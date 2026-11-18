@@ -70,5 +70,7 @@ class LF_Test_E2EInventory : LF_Test
 
 		ctx.Equal(3, LF_InventoryUtils.AddAmount(character, APPLE_PREFAB, 3), "AddAmount adds 3 apples");
 		ctx.Equal(3, LF_InventoryUtils.GetAmount(character, APPLE_PREFAB), "GetAmount reads 3 apples");
+
+		LF_TestCharacterFixture.Delete(character);
 	}
 }

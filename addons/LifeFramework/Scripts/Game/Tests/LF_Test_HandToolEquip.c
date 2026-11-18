@@ -21,7 +21,10 @@ class LF_Test_HandToolEquip : LF_Test
 		LF_HandToolComponent tool = LF_HandTool.Of(drill);
 		ctx.NotNull(tool, "the drill carries LF_HandToolComponent");
 		if (!tool)
+		{
+			LF_TestVaultDrillFixture.Release(robber);
 			return;
+		}
 
 		ctx.True(tool.GetToolId() == "drill", "its tool id is drill");
 		ctx.True(tool.CanBeHeld(), "it can be held in the hands");
@@ -37,5 +40,7 @@ class LF_Test_HandToolEquip : LF_Test
 		ctx.True(LF_HandTool.HeldTool(robber, "drill") == drill, "the held tool is that drill");
 		ctx.False(LF_HandTool.Holds(robber, "parcel"), "another tool id is not held");
 		ctx.False(LF_HandTool.Matches("drill", EGadgetMode.IN_SLOT, "drill"), "a slotted tool is not held");
+
+		LF_TestVaultDrillFixture.Release(robber);
 	}
 }

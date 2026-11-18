@@ -22,7 +22,7 @@ class LF_Test_VaultTool : LF_Test
 
 		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(robber);
 		// The fixture's jacket is too small for a drill; a field pack carries it.
-		IEntity pack = LF_Utils.SpawnEntityPrefab("Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et", robber.GetOrigin());
+		IEntity pack = LF_Utils.SpawnEntityPrefab(LF_TestVaultDrillFixture.PACK_PREFAB, robber.GetOrigin());
 		ctx.True(pack != null && inventory.TryInsertItem(pack, EStoragePurpose.PURPOSE_LOADOUT_PROXY), "the robber wears a pack");
 
 		LF_Bank.Configure(vaultId, 1, 100, 0, 0, 0);
@@ -70,6 +70,6 @@ class LF_Test_VaultTool : LF_Test
 		ctx.True(LF_Breach.IsOpen(vaultId), "the vault opened");
 		ctx.Equal(1, LF_Bank.GetSpawnedBagCount(vaultId), "the haul spawned");
 
-//		LF_TestCharacterFixture.Delete(robber);
+		LF_TestVaultDrillFixture.Release(robber, vaultId);
 	}
 }

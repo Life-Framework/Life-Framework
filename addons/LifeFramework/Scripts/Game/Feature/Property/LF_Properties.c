@@ -90,6 +90,9 @@ class LF_Properties
 			return false;
 		}
 
+		if (!record.m_sOwnerKey.IsEmpty() && record.m_sOwnerKey != ownerKey)
+			record.m_bOwnerSpawnsHere = false; // a new owner does not inherit the spawn choice (#2651)
+
 		record.m_sOwnerKey = ownerKey;
 		LF_HouseManagerComponent house = LF_Houses.Find(propertyId);
 		if (house)
@@ -135,7 +138,11 @@ class LF_Properties
 		foreach (string sortedId : ids)
 		{
 			LF_PropertyRecord row = Records().Get(sortedId).Copy();
-			row.m_sOwnerKey = GetOwnerKey(sortedId);
+			string liveOwner = GetOwnerKey(sortedId);
+			if (row.m_sOwnerKey != liveOwner)
+				row.m_bOwnerSpawnsHere = false; // a sold house is not the new owner's spawn (#2651)
+
+			row.m_sOwnerKey = liveOwner;
 			rows.Insert(row);
 		}
 

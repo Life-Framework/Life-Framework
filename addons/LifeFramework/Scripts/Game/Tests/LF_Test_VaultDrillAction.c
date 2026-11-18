@@ -53,5 +53,7 @@ class LF_Test_VaultDrillAction : LF_Test
 
 		ctx.True(LF_BankRobAction.NameFor(vault, robber) == "#LF-Bank_Drill", "drill in the hands: Drill the vault door");
 		ctx.True(LF_Bank.GateReason(vault.GetVaultId(), uid, robber) == "", "drill in the hands: the gate passes");
+
+		LF_TestVaultDrillFixture.Release(robber);
 	}
 }
