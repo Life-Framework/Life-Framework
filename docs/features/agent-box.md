@@ -15,6 +15,14 @@
   `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
   (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
   `LF_OpenDebugMenu`); movement actions are refused.
+- 🔵 `use <class> <name>` on a client falls back to the nearest unnamed host only (a replicated NPC has no
+  layer name there); a host with another name answers `error wrong_target:<that name>` (#2935,
+  `agent-harness/use-fallback-strict`). `carries <prefab text>` answers whether the character carries a
+  matching item (`LF_HarnessCarries.c`).
+- 🔵 Judged flows (#2935, `agent-box/flow-asserts.mjs`): `step <id> <title> [pending #N]` and
+  `expect cash|bank|money +N|-N|=N|up|down|same`, `expect job <NAME>`, `expect duty police|medic|off`,
+  `expect item <prefab text>`. The flow ends with a `step PASS|FAIL` table and exits 1 on any failed step;
+  `flow island-first-hour` is the Friday gate.
 - ✅ `stand` is the placement exception: the server moves the local character
   beside a named entity. The poll does not start on a dedicated server
   (`RplMode.Dedicated`). The server checks the `stand`, `pose`, and `use` RPCs
