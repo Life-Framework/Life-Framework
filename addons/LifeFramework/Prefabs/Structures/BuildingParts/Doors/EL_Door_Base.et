@@ -19,6 +19,11 @@ GenericEntity : "{776E0766BBDB17A3}Prefabs/Structures/BuildingParts/Doors/Door_H
       "default"
      }
     }
+    LF_SetHomeAction "{69A56BFA83EAD194}" {
+     ParentContextList {
+      "default"
+     }
+    }
    }
   }
  }
