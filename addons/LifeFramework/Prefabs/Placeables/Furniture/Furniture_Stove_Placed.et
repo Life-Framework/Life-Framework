@@ -1,0 +1,28 @@
+GenericEntity : "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et" {
+ ID "C578ADB3898937C8"
+ components {
+  ActionsManagerComponent "{200C58E1365ADC56}" {
+   ActionContexts {
+    UserActionContext "{B9507D16A65E2B0A}" {
+     ContextName "default"
+     Position PointInfo "{C4387698C47C8288}" {
+      Offset -0.325 0.541 0.352
+     }
+     Radius 1.403
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{7D36377970FD56DC}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{66307A8DAC58EDE7}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

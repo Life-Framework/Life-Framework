@@ -43,6 +43,13 @@
   empty input/output lists, missing inputs, and non-positive amounts are
   rejected before inventory mutation. Regression coverage is in
   `LF_Test_ActionGuards`.
+- ✅ Machine rules for the mining chains (#3226). A `ResourceChains.conf` machine row can set
+  `m_sLevelJob` + `m_iMinLevel`: the server refuses a player below that level in the job's own
+  words (`LF_JobLevelWords`, no number). It can set `m_iMaxBatches`: one interaction runs as many
+  whole batches as the inventory covers, up to the cap, takes all inputs together with the existing
+  rollback, and pays job rewards once per batch. A short input is named in the refusal ("Needs
+  Coal") instead of "Missing the input materials". Defaults (no job, cap 1) keep every existing
+  machine as it was. Test: `LF_Test_MachineRecipeRules`.
 - ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
   empty recipe or a prefab that does not resolve logs `LF_Debug.Error` and
   returns before inventory changes (verified 2026-10-11).

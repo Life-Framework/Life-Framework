@@ -1,0 +1,28 @@
+GenericEntity : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
+ ID "B0C566F79909802E"
+ components {
+  ActionsManagerComponent "{52E71719F5BE5EBB}" {
+   ActionContexts {
+    UserActionContext "{E6B7BC7A917F1BF4}" {
+     ContextName "default"
+     Position PointInfo "{BB3A05DAEBF6E634}" {
+      Offset -0.003 0.15 0.006
+     }
+     Radius 1.4
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{45D4AF0806FC4153}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{56FB581373B652FC}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}
