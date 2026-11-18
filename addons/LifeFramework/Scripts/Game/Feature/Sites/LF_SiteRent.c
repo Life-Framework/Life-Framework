@@ -297,10 +297,7 @@ class LF_SiteRentSavePayload : LF_SavePayload
 		return true;
 	}
 
-	//------------------------------------------------------------------------------------------------
-	//! A save without the section (older, or written before #2683): every site's bank starts empty.
-	override void OnAbsent()
-	{
-		LF_SiteRent.ApplyAll(null);
-	}
+	// No OnAbsent: a save without the section (written before #2683) leaves the banks as they are,
+	// which on a fresh boot is empty. Clearing here would wipe live banks whenever a test or a
+	// re-apply loads an older save.
 }
