@@ -195,6 +195,7 @@ class LF_PlacementSave
 		LF_PlacementRow row = LF_PlacementRow.Create(id, placed.GetPrefabData().GetPrefabName(), transform, ownerKey, kind, PropertyAt(transform[3]), itemPrefab);
 		s_mRows.Set(id, row);
 		s_mLive.Set(id, placed.GetID());
+		LF_PlacedOwnerComponent.Stamp(placed, ownerKey);
 		LF_Debug.Info(FEATURE, string.Format("recorded permanent placement %1 (%2) for %3 at %4, %5 owned", id, kind, ownerKey, row.m_vPos, CountOwned(ownerKey)));
 		return id;
 	}
@@ -322,6 +323,7 @@ class LF_PlacementSave
 
 			s_mRows.Set(row.m_sPlacementId, row);
 			s_mLive.Set(row.m_sPlacementId, placed.GetID());
+			LF_PlacedOwnerComponent.Stamp(placed, row.m_sOwnerKey);
 			standing++;
 		}
 

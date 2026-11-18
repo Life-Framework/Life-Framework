@@ -30,7 +30,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    Object "{5B2CC29845CBBFB9}Assets/Props/Furniture/Chair_02/Chair_02.xob"
   }
   LF_PlaceableComponent "{A291EF1597B78C29}" {
-   m_sPlacedPrefab "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et"
+   m_sPlacedPrefab "{5C0D76FB2EF1F2A7}Prefabs/Placeables/Furniture/Furniture_Chair_Placed.et"
    m_vFootprintMins -0.25 0.1 -0.25
    m_vFootprintMaxs 0.25 1 0.25
    m_fReach 1

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5C0D76FB2EF1F2A7}Prefabs/Placeables/Furniture/Furniture_Chair_Placed.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

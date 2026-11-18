@@ -1,0 +1,28 @@
+GenericEntity : "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et" {
+ ID "3E19E0FC9C3DD046"
+ components {
+  ActionsManagerComponent "{AA7835FBD5F4E9D8}" {
+   ActionContexts {
+    UserActionContext "{4EA24375AF803B25}" {
+     ContextName "default"
+     Position PointInfo "{AD828A36B0437401}" {
+      Offset 0 0.7635 0.0057
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{2B89D88BF19C78D8}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{B448B5ED5C9C7973}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}
