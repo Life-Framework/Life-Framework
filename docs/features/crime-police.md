@@ -382,10 +382,17 @@
   officer stays on duty with the body and kit, but the time away is never counted. `OnPlayerReturned` (on spawn) starts
   the clock again inside the same shift cap, which also restarts the clock of an officer whose on-duty flag survived a
   server restart. The cap applies to every duty role (police and medic). Log `[LFDebug:Ranks] shift cap reached`,
-  `duty clock stopped`, `duty clock resumed`. Not tracked: whether a connected officer is moving (no activity signal
-  exists), so an officer who stays connected but idle earns up to the cap. The shift's counted seconds are session
+  `duty clock stopped`, `duty clock resumed`. A connected officer who stands idle is paused by the idle sampler below. The shift's counted seconds are session
   state: a server restart gives a fresh cap. The cap log fires once per shift. Tests `police/duty-shift-cap`,
   `police/duty-clock-disconnect`.
+- 🔨 **Duty pay pauses while the officer or medic stands idle** (#3120, in-dev, WORLD `police/duty-idle`). `LF_DutyIdle`
+  samples every connected on-duty player every 30 s. Moving more than 2 m (on foot or in any vehicle; a seat follows the
+  vehicle's position) or turning the view about 10 degrees counts as active, so patrol, a desk, a parked car with the
+  officer looking out and driving to a call all keep the clock running. After `dutyIdleSeconds` (jobs config, default
+  300; 0 = off) with none of that, the clock is settled at the moment the window ran out and stopped; the idle time earns
+  no pay and no rank time. The next sample that sees activity starts it again (at most 30 s late). Rank rates are
+  untouched. A logout while paused needs nothing: the spawn restarts the clock (`ResumeDutyClock`). Watches are runtime
+  only. Log `[LFDebug:DutyIdle] duty clock paused`, `duty clock resumed`.
 - 🔨 **A character switch settles the duty clock first** (#2838, in-dev, LOGIC `police/duty-clock-character-switch`). Every
   change of the account's active character (a pick, a new character made active, the active one removed) runs
   `LF_PoliceRanks.SettleForCharacterSwitch` before it: the running seconds go to the outgoing character's rank time
@@ -428,9 +435,11 @@
   raises wanted (till, vehicle and weapon robbery, breach, hospital till) calls
   `LF_Dispatch.Report` (M1-20), which calls `LF_WantedReports.Report`. It records the offence and a description of the
   suspect at that moment: clothing display names, the vehicle they sit in, and
-  the nearest sign title within `m_fPlaceRadius`, else the nearest map town or
-  landmark (`LF_NamedPlaces.Nearest`, #1944, WORLD `police/dispatch-names-place`:
-  "bank robbery, Saint Philippe"), else a 100 m grid square. The place is stored as a
+  the nearest map town or landmark (`LF_NamedPlaces.Nearest`, #1944, WORLD
+  `police/dispatch-names-place`: "bank robbery, Saint Philippe"), else the nearest
+  sign title within `m_fPlaceRadius`, else a 100 m grid square. The town wins over
+  a sign (#3092): on the island the bank's fascia sign stood nearer than the town
+  label and the call read "Bank". The place is stored as a
   localization key and localized where each board and radio line is built; the
   core holds no place names. In town the hospital till's alarm stands on `Hospital_AlarmBox` (an alarm mount on the hospital front wall, `Street_Hospital.layer`) and the pack names the town "Saint Philippe" (`Place_SaintPhilippe`, town pass #1947).
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)

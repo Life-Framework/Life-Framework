@@ -56,6 +56,15 @@
   owner `config.json` section. Tests: `quests/onboarding-chain` (WORLD: links, no money, items resolve),
   `quests/arrival-chain` (gift lands, no cash), `everon/welcome-gift` (pack leg).
 
+- ✅ **A pack adds quests to a giver by config** (#3124). `LF_QuestGiverTable` (`Feature/Quests/LF_QuestGiverTable.c`)
+  reads `Configs/Quests/LF_QuestGiverTable.conf`, rows keyed by giver id (`m_sGiverId`) with a list of
+  `LF_QuestDefinition`, and a pack overlays rows with the override verbs (`m_sOp`); a patch gives the giver's whole
+  list again. `LF_QuestGiverComponent.GetQuests()` returns the prefab's quests followed by the row's, so the clerk
+  or any placed giver gains errands with no prefab variant. The core file ships no rows. A row quest whose id the
+  giver already offers is refused (`[LFDebug:Quests]`, the prefab quest wins: quest ids are persistence keys); a
+  row for a giver id nothing registers is logged once, 30 s into the world, and never read. Pack-only: no owner
+  `config.json` section. Test: `quests/giver-table` (WORLD).
+
 ### Layouts (loaded by `LF_Test_Data`)
 - ✅ `LF_SplitQuantityDialog`, `LF_CharacterCreationMenu`, `LF_ATMMenu`,
   `EL_SurvivalHUD`, `ShopMenu`,
@@ -128,3 +137,5 @@
 - ✅ **Notifications:** `SendToJob` null-checks the player and account managers; the fallback toast titles are `#LF-Notify_Title*` keys instead of Spanish literals.
 - ✅ **Host's own quest log.** `PushLog` replies with `Rpc(RpcDo_Log)` to `RplRcver.Owner`; when this machine owns the replicated body (a listen host's own player) the engine runs that handler locally at once, so no direct call is needed. WORLD test `quests/log-host-reply` holds it (#2619).
 - ✅ **Idle quest tracker costs nothing (#2537).** `LF_QuestTrackerComponent` no longer sets the FRAME event on every body. The 0.5 s timed check (expiry, area entry) starts when a quest is accepted and stops when the last ACTIVE or COMPLETED quest is turned in or expires; a body with no quest, or only turned-in ones, does no frame work and allocates no map. Test: `LF_Test_QuestTrackerIdle`.
+- ✅ **Hour-2 milestone signals (#3123).** `LF_QuestHooksProgress.c` (modded classes, keys in `LF_QuestProgressSignals`) reports `vehicle_bought` (`LF_VehicleLotComponent.BuyColour` succeeded), `plot_bought` (`LF_PlotComponent.Buy` returned BOUGHT), `permit_collected` (`LF_LicenceDesk.VisitFor` returned ISSUED, at once or at the collection visit), `fish_sold` (`LF_ShopComponent.Sell` paid for a fish prefab of the fishing config) and `job_level:<JOB>:<n>` (`LF_JobLevelSync.Handle` on `LF_OnJobLevelChanged`, one signal per level crossed, `<JOB>` as the jobs config spells it, e.g. `job_level:DELIVERY:2`). A refused purchase or sale reports nothing. Test: `quests/signals-progress` (WORLD).
+- ✅ **The Everon clerk's second chain: settling in (#3125).** After `arrival_done` the clerk's "What should I do now?" offers `settle_parcels`; the pack file `LF_QuestGiverTable_Everon1989.conf` (a row of #3124's quest giver table, listed in the mission header) adds six quests to giver `clerk`. Steps start and finish on their own: `settle_parcels` (five `job.run_complete:parcel`, which lifts the DELIVERY job to level 2 and opens fuel runs), then `settle_fuel` (`job.run_complete:fuel_delivery`), `settle_wheels` (`vehicle_bought`), then three errands that each need only the car: `settle_permit` (`permit_collected`), `settle_fish` (`fish_sold`) and `settle_plot` (`sign.read:plot_for_sale`). Rewards are one-off cash, 20, 30, 50, 15, 15 and 20 (150 for the chain, at most 50 a step) and 50 DELIVERY XP on the first two. No dialogue reply was added: the clerk's menu keeps its four replies. The strings are pack keys `LF-Quest_Settle*`. Test: `everon/settling-in` (pack leg).

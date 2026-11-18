@@ -23,7 +23,7 @@ Incidents: #41 Damage, #42 Damage, #43 Downed, all flagged REPORTED, read by the
   administrator at 21:20:40 UTC, each "6 min ago", so about 21:14 UTC
 Order: two Damage rows, then the Downed row (#41, #42, then #43): Tomas Reil was
   hurt first and downed last, Mara Voss the other party on all three
-Clip: reporter's F9 stamp 21:14:31 UTC, inside the minute the rows give; matches
+Clip: reporter's F8 stamp 21:14:31 UTC, inside the minute the rows give; matches
 Other rows: none for the pair in the last hour, so no Hold-up, no Cash, no Weapon
   aimed. Nothing in the log gives Mara Voss a reason.
 Found: Mara Voss damaged and downed Tomas Reil with no earlier contact in the log.
@@ -44,7 +44,7 @@ Closed by: <administrator>, once the three !handled rows appear.
   and the `!handled` step.
 - Reading the incident panel and Incident kinds: what a `REPORTED #n` line means and
   that the number goes in the ticket.
-- Time and clips: the F9 stamp is UTC, the same clock as the rows.
+- Time and clips: the F8 stamp is UTC, the same clock as the rows.
 - The ladder: moderators propose and administrators act.
 - Admin commands: `!handled <number>` per flagged incident.
 - Evidence: the one-week ticket rule.
@@ -81,7 +81,7 @@ come from what the guide does not say.
 3. **No proportion.** Nothing says when shooting a player is a violation or how to
    choose between a warning and a kick; the reader leaned on the absence of Hold-up,
    Cash and Weapon aimed rows, which is the reader's own inference.
-4. **Row time.** A panel line gives minutes ago, not a clock time. Matching the F9
+4. **Row time.** A panel line gives minutes ago, not a clock time. Matching the F8
    stamp to a row needs the minute the administrator read the panel, which step 2
    does not ask them to say.
 5. **Uids.** The guide tells moderators to keep uids in tickets and to get one from
