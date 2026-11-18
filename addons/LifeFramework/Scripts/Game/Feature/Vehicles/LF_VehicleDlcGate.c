@@ -1,49 +1,20 @@
 //------------------------------------------------------------------------------------------------
-//! What the DLC check said about a purchase (#3304).
-//------------------------------------------------------------------------------------------------
-enum LF_EVehicleDlcGate
-{
-	ALLOWED,
-	NEEDS_DLC,
-	NO_MANAGER
-}
-
-//------------------------------------------------------------------------------------------------
-//! The engine side of the check, behind a seam so a LOGIC test can answer for it. The default asks
-//! DlcManager, as the vanilla driver-seat block does (SCR_GetInUserAction).
-//------------------------------------------------------------------------------------------------
-class LF_VehicleDlcChecker
-{
-	//------------------------------------------------------------------------------------------------
-	//! False when the engine has no DlcManager to ask.
-	bool Available()
-	{
-		return DlcManager.Get() != null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! True when this player owns every DLC the prefab references.
-	bool CanUse(IEntity player, ResourceName prefab)
-	{
-		DlcManager manager = DlcManager.Get();
-		if (!manager)
-			return false;
-
-		return manager.CanUseResource(player, prefab, true);
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! Gate for a vehicle the base game restricts to a DLC (#3304). The Z7211 tractor is Rally DLC
 //! content and vanilla refuses its driver seat to a player without the DLC, so the lot must not
-//! charge for one that player cannot drive. The server asks before it charges; a refusal charges
-//! nothing. A base-game vehicle is never asked, so today's lot is unchanged.
+//! charge for one that player cannot drive.
+//!
+//! DlcManager answers for the licence of the machine it runs on, never for a remote player: vanilla
+//! runs every DLC check on the acting client (SCR_GetInUserAction, SCR_InventoryStorageManagerComponent,
+//! and the arsenal's "DLC checks can only be performed locally" in
+//! SCR_ResourcePlayerControllerInventoryComponent.RpcAsk_ArsenalRequestItem). So the buyer's client
+//! asks its own DlcManager (LocalOwns) and sends the answer with the buy; the server refuses before
+//! any charge when the answer is no. The answer is a hint: a client that lies buys a tractor whose
+//! driver seat vanilla still refuses it. A base-game vehicle is never asked, so today's lot is unchanged.
 //------------------------------------------------------------------------------------------------
 class LF_VehicleDlcGate
 {
 	protected static const string FEATURE = "Vehicle";
 	static const string NEEDS_DLC_KEY = "#LF-Vehicle_NeedsRallyDlc";
-	static const string NOT_SOLD_KEY = "#EL-Vehicle_NotSold";
 
 	//! The Rally tractor the lot sells, and the locked child the buyer gets (EL_Z7211_red_CIV.et).
 	static const ResourceName Z7211 = "{939AC713213C2BA1}Prefabs/Vehicles/Wheeled/Z7211/Z7211_red_CIV.et";
@@ -61,48 +32,34 @@ class LF_VehicleDlcGate
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The rule, with the engine answer passed in. A base-game vehicle is allowed without asking; a
-	//! DLC vehicle needs a checker that can answer, and a buyer it says may use the prefab.
-	static LF_EVehicleDlcGate Evaluate(LF_VehicleDlcChecker checker, IEntity buyer, ResourceName prefab)
+	//! Client (the buyer's machine, or a listen host buying for itself): does this machine's licence
+	//! cover the prefab? True for a base-game vehicle without asking. No DlcManager answers no.
+	static bool LocalOwns(ResourceName prefab)
 	{
 		if (!IsDlcVehicle(prefab))
-			return LF_EVehicleDlcGate.ALLOWED;
-
-		if (!checker || !checker.Available())
-		{
-			LF_Debug.Error(FEATURE, string.Format("DLC vehicle %1 refused: no DlcManager to ask", prefab));
-			return LF_EVehicleDlcGate.NO_MANAGER;
-		}
-
-		if (!checker.CanUse(buyer, prefab))
-		{
-			LF_Debug.Info(FEATURE, string.Format("purchase refused: %1 needs a DLC the buyer does not own, nothing charged", prefab));
-			return LF_EVehicleDlcGate.NEEDS_DLC;
-		}
-
-		return LF_EVehicleDlcGate.ALLOWED;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The lot's question, on the server before it charges. False carries the refusal key to show.
-	static bool Allows(IEntity buyer, ResourceName prefab, out string reasonKey)
-	{
-		return AllowsWith(new LF_VehicleDlcChecker(), buyer, prefab, reasonKey);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Allows against a given checker (the test seam).
-	static bool AllowsWith(LF_VehicleDlcChecker checker, IEntity buyer, ResourceName prefab, out string reasonKey)
-	{
-		LF_EVehicleDlcGate result = Evaluate(checker, buyer, prefab);
-		if (result == LF_EVehicleDlcGate.ALLOWED)
 			return true;
 
-		if (result == LF_EVehicleDlcGate.NEEDS_DLC)
-			reasonKey = NEEDS_DLC_KEY;
-		else
-			reasonKey = NOT_SOLD_KEY;
+		DlcManager manager = DlcManager.Get();
+		if (!manager)
+		{
+			LF_Debug.Error(FEATURE, string.Format("DLC vehicle %1: no DlcManager to ask, sent as not owned", prefab));
+			return false;
+		}
 
+		// null asks for the local instance (DlcManager.c), which is the only answer the engine gives.
+		return manager.CanUseResource(null, prefab, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server, before any charge: the rule with the client's answer passed in. False carries the
+	//! refusal key to show. Pure.
+	static bool Allows(ResourceName prefab, bool buyerOwns, out string reasonKey)
+	{
+		if (!IsDlcVehicle(prefab) || buyerOwns)
+			return true;
+
+		reasonKey = NEEDS_DLC_KEY;
+		LF_Debug.Info(FEATURE, string.Format("purchase refused: %1 needs a DLC the buyer's client says it does not own, nothing charged", prefab));
 		return false;
 	}
 }
