@@ -40,7 +40,7 @@ GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
    LayerPreset "ItemFireView"
    ModelGeometry 1
   }
-  LF_HandToolComponent "{3D9A61C47E2B5F42}" {
+  LF_FishingRodComponent "{3D9A61C47E2B5F42}" {
    m_eAnimVariable ADRIANOV
    m_sToolId "rod"
   }

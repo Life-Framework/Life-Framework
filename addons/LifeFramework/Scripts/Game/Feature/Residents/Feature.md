@@ -63,3 +63,10 @@ bench, bus stop) near players.
 - **Owner and side:** server. `LF_Dialogue.Start` calls `LF_ResidentTalk.StartNode`; the word is `LF_ResidentMemory.Tier`. The client is sent node and line ids only.
 - **Rules:** node order: `<residentId>_greet_<word>` (pack), `greet_<word>` (core), else the dialogue's `m_sStart`. A character that is not a live resident opens on `m_sStart`. Data: `Configs/Dialogue/LF_Dialogue_Resident.conf` (id `resident` in the dialogue index).
 - **Proof:** `residents/resident-talk` (WORLD).
+
+## Resident walk (#2909)
+
+- **Player sees:** a resident whose line moves on (bench to counter) walking to the next anchor at walking pace when they are near, then starting the activity, instead of vanishing and appearing.
+- **Owner and side:** server. `LF_ResidentWalk.Move` is called from `LF_ResidentSpawner.Despawn`; `LF_ResidentMover` drives the vanilla AI (a test swaps it).
+- **Rules:** see `docs/features/residents.md` "LF_ResidentWalk". Data: `LF_Residents.conf` `m_iMaxWalking` (4). No AIWorld: placed, never walked. Persisted: nothing.
+- **Proof:** `residents/walk` (WORLD).

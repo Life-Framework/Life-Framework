@@ -246,7 +246,17 @@ class LF_ResidentSpawner
 			}
 
 			LF_ResidentSlot slot = LF_ResidentTimetable.WhereIs(id, minute);
-			if (!slot || slot.m_sRole != live.m_sRole || slot.m_sAnchor != live.m_sAnchor)
+			bool moved = slot && (slot.m_sRole != live.m_sRole || slot.m_sAnchor != live.m_sAnchor);
+			// A resident a player can see walks to the next anchor, or is placed there, instead of popping (#2909).
+			if (moved && LF_ResidentWalk.Move(id, entity, slot, where, 0, Math.Sqrt(despawnSq)) != LF_EResidentMove.NONE)
+			{
+				live.m_sRole = slot.m_sRole;
+				live.m_sAnchor = slot.m_sAnchor;
+				live.m_sActivity = slot.m_sActivity;
+				continue;
+			}
+
+			if (!slot || moved)
 			{
 				LF_Debug.Info(FEATURE, string.Format("resident '%1' despawned: the timetable moved them on", id));
 				SCR_EntityHelper.DeleteEntityAndChildren(entity);
