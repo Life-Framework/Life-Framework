@@ -1,5 +1,5 @@
 // red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_OrgLeaseRelease` (RedProof hook skips the Release call): RED PROOF OK, "the ledger row reads FREE again (expected 0, got 1)", "the yard has no owner", "a second release finds nothing to give up". Green with the verb.
-// tier: WORLD (needs the organization hideout door: GridWorld's Grid_orgs_vehicles.layer, as LF_Test_OrgRegistry)
+//! Needs the organization hideout door: GridWorld's Grid_orgs_vehicles.layer, as LF_Test_OrgRegistry
 //! organization/lease-release (#2572): a member whose rank holds BUY_UPGRADE gives the hideout lease
 //! back; the lease reads FREE and the gate is shut. A member without the right, another organization,
 //! and a second release are refused and the lease stays.

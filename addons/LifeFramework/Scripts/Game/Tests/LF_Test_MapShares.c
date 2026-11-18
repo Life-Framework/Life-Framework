@@ -96,7 +96,6 @@ class LF_Test_MapShareFacts : LF_MapShareFacts
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! map/shares: the shared-mark core (#2237, everon-map.md section 3, card M9). The case table
 //! Configs/Map/Rules/shares.cases.json (audience resolution for player, role, org and everyone;
 //! expiry; the membership diff; whether a row's area is drawable) runs here through LF_MapShareRules and in

@@ -1,5 +1,4 @@
 // red-proof: Observed on main with `tools/cli test --no-build --only LF_Test_VaultPickToolSpare`: a drill in the pack and a charge at a drill,charge vault picked "drill" (`- a spare pack drill does not block the charge`).
-// tier: WORLD
 //! A drill only in the pack never blocks the charge on a drill-or-charge vault (#2581): the robber
 //! with a spare drill and a charge is sent to the charge; once the drill is in the hands it is the
 //! drill. A drill-only vault still points a pack drill at "hold it".

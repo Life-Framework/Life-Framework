@@ -1,7 +1,6 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_VehicleStateBadRow,...`:
 // LF_VehicleOwnership.WriteState accepting any tow state above NONE failed `[LFTEST] FAIL vehicles/state-bad-row`,
 // `- an unknown tow state reads as none (apply 1) (expected 0, got 7)`. Restored; green.
-// tier: LOGIC
 //! #752a: LF_VehicleOwnership.ApplyState corrects what a damaged "vehiclestate" row holds. A row
 //! for a vehicle that is not loaded is skipped; an unknown tow state reads as none, a negative stamp
 //! as never, a compartment level outside 0-3 is clamped; the other rows still apply. A second apply

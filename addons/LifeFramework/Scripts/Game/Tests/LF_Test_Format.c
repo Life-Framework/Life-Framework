@@ -1,7 +1,6 @@
 // red-proof: change an expected string (e.g. 999 -> "9999") or break the
 // threshold in LF_FormatUtils.AbbreviateNumber, then run the fast tier.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_FormatAbbreviate : LF_Test
 {
@@ -23,7 +22,6 @@ class LF_Test_FormatAbbreviate : LF_Test
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UtilsMinMax : LF_Test
 {

@@ -3,7 +3,6 @@
 //! comms/radio-preset (#252): clocking in as police or medic gives a vanilla handheld radio whose
 //! first transceiver sits on the service frequency from LF_ServiceCalls.conf; a radio that is not
 //! on duty stays on its factory channel; the frequencies differ per service.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ServiceRadio : LF_Test
 {

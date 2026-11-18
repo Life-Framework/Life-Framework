@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `tools cli test --no-build --red LF_Test_RobCommitGates`: RED PROOF OK; with the hook on the commits get no gate arguments, as on main, so the vehicle and weapon cases spawn or deliver and fail (`a refused weapon robbery inside the cooldown adds no wanted (expected 0, got 5)`); green without it.
-// tier: WORLD
 //! The vehicle and weapon robbery commits judge the robber on the server (#2538): a robber in grace,
 //! a faction that may not rob, too few police on duty and a robbery inside the cooldown each get
 //! nothing delivered and no wanted level. A robber who passes every gate still gets the robbery.

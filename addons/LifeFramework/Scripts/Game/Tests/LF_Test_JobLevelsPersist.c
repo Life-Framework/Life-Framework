@@ -4,7 +4,6 @@
 // Restored; green. With the single level clamped at 20 again, RunHighLevel failed
 // `- a single level 25 with 10 xp migrates to 30010 civilian xp (expected 30010, got 19010)` and
 // `- the mirror writes single level 25 back (expected 25, got 20)`. Restored; green.
-// tier: PERSISTENCE
 //! Per-job XP (#749) rides the real save path: the "joblevels" payload, save version 28. The XP of
 //! every job comes back after the store is wiped, a second load gives the same XP, and a version 27
 //! save (no "joblevels" rows) migrates: the progression records' single level comes back as

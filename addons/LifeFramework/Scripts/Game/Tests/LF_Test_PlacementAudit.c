@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-11, LF_PlacementAudit.Flags with the floating test at GAP + 5: `--only LF_Test_PlacementAudit` failed "a crate 1 m above the ground is flagged floating (flags=)" while the log measured gap=0.999. Restored, green.
 //! The placement audit (LF_PlacementAudit, `tools\cli audit placement`) on fixtures spawned on open
 //! ground south of the DebugWorld town (300, 100): a crate on the ground and one stacked on it are clean, a crate 1 m up is floating, a crate

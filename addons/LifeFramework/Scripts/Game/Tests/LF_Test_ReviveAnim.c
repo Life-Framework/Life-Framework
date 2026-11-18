@@ -5,7 +5,6 @@
 //! runs one animation per medic, and stops it when the hold is cancelled, the medic walks out of
 //! reach, the patient stops being downed, or the hold overruns. Broadcasts are silenced; the test
 //! counts the starts and stops the server decided.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ReviveAnim : LF_Test
 {

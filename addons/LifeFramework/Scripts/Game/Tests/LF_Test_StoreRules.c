@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_StoreRules,...`: LF_StoreRules.ShelfCount returning Math.Max(stock, slots) failed `- six in stock on four slots: four on the shelf (expected 4, got 6)`; restored, green.
 
-// tier: LOGIC
 //! The pure rules of the physical store (#202): how many display copies stand on a shelf, the
 //! restock step, the saved-stock clamp, the boundary box, the restock clock, the till total and the
 //! till toast keys. No world, no entity.

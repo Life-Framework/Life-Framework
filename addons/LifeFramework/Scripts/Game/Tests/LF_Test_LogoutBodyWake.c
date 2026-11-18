@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-17 `tools\cli test --no-build --red LF_Test_LogoutBodyWake` (hook takes the body back the pre-#2156 way, End without the hold): "the take-back releases the logout ragdoll (expected 1, got 0)" and "the released body settles before it gets up" failed; green with `--only`.
-// tier: WORLD
 //! Acceptance of #2156: a rejoiner who takes back their logout body gets up. The logout knockout
 //! was started and held by the leaving client (it still owned the body), so the server has no hold
 //! of its own; the take-back must still release the ragdoll, let it settle and wake the body

@@ -11,6 +11,30 @@ class LF_TestDebrisProbe
 	protected ref array<EntityID> m_aBaseline = {};
 	protected bool m_bLeftoversOnly;
 	protected bool m_bBaselining;
+	//! Entities a test keeps standing on purpose (Keep()); no static initializer, filled on first use.
+	protected static ref array<EntityID> s_aKept;
+
+	//------------------------------------------------------------------------------------------------
+	//! A test that must leave an entity standing (e2e/pass1-write-save holds its bodies through the shutdown save
+	//! the reload boot loads) declares it here, so the end-of-run check does not list it as a leak (#2792). Only
+	//! a test whose assertions need the entity alive past the run may call this; every other test deletes what it spawns.
+	static void Keep(IEntity entity)
+	{
+		if (!entity)
+			return;
+
+		if (!s_aKept)
+			s_aKept = {};
+
+		if (s_aKept.Find(entity.GetID()) == -1)
+			s_aKept.Insert(entity.GetID());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsKept(IEntity entity)
+	{
+		return s_aKept && s_aKept.Find(entity.GetID()) != -1;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The fixture spawn point (the gate): every LF_TestCharacterFixture character stands here, so test
@@ -110,7 +134,7 @@ class LF_TestDebrisProbe
 	//! and forgets. What a character wears or carries goes with it, so only the top of each tree counts.
 	protected static bool IsLeftover(IEntity entity)
 	{
-		if (entity.GetParent())
+		if (entity.GetParent() || IsKept(entity))
 			return false;
 
 		if (ChimeraCharacter.Cast(entity))

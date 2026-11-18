@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-17 with `tools/cli test --no-build --red LF_Test_CarriedPropHang`: `RED PROOF OK`; with the hook on (identity slot transform) "the handle is on the hand (0.455442 m off)", "the prop hangs upright" and "the long side runs along the carrier's forward axis" fail; green with `--only`.
 
-// tier: LOGIC
 //! A carried prop hangs from the hand (#2174 grip): for any hand pose, the slot transform that
 //! LF_CarriedPropComponent.SolveHanging returns puts the prop's handle on the hand bone, keeps the
 //! prop upright and turns its long side along the carrier's forward axis.

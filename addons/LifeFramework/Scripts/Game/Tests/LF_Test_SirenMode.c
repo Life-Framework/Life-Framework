@@ -2,7 +2,6 @@
 // failed it with `[LFTEST] FAIL siren/mode-enum-integrity`, `- mode name Mode2 is unique`.
 // Restored; green.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SirenMode : LF_Test
 {

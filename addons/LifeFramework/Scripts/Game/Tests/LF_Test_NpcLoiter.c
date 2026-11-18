@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_NpcLoiter`: with Release skipped it failed `releasing stands the NPC up`, `releasing frees the seat` and `the freed seat is found again`; RED PROOF OK. Green without the hook.
-// tier: WORLD
 //! npc/loiter (#1928): an NPC of a loiter role takes a free seat near it (the same LF_SitAction a player
 //! sits on), the seat reads taken, a second NPC finds no free place, and releasing frees it. The role and
 //! pose choices are pure rules.

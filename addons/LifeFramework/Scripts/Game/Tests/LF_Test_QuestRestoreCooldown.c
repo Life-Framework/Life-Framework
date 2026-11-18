@@ -1,7 +1,6 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_QuestRestoreCooldown,LF_Test_RacePathStart`: RedProof() restores
 // with time 0 (the old rule) and the cooldown assertions fail; RED PROOF OK (all 2 listed). Green with the fix (--only, 20 passed).
 
-// tier: LOGIC
 //! A repeatable quest's cooldown survives a respawn (docs/reviews/2026-11-17-life.md #3). The new
 //! body restores saved turn-ins; with no turn-in time the cooldown was skipped, so a player could
 //! turn in, die, respawn and take the quest again at once, paid every time.

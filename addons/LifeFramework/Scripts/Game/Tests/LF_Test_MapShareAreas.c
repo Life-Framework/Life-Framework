@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapShareAreas: RED-OK map/share-areas (RedProof() makes the test sink draw areas but never drop one on a remove or a clear, so the remove, the expiry and the moved-audience checks fail). Green without it.
-// tier: LOGIC
 //! A share row's area on the client (#2243 follow-up, everon-map.md sections 2 and 3). The test sink stands
 //! in for the owner RPC and calls what LF_MapShareComponent calls on the client: LF_MapShareAreas.Show for
 //! an add, Hide for a remove, HideAll for the clear before a resend. A row with a radius and a style

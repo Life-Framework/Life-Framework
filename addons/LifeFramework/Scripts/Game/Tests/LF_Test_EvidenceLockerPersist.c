@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-10 with `tools/cli test --no-build --only LF_Test_EvidenceLockerPersist`: commenting out `LF_EvidenceLocker.ApplyAll(lockerRows)` in the load failed `- the logged bag is back (expected 1, got 0)` and `- it is still linked to its report`. Restored; green. Restart path stays with wt e2e.
-// tier: PERSISTENCE
 //! The evidence locker rides the real save path (the "evidencelocker" payload, save version 18,
 //! payload 18): a bag logged in the locker is still on file, against its report, after the store is
 //! wiped and read back, and loading twice adds no rows. The bag logging itself calls

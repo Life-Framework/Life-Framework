@@ -2,7 +2,6 @@
 // RED PROOF OK (RedProof() drops the snapshot the store and the tow took): `the retrieved car holds the apple (expected 1, got 0)`.
 // Before #2809 the car with an apple was refused at the garage (#2411); the first assertion failed on that code.
 // #2830 review, 2026-11-18: a car deleted outside Store/tow, then collected at the impound, came back with an apple already taken out (`--only LF_Test_VehicleStoreCargo` on the unfixed code: `expected 0, got 1`); passes with the SpawnOwned guard.
-// tier: WORLD
 //! The garage, the tow and the impound keep a car's cargo (#2809, replacing the #2411 refusal): a
 //! car holding an apple is stored, comes back from the garage with the apple and its stock fill
 //! (no dupe, no extra field dressings), goes to the impound with it on a tow, and comes back from

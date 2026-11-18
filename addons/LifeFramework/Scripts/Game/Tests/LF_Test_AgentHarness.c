@@ -1,6 +1,5 @@
 // red-proof: make IsMenuAction accept MoveForward, then "movement input is refused" fails.
 // DecideApplyAction(false, false) asserted true fails "a non-owner client does not apply".
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_AgentHarness : LF_Test
 {

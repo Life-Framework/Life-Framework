@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_WhitelistLegacyFailurePaths,LF_Test_WhitelistLegacyIgnoredCount`: RED-OK whitelist/legacy-ignored-count (fails with the hook on, 10 assertions); green with --only.
-// tier: WORLD
 //! whitelist/legacy-ignored-count (#2607): after the move, a uid added to the legacy file is counted
 //! as ignored (Migrate warns with that count once per start) and never reaches the roster.
 [LF_TestInfo(LF_TestTier.WORLD)]

@@ -4,7 +4,6 @@
 // and the chop Payout line failed (the helper checks and the engine-error check passed); after the sites moved to
 // LF_Utils.MaxInt/MinInt/ClampInt the test is green.
 
-// tier: LOGIC
 //! #2787: Enforce `Math.Max`/`Math.Min`/`Math.Clamp` work in floats, so an int above 2^24 loses its low bits
 //! (unix 1800000480 came back as 1800000512). The int helpers in LF_Utils are exact, and the pure rules that
 //! take seconds, milliseconds or money stay exact at unix-time magnitude.

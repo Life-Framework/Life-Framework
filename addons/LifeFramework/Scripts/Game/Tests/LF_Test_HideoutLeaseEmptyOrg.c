@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, `tools/cli test --no-build --only LF_Test_HideoutLeaseEmptyOrg` on main code (no caller of Release) failed `hideout/lease-empty-org` with `- the lease is free once A is empty (expected '', got '01a1eb08-...')`, `- A's org_base place is gone`, `- the door forgot A: its house identifier is empty`, `- B can lease the freed hideout`. Implemented: green.
-// tier: WORLD
 //! hideout/lease-empty-org (#2571, epic #2533): an organization that loses its last member (Leave,
 //! LeaveDirect or Kick) publishes LF_OnOrganizationEmptied and LF_Hideout releases every site it
 //! leases: the lease is free, the org_base place is gone, the door lock no longer carries the old

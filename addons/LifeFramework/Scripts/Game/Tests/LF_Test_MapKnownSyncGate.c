@@ -1,4 +1,3 @@
-// tier: LOGIC
 // red-proof: 2026-11-17, on the unfixed gate (Admit = LF_RateLimit.Allow COMMS) `--only LF_Test_MapKnownSyncGate` failed "a full comms bucket does not refuse the sync (expected 0, got 2)", plus the DEFER and after-gap asserts. With LF_MapKnownSync.Admit, green.
 //! map/known-sync-gate: the join sync of a player's known places (#2241) is not refused by the
 //! shared COMMS rate bucket (review 2026-11-17). A player who just made three chess moves or board

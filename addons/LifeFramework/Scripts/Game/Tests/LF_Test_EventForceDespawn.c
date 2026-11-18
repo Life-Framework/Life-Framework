@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 batched `--red` RED PROOF OK: with the hook on the watched walkers and the watched scene are never advanced past the force window, so "removed in sight" and "the scene goes once it has waited the force window" fail. Green with the fix.
-// tier: WORLD
 //! #2406: a player who keeps an event scene in sight cannot hold it forever. Past the plan's
 //! m_fForceDespawnSeconds a timed-out walker and the scene's despawn go anyway (so the phase, the
 //! scene slot and the AI budget come free), and the players' eyes are collected once per walk step,

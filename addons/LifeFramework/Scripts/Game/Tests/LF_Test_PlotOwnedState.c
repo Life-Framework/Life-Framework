@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_PlotOwnedState` printed `RED PROOF OK (all 1 listed test(s) fail with the hook on)` (the hook skips the sale, the save load and the owner clear, so every owned assertion fails); `--only` then passed.
-// tier: WORLD
 //! property/plot-owned-state (#2780): a plot sign carries one replicated flag, "somebody owns this plot",
 //! so a client (which has no property book) hides "Buy plot" on an owned plot instead of offering it and
 //! being refused. The server refreshes the flag whenever the book changes (LF_Properties.SetOwner and

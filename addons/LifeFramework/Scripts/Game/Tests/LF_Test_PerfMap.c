@@ -61,7 +61,6 @@ class LF_PerfMapFacts : LF_MapShareFacts
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERF
 //! perf/map-128 (#2246, everon-map.md card M18): the map cost gate. Runs only under `tools\cli test --tier perf`
 //! (`--only` runs it too, with fewer repeats). Three budgets, each on the cheapest of several timed repeats:
 //!

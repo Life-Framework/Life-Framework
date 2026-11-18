@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_RaceRacerIndex,...`: RED-OK racing/racer-index, with the synthetic population not installed "each racer costs one uid compare a tick (expected 160, got 0)" and "a racer gone offline is scanned for once (expected 17, got 16)" failed. Green with the fix (--only, 8 passed).
-// tier: WORLD
 //! #2404: the race tick finds each racer's body through the racer's cached player id, checked with
 //! one uid compare, not by scanning every player's uid per racer every 250 ms. A synthetic
 //! population of 128 players stands in for the PlayerManager (LF_RaceRunner.SetPlayers). A racer

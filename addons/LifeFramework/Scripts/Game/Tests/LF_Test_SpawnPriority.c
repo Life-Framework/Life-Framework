@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `tools/cli test --no-build --red LF_Test_SpawnPriority,LF_Test_HouseSpawn`: `RED PROOF OK (all 2 listed test(s) fail with the hook on)`; the order and verdict cases fail with the function skipped. Green on the real code.
-// tier: LOGIC
 //! spawn/priority (#2652): the login spawn order. One named case per pair: jail beats the hospital,
 //! the house and the role; a death goes to the hospital even with a house; a rejoin spot beats the
 //! house; the house beats the role; nothing set is the role's spawn point. A recorded house that is

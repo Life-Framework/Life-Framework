@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_DialogueOverrideVerbs`: making LF_DialogueNodeList.RemoveAt a no-op failed `- remove: two nodes left (expected 2, got 3)` and `- remove: the node is gone by id`; making LF_DialogueFlow.Choose always return the patched dialogue failed `- a patch that leaves a reply to a removed node is dropped; the core plays`. Restored; green.
-// tier: LOGIC
 //! #1109, #957: the dialogue nodes and lines on the override model (#962). `op: remove` takes a node
 //! or a line out, `op: patch`, `remove` of an id no lower layer has and `add` of one it has are
 //! refused. A patched dialogue that is broken (a reply to a removed node, a hook with no class) is

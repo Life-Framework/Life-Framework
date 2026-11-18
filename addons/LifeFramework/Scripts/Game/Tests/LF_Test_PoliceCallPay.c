@@ -1,6 +1,5 @@
 // red-proof: `tools\cli test --no-build --red LF_Test_PoliceCallPay` (2026-11-18): RED PROOF OK, with the Settle skipped:
 // "the call is completed", "a completed call forgets its site", "a second fine pays nothing (expected 0, got 150)".
-// tier: LOGIC
 //! Police call pay (#2478, parent #234): a fine by another officer or outside the radius completes
 //! nothing; the holder's fine inside the radius completes the call and pays the reward once. The site
 //! comes from the police service call that follows the wanted change (a crime's real order).

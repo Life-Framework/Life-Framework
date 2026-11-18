@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-09-19 dedicated-server run failed both apple crate physics and
 // sweep assertions (fraction=1) with the world entity in Terrain.layer. Moving
 // world initialization to default.layer gave both sweeps fraction=0.386069.

@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-15: with LF_RestartClose a do-nothing skeleton, `tools/cli test --no-build --only LF_Test_RestartClose` failed (no close request, no marker); with the subscriber, green.
 
-// tier: LOGIC
 //! O8 (#1267): when LF_OnRestartDue is published, LF_RestartClose writes the restart marker for the
 //! host watchdog and only then asks the engine for a normal close (the SHUTDOWN save; O9 proves it).
 //! The close seam records the request instead of closing; the marker goes to a test path so the

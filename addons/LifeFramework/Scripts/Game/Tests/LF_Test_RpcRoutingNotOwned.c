@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `--red` (RedProof() runs the handlers directly, as a host branch would): RED-OK core/rpc-routing-not-owned; the Broadcast-on-the-server assertion went red (expected 0, got 1).
-// tier: WORLD
 //! #2641 case (b): the server calls a bare Rpc() on a replicated entity it does not own. The suite boot has
 //! no client, so ownership goes to RplIdentity.Invalid(), an owner with no connection. Observed on build
 //! 26266485: Server runs here, Owner ALSO runs here (an owner with no connection does not take the call

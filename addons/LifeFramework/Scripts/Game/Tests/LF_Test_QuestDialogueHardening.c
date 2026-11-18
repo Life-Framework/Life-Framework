@@ -2,7 +2,6 @@
 // behaviour of each guard: the offer read as level 1 / unemployed / no faction, a late node taken by a closed scene,
 // no Forget on disconnect, no QUEST bucket); every assertion that guards one fails, so the run is RED-OK.
 
-// tier: LOGIC
 //! Quests and dialogue hardening (#2403, life review 2026-11-17): the conversation offers a gated quest
 //! to the players who meet its gates (one reader shared with accept), a late node does not reopen a
 //! closed scene, a disconnect frees the dialogue session and the town-board gap, and the quest and

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_ScenePiecesWorld`: LF_ScenePieces.GroundSpot returning the point unprobed failed `- the casing rests on the ground, not at the shooter's height (gap 1.1942 m)` and `- a second casing lands apart from the first`. Restored; green. Shared-mesh guard: with the marker on IdCard.xob and the footprint and statement on Papers_Personal.xob, `- {...}LF_EvidenceMarker.et shares no mesh with a carried item ({46A5E009BCE3233E}Assets/Items/Roleplay/IDCard/IdCard.xob)` and the same for both papers. Restored; green.
-// tier: WORLD
 //! Scene pieces (#148) in the world: a casing from a shooter standing 1.2 m up lands on the ground
 //! under the placement probe, not in the air; a burst's casings land apart; a robber on foot leaves
 //! one footprint card (none from a car, none for a car theft); a witness's statement lies at their

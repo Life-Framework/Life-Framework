@@ -5,7 +5,6 @@
 //   [LFTEST] SUMMARY tier=fast passed=79 failed=1 total=80
 // Restored `return devToolsEnabled || isAdmin;` and the suite went green.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DebugMenuGate : LF_Test
 {

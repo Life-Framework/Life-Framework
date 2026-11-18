@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_SetHome` (the owner's perform skipped): `red: the owner's spawn house is A (expected 'set-home-house-a', got '')`, `RED PROOF OK`. Green with the action. Review 2026-11-18: `a house sold and bought back is not the spawn again (expected '', got 'set-home-house-b')` before the LF_HouseManagerComponent.SetOwner hook, green after.
-// tier: WORLD
 //! property/set-home (#2651): "Make this my spawn" at the door of a house the player owns. The owner
 //! sets it and LF_Properties.SpawnHouseOf returns the house; a second house clears the first; a key
 //! holder or a stranger neither sees it nor gets it by a forged perform; the flag survives the

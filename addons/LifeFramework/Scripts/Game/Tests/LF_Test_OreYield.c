@@ -1,7 +1,6 @@
 // red-proof: 2026-11-10, LF_OreYield.RestHeight returned the fallback (hit) height; `--only LF_Test_OreYield,LF_Test_MiningDamage` failed "a piece rests just above the traced ground" and "the nugget rests on the ground, not at the hit height". Restored, green.
 // red-proof: 2026-11-08, LF_OreYield.ItemsFor returned breaks (ignored the yield); `tools\cli test --no-build --only LF_Test_OreYield` failed "one piece of a four-yield row drops four items (expected 4, got 1)". Restored, green.
 
-// tier: LOGIC
 //! Ore rock arithmetic: pickaxe damage piles up into pieces, the rock is spent
 //! after its row's piece count, and grows back whole.
 [LF_TestInfo(LF_TestTier.LOGIC)]

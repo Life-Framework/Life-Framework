@@ -1,7 +1,6 @@
 // red-proof: new rule, written first. Run against the stub that returned the skin height (before
 // LF_UISheetFit existed as a real rule), the grow, cap and list-squeeze assertions all failed.
 
-// tier: LOGIC
 //! #2462: a kit sheet grows to fit its content up to the screen's safe height. LF_UISheetFit.Height keeps
 //! the skin height when the content fits, grows to the content when it does not, stops at the cap, and
 //! never shrinks a sheet under its skin. ListHeight squeezes a list to scroll once the sheet is capped.

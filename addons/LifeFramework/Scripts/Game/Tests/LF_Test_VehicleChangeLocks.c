@@ -1,7 +1,6 @@
 // red-proof: #2411, 2026-11-17, `tools/cli test --no-build --red LF_Test_VehicleChangeLocks` (ChangeLocks skipped):
 // RED-OK vehicles/change-locks-revokes-keys (fails with the hook on, 27 assertions); - the old key no longer opens the car,
 // - the saved record carries the new key id, - the respawned car refuses the old key.
-// tier: WORLD
 //! Changing the locks revokes every key cut before (#2411): the owner pays, the old key stops
 //! opening the car (in the world and after a garage round trip), the new key opens it, a stranger
 //! cannot do it, and the vehicle identifier that plates and records use stays the same.

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `--red` (RedProof() runs the handlers directly, as a host branch would): RED-OK core/rpc-routing-no-rplid; red: the three "... with no RplId: dropped" lines (expected 0, got 1) and "Broadcast Rpc, local-only spawn".
-// tier: WORLD
 //! #2641 case (c): the server calls a bare Rpc() on an entity with no RplId. Observed on build 26266485:
 //! - an entity with NO RplComponent: every Rpc (Server, Owner, Broadcast) is dropped, with
 //!   `RPL (E): Attempting to send an RPC through unregistred item`; nothing runs, here or anywhere.

@@ -24,6 +24,9 @@ class LF_CropRow
 	[Attribute("1800", UIWidgets.Auto, "Seconds a ripe crop stays harvestable before it rots. 0 means it never rots", params: "0 604800")]
 	int m_iLifetimeAfterRipe;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Item a ripe harvest gives (#2664)", "et")]
+	ResourceName m_HarvestPrefab;
+
 	[Attribute("3", UIWidgets.Auto, "Items one harvest gives", params: "1 100")]
 	int m_iYield;
 

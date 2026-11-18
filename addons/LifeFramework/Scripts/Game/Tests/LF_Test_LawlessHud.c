@@ -1,4 +1,3 @@
-// tier: LOGIC
 // red-proof: Observed 2026-11-10 with tools\cli test --no-build --only LF_Test_LawlessHud: asserting inside-to-outside is ENTERED failed (inside to outside is a leave); restored.
 //! lawless HUD (#591): the enter/exit state rule, and that a lawless zone reads as lawless to the
 //! local client (the tag and hint are driven by LF_Zones.RuleAt).

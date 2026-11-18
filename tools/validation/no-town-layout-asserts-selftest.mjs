@@ -21,7 +21,7 @@ function put(root, path, text) {
   mkdirSync(dirname(full), { recursive: true });
   writeFileSync(full, text);
 }
-const test = (body) => `// tier: WORLD\nclass LF_Test_X : LF_Test\n{\n\toverride void Run(LF_TestContext ctx)\n\t{\n${body}\n\t}\n}\n`;
+const test = (body) => `[LF_TestInfo(LF_TestTier.WORLD)]\nclass LF_Test_X : LF_Test\n{\n\toverride void Run(LF_TestContext ctx)\n\t{\n${body}\n\t}\n}\n`;
 
 function tree() {
   const root = scratchDir("lf-townlayout-");

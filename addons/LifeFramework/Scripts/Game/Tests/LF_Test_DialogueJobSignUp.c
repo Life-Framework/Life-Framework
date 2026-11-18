@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 (#2740) with `tools\cli test --no-build --red LF_Test_DialogueJobSignUp`: RedProof() skips the hook run, so `the reply signs the player up for parcels (expected 5, got 0)` and `the sign-up is recorded for the player's account` fail (RED-OK dialogue/job-sign-up).
-// tier: WORLD
 //! #2740: a dialogue reply can sign the player up for a job. `LF_DialogueHook_JobSignUp` reads the
 //! job from the reply's param (PARCEL), signs the player up and sets the job on the body, server-side.
 //! A param that is no delivery job, or a job above the player's career level, changes nothing.

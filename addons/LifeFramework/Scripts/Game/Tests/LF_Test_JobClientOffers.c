@@ -8,7 +8,6 @@
 //! and abandon decide on the client from the job replicated on LF_PlayerJobComponent and the cargo
 //! in the player's own inventory. Before this, "Pick up parcel" read the server map and was greyed
 //! ("Sign up at the workplace first") for every player on a hosted server (M1 RC QA, 2026-11-08).
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_JobClientOffers : LF_Test
 {

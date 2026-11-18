@@ -3,7 +3,6 @@
 // Restored; green.
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
 //! vehicles/siren (#263): a siren toggle replicates once per change. A repeated mode, a mode out of
 //! range and a request inside the throttle window broadcast nothing; the service vehicle prefabs
 //! (police jeep, ambulance) carry the siren and the lights come on and off with the mode.

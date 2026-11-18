@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `--red` (log test-20261117-231653): RED-OK placement/cap, the cap check skipped: FAIL "the third placement is refused naming the owner cap", "the owner cap has its own toast". Hook off: green.
-// tier: WORLD
 //! placement/cap (#1032, slice #2653): the next permanent placement past the owner's cap, or past the
 //! property's, is refused with that cap named; a temporary kind (the spike strip) is never capped nor
 //! recorded; the owner within reach picks a placement up, which deletes its row and the entity, and

@@ -296,11 +296,13 @@ from <ref>`). The string-table driver refuses a side it cannot parse whole
 and writes git's line merge with exit 1 instead. `merge-content-selftest`
 merges real branches and compares the result byte for byte (#1154, #1161).
 
-(Gone in #2618: tests carry `[LF_TestInfo]` and there is no registry or `lf-regen-tests` driver; the paragraph is history.) The registry driver (`regen-generated.mjs`) read the three sides' test sources with one `ls-tree` per side and one
-`git cat-file --batch`, never a git child per file: on a loaded laptop a spawn costs about 230 ms, and the old per-file
-`git show` (about 2300 children for 760 tests) ran past the 240 s backstop on every merge, in `git merge` and in
-`wt ship`'s merge alike. `LF_MERGE_DRIVER_TRACE=<file>` appends `<ms> <command>` per child process, which is how to
-see where a slow merge goes; `merge-drivers-selftest` caps the git children at 12.
+Tests carry `[LF_TestInfo]`; there is no registry and no `lf-regen-tests` driver (#2618). A child process costs about
+230 ms on a loaded laptop, so a driver never spawns one per file. `LF_MERGE_DRIVER_TRACE=<file>` appends `<ms> <command>`
+per child process, which is how to see where a slow merge goes; `merge-drivers-selftest` caps the git children at 12,
+and kills a generator that never exits (#2549, #2746). A merge driver the repo dropped can linger in an older
+checkout's shared git config and print a missing-path error on every merge: `tools\cli wt fix-drivers` (also run by
+`wt new`, `wt sync` and the pre-commit hook) removes every `merge.lf-*` section that `tools/merge/drivers.gitconfig` no
+longer declares (#2797).
 
 - **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
   detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,

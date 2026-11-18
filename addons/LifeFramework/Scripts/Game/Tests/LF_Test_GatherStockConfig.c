@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, `--only LF_Test_GatherStockConfig` on the unfixed ResourceChains.conf (apple, plum, cement, gravel, sand all m_iMaxGathers 0, no regrow) failed "apple spot has a stock cap".
-// tier: WORLD
 //! gather/stock-config (#2409): the free gather spots carry a stock and a regrow time in
 //! ResourceChains.conf, and ripe crops stay on their own growth timer.
 [LF_TestInfo(LF_TestTier.WORLD)]

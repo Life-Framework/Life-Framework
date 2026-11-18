@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 (#1959) with `tools\cli test --no-build --red LF_Test_EveronClerkWelcome`: RedProof() makes the act load the core clerk, so no welcome node exists; got `- the welcome is the papers, the room, then what the town expects (expected 'welcome_papers;welcome_room;welcome_town;', got '')`, RED PROOF OK. Green without the hook (pack leg, worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #1959 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), a character who is new
 //! in town and talks to the clerk hears a voiced welcome before the register: the papers (Form R-89 and the
 //! identity card), the hostel for the first night, and what the town expects. Each welcome line has a caption

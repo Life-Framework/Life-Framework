@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_VehicleRemoveByBaseGuid` on the unfixed behaviour (IsRemoved false, IsOfferedIn true): failed `- the UAZ is recorded as removed` and `- the lot does not offer the removed UAZ`; green after the fix.
-// tier: LOGIC
 //! #1741: `op: remove` keyed by the base prefab GUID (the key LF_VehiclePrices.conf lists) takes the
 //! vehicle off the lot. A removed vehicle is unpriced, and the lot used to fall back to the price
 //! written on the offer, so it was still shown and sold.

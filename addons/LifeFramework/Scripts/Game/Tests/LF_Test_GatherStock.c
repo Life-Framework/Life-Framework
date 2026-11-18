@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, before the fix there was no LF_GatherStock and the apple row had m_iMaxGathers 0: a spot gathered without end. With the fix reverted (Take always true) `--only LF_Test_GatherStock` fails "an empty spot refuses a gather".
-// tier: LOGIC
 //! gather/stock-rules (#2409): a spot holds a capped stock, an empty one refuses, and one gather
 //! grows back per regrow interval, on the server's clock.
 [LF_TestInfo(LF_TestTier.LOGIC)]

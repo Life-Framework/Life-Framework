@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_ArmoryKitTurnIn`: RED PROOF OK, fails "the rifle's serial leaves the book (expected 0, got 1)" and "the officer no longer carries the rifle" with the DrawAt skipped.
-// tier: WORLD
 //! police/armory-kit-turn-in (#2416): an officer carrying their issued rifle uses the armory: the
 //! rifle is taken off them and its serial leaves the book, and nothing new is issued in that use.
 [LF_TestInfo(LF_TestTier.WORLD)]

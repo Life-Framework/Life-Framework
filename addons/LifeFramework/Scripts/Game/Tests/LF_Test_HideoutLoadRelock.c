@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --only LF_Test_OrgUpgradeUnwired,LF_Test_OrgFundOverflow,LF_Test_HideoutStashRight,LF_Test_HideoutLoadRelock` on the unfixed code (only the IsRelockScheduled accessor added) failed all four, here "a load with the gate open queues the relock sweep". Green with the fix.
-// tier: LOGIC
 //! hideout/load-relock (review 2026-11-17): a gate saved open loaded open, and only a member's unlock
 //! started the relock sweep, so after a restart the gate stayed open for anyone. A load with an open
 //! gate queues the sweep; a load with every gate shut queues nothing.

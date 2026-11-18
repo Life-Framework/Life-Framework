@@ -2,7 +2,6 @@
 // --only LF_Test_SignBoardFace` (2026-11-08) failed signs/board-face with
 // "STATION across the box sets the font (expected 148, got 180)".
 
-// tier: LOGIC
 //! The painted board face: a title is broken at spaces and set as big as the
 //! board's title box allows, so it reads from the road.
 [LF_TestInfo(LF_TestTier.LOGIC)]

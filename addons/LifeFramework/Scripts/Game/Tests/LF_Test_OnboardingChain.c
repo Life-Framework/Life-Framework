@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_OnboardingChain` on the unfixed clerk: `[LFTEST] FAIL quests/onboarding-chain`, `- no step rewards money: arrival_done (expected 0, got 250)`. With the cash removed from QuestGiver_Clerk.et and the gift moved to the pack table, green.
-// tier: WORLD
 //! #1781: the arrival chain ends with a welcome gift, not cash (#795). The clerk's quests link by
 //! `m_sRequiredPreviousQuestId` with no gap and no cycle, no step rewards money, and every item a
 //! step hands over (its own `m_aRewardItems` plus the pack's welcome-gift rows) resolves to a prefab.

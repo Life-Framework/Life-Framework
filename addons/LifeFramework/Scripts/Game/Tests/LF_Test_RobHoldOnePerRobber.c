@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_RobHoldOnePerRobber`: RED-OK, the second demand was not refused (got '') and the unseated hold settled as NONE (got 0); green without the hook.
-// tier: LOGIC
 //! A robber holds one till at a time, and a downed or dead attendant ends the hold unpaid (#2540).
 //! Goes through LF_RobHold's seams: a seated hold, the refusal a second demand gets, and the hold
 //! settled the way the tick settles it once the attendant is down.

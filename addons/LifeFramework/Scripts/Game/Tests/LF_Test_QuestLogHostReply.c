@@ -1,5 +1,4 @@
 // red-proof: RedProof() skips the ask: expected lines "the quest log ask reaches its handler on the server", "the quest log reply reaches a locally owned body" and "the client cache holds the encoded log" (run it with `--red`).
-// tier: WORLD
 //! #2619: a listen host's own quest log must arrive. PushLog replies with Rpc(RpcDo_Log), RplRcver.Owner.
 //! Observed on build 26266485: when this machine owns the replicated body, that Rpc runs the handler
 //! here at once, so PushLog needs no direct call. This test keeps it that way.

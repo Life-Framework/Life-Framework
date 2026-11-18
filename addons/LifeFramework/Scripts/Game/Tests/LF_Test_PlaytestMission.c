@@ -10,7 +10,6 @@
 // tools/validation/validate-pack-missions.mjs. This test now reads the core fixture
 // Missions/LF_HostedTest.conf, which carries the same two switches on DebugWorld.
 
-// tier: LOGIC
 //! A hosted mission reuses DebugWorld, whose game mode opts every player into dev tools. A
 //! header with m_bLF_DevToolsOff must close them, or any joining player gets the debug menu
 //! (free cash) and the agent-harness RPCs.
