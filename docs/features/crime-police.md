@@ -370,7 +370,7 @@
 - ✅ **Duty pay at the desk** (verified 2026-11-08: LOGIC test `jobs/duty-pay`;
   the 2-client cash check is manual). Going off duty pays the shift's on-duty
   seconds times `m_fPoliceDutyPayPerSecond` (`Configs/Jobs/LF_Jobs.conf`, flagship
-  0.5) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
+  0.25 since 2026-11-18, was 0.5) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
   `#EL-Duty_Paid` toast. Seconds settled by an armory draw mid-shift are kept
   for the clock-out. A second clock-out, a clock-out with no clock-in, and a
   non-police account pay nothing. Unpaid seconds are session state: a restart
@@ -556,8 +556,8 @@
   wanted list. DebugWorld places `Roadmap_Police_Armory` at `241.2 0 244.2`
   (police station forecourt) on `Street_Police.layer`.
 - 🔨 The flagship ladder (#1769, merged, in-dev; `LF_Police_Everon1989.conf`): five ranks, Cadet, Patrol,
-  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.3, 0.5, 0.65, 0.8, 1
-  per on-duty second; duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
+  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.25, 0.28, 0.30, 0.33, 0.35
+  per on-duty second (900 to 1260 an hour; was 0.3 to 1 until 2026-11-18, the duty-versus-civilian pay gap); duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
   the pack patches the core's `patrol` (index 0) into Cadet and `senior` (index 1) into Patrol and appends the other three.
   Titles are the pack's `LF-Rank_*` rows. A saved rank above the ladder clamps to the top on load.
 - 🔨 Only an officer above the new rank promotes (#2095, in-dev). `LF_PoliceRanks.Promote` (server) refuses
