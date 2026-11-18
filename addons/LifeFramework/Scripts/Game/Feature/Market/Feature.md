@@ -33,7 +33,7 @@ Rung 4 background: pure rules and a config, no screen, no world, no replication 
 
 ## Not built yet (later cards of the chapter)
 
-The per-good price state and its save, the trader sale reading the curve, the pack overlay and owner
+The pack overlay and owner (the per-good price state is saved as section `market` since #2846, `LF_MarketSave.c`)
 `config.json` section, and any screen.
 
 ## Dependencies

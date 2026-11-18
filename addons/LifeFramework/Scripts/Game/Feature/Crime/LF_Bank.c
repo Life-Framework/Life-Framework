@@ -1192,6 +1192,10 @@ class LF_Bank
 			return false;
 		}
 
+		// Dirty money (#2851): with the server's switch on the vault's bags hold marked notes.
+		if (LF_LaunderConfig.CrimePaysMarked())
+			return WriteWorldBagMarked(bag, cash);
+
 		Resource money = Resource.Load(LF_MoneyUtils.CashPrefab());
 		if (!money || !money.IsValid())
 		{
@@ -1239,16 +1243,110 @@ class LF_Bank
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The bag fill as marked notes: the bag's storage when it has one, else a marked-notes stack
+	//! hung on the bag with its quantity set, the same two ways the cash fill uses.
+	protected static bool WriteWorldBagMarked(IEntity bag, int amount)
+	{
+		ResourceName prefab = LF_MarkedCash.Prefab();
+		if (prefab.IsEmpty())
+		{
+			LF_Debug.Error("Bank", "money bag fill refused: the marked-notes slot has no prefab");
+			return false;
+		}
+
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(bag);
+		if (manager)
+		{
+			int added = LF_MarkedCash.Add(manager, amount, "robbery");
+			if (added == amount)
+				return true;
+
+			if (added > 0)
+				LF_MarkedCash.Take(manager, added, "robbery-rollback");
+		}
+
+		IEntity notes = FindNotesChild(bag, prefab);
+		if (!notes)
+		{
+			notes = LF_Utils.SpawnEntityPrefab(prefab, bag.GetOrigin());
+			if (!notes)
+			{
+				LF_Debug.Error("Bank", "money bag fill refused: marked notes did not spawn");
+				return false;
+			}
+
+			bag.AddChild(notes, -1, EAddChildFlags.AUTO_TRANSFORM);
+		}
+
+		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(notes);
+		if (!quantity || !quantity.SetQuantity(amount))
+		{
+			LF_Debug.Error("Bank", string.Format("money bag fill refused: marked notes did not become %1", amount));
+			return false;
+		}
+
+		LF_Debug.Info("Bank", string.Format("money bag filled with %1 marked notes (robbery)", amount));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The marked notes a vault bag holds (storage first, then a hung stack), or -1 with no bag.
+	static int ReadWorldBagMarked(IEntity bag)
+	{
+		if (!bag)
+			return -1;
+
+		InventoryStorageManagerComponent manager = LF_InventoryUtils.GetResponsibleStorageManager(bag);
+		if (manager)
+		{
+			int stored = LF_MarkedCash.Count(manager);
+			if (stored > 0)
+				return stored;
+		}
+
+		IEntity notes = FindNotesChild(bag, LF_MarkedCash.Prefab());
+		if (!notes)
+			return 0;
+
+		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(notes);
+		if (!quantity)
+			return 0;
+
+		return quantity.GetQuantity();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The bag's cash stack: any quantity child that is not marked notes (#2851), so a marked bag
+	//! never reads as cash.
 	protected static IEntity FindCashChild(IEntity bag)
 	{
 		if (!bag)
 			return null;
 
+		ResourceName marked = LF_MarkedCash.Prefab();
 		IEntity child = bag.GetChildren();
 		while (child)
 		{
 			LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(child);
-			if (quantity)
+			if (quantity && !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(child), marked))
+				return child;
+
+			child = child.GetSibling();
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static IEntity FindNotesChild(IEntity bag, ResourceName prefab)
+	{
+		if (!bag || prefab.IsEmpty())
+			return null;
+
+		IEntity child = bag.GetChildren();
+		while (child)
+		{
+			if (LF_Utils.SamePrefab(LF_Utils.GetPrefabName(child), prefab))
 				return child;
 
 			child = child.GetSibling();

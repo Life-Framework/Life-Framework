@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7EC202753E99A160}Configs/Residents/LF_ResidentMemory.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -19,3 +19,34 @@ Stolen money is a separate item that never counts as cash.
   Test: `LF_Test_MarkedCashWipe` (LOGIC).
 - ⚠️ Looks the same as cash for now (same mesh, only the name differs); a band or tint is a follow-up.
 - Test: `LF_Test_MarkedCash` (WORLD).
+
+### Dirty payouts — `Feature/Laundering/LF_LaunderConfig.c` (#2851)
+- ✅ `LF_LaunderConfig` (`Configs/Crime/LF_Launder.conf`, the feature's one config; a pack overrides the
+  file) carries `m_bCrimePaysMarked`. Core ships it **off**: every payout is exactly today's cash.
+- ✅ Switch on: a till robbery (`LF_RobAction.PayCash`) pays the same amount as marked notes and no cash
+  (reason `robbery`; a short add is taken back and the robbery refused, like the cash path), and a bank
+  vault's money bags (`LF_Bank.WriteWorldBagCash`: the vault bag, the heist spill, the bag re-filled on
+  load) hold marked notes (`LF_Bank.ReadWorldBagMarked`). A bag's marked stack never reads as cash.
+- ✅ Chop shop and fence payouts stay clean cash (the fence is already the dirty exit for goods).
+- Test: `LF_Test_DirtyPayout` (WORLD).
+- ✅ The illicit buyer's open spot (#2856, beat 2 of #1025): `LF_BuyerSpotComponent` registers a place in
+  `LF_Places` under kind `chain_buyer` (server only); `LF_BuyerRotation.OpenSpot(unixNow)` names the one
+  open now. Time is cut into periods of `m_iBuyerPeriodHours` (core 4 h); a cycle of `count` periods visits
+  every spot once in a hashed shuffle, so the spot changes every period inside a cycle. A pure function of
+  unix time and the seed, nothing saved, so a restart keeps it. The period hands out one spot (a spot added
+  mid-period joins at the next period). No spot placed: none, one warning.
+- ✅ The seed is a server secret, not config or script: made at random on first use and kept in
+  `$profile:LifeFramework/buyer-rotation-seed.txt`. Delete the file to reshuffle the buyer. The buyer NPC at
+  the open spot, the sale and the pack's spots come next. Test: `LF_Test_BuyerRotation` (WORLD).
+
+### Wash rules — `Feature/Laundering/LF_LaunderRules.c` (#2852)
+- ✅ Pure logic, no entity: `LF_LaunderRules.Quote(key, marked, nowSec, cutPct, batchMax, dailyCap)` gives the
+  notes accepted, the clean cash and what stays marked. Config (`LF_LaunderConfig`): `m_iCutPct` 30,
+  `m_iBatchMax` 2000, `m_iBatchSeconds` 60, `m_iDailyCap` 10000. 1000 marked yields 700 and 3 yields 2 (integer maths: the clean share
+  rounds down and the remainder stays with the house, so no split of a wash pays more); a bigger batch is cut to the max; at the cap a wash gets 0 and the
+  reason `daily_cap`, and the cap window ends 24 real hours after the first wash.
+- ✅ A cut outside 0..90 %, or a zero batch or cap, is refused at load (`LF_Debug.Error("Laundering", ...)`): the
+  wash rules read as missing (`LF_LaunderConfig.GetRules` null) while the dirty-money switch still applies.
+- ⚠️ The per-character day total is session-only in this wave: a restart forgives the day.
+- ⚠️ Nothing calls the rules yet; the washing interaction is a later slice.
+- Test: `LF_Test_LaunderRules` (LOGIC).

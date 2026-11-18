@@ -48,7 +48,7 @@ function makeRepo(withAttributes) {
   mkdirSync(join(dir, "tools", "config"), { recursive: true });
   for (const f of ["schema.mjs", "pack-sections.mjs"]) cpSync(join(ROOT, "tools", "config", f), join(dir, "tools", "config", f));
   mkdirSync(join(dir, "tools", "economy"), { recursive: true });
-  cpSync(join(ROOT, "tools", "economy", "profit-loops.mjs"), join(dir, "tools", "economy", "profit-loops.mjs"));
+  for (const f of ["profit-loops.mjs", "profit-market.mjs"]) cpSync(join(ROOT, "tools", "economy", f), join(dir, "tools", "economy", f));
   writeFileSync(join(dir, "tools", "config", "schema-overrides.json"), "{}\n");
   for (const [rel, text] of [[SERVICE, "class LF_ConfigService\n{\n\tstatic const int SCHEMA_VERSION = 1;\n}\n"], [DEMO, demo("Base")]]) {
     mkdirSync(dirname(join(dir, rel)), { recursive: true });

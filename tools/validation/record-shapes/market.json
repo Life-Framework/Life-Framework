@@ -1,0 +1,17 @@
+{
+  "section": "market",
+  "class": "LF_MarketSavePayload",
+  "version": 1,
+  "roots": "LF_MarketPriceRow",
+  "records": {
+    "LF_MarketPriceRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sGood",
+        "int m_iCurrent",
+        "int m_iLastSaleUnix",
+        "string m_sScope"
+      ]
+    }
+  }
+}
