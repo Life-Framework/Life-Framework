@@ -54,6 +54,9 @@ class LF_SignStyleDef : LF_ConfigRecord
 	[Attribute("0.32", UIWidgets.EditBox, "Share of the inner height the title takes when the sign has rows")]
 	float m_fTitleShare;
 
+	[Attribute("0", UIWidgets.EditBox, "Raises the title (and its ghost) by this share of the title font, in a tall box the engine centres the line in: a client seats the lettering below the middle of the widget. 0 keeps the plain box")]
+	float m_fTitleLift;
+
 	[Attribute("220", UIWidgets.EditBox, "Largest title font, layout units")]
 	int m_iTitleFontMax;
 
@@ -238,6 +241,8 @@ class LF_SignStyleList : LF_ConfigList
 		if (container.IsVariableSetDirectly("m_fMargin") && container.Get("m_fMargin", style.m_fMargin))
 			changed++;
 		if (container.IsVariableSetDirectly("m_fTitleShare") && container.Get("m_fTitleShare", style.m_fTitleShare))
+			changed++;
+		if (container.IsVariableSetDirectly("m_fTitleLift") && container.Get("m_fTitleLift", style.m_fTitleLift))
 			changed++;
 		if (container.IsVariableSetDirectly("m_iTitleFontMax") && container.Get("m_iTitleFontMax", style.m_iTitleFontMax))
 			changed++;

@@ -7537,10 +7537,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Safe zone"
      Comment "Map label of a safe zone at the closest zoom."
     }
+    CustomStringTableItem "{5E8B1D70A3C94F26}" {
+     Id "LF-Market_BoardNext"
+     Target_en_us "Sell your goods to the trader at the price on the board."
+     Comment "Sign catalog 'next' text of the trader price board face (never shown: the board's own Read action opens the prices card)."
+    }
     CustomStringTableItem "{E3A1B2C4D5F60718}" {
      Id "LF-Market_BoardTitle"
      Target_en_us "Prices today"
      Comment "Title of the trader chalk price board card."
+    }
+    CustomStringTableItem "{7B3D5A91C2E0F486}" {
+     Id "LF-Market_BoardWhat"
+     Target_en_us "What the trader pays today for each good, chalked on the board."
+     Comment "Sign catalog 'what' text of the trader price board face (never shown: the board's own Read action opens the prices card)."
     }
     CustomStringTableItem "{E3A1B2C4D5F60719}" {
      Id "LF-Market_NoPrices"
@@ -11404,6 +11414,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_ChalkSample_Fuel"
      Target_en_us "Jerry can of fuel"
      Comment "Sample chalk board price row label."
+    }
+    CustomStringTableItem "{A2E6C14B7D9035F8}" {
+     Id "LF-Sign_ChalkSample_Next"
+     Target_en_us "Walk on to the next cell."
+     Comment "Next section of the sample chalk board's Read card (signs/next wants every sign to say what comes next)."
     }
     CustomStringTableItem "{F1E37CC41BF9295B}" {
      Id "LF-Sign_ChalkSample_Title"

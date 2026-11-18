@@ -25,6 +25,10 @@ class LF_SignReadAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
+		// A board with live rows has its own Read action (the source's card).
+		if (m_SignComponent && m_SignComponent.HasRowSource())
+			return false;
+
 		return GetSign() != null;
 	}
 
