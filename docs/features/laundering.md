@@ -29,3 +29,14 @@ Stolen money is a separate item that never counts as cash.
   load) hold marked notes (`LF_Bank.ReadWorldBagMarked`). A bag's marked stack never reads as cash.
 - ✅ Chop shop and fence payouts stay clean cash (the fence is already the dirty exit for goods).
 - Test: `LF_Test_DirtyPayout` (WORLD).
+
+### Wash rules — `Feature/Laundering/LF_LaunderRules.c` (#2852)
+- ✅ Pure logic, no entity: `LF_LaunderRules.Quote(key, marked, nowSec, cutPct, batchMax, dailyCap)` gives the
+  notes accepted, the clean cash and what stays marked. Config (`LF_LaunderConfig`): `m_iCutPct` 30,
+  `m_iBatchMax` 2000, `m_iBatchSeconds` 60, `m_iDailyCap` 10000. 1000 marked yields 700 (integer maths, the
+  rounded-down cut stays with the house); a bigger batch is cut to the max; at the cap a wash gets 0 and the
+  reason `daily_cap`, and the cap window ends 24 real hours after the first wash.
+- ✅ A cut outside 0..90 %, or a zero batch or cap, is refused at load (`LF_Debug.Error("Laundering", ...)`).
+- ⚠️ The per-character day total is session-only in this wave: a restart forgives the day.
+- ⚠️ Nothing calls the rules yet; the washing interaction is a later slice.
+- Test: `LF_Test_LaunderRules` (LOGIC).

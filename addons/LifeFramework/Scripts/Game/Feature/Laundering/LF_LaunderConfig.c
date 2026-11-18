@@ -10,6 +10,18 @@ class LF_LaunderConfig
 	[Attribute("0", UIWidgets.CheckBox, "Till robberies and bank vault bags pay marked notes (LF_MarkedCash) instead of cash. Chop shop and fence stay cash.")]
 	bool m_bCrimePaysMarked;
 
+	[Attribute("30", UIWidgets.EditBox, "House cut in percent of the marked notes washed (0..90). The cut rounds down and the house keeps it.")]
+	int m_iCutPct;
+
+	[Attribute("2000", UIWidgets.EditBox, "Largest batch of marked notes one wash takes; the rest stays marked.")]
+	int m_iBatchMax;
+
+	[Attribute("60", UIWidgets.EditBox, "Seconds one batch takes to wash.")]
+	int m_iBatchSeconds;
+
+	[Attribute("10000", UIWidgets.EditBox, "Most marked notes one character may wash per 24 real hours (session only: a restart forgives the day).")]
+	int m_iDailyCap;
+
 	protected static ref LF_LaunderConfig s_Config;
 	protected static bool s_bLoadAttempted;
 	//! Tests only: -1 reads the config, 0 forces the switch off, 1 forces it on.
@@ -31,9 +43,38 @@ class LF_LaunderConfig
 
 		s_Config = LF_LaunderConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
+		{
 			LF_Debug.Error("Laundering", string.Format("launder config has an unexpected root class: %1", CONFIG_PATH));
+			return s_Config;
+		}
+
+		if (!Validate(s_Config))
+			s_Config = null;
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A config the rules can use: cut 0..90 %, batch max, batch seconds and daily cap at least 1.
+	//! Logs a Laundering error naming the bad field and returns false; Get then reads as missing.
+	static bool Validate(LF_LaunderConfig config)
+	{
+		if (!config)
+			return false;
+
+		if (config.m_iCutPct < 0 || config.m_iCutPct > 90)
+		{
+			LF_Debug.Error("Laundering", string.Format("launder config refused: m_iCutPct %1 is outside 0..90", config.m_iCutPct));
+			return false;
+		}
+
+		if (config.m_iBatchMax < 1 || config.m_iBatchSeconds < 1 || config.m_iDailyCap < 1)
+		{
+			LF_Debug.Error("Laundering", string.Format("launder config refused: m_iBatchMax %1, m_iBatchSeconds %2, m_iDailyCap %3 must each be at least 1", config.m_iBatchMax, config.m_iBatchSeconds, config.m_iDailyCap));
+			return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
