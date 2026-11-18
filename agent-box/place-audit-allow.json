@@ -109,6 +109,62 @@
       "match": "^Roadmap_Police_Taser ",
       "kind": "tilted",
       "why": "maintainer hand placement (world ship): Roadmap_Police_Taser in Street_Police.layer (tilted 86 deg)"
+    },
+    {
+      "match": "^Shop_GeneralStore_Till ",
+      "kind": "contact",
+      "why": "maintainer town fix pending #2956: the contact audit (#2953) measures it resting wrong; `place settle` (#2954) writes the settled height. The till sits 9.5 cm into its counter."
+    },
+    {
+      "match": "^((Iron|Copper|Gold)(Nugget|Bar)_0[0-9]|(Cement|Gravel)Brick_01|WoodKindling_01|Quarry_Barrel[0-9]) ",
+      "kind": "contact",
+      "why": "maintainer town fix pending #2956: the contact audit (#2953) measures it resting wrong; `place settle` (#2954) writes the settled height. The quarry table goods sit 1 to 3.5 cm into the table, the barrels 1.7 cm into the ground."
+    },
+    {
+      "match": "^Farm_PressApple_[0-9]+ ",
+      "kind": "contact",
+      "why": "maintainer town fix pending #2956: the contact audit (#2953) measures it resting wrong; `place settle` (#2954) writes the settled height. The press apples hover 8.7 cm over the crate."
+    },
+    {
+      "match": "BarrelMetal_01_blue",
+      "kind": "contact",
+      "layer": "Crimes.layer",
+      "why": "maintainer town fix pending #2956: the contact audit (#2953) measures it resting wrong; `place settle` (#2954) writes the settled height. The barrel sits 1.7 cm into the ground (its pivot is above its base)."
+    },
+    {
+      "match": "^PoliceKit_",
+      "kind": "contact",
+      "layer": "Grid_police_station_kit.layer",
+      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
+    },
+    {
+      "match": "^Annex_Convoy_(Start|Drop|Drop_Near) ",
+      "kind": "contact",
+      "layer": "Grid_convoy.layer",
+      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
+    },
+    {
+      "match": "^Grid_community_hall_Radio ",
+      "kind": "contact",
+      "layer": "Grid_community_hall.layer",
+      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
+    },
+    {
+      "match": "^(NPCIDCard|WhitelistIDCard)_Debug ",
+      "kind": "contact",
+      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
+    },
+    {
+      "match": "^ConfiscatedRifle_Debug ",
+      "kind": "contact",
+      "layer": "Grid_crimes.layer",
+      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
+    },
+    {
+      "match": "^Annex_Apple_",
+      "kind": "contact",
+      "layer": "Grid_apple_chain.layer",
+      "why": "existing grid prop the new contact bar (#2953, 1 cm) measures off its support; `place settle` (#2954) writes the settled height. Remove this entry when the layer is settled."
     }
   ]
 }
