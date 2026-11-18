@@ -7,15 +7,19 @@
 // inputs: tools/scout/**, tools/visual/look.mjs, tools/validation/scout-selftest.mjs
 // red-proof: 2026-11-16, footprint() ignoring the yaw failed "a building turned 90 degrees swaps its extents";
 // pickCandidates() without the two-per-prefab limit failed "a street of one shop is not six pictures";
+// the top-view projector without the camera height (60 m view -> 132 m) failed "a point 10 m east lands 10 scale-px right of the centre";
+// labelPlan() grouping by slot instead of by building failed "a shared building is one label naming both slots";
 // blockNames() reading Texts at the same index as Ids failed "the string table's offset is found, not assumed".
 
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 import { analyse, catalogBuilding, compass, facing, footprint, inQuad, junctions, largestRect, rot, roadsIn } from "../scout/analyse.mjs";
 import { catalogBuildings, matchByPrefab } from "../scout/catalog.mjs";
 import { formatDump, parseDump } from "../scout/dump.mjs";
 import { blockNames, buildEntries, kindOf, matchPlace, normalise, parseCoords, parseLocationPrefab, placesNear, stringBlock } from "../scout/gazetteer.mjs";
+import { labelPlan, labelTopPicture, topProjector } from "../scout/label.mjs";
 import { renderDossier } from "../scout/render.mjs";
 import { areaName, areaSpec, buildDossier, parseScoutArgs, pickCandidates, pickInteriors, resolveTarget, slugOf } from "../scout/scout.mjs";
 import { BUILDING_RULES, classify, typeTable } from "../scout/types.mjs";
@@ -265,6 +269,45 @@ check("look takes x,z,r: a radius of its own", areas[0].radius === 60 && areas[0
 check("look's plan carries a dump line only when asked", !/^dump /m.test(planText([], areas, { world: "W.ent" })) && /^dump xz-1000-2000 1000 2000 120 5$/m.test(planText([], areas, { world: "W.ent", dump: { radius: 120, step: 5 } })));
 check("look takes --dump and --dumpstep with values", parseArgs(["1,2", "--dump", "120", "--dumpstep", "4"]).flags.dump === "120" && parseArgs(["1,2", "--dump", "120", "--dumpstep", "4"]).flags.dumpstep === "4");
 check("a dump with no radius of its own uses each area's", /^dump xz-1000-2000 1000 2000 60 5$/m.test(planText([], areas, { world: "W.ent", dump: { radius: undefined, step: 5 } })));
+
+
+// ------------------------------------------------------------------ the labelled overview (#2897)
+
+// look's top shot: camera 2.2 x the view radius above the target (at least 30 m), 60 degrees of vertical field, north up,
+// inside the 4 px frame the contact-sheet writer leaves round a 1280 px wide picture.
+const proj = topProjector({ x: 1000, z: 2000 }, 60, 1280);
+const c0 = proj(1000, 2000);
+const e10 = proj(1010, 2000);
+const n10 = proj(1000, 2010);
+const wantScale = 716 / (2 * 132 * Math.tan(Math.PI / 6));
+check("the top view centres on the place", near(c0.x, 640, 0.6) && near(c0.y, 4 + 358, 0.6));
+check("a point 10 m east lands 10 scale-px right of the centre", near(e10.x - c0.x, 10 * wantScale, 0.1) && near(e10.y, c0.y, 0.01));
+check("north is up: a point 10 m north lands higher in the picture", n10.y < c0.y && near(c0.y - n10.y, 10 * wantScale, 0.1));
+check("a view under 13.6 m keeps the camera at 30 m", near(topProjector({ x: 0, z: 0 }, 10, 1280)(10, 0).x - 640, 10 * (716 / (2 * 30 * Math.tan(Math.PI / 6))), 0.1));
+
+const sq = (id, x, z) => ({ id, type: "house", x, z, footprint: { cx: x, cz: z, corners: [[x - 4, z - 4], [x + 4, z - 4], [x + 4, z + 4], [x - 4, z + 4]] } });
+const dos = { place: { x: 1000, z: 2000, slug: "labelled-place" }, generated: { view: 60 }, buildings: [sq("b01", 1000, 2000), sq("b02", 1006, 2001), sq("b03", 1030, 2020), sq("b04", 5000, 2000)], pictures: [{ role: "overview", file: "img/overview-top.jpg", caption: "from above, north up" }] };
+const map = { slots: { dock: { building: "b01", shared: true, alternatives: [{ building: "b03" }] }, taxi: { building: "b01", shared: true }, house: { building: "b02" }, fish: { none: true, reason: "later" }, far: { building: "b04" } } };
+const plan = labelPlan(dos, map, { imgW: 1280 });
+const l01 = plan.labels.filter((l) => l.building === "b01");
+check("a shared building is one label naming both slots", l01.length === 1 && /b01/.test(l01[0].text) && /dock/.test(l01[0].text) && /taxi/.test(l01[0].text));
+check("a none slot gets no label and an alternative is marked", !plan.labels.some((l) => /fish/.test(l.text)) && plan.labels.some((l) => l.building === "b03" && l.kind === "alt"));
+check("a mapped building outside the picture is named, not drawn", plan.offFrame.join() === "b04" && !plan.labels.some((l) => l.building === "b04"));
+check("each label carries its footprint outline", plan.polys.length === plan.labels.length && plan.polys.every((p) => p.pts.length === 4));
+const overlap = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+const rects = plan.labels.map((l) => ({ x: l.lx, y: l.ly, w: l.w, h: l.h }));
+check("labels of buildings 6 m apart do not overlap", rects.every((r, i) => rects.every((q, j) => i === j || !overlap(r, q))));
+check("no mapping, no labelled picture", labelPlan(dos, null, { imgW: 1280 }).labels.length === 0);
+
+if (process.platform === "win32") {
+  const dir = scratchDir("lf-scout-label-");
+  const plain = join(dir, "overview-top.jpg");
+  const { image } = await import("../../agent-box/shots.mjs");
+  image({ op: "sheet", tiles: [{ file: null, label: "", marks: [] }], out: plain, cols: 1, maxWidth: 1280, quality: 80 });
+  const made = labelTopPicture({ dossier: dos, mapping: map, plain, out: join(dir, "overview-top-labelled.jpg"), image });
+  check("the labelled picture is written next to the plain one", made.ok === true && existsSync(join(dir, "overview-top-labelled.jpg")) && readFileSync(join(dir, "overview-top-labelled.jpg")).length > readFileSync(plain).length * 0.5);
+  check("the plain picture is left alone", existsSync(plain));
+}
 
 if (failures.length) {
   for (const f of failures) console.error(`FAIL  scout-selftest: ${f}`);
