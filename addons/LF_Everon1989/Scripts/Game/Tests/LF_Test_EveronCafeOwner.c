@@ -39,10 +39,11 @@ class LF_Test_EveronCafeOwner : LF_Test
 		LF_DialogueFlow.Problems(config, problems);
 		ctx.Equal(0, problems.Count(), "the café owner's dialogue is playable");
 
-		// Each line: a caption in the string table, a sound event, a length and a mouth envelope. Seven lines: the
-		// greeting, two memories (the zone, the move), three pointers (work, the clerk, the handbook) and the goodbye.
-		array<string> lineIds = {"greet", "zone", "move", "work", "clerk", "handbook", "bye"};
-		ctx.Equal(lineIds.Count(), config.m_aLines.Count(), "the café owner has exactly the seven lines");
+		// Each line: a caption in the string table, a sound event, a length and a mouth envelope. Eleven lines: the
+		// greeting, the four mood greetings (#2998: refuses, wary, friendly, regular), two memories (the zone, the move),
+		// three pointers (work, the clerk, the handbook) and the goodbye.
+		array<string> lineIds = {"greet", "greet_refuses", "greet_wary", "greet_friendly", "greet_regular", "zone", "move", "work", "clerk", "handbook", "bye"};
+		ctx.Equal(lineIds.Count(), config.m_aLines.Count(), "the café owner has exactly the eleven lines");
 		foreach (string lineId : lineIds)
 		{
 			LF_DialogueLine line = LF_DialogueFlow.FindLine(config, lineId);
