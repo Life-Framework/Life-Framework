@@ -19,3 +19,13 @@ Stolen money is a separate item that never counts as cash.
   Test: `LF_Test_MarkedCashWipe` (LOGIC).
 - ⚠️ Looks the same as cash for now (same mesh, only the name differs); a band or tint is a follow-up.
 - Test: `LF_Test_MarkedCash` (WORLD).
+
+### Dirty payouts — `Feature/Laundering/LF_LaunderConfig.c` (#2851)
+- ✅ `LF_LaunderConfig` (`Configs/Crime/LF_Launder.conf`, the feature's one config; a pack overrides the
+  file) carries `m_bCrimePaysMarked`. Core ships it **off**: every payout is exactly today's cash.
+- ✅ Switch on: a till robbery (`LF_RobAction.PayCash`) pays the same amount as marked notes and no cash
+  (reason `robbery`; a short add is taken back and the robbery refused, like the cash path), and a bank
+  vault's money bags (`LF_Bank.WriteWorldBagCash`: the vault bag, the heist spill, the bag re-filled on
+  load) hold marked notes (`LF_Bank.ReadWorldBagMarked`). A bag's marked stack never reads as cash.
+- ✅ Chop shop and fence payouts stay clean cash (the fence is already the dirty exit for goods).
+- Test: `LF_Test_DirtyPayout` (WORLD).

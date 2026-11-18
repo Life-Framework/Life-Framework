@@ -4,5 +4,7 @@ Dirty money as items (M7, parent #1025). No dirty balance anywhere: money stays 
 
 - `LF_MarkedCash.c`: marked notes, the `markedcash` slot item. `Add`/`Count`/`Take` like
   `LF_MoneyUtils`, but never counted as cash and never on the cash ledger. Logs `[LFDebug:Laundering]`.
+- `LF_LaunderConfig.c`: `Configs/Crime/LF_Launder.conf`. `m_bCrimePaysMarked` (core off) makes till
+  robberies and bank vault bags pay marked notes (#2851); chop shop and fence stay cash.
 
-Docs: `docs/features/laundering.md`. Test: `LF_Test_MarkedCash`.
+Docs: `docs/features/laundering.md`. Tests: `LF_Test_MarkedCash`, `LF_Test_DirtyPayout`.
