@@ -30,6 +30,10 @@ Rung 1. A radio has one action, "Switch off" / "Switch on"
 - `LF_AmbientSwitchComponent`: the one replicated bool. `SetOn`, `Pulse`,
   `PulseOn(entity, seconds)` for a feature whose machine was just used.
 
+- `LF_NightLightComponent` (#3390): enables its child `LightEntity` between `m_fHourOn` and `m_fHourOff` from
+  the local world hour, every 30 s. Client only: no replication, nothing on a dedicated server. Prefabs
+  `Props/Lights/LF_WindowGlow.et` and `LF_LampHeadNight.et`; the rule is `LF_NightLight.IsOn`.
+
 ## Rules
 
 - A core prop names its sound by **slot** (`m_sSoundSlot`, `Configs/SoundSlots/LF_SoundSlots.conf`), never by the `.acp`; a pack overrides the slot by id (`Core/Config/LF_SoundSlots.c`, `validate-sound-slots`). `m_sSoundProject` stays for a pack's own placement and wins over the slot. The town sounds are pack content (#323 batch 4): the core `atmo_*` slots have no default, and the flagship pack's sound-slot overlay fills them; core alone, those emitters are silent.
