@@ -1,0 +1,29 @@
+GenericEntity Fit_saint_philippe_cafe_Place {
+ components {
+  LF_PlaceComponent "{60F580E538DA8215}" {
+   m_sKind "CafeTable"
+   m_sId "saint-philippe.cafe"
+  }
+  LF_FittedBuildingComponent "{06527558DE238CBB}" {
+  }
+ }
+ coords 4455.4 13.1 10700.3
+}
+GenericEntity Fit_saint_philippe_cafe_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
+ coords 4461.251 13.1 10704.657
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_cafe_anchor_door {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4445.785 13.1 10701.17
+ angleY -98
+}

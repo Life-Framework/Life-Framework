@@ -1,0 +1,88 @@
+{
+  "schema": 1,
+  "kit": "cafe",
+  "system": "cafe",
+  "source": {
+    "file": "tools/town/kits/sources/cafe.layer",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{0B1B8B16E7E9481F}Prefabs/Structures/Commercial/Pubs/PubVillage_E_2L01/PubVillage_E_2L01_Base.et"
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -7,
+        -4.7
+      ],
+      "max": [
+        9.5,
+        -1.5
+      ]
+    },
+    "front": "+x",
+    "counters": [],
+    "adapt": "The vanilla village pub (PubVillage_E_2L01 family) is already furnished: a bar along local z -4.5 from x -8.5 to -4.4, tables and chairs on the -z side, the kitchen (stove, fridge, sink) behind the bar on the +z side, a street door on the +x wall at about z -2 and a back door on the -z wall. The kit adds only what the residents system reads: the `counter` anchor behind the bar (the owner serves there, facing the room) and the `door` anchor on the pavement outside the +x door (a resident loitering between rounds). The slot's marker is the CafeTable place. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "anchor-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -6.4,
+        0,
+        -3.5
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-door",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        9.4,
+        0,
+        -2.2
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"door\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
