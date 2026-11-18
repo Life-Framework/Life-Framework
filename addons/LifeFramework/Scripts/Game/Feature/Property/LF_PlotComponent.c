@@ -2,9 +2,10 @@
 //! A for-sale plot sign (#2649, slice of #747). The placed sign names its plot by key; the price and
 //! tier come from LF_PropertyConfig and the owner of record is LF_Properties' row.
 //!
-//! BUYING. The client sends no plot id (LF_PropertyPlayerController.RpcAsk_LF_BuyProperty): the
-//! server takes the nearest live plot sign within REACH of the caller's character, so a client can
-//! never name a plot it is not standing at. The owner check comes before any cash moves and the
+//! BUYING. The client sends the plot key of the sign it used (LF_PropertyPlayerController.RpcAsk_LF_BuyProperty);
+//! the server takes the nearest live sign with that key within REACH of the caller's character. A
+//! client can never buy a plot it is not standing at, and of two signs a few metres apart the server
+//! never sells the one the player did not pick, at a price the prompt did not show. The owner check comes before any cash moves and the
 //! owner is set in the same server call, so two buyers can not both pay for one plot.
 //------------------------------------------------------------------------------------------------
 enum LF_EPlotBuy
@@ -79,8 +80,9 @@ class LF_PlotComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The nearest live plot sign with a key within REACH of the position, null when none.
-	static LF_PlotComponent FindNear(vector position)
+	//! \param askedKey The plot key the client picked; empty takes any key.
+	//! \return The nearest live plot sign with a key (askedKey when given) within REACH, null when none.
+	static LF_PlotComponent FindNear(vector position, string askedKey = "")
 	{
 		if (!s_aLive)
 			return null;
@@ -90,6 +92,9 @@ class LF_PlotComponent : ScriptComponent
 		foreach (LF_PlotComponent plot : s_aLive)
 		{
 			if (!plot || plot.GetPlotKey().IsEmpty())
+				continue;
+
+			if (!askedKey.IsEmpty() && plot.GetPlotKey() != askedKey)
 				continue;
 
 			IEntity owner = plot.GetOwner();
@@ -112,8 +117,9 @@ class LF_PlotComponent : ScriptComponent
 	//! \param buyer The caller's character; the plot is found from its position, never from the client.
 	//! \param ownerKey The buyer's character key (LF_Utils.GetPlayerUID).
 	//! \param[out] plotKey The plot that was found, empty when none was in reach.
+	//! \param askedKey The plot key of the sign the client used; it must be within REACH. Empty takes the nearest sign.
 	//! \return BOUGHT, or the reason nothing changed.
-	static LF_EPlotBuy Buy(IEntity buyer, string ownerKey, out string plotKey)
+	static LF_EPlotBuy Buy(IEntity buyer, string ownerKey, out string plotKey, string askedKey = "")
 	{
 		plotKey = "";
 		if (!buyer || ownerKey.IsEmpty())
@@ -122,10 +128,10 @@ class LF_PlotComponent : ScriptComponent
 			return LF_EPlotBuy.REFUSED_NO_BUYER;
 		}
 
-		LF_PlotComponent plot = FindNear(buyer.GetOrigin());
+		LF_PlotComponent plot = FindNear(buyer.GetOrigin(), askedKey);
 		if (!plot)
 		{
-			LF_Debug.Warn(FEATURE, string.Format("plot buy refused for %1: no plot sign within %2 m", ownerKey, REACH));
+			LF_Debug.Warn(FEATURE, string.Format("plot buy refused for %1: no plot sign '%2' within %3 m", ownerKey, askedKey, REACH));
 			return LF_EPlotBuy.REFUSED_NO_PLOT;
 		}
 
