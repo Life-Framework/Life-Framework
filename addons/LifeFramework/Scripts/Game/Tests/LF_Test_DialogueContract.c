@@ -72,6 +72,14 @@ class LF_Test_DialogueContract : LF_Test
 		// Below the gate: no reply, and a forced pick is refused in words with nothing started.
 		ctx.False(hook.Allows(player, null, CONTRACT), "the reply is hidden below the gate's tier");
 		ctx.False(hook.Allows(player, null, "no_such_contract"), "a reply naming no contract is hidden");
+		// #3050: the locked condition is the other side: offered below the gate, hidden at it and for no contract.
+		LF_DialogueHook locked = LF_DialogueHook.Find("ContractLocked");
+		ctx.NotNull(locked, "the ContractLocked dialogue hook has its class");
+		if (locked)
+		{
+			ctx.True(locked.Allows(player, null, CONTRACT), "the come-back reply is offered below the gate's tier");
+			ctx.False(locked.Allows(player, null, "no_such_contract"), "the come-back reply naming no contract is hidden");
+		}
 		array<string> spoken = {};
 		Pick(player, spoken);
 		string tierWord;
@@ -83,6 +91,9 @@ class LF_Test_DialogueContract : LF_Test
 		// At the gate's tier: the act. Red proof: skip the pick.
 		LF_Reputation.Add(UID, "TOWN", 100, "test");
 		ctx.True(hook.Allows(player, null, CONTRACT), "the reply is offered at the gate's tier");
+		if (locked)
+			ctx.False(locked.Allows(player, null, CONTRACT), "the come-back reply is hidden at the gate's tier");
+
 		spoken.Clear();
 		if (!RedProof())
 			Pick(player, spoken);

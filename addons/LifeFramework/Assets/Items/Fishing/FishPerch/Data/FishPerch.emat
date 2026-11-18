@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{5D71448B940211E4}Assets/Items/Fishing/FishPerch/Data/FishPerch_BCR.edds"
+ NMOMap "{6C6FE80196BECBB1}Assets/Items/Fishing/FishPerch/Data/FishPerch_NMO.edds"
+}

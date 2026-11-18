@@ -1,6 +1,8 @@
 //------------------------------------------------------------------------------------------------
 //! One tradable good's price curve (#2844). The key is `m_sGood`, the item prefab ResourceName the trader
-//! list uses. All prices are whole cash units.
+//! list uses. The prices in the row are whole cash; the curve itself runs in hundredths of a cash unit
+//! (LF_PriceCurve, #3028), so the Fine-named members and the price arguments of the curve methods below
+//! are hundredths.
 [BaseContainerProps()]
 class LF_MarketGoodDef : LF_ConfigRecord
 {
@@ -44,6 +46,8 @@ class LF_MarketGoodDef : LF_ConfigRecord
 			return "no good";
 		if (m_iFloor < 0 || m_iBase < 0 || m_iCeiling < 0)
 			return "a price is negative";
+		if (m_iCeiling > LF_PriceCurve.MAX_CASH)
+			return string.Format("ceiling %1 is above the largest price %2", m_iCeiling, LF_PriceCurve.MAX_CASH);
 		if (m_iFloor > m_iCeiling)
 			return string.Format("floor %1 is above ceiling %2", m_iFloor, m_iCeiling);
 		if (m_iBase < m_iFloor || m_iBase > m_iCeiling)
@@ -57,38 +61,60 @@ class LF_MarketGoodDef : LF_ConfigRecord
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return Cash one sold unit takes off this good's price.
+	//! \return The base in hundredths of a cash unit.
+	int BaseFine()
+	{
+		return LF_PriceCurve.ToFine(m_iBase);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The floor in hundredths of a cash unit.
+	int FloorFine()
+	{
+		return LF_PriceCurve.ToFine(m_iFloor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The ceiling in hundredths of a cash unit.
+	int CeilingFine()
+	{
+		return LF_PriceCurve.ToFine(m_iCeiling);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Hundredths of a cash unit one sold unit takes off this good's price.
 	int DropPerUnit()
 	{
 		return LF_PriceCurve.DropPerUnit(m_iBase, m_iDropPerUnitPct);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The next unit's price from `current`.
-	int NextPrice(int current)
+	//! \return The next unit's price (hundredths) from `currentFine`.
+	int NextPrice(int currentFine)
 	{
-		return LF_PriceCurve.NextPrice(current, m_iFloor, m_iCeiling);
+		return LF_PriceCurve.NextPrice(currentFine, FloorFine(), CeilingFine());
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The total `units` pay from `current`.
-	int BulkTotal(int current, int units)
+	//! \return The whole cash `units` pay together from `currentFine`.
+	int BulkTotal(int currentFine, int units)
 	{
-		return LF_PriceCurve.BulkTotal(current, units, DropPerUnit(), m_iFloor, m_iCeiling);
+		return LF_PriceCurve.BulkTotal(currentFine, units, DropPerUnit(), FloorFine(), CeilingFine());
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The price after `units` were sold from `current`.
-	int PriceAfterSale(int current, int units)
+	//! \return The price (hundredths) after `units` were sold from `currentFine`.
+	int PriceAfterSale(int currentFine, int units)
 	{
-		return LF_PriceCurve.PriceAfterSale(current, units, DropPerUnit(), m_iFloor, m_iCeiling);
+		return LF_PriceCurve.PriceAfterSale(currentFine, units, DropPerUnit(), FloorFine(), CeilingFine());
 	}
 }
 
 //------------------------------------------------------------------------------------------------
 //! The market's tables. Loaded from Configs/Market/LF_Market.conf. The core ships it off
 //! (`m_bEnabled` 0) with three neutral goods, so no server changes behaviour until it opts in.
-//! The pack overlay and the owner config.json section come with a later card.
+//! A pack overlay (`m_aLF_ConfigOverlays`, #3018) merges the goods by `m_sGood` and may switch the market
+//! on; the owner config.json section comes with a later card.
 [BaseContainerProps(configRoot: true)]
 class LF_MarketConfig
 {
@@ -129,8 +155,55 @@ class LF_MarketConfig
 			return null;
 		}
 
+		s_Config.ApplyLayers();
 		s_Config.Sanitize();
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges each pack overlay (the mission header's m_aLF_ConfigOverlays, in load order) over this
+	//! instance, which holds the core `.conf`: the goods by `m_sGood` (add, replace, patch, remove;
+	//! docs/config/override-model.md), then `m_bEnabled` and `m_iMaxRecoveryHours` when the overlay sets
+	//! them on its root. Sanitize runs after, so a bad merged row is refused like a core one.
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_MarketConfig, "market", resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer(), names[i], claims);
+			LF_Debug.Info(FEATURE, string.Format("market: pack overlay %1 changed %2 entries", names[i], changed));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack overlay: its `m_aGoods` by good, and the root fields it sets directly.
+	//! \return Entries changed (goods plus root fields).
+	//! \param[in] root The overlay's root container.
+	//! \param[in] source The overlay file, for log lines.
+	int ApplyPackContainer(notnull BaseContainer root, string source, LF_ConfigClaims claims = null)
+	{
+		if (!m_aGoods)
+			m_aGoods = {};
+
+		int changed = LF_ConfigOverlay.ApplyContainerList(new LF_MarketGoodList(this), root, "m_aGoods", source, claims);
+		bool enabled;
+		if (root.IsVariableSetDirectly("m_bEnabled") && root.Get("m_bEnabled", enabled))
+		{
+			m_bEnabled = enabled;
+			changed++;
+		}
+
+		int hours;
+		if (root.IsVariableSetDirectly("m_iMaxRecoveryHours") && root.Get("m_iMaxRecoveryHours", hours))
+		{
+			m_iMaxRecoveryHours = hours;
+			changed++;
+		}
+
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -218,14 +291,128 @@ class LF_MarketConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The price of `good` after `seconds` of recovery from `current`; `current` when the good has no curve.
-	int Recover(ResourceName good, int current, int seconds)
+	//! \return The price (hundredths) of `good` after `seconds` of recovery from `currentFine`; `currentFine` when the good has no curve.
+	int Recover(ResourceName good, int currentFine, int seconds)
 	{
 		LF_MarketGoodDef def = FindGood(good);
 		if (!def)
-			return current;
+			return currentFine;
 
-		return LF_PriceCurve.Recover(current, def.m_iBase, def.m_iRecoverPctPerHour, seconds, m_iMaxRecoveryHours, def.m_iFloor, def.m_iCeiling);
+		return LF_PriceCurve.Recover(currentFine, def.BaseFine(), def.m_iRecoverPctPerHour, seconds, m_iMaxRecoveryHours, def.FloorFine(), def.CeilingFine());
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The goods list for the shared merge (LF_ConfigOverlay), keyed by the good's GUID. There is no owner
+//! section, so only pack overlays reach it. A new or replaced row must pass LF_MarketGoodDef.Problem; a
+//! patch that would leave a row unusable is refused whole and the row keeps its values.
+class LF_MarketGoodList : LF_ConfigList
+{
+	protected LF_MarketConfig m_Config;
+
+	void LF_MarketGoodList(LF_MarketConfig config)
+	{
+		m_Config = config;
+		if (!m_Config.m_aGoods)
+			m_Config.m_aGoods = {};
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "{GUID}path" to "GUID" in upper case; a bare path comes back upper-cased whole.
+	static string GoodId(ResourceName good)
+	{
+		string text = good;
+		if (text.StartsWith("{"))
+		{
+			int close = text.IndexOf("}");
+			if (close > 1)
+				text = text.Substring(1, close - 1);
+		}
+
+		text.ToUpper();
+		return text;
+	}
+
+	override string GetName()
+	{
+		return "market.goods";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aGoods.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aGoods[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return GoodId(LF_MarketGoodDef.Cast(record).m_sGood);
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		ResourceName good;
+		container.Get("m_sGood", good);
+		return GoodId(good);
+	}
+
+	override string IdHint()
+	{
+		return "a good's prefab GUID";
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_MarketGoodDef def = LF_MarketGoodDef.Cast(record);
+		if (index < m_Config.m_aGoods.Count())
+			m_Config.m_aGoods.Set(index, def);
+		else
+			m_Config.m_aGoods.Insert(def);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aGoods.RemoveOrdered(index);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		return LF_MarketGoodDef.Cast(record).Problem();
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_MarketGoodDef def = LF_MarketGoodDef.Cast(record);
+		LF_MarketGoodDef before = LF_MarketGoodDef.Make(def.m_sGood, def.m_iBase, def.m_iFloor, def.m_iCeiling, def.m_iDropPerUnitPct, def.m_iRecoverPctPerHour);
+		int changed;
+		if (container.IsVariableSetDirectly("m_iBase") && container.Get("m_iBase", def.m_iBase))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iFloor") && container.Get("m_iFloor", def.m_iFloor))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iCeiling") && container.Get("m_iCeiling", def.m_iCeiling))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iDropPerUnitPct") && container.Get("m_iDropPerUnitPct", def.m_iDropPerUnitPct))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iRecoverPctPerHour") && container.Get("m_iRecoverPctPerHour", def.m_iRecoverPctPerHour))
+			changed++;
+
+		string problem = def.Problem();
+		if (!problem.IsEmpty())
+		{
+			LF_Debug.Error(LF_MarketConfig.FEATURE, string.Format("market.goods %1: pack patch refused, keeping the shipped row: %2", def.m_sGood, problem));
+			def.m_iBase = before.m_iBase;
+			def.m_iFloor = before.m_iFloor;
+			def.m_iCeiling = before.m_iCeiling;
+			def.m_iDropPerUnitPct = before.m_iDropPerUnitPct;
+			def.m_iRecoverPctPerHour = before.m_iRecoverPctPerHour;
+			return 0;
+		}
+
+		return changed;
 	}
 }
 

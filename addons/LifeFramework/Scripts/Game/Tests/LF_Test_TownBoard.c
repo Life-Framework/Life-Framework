@@ -1,4 +1,5 @@
 // red-proof: [LFTEST] RED-OK townboard/cards (fails with the hook on, 49 assertions) (tools/cli test --no-build --red, 2026-11-16)
+// red-proof: #3077 at MAX_CARDS 8 the twelve-card board fails (`twelve config cards are all shown`, and no warning at thirteen).
 //! The town board's cards and the waypoint, with no world: which cards show and in which slot, what a
 //! card says about a place it cannot find, the compass and distance words, the slot geometry the
 //! prefab's contexts follow, and the waypoint's set, replace, toggle, arrive and refuse rules.
@@ -25,21 +26,33 @@ class LF_Test_TownBoard : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		LF_Waypoint.ResetStatics();
+		// Twelve cards fill the board and nothing is dropped, so nothing is warned about.
 		LF_TownBoardConfig config = new LF_TownBoardConfig();
 		config.m_sTitle = "Test board";
 		config.m_aCards = {};
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 12; i++)
 			config.m_aCards.Insert(MakeCard("c" + i.ToString(), "nowhere"));
 
 		LF_TownBoard.UseConfig(config);
+		ctx.Equal(12, LF_TownBoard.MAX_CARDS, "the board has twelve slots");
+		ctx.Equal(12, LF_TownBoard.CardCount(), "twelve config cards are all shown");
+		ctx.EqualStr("c11", LF_TownBoard.CardAt(11).m_sId, "slot 11 is the twelfth card");
+		ctx.Equal(0, LF_TownBoard.DropWarnCount(), "twelve cards drop none, so no warning");
 
-		// Cards: the first MAX_CARDS, in order; the rest have no slot.
-		ctx.Equal(LF_TownBoard.MAX_CARDS, LF_TownBoard.CardCount(), "ten cards fill the eight slots");
+		// A thirteenth card is dropped, with one LF_Debug warning for the config; the first twelve stay.
+		config.m_aCards.Insert(MakeCard("c12", "nowhere"));
+		LF_TownBoard.UseConfig(config);
+		if (!RedProof())
+			ctx.Equal(1, LF_TownBoard.DropWarnCount(), "a thirteenth card is dropped with a warning");
+		else
+			ctx.Equal(1, LF_TownBoard.DropWarnCount() + 1, "a thirteenth card is dropped with a warning");
+
+		ctx.Equal(LF_TownBoard.MAX_CARDS, LF_TownBoard.CardCount(), "thirteen cards fill the twelve slots");
 		ctx.EqualStr("c0", LF_TownBoard.CardAt(0).m_sId, "slot 0 is the first card");
-		ctx.EqualStr("c7", LF_TownBoard.CardAt(7).m_sId, "slot 7 is the eighth card");
-		ctx.True(LF_TownBoard.CardAt(8) == null, "a ninth card has no slot");
+		ctx.True(LF_TownBoard.CardAt(12) == null, "a thirteenth card has no slot");
 		ctx.True(LF_TownBoard.CardAt(-1) == null, "a negative slot is empty");
-		ctx.True(LF_TownBoard.FindCard("c9") == null, "a card past the slots is not on the board");
+		ctx.True(LF_TownBoard.FindCard("c12") == null, "a card past the slots is not on the board");
+		ctx.True(LF_TownBoard.FindCard("c11") != null, "the twelfth card is on the board");
 		ctx.EqualStr("TEST BOARD", LF_TownBoard.Title(), "the header is printed in capitals");
 
 		// A place that is not on this map: the card says so, and there is nothing to mark.
@@ -60,7 +73,7 @@ class LF_Test_TownBoard : LF_Test
 		ctx.Equal(60, LF_TownBoard.RoundDistance(57), "to 10 m under 200");
 		ctx.Equal(250, LF_TownBoard.RoundDistance(262), "to 50 m from 200");
 
-		// The slots: four across, two down, inside the face, mirrored about its centre.
+		// The slots: four across, three down, inside the face, mirrored about its centre.
 		vector first = LF_TownBoardFace.SlotPosition(0);
 		vector last = LF_TownBoardFace.SlotPosition(LF_TownBoard.MAX_CARDS - 1);
 		ctx.True(first[0] >= 0 && first[1] >= 0, "the first card is on the face");
@@ -70,6 +83,14 @@ class LF_Test_TownBoard : LF_Test
 		ctx.EqualFloat(-a[0], b[0], 0.001, "the top row is centred left to right");
 		ctx.True(a[0] < 0 && a[1] > 0, "slot 0 is top left as the reader sees it");
 		ctx.True(LF_TownBoardFace.SlotCentreMeters(4, 0.965)[1] < 0, "slot 4 starts the lower row");
+		ctx.True(LF_TownBoardFace.SlotPosition(8)[1] > LF_TownBoardFace.SlotPosition(4)[1], "slot 8 starts a third row");
+		ctx.True(LF_TownBoardFace.SlotPosition(0)[1] >= LF_TownBoardFace.HEADER_TOP + LF_TownBoardFace.HEADER_HEIGHT, "the cards start below the header");
+		ctx.True(LF_TownBoardFace.SlotPosition(4)[1] >= LF_TownBoardFace.SlotPosition(0)[1] + LF_TownBoardFace.CARD_HEIGHT, "the rows do not overlap");
+		ctx.True(LF_TownBoardFace.SlotPosition(8)[1] >= LF_TownBoardFace.SlotPosition(4)[1] + LF_TownBoardFace.CARD_HEIGHT, "the third row does not overlap the second");
+		ctx.True(LF_TownBoardFace.SlotPosition(1)[0] >= LF_TownBoardFace.SlotPosition(0)[0] + LF_TownBoardFace.CARD_WIDTH, "the columns do not overlap");
+		// Neighbouring card contexts (0.12 m radius in the prefab) must not reach each other's centre.
+		float rowStep = vector.Distance(LF_TownBoardFace.SlotCentreMeters(0, 0.965), LF_TownBoardFace.SlotCentreMeters(4, 0.965));
+		ctx.True(rowStep > 0.24, "the card contexts of two rows do not overlap");
 
 		// The waypoint: set, the same card again takes it off, another replaces it, arriving clears it.
 		ctx.False(LF_Waypoint.Mark("", "Bank", "10 0 10"), "a mark with no id is refused");

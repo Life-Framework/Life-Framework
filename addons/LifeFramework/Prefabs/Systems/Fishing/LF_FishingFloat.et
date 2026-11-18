@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "6A1D3F2B7C94E5A0"
+ scale 3
+ components {
+  MeshObject "{3E7B91C4A25D8F06}" {
+   Object "{B81453DA6E38012C}Assets/Items/Fishing/FishingFloat/FishingFloat.xob"
+  }
+ }
+}

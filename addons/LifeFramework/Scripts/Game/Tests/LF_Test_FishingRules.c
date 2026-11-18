@@ -395,7 +395,7 @@ class LF_Test_FishingRules : LF_Test
 
 		ctx.Equal(1, shipped.m_aRods.Count(), "the core ships one rod and refuses none");
 		ctx.Equal(1, shipped.m_aBaits.Count(), "one bait");
-		ctx.Equal(5, shipped.m_aSpecies.Count(), "five species");
+		ctx.Equal(6, shipped.m_aSpecies.Count(), "six species (the trout joined in #2995 so the grid pond gives a fish the counter buys)");
 		ctx.Equal(3, shipped.m_aTables.Count(), "three tables");
 		ctx.Equal(0, shipped.Sanitize(), "a second pass refuses nothing");
 

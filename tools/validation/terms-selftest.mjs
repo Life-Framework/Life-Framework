@@ -1,4 +1,5 @@
 // Red-proof for validate-terms (#958): each failure class is caught, a clean table is not.
+// inputs: imports
 import { parseTable, parseTermsConf } from "../lib/terms.mjs";
 import { check } from "./validate-terms.mjs";
 

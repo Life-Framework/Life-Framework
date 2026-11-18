@@ -1,5 +1,6 @@
 # tools/validation/validate-scripts.ps1 - Layer 1: headless EnforceScript compile check.
 # inputs: always
+# (global: the Workbench compile; runs only in validate --full, ci, wt gate, wt ship, which never skip)
 #
 # Runs Workbench's ScriptEditor -validate against the LifeFramework gproj, then
 # against the LF_Everon1989 pack gproj when the pack is in the checkout (#322). That

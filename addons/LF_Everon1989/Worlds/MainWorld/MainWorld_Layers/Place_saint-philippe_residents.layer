@@ -1,0 +1,37 @@
+GenericEntity Fit_saint_philippe_residents_Place {
+ components {
+  LF_PlaceComponent "{CF4B7B50B75186C4}" {
+   m_sKind "House"
+   m_sId "saint-philippe.residents"
+  }
+  LF_FittedBuildingComponent "{1519AE432C5909A6}" {
+  }
+ }
+ coords 4444.3 12.7 10670.6
+}
+GenericEntity Fit_saint_philippe_residents_bench_1 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 4437.048 12.7 10671.903
+ angleY -98
+}
+GenericEntity Fit_saint_philippe_residents_bench_2 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 4436.811 12.7 10673.587
+ angleY -98
+}
+GenericEntity Fit_saint_philippe_residents_anchor_door {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4437.565 12.7 10668.947
+ angleY -98
+}
+GenericEntity Fit_saint_philippe_residents_anchor_bench {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "bench"
+  }
+ }
+ coords 4435.939 12.7 10672.606
+ angleY -98
+}

@@ -79,7 +79,7 @@
 | Alarm | `store` | `bank` | `bank`, loud |
 | Action name | "Crack the box safe" | "Rob the bank" | "Break into the reserve depot" |
 
-- `store_box` matches the placed shop tills: they ship with 0 police needed and 150 cash a haul (`LF_FuelTill_Attended.et`). `LF_RobAction`'s own code default is 2 police, which every placed till overrides to 0, so the tier follows the placed value. With no tool it opens after the fuse. `m_fDrillSeconds` is 10 only because the setter needs a positive value; no drill is accepted. The Everon pack patches the haul to 120 (1989 till takings).
+- `store_box` matches the placed shop tills: they ship with 0 police needed, 150 cash a haul and a 900 s cooldown (`LF_FuelTill_Attended.et`; it was 60 s, which paid a solo robber 150 a minute, #2418). `LF_RobAction`'s own code default is 2 police, which every placed till overrides to 0, so the tier follows the placed value. With no tool it opens after the fuse. `m_fDrillSeconds` is 10 only because the setter needs a positive value; no drill is accepted. The Everon pack patches the haul to 120 (1989 till takings).
 - `bank_room` is today's bank: the numbers `LF_BankVault.et` sets (1 bag, 500, 60 s, 0 police, no fuse, drill or charge, bank alarm, no jam, 30 s drill).
 - `reserve_vault` is the big vault for a later "Federal Reserve" building (docs only; in-world text says "reserve depot"). The existing `LF_BankVault.et` prefab keeps its GUID, path and its own explicit numbers and sets no type, because it is the playtest town's bank today; a building that uses it as the reserve vault sets `m_sSafeType "reserve_vault"` on its placement and drops the explicit numbers.
 - Test `crime/safe-types` (LOGIC) and `everon/safe-types` (pack leg). Log `[LFDebug:SafeTypes]`.
@@ -370,7 +370,7 @@
 - ✅ **Duty pay at the desk** (verified 2026-11-08: LOGIC test `jobs/duty-pay`;
   the 2-client cash check is manual). Going off duty pays the shift's on-duty
   seconds times `m_fPoliceDutyPayPerSecond` (`Configs/Jobs/LF_Jobs.conf`, flagship
-  0.5) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
+  0.25 since 2026-11-18, was 0.5) as cash through `LF_DutyPay.PayAtClockOut`, with the pick-up sound and a
   `#EL-Duty_Paid` toast. Seconds settled by an armory draw mid-shift are kept
   for the clock-out. A second clock-out, a clock-out with no clock-in, and a
   non-police account pay nothing. Unpaid seconds are session state: a restart
@@ -382,10 +382,21 @@
   officer stays on duty with the body and kit, but the time away is never counted. `OnPlayerReturned` (on spawn) starts
   the clock again inside the same shift cap, which also restarts the clock of an officer whose on-duty flag survived a
   server restart. The cap applies to every duty role (police and medic). Log `[LFDebug:Ranks] shift cap reached`,
-  `duty clock stopped`, `duty clock resumed`. Not tracked: whether a connected officer is moving (no activity signal
-  exists), so an officer who stays connected but idle earns up to the cap. The shift's counted seconds are session
+  `duty clock stopped`, `duty clock resumed`. A connected officer who stands idle is paused by the idle sampler below. The shift's counted seconds are session
   state: a server restart gives a fresh cap. The cap log fires once per shift. Tests `police/duty-shift-cap`,
   `police/duty-clock-disconnect`.
+- 🔨 **A dedicated server sees an officer who only looks around** (#3154, in-dev, proof `duty-idle-proof`). The idle
+  sampler reads the server's copy of a remote client's aim, and that copy follows the client: on a dedicated session a
+  client on duty that only pitched its view for 360 s kept the clock running, and the same client standing still was
+  paused about 330 s later.
+- 🔨 **Duty pay pauses while the officer or medic stands idle** (#3120, in-dev, WORLD `police/duty-idle`). `LF_DutyIdle`
+  samples every connected on-duty player every 30 s. Moving more than 2 m (on foot or in any vehicle; a seat follows the
+  vehicle's position) or turning the view about 10 degrees counts as active, so patrol, a desk, a parked car with the
+  officer looking out and driving to a call all keep the clock running. After `dutyIdleSeconds` (jobs config, default
+  300; 0 = off) with none of that, the clock is settled at the moment the window ran out and stopped; the idle time earns
+  no pay and no rank time. The next sample that sees activity starts it again (at most 30 s late). Rank rates are
+  untouched. A logout while paused needs nothing: the spawn restarts the clock (`ResumeDutyClock`). Watches are runtime
+  only. Log `[LFDebug:DutyIdle] duty clock paused`, `duty clock resumed`.
 - 🔨 **A character switch settles the duty clock first** (#2838, in-dev, LOGIC `police/duty-clock-character-switch`). Every
   change of the account's active character (a pick, a new character made active, the active one removed) runs
   `LF_PoliceRanks.SettleForCharacterSwitch` before it: the running seconds go to the outgoing character's rank time
@@ -428,9 +439,11 @@
   raises wanted (till, vehicle and weapon robbery, breach, hospital till) calls
   `LF_Dispatch.Report` (M1-20), which calls `LF_WantedReports.Report`. It records the offence and a description of the
   suspect at that moment: clothing display names, the vehicle they sit in, and
-  the nearest sign title within `m_fPlaceRadius`, else the nearest map town or
-  landmark (`LF_NamedPlaces.Nearest`, #1944, WORLD `police/dispatch-names-place`:
-  "bank robbery, Saint Philippe"), else a 100 m grid square. The place is stored as a
+  the nearest map town or landmark (`LF_NamedPlaces.Nearest`, #1944, WORLD
+  `police/dispatch-names-place`: "bank robbery, Saint Philippe"), else the nearest
+  sign title within `m_fPlaceRadius`, else a 100 m grid square. The town wins over
+  a sign (#3092): on the island the bank's fascia sign stood nearer than the town
+  label and the call read "Bank". The place is stored as a
   localization key and localized where each board and radio line is built; the
   core holds no place names. In town the hospital till's alarm stands on `Hospital_AlarmBox` (an alarm mount on the hospital front wall, `Street_Hospital.layer`) and the pack names the town "Saint Philippe" (`Place_SaintPhilippe`, town pass #1947).
   An on-duty officer within `m_fCatchInActRadius` (`Configs/Police/LF_Police.conf`)
@@ -547,8 +560,8 @@
   wanted list. DebugWorld places `Roadmap_Police_Armory` at `241.2 0 244.2`
   (police station forecourt) on `Street_Police.layer`.
 - 🔨 The flagship ladder (#1769, merged, in-dev; `LF_Police_Everon1989.conf`): five ranks, Cadet, Patrol,
-  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.3, 0.5, 0.65, 0.8, 1
-  per on-duty second; duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
+  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.25, 0.28, 0.30, 0.33, 0.35
+  per on-duty second (900 to 1260 an hour; was 0.3 to 1 until 2026-11-18, the duty-versus-civilian pay gap); duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
   the pack patches the core's `patrol` (index 0) into Cadet and `senior` (index 1) into Patrol and appends the other three.
   Titles are the pack's `LF-Rank_*` rows. A saved rank above the ladder clamps to the top on load.
 - 🔨 Only an officer above the new rank promotes (#2095, in-dev). `LF_PoliceRanks.Promote` (server) refuses
@@ -700,6 +713,7 @@
   A kind with a cost in the same `.conf` (#2448, `LF_PlacementCost`) pays it on the server only after the spot is VALID, once: cash through `LF_MoneyUtils` (ledger reasons `placement`, `placement-refund`) or items used up; a player who cannot pay is refused (`#LF-Placement_NeedCash`, `_NeedItem`) and keeps everything, a failed spawn gives it back, and a refundable kind refunds once on pick-up to the payer only (compositions, and spike strips through `LF_SpikeStrips.PickUp` since #2502; another officer folding a paid strip up refunds nobody). Core ships every kind free; a pack sets prices. Tests `placement/policy-cost`, `police/spike-strip-refund` (WORLD).
   A PERMANENT placeable (`LF_PlaceableComponent` lifetime, default temporary) is saved (#1032, `LF_PlacementSave`, payload `placements`, save version 52): prefab, spot, owner key, kind, property, never an EntityID; a restart spawns each row once (a second apply makes no duplicate; a row whose prefab no longer resolves is skipped with an error). The server refuses one past 40 per owner or 25 per property (`m_iOwnerCap`, `m_iPropertyCap` on the policy conf; toasts `#LF-Placement_CapOwner`, `_CapProperty`). The owner within 4 m picks it up (`LF_PlacementPickup.PickUp`): entity and row go, a refundable cost comes back, the item goes into the inventory. A placed prop carries `LF_PlacedOwnerComponent` (the placer's character key, replicated, stamped by `LF_PlacementSave` on record and on load) and `LF_PlacementPickupAction` ("Pick up", `#LF-Placement_PickUp`): shown and performable only for that character, and the server's `PickUp` decides again from the saved row (owner, 4 m), so a client that sends it anyway changes nothing (#2751). Tests `placement/persist` (PERSISTENCE, restart through `wt e2e`), `placement/cap`, `placement/pickup-action` (WORLD).
 - **House furniture (#2654, slice of #747):** four neutral carried items (chair, table, shelf, lamp: `Prefabs/Placeables/Furniture/Furniture_*_Item.et`, vanilla props placed) are PERMANENT, need an owned or key-held house (`HOUSE_OWNER_OR_KEY` plus the `OWNED_PROPERTY` zone in the policy conf, kinds `Furniture_*`) and use the `m_eSnap` modes. FLOOR lies like GROUND (the ground probe reads a building floor). WALL puts the shelf flush on the wall face the player aims at (`LF_PlacementFurniture`: face normal is the heading, back edge 1 cm off the face, floor from a probe at the middle and front edge); the server refuses a WALL proposal more than 2 cm off a wall. Three five-line hooks in `LF_PlacementService` (Plan, PlanAimed, Confirm). Test `housing/furniture` (WORLD). Each item places a `Furniture_*_Placed.et` (the vanilla prop plus `RplComponent`, the owner stamp and the "Pick up" action, #2751), so the owner can take it back; a chair saved before #2751 comes back as the plain prop with no action. Prices and the 1989 catalogue are pack work.
+- **House furniture, home set (vanilla props only, 2026-11-18):** fourteen more carried items furnish a home (`tools/furniture/items.json`, written by `tools/furniture/gen.mjs`): bed, double bed, sofa, armchair, coffee table, rug, television, radio, potted plant, mirror, picture, stove, bookcase, workbench. Each is built on a base-game prop (the footprint comes from the model's measured bounds, the carried item keeps the vanilla prefab's material override such as the poster's print), is PERMANENT, needs an owned or key-held house like the first four, and places a `Furniture_<Id>_Placed.et` with the owner stamp and "Pick up". The radio keeps its vanilla turn-on action. The mirror and the picture are WALL items with `m_fHangHeight` (1.3 m and 1.5 m): `LF_PlacementFurniture.ProbeWall` lifts the origin that far above the floor at the foot of the wall, on the client's ghost and on the server's recomputed spot alike; 0 (the default, the shelf) stands on the floor. A vanilla prop's pivot is often a corner (wardrobe, stove, bookcase), so the ghost extends from the aimed point; the footprint is exact. Pack: price rules (buy 20 to 260, sell about 40 percent of it) and stock rows in `LF_Everon1989/Configs/Shop/`. Proof `everon/furniture-home` (WORLD, pack leg: stocked, priced above sell-back, permanent, floor or wall snap, hang height, house-owner policy, owner stamp and Pick up on the placed prop). Pictures: `website/public/docs-images/2654/furniture-items-after.jpg`, `furniture-showroom-after.png` (grid cell `furniture-vanilla`, flat ground: a placed prop in a real house room and the hung mirror and picture stay manual).
 - ⚠️ Placement preview (#928 prototype, dev-tools worlds only, selecting the action is not automated): while Deploy is selected the officer sees a ghost
   of the strip where it will lie, blue when the server would accept it and red when not (`LF_SpikeStripPreview`).
 - ✅ The server samples the vehicles within 9.75 m every 50 ms and tests each wheel's path since the last
@@ -762,9 +776,24 @@
   Every prop height is snapped by `surface.mjs`; `tools\cli building check police-station` reads the kit's layer rows too
   (`spec.json` `check_layer`). **The cell door, decided:** the kit always shows the villa's own barred cell and door and
   carries no jail component, because one placed cell is allowed per world and GridWorld has one. `fitout.mjs --with-cell`
-  (for `town fit` into a world with no cell) stages only the `LF_JailCell` marker, its zone fitted to the room (2 m), the
-  release point in the hall and no door target; no `EL_JailDoor`, which would hang a second door in the villa's doorway.
-  Breach and jailbreak on that cell need the villa door to carry `LF_BreachTarget` (#2373).
+  (for `town fit` into a world with no cell) stages only the `LF_JailCell` marker, its zone fitted to the room (2 m) and the
+  release point in the hall; no `EL_JailDoor`, which would hang a second door in the villa's doorway.
+  **The villa's own cell door is the breach target (#2373, in-dev).** `PoliceStation.et` overrides the cell's door leaf
+  (`DoorSet_PrisonCell_L_EXT_B` > `Door_PrisonCell_E_A_Left_INT_ST_B`, written by `shell.mjs`) with `LF_LockComponent`
+  (locked at spawn), `LF_BreachTargetComponent` id `PoliceStation_CellDoor` and the arm and repair actions, the same
+  parts `Roadmap_Jail_Door` has, so `--with-cell` writes `m_sDoorTargetId "PoliceStation_CellDoor"` and a prisoner is
+  held while the door is locked, a charge breaches it and the jailbreak path of #235 applies, and police repair it. A cell
+  placed by hand in a world (the island town) sets that same id on its `LF_JailCellComponent`. One station per world:
+  two stations would share the id. Test `everon/police-cell-door` (WORLD, pack leg).
+- 🧪 **Saint-Philippe jail cell** (#2969, town draft, draft PR, in-dev). The police slot's `JailCell` marker (`LF_PlaceComponent`) is only
+  a marker: it switches the Jail system on and leaves `LF_Jail` with no cell, so an arrest had nowhere to send the prisoner. The island
+  now has the real cell: the `jail` slot (a street-style slot that rides in the police slot's building, `with: police` in
+  `tools/town/templates/town.json`, kit `tools/town/kits/jail.json`, layer `Place_saint-philippe_jail.layer`) puts one
+  `LF_JailCellComponent` (prefab `EL_JailCell`, zone 2 m, release point 3 0 2.5 in the cell's frame, no door target) in the villa's own
+  barred cell on the ground floor, west. `LF_Jail` finds it by component (`LF_Places` kind `JailCell`, id `cell`; one per world),
+  so arrests, sentences, the zone and release run on the island exactly as in DebugWorld. Breach and jailbreak on it still need
+  the villa door to carry `LF_BreachTarget` (#2373). `tools\cli town check <place>` now warns (an error under `--complete`) when
+  a slot promises `JailCell` and no fitted layer carries `LF_JailCellComponent`, so the marker alone cannot pass again.
 - ✅ **Map area data** (#2233, epic #2223, test `map/areas`; node twin `tools/map/rules/areas.mjs`). `LF_MapAreas` (`Feature/Map/LF_MapAreas.c`) turns an area into an outline vertex list: a polygon is its points, a circle a 32-gon, a box its four corners turned by yaw the way `LF_ZoneArea.Contains` turns it, a polyline corridor a mitred strip. `Collect` merges every `LF_Zones` zone that has a style (SAFE and LAWLESS draw; NORMAL draws nothing) with the map-only areas (`LF_MapAreaComponent`: town line, gated, custom; a polygon local to the entity, or a circle). Styles are tokens for the `map-*` theme rows (M6). The outline, centroid, style and rule cases are one table, `Configs/Map/Rules/areas.cases.json`, that the Enforce test and the emulator's node rule both run; `LF_MapAreaCases.generated.c` carries it as script because the game cannot read a loose `.json` from an addon (`node tools/map/rules/areas.mjs --gen` rewrites it; the selftest fails when stale). `LF_Zones.GetAll()` is the one hook in the zone service. Nothing draws yet (M6).
 - 🔧 **Crime review fixes** (2026-11-17, `docs/reviews/2026-11-17-crime.md`, merged, in-dev):
   - **Till robbery with no room for the cash.** `LF_RobAction.CommitRobbery` now refuses with `REFUSED_NO_ROOM` when the robber's inventory takes none of the cash. It starts no till cooldown, adds no wanted and calls no dispatch, and the robber gets the toast `#LF-Robbery_NoRoom`. Test `crime/rob-no-room`.
@@ -782,3 +811,7 @@
 - 🧪 **Police calls: the report's place, and a call closes with the wanted level** (#2516, fix of #2477; merged, in-dev). Crime paths raise the wanted level before `LF_WantedReports.Report` files the report, so a call posted at the rise had an empty site. `LF_WantedReports.Add` now publishes `LF_OnWantedReportFiled` (uid, sequence, place). A level rising from 0 with a report already filed posts the call at once with the newest report's place; with none filed yet the suspect waits (`call for <uid> waits for the crime report`) and the first report posts the call with its place. A level back at 0 (served time, expiry, another officer's arrest, an admin) drops the wait and closes the suspect's open call, taken or not (`LF_PoliceCalls.CloseFor`, `[LFDebug:PoliceCalls] call #N closed for <uid>: no longer wanted`); a closed call pays nothing and `Complete` refuses it. A report filed after the level cleared posts no call. Test `police/call-lifecycle`.
 - 🔧 **A spare drill in the pack never blocks the charge** (#2581, item 13 of #2418; merged, in-dev): `LF_Bank.PickTool` picks the drill only when it is held (`LF_HandTool.HeldTool`); a keycard or charge the robber can use comes next, and a drill only in the pack is the answer last, so a drill-only vault still shows "hold the drill". A robber with a charge and a spare pack drill at a `drill,charge` vault is no longer told to drill. No save change. Test `crime/vault-picktool-spare`.
 - 🧪 **Police calls keep the crime's position** (#2578, follow-up of #2516; merged, in-dev). A site named only by a map location label (`LF_NamedPlaces`) resolved to no point, so the officer got no waypoint. `LF_WantedReportRecord` now carries a session-only `m_vPosition` and `m_bHasPosition` (`[NonSerialized]`, in no save payload, no version bump); `LF_WantedReports.Report` files it through `AddAt` and `LF_OnWantedReportFiled` carries it. `LF_PoliceCall` stores it (from the event, or from the newest stored report when the report came first) and `LF_PoliceCallBoardAction.CallOrigin` uses it before the site text, so `SendWaypoint` marks the crime's spot. A report with no position (`Add`, a loaded save) falls back to the site text as before. Test: `LF_Test_PoliceCallPosition` (WORLD).
+- 🧪 **The Saint-Philippe `police` slot is fitted on the island (#2319, town draft; merged, in-dev once approved).** The vanilla police villa b32 (`Villa_E_2I01_Police`) gets the `police` kit (`tools/town/kits/police.json`, lifted from the grid police station kit): the duty desk with its clock-in clocks, the armoury store, the evidence locker, the wanted and dispatch boards, the front-desk dressing and the fascia sign. The layer is `Place_saint-philippe_police.layer` with the `PoliceStation`, `PoliceDesk` and `Armoury` markers. Left out of the kit: the licence desk and case board (they cut the vanilla villa's walls), the payphone (floated at roof height), the patrol cars and spike strip, and the six lights (the kit carries no light settings). Cells are not in this slot yet.
+- 🧪 **Police Search and Arrest are the player interaction menu on a wanted suspect** (#2494, proof only; merged, in-dev). The duty NPC menu with two blank buttons is gone (#2509, #2535); an on-duty officer stands within 2 m of a wanted player and the vanilla action menu on the body offers Search (`LF_ConfiscateAction`) and Arrest (`LF_JailArrestAction`), the latter sending the suspect to the cell with a sentence slip. `session.mjs police-arrest-proof` (`up --clients 2 --profile full --roster 2`) drives it on two real clients: rob the till, clock in, menu picture, Search, Arrest, `jail=` seconds above 0 (56 s for wanted 1). `LF_AskPoliceArrest` stays server-guarded for a later wanted-list sheet. No game code changed.
+- 🧪 **Shop bell for the general store till** (#2727, rescued WIP of #929; merged, in-dev): a till can name the alarm kind `shopbell` (`LF_RobAction.m_sAlarmKind`), an ElevenLabs-generated 1980s shop burglar bell (`Alarm_Robbery_ShopBell.acp`, `LF_SiteAlarm_ShopBell[Loud].et`, kind row in `LF_Police.conf`); the core default kind for a till stays `store`. Core ships the kind and the prefabs; the grid cell `shops-till` mounts a till that rings it (`Grid_shops_till_Till`). The island general store mounts it in a follow-up once its town draft lands. Test `police/store-alarm`.
+- 🔧 **The vault prompt works on a dedicated client** (#2418, item 10; merged, in-dev): the vault table (`LF_Bank`) and the drill sessions (`LF_VaultDrill`) live on the server only, so a remote client's rob prompt read "This vault cannot be robbed" on every vault and never showed "Stop drilling"; a host or listen run hid it. On a client `LF_Bank.GateReason` now answers from what replicates (`ClientGateReason`): the faction and police count from `LF_AccountReplication`, open or armed from the door's breach RplProps, the tools and police minimum from the vault's own `LF_SafeTuning`, and the driller from the new `LF_BankVaultComponent` RplProp (`SetDriller`, a player id, set when a drill starts and cleared when it ends). Cooldown, stock and grace stay server-only: `LF_Bank.Rob` now toasts each refusal (`GateRefusal`) instead of a silent no-op. No save change. Test `crime/vault-client-offer`; session proof `vault-offer-proof` (dedicated server, one client).

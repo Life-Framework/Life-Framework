@@ -1,0 +1,28 @@
+GenericEntity : "{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et" {
+ ID "8F0A025A45F48B44"
+ components {
+  ActionsManagerComponent "{B834C8B13E931147}" {
+   ActionContexts {
+    UserActionContext "{9466143C6CBF76EB}" {
+     ContextName "default"
+     Position PointInfo "{363CD77EB5BFBF71}" {
+      Offset 0 0.255 -0.026
+     }
+     Radius 1.4
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{0AE7C2F5731F7EC0}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{882561A7D070C2D0}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}
