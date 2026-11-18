@@ -116,9 +116,9 @@ for (const name of names) {
     const marker = `${data.layers[shopLayer]}\nGenericEntity Fit_jail_Place {\n components {\n  LF_PlaceComponent "{CD3757DA70ED5B73}" {\n   m_sKind "JailCell"\n   m_sId "sample-square.shop"\n  }\n }\n coords 0 0 0\n}\n`;
     const cell = `${marker}\nGenericEntity Fit_jail_cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.et" {\n components {\n  LF_JailCellComponent "{540EBBB989D3A80A}" {\n  }\n }\n coords 0 0 0\n}\n`;
     const bare = checkPlace(jailData(marker), { resolve: resolve_, complete: true });
-    check(has(bare.errors, "no fitted layer carries LF_JailCellComponent"), `jail: a JailCell marker with no cell component should fail a complete place (errors: ${bare.errors.join(" | ") || "none"})`);
+    check(has(bare.errors, "no LF_JailCellComponent"), `jail: a JailCell marker with no cell component should fail a complete place (errors: ${bare.errors.join(" | ") || "none"})`);
     const draft = checkPlace(jailData(marker), { resolve: resolve_ });
-    check(has(draft.warnings, "no fitted layer carries LF_JailCellComponent") && !has(draft.errors, "LF_JailCellComponent"), "jail: the same gap is only a warning in a draft");
+    check(has(draft.warnings, "no LF_JailCellComponent") && !has(draft.errors, "LF_JailCellComponent"), "jail: the same gap is only a warning in a draft");
     const backed = checkPlace(jailData(cell), { resolve: resolve_, complete: true });
     check(!has(backed.errors, "LF_JailCellComponent") && !has(backed.warnings, "LF_JailCellComponent"), `jail: a layer with LF_JailCellComponent should clear it (${[...backed.errors, ...backed.warnings].join(" | ")})`);
   }
