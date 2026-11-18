@@ -97,11 +97,11 @@ class LF_Test_MedicRanksPersist : LF_Test
 			return;
 
 #ifdef LF_E2E_LOAD_BOOT
-		// The reload boot: the e2e medic's rank came back from the real save, when it carried the section.
-		if (LF_SaveSections.BootHadSection(LF_MedicRanksSavePayload.NAME))
+		// The reload boot: the e2e medic's rank came back from the real save, when it carried the section
+		// (a --pre-move or --legacy-save ref build wrote none; LF_E2E logs the skip).
+		if (LF_E2E.RequiresSeed("medicranks save section", LF_SaveSections.BootHadSection(LF_MedicRanksSavePayload.NAME)))
 			VerifyE2E(ctx);
-		else
-			LF_Debug.Info(LF_MedicRanks.FEATURE, "e2e restart: the boot save has no medicranks section (an older save); restart check skipped");
+
 		return;
 #endif
 
