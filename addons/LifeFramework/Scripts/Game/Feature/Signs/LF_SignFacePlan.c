@@ -29,6 +29,8 @@ class LF_SignFacePlan
 	static const float LEADER_EM = 0.34;	// lf-fixed: '.' advance in RobotoCondensed Regular
 	//! Space kept clear either side of the leader, in ems.
 	static const float LEADER_PAD_EM = 0.5;	// lf-fixed: typographic gap
+	//! A lifted title (LF_SignStyleDef.m_fTitleLift) sits in a box this many ems tall.
+	static const float TITLE_BOX_EM = 2.5;	// lf-fixed: taller than any line of the font, so the engine centres it
 
 	vector m_vTitlePos;
 	vector m_vTitleSize;
@@ -76,12 +78,25 @@ class LF_SignFacePlan
 		plan.m_sTitle = lines;
 		plan.m_vTitlePos = Vector(margin, margin, 0);
 		plan.m_vTitleSize = Vector(innerW, titleH, 0);
+		float lift = 0;
+		if (style.m_fTitleLift != 0)
+		{
+			// A client draws a title about a quarter of its font below the middle of its box (measured on a
+			// 1280x720 client: bank and gendarmerie at 129 sat 29 to 32 units low, the hospital at 67 sat 20),
+			// and a box shorter than its line is anchored at the top instead. So the box is tall enough for
+			// the line to centre in, and raised by the seat. (m_fTitleLift)
+			lift = plan.m_iTitleFont * Math.Clamp(style.m_fTitleLift, -1, 1);
+			float boxH = Math.Max(titleH, plan.m_iTitleFont * TITLE_BOX_EM);
+			plan.m_vTitleSize = Vector(innerW, boxH, 0);
+			plan.m_vTitlePos = Vector(margin, margin + titleH * 0.5 - boxH * 0.5 - lift, 0);
+		}
+
 		plan.m_fTitleTilt = style.m_fTilt;
 
 		if (style.m_fGhostAlpha > 0)
 		{
 			plan.m_bGhost = true;
-			plan.m_vGhostPos = Vector(margin + style.m_vGhostShift[0], margin + style.m_vGhostShift[1], 0);
+			plan.m_vGhostPos = Vector(plan.m_vTitlePos[0] + style.m_vGhostShift[0], plan.m_vTitlePos[1] + style.m_vGhostShift[1], 0);
 		}
 
 		if (count == 0)

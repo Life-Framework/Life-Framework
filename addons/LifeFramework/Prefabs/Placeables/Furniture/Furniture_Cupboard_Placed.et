@@ -1,0 +1,52 @@
+GenericEntity : "{23EDC2B8CDEE124F}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et" {
+ ID "D848456A7CC1045B"
+ components {
+  ActionsManagerComponent "{B2E3201E6A8A57B7}" {
+   ActionContexts {
+    UserActionContext "{7B9A67C8B4AC646C}" {
+     ContextName "default"
+     Position PointInfo "{7D074DE1E2939E6D}" {
+      Offset -0.376 1 0.403
+     }
+     Radius 1.454
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{9184F52A0E68EB4C}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_FurnitureStorageOpenAction "{B39853F35F4D6174}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{921F273274960D64}" {
+      Name "#LF-FurnitureStorage_Open"
+     }
+    }
+   }
+  }
+  LF_FurnitureStorageManagerComponent "{EBDBB57648B7FA32}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{331D8C8906D10CFD}" {
+   Attributes SCR_ItemAttributeCollection "{108FD8BD49ABED0F}" {
+    ItemDisplayName SCR_InventoryUIInfo "{2632169695D0E547}" {
+     Name "#LF-Furniture_Cupboard_Name"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 90000
+   MaxItemSize 70 100 70
+   m_fMaxWeight 50
+  }
+  LF_PersistentStorageComponent "{8E17EF428E91E42B}" {
+   m_bKeyAssignedLater 1
+  }
+  LF_PlacedOwnerComponent "{0A9264B3960075D0}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

@@ -1,6 +1,10 @@
 GenericEntity : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
  ID "3C7A9E10B24D5F61"
  components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "price_board"
+   m_sRowSource "market"
+  }
   ActionsManagerComponent "{3C818B6A6011C9DE}" {
    additionalActions + {
     LF_PriceBoardReadAction "{A9C1D3E5F7B20416}" {

@@ -171,7 +171,9 @@ export function sourceComponent(kit, row, c, root, cache = new Map()) {
       const set = scalarSet(comp);
       const setOk = Object.entries(c.set ?? {}).every(([k, v]) => set[k] === v);
       const blocksOk = JSON.stringify(comp.kids.map(compClass)) === names;
-      cands.push({ comp, exact: setOk && blocksOk, score: (setOk ? 2 : 0) + (blocksOk ? 1 : 0) });
+      // A kit row has no prefab when its entities are bare ones, so every one of them matches; the row's own source entity wins.
+      const own = e.name && e.name === row.name ? 4 : 0;
+      cands.push({ comp, exact: setOk && blocksOk, score: own + (setOk ? 2 : 0) + (blocksOk ? 1 : 0) });
     }
   }
   cands.sort((x, y) => y.score - x.score);

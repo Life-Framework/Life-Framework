@@ -215,6 +215,10 @@ class LF_BoardProviders
 	//! \return False when there was nothing to show or the card did not open.
 	static bool Open(string kind, LF_BoardAnswer answer)
 	{
+		// A reply to a sign face's ask (LF_SignRowSources) feeds the face; it opens no card.
+		if (answer && LF_SignRowSources.TakeFaceReply(kind, answer))
+			return true;
+
 		LF_BoardProvider provider = Find(kind);
 		if (!provider || !answer)
 		{
@@ -260,8 +264,10 @@ modded class SCR_PlayerController
 {
 	//------------------------------------------------------------------------------------------------
 	//! Client: ask the server what the board of this kind says to this player.
-	void LF_AskBoard(string kind)
+	//! \param face True for a sign face asking for its live rows: the reply feeds the face, not a card.
+	void LF_AskBoard(string kind, bool face = false)
 	{
+		LF_SignRowSources.NoteAsk(kind, face);
 		if (Replication.IsServer())
 			RpcAsk_LF_Board(kind);
 		else

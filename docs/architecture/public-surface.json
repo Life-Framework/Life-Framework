@@ -56,6 +56,7 @@
     "LF_StallConfig",
     "LF_SpawnHubConfig",
     "LF_SurvivalConfig",
+    "LF_TaxiFareConfig",
     "LF_TermsConfig",
     "LF_TownBoardConfig",
     "LF_UIThemeConfig",

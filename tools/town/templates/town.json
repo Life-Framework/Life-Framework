@@ -57,7 +57,7 @@
       "places": ["ChessTable"]
     },
     {
-      "id": "range", "required": false, "kit": "range", "host": "building", "poi": "none",
+      "id": "range", "required": false, "kit": "range", "host": "building", "poi": "none", "margin": 18,
       "needs": { "interior": "optional", "minArea": 15, "prefer": "far", "types": ["shed", "garage", "farm", "farm-small", "industrial"] },
       "places": ["RangeLane"]
     },
@@ -107,6 +107,21 @@
       "places": ["StoreCounter"]
     },
     {
+      "id": "woodlot", "required": false, "kit": "woodlot", "host": "building", "poi": "none", "margin": 14,
+      "needs": { "interior": "optional", "minArea": 80, "prefer": "far", "types": ["industrial", "shed", "farm", "garage"] },
+      "places": ["LogPile", "Processor"]
+    },
+    {
+      "id": "farm", "required": false, "kit": "farm", "host": "building", "poi": "none", "margin": 20,
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "far", "types": ["farm"] },
+      "places": ["FarmPlot", "SeedCrate"]
+    },
+    {
+      "id": "merchant-timber", "required": false, "kit": "merchant-timber", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 160 },
+      "places": ["TimberCounter"]
+    },
+    {
       "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop", "townhouse", "house"] },
       "places": ["GunCounter"]
@@ -152,6 +167,31 @@
       "id": "parcel-drops", "required": false, "kit": "parcel-drops", "host": "outposts", "poi": "none",
       "needs": { "interior": "optional" },
       "places": []
+    },
+    {
+      "id": "bins", "required": false, "kit": "bins", "host": "outposts", "poi": "none", "margin": 6,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "loot", "required": false, "kit": "loot", "host": "outposts", "poi": "none",
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "buyer-spots", "required": false, "kit": "buyer-spots", "host": "outposts", "poi": "none", "margin": 14,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
+      "id": "tow-yard", "required": false, "kit": "tow-yard", "host": "building", "poi": "none", "margin": 18,
+      "needs": { "interior": "optional", "minArea": 20, "prefer": "near", "maxDistance": 120, "types": ["garage", "shed", "industrial"] },
+      "places": ["ImpoundYard"]
+    },
+    {
+      "id": "memorial", "required": false, "kit": "memorial", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 80 },
+      "places": ["Memorial"]
     },
     {
       "id": "parcel", "required": false, "kit": "parcel", "host": "building", "poi": "none",

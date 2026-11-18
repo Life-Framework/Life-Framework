@@ -20,5 +20,12 @@
   "Prefabs/Placeables/Furniture/Furniture_Picture_Placed.et": { "anchor": "center" },
   "Prefabs/Placeables/Furniture/Furniture_Stove_Placed.et": { "anchor": "center" },
   "Prefabs/Placeables/Furniture/Furniture_Bookcase_Placed.et": { "anchor": "center" },
-  "Prefabs/Placeables/Furniture/Furniture_Workbench_Placed.et": { "anchor": "center" }
+  "Prefabs/Placeables/Furniture/Furniture_Workbench_Placed.et": { "anchor": "center" },
+  "Prefabs/Placeables/Furniture/Furniture_Wardrobe_Placed.et": { "anchor": "center" },
+  "Prefabs/Placeables/Furniture/Furniture_Dresser_Placed.et": { "anchor": "center" },
+  "Prefabs/Placeables/Furniture/Furniture_Cupboard_Placed.et": { "anchor": "center" },
+  "Prefabs/Placeables/Furniture/Furniture_Chest_Placed.et": { "anchor": "center" },
+  "Prefabs/Placeables/Furniture/Furniture_Crate_Placed.et": { "anchor": "center" },
+  "Prefabs/Placeables/Furniture/Furniture_Fridge_Placed.et": { "anchor": "center" },
+  "Prefabs/Placeables/Furniture/Furniture_KitchenUnit_Placed.et": { "anchor": "center" }
 }

@@ -498,9 +498,9 @@ Owner is core for every row until the M3 move.
 | `Investigation/LF_WitnessConfig.c` | `DEFAULT_SIGHT_RANGE` | `60` | crime | config default |
 | `Investigation/LF_WitnessConfig.c` | `DEFAULT_VEHICLE_RANGE` | `45` | crime | config default |
 | `Investigation/LF_WitnessConfig.c` | `DEFAULT_WINDOW_SECONDS` | `900` | crime | config default |
-| `Jobs/LF_CivilianJob.c` | `PAY_FUEL` | `60` | jobs | to move (#284) |
-| `Jobs/LF_CivilianJob.c` | `PAY_PARCEL` | `40` | jobs | to move (#284) |
-| `Jobs/LF_CivilianJob.c` | `PAY_TAXI` | `80` | jobs | to move (#284) |
+| `Jobs/LF_CivilianJob.c` | `PAY_FUEL` | `60` | jobs | moved (#3147) |
+| `Jobs/LF_CivilianJob.c` | `PAY_PARCEL` | `40` | jobs | moved (#3147) |
+| `Jobs/LF_CivilianJob.c` | `PAY_TAXI` | `80` | jobs | moved (#3147) |
 | `Jobs/LF_JobGuards.c` | `SWITCH_COOLDOWN_SECONDS` | `30.0` | jobs | to move (#284) |
 | `Jobs/LF_JobGuards.c` | `WORKPLACE_RADIUS` | `5.0` | jobs | to move (#284) |
 | `Jobs/LF_JobMapMarks.c` | `EXPIRY_SECONDS` | `3600` | jobs | fixed (marked) |

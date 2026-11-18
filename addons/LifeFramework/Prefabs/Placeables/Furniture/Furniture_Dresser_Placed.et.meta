@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1736B87AAEB64AB7}Prefabs/Placeables/Furniture/Furniture_Dresser_Placed.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

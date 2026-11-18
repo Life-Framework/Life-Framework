@@ -207,6 +207,72 @@
         "`tools\\cli town drops saint-philippe parcel-drops` seats them; the entities are the drop-off site (LF_JobSiteComponent DROP) the jobs system finds by place, not markers"
       ]
     },
+    "bins": {
+      "drops": [
+        { "place": "saint-philippe-districts", "building": "b51" },
+        { "place": "saint-philippe-districts", "building": "b56" },
+        { "place": "saint-philippe-districts", "building": "b73" },
+        { "place": "saint-philippe-districts", "building": "b43" },
+        { "place": "saint-philippe-districts", "building": "b50" },
+        { "place": "saint-philippe-districts", "building": "b66" },
+        { "place": "saint-philippe-districts", "building": "b27" },
+        { "place": "saint-philippe-districts", "building": "b49" },
+        { "place": "saint-philippe-districts", "building": "b11" }
+      ],
+      "why": [
+        "D10 pick (#3314), garbage round card #3338: nine drops, each a building of the districts survey (an outposts drop cannot name this place's own survey, so the village buildings that the east-ring survey also covers go by their districts ids): the depot and tip at di:b51 (Shed_03, 26.5 m2, no interior) in the outbuilding cluster at the south-east edge, which is the dump because neither survey lists a dump or a landfill, and eight street bins at the kerbs of di:b56, b73, b43, b50, b66, b27, b49 and b11 (the square row east of the church, the east road, the police end and the eastern houses)",
+        "the round walks the east half of the village from the square (di:b56 is 38 m from the scout centre, di:b11 163 m); the west half of the centre has no districts id, so a west-side bin is a follow-up once the slot can name its own place's buildings. The slot's 6 m margin lets a bin stand at the kerb, not only on the wall; `toolscli town drops saint-philippe bins` seats them"
+      ]
+    },
+    "loot": {
+      "drops": [
+        { "place": "saint-philippe-districts", "building": "b03" },
+        { "place": "saint-philippe-districts", "building": "b18" },
+        { "place": "saint-philippe-districts", "building": "b37" },
+        { "place": "saint-philippe-districts", "building": "b63" },
+        { "place": "saint-philippe-districts", "building": "b76" },
+        { "place": "saint-philippe-dock", "building": "b11" },
+        { "place": "saint-philippe-dock", "building": "b31" }
+      ],
+      "why": [
+        "D10 pick (#3314), loot cards #3344 and #3345: sheds and back rooms with a real interior that hold the tool chest, the kitchen cupboard and the dump pile: the east ring's small sheds di:b03, di:b18 and di:b37, the back-room workshop di:b63 (HouseAddon_Workshop_E_01) and the south garage di:b76, and at the dock the garage dk:b11 and the side workshop dk:b31",
+        "the loot kit reads the interior, so only buildings with `interior: yes` are listed; the containers on the dump pile stand at di:b51 (the bins slot's depot), so it is not repeated here"
+      ]
+    },
+    "buyer-spots": {
+      "drops": [
+        { "place": "saint-philippe-dock", "building": "b22" },
+        { "place": "saint-philippe-districts", "building": "b21" },
+        { "place": "saint-philippe-districts", "building": "b64" }
+      ],
+      "why": [
+        "D10 pick (#3314), buyer card #3400 (also #3416): three spots out of sight, one per place of the rotation: behind the dock warehouses (dk:b22, Warehouse_01_V3, 793 m2), a districts back lane (di:b21, the concrete vehicle ramp, a doorless prop north of the east road) and a lay-by at the town edge (di:b64, Barn_E_02, 139 m south of the districts centre)",
+        "each is outdoors by a wall or seat he can loiter at; the 14 m margin lets the kit stand off the wall. Whether a spot lies outside the X3 safe zone is the fit card's check (the safe zone is mapped by #3346)"
+      ]
+    },
+    "tow-yard": {
+      "building": "b29",
+      "alternatives": [
+        {
+          "building": "b36"
+        },
+        {
+          "building": "b24"
+        }
+      ],
+      "why": [
+        "Garage_E_01 (garage), 48.5 m2, 2 floors, 2 doors, interior yes, 77.1 m north-east of the scout centre, 20 m from the police villa b32 on the north side of the east road",
+        "D10 pick (#3314), tow-yard card #3459: the impound lot behind the police villa, a hut at the garage and a fenced yard round it (kind ImpoundYard, margin 18 m); b36 (Workshop_01_Side, the workshop yard beside the fence workshop) and b24 (Shed_02_big_V1) are the alternatives"
+      ]
+    },
+    "memorial": {
+      "building": "b07",
+      "shared": true,
+      "why": [
+        "Church_01_red (church), 676 m2, interior yes, 36.7 m north-west of the scout centre: the church beside the square, about 38 m from the plague column (4412, 10722)",
+        "D10 pick (#3314), memorial card #3467 and #3464: a stone memorial with a plaque and wreath spots on the church frontage (the kit picks the kerb side), the gathering points and the priest's spot (kind Memorial); street furniture, so it shares b07 with the church kit (b08, the crypt and attic, stands at the same spot)"
+      ]
+    },
     "parcel": {
       "building": "b21",
       "alternatives": [
@@ -292,6 +358,47 @@
       "why": [
         "House_Town_E_2I01 (townhouse), 208 m2, 3 floors, 13 doors, the town house on the square row beside the barber b43 and the clinic b39",
         "D10 pick (#3217), allocation S9 #3256 (lead 2026-11-18): the furniture store, all house furniture on its own stock; furniture then leaves the general store"
+      ]
+    },
+    "woodlot": {
+      "building": "b121",
+      "alternatives": [
+        {
+          "building": "b124"
+        },
+        {
+          "building": "b125"
+        },
+        {
+          "building": "b126"
+        }
+      ],
+      "why": [
+        "Warehouse_01 (industrial), 793 m2, 1 floor, 4 doors, interior yes, 162 m south-west of the scout centre at the village edge, off the roads; the open-sided metal sheds b124 and b125 stand about 30 m beside it",
+        "D10 pick (#3272, after #3174), lumber epic #3169, yard card #3175: the timber yard. The sawmill stands inside the warehouse; the log piles, stacked planks and loading bay go on the yard round it and under the open sheds (the slot's 14 m margin covers them); kinds LogPile and Processor. The allocation marks b121 a locked co-op warehouse (L0 #3204); a fitted place marker beats that lock (#3201 precedence) and its purpose row becomes `timber yard` with the yard card. di:b76 (Workshop_01_Garage in the districts survey, 158 m south) is the other candidate #3175 names and stays unmapped: b121 has the sheds to build the yard from. Whether trees stand within reach of the yard is the fit card's check (the survey counts vegetation for the whole radius, not per spot)"
+      ]
+    },
+    "farm": {
+      "building": "b73",
+      "alternatives": [
+        {
+          "building": "b100"
+        },
+        {
+          "building": "b23"
+        }
+      ],
+      "why": [
+        "Barn_E_02 (farm), 80.8 m2, 118.6 m south-west of the scout centre at the village edge, the farm barn with open ground round it",
+        "D10 pick (#3190), lumber epic #3169 sibling (Z2): the cabbage plots, the seed crate and the farm_plots sign (kinds FarmPlot, SeedCrate) go on the open ground round this barn, which stays locked 'Propriete privee' (L0 #3204) since the slot uses its yard, not its door. None of the four free plots was used: all four carry sale signs (Plots_saint-philippe.layer). Every henhouse stands in a house yard, and b96 is the barn behind the range, so b73 is the one farm barn clear of both. b100 (north-east edge) and b23 are the same kind of barn"
+      ]
+    },
+    "merchant-timber": {
+      "building": "b59",
+      "shared": true,
+      "why": [
+        "Workshop_02 (garage), 138 m2, 1 floor, 4 doors, the workshop yard on the south-east road beside the fence workshop b33; the building the hardware slot (#3217) already holds",
+        "D10 pick (#3272), lumber epic #3169, card #3274: the hardware store's timber counter, a 'we buy timber' board and stacked timber on the b59 frontage; street furniture that shares the building with the hardware slot (the chess-on-the-pub pattern, #3078), so the hardware kit keeps the interior and the timber kit keeps the kerb"
       ]
     }
   }

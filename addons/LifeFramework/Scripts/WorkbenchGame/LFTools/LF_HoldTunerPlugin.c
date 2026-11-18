@@ -73,6 +73,18 @@ class LF_HoldTuner
 			return true;
 		}
 
+		if (graph.Contains("MedicalKit_supplies.agr"))
+		{
+			// The vanilla supply-box carry (a mortar ammo box, the courier parcel): one hand down by the left side, the
+			// prop bone 0.34 m under the fist. Measured with `heldxf` on the parcel, 2026-11-18, build 26266485.
+			pose = "supply box (one hand, by the side; the bone hangs 0.34 m under the fist)";
+			mat[0] = Vector(0.2665, -0.0608, 0.9619);
+			mat[1] = Vector(0.0472, 0.9976, 0.0500);
+			mat[2] = Vector(-0.9627, 0.0321, 0.2687);
+			mat[3] = Vector(-0.2544, 0.5831, 0.0351);
+			return true;
+		}
+
 		if (graph.Contains("player_carry.agr"))
 		{
 			// The mod's carry set: the arm comes up across the chest, but the prop bone stays about a metre to

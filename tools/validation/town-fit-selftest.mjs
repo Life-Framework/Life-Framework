@@ -20,6 +20,7 @@
 // red-proof: with componentGuid reading addons only and no kit-source fallback this printed "FAIL a component the prefab lacks did not take its guid from the kit's source" and the vanilla-guid case (2026-11-17).
 // red-proof: before verifySteps existed (audit and look steps inline in main, the audit on no world, `look` on a bare x,z) this threw "fitMod.verifySteps is not a function" (2026-11-17).
 // red-proof: with claimOfBase() and isIntegrationBranch() not applied in planFit()/worktreeTownClaims() the stacked -suffix and integration-worktree cases printed "FAIL a -suffix branch was refused its base draft's own slot" and "FAIL an integration worktree's claim copy blocked a fit" (2026-11-18, #3101).
+// red-proof: with the source-name preference removed from sourceComponent() the prefab-less taxi pad took the drop pad's guid and this printed "FAIL a prefab-less row took the wrong source entity" (2026-11-18, #2318).
 // red-proof: with the kit rows' yaw ignored (anchor yaw 0) this printed "FAIL shop row fit-display is not where kit apply puts it" (2026-11-16).
 
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
@@ -189,6 +190,19 @@ for (const where of ["main", "pr"]) {
   // Without the game paks the vanilla sign has no inherited guid: the source's guid stands in, with its blocks.
   const offline = fitMod.planFit({ ...base, kits: { "fit-kit": nested } }, ctx());
   check(/MeshObject "\{EEEEEEEEEEEEEE05\}"/.test(offline.layerText ?? ""), "with no game paks the kit's source guid was not used");
+}
+
+// ---- a prefab-less row takes the component of the source entity that carries its own name (#2318: the taxi pad got the drop pad's action)
+{
+  const src = scratchDir("lf-fit-src-");
+  try {
+    const ent = (n, guid) => ` ${n} {\n  components {\n   ActionsManagerComponent "{${guid}}" {\n    additionalActions {\n    }\n   }\n  }\n  coords 0 0 0\n }\n`;
+    writeFileSync(join(src, "Jobs.layer"), `$grp GenericEntity {\n${ent("Pad_A", "AAAAAAAAAAAAAAA1")}${ent("Pad_B", "BBBBBBBBBBBBBBB2")}}\n`);
+    const got = fitMod.sourceComponent({ source: { file: "Jobs.layer" } }, { name: "Pad_B", prefab: null }, { component: "ActionsManagerComponent", set: {}, blocks: ["additionalActions"] }, src);
+    check(got?.guid === "BBBBBBBBBBBBBBB2", `a prefab-less row took the wrong source entity: ${JSON.stringify(got)}`);
+  } finally {
+    rmSync(src, { recursive: true, force: true });
+  }
 }
 
 // ---- the verify steps: the audit is scoped to the slot's layer and its world; `look place:` replaces a bare x,z; nothing pins a machine

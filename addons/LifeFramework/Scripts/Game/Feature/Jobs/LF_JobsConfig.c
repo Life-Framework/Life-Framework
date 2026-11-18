@@ -121,6 +121,29 @@ class LF_JobLicenceGateDef : LF_ConfigRecord
 }
 
 //------------------------------------------------------------------------------------------------
+//! What one delivery run pays (#3147): the job (the LF_EJobType name PARCEL, FUEL_DELIVERY or TAXI)
+//! and the cash a finished run hands over. A taxi run with a measured fare pays the fare instead
+//! (LF_TaxiFare); this row is the flat pay.
+[BaseContainerProps()]
+class LF_JobRunPayDef : LF_ConfigRecord
+{
+	[Attribute("", UIWidgets.EditBox, "Delivery job (LF_EJobType name): PARCEL, FUEL_DELIVERY or TAXI. The record key")]
+	string m_sJob;
+
+	[Attribute("40", UIWidgets.Auto, "Cash one finished run of the job pays. Below 1 is refused and the shipped pay is used", params: "1 1000000")]
+	int m_iPay;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_JobRunPayDef Make(string job, int pay)
+	{
+		LF_JobRunPayDef row = new LF_JobRunPayDef();
+		row.m_sJob = job;
+		row.m_iPay = pay;
+		return row;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! Job pay, job XP and job levels. Loaded from Configs/Jobs/LF_Jobs.conf; systems hold no prices.
 //! There is no timer paycheck: civilians earn cash per completed run and from trader sales,
 //! police earn duty pay at clock-out, and a broke player collects a benefit at the counter.
@@ -137,6 +160,7 @@ class LF_JobsConfig
 	static const float PAY_RATE_MAX = 100;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int CASH_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int CASH_MAX = 1000000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int RUN_PAY_MIN = 1;	// lf-fixed: the schema limit, a run that pays nothing is refused
 	static const float COOLDOWN_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const float COOLDOWN_MAX = 86400;	// lf-fixed: the schema limit, one day
 	static const int DUTY_IDLE_MIN = 0;	// lf-fixed: the schema limit, 0 turns the idle pause off
@@ -224,6 +248,9 @@ class LF_JobsConfig
 	[Attribute("", UIWidgets.Object, "Licence gates that differ from the shipped catalog: the job and level a licence needs")]
 	ref array<ref LF_JobLicenceGateDef> m_aLicenceGates;
 
+	[Attribute("", UIWidgets.Object, "What a finished delivery run pays, one row per job (PARCEL, FUEL_DELIVERY, TAXI); a pack sets its own rows")]
+	ref array<ref LF_JobRunPayDef> m_aRunPays;
+
 	protected static ref LF_JobsConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -285,6 +312,7 @@ class LF_JobsConfig
 			int changed = LF_ConfigOverlay.ApplyContainerList(new LF_JobTrackList(this), root, "m_aTracks", names[i], claims);
 			changed += LF_ConfigOverlay.ApplyContainerList(new LF_JobXpAwardList(this), root, "m_aXpAwards", names[i], claims);
 			changed += LF_ConfigOverlay.ApplyContainerList(new LF_JobLicenceGateList(this), root, "m_aLicenceGates", names[i], claims);
+			changed += LF_ConfigOverlay.ApplyContainerList(new LF_JobRunPayList(this), root, "m_aRunPays", names[i], claims);
 			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("jobs: pack overlay %1 changed %2 entries", names[i], changed));
 		}
 
@@ -305,6 +333,8 @@ class LF_JobsConfig
 			m_aXpAwards = new array<ref LF_JobXpAwardDef>();
 		if (!m_aLicenceGates)
 			m_aLicenceGates = new array<ref LF_JobLicenceGateDef>();
+		if (!m_aRunPays)
+			m_aRunPays = new array<ref LF_JobRunPayDef>();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -316,7 +346,7 @@ class LF_JobsConfig
 	//! \param[in] source The file, for log lines.
 	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
-		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "dutyIdleSeconds", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "runMinDistance", "runMinTimeFraction", "runRoadSpeed", "cargoDepositPercent", "cargoDepositFallback", "jobXpFirstLevel", "jobXpLevelGrowth", "testUnlockAll", "tracks", "xpAwards", "licenceGates"};
+		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "dutyIdleSeconds", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "runMinDistance", "runMinTimeFraction", "runRoadSpeed", "cargoDepositPercent", "cargoDepositFallback", "jobXpFirstLevel", "jobXpLevelGrowth", "testUnlockAll", "tracks", "xpAwards", "licenceGates", "runPays"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadBool("testUnlockAll", m_bTestUnlockAll);
 		reader.ReadFloat("policeDutyPayPerSecond", m_fPoliceDutyPayPerSecond, PAY_RATE_MIN, PAY_RATE_MAX);
@@ -337,6 +367,33 @@ class LF_JobsConfig
 		LF_ConfigOverlay.ApplyRecords(reader, "tracks", new LF_JobTrackList(this), source);
 		LF_ConfigOverlay.ApplyRecords(reader, "xpAwards", new LF_JobXpAwardList(this), source);
 		LF_ConfigOverlay.ApplyRecords(reader, "licenceGates", new LF_JobLicenceGateList(this), source);
+		LF_ConfigOverlay.ApplyRecords(reader, "runPays", new LF_JobRunPayList(this), source);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What a finished run of `job` pays (#3147): the row's pay, or `fallback` when the config has no
+	//! row for the job or the row is below 1 (both logged).
+	//! \param[in] job The LF_EJobType name: PARCEL, FUEL_DELIVERY or TAXI.
+	//! \param[in] fallback The pay the core ships, used when no usable row exists.
+	int RunPayFor(string job, int fallback)
+	{
+		if (m_aRunPays)
+		{
+			foreach (LF_JobRunPayDef row : m_aRunPays)
+			{
+				if (!row || row.m_sJob != job)
+					continue;
+
+				if (row.m_iPay >= 1)
+					return row.m_iPay;
+
+				LF_Debug.Error("Jobs", string.Format("run pay row for %1 is %2, below 1: paying the shipped %3", job, row.m_iPay, fallback));
+				return fallback;
+			}
+		}
+
+		LF_Debug.Error("Jobs", string.Format("no run pay row for %1: paying the shipped %2", job, fallback));
+		return fallback;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -694,6 +751,104 @@ class LF_JobLicenceGateList : LF_ConfigList
 		LF_JobLicenceGateDef gate = LF_JobLicenceGateDef.Cast(record);
 		if (gate.m_sJob.IsEmpty() || gate.m_iMinLevel < LF_JobsConfig.GATE_LEVEL_MIN)
 			return "a licence gate the shipped config does not list needs a job and a minLevel";
+
+		return string.Empty;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The `runPays` list for the shared merge, keyed by the job's LF_EJobType name (PARCEL,
+//! FUEL_DELIVERY, TAXI). A new or replaced row needs a pay of at least 1.
+class LF_JobRunPayList : LF_ConfigList
+{
+	protected LF_JobsConfig m_Config;
+
+	void LF_JobRunPayList(LF_JobsConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "jobs.runPays";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aRunPays.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aRunPays[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_JobRunPayDef.Cast(record).m_sJob;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sJob", id);
+		return id;
+	}
+
+	//! An owner key must be one of the three delivery jobs.
+	override string CanonicalId(string key)
+	{
+		if (key == "PARCEL" || key == "FUEL_DELIVERY" || key == "TAXI")
+			return key;
+
+		return string.Empty;
+	}
+
+	override string IdHint()
+	{
+		return "PARCEL, FUEL_DELIVERY or TAXI";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		return LF_JobRunPayDef.Make(id, 0);
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_JobRunPayDef row = LF_JobRunPayDef.Cast(record);
+		if (index < m_Config.m_aRunPays.Count())
+			m_Config.m_aRunPays.Set(index, row);
+		else
+			m_Config.m_aRunPays.Insert(row);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aRunPays.RemoveOrdered(index);
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_JobRunPayDef row = LF_JobRunPayDef.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_iPay") && container.Get("m_iPay", row.m_iPay))
+			changed++;
+		return changed;
+	}
+
+	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
+	{
+		LF_JobRunPayDef row = LF_JobRunPayDef.Cast(record);
+		array<string> recordKeys = {"op", "pay"};
+		reader.WarnUnknownKeys(recordKeys);
+		reader.ReadInt("pay", row.m_iPay, LF_JobsConfig.RUN_PAY_MIN, LF_JobsConfig.CASH_MAX);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		if (LF_JobRunPayDef.Cast(record).m_iPay < LF_JobsConfig.RUN_PAY_MIN)
+			return "a run pay row the shipped config does not list needs a pay of at least 1";
 
 		return string.Empty;
 	}

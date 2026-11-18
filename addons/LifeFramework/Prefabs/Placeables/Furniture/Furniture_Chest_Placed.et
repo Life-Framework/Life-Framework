@@ -1,0 +1,52 @@
+GenericEntity : "{0BB4B21E4F560431}Prefabs/Props/Furniture/Chest_01.et" {
+ ID "75E23F0E2F5ACA75"
+ components {
+  ActionsManagerComponent "{8F8791AC2D7FF831}" {
+   ActionContexts {
+    UserActionContext "{0CCE04566238A5A9}" {
+     ContextName "default"
+     Position PointInfo "{263FD931CCF8CCA9}" {
+      Offset 0 0.211 0.001
+     }
+     Radius 1.4
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{6393FE02C05C25D3}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_FurnitureStorageOpenAction "{8755CBCC24AE92B0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{25B79D967B6AE3E8}" {
+      Name "#LF-FurnitureStorage_Open"
+     }
+    }
+   }
+  }
+  LF_FurnitureStorageManagerComponent "{59532F856C8BEFD8}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{61B7471E4F7997D4}" {
+   Attributes SCR_ItemAttributeCollection "{EA18BBEAAC64D3A0}" {
+    ItemDisplayName SCR_InventoryUIInfo "{DA83BE653CEDD763}" {
+     Name "#LF-Furniture_Chest_Name"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 60000
+   MaxItemSize 60 30 40
+   m_fMaxWeight 40
+  }
+  LF_PersistentStorageComponent "{5DA90D6A9DA80258}" {
+   m_bKeyAssignedLater 1
+  }
+  LF_PlacedOwnerComponent "{2AF3AE492C509EFA}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

@@ -52,6 +52,7 @@ Object.assign(SECTIONS, {
   "jobs.tracks": row("jobs", "tracks", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aTracks", "m_sJob", byField("m_sJob"), same),
   "jobs.xpAwards": row("jobs", "xpAwards", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aXpAwards", "m_sAction", byField("m_sAction"), same),
   "jobs.licenceGates": row("jobs", "licenceGates", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aLicenceGates", "m_sLicence", byField("m_sLicence"), same),
+  "jobs.runPays": row("jobs", "runPays", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aRunPays", "m_sJob", byField("m_sJob"), same),
   "mapAreas.areas": row("mapAreas", "areas", "LF_MapAreaConfig", "Configs/Map/LF_MapAreas.conf", "m_aAreas", "m_sId", byField("m_sId")),
   "mapPois.kinds": row("mapPois", "kinds", "LF_MapPoiConfig", "Configs/Map/LF_MapPois.conf", "m_aKinds", "m_sKind", byField("m_sKind")),
   "zones.ruleSets": row("zones", "ruleSets", "LF_ZoneConfig", "Configs/Moderation/LF_Zones.conf", "m_aRuleSets", "m_eRule", zoneRule, (k) => (ZONE_RULES.includes(k) ? k : "")),
@@ -71,6 +72,8 @@ Object.assign(SECTIONS, {
   "terms.terms": row("terms", "terms", "LF_TermsConfig", "Configs/Terms/LF_Terms.conf", "m_aTerms", "m_sId", byField("m_sId")),
   "property.plots": row("property", "plots", "LF_PropertyConfig", "Configs/Property/LF_Property.conf", "m_aPlots", "m_sPlotId", byField("m_sPlotId")),
   "market.goods": row("market", "goods", "LF_MarketConfig", "Configs/Market/LF_Market.conf", "m_aGoods", "m_sGood", (p) => guidOf(p.m_sGood), noOwner),
+  // Keyed by buyer plus good (#3267); no owner section. The core ships no rows, so the core layer is empty: a pack adds.
+  "buyerDemand.rows": { ...row("buyerDemand", "rows", "LF_BuyerDemandConfig", "Configs/Market/LF_BuyerDemand.conf", "m_aRows", "m_sBuyer", (p) => `${p.m_sBuyer ?? ""}|${guidOf(p.m_sGood)}`, noOwner), idFields: ["m_sBuyer", "m_sGood"] },
   // The core file lists no rung (LF_MedicRanks falls back to the built-in three in script), so the core layer is empty: a pack adds.
   "farming.crops": row("farming", "crops", "LF_CropCatalogue", "Configs/Farming/LF_Crops.conf", "m_aCrops", "m_sCropId", byField("m_sCropId"), noOwner),
   "medic.ranks": row("medic", "ranks", "LF_MedicConfig", null, "m_aRanks", "m_sId", byField("m_sId"), noOwner),

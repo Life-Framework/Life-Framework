@@ -1,4 +1,4 @@
-// red-proof: `tools\cli test --no-build --red LF_Test_SignFacePlan,LF_Test_SignStyles` (2026-11-18): RED-OK signs/face-plan ("and the cut rows are counted (expected 3, got 0)").
+// red-proof: `tools\cli test --no-build --red LF_Test_SignFacePlan,LF_Test_SignStyles` (2026-11-18): RED-OK signs/face-plan ("and the cut rows are counted (expected 3, got 0)"); the fascia title-lift block re-proved with `--red LF_Test_SignFacePlan` (RED PROOF OK, 2026-11-18).
 
 //! A styled sign face's plan (docs/architecture/sign-system.md): the title and price rows fit the shown
 //! area, rows sit under the title without overlapping, one font lines the prices up, a long label
@@ -91,6 +91,28 @@ class LF_Test_SignFacePlan : LF_Test
 			plan = LF_SignFacePlan.Compose(shown, style, "Prices", many, manyValues);
 		ctx.Equal(LF_SignFacePlan.MAX_ROWS, plan.m_aRows.Count(), "a long list is cut at MAX_ROWS");
 		ctx.Equal(3, plan.m_iDropped, "and the cut rows are counted");
+
+		// A lifted title (the fascia): a box tall enough for the line, centred on the title area and raised
+		// by a share of the font; the ghost keeps its shift from the raised box; no lift leaves the box alone.
+		vector fascia = "1024 213 0";
+		LF_SignStyleDef lifted = ChalkLike();
+		lifted.m_fMargin = 0.15;
+		lifted.m_iTitleFontMax = 150;
+		LF_SignStyleDef plain = ChalkLike();
+		plain.m_fMargin = 0.15;
+		plain.m_iTitleFontMax = 150;
+		lifted.m_fTitleLift = 0.25;
+		LF_SignFacePlan flat = LF_SignFacePlan.Compose(fascia, plain, "Bank", none, none);
+		if (!RedProof())
+			plan = LF_SignFacePlan.Compose(fascia, lifted, "Bank", none, none);
+		float titleArea = 213 - 2 * 0.15 * 213;
+		float seat = plan.m_iTitleFont * 0.25;
+		ctx.True(plan.m_vTitleSize[1] >= plan.m_iTitleFont * LF_SignFacePlan.TITLE_BOX_EM - 0.5, "a lifted title sits in a box taller than its line");
+		float middle = plan.m_vTitlePos[1] + plan.m_vTitleSize[1] * 0.5;
+		ctx.EqualFloat(0.15 * 213 + titleArea * 0.5 - seat, middle, 0.5, "the box is centred on the title area, raised by the seat");
+		ctx.EqualFloat(plan.m_vTitlePos[1] + 9, plan.m_vGhostPos[1], 0.5, "the ghost keeps its shift from the raised box");
+		ctx.EqualFloat(0.15 * 213, flat.m_vTitlePos[1], 0.5, "a style with no lift keeps the plain box");
+		ctx.EqualFloat(titleArea, flat.m_vTitleSize[1], 0.5, "and its height");
 
 		// A row with no value has no leader.
 		LF_SignFaceRowPlan bare = new LF_SignFaceRowPlan();
