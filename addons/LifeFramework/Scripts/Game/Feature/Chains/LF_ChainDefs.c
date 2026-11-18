@@ -74,21 +74,6 @@ class LF_ChainStepDef
 
 	[Attribute("", UIWidgets.EditBox, "Equipment id from the chain's equipment list. Empty means none needed")]
 	string m_sEquipmentId;
-
-	[Attribute("0", UIWidgets.Auto, "Chance per work tick, 0 to 100, that the worker makes a mistake (#2855). 0 means the step can never fail")]
-	int m_iMistakeChancePct;
-
-	[Attribute("0", UIWidgets.Auto, "Mistakes that ruin the batch: the station blows, the batch is lost and the site heat jumps to its cap. 0 means never")]
-	int m_iMaxMistakes;
-
-	[Attribute("4000", UIWidgets.Auto, "Milliseconds between the ruining mistake and the blast, the warning a worker gets to run")]
-	int m_iRuinDelayMs;
-
-	[Attribute("4", UIWidgets.Auto, "Metres from the station the blast hurts")]
-	float m_fBlastRadiusM;
-
-	[Attribute("40", UIWidgets.Auto, "Explosive damage the blast does to a character beside the station, less with distance")]
-	float m_fBlastDamage;
 }
 
 //------------------------------------------------------------------------------------------------

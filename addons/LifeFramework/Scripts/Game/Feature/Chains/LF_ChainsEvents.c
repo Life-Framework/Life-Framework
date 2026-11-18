@@ -88,30 +88,3 @@ class LF_OnChainSmell : LF_Event
 		return e;
 	}
 }
-
-//! A ruined batch blew at a chain station (#2855): too many mistakes, then the short delay. The
-//! batch is gone with no output and the site heat (m_fHeat) is at its cap. m_sWorkerUid is the
-//! worker whose mistake ruined it. One event per blast.
-class LF_OnChainBatchRuined : LF_Event
-{
-	string m_sWorkerUid;
-	string m_sSiteId;
-	string m_sChainId;
-	string m_sStepId;
-	string m_sStationKey;
-	float m_fHeat;
-	vector m_vPosition;
-
-	static LF_OnChainBatchRuined Create(string workerUid, string siteId, string chainId, string stepId, string stationKey, float heat, vector position)
-	{
-		LF_OnChainBatchRuined e = new LF_OnChainBatchRuined();
-		e.m_sWorkerUid = workerUid;
-		e.m_sSiteId = siteId;
-		e.m_sChainId = chainId;
-		e.m_sStepId = stepId;
-		e.m_sStationKey = stationKey;
-		e.m_fHeat = heat;
-		e.m_vPosition = position;
-		return e;
-	}
-}
