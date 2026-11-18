@@ -30,6 +30,11 @@ class LF_BuildSiteComponentClass : ScriptComponentClass
 //! SERVER ONLY decides. The owner deposits what they carry (consumed from the inventory, counted in
 //! the record) and works the site one unit per hold; when items and work are met the stage advances
 //! and the shell swaps. Clients read only the replicated mirror for the action labels.
+//!
+//! SHELL ON CLIENTS. A shell prefab with an RplComponent is spawned by the server alone and reaches
+//! every client, late joiners too, through replication. A plain prop (DirtPile has no RplComponent)
+//! would never leave the server, so each client spawns its own copy from the replicated stage
+//! (SpawnsShellHere); the server keeps its copy for collision and for a listen host.
 //------------------------------------------------------------------------------------------------
 class LF_BuildSiteComponent : ScriptComponent
 {
@@ -37,14 +42,14 @@ class LF_BuildSiteComponent : ScriptComponent
 	//! Metres from the caller's character to the site.
 	static const float REACH = 6.0; // lf-fixed: interaction reach around the plot sign
 	//! Seconds one character must wait between two work units; a hold takes longer.
-	static const float WORK_INTERVAL = 0.5; // lf-fixed: anti-spam floor under the held action
+	static const float WORK_INTERVAL = 1.5; // lf-fixed: anti-spam floor under the 2 s held action
 	//! How often the server mirrors the record and checks the shell (a load can change the record).
 	static const int SYNC_MS = 2000; // lf-fixed: cheap map read per site
 
 	[Attribute("0 0 8", UIWidgets.Coords, "Where the house shell stands, in the sign's local space (metres)")]
 	protected vector m_vShellOffset;
 
-	[RplProp()]
+	[RplProp(onRplName: "OnRplStage")]
 	protected int m_iRplStage;
 	[RplProp()]
 	protected int m_iRplWork;
@@ -60,6 +65,7 @@ class LF_BuildSiteComponent : ScriptComponent
 	protected LF_PlotComponent m_Plot;
 	protected EntityID m_ShellId = EntityID.INVALID;
 	protected int m_iShellStage = -1;
+	protected bool m_bShellSpawnedHere;
 	protected ref map<string, float> m_mLastWork = new map<string, float>();
 
 	//------------------------------------------------------------------------------------------------
@@ -292,7 +298,7 @@ class LF_BuildSiteComponent : ScriptComponent
 	{
 		if (!Replication.IsServer())
 		{
-			GetGame().GetCallqueue().Remove(Sync);
+			RefreshShell(m_iRplStage);
 			return;
 		}
 
@@ -335,10 +341,43 @@ class LF_BuildSiteComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: swaps the shell to the prefab of finished stage `stage` (none for a bare plot).
+	//! Client: the replicated stage changed; show its shell now instead of at the next Sync.
+	protected void OnRplStage()
+	{
+		RefreshShell(m_iRplStage);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when `prefab` loads and carries an RplComponent, so a server spawn replicates.
+	static bool IsReplicatedPrefab(ResourceName prefab)
+	{
+		if (prefab.IsEmpty())
+			return false;
+
+		Resource resource = Resource.Load(prefab);
+		if (!resource || !resource.IsValid())
+			return false;
+
+		return SCR_BaseContainerTools.FindComponentSource(resource, RplComponent) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether this machine spawns a shell itself. The server always does; a client only when the
+	//! prefab is not replicated (the server's copy would never reach it).
+	static bool SpawnsShellHere(bool isServer, bool replicated)
+	{
+		if (isServer)
+			return true;
+
+		return !replicated;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Swaps the shell to the prefab of finished stage `stage` (none for a bare plot). The server
+	//! passes the record's stage, a client the replicated one.
 	protected void RefreshShell(int stage)
 	{
-		if (stage == m_iShellStage && (stage == 0 || GetShell()))
+		if (stage == m_iShellStage && (!m_bShellSpawnedHere || GetShell()))
 			return;
 
 		DeleteShell();
@@ -354,6 +393,9 @@ class LF_BuildSiteComponent : ScriptComponent
 			return;
 		}
 
+		if (!SpawnsShellHere(Replication.IsServer(), IsReplicatedPrefab(prefab)))
+			return;
+
 		EntitySpawnParams params();
 		params.TransformMode = ETransformMode.WORLD;
 		GetOwner().GetWorldTransform(params.Transform);
@@ -366,6 +408,7 @@ class LF_BuildSiteComponent : ScriptComponent
 		}
 
 		m_ShellId = shell.GetID();
+		m_bShellSpawnedHere = true;
 		LF_Debug.Info(FEATURE, string.Format("site %1 shows stage %2 shell %3", GetSiteKey(), stage, prefab));
 	}
 
@@ -377,5 +420,6 @@ class LF_BuildSiteComponent : ScriptComponent
 			SCR_EntityHelper.DeleteEntityAndChildren(shell);
 
 		m_ShellId = EntityID.INVALID;
+		m_bShellSpawnedHere = false;
 	}
 }

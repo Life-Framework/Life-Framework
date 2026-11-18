@@ -37,13 +37,16 @@
   the inventory and are counted in the property row's `m_sDeposited`. A stranger, someone out of reach (6 m) or
   someone carrying none of it is refused with a toast.
 - 🟡 "Build (x/y)" is a 2 s held action, offered once the items are in: one work unit per hold (a second unit
-  from the same character within 0.5 s is refused). Items and work met: the stage advances, the next stage
+  from the same character within 1.5 s is refused). Items and work met: the stage advances, the next stage
   starts empty, and the shell swaps to the finished stage's prefab from `LF_Property.conf` (spawned at the sign's
   local `m_vShellOffset`, default 8 m in front).
 - 🟡 Progress is the row (`m_iBuildStage` = finished stages, `m_iWorkDone`, `m_sDeposited`), saved by the
   existing `properties` payload; no save version change. The shell is not saved: the site re-reads the row
-  every 2 s and spawns the shell after a load. Clients see a replicated mirror for the labels only.
-  Proof: `property/build-site`, `property/build-site-persist`, `wt e2e`.
+  every 2 s and spawns the shell after a load. Clients see a replicated mirror for the labels. A shell
+  prefab with an RplComponent is spawned by the server and replicates (late joiners too); a plain prop such as
+  DirtPile is spawned by every machine from the replicated stage. Shell prefabs are scenery: none carries an
+  action (the stage 2 cement pile was a cement gather node and is now a plank pile; #2807 review).
+  Proof: `property/build-site`, `property/build-site-persist`, `property/build-site-shell`, `wt e2e`.
 
 ### Spawn house — `Feature/Property/LF_SetHomeAction.c` (2026-11-18, #2651, spec #811)
 - 🟡 The owner of a house sees "Make this my spawn" at its door (`EL_Door_Base.et`, beside the lock action).
