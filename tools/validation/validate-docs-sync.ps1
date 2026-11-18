@@ -1,5 +1,4 @@
 # tools/validation/validate-docs-sync.ps1 - keep docs/features.md current with feature code.
-# inputs: always
 #
 # docs/features.md is the contract doc every agent reads to know what a system
 # does. When a change touches feature/core scripts but not that file, the doc
@@ -10,6 +9,7 @@
 # agents to update the affected feature's rows in the SAME change.
 #
 # Invoked by `tools\cli validate` (the CLI runs every script in this folder).
+# inputs: addons/LifeFramework/Scripts/Game/**/*.c, docs/features.md, docs/features/**
 
 $ErrorActionPreference = "Stop"
 $root = git rev-parse --show-toplevel

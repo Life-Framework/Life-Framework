@@ -47,7 +47,7 @@ GenericEntity {
     }
     LF_TraderItem "{59693C53B6A5E003}" {
      m_ItemPrefab "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et"
-     m_ValuePerItem 15
+     m_ValuePerItem 10
     }
     LF_TraderItem "{59693C53B6A5E004}" {
      m_ItemPrefab "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et"

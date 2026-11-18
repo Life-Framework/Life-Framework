@@ -1,5 +1,4 @@
 # tools/validation/validate-repo.ps1 - Life Framework repo validator.
-# inputs: always
 #
 # Used by the pre-commit hook (with -Staged) and standalone (full tree) via:
 #   tools\cli validate
@@ -12,6 +11,8 @@
 #   - warnings for lowercase 'data/' path references in text resources
 #
 # Exits 1 on errors (aborts a commit), 0 otherwise.
+# inputs: always
+# (global: repo hygiene over every .meta and text resource, plus the branch rule (never main in a linked worktree))
 
 param(
   [switch]$Staged

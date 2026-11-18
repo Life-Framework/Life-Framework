@@ -1,5 +1,4 @@
 // tools/validation/validate-map-independence.mjs
-// inputs: always
 // (always: it compares its baseline with origin/main's, so repo files are not its only input)
 //
 // Core Scripts must not know where anything stands on Everon. The map moves to the
@@ -22,6 +21,7 @@
 // with no finding fails (delete it), an entry needs an "issue" ("#123"), and an entry
 // that the main branch copy does not have fails (when git can read that copy).
 // --write-baseline refuses to add. red-proof: map-independence-selftest.mjs.
+// inputs: addons/LifeFramework/Scripts/Game/**/*.c, tools/validation/map-independence-baseline.json
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";

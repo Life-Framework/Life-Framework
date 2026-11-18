@@ -471,6 +471,13 @@
           "minimum": 0,
           "maximum": 100
         },
+        "dutyIdleSeconds": {
+          "type": "integer",
+          "description": "Duty idle pause: an officer or medic on duty who for this many seconds neither moves 2 m, turns their view, nor rides a moving vehicle has the duty clock paused (no pay, no rank time) until they do. 0 turns the pause off",
+          "default": 300,
+          "minimum": 0,
+          "maximum": 86400
+        },
         "benefitBalanceThreshold": {
           "type": "integer",
           "description": "Unemployment benefit: a bank balance strictly below this may collect",
