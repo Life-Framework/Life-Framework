@@ -22,6 +22,7 @@ class LF_MarketMoveRecorder : LF_EventSubscriber
 // red-proof: new test with no failing state on main (the sale never read the curve). Batched hook run:
 // `tools\cli test --no-build --red LF_Test_MarketTrader` skips the curved sale in RedProof() and the
 // curve assertions fail. Observed 2026-11-18: `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; green 51 assertions.
+// #3028 cheap-apple sale (ten 5-cash apples pay 46, price 4): RedProof() skips the sale, RED PROOF OK in the same batched `--red` run as LF_Test_PriceCurve (2026-11-18).
 // Trickle recovery (review of #2877): red on the stamp-to-now book, `expected 19, got 18` (2026-11-18), green with StampAfterSale.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MarketTrader : LF_Test
@@ -150,7 +151,11 @@ class LF_Test_MarketTrader : LF_Test
 		// Market on for apples: a stack of 10 pays the curve's bulk total and lowers the next quote.
 		LF_MarketConfig.UseForTest(MakeConfig(true, APPLE_PREFAB));
 		int drop = LF_PriceCurve.DropPerUnit(BASE, DROP_PCT);
-		int expected = LF_PriceCurve.BulkTotal(BASE, 10, drop, FLOOR, CEILING);
+		int baseFine = LF_PriceCurve.ToFine(BASE);
+		int floorFine = LF_PriceCurve.ToFine(FLOOR);
+		int ceilingFine = LF_PriceCurve.ToFine(CEILING);
+		int expected = LF_PriceCurve.BulkTotal(baseFine, 10, drop, floorFine, ceilingFine);
+		int afterFine = LF_PriceCurve.PriceAfterSale(baseFine, 10, drop, floorFine, ceilingFine);
 		ctx.Equal(155, expected, "the curve prices 10 apples at 155 (20 + 19 + ... + 11)");
 		ctx.Equal(BASE, LF_MarketBook.CurrentPrice(APPLE_PREFAB), "an unsold good quotes its base");
 		ctx.Equal(expected, LF_MarketBook.Quote(APPLE_PREFAB, 10), "the book quotes the bulk total");
@@ -165,7 +170,7 @@ class LF_Test_MarketTrader : LF_Test
 		ctx.Equal(120 + expected, LF_MoneyUtils.GetCash(near), "the seller is paid the bulk total");
 		ctx.Equal(0, LF_InventoryUtils.GetAmount(near, APPLE_PREFAB), "the sold apples left the seller");
 		int after = LF_MarketBook.CurrentPrice(APPLE_PREFAB);
-		ctx.Equal(LF_PriceCurve.PriceAfterSale(BASE, 10, drop, FLOOR, CEILING), after, "the price moved down the curve");
+		ctx.Equal(LF_PriceCurve.ToCash(afterFine), after, "the price moved down the curve");
 		ctx.True(after < BASE, "the next single unit quotes lower");
 		ctx.Equal(after, LF_MarketBook.Quote(APPLE_PREFAB, 1), "one unit quotes the new price");
 		ctx.Equal(1, recorder.m_iCount, "one price-moved event");
@@ -174,7 +179,7 @@ class LF_Test_MarketTrader : LF_Test
 
 		// Recovery is lazy: an hour later the quote has closed part of the gap; quoting moves nothing.
 		int inHour = LF_MarketBook.CurrentPriceAt(APPLE_PREFAB, System.GetUnixTime() + LF_PriceCurve.SECONDS_PER_HOUR);
-		ctx.Equal(LF_PriceCurve.Recover(after, BASE, RECOVER_PCT, LF_PriceCurve.SECONDS_PER_HOUR, 168, FLOOR, CEILING), inHour, "an hour of recovery");
+		ctx.Equal(LF_PriceCurve.ToCash(LF_PriceCurve.Recover(afterFine, baseFine, RECOVER_PCT, LF_PriceCurve.SECONDS_PER_HOUR, 168, floorFine, ceilingFine)), inHour, "an hour of recovery");
 		ctx.Equal(after, LF_MarketBook.CurrentPrice(APPLE_PREFAB), "a quote does not move the price");
 
 		// Steady trade still recovers: a sale half an hour after the last keeps the part hour, so an
@@ -185,8 +190,14 @@ class LF_Test_MarketTrader : LF_Test
 		int p2 = LF_MarketBook.ApplySaleAt(APPLE_PREFAB, 1, t0 + LF_PriceCurve.SECONDS_PER_HOUR / 2, unused);
 		ctx.True(p2 < p1, "the second trickle sale lowers the price");
 		int stepped = LF_MarketBook.CurrentPriceAt(APPLE_PREFAB, t0 + LF_PriceCurve.SECONDS_PER_HOUR);
-		ctx.Equal(LF_PriceCurve.Recover(p2, BASE, RECOVER_PCT, LF_PriceCurve.SECONDS_PER_HOUR, 168, FLOOR, CEILING), stepped, "a sale inside the hour keeps the part hour toward recovery");
-		ctx.True(stepped > p2, "trickle selling does not pin the price");
+		LF_MarketPrice p2State = LF_MarketBook.Snapshot(APPLE_PREFAB);
+		ctx.NotNull(p2State, "the trickle sales left a stored price");
+		if (p2State)
+			ctx.Equal(LF_PriceCurve.ToCash(LF_PriceCurve.Recover(p2State.m_iFine, baseFine, RECOVER_PCT, LF_PriceCurve.SECONDS_PER_HOUR, 168, floorFine, ceilingFine)), stepped, "a sale inside the hour keeps the part hour toward recovery");
+
+		// Compared in hundredths: a recovery step can be under half a cash unit, which rounds to the same cash price.
+		if (p2State)
+			ctx.True(LF_MarketBook.CurrentFineAt(APPLE_PREFAB, t0 + LF_PriceCurve.SECONDS_PER_HOUR) > p2State.m_iFine, "trickle selling does not pin the price");
 		// Put the book back where the 10-apple sale left it for the checks below.
 		LF_MarketBook.ResetStatics();
 		LF_MarketBook.ApplySaleAt(APPLE_PREFAB, 10, System.GetUnixTime(), unused);
@@ -232,5 +243,49 @@ class LF_Test_MarketTrader : LF_Test
 			ctx.Equal(cashFar, LF_MoneyUtils.GetCash(far), "the downed seller is paid nothing");
 			ctx.Equal(after, LF_MarketBook.CurrentPrice(APPLE_PREFAB), "a downed seller leaves the price");
 		}
+
+		RunCheapSale(ctx, traderOwner, near);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Cheap goods (#3028): a 5-cash apple at 2 percent of its base drops 0.10 a unit, so ten apples pay
+	//! 5.00 + 4.90 + ... + 4.10 = 45.50 (46) and the next apple fetches 4, not the old floor of 3.
+	protected void RunCheapSale(LF_TestContext ctx, IEntity traderOwner, IEntity near)
+	{
+		LF_MarketBook.ResetStatics();
+		LF_MarketConfig cheap = new LF_MarketConfig();
+		cheap.m_bEnabled = true;
+		cheap.m_iMaxRecoveryHours = 168;
+		cheap.m_aGoods = {};
+		cheap.m_aGoods.Insert(LF_MarketGoodDef.Make(APPLE_PREFAB, 5, 3, 8, 2, 10));
+		cheap.Sanitize();
+		LF_MarketConfig.UseForTest(cheap);
+
+		// The rollback check above left 4 apples on the seller: sell them off so the stack is exactly 10.
+		InventoryStorageManagerComponent storage = LF_InventoryUtils.GetResponsibleStorageManager(near);
+		array<IEntity> leftovers = LF_InventoryUtils.FindItemsByPrefab(storage, APPLE_PREFAB);
+		foreach (IEntity leftover : leftovers)
+		{
+			LF_TraderSale.Sell(near, leftover, traderOwner, true);
+		}
+
+		ctx.Equal(0, LF_InventoryUtils.GetAmount(near, APPLE_PREFAB), "the seller holds no apples before the cheap sale");
+		LF_MarketBook.ResetStatics();
+
+		IEntity apples = GiveApples(ctx, near, 10);
+		if (!apples)
+			return;
+
+		int cashBefore = LF_MoneyUtils.GetCash(near);
+		LF_ETraderSale outcome = LF_ETraderSale.NOT_SERVER;
+		if (!RedProof())
+			outcome = LF_TraderSale.Sell(near, apples, traderOwner, true);
+		ctx.True(outcome == LF_ETraderSale.SOLD, "10 cheap apples sell");
+		ctx.Equal(cashBefore + 46, LF_MoneyUtils.GetCash(near), "ten 5-cash apples pay 46 together");
+		ctx.Equal(4, LF_MarketBook.CurrentPrice(APPLE_PREFAB), "the next apple fetches 4, not the floor 3");
+		LF_MarketPrice state = LF_MarketBook.Snapshot(APPLE_PREFAB);
+		ctx.NotNull(state, "the sale stored a price");
+		if (state)
+			ctx.Equal(400, state.m_iFine, "the book holds the price in hundredths");
 	}
 };

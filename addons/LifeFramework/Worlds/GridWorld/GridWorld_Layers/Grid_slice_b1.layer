@@ -60,6 +60,6 @@ GenericEntity Grid_slice_b1_R0_3 : "{25C8B889A777399D}Prefabs/Props/Infrastructu
  angleY -90
 }
 LF_NpcBaseEntity Grid_slice_b1_R0_4 : "{3AF0C7C21AB03542}Prefabs/Characters/LF_IllicitBuyer.et" {
- coords 270.501 -0.005 75
- angleY -90
+ coords 267.469 -0.005 75
+ angleY 90
 }

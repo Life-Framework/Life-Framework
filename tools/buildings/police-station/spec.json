@@ -93,7 +93,7 @@
     "duty": "LF_PoliceDutyDesk (clock in, duty pay) and LF_ArmoryStore plus the armory cabinet (LF_PoliceRanks armory, issue offers #1763)",
     "evidence": "LF_EvidenceLocker (breach target) and LF_CaseBoard",
     "boards": "LF_WantedBoard and LF_DispatchBoard_Police",
-    "jail": "the villa's own barred cell and door, no jail component in the kit (one placed cell per world; GridWorld has one). --with-cell (town fit, a world with no cell) stages the LF_JailCell marker only: 2 m zone, release in the hall, no door target, no EL_JailDoor (it would hang a second door in the villa's doorway)",
+    "jail": "the villa's own barred cell and door, no jail component in the kit (one placed cell per world; GridWorld has one). --with-cell (town fit, a world with no cell) stages the LF_JailCell marker only: 2 m zone, release in the hall, door target PoliceStation_CellDoor (the villa's own door leaf carries the lock and breach target, shell.mjs), no EL_JailDoor (it would hang a second door in the villa's doorway)",
     "vehicles": "LF_UAZ469_Police patrol and escort cars, SpikeStrip",
     "sign": "LF_Sign_Fascia over the loggia, pack card police_front (Gendarmerie)"
   },

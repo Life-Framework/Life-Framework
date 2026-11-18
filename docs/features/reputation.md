@@ -43,6 +43,11 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   no contract money (a late finish still pays the plain run). Stakes move no money. A contract whose run vanished (a wipe) is dropped with
   no stake. Session state: a restart refunds the run's deposit and drops the contract. A drop-off by a dead or downed body pays nothing.
   Core ships one neutral parcel row (`test_parcel`); the offer that calls `Begin` and the pack's contracts are later cards. Test `reputation/contract`.
+- ✅ **Standing pay bonus** (#2703, merged, in-dev): `LF_ReputationPay.c`, rows `m_aPays` in `Configs/Reputation/LF_Reputation.conf`
+  (`LF_ReputationPayDef`: faction, percent per tier lowest first, shipped TOWN `0 0 0 5 10 15` for tiers -2..3, clamped to 15). `LF_CivilianJob.CompleteRun`
+  adds the town tier's percent of the run's BASE pay (a contract's multiplier does not compound it); the drop-off hands it over as its own
+  ledger line, reason `standing-bonus`, beside the contract bonus part. Police and medic duty pay never calls it; another faction's tier pays
+  nothing on a civilian run. Test `reputation/pay-bonus`.
 - ✅ **Contract offer in dialogue** (#2913, merged, in-dev): `LF_DialogueHook_Contract.c`. A dialogue reply with `m_sAction "Contract"`,
   `m_sCondition "Contract"` and the contract id as `m_sParam` starts the contract: the reply is offered only when the contract's standing
   gate passes (checked on the server, where `Offers` runs), the pick signs the player up for the contract's job if needed (the JobSignUp
@@ -53,5 +58,42 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   `LF_JobStartRunAction` (`CanBePerformedScript`, client branch only) grey the offer with the faction's refusal and the
   tier word, before the press. No tiers received yet shows the offer (the server still refuses on use); a gate with no
   row is open. The host path is unchanged. Test `reputation/offer-grey`.
-- 🔲 Screens, the pack's words,
-  pack overlay and the owner `config.json` section `reputation` (later cards of #1018).
+- ✅ **A running contract shows in the tracker with its time left** (#2914, merged, in-dev): `LF_ContractTracker.c`. `Take` sends
+  the contract's own player one line by an Owner RPC on their controller (`RpcDo_LF_ContractLine`; never anyone else), `End`,
+  the stale drop and `Forget` clear it. The client counts down itself and shows who it is for and the time left in words
+  (`LF_EContractTimeWord`: plenty over half, soon over a fifth, hurry, then the line goes; never a number), and under it
+  what walking away costs in words (`#LF-ContractTracker_Cost`, never points) when the contract has a stake. The title
+  is the pack's row `Title_<contractId>`, else `Title_Default`. There was no on-screen quest tracker, so the line is a
+  paper tag built from UI kit parts (`LF_ContractTrackerHud`, no layout). Test `reputation/contract-tracker`.
+- ✅ **The tracker line comes back after a reconnect, with the time left** (#3144, merged, in-dev): `LF_ContractTrackerSubscriber`
+  listens for `LF_OnPlayerSpawnedEvent` (a reconnect, a late join, a respawn) and `LF_ContractTracker.Resend` sends a running
+  contract's line again over the same Owner RPC, with a fourth field, the seconds left (`limit - (now - takenAt)`, from
+  `LF_ReputationContracts.ActiveRun`), so the client's countdown and time word carry on instead of starting full. No new
+  RPC and no JIP state; a spawn with no contract, or one already out of time, sends nothing. A contract still ends on a
+  server restart. Test `reputation/contract-tracker-resend`.
+- 🟡 **The standing tables read pack overlays** (#3044): `LF_ReputationConfig.Get()` and `LF_ReputationContractsConfig.Get()`
+  layer each overlay the mission header lists (`LF_ReputationOverlay.c`, load order) over the core file: factions (key `m_sId`),
+  awards (`m_sAction`), gates (`m_sGate`), pays (`m_sFaction`) and contracts (`m_sId`) take add, replace, patch and remove
+  (`docs/config/override-model.md`). A patch sets only the fields it gives; an array (tier words, pay percents) is replaced whole.
+  The contracts file's cooldown stays core. Test `reputation/pack-overlay`.
+- ✅ **Standing in words** (#2705, merged, in-dev): `LF_ReputationWords.c`. `Pairs` lists each faction's label key and tier word key
+  (the config's `m_sLabel` and `m_aTierLabels`) for the tiers given, skipping a faction whose `m_bShown` is false (the underworld) or
+  that has no word for the tier. The ID card sheet (`LF_IdCardView`, your own card only, never one shown to you) prints one line from the
+  tiers this client holds (`ClientLine`, "Locals: Known. The law: Unknown."; `#LF-Reputation_File_Line` is "%1: %2."). The clerk's
+  "What does my file say?" reply (on the town node, action hook `StandingFile`) says the same, one entry per faction, with the server
+  tiers. No number, no bar, no underworld. Test `reputation/words`.
+- 🟡 **The 1989 pack speaks standing** (#2709, `Configs/Reputation/LF_Reputation_Everon1989.conf`, `LF_ReputationContracts_Everon1989.conf`, both in
+  the mission header's overlays): the three factions' tier words are the pack's (`#LF-Everon_Tier_<Faction>_<Tier>` rows in
+  `LF_Everon1989/Language/`, from `docs/architecture/reputation.md` section 1; the underworld's are never shown), a `job_completed:<JOB>` award for
+  parcel (10, #3083: ten runs, about 40 minutes, take a newcomer to Known), fuel (6) and taxi (6) runs with a 60 s cooldown, the pack's
+  town daily cap raised from the core 60 to 120 so those ten runs fit one in-game day (#3083), the gate `contract:harbour_crates` (town, tier 1, Known) and the harbour master's
+  early crates contract (a parcel run, x1.4 pay, +12 on finish, -10 if dropped, 25 min limit; tracker title `LF-ContractTracker_Title_harbour_crates`).
+  Test `everon/reputation` (pack leg). Not yet: the chop shop's "car to order" contract (no core job matches it).
+- 🧪 **The harbour master offers the harbour crates contract, voiced** (#3050, merged, in-dev): his pack dialogue (`tools/assets/dialogue/harbour_master/`, ElevenLabs
+  pipeline, ten recorded lines) greets with "a bigger load?" behind the core `Contract` condition (`harbour_crates`, shown at Known) and, below Known, the same words behind the new
+  core condition `ContractLocked` (`LF_DialogueHook_ContractLocked.c`: offered only while the gate does NOT pass), which leads to "I keep the big loads for people I know. Come back when
+  the town knows you." Accepting runs the `Contract` action; the node after it has no line of its own, so he answers with the recorded line for the key the hook hands back
+  (started, busy, cooldown, run already open). Declining ends the talk. Tests `everon/harbour-master` (pack leg: both replies, the pick starts the contract at Known and nothing
+  below it) and `dialogue/contract` (the locked condition).
+- ✅ **Harbour crates proof** (#3084, merged, in-dev): session proof `harbour-crates` (`agent-box/proofs/harbour-crates-proof.mjs`, `up --mission island`). A Known character (set with the harness verbs `repgrant <FACTION> <points>` and `repshow <FACTION>` in `LF_ReputationHarnessVerbs.c`, dev-gated like `/licence`, no daily cap booked) talks to Marcel Roux, takes `harbour_crates`, reads the tracker, delivers and the server log shows pay x1.4, the `standing-bonus` ledger line and +12 town. It prints PASS or FAIL per step with the PR that should fix a failure. It passed 11 of 11 on a local merge of the harbour master (#3058) and the parcel drop points (#2973); on main plus #3058 alone step 7 fails, the island has no drop-off to deliver at.
+- 🔲 Screens, and the owner `config.json` section `reputation` (later cards of #1018).

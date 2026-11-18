@@ -222,15 +222,26 @@ class LF_EventSceneSpawn
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The plan's parked vehicle beside the first spawn marker, by prefab slot (#964). Nobody drives
-	//! it: it spawns empty and stays where it stands.
+	//! The prefab of a scene's parked vehicle: a `{GUID}path` is the prefab itself, anything else is a
+	//! prefab slot id (#964). "" when the slot resolves to nothing (LF_PrefabSlots logs it).
+	static ResourceName VehiclePrefabFor(string slotOrPrefab)
+	{
+		if (slotOrPrefab.StartsWith("{"))
+			return slotOrPrefab;
+
+		return LF_PrefabSlots.Get(slotOrPrefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The plan's parked vehicle beside the first spawn marker, by prefab slot (#964) or prefab.
+	//! Nobody drives it: it spawns empty and stays where it stands.
 	protected static void SpawnVehicle(LF_EventSceneCrew crew, IEntity marker)
 	{
 		string slot = crew.m_Plan.m_sVehicleSlot;
 		if (slot.IsEmpty())
 			return;
 
-		ResourceName prefab = LF_PrefabSlots.Get(slot);
+		ResourceName prefab = VehiclePrefabFor(slot);
 		if (prefab.IsEmpty())
 		{
 			LF_Debug.Error(FEATURE, string.Format("scene %1: vehicle slot '%2' resolves to no prefab; no vehicle", crew.m_sSceneId, slot));

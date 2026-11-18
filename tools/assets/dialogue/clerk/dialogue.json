@@ -26,7 +26,16 @@
       ]
     },
     { "id": "work", "line": "about_work", "options_from": "menu" },
-    { "id": "town", "line": "about_town", "options_from": "menu" },
+    {
+      "id": "town",
+      "line": "about_town",
+      "options": [
+        { "text": "next", "next": "menu", "action": "QuestConverse" },
+        { "text": "work", "next": "work" },
+        { "text": "file", "next": "menu", "action": "StandingFile" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
@@ -46,6 +55,7 @@
     "next": "What should I do now?",
     "work": "Where can I find work?",
     "town": "Tell me about this {town}.",
+    "file": "What does my file say?",
     "lost": "I have lost my identity card.",
     "bye": "Goodbye."
   }

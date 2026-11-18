@@ -9,6 +9,10 @@ class LF_DayCycleSettings
 	//! Real seconds one in-game day lasts at the daytime rate: TimeAndWeatherManagerEntity.SetDayDuration.
 	float m_fDayDurationSeconds;
 
+	//! The same value while it is night: the day duration divided by `nightSpeed` (#3149). Equal to the
+	//! day duration when nightSpeed is 1 and in every mode but accelerated.
+	float m_fNightDurationSeconds;
+
 	//! Daytime speed against the 24 h vanilla day (a 120-minute day is 12).
 	float m_fDayAcceleration;
 
@@ -36,6 +40,13 @@ class LF_DayCycle
 	static const float VANILLA_DAY_SECONDS = 86400;	// lf-fixed: the engine's vanilla day, not a tuning value
 	static const float VANILLA_DAY_MINUTES = 1440;	// lf-fixed: the vanilla day in minutes
 
+	//! Night hours when the world has no sunrise and sunset of its own (the vanilla handler's defaults).
+	static const float FALLBACK_SUNRISE_HOUR = 5;	// lf-fixed: the vanilla handler's DEFAULT_DAYTIME_START
+	static const float FALLBACK_SUNSET_HOUR = 19;	// lf-fixed: the vanilla handler's DEFAULT_DAYTIME_END
+
+	//! A duration change under this many seconds is no change (float noise; never re-set the manager for it).
+	static const float DURATION_EPSILON = 0.5;	// lf-fixed: half a real second
+
 	//------------------------------------------------------------------------------------------------
 	//! Wraps hours into [0, 24).
 	static float WrapHour(float hour)
@@ -54,6 +65,7 @@ class LF_DayCycle
 		LF_DayCycleSettings settings = new LF_DayCycleSettings();
 		settings.m_bApply = false;
 		settings.m_fDayDurationSeconds = VANILLA_DAY_SECONDS;
+		settings.m_fNightDurationSeconds = VANILLA_DAY_SECONDS;
 		settings.m_fDayAcceleration = 1;
 		settings.m_fNightAcceleration = 1;
 		settings.m_bSetStartHour = false;
@@ -73,6 +85,7 @@ class LF_DayCycle
 
 			settings.m_bApply = true;
 			settings.m_fDayDurationSeconds = config.m_iDayLengthMinutes * 60;
+			settings.m_fNightDurationSeconds = settings.m_fDayDurationSeconds / nightSpeed;
 			settings.m_fDayAcceleration = VANILLA_DAY_MINUTES / config.m_iDayLengthMinutes;
 			settings.m_fNightAcceleration = settings.m_fDayAcceleration * nightSpeed;
 			settings.m_bSetStartHour = true;
@@ -93,5 +106,31 @@ class LF_DayCycle
 			LF_Debug.Error(FEATURE, string.Format("dayCycle.mode = %1 is not vanilla, accelerated or realtime; keeping the vanilla day", config.m_sMode));
 
 		return settings;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure (#3149): true between sunset (inclusive) and the next sunrise (exclusive). Hours are 0 to 24.
+	static bool IsNight(float hour, float sunriseHour, float sunsetHour)
+	{
+		float h = WrapHour(hour);
+		return h < sunriseHour || h >= sunsetHour;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure (#3149): the real seconds a whole day should take at this in-game hour, so the night runs at
+	//! `nightSpeed` times the day rate.
+	static float DurationForHour(notnull LF_DayCycleSettings settings, float hour, float sunriseHour, float sunsetHour)
+	{
+		if (IsNight(hour, sunriseHour, sunsetHour))
+			return settings.m_fNightDurationSeconds;
+
+		return settings.m_fDayDurationSeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the settings run the night at another rate than the day, so the phase must be watched.
+	static bool HasNightRate(notnull LF_DayCycleSettings settings)
+	{
+		return Math.AbsFloat(settings.m_fNightDurationSeconds - settings.m_fDayDurationSeconds) > DURATION_EPSILON;
 	}
 }

@@ -92,6 +92,58 @@
       "request_id": "CYoTaWojPehyiH2in83P",
       "seconds": 3.97,
       "mouth": "04988971188889855975598631000009999876555320000000985546686654435543430000000000"
+    },
+    "greet_refuses": {
+      "hash": "fe0054f900f5d3a9",
+      "date": "2026-11-18",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "I have nothing to say to you. Please leave my cafe.",
+      "chars": 51,
+      "chars_total": 20,
+      "request_id": "1z9MwaMjSb8UT1F0Zmiy",
+      "seconds": 3.4,
+      "mouth": "19788769726873566995457797421003499834100199837883389229631000000000"
+    },
+    "greet_wary": {
+      "hash": "cb5ee787803da069",
+      "date": "2026-11-18",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "Oh. It is you. What do you need?",
+      "chars": 32,
+      "chars_total": 13,
+      "request_id": "FXRmupiEZCQaHaxslt4g",
+      "seconds": 2.23,
+      "mouth": "998985212059238656999863100722555555421021000"
+    },
+    "greet_friendly": {
+      "hash": "a7bde8411679ca60",
+      "date": "2026-11-18",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "Welcome back! You always bring a smile in with you. What can I do for you?",
+      "chars": 74,
+      "chars_total": 30,
+      "request_id": "EQTp3buTzcJ1eOa5JE9B",
+      "seconds": 4.83,
+      "mouth": "9998227875797411100000007993199959853379677565797776478778725776520000396227777527422875997431000"
+    },
+    "greet_regular": {
+      "hash": "bda65d67d519fda1",
+      "date": "2026-11-18",
+      "voice_id": "1hIScOW98xkqE5ttC10C",
+      "voice_name": "Mariva Viva Muse - Warm and Energetic",
+      "model": "eleven_multilingual_v2",
+      "text": "There is my favourite customer! Sit, sit. Ask me anything.",
+      "chars": 58,
+      "chars_total": 23,
+      "request_id": "uEBoLRPjXvLqXVAu225J",
+      "seconds": 4.11,
+      "mouth": "99755995389759941178518788752100026899971110058899851207984358887772175431000011000"
     }
   },
   "voice": {

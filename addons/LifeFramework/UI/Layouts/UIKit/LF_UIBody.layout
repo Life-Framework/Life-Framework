@@ -1,0 +1,20 @@
+SizeLayoutWidgetClass "{B4C7E1A93D5F2860}" {
+ Name "Body"
+ Slot LayoutSlot "{6D1F8A3C57E294B0}" {
+  Padding 0 0 0 0
+ }
+ {
+  ScrollLayoutWidgetClass "{A27E94C1D63B5F08}" {
+   Name "BodyScroll"
+   Slot AlignableSlot "{5C83B1E7F2A4D960}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    VerticalLayoutWidgetClass "{E0953D7A1B6C4F82}" {
+     Name "BodyContent"
+    }
+   }
+  }
+ }
+}

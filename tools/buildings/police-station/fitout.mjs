@@ -33,6 +33,7 @@ const SPEC = JSON.parse(readFileSync(join(ROOT, "tools", "buildings", "police-st
 const LICENCE_LAYER = join(LAYERS, "GridWorld", "GridWorld_Layers", "Grid_licence_desk.layer");
 
 import { ORIGIN } from "./origin.mjs";
+import { CELL_DOOR_TARGET } from "./shell.mjs";
 const PREFIX = "PoliceKit_";
 const VILLA = `${PREFIX}Villa`;
 const F1 = 3.8; // first floor
@@ -156,10 +157,10 @@ if (PASS >= 1) {
   // The decision (#2275): the kit always shows that cell and door and carries no jail component, because LF_Places and
   // LF_JailCellComponent allow one placed cell per world and GridWorld has one (Grid_test_fixtures). `--with-cell` is for
   // `town fit` into a world with no cell: it stages the LF_JailCell marker only, its zone fitted to the room (2 m, not the
-  // DebugWorld yard's 8 m), the release point in the hall, and no door target: the villa's barred door is the door, and an
-  // EL_JailDoor would hang a second door in the same doorway. Breach and jailbreak on this cell need the villa door itself
-  // to carry LF_BreachTarget (#2373); until then the zone returns a prisoner who walks out.
-  if (args.includes("--with-cell")) sys("jail", { name: `${PREFIX}Jail_Cell`, x: -4.5, y: 0, z: -2.0, yaw: 0, radius: 2, release: "3 0 2.5" });
+  // DebugWorld yard's 8 m), the release point in the hall, and the villa's own barred door as the door target: the leaf
+  // carries LF_BreachTargetComponent and LF_LockComponent in PoliceStation.et (shell.mjs, #2373), so breach and jailbreak
+  // work on it and an EL_JailDoor (a second door in the same doorway) is never needed.
+  if (args.includes("--with-cell")) sys("jail", { name: `${PREFIX}Jail_Cell`, x: -4.5, y: 0, z: -2.0, yaw: 0, radius: 2, release: "3 0 2.5", door: CELL_DOOR_TARGET });
   // Time clocks: the duty action on a wall punch clock (ClockPunch_01), by the front door in the hall and by the door of
   // the duty room, so an officer clocks in on the way in. The desk keeps its own. Pivot y = mesh bottom - 0.692.
   clock(`${PREFIX}DutyClock_Hall`, 0.725, 1.2 - 0.692, -1.64, -90);
@@ -378,10 +379,10 @@ async function build() {
       continue;
     }
     if (s.kind === "jail") {
-      // The cell marker alone (the DebugWorld clone carried a crate as a debug marker and a door target): see --with-cell above.
+      // The cell marker alone (the DebugWorld clone carried a crate as a debug marker): its door target is the villa's own door, see --with-cell above.
       const [wx, wz] = world(s.x, s.z);
       blocks.push([`GenericEntity ${s.name} : "${G.jailCell}" {`, " components {", '  LF_JailCellComponent "{540EBBB989D3A80A}" {', `   m_fZoneRadius ${s.radius}`,
-        '   m_sDoorTargetId ""', `   m_vReleaseOffset ${s.release}`, "  }", " }", ` coords ${wx} ${num(s.y)} ${wz}`, ...(s.yaw ? [` angleY ${num(s.yaw)}`] : []), "}"].join("\n"));
+        `   m_sDoorTargetId "${s.door ?? ""}"`, `   m_vReleaseOffset ${s.release}`, "  }", " }", ` coords ${wx} ${num(s.y)} ${wz}`, ...(s.yaw ? [` angleY ${num(s.yaw)}`] : []), "}"].join("\n"));
       continue;
     }
     if (s.kind === "clone") {

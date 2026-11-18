@@ -6,7 +6,7 @@
 
 class LF_TownBoardCardAction : ScriptedUserAction
 {
-	[Attribute("0", UIWidgets.EditBox, "Card slot on the board (0 .. 7: left to right, top row first)")]
+	[Attribute("0", UIWidgets.EditBox, "Card slot on the board (0 .. 11: left to right, top row first)")]
 	protected int m_iSlot;
 
 	protected LF_SignComponent m_Sign;

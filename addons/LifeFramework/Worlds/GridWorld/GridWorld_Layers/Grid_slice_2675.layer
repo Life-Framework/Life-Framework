@@ -1,0 +1,84 @@
+// Grid cell c12r6 for slice-2675: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_slice_2675_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 167 0 95
+}
+SCR_DestructibleEntity Grid_slice_2675_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 172 0 95
+}
+SCR_DestructibleEntity Grid_slice_2675_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 177 0 95
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_2675_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 177 0 100
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_2675_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 177 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_2675_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 172 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_2675_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 167 0 105
+ angleY 90
+}
+GenericEntity Grid_slice_2675_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-2675"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 166.2 0.505 95.6
+ angleY -90
+}
+GenericEntity Grid_slice_2675_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "slice-2675"
+  }
+ }
+ coords 166.3 0 97.5
+ angleY 90
+}
+GenericEntity Grid_slice_2675_R0 : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ components {
+  ActionsManagerComponent "{84F263DF01236A06}" {
+   ActionContexts {
+    UserActionContext "{3F6AF5F26DCE3739}" {
+     ContextName "default"
+     Position PointInfo "{7B23E0D8F24C1C76}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_OrganizationDeskAction "{A400B8708D3E8AFE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8CFE7804D25C87CE}" {
+      Name "#EL-Org_Open"
+     }
+    }
+    LF_OrgWarDeskAction "{5D2A9C41E7B03F68}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{19C6E0A47B5D2F83}" {
+      Name "#LF-OrgWarSheet_Open"
+     }
+    }
+   }
+  }
+ }
+ coords 174.874 0.001 100.851
+ angleY -90
+}

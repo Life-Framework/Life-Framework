@@ -3,7 +3,7 @@
 // (#2665) where each resident should be now, resolves that to an anchor (#2857) and spawns the
 // resident's character there when a player is within the spawn radius; a live resident whose line
 // moved on, or with no player within the despawn radius, is removed. A hard cap bounds how many are
-// live. Residents stand and are logged with their activity; nobody walks in this wave. The spawned
+// live; the director (#2910) picks which due residents take the free slots. Residents stand and are logged with their activity; nobody walks in this wave. The spawned
 // character is an ordinary replicated entity, so a late joiner sees it with no extra state.
 // Entries hold EntityID, never IEntity (rule: entities vanish at any time).
 
@@ -52,7 +52,7 @@ class LF_ResidentSpawner
 {
 	static const string FEATURE = "Residents";
 	//! The neutral civilian a resident with no prefab of their own spawns as.
-	static const ResourceName DEFAULT_PREFAB = "{6E8EF026940F3841}Prefabs/Characters/Npcs/Npc_Civilian_01.et";
+	static const ResourceName DEFAULT_PREFAB = "{D9D016A65F3245D7}Prefabs/Characters/Residents/Resident_Civilian.et";
 	static const int DEFAULT_SWEEP_SECONDS = 5;	// lf-fixed: used only when the config does not resolve
 
 	protected static ref map<string, ref LF_ResidentLive> s_mLive;
@@ -87,7 +87,8 @@ class LF_ResidentSpawner
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: one pass at game minute `minute`. Despawns first (so freed slots count against the cap),
-	//! then spawns each due resident a player is near, in id order.
+	//! then spawns the due residents a player is near that `LF_ResidentDirector` picks for the free slots
+	//! (nearest a player first, a counter worker beside one before a bench sitter, ties by id).
 	//! \param[in] players Where the players are; null reads the live players.
 	//! \return How many residents were spawned or despawned.
 	static int SweepAt(int minute, LF_ResidentPlayers players = null)
@@ -110,16 +111,37 @@ class LF_ResidentSpawner
 		float despawnSq = config.DespawnRadius() * config.DespawnRadius();
 		int changes = Despawn(minute, where, despawnSq);
 
+		if (where.IsEmpty())
+			return changes;
+
 		array<string> ids = {};
 		LF_ResidentTimetable.GetIds(ids);
 		ids.Sort();
+		array<ref LF_ResidentCandidate> due = {};
 		foreach (string id : ids)
 		{
-			if (s_mLive.Contains(id) || where.IsEmpty())
+			if (s_mLive.Contains(id))
 				continue;
 
-			if (TrySpawn(id, minute, where, spawnSq, config))
-				changes++;
+			LF_ResidentCandidate found = Candidate(id, minute, where, spawnSq);
+			if (found)
+				due.Insert(found);
+		}
+
+		// The director fills the places players are in first (#2910); the rest wait for a free slot.
+		array<string> chosen = {};
+		LF_ResidentDirector.Pick(due, where, config.MaxLive() - s_mLive.Count(), chosen);
+		foreach (LF_ResidentCandidate candidate : due)
+		{
+			if (chosen.Contains(candidate.m_sId))
+			{
+				if (Spawn(candidate, config))
+					changes++;
+			}
+			else
+			{
+				WarnCapped(candidate.m_sId, config);
+			}
 		}
 
 		return changes;
@@ -284,12 +306,13 @@ class LF_ResidentSpawner
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawns `id` on their current anchor when a player is within the spawn radius of it.
-	protected static bool TrySpawn(string id, int minute, notnull array<vector> where, float spawnSq, LF_ResidentsConfig config)
+	//! `id` as a candidate to spawn: their current line and the anchor spot, when a player is within the spawn
+	//! radius of it; null otherwise.
+	protected static LF_ResidentCandidate Candidate(string id, int minute, notnull array<vector> where, float spawnSq)
 	{
 		LF_ResidentSlot slot = LF_ResidentTimetable.WhereIs(id, minute);
 		if (!slot)
-			return false;
+			return null;
 
 		// The place of the kind nearest a player, so the resident of a kind with several places appears
 		// at the one the player is walking up to.
@@ -298,7 +321,7 @@ class LF_ResidentSpawner
 		foreach (vector player : where)
 		{
 			if (!LF_ResidentAnchors.Resolve(slot.m_sKind, slot.m_sAnchor, player, spot))
-				return false;
+				return null;
 
 			if (DistanceSqXZ(player, spot.m_vOrigin) <= spawnSq)
 			{
@@ -308,23 +331,33 @@ class LF_ResidentSpawner
 		}
 
 		if (!near)
-			return false;
+			return null;
 
-		if (s_mLive.Count() >= config.MaxLive())
-		{
-			if (!s_mCapped)
-				s_mCapped = new set<string>();
+		return LF_ResidentCandidate.Make(id, slot, spot);
+	}
 
-			if (!s_mCapped.Contains(id))
-			{
-				s_mCapped.Insert(id);
-				s_iCapWarns++;
-				LF_Debug.Warn(FEATURE, string.Format("resident '%1' is due but the live cap of %2 is reached; waiting", id, config.MaxLive()));
-			}
+	//------------------------------------------------------------------------------------------------
+	//! One log line per resident the cap holds back, until they spawn.
+	protected static void WarnCapped(string id, LF_ResidentsConfig config)
+	{
+		if (!s_mCapped)
+			s_mCapped = new set<string>();
 
-			return false;
-		}
+		if (s_mCapped.Contains(id))
+			return;
 
+		s_mCapped.Insert(id);
+		s_iCapWarns++;
+		LF_Debug.Warn(FEATURE, string.Format("resident '%1' is due but the live cap of %2 is reached; waiting", id, config.MaxLive()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Spawns the character of a chosen candidate on their anchor.
+	protected static bool Spawn(notnull LF_ResidentCandidate candidate, LF_ResidentsConfig config)
+	{
+		string id = candidate.m_sId;
+		LF_ResidentSlot slot = candidate.m_Slot;
+		LF_ResidentSpot spot = candidate.m_Spot;
 		ResourceName prefab = DEFAULT_PREFAB;
 		LF_ResidentDef def = DefOf(config, id);
 		if (def && !def.m_sPrefab.IsEmpty())
