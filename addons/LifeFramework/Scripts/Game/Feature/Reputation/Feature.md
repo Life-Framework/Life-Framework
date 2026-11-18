@@ -30,9 +30,13 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
   tiers by an Owner RPC on their controller (`ClientTier` on the client); town and police changes toast in words. A spawn before the account is cached
   retries once (`SendOnSpawn`, `SPAWN_RETRY_MS`).
 
+- Contracts (`LF_ReputationContracts.c`, `Configs/Reputation/LF_ReputationContracts.conf`, #2702): a contract wraps the
+  active `LF_CivilianJob` run (`Begin` / `Take`); `CompleteRun` calls `Settle` (multiplier 1.3..1.6, award, `standing-bonus`
+  ledger part), `AbandonRun` calls `Forfeit` (the stake, points only). One at a time, a cooldown; session state.
+
 ## Not built yet (later cards of chapter #1018)
 
-Contracts, gates beyond job sign-up and run start (#2701 built those: `LF_ReputationGate.c`),
+The contract offer (the caller of `LF_ReputationContracts.Begin`), gates beyond job sign-up and run start (#2701 built those: `LF_ReputationGate.c`),
 client greying from `LF_ReputationSync.ClientTier`, screens, the pack's words, and the pack overlay and owner
 `config.json` section for the config.
 

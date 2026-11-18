@@ -34,5 +34,14 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   no screen draws the underworld. A spawn that comes before the account is cached waits once (2 s) instead of
   sending the account key's tiers. A town or police tier change sends one toast in words through `NotifyPlayer`
   (`#LF-Reputation_Toast_<Faction>_Up|Down`), the underworld none. Test `reputation/sync`.
-- 🔲 Contracts, client greying from `ClientTier`, screens, the pack's words,
+- ✅ **Contracts** (#2702, merged, in-dev): `LF_ReputationContracts.c`, rows in `Configs/Reputation/LF_ReputationContracts.conf`
+  (`LF_ReputationContractDef`: id, `m_sJob`, `m_sStandingGate`, faction, `m_fPayMultiplier` clamped to 1.3..1.6, award, `m_iStakePoints`,
+  time limit; a per-character cooldown, 1800 s). A contract wraps the character's active `LF_CivilianJob` run of its job, one at a
+  time: `Begin(user, ...)` refuses a dead or downed body and is rate limited as a purchase, then starts the run and `Take`s it.
+  `CompleteRun` pays base times the multiplier once and awards the points; the bonus part reaches the player under the ledger reason
+  `standing-bonus`. `AbandonRun`, or finishing past the time limit, takes the stake (`LF_Reputation.Add(-stake)`, reason logged) and pays
+  no contract money (a late finish still pays the plain run). Stakes move no money. A contract whose run vanished (a wipe) is dropped with
+  no stake. Session state: a restart refunds the run's deposit and drops the contract. A drop-off by a dead or downed body pays nothing.
+  Core ships one neutral parcel row (`test_parcel`); the offer that calls `Begin` and the pack's contracts are later cards. Test `reputation/contract`.
+- 🔲 The contract offer, client greying from `ClientTier`, screens, the pack's words,
   pack overlay and the owner `config.json` section `reputation` (later cards of #1018).
