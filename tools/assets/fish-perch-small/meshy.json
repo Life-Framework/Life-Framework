@@ -1,0 +1,14 @@
+{
+  "slug": "fish-perch-small",
+  "generations": [
+    {
+      "date": "2026-11-18",
+      "tool": "Meshy text-to-3D",
+      "model": "meshy-6-lite",
+      "previewId": "01a1effe-75ff-7215-b921-316736f23243",
+      "refineId": "01a1effe-e2cf-751b-b87a-60770279daf9",
+      "prompt": "A single European river perch fish, whole, swimming pose seen from the side, deep arched body, two separate dorsal fins the first one spiny and tall, spread tail fin, green-olive back with six dark vertical bars across the flanks, yellowish belly, bright orange-red pelvic and anal fins. Realistic game prop, no base, no stand, no water, no text, no logos.",
+      "texturePrompt": "European perch: olive green back, dark vertical bars on yellow-green flanks, bright orange-red lower fins."
+    }
+  ]
+}

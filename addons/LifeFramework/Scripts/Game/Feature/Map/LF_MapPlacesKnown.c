@@ -255,16 +255,16 @@ modded class LF_MapPlacesUI
 
 	//------------------------------------------------------------------------------------------------
 	//! A single heard-of place draws the faded pencil "?" instead of its kind's icon.
-	override protected void Style(int i)
+	//! (Through the layer's one candidate hook, so the icon is loaded once and the lookup is remembered, #2397.)
+	override protected void IconCandidates(notnull LF_MapClusterGroup group, notnull array<string> candidates)
 	{
-		super.Style(i);
-		LF_MapClusterGroup group = m_aGroups[i];
 		if (!group.IsSingle() || group.m_eState != LF_EMapPoiState.FADED)
+		{
+			super.IconCandidates(group, candidates);
 			return;
+		}
 
 		LF_MapPoi poi = m_aPois[group.m_aMembers[0]];
-		array<string> candidates = {};
 		LF_MapPlacesKnown.Candidates(group.m_eState, poi.m_sKind, poi.m_sIcon, poi.m_sCategory, candidates);
-		LF_MapPlaceIcons.Apply(ImageWidget.Cast(m_aWidgets[i].FindAnyWidget("Icon")), candidates);
 	}
 }

@@ -999,10 +999,10 @@ GenericEntity GridMarker_c16r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c16r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:slice-2684"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 214.5 0.505 37.5
@@ -1071,10 +1071,10 @@ GenericEntity GridMarker_c19r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c19r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:furniture-vanilla"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 250.5 0.505 37.5
@@ -1089,19 +1089,19 @@ GenericEntity GridMarker_c20r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
    m_vTextColor 0.05 0.05 0.05
   }
  }
- coords 262.5 0.505 35.5
+ coords 273.5 0.505 35.5
  angleY 180
 }
 GenericEntity GridPlate_c20r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:furniture-vanilla"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
- coords 262.5 0.505 37.5
+ coords 273.5 0.505 37.5
  angleY 180
 }
 GenericEntity GridMarker_c21r1 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -3879,10 +3879,10 @@ GenericEntity GridMarker_c11r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c11r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:slice-3065"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 154.5 0.505 97.5
@@ -3903,10 +3903,10 @@ GenericEntity GridMarker_c12r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_
 GenericEntity GridPlate_c12r6 : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:free"
+   m_sSignId "grid:slice-2675"
    m_vRimColor 0.1 0.1 0.1
-   m_vPaintColor 0.4 0.8 0.4
-   m_vTextColor 0.05 0.05 0.05
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
   }
  }
  coords 166.5 0.505 97.5
@@ -4560,26 +4560,6 @@ StaticModelEntity GridPath_r1_85 : "{D93A7286584E122C}Prefabs/Props/Construction
  coords 224.67 0.025 34
  scale 0.3
 }
-StaticModelEntity GridPath_r1_96 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 251.07 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_97 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 253.47 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_98 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 255.87 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_99 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 258.27 0.025 34
- scale 0.3
-}
-StaticModelEntity GridPath_r1_100 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 260.67 0.025 34
- scale 0.3
-}
 StaticModelEntity GridPath_r2_1 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 23.07 0.025 46
  scale 0.3
@@ -4678,46 +4658,6 @@ StaticModelEntity GridPath_r2_84 : "{D93A7286584E122C}Prefabs/Props/Construction
 }
 StaticModelEntity GridPath_r2_85 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 224.67 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_96 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 251.07 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_97 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 253.47 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_98 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 255.87 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_99 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 258.27 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_100 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 260.67 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_101 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 263.07 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_102 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 265.47 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_103 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 267.87 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_104 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 270.27 0.025 46
- scale 0.3
-}
-StaticModelEntity GridPath_r2_105 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
- coords 272.67 0.025 46
  scale 0.3
 }
 StaticModelEntity GridPath_r2_106 : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
@@ -6133,7 +6073,7 @@ GenericEntity Grid_frame_Spawn {
 GenericEntity GridMapBoard : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  components {
   LF_SignComponent "{026619B31213409D}" {
-   m_sSignId "grid:map c0r0 chess-table, c1r0 pr-features, c2r0 whitelist-chat, c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c6r0 first-night, c7r0 bank-heist, c8r0 bank-heist, c9r0 hideout, c10r0 jail, c11r0 bank, c12r0 bank, c13r0 taxi-stand, c14r0 hostel, c15r0 hostel, c17r0 pub, c18r0 pub, c20r0 fuel-station, c21r0 fuel-station, c22r0 fuel-station, c23r0 clinic, c24r0 clinic, c0r1 roadblock, c1r1 retheme-proof, c2r1 slice-2677, c3r1 police-station-kit, c4r1 police-station-kit, c5r1 hospital, c6r1 chain-barrels, c7r1 chopshop, c8r1 lockpick-cars, c9r1 cash-van, c10r1 cash-van, c11r1 bank, c12r1 bank, c14r1 hostel, c15r1 hostel, c17r1 pub, c18r1 pub, c23r1 clinic, c24r1 clinic, c0r2 jobs, c1r2 event-scene, c2r2 community-hall, c3r2 police-station-kit, c4r2 police-station-kit, c5r2 hospital, c6r2 impound, c7r2 police-desk, c8r2 police-desk, c9r2 dispatch, c10r2 convoy, c11r2 town-hall, c12r2 town-hall, c13r2 town-hall, c14r2 slice-2441, c15r2 plot-sign, c16r2 slice-2685, c17r2 slice-r1, c0r3 houses-keys, c1r3 test-fixtures, c6r3 vehicle-lot, c7r3 job-depot, c8r3 job-depot, c9r3 zone-signs, c10r3 zone-signs, c11r3 town-hall, c12r3 town-hall, c13r3 town-hall, c14r3 slice-2654, c18r3 pack-fixture, c0r4 shooting-range, c1r4 fence-shop-2, c2r4 orgs-vehicles, c6r4 vehicle-lot, c7r4 apple-chain, c8r4 apple-chain, c9r4 org-desk, c10r4 atm, c12r4 slice-2925, c14r4 fence-yard, c15r4 fence-yard, c16r4 slice-2847, c17r4 parcel-kiosk, c18r4 slice-2853, c19r4 store-box, c20r4 slice-b1, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c7r5 first-night-room, c8r5 first-night-room, c9r5 first-night-room, c10r5 furnace, c11r5 slice-fi4, c14r5 fence-yard, c15r5 fence-yard, c21r5 slice-2948, c0r6 race-track, c1r6 police, c2r6 npcs, c5r6 wanted-posters, c7r6 first-night-room, c8r6 first-night-room, c9r6 first-night-room, c10r6 gun-counter"
+   m_sSignId "grid:map c0r0 chess-table, c1r0 pr-features, c2r0 whitelist-chat, c3r0 shops-till, c4r0 crimes, c5r0 zones-spawn, c6r0 first-night, c7r0 bank-heist, c8r0 bank-heist, c9r0 hideout, c10r0 jail, c11r0 bank, c12r0 bank, c13r0 taxi-stand, c14r0 hostel, c15r0 hostel, c17r0 pub, c18r0 pub, c20r0 fuel-station, c21r0 fuel-station, c22r0 fuel-station, c23r0 clinic, c24r0 clinic, c0r1 roadblock, c1r1 retheme-proof, c2r1 slice-2677, c3r1 police-station-kit, c4r1 police-station-kit, c5r1 hospital, c6r1 chain-barrels, c7r1 chopshop, c8r1 lockpick-cars, c9r1 cash-van, c10r1 cash-van, c11r1 bank, c12r1 bank, c14r1 hostel, c15r1 hostel, c16r1 slice-2684, c17r1 pub, c18r1 pub, c19r1 furniture-vanilla, c20r1 furniture-vanilla, c23r1 clinic, c24r1 clinic, c0r2 jobs, c1r2 event-scene, c2r2 community-hall, c3r2 police-station-kit, c4r2 police-station-kit, c5r2 hospital, c6r2 impound, c7r2 police-desk, c8r2 police-desk, c9r2 dispatch, c10r2 convoy, c11r2 town-hall, c12r2 town-hall, c13r2 town-hall, c14r2 slice-2441, c15r2 plot-sign, c16r2 slice-2685, c17r2 slice-r1, c0r3 houses-keys, c1r3 test-fixtures, c6r3 vehicle-lot, c7r3 job-depot, c8r3 job-depot, c9r3 zone-signs, c10r3 zone-signs, c11r3 town-hall, c12r3 town-hall, c13r3 town-hall, c14r3 slice-2654, c18r3 pack-fixture, c0r4 shooting-range, c1r4 fence-shop-2, c2r4 orgs-vehicles, c6r4 vehicle-lot, c7r4 apple-chain, c8r4 apple-chain, c9r4 org-desk, c10r4 atm, c12r4 slice-2925, c14r4 fence-yard, c15r4 fence-yard, c16r4 slice-2847, c17r4 parcel-kiosk, c18r4 slice-2853, c19r4 store-box, c20r4 slice-b1, c0r5 licence-desk, c1r5 everon-outlets, c2r5 signs-board-quests, c7r5 first-night-room, c8r5 first-night-room, c9r5 first-night-room, c10r5 furnace, c11r5 slice-fi4, c14r5 fence-yard, c15r5 fence-yard, c21r5 slice-2948, c0r6 race-track, c1r6 police, c2r6 npcs, c5r6 wanted-posters, c7r6 first-night-room, c8r6 first-night-room, c9r6 first-night-room, c10r6 gun-counter, c11r6 slice-3065, c12r6 slice-2675"
    m_vRimColor 0.1 0.1 0.1
    m_vPaintColor 0.95 0.95 0.9
    m_vTextColor 0.05 0.05 0.05

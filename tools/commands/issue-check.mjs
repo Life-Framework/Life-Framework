@@ -1,0 +1,73 @@
+// tools\cli issue-check <N> [<N>...] [--skip-list <file>] [--json]: before dispatching an agent to an
+// open issue, ask GitHub and git whether merged work already covers it (tools/lib/issue-preflight.mjs).
+// One verdict per issue: LIKELY DONE, CHECK or CLEAR. Exit 0 always (it is advice); --json prints the
+// facts and verdicts. The skip list is the lead's stale-issue file (lines with ALREADY-FIXED); it
+// defaults to LF_STALE_LIST when that is set.
+import { existsSync, readFileSync } from "node:fs";
+import { ghBin, run } from "../wt.mjs";
+import { keywords, namedIssues, render, skipListNumbers, verdict } from "../lib/issue-preflight.mjs";
+
+export const help = "issue-check <N...> [--skip-list f] [--json]   before dispatch: is the issue already done under another number? (merged PRs and main commits citing it, done labels, similar merged PRs, done sub-issues)";
+
+function gh(root, args) {
+  const bin = ghBin();
+  if (!bin) throw new Error("the GitHub CLI (gh) is required");
+  const r = run(bin, args, { cwd: root, maxBuffer: 64 * 1024 * 1024, timeout: 30000 });
+  if (r.status !== 0) throw new Error(`gh ${args.slice(0, 3).join(" ")}: ${(r.stderr || r.stdout || "").trim().split("\n")[0]}`);
+  return JSON.parse(r.stdout || "[]");
+}
+
+export function gather(root, n, { skipList = new Set() } = {}) {
+  const issue = gh(root, ["issue", "view", String(n), "--json", "number,title,body,labels,state,comments"]);
+  const prs = gh(root, ["pr", "list", "--state", "merged", "--search", `${n} in:title,body`, "--limit", "30", "--json", "number,title,body,mergedAt"]);
+  const g = run("git", ["log", "origin/main", "-E", `--grep=#${n}([^0-9]|$)`, "--no-merges", "--format=%H%x09%s", "-n", "10"], { cwd: root, timeout: 30000 });
+  const commits = (g.status === 0 ? g.stdout : "")
+    .split("\n")
+    .filter(Boolean)
+    .map((l) => ({ sha: l.split("\t")[0], subject: l.split("\t").slice(1).join("\t") }));
+  const words = keywords(issue.title);
+  let similar = [];
+  if (words.length >= 2) {
+    try {
+      similar = gh(root, ["pr", "list", "--state", "merged", "--search", `${words.slice(0, 3).join(" ")} in:title`, "--limit", "5", "--json", "number,title,mergedAt"]);
+    } catch {
+      /* search hiccup: no similar list */
+    }
+  }
+  const named = [];
+  for (const m of namedIssues(issue.body, n).slice(0, 8)) {
+    try {
+      named.push(gh(root, ["issue", "view", String(m), "--json", "number,title,state,labels"]));
+    } catch {
+      /* a PR number or a deleted issue */
+    }
+  }
+  return { issue, prs, commits, similar, named, skipList };
+}
+
+export async function main(args, { root = process.cwd() } = {}) {
+  const nums = args.filter((a) => /^#?[0-9]+$/.test(a)).map((a) => Number(a.replace("#", "")));
+  if (!nums.length) {
+    console.log("usage: tools\\cli issue-check <N> [<N>...] [--skip-list <file>] [--json]");
+    return 2;
+  }
+  const si = args.indexOf("--skip-list");
+  const listFile = si >= 0 ? args[si + 1] : process.env.LF_STALE_LIST;
+  const skipList = listFile && existsSync(listFile) ? skipListNumbers(readFileSync(listFile, "utf8")) : new Set();
+  const out = [];
+  for (const n of nums) {
+    try {
+      const facts = gather(root, n, { skipList });
+      const v = verdict(facts);
+      out.push({ n, title: facts.issue.title, ...v });
+      if (!args.includes("--json")) console.log(render(n, facts.issue.title, v));
+    } catch (e) {
+      out.push({ n, level: "ERROR", reasons: [e.message] });
+      if (!args.includes("--json")) console.log(`#${n} ERROR: ${e.message}`);
+    }
+  }
+  if (args.includes("--json")) console.log(JSON.stringify(out, null, 1));
+  const counts = ["LIKELY DONE", "CHECK", "CLEAR", "ERROR"].map((l) => `${l.toLowerCase().replace(" ", "-")}=${out.filter((o) => o.level === l).length}`).join(" ");
+  console.log(`SUMMARY issue-check ok ${counts}`);
+  return 0;
+}

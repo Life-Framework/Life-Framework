@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "carlot",
+  "building": "b77",
+  "kit": "carlot",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_carlot.layer",
+  "kinds": [
+    "VehicleLot"
+  ],
+  "rows": 7,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_carlot_Place"
+  },
+  "date": "2026-11-18"
+}

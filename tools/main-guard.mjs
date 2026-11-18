@@ -12,7 +12,10 @@
 //   4. the culprit merge is reverted with `git revert -m 1` on a ws/revert-pr<N>-guard branch, a PR titled
 //      "Revert #N (main guard: <what failed>)" with auto-merge (GitHub's required validate check gates it),
 //      a comment on the original PR, its issues reopened as `regression`, one line to the staff webhook.
-// Never reverts a revert, never touches a merge from before it started, never pushes main. LF_MAIN_GUARD=0 stops it.
+// Stage 0 (#2889, tools/lib/main-guard.mjs validateGate): `validate --all` on every new head before the compile; a red
+// is rerun, bisected to the merge that introduced it, and that PR gets a comment, the staff a line and a fix card; only a
+// hard data-safety check (HARD_CHECKS) reverts. A red explained by an earlier guard revert still on main (the follow-up
+// of a reverted PR) is commented, never reverted. Never reverts a revert, never touches a merge from before it started, never pushes main. LF_MAIN_GUARD=0 stops it.
 // One worker per repo (hub lock); state in <hub>/main-guard.json; log tmp/logs/main-guard.log.
 
 import { spawn, spawnSync } from "node:child_process";
@@ -158,12 +161,12 @@ function checkout(dir, sha) {
 }
 
 // One cli command in the run worktree, at high pool priority (LF_PRIORITY: `build` takes no --priority flag and read it as an addon), logged to its own file; resolves { code, text, log }.
-function runCli(root, dir, args, tag) {
+function runCli(root, dir, args, tag, extraEnv = {}) {
   const file = join(mainRoot(root), "tmp", "logs", `main-guard-${tag}-${Date.now()}.log`);
   mkdirSync(dirname(file), { recursive: true });
   return new Promise((res) => {
     const fd = openSync(file, "a");
-    const child = spawn(process.execPath, [join(dir, "tools", "cli.mjs"), ...args], { cwd: dir, env: { ...process.env, LF_PRIORITY: "high", LF_MAIN_GUARD_JOB: "1" }, stdio: ["ignore", fd, fd], windowsHide: true });
+    const child = spawn(process.execPath, [join(dir, "tools", "cli.mjs"), ...args], { cwd: dir, env: { ...process.env, LF_PRIORITY: "high", LF_MAIN_GUARD_JOB: "1", ...extraEnv }, stdio: ["ignore", fd, fd], windowsHide: true });
     const timer = setTimeout(() => { try { child.kill(); } catch {} }, STEP_BUDGET_MS);
     const done = (code) => {
       clearTimeout(timer);
@@ -181,11 +184,30 @@ function runCli(root, dir, args, tag) {
 function mergesSince(dir, from, head, startHead) {
   const r = git(dir, ["log", "--first-parent", "--merges", "--reverse", "--format=%H%x09%s", `${from}..${head}`]);
   if (r.status !== 0) return [];
-  return r.stdout.split(/\r?\n/).filter(Boolean).map((l, i) => {
-    const [sha, subject] = l.split("\t");
-    const beforeStart = !!startHead && git(dir, ["merge-base", "--is-ancestor", sha, startHead]).status === 0;
-    return { sha, subject, beforeStart, order: i };
+  return mg.parseMerges(r.stdout, (sha) => !!startHead && git(dir, ["merge-base", "--is-ancestor", sha, startHead]).status === 0);
+}
+
+// A guard revert still on main: its merge subject names the revert branch (revert() makes ws/revert-pr<N>-guard).
+function revertLanded(dir, pr) {
+  const r = git(dir, ["log", "origin/main", "--first-parent", "--merges", "-F", `--grep=ws/revert-pr${pr}-guard`, "--format=%H", "-1"]);
+  return r.status === 0 && !!r.stdout.trim();
+}
+// The follow-up of a reverted PR (lib explainedByEarlierRevert): merged after it, touching its files.
+function earlierRevertFor(dir, c, state) {
+  const filesOf = (sha) => { const r = git(dir, ["diff", "--name-only", `${sha}^1`, sha]); return r.status === 0 ? r.stdout.split(/\r?\n/).filter(Boolean) : []; };
+  return mg.explainedByEarlierRevert(c, state, {
+    landed: (pr) => revertLanded(dir, pr),
+    isAfter: (revertedSha, sha) => revertedSha !== sha && git(dir, ["merge-base", "--is-ancestor", revertedSha, sha]).status === 0,
+    filesOf,
   });
+}
+
+// A comment on a PR, from a file (a body on the command line loses its quotes on Windows).
+function commentOnPr(root, dir, pr, body, tag) {
+  const cf = join(mainRoot(root), "tmp", "logs", `main-guard-${tag}-${pr}-${Date.now()}.md`);
+  writeFileSync(cf, body);
+  const r = gh(dir, ["pr", "comment", String(pr), "--body-file", cf]);
+  if (r.status !== 0) log(root, `comment on #${pr} failed: ${String(r.stderr || "").trim().slice(0, 160)}`);
 }
 
 async function checkHead(root, dir, head) {
@@ -278,9 +300,11 @@ async function checkHead(root, dir, head) {
       writeState(root, { running: null });
       return;
     }
-    const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name, needsSkip });
+    const earlier = b.culprit && !b.stop ? earlierRevertFor(dir, b.culprit, readState(root)) : null;
+    const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name, needsSkip }) ?? (earlier ? mg.earlierRefusal(mg.prOfMerge(b.culprit.subject), earlier) : null);
     if (refusal) {
       log(root, `${head.slice(0, 8)} ${step.name} red, no revert: ${refusal}`);
+      if (earlier && b.culprit) commentOnPr(root, dir, mg.prOfMerge(b.culprit.subject), `**Main guard:** ${what} fails on main after this PR merged, but ${mg.earlierRefusal(mg.prOfMerge(b.culprit.subject), earlier)}. Not reverted. Log on the guard machine: \`${r.log}\``, "explained");
       if (mg.fixCardInstead(b.culprit, step.name, { needsSkip })) openFixCard(root, dir, b.culprit, step.name, what, r.log, { needsSkip });
       mark(root, dir, head, "red", { step: step.name, what, note: b.stop ? refusal : "" });
       writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), note: refusal, failing, failLines: redLines } });
@@ -294,6 +318,84 @@ async function checkHead(root, dir, head) {
   mark(root, dir, head, "green");
   writeState(root, { running: null, lastChecked: head, lastGreen: head, lastResult: { head, verdict: "green", at: now() } });
   log(root, `${head.slice(0, 8)} green`);
+}
+
+// Stage 0: validate --all on a new head (#2889), in the compile worktree, before the compile. It never marks the head red
+// on GitHub (the compiled-ok pin is about the build, not about a validator), and it never blocks the compile or stage 2.
+async function validateHead(root, vdir, head) {
+  const h8 = head.slice(0, 8);
+  writeState(root, { lastValidateAt: now(), validating: { head, at: now() } });
+  let lastLog = "";
+  try {
+    const state = readState(root);
+    const run = async (sha, only) => {
+      checkout(vdir, sha);
+      const x = await runCli(root, vdir, mg.VALIDATE, `${sha.slice(0, 8)}-validate${only ? "-probe" : ""}`, only ? { [mg.VALIDATE_ONLY_ENV]: only.join(",") } : {});
+      lastLog = x.log;
+      const failed = mg.failingChecks(x.text);
+      const v = mg.classifyStep("validate", x.code, x.text, failed);
+      if (only) log(root, `  validate ${sha.slice(0, 8)} ${x.code === 0 ? "green" : v.verdict === "red" ? `red (${failed.slice(0, 3).join(", ") || "no check named"})` : v.verdict.toUpperCase()} for ${only.slice(0, 3).join(", ")}`);
+      return { verdict: v.verdict, failed, why: v.why, text: x.text, log: x.log };
+    };
+    let top = null;
+    const from = state.lastValidated ?? state.lastGreen ?? state.startHead;
+    const g = await mg.validateGate({
+      head,
+      merges: mergesSince(vdir, from, head, state.startHead),
+      state,
+      run: async (sha, only) => { const x = await run(sha, only); if (sha === head && !only) top = x; return x; },
+      earlier: (c) => earlierRevertFor(vdir, c, state),
+    });
+    if (g.verdict === "green") {
+      writeState(root, { lastValidated: head, lastValidateRed: null, validateRed: null });
+      log(root, `${h8} validate green`);
+      return;
+    }
+    if (g.verdict === "env" || g.verdict === "unnamed") {
+      log(root, `${h8} validate: no verdict (${g.why}); retried on a later tick`);
+      writeState(root, { lastValidateAt: new Date(Date.now() + 7 * 60 * 1000).toISOString() }); // no verdict: back off to ~10 min between tries
+      return;
+    }
+    if (g.verdict === "flake") {
+      try { appendFileSync(flakeLog(root), `${now()} ${h8} validate: ${g.set.join(", ")} failed once, passed on recheck (${lastLog})\n`); } catch {}
+      log(root, `${h8} validate: flake (${g.set.join(", ")}), no action; retried on a later tick`);
+      writeState(root, { lastValidateAt: new Date(Date.now() + 7 * 60 * 1000).toISOString() }); // no verdict: back off to ~10 min between tries
+      return;
+    }
+    if (g.verdict === "known") {
+      log(root, `${h8} validate still red (${g.set.join(", ")}), already flagged${g.flagged.pr ? ` on #${g.flagged.pr}` : ""}`);
+      writeState(root, { lastValidateRed: head });
+      return;
+    }
+    // red: the set, the merge that introduced it, and what to do about it.
+    const out = mg.checkOutput(top?.text, g.set);
+    const checks = g.set;
+    const drift = codeDriftNow(vdir);
+    if (drift.length) { log(root, `${h8} validate red (${checks.join(", ")}), not acted on: ${mg.staleRefusal(drift)}`); return; }
+    const c = g.culprit;
+    const pr = c ? mg.prOfMerge(c.subject) : null;
+    log(root, `${h8} validate RED (${checks.join(", ")}); ${c ? `introduced by #${pr} (${c.sha.slice(0, 8)}): ${g.action}` : `no merge to blame: ${g.stop}`}${g.refusal && c ? ` (${g.refusal})` : ""}`);
+    writeState(root, { lastValidateRed: head, validateRed: { head, checks, pr, action: g.action, at: now() } });
+    if (!c) { await staffLine(root, `main guard: validate is red on main at ${h8} (${checks.slice(0, 3).join(", ")}); no single merge to blame (${g.stop})`); return; }
+    if (g.action === "revert") {
+      await revert(root, vdir, c, `validate ${g.hits.join(", ")}`, lastLog);
+      return;
+    }
+    if (g.action === "explained") {
+      commentOnPr(root, vdir, pr, mg.validateComment(c, checks, out, lastLog, { earlier: g.earlier }), "validate-explained");
+      await staffLine(root, `main guard: validate is red on main (${checks.slice(0, 3).join(", ")}) after #${pr}, which follows the reverted #${g.earlier.pr}; not reverted, ship it with the re-land`);
+      return;
+    }
+    commentOnPr(root, vdir, pr, mg.validateComment(c, checks, out, lastLog), "validate");
+    const card = mg.validateFixCard(c, checks, out, lastLog);
+    const bf = join(mainRoot(root), "tmp", "logs", `main-guard-validate-card-${pr}-${Date.now()}.md`);
+    writeFileSync(bf, card.body);
+    const r = gh(vdir, ["issue", "create", "--title", card.title, "--body-file", bf]);
+    log(root, `validate fix card: ${r.status === 0 ? (r.stdout || "").trim() : `create failed: ${(r.stderr || "").trim().slice(0, 200)}`}`);
+    await staffLine(root, `main guard: validate is red on main (${checks.slice(0, 3).join(", ")}), introduced by #${pr}; commented, fix card ${r.status === 0 ? (r.stdout || "").trim() : "failed"}`);
+  } finally {
+    writeState(root, { validating: null });
+  }
 }
 
 // The stage-2 reds the guard set on an infra refusal before #2759 (2026-11-17: 7587bfd5, a held build lock): read
@@ -529,7 +631,11 @@ export async function runWorker(root) {
         } else if (v === "fail") mark(root, cdir, req, "red", { step: "compile" });
         else { log(root, `${req.slice(0, 8)}: no compile verdict; request kept`); writeState(root, { request: req }); }
       }
-      // Stage 1 first: compile the newest head.
+      // Stage 0: validate the newest head (cheap, no Workbench); a failure here is flagged, it does not hold the compile.
+      if (mg.shouldValidate(readState(root), head, Date.now()).run) {
+        try { await validateHead(root, cdir, head); } catch (e) { log(root, `validate stage failed: ${e?.message ?? e}`); writeState(root, { validating: null }); }
+      }
+      // Stage 1 next: compile the newest head.
       const c = mg.shouldCompile(readState(root), head, Date.now());
       if (c.run) await compileHead(root, cdir, head);
       // Stage 2 in the background, only ever on the newest compiled-ok head.

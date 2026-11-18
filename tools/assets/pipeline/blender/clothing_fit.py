@@ -248,6 +248,26 @@ def skin(o, arm):
     mod.object = arm
 
 
+def prune_armature(arm, meshes):
+    """Keep only the bones the meshes are weighted to and their ancestors (names untouched). A full 231-node
+    skeleton imports with no mesh in today's Workbench; a small one (the taser's) does."""
+    used = set()
+    for m in meshes:
+        used.update(used_bones(m))
+    keep = set()
+    for n in used:
+        b = arm.data.bones.get(n)
+        while b is not None:
+            keep.add(b.name)
+            b = b.parent
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.mode_set(mode="EDIT")
+    for eb in [e for e in arm.data.edit_bones if e.name not in keep]:
+        arm.data.edit_bones.remove(eb)
+    bpy.ops.object.mode_set(mode="OBJECT")
+    log("pruned skeleton to", len(keep), "bones")
+
+
 def region_colliders(name, worn, bone_by_name, gamemat_name):
     """One rigid UTM_ piece per dominant bone region, parented to that bone's Empty (the sample vest parents
     its pieces to the bones; with EBT the bones are Empties, and the armature itself may have no children)."""
@@ -447,6 +467,8 @@ def main():
             l.parent = arm
             l.modifiers.new("Armature", "ARMATURE").object = arm
         report["lods"].append({"name": l.name, "tris": tris(l), "max_influences": max((sum(1 for g in v.groups if g.weight > 1e-5) for v in l.data.vertices), default=0)})
+    if job.get("prune_skeleton") and not ebt:
+        prune_armature(arm, lods)
     colliders = region_colliders(name, worn, bone_by_name if ebt else {b.name: arm for b in arm.data.bones}, job.get("collider_material", "fabric"))
     if not ebt:
         for c in colliders:

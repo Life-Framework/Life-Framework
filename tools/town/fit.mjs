@@ -235,23 +235,9 @@ export function openPrTownClaims(exec, { branch = null } = {}) {
   return { claims, note: "" };
 }
 
-// Uncommitted claim files in sibling local worktrees: no network, read from `git worktree list --porcelain`.
-export function worktreeTownClaims(exec, root) {
-  const ls = exec("git", ["worktree", "list", "--porcelain"]);
-  if (ls.status !== 0) return { claims: [], note: "could not list the worktrees; claims in sibling worktrees were not checked" };
-  const claims = [];
-  for (const block of String(ls.stdout).split(/\r?\n\r?\n/)) {
-    const path = /^worktree (.+)$/m.exec(block)?.[1];
-    if (!path || resolve(path) === resolve(root)) continue;
-    const dir = join(path, CLAIMS_DIR);
-    if (!existsSync(dir)) continue;
-    for (const f of readdirSync(dir).filter((n) => n.endsWith(".json"))) {
-      const c = asClaim(readFileSync(join(dir, f), "utf8"), { file: `${CLAIMS_DIR}/${f}`, where: `worktree ${basename(path)}` });
-      if (c) claims.push(c);
-    }
-  }
-  return { claims, note: "" };
-}
+// Pure: an integration worktree (ws/island-integration, #3076) merges other drafts' claim files to try them together and is never
+// pushed, so its copies are not claims of its own and must not block the drafts they came from.
+export const isIntegrationBranch = (branch) => /^ws\/island-integration(-[a-z0-9-]+)?$/.test(String(branch ?? ""));
 
 // Pure: whether a claim belongs to the draft this branch is stacked on. A follow-up branch ws/town-draft-<place>-<slot>-<word> builds on
 // the open draft ws/town-draft-<place>-<slot> and changes that slot's layer on top of it, so the draft's own claim (its open PR, its
@@ -261,6 +247,25 @@ export function claimOfBase(c, { branch, place, slot }) {
   if (!branch || !String(branch).startsWith(`${base}-`)) return false;
   if (c.place !== place || c.slot !== slot) return false;
   return new RegExp(`^open PR #[0-9]+ \\(${base}\\)$`).test(c.where) || c.where === `worktree Life-Framework-ws-town-draft-${place}-${slot}`;
+}
+
+// Uncommitted claim files in sibling local worktrees: no network, read from `git worktree list --porcelain`.
+export function worktreeTownClaims(exec, root) {
+  const ls = exec("git", ["worktree", "list", "--porcelain"]);
+  if (ls.status !== 0) return { claims: [], note: "could not list the worktrees; claims in sibling worktrees were not checked" };
+  const claims = [];
+  for (const block of String(ls.stdout).split(/\r?\n\r?\n/)) {
+    const path = /^worktree (.+)$/m.exec(block)?.[1];
+    if (!path || resolve(path) === resolve(root)) continue;
+    if (isIntegrationBranch(/^branch refs\/heads\/(.+)$/m.exec(block)?.[1])) continue;
+    const dir = join(path, CLAIMS_DIR);
+    if (!existsSync(dir)) continue;
+    for (const f of readdirSync(dir).filter((n) => n.endsWith(".json"))) {
+      const c = asClaim(readFileSync(join(dir, f), "utf8"), { file: `${CLAIMS_DIR}/${f}`, where: `worktree ${basename(path)}` });
+      if (c) claims.push(c);
+    }
+  }
+  return { claims, note: "" };
 }
 
 // Pure: why another claim blocks this fit ([] when none does). A street slot shares its building's frontage.
@@ -322,6 +327,7 @@ export function planFit(opts, ctx = {}) {
 
   const slot = template.slots.find((s) => s.id === slotId);
   if (!slot) return (errors.push(`the ${template.kind} template has no slot '${slotId}'`), fail());
+  if (slot.host === "outposts") return (errors.push(`slot ${slotId} stands in other places' buildings (an outposts slot): run tools\\cli town drops ${place} ${slotId}`), fail());
   const entry = mapping.slots?.[slotId];
   if (!entry) return (errors.push(`slot ${slotId} is not in the mapping`), fail());
   if (entry.none) return (errors.push(`slot ${slotId} is mapped to none${entry.reason ? ` (${entry.reason})` : ""}: nothing to fit`), fail());

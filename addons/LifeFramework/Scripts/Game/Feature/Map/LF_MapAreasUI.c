@@ -40,6 +40,37 @@ class LF_MapAreaCmd : Managed
 }
 
 //------------------------------------------------------------------------------------------------
+//! The colours of one tessellation pass (#2397): a token's colour is parsed out of the theme string once and
+//! reused by every area of that style, instead of splitting the theme string again for each area (about 80
+//! parses for 40 areas, a large share of a zoom end's cost). One palette is made per pass, so a theme change
+//! is seen on the next pass.
+class LF_MapAreaPalette
+{
+	protected string m_sThemeTokens;
+	protected ref map<string, int> m_mColors = new map<string, int>();
+
+	//------------------------------------------------------------------------------------------------
+	void LF_MapAreaPalette(string themeTokens)
+	{
+		m_sThemeTokens = themeTokens;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Same answer as LF_MapAreasDraw.ColorOf for this palette's theme string.
+	int ColorOf(string token, int alphaPercent)
+	{
+		string key = token + "/" + alphaPercent.ToString();
+		int color;
+		if (m_mColors.Find(key, color))
+			return color;
+
+		color = LF_MapAreasDraw.ColorOf(token, alphaPercent, m_sThemeTokens);
+		m_mColors.Set(key, color);
+		return color;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! The map area drawing rules, pure. Screen units are the canvas's reference pixels.
 class LF_MapAreasDraw
 {
@@ -185,7 +216,9 @@ class LF_MapAreasDraw
 		for (int i = 0; i < screen.Count(); i++)
 		{
 			vector next = screen[(i + 1) % screen.Count()];
-			total += Math.Sqrt(Math.Pow(next[0] - screen[i][0], 2) + Math.Pow(next[1] - screen[i][1], 2));
+			float edgeX = next[0] - screen[i][0];
+			float edgeY = next[1] - screen[i][1];
+			total += Math.Sqrt(edgeX * edgeX + edgeY * edgeY);
 		}
 
 		return total;
@@ -203,12 +236,14 @@ class LF_MapAreasDraw
 		{
 			vector from = screen[i];
 			vector to = screen[(i + 1) % screen.Count()];
-			float length = Math.Sqrt(Math.Pow(to[0] - from[0], 2) + Math.Pow(to[1] - from[1], 2));
+			float deltaX = to[0] - from[0];
+			float deltaY = to[1] - from[1];
+			float length = Math.Sqrt(deltaX * deltaX + deltaY * deltaY);
 			if (length <= 0)
 				continue;
 
-			float ux = (to[0] - from[0]) / length;
-			float uy = (to[1] - from[1]) / length;
+			float ux = deltaX / length;
+			float uy = deltaY / length;
 			float at;
 			if (drawing && !dash)
 			{
@@ -271,8 +306,12 @@ class LF_MapAreasDraw
 	//! the theme's map colours, `labelText` the translated label (empty: none). Draws nothing for an
 	//! outline off the canvas or too small to see. Order: fill, outline, label.
 	//! \return The number of records added.
-	static int Build(notnull LF_MapArea area, notnull array<vector> screen, float ppu, float viewW, float viewH, string themeTokens, string labelText, notnull array<ref LF_MapAreaCmd> into)
+	static int Build(notnull LF_MapArea area, notnull array<vector> screen, float ppu, float viewW, float viewH, string themeTokens, string labelText, notnull array<ref LF_MapAreaCmd> into, LF_MapAreaPalette palette = null)
 	{
+		LF_MapAreaPalette colors = palette;
+		if (!colors)
+			colors = new LF_MapAreaPalette(themeTokens);
+
 		if (screen.Count() < 3)
 			return 0;
 
@@ -301,7 +340,7 @@ class LF_MapAreasDraw
 			LF_MapAreaCmd fill = new LF_MapAreaCmd();
 			fill.m_eKind = LF_MapAreaCmdKind.FILL;
 			fill.m_sToken = look.m_sFillToken;
-			fill.m_iColor = ColorOf(look.m_sFillToken, look.m_iFillAlpha, themeTokens);
+			fill.m_iColor = colors.ColorOf(look.m_sFillToken, look.m_iFillAlpha);
 			fill.m_sHatch = look.m_sHatch;
 			foreach (vector fillPoint : screen)
 			{
@@ -312,7 +351,7 @@ class LF_MapAreasDraw
 			into.Insert(fill);
 		}
 
-		int lineColor = ColorOf(look.m_sLineToken, 100, themeTokens);
+		int lineColor = colors.ColorOf(look.m_sLineToken, 100);
 		float on;
 		float off;
 		bool dashed = DashLengths(look.m_sDash, on, off);
@@ -364,10 +403,19 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 {
 	protected CanvasWidget m_wCanvas;
 	protected ref array<ref CanvasWidgetCommand> m_aCommands = {};
-	protected ref array<ref LF_MapArea> m_aAreas = {};
+	//! Records one frame's slice of a rebuild may add (about 1 ms of script).
+	protected static const int SLICE_COMMANDS = 120;	// lf-fixed: bounds the work of one frame; 40 areas take some five frames
 	protected float m_fBuildX;
 	protected float m_fBuildY;
 	protected bool m_bBuilt;	// false until a build ran on a settled view (the first Update after open)
+	// The rebuild in progress (#2397): its areas, the commands so far, the theme it reads and where it is.
+	protected ref array<ref LF_MapArea> m_aJobAreas = {};
+	protected ref array<ref CanvasWidgetCommand> m_aJobCommands = {};
+	protected ref LF_MapAreaPalette m_JobPalette;
+	protected string m_sJobTokens;
+	protected int m_iJobNext = -1;	// the next area to build, -1 when no rebuild is running
+	protected float m_fJobX;	// where the world origin was on screen when the job began
+	protected float m_fJobY;
 
 	//------------------------------------------------------------------------------------------------
 	protected static string ThemeTokens()
@@ -415,15 +463,92 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Re-reads the areas and rebuilds every command for the view the map has now.
+	//! Re-reads the areas and rebuilds every command for the view the map has now, all in this call (the map
+	//! opening: nothing is drawn yet, so there is nothing to hold on screen meanwhile).
 	protected void Redraw()
 	{
 		if (!m_wCanvas || !m_MapEntity)
 			return;
 
-		FrameSlot.SetOffsets(m_wCanvas, 0, 0, 0, 0);
-		OriginOnScreen(m_fBuildX, m_fBuildY);
-		LF_MapAreas.Collect(m_aAreas);
+		StartJob();
+		while (m_iJobNext >= 0)
+			StepJob();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Starts a rebuild for the view the map has now, to be run a slice a frame by Update (#2397): 40 areas
+	//! take about 4 ms of script (the dashes alone are some 500 small records), which in one frame was a hitch
+	//! on top of the places layer's rebuild. The canvas keeps showing the last commit until the new one is done.
+	protected void StartJob()
+	{
+		if (!m_wCanvas || !m_MapEntity)
+			return;
+
+		OriginOnScreen(m_fJobX, m_fJobY);
+		LF_MapAreas.Collect(m_aJobAreas);
+		BeginJob();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Starts the job on the areas already in m_aJobAreas (the probe fills them with its own).
+	protected void BeginJob()
+	{
+		m_aJobCommands.Clear();
+		m_sJobTokens = ThemeTokens();
+		m_JobPalette = new LF_MapAreaPalette(m_sJobTokens);
+		m_iJobNext = 0;
+		if (m_aJobAreas.IsEmpty())
+			Commit();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One frame's slice of the job: areas until SLICE_COMMANDS records were added. The last slice commits.
+	protected void StepJob()
+	{
+		if (m_iJobNext < 0)
+			return;
+
+		if (!m_MapEntity)
+		{
+			m_iJobNext = -1;
+			return;
+		}
+
+		m_iJobNext = BuildSlice(m_aJobAreas, m_iJobNext, SLICE_COMMANDS, m_sJobTokens, m_JobPalette, m_aJobCommands, true);
+		if (m_iJobNext >= m_aJobAreas.Count())
+			Commit();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the finished job on the canvas in one call. The map may have panned since the job began (a pan
+	//! restarts the job, but one that ended this frame did not see it), so the canvas is offset by the difference.
+	protected void Commit()
+	{
+		m_iJobNext = -1;
+		array<ref CanvasWidgetCommand> done = m_aJobCommands;
+		m_aJobCommands = m_aCommands;
+		m_aCommands = done;
+		m_fBuildX = m_fJobX;
+		m_fBuildY = m_fJobY;
+		float nowX;
+		float nowY;
+		OriginOnScreen(nowX, nowY);
+		float dx = nowX - m_fBuildX;
+		float dy = nowY - m_fBuildY;
+		FrameSlot.SetOffsets(m_wCanvas, dx, dy, dx, dy);
+		m_wCanvas.SetDrawCommands(m_aCommands);
+		m_bBuilt = true;
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (workspace)
+			LF_Debug.Info(LF_MapAreas.FEATURE, string.Format("drew %1 area(s) as %2 command(s) at %3 px/m on %4x%5", m_aJobAreas.Count(), m_aCommands.Count(), m_MapEntity.GetCurrentZoom(), workspace.GetWidth(), workspace.GetHeight()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tessellates areas[from..] for the view the map has now, stopping once `budget` records were added (at
+	//! least one area is always done). With `convert` the canvas commands are added to `commands`.
+	//! \return the index of the next area, the count when all are done.
+	protected int BuildSlice(notnull array<ref LF_MapArea> areas, int from, int budget, string tokens, notnull LF_MapAreaPalette palette, notnull array<ref CanvasWidgetCommand> commands, bool convert)
+	{
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		// Canvas draw commands take screen pixels, as SCR_MapEntity.WorldToScreen gives them (vanilla feeds
 		// them unscaled too); DPIUnscale is for FrameSlot positions only. The canvas fills the map root, which
@@ -431,10 +556,10 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 		float viewW = workspace.GetWidth();
 		float viewH = workspace.GetHeight();
 		float ppu = m_MapEntity.GetCurrentZoom();
-		string tokens = ThemeTokens();
-		m_aCommands.Clear();
-		foreach (LF_MapArea area : m_aAreas)
+		int added;
+		for (int at = from; at < areas.Count(); at++)
 		{
+			LF_MapArea area = areas[at];
 			array<vector> screen = {};
 			foreach (vector world : area.m_aOutline)
 			{
@@ -449,16 +574,133 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 				label = WidgetManager.Translate(label);
 
 			array<ref LF_MapAreaCmd> records = {};
-			if (LF_MapAreasDraw.Build(area, screen, ppu, viewW, viewH, tokens, label, records) == 0)
+			if (LF_MapAreasDraw.Build(area, screen, ppu, viewW, viewH, tokens, label, records, palette) == 0)
 				LogNotDrawn(area, screen);
 
-			foreach (LF_MapAreaCmd record : records)
-				m_aCommands.Insert(ToCommand(record));
+			added += records.Count();
+			if (convert)
+			{
+				foreach (LF_MapAreaCmd record : records)
+					commands.Insert(ToCommand(record));
+			}
+
+			if (added >= budget)
+				return at + 1;
 		}
 
-		m_wCanvas.SetDrawCommands(m_aCommands);
-		m_bBuilt = true;
-		LF_Debug.Info(LF_MapAreas.FEATURE, string.Format("drew %1 area(s) as %2 command(s) at %3 px/m on %4x%5", m_aAreas.Count(), m_aCommands.Count(), ppu, viewW, viewH));
+		return areas.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! HARNESS ONLY (`map demo`): puts the 40 stand-in areas on the canvas through the same frame slices a real
+	//! zoom end uses (they stay until the next pan or zoom end re-reads the real ones). \return false with no map.
+	bool Demo()
+	{
+		array<ref LF_MapArea> synthetic = {};
+		if (!StandIns(synthetic))
+			return false;
+
+		m_aJobAreas.Clear();
+		foreach (LF_MapArea fake : synthetic)
+		{
+			m_aJobAreas.Insert(fake);
+		}
+
+		OriginOnScreen(m_fJobX, m_fJobY);
+		BeginJob();
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! 40 circle areas of the six styles in an 8 by 5 grid over the ground the map shows now.
+	protected bool StandIns(notnull array<ref LF_MapArea> into)
+	{
+		if (!m_wCanvas || !m_MapEntity)
+			return false;
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		float ppu = m_MapEntity.GetCurrentZoom();
+		if (!workspace || ppu <= 0)
+			return false;
+
+		float centreX;
+		float centreZ;
+		m_MapEntity.GetMapCenterWorldPosition(centreX, centreZ);
+		float viewM = workspace.GetWidth() / ppu;
+		float viewH = workspace.GetHeight() / ppu;
+		float cell = viewM / 8;
+		for (int a = 0; a < 40; a++)
+		{
+			LF_MapArea area = new LF_MapArea();
+			area.m_sName = "probe-area-" + a.ToString();
+			area.m_eStyle = a % 6;
+			area.m_sLabel = "Probe area " + a.ToString();
+			int col = a % 8;
+			int row = a / 8;
+			float x = centreX - viewM / 2 + cell * (col + 0.5);
+			float z = centreZ - viewH / 2 + cell * (row + 0.5);
+			LF_MapAreas.CircleOutline(Vector(x, 0, z), cell * 0.4, LF_MapAreas.DEFAULT_SEGMENTS, area.m_aOutline);
+			into.Insert(area);
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The `map probe` measurement: 40 synthetic circle areas in the current view, projected and rebuilt as
+	//! frame slices over many passes (a zoom end's area cost). \return the log line.
+	string Probe()
+	{
+		array<ref LF_MapArea> synthetic = {};
+		if (!StandIns(synthetic))
+			return "probe areas: map not ready";
+
+		int passes = 50;
+		int start = System.GetTickCount();
+		for (int j = 0; j < passes; j++)
+		{
+			foreach (LF_MapArea projected : synthetic)
+			{
+				foreach (vector world : projected.m_aOutline)
+				{
+					float sx;
+					float sy;
+					m_MapEntity.WorldToScreen(world[0], world[2], sx, sy, true);
+				}
+			}
+		}
+
+		int projectMs = System.GetTickCount() - start;
+
+		// The whole rebuild as frame slices: the time of all of them, how many frames it takes, and the
+		// dearest slice (a slice is one frame's cost; whole milliseconds, so a fast slice reads 0).
+		int steps = 0;
+		int worstMs = 0;
+		int slicesMs = 0;
+		for (int p = 0; p < passes; p++)
+		{
+			m_aJobAreas.Clear();
+			foreach (LF_MapArea fake : synthetic)
+			{
+				m_aJobAreas.Insert(fake);
+			}
+
+			BeginJob();
+			while (m_iJobNext >= 0)
+			{
+				int stepStart = System.GetTickCount();
+				StepJob();
+				int stepMs = System.GetTickCount() - stepStart;
+				slicesMs += stepMs;
+				worstMs = LF_Utils.MaxInt(worstMs, stepMs);
+				steps++;
+			}
+		}
+
+		string line = string.Format("probe areas: 40 areas, %1 commands: projection %2 us; rebuild as slices: %3 us per pass in %4 frame(s), %5 us per frame, dearest frame %6 ms", m_aCommands.Count(), projectMs * 1000 / passes, slicesMs * 1000 / passes, steps / passes, slicesMs * 1000 / steps, worstMs);
+		LF_Debug.Info(LF_MapAreas.FEATURE, line);
+		Redraw();
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -466,7 +708,13 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 	override void Update(float timeSlice)
 	{
 		if (m_wCanvas && !m_bBuilt)
+		{
 			Redraw();
+			return;
+		}
+
+		if (m_iJobNext >= 0)
+			StepJob();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -519,18 +767,29 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 		float dx = nowX - m_fBuildX;
 		float dy = nowY - m_fBuildY;
 		FrameSlot.SetOffsets(m_wCanvas, dx, dy, dx, dy);
+		// The slices already built were projected from where the map was: start again from where it is now.
+		if (m_iJobNext >= 0)
+			StartJob();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The zoom is moving: a rebuild begun for the old scale is wasted, the zoom end starts the right one.
+	protected void OnMapZoom(float pixelPerUnit)
+	{
+		if (m_iJobNext >= 0)
+			StartJob();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnMapPanEnd(float x, float y)
 	{
-		Redraw();
+		StartJob();
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void OnMapZoomEnd(float pixelPerUnit)
 	{
-		Redraw();
+		StartJob();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -560,6 +819,7 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 		SCR_MapEntity.GetOnMapPan().Insert(OnMapPan);
 		SCR_MapEntity.GetOnMapPanEnd().Insert(OnMapPanEnd);
 		SCR_MapEntity.GetOnMapZoomEnd().Insert(OnMapZoomEnd);
+		SCR_MapEntity.GetOnMapZoom().Insert(OnMapZoom);
 		Redraw();
 		m_bBuilt = false; // the first Update builds once more on the settled view
 	}
@@ -570,12 +830,16 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 		SCR_MapEntity.GetOnMapPan().Remove(OnMapPan);
 		SCR_MapEntity.GetOnMapPanEnd().Remove(OnMapPanEnd);
 		SCR_MapEntity.GetOnMapZoomEnd().Remove(OnMapZoomEnd);
+		SCR_MapEntity.GetOnMapZoom().Remove(OnMapZoom);
 		if (m_wCanvas)
 			m_wCanvas.RemoveFromHierarchy();
 
 		m_wCanvas = null;
+		m_iJobNext = -1;
 		m_aCommands.Clear();
-		m_aAreas.Clear();
+		m_aJobCommands.Clear();
+		m_aJobAreas.Clear();
+		m_JobPalette = null;
 		super.OnMapClose(config);
 	}
 }

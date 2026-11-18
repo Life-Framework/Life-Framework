@@ -1,0 +1,99 @@
+{
+  "schema": 1,
+  "kit": "residents",
+  "system": "residents",
+  "source": {
+    "file": "tools/town/kits/sources/residents.layer",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside"
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -1,
+        6.5
+      ],
+      "max": [
+        5,
+        8.5
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "A home's doorstep, in the building's own frame: +z is the street side of the facade, the entrance at about x -0.7. The `door` anchor stands just outside the door; two street benches stand to its right with the `bench` anchor in front of them, so a resident whose line says `sit` takes a free seat within 2.5 m of it. The house is a shared home: the place marker is the slot's `House`, every resident's home lines resolve to these two anchors. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "bench-1",
+      "prefab": "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [2.3, 0, 7.0],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bench-2",
+      "prefab": "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [4.0, 0, 7.0],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-door",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [-0.7, 0, 6.9],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"door\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-bench",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [3.15, 0, 8.0],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"bench\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "slug": "fish-carp-small",
+  "generations": [
+    {
+      "date": "2026-11-18",
+      "tool": "Meshy text-to-3D",
+      "model": "meshy-6-lite",
+      "previewId": "01a1effe-761d-7241-a2b4-b04ad6a5e033",
+      "refineId": "01a1effe-e15d-75ef-ad59-381bb3e61a27",
+      "prompt": "A single common carp fish, whole, swimming pose seen from the side, deep heavy bodied, large rounded scales, one long dorsal fin, forked tail fin, two short barbels beside the mouth, olive brown back, golden bronze flanks, pale yellow belly. Realistic game prop, no base, no stand, no water, no text, no logos.",
+      "texturePrompt": "Common carp: olive-brown back, golden bronze large scales on the flanks, pale yellow belly, orange-tinted fins."
+    }
+  ]
+}

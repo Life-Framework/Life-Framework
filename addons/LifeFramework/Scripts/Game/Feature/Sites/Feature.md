@@ -39,6 +39,12 @@ None yet: no player-facing object in this slice. `LF_SiteHold.Step` is a pure fu
 - **Data:** the `siterent` save section (`LF_SiteRentSavePayload` in `LF_SiteRent.c`, its own version 1; lock `tools/validation/record-shapes/siterent.json`), rows `LF_SiteRentRow` {version, hideout id, banked, last rent time (unix s), unlogged amount and seconds}. Load replaces the banks (idempotent) and keeps a bank above the cap at the cap. A save without the section loads every bank empty. Under one unit of carried fraction is lost on a restart.
 - **Proof:** `sites/site-rent` (PERSISTENCE), and `tools\cli wt e2e` across a restart.
 
+## Site strongbox (#2684)
+
+- **Player sees:** a safe at the site with a "Take the rent" action. The holder's member with a `WITHDRAW` rank gets the banked rent as cash in hand and a toast; anyone else gets a refusal toast.
+- **Owner and side:** `LF_SiteStrongboxAction` (the engine runs it on the server) calls `LF_SiteStrongbox.TakeFromBox`; `LF_SiteStrongboxComponent` on `Prefabs/Sites/LF_SiteStrongbox.et` names the hideout id. The server checks reach (4 m), the lease (`LF_Hideout.GetOwner`), membership and the `WITHDRAW` right, then `LF_MoneyUtils.AddCash`, then `LF_SiteRent.Take` empties the bank. Money stays physical, never an account.
+- **Data:** none new; the emptied bank saves in the `siterent` section. **Proof:** `sites/site-strongbox` (WORLD).
+
 ## Site flag board (#2685)
 
 - **Player sees:** a flag pole at the site with a small painted board that reads the holding organisation's name, or "Unclaimed". The back of the board is plain.
