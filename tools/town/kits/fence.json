@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "kit": "fence",
+  "system": "fence",
+  "source": {
+    "file": "addons/LF_Everon1989/Prefabs/Buildings/FenceYard/FenceYard.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local",
+    "also": [
+      "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_fence_yard.layer"
+    ]
+  },
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{4259618E0B0BCB40}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Main_base.et",
+    "vanilla": "{4259618E0B0BCB40}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Main_base.et"
+  },
+  "store": {
+    "prefab": "{A3651B565452A1DA}Prefabs/Buildings/FenceYard/FenceYard.et",
+    "config": []
+  },
+  "anchoring": {
+    "floorY": 0.19,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.19
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -5.5,
+        -3.3
+      ],
+      "max": [
+        5.2,
+        3
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "fence-yard-furniture-01",
+      "prefab": "{21ABC616E459B346}Prefabs/Buildings/FenceYard/Furniture/FenceYard_furniture_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "+x",
+      "floor": "all"
+    },
+    {
+      "id": "kit",
+      "name": "Kit",
+      "prefab": "{6C6855E3C560B551}Prefabs/Buildings/FenceYard/FenceYard_Kit.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-yard-stall",
+      "name": "FenceYard_Stall",
+      "prefab": "{4855AC571C89CA6D}Prefabs/Props/Commercial/LF_FenceStall.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.3,
+        0.19,
+        1.6
+      ],
+      "yaw": 0,
+      "from": "Grid_fence_yard.layer",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-yard-fence",
+      "name": "FenceYard_Fence",
+      "prefab": "{12FCE81FDD79F2B4}Prefabs/Characters/Npcs/LF_Fence.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        1.5,
+        0.19,
+        2.35
+      ],
+      "yaw": 180,
+      "class": "LF_NpcBaseEntity",
+      "from": "Grid_fence_yard.layer",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-bench",
+      "name": "ChopBench",
+      "prefab": "{9C2E4A7B1D5F8036}Prefabs/Crime/LF_ChopBench.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -3.7,
+        0.19,
+        1.2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_ChopShopComponent",
+          "set": {
+            "m_sShopId": "\"saint-philippe-chop\""
+          },
+          "blocks": []
+        }
+      ]
+    }
+  ]
+}
