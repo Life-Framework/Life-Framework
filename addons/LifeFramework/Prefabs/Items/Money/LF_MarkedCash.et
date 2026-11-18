@@ -1,6 +1,16 @@
 GenericEntity : "{5439738849229352}Prefabs/Items/Currencies/MoneyStack.et" {
  ID "0000000000000001"
  components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_aQuantityStacks {
+    LF_QuantityStack "{D5EBC1FB08B68D4D}" {
+     m_StackModel "{31608273AA015B25}Assets/Items/Currencies/MarkedStack.xob"
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{31608273AA015B25}Assets/Items/Currencies/MarkedStack.xob"
+  }
   InventoryItemComponent "{5222EB4D0C73006B}" {
    Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
     ItemDisplayName UIInfo "{5222EB4D07D865FA}" {

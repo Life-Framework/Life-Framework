@@ -15,6 +15,14 @@
   `CanBePerformedScript` before `PerformAction`. Menu keys are an allowlist
   (`MenuUp`, `MenuDown`, `MenuLeft`, `MenuRight`, `MenuSelect`, `MenuBack`,
   `LF_OpenDebugMenu`); movement actions are refused.
+- 🔵 `use <class> <name>` on a client falls back to the nearest unnamed host only (a replicated NPC has no
+  layer name there); a host with another name answers `error wrong_target:<that name>` (#2935,
+  `agent-harness/use-fallback-strict`). `carries <prefab text>` answers whether the character carries a
+  matching item (`LF_HarnessCarries.c`).
+- 🔵 Judged flows (#2935, `agent-box/flow-asserts.mjs`): `step <id> <title> [pending #N]` and
+  `expect cash|bank|money +N|-N|=N|up|down|same`, `expect job <NAME>`, `expect duty police|medic|off`,
+  `expect item <prefab text>`. The flow ends with a `step PASS|FAIL` table and exits 1 on any failed step;
+  `flow island-first-hour` is the Friday gate.
 - ✅ `stand` is the placement exception: the server moves the local character
   beside a named entity. The poll does not start on a dedicated server
   (`RplMode.Dedicated`). The server checks the `stand`, `pose`, and `use` RPCs
@@ -271,3 +279,5 @@
 - ✅ (2026-11-17, drug store perf, #2329) **The drug store meets the medium building budget and still reads the same by day and night.** `tools/buildings/drugstore/budget.mjs` (`--check` gives the same bytes) is the only writer of the budget edits to `ShopHouse_E_2I01t_furniture_drugstore_lf_01.et`: the attic, 17 light switches and 6 radiators go, shop dressing (bottles, notebooks, cartons, tool cases, buckets, pen) keeps 60 % of its 0.5 m cells so stacks stay whole, and the twelve lights become six with `CastShadow` written on each (one spot over the counter casts, no point light casts: four down-spots, a frontage spot, one ambient point for the ceiling). `perf building Drugstore --size medium`: 468 to 289 entities, 12 to 6 lights, 12 to 1 shadow caster, 2 to 0 casting points, 12 to 0 unset. `building check drugstore` ok. The sold lines, counters and store prefab are untouched.
 
 - ✅ (2026-11-18, #2955) **`tools\cli look contact <area|place:...> [--stock <store>] [--items File@slot] [--entities A,B] [--worst]`: a placement is looked at, not only measured.** One row of five pictures per item (four low side views, one top-down) with the measured bottom face (red), the traced support (green) and the contact rays (yellow); each tile says the gap in cm and `[OFF]` past 1 cm. Store stock is named by slot and read from the store component in the same Workbench session, never by the test server's positions (those missed the first item of each sheet); `place:` areas run on the island. `wt ship` refuses a PR that changes a layer under `Worlds/` (not the DebugWorld annex) without an embedded contact sheet or a `No contact sheet: <reason>` line (`tools/lib/pr-quality.mjs`). `docs/visual-testing.md`; plan fixture `tools/visual/fixtures/contact-plan.json`, proof `look selftest`.
+
+- ✅ (2026-11-18, #2953) **The placement audit judges contact.** `audit placement` reads `cgap` (LF_PlaceSnap: mesh bottom vs the highest support under a 3x3 footprint, proxy boxes ignored) and flags `contact` when a prop under 1.5 m hovers or sinks past 1 cm; the 15 cm floating/sunk bar stays for buildings and large props, vehicles, hung signs, laid sacks and logs are exempt. Existing town and grid props it measures off are in `agent-box/place-audit-allow.json` ("maintainer town fix pending #2956"). Proof: `audit selftest` runs `agent-box/fixtures/place-audit-contact/`. Docs: `docs/placement-audit.md`.

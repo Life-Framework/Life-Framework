@@ -119,4 +119,4 @@ No stretcher-load sound yet.
 - **Player sees:** nothing new on screen yet; a promoted medic earns more per duty second at clock-out. A kit draw above the medic's rank is refused with `#LF-MedicRank_KitRefused` once a locker calls `LF_MedicRanks.CanDraw` (follow-up).
 - **Owner and side:** `LF_MedicRanks` (`LF_MedicRanks.c`), server only. Separate from `LF_PoliceRanks` on purpose (#652 asked to generalise; not in M6).
 - **Data:** `m_aRanks` (`LF_MedicRank` rows) in `LF_Medic.conf`; empty uses the built-in trainee / paramedic / doctor. Rank and medic duty seconds live on `LF_CharacterStanding` and are saved by the `medicranks` save section (`LF_MedicRanksSavePayload`, section version 1, #2841).
-- **Proof:** `medic/ranks` (LOGIC), `medic/ranks-persist` (PERSISTENCE), `tools\cli wt e2e` (`medic/ranks-persist` in the reload boot, gated on `LF_SaveSections.BootHadSection("medicranks")`).
+- **Proof:** `medic/ranks` (LOGIC), `medic/ranks-persist` (PERSISTENCE), `tools\cli wt e2e` (`medic/ranks-persist` in the reload boot, gated on `LF_E2E.RequiresSection`).

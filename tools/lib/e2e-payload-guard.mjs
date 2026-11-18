@@ -8,7 +8,9 @@
 //   1. A line comparing BootSaveVersion() with PayloadSinceVersion() by hand fails (use the helper).
 //      PayloadSinceVersion itself stays legal for round-trip tests; in LF_Test_E2E*.c it does not.
 //   2. LF_E2E.SaveHas / RequiresPayload name a payload RegisterPersistencePayloads lists.
-//   3. Every `Owner.VerifyE2E(` call is guarded: an LF_E2E.Requires*/SaveHas call within the 3 lines above it,
+//   3. LF_SaveSections.BootHadSection( outside LF_E2E.c fails: a save section is asked through
+//      LF_E2E.SaveHasSection / RequiresSection (#2875).
+//   4. Every `Owner.VerifyE2E(` call is guarded: an LF_E2E.Requires*/SaveHas call within the 3 lines above it,
 //      or inside the first lines of the callee's own body.
 
 // Blank `//` and `/* */` comments, keep strings (payload names live in them) and newlines.
@@ -74,6 +76,7 @@ export function guardFindings(files, payloads) {
     f.lines.forEach((line, i) => {
       const where = `${f.path}:${i + 1}`;
       if (/\bBootSaveVersion\s*\(/.test(line) && /\bPayloadSinceVersion\s*\(/.test(line)) out.push(`${where} hand-rolled save-version compare: use LF_E2E.SaveHas("<payload>") or LF_E2E.RequiresPayload("<payload>")`);
+      else if (/\bBootHadSection\s*\(/.test(line)) out.push(`${where} hand-rolled BootHadSection check: use LF_E2E.SaveHasSection("<section>") or LF_E2E.RequiresSection("<section>")`);
       else if (isE2eFile(f.path) && /\bPayloadSinceVersion\s*\(/.test(line)) out.push(`${where} PayloadSinceVersion in an e2e pass-2 file: use LF_E2E.SaveHas("<payload>")`);
       for (const m of line.matchAll(NAMED)) {
         if (payloads.length && !known.has(m[1])) out.push(`${where} LF_E2E guard names payload "${m[1]}", which RegisterPersistencePayloads does not list`);

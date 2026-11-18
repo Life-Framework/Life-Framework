@@ -356,15 +356,21 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
+		LF_SaveTiming.BeginStore();
 		context.WriteValue("version", SECTIONED_FORMAT);
+		int start = LF_SaveTiming.Now();
 		WritePrefix(context);
+		LF_SaveTiming.Part("prefix", start);
 
 		foreach (string payload : order)
 		{
+			start = LF_SaveTiming.Now();
 			WritePersistencePayload(persistence, context, payload);
+			LF_SaveTiming.Part(payload, start);
 		}
 
 		LF_SaveSections.WriteAll(context);
+		LF_SaveTiming.EndStore();
 		return ESerializeResult.OK;
 	}
 

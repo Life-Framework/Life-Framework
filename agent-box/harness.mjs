@@ -22,6 +22,7 @@ import { claimPlay, decideClaim, rendererFor } from "./play-claim.mjs";
 import { readSession, sessionForBox } from "./session.mjs";
 import { sessionDirOfBox, takeHoldWarning, touchLease } from "../tools/lib/session-lease.mjs";
 import { judgeRoadmapRow, judgeStreet, menuActionFromLook, missingRoadmapNames, presentedMesh, renderRoadmapReport, roadmapSites, rowCamera, runRoadmapReport, runTownReport, selectRoadmapSites, siteLook, siteShotOffset, STREET_Z } from "./report.mjs";
+import { checkExpect, flowTable, parseExpect, parseState, parseStep, selftest as flowAssertsSelftest } from "./flow-asserts.mjs";
 import { TOWN, checkTown, formatTownCheck, judgeTownRow, loadSignCatalog, loadStrings, manifestErrors, parseSignConfig, resolveSite, signCard, signIssues } from "./town.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -757,14 +758,46 @@ export function readFlow(name) {
   return readFileSync(path, "utf8").split(/\r?\n/);
 }
 
-export function runFlow(lines) {
+// `step` and `expect` lines judge a flow (flow-asserts.mjs): a failed line or assert fails its step, and
+// the flow ends with a PASS/FAIL table and exit 1 when any step failed.
+export function runFlow(lines, name = "flow") {
   const out = [];
   let code = 0;
+  const steps = [];
+  let current = null;
+  const failStep = (why) => {
+    if (current) current.fails.push(why);
+  };
   for (const raw of lines) {
     const line = raw.trim();
     if (!line || line.startsWith("#")) continue;
     const [verb, ...rest] = line.split(/\s+/);
     let result = null;
+    if (verb === "step") {
+      current = parseStep(rest);
+      steps.push(current);
+      const base = sendCommand({ verb: "state" }, 10000);
+      current.before = base.status === "ok" ? parseState(base.detail) : null;
+      if (base.status !== "ok") failStep(`state at step start: ${base.detail}`);
+      out.push(`== step ${current.id} ${current.title}${current.pending ? ` [pending ${current.pending}]` : ""}`);
+      continue;
+    }
+    if (verb === "expect") {
+      if (!current) throw new Error(`expect outside a step: ${line}`);
+      const spec = parseExpect(rest);
+      let why = "";
+      if (spec.field === "item") {
+        const carried = sendCommand({ verb: "carries", words: [spec.want] }, 10000);
+        if (carried.status !== "ok") why = `expect item ${spec.want}: ${carried.detail}`;
+      } else {
+        const now = sendCommand({ verb: "state" }, 10000);
+        why = now.status === "ok" ? checkExpect(spec, current.before, parseState(now.detail)) : `expect ${rest.join(" ")}: state ${now.detail}`;
+      }
+      // Lower case: the step's table row is the failure line the compact runner shows.
+      out.push(why ? `expect-miss ${why}` : `ok expect ${rest.join(" ")}`);
+      if (why) failStep(why);
+      continue;
+    }
     if (verb === "wait") {
       const ms = Number(rest[0]);
       if (!Number.isFinite(ms) || ms < 0 || ms > 30000) throw new Error(`bad wait: ${line}`);
@@ -793,7 +826,10 @@ export function runFlow(lines) {
     else if (verb === "layer") {
       const played = playLayer(rest[0], rest[1]);
       out.push(...played.lines);
-      if (played.code !== 0) code = played.code;
+      if (played.code !== 0) {
+        code = played.code;
+        failStep(`layer ${rest[0]}: ${played.lines[played.lines.length - 1] ?? "failed"}`);
+      }
       continue;
     } else if (verb === "shot" && rest[0] === "ui") {
       result = sendCommand({ verb: "capture", mode: "ui", name: rest[1] }, 25000);
@@ -807,9 +843,14 @@ export function runFlow(lines) {
     out.push(text);
     const image = resolveCapture(result.detail);
     if (image) out.push(`image: ${image}`);
-    if (result.status !== "ok") code = 1;
+    if (result.status !== "ok") {
+      code = 1;
+      failStep(`${verb}${rest[0] ? ` ${rest[0]}` : ""}: ${result.detail}`);
+    }
   }
-  return { code, lines: out };
+  const table = flowTable(name, steps);
+  out.push(...table.lines);
+  return { code: code || table.code, lines: out };
 }
 
 export function pads() {
@@ -1344,6 +1385,7 @@ function selftest() {
   if (!/no running session/.test(missionProblem(null, "grid"))) throw new Error("no session was accepted");
   if (!/no running session/.test(missionProblem({ mission: "grid", stoppedAt: "2026-11-16T00:00:00Z" }, "grid"))) throw new Error("a stopped session was accepted");
   townSelftest();
+  console.log(flowAssertsSelftest());
   console.log("selftest ok");
   return 0;
 }
@@ -1745,7 +1787,7 @@ function main(argv) {
       return printResult(sendCommand(worldCapture(target, rest.slice(5, 8)), 25000));
     }
     if (cmd === "flow") {
-      const played = runFlow(readFlow(rest[0]));
+      const played = runFlow(readFlow(rest[0]), rest[0]);
       for (const line of played.lines) console.log(line);
       return played.code;
     }
