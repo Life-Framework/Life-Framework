@@ -18,6 +18,10 @@ Rung 4 background: pure rules and a config, no screen, no world, no replication 
   engine's `EWaterSurfaceType` to them in a later card, so the rules hold no engine enum).
 - `LF_FishingRules`: static and pure; rolls in 0..1 come from the caller.
 - Spot stock reuses `LF_GatherStock` (Feature/Gathering): thins per catch, regrows on a timer, never saved.
+- `LF_FishingSpotComponent` (`Prefabs/Systems/Fishing/LF_FishingSpot.et`, #2929) registers the marker in `LF_Places` as
+  kind `FishingSpot`; `FindSpotFor(target)` is the cast's lookup (radius cover, nearest marker wins, null is open water).
+- The fishing rows of `Configs/Catalogue/LF_ItemCatalogue.conf` put the trout on the `fish_counter` outlet and the rod and bait tin on
+  the `chandler`; a pack overlay changes the prices by item id.
 
 ## Decided
 
@@ -27,7 +31,7 @@ Rung 4 background: pure rules and a config, no screen, no world, no replication 
 
 ## Not built yet
 
-Cast and strike RPCs, the rod and spot components, the licence, the FISHER job track, outlets, assets, pack data.
+Cast and strike RPCs, the rod component, the licence gate on the fish counter, the FISHER job track, the pack's species and prices.
 
 ## Dependencies
 
