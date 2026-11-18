@@ -10,7 +10,7 @@ class LF_LaunderConfig
 	[Attribute("0", UIWidgets.CheckBox, "Till robberies and bank vault bags pay marked notes (LF_MarkedCash) instead of cash. Chop shop and fence stay cash.")]
 	bool m_bCrimePaysMarked;
 
-	[Attribute("30", UIWidgets.EditBox, "House cut in percent of the marked notes washed (0..90). The cut rounds down and the house keeps it.")]
+	[Attribute("30", UIWidgets.EditBox, "House cut in percent of the marked notes washed (0..90). The clean share rounds down; the remainder stays with the house.")]
 	int m_iCutPct;
 
 	[Attribute("2000", UIWidgets.EditBox, "Largest batch of marked notes one wash takes; the rest stays marked.")]
@@ -24,6 +24,8 @@ class LF_LaunderConfig
 
 	protected static ref LF_LaunderConfig s_Config;
 	protected static bool s_bLoadAttempted;
+	//! Whether the wash fields (cut, batch, cap) passed Validate; the dirty-money switch works either way.
+	protected static bool s_bRulesValid;
 	//! Tests only: -1 reads the config, 0 forces the switch off, 1 forces it on.
 	protected static int s_iCrimePaysMarkedForTests = -1;
 
@@ -41,22 +43,42 @@ class LF_LaunderConfig
 			return null;
 		}
 
-		s_Config = LF_LaunderConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
-		if (!s_Config)
+		LF_LaunderConfig loaded = LF_LaunderConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
+		if (!loaded)
 		{
 			LF_Debug.Error("Laundering", string.Format("launder config has an unexpected root class: %1", CONFIG_PATH));
-			return s_Config;
+			return null;
 		}
 
-		if (!Validate(s_Config))
-			s_Config = null;
-
+		Install(loaded);
 		return s_Config;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Take `config` as the loaded config (Get calls it; tests call it with a built config). Bad wash
+	//! fields refuse only the wash rules (GetRules reads null); the dirty-money switch still applies,
+	//! so a typo in the cut never turns robberies back into clean cash.
+	static void Install(LF_LaunderConfig config)
+	{
+		s_bLoadAttempted = true;
+		s_Config = config;
+		s_bRulesValid = Validate(config);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The config for the wash rules: null when it is missing or its cut, batch or cap was refused.
+	static LF_LaunderConfig GetRules()
+	{
+		LF_LaunderConfig config = Get();
+		if (!config || !s_bRulesValid)
+			return null;
+
+		return config;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A config the rules can use: cut 0..90 %, batch max, batch seconds and daily cap at least 1.
-	//! Logs a Laundering error naming the bad field and returns false; Get then reads as missing.
+	//! Logs a Laundering error naming the bad field and returns false; GetRules then reads as missing.
 	static bool Validate(LF_LaunderConfig config)
 	{
 		if (!config)
@@ -112,6 +134,7 @@ class LF_LaunderConfig
 	{
 		s_Config = null;
 		s_bLoadAttempted = false;
+		s_bRulesValid = false;
 		s_iCrimePaysMarkedForTests = -1;
 	}
 }

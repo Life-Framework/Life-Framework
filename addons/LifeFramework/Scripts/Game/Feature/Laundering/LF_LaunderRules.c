@@ -31,16 +31,17 @@ class LF_LaunderRules
 	protected static ref map<string, ref LF_LaunderDay> s_Days = new map<string, ref LF_LaunderDay>();
 
 	//------------------------------------------------------------------------------------------------
-	//! Clean cash for `marked` notes at a cut of `cutPct` percent. Integer maths: the cut rounds down
-	//! and the house keeps it, so 1000 at 30 % yields 700.
+	//! Clean cash for `marked` notes at a cut of `cutPct` percent. Integer maths: the clean share rounds
+	//! down and the remainder stays with the house, so 1000 at 30 % yields 700 and 3 yields 2. As
+	//! floor(a) + floor(b) <= floor(a + b), no split of a wash into smaller ones pays more.
 	static int CleanFor(int marked, int cutPct)
 	{
 		if (marked <= 0)
 			return 0;
 
-		int cutPctSafe = LF_Utils.ClampInt(cutPct, 0, 100);
-		int cut = (marked * cutPctSafe) / 100;
-		return marked - cut;
+		int keepPct = 100 - LF_Utils.ClampInt(cutPct, 0, 100);
+		// marked = 100q + r: floor(marked * keepPct / 100) without the marked * keepPct overflow
+		return (marked / 100) * keepPct + ((marked % 100) * keepPct) / 100;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -51,7 +52,7 @@ class LF_LaunderRules
 		if (!day)
 			return 0;
 
-		if (nowSec >= day.m_iWindowStart + DAY_SECONDS)
+		if (nowSec - day.m_iWindowStart >= DAY_SECONDS)
 			return 0;
 
 		return day.m_iTotal;
@@ -90,7 +91,7 @@ class LF_LaunderRules
 	//! Quote with the loaded config. Null when the config is missing or refused (logged at load).
 	static LF_LaunderQuote QuoteWithConfig(string key, int marked, int nowSec)
 	{
-		LF_LaunderConfig config = LF_LaunderConfig.Get();
+		LF_LaunderConfig config = LF_LaunderConfig.GetRules();
 		if (!config)
 			return null;
 
@@ -112,7 +113,7 @@ class LF_LaunderRules
 			day.m_iWindowStart = nowSec;
 			s_Days.Set(key, day);
 		}
-		else if (nowSec >= day.m_iWindowStart + DAY_SECONDS)
+		else if (nowSec - day.m_iWindowStart >= DAY_SECONDS)
 		{
 			day.m_iWindowStart = nowSec;
 			day.m_iTotal = 0;

@@ -1,4 +1,4 @@
-// red-proof: 2026-11-18 `tools/cli test --no-build --red LF_Test_LaunderRules`: RED-OK; the hook zeroes the cut: `1000 marked at 30 % yields 700 (expected 700, got 1000)`. Green: 26 assertions.
+// red-proof: 2026-11-18 `tools/cli test --no-build --red LF_Test_LaunderRules`: RED-OK, the hook zeroes the cut (`expected 700, got 1000`). Review fix (#2885): on the unfixed rules `--only` failed `3 marked at 30 % yields 2 (expected 2, got 3)`, `1 marked ... (expected 0, got 1)`, the 333-washes-of-3 split, the 2e9 overflow and the refused-cut switch; green after.
 //! Laundering rules (#2852): the 30 % cut in integer maths, the batch max, the per-character daily cap
 //! with its 24 h window, and a config cut outside 0..90 refused at load.
 [LF_TestInfo(LF_TestTier.LOGIC)]
@@ -21,7 +21,14 @@ class LF_Test_LaunderRules : LF_Test
 			cut = 0;
 
 		ctx.Equal(700, LF_LaunderRules.CleanFor(1000, cut), "1000 marked at 30 % yields 700");
-		ctx.Equal(3, LF_LaunderRules.CleanFor(3, 30), "3 marked at 30 %: the cut rounds down to 0, so 3 clean");
+		ctx.Equal(2, LF_LaunderRules.CleanFor(3, 30), "3 marked at 30 % yields 2: the remainder stays with the house");
+		ctx.Equal(0, LF_LaunderRules.CleanFor(1, 30), "1 marked at 30 % yields 0, never a zero-cut wash");
+		int splitClean = 0;
+		int split;
+		for (split = 0; split < 333; split++)
+			splitClean = splitClean + LF_LaunderRules.CleanFor(3, 30);
+		ctx.True(splitClean <= LF_LaunderRules.CleanFor(999, 30), "333 washes of 3 pay no more than one of 999");
+		ctx.Equal(1400000000, LF_LaunderRules.CleanFor(2000000000, 30), "a huge batch does not overflow");
 
 		LF_LaunderQuote big = LF_LaunderRules.Quote(KEY, 5000, T0, 30, 2000, 10000);
 		ctx.Equal(2000, big.m_iAccepted, "a batch above the max is cut to it");
@@ -77,6 +84,16 @@ class LF_Test_LaunderRules : LF_Test
 		bad.m_iCutPct = 30;
 		bad.m_iBatchMax = 0;
 		ctx.False(LF_LaunderConfig.Validate(bad), "a zero batch max is refused");
+
+		LF_LaunderConfig refused = new LF_LaunderConfig();
+		refused.m_bCrimePaysMarked = true;
+		refused.m_iCutPct = 95;
+		refused.m_iBatchMax = 2000;
+		refused.m_iBatchSeconds = 60;
+		refused.m_iDailyCap = 10000;
+		LF_LaunderConfig.Install(refused);
+		ctx.True(LF_LaunderRules.QuoteWithConfig(KEY, 1000, T0) == null, "a refused cut refuses the wash");
+		ctx.True(LF_LaunderConfig.CrimePaysMarked(), "a refused cut keeps the dirty-money switch, so robberies stay marked");
 
 		LF_LaunderConfig.ResetStatics();
 		LF_LaunderRules.ResetStatics();
