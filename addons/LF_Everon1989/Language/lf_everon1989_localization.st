@@ -1414,6 +1414,11 @@ StringTable {
      Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
+    CustomStringTableItem "{1B4CFC6B76803431}" {
+     Id "LF-Shop_Desc_Furniture"
+     Target_en_us "Beds, sofas, tables, wardrobes and lamps for the new home."
+     Comment "Shop description of the Saint-Philippe furniture store counter (#3256)."
+    }
     CustomStringTableItem "{0238B801ABD1D07C}" {
      Id "LF-Shop_Desc_GunCounter"
      Target_en_us "Rifles, pistols and ammunition for permit holders; scopes, holsters and pouches for anyone."
@@ -1468,6 +1473,11 @@ StringTable {
      Id "LF-Shop_Name_ClothesShop"
      Target_en_us "Clothes shop"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{5610D2FB07972A2F}" {
+     Id "LF-Shop_Name_Furniture"
+     Target_en_us "Meubles"
+     Comment "Shop name of the Saint-Philippe furniture store counter (#3256): stock furniture."
     }
     CustomStringTableItem "{6D1028DE2DB79D51}" {
      Id "LF-Shop_Name_Hardware"
@@ -1528,6 +1538,11 @@ StringTable {
      Id "LF-Shop_Open_ClothesShop"
      Target_en_us "Browse the clothes rack"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{0E816968A7BE847A}" {
+     Id "LF-Shop_Open_Furniture"
+     Target_en_us "Browse the furniture"
+     Comment "Interaction name at the furniture store counter (#3256): opens the furniture price list."
     }
     CustomStringTableItem "{53F9E5EEA5C98E4E}" {
      Id "LF-Shop_Open_GunCounter"
@@ -1958,6 +1973,31 @@ StringTable {
      Id "LF-Sign_FuelStation_What"
      Target_en_us "Fuel cans for delivery work, and a till."
      Comment "Sign card for the fuel station till, What section."
+    }
+    CustomStringTableItem "{4ADF98012DC9F5EB}" {
+     Id "LF-Sign_FurnitureStore_How"
+     Target_en_us "Choose from the pieces on show: *Browse the furniture* at the counter and pay at the till|Carry it home and place it where you want it"
+     Comment "Sign card for the furniture store, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{06FFFAB5E0B31BBD}" {
+     Id "LF-Sign_FurnitureStore_Needs"
+     Target_en_us "A house of your own to put it in, and the money."
+     Comment "Sign card for the furniture store, You need section."
+    }
+    CustomStringTableItem "{6B5905F4476F4147}" {
+     Id "LF-Sign_FurnitureStore_Next"
+     Target_en_us "The pieces on the floor are for show: order from the counter."
+     Comment "Sign card for the furniture store, Next section."
+    }
+    CustomStringTableItem "{A6ED44BC014EDE30}" {
+     Id "LF-Sign_FurnitureStore_Title"
+     Target_en_us "Meubles"
+     Comment "Title of the fascia sign over the furniture store on the square row (Everon 1989 pack, #3256). Printed on the sign and shown in the prompt as Read: Meubles."
+    }
+    CustomStringTableItem "{BFEBD3886DC16F44}" {
+     Id "LF-Sign_FurnitureStore_What"
+     Target_en_us "Beds, sofas, tables, shelves and lamps for every room of the house, on show on the ground floor."
+     Comment "Sign card for the furniture store, What section."
     }
     CustomStringTableItem "{C253431484CC5293}" {
      Id "LF-Sign_Garage_How"
