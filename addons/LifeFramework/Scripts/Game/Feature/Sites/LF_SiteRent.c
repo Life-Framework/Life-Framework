@@ -174,6 +174,22 @@ class LF_SiteRent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Empties a site's bank (server; the strongbox take, #2684). Rent not yet logged is logged under
+	//! `holderOrgId` first, so the money line stays one per banked unit.
+	//! \return The whole units that were banked, 0 for a site with nothing banked.
+	static int Take(string hideoutId, string holderOrgId)
+	{
+		LF_SiteRentRow row = Rows().Get(hideoutId);
+		if (!row || row.m_iBanked <= 0)
+			return 0;
+
+		LogBanked(row, holderOrgId);
+		int taken = row.m_iBanked;
+		row.m_iBanked = 0;
+		return taken;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return Unix seconds of the site's last banking, 0 when it never banked.
 	static int LastRentAtOf(string hideoutId)
 	{

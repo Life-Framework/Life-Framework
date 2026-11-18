@@ -2887,22 +2887,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C06863243F369B82}" {
      Id "LF-Credits_120"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbour master Marcel Roux's ten spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{034AB24F20B9C523}" {
      Id "LF-Credits_121"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6FE700B6BDC757ED}" {
      Id "LF-Credits_122"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2B6B443BB2E0DFB9}" {
      Id "LF-Credits_123"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0C744196304685EB}" {
@@ -2912,27 +2912,27 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9954645FD5FC4292}" {
      Id "LF-Credits_125"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C35B3ADBB9D89721}" {
      Id "LF-Credits_126"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9968FD984CF4FABF}" {
      Id "LF-Credits_127"
-     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9604C54EE7C42A8F}" {
      Id "LF-Credits_128"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2A31B23D96B99646}" {
      Id "LF-Credits_129"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Target_en_us "Michael Hansen / Rhasspy, MIT"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4698D3AC325BC21D}" {
@@ -2942,11 +2942,21 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{EF83CE5E501404F6}" {
      Id "LF-Credits_130"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2E46C1E4691E2B33}" {
      Id "LF-Credits_131"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A636049B1615FBC6}" {
+     Id "LF-Credits_132"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{16186E0A5EB3A7AA}" {
+     Id "LF-Credits_133"
      Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
@@ -10819,6 +10829,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-SiteFlag_Unclaimed"
      Target_en_us "Unclaimed"
      Comment "Painted board on a contested site's flag pole when no organisation holds the site."
+    }
+    CustomStringTableItem "{970E45E130DA2448}" {
+     Id "LF-SiteStrongbox_Empty"
+     Target_en_us "The strongbox is empty."
+     Comment "Toast: the holder opens the site strongbox and no rent is banked (#2684)."
+    }
+    CustomStringTableItem "{E97E258CA4D33FE7}" {
+     Id "LF-SiteStrongbox_NoRight"
+     Target_en_us "Your rank cannot take the rent."
+     Comment "Toast: a member of the holding organisation whose rank lacks the withdraw right (#2684)."
+    }
+    CustomStringTableItem "{CEEAC310316FCF52}" {
+     Id "LF-SiteStrongbox_NoRoom"
+     Target_en_us "No room to carry the cash. The rent stays in the strongbox."
+     Comment "Toast: the cash did not fit in the player inventory; the bank is unchanged (#2684)."
+    }
+    CustomStringTableItem "{B6BB27B3E34F8BD4}" {
+     Id "LF-SiteStrongbox_NotHolder"
+     Target_en_us "Only the organisation that holds this site can open the strongbox."
+     Comment "Toast: a non-member or another organisation tries the site strongbox (#2684)."
+    }
+    CustomStringTableItem "{15D45ACB87B1F80A}" {
+     Id "LF-SiteStrongbox_Take"
+     Target_en_us "Take the rent"
+     Comment "Action name on a site strongbox (#2684)."
+    }
+    CustomStringTableItem "{FB8C42542BB9F188}" {
+     Id "LF-SiteStrongbox_Taken"
+     Target_en_us "You take %1 in rent from the strongbox."
+     Comment "Toast: the holder took the banked rent as cash. %1 = the amount (#2684)."
+    }
+    CustomStringTableItem "{41D611C1A02BCA46}" {
+     Id "LF-SiteStrongbox_Title"
+     Target_en_us "Strongbox"
+     Comment "Toast title for the site strongbox (#2684)."
     }
     CustomStringTableItem "{134044FE4B970260}" {
      Id "LF-SpawnHub_Close"

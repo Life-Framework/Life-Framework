@@ -81,6 +81,11 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   `LF_Everon1989/Language/`, from `docs/architecture/reputation.md` section 1; the underworld's are never shown), a `job_completed:<JOB>` award for
   parcel (4), fuel (6) and taxi (6) runs with a 60 s cooldown, the gate `contract:harbour_crates` (town, tier 1, Known) and the harbour master's
   early crates contract (a parcel run, x1.4 pay, +12 on finish, -10 if dropped, 25 min limit; tracker title `LF-ContractTracker_Title_harbour_crates`).
-  Test `everon/reputation` (pack leg). Not yet: the harbour master's dialogue reply that offers it, and the chop shop's "car to order" contract
-  (no core job matches it).
+  Test `everon/reputation` (pack leg). Not yet: the chop shop's "car to order" contract (no core job matches it).
+- 🧪 **The harbour master offers the harbour crates contract, voiced** (#3050, merged, in-dev): his pack dialogue (`tools/assets/dialogue/harbour_master/`, ElevenLabs
+  pipeline, ten recorded lines) greets with "a bigger load?" behind the core `Contract` condition (`harbour_crates`, shown at Known) and, below Known, the same words behind the new
+  core condition `ContractLocked` (`LF_DialogueHook_ContractLocked.c`: offered only while the gate does NOT pass), which leads to "I keep the big loads for people I know. Come back when
+  the town knows you." Accepting runs the `Contract` action; the node after it has no line of its own, so he answers with the recorded line for the key the hook hands back
+  (started, busy, cooldown, run already open). Declining ends the talk. Tests `everon/harbour-master` (pack leg: both replies, the pick starts the contract at Known and nothing
+  below it) and `dialogue/contract` (the locked condition).
 - 🔲 Screens, and the owner `config.json` section `reputation` (later cards of #1018).
