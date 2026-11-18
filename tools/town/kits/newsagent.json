@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "kit": "newsagent",
+  "system": "store",
+  "source": {
+    "file": "tools/town/kits/sources/newsagent.layer",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{DA33ED8E94FD68DF}Prefabs/Structures/Commercial/Booth/NewspaperBooth_E_01/NewspaperBooth_E_01_redyellow.et"
+  },
+  "anchoring": {
+    "floorY": 0.05,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.05
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -2.2,
+        -2.47
+      ],
+      "max": [
+        1.92,
+        2.19
+      ]
+    },
+    "front": "+z",
+    "counters": [
+      {
+        "id": "newsagent-counter",
+        "wall": "-z",
+        "edgeGap": 0.1
+      }
+    ],
+    "adapt": "The same booth model as the parcel kiosk (NewspaperBooth_E_01 family): the counter hugs the back wall (-z), `front` (+z) is the door side. The till sells the `newsagent` stock (the tourist map at $25, water). Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "newsagent-counter",
+      "prefab": "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        -0.45,
+        0.05,
+        -1.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "newsagent-till",
+      "name": "Source_NewsagentTill",
+      "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
+      "role": "till",
+      "verb": "on newsagent-counter",
+      "offset": [
+        -0.45,
+        1.238,
+        -1.5
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sShopName": "\"#LF-Shop_Name_Newsagent\"",
+            "m_sShopDescription": "\"#LF-Shop_Desc_Newsagent\"",
+            "m_sStockId": "\"newsagent\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "floor": "f0"
+    },
+    {
+      "id": "newsagent-papers",
+      "prefab": "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.9,
+        0.05,
+        -1.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
