@@ -29,7 +29,7 @@ class LF_Test_BuildSitePersist : LF_Test
 			return;
 
 #ifdef LF_E2E_LOAD_BOOT
-		if (LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("properties"))
+		if (!LF_E2E.SaveHas("properties"))
 			return;
 
 		LF_PropertyRecord restored = LF_Properties.Get(E2E_PLOT);
