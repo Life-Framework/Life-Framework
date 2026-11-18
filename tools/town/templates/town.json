@@ -62,6 +62,51 @@
       "places": ["RangeLane"]
     },
     {
+      "id": "supermarket", "required": false, "kit": "supermarket", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 150, "prefer": "near", "maxDistance": 160, "types": ["shop", "townhouse"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "hardware", "required": false, "kit": "hardware", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["garage", "industrial", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "pharmacy", "required": false, "kit": "pharmacy", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 100, "prefer": "near", "maxDistance": 160, "types": ["shop", "townhouse"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "newsagent", "required": false, "kit": "newsagent", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "minArea": 8, "prefer": "near", "maxDistance": 160, "types": ["kiosk", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "seed-feed", "required": false, "kit": "seed-feed", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "minArea": 40, "prefer": "near", "maxDistance": 160, "types": ["farm", "garage", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "bakery", "required": false, "kit": "bakery", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "butcher", "required": false, "kit": "butcher", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
+      "id": "barber", "required": false, "kit": "barber", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
+      "places": ["BarberChair"]
+    },
+    {
+      "id": "furniture", "required": false, "kit": "furniture", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 100, "prefer": "near", "maxDistance": 160, "types": ["townhouse", "shop"] },
+      "places": ["StoreCounter"]
+    },
+    {
       "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop", "townhouse", "house"] },
       "places": ["GunCounter"]
@@ -77,6 +122,11 @@
       "needs": { "interior": "optional", "minArea": 25, "prefer": "far", "types": ["farm", "farm-small", "garage", "shed", "industrial"] },
       "plot": { "minWidth": 12, "minDepth": 10, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
       "places": ["FenceYard"]
+    },
+    {
+      "id": "harbour", "required": false, "kit": "harbour-master", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 15, "prefer": "near", "maxDistance": 130, "types": ["industrial", "shed", "garage", "house"] },
+      "places": ["HarbourMaster"]
     },
     {
       "id": "carlot", "required": false, "kit": "carlot", "host": "building", "poi": "none", "margin": 18,
