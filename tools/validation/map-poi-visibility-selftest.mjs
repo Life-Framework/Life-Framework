@@ -1,5 +1,6 @@
 // Red-proof for validate-map-poi-visibility: each way to publish an underworld POI is caught, the
 // hidden row and a public civic row are not, and the real core and pack confs pass.
+// inputs: addons/*/Configs/Map/*.conf
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { poiConfFiles, poiRows, underworldViolations } from "./validate-map-poi-visibility.mjs";

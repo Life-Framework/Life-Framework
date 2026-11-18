@@ -17,6 +17,7 @@
 // file: the raincoat's prefab set to Suit_Rally_01_red.et and its sell price to 90 printed "FAIL ...
 // LF_ItemCatalogue.conf:12 item raincoat_green: ... is DLC-owned" and "sells back for 90, above its
 // price 60 (a profit loop, #686)" and exited 1.
+// inputs: addons/**/*.conf, addons/**/*.et, addons/**/*.et.meta, tools/validation/dlc-owned-prefabs.txt
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";

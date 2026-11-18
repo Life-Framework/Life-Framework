@@ -74,10 +74,25 @@ class LF_CharacterSurvivalComponent : ScriptComponent
 	//! Server tick: applies the elapsed time (clamped against hitches) and syncs the owner.
 	void Tick()
 	{
+		TickAt(GetGame().GetWorld().GetWorldTime());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tick at a given world time, so a WORLD test can drive an exact delta.
+	void TickAt(float nowMs)
+	{
 		if (!m_SurvivalStats)
 			return;
 
-		float nowMs = GetGame().GetWorld().GetWorldTime();
+		// A corpse stops here: the respawned body shares this stats object (same character id) and
+		// ticks it, so a running corpse doubled the drain until cleanup took it (#3359).
+		if (IsBodyDeadForSurvival())
+		{
+			GetGame().GetCallqueue().Remove(Tick);
+			m_SurvivalStats = null;
+			LF_Debug.Info("Survival", string.Format("%1 body died: its survival tick stops", m_sCharacterId));
+			return;
+		}
 
 		// Survival off: the clock moves on but the stats do not, so they come back as they were saved (#1075).
 		if (!LF_Systems.IsEnabled(SYSTEM))
@@ -101,6 +116,21 @@ class LF_CharacterSurvivalComponent : ScriptComponent
 		}
 
 		SyncReplication();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool IsBodyDeadForSurvival()
+	{
+		IEntity owner = GetOwner();
+		if (!owner)
+			return true;
+
+		DamageManagerComponent damage = DamageManagerComponent.Cast(owner.FindComponent(DamageManagerComponent));
+		if (damage && damage.IsDestroyed())
+			return true;
+
+		CharacterControllerComponent controller = CharacterControllerComponent.Cast(owner.FindComponent(CharacterControllerComponent));
+		return controller && controller.GetLifeState() == ECharacterLifeState.DEAD;
 	}
 
 	//------------------------------------------------------------------------------------------------

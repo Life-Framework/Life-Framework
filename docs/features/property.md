@@ -28,6 +28,16 @@
   (`docs/config/override-model.md`). Tiers stay core-only. A pack plot whose key is a house id is refused like a
   core one (#2783). A path override (tests) reads that file alone. Proof: `property/pack-overlay`.
 
+### Saint-Philippe plot signs — `LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Plots_saint-philippe.layer` (2026-11-18, #2936)
+- 🟡 The four free plots of the scout dossier (p1 to p4) each carry an `LF_PlotSign.et` on the island, keys
+  `saint-philippe.p1` to `.p4`, priced by the pack overlay `Configs/Property/LF_Property_Everon1989.conf` (6000, 5000,
+  4500, 3500; tier `cottage`), which the header lists. The signs rest on the terrain (contact gap under 1 mm). Proof:
+  `everon/plot-prices` (pack leg), `look contact place:saint-philippe/plots`.
+- 🟡 (#2918) The merged catalogue (core plots plus the pack overlay) is checked as a whole: keys unique and no house id, every
+  plot names a core tier whose stages have work and item counts, prices above 0 and under ten times the priciest core plot.
+  Plot labels in period words and pack-set build stages are not possible yet: `LF_PropertyPlotDef` has no label field and tiers
+  are core-only (a core change, split off). Proof: `everon/plots` (pack leg).
+
 ### Plot purchase — `Feature/Property/LF_PlotComponent.c` (2026-11-18, #2649, spec #756)
 - 🟡 A for-sale plot sign (`Prefabs/Props/Property/LF_PlotSign.et`, an `LF_PlotComponent` naming a
   `LF_Property.conf` plot key) shows "Buy plot ($price)". The request carries the used sign's plot key: the server sells

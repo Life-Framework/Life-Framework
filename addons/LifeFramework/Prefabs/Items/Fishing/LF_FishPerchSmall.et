@@ -1,0 +1,21 @@
+GenericEntity : "{FAEF245300848A2C}Prefabs/Items/Fishing/LF_FishTroutSmall.et" {
+ ID "FFB29ECAB326E616"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_FishPerch_Small_Name"
+     Description "#LF-Item_FishPerch_Small_Description"
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{AB413D9CB8783DEB}" {
+      CameraDistanceToItem 0.47
+     }
+    }
+   }
+  }
+  MeshObject "{CF3097B91F6EE919}" {
+   Object "{384DD2E556A78240}Assets/Items/Fishing/FishPerchSmall/FishPerchSmall.xob"
+  }
+ }
+}

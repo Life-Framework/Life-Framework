@@ -135,7 +135,7 @@
     },
     {
       "id": "counter-shop-01",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "prefab": "{37C56F70D97B0214}Prefabs/Props/Commercial/LF_ClothesShopCounter.et",
       "role": "counter",
       "verb": "on floor",
       "offset": [
@@ -284,6 +284,38 @@
       ],
       "yaw": 0,
       "wall": "+z",
+      "floor": "f0"
+    },
+    {
+      "id": "clothing-stock",
+      "prefab": "{B7F7DA7E20CBDC08}Prefabs/Buildings/ClothingStore/ClothingStore_Stock.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "from": "ClothingStore_Store.et",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "village-clothing-store-clerk",
+      "name": "Village_ClothingStore_Clerk",
+      "prefab": "{50F89493E50AA61B}Prefabs/Characters/Npcs/LF_Npc_ClothingClerk.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        1.4,
+        0.199,
+        -1.2
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "from": "Village_Buildings.layer",
+      "wall": "free",
       "floor": "f0"
     }
   ]

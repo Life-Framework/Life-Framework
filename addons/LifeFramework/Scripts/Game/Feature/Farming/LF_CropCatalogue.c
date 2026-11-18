@@ -2,9 +2,9 @@
 //! One crop of the catalogue (#2663, spec #809): the seed that plants it, how long it grows, the
 //! window in which it must be watered, how long a ripe crop keeps, what it yields and the look of each
 //! growth stage. Core ships one neutral example row (Configs/Farming/LF_Crops.conf); cabbage and
-//! potato are the pack's (#810).
+//! potato are the pack's (#810, #3176): a pack overlay adds or patches a crop by id.
 [BaseContainerProps()]
-class LF_CropRow
+class LF_CropRow : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Stable crop id. Saved plants are keyed by it, so never rename one")]
 	string m_sCropId;
@@ -68,9 +68,50 @@ class LF_CropCatalogue
 
 		s_Catalogue = LF_CropCatalogue.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Catalogue)
+		{
 			LF_Debug.Error(FEATURE, string.Format("crop catalogue has an unexpected root class: %1", CONFIG_PATH));
+			return null;
+		}
 
+		s_Catalogue.ApplyLayers();
 		return s_Catalogue;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges each pack overlay (the mission header's m_aLF_ConfigOverlays, in load order) over this
+	//! instance, which holds the core `.conf`: the crops by crop id (add, replace, patch, remove;
+	//! docs/config/override-model.md).
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_CropCatalogue, "farming", resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer(), names[i], claims);
+			LF_Debug.Info(FEATURE, string.Format("crops: pack overlay %1 changed %2 crops", names[i], changed));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack overlay's `m_aCrops` by crop id. \return Crops changed.
+	//! \param[in] root The overlay's root container.
+	//! \param[in] source The overlay file, for log lines.
+	int ApplyPackContainer(notnull BaseContainer root, string source, LF_ConfigClaims claims = null)
+	{
+		if (!m_aCrops)
+			m_aCrops = new array<ref LF_CropRow>();
+
+		return LF_ConfigOverlay.ApplyContainerList(new LF_CropList(this), root, "m_aCrops", source, claims);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the cached catalogue; the next Get loads the `.conf` and its pack overlays again (world end, tests).
+	static void Reload()
+	{
+		s_Catalogue = null;
+		s_bLoadAttempted = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -114,5 +155,194 @@ class LF_CropCatalogue
 		}
 
 		return null;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The crop catalogue for the shared merge (LF_ConfigOverlay), keyed by crop id. A new or replaced
+//! crop needs a seed and two or more stage prefabs, none of them empty: a crop with a blank stage
+//! would plant, grow and draw nothing, so the row is dropped with an error instead.
+class LF_CropList : LF_ConfigList
+{
+	protected LF_CropCatalogue m_Catalogue;
+
+	void LF_CropList(LF_CropCatalogue catalogue)
+	{
+		m_Catalogue = catalogue;
+		if (!m_Catalogue.m_aCrops)
+			m_Catalogue.m_aCrops = new array<ref LF_CropRow>();
+	}
+
+	override string GetName()
+	{
+		return "farming.crops";
+	}
+
+	override int Count()
+	{
+		return m_Catalogue.m_aCrops.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Catalogue.m_aCrops[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_CropRow.Cast(record).m_sCropId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sCropId", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "a crop id";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		LF_CropRow crop = new LF_CropRow();
+		crop.m_sCropId = id;
+		return crop;
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_CropRow crop = LF_CropRow.Cast(record);
+		if (index < m_Catalogue.m_aCrops.Count())
+			m_Catalogue.m_aCrops.Set(index, crop);
+		else
+			m_Catalogue.m_aCrops.Insert(crop);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Catalogue.m_aCrops.RemoveOrdered(index);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		LF_CropRow crop = LF_CropRow.Cast(record);
+		if (crop.m_sCropId.IsEmpty())
+			return "the entry has no crop id";
+		if (crop.m_SeedPrefab.IsEmpty())
+			return "a crop needs a seed prefab";
+
+		return StagesProblem(crop.m_aStagePrefabs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Why this stage list cannot stand (fewer than two, or one blank), or empty.
+	static string StagesProblem(array<ResourceName> stages)
+	{
+		if (!stages || stages.Count() < 2)
+			return "a crop needs two or more stage prefabs";
+
+		foreach (int i, ResourceName stage : stages)
+		{
+			if (stage.IsEmpty())
+				return string.Format("stage %1 has an empty prefab", i + 1);
+		}
+
+		return string.Empty;
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_CropRow crop = LF_CropRow.Cast(record);
+		int changed;
+		ResourceName prefab;
+		if (container.IsVariableSetDirectly("m_SeedPrefab") && container.Get("m_SeedPrefab", prefab) && !prefab.IsEmpty())
+		{
+			crop.m_SeedPrefab = prefab;
+			changed++;
+		}
+
+		if (container.IsVariableSetDirectly("m_HarvestPrefab") && container.Get("m_HarvestPrefab", prefab) && !prefab.IsEmpty())
+		{
+			crop.m_HarvestPrefab = prefab;
+			changed++;
+		}
+
+		int number;
+		if (container.IsVariableSetDirectly("m_iGrowthSeconds") && container.Get("m_iGrowthSeconds", number) && number > 0)
+		{
+			crop.m_iGrowthSeconds = number;
+			changed++;
+		}
+
+		if (container.IsVariableSetDirectly("m_iWaterMinSeconds") && container.Get("m_iWaterMinSeconds", number) && number >= 0)
+		{
+			crop.m_iWaterMinSeconds = number;
+			changed++;
+		}
+
+		if (container.IsVariableSetDirectly("m_iWaterMaxSeconds") && container.Get("m_iWaterMaxSeconds", number) && number >= 0)
+		{
+			crop.m_iWaterMaxSeconds = number;
+			changed++;
+		}
+
+		if (container.IsVariableSetDirectly("m_iLifetimeAfterRipe") && container.Get("m_iLifetimeAfterRipe", number) && number >= 0)
+		{
+			crop.m_iLifetimeAfterRipe = number;
+			changed++;
+		}
+
+		if (container.IsVariableSetDirectly("m_iYield") && container.Get("m_iYield", number) && number >= 1)
+		{
+			crop.m_iYield = number;
+			changed++;
+		}
+
+		bool legal;
+		if (container.IsVariableSetDirectly("m_bLegal") && container.Get("m_bLegal", legal))
+		{
+			crop.m_bLegal = legal;
+			changed++;
+		}
+
+		// The stage list is replaced whole, and only when it is usable.
+		if (container.IsVariableSetDirectly("m_aStagePrefabs"))
+		{
+			array<ResourceName> stages = {};
+			string problem = "the stage list could not be read";
+			if (container.Get("m_aStagePrefabs", stages))
+				problem = StagesProblem(stages);
+
+			if (problem.IsEmpty())
+			{
+				crop.m_aStagePrefabs = new array<ResourceName>();
+				crop.m_aStagePrefabs.Copy(stages);
+				changed++;
+			}
+			else
+			{
+				LF_Debug.Error(LF_CropCatalogue.FEATURE, string.Format("farming.crops %1: pack stage list refused (%2); keeping the shipped stages", crop.m_sCropId, problem));
+			}
+		}
+
+		return changed;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CropCatalogue's statics (LF_StaticReset finds it by reflection).
+class LF_CropCatalogue_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_CropCatalogue";
+	}
+
+	override void Apply()
+	{
+		LF_CropCatalogue.Reload();
 	}
 }
