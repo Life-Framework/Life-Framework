@@ -21,6 +21,8 @@ choice survive a restart.
   controller sends the used sign's plot key; the server sells it only when a sign with that key is within 5 m,
   rate-limited (PURCHASE), for a living conscious buyer, paid with carried cash. Nothing
   builds yet.
+- Spawn house (#2651): "Make this my spawn" on the house door, owner only; `m_bOwnerSpawnsHere` on the row, one
+  per owner, read by `LF_Properties.SpawnHouseOf` at login only.
 
 ## Rules
 

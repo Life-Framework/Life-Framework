@@ -1585,6 +1585,99 @@
       "additionalProperties": false,
       "x-class": "LF_ShopPricesConfig"
     },
+    "sites": {
+      "type": "object",
+      "description": "The rules of each contested site: radius, member minimum, capture, decay, flip cooldown and rent, per hideout id (#2679, gang war #1022).",
+      "properties": {
+        "rules": {
+          "type": "object",
+          "description": "The rules of each contested site, one entry per hideout id the site guards. A field an entry leaves out has the default rule. The core ships none: a pack adds the sites of its map. Records are an object keyed by a stable key. The key is the hideout id the site guards. An id no shipped entry has adds a site; an existing id changes only the fields given. A field an entry leaves out has the default rule.",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
+              "radius": {
+                "type": "integer",
+                "description": "Metres from the site's centre within which a member counts as on the site",
+                "default": 60,
+                "minimum": 1,
+                "maximum": 1000
+              },
+              "innerRadius": {
+                "type": "integer",
+                "description": "Metres from the site's centre of the inner ring; a member there counts double. 0 means no inner ring. At most radius",
+                "default": 20,
+                "minimum": 0,
+                "maximum": 1000
+              },
+              "minMembersPresent": {
+                "type": "integer",
+                "description": "Members of one organization that must stand on the site before it gains or captures",
+                "default": 2,
+                "minimum": 1,
+                "maximum": 100
+              },
+              "captureSeconds": {
+                "type": "integer",
+                "description": "Capture progress, in counted-member seconds, at which the site changes hands",
+                "default": 300,
+                "minimum": 1,
+                "maximum": 86400
+              },
+              "decayPerHour": {
+                "type": "integer",
+                "description": "Seconds of capture progress lost per hour while nobody stands on the site. 0 means progress never fades",
+                "default": 600,
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "flipCooldownSeconds": {
+                "type": "integer",
+                "description": "Seconds after the site changes hands in which no new capture completes. 0 means no cooldown",
+                "default": 1800,
+                "minimum": 0,
+                "maximum": 604800
+              },
+              "rentPerHour": {
+                "type": "integer",
+                "description": "Cash the holder earns per hour of holding the site. 0 earns nothing",
+                "default": 600,
+                "minimum": 0,
+                "maximum": 1000000
+              },
+              "maxRentBanked": {
+                "type": "integer",
+                "description": "Most cash a site banks for its holder before it is collected",
+                "default": 3000,
+                "minimum": 0,
+                "maximum": 100000000
+              },
+              "activeWindowSeconds": {
+                "type": "integer",
+                "description": "Seconds a member stays counted as active after the last thing they did on the site",
+                "default": 300,
+                "minimum": 1,
+                "maximum": 86400
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_SitesConfig"
+    },
     "staff": {
       "type": "object",
       "description": "The `staff` owner section (M4, #1343): where staff notifications are posted.",

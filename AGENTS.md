@@ -280,6 +280,10 @@ bug for each one; they transfer here because the engine is the same.
   `version` first; binary save contexts are positional (write order = read
   order). Load must be idempotent (runs on fresh load AND when re-applying to a
   live session). No console guards; consoles are handled internally.
+  A save record is keyed by the variable name given to `context.Write`/`Read` in
+  `LF_PersistenceComponentSerializer.c`: a new payload takes a fresh name, one
+  write and one read (a reused `slotRows` once loaded every garage slot as 0);
+  `validate-record-var-names` fails a repeat.
   **In-session round trips prove nothing about restarts**; the restart path is
   ground truth.
 
