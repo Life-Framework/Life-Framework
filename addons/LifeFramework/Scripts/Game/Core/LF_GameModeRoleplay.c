@@ -97,6 +97,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_OrgWarBoard.Install();
 		// The serial book stamps every tool the fence sells (server only).
 		LF_FenceSerials.EnsureSubscribed();
+		// Standing moves on jobs, arrests, statements, fence and chop shop events (server only, #2697).
+		LF_ReputationSubscriber.EnsureSubscribed();
 		// The wanted board's posters rebuild on a crime, a wanted level, an identification (server only).
 		LF_WantedPosters.Install();
 		// The case board rebuilds for on-duty officers on the same events (server only, #148).
