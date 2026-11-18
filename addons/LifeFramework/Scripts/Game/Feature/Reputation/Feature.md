@@ -29,7 +29,7 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
 
 ## Not built yet (later cards of chapter #1018)
 
-Event subscriptions, gates in job sign-up, contracts, the owner
+Event subscriptions, contracts, gates beyond job sign-up and run start (#2701 built those: `LF_ReputationGate.c`), the owner
 RPC and screens, the pack's words, and the pack overlay and owner `config.json` section for the config.
 
 ## Dependencies
