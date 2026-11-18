@@ -141,21 +141,36 @@ GenericEntity Fit_saint_philippe_carlot_garage {
     }
    }
    additionalActions {
-    LF_VehicleBuyAction "{E1B0E70100000021}" {
-     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+    LF_VehicleStoreAction "{A1C1080A00000005}" {
      ParentContextList {
       "default"
      }
-     UIInfo UIInfo "{E1B0E70100000022}" {
-      Name "#EL-Vehicle_Buy"
+     UIInfo UIInfo "{A1C1080A00000006}" {
+      Name "#EL-Vehicle_Store"
      }
     }
-    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
+    LF_VehicleRetrieveAction "{A1C1080A00000007}" {
      ParentContextList {
       "default"
      }
-     UIInfo UIInfo "{E1B0E70100000024}" {
-      Name "#EL-Vehicle_ExtraKey"
+     UIInfo UIInfo "{A1C1080A00000008}" {
+      Name "#EL-Vehicle_Retrieve"
+     }
+    }
+    LF_GarageLedgerAction "{C9A69B1164585666}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{006BD8DCF53DEDC6}" {
+      Name "#LF-Garage_ReadLedger"
+     }
+    }
+    LF_GarageBuySlotAction "{28F1261ED2051036}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6EF55C133E0B55D2}" {
+      Name "#LF-Garage_BuySlot"
      }
     }
    }
@@ -202,21 +217,20 @@ GenericEntity Fit_saint_philippe_carlot_impound_desk {
     }
    }
    additionalActions {
-    LF_VehicleBuyAction "{E1B0E70100000021}" {
-     m_sPrefab "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et"
+    LF_ImpoundCollectAction "{2D594A0A83AE40B7}" {
      ParentContextList {
       "default"
      }
-     UIInfo UIInfo "{E1B0E70100000022}" {
-      Name "#EL-Vehicle_Buy"
+     UIInfo UIInfo "{2426F79B9E22C4CB}" {
+      Name "#LF-Impound_Collect"
      }
     }
-    LF_VehicleExtraKeyAction "{E1B0E70100000023}" {
+    LF_GarageLedgerAction "{AB18B805A523E985}" {
      ParentContextList {
       "default"
      }
-     UIInfo UIInfo "{E1B0E70100000024}" {
-      Name "#EL-Vehicle_ExtraKey"
+     UIInfo UIInfo "{3AE5CC43C788D6EE}" {
+      Name "#LF-Garage_ReadLedger"
      }
     }
    }
@@ -233,7 +247,7 @@ Vehicle Fit_saint_philippe_carlot_lot_display_uaz469 : "{C8B16ABCA57679A2}Prefab
  angleY 11
 }
 Vehicle Fit_saint_philippe_carlot_lot_display_dana2101 : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
- coords 4398.819 14.73 10641.263
+ coords 4396.6 15.2 10633.5
  angleY 151
 }
 GenericEntity Fit_saint_philippe_carlot_vehicle_lot_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

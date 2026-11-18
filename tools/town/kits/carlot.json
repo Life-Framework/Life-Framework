@@ -272,9 +272,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        9.5,
+        5.2,
         -1.07,
-        10
+        2.7
       ],
       "yaw": 160,
       "class": "Vehicle",
