@@ -283,9 +283,9 @@ class LF_Garage
 
 	//------------------------------------------------------------------------------------------------
 	//! \return True when the vehicle's storages hold an item beyond the prefab's own fill (the
-	//! MultiSlots a stock car spawns with, such as the S105's two field dressings). A stored
-	//! vehicle keeps no cargo: the record has no inventory and retrieve spawns a fresh prefab with
-	//! its own fill, so storing would delete everything else (#2411).
+	//! MultiSlots a stock car spawns with, such as the S105's two field dressings). The garage keeps
+	//! the cargo since #2809 (LF_VehicleOwnership.CaptureCargo); the stolen-car recover still asks
+	//! the officer to search the car first.
 	static bool HasCargo(IEntity vehicle)
 	{
 		if (!vehicle)
@@ -431,17 +431,13 @@ class LF_Garage
 
 	//------------------------------------------------------------------------------------------------
 	//! Why vehicle cannot go into the garage as it is, as a string key; empty when it can.
-	//! Storing deletes the vehicle entity and its children, so a car that still holds items is
-	//! refused instead of losing them (#2411), and so is one with the owner or a keyholder still
-	//! seated. Other occupants do not refuse: the store ejects them (StopAndEject) and Store
+	//! A car with the owner or a keyholder still seated is refused (#2411). Cargo does not refuse:
+	//! the record keeps it (#2809), and the garage has no capacity limit that would need it. Other occupants do not refuse: the store ejects them (StopAndEject) and Store
 	//! checks the seats again before deleting, so a player is never deleted with the car.
 	static string StoreRefusalKey(IEntity vehicle, string vehicleId, string ownerUid)
 	{
 		if (KeyholderInside(vehicle, vehicleId, ownerUid))
 			return "#LF-Garage_Occupied";
-
-		if (HasCargo(vehicle))
-			return "#LF-Garage_EmptyCargo";
 
 		return "";
 	}
