@@ -35,7 +35,7 @@ Rung 1: a locker bank prop (`Prefabs/Props/Lockers/LF_LockerBank.et`, a vanilla 
   from that character's own position and its character record key (`LF_Utils.GetPlayerUID`); nothing the client
   sends picks the bank or the renter. Refused: out of reach, already renting here, short of `rentPrice` (nothing
   taken). The cash is taken only after every check; a short take is handed back.
-- Saved as the `lockers` payload (save v56): rows `{siteId, characterKey, paidUntil}`. A save before v56 loads
+- Saved as the `lockers` payload (save v57): rows `{siteId, characterKey, paidUntil}`. A save before v57 loads
   with nobody renting. Apply replaces the table, so a second apply gives the same table.
 
 ## Data

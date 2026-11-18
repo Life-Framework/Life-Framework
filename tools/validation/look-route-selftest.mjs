@@ -7,7 +7,7 @@
 // red-proof: 2026-11-14, routeMode returning "local" for every look (the old behaviour) failed "a plain
 // look routes"; diskRoute rethrowing every refusal failed "disk-short PC drops out of an any-machine run".
 
-import { LOOK_RESERVE_MB, parseArgs, rehomeIndex, remoteLookArgs, routeMode, starvedRun } from "../visual/look.mjs";
+import { BUSY_CODE, ENV_SHORT_CODE, LOOK_RESERVE_MB, parseArgs, rehomeIndex, remoteLookArgs, routeMode, skipOutcome, starvedRun } from "../visual/look.mjs";
 import { chooseGate } from "../lib/wb-gate.mjs";
 import { diskRoute } from "../remote/pool.mjs";
 
@@ -43,6 +43,14 @@ check("starved: timeout, no shot, short", !!starvedRun({ timedOut: true, written
 check("not starved with a shot written", starvedRun({ timedOut: true, written: 1, freeMb: 2017 }) === null);
 check("not starved with the RAM there", starvedRun({ timedOut: true, written: 0, freeMb: 8000 }) === null);
 check("not starved without a timeout", starvedRun({ timedOut: false, written: 0, freeMb: 100 }) === null);
+
+// A held build lock waits, it does not strike the machine (2026-11-18, #2808: one PC, another Workbench held the
+// lock, the look said "no machine left to try (tried local)" and the PR shipped without its picture)
+check("held lock: busy, retried", skipOutcome(BUSY_CODE, { elapsedMs: 20000, waitS: 1200 }) === "busy");
+check("held lock past the budget: give up", skipOutcome(BUSY_CODE, { elapsedMs: 1201000, waitS: 1200 }) === "giveup");
+check("short RAM still skips the machine", skipOutcome(ENV_SHORT_CODE, { elapsedMs: 5000 }) === "skip");
+check("a finished look is not a skip", skipOutcome(0) === null && skipOutcome(2) === null && skipOutcome(3) === null);
+check("busy and short are different codes", BUSY_CODE !== ENV_SHORT_CODE);
 
 // The look's reserve in the shared ranking (the 2026-11-14 machines)
 const pc = (freeMb, busy = 0) => ({ busy, queued: 0, limit: 1, freeMb, multiplier: 1 });

@@ -17,6 +17,6 @@
   `rentPrice` in cash and records `{siteId, characterKey, paidUntil}`. The server finds the bank from the character's
   position; refused out of reach, already renting at the site, or short of cash (nothing taken).
   Proof: `LF_Test_LockerRent` (WORLD).
-- ✅ Saved as the `lockers` payload (save v56); a pre-v56 save loads with nobody renting. Proof: `LF_Test_LockerPersist`
+- ✅ Saved as the `lockers` payload (save v57); a pre-v57 save loads with nobody renting. Proof: `LF_Test_LockerPersist`
   (PERSISTENCE), `tools\cli wt e2e`.
 - ⚠️ No bank placed in a world yet; a pack placement sets `m_sSiteId`.

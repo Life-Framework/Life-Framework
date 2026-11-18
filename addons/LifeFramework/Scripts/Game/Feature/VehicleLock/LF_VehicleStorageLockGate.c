@@ -57,6 +57,10 @@ class LF_VehicleStorageLockGate
 	//! \return True when the move must be refused; logs the refusal once per call.
 	static bool Refuses(BaseInventoryStorageComponent storage, IEntity item, string verb)
 	{
+		// The server's own insert (the garage putting a locked car's saved cargo back, #2809) passes.
+		if (LF_ServerInsertScope.IsOpen())
+			return false;
+
 		LF_VehicleLockComponent vehicleLock = LockedVehicleOf(storage);
 		if (!vehicleLock)
 			return false;

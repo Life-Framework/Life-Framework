@@ -179,12 +179,8 @@ class LF_VehicleTow
 
 		string ownerUid = LF_VehicleOwnership.GetOwner(vehicleId);
 		string plate = LF_VehicleOwnership.GetPlate(vehicleId);
-		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
-		if (vehicleLock)
-			LF_VehicleOwnership.NoteLockState(vehicleId, vehicleLock.IsVehicleLocked());
-
-		SCR_EntityHelper.DeleteEntityAndChildren(vehicle);
-		if (LF_VehicleOwnership.GetVehicle(vehicleId))
+		// The cargo goes to the impound with the car (#2809).
+		if (!LF_VehicleOwnership.TakeOffStreet(vehicleId, vehicle))
 		{
 			LF_Debug.Error(FEATURE, string.Format("tow of %1 failed: the entity is still in the world", vehicleId));
 			return false;

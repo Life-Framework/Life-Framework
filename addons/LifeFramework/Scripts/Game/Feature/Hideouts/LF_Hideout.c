@@ -369,6 +369,43 @@ class LF_Hideout
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Hands a site to another organization (server; a contested-site capture, #2680): the old lease
+	//! is released with `reason` (its held ground goes with it), the new organization leases the site
+	//! and its held ground starts at zero. Checked before anything changes, so a refusal leaves the
+	//! old lease standing: the new organization must exist and lease no other site.
+	//! \return False when refused (GetLastRefusal says why).
+	static bool HandOver(string hideoutId, string organizationId, string reason)
+	{
+		if (!Server())
+			return false;
+
+		if (hideoutId.IsEmpty() || !LF_OrganizationManager.Get(organizationId))
+		{
+			Refuse("hand-over refused: no organization");
+			return false;
+		}
+
+		string ownedHideout = HideoutOf(organizationId);
+		if (!ownedHideout.IsEmpty() && ownedHideout != hideoutId)
+		{
+			Refuse("hand-over refused: organization already owns a hideout");
+			return false;
+		}
+
+		string previous = GetOwner(hideoutId);
+		if (previous == organizationId)
+			return SetHeldGround(hideoutId, organizationId, 0, 0);
+
+		if (!previous.IsEmpty())
+			Release(hideoutId, reason);
+
+		if (!Assign(hideoutId, organizationId))
+			return false;
+
+		return SetHeldGround(hideoutId, organizationId, 0, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: an organization with no member left (LF_OnOrganizationEmptied, #2571) holds nothing:
 	//! every site it leases is released.
 	//! \return How many sites were released.

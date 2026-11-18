@@ -49,9 +49,13 @@ const ISLAND_BOOT_BUDGET_S = 210;
 // The pool's Workbench peak (tools/lib/pool-ram.mjs: 3.7 GB measured on the laptop 2026-11-16; the p90 of the
 // observed peaks once there are samples). The look no longer carries a number of its own (it was 1.9 GB + 0.3).
 export const LOOK_RESERVE_MB = SEED_PEAKS_MB["workbench:small"];
-// run() returns this when this machine could not run the look (RAM, the build lock, a starved Workbench),
+// run() returns this when this machine could not run the look (RAM, a starved Workbench),
 // so the router (routeLook) tries another machine. Never a verdict about the pictures.
 export const ENV_SHORT_CODE = 4;
+// run() returns this when the only thing in the way is the machine-wide build lock held by another headless
+// Workbench (a build, an rdb refresh, another look). That clears in seconds, so routeLook queues for it
+// instead of striking the machine off (2026-11-18, #2808: one PC, lock held, "no machine left to try").
+export const BUSY_CODE = 5;
 // How long a look queues for a machine (RAM or a Workbench slot) before it gives up: LF_LOOK_WAIT_S.
 const waitBudgetS = () => (Number(process.env.LF_LOOK_WAIT_S) > 0 ? Number(process.env.LF_LOOK_WAIT_S) : 1200);
 const SERVE_BUDGET_S = 150;
@@ -587,6 +591,15 @@ export function starvedRun({ timedOut, written, freeMb, needMb = LOOK_RESERVE_MB
   return `the Workbench wrote no shot before its budget with ${freeMb} MB free (needs about ${needMb} MB)`;
 }
 
+// Pure: what routeLook does with a machine that handed the look back. "busy" (the build lock is held) is a wait,
+// not a verdict: the machine stays in the running and the look re-queues until the budget is spent; "skip"
+// (RAM, a starved Workbench) takes the machine out for this look; null means the look ran.
+export function skipOutcome(code, { elapsedMs = 0, waitS = 1200 } = {}) {
+  if (code === BUSY_CODE) return elapsedMs > waitS * 1000 ? "giveup" : "busy";
+  if (code === ENV_SHORT_CODE) return "skip";
+  return null;
+}
+
 // null when this process holds the machine-wide build lock, else why not.
 function takeBuildLock(wt, waitMs) {
   try {
@@ -757,7 +770,7 @@ async function run(args) {
   TL.add("lock-wait", (Date.now() - lockT0) / 1000);
   if (lockErr) {
     console.log(`${args.routed ? "look: not here:" : "FAIL "} look: ${lockErr}`);
-    return envFail;
+    return args.routed ? BUSY_CODE : envFail;
   }
 
   const outRoot = resolve(ROOT, args.flags.out || join("tmp", "look"));
@@ -1381,13 +1394,40 @@ async function routeLook(args, argv) {
     tried.push(c.where);
     if (c.where === "local") {
       const code = await localLook({ ...args, routed: true });
-      if (code === ENV_SHORT_CODE) continue;
+      const out = skipOutcome(code, { elapsedMs: Date.now() - t0, waitS });
+      if (out === "giveup") {
+        console.log(`FAIL  look: the build lock stayed held by another headless Workbench for ${Math.round((Date.now() - t0) / 1000)} s; retry, or see what holds it with tools\\cli pool status`);
+        return 3;
+      }
+      if (out === "busy") {
+        if (!saidWait) console.log(`look: queued: another headless Workbench holds the build lock on this PC; re-checking every 20 s for up to ${Math.round(waitS / 60)} min`);
+        saidWait = true;
+        tried.pop();
+        attempt--;
+        await new Promise((r) => setTimeout(r, 20000));
+        continue;
+      }
+      if (out === "skip") continue;
       return code;
     }
     const m = view.remotes.find((r) => r.name === c.where).m;
     TL.add("route-wait", (Date.now() - t0) / 1000);
     const code = await remoteLook(m, args, argv, pool);
-    if (code === ENV_SHORT_CODE || code === null) continue;
+    if (code === null) continue;
+    const rOut = skipOutcome(code, { elapsedMs: Date.now() - t0, waitS });
+    if (rOut === "giveup") {
+      console.log(`FAIL  look: the build lock stayed held on ${c.where} for ${Math.round((Date.now() - t0) / 1000)} s`);
+      return 3;
+    }
+    if (rOut === "busy") {
+      if (!saidWait) console.log(`look: queued: another headless Workbench holds the build lock on ${c.where}; re-checking every 20 s for up to ${Math.round(waitS / 60)} min`);
+      saidWait = true;
+      tried.pop();
+      attempt--;
+      await new Promise((r) => setTimeout(r, 20000));
+      continue;
+    }
+    if (rOut === "skip") continue;
     return code;
   }
   console.log(`FAIL  look: tried ${tried.join(", ")}; none could run the Workbench`);
@@ -1408,7 +1448,7 @@ async function remoteLook(m, args, argv, pool, { warm = !args.flags.cold && !arg
     console.log(`look: ${m.name} did not take it (exit ${r.code})`);
     return null;
   }
-  if (r.code === ENV_SHORT_CODE) return ENV_SHORT_CODE;
+  if (r.code === ENV_SHORT_CODE || r.code === BUSY_CODE) return r.code;
   const pulled = pullPictures(m, r.rDir, outRel, resolve(ROOT, args.flags.out || join("tmp", "look")));
   const s = Math.round((Date.now() - t0) / 1000);
   // The phases of this call: sync to the box, the run there (its own phases are in index.json "timing"), the copy back.

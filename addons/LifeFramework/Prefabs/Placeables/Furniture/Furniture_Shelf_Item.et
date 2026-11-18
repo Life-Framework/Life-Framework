@@ -30,7 +30,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    Object "{C2AEF1F8600A8929}Assets/Props/Furniture/Shelf_01/Shelf_01.xob"
   }
   LF_PlaceableComponent "{2A2BE9E51516AA08}" {
-   m_sPlacedPrefab "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et"
+   m_sPlacedPrefab "{966F7E9F8D3CF17A}Prefabs/Placeables/Furniture/Furniture_Shelf_Placed.et"
    m_vFootprintMins -0.5 0.1 -0.2
    m_vFootprintMaxs 0.5 1.8 0.2
    m_fReach 1

@@ -345,11 +345,6 @@ class LF_TestManager
 		if (red || m_bLogicWorld || !GetGame() || !GetGame().GetWorld())
 			return;
 
-		// The e2e pass-1 write test keeps its characters standing on purpose: the shutdown save has to
-		// find them (`tools\cli e2e`), so that run has no gate to keep clean (main guard e2e, #2800).
-		if (m_aOnly.Find("LF_Test_E2E_SaveStateWrite") != -1)
-			return;
-
 		m_vGate = LF_TestDebrisProbe.Gate();
 		if (m_vGate == vector.Zero)
 			return;

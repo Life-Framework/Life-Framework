@@ -58,6 +58,7 @@
     "reputation": "LF_ReputationRow",
     "orgwars": "LF_OrgWarRecord",
     "garageslots": "LF_GarageSlotRow",
+    "plants": "LF_PlantRow",
     "lockers": "LF_LockerRentalRow"
   },
   "records": {
@@ -687,8 +688,19 @@
         "int m_iBought"
       ]
     },
-    "LF_LockerRentalRow": {
+    "LF_PlantRow": {
       "since": 56,
+      "fields": [
+        "string m_sPlantId",
+        "string m_sCropId",
+        "vector m_vPosition",
+        "int m_iPlantedAt",
+        "int m_iWateredAt",
+        "string m_sOwnerKey"
+      ]
+    },
+    "LF_LockerRentalRow": {
+      "since": 57,
       "fields": [
         "int m_iVersion",
         "string m_sSiteId",

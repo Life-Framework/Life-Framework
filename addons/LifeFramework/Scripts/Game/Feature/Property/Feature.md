@@ -21,6 +21,9 @@ choice survive a restart.
   controller sends the used sign's plot key; the server sells it only when a sign with that key is within 5 m,
   rate-limited (PURCHASE), for a living conscious buyer, paid with carried cash. Nothing
   builds yet.
+- Owned state on clients (#2780): `LF_PlotComponent.m_bOwned` is an `RplProp` (the server `BumpMe`s it from `RefreshOwned`, called by
+  `LF_Properties.SetOwner` / `ApplyAll` and when a sign appears); the Buy action reads `IsForSale()` from it, never the book.
+  The owner key is never sent. The face is the core sign `plot_for_sale` (`Prefabs/Props/Property/LF_PlotSign.et`).
 - Spawn house (#2651): "Make this my spawn" on the house door, owner only; `m_bOwnerSpawnsHere` on the row, one
   per owner, read by `LF_Properties.SpawnHouseOf` at login only.
 

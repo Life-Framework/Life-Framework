@@ -36,7 +36,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation, orgwars, garageslots, lockers. The written version is that list's length (56). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation, orgwars, garageslots, plants, lockers. The written version is that list's length (57). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -126,7 +126,8 @@
 //! declaration or pair cooldown is restored.
 //! A version 54 save includes the organization wars and has no bought garage slots (#2656): every
 //! character has only the base slots.
-//! A version 55 save includes the bought garage slots and has no locker rentals (#2659): every locker
+//! A version 55 save includes the bought garage slots and has no planted crops (#2664): nothing is planted.
+//! A version 56 save includes the planted crops and has no locker rentals (#2659): every locker
 //! bank loads with nobody renting.
 //! The next system adds one Insert at the end of the list and raises the written version by one.
 //! Do not insert earlier and do not reorder: existing saves are positional.
@@ -304,6 +305,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("reputation");
 		order.Insert("orgwars");
 		order.Insert("garageslots");
+		order.Insert("plants");
 		order.Insert("lockers");
 	}
 
@@ -338,7 +340,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 56);
+		context.WriteValue("version", 57);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -610,6 +612,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			// Every save point (autosave, manual, shutdown) refreshes living players first.
 			int captured = LF_StorageSnapshot.CaptureAllPlayers();
 			int placed = LF_PersistentStorageComponent.CaptureAllPlaced();
+			LF_VehicleOwnership.CaptureAllCargo();
 			array<ref LF_StorageSnapshotRecord> carriedRecords = LF_StorageSnapshot.ExportAll();
 			if (!carriedRecords)
 				carriedRecords = new array<ref LF_StorageSnapshotRecord>();
@@ -958,6 +961,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_GarageSlotRow> garageSlotRows = LF_GarageSlotStore.ExportAll();
 			context.Write(garageSlotRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 garage slot row(s)", garageSlotRows.Count()));
+		}
+		else if (payload == "plants")
+		{
+			// Planted crops (#2664): id, crop id, position, planted-at and watered-at on the farming clock (relative to the save, zero or less), owner key.
+			array<ref LF_PlantRow> plantRows = LF_Plants.ExportAll();
+			context.Write(plantRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 planted crop(s)", plantRows.Count()));
 		}
 		else if (payload == "lockers")
 		{
@@ -1788,9 +1798,22 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 				ReadFailed("garage slots failed to read, bought slots stay as they were");
 			}
 		}
+		else if (payload == "plants")
+		{
+			// A version 1-55 save never reaches this payload: nothing is planted.
+			array<ref LF_PlantRow> plantRows = new array<ref LF_PlantRow>();
+			if (context.Read(plantRows))
+			{
+				int plantsKept = LF_Plants.ApplyAll(plantRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 planted crop(s)", plantsKept, plantRows.Count()));
+			}
+			else
+			{
+				ReadFailed("planted crops failed to read, the plants stay as they were");
+		}
 		else if (payload == "lockers")
 		{
-			// A version 1-55 save never reaches this payload: nobody rents a locker.
+			// A version 1-56 save never reaches this payload: nobody rents a locker.
 			array<ref LF_LockerRentalRow> lockerRentalRows = new array<ref LF_LockerRentalRow>();
 			if (context.Read(lockerRentalRows))
 			{
