@@ -1,7 +1,7 @@
 import { arrive, clientBox, clientSees, sessionDir } from "../session.mjs";
 
 // The town board on the spawn square (Sign_TownMap), driven the way a player does it, on a running
-// `up --profile full` session (one client). The client walks up: the face draws the eight cards.
+// `up --profile full` session (one client). The client walks up: the face draws its nine cards.
 // It reads the first card (work): the sheet shows the title, WHERE and the detail with a Set waypoint
 // button. Set waypoint closes the sheet and puts the marker over the post office; `seen` reads the
 // board (cards/face) and the waypoint (card@metres/hud). Shots: the board from the square, the cards
@@ -61,7 +61,7 @@ async function runTownBoardProof() {
   arrive(on, 1, wait);
   must(on(1, { verb: "stand", entityName: SITE }), "stand at the board");
   wait(3000);
-  expect("the board draws its eight cards", (b) => (b.cards === 8 && b.face !== "released" ? [] : [`townboard=${b.cards}/${b.face}`]));
+  expect("the board draws its nine cards", (b) => (b.cards === 9 && b.face !== "released" ? [] : [`townboard=${b.cards}/${b.face}`]));
   // After the settle refresh, so the cork and the paper are at full detail on the frozen frame.
   wait(12000);
   const out = (d) => ({ x: BOARD_AT.x + FACING.x * d, y: BOARD_AT.y, z: BOARD_AT.z + FACING.z * d });

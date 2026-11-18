@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{CF228B58A7782218}Assets/Items/Store1989/ChocolateBar/Data/ChocolateBar_BCR.edds"
+ NMOMap "{2C352745C5BA9B9E}Assets/Items/Store1989/ChocolateBar/Data/ChocolateBar_NMO.edds"
+}

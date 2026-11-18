@@ -1,0 +1,28 @@
+GenericEntity : "{A0A76057A66049D0}Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et" {
+ ID "51FF47E26862A51F"
+ components {
+  ActionsManagerComponent "{C0F2F54B8773AFED}" {
+   ActionContexts {
+    UserActionContext "{99B094DDE252AF5A}" {
+     ContextName "default"
+     Position PointInfo "{476009ED06124B13}" {
+      Offset 0 0.407 0.003
+     }
+     Radius 2.017
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{879CE79B7025C85B}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{79E63C7AF4FA96EA}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

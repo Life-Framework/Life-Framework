@@ -371,6 +371,8 @@ class LF_StoreComponent : ScriptComponent
 				if (shop)
 					price = shop.GetBuyPrice(line.m_Prefab);
 
+				LF_StoreGarbage.Release(item);
+				LF_StoreShelfSave.Release(item);
 				LF_Stores.Tag(this, item, line.m_Prefab, price);
 			}
 		}
@@ -404,6 +406,8 @@ class LF_StoreComponent : ScriptComponent
 			return null;
 
 		RestOnBoard(copy, line, index);
+		LF_StoreGarbage.Hold(copy);
+		LF_StoreShelfSave.Hold(copy);
 		return copy;
 	}
 
@@ -651,10 +655,11 @@ class LF_StoreComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A shelf item is a plain world item with a quantity component, so the engine's own persistence
-	//! saves it and brings it back after a restart, at the same spot, beside the copies this store
-	//! spawns from its saved stock. Any loose copy of a line's item sitting on a shelf point is therefore
-	//! the shelf's own: it is adopted into an empty slot, or deleted when the slot already has one.
+	//! A shelf copy is left out of the world save (LF_StoreShelfSave, #3127), but a save written before
+	//! that still holds copies the engine brings back after a restart, beside the ones this store spawns
+	//! from its saved stock. Any loose copy of a line's item sitting on a shelf point is therefore the
+	//! shelf's own: it is adopted into an empty slot (and untracked, so its record goes at the next save),
+	//! or deleted when the slot already has one.
 	protected void AdoptStrays()
 	{
 		foreach (LF_StoreLineState line : m_aState)
@@ -687,6 +692,8 @@ class LF_StoreComponent : ScriptComponent
 					if (line.m_aShelf[i] == EntityID.INVALID && LF_StoreRules.ShelfCount(line.m_iStock, line.m_aSlots.Count()) > line.Occupied())
 					{
 						line.m_aShelf[i] = id;
+						LF_StoreGarbage.Hold(stray);
+						LF_StoreShelfSave.Hold(stray);
 						continue;
 					}
 
