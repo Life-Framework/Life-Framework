@@ -56,6 +56,15 @@
   owner `config.json` section. Tests: `quests/onboarding-chain` (WORLD: links, no money, items resolve),
   `quests/arrival-chain` (gift lands, no cash), `everon/welcome-gift` (pack leg).
 
+- ✅ **A pack adds quests to a giver by config** (#3124). `LF_QuestGiverTable` (`Feature/Quests/LF_QuestGiverTable.c`)
+  reads `Configs/Quests/LF_QuestGiverTable.conf`, rows keyed by giver id (`m_sGiverId`) with a list of
+  `LF_QuestDefinition`, and a pack overlays rows with the override verbs (`m_sOp`); a patch gives the giver's whole
+  list again. `LF_QuestGiverComponent.GetQuests()` returns the prefab's quests followed by the row's, so the clerk
+  or any placed giver gains errands with no prefab variant. The core file ships no rows. A row quest whose id the
+  giver already offers is refused (`[LFDebug:Quests]`, the prefab quest wins: quest ids are persistence keys); a
+  row for a giver id nothing registers is logged once, 30 s into the world, and never read. Pack-only: no owner
+  `config.json` section. Test: `quests/giver-table` (WORLD).
+
 ### Layouts (loaded by `LF_Test_Data`)
 - ✅ `LF_SplitQuantityDialog`, `LF_CharacterCreationMenu`, `LF_ATMMenu`,
   `EL_SurvivalHUD`, `ShopMenu`,
