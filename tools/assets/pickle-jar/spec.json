@@ -1,0 +1,42 @@
+{
+  "slug": "pickle-jar",
+  "name": "PickleJar",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "A jar of pickled gherkins, pickle-green glass, plain cream paper label and a gold lid: shelf stock at the village general store.",
+  "prompt": "Modelled in Blender by model.py: A jar of pickled gherkins, pickle-green glass, plain cream paper label and a gold lid: shelf stock at the village general store. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": {
+    "length": 0.087,
+    "height": 0.1445,
+    "width": 0.087
+  },
+  "budget": {
+    "lod0_tris": 1200,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Store1989/PickleJar",
+  "prefab_dir": "Prefabs/Items/Store1989",
+  "prefab": false,
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  },
+  "source": {
+    "blender": "model.py"
+  }
+}

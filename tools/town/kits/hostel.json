@@ -1,0 +1,264 @@
+{
+  "schema": 1,
+  "kit": "hostel",
+  "system": "hostel",
+  "source": {
+    "file": "addons/LF_Everon1989/Prefabs/Buildings/Hostel/Hostel.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local",
+    "also": [
+      "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_hostel.layer"
+    ]
+  },
+  "scope": "building",
+  "building": {
+    "mode": "override",
+    "via": "{10DB3EEB6DB494AD}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_Base.et",
+    "vanilla": "{10DB3EEB6DB494AD}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_Base.et"
+  },
+  "store": {
+    "prefab": "{DA1BC03553301847}Prefabs/Buildings/Hostel/Hostel.et",
+    "config": []
+  },
+  "anchoring": {
+    "floorY": 0.26,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.26
+      },
+      {
+        "id": "f1",
+        "y": 3.26
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -7.5,
+        -5.3
+      ],
+      "max": [
+        3.2,
+        3
+      ]
+    },
+    "front": null,
+    "counters": [
+      {
+        "id": "hostel-kit-decor-4",
+        "wall": "+x",
+        "edgeGap": 0
+      }
+    ],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "hostel-furniture-01",
+      "prefab": "{75CB9B95DCD2AFE3}Prefabs/Buildings/Hostel/Furniture/Hostel_furniture_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "all"
+    },
+    {
+      "id": "hostel-kit-first-bed-1",
+      "name": "HostelKit_FirstBed_1",
+      "prefab": "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -2.4,
+        4.06,
+        2.6
+      ],
+      "yaw": 0,
+      "from": "Grid_hostel.layer",
+      "config": [
+        {
+          "component": "LF_FirstSpawnBedComponent",
+          "set": {
+            "m_vStandOffset": "-0.85 0 0"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f1"
+    },
+    {
+      "id": "hostel-kit-first-bed-2",
+      "name": "HostelKit_FirstBed_2",
+      "prefab": "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        1.45,
+        4.06,
+        2.9
+      ],
+      "yaw": 0,
+      "from": "Grid_hostel.layer",
+      "config": [
+        {
+          "component": "LF_FirstSpawnBedComponent",
+          "set": {
+            "m_vStandOffset": "0.9 0 -1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f1"
+    },
+    {
+      "id": "hostel-kit-decor-1",
+      "name": "HostelKit_Decor_1",
+      "prefab": "{8BE469B1C9144671}Prefabs/Props/Furniture/BunkBed_02/BunkBed_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -6.2,
+        4.06,
+        2.3
+      ],
+      "yaw": 0,
+      "from": "Grid_hostel.layer",
+      "wall": "+z",
+      "floor": "f1"
+    },
+    {
+      "id": "hostel-kit-decor-2",
+      "name": "HostelKit_Decor_2",
+      "prefab": "{8BE469B1C9144671}Prefabs/Props/Furniture/BunkBed_02/BunkBed_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5,
+        4.06,
+        2.3
+      ],
+      "yaw": 0,
+      "from": "Grid_hostel.layer",
+      "wall": "+z",
+      "floor": "f1"
+    },
+    {
+      "id": "hostel-kit-decor-3",
+      "name": "HostelKit_Decor_3",
+      "prefab": "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.6,
+        4.06,
+        4.1
+      ],
+      "yaw": 90,
+      "from": "Grid_hostel.layer",
+      "wall": "+z",
+      "floor": "f1"
+    },
+    {
+      "id": "hostel-kit-decor-4",
+      "name": "HostelKit_Decor_4",
+      "prefab": "{5E7626D8E78566B4}Prefabs/Props/Furniture/Desk_01_long.et",
+      "role": "counter",
+      "verb": "against wall",
+      "offset": [
+        3.2,
+        0.26,
+        1.6
+      ],
+      "yaw": 0,
+      "from": "Grid_hostel.layer",
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "hostel-kit-decor-5",
+      "name": "HostelKit_Decor_5",
+      "prefab": "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et",
+      "role": "dressing",
+      "verb": "on hostel-kit-decor-4",
+      "offset": [
+        2.3,
+        1.167,
+        1.95
+      ],
+      "yaw": 180,
+      "from": "Grid_hostel.layer",
+      "floor": "f0"
+    },
+    {
+      "id": "hostel-kit-decor-6",
+      "name": "HostelKit_Decor_6",
+      "prefab": "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et",
+      "role": "dressing",
+      "verb": "on hostel-kit-decor-4",
+      "offset": [
+        1.7,
+        1.167,
+        1.95
+      ],
+      "yaw": 160,
+      "from": "Grid_hostel.layer",
+      "floor": "f0"
+    },
+    {
+      "id": "hostel-kit-decor-7",
+      "name": "HostelKit_Decor_7",
+      "prefab": "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et",
+      "role": "dressing",
+      "verb": "on hostel-kit-decor-4",
+      "offset": [
+        2.8,
+        1.166,
+        1.95
+      ],
+      "yaw": 0,
+      "from": "Grid_hostel.layer",
+      "floor": "f0"
+    },
+    {
+      "id": "hostel-kit-decor-12",
+      "name": "HostelKit_Decor_12",
+      "prefab": "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -3.6,
+        0.26,
+        -4.9
+      ],
+      "yaw": 10,
+      "from": "Grid_hostel.layer",
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "hostel-kit-decor-13",
+      "name": "HostelKit_Decor_13",
+      "prefab": "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -7.2,
+        0.26,
+        3
+      ],
+      "yaw": 80,
+      "from": "Grid_hostel.layer",
+      "wall": "+z",
+      "floor": "f0"
+    }
+  ]
+}

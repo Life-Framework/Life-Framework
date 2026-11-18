@@ -5,6 +5,9 @@
 // repo: a check is skipped only when its declared inputs are untouched since its last green run,
 // and every kind of change (edit, add, delete, rename, its own script, a baseline) re-runs it.
 //
+// red-proof: 2026-11-18 (#3189, CI green set), with loadShared() ignoring the file's `tool` hash the run printed `FAIL a green set written by
+// another validate tool must run everything`, `FAIL a green set with no tool hash must run everything` and `FAIL a green set made by a different
+// validate tool ...`; with it keeping non-list entries plan() threw `TypeError: state.shared?.[s]?.includes is not a function`; restored, it passes.
 // red-proof: 2026-11-18 (#3115, import closure), with plan() building an empty closure the run printed `FAIL editing a module the check
 // imports did not re-run it`, `FAIL editing a module the check imports only through another module ...` and `FAIL a branch edit to a
 // transitively imported module must run an imports check`; restored, it passes.
@@ -17,7 +20,7 @@ import { execFileSync } from "node:child_process";
 import { mkdirSync, readdirSync, readFileSync, renameSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { baseChanges, globToRegExp, incrementalOff, loadState, parseInputs, plan, publishShared, snapshotFiles, touches, ttlOf } from "../lib/validate-incremental.mjs";
+import { baseChanges, ciGreenFile, globToRegExp, incrementalOff, loadState, parseInputs, plan, publishShared, saveState, sharedFile, snapshotFiles, toolHash, touches, ttlOf } from "../lib/validate-incremental.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 const failures = [];
@@ -50,7 +53,12 @@ check(touches(["tools/validation/record-shapes.json"], ["addons/**"], self, "rec
 check(touches(["tools/validation/fixtures/x/y.txt"], ["addons/**"], self, ""), "a fixture change must count for every check");
 check(touches([self], ["addons/**"], self, ""), "the check's own file must count");
 check(!touches(["addons/a.c"], ["docs/*.md"], self, ""), "a path outside every glob must not count");
-check(incrementalOff({ CI: "true" }) && incrementalOff({ LF_VALIDATE_ALL: "1" }) && !incrementalOff({}), "CI and LF_VALIDATE_ALL must disable it");
+check(incrementalOff({ CI: "true" }) && incrementalOff({ LF_VALIDATE_ALL: "1" }) && !incrementalOff({}), "CI without a green set and LF_VALIDATE_ALL must disable it");
+// CI skips only when the workflow named a restored green set (#3189); LF_VALIDATE_ALL still runs everything.
+check(!incrementalOff({ CI: "true", LF_VALIDATE_GREEN_FILE: "x.json" }), "CI with a green set file must allow skipping");
+check(incrementalOff({ CI: "true", LF_VALIDATE_GREEN_FILE: "x.json", LF_VALIDATE_ALL: "1" }), "LF_VALIDATE_ALL must beat a CI green set");
+check(ciGreenFile({ LF_VALIDATE_GREEN_FILE: "x.json" }) === null, "a green set path outside CI must be ignored (a developer's shell never reads the CI file)");
+check(ciGreenFile({ GITHUB_ACTIONS: "true", LF_VALIDATE_GREEN_FILE: "x.json" }) === "x.json", "a green set path in CI must be used");
 
 // Every real check should state its inputs (or "always"). One that does not simply runs every time.
 const realDir = join(dirname(fileURLToPath(import.meta.url)));
@@ -191,6 +199,70 @@ try {
   const sharedPath = join(root, "shared-green.json");
   publishShared(sharedPath, { checks: { "check-t.mjs": { fp: "ttl", at: Date.now() } } });
   check(plan(root, dir, scripts, loadState(root, sharedPath), snapshotFiles(root)).get("check-t.mjs").unchanged, "publishShared must carry a ttl green time to other worktrees");
+
+  // CI green set (#3189): a file restored by actions/cache from another run is trusted only for checks whose
+  // fingerprint it lists; a changed input, another tool version, or a damaged file runs the check.
+  const ciPath = join(root, "ci-green", "validate-green.json");
+  const ciEnv = { CI: "true", LF_VALIDATE_GREEN_FILE: ciPath };
+  check(sharedFile(root, ciEnv) === ciPath, "sharedFile must be the CI green set in CI");
+  check(ciGreenFile({ ...ciEnv, GITHUB_WORKSPACE: root }, root) === ciPath, "the CI green set must apply to the runner's workspace");
+  check(ciGreenFile({ ...ciEnv, GITHUB_WORKSPACE: join(root, "elsewhere") }, root) === null, "a scratch repo run inside CI must not read or rewrite the real green set");
+  const ciPlan = () => plan(root, dir, scripts, loadState(root, sharedFile(root, ciEnv), ciEnv), snapshotFiles(root), null);
+  check(ciPlan().get("check-a.mjs").unchanged === false, "a missing CI green set must run everything");
+  // run 1: nothing cached, every check passes, the run publishes the set (saveState writes tmp/ in the scratch repo).
+  const run1 = loadState(root, sharedFile(root, ciEnv), ciEnv);
+  for (const [name, v] of plan(root, dir, scripts, run1, snapshotFiles(root), null)) {
+    if (v.fp) run1.checks[name] = { fp: v.fp, secs: 1, at: Date.now() };
+  }
+  saveState(root, run1);
+  rmSync(join(root, "tmp"), { recursive: true, force: true }); // a new runner has the restored green set only, no tmp/validate-state.json
+  // run 2 (another job): the restored file skips what its fingerprints match, never an 'always' check or a ttl check.
+  let cp = ciPlan();
+  check(cp.get("check-a.mjs").unchanged && cp.get("check-b.mjs").unchanged && cp.get("check-d.mjs").unchanged, "a restored green set must skip checks whose inputs match");
+  check(/another worktree/.test(cp.get("check-a.mjs").why), "the CI skip is a shared green skip");
+  check(!cp.get("check-c.mjs").unchanged, "an 'always' check must still run in CI");
+  check(!cp.get("check-t.mjs").unchanged, "a ttl (machine state) green must not carry over to a new CI runner");
+  // a changed input reruns that check and only that one
+  put("world/a/uno.layer", "edited after the cache was saved");
+  cp = ciPlan();
+  check(!cp.get("check-a.mjs").unchanged, "a changed input must rerun the check despite a restored green set");
+  check(cp.get("check-b.mjs").unchanged, "a restored green set must still skip a check whose inputs did not change");
+  put("tools/lib/dep2.mjs", "export const y = 77;\n");
+  check(!ciPlan().get("check-d.mjs").unchanged, "a changed import of the check must rerun it despite a restored green set");
+  // the file as it is on disk, damaged in each way
+  const good = readFileSync(ciPath, "utf8");
+  const damage = (text) => writeFileSync(ciPath, text);
+  const allRun = () => [...ciPlan().entries()].filter(([, v]) => v.unchanged).map(([k]) => k);
+  put("world/a/uno.layer", "1");
+  put("tools/lib/dep2.mjs", "export const y = 9;\n");
+  damage(good);
+  check(allRun().length > 0, "the undamaged green set must skip something (the test's own control)");
+  damage("{ not json");
+  check(allRun().length === 0, "a corrupt green set (not JSON) must run everything");
+  damage("");
+  check(allRun().length === 0, "an empty green set file must run everything");
+  damage(JSON.stringify({ ...JSON.parse(good), version: 1 }));
+  check(allRun().length === 0, "a green set of another state version must run everything");
+  damage(JSON.stringify({ ...JSON.parse(good), tool: "0".repeat(40) }));
+  check(allRun().length === 0, "a green set written by another validate tool must run everything");
+  const noTool = JSON.parse(good);
+  delete noTool.tool;
+  damage(JSON.stringify(noTool));
+  check(allRun().length === 0, "a green set with no tool hash must run everything");
+  damage(JSON.stringify({ ...JSON.parse(good), checks: { "check-a.mjs": "abc", "check-b.mjs": 7, "check-d.mjs": [null, 3, "x"] } }));
+  check(allRun().length === 0, "a corrupt green set (a string where a list belongs) must not skip by substring");
+  damage(JSON.stringify([1, 2]));
+  check(allRun().length === 0, "a green set that is a JSON array must run everything");
+  damage(good);
+  // toolHash moves with the tool's code (CI keys the cache on it too)
+  const h0 = toolHash(root);
+  put("tools/lib/validate-incremental.mjs", "// stand-in tool\n");
+  const h1 = toolHash(root);
+  check(h1 !== h0, "toolHash must change when the validate tool's code changes");
+  check(h1 === toolHash(root) && /^[0-9a-f]{40}$/.test(h0), "toolHash must be a stable sha1");
+  put("tools/lib/validate-incremental.mjs", "// stand-in tool\r\n");
+  check(toolHash(root) === h1, "toolHash must ignore CRLF versus LF checkouts");
+  check(allRun().length === 0, "a green set made by a different validate tool must run everything (tool hash moved)");
 } finally {
   rmSync(root, { recursive: true, force: true });
 }
@@ -199,4 +271,4 @@ if (failures.length) {
   for (const f of failures) console.log(`FAIL ${f}`);
   process.exit(1);
 }
-console.log("validate-incremental-selftest: OK (header parsing, globs, skip when unchanged, re-run on edit/add/delete/rename/own script/baseline, ttl, always, CI off)");
+console.log("validate-incremental-selftest: OK (header parsing, globs, skip when unchanged, re-run on edit/add/delete/rename/own script/baseline, ttl, always, CI green set restored from cache: matching inputs skip, changed/corrupt/other-tool runs)");

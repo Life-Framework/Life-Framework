@@ -1,0 +1,65 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "BA4A4C9BA69EC5F7"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{76C1B2BA574582F0}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 3.68
+      FOV 20
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Furniture_Bed_Name"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 25
+     SizeSetupStrategy Volume
+     ItemVolume 2500
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{EA947899E77399ED}Assets/Props/Furniture/Bed_01/Bed_01.xob"
+  }
+  LF_PlaceableComponent "{26C4707603C02E8F}" {
+   m_sPlacedPrefab "{EFF4F80C6C9E1391}Prefabs/Placeables/Furniture/Furniture_Bed_Placed.et"
+   m_vFootprintMins -0.592 0.1 -1.18
+   m_vFootprintMaxs 0.593 0.512 1.18
+   m_fReach 1
+   m_fAimReach 4
+   m_eSnap FLOOR
+   m_eWho HOUSE_OWNER_OR_KEY
+   m_sKind "Furniture_Bed"
+   m_eLifetime PERMANENT
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     ContextName "default"
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.2119 0
+     }
+     Radius 1.07
+    }
+   }
+   additionalActions {
+    LF_PlacementAimAction "{1B79B58DF948D4AE}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{2098B1EEF3469A6F}" {
+   m_eAnimVariable LF_ITEM
+  }
+ }
+}
