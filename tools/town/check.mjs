@@ -48,7 +48,7 @@ export const PLACE_RADIUS = 60;
 // LF_Places kinds that only work with a real component on a placed entity, not the marker alone (#2937). The marker switches the
 // system on; the component is what it runs: the jail's cell, the shop a counter sells from. A kind absent here needs nothing but its
 // marker (a clerk or teller is a resident the pack's timetable spawns at the marker). Keep the value a class name.
-export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "LF_ShopComponent", ClothingCounter: "LF_ShopComponent", GunCounter: "LF_ShopComponent" };
+export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "LF_ShopComponent", ClothingCounter: "LF_ShopComponent", GunCounter: "LF_ShopComponent", CafeTable: "LF_ShopComponent" };
 export const PLACE_LIMITS = { lights: 24, shadow: 12, entities: 1500 };
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
@@ -341,9 +341,11 @@ export function guardIslandLayers({ branch, files }) {
       continue;
     }
     // The branch joins place and slot with '-'; the layer joins them with '_' (slugs hold no '_'), so the layer is this branch's own
-    // when its two parts joined with '-' give the branch's suffix.
+    // when its two parts joined with '-' give the branch's suffix. A stacked follow-up on a slot's open draft adds a '-<word>' tail
+    // (ws/town-draft-saint-philippe-cafe-shop builds on ws/town-draft-saint-philippe-cafe) and may change that one slot's layer.
     const parts = base.replace(/^Place_/, "").split("_");
-    if (parts.length !== 2 || parts.join("-") !== draft[1]) errors.push(`${f}: branch ${name} may change only its own Place_<place>_<slot>.layer, not ${base}.layer`);
+    const own = parts.length === 2 && (parts.join("-") === draft[1] || draft[1].startsWith(`${parts.join("-")}-`));
+    if (!own) errors.push(`${f}: branch ${name} may change only its own Place_<place>_<slot>.layer, not ${base}.layer`);
   }
   return { errors, touched };
 }
