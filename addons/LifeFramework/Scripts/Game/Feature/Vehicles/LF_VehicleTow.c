@@ -107,6 +107,8 @@ class LF_VehicleTow
 		float exemptRadius = LF_GarageConfig.TowExemptNearGarage();
 		int towed = 0;
 		array<string> seen = {};
+		// One pass over the players per sweep, not one per car (hundreds of cars x 128 players).
+		map<string, int> online = OnlinePlayers();
 		array<ref LF_VehicleRecord> records = LF_VehicleOwnership.ExportAll();
 		foreach (LF_VehicleRecord record : records)
 		{
@@ -120,7 +122,7 @@ class LF_VehicleTow
 
 			seen.Insert(vehicleId);
 			bool occupied = LF_Garage.HasOccupants(vehicle);
-			bool ownerNear = OwnerNear(record.m_sOwnerUid, vehicle.GetOrigin());
+			bool ownerNear = OwnerNear(online.Get(record.m_sOwnerUid), vehicle.GetOrigin());
 			bool policeCar = LF_Component<LF_SirenKnobComponent>.Find(vehicle) != null;
 			bool nearGarage = NearGarage(vehicle.GetOrigin(), exemptRadius);
 			bool stolen = false;
@@ -146,7 +148,7 @@ class LF_VehicleTow
 				continue;
 			}
 
-			if (Tow(vehicleId, vehicle, now))
+			if (Tow(vehicleId, vehicle, now, online.Get(record.m_sOwnerUid)))
 				towed++;
 		}
 
@@ -169,7 +171,7 @@ class LF_VehicleTow
 	//------------------------------------------------------------------------------------------------
 	//! Takes the car off the street and marks it TOWED. The inspection and compartment fields keep
 	//! their values.
-	protected static bool Tow(string vehicleId, IEntity vehicle, int now)
+	protected static bool Tow(string vehicleId, IEntity vehicle, int now, int ownerPlayerId)
 	{
 		LF_VehicleStateRow state = LF_VehicleOwnership.StateOf(vehicleId);
 		if (!state)
@@ -192,9 +194,8 @@ class LF_VehicleTow
 		Since().Remove(vehicleId);
 		LF_Debug.Info(FEATURE, string.Format("towed %1 owner=%2 plate=%3 at %4", vehicleId, ownerUid, plate, now));
 
-		int playerId = PlayerIdOf(ownerUid);
-		if (playerId > 0)
-			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Impound_Title", "#LF-Tow_Towed", 6.0, LF_ENotificationType.WARNING, plate);
+		if (ownerPlayerId > 0)
+			LF_NotificationManagerComponent.NotifyPlayer(ownerPlayerId, "#LF-Impound_Title", "#LF-Tow_Towed", 6.0, LF_ENotificationType.WARNING, plate);
 
 		return true;
 	}
@@ -241,10 +242,10 @@ class LF_VehicleTow
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool OwnerNear(string ownerUid, vector origin)
+	//! param playerId The owner's player id, 0 when the owner is offline.
+	protected static bool OwnerNear(int playerId, vector origin)
 	{
-		int playerId = PlayerIdOf(ownerUid);
-		if (playerId <= 0)
+		if (playerId <= 0 || !GetGame() || !GetGame().GetPlayerManager())
 			return false;
 
 		IEntity owner = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
@@ -252,21 +253,23 @@ class LF_VehicleTow
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The online player with this account uid, or 0.
-	protected static int PlayerIdOf(string uid)
+	//! Record key (LF_Utils.GetPlayerUID) -> player id of every online player. A missing key reads 0.
+	protected static map<string, int> OnlinePlayers()
 	{
-		if (uid.IsEmpty() || !GetGame() || !GetGame().GetPlayerManager())
-			return 0;
+		map<string, int> online = new map<string, int>();
+		if (!GetGame() || !GetGame().GetPlayerManager())
+			return online;
 
 		array<int> playerIds = {};
 		GetGame().GetPlayerManager().GetPlayers(playerIds);
 		foreach (int playerId : playerIds)
 		{
-			if (LF_Utils.GetPlayerUID(playerId) == uid)
-				return playerId;
+			string uid = LF_Utils.GetPlayerUID(playerId);
+			if (!uid.IsEmpty())
+				online.Set(uid, playerId);
 		}
 
-		return 0;
+		return online;
 	}
 }
 
