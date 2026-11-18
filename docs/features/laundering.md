@@ -38,8 +38,16 @@ Stolen money is a separate item that never counts as cash.
   unix time and the seed, nothing saved, so a restart keeps it. The period hands out one spot (a spot added
   mid-period joins at the next period). No spot placed: none, one warning.
 - ✅ The seed is a server secret, not config or script: made at random on first use and kept in
-  `$profile:LifeFramework/buyer-rotation-seed.txt`. Delete the file to reshuffle the buyer. The buyer NPC at
-  the open spot, the sale and the pack's spots come next. Test: `LF_Test_BuyerRotation` (WORLD).
+  `$profile:LifeFramework/buyer-rotation-seed.txt`. Delete the file to reshuffle the buyer. The sale and the
+  pack's spots come next. Test: `LF_Test_BuyerRotation` (WORLD).
+- ✅ The buyer stands at the open spot (#2919): `LF_BuyerNpc` (started from the game mode, server only) sweeps every 5 s.
+  A man in a work jacket (core prefab `Prefabs/Characters/LF_IllicitBuyer.et`, a denim jacket; a pack dresses him, B4)
+  is spawned on the open `chain_buyer` spot when a player is within 150 m of it, then loiters (`LF_NpcLoiter.Settle`:
+  a free seat nearby, else leans or smokes). When the rotation moves he is removed from the old spot and appears at
+  the new one; with no player within 200 m of him he is removed. One buyer at most, none at the other spots, nothing
+  saved. The spot prefab `Prefabs/Systems/Laundering/LF_BuyerSpot.et` carries `LF_BuyerSpotComponent`.
+  Test: `LF_Test_BuyerNpc` (WORLD). Look: `grid:slice-b1` (cones stand in for spots: a live spot in a grid layer
+  would join every test's rotation).
 
 ### Wash rules — `Feature/Laundering/LF_LaunderRules.c` (#2852)
 - ✅ Pure logic, no entity: `LF_LaunderRules.Quote(key, marked, nowSec, cutPct, batchMax, dailyCap)` gives the

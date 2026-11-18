@@ -119,6 +119,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_VehicleTow.Start();
 		// Residents appear on their anchors near players and leave when nobody is (server only, #2858).
 		LF_ResidentSpawner.Start();
+		// The illicit buyer stands at the open chain_buyer spot when a player is near (server only, #2919).
+		LF_BuyerNpc.Start();
 	}
 
 	//------------------------------------------------------------------------------------------------
