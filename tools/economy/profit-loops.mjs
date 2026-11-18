@@ -14,6 +14,7 @@
 import { readFileSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { findMarketLoops, marketFiles } from "./profit-market.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const ROOT = join(here, "..", "..");
@@ -26,6 +27,7 @@ export const DEFAULT_SOURCES = {
   chop: join(CFG, "Crime", "LF_ChopShop.conf"),
   catalogue: join(CFG, "Catalogue", "LF_ItemCatalogue.conf"),
   layers: ["Street_Vehicles.layer", "Annex.layer"].map((f) => join(LAYERS, f)),
+  market: marketFiles(join(here, "..", "..")),
   owner: null,
 };
 // LF_ChopShop.PARTS_PREFAB: what the yard hands over beside the cash.
@@ -321,7 +323,7 @@ export function checkProfitLoops(src = DEFAULT_SOURCES) {
   const chains = parseConf(read(src.chains));
   const veh = loadVehicles(maybe(src.vehicles), maybe(src.chop), (src.layers || []).filter(existsSync).map(read));
   const catalogue = loadCatalogue(maybe(src.catalogue), owner?.catalogue);
-  return [...findShopLoops(shop), ...findRecipeLoops(shop, chains), ...findVehicleLoops(shop, veh), ...findCatalogueLoops(shop, catalogue)]
+  return [...findShopLoops(shop), ...findRecipeLoops(shop, chains), ...findVehicleLoops(shop, veh), ...findCatalogueLoops(shop, catalogue), ...findMarketLoops(shop, src, catalogue)]
     .sort((a, b) => b.margin - a.margin || a.id.localeCompare(b.id));
 }
 
