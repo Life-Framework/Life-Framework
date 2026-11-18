@@ -22,6 +22,7 @@ class LF_MarketMoveRecorder : LF_EventSubscriber
 // red-proof: new test with no failing state on main (the sale never read the curve). Batched hook run:
 // `tools\cli test --no-build --red LF_Test_MarketTrader` skips the curved sale in RedProof() and the
 // curve assertions fail. Observed 2026-11-18: `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; green 51 assertions.
+// Trickle recovery (review of #2877): red on the stamp-to-now book, `expected 19, got 18` (2026-11-18), green with StampAfterSale.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MarketTrader : LF_Test
 {
@@ -175,6 +176,21 @@ class LF_Test_MarketTrader : LF_Test
 		int inHour = LF_MarketBook.CurrentPriceAt(APPLE_PREFAB, System.GetUnixTime() + LF_PriceCurve.SECONDS_PER_HOUR);
 		ctx.Equal(LF_PriceCurve.Recover(after, BASE, RECOVER_PCT, LF_PriceCurve.SECONDS_PER_HOUR, 168, FLOOR, CEILING), inHour, "an hour of recovery");
 		ctx.Equal(after, LF_MarketBook.CurrentPrice(APPLE_PREFAB), "a quote does not move the price");
+
+		// Steady trade still recovers: a sale half an hour after the last keeps the part hour, so an
+		// hour after the first sale the price has taken one recovery step (review of #2877).
+		int t0 = System.GetUnixTime() + 10 * LF_PriceCurve.SECONDS_PER_HOUR;
+		int unused;
+		int p1 = LF_MarketBook.ApplySaleAt(APPLE_PREFAB, 1, t0, unused);
+		int p2 = LF_MarketBook.ApplySaleAt(APPLE_PREFAB, 1, t0 + LF_PriceCurve.SECONDS_PER_HOUR / 2, unused);
+		ctx.True(p2 < p1, "the second trickle sale lowers the price");
+		int stepped = LF_MarketBook.CurrentPriceAt(APPLE_PREFAB, t0 + LF_PriceCurve.SECONDS_PER_HOUR);
+		ctx.Equal(LF_PriceCurve.Recover(p2, BASE, RECOVER_PCT, LF_PriceCurve.SECONDS_PER_HOUR, 168, FLOOR, CEILING), stepped, "a sale inside the hour keeps the part hour toward recovery");
+		ctx.True(stepped > p2, "trickle selling does not pin the price");
+		// Put the book back where the 10-apple sale left it for the checks below.
+		LF_MarketBook.ResetStatics();
+		LF_MarketBook.ApplySaleAt(APPLE_PREFAB, 10, System.GetUnixTime(), unused);
+		ctx.Equal(after, LF_MarketBook.CurrentPrice(APPLE_PREFAB), "the book is back at the post-sale price");
 
 		// Refusals leave the price where it was.
 		int cashFar = LF_MoneyUtils.GetCash(far);

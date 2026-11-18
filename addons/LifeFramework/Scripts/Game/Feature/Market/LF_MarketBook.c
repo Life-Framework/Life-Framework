@@ -88,7 +88,7 @@ class LF_MarketBook
 
 		oldPrice = RecoveredPrice(def, nowUnix);
 		int newPrice = def.PriceAfterSale(oldPrice, ClampUnits(units));
-		s_mPrices.Set(good, LF_MarketPrice.Make(newPrice, nowUnix));
+		s_mPrices.Set(good, LF_MarketPrice.Make(newPrice, StampAfterSale(good, nowUnix)));
 		LF_Debug.Info(FEATURE, string.Format("%1 sold x%2: price %3 -> %4", good, units, oldPrice, newPrice));
 		return newPrice;
 	}
@@ -134,6 +134,31 @@ class LF_MarketBook
 
 		int recovered = LF_PriceCurve.Recover(p.m_iPrice, def.m_iBase, def.m_iRecoverPctPerHour, nowUnix - p.m_iLastSaleUnix, maxHours, def.m_iFloor, def.m_iCeiling);
 		return def.NextPrice(recovered);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stamp a sale at `nowUnix` stores. It moves forward by the whole hours the recovery just
+	//! counted, so the part hour since then still counts toward the next step: stamping `nowUnix`
+	//! would throw it away, and a good sold at least once an hour would never recover. A first sale,
+	//! a clock moved back, or a gap past the recovery cap stamps `nowUnix` (IsClamped).
+	protected static int StampAfterSale(ResourceName good, int nowUnix)
+	{
+		LF_MarketPrice p = s_mPrices.Get(good);
+		if (!p)
+			return nowUnix;
+
+		int gap = nowUnix - p.m_iLastSaleUnix;
+		if (gap < 0)
+			return nowUnix;
+
+		int maxHours = 0;
+		LF_MarketConfig config = LF_MarketConfig.Get();
+		if (config)
+			maxHours = config.m_iMaxRecoveryHours;
+		if (LF_PriceCurve.IsClamped(gap, maxHours))
+			return nowUnix;
+
+		return p.m_iLastSaleUnix + LF_PriceCurve.RecoveryHours(gap, maxHours) * LF_PriceCurve.SECONDS_PER_HOUR;
 	}
 
 	//------------------------------------------------------------------------------------------------
