@@ -1,0 +1,28 @@
+GenericEntity : "{0164749D6EAA4518}Prefabs/Props/Furniture/Bed_01.et" {
+ ID "D501AF0C5DEF9ECE"
+ components {
+  ActionsManagerComponent "{816BC3B87444C7AC}" {
+   ActionContexts {
+    UserActionContext "{BDBD39AECB6B99AF}" {
+     ContextName "default"
+     Position PointInfo "{5EDC6454E7DA0122}" {
+      Offset 0 0.256 0
+     }
+     Radius 2.18
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{B83E32E0A4436638}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{D6985D5472E3A821}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

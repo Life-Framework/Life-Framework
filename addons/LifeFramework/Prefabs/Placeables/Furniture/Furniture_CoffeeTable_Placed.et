@@ -1,0 +1,28 @@
+GenericEntity : "{E3382F292BA2A27D}Prefabs/Props/Furniture/TableCoffee_01.et" {
+ ID "42FA5C58B6515374"
+ components {
+  ActionsManagerComponent "{6A3DA374935A2E07}" {
+   ActionContexts {
+    UserActionContext "{260BD6CB68D82E6F}" {
+     ContextName "default"
+     Position PointInfo "{12D078621576B003}" {
+      Offset 0 0.3 0
+     }
+     Radius 1.699
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{CF13C020A50F8A2B}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{690740F87BD65E02}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

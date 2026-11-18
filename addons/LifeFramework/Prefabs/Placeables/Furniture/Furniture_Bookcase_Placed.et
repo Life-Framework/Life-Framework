@@ -1,0 +1,28 @@
+GenericEntity : "{F77F7F847CC6455F}Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et" {
+ ID "060117DF77E5E1FD"
+ components {
+  ActionsManagerComponent "{54B76DD92B23ADE9}" {
+   ActionContexts {
+    UserActionContext "{882791DE7735B4AD}" {
+     ContextName "default"
+     Position PointInfo "{F3394BA53FF1E3A6}" {
+      Offset -0.75 0.925 0.25
+     }
+     Radius 1.691
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{AEA11DFF00D9BD5D}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{1753A1034AF2840F}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

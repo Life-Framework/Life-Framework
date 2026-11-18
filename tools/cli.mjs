@@ -660,6 +660,11 @@ function toolEnv() {
 // `validate --full`, `ci`, `wt gate`, and `wt ship`.
 const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
+// Checks that are healthy but slow when the PC is busy get a longer budget (seconds). world-sync-selftest runs
+// ~500 git processes; with ~20 agents validating at once it took 113-393 s green and then past 600 s on
+// 2026-11-18, which the main guard blamed on an unrelated merge (#3283).
+const SLOW_CHECK_S = new Map([["validate-scripts.ps1", 1200], ["world-sync-selftest.mjs", 1200], ["selftest-scratch-selftest.mjs", 1200]]);
+
 // Checks are independent read-only scripts, so they run concurrently (most of
 // their time is PowerShell start-up), fewer at once when free RAM is short (tools/lib/validate-concurrency.mjs).
 // Output is printed in file order.
@@ -779,7 +784,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
         const wb = FULL_ONLY.has(job.s) ? await wbRoute.acquireWorkbench(root, { purpose: job.s }) : null;
         try {
           // LF_WB_GUARDED: validate-scripts.ps1 refuses to start Workbench unless the CLI passed the cap check above.
-          dog.start(job.s, checkBudgetMs(process.env, FULL_ONLY.has(job.s) ? 1200 : null));
+          dog.start(job.s, checkBudgetMs(process.env, SLOW_CHECK_S.get(job.s) ?? null));
           job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env: FULL_ONLY.has(job.s) ? { ...env, LF_WB_GUARDED: "1" } : env, onSpawn: (h) => handles.set(job.s, h) });
         } finally {
           wb?.release();

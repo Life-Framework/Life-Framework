@@ -1,0 +1,57 @@
+GenericEntity : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ ID "CF0E06C9FD3DD514"
+ components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Object ""
+  }
+  RigidBody "{5872F0EB7DFB5A9D}" {
+   Enabled 0
+  }
+  SCR_DestructionMultiPhaseComponent "{5624A88D86EFE8BA}" {
+   Enabled 0
+  }
+  LF_ShopComponent "{5B83F735A9938615}" {
+   m_sShopName "#LF-Shop_Name_Cafe"
+   m_sShopDescription "#LF-Shop_Desc_Cafe"
+   m_sStockId "cafe"
+  }
+  ActionsManagerComponent "{88D1A76B7015FE99}" {
+   ActionContexts {
+    UserActionContext "{6E408DDF71546059}" {
+     ContextName "default"
+     Position PointInfo "{22569105E676C67E}" {
+      Offset 0 0.25 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{5D86AC8032703754}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{DB7338A92FE47725}" {
+      Name "#LF-Shop_Open_Cafe"
+      Description "#LF-Shop_Desc_Cafe"
+     }
+    }
+    LF_RobAction "{CB2175D0F77777AE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{F7C6AAE8CFBD351E}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_sAlarmKind "shopbell"
+     m_iMoneyAmount 120
+     m_iMinPayout 120
+     m_iMaxPayout 120
+     m_fCooldown 600
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+}

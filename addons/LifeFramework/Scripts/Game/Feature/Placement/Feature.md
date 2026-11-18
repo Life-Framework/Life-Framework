@@ -187,3 +187,17 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Owner and side:** server. FLOOR is GROUND; WALL is `LF_PlacementFurniture` (aimed ray, face normal heading, 1 cm gap, floor probe at middle and front edge). `LF_PlacementService.Confirm` refuses a WALL proposal more than 2 cm off a wall.
 - **Data:** `Prefabs/Placeables/Furniture/Furniture_{Chair,Table,Shelf,Lamp}_Item.et` and the `Furniture_*` policy entries. Strings `#LF-Furniture_*_Name`. The placed prefabs are `Furniture_*_Placed.et`: the vanilla prop plus the owner stamp and the Pick up action (#2751).
 - **Proof:** `housing/furniture` (WORLD). The ghost and the shelf against a real house wall are manual (below).
+
+## House furniture, home set (vanilla props)
+
+- **Player sees:** fourteen more things a villager furnishes a home with (bed, double bed, sofa, armchair, coffee table, rug, television, radio, plant, mirror, picture, stove, bookcase, workbench), bought at the general store and placed like the chair; the mirror and the picture hang on the wall above the floor.
+- **Owner and side:** server, as for the first four. `LF_PlaceableComponent.m_fHangHeight` (WALL snap only, default 0) lifts the origin in `LF_PlacementFurniture.ProbeWall`, so the ghost and the server's recomputed spot agree.
+- **Data:** `tools/furniture/items.json` through `tools/furniture/gen.mjs` (`--check` compares); `Furniture_<Id>_{Item,Placed}.et`, the `Furniture_<Id>` policy rows, strings `#LF-Furniture_<Id>_Name`; pack prices and stock in `LF_Everon1989/Configs/Shop/`.
+- **Proof:** `everon/furniture-home` (WORLD, pack leg). The placed prop in a real room and the hung mirror and picture are manual.
+
+## Storage furniture (wardrobe, dresser, cupboard, chest, crate, fridge, kitchen unit)
+
+- **Player sees:** a piece with an inventory: Open (the placer only) shows its storage; what is put in stays after a restart. A piece with items in it is not picked up ("Empty it first").
+- **Owner and side:** server. `LF_PlacementSave` attaches `LF_PersistentStorageComponent` through `LF_PlacedStorage.Attach` (key `furniture:<placement id>`), no new save section: the contents ride the carried payload (`LF_StorageSnapshot`, slot placed). `LF_PlacementPickup` refuses a non-empty piece. `LF_FurnitureStorageManagerComponent.HandleAccessValidation` is the server check behind the placer-only Open.
+- **Data:** `storage` rows of `tools/furniture/items.json` (volume, weight, item size); strings `#LF-FurnitureStorage_Open`, `#LF-Placement_EmptyFirst`.
+- **Proof:** `housing/furniture-storage`, `housing/furniture-storage-save` (PERSISTENCE), `everon/furniture-storage-stock`. A real restart and a second player are manual.

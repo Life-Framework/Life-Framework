@@ -32,6 +32,13 @@
     "chandler": {
       "none": true,
       "reason": "state 2b: the chandler opens with the fishing chapter (Chapter 4); it is mapped when 2b is cut"
+    },
+    "wholesale": {
+      "building": "b24",
+      "why": [
+        "Garage_E_02 (garage), 531 m2, 3 floors, 14 vehicle bays, interior yes, faces west, 125 m north-east of the dock's scout centre on the quay road",
+        "lead update 2026-11-18, card W1 #3273: the island's one wholesale warehouse (buyer id wholesale) for lumber, ore, metal and cement; it replaces the old timber-warehouse slot planned on dk:b22, which stays the staff-only dock warehouse (L0 #3204). The parcel-drop mailbox on its wall stays where it is"
+      ]
     }
   }
 }
