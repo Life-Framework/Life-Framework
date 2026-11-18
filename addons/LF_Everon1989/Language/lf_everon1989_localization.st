@@ -1154,6 +1154,11 @@ StringTable {
      Target_en_us "Coats and a medical kit for the hospital staff."
      Comment "Everon 1989 outlet counter (#1770): medic_stores."
     }
+    CustomStringTableItem "{3B9D4E10C1D6F1A1}" {
+     Id "LF-Shop_Desc_MinersSupply"
+     Target_en_us "Picks and shovels for working miners. A miner of rank 2 can buy the pickaxe."
+     Comment "General store counter (#3085): the miner's supply description."
+    }
     CustomStringTableItem "{88A40BFFEF7CB897}" {
      Id "LF-Shop_Desc_PharmacyCounter"
      Target_en_us "Morphine and saline, for licensed medics only."
@@ -1183,6 +1188,11 @@ StringTable {
      Id "LF-Shop_Name_MedicStores"
      Target_en_us "Medic stores"
      Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{3B9D4E10A2C7F1A0}" {
+     Id "LF-Shop_Name_MinersSupply"
+     Target_en_us "Miner's supply"
+     Comment "General store counter (#3085): the miner's supply name."
     }
     CustomStringTableItem "{B1BC977506FDDA48}" {
      Id "LF-Shop_Name_PharmacyCounter"
@@ -1218,6 +1228,11 @@ StringTable {
      Id "LF-Shop_Open_MedicStores"
      Target_en_us "Open the medic stores"
      Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{3B9D4E10E0E5F1A2}" {
+     Id "LF-Shop_Open_MinersSupply"
+     Target_en_us "Miner's supply"
+     Comment "General store counter (#3085): the miner's supply action label."
     }
     CustomStringTableItem "{7729AC333C1E6567}" {
      Id "LF-Shop_Open_PharmacyCounter"
