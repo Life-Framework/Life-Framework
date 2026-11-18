@@ -40,7 +40,7 @@ class LF_RpcStringProbe
 		}
 
 		if (left > 0)
-			result += PATTERN.Substring(0, left);
+			result += PATTERN.Substring(0, left); // lf-bounded: Substring of the 64-char PATTERN, at most 63 chars; the long result grows by +=, which never cuts
 
 		return result;
 	}
@@ -91,8 +91,6 @@ class LF_RpcStringProbe
 //------------------------------------------------------------------------------------------------
 class LF_RpcStringProbe_StaticResetHook : LF_StaticResetHook
 {
-	protected static bool s_bRegistered = LF_StaticReset.Register(new LF_RpcStringProbe_StaticResetHook());
-
 	override string Owner()
 	{
 		return "LF_RpcStringProbe";
