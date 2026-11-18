@@ -8,7 +8,8 @@ enum LF_EPlantPlace
 	IN_VEHICLE,
 	SAFE_ZONE,
 	CHARACTER_CAP,
-	SERVER_CAP
+	SERVER_CAP,
+	NOT_OPEN_GROUND
 }
 
 //------------------------------------------------------------------------------------------------
@@ -55,6 +56,8 @@ class LF_PlantRules
 	static const int MAX_PER_CHARACTER = 12;	// lf-fixed: decided cap, #2663
 	//! Plants standing on the server. Decided on #2663.
 	static const int MAX_ON_SERVER = 300;	// lf-fixed: decided cap, #2663
+	//! Highest the planter's feet may stand above the terrain under them, metres. Above it they are on a floor or a roof (#2821).
+	static const float MAX_STAND_HEIGHT = 1.0;	// lf-fixed: open-ground rule of spec #809, #2821
 
 	//------------------------------------------------------------------------------------------------
 	//! May this seed go in the ground here. The first failing rule wins, in the order a player
@@ -85,6 +88,50 @@ class LF_PlantRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Is this surface material name a road or other hard surface (#2821).
+	static bool IsHardSurface(string materialName)
+	{
+		if (materialName.IsEmpty())
+			return false;
+
+		string lower = materialName;
+		lower.ToLower();
+		array<string> words = {"asphalt", "road", "concrete", "cobble", "pavement", "gravel", "paved", "tarmac"};
+		foreach (string word : words)
+		{
+			if (lower.Contains(word))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Is the spot open ground (#2821, spec #809): not under a floor, roof or prop, not on a road, not
+	//! under water, and the planter stands on the terrain, not on an upper floor or a roof.
+	//! \param standHeight metres the planter's feet are above the terrain under them
+	//! \param groundY terrain height at the spot
+	//! \param seaY sea level
+	//! \param coveredAbove a trace from above the spot hit a building or prop before the terrain
+	//! \param surfaceMaterial name of the surface the trace met, empty when unknown
+	static LF_EPlantPlace OpenGround(float standHeight, float groundY, float seaY, bool coveredAbove, string surfaceMaterial)
+	{
+		if (standHeight > MAX_STAND_HEIGHT)
+			return LF_EPlantPlace.NOT_OPEN_GROUND;
+
+		if (groundY < seaY)
+			return LF_EPlantPlace.NOT_OPEN_GROUND;
+
+		if (coveredAbove)
+			return LF_EPlantPlace.NOT_OPEN_GROUND;
+
+		if (IsHardSurface(surfaceMaterial))
+			return LF_EPlantPlace.NOT_OPEN_GROUND;
+
+		return LF_EPlantPlace.OK;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return Localization key for a planting refusal, empty for OK.
 	static string PlaceRefusalKey(LF_EPlantPlace result)
 	{
@@ -96,6 +143,7 @@ class LF_PlantRules
 			case LF_EPlantPlace.SAFE_ZONE: return "#LF-Plant_SafeZone";
 			case LF_EPlantPlace.CHARACTER_CAP: return "#LF-Plant_CharacterCap";
 			case LF_EPlantPlace.SERVER_CAP: return "#LF-Plant_ServerCap";
+			case LF_EPlantPlace.NOT_OPEN_GROUND: return "#LF-Plant_NotOpenGround";
 		}
 
 		return "";

@@ -16,11 +16,14 @@ class LF_FishingRodComponent : LF_HandToolComponent
 {
 	static const string FIRE_ACTION = "CharacterFire";
 	static const float AIM_SHARE_OF_RANGE = 0.75;	// lf-fixed: the cast lands this share of the rod's range ahead
+	static const float MIN_CAST_METRES = 3;			// lf-fixed: water nearer than this is at the angler's feet, not a cast (the float then sits in the view)
 
 	//! Client: the id of the cast the server says is out, 0 when none. A strike carries it.
 	protected static int s_iOpenCast;
 	//! Client: the server told us the fish bit (the float dips; "Strike!" is on screen).
 	protected static bool s_bBite;
+	//! Client: where the last cast was aimed; the float goes there when the server says the line is out.
+	protected static vector s_vPendingTarget;
 
 	protected bool m_bListening;
 
@@ -33,7 +36,10 @@ class LF_FishingRodComponent : LF_HandToolComponent
 		if (mode == EGadgetMode.IN_HAND && local)
 			Listen(true);
 		else if (mode != EGadgetMode.IN_HAND)
+		{
 			Listen(false);
+			LF_FishingFloat.Hide();
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -58,27 +64,39 @@ class LF_FishingRodComponent : LF_HandToolComponent
 	//! Local machine: the fire input with the rod in the hands.
 	protected void OnFire()
 	{
+		Fire(GetOwner());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Local machine: what the fire input does with the rod `rod` in the hands: strike when a line is
+	//! out, else cast. The harness verb `fishing fire` calls it too (the listener is the only other caller).
+	static void Fire(IEntity rod)
+	{
 		IEntity character = SCR_PlayerController.GetLocalControlledEntity();
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (!character || !controller)
 			return;
 
 		if (s_iOpenCast > 0)
+		{
 			controller.LF_AskFishingStrike(s_iOpenCast);
-		else
-			controller.LF_AskFishingCast(CastPoint(character));
+			return;
+		}
+
+		s_vPendingTarget = CastPoint(character, rod);
+		controller.LF_AskFishingCast(s_vPendingTarget);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The flat point the cast lands on: ahead of the camera, a share of the rod's range out. It is a
-	//! request: the server checks the range, the water and everything else itself.
-	protected vector CastPoint(IEntity character)
+	//! The flat point the cast lands on: the first water along the aim, else a share of the rod's range
+	//! out. It is a request: the server checks the range, the water and everything else itself.
+	protected static vector CastPoint(IEntity character, IEntity rod)
 	{
 		float reach = 15; // lf-fixed: used only when the config has no row for this rod
 		LF_FishingConfig config = LF_FishingConfig.Get();
-		if (config)
+		if (config && rod)
 		{
-			LF_FishingRodDef def = config.FindRod(LF_Utils.GetPrefabName(GetOwner()));
+			LF_FishingRodDef def = config.FindRod(LF_Utils.GetPrefabName(rod));
 			if (def)
 				reach = def.m_fCastRange * AIM_SHARE_OF_RANGE;
 		}
@@ -98,7 +116,18 @@ class LF_FishingRodComponent : LF_HandToolComponent
 
 		ahead[1] = 0;
 		ahead.Normalize();
-		return character.GetOrigin() + ahead * reach;
+
+		// The first water along the aim, so a pond close by is cast at where it is; open ground out to
+		// the full reach is still a request (the server refuses it as not water).
+		vector origin = character.GetOrigin();
+		for (float step = MIN_CAST_METRES; step <= reach; step += 1)
+		{
+			vector point = origin + ahead * step;
+			if (!LF_FishingSession.WaterKindAt(point).IsEmpty())
+				return point;
+		}
+
+		return origin + ahead * reach;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -109,16 +138,19 @@ class LF_FishingRodComponent : LF_HandToolComponent
 		{
 			s_iOpenCast = castId;
 			s_bBite = false;
+			LF_FishingFloat.Show(s_vPendingTarget);
 		}
 		else if (kind == LF_EFishingEvent.BITE)
 		{
 			s_iOpenCast = castId;
 			s_bBite = true;
+			LF_FishingFloat.Dip();
 		}
 		else
 		{
 			s_iOpenCast = 0;
 			s_bBite = false;
+			LF_FishingFloat.Hide();
 		}
 
 		LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("client: %1 (cast %2)", typename.EnumToString(LF_EFishingEvent, kind), castId));
@@ -141,6 +173,7 @@ class LF_FishingRodComponent : LF_HandToolComponent
 	{
 		s_iOpenCast = 0;
 		s_bBite = false;
+		s_vPendingTarget = vector.Zero;
 	}
 
 	//------------------------------------------------------------------------------------------------
