@@ -47,6 +47,21 @@
       "places": ["ClothingCounter"]
     },
     {
+      "id": "market", "required": false, "kit": "market", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 70 },
+      "places": ["MarketTrader"]
+    },
+    {
+      "id": "chess", "required": false, "kit": "chess", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 70 },
+      "places": ["ChessTable"]
+    },
+    {
+      "id": "range", "required": false, "kit": "range", "host": "building", "poi": "none",
+      "needs": { "interior": "optional", "minArea": 15, "prefer": "far", "types": ["shed", "garage", "farm", "farm-small", "industrial"] },
+      "places": ["RangeLane"]
+    },
+    {
       "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop", "townhouse", "house"] },
       "places": ["GunCounter"]
@@ -69,9 +84,19 @@
       "places": ["HarbourMaster"]
     },
     {
+      "id": "carlot", "required": false, "kit": "carlot", "host": "building", "poi": "none", "margin": 18,
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "near", "maxDistance": 140, "types": ["garage"] },
+      "places": ["VehicleLot"]
+    },
+    {
       "id": "board", "required": true, "kit": "board", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 60 },
       "places": ["TownBoard", "MapBoard"]
+    },
+    {
+      "id": "jail", "required": false, "kit": "jail", "host": "street", "with": "police", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 110 },
+      "places": ["JailCell"]
     },
     {
       "id": "taxi", "required": false, "kit": "taxi", "host": "street", "poi": "none",
@@ -79,10 +104,20 @@
       "places": ["TaxiRank"]
     },
     {
+      "id": "parcel-drops", "required": false, "kit": "parcel-drops", "host": "outposts", "poi": "none",
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
       "id": "parcel", "required": false, "kit": "parcel", "host": "building", "poi": "none",
       "needs": { "interior": "optional", "minArea": 8, "prefer": "near", "maxDistance": 100, "types": ["kiosk", "shop"] },
       "plot": { "minWidth": 6, "minDepth": 6, "prefabs": [{ "type": "kiosk", "stem": "NewspaperBooth_E_01_redwhite" }] },
       "places": ["ParcelDepot"]
+    },
+    {
+      "id": "residents", "required": false, "kit": "residents", "host": "building", "poi": "none",
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "near", "maxDistance": 130, "types": ["townhouse", "house", "villa"] },
+      "places": ["House"]
     }
   ]
 }

@@ -187,7 +187,7 @@ for (const slot of town.slots) {
     check(!!p, `slot ${slot.id} maps to unknown plot ${e.plot}`);
     check(!!e.prefab && !!e.prefab.stem, `slot ${slot.id} maps to a plot with no prefab`);
   }
-  check(Array.isArray(e.why) && e.why.length > 0, `slot ${slot.id} carries no reason`);
+  check(e.none ? typeof e.reason === "string" && e.reason.length > 0 : Array.isArray(e.why) && e.why.length > 0, `slot ${slot.id} carries no reason`);
 }
 // Fit: the strong matches the doc names, by the scout's types.
 check(m.slots.clothing.building === "b03", `clothing should take the clothes shop b03, took ${m.slots.clothing.building}`);
@@ -354,6 +354,29 @@ try {
 for (const kind of ["town", "village", "districts"]) {
   const text = readFileSync(join(ROOT, "tools", "town", "templates", `${kind}.json`), "utf8");
   check(!/\d{3,}\s*,\s*-?\d{3,}/.test(text), `templates/${kind}.json holds a coordinate-looking pair`);
+}
+
+// ---- the market, chess and range slots (#3078): optional, street furniture or an outbuilding, each kind backed by a real class
+{
+  const checkMod = await import(pathToFileURL(join(ROOT, "tools", "town", "check.mjs")).href);
+  for (const [id, host, kind, comp] of [["market", "street", "MarketTrader", "LF_TraderManagerComponent"], ["chess", "street", "ChessTable", "LF_ChessTableComponent"], ["range", "building", "RangeLane", "SCR_FiringRangeTarget"]]) {
+    const s = town.slots.find((x) => x.id === id);
+    check(!!s && s.required === false && s.host === host && s.places[0] === kind, `the town template should have an optional ${host} slot ${id} registering ${kind}`);
+    check(checkMod.BACKED_KINDS[kind] === comp, `BACKED_KINDS.${kind} should be ${comp}, got ${checkMod.BACKED_KINDS[kind]}`);
+  }
+  const spMap = join(ROOT, "docs", "everon", "places", "saint-philippe", "mapping.json");
+  if (existsSync(spMap)) {
+    const slots = JSON.parse(readFileSync(spMap, "utf8")).slots;
+    for (const id of ["market", "chess", "range"]) check(!!slots[id] && Array.isArray(slots[id].why) && slots[id].why.length > 0, `saint-philippe: the approved mapping has no ${id} slot with a reason`);
+  }
+  // A range lane is an entity class, found in a placed entity's head; a chess table is a component line in a placed prefab; a bare table backs nothing.
+  const prefabs = {
+    "{CCCCCCCCCCCCCCCC}Prefabs/Props/Chess/LF_ChessTable.et": { text: `GenericEntity : "{DDDDDDDDDDDDDDDD}Prefabs/Props/Furniture/Table.et" {\n components {\n  LF_ChessTableComponent "{29CDC8FC39C4E97E}" {\n  }\n }\n}\n` },
+  };
+  const resolve = (ref) => prefabs[ref] ?? null;
+  check(checkMod.layerBacking(`SCR_FiringRangeTarget R0 : "{AAAAAAAAAAAAAAAA}Prefabs/Props/Range/LF_RangeTarget.et" {\n}\n`, resolve).has("SCR_FiringRangeTarget"), "layerBacking should find the range target class in a placed entity head");
+  check(checkMod.layerBacking(`GenericEntity T : "{CCCCCCCCCCCCCCCC}Prefabs/Props/Chess/LF_ChessTable.et" {\n}\n`, resolve).has("LF_ChessTableComponent"), "layerBacking should find the chess component through the placed prefab");
+  check(!checkMod.layerBacking(`GenericEntity M : "{DDDDDDDDDDDDDDDD}Prefabs/Props/Furniture/Table.et" {\n}\n`, resolve).has("LF_ChessTableComponent"), "a plain table should not back ChessTable");
 }
 
 if (failed) {

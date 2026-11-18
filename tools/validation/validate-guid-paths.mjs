@@ -1,5 +1,4 @@
 // tools/validation/validate-guid-paths.mjs
-// inputs: always
 // (always: it compares its baseline with origin/main's, so repo files are not its only input)
 //
 // A resource path in Enforce Script carries its GUID: "{D6DE32D1C0FCC1C7}Prefabs/Editor/Camera/ManualCameraBase.et"
@@ -22,6 +21,7 @@
 // fails (delete it), an entry needs an "issue" ("#123"), and an entry that the main branch copy
 // does not have fails (when git can read that copy). --write-baseline refuses to add.
 // red-proof: guid-paths-selftest.mjs.
+// inputs: addons/**/*.c, tools/validation/guid-paths-baseline.json
 
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync, writeFileSync } from "node:fs";

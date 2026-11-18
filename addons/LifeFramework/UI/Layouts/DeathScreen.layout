@@ -42,6 +42,15 @@ FrameWidgetClass "{39BE412466747946}" {
        Text "#EL-Death_Title"
        "Font Size" 30
       }
+      RichTextWidgetClass "{3152B7C4E1A9D605}" : "{7AA3823D51F36803}UI/Layouts/UIKit/LF_UIRich.layout" {
+       Name "CostText"
+       Slot LayoutSlot "{3152C8D5F2BAE716}" {
+        HorizontalAlign 3
+        Padding 24 0 24 15
+       }
+       Color 1 1 1 1
+       Text "#LF-Death_CostKeeps"
+      }
       ButtonWidgetClass "{F189D6C24E9F33CD}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
        Name "RespawnButton"
        Slot LayoutSlot "{B3B40B6EFD4B7F62}" {

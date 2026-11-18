@@ -1,4 +1,5 @@
 // Selftest for validate-meta-name-path.mjs. Red proof: with isBareName returning false, the first case fails.
+// inputs: imports
 import { isBareName } from "./validate-meta-name-path.mjs";
 
 const cases = [

@@ -1,4 +1,5 @@
 // Red-proof for validate-keybinding-menu: a menu missing a bound action fails, the real files pass (#2510).
+// inputs: addons/LifeFramework/Configs/System/chimeraInputCommon.conf, addons/LifeFramework/Configs/System/keyBindingMenu.conf
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

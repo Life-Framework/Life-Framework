@@ -14,6 +14,7 @@
 // A pack LF_DialogueIndexConfig overlay is checked the same way: its verbs against the core index and its
 // files against the addons.
 // red-proof: tools/validation/dialogue-patch-selftest.mjs plants each violation.
+// inputs: addons/**/*.conf, addons/**/*.st, addons/**/*.c
 
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";

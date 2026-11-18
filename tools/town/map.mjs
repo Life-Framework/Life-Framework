@@ -15,6 +15,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { typeIndex, unknownTypes } from "../scout/types.mjs";
+import { attachDropDossiers, checkOutposts } from "./outposts.mjs";
 import { checkSlotPois, loadPoiKinds } from "./lib/poi-check.mjs";
 
 export const help = "map <slug> [--template town|village] [--dossier f] [--out f] [--force] | --check   propose a slot -> building/plot mapping from the scout dossier; --check refuses an incomplete one or a slot with no POI kind";
@@ -55,7 +56,7 @@ export function checkTemplate(t) {
     else ids.add(s.id);
     if (typeof s?.required !== "boolean") out.push(`${at}: required must be true or false`);
     if (typeof s?.kit !== "string" || !s.kit) out.push(`${at}: kit is missing`);
-    if (s?.host !== "building" && s?.host !== "street" && s?.host !== "plot") out.push(`${at}: host must be building, street or plot`);
+    if (!["building", "street", "plot", "outposts"].includes(s?.host)) out.push(`${at}: host must be building, street, plot or outposts`);
     if (!s?.needs || typeof s.needs !== "object") out.push(`${at}: needs is missing`);
     else if (!["required", "optional"].includes(s.needs.interior)) out.push(`${at}: needs.interior must be required or optional`);
     if (!Array.isArray(s?.places)) out.push(`${at}: places must be a list of LF_Places kinds`);
@@ -268,9 +269,20 @@ export function proposeMapping(dossierJson, template, opts = {}) {
     }
   }
 
+  // Outposts slots stand in other places' buildings: the proposal leaves them none; a person lists their drops in the mapping.
+  for (const slot of template.slots) {
+    if (slot.host === "outposts") slots[slot.id] = { none: true, reason: "an outposts slot lists its drops by hand (`drops`: place and building), then `tools\\cli town drops` seats them", why: ["outposts slot: its drops stand in other places' buildings and are listed by hand"] };
+  }
+
   // Street slots: a shared frontage, the nearest building to the centre inside the slot's reach, else the nearest plot.
   for (const slot of template.slots) {
     if (slot.host !== "street") continue;
+    // `with`: the slot rides in another slot's building (a jail cell in the police villa), not on the nearest frontage.
+    const partner = slot.with ? slots[slot.with] : null;
+    if (partner?.building) {
+      slots[slot.id] = { building: partner.building, shared: true, why: [`rides in the ${slot.with} slot's building (${partner.building})`] };
+      continue;
+    }
     const reach = slot.needs.maxDistance ?? Infinity;
     const b = live
       .filter((x) => x.distance <= reach)
@@ -337,6 +349,13 @@ export function checkMapping(mapping, dossierJson, template, others = null) {
       else if (!e.reason) out.push(`slot ${slot.id}: none needs a reason`);
       continue;
     }
+    if (slot.host === "outposts") {
+      // The drops' dossiers: the ones read with the mapping (attachDropDossiers), plus any the caller passed in `others`.
+      const dossiers = mapping.dropDossiers || others ? { ...others, ...mapping.dropDossiers } : null;
+      out.push(...checkOutposts(slot.id, e, dossiers, mapping.place));
+      continue;
+    }
+    if (e.drops) out.push(`slot ${slot.id}: only an outposts slot lists drops`);
     if (e.building && e.plot) out.push(`slot ${slot.id}: names both a building and a plot`);
     if (!e.building && !e.plot) {
       out.push(`slot ${slot.id}: names neither a building nor a plot`);
@@ -475,6 +494,7 @@ export async function main(args, { root }) {
     const template = loadTemplate(kind, root);
     if (flags.check) {
       const mapping = readJson(out, "mapping");
+      attachDropDossiers(root, mapping);
       // The template's POI naming (card M17): every slot names a front kind with a POI row, or "none". `town check` (T4) calls the same.
       const probs = [...checkMapping(mapping, dossier, template, loadOtherDossiers(root, mapping)), ...checkSlotPois(template, loadPoiKinds(root).kinds)];
       for (const p of probs) console.log(`FAIL  ${p}`);

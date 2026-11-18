@@ -10,8 +10,11 @@
 //!                             map width / 2^zoom metres wide, so the in-game and the offline picture
 //!                             frame the same ground (`tools\cli map render --zoom <zoom>`)
 //!   map pan <x> <z> <zoom> <s> the same over <s> seconds, so a shot catches the canvas mid-pan
-//!   map probe                 the places probe (-lfMapPlacesProbe: 400 POIs, rebuild and reposition cost)
-//!                             and the mean frame ms since the map opened
+//!   map probe                 the zoom-end probe (-lfMapPlacesProbe: 400 POIs rebuilt at two clustered and two
+//!                             solo zooms, reposition cost; 40 areas rebuilt as frame slices) and the mean frame
+//!                             ms since the map opened (#2397; `session.mjs map-probe` runs it repeatedly)
+//!   map demo                  40 stand-in areas drawn through the area layer's frame slices, until the next
+//!                             pan or zoom end re-reads the real ones
 //!   map status                open flag, pixels per unit, centre and the view width in metres
 //!   map waypoint <x> <z>      what a right-click on the map does: LF_MapWaypoint.SetFromMap (card M7)
 //!   map mark <x> <z> [n]      n personal marks (default 1) at (x, z), each through the marker manager's
@@ -242,8 +245,36 @@ class LF_MapHarness
 
 		int frames;
 		float frameMs = places.FrameMs(frames);
-		detail = string.Format("frame_ms=%1 frames=%2 | %3", frameMs, frames, places.Probe());
+		string areasLine = "probe areas: no area layer";
+		LF_MapAreasUI areas = LF_MapAreasUI.Cast(mapEntity.GetMapUIComponent(LF_MapAreasUI));
+		if (areas)
+			areasLine = areas.Probe();
+
+		detail = string.Format("frame_ms=%1 frames=%2 | %3 | %4", frameMs, frames, places.Probe(), areasLine);
 		LF_Debug.Info(FEATURE, "harness map probe: " + detail);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Draws 40 stand-in areas on the open map through the layer's frame slices (the picture a zoom end gives
+	//! in a world with no areas). \return false when the map or the area layer is missing.
+	static bool Demo(out string detail)
+	{
+		SCR_MapEntity mapEntity = SCR_MapEntity.GetMapInstance();
+		if (!mapEntity || !mapEntity.IsOpen())
+		{
+			detail = "map_not_open";
+			return false;
+		}
+
+		LF_MapAreasUI areas = LF_MapAreasUI.Cast(mapEntity.GetMapUIComponent(LF_MapAreasUI));
+		if (!areas || !areas.Demo())
+		{
+			detail = "no_area_layer";
+			return false;
+		}
+
+		detail = "stand-in areas queued";
 		return true;
 	}
 
@@ -309,6 +340,10 @@ modded class LF_AgentHarnessVerbs
 		{
 			ok = LF_MapHarness.Probe(detail);
 		}
+		else if (cmd.Arg1 == "demo")
+		{
+			ok = LF_MapHarness.Demo(detail);
+		}
 		else if (cmd.Arg1 == "waypoint")
 		{
 			if (cmd.Arg2.IsEmpty() || cmd.Arg3.IsEmpty())
@@ -330,7 +365,7 @@ modded class LF_AgentHarnessVerbs
 		}
 		else
 		{
-			detail = "usage: map open|close|pan <x> <z> <zoom> [s]|waypoint <x> <z>|mark <x> <z> [n]|probe|status";
+			detail = "usage: map open|close|pan <x> <z> <zoom> [s]|waypoint <x> <z>|mark <x> <z> [n]|probe|demo|status";
 		}
 
 		if (ok)

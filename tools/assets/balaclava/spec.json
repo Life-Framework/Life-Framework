@@ -1,0 +1,48 @@
+{
+  "slug": "balaclava",
+  "name": "Balaclava",
+  "kind": "clothing",
+  "route": "c",
+  "roadmap": "#1997",
+  "concept": "A 1989 black knitted balaclava with one eye opening: the black market's face cover. It is cut from the base body's own head by model.py (no library model fits Bohemia's head to the millimetre) and worn through the vanilla knitted hat's prefab, so it takes the Hat slot, the pickup and equip actions and the sounds of a real hat.",
+  "base": "{BCCB7D5AB38BB3A7}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_base.et",
+  "slot": "Hat",
+  "hide": null,
+  "mesh": {
+    "build": "model.py",
+    "source": "build:balaclava.blend",
+    "object": "Balaclava",
+    "item_object": "Balaclava_item",
+    "material": "Balaclava",
+    "item_material": "Balaclava_item",
+    "maps": {
+      "BCRMap": "build:Balaclava_BCR.tif",
+      "NMOMap": "build:Balaclava_NMO.tif"
+    },
+    "weights_from": "body",
+    "smooth": 2,
+    "clearance_m": 0.003,
+    "exporter": "stock",
+    "prune_skeleton": true
+  },
+  "materials": [],
+  "budget": {
+    "texture_px": 1024,
+    "lod0_tris": 4500,
+    "lod_ratios": [
+      0.5,
+      0.25,
+      0.12
+    ]
+  },
+  "asset_dir": "Assets/Characters/HeadGear/LF/Balaclava",
+  "prefab_dir": "Prefabs/Characters/HeadGear/LF",
+  "prefab": {
+    "name_key": "#LF-Balaclava_Name",
+    "description_key": "#LF-Balaclava_Description"
+  },
+  "verify": {
+    "expect": "changed",
+    "min_diff": 0.15
+  }
+}

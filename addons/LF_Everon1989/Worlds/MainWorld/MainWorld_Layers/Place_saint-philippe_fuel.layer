@@ -1,0 +1,37 @@
+GenericEntity Fit_saint_philippe_fuel_Place {
+ components {
+  LF_PlaceComponent "{DD585D89CEC97EB0}" {
+   m_sKind "FuelTill"
+   m_sId "saint-philippe.fuel"
+  }
+  LF_FittedBuildingComponent "{D92770A9FAB088BC}" {
+  }
+ }
+ coords 4616.6 18.8 10658.7
+}
+GenericEntity Fit_saint_philippe_fuel_till : "{9D3A51E060EFE982}Prefabs/Props/Commercial/LF_FuelTill_Attended.et" {
+ coords 4618.306 19.939 10653.849
+ angleY 74
+}
+GenericEntity Fit_saint_philippe_fuel_clerk : "{4C624B7D84E8BAFA}Prefabs/Characters/Npcs/Outfits/LF_Npc_FuelClerk_1.et" {
+ coords 4617.584 18.9 10653.695
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_fuel_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
+ coords 4618.914 18.9 10653.929
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_fuel_anchor_door {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4615.095 18.9 10664.933
+ angleY -10
+}

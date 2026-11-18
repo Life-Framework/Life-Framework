@@ -103,7 +103,13 @@ class LF_ShopRefusal
 		if (key.IsEmpty() || detail.IsEmpty())
 			return key;
 
-		return WidgetManager.Translate(key, WidgetManager.Translate(detail));
+		string line = WidgetManager.Translate(key, WidgetManager.Translate(detail));
+
+		//! #3150: a licence refusal also says where to get it and what it costs.
+		if (reason == LF_EShopRefusal.NEEDS_LICENCE)
+			line = line + " " + LF_LicenceWhere.LineForName(detail);
+
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------

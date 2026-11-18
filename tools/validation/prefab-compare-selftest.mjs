@@ -4,6 +4,7 @@
 // red-proof: with the pattern list emptied the bad fixture printed
 // "bad: expected 3 path compares, got 0" and exited 1; restored, it prints
 // "prefab-compare-selftest: OK".
+// inputs: imports
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { scanPrefabCompares, compare, toBaseline } from "./validate-prefab-compare.mjs";
