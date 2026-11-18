@@ -153,6 +153,9 @@ class LF_ReputationConfig
 	[Attribute("", UIWidgets.Object, "Standing gates: the lowest tier a job or run needs (LF_ReputationGate.c). A gate id with no row is open")]
 	ref array<ref LF_ReputationGateDef> m_aGates;
 
+	[Attribute("", UIWidgets.Object, "Standing pay: the bonus percent per tier on a faction's jobs (LF_ReputationPay.c, #2703). A faction with no row pays none")]
+	ref array<ref LF_ReputationPayDef> m_aPays;
+
 	protected static ref LF_ReputationConfig s_Config;
 	protected static bool s_bLoadAttempted;
 

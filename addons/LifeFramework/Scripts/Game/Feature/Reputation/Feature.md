@@ -33,6 +33,8 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
 - Contracts (`LF_ReputationContracts.c`, `Configs/Reputation/LF_ReputationContracts.conf`, #2702): a contract wraps the
   active `LF_CivilianJob` run (`Begin` / `Take`); `CompleteRun` calls `Settle` (multiplier 1.3..1.6, award, `standing-bonus`
   ledger part), `AbandonRun` calls `Forfeit` (the stake, points only). One at a time, a cooldown; session state.
+- Standing pay bonus (`LF_ReputationPay.c`, `m_aPays` in `LF_Reputation.conf`, #2703): `CompleteRun` adds the town tier's percent
+  (`0 0 0 5 10 15`, max 15) of the run's base pay; `Dropoff` books it with the contract bonus under the ledger reason `standing-bonus`.
 - Contract offer in dialogue (`LF_DialogueHook_Contract.c`, #2913): the dialogue hook "Contract" offers a contract by id and calls
   `LF_ReputationContracts.Begin`; condition and action are both server-side.
 

@@ -43,6 +43,11 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   no contract money (a late finish still pays the plain run). Stakes move no money. A contract whose run vanished (a wipe) is dropped with
   no stake. Session state: a restart refunds the run's deposit and drops the contract. A drop-off by a dead or downed body pays nothing.
   Core ships one neutral parcel row (`test_parcel`); the offer that calls `Begin` and the pack's contracts are later cards. Test `reputation/contract`.
+- ✅ **Standing pay bonus** (#2703, merged, in-dev): `LF_ReputationPay.c`, rows `m_aPays` in `Configs/Reputation/LF_Reputation.conf`
+  (`LF_ReputationPayDef`: faction, percent per tier lowest first, shipped TOWN `0 0 0 5 10 15` for tiers -2..3, clamped to 15). `LF_CivilianJob.CompleteRun`
+  adds the town tier's percent of the run's BASE pay (a contract's multiplier does not compound it); the drop-off hands it over as its own
+  ledger line, reason `standing-bonus`, beside the contract bonus part. Police and medic duty pay never calls it; another faction's tier pays
+  nothing on a civilian run. Test `reputation/pay-bonus`.
 - ✅ **Contract offer in dialogue** (#2913, merged, in-dev): `LF_DialogueHook_Contract.c`. A dialogue reply with `m_sAction "Contract"`,
   `m_sCondition "Contract"` and the contract id as `m_sParam` starts the contract: the reply is offered only when the contract's standing
   gate passes (checked on the server, where `Offers` runs), the pick signs the player up for the contract's job if needed (the JobSignUp
