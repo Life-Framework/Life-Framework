@@ -10,11 +10,11 @@ GenericEntity Fit_saint_philippe_seed_feed_Place {
  coords 4522.5 16.1 10653.2
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4528.079 16.1 10656.653
+ coords 4528.057 16.1 10653.27
  angleY 171
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4526.597 16.1 10656.417
+ coords 4526.576 16.1 10653.036
  angleY 171
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
@@ -47,7 +47,7 @@ GenericEntity Fit_saint_philippe_seed_feed_seed_feed_till : "{4E4E1620C6B02E1F}P
    }
   }
  }
- coords 4526.597 17.139 10656.417
+ coords 4526.576 17.139 10653.036
  angleY 171
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
@@ -55,7 +55,7 @@ GenericEntity Fit_saint_philippe_seed_feed_seed_feed_sacks_1 : "{662766254306EE2
  angleY -99
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_sacks_2 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 4529.57 16.123 10653.307
+ coords 4529.664 16.123 10652.715
  angleY -99
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
@@ -71,7 +71,7 @@ GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_3 : "{C8C36ADC9DFC5FB
  angleY -89
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_box_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 4528.079 17.139 10656.653
+ coords 4528.057 17.139 10653.27
  angleY 171
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_4 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {

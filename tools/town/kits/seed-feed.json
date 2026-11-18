@@ -35,11 +35,11 @@
     "counters": [
       {
         "id": "seed-feed-counter",
-        "wall": "-z",
+        "wall": "free",
         "edgeGap": 0.5
       }
     ],
-    "adapt": "The closed barn Barn_E_03: its ground floor is 16.3 x 6.3 m with two partition walls (x about -2.55 and 2.05) cutting three bays; three doors in the front wall (+z) and one in the back wall (-z) near x 4.7. The shop is the left bay (the one with the front door at x about -4.7): the counter hugs the back wall (-z), sacks stand in the corner and along the end wall, crates in the front corner and against the partition. The till sells the `seed_feed` stock (cabbage seeds, bait tin, fishing rod, water). Rows are rigid: shift, never stretch."
+    "adapt": "The closed barn Barn_E_03: its ground floor is 16.3 x 6.3 m with two partition walls (x about -2.55 and 2.05) cutting three bays; three doors in the front wall (+z) and one in the back wall (-z) near x 4.7. The shop is the left bay (the one with the front door at x about -4.7): the counters stand free across the bay (the vanilla hay bales fill the back-left corner), sacks along the end wall, crates against the partition. The till sells the `seed_feed` stock (cabbage seeds, bait tin, fishing rod, water). Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -48,9 +48,9 @@
       "role": "counter",
       "verb": "on floor",
       "offset": [
-        -6.05,
+        -5.5,
         0.1,
-        -2.62
+        0.8
       ],
       "yaw": 0,
       "wall": "free",
@@ -62,9 +62,9 @@
       "role": "counter",
       "verb": "on floor",
       "offset": [
-        -4.55,
+        -4,
         0.1,
-        -2.62
+        0.8
       ],
       "yaw": 0,
       "wall": "free",
@@ -77,9 +77,9 @@
       "role": "till",
       "verb": "on seed-feed-counter-2",
       "offset": [
-        -4.55,
+        -4,
         1.139,
-        -2.62
+        0.8
       ],
       "yaw": 0,
       "config": [
@@ -125,7 +125,7 @@
       "offset": [
         -7,
         0.1,
-        1
+        1.6
       ],
       "yaw": 90,
       "wall": "free",
@@ -179,9 +179,9 @@
       "role": "dressing",
       "verb": "on seed-feed-counter",
       "offset": [
-        -6.05,
+        -5.5,
         1.139,
-        -2.62
+        0.8
       ],
       "yaw": 0,
       "wall": "free",
