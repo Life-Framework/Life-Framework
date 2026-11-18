@@ -79,6 +79,11 @@
       "places": ["FenceYard"]
     },
     {
+      "id": "carlot", "required": false, "kit": "carlot", "host": "building", "poi": "none", "margin": 18,
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "near", "maxDistance": 140, "types": ["garage"] },
+      "places": ["VehicleLot"]
+    },
+    {
       "id": "board", "required": true, "kit": "board", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 60 },
       "places": ["TownBoard", "MapBoard"]
@@ -92,6 +97,11 @@
       "id": "taxi", "required": false, "kit": "taxi", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 70 },
       "places": ["TaxiRank"]
+    },
+    {
+      "id": "parcel-drops", "required": false, "kit": "parcel-drops", "host": "outposts", "poi": "none",
+      "needs": { "interior": "optional" },
+      "places": []
     },
     {
       "id": "parcel", "required": false, "kit": "parcel", "host": "building", "poi": "none",

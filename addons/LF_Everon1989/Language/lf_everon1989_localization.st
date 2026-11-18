@@ -699,6 +699,11 @@ StringTable {
      Target_en_us "Nearly there. A few more shifts at the quarry and the foreman will let you."
      Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
     }
+    CustomStringTableItem "{597379C162802B06}" {
+     Id "LF-LicenceWhere_FIREARM_PERMIT"
+     Target_en_us "The gun store counter"
+     Comment "Overrides the core row: the firearm permit is bought at the gun store counter (#3150)."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0E}" {
      Id "LF-MapPoi_Cafe"
      Target_en_us "Cafe"

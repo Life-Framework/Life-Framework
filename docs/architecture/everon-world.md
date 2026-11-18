@@ -227,6 +227,12 @@ supplies every coordinate the later steps use. No step types a coordinate.
   and a row standing in a prop the host carries itself (a vanilla furniture set a layer cannot remove) is flagged.
   `town fit <place> <slot> --check` prints the per-row corrections against the layer on disk and writes nothing.
 
+- **Outposts slots (`town drops <place> <slot>`).** A slot whose host is `outposts` (template `town`: `parcel-drops`) lists
+  `drops: [{ place, building }]` in the mapping, buildings of OTHER places' dossiers that lie outside this place's own survey
+  (the parcel run needs stops 300 m or more from the depot). One layer holds one `LF_ParcelDrop` mailbox per drop, each
+  placed a metre outside its building's entrance side and slid onto the host's real wall by the same offline seat as `town fit`;
+  the claim names the drops, and `town check` tests each entity against its own drop building's footprint (2 m margin).
+
 ### 3.4 Parallelism
 
 - **One layer per slot.** `Place_<place>_<slot>.layer` is the unit of work and the unit of review. The
