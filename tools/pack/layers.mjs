@@ -84,6 +84,7 @@ Object.assign(SECTIONS, {
   "reputationContracts.contracts": row("reputationContracts", "contracts", "LF_ReputationContractsConfig", "Configs/Reputation/LF_ReputationContracts.conf", "m_aContracts", "m_sId", byField("m_sId")),
   "townBoard.cards": row("townBoard", "cards", "LF_TownBoardConfig", "Configs/TownBoard/LF_TownBoard.conf", "m_aCards", "m_sId", byField("m_sId")),
   "ui-theme.themes": row("ui-theme", "themes", "LF_UIThemeConfig", "Configs/UI/LF_UITheme.conf", "m_aThemes", "m_sThemeId", byField("m_sThemeId")),
+  "parkedcars.cars": row("parkedcars", "cars", "LF_ParkedCarConfig", "Configs/Vehicles/LF_ParkedCars.conf", "m_aCars", "m_sPrefab", (p) => guidOf(p.m_sPrefab), noOwner),
   "vehicle-colours.models": row("vehicle-colours", "models", "LF_VehicleColoursConfig", "Configs/Vehicles/LF_VehicleColours.conf", "m_aModels", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
 });
 
