@@ -21,7 +21,8 @@
   },
   "dayCycle": {
     "mode": "accelerated",
-    "dayLengthMinutes": 120
+    "dayLengthMinutes": 120,
+    "nightSpeed": 2
   },
   "respawn": {
     "rejoinAtLastPosition": true,
