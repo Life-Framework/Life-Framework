@@ -3620,6 +3620,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Confirm: skip    Back: leave"
      Comment "Conversation scene, small hint under the caption while the NPC speaks. Confirm and Back are the menu confirm and back keys."
     }
+    CustomStringTableItem "{6456C75F481973C0}" {
+     Id "LF-Dialogue_Resident_Bye"
+     Target_en_us "Take care."
+     Comment "Dialogue caption: a resident says goodbye (#2908)."
+    }
+    CustomStringTableItem "{F3EF6FF492DA0C0C}" {
+     Id "LF-Dialogue_Resident_GreetFriendly"
+     Target_en_us "Good to see you again. How are you keeping?"
+     Comment "Dialogue caption: how a resident greets a character they feel 'friendly' about (#2908)."
+    }
+    CustomStringTableItem "{99DC983EEF939A94}" {
+     Id "LF-Dialogue_Resident_GreetNeutral"
+     Target_en_us "Morning. Can I help you with something?"
+     Comment "Dialogue caption: how a resident greets a character they feel 'neutral' about (#2908)."
+    }
+    CustomStringTableItem "{BCA0CA792C68EAAA}" {
+     Id "LF-Dialogue_Resident_GreetRefuses"
+     Target_en_us "I've nothing to say to you."
+     Comment "Dialogue caption: how a resident greets a character they feel 'refuses' about (#2908)."
+    }
+    CustomStringTableItem "{7E0339705DFF2929}" {
+     Id "LF-Dialogue_Resident_GreetRegular"
+     Target_en_us "There you are! Come in, come in. It's always good to see you."
+     Comment "Dialogue caption: how a resident greets a character they feel 'regular' about (#2908)."
+    }
+    CustomStringTableItem "{9DC6BC29421DDF04}" {
+     Id "LF-Dialogue_Resident_GreetWary"
+     Target_en_us "Oh. It's you. Keep it short."
+     Comment "Dialogue caption: how a resident greets a character they feel 'wary' about (#2908)."
+    }
+    CustomStringTableItem "{24A6C708B0B2495C}" {
+     Id "LF-Dialogue_Resident_Name"
+     Target_en_us "Resident"
+     Comment "Dialogue speaker name for a townsperson who speaks through the core resident dialogue."
+    }
+    CustomStringTableItem "{7C2D782E00522C19}" {
+     Id "LF-Dialogue_Resident_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply: end the talk with a resident (#2908)."
+    }
     CustomStringTableItem "{BC6FD589CFCCD2F2}" {
      Id "LF-Dialogue_Shopkeeper_Bye"
      Target_en_us "Good day to you."
