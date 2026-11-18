@@ -8,7 +8,7 @@
     "origin": "PoliceKit_Villa",
     "frame": "origin-entity"
   },
-  "scope": "building",
+  "scope": "room",
   "building": {
     "mode": "inside",
     "vanilla": "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et"
