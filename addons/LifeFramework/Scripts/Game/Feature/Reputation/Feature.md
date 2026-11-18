@@ -33,10 +33,12 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
 - Contracts (`LF_ReputationContracts.c`, `Configs/Reputation/LF_ReputationContracts.conf`, #2702): a contract wraps the
   active `LF_CivilianJob` run (`Begin` / `Take`); `CompleteRun` calls `Settle` (multiplier 1.3..1.6, award, `standing-bonus`
   ledger part), `AbandonRun` calls `Forfeit` (the stake, points only). One at a time, a cooldown; session state.
+- Contract offer in dialogue (`LF_DialogueHook_Contract.c`, #2913): the dialogue hook "Contract" offers a contract by id and calls
+  `LF_ReputationContracts.Begin`; condition and action are both server-side.
 
 ## Not built yet (later cards of chapter #1018)
 
-The contract offer (the caller of `LF_ReputationContracts.Begin`), gates beyond job sign-up and run start (#2701 built those: `LF_ReputationGate.c`),
+Gates beyond job sign-up and run start (#2701 built those: `LF_ReputationGate.c`),
 client greying from `LF_ReputationSync.ClientTier`, screens, the pack's words, and the pack overlay and owner
 `config.json` section for the config.
 

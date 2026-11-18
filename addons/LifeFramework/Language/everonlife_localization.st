@@ -2690,6 +2690,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are in no state to take on work."
      Comment "Contract refusal (#2702): the player is dead or downed."
     }
+    CustomStringTableItem "{03EF818A89F1ED32}" {
+     Id "LF-Contract_RunOpen"
+     Target_en_us "Finish the run you are on first, then come and see me."
+     Comment "Contract refusal (#2913): the player already has a delivery run under way."
+    }
+    CustomStringTableItem "{A3B9EDA33F8EFD30}" {
+     Id "LF-Contract_Started"
+     Target_en_us "Right, it is yours. Deliver it in good time and the pay is better than a plain run."
+     Comment "Contract start (#2913): the NPC answers a dialogue reply that took a contract; also the toast."
+    }
     CustomStringTableItem "{49069B1064628566}" {
      Id "LF-Contract_Unknown"
      Target_en_us "That contract isn't on offer."
@@ -6537,6 +6547,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Safe zone"
      Comment "Map label of a safe zone at the closest zoom."
     }
+    CustomStringTableItem "{E3A1B2C4D5F60718}" {
+     Id "LF-Market_BoardTitle"
+     Target_en_us "Prices today"
+     Comment "Title of the trader chalk price board card."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60719}" {
+     Id "LF-Market_NoPrices"
+     Target_en_us "No prices today."
+     Comment "Price board line when the market is off or lists no goods."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F6071A}" {
+     Id "LF-Market_Price"
+     Target_en_us "%1  %2"
+     Comment "Price board line: %1 good name, %2 price."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F6071B}" {
+     Id "LF-Market_PriceDown"
+     Target_en_us "%1  %2 %3"
+     Comment "Price board line for a good below its base: %1 name, %2 price, %3 down arrow."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F6071C}" {
+     Id "LF-Market_Read"
+     Target_en_us "Read today's prices"
+     Comment "Action on the trader chalk price board."
+    }
     CustomStringTableItem "{DF4F6E621FD608FA}" {
      Id "LF-MedicRank_Doctor"
      Target_en_us "Doctor"
@@ -9300,6 +9335,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"
      Comment "Escort refused because the officer's rank is below the configured escort rank"
+    }
+    CustomStringTableItem "{37D9CCF94EDAF2EB}" {
+     Id "LF-Rank_KitAboveRankTaken"
+     Target_en_us "Kit above your new rank was taken back"
+     Comment "Toast: after a demotion the armory took back the issued kit the officer's new rank may not hold"
     }
     CustomStringTableItem "{A2D4831F96B7DC32}" {
      Id "LF-RateLimit_Slow"

@@ -16,7 +16,7 @@ class LF_Test_ArmoryKitTurnIn : LF_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! The serial of the first issued rifle the officer holds in a bag or a weapon slot.
-	protected static string SerialOf(IEntity holder)
+	static string SerialOf(IEntity holder)
 	{
 		array<IEntity> found = {};
 		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(holder);

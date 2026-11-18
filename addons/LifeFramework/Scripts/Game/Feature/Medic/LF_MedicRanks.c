@@ -267,7 +267,10 @@ class LF_MedicRanks
 		if (!IsRankUsable(nextRank))
 			return false;
 
+		// The shift so far is paid at the old rank (#2874).
+		float oldRate = LF_DutyPay.RateBeforeRankChange(account);
 		account.SetMedicRank(nextRank);
+		LF_DutyPay.AfterRankChange(account, oldRate);
 		LF_Debug.Info(FEATURE, string.Format("promoted %1 to medic rank %2 (%3) by time on duty", account.GetPersistentId(), nextRank, TitleKey(nextRank)));
 		return true;
 	}
