@@ -8,5 +8,10 @@
   "id": "machine:cement-plant",
   "margin": 24,
   "reason": "Shipped prices (#686 audit): sand, gravel and cement bags are 12 each under the Prefabs/Items/Resources rule = 36; the plant makes 10 Brick that sell for 6 each = 60. A design decision to retune (Brick sell 3 closes it); not changed here."
+ },
+ {
+  "id": "outlet-sell:fish_tuna_large",
+  "margin": 10,
+  "reason": "Shipped prices (#3119 planner table): a large tuna sells to the fish counter for 60; ShopPrices.conf has no rule for Prefabs/Items/Fishing/, so the shop default buy price 50 applies if a general shop ever stocks it. No shop stocks fish (the counter takes catches, it does not sell them), so the loop is not reachable today; a Fishing price rule closes it. A design decision, not changed here."
  }
 ]
