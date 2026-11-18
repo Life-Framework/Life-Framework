@@ -164,22 +164,22 @@ class LF_OrgLedger
 			return parts;
 		}
 
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_NAME_LINE, ""));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_RANK_LINE, ""));
-		parts.Insert(LF_UIPart.CreateStatus(PART_FUND, "#EL-Org_Fund", "", ""));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, PART_AMOUNT, "#EL-Org_Amount"));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_DEPOSIT, "#EL-Org_Deposit"));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_NAME_LINE, "").InBody());
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_RANK_LINE, "").InBody());
+		parts.Insert(LF_UIPart.CreateStatus(PART_FUND, "#EL-Org_Fund", "", "").InBody());
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, PART_AMOUNT, "#EL-Org_Amount").InBody());
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_DEPOSIT, "#EL-Org_Deposit").InBody());
 		if (page.Can(LF_OrgRules.RIGHT_WITHDRAW))
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_WITHDRAW, "#EL-Org_Withdraw"));
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_WITHDRAW, "#EL-Org_Withdraw").InBody());
 
-		parts.Insert(LF_UIPart.CreateStatus(PART_PROCESSING, "#LF-Org_Processing", "", ""));
-		parts.Insert(LF_UIPart.CreateStatus(PART_HIDEOUT, "#LF-Org_Hideout", "", ""));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_MEMBERS_LINE, ""));
-		parts.Insert(LF_UIPart.CreateList(PART_MEMBERS));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_SITES_LINE, ""));
-		parts.Insert(LF_UIPart.CreateList(PART_SITES));
+		parts.Insert(LF_UIPart.CreateStatus(PART_PROCESSING, "#LF-Org_Processing", "", "").InBody());
+		parts.Insert(LF_UIPart.CreateStatus(PART_HIDEOUT, "#LF-Org_Hideout", "", "").InBody());
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_MEMBERS_LINE, "").InBody());
+		parts.Insert(LF_UIPart.CreateList(PART_MEMBERS).InBody());
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_SITES_LINE, "").InBody());
+		parts.Insert(LF_UIPart.CreateList(PART_SITES).InBody());
 		if (page.Can(LF_OrgRules.RIGHT_INVITE))
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_INVITE_HINT, "#LF-Org_InviteHint"));
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_INVITE_HINT, "#LF-Org_InviteHint").InBody());
 
 		parts.Insert(LF_UIPart.CreateStatus(PART_MEMBERSHIP, "#LF-Org_Membership", "", ""));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_NOTICE, ""));
@@ -284,8 +284,8 @@ class LF_OrgLedger
 			return false;
 		}
 
-		// The kit squeezes only the first list (the members) when the sheet is at the screen cap, so the
-		// held-ground list stays short or it pushes Leave and Close off the sheet (#2834).
+		// The held-ground list stays one row: the body above Leave and Close scrolls at the screen cap
+		// (#3036), and a tall list would only make it scroll sooner.
 		if (m_Page && m_Page.m_bHasOrg)
 			m_Screen.SetListHeight(PART_SITES, SITES_LIST_HEIGHT);
 
