@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{90719A7BA643C4C3}Configs/Vehicles/LF_VehiclePrices_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
