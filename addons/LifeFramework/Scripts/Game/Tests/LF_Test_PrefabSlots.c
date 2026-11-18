@@ -23,7 +23,6 @@ class LF_Test_PrefabSlotsPackStub : LF_ConfigPackSource
 //! prefab. With the fixture pack: cash swaps to a prefab that has what cash needs; the ID card
 //! slot pointed at an apple (no LF_IdCardComponent) and the money bag at a missing file fall back
 //! to the core default; a pack removing a slot keeps the core default; an unknown slot is empty.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PrefabSlots : LF_Test
 {

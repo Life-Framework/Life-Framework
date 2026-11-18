@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 batched `--red` RED PROOF OK: with the hook on no visitor is forgotten, so "the list holds only the visitors on the pad" fails (expected 2, got 52). Green with the fix.
-// tier: LOGIC
 //! #2406: the jump pad remembers a visitor only while it stands on the pad (the list never outgrows the
 //! people on it), and only a living body is thrown: a corpse or a downed player is not.
 [LF_TestInfo(LF_TestTier.LOGIC)]

@@ -2,7 +2,6 @@
 //   core-only run, cli test --no-build --core-only --only LF_Test_CoreOnlyBoot --local:
 //   [LFTEST]   - core-only run loads only the core and the base game (loaded: ...)
 // Restored; green.
-// tier: LOGIC
 //! core/only-boot: Test 1 of the red line (#326). On a core-only run (tools\cli test --core-only) the
 //! engine has loaded the core and the base game addons and nothing else, so the suite proves what the
 //! core does alone. A normal run has the same core loaded and may have more; this test then only

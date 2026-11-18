@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools/cli test --no-build --only LF_Test_ConvictionRecord` before the "convictions" payload was registered: failed "the conviction is back, no extra rows (expected 1, got 0)". Green once the payload was wired.
-// tier: PERSISTENCE
 //! #1914: an arrest published on the bus stamps the account with the in-game day; IsRecent answers
 //! the clean-record question for a window of days; the stamp survives the "convictions" payload.
 //! Across a restart (`tools\cli wt e2e`): the save boot leaves one conviction on today's clock day

@@ -1,6 +1,5 @@
 // red-proof: RED-OK licence/restored-body, observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_RestoredBodyLicences,LF_Test_IdRegistryUnreadable`:
 // with the adopt call skipped, `the restored body holds the saved firearm permit` and `the licence desk sees the permit and does not charge again` fail. Green with the fix (--only).
-// tier: WORLD
 //! licence/restored-body (#2413): a player who takes control of a living body a save restored is
 //! never spawned a new one (LF_SpawnLogic "already controls a character"), so the progression apply
 //! every spawned body gets never ran: the body held only its starter licences and the licence desk

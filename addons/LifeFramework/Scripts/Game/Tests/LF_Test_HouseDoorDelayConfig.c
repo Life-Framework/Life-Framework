@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17: `tools\cli test --no-build --red LF_Test_HouseDoorDelayConfig` printed RED-OK (with the fixture skipped: "doorCloseDelaySeconds 5 gives a 5 s delay (expected 5, got 20)"; no houses key is read on main).
-// tier: WORLD
 //! The `houses` owner section (#2505, slice of #2435): `doorCloseDelaySeconds` is how long a locked
 //! house's open door stays open before LF_HouseDoorClose closes it. 5 gives a 5 s delay, 0 turns the
 //! auto-close off, 9999 clamps to 600 (with a warning), a missing key keeps the shipped 20, and a

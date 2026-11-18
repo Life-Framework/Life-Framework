@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapPrivateEntitled,LF_Test_MapPrivateRegistry: RED-OK (RedProof() sends every private place, as every client used to hold them, so "a player who is not entitled is sent no private place" fails). Green with LF_MapPrivatePlaces.Entitled.
-// tier: LOGIC
 //! map/private-entitled (#2492): the private places the server sends one player are exactly what the
 //! visibility rule gives that player. A player who knows nothing and holds no role is sent no private place:
 //! not the hidden fence, not the police armoury, not an unheard discover place. A heard-of discover place, a

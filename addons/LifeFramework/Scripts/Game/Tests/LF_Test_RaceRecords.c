@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_RaceRecords` (RED PROOF OK): with the payload read skipped, failed "the other course loads (expected 70000, got -1)"; green on the real code.
-// tier: PERSISTENCE
 //! #1925: the record board keeps the best race times. A faster finish replaces a character's record
 //! and a slower one does not; a finished race (LF_OnRaceFinished) records the winner; the
 //! "racerecords" payload survives a save round trip and a second load; the board card lists the top

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `--red LF_Test_FittedBuildingIndestructible` on DebugWorld (spawned garages): `RED PROOF OK`; with the fit skipped, `explosive and true damage past full health leave the fitted building's health alone (expected 10000, got 0)`, `the fitted building is not destroyed` and `the fitted building takes no damage` failed. Green: 10 assertions.
-// tier: WORLD
 //! D15: a fitted vanilla building is indestructible, its unfitted neighbour is not. On a world with
 //! vanilla buildings (CoreOnEveron) the test takes the two destructible buildings nearest the map's
 //! middle; on DebugWorld it spawns two vanilla garages. It fits the first through LF_FittedBuildings

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-12 with `tools\cli test --no-build --only LF_Test_Stun`: LF_Stun.Wake without the token check failed `a stale wake leaves the stun in place`; restored, green.
-// tier: WORLD
 //! A stun (#341) puts a player character in the downed state without touching its health, the
 //! player cannot give up out of it, the timed wake ends it, a stale wake does nothing, and a
 //! character that is already downed is not stunned. The taser prefab loads and is a stun weapon.

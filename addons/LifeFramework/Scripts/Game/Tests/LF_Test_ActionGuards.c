@@ -3,7 +3,6 @@
 // and run `tools\cli test --tier fast`; the malformed configuration assertions
 // go red.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ActionGuards : LF_Test
 {

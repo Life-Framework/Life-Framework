@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapMarksDropShareCopies: RED PROOF OK with the share Put skipped, "the restore sends only the mark that is not a share copy (expected 1, got 3)". Green with DropShareCopies in the restore.
-// tier: WORLD
 //------------------------------------------------------------------------------------------------
 //! map/marks-drop-share-copies (#2623, #2495 finding 9): before the review fix shared marks were uploaded
 //! as personal marks, so saved "mapmarks" rows hold copies of org and dispatch marks. The spawn restore

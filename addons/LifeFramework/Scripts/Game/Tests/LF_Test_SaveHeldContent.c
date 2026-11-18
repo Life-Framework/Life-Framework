@@ -11,7 +11,6 @@
 //! longer has (inside the backpack) and one at the root with an apple inside it. Applying it skips
 //! them; a fresh capture still holds them, once, in the right container; a second capture adds no
 //! copy; when an alias brings the content back, the next load restores it into the backpack.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SaveHeldContent : LF_Test
 {

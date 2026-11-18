@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, `tools\cli test --no-build --red LF_Test_OrgLedgerRate`: RED-OK, "leave is refused from the spent bucket" and "the sign's leave refuses a member of another organisation (expected 7, got 0)" with the hook on. Green with the gate and the OTHER_ORG rule.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! organizations/ledger-rate (review 2026-11-17, items 30 and 31, #2415, slice #2536): the View,
 //! Deposit, Withdraw, Leave and Lease asks go through LF_RateLimit (View walks every member), and

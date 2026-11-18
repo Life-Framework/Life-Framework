@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_OrgWarPersist`: `RED-OK org/war-persist` with the store read skipped, `- three wars after the load (load 1) (expected 3, got 0)`. Green with the read.
-// tier: PERSISTENCE
 //! org/war-persist (#2672, M7 gang war W6): the "orgwars" payload round trips an accepted war, a
 //! pending declaration and an ended war still inside its pair cooldown through the real store write
 //! and read, with the same ids, states and times; a lapsed declaration is not saved; a second load

@@ -4,7 +4,6 @@
 // with SUMMARY tier=fast passed=55 failed=1 total=56.
 // Restored the expected value to Z.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Vehicles : LF_Test
 {
@@ -99,7 +98,6 @@ class LF_Test_Roadmap_Vehicles : LF_Test
 	}
 }
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_VehiclesWorld : LF_Test
 {
@@ -240,7 +238,6 @@ class LF_Test_Roadmap_VehiclesWorld : LF_Test
 	}
 }
 
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_Roadmap_VehiclesPersistence : LF_Test
 {

@@ -30,7 +30,6 @@ class LF_DispatchMarkTestSink : LF_MapShareSink
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! comms/dispatch-map-marks (card M10, #2238, D-M10): a raised police call becomes a ROLE police shared
 //! mark for the on-duty officer only; taking it turns it solid (the taken colour); the world reset
 //! closes it and the board expiry removes another. A medic call reaches the medic only; a taxi call

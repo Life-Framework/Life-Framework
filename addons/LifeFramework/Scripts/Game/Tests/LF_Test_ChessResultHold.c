@@ -1,6 +1,5 @@
 // red-proof: 2026-11-17, bug fix. On the unfixed LF_ChessTable.Sit (a finished game cleared for any newcomer) `--only LF_Test_ChessResultHold` fails "a bystander does not wipe a finished game". With the hold, green.
 
-// tier: LOGIC
 //! #2405 (review 2026-11-17): with both seats held and the game over, a third player pressing Play
 //! used to call NewGame() and wipe the result. Now only the two players keep the board, until
 //! RESULT_HOLD_MS after the last move; a free seat still starts a new game for a newcomer.

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18, cli test --no-build --red (batched): RED-OK, "a PLAYER row under the record key reaches the first character" fails with the member keyed by character id. Green with MemberOf keying by record key.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! map/share-member-key (review 2026-11-17, docs/reviews/2026-11-17-map.md): the job marks put a PLAYER
 //! row under the runner's record key (LF_Utils.GetPlayerUID). The share table's member used the

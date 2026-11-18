@@ -1,5 +1,5 @@
 {
-  "saveVersion": 56,
+  "saveVersion": 57,
   "launched": true,
   "payloads": {
     "prefix": "LF_PlayerAccountRecord,LF_BankAccountRecord",
@@ -58,7 +58,8 @@
     "reputation": "LF_ReputationRow",
     "orgwars": "LF_OrgWarRecord",
     "garageslots": "LF_GarageSlotRow",
-    "plants": "LF_PlantRow"
+    "plants": "LF_PlantRow",
+    "lockers": "LF_LockerRentalRow"
   },
   "records": {
     "LF_PlayerAccountRecord": {
@@ -696,6 +697,15 @@
         "int m_iPlantedAt",
         "int m_iWateredAt",
         "string m_sOwnerKey"
+      ]
+    },
+    "LF_LockerRentalRow": {
+      "since": 57,
+      "fields": [
+        "int m_iVersion",
+        "string m_sSiteId",
+        "string m_sCharacterKey",
+        "int m_iPaidUntil"
       ]
     }
   }

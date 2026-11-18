@@ -4,7 +4,6 @@
 //   [LFTEST] FAIL persist/quiz-pass
 //   [LFTEST]   - a restart does not ask a passed account again
 // Restored; green.
-// tier: PERSISTENCE
 //! Rules orientation quiz (#915): a pass is saved with the account's progression and read back, so a
 //! restart does not ask again. A quest log built from the same record does not list the pass as a quest.
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]

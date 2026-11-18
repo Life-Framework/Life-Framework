@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16: `tools\cli test --no-build --red LF_Test_ConfigRespawnGrace` printed RED PROOF OK (with the fixture skipped, rejoinAtLastPosition, rejoinMaxAgeHours and grace minutes were not read).
-// tier: WORLD
 //! The `respawn` and `grace` owner sections (#1779, chapter Arrival #1007). The flagship's config.json turns
 //! rejoin-at-the-saved-spot on and gives a new character 30 minutes of grace; the core .conf files stay off.
 //! A config without the sections keeps the .conf values; a bad value keeps the .conf value.

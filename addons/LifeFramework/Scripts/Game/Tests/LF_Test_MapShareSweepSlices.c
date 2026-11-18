@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapShareSweepSlices: RED-OK map/share-sweep-slices (RedProof() runs the old one-frame RefreshAll per tick, so the first tick refreshes all 45 players, not a batch of 3, and no cycle is counted). Green with SweepStep (22 assertions).
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! map/share-sweep-slices (#2531): the 5 s share sweep refreshed all 128 players in one frame (20 to 50 ms). It is
 //! spread over LF_MapShares.SWEEP_SLICES ticks: each tick refreshes a batch of the cycle's players (the list divided

@@ -4,7 +4,6 @@
 //! `[Attribute]` member initializer beats it), and a field the `.conf` leaves out reads the attribute
 //! default, which is what CreateDefault() hands script. Covers the classes that used to carry
 //! initializers: LF_MedicConfig (flags, seconds, an amount) and LF_OrgConfig (the founding fee).
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ConfZeroConfigs : LF_Test
 {

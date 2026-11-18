@@ -1,7 +1,6 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --tier all`: making LF_BaseCrop.IsStageDue strict
 // (nowMs > start + duration) failed it with `[LFTEST] FAIL crop/stage-progression`,
 // `- due exactly at the boundary` and `- seed due at 12s`. Restored; green.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CropStages : LF_Test
 {

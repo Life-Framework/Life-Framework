@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 (new feature) with `tools\cli test --no-build --only LF_Test_HouseDoorAutoClose` against a no-op LF_HouseDoorClose stub and the unchanged gate: `[LFTEST] FAIL houses/door-auto-close`, `- a stranger may close the locked house's open door`, `- the close tick shuts a locked house's open door`, `- an unlocked house's open door stays open`. Green with the gate and the tick.
-// tier: WORLD
 //! houses/door-auto-close (#2472): on a locked house, anyone may close an open door but only the owner
 //! and key holders may open it, and a door left open closes itself once the delay has run. An unlocked
 //! house's open door stays open. The close tick is called directly; nothing waits.

@@ -1,7 +1,6 @@
 // red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_DialogueFlow`: setting LF_DialogueCamera.FOV to 30 (the old face close-up) failed `dialogue/flow` with `- the one framing is a medium shot, not a face close-up`. Restored; green. Earlier: made LF_DialogueFlow.IsOffered return true; got `- a reply that was not offered cannot be picked`.
 // LF_DialogueFlow.IsOffered return true; got `[LFTEST] FAIL dialogue/flow`,
 // `- a reply that was not offered cannot be picked`. Restored; green.
-// tier: LOGIC
 //! The rules of an NPC conversation (Feature/Dialogue/LF_DialogueConfig.c, LF_DialogueFlow): a
 //! reply the server did not offer cannot be picked, what a feature hands back is spoken by the
 //! line voiced for it, broken data is named, and the mouth and camera maths hold their bounds.

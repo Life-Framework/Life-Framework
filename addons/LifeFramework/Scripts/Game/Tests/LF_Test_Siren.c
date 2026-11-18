@@ -2,7 +2,6 @@
 // nonexistent conf (or remove the manager component from LF_UAZ469_Police.et) and
 // run `tools\cli test --tier all`; the prefab load / spawn / manager assertions fail.
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Siren : LF_Test
 {

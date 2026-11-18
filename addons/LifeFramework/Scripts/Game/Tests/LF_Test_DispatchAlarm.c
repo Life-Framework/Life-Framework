@@ -7,7 +7,6 @@
 //! dispatch/site-alarm (M1-20): both alarm prefabs spawn as replicated entities at the site,
 //! the loud one is louder (its own level, a longer hear range), a newer alarm at the same site
 //! replaces the older one, and stopping removes it.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DispatchAlarm : LF_Test
 {

@@ -125,12 +125,12 @@ check(/T1 \(data only\)/.test(tierLine(st)), `tierLine: ${tierLine(st)}`);
 const toks = fileTokens(CONF, CHAR_CONF, 'MetaFileClass {\n Name "{CBD57E33C475D480}Configs/Account/LF_Characters.conf"\n}\n');
 check(["LF_Characters", "CBD57E33C475D480", "LF_CharacterConfig"].every((t) => toks.includes(t)), `fileTokens: ${toks}`);
 const tests = [
-  { file: "LF_Test_Fast.c", text: "// tier: LOGIC\nclass LF_Test_Fast : LF_Test\n{\n}\n// tier: WORLD\nclass LF_Test_FastWorld : LF_Test\n{\n}\n" },
-  { file: "LF_Test_Chars.c", text: "// tier: WORLD\nclass LF_Test_Chars : LF_Test\n{\n  // reads LF_CharacterConfig\n}\n" },
-  { file: "LF_Test_Guid.c", text: "// tier: PERSISTENCE\nclass LF_Test_Guid : LF_Test\n{\n  string p = \"{CBD57E33C475D480}\";\n}\n" },
-  { file: "LF_Test_Atm.c", text: "// tier: WORLD\nclass LF_Test_Atm : LF_Test\n{\n  string k = \"#EL-ATM_Amount\";\n}\n" },
-  { file: "LF_Test_Other.c", text: "// tier: WORLD\nclass LF_Test_Other : LF_Test\n{\n}\n" },
-  { file: "LF_Test_Timing.c", text: "// tier: PERF\nclass LF_Test_Timing : LF_Test\n{\n  // reads LF_CharacterConfig\n}\n" },
+  { file: "LF_Test_Fast.c", text: "[LF_TestInfo(LF_TestTier.LOGIC)]\nclass LF_Test_Fast : LF_Test\n{\n}\n[LF_TestInfo(LF_TestTier.WORLD)]\nclass LF_Test_FastWorld : LF_Test\n{\n}\n" },
+  { file: "LF_Test_Chars.c", text: "[LF_TestInfo(LF_TestTier.WORLD)]\nclass LF_Test_Chars : LF_Test\n{\n  // reads LF_CharacterConfig\n}\n" },
+  { file: "LF_Test_Guid.c", text: "[LF_TestInfo(LF_TestTier.PERSISTENCE)]\nclass LF_Test_Guid : LF_Test\n{\n  string p = \"{CBD57E33C475D480}\";\n}\n" },
+  { file: "LF_Test_Atm.c", text: "[LF_TestInfo(LF_TestTier.WORLD)]\nclass LF_Test_Atm : LF_Test\n{\n  string k = \"#EL-ATM_Amount\";\n}\n" },
+  { file: "LF_Test_Other.c", text: "[LF_TestInfo(LF_TestTier.WORLD)]\nclass LF_Test_Other : LF_Test\n{\n}\n" },
+  { file: "LF_Test_Timing.c", text: "[LF_TestInfo(LF_TestTier.PERF)]\nclass LF_Test_Timing : LF_Test\n{\n  // reads LF_CharacterConfig\n}\n" },
 ];
 const sel = selectTests(tests, [...toks, "EL-ATM_Amount"]);
 check(sel.logic.join() === "LF_Test_Fast", `selectTests logic: ${sel.logic}`);

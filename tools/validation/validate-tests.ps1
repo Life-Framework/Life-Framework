@@ -69,12 +69,12 @@ foreach ($file in $files) {
   }
 
   # The red-proof block is the red-proof line plus the comment lines that follow it,
-  # up to the first non-comment line or the tier comment.
+  # up to the first non-comment line, the first doc comment (`//!`, the test's description) or a `//-----` rule.
   $block = @()
   for ($i = $start; $i -lt $lines.Count; $i++) {
     $line = $lines[$i]
     if ($line -notmatch '^\s*//') { break }
-    if ($i -gt $start -and $line -match '^\s*//\s*tier:') { break }
+    if ($i -gt $start -and $line -match '^\s*//(!|-{5})') { break }
     $block += ($line -replace '^\s*//\s*', '')
   }
   $proof = (($block -join ' ') -replace '^red-proof:\s*', '').Trim()

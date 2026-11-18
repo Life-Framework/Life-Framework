@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_FirstSpawn,LF_Test_FirstSpawnPersist` (RED PROOF OK): with the payload read skipped, failed "the waiting character is new again after the load (expected 1, got 0)"; green on the real code.
-// tier: PERSISTENCE
 //! #1964: the first-spawn mark survives the "firstspawns" payload and a restart. A character marked
 //! and not yet spawned is still new after a reload; one that spawned before the save is not.
 //! Across a restart (`tools\cli wt e2e`): the save boot marks E2E_PENDING and marks then spawns

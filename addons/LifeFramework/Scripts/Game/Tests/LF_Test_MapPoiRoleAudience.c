@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18, cli test --no-build --red (batched): RED-OK with no roles added, "an on-duty officer sees the police armoury" fails. Green with AddRolesFromState.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! map/poi-role-audience (review 2026-11-17, docs/reviews/2026-11-17-map.md): the client's map audience
 //! takes its roles from the replicated account state. Neither audience builder (LF_MapPlacesUI,

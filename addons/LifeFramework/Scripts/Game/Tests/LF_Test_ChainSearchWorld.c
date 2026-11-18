@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 shares LF_ChainSearch.IsGood with LF_Test_ChainSearch; dropping the m_bContraband check made the flagged-goods count wrong (see that red-proof); restored; green. 2026-11-16: #2001 made the still output the moonshine bottle, so the crate stopped being chain goods and this failed ("the crate is found as chain goods (expected 1, got 0)"); with the bottle it passes.
-// tier: WORLD
 //! Officer search for chain goods (#419), against a real inventory: the moonshine bottle (the still makes it since #2001) in a
 //! character's inventory is collected as flagged goods, an ordinary item is not. Deletes what it spawns.
 [LF_TestInfo(LF_TestTier.WORLD)]

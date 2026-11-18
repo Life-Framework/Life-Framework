@@ -1,0 +1,32 @@
+GenericEntity : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
+ ID "61A058FBB578AFD3"
+ components {
+  LF_LockerBankComponent "{8C396AE2B9915D0A}" {
+  }
+  ActionsManagerComponent "{ED1EF8BDDD1A322A}" {
+   ActionContexts {
+    UserActionContext "{C8125178B37DB8F9}" {
+     ContextName "LF_LockerBank"
+     Position PointInfo "{6CC941F21CEAF876}" {
+      Offset 0 1.1 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_LockerRentAction "{B7CA5ACF5BF4A357}" {
+     ParentContextList {
+      "LF_LockerBank"
+     }
+     UIInfo UIInfo "{119694D5F2D09314}" {
+      Name "#LF-LockerBank_Rent"
+      Description "#LF-LockerBank_Title"
+     }
+    }
+   }
+  }
+  RplComponent "{FA6FFF2F08D41001}" {
+   Enabled 1
+  }
+ }
+}

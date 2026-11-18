@@ -2,7 +2,6 @@
 // behind the RedProof() hook: the kit's pause-menu button keeps its 40 pixel label padding and its
 // 64 pixel arrow glyph, so every key's label row and glyph assertion fails (#2099, #2056).
 
-// tier: WORLD
 //! #2099: the chess board's 64 keys each carry their own label, centred. A row is eight keys of
 //! equal width (one eighth each), every key's label widget sits inside that key's own button, and the
 //! kit button's left padding and arrow glyph, which pushed a label one key to the right, are gone.

@@ -2,7 +2,6 @@
 // red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_StoreShoplift,...`: LF_Stores.Shoplift without LF_WantedReports.Identify failed `- the report names the thief`; in the same run Pay leaving the tags failed `- exactly one shopper is caught walking out (expected 1, got 2)`; restored, green.
 
-// tier: WORLD
 //! Walking out of the physical general store (#202): a shopper who carries an unpaid shelf item and
 //! stands outside the boundary is a thief (the alarm sounds at the store, dispatch is called, the
 //! report names them, the tags close); a shopper who paid walks out clean; an item eaten in the shop

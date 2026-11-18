@@ -3,7 +3,6 @@
 // `- GetCash reads 50 after TakeCash(150) (expected 51, got 50)`. Restored; green. Before this
 // change an unresolved storage manager returned ctx.Pass and skipped every cash assertion; the
 // fixture now records a FAIL with its reason instead.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_MoneyCash : LF_Test
 {

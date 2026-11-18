@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only` (all four broken in one run, 0/4 passed), then restored; green. Replacing `amount > from.Carried()` with `false` in LF_CashHandover.Move failed
 // `[LFTEST] FAIL interaction/give-cash`, `- more than carried is refused (expected 2, got 3)`.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_InteractionGiveCash : LF_Test
 {

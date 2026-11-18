@@ -4,7 +4,6 @@
 // a MANUAL save point), `a direct AutoSave() is refused ...`, `a damaged re-apply turns engine saving off`. Green with the fix.
 // Also `tools\cli test --no-build --red LF_Test_SaveNewerVersion,LF_Test_SaveStopsAfterFailedRead,LF_Test_SaveRefusedOnDamage`:
 // RED PROOF OK (all 3 listed test(s) fail with the hook on).
-// tier: PERSISTENCE
 //! #2489 (review P2): a damaged load used to pause only the autosave timer, and the engine's saving
 //! was turned off only for a damaged boot load. A damaged load later in the session (a re-apply) let
 //! SaveGame(), a direct AutoSave(), an admin save and the engine's shutdown save overwrite the save on

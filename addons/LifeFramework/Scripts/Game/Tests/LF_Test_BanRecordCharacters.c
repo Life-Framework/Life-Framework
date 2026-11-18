@@ -1,6 +1,5 @@
 // red-proof: RED-OK 2026-11-17, `tools/cli test --no-build --red LF_Test_BanRecordCharacters,...` (hook asks with the account uid only, as the unfixed code did): `a ban lists the incidents of both characters, as either party` failed (1 of 3 listed); restored, green.
 
-// tier: LOGIC
 //! moderation/ban-record-characters (#2414): incidents are stored under the key of the character that
 //! was active, which is not the account uid for any character after the first. A ban names the
 //! account, so the incidents it lists are those of every character of that account.

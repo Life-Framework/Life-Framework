@@ -1,6 +1,5 @@
 // red-proof: RED-OK 2026-11-17 `tools/cli test --no-build --red LF_Test_LicensePlateClientApply`: with the hook on (no OnRegistrationUpdated call) the plate record read "" instead of "RPL 2475".
 
-// tier: WORLD
 // #2475: a registration that arrives through the replication callback (OnRegistrationUpdated, the RplProp
 // onRpl handler) is applied to every plate the manager spawned. The applied text lives on the manager's plate
 // record so it is readable without a text widget (dedicated server).

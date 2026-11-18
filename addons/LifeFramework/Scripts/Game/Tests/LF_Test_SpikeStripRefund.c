@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: observed 2026-11-18 with `tools/cli test --no-build --only LF_Test_SpikeStripRefund` on main (LF_SpikeStrips.PickUp without the LF_PlacementCost.OnPickedUp call, log tmp/logs/test-20261118-030318.log): FAIL `the pick-up refunded the price (expected 200, got 160)`, `the charge is forgotten (expected 0, got 1)`, `a second pick-up of the same strip refunds nothing`. With the call: green.
 //! police/spike-strip-refund (#2502): a spike strip placed under a priced, refundable policy entry
 //! gives its charge back once when the officer who paid folds it up, the same as a composition

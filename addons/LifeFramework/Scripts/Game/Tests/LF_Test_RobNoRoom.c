@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, a bug fix: one boot of this test against the unfixed CommitRobbery (the paid<=0 return removed): `- the robber is not made wanted for cash they never took (expected 0, got 1)`, `- the till cooldown does not start`. Green on the fixed code.
-// tier: WORLD
 //! A till robbery whose cash the robber cannot carry (crime review 2026-11-17). It used to pay 0
 //! and still start the till cooldown, raise wanted and call dispatch. Now nothing happens.
 [LF_TestInfo(LF_TestTier.WORLD)]

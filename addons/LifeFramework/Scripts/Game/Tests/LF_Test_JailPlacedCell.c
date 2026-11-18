@@ -4,7 +4,6 @@
 
 //! LF_Jail.SyncPlacedCell finds the cell through its component, not by an entity name, so a world
 //! that places the cell under any name (or a pack) keeps the sentence tests working (#323).
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JailPlacedCell : LF_Test
 {

@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-18 with `tools\cli test --no-build --only LF_Test_BuildStageRules` before LF_BuildStageRules existed: the script failed to compile (`Unable to find class 'LF_BuildStageRules'`) and the run failed; with the rules in place it ran green.
 
-// tier: LOGIC
 //! Build-stage rules (#2648, slice of #747): what a stage still misses, who may deposit, when the
 //! stage is done. Pure logic over the stage def and the "prefab=count;..." deposit string.
 [LF_TestInfo(LF_TestTier.LOGIC)]

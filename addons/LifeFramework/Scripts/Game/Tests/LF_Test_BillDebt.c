@@ -1,7 +1,6 @@
 // red-proof: observed 2026-11-10 with `toolsi test --no-build --only LF_Test_BillDebt`: scaling the deadline in PastDeadline x100 failed it with `- past the deadline the bill is debt` and `- the bank pays what it holds (expected 30, got 0)`. Restored; green.
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! medic/bill-debt (#464): a bill unpaid past its deadline becomes debt; the bank pays it as soon as it
 //! has money, partially if needed, with the ledger reason; a paid bill never becomes debt; the debt
 //! survives the save/load of the bills record (it lives in the existing record, layout unchanged).

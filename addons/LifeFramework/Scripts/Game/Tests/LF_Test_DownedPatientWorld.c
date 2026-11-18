@@ -1,5 +1,4 @@
 // red-proof: 2026-11-14, `tools\cli test --no-build --only LF_Test_DownedPatientWorld` with the `LF_Jail.MoveBody(patient, slot.m_aHome[3])` line removed from LF_DownedPatient.Reset: `the patient is at its spot again`; restored, green.
-// tier: WORLD
 //! The practice patient in a world: the prefab is the patient, lethal damage downs it as it would a
 //! player, it does not bleed out, the medic actions are on it, a reset puts a treated one back
 //! healed at its spot and downs it again, and the world reset has a step for it.

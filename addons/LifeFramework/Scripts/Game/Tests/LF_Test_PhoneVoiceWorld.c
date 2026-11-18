@@ -4,7 +4,6 @@
 //! two phone lines' radios on the call's frequency with one key; hanging up puts them back on the
 //! idle frequency with new idle keys. The handset transport hands a receiver on the private band to the
 //! talker and takes it back.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PhoneVoiceWorld : LF_Test
 {

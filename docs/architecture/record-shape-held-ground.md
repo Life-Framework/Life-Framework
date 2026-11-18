@@ -129,7 +129,7 @@ Nothing per tick replicates (#751: "No per-tick replication").
 
 ## Test plan
 
-Each test is one file, `// tier:` and `// red-proof:` as `AGENTS.md` asks.
+Each test is one file, `[LF_TestInfo]` and `// red-proof:` as `AGENTS.md` asks.
 
 | Test | Tier | Proves | Red-proof |
 |---|---|---|---|

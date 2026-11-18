@@ -1,5 +1,4 @@
 // red-proof: (#2740 sign-up check: without `m_sAction "JobSignUp"` on the reply the action assertion and `the player's job to PARCEL` fail; the hook's own red proof is LF_Test_DialogueJobSignUp.) Observed 2026-11-17 (#2692) with `tools\cli test --no-build --red LF_Test_EveronHarbourMaster`: RedProof() skips the spawn, so `the harbour master spawns` fails (RED-OK everon/harbour-master, 3 assertions). The first run before the caption fix also failed on one assertion. Green without the hook (pack leg, worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #2692 (M6 chapter 1, #2644; beat 3): under the Everon 1989 header (the pack leg of `tools\cli test`) the harbour
 //! master Marcel Roux is a dressed dock worker with a talk action, his dialogue id resolves through the pack's index
 //! overlay, and the dialogue has the `harbour.first_job` line (captions only, voice comes with #343) and a reply that

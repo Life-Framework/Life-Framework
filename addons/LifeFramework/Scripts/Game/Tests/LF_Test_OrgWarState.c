@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools\cli test --no-build --only LF_Test_OrgWarState` before LF_OrgWars existed failed (scripts do not compile); green with it. `--red` run: RED-OK org/war-state ("a world end clears the war table (expected 0, got 3)").
-// tier: LOGIC
 //! org/war-state (#2666, M7 gang war W1): the war record moves declared -> accepted -> ended by the
 //! rules; an unanswered declaration lapses; the pair cooldown and self-war refusals hold; the three
 //! bus events fire once each. Times are plain unix seconds the test passes in.

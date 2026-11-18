@@ -3,7 +3,6 @@
 //   RED-OK chess/game (fails with the hook on)
 //   red: the move list reads in order (expected '1. f2f3 e7e5 2. g2g4 d8h4', got '')
 
-// tier: LOGIC
 //! #1933: a chess game wraps the board. Fool's mate ends in mate for black, a queen move into a
 //! known stalemate ends drawn, a move out of turn is refused, resignation hands the other side the
 //! game, and nothing is playable once a game is over.

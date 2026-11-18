@@ -1,5 +1,5 @@
 // red-proof: 2026-11-17, a bug fix: one boot of this test against the unfixed LF_Jail.Imprison (no LF_JailEscort.Drop): `- the cell ends the escort hold`, `- no hold is left for the officer to drop (expected 0, got 1)`. Green on the fixed code.
-// tier: WORLD (needs a cell origin, like jail/work)
+//! Needs a cell origin, like jail/work
 //! An arrest ends the escort hold (crime review 2026-11-17). The hold used to stay active after an
 //! action or menu arrest, so the freed prisoner's next logout counted as escaping custody.
 [LF_TestInfo(LF_TestTier.WORLD)]

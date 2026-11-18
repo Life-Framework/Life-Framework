@@ -1,6 +1,5 @@
 // red-proof: `tools\cli test --no-build --only LF_Test_DispatchMarkClosed` on main (before LF_OnServiceCallClosed) FAILED
 //   "clearing the suspect's wanted level removes their mark"; the fix turns it green.
-// tier: WORLD
 //! comms/dispatch-mark-closed (#2579, finding 10 of #2495): a crime dispatch puts a police mark on the map; the
 //! mark leaves when its suspect's wanted level returns to 0, and another suspect's mark stays. The crime goes
 //! through LF_Dispatch.Report (it sounds a real alarm at the site, so this is a WORLD test); the wanted change

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_PlantHarvest,LF_Test_PlantPersist`: `RED PROOF OK (all 2 listed test(s) fail with the hook on)`, planting skipped. Also red for real on the first green run: a fixture character has no player UID, so planting was refused as BAD_CALLER; the test plants through PlantAs with a key.
-// tier: WORLD
 //! farming/plant-harvest (#2664): planting takes one seed and makes a plant row; the same spot again is
 //! too close; watering before the window is refused and inside it resets the thirst; an unripe plant
 //! cannot be harvested; a second character with no water cannot water but CAN harvest the ripe crop

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 (#1940) with `toolscli test --no-build --red LF_Test_PlacementComposition`: `RED-OK placement/composition (fails with the hook on, 17 assertions)` (RedProof() skips the first Confirm, so nothing is placed); green without the hook (`--only`, 1 passed).
-// tier: WORLD
 //! #1940 acceptance: composition placement (LF_PlacementComposition.c). A three-cone set (the same
 //! shape as a roadblock's cones and barriers) is placed by an officer on the main street's south
 //! verge: one plan with one verdict, one confirm that spawns every piece with each piece on the

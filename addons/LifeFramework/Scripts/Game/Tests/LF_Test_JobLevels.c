@@ -6,7 +6,6 @@
 // level clamped at 20 failed `- single level 25 with 10 xp is 30010, not clamped at 20 (expected
 // 30010, got 19010)`; the career curve ignoring the config failed `- a configured 100-then-triple
 // career level 3 is 407 (expected 407, got 1507)`. Restored; green.
-// tier: LOGIC
 //! Per-job XP (#749, D12): XP reaches levels through the job's thresholds, an action's cooldown and
 //! a job's daily cap hold back farming, an unknown job or action earns nothing, and the pre-#749
 //! curves convert both ways.

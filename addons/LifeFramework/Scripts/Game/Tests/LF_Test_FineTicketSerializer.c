@@ -2,7 +2,6 @@
 // then restored; green. Commenting out LF_FineTickets.ApplyAll in the serializer's tickets read failed
 // `[LFTEST] FAIL police/fine-ticket-serializer`, `- the ticket is back after the load`.
 
-// tier: WORLD
 //! Outstanding tickets ride the real save path (the "tickets" payload, version 13): amount, clock,
 //! stage and paid flag come back after the store is wiped.
 [LF_TestInfo(LF_TestTier.WORLD)]

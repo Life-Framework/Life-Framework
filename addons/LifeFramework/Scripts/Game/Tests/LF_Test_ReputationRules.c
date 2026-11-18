@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_ReputationRules`: RED-OK reputation/rules (fails with the hook on, 32 assertions), first `the daily cap cuts a gain to what is left (expected 40, got 60)`. Green with `--only`.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! Records LF_OnReputationChanged events for the test.
 class LF_TestReputationRecorder : LF_EventSubscriber

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 `tools/cli test --no-build --only LF_Test_HideoutRelock` with the relock check and the load release disabled failed `hideout/relock-and-load` with `- the door relocks when the last member has left`. Restored: green.
-// tier: LOGIC
 //! #2419: a hideout door a member opened relocks once no member is near it, a load that omits a
 //! live lease unleases it (the load is idempotent), and the world-end reset forgets every lease.
 [LF_TestInfo(LF_TestTier.LOGIC)]

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 on the unfixed fuse (OnFuse advanced by the component's 0 s and skipped LF_Bank) `tools/cli test --no-build --only LF_Test_VaultChargeFuse` failed `- the fuse opens the vault`, `- the haul is offered (expected 1, got 0)`; `--red LF_Test_VaultChargeFuse` RED-OK with the same two lines; green after the fix.
-// tier: WORLD
 //! A charge set on a vault whose safe type has a fuse opens the vault when the fuse fires and pays the
 //! haul once (#2541). The fuse used to advance the breach by the component's own fuse (0 on a vault)
 //! and skipped LF_Bank, so the robber took the wanted level and the vault never opened.

@@ -1,5 +1,4 @@
 // red-proof: with the core-name check in LF_PackConfigSections.Problem disabled, config/pack-section failed `a section named like a core section is refused, even in the pack's own namespace` and `SUMMARY tier=only passed=0 failed=1` (observed 2026-11-14); restored, green.
-// tier: LOGIC
 //! A pack adds namespaced owner-config sections (#553). The pack declares them in its manifest as
 //! data; the owner's config.json sets them; a bad field keeps its default; a name that clashes
 //! with a core section or breaks the namespace rule is ignored; the core never reads the values.

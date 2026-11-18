@@ -1,5 +1,4 @@
 // red-proof: 2026-11-16 `tools\cli test --no-build --only LF_Test_GridFrameLabels` before Grid_frame.layer existed failed `- marker GridMarker_c0r0 is placed` (49 times) and `- the map board GridMapBoard is placed`; green once the layer was written.
-// tier: WORLD
 //! The grid world frame (#1810): every cell of the 7 x 7 lattice has a marker post named
 //! GridMarker_cXrY standing inside its cell, a plate GridPlate_cXrY beside it (the claim's slug, or
 //! FREE), and the gate spawn has a map board GridMapBoard. The lattice is the one in

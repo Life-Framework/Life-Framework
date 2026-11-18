@@ -4,7 +4,6 @@
 //   [LFTEST]   - the look applied by sequence (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')
 // Restored it and the test passed (21 assertions).
 
-// tier: PERSISTENCE
 //! The look on a crime report (#758) rides the real save path: the "wantedlooks" payload, save
 //! version 29, keyed by report sequence. After the store is wiped the reports come back from
 //! "wanted" with their looks from "wantedlooks", twice the same (idempotent); a version 28 save

@@ -44,7 +44,6 @@ class LF_JobMarkTestSink : LF_MapShareSink
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! jobs/job-map-marks (card M11, #2239): an accepted taxi fare puts its destination on the driver's and
 //! the passenger's map and waypoint (nobody else's); a delivery stop does the same for its runner and a
 //! new stop replaces the last; finishing the fare or the run clears the row and the waypoint. Three

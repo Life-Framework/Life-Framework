@@ -7,7 +7,6 @@
 // (name order) failed with "zero-fuse vault opens" on the unfixed test, because the save test had
 // already robbed the annex vault; it passes now that the test empties the vault and runs its cooldown out.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Bank : LF_Test
 {
@@ -133,7 +132,6 @@ class LF_Test_Roadmap_Bank : LF_Test
 	}
 }
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_BankWorld : LF_Test
 {
@@ -233,7 +231,6 @@ class LF_Test_Roadmap_BankWorld : LF_Test
 	}
 }
 
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_Roadmap_BankPersistence : LF_Test
 {

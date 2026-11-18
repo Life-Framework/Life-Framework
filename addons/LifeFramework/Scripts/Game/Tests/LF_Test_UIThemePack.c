@@ -31,7 +31,6 @@ class LF_Test_UIThemePackSource : LF_ConfigPackSource
 //! The theme config end to end (#966): the core Configs/UI/LF_UITheme.conf is the 1989 look (the
 //! flagship keeps it exactly), and a pack overlay patches a theme by id so every sheet that
 //! inherits it, and only those, takes the new tokens. The fixture is Configs/Tests/LF_Test_UIThemePack.conf.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_UIThemePack : LF_Test
 {

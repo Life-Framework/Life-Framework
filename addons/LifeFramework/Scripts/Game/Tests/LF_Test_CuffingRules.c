@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_CuffingRules`: LF_Cuffing.Step judging the rule before reach failed `reach is judged before the rule (expected 1, got 2)`; restored, green.
-// tier: LOGIC
 //! police/cuffing-rules: the rules of the Cuff and Uncuff hold (LF_Cuffing). A hold goes on while the pair
 //! stays in reach and the cuffing rule holds; reach is judged first; a hold the server never hears the
 //! end of times out; and the server accepts the end of a hold only after most of the action's duration,
