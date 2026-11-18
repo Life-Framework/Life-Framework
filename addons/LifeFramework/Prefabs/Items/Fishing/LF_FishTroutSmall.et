@@ -1,0 +1,20 @@
+GenericEntity : "{ACCC8B6FEB32034C}Prefabs/Items/Fishing/LF_FishTrout.et" {
+ ID "F083DE3A54C82262"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_FishTrout_Small_Name"
+     Description "#LF-Item_FishTrout_Small_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.12
+     ItemVolume 150
+    }
+   }
+  }
+  MeshObject "{CF3097B91F6EE919}" {
+   Object "{9F294F8AF71C11F4}Assets/Items/Fishing/FishTroutSmall/FishTroutSmall.xob"
+  }
+ }
+}

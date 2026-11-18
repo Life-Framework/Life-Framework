@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{9B335431CA489314}Assets/Items/Fishing/BaitTin/Data/BaitTin_BCR.edds"
+ NMOMap "{F8301CCA2D7A867E}Assets/Items/Fishing/BaitTin/Data/BaitTin_NMO.edds"
+}

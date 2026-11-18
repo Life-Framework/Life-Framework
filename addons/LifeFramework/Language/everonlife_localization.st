@@ -5038,6 +5038,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Vehicle Key [%1]"
      Comment "Inventory name of a vehicle key bound to a vehicle. %1 is the vehicle identifier it opens (#2470)."
     }
+    CustomStringTableItem "{AC88D3331A83BBB1}" {
+     Id "LF-Item_BaitTin_Description"
+     Target_en_us "A green enamelled tin with a snap lid. Worms and dough balls, mostly."
+     Comment "Item description: the bait tin (#2928)."
+    }
+    CustomStringTableItem "{27D7F2EA4C764F06}" {
+     Id "LF-Item_BaitTin_Name"
+     Target_en_us "Bait tin"
+     Comment "Item name: the bait tin (#2928)."
+    }
     CustomStringTableItem "{39E8DFFDB0869E08}" {
      Id "LF-Item_CarParts_Description"
      Target_en_us "Spare parts stripped off a stolen car. A trader pays a little for them."
@@ -5087,6 +5097,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Drill_Name"
      Target_en_us "Drill"
      Comment "Item name of the fence drill."
+    }
+    CustomStringTableItem "{D9C27E711957F2A2}" {
+     Id "LF-Item_FishTrout_Description"
+     Target_en_us "A decent brown trout, olive on the back and pale underneath."
+     Comment "Item description: the trout base prefab (#2928)."
+    }
+    CustomStringTableItem "{6BB0D04BABA540C6}" {
+     Id "LF-Item_FishTrout_Large_Description"
+     Target_en_us "A big brown trout. Worth the wait."
+     Comment "Item description: a large trout (#2928)."
+    }
+    CustomStringTableItem "{0EF8318669237071}" {
+     Id "LF-Item_FishTrout_Large_Name"
+     Target_en_us "Large trout"
+     Comment "Item name: a large trout (#2928)."
+    }
+    CustomStringTableItem "{2936F3C2F236AEF1}" {
+     Id "LF-Item_FishTrout_Name"
+     Target_en_us "Trout"
+     Comment "Item name: the medium trout, the base prefab (#2928)."
+    }
+    CustomStringTableItem "{1A89123E3BDB8888}" {
+     Id "LF-Item_FishTrout_Small_Description"
+     Target_en_us "A small brown trout. Barely a mouthful."
+     Comment "Item description: a small trout (#2928)."
+    }
+    CustomStringTableItem "{0F3CF69DC9F74BE4}" {
+     Id "LF-Item_FishTrout_Small_Name"
+     Target_en_us "Small trout"
+     Comment "Item name: a small trout (#2928)."
+    }
+    CustomStringTableItem "{377E1717041FCC31}" {
+     Id "LF-Item_FishingRod_Description"
+     Target_en_us "A cork-handled fibreglass rod with a fixed-spool reel. Take it into your hands from a quick slot."
+     Comment "Item description: the fishing rod (#2928)."
+    }
+    CustomStringTableItem "{2039700C106A3719}" {
+     Id "LF-Item_FishingRod_Name"
+     Target_en_us "Fishing rod"
+     Comment "Item name: the fishing rod (#2928)."
     }
     CustomStringTableItem "{E0C70F7F81117F7D}" {
      Id "LF-Item_Handcuffs_Description"
