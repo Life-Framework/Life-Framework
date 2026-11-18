@@ -81,6 +81,35 @@ async function runPlugin(plan, budgetS) {
   }
 }
 
+// WorldEditor.Save rewrites every layer of the world (default.layer comes back with a new BSP and bounds). Only the
+// layers that hold a settled entity are meant to change: snapshot the others before the run and put them back after.
+export function layerDirOf(world) {
+  return join(ROOT, "addons", "LifeFramework", world.replace(/\.ent$/, "") + "_Layers");
+}
+
+export function snapshotOthers(dir, names) {
+  const keep = new Map();
+  if (!existsSync(dir)) return { dir, keep };
+  for (const f of readdirSync(dir)) {
+    if (!f.endsWith(".layer")) continue;
+    const bytes = readFileSync(join(dir, f));
+    if (!names.some((n) => bytes.includes(n))) keep.set(f, bytes);
+  }
+  return { dir, keep };
+}
+
+export function restoreOthers(snap) {
+  const restored = [];
+  for (const [f, bytes] of snap.keep) {
+    const p = join(snap.dir, f);
+    if (!existsSync(p) || !readFileSync(p).equals(bytes)) {
+      writeFileSync(p, bytes);
+      restored.push(f);
+    }
+  }
+  return restored;
+}
+
 function report(rows, { run, compile }) {
   for (const line of compile) console.log(`  ${line}`);
   for (const [n, r] of Object.entries(rows.rest)) console.log(`  rest   ${r.line}`);
@@ -117,7 +146,11 @@ export async function main(argv) {
     return fails.length ? 1 : 0;
   }
   if (verb === "settle" && pos.length) {
-    const { run, status, compile } = await runPlugin(planFor({ world: flags.world || GRID, settles: pos, dry: flags.dry === true, lift: flags.lift }), 240 + 20 * pos.length);
+    const world = flags.world || GRID;
+    const snap = snapshotOthers(layerDirOf(world), pos);
+    const { run, status, compile } = await runPlugin(planFor({ world, settles: pos, dry: flags.dry === true, lift: flags.lift }), 240 + 20 * pos.length);
+    const restored = restoreOthers(snap);
+    if (restored.length) console.log(`  restored ${restored.join(", ")} (the editor save rewrote a layer with no settled entity)`);
     const rows = parseStatus(status);
     report(rows, { run, compile });
     const ok = !rows.errors.length && !compile.length && rows.done && rows.done[1] === 0;
