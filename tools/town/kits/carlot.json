@@ -1,0 +1,296 @@
+{
+  "schema": 1,
+  "kit": "carlot",
+  "system": "vehicles",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Street_Vehicles.layer",
+    "group": "Roadmap_Vehicle_Lot,Roadmap_Garage,Roadmap_Impound_Desk,CarLot_Mechanic,Lot_Display_*",
+    "origin": "Roadmap_Garage",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -9.5,
+        -3.8
+      ],
+      "max": [
+        11,
+        15
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "A garage kit: the counters and the mechanic stand inside the workshop against its back wall, the bays and display cars in the yard in front. Spawn bays are world-axis offsets from their counter (the component does not turn them). Rows are rigid: shift, never stretch. The fitted island layer lists the offers cheapest first (sorted by hand after the fit, so Car0 on the sheet is the cheapest and the island-first-hour flow buys it); a re-fit copies the source order again, sort it once more."
+  },
+  "rows": [
+    {
+      "id": "vehicle-lot",
+      "name": "Roadmap_Vehicle_Lot",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        -0.7,
+        0,
+        -2.9
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_VehicleLotComponent",
+          "set": {
+            "m_sShopId": "\"roadmap-lot\"",
+            "m_iCashCeiling": "500",
+            "m_iExtraKeyPrice": "25",
+            "m_bTestCarLot": "1"
+          },
+          "blocks": [
+            "m_aOffers"
+          ]
+        },
+        {
+          "component": "LF_VehicleSpawnPointComponent",
+          "set": {
+            "m_sShopId": "\"roadmap-lot\"",
+            "m_vOffset": "-0.7 0 12.5"
+          },
+          "blocks": []
+        },
+        {
+          "component": "MeshObject",
+          "set": {
+            "Object": "\"{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "RigidBody",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "RplComponent",
+          "set": {
+            "Enabled": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "garage",
+      "name": "Roadmap_Garage",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        3,
+        -0.18,
+        -2.9
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_VehicleGarageComponent",
+          "set": {
+            "m_sPadId": "\"roadmap-garage\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "LF_VehicleSpawnPointComponent",
+          "set": {
+            "m_sShopId": "\"roadmap-garage\"",
+            "m_vOffset": "3 0 14.5",
+            "m_iSlots": "2",
+            "m_vSlotStep": "5 0 0",
+            "m_vAngles": "0 0 0"
+          },
+          "blocks": []
+        },
+        {
+          "component": "MeshObject",
+          "set": {
+            "Object": "\"{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "RigidBody",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "RplComponent",
+          "set": {
+            "Enabled": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "car-lot-mechanic",
+      "name": "CarLot_Mechanic",
+      "prefab": "{009A8952A2537BB4}Prefabs/Characters/Npcs/Outfits/LF_Npc_Mechanic_2.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -3.3,
+        0,
+        -0.6
+      ],
+      "yaw": 180,
+      "class": "LF_NpcBaseEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "impound-desk",
+      "name": "Roadmap_Impound_Desk",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        5.4,
+        -0.17,
+        -2.9
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ImpoundDeskComponent",
+          "set": {
+            "m_sPadId": "\"roadmap-impound\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "LF_VehicleSpawnPointComponent",
+          "set": {
+            "m_sShopId": "\"roadmap-impound\"",
+            "m_vOffset": "9 0 14.5",
+            "m_iSlots": "2",
+            "m_vSlotStep": "5 0 0",
+            "m_vAngles": "0 0 0"
+          },
+          "blocks": []
+        },
+        {
+          "component": "MeshObject",
+          "set": {
+            "Object": "\"{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "RigidBody",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "RplComponent",
+          "set": {
+            "Enabled": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "lot-display-uaz469",
+      "name": "Lot_Display_uaz469",
+      "prefab": "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -7.2,
+        -2.05,
+        10.5
+      ],
+      "yaw": 20,
+      "class": "Vehicle",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "vehicle-lot-sign",
+      "name": "Sign_VehicleLot",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        -8.5,
+        -0.84,
+        5.5
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"vehicle_lot\"",
+            "m_vRimColor": "1 1 1",
+            "m_vPaintColor": "0.12 0.3 0.55",
+            "m_vTextColor": "1 1 1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

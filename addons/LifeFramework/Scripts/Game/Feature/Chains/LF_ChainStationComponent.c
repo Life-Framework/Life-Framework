@@ -815,6 +815,18 @@ class LF_ChainStationComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! #3150: where to get the licence this station's step needs, for its refusal toast; empty when none.
+	string LicenceWhere()
+	{
+		LF_ChainDef chain;
+		LF_ChainStepDef step;
+		if (!Resolve(chain, step))
+			return string.Empty;
+
+		return LF_ChainGate.LicenceWhere(step);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Localization key for a refusal. Empty for results the worker needs no text for.
 	static string RefusalKey(LF_EChainStation result)
 	{

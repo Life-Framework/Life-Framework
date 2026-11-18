@@ -1,0 +1,28 @@
+GenericEntity : "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et" {
+ ID "0E0B6B456A4BE682"
+ components {
+  ActionsManagerComponent "{AFED75824D80BE36}" {
+   ActionContexts {
+    UserActionContext "{DEF24E80F30CBBB7}" {
+     ContextName "default"
+     Position PointInfo "{E5C2BEC0477858F4}" {
+      Offset 0.004 0.357 0.017
+     }
+     Radius 1.4
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{824E62477A6EFBB9}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{806CC61A98E205E8}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

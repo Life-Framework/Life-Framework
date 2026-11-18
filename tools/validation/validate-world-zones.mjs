@@ -1,5 +1,4 @@
 // tools/validation/validate-world-zones.mjs
-// inputs: always
 //
 // The world zones (docs/architecture/world-zones.md, three-worlds.md).
 //
@@ -27,6 +26,7 @@
 // red-proof: tools/validation/world-zones-selftest.mjs plants a slice that edits Street_Hospital.layer,
 // two claims on one cell, a grid prop outside its cell, a Grid_ layer in DebugWorld and a changed annex
 // entity in DebugWorld, and asserts each is reported.
+// inputs: tools/grid/cells/*.json, addons/LifeFramework/Worlds/GridWorld/**, addons/LifeFramework/Worlds/DebugWorld/**, addons/LF_Everon1989/Worlds/Everon1989Grid/**, addons/LF_Everon1989/Worlds/Everon1989Town/**, tools/validation/zone-guard-baseline.json
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";

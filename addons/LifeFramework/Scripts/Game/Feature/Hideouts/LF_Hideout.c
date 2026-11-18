@@ -173,6 +173,11 @@ class LF_Hideout
 	static const string PLACE_KIND_ORG_HIDEOUT = "OrgHideout";
 	static const string PLACE_ID_ORG_HIDEOUT = "primary";
 
+	//! LF_Places kind of every door an organization can lease at the desk as its base (#3408): each
+	//! door with the "organization hideout" attribute registers here under its own hideout id, so a
+	//! world can place any number of base sites. The first of them is still "primary" above.
+	static const string PLACE_KIND_BASE_DOOR = "HideoutBaseDoor";
+
 	//! A door a member opened is relocked once no member stands this close to it (checked every sweep).
 	static const float RELOCK_RADIUS_M = 40;	// lf-fixed: door safety radius, not a balance knob
 	static const int RELOCK_SWEEP_MS = 15000;	// lf-fixed: sweep period of the relock check
@@ -296,6 +301,97 @@ class LF_Hideout
 			return "";
 
 		return component.GetHideoutIdAttribute();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Marks a door as a base site the desk leases (#3408): its door component calls this for a door
+	//! with the "organization hideout" attribute. The first marked door is also the "primary" place
+	//! contraband starts from; a later one takes no error for it.
+	//! \return true when the door is a base site.
+	static bool MarkBaseDoor(string hideoutId, IEntity door)
+	{
+		if (hideoutId.IsEmpty() || !door)
+		{
+			LF_Debug.Error("Hideout", "base door refused: missing hideout or entity");
+			return false;
+		}
+
+		if (!LF_Places.Register(PLACE_KIND_BASE_DOOR, hideoutId, door))
+			return false;
+
+		LF_Places.Claim(PLACE_KIND_ORG_HIDEOUT, PLACE_ID_ORG_HIDEOUT, door);
+		Ensure(hideoutId);
+		LF_Debug.Log("Hideout", string.Format("base site hideout=%1", hideoutId));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every base site the desk can lease, by hideout id: the primary first, then the rest by id.
+	//! \return how many were added to into.
+	static int BaseSiteIds(notnull array<string> into)
+	{
+		array<string> ids = {};
+		if (s_mHideouts)
+		{
+			foreach (string hideoutId, LF_HideoutState state : s_mHideouts)
+			{
+				if (LF_Places.Find(PLACE_KIND_BASE_DOOR, hideoutId))
+					ids.Insert(hideoutId);
+			}
+		}
+
+		ids.Sort();
+		string primary = OrgHideoutId();
+		int at = ids.Find(primary);
+		if (at > 0)
+		{
+			ids.Remove(at);
+			ids.InsertAt(primary, 0);
+		}
+
+		foreach (string id : ids)
+		{
+			into.Insert(id);
+		}
+
+		return ids.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The base site the desk offers an organization (#3408): the base it already leases, else the
+	//! first free base site, else the primary (the desk then refuses it as taken). A site whose holder
+	//! no longer exists counts as free, as LF_OrgHideoutLease.StateFor does. "" when the map places none.
+	static string BaseSiteFor(string organizationId)
+	{
+		string held = HideoutOf(organizationId);
+		if (!held.IsEmpty())
+			return held;
+
+		array<string> ids = {};
+		BaseSiteIds(ids);
+		foreach (string id : ids)
+		{
+			string owner = GetOwner(id);
+			if (owner.IsEmpty() || !LF_OrganizationManager.Get(owner))
+				return id;
+		}
+
+		if (!ids.IsEmpty())
+			return ids[0];
+
+		return OrgHideoutId();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! BaseSiteFor the organization of a character; the primary when the character has none (the
+	//! desk then refuses with "no organization").
+	static string BaseSiteForCharacter(string characterId)
+	{
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
+		if (!org)
+			return OrgHideoutId();
+
+		return BaseSiteFor(org.GetId());
 	}
 
 	//------------------------------------------------------------------------------------------------

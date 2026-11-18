@@ -47,3 +47,47 @@ class LF_LicenceDeskAction : ScriptedUserAction
 		return true;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! The licence desk's second action (#3128): buy the driving licence at once for the fee in carried
+//! cash (LF_LicenceDesk.BuyDriving). Shown whenever the License system is on, also where the permit
+//! is sold at a shop counter; hidden from a player whose body already holds the licence.
+class LF_LicenceDeskDrivingAction : ScriptedUserAction
+{
+	//------------------------------------------------------------------------------------------------
+	override bool CanBeShownScript(IEntity user)
+	{
+		if (!LF_Systems.IsEnabled(LF_LicenseGate.SYSTEM))
+			return false;
+
+		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(user);
+		return !licences || !licences.HasLicense(LF_LicenceDesk.DRIVING);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		if (LF_Systems.Refuses(LF_LicenseGate.SYSTEM, "LF_LicenceDeskDrivingAction"))
+			return;
+
+		LF_ELicenceDesk outcome = LF_LicenceDesk.BuyDriving(pUserEntity);
+		LF_ENotificationType type = LF_ENotificationType.INFO;
+		if (outcome != LF_ELicenceDesk.ISSUED && outcome != LF_ELicenceDesk.ALREADY_HELD)
+			type = LF_ENotificationType.WARNING;
+
+		if (outcome == LF_ELicenceDesk.ISSUED)
+			LF_PlayerInteraction.PlayHandoverSound(pUserEntity, LF_PlayerInteraction.SOUND_HANDOVER);
+
+		LF_NotificationManagerComponent.NotifyPlayer(LF_PlayerInteraction.PlayerIdOf(pUserEntity), "#LF-LicenceDesk_Title", LF_LicenceDesk.DrivingAnswerKey(outcome), 6.0, type, LF_LicenceDesk.DrivingAnswerArg(outcome));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool GetActionNameScript(out string outName)
+	{
+		outName = "#LF-LicenceDesk_DrivingAction";
+		return true;
+	}
+}

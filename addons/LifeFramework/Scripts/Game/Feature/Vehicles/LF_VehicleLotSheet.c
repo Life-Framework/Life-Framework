@@ -84,7 +84,8 @@ class LF_VehicleLot
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the reader pressed Buy on row index. The lot decides; the sheet comes back refreshed.
-	static void Buy(IEntity buyer, IEntity lotEntity, int index, int colour)
+	//! dlcOwned is the buyer's client answer for a DLC vehicle (LF_VehicleDlcGate, #3304).
+	static void Buy(IEntity buyer, IEntity lotEntity, int index, int colour, bool dlcOwned = true)
 	{
 		if (!Replication.IsServer() || !buyer || !lotEntity)
 			return;
@@ -116,7 +117,10 @@ class LF_VehicleLot
 		string vehicleId;
 		int cashCharged;
 		string reasonKey;
-		bool bought = lot.BuyColour(uid, offer.GetPrefab(), colour, buyer, vehicleId, cashCharged, reasonKey);
+		// A DLC vehicle the buyer's client cannot use is refused before the lot charges (#3304).
+		bool bought = false;
+		if (LF_VehicleDlcGate.Allows(offer.GetPrefab(), dlcOwned, reasonKey))
+			bought = lot.BuyColour(uid, offer.GetPrefab(), colour, buyer, vehicleId, cashCharged, reasonKey);
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(buyer);
 		if (!reasonKey.IsEmpty() && playerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Vehicle_Buy", reasonKey);
@@ -322,22 +326,33 @@ modded class SCR_PlayerController
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Runs on the buyer's machine, so the DLC answer is this player's licence (DlcManager is local
+	//! only, LF_VehicleDlcGate). The lot's offers are layer data, present on the client too.
 	void LF_AskBuyVehicle(RplId lot, int index, int colour)
 	{
+		bool dlcOwned = true;
+		LF_VehicleLotComponent lotComponent = LF_Component<LF_VehicleLotComponent>.Find(LF_NetworkUtils.FindEntityByRplId(lot));
+		if (lotComponent)
+		{
+			LF_VehicleOffer offer = lotComponent.GetOfferAt(index);
+			if (offer)
+				dlcOwned = LF_VehicleDlcGate.LocalOwns(offer.GetPrefab());
+		}
+
 		if (Replication.IsServer())
-			RpcAsk_LF_BuyVehicle(lot, index, colour);
+			RpcAsk_LF_BuyVehicle(lot, index, colour, dlcOwned);
 		else
-			Rpc(RpcAsk_LF_BuyVehicle, lot, index, colour);
+			Rpc(RpcAsk_LF_BuyVehicle, lot, index, colour, dlcOwned);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_BuyVehicle(RplId lot, int index, int colour)
+	protected void RpcAsk_LF_BuyVehicle(RplId lot, int index, int colour, bool dlcOwned)
 	{
 		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.PURCHASE, "vehicle purchase"))
 			return;
 
-		LF_VehicleLot.Buy(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(lot), index, colour);
+		LF_VehicleLot.Buy(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(lot), index, colour, dlcOwned);
 	}
 
 	//------------------------------------------------------------------------------------------------

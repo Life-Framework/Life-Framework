@@ -34,7 +34,8 @@ enum LF_ERunStart
 	STARTED,
 	REFUSED,
 	NO_DEPOSIT,
-	NO_CARGO
+	NO_CARGO,
+	ALREADY_RUN
 }
 
 //------------------------------------------------------------------------------------------------
@@ -54,6 +55,10 @@ class LF_CivilianJob
 	static const string KEY_NOT_DROP = "#LF-Job_NotADrop";
 	static const string KEY_NO_RUN = "#EL-Job_NoActiveRun";
 	static const string KEY_NEED_DEPOSIT = "#LF-Job_NeedDeposit";
+	static const string KEY_NO_CARGO = "#LF-Job_NoCargo";
+	static const string KEY_ALREADY_RUN = "#LF-Job_AlreadyRun";
+	static const string KEY_START_REFUSED = "#LF-Job_StartRefused";
+	static const string KEY_NO_ROOM = "#LF-Job_NoRoom";
 
 	//! The ledger reasons of a deposit taken, given back and kept.
 	static const string REASON_DEPOSIT = "job-deposit";
@@ -72,6 +77,7 @@ class LF_CivilianJob
 	static const ResourceName DEPOT_PREFAB = "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et";
 
 	protected static ref map<string, ref LF_JobWorker> s_mWorkers;
+	protected static ref LF_CivilianJobDeathWatch s_DeathWatch;
 
 	//------------------------------------------------------------------------------------------------
 	protected static map<string, ref LF_JobWorker> Workers()
@@ -438,9 +444,10 @@ class LF_CivilianJob
 
 	//------------------------------------------------------------------------------------------------
 	//! Whether "Complete the run" and "Abandon" are offered. The server reads its run map. The
-	//! runs live on the server only, so a dedicated client decides from what it can see: the job
-	//! replicated on its LF_PlayerJobComponent and the cargo in its own inventory (ClientRunOpen).
-	//! Reading the server map on the client greyed both actions for every hosted player.
+	//! runs live on the server only, so a dedicated client decides from the job replicated on its
+	//! LF_PlayerJobComponent (ClientRunOpen). Reading the server map on the client greyed both
+	//! actions for every hosted player; reading the cargo in the player's inventory locked a courier
+	//! out once the parcel was dropped (#3356).
 	static bool RunOfferOpen(IEntity user)
 	{
 		if (!user)
@@ -457,29 +464,52 @@ class LF_CivilianJob
 		if (jobs)
 			bodyJob = jobs.GetJob();
 
-		bool carrying = false;
-		if (HasCargo(bodyJob))
-		{
-			InventoryStorageManagerComponent storage = InventoryStorageManagerComponent.Cast(user.FindComponent(InventoryStorageManagerComponent));
-			if (storage)
-				carrying = !LF_InventoryUtils.FindItemsByPrefab(storage, PrefabFor(bodyJob)).IsEmpty();
-		}
-
-		return ClientRunOpen(bodyJob, carrying);
+		return ClientRunOpen(bodyJob);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client rule for an active run: a delivery job on the body, and its cargo in hand when the
-	//! job has one (a taxi fare has none; the server refuses a fare that is not running).
-	static bool ClientRunOpen(LF_EJobType bodyJob, bool carryingCargo)
+	//! Client rule for an active run: a delivery job on the body. The cargo is not read: a downed
+	//! carrier drops the parcel, and a run that lost its cargo must still be abandonable (#3356). The
+	//! server decides on use (AbandonRun refuses with no run; Dropoff refuses with no cargo).
+	static bool ClientRunOpen(LF_EJobType bodyJob)
 	{
-		if (!IsDeliveryJob(bodyJob))
+		return IsDeliveryJob(bodyJob);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a player character died. Their run ends as a forfeit, the same as the counter's Abandon
+	//! (AbandonRun: no pay, the deposit and the contract stake stay kept, the map marks clear). Without
+	//! this the run outlived the dead carrier, whose parcel dropped, and blocked the next pick-up (#3356).
+	//! \param[in] victimUid The account uid of the dead player; an NPC's label or an unknown uid is ignored.
+	//! \return true when a run was ended.
+	static bool OnCarrierDied(string victimUid)
+	{
+		if (victimUid.IsEmpty() || !HasCareer(victimUid) || !HasActiveRun(victimUid))
 			return false;
 
-		if (!HasCargo(bodyJob))
-			return true;
+		LF_Debug.Info("Jobs", string.Format("%1 died on a run: the run ends as an abandon", victimUid));
+		return AbandonRun(victimUid);
+	}
 
-		return carryingCargo;
+	//------------------------------------------------------------------------------------------------
+	//! Subscribes the death watcher to the bus. Idempotent: the bus refuses a second subscription of the
+	//! same subscriber, which lives for the world's life. StartRun calls it, because the bus table is
+	//! cleared at world end and a run can only exist after it.
+	protected static void WatchDeaths()
+	{
+		if (!s_DeathWatch)
+			s_DeathWatch = new LF_CivilianJobDeathWatch();
+
+		LF_EventBus.Subscribe(LF_OnPlayerKilled, s_DeathWatch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		if (s_DeathWatch)
+			LF_EventBus.Unsubscribe(LF_OnPlayerKilled, s_DeathWatch);
+
+		s_DeathWatch = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -550,6 +580,7 @@ class LF_CivilianJob
 		if (!PrefabLoads(job))
 			return false;
 
+		WatchDeaths();
 		worker.m_bActive = true;
 		worker.m_eActiveJob = job;
 		worker.m_bRunTimed = false;
@@ -893,6 +924,12 @@ class LF_CivilianJob
 			return LF_ERunStart.REFUSED;
 		}
 
+		if (HasActiveRun(uid))
+		{
+			LF_Debug.Log("Jobs", string.Format("start rejected: %1 already has a run", uid));
+			return LF_ERunStart.ALREADY_RUN;
+		}
+
 		if (!StartRun(uid, job))
 			return LF_ERunStart.REFUSED;
 
@@ -977,7 +1014,12 @@ class LF_CivilianJob
 			return 0;
 
 		if (!TakeCargo(user, finished))
+		{
+			// The cargo is not on the player (dropped when downed, stashed): say so, the run stays open
+			// and Abandon at the counter still works (#3356).
+			refusal = KEY_NO_CARGO;
 			return 0;
+		}
 
 		int taxiFare = -1;
 		if (finished == LF_EJobType.TAXI)
@@ -1249,5 +1291,35 @@ class LF_CivilianJob
 		}
 
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Ends a dead carrier's run (LF_CivilianJob.OnCarrierDied). Subscribed by StartRun.
+class LF_CivilianJobDeathWatch : LF_EventSubscriber
+{
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnPlayerKilled killed = LF_OnPlayerKilled.Cast(busEvent);
+		if (!killed)
+			return false;
+
+		LF_CivilianJob.OnCarrierDied(killed.m_sVictimUid);
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CivilianJob's death watcher (found by reflection; Core/LF_StaticReset.c).
+class LF_CivilianJob_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_CivilianJob";
+	}
+
+	override void Apply()
+	{
+		LF_CivilianJob.ResetStatics();
 	}
 }

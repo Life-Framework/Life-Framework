@@ -1,0 +1,50 @@
+{
+  "slug": "fish-bass-small",
+  "name": "FishBassSmall",
+  "kind": "gadget",
+  "roadmap": "#3134",
+  "concept": "The small size of the bass: the same Meshy generation as fish-bass, scaled by the clean stage.",
+  "prompt": "A single European sea bass fish, whole, swimming pose seen from the side, long stout body, spiny first dorsal fin and soft second dorsal fin, large mouth, spread tail fin, silvery grey back, bright silver flanks, white belly, dark spot on the gill cover. Realistic game prop, no base, no stand, no water, no text, no logos.",
+  "texture_prompt": "European sea bass: grey-blue back, bright silver scales on the flanks, white belly, dark gill-cover spot.",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 8000
+  },
+  "size_m": {
+    "length": 0.238,
+    "height": 0.105,
+    "width": 0.105
+  },
+  "budget": {
+    "lod0_tris": 4000,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 40
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Fishing/FishBassSmall",
+  "prefab_dir": "Prefabs/Items/Fishing",
+  "prefab": false,
+  "gadget": {
+    "name_key": "#LF-Item_FishBass_Small_Name",
+    "description_key": "#LF-Item_FishBass_Small_Description",
+    "weight": 0.3,
+    "volume": 300,
+    "components": []
+  },
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  }
+}

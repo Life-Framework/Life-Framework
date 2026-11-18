@@ -1,0 +1,65 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "6757055581AA1E51"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{76C1B2BA574582F0}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 2.96
+      FOV 20
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Furniture_Bookcase_Name"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 30
+     SizeSetupStrategy Volume
+     ItemVolume 2500
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{1BC99377A2D6406E}Assets/Props/Furniture/Bookshelf_01/Bookshelf_01.xob"
+  }
+  LF_PlaceableComponent "{05C70B99CFE3E344}" {
+   m_sPlacedPrefab "{9C4E2301D74B31CC}Prefabs/Placeables/Furniture/Furniture_Bookcase_Placed.et"
+   m_vFootprintMins -1.52 0.1 0
+   m_vFootprintMaxs 0.02 1.85 0.53
+   m_fReach 1
+   m_fAimReach 4
+   m_eSnap WALL
+   m_eWho HOUSE_OWNER_OR_KEY
+   m_sKind "Furniture_Bookcase"
+   m_eLifetime PERMANENT
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     ContextName "default"
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.2119 0
+     }
+     Radius 1.07
+    }
+   }
+   additionalActions {
+    LF_PlacementAimAction "{C7EBBF83EA1C7CBC}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{2098B1EEF3469A6F}" {
+   m_eAnimVariable LF_ITEM
+  }
+ }
+}

@@ -275,5 +275,18 @@ try {
   rmSync(out, { recursive: true, force: true });
 }
 
+// A stacked follow-up branch (ws/town-draft-<place>-<slot>-<word>) is not blocked by the draft it builds on, only by others.
+{
+  const { claimOfBase } = fitMod;
+  const claim = (where, slot = "cafe") => ({ place: "saint-philippe", slot, where });
+  const stacked = { branch: "ws/town-draft-saint-philippe-cafe-shop", place: "saint-philippe", slot: "cafe" };
+  check(claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)"), stacked), "the base draft's open PR claim blocked its stacked follow-up");
+  check(claimOfBase(claim("worktree Life-Framework-ws-town-draft-saint-philippe-cafe"), stacked), "the base draft's worktree claim blocked its stacked follow-up");
+  check(!claimOfBase(claim("open PR #3099 (ws/town-draft-saint-philippe-cafe-other)"), stacked), "an unrelated PR's claim on the slot was let through");
+  check(!claimOfBase(claim("origin/main"), stacked), "a claim on origin/main was let through (that is --refit's job)");
+  check(!claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)", "bank"), { ...stacked, slot: "bank" }), "a branch with no '-<word>' tail counted as stacked");
+  check(!claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)"), { ...stacked, branch: "ws/town-draft-saint-philippe-cafe" }), "the draft's own branch counted as stacked on itself");
+}
+
 console.log(failed ? `SUMMARY town-fit-selftest fail ${failed}` : "SUMMARY town-fit-selftest ok");
 process.exit(failed ? 1 : 0);

@@ -431,6 +431,49 @@ export function ledgerMinutes({ started, now, agent }) {
   return { minutes: null };
 }
 
+// Waiting vs working (#3200). A worktree's tmp/logs say how long each step sat in a queue: a `waited N s` figure on a pool
+// line, a look or session summary. A line counts toward the first step named on it (validate, look, test; e2e is test;
+// session; ship), else toward the step its log file name names. A log with no `waited` figure falls back to its `(N s)`
+// wall-time figures, so its waits are an upper bound. Lines naming no step count toward nothing. Working = minutes - waits.
+export const WAIT_KEYS = ["validate", "look", "test", "session", "ship"];
+const STEP_WORD = /\b(validate|look|e2e|test|session|ship)\b/i;
+const STEP_OF = { validate: "validate", look: "look", e2e: "test", test: "test", session: "session", ship: "ship" };
+const WAITED = /\bwaited ([\d.]+) ?s\b/;
+const DURATION = /\((\d+(?:\.\d+)?) s\)/g;
+const stepOfLog = (name) => {
+  const n = String(name).toLowerCase();
+  const word = ["look", "session", "validate", "test", "e2e", "ship"].find((w) => n.includes(w));
+  return word ? STEP_OF[word] : null;
+};
+
+// logs: [{ name, text }] (a tmp/logs file each). Returns minutes per step, one decimal: { validate, look, test, session, ship }.
+export function waitMinutes(logs) {
+  const sec = Object.fromEntries(WAIT_KEYS.map((k) => [k, 0]));
+  for (const { name, text } of logs || []) {
+    const own = stepOfLog(name);
+    const lines = String(text || "").split(/\r?\n/);
+    const explicit = lines.some((l) => WAITED.test(l));
+    for (const line of lines) {
+      const word = STEP_WORD.exec(line);
+      const step = word ? STEP_OF[word[1].toLowerCase()] : own;
+      if (!step) continue;
+      const waited = WAITED.exec(line);
+      if (waited) sec[step] += Number(waited[1]);
+      else if (!explicit) for (const d of line.matchAll(DURATION)) sec[step] += Number(d[1]);
+    }
+  }
+  return Object.fromEntries(WAIT_KEYS.map((k) => [k, Math.round(sec[k] / 6) / 10]));
+}
+
+export function waitTotal(waitMin) {
+  return Math.round(WAIT_KEYS.reduce((a, k) => a + (waitMin?.[k] || 0), 0) * 10) / 10;
+}
+
+// Working minutes of a run: its ledger minutes less the waits recorded for it, never below zero.
+export function workMinutes(minutes, waitMin) {
+  return Math.max(0, Math.round((minutes - waitTotal(waitMin)) * 10) / 10);
+}
+
 // `record --outcome merged` is true only when a PR for the slice is merged (agents recorded "merged" while
 // the PR was still open). prs: [{ number, state, mergedAt, headRefName, body }] from `gh pr list`. A PR belongs
 // to the slice when its branch is ws/slice-<N> (or ws/slice-<N>-...) or its body says Refs/Closes/Fixes #<N>.
@@ -464,14 +507,26 @@ export function stats(rows) {
       if (!g.has(k)) g.set(k, []);
       g.get(k).push(r);
     }
-    return [...g.entries()].sort().map(([k, rs]) => ({
-      key: k,
-      n: rs.length,
-      firstPass: rs.filter((r) => r.gate === "pass").length / rs.length,
-      rework: rs.filter((r) => r.outcome !== "merged" && r.outcome !== "shipped").length / rs.length,
-      minutes: median(rs.map((r) => r.minutes)),
-      wait: median(rs.filter((r) => r.wait >= 0).map((r) => r.wait)),
-    }));
+    return [...g.entries()].sort().map(([k, rs]) => {
+      // the split only counts rows recorded with a waitMin map (older rows have none)
+      const timed = rs.filter((r) => r.waitMin);
+      return {
+        key: k,
+        n: rs.length,
+        firstPass: rs.filter((r) => r.gate === "pass").length / rs.length,
+        rework: rs.filter((r) => r.outcome !== "merged" && r.outcome !== "shipped").length / rs.length,
+        minutes: median(rs.map((r) => r.minutes)),
+        wait: median(rs.filter((r) => r.wait >= 0).map((r) => r.wait)),
+        split: timed.length
+          ? {
+              n: timed.length,
+              waiting: median(timed.map((r) => waitTotal(r.waitMin))),
+              working: median(timed.map((r) => workMinutes(r.minutes, r.waitMin))),
+              steps: Object.fromEntries(WAIT_KEYS.map((s) => [s, median(timed.map((r) => r.waitMin[s] || 0))])),
+            }
+          : null,
+      };
+    });
   };
   return { all: group("all"), model: group("model"), type: group("type") };
 }
@@ -481,5 +536,12 @@ export function renderStats(rows) {
   const s = stats(rows.map((r) => ({ ...r, all: "all" })));
   const pct = (x) => `${Math.round(x * 100)}%`.padStart(4);
   const line = (g) => `  ${g.key.padEnd(11)} n ${String(g.n).padStart(3)}  first-pass ${pct(g.firstPass)}  rework ${pct(g.rework)}  median ${g.minutes}m${g.wait === null ? "" : `  wait ${g.wait}m`}`;
-  return ["all slices", ...s.all.map(line), "by model", ...s.model.map(line), "by type", ...s.type.map(line)].join("\n");
+  const split = (g) => {
+    if (!g.split) return [];
+    const x = g.split;
+    const steps = WAIT_KEYS.map((k) => `${k} ${x.steps[k]}m`).join(", ");
+    return [`${"".padEnd(14)}waiting ${x.waiting}m, working ${x.working}m (${steps}; ${x.n} timed)`];
+  };
+  const block = (gs) => gs.flatMap((g) => [line(g), ...split(g)]);
+  return ["all slices", ...block(s.all), "by model", ...block(s.model), "by type", ...block(s.type)].join("\n");
 }

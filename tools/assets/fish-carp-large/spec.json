@@ -1,0 +1,50 @@
+{
+  "slug": "fish-carp-large",
+  "name": "FishCarpLarge",
+  "kind": "gadget",
+  "roadmap": "#3134",
+  "concept": "The large size of the carp: the same Meshy generation as fish-carp, scaled by the clean stage.",
+  "prompt": "A single common carp fish, whole, swimming pose seen from the side, deep heavy bodied, large rounded scales, one long dorsal fin, forked tail fin, two short barbels beside the mouth, olive brown back, golden bronze flanks, pale yellow belly. Realistic game prop, no base, no stand, no water, no text, no logos.",
+  "texture_prompt": "Common carp: olive-brown back, golden bronze large scales on the flanks, pale yellow belly, orange-tinted fins.",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 8000
+  },
+  "size_m": {
+    "length": 0.58,
+    "height": 0.241,
+    "width": 0.104
+  },
+  "budget": {
+    "lod0_tris": 4000,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 40
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Fishing/FishCarpLarge",
+  "prefab_dir": "Prefabs/Items/Fishing",
+  "prefab": false,
+  "gadget": {
+    "name_key": "#LF-Item_FishCarp_Large_Name",
+    "description_key": "#LF-Item_FishCarp_Large_Description",
+    "weight": 5,
+    "volume": 5000,
+    "components": []
+  },
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  }
+}

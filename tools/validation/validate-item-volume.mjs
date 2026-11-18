@@ -42,6 +42,8 @@ const ALLOW_VOLUME = {
   "Resources/Mining/IronBar.et": BASE_VOLUME,
   "Resources/WoodCutting/WoodKindling.et": BASE_VOLUME,
   "Resources/WoodCutting/WoodLog_01_Small.et": HAND_CARRY,
+  "Resources/WoodCutting/WoodLog_Hardwood.et": HAND_CARRY,
+  "Resources/WoodCutting/HardwoodBoard.et": HAND_CARRY,
   "Resources/WoodCutting/WoodPlank.et": HAND_CARRY,
 };
 const ALLOW_GADGET = {
