@@ -6907,6 +6907,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "needs %1"
      Comment "Car lot row for a cheap car the reader cannot afford in cash. %1 is the price."
     }
+    CustomStringTableItem "{875D23933B55810A}" {
+     Id "LF-Lot_NeedsDrivingLicence"
+     Target_en_us "Not without a driving licence. The licence desk issues it for %1."
+     Comment "Car lot refusal when the server asks for a driving licence (#3151). %1 is the fee. Neutral core text; a pack row with the same Id names the place."
+    }
     CustomStringTableItem "{B58D71B1650E8EBB}" {
      Id "LF-Lot_Rule"
      Target_en_us "Cars up to %1 are paid in cash. Dearer cars are paid from your bank: deposit cash at the ATM first."

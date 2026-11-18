@@ -119,7 +119,7 @@ class LF_VehicleLot
 		bool bought = lot.BuyColour(uid, offer.GetPrefab(), colour, buyer, vehicleId, cashCharged, reasonKey);
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(buyer);
 		if (!reasonKey.IsEmpty() && playerId > 0)
-			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Vehicle_Buy", reasonKey);
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#EL-Vehicle_Buy", reasonKey, 5.0, LF_ENotificationType.INFO, LF_VehicleLotComponent.ReasonArg(reasonKey));
 
 		if (bought)
 		{
