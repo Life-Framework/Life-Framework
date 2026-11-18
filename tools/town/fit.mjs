@@ -268,16 +268,6 @@ export function worktreeTownClaims(exec, root) {
   return { claims, note: "" };
 }
 
-// Pure: whether a claim belongs to the draft this branch is stacked on. A follow-up branch ws/town-draft-<place>-<slot>-<word> builds on
-// the open draft ws/town-draft-<place>-<slot> and changes that slot's layer on top of it, so the draft's own claim (its open PR, its
-// worktree) is not a rival. Another slot's claim, or a PR of any other branch, still blocks.
-export function claimOfBase(c, { branch, place, slot }) {
-  const base = `ws/town-draft-${place}-${slot}`;
-  if (!branch || !String(branch).startsWith(`${base}-`)) return false;
-  if (c.place !== place || c.slot !== slot) return false;
-  return new RegExp(`^open PR #[0-9]+ \\(${base}\\)$`).test(c.where) || c.where === `worktree Life-Framework-ws-town-draft-${place}-${slot}`;
-}
-
 // Pure: why another claim blocks this fit ([] when none does). A street slot shares its building's frontage.
 export function conflicts(claims, { place, slot, building, plot, shared }) {
   const out = [];
