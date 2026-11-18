@@ -964,6 +964,16 @@ StringTable {
      Target_en_us "Sell a catch"
      Comment "Settling-in chain, one of three errands after the car. Title."
     }
+    CustomStringTableItem "{4D8E21B7A09C35F6}" {
+     Id "LF-Quest_SettleFoundation_Desc"
+     Target_en_us "Lay the foundation of your cottage. The general store sells gravel and cement."
+     Comment "Settling-in chain: finish the foundation stage on a plot (#3195)."
+    }
+    CustomStringTableItem "{91C6F3A82E5B704D}" {
+     Id "LF-Quest_SettleFoundation_Title"
+     Target_en_us "Lay your foundation"
+     Comment "Settling-in chain, after the plot. Title (#3195)."
+    }
     CustomStringTableItem "{6E07D3A5B533B63A}" {
      Id "LF-Quest_SettleFuel_Desc"
      Target_en_us "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it."

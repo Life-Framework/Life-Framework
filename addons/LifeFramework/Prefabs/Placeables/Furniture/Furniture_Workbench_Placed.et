@@ -1,0 +1,28 @@
+GenericEntity : "{D349CAB0A6544C59}Prefabs/Props/Furniture/TableWorkshop_01_short.et" {
+ ID "10A25B963F60B4CF"
+ components {
+  ActionsManagerComponent "{E5826260793F2ADE}" {
+   ActionContexts {
+    UserActionContext "{5298844594FED251}" {
+     ContextName "default"
+     Position PointInfo "{ABF5C2B008AC63A4}" {
+      Offset 0 0.501 0
+     }
+     Radius 1.573
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{0DBB8C788C8CE9E3}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{87BF581EADB4D6EF}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

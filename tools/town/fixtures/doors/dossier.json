@@ -1,0 +1,129 @@
+{
+ "place": "fixture-town",
+ "buildings": [
+  {
+   "id": "b01",
+   "stem": "Shop_E_1",
+   "type": "shop",
+   "x": 100,
+   "z": 100,
+   "doors": 2,
+   "interior": {
+    "value": "yes"
+   },
+   "footprint": {
+    "corners": [
+     [
+      95,
+      95
+     ],
+     [
+      105,
+      95
+     ],
+     [
+      105,
+      105
+     ],
+     [
+      95,
+      105
+     ]
+    ]
+   }
+  },
+  {
+   "id": "b02",
+   "stem": "Barn_E_1",
+   "type": "farm",
+   "x": 200,
+   "z": 100,
+   "doors": 3,
+   "interior": {
+    "value": "yes"
+   },
+   "footprint": {
+    "corners": [
+     [
+      195,
+      95
+     ],
+     [
+      205,
+      95
+     ],
+     [
+      205,
+      105
+     ],
+     [
+      195,
+      105
+     ]
+    ]
+   }
+  },
+  {
+   "id": "b03",
+   "stem": "Wall_E_1",
+   "type": "wall",
+   "x": 300,
+   "z": 100,
+   "doors": 0,
+   "interior": {
+    "value": "no"
+   },
+   "footprint": {
+    "corners": [
+     [
+      295,
+      95
+     ],
+     [
+      305,
+      95
+     ],
+     [
+      305,
+      105
+     ],
+     [
+      295,
+      105
+     ]
+    ]
+   }
+  },
+  {
+   "id": "b04",
+   "stem": "Shed_E_1",
+   "type": "shed",
+   "x": 100,
+   "z": 120,
+   "doors": 1,
+   "interior": {
+    "value": "yes"
+   },
+   "footprint": {
+    "corners": [
+     [
+      95,
+      115
+     ],
+     [
+      105,
+      115
+     ],
+     [
+      105,
+      125
+     ],
+     [
+      95,
+      125
+     ]
+    ]
+   }
+  }
+ ]
+}

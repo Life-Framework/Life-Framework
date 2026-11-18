@@ -1,0 +1,15 @@
+GenericEntity Fit_saint_philippe_harbour_Place {
+ components {
+  LF_PlaceComponent "{EEF806E681DB6EE1}" {
+   m_sKind "HarbourMaster"
+   m_sId "saint-philippe.harbour"
+  }
+  LF_FittedBuildingComponent "{5EBD406CEA5516BB}" {
+  }
+ }
+ coords 4471.1 1.4 11143.9
+}
+GenericEntity Fit_saint_philippe_harbour_harbour_master : "{B45B7C6C168822D4}Configs/Npcs/LF_Npc_Townsfolk_HarbourMaster.et" {
+ coords 4471.577 1.846 11144.663
+ angleY 122
+}

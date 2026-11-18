@@ -1,0 +1,50 @@
+{
+  "slug": "fish-perch-small",
+  "name": "FishPerchSmall",
+  "kind": "gadget",
+  "roadmap": "#3134",
+  "concept": "The small size of the perch: the same Meshy generation as fish-perch, scaled by the clean stage.",
+  "prompt": "A single European river perch fish, whole, swimming pose seen from the side, deep arched body, two separate dorsal fins the first one spiny and tall, spread tail fin, green-olive back with six dark vertical bars across the flanks, yellowish belly, bright orange-red pelvic and anal fins. Realistic game prop, no base, no stand, no water, no text, no logos.",
+  "texture_prompt": "European perch: olive green back, dark vertical bars on yellow-green flanks, bright orange-red lower fins.",
+  "meshy": {
+    "ai_model": "meshy-6-lite",
+    "target_polycount": 8000
+  },
+  "size_m": {
+    "length": 0.158,
+    "height": 0.085,
+    "width": 0.056
+  },
+  "budget": {
+    "lod0_tris": 4000,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 40
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Fishing/FishPerchSmall",
+  "prefab_dir": "Prefabs/Items/Fishing",
+  "prefab": false,
+  "gadget": {
+    "name_key": "#LF-Item_FishPerch_Small_Name",
+    "description_key": "#LF-Item_FishPerch_Small_Description",
+    "weight": 0.08,
+    "volume": 90,
+    "components": []
+  },
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  }
+}
