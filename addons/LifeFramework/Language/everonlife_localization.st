@@ -2405,6 +2405,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are not licensed for this work"
      Comment "Chain step refused: the worker lacks the licence the step names (#416)."
     }
+    CustomStringTableItem "{F7EF14B5A3B557CE}" {
+     Id "LF-Chain_NeedLicenseWhere"
+     Target_en_us "You are not licensed for this work. %1"
+     Comment "Chain step refused for a missing licence (#3150): %1 says where to get it and what it costs."
+    }
     CustomStringTableItem "{C4A100000000A0C4}" {
      Id "LF-Chain_SmellLead"
      Target_en_us "Smell of brewing"
@@ -6298,6 +6303,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LicenceDesk_Wanted"
      Target_en_us "Refused: you are wanted by the {police}."
      Comment "Licence desk refusal: the player's wanted level is above zero."
+    }
+    CustomStringTableItem "{AA51A5C85F69418F}" {
+     Id "LF-LicenceWhere_DRIVING_LICENCE"
+     Target_en_us "The licence desk"
+     Comment "Where the driving licence is sold, for a refusal (#3150). Neutral core text; a pack row with the same Id names the place."
+    }
+    CustomStringTableItem "{385688993BAD1A12}" {
+     Id "LF-LicenceWhere_Default"
+     Target_en_us "Ask at the licence desk."
+     Comment "Refusal tail for a licence with no where text of its own (#3150)."
+    }
+    CustomStringTableItem "{3B2EC279E93EE312}" {
+     Id "LF-LicenceWhere_FIREARM_PERMIT"
+     Target_en_us "The licence desk"
+     Comment "Where the firearm permit is sold, for a refusal (#3150). Neutral core text; the pack's row with the same Id names the place."
+    }
+    CustomStringTableItem "{4F0F698E82FCFE93}" {
+     Id "LF-LicenceWhere_Job"
+     Target_en_us "Earn it through %1 work."
+     Comment "Refusal tail for a job licence (#3150): %1 is the job's name; never a level."
+    }
+    CustomStringTableItem "{C31BB47A38A4999B}" {
+     Id "LF-LicenceWhere_Sold"
+     Target_en_us "%1 sells it for %2."
+     Comment "Refusal tail (#3150): %1 is the place (LF-LicenceWhere_<TYPE>), %2 the fee, e.g. 'The licence desk sells it for $250.'"
     }
     CustomStringTableItem "{C8CAEB5DF24A1E79}" {
      Id "LF-License_CriminalBlackmarket_Desc"
