@@ -115,8 +115,8 @@ class LF_PersistenceKeep
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Strips the cash stacks from every slot a player can carry back: carried, the civilian stash and
-	//! both duty slots. A duty slot is not cleared, only its cash goes.
+	//! Strips the cash stacks from every slot a player can carry back: carried, the civilian stash,
+	//! both duty slots and car cargo (#2809). A duty slot is not cleared, only its cash goes.
 	//! \param[in] dutyOnly True when the carried and civilian slots were already dropped.
 	//! \return The total cash removed.
 	protected static int StripCash(bool dutyOnly)
@@ -137,6 +137,8 @@ class LF_PersistenceKeep
 
 		cash += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_POLICE, cashPrefab);
 		cash += LF_StorageSnapshot.StripPrefab(LF_DutyLocker.SLOT_MEDIC, cashPrefab);
+		// A car's saved cargo (#2809) is not gear a wipe drops, but its cash is cash.
+		cash += LF_StorageSnapshot.StripPrefab(LF_VehicleOwnership.SLOT_CARGO, cashPrefab);
 		return cash;
 	}
 }
