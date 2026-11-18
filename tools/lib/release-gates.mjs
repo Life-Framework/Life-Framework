@@ -21,6 +21,7 @@ export const LABEL_SPECS = {
   regression: ["d73a4a", "Failed verification; the fix lands on main"],
 };
 const WORKING = "agent:working";
+const LABEL_BATCH = 40; // issue numbers per `gh issue edit` call
 
 // ------------------------------------------------------------------ PR text
 
@@ -146,18 +147,73 @@ export async function onPrMerged(gh, prNumber, log = () => {}) {
   return done;
 }
 
-export async function markVerified(gh, n, via, log = () => {}) {
-  const issue = await gh.getIssue(n);
-  if (!issue) {
-    log(`#${n}: not found`);
-    return false;
+// Verify and close the issues of a promoted range (`promote --confirm`).
+// - An issue labelled `regression` is never verified: it failed a check and its fix has not landed
+//   (release 0.1.3 closed four such issues as verified, #2980). Same for a number in `skip`
+//   (Map issue -> reason, e.g. its PR was reverted in the range).
+// - Label edits are grouped: every issue that needs the same add/remove set goes in one `gh issue edit n1 n2 ...`
+//   call, so ~1300 PRs cost a handful of label calls, not three per issue. Reads come from the adapter's
+//   primed cache (`gh.prime`). An issue already verified and closed costs no write.
+// - One issue failing does not stop the rest: stable has already moved, so a rerun would find nothing to do.
+// Returns { verified, skipped, failed } (issue numbers).
+export async function verifyIssues(gh, nums, via, log = () => {}, skip = new Map()) {
+  const verified = [];
+  const skipped = [];
+  const failed = [];
+  const groups = new Map(); // "add|remove" -> { add, remove, nums }
+  const toClose = [];
+  for (const n of nums) {
+    const issue = await gh.getIssue(n);
+    if (!issue) {
+      log(`#${n}: not found`);
+      continue;
+    }
+    if (issue.labels.includes("regression")) {
+      log(`#${n}: labelled regression; left open`);
+      skipped.push(n);
+      continue;
+    }
+    if (skip.has(n)) {
+      log(`#${n}: ${skip.get(n)}; left open`);
+      skipped.push(n);
+      continue;
+    }
+    const remove = [WORKING, ...STATE_LABELS.filter((l) => l !== "verified")].filter((l) => issue.labels.includes(l));
+    const add = issue.labels.includes("verified") ? [] : ["verified"];
+    if (add.length || remove.length) {
+      const key = add.join() + "|" + remove.join();
+      if (!groups.has(key)) groups.set(key, { add, remove, nums: [] });
+      groups.get(key).nums.push(n);
+    }
+    if (issue.state !== "closed") toClose.push(n);
+    verified.push(n);
   }
-  const remove = [WORKING, ...STATE_LABELS.filter((l) => l !== "verified")].filter((l) => issue.labels.includes(l));
-  if (remove.length) await gh.removeLabels(n, remove);
-  if (!issue.labels.includes("verified")) await gh.addLabels(n, ["verified"]);
-  if (issue.state !== "closed") await gh.close(n, `Verified by a human; \`stable\` now contains it (${via}).`);
-  log(`#${n}: verified, closed`);
-  return true;
+  const bad = new Set();
+  for (const g of groups.values()) {
+    for (let i = 0; i < g.nums.length; i += LABEL_BATCH) {
+      const part = g.nums.slice(i, i + LABEL_BATCH);
+      try {
+        await gh.editLabels(part, g.add, g.remove);
+      } catch (err) {
+        log(`labels for ${part.map((n) => "#" + n).join(" ")} failed: ${err.message}`);
+        part.forEach((n) => bad.add(n));
+      }
+    }
+  }
+  for (const n of toClose) {
+    if (bad.has(n)) continue;
+    try {
+      await gh.close(n, `Verified by a human; \`stable\` now contains it (${via}).`);
+    } catch (err) {
+      log(`#${n}: close failed: ${err.message}`);
+      bad.add(n);
+    }
+  }
+  for (const n of verified) {
+    if (bad.has(n)) failed.push(n);
+    else log(`#${n}: verified, closed`);
+  }
+  return { verified: verified.filter((n) => !bad.has(n)), skipped, failed };
 }
 
 export async function markRegression(gh, n, log = () => {}) {
@@ -247,10 +303,16 @@ export async function buildChecklist(gh, plan) {
   lines.push("");
   const issues = new Set();
   const manualIssues = new Set();
+  // Issues whose PR a later "Reverts #P" PR in the range took back; a PR after the revert that refs one again
+  // (a re-land) puts it back in play. Oldest first, as plan.prs is.
+  const reverted = new Set();
+  await gh.prime?.({ prs: plan.prs });
   for (const n of plan.prs) {
     const pr = await gh.getPr(n);
     const refs = pr ? parseRefs(pr.body) : [];
     refs.forEach((r) => issues.add(r));
+    for (const p of parseReverts(pr?.body)) parseRefs((await gh.getPr(p))?.body).forEach((r) => reverted.add(r));
+    refs.forEach((r) => reverted.delete(r));
     const manual = pr ? manualSteps(pr.body) : "";
     if (manual) refs.forEach((r) => manualIssues.add(r));
     lines.push(`## [ ] PR #${n}: ${pr ? pr.title : "(not found)"}`);
@@ -264,7 +326,7 @@ export async function buildChecklist(gh, plan) {
     for (const c of plan.direct) lines.push(`- ${c.sha.slice(0, 8)} ${c.subject}`);
     lines.push("");
   }
-  return { text: lines.join("\n"), issues: [...issues], manualIssues: [...manualIssues] };
+  return { text: lines.join("\n"), issues: [...issues], manualIssues: [...manualIssues], revertedIssues: [...reverted] };
 }
 
 export function writeChecklist(root, plan, text) {
@@ -337,38 +399,102 @@ export function realGh(cwd) {
   const ok = (r, what) => {
     if (r.status !== 0) throw new Error(`${what}: ${(r.stderr || r.stdout).trim()}`);
   };
+  // Reads are cached; `prime` fills the cache for many PRs / issues in a few GraphQL calls, and every write below
+  // updates it, so a promotion of ~1300 PRs reads in dozens of calls, not thousands (#2980).
+  const prs = new Map();
+  const issues = new Map(); // n -> { number, state, stateReason, labels, pr }
+  const ensured = new Set();
+  const gql = (fields) => {
+    const query = "query($owner:String!,$repo:String!){repository(owner:$owner,name:$repo){" + fields + "}}";
+    // gh exits non-zero when one alias is missing (NOT_FOUND) but still prints the rest: read stdout either way.
+    const r = gh(["api", "graphql", "-F", "owner={owner}", "-F", "repo={repo}", "-f", "query=" + query]);
+    try {
+      return JSON.parse(r.stdout)?.data?.repository ?? null;
+    } catch {
+      return null;
+    }
+  };
+  const chunks = (list, size) => {
+    const out = [];
+    for (let i = 0; i < list.length; i += size) out.push(list.slice(i, i + size));
+    return out;
+  };
+  const put = (n, patch) => {
+    const i = issues.get(n);
+    if (i) Object.assign(i, patch);
+  };
   return {
+    async prime({ prs: prNums = [], issues: issueNums = [] } = {}) {
+      for (const part of chunks([...new Set(prNums)].filter((n) => !prs.has(n)), 40)) {
+        const repo = gql(part.map((n) => `p${n}: pullRequest(number: ${n}) { number title body mergedAt baseRefName url }`).join(" "));
+        for (const n of part) if (repo?.["p" + n]) prs.set(n, repo["p" + n]);
+      }
+      for (const part of chunks([...new Set(issueNums)].filter((n) => !issues.has(n)), 40)) {
+        const repo = gql(part.map((n) => `i${n}: issueOrPullRequest(number: ${n}) { __typename ... on Issue { number state stateReason labels(first: 50) { totalCount nodes { name } } } }`).join(" "));
+        for (const n of part) {
+          const i = repo?.["i" + n];
+          if (!i) continue;
+          if (i.__typename === "PullRequest") issues.set(n, { number: n, pr: true, state: "", stateReason: "", labels: [] });
+          else if (i.labels.totalCount <= i.labels.nodes.length) {
+            issues.set(n, { number: n, pr: false, state: String(i.state).toLowerCase(), stateReason: String(i.stateReason ?? "").toLowerCase(), labels: i.labels.nodes.map((l) => l.name) });
+          }
+        }
+      }
+    },
     async getPr(n) {
-      const p = json(["pr", "view", String(n), "--json", "number,title,body,mergedAt,baseRefName,url"]);
-      return p;
+      if (!prs.has(n)) {
+        const p = json(["pr", "view", String(n), "--json", "number,title,body,mergedAt,baseRefName,url"]);
+        if (p) prs.set(n, p);
+        return p;
+      }
+      return prs.get(n);
     },
     async getIssue(n) {
-      const i = json(["issue", "view", String(n), "--json", "number,state,stateReason,labels"]);
-      if (!i) return null;
-      return { number: i.number, state: String(i.state).toLowerCase(), stateReason: String(i.stateReason ?? "").toLowerCase(), labels: i.labels.map((l) => l.name) };
+      if (!issues.has(n) || issues.get(n).pr) {
+        const i = json(["issue", "view", String(n), "--json", "number,state,stateReason,labels"]);
+        if (!i) return null;
+        issues.set(n, { number: i.number, pr: issues.get(n)?.pr ?? false, state: String(i.state).toLowerCase(), stateReason: String(i.stateReason ?? "").toLowerCase(), labels: i.labels.map((l) => l.name) });
+      }
+      const c = issues.get(n);
+      return { number: n, state: c.state, stateReason: c.stateReason, labels: [...c.labels] };
     },
     // A PR ref (`Refs #896` where 896 is a PR) gets no labels: the labels call is refused for PRs.
     async isPullRequest(n) {
+      if (issues.has(n)) return issues.get(n).pr;
       const r = json(["api", `repos/{owner}/{repo}/issues/${n}`]);
       return Boolean(r && r.pull_request);
     },
     async addLabels(n, labels) {
-      await this.ensureLabels(labels);
-      ok(gh(["issue", "edit", String(n), "--add-label", labels.join(",")]), `label #${n}`);
+      await this.editLabels([n], labels, []);
     },
     async removeLabels(n, labels) {
-      ok(gh(["issue", "edit", String(n), "--remove-label", labels.join(",")]), `unlabel #${n}`);
+      await this.editLabels([n], [], labels);
+    },
+    // One `gh issue edit n1 n2 ...` call adds and removes labels on every listed issue.
+    async editLabels(nums, add, remove) {
+      if (!nums.length || (!add.length && !remove.length)) return;
+      await this.ensureLabels(add);
+      const args = ["issue", "edit", ...nums.map(String)];
+      if (add.length) args.push("--add-label", add.join(","));
+      if (remove.length) args.push("--remove-label", remove.join(","));
+      ok(gh(args), `label ${nums.map((n) => "#" + n).join(" ")}`);
+      for (const n of nums) put(n, { labels: (issues.get(n)?.labels ?? []).filter((l) => !remove.includes(l)).concat(add) });
     },
     async close(n, comment) {
       ok(gh(["issue", "close", String(n), "--comment", comment]), `close #${n}`);
+      put(n, { state: "closed" });
     },
     async reopen(n, comment) {
       ok(gh(["issue", "reopen", String(n), "--comment", comment]), `reopen #${n}`);
+      put(n, { state: "open" });
     },
     async ensureLabels(labels) {
       for (const l of labels) {
         const spec = LABEL_SPECS[l];
-        if (spec) gh(["label", "create", l, "--color", spec[0], "--description", spec[1], "--force"]);
+        if (spec && !ensured.has(l)) {
+          gh(["label", "create", l, "--color", spec[0], "--description", spec[1], "--force"]);
+          ensured.add(l);
+        }
       }
     },
   };
