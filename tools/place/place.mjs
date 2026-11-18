@@ -24,6 +24,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
 import { layerFile as townLayerFile, worldLayerDirs } from "../lib/addons.mjs";
 import { GRID_LAYERS, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
 import { layerEntityPrefabs } from "../lib/layer-prefabs.mjs";
@@ -1107,16 +1108,19 @@ function review(ctx, plans, flags, { quiet = false } = {}) {
 
 // The offline checks, the write, the audit, and the rollback: shared by every placing command.
 function commit(ctx, plans, flags) {
-  const snap = settleMode(flags);
+  const mode = settleModeOf(flags);
+  const snap = mode === "snap";
+  if (mode === "physics") physicsTargets(plans, { grid: !ctx.prefabFile && itemsGrid(plans.map((p) => p.item)) });
   const blocked = review(ctx, plans, flags);
   if (blocked && !flags.force) {
     console.log("place: not written (problems above). Fix the request, or --force to write anyway.");
     return 1;
   }
   if (flags.dry) {
-    console.log(`place: dry run, nothing written${snap ? " (the contact settle runs on the write, in the audit boot)" : ""}.`);
+    console.log(`place: dry run, nothing written${snap ? " (the contact settle runs on the write, in the audit boot)" : ""}${mode === "physics" ? " (the physics settle runs on the write, in a Workbench play session)" : ""}.`);
     return 0;
   }
+  if (mode === "physics") nameForPhysics(ctx, plans);
   // Write, keeping each file's original text for the rollback.
   const originals = new Map();
   const edit = (file, fn) => {
@@ -1147,6 +1151,13 @@ function commit(ctx, plans, flags) {
   if (flags["no-verify"] || ctx.prefabFile) {
     if (snap) console.log("settle: skipped (no audit boot to run it in); the height is the probed one. Run tools\\cli place settle <names> before shipping.");
     console.log(`place: wrote ${files.join(", ")} (not audited${ctx.prefabFile ? ": a prefab's children are checked offline; validate-prop-on-surface covers them" : "; run tools\\cli place verify <names> before shipping"}).`);
+    return 0;
+  }
+  if (mode === "physics") {
+    if (!runPhysicsSettle(plans, originals)) return 1;
+    // The audit judges a static prop at the spot it was probed; a body at rest after the simulation (a log on its end
+    // 2.9 m up) is exactly what the simulation decided, so there is no audit boot after it: look at it (\`look contact\`).
+    console.log(`place: placed ${files.join(", ")}; physics-rested, not audited (tools\\cli look contact grid:<slug> --entities <names> shows it).`);
     return 0;
   }
   const targets = plans.map((p) => ({ name: p.item.name, prefab: p.item.prefab, x: r3(p.x), y: r3(p.y), z: r3(p.z), yaw: p.yaw, hung: Boolean(p.hung) }));
@@ -1198,6 +1209,43 @@ function commit(ctx, plans, flags) {
   return bad.length ? 1 : 0;
 }
 
+// --settle physics (#3065): each placed prop is a dynamic body; a hidden Workbench plays the grid world, simulates it to
+// rest and writes its coords and `angles` into the layer (tools/visual/place-settle.mjs). Grid layers of the core
+// GridWorld only (never a town layer), and a body that is not simulated has no physics rest (use the default snap).
+export function physicsTargets(plans, { grid = true } = {}) {
+  if (!grid) throw new PlaceError("--settle physics works in GridWorld (Grid_*.layer) only, never a town layer");
+  const pack = plans.some((p) => layerFile(ROOT, p.item.mode === "move" ? p.item.ent?.file : p.item.layer).startsWith(join(ROOT, PACK_GRID_LAYERS)));
+  if (pack) throw new PlaceError("--settle physics runs in the core GridWorld; a pack cell's layer is not simulated yet");
+  const bad = plans.filter((p) => !p.item.dynamic).map((p) => p.item.name || baseOf(p.item.prefab));
+  if (bad.length) throw new PlaceError(`--settle physics is for simulated rigid bodies (a log, a bag); ${bad.join(", ")} is static: place it with the default --settle snap in a separate command`);
+  return plans;
+}
+
+// Gives each new body a layer name (the plugin finds its entity by name): <layer>_<Prefab>_<n>, unique in the world.
+function nameForPhysics(ctx, plans) {
+  const taken = new Set((ctx.world ?? []).map((e) => e.name).filter(Boolean));
+  for (const p of plans) {
+    const it = p.item;
+    if (it.name || (it.mode === "move" && it.ent?.name)) continue;
+    const layerName = String(it.layer || it.ent?.file || "Grid").replace(/\.layer$/, "");
+    let n = 1;
+    while (taken.has(`${layerName}_${baseOf(it.prefab)}_${n}`)) n++;
+    it.name = `${layerName}_${baseOf(it.prefab)}_${n}`;
+    taken.add(it.name);
+  }
+}
+
+// The physics run: after the write, before the audit. A failed run restores every file (the editor save can rewrite
+// a layer); the runner itself puts back the layers it was not asked to change.
+function runPhysicsSettle(plans, originals) {
+  const names = plans.map((p) => p.item.name || p.item.ent?.name);
+  const run = spawnSync(process.execPath, [join(ROOT, "tools", "visual", "place-settle.mjs"), "settle", ...names], { cwd: ROOT, stdio: "inherit", windowsHide: true });
+  if (run.status === 0) return true;
+  for (const [file, text] of originals) writeFileSync(file, text);
+  console.log("place: the physics settle failed; the files are restored (nothing written).");
+  return false;
+}
+
 // `settle`: settle lines for the same boot (serverRun). Returns the verdicts and the run (its `settles`).
 function runJudge(targets, { grid = false, settle = [] } = {}) {
   const run = serverRun([], { grid, settle });
@@ -1221,11 +1269,10 @@ export function settleResult(s, coordsY, { force = false } = {}) {
   if (Math.abs(s.y1 - s.y0) > MAX_MOVE && !force) return { ok: false, why: `would move it ${cmOf(s.y1 - s.y0)} (over ${MAX_MOVE * 100} cm): a hung prop or the wrong support (${s.on})? Not written; --force writes it anyway` };
   return { ok: true, y: coordsY + (s.y1 - s.y0) };
 }
-function settleMode(flags) {
+export function settleModeOf(flags) {
   const mode = String(flags.settle ?? "snap");
-  if (mode === "physics") throw new PlaceError("--settle physics (simulate a dynamic body to rest in Workbench play) is not built yet (#2957); --settle snap is the default");
-  if (mode !== "snap" && mode !== "off") throw new PlaceError(`--settle is snap (default) or off, not ${mode}`);
-  return mode === "snap";
+  if (mode !== "snap" && mode !== "off" && mode !== "physics") throw new PlaceError(`--settle is snap (default), off or physics, not ${mode}`);
+  return mode;
 }
 
 function relYawOf(flags, surface) {
@@ -1571,7 +1618,7 @@ const USAGE = `usage: tools\\cli place <command>   (docs/placement-tool.md)
   arrange row <x1,z1> <x2,z2> <prefab>... --layer L.layer [--yaw deg]
   bounds <prefab|entity> | probe <surface> | verify <entity>...
   settle <entity>... [--layer L.layer] [--dry] [--force]   rest props by their measured mesh bottom; only the coords height changes
-  --settle snap|off (on|ground|arrange|against: height from the contact settle, the default, or the probed height)
+  --settle snap|off|physics (on|ground|arrange|against: height from the contact settle, the default; the probed height; or a rigid body simulated to rest in Workbench play, GridWorld only)
   --move <Entity>[,...] re-places existing entities; --in <Prefabs/X.et> works on a prefab's children (surface: root)
   --dry  --no-verify  --keep  --force  --scale s`;
 

@@ -27,13 +27,15 @@
 //   judge resting a tree on its bounds base (2026-11-14, #924) -> FAIL judge: a tree whose roots go 0.51 m below the ground
 //   onGround raising a building by its foundation (2026-11-16, town-arrival-desk; the code before the fix)
 //     -> FAIL ground: a building's pivot (its floor) stands on the ground, its foundation below
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { scratchDir } from "../lib/scratch.mjs";
+import { restoreOthers, snapshotOthers } from "../visual/place-settle.mjs";
 import { join } from "node:path";
 import { checkEntities } from "../actions/prop-on-surface.mjs";
 import { isKind, obbPenetration } from "../../agent-box/place-audit.mjs";
 import { GRID_LAYERS, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
 import { auditTestArgs } from "../../agent-box/place-audit.mjs";
-import { PlaceError, ROOT, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, gridWorldOf, judge, modelOf, offlineProblems, onGround, parseSettles, restOn, rot, rowCentres, excludeOf, serverRun, setCoordsY, setTransform, settleExempt, settleLine, settleResult, settleToken, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
+import { PlaceError, ROOT, TOL, againstWall, appendEntity, arrangeOn, boxOf, cacheFromRays, faceNormal, findEntity, footprintRect, gridWorldOf, judge, modelOf, offlineProblems, onGround, parseSettles, restOn, rot, rowCentres, excludeOf, serverRun, setCoordsY, setTransform, settleExempt, settleModeOf, physicsTargets, settleLine, settleResult, settleToken, surfaceGrid, surfaceTop, unrot, yawForFacing } from "../place/place.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -393,6 +395,35 @@ GenericEntity : "{0E3533EE196F01EC}Prefabs/Lamps/LampStreet.et" {
   refuses(() => serverRun([], { grid: true, measure: boot, settle: ["settle e0 A", "settle e1 B", "settle e2 C", "settle e3 D"] }), /answered 3 of 4 settle lines/, "settle: a server that answers fewer settle lines than were sent is an old build");
 }
 
+// ---- --settle physics (#3065) ---------------------------------------------------------------------------------
+// red-proof: 2026-11-18,
+//   settleModeOf still throwing for "physics"          -> FAIL physics: --settle physics is a mode
+//   physicsTargets letting a static prop through       -> FAIL physics: a static prop is refused
+//   physicsTargets without the grid check              -> FAIL physics: a town layer is refused
+//   restoreOthers not putting default.layer back       -> FAIL physics: the editor save's rewrite of another layer is undone
+{
+  ok(settleModeOf({ settle: "physics" }) === "physics" && settleModeOf({}) === "snap" && settleModeOf({ settle: "off" }) === "off", "physics: --settle physics is a mode, snap stays the default");
+  refuses(() => settleModeOf({ settle: "wobble" }), /off or physics, not wobble/, "physics: an unknown --settle mode is refused");
+  const body = (dynamic) => ({ item: { mode: "new", layer: "Grid_slice_3065.layer", prefab: "Prefabs/Resources/WoodCutting/WoodLog_01_Small.et", dynamic } });
+  ok(physicsTargets([body(true)], { grid: true }).length === 1, "physics: a rigid body in a grid layer is accepted");
+  refuses(() => physicsTargets([body(true), body(false)], { grid: true }), /static/, "physics: a static prop is refused");
+  refuses(() => physicsTargets([body(true)], { grid: false }), /GridWorld/, "physics: a town layer is refused");
+  const pack = { item: { mode: "new", layer: "Grid_everon_bank.layer", prefab: "x.et", dynamic: true } };
+  const packLayer = join(ROOT, PACK_GRID_LAYERS, "Grid_everon_bank.layer");
+  if (existsSync(packLayer)) refuses(() => physicsTargets([pack], { grid: true }), /core GridWorld/, "physics: a pack cell layer is refused");
+  // The editor save rewrites every layer of the world: the runner keeps only the layers holding a settled entity.
+  const dir = scratchDir("lf-settle-");
+  mkdirSync(dir, { recursive: true });
+  writeFileSync(join(dir, "default.layer"), "BSP 520\n");
+  writeFileSync(join(dir, "Grid_a.layer"), "GenericEntity Log1 {\n coords 1 0 1\n}\n");
+  const snap = snapshotOthers(dir, ["Log1"]);
+  ok(snap.keep.has("default.layer") && !snap.keep.has("Grid_a.layer"), "physics: the layer holding the settled entity is not snapshotted");
+  writeFileSync(join(dir, "default.layer"), "BSP 607\n");
+  writeFileSync(join(dir, "Grid_a.layer"), "GenericEntity Log1 {\n coords 1 2.857 1\n angles 89 170 -80\n}\n");
+  const put = restoreOthers(snap);
+  ok(put.join() === "default.layer" && readFileSync(join(dir, "default.layer"), "utf8") === "BSP 520\n", "physics: the editor save's rewrite of another layer is undone");
+  ok(readFileSync(join(dir, "Grid_a.layer"), "utf8").includes("angles 89 170 -80"), "physics: the settled layer keeps its written pose");
+}
 
 if (failed) {
   console.log(`place-tool-selftest: FAILED (${failed})`);
