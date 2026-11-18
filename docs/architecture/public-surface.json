@@ -31,6 +31,7 @@
     "LF_PhoneConfig",
     "LF_PhotoIdCardConfig",
     "LF_PoliceConfig",
+    "LF_PropertyConfig",
     "LF_PrefabSlotsConfig",
     "LF_QuestGiverConfig",
     "LF_QuizBank",
