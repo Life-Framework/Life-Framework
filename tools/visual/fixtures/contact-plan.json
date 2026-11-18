@@ -1,0 +1,21 @@
+{
+  "note": "look contact plan (#2955). Stock is named by the store's slot (stock:<store>/<prefab file>@<slot>), never by the audit's positions: Workbench play spawns its own stock, so a server position missed the first item of each sheet. The area is a place: slot on the island.",
+  "area": { "name": "sample-square-general-store", "x": 1012, "y": 0, "z": 2014, "radius": 12, "front": 90, "world": "island" },
+  "audit": "shelf general_store/AppleJuice@3 bmin=1,2,3 gap=0.2 c=177.6,1.1,237.3 cgap=0.0005 flags=none\nshelf general_store/Canteen@0 c=178.1,1.0,237.9 cgap=0.236 flags=none\nshelf other_store/Crackers@1 c=1,1,1 cgap=0.001 flags=none\nfoo",
+  "stock": {
+    "flags": { "stock": "general_store", "max": "12" },
+    "labels": ["AppleJuice@3", "Canteen@0"],
+    "refs": ["stock:general_store/AppleJuice@3", "stock:general_store/Canteen@0"],
+    "firstLines": [
+      "contact contact-sample-square-general-store-general_store__k01_AppleJuice_3_0 stock:general_store/AppleJuice@3 0 0 0 0 90",
+      "contact contact-sample-square-general-store-general_store__k01_AppleJuice_3_1 stock:general_store/AppleJuice@3 0 0 0 1 90",
+      "contact contact-sample-square-general-store-general_store__k01_AppleJuice_3_2 stock:general_store/AppleJuice@3 0 0 0 2 90",
+      "contact contact-sample-square-general-store-general_store__k01_AppleJuice_3_3 stock:general_store/AppleJuice@3 0 0 0 3 90",
+      "contact contact-sample-square-general-store-general_store__k01_AppleJuice_3_top stock:general_store/AppleJuice@3 0 0 0 top 90"
+    ]
+  },
+  "worst": { "flags": { "stock": "general_store", "worst": true }, "labels": ["Canteen@0", "AppleJuice@3"] },
+  "items": { "flags": { "stock": "general_store", "items": "Canteen@0" }, "labels": ["Canteen@0"] },
+  "entities": { "flags": { "entities": "Till_Test" }, "world": [{ "name": "Till_Test", "x": 1011.5, "y": 12.4, "z": 2013 }], "line": "contact contact-sample-square-general-store__k01_Till_Test_0 Till_Test 1011.5 12.4 2013 0 90" },
+  "planHead": "world Worlds/MainWorld/MainWorld.ent\nmode play\n"
+}

@@ -132,7 +132,7 @@ GenericEntity CrimeScene {
       coords -0.5 -0.05 0
      }
      GenericEntity ConfiscatedRifle_Debug : "{FA5C25BF66A53DCF}Prefabs/Weapons/Rifles/AK74/Rifle_AK74.et" {
-      coords 0 0.1 -0.25
+      coords 0 0.022 -0.25
      }
     }
    }

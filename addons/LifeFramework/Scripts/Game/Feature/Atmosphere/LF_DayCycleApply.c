@@ -5,12 +5,16 @@
 //! TimeAndWeatherManagerEntity (SetDayDuration, SetIsDayAutoAdvanced, SetTimeOfTheDay), which
 //! replicates the clock to every client itself. No script loop drives the time.
 //!
-//! `nightSpeed` is not applied: the vanilla manager has one day duration and no night rate, so a
-//! config that asks for another night speed logs a warning and runs the day at its daytime speed.
+//! `nightSpeed` (#3149): the vanilla manager has one day duration, so the server switches it at dusk and
+//! dawn. SwitchPhase() sets the day duration while the sun is up and the night duration (the day's divided by
+//! `nightSpeed`) between sunset and sunrise, read from the manager (the vanilla handler's 5 h and 19 h when
+//! the world has none). Apply() runs it once; a 10 s call-queue check runs it again only when the settings
+//! have a night rate, and it logs once per flip. The clock still replicates through the manager.
 class LF_DayCycleApply
 {
 	static const string FEATURE = "Atmosphere";
 
+	static const int PHASE_CHECK_MS = 10000;	// lf-fixed: how often the server looks for dusk or dawn
 	static const int RATE_CHECK_MS = 20000;	// lf-fixed: how long after start the one rate check reads the clock
 	static const float RATE_TOLERANCE = 0.15;	// lf-fixed: a check within 15% of the promised rate is healthy
 
@@ -18,6 +22,7 @@ class LF_DayCycleApply
 	protected static float s_fCheckStartHour;
 	protected static int s_iCheckStartTick;
 	protected static float s_fCheckDaySeconds;
+	protected static ref LF_DayCycleSettings s_PhaseSettings;
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: reads the day-cycle config and applies it.
@@ -60,7 +65,7 @@ class LF_DayCycleApply
 
 		s_fCheckStartHour = clock.GetTimeOfTheDay();
 		s_iCheckStartTick = System.GetTickCount();
-		s_fCheckDaySeconds = settings.m_fDayDurationSeconds;
+		s_fCheckDaySeconds = clock.GetDayDuration();	// the phase's duration: dusk or dawn inside the 20 s skips the check
 		GetGame().GetCallqueue().CallLater(CheckRate, RATE_CHECK_MS, false);
 	}
 
@@ -70,6 +75,12 @@ class LF_DayCycleApply
 		TimeAndWeatherManagerEntity clock = GetClock();
 		if (!clock)
 			return;
+
+		if (Math.AbsFloat(clock.GetDayDuration() - s_fCheckDaySeconds) > LF_DayCycle.DURATION_EPSILON)
+		{
+			LF_Debug.Info(FEATURE, "day cycle rate check: skipped, dusk or dawn changed the day duration during the check");
+			return;
+		}
 
 		float elapsedSeconds = System.GetTickCount(s_iCheckStartTick) / 1000.0;
 		float moved = clock.GetTimeOfTheDay() - s_fCheckStartHour;
@@ -125,18 +136,103 @@ class LF_DayCycleApply
 		if (settings.m_bSetStartHour && LF_DayCycleSave.ShouldSetStartHour(mode))
 			clock.SetTimeOfTheDay(settings.m_fStartHour);
 
-		if (Math.AbsFloat(settings.m_fNightAcceleration - settings.m_fDayAcceleration) > 0.001)
-			LF_Debug.Warn(FEATURE, string.Format("day cycle: nightSpeed is not applied, the vanilla time manager has one day rate (%1x all day)", settings.m_fDayAcceleration));
+		// #3149: night runs at nightSpeed times the day rate; the right duration for this hour goes in now.
+		StartPhaseWatch(settings);
 
 		s_sLastLog = string.Format("day cycle: %1, day %2 s (%3x), start %4 h", mode, settings.m_fDayDurationSeconds, settings.m_fDayAcceleration, settings.m_fStartHour);
+		if (LF_DayCycle.HasNightRate(settings))
+			s_sLastLog = s_sLastLog + string.Format(", night %1 s (%2x)", settings.m_fNightDurationSeconds, settings.m_fNightAcceleration);
 		LF_Debug.Info(FEATURE, s_sLastLog);
 		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Sets the duration for the current hour, then keeps checking at dusk and dawn when the settings have a
+	//! night rate. Applying again (the save load) replaces the watch.
+	protected static void StartPhaseWatch(notnull LF_DayCycleSettings settings)
+	{
+		StopPhaseWatch();
+		SwitchPhase(settings);
+		if (!LF_DayCycle.HasNightRate(settings) || !GetGame())
+			return;
+
+		s_PhaseSettings = settings;
+		GetGame().GetCallqueue().CallLater(CheckPhase, PHASE_CHECK_MS, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Stops the dusk and dawn check. Tests call it so the repeating call does not outlive them.
+	static void StopPhaseWatch()
+	{
+		if (s_PhaseSettings && GetGame())
+			GetGame().GetCallqueue().Remove(CheckPhase);
+
+		s_PhaseSettings = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void CheckPhase()
+	{
+		if (!s_PhaseSettings)
+			return;
+
+		SwitchPhase(s_PhaseSettings);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: gives the manager the day duration for its current hour (the night duration after sunset
+	//! and before sunrise). \return true when the duration changed; each change logs once.
+	static bool SwitchPhase(notnull LF_DayCycleSettings settings)
+	{
+		TimeAndWeatherManagerEntity clock = GetClock();
+		if (!clock)
+			return false;
+
+		float sunrise = LF_DayCycle.FALLBACK_SUNRISE_HOUR;
+		float sunset = LF_DayCycle.FALLBACK_SUNSET_HOUR;
+		float worldSunrise, worldSunset;
+		if (clock.GetSunriseHour(worldSunrise) && clock.GetSunsetHour(worldSunset))
+		{
+			sunrise = worldSunrise;
+			sunset = worldSunset;
+		}
+
+		float hour = clock.GetTimeOfTheDay();
+		float wanted = LF_DayCycle.DurationForHour(settings, hour, sunrise, sunset);
+		if (Math.AbsFloat(clock.GetDayDuration() - wanted) <= LF_DayCycle.DURATION_EPSILON)
+			return false;
+
+		if (!clock.SetDayDuration(wanted))
+		{
+			LF_Debug.Error(FEATURE, string.Format("day cycle: the time manager refused a %1 s day at %2 h", wanted, hour));
+			return false;
+		}
+
+		string phase = "day";
+		if (LF_DayCycle.IsNight(hour, sunrise, sunset))
+			phase = "night";
+		LF_Debug.Info(FEATURE, string.Format("day cycle: %1 at %2 h (sunrise %3, sunset %4), a day now lasts %5 s", phase, hour, sunrise, sunset, wanted));
+		return true;
+	}
+	//------------------------------------------------------------------------------------------------
 	//! The line the last ApplyFromConfig() logged; tests read it.
 	static string GetLastLog()
 	{
 		return s_sLastLog;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_DayCycleApply's phase watch (LF_StaticReset finds it by reflection).
+class LF_DayCycleApply_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_DayCycleApply";
+	}
+
+	override void Apply()
+	{
+		LF_DayCycleApply.StopPhaseWatch();
 	}
 }

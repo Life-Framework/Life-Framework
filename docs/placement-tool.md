@@ -29,7 +29,23 @@ tools\cli place arrange row <x1,z1> <x2,z2> <prefab>... --layer L.layer [--yaw d
 tools\cli place bounds <prefab|entity>      size, base, scale, rigid body; no server
 tools\cli place probe <surface>             trace a surface's real top into tools/place/surface-cache.json
 tools\cli place verify <entity>...          the placement audit on those entities only
+tools\cli place settle <entity>... [--layer L.layer] [--dry] [--force]   rest props by their measured mesh bottom
 ```
+
+`--settle snap|off` on `on|against|ground|arrange`: the written height is the contact-settled one (default `snap`),
+or the probed height (`off`). See "Contact settle" below.
+`--settle physics` (#3065, simulated rigid bodies in a `Grid_*.layer` of GridWorld only): after the write, a hidden
+Workbench plays the grid world, drops each body 1 m, simulates it to rest and writes the rest pose (`coords` and the
+`angles` line) into the layer (`tools/visual/place-settle.mjs settle <entity>...`, `LF_PlaceSettlePlugin`). A new
+body with no name gets `<layer>_<Prefab>_<n>` (the plugin finds it by name). It reads back the entity it wrote
+(turn under 1 degree, position under 5 mm), saves with `WorldEditor.Save` and puts back every other layer that
+save rewrote (`default.layer` comes back with a new BSP). No audit boot follows: the audit judges a static spot,
+and a body that rests standing on its end is what the simulation decided. Check it with
+`tools\cli look contact grid:<slug> --entities <names>`. A static prop, a town layer or a pack cell is refused;
+a failed run restores every file. The runner alone: `node tools/visual/place-settle.mjs settle <entity>... [--dry]`.
+**WoodLog_01_Small rests on its end** (every drop: pitch 89 degrees, pivot 2.857 m up; the `look contact` sheet shows it
+standing): the logging stand's logs "fell upright" (placement-audit.md) for that reason, so a log meant to
+lie flat is not a physics-settled placement.
 
 - `--move <Entity>[,<Entity>...]` in place of `<prefab>` re-places entities a layer already has. Only
   their `coords` and `angleY` lines change.
@@ -138,6 +154,37 @@ Each command refuses, with the reason and what to change:
   simulates it (the logs on the logging stand). Any simulated body prints a note to confirm it in a
   shot.
 
+## Contact settle (#2954)
+
+The audit judges a small prop by its contact gap (`LF_PlaceSnap.Measure`: the mesh bottom against the highest support
+under a 3x3 footprint, proxy boxes ignored) and fails a hover or sink over 1 cm (`docs/placement-audit.md`). A height
+worked out from a probed top plus a bounds offset lands a few millimetres to centimetres off that, so the tool takes the
+height from the same measurement.
+
+- `place on|against|ground|arrange` write the layer at the probed height, then run the **audit boot** (the one that was
+  already there). That boot first answers a `settle <id> <name|@prefab:x,y,z>` line per prop
+  (`LF_PlacementAudit.SettleLine` -> `LF_PlaceSnap.Settle`: measure, move straight up or down so the mesh bottom is 1 mm
+  over the support, measure again) and only then the audit rows, so the audit judges the prop already settled. The reply is
+  `settle <id> y0= y1= gap= before= spread= on=`; the tool rewrites the entity's `coords` height as the old one plus
+  `y1 - y0` (so a group child or a child in a parent's frame keeps its own frame), logs
+  `settle <name>: y 0.1 -> 0.014 (8.7 cm before, 0.1 cm after, on <support>)` and judges as before. No second boot.
+- Left at the probed height, with a line saying why: a hung prop (`place against --hang`), a tilted one, vegetation, a vehicle,
+  a building, a ground plate or rock chain (`settleExempt`: the audit never judges them by their mesh bottom: a tree
+  stands by its pivot, a vehicle by its wheels). Nothing under the footprint, or a move over 25 cm, also keeps the probed
+  height. `--no-verify` and `--in` skip the settle (there is no boot to run it in); `--settle off` keeps the probed height.
+- `place settle <entity>... [--layer L.layer] [--dry] [--force]` re-settles props a layer already has: one test-server
+  boot for the batch, each prop measured, moved to rest, measured again. A prop whose re-measured gap is over 1 cm, with
+  nothing under it, or that would move over 25 cm (a board hung on a wall dropped to the floor) is **not written**
+  (`--force` writes the long move, and settles the exempt kinds); for the rest only the height on the `coords` line changes
+  (x, z, `angleY`, scale and every other byte stay). `--dry` prints `y` before and after and writes nothing. Name the
+  props: `--layer` only picks the layer when a name is in several (a `Grid_*.layer` resolves to GridWorld's own layers).
+  Props that stand on each other (a card on a stack) are settled in the order the layer lists them, not as a pile: settle
+  the lower one first or place the pile with `arrange`.
+- Measured by the spike (2026-11-18, `tools/place/fixtures/settle.json`, the test server's own answers): IronNugget_01 sunk
+  3.1 cm into TableRecreation_01 -> `coords` y 0 to 0.032, Farm_PressApple_1 8.7 cm over its crate -> 0.1 to 0.014,
+  BarrelMetal_01_blue 1.7 cm into the ground -> 0 to 0.018, each 1 mm over its support afterwards. 20 settles took 0 to
+  1 ms each; a 200-prop batch is one 11 s boot.
+
 ## Checks after the write
 
 The tool boots the test server once more and reads the placement audit's row for each entity it wrote.
@@ -157,6 +204,7 @@ that slips through still meets the audit there.
 - A moved entity: its `coords` line and its `angleY` line (added after `coords` when it had none and
   the yaw is not 0). No other byte of the layer changes. A child's coords are written in its parent's
   frame.
+- A settled entity (`place settle`, or the settle step of a placement): only the height of its `coords` line changes.
 - A new entity: appended at the end of the layer in the form Workbench writes
   (`Class Name : "{GUID}path" {`, ` coords x y z`, ` angleY a`, ` scale s`, `}`), millimetre precision,
   LF line ends. The class comes from the prefab's root. A world interactable still runs

@@ -1,0 +1,106 @@
+[
+ {
+  "name": "AppleJuice",
+  "layer": "Fixture.layer",
+  "x": 0,
+  "y": 1.28,
+  "z": 0,
+  "prefab": "Prefabs/Items/Food/AppleJuice_01.et"
+ },
+ {
+  "name": "IronNugget_01",
+  "layer": "Fixture.layer",
+  "x": 5,
+  "y": 0.97,
+  "z": 0,
+  "prefab": "Prefabs/Items/Quarry/IronNugget_01.et"
+ },
+ {
+  "name": "Farm_PressApple_1",
+  "layer": "Fixture.layer",
+  "x": 10,
+  "y": 0.087,
+  "z": 0,
+  "prefab": "Prefabs/Items/Food/Apple_01.et"
+ },
+ {
+  "name": "Van_Delivery",
+  "layer": "Fixture.layer",
+  "x": 15,
+  "y": 0,
+  "z": 0,
+  "prefab": "Prefabs/Vehicles/Wheeled/UAZ469/UAZ469.et"
+ },
+ {
+  "name": "Sign_Hung",
+  "layer": "Fixture.layer",
+  "x": 20,
+  "y": 2,
+  "z": 0,
+  "prefab": "Prefabs/Props/Signs/Sign_Shop_01.et"
+ },
+ {
+  "name": "Sack_Laid",
+  "layer": "Fixture.layer",
+  "x": 25,
+  "y": 0,
+  "z": 0,
+  "prefab": "Prefabs/Props/Sacks/Sack_Grain_01.et"
+ },
+ {
+  "name": "Shed_Big",
+  "layer": "Fixture.layer",
+  "x": 30,
+  "y": 0,
+  "z": 0,
+  "prefab": "Prefabs/Structures/Houses/Shed_01.et"
+ },
+ {
+  "name": "Crate_Tall",
+  "layer": "Fixture.layer",
+  "x": 35,
+  "y": 0,
+  "z": 0,
+  "prefab": "Prefabs/Props/Crates/BoxWooden_Tall.et"
+ },
+ {
+  "name": "Crate_Edge",
+  "layer": "Fixture.layer",
+  "x": 40,
+  "y": 0,
+  "z": 0,
+  "prefab": "Prefabs/Props/Crates/BoxWooden_01.et"
+ },
+ {
+  "name": "Crate_Over",
+  "layer": "Fixture.layer",
+  "x": 45,
+  "y": 0,
+  "z": 0,
+  "prefab": "Prefabs/Props/Crates/BoxWooden_01.et"
+ },
+ {
+  "name": "Crate_Under",
+  "layer": "Fixture.layer",
+  "x": 50,
+  "y": 0,
+  "z": 0,
+  "prefab": "Prefabs/Props/Crates/BoxWooden_01.et"
+ },
+ {
+  "name": "Crate_NoHit",
+  "layer": "Fixture.layer",
+  "x": 55,
+  "y": 0,
+  "z": 0,
+  "prefab": "Prefabs/Props/Crates/BoxWooden_01.et"
+ },
+ {
+  "name": "Crate_Big",
+  "layer": "Fixture.layer",
+  "x": 60,
+  "y": 0,
+  "z": 0,
+  "prefab": "Prefabs/Props/Crates/BoxWooden_Tall.et"
+ }
+]

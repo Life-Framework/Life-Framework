@@ -33,6 +33,7 @@
 - [DebugWorld coverage](features/debugworld-coverage.md)
 - [Dispatch board (#250)](features/dispatch-board.md)
 - [Events](features/events.md)
+- [Fishing](features/fishing.md)
 - [Gathering / Processing / Resources](features/gathering-processing-resources.md)
 - [Hidden crime record (#270)](features/hidden-crime-record.md)
 - [Illicit chains](features/illicit-chains.md)

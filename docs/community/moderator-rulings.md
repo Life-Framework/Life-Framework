@@ -74,7 +74,7 @@ unless the row says otherwise. How the ladder continues is under
   pattern. The incident log has no stalking row, so the log can only support it
   (repeated Weapon aimed rows on the same player, repeated reports of the same pair)
   and cannot settle it.
-- **Evidence that settles it:** the reporter's clips with the F9 stamp on, kept in
+- **Evidence that settles it:** the reporter's clips with the F8 stamp on, kept in
   the ticket for the week
   ([Evidence](./moderator-guide.md#evidence)). Two accounts of a dispute are not
   evidence ([guide step 3](./moderator-guide.md#from-report-to-ruling)).

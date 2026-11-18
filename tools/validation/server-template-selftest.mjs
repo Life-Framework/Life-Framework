@@ -1,6 +1,7 @@
 // Proves the example server template check (#295): the shipped folder is clean, and each way a host
 // folder goes wrong is named. red-proof: with the a2s.address fixture left "" the engine-refused file passed
 // the check; with the check in place it prints "FAIL ... a2s.address" below.
+// inputs: tools/server-template/**, tools/pack/**, tools/test/config-fixtures/**, server/example/**, addons/*/*.gproj, addons/*/Missions/*, addons/LifeFramework/Scripts/Game/Feature/Packs/LF_PackManifest.c, docs/config/*.json, addons/*/Configs/**/*.conf, addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/*.layer, tools/validation/profit-loop-baseline.json
 import { cpSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { templateLaunch, templateProblems } from "../server-template/template.mjs";

@@ -4,6 +4,9 @@ GenericEntity Fit_shop_Place {
    m_sKind "StoreCounter"
    m_sId "sample-square.shop"
   }
+  LF_ShopComponent "{AAAAAAAAAAAAAAA2}" {
+   m_sOutletId "shop"
+  }
  }
  coords 980 12.4 2015
 }

@@ -13,6 +13,7 @@
 // `FAIL Feature/Toys has no entry in Configs/Systems/LF_SystemCatalog.conf` and exited 1. Pointing the
 // three Farming checks at another name (keeping `SYSTEM = "Farming"`) printed
 // `FAIL system Farming is SWITCHABLE but no LF_Systems.IsEnabled or Refuses call checks it`.
+// inputs: addons/LifeFramework/Scripts/**, addons/LifeFramework/Configs/Systems/LF_SystemCatalog.conf
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";

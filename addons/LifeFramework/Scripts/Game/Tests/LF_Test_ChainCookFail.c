@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_ChainCookFail`: RED PROOF OK, with ServerBlow skipped "the event carries the capped heat (expected 100, got 0)" and "the worker beside the station is hurt" fail; green with it.
+// red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_ChainCookFail`: RED PROOF OK, with ServerBlow skipped "the event carries the capped heat (expected 100, got 0)" and "the worker beside the station is hurt" fail; green with it. #2882 (safe zone, wall, system off), same command 2026-11-18: RED PROOF OK, with the hook on "the station blows with a wall in the way (expected 2, got 1)", "the queued blast is gone" and "the ruined batch is dropped" fail; green with it.
 
 class LF_TestChainRuinRecorder : LF_EventSubscriber
 {
@@ -32,6 +32,7 @@ class LF_Test_ChainCookFail : LF_Test
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
 	protected static const ResourceName JUICE = "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et";
 	protected static const string SITE = "Annex_Chains_Site";
+	protected static const ResourceName WALL = "{419130031F0009C9}Prefabs/Structures/Walls/Brick/BrickWall_01/BrickWall_01_4m.et";
 
 	override string GetName()
 	{
@@ -74,6 +75,9 @@ class LF_Test_ChainCookFail : LF_Test
 
 		Ruin(ctx, barrel, worker, recorder);
 		LoadCancelsBlast(ctx, barrel, worker, recorder);
+		SafeZoneSpares(ctx, barrel, worker, recorder);
+		WallShields(ctx, barrel, worker, recorder);
+		SystemOffCancels(ctx, barrel, worker, recorder);
 
 		step.m_iMistakeChancePct = chance;
 		step.m_iMaxMistakes = max;
@@ -165,6 +169,124 @@ class LF_Test_ChainCookFail : LF_Test
 		barrel.ServerBlow();
 		ctx.Equal(ruinedBefore, recorder.m_iRuined, "no blast after the save is applied");
 		ctx.True(barrel.GetProgress().IsLoaded(), "the restored batch is still in the station");
+		barrel.Import(null);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Loads the barrel and works it into a ruin with the blast queued; false when it did not get there.
+	protected bool QueueRuin(LF_TestContext ctx, LF_ChainStationComponent barrel, IEntity worker, float now)
+	{
+		InventoryStorageManagerComponent bag = LF_InventoryUtils.GetResponsibleStorageManager(worker);
+		if (!bag)
+			return false;
+
+		barrel.Import(null);
+		LF_ChainSites.ClearHeat(SITE);
+		LF_InventoryUtils.AddAmount(bag, APPLE, 4);
+		ctx.Equal(LF_EChainStation.OK, barrel.ServerLoad(worker, now), "a batch loads");
+		barrel.ServerWork(worker, now + 2);
+		barrel.ServerWork(worker, now + 4);
+		ctx.True(barrel.IsRuinPending(), "the batch is ruined and its blast queued");
+		return barrel.IsRuinPending();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected float Health(IEntity worker)
+	{
+		SCR_CharacterDamageManagerComponent damage = SCR_CharacterDamageManagerComponent.Cast(worker.FindComponent(SCR_CharacterDamageManagerComponent));
+		if (!damage || !damage.GetDefaultHitZone())
+			return 0;
+
+		return damage.GetDefaultHitZone().GetHealth();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The blast has no instigator, so a safe zone blocks it for a worker standing inside (#2882); it
+	//! still blows, empties the station and heats the site.
+	protected void SafeZoneSpares(LF_TestContext ctx, LF_ChainStationComponent barrel, IEntity worker, LF_TestChainRuinRecorder recorder)
+	{
+		worker.SetOrigin(barrel.GetOwner().GetOrigin() + "0.8 0 0");
+		worker.Update();
+		if (!QueueRuin(ctx, barrel, worker, 2600))
+			return;
+
+		int ruinedBefore = recorder.m_iRuined;
+		float before = Health(worker);
+		ctx.True(LF_Zones.RegisterCircle("test-chain-safe", LF_ZoneRule.SAFE, barrel.GetOwner().GetOrigin(), 20), "a safe zone covers the station");
+		if (!RedProof())
+			barrel.ServerBlow();
+
+		LF_Zones.Unregister("test-chain-safe");
+		ctx.Equal(ruinedBefore + 1, recorder.m_iRuined, "the station still blows in a safe zone");
+		ctx.EqualFloat(before, Health(worker), 0.01, "a worker inside a safe zone takes no blast damage");
+		barrel.Import(null);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A wall between the still and the worker shields them (#2882). Two walls cross at the midpoint so
+	//! the line is blocked whichever way the prefab's long side runs.
+	protected void WallShields(LF_TestContext ctx, LF_ChainStationComponent barrel, IEntity worker, LF_TestChainRuinRecorder recorder)
+	{
+		vector stillAt = barrel.GetOwner().GetOrigin();
+		worker.SetOrigin(stillAt + "2.5 0 0");
+		worker.Update();
+		IEntity wallA = LF_Utils.SpawnEntityPrefab(WALL, stillAt + "1.25 0 0");
+		IEntity wallB = LF_Utils.SpawnEntityPrefab(WALL, stillAt + "1.25 0 0");
+		ctx.NotNull(wallA, "the first wall spawns");
+		ctx.NotNull(wallB, "the second wall spawns");
+		if (wallA && wallB)
+		{
+			wallB.SetAngles("0 90 0");
+			wallA.Update();
+			wallB.Update();
+			if (QueueRuin(ctx, barrel, worker, 2700))
+			{
+				int ruinedBefore = recorder.m_iRuined;
+				float before = Health(worker);
+				if (!RedProof())
+					barrel.ServerBlow();
+
+				ctx.Equal(ruinedBefore + 1, recorder.m_iRuined, "the station blows with a wall in the way");
+				ctx.EqualFloat(before, Health(worker), 0.01, "a worker behind a wall takes no blast damage");
+			}
+		}
+
+		if (wallA)
+			LF_TestCharacterFixture.Delete(wallA);
+
+		if (wallB)
+			LF_TestCharacterFixture.Delete(wallB);
+
+		barrel.Import(null);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A blast queued before an admin switches the Chains system off does not fire (#2882): nothing is
+	//! hurt, no heat, no bus event; the ruined batch is gone.
+	protected void SystemOffCancels(LF_TestContext ctx, LF_ChainStationComponent barrel, IEntity worker, LF_TestChainRuinRecorder recorder)
+	{
+		worker.SetOrigin(barrel.GetOwner().GetOrigin() + "0.8 0 0");
+		worker.Update();
+		if (!QueueRuin(ctx, barrel, worker, 2800))
+			return;
+
+		int ruinedBefore = recorder.m_iRuined;
+		float before = Health(worker);
+		if (!LF_Systems.SwitchOff(LF_ChainStationComponent.SYSTEM, "chains/cook-fail test"))
+		{
+			ctx.Fail("the Chains system switches off");
+			return;
+		}
+
+		if (!RedProof())
+			barrel.ServerBlow();
+
+		LF_Systems.ClearRuntimeOff(LF_ChainStationComponent.SYSTEM);
+		ctx.False(barrel.IsRuinPending(), "the queued blast is gone");
+		ctx.Equal(ruinedBefore, recorder.m_iRuined, "no blast and no bus event while the system is off");
+		ctx.EqualFloat(before, Health(worker), 0.01, "nobody is hurt");
+		ctx.EqualFloat(0, LF_ChainSites.GetHeat(SITE, 2805), 0.01, "no heat is added");
+		ctx.Equal(LF_StationProgress.EMPTY, barrel.GetPercent(), "the ruined batch is dropped");
 		barrel.Import(null);
 	}
 

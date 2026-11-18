@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A7CC194C6996C8E8}Prefabs/Police/LF_SiteAlarm_ShopBellLoud.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

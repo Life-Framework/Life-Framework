@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "police",
+  "building": "b32",
+  "kit": "police",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_police.layer",
+  "kinds": [
+    "PoliceStation",
+    "JailCell",
+    "PoliceDesk",
+    "Armoury"
+  ],
+  "rows": 56,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_police_Place"
+  },
+  "date": "2026-11-18"
+}

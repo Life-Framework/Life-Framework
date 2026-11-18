@@ -13,11 +13,13 @@
 // the claim's `destruction.mode: "needs-hook"` is a warning and never an error; the per-place limits within 60 m;
 // the guard lets a town-draft branch change only its own layer; the repo as it stands passes validate-island-zones.
 // red-proof: before tools/town/check.mjs existed this printed "FAIL cannot load tools/town/check.mjs: ERR_MODULE_NOT_FOUND" (2026-11-17).
+// red-proof: with the '-<word>' tail rule left out of guardIslandLayers() this printed "FAIL a ws/town-draft-<place>-<slot>-<word> branch may change its slot's layer (#3101)" (2026-11-18).
 // red-proof: with the footprint test left out of checkClaimsAndFootprints() this printed "FAIL outside-footprint: no error contains 'Fit_shop_Stray stands 26 m outside building b03'" (2026-11-17).
 
 // red-proof: before the partial rule (#2347) this printed "FAIL missing-layer-claim [partial]: expected pass, got fail: slot shop: no claim ..." and the
 // same for one-slot-draft [partial] (2026-11-17).
 // red-proof: with the POI-kind call left out of checkPlace() this printed "FAIL complete: a slot with no poi should fail the POI check" and "FAIL complete: a front kind with no POI row should fail" (2026-11-17).
+// red-proof: with the BACKED_KINDS loop left out of checkPlace() this printed "FAIL jail: a JailCell marker with no cell component should fail a complete place" (2026-11-18).
 
 import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
@@ -106,6 +108,20 @@ for (const name of names) {
   check(checkPlace(slotsWith("none"), { resolve: resolve_ }).ok, "complete: an explicit poi none should pass");
   const unloaded = checkPlace({ ...data, poiKinds: null }, { resolve: resolve_ });
   check(unloaded.ok && has(unloaded.notes, "map POI kinds: not checked"), "complete: with no POI table loaded the check is skipped with a note");
+  // A kind whose system reads a real component (JailCell -> LF_JailCellComponent, #2969): a marker alone is a warning in a draft
+  // and an error in a complete place; the cell component in any fitted layer clears it.
+  {
+    const shopLayer = Object.keys(data.layers).find((n) => /_shop\.layer$/.test(n));
+    const jailData = (layerText) => ({ ...data, template: { ...data.template, slots: data.template.slots.map((s) => (s.id === "shop" ? { ...s, places: [...s.places, "JailCell"] } : s)) }, layers: { ...data.layers, [shopLayer]: layerText } });
+    const marker = `${data.layers[shopLayer]}\nGenericEntity Fit_jail_Place {\n components {\n  LF_PlaceComponent "{CD3757DA70ED5B73}" {\n   m_sKind "JailCell"\n   m_sId "sample-square.shop"\n  }\n }\n coords 0 0 0\n}\n`;
+    const cell = `${marker}\nGenericEntity Fit_jail_cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.et" {\n components {\n  LF_JailCellComponent "{540EBBB989D3A80A}" {\n  }\n }\n coords 0 0 0\n}\n`;
+    const bare = checkPlace(jailData(marker), { resolve: resolve_, complete: true });
+    check(has(bare.errors, "no LF_JailCellComponent"), `jail: a JailCell marker with no cell component should fail a complete place (errors: ${bare.errors.join(" | ") || "none"})`);
+    const draft = checkPlace(jailData(marker), { resolve: resolve_ });
+    check(has(draft.warnings, "no LF_JailCellComponent") && !has(draft.errors, "LF_JailCellComponent"), "jail: the same gap is only a warning in a draft");
+    const backed = checkPlace(jailData(cell), { resolve: resolve_, complete: true });
+    check(!has(backed.errors, "LF_JailCellComponent") && !has(backed.warnings, "LF_JailCellComponent"), `jail: a layer with LF_JailCellComponent should clear it (${[...backed.errors, ...backed.warnings].join(" | ")})`);
+  }
   // A kind no system lists is a warning, not an error.
   const odd = { ...data, catalogKinds: new Set(["Spawn"]) };
   const r2 = checkPlace(odd, { resolve: resolve_ });
@@ -123,6 +139,9 @@ for (const name of names) {
   check(g("ws/town-draft-sample-square-shop", [arrival]).errors.length === 1, "the guard should refuse a town-draft branch that changes another slot's layer");
   check(g("ws/town-draft-saint-philippe-general-store", [`${LAYER_DIR}/Place_saint-philippe_general-store.layer`]).errors.length === 0, "hyphens in the place and the slot must not confuse the guard");
   check(g("ws/town-draft-saint-philippe-general-store", [`${LAYER_DIR}/Place_saint-philippe_clothing.layer`]).errors.length === 1, "a town-draft branch of one slot must not change a sibling's layer");
+  check(g("ws/town-draft-saint-philippe-cafe-shop", [`${LAYER_DIR}/Place_saint-philippe_cafe.layer`]).errors.length === 0, "a ws/town-draft-<place>-<slot>-<word> branch may change its slot's layer (#3101)");
+  check(g("ws/town-draft-saint-philippe-cafe-shop", [`${LAYER_DIR}/Place_saint-philippe_clothing.layer`]).errors.length === 1, "a -suffix town-draft branch must not change a sibling slot's layer");
+  check(g("ws/town-draft-saint-philippe-cafe-shop", [`${LAYER_DIR}/Place_saint-philippe_cafe-shop.layer`]).errors.length === 0, "a branch's exact place-slot layer is still its own");
   check(g("ws/fix-bug", ["docs/features/world.md", `${LAYER_DIR}/Gamemode.layer`]).errors.length === 0, "the guard touches only Place_*.layer files");
   check(g("main", [shop]).errors.length === 0 && g("HEAD", [shop]).errors.length === 0, "main and a detached HEAD are not checked");
 }

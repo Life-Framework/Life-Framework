@@ -138,6 +138,8 @@ class LF_TraderSale
 
 		LF_Debug.Info("Trader", string.Format("sold %1 for %2 (untrusted=%3)", itemPrefab, totalValue, untrusted));
 		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, totalValue.ToString());
+		if (curved && newPrice != oldPrice)
+			LF_MarketSaleNotice.OnSale(seller, itemPrefab, oldPrice, newPrice);
 		return LF_ETraderSale.SOLD;
 	}
 

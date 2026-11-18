@@ -20,6 +20,10 @@
   "hear_range_m": 10,
   "start": "greet",
   "nodes": [
+    { "id": "greet_refuses", "line": "greet_refuses" },
+    { "id": "greet_wary", "line": "greet_wary", "options": [{ "text": "bye", "next": "bye" }] },
+    { "id": "greet_friendly", "line": "greet_friendly", "options_from": "greet" },
+    { "id": "greet_regular", "line": "greet_regular", "options_from": "greet" },
     {
       "id": "greet",
       "line": "greet",
@@ -36,6 +40,10 @@
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
+    "greet_refuses": { "text": "I saw what you did. Keep walking." },
+    "greet_wary": { "text": "Hm. You again. Say what you want, and be quick." },
+    "greet_friendly": { "text": "Ah, there you are. A friendly face is good to see. Sit a moment." },
+    "greet_regular": { "text": "My friend! The harbour is better for having you in it. What can an old fisherman do for you?" },
     "greet": {
       "text": "Sit down a minute. Everyone is in a hurry these days. I only watch the square."
     },

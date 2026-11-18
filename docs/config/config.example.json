@@ -64,6 +64,7 @@
   "jobs": {
     "policeDutyPayPerSecond": 0.5,
     "medicDutyPayPerSecond": 0.4,
+    "dutyIdleSeconds": 300,
     "benefitBalanceThreshold": 500,
     "benefitAmount": 100,
     "benefitCooldownSeconds": 1200,

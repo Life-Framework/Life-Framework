@@ -25,8 +25,8 @@ the spec is `tools/assets/<slug>/spec.json` and everything a stage makes lands i
   need a mesh.
 - **Doctor's white coat:** no vanilla garment has the cut. The longest jacket, `Jacket_Raincoat_01`, is
   0.78 m tall, the same as the suit jacket, and a lab coat reaches the knee. A white raincoat or suit jacket
-  (route a) works as a stopgap. The real coat is route (c), and route (c) is blocked at the Workbench
-  import (see "Blocked").
+  (route a) works as a stopgap. The real coat is route (c), which imports since 2026-11-18 with a pruned
+  skeleton (see "Unblocked").
 - **Route (c) quality:** skin weights transferred from Bohemia's body template agree with Bohemia's
   hand-made weights on 38 % of the sample vest's vertices (dominant bone). That is a starting point
   for hand painting, not a finished skin. Bohemia's own README calls it a "rough transfer of
@@ -139,7 +139,7 @@ a mip table, smallest first, of `COPY` or `LZ4 ` blocks (a u32 size, then linked
 | Can't do | A new silhouette, 3D badges, a longer hem | Anything the Samples do not hold: the M88 jacket and trousers, Soviet boots (sculpts, no UVs), one vest | - |
 | Effort | Hours (painting) | Days | Days to a week |
 | Risks | The atlas shares the shirt and tie; colours look about 1.7 times lighter in game lighting; derived textures carry Bohemia's terms | Retopology and UVs for the deflated sculpts; same weight and clipping risks as (c) | Weights are rough (38 % agreement) and need hand painting; clipping in crouch, prone and the arm extremes; normal seams where LODs collapse; the ground model is a second model to make |
-| Pipeline state | Working end to end, parity proven | Fit and export working, Workbench import blocked | Fit and export working, Workbench import blocked |
+| Pipeline state | Working end to end, parity proven | Working: pruned skeleton imports and wears (sample vest) | Working: the balaclava is a route (c) garment |
 
 ## Tooling
 
@@ -275,38 +275,36 @@ Three fixtures under `tools/assets/`. None commits anything to the addon: run th
   use). Its weights are thrown away and transferred again from the body: 38 % of vertices keep Bohemia's
   dominant bone (mean weight difference 0.65; smoothing 0 to 8 passes changes it by under 2 points). LODs
   1,964 / 981 / 490 triangles, 4 influences at every LOD, 10 FireGeo pieces, a box on the ground model. The
-  ground model imports (material and `UBX_` collider). The worn model does not: see "Blocked".
+  ground model imports (material and `UBX_` collider). The worn model imports once its skeleton is pruned: see "Unblocked".
 
 | | Vanilla | Ours |
 |---|---|---|
 | Unchanged textures | ![vanilla](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/990/clothing-parity-unchanged-before.jpg) | ![ours](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/990/clothing-parity-unchanged-after.jpg) |
 | Navy tint | ![vanilla](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/990/clothing-parity-tint-before.jpg) | ![ours](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/990/clothing-parity-tint-after.jpg) |
 
-## Blocked: importing a garment skinned to the character skeleton
+## Unblocked (2026-11-18): prune the skeleton to the bones the garment uses
 
-The headless Workbench build (`ResourceManager.RebuildResourceFiles`, the path every asset kind uses) of
-an FBX skinned to the 224-bone character skeleton writes a `.txo` with the 231 skeleton nodes and no mesh:
-the `.xob` comes out with no material and no collider, and Workbench removes the `MaterialAssigns` and
-`GeometryParams` from the meta ("1 Materials deleted"). Ruled out on 2026-11-14:
+The headless Workbench build (`ResourceManager.RebuildResourceFiles`, the path every asset kind uses) of an FBX
+skinned to the whole 224-bone character skeleton writes a `.txo` with the 231 skeleton nodes and no mesh: the `.xob`
+comes out with no material and no collider, and Workbench removes the `MaterialAssigns` and `GeometryParams` from
+the meta ("1 Materials deleted"). Ruled out on 2026-11-14: the exporter (stock Blender, parented or not, EBT's patched
+writer), our FBX (Bohemia's own `Vest_SampleVest_01.fbx` fails the same way), the import switches, 4 influences per
+vertex, the startup reimport colliding with the plugin's.
 
-- the exporter: stock Blender with the meshes unparented, stock Blender with them parented to the armature
-  as the working taser does, and EBT's patched writer all give the same `.txo`;
-- our FBX: Bohemia's own `Vest_SampleVest_01.fbx` from the Samples, through the same import, loses its
-  meshes the same way;
-- the import switches: `ExportSkinning` alone, `ExportSceneHierarchy` alone, both, and a `MeshParams` entry
-  as Bohemia's meta has it;
-- 4 influences per vertex at every LOD;
-- the startup reimport colliding with the plugin's: a second build that changes no file is clean
-  ("Build successful", no hang) and still writes no mesh.
+**What fixed it (#1997): a small skeleton.** The same FBX with the armature cut to the bones the mesh is weighted to
+plus their ancestors (names untouched; 20 bones for the sample vest, 6 for the balaclava) imports with its material,
+its colliders and its mesh, through the stock exporter. The sample vest round trip passes every check and, worn
+through the Lifchik vest's prefab, draws on the character and follows idle, crouch and prone (26 state pictures). The
+engine binds the worn mesh to the character's skeleton by bone name, so the model does not carry the whole skeleton.
+Whether the cause is the node count or something the full hierarchy trips is not known; a small skeleton is what works.
 
-The same machinery imports the 6-bone taser and every unskinned model, and the vest's ground model.
-What is left untested is EBT's own route: Blender exporting to a Workbench that is running with its
-GUI, over EBT's REST connection (`XOBResourceInfo.export_to_workbench`, which sends the same two
-switches). The next step is a human, or an agent with a GUI Workbench, doing
-"Export FBX (EBT)" of `tmp/assets/clothing-roundtrip-vest/fit/` into the project, or "Reimport" of
-`RoundTripVest.fbx` in the Resource Browser. If the mesh appears, the fix is to run the import
-stage through a GUI Workbench for skinned models. Until then routes (b) and (c) stop after `fit` with a
-valid FBX, a prefab text the selftest checks, and a ground model.
+Spec: `mesh.exporter: "stock"` and `mesh.prune_skeleton: true`. The import check "the worn model lacks N node(s) of the
+vanilla skeleton" is skipped for a pruned model; the FireGeo collider and the material checks still run. A re-import
+over files from an earlier run can log "Wrong GUID/name for resource" on its first try; running the import stage again
+clears it. `mesh.build` (a script beside the spec, run first, writing `build:<file>` into `tmp/assets/<slug>/build/`) lets
+a garment be generated from the base body; the balaclava (`tools/assets/balaclava/model.py`) is cut from the head of
+`Body_LOD0`, offset 6 mm, with an eye opening, and the knit maps are drawn in the same script.
+`verify.min_diff` lowers the "looks like vanilla" threshold for a garment as small as a hat.
 
 ## What the tool does not do
 

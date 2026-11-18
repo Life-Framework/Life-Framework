@@ -40,7 +40,7 @@ class LF_Test_ResidentMemoryPersist : LF_Test
 #ifdef LF_E2E_LOAD_BOOT
 		// The reload boot: the e2e row came back from the real save, when it carried the section
 		// (a --pre-move or --legacy-save ref build wrote none; LF_E2E logs the skip).
-		if (LF_E2E.RequiresSeed("residentmemory save section", LF_SaveSections.BootHadSection(LF_ResidentMemorySavePayload.NAME)))
+		if (LF_E2E.RequiresSection(LF_ResidentMemorySavePayload.NAME))
 			VerifyE2E(ctx);
 
 		return;

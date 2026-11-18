@@ -33,11 +33,18 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
 - Contracts (`LF_ReputationContracts.c`, `Configs/Reputation/LF_ReputationContracts.conf`, #2702): a contract wraps the
   active `LF_CivilianJob` run (`Begin` / `Take`); `CompleteRun` calls `Settle` (multiplier 1.3..1.6, award, `standing-bonus`
   ledger part), `AbandonRun` calls `Forfeit` (the stake, points only). One at a time, a cooldown; session state.
+- Standing pay bonus (`LF_ReputationPay.c`, `m_aPays` in `LF_Reputation.conf`, #2703): `CompleteRun` adds the town tier's percent
+  (`0 0 0 5 10 15`, max 15) of the run's base pay; `Dropoff` books it with the contract bonus under the ledger reason `standing-bonus`.
+- Pack overlays (`LF_ReputationOverlay.c`, #3044): `LF_ReputationConfig.Get()` and `LF_ReputationContractsConfig.Get()` layer each
+  mission-header overlay over the core file (factions, awards, gates, pays, contracts, by id: add, replace, patch, remove).
+- Contract offer in dialogue (`LF_DialogueHook_Contract.c`, #2913): the dialogue hook "Contract" offers a contract by id and calls
+  `LF_ReputationContracts.Begin`; condition and action are both server-side.
 
 ## Not built yet (later cards of chapter #1018)
 
-The contract offer (the caller of `LF_ReputationContracts.Begin`), gates beyond job sign-up and run start (#2701 built those: `LF_ReputationGate.c`),
-client greying from `LF_ReputationSync.ClientTier`, screens, the pack's words, and the pack overlay and owner
+Gates beyond job sign-up and run start (#2701 built those: `LF_ReputationGate.c`),
+client greying from `LF_ReputationSync.ClientTier`, other screens (the ID card line and the clerk's "My file" are built, #2705:
+`LF_ReputationWords.c`), the pack's words, and the pack overlay and owner
 `config.json` section for the config.
 
 ## Dependencies
