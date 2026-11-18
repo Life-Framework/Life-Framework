@@ -161,11 +161,38 @@ function itemText(item, m, fp) {
 
 // An existing ActionsManagerComponent in the vanilla chain (the radio's turn-on action) is overridden by its
 // own GUID so the placed prop keeps it and gains one more context; otherwise a new one is added.
-function placedText(item, m, existingActions, vanillaRef) {
+function placedText(item, m, existingActions, vanillaRef, rplGuid) {
   const id = item.id;
   const center = [0, 1, 2].map((k) => (m.min[k] + m.max[k]) / 2);
   const radius = r3(Math.max(1.4, Math.hypot(m.max[0] - m.min[0], m.max[2] - m.min[2]) / 2 + 0.9));
   const am = existingActions || guid(id, "placed-actions");
+  const s = item.storage;
+  const openAction = s ? `    LF_FurnitureStorageOpenAction "{${guid(id, "open-action")}}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{${guid(id, "open-ui")}}" {
+      Name "#LF-FurnitureStorage_Open"
+     }
+    }
+` : "";
+  const storage = s ? `  LF_FurnitureStorageManagerComponent "{${guid(id, "storage-manager")}}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{${guid(id, "storage")}}" {
+   Attributes SCR_ItemAttributeCollection "{${guid(id, "storage-attrs")}}" {
+    ItemDisplayName SCR_InventoryUIInfo "{${guid(id, "storage-ui")}}" {
+     Name "#LF-Furniture_${id}_Name"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume ${s.volume}
+   MaxItemSize ${s.size.join(" ")}
+   m_fMaxWeight ${s.weight}
+  }
+  LF_PersistentStorageComponent "{${guid(id, "persistent")}}" {
+   m_bKeyAssignedLater 1
+  }
+` : "";
   return `GenericEntity : "${vanillaRef}" {
  ID "${guid(id, "placed-id")}"
  components {
@@ -185,11 +212,11 @@ function placedText(item, m, existingActions, vanillaRef) {
       "default"
      }
     }
-   }
+${openAction}   }
   }
-  LF_PlacedOwnerComponent "{${guid(id, "owner")}}" {
+${storage}  LF_PlacedOwnerComponent "{${guid(id, "owner")}}" {
   }
-  RplComponent "{5624A88DC2D9928D}" {
+  RplComponent "{${rplGuid}}" {
    Enabled 1
   }
  }
@@ -222,16 +249,20 @@ for (const item of spec.items) {
   const itemRef = `{${guid(id, "item-meta")}}Prefabs/Placeables/Furniture/Furniture_${id}_Item.et`;
   const placedRef = `{${guid(id, "placed-meta")}}Prefabs/Placeables/Furniture/Furniture_${id}_Placed.et`;
   let existingActions = null;
+  let rplGuid = null;
   const chain = meshOf(ROOT, vfs, m.path).chain;
   m.materials = materialsOf(vfs, chain);
   for (const p of chain) {
     const t = readText(ROOT, vfs, p);
     const hit = /ActionsManagerComponent\s+"\{([0-9A-F]{16})\}"/.exec(ownComponents(t));
     if (hit && !existingActions) existingActions = hit[1];
+    // A vanilla RplComponent has its own GUID in some chains (the crate's): override that one, never add a second.
+    const rpl = /RplComponent\s+"\{([0-9A-F]{16})\}"/.exec(ownComponents(t));
+    if (rpl && !rplGuid) rplGuid = rpl[1];
   }
   put(join(FURN, `Furniture_${id}_Item.et`), itemText(item, m, fp));
   put(join(FURN, `Furniture_${id}_Item.et.meta`), meta(itemRef));
-  put(join(FURN, `Furniture_${id}_Placed.et`), placedText(item, m, existingActions, m.ref));
+  put(join(FURN, `Furniture_${id}_Placed.et`), placedText(item, m, existingActions, m.ref, rplGuid || "5624A88DC2D9928D"));
   put(join(FURN, `Furniture_${id}_Placed.et.meta`), meta(placedRef));
 
   policy = insert(policy, `"Furniture_${id}"`, "\n }\n}", `\n  LF_PlacementPolicyEntry "{${guid(id, "policy")}}" {\n   m_sKind "Furniture_${id}"\n   m_eWho HOUSE_OWNER_OR_KEY\n   m_eWhere OWNED_PROPERTY\n  }`, { last: true });
@@ -239,6 +270,15 @@ for (const item of spec.items) {
   prices = insert(prices, `Furniture_${id}_Item.et"\n   m_iBuyPrice`, "\n }\n m_aExtraItemPrefabs {", `\n  LF_ShopPriceRule "{${guid(id, "price")}}" {\n   m_Prefab "${itemRef}"\n   m_iBuyPrice ${item.buy}\n   m_iSellPrice ${item.sell}\n  }`);
   prices = insert(prices, `  "${itemRef}"`, "\n }\n}", `\n  "${itemRef}"`, { last: true });
   stock = insert(stock, `Furniture_${id}_Item.et"\n     m_iPrice`, lamp, `    LF_ShopStockItem "{${guid(id, "stock")}}" {\n     m_Prefab "${itemRef}"\n     m_iPrice ${item.buy}\n    }\n`, { after: true });
+}
+
+if (spec.items.some((i) => i.storage)) {
+  const fixed = [
+    ["LF-FurnitureStorage_Open", "Open", "storage-open", "Action on a placed storage furniture (wardrobe, dresser, chest, fridge): opens its inventory for the player who placed it."],
+    ["LF-Placement_EmptyFirst", "Empty it first", "empty-first", "Toast under Placing when the player picks up a storage furniture that still holds items."],
+  ];
+  for (const [key, text, slot, comment] of fixed)
+    strings = insert(strings, `"${key}"`, "\n }\n}", `\n    CustomStringTableItem "{${guid("fixed", slot)}}" {\n     Id "${key}"\n     Target_en_us "${text}"\n     Comment "${comment}"\n    }`, { last: true });
 }
 
 put(POLICY, policy);

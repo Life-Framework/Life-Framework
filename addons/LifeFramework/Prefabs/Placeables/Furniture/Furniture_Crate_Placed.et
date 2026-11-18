@@ -1,0 +1,52 @@
+GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+ ID "92C0E49D7363639C"
+ components {
+  ActionsManagerComponent "{48A21C36251C2E58}" {
+   ActionContexts {
+    UserActionContext "{4B0F4D527D0F1148}" {
+     ContextName "default"
+     Position PointInfo "{A206F8A0615787CC}" {
+      Offset -0.001 0.417 0.001
+     }
+     Radius 1.749
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{065420C374372AC7}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_FurnitureStorageOpenAction "{8A3BB30D2BC7457F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{06167073002F0CC5}" {
+      Name "#LF-FurnitureStorage_Open"
+     }
+    }
+   }
+  }
+  LF_FurnitureStorageManagerComponent "{8CE281E9398000B2}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{AE55A55B95180641}" {
+   Attributes SCR_ItemAttributeCollection "{17C86B1AF6858EB8}" {
+    ItemDisplayName SCR_InventoryUIInfo "{D8D68B6E6F3D6CD9}" {
+     Name "#LF-Furniture_Crate_Name"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 50000
+   MaxItemSize 60 60 60
+   m_fMaxWeight 40
+  }
+  LF_PersistentStorageComponent "{C1EF247916CECD68}" {
+   m_bKeyAssignedLater 1
+  }
+  LF_PlacedOwnerComponent "{0F59ED70198DD487}" {
+  }
+  RplComponent "{6684B114DF44BF56}" {
+   Enabled 1
+  }
+ }
+}

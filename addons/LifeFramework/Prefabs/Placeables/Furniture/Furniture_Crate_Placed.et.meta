@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9A2E2D12C3323874}Prefabs/Placeables/Furniture/Furniture_Crate_Placed.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -4263,6 +4263,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
     }
+    CustomStringTableItem "{251C7BC1C7871641}" {
+     Id "LF-FurnitureStorage_Open"
+     Target_en_us "Open"
+     Comment "Action on a placed storage furniture (wardrobe, dresser, chest, fridge): opens its inventory for the player who placed it."
+    }
     CustomStringTableItem "{C7FECEA5DD6D8719}" {
      Id "LF-Furniture_Armchair_Name"
      Target_en_us "Armchair"
@@ -4288,10 +4293,40 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Chair"
      Comment "Inventory name of the carried chair a player places in their own house (#2654)."
     }
+    CustomStringTableItem "{E66FFF580815DAF0}" {
+     Id "LF-Furniture_Chest_Name"
+     Target_en_us "Chest"
+     Comment "Inventory name of the carried chest a player places in their own house."
+    }
     CustomStringTableItem "{1F2E04D27FF3273B}" {
      Id "LF-Furniture_CoffeeTable_Name"
      Target_en_us "Coffee table"
      Comment "Inventory name of the carried coffee table a player places in their own house."
+    }
+    CustomStringTableItem "{3F8B1F03F147CD0D}" {
+     Id "LF-Furniture_Crate_Name"
+     Target_en_us "Crate"
+     Comment "Inventory name of the carried crate a player places in their own house."
+    }
+    CustomStringTableItem "{B9313FCEA8888FFE}" {
+     Id "LF-Furniture_Cupboard_Name"
+     Target_en_us "Cupboard"
+     Comment "Inventory name of the carried cupboard a player places in their own house."
+    }
+    CustomStringTableItem "{5AAEAA90F687545E}" {
+     Id "LF-Furniture_Dresser_Name"
+     Target_en_us "Dresser"
+     Comment "Inventory name of the carried dresser a player places in their own house."
+    }
+    CustomStringTableItem "{31482C09BA882977}" {
+     Id "LF-Furniture_Fridge_Name"
+     Target_en_us "Fridge"
+     Comment "Inventory name of the carried fridge a player places in their own house."
+    }
+    CustomStringTableItem "{E5CB7A6F0B0F99C5}" {
+     Id "LF-Furniture_KitchenUnit_Name"
+     Target_en_us "Kitchen unit"
+     Comment "Inventory name of the carried kitchen unit a player places in their own house."
     }
     CustomStringTableItem "{100E11EBB38DD2B9}" {
      Id "LF-Furniture_Lamp_Name"
@@ -4347,6 +4382,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Furniture_Tv_Name"
      Target_en_us "Television"
      Comment "Inventory name of the carried television a player places in their own house."
+    }
+    CustomStringTableItem "{252218056270237E}" {
+     Id "LF-Furniture_Wardrobe_Name"
+     Target_en_us "Wardrobe"
+     Comment "Inventory name of the carried wardrobe a player places in their own house."
     }
     CustomStringTableItem "{2D489E9F3516FB40}" {
      Id "LF-Furniture_Workbench_Name"
@@ -8996,6 +9036,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Placement_CapProperty"
      Target_en_us "This property already holds as many placed things as it may. Pick one up first."
      Comment "Toast when a permanent placement is refused: the property reached its cap (#1032)."
+    }
+    CustomStringTableItem "{4A63282A460A441D}" {
+     Id "LF-Placement_EmptyFirst"
+     Target_en_us "Empty it first"
+     Comment "Toast under Placing when the player picks up a storage furniture that still holds items."
     }
     CustomStringTableItem "{7D3F102C9E5B6C43}" {
      Id "LF-Placement_KeyCancel"
