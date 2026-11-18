@@ -158,10 +158,24 @@ export function parseLease(st) {
   return { state: m[1], host: m[2], pid: m[3] ? Number(m[3]) : null, at: m[4] ?? st.created_at ?? null };
 }
 
+// The host name a lease carries: the machine name with whitespace runs as "-" (the lease description is
+// space-separated). Until #2764 the cleanup was /s+/g, which turned every run of the letter "s" into "-":
+// "lf-testbox" was written as "lf-te-tbox". The legacy form is still what an older guard writes, so a lease
+// in either spelling is ours (sameLeaseHost); new leases use the real name.
+export function leaseHostName(raw) {
+  return String(raw).replace(/\s+/g, "-");
+}
+export function legacyLeaseHostName(raw) {
+  return String(raw).replace(/s+/g, "-"); // lf-regex-ok: the pre-#2764 lease host spelling, kept so existing leases still match
+}
+export function sameLeaseHost(leaseHost, host) {
+  return leaseHost === host || leaseHost === legacyLeaseHostName(host);
+}
+
 // Pure: may `host` take the lease? { ok, holder, why }.
 export function leaseDecision(lease, host, now = Date.now(), ttl = LEASE_TTL_MS) {
   if (!lease || lease.state !== "held") return { ok: true, why: "free" };
-  if (lease.host === host) return { ok: true, holder: lease, why: "ours" };
+  if (sameLeaseHost(lease.host, host)) return { ok: true, holder: lease, why: "ours" };
   const age = now - Date.parse(lease.at ?? "");
   if (!Number.isFinite(age) || age > ttl) return { ok: true, holder: lease, why: `stale lease of ${lease.host}` };
   return { ok: false, holder: lease, why: `the main guard runs on ${lease.host} (pid ${lease.pid}, lease renewed ${Math.round(age / 60000)} min ago)` };

@@ -1,0 +1,28 @@
+GenericEntity : "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et" {
+ ID "B8B78292C4122602"
+ components {
+  ActionsManagerComponent "{2855C25D46734443}" {
+   ActionContexts {
+    UserActionContext "{AAF90794B82A4E02}" {
+     ContextName "default"
+     Position PointInfo "{D8D5A9137F6E7917}" {
+      Offset -0.0358 0.1232 0.0439
+     }
+     Radius 1.7
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{F92A7F5E3077B363}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{75E455B84DD76BEE}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

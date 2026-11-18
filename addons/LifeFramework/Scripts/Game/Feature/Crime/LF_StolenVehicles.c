@@ -308,7 +308,7 @@ class LF_StolenVehicles
 			return false;
 		}
 
-		// The garage keeps no cargo: the officer searches the car before it goes back (#2411).
+		// The officer searches the car before it goes back, so a thief's goods never ride home in the owner's garage (#2411, #2809).
 		if (LF_Garage.HasCargo(vehicle))
 		{
 			LF_Debug.Warn(FEATURE, string.Format("recover refused on %1: the vehicle still holds items", vehicleId));

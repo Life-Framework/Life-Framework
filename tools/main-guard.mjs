@@ -25,7 +25,7 @@ import * as mg from "./lib/main-guard.mjs";
 import * as pin from "./lib/guard-pin.mjs";
 import { hostname } from "node:os";
 
-const HOST = (process.env.LF_MACHINE_NAME || hostname()).replace(/s+/g, "-");
+const HOST = pin.leaseHostName(process.env.LF_MACHINE_NAME || hostname());
 
 const SELF = fileURLToPath(import.meta.url);
 const TICK_MS = 60 * 1000;
@@ -435,7 +435,7 @@ export async function runWorker(root) {
   const beat = setInterval(() => {
     try {
       const cur = pin.readLease(dir);
-      if (cur && cur.state === "held" && cur.host !== HOST) { leaseLost = cur.host; return; }
+      if (cur && cur.state === "held" && !pin.sameLeaseHost(cur.host, HOST)) { leaseLost = cur.host; return; }
       pin.writeLease(dir, "held", HOST, process.pid);
     } catch (e) { log(root, `lease renewal failed: ${e?.message ?? e}`); }
   }, 5 * 60 * 1000);
@@ -568,7 +568,7 @@ export async function main(args, { root }) {
     try { process.kill(pid); } catch {}
     try { unlinkSync(lockPath(root)); } catch {}
     writeState(root, { stop: false, running: null });
-    if (pin.readLease(mainRoot(root))?.host === HOST) pin.writeLease(mainRoot(root), "released", HOST);
+    if (pin.sameLeaseHost(pin.readLease(mainRoot(root))?.host, HOST)) pin.writeLease(mainRoot(root), "released", HOST);
     console.log(`main-guard: stopped (pid ${pid})`);
     return 0;
   }

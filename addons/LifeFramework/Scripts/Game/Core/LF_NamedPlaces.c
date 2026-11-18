@@ -39,15 +39,37 @@ class LF_NamedPlaces
 			return null;
 		}
 
-		SCR_EditableEntityComponent nearest = core.FindNearestEntity(pos, EEditableEntityType.COMMENT, EEditableEntityFlag.LOCAL);
+		// Not core.FindNearestEntity: it iterates the core's private entity set without a null check, and
+		// that set stays null until the first editable entity registers (a world with no labels, such as
+		// TestLogic, VMEs inside it). GetAllEntities guards the null and hands back an empty set.
+		set<SCR_EditableEntityComponent> entities = new set<SCR_EditableEntityComponent>();
+		core.GetAllEntities(entities, true);
+
+		SCR_EditableEntityComponent nearest;
+		float nearestDistSq = float.MAX;
+		vector nearestAt;
+		foreach (SCR_EditableEntityComponent entity : entities)
+		{
+			if (!entity || entity.GetEntityType() != EEditableEntityType.COMMENT || !entity.HasEntityFlag(EEditableEntityFlag.LOCAL))
+				continue;
+
+			vector at;
+			if (!entity.GetPos(at))
+				continue;
+
+			float distSq = vector.DistanceSqXZ(at, pos);
+			if (distSq >= nearestDistSq)
+				continue;
+
+			nearestDistSq = distSq;
+			nearest = entity;
+			nearestAt = at;
+		}
+
 		if (!nearest)
 			return null;
 
-		vector at;
-		if (!nearest.GetPos(at))
-			return null;
-
-		if (vector.DistanceXZ(at, pos) > maxRadius)
+		if (vector.DistanceXZ(nearestAt, pos) > maxRadius)
 			return null;
 
 		return nearest;
