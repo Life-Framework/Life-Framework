@@ -316,7 +316,7 @@ set them. File and constant, then the value.
 
 | File | Constant or literal | Value | Moves to |
 | --- | --- | --- | --- |
-| `Feature/Jobs/LF_CivilianJob.c` | `PAY_PARCEL`, `PAY_FUEL`, `PAY_TAXI` | 40, 60, 80 | `LF_Jobs.conf` |
+| `Feature/Jobs/LF_CivilianJob.c` | `PAY_PARCEL`, `PAY_FUEL`, `PAY_TAXI` | 40, 60, 80 | `LF_Jobs.conf` `runPays` (moved #3147; the constants are the fallback) |
 | `Feature/Jobs/LF_CivilianJob.c` | `TAXI_PREFAB` | vanilla `S105_beige.et` | jobs config (catalogue pick) |
 | `Feature/Jobs/LF_CivilianJob.c` | `DEPOT_PREFAB` | vanilla post office counter | jobs config |
 | `Feature/Jobs/LF_JobGuards.c` | `FruitPrefab()` | apple, tomato, plum, rowan berries | jobs config |

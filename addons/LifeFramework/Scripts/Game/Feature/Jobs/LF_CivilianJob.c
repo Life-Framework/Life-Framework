@@ -43,9 +43,10 @@ class LF_CivilianJob
 	//! The system id the Jobs switch answers to (#1074).
 	static const string SYSTEM = "Jobs";
 
-	static const int PAY_PARCEL = 40;
-	static const int PAY_FUEL = 60;
-	static const int PAY_TAXI = 80;
+	//! Run pay when the jobs config has no usable row (#3147); the core LF_Jobs.conf `runPays` mirrors them.
+	static const int PAY_PARCEL = 40;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
+	static const int PAY_FUEL = 60;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
+	static const int PAY_TAXI = 80;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
 
 	//! The reason keys the drop-off refusal shows (Language/everonlife_localization.st).
 	static const string KEY_TOO_CLOSE = "#LF-Job_TooClose";
@@ -321,14 +322,21 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What a finished run of `job` pays: the jobs config's run pay row (a pack or the owner sets it,
+	//! #3147), or the PAY_ constant when the config has no usable row.
 	static int PayFor(LF_EJobType job)
 	{
+		int shipped = PAY_PARCEL;
 		if (job == LF_EJobType.FUEL_DELIVERY)
-			return PAY_FUEL;
-		if (job == LF_EJobType.TAXI)
-			return PAY_TAXI;
+			shipped = PAY_FUEL;
+		else if (job == LF_EJobType.TAXI)
+			shipped = PAY_TAXI;
 
-		return PAY_PARCEL;
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return shipped;
+
+		return config.RunPayFor(typename.EnumToString(LF_EJobType, job), shipped);
 	}
 
 	//------------------------------------------------------------------------------------------------

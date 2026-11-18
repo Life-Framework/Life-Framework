@@ -22,6 +22,8 @@ export const TAXI_METRES = 2000;
 /** The job level each run type needs (LF_CivilianJob.LevelFor): parcel 1, fuel 2, taxi 3. */
 const RUN_LEVEL = { parcel: 1, fuel: 2, taxi: 3 };
 const PAY_CONST = { parcel: "PAY_PARCEL", fuel: "PAY_FUEL" };
+/** The jobs.runPays row key of each run type (the LF_EJobType name). */
+const RUN_JOB = { parcel: "PARCEL", fuel: "FUEL_DELIVERY", taxi: "TAXI" };
 export const HOURS = [1, 2, 4, 6];
 
 const read = (p) => (existsSync(p) ? readFileSync(p, "utf8") : "");
@@ -128,8 +130,15 @@ export function buildReport(root, opts = {}) {
   const fares = { floor: num(fareProps.m_iFloor?.value), rate: num(fareProps.m_fRatePerMetre?.value), cap: num(fareProps.m_iCap?.value), shortHop: num(fareProps.m_fShortHopMetres?.value, 100) };
   const taxiMetres = opts.taxiMetres ?? TAXI_METRES;
   const taxiPay = fares.floor > 0 && fares.rate > 0 && fares.cap > 0 ? taxiFare(fares, taxiMetres) : null;
+  // A parcel or fuel run pays its jobs.runPays row (core LF_Jobs.conf, a pack overlay or the owner's section over it);
+  // with no usable row (below 1) the PAY_ constant is the fallback, as LF_CivilianJob.PayFor does (#3147).
+  const runPayRows = new Map(listOf(addonsDir, "jobs.runPays", packLayers, owner).map((r) => [r.id, num(r.f("pay") ?? r.f("m_iPay"))]));
+  const runPay = (type) => {
+    const row = runPayRows.get(RUN_JOB[type]);
+    return row >= 1 ? row : constIn(jobText, PAY_CONST[type]);
+  };
   const runs = Object.keys(RUN_MINUTES).map((type) => {
-    const pay = type === "taxi" ? taxiPay : constIn(jobText, PAY_CONST[type]);
+    const pay = type === "taxi" ? taxiPay : runPay(type);
     const unlock = runsToLevel(RUN_LEVEL[type], thresholds, xpPerRun);
     const minutes = runMinutes[type];
     return { job: type, pay: pay ?? 0, payKnown: pay !== null, unlockRuns: unlock, minutes, perHour: Math.round((pay ?? 0) * 60 / minutes) };
