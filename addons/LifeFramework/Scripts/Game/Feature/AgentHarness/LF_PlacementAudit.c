@@ -7,6 +7,8 @@ class LF_PlacementMeasure
 	float m_fGap;
 	//! Pivot height above that surface.
 	float m_fPivotGap;
+	//! LF_PlaceSnap's contact measure (footprint grid, proxy boxes ignored): "cgap=.. cspread=.. chits=..", or "cgap=none".
+	string m_sContact = "cgap=none";
 	float m_fTilt;
 	float m_fScale = 1;
 	//! What the centre rests on: an entity label, or "terrain".
@@ -531,6 +533,10 @@ class LF_PlacementAudit
 			return m;
 		}
 
+		LF_PlaceSnapResult contact = LF_PlaceSnap.Measure(entity);
+		if (contact.m_iHits > 0)
+			m.m_sContact = string.Format("cgap=%1 cspread=%2 chits=%3/%4", F(contact.m_fGap), F(contact.m_fSpread), contact.m_iHits, contact.m_iRays);
+
 		m.m_bPoint = m.m_vHalf[0] < 0.01 && m.m_vHalf[1] < 0.01 && m.m_vHalf[2] < 0.01;
 		if (!m.m_bPoint)
 		{
@@ -608,7 +614,7 @@ class LF_PlacementAudit
 		string flags = Flags(m);
 		if (flags.IsEmpty())
 			flags = "none";
-		return text + " flags=" + flags;
+		return text + " " + m.m_sContact + " flags=" + flags;
 	}
 
 	//------------------------------------------------------------------------------------------------

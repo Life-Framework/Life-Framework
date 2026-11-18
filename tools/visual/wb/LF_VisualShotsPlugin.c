@@ -300,7 +300,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 				park = Rest(line, 5);
 			else if (line.StartsWith("dump "))
 				dumps.Insert(line);
-			else if (line.StartsWith("shot ") || line.StartsWith("close ") || line.StartsWith("item "))
+			else if (line.StartsWith("shot ") || line.StartsWith("close ") || line.StartsWith("item ") || line.StartsWith("contact "))
 				shots.Insert(line);
 		}
 
@@ -545,6 +545,9 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 
 		if (p[0] == "item")
 			return TakeItem(p, shot, settleMs, first, firstMs);
+
+		if (p[0] == "contact")
+			return TakeContact(p, shot, settleMs, first, firstMs);
 
 		if (p.Count() < 8)
 		{
@@ -813,6 +816,226 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 		bool ok = Capture(name, cam, target, fov, string.Format("clear=1 found=1 size=%1,%2,%3", maxs[0] - mins[0], maxs[1] - mins[1], maxs[2] - mins[2]), settleMs, first, firstMs);
 		SCR_EntityHelper.DeleteEntityAndChildren(item);
 		return ok;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// contact <name> <entity|-> <x> <y> <z> <view> [az]   (placement spike, tools\cli look contact)
+	//   One picture of where an entity touches what it stands on. The entity is found by name, else the one whose
+	//   world-bounds centre is nearest (x, y, z) within 0.5 m (never by pivot: many pivots are not the base).
+	//   Its contact is measured with LF_PlaceSnap (mesh-bounds bottom through the transform, a 3x3 footprint of
+	//   traces, proxy boxes ignored) and drawn over the frame, through the mesh: RED = the measured bottom face,
+	//   GREEN = the support the traces found under it, YELLOW = the 9 contact rays. A gap or a sink of 1 cm is
+	//   two separate outlines at this framing. view 0..3 = a low side view from az + 90 * view, the camera 2 cm
+	//   above the bottom (the clearest of az +-0/30/60 wins); view top = straight down onto the footprint.
+	//   Status: `ok shot` with gap= spread= hits= on= size= (the same numbers the audit's cgap uses).
+	protected IEntity m_ContactEntity;
+	protected string m_sContactKey;
+	protected ref array<ref Shape> m_aContactShapes = {};
+	protected ref LF_PlaceSnapResult m_ContactResult;
+	protected vector m_vContactBest;
+	protected float m_fContactBest;
+	protected IEntity m_ContactNearest;
+	//! "@<prefab file name>": only an entity of that prefab counts (store stock beside the shelf's own decoration).
+	protected string m_sContactPrefab;
+
+	protected bool CollectContact(IEntity entity)
+	{
+		if (!entity || !entity.GetVObject())
+			return true;
+
+		vector mins, maxs;
+		entity.GetWorldBounds(mins, maxs);
+		vector size = maxs - mins;
+		// Not the building, the shelf or the room around the item: something the point is the centre of.
+		if (size.Length() > 6)
+			return true;
+
+		// Stock: a root entity (the shelf's own decoration is a child of the building's furniture); its prefab when the engine names it
+		// (Workbench play returns no prefab data for spawned entities, 2026-11-18).
+		if (!m_sContactPrefab.IsEmpty())
+		{
+			if (entity.GetParent())
+				return true;
+
+			string base = LF_PlacementAudit.PrefabBase(entity);
+			if (!base.IsEmpty() && base != m_sContactPrefab)
+				return true;
+		}
+
+		float d = vector.Distance((mins + maxs) * 0.5, m_vContactBest);
+		if (d < m_fContactBest)
+		{
+			m_fContactBest = d;
+			m_ContactNearest = entity;
+		}
+
+		return true;
+	}
+
+	protected ref array<string> m_aContactNear = {};
+
+	protected bool CollectContactNear(IEntity entity)
+	{
+		if (entity && entity.GetVObject() && m_aContactNear.Count() < 6)
+			m_aContactNear.Insert(LF_PlacementAudit.PrefabBase(entity));
+
+		return true;
+	}
+
+	protected void ClearContactShapes()
+	{
+		m_aContactShapes.Clear();
+	}
+
+	protected void Outline(IEntity entity, float y, int color)
+	{
+		vector mins, maxs;
+		entity.GetBounds(mins, maxs);
+		vector pts[5];
+		pts[0] = entity.CoordToParent(Vector(mins[0], mins[1], mins[2]));
+		pts[1] = entity.CoordToParent(Vector(maxs[0], mins[1], mins[2]));
+		pts[2] = entity.CoordToParent(Vector(maxs[0], mins[1], maxs[2]));
+		pts[3] = entity.CoordToParent(Vector(mins[0], mins[1], maxs[2]));
+		pts[4] = pts[0];
+		if (y > -1e8)
+		{
+			for (int i = 0; i < 5; i++)
+				pts[i][1] = y;
+		}
+
+		m_aContactShapes.Insert(Shape.CreateLines(color, ShapeFlags.NOZBUFFER | ShapeFlags.NOOUTLINE, pts, 5, 2));
+	}
+
+	protected bool TakeContact(notnull array<string> p, string shot, int settleMs, bool first, int firstMs)
+	{
+		if (p.Count() < 7)
+		{
+			Note("error bad_shot " + shot);
+			return false;
+		}
+
+		string name = p[1];
+		vector pos = Vector(p[3].ToFloat(), p[4].ToFloat(), p[5].ToFloat());
+		string view = p[6];
+		float az0 = 0;
+		if (p.Count() > 7)
+			az0 = p[7].ToFloat();
+
+		// One measure and one set of outlines per entity; the five views of it reuse them.
+		string key = p[2] + "@" + p[3] + "," + p[4] + "," + p[5];
+		if (key != m_sContactKey)
+		{
+			ClearContactShapes();
+			m_sContactKey = key;
+			m_ContactEntity = null;
+			m_sContactPrefab = "";
+			if (p[2].StartsWith("@"))
+				m_sContactPrefab = p[2].Substring(1, p[2].Length() - 1);
+			else if (p[2] != "-")
+				m_ContactEntity = m_World.FindEntityByName(p[2]);
+
+			if (!m_ContactEntity)
+			{
+				m_ContactNearest = null;
+				m_fContactBest = 0.5;
+				m_vContactBest = pos;
+				m_World.QueryEntitiesBySphere(pos, 1.5, CollectContact, null, EQueryEntitiesFlags.ALL);
+				m_ContactEntity = m_ContactNearest;
+				m_ContactNearest = null;
+			}
+
+			// A layer entity given by its layer coords (an unnamed one): those are its pivot.
+			if (!m_ContactEntity && m_sContactPrefab.IsEmpty())
+			{
+				m_Nearest = null;
+				m_fNearest = 0.3;
+				m_vNearest = pos;
+				m_World.QueryEntitiesBySphere(pos, 1, CollectNearest, null, EQueryEntitiesFlags.ALL);
+				m_ContactEntity = m_Nearest;
+				m_Nearest = null;
+			}
+
+			m_ContactResult = null;
+			if (m_ContactEntity)
+			{
+				m_ContactResult = LF_PlaceSnap.Measure(m_ContactEntity);
+				Outline(m_ContactEntity, -1e9, Color.RED);
+				if (m_ContactResult.m_iHits > 0)
+					Outline(m_ContactEntity, m_ContactResult.m_fSupportY, Color.GREEN);
+
+				array<vector> rays = {};
+				LF_PlaceSnap.ContactPoints(m_ContactEntity, rays);
+				foreach (vector r : rays)
+				{
+					m_aContactShapes.Insert(Shape.CreateLine(Color.YELLOW, ShapeFlags.NOZBUFFER, r + "0 0.03 0", r - "0 0.03 0", 1));
+				}
+			}
+		}
+
+		if (!m_ContactEntity)
+		{
+			// What is there instead: the prefabs within 0.5 m, so a wrong point or a late spawn reads at once.
+			m_aContactNear.Clear();
+			m_World.QueryEntitiesBySphere(pos, 0.5, CollectContactNear, null, EQueryEntitiesFlags.ALL);
+			Note(string.Format("error contact_not_found %1 want=%2 near=%3", name, m_sContactPrefab, m_aContactNear.Count()) + " " + SCR_StringHelper.Join(",", m_aContactNear));
+			return false;
+		}
+
+		vector mins, maxs;
+		m_ContactEntity.GetWorldBounds(mins, maxs);
+		vector size = maxs - mins;
+		float foot = Math.Max(size[0], size[2]);
+		vector target = Vector((mins[0] + maxs[0]) * 0.5, mins[1], (mins[2] + maxs[2]) * 0.5);
+		// The contact line, or the middle between bottom and support when they are far apart, so both outlines are in frame.
+		float apart = 0;
+		if (m_ContactResult)
+		{
+			target[1] = m_ContactResult.m_fBottomY;
+			if (m_ContactResult.m_iHits > 0 && Math.AbsFloat(m_ContactResult.m_fGap) < 3)
+			{
+				apart = Math.AbsFloat(m_ContactResult.m_fGap);
+				target[1] = m_ContactResult.m_fBottomY - m_ContactResult.m_fGap * 0.5;
+			}
+		}
+
+		vector cam;
+		float fov;
+		float clear = 1;
+		if (view == "top")
+		{
+			float h = Math.Clamp(foot * 1.4, 0.5, 8);
+			cam = target + Vector(0, h, -0.001);
+			fov = Math.Clamp(2 * Math.Atan2(foot * 0.8, h) * Math.RAD2DEG, 20, VERTICAL_FOV);
+		}
+		else
+		{
+			// Low and close: the frame is about the footprint wide and a third of it high, centred on the contact line.
+			float dist = Math.Clamp(foot * 1.6, 0.35, 8);
+			float span = Math.Clamp(Math.Max(Math.Max(foot * 0.6, size[1] * 0.5), apart * 1.6), 0.12, 3);
+			fov = Math.Clamp(2 * Math.Atan2(span * 0.5, dist) * Math.RAD2DEG, 8, VERTICAL_FOV);
+			float base = az0 + 90 * view.ToInt();
+			array<float> tries = { 0, 30, -30, 60, -60 };
+			float best = -10;
+			foreach (int i, float off : tries)
+			{
+				float a = (base + off) * Math.DEG2RAD;
+				vector at = Vector(target[0] + Math.Sin(a) * dist, target[1] + 0.02, target[2] + Math.Cos(a) * dist);
+				float free = Clear(at, target + "0 0.01 0") - 0.02 * i;
+				if (free > best)
+				{
+					best = free;
+					cam = at;
+				}
+			}
+
+			clear = best;
+		}
+
+		string detail = string.Format("view=%1 clear=%2 size=%3,%4,%5 found=1", view, clear, size[0], size[1], size[2]);
+		if (m_ContactResult)
+			detail = detail + string.Format(" gap=%1 spread=%2 hits=%3/%4 on=%5", m_ContactResult.m_fGap, m_ContactResult.m_fSpread, m_ContactResult.m_iHits, m_ContactResult.m_iRays, m_ContactResult.m_sOn);
+
+		return Capture(name, cam, target, fov, detail, settleMs, first, firstMs);
 	}
 
 	//------------------------------------------------------------------------------------------------
