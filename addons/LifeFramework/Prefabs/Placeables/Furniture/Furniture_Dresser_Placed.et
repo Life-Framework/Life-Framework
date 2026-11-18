@@ -1,0 +1,52 @@
+GenericEntity : "{A319C11D446D88B3}Prefabs/Props/Furniture/Dresser_01.et" {
+ ID "6C163B085C50F867"
+ components {
+  ActionsManagerComponent "{7C9A1992DB463CC1}" {
+   ActionContexts {
+    UserActionContext "{615193B50CD237F8}" {
+     ContextName "default"
+     Position PointInfo "{1B892024D36FE433}" {
+      Offset -0.75 0.5 0.379
+     }
+     Radius 1.741
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{154C3690259C3580}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_FurnitureStorageOpenAction "{A725B4E6C515EB36}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo SCR_ActionUIInfo "{D91023DB41C447E8}" {
+      Name "#LF-FurnitureStorage_Open"
+     }
+    }
+   }
+  }
+  LF_FurnitureStorageManagerComponent "{2772432F02491982}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{9C8F4865494EBF94}" {
+   Attributes SCR_ItemAttributeCollection "{923897D3251445EE}" {
+    ItemDisplayName SCR_InventoryUIInfo "{BE97DBD7DD1EFEC8}" {
+     Name "#LF-Furniture_Dresser_Name"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 80000
+   MaxItemSize 70 40 70
+   m_fMaxWeight 40
+  }
+  LF_PersistentStorageComponent "{94BD03188F7FEC37}" {
+   m_bKeyAssignedLater 1
+  }
+  LF_PlacedOwnerComponent "{1AD50189696D1843}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}
