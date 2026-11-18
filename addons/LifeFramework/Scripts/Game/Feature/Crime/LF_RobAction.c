@@ -263,7 +263,11 @@ class LF_RobAction : ScriptedUserAction
 			return;
 
 		s_iCashPaid = s_iCashPaid + paid;
-		LF_Debug.Log("Crime", string.Format("robbery +%1 cash to player %2", paid, playerUid));
+		string kind = "cash";
+		if (LF_LaunderConfig.CrimePaysMarked())
+			kind = "marked notes";
+
+		LF_Debug.Log("Crime", string.Format("robbery +%1 %2 to player %3", paid, kind, playerUid));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -506,6 +510,10 @@ class LF_RobAction : ScriptedUserAction
 		if (!user)
 			return payout;
 
+		// Dirty money (#2851): with the server's switch on the till pays marked notes, never cash.
+		if (LF_LaunderConfig.CrimePaysMarked())
+			return PayMarked(user, payout);
+
 		int paid = LF_MoneyUtils.AddCash(user, payout, "robbery");
 		if (paid != payout)
 		{
@@ -517,5 +525,22 @@ class LF_RobAction : ScriptedUserAction
 		}
 
 		return paid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The robbery payout as marked notes: all of it or nothing (a short add is taken back).
+	protected static int PayMarked(IEntity user, int payout)
+	{
+		int added = LF_MarkedCash.Add(user, payout, "robbery");
+		if (added != payout)
+		{
+			if (added > 0)
+				LF_MarkedCash.Take(user, added, "robbery-rollback");
+
+			LF_Debug.Error("Crime", string.Format("robbery payout short: %1 of %2 marked notes", added, payout));
+			return 0;
+		}
+
+		return added;
 	}
 };
