@@ -36,7 +36,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation, orgwars, garageslots, plants, lockers, tenancy. The written version is that list's length (58). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation, orgwars, garageslots, plants, lockers, tenancy. That list is frozen at 58 (LEGACY_COUNT); the store writes SECTIONED_FORMAT (#2841). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -131,10 +131,18 @@
 //! bank loads with nobody renting.
 //! A version 57 save includes the locker rentals and has no hideout tenancy rows (#2816): every
 //! lease loads as a base lease, none as captured ground.
-//! The next system adds one Insert at the end of the list and raises the written version by one.
-//! Do not insert earlier and do not reorder: existing saves are positional.
+//! The list is FROZEN at LEGACY_COUNT (#2841): a new payload is an LF_SavePayload section in its own
+//! feature file, never an Insert here. Do not insert, append or reorder: existing saves are positional.
 //!
-//! NEWER SAVES. A save whose version is above this list's length was written by a newer build (a
+//! SECTIONS (#2841). A save written at SECTIONED_FORMAT holds every legacy payload positionally,
+//! exactly as a LEGACY_COUNT save does, then the section manifest and one named object per
+//! LF_SavePayload, each with its own small version (LF_SaveSections, docs/persistence.md
+//! "Sections"). A positional save (1..LEGACY_COUNT) has no sections: each registered section gets
+//! OnAbsent(). A build from before the switch reads a sectioned save as a newer version: every
+//! legacy payload loads (the same positions) and autosave pauses, the rule below.
+//!
+//! NEWER SAVES. A save whose version is above LEGACY_COUNT and not SECTIONED_FORMAT (or above
+//! SECTIONED_FORMAT), or that holds a section this build cannot read, was written by a newer build (a
 //! rollback, or a merge the main guard reverted). Its known payloads load, the rest are not read,
 //! and the load counts as damaged: the next save would drop the payloads this build cannot read,
 //! so autosave pauses and the save on disk is kept (the #980 fail-safe).
@@ -146,6 +154,11 @@
 //------------------------------------------------------------------------------------------------
 class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 {
+	//! The frozen length of RegisterPersistencePayloads (#2841). Never raised again: new payloads are sections.
+	static const int LEGACY_COUNT = 58;
+	//! The version a sectioned save writes: the legacy payloads, then the sections (#2841).
+	static const int SECTIONED_FORMAT = 1000;
+
 	//! True once DeserializeStore ran this boot. A boot that continues a save and reaches ACTIVE
 	//! with this still false has a save written before the pre-release LF_ rename (the engine matches
 	//! the component key LF_PersistenceComponent:<id> literally), see docs/persistence.md "Save reset".
@@ -247,8 +260,8 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The only payload order. Index 0 is version 1. Written version equals this length.
-	//! Append the next system at the end; do not insert or reorder.
+	//! The legacy payload order. Index 0 is version 1. FROZEN at LEGACY_COUNT (#2841): a new payload
+	//! is an LF_SavePayload section in its feature folder, never an Insert here.
 	//! \param[out] order Empty array filled with the payload names in save order.
 	protected static void RegisterPersistencePayloads(notnull array<string> order)
 	{
@@ -343,7 +356,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	{
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
-		context.WriteValue("version", 58);
+		context.WriteValue("version", SECTIONED_FORMAT);
 		WritePrefix(context);
 
 		foreach (string payload : order)
@@ -351,6 +364,27 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			WritePersistencePayload(persistence, context, payload);
 		}
 
+		LF_SaveSections.WriteAll(context);
+		return ESerializeResult.OK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The current format without some sections: what the build before those sections wrote. Tests
+	//! use it for "a save that predates this section".
+	//! \param[in] omit Section names to leave out.
+	static ESerializeResult SerializeStoreOmitting(notnull LF_PersistenceComponent persistence, notnull SaveContext context, notnull array<string> omit)
+	{
+		array<string> order = new array<string>();
+		RegisterPersistencePayloads(order);
+		context.WriteValue("version", SECTIONED_FORMAT);
+		WritePrefix(context);
+
+		foreach (string payload : order)
+		{
+			WritePersistencePayload(persistence, context, payload);
+		}
+
+		LF_SaveSections.WriteAll(context, omit);
 		return ESerializeResult.OK;
 	}
 
@@ -361,6 +395,10 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 	//! \param[in] version Save version to write, 1 to the current one.
 	static ESerializeResult SerializeStoreAsVersion(notnull LF_PersistenceComponent persistence, notnull SaveContext context, int version)
 	{
+		// SECTIONED_FORMAT is the current store; any version 1..LEGACY_COUNT is positional, with no sections.
+		if (version >= SECTIONED_FORMAT)
+			return SerializeStore(persistence, context);
+
 		array<string> order = new array<string>();
 		RegisterPersistencePayloads(order);
 		int written = Math.ClampInt(version, 1, order.Count());
@@ -466,10 +504,16 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			}
 		}
 
+		// A sectioned save (#2841) holds every legacy payload, positionally, before its sections. Every
+		// "version <= order.Find(x)" check below reads this, so a sectioned save counts as having them all.
+		int legacyVersion = version;
+		if (version >= SECTIONED_FORMAT)
+			legacyVersion = order.Count();
+
 		int reached = 0;
 		for (int index = 0; index < order.Count(); index++)
 		{
-			if (index >= version)
+			if (index >= legacyVersion)
 				break;
 
 			if (s_iReadFailures > 0)
@@ -480,14 +524,37 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		}
 
 		if (s_iReadFailures > 0)
-			s_iSkippedAfterFailure += Math.Min(version, order.Count()) - reached;
+			s_iSkippedAfterFailure += Math.Min(legacyVersion, order.Count()) - reached;
+
+		// The sections sit after the legacy payloads, so a positional failure before them leaves them unread
+		// (live state kept). Each section is its own skippable object: one that fails does not stop the rest.
+		if (version == SECTIONED_FORMAT)
+		{
+			if (s_iReadFailures > 0)
+			{
+				s_iSkippedAfterFailure++;
+			}
+			else
+			{
+				int sectionsFailed;
+				int sectionsUnread;
+				LF_SaveSections.ReadAll(context, sectionsFailed, sectionsUnread);
+				s_iReadFailures += sectionsFailed + sectionsUnread;
+			}
+		}
+		else if (version < SECTIONED_FORMAT)
+		{
+			LF_SaveSections.MarkAllAbsent();
+		}
 
 		if (s_iSkippedAfterFailure > 0)
 			LF_Debug.Error("Persistence", string.Format("save load stopped at the first failed read: %1 later payload(s) not applied, they keep their live state (a positional read past a failure is misaligned)", s_iSkippedAfterFailure));
 
 		// A newer build wrote this save: what it holds past this list cannot be read, and saving
 		// over it would drop that. Damaged, so autosave pauses and the save on disk is kept.
-		if (version > order.Count())
+		if (version > SECTIONED_FORMAT)
+			ReadFailed(string.Format("save format %1 is newer than this build's %2: only the legacy payloads are read; autosave pauses so the rest is not dropped", version, SECTIONED_FORMAT));
+		else if (version < SECTIONED_FORMAT && version > order.Count())
 			ReadFailed(string.Format("save version %1 is newer than this build's %2: %3 payload(s) at the end are not read; autosave pauses so they are not dropped", version, order.Count(), version - order.Count()));
 
 		// The owner's persistence switches (#689): each switched-off field is reset to its default
@@ -496,27 +563,28 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 
 		// After every payload: a wanted report is kept only while the character it names is wanted,
 		// and the "characters" payload restores those levels after "wanted" loads (#331).
-		if (version > order.Find("wanted"))
+		if (legacyVersion > order.Find("wanted"))
 			LF_WantedReports.PruneCleared();
 
 		// A save from before #331 has no character slots. ApplyAll already keyed each account's one
 		// character by the account uid (slot 1), which is what that save's records use.
 		// A save from before #749 has no job XP rows: "progression" seeded them from its single
 		// level and delivery career.
-		if (version > order.Find("progression") && version <= order.Find("joblevels"))
+		if (legacyVersion > order.Find("progression") && legacyVersion <= order.Find("joblevels"))
 			LF_Debug.Info("Persistence", string.Format("save version %1 has no job xp rows: job levels migrated from the single level (CIVILIAN) and the delivery career (DELIVERY), %2 job xp row(s)", version, LF_JobLevels.ExportAll().Count()));
 
 		// A save from before #2443 has no grace clocks: every character it holds gets its account's
 		// playtime, which is what the grace read then. After every payload, so playtime and slots are in.
-		if (version <= order.Find("graceclock"))
+		if (legacyVersion <= order.Find("graceclock"))
 			LF_GraceCharacterClock.SeedFromAccounts();
 
-		if (version <= order.Find("characters"))
+		if (legacyVersion <= order.Find("characters"))
 			LF_Debug.Info("Persistence", string.Format("save version %1 has no character slots: %2 account(s) load their character into slot 1, keyed by the account uid", version, LF_PlayerAccountManager.CountAccountsWithCharacters()));
 
 		LF_SaveIds.ReportLoad();
 		ReportLoad(version);
 		LF_SaveStamp.CaptureBoot();
+		LF_SaveSections.CaptureBoot();
 		return true;
 	}
 
@@ -792,11 +860,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			// The game build and save version that wrote this save (#980).
 			int stampVersion = saveVersion;
 			if (stampVersion <= 0)
-			{
-				array<string> stampOrder = new array<string>();
-				RegisterPersistencePayloads(stampOrder);
-				stampVersion = stampOrder.Count();
-			}
+				stampVersion = SECTIONED_FORMAT;
 			array<ref LF_SaveStampRecord> stampRows = LF_SaveStamp.Export(stampVersion);
 			context.Write(stampRows);
 			LF_Debug.Log("Persistence", string.Format("saved build stamp: game build %1, save version %2", stampRows.Get(0).m_sGameBuild, stampVersion));
