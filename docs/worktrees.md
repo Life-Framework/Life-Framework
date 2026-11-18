@@ -296,7 +296,7 @@ from <ref>`). The string-table driver refuses a side it cannot parse whole
 and writes git's line merge with exit 1 instead. `merge-content-selftest`
 merges real branches and compares the result byte for byte (#1154, #1161).
 
-The registry driver (`regen-generated.mjs`) reads the three sides' test sources with one `ls-tree` per side and one
+(Gone in #2618: tests carry `[LF_TestInfo]` and there is no registry or `lf-regen-tests` driver; the paragraph is history.) The registry driver (`regen-generated.mjs`) read the three sides' test sources with one `ls-tree` per side and one
 `git cat-file --batch`, never a git child per file: on a loaded laptop a spawn costs about 230 ms, and the old per-file
 `git show` (about 2300 children for 760 tests) ran past the 240 s backstop on every merge, in `git merge` and in
 `wt ship`'s merge alike. `LF_MERGE_DRIVER_TRACE=<file>` appends `<ms> <command>` per child process, which is how to
@@ -305,9 +305,9 @@ see where a slow merge goes; `merge-drivers-selftest` caps the git children at 1
 - **`DIRTY` or `BEHIND`, worktree not LIVE.** In its worktree (or a temporary
   detached `Life-Framework-heal-<n>` worktree at the PR head when it is gone,
   removed afterwards with the junction-safe helper) it merges `origin/main` with
-  the `tools/merge/` drivers. Conflicts only in the test registry, the language
+  the `tools/merge/` drivers. Conflicts only in the language
   confs, the string table, `features.md`, `debug-log-triage.md`, or the
-  enforce-lint baseline are resolved: the registry and confs by `regen-tests` /
+  enforce-lint baseline are resolved: the confs by
   `regen-localization`, the others by the drivers' merge logic on the index
   stages. Any other conflicted path aborts the merge; the PR, the worktree, and
   the branch stay as they were, and the PR is reported "needs a human/agent"
@@ -394,7 +394,7 @@ tools\cli pool prune [--dry-run] [--unmarked] [--lanes]    # remote run folders 
 tools\cli pool prune --idle <min> [--dry-run]              # every remote run folder idle that long (no lock, process or write)
 ```
 
-- **Sharding.** `--shards N|auto` splits the registry into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
+- **Sharding.** `--shards N|auto` splits the core suite (the `[LF_TestInfo]` lines) into balanced slices, one pool job each (`tools/lib/test-shards.mjs`; `--only-classes` is what a slice runs; timing history in the pool dir balances them). A slice pays its own boot and run-folder sync while the tests take about 4 s, so `auto` adds a slice only per 15 s of estimated test time: 1 per pass today (4 slices per pass measured 106 s, slower). The win is `--both`: the normal and core-only passes run at the same time on different lanes (median 37 s against 70 s back to back). `ci`, `wt gate` and `wt ship` do this by default; `ci --shards 1` runs the passes one after the other.
 - **Nothing in a gate waits silently.** The rdb refresh before the suite waits for the hub `build` lock through `tools/lib/lock-wait.mjs`: it prints the holder (`waiting on the build lock ...: held by pid N (rdb refresh in <worktree>), held N s; budget ...`), repeats every 30 s, and gives up at `LF_RDB_WAIT_S` (900 s) for the whole process, every addon together; a later addon fails at once instead of waiting again. Shard children run with `LF_RDB_CHECKED=1`, so the slices never refresh or wait a second time (before, the gate and each slice each waited 15 min per addon, silently: 25+ min with no output). While slices run, the parent prints `shards: <pass> i/n still running after N s: <last line>` every `LF_SHARD_HEARTBEAT_S` (120 s) and stops a slice after `LF_SHARD_TIMEOUT_S` (2700 s). `lock-wait-selftest` proves it.
 - **Who uses it.** `test`, `dev`, `ci`, `wt test`, `wt gate`, `wt ship` (its
   gate), `wt e2e`, and `e2e`. Every run prints where it ran and how long it
@@ -613,7 +613,7 @@ LOGIC test never reads (about 2.4 s on lf-cloud, 1.5 s on the laptop).
 
 - **Routed to TestLogic**: `--tier fast` (fast runs LOGIC only), and `--only` or
   `--red` when every name resolves to a LOGIC test (class name or `GetName()`,
-  read from the `// tier:` lines). `test` prints `test: world
+  read from the `[LF_TestInfo]` lines). `test` prints `test: world
   Worlds/TestLogic/TestLogic.ent (<reason>)`.
 - **Routed to GridWorld** (`Worlds/GridWorld/GridWorld.ent`, #1804): `--tier all`,
   `--tier persistence`, an `--only`/`--red` list with any WORLD, PERSISTENCE or

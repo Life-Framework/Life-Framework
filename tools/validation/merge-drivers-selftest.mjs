@@ -131,22 +131,20 @@ if (!lintRound.ok || lintRound.text !== lintText) fail("enforce-lint-baseline.js
 const locPlan = regenPlan("addons/LifeFramework/Language/everonlife_localization.en_us.conf");
 const packLocPlan = regenPlan("addons/LF_Everon1989/Language/lf_everon1989_localization.en_us.conf");
 if (!packLocPlan || packLocPlan.kind !== "localization") fail("a pack language conf should resolve by regen-localization -Write");
-const testPlan = regenPlan("addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c");
 if (!locPlan || !locPlan.script.endsWith("regen-localization.ps1") || !locPlan.args.includes("-Write")) {
   fail("language confs should resolve by regen-localization -Write");
-}
-if (!testPlan || !testPlan.script.endsWith("gen-test-registry.ps1") || !testPlan.args.includes("-Write")) {
-  fail("the test registry should resolve by regen-tests -Write");
 }
 
 const attributes = readFileSync(join(ROOT, ".gitattributes"), "utf8");
 const driverConfig = readFileSync(join(ROOT, "tools", "merge", "drivers.gitconfig"), "utf8");
+// #2618: tests register themselves with [LF_TestInfo]; no registry, so no lf-regen-tests driver.
+if (/lf-regen-tests/.test(attributes) || /lf-regen-tests/.test(driverConfig)) fail("the lf-regen-tests driver is gone with the test registry (#2618)");
+if (regenPlan("addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c")) fail("the old registry path must not resolve to a generator");
 for (const [path, driver] of [
   ["addons/LifeFramework/Language/everonlife_localization.st", "lf-string-table"],
   ["addons/LifeFramework/Language/everonlife_localization.*.conf", "lf-regen-localization"],
   ["addons/LF_Everon1989/Language/lf_everon1989_localization.st", "lf-string-table"],
   ["addons/LF_Everon1989/Language/lf_everon1989_localization.*.conf", "lf-regen-localization"],
-  ["addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c", "lf-regen-tests"],
   ["docs/features.md", "lf-markdown"],
   ["docs/features/*.md", "lf-markdown"],
   ["docs/debug-log-triage.md", "lf-markdown"],
@@ -377,174 +375,26 @@ ${clean.stderr}`);
   const regenRepo = join(temp, "regen");
   initRepo(regenRepo);
   configureDriver(regenRepo, "lf-regen-localization", "regen-generated.mjs");
-  configureDriver(regenRepo, "lf-regen-tests", "regen-generated.mjs");
   writeFileSync(
     join(regenRepo, ".gitattributes"),
-    "everonlife_localization.en_us.conf merge=lf-regen-localization\nLF_TestRegistrations.generated.c merge=lf-regen-tests\n",
+    "everonlife_localization.en_us.conf merge=lf-regen-localization\n",
   );
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "ours-conf\n");
-  writeFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "ours-registry\n");
   commitAll(regenRepo, "base");
   git(regenRepo, ["checkout", "-q", "-b", "theirs"]);
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "theirs-conf\n");
-  writeFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "theirs-registry\n");
   commitAll(regenRepo, "theirs");
   git(regenRepo, ["checkout", "-q", "master"]);
   writeFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "master-conf\n");
-  writeFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "master-registry\n");
   commitAll(regenRepo, "ours");
   const regenEnv = { ...process.env, LF_MERGE_REGEN_MODE: "plan" };
   const regenMerge = git(regenRepo, ["merge", "theirs", "--no-edit"], regenEnv);
   if (regenMerge.status !== 0) fail(`regen driver merge should be clean:\n${regenMerge.stdout}\n${regenMerge.stderr}`);
   else {
     const conf = readFileSync(join(regenRepo, "everonlife_localization.en_us.conf"), "utf8");
-    const registry = readFileSync(join(regenRepo, "LF_TestRegistrations.generated.c"), "utf8");
     if (!conf.startsWith("regen:localization")) fail(`conf driver wrote ${JSON.stringify(conf)}`);
-    if (!registry.startsWith("regen:tests")) fail(`registry driver wrote ${JSON.stringify(registry)}`);
   }
 
-  // Regression: the registry driver ran mid-merge and wrote the incoming side's new test files into
-  // the worktree as untracked files, so git then refused to write them ("untracked working tree
-  // files would be overwritten by merge"). The driver must generate in a temp dir and touch only %A.
-  const testsRel = "addons/LifeFramework/Scripts/Game/Tests";
-  const registryRel = `${testsRel}/LF_TestRegistrations.generated.c`;
-  const testSource = (name) => `// tier: LOGIC\nclass ${name} : LF_Test\n{\n}\n`;
-  const writeTest = (repo, name) => {
-    mkdirSync(join(repo, testsRel), { recursive: true });
-    writeFileSync(join(repo, testsRel, `${name}.c`), testSource(name));
-  };
-  const untrackedRepo = join(temp, "untracked");
-  initRepo(untrackedRepo);
-  configureDriver(untrackedRepo, "lf-regen-tests", "regen-generated.mjs");
-  writeFileSync(join(untrackedRepo, ".gitattributes"), "LF_TestRegistrations.generated.c merge=lf-regen-tests\n");
-  writeTest(untrackedRepo, "LF_Test_Old");
-  mkdirSync(join(untrackedRepo, testsRel), { recursive: true });
-  writeFileSync(join(untrackedRepo, registryRel), "base-registry\n");
-  commitAll(untrackedRepo, "base");
-  git(untrackedRepo, ["checkout", "-q", "-b", "theirs"]);
-  writeTest(untrackedRepo, "LF_Test_Incoming");
-  writeFileSync(join(untrackedRepo, registryRel), "theirs-registry\n");
-  commitAll(untrackedRepo, "theirs");
-  git(untrackedRepo, ["checkout", "-q", "master"]);
-  writeTest(untrackedRepo, "LF_Test_Local");
-  writeFileSync(join(untrackedRepo, registryRel), "ours-registry\n");
-  commitAll(untrackedRepo, "ours");
-  const untrackedMerge = git(untrackedRepo, ["merge", "theirs", "--no-edit"]);
-  const untrackedOut = `${untrackedMerge.stdout}\n${untrackedMerge.stderr}`;
-  if (untrackedMerge.status !== 0) {
-    fail(`registry driver merge should be clean (it must not write untracked test files into the worktree):\n${untrackedOut}`);
-  } else {
-    const registry = readFileSync(join(untrackedRepo, registryRel), "utf8");
-    for (const name of ["LF_Test_Old", "LF_Test_Incoming", "LF_Test_Local"]) {
-      if (!registry.includes(`new ${name}()`)) fail(`regenerated registry is missing ${name}:\n${registry}`);
-    }
-    const status = git(untrackedRepo, ["status", "--porcelain"]).stdout.trim();
-    if (status) fail(`the registry driver left the worktree dirty:\n${status}`);
-  }
-
-  // #2549: a generator that never exits must not hang `git merge`. The stub stands in for PowerShell and
-  // sleeps forever; with a 2 s stub budget the driver kills it, names the step, removes its scratch dir and exits 1
-  // so git marks the file conflicted and the merge finishes. Red on main: the stub is ignored, the real
-  // generator runs and the merge succeeds.
-  const hangRepo = join(temp, "hang");
-  const hangTmp = join(temp, "hang-tmp");
-  const hangStub = join(temp, "hang-stub.mjs");
-  mkdirSync(hangTmp, { recursive: true });
-  writeFileSync(hangStub, "setInterval(() => {}, 1000);\n");
-  initRepo(hangRepo);
-  configureDriver(hangRepo, "lf-regen-tests", "regen-generated.mjs");
-  writeFileSync(join(hangRepo, ".gitattributes"), "LF_TestRegistrations.generated.c merge=lf-regen-tests\n");
-  writeTest(hangRepo, "LF_Test_Old");
-  writeFileSync(join(hangRepo, registryRel), "base-registry\n");
-  commitAll(hangRepo, "base");
-  git(hangRepo, ["checkout", "-q", "-b", "theirs"]);
-  writeFileSync(join(hangRepo, registryRel), "theirs-registry\n");
-  commitAll(hangRepo, "theirs");
-  git(hangRepo, ["checkout", "-q", "master"]);
-  writeFileSync(join(hangRepo, registryRel), "ours-registry\n");
-  commitAll(hangRepo, "ours");
-  const hangBudgetMs = 2000;
-  const hangEnv = {
-    ...process.env,
-    // Only the stub gets the 2 s limit. The driver's own git init / rev-parse keep their 20 s default: under
-    // load (~30 agents) a git spawn passed 2 s and flaked this test twice on 2026-11-18 (#2746).
-    LF_MERGE_DRIVER_STUB_TIMEOUT_MS: String(hangBudgetMs),
-    LF_MERGE_DRIVER_GENERATOR_STUB: hangStub,
-    TEMP: hangTmp,
-    TMP: hangTmp,
-    TMPDIR: hangTmp,
-  };
-  const hangStart = Date.now();
-  const hangMerge = spawnSync("git", ["merge", "theirs", "--no-edit"], {
-    windowsHide: true,
-    cwd: hangRepo,
-    encoding: "utf8",
-    env: hangEnv,
-    timeout: 60_000,
-    killSignal: "SIGKILL",
-  });
-  const hangElapsed = Date.now() - hangStart;
-  const hangOut = `${hangMerge.stdout}\n${hangMerge.stderr}`;
-  if (hangMerge.error) fail(`the merge never finished: ${hangMerge.error.code} after ${hangElapsed} ms`);
-  else {
-    if (hangMerge.status === 0) fail(`a hung generator should leave the registry conflicted:\n${hangOut}`);
-    if (hangElapsed > hangBudgetMs + 15_000) fail(`the driver took ${hangElapsed} ms for a ${hangBudgetMs} ms budget`);
-    if (!/lf-regen: generator stub timed out after .*regen-tests/.test(hangOut)) fail(`the driver should name the step and the fix:\n${hangOut}`);
-    const unmerged = git(hangRepo, ["ls-files", "-u"]).stdout.trim();
-    if (!unmerged.includes("LF_TestRegistrations.generated.c")) fail(`git should mark the registry unmerged:
-${unmerged}`);
-  }
-  const hangLeft = readdirSync(hangTmp).filter((name) => name.startsWith("lf-regen-"));
-  if (hangLeft.length) fail(`the driver left scratch dirs behind: ${hangLeft.join(", ")}`);
-
-  // Laptop merge failures (2026-11-17): the registry driver ran `git show` once per test file and side, about
-  // 2300 children for 760 tests. At 230 ms a spawn on a loaded Windows box that is over the 240 s backstop, so
-  // every `git merge origin/main` (and `wt ship`'s merge) left the registry conflicted. The git calls must not
-  // grow with the number of tests. The stub generator writes the registry from the scratch tree, so this also
-  // proves the incoming, local and old test files all reach it. Red on the per-file code: ~190 git children.
-  const manyRepo = join(temp, "many");
-  const manyTrace = join(temp, "many-trace.log");
-  const manyStub = join(temp, "many-stub.mjs");
-  writeFileSync(
-    manyStub,
-    [
-      'import { readdirSync, writeFileSync } from "node:fs";',
-      `const dir = ${JSON.stringify(testsRel)};`,
-      'const names = readdirSync(dir).filter((n) => n.endsWith(".c") && !n.includes("Registrations")).map((n) => n.slice(0, -2)).sort();',
-      'writeFileSync(`${dir}/LF_TestRegistrations.generated.c`, names.map((n) => `new ${n}()\n`).join(""));',
-      "",
-    ].join("\n"),
-  );
-  initRepo(manyRepo);
-  configureDriver(manyRepo, "lf-regen-tests", "regen-generated.mjs");
-  writeFileSync(join(manyRepo, ".gitattributes"), "LF_TestRegistrations.generated.c merge=lf-regen-tests\n");
-  const manyCount = 60;
-  for (let i = 0; i < manyCount; i++) writeTest(manyRepo, `LF_Test_Many${String(i).padStart(2, "0")}`);
-  writeFileSync(join(manyRepo, registryRel), "base-registry\n");
-  commitAll(manyRepo, "base");
-  git(manyRepo, ["checkout", "-q", "-b", "theirs"]);
-  writeTest(manyRepo, "LF_Test_ManyIncoming");
-  writeFileSync(join(manyRepo, registryRel), "theirs-registry\n");
-  commitAll(manyRepo, "theirs");
-  git(manyRepo, ["checkout", "-q", "master"]);
-  writeTest(manyRepo, "LF_Test_ManyLocal");
-  writeFileSync(join(manyRepo, registryRel), "ours-registry\n");
-  commitAll(manyRepo, "ours");
-  const manyMerge = git(manyRepo, ["merge", "theirs", "--no-edit"], {
-    ...process.env,
-    LF_MERGE_DRIVER_GENERATOR_STUB: manyStub,
-    LF_MERGE_DRIVER_TRACE: manyTrace,
-  });
-  const manyOut = `${manyMerge.stdout}\n${manyMerge.stderr}`;
-  if (manyMerge.status !== 0) fail(`registry driver merge of ${manyCount} tests should be clean:\n${manyOut}`);
-  else {
-    const registry = readFileSync(join(manyRepo, registryRel), "utf8");
-    for (const name of ["LF_Test_Many00", `LF_Test_Many${manyCount - 1}`, "LF_Test_ManyIncoming", "LF_Test_ManyLocal"]) {
-      if (!registry.includes(`new ${name}()`)) fail(`regenerated registry is missing ${name}:\n${registry}`);
-    }
-  }
-  const manyGit = existsSync(manyTrace) ? readFileSync(manyTrace, "utf8").split("\n").filter((line) => / git /.test(line)).length : -1;
-  if (manyGit < 0 || manyGit > 12) fail(`the registry driver ran ${manyGit} git children for ${manyCount + 2} tests; it must batch its reads (limit 12)`);
 
   // The launcher honours the same override: a backstop of three times it for the wrapped driver.
   if (driverBackstopMs({ LF_MERGE_DRIVER_TIMEOUT_MS: "2000" }) !== 11000) fail("driverBackstopMs should be 3x the override plus 5 s");
