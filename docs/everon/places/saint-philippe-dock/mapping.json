@@ -95,6 +95,14 @@
         "Garage_E_02 (garage), 531 m2, 3 floors, 14 vehicle bays, interior yes, faces west, 125 m north-east of the dock's scout centre on the quay road",
         "lead update 2026-11-18, card W1 #3273: the island's one wholesale warehouse (buyer id wholesale) for lumber, ore, metal and cement; it replaces the old timber-warehouse slot planned on dk:b22, which stays the staff-only dock warehouse (L0 #3204). The parcel-drop mailbox on its wall stays where it is"
       ]
+    },
+    "fishing-quay": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (industrial-tower) at the quay road junction, sharing it with the dock, taxi and quay-fishing slots",
+        "D10 pick (#3346), card X17 #3383: two `LF_FishingSpot` entities (table harbour, radius about 20 m), one at the quay end and one along the quay wall, with the spot cones hidden below the quay edge; the 60 m margin reaches the quay end. It names the slot the quay-fishing card's worktree uses; #3315's `quay-fishing` maps the same quay and the lead can retire one of the two"
+      ]
     }
   }
 }
