@@ -160,18 +160,29 @@ class LF_BarberSheet
 
 		if (m_Screen)
 			m_Screen.SetLine(PART_STATUS, LF_Barber.RefusalKey(refusal));
+
+		// A listen host put its preview back before asking; the sheet's look goes back on.
+		LF_Barber.ApplyHead(Character(), LF_Barber.LookAt(m_iLook));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Leaving without paying for the shown look: the head goes back to the one the sitter came in with.
 	protected void PutBackPreview()
 	{
-		IEntity character = Character();
-		if (!character || m_sOriginalHead.IsEmpty())
+		EndPreview(Character(), m_sOriginalHead);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the head the sitter came in with back on `character`. A listen host's preview runs on the
+	//! server, so Pay puts the head back before asking: the server would otherwise take the previewed
+	//! look for the one worn and refuse it as SAME_LOOK.
+	static void EndPreview(IEntity character, ResourceName original)
+	{
+		if (!character || original.IsEmpty())
 			return;
 
-		if (LF_Barber.CurrentHead(character) != m_sOriginalHead)
-			LF_Barber.ApplyHead(character, m_sOriginalHead);
+		if (LF_Barber.CurrentHead(character) != original)
+			LF_Barber.ApplyHead(character, original);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -211,6 +222,9 @@ class LF_BarberSheet
 		}
 
 		m_Screen.SetLine(PART_STATUS, "#LF-Barber_Asking");
+		if (Replication.IsServer())
+			PutBackPreview();
+
 		controller.LF_AskBarberCut(chairRpl.Id(), m_iLook);
 	}
 

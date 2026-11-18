@@ -202,7 +202,7 @@
   head mesh (no hair, beard or hair-colour part exists), so a look is one of ten vanilla civilian heads
   (`LF_Barber.Looks`) and changes the face with the hair. The chosen head is kept per character record key in
   the `barber` save section (`LF_BarberSavePayload`) and put back on every spawn (`LF_BarberSpawnSubscriber`),
-  so it survives death, respawn and restart. Tests `barber/changes-hair`, `barber/persist`. Placing the chair
+  so it survives death, respawn and restart. A listen host puts its preview back before paying, so its server does not refuse the look as already worn. `LF_WantedLook.Capture` records the head (`|h=HEADGUID`), so wanted posters and photo IDs show the paid look. Tests `barber/changes-hair`, `barber/persist`, `barber/host-and-portrait`. Placing the chair
   in the Saint-Philippe barber (b43) is the shop card.
 
 ### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
