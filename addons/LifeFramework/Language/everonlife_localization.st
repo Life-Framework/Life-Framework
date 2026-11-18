@@ -3510,6 +3510,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Rob the safe"
      Comment "Annex safe robbery action name"
     }
+    CustomStringTableItem "{3152A1C0B7D34E02}" {
+     Id "LF-Death_CostBill"
+     Target_en_us "The bill is {currency:sym}%1."
+     Comment "Death screen cost line: the hospital bill; %1 is the amount from the respawn config, left out when it is 0 (#3152)."
+    }
+    CustomStringTableItem "{3152A1C0B7D34E03}" {
+     Id "LF-Death_CostKeeps"
+     Target_en_us "What you carried stays with your body."
+     Comment "Death screen cost line: the dead body keeps the carried items (#3152)."
+    }
+    CustomStringTableItem "{3152A1C0B7D34E01}" {
+     Id "LF-Death_CostWake"
+     Target_en_us "You wake at the hospital."
+     Comment "Death screen cost line: where a dead player wakes (#3152)."
+    }
     CustomStringTableItem "{EF124E70F7C349D7}" {
      Id "LF-DebugJailMe_Action"
      Target_en_us "Send me to jail (playtest)"
