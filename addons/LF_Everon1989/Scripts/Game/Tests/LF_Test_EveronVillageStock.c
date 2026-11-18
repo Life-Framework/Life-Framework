@@ -1,3 +1,4 @@
+// red-proof (cafe and general store loop check): 2026-11-18 with the cafe and general store apple rows at $2, `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed 4 lines (cafe and general_store: `Apple.et sells for 2 and buys back for 4` and `sells for 2 and the market pays up to 5`); at $6 it passes.
 // red-proof: observed 2026-11-18 (#3218): on main (no supermarket, hardware, seed_feed, newsagent or mechanic stock) `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed on every `has a stock under the pack header` line.
 //! #3218: the new Saint-Philippe village shops each have a stock in the pack's shop stock overlay.
 //! Checked against the merged pack config (pack leg): each stock id loads with the items the card names,
@@ -51,6 +52,27 @@ class LF_Test_EveronVillageStock : LF_Test
 		CheckStock(ctx, manager, "mechanic", {PARTS});
 
 		CheckHardwareCopiesGeneralStore(ctx);
+
+		//! The cafe menu and the general store were priced apart from the market curve: an apple was $2 at both
+		//! while the trader paid up to $5. Every row of both stocks gets the same no-loop checks.
+		CheckNoLoops(ctx, manager, "cafe");
+		CheckNoLoops(ctx, manager, "general_store");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every row of one stock: no buy-back and no market-ceiling loop (CheckItem's checks, without a fixed item list).
+	protected void CheckNoLoops(LF_TestContext ctx, LF_ShopManagerComponent manager, string id)
+	{
+		LF_ShopStock stock = LF_ShopStockConfig.Get().Find(id);
+		ctx.NotNull(stock, string.Format("the %1 has a stock under the pack header", id));
+		if (!stock)
+			return;
+
+		foreach (LF_ShopStockItem row : stock.m_aItems)
+		{
+			if (row)
+				CheckLoopFree(ctx, manager, id, row);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -84,6 +106,13 @@ class LF_Test_EveronVillageStock : LF_Test
 			return;
 
 		ctx.True(row.m_iPrice > 0, string.Format("%1: %2 has a price (got %3)", id, prefab, row.m_iPrice));
+		CheckLoopFree(ctx, manager, id, row);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CheckLoopFree(LF_TestContext ctx, LF_ShopManagerComponent manager, string id, LF_ShopStockItem row)
+	{
+		ResourceName prefab = row.m_Prefab;
 
 		//! An item outside the shop catalogue (the tourist map) is never bought back, so it has no sell price.
 		if (manager.GetItem(prefab))
