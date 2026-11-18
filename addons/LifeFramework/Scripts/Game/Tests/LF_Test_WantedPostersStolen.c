@@ -4,7 +4,6 @@
 //   [LFTEST]   - the newest report's plate (expected 'CD 56-78', got '')
 // Restored the split and the test passed (17 assertions).
 
-// tier: LOGIC
 //! Stolen cars on the wanted board's face (docs/architecture/visual-boards-spike.md, issue 5):
 //! reported cars take up to `stolenPosters` places after the wanted people, newest first, with the
 //! plate, the name key and the prefab GUID (no path, no place); people take the places the cars

@@ -2,7 +2,6 @@
 //   cli test --no-build --only LF_Test_PlacesDispatch:
 //   [LFTEST]   - the call comes from the placed entity by component
 // Restored; green.
-// tier: WORLD
 //! places/dispatch: a debug dispatch call comes from a placed DispatchSource id, never from an
 //! entity name (#1045). An unnamed entity placed under an id is where the call comes from; an id
 //! that is not placed, or none, falls back to the console. Under the old FindEntityByName lookup an

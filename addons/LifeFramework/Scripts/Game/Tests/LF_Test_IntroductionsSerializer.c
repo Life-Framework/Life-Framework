@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-08 with `tools\cli test --no-build --only` (all four broken in one run, 0/4 passed), then restored; green. Commenting out LF_Introductions.ApplyAll in the serializer's introductions read failed
 // `[LFTEST] FAIL interaction/introductions-serializer`, `- the pair is known again after the load`.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_IntroductionsSerializer : LF_Test
 {

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_SaveNewerVersion,LF_Test_PersistStoreStaticReset`: RED PROOF OK (both listed tests fail with the hook on; this one with the reset skipped fails `a world end forgets that the store was read`). Green with the hook (--only).
-// tier: WORLD
 //! A world end resets the store-read flags (LF_PersistenceComponentSerializer_StaticResetHook). A
 //! stale "store loaded" from the last world hid a continued save that never reached the store in the
 //! next one (an in-process scenario restart), so autosave overwrote the save on disk.

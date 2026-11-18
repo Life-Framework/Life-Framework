@@ -38,7 +38,6 @@
 // save of the live store, which has no "wantedlooks", and pass 2 failed with
 // `- e2e the robber's look survives the restart (expected '9B5BB216CC7FF18E|1=9F546CCA2582D16F', got '')`.
 // LF_TestLegacySnapshot now puts the crime reports back; both passes green, and green with --legacy-save.
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
@@ -150,6 +149,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// alive in the world through the shutdown save, so the reload boot also sees whether the
 		// engine brings its items back on its own (a dupe next to the restored snapshot).
 		IEntity carrier = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(carrier);
 		// A stamped drill rides in the backpack (#470): its serial must survive the restart on the item.
 		if (carrier)
 		{
@@ -241,6 +241,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// leave 9 rounds, clock out. A wanted report with its identified flag rides "wanted" (10).
 		LF_PlayerAccount dutyAccount = LF_TestPoliceKit.Account(DUTY_UID, true);
 		IEntity dutyBody = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(dutyBody);
 		if (dutyBody)
 		{
 			ctx.EqualStr("", LF_DutyLocker.ClockIn(dutyAccount, dutyBody), "e2e officer clocks in before the save");
@@ -255,6 +256,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		// The medic duty inventory rides the same carried payload in its own slot (medic_duty, #258).
 		LF_PlayerAccount medicAccount = LF_TestPoliceKit.Account(MEDIC_UID, false);
 		IEntity medicBody = LF_TestCarriedInventoryKit.SpawnLoaded(ctx);
+		LF_TestDebrisProbe.Keep(medicBody);
 		if (medicBody)
 		{
 			ctx.EqualStr("", LF_DutyLocker.ClockIn(medicAccount, medicBody, LF_Faction.MEDIC), "e2e medic clocks in before the save");
@@ -292,6 +294,11 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		array<ref LF_EvidenceLockerRow> lockerRows = {};
 		lockerRows.Insert(lockerRow);
 		LF_EvidenceLocker.ApplyAll(lockerRows);
+
+		// A locker rental (#2659, "lockers" payload, save version 57) must come back with its paid-until.
+		array<ref LF_LockerRentalRow> lockerRentalRows = {};
+		lockerRentalRows.Insert(LF_LockerRentalRow.Create("e2e-locker-site", OFFICER_UID, 1900000000));
+		LF_LockerBank.ApplyAll(lockerRentalRows);
 
 		// A half-finished chain batch (#417) must come back: barrel 3 of the Annex_Chains_Site, 3 of 8 units in.
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
@@ -468,7 +475,6 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateVerify : LF_Test
 {
@@ -897,6 +903,17 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.False(LF_PersistenceComponentSerializer.IsLoadDamaged(), "e2e the restart load is not damaged, autosave runs");
 		LF_Debug.Info("Persistence", string.Format("e2e restart: loaded a save from game build %1 (save version %2), running %3", LF_SaveStamp.BootLoadedBuild(), LF_SaveStamp.BootSaveVersion(), GetGame().GetBuildVersion()));
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
+		// A save older than "lockers" (a --legacy-save, or the --pre-move ref build, whose pass 1 never wrote
+		// a rental) holds no rental: the check skips, as VerifyJobDeposit does for "jobruns".
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("lockers"))
+		{
+			ctx.True(LF_LockerBank.IsRenting("e2e-locker-site", OFFICER_UID), "e2e locker rental survives the restart");
+			ctx.Equal(1900000000, LF_LockerBank.PaidUntil("e2e-locker-site", OFFICER_UID), "e2e locker rental keeps its paid-until");
+		}
+		else
+		{
+			LF_Debug.Info("Lockers", string.Format("e2e restart: boot save version %1 predates lockers, no rental to check", LF_SaveStamp.BootSaveVersion()));
+		}
 		LF_ChainStationComponent chainBarrel = LF_ChainStations.Find(LF_TestAnnex.CHAINS_BARREL_3);
 		ctx.NotNull(chainBarrel, "e2e chain barrel 3 is placed after the restart");
 		if (chainBarrel)

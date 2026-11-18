@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-17 with `tools\cli test --no-build --only LF_Test_IdRegistryUnreadable` on the unfixed serializer (no NoteRegistryUnreadable call), FAIL id-card/registry-unreadable:
 // `the new card does not reuse the number an old card carries`, `numbering resumes past the floor`, `the old card's number matches no row: it reads as unregistered`, `the old card is not valid for anyone`. Also RED-OK under --red. Restored; green.
-// tier: WORLD
 //! id-card/registry-unreadable (#2413): when the saved "idcards" payload cannot be read the rows are
 //! gone, and numbering used to restart at 1. A new holder then got the number an old card still
 //! carries, and that card printed as the new holder. Numbering now resumes past

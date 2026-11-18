@@ -3,7 +3,6 @@
 //! comms/phone-voice-connect-fail (#2625): when the second phone line of a call has no radio,
 //! the line transport returns false and the first line is back on the idle frequency with a
 //! key that is not the call's. Line B here is the payphone prop itself, which carries no radio.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PhoneVoiceConnectFail : LF_Test
 {

@@ -1,6 +1,5 @@
 // red-proof: #2411, 2026-11-17, `tools/cli test --no-build --only LF_Test_VehicleLockedCargo,LF_Test_VehicleRetrieveKey` on the unfixed code
 // (SpawnOwned handed a key only when the session key was gone): FAIL - the owner leaves with a key that opens the car.
-// tier: WORLD
 //! The owner leaves the garage with a working key (#2411): when the last key handed out is in
 //! someone else's pocket, Retrieve cuts the owner a new one instead of sending them off keyless.
 [LF_TestInfo(LF_TestTier.WORLD)]

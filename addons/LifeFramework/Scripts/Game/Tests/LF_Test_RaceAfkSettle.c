@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 batched `--red` RED PROOF OK: with the hook on the ticks are skipped, so the AFK racer is never dropped ("past the grace the AFK racer is dropped and the race settles" fails) and the settle delay never runs. Green with the fix.
-// tier: WORLD
 //! #2406: one AFK or dead racer no longer holds every prize. A racer with no living body past the course's
 //! AFK grace is dropped (the fee stays in the pot) and the race settles for the finishers; with the
 //! settle delay set, the race also pays out that long after the first finisher, and a racer still out

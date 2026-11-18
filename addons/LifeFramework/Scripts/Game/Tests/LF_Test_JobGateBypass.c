@@ -5,7 +5,6 @@
 //! the whitelist reports nothing restricted and the replicated roster bit reads true. A dedicated
 //! server refuses the bypass unless the mission header allows it. The owner config key
 //! `jobs.testUnlockAll` is read and defaults to off.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_JobGateBypass : LF_Test
 {

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-15 before the classes existed: `tools\cli test --no-build --only LF_Test_M4ConfigSections` failed to compile ("Unknown type 'LF_RestartConfig'"), so the test could not pass. Then green on the classes.
-// tier: LOGIC
 //! The three M4 config sections (#1343), declared as shapes: `restarts`, `staff` and `dayCycle`.
 //! A fixture owner file with all three reads back every value through LF_ConfigService; a config
 //! without them gives no restarts, an empty webhook URL and the vanilla day cycle; a bad value keeps

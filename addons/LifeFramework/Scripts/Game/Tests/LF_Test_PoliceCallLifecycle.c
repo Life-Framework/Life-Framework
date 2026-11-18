@@ -1,6 +1,5 @@
 // red-proof: `tools\cli test --no-build --only LF_Test_PoliceCallLifecycle` on the unfixed LF_PoliceCalls (2026-11-18) FAILED 7 checks:
 // "no call is posted before the report (expected 0, got 1)", "the call carries the report's place (expected 'Square', got '')", "a cleared wanted level closes the call"; the fix turns it green.
-// tier: LOGIC
 //! Police calls (#2516, parent #234): a crime raises the wanted level before its report is filed, so the
 //! call waits for the report and carries its place; a call closes when the suspect stops being wanted.
 [LF_TestInfo(LF_TestTier.LOGIC)]

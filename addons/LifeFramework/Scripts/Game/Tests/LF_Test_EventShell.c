@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_EventShell`: with the hook on the forced-hour ticks are skipped and the test failed (`one LF_OnEventPhase per change (expected 3, got 0)`), `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; without the hook `SUMMARY tier=only passed=1 failed=0`.
-// tier: WORLD
 //! The event shell (#1950): a test event with a forced in-game hour starts in prep, advances to hot
 //! and ends into cooldown, publishing one LF_OnEventPhase per change; outside its hour a failing
 //! start condition keeps it idle; a cooling event does not restart; an event that is off

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with LF_PromoteCandidates.List reading only BindOfficer bodies, as before the fix (log test-20261117-224005): FAIL "the patrol officer standing by is found among the connected players (expected promote-players-patrol, got empty)". Restored: green.
-// tier: LOGIC
 //! police/promote-finds-players (#2416): the station promote action looks for the lower-rank officer
 //! among the connected players, not only bodies a test bound with BindOfficer. Synthetic players
 //! stand in for the player manager.

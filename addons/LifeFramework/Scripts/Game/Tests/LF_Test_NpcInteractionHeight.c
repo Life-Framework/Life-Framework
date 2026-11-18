@@ -4,7 +4,6 @@
 // (the same for QuestGiver_Start), and PoliceDutyNPC.et had no actions manager: its second
 // CharacterIdentityComponent failed the prefab ("cannot be combined with component
 // CharacterIdentityComponent"). Green after the fix.
-// tier: WORLD
 //! A talk-to NPC's action context sits on its chest, where the player looks, not at the hips
 //! (playtest 2026-11-08: "between their legs"). The prefabs had Offset 0 0.5 0 with Radius 2.0;
 //! they now pin the context to the Spine5 bone as vanilla Character_Base does for "Chest".

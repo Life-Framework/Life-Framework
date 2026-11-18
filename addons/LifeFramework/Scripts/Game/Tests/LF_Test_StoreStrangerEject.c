@@ -4,7 +4,6 @@
 // suite runs synchronously, so a live stranger in a seat cannot be arranged here. The eject and the
 // re-check that never deletes a player are checked by hand (PR "Manual testing").
 // Observed 2026-11-18 `tools/cli test --no-build --red LF_Test_StoreStrangerEject,LF_Test_JobDepositRestart`: RED-OK, 7 assertions fail with the hook on.
-// tier: LOGIC
 //! Garaging a car: the owner and a keyholder seated in it block the store, a stranger does not (the
 //! store ejects them), and an empty car with no keyholder has no refusal.
 [LF_TestInfo(LF_TestTier.LOGIC)]

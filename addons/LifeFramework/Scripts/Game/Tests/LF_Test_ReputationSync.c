@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `tools/cli test --no-build --red LF_Test_ReputationSync`: RED PROOF OK (send unwired: "a town tier change queues exactly one owner send (expected 1, got 0)"). Green with `--only`. Spawn before the account (review of #2788): red on the old handler with `--only` ("a spawn before the account sends no tiers yet (expected 0, got 1)"), green after.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! The owner learns their own tiers (#2704): the packed tiers round-trip, a town or police tier change
 //! journals exactly one owner send with one toast key, an underworld change one send and no toast,

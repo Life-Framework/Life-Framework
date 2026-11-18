@@ -33,7 +33,7 @@ const check = (ok, msg) => {
   }
 };
 
-const REG = "addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c";
+const REG = "addons/LifeFramework/Language/everonlife_localization.en_us.conf";
 const q = { seq: 0, entries: [] };
 const add = (slug, files, at) => sq.enqueue(q, { slug, files, branch: `ws/${slug}` }, at);
 

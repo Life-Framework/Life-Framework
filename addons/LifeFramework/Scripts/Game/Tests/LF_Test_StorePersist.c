@@ -1,7 +1,6 @@
 // red-proof: observed 2026-11-16 (#1891), `tools\cli test --no-build --no-cache --only <the 10 classes>` on GridWorld before the grid fixtures: 10 of 15 failed on `... resolves in the DebugWorld` (Shop_GeneralStore_Debug, Shop_BlackMarket_Debug, FenceNpc are town entities); on Grid_shops_till fixtures 15 of 15 pass.
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_StorePersist,...`: LF_StoreComponent.ImportRow not applying the saved count failed `- the saved stock is back (expected 3, got 6)`; restored, green.
 
-// tier: PERSISTENCE
 //! The store stock rides the real save path (the "storestock" payload, save version 21): after a
 //! restart the shelf holds the stock that was left, not a fresh full one, a second load changes
 //! nothing and never doubles the shelf, a saved stock for an item the store no longer sells is

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_ChopShopWorld` with the action count expectation set to 4 failed `- load, work and collect are on the bench (expected 4, got 3)`. Restored; green.
-// tier: WORLD
 //! The playtest chop shop yard is wired (#415): the bench is placed with its component and its three
 //! actions (load, work, collect), starts empty, the config and the parts prefab resolve, and a bench
 //! with no car in the drop area refuses. Spawns nothing. The steal-and-chop loop is the

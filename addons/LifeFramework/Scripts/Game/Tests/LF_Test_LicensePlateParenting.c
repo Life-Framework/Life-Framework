@@ -4,7 +4,6 @@
 // RECALC_LOCAL_TRANSFORM breaks the spawn-time local offset and the
 // parent/local-offset assertions fail.
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LicensePlateParenting : LF_Test
 {

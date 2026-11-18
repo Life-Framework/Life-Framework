@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_PlayFromCamera`: `RED-OK spawn/play-from-camera`, failing `- Workbench, editor body replaced: spawn at the camera`.
-// tier: LOGIC
 //! Workbench "Play from camera" keeps the player at the camera: the spawn takes the replaced editor
 //! body's pose only inside Workbench, only when such a body was replaced, and never with no position.
 [LF_TestInfo(LF_TestTier.LOGIC)]

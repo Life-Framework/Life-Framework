@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 (#1961) with `tools\cli test --no-build --red LF_Test_EveronCafeOwner`: RedProof() makes the act load a dialogue the pack lacks, so no conversation loads (RED-OK everon/cafe-owner, 3 assertions, `the café owner's dialogue loads`). Green without the hook (pack leg, worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #1961 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the café owner Odile Marchand
 //! has a voiced conversation about the zone and the move, and three useful pointers (work, the clerk, the handbook).
 //! Every line has a caption key that resolves, a sound event and a length with a mouth envelope; every reply

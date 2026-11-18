@@ -2,7 +2,6 @@
 // boundary failed `- half way it is half grown (expected 1, got 0)`, and a harvest that did not empty
 // the plot failed `- the plot is empty again` and `- the second packet plants it again (expected 0, got 2)`. Restored; green.
 
-// tier: WORLD
 //! The farm loop on a placed DebugWorld plot (#614), through the same server calls the plot action
 //! makes: no seed packet refuses, a packet plants and is used up, a planted plot refuses a second
 //! packet and an early harvest, growth walks sprouts -> half grown -> ripe, the harvest gives three

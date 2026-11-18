@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-10 with `toolscli test --no-build --only LF_Test_ChainMoonshine`: a non-existent BerryJam prefab in the config failed `the moonshine chain is enabled` and `the moonshine chain resolves` (`chain moonshine disabled: a prefab does not resolve`), `SUMMARY tier=only passed=0 failed=1`; swapped for the real WaterBottle, green.
 
-// tier: WORLD
 //! The shipped moonshine chain (#420) loads from ResourceChains.conf with every prefab resolving,
 //! is tier 1 with no gate, and its steps hand items on: the mash output is the still input, and
 //! the still makes the moonshine bottle (#2001), and a pack bench turns bottles into a crate (#2441, LF_Test_MoonshineCratePack).

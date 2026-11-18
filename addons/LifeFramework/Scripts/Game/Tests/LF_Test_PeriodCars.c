@@ -1,5 +1,4 @@
 // red-proof: 2026-11-14 `tools/cli test --no-build --only LF_Test_PeriodCars` with the Dana price expectation 1800 changed to 1801 failed `- the lot price comes from the vehicles config: ...V2101_beige.et (expected 1801, got 1800)`. Restored; green.
-// tier: WORLD
 //! The free 1.9 period cars (#981): the Dana 2101 and the Sputnik T601 are on the car lot with a
 //! configured price, a locked child that loads, and no Rally DLC prefab. A bought Dana spawns locked,
 //! with a plate and a key, like every other car on the lot.

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-15 with `tools\cli test --no-build --only LF_Test_IncidentFlagged` before LF_IncidentFlags.Report published: `a report that flagged publishes one event (expected 1, got 0)`; green after.
-// tier: LOGIC
 //! incident/flagged-event: a report that flags incidents publishes one LF_OnIncidentFlagged with the
 //! reporter and the flagged count, after the rows exist; a refused or empty report publishes none.
 class LF_Test_IncidentFlaggedSubscriber : LF_EventSubscriber

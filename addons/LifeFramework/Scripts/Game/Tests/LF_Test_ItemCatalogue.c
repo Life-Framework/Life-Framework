@@ -2,7 +2,6 @@
 // gate in LF_ItemCatalogue.Check short-circuited (`if (false && !buyer.HasLicence(licence))`) failed
 // `- no permit, no pistol (expected 2, got 0)` and `- the refusal names the permit (expected
 // 'name:FIREARM_PERMIT', got '')`. Restored; green.
-// tier: LOGIC
 //! Item catalogue and outlets (#988): each offer's gate (licence, job and rank, organisation right)
 //! and the name its refusal carries, legality to a crime catalog offence, what clothing hides, an owner
 //! patch of a price merged by id, the load checks (DLC-owned prefab, sell above price, offer for a

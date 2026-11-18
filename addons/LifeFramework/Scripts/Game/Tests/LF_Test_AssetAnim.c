@@ -1,7 +1,6 @@
 // red-proof: 2026-11-14, with the last assertion expecting 2 stops, cli test --no-build --only LF_Test_AssetAnim:
 //   [LFTEST]   - ending twice stops once (expected 2, got 1)
 //   Restored; green.
-// tier: WORLD
 //! Asset animation (#340): the motion rules, and the drill as the first asset that uses them. The drill
 //! prefab carries the component the asset spec generates (one spinning bone, the sparks), its model has
 //! the bone and the socket, the server switches it and poses it, and LF_DrillScene holds it in front of

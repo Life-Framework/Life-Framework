@@ -1,6 +1,5 @@
 // red-proof: `tools\cli test --no-build --red LF_Test_PoliceCallBoard` (2026-11-18): RED PROOF OK, with the take skipped the officer holds no call (`the officer holds the call (expected 'police-board-officer', got '')`). Green without the hook.
 
-// tier: WORLD
 //! police/call-board (#2479, parent #234): the police dispatch board carries a "Take a call" action. An
 //! off-duty user is not offered it, an on-duty officer is; performing it on the server makes that officer
 //! the holder of the oldest open call their rank may see, and a call above their rank stays open.

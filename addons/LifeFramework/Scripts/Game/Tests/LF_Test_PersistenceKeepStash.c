@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --only LF_Test_PersistenceKeepStash` on the unfixed LF_PersistenceKeep (log test-20261117-200027): FAIL "keepCarriedGear off drops the civilian stash", "keepCash off leaves no cash in civilian_stash (expected 0, got 237)", police_duty 40, medic_duty 15, "no pre-wipe civilian apple comes back (expected 0, got 3)" (the stash now holds 7 apples, since the civilian kit carries 2). Fixed: green. `--red LF_Test_PersistenceKeepStash` (log test-20261117-201308): RED-OK, fails "drops the carried snapshot", "drops the civilian stash", "the pre-wipe stash apples do not come back" with the wipe skipped.
-// tier: WORLD
 //! persistence/keep-stash (#2547): the carried-gear and cash switches reach the duty desk's stored
 //! inventories. With keepCarriedGear off the civilian stash goes with the carried snapshot, so an
 //! officer on duty at save time does not get pre-wipe gear back at clock-out; with keepCash off no

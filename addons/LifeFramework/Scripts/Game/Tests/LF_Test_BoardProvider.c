@@ -1,5 +1,4 @@
 // red-proof: 2026-11-16 `toolsi test --no-build --red LF_Test_BoardProvider` skipped registering the fake: RED-OK boards/provider (fails with the hook on, 4 assertions: no provider, no answer). Green with it (--only, with LF_Test_PoliceStation).
-// tier: LOGIC
 //! One board component (#1945): a fake provider's server answer reaches the board text the client
 //! paints; an unknown kind answers nothing; a second read builds a new answer from the server's
 //! state now (nothing cached past a read); the wanted board is registered as a kind and its answer

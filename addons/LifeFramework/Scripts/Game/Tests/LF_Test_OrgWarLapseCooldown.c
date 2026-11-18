@@ -1,5 +1,4 @@
 // red-proof: the batched `--red` run (RedProof() skips the officer's join and the lapse tick) fails "the shipped officer holds DECLARE_WAR" and "a declaration that lapsed starts the pair cooldown"; see the PR for the RED-OK line.
-// tier: LOGIC
 //! org/war-lapse-cooldown (#2769, from the #2668 review): the shipped officer rung holds DECLARE_WAR (a
 //! member does not), so a declaration is not lost whenever the founder is offline; a LAPSED declaration
 //! starts the same-pair lapse cooldown (either side refused inside it, free after), a lapse cooldown of 0

@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-15: before LF_OpsEvents.c and the stubs existed, `tools/cli test --no-build --only LF_Test_OpsEventsContract` failed (scripts do not compile); with them, green; `--red` printed `RED PROOF OK` (publishes skipped: the seconds, due and warning checks failed).
 
-// tier: LOGIC
 //! The Ops bus contract (#1344): the restart warning and the restart-due events reach a
 //! subscriber with their published values, and the two M4 starter stubs the game mode calls run
 //! without a VME and log their line. The toast, siren and close slices subscribe to these events.

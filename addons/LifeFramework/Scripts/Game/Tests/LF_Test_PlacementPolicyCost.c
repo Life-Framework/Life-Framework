@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-17, `tools/cli test --no-build --red LF_Test_PlacementPolicyCost` printed RED PROOF OK (the RedProof hook installs no cost table, so every kind is free: the dear set places, nothing is charged or refunded); green without the hook (`--only`, with PlacementComposition, PlacementConfirm, PlacementPolicyWho and PlacementPolicyWhere green).
 //! placement/policy-cost (#2448): a kind's cost in the placement policy is taken on the server once the
 //! spot is VALID, exactly once. A paid set charges once; a refused one (malformed, on top of a set) charges

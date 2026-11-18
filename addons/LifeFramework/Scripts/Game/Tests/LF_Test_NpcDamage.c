@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-11 with `tools/cli test --no-build --only LF_Test_NpcDamage`: (a) making LF_NpcHitZone.OnDamage return before LF_NpcDamage.OnKilled failed `- a lethal hit kills the civilian and queues its removal`; (b) before the fix, LF_Witness.CollectNpc skipped every town NPC (IsAlive is false for a non-character) and failed `- a civilian beside the crime is a witness` and `- a shopkeeper beside the crime is a witness`. Restored/fixed; green.
-// tier: WORLD
 //! Which town NPCs can be shot (#610). An ambient civilian (Npc_Civilian_01) carries a hit zone and
 //! dies to lethal damage; shop clerks, the fence and quest givers (Npc_Default_01 and children)
 //! have none and stay protected. A killed civilian is queued for removal once.

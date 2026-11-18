@@ -7,7 +7,6 @@
 //! it changed (new text, edited text, deleted file, a bad file that keeps what was there), the
 //! summary of what changed, the stream section a client applies, and the reloaders found by name.
 //! Uses a scratch file under $profile, never the server's own dev file.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ContentReload : LF_Test
 {

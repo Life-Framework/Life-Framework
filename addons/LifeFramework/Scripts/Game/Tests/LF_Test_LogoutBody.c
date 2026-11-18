@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `toolsi test --no-build --red LF_Test_LogoutBody`: RED PROOF OK, with KeepBody skipped `the window closes (expected 1, got 0)`, `the body left the world` and `the rejoin still gets what the body held` fail. Green after. The real disconnect is `toolsi session logout-body-proof` (PASS 2026-11-16 on lf-testbox).
-// tier: WORLD
 //! Acceptance of #1973 (`rejoin/logout-body`): after a simulated disconnect the body stays, its
 //! inventory can be taken and the account snapshot follows it (no dupe on the rejoin), it
 //! despawns when the window closes or the player returns, and a killed body drops the snapshot.

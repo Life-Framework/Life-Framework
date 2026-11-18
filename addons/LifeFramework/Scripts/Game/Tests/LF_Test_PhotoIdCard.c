@@ -2,7 +2,6 @@
 // made LF_PhotoIdCard.IsValid return true for any known number (no void check); got
 // `[LFTEST] FAIL identity/photo-id-card`, `- the replaced card is void`,
 // `- the replaced card is still void (apply 1)`. Restored; green.
-// tier: LOGIC
 //! Photo identity card (#902), with no world: the registry numbers cards in order, the newest card of
 //! a holder is valid and an older one void, the rows survive an export and apply (idempotent, the
 //! number keeps counting), the clerk's and the spawn's rules, the police request's window, and the

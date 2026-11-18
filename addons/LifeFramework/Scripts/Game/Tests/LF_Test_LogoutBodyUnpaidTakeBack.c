@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 on the unfixed LF_LogoutBodyRejoin.TakeBack (no ReattachUnpaid), run beside LF_Test_PersistOwnersStaticReset: `the taken-back body still owes the store (expected 7, got 0)`. Green with ReattachUnpaid in TakeBack (`tools\cli test --no-build --only`).
-// tier: WORLD
 //! A shopper who logs out carrying unpaid goods has the tags parked under their character key
 //! (LF_Stores.ParkCarrier). Rejoining inside the logout window takes the same body back, and the
 //! parked tags must go back on it: before the fix only a fresh spawn reattached them, so a quick

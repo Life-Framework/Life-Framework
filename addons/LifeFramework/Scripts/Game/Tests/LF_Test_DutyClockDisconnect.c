@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `test --no-build --red LF_Test_DutyClockDisconnect` (RED PROOF OK, log tmp/logs/test-20261117-220601.log): the hook skips the disconnect stop and the 1000 s cap, so 'rank time counts only the paid seconds' (expected 600, got 4000) and 'a 4000 s shift pays the 1000 s cap' (expected 1000, got 4000) fail. On main the test does not compile (no dutyShiftMaxSeconds). Green with the change.
-// tier: WORLD
 //! police/duty-clock-disconnect (#2622): a disconnect settles the duty clock at the disconnect time,
 //! so the time away is never paid at the next clock-out, and one shift pays at most the police
 //! config's dutyShiftMaxSeconds (0 means no cap). Rank time counts only the paid seconds.

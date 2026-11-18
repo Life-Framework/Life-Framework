@@ -1,5 +1,4 @@
 // red-proof: RedProof() skips both host-path asks: expected lines "the police arrest ask reaches its handler on the server" and "the quest log ask reaches its handler on the server" (run it with `--red`).
-// tier: WORLD
 //! #2534: a listen host's own client-to-server ask must reach its handler. LF_AskPoliceArrest and
 //! AskRequestLog branch on Replication.IsServer() and call the handler directly; before, the bare
 //! Rpc was dropped on the host and nothing ran.

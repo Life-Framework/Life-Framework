@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-15 with `tools\cli test --no-build --no-cache --only LF_Test_AmmoList`: with the taser line removed from AmmoList.conf the test boot threw the issue's VME (`unable to find {504A05CCC2926A5C}Prefabs/Weapons/Handguns/Taser/Ammo_Taser.et in the SCR_MagazineRepackingSystem ammunition list`) and failed; restored, green.
-// tier: WORLD
 //! The ammunition list the magazine repacking system reads (#1643). Every magazine looks its rounds
 //! up in `AmmoList.conf` when it is created; a round that is missing is a Virtual Machine Exception
 //! the first time a saved taser magazine loads. The list is read here the way the system reads it,

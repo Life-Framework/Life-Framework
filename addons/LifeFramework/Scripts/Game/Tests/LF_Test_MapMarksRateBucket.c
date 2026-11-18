@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18, cli test --no-build --red (batched): RED-OK on the old COMMS bucket, "a mark sync is not refused by a full phone bucket" and "admit their own burst (expected 4, got 1)". Green with LF_ERequestKind.MAP.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! map/marks-rate-bucket (review 2026-11-17, docs/reviews/2026-11-17-map.md): the personal-mark sync and
 //! save have their own rate bucket. On the shared COMMS bucket three phone or board asks in five seconds

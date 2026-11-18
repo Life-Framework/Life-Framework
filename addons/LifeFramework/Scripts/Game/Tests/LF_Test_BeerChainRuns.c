@@ -2,7 +2,6 @@
 // (`the empty beer bottle loads`), so no bottle could be given to the character and the processor step
 // failed `one empty bottle gives one beer`.
 
-// tier: WORLD
 //! The beer chain runs (#2097): the processor's input, the empty beer bottle, is a real item that
 //! loads, and a character holding one empty bottle at the beer processor ends up with one beer.
 [LF_TestInfo(LF_TestTier.WORLD)]

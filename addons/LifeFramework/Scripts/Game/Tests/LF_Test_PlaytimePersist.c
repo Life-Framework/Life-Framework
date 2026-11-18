@@ -1,7 +1,6 @@
 // red-proof: observed 2026-11-11 with `tools\cli test --no-build --only LF_Test_PlaytimePersist`: LF_Playtime.ApplyAll adding to
 // the live rows instead of replacing them failed `- the restarted session starts empty (expected 0, got 3990)` and
 // `- the total is back, not doubled (load 2) (expected 3990, got 11970)`. Restored; green. The restart path is `wt e2e`.
-// tier: PERSISTENCE
 //! Playtime per account and per job (#692) rides the real save path (the "playtime" payload, save
 //! version 26). The job comes from duty and sign-up accessors; a clock credits the seconds since
 //! its last credit to the account's job now, caps a wall-clock jump and stops on disconnect. The

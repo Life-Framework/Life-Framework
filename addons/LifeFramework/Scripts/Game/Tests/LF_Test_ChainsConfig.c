@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_ChainsConfig`: passing hasLicense=true to the licensed step failed `a gate refuses a worker without the licence (expected 1, got 0)` and `SUMMARY tier=only passed=0 failed=1`; restored, green.
 
-// tier: LOGIC
 //! Illicit chain config (#416): a gate refuses a worker without the licence, the level or the
 //! equipment; a malformed chain disables itself and every other chain still loads; the heat
 //! arithmetic caps and decays.

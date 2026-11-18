@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_ReputationEvents`: RED-OK reputation/events (hook leaves the subscriber off the bus; e.g. `a chopped car raises the underworld: underworld (expected 12, got 0)`). Green with `--only`.
-// tier: LOGIC
 //! Standing listens to the event bus (#2697): a finished civilian run raises town, an arrest lowers town
 //! and police and gives the underworld a little, a witness statement raises police (and costs the witness
 //! a little underworld when it describes a suspect), a recovered car raises the officer's police standing,

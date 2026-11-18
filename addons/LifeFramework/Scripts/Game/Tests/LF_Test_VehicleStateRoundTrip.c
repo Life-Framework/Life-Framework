@@ -1,7 +1,6 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_VehicleStateRoundTrip,...`:
 // LF_VehicleOwnership.ExportState writing 0 for m_iInspectedAt failed `[LFTEST] FAIL persist/vehicle-state`,
 // `- the inspected-at stamp is kept (load 1) (expected 1800000600, got 0)`. Restored; green.
-// tier: PERSISTENCE
 //! #752a through the real save path ("vehiclestate" payload). A towed, inspected car with a fitted
 //! compartment and a police-impounded car come back with every field after the store is written and
 //! read, twice; a stock car writes no row and loads untowed. The "vehicles" records are unchanged.

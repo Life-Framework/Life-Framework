@@ -4,7 +4,6 @@
 //   [LFTEST]   - {F0F6577FD74790D2}Prefabs/Crafting/Linen.et is its designed size (largest side 0.678101 m, want 0.05 to 0.4)
 //   [LFTEST]   - {65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et is its designed size (largest side 1.36045 m, want 0.4 to 0.6)
 // Restored; green (gunpowder 0.15 m heap, linen 0.2 m, bag 0.55 m, drill 0.51 m).
-// tier: WORLD
 //! spawn/prefab-scale: every mod prefab with its own root scale comes out of LF_Utils.SpawnEntityPrefab at that
 //! scale and its designed size. Until #740 a spawn reset the scale to 1: the money bag (0.4) was a 1.36 m sack,
 //! gunpowder (a vanilla gravel pile at 0.012) would have dropped as a full gravel heap, linen (a sandbag at 0.3)

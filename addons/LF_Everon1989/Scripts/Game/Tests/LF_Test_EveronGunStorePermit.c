@@ -1,6 +1,5 @@
 // red-proof: RED-OK everon/gun-store-permit, observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_LicenceCounter,LF_Test_EveronGunStorePermit`:
 // looking the row up on another outlet, `- the gun store counter offers the firearm permit row`. Hook off: green.
-// tier: WORLD
 //! Maintainer 2026-11-17: the firearm permit is got at the gun store. Under the Everon 1989 header (the
 //! pack leg of `tools\cli test`), the gun store's `gun_counter` outlet carries the firearm permit licence
 //! row (LF_Catalogue_GunStore.conf), its fee is the licence office's, and the licence desk therefore no

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_VehicleColours,LF_Test_VehicleColoursOverlay` (RED-OK for both): with the colours config not in use every colour assertion failed, e.g. `- the S105 sells in three colours (expected 3, got 1)`, `- a colour child is chopped for its model payout (expected 300, got 240)`, and a dropped colour on a model the prices config does not list respawned as the saved name. Green with the hook off.
-// tier: LOGIC
 //! Buyable car colours (epic #1826): a colour index maps to its locked child and to price plus delta,
 //! a model with no colour row sells as today, the server range check refuses an index the model
 //! does not sell, a delta that crosses the cash ceiling pays from the bank, a colour child is chopped

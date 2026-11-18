@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `--red` RED-OK; on the unfixed StampVersion `config/stamp-long` failed "an early key keeps every char (expected 24051, got 8209)", the same for a late key (got 8193) and an added key (got 8210); green after the piecewise join (--only).
-// tier: LOGIC
 //! LF_ConfigMigrator.StampVersion on a config past the 8191-char Enforce string cap (#2671,
 //! docs/architecture/enforce-string-limits.md site 1). Substring clamps a long result silently, so
 //! the old splice lost the tail of any config over 8 KB at its first migration. The stamped text

@@ -7,7 +7,6 @@
 //! (owner layer included), serialised, received and applied on a client that has only the shipped
 //! values, give the client the same percents and the same vehicles in the same order, so a price
 //! board reads the owner's price. A bad value in the section changes nothing on the client.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigStreamVehicles : LF_Test
 {

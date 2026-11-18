@@ -96,7 +96,6 @@ class LF_Test_MigrationFails : LF_ConfigMigration
 //! The in-memory migration chain (#303): steps run in version order with the version stamped
 //! after each, a missing or failing step stops the chain, and the v0 to v1 fixture produces a
 //! document the shops section reads.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigMigrationChain : LF_Test
 {

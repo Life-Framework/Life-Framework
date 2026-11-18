@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 (#1962) with `tools\cli test --no-build --red LF_Test_EveronOldMan`: RedProof() makes the act load the core clerk instead of the old man, so his lines are missing (`- bye has a sound event`, `- bye has a length` fail), RED PROOF OK. Green without the hook (pack leg, worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #1962 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the old man on the bench
 //! (Gaspard Lenoir) has a voiced dialogue about the zone and the move and one pointer for a newcomer. Every
 //! line resolves to a caption key in the string table and a sound event with a length and a mouth envelope,

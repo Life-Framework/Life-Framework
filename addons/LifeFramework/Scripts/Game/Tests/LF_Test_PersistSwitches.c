@@ -1,5 +1,4 @@
 // red-proof: StripPrefabFrom without the parent remap failed "the apple in the pouch follows the pouch to its new place (expected 2, got 4)"
-// tier: LOGIC
 //! Persistence switches (#689): the owner's `persistence.keep*` keys, and what each switch resets
 //! in the stores a load just filled (LF_PersistenceKeep.ApplyAfterLoad). Cash, carried gear, jail
 //! and licences here; survival and wanted, which live on the game mode, ride the real save path in

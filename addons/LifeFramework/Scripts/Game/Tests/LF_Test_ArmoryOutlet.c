@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_ArmoryOutlet`: RedProof() lets the patrol officer's rank read as senior, so `a patrol officer is refused the rifle` fails; hook off: green.
-// tier: WORLD
 //! The police armory issues from its outlet by rank (#1763, Refs #1066): the armory reads the
 //! `police_armory` outlet's issue offers, a patrol officer is refused the rifle and the refusal names
 //! the senior rank, a senior officer draws it free with a serial booked to their account, and no

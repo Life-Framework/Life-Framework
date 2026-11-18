@@ -4,7 +4,6 @@
 //   [LFTEST] SUMMARY tier=only passed=0 failed=1 total=1
 // Restored the mean and the test passed (10 assertions).
 
-// tier: LOGIC
 //! The `perf` harness verb's summary: the percentiles and fps a board measurement is judged on
 //! (docs/architecture/visual-boards-budget.md). Nearest-rank percentiles of the frame times, the
 //! mean, and the memory delta, from a fixed set of frames.
