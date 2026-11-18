@@ -21,7 +21,7 @@ slice cards are on GitHub (label `slice`); this page covers the design and the o
 | `test --tier all`, `--only`/`--red` with any WORLD or PERSISTENCE test | 2. Tests named in `tools/test/world-pins.json` boot 3 in a second run until that list is empty. The town tests (`tools/test/town-tests.json`) are in no tier run |
 | `test --town` | 3, one boot, the 12 town tests only (below). `--only <town test>` boots 3 too |
 | Pack tests (`--tier all`, `--tier persistence`, or named with `--only`/`--red`) | 2 under the pack test header, one more boot (below). Never under `--tier fast`, `--core-only`, `--world` or `--town` |
-| `ci`, `wt gate`, `wt ship` suite | as `--tier all`, without the town tests; the pack leg runs after the shards |
+| `ci`, `wt gate`, `wt ship` suite | as `--tier all`, without the town tests; the pack leg is one more job beside the shards |
 | `e2e` | one pair of boots per world (#1993): 2 for the grid-fixture persistence tests, 3 for the town tests (below), 2 under the pack test header for PERSISTENCE pack tests. `--pre-move` keeps the town pair only |
 | `host` | 3 (the playtest mission) |
 | `session up` (default `--mission debug`) | 3, as today. `--mission grid` boots 2, or the pack grid world (a SubScene of 2 that adds the pack's cells) when the pack is loaded and a pack cell exists |
@@ -89,7 +89,8 @@ game loads. The pack test leg closes that gap:
   names; a mixed `--only` splits into the core legs plus the pack leg, and each leg runs only the names
   that belong to it (a core leg never falls back to the whole tier, #2276); a name that matches no test
   stops the run with exit 2 (`splitSelection`, `test-selection-selftest`). A sharded run (`ci`, `wt gate`)
-  runs the pack leg after the shards. `planE2eLegs` gives PERSISTENCE pack tests a save and reload pair
+  runs the pack leg as one more job beside the shards (`runPasses`, #2789), so it costs no wall-clock of its own when a second lane is free
+  and a gate that shards runs the pack tests at all; a shard child never plans a pack leg itself. `planE2eLegs` gives PERSISTENCE pack tests a save and reload pair
   on the same header. `pack-test-leg-selftest` proves the plan, the boundary and the header.
 - **The first one.** `everon/drinks-impair` (`LF_Test_EveronDrinksImpair`, #2003) asserts that the moonshine
   and beer rows apply over the neutral core table under the pack header. It replaced

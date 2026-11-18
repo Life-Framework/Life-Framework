@@ -70,6 +70,10 @@
    {
     "item": "gloves_rally",
     "present": false
+   },
+   {
+    "item": "balaclava",
+    "present": false
    }
   ]
  },
@@ -260,6 +264,18 @@
    {
     "item": "gloves_rally",
     "present": false
+   }
+  ]
+ },
+ {
+  "kind": "outlets",
+  "outlet": "black_market",
+  "offers": [
+   {
+    "item": "balaclava",
+    "licence": "CRIMINAL_BLACKMARKET",
+    "price": 40,
+    "concealsFace": true
    }
   ]
  }

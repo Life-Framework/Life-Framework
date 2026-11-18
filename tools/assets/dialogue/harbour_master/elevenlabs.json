@@ -1,0 +1,141 @@
+{
+  "id": "harbour_master",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "3788090d9e14e542",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Harbour office. Mind the crane and mind the ropes. What can I do for you?",
+      "chars": 73,
+      "chars_total": 29,
+      "request_id": "oCJ1DYSXaReLj4YUS2CC",
+      "seconds": 8.39,
+      "mouth": "378899699189984557706665420011000001010000122469998857820175669998654221110000000000355776799978667777769741155421100000001000100000256951416897788762775554899999742100"
+    },
+    "first_job": {
+      "hash": "8599312297992072",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Crates, mostly. The coaster unloads onto the quay and somebody has to carry them across to the sheds. It pays by the crate, on the spot.",
+      "chars": 136,
+      "chars_total": 54,
+      "request_id": "sGprfx1ZeTJUhslTHWMT",
+      "seconds": 18.53,
+      "mouth": "77989963999742100000235899698999621100000000000000000000000100002265517869887478997305889999999256406976154895673008577653200000000000000034446888667666999986310000000000001478766540787799997598853210000000440545799766420000000024355789999699541477521000000000000000000000000004441029999997664211000000007998872761357988643123221000000000000000000054874887612794110332100"
+    },
+    "go": {
+      "hash": "1aef36e8b50e7e22",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Good. Take a crate from the pile by the crane and carry it where the tag says. Then come back for the next one.",
+      "chars": 111,
+      "chars_total": 44,
+      "request_id": "oR1r62klzsHQnOvM6ybF",
+      "seconds": 9.68,
+      "mouth": "25799934221000000100008985520759997334768493149999875368846417599897421000111001435307689998977344679999984252017877747666678876466310000000000000002675725799876598643338999826767844436786421000"
+    },
+    "crates_offer": {
+      "hash": "04e7e76120e9d0d3",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "You, I know. I have a load that must be across before the tide turns. Fast work, better money, and I will want it done on time. Do you want it?",
+      "chars": 143,
+      "chars_total": 57,
+      "request_id": "WuD305lUygogrWRabmqu",
+      "seconds": 14.99,
+      "mouth": "367999863111000028997999853111000001101101000587999699899985397114679754325897153798655145347857516688741178996432354200000110001111000236898744499998624321000101100001119974796689879964110001000010001000445899899879996367511489987531101000100005676117899987421110000000010000000546797998736874143100"
+    },
+    "crates_early": {
+      "hash": "e73b063b67837ce8",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "I keep the big loads for people I know. Come back when the town knows you. Carry a few crates first.",
+      "chars": 100,
+      "chars_total": 40,
+      "request_id": "qgiwJ3bR7GdcPXbWJ7cP",
+      "seconds": 9.95,
+      "mouth": "87407662143377310379723678998556652389411662059972479877899986421101000001000100006598665898161599877557116999987679999745468642110001001000000000667899961397345446872104543689873565333799863564142000"
+    },
+    "contract_started": {
+      "hash": "d5b62a6a8dc542c1",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Good. Crates are on the quay by the crane. Mind the clock, I am watching it.",
+      "chars": 76,
+      "chars_total": 30,
+      "request_id": "c68mgH7vPXV1TSFfOGsB",
+      "seconds": 8.22,
+      "mouth": "276799353431100010010000011100005679859788976575056668997221000000021168987482065479898731210000000001001000022379999689206599998107322000000769778996988789613531000"
+    },
+    "contract_busy": {
+      "hash": "197ebd2d331e62a8",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "You already have a load on your back. Finish that one first.",
+      "chars": 60,
+      "chars_total": 24,
+      "request_id": "cACZxHadeDwv2LE9Xqo7",
+      "seconds": 4.98,
+      "mouth": "2458998997698898669979996388677872199875116320000000000000000002354798846997327976445898653562131100"
+    },
+    "contract_cooldown": {
+      "hash": "e55f8156d4cf3823",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Not now. Let your arms rest. Come back in a little while.",
+      "chars": 57,
+      "chars_total": 23,
+      "request_id": "m1L22g7NGDmQNgcVXcAc",
+      "seconds": 6,
+      "mouth": "2388114799999986422100000000000044526899974699867648999768504421000000000010000100003445658971467787898247878997775421000"
+    },
+    "contract_run_open": {
+      "hash": "3d31bc5e25efdebd",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "You are carrying something already. Deliver it, then we talk.",
+      "chars": 61,
+      "chars_total": 24,
+      "request_id": "RGpm8DLanhLzHsVczrdv",
+      "seconds": 6.27,
+      "mouth": "247997167999899987778788761489651799976988648753110000000010000000000032566996699896215642100000000232267667771368876411531000"
+    },
+    "bye": {
+      "hash": "2ebec13372b92cef",
+      "date": "2026-11-18",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Mind the edge of the quay.",
+      "chars": 26,
+      "chars_total": 10,
+      "request_id": "LKl5D1fZ5rhtFBY4YiYa",
+      "seconds": 2.21,
+      "mouth": "236999873698710599623768445761175578986421000"
+    }
+  },
+  "voice": {
+    "id": "LifjXiNLcYfyYJD8PCDT",
+    "name": "LaRauque - Hoarse, Deep, and Dramatic",
+    "source": "voice library"
+  }
+}

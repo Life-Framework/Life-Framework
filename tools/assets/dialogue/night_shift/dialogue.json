@@ -20,6 +20,10 @@
   "hear_range_m": 10,
   "start": "greet",
   "nodes": [
+    { "id": "greet_refuses", "line": "greet_refuses" },
+    { "id": "greet_wary", "line": "greet_wary", "options": [{ "text": "bye", "next": "bye" }] },
+    { "id": "greet_friendly", "line": "greet_friendly", "options_from": "greet" },
+    { "id": "greet_regular", "line": "greet_regular", "options_from": "greet" },
     {
       "id": "greet",
       "line": "greet",
@@ -36,6 +40,10 @@
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
+    "greet_refuses": { "text": "I know your face from the night. Do not speak to me." },
+    "greet_wary": { "text": "You again. Make it short, I have work." },
+    "greet_friendly": { "text": "Ah, good evening. Good to see you. Sit if you like." },
+    "greet_regular": { "text": "My friend! The night is long and your company shortens it. What do you want to know?" },
     "greet": { "text": "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like." },
     "about_zone": { "text": "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key." },
     "about_move": { "text": "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner." },

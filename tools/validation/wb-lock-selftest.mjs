@@ -4,6 +4,7 @@
 // red-proof: 2026-11-14, mayTake returning ok for any ticket while a lock was free failed
 // "FIFO: the second ticket waits". 2026-11-15: with the holder on a 1500 ms exit timer again, 8 runs beside 100 busy
 // processes failed 8/8 ("the waiter queued with one status line", "held lock shows busy"); on a stdin release, 8/8 pass.
+// inputs: tools/pool.json
 
 import { spawn, spawnSync } from "node:child_process";
 import { writeFileSync } from "node:fs";

@@ -1,0 +1,36 @@
+GenericEntity {
+ ID "EE15CF7D2984252A"
+ components {
+  MeshObject "{6D3B7B6CE6AA2901}" {
+   Object "{4CD9B977F230E7DF}Assets/Props/Furniture/Safe_01/Safe_01.xob"
+  }
+  RigidBody "{6D3B7B6CE6AA2902}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{6D3B7B6CE6AA2903}" {
+   ActionContexts {
+    UserActionContext "{6D3B7B6CE6AA2904}" {
+     ContextName "default"
+     Position PointInfo "{6D3B7B6CE6AA2905}" {
+      Offset 0 0.5 0
+     }
+     Radius 2
+    }
+   }
+   additionalActions {
+    LF_SiteStrongboxAction "{6D3B7B6CE6AA2906}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{6D3B7B6CE6AA2907}" {
+   Enabled 1
+  }
+  LF_SiteStrongboxComponent "{6D3B7B6CE6AA2908}" {
+  }
+ }
+}

@@ -11,6 +11,7 @@ class LF_IdCardView
 	static const float CLOSE_DISTANCE = 4;	// lf-fixed: arm's length and a step, as every sheet held up to you (LF_HospitalBillCard)
 	static const string PORTRAIT = "IdPortrait";
 	static const string VOID_LINE = "IdVoid";
+	static const string STANDING_LINE = "IdStanding";
 	static const ResourceName STAMP_IMAGESET = "{F02831E43418249A}Assets/UI/Illustrations/LF_IdStamp.imageset";
 	static const string STAMP_IMAGE = "full";
 
@@ -23,7 +24,9 @@ class LF_IdCardView
 	//! The card: title, the registry heading, the photo with the stamp and the five printed lines,
 	//! VOID when it was replaced since, and Close ("Hand it back" on a card shown to you, "Put it
 	//! away" on your own). Empty fields print a dash.
-	static array<ref LF_UIPart> BuildParts(string firstName, string lastName, int age, string number, string issued, bool isVoid, bool shown)
+	//! \param standing One line of words about where the holder stands (LF_ReputationWords.ClientLine); empty
+	//! prints none. Only your own card carries it: the tiers this client holds are its own.
+	static array<ref LF_UIPart> BuildParts(string firstName, string lastName, int age, string number, string issued, bool isVoid, bool shown, string standing = string.Empty)
 	{
 		array<string> labels = {"#LF-IdCard_Surname", "#LF-IdCard_GivenName", "#LF-IdCard_Age", "#LF-IdCard_Issued", "#LF-IdCard_Number"};
 		array<string> values = {Printed(lastName), Printed(firstName), age.ToString(), Printed(issued), Printed(number)};
@@ -32,6 +35,9 @@ class LF_IdCardView
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "IdTitle", "#LF-ID_CardTitle"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.HEADING, "IdRegistry", "#LF-IdCard_Registry"));
 		parts.Insert(LF_UIPart.CreatePortrait(PORTRAIT, STAMP_IMAGESET, STAMP_IMAGE, labels, values));
+		if (!standing.IsEmpty())
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, STANDING_LINE, standing));
+
 		if (isVoid)
 			parts.Insert(LF_UIPart.CreateStatus(VOID_LINE, "#LF-IdCard_VoidLabel", "#LF-IdCard_Void", string.Empty));
 
@@ -84,7 +90,12 @@ class LF_IdCardView
 	static LF_UIScreen Open(string firstName, string lastName, int age, string number, string issued, string look, bool isVoid, IEntity shower, float seconds)
 	{
 		Hide();
-		s_Screen = LF_UIScreen.Open(BuildParts(firstName, lastName, age, number, issued, isVoid, seconds > 0), LF_UISkin.IdCard());
+		// Your own card (nobody holds it up to you) says where you stand, in words; a shown card never does.
+		string standing;
+		if (!shower)
+			standing = LF_ReputationWords.ClientLine();
+
+		s_Screen = LF_UIScreen.Open(BuildParts(firstName, lastName, age, number, issued, isVoid, seconds > 0, standing), LF_UISkin.IdCard());
 		if (!s_Screen)
 		{
 			LF_Debug.Error(LF_PhotoIdCard.FEATURE, "card view failed to open");

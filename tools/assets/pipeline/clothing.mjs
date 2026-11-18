@@ -91,7 +91,7 @@ export function clothingSpecProblems(spec) {
     if (!m.item_object) out.push("mesh.item_object names the ground (item) mesh object in the source (or in mesh.item_source): vanilla garments have a separate folded model");
     for (const [k, v] of Object.entries(m.maps || {})) {
       if (!["BCRMap", "NMOMap"].includes(k)) out.push(`mesh.maps.${k}: a route ${spec.route} material takes BCRMap and NMOMap`);
-      if (!/^(samples:\w+|[\w-]+\.tif)$/.test(v)) out.push(`mesh.maps.${k} names a .tif beside the spec or a samples: file`);
+      if (!/^(samples:\w+|build:[\w-]+\.tif|[\w-]+\.tif)$/.test(v)) out.push(`mesh.maps.${k} names a .tif beside the spec, a build: file or a samples: file`);
     }
     const r = b.lod_ratios;
     if (!(Array.isArray(r) && r.length >= 2 && r.every((x, k) => x > 0 && x < 1 && (k === 0 || x < r[k - 1])))) out.push("budget.lod_ratios must be at least two falling ratios of LOD0 under 1, for LOD1 and on (vanilla clothing ships 4 or 5 LODs)");
@@ -231,8 +231,11 @@ export function ebtAddons() {
 }
 
 // A source file named in a spec: "samples:<key>" (Bohemia's Samples) or a file beside the spec.
-async function sourceFile(root, spec, name) {
-  const file = /^samples:/.test(name) ? await samplesFile(root, name.slice(8)) : join(root, "tools", "assets", spec.slug, name);
+// "build:<file>" is a file the spec's mesh.build script wrote into the asset's tmp folder.
+async function sourceFile(root, spec, name, dir) {
+  const file = /^samples:/.test(name) ? await samplesFile(root, name.slice(8))
+    : /^build:/.test(name) ? join(dir, "build", name.slice(6))
+    : join(root, "tools", "assets", spec.slug, name);
   if (!existsSync(file)) throw new Error(`source ${file} is missing`);
   return file;
 }
@@ -244,15 +247,26 @@ async function stageFit(ctx) {
     return { skipped: true };
   }
   const m = spec.mesh;
-  const source = await sourceFile(root, spec, m.source);
-  const itemSource = m.item_source ? await sourceFile(root, spec, m.item_source) : null;
-  const out = join(dir, "fit");
   const slash = (p) => p && p.replaceAll("\\", "/");
+  if (m.build) {
+    // The garment is modelled by a script beside the spec (the balaclava is cut from the base head): it writes
+    // the .blend and the maps into <asset tmp>/build, which "build:<file>" names below.
+    const script = join(root, "tools", "assets", spec.slug, m.build);
+    if (!existsSync(script)) throw new Error(`mesh.build ${script} is missing`);
+    const buildDir = join(dir, "build");
+    mkdirSync(buildDir, { recursive: true });
+    save(join(dir, "build-job.json"), { template_blend: slash(await samplesFile(root, "weights")), out: slash(buildDir), review: true });
+    ctx.blender(script, [join(dir, "build-job.json")], { log: join(dir, "build.log"), timeoutMs: 600000 });
+    console.log(`fit: built ${m.source} with ${m.build}`);
+  }
+  const source = await sourceFile(root, spec, m.source, dir);
+  const itemSource = m.item_source ? await sourceFile(root, spec, m.item_source, dir) : null;
+  const out = join(dir, "fit");
   const job = {
     template_blend: slash(await samplesFile(root, "weights")), body_fbx: slash(await samplesFile(root, "body")), ebt_addons: slash(ebtAddons()),
     source: slash(source), item_source: slash(itemSource), out: slash(out),
     name: spec.name, object: m.object, item_object: m.item_object, weights_from: m.weights_from || "body", compare_to: m.compare_to || null,
-    smooth: m.smooth ?? 2, clearance_m: m.clearance_m || 0, keep_head: spec.slot === "Hat", max_influences: 4, exporter: m.exporter || "ebt",
+    smooth: m.smooth ?? 2, clearance_m: m.clearance_m || 0, keep_head: spec.slot === "Hat", max_influences: 4, exporter: m.exporter || "ebt", prune_skeleton: !!m.prune_skeleton,
     lod_ratios: spec.budget.lod_ratios, item_lod_ratios: [0.5, 0.25],
   };
   save(join(dir, "fit-job.json"), job);
@@ -358,7 +372,7 @@ async function stageImport(ctx) {
       for (const [map, src] of Object.entries(spec.mesh.maps)) {
         const stem = `${spec.name}_${map.replace(/Map$/, "")}`;
         const tif = join(dataDir, `${stem}.tif`);
-        copyFileSync(await sourceFile(root, spec, src), tif);
+        copyFileSync(await sourceFile(root, spec, src, dir), tif);
         const res = `${spec.asset_dir}/Data/${stem}.edds`;
         const guid = guidFor(res);
         if (!existsSync(join(addon, res + ".meta"))) writeFileSync(join(addon, res + ".meta"), textureMeta(res, map === "NMOMap" ? "TextureNType.conf" : "TextureColorMap.conf", guid));
@@ -407,7 +421,7 @@ async function stageImport(ctx) {
       }
       if (!models[p.key]) problems.push(`Workbench produced no ${xob}`);
     }
-    problems.push(...modelProblems(vanilla, models));
+    problems.push(...modelProblems(vanilla, models, { pruned: !!spec.mesh.prune_skeleton }));
   }
   problems.push(...logProblems(log, spec.name));
   for (const p of problems) console.log(`FAIL  ${p}`);
@@ -431,11 +445,11 @@ export function withMeshParams(text, mesh) {
 }
 
 // What a route (b)/(c) model lacks against the vanilla garment it replaces. Pure.
-export function modelProblems(vanilla, models) {
+export function modelProblems(vanilla, models, opts = {}) {
   const out = [];
   if (models.worn) {
     const missing = (vanilla.worn?.nodeNames || []).filter((n) => !models.worn.nodes.includes(n));
-    if (missing.length) out.push(`the worn model lacks ${missing.length} node(s) of the vanilla skeleton (${missing.slice(0, 5).join(", ")}): every worn model carries the whole skeleton, helpers included`);
+    if (missing.length && !opts.pruned) out.push(`the worn model lacks ${missing.length} node(s) of the vanilla skeleton (${missing.slice(0, 5).join(", ")}): every worn model carries the whole skeleton, helpers included`);
     if (!models.worn.colliders.some((c) => /^UTM_/.test(c))) out.push("the worn model has no UTM_ FireGeo collider: bullets would pass through the garment");
     if (!models.worn.materials.length) out.push("the worn model bakes no material");
   }
@@ -572,7 +586,7 @@ async function stageVerify(ctx) {
   const worn = rows.filter((x) => !x.missing && !x.state.startsWith("ground"));
   const limit = (x) => (isMotion(x.state) ? SAME_LIMIT.motion : SAME_LIMIT.still);
   if (expect === "same") for (const x of rows.filter((y) => !y.missing && y.mean > limit(y))) problems.push(`${x.state} differs from vanilla by ${x.mean} (limit ${limit(x)}): the parity run should look the same`);
-  if (expect === "changed" && worn.length && worn.filter((x) => !isMotion(x.state)).every((x) => x.mean <= limit(x))) problems.push("every still worn picture looks like vanilla: the materials did not take");
+  if (expect === "changed" && worn.length && worn.filter((x) => !isMotion(x.state)).every((x) => x.mean <= (spec.verify?.min_diff ?? limit(x)))) problems.push("every still worn picture looks like vanilla: the materials did not take");
 
   // The inventory preview needs a game client (Workbench play draws no UI).
   let previews = null;

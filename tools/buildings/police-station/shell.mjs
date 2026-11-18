@@ -25,6 +25,56 @@ export const BUILDING = "PoliceStation.et";
 export const FURNITURE = "Furniture/PoliceStation_furniture_01.et";
 const CHECK = process.argv.includes("--check");
 
+// The villa's barred cell door (#2373): Villa_E_2I01_Police_Base hangs DoorSet_PrisonCell_L_EXT_B (5572C8BE5DA39A3D) in the
+// cell's doorway, and that set's leaf is Door_PrisonCell_E_A_Left_INT_ST_B (568ABA5656ABBD13), the same door EL_JailDoor is.
+// The override gives the leaf what Roadmap_Jail_Door has in DebugWorld (the lock, the breach target, the arm and repair
+// actions) so the jail's door target can name it: LF_JailCellComponent.m_sDoorTargetId = CELL_DOOR_TARGET. No second door.
+export const CELL_DOOR_TARGET = "PoliceStation_CellDoor";
+const CELL_DOOR_SET_ID = "5572C8BE5DA39A3D";
+const CELL_DOOR_LEAF_ID = "568ABA5656ABBD13";
+const cellDoor = [
+  "  GenericEntity {",
+  `   ID "${CELL_DOOR_SET_ID}"`,
+  "   {",
+  "    GenericEntity {",
+  `     ID "${CELL_DOOR_LEAF_ID}"`,
+  "     components {",
+  '      LF_LockComponent "{5AC29970429B33BB}" {',
+  "       m_bDebugLocked 1",
+  "      }",
+  '      LF_BreachTargetComponent "{D2FC9663261624B6}" {',
+  `       m_sTargetId "${CELL_DOOR_TARGET}"`,
+  "       m_fFuseSeconds 0",
+  "      }",
+  '      ActionsManagerComponent "{F32B667C3C823800}" {',
+  "       ActionContexts {",
+  '        UserActionContext "{50888D37F529F720}" {',
+  '         Position PointInfo "{50888D37F0EB77E0}" {',
+  "          Offset 1.1594 1.205 0.0196",
+  "         }",
+  "         Radius 0.653",
+  "         Height 2.41",
+  "        }",
+  "       }",
+  "       additionalActions {",
+  '        LF_BreachArmAction "{30DA080036F318AA}" {',
+  "         ParentContextList {",
+  '          "default"',
+  "         }",
+  "        }",
+  '        LF_BreachRepairAction "{C82C7E9C610EFB5D}" {',
+  "         ParentContextList {",
+  '          "default"',
+  "         }",
+  "        }",
+  "       }",
+  "      }",
+  "     }",
+  "    }",
+  "   }",
+  "  }",
+].join("\n");
+
 // The villa's floors: ground 0 (its ceiling lamps hang at 3.3), first 3.8, the attic from 7.3.
 export const floorOf = (y) => (y < 3.7 ? 0 : y < 7.0 ? 1 : 2);
 
@@ -122,7 +172,11 @@ async function main() {
 
   const oldRef = /GenericEntity : "(\{[0-9A-F]+\})Prefabs\/Structures\/Houses\/Villa\/Villa_E_2I01\/Furniture\/Villa_E_2I01_furniture_02\.et"/;
   if (!oldRef.test(vanilla)) throw new Error("the vanilla police villa has no furniture child");
-  const building = vanilla.replace(oldRef, `GenericEntity : "{${fGuid}}${DIR_REL}/${FURNITURE}"`);
+  const furnitureChild = `  GenericEntity : "{${fGuid}}${DIR_REL}/${FURNITURE}"`;
+  const building = vanilla
+    .replace(oldRef, `GenericEntity : "{${fGuid}}${DIR_REL}/${FURNITURE}"`)
+    .replace(`\n${furnitureChild}`, `\n${cellDoor}\n${furnitureChild}`);
+  if (!building.includes(CELL_DOOR_LEAF_ID)) throw new Error("the cell door override did not land before the furniture child");
 
   const root = /^(GenericEntity : "[^"]+" \{\n ID "[0-9A-F]+")/.exec(vFurniture)?.[1];
   if (!root) throw new Error("cannot read the vanilla furniture root");

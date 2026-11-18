@@ -39,10 +39,12 @@ the base game's 24-hour day, so a 60-minute day is 24x and a 120-minute day is 1
 }
 ```
 
-`nightSpeed` is not supported ([#1650](https://github.com/Life-Framework/Life-Framework/issues/1650)). The base
-game's time manager has one day duration and no night rate, so the night runs at the day's rate. A value other
-than `1` logs `day cycle: nightSpeed is not applied, the vanilla time manager has one day rate (<N>x all day)`
-and changes nothing. The field stays so a config that sets it still loads; leave it at `1`.
+`nightSpeed` is how much faster the night runs than the day ([#3149](https://github.com/Life-Framework/Life-Framework/issues/3149)):
+`2` makes the dark hours pass twice as fast, so a 120-minute day spends half as long in the dark. The base game's time
+manager has one day duration, so the server switches it at sunset and sunrise (the world's own, 5 h and 19 h if it
+has none) to the day's duration divided by `nightSpeed`, and logs each flip once. The clock still replicates to every
+client through the manager. `1` (the default) never changes the duration. The night rate shows in the start line as
+`night <N> s (<M>x)`.
 
 `startHour` is the in-game hour a fresh world starts at, `0` to `24`. A save that already has a time
 of day is a different case: see [what a restart does](#what-a-restart-does).
@@ -62,7 +64,7 @@ to it, so a server hosted in one timezone can show another's evening.
 }
 ```
 
-`dayLengthMinutes`, `nightSpeed` (not supported anyway) and `startHour` are ignored: the real clock sets the hour and a day lasts a
+`dayLengthMinutes`, `nightSpeed` and `startHour` are ignored: the real clock sets the hour and a day lasts a
 real day. A negative offset shows an earlier hour than the machine's clock, a positive one a later hour.
 
 ## Fields
@@ -71,7 +73,7 @@ real day. A negative offset shows an earlier hour than the machine's clock, a po
 |---|---|---|---|
 | `mode` | all | `vanilla`, `accelerated`, `realtime` | `vanilla` |
 | `dayLengthMinutes` | `accelerated` | 1 to 10080 | 1440 |
-| `nightSpeed` | `accelerated` | not supported (#1650); 0.1 to 10 is accepted | 1 |
+| `nightSpeed` | `accelerated` | 0.1 to 10: the night runs this many times faster than the day | 1 |
 | `startHour` | `accelerated`, a fresh world | 0 to 24 | 8 |
 | `clockOffsetMinutes` | `realtime` | -1440 to 1440 | 0 |
 
@@ -85,12 +87,14 @@ The Life Framework | Everon 1989 server runs a 2-hour day, in `server/flagship/c
 ```json
 "dayCycle": {
   "mode": "accelerated",
-  "dayLengthMinutes": 120
+  "dayLengthMinutes": 120,
+  "nightSpeed": 2
 }
 ```
 
 - One real minute is 12 in-game minutes; one in-game hour is 5 real minutes.
-- `startHour` is not set, so it keeps its default (8). `nightSpeed` does nothing (#1650).
+- `startHour` is not set, so it keeps its default (8). `nightSpeed` is 2: the night is half as long, so a day is
+  about 90 real minutes of play instead of 120 (the config goes out with the next config push).
 - The server restarts at `06:00` and `18:00`, 12 real hours apart, which is six in-game days.
 
 The core's default stays `vanilla`. Only this config chooses 120 minutes, so a server of your own does not

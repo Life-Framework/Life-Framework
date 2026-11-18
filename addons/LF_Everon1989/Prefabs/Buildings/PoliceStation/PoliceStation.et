@@ -14,6 +14,46 @@ SCR_DestructibleBuildingEntity : "{29CABA57BEA2A188}Prefabs/Structures/Houses/Vi
     }
    }
   }
+  GenericEntity {
+   ID "5572C8BE5DA39A3D"
+   {
+    GenericEntity {
+     ID "568ABA5656ABBD13"
+     components {
+      LF_LockComponent "{5AC29970429B33BB}" {
+       m_bDebugLocked 1
+      }
+      LF_BreachTargetComponent "{D2FC9663261624B6}" {
+       m_sTargetId "PoliceStation_CellDoor"
+       m_fFuseSeconds 0
+      }
+      ActionsManagerComponent "{F32B667C3C823800}" {
+       ActionContexts {
+        UserActionContext "{50888D37F529F720}" {
+         Position PointInfo "{50888D37F0EB77E0}" {
+          Offset 1.1594 1.205 0.0196
+         }
+         Radius 0.653
+         Height 2.41
+        }
+       }
+       additionalActions {
+        LF_BreachArmAction "{30DA080036F318AA}" {
+         ParentContextList {
+          "default"
+         }
+        }
+        LF_BreachRepairAction "{C82C7E9C610EFB5D}" {
+         ParentContextList {
+          "default"
+         }
+        }
+       }
+      }
+     }
+    }
+   }
+  }
   GenericEntity : "{0F5E8DAB572CA160}Prefabs/Buildings/PoliceStation/Furniture/PoliceStation_furniture_01.et" {
    ID "5854C08497298AAE"
    coords 0 0 0
