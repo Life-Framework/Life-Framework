@@ -1,0 +1,22 @@
+// Source of the `butcher` kit (tools/town/kits/butcher.json, #3228): the vanilla shop furniture it places and the
+// butcher's own props. `town fit` reads a row's prefab and component GUIDs from here (a vanilla prefab the kit uses must
+// be named in its source). The kit is built for the ground-floor west room of the town house House_Town_E_2I01_orange (b20),
+// the same plan as the bakery's b06.
+GenericEntity Source_ButcherCounter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_ButcherChiller : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
+ coords 3 0 0
+}
+GenericEntity Source_ButcherFreezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
+ coords 6 0 0
+}
+GenericEntity Source_ButcherScale : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et" {
+ coords 9 0 0
+}
+GenericEntity Source_ButcherTill : "{7CA6A8139045323E}Prefabs/Props/Commercial/LF_ButcherTill.et" {
+ coords 12 0 0
+}
+GenericEntity Source_ButcherMeat : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 15 0 0
+}
