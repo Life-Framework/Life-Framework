@@ -1,4 +1,4 @@
-// red-proof: 2026-11-18 `toolsi test --no-build --red LF_Test_LaunderRules`: RED-OK; the hook zeroes the cut: `1000 marked at 30 % yields 700 (expected 700, got 1000)`. Green: 26 assertions.
+// red-proof: 2026-11-18 `tools/cli test --no-build --red LF_Test_LaunderRules`: RED-OK; the hook zeroes the cut: `1000 marked at 30 % yields 700 (expected 700, got 1000)`. Green: 26 assertions.
 //! Laundering rules (#2852): the 30 % cut in integer maths, the batch max, the per-character daily cap
 //! with its 24 h window, and a config cut outside 0..90 refused at load.
 [LF_TestInfo(LF_TestTier.LOGIC)]

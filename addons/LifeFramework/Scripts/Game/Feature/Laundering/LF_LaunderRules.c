@@ -24,7 +24,7 @@ class LF_LaunderDay
 //------------------------------------------------------------------------------------------------
 class LF_LaunderRules
 {
-	static const int DAY_SECONDS = 86400;
+	static const int DAY_SECONDS = 86400; // lf-fixed: 24 real hours is the rule, not a tunable
 	static const string REASON_DAILY_CAP = "daily_cap";
 	static const string REASON_NOTHING = "nothing";
 
