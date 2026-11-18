@@ -328,6 +328,7 @@ class LF_ResidentSpawner
 		}
 
 		Dormant(entity);
+		LF_ResidentActivity.Apply(entity, slot.m_sActivity, spot);
 		LF_ResidentLive live = new LF_ResidentLive();
 		live.m_sId = id;
 		live.m_Entity = entity.GetID();
