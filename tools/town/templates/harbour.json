@@ -25,6 +25,26 @@
       "places": ["WholesaleCounter"]
     },
     {
+      "id": "lockers", "required": false, "kit": "lockers", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 140 },
+      "places": ["LockerBank"]
+    },
+    {
+      "id": "smokehouse", "required": false, "kit": "smokehouse", "host": "building", "poi": "none", "margin": 6,
+      "needs": { "interior": "optional", "minArea": 40, "prefer": "near", "maxDistance": 120, "types": ["industrial", "shed", "garage"] },
+      "places": ["Smokehouse"]
+    },
+    {
+      "id": "warehouse", "required": false, "kit": "warehouse", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "groundFloor": true, "minArea": 200, "prefer": "near", "maxDistance": 140, "types": ["industrial", "garage"] },
+      "places": ["Warehouse"]
+    },
+    {
+      "id": "quay-fishing", "required": false, "kit": "quay-fishing", "host": "street", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 120 },
+      "places": ["FishingSpot"]
+    },
+    {
       "id": "chandler", "required": false, "kit": "chandler", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 30, "prefer": "near", "maxDistance": 140, "types": ["shed", "industrial", "garage", "house", "shop"] },
       "plot": { "minWidth": 10, "minDepth": 8, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
