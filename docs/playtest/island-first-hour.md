@@ -32,10 +32,11 @@ line if a kit row is named differently, and drop the `pending #N` from that step
 | 2 | Talk to the clerk at the town hall; read the rules sign | The clerk greets you and points to work; the rules sign opens | pending #2932 |
 | 3 | At the parcel kiosk: Take courier work (parcel only), Pick up parcel; carry it to a drop: a mailbox 300 m or more away (the dock metal shed north of the square, or the wooden house east), wait out the walk, Complete the run | A toast pays the run (about $40); the job shows Courier | draft #2325 and #2959 |
 | 4 | Open your status | Cash went up by the pay; job XP or level moved | follows step 3 |
-| 5 | Bank teller: deposit the pay, then withdraw $200 | Bank and cash move by the amounts you typed | pending #2932 |
+| 5 | Bank teller: deposit the pay, then withdraw $300 (permit and driving licence) | Bank and cash move by the amounts you typed | pending #2932 |
 | 6 | Clothing shop: buy a shirt | Cash down by the price; the shirt is in your inventory | pending #2315 |
 | 6b | Gun counter: order the Firearm permit ($250), pay cash | The permit is yours; the PM pistol is no longer "Not without a Firearm permit" | on main (needs $250 cash, so step 5 first) |
-| 6c | Car lot: buy the cheapest car | Bank or cash down; the car is yours and parked at the lot | pending #2933 |
+| 6c | Town hall licence desk: buy the driving licence ($100, cash) | Cash down $100; the licence is yours at once | on main (#3140) |
+| 6d | Car lot: buy the cheapest car (the lot refuses you without the driving licence, #3151) | Bank or cash down; the car is yours and parked at the lot | pending #2933 |
 | 7 | General store: buy water | Cash down; water in the inventory. The till is there to rob (police get an alert) | pending #2314 |
 | 8 | Police station desk: clock in, clock out (whitelisted police only) | Duty on, police kit and radio; duty off | pending #2319 |
 | 9 | Clinic desk: clock in, clock out (medic roster) | Duty on as medic; duty off | pending #2320 |
@@ -56,7 +57,8 @@ Self-judged run on `ws/first-hour-asserts` over main `14ffae11` (2026-11-18, one
 | 5 | Bank teller | pending #2932 (bank layer has the vault and counter marker, no teller) |
 | 6 | Shirt | pending #2315 (clothing layer has props, no shop) |
 | 6b | Firearm permit | **works, unaffordable**: the counter opens and lists the permit at $250; a newcomer's $100 is refused. Passes once step 5 can withdraw |
-| 6c | Car | pending #2933 (no car-lot slot) |
+| 6c | Driving licence | not yet run (added by #3151) |
+| 6d | Car | pending #2933 (no car-lot slot) |
 | 7 | Groceries | pending #2314 |
 | 8 | Police duty | pending #2319 |
 | 9 | Medic duty | pending #2320 |

@@ -824,10 +824,20 @@ StringTable {
      Target_en_us "Nearly there. A few more shifts at the quarry and the foreman will let you."
      Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
     }
+    CustomStringTableItem "{4698001E131BC577}" {
+     Id "LF-LicenceWhere_DRIVING_LICENCE"
+     Target_en_us "The town hall desk"
+     Comment "Overrides the core row: the driving licence is bought at the town hall licence desk (#3151)."
+    }
     CustomStringTableItem "{597379C162802B06}" {
      Id "LF-LicenceWhere_FIREARM_PERMIT"
      Target_en_us "The gun store counter"
      Comment "Overrides the core row: the firearm permit is bought at the gun store counter (#3150)."
+    }
+    CustomStringTableItem "{CA4B6B802EFD710E}" {
+     Id "LF-Lot_NeedsDrivingLicence"
+     Target_en_us "Not without a driving licence. The town hall desk issues it for %1."
+     Comment "Overrides the core row: the flagship's car lot refusal names the town hall licence desk (#3151). %1 is the fee."
     }
     CustomStringTableItem "{EFE3196881518A64}" {
      Id "LF-MapPoi_Bakery"
@@ -1193,6 +1203,11 @@ StringTable {
      Id "LF-Quest_SettleWheels_Desc"
      Target_en_us "Buy any car at the car lot. The town board shows where it is."
      Comment "Settling-in chain step 3: buy a car."
+    }
+    CustomStringTableItem "{A63268C6F419075E}" {
+     Id "LF-Quest_SettleWheels_DescLicence"
+     Target_en_us "Get your driving licence at the town hall desk first (00), then buy any car at the car lot. The town board shows where it is."
+     Comment "Settling-in chain step 3 (#3151): the flagship's car lot asks for the driving licence, so the step says to get it first."
     }
     CustomStringTableItem "{71D42A3909D03894}" {
      Id "LF-Quest_SettleWheels_Title"
