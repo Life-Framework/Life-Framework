@@ -37,5 +37,6 @@
   it, and a forged perform or a direct `LF_Properties.SetSpawnHouse` by them is refused with a logged reason.
 - 🟡 The choice is `m_bOwnerSpawnsHere` on the house's `properties` row (no new payload, no version change). One
   per owner: setting a second house clears the first. `LF_Properties.SpawnHouseOf(ownerKey)` returns it while the
-  owner who set it still owns the house; a sold house is never the buyer's spawn, in session or after a save.
+  owner who set it still owns the house; a sold house is never the buyer's spawn, in session or after a save. Any owner change
+  (`LF_HouseManagerComponent.SetOwner`, whatever calls it) clears the flag, so buying the house back does not restore it.
 - 🟡 Applies at login only (the spawn flow reads `SpawnHouseOf`); deaths still wake at hospital. Proof: `property/set-home`.

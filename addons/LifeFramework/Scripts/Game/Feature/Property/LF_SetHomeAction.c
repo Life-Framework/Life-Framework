@@ -156,6 +156,19 @@ modded class LF_Properties
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a property changed hands, so its spawn choice goes (a buyer never inherits it, and the
+	//! seller does not get it back by buying the house again).
+	static void ClearSpawnHouse(string propertyId)
+	{
+		LF_PropertyRecord record = Records().Get(propertyId);
+		if (!record || !record.m_bOwnerSpawnsHere)
+			return;
+
+		record.m_bOwnerSpawnsHere = false;
+		LF_Debug.Info(FEATURE, string.Format("property %1 changed hands and is no longer a spawn house", propertyId));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \param ownerKey A character key.
 	//! \return The id of the property that owner spawns at on login, empty when none. A flagged row
 	//! counts only while the owner who set it (the row's mirror) still owns the property.
@@ -171,5 +184,20 @@ modded class LF_Properties
 		}
 
 		return "";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Every change of a house's owner (a sale, a wipe, an eviction, a lapse) clears its spawn flag, also
+//! when it bypasses LF_Properties.SetOwner. A first owner after boot (empty before) is a load, not a sale.
+modded class LF_HouseManagerComponent
+{
+	//------------------------------------------------------------------------------------------------
+	override void SetOwner(string ownerKey)
+	{
+		string previous = GetOwnerKey();
+		super.SetOwner(ownerKey);
+		if (Replication.IsServer() && !previous.IsEmpty() && previous != GetOwnerKey())
+			LF_Properties.ClearSpawnHouse(GetHouseIdentifier());
 	}
 }
