@@ -113,8 +113,61 @@ class LF_PropertyConfig
 		LF_PropertyConfig config = LF_PropertyConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!config)
 			LF_Debug.Error("Property", string.Format("property config has an unexpected root class, using defaults: %1", path));
+		else
+			config.RefuseHouseCollisions();
 
 		return config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! LF_Properties keys houses and plots in one table and a house wins, so a plot key equal to a house
+	//! identifier would sell that house at the plot price (#2783). Drops every plot whose key is a known
+	//! house (a saved row or a live house) and logs LF_Debug.Error naming both. The other plots stay.
+	//! \return How many plots were refused.
+	int RefuseHouseCollisions()
+	{
+		if (!m_aPlots)
+			return 0;
+
+		int refused = 0;
+		for (int i = m_aPlots.Count() - 1; i >= 0; i--)
+		{
+			LF_PropertyPlotDef plot = m_aPlots[i];
+			if (!plot || plot.m_sPlotId.IsEmpty())
+				continue;
+
+			if (!LF_Houses.Get(plot.m_sPlotId) && !LF_Houses.Find(plot.m_sPlotId))
+				continue;
+
+			LF_Debug.Error("Property", string.Format("plot key %1 equals the house identifier %1: the plot is not for sale (rename the plot key in the property config, the house is untouched)", plot.m_sPlotId));
+			m_aPlots.RemoveOrdered(i);
+			refused++;
+		}
+
+		return refused;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A house registered after the config loaded (the config usually loads first): drops the loaded
+	//! plot with the same key. Does nothing when no config is loaded; LoadFrom checks the houses then.
+	//! \return True when a plot was refused.
+	static bool RefuseHouseId(string houseId)
+	{
+		if (!s_Config || !s_Config.m_aPlots || houseId.IsEmpty())
+			return false;
+
+		for (int i = 0; i < s_Config.m_aPlots.Count(); i++)
+		{
+			LF_PropertyPlotDef plot = s_Config.m_aPlots[i];
+			if (!plot || plot.m_sPlotId != houseId)
+				continue;
+
+			LF_Debug.Error("Property", string.Format("plot key %1 equals the house identifier %1: the plot is not for sale (rename the plot key in the property config, the house is untouched)", houseId));
+			s_Config.m_aPlots.RemoveOrdered(i);
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

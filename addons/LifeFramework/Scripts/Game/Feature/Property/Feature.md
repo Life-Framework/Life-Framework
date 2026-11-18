@@ -12,6 +12,8 @@ choice survive a restart.
 
 - Config (#2647, P2): `Configs/Property/LF_Property.conf` read through `LF_PropertyConfig`. Plots, tiers,
   four stages per tier, per-stage item requirements, work units and shell prefabs are all config.
+- A plot key equal to a house identifier is refused (#2783): `RefuseHouseCollisions` at config load,
+  `RefuseHouseId` when a house registers later; `validate-plot-house-ids` checks the confs and layers.
 - Record (#2646): `LF_PropertyRecord`, one row, append-only, VERSION 1. Stable id = house identifier or
   plot key. `LF_Properties` is the server book (static map), `ExportAll` / `ApplyAll` for the
   `properties` payload.
