@@ -359,6 +359,9 @@ class LF_PoliceRanks
 			return false;
 		}
 
+		// The target's running seconds count at the rank they were earned at (#2874).
+		SettleNow(target);
+
 		if (promoter.GetPoliceRank() <= target.GetPoliceRank())
 		{
 			Note("promote refused: promoter does not outrank the target");
@@ -382,7 +385,9 @@ class LF_PoliceRanks
 			return false;
 		}
 
+		float oldRate = LF_DutyPay.RateBeforeRankChange(target);
 		target.SetPoliceRank(nextRank);
+		LF_DutyPay.AfterRankChange(target, oldRate);
 		LF_PoliceApplications.EndTrial(targetUid);
 		LF_Debug.Log("Ranks", string.Format("promoted %1 to rank %2 by %3", targetUid, nextRank, promoterUid));
 		return true;
@@ -418,7 +423,9 @@ class LF_PoliceRanks
 		if (!IsRankUsable(nextRank))
 			return false;
 
+		float oldRate = LF_DutyPay.RateBeforeRankChange(account);
 		account.SetPoliceRank(nextRank);
+		LF_DutyPay.AfterRankChange(account, oldRate);
 		LF_PoliceApplications.EndTrial(uid);
 		LF_Debug.Log("Ranks", string.Format("promoted %1 to rank %2 by time on duty", uid, nextRank));
 		return true;
@@ -613,6 +620,104 @@ class LF_PoliceRanks
 		s_sLastError = string.Format("draw refused: %1 has %2 issued item(s) still out", uid, LF_ArmoryKits.Outstanding(uid));
 		LF_Debug.Warn("Ranks", s_sLastError);
 		NotifyOfficer(officer, "#EL-Rank_KitOutstanding");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server (#2874): takes off the officer every issued item on their armory book that their rank
+	//! may no longer draw (a demotion), and turns its serial in. Kit the rank still allows stays.
+	//! Called when an administrator demotes an online officer, and at every spawn for one who was
+	//! offline then. Logged with the count; a toast tells the officer.
+	//! \param[in] uid The armory book key: the officer's account id.
+	//! \return Items taken.
+	static int StripKitAboveRank(string uid, IEntity officer)
+	{
+		LF_PlayerAccount account = Account(uid);
+		if (!account || !officer || LF_ArmoryKits.Outstanding(uid) <= 0)
+			return 0;
+
+		if (Replication.IsRunning() && !Replication.IsServer())
+			return 0;
+
+		array<IEntity> carried = {};
+		array<string> serials = {};
+		CarriedKit(uid, officer, carried, serials);
+
+		int rank = account.GetPoliceRank();
+		array<string> stripped = {};
+		InventoryStorageManagerComponent inventory = LF_Component<InventoryStorageManagerComponent>.Find(officer);
+		foreach (int i, IEntity item : carried)
+		{
+			if (!item || RankMayHoldIssued(rank, LF_Utils.GetPrefabName(item)))
+				continue;
+
+			InventoryItemComponent itemComponent = LF_Component<InventoryItemComponent>.Find(item);
+			if (inventory && itemComponent && itemComponent.GetParentSlot() && itemComponent.GetParentSlot().GetStorage())
+				inventory.TryRemoveItemFromStorage(item, itemComponent.GetParentSlot().GetStorage());
+
+			SCR_EntityHelper.DeleteEntityAndChildren(item);
+			stripped.Insert(serials[i]);
+		}
+
+		if (stripped.IsEmpty())
+			return 0;
+
+		LF_ArmoryKits.TurnIn(uid, stripped);
+		s_sLastError = string.Format("kit above rank %1 taken from %2: %3 item(s), %4 still out", rank, uid, stripped.Count(), LF_ArmoryKits.Outstanding(uid));
+		LF_Debug.Info("Ranks", s_sLastError);
+		NotifyOfficer(officer, "#LF-Rank_KitAboveRankTaken");
+		return stripped.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! May an officer of rank hold this issued prefab? The armory offer that issues it decides (its
+	//! rank gate); a prefab no armory offer issues is not rank kit, so it may be held.
+	static bool RankMayHoldIssued(int rank, ResourceName prefab)
+	{
+		LF_ItemCatalogueConfig config = LF_ItemCatalogueConfig.Get();
+		array<LF_OutletOffer> offers = {};
+		LF_ItemCatalogue.Offers(config, ARMORY_OUTLET, offers);
+		foreach (LF_OutletOffer offer : offers)
+		{
+			if (!offer || !offer.m_bIssue)
+				continue;
+
+			LF_CatalogueItem item = LF_ItemCatalogue.Item(config, offer.m_sItem);
+			bool issues = !offer.m_IssuePrefab.IsEmpty() && LF_Utils.SamePrefab(offer.m_IssuePrefab, prefab);
+			if (!issues && item)
+				issues = LF_Utils.SamePrefab(item.m_Prefab, prefab);
+
+			if (!issues)
+				continue;
+
+			LF_PoliceIssueFacts facts = new LF_PoliceIssueFacts();
+			facts.m_iRank = rank;
+			string missing;
+			return LF_ItemCatalogue.Check(offer, facts, missing) == LF_EOutletGate.OPEN;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The live body of a connected officer: one BindOfficer tied to the uid, else the connected
+	//! player whose account it is. Null when they are offline.
+	static IEntity OnlineBody(string uid)
+	{
+		IEntity bound = BoundEntity(uid);
+		if (bound || uid.IsEmpty() || !GetGame() || !GetGame().GetPlayerManager())
+			return bound;
+
+		PlayerManager players = GetGame().GetPlayerManager();
+		array<int> playerIds = {};
+		players.GetPlayers(playerIds);
+		foreach (int playerId : playerIds)
+		{
+			IEntity body = players.GetPlayerControlledEntity(playerId);
+			if (body && ResolveUid(body) == uid)
+				return body;
+		}
+
+		return null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -960,14 +1065,22 @@ class LF_PoliceRanks
 				{
 					account.AddShiftSeconds(credited);
 
-					// Rank seconds go to the ladder of the role on duty (medic ranks: #2708).
-					if (account.GetFaction() == LF_Faction.POLICE)
-						AccrueDuty(account.GetPersistentId(), credited);
-					else if (account.GetFaction() == LF_Faction.MEDIC)
-						LF_MedicRanks.AccrueDuty(account, credited);
+					// Split at each time promotion (#2874): the seconds before it are added unpaid at the old
+					// rank, and the promotion restates them at the new rank's rate before the rest is added.
+					int remaining = credited;
+					while (remaining > 0)
+					{
+						int piece = LF_Utils.MinInt(remaining, SecondsToNextRank(account));
+						remaining -= piece;
+						if (account.GetFaction() != LF_Faction.CIVILIAN)
+							account.AddUnpaidDutySeconds(piece);
 
-					if (account.GetFaction() != LF_Faction.CIVILIAN)
-						account.AddUnpaidDutySeconds(credited);
+						// Rank seconds go to the ladder of the role on duty (medic ranks: #2708).
+						if (account.GetFaction() == LF_Faction.POLICE)
+							AccrueDuty(account.GetPersistentId(), piece);
+						else if (account.GetFaction() == LF_Faction.MEDIC)
+							LF_MedicRanks.AccrueDuty(account, piece);
+					}
 				}
 			}
 		}
@@ -976,6 +1089,34 @@ class LF_PoliceRanks
 			account.StartDutyClock(nowMs);
 		else
 			account.StopDutyClock();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! On-duty seconds until the account's next time promotion on the ladder of its duty role;
+	//! int.MAX when no time promotion is ahead (top rank, a civilian, already due).
+	static int SecondsToNextRank(LF_PlayerAccount account)
+	{
+		int required = 0;
+		int done = 0;
+		if (account.GetFaction() == LF_Faction.POLICE)
+		{
+			required = DutySecondsForNext(account.GetPoliceRank());
+			done = account.GetOnDutySeconds();
+		}
+		else if (account.GetFaction() == LF_Faction.MEDIC)
+		{
+			required = LF_MedicRanks.DutySecondsForNext(account.GetMedicRank());
+			done = account.GetMedicDutySeconds();
+		}
+
+		if (required <= 0)
+			return int.MAX;
+
+		// Already due (a promotion that could not happen): the rest goes in one piece.
+		if (required <= done)
+			return int.MAX;
+
+		return required - done;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1070,7 +1211,12 @@ class LF_PoliceRanks
 	//! Server, from the game mode when a player spawns: ResumeDutyClock for that player's account.
 	static void OnPlayerReturned(int playerId)
 	{
-		ResumeDutyClock(Account(LF_Utils.GetPlayerUID(playerId)), NowMs());
+		string uid = LF_Utils.GetPlayerUID(playerId);
+		ResumeDutyClock(Account(uid), NowMs());
+
+		// An officer demoted while offline loses kit above the new rank when they come back (#2874).
+		if (GetGame() && GetGame().GetPlayerManager())
+			StripKitAboveRank(uid, GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------
