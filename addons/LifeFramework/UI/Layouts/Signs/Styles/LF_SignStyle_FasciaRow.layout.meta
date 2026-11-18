@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{3C8A32F4A9E38F27}UI/Layouts/Signs/Styles/LF_SignStyle_FasciaRow.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass PS5 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}

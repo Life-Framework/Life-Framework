@@ -143,3 +143,11 @@ for `quad16x9`) at the prop's face offset, angles and scale, and paints the styl
 First style: `chalk` on `LF_Sign_Chalkboard` (face `-90 0 0`, offset `0 1.53 0.3`, scale 1.15 covers the slate).
 Sample sign `chalk_sample` (Today's prices, four rows) stands in GridWorld cell `sign-overhaul`. Tests LOGIC
 `signs/face-plan`, `signs/styles`. Proof of a face is a full-profile session shot (`look` draws render targets white).
+
+## Shop fascias (#3301)
+
+`LF_Sign_Fascia` is migrated to the styled face (`m_sStyle "fascia"`, `m_sSize "fascia"`): bold condensed capitals,
+a dark drop shadow (`LF_SignStyleDef.m_vGhostColor` at the ghost alpha), ground and ink from the placement's
+`m_vPaintColor` and `m_vTextColor` (`LF_SignStyleDef.m_bPlacementColors`, `LF_SignStyledFace.FaceColors`). The `fascia`
+size has no carrier: the vanilla body samples `$rendertarget` itself and the style shows 1024 x 213 of the target.
+The layout is `UI/Layouts/Signs/Styles/LF_SignStyle_Fascia.layout`. Test `signs/fascia`.
