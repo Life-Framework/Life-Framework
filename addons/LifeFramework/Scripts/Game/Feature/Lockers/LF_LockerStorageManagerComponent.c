@@ -307,8 +307,10 @@ class LF_LockerStorageManagerComponent : ScriptedInventoryStorageManagerComponen
 
 		Capture();
 		IEntity opener = GetGame().GetWorld().FindEntityByID(m_OpenerId);
+		// The locker is keyed by the record key (LF_Utils.GetPlayerUID); the carried snapshot by the
+		// character id, which differs for a character in slot 1 (its record key is the account uid).
 		if (opener && LF_Utils.IsAliveState(opener))
-			LF_StorageSnapshot.CaptureCarried(m_sCharacterKey, opener);
+			LF_StorageSnapshot.CaptureCarried(LF_PlayerAccountManager.CharacterIdOfKey(m_sCharacterKey), opener);
 
 		m_bReleased = true;
 		ScriptCallQueue queue = GetGame().GetCallqueue();
