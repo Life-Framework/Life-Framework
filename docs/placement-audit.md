@@ -46,7 +46,7 @@ them, which is how apple juice bottles stood inside the general store till.
 
 | Problem | Measured | Threshold |
 |---|---|---|
-| floating | bounds bottom above the surface under it: the higher of a trace down from 0.5 m above the bottom (every physics layer) and the top of a prop whose bounds stand under the centre | 0.15 m |
+| floating | (buildings, props from 1.5 m up and the exempt kinds below; a small prop is judged by `contact`) bounds bottom above the surface under it: the higher of a trace down from 0.5 m above the bottom (every physics layer) and the top of a prop whose bounds stand under the centre | 0.15 m |
 | sunk | bounds bottom and pivot both below that surface (a vehicle's wheels below its pivot, or a pivot left on the floor under a raised mesh, are not sunk) | 0.15 m (0.5 m for buildings) |
 | overhang | a bottom corner (20% in from each side) with no surface within 0.2 m under it while the centre rests on a prop | any corner |
 | clips | another entity's surface inside the shrunk bounds on two or more of 54 rays across them | 0.15 m in |
@@ -56,6 +56,7 @@ them, which is how apple juice bottles stood inside the general store till.
 | in the road | the box centre on a carriageway of `Village_Roads.layer` (roads under 15 m wide, not the market, square or fuel apron) | half width - 0.3 m |
 | scale | entity scale outside 0.5 to 2 (odd: outside 0.75 to 1.6, signs excepted) | |
 | tilted | up axis off vertical | 5 deg |
+| contact (#2953) | a prop under 1.5 m: `cgap` is its mesh-bounds bottom minus the highest support under a 3x3 footprint (`LF_PlaceSnap.Measure`; a trace that starts inside a proxy box is dropped), written on every row with `cspread` and `chits`. It replaces floating and sunk for that prop: flagged `contact` past 1 cm either way (the `floating` trace read 3 to 23 cm for juice standing exactly on a wide universal shelf, where cgap reads 0.5 mm). Exempt: vehicles (bounds include the wheels), vegetation, hung kinds, sacks and logs laid down, tilted props, buildings, ground surfaces, rock chains, road furniture, characters; no support found (`cgap=none`) falls back to the 15 cm trace | 1 cm |
 | size | the largest side of the measured box (world space, scale applied) outside the range `tools/place/expected-sizes.json` gives for that kind of prop | per entry; see "Expected sizes" |
 | unreachable | interactables: no standing spot within 1.5 m of the edge (3 m for signs) | |
 
@@ -138,7 +139,8 @@ Add an entry only with a reason a reviewer can check in a shot.
 - It measures where the layer puts each entity. A dynamic rigid body (a pickup with `RigidBody Active Active`,
   such as `WoodLog_01_Small`) is simulated on clients and can tip off a table that the audit passed: on
   2026-11-11 the logging stand's logs, laid along a 1.2 m table, fell upright in the after shot. Lay such
-  items on the ground, or check them in a shot.
+  items on the ground, or check them in a shot. `place ... --settle physics` simulates such a body to rest and
+  writes the pose (#3065, `docs/placement-tool.md`): `WoodLog_01_Small` comes to rest standing on its end.
 - It measures; it does not judge looks. The visual pass (`tools\cli look <area>` with no session, or
   `tools\cli shots area <name> --eye-only`; `docs/visual-testing.md`, `docs/agent-area-polish.md`) still catches the wrong asset, junk strewn about and odd scale that is
   inside the thresholds.

@@ -24,6 +24,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { spawnSync } from "node:child_process";
 import { layerFile as townLayerFile, worldLayerDirs } from "../lib/addons.mjs";
 import { GRID_LAYERS, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
 import { layerEntityPrefabs } from "../lib/layer-prefabs.mjs";
@@ -420,6 +421,24 @@ export function setTransform(text, target, { coords, yaw, scale = null }) {
     if (scaleLine >= 0) lines[scaleLine] = `${indent}scale ${num(scale)}`;
     else lines.splice(after + 1, 0, `${indent}scale ${num(scale)}`);
   }
+  return text.slice(0, span.open) + lines.join("\n") + text.slice(span.end);
+}
+
+// Rewrite only the height of one entity's `coords` line (x and z keep their text; angleY, scale and every other byte stay).
+export function setCoordsY(text, target, y) {
+  const name = typeof target === "string" ? target : baseOf(target.prefab);
+  const span = entityBlockOf(text, target);
+  const lines = text.slice(span.open, span.end).split("\n");
+  let depth = 0;
+  let coordsAt = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (depth === 1 && /^\s*coords\s/.test(lines[i])) coordsAt = i;
+    depth += (lines[i].match(/\{/g) || []).length - (lines[i].match(/\}/g) || []).length;
+  }
+  if (coordsAt < 0) throw new PlaceError(`${name} has no coords line`);
+  const m = lines[coordsAt].match(/^(\s*coords\s+)(\S+)\s+(\S+)\s+(\S+)\s*$/);
+  if (!m) throw new PlaceError(`${name}: cannot read its coords line "${lines[coordsAt].trim()}"`);
+  lines[coordsAt] = `${m[1]}${m[2]} ${num(y)} ${m[4]}`;
   return text.slice(0, span.open) + lines.join("\n") + text.slice(span.end);
 }
 
@@ -853,22 +872,56 @@ export function parseRays(outText) {
 // `grid`: the command targets a Grid_*.layer, so the list is GridWorld's own layers and the server boots GridWorld
 // (what `audit placement --grid` measures); a town run lists the playtest world's layers and boots that.
 // `measure` is the server boot, replaceable so the selftest can see what the tool would send.
-export function serverRun(rayLines = [], { grid = false, measure = measureTown } = {}) {
+// `settle`: `settle <id> <token>` lines (settleLine): the server rests each entity by its measured mesh bottom
+// (LF_PlaceSnap, LF_PlacementAudit.SettleLine) after the rays and BEFORE the entity rows, so the audit rows of the
+// same boot measure the props already settled. The answers come back as `settles` (parseSettles).
+export function serverRun(rayLines = [], { grid = false, measure = measureTown, settle = [] } = {}) {
   mkdirSync(TMP, { recursive: true });
   const records = grid ? auditRecords({ grid: true }) : auditRecords({ annex: true });
   // The probe goes through the pool like `test` (RAM admission, FIFO queue, a run budget). This PC goes first
   // while it has room (a probe is seconds; another machine adds a sync); under the RAM floor the pool sends it
   // to the machine with headroom, carrying in.txt up and out.txt back. Never pinned (`local: true` timed out
   // under the RAM floor, 2026-11-16).
-  const run = measure(records, { outDir: TMP, extra: rayLines, preferLocal: true, grid });
+  const run = measure(records, { outDir: TMP, extra: [...rayLines, ...settle], preferLocal: true, grid });
   if (run.outText == null) throw new PlaceError("the test server wrote no measurements (lines above). Run it from a worktree; `tools\\cli test --no-build --only LF_Test_PlacementAuditTown` shows why");
   const { rays, doors } = parseRays(run.outText);
   // doors.json is the town's door cache (loadDoors); GridWorld's doors must not replace it.
   if (doors.length && !grid) writeFileSync(join(TMP, "doors.json"), JSON.stringify({ at: new Date().toISOString(), doors }));
   const missingRays = rayLines.length - rays.size;
   if (missingRays > 0) throw new PlaceError(`the test server answered ${rays.size} of ${rayLines.length} probe rays: its scripts are older than this tool (run from a worktree at this commit)`);
-  return { records, outText: run.outText, rays, doors };
+  const settles = parseSettles(run.outText);
+  const missingSettles = settle.length - settles.size;
+  if (missingSettles > 0) throw new PlaceError(`the test server answered ${settles.size} of ${settle.length} settle lines: its scripts are older than this tool (run from a worktree at this commit)`);
+  return { records, outText: run.outText, rays, doors, settles };
 }
+
+// `settle <id> y0=.. y1=.. gap=.. before=.. spread=.. on=.. found=..` (LF_PlacementAudit.SettleLine). y0/y1 are the
+// entity's origin height before and after (the value of its `coords` line); gap is the contact gap re-measured after
+// the move, before the gap it started with. `missing` (not found) and `nothing` (no support under its footprint) have no y1.
+export function parseSettles(outText) {
+  const out = new Map();
+  for (const raw of String(outText).split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line.startsWith("settle ")) continue;
+    const sp = line.indexOf(" ", 7);
+    if (sp < 0) continue;
+    const kv = parseKv(line.slice(sp + 1));
+    const n = (v) => (v === undefined || !Number.isFinite(Number(v)) ? null : Number(v));
+    out.set(line.slice(7, sp), { y0: n(kv.y0), y1: n(kv.y1), gap: n(kv.gap), before: n(kv.before), spread: n(kv.spread), on: kv.on ?? "", found: kv.found ?? "", missing: kv.missing === "1", nothing: kv.nothing === "1" });
+  }
+  return out;
+}
+
+// What LF_PlacementAudit.FindExcluded resolves to one entity: its name, or `@<prefab file>:x,y,z` for an unnamed one.
+export const settleToken = (t) => (t.name ? t.name : `@${baseOf(t.prefab)}:${r3(t.x)},${r3(t.y)},${r3(t.z)}`);
+export const settleLine = (id, t) => `settle ${id} ${settleToken(t)}`;
+
+// The audit never judges these by their mesh bottom (agent-box/place-audit.mjs contactJudged): a tree stands by its pivot
+// (the roots go below), a vehicle by its wheels, a building by its foundation, a ground plate or rock chain by its edge, a
+// hung sign by its wall. Resting their mesh bottom would float the trunk or drop the sign, so a command leaves them where
+// the geometry put them (`place settle` takes them only with --force). The reason, or "" when the prop is settled.
+const SETTLE_EXEMPT = ["vehicle", "vegetation", "building", "surface", "chain"];
+export const settleExempt = (t) => (t.hung ? "hung" : t.tilted ? "tilted" : SETTLE_EXEMPT.find((k) => isKind(t, k)) || "");
 
 // `exclude`: what the ray passes through, the entity being re-placed: its name, or for an unnamed one
 // `@<prefab>:x,y,z` (excludeOf), which LF_PlacementAudit.FindExcluded resolves to the entity at that spot.
@@ -930,7 +983,7 @@ export function judge(targets, records, outText, { allow = [], areas = [], roads
 
 // --------------------------------------------------------------------------------- cli
 
-const VALUED = new Set(["layer", "name", "at", "near", "yaw", "facing", "face-to", "face", "along", "hang", "front", "gap", "floor", "reach", "count", "spacing", "move", "in", "scale", "row", "y-hint", "inset"]);
+const VALUED = new Set(["layer", "name", "at", "near", "yaw", "facing", "face-to", "face", "along", "hang", "front", "gap", "floor", "reach", "count", "spacing", "move", "in", "scale", "row", "y-hint", "inset", "settle"]);
 
 function parseArgs(argv) {
   const out = { _: [], flags: {} };
@@ -1055,15 +1108,19 @@ function review(ctx, plans, flags, { quiet = false } = {}) {
 
 // The offline checks, the write, the audit, and the rollback: shared by every placing command.
 function commit(ctx, plans, flags) {
+  const mode = settleModeOf(flags);
+  const snap = mode === "snap";
+  if (mode === "physics") physicsTargets(plans, { grid: !ctx.prefabFile && itemsGrid(plans.map((p) => p.item)) });
   const blocked = review(ctx, plans, flags);
   if (blocked && !flags.force) {
     console.log("place: not written (problems above). Fix the request, or --force to write anyway.");
     return 1;
   }
   if (flags.dry) {
-    console.log("place: dry run, nothing written.");
+    console.log(`place: dry run, nothing written${snap ? " (the contact settle runs on the write, in the audit boot)" : ""}${mode === "physics" ? " (the physics settle runs on the write, in a Workbench play session)" : ""}.`);
     return 0;
   }
+  if (mode === "physics") nameForPhysics(ctx, plans);
   // Write, keeping each file's original text for the rollback.
   const originals = new Map();
   const edit = (file, fn) => {
@@ -1072,6 +1129,8 @@ function commit(ctx, plans, flags) {
   };
   for (const p of plans) {
     const it = p.item;
+    // Where the entity's block is after this write, for the settle step: its name, or its prefab and coords line.
+    const at = (file, coords) => ({ file, target: it.name || { prefab: it.prefab, coordsText: coords.map(num).join(" ") }, coords });
     if (it.mode === "move") {
       const par = it.ent.parent;
       let coords = [p.x, p.y, p.z];
@@ -1082,19 +1141,54 @@ function commit(ctx, plans, flags) {
         yaw = p.yaw - par.yaw;
       }
       edit(ctx.prefabFile ?? layerFile(ROOT, it.ent.file), (t) => setTransform(t, it.ent.name || it.ent, { coords, yaw, scale: it.setScale ?? null }));
+      p.at = at(ctx.prefabFile ?? layerFile(ROOT, it.ent.file), coords);
     } else {
       edit(layerFile(ROOT, it.layer), (t) => appendEntity(t, { cls: it.info.cls, name: it.name, guid: it.ref.guid, path: it.ref.path, coords: [p.x, p.y, p.z], yaw: p.yaw, scale: it.setScale }));
+      p.at = at(layerFile(ROOT, it.layer), [p.x, p.y, p.z]);
     }
   }
   const files = [...originals.keys()].map((f) => f.slice(ROOT.length + 1).replace(/\\/g, "/"));
   if (flags["no-verify"] || ctx.prefabFile) {
+    if (snap) console.log("settle: skipped (no audit boot to run it in); the height is the probed one. Run tools\\cli place settle <names> before shipping.");
     console.log(`place: wrote ${files.join(", ")} (not audited${ctx.prefabFile ? ": a prefab's children are checked offline; validate-prop-on-surface covers them" : "; run tools\\cli place verify <names> before shipping"}).`);
     return 0;
   }
+  if (mode === "physics") {
+    if (!runPhysicsSettle(plans, originals)) return 1;
+    // The audit judges a static prop at the spot it was probed; a body at rest after the simulation (a log on its end
+    // 2.9 m up) is exactly what the simulation decided, so there is no audit boot after it: look at it (\`look contact\`).
+    console.log(`place: placed ${files.join(", ")}; physics-rested, not audited (tools\\cli look contact grid:<slug> --entities <names> shows it).`);
+    return 0;
+  }
   const targets = plans.map((p) => ({ name: p.item.name, prefab: p.item.prefab, x: r3(p.x), y: r3(p.y), z: r3(p.z), yaw: p.yaw, hung: Boolean(p.hung) }));
+  // The contact settle (#2954): the same boot rests each prop by its measured mesh bottom (LF_PlaceSnap) before the audit
+  // rows measure it, and its height is what the layer keeps. Hung, tilted and pivot-stood props (settleExempt) keep the probed height.
+  const settleIdx = [];
+  const lines = [];
+  plans.forEach((p, i) => {
+    if (!snap) return;
+    const why = settleExempt({ name: p.item.name, prefab: p.item.prefab, hung: p.hung });
+    if (why) console.log(`settle ${p.item.name || baseOf(p.item.prefab)}: left at the probed height (${why}: the audit judges it another way)`);
+    else {
+      settleIdx.push(i);
+      lines.push(settleLine(`s${i}`, targets[i]));
+    }
+  });
   let verdict;
   try {
-    verdict = runJudge(targets, { grid: itemsGrid(plans.map((p) => p.item)) });
+    const judged = runJudge(targets, { grid: itemsGrid(plans.map((p) => p.item)), settle: lines });
+    verdict = judged.verdict;
+    for (const i of settleIdx) {
+      const s = judged.run.settles.get(`s${i}`);
+      const label = targets[i].name || baseOf(targets[i].prefab);
+      const res = settleResult(s, plans[i].at.coords[1]);
+      if (!res.ok) {
+        console.log(`settle ${label}: ${res.why}; kept the probed height`);
+        continue;
+      }
+      edit(plans[i].at.file, (t) => setCoordsY(t, plans[i].at.target, res.y));
+      console.log(`settle ${label}: y ${num(plans[i].at.coords[1])} -> ${num(res.y)} (contact ${cmOf(s.before)} before, ${cmOf(s.gap)} after, on ${s.on})`);
+    }
   } catch (e) {
     for (const [file, text] of originals) writeFileSync(file, text);
     throw e;
@@ -1115,11 +1209,70 @@ function commit(ctx, plans, flags) {
   return bad.length ? 1 : 0;
 }
 
-function runJudge(targets, { grid = false } = {}) {
-  const run = serverRun([], { grid });
+// --settle physics (#3065): each placed prop is a dynamic body; a hidden Workbench plays the grid world, simulates it to
+// rest and writes its coords and `angles` into the layer (tools/visual/place-settle.mjs). Grid layers of the core
+// GridWorld only (never a town layer), and a body that is not simulated has no physics rest (use the default snap).
+export function physicsTargets(plans, { grid = true } = {}) {
+  if (!grid) throw new PlaceError("--settle physics works in GridWorld (Grid_*.layer) only, never a town layer");
+  const pack = plans.some((p) => layerFile(ROOT, p.item.mode === "move" ? p.item.ent?.file : p.item.layer).startsWith(join(ROOT, PACK_GRID_LAYERS)));
+  if (pack) throw new PlaceError("--settle physics runs in the core GridWorld; a pack cell's layer is not simulated yet");
+  const bad = plans.filter((p) => !p.item.dynamic).map((p) => p.item.name || baseOf(p.item.prefab));
+  if (bad.length) throw new PlaceError(`--settle physics is for simulated rigid bodies (a log, a bag); ${bad.join(", ")} is static: place it with the default --settle snap in a separate command`);
+  return plans;
+}
+
+// Gives each new body a layer name (the plugin finds its entity by name): <layer>_<Prefab>_<n>, unique in the world.
+function nameForPhysics(ctx, plans) {
+  const taken = new Set((ctx.world ?? []).map((e) => e.name).filter(Boolean));
+  for (const p of plans) {
+    const it = p.item;
+    if (it.name || (it.mode === "move" && it.ent?.name)) continue;
+    const layerName = String(it.layer || it.ent?.file || "Grid").replace(/\.layer$/, "");
+    let n = 1;
+    while (taken.has(`${layerName}_${baseOf(it.prefab)}_${n}`)) n++;
+    it.name = `${layerName}_${baseOf(it.prefab)}_${n}`;
+    taken.add(it.name);
+  }
+}
+
+// The physics run: after the write, before the audit. A failed run restores every file (the editor save can rewrite
+// a layer); the runner itself puts back the layers it was not asked to change.
+function runPhysicsSettle(plans, originals) {
+  const names = plans.map((p) => p.item.name || p.item.ent?.name);
+  const run = spawnSync(process.execPath, [join(ROOT, "tools", "visual", "place-settle.mjs"), "settle", ...names], { cwd: ROOT, stdio: "inherit", windowsHide: true });
+  if (run.status === 0) return true;
+  for (const [file, text] of originals) writeFileSync(file, text);
+  console.log("place: the physics settle failed; the files are restored (nothing written).");
+  return false;
+}
+
+// `settle`: settle lines for the same boot (serverRun). Returns the verdicts and the run (its `settles`).
+function runJudge(targets, { grid = false, settle = [] } = {}) {
+  const run = serverRun([], { grid, settle });
   const allow = readJson(join(ROOT, "agent-box", "place-audit-allow.json"), { allow: [] }).allow ?? [];
   const areas = readJson(join(ROOT, "agent-box", "areas.json"), { areas: [] }).areas ?? [];
-  return judge(targets, run.records, run.outText, { allow, areas, roads: grid ? [] : loadRoads(ROOT), grid });
+  return { run, verdict: judge(targets, run.records, run.outText, { allow, areas, roads: grid ? [] : loadRoads(ROOT), grid }) };
+}
+
+// --settle snap (the default): the height is the one LF_PlaceSnap rests the prop at. --settle off keeps the probed height.
+const CONTACT_MAX = LIMITS.contact;
+// Settle is for centimetres (the spike's worst hover was 8.7 cm).
+const MAX_MOVE = 0.25;
+const cmOf = (v) => `${r2(v * 100)} cm`;
+
+// What one settle answer means for the layer: the new `coords` height (the old one plus the move the server made, so the
+// parent's frame and a group's offset do not matter), or why not. A gap over 1 cm after the move is a failed verify.
+export function settleResult(s, coordsY, { force = false } = {}) {
+  if (!s || s.missing) return { ok: false, why: "not in the world at its layer position (did the prefab reference load?)" };
+  if (s.nothing || s.y0 === null || s.y1 === null) return { ok: false, why: "nothing under its footprint within 0.6 m; left where it is" };
+  if (!Number.isFinite(s.gap) || Math.abs(s.gap) > CONTACT_MAX) return { ok: false, why: `still ${cmOf(s.gap)} off its support (${s.on}) after the move; not written. Support varies ${cmOf(s.spread ?? 0)} under it: a lip, an edge or a slope` };
+  if (Math.abs(s.y1 - s.y0) > MAX_MOVE && !force) return { ok: false, why: `would move it ${cmOf(s.y1 - s.y0)} (over ${MAX_MOVE * 100} cm): a hung prop or the wrong support (${s.on})? Not written; --force writes it anyway` };
+  return { ok: true, y: coordsY + (s.y1 - s.y0) };
+}
+export function settleModeOf(flags) {
+  const mode = String(flags.settle ?? "snap");
+  if (mode !== "snap" && mode !== "off" && mode !== "physics") throw new PlaceError(`--settle is snap (default), off or physics, not ${mode}`);
+  return mode;
 }
 
 function relYawOf(flags, surface) {
@@ -1308,6 +1461,59 @@ function cmdAgainst(args, flags) {
   return commit(ctx, [plan], flags);
 }
 
+// `place settle <entity>... [--layer L.layer] [--dry] [--force]`: re-settle props a layer already has (#2954). One test-server
+// boot for the batch: each entity is measured with LF_PlaceSnap, moved so its mesh bottom rests on the support under its
+// footprint, and measured again. A prop whose re-measured gap is over 1 cm, or that has nothing under it, is not written;
+// for the rest only the height on the `coords` line changes (x, z, angleY, scale and every other byte stay).
+// A move over MAX_MOVE is refused without --force: settle is for centimetres, and a long move means a hung prop (a board on a wall),
+// a prop standing on another settled prop, or the wrong support.
+function cmdSettle(args, flags) {
+  if (!args.length) throw new PlaceError("usage: place settle <entity>... [--layer L.layer] [--dry] [--force]   (--layer picks the layer when a name is in several)");
+  const layer = flags.layer ? String(flags.layer).split(/[\/]/).pop() : null;
+  const world = loadModel(ROOT);
+  const pool = layer ? world.filter((e) => e.file === layer) : world;
+  if (layer && !pool.length) throw new PlaceError(`no entities in layer ${layer} (DebugWorld_Layers, the pack town's layers or a Grid_*.layer)`);
+  const items = [];
+  for (const e of args.map((spec) => findEntity(pool, spec))) {
+    const why = e.bounds ? settleExempt(e) : "no mesh bounds";
+    if (why && !(flags.force && e.bounds)) {
+      console.log(`settle ${labelOf(e)}: skipped (${why}${why === "no mesh bounds" ? "" : ": the audit judges it another way; --force settles it anyway"})`);
+      continue;
+    }
+    items.push(e);
+  }
+  if (!items.length) {
+    console.log("settle: nothing to settle");
+    return 1;
+  }
+  const grid = gridWorldOf(items.map((e) => e.file));
+  console.log(`  settling ${items.length} prop(s) (one test-server boot)`);
+  const run = serverRun([], { grid, settle: items.map((e, i) => settleLine(`e${i}`, e)) });
+  const originals = new Map();
+  let bad = 0;
+  let moved = 0;
+  items.forEach((e, i) => {
+    const label = labelOf(e);
+    const s = run.settles.get(`e${i}`);
+    const file = layerFile(ROOT, e.file);
+    const coords = e.coordsText.split(/\s+/).map(Number);
+    const res = settleResult(s, coords[1], { force: Boolean(flags.force) });
+    if (!res.ok) {
+      bad++;
+      console.log(`settle ${label}: ${res.why}`);
+      return;
+    }
+    const y = res.y;
+    console.log(`settle ${label}: y ${num(coords[1])} -> ${num(y)} (${cmOf(s.before)} off before, ${cmOf(s.gap)} after, on ${s.on})${flags.dry ? " [dry]" : ""}`);
+    if (flags.dry || Math.abs(y - coords[1]) < 0.0005) return;
+    if (!originals.has(file)) originals.set(file, readFileSync(file, "utf8"));
+    writeFileSync(file, setCoordsY(readFileSync(file, "utf8"), e.name || e, y));
+    moved++;
+  });
+  console.log(`place settle: ${flags.dry ? "dry run, nothing written" : `${moved} moved`}${bad ? `, ${bad} not settled` : ""}.`);
+  return bad ? 1 : 0;
+}
+
 // Every vanilla prefab (one the addon does not hold) an entity in the layers is placed from, measured once from the
 // .xob headers. A loadout-slot or inventory prefab is not a placed prop (tools/lib/layer-prefabs.mjs).
 export function vanillaPrefabs(root = ROOT) {
@@ -1390,7 +1596,7 @@ function cmdVerify(args) {
     const e = found[i];
     return { name, prefab: e.prefab, x: r3(e.x), y: r3(e.y), z: r3(e.z), yaw: e.yaw, hung: false, tilted: e.tilted };
   });
-  const verdict = runJudge(targets, { grid: gridWorldOf(found.map((e) => e.file)) });
+  const { verdict } = runJudge(targets, { grid: gridWorldOf(found.map((e) => e.file)) });
   let bad = 0;
   for (const v of verdict) {
     // A hung thing is judged by the audit's own mounted rule, not by the tool's rest tolerance.
@@ -1411,6 +1617,8 @@ const USAGE = `usage: tools\\cli place <command>   (docs/placement-tool.md)
   arrange on <surface> <prefab>... --layer L.layer [--count n] [--spacing m] [--at north]
   arrange row <x1,z1> <x2,z2> <prefab>... --layer L.layer [--yaw deg]
   bounds <prefab|entity> | probe <surface> | verify <entity>...
+  settle <entity>... [--layer L.layer] [--dry] [--force]   rest props by their measured mesh bottom; only the coords height changes
+  --settle snap|off|physics (on|ground|arrange|against: height from the contact settle, the default; the probed height; or a rigid body simulated to rest in Workbench play, GridWorld only)
   --move <Entity>[,...] re-places existing entities; --in <Prefabs/X.et> works on a prefab's children (surface: root)
   --dry  --no-verify  --keep  --force  --scale s`;
 
@@ -1426,6 +1634,7 @@ export async function main(argv) {
     if (cmd === "measure") return cmdMeasure();
     if (cmd === "probe") return cmdProbe(args, flags);
     if (cmd === "verify") return cmdVerify(args, flags);
+    if (cmd === "settle") return cmdSettle(args, flags);
   } catch (e) {
     if (!(e instanceof PlaceError)) throw e;
     console.log(`place: ${e.message}`);

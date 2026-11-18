@@ -235,6 +235,12 @@ export async function main() {
     const skeleton = ["Scene_Root", "Root", "Hips", "Spine1"];
     ok(modelProblems({ worn: { nodeNames: skeleton } }, { worn: { nodes: ["Scene_Root"], colliders: ["UTM_x"], materials: [{}] } }).some((m) => /lacks 3 node/.test(m)), "models: a worn model missing skeleton nodes is flagged");
     ok(modelProblems({ worn: { nodeNames: skeleton } }, { worn: { nodes: skeleton, colliders: [], materials: [] } }).length === 2, "models: no FireGeo collider and no material are both flagged");
+    // A pruned skeleton (spec mesh.prune_skeleton, #1997): the full 231-node skeleton imports with no mesh in Workbench, a small one does.
+    ok(modelProblems({ worn: { nodeNames: skeleton } }, { worn: { nodes: ["Scene_Root"], colliders: ["UTM_x"], materials: [{}] } }, { pruned: true }).length === 0, "models: a pruned skeleton is not flagged for the nodes it dropped");
+    ok(modelProblems({ worn: { nodeNames: skeleton } }, { worn: { nodes: ["Scene_Root"], colliders: [], materials: [] } }, { pruned: true }).length === 2, "models: a pruned model still needs its FireGeo collider and material");
+    const built = newClothingSpec({ slug: "c-build", name: "CBuild", base: BASE, slot: "Hat", route: "c" });
+    built.mesh = { build: "model.py", source: "build:x.blend", object: "X", item_object: "X_item", maps: { BCRMap: "build:X_BCR.tif", NMOMap: "build:X_NMO.tif" }, weights_from: "body" };
+    ok(!clothingSpecProblems(built).some((m) => /mesh\.maps/.test(m)), "spec: a mesh map may be a file the build script writes (build:<file>.tif)");
     ok(modelProblems({}, { item: { nodes: ["Root"], colliders: [] } }).length === 2, "models: a ground model with bones and no collider is flagged");
     const meta = 'MetaFileClass {\n Configurations {\n  FBXResourceClass PC {\n   GeometryParams {\n   }\n  }\n }\n}\n';
     const once = withMeshParams(meta, "Vest");

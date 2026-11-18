@@ -43,7 +43,7 @@ GenericEntity WhitelistStation {
     coords 0 0.9 0.7
    {
     GenericEntity WhitelistIDCard_Debug : "{75459D9B0B635800}Prefabs/Items/Roleplay/IDCard.et" {
-     coords 0 0 0
+     coords 0 0.085 0
     }
    }
   }

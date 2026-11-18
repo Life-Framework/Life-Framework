@@ -932,6 +932,7 @@ class LF_PersistenceManagerComponent : ScriptComponent
 	protected void OnBeforeSave(ESaveGameType saveType)
 	{
 		LF_Debug.Info("Persistence", string.Format("preparing to save (%1)", typename.EnumToString(ESaveGameType, saveType)));
+		LF_SaveTiming.BeginEngine();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -943,6 +944,8 @@ class LF_PersistenceManagerComponent : ScriptComponent
 	{
 		if (saveType == ESaveGameType.SHUTDOWN)
 			m_bShutdownSaveObserved = true;
+
+		LF_SaveTiming.EndEngine(typename.EnumToString(ESaveGameType, saveType));
 
 		if (success)
 		{

@@ -24,6 +24,11 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Residents on File"
      Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
     }
+    CustomStringTableItem "{0384C0944FFE565E}" {
+     Id "LF-ContractTracker_Title_harbour_crates"
+     Target_en_us "Harbour crates"
+     Comment "Contract tracker title (#2709): the harbour master's early crates run (LF-ContractTracker_Title_<contractId>)."
+    }
     CustomStringTableItem "{3E9F5343A58B4851}" {
      Id "LF-Dialogue_CafeOwner_Bye"
      Target_en_us "Come back when you are hungry. Or lonely. It is the same to me."
@@ -37,6 +42,26 @@ StringTable {
     CustomStringTableItem "{CF6D5EEB9B023A27}" {
      Id "LF-Dialogue_CafeOwner_Greet"
      Target_en_us "Come in, come in. The coffee is hot. You are new here, I can tell. Nobody walks that slowly who has lived here long."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{7175FAEEC545FB58}" {
+     Id "LF-Dialogue_CafeOwner_GreetFriendly"
+     Target_en_us "Welcome back! You always bring a smile in with you. What can I do for you?"
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{6F4DC97D37490E2A}" {
+     Id "LF-Dialogue_CafeOwner_GreetRefuses"
+     Target_en_us "I have nothing to say to you. Please leave my cafe."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{D147578847F58E39}" {
+     Id "LF-Dialogue_CafeOwner_GreetRegular"
+     Target_en_us "There is my favourite customer! Sit, sit. Ask me anything."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{8DFEB7702C93ABF5}" {
+     Id "LF-Dialogue_CafeOwner_GreetWary"
+     Target_en_us "Oh. It is you. What do you need?"
      Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
     }
     CustomStringTableItem "{73190CD9164F1A41}" {
@@ -199,6 +224,36 @@ StringTable {
      Target_en_us "Mind the edge of the quay."
      Comment "Harbour master caption (#2692): the goodbye."
     }
+    CustomStringTableItem "{7E9DDAA8102F7328}" {
+     Id "LF-Dialogue_HarbourMaster_ContractBusy"
+     Target_en_us "You already have a load on your back. Finish that one first."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{7EFE04DBAEF1FD6D}" {
+     Id "LF-Dialogue_HarbourMaster_ContractCooldown"
+     Target_en_us "Not now. Let your arms rest. Come back in a little while."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{2D047BD4994A439B}" {
+     Id "LF-Dialogue_HarbourMaster_ContractRunOpen"
+     Target_en_us "You are carrying something already. Deliver it, then we talk."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{64B76FBB42089C1D}" {
+     Id "LF-Dialogue_HarbourMaster_ContractStarted"
+     Target_en_us "Good. Crates are on the quay by the crane. Mind the clock, I am watching it."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{0CAB3606C5E90963}" {
+     Id "LF-Dialogue_HarbourMaster_CratesEarly"
+     Target_en_us "I keep the big loads for people I know. Come back when the town knows you. Carry a few crates first."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{1BC2671024BE40DA}" {
+     Id "LF-Dialogue_HarbourMaster_CratesOffer"
+     Target_en_us "You, I know. I have a load that must be across before the tide turns. Fast work, better money, and I will want it done on time. Do you want it?"
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
     CustomStringTableItem "{A55113E34B39D13E}" {
      Id "LF-Dialogue_HarbourMaster_FirstJob"
      Target_en_us "Crates, mostly. The coaster unloads onto the quay and somebody has to carry them across to the sheds. It pays by the crate, on the spot."
@@ -214,6 +269,11 @@ StringTable {
      Target_en_us "Harbour office. Mind the crane and mind the ropes. What can I do for you?"
      Comment "Harbour master caption (#2692): the greeting."
     }
+    CustomStringTableItem "{31104EFBD559B194}" {
+     Id "LF-Dialogue_HarbourMaster_SayAskCrates"
+     Target_en_us "Have you got a bigger load?"
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
     CustomStringTableItem "{841D61171005B9D8}" {
      Id "LF-Dialogue_HarbourMaster_SayAskWork"
      Target_en_us "Is there any work on the quay?"
@@ -227,6 +287,11 @@ StringTable {
     CustomStringTableItem "{5644E7F72839DB8C}" {
      Id "LF-Dialogue_HarbourMaster_SayNotNow"
      Target_en_us "Not just now."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{DF9EF80D315A7206}" {
+     Id "LF-Dialogue_HarbourMaster_SayTakeCrates"
+     Target_en_us "I'll take the load."
      Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
     }
     CustomStringTableItem "{555B8170F5B38060}" {
@@ -259,6 +324,26 @@ StringTable {
      Target_en_us "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like."
      Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
     }
+    CustomStringTableItem "{CD248C95DC1ABEA0}" {
+     Id "LF-Dialogue_NightShift_GreetFriendly"
+     Target_en_us "Ah, good evening. Good to see you. Sit if you like."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{DE5B4981A3551962}" {
+     Id "LF-Dialogue_NightShift_GreetRefuses"
+     Target_en_us "I know your face from the night. Do not speak to me."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{A3A002843565D613}" {
+     Id "LF-Dialogue_NightShift_GreetRegular"
+     Target_en_us "My friend! The night is long and your company shortens it. What do you want to know?"
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
+    CustomStringTableItem "{313BEDDBB4D62D31}" {
+     Id "LF-Dialogue_NightShift_GreetWary"
+     Target_en_us "You again. Make it short, I have work."
+     Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
+    }
     CustomStringTableItem "{D435BA49E015D84F}" {
      Id "LF-Dialogue_NightShift_SayBye"
      Target_en_us "Goodbye."
@@ -287,6 +372,26 @@ StringTable {
     CustomStringTableItem "{EE06F137A9E223A3}" {
      Id "LF-Dialogue_OldMan_Greet"
      Target_en_us "Sit down a minute. Everyone is in a hurry these days. I only watch the square."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{19F518135D4FF803}" {
+     Id "LF-Dialogue_OldMan_GreetFriendly"
+     Target_en_us "Ah, there you are. A friendly face is good to see. Sit a moment."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{3582FBD5E8DCF917}" {
+     Id "LF-Dialogue_OldMan_GreetRefuses"
+     Target_en_us "I saw what you did. Keep walking."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{02D74A9E8D29DB53}" {
+     Id "LF-Dialogue_OldMan_GreetRegular"
+     Target_en_us "My friend! The harbour is better for having you in it. What can an old fisherman do for you?"
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{0DA987094106C72C}" {
+     Id "LF-Dialogue_OldMan_GreetWary"
+     Target_en_us "Hm. You again. Say what you want, and be quick."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
     CustomStringTableItem "{22873025BE77ACB7}" {
@@ -323,6 +428,96 @@ StringTable {
      Id "LF-Dialogue_OldMan_Zone"
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{10AEFC81EF1DE6FB}" {
+     Id "LF-Everon_Tier_Police_0"
+     Target_en_us "No record"
+     Comment "Standing tier word (#2709): police tier 0. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{218B43E34075A8FE}" {
+     Id "LF-Everon_Tier_Police_1"
+     Target_en_us "No trouble"
+     Comment "Standing tier word (#2709): police tier 1. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{C322B474C87BCAF7}" {
+     Id "LF-Everon_Tier_Police_2"
+     Target_en_us "Helpful"
+     Comment "Standing tier word (#2709): police tier 2. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{EBC160A5B600F12D}" {
+     Id "LF-Everon_Tier_Police_3"
+     Target_en_us "A friend of the station"
+     Comment "Standing tier word (#2709): police tier 3. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{8D3CAF967BDF45C0}" {
+     Id "LF-Everon_Tier_Police_Neg1"
+     Target_en_us "Under watch"
+     Comment "Standing tier word (#2709): police tier -1. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{3BB58BA737421867}" {
+     Id "LF-Everon_Tier_Police_Neg2"
+     Target_en_us "Known to us"
+     Comment "Standing tier word (#2709): police tier -2. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{36EF1685B8B0C10C}" {
+     Id "LF-Everon_Tier_Town_0"
+     Target_en_us "A newcomer"
+     Comment "Standing tier word (#2709): town tier 0. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{A6EA6821D99A6A5A}" {
+     Id "LF-Everon_Tier_Town_1"
+     Target_en_us "Known"
+     Comment "Standing tier word (#2709): town tier 1. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{154A66F103A03D94}" {
+     Id "LF-Everon_Tier_Town_2"
+     Target_en_us "Trusted"
+     Comment "Standing tier word (#2709): town tier 2. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{F5903CBEFB96A9CA}" {
+     Id "LF-Everon_Tier_Town_3"
+     Target_en_us "Respected"
+     Comment "Standing tier word (#2709): town tier 3. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{981F307582FD362C}" {
+     Id "LF-Everon_Tier_Town_Neg1"
+     Target_en_us "Talked about"
+     Comment "Standing tier word (#2709): town tier -1. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{01ED3F875FE1DF75}" {
+     Id "LF-Everon_Tier_Town_Neg2"
+     Target_en_us "Not welcome"
+     Comment "Standing tier word (#2709): town tier -2. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{B85C88CCDBC020BF}" {
+     Id "LF-Everon_Tier_Underworld_0"
+     Target_en_us "Nobody"
+     Comment "Standing tier word (#2709): underworld tier 0. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{C838265D08A464AE}" {
+     Id "LF-Everon_Tier_Underworld_1"
+     Target_en_us "Known face"
+     Comment "Standing tier word (#2709): underworld tier 1. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{ABC0784CFCF0BEFC}" {
+     Id "LF-Everon_Tier_Underworld_2"
+     Target_en_us "Reliable"
+     Comment "Standing tier word (#2709): underworld tier 2. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{CE26B7D55EA59ED5}" {
+     Id "LF-Everon_Tier_Underworld_3"
+     Target_en_us "One of us"
+     Comment "Standing tier word (#2709): underworld tier 3. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{DB6A8EF7D2C59A80}" {
+     Id "LF-Everon_Tier_Underworld_Neg1"
+     Target_en_us "Suspect"
+     Comment "Standing tier word (#2709): underworld tier -1. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{191C12776304C9DA}" {
+     Id "LF-Everon_Tier_Underworld_Neg2"
+     Target_en_us "Not trusted"
+     Comment "Standing tier word (#2709): underworld tier -2. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
     }
     CustomStringTableItem "{5AFB8F50443E2D63}" {
      Id "LF-Handbook_Everon_CrimeBody1"
@@ -464,10 +659,110 @@ StringTable {
      Target_en_us "Tourist map of Everon"
      Comment "Tourist map (#2242): the item's name in the inventory."
     }
+    CustomStringTableItem "{78E9902BB0209A7E}" {
+     Id "LF-Level_Far_Farmer"
+     Target_en_us "You have not put in enough seasons on the land for that."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{A718D65B1FDFE9B2}" {
+     Id "LF-Level_Far_Lumberjack"
+     Target_en_us "You have not spent enough days in the timber for that."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{E7776BB29B052CA7}" {
+     Id "LF-Level_Far_Medic"
+     Target_en_us "The infirmary does not trust you with that yet. More time on the ward first."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{8A34CDF81572554B}" {
+     Id "LF-Level_Far_Miner"
+     Target_en_us "You have not put in enough shifts at the quarry for that."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{C350EDAE16B51A03}" {
+     Id "LF-Level_Near_Farmer"
+     Target_en_us "Not quite yet. A few more days in the orchards and the foreman will take you on."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{4C195362770B5C66}" {
+     Id "LF-Level_Near_Lumberjack"
+     Target_en_us "Nearly there. A few more days on the saw and the woodsmen will trust you with it."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{8ABADA8A8ECDE7C1}" {
+     Id "LF-Level_Near_Medic"
+     Target_en_us "Nearly there. A few more patients under the doctor's eye first."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{B3848ED998DC1D4A}" {
+     Id "LF-Level_Near_Miner"
+     Target_en_us "Nearly there. A few more shifts at the quarry and the foreman will let you."
+     Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0E}" {
+     Id "LF-MapPoi_Cafe"
+     Target_en_us "Cafe"
+     Comment "Map POI kind name (#2247): the cafe."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0C}" {
+     Id "LF-MapPoi_ClothingStore"
+     Target_en_us "Clothing store"
+     Comment "Map POI kind name (#2247): the clothing store counter."
+    }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
      Target_en_us "Fence"
      Comment "Map POI kind name (#2230): the fence. A hidden kind, never public; shown only as a personal pencil mark after the player met them."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0F}" {
+     Id "LF-MapPoi_FillingStation"
+     Target_en_us "Filling station"
+     Comment "Map POI kind name (#2247): the fuel till."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0B}" {
+     Id "LF-MapPoi_GeneralStore"
+     Target_en_us "General store"
+     Comment "Map POI kind name (#2247): the general store counter."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0D}" {
+     Id "LF-MapPoi_GunStore"
+     Target_en_us "Gun store"
+     Comment "Map POI kind name (#2247): the gun store counter."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F13}" {
+     Id "LF-MapPoi_Hostel"
+     Target_en_us "Hostel"
+     Comment "Map POI kind name (#2247): the hostel."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F11}" {
+     Id "LF-MapPoi_NoticeBoard"
+     Target_en_us "Notice board"
+     Comment "Map POI kind name (#2247): the town board."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F12}" {
+     Id "LF-MapPoi_ParcelDepot"
+     Target_en_us "Parcel depot"
+     Comment "Map POI kind name (#2247): the parcel depot."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F10}" {
+     Id "LF-MapPoi_TaxiRank"
+     Target_en_us "Taxi rank"
+     Comment "Map POI kind name (#2247): the taxi rank."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0A}" {
+     Id "LF-MapPoi_TownHall"
+     Target_en_us "Town hall"
+     Comment "Map POI kind name (#2247): the town hall, where the clerk sits."
+    }
+    CustomStringTableItem "{9C1E4A73D0B58F26}" {
+     Id "LF-MedicRank_Emt"
+     Target_en_us "Emergency Medical Technician"
+     Comment "Medic rank title, rung 1 of the 1989 ladder (#3047); the maintainer confirms the copy."
+    }
+    CustomStringTableItem "{9C1E4A73D0B58F27}" {
+     Id "LF-MedicRank_Orderly"
+     Target_en_us "Orderly"
+     Comment "Medic rank title, rung 0 of the 1989 ladder (#3047); the maintainer confirms the copy."
     }
     CustomStringTableItem "{6E1A4D2B9C70F358}" {
      Id "LF-Mission_Everon1989_Details"
@@ -2133,6 +2428,31 @@ StringTable {
      Id "LF-TownCard_Orgs_Title"
      Target_en_us "Start a crew"
      Comment "Town board card (organisations): card title."
+    }
+    CustomStringTableItem "{E37B52C51E000EF7}" {
+     Id "LF-TownCard_Plots_Category"
+     Target_en_us "Property"
+     Comment "Town board card (plots for sale, #2984): category."
+    }
+    CustomStringTableItem "{6205E969F3A4DA32}" {
+     Id "LF-TownCard_Plots_Detail"
+     Target_en_us "Walk to a *plot sign* and use *Buy plot* with the price in cash|Plots for sale are marked on your map and the nearest one is pinned here|A bought plot is yours across restarts; nobody else can buy it"
+     Comment "Town board card (plots for sale): detail sheet text."
+    }
+    CustomStringTableItem "{5C623565EE17828D}" {
+     Id "LF-TownCard_Plots_Line"
+     Target_en_us "Land for sale on the island. Marked on your map."
+     Comment "Town board card (plots for sale): one line on the card."
+    }
+    CustomStringTableItem "{19166851D7D315EF}" {
+     Id "LF-TownCard_Plots_Place"
+     Target_en_us "Plot for sale"
+     Comment "Town board card (plots for sale): name of the place in the where line."
+    }
+    CustomStringTableItem "{D17128F9B8C720F4}" {
+     Id "LF-TownCard_Plots_Title"
+     Target_en_us "Plots for sale"
+     Comment "Town board card (plots for sale): card title."
     }
     CustomStringTableItem "{43D58C6A3657CB6C}" {
      Id "LF-TownCard_Police_Category"

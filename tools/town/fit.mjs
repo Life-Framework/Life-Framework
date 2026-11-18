@@ -1,7 +1,7 @@
 // tools/town/fit.mjs - `tools\cli town fit <place> <slot>`: apply a slot's kit to the building the approved mapping names
 // (docs/architecture/everon-world.md 3.3 and 3.4, card #2205).
 //
-//   town fit <place> <slot> [--dry] [--check] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path]
+//   town fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path]
 //            [--destruction-guid {GUID}] [--dossier f] [--mapping f] [--template-file f] [--kits-dir d] [--out-dir d]
 //
 // Reads  docs/everon/places/<place>/dossier.json and mapping.json, tools/town/templates/<kind>.json, tools/town/kits/<kit>.json
@@ -32,14 +32,14 @@ import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
 import { sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
 
-export const help = "fit <place> <slot> [--dry] [--check] [--allow-clip] [--no-audit] [--no-look]   apply the slot's kit into its mapped building, rows seated on the host's floors and walls: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
+export const help = "fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-audit] [--no-look]   apply the slot's kit into its mapped building, rows seated on the host's floors and walls: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const LAYER_DIR = "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers";
 export const CLAIMS_DIR = "tools/town/claims";
 const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
 const REF_RE = /^\{([0-9A-Fa-f]{16})\}(.+)$/;
-const FLAGS = new Set(["dry", "check", "allow-clip", "no-fetch", "no-audit", "no-look", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
+const FLAGS = new Set(["dry", "check", "refit", "allow-clip", "no-fetch", "no-audit", "no-look", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
 const WITH_VALUE = new Set(["building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir"]);
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const norm = (d) => {
@@ -337,7 +337,10 @@ export function planFit(opts, ctx = {}) {
     taken.push(...r.claims);
     if (r.note) notes.push(r.note);
   }
-  errors.push(...conflicts(taken, { place, slot: slotId, building: entry.building, plot: entry.plot, shared: entry.shared }));
+  // `--refit`: this slot's own claim, already committed on origin/main (every worktree carries it), does not block its re-fit.
+  // The same slot held by an open PR or a sibling worktree, and any other slot's claim on the building, still refuse.
+  const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && c.where === "origin/main")) : taken;
+  errors.push(...conflicts(blocking, { place, slot: slotId, building: entry.building, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
 
   // The building: a mapped one stands where the dossier says; a plot gets the purpose-built building first (D9).
@@ -504,7 +507,7 @@ function parseArgs(args) {
   return { flags, pos, bad };
 }
 
-const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--check] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
+const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
 const readJson = (f, what) => {
   if (!existsSync(f)) throw new Error(`no ${what}: ${f} does not exist`);
   return JSON.parse(readFileSync(f, "utf8"));
@@ -601,7 +604,7 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
       if (existsSync(kf)) kits[entry.kit] = readJson(kf, "kit");
     }
     const shell = ctxShell ?? shellReader(root);
-    const fitOpts = { place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
+    const fitOpts = { place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
     plan = await planFitSeated(fitOpts, { root, run, readGame: await gameReader(), shell });
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);

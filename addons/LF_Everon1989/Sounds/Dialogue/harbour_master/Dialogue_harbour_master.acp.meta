@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{941BFE732FEC95D0}Sounds/Dialogue/harbour_master/Dialogue_harbour_master.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
