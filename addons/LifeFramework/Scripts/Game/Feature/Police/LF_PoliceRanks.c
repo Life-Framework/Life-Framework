@@ -960,9 +960,11 @@ class LF_PoliceRanks
 				{
 					account.AddShiftSeconds(credited);
 
-					// Rank seconds are police only; a medic's seconds are only the shift's pay.
+					// Rank seconds go to the ladder of the role on duty (medic ranks: #2708).
 					if (account.GetFaction() == LF_Faction.POLICE)
 						AccrueDuty(account.GetPersistentId(), credited);
+					else if (account.GetFaction() == LF_Faction.MEDIC)
+						LF_MedicRanks.AccrueDuty(account, credited);
 
 					if (account.GetFaction() != LF_Faction.CIVILIAN)
 						account.AddUnpaidDutySeconds(credited);
@@ -1023,6 +1025,29 @@ class LF_PoliceRanks
 
 		SettleDutyAt(account, false, nowMs);
 		LF_Debug.Info("Ranks", string.Format("duty clock stopped for %1: the player left", account.GetPersistentId()));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Settles and stops the duty clock before the account's active character changes (#2838): the
+	//! running seconds go to the outgoing character's rank time and the shift's pay. A spawn restarts
+	//! the clock for the next character when the account is still on duty (ResumeDutyClock).
+	//! \return True when a running clock was settled.
+	static bool SettleForCharacterSwitch(LF_PlayerAccount account)
+	{
+		return SettleForCharacterSwitchAt(account, NowMs());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! SettleForCharacterSwitch with the world time passed in.
+	static bool SettleForCharacterSwitchAt(LF_PlayerAccount account, int nowMs)
+	{
+		if (!account || !account.IsDutyClockRunning())
+			return false;
+
+		string outgoing = account.GetActiveCharacterKey();
+		SettleDutyAt(account, false, nowMs);
+		LF_Debug.Info("Ranks", string.Format("duty clock settled for %1 (character %2) before a character switch", account.GetPersistentId(), outgoing));
 		return true;
 	}
 

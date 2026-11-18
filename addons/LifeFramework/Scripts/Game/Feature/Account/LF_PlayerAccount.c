@@ -115,6 +115,44 @@ class LF_PlayerAccount : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Medic rank index of the active character (#2708). 0 is the starting rank. Saved by the
+	//! "medicranks" payload under the character's record key (LF_MedicRanks).
+	int GetMedicRank()
+	{
+		return GetStanding().m_iMedicRank;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void SetMedicRank(int rank)
+	{
+		GetStanding().m_iMedicRank = LF_Utils.MaxInt(0, rank);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds the active character has worked on duty as a medic; they count toward medic rank only.
+	int GetMedicDutySeconds()
+	{
+		return GetStanding().m_iMedicDutySeconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void AddMedicDutySeconds(int seconds)
+	{
+		if (seconds <= 0)
+			return;
+
+		LF_CharacterStanding standing = GetStanding();
+		standing.m_iMedicDutySeconds = standing.m_iMedicDutySeconds + seconds;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam (LF_MedicRanks): the saved total. Negative is read as 0.
+	void SetMedicDutySeconds(int seconds)
+	{
+		GetStanding().m_iMedicDutySeconds = LF_Utils.MaxInt(0, seconds);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	int GetOnDutySeconds()
 	{
 		return GetStanding().m_iOnDutySeconds;
@@ -269,6 +307,9 @@ class LF_PlayerAccount : Managed
 			adopted.TakeValuesOf(m_AccountStanding);
 		}
 
+		if (setAsActive && !first)
+			SettleDutyBeforeCharacterChange();
+
 		int idx = m_aCharacters.Insert(character);
 		if (setAsActive)
 			m_iActiveCharacterIdx = idx;
@@ -280,6 +321,9 @@ class LF_PlayerAccount : Managed
 		int removedIdx = m_aCharacters.Find(character);
 		if (removedIdx == -1)
 			return;
+
+		if (removedIdx == m_iActiveCharacterIdx)
+			SettleDutyBeforeCharacterChange();
 
 		m_aCharacters.RemoveItemOrdered(character);
 
@@ -381,8 +425,22 @@ class LF_PlayerAccount : Managed
 	void SetActiveCharacter(notnull LF_PlayerCharacter character)
 	{
 		int idx = m_aCharacters.Find(character);
-		if (idx != -1)
-			m_iActiveCharacterIdx = idx;
+		if (idx == -1)
+			return;
+
+		if (idx != m_iActiveCharacterIdx)
+			SettleDutyBeforeCharacterChange();
+
+		m_iActiveCharacterIdx = idx;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The active character is about to change: a running duty clock is settled for the outgoing
+	//! character first, so its on-duty seconds never land on the next one (#2838).
+	protected void SettleDutyBeforeCharacterChange()
+	{
+		if (m_bDutyClockRunning && !m_aCharacters.IsEmpty())
+			LF_PoliceRanks.SettleForCharacterSwitch(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -405,6 +463,9 @@ class LF_CharacterStanding : Managed
 	int m_iPoliceRank;
 	int m_iOnDutySeconds;
 	int m_iUnpaidDutySeconds;
+	//! Medic rank and the medic on-duty seconds that promote it (#2708; the "medicranks" payload).
+	int m_iMedicRank;
+	int m_iMedicDutySeconds;
 
 	//------------------------------------------------------------------------------------------------
 	void TakeValuesOf(notnull LF_CharacterStanding other)
@@ -413,6 +474,8 @@ class LF_CharacterStanding : Managed
 		m_iPoliceRank = other.m_iPoliceRank;
 		m_iOnDutySeconds = other.m_iOnDutySeconds;
 		m_iUnpaidDutySeconds = other.m_iUnpaidDutySeconds;
+		m_iMedicRank = other.m_iMedicRank;
+		m_iMedicDutySeconds = other.m_iMedicDutySeconds;
 	}
 }
 

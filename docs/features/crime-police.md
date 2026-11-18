@@ -83,7 +83,7 @@
 - `bank_room` is today's bank: the numbers `LF_BankVault.et` sets (1 bag, 500, 60 s, 0 police, no fuse, drill or charge, bank alarm, no jam, 30 s drill).
 - `reserve_vault` is the big vault for a later "Federal Reserve" building (docs only; in-world text says "reserve depot"). The existing `LF_BankVault.et` prefab keeps its GUID, path and its own explicit numbers and sets no type, because it is the playtest town's bank today; a building that uses it as the reserve vault sets `m_sSafeType "reserve_vault"` on its placement and drops the explicit numbers.
 - Test `crime/safe-types` (LOGIC) and `everon/safe-types` (pack leg). Log `[LFDebug:SafeTypes]`.
-- **Store box in the pack** (#2331): `LF_Everon1989/Prefabs/Props/Safes/LF_StoreBox.et` inherits the core `LF_SafeBox.et` and names `store_box` itself, so a shop fit-out places the pack prefab and the pack's 120 cash takings apply. The pack grid cell `store-box` (`Grid_store_box.layer`, cell c19r4) stands one till and one box beside it. Test `everon/store-box-safe` (pack leg, `LF_Test_EveronStoreBoxSafe`) asserts the box registers under its entity name with one bag, 120 a bag and a 10 s drill, and that a script-driven robbery with no tool and no police arms it and spills exactly that haul after the fuse. Putting a box in each shop is a later per-shop card.
+- **Store box in the pack** (#2331): `LF_Everon1989/Prefabs/Props/Safes/LF_StoreBox.et` inherits the core `LF_SafeBox.et` and names `store_box` itself, so a shop fit-out places the pack prefab and the pack's 120 cash takings apply. It swaps the mesh to the vanilla olive `CabinetMetal_01` steel cabinet with its own material, because the core `Safe_01` mesh renders plain white (#2728). The pack grid cell `store-box` (`Grid_store_box.layer`, cell c19r4) stands one till and one box beside it. Test `everon/store-box-safe` (pack leg, `LF_Test_EveronStoreBoxSafe`) asserts the box registers under its entity name with one bag, 120 a bag and a 10 s drill, and that a script-driven robbery with no tool and no police arms it and spills exactly that haul after the fuse. Putting a box in each shop is a later per-shop card.
 
 ### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
 - ✅ The hospital till is not scripted here: the placed action is `LF_RobAction` on the
@@ -386,6 +386,19 @@
   exists), so an officer who stays connected but idle earns up to the cap. The shift's counted seconds are session
   state: a server restart gives a fresh cap. The cap log fires once per shift. Tests `police/duty-shift-cap`,
   `police/duty-clock-disconnect`.
+- 🔨 **A character switch settles the duty clock first** (#2838, in-dev, LOGIC `police/duty-clock-character-switch`). Every
+  change of the account's active character (a pick, a new character made active, the active one removed) runs
+  `LF_PoliceRanks.SettleForCharacterSwitch` before it: the running seconds go to the outgoing character's rank time
+  and the shift's pay, and the clock stops. Logout already settled at the disconnect. Log `[LFDebug:Ranks] duty clock
+  settled for <uid> (character <key>) before a character switch`. Medic rank time follows the same settle once medic
+  ranks (#2837) land.
+- 🔨 **Administrators set or demote a police rank** (#2838, in-dev, LOGIC `police/rank-admin-set`). Chat
+  `/policerank <account uid> <rank>` (`LF_PoliceRankAdmin`). The server checks the caller (engine administrator or
+  staff roster level `administrator`, as for application decisions), the account and the rank (0 to the top rung).
+  It settles a running duty clock, sets the active character's rank and logs `rank set by administrator <caller>:
+  <uid> (character <key>) rank <old> -> <new> (promotion|demotion|unchanged)`. A demotion restarts the character's
+  on-duty seconds at the start of the new rank, so the next accrual does not promote them back. Refusals are logged
+  and shown to the caller. Medic ranks are not covered yet (#2837 is not merged).
 - 🔨 **An expired trial ends the shift** (#2416, in-dev). `LF_PoliceTrialSweep` runs on the server every
   `trialSweepSeconds` (60): it expires trials (`ExpireTrials`), then clocks out each connected on-duty officer whose
   trial ended unpromoted and who may no longer clock in (`LF_PoliceApplications.TrialExpiredFor`, roster check), through

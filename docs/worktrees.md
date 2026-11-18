@@ -182,6 +182,11 @@ toolscli main-guard start | stop | status | watch   # status is also a line in `
    `build`, `test --no-build --tier all`, `audit placement --strict`, `e2e --pre-move 502ebf39 --mission playtest`.
    All pass: `green`. A red step reruns at the same head; a pass on the rerun is a flake
    (`tmp/logs/main-guard-flakes.log`), red twice bisects and reverts.
+   **A pre-move-only red is `needs-skip`, not a revert (#2812).** When `pre-move e2e` reproduces, the guard runs the
+   plain `e2e` at the same head; if that passes, a pass-2 check needs data the pinned ref build's pass 1 cannot write
+   (the #2480 and #2798 shape). The bisect still names the PR, which gets a PR comment and a fix card, and nothing is
+   reverted (`needsSkip` in `tools/lib/main-guard.mjs`). The cure is `LF_E2E.RequiresPayload`, enforced by
+   `validate-e2e-payload-guard` (docs/persistence.md "Pre-move save gate").
    **INFRA is not red (#2759).** A step the machine refused (a held lock, no free Workbench slot, no pool machine,
    `build` exit 3, a Workbench that died before compiling) is `INFRA` in the log: no recheck, no bisect, no revert, no
    red mark, and the head is tried again on a later tick. The same rule covers the recheck and every bisect probe. Only

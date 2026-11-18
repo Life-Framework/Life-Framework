@@ -199,6 +199,21 @@ async function checkHead(root, dir, head) {
       log(root, `${head.slice(0, 8)} ${step.name}: flake (${what}), no revert`);
       continue;
     }
+    // #2812: a pre-move e2e red is blamed on a PR only when the plain e2e fails too. A pass-2 check for data the ref
+    // build's pass 1 cannot write fails the pre-move run alone; that PR gets a fix card and a comment, no revert.
+    let needsSkip = false;
+    if (step.name === "pre-move e2e") {
+      log(root, `${head.slice(0, 8)} pre-move e2e reproduced; running the plain e2e to tell a pre-move-only failure from a real one`);
+      const plain = await runCli(root, dir, mg.PLAIN_E2E, `${head.slice(0, 8)}-plain-e2e`);
+      const pv = mg.classifyStep("e2e", plain.code, plain.text);
+      if (pv.verdict === "env" || pv.verdict === "infra") {
+        log(root, `${head.slice(0, 8)} plain e2e: ${pv.verdict.toUpperCase()} (${pv.why}), not the commit; no revert, retried on a later tick`);
+        writeState(root, { running: null, lastResult: { head, verdict: pv.verdict, step: step.name, what: pv.why, at: now() } });
+        return;
+      }
+      needsSkip = mg.needsSkip(step.name, plain.code);
+      log(root, `${head.slice(0, 8)} plain e2e ${plain.code === 0 ? "passes: needs-skip, the pre-move failure is not a broken save" : "fails too: a real failure"} (log ${plain.log})`);
+    }
     // Reproduced twice: find the merge that broke it.
     const recheck = step.recheck(failing);
     const list = mg.candidates(mergesSince(dir, state.lastGreen ?? state.startHead, head, state.startHead));
@@ -233,10 +248,10 @@ async function checkHead(root, dir, head) {
       });
     }
     checkout(dir, head);
-    const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name });
+    const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name, needsSkip });
     if (refusal) {
       log(root, `${head.slice(0, 8)} ${step.name} red, no revert: ${refusal}`);
-      if (mg.fixCardInstead(b.culprit, step.name)) openFixCard(root, dir, b.culprit, step.name, what, r.log);
+      if (mg.fixCardInstead(b.culprit, step.name, { needsSkip })) openFixCard(root, dir, b.culprit, step.name, what, r.log, { needsSkip });
       mark(root, dir, head, "red", { step: step.name, what, note: b.stop ? refusal : "" });
       writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), note: refusal, failing, failLines: redLines } });
       return;
@@ -277,12 +292,18 @@ export function reclassifyInfra(root, { dryRun = false, say = (s) => log(root, s
   return found;
 }
 
-function openFixCard(root, dir, c, stepName, what, failLog) {
-  const card = mg.fixCard(c, stepName, what, failLog);
+function openFixCard(root, dir, c, stepName, what, failLog, opts = {}) {
+  const card = mg.fixCard(c, stepName, what, failLog, opts);
   const bf = join(mainRoot(root), "tmp", "logs", `main-guard-fixcard-${mg.prOfMerge(c.subject)}-${Date.now()}.md`);
   writeFileSync(bf, card.body);
   const r = gh(dir, ["issue", "create", "--title", card.title, "--body-file", bf]);
   log(root, `fix card: ${r.status === 0 ? (r.stdout || "").trim() : `create failed: ${(r.stderr || "").trim().slice(0, 200)}`}`);
+  if (opts.needsSkip) {
+    const pr = mg.prOfMerge(c.subject);
+    const cf = join(mainRoot(root), "tmp", "logs", `main-guard-needs-skip-${pr}.md`);
+    writeFileSync(cf, `**Main guard:** the pre-move e2e failed on main after this PR merged, but the plain e2e passes, so this is not a broken save: a pass-2 check needs data the pinned ref build (502ebf39) cannot write. Guard it with LF_E2E.RequiresPayload("<payload>") (Tests/LF_E2E.c; validate-e2e-payload-guard names the rule). Not reverted. Log: ${failLog}`);
+    gh(dir, ["pr", "comment", String(pr), "--body-file", cf]);
+  }
 }
 
 async function compileRouted(root, cdir, sha) {

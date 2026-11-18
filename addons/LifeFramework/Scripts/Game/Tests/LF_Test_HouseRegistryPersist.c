@@ -34,7 +34,7 @@ class LF_Test_HouseRegistryPersist : LF_Test
 
 #ifdef LF_E2E_LOAD_BOOT
 		// --legacy-save and --pre-move load a save older than the "houses" payload: it has no rows.
-		if (LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("houses"))
+		if (!LF_E2E.SaveHas("houses"))
 		{
 			ctx.True(LF_Houses.Get(E2E_HOUSE) == null, "a save older than the houses payload loads no house row");
 			return;

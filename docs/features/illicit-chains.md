@@ -18,6 +18,7 @@
   `#LF-Chain_NeedLicense`, `#LF-Chain_NeedLevel`, `#LF-Chain_NeedEquipment`. Equipment is an item
   the worker carries (priced for a shop), so owning it persists with the inventory.
 - ✅ **Heat settings** per chain: `m_fPerWork`, `m_fDecayPerSecond`, `m_fMax`, `m_fRangeM`.
+- ✅ **Cook mistakes** (#2854, pure rules): `LF_ChainMistakes` rolls a seeded chance per work tick, keeps a hidden strike count (`LF_ChainStrikes`, session-only: a restart forgives it), ruins the batch at `maxMistakes` (0 = never fails) and gives a cue level 0/1/2. Approved chains only (moonshine, tobacco, counterfeit papers); the station wiring is #2855.
   `LF_ChainHeat` does the arithmetic (`AfterWork`, `AfterDecay`, `RangeAt`); the per-site number
   and the trace that reads it come with the stations (#417) and the smell (#418).
 - ✅ The core ships one neutral example, `cider` (tier 1, one `barrel` step, apples to juice).

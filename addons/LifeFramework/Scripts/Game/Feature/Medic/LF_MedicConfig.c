@@ -115,6 +115,9 @@ class LF_MedicConfig
 	[Attribute("60", UIWidgets.Auto, "Seconds between two sweeps that turn overdue bills into debt and let the bank pay debt off", params: "5 3600")]
 	int m_iDebtSweepSeconds;
 
+	[Attribute("", UIWidgets.Object, "Medic rank ladder (#2708, LF_MedicRanks): pay and kit per rung. Empty: the built-in trainee, paramedic and doctor")]
+	ref array<ref LF_MedicRank> m_aRanks;
+
 	//------------------------------------------------------------------------------------------------
 	//! A config with the attribute defaults, built in script (the fallback when the `.conf` does not resolve, tests).
 	//! The members carry no initializers: an initializer beats a `.conf` value of 0, so a pack overlay that

@@ -1,0 +1,18 @@
+{
+  "section": "siterent",
+  "class": "LF_SiteRentSavePayload",
+  "version": 1,
+  "roots": "LF_SiteRentRow",
+  "records": {
+    "LF_SiteRentRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sHideoutId",
+        "int m_iBanked",
+        "int m_iLastRentAt",
+        "int m_iUnlogged",
+        "int m_iUnloggedSeconds"
+      ]
+    }
+  }
+}
