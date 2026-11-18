@@ -186,6 +186,8 @@ class LF_Test_Roadmap_FuelWorld : LF_Test
 		ctx.NotNull(bank, "e2e bank account exists");
 		if (bank)
 			ctx.Equal(0, bank.GetBalance(), "a refused robbery does not change the bank");
+
+		LF_TestCharacterFixture.Delete(character);
 	}
 
 	//------------------------------------------------------------------------------------------------

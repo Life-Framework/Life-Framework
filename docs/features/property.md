@@ -44,3 +44,13 @@
   existing `properties` payload; no save version change. The shell is not saved: the site re-reads the row
   every 2 s and spawns the shell after a load. Clients see a replicated mirror for the labels only.
   Proof: `property/build-site`, `property/build-site-persist`, `wt e2e`.
+
+### Spawn house — `Feature/Property/LF_SetHomeAction.c` (2026-11-18, #2651, spec #811)
+- 🟡 The owner of a house sees "Make this my spawn" at its door (`EL_Door_Base.et`, beside the lock action).
+  The server takes the house from the door used; the client sends no id. A key holder or a stranger does not see
+  it, and a forged perform or a direct `LF_Properties.SetSpawnHouse` by them is refused with a logged reason.
+- 🟡 The choice is `m_bOwnerSpawnsHere` on the house's `properties` row (no new payload, no version change). One
+  per owner: setting a second house clears the first. `LF_Properties.SpawnHouseOf(ownerKey)` returns it while the
+  owner who set it still owns the house; a sold house is never the buyer's spawn, in session or after a save. Any owner change
+  (`LF_HouseManagerComponent.SetOwner`, whatever calls it) clears the flag, so buying the house back does not restore it.
+- 🟡 Applies at login only (the spawn flow reads `SpawnHouseOf`); deaths still wake at hospital. Proof: `property/set-home`.
