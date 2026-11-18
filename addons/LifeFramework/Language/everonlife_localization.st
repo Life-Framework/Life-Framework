@@ -4598,6 +4598,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "HANDBOOK"
      Comment "Printed heading of the handbook screen (#1773)."
     }
+    CustomStringTableItem "{57403D2F7D7CFD8A}" {
+     Id "LF-Handset_CallMedic"
+     Target_en_us "Radio for a doctor"
+     Comment "Radio set action: call a medic."
+    }
+    CustomStringTableItem "{544D193A3E8A461A}" {
+     Id "LF-Handset_CallPolice"
+     Target_en_us "Radio the {police}"
+     Comment "Radio set action: call the police."
+    }
+    CustomStringTableItem "{0350E5CBCEDFF757}" {
+     Id "LF-Handset_CallTaxi"
+     Target_en_us "Radio for a cab"
+     Comment "Radio set action: call a taxi."
+    }
+    CustomStringTableItem "{2F049E3EF139D9CE}" {
+     Id "LF-Handset_Connected"
+     Target_en_us "You got through on the radio."
+     Comment "Toast: the radio set call reached somebody on duty."
+    }
+    CustomStringTableItem "{6A9D4C7550B7168A}" {
+     Id "LF-Handset_NoCash"
+     Target_en_us "You need cash for the call fee."
+     Comment "Radio set call refused: not enough carried cash for the fee."
+    }
+    CustomStringTableItem "{C1AB8F125674BBDD}" {
+     Id "LF-Handset_NotCarried"
+     Target_en_us "Carry the radio set to call on it."
+     Comment "Radio set call refused: the radio is not in the caller inventory."
+    }
+    CustomStringTableItem "{6DD229FA5A46FBA5}" {
+     Id "LF-Handset_Summary_Call"
+     Target_en_us "Called in on a radio set"
+     Comment "Service board summary: the caller used a carried radio set."
+    }
+    CustomStringTableItem "{BE2EAACE7DF5E3EF}" {
+     Id "LF-Handset_Title"
+     Target_en_us "Radio set"
+     Comment "Toast title for calls placed on a carried radio set."
+    }
     CustomStringTableItem "{9306F928F7A81EBC}" {
      Id "LF-Heist_Armory_Open"
      Target_en_us "Breach the armory store"
@@ -5582,6 +5622,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Handcuffs_Name"
      Target_en_us "Handcuffs"
      Comment "Inventory name of the police handcuffs."
+    }
+    CustomStringTableItem "{B343B39B5EC2F09D}" {
+     Id "LF-Item_HandsetRadio_Description"
+     Target_en_us "A handheld set. Calls a cab, a doctor or the {police} from wherever you stand, for a small fee."
+     Comment "Item description of the radio set."
+    }
+    CustomStringTableItem "{3A87AA0CD67A55F9}" {
+     Id "LF-Item_HandsetRadio_Name"
+     Target_en_us "Radio set"
+     Comment "Item name: a civilian handheld radio set that calls services."
     }
     CustomStringTableItem "{D905B60D78F7B540}" {
      Id "LF-Item_Keycard_Description"
