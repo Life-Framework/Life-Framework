@@ -1,0 +1,4 @@
+MatPBRBasic : "{5CDDE2709BA9A5EE}Assets/_BaseMaterials/Characters_MatPBRBasic.emat" {
+ BCRMap "{64A6334A529E3746}Assets/Characters/HeadGear/LF/HockeyMask/Data/HockeyMask_BCR.edds"
+ NMOMap "{B2B27647C36514C7}Assets/Characters/HeadGear/LF/HockeyMask/Data/HockeyMask_NMO.edds"
+}

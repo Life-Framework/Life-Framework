@@ -74,6 +74,14 @@
    {
     "item": "balaclava",
     "present": false
+   },
+   {
+    "item": "doll_mask",
+    "present": false
+   },
+   {
+    "item": "hockey_mask",
+    "present": false
    }
   ]
  },
@@ -275,6 +283,18 @@
     "item": "balaclava",
     "licence": "CRIMINAL_BLACKMARKET",
     "price": 40,
+    "concealsFace": true
+   },
+   {
+    "item": "doll_mask",
+    "licence": "CRIMINAL_BLACKMARKET",
+    "price": 45,
+    "concealsFace": true
+   },
+   {
+    "item": "hockey_mask",
+    "licence": "CRIMINAL_BLACKMARKET",
+    "price": 55,
     "concealsFace": true
    }
   ]
