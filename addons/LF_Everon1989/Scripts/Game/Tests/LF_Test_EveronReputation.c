@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronReputation` printed `RED PROOF OK` (pack leg); with an empty header as the pack source it failed `a newcomer does not pass the crates gate` and `a Known character passes the crates gate` (no gate row, no contract, core tier words). `--only` then passed under the pack header. An earlier green run caught the town's daily cap of 60 holding back the 100 test points, lifted on the loaded copy.
+// red-proof: #3083 observed 2026-11-18 `--only LF_Test_EveronReputation` on the old +4 award (cap 60) failed `ten parcel runs open the crates gate` and `ten parcel runs take a newcomer to Known (tier 1) (expected 1, got 0)`, then passed on +10 with the town cap at 120. Earlier: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronReputation` printed `RED PROOF OK` (pack leg); with an empty header as the pack source it failed `a newcomer does not pass the crates gate` and `a Known character passes the crates gate` (no gate row, no contract, core tier words). `--only` then passed under the pack header. An earlier green run caught the town's daily cap of 60 holding back the 100 test points, lifted on the loaded copy.
 //! #2709 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's standing overlays
 //! replace the core tier words with the pack's own (the pack's own tier keys, three factions of six, the ladder itself
 //! untouched), add an award row per civilian job whose action the core subscriber actually raises
@@ -76,9 +76,32 @@ class LF_Test_EveronReputation : LF_Test
 		LF_ReputationGateDef gate = LF_Reputation.FindGate("contract:" + CONTRACT);
 		bool newcomerPasses = true;
 		bool knownPasses;
+		bool ninePasses = true;
+		bool tenPasses;
+		int parcelTier = -1;
 		if (gate)
 		{
-			// The town's daily cap (60) would hold 100 points back; lift it on this loaded copy (dropped below).
+			// #3083: finished parcel runs at the pack's award, under the pack's own daily cap (the cooldown
+			// is real time between runs, so each run is booked through Add at the award's points).
+			LF_ReputationAwardDef parcel = config.FindAward("job_completed:PARCEL");
+			int parcelPoints;
+			if (parcel)
+				parcelPoints = parcel.m_iPoints;
+
+			LF_Reputation.Forget(UID);
+			for (int run = 1; run <= 10; run++)
+			{
+				LF_Reputation.Add(UID, "TOWN", parcelPoints, "job_completed:PARCEL");
+				if (run == 9)
+					ninePasses = LF_Reputation.Passes(UID, "contract:" + CONTRACT);
+			}
+
+			tenPasses = LF_Reputation.Passes(UID, "contract:" + CONTRACT);
+			LF_ReputationFactionDef townDef = config.FindFaction("TOWN");
+			if (townDef)
+				parcelTier = LF_Reputation.Tier(UID, "TOWN");
+
+			// The town's daily cap would hold 100 points back; lift it on this loaded copy (dropped below).
 			LF_ReputationFactionDef capped = config.FindFaction("TOWN");
 			if (capped)
 				capped.m_iDailyCap = 0;
@@ -157,6 +180,9 @@ class LF_Test_EveronReputation : LF_Test
 			ctx.Equal(1, gate.m_iMinTier, "the crates open at Known (tier 1)");
 		}
 
+		ctx.False(ninePasses, "nine parcel runs do not open the crates gate");
+		ctx.True(tenPasses, "ten parcel runs open the crates gate");
+		ctx.Equal(1, parcelTier, "ten parcel runs take a newcomer to Known (tier 1)");
 		ctx.False(newcomerPasses, "a newcomer does not pass the crates gate");
 		ctx.True(knownPasses, "a Known character passes the crates gate");
 	}

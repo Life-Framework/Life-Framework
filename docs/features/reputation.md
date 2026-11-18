@@ -79,7 +79,8 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
 - 🟡 **The 1989 pack speaks standing** (#2709, `Configs/Reputation/LF_Reputation_Everon1989.conf`, `LF_ReputationContracts_Everon1989.conf`, both in
   the mission header's overlays): the three factions' tier words are the pack's (`#LF-Everon_Tier_<Faction>_<Tier>` rows in
   `LF_Everon1989/Language/`, from `docs/architecture/reputation.md` section 1; the underworld's are never shown), a `job_completed:<JOB>` award for
-  parcel (4), fuel (6) and taxi (6) runs with a 60 s cooldown, the gate `contract:harbour_crates` (town, tier 1, Known) and the harbour master's
+  parcel (10, #3083: ten runs, about 40 minutes, take a newcomer to Known), fuel (6) and taxi (6) runs with a 60 s cooldown, the pack's
+  town daily cap raised from the core 60 to 120 so those ten runs fit one in-game day (#3083), the gate `contract:harbour_crates` (town, tier 1, Known) and the harbour master's
   early crates contract (a parcel run, x1.4 pay, +12 on finish, -10 if dropped, 25 min limit; tracker title `LF-ContractTracker_Title_harbour_crates`).
   Test `everon/reputation` (pack leg). Not yet: the chop shop's "car to order" contract (no core job matches it).
 - 🧪 **The harbour master offers the harbour crates contract, voiced** (#3050, merged, in-dev): his pack dialogue (`tools/assets/dialogue/harbour_master/`, ElevenLabs
