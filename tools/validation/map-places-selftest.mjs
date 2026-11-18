@@ -63,6 +63,14 @@ expect(kinds.has("Fence") && kinds.has("Bank") && kinds.get("PoliceArmoury")?.vi
 const j = joinPois(kinds, [{ kind: "Bank", id: "b1", x: 1, z: 2, live: true, state: -1 }, { kind: "Nope", id: "n", x: 0, z: 0, live: true, state: -1 }]);
 expect(j.pois.length === 1 && j.unjoined.Nope === 1, "joinPois keeps rows with a kind and counts the rest");
 
+// 5b. A slot row ("Kind/slot", #3515) renames the places of that kind whose id ends in ".slot"; the base row still decides who sees it.
+const shopKinds = new Map([["StoreCounter", { kind: "StoreCounter", category: "shop", icon: "poi_Shop", label: "#base", minZoom: 0, visibility: "DISCOVER", role: "" }], ["StoreCounter/bakery", { kind: "StoreCounter/bakery", category: "shop", icon: "poi_Shop", label: "#bakery", minZoom: 0, visibility: "PUBLIC", role: "" }]]);
+const shopText = (key) => ({ "#base": "General store", "#bakery": "Bakery" })[key] ?? "";
+const sj = joinPois(shopKinds, [{ kind: "StoreCounter", id: "town.bakery", x: 0, z: 0, live: true, state: -1 }, { kind: "StoreCounter", id: "town.other", x: 1, z: 1, live: true, state: -1 }], shopText);
+expect(sj.pois.find((p) => p.id === "town.bakery")?.name === "Bakery", "a slot row names its shop");
+expect(sj.pois.find((p) => p.id === "town.other")?.name === "General store", "a slot with no row keeps the base name");
+expect(sj.pois.every((p) => p.visibility === "DISCOVER" && p.kind === "StoreCounter"), "a slot row restyles only: visibility and kind stay the base row's");
+
 // 6. The real playtest town has places with POI kinds (the duty desks and the hospital sites).
 const town = loadOverlay(ROOT, { world: "town" });
 expect(town.source === "places:town" && town.pois.length > 0, `the playtest town yields real POIs (got ${town.source}, ${town.pois.length})`);

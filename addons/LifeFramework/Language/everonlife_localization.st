@@ -7387,6 +7387,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "needs %1"
      Comment "Car lot row for a cheap car the reader cannot afford in cash. %1 is the price."
     }
+    CustomStringTableItem "{875D23933B55810A}" {
+     Id "LF-Lot_NeedsDrivingLicence"
+     Target_en_us "Not without a driving licence. The licence desk issues it for %1."
+     Comment "Car lot refusal when the server asks for a driving licence (#3151). %1 is the fee. Neutral core text; a pack row with the same Id names the place."
+    }
     CustomStringTableItem "{B58D71B1650E8EBB}" {
      Id "LF-Lot_Rule"
      Target_en_us "Cars up to %1 are paid in cash. Dearer cars are paid from your bank: deposit cash at the ATM first."
@@ -11188,6 +11193,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Handguns for permit holders."
      Comment "Shop description of the licensed gun counter outlet (#988)."
     }
+    CustomStringTableItem "{F2D0DCE7D7861628}" {
+     Id "LF-Shop_Desc_Supermarket"
+     Target_en_us "Groceries and drinks"
+     Comment "Shop description of a village supermarket till (#3219)."
+    }
     CustomStringTableItem "{B4FBE7394CA00159}" {
      Id "LF-Shop_Hint_General"
      Target_en_us "Looking for something stronger? Try the back room at the head of the cobbled alley, east of the square. Knock, and bring cash."
@@ -11260,6 +11270,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Gun counter"
      Comment "Shop name of the licensed gun counter outlet (#988)."
     }
+    CustomStringTableItem "{CB9900E42434661E}" {
+     Id "LF-Shop_Name_Supermarket"
+     Target_en_us "Supermarket"
+     Comment "Shop name of a village supermarket till (#3219)."
+    }
     CustomStringTableItem "{684633A0ED601DA3}" {
      Id "LF-Shop_NoReply"
      Target_en_us "The till did not answer. Try again."
@@ -11286,6 +11301,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Buy food and supplies"
      Target_es_es "Comprar comida y suministros"
      Comment "Interaction description on the general store counter"
+    }
+    CustomStringTableItem "{79EFB1B443677DA1}" {
+     Id "LF-Shop_OpenDesc_Supermarket"
+     Target_en_us "Buy groceries and drinks"
+     Comment "Interaction description on the supermarket till (#3219)."
     }
     CustomStringTableItem "{B50F85FC9F4CC91E}" {
      Id "LF-Shop_Open_BackRoom"
@@ -11318,6 +11338,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_Open_GunCounter"
      Target_en_us "Buy a handgun"
      Comment "Action prompt at the gun counter (#988)."
+    }
+    CustomStringTableItem "{227F1753641762B8}" {
+     Id "LF-Shop_Open_Supermarket"
+     Target_en_us "Browse the shelves"
+     Comment "Interaction name on the supermarket till (#3219)."
     }
     CustomStringTableItem "{BE3CD5847E4642EA}" {
      Id "LF-Shop_Order"

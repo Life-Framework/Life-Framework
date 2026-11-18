@@ -1,5 +1,5 @@
 // red-proof: observed 2026-11-18 (#3171): on main (no gravel, cement, brick, plank, axe or seed rows in the general store stock) `tools\cli test --no-build --only LF_Test_EveronBuildSupplies` failed on every `is in the general store stock` line.
-//! #3171: the Everon 1989 general store sells what a Saint-Philippe plot owner needs: the cottage's
+//! #3171: the Everon 1989 hardware store (#3220: the building materials and the axe moved there from the general store, which keeps the cabbage seeds) sells what a Saint-Philippe plot owner needs: the cottage's
 //! building materials (`LF_Property.conf`: gravel, cement, planks, bricks), an axe for lumber and cabbage
 //! seeds for the farm. Checked against the merged pack config (pack leg): each prefab loads, has a stock row
 //! and a visible buy price, is never sold back for more than it costs, is never bought by the trader for
@@ -15,7 +15,8 @@ class LF_Test_EveronBuildSupplies : LF_Test
 	static const ResourceName AXE = "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et";
 	static const ResourceName SEEDS = "{F77BE55D8D3AEBA3}Prefabs/Items/Seeds/CabbageSeeds.et";
 	static const ResourceName PACK_TRADER = "{3A9F6E21C47D8B71}Prefabs/Trader/LF_UniversalTrader_Everon1989.et";
-	protected static const string STOCK = "general_store";
+	protected static const string STOCK = "hardware";
+	protected static const string SEED_STOCK = "general_store";
 	protected static const int TOTAL_MIN = 800;
 	protected static const int TOTAL_MAX = 1400;
 
@@ -31,15 +32,20 @@ class LF_Test_EveronBuildSupplies : LF_Test
 		LF_ShopManagerComponent manager = LF_ShopManagerComponent.GetInstance();
 		ctx.NotNull(manager, "the shop manager exists");
 		LF_ShopStock stock = LF_ShopStockConfig.Get().Find(STOCK);
-		ctx.NotNull(stock, "the general store has a stock under the pack header");
-		if (!manager || !stock)
+		ctx.NotNull(stock, "the hardware store has a stock under the pack header");
+		LF_ShopStock seedStock = LF_ShopStockConfig.Get().Find(SEED_STOCK);
+		ctx.NotNull(seedStock, "the general store has a stock under the pack header");
+		if (!manager || !stock || !seedStock)
 			return;
 
 		array<ResourceName> goods = {GRAVEL, CEMENT, BRICK, PLANK, AXE, SEEDS};
 		array<string> labels = {"gravel bag", "cement bag", "brick", "plank", "axe", "cabbage seeds"};
 		foreach (int i, ResourceName prefab : goods)
 		{
-			CheckGood(ctx, manager, stock, labels[i], prefab);
+			LF_ShopStock from = stock;
+			if (prefab == SEEDS)
+				from = seedStock;
+			CheckGood(ctx, manager, from, labels[i], prefab);
 		}
 
 		CheckTraderLoop(ctx, manager, goods);
@@ -57,7 +63,7 @@ class LF_Test_EveronBuildSupplies : LF_Test
 			probe = "";
 
 		LF_ShopStockItem row = stock.FindItem(probe);
-		ctx.NotNull(row, string.Format("the %1 is in the general store stock", label));
+		ctx.NotNull(row, string.Format("the %1 is in its store stock", label));
 		if (!row)
 			return;
 

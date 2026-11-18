@@ -1,6 +1,6 @@
 // red-proof: 2026-11-18 on the unpriced overlay the test FAILED (the four items were not in the shop catalogue); `tools\cli test --no-build --red LF_Test_EveronFurnitureStock`: RED PROOF OK (RedProof() skips the catalogue and furniture stock lookups). Green in the pack leg.
-//! shop/furniture-stock (#2916): the 1989 general store sells the four house furniture items
-//! (chair, table, shelf, lamp), so a player can furnish a house. Each item resolves a visible buy
+//! shop/furniture-stock (#2916, #3256): the 1989 furniture store sells the four house furniture items
+//! (chair, table, shelf, lamp) and the general store no longer does, so a player can furnish a house. Each item resolves a visible buy
 //! price from the pack's general store overlay (`LF_ShopPrices_GeneralStore.conf`), and each buy
 //! price beats the sell-back value, so buying and selling back is never a profit loop.
 //! Lives in the pack because it needs the pack's price overlay (pack leg).
@@ -31,7 +31,7 @@ class LF_Test_EveronFurnitureStock : LF_Test
 		CheckItem(ctx, manager, "shelf", SHELF_ITEM);
 		CheckItem(ctx, manager, "lamp", LAMP_ITEM);
 
-		// The four stay on the general store until the furniture store's counter lands, and are on the furniture stock too.
+		// The furniture store's counter (#3256) sells them; the general store no longer does.
 		CheckStocks(ctx, CHAIR_ITEM);
 		CheckStocks(ctx, TABLE_ITEM);
 		CheckStocks(ctx, SHELF_ITEM);
@@ -46,7 +46,7 @@ class LF_Test_EveronFurnitureStock : LF_Test
 			onFurniture = StockPrice("furniture", prefab);
 
 		ctx.True(onFurniture > 0, "the furniture stock lists " + prefab);
-		ctx.Equal(onFurniture, StockPrice("general_store", prefab), "the general store still sells it at the same price: " + prefab);
+		ctx.Equal(0, StockPrice("general_store", prefab), "the general store no longer sells it: " + prefab);
 	}
 
 	//------------------------------------------------------------------------------------------------

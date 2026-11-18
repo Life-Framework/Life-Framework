@@ -347,6 +347,34 @@ class LF_VehicleLotComponent : ScriptComponent
 		return offer.GetPrice();
 	}
 
+	//! #3151: the lot's refusal when the server asks for a driving licence and the buyer has none.
+	//! Its %1 is the licence fee (ReasonArg); the pack's row with the same Id names the place.
+	static const string KEY_NEEDS_DRIVING = "#LF-Lot_NeedsDrivingLicence";
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the buyer may buy here as far as the driving licence goes: always when the server's
+	//! vehicles config does not ask for it or the License system is off (nobody could get one).
+	static bool LicenceAllows(string buyerUid, IEntity buyer)
+	{
+		if (!LF_VehiclePricesConfig.LotNeedsDrivingLicence())
+			return true;
+
+		if (!LF_Systems.IsEnabled(LF_LicenseGate.SYSTEM))
+			return true;
+
+		return LF_LicenceDesk.HoldsLicence(buyer, buyerUid, LF_LicenceDesk.DRIVING);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The argument a refusal's toast fills in: the licence fee for KEY_NEEDS_DRIVING, else empty.
+	static string ReasonArg(string reasonKey)
+	{
+		if (reasonKey == KEY_NEEDS_DRIVING)
+			return LF_MoneyFormat.FormatMoney(LF_LicencesConfig.DriverLicenceFee());
+
+		return string.Empty;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	bool Buy(string buyerUid, ResourceName prefab, IEntity buyer, out string vehicleId, out int cashCharged, out string reasonKey)
 	{
@@ -372,6 +400,14 @@ class LF_VehicleLotComponent : ScriptComponent
 		if (!offer.ColourValid(colour))
 		{
 			LF_Debug.Error("Vehicle", string.Format("purchase refused: colour %1 is not sold for %2 (%3 colour(s))", colour, prefab, offer.ColourCount()));
+			return false;
+		}
+
+		// #3151: the licence gate, before any cash moves. The server reads the buyer's licence.
+		if (!LicenceAllows(buyerUid, buyer))
+		{
+			reasonKey = KEY_NEEDS_DRIVING;
+			LF_Debug.Info("Vehicle", string.Format("purchase refused for %1: no driving licence", buyerUid));
 			return false;
 		}
 

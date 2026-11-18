@@ -141,11 +141,33 @@ class LF_MapPois
 			poi.m_sIcon = row.m_sIcon;
 			poi.m_sLabel = row.m_sLabel;
 			poi.m_fMinZoom = row.m_fMinZoom;
+			ApplySlotRow(config.FindSlotRow(place.m_sKind, place.m_sId), poi);
 			into.Insert(poi);
 			added++;
 		}
 
 		return added;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A slot row (kind/slot, #3515) restyles one POI: its label, icon, category and min zoom replace the
+	//! base row's where the slot row sets them. Visibility and role stay the base kind's. Null: no change.
+	static void ApplySlotRow(LF_MapPoiKind slot, notnull LF_MapPoi poi)
+	{
+		if (!slot)
+			return;
+
+		if (!slot.m_sLabel.IsEmpty())
+			poi.m_sLabel = slot.m_sLabel;
+
+		if (!slot.m_sIcon.IsEmpty())
+			poi.m_sIcon = slot.m_sIcon;
+
+		if (!slot.m_sCategory.IsEmpty())
+			poi.m_sCategory = slot.m_sCategory;
+
+		if (slot.m_fMinZoom > 0)
+			poi.m_fMinZoom = slot.m_fMinZoom;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -159,7 +181,7 @@ class LF_MapPois
 
 		foreach (LF_MapPoiKind row : config.m_aKinds)
 		{
-			if (row)
+			if (row && !LF_MapPoiConfig.IsSlotRow(row))
 				GatherKind(row.m_sKind, into);
 		}
 	}
@@ -174,7 +196,7 @@ class LF_MapPois
 		{
 			foreach (LF_MapPoiKind row : config.m_aKinds)
 			{
-				if (row && row.m_eVisibility == LF_EMapPoiVisibility.PUBLIC)
+				if (row && !LF_MapPoiConfig.IsSlotRow(row) && row.m_eVisibility == LF_EMapPoiVisibility.PUBLIC)
 					GatherKind(row.m_sKind, into);
 			}
 		}

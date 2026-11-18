@@ -127,7 +127,7 @@ class LF_MapDiscoverScan
 		array<ref LF_MapPoiPlace> places = {};
 		foreach (LF_MapPoiKind row : config.m_aKinds)
 		{
-			if (row && row.m_eVisibility == LF_EMapPoiVisibility.DISCOVER)
+			if (row && !LF_MapPoiConfig.IsSlotRow(row) && row.m_eVisibility == LF_EMapPoiVisibility.DISCOVER)
 				LF_MapPois.GatherKind(row.m_sKind, places);
 		}
 
