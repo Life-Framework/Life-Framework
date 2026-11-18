@@ -40,3 +40,14 @@
   owner who set it still owns the house; a sold house is never the buyer's spawn, in session or after a save. Any owner change
   (`LF_HouseManagerComponent.SetOwner`, whatever calls it) clears the flag, so buying the house back does not restore it.
 - 🟡 Applies at login only (the spawn flow reads `SpawnHouseOf`); deaths still wake at hospital. Proof: `property/set-home`.
+
+### Spawn order at login — `Feature/Character/Spawning/LF_SpawnPriority.c`, `Feature/Property/LF_HouseSpawnComponent.c` (2026-11-18, #2652, spec #747)
+- 🟡 Login order: jail (the body is moved to the cell after it spawns), the hospital wake after a death, a rejoin
+  spot (`LF_RejoinSpot`, off by default, #1778), the player's own spawn house, then the role's spawn point.
+  `LF_SpawnPriority.Decide` is the pure order. Proof: `spawn/priority`.
+- 🟡 A house is used only if it is in the world and its live owner is still the player. A dead or sold house
+  logs `LF_Debug.Warn("Spawn", ...)` and the player takes the role spawn; the flag stays on the row.
+- 🟡 `LF_HouseSpawnComponent` on a house holds authored points and one outside-the-door point. Points are tried in
+  random order and the first with room for a person (a box trace) wins; none clear gives the outside point;
+  no outside point gives the role spawn. A house with no component takes the role spawn (an Info line). The core
+  authors no points; the pack adds them (#812). Port of `OVT_SpawnPointComponent` (`THIRD_PARTY.md`). Proof: `spawn/house-point`.
