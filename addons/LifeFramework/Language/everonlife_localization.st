@@ -5964,6 +5964,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Acceso denegado"
      Comment "Hint title when a job cannot be taken"
     }
+    CustomStringTableItem "{A3F1B7C2D94E6A01}" {
+     Id "LF-Job_AlreadyRun"
+     Target_en_us "You already have a delivery run. Abandon it at the counter first."
+     Comment "Toast: Pick up refused because the player still has an open run (#3356); the title is the job name."
+    }
     CustomStringTableItem "{0DAF48DFDAAF2069}" {
      Id "LF-Job_Desc_Medic"
      Target_en_us "Emergency ambulance crew. Treats the injured on the public payroll."
@@ -6078,10 +6083,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
      Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
     }
+    CustomStringTableItem "{D604EAF50C719D34}" {
+     Id "LF-Job_NoCargo"
+     Target_en_us "You are not carrying the cargo. Pick it up again, or abandon the run at the counter."
+     Comment "Toast: a drop-off refused because the cargo is not in the player's inventory (#3356); the title is the job name."
+    }
     CustomStringTableItem "{12050BC151134136}" {
      Id "LF-Job_NoPassenger"
      Target_en_us "A fare needs a passenger seated in your car."
      Comment "Toast: a taxi fare is refused at the drop-off because no other player is seated in the driver vehicle; the title is the job name."
+    }
+    CustomStringTableItem "{C5F3D9E4FB608C23}" {
+     Id "LF-Job_NoRoom"
+     Target_en_us "You have no room to carry the cargo. Make space and ask again."
+     Comment "Toast: a run start refused because the cargo did not fit in the inventory (#3356); the title is the job name."
     }
     CustomStringTableItem "{3B4E65464D2780EE}" {
      Id "LF-Job_NotADrop"
@@ -6177,6 +6192,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Job_SignedUp_Taxi"
      Target_en_us "You drive a taxi now. Start a fare at this counter."
      Comment "Toast after signing up for taxi work: the next step."
+    }
+    CustomStringTableItem "{B4E2C8D3EA5F7B12}" {
+     Id "LF-Job_StartRefused"
+     Target_en_us "The counter cannot start that run right now."
+     Comment "Toast: a run start refused for a reason with no better words (#3356); the title is the job name."
     }
     CustomStringTableItem "{4BBC06DC40BA877A}" {
      Id "LF-Job_TooClose"

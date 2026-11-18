@@ -93,9 +93,17 @@
   `jobs/client-offers`): the offers read the server-only sign-up and run maps, so on a hosted
   server "Pick up parcel" stayed greyed ("Sign up at the workplace first") after a good sign-up.
   A client now reads the job replicated on `LF_PlayerJobComponent` (set at sign-up and when a
-  restored sign-up is put on a spawned body) and, for Complete and Abandon, the cargo in its own
-  inventory (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
+  restored sign-up is put on a spawned body); Complete and Abandon read the same job
+  (`LF_JobStartRunAction.ClientRefusal`, `LF_CivilianJob.RunOfferOpen`). The server
   re-checks everything when the action runs.
+- ✅ **Dying or losing the cargo mid-run does not lock a player out of delivery work** (#3356, merged, in-dev; LOGIC
+  `jobs/run-cargo-lost`): the cargo is no longer read for the client offer (a downed carrier drops the parcel, which
+  greyed Abandon while "Pick up parcel" failed silently as "already has a run" until a restart), so Abandon shows for
+  a delivery job on the body. The player's death (`LF_OnPlayerKilled`, subscribed by `StartRun`) ends the run as an
+  abandon: no pay, the deposit and the contract stake stay forfeited, the map marks clear
+  (`LF_CivilianJob.OnCarrierDied`). A refused start now toasts (`LF_JobStartRunAction.StartRefusalKey`: run still open,
+  no room for the cargo, other refusal) and a drop-off without the cargo says so (`#LF-Job_NoCargo`). The harbour
+  crates contract starts through `BeginRun`, so it ends the same way.
 - ✅ (#619) The parcel's inventory description reads "Deliver to: <place>" (`LF_ParcelComponent` sets it from `#LF-Item_Parcel_Deliver` and `#LF-Job_ParcelDest` at spawn; test `jobs/parcel-description`). Demo: `session.mjs parcel-proof` (carry pose and inventory shots). Carry pose (#619, reworked in the parcel fix): the jerrycan graph hung the parcel 0.44 m below the hand (its grip point is at the canister's handle, the parcel mesh is centred on its origin), so it dangled at knee height through the legs, and it played canister sounds. The parcel was put back on `player_carry` for a while (box beside the arms, a stopgap); since #1846 it is a core hand tool held with the wrench graph (see the cargo row).
 
 ### `LF_JobManager` — `Feature/Jobs/LF_JobManager.c`
