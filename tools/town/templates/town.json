@@ -194,7 +194,7 @@
       "places": ["Memorial"]
     },
     {
-      "id": "safe-zone", "required": false, "kit": "safe-zone", "host": "street", "poi": "none", "margin": 70,
+      "id": "safe-zone", "required": false, "kit": "safe-zone", "host": "street", "poi": "none", "margin": 120,
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 60 },
       "places": ["SafeZone"]
     },
