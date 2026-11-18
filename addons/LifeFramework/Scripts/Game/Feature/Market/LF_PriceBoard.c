@@ -5,14 +5,14 @@
 //! nothing is replicated, so there is no join-in-progress state and a read never shows a stale price.
 //! A disabled market (or one that lists no goods) answers an empty board, painted as "no prices today".
 //! Wire shape: per good one text (the item's display name or key) in m_aTexts and two numbers in
-//! m_aNumbers (today's price, the base).
+//! m_aNumbers (today's price, 1 when it stands below base else 0). The base and the curve stay on the server.
 //------------------------------------------------------------------------------------------------
 class LF_PriceBoard
 {
 	static const string FEATURE = "Market";
 	static const string KIND = "prices";
 	static const string READ_ACTION = "LF_PriceBoardReadAction";
-	static const int NUMBERS_PER_GOOD = 2;	// lf-fixed: wire stride (price, base), not a tunable
+	static const int NUMBERS_PER_GOOD = 2;	// lf-fixed: wire stride (price, below-base flag), not a tunable
 	static const string ARROW_DOWN = "v";
 
 	//------------------------------------------------------------------------------------------------
@@ -30,8 +30,13 @@ class LF_PriceBoard
 				continue;
 
 			answer.m_aTexts.Insert(LF_ShopManagerComponent.ResolveDisplayName(def.m_sGood));
-			answer.m_aNumbers.Insert(LF_MarketBook.CurrentPriceAt(def.m_sGood, nowUnix));
-			answer.m_aNumbers.Insert(def.m_iBase);
+			int price = LF_MarketBook.CurrentPriceAt(def.m_sGood, nowUnix);
+			answer.m_aNumbers.Insert(price);
+			// Only what the board shows crosses: the arrow, never the base or the curve.
+			if (price < def.m_iBase)
+				answer.m_aNumbers.Insert(1);
+			else
+				answer.m_aNumbers.Insert(0);
 		}
 
 		return answer;
@@ -73,10 +78,10 @@ class LF_PriceBoard
 
 	//------------------------------------------------------------------------------------------------
 	//! "Copper Bar  38" or "Copper Bar  32 v" when the price is below its base.
-	static string PriceLine(string name, int price, int base)
+	static string PriceLine(string name, int price, int belowBase)
 	{
 		string good = LF_WantedBoard.ResolveKey(name);
-		if (price < base)
+		if (belowBase != 0)
 			return WidgetManager.Translate("#LF-Market_PriceDown", good, price.ToString(), ARROW_DOWN);
 
 		return WidgetManager.Translate("#LF-Market_Price", good, price.ToString());

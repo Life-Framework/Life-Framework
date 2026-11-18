@@ -1,4 +1,5 @@
 // red-proof: new test, red first: with no LF_PriceBoard the file does not compile (all asserts fail); the RedProof() hook skips the sale so the "lower after a sale" assertion fails.
+// red-proof (review #2887): on the unfixed code the answer carried the raw base (expected 0, got 40) and the shared board read had no rate limit (AllowReadAt did not exist).
 //! The chalk price board (#2847): the server's answer lists every curved good with the book's price in
 //! config order; a sale lowers the next read; a disabled market answers an empty board painted as
 //! "no prices today".
@@ -46,7 +47,7 @@ class LF_Test_PriceBoard : LF_Test
 		ctx.Equal(2, first.m_aTexts.Count(), "the board lists every curved good");
 		ctx.Equal(4, first.m_aNumbers.Count(), "two numbers per good");
 		ctx.Equal(40, first.m_aNumbers[0], "copper first, at its base");
-		ctx.Equal(40, first.m_aNumbers[1], "copper base");
+		ctx.Equal(0, first.m_aNumbers[1], "copper at base: the below-base flag is off; the base itself never crosses");
 		ctx.Equal(30, first.m_aNumbers[2], "iron second, at its base");
 		array<ref LF_UIPart> parts = LF_PriceBoard.BuildParts(first);
 		ctx.False(LineText(parts, "Price0").EndsWith(LF_PriceBoard.ARROW_DOWN), "no arrow at the base");
@@ -59,6 +60,7 @@ class LF_Test_PriceBoard : LF_Test
 		ctx.True(second.m_aNumbers[0] < 40, "after a sale the next read shows the lower price");
 		ctx.Equal(LF_MarketBook.CurrentPriceAt(COPPER, now), second.m_aNumbers[0], "the board shows the book's price");
 		ctx.Equal(30, second.m_aNumbers[2], "the other good is untouched");
+		ctx.Equal(1, second.m_aNumbers[1], "below base the flag is on (the base number is never sent)");
 		parts = LF_PriceBoard.BuildParts(second);
 		ctx.True(LineText(parts, "Price0").EndsWith(LF_PriceBoard.ARROW_DOWN), "a price below base carries the arrow");
 		ctx.False(LineText(parts, "Price1").EndsWith(LF_PriceBoard.ARROW_DOWN), "a price at base carries none");
@@ -74,6 +76,17 @@ class LF_Test_PriceBoard : LF_Test
 		// The provider is registered and answers like the helper.
 		LF_BoardProviders.ResetStatics();
 		ctx.True(LF_BoardProviders.Find(LF_PriceBoard.KIND) != null, "the prices kind is registered");
+
+		// A client spamming the shared read RPC is refused after the burst, then admitted again (#2887 review).
+		int spammer = 984701;
+		int t0 = 2000000000;
+		for (int i = 0; i < LF_RateLimit.COMMS_BURST; i++)
+		{
+			ctx.True(LF_BoardProviders.AllowReadAt(spammer, t0 + i, false), "reads within the burst are admitted");
+		}
+
+		ctx.False(LF_BoardProviders.AllowReadAt(spammer, t0 + 10, false), "a read past the burst is refused");
+		ctx.True(LF_BoardProviders.AllowReadAt(spammer, t0 + LF_RateLimit.COMMS_WINDOW_MS + 1, false), "the next window admits again");
 
 		LF_MarketConfig.Reload();
 		LF_MarketBook.ResetStatics();
