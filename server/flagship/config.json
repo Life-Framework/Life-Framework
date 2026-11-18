@@ -10,7 +10,8 @@
   },
   "jobs": {
     "policeDutyPayPerSecond": 0.5,
-    "benefitAmount": 100,
+    "benefitAmount": 50,
+    "benefitBalanceThreshold": 250,
     "benefitCooldownSeconds": 1200
   },
   "vehicles": {
