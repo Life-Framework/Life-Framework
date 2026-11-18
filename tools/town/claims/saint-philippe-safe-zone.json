@@ -1,0 +1,14 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "safe-zone",
+  "building": "b45",
+  "shared": true,
+  "kit": "safe-zone",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_safe-zone.layer",
+  "kinds": [
+    "SafeZone"
+  ],
+  "rows": 1,
+  "date": "2026-11-18"
+}
