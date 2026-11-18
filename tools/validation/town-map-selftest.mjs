@@ -379,6 +379,23 @@ for (const kind of ["town", "village", "districts"]) {
   check(!checkMod.layerBacking(`GenericEntity M : "{DDDDDDDDDDDDDDDD}Prefabs/Props/Furniture/Table.et" {\n}\n`, resolve).has("LF_ChessTableComponent"), "a plain table should not back ChessTable");
 }
 
+// ---- the village shop slots (#3217): nine optional building slots, so `town ready` is unchanged; each shop card owns only its layer, kit and claim
+{
+  const SHOPS = [["supermarket", "StoreCounter", "b66"], ["hardware", "StoreCounter", "b59"], ["pharmacy", "StoreCounter", "b88"], ["newsagent", "StoreCounter", "b13"], ["seed-feed", "StoreCounter", "b25"], ["bakery", "StoreCounter", "b06"], ["butcher", "StoreCounter", "b20"], ["barber", "BarberChair", "b43"], ["furniture", "StoreCounter", "b55"]];
+  for (const [id, kind] of SHOPS) {
+    const s = town.slots.find((x) => x.id === id);
+    check(!!s && s.required === false && s.host === "building" && s.places[0] === kind && typeof s.poi === "string", `the town template should have an optional building slot ${id} registering ${kind} and naming a poi`);
+  }
+  const spMap = join(ROOT, "docs", "everon", "places", "saint-philippe", "mapping.json");
+  if (existsSync(spMap)) {
+    const slots = JSON.parse(readFileSync(spMap, "utf8")).slots;
+    for (const [id, , building] of SHOPS) {
+      const row = slots[id];
+      check(!!row && row.building === building && Array.isArray(row.why) && row.why.length > 0, `saint-philippe: the approved mapping should map ${id} to ${building} with a reason`);
+    }
+  }
+}
+
 if (failed) {
   console.log(`SUMMARY town-map-selftest fail ${failed}`);
   process.exit(1);
