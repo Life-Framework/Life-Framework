@@ -20,17 +20,17 @@
     "footprint": {
       "source": "rows",
       "min": [
-        24.8,
-        -6.05
+        13.86,
+        -15.6
       ],
       "max": [
-        24.8,
-        -3.85
+        13.86,
+        -13.4
       ]
     },
     "front": null,
     "counters": [],
-    "adapt": "Street kit: the table stands on the cobbled street west of the pub, clear of the garden fence (24.8 m out along the pub right side, +x is west for b03). The two seats flank the table along z and face it. Rows are rigid: shift, never stretch."
+    "adapt": "Street kit: the table stands on the cobbled plaza at the pub north-west corner, about 8 m from the footprint (kit +x is west and -z is north for b03; island-zones allows 12 m). The two seats flank the table along z and face it. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -40,9 +40,9 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        24.8,
+        13.86,
         -0.7,
-        -4.95
+        -14.5
       ],
       "yaw": 0,
       "wall": "free",
@@ -55,9 +55,9 @@
       "role": "furniture",
       "verb": "on floor",
       "offset": [
-        24.8,
+        13.86,
         -0.7,
-        -6.05
+        -15.6
       ],
       "yaw": 0,
       "wall": "free",
@@ -70,9 +70,9 @@
       "role": "furniture",
       "verb": "on floor",
       "offset": [
-        24.8,
+        13.86,
         -0.7,
-        -3.85
+        -13.4
       ],
       "yaw": 180,
       "wall": "free",
