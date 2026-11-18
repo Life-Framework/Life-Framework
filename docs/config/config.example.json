@@ -243,6 +243,14 @@
     },
     "extraItemPrefabs": []
   },
+  "sites": {
+    "rules": {
+      "hideout_example": {
+        "captureSeconds": 180,
+        "rentPerHour": 900
+      }
+    }
+  },
   "staff": {
     "webhookUrl": ""
   },

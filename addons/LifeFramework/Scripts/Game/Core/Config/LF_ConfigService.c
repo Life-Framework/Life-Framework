@@ -223,6 +223,10 @@ class LF_ConfigService
 		if (key == LF_LockerConfig.SECTION)
 			return true;
 
+		// The contested-site rules (#2679): radius, capture, decay, rent per hideout id.
+		if (key == LF_SitesConfig.SECTION)
+			return true;
+
 		// The arrival sections (#1779): rejoin at the saved spot and the new-character grace.
 		if (key == LF_RespawnConfig.SECTION || key == LF_GraceConfig.SECTION)
 			return true;

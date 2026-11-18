@@ -50,6 +50,12 @@
       ],
       "key": "The key is the rank id (patrol, senior). An id the ladder has changes that rank only in the fields given; an id it lacks appends a rung at the end, because a saved rank is its index and never moves. A remove is refused on a shipped rank and on any rank that is not the last. A rank written in the stream leaves out kit."
     },
+    "LF_SiteRuleDef": {
+      "keyFields": [
+        "m_sHideoutId"
+      ],
+      "key": "The key is the hideout id the site guards. An id no shipped entry has adds a site; an existing id changes only the fields given. A field an entry leaves out has the default rule."
+    },
     "LF_ZoneRuleSet": {
       "keyFields": [
         "m_eRule"
@@ -177,6 +183,14 @@
         }
       },
       "foundingFee": 500
+    },
+    "sites": {
+      "rules": {
+        "hideout_example": {
+          "captureSeconds": 180,
+          "rentPerHour": 900
+        }
+      }
     },
     "licences": {
       "rules": {

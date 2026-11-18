@@ -295,6 +295,9 @@ class LF_ConfigStream
 		// Locker rent, grace and reclaim fee (#2658, server).
 		LF_LockerConfig.Reload();
 
+		// Contested-site rules (#2679, server).
+		LF_SitesConfig.Reload();
+
 		LF_QuizConfig.Reload();
 		LF_QuizBank.Reload();
 
