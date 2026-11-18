@@ -50,6 +50,7 @@ class LF_FishingCast : Managed
 	string m_sSpotTable;		//! the table of the spot covering the target, empty for open water
 	EntityID m_SpotId;
 	EntityID m_CharacterId;		//! the body the cast was made from
+	int m_iPlayerId;			//! the player who cast: every event goes here, even after that body died
 	float m_fCastAt;
 	bool m_bBitten;				//! the server's bite has happened
 	float m_fBittenAt;			//! seconds, set by the bite and never by the client
@@ -158,7 +159,7 @@ class LF_FishingSession
 		if (why != LF_EFishingRefusal.NONE)
 		{
 			LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("cast refused for %1: %2", KeyOf(character), typename.EnumToString(LF_EFishingRefusal, why)));
-			Toast(character, RefusalText(why));
+			Toast(PlayerIdOf(character), RefusalText(why));
 		}
 
 		return why;
@@ -230,6 +231,7 @@ class LF_FishingSession
 		cast.m_iCastId = s_iNextCastId;
 		cast.m_sKey = key;
 		cast.m_CharacterId = character.GetID();
+		cast.m_iPlayerId = PlayerIdOf(character);
 		cast.m_Rod = rod;
 		cast.m_Bait = bait;
 		cast.m_vOrigin = character.GetOrigin();
@@ -248,8 +250,8 @@ class LF_FishingSession
 		s_mCasts.Set(key, cast);
 		GetGame().GetCallqueue().CallLater(OnBiteTimer, seconds * 1000, false, key, cast.m_iCastId);
 		LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("%1 cast %2 onto %3 water (%4 m, %5): bite in %6 s", key, cast.m_iCastId, water, reach, SpotLabel(cast), seconds));
-		Toast(character, "#LF-Fishing_CastOut");
-		Event(character, LF_EFishingEvent.CAST_OK, cast.m_iCastId);
+		Toast(cast.m_iPlayerId, "#LF-Fishing_CastOut");
+		Event(cast.m_iPlayerId, LF_EFishingEvent.CAST_OK, cast.m_iCastId);
 		return LF_EFishingRefusal.NONE;
 	}
 
@@ -334,8 +336,8 @@ class LF_FishingSession
 
 		GetGame().GetCallqueue().CallLater(OnExpireTimer, expireMs, false, key, castId);
 		LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("%1 cast %2 bites", key, castId));
-		Toast(character, "#LF-Fishing_Bite");
-		Event(character, LF_EFishingEvent.BITE, castId);
+		Toast(RecipientOf(cast, character), "#LF-Fishing_Bite");
+		Event(RecipientOf(cast, character), LF_EFishingEvent.BITE, castId);
 		return true;
 	}
 
@@ -349,13 +351,17 @@ class LF_FishingSession
 
 		IEntity character = FindCharacter(cast);
 		End(key);
+		int playerId = RecipientOf(cast, character);
 		if (!character)
+		{
+			Event(playerId, LF_EFishingEvent.ENDED, castId);
 			return;
+		}
 
 		SpendBait(character, cast.m_Bait);
 		LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("%1 cast %2 bite went unstruck: the bait is gone", key, castId));
-		Toast(character, "#LF-Fishing_Missed");
-		Event(character, LF_EFishingEvent.MISSED, castId);
+		Toast(playerId, "#LF-Fishing_Missed");
+		Event(playerId, LF_EFishingEvent.MISSED, castId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -379,7 +385,7 @@ class LF_FishingSession
 		LF_FishingConfig config = LF_FishingConfig.Get();
 		if (!config)
 		{
-			End(key);
+			Cancel(key, character, "the fishing config is gone");
 			return LF_EFishingStrike.CANCELLED;
 		}
 
@@ -394,8 +400,8 @@ class LF_FishingSession
 		{
 			SpendBait(character, cast.m_Bait);
 			LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("%1 struck late on cast %2: the bait is gone", key, castId));
-			Toast(character, "#LF-Fishing_Missed");
-			Event(character, LF_EFishingEvent.MISSED, castId);
+			Toast(RecipientOf(cast, character), "#LF-Fishing_Missed");
+			Event(RecipientOf(cast, character), LF_EFishingEvent.MISSED, castId);
 			return LF_EFishingStrike.LATE;
 		}
 
@@ -436,8 +442,8 @@ class LF_FishingSession
 		if (!pick || pick.m_Prefab.IsEmpty())
 		{
 			LF_Debug.Error(LF_FishingConfig.FEATURE, string.Format("%1 struck in time but nothing can be given (no catch, or a species with no prefab for that size)", key));
-			Toast(character, "#LF-Fishing_Empty");
-			Event(character, LF_EFishingEvent.MISSED, cast.m_iCastId);
+			Toast(RecipientOf(cast, character), "#LF-Fishing_Empty");
+			Event(RecipientOf(cast, character), LF_EFishingEvent.MISSED, cast.m_iCastId);
 			return LF_EFishingStrike.EMPTY;
 		}
 
@@ -446,8 +452,8 @@ class LF_FishingSession
 		if (added < 1)
 		{
 			LF_Debug.Error(LF_FishingConfig.FEATURE, string.Format("%1 caught %2 but it could not be given or dropped", key, pick.m_Prefab));
-			Toast(character, "#LF-Fishing_Empty");
-			Event(character, LF_EFishingEvent.MISSED, cast.m_iCastId);
+			Toast(RecipientOf(cast, character), "#LF-Fishing_Empty");
+			Event(RecipientOf(cast, character), LF_EFishingEvent.MISSED, cast.m_iCastId);
 			return LF_EFishingStrike.EMPTY;
 		}
 
@@ -456,8 +462,8 @@ class LF_FishingSession
 
 		LF_JobLevels.Award(key, XP_ACTION);
 		LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("%1 caught %2 (%3, size %4, table %5)", key, pick.m_Prefab, pick.m_Species.m_sId, pick.m_iSize, pick.m_sTable));
-		Toast(character, "#LF-Fishing_Caught");
-		Event(character, LF_EFishingEvent.CAUGHT, cast.m_iCastId);
+		Toast(RecipientOf(cast, character), "#LF-Fishing_Caught");
+		Event(RecipientOf(cast, character), LF_EFishingEvent.CAUGHT, cast.m_iCastId);
 		return LF_EFishingStrike.CAUGHT;
 	}
 
@@ -485,8 +491,8 @@ class LF_FishingSession
 		LF_FishingCast cast = Open(key);
 		End(key);
 		LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("%1 cast ended: %2", key, reason));
-		if (character && cast)
-			Event(character, LF_EFishingEvent.ENDED, cast.m_iCastId);
+		if (cast)
+			Event(RecipientOf(cast, character), LF_EFishingEvent.ENDED, cast.m_iCastId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -524,7 +530,7 @@ class LF_FishingSession
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static int PlayerIdOf(IEntity character)
+	static int PlayerIdOf(IEntity character)
 	{
 		if (!character)
 			return 0;
@@ -537,17 +543,27 @@ class LF_FishingSession
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Toast(IEntity character, string text)
+	//! The player told about `cast`: the one who cast it. A body that died or was swapped since maps to
+	//! no player, and an event sent through it was lost: the client kept its line out for good (fire
+	//! only struck, every strike ignored) after a death mid-cast.
+	static int RecipientOf(LF_FishingCast cast, IEntity character)
 	{
-		int playerId = PlayerIdOf(character);
+		if (cast && cast.m_iPlayerId > 0)
+			return cast.m_iPlayerId;
+
+		return PlayerIdOf(character);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Toast(int playerId, string text)
+	{
 		if (playerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Fishing_Title", text, 4.0);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void Event(IEntity character, LF_EFishingEvent kind, int castId)
+	protected static void Event(int playerId, LF_EFishingEvent kind, int castId)
 	{
-		int playerId = PlayerIdOf(character);
 		if (playerId <= 0)
 			return;
 

@@ -112,6 +112,7 @@ class LF_FishingRodComponent : LF_HandToolComponent
 		}
 		else if (kind == LF_EFishingEvent.BITE)
 		{
+			s_iOpenCast = castId;
 			s_bBite = true;
 		}
 		else

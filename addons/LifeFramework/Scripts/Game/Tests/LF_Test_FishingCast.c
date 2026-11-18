@@ -1,4 +1,4 @@
-// red-proof: 2026-11-18 tools/cli test --no-build --red LF_Test_FishingCast RED-OK (RedProof() makes no water cast, so 13 cast, strike and catch assertions fail); the plain run is green.
+// red-proof: 2026-11-18 tools/cli test --no-build --red LF_Test_FishingCast RED-OK (RedProof() makes no water cast and leaves the cast's player unset, so the cast, strike, catch and recipient assertions fail); the plain run is green.
 //! fishing/cast: the server's half of a cast (#2930). A cast onto land is refused and leaves nothing
 //! out; a cast onto water with the rod in the hands and bait in the pack is accepted; a second cast
 //! while one is out is refused; a strike before the server's own bite is ignored (nothing spent);
@@ -102,6 +102,15 @@ class LF_Test_FishingCast : LF_Test
 		LF_FishingSession.End(key);
 		vector water = angler.GetOrigin() + Vector(8, 0, 0);
 		float now = 1000;
+
+		// The cast's events go to the player who cast, not to whoever drives the body now: a body that
+		// died mid-cast maps to no player, and its lost ENDED left the client's line out for good.
+		LF_FishingCast orphan = new LF_FishingCast();
+		if (!RedProof())
+			orphan.m_iPlayerId = 7;
+
+		ctx.Equal(0, LF_FishingSession.PlayerIdOf(angler), "fixture: the test body has no player");
+		ctx.Equal(7, LF_FishingSession.RecipientOf(orphan, angler), "a cast's events reach the caster after the body lost its player");
 
 		// The rod is in the pack, not in the hands: refused, nothing out.
 		ctx.True(LF_FishingSession.CastOn(angler, water, "OCEAN", now) == LF_EFishingRefusal.NO_ROD, "a rod in the pack does not cast");
