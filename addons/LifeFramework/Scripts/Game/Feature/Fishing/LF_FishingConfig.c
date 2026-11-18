@@ -100,7 +100,7 @@ class LF_FishSpeciesDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.EditBox, "Species id. The record key")]
 	string m_sId;
 
-	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Fish prefabs: small, medium, large (exactly three). An empty entry is checked when a fish is given, not at load", "et")]
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Fish prefabs: small, medium, large (exactly three). A table entry for a species with an empty size prefab is dropped at load", "et")]
 	ref array<ResourceName> m_aSizePrefabs;
 
 	[Attribute("", UIWidgets.Auto, "Water kinds it lives in: OCEAN, POND")]
@@ -162,6 +162,22 @@ class LF_FishSpeciesDef : LF_ConfigRecord
 			return string.Format("minimum level %1 is negative", m_iMinFisherLevel);
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The first size (0 small, 1 medium, 2 large) whose prefab is empty, or -1 when all are set.
+	int EmptyPrefabSize()
+	{
+		if (!m_aSizePrefabs)
+			return 0;
+
+		for (int i = 0; i < m_aSizePrefabs.Count(); i++)
+		{
+			if (m_aSizePrefabs[i].IsEmpty())
+				return i;
+		}
+
+		return -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -577,7 +593,7 @@ class LF_FishingConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Drops the entries of one table that name no species or weigh nothing.
+	//! Drops the entries of one table that name no species, name a species with an empty size prefab, or weigh nothing.
 	protected int SanitizeEntries(LF_FishTableDef table)
 	{
 		if (!table.m_aSpecies)
@@ -593,8 +609,11 @@ class LF_FishingConfig
 			{
 				name = entry.m_sSpecies;
 				problem = "";
-				if (!FindSpecies(entry.m_sSpecies))
+				LF_FishSpeciesDef species = FindSpecies(entry.m_sSpecies);
+				if (!species)
 					problem = "no such species";
+				else if (species.EmptyPrefabSize() >= 0)
+					problem = string.Format("the species has no prefab for size %1 (0 small, 1 medium, 2 large)", species.EmptyPrefabSize());
 				else if (entry.m_iWeight <= 0)
 					problem = string.Format("weight %1 is not above 0", entry.m_iWeight);
 			}
