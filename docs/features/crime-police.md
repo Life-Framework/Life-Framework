@@ -762,9 +762,15 @@
   Every prop height is snapped by `surface.mjs`; `tools\cli building check police-station` reads the kit's layer rows too
   (`spec.json` `check_layer`). **The cell door, decided:** the kit always shows the villa's own barred cell and door and
   carries no jail component, because one placed cell is allowed per world and GridWorld has one. `fitout.mjs --with-cell`
-  (for `town fit` into a world with no cell) stages only the `LF_JailCell` marker, its zone fitted to the room (2 m), the
-  release point in the hall and no door target; no `EL_JailDoor`, which would hang a second door in the villa's doorway.
-  Breach and jailbreak on that cell need the villa door to carry `LF_BreachTarget` (#2373).
+  (for `town fit` into a world with no cell) stages only the `LF_JailCell` marker, its zone fitted to the room (2 m) and the
+  release point in the hall; no `EL_JailDoor`, which would hang a second door in the villa's doorway.
+  **The villa's own cell door is the breach target (#2373, in-dev).** `PoliceStation.et` overrides the cell's door leaf
+  (`DoorSet_PrisonCell_L_EXT_B` > `Door_PrisonCell_E_A_Left_INT_ST_B`, written by `shell.mjs`) with `LF_LockComponent`
+  (locked at spawn), `LF_BreachTargetComponent` id `PoliceStation_CellDoor` and the arm and repair actions, the same
+  parts `Roadmap_Jail_Door` has, so `--with-cell` writes `m_sDoorTargetId "PoliceStation_CellDoor"` and a prisoner is
+  held while the door is locked, a charge breaches it and the jailbreak path of #235 applies, and police repair it. A cell
+  placed by hand in a world (the island town) sets that same id on its `LF_JailCellComponent`. One station per world:
+  two stations would share the id. Test `everon/police-cell-door` (WORLD, pack leg).
 - ✅ **Map area data** (#2233, epic #2223, test `map/areas`; node twin `tools/map/rules/areas.mjs`). `LF_MapAreas` (`Feature/Map/LF_MapAreas.c`) turns an area into an outline vertex list: a polygon is its points, a circle a 32-gon, a box its four corners turned by yaw the way `LF_ZoneArea.Contains` turns it, a polyline corridor a mitred strip. `Collect` merges every `LF_Zones` zone that has a style (SAFE and LAWLESS draw; NORMAL draws nothing) with the map-only areas (`LF_MapAreaComponent`: town line, gated, custom; a polygon local to the entity, or a circle). Styles are tokens for the `map-*` theme rows (M6). The outline, centroid, style and rule cases are one table, `Configs/Map/Rules/areas.cases.json`, that the Enforce test and the emulator's node rule both run; `LF_MapAreaCases.generated.c` carries it as script because the game cannot read a loose `.json` from an addon (`node tools/map/rules/areas.mjs --gen` rewrites it; the selftest fails when stale). `LF_Zones.GetAll()` is the one hook in the zone service. Nothing draws yet (M6).
 - 🔧 **Crime review fixes** (2026-11-17, `docs/reviews/2026-11-17-crime.md`, merged, in-dev):
   - **Till robbery with no room for the cash.** `LF_RobAction.CommitRobbery` now refuses with `REFUSED_NO_ROOM` when the robber's inventory takes none of the cash. It starts no till cooldown, adds no wanted and calls no dispatch, and the robber gets the toast `#LF-Robbery_NoRoom`. Test `crime/rob-no-room`.
