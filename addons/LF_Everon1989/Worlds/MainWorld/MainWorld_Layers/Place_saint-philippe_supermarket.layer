@@ -13,6 +13,10 @@ GenericEntity Fit_saint_philippe_supermarket_supermarket_till : "{416686D8F5FBEA
  coords 4377.409 13.74 10671.648
  angleY 172
 }
+GenericEntity Fit_saint_philippe_supermarket_supermarket_shelves : "{5153D03AA99A065A}Prefabs/Buildings/Supermarket/Supermarket_Shelves.et" {
+ coords 4373.5 12.7 10681.5
+ angleY 82
+}
 GenericEntity Fit_saint_philippe_supermarket_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {
   LF_SignComponent "{6E3FF3980D87CACE}" {

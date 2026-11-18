@@ -21,6 +21,7 @@
 // red-proof: before verifySteps existed (audit and look steps inline in main, the audit on no world, `look` on a bare x,z) this threw "fitMod.verifySteps is not a function" (2026-11-17).
 // red-proof: with claimOfBase() and isIntegrationBranch() not applied in planFit()/worktreeTownClaims() the stacked -suffix and integration-worktree cases printed "FAIL a -suffix branch was refused its base draft's own slot" and "FAIL an integration worktree's claim copy blocked a fit" (2026-11-18, #3101).
 // red-proof: with the source-name preference removed from sourceComponent() the prefab-less taxi pad took the drop pad's guid and this printed "FAIL a prefab-less row took the wrong source entity" (2026-11-18, #2318).
+// red-proof: before the sameAsMain filter, `town fit saint-philippe supermarket --refit` printed "town-fit fail ... 16 problem(s)" (REFUSE ... already claimed on worktree ...), one per sibling worktree holding main's own claim file (2026-11-19, #3516, observed on the real repo).
 // red-proof: with the kit rows' yaw ignored (anchor yaw 0) this printed "FAIL shop row fit-display is not where kit apply puts it" (2026-11-16).
 
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
@@ -286,6 +287,15 @@ try {
   check(!claimOfBase(claim("origin/main"), stacked), "a claim on origin/main was let through (that is --refit's job)");
   check(!claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)", "bank"), { ...stacked, slot: "bank" }), "a branch with no '-<word>' tail counted as stacked");
   check(!claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)"), { ...stacked, branch: "ws/town-draft-saint-philippe-cafe" }), "the draft's own branch counted as stacked on itself");
+}
+
+// A sibling worktree's untouched copy of main's claim file is not a rival under --refit (#3516); an edited copy still is.
+{
+  const { claimBody } = fitMod;
+  const main = { place: "saint-philippe", slot: "supermarket", rows: 4, where: "origin/main", file: "tools/town/claims/saint-philippe-supermarket.json" };
+  const copy = { rows: 4, slot: "supermarket", place: "saint-philippe", where: "worktree Life-Framework-ws-other", file: "tools/town/claims/saint-philippe-supermarket.json" };
+  check(claimBody(main) === claimBody(copy), "a worktree's copy of main's claim, keys in another order, did not compare equal");
+  check(claimBody(main) !== claimBody({ ...copy, rows: 5 }), "a worktree's edited claim compared equal to main's");
 }
 
 console.log(failed ? `SUMMARY town-fit-selftest fail ${failed}` : "SUMMARY town-fit-selftest ok");
