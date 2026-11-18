@@ -377,6 +377,13 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		SeedOrgLadder(ctx);
 		LF_Test_ReputationPersist.SeedE2E(ctx);
 		LF_Test_GarageSlotsPersist.SeedE2E(ctx);
+		// A car on the street holds an apple (#2809): the shutdown save captures its cargo into "carried".
+		IEntity cargoPayer = LF_TestCharacterFixture.Spawn(ctx);
+		if (cargoPayer)
+		{
+			LF_Test_VehicleCargoPersist.SeedE2E(ctx, cargoPayer);
+			LF_TestCharacterFixture.Delete(cargoPayer);
+		}
 		LF_Test_MedicRanksPersist.SeedE2E(ctx);
 
 #ifndef LF_E2E_LEGACY_SAVE
@@ -1024,6 +1031,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			ctx.False(LF_VehicleOwnership.CollectFromImpound(STREET_ID, GARAGE_OWNER_UID, payer, fee, "roadmap-impound", reasonKey), "e2e street car is collected only once");
 			ctx.True(LF_VehicleOwnership.GetVehicle(STREET_ID) != null, "e2e collected car is in the impound yard");
 			LF_VehicleOwnership.Store(STREET_ID, GARAGE_OWNER_UID);
+			LF_Test_VehicleCargoPersist.VerifyE2E(ctx, payer);
 			LF_TestCharacterFixture.Delete(payer);
 		}
 
