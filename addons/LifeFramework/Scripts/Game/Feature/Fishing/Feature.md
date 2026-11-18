@@ -17,6 +17,7 @@ Rung 4 background: pure rules and a config, no screen, no world, no replication 
   bad row alone with `LF_Debug.Error("Fishing", ...)`. Water kinds are the strings OCEAN and POND (the cast maps the
   engine's `EWaterSurfaceType` to them in a later card, so the rules hold no engine enum).
 - `LF_FishingRules`: static and pure; rolls in 0..1 come from the caller.
+- Cast, bite and strike (#2930): `LF_FishingSession` (server state, `CastAt`, `Bite`, `Strike`; the PlayerController bridge `LF_AskFishingCast`, `LF_AskFishingStrike`, `LF_FishingEvent` is a modded `SCR_PlayerController` in the same file) and `LF_FishingRodComponent` (the rod hand tool plus the owner fire input).
 - Spot stock reuses `LF_GatherStock` (Feature/Gathering): thins per catch, regrows on a timer, never saved.
 - `LF_FishingSpotComponent` (`Prefabs/Systems/Fishing/LF_FishingSpot.et`, #2929) registers the marker in `LF_Places` as
   kind `FishingSpot`; `FindSpotFor(target)` is the cast's lookup (radius cover, nearest marker wins, null is open water).
@@ -31,7 +32,7 @@ Rung 4 background: pure rules and a config, no screen, no world, no replication 
 
 ## Not built yet
 
-Cast and strike RPCs, the rod component, the licence gate on the fish counter, the FISHER job track, the pack's species and prices.
+The float prop and its sound, the `LF_OnFishCaught` event, the licence gate on the fish counter, the FISHER job track, the pack's species and prices.
 
 ## Dependencies
 
