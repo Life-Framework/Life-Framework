@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_Roles`: changed the expected seed hash to 410749; got
 // `[LFTEST] FAIL npc/roles`, `- the seed hash matches the generator's (expected 410749, got 410748)`. Restored; green.
-// tier: LOGIC
 //! NPC roles, with no world: every role has outfits and a playable conversation, the outfit an NPC
 //! wears is stable for its seed and differs between seeds, and a bare caption key is a valid line.
 [LF_TestInfo(LF_TestTier.LOGIC)]

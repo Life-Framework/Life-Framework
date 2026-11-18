@@ -87,7 +87,7 @@ eq(milestoneLine("M3", mc.M3), "M3 2 open: code 0 | in-dev 0 | playtest 1 | huma
 const pr = (n, o) => ({ number: n, headRefName: `ws/p${n}`, mergeStateStatus: "CLEAN", mergeable: "MERGEABLE", createdAt: "2026-11-14T10:00:00Z", statusCheckRollup: [], ...o });
 const sorted = sortPrs([pr(1), pr(2, { mergeStateStatus: "BLOCKED" }), pr(3, { mergeStateStatus: "DIRTY", mergeable: "CONFLICTING" }), pr(4, { createdAt: "2026-11-14T09:00:00Z" })]);
 eq(sorted.map((p) => p.number), [3, 2, 4, 1], "conflicting first, then stuck, then clean oldest first");
-eq(conflictHint(["addons/LifeFramework/Scripts/Game/Tests/LF_TestRegistrations.generated.c", "docs/features.md"]).startsWith("generated-only (2)"), true, "generated files only");
+eq(conflictHint(["addons/LifeFramework/Language/everonlife_localization.en_us.conf", "docs/features.md"]).startsWith("generated-only (2)"), true, "generated files only");
 eq(conflictHint(["docs/features.md", "addons/LifeFramework/Scripts/Game/Feature/Bank/LF_Bank.c"]), "NEEDS HUMAN: LF_Bank.c", "a source file needs a human");
 eq(conflictHint(null).startsWith("conflicts: ?"), true, "unknown branch");
 const line = prLine(pr(7, { mergeStateStatus: "DIRTY", mergeable: "CONFLICTING", statusCheckRollup: [{ __typename: "CheckRun", status: "COMPLETED", conclusion: "FAILURE" }] }), NOW, "generated-only (1): prs heal fixes it");

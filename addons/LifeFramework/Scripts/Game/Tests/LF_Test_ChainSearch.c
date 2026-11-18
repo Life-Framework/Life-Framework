@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_ChainSearch` with the m_bContraband check dropped from LF_ChainSearch.IsGood failed `- an unflagged chain's output is not chain goods`, `- a search counts only the flagged units (expected 3, got 7)`. Restored; green.
-// tier: LOGIC
 //! Officer search for chain goods (#419): only goods of a chain flagged contraband are ever found,
 //! never the input or an unflagged chain's output; a bigger load is harder to hide.
 [LF_TestInfo(LF_TestTier.LOGIC)]

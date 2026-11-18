@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `test --no-build --red LF_Test_DutyShiftCap,LF_Test_TrialExpiryDuty,LF_Test_TicketRequestLimit` (RED-OK, all 3 failed with the hook on, log tmp/logs/test-20261118-003756.log): the hook skips the shift settle and the clock stop, so 'eight hours on one clock-in count only the shift cap for pay' and 'a disconnect stops the duty clock' fail. Green with the fix.
-// tier: LOGIC
 //! police/duty-shift-cap (#2416): duty pay and rank count at most dutyShiftMaxSeconds of one shift
 //! (an AFK officer stops earning), a disconnect stops the clock so offline time is never counted,
 //! and a returning officer's clock restarts inside the same shift cap.

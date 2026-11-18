@@ -1,5 +1,4 @@
 // red-proof: `test --no-build --red LF_Test_EventSceneSpawn` -> RED PROOF OK (2026-11-17): with the hook on Start is skipped, so `the scene starts` fails (5 assertions); without it `SUMMARY tier=only passed=1 failed=0`.
-// tier: WORLD
 //! Event scene spawn (#1955): a plan of the grid cell `event-scene` (Grid_event_scene.layer) spawns its
 //! walkers at the scene's spawn markers in the role's outfit, the NPC cap holds the count, a second
 //! scene cannot start while it runs, and the despawn waits while a test eye has line of sight and

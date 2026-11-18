@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-17 with `tools\cli test --no-build --only LF_Test_DownedLogRate` on the unfixed behaviour: `20 absorbed hits within a second log one line (expected 1, got 20)` and `a revive queues no delayed log calls (expected 0, got 3)`; fixed, green.
 
-// tier: WORLD
 //! A downed body that keeps taking damage logs one line per few seconds with the count of hits
 //! absorbed since, not one line per hit, and a revive queues no delayed log calls (#2582).
 [LF_TestInfo(LF_TestTier.WORLD)]

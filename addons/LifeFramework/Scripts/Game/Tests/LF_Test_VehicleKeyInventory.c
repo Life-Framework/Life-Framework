@@ -1,6 +1,5 @@
 // red-proof: KeySpawnOrigin returned the pad origin, so the key was created at the pad, outside the collecting player's replication range (a client could not resolve it; key and ID card moves hung on the throbber)
 // red-proof (#1892, 2026-11-16): `tools\cli test --no-build --only <the 7 slice-1892 tests> --world Worlds/GridWorld/GridWorld.ent` before Grid_orgs_vehicles.layer failed all 7 (no org hideout door, no flagged lot, no store, no impound pad); green with it.
-// tier: WORLD
 //! A collected or bought vehicle key is created at its holder, never at the pad it was collected
 //! from, and lands in the holder's inventory (maintainer playtest 2026-11-10: after an impound
 //! collect, moving the key or the ID card stuck on the loading throbber).

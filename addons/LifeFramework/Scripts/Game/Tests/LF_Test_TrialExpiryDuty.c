@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `test --no-build --red LF_Test_TrialExpiryDuty,LF_Test_TrialExpiryClockOut` (RED-OK, log tmp/logs/test-20261118-004832.log): the hook expires the trial before the settle (the old order), so 'the seconds earned before the trial ended promote the officer (expected 1, got 0)' and 'the promotion ended the trial: the roster row stays' fail. Green with the fix.
-// tier: LOGIC
 //! police/trial-expiry-duty (#2416): which on-duty officers the trial sweep ends, and in what
 //! order. A promotion earned in seconds the clock had not settled yet ends the trial before the
 //! roster row goes. A promoted officer, an officer still on trial and one an admin put back on the

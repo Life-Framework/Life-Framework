@@ -12,7 +12,7 @@
 // A busy config (another process holds config.lock) is retried, then skipped with a warning; this
 // script never fails a commit.
 import { spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { basename, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -52,7 +52,27 @@ function writeConfig(cwd, args) {
   return false;
 }
 
-// Makes the config right. Returns { canonical, removed, added } or { skipped: reason }.
+// Merge drivers a repo config may still define after the repo dropped them (lf-regen-tests, #2618): a
+// `merge.lf-*` section in the local config that the canonical drivers file no longer declares. Old worktrees
+// kept printing a missing-path error from it on every merge. Returns the names it removed.
+export function pruneStaleDrivers(cwd, canonical) {
+  let live;
+  try {
+    live = new Set([...readFileSync(canonical, "utf8").matchAll(/^\[merge "([^"]+)"\]/gm)].map((m) => m[1]));
+  } catch {
+    return [];
+  }
+  const r = git(cwd, ["config", "--local", "--name-only", "--get-regexp", "^merge\\.lf-"]);
+  if (r.status !== 0) return [];
+  const stale = [...new Set(r.out.split(/\r?\n/).map((k) => /^merge\.(lf-[^.]+)\./.exec(k)?.[1]).filter((n) => n && !live.has(n)))];
+  const removed = [];
+  for (const name of stale) {
+    if (writeConfig(cwd, ["--remove-section", `merge.${name}`])) removed.push(name);
+  }
+  return removed;
+}
+
+// Makes the config right. Returns { canonical, removed, added, pruned } or { skipped: reason }.
 export function registerDrivers(cwd) {
   const main = mainCheckout(cwd);
   if (!main) return { skipped: "no main checkout" };
@@ -60,7 +80,7 @@ export function registerDrivers(cwd) {
   if (!existsSync(canonical)) return { skipped: `${canonical} missing` };
   const have = driversIncludes(cwd);
   const stale = have.filter((p) => p !== canonical);
-  const result = { canonical, removed: 0, added: false };
+  const result = { canonical, removed: 0, added: false, pruned: pruneStaleDrivers(cwd, canonical) };
   if (stale.length) {
     // Drop every drivers include, then re-add the one. One atomic-ish pass beats N unsets.
     if (!writeConfig(cwd, ["--unset-all", "include.path", "[/\\\\]tools[/\\\\]merge[/\\\\]drivers\\.gitconfig$"])) return result;
@@ -77,6 +97,7 @@ if (process.argv[1] && resolve(process.argv[1]) === resolve(fileURLToPath(import
   try {
     const r = registerDrivers(process.cwd());
     if (r.removed) console.log(`register-drivers: removed ${r.removed} stale include.path line(s)`);
+    if (r.pruned?.length) console.log(`register-drivers: removed stale merge driver(s) ${r.pruned.join(", ")}`);
   } catch (e) {
     console.warn(`register-drivers: ${e.message}`);
   }

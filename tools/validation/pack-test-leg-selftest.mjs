@@ -104,13 +104,11 @@ function put(base, path, text) {
 }
 const CORE = boundary.CORE ?? "LifeFramework";
 const PACK = boundary.PACK ?? "LF_Everon1989";
-const TEST_OK = `// tier: WORLD\nclass LF_Test_EveronX : LF_Test\n{\n}\n`;
-const REG_OK = `modded class LF_TestManager\n{\n\tprotected override void RegisterPackTests()\n\t{\n\t\tRegisterPack(new LF_Test_EveronX(), LF_TestTier.WORLD);\n\t}\n}\n`;
+const TEST_OK = `[LF_TestInfo(LF_TestTier.WORLD, pack: true)]\nclass LF_Test_EveronX : LF_Test\n{\n}\n`;
 function tree(extra) {
   const r = scratchDir("lf-packleg-");
   put(r, `${CORE}/Scripts/Game/Tests/LF_TestManager.c`, `class LF_TestManager\n{\n}\n`);
   put(r, `${PACK}/Scripts/Game/Tests/LF_Test_EveronX.c`, TEST_OK);
-  put(r, `${PACK}/Scripts/Game/Tests/LF_PackTestRegistrations.generated.c`, REG_OK);
   extra?.(r);
   return r;
 }
@@ -122,13 +120,11 @@ const errorsOf = (extra) => {
 };
 try {
   const clean = errorsOf();
-  check(clean.length === 0, `a pack test and the pack registry pass the boundary (got: ${clean.join("; ")})`);
-  check(errorsOf((r) => put(r, `${PACK}/Scripts/Game/Tests/LF_Test_EveronY.c`, `// tier: WORLD\nclass LF_Test_EveronY : LF_Test\n{\n}\nmodded class SCR_BaseGameMode\n{\n}\n`)).some((e) => /pack test file declares modded SCR_BaseGameMode/.test(e)), "a pack test file that mods a core class fails");
+  check(clean.length === 0, `a pack test passes the boundary (got: ${clean.join("; ")})`);
+  check(errorsOf((r) => put(r, `${PACK}/Scripts/Game/Tests/LF_Test_EveronY.c`, `[LF_TestInfo(LF_TestTier.WORLD, pack: true)]\nclass LF_Test_EveronY : LF_Test\n{\n}\nmodded class SCR_BaseGameMode\n{\n}\n`)).some((e) => /pack test file declares modded SCR_BaseGameMode/.test(e)), "a pack test file that mods a core class fails");
   check(errorsOf((r) => put(r, `${PACK}/Scripts/Game/Tests/LF_Test_EveronZ.c`, `class LFE_Helper\n{\n}\n`)).some((e) => /pack test file declares LFE_Helper/.test(e)), "a pack test file with a non-test class fails");
-  check(errorsOf((r) => put(r, `${PACK}/Scripts/Game/Tests/LF_PackTestRegistrations.generated.c`, `class LFE_Sneak\n{\n}\n`)).some((e) => /pack test registry declares LFE_Sneak/.test(e)), "a pack registry declaring anything but the modded LF_TestManager fails");
   check(errorsOf((r) => put(r, `${PACK}/Scripts/Game/LFE_Glue.c`, `class LFE_Glue\n{\n}\n`)).some((e) => /LFE_Glue\.c: script in the pack/.test(e)), "other pack script still fails");
   check(errorsOf((r) => put(r, `${CORE}/Scripts/Game/Tests/LF_Uses.c`, `class LF_Uses\n{\n\tref LF_Test_EveronX m_T;\n}\n`)).some((e) => /uses pack class LF_Test_EveronX/.test(e)), "a core script naming a pack test still fails");
-  check(!errorsOf().some((e) => /uses pack class LF_TestManager/.test(e)), "the modded LF_TestManager is not a pack class");
 } finally {
   // Fixture trees are plain files under the OS temp dir: no junctions.
   for (const r of roots) rmSync(r, { recursive: true, force: true });

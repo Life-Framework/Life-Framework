@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_PerfLife128`: RED-OK perf/life-128, with the synthetic population not installed "after: one uid compare per racer per tick (expected 6400, got 0)" failed. `--tier perf` green, 3 of 3 (numbers in docs/architecture/performance.md, #2404).
-// tier: PERF
 //! perf/life-128 (#2404): the four everyday-life costs the life review found at 128 players, each
 //! measured the old way and the new way in the same run, on the same machine. "Before" replays the
 //! old loop with the same primitives; "after" runs the shipped code. Prints one

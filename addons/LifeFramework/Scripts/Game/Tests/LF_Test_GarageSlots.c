@@ -2,7 +2,6 @@
 // the scripts failed to compile (unknown type), so the suite failed. Then `--red LF_Test_GarageSlots` printed
 // `RED-OK vehicles/garage-slots` (the at-cap refusal and its reason fail with the hook on); green without it.
 
-// tier: LOGIC
 //! Garage slots (#2655, spec #774): base slots, price of the next slot, the max, and the cap that
 //! refuses a park with a reason naming the cap.
 [LF_TestInfo(LF_TestTier.LOGIC)]

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_OutletSerial`: RedProof() mints with no outlet and `a serial minted for gun_counter parses back to gun_counter` fails (expected gun_counter, got empty); hook off: green.
-// tier: LOGIC
 //! A sold weapon's serial names the outlet that sold it (#1765, Refs #1067): a serial minted for
 //! outlet `gun_counter` parses back to `gun_counter`, an old serial with no prefix parses to no
 //! outlet and still resolves in the book, and the booked serial from LF_FenceSerials.Issue carries it.

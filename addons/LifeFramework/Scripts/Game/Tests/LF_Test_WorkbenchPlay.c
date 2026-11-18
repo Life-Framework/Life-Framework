@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 (fix-wb-voices): on the unfixed PickFallbackHeader `tools/cli test --no-build --only LF_Test_WorkbenchPlay` failed `- DebugWorld open, only the pack header lists overlays: the pack header stands in (voices load) (expected 1, got -1)`; with the fix it passes. Earlier lines: observed 2026-11-16 with the batched red run (--red LF_Test_WorkbenchPlay): `RED-OK workbench/play-decisions`, failing `- Workbench with the plugin's request: fast play`.
-// tier: LOGIC
 //! Workbench play decisions (LF_WorkbenchPlay): fast play only inside Workbench with a fresh "fast"
 //! request; a missing persistence system is expected only in Workbench play with no mission header;
 //! the stand-in mission header is the one for the open world that lists the most overlays, else the

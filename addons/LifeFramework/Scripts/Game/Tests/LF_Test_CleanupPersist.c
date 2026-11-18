@@ -1,5 +1,4 @@
 // red-proof: 2026-11-14, LF_VehicleOwnership.IsOwnedEntity returning false: `--only LF_Test_CleanupPersist` failed `the owned car survives the sweep`. Restored, green.
-// tier: PERSISTENCE
 //! World cleanup (#690): a sweep never deletes a saved vehicle record. A swept stray car leaves the
 //! saved vehicle records as they were, and the owned car's record still serializes.
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]

@@ -1,5 +1,4 @@
 // Fixture for no-test-resetall-selftest.mjs: NOT in addons/, so the real validate never sees it.
-// tier: LOGIC
 // red-proof: fixture only.
 class LF_Test_BadResetAll : LF_Test
 {

@@ -5,7 +5,6 @@
 // "(10,12) clamps to 0" assertion fail. Deferred to the serial suite here
 // because this workstream may not boot the test server (port collision gate).
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_MiningAreaWeightedSpawns : LF_Test
 {

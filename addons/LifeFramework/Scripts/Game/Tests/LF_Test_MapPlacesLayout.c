@@ -17,7 +17,6 @@ class LF_Test_MapClusterCase
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! map/places-layout: the POI layer's min-zoom and cluster rules (#2232, everon-map.md section 1,
 //! Rendering). The case table Configs/Map/Rules/cluster.cases.json is the one source: this test runs
 //! it through LF_MapClusterRules and tools/validation/map-cluster-selftest.mjs runs it through the node

@@ -1,5 +1,4 @@
 // red-proof: the batched `--red` run (RedProof() skips the pack overlay and the owner JSON) fails "the overlay adds one site (expected 1, got 0)"; see the PR for the RED-OK line. Before LF_SitesConfig existed the file did not compile.
-// tier: LOGIC
 //! The contested-site rules (#2679, #1022): LF_SitesConfig loads Configs/Sites/LF_Sites.conf (the core
 //! has no sites and only the default rules), merges pack overlays, then the owner's `sites` keys. A
 //! test overlay adds one site and overrides its rent; an owner key lowers its capture time; a bad

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 `tools/cli test --no-build --red LF_Test_GarageBuySlot,LF_Test_GarageSlotsPersist`: RED PROOF OK (the hook skips the first paying Buy: "exact cash buys the slot" fails); green with `--only`.
-// tier: WORLD
 //! Buying a garage slot with carried cash (#2656): enough cash takes the next slot's price from
 //! LF_Garage.conf and raises the cap by one; short cash is refused and nothing is taken; at the max
 //! the buy is refused and nothing is taken.

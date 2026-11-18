@@ -1,7 +1,6 @@
 // red-proof: #2411, 2026-11-17, `tools/cli test --no-build --only LF_Test_VehicleLockedCargo,LF_Test_VehicleRetrieveKey` on the unfixed code
 // (no LF_VehicleStorageLockGate): FAIL - a locked car takes no cargo, - nobody takes cargo out of a locked car,
 // - the cargo is still in the locked car. Green with the gate (both locked takes log "take refused").
-// tier: WORLD
 //! A locked car's cargo is closed on the server (#2411): no inventory move puts an item in or
 //! takes one out, whatever the client's UI showed. Unlocked, the same moves work.
 [LF_TestInfo(LF_TestTier.WORLD)]

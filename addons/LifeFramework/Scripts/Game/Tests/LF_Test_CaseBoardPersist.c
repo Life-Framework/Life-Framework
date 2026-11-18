@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_CaseBoardPersist`: commenting out `LF_CaseBoard.ApplyAll(caseRows)` in the load failed `- the pinned cards are back (expected 2, got 0)` and `- the time of the crime is back (expected '09:36', got '')`. Restored; green. Restart path stays with wt e2e.
-// tier: PERSISTENCE
 //! The case board rides the real save path (the "caseboard" payload, save version 31, payload 31):
 //! the time of the crime, the pinned cards and their notes are back after the store is wiped and read
 //! back, the pin order goes on after the highest loaded pin, and loading twice adds nothing.

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 (bug fix: the test run with the fix reverted failed) on the unfixed LF_WhitelistManager (remove returned false on an empty cache): "a remove before any load still removes", "after the next restart the officer is off the roster". Green with the fix.
-// tier: LOGIC
 //! whitelist/remove-before-load (review 2026-11-17): a roster removal that comes before anything
 //! loaded the whitelist file (LF_PoliceApplications.ExpireTrials on the first duty desk use after a
 //! restart) loads the file and removes the entry. It used to return false on the empty cache, so the

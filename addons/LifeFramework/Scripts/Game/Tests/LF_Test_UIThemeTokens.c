@@ -5,7 +5,6 @@
 //------------------------------------------------------------------------------------------------
 //! The theme's pure parts (#966): hex colours, inheritance from the paper theme, and the built-in
 //! 1989 values the sheets fall back to. No resource is loaded.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UIThemeTokens : LF_Test
 {

@@ -4,7 +4,6 @@
 // `- Mining off: the area places no ore (expected 0, got 2)`, `- Mining off: a spent rock does not grow back`,
 // `- Gathering off: the pile offers no gather action (expected 0, got 1)`, `- Processing off: the lathe offers no process action (expected 0, got 1)`,
 // `- Atmosphere off: the radio offers no switch (expected 0, got 1)` and `- Toys off: a jump pad is inactive`. Restored; green.
-// tier: WORLD
 //! Systems (#1075), the world-resource ones: Gathering, Processing, Mining, Resources, Atmosphere
 //! and Toys. Each is turned off in the owner config and the real fixture is asked: the gather pile,
 //! the lathe and the radio offer no action; a rock takes no hit, drops nothing and does not grow back;

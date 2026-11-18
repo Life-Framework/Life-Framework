@@ -1,7 +1,6 @@
 // red-proof: observed 2026-11-08 (tools/cli test --no-build --tier all) for the armory part, which
 // moved to LF_Test_ArmoryKitCap and LF_Test_ArmoryCooldownPersist (#2416). The reach checks are pure.
 
-// tier: LOGIC
 //! Police menu reach. The armory's one-kit rule is LF_Test_ArmoryKitCap. Fines are paper tickets (LF_Test_FineTicket*).
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PoliceAbuse : LF_Test

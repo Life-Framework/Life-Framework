@@ -2,7 +2,6 @@
 // and the LF_ParcelComponent removed from LF_Parcel.et:
 // FAIL the description names the destination: #LF-Item_Parcel_Desc (raw key, no destination)
 
-// tier: WORLD
 //! A spawned courier parcel describes where it goes.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ParcelDescription : LF_Test

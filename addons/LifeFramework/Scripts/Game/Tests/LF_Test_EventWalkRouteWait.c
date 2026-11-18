@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-16 with `tools/cli test --no-build --only LF_Test_EventWalkRouteWait` on the unfixed walk (route given at the first spawn): `walker 0 timed out: stuck 20 s` while it waited for its stagger, then walker 1 never joined (JoinNewWalkers matched by count after walker 0 was removed); fixed, passed=3 failed=0 with the other walk tests.
 
-// tier: WORLD
 //! Scene walk route timing (#2174 follow-up): like vanilla SCR_AIGroup.SpawnUnits (members first, then
 //! AddWaypointsStatic), the walk hands out its route only once every planned walker has spawned. A
 //! walker waiting at the spawn marker for the rest of its family is not stuck; once the route is out,

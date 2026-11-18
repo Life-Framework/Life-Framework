@@ -1,5 +1,4 @@
 // red-proof: 2026-11-16 `tools\cli test --no-build --red LF_Test_PricedSignProvider`: RED-OK signs/priced-provider (fails with the hook on, 6 assertions: no answer from the provider). Green without it (--only, with LF_Test_SignPrice and LF_Test_BoardProvider).
-// tier: WORLD
 //! The priced sign reads through the board provider (#1946, chapter #1014): the answer for a lot's
 //! car carries the offer's name and price, the sign built from the answer shows the same title the
 //! price list gives (name and grouped price), a changed price changes the answer on the next read,

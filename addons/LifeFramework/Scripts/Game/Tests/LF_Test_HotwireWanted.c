@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools\cli test --no-build --only LF_Test_HotwireWanted` with ApplyTheft's IncreaseWantedLevel removed failed `- a successful hotwire raises the thief to wanted 1 (expected 1, got 0)`. Restored; green.
-// tier: LOGIC
 //! #495: a hotwired car puts the thief on the wanted board, so the entry must not read level 0.
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HotwireWanted : LF_Test

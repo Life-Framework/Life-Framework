@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 (#2107): the first run read the name through SCR_ChimeraCharacter and failed `- the old man has the name Gaspard Lenoir (is: )` (the prefab is an LF_NpcBaseEntity); `tools\cli test --no-build --red LF_Test_EveronTownsfolk` (RedProof() skips the load): every `- <who> spawns` fails, RED PROOF OK. Green without the hook (pack leg, worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #1960 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the three townsfolk
 //! (the old man, the cafe owner, the night-shift worker) each load as a person with a name, the
 //! `townsfolk` role (the role component overridden by GUID 7A31C05E94D2B861), a `Townsfolk` place id

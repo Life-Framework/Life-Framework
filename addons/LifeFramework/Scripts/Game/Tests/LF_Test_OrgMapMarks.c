@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_OrgMapMarks: RED PROOF OK with the orgmarks payload read skipped ("re-applying the rows applies the same 20 (expected 20, got 0)"); the first red run crashed on an unguarded loaded[0], guarded since.
-// tier: PERSISTENCE
 //! map/org-marks (#2240, card M12): an officer whose rank holds the territory right adds org marks that
 //! reach the organization's members only (LF_MapShares ORG audience); a member without the right, an
 //! outsider and a too-fast add are refused; the cap is 20 per organization; the "orgmarks" payload

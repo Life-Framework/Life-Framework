@@ -48,7 +48,10 @@ agent per area. `tools\cli usage` shows where the tokens went.
    Text is LF in the repo and in every checkout (`* text=auto eol=lf`; `.cmd`/`.bat`
    stay CRLF). Generators write LF; scripts that patch files need not handle `\r\n`.
    A lone CR byte in a text file is a bug: a `\return` in a doc comment written through a shell
-   becomes CR plus `eturn` and splits the comment. `validate-no-lone-cr` fails it.
+   becomes CR plus `eturn` and splits the comment. `validate-no-lone-cr` fails it. The same
+   shell eats the backslash of a regex (`/s+/` for `/\s+/`, `SCRIPTs*(E)`) or turns `\b`
+   into a backspace byte in `tools/`; write regex-heavy code with the Write/Edit tools
+   and let `validate-regex-backslashes` catch what slips (`// lf-regex-ok: <why>` allows a real letter).
 5. **All classes are `LF_`; tests are `LF_Test_*`.** The `EL_` to `LF_` rename
    landed 2026-11-09 (#334). The real EveronLife mod (`EL_`) can load on the same
    server, so an `EL_` name can collide. `validate-no-el-prefix.mjs` rejects any
@@ -207,7 +210,7 @@ worktree with `tools\cli wt prune <slug>`; delete any other tree with
   (`--tier all`, or `--only`/`--red` by name). Never a node selftest that reads `.conf` text
   (`docs/architecture/three-worlds.md` "Pack test leg").
 - Loop: `tools\cli test --no-build --only <LF_Test_Class>` (~10 s) until green, one `--red` run for the new tests, then `--tier all` once at the end.
-- **A test deletes what it spawns** (`LF_TestCharacterFixture.Delete`; `LF_TestLooseSweep.DeleteBuilding` for a payphone booth, whose loose part outlives the booth; `LF_TestVaultDrillFixture.Release` for a robber). Every fixture character spawns at the gate, so leftovers pile up under later tests (#2792). A run ends with `suite/no-leftover-fixtures`, which fails and names the test that left a character or prefab-less prop within 9 m of the gate. Never delete characters in a sweep after each test: it crashed the engine, and deleting a character that carries a path-loaded pack crashes it too (use the GUID reference, `LF_TestVaultDrillFixture.PACK_PREFAB`).
+- **A test deletes what it spawns** (`LF_TestCharacterFixture.Delete`; `LF_TestLooseSweep.DeleteBuilding` for a payphone booth, whose loose part outlives the booth; `LF_TestVaultDrillFixture.Release` for a robber). Every fixture character spawns at the gate, so leftovers pile up under later tests (#2792). A run ends with `suite/no-leftover-fixtures`, which fails and names the test that left a character or prefab-less prop within 9 m of the gate. A test that must keep a body alive past the run (`e2e/pass1-write-save` holds its characters through the shutdown save) declares each with `LF_TestDebrisProbe.Keep(entity)`, and the check skips it. Never delete characters in a sweep after each test: it crashed the engine, and deleting a character that carries a path-loaded pack crashes it too (use the GUID reference, `LF_TestVaultDrillFixture.PACK_PREFAB`).
 - **A test never calls `LF_StaticReset.ResetAll()`**: it wipes every feature's statics and fails every later test in the suite (2026-11-16, 38 tests, #2092). Apply only your own feature's `LF_StaticResetHook` (`<Owner>.ResetStatics()`); `validate-no-test-resetall` fails core and pack tests that call it.
 - **A node selftest that builds a scratch git repo** calls `useHermeticGit()` and cleans up with `removeScratch()`
   (`tools/lib/selftest-git.mjs`): no machine git config, a fixed identity and branch, no auto-gc holding the folder

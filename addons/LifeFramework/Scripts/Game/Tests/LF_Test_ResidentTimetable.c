@@ -1,5 +1,4 @@
 // red-proof: RED-OK residents/resident-timetable (fails with the hook on, 2 assertions; the hook skips building the day)
-// tier: LOGIC
 //! Resident cast and timetable as data (#2665): a resident's day resolves by game minute, a bad day
 //! is refused at load naming the resident, and an unknown place kind drops its line.
 

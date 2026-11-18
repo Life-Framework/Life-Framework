@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_ChopShopPayout` with the keyed-owner expectation flipped to NONE failed `- an owned car whose key the worker holds is refused`. Restored; green.
-// tier: LOGIC
 //! Chop shop rules (#415): the payout is a capped fraction of the vehicle value, an owned car whose
 //! key the worker holds is refused, only a stolen car is taken, the cooldown holds, and a hot car
 //! scrapped from the ownership record leaves no record behind.

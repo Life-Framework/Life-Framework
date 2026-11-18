@@ -3,7 +3,6 @@
 //! comms/debug-dispatch: the dispatch console's test call is refused when the game mode has it
 //! off, refused with the no-answer line when nobody is on duty, and otherwise reaches dispatch
 //! once through the same path a payphone call takes.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DebugDispatch : LF_Test
 {

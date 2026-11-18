@@ -2,7 +2,6 @@
 // crate's storage accepted the apple, so it sat in the crate unpaid. Observed 2026-11-18 on the unfixed
 // code: FAIL trader/crate-direct-insert (vicinity move, stays with seller, direct insert); green with
 // LF_TraderCrateGuard in the next run.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TraderCrateDirectInsert : LF_Test
 {

@@ -2,7 +2,6 @@
 // that dropped the rows instead of applying them failed `- the crop is back half grown (expected 1, got -1)` and
 // `- with the same 75 seconds of growth (expected 75, got 0)`. Restored; green.
 
-// tier: PERSISTENCE
 //! A growing crop rides the real save path (the "farmplots" payload, save version 23, #614): after
 //! the store is wiped the plot is empty, after the payload is read it is back at the same growth and
 //! stage and still ripens, and reading twice changes nothing. A saved crop whose plot is not in the

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `toolscli test --no-build --red LF_Test_EventPackOverlay`: with the hook on the overlay is not applied and the replace assertions fail (`replace: alpha has only the overlay's phase (expected 1, got 2)`, `replace: the cooldown is the overlay's (expected 10, got 300)`); `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; without the hook green, `SUMMARY tier=only passed=1 failed=0`.
-// tier: LOGIC
 //! A pack's event config layers over the core by id (#1952, the shared override model #962): one
 //! overlay adds an event, patches a phase timing of another (the fields it does not set keep the
 //! core value), disables a third and replaces a fourth; an add of an id that exists and a patch of

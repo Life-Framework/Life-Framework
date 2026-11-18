@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_OrgWarSweep` with the sweep subscribers not installed: RED-OK org/war-sweep ("with reason forfeit (expected 'forfeit', got 'time')", "told once (expected 1, got 0)"); green with them (`--only`, 22 lines, failures=0).
-// tier: LOGIC
 //! org/war-sweep (#2669, M7 gang war W4): the war sweep lapses a declaration nobody answered, ends a war
 //! past endsAt, and an organization that lost its last member forfeits its wars. Each closing, and the
 //! declare and accept before it, is told to the island exactly once (the announce count is the seam).

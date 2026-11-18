@@ -3,7 +3,6 @@
 // `- an unbound record is rejected everywhere`. Restored; green. The VERSION constant and Create
 // field read-backs were removed: they restated what the test had just written and could not fail.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_HouseSaveData : LF_Test
 {

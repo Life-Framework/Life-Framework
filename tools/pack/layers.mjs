@@ -31,8 +31,54 @@ export const SECTIONS = {
   "catalogue.offers": { section: "catalogue", cls: "LF_ItemCatalogueConfig", core: "Configs/Catalogue/LF_ItemCatalogue.conf", field: "m_aOffers", key: "offers", id: (p) => (p.m_sOutlet && p.m_sItem ? `${p.m_sOutlet}/${p.m_sItem}` : ""), ownerKey: (k) => k },
   "crime.crimes": { section: "crime", cls: "LF_CrimeCatalogConfig", core: "Configs/Crime/LF_CrimeCatalog.conf", field: "m_aCrimes", key: "crimes", id: (p) => p.m_sCrimeId ?? "", ownerKey: (k) => k },
   "vehicles.vehicles": { section: "vehicles", cls: "LF_VehiclePricesConfig", core: "Configs/Vehicles/LF_VehiclePrices.conf", field: "m_aVehicles", key: "vehicles", id: (p) => guidOf(p.m_Prefab), ownerKey: (k) => /^{?[0-9A-Fa-f]{16}}?$/.test(k) ? k.replace(/[{}]/g, "").toUpperCase() : "" },
+  "sites.rules": { section: "sites", cls: "LF_SitesConfig", core: "Configs/Sites/LF_Sites.conf", field: "m_aRules", key: "rules", id: (p) => p.m_sHideoutId ?? "", ownerKey: (k) => k },
   "shops.priceRules": { section: "shops", cls: "LF_ShopPricesConfig", core: "Configs/Shop/ShopPrices.conf", field: "m_aPriceRules", key: "priceRules", id: shopKey, ownerKey: (k) => parseShopRuleKey(k)?.norm ?? "" },
 };
+// ---- The remaining core list sections (#2804) ----
+// row(): idField names a record, so it is not listed as a field a layer sets (idFields below). A list with
+// no owner section is read from pack overlays only: its ownerKey says no key can be an id.
+const noOwner = () => "";
+const same = (k) => k;
+const byField = (f) => (p) => p[f] ?? "";
+const ZONE_RULES = ["NORMAL", "SAFE", "LAWLESS"];
+const zoneRule = (p) => (typeof p.m_eRule === "number" ? ZONE_RULES[p.m_eRule] ?? "" : p.m_eRule === undefined ? "" : String(p.m_eRule));
+const row = (section, key, cls, core, field, idField, id, ownerKey = noOwner) => ({ section, cls, core, field, key, idFields: [idField], id, ownerKey });
+Object.assign(SECTIONS, {
+  "prefabs.slots": row("prefabs", "slots", "LF_PrefabSlotsConfig", "Configs/PrefabSlots/LF_PrefabSlots.conf", "m_aSlots", "m_sSlot", byField("m_sSlot")),
+  "sounds.slots": row("sounds", "slots", "LF_SoundSlotsConfig", "Configs/SoundSlots/LF_SoundSlots.conf", "m_aSlots", "m_sSlot", byField("m_sSlot")),
+  "safeTypes.types": row("safeTypes", "types", "LF_SafeTypeConfig", "Configs/Crime/LF_SafeTypes.conf", "m_aTypes", "m_sId", byField("m_sId")),
+  "dialogue.index": row("dialogue", "index", "LF_DialogueIndexConfig", "Configs/Dialogue/LF_DialogueIndex.conf", "m_aEntries", "m_sId", byField("m_sId")),
+  "events.events": row("events", "events", "LF_EventsConfig", "Configs/Events/LF_Events.conf", "m_aEvents", "m_sEventId", byField("m_sEventId")),
+  "jobs.tracks": row("jobs", "tracks", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aTracks", "m_sJob", byField("m_sJob"), same),
+  "jobs.xpAwards": row("jobs", "xpAwards", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aXpAwards", "m_sAction", byField("m_sAction"), same),
+  "jobs.licenceGates": row("jobs", "licenceGates", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aLicenceGates", "m_sLicence", byField("m_sLicence"), same),
+  "mapAreas.areas": row("mapAreas", "areas", "LF_MapAreaConfig", "Configs/Map/LF_MapAreas.conf", "m_aAreas", "m_sId", byField("m_sId")),
+  "mapPois.kinds": row("mapPois", "kinds", "LF_MapPoiConfig", "Configs/Map/LF_MapPois.conf", "m_aKinds", "m_sKind", byField("m_sKind")),
+  "zones.ruleSets": row("zones", "ruleSets", "LF_ZoneConfig", "Configs/Moderation/LF_Zones.conf", "m_aRuleSets", "m_eRule", zoneRule, (k) => (ZONE_RULES.includes(k) ? k : "")),
+  "organizations.rankDefaults": row("organizations", "rankDefaults", "LF_OrgConfig", "Configs/Organizations/LF_Org.conf", "m_aRankDefaults", "m_sRank", byField("m_sRank"), (k) => (["founder", "officer", "member"].includes(k) ? k : "")),
+  "police.ranks": row("police", "ranks", "LF_PoliceConfig", "Configs/Police/LF_Police.conf", "m_aRanks", "m_sId", byField("m_sId"), same),
+  "welcomeGift.gifts": row("welcomeGift", "gifts", "LF_WelcomeGiftConfig", "Configs/Quests/LF_WelcomeGift.conf", "m_aGifts", "m_sQuestId", byField("m_sQuestId")),
+  // The core ships no course (LF_RaceCourseBook starts empty), so the core layer is empty: a pack adds.
+  "racing.courses": row("racing", "courses", "LF_RaceCoursesConfig", null, "m_aCourses", "m_sId", byField("m_sId"), same),
+  "residents.residents": row("residents", "residents", "LF_ResidentsConfig", "Configs/Residents/LF_Residents.conf", "m_aResidents", "m_sId", byField("m_sId")),
+  "handbook.pages": row("handbook", "pages", "LF_HandbookConfig", "Configs/Rules/LF_Handbook.conf", "m_aPages", "m_sId", byField("m_sId")),
+  "signs.signs": row("signs", "signs", "LF_SignConfig", "Configs/Signs/LF_Signs.conf", "m_aSigns", "m_sId", byField("m_sId")),
+  "drinkImpairment.drinks": row("drinkImpairment", "drinks", "LF_DrinkImpairmentConfig", "Configs/Survival/LF_DrinkImpairment.conf", "m_aDrinks", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
+  "systems.catalog": row("systems", "catalog", "LF_SystemCatalog", "Configs/Systems/LF_SystemCatalog.conf", "m_aSystems", "m_sId", byField("m_sId")),
+  "terms.terms": row("terms", "terms", "LF_TermsConfig", "Configs/Terms/LF_Terms.conf", "m_aTerms", "m_sId", byField("m_sId")),
+  "townBoard.cards": row("townBoard", "cards", "LF_TownBoardConfig", "Configs/TownBoard/LF_TownBoard.conf", "m_aCards", "m_sId", byField("m_sId")),
+  "ui-theme.themes": row("ui-theme", "themes", "LF_UIThemeConfig", "Configs/UI/LF_UITheme.conf", "m_aThemes", "m_sThemeId", byField("m_sThemeId")),
+  "vehicle-colours.models": row("vehicle-colours", "models", "LF_VehicleColoursConfig", "Configs/Vehicles/LF_VehicleColours.conf", "m_aModels", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
+});
+
+// Lists the offline merge cannot model, each with the reason. selftest pack-check-selftest accepts a
+// core list that is here instead of in SECTIONS; the runtime still merges it.
+export const UNMODELLED = {
+  "dialogue.nodes": "a conversation is one core .conf per NPC and a pack overlay is matched to it by its m_sId, so there is no single core file to merge into; validate-dialogue-patch.mjs checks each pack patch against its core dialogue with the runtime's rules",
+  "dialogue.lines": "same as dialogue.nodes: the lines live in the per-NPC dialogue files, checked by validate-dialogue-patch.mjs",
+  "licences.rules": "no core .conf: the licence catalog is built in script (LF_LicencesConfig.LoadFrom), and a rule's id must be a catalog name, which only the running game knows",
+};
+
 export const sectionNames = () => [...new Set(Object.values(SECTIONS).map((s) => s.section))];
 export const sectionDef = (name) => Object.values(SECTIONS).find((s) => s.section === name);
 export const classes = () => new Set(Object.values(SECTIONS).map((s) => s.cls));
@@ -94,6 +140,7 @@ export const show = (v) => (v !== null && typeof v === "object" ? `{${Object.key
 
 /** Core conf root node of a section, or null. */
 export function loadCore(addonsDir, def) {
+  if (!def.core) return null; // a section whose core ships no records (racing.courses)
   const p = join(addonsDir, CORE, def.core);
   return existsSync(p) ? parseConf(readFileSync(p, "utf8")) : null;
 }
@@ -132,7 +179,8 @@ export function loadPackOverlays(addonsDir, pack, meta) {
   for (const f of walk(join(dir, "Configs")).filter((p) => p.endsWith(".conf"))) {
     const r = rel(dir, f);
     const root = parseConf(readFileSync(f, "utf8"));
-    if (root && classes().has(root.cls) && !listed.has(r)) out.unlisted.push(r);
+    // Configs/Tests/ holds fixtures a test loads itself (like the core's), never a header overlay.
+    if (root && classes().has(root.cls) && !listed.has(r) && !r.startsWith("Configs/Tests/")) out.unlisted.push(r);
   }
   return out;
 }
@@ -205,7 +253,7 @@ export function confRecords(def, root) {
   return list.map((n) => ({ id: def.id(n.props), op: String(n.props.m_sOp ?? ""), fields: fieldsOf(n.props, idFields(def)), node: n }));
 }
 // The fields that make up an id are not "set by a layer"; they are the record's name.
-export const idFields = (def) => (def.key === "items" ? ["m_sId"] : def.key === "offers" ? ["m_sOutlet", "m_sItem"] : def.key === "crimes" ? ["m_sCrimeId"] : []);
+export const idFields = (def) => def.idFields ?? (def.key === "items" ? ["m_sId"] : def.key === "offers" ? ["m_sOutlet", "m_sItem"] : def.key === "crimes" ? ["m_sCrimeId"] : []);
 
 /** Records of a list section from the owner's JSON section object. */
 export function ownerRecords(def, json) {

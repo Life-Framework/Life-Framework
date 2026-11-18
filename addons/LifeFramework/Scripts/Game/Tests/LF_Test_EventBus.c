@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-09 with `tools/cli test --no-build --only LF_Test_EventBus`: LF_EventBus.Publish building its snapshot in reverse failed `[LFTEST] FAIL core/event-bus`, `- subscribers ran in subscription order and C ran after B failed (expected 'A:uid-2:#x;B:...', got 'C:uid-2:#x;B:...')`; restored, green.
 
-// tier: LOGIC
 //! The server event bus: publish and subscribe, subscription order, one failing or null
 //! subscriber not stopping the rest, and unsubscribing during a publish.
 [LF_TestInfo(LF_TestTier.LOGIC)]

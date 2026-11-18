@@ -1,6 +1,5 @@
 // red-proof: RED-OK 2026-11-17, `tools/cli test --no-build --red LF_Test_IncidentReportSpam,...` (hook reports past the cooldown, as the unfixed code let every empty report through): `the empty report started the cooldown, so the next one inside it is refused` failed; restored, green.
 
-// tier: LOGIC
 //! incident/report-spam (#2414): a /report with nothing to flag starts the cooldown too, so it cannot be
 //! repeated every frame (each call ran a log query, wrote a line and sent a notification).
 [LF_TestInfo(LF_TestTier.LOGIC)]

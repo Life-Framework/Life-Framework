@@ -90,7 +90,6 @@ class LF_TestCarriedInventoryKit
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_CarriedInventoryRoundtrip : LF_Test
 {
@@ -189,7 +188,6 @@ class LF_Test_CarriedInventoryRoundtrip : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CarriedInventoryDeathNoDupe : LF_Test
 {

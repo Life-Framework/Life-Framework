@@ -1,6 +1,5 @@
 // red-proof: on main (before LF_WantedReports.AddAt, LF_PoliceCallBoardAction.CallOrigin and LF_PoliceCall.m_vPosition existed) this test did not compile (2026-11-18); `--red` skips the position filing, so the call has no point for a map-label site.
 
-// tier: WORLD
 //! police/call-position (#2578, parent #2516): a call keeps the position its crime was filed at, so a site
 //! named only by a map location label still gets a waypoint. The position comes from the report (the event
 //! when the call waits for the report, the stored report when the report came first); a report with no

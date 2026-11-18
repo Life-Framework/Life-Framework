@@ -1,5 +1,4 @@
 // red-proof: `test --no-build --red LF_Test_RaceCourse` -> RED PROOF OK (all 1 listed test(s) fail with the hook on): skipping the first in-order Pass leaves cp_b not next, the shortcut check sees progress 0, and a repeat of cp_a is no longer refused.
-// tier: LOGIC
 //! Race course (#1922): checkpoints count in order, a skipped one is refused, laps count, the
 //! finish order is by time. A course here is built in script from ids; no world, no coordinates.
 [LF_TestInfo(LF_TestTier.LOGIC)]

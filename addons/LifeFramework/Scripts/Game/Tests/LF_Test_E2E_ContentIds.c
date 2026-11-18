@@ -14,7 +14,6 @@
 //! 3. Restart with the content back (LF_E2E_IDS_RESTORED aliases the canteen to the water bottle):
 //!    it comes back inside the backpack.
 //! Runs only under LF_E2E_CONTENT_IDS; a normal suite run passes it untouched.
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_ContentIds : LF_Test
 {

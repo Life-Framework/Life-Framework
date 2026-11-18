@@ -5,7 +5,6 @@
 //! is refused; the request is left; an off-duty player cannot ring it back; the officer rings the
 //! payphone back, anyone there picks up and the request leaves the pad; a rung-out call offers
 //! too; the bus hears left, rung and answered.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PhoneCallBackWorld : LF_Test
 {

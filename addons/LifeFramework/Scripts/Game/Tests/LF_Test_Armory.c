@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-10 with `tools/cli test --no-build --only LF_Test_Armory`: not spending a kit in LF_Bank.PayHeist failed `crime/armory` with `- one kit left in stock (expected 1, got 2)`, `- the stock is spent (expected 0, got 2)`, `- out of stock: refused`. Restored; green.
-// tier: WORLD
 //! The police armory store (#275): breaching it without the keycard is refused and files nothing.
 //! With the keycard it pays its weapons once, each stamped with a book serial that names the thief,
 //! and files the loud report. It pays again only after a police repair, the loot cooldown and

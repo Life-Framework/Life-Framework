@@ -2,7 +2,6 @@
 // LF_Hideout.ApplyAll keeping the live held ground (a site with no row) failed `[LFTEST] FAIL persist/held-ground-legacy`,
 // `- the site loads unheld (version 33 load 1) (expected '', got '<org id>')`, `- the site loads with no points
 // (version 23 load 1) (expected 0, got 30)`. Restored; green.
-// tier: PERSISTENCE
 //! #751: a save from before the "heldground" payload (the version before it, and version 23, the e2e
 //! legacy save) has no held-ground rows. Each loads, twice, with every site unheld (no holder, no hold
 //! time, no points) and the "hideout" lease and lock unchanged. The test puts back the stores it found.

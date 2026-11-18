@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_ChopShopSteal` with the payout expectation set to 301 failed `- the worker is paid 30 percent of the S105's 1000 (expected 301, got 300)`. Restored; green.
-// tier: WORLD
 //! The chop shop loop at the real bench (#601): a car nobody stole is refused with the line that says
 //! what counts as hot, and is left untouched (not locked, not started on a job, still there). The same
 //! car marked stolen (what a hotwire does) loads, takes its work, pays the worker and is deleted.

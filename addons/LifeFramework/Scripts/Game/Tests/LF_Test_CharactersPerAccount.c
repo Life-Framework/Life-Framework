@@ -7,7 +7,6 @@
 // refused (expected '#LF-CharSel_Refused', got '')`, `- the application is filed under the account uid
 // (expected '00bbbddd-...', got '01a1c860-...')`, `- slot 2 is on the roster after approval`. Fixed; green.
 
-// tier: LOGIC
 //! #331: with characters.maxPerAccount = 2 an account holds two characters. Slot 1 is keyed by the
 //! account uid, slot 2 by its own id; wanted level and police rank belong to the character; the
 //! active character's key is what LF_Utils.GetPlayerUID resolves to, and that key finds the account.

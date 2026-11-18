@@ -3,7 +3,6 @@
 //! comms/phone-voice-band (#147): a call's frequency is inside the private band, never its idle
 //! bottom, and the next call gets the next channel; a call's key changes with its salt; the
 //! shipped transport is the line at each telephone.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_PhoneVoiceBand : LF_Test
 {

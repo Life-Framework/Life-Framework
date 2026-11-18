@@ -30,7 +30,6 @@ class LF_Test_SystemsPackStub : LF_ConfigPackSource
 //! read action and the police loadout leaves the pager out. Turned on again, all of it comes back.
 //! A pack overlay turns the pager off and the owner turns it back on; the config stream carries
 //! the server's answer to a client.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SystemsWorld : LF_Test
 {

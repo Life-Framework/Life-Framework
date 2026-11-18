@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_Placement`: Judge checking the blocker before the step failed `too steep wins over a blocker (expected 2, got 3)`; restored, green. Observed 2026-11-14 for the #1026 review: ProposalProblem without its horizontal check failed `a forward straight up is refused`; restored, green.
-// tier: LOGIC
 //! The placement foundation's verdict (#927, #928): a probe maps to valid or to one invalid reason,
 //! in a fixed order (no ground, then too steep, then blocked), and every invalid verdict carries a
 //! reason for the log and the refusal while a valid one carries none. The confirm (#1026) takes a

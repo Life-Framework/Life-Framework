@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `toolsi test --no-build --red LF_Test_DrinkImpairmentTable` (RedProof skips the overlay apply): failed `add: the overlay's new prefab has a row`, `two core rows plus one added (expected 3, got 2)` and `after the overlay the added row wins over the component`; green without the hook.
-// tier: LOGIC
 //! #2002: a drink's impairment values come from a table keyed by prefab that packs overlay. A row
 //! the core table has is read, a pack overlay patches one row and adds another, a drink with no row
 //! keeps the component's values, and a row naming a prefab that does not load is skipped.

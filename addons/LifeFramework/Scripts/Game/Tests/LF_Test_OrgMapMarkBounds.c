@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18, cli test --no-build --only LF_Test_OrgMapMarkBounds on the unfixed Add: FAIL, 10 assertions (icon and colour at list size and all four out-of-map edges accepted, got serials 1-8); green with the fix.
-// tier: WORLD
 //! map/org-mark-bounds (#2513, card M12 follow-up): an org mark is refused when its icon or colour index
 //! is past the placed-marker config's lists (LF_MapMarkerConfig.conf: an index off the end draws a white
 //! circle on every member's map) or its position is outside the map, not only outside the int16 wire

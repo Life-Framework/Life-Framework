@@ -3,7 +3,6 @@
 // GUID, and run `tools\cli test --tier all`; the resource comes back invalid and
 // the ctx.True assertion fails.
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_IDCard : LF_Test
 {

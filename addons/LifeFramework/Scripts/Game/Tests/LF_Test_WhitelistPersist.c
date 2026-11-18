@@ -2,7 +2,6 @@
 // that was not saved" to ctx.True failed it with `[LFTEST] FAIL whitelist/persist`,
 // `- a restart still refuses a uid that was not saved`. Restored; green.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_WhitelistPersist : LF_Test
 {

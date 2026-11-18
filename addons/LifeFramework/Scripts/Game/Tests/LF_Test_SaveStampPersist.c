@@ -3,7 +3,6 @@
 // wrote the save (load 1) (expected '1.8.0.13', got 'unknown')` and `- the save is from another build than the
 // running one (load 1)`; dropping `s_bLoadDamaged = true` in ReportLoad failed `- the damaged load pauses
 // autosave`. Restored; green. The restart path is `tools\cli wt e2e <slug> --old-build`.
-// tier: PERSISTENCE
 //! #980 through the real save path ("buildstamp" payload, save version 32). A save written by
 //! another game build (a faked older stamp) loads whole: the bank balance in the same save comes
 //! back, the stamp names the old build, the load is not damaged, and loading twice changes nothing.

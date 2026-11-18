@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 with `--red` (RED-OK, same run): the hook skips LF_PoliceTrialSweep.EndIfExpired, so 'the sweep ends the officer's shift', 'an expired trial ends the shift' and 'the desk clock-out paid the shift' fail. Green with the fix.
-// tier: WORLD
 //! police/trial-expiry-clock-out (#2416): the sweep takes an officer whose trial ran out off duty
 //! through the duty desk's own clock-out: the shift is paid, the police gear is stored and the
 //! civilian inventory comes back.

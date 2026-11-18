@@ -1,5 +1,4 @@
 // red-proof: 2026-11-15, cli test --no-build --only LF_Test_ServerPerfLog failed before LF_ServerPerfLog.c existed (scripts do not compile), then passed=1 failed=0; `--red` printed RED PROOF OK (the format and gate acts are skipped, the line and fire checks fail).
-// tier: LOGIC
 //! ops/server-perf-log (#1452): the once-a-minute `[LFDebug:Perf] players=N fps=F frameMs=M entities=E`
 //! line. The formatter turns a fixed sample into the exact line, and the interval gate fires once
 //! per 60 s of fed time, never per frame and never as a burst after a long stall.

@@ -2,7 +2,6 @@
 // dropping the inviter check (`user.m_iOfferFromPlayerId == targetPlayerId`) from LF_OrgRules.ModeFor
 // failed `[LFTEST] FAIL org/invite-role`, `- the invitee facing someone else is offered nothing (expected 0, got 3)`.
 // Restored; green.
-// tier: LOGIC
 //! M1-17 offer side: which `org_invite` entry a pair sees (invite only with the rank, join only
 //! from the one who offered, remove never the founder), the slot registration, and the ledger page.
 [LF_TestInfo(LF_TestTier.LOGIC)]

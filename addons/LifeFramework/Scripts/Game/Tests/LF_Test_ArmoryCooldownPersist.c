@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with "armorykits" not registered and the DrawAt gates off (log test-20261117-224005): FAIL "armorykits is a registered payload", "the refusal names the cooldown". Restored: green.
-// tier: PERSISTENCE
 //! police/armory-cooldown-persist (#2416): an officer's 2 h armory cooldown and the serials still out
 //! are saved in the "armorykits" payload, come back on load (idempotent), and hold across a clock-out.
 //! Across a restart (`tools\cli wt e2e`): every non-reload run books one e2e officer's kit; the

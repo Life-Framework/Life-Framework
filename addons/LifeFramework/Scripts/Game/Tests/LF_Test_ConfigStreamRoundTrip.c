@@ -8,7 +8,6 @@
 //! and applied on a client that has only the shipped values, give the client the same values in
 //! the same order (every rule field, the defaults and the extra prefabs), so the client's resolver
 //! prices an apple at the owner's price. With no owner file, applying the stream changes nothing.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigStreamRoundTrip : LF_Test
 {

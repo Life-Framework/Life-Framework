@@ -2,7 +2,6 @@
 // check in LF_Garage.CanPark skipped failed it with `- park refuses a seated player`
 // (`SUMMARY tier=only passed=0 failed=4 total=4`, roadmap/garage among them). Restored; green.
 
-// tier: LOGIC
 //! Park rules at the garage: the owner, on foot, at a garage.
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Roadmap_Garage : LF_Test

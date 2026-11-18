@@ -1,6 +1,5 @@
 // red-proof: 2026-11-16, cli test --no-build --red LF_Test_PlaceLiveState: RED-OK (RedProof()
 //   registers the state-2 place under no list, so "does not register under [0]" fails). Green without it.
-// tier: WORLD
 //! places/live-state: a place of a map state the header does not list stays dark (#2208, D14).
 //! Two fixture places, states 0 and 2, under a header that lists only state 0: LF_Places finds the
 //! state-0 place and nothing for the state-2 one; once state 2 is listed both are found. A place

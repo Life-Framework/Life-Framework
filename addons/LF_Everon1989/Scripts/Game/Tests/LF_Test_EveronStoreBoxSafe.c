@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_EveronStoreBoxSafe`: RED PROOF OK (RedProof() skips LF_Bank.Rob); failed "one bag spills (expected 1, got 0)" and "the bag holds the shop's takings (expected 120, got 0)". Green without the hook (pack leg).
-// tier: WORLD
 //! crime/store-box (#2331): a shop till has a `store_box` safe beside it, set up with the safe-types
 //! PR's type. Under the Everon 1989 header (the pack leg) the pack grid cell `store-box` places a till
 //! and a LF_StoreBox next to it. The box is a lockable heist target of the store_box type, it is
