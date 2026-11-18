@@ -10075,6 +10075,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Stand up"
      Comment "F-key action on the seat you are sitting on: stand up (#982)."
     }
+    CustomStringTableItem "{E90742664100610A}" {
+     Id "LF-SiteFlag_Unclaimed"
+     Target_en_us "Unclaimed"
+     Comment "Painted board on a contested site's flag pole when no organisation holds the site."
+    }
     CustomStringTableItem "{134044FE4B970260}" {
      Id "LF-SpawnHub_Close"
      Target_en_us "Close"
