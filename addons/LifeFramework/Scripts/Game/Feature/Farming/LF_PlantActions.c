@@ -29,6 +29,12 @@ class LF_PlantAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	LF_EPlantActionMode GetMode()
+	{
+		return m_eMode;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
 		return user && LF_Systems.IsEnabled(LF_FarmPlots.SYSTEM);
