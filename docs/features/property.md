@@ -30,8 +30,8 @@
 
 ### Saint-Philippe plot signs — `LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Plots_saint-philippe.layer` (2026-11-18, #2936)
 - 🟡 The four free plots of the scout dossier (p1 to p4) each carry an `LF_PlotSign.et` on the island, keys
-  `saint-philippe.p1` to `.p4`, priced by the pack overlay `Configs/Property/LF_Property_Everon1989.conf` (6000, 5000,
-  4500, 3500; tier `cottage`), which the header lists. The signs rest on the terrain (contact gap under 1 mm). Proof:
+  `saint-philippe.p1` to `.p4`, priced by the pack overlay `Configs/Property/LF_Property_Everon1989.conf` (4500, 4000,
+  3500, 2800; tier `cottage`), which the header lists. The signs rest on the terrain (contact gap under 1 mm). Proof:
   `everon/plot-prices` (pack leg), `look contact place:saint-philippe/plots`.
 
 ### Plot purchase — `Feature/Property/LF_PlotComponent.c` (2026-11-18, #2649, spec #756)
