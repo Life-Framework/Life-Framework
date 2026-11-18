@@ -135,3 +135,11 @@
   buys omits the price sentence.
 - ✅ A finished process shows what came out (`Iron bar x1. The trader pays $50 for Iron bar.`), one toast per action.
 - ⚠️ The server builds the sentence, so item names are translated on the server; a dedicated server is a manual check.
+
+### Mining chain reagent items (#3230, epic #3206)
+- 🧪 Three carriable items for the mining chains, named with `LF-Item_*` keys in the core table: coal
+  (`Prefabs/Resources/Mining/CoalLump.et`, 0.8 kg, the vanilla `Clutter/Coal` lump mesh; the repo's `Coal.xob`
+  has no baked textures and renders as a checkerboard), limestone (`Prefabs/Resources/Mining/Limestone.et`,
+  4 kg, a vanilla concrete-fragment mesh, about 10 fill a backpack so stone needs a truck) and the acid carboy
+  (`Prefabs/Items/Resources/AcidCarboy.et`, 8 kg, a two-handed load on the vanilla jerrycan mesh). They are items
+  only: no node, recipe, shop or buyer row yet (the chain cards D2, D3, D4 add those). Test `mining/reagent-items`.
