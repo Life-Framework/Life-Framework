@@ -30,7 +30,7 @@ class LF_Test_LockerPersist : LF_Test
 
 		int since = LF_PersistenceComponentSerializer.PayloadSinceVersion("lockers");
 #ifdef LF_E2E_LOAD_BOOT
-		if (LF_SaveStamp.BootSaveVersion() < since)
+		if (!LF_E2E.SaveHas("lockers"))
 		{
 			ctx.False(LF_LockerBank.IsRenting(E2E_SITE, E2E_KEY), "a save older than the lockers payload loads no rental");
 			return;

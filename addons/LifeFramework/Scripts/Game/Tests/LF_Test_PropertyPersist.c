@@ -31,7 +31,7 @@ class LF_Test_PropertyPersist : LF_Test
 		int since = LF_PersistenceComponentSerializer.PayloadSinceVersion("properties");
 #ifdef LF_E2E_LOAD_BOOT
 		// --legacy-save and --pre-move load a save older than the "properties" payload: it has no rows.
-		if (LF_SaveStamp.BootSaveVersion() < since)
+		if (!LF_E2E.SaveHas("properties"))
 		{
 			ctx.True(LF_Properties.Get(E2E_PLOT) == null, "a save older than the properties payload loads no property row");
 			return;

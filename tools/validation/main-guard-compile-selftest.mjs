@@ -90,7 +90,7 @@ check(mg.compileVerdict(1, "validate-scripts: FAILED - Enforce Script does not c
   check(/shouldRun\(s, s\.lastCompiled/.test(loop), "worker: stage 2 only on a compiled-ok head");
   check(loop.indexOf("readState(root).request") > 0 && loop.indexOf("readState(root).request") < loop.indexOf("compileHead("), "worker: a requested check (main-guard check <sha>) runs before the head's compile");
   check(loop.includes("checkHead(root, dir, req)"), "worker: the requested commit gets stage 2 on exactly that sha");
-  check(/revertRefusal\(b\.culprit, readState\(root\), \{ step: step\.name \}\)/.test(w), "worker: stage 2 refusal knows the step");
+  check(/revertRefusal\(b\.culprit, readState\(root\), \{ step: step\.name, needsSkip \}\)/.test(w), "worker: stage 2 refusal knows the step");
 }
 
 if (failed) process.exit(1);

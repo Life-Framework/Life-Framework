@@ -116,11 +116,8 @@ class LF_Test_VehicleCargoPersist : LF_Test
 	static void VerifyE2E(LF_TestContext ctx, IEntity payer)
 	{
 		// --pre-move: a ref build from before #2809 seeded no cargo car, so there is nothing to check.
-		if (LF_VehicleOwnership.GetOwner(E2E_ID).IsEmpty())
-		{
-			LF_Debug.Info("Vehicle", string.Format("e2e restart: skipped the cargo check, the save (version %1) has no %2 (written by a build before #2809)", LF_SaveStamp.BootSaveVersion(), E2E_ID));
+		if (!LF_E2E.RequiresSeed("cargo car (#2809)", !LF_VehicleOwnership.GetOwner(E2E_ID).IsEmpty()))
 			return;
-		}
 
 		ctx.True(LF_VehicleOwnership.IsImpounded(E2E_ID), "e2e cargo car is at the impound after the restart");
 		ctx.True(LF_StorageSnapshot.Has(E2E_ID, LF_VehicleOwnership.SLOT_CARGO), "e2e cargo car's snapshot is back after the restart");
