@@ -8,6 +8,11 @@ enum LF_EIdentityFallback
 
 class LF_Utils : Managed
 {
+	//! Integer min, max and clamp for anything that can be large: unix seconds, millisecond stamps, money,
+	//! XP, running counters. Enforce `Math.Max`, `Math.Min` and `Math.Clamp` work in floats, so above
+	//! 2^24 (16,777,216) an int loses its low bits (unix 1800000480 comes back as 1800000512, #2787).
+	//! `validate-int-time-math` flags a time-named argument handed to them.
+
 	//------------------------------------------------------------------------------------------------
 	static int MaxInt(int a, int b)
 	{
@@ -20,6 +25,15 @@ class LF_Utils : Managed
 	{
 		if (a < b) return a;
 		return b;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! value limited to lo..hi without a float round trip. A reversed range (lo above hi) returns hi.
+	static int ClampInt(int value, int lo, int hi)
+	{
+		if (value < lo) value = lo;
+		if (value > hi) value = hi;
+		return value;
 	}
 
 	protected static ref array<IEntity> s_aNearbyEntities = {};

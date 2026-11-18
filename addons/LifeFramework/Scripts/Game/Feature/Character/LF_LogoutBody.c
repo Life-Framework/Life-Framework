@@ -152,8 +152,8 @@ class LF_LogoutBody
 	//! Tests and server tuning: the window in seconds; 0 turns the body off (the base game deletes it).
 	static void SetWindows(int seconds, int downedSeconds)
 	{
-		s_iWindowSeconds = Math.Max(0, seconds);
-		s_iDownedWindowSeconds = Math.Max(0, downedSeconds);
+		s_iWindowSeconds = LF_Utils.MaxInt(0, seconds);
+		s_iDownedWindowSeconds = LF_Utils.MaxInt(0, downedSeconds);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -174,7 +174,7 @@ class LF_LogoutBody
 	static int WindowFor(bool downed, int windowSeconds, int downedWindowSeconds)
 	{
 		if (downed)
-			return Math.Max(windowSeconds, downedWindowSeconds);
+			return LF_Utils.MaxInt(windowSeconds, downedWindowSeconds);
 
 		return windowSeconds;
 	}

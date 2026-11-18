@@ -64,7 +64,7 @@ class LF_PoliceContact
 		if (!s_mStampMs || uid.IsEmpty() || !s_mStampMs.Contains(uid))
 			return -1;
 
-		return Math.Max(0, (nowMs - s_mStampMs.Get(uid)) / 1000);
+		return LF_Utils.MaxInt(0, (nowMs - s_mStampMs.Get(uid)) / 1000);
 	}
 
 	//------------------------------------------------------------------------------------------------

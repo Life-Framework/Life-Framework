@@ -141,7 +141,7 @@ class LF_ArmoryKits
 			return cooldown;
 		}
 
-		return Math.Max(cooldown - elapsed, 0);
+		return LF_Utils.MaxInt(cooldown - elapsed, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------

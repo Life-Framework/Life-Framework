@@ -185,9 +185,9 @@ class LF_ChopShopRules
 
 		int counted = value;
 		if (cap > 0)
-			counted = Math.Min(value, cap);
+			counted = LF_Utils.MinInt(value, cap);
 
-		return Math.Clamp(counted * percent / 100, 0, counted);
+		return LF_Utils.ClampInt(counted * percent / 100, 0, counted);
 	}
 
 	//------------------------------------------------------------------------------------------------
