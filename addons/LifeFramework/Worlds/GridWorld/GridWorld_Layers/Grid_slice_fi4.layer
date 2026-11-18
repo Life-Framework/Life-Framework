@@ -1,0 +1,103 @@
+// Grid cell c11r5 for slice-fi4: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_slice_fi4_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 155 0 83
+}
+SCR_DestructibleEntity Grid_slice_fi4_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 160 0 83
+}
+SCR_DestructibleEntity Grid_slice_fi4_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 165 0 83
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_fi4_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 165 0 88
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_fi4_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 165 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_fi4_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 160 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_fi4_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 155 0 93
+ angleY 90
+}
+GenericEntity Grid_slice_fi4_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-fi4"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 154.2 0.505 83.6
+ angleY -90
+}
+GenericEntity Grid_slice_fi4_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "slice-fi4"
+  }
+ }
+ coords 154.3 0 85.5
+ angleY 90
+}
+GenericEntity Grid_slice_fi4_R0_1 : "{2F5749F913C9B23D}Prefabs/Props/Commercial/LF_FishCounter.et" {
+ coords 162.536 0.001 85
+ angleY -90
+}
+GenericEntity Grid_slice_fi4_R0_2 : "{B4D3E8205A917C6F}Prefabs/Props/Commercial/LF_Chandler.et" {
+ coords 162.536 0.001 91
+ angleY -90
+}
+PolylineShapeEntity Grid_slice_fi4_PondShape {
+ coords 158.5 0.3 89.2
+ IsClosed 1
+ Points {
+  ShapePoint "{5A3C1E7F92B4D608}" {
+   Position -3 0 0
+  }
+  ShapePoint "{5A3C1E7F92B4D609}" {
+   Position -2.1 0 -2.1
+  }
+  ShapePoint "{5A3C1E7F92B4D60A}" {
+   Position 0 0 -3
+  }
+  ShapePoint "{5A3C1E7F92B4D60B}" {
+   Position 2.1 0 -2.1
+  }
+  ShapePoint "{5A3C1E7F92B4D60C}" {
+   Position 3 0 0
+  }
+  ShapePoint "{5A3C1E7F92B4D60D}" {
+   Position 2.1 0 2.1
+  }
+  ShapePoint "{5A3C1E7F92B4D60E}" {
+   Position 0 0 3
+  }
+  ShapePoint "{5A3C1E7F92B4D60F}" {
+   Position -2.1 0 2.1
+  }
+ }
+ {
+  LakeGeneratorEntity Grid_slice_fi4_Pond : "{1F2254A7C9C8AA57}Prefabs/WEGenerators/Water/Lake/LG_Lake_01.et" {
+  }
+ }
+}
+GenericEntity Grid_slice_fi4_PondSpot : "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingSpot.et" {
+ components {
+  LF_FishingSpotComponent "{4A0F573235D2E074}" {
+   m_sId "grid-pond"
+   m_sTable "pond"
+   m_fRadius 5
+   m_iStock 6
+   m_fRegrowSeconds 60
+  }
+ }
+ coords 158.5 0.3 89.2
+}

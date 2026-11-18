@@ -6,8 +6,13 @@
 //   4. a shipped PR (old "Closes #N" or new "Refs #N") leaves its issue OPEN with in-dev, or
 //      needs-playtest when the PR lists manual steps; a PR that is not merged / a verified issue is left alone;
 //   5. a failed issue becomes `regression` and reopens; --confirm refuses while its PR is in range;
-//   6. `--revert` reverts one merge on main; `wt ship --closes` text becomes "Refs".
-// red-proof: with the ancestor check removed from promotionPlan it printed "moving stable backwards was
+//   6. `--revert` reverts one merge on main; `wt ship --closes` text becomes "Refs";
+//   7. `--confirm` never verifies an issue labelled `regression` or one whose PR a later PR in the range reverted
+//      (a re-land puts it back), and groups the label edits: issues with the same change share one edit call (#2980).
+// red-proof: with the `regression` skip removed from verifyIssues it printed "confirm verified a regression-labelled issue";
+//   with the reverted-issue skip removed it printed "confirm verified an issue whose PR was reverted";
+//   with each issue edited alone it printed "label edits were not grouped";
+//   (older:) with the ancestor check removed from promotionPlan it printed "moving stable backwards was
 // accepted"; with planMerged's reopen forced false it printed "legacy Closes: issue 101 stayed closed".
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -65,6 +70,15 @@ function fakeGh(prs, issues) {
       for (const x of l) if (!issues[n].labels.includes(x)) issues[n].labels.push(x);
     },
     async removeLabels(n, l) { issues[n].labels = issues[n].labels.filter((x) => !l.includes(x)); },
+    editCalls: [],
+    // One call edits many issues (gh issue edit n1 n2 ...).
+    async editLabels(nums, add, remove) {
+      this.editCalls.push({ nums: [...nums], add: [...add], remove: [...remove] });
+      for (const n of nums) {
+        await this.removeLabels(n, remove);
+        if (add.length) await this.addLabels(n, add);
+      }
+    },
     async close(n) { issues[n].state = "closed"; },
     async reopen(n) { issues[n].state = "open"; },
   };
@@ -214,6 +228,40 @@ try {
   // ---- 5b. fail after the fact
   res = await mute(() => cmdPromote(work, ["--fail", "103"], { gh, guardStatus: () => "green" }));
   check(issues[103].state === "open" && issues[103].labels.includes("regression") && !issues[103].labels.includes("verified"), `--fail: ${issues[103].state} ${issues[103].labels}`);
+
+  // ---- 7. --confirm skips a regression-labelled issue and an issue whose PR was reverted; batches label edits (#2980)
+  {
+    const m14 = mergePr(14, "d.txt");
+    mergePr(16, "e.txt"); mergePr(17, "f.txt"); mergePr(18, "g.txt"); mergePr(19, "h.txt");
+    const m20 = mergePr(20, "i.txt");
+    sh(work, "fetch", "origin");
+    const merged = (n, title, body) => { prs[n] = { number: n, title, body, mergedAt: "t" }; };
+    merged(14, "Two issues", "Refs #104, #105, #108");
+    merged(16, "Gets reverted", "Refs #106");
+    merged(17, "Revert 16", "Reverts #16");
+    merged(18, "Reverted, then re-landed", "Refs #107");
+    merged(19, "Revert 18", "Reverts #18");
+    merged(20, "Re-land 18", "Refs #107");
+    issues[104] = { state: "open", labels: ["scope", "in-dev", "regression"] }; // failed verification, fix not landed
+    issues[105] = { state: "open", labels: ["scope", "in-dev"] };
+    issues[106] = { state: "open", labels: ["scope", "in-dev"] };             // its PR was reverted in the range
+    issues[107] = { state: "open", labels: ["scope", "in-dev"] };             // reverted, then re-landed by PR 20
+    issues[108] = { state: "closed", labels: ["scope", "verified"] };         // already verified: no write at all
+    gh.editCalls.length = 0;
+    res = await mute(() => cmdPromote(work, ["--to", m20.slice(0, 12), "--confirm"], { gh, guardStatus: () => "green" }));
+    check(res.code === 0, `confirm over regression/revert issues failed: ${res.out}`);
+    check(sh(origin, "rev-parse", "stable") === m20, "stable not at #20 after the regression confirm");
+    check(issues[104].state === "open" && issues[104].labels.includes("regression") && !issues[104].labels.includes("verified"), `confirm verified a regression-labelled issue: ${issues[104].state} ${issues[104].labels}`);
+    check(/#104: labelled regression/.test(res.out), `no skip line for #104: ${res.out}`);
+    check(issues[106].state === "open" && !issues[106].labels.includes("verified"), `confirm verified an issue whose PR was reverted: ${issues[106].state} ${issues[106].labels}`);
+    check(/#106: its PR was reverted/.test(res.out), `no skip line for #106: ${res.out}`);
+    check(issues[105].state === "closed" && issues[105].labels.includes("verified") && !issues[105].labels.includes("in-dev"), `105 after confirm: ${issues[105].state} ${issues[105].labels}`);
+    check(issues[107].state === "closed" && issues[107].labels.includes("verified"), `a re-landed issue was not verified: ${issues[107].state} ${issues[107].labels}`);
+    check(issues[108].state === "closed" && issues[108].labels.join() === "scope,verified", "an already verified issue was rewritten");
+    check(gh.editCalls.length === 1 && gh.editCalls[0].nums.join() === "105,107", `label edits were not grouped: ${JSON.stringify(gh.editCalls)}`);
+    // markRegression's own labels stay out of the group; a --fail on an in-range issue is still refused (case 5)
+    check(m14 !== m20, "scratch PRs did not advance main");
+  }
 
   // ---- 6. revert one merge on main
   sh(work, "fetch", "origin");

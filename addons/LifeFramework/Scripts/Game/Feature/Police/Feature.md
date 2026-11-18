@@ -127,3 +127,4 @@ weapons from the nearest wanted player within 5 m.
 - **Data:** owner section `disconnect` (`LF_DisconnectConfig`, shipped values in `CreateDefault`, no `.conf`); bus event `LF_OnFlaggedLogout`; incident kind `logout`; string `LF-IncidentGm_Kind_logout`. Nothing new is persisted: the sentence is the jail payload.
 - **Proof:** `disconnect/rules`, `disconnect/jail`, `disconnect/cuffed`; two-client session (client 2 cuffed, leaves, rejoins in the cell).
 
+- **Shop bell (2026-11-16):** the general store till names the kind `shopbell` (a 1989 shop burglar bell, `Alarm_Robbery_ShopBell.acp`, `LF_SiteAlarm_ShopBell[Loud].et`); the core default kind for a till stays `store`. Test `police/store-alarm`.

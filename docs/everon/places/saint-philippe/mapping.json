@@ -105,6 +105,40 @@
         "lead-approved: the fuel station on the south-east road in (4617, 10659); b97 is its small kiosk building"
       ]
     },
+    "market": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "House_Village_E_1L03t (house), 663 m2, 15.2 m from the scout centre, the building nearest the middle of the square",
+        "D10 pick (#3078): street furniture on the b01 frontage, the trader's stall and the chalk price board; the kit sets them against the kerb, clear of the board slot's kerb (b38)"
+      ]
+    },
+    "chess": {
+      "building": "b03",
+      "shared": true,
+      "why": [
+        "PubVillage_E_2L01_V8_ProgresBar (pub), 304.3 m2, 28.7 m from the scout centre, interior yes",
+        "D10 pick (#3078): street furniture on the pub's frontage, a chess table and two seats where the cafe's regulars sit out; the kit sets it against the kerb"
+      ]
+    },
+    "range": {
+      "building": "b95",
+      "alternatives": [
+        {
+          "building": "b102"
+        },
+        {
+          "building": "b89"
+        },
+        {
+          "building": "b116"
+        }
+      ],
+      "why": [
+        "Shed_02_line (shed), 18.5 m2, 142.4 m south of the scout centre, interior yes",
+        "D10 pick (#3078): the outbuilding at the south edge, beside the b96 barn and the proposer's first choice; the lane's firing direction and what lies behind the targets are the range card's question (#3081)"
+      ]
+    },
     "fence": {
       "building": "b33",
       "alternatives": [

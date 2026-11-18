@@ -1,5 +1,4 @@
 // Warns (never fails) when this checkout's gitignored resourceDatabase.rdb does
-// inputs: always
 // not register every .meta in the addon: the server would refuse those
 // resources with `Wrong GUID/name`. In a worktree, test/dev/serve/session/e2e
 // refresh it on their own (`tools\\cli rdb` does it now). Fails only when the
@@ -7,6 +6,8 @@
 // resources (tools/lib/addons.mjs rdbAddons).
 // red-proof: with missingFrom() matching paths case-sensitively the selftest
 // printed "folder casing (Data/ vs data/) counted missing" and exited 1.
+// inputs: always
+// (global: compares the gitignored resourceDatabase.rdb with the .meta files (machine state, a warning))
 import { describeMissing, rdbFreshness, selftestRdbFresh } from "../lib/rdb-fresh.mjs";
 import { addonDir, rdbAddons, selftestAddons } from "../lib/addons.mjs";
 

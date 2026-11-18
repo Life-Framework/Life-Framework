@@ -30,11 +30,12 @@ tools\cli test --no-build --tier all                  # T2 only, once, at the en
 ## Ship
 ```
 tools\cli wt ship slice-<N> --refs <N> --body-file tmp\pr-body-slice-<N>.md --commit "<subject>"
-tools\cli slice record <N> --model sonnet --outcome merged --gate pass|fail --minutes <m>
+tools\cli slice record <N> --model sonnet --outcome merged --gate pass|fail
 ```
 - `--commit` commits anything left (git add -A) first; without it a dirty worktree is refused.
 - Ship merges `origin/main` itself and regenerates a conflicted test registry or language conf. Only a conflict in
   your own files comes back to you.
+- `slice record` computes minutes from the worktree's creation time; do not estimate them. `--minutes N` is kept only as `agentMinutes` on the row.
 - `slice record --outcome merged` with the PR still open records `shipped` and exits 0. Then stop: never poll
   `gh pr checks`, `Wait-Process` or sleep for the merge; auto-merge and the main guard finish it.
 Body: what changed, the observed red and green lines, `## Manual testing` for anything automation cannot reach, and the

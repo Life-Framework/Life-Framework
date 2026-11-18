@@ -37,3 +37,9 @@ on the bed is the state, and the prompt says it in words.
 - Seeds bought, not free: a farm stand or general store line.
 - Care: watering or weeds that slow growth; spoil if left ripe too long.
 - Jobs and levels: farmer pay per harvest through `LF_JobManager` scope rewards.
+
+## Free plants on a dedicated server (#2819)
+
+`LF_PlantReplication` (carrier table, three broadcast RPCs and the join snapshot on `LF_GameModeRoleplay`)
+tells clients each planted crop's id, crop, position and stage. The server draws nothing; each client keeps
+a mirror and draws one local stage mesh per row. Only a new plant, a stage change, a harvest or a clear sends.

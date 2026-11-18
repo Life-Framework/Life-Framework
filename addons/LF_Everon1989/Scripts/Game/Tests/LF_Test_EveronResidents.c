@@ -89,6 +89,16 @@ class LF_Test_EveronResidents : LF_Test
 			{
 				Resource prefab = Resource.Load(def.m_sPrefab);
 				ctx.True(prefab && prefab.IsValid(), id + " prefab loads: " + def.m_sPrefab);
+
+				// A resident is a real character, so a `sit` or `loiter` line can act (#2948): a static NPC body has no
+				// character controller and would stand with a warning.
+				IEntity body;
+				if (!RedProof())
+					body = LF_Utils.SpawnEntityPrefab(def.m_sPrefab, "0 -50 0");
+
+				ctx.True(SCR_ChimeraCharacter.Cast(body) != null, id + " spawns as a real character (can sit and lean)");
+				if (body)
+					SCR_EntityHelper.DeleteEntityAndChildren(body);
 			}
 
 			// Home and work are kinds this pack's places register (or its place templates name).

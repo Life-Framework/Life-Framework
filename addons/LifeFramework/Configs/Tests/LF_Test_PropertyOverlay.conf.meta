@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5E2A9C41D07B3F67}Configs/Tests/LF_Test_PropertyOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

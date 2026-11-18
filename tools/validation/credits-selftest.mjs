@@ -1,5 +1,6 @@
 // Self-test for the credits generator (#481): a row in docs/credits.md reaches the generated outputs,
 // and a hand-edited generated file no longer matches.
+// inputs: imports
 import assert from "node:assert/strict";
 import { dataFile, entries, parse, patchSt } from "../commands/credits.mjs";
 

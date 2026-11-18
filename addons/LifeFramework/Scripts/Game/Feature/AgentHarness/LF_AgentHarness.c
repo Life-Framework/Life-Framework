@@ -3059,7 +3059,7 @@ class LF_AgentHarness
 		while (cursor && cursor.GetParent())
 		{
 			string parentName = cursor.GetParent().GetName();
-			if (parentName == "Content" || parentName == "ListContent")
+			if (parentName == "Content" || parentName == "ListContent" || parentName == "BodyContent")
 				return cursor.GetName();
 			cursor = cursor.GetParent();
 		}
