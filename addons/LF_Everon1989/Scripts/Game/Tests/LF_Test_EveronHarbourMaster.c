@@ -1,11 +1,11 @@
-// red-proof: observed 2026-11-17 (#2692) with `tools\cli test --no-build --red LF_Test_EveronHarbourMaster`: RedProof() skips the spawn, so `the harbour master spawns` fails (RED-OK everon/harbour-master, 3 assertions). The first run before the caption fix also failed on one assertion. Green without the hook (pack leg, worlds=LF_Everon1989_Test).
+// red-proof: (#2740 sign-up check: without `m_sAction "JobSignUp"` on the reply the action assertion and `the player's job to PARCEL` fail; the hook's own red proof is LF_Test_DialogueJobSignUp.) Observed 2026-11-17 (#2692) with `tools\cli test --no-build --red LF_Test_EveronHarbourMaster`: RedProof() skips the spawn, so `the harbour master spawns` fails (RED-OK everon/harbour-master, 3 assertions). The first run before the caption fix also failed on one assertion. Green without the hook (pack leg, worlds=LF_Everon1989_Test).
 // tier: WORLD
 //! #2692 (M6 chapter 1, #2644; beat 3): under the Everon 1989 header (the pack leg of `tools\cli test`) the harbour
 //! master Marcel Roux is a dressed dock worker with a talk action, his dialogue id resolves through the pack's index
 //! overlay, and the dialogue has the `harbour.first_job` line (captions only, voice comes with #343) and a reply that
-//! takes the crate run on. The sign-up itself needs a core dialogue hook (`LF_DialogueHook_<name>` that calls
-//! `LF_PlayerJobComponent.SetJob`); none exists, so the take-the-job reply leads to the `harbour.go` line and the
-//! hook is the follow-up card named in the PR. Found by prefab, never by a town coordinate.
+//! takes the crate run on. The take-the-job reply runs the core `JobSignUp` dialogue hook with PARCEL (#2740) and
+//! leads to the `harbour.go` line; choosing it sets the player's job to PARCEL. Found by prefab, never by a town
+//! coordinate.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronHarbourMaster : LF_Test
 {
@@ -33,6 +33,42 @@ class LF_Test_EveronHarbourMaster : LF_Test
 		}
 
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #2740: the take-the-job reply runs the JobSignUp hook with PARCEL, and choosing it (the
+	//! server running the reply's action) sets the player's job to PARCEL. The hook's own red proof is
+	//! `dialogue/job-sign-up` (LF_Test_DialogueJobSignUp); this one fails without the reply's action or param.
+	protected void SignUpCheck(LF_TestContext ctx, LF_DialogueOption take)
+	{
+		ctx.EqualStr("JobSignUp", take.m_sAction, "the take-the-job reply signs the player up through the JobSignUp hook");
+		ctx.EqualStr("PARCEL", take.m_sParam, "the take-the-job reply names the parcel job");
+
+		LF_DialogueHook hook = LF_DialogueHook.Find(take.m_sAction);
+		ctx.NotNull(hook, "the reply's hook has a class");
+		IEntity player = LF_ExploitGuardsWorldFixture.SpawnCharacter(ctx, "100 0 -60", false);
+		if (!hook || !player)
+		{
+			LF_ExploitGuardsWorldFixture.Despawn(player);
+			return;
+		}
+
+		string uid = "harbour-master-signup-uid";
+		LF_Utils.SetUidForTests(player, uid);
+		LF_PlayerJobComponent jobs = LF_Component<LF_PlayerJobComponent>.Find(player);
+		ctx.NotNull(jobs, "the player has a job component");
+		if (jobs)
+		{
+			ctx.Equal(LF_EJobType.UNEMPLOYED, jobs.GetJob(), "the player is unemployed before taking the job");
+			array<string> spoken = {};
+			hook.Run(player, null, take.m_sParam, spoken);
+
+			ctx.Equal(LF_EJobType.PARCEL, jobs.GetJob(), "choosing the take-the-job reply sets the player's job to PARCEL");
+		}
+
+		LF_Utils.SetUidForTests(null, "");
+		LF_CivilianJob.ForgetCareer(uid);
+		LF_ExploitGuardsWorldFixture.Despawn(player);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -133,6 +169,7 @@ class LF_Test_EveronHarbourMaster : LF_Test
 				takes = true;
 				string reply = WidgetManager.Translate(take.m_sTextKey);
 				ctx.True(reply != take.m_sTextKey && !reply.IsEmpty(), "the take-the-job reply has its text");
+				SignUpCheck(ctx, take);
 			}
 		}
 
