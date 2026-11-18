@@ -66,6 +66,7 @@ class LF_Plants
 	protected static ref map<string, EntityID> s_mVisuals;
 	protected static ref map<string, int> s_mShownStage;
 	protected static ref LF_CropCatalogue s_CatalogueOverride;
+	protected static bool s_bNoCatalogueForTest;
 	protected static float s_fClock;
 	protected static int s_iNextId;
 	protected static bool s_bTicking;
@@ -107,6 +108,7 @@ class LF_Plants
 		s_mVisuals = null;
 		s_mShownStage = null;
 		s_CatalogueOverride = null;
+		s_bNoCatalogueForTest = false;
 		s_fClock = 0;
 		s_iNextId = 0;
 	}
@@ -119,21 +121,39 @@ class LF_Plants
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Tests: act as if the crop catalogue failed to load (true) until ResetStatics.
+	static void SimulateNoCatalogue(bool missing)
+	{
+		s_bNoCatalogueForTest = missing;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The catalogue plants are read from: a test's, else the config one; null when it failed to load.
+	protected static LF_CropCatalogue Catalogue()
+	{
+		if (s_bNoCatalogueForTest)
+			return null;
+
+		if (s_CatalogueOverride)
+			return s_CatalogueOverride;
+
+		return LF_CropCatalogue.Get();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static LF_CropRow FindCrop(string cropId)
 	{
-		if (s_CatalogueOverride)
-			return s_CatalogueOverride.FindIn(cropId);
+		LF_CropCatalogue catalogue = Catalogue();
+		if (!catalogue)
+			return null;
 
-		return LF_CropCatalogue.Find(cropId);
+		return catalogue.FindIn(cropId);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	static LF_CropRow FindCropBySeed(ResourceName seed)
 	{
-		LF_CropCatalogue catalogue = s_CatalogueOverride;
-		if (!catalogue)
-			catalogue = LF_CropCatalogue.Get();
-
+		LF_CropCatalogue catalogue = Catalogue();
 		if (!catalogue)
 			return null;
 
@@ -614,13 +634,19 @@ class LF_Plants
 
 	//------------------------------------------------------------------------------------------------
 	//! Persistence seam: the saved plants replace the live ones, set on the ground under them.
-	//! Rows with no id or an unknown crop are dropped and logged. Idempotent: a second apply converges.
+	//! Rows with no id or an unknown crop are dropped and logged. With no crop catalogue loaded every row
+	//! is kept unchecked (as reputation keeps its rows with no config), so a broken config never wipes
+	//! the plants from the next save. Idempotent: a second apply converges.
 	//! \return How many plants were kept.
 	static int ApplyAll(array<ref LF_PlantRow> records)
 	{
 		ClearAllVisuals();
 		s_mPlants = new map<string, ref LF_PlantRow>();
 		int now = Now();
+		bool haveCatalogue = Catalogue() != null;
+		if (!haveCatalogue && records && !records.IsEmpty())
+			LF_Debug.Error(FEATURE, string.Format("load: no crop catalogue, keeping %1 plant row(s) unchecked", records.Count()));
+
 		if (records)
 		{
 			foreach (LF_PlantRow record : records)
@@ -631,7 +657,7 @@ class LF_Plants
 					continue;
 				}
 
-				if (!FindCrop(record.m_sCropId))
+				if (haveCatalogue && !FindCrop(record.m_sCropId))
 				{
 					LF_Debug.Warn(FEATURE, string.Format("load dropped plant %1: crop %2 is not in the catalogue", record.m_sPlantId, record.m_sCropId));
 					continue;

@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_PlantHarvest,LF_Test_PlantPersist`: `RED PROOF OK`, the store read skipped failed `two plants after the load (load 2) (expected 2, got 0)`. Green with the read.
+// red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_PlantHarvest,LF_Test_PlantPersist`: `RED PROOF OK`, the store read skipped failed `two plants after the load (load 2) (expected 2, got 0)`. Green with the read. Review (2026-11-18): with ApplyAll dropping rows when no catalogue loads, `--only LF_Test_PlantPersist` failed `with no catalogue every saved plant is kept (expected 2, got 0)`; green with the keep.
 // tier: PERSISTENCE
 //! farming/plant-persist (#2664): the "plants" payload round trips rows {plantId, cropId, position,
 //! plantedAt, wateredAt, ownerKey} through the real store write and read, positions set on the ground;
@@ -35,6 +35,8 @@ class LF_Test_PlantPersist : LF_Test
 		LF_PlantRow back = LF_Plants.Find(E2E_ID);
 		if (LF_SaveStamp.BootSaveVersion() < since)
 		{
+			// The guard's pre-move e2e writes pass 1 with the build before this payload (#2812).
+			LF_Debug.Info(LF_Plants.FEATURE, string.Format("e2e restart: boot save version %1 predates plants (%2), skipping the plant check", LF_SaveStamp.BootSaveVersion(), since));
 			ctx.True(!back, "a save older than the plants payload loads no plant");
 			return;
 		}
@@ -122,6 +124,18 @@ class LF_Test_PlantPersist : LF_Test
 		// A second apply of the same rows on a live table makes no duplicate.
 		LF_Plants.ApplyAll(LF_Plants.ExportAll());
 		ctx.Equal(2, LF_Plants.Count(), "a second apply keeps two plants");
+
+		// A crop catalogue that failed to load keeps every saved row, so the next save does not lose them.
+		LF_Plants.ResetStatics();
+		LF_Plants.SimulateNoCatalogue(true);
+		array<ref LF_PlantRow> unchecked = {};
+		unchecked.Insert(Row("plant-persist-nocat-a", "1000 0 1000", -30, -30, "plant-persist-owner-a"));
+		unchecked.Insert(Row("plant-persist-nocat-b", "1003 0 1000", -30, -30, "plant-persist-owner-b"));
+		unchecked[1].m_sCropId = "plant-persist-no-such-crop";
+		ctx.Equal(2, LF_Plants.ApplyAll(unchecked), "with no catalogue every saved plant is kept");
+		ctx.Equal(2, LF_Plants.ExportAll().Count(), "with no catalogue the next save still carries them");
+		LF_Plants.ResetStatics();
+		LF_Plants.ApplyAll(rows);
 
 		// A save from the version before this payload holds no plants.
 		JsonSaveContext oldContext = new JsonSaveContext(false);
