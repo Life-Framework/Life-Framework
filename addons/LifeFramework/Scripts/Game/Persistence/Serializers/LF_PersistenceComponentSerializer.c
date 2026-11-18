@@ -36,7 +36,7 @@
 //! FORMAT. Binary save contexts are POSITIONAL: write order must equal read order. Version is
 //! written first. Accounts and bank are the prefix on every save, including version 1.
 //! RegisterPersistencePayloads is the only order after that prefix: survival, then organizations,
-//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation, orgwars, garageslots, plants, lockers. The written version is that list's length (57). Serialize walks the
+//! hideout, vehicles, jail, carried, progression, introductions, itemstate, wanted, jobsignups, tickets, incidents, ledger, crimerecord, fenceserials, incidentflags, evidencelocker, bills, chainstations, storestock, itemserials, farmplots, characters, storeunpaid, playtime, orgranks, joblevels, wantedlooks, idcards, caseboard, buildstamp, vehiclestate, heldground, itemstolen, convictions, firstspawns, racerecords, lastpos, hospitalrejoin, worldevents, mapknown, mapmarks, orgmarks, armorykits, houses, itemkeys, graceclock, jobruns, leaseidle, properties, placements, reputation, orgwars, garageslots, plants, lockers, tenancy. That list is frozen at 58 (LEGACY_COUNT); the store writes SECTIONED_FORMAT (#2841). Serialize walks the
 //! whole list. Deserialize walks the same list and stops at the version stored in the save.
 //! A version 1 save stops after survival (no organization payload). A version 2 save includes
 //! organizations and has no hideouts. A version 3 save includes hideouts and has no vehicles.
@@ -129,6 +129,8 @@
 //! A version 55 save includes the bought garage slots and has no planted crops (#2664): nothing is planted.
 //! A version 56 save includes the planted crops and has no locker rentals (#2659): every locker
 //! bank loads with nobody renting.
+//! A version 57 save includes the locker rentals and has no hideout tenancy rows (#2816): every
+//! lease loads as a base lease, none as captured ground.
 //! The list is FROZEN at LEGACY_COUNT (#2841): a new payload is an LF_SavePayload section in its own
 //! feature file, never an Insert here. Do not insert, append or reorder: existing saves are positional.
 //!
@@ -153,7 +155,7 @@
 class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 {
 	//! The frozen length of RegisterPersistencePayloads (#2841). Never raised again: new payloads are sections.
-	static const int LEGACY_COUNT = 57;
+	static const int LEGACY_COUNT = 58;
 	//! The version a sectioned save writes: the legacy payloads, then the sections (#2841).
 	static const int SECTIONED_FORMAT = 1000;
 
@@ -320,6 +322,7 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 		order.Insert("garageslots");
 		order.Insert("plants");
 		order.Insert("lockers");
+		order.Insert("tenancy");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1039,6 +1042,13 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			array<ref LF_LockerRentalRow> lockerRentalRows = LF_LockerBank.ExportAll();
 			context.Write(lockerRentalRows);
 			LF_Debug.Log("Persistence", string.Format("saved %1 locker rental(s)", lockerRentalRows.Count()));
+		}
+		else if (payload == "tenancy")
+		{
+			// Which hideout leases are captured contested ground (#2816): one row per captured site, by hideout id.
+			array<ref LF_HideoutTenancyRow> tenancyRows = LF_Hideout.ExportTenancy();
+			context.Write(tenancyRows);
+			LF_Debug.Log("Persistence", string.Format("saved %1 hideout tenancy row(s)", tenancyRows.Count()));
 		}
 		else
 		{
@@ -1888,6 +1898,20 @@ class LF_PersistenceComponentSerializer : ScriptedComponentSerializer
 			else
 			{
 				ReadFailed("locker rentals failed to read, the rentals stay as they were");
+			}
+		}
+		else if (payload == "tenancy")
+		{
+			// Runs after "hideout" in the same load. A version 1-57 save never reaches this payload: every lease is a base lease.
+			array<ref LF_HideoutTenancyRow> tenancyRows = new array<ref LF_HideoutTenancyRow>();
+			if (context.Read(tenancyRows))
+			{
+				int tenancyApplied = LF_Hideout.ApplyTenancy(tenancyRows);
+				LF_Debug.Info("Persistence", string.Format("applied %1 of %2 hideout tenancy row(s)", tenancyApplied, tenancyRows.Count()));
+			}
+			else
+			{
+				ReadFailed("hideout tenancy rows failed to read, every lease stays a base lease");
 			}
 		}
 		else

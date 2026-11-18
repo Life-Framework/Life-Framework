@@ -21,7 +21,7 @@ $ErrorActionPreference = "Stop"
 
 # The legacy payload list length at the #2841 switch. Raise it only if a positional payload that
 # predates the switch lands after it (and say so in the PR); never for a new payload.
-$FrozenLegacyCount = 57
+$FrozenLegacyCount = 58
 
 # A payload is its exact registered name (the string appended in
 # RegisterPersistencePayloads), lowercased. No prefix folding: `hideoutfoo` is

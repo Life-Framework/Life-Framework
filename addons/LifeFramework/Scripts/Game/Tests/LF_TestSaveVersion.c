@@ -8,5 +8,5 @@
 class LF_TestSaveVersion
 {
 	static const int CURRENT = 1000;
-	static const int LEGACY = 57;
+	static const int LEGACY = 58;
 }

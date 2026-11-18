@@ -2670,6 +2670,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Contraband"
      Comment "Toast title for contraband convoy messages"
     }
+    CustomStringTableItem "{3565B0AEE39851EE}" {
+     Id "LF-Contract_Busy"
+     Target_en_us "You already have a contract. Finish that one first."
+     Comment "Contract refusal (#2702): one contract at a time per character."
+    }
+    CustomStringTableItem "{00EEFD92187745AF}" {
+     Id "LF-Contract_Cooldown"
+     Target_en_us "Nothing for you right now. Come back later."
+     Comment "Contract refusal (#2702): the cooldown after the last contract is still running."
+    }
+    CustomStringTableItem "{874C1FFFA39D4B3B}" {
+     Id "LF-Contract_NoRun"
+     Target_en_us "The contract could not be tied to your run; it pays as an ordinary run."
+     Comment "Contract start (#2702): the run started but the contract did not bind. Should not happen."
+    }
+    CustomStringTableItem "{FED9A73448625D00}" {
+     Id "LF-Contract_NotAble"
+     Target_en_us "You are in no state to take on work."
+     Comment "Contract refusal (#2702): the player is dead or downed."
+    }
+    CustomStringTableItem "{49069B1064628566}" {
+     Id "LF-Contract_Unknown"
+     Target_en_us "That contract isn't on offer."
+     Comment "Contract refusal (#2702): the contract id has no row or no delivery job."
+    }
     CustomStringTableItem "{E83AB3CDE17F447B}" {
      Id "LF-Credits_1"
      Target_en_us "PROJECTS WE BUILD ON AND BORROW FROM"
@@ -10074,6 +10099,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sit_StandUp"
      Target_en_us "Stand up"
      Comment "F-key action on the seat you are sitting on: stand up (#982)."
+    }
+    CustomStringTableItem "{E90742664100610A}" {
+     Id "LF-SiteFlag_Unclaimed"
+     Target_en_us "Unclaimed"
+     Comment "Painted board on a contested site's flag pole when no organisation holds the site."
     }
     CustomStringTableItem "{134044FE4B970260}" {
      Id "LF-SpawnHub_Close"
