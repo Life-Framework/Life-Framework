@@ -61,6 +61,57 @@ class LF_DutyPay
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pure (#2874): how many unpaid seconds at newRate are worth `seconds` at oldRate, rounded up so
+	//! the shift is never paid less than its part at the old rank (over by under one second's pay).
+	//! Seconds at a rate of 0 are worth nothing. With newRate 0 the value cannot be carried, so the
+	//! seconds stay as they are.
+	static int CarrySeconds(int seconds, float oldRate, float newRate)
+	{
+		if (seconds <= 0 || oldRate <= 0)
+			return 0;
+
+		if (newRate <= 0 || oldRate == newRate)
+			return seconds;
+
+		float carried = seconds * oldRate / newRate;
+		return Math.Ceil(carried - 0.0001);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Before a rank change (#2874): the rate the account is paid at now. The caller has settled the
+	//! running duty clock, so the unpaid seconds are all from the old rank.
+	static float RateBeforeRankChange(LF_PlayerAccount account)
+	{
+		return RateForAccount(account);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After a rank change (#2874): the unpaid seconds earned at oldRate are restated at the new
+	//! rank's rate, so clock-out pays each part of the shift at the rank held during it.
+	//! \return The unpaid seconds now on the account.
+	static int AfterRankChange(LF_PlayerAccount account, float oldRate)
+	{
+		if (!account)
+			return 0;
+
+		int unpaid = account.GetUnpaidDutySeconds();
+		if (unpaid <= 0)
+			return 0;
+
+		float newRate = RateForAccount(account);
+		int carried = CarrySeconds(unpaid, oldRate, newRate);
+		if (newRate <= 0 && oldRate > 0)
+			LF_Debug.Warn("DutyPay", string.Format("%1: rank change to an unpaid rank; %2 unpaid s kept as they are", account.GetPersistentId(), unpaid));
+
+		if (carried == unpaid)
+			return unpaid;
+
+		account.SetUnpaidDutySeconds(carried);
+		LF_Debug.Info("DutyPay", string.Format("%1: rank change settled the shift: %2 unpaid s at rate %3 carried as %4 s at rate %5", account.GetPersistentId(), unpaid, oldRate, carried, newRate));
+		return carried;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Takes the account's unpaid duty seconds and returns the cash owed for them. The seconds
 	//! are zeroed, so a second call returns 0. A non-police account is owed nothing.
 	static int TakeShiftPay(LF_PlayerAccount account, float rate)

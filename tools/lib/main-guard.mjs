@@ -216,9 +216,10 @@ export async function bisectBySet(list, set, probe, { head = null } = {}) {
 }
 
 // May the guard revert this merge? Never a revert, never a merge from before the guard started, never one with
-// no PR number, never twice.
-export function revertRefusal(c, state, { step, needsSkip: skip = false } = {}) {
+// no PR number, never twice, never while the guard runs stale code (codeDrift).
+export function revertRefusal(c, state, { step, needsSkip: skip = false, codeDrift: drift = [] } = {}) {
   if (!c) return "no culprit";
+  if (drift.length) return staleRefusal(drift);
   if (step && fixCardInstead(c, step, { needsSkip: skip })) return fixCardInstead(c, step, { needsSkip: skip });
   if (c.beforeStart) return `merge ${c.sha.slice(0, 8)} was on main before the guard started`;
   if (isRevert(c.subject, c.branch)) return `merge ${c.sha.slice(0, 8)} is a revert; the guard never reverts a revert`;
@@ -235,6 +236,41 @@ export function revertTitle(pr, what) {
 // The issues a PR body refs (Refs/Closes/Fixes/Resolves #N).
 export function issuesOf(body) {
   return [...new Set([...String(body ?? "").matchAll(/\b(?:Refs|Closes|Fixes|Resolves|Closed|Fixed|Resolved)\s+#(\d+)/gi)].map((m) => Number(m[1])))];
+}
+
+// ---- Guard code freshness. 2026-11-18 the worker started at 23:13:12Z, 14 s before the main checkout pulled #2763
+// (#2759: a held lock is INFRA), and a running worker never reloads its modules: it kept judging by exit code and
+// falsely reverted #2881 (#2884) and #2887 (#2899) on `FAIL lock 'build' is held`. The worker records the blob ids of
+// the code it loaded, compares them with origin/main every tick, never reverts while they differ, and restarts itself
+// on the current code once the main checkout fast-forwards.
+export const GUARD_CODE = ["tools/main-guard.mjs", "tools/lib/main-guard.mjs", "tools/lib/guard-pin.mjs"];
+
+// Blob ids from `git ls-tree <ref> -- <paths>` output -> { path: id }.
+export function parseLsTree(text) {
+  const out = {};
+  for (const l of String(text ?? "").split(/\r?\n/)) {
+    const m = /^\d+ blob ([0-9a-f]{40})\t(.+)$/.exec(l);
+    if (m) out[m[2]] = m[1];
+  }
+  return out;
+}
+
+// The guard files whose loaded blob is not origin/main's. An unknown id on either side counts as drift: the guard
+// cannot prove it runs current code, so it must not revert.
+export function codeDrift(loaded, current) {
+  return GUARD_CODE.filter((p) => !loaded?.[p] || !current?.[p] || loaded[p] !== current[p]);
+}
+
+export function staleRefusal(drift) {
+  return `the guard runs stale code (${drift.join(", ")} differ from origin/main); it restarts on current code before it reverts anything`;
+}
+
+// What a tick does about drift: none (fresh), wait (a stage-2 run is going; revertRefusal keeps it from reverting),
+// restart (the main checkout now holds origin/main's guard code), stuck (the checkout could not fast-forward).
+export function staleAction({ drift = [], busy = false, checkoutFresh = false } = {}) {
+  if (!drift.length) return "none";
+  if (busy) return "wait";
+  return checkoutFresh ? "restart" : "stuck";
 }
 
 // One line for `main-guard status` and `lead`.

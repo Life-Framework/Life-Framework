@@ -32,6 +32,8 @@ Generated 2026-11-17 by `tools\cli scout`. Do not edit by hand; run `tools\cli s
 
 ![from above, north up](img/overview-top.jpg)
 
+![from above, north up, the mapped buildings labelled](img/overview-top-labelled.jpg)
+
 ![wide, from the south](img/overview-wide.jpg)
 
 ![from the west](img/overview-ob270.jpg)
