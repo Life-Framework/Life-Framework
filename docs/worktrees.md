@@ -156,8 +156,11 @@ gate before a merge; the main guard (next section) checks `main` after it.
    `origin/<base>` in, pushes again and retries.
 4. Prints `SUMMARY ship ok|fail`, then `PR <url>, head <sha>`. No queue, no pool lane, no wait.
 
+Town cards (worktrees `town-draft-<place>-<slot>`, see docs/starter-packs/town.md) ship the same way: plain `wt ship`,
+auto-merge, no maintainer approval (since 2026-11-18). The `town-draft-` name is only the zone guard's key.
+
 `--draft` runs the same body checks, preflight and push, then opens the PR with `gh pr create --draft` and never runs
-`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Town-draft and maintainer-review PRs use it; a human
+`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Maintainer-review PRs use it; a human
 marks the PR ready and merges it (`ship-direct.mjs` `draft`, `wt-ship-draft-selftest.mjs`). Re-running on an open PR
 reuses it and, because an earlier ship may have left it ready with auto-merge queued, runs `gh pr merge --disable-auto` and
 `gh pr ready --undo` on it; ship prints `draft: auto-merge off (REVIEW-NEEDED)` (#2940). `prs heal` re-queues auto-merge only on a PR
