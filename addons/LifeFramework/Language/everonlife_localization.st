@@ -9458,6 +9458,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Officer's trousers"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
     }
+    CustomStringTableItem "{4140D26F74D7F5F3}" {
+     Id "LF-Process_Needs"
+     Target_en_us "Needs %1"
+     Comment "Processing refused: the player lacks one input of the recipe (#3226). %1 = item name, e.g. Coal"
+    }
     CustomStringTableItem "{60B6DD582597F066}" {
      Id "LF-Process_NoItems"
      Target_en_us "Missing the input materials"
