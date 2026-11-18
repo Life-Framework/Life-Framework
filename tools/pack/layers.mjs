@@ -31,7 +31,6 @@ export const SECTIONS = {
   "catalogue.offers": { section: "catalogue", cls: "LF_ItemCatalogueConfig", core: "Configs/Catalogue/LF_ItemCatalogue.conf", field: "m_aOffers", key: "offers", id: (p) => (p.m_sOutlet && p.m_sItem ? `${p.m_sOutlet}/${p.m_sItem}` : ""), ownerKey: (k) => k },
   "crime.crimes": { section: "crime", cls: "LF_CrimeCatalogConfig", core: "Configs/Crime/LF_CrimeCatalog.conf", field: "m_aCrimes", key: "crimes", id: (p) => p.m_sCrimeId ?? "", ownerKey: (k) => k },
   "vehicles.vehicles": { section: "vehicles", cls: "LF_VehiclePricesConfig", core: "Configs/Vehicles/LF_VehiclePrices.conf", field: "m_aVehicles", key: "vehicles", id: (p) => guidOf(p.m_Prefab), ownerKey: (k) => /^{?[0-9A-Fa-f]{16}}?$/.test(k) ? k.replace(/[{}]/g, "").toUpperCase() : "" },
-  "sites.rules": { section: "sites", cls: "LF_SitesConfig", core: "Configs/Sites/LF_Sites.conf", field: "m_aRules", key: "rules", id: (p) => p.m_sHideoutId ?? "", ownerKey: (k) => k },
   "shops.priceRules": { section: "shops", cls: "LF_ShopPricesConfig", core: "Configs/Shop/ShopPrices.conf", field: "m_aPriceRules", key: "priceRules", id: shopKey, ownerKey: (k) => parseShopRuleKey(k)?.norm ?? "" },
 };
 export const sectionNames = () => [...new Set(Object.values(SECTIONS).map((s) => s.section))];
