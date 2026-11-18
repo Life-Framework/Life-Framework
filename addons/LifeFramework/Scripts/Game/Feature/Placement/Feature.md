@@ -167,3 +167,10 @@ selected; aimed placement with rotate, place and cancel is #1028.
   pick-up: the chair item and its "Pick up" action are follow-up cards.
 - **Proof:** `placement/persist` (PERSISTENCE: payload round trip, no duplicate on a second apply, missing prefab
   skipped; the e2e reload boot finds the kept chair and not the picked-up one), `placement/cap` (WORLD).
+
+## House furniture (#2654)
+
+- **Player sees:** a chair, table or lamp placed on the floor of their own (or key-held) house, a shelf flush on the wall they aim at; refused elsewhere. They stay after a restart (permanent, #2653).
+- **Owner and side:** server. FLOOR is GROUND; WALL is `LF_PlacementFurniture` (aimed ray, face normal heading, 1 cm gap, floor probe at middle and front edge). `LF_PlacementService.Confirm` refuses a WALL proposal more than 2 cm off a wall.
+- **Data:** `Prefabs/Placeables/Furniture/Furniture_{Chair,Table,Shelf,Lamp}_Item.et` and the `Furniture_*` policy entries. Strings `#LF-Furniture_*_Name`. No "Pick up" action yet (#2751).
+- **Proof:** `housing/furniture` (WORLD). The ghost and the shelf against a real house wall are manual (below).

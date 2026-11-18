@@ -3983,6 +3983,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
     }
+    CustomStringTableItem "{E5E20ACD90437F84}" {
+     Id "LF-Furniture_Chair_Name"
+     Target_en_us "Chair"
+     Comment "Inventory name of the carried chair a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{100E11EBB38DD2B9}" {
+     Id "LF-Furniture_Lamp_Name"
+     Target_en_us "Lamp"
+     Comment "Inventory name of the carried lamp a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{272F0629B6A6B098}" {
+     Id "LF-Furniture_Shelf_Name"
+     Target_en_us "Shelf"
+     Comment "Inventory name of the carried shelf a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{CD0C9FCE1E77121B}" {
+     Id "LF-Furniture_Table_Name"
+     Target_en_us "Table"
+     Comment "Inventory name of the carried table a player places in their own house (#2654)."
+    }
     CustomStringTableItem "{3CEA2232FA244C93}" {
      Id "LF-Garage_Blue"
      Target_en_us "Blue"
