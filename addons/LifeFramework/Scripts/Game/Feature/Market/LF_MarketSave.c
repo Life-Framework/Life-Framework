@@ -2,11 +2,13 @@
 //! One saved market price ("market" save section, #2846): the good's prefab, the price the book
 //! stores (before recovery) and the unix second it last moved. Floor, ceiling and curve stay config
 //! and are never saved. Field order is the binary save order; append only.
+//! Row version 1 stored `m_iCurrent` in whole cash; version 2 (#3028) stores it in hundredths of a cash
+//! unit, so a small drop per unit is not rounded up. The shape is the same; a version 1 row is read x100.
 class LF_MarketPriceRow : Managed
 {
-	static const int ROW_VERSION = 1;
+	static const int ROW_VERSION = 2;
 
-	//! Row format, written first. 1 is this shape.
+	//! Row format, written first. 1 is whole cash in m_iCurrent, 2 is hundredths.
 	int m_iVersion;
 	string m_sGood;
 	int m_iCurrent;
@@ -15,12 +17,13 @@ class LF_MarketPriceRow : Managed
 	string m_sScope;
 
 	//------------------------------------------------------------------------------------------------
-	static LF_MarketPriceRow Create(string good, int current, int lastSaleUnix)
+	//! \param[in] currentFine The price in hundredths of a cash unit (the book's own unit).
+	static LF_MarketPriceRow Create(string good, int currentFine, int lastSaleUnix)
 	{
 		LF_MarketPriceRow row = new LF_MarketPriceRow();
 		row.m_iVersion = ROW_VERSION;
 		row.m_sGood = good;
-		row.m_iCurrent = current;
+		row.m_iCurrent = currentFine;
 		row.m_iLastSaleUnix = lastSaleUnix;
 		row.m_sScope = string.Empty;
 		return row;
@@ -44,9 +47,22 @@ class LF_MarketSavePayload : LF_SavePayload
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! 2 (#3028): prices are saved in hundredths of a cash unit. Version 1 saves hold whole cash and read x100.
 	override int Version()
 	{
-		return 1;
+		return 2;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The row's price in hundredths: a row older than version 2 holds whole cash, so it is scaled
+	//! up; a newer one is already fine. Held to 0..the largest price either way, so a damaged value cannot
+	//! overflow the scaling.
+	static int RowFine(notnull LF_MarketPriceRow row)
+	{
+		if (row.m_iVersion < 2)
+			return LF_PriceCurve.ToFine(row.m_iCurrent);
+
+		return LF_Utils.ClampInt(row.m_iCurrent, 0, LF_PriceCurve.MAX_CASH * LF_PriceCurve.PRICE_SCALE);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -61,7 +77,7 @@ class LF_MarketSavePayload : LF_SavePayload
 		foreach (ResourceName good, LF_MarketPrice price : book)
 		{
 			if (price)
-				rows.Insert(LF_MarketPriceRow.Create(good, price.m_iPrice, price.m_iLastSaleUnix));
+				rows.Insert(LF_MarketPriceRow.Create(good, price.m_iFine, price.m_iLastSaleUnix));
 		}
 
 		return rows;
@@ -94,7 +110,8 @@ class LF_MarketSavePayload : LF_SavePayload
 				continue;
 			}
 
-			int price = row.m_iCurrent;
+			int saved = RowFine(row);
+			int price = saved;
 			if (config)
 			{
 				LF_MarketGoodDef def = config.FindGood(row.m_sGood);
@@ -104,9 +121,9 @@ class LF_MarketSavePayload : LF_SavePayload
 					continue;
 				}
 
-				price = LF_Utils.ClampInt(row.m_iCurrent, def.m_iFloor, def.m_iCeiling);
-				if (price != row.m_iCurrent)
-					LF_Debug.Info(LF_MarketBook.FEATURE, string.Format("saved price of %1 clamped %2 -> %3 (floor %4, ceiling %5)", row.m_sGood, row.m_iCurrent, price, def.m_iFloor, def.m_iCeiling));
+				price = LF_Utils.ClampInt(saved, def.FloorFine(), def.CeilingFine());
+				if (price != saved)
+					LF_Debug.Info(LF_MarketBook.FEATURE, string.Format("saved price of %1 clamped %2 -> %3 hundredths (floor %4, ceiling %5)", row.m_sGood, saved, price, def.m_iFloor, def.m_iCeiling));
 			}
 
 			book.Set(row.m_sGood, LF_MarketPrice.Make(price, row.m_iLastSaleUnix));

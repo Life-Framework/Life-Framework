@@ -1,6 +1,8 @@
 //------------------------------------------------------------------------------------------------
 //! One tradable good's price curve (#2844). The key is `m_sGood`, the item prefab ResourceName the trader
-//! list uses. All prices are whole cash units.
+//! list uses. The prices in the row are whole cash; the curve itself runs in hundredths of a cash unit
+//! (LF_PriceCurve, #3028), so the Fine-named members and the price arguments of the curve methods below
+//! are hundredths.
 [BaseContainerProps()]
 class LF_MarketGoodDef : LF_ConfigRecord
 {
@@ -44,6 +46,8 @@ class LF_MarketGoodDef : LF_ConfigRecord
 			return "no good";
 		if (m_iFloor < 0 || m_iBase < 0 || m_iCeiling < 0)
 			return "a price is negative";
+		if (m_iCeiling > LF_PriceCurve.MAX_CASH)
+			return string.Format("ceiling %1 is above the largest price %2", m_iCeiling, LF_PriceCurve.MAX_CASH);
 		if (m_iFloor > m_iCeiling)
 			return string.Format("floor %1 is above ceiling %2", m_iFloor, m_iCeiling);
 		if (m_iBase < m_iFloor || m_iBase > m_iCeiling)
@@ -57,31 +61,52 @@ class LF_MarketGoodDef : LF_ConfigRecord
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return Cash one sold unit takes off this good's price.
+	//! \return The base in hundredths of a cash unit.
+	int BaseFine()
+	{
+		return LF_PriceCurve.ToFine(m_iBase);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The floor in hundredths of a cash unit.
+	int FloorFine()
+	{
+		return LF_PriceCurve.ToFine(m_iFloor);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The ceiling in hundredths of a cash unit.
+	int CeilingFine()
+	{
+		return LF_PriceCurve.ToFine(m_iCeiling);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Hundredths of a cash unit one sold unit takes off this good's price.
 	int DropPerUnit()
 	{
 		return LF_PriceCurve.DropPerUnit(m_iBase, m_iDropPerUnitPct);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The next unit's price from `current`.
-	int NextPrice(int current)
+	//! \return The next unit's price (hundredths) from `currentFine`.
+	int NextPrice(int currentFine)
 	{
-		return LF_PriceCurve.NextPrice(current, m_iFloor, m_iCeiling);
+		return LF_PriceCurve.NextPrice(currentFine, FloorFine(), CeilingFine());
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The total `units` pay from `current`.
-	int BulkTotal(int current, int units)
+	//! \return The whole cash `units` pay together from `currentFine`.
+	int BulkTotal(int currentFine, int units)
 	{
-		return LF_PriceCurve.BulkTotal(current, units, DropPerUnit(), m_iFloor, m_iCeiling);
+		return LF_PriceCurve.BulkTotal(currentFine, units, DropPerUnit(), FloorFine(), CeilingFine());
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The price after `units` were sold from `current`.
-	int PriceAfterSale(int current, int units)
+	//! \return The price (hundredths) after `units` were sold from `currentFine`.
+	int PriceAfterSale(int currentFine, int units)
 	{
-		return LF_PriceCurve.PriceAfterSale(current, units, DropPerUnit(), m_iFloor, m_iCeiling);
+		return LF_PriceCurve.PriceAfterSale(currentFine, units, DropPerUnit(), FloorFine(), CeilingFine());
 	}
 }
 
@@ -266,14 +291,14 @@ class LF_MarketConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The price of `good` after `seconds` of recovery from `current`; `current` when the good has no curve.
-	int Recover(ResourceName good, int current, int seconds)
+	//! \return The price (hundredths) of `good` after `seconds` of recovery from `currentFine`; `currentFine` when the good has no curve.
+	int Recover(ResourceName good, int currentFine, int seconds)
 	{
 		LF_MarketGoodDef def = FindGood(good);
 		if (!def)
-			return current;
+			return currentFine;
 
-		return LF_PriceCurve.Recover(current, def.m_iBase, def.m_iRecoverPctPerHour, seconds, m_iMaxRecoveryHours, def.m_iFloor, def.m_iCeiling);
+		return LF_PriceCurve.Recover(currentFine, def.BaseFine(), def.m_iRecoverPctPerHour, seconds, m_iMaxRecoveryHours, def.FloorFine(), def.CeilingFine());
 	}
 }
 
