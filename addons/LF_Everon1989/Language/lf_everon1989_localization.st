@@ -1894,6 +1894,21 @@ StringTable {
      Target_en_us "Sporting rifles, pistols and ammunition for permit holders. Binoculars, compasses, maps and hunters' hats for anyone."
      Comment "Sign card for the gun store, What section."
     }
+    CustomStringTableItem "{248660AA4A4823F3}" {
+     Id "LF-Sign_HarbourOffice_How"
+     Target_en_us "Step inside and *Talk* to the harbour master"
+     Comment "Sign card for the harbour office plate, How section. The capitalized word is the action name the player sees."
+    }
+    CustomStringTableItem "{416AD19C737315ED}" {
+     Id "LF-Sign_HarbourOffice_Title"
+     Target_en_us "Harbour Office"
+     Comment "Title of the plate beside the door of the dock's site cabin (Everon 1989 pack, #3072). Printed on the sign and shown in the prompt as Read: Harbour Office."
+    }
+    CustomStringTableItem "{719C66DDD07B5E1A}" {
+     Id "LF-Sign_HarbourOffice_What"
+     Target_en_us "The harbour master's cabin on the quay road. Marcel Roux takes on crate runs for anyone the town knows."
+     Comment "Sign card for the harbour office plate, What section."
+    }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
      Target_en_us "Members open the gate|Inside, *Process contraband* at the machine|Keep the crew's goods in the chest: *Open hideout stash*"
