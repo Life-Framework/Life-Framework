@@ -8405,8 +8405,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6B1E0D4C9A2F7354}" {
      Id "LF-Property_BuildNotYours"
-     Target_en_us "Only the owner can build here."
-     Comment "Build site refusal (#2650): the caller does not own the plot."
+     Target_en_us "Only the owner and key holders can build here."
+     Comment "Build site refusal (#2650, #2815): the caller neither owns the plot nor carries its key."
     }
     CustomStringTableItem "{6B1E0D4C9A2F7352}" {
      Id "LF-Property_BuildWork"

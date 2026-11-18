@@ -4,7 +4,7 @@ enum LF_EBuildSite
 {
 	OK,
 	REFUSED_NO_SITE,	//!< the site names no plot, or the plot's tier is not in the config
-	REFUSED_NOT_ALLOWED,	//!< the caller is not the owner (or nobody owns the plot)
+	REFUSED_NOT_ALLOWED,	//!< the caller is neither the owner nor a key holder of the plot (or nobody owns it)
 	REFUSED_FAR,	//!< the caller is out of reach of the site
 	REFUSED_COMPLETE,	//!< every stage is built
 	REFUSED_NO_ITEMS,	//!< the caller carries none of what the stage still lacks
@@ -27,7 +27,8 @@ class LF_BuildSiteComponentClass : ScriptComponentClass
 //! kept on this entity, so the "properties" payload carries it over a restart. The shell is not
 //! saved: Sync spawns the finished stage's shell prefab from the record after a load.
 //!
-//! SERVER ONLY decides. The owner deposits what they carry (consumed from the inventory, counted in
+//! SERVER ONLY decides. The owner and any key holder of the plot (a character carrying a key item
+//! bound to the plot key, as at a house door; #2815) deposit what they carry (consumed from the inventory, counted in
 //! the record) and works the site one unit per hold; when items and work are met the stage advances
 //! and the shell swaps. Clients read only the replicated mirror for the action labels.
 //!
@@ -168,6 +169,61 @@ class LF_BuildSiteComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! param user The character to test.
+	//! eturn True when the character carries (in the left-hand slot or anywhere in the inventory) a
+	//! key item bound to this plot (#2815). Same key system as a house door (LF_LockComponent.UserHasValidKey);
+	//! an unbound key matches nothing. Server and client may call it; it does not log.
+	static bool UserHoldsKey(IEntity user, string plotKey)
+	{
+		if (!user || plotKey.IsEmpty())
+			return false;
+
+		CharacterControllerComponent characterController = LF_Component<CharacterControllerComponent>.Find(user);
+		if (characterController && IsKeyFor(characterController.GetAttachedGadgetAtLeftHandSlot(), plotKey))
+			return true;
+
+		SCR_InventoryStorageManagerComponent inventoryManager = LF_Component<SCR_InventoryStorageManagerComponent>.Find(user);
+		if (!inventoryManager)
+			return false;
+
+		array<IEntity> items = {};
+		inventoryManager.GetItems(items);
+		foreach (IEntity item : items)
+		{
+			if (IsKeyFor(item, plotKey))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsKeyFor(IEntity item, string plotKey)
+	{
+		if (!item)
+			return false;
+
+		LF_KeyComponent key = LF_Component<LF_KeyComponent>.Find(item);
+		if (!key)
+			return false;
+
+		return LF_VehicleLockComponent.IdentifiersMatch(key.GetHouseIdentifier(), plotKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the key holders among the callers: the caller's own key when their character carries a
+	//! key to this plot, none otherwise. Read again on every call, so a key handed away stops working
+	//! at once (#2815).
+	protected array<string> KeyHolders(IEntity user, string actorKey)
+	{
+		array<string> holders = {};
+		if (!actorKey.IsEmpty() && UserHoldsKey(user, GetSiteKey()))
+			holders.Insert(actorKey);
+
+		return holders;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the checks every deposit and work share. Fills the record and the stage on OK.
 	protected LF_EBuildSite Check(IEntity user, string actorKey, out LF_PropertyRecord record, out LF_PropertyStageDef def)
 	{
@@ -180,7 +236,7 @@ class LF_BuildSiteComponent : ScriptComponent
 
 		record = LF_Properties.Get(key);
 		string ownerKey = LF_Properties.GetOwnerKey(key);
-		if (!record || ownerKey.IsEmpty() || !LF_BuildStageRules.MayContribute(ownerKey, null, actorKey))
+		if (!record || ownerKey.IsEmpty() || !LF_BuildStageRules.MayContribute(ownerKey, KeyHolders(user, actorKey), actorKey))
 			return LF_EBuildSite.REFUSED_NOT_ALLOWED;
 
 		def = CurrentStage(record);
@@ -221,7 +277,7 @@ class LF_BuildSiteComponent : ScriptComponent
 				if (taken < 1)
 					continue;
 
-				LF_BuildDepositResult deposit = LF_BuildStageRules.Deposit(def, record.m_sDeposited, req.m_Prefab, taken, ownerKey, null, actorKey);
+				LF_BuildDepositResult deposit = LF_BuildStageRules.Deposit(def, record.m_sDeposited, req.m_Prefab, taken, ownerKey, KeyHolders(user, actorKey), actorKey);
 				if (!deposit.m_bAccepted)
 				{
 					// Cannot happen after the checks above; give the items back rather than lose them.

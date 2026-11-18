@@ -33,9 +33,17 @@
 
 ### Build site — `Feature/Property/LF_BuildSiteComponent.c` (2026-11-18, #2650, spec #756)
 - 🟡 The plot sign also carries an `LF_BuildSiteComponent` and two actions. "Need N more <item>" deposits
-  everything the owner carries of what the stage being built still lacks, up to what it lacks: the items leave
+  everything the caller carries of what the stage being built still lacks, up to what it lacks: the items leave
   the inventory and are counted in the property row's `m_sDeposited`. A stranger, someone out of reach (6 m) or
   someone carrying none of it is refused with a toast.
+- 🟡 Building is cooperative (#2815): the owner and any **key holder** of the plot may deposit and work. A key
+  holder is a character carrying (left hand or anywhere in the inventory) a key item (`LF_KeyComponent`) bound to the
+  plot key, the same key system as a house door (`LF_BuildSiteComponent.UserHoldsKey`). The server reads the key again
+  on every deposit and every work unit, so a key handed away or rebound stops working at once. A character with
+  neither gets "Only the owner and key holders can build here." and nothing leaves their inventory. A plot sold or
+  repossessed mid-build passes its stage, work and deposits to the next owner (they live on the property row, not on
+  the owner): no refund, the old owner is refused, and the new owner continues from where it stood. Proof:
+  `property/build-site-keyholder`.
 - 🟡 "Build (x/y)" is a 2 s held action, offered once the items are in: one work unit per hold (a second unit
   from the same character within 1.5 s is refused). Items and work met: the stage advances, the next stage
   starts empty, and the shell swaps to the finished stage's prefab from `LF_Property.conf` (spawned at the sign's
