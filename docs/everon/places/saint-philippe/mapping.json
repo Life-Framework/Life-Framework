@@ -293,6 +293,21 @@
         "House_Town_E_2I01 (townhouse), 208 m2, 3 floors, 13 doors, the town house on the square row beside the barber b43 and the clinic b39",
         "D10 pick (#3217), allocation S9 #3256 (lead 2026-11-18): the furniture store, all house furniture on its own stock; furniture then leaves the general store"
       ]
+    },
+    "woodlot": {
+      "building": "b124",
+      "alternatives": [
+        {
+          "building": "b125"
+        },
+        {
+          "building": "b126"
+        }
+      ],
+      "why": [
+        "ShedMetal_02_short_nowalls (industrial), 182.6 m2, open-sided, no door, 166.5 m south-west of the scout centre at the village edge, off the roads",
+        "D10 pick (#3174), lumber epic #3169: the sawmill shed and the log yard (kinds LogPile, Processor) go under and around this open-sided metal shed; a doorless prop, so the allocation gives it no other purpose, and none of the four free plots, which are all for sale (Plots_saint-philippe.layer). b125 and b126 are the same kind of open shed. Whether trees stand within reach of the yard is the fit card's check (the survey counts vegetation for the whole radius, not per spot)"
+      ]
     }
   }
 }

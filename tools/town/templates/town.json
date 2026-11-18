@@ -107,6 +107,11 @@
       "places": ["StoreCounter"]
     },
     {
+      "id": "woodlot", "required": false, "kit": "woodlot", "host": "building", "poi": "none", "margin": 14,
+      "needs": { "interior": "optional", "minArea": 80, "prefer": "far", "types": ["industrial", "shed", "farm", "garage"] },
+      "places": ["LogPile", "Processor"]
+    },
+    {
       "id": "gun-counter", "required": true, "kit": "gun-counter", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 50, "prefer": "near", "maxDistance": 110, "types": ["shop", "townhouse", "house"] },
       "places": ["GunCounter"]
