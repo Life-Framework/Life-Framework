@@ -24,6 +24,11 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Residents on File"
      Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
     }
+    CustomStringTableItem "{0384C0944FFE565E}" {
+     Id "LF-ContractTracker_Title_harbour_crates"
+     Target_en_us "Harbour crates"
+     Comment "Contract tracker title (#2709): the harbour master's early crates run (LF-ContractTracker_Title_<contractId>)."
+    }
     CustomStringTableItem "{3E9F5343A58B4851}" {
      Id "LF-Dialogue_CafeOwner_Bye"
      Target_en_us "Come back when you are hungry. Or lonely. It is the same to me."
@@ -383,6 +388,96 @@ StringTable {
      Id "LF-Dialogue_OldMan_Zone"
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{10AEFC81EF1DE6FB}" {
+     Id "LF-Everon_Tier_Police_0"
+     Target_en_us "No record"
+     Comment "Standing tier word (#2709): police tier 0. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{218B43E34075A8FE}" {
+     Id "LF-Everon_Tier_Police_1"
+     Target_en_us "No trouble"
+     Comment "Standing tier word (#2709): police tier 1. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{C322B474C87BCAF7}" {
+     Id "LF-Everon_Tier_Police_2"
+     Target_en_us "Helpful"
+     Comment "Standing tier word (#2709): police tier 2. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{EBC160A5B600F12D}" {
+     Id "LF-Everon_Tier_Police_3"
+     Target_en_us "A friend of the station"
+     Comment "Standing tier word (#2709): police tier 3. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{8D3CAF967BDF45C0}" {
+     Id "LF-Everon_Tier_Police_Neg1"
+     Target_en_us "Under watch"
+     Comment "Standing tier word (#2709): police tier -1. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{3BB58BA737421867}" {
+     Id "LF-Everon_Tier_Police_Neg2"
+     Target_en_us "Known to us"
+     Comment "Standing tier word (#2709): police tier -2. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{36EF1685B8B0C10C}" {
+     Id "LF-Everon_Tier_Town_0"
+     Target_en_us "A newcomer"
+     Comment "Standing tier word (#2709): town tier 0. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{A6EA6821D99A6A5A}" {
+     Id "LF-Everon_Tier_Town_1"
+     Target_en_us "Known"
+     Comment "Standing tier word (#2709): town tier 1. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{154A66F103A03D94}" {
+     Id "LF-Everon_Tier_Town_2"
+     Target_en_us "Trusted"
+     Comment "Standing tier word (#2709): town tier 2. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{F5903CBEFB96A9CA}" {
+     Id "LF-Everon_Tier_Town_3"
+     Target_en_us "Respected"
+     Comment "Standing tier word (#2709): town tier 3. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{981F307582FD362C}" {
+     Id "LF-Everon_Tier_Town_Neg1"
+     Target_en_us "Talked about"
+     Comment "Standing tier word (#2709): town tier -1. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{01ED3F875FE1DF75}" {
+     Id "LF-Everon_Tier_Town_Neg2"
+     Target_en_us "Not welcome"
+     Comment "Standing tier word (#2709): town tier -2. docs/architecture/reputation.md section 1."
+    }
+    CustomStringTableItem "{B85C88CCDBC020BF}" {
+     Id "LF-Everon_Tier_Underworld_0"
+     Target_en_us "Nobody"
+     Comment "Standing tier word (#2709): underworld tier 0. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{C838265D08A464AE}" {
+     Id "LF-Everon_Tier_Underworld_1"
+     Target_en_us "Known face"
+     Comment "Standing tier word (#2709): underworld tier 1. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{ABC0784CFCF0BEFC}" {
+     Id "LF-Everon_Tier_Underworld_2"
+     Target_en_us "Reliable"
+     Comment "Standing tier word (#2709): underworld tier 2. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{CE26B7D55EA59ED5}" {
+     Id "LF-Everon_Tier_Underworld_3"
+     Target_en_us "One of us"
+     Comment "Standing tier word (#2709): underworld tier 3. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{DB6A8EF7D2C59A80}" {
+     Id "LF-Everon_Tier_Underworld_Neg1"
+     Target_en_us "Suspect"
+     Comment "Standing tier word (#2709): underworld tier -1. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{191C12776304C9DA}" {
+     Id "LF-Everon_Tier_Underworld_Neg2"
+     Target_en_us "Not trusted"
+     Comment "Standing tier word (#2709): underworld tier -2. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
     }
     CustomStringTableItem "{5AFB8F50443E2D63}" {
      Id "LF-Handbook_Everon_CrimeBody1"
