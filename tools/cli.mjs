@@ -44,7 +44,7 @@ import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import { dirname, join, resolve, sep } from "node:path";
-import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
+import { baseChanges, incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as wt from "./wt.mjs";
 import { registerDrivers } from "./merge/register-drivers.mjs";
@@ -743,7 +743,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
   const state = isValidate ? loadState(root) : null;
   let inc = null;
   if (isValidate && opts.incremental && !opts.full && !incrementalOff()) {
-    inc = plan(root, dir, scripts, state, snapshotFiles(root));
+    inc = plan(root, dir, scripts, state, snapshotFiles(root), process.env.LF_VALIDATE_NO_BASE ? null : baseChanges(root));
   }
   const jobs = scripts.map((s) => {
     if (skip.has(s)) return { s, skipped: "LF_VALIDATE_SKIP" };
@@ -825,7 +825,8 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
       const slow = [...ran].sort((a, b) => b.secs - a.secs).slice(0, 3).map((j) => `${j.s} ${j.secs.toFixed(1)} s`).join(", ");
       console.log(`slowest: ${slow}`);
     }
-    if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (inputs unchanged since their last green run; 'validate --all' runs every check)`);
+    const skippedBase = inc ? [...inc.values()].filter((v) => v.unchanged && v.base).length : 0;
+    if (inc) console.log(`incremental: ran ${ran.length}, skipped ${skippedIncr} (${skippedBase} as on origin/main, the rest unchanged since their last green run; 'validate --all' runs every check)`);
   }
   if (dog.frozenMs() >= 5000) {
     console.log(`WARN  ${area}: this process was frozen ${(dog.frozenMs() / 1000).toFixed(0)} s (longest ${(dog.longestFreezeMs() / 1000).toFixed(0)} s) by a synchronous call beside the checks (a lock wait or spawnSync in the same process); check times above leave it out`);

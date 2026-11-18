@@ -21,6 +21,14 @@
 // check some other worktree already passed on the same inputs. Before this, the
 // first validate of each slice ran all ~350 checks (about 6 min under load, 2026-11-17). Full runs (`validate --full`, `--all`, ci, wt gate,
 // wt ship, CI) never consult it.
+//
+// Base-clean skip (2026-11-18, efficiency pass 3): a check whose inputs match no path this branch
+// changed since its merge-base with origin/main gives the result it gives on that main commit, which
+// GitHub's full validate already ran (CI never uses this file: incrementalOff). Before it, ~25 git-heavy
+// `tools/**` selftests (40-80 s each under load) re-ran on every slice whenever main's tools/ had
+// moved, slices that never touched tools/ included: 58% of all validate CPU on 2026-11-18.
+// A `ttl=` check (machine state such as the worktree registry) shares its green time across
+// worktrees, so it runs once per window on the machine, not once per worktree.
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
@@ -126,11 +134,26 @@ export function sharedFile(root) {
 function loadShared(file) {
   try {
     const s = JSON.parse(readFileSync(file, "utf8"));
-    if (s.version === STATE_VERSION && s.checks) return s;
+    if (s.version === STATE_VERSION && s.checks) return { ttl: {}, ...s };
   } catch {
     /* none yet, or a torn write: just no sharing */
   }
-  return { version: STATE_VERSION, checks: {} };
+  return { version: STATE_VERSION, checks: {}, ttl: {} };
+}
+
+// Paths this worktree changed since its merge-base with `ref` (committed, staged, modified,
+// deleted, untracked), or null when there is no such ref (then nothing is skipped this way).
+export function baseChanges(root, ref = "origin/main") {
+  try {
+    const git = (args) => execFileSync("git", args, { cwd: root, encoding: "utf8", maxBuffer: 1 << 28, stdio: ["ignore", "pipe", "ignore"] });
+    const mb = git(["merge-base", "HEAD", ref]).trim();
+    if (!/^[0-9a-f]{40}$/.test(mb)) return null;
+    const out = new Set(git(["diff", "--name-only", "--no-renames", "-z", mb]).split("\0").filter(Boolean));
+    for (const rel of lsz(root, ["--others", "--exclude-standard"])) out.add(rel);
+    return [...out];
+  } catch {
+    return null;
+  }
 }
 
 // Merge this run's green fingerprints into the shared file (newest first, SHARED_KEEP per check).
@@ -139,6 +162,7 @@ export function publishShared(file, state) {
   if (!file) return;
   const shared = loadShared(file);
   for (const [name, e] of Object.entries(state.checks)) {
+    if (e?.fp === "ttl" && e.at) shared.ttl[name] = Math.max(e.at, shared.ttl[name] ?? 0);
     if (!e?.fp || e.fp === "ttl") continue;
     const list = (shared.checks[name] ?? []).filter((fp) => fp !== e.fp);
     shared.checks[name] = [e.fp, ...list].slice(0, SHARED_KEEP);
@@ -160,7 +184,9 @@ export function loadState(root, shared = sharedFile(root)) {
     /* none yet */
   }
   // Not saved back into tmp/validate-state.json (saveState drops it).
-  Object.defineProperty(state, "shared", { value: shared ? loadShared(shared).checks : {}, enumerable: false, writable: true });
+  const sh = shared ? loadShared(shared) : { checks: {}, ttl: {} };
+  Object.defineProperty(state, "shared", { value: sh.checks, enumerable: false, writable: true });
+  Object.defineProperty(state, "sharedTtl", { value: sh.ttl, enumerable: false, writable: true });
   Object.defineProperty(state, "sharedFile", { value: shared, enumerable: false, writable: true });
   return state;
 }
@@ -177,12 +203,14 @@ export function saveState(root, state) {
 
 // Decide for each script: { name, fp|null, unchanged }.
 // `dir` is tools/validation (absolute), `rootRel` its repo-relative prefix.
-export function plan(root, dir, scripts, state, files) {
+// `changed` (from baseChanges) turns on the base-clean skip; null leaves it off.
+export function plan(root, dir, scripts, state, files, changed = null) {
   const rootRel = "tools/validation";
   const out = new Map();
   for (const s of scripts) {
     const full = join(dir, s);
-    const globs = existsSync(full) ? parseInputs(readFileSync(full, "utf8")) : null;
+    const text = existsSync(full) ? readFileSync(full, "utf8") : "";
+    const globs = text ? parseInputs(text) : null;
     if (!globs) {
       out.set(s, { fp: null, unchanged: false, why: "always runs" });
       continue;
@@ -190,16 +218,52 @@ export function plan(root, dir, scripts, state, files) {
     const prev = state.checks[s];
     const ttl = ttlOf(globs);
     if (ttl) {
-      const fresh = !!prev?.at && Date.now() - prev.at < ttl * 1000;
-      out.set(s, { fp: "ttl", unchanged: fresh, why: `green ${ttl} s ago window` });
+      const at = Math.max(prev?.at ?? 0, state.sharedTtl?.[s] ?? 0);
+      const fresh = at > 0 && Date.now() - at < ttl * 1000;
+      out.set(s, { fp: "ttl", unchanged: fresh, why: `green within the last ${ttl} s on this machine` });
       continue;
     }
     const fp = fingerprint(files, [...globs, ...IMPLICIT], `${rootRel}/${s}`);
     if (prev && prev.fp === fp) out.set(s, { fp, unchanged: true, why: "inputs unchanged since its last green run" });
     else if (state.shared?.[s]?.includes(fp)) out.set(s, { fp, unchanged: true, why: "green on these exact inputs in another worktree" });
+    else if (changed && !touches(changed, globs, `${rootRel}/${s}`, text)) out.set(s, { fp, unchanged: true, base: true, why: "inputs as on origin/main (merge-base), which CI validated" });
     else out.set(s, { fp, unchanged: false, why: "inputs changed" });
   }
   return out;
+}
+
+// Data folders that slices edit all the time (town claims and kits, grid cells, dialogue lines,
+// feature docs, PR pictures). For the base skip, a change there counts against a check's broad glob
+// (`tools/**`, `docs/**`, ...) only when the check's source names the folder; a narrower glob that
+// matches it always counts. Without this every town draft re-ran the ~25 git-heavy tools selftests.
+// [folder, the text a check that reads it names]
+export const DATA_DIRS = [
+  ["tools/grid/cells/", "grid/cells"],
+  ["tools/town/claims/", "town/claims"],
+  ["tools/town/kits/", "town/kits"],
+  ["tools/assets/dialogue/", "dialogue"],
+  ["docs/features/", "docs/features"],
+  ["website/public/docs-images/", "docs-images"],
+];
+const BROAD = new Set(["**", "tools/**", "docs/**", "website/**", "agent-box/**"]);
+
+// Does any changed path count as an input of this check (for the base skip)? A baseline beside the
+// checks (tools/validation/<name>.json, which every check fingerprints) counts only for the checks
+// whose source names it: record-shapes.json changes in every persistence slice.
+export function touches(changed, globs, selfRel, text = "") {
+  const res = globs.map((g) => [g, globToRegExp(g)]);
+  return changed.some((rel) => {
+    if (rel === selfRel) return true;
+    const hits = res.filter(([, r]) => r.test(rel)).map(([g]) => g);
+    if (hits.some((g) => !BROAD.has(g))) return true;
+    if (rel.startsWith("tools/validation/fixtures/")) return true;
+    if (/^tools\/validation\/[^/]+$/.test(rel) && !/\.(mjs|ps1)$/.test(rel)) {
+      return text.includes(rel.split("/").pop().replace(/\.[^.]+$/, ""));
+    }
+    if (!hits.length) return false;
+    const data = DATA_DIRS.find(([d]) => rel.startsWith(d));
+    return !data || text.includes(data[1]);
+  });
 }
 
 export function incrementalOff(env = process.env) {

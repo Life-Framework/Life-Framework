@@ -10,6 +10,7 @@
 //    sides added at different spots stays once.
 // 3. A branch whose own tools/merge still has the old parser merges a branch
 //    with the fixed one: run-driver.mjs must run the newer copy.
+// inputs: tools/**, .gitattributes
 
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
