@@ -39,7 +39,8 @@ Rung 4 background: server-only state, no screen in this card. Target: rung 3 for
 ## Not built yet (later cards of chapter #1018)
 
 Gates beyond job sign-up and run start (#2701 built those: `LF_ReputationGate.c`),
-client greying from `LF_ReputationSync.ClientTier`, screens, the pack's words, and the pack overlay and owner
+client greying from `LF_ReputationSync.ClientTier`, other screens (the ID card line and the clerk's "My file" are built, #2705:
+`LF_ReputationWords.c`), the pack's words, and the pack overlay and owner
 `config.json` section for the config.
 
 ## Dependencies
