@@ -8,6 +8,7 @@ import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node
 import { join } from "node:path";
 import { checkText } from "../config/check.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
+import { ISLAND_MISSION } from "../lib/worlds.mjs";
 
 const NAME = "Life Framework | Everon 1989 (Alpha)";
 const SECRET_KEY = /password|passwd|secret|token|webhook|apikey|api_key|credential/i;
@@ -49,7 +50,9 @@ export function flagshipProblems(root = ".") {
   if (srv) {
     const g = srv.json.game ?? {};
     if (g.name !== NAME) out.push(`server.json game.name must be "${NAME}", got "${g.name}"`);
-    if (g.scenarioId !== ex.game.scenarioId) out.push("server.json game.scenarioId differs from server/example");
+    // The weekend cutover (#2212): the flagship may boot the hidden island header instead of the example's public one;
+    // rollback is a config push of the example's scenarioId. Anything else is a typo.
+    if (g.scenarioId !== ex.game.scenarioId && g.scenarioId !== ISLAND_MISSION) out.push("server.json game.scenarioId is neither server/example's nor the island header");
     if (JSON.stringify(g.mods) !== JSON.stringify(ex.game.mods)) out.push("server.json game.mods differs from server/example");
     if (g.password !== "") out.push("server.json game.password must be empty (the alpha password is host-only)");
     if (g.passwordAdmin !== "") out.push("server.json game.passwordAdmin must be empty (host-only)");
@@ -85,7 +88,7 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, "/")}` || proc
   mutate("server.json", json((o) => { o.game.admins = ["0123456789abcdef"]; }), /game\.admins must be empty/);
   mutate("server.json", json((o) => { o.game.name = "My server"; }), /game\.name must be/);
   mutate("server.json", json((o) => { o.game.mods.pop(); }), /game\.mods differs/);
-  mutate("server.json", json((o) => { o.game.scenarioId = "{0000000000000000}Missions/X.conf"; }), /scenarioId differs/);
+  mutate("server.json", json((o) => { o.game.scenarioId = "{0000000000000000}Missions/X.conf"; }), /scenarioId is neither/);
   mutate("config.json", json((o) => { o.staff = { webhookUrl: "https://discord.com/api/webhooks/1/x" }; }), /webhookUrl holds a value|holds a URL/);
   mutate("config.json", json((o) => { o.shops.note = "https://example.org/x"; }), /holds a URL/);
   mutate("config.json", json((o) => { o.dayCycle.dayLengthMinutes = 1440; }), /dayCycle must be/);

@@ -24,7 +24,7 @@ Before it launches anything, `host start --public` checks five things and stops 
 - `game.mods` holds two real Workshop IDs (not `0000000000000000` or another placeholder), and they
   are the IDs you confirmed after publishing (step 3).
 - `game.password` is set.
-- `game.scenarioId` is the flagship `{C638C03B775C31BB}Missions/LF_Everon1989.conf`.
+- `game.scenarioId` is the flagship `{C638C03B775C31BB}Missions/LF_Everon1989.conf` (playtest town), or from the weekend cutover (#2212) the hidden island header `{5E2A9C41B7D08F36}Missions/LF_EveronIsland.conf`; the pre-flight accepts both.
 - `game.visible` is not `false`.
 - The host's files match `server/flagship/`, so `host drift` is clean.
 
