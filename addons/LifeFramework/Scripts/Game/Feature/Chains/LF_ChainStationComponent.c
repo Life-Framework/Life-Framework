@@ -441,6 +441,15 @@ class LF_ChainStationComponent : ScriptComponent
 		LF_ChainMistakes.Reset(m_Strikes);
 		SetCue(0);
 
+		// An admin switched the system off while the blast was queued (#2882): the ruined batch is
+		// gone, but nothing blows, no heat is added and nobody is hurt.
+		if (!LF_Systems.IsEnabled(SYSTEM))
+		{
+			LF_Debug.Warn(LF_ChainSites.FEATURE, string.Format("station %1: the queued blast was cancelled, the Chains system is off (%2)", m_sStationKey, LF_Systems.WhyOff(SYSTEM)));
+			m_sRuinUid = "";
+			return;
+		}
+
 		LF_ChainDef chain;
 		LF_ChainStepDef step;
 		if (!Resolve(chain, step))
@@ -483,10 +492,19 @@ class LF_ChainStationComponent : ScriptComponent
 		}
 
 		int hurt = 0;
+		int shielded = 0;
 		foreach (IEntity target : m_aBlastHits)
 		{
 			if (!target)
 				continue;
+
+			// The blast has no instigator, so the zone hook (player-caused damage only) would let it
+			// through: a safe zone still blocks it, and a wall or a rise of ground shields (#2882).
+			if (LF_Zones.BlocksPlayerDamageAt(target.GetOrigin()) || !HasLineOfSight(origin, target))
+			{
+				shielded++;
+				continue;
+			}
 
 			SCR_CharacterDamageManagerComponent manager = SCR_CharacterDamageManagerComponent.Cast(target.FindComponent(SCR_CharacterDamageManagerComponent));
 			if (!manager)
@@ -509,7 +527,37 @@ class LF_ChainStationComponent : ScriptComponent
 		}
 
 		m_aBlastHits = null;
+		if (shielded > 0)
+			LF_Debug.Info(LF_ChainSites.FEATURE, string.Format("station %1: the blast spared %2 in reach (safe zone or no line of sight)", m_sStationKey, shielded));
+
 		return hurt;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when nothing solid lies between the still and the character's torso: the first thing a
+	//! line from the still to the torso hits is the character itself (or something it carries).
+	protected bool HasLineOfSight(vector origin, IEntity target)
+	{
+		TraceParam trace = new TraceParam();
+		trace.Start = origin + "0 1 0";
+		trace.End = target.GetOrigin() + "0 1 0";
+		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		trace.Exclude = GetOwner();
+		trace.LayerMask = EPhysicsLayerPresets.Projectile;
+		float fraction = GetGame().GetWorld().TraceMove(trace, null);
+		if (fraction >= 1)
+			return true;
+
+		IEntity hit = trace.TraceEnt;
+		while (hit)
+		{
+			if (hit == target)
+				return true;
+
+			hit = hit.GetParent();
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

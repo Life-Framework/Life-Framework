@@ -117,6 +117,6 @@ Loop:
 3. Implement the smallest change inside owns; run the targeted test until green.
 4. Gate T2: full gate (wt ship: validate --full, build, suite). [Risk: an independent reviewer reads the diff before merge.]
 5. Ship: tools\cli wt ship slice-<N> --refs <N>. Visible change: one look picture; polish nitpicks become follow-up issues.
-6. Record: tools\cli slice record <N> --model sonnet --outcome merged|handoff|split|failed --gate pass|fail --minutes N.
+6. Record: tools\cli slice record <N> --model sonnet --outcome merged|handoff|split|failed --gate pass|fail (minutes come from the worktree clock).
 Stay in your lane: do not re-verify other slices, start no helper agents, no wait loops. Report in five lines; say merged, in-dev.
 ```
