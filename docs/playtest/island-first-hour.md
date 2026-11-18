@@ -30,7 +30,7 @@ line if a kit row is named differently, and drop the `pending #N` from that step
 |---|---|---|---|
 | 1 | Join, pass the rules quiz (5 questions), sign form R-89 | You spawn on the south road with $100 cash and $1000 in the bank; walk north into the square | on main |
 | 2 | Talk to the clerk at the town hall; read the rules sign | The clerk greets you and points to work; the rules sign opens | pending #2932 |
-| 3 | At the parcel kiosk: Take courier work, Pick up parcel; carry it to the drop, Complete the run | A toast pays the run (about $40); the job shows Courier | pending #2325 |
+| 3 | At the parcel kiosk: Take courier work (parcel only), Pick up parcel; carry it to a drop: a mailbox 300 m or more away (the dock metal shed north of the square, or the wooden house east), wait out the walk, Complete the run | A toast pays the run (about $40); the job shows Courier | draft #2325 and #2959 |
 | 4 | Open your status | Cash went up by the pay; job XP or level moved | follows step 3 |
 | 5 | Bank teller: deposit the pay, then withdraw $300 (permit and driving licence) | Bank and cash move by the amounts you typed | pending #2932 |
 | 6 | Clothing shop: buy a shirt | Cash down by the price; the shirt is in your inventory | pending #2315 |
@@ -52,8 +52,8 @@ Self-judged run on `ws/first-hour-asserts` over main `14ffae11` (2026-11-18, one
 |---|---|---|
 | 1 | Quiz, form R-89, spawn, walk to the square | **pass**: spawned at the south road with cash 100, bank 1000; stood at the arrival place |
 | 2 | Clerk and rules sign | pending #2932 (no clerk or rules sign in the arrival layer) |
-| 3 | Parcel job | pending #2325 (no parcel layer) |
-| 4 | Paid and progression | blocked by step 3 |
+| 3 | Parcel job | draft #2325 (parcel kiosk) |
+| 4 | Paid and progression | draft #2959 (parcel drops); flow waits out the timed run |
 | 5 | Bank teller | pending #2932 (bank layer has the vault and counter marker, no teller) |
 | 6 | Shirt | pending #2315 (clothing layer has props, no shop) |
 | 6b | Firearm permit | **works, unaffordable**: the counter opens and lists the permit at $250; a newcomer's $100 is refused. Passes once step 5 can withdraw |
