@@ -2907,22 +2907,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6FE700B6BDC757ED}" {
      Id "LF-Credits_122"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbour master Marcel Roux's ten spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2B6B443BB2E0DFB9}" {
      Id "LF-Credits_123"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0C744196304685EB}" {
      Id "LF-Credits_124"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9954645FD5FC4292}" {
      Id "LF-Credits_125"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C35B3ADBB9D89721}" {
@@ -2932,17 +2932,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9968FD984CF4FABF}" {
      Id "LF-Credits_127"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9604C54EE7C42A8F}" {
      Id "LF-Credits_128"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2A31B23D96B99646}" {
      Id "LF-Credits_129"
-     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4698D3AC325BC21D}" {
@@ -2952,21 +2952,31 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{EF83CE5E501404F6}" {
      Id "LF-Credits_130"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2E46C1E4691E2B33}" {
      Id "LF-Credits_131"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Target_en_us "Michael Hansen / Rhasspy, MIT"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A636049B1615FBC6}" {
      Id "LF-Credits_132"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{16186E0A5EB3A7AA}" {
      Id "LF-Credits_133"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{FE189EB428AF142A}" {
+     Id "LF-Credits_134"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4D04FB45B8DBCE90}" {
+     Id "LF-Credits_135"
      Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
@@ -7697,6 +7707,101 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "War notices"
      Comment "Title of the war notice board card (#2677)."
     }
+    CustomStringTableItem "{E2D1E8610799E24F}" {
+     Id "LF-OrgWarSheet_Accept"
+     Target_en_us "Accept"
+     Comment "War sheet button: accept the declaration in the row (#2675)."
+    }
+    CustomStringTableItem "{66B687D491E42733}" {
+     Id "LF-OrgWarSheet_ActiveLine"
+     Target_en_us "Wars in progress (%1)"
+     Comment "War sheet line above the active wars. %1 = count (#2675)."
+    }
+    CustomStringTableItem "{7A53D42CF1DC03B7}" {
+     Id "LF-OrgWarSheet_AnswerBy"
+     Target_en_us "Answer within %1"
+     Comment "War sheet pending row status. %1 = time left to answer, such as 9 min (#2675)."
+    }
+    CustomStringTableItem "{FAF591F49E6D3C03}" {
+     Id "LF-OrgWarSheet_Close"
+     Target_en_us "Close"
+     Comment "War sheet close button (#2675)."
+    }
+    CustomStringTableItem "{0CC38A7BD8CFF0E5}" {
+     Id "LF-OrgWarSheet_Declare"
+     Target_en_us "Declare"
+     Comment "War sheet button: declare war on the organisation in the row (#2675)."
+    }
+    CustomStringTableItem "{0985BBB12E38FF3B}" {
+     Id "LF-OrgWarSheet_EndsIn"
+     Target_en_us "Ends in %1"
+     Comment "War sheet active row status. %1 = time until the war ends (#2675)."
+    }
+    CustomStringTableItem "{EC6D5BB1509DD4D0}" {
+     Id "LF-OrgWarSheet_Intro"
+     Target_en_us "Declaring a war costs %1 from your fund. Both sides need at least %2 members. The other side has a short time to answer."
+     Comment "War sheet intro line. %1 = the fee as money, %2 = the member minimum (#2675)."
+    }
+    CustomStringTableItem "{1954F9D1B9794DC7}" {
+     Id "LF-OrgWarSheet_IntroNoOrg"
+     Target_en_us "You belong to no {org}, so you cannot declare or answer a war. The register is below. A declaration costs %1 and both sides need %2 members."
+     Comment "War sheet intro for a viewer with no organisation. %1 = fee, %2 = member minimum (#2675)."
+    }
+    CustomStringTableItem "{A554181130589FE1}" {
+     Id "LF-OrgWarSheet_IntroNoRight"
+     Target_en_us "Your rank cannot declare or answer a war. A declaration costs %1 and both sides need %2 members."
+     Comment "War sheet intro for a member whose rank lacks the war right. %1 = fee, %2 = member minimum (#2675)."
+    }
+    CustomStringTableItem "{CF5337F9DE14C7CD}" {
+     Id "LF-OrgWarSheet_IntroTooFew"
+     Target_en_us "Your {org} needs %2 members to declare or answer a war. A declaration costs %1."
+     Comment "War sheet intro when the viewer's organisation is under the member minimum. %1 = fee, %2 = minimum (#2675)."
+    }
+    CustomStringTableItem "{E3E3577C0775B16B}" {
+     Id "LF-OrgWarSheet_Members"
+     Target_en_us "%1 members"
+     Comment "War sheet register row status. %1 = member count (#2675)."
+    }
+    CustomStringTableItem "{1D6443E6EB523B34}" {
+     Id "LF-OrgWarSheet_Open"
+     Target_en_us "Wars"
+     Comment "Registry desk action name: opens the war sheet (#2675)."
+    }
+    CustomStringTableItem "{6E46E29A07149C56}" {
+     Id "LF-OrgWarSheet_OrgsLine"
+     Target_en_us "On the register (%1)"
+     Comment "War sheet line above the register list. %1 = count (#2675)."
+    }
+    CustomStringTableItem "{A728D68B4D022A0F}" {
+     Id "LF-OrgWarSheet_PendingLine"
+     Target_en_us "Declared against you (%1)"
+     Comment "War sheet line above the declarations made on the viewer's organisation. %1 = count (#2675)."
+    }
+    CustomStringTableItem "{0C1332EF71C3032A}" {
+     Id "LF-OrgWarSheet_StateAtWar"
+     Target_en_us "At war"
+     Comment "War sheet register row status: the two are at war (#2675)."
+    }
+    CustomStringTableItem "{596E0A35FB7B60FB}" {
+     Id "LF-OrgWarSheet_StateCooldown"
+     Target_en_us "Too soon to declare"
+     Comment "War sheet register row status: the pair cooldown after a war is running (#2675)."
+    }
+    CustomStringTableItem "{E81FDC27EE4A5512}" {
+     Id "LF-OrgWarSheet_StatePending"
+     Target_en_us "Declaration waiting"
+     Comment "War sheet register row status: a declaration between the two is waiting for an answer (#2675)."
+    }
+    CustomStringTableItem "{586D525A4BF713EF}" {
+     Id "LF-OrgWarSheet_StateTooFew"
+     Target_en_us "Under %1 members"
+     Comment "War sheet register row status: the organisation is under the member minimum. %1 = minimum (#2675)."
+    }
+    CustomStringTableItem "{CB90D6E283C0FEB5}" {
+     Id "LF-OrgWarSheet_Title"
+     Target_en_us "Organisation wars"
+     Comment "War sheet title (#2675)."
+    }
     CustomStringTableItem "{7E0E46C2E4A95435}" {
      Id "LF-OrgWar_Accepted"
      Target_en_us "Declaration answered. Your organizations are at war."
@@ -10744,6 +10849,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-SiteFlag_Unclaimed"
      Target_en_us "Unclaimed"
      Comment "Painted board on a contested site's flag pole when no organisation holds the site."
+    }
+    CustomStringTableItem "{970E45E130DA2448}" {
+     Id "LF-SiteStrongbox_Empty"
+     Target_en_us "The strongbox is empty."
+     Comment "Toast: the holder opens the site strongbox and no rent is banked (#2684)."
+    }
+    CustomStringTableItem "{E97E258CA4D33FE7}" {
+     Id "LF-SiteStrongbox_NoRight"
+     Target_en_us "Your rank cannot take the rent."
+     Comment "Toast: a member of the holding organisation whose rank lacks the withdraw right (#2684)."
+    }
+    CustomStringTableItem "{CEEAC310316FCF52}" {
+     Id "LF-SiteStrongbox_NoRoom"
+     Target_en_us "No room to carry the cash. The rent stays in the strongbox."
+     Comment "Toast: the cash did not fit in the player inventory; the bank is unchanged (#2684)."
+    }
+    CustomStringTableItem "{B6BB27B3E34F8BD4}" {
+     Id "LF-SiteStrongbox_NotHolder"
+     Target_en_us "Only the organisation that holds this site can open the strongbox."
+     Comment "Toast: a non-member or another organisation tries the site strongbox (#2684)."
+    }
+    CustomStringTableItem "{15D45ACB87B1F80A}" {
+     Id "LF-SiteStrongbox_Take"
+     Target_en_us "Take the rent"
+     Comment "Action name on a site strongbox (#2684)."
+    }
+    CustomStringTableItem "{FB8C42542BB9F188}" {
+     Id "LF-SiteStrongbox_Taken"
+     Target_en_us "You take %1 in rent from the strongbox."
+     Comment "Toast: the holder took the banked rent as cash. %1 = the amount (#2684)."
+    }
+    CustomStringTableItem "{41D611C1A02BCA46}" {
+     Id "LF-SiteStrongbox_Title"
+     Target_en_us "Strongbox"
+     Comment "Toast title for the site strongbox (#2684)."
     }
     CustomStringTableItem "{134044FE4B970260}" {
      Id "LF-SpawnHub_Close"
