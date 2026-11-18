@@ -57,6 +57,7 @@
     "placements": "LF_PlacementRow",
     "reputation": "LF_ReputationRow",
     "orgwars": "LF_OrgWarRecord",
+    "garageslots": "LF_GarageSlotRow",
     "lockers": "LF_LockerRentalRow"
   },
   "records": {
@@ -678,8 +679,16 @@
         "int m_iCooldownUntil"
       ]
     },
-    "LF_LockerRentalRow": {
+    "LF_GarageSlotRow": {
       "since": 55,
+      "fields": [
+        "int m_iVersion",
+        "string m_sCharacterKey",
+        "int m_iBought"
+      ]
+    },
+    "LF_LockerRentalRow": {
+      "since": 56,
       "fields": [
         "int m_iVersion",
         "string m_sSiteId",

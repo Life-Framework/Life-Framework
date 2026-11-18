@@ -293,7 +293,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		lockerRows.Insert(lockerRow);
 		LF_EvidenceLocker.ApplyAll(lockerRows);
 
-		// A locker rental (#2659, "lockers" payload, save version 55) must come back with its paid-until.
+		// A locker rental (#2659, "lockers" payload, save version 56) must come back with its paid-until.
 		array<ref LF_LockerRentalRow> lockerRentalRows = {};
 		lockerRentalRows.Insert(LF_LockerRentalRow.Create("e2e-locker-site", OFFICER_UID, 1900000000));
 		LF_LockerBank.ApplyAll(lockerRentalRows);
@@ -381,6 +381,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 
 		SeedOrgLadder(ctx);
 		LF_Test_ReputationPersist.SeedE2E(ctx);
+		LF_Test_GarageSlotsPersist.SeedE2E(ctx);
 
 #ifndef LF_E2E_LEGACY_SAVE
 		// A cargo run in progress holds a deposit ("jobruns" payload, save version 49, #2408, #2481): the
@@ -1037,6 +1038,8 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		VerifyJobLevels(ctx);
 		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("reputation"))
 			LF_Test_ReputationPersist.VerifyE2E(ctx);
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("garageslots"))
+			LF_Test_GarageSlotsPersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
 
