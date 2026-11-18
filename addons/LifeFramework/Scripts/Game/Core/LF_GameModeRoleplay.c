@@ -117,6 +117,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_OrgWarSweep.Start();
 		// Abandoned owned cars are towed to the impound lot (server only, #2657).
 		LF_VehicleTow.Start();
+		// Residents appear on their anchors near players and leave when nobody is (server only, #2858).
+		LF_ResidentSpawner.Start();
 	}
 
 	//------------------------------------------------------------------------------------------------

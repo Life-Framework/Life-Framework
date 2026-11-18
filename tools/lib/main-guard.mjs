@@ -7,6 +7,14 @@ import { sameLeaseHost } from "./guard-pin.mjs";
 
 export const BATCH_MS = 10 * 60 * 1000; // a burst of merges is checked once, at most every 10 min
 export const PRE_MOVE = ["e2e", "--pre-move", "502ebf39", "--mission", "playtest"];
+export const PLAIN_E2E = ["e2e"]; // the same save round trip with no old build: tells a pre-move-only red from a real one (#2812)
+
+// A pre-move e2e that fails twice while the plain e2e passes at the same head: a pass-2 check needs data the ref
+// build's pass 1 cannot write (#2480, #2798). The merge is not broken, its check lacks an LF_E2E guard
+// (validate-e2e-payload-guard): a fix card and a comment, no revert.
+export function needsSkip(stepName, plainCode) {
+  return stepName === "pre-move e2e" && plainCode === 0;
+}
 
 // The full post-merge check, one step per entry. `recheck(failing)` is the cheap command that reruns only what failed.
 export const STEPS = [
@@ -209,9 +217,9 @@ export async function bisectBySet(list, set, probe, { head = null } = {}) {
 
 // May the guard revert this merge? Never a revert, never a merge from before the guard started, never one with
 // no PR number, never twice.
-export function revertRefusal(c, state, { step } = {}) {
+export function revertRefusal(c, state, { step, needsSkip: skip = false } = {}) {
   if (!c) return "no culprit";
-  if (step && fixCardInstead(c, step)) return fixCardInstead(c, step);
+  if (step && fixCardInstead(c, step, { needsSkip: skip })) return fixCardInstead(c, step, { needsSkip: skip });
   if (c.beforeStart) return `merge ${c.sha.slice(0, 8)} was on main before the guard started`;
   if (isRevert(c.subject, c.branch)) return `merge ${c.sha.slice(0, 8)} is a revert; the guard never reverts a revert`;
   const pr = prOfMerge(c.subject);
@@ -302,19 +310,20 @@ export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
 // Never revert over town layout (#1872: town findings warn on every branch; a placement audit red is a fix card,
 // not a revert) and never auto-revert the maintainer's town edits for anything but a compile break.
 // Returns the reason when the guard must open a fix card instead, or null.
-export function fixCardInstead(c, step) {
+export function fixCardInstead(c, step, { needsSkip: skip = false } = {}) {
   if (!c || step === "compile") return null;
+  if (skip && step === "pre-move e2e") return "the plain e2e passes at this head: the pre-move failure is a pass-2 check for data the ref build cannot write, a missing LF_E2E.RequiresPayload guard (#2812); fixed forward, never reverted";
   if (step === "placement audit" || step === "grid placement audit") return "a placement audit finding is fixed forward, never reverted (town layout warns, #1872)";
   const br = c.branch || branchOfMerge(c.subject);
   if (MAINTAINER_BRANCH.test(br)) return `#${prOfMerge(c.subject)} is the maintainer's town edit (${br}); only a compile break reverts it`;
   return null;
 }
 
-export function fixCard(c, step, what, failLog) {
+export function fixCard(c, step, what, failLog, opts = {}) {
   const pr = prOfMerge(c?.subject);
   return {
     title: `Main guard: ${step} red on main after #${pr} (${String(what).slice(0, 60)})`,
-    body: [`The main guard saw **${what}** (${step}) fail twice on main; the bisect points at #${pr} (merge \`${c?.sha}\`).`, "", `It was not reverted: ${fixCardInstead(c, step) ?? "see the guard log"}. Fix forward on a branch.`, "", `Log on the guard machine: \`${failLog}\``, "", "🤖 Generated with [Claude Code](https://claude.com/claude-code)"].join("\n"),
+    body: [`The main guard saw **${what}** (${step}) fail twice on main; the bisect points at #${pr} (merge \`${c?.sha}\`).`, "", `It was not reverted: ${fixCardInstead(c, step, opts) ?? "see the guard log"}. Fix forward on a branch.`, "", `Log on the guard machine: \`${failLog}\``, "", "🤖 Generated with [Claude Code](https://claude.com/claude-code)"].join("\n"),
   };
 }
 

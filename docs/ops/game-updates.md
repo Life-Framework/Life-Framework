@@ -51,6 +51,13 @@ by hand, with the same keep-what-it-replaces rule.
   the boot and the stop, two after.
 - In both cases: stop the server, `tools\cli host restore`, and find the cause before
   opening again.
+- **A save written by a newer build** (`save format N is newer`, `save version N is newer`, or
+  `save section '<name>' ... is unknown to this build` / `is version N, this build reads 1 to M`,
+  #2841): nothing failed, this build just cannot read part of the save. Every backup written by the
+  newer build holds the same part, so `host restore` to such a backup does not clear it, and the
+  server stays read-only on every boot. Fix it by running a build that reads the save again (roll
+  forward to the build that wrote it, or re-land the reverted section). Dropping that data on
+  purpose is a lead decision: restore a backup from before the newer build ran, or wipe.
 
 ## Diagnosing a bad load
 

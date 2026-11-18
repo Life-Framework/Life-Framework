@@ -43,6 +43,10 @@ class LF_DutyPay
 				return rankRate;
 		}
 
+		float medicRate = LF_MedicRanks.PayPerSecondFor(account);
+		if (medicRate >= 0)
+			return medicRate;
+
 		return RateFor(account.GetFaction());
 	}
 

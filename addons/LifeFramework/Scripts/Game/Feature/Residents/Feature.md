@@ -25,3 +25,34 @@ bench, bus stop) near players.
   `LF_Places` does not know (no such place placed on the map) is logged and dropped; a day with no line left is
   refused.
 - **Proof:** `residents/resident-timetable` (LOGIC).
+
+## Resident anchors (#2857)
+
+- **Player sees:** nothing yet (the marker is invisible to players; wave 2 stands residents on it).
+- **Owner and side:** server. `LF_ResidentAnchorComponent` on the marker prefab `Prefabs/Systems/Residents/LF_ResidentAnchor.et`
+  (attribute `m_sAnchorId`: `counter`, `bench`, `door`); `LF_ResidentAnchors.Resolve(kind, anchorId, near, spot)` answers.
+- **Rules:** the place is the nearest `LF_Places` place of `kind` to `near`. An anchor belongs to it by parent hierarchy, else
+  by sitting within 30 m of it and nearer it than any other place of the kind. Empty anchor id: the place origin. Unknown
+  anchor id: the place origin, one `LF_Debug.Warn("Residents", ...)` per kind and id pair. No place of the kind: false.
+  Entries hold `EntityID`; statics reset through `LF_ResidentAnchors_StaticResetHook`. Persisted: nothing.
+- **Proof:** `residents/anchors` (WORLD).
+
+## Resident spawner (#2858)
+
+- **Player sees:** a resident standing on their anchor (the shopkeeper at the counter at 07:30) when they walk within
+  150 m, and nobody once they leave (200 m). Nobody walks yet: residents stand on the anchor of their current line.
+- **Owner and side:** server. `LF_ResidentSpawner` (started from the game mode like the other sweeps) sweeps every
+  `m_iSweepSeconds` (5) through one `CallLater`; `SweepAt(minute, players)` is the same pass with the clock and the
+  players handed in, which tests use. The spawned character is an ordinary replicated entity, so a late joiner sees it
+  with no extra state and there is no RPC.
+- **Rules:** a resident is due where `LF_ResidentTimetable` says at the game minute, on the anchor
+  `LF_ResidentAnchors.Resolve` finds nearest the player. Spawn when a player is within `m_iSpawnRadiusM` (150) of
+  the anchor, despawn when none is within `m_iDespawnRadiusM` (200) of the character (horizontal metres, so
+  a player on a roof counts). A line change to another place or anchor despawns first, then spawns at the new spot only if
+  a player is near it. `m_iMaxLive` (24) caps live residents; the rest wait, first by id wins, and each waiting
+  resident is logged once (`LF_Debug.Warn("Residents", ...)`). The prefab is `LF_ResidentDef.m_sPrefab`, default the neutral
+  civilian `Npc_Civilian_01`; any AI on it is deactivated. `m_sActivity` is recorded (`ActivityOf`) and logged on
+  spawn; no animation or emote plays yet. Live residents are keyed by resident id and hold `EntityID`;
+  statics reset through `LF_ResidentSpawner_StaticResetHook`. Persisted: nothing, a restart re-spawns by proximity.
+- **Data:** `LF_Residents.conf` root fields `m_iSpawnRadiusM`, `m_iDespawnRadiusM`, `m_iMaxLive`, `m_iSweepSeconds`.
+- **Proof:** `residents/spawner` (WORLD).

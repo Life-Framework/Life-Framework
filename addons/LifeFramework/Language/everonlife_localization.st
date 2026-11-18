@@ -5108,6 +5108,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Lockpick"
      Comment "Item name (#411)."
     }
+    CustomStringTableItem "{B7CF3EC52549209E}" {
+     Id "LF-Item_MarkedCash"
+     Target_en_us "Marked notes"
+     Comment "Item name: stolen banknotes still in a bank band; they look like cash but no shop or ATM takes them"
+    }
+    CustomStringTableItem "{4D5896C4AF350BBF}" {
+     Id "LF-Item_MarkedCash_Desc"
+     Target_en_us "Banknotes still in the bank's band. No shop or teller will take them as they are."
+     Comment "Item description of the marked notes"
+    }
     CustomStringTableItem "{315A7D38264FAED4}" {
      Id "LF-Item_MoneyBag"
      Target_en_us "Cash sack"
@@ -6461,6 +6471,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Map_AreaSafe"
      Target_en_us "Safe zone"
      Comment "Map label of a safe zone at the closest zoom."
+    }
+    CustomStringTableItem "{DF4F6E621FD608FA}" {
+     Id "LF-MedicRank_Doctor"
+     Target_en_us "Doctor"
+     Comment "Medic rank title, rung 2 (#2708)"
+    }
+    CustomStringTableItem "{BA039C69E3728E5E}" {
+     Id "LF-MedicRank_KitRefused"
+     Target_en_us "Your {medic} rank may not draw this item"
+     Comment "Refusal when a medic draws kit above their rank (#2708)"
+    }
+    CustomStringTableItem "{F45008F52BDF7B2C}" {
+     Id "LF-MedicRank_Paramedic"
+     Target_en_us "Paramedic"
+     Comment "Medic rank title, rung 1 (#2708)"
+    }
+    CustomStringTableItem "{1E8C9F222375C5BB}" {
+     Id "LF-MedicRank_Trainee"
+     Target_en_us "Trainee {medic}"
+     Comment "Medic rank title, rung 0 (#2708)"
     }
     CustomStringTableItem "{3C71B0A2D4E5F612}" {
      Id "LF-Medic_Downed"
@@ -8481,6 +8511,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-PoliceCall_Title"
      Target_en_us "Call for {police}"
      Comment "Toast title for a police call event"
+    }
+    CustomStringTableItem "{622F0801A7A7F9E1}" {
+     Id "LF-PoliceRankSet_BadRank"
+     Target_en_us "There is no {police} rank %1."
+     Comment "/policerank refusal: %1 is the rank number asked for (#2838)."
+    }
+    CustomStringTableItem "{6DBFB3950141B969}" {
+     Id "LF-PoliceRankSet_Denied"
+     Target_en_us "Only administrators can set {police} ranks."
+     Comment "/policerank refusal: the caller is not an administrator (#2838)."
+    }
+    CustomStringTableItem "{21563D4ECF5D060A}" {
+     Id "LF-PoliceRankSet_Done"
+     Target_en_us "{police} rank set to %1."
+     Comment "/policerank result: %1 is the new rank number (#2838)."
+    }
+    CustomStringTableItem "{357C84FBFAC0AFCC}" {
+     Id "LF-PoliceRankSet_NoTarget"
+     Target_en_us "No account with that id."
+     Comment "/policerank refusal: the account id is unknown (#2838)."
+    }
+    CustomStringTableItem "{A52EC32B02107B2D}" {
+     Id "LF-PoliceRankSet_Usage"
+     Target_en_us "Type /policerank, an account id and a rank number."
+     Comment "/policerank status when the line is not an account id and a rank number (#2838)."
     }
     CustomStringTableItem "{57D1AD3E97B72422}" {
      Id "LF-PoliceRoster_Approved"

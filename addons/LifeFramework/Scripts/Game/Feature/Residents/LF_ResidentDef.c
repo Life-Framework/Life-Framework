@@ -44,6 +44,9 @@ class LF_ResidentDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.EditBox, "LF_Places kind of this resident's workplace. Empty for a resident who never works")]
 	string m_sWorkKind;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Character prefab this resident spawns as (#2858). Empty: the neutral civilian", "et")]
+	ResourceName m_sPrefab;
+
 	[Attribute("", UIWidgets.Object, "The day, per game day (no weekdays yet): lines by start time, none sharing a start")]
 	ref array<ref LF_ResidentEntryDef> m_aTimetable;
 
@@ -80,6 +83,20 @@ class LF_ResidentsConfig
 
 	[Attribute("", UIWidgets.Object, "Every resident: id, home and work place kinds, and the day")]
 	ref array<ref LF_ResidentDef> m_aResidents;
+
+	// The spawner (#2858). A field left 0 means its default (SpawnRadius, DespawnRadius, MaxLive, SweepSeconds). Hysteresis: a resident appears inside the spawn radius and leaves outside the
+	// despawn radius, so one standing on the edge does not flicker. Radii are horizontal metres.
+	[Attribute("150", UIWidgets.EditBox, "A due resident appears when a player is within this many metres of their anchor")]
+	int m_iSpawnRadiusM;
+
+	[Attribute("200", UIWidgets.EditBox, "A live resident leaves when no player is within this many metres of them")]
+	int m_iDespawnRadiusM;
+
+	[Attribute("24", UIWidgets.EditBox, "Most residents live in the world at once; the rest wait, first by id")]
+	int m_iMaxLive;
+
+	[Attribute("5", UIWidgets.EditBox, "Seconds between spawner sweeps")]
+	int m_iSweepSeconds;
 
 	protected static ref LF_ResidentsConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -144,6 +161,43 @@ class LF_ResidentsConfig
 			int changed = LF_ConfigOverlay.ApplyContainerList(new LF_ResidentList(this), root, "m_aResidents", names[i], claims);
 			LF_Debug.Info("Residents", string.Format("pack overlay %1 changed %2 residents", names[i], changed));
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spawner settings (#2858): a value the conf leaves at 0 reads as its default.
+	int SpawnRadius()
+	{
+		if (m_iSpawnRadiusM <= 0)
+			return 150;	// lf-fixed: default spawn radius when the conf leaves it unset
+
+		return m_iSpawnRadiusM;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int DespawnRadius()
+	{
+		if (m_iDespawnRadiusM <= 0)
+			return 200;	// lf-fixed: default despawn radius when the conf leaves it unset
+
+		return m_iDespawnRadiusM;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int MaxLive()
+	{
+		if (m_iMaxLive <= 0)
+			return 24;	// lf-fixed: default live cap when the conf leaves it unset
+
+		return m_iMaxLive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int SweepSeconds()
+	{
+		if (m_iSweepSeconds <= 0)
+			return 5;	// lf-fixed: default sweep period when the conf leaves it unset
+
+		return m_iSweepSeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------

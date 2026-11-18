@@ -237,6 +237,7 @@ class LF_ContestedSites
 		string holderBefore = state.m_sHolderOrgId;
 		LF_ESiteHoldOutcome outcome = LF_SiteHold.Step(state, presence, elapsedSeconds, rules);
 		NoteContest(hideoutId, holderBefore, outcome, counted.Count());
+		LF_SiteRent.Accrue(hideoutId, holderBefore, outcome, elapsedSeconds, nowUnix);
 
 		if (outcome == LF_ESiteHoldOutcome.CAPTURED)
 		{

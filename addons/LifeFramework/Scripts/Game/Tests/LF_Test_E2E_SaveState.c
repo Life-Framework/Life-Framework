@@ -589,7 +589,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 #endif
 		// #2443: the character grace clock survives the restart; a save older than it seeds only real characters.
 		string graceKey = LF_Test_E2E_SaveStateWrite.GRACE_KEY;
-		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("graceclock"))
+		if (LF_E2E.SaveHas("graceclock"))
 			ctx.Equal(420, LF_GraceCharacterClock.Seconds(graceKey), "e2e the character grace clock survives the restart");
 		else
 			ctx.Equal(0, LF_GraceCharacterClock.Seconds(graceKey), "e2e a save older than graceclock has no grace clock for it");
@@ -605,7 +605,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	protected void VerifyJobDeposit(LF_TestContext ctx)
 	{
 		string uid = LF_Test_E2E_SaveStateWrite.DEPOSIT_UID;
-		if (LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("jobruns"))
+		if (!LF_E2E.SaveHas("jobruns"))
 		{
 			ctx.False(LF_CivilianJob.HasActiveRun(uid), "e2e a save older than jobruns has no run in progress after the restart");
 			ctx.Equal(0, LF_CivilianJob.GetDeposit(uid), "e2e a save older than jobruns holds no deposit after the restart");
@@ -670,7 +670,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 #ifdef LF_E2E_PRE_MOVE
 		// --pre-move: a ref build from before #751 (its save version below the payload's) leased no
 		// site and held no ground; a later ref build wrote both, checked as on a plain restart.
-		if (LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("heldground"))
+		if (!LF_E2E.SaveHas("heldground"))
 		{
 			ctx.True(LF_Hideout.HeldGroundOf(site) == null, "e2e the ref build's save has no lease on the held site");
 			ctx.Equal(0, LF_Hideout.ExportHeldGround().Count(), "e2e the ref build's save loads every site unheld");
@@ -718,8 +718,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 	//! (--pre-move) carried no key.
 	protected void VerifyHouseKey(LF_TestContext ctx, IEntity restored)
 	{
-		int bootVersion = LF_SaveStamp.BootSaveVersion();
-		if (bootVersion > 0 && bootVersion < LF_PersistenceComponentSerializer.PayloadSinceVersion("houses"))
+		if (!LF_E2E.SaveHas("houses"))
 		{
 			ctx.Pass("e2e a save older than the house payloads carries no house key");
 			return;
@@ -735,7 +734,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		if (key)
 			bound = key.GetHouseIdentifier();
 
-		if (bootVersion >= LF_PersistenceComponentSerializer.PayloadSinceVersion("itemkeys"))
+		if (LF_E2E.SaveHas("itemkeys"))
 			ctx.EqualStr(HOUSE_KEY_HOUSE, bound, "e2e the carried house key still opens its house after the restart");
 		else
 			ctx.EqualStr("", bound, "e2e a save older than itemkeys restores the house key unbound");
@@ -850,7 +849,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 
 					// #1855: the drill flagged stolen before the save is still stolen; a save older than
 					// the itemstolen payload (--legacy-save) restores it unflagged, as that build did.
-					if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("itemstolen"))
+					if (LF_E2E.SaveHas("itemstolen"))
 						ctx.True(LF_StolenGoods.IsStolen(backDrills[0]), "e2e carried drill is still flagged stolen after the restart");
 					else
 						ctx.False(LF_StolenGoods.IsStolen(backDrills[0]), "e2e a legacy save restores the drill unflagged");
@@ -924,7 +923,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(1, LF_EvidenceLocker.CountFor(77), "e2e evidence locker keeps its logged bag after the restart");
 		// A save older than "lockers" (a --legacy-save, or the --pre-move ref build, whose pass 1 never wrote
 		// a rental) holds no rental: the check skips, as VerifyJobDeposit does for "jobruns".
-		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("lockers"))
+		if (LF_E2E.SaveHas("lockers"))
 		{
 			ctx.True(LF_LockerBank.IsRenting("e2e-locker-site", OFFICER_UID), "e2e locker rental survives the restart");
 			ctx.Equal(1900000000, LF_LockerBank.PaidUntil("e2e-locker-site", OFFICER_UID), "e2e locker rental keeps its paid-until");
@@ -1036,7 +1035,7 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			// state rows and set none; a later ref build wrote them, checked as on a plain restart.
 			bool refBeforeState = false;
 #ifdef LF_E2E_PRE_MOVE
-			refBeforeState = LF_SaveStamp.BootSaveVersion() < LF_PersistenceComponentSerializer.PayloadSinceVersion("vehiclestate");
+			refBeforeState = !LF_E2E.SaveHas("vehiclestate");
 #endif
 			if (refBeforeState)
 			{
@@ -1073,16 +1072,14 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		VerifyCharacterSlots(ctx);
 		VerifyPlaytime(ctx);
 		VerifyJobLevels(ctx);
-		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("reputation"))
+		if (LF_E2E.RequiresPayload("reputation"))
 			LF_Test_ReputationPersist.VerifyE2E(ctx);
-		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("garageslots"))
+		if (LF_E2E.RequiresPayload("garageslots"))
 			LF_Test_GarageSlotsPersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
-		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("tenancy"))
+		if (LF_E2E.RequiresPayload("tenancy"))
 			VerifyTenancy(ctx);
-		else
-			LF_Debug.Info("Hideout", "e2e tenancy check skipped: the loaded save is older than the tenancy payload");
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");
