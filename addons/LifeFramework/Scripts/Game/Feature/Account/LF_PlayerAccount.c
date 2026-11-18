@@ -269,6 +269,9 @@ class LF_PlayerAccount : Managed
 			adopted.TakeValuesOf(m_AccountStanding);
 		}
 
+		if (setAsActive && !first)
+			SettleDutyBeforeCharacterChange();
+
 		int idx = m_aCharacters.Insert(character);
 		if (setAsActive)
 			m_iActiveCharacterIdx = idx;
@@ -280,6 +283,9 @@ class LF_PlayerAccount : Managed
 		int removedIdx = m_aCharacters.Find(character);
 		if (removedIdx == -1)
 			return;
+
+		if (removedIdx == m_iActiveCharacterIdx)
+			SettleDutyBeforeCharacterChange();
 
 		m_aCharacters.RemoveItemOrdered(character);
 
@@ -381,8 +387,22 @@ class LF_PlayerAccount : Managed
 	void SetActiveCharacter(notnull LF_PlayerCharacter character)
 	{
 		int idx = m_aCharacters.Find(character);
-		if (idx != -1)
-			m_iActiveCharacterIdx = idx;
+		if (idx == -1)
+			return;
+
+		if (idx != m_iActiveCharacterIdx)
+			SettleDutyBeforeCharacterChange();
+
+		m_iActiveCharacterIdx = idx;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The active character is about to change: a running duty clock is settled for the outgoing
+	//! character first, so its on-duty seconds never land on the next one (#2838).
+	protected void SettleDutyBeforeCharacterChange()
+	{
+		if (m_bDutyClockRunning && !m_aCharacters.IsEmpty())
+			LF_PoliceRanks.SettleForCharacterSwitch(this);
 	}
 
 	//------------------------------------------------------------------------------------------------
