@@ -10600,6 +10600,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Only an on-duty officer can handle the spike strip."
      Comment "Toast and greyed-out reason when someone who is not on-duty police tries the strip."
     }
+    CustomStringTableItem "{E3A1B2C4D5F60738}" {
+     Id "LF-Stall_AlreadyRented"
+     Target_en_us "This stall is taken, or you already rent one today."
+     Comment "Toast: stall rent refused, the stall is rented or the player has another; nothing was taken (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60735}" {
+     Id "LF-Stall_Closed"
+     Target_en_us "The market is closed. Stalls rent on market day."
+     Comment "Cannot-rent reason and toast outside market hours (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60737}" {
+     Id "LF-Stall_NoCash"
+     Target_en_us "You do not carry enough cash for the pitch fee."
+     Comment "Toast: stall rent refused, short of cash; nothing was taken (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60731}" {
+     Id "LF-Stall_Rent"
+     Target_en_us "Rent stall (%1)"
+     Comment "Action on a free market stall (#2925). %1 = the formatted pitch fee."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60732}" {
+     Id "LF-Stall_RentDesc"
+     Target_en_us "Rent this stall for today's market."
+     Comment "Description of the rent action on a market stall (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60736}" {
+     Id "LF-Stall_Rented"
+     Target_en_us "You rented a stall for today's market."
+     Comment "Toast: the pitch fee was paid and the stall is yours until the market closes (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60733}" {
+     Id "LF-Stall_Taken"
+     Target_en_us "Stall of %1"
+     Comment "Prompt on a rented market stall (#2925). %1 = the holder's name."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60730}" {
+     Id "LF-Stall_Title"
+     Target_en_us "Market stall"
+     Comment "Toast title for a market stall rent (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60734}" {
+     Id "LF-Stall_Unnamed"
+     Target_en_us "a trader"
+     Comment "Holder label on a rented stall whose holder has no name (#2925)."
+    }
     CustomStringTableItem "{C6CD1F2F0A61F3B5}" {
      Id "LF-Stolen_Already"
      Target_en_us "The {police} already have this one"

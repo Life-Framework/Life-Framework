@@ -1,0 +1,40 @@
+GenericEntity {
+ ID "7B3D9E4A1C5F8206"
+ components {
+  MeshObject "{4D8E2A6C91B35F70}" {
+   Object "{8AEBC3FDF26E9C07}Assets/Props/Commercial/MarketStand_01/MarketStand_01.xob"
+  }
+  RigidBody "{9A1E5C37D2B84F60}" {
+   Mass 20
+   ModelGeometry 1
+   Static 1
+  }
+  LF_StallComponent "{2F6B8D1E4A9C7035}" {
+  }
+  ActionsManagerComponent "{6C3A9F52E81D4B07}" {
+   ActionContexts {
+    UserActionContext "{A4E7C1B93D5F2860}" {
+     ContextName "default"
+     Position PointInfo "{1D8B4F72A6E93C05}" {
+      Offset 0 0.95 0
+     }
+     Radius 2
+    }
+   }
+   additionalActions {
+    LF_StallRentAction "{E5A2C8F10B7D3694}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3B9F6D2A8C1E5740}" {
+      Name "#LF-Stall_Rent"
+      Description "#LF-Stall_RentDesc"
+     }
+    }
+   }
+  }
+  RplComponent "{C7D4A9E1B2F58360}" {
+   Enabled 1
+  }
+ }
+}
