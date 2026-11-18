@@ -67,3 +67,11 @@ GenericEntity Fit_saint_philippe_clothing_lf_mannequin_suit : "{88F59F323FF25661
  coords 4444.931 11.499 10783.192
  angleY 153
 }
+GenericEntity Fit_saint_philippe_clothing_clothing_stock : "{B7F7DA7E20CBDC08}Prefabs/Buildings/ClothingStore/ClothingStore_Stock.et" {
+ coords 4441.4 11.3 10788.8
+ angleY 153
+}
+LF_NpcBaseEntity Fit_saint_philippe_clothing_village_clothing_store_clerk : "{50F89493E50AA61B}Prefabs/Characters/Npcs/LF_Npc_ClothingClerk.et" {
+ coords 4439.608 11.499 10789.234
+ angleY 153
+}
