@@ -8492,6 +8492,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Call for {police}"
      Comment "Toast title for a police call event"
     }
+    CustomStringTableItem "{622F0801A7A7F9E1}" {
+     Id "LF-PoliceRankSet_BadRank"
+     Target_en_us "There is no {police} rank %1."
+     Comment "/policerank refusal: %1 is the rank number asked for (#2838)."
+    }
+    CustomStringTableItem "{6DBFB3950141B969}" {
+     Id "LF-PoliceRankSet_Denied"
+     Target_en_us "Only administrators can set {police} ranks."
+     Comment "/policerank refusal: the caller is not an administrator (#2838)."
+    }
+    CustomStringTableItem "{21563D4ECF5D060A}" {
+     Id "LF-PoliceRankSet_Done"
+     Target_en_us "{police} rank set to %1."
+     Comment "/policerank result: %1 is the new rank number (#2838)."
+    }
+    CustomStringTableItem "{357C84FBFAC0AFCC}" {
+     Id "LF-PoliceRankSet_NoTarget"
+     Target_en_us "No account with that id."
+     Comment "/policerank refusal: the account id is unknown (#2838)."
+    }
+    CustomStringTableItem "{A52EC32B02107B2D}" {
+     Id "LF-PoliceRankSet_Usage"
+     Target_en_us "Type /policerank, an account id and a rank number."
+     Comment "/policerank status when the line is not an account id and a rank number (#2838)."
+    }
     CustomStringTableItem "{57D1AD3E97B72422}" {
      Id "LF-PoliceRoster_Approved"
      Target_en_us "You are on the {Police} roster: go on duty at the station locker."

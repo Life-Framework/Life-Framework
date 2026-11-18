@@ -386,6 +386,19 @@
   exists), so an officer who stays connected but idle earns up to the cap. The shift's counted seconds are session
   state: a server restart gives a fresh cap. The cap log fires once per shift. Tests `police/duty-shift-cap`,
   `police/duty-clock-disconnect`.
+- 🔨 **A character switch settles the duty clock first** (#2838, in-dev, LOGIC `police/duty-clock-character-switch`). Every
+  change of the account's active character (a pick, a new character made active, the active one removed) runs
+  `LF_PoliceRanks.SettleForCharacterSwitch` before it: the running seconds go to the outgoing character's rank time
+  and the shift's pay, and the clock stops. Logout already settled at the disconnect. Log `[LFDebug:Ranks] duty clock
+  settled for <uid> (character <key>) before a character switch`. Medic rank time follows the same settle once medic
+  ranks (#2837) land.
+- 🔨 **Administrators set or demote a police rank** (#2838, in-dev, LOGIC `police/rank-admin-set`). Chat
+  `/policerank <account uid> <rank>` (`LF_PoliceRankAdmin`). The server checks the caller (engine administrator or
+  staff roster level `administrator`, as for application decisions), the account and the rank (0 to the top rung).
+  It settles a running duty clock, sets the active character's rank and logs `rank set by administrator <caller>:
+  <uid> (character <key>) rank <old> -> <new> (promotion|demotion|unchanged)`. A demotion restarts the character's
+  on-duty seconds at the start of the new rank, so the next accrual does not promote them back. Refusals are logged
+  and shown to the caller. Medic ranks are not covered yet (#2837 is not merged).
 - 🔨 **An expired trial ends the shift** (#2416, in-dev). `LF_PoliceTrialSweep` runs on the server every
   `trialSweepSeconds` (60): it expires trials (`ExpireTrials`), then clocks out each connected on-duty officer whose
   trial ended unpromoted and who may no longer clock in (`LF_PoliceApplications.TrialExpiredFor`, roster check), through
