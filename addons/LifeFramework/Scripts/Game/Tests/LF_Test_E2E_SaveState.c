@@ -86,6 +86,8 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 	static const string HELD_SITE = "e2e-held-ground-site";
 	static const int HELD_SECONDS = 3600;
 	static const int HELD_POINTS = 12;
+	//! A second site the same organization holds as captured ground (#2816, "tenancy" payload, save version 56).
+	static const string CAPTURED_SITE = "e2e-captured-site";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -433,6 +435,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		ctx.True(LF_Hideout.Assign(HELD_SITE, orgId), "e2e the organization leases the held site before the save");
 		ctx.True(LF_Hideout.TryUnlock(ORG_FOUNDER, HELD_SITE), "e2e the founder unlocks the held site before the save");
 		ctx.True(LF_Hideout.SetHeldGround(HELD_SITE, orgId, HELD_SECONDS, HELD_POINTS), "e2e the organization holds its site before the save");
+		ctx.True(LF_Hideout.HandOver(CAPTURED_SITE, orgId, "e2e"), "e2e the organization captures a second site beside its base before the save");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -678,6 +681,22 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 		ctx.Equal(LF_Test_E2E_SaveStateWrite.HELD_POINTS, held.m_iHoldPoints, "e2e the banked points are kept after the restart");
 #endif
 		LF_Debug.Info("Hideout", string.Format("e2e restart: %1 lease %2 holder '%3' hold %4 s points %5", site, LF_Hideout.GetOwner(site), held.m_sHolderOrgId, held.m_iHoldSeconds, held.m_iHoldPoints));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #2816 after the restart: the base lease stays a base, the captured site stays captured, and both are
+	//! still the organization's. Callers gate this on the loaded save's version.
+	protected void VerifyTenancy(LF_TestContext ctx)
+	{
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(LF_Test_E2E_SaveStateWrite.ORG_FOUNDER);
+		ctx.NotNull(org, "e2e the capturing organization is back after the restart");
+		if (!org)
+			return;
+
+		ctx.EqualStr(org.GetId(), LF_Hideout.GetOwner(LF_Test_E2E_SaveStateWrite.CAPTURED_SITE), "e2e the captured site keeps its lease after the restart");
+		ctx.True(LF_Hideout.IsCaptured(LF_Test_E2E_SaveStateWrite.CAPTURED_SITE), "e2e the captured site is still captured after the restart");
+		ctx.False(LF_Hideout.IsCaptured(LF_Test_E2E_SaveStateWrite.HELD_SITE), "e2e the base lease is still a base lease after the restart");
+		ctx.Equal(1, LF_Hideout.SitesOf(org.GetId(), true).Count(), "e2e the organization holds one captured site after the restart");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1035,6 +1054,10 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			LF_Test_GarageSlotsPersist.VerifyE2E(ctx);
 		VerifyOrgLadder(ctx);
 		VerifyHeldGround(ctx);
+		if (LF_SaveStamp.BootSaveVersion() >= LF_PersistenceComponentSerializer.PayloadSinceVersion("tenancy"))
+			VerifyTenancy(ctx);
+		else
+			LF_Debug.Info("Hideout", "e2e tenancy check skipped: the loaded save is older than the tenancy payload");
 
 		SCR_BaseGameMode gameMode = SCR_BaseGameMode.Cast(GetGame().GetGameMode());
 		ctx.NotNull(gameMode, "the DebugWorld game mode resolves in the reload boot");
