@@ -1,0 +1,15 @@
+{
+  "section": "barber",
+  "class": "LF_BarberSavePayload",
+  "version": 1,
+  "roots": "LF_BarberLookRow",
+  "records": {
+    "LF_BarberLookRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sKey",
+        "string m_sHead"
+      ]
+    }
+  }
+}

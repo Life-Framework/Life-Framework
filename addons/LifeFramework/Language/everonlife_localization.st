@@ -2110,6 +2110,86 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Deposit or withdraw cash at the counter"
      Comment "Description of the bank teller prompt."
     }
+    CustomStringTableItem "{62D75ACB54C1AA09}" {
+     Id "LF-Barber_Action"
+     Target_en_us "Ask for a haircut"
+     Comment "Action while seated on a barber chair: open the barber sheet (#3234)."
+    }
+    CustomStringTableItem "{B9315E3528BAE1E3}" {
+     Id "LF-Barber_Asking"
+     Target_en_us "The barber gets to work..."
+     Comment "Barber sheet status while the server answers (#3234)."
+    }
+    CustomStringTableItem "{FE9688F31B4E6799}" {
+     Id "LF-Barber_Close"
+     Target_en_us "Leave the chair as you were"
+     Comment "Barber sheet close button; the old look comes back (#3234)."
+    }
+    CustomStringTableItem "{AFE2CDD8B76005A5}" {
+     Id "LF-Barber_Done"
+     Target_en_us "Paid. Enjoy the new look."
+     Comment "Barber sheet status after a paid haircut (#3234)."
+    }
+    CustomStringTableItem "{8DC241E8A6EA978A}" {
+     Id "LF-Barber_Intro"
+     Target_en_us "Pick a new hair and beard, then pay at the chair."
+     Comment "First line of the barber sheet (#3234)."
+    }
+    CustomStringTableItem "{BCEF22626AE37FE8}" {
+     Id "LF-Barber_Look"
+     Target_en_us "Look %1 of %2"
+     Comment "Barber sheet: which look is shown on the seated character. %1 the look, %2 how many (#3234)."
+    }
+    CustomStringTableItem "{6DAE9AB8265EE308}" {
+     Id "LF-Barber_Next"
+     Target_en_us "Next look"
+     Comment "Barber sheet button (#3234)."
+    }
+    CustomStringTableItem "{5CE95C8E08A13CA8}" {
+     Id "LF-Barber_Pay"
+     Target_en_us "Pay {currency:sym}%1 for this look"
+     Comment "Barber sheet button: pay the fee and keep the shown look. %1 the fee in cash (#3234)."
+    }
+    CustomStringTableItem "{7721BE3239E4E078}" {
+     Id "LF-Barber_Prev"
+     Target_en_us "Previous look"
+     Comment "Barber sheet button (#3234)."
+    }
+    CustomStringTableItem "{63094ABE99436B00}" {
+     Id "LF-Barber_RefuseNoCash"
+     Target_en_us "Not enough cash on you"
+     Comment "Barber refusal: the fee is more than the cash carried (#3234)."
+    }
+    CustomStringTableItem "{79887C4EA5818614}" {
+     Id "LF-Barber_RefuseNoCharacter"
+     Target_en_us "The barber cannot see you"
+     Comment "Barber refusal: no character or record key (#3234)."
+    }
+    CustomStringTableItem "{B5EA72B91B44A3F8}" {
+     Id "LF-Barber_RefuseNoLook"
+     Target_en_us "The barber does not know that look"
+     Comment "Barber refusal: look index out of range (#3234)."
+    }
+    CustomStringTableItem "{7E370923ED0BF27F}" {
+     Id "LF-Barber_RefuseNoSeat"
+     Target_en_us "Sit in the barber chair first"
+     Comment "Barber refusal: the player is not seated on a barber chair (#3234)."
+    }
+    CustomStringTableItem "{F7263FF14E397E25}" {
+     Id "LF-Barber_RefuseOff"
+     Target_en_us "The barber is closed"
+     Comment "Barber refusal: the feature is off (#3234)."
+    }
+    CustomStringTableItem "{CCD3BB259D0AFB7E}" {
+     Id "LF-Barber_RefuseSameLook"
+     Target_en_us "That is already your look"
+     Comment "Barber refusal: the chosen look is the one worn (#3234)."
+    }
+    CustomStringTableItem "{E6E5C23EA2F7B092}" {
+     Id "LF-Barber_Title"
+     Target_en_us "Barber"
+     Comment "Title of the barber sheet (#3234)."
+    }
     CustomStringTableItem "{30B35DD36DE9AD2B}" {
      Id "LF-Bed_Action"
      Target_en_us "Put patient in bed"
