@@ -115,6 +115,10 @@ into sub-states**, each its own id in `m_aLF_LiveStates` (#2208), each passing `
 | 2c | Montignac, the factory, the collective-farm depot, an orchard village | Chapters 5 and 8 |
 | 2d | The scrapyard | Chapter 6 |
 
+Ids on the pack header (#2694): 2a = 21, 2b = 22, 2c = 23, 2d = 24. The header's `m_aLF_LiveStates` lists only live
+states (0 today), so 2a is dark until the cutover (#2212) adds 21; a place tagged 21 does not register before that
+(test `everon/live-state-2a`).
+
 The market, the supermarket and the bank interior are slots in places that are already live (the
 square), so they need no sub-state of their own.
 

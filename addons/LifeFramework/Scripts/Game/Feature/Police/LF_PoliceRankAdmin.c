@@ -8,7 +8,9 @@
 //! The rank is the target account's active character's (#331). A running duty clock is settled first,
 //! so the seconds earned at the old rank count at the old rank. After a demotion the character's
 //! on-duty seconds restart at the start of the new rank, so the next accrual does not promote them
-//! straight back. Medic ranks are not covered: they are not on main yet (#2837).
+//! straight back. The shift's unpaid seconds are restated at the new rank's rate (LF_DutyPay, #2874),
+//! and a demotion takes armory kit above the new rank off the officer (at once, or at their next
+//! spawn when offline). Medic ranks have no administrator path.
 //------------------------------------------------------------------------------------------------
 class LF_PoliceRankAdmin
 {
@@ -46,7 +48,9 @@ class LF_PoliceRankAdmin
 		// Seconds earned at the old rank count at the old rank.
 		LF_PoliceRanks.SettleNow(account);
 		int oldRank = account.GetPoliceRank();
+		float oldRate = LF_DutyPay.RateBeforeRankChange(account);
 		account.SetPoliceRank(rank);
+		LF_DutyPay.AfterRankChange(account, oldRate);
 
 		string change = "unchanged";
 		if (rank > oldRank)
@@ -57,6 +61,13 @@ class LF_PoliceRankAdmin
 		else if (rank < oldRank)
 		{
 			change = "demotion";
+			// Kit above the new rank comes off now, or at their next spawn when offline (#2874).
+			IEntity body = LF_PoliceRanks.OnlineBody(targetUid);
+			int taken = LF_PoliceRanks.StripKitAboveRank(targetUid, body);
+			if (!body && LF_ArmoryKits.Outstanding(targetUid) > 0)
+				LF_Debug.Info("Ranks", string.Format("rank set: %1 is offline; kit above rank %2 comes off at their next spawn", targetUid, rank));
+			else if (taken > 0)
+				LF_Debug.Info("Ranks", string.Format("rank set: %1 item(s) above rank %2 taken from %3", taken, rank, targetUid));
 		}
 
 		// Rank thresholds are running totals of on-duty seconds. A demoted officer starts the new rank

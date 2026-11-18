@@ -67,5 +67,13 @@ Stolen money is a separate item that never counts as cash.
 - ✅ Heat: each batch adds `m_iHeatPerBatch` (10) work units to the station's chain site (`m_sSiteId`, heat settings of
   `m_sChainId`, default `cider`) through `LF_ChainSites.AddWork` and publishes `LF_OnChainWork`, so the smell trace and
   the police lead work as at a still.
-- ⚠️ Not saved: a restart empties the station and a batch in it is lost. Follow-up: a station save section.
-- Test: `LF_Test_LaunderStation` (WORLD).
+- ✅ Saved (#2894): the batch is the `launder` save section (`LF_LaunderSavePayload`, `Feature/Laundering/LF_LaunderSave.c`),
+  one row per loaded station keyed by its chain site id (`m_sSiteId`): owner, marked notes held, clean cash still owed (after a
+  short pay, the unpaid rest), seconds of wash left and seconds it has waited washed (world time restarts at 0, so no clock is
+  saved). A restart gives the batch back to its owner only. A row whose station has not appeared 10 min after the load is dropped
+  with `LF_Debug.Warn`; a station deleted mid-session keeps its batch as a pending row for the next save. A save without the
+  section leaves every station empty. Day totals stay session-only (`LF_LaunderRules`).
+- ✅ Forfeit (#2894): a washed batch its owner leaves uncollected for `m_iForfeitSeconds` (station attribute, default 7200 s; 0
+  never forfeits) is forfeited: `LF_Debug.Info("Laundering", ...)` names owner, marked and clean amounts, nobody is paid, and the
+  station frees for anyone. A timer frees it without anyone touching it; the clock is part of the save.
+- Test: `LF_Test_LaunderStation` (WORLD), `LF_Test_LaunderStationPersist` (PERSISTENCE, restart check under `wt e2e`).
