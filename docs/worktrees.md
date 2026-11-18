@@ -1584,3 +1584,12 @@ GitHub cannot list the merged PRs it prunes nothing.
 `--oldest N` caps a run to the N least recently active of the worktrees that qualify, to free the most space at once; every rule above still applies to each one.
 
 **Why the marker is bookkeeping (2026-11-17).** `wt list` reconciles the registry and rewrote `tmp/wt.json` in every worktree, so all 214 looked touched a minute ago and `prune-safe` pruned none while C: filled to 195 MB free. `writeMarker` now writes only when the content changes, and the idle check (`newestActivityMs` in `tools/lib/lead.mjs`) ignores `tmp/wt.json` and its temp and lock files. `disk-guard-selftest` proves both and the thresholds.
+
+## Writes into the main checkout (#2785)
+
+On 2026-11-17/18 three agents wrote a localization diff and several `LF_Test_*.c` files into the lead's main checkout instead of their worktree, and each one blocked `git pull --ff-only`. Most agents are launched with the main checkout as their cwd and `cd` into the worktree only for shell commands, so the cwd alone is not a signal. Two pieces, both cheap:
+
+- **PreToolUse hook** (`.claude/settings.json` runs `tools/hooks/main-write-guard.mjs`, rule in `tools/lib/main-write-guard.mjs`). Write, Edit, MultiEdit and NotebookEdit are denied on a file under the main checkout's `addons/`, `tools/`, `docs/`, `website/`, `agent-box/`, `.claude/`, `.githooks/` or `.github/` when the session is an agent: its cwd is a linked worktree, or `wt new` ran in this session (it writes `tmp/wt/session-claims/<session id>.json`; a claim ends when the worktree folder is gone or after 48 h). The deny names the worktree path to write instead. Never denied: the session's own worktree, main's `tmp/` and `lf.local.json`, a session with no claim and cwd in main (the lead, the maintainer's own editing), Read and Bash. `LF_ALLOW_MAIN_WRITE=1` turns it off. A broken hook allows the call. One call costs about 60 ms (`main-write-guard-selftest` prints the measure).
+- **`tools\cli lead stray [--dry-run]`**, also run by the lead view (`STRAY` line; `LF_LEAD_STRAY=0` turns it off): in the main checkout on branch `main`, untracked files under those folders older than 2 minutes are moved to `C:\LF\lead\stray\<timestamp>\<same relative path>` (`LF_LEAD_STRAY_DIR` overrides; `tmp/stray` when there is no `C:\LF\lead`). Tracked files an agent modified are listed with the `git diff` hint, never reverted.
+
+The hook cannot see a shell write (`echo > file`, a script); the stray pass is the net for those.
