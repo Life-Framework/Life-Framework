@@ -10720,6 +10720,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This stall is taken, or you already rent one today."
      Comment "Toast: stall rent refused, the stall is rented or the player has another; nothing was taken (#2925)."
     }
+    CustomStringTableItem "{E3A1B2C4D5F60742}" {
+     Id "LF-Stall_Bought"
+     Target_en_us "You bought an item from the stall for %1."
+     Comment "Toast to the buyer: cash paid and the item is in the inventory (#2926). %1 = the price paid."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60740}" {
+     Id "LF-Stall_Buy"
+     Target_en_us "Buy from the stall"
+     Comment "Action on a rented market stall: buys the cheapest listing (#2926)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60741}" {
+     Id "LF-Stall_BuyDesc"
+     Target_en_us "Buy the cheapest item on this stall."
+     Comment "Description of the buy action on a market stall (#2926)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60744}" {
+     Id "LF-Stall_BuyerFull"
+     Target_en_us "You have no room to carry it. Nothing was taken."
+     Comment "Toast: buy refused, the item did not fit the buyer's inventory; cash refunded (#2926)."
+    }
     CustomStringTableItem "{E3A1B2C4D5F60735}" {
      Id "LF-Stall_Closed"
      Target_en_us "The market is closed. Stalls rent on market day."
@@ -10729,6 +10749,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Stall_NoCash"
      Target_en_us "You do not carry enough cash for the pitch fee."
      Comment "Toast: stall rent refused, short of cash; nothing was taken (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60746}" {
+     Id "LF-Stall_NoCashBuy"
+     Target_en_us "You do not carry enough cash for that."
+     Comment "Toast: buy refused, short of cash; nothing was taken (#2926)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60743}" {
+     Id "LF-Stall_NothingListed"
+     Target_en_us "This stall has nothing for sale right now."
+     Comment "Toast: buy refused, no open listing; nothing moved (#2926)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60747}" {
+     Id "LF-Stall_OwnStall"
+     Target_en_us "You cannot buy from your own stall."
+     Comment "Toast: the holder tried to buy their own listing (#2926)."
     }
     CustomStringTableItem "{E3A1B2C4D5F60731}" {
      Id "LF-Stall_Rent"
@@ -10745,6 +10780,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You rented a stall for today's market."
      Comment "Toast: the pitch fee was paid and the stall is yours until the market closes (#2925)."
     }
+    CustomStringTableItem "{E3A1B2C4D5F60748}" {
+     Id "LF-Stall_Sold"
+     Target_en_us "You sold an item at your stall and were paid %1."
+     Comment "Toast to the holder: a sale settled and the cash is in their pockets (#2926). %1 = the amount paid after the market's cut."
+    }
     CustomStringTableItem "{E3A1B2C4D5F60733}" {
      Id "LF-Stall_Taken"
      Target_en_us "Stall of %1"
@@ -10754,6 +10794,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Stall_Title"
      Target_en_us "Market stall"
      Comment "Toast title for a market stall rent (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60745}" {
+     Id "LF-Stall_Unavailable"
+     Target_en_us "That item is no longer available. Nothing was taken."
+     Comment "Toast: buy refused, the holder no longer has it or is away; cash refunded (#2926)."
     }
     CustomStringTableItem "{E3A1B2C4D5F60734}" {
      Id "LF-Stall_Unnamed"
