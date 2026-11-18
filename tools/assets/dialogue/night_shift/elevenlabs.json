@@ -66,58 +66,6 @@
       "request_id": "3dG1QfrHLHf6pmGlic0E",
       "seconds": 1.3,
       "mouth": "499965324688235556421111000"
-    },
-    "greet_refuses": {
-      "hash": "6cb641f1f7753383",
-      "date": "2026-11-18",
-      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
-      "voice_name": "Raspy - Convincing and Weary Narrator",
-      "model": "eleven_multilingual_v2",
-      "text": "I know your face from the night. Do not speak to me.",
-      "chars": 52,
-      "chars_total": 21,
-      "request_id": "gdysZuUXaEgJPIMrK2LL",
-      "seconds": 3.3,
-      "mouth": "389998979422227863553257655556431021003988973640792035776543119500"
-    },
-    "greet_wary": {
-      "hash": "b5bf1a6ff84ededb",
-      "date": "2026-11-18",
-      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
-      "voice_name": "Raspy - Convincing and Weary Narrator",
-      "model": "eleven_multilingual_v2",
-      "text": "You again. Make it short, I have work.",
-      "chars": 38,
-      "chars_total": 15,
-      "request_id": "u1HYOk96gV4fb6M97hn1",
-      "seconds": 2.24,
-      "mouth": "399998656655555411179938567367666644565411100"
-    },
-    "greet_friendly": {
-      "hash": "23da12bbb24af371",
-      "date": "2026-11-18",
-      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
-      "voice_name": "Raspy - Convincing and Weary Narrator",
-      "model": "eleven_multilingual_v2",
-      "text": "Ah, good evening. Good to see you. Sit if you like.",
-      "chars": 51,
-      "chars_total": 20,
-      "request_id": "nPdrfsmurKc5qV4nW0Af",
-      "seconds": 2.38,
-      "mouth": "499998787959863675444678542106733477536543105100"
-    },
-    "greet_regular": {
-      "hash": "e164c7a49f472e30",
-      "date": "2026-11-18",
-      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
-      "voice_name": "Raspy - Convincing and Weary Narrator",
-      "model": "eleven_multilingual_v2",
-      "text": "My friend! The night is long and your company shortens it. What do you want to know?",
-      "chars": 84,
-      "chars_total": 34,
-      "request_id": "a1xd94PpMLKnrFUGq55a",
-      "seconds": 5.04,
-      "mouth": "99994118987554379999789876777999642688755658716485168554387267864431256882278998799713478777766543100"
     }
   },
   "voice": {

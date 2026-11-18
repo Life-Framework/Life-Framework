@@ -1,0 +1,44 @@
+GenericEntity {
+ ID "46BC762CD55C4FA7"
+ components {
+  MeshObject "{C65E9B0AA5E788B5}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{91DE38B68E5F9636}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_ShopComponent "{A3BDE59A9DCF49FB}" {
+   m_sShopName "#LF-Shop_Name_FishCounter"
+   m_sShopDescription "#LF-Shop_Desc_FishCounter"
+   m_sOutletId "fish_counter"
+  }
+  ActionsManagerComponent "{34511DDC4E9BE5D6}" {
+   ActionContexts {
+    UserActionContext "{BFECD87484307793}" {
+     ContextName "default"
+     Position PointInfo "{536C321AAF533E21}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{A867DB2610C3BC16}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{20ED917D50B978A7}" {
+      Name "#LF-Shop_Open_FishCounter"
+      Description "#LF-Shop_Desc_FishCounter"
+     }
+    }
+   }
+  }
+  RplComponent "{E61144BD1A2233F2}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}
