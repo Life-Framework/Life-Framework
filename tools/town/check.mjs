@@ -12,7 +12,8 @@
 //   - every layer registers the LF_Places kinds its slot promises (`LF_PlaceComponent` m_sKind, id `<place>.<slot>`); a promised
 //     kind that no system lists in `m_aPlaces` of LF_SystemCatalog.conf is a WARN (the layer is right, nothing reads the kind yet);
 //   - a fitted slot whose kind needs a working component (BACKED_KINDS: JailCell, the shop counters) carries it, inline or in a prefab it
-//     places: an ERROR with --complete, a WARN otherwise (#2937); skipped with a note under --no-perf, which has no prefab reader;
+//     places, or in the layer of a companion slot that rides in its building (`with: <slot id>`, #3099): an ERROR with --complete, a WARN
+//     otherwise (#2937); skipped with a note under --no-perf, which has no prefab reader;
 //   - every entity of a layer stands inside its claimed building's footprint (or plot) plus the slot's margin;
 //   - no two claims name one building or plot (a street slot marked `shared` may stand on a building another slot holds);
 //   - a claim whose `destruction.mode` is "needs-hook" is a WARN until the core's indestructible hook lands (D15);
@@ -290,6 +291,9 @@ export function checkPlace(data, opts = {}) {
   } else if (wanted.length) {
     for (const { row, kind, comp } of wanted) {
       if (layerBacking(row.layer, opts.resolve).has(comp)) continue;
+      // A companion slot rides in this slot's building (`with: <slot id>` in the template: the jail cell beside the police desk, #2975):
+      // the component may sit in its layer, which stands in the same building.
+      if (base.slots.some((r) => r.layer !== null && slotsById.get(r.slot)?.with === row.slot && layerBacking(r.layer, opts.resolve).has(comp))) continue;
       const msg = `slot ${row.slot}: kind ${kind} has a marker but no ${comp} on any entity of the layer, inline or in a placed prefab: the system switches on and has nothing to run (fit it with the ${row.slot} kit)`;
       if (opts.complete) errors.push(msg);
       else warnings.push(msg);
