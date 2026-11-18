@@ -42,7 +42,7 @@ StringTable {
    Target_en_us "Deposit"
    Target_es_es "Depositar"
    Target_de_de "Einzahlen"
-   Target_fr_fr "Déposer"
+   Target_fr_fr "DÃ©poser"
    Target_it_it "Deposita"
    Target_pt_pt "Depositar"
    Target_pt_br "Depositar"
@@ -70,12 +70,12 @@ StringTable {
   CustomStringTableItem "{B3BF4076847C9C6E}" {
    Id "EL-ATM_Title"
    Target_en_us "ATM"
-   Target_es_es "Cajero Automático"
+   Target_es_es "Cajero AutomÃ¡tico"
    Target_de_de "Geldautomat"
    Target_fr_fr "Distributeur automatique"
    Target_it_it "Bancomat"
-   Target_pt_pt "Caixa automático"
-   Target_pt_br "Caixa eletrônico"
+   Target_pt_pt "Caixa automÃ¡tico"
+   Target_pt_br "Caixa eletrÃ´nico"
   }
     CustomStringTableItem "{B0D42569EC54BD93}" {
      Id "EL-ATM_TooFar"
@@ -202,8 +202,8 @@ StringTable {
      Id "EL-CC_Error_Age"
      Target_en_us "Enter an age between 18 and 80."
      Target_de_de "Gib ein Alter zwischen 18 und 80 ein."
-     Target_fr_fr "Saisissez un âge entre 18 et 80."
-     Target_it_it "Inserisci un'età tra 18 e 80."
+     Target_fr_fr "Saisissez un Ã¢ge entre 18 et 80."
+     Target_it_it "Inserisci un'etÃ  tra 18 e 80."
      Target_es_es "Introduce una edad entre 18 y 80."
      Target_pt_pt "Introduz uma idade entre 18 e 80."
      Target_pt_br "Digite uma idade entre 18 e 80."
@@ -228,10 +228,10 @@ StringTable {
      Id "EL-CC_Error_Fields"
      Target_en_us "Enter a first and last name."
      Target_de_de "Gib einen Vor- und Nachnamen ein."
-     Target_fr_fr "Saisissez un prénom et un nom."
+     Target_fr_fr "Saisissez un prÃ©nom et un nom."
      Target_it_it "Inserisci nome e cognome."
      Target_es_es "Introduce un nombre y un apellido."
-     Target_pt_pt "Introduz um nome próprio e um apelido."
+     Target_pt_pt "Introduz um nome prÃ³prio e um apelido."
      Target_pt_br "Digite um nome e um sobrenome."
      Comment "Character creation empty name error"
     }
@@ -254,7 +254,7 @@ StringTable {
      Id "EL-CC_FirstNamePlaceholder"
      Target_en_us "Enter your first name..."
      Target_de_de "Gib deinen Vornamen ein..."
-     Target_fr_fr "Saisissez votre prénom..."
+     Target_fr_fr "Saisissez votre prÃ©nom..."
      Target_it_it "Inserisci il tuo nome..."
      Target_es_es "Introduce tu nombre..."
      Target_pt_pt "Introduza o seu primeiro nome..."
@@ -277,8 +277,8 @@ StringTable {
    Target_en_us "Age:"
    Target_es_es "Edad:"
    Target_de_de "Alter:"
-   Target_fr_fr "Âge :"
-   Target_it_it "Età :"
+   Target_fr_fr "Ã‚ge :"
+   Target_it_it "EtÃ  :"
    Target_pt_pt "Idade:"
    Target_pt_br "Idade:"
   }
@@ -287,7 +287,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_en_us "Create Character"
     Target_es_es "Crear Personaje"
     Target_de_de "Charakter erstellen"
-    Target_fr_fr "Créer le personnage"
+    Target_fr_fr "CrÃ©er le personnage"
     Target_it_it "Crea personaggio"
     Target_pt_pt "Criar personagem"
     Target_pt_br "Criar personagem"
@@ -297,9 +297,9 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_en_us "First Name:"
    Target_es_es "Nombre:"
    Target_de_de "Vorname:"
-   Target_fr_fr "Prénom :"
+   Target_fr_fr "PrÃ©nom :"
    Target_it_it "Nome :"
-   Target_pt_pt "Nome próprio:"
+   Target_pt_pt "Nome prÃ³prio:"
    Target_pt_br "Primeiro nome:"
   }
   CustomStringTableItem "{32AE1891B7DEDCF6}" {
@@ -317,7 +317,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_en_us "Create Your Character"
    Target_es_es "Crea tu Personaje"
    Target_de_de "Erstelle deinen Charakter"
-   Target_fr_fr "Créez votre personnage"
+   Target_fr_fr "CrÃ©ez votre personnage"
    Target_it_it "Crea il tuo personaggio"
    Target_pt_pt "Cria o teu personagem"
    Target_pt_br "Crie seu personagem"
@@ -371,7 +371,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Id "EL-Death_Respawn"
     Target_en_us "Respawn"
     Target_de_de "Neu starten"
-    Target_fr_fr "Réapparaître"
+    Target_fr_fr "RÃ©apparaÃ®tre"
     Target_it_it "Ricomparizione"
     Target_es_es "Reaparecer"
     Target_pt_pt "Reaparecer"
@@ -382,17 +382,17 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Id "EL-Death_Title"
     Target_en_us "You are dead"
     Target_de_de "Du bist gestorben"
-    Target_fr_fr "Vous êtes mort"
+    Target_fr_fr "Vous Ãªtes mort"
     Target_it_it "Sei morto"
-    Target_es_es "Estás muerto"
-    Target_pt_pt "Você morreu"
-    Target_pt_br "Você morreu"
+    Target_es_es "EstÃ¡s muerto"
+    Target_pt_pt "VocÃª morreu"
+    Target_pt_br "VocÃª morreu"
     Comment "Death screen title"
    }
    CustomStringTableItem "{6A52D1D87E9A31C4}" {
     Id "EL-DebugMenu_Close"
     Target_en_us "Close"
-    Target_de_de "Schließen"
+    Target_de_de "SchlieÃŸen"
     Target_fr_fr "Fermer"
     Target_it_it "Chiudi"
     Target_es_es "Cerrar"
@@ -406,9 +406,9 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_de_de "Zivilisten-Fraktion"
     Target_fr_fr "Fraction civile"
     Target_it_it "Fazione civile"
-    Target_es_es "Facción civil"
-    Target_pt_pt "Facção civil"
-    Target_pt_br "Facção civil"
+    Target_es_es "FacciÃ³n civil"
+    Target_pt_pt "FacÃ§Ã£o civil"
+    Target_pt_br "FacÃ§Ã£o civil"
     Comment "Debug menu: set civilian faction"
    }
    CustomStringTableItem "{C72E71FF41583BB3}" {
@@ -417,9 +417,9 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_de_de "Polizei-Fraktion"
     Target_fr_fr "Fraction police"
     Target_it_it "Fazione polizia"
-    Target_es_es "Facción policial"
-    Target_pt_pt "Facção policial"
-    Target_pt_br "Facção policial"
+    Target_es_es "FacciÃ³n policial"
+    Target_pt_pt "FacÃ§Ã£o policial"
+    Target_pt_br "FacÃ§Ã£o policial"
     Comment "Debug menu: set police faction"
    }
    CustomStringTableItem "{B314C31C663DB665}" {
@@ -459,7 +459,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Id "EL-DebugMenu_JobFarmer"
     Target_en_us "Job: Farmer"
     Target_de_de "Job: Bauer"
-    Target_fr_fr "Métier : agriculteur"
+    Target_fr_fr "MÃ©tier : agriculteur"
     Target_it_it "Lavoro: contadino"
     Target_es_es "Trabajo: granjero"
     Target_pt_pt "Trabalho: agricultor"
@@ -470,7 +470,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Id "EL-DebugMenu_JobUnemployed"
     Target_en_us "Job: Unemployed"
     Target_de_de "Job: Arbeitslos"
-    Target_fr_fr "Métier : sans emploi"
+    Target_fr_fr "MÃ©tier : sans emploi"
     Target_it_it "Lavoro: disoccupato"
     Target_es_es "Trabajo: desempleado"
     Target_pt_pt "Trabalho: desempregado"
@@ -480,23 +480,23 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    CustomStringTableItem "{63A127949F852CC4}" {
     Id "EL-DebugMenu_SurvivalEmpty"
     Target_en_us "Survival Empty"
-    Target_de_de "Überleben leer"
+    Target_de_de "Ãœberleben leer"
     Target_fr_fr "Survie vide"
     Target_it_it "Sopravvivenza vuota"
-    Target_es_es "Supervivencia vacía"
-    Target_pt_pt "Sobrevivência vazia"
-    Target_pt_br "Sobrevivência vazia"
+    Target_es_es "Supervivencia vacÃ­a"
+    Target_pt_pt "SobrevivÃªncia vazia"
+    Target_pt_br "SobrevivÃªncia vazia"
     Comment "Debug menu: zero hunger/thirst/health"
    }
    CustomStringTableItem "{836DE3CEE3A9A308}" {
     Id "EL-DebugMenu_SurvivalFull"
     Target_en_us "Survival Full"
-    Target_de_de "Überleben voll"
-    Target_fr_fr "Survie complète"
+    Target_de_de "Ãœberleben voll"
+    Target_fr_fr "Survie complÃ¨te"
     Target_it_it "Sopravvivenza piena"
     Target_es_es "Supervivencia llena"
-    Target_pt_pt "Sobrevivência cheia"
-    Target_pt_br "Sobrevivência cheia"
+    Target_pt_pt "SobrevivÃªncia cheia"
+    Target_pt_br "SobrevivÃªncia cheia"
     Comment "Debug menu: max hunger/thirst/health"
    }
    CustomStringTableItem "{58B6B04D77AF1CCC}" {
@@ -513,19 +513,19 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     CustomStringTableItem "{40526487807838C7}" {
     Id "EL-DebugMenu_Title"
     Target_en_us "Debug Menu"
-    Target_de_de "Debug-Menü"
-    Target_fr_fr "Menu de débogage"
+    Target_de_de "Debug-MenÃ¼"
+    Target_fr_fr "Menu de dÃ©bogage"
     Target_it_it "Menu di debug"
-    Target_es_es "Menú de depuración"
-    Target_pt_pt "Menu de depuração"
-    Target_pt_br "Menu de depuração"
+    Target_es_es "MenÃº de depuraciÃ³n"
+    Target_pt_pt "Menu de depuraÃ§Ã£o"
+    Target_pt_br "Menu de depuraÃ§Ã£o"
     Comment "Debug menu title"
    }
    CustomStringTableItem "{2DBD1E711A1FE9C9}" {
     Id "EL-DebugMenu_Wanted0"
     Target_en_us "Wanted 0"
     Target_de_de "Gesucht 0"
-    Target_fr_fr "Recherché 0"
+    Target_fr_fr "RecherchÃ© 0"
     Target_it_it "Ricercato 0"
     Target_es_es "Buscado 0"
     Target_pt_pt "Procurado 0"
@@ -536,7 +536,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Id "EL-DebugMenu_Wanted5"
     Target_en_us "Wanted 5"
     Target_de_de "Gesucht 5"
-    Target_fr_fr "Recherché 5"
+    Target_fr_fr "RecherchÃ© 5"
     Target_it_it "Ricercato 5"
     Target_es_es "Buscado 5"
     Target_pt_pt "Procurado 5"
@@ -546,8 +546,8 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    CustomStringTableItem "{B8AE8B1EC379425C}" {
     Id "EL-DeleteAction_DisplayName"
     Target_en_us "Destroy"
-    Target_de_de "Zerstören"
-    Target_fr_fr "Détruire"
+    Target_de_de "ZerstÃ¶ren"
+    Target_fr_fr "DÃ©truire"
     Target_it_it "Distruggi"
     Target_es_es "Destruir"
     Target_pt_pt "Destruir"
@@ -583,18 +583,18 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_de_de "Dienststatus"
    Target_fr_fr "Statut de Service"
    Target_it_it "Stato di Servizio"
-   Target_pt_pt "Estado de Serviço"
-   Target_pt_br "Estado de Serviço"
+   Target_pt_pt "Estado de ServiÃ§o"
+   Target_pt_br "Estado de ServiÃ§o"
   }
   CustomStringTableItem "{E707FDC68C849C38}" {
    Id "EL-Duty_Status_Change"
    Target_en_us "You are now %1"
    Target_es_es "Ahora eres %1"
    Target_de_de "Du bist jetzt %1"
-   Target_fr_fr "Vous êtes maintenant %1"
+   Target_fr_fr "Vous Ãªtes maintenant %1"
    Target_it_it "Ora sei %1"
-   Target_pt_pt "Agora és %1"
-   Target_pt_br "Agora você é %1"
+   Target_pt_pt "Agora Ã©s %1"
+   Target_pt_br "Agora vocÃª Ã© %1"
   }
     CustomStringTableItem "{4F8C2A91D6B74E12}" {
      Id "EL-Escort_Arrest"
@@ -634,22 +634,22 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    CustomStringTableItem "{8D4E3C7BBC67A1B5}" {
     Id "EL-Faction_Police"
     Target_en_us "Police"
-    Target_es_es "Policía"
+    Target_es_es "PolicÃ­a"
     Target_de_de "Polizei"
     Target_fr_fr "Police"
     Target_it_it "Polizia"
-    Target_pt_pt "Polícia"
-    Target_pt_br "Polícia"
+    Target_pt_pt "PolÃ­cia"
+    Target_pt_br "PolÃ­cia"
    }
    CustomStringTableItem "{71BBA650CD61B241}" {
     Id "EL-Faction_Title"
     Target_en_us "Select Faction"
-    Target_es_es "Seleccionar facción"
-    Target_de_de "Fraktion wählen"
+    Target_es_es "Seleccionar facciÃ³n"
+    Target_de_de "Fraktion wÃ¤hlen"
     Target_fr_fr "Choisir une faction"
     Target_it_it "Seleziona fazione"
-    Target_pt_pt "Selecionar facção"
-    Target_pt_br "Selecionar facção"
+    Target_pt_pt "Selecionar facÃ§Ã£o"
+    Target_pt_br "Selecionar facÃ§Ã£o"
    }
   CustomStringTableItem "{3786BE1BEAA9D0BE}" {
    Id "EL-Fine_Failed"
@@ -658,14 +658,14 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_de_de "Der Spieler hat nicht genug Geld!"
    Target_fr_fr "Le joueur n'a pas assez d'argent!"
    Target_it_it "Il giocatore non ha abbastanza denaro!"
-   Target_pt_pt "O jogador não tem dinheiro suficiente!"
-   Target_pt_br "O jogador não tem dinheiro suficiente!"
+   Target_pt_pt "O jogador nÃ£o tem dinheiro suficiente!"
+   Target_pt_br "O jogador nÃ£o tem dinheiro suficiente!"
   }
     CustomStringTableItem "{41C6EEAFCB6BAA99}" {
      Id "EL-Fine_Title"
      Target_en_us "Fine Failed"
-     Target_de_de "Bußgeld fehlgeschlagen"
-     Target_fr_fr "Amende échouée"
+     Target_de_de "BuÃŸgeld fehlgeschlagen"
+     Target_fr_fr "Amende Ã©chouÃ©e"
      Target_it_it "Multa non riuscita"
      Target_es_es "Multa fallida"
      Target_pt_pt "Multa falhada"
@@ -681,7 +681,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Id "EL-Fined"
    Target_en_us "Fined"
    Target_es_es "Multado"
-   Target_de_de "Gebüßt"
+   Target_de_de "GebÃ¼ÃŸt"
    Target_fr_fr "Amende"
    Target_it_it "Multato"
    Target_pt_pt "Multado"
@@ -746,22 +746,22 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
      Id "EL-HouseLock_Reason"
      Target_en_us "House is locked"
      Target_de_de "Das Haus ist abgeschlossen"
-     Target_fr_fr "La maison est verrouillée"
-     Target_it_it "La casa è bloccata"
-     Target_es_es "La casa está bloqueada"
-     Target_pt_pt "A casa está trancada"
-     Target_pt_br "A casa está trancada"
+     Target_fr_fr "La maison est verrouillÃ©e"
+     Target_it_it "La casa Ã¨ bloccata"
+     Target_es_es "La casa estÃ¡ bloqueada"
+     Target_pt_pt "A casa estÃ¡ trancada"
+     Target_pt_br "A casa estÃ¡ trancada"
      Comment "Door action cannot-perform reason on a locked house"
     }
   CustomStringTableItem "{04BE9409328F0209}" {
    Id "EL-ID_Information"
    Target_en_us "ID Information"
-   Target_es_es "Información de ID"
+   Target_es_es "InformaciÃ³n de ID"
    Target_de_de "ID-Information"
    Target_fr_fr "Information d'ID"
    Target_it_it "Informazione ID"
-   Target_pt_pt "Informação de ID"
-   Target_pt_br "Informação de ID"
+   Target_pt_pt "InformaÃ§Ã£o de ID"
+   Target_pt_br "InformaÃ§Ã£o de ID"
   }
   CustomStringTableItem "{4CC21547F7D0E8C0}" {
    Id "EL-Inventory_Full"
@@ -770,15 +770,15 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_de_de "Inventar voll!"
    Target_fr_fr "Inventaire plein!"
    Target_it_it "Inventario pieno!"
-   Target_pt_pt "Inventário cheio!"
-   Target_pt_br "Inventário cheio!"
+   Target_pt_pt "InventÃ¡rio cheio!"
+   Target_pt_br "InventÃ¡rio cheio!"
   }
     CustomStringTableItem "{EC4658E696C73E74}" {
      Id "EL-ItemDesc_HouseKey"
      Target_en_us "Key for the house you own"
-     Target_de_de "Schlüssel für dein eigenes Haus"
-     Target_fr_fr "Clé de la maison que vous possédez"
-     Target_it_it "Chiave della casa di tua proprietà"
+     Target_de_de "SchlÃ¼ssel fÃ¼r dein eigenes Haus"
+     Target_fr_fr "ClÃ© de la maison que vous possÃ©dez"
+     Target_it_it "Chiave della casa di tua proprietÃ "
      Target_es_es "Llave de la casa de tu propiedad"
      Target_pt_pt "Chave da casa da sua propriedade"
      Target_pt_br "Chave da casa da sua propriedade"
@@ -787,8 +787,8 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     CustomStringTableItem "{B908E0A780049A70}" {
      Id "EL-ItemName_HouseKey"
      Target_en_us "House Key"
-     Target_de_de "Hausschlüssel"
-     Target_fr_fr "Clé de maison"
+     Target_de_de "HausschlÃ¼ssel"
+     Target_fr_fr "ClÃ© de maison"
      Target_it_it "Chiave di casa"
      Target_es_es "Llave de casa"
      Target_pt_pt "Chave de casa"
@@ -798,9 +798,9 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
 CustomStringTableItem "{AA76A797BE84093A}" {
     Id "EL-Item_Bought"
     Target_en_us "Bought %1 x%2!"
-    Target_es_es "Compró %1 x%2!"
+    Target_es_es "ComprÃ³ %1 x%2!"
     Target_de_de "%1 x%2 gekauft!"
-    Target_fr_fr "Acheté %1 x%2!"
+    Target_fr_fr "AchetÃ© %1 x%2!"
     Target_it_it "Comprato %1 x%2!"
     Target_pt_pt "Comprou %1 x%2!"
     Target_pt_br "Comprou %1 x%2!"
@@ -812,8 +812,8 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_fr_fr "Outil pour miner le minerai"
     Target_it_it "Attrezzo per estrarre minerale"
     Target_es_es "Herramienta para extraer mineral"
-    Target_pt_pt "Ferramenta para minerar minério"
-    Target_pt_br "Ferramenta para minerar minério"
+    Target_pt_pt "Ferramenta para minerar minÃ©rio"
+    Target_pt_br "Ferramenta para minerar minÃ©rio"
     Comment "Pickaxe tool description"
     Modified 1788019742
     Author "LifeFramework"
@@ -837,7 +837,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Id "EL-Item_Sold"
    Target_en_us "Sold item for {currency:sym}%1!"
    Target_es_es "Item vendido por {currency:sym}%1!"
-   Target_de_de "Item für {currency:sym}%1 verkauft!"
+   Target_de_de "Item fÃ¼r {currency:sym}%1 verkauft!"
    Target_fr_fr "Objet vendu pour {currency:sym}%1!"
    Target_it_it "Oggetto venduto per {currency:sym}%1!"
    Target_pt_pt "Item vendido por {currency:sym}%1!"
@@ -891,9 +891,9 @@ CustomStringTableItem "{AA76A797BE84093A}" {
   CustomStringTableItem "{C60F134F56CDE9BE}" {
    Id "EL-Job_Earned"
    Target_en_us "Earned {currency:sym}%1 for work!"
-   Target_es_es "Ganó {currency:sym}%1 por trabajo!"
-   Target_de_de "{currency:sym}%1 für Arbeit verdient!"
-   Target_fr_fr "Gagné {currency:sym}%1 pour le travail!"
+   Target_es_es "GanÃ³ {currency:sym}%1 por trabajo!"
+   Target_de_de "{currency:sym}%1 fÃ¼r Arbeit verdient!"
+   Target_fr_fr "GagnÃ© {currency:sym}%1 pour le travail!"
    Target_it_it "Guadagnato {currency:sym}%1 per lavoro!"
    Target_pt_pt "Ganhou {currency:sym}%1 pelo trabalho!"
    Target_pt_br "Ganhou {currency:sym}%1 pelo trabalho!"
@@ -948,7 +948,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Target_en_us "Job Reward"
    Target_es_es "Recompensa de Trabajo"
    Target_de_de "Arbeitsbelohnung"
-   Target_fr_fr "Récompense de Travail"
+   Target_fr_fr "RÃ©compense de Travail"
    Target_it_it "Ricompensa Lavoro"
    Target_pt_pt "Recompensa de Trabalho"
    Target_pt_br "Recompensa de Trabalho"
@@ -977,7 +977,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Id "EL-Keybinds_Inventory_MoveQuantity"
    Target_en_us "Move stack"
    Target_de_de "Stapel verschieben"
-   Target_fr_fr "Déplacer la pile"
+   Target_fr_fr "DÃ©placer la pile"
    Target_it_it "Sposta pila"
    Target_es_es "Mover pila"
    Target_pt_pt "Mover pilha"
@@ -1028,12 +1028,12 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    CustomStringTableItem "{47776A7324DF510E}" {
     Id "EL-Keybinds_OpenDebugMenu"
     Target_en_us "Open debug menu"
-    Target_de_de "Debug-Menü öffnen"
-    Target_fr_fr "Ouvrir le menu de débogage"
+    Target_de_de "Debug-MenÃ¼ Ã¶ffnen"
+    Target_fr_fr "Ouvrir le menu de dÃ©bogage"
     Target_it_it "Apri il menu di debug"
-    Target_es_es "Abrir menú de depuración"
-    Target_pt_pt "Abrir menu de depuração"
-    Target_pt_br "Abrir menu de depuração"
+    Target_es_es "Abrir menÃº de depuraciÃ³n"
+    Target_pt_pt "Abrir menu de depuraÃ§Ã£o"
+    Target_pt_br "Abrir menu de depuraÃ§Ã£o"
     Comment "Keybind: open the debug menu"
    }
   CustomStringTableItem "{5A5EA70D1ADCCA9E}" {
@@ -1133,7 +1133,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Target_en_us "Player arrested!"
    Target_es_es "Jugador arrestado!"
    Target_de_de "Spieler verhaftet!"
-   Target_fr_fr "Joueur arrêté!"
+   Target_fr_fr "Joueur arrÃªtÃ©!"
    Target_it_it "Giocatore arrestato!"
    Target_pt_pt "Jogador preso!"
    Target_pt_br "Jogador preso!"
@@ -1154,7 +1154,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Target_en_us "Weapons confiscated!"
    Target_es_es "Armas confiscadas!"
    Target_de_de "Waffen beschlagnahmt!"
-   Target_fr_fr "Armes confisquées!"
+   Target_fr_fr "Armes confisquÃ©es!"
    Target_it_it "Armi confiscate!"
    Target_pt_pt "Armas confiscadas!"
    Target_pt_br "Armas confiscadas!"
@@ -1182,12 +1182,12 @@ CustomStringTableItem "{AA76A797BE84093A}" {
   CustomStringTableItem "{94F7D789515A802D}" {
    Id "EL-Police_Alert_Vehicle"
    Target_en_us "Crime Alert: Vehicle theft!"
-   Target_es_es "Alerta de Crimen: Robo de vehículo!"
+   Target_es_es "Alerta de Crimen: Robo de vehÃ­culo!"
    Target_de_de "Verbrechensalarm: Fahrzeugraub!"
-   Target_fr_fr "Alerte Crime: Vol de véhicule!"
+   Target_fr_fr "Alerte Crime: Vol de vÃ©hicule!"
    Target_it_it "Allarme Crimine: Furto di veicolo!"
-   Target_pt_pt "Alerta de Crime: Roubo de veículo!"
-   Target_pt_br "Alerta de Crime: Roubo de veículo!"
+   Target_pt_pt "Alerta de Crime: Roubo de veÃ­culo!"
+   Target_pt_br "Alerta de Crime: Roubo de veÃ­culo!"
   }
   CustomStringTableItem "{DA10C8D24DAFB028}" {
    Id "EL-Police_Alert_Weapon"
@@ -1205,9 +1205,9 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_de_de "{Police}aktion"
      Target_fr_fr "Action de {police}"
      Target_it_it "Azione di {police}"
-     Target_es_es "Acción policial"
-     Target_pt_pt "Ação policial"
-     Target_pt_br "Ação policial"
+     Target_es_es "AcciÃ³n policial"
+     Target_pt_pt "AÃ§Ã£o policial"
+     Target_pt_br "AÃ§Ã£o policial"
      Comment "Notification title for police actions"
     }
     CustomStringTableItem "{200D9FF1811EAA61}" {
@@ -1360,7 +1360,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Target_en_us "Robbery Failed"
    Target_es_es "Robo Fallido"
    Target_de_de "Raub fehlgeschlagen"
-   Target_fr_fr "Vol Échoué"
+   Target_fr_fr "Vol Ã‰chouÃ©"
    Target_it_it "Rapina Fallita"
    Target_pt_pt "Roubo Falhado"
    Target_pt_br "Roubo Falhado"
@@ -1370,7 +1370,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Target_en_us "Robbery Successful"
    Target_es_es "Robo Exitoso"
    Target_de_de "Raub erfolgreich"
-   Target_fr_fr "Vol Réussi"
+   Target_fr_fr "Vol RÃ©ussi"
    Target_it_it "Rapina Riuscita"
    Target_pt_pt "Roubo Bem-Sucedido"
    Target_pt_br "Roubo Bem-Sucedido"
@@ -1378,12 +1378,12 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     CustomStringTableItem "{F28F55445F43594B}" {
      Id "EL-SellBlocked_Equipped"
      Target_en_us "You cannot sell an equipped item"
-     Target_de_de "Du kannst einen ausgerüsteten Gegenstand nicht verkaufen"
-     Target_fr_fr "Vous ne pouvez pas vendre un objet équipé"
+     Target_de_de "Du kannst einen ausgerÃ¼steten Gegenstand nicht verkaufen"
+     Target_fr_fr "Vous ne pouvez pas vendre un objet Ã©quipÃ©"
      Target_it_it "Non puoi vendere un oggetto equipaggiato"
      Target_es_es "No puedes vender un objeto equipado"
-     Target_pt_pt "Não pode vender um item equipado"
-     Target_pt_br "Você não pode vender um item equipado"
+     Target_pt_pt "NÃ£o pode vender um item equipado"
+     Target_pt_br "VocÃª nÃ£o pode vender um item equipado"
      Comment "Shop sell blocked: item is equipped"
     }
     CustomStringTableItem "{8C6C046D530707FD}" {
@@ -1393,19 +1393,19 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_fr_fr "Cet objet n'a aucune valeur"
      Target_it_it "Questo oggetto non ha valore"
      Target_es_es "Este objeto no tiene valor"
-     Target_pt_pt "Este item não tem valor"
-     Target_pt_br "Este item não tem valor"
+     Target_pt_pt "Este item nÃ£o tem valor"
+     Target_pt_br "Este item nÃ£o tem valor"
      Comment "Shop sell blocked: item has no sell value"
     }
     CustomStringTableItem "{8C63A97A927C0B53}" {
      Id "EL-SellBlocked_NotBoughtHere"
      Target_en_us "This shop does not buy this item"
-     Target_de_de "Dieses Geschäft kauft diesen Gegenstand nicht"
-     Target_fr_fr "Ce magasin n'achète pas cet objet"
+     Target_de_de "Dieses GeschÃ¤ft kauft diesen Gegenstand nicht"
+     Target_fr_fr "Ce magasin n'achÃ¨te pas cet objet"
      Target_it_it "Questo negozio non compra questo oggetto"
      Target_es_es "Esta tienda no compra este objeto"
-     Target_pt_pt "Esta loja não compra este item"
-     Target_pt_br "Esta loja não compra este item"
+     Target_pt_pt "Esta loja nÃ£o compra este item"
+     Target_pt_br "Esta loja nÃ£o compra este item"
      Comment "Shop sell blocked: shop does not buy this item"
     }
    CustomStringTableItem "{57624FF39CA0C9FB}" {
@@ -1434,7 +1434,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Id "EL-Shop_PurchaseFailed"
     Target_en_us "Purchase failed"
     Target_de_de "Kauf fehlgeschlagen"
-    Target_fr_fr "Achat échoué"
+    Target_fr_fr "Achat Ã©chouÃ©"
     Target_it_it "Acquisto non riuscito"
     Target_es_es "Compra fallida"
     Target_pt_pt "Compra falhou"
@@ -1456,9 +1456,9 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "EL-Shop_Results"
     Target_en_us "Showing %1 of %2 items"
     Target_de_de "%1 von %2 Artikeln angezeigt"
-    Target_fr_fr "%1 articles sur %2 affichǸs"
+    Target_fr_fr "%1 articles sur %2 affichÇ¸s"
     Target_it_it "Mostrati %1 di %2 articoli"
-    Target_es_es "Mostrando %1 de %2 artículos"
+    Target_es_es "Mostrando %1 de %2 artÃ­culos"
     Target_pt_pt "A mostrar %1 de %2 artigos"
     Target_pt_br "Mostrando %1 de %2 artigos"
     Comment "Shop result-count hint"
@@ -1469,7 +1469,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_de_de "Artikel suchen"
     Target_fr_fr "Rechercher des articles"
     Target_it_it "Cerca articoli"
-    Target_es_es "Buscar artículos"
+    Target_es_es "Buscar artÃ­culos"
     Target_pt_pt "Pesquisar artigos"
     Target_pt_br "Pesquisar artigos"
     Comment "Shop search box placeholder"
@@ -1489,7 +1489,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "EL-Shop_SellFailed"
     Target_en_us "Nothing to sell"
     Target_de_de "Nichts zu verkaufen"
-    Target_fr_fr "Rien à vendre"
+    Target_fr_fr "Rien Ã  vendre"
     Target_it_it "Niente da vendere"
     Target_es_es "Nada que vender"
     Target_pt_pt "Nada para vender"
@@ -1525,36 +1525,36 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_fr_fr "Campement minier"
     Target_it_it "Campo minerario"
     Target_pt_pt "Campo mineiro"
-    Target_pt_br "Acampamento de mineração"
+    Target_pt_br "Acampamento de mineraÃ§Ã£o"
    }
    CustomStringTableItem "{41489243B750D905}" {
     Id "EL-SpawnLoc_Outpost"
     Target_en_us "East Outpost"
     Target_es_es "Puesto del este"
-    Target_de_de "Ost-Außenposten"
+    Target_de_de "Ost-AuÃŸenposten"
     Target_fr_fr "Avant-poste est"
     Target_it_it "Avamposto est"
-    Target_pt_pt "Posto avançado este"
-    Target_pt_br "Posto avançado leste"
+    Target_pt_pt "Posto avanÃ§ado este"
+    Target_pt_br "Posto avanÃ§ado leste"
    }
    CustomStringTableItem "{41489243B750D904}" {
     Id "EL-SpawnLoc_Station"
     Target_en_us "Police Station"
-    Target_es_es "Comisaría"
+    Target_es_es "ComisarÃ­a"
     Target_de_de "Polizeiwache"
     Target_fr_fr "Poste de police"
     Target_it_it "Stazione di polizia"
-    Target_pt_pt "Esquadra de polícia"
-    Target_pt_br "Delegacia de polícia"
+    Target_pt_pt "Esquadra de polÃ­cia"
+    Target_pt_br "Delegacia de polÃ­cia"
    }
    CustomStringTableItem "{41489243B750D901}" {
     Id "EL-SpawnLoc_Title"
     Target_en_us "Select Spawn Location"
-    Target_es_es "Seleccionar punto de aparición"
-    Target_de_de "Spawnpunkt wählen"
+    Target_es_es "Seleccionar punto de apariciÃ³n"
+    Target_de_de "Spawnpunkt wÃ¤hlen"
     Target_fr_fr "Choisir le point d'apparition"
     Target_it_it "Seleziona punto di comparsa"
-    Target_pt_pt "Selecionar ponto de aparição"
+    Target_pt_pt "Selecionar ponto de apariÃ§Ã£o"
     Target_pt_br "Selecionar ponto de surgimento"
    }
    CustomStringTableItem "{41489243B750D902}" {
@@ -1564,18 +1564,18 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_de_de "Marktplatz"
     Target_fr_fr "Place du village"
     Target_it_it "Piazza del paese"
-    Target_pt_pt "Praça da vila"
-    Target_pt_br "Praça da vila"
+    Target_pt_pt "PraÃ§a da vila"
+    Target_pt_br "PraÃ§a da vila"
    }
   CustomStringTableItem "{BA65E2A7D9A6EB16}" {
    Id "EL-Spawn_Failed"
    Target_en_us "Failed to spawn vehicle!"
-   Target_es_es "Fallo al spawnear vehículo!"
+   Target_es_es "Fallo al spawnear vehÃ­culo!"
    Target_de_de "Fahrzeug spawnen fehlgeschlagen!"
-   Target_fr_fr "Échec du spawn de véhicule!"
+   Target_fr_fr "Ã‰chec du spawn de vÃ©hicule!"
    Target_it_it "Fallito spawn veicolo!"
-   Target_pt_pt "Falha ao spawnar veículo!"
-   Target_pt_br "Falha ao spawnar veículo!"
+   Target_pt_pt "Falha ao spawnar veÃ­culo!"
+   Target_pt_br "Falha ao spawnar veÃ­culo!"
   }
   CustomStringTableItem "{5A7AC3DBDBC982B7}" {
    Id "EL-SplitQuantityDialog_Input_Amount"
@@ -1607,7 +1607,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Id "EL-SplitQuantityDialog_Input_SplitOff"
    Target_en_us "Split off"
    Target_de_de "Abteilen"
-   Target_fr_fr "Séparer"
+   Target_fr_fr "SÃ©parer"
    Target_it_it "Separa"
    Target_es_es "Separar"
    Target_pt_pt "Separar"
@@ -1619,10 +1619,10 @@ CustomStringTableItem "{44869271883D0402}" {
   CustomStringTableItem "{5A7AC3DBDC021AB3}" {
    Id "EL-SplitQuantityDialog_Message"
    Target_en_us "Choose the stack size you want to split off"
-   Target_de_de "Wähle die Größe des Stapels der abgespalten werden soll"
-   Target_fr_fr "Choisissez la taille de la pile à séparer"
+   Target_de_de "WÃ¤hle die GrÃ¶ÃŸe des Stapels der abgespalten werden soll"
+   Target_fr_fr "Choisissez la taille de la pile Ã  sÃ©parer"
    Target_it_it "Scegli la dimensione della pila da separare"
-   Target_es_es "Elige el tamaño de la pila que quieres separar"
+   Target_es_es "Elige el tamaÃ±o de la pila que quieres separar"
    Target_pt_pt "Escolha o tamanho da pilha a separar"
    Target_pt_br "Escolha o tamanho da pilha a separar"
    Modified 1517997601
@@ -1645,9 +1645,9 @@ CustomStringTableItem "{44869271883D0402}" {
   CustomStringTableItem "{51406463B7ACAB53}" {
    Id "EL-Stole_Money"
    Target_en_us "Stole {currency:sym}%1!"
-   Target_es_es "Robó {currency:sym}%1!"
+   Target_es_es "RobÃ³ {currency:sym}%1!"
    Target_de_de "{currency:sym}%1 gestohlen!"
-   Target_fr_fr "Volé {currency:sym}%1!"
+   Target_fr_fr "VolÃ© {currency:sym}%1!"
    Target_it_it "Rubato {currency:sym}%1!"
    Target_pt_pt "Roubou {currency:sym}%1!"
    Target_pt_br "Roubou {currency:sym}%1!"
@@ -1656,11 +1656,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "EL-Survival_Health"
      Target_en_us "Health:"
      Target_de_de "Gesundheit:"
-     Target_fr_fr "Santé :"
+     Target_fr_fr "SantÃ© :"
      Target_it_it "Salute:"
      Target_es_es "Salud:"
-     Target_pt_pt "Saúde:"
-     Target_pt_br "Saúde:"
+     Target_pt_pt "SaÃºde:"
+     Target_pt_br "SaÃºde:"
      Comment "Survival HUD health label"
     }
     CustomStringTableItem "{F1A1819AC780B000}" {
@@ -1690,7 +1690,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Target_en_us "Trade Successful"
    Target_es_es "Intercambio Exitoso"
    Target_de_de "Handel erfolgreich"
-   Target_fr_fr "Échange Réussi"
+   Target_fr_fr "Ã‰change RÃ©ussi"
    Target_it_it "Scambio Riuscito"
    Target_pt_pt "Troca Bem-Sucedida"
    Target_pt_br "Troca Bem-Sucedida"
@@ -1699,11 +1699,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "EL-VehicleLock_Action"
     Target_en_us "Lock/Unlock Vehicle"
     Target_de_de "Fahrzeug ver-/entriegeln"
-    Target_fr_fr "Verrouiller/Déverrouiller le véhicule"
+    Target_fr_fr "Verrouiller/DÃ©verrouiller le vÃ©hicule"
     Target_it_it "Blocca/Sblocca veicolo"
-    Target_es_es "Bloquear/Desbloquear vehículo"
-    Target_pt_pt "Trancar/Destrancar veículo"
-    Target_pt_br "Trancar/Destrancar veículo"
+    Target_es_es "Bloquear/Desbloquear vehÃ­culo"
+    Target_pt_pt "Trancar/Destrancar veÃ­culo"
+    Target_pt_br "Trancar/Destrancar veÃ­culo"
     Modified 1788019742
     Author "LifeFramework"
     LastChanged "LifeFramework"
@@ -1721,12 +1721,12 @@ CustomStringTableItem "{44869271883D0402}" {
    CustomStringTableItem "{3183B68A7D10419E}" {
     Id "EL-VehicleLock_MissingKey"
     Target_en_us "You need the key for this vehicle"
-    Target_de_de "Sie benötigen den Schlüssel für dieses Fahrzeug"
-    Target_fr_fr "Vous avez besoin de la clé de ce véhicule"
+    Target_de_de "Sie benÃ¶tigen den SchlÃ¼ssel fÃ¼r dieses Fahrzeug"
+    Target_fr_fr "Vous avez besoin de la clÃ© de ce vÃ©hicule"
     Target_it_it "Ti serve la chiave di questo veicolo"
-    Target_es_es "Necesitas la llave de este vehículo"
-    Target_pt_pt "Precisa da chave deste veículo"
-    Target_pt_br "Você precisa da chave deste veículo"
+    Target_es_es "Necesitas la llave de este vehÃ­culo"
+    Target_pt_pt "Precisa da chave deste veÃ­culo"
+    Target_pt_br "VocÃª precisa da chave deste veÃ­culo"
     Modified 1788019742
     Author "LifeFramework"
     LastChanged "LifeFramework"
@@ -1735,11 +1735,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "EL-VehicleLock_Reason"
     Target_en_us "Vehicle is locked"
     Target_de_de "Fahrzeug ist abgeschlossen"
-    Target_fr_fr "Véhicule verrouillé"
+    Target_fr_fr "VÃ©hicule verrouillÃ©"
     Target_it_it "Veicolo bloccato"
-    Target_es_es "Vehículo bloqueado"
-    Target_pt_pt "Veículo trancado"
-    Target_pt_br "Veículo trancado"
+    Target_es_es "VehÃ­culo bloqueado"
+    Target_pt_pt "VeÃ­culo trancado"
+    Target_pt_br "VeÃ­culo trancado"
     Modified 1788019742
     Author "LifeFramework"
     LastChanged "LifeFramework"
@@ -1748,11 +1748,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "EL-VehicleLock_Title"
     Target_en_us "Vehicle Lock"
     Target_de_de "Fahrzeugschloss"
-    Target_fr_fr "Verrou du véhicule"
+    Target_fr_fr "Verrou du vÃ©hicule"
     Target_it_it "Blocco veicolo"
-    Target_es_es "Bloqueo de vehículo"
-    Target_pt_pt "Bloqueio do veículo"
-    Target_pt_br "Bloqueio do veículo"
+    Target_es_es "Bloqueo de vehÃ­culo"
+    Target_pt_pt "Bloqueio do veÃ­culo"
+    Target_pt_br "Bloqueio do veÃ­culo"
     Modified 1788019742
     Author "LifeFramework"
     LastChanged "LifeFramework"
@@ -1761,11 +1761,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "EL-VehicleLocked"
     Target_en_us "Your vehicle is now locked."
     Target_de_de "Ihr Fahrzeug ist jetzt abgeschlossen."
-    Target_fr_fr "Votre véhicule est maintenant verrouillé."
-    Target_it_it "Il tuo veicolo è ora bloccato."
-    Target_es_es "Tu vehículo ahora está bloqueado."
-    Target_pt_pt "O seu veículo agora está trancado."
-    Target_pt_br "Seu veículo agora está trancado."
+    Target_fr_fr "Votre vÃ©hicule est maintenant verrouillÃ©."
+    Target_it_it "Il tuo veicolo Ã¨ ora bloccato."
+    Target_es_es "Tu vehÃ­culo ahora estÃ¡ bloqueado."
+    Target_pt_pt "O seu veÃ­culo agora estÃ¡ trancado."
+    Target_pt_br "Seu veÃ­culo agora estÃ¡ trancado."
     Modified 1788019742
     Author "LifeFramework"
     LastChanged "LifeFramework"
@@ -1774,11 +1774,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "EL-VehicleUnlocked"
     Target_en_us "Your vehicle is now unlocked."
     Target_de_de "Ihr Fahrzeug ist jetzt aufgeschlossen."
-    Target_fr_fr "Votre véhicule est maintenant déverrouillé."
-    Target_it_it "Il tuo veicolo è ora sbloccato."
-    Target_es_es "Tu vehículo ahora está desbloqueado."
-    Target_pt_pt "O seu veículo agora está destrancado."
-    Target_pt_br "Seu veículo agora está destrancado."
+    Target_fr_fr "Votre vÃ©hicule est maintenant dÃ©verrouillÃ©."
+    Target_it_it "Il tuo veicolo Ã¨ ora sbloccato."
+    Target_es_es "Tu vehÃ­culo ahora estÃ¡ desbloqueado."
+    Target_pt_pt "O seu veÃ­culo agora estÃ¡ destrancado."
+    Target_pt_br "Seu veÃ­culo agora estÃ¡ destrancado."
     Modified 1788019742
     Author "LifeFramework"
     LastChanged "LifeFramework"
@@ -1851,12 +1851,12 @@ CustomStringTableItem "{44869271883D0402}" {
   CustomStringTableItem "{769912DD3060E56A}" {
    Id "EL-Vehicle_Stolen"
    Target_en_us "Vehicle stolen!"
-   Target_es_es "Vehículo robado!"
+   Target_es_es "VehÃ­culo robado!"
    Target_de_de "Fahrzeug gestohlen!"
-   Target_fr_fr "Véhicule volé!"
+   Target_fr_fr "VÃ©hicule volÃ©!"
    Target_it_it "Veicolo rubato!"
-   Target_pt_pt "Veículo roubado!"
-   Target_pt_br "Veículo roubado!"
+   Target_pt_pt "VeÃ­culo roubado!"
+   Target_pt_br "VeÃ­culo roubado!"
   }
     CustomStringTableItem "{E1C0E00100000003}" {
      Id "EL-Vehicle_Store"
@@ -1878,7 +1878,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Target_en_us "Weapon stolen!"
    Target_es_es "Arma robada!"
    Target_de_de "Waffe gestohlen!"
-   Target_fr_fr "Arme volée!"
+   Target_fr_fr "Arme volÃ©e!"
    Target_it_it "Arma rubata!"
    Target_pt_pt "Arma roubada!"
    Target_pt_br "Arma roubada!"
@@ -1887,11 +1887,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "EL-Whitelist_NotAllowed"
      Target_en_us "You are not allowed to use this"
      Target_de_de "Du darfst dies nicht verwenden"
-     Target_fr_fr "Vous n'êtes pas autorisé à utiliser ceci"
+     Target_fr_fr "Vous n'Ãªtes pas autorisÃ© Ã  utiliser ceci"
      Target_it_it "Non sei autorizzato a usarlo"
      Target_es_es "No tienes permitido usar esto"
-     Target_pt_pt "Não está autorizado a usar isto"
-     Target_pt_br "Você não está autorizado a usar isto"
+     Target_pt_pt "NÃ£o estÃ¡ autorizado a usar isto"
+     Target_pt_br "VocÃª nÃ£o estÃ¡ autorizado a usar isto"
      Comment "Whitelist-gated action cannot-perform reason"
     }
     CustomStringTableItem "{11FBC6AD34589936}" {
@@ -1901,8 +1901,8 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_fr_fr "Panneau de liste blanche"
      Target_it_it "Insegna whitelist"
      Target_es_es "Cartel de lista blanca"
-     Target_pt_pt "Placa de lista de permissões"
-     Target_pt_br "Placa de lista de permissões"
+     Target_pt_pt "Placa de lista de permissÃµes"
+     Target_pt_br "Placa de lista de permissÃµes"
      Comment "Whitelist sign interactive action name"
     }
     CustomStringTableItem "{4A64CBDDC70A3B14}" {
@@ -2762,7 +2762,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C0DF6FBEA91CB184}" {
      Id "LF-Credits_110"
-     Target_en_us "Café owner's seven lines"
+     Target_en_us "CafÃ© owner's seven lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E14413C1D94DD1F}" {
@@ -5262,13 +5262,13 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{0DAF48DFDAAF2069}" {
      Id "LF-Job_Desc_Medic"
      Target_en_us "Emergency ambulance crew. Treats the injured on the public payroll."
-     Target_es_es "Paramédico de emergencias. Atiende a los heridos con sueldo público."
+     Target_es_es "ParamÃ©dico de emergencias. Atiende a los heridos con sueldo pÃºblico."
      Comment "Description of the ambulance service job"
     }
     CustomStringTableItem "{4CA1C4431CA9A325}" {
      Id "LF-Job_Desc_Police"
      Target_en_us "Sworn police officer. Requires an approved appointment."
-     Target_es_es "Oficial de policía. Requiere un nombramiento aprobado."
+     Target_es_es "Oficial de policÃ­a. Requiere un nombramiento aprobado."
      Comment "Description of the police job (appointment = whitelist)"
     }
     CustomStringTableItem "{2FFBFD36EA8DB8AE}" {
@@ -5290,7 +5290,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{5374FA2BFDB1A7AE}" {
      Id "LF-Job_Hired"
      Target_en_us "You now work as %1, grade %2."
-     Target_es_es "Ahora trabajas como %1, categoría %2."
+     Target_es_es "Ahora trabajas como %1, categorÃ­a %2."
      Comment "Hint text when the player takes a civilian job. %1 = job title, %2 = grade (job level)"
     }
     CustomStringTableItem "{196A4BD9FFC674C5}" {
@@ -5312,13 +5312,13 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{695CFE5E8782D705}" {
      Id "LF-Job_Name_Farmer"
      Target_en_us "Farm hand"
-     Target_es_es "Peón agrícola"
+     Target_es_es "PeÃ³n agrÃ­cola"
      Comment "Job title: agricultural worker (1989 employment form wording)"
     }
     CustomStringTableItem "{EBFC5BE844D9E9E3}" {
      Id "LF-Job_Name_Lumberjack"
      Target_en_us "Logger"
-     Target_es_es "Leñador"
+     Target_es_es "LeÃ±ador"
      Comment "Job title: forestry worker"
     }
     CustomStringTableItem "{7199A0B3FCE020A3}" {
@@ -5336,7 +5336,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{FDFA125F576C29FB}" {
      Id "LF-Job_Name_Police"
      Target_en_us "Police officer"
-     Target_es_es "Policía"
+     Target_es_es "PolicÃ­a"
      Comment "Job title: police officer"
     }
     CustomStringTableItem "{F4140C183366F34A}" {
@@ -5365,7 +5365,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{0F3FC6994B2A56D8}" {
      Id "LF-Job_NeedPoliceBadge"
      Target_en_us "You need your {police} warrant card to go on duty. It is issued at the station."
-     Target_es_es "Necesitas la placa policial para entrar de servicio. Se expide en la comisaría."
+     Target_es_es "Necesitas la placa policial para entrar de servicio. Se expide en la comisarÃ­a."
      Comment "Police job refused: the player lacks the police credential licence"
     }
     CustomStringTableItem "{F51D6FC3BD1F68DC}" {
@@ -5439,7 +5439,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{CF29236D0C626F05}" {
      Id "LF-Job_Promoted"
      Target_en_us "%1, grade %2. Practice pays: you bring in %3% more per shift."
-     Target_es_es "%1, categoría %2. La práctica se nota: rindes un %3% más por turno."
+     Target_es_es "%1, categorÃ­a %2. La prÃ¡ctica se nota: rindes un %3% mÃ¡s por turno."
      Comment "Hint text when job grade rises. %1 = job title, %2 = grade, %3 = yield bonus percent"
     }
     CustomStringTableItem "{AF990714687E46C1}" {
@@ -5614,7 +5614,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{2024E806595907BF}" {
      Id "LF-Level_Promoted"
      Target_en_us "Your record now reads grade %1. Your supervisor has put you down for further training."
-     Target_es_es "Tu expediente ya figura en la categoría %1. Tu supervisor te ha propuesto para más formación."
+     Target_es_es "Tu expediente ya figura en la categorÃ­a %1. Tu supervisor te ha propuesto para mÃ¡s formaciÃ³n."
      Comment "Hint text when overall standing rises. %1 = grade. Further training = one skill point to spend on a licence"
     }
     CustomStringTableItem "{8D0BA6972F630893}" {
@@ -5626,7 +5626,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{53E56B72A7F27F7F}" {
      Id "LF-Level_Promoted_Title"
      Target_en_us "Standing improved"
-     Target_es_es "Mejora de categoría"
+     Target_es_es "Mejora de categorÃ­a"
      Comment "Hint title when the character's overall standing rises (replaces an arcade LEVEL UP)"
     }
     CustomStringTableItem "{7782A81CDE1A5199}" {
@@ -5722,7 +5722,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{C8CAEB5DF24A1E79}" {
      Id "LF-License_CriminalBlackmarket_Desc"
      Target_en_us "You know someone in the back room: illegal weapons, vehicles and clothing."
-     Target_es_es "Conoces a alguien en el mercado negro: armas, vehículos y ropa ilegales."
+     Target_es_es "Conoces a alguien en el mercado negro: armas, vehÃ­culos y ropa ilegales."
      Comment "Underground skill description"
     }
     CustomStringTableItem "{02105F9797802A3E}" {
@@ -5746,25 +5746,25 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{19A2ACB62354FA15}" {
      Id "LF-License_CriminalRobbery_Desc"
      Target_en_us "You know how to rob shops and other premises. The police can arrest you."
-     Target_es_es "Sabes robar tiendas y otros locales. La policía puede arrestarte."
+     Target_es_es "Sabes robar tiendas y otros locales. La policÃ­a puede arrestarte."
      Comment "Underground skill description"
     }
     CustomStringTableItem "{45C9A748A0EC27AC}" {
      Id "LF-License_CriminalRobbery_Name"
      Target_en_us "Professional thief"
-     Target_es_es "Ladrón profesional"
+     Target_es_es "LadrÃ³n profesional"
      Comment "Underground skill name: robbery"
     }
     CustomStringTableItem "{05A75882D73C7AA8}" {
      Id "LF-License_CriminalVehicles_Desc"
      Target_en_us "Lets you buy modified or stolen vehicles. Requires a back-room contact."
-     Target_es_es "Permite comprar vehículos modificados o robados. Requiere un contacto del mercado negro."
+     Target_es_es "Permite comprar vehÃ­culos modificados o robados. Requiere un contacto del mercado negro."
      Comment "Underground skill description"
     }
     CustomStringTableItem "{5EF93ACC4BD2B30E}" {
      Id "LF-License_CriminalVehicles_Name"
      Target_en_us "Vehicle smuggler"
-     Target_es_es "Contrabandista de vehículos"
+     Target_es_es "Contrabandista de vehÃ­culos"
      Comment "Underground skill name: illegal vehicles"
     }
     CustomStringTableItem "{2EDB9E69E8E040F3}" {
@@ -5794,7 +5794,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{C8B554017BA55A32}" {
      Id "LF-License_FarmerApple_Desc"
      Target_en_us "Permits picking apples in the orchards. Farm work only."
-     Target_es_es "Permite recolectar manzanas en los huertos. Solo para trabajo agrícola."
+     Target_es_es "Permite recolectar manzanas en los huertos. Solo para trabajo agrÃ­cola."
      Comment "Licence description"
     }
     CustomStringTableItem "{F8F02CBA407DB562}" {
@@ -5806,19 +5806,19 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{1921CA724A9210CF}" {
      Id "LF-License_FarmerField_Desc"
      Target_en_us "Starting permit for farm work. Lets you gather crops by hand."
-     Target_es_es "Permiso inicial de trabajo agrícola. Permite recoger cultivos a mano."
+     Target_es_es "Permiso inicial de trabajo agrÃ­cola. Permite recoger cultivos a mano."
      Comment "Licence description"
     }
     CustomStringTableItem "{33B679F9679C9184}" {
      Id "LF-License_FarmerField_Name"
      Target_en_us "Field hand"
-     Target_es_es "Jornalero agrícola"
+     Target_es_es "Jornalero agrÃ­cola"
      Comment "Licence name: starting farm permit"
     }
     CustomStringTableItem "{DB482F762BCADC84}" {
      Id "LF-License_FarmerPlum_Desc"
      Target_en_us "Permits picking plums. Farm work only."
-     Target_es_es "Permite recolectar ciruelas. Solo para trabajo agrícola."
+     Target_es_es "Permite recolectar ciruelas. Solo para trabajo agrÃ­cola."
      Comment "Licence description"
     }
     CustomStringTableItem "{907E758E2A75E717}" {
@@ -5830,19 +5830,19 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{9D0A14CCECAD0FA0}" {
      Id "LF-License_FarmerSpeed_Desc"
      Target_en_us "Years in the fields: you pick fruit and draw water twice as fast. Farm work only."
-     Target_es_es "Años en el campo: recolectas fruta y agua el doble de rápido. Solo para trabajo agrícola."
+     Target_es_es "AÃ±os en el campo: recolectas fruta y agua el doble de rÃ¡pido. Solo para trabajo agrÃ­cola."
      Comment "Licence description"
     }
     CustomStringTableItem "{6B8613BCC510B24D}" {
      Id "LF-License_FarmerSpeed_Name"
      Target_en_us "Seasoned field hand"
-     Target_es_es "Peón experimentado"
+     Target_es_es "PeÃ³n experimentado"
      Comment "Licence name: faster farm work from experience"
     }
     CustomStringTableItem "{16307C311176370F}" {
      Id "LF-License_FarmerWater_Desc"
      Target_en_us "Permits drawing clean water. Farm work only."
-     Target_es_es "Permite recoger agua limpia. Solo para trabajo agrícola."
+     Target_es_es "Permite recoger agua limpia. Solo para trabajo agrÃ­cola."
      Comment "Licence description"
     }
     CustomStringTableItem "{5439217A822B0A98}" {
@@ -5876,7 +5876,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{E61C0E0A8EDB2204}" {
      Id "LF-License_LumberjackBasic_Desc"
      Target_en_us "Permits felling trees with an axe. Forestry work only."
-     Target_es_es "Permite talar árboles con hacha. Solo para trabajo forestal."
+     Target_es_es "Permite talar Ã¡rboles con hacha. Solo para trabajo forestal."
      Comment "Licence description"
     }
     CustomStringTableItem "{963225B9757EABD9}" {
@@ -5900,19 +5900,19 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{799448B54F0FA216}" {
      Id "LF-License_LumberjackSpeed_Desc"
      Target_en_us "Years in the forest: you fell trees twice as fast. Forestry work only."
-     Target_es_es "Años en el bosque: talas árboles el doble de rápido. Solo para trabajo forestal."
+     Target_es_es "AÃ±os en el bosque: talas Ã¡rboles el doble de rÃ¡pido. Solo para trabajo forestal."
      Comment "Licence description"
     }
     CustomStringTableItem "{9310A55A29C5AB39}" {
      Id "LF-License_LumberjackSpeed_Name"
      Target_en_us "Seasoned logger"
-     Target_es_es "Leñador experimentado"
+     Target_es_es "LeÃ±ador experimentado"
      Comment "Licence name: faster felling from experience"
     }
     CustomStringTableItem "{3D7CB03E481166E3}" {
      Id "LF-License_MedicAccess_Desc"
      Target_en_us "Official ambulance service credential. Required to go on duty."
-     Target_es_es "Acreditación oficial del servicio de ambulancias. Necesaria para entrar de servicio."
+     Target_es_es "AcreditaciÃ³n oficial del servicio de ambulancias. Necesaria para entrar de servicio."
      Comment "Licence description"
     }
     CustomStringTableItem "{8E937DCF7ED8F47C}" {
@@ -5954,19 +5954,19 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{E25FC9B920D69E5B}" {
      Id "LF-License_MedicRevive_Name"
      Target_en_us "Resuscitation certificate"
-     Target_es_es "Certificado de reanimación"
+     Target_es_es "Certificado de reanimaciÃ³n"
      Comment "Licence name: reviving the unconscious"
     }
     CustomStringTableItem "{B9758C07B8B9645C}" {
      Id "LF-License_MinerCoal_Desc"
      Target_en_us "Permits cutting coal with a pick. Mine work only."
-     Target_es_es "Permite extraer carbón con pico. Solo para trabajo de mina."
+     Target_es_es "Permite extraer carbÃ³n con pico. Solo para trabajo de mina."
      Comment "Licence description"
     }
     CustomStringTableItem "{D07532E7830E5DA7}" {
      Id "LF-License_MinerCoal_Name"
      Target_en_us "Coal face permit"
-     Target_es_es "Permiso de mina de carbón"
+     Target_es_es "Permiso de mina de carbÃ³n"
      Comment "Licence name: coal mining"
     }
     CustomStringTableItem "{398537ABA9F82833}" {
@@ -6008,7 +6008,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{F5405603934A1084}" {
      Id "LF-License_MinerSpeed_Desc"
      Target_en_us "Years underground: you cut any ore twice as fast. Mine work only."
-     Target_es_es "Años bajo tierra: extraes cualquier mineral el doble de rápido. Solo para trabajo de mina."
+     Target_es_es "AÃ±os bajo tierra: extraes cualquier mineral el doble de rÃ¡pido. Solo para trabajo de mina."
      Comment "Licence description"
     }
     CustomStringTableItem "{7CECA66DA479A94D}" {
@@ -6020,7 +6020,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{BDE1051C590C0420}" {
      Id "LF-License_PoliceAccess_Desc"
      Target_en_us "Official police credential. Required to go on duty."
-     Target_es_es "Acreditación oficial de policía. Necesaria para entrar de servicio."
+     Target_es_es "AcreditaciÃ³n oficial de policÃ­a. Necesaria para entrar de servicio."
      Comment "Licence description"
     }
     CustomStringTableItem "{F5DCC2DF5B1749C9}" {
@@ -6032,7 +6032,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{D4F41D86072924D4}" {
      Id "LF-License_PoliceArrest_Desc"
      Target_en_us "Authorises arrests. Police officers on the roster only."
-     Target_es_es "Autoriza a realizar arrestos. Solo para policías en plantilla."
+     Target_es_es "Autoriza a realizar arrestos. Solo para policÃ­as en plantilla."
      Comment "Licence description"
     }
     CustomStringTableItem "{C73088E5160767C2}" {
@@ -6044,7 +6044,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{C5AA33FDAE156EF8}" {
      Id "LF-License_PoliceFine_Desc"
      Target_en_us "Authorises issuing fines. Police officers on the roster only."
-     Target_es_es "Autoriza a imponer multas. Solo para policías en plantilla."
+     Target_es_es "Autoriza a imponer multas. Solo para policÃ­as en plantilla."
      Comment "Licence description"
     }
     CustomStringTableItem "{44CBDAFCAE506445}" {
@@ -6056,7 +6056,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{8D66BEC61FE33397}" {
      Id "LF-License_PoliceSearch_Desc"
      Target_en_us "Authorises searching suspects. Police officers on the roster only."
-     Target_es_es "Autoriza a registrar a sospechosos. Solo para policías en plantilla."
+     Target_es_es "Autoriza a registrar a sospechosos. Solo para policÃ­as en plantilla."
      Comment "Licence description"
     }
     CustomStringTableItem "{B1588D6DB4D51DBF}" {
@@ -6471,6 +6471,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Map_AreaSafe"
      Target_en_us "Safe zone"
      Comment "Map label of a safe zone at the closest zoom."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60718}" {
+     Id "LF-Market_BoardTitle"
+     Target_en_us "Prices today"
+     Comment "Title of the trader chalk price board card."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60719}" {
+     Id "LF-Market_NoPrices"
+     Target_en_us "No prices today."
+     Comment "Price board line when the market is off or lists no goods."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F6071A}" {
+     Id "LF-Market_Price"
+     Target_en_us "%1  %2"
+     Comment "Price board line: %1 good name, %2 price."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F6071B}" {
+     Id "LF-Market_PriceDown"
+     Target_en_us "%1  %2 %3"
+     Comment "Price board line for a good below its base: %1 name, %2 price, %3 down arrow."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F6071C}" {
+     Id "LF-Market_Read"
+     Target_en_us "Read today's prices"
+     Comment "Action on the trader chalk price board."
     }
     CustomStringTableItem "{DF4F6E621FD608FA}" {
      Id "LF-MedicRank_Doctor"
@@ -8580,7 +8605,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{7D3A91C4E85B2F60}" {
      Id "LF-Police_MenuTitle"
      Target_en_us "Station desk"
-     Target_es_es "Mostrador de la comisaría"
+     Target_es_es "Mostrador de la comisarÃ­a"
      Comment "Title of the police station desk menu (wanted list, fines, arrests)"
     }
     CustomStringTableItem "{77F083725C2B630B}" {
@@ -8683,22 +8708,22 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "LF-Quest_Accepted"
     Target_en_us "Quest accepted"
     Target_de_de "Auftrag angenommen"
-    Target_fr_fr "Quête acceptée"
+    Target_fr_fr "QuÃªte acceptÃ©e"
     Target_it_it "Missione accettata"
-    Target_es_es "Misión aceptada"
-    Target_pt_pt "Missão aceite"
-    Target_pt_br "Missão aceita"
+    Target_es_es "MisiÃ³n aceptada"
+    Target_pt_pt "MissÃ£o aceite"
+    Target_pt_br "MissÃ£o aceita"
     Comment "Quest accepted notification"
    }
    CustomStringTableItem "{E2E355A0237019E3}" {
     Id "LF-Quest_Action"
     Target_en_us "Talk to Quest Giver"
     Target_de_de "Mit Questgeber sprechen"
-    Target_fr_fr "Parler au donneur de quêtes"
+    Target_fr_fr "Parler au donneur de quÃªtes"
     Target_it_it "Parla con il mercante di missioni"
     Target_es_es "Hablar con el dador de misiones"
-    Target_pt_pt "Falar com o doador de missões"
-    Target_pt_br "Falar com o doador de missões"
+    Target_pt_pt "Falar com o doador de missÃµes"
+    Target_pt_br "Falar com o doador de missÃµes"
     Comment "Quest giver interaction action name"
    }
     CustomStringTableItem "{DD20CCA577AB2B68}" {
@@ -8775,11 +8800,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "LF-Quest_Expired"
     Target_en_us "Quest expired"
     Target_de_de "Auftrag abgelaufen"
-    Target_fr_fr "Quête expirée"
+    Target_fr_fr "QuÃªte expirÃ©e"
     Target_it_it "Missione scaduta"
-    Target_es_es "Misión expirada"
-    Target_pt_pt "Missão expirada"
-    Target_pt_br "Missão expirada"
+    Target_es_es "MisiÃ³n expirada"
+    Target_pt_pt "MissÃ£o expirada"
+    Target_pt_br "MissÃ£o expirada"
     Comment "Timed quest expired notification"
    }
     CustomStringTableItem "{9823FC0642192065}" {
@@ -8813,39 +8838,39 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "LF-Quest_IntroArea_Desc"
     Target_en_us "Visit the marked area near the start point."
     Target_de_de "Besuche das markierte Gebiet nahe dem Startpunkt."
-    Target_fr_fr "Visitez la zone marquée près du point de départ."
+    Target_fr_fr "Visitez la zone marquÃ©e prÃ¨s du point de dÃ©part."
     Target_it_it "Visita l'area segnata vicino al punto di partenza."
     Target_es_es "Visita la zona marcada cerca del punto de inicio."
-    Target_pt_pt "Visite a área marcada perto do ponto de partida."
-    Target_pt_br "Visite a área marcada perto do ponto de partida."
+    Target_pt_pt "Visite a Ã¡rea marcada perto do ponto de partida."
+    Target_pt_br "Visite a Ã¡rea marcada perto do ponto de partida."
     Comment "Area quest description"
    }
    CustomStringTableItem "{C77DB039F02C2043}" {
     Id "LF-Quest_IntroArea_Title"
     Target_en_us "Know the Area"
     Target_de_de "Die Gegend kennenlernen"
-    Target_fr_fr "Connaître le secteur"
+    Target_fr_fr "ConnaÃ®tre le secteur"
     Target_it_it "Conosci la zona"
     Target_es_es "Conoce la zona"
-    Target_pt_pt "Conheça a área"
-    Target_pt_br "Conheça a área"
+    Target_pt_pt "ConheÃ§a a Ã¡rea"
+    Target_pt_br "ConheÃ§a a Ã¡rea"
     Comment "Area quest title"
    }
    CustomStringTableItem "{EE99865B91651AE5}" {
     Id "LF-Quest_IntroCollect_Desc"
     Target_en_us "Bring a water bottle to the quest giver."
     Target_de_de "Bring eine Wasserflasche zum Questgeber."
-    Target_fr_fr "Apportez une bouteille d'eau au donneur de quêtes."
+    Target_fr_fr "Apportez une bouteille d'eau au donneur de quÃªtes."
     Target_it_it "Porta una bottiglia d'acqua al mercante di missioni."
     Target_es_es "Lleva una botella de agua al dador de misiones."
-    Target_pt_pt "Leve uma garrafa de água ao doador de missões."
-    Target_pt_br "Leve uma garrafa de água ao doador de missões."
+    Target_pt_pt "Leve uma garrafa de Ã¡gua ao doador de missÃµes."
+    Target_pt_br "Leve uma garrafa de Ã¡gua ao doador de missÃµes."
     Comment "Collect quest description"
    }
    CustomStringTableItem "{C9634CE0587CFA70}" {
     Id "LF-Quest_IntroCollect_Title"
     Target_en_us "Drinks on Me"
-    Target_de_de "Getränke gefällig"
+    Target_de_de "GetrÃ¤nke gefÃ¤llig"
     Target_fr_fr "Une petite soif"
     Target_it_it "Un giro di bevute"
     Target_es_es "Invita a la casa"
@@ -8856,8 +8881,8 @@ CustomStringTableItem "{44869271883D0402}" {
    CustomStringTableItem "{A38C998BD1D37CDD}" {
     Id "LF-Quest_IntroGather_Desc"
     Target_en_us "Gather 3 items in the world."
-    Target_de_de "Sammle 3 Gegenstände in der Welt."
-    Target_fr_fr "Récoltez 3 objets dans le monde."
+    Target_de_de "Sammle 3 GegenstÃ¤nde in der Welt."
+    Target_fr_fr "RÃ©coltez 3 objets dans le monde."
     Target_it_it "Raccogli 3 oggetti nel mondo."
     Target_es_es "Recoge 3 objetos en el mundo."
     Target_pt_pt "Colete 3 itens no mundo."
@@ -8868,18 +8893,18 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "LF-Quest_IntroGather_Title"
     Target_en_us "Gatherer's Start"
     Target_de_de "Sammler-Einstieg"
-    Target_fr_fr "Première récolte"
+    Target_fr_fr "PremiÃ¨re rÃ©colte"
     Target_it_it "Inizio del raccoglitore"
     Target_es_es "Inicio del recolector"
-    Target_pt_pt "Início do coletor"
-    Target_pt_br "Início do coletor"
+    Target_pt_pt "InÃ­cio do coletor"
+    Target_pt_br "InÃ­cio do coletor"
     Comment "Gather quest title"
    }
    CustomStringTableItem "{64A90BC62007EB6E}" {
     Id "LF-Quest_IntroKill_Desc"
     Target_en_us "Eliminate 2 enemy players."
     Target_de_de "Schalte 2 feindliche Spieler aus."
-    Target_fr_fr "Éliminez 2 joueurs ennemis."
+    Target_fr_fr "Ã‰liminez 2 joueurs ennemis."
     Target_it_it "Elimina 2 giocatori nemici."
     Target_es_es "Elimina a 2 jugadores enemigos."
     Target_pt_pt "Elimine 2 jogadores inimigos."
@@ -8889,23 +8914,23 @@ CustomStringTableItem "{44869271883D0402}" {
    CustomStringTableItem "{ECACEA89B00C7695}" {
     Id "LF-Quest_IntroKill_Title"
     Target_en_us "Show of Force"
-    Target_de_de "Zeichen der Stärke"
+    Target_de_de "Zeichen der StÃ¤rke"
     Target_fr_fr "Montrer sa force"
     Target_it_it "Mostra di forza"
-    Target_es_es "Demostración de fuerza"
-    Target_pt_pt "Demonstração de força"
-    Target_pt_br "Demonstração de força"
+    Target_es_es "DemostraciÃ³n de fuerza"
+    Target_pt_pt "DemonstraÃ§Ã£o de forÃ§a"
+    Target_pt_br "DemonstraÃ§Ã£o de forÃ§a"
     Comment "Kill quest title"
    }
    CustomStringTableItem "{D40D1DC625C5FAA9}" {
     Id "LF-Quest_IntroTalk_Desc"
     Target_en_us "Talk to the quest giver to learn how quests work."
-    Target_de_de "Sprich mit dem Questgeber, um zu lernen, wie Aufträge funktionieren."
-    Target_fr_fr "Parlez au donneur de quêtes pour apprendre leur fonctionnement."
+    Target_de_de "Sprich mit dem Questgeber, um zu lernen, wie AuftrÃ¤ge funktionieren."
+    Target_fr_fr "Parlez au donneur de quÃªtes pour apprendre leur fonctionnement."
     Target_it_it "Parla con il mercante di missioni per imparare come funzionano."
-    Target_es_es "Habla con el dador de misiones para aprender cómo funcionan."
-    Target_pt_pt "Fale com o doador de missões para aprender como funcionam."
-    Target_pt_br "Fale com o doador de missões para aprender como funcionam."
+    Target_es_es "Habla con el dador de misiones para aprender cÃ³mo funcionan."
+    Target_pt_pt "Fale com o doador de missÃµes para aprender como funcionam."
+    Target_pt_br "Fale com o doador de missÃµes para aprender como funcionam."
     Comment "Onboarding quest description"
    }
    CustomStringTableItem "{8E5F1CF2509E3CC0}" {
@@ -8926,8 +8951,8 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_fr_fr "Livrez 2 bouteilles d'eau en 2 minutes."
     Target_it_it "Consegna 2 bottiglie d'acqua entro 2 minuti."
     Target_es_es "Entrega 2 botellas de agua en 2 minutos."
-    Target_pt_pt "Entregue 2 garrafas de água em 2 minutos."
-     Target_pt_br "Entregue 2 garrafas de água em 2 minutos."
+    Target_pt_pt "Entregue 2 garrafas de Ã¡gua em 2 minutos."
+     Target_pt_br "Entregue 2 garrafas de Ã¡gua em 2 minutos."
      Comment "Timed quest description"
     }
    CustomStringTableItem "{C39AC0E1DD9064FD}" {
@@ -8936,71 +8961,71 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_de_de "Schnelle Lieferung"
     Target_fr_fr "Livraison express"
     Target_it_it "Consegna rapida"
-    Target_es_es "Entrega rápida"
-    Target_pt_pt "Entrega rápida"
-    Target_pt_br "Entrega rápida"
+    Target_es_es "Entrega rÃ¡pida"
+    Target_pt_pt "Entrega rÃ¡pida"
+    Target_pt_br "Entrega rÃ¡pida"
     Comment "Timed quest title"
    }
    CustomStringTableItem "{9A063765A5B8123E}" {
     Id "LF-Quest_MissingItems"
     Target_en_us "You no longer hold the required items"
-    Target_de_de "Du hast die benötigten Gegenstände nicht mehr"
+    Target_de_de "Du hast die benÃ¶tigten GegenstÃ¤nde nicht mehr"
     Target_fr_fr "Vous n'avez plus les objets requis"
-    Target_it_it "Non hai più gli oggetti richiesti"
+    Target_it_it "Non hai piÃ¹ gli oggetti richiesti"
     Target_es_es "Ya no tienes los objetos requeridos"
-    Target_pt_pt "Já não tem os itens necessários"
-    Target_pt_br "Você não tem mais os itens necessários"
+    Target_pt_pt "JÃ¡ nÃ£o tem os itens necessÃ¡rios"
+    Target_pt_br "VocÃª nÃ£o tem mais os itens necessÃ¡rios"
     Comment "Turn-in refused after collect recount"
    }
    CustomStringTableItem "{F6AB60C375531892}" {
     Id "LF-Quest_NotComplete"
     Target_en_us "Quest not complete yet"
     Target_de_de "Auftrag noch nicht abgeschlossen"
-    Target_fr_fr "Quête pas encore terminée"
+    Target_fr_fr "QuÃªte pas encore terminÃ©e"
     Target_it_it "Missione non ancora completata"
-    Target_es_es "Misión aún no completada"
-    Target_pt_pt "Missão ainda não concluída"
-    Target_pt_br "Missão ainda não concluída"
+    Target_es_es "MisiÃ³n aÃºn no completada"
+    Target_pt_pt "MissÃ£o ainda nÃ£o concluÃ­da"
+    Target_pt_br "MissÃ£o ainda nÃ£o concluÃ­da"
     Comment "Turn-in refused, quest not complete"
    }
    CustomStringTableItem "{C62FE3743E00B28C}" {
     Id "LF-Quest_Rejected"
     Target_en_us "Quest not available"
-    Target_de_de "Auftrag nicht verfügbar"
-    Target_fr_fr "Quête non disponible"
+    Target_de_de "Auftrag nicht verfÃ¼gbar"
+    Target_fr_fr "QuÃªte non disponible"
     Target_it_it "Missione non disponibile"
-    Target_es_es "Misión no disponible"
-    Target_pt_pt "Missão não disponível"
-    Target_pt_br "Missão não disponível"
+    Target_es_es "MisiÃ³n no disponible"
+    Target_pt_pt "MissÃ£o nÃ£o disponÃ­vel"
+    Target_pt_br "MissÃ£o nÃ£o disponÃ­vel"
     Comment "Quest accept rejected notification"
    }
    CustomStringTableItem "{58FE2B1ECE005A69}" {
     Id "LF-Quest_Status_Available"
     Target_en_us "Available"
-    Target_de_de "Verfügbar"
+    Target_de_de "VerfÃ¼gbar"
     Target_fr_fr "Disponible"
     Target_it_it "Disponibile"
     Target_es_es "Disponible"
-    Target_pt_pt "Disponível"
-    Target_pt_br "Disponível"
+    Target_pt_pt "DisponÃ­vel"
+    Target_pt_br "DisponÃ­vel"
     Comment "Quest status: available"
    }
    CustomStringTableItem "{C07FEC9957C93531}" {
     Id "LF-Quest_Status_Complete"
     Target_en_us "Complete"
     Target_de_de "Abgeschlossen"
-    Target_fr_fr "Terminée"
+    Target_fr_fr "TerminÃ©e"
     Target_it_it "Completata"
     Target_es_es "Completada"
-    Target_pt_pt "Concluída"
-    Target_pt_br "Concluída"
+    Target_pt_pt "ConcluÃ­da"
+    Target_pt_br "ConcluÃ­da"
     Comment "Quest status: complete, ready to turn in"
    }
    CustomStringTableItem "{943A6AA99E7319EE}" {
     Id "LF-Quest_Status_Failed"
     Target_en_us "Failed"
     Target_de_de "Fehlgeschlagen"
-    Target_fr_fr "Échouée"
+    Target_fr_fr "Ã‰chouÃ©e"
     Target_it_it "Fallita"
     Target_es_es "Fallida"
     Target_pt_pt "Falhada"
@@ -9021,12 +9046,12 @@ CustomStringTableItem "{44869271883D0402}" {
    CustomStringTableItem "{8433759EB8ED5E85}" {
     Id "LF-Quest_Title"
     Target_en_us "Quests"
-    Target_de_de "Aufträge"
+    Target_de_de "AuftrÃ¤ge"
     Target_fr_fr "Missions"
     Target_it_it "Missioni"
     Target_es_es "Misiones"
-    Target_pt_pt "Missões"
-    Target_pt_br "Missões"
+    Target_pt_pt "MissÃµes"
+    Target_pt_br "MissÃµes"
     Comment "Quest menu title"
    }
    CustomStringTableItem "{4D6C52F92E7C8237}" {
@@ -9044,11 +9069,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Id "LF-Quest_TurnedIn"
     Target_en_us "Quest completed - reward granted"
     Target_de_de "Auftrag abgeschlossen - Belohnung erhalten"
-    Target_fr_fr "Quête terminée - récompense accordée"
+    Target_fr_fr "QuÃªte terminÃ©e - rÃ©compense accordÃ©e"
     Target_it_it "Missione completata - ricompensa ottenuta"
-    Target_es_es "Misión completada - recompensa otorgada"
-    Target_pt_pt "Missão concluída - recompensa concedida"
-    Target_pt_br "Missão concluída - recompensa concedida"
+    Target_es_es "MisiÃ³n completada - recompensa otorgada"
+    Target_pt_pt "MissÃ£o concluÃ­da - recompensa concedida"
+    Target_pt_br "MissÃ£o concluÃ­da - recompensa concedida"
     Comment "Quest turned in notification"
    }
     CustomStringTableItem "{F9D7252954C6A302}" {
@@ -10531,9 +10556,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_de_de "Dollar"
      Target_fr_fr "dollar"
      Target_it_it "dollaro"
-     Target_es_es "dólar"
-     Target_pt_pt "dólar"
-     Target_pt_br "dólar"
+     Target_es_es "dÃ³lar"
+     Target_pt_pt "dÃ³lar"
+     Target_pt_br "dÃ³lar"
      Comment "Term "currency" (#958): the money unit, singular."
     }
     CustomStringTableItem "{4C9D9FCD0F57F53F}" {
@@ -10542,9 +10567,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_de_de "Dollar"
      Target_fr_fr "dollars"
      Target_it_it "dollari"
-     Target_es_es "dólares"
-     Target_pt_pt "dólares"
-     Target_pt_br "dólares"
+     Target_es_es "dÃ³lares"
+     Target_pt_pt "dÃ³lares"
+     Target_pt_br "dÃ³lares"
      Comment "Term "currency" (#958): the money unit, plural, {currency:pl}."
     }
     CustomStringTableItem "{F8FF62CD88A6A2E3}" {
@@ -10561,7 +10586,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{B543BF50A77A5A7C}" {
      Id "LF-Term_Fine"
      Target_en_us "fine"
-     Target_de_de "Bußgeld"
+     Target_de_de "BuÃŸgeld"
      Target_fr_fr "amende"
      Target_it_it "multa"
      Target_es_es "multa"
@@ -10572,7 +10597,7 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{CA4254F348EBC44B}" {
      Id "LF-Term_Fine_Plural"
      Target_en_us "fines"
-     Target_de_de "Bußgelder"
+     Target_de_de "BuÃŸgelder"
      Target_fr_fr "amendes"
      Target_it_it "multe"
      Target_es_es "multas"
@@ -10584,7 +10609,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Term_Job"
      Target_en_us "job"
      Target_de_de "Beruf"
-     Target_fr_fr "métier"
+     Target_fr_fr "mÃ©tier"
      Target_it_it "lavoro"
      Target_es_es "trabajo"
      Target_pt_pt "trabalho"
@@ -10595,7 +10620,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Term_Job_Plural"
      Target_en_us "jobs"
      Target_de_de "Berufe"
-     Target_fr_fr "métiers"
+     Target_fr_fr "mÃ©tiers"
      Target_it_it "lavori"
      Target_es_es "trabajos"
      Target_pt_pt "trabalhos"
@@ -10605,23 +10630,23 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{04400B2027C380FF}" {
      Id "LF-Term_Medic"
      Target_en_us "medic"
-     Target_de_de "Sanitäter"
-     Target_fr_fr "médecin"
+     Target_de_de "SanitÃ¤ter"
+     Target_fr_fr "mÃ©decin"
      Target_it_it "medico"
-     Target_es_es "médico"
-     Target_pt_pt "médico"
-     Target_pt_br "médico"
+     Target_es_es "mÃ©dico"
+     Target_pt_pt "mÃ©dico"
+     Target_pt_br "mÃ©dico"
      Comment "Term "medic" (#958): singular."
     }
     CustomStringTableItem "{D16A258D77A04F85}" {
      Id "LF-Term_Medic_Plural"
      Target_en_us "medics"
-     Target_de_de "Sanitäter"
-     Target_fr_fr "médecins"
+     Target_de_de "SanitÃ¤ter"
+     Target_fr_fr "mÃ©decins"
      Target_it_it "medici"
-     Target_es_es "médicos"
-     Target_pt_pt "médicos"
-     Target_pt_br "médicos"
+     Target_es_es "mÃ©dicos"
+     Target_pt_pt "mÃ©dicos"
+     Target_pt_br "mÃ©dicos"
      Comment "Term "medic" (#958): plural, {medic:pl}."
     }
     CustomStringTableItem "{EFA49FCF4C181DD3}" {
@@ -10630,9 +10655,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_de_de "Organisation"
      Target_fr_fr "organisation"
      Target_it_it "organizzazione"
-     Target_es_es "organización"
-     Target_pt_pt "organização"
-     Target_pt_br "organização"
+     Target_es_es "organizaciÃ³n"
+     Target_pt_pt "organizaÃ§Ã£o"
+     Target_pt_br "organizaÃ§Ã£o"
      Comment "Term "org" (#1136): a player organization as a sentence names it. Core text writes {org} or {Org}; a pack or the owner renames it (Gang, Crew)."
     }
     CustomStringTableItem "{857D8BAEB3AA5709}" {
@@ -10642,8 +10667,8 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_fr_fr "organisations"
      Target_it_it "organizzazioni"
      Target_es_es "organizaciones"
-     Target_pt_pt "organizações"
-     Target_pt_br "organizações"
+     Target_pt_pt "organizaÃ§Ãµes"
+     Target_pt_br "organizaÃ§Ãµes"
      Comment "Term "org", plural form: {org:pl}."
     }
     CustomStringTableItem "{67F7742CC0C6E47C}" {
@@ -10652,9 +10677,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_de_de "Polizei"
      Target_fr_fr "police"
      Target_it_it "polizia"
-     Target_es_es "policía"
-     Target_pt_pt "polícia"
-     Target_pt_br "polícia"
+     Target_es_es "policÃ­a"
+     Target_pt_pt "polÃ­cia"
+     Target_pt_br "polÃ­cia"
      Comment "Term "police" (#958): the police service as a sentence names it. Core text writes {police} or {Police}; a pack or the owner renames it."
     }
     CustomStringTableItem "{7653CEA2A3D01C1D}" {
@@ -10662,7 +10687,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "town"
      Target_de_de "Stadt"
      Target_fr_fr "ville"
-     Target_it_it "città"
+     Target_it_it "cittÃ "
      Target_es_es "ciudad"
      Target_pt_pt "cidade"
      Target_pt_br "cidade"
