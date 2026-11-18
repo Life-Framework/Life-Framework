@@ -19,7 +19,9 @@ enum LF_EContractTimeWord
 //! player's own controller with an Owner RPC (RpcDo_LF_ContractLine); an empty payload clears the
 //! line. Nobody else gets it. The client counts the time down itself from the moment it received the
 //! line (no per-second traffic), moves the word through its bands, and drops the line when the time
-//! is gone. The server still settles the contract as before.
+//! is gone. The server still settles the contract as before. A player who spawns while their contract
+//! runs (a reconnect, a late join, a respawn) is sent the line again with a fourth field, the seconds
+//! left, so the countdown carries on from the real time (Resend, #3144; no extra RPC, no JIP state).
 //!
 //! WORDS. The title is the key "Title_" plus the contract id under the tracker's key family (the pack's row with the
 //! same Id carries the client's name, "Crates for the harbour master"); a contract with no such row
@@ -94,14 +96,18 @@ class LF_ContractTracker
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pure: "contractId|limitSeconds|stakeFlag".
-	static string Encode(string contractId, int limitSeconds, bool hasStake)
+	//! Pure: "contractId|limitSeconds|stakeFlag", plus "|secondsLeft" for a line re-sent to a running
+	//! contract (#3144). `secondsLeft` below 0 leaves the field out: the full limit is left.
+	static string Encode(string contractId, int limitSeconds, bool hasStake, int secondsLeft = -1)
 	{
 		int stake = 0;
 		if (hasStake)
 			stake = 1;
 
-		return string.Format("%1|%2|%3", contractId, limitSeconds, stake);
+		if (secondsLeft < 0)
+			return string.Format("%1|%2|%3", contractId, limitSeconds, stake);
+
+		return string.Format("%1|%2|%3|%4", contractId, limitSeconds, stake, secondsLeft);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -109,17 +115,31 @@ class LF_ContractTracker
 	//! \return False for an empty or malformed payload.
 	static bool Decode(string payload, out string contractId, out int limitSeconds, out bool hasStake)
 	{
+		int secondsLeft;
+		return DecodeLeft(payload, contractId, limitSeconds, hasStake, secondsLeft);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: reads Encode's payload with the time left; a line with no "secondsLeft" field has the
+	//! full limit left. \return False for an empty or malformed payload.
+	static bool DecodeLeft(string payload, out string contractId, out int limitSeconds, out bool hasStake, out int secondsLeft)
+	{
 		contractId = string.Empty;
 		limitSeconds = 0;
 		hasStake = false;
+		secondsLeft = 0;
 		TStringArray parts = {};
 		payload.Split("|", parts, false);
-		if (parts.Count() != 3 || parts[0].IsEmpty())
+		if ((parts.Count() != 3 && parts.Count() != 4) || parts[0].IsEmpty())
 			return false;
 
 		contractId = parts[0];
 		limitSeconds = parts[1].ToInt();
 		hasStake = parts[2].ToInt() > 0;
+		secondsLeft = limitSeconds;
+		if (parts.Count() == 4)
+			secondsLeft = LF_Utils.ClampInt(parts[3].ToInt(), 0, limitSeconds);
+
 		return true;
 	}
 
@@ -146,6 +166,44 @@ class LF_ContractTracker
 		}
 
 		Send(playerUid, Encode(contractId, Math.Round(def.m_fTimeLimitSeconds), def.m_iStakePoints > 0), "taken");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the character spawned (a reconnect, a late join, a respawn) while a contract runs. The
+	//! client lost its line, so it is sent again with the time actually left (#3144). The contract
+	//! itself lives on the server keyed by uid; nothing is sent with no contract running.
+	//! \return True when a line was sent.
+	static bool Resend(string playerUid, float now)
+	{
+		if (Replication.IsRunning() && !Replication.IsServer())
+			return false;
+
+		float takenAt;
+		string contractId = LF_ReputationContracts.ActiveRun(playerUid, takenAt);
+		if (contractId.IsEmpty())
+			return false;
+
+		LF_ReputationContractDef def = LF_ReputationContracts.FindDef(contractId);
+		if (!def)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("contract line for %1 not re-sent: '%2' is not in the config", playerUid, contractId));
+			return false;
+		}
+
+		int limit = Math.Round(def.m_fTimeLimitSeconds);
+		int left = limit;
+		if (limit > 0)
+		{
+			left = LF_Utils.ClampInt(Math.Round(def.m_fTimeLimitSeconds - (now - takenAt)), 0, limit); // lf-float: seconds of world time
+			if (left <= 0)
+			{
+				LF_Debug.Info(FEATURE, string.Format("contract line for %1 not re-sent: %2 is out of time and settles on its drop-off", playerUid, contractId));
+				return false;
+			}
+		}
+
+		Send(playerUid, Encode(contractId, limit, def.m_iStakePoints > 0, left), "spawn");
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -188,7 +246,7 @@ class LF_ContractTracker
 		}
 
 		controller.LF_SendContractLine(payload);
-		LF_Debug.Info(FEATURE, string.Format("contract line sent to player %1 (%2)", playerId, reason));
+		LF_Debug.Info(FEATURE, string.Format("contract line sent to player %1 (%2): '%3'", playerId, reason, payload));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -214,7 +272,8 @@ class LF_ContractTracker
 		string contractId;
 		int limit;
 		bool hasStake;
-		if (payload.IsEmpty() || !Decode(payload, contractId, limit, hasStake))
+		int secondsLeft;
+		if (payload.IsEmpty() || !DecodeLeft(payload, contractId, limit, hasStake, secondsLeft))
 		{
 			if (!payload.IsEmpty())
 				LF_Debug.Warn(FEATURE, string.Format("contract line ignored: '%1' is not a line", payload));
@@ -227,7 +286,8 @@ class LF_ContractTracker
 		s_sClientId = contractId;
 		s_iClientLimit = limit;
 		s_bClientCost = hasStake;
-		s_iClientReceivedMs = nowMs;
+		// A re-sent line started before it arrived: count from when the contract was taken.
+		s_iClientReceivedMs = nowMs - (limit - secondsLeft) * 1000;
 		LF_ContractTrackerHud.Refresh();
 	}
 
@@ -469,6 +529,90 @@ modded class SCR_PlayerController
 }
 
 //------------------------------------------------------------------------------------------------
+//! Server: a spawned player gets their running contract's line again (#3144).
+class LF_ContractTrackerSubscriber : LF_EventSubscriber
+{
+	static const int RETRY_MS = 2000; // lf-fixed: one retry for a spawn event that came before the account id
+
+	protected static ref LF_ContractTrackerSubscriber s_Subscriber;
+
+	//------------------------------------------------------------------------------------------------
+	override string GetName()
+	{
+		return "ContractTracker";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnPlayerSpawnedEvent spawned = LF_OnPlayerSpawnedEvent.Cast(busEvent);
+		if (!spawned)
+			return false;
+
+		string uid = spawned.m_sAccountUid;
+		if (uid.IsEmpty())
+			uid = LF_Utils.GetPlayerUID(spawned.m_iPlayerId);
+
+		if (uid.IsEmpty())
+		{
+			if (GetGame() && GetGame().GetCallqueue())
+				GetGame().GetCallqueue().CallLater(RetryResend, RETRY_MS, false, spawned.m_iPlayerId);
+
+			return true;
+		}
+
+		LF_ContractTracker.Resend(uid, LF_JobGuards.Now());
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void RetryResend(int playerId)
+	{
+		string uid = LF_Utils.GetPlayerUID(playerId);
+		if (uid.IsEmpty())
+		{
+			LF_Debug.Warn(LF_ContractTracker.FEATURE, string.Format("contract line for player %1 not re-sent: no account id after the retry", playerId));
+			return;
+		}
+
+		LF_ContractTracker.Resend(uid, LF_JobGuards.Now());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void Install()
+	{
+		if (Replication.IsRunning() && !Replication.IsServer())
+			return;
+
+		Uninstall();
+		s_Subscriber = new LF_ContractTrackerSubscriber();
+		LF_EventBus.Subscribe(LF_OnPlayerSpawnedEvent, s_Subscriber);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void Uninstall()
+	{
+		if (!s_Subscriber)
+			return;
+
+		LF_EventBus.Unsubscribe(LF_OnPlayerSpawnedEvent, s_Subscriber);
+		s_Subscriber = null;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Self-start: the server listens for spawns from the world's start.
+modded class LF_GameModeRoleplay
+{
+	//------------------------------------------------------------------------------------------------
+	protected override void OnGameStart()
+	{
+		super.OnGameStart();
+		LF_ContractTrackerSubscriber.Install();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! World-end reset of LF_ContractTracker's statics (LF_StaticReset finds it by reflection).
 class LF_ContractTracker_StaticResetHook : LF_StaticResetHook
 {
@@ -481,5 +625,6 @@ class LF_ContractTracker_StaticResetHook : LF_StaticResetHook
 	{
 		LF_ContractTrackerHud.Remove();
 		LF_ContractTracker.ResetStatics();
+		LF_ContractTrackerSubscriber.Uninstall();
 	}
 }
