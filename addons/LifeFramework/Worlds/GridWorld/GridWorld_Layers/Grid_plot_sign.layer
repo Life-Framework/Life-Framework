@@ -1,0 +1,53 @@
+// Grid cell c15r2 for plot-sign: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_plot_sign_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 203 0 47
+}
+SCR_DestructibleEntity Grid_plot_sign_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 208 0 47
+}
+SCR_DestructibleEntity Grid_plot_sign_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_plot_sign_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 52
+ angleY 270
+}
+SCR_DestructibleEntity Grid_plot_sign_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_plot_sign_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 208 0 57
+ angleY 180
+}
+SCR_DestructibleEntity Grid_plot_sign_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 203 0 57
+ angleY 90
+}
+GenericEntity Grid_plot_sign_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:plot-sign"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 202.2 0.505 47.6
+ angleY -90
+}
+GenericEntity Grid_plot_sign_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "plot-sign"
+  }
+ }
+ coords 202.3 0 49.5
+ angleY 90
+}
+GenericEntity Grid_plot_sign_R0 : "{DA9D4FEB9BD67EA5}Prefabs/Props/Property/LF_PlotSign.et" {
+ coords 210.502 0.505 52
+ angleY -90
+}
