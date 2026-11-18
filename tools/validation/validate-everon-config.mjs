@@ -17,6 +17,7 @@
 // (missing-offer.json expects pistol_m1911 at gun_counter, which no overlay offers) prints
 // "FAIL missing-offer.json: gun_counter does not offer pistol_m1911 ..." and exits 1; the live fixtures
 // and the empty stubs pass.
+// inputs: addons/**/*.conf, addons/**/*.conf.meta
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";

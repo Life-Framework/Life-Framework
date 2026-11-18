@@ -65,6 +65,12 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   what walking away costs in words (`#LF-ContractTracker_Cost`, never points) when the contract has a stake. The title
   is the pack's row `Title_<contractId>`, else `Title_Default`. There was no on-screen quest tracker, so the line is a
   paper tag built from UI kit parts (`LF_ContractTrackerHud`, no layout). Test `reputation/contract-tracker`.
+- ✅ **The tracker line comes back after a reconnect, with the time left** (#3144, merged, in-dev): `LF_ContractTrackerSubscriber`
+  listens for `LF_OnPlayerSpawnedEvent` (a reconnect, a late join, a respawn) and `LF_ContractTracker.Resend` sends a running
+  contract's line again over the same Owner RPC, with a fourth field, the seconds left (`limit - (now - takenAt)`, from
+  `LF_ReputationContracts.ActiveRun`), so the client's countdown and time word carry on instead of starting full. No new
+  RPC and no JIP state; a spawn with no contract, or one already out of time, sends nothing. A contract still ends on a
+  server restart. Test `reputation/contract-tracker-resend`.
 - 🟡 **The standing tables read pack overlays** (#3044): `LF_ReputationConfig.Get()` and `LF_ReputationContractsConfig.Get()`
   layer each overlay the mission header lists (`LF_ReputationOverlay.c`, load order) over the core file: factions (key `m_sId`),
   awards (`m_sAction`), gates (`m_sGate`), pays (`m_sFaction`) and contracts (`m_sId`) take add, replace, patch and remove
@@ -89,4 +95,5 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   the town knows you." Accepting runs the `Contract` action; the node after it has no line of its own, so he answers with the recorded line for the key the hook hands back
   (started, busy, cooldown, run already open). Declining ends the talk. Tests `everon/harbour-master` (pack leg: both replies, the pick starts the contract at Known and nothing
   below it) and `dialogue/contract` (the locked condition).
+- ✅ **Harbour crates proof** (#3084, merged, in-dev): session proof `harbour-crates` (`agent-box/proofs/harbour-crates-proof.mjs`, `up --mission island`). A Known character (set with the harness verbs `repgrant <FACTION> <points>` and `repshow <FACTION>` in `LF_ReputationHarnessVerbs.c`, dev-gated like `/licence`, no daily cap booked) talks to Marcel Roux, takes `harbour_crates`, reads the tracker, delivers and the server log shows pay x1.4, the `standing-bonus` ledger line and +12 town. It prints PASS or FAIL per step with the PR that should fix a failure. It passed 11 of 11 on a local merge of the harbour master (#3058) and the parcel drop points (#2973); on main plus #3058 alone step 7 fails, the island has no drop-off to deliver at.
 - 🔲 Screens, and the owner `config.json` section `reputation` (later cards of #1018).

@@ -3510,6 +3510,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Rob the safe"
      Comment "Annex safe robbery action name"
     }
+    CustomStringTableItem "{3152A1C0B7D34E02}" {
+     Id "LF-Death_CostBill"
+     Target_en_us "The bill is {currency:sym}%1."
+     Comment "Death screen cost line: the hospital bill; %1 is the amount from the respawn config, left out when it is 0 (#3152)."
+    }
+    CustomStringTableItem "{3152A1C0B7D34E03}" {
+     Id "LF-Death_CostKeeps"
+     Target_en_us "What you carried stays with your body."
+     Comment "Death screen cost line: the dead body keeps the carried items (#3152)."
+    }
+    CustomStringTableItem "{3152A1C0B7D34E01}" {
+     Id "LF-Death_CostWake"
+     Target_en_us "You wake at the hospital."
+     Comment "Death screen cost line: where a dead player wakes (#3152)."
+    }
     CustomStringTableItem "{EF124E70F7C349D7}" {
      Id "LF-DebugJailMe_Action"
      Target_en_us "Send me to jail (playtest)"
@@ -4488,6 +4503,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Requires the right tool in hand"
      Comment "Gather refused: the required tool is not held"
     }
+    CustomStringTableItem "{3156A1C07E5B2D91}" {
+     Id "LF-Gather_Toast"
+     Target_en_us "%1 x%2"
+     Comment "Toast after a gather or a process (#3156). %1 = item name, %2 = amount"
+    }
+    CustomStringTableItem "{3156C3E290A7D4B3}" {
+     Id "LF-Gather_ToastPrice"
+     Target_en_us "The trader pays {currency:sym}%1 for %2."
+     Comment "Second sentence of a gather or process toast when a trader buys the item or its product (#3156). %1 = price, %2 = item name"
+    }
+    CustomStringTableItem "{3156B2D18F6C3EA2}" {
+     Id "LF-Gather_ToastXp"
+     Target_en_us "%1 x%2 (+%3 XP)"
+     Comment "Toast after a gather that paid job XP (#3156). %1 = item name, %2 = amount, %3 = XP paid"
+    }
     CustomStringTableItem "{2969D3779A79F0EA}" {
      Id "LF-Gather_Unknown"
      Target_en_us "resource"
@@ -5353,6 +5383,126 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Drill"
      Comment "Item name of the fence drill."
     }
+    CustomStringTableItem "{E2784D1F4353D38F}" {
+     Id "LF-Item_FishBass_Description"
+     Target_en_us "A sea bass with a spiny back fin."
+     Comment "Item description: bass (#3119)."
+    }
+    CustomStringTableItem "{9A898B30BBECE54A}" {
+     Id "LF-Item_FishBass_Large_Description"
+     Target_en_us "A big sea bass. A proud catch."
+     Comment "Item description: Large bass (#3119)."
+    }
+    CustomStringTableItem "{9359D41CCCD09C91}" {
+     Id "LF-Item_FishBass_Large_Name"
+     Target_en_us "Large bass"
+     Comment "Item name: Large bass (#3119)."
+    }
+    CustomStringTableItem "{6B6D20BD67714955}" {
+     Id "LF-Item_FishBass_Name"
+     Target_en_us "Bass"
+     Comment "Item name: bass (#3119)."
+    }
+    CustomStringTableItem "{3D4C47BC0C448471}" {
+     Id "LF-Item_FishBass_Small_Description"
+     Target_en_us "A small sea bass. Quick and silvery."
+     Comment "Item description: Small bass (#3119)."
+    }
+    CustomStringTableItem "{D1B389AD889452FD}" {
+     Id "LF-Item_FishBass_Small_Name"
+     Target_en_us "Small bass"
+     Comment "Item name: Small bass (#3119)."
+    }
+    CustomStringTableItem "{5DB4327C8FD8C6F5}" {
+     Id "LF-Item_FishCarp_Description"
+     Target_en_us "A carp, broad and golden-brown."
+     Comment "Item description: carp (#3119)."
+    }
+    CustomStringTableItem "{3E331EBEA033DBF8}" {
+     Id "LF-Item_FishCarp_Large_Description"
+     Target_en_us "A big carp. Slow, heavy and old."
+     Comment "Item description: Large carp (#3119)."
+    }
+    CustomStringTableItem "{00FCE916EC8F207B}" {
+     Id "LF-Item_FishCarp_Large_Name"
+     Target_en_us "Large carp"
+     Comment "Item name: Large carp (#3119)."
+    }
+    CustomStringTableItem "{E3B3001507AC877B}" {
+     Id "LF-Item_FishCarp_Name"
+     Target_en_us "Carp"
+     Comment "Item name: carp (#3119)."
+    }
+    CustomStringTableItem "{34A3AD0F6B77EB36}" {
+     Id "LF-Item_FishCarp_Small_Description"
+     Target_en_us "A small carp, bronze and scaly."
+     Comment "Item description: Small carp (#3119)."
+    }
+    CustomStringTableItem "{38CA8EAD72C90BF2}" {
+     Id "LF-Item_FishCarp_Small_Name"
+     Target_en_us "Small carp"
+     Comment "Item name: Small carp (#3119)."
+    }
+    CustomStringTableItem "{4B56E52FB9CF207D}" {
+     Id "LF-Item_FishMackerel_Description"
+     Target_en_us "A good mackerel, firm and streaked."
+     Comment "Item description: mackerel (#3119)."
+    }
+    CustomStringTableItem "{C4DDAEF89A37519D}" {
+     Id "LF-Item_FishMackerel_Large_Description"
+     Target_en_us "A big mackerel. Heavy for its kind."
+     Comment "Item description: Large mackerel (#3119)."
+    }
+    CustomStringTableItem "{E73AE5B5C5FB7443}" {
+     Id "LF-Item_FishMackerel_Large_Name"
+     Target_en_us "Large mackerel"
+     Comment "Item name: Large mackerel (#3119)."
+    }
+    CustomStringTableItem "{5E0A92C3AF9164C4}" {
+     Id "LF-Item_FishMackerel_Name"
+     Target_en_us "Mackerel"
+     Comment "Item name: mackerel (#3119)."
+    }
+    CustomStringTableItem "{69C02856EEC8D522}" {
+     Id "LF-Item_FishMackerel_Small_Description"
+     Target_en_us "A small mackerel, silver and green-barred."
+     Comment "Item description: Small mackerel (#3119)."
+    }
+    CustomStringTableItem "{633C51C7D45BA350}" {
+     Id "LF-Item_FishMackerel_Small_Name"
+     Target_en_us "Small mackerel"
+     Comment "Item name: Small mackerel (#3119)."
+    }
+    CustomStringTableItem "{AB96FAED4AECB267}" {
+     Id "LF-Item_FishPerch_Description"
+     Target_en_us "A perch, green-gold with red fins."
+     Comment "Item description: perch (#3119)."
+    }
+    CustomStringTableItem "{061E58D13F51C5C8}" {
+     Id "LF-Item_FishPerch_Large_Description"
+     Target_en_us "A big perch. Striped and stout."
+     Comment "Item description: Large perch (#3119)."
+    }
+    CustomStringTableItem "{16B0C23F1964DB20}" {
+     Id "LF-Item_FishPerch_Large_Name"
+     Target_en_us "Large perch"
+     Comment "Item name: Large perch (#3119)."
+    }
+    CustomStringTableItem "{F57F65FB08C8F73A}" {
+     Id "LF-Item_FishPerch_Name"
+     Target_en_us "Perch"
+     Comment "Item name: perch (#3119)."
+    }
+    CustomStringTableItem "{A12E910AA22B4796}" {
+     Id "LF-Item_FishPerch_Small_Description"
+     Target_en_us "A small perch with dark stripes."
+     Comment "Item description: Small perch (#3119)."
+    }
+    CustomStringTableItem "{379C675811B9535B}" {
+     Id "LF-Item_FishPerch_Small_Name"
+     Target_en_us "Small perch"
+     Comment "Item name: Small perch (#3119)."
+    }
     CustomStringTableItem "{D9C27E711957F2A2}" {
      Id "LF-Item_FishTrout_Description"
      Target_en_us "A decent brown trout, olive on the back and pale underneath."
@@ -5382,6 +5532,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_FishTrout_Small_Name"
      Target_en_us "Small trout"
      Comment "Item name: a small trout (#2928)."
+    }
+    CustomStringTableItem "{860E865EA857C343}" {
+     Id "LF-Item_FishTuna_Description"
+     Target_en_us "A tuna, solid muscle from nose to tail."
+     Comment "Item description: tuna (#3119)."
+    }
+    CustomStringTableItem "{A9743CC382E8A306}" {
+     Id "LF-Item_FishTuna_Large_Description"
+     Target_en_us "A huge tuna. It took real work to land."
+     Comment "Item description: Large tuna (#3119)."
+    }
+    CustomStringTableItem "{31EDD97E30F43C62}" {
+     Id "LF-Item_FishTuna_Large_Name"
+     Target_en_us "Large tuna"
+     Comment "Item name: Large tuna (#3119)."
+    }
+    CustomStringTableItem "{73662CFC234FFF2B}" {
+     Id "LF-Item_FishTuna_Name"
+     Target_en_us "Tuna"
+     Comment "Item name: tuna (#3119)."
+    }
+    CustomStringTableItem "{39AC76C237D894BF}" {
+     Id "LF-Item_FishTuna_Small_Description"
+     Target_en_us "A young tuna, torpedo-shaped and dark blue."
+     Comment "Item description: Small tuna (#3119)."
+    }
+    CustomStringTableItem "{55C653E598CCC44F}" {
+     Id "LF-Item_FishTuna_Small_Name"
+     Target_en_us "Small tuna"
+     Comment "Item name: Small tuna (#3119)."
     }
     CustomStringTableItem "{377E1717041FCC31}" {
      Id "LF-Item_FishingRod_Description"
@@ -6049,6 +6229,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Refused: you were convicted too recently."
      Comment "Licence desk refusal: the player has a conviction within the configured look-back (#1995)."
     }
+    CustomStringTableItem "{04D482BE05C4CD10}" {
+     Id "LF-LicenceDesk_DrivingAction"
+     Target_en_us "Buy a driving licence"
+     Comment "Action on the licence desk: buy the driving licence at once for the fee in cash (#3128)."
+    }
+    CustomStringTableItem "{DB194A67205192B5}" {
+     Id "LF-LicenceDesk_DrivingAlreadyHeld"
+     Target_en_us "You already hold a driving licence."
+     Comment "Licence desk: the player already has the driving licence (#3128)."
+    }
+    CustomStringTableItem "{34BBF90BAF789D18}" {
+     Id "LF-LicenceDesk_DrivingIssued"
+     Target_en_us "Here is your driving licence."
+     Comment "Licence desk: the driving licence is handed over (#3128)."
+    }
+    CustomStringTableItem "{BD0E7DC7F5624449}" {
+     Id "LF-LicenceDesk_DrivingNotAllowed"
+     Target_en_us "Refused: you do not meet the driving licence requirements."
+     Comment "Licence desk refusal for the driving licence: the licence gate (system off, whitelist or job level) (#3128)."
+    }
     CustomStringTableItem "{A23456CB32ABE45B}" {
      Id "LF-LicenceDesk_Issued"
      Target_en_us "Here is your firearm permit. A licensed gun counter will now serve you."
@@ -6170,6 +6370,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cannabis grower"
      Target_es_es "Cultivador de marihuana"
      Comment "Underground skill name: growing cannabis"
+    }
+    CustomStringTableItem "{AFC2B3AB51D2DEA7}" {
+     Id "LF-License_Driving_Desc"
+     Target_en_us "Lets you drive on public roads."
+     Comment "Licence description: the driving licence (#3128)."
+    }
+    CustomStringTableItem "{B45A8C5B2A8A570E}" {
+     Id "LF-License_Driving_Name"
+     Target_en_us "Driving licence"
+     Comment "Licence name: the driving licence sold at the licence desk (#3128)."
     }
     CustomStringTableItem "{C8B554017BA55A32}" {
      Id "LF-License_FarmerApple_Desc"

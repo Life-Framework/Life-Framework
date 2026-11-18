@@ -6,6 +6,7 @@
 // Exit 1 when a string that now uses a placeholder renders differently. A plain copy edit (a key whose
 // new text has no placeholder) is listed as EDIT and passes, so `validate` (which runs every script here)
 // does not fail a PR that rewords a string. Run it in a terms migration PR and paste the last line.
+// inputs: addons/LifeFramework/Language/*.st, addons/LifeFramework/Configs/Terms/*.conf
 import { execFileSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
