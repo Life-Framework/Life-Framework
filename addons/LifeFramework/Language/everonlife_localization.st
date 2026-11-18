@@ -8223,6 +8223,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
     }
+    CustomStringTableItem "{C1E9F68FC02150FF}" {
+     Id "LF-Property_Bought"
+     Target_en_us "Plot %1 is yours."
+     Comment "Toast: the plot purchase went through (#2649). %1 = the plot."
+    }
+    CustomStringTableItem "{55D1BC2D7557DA0C}" {
+     Id "LF-Property_Buy"
+     Target_en_us "Buy plot (%1)"
+     Comment "Action on a for-sale plot sign (#2649). %1 = the formatted price (LF_MoneyFormat)."
+    }
+    CustomStringTableItem "{2E4ED8FC8172E6AA}" {
+     Id "LF-Property_NoCash"
+     Target_en_us "You do not carry enough cash for this plot."
+     Comment "Toast: plot purchase refused, short of cash; nothing was taken (#2649)."
+    }
+    CustomStringTableItem "{5CC34CD87EB4192B}" {
+     Id "LF-Property_NotHere"
+     Target_en_us "There is no plot for sale here."
+     Comment "Toast: plot purchase refused, no for-sale plot sign in reach (#2649)."
+    }
+    CustomStringTableItem "{7A2A3649718F2743}" {
+     Id "LF-Property_Owned"
+     Target_en_us "This plot is already owned."
+     Comment "Toast: plot purchase refused, somebody owns it (#2649)."
+    }
+    CustomStringTableItem "{92136B0C3106B107}" {
+     Id "LF-Property_Title"
+     Target_en_us "Property"
+     Comment "Toast title for a plot purchase answer (#2649)."
+    }
    CustomStringTableItem "{468EF5CBF215416A}" {
     Id "LF-Quest_Accept"
     Target_en_us "Accept"
@@ -8855,6 +8885,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reputation_Faction_Underworld"
      Target_en_us "Underworld"
      Comment "Standing: neutral core label of the underworld faction. Never shown to the player."
+    }
+    CustomStringTableItem "{F38A5D16B04E927C}" {
+     Id "LF-Reputation_Refuse_Any"
+     Target_en_us "You are not well enough known for this yet."
+     Comment "Standing gate refusal (#2701) for a faction with no words of its own. Never a number."
+    }
+    CustomStringTableItem "{91E4B7035CA2D68F}" {
+     Id "LF-Reputation_Refuse_Police"
+     Target_en_us "The law doesn't trust you enough for this yet. You would need to be at least: %1."
+     Comment "Standing gate refusal (#2701). %1 = the minimum tier word. Never a number. The pack overlays the words."
+    }
+    CustomStringTableItem "{2C7A91E45B03D8F6}" {
+     Id "LF-Reputation_Refuse_Town"
+     Target_en_us "The locals don't know you well enough for this work yet. You would need to be at least: %1."
+     Comment "Standing gate refusal (#2701): job sign-up or run start. %1 = the minimum tier word. Never a number. The pack overlays the words."
+    }
+    CustomStringTableItem "{6D0F3A82E715C4B9}" {
+     Id "LF-Reputation_Refuse_Underworld"
+     Target_en_us "Nobody in those circles knows you well enough."
+     Comment "Standing gate refusal (#2701). The underworld's tier is never shown, so no tier word. The pack overlays the words."
     }
     CustomStringTableItem "{067374E8D35098CE}" {
      Id "LF-Reputation_Tier_0"

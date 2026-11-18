@@ -17,7 +17,9 @@ choice survive a restart.
   `properties` payload.
 - A house's owner of record is in `houses` (`LF_Houses`); this book mirrors it. Contents of a house ride
   `LF_PersistentStorageComponent` under `property:<id>`, not this record.
-- Nothing places or builds yet.
+- Plot purchase (#2649): `LF_PlotComponent` on a plot sign; `RpcAsk_LF_BuyProperty` on the player
+  controller sends no id, the server picks the nearest sign within 5 m and pays with carried cash. Nothing
+  builds yet.
 
 ## Rules
 

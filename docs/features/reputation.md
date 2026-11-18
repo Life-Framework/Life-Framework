@@ -19,10 +19,18 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   `LF_ReputationRow`: row version, character record key, faction, points). 0 rows are not written; on load a
   removed faction is skipped with a warning and points clamp to the current thresholds. Cooldowns and daily caps
   stay session state. Proof: `LF_Test_ReputationPersist` and `tools/cli wt e2e`.
+- ✅ **Job sign-up and run start check standing** (#2701, merged, in-dev): `LF_Reputation.Passes(uid, gateId)`
+  reads a gate row (`LF_ReputationGateDef`: gate id, faction, `m_iMinTier`, in `Configs/Reputation/LF_Reputation.conf`
+  `m_aGates`; code in `LF_ReputationGate.c`); a gate id with no row passes. `LF_JobSignUpAction` reads `job:<JOB>`
+  and `LF_JobStartRunAction` reads `run:<JOB>` (`LF_JobStandingGate`). The core ships fuel and taxi at the town, tier 0.
+  A refusal is the `#LF-Reputation_Refuse_<Faction>` key with the minimum tier's word as the argument, never a number
+  (the underworld gives no tier word). The server refuses and notifies in `PerformAction`; the greyed offer reads
+  standing only on the server host (a dedicated client waits for the owner RPC). The sign-up offer's level refusal
+  now uses `LF_JobLevelWords` (#2700). Test `reputation/gate`.
 - ✅ **The owner learns their own tiers** (#2704, merged, in-dev): `LF_ReputationSync.c` packs the three tiers into one int and
   sends it on spawn and on each tier change to that player's own controller only (`RpcDo_LF_StandingTiers`, `RplRcver.Owner`,
   never an RplProp; points never leave the server). The client keeps them in `LF_ReputationSync.ClientTier` for greyed offers;
   no screen draws the underworld. A town or police tier change sends one toast in words through `NotifyPlayer`
   (`#LF-Reputation_Toast_<Faction>_Up|Down`), the underworld none. Test `reputation/sync`.
-- 🔲 Event subscriptions, job gates, contracts, screens, the pack's words,
+- 🔲 Event subscriptions, contracts, client greying from `ClientTier`, screens, the pack's words,
   pack overlay and the owner `config.json` section `reputation` (later cards of #1018).
