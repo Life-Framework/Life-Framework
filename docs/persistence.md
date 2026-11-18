@@ -296,7 +296,7 @@ the next one still reads (`persist/save-sections`, JSON and binary).
    `tools/validation/record-shapes/<name>.json`.
 3. Its own PERSISTENCE test: a round trip, a save without it
    (`SerializeStoreOmitting(persistence, ctx, {"<name>"})`), and the restart check under
-   `#ifdef LF_E2E_LOAD_BOOT`, gated on `LF_SaveSections.BootHadSection("<name>")` (`wt e2e` runs
+   `#ifdef LF_E2E_LOAD_BOOT`, gated on `LF_E2E.RequiresSection("<name>")` (`SaveHasSection` for a branch) (`wt e2e` runs
    every PERSISTENCE test in both boots). Do not append to `LF_Test_E2E_SaveState`.
 4. The observable contract goes in `docs/features/<area>.md`, not in this file's list.
 
