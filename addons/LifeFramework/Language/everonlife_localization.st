@@ -10260,6 +10260,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Stand up"
      Comment "F-key action on the seat you are sitting on: stand up (#982)."
     }
+    CustomStringTableItem "{0008CC6249A5CFEE}" {
+     Id "LF-SiteAlert_Captured"
+     Target_en_us "Your organisation captured a contested site."
+     Comment "Toast to the capturing organisation's members when a site changes hands (#2686)."
+    }
+    CustomStringTableItem "{C4975E59132BD691}" {
+     Id "LF-SiteAlert_Contested"
+     Target_en_us "Your held ground is being contested!"
+     Comment "Toast to every online member of the holding organisation when a site becomes contested (#2686)."
+    }
+    CustomStringTableItem "{4A0872A212CC8663}" {
+     Id "LF-SiteAlert_Lost"
+     Target_en_us "Your organisation lost a contested site."
+     Comment "Toast to the old holder's members when a site is captured (#2686)."
+    }
+    CustomStringTableItem "{238A8F0864906DC7}" {
+     Id "LF-SiteAlert_Title"
+     Target_en_us "Gang war"
+     Comment "Toast title for a site alert to an organisation (#2686)."
+    }
+    CustomStringTableItem "{FF6CC0CF9F225E83}" {
+     Id "LF-SiteCapture_Capturing"
+     Target_en_us "%1 capturing: %2%"
+     Comment "Capture bar progress line. %1 = the challenging organisation, %2 = percent (#2686)."
+    }
+    CustomStringTableItem "{976106A58BF13557}" {
+     Id "LF-SiteCapture_Fallback"
+     Target_en_us "Contested ground"
+     Comment "Capture bar title when the pack gives the site no LF-SiteName_<hideout id> row (#2686)."
+    }
+    CustomStringTableItem "{B61D9A845B840433}" {
+     Id "LF-SiteCapture_HeldBy"
+     Target_en_us "Held by %1"
+     Comment "Capture bar holder line. %1 = the holding organisation (#2686)."
+    }
+    CustomStringTableItem "{B04D9B6C54D7F8AA}" {
+     Id "LF-SiteCapture_Idle"
+     Target_en_us "Nobody is capturing"
+     Comment "Capture bar progress line while no challenger has progress (#2686)."
+    }
+    CustomStringTableItem "{C3855F9D427A1467}" {
+     Id "LF-SiteCapture_Unclaimed"
+     Target_en_us "Unclaimed"
+     Comment "Capture bar holder line when nobody holds the site (#2686)."
+    }
     CustomStringTableItem "{E90742664100610A}" {
      Id "LF-SiteFlag_Unclaimed"
      Target_en_us "Unclaimed"
