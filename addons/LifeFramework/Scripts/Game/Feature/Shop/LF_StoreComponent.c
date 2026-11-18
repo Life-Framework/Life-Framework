@@ -371,6 +371,7 @@ class LF_StoreComponent : ScriptComponent
 				if (shop)
 					price = shop.GetBuyPrice(line.m_Prefab);
 
+				LF_StoreGarbage.Release(item);
 				LF_Stores.Tag(this, item, line.m_Prefab, price);
 			}
 		}
@@ -404,6 +405,7 @@ class LF_StoreComponent : ScriptComponent
 			return null;
 
 		RestOnBoard(copy, line, index);
+		LF_StoreGarbage.Hold(copy);
 		return copy;
 	}
 
@@ -687,6 +689,7 @@ class LF_StoreComponent : ScriptComponent
 					if (line.m_aShelf[i] == EntityID.INVALID && LF_StoreRules.ShelfCount(line.m_iStock, line.m_aSlots.Count()) > line.Occupied())
 					{
 						line.m_aShelf[i] = id;
+						LF_StoreGarbage.Hold(stray);
 						continue;
 					}
 
