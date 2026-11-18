@@ -284,6 +284,8 @@ class LF_CharacterCreationManager : Managed
 		if (!m_SwitchOffered.Contains(playerId))
 			m_SwitchOffered.Insert(playerId);
 
+		LF_CharacterSwitch.NoteOffer(playerId, LF_CharacterSwitch.Now(), BodyOrigin(playerId));
+
 		LF_Debug.Info(LF_CharacterSwitch.FEATURE, string.Format("switch sheet sent to player %1: %2 character(s), playing slot %3, new slot %4", playerId, account.GetCharacterCount(), currentSlot + 1, canRegister));
 		controller.LF_ShowCharacterSwitch(CharacterNames(account), canRegister, currentSlot);
 		return true;
@@ -297,7 +299,22 @@ class LF_CharacterCreationManager : Managed
 			return;
 
 		m_SwitchOffered.RemoveItem(playerId);
+		LF_CharacterSwitch.ForgetOffer(playerId);
 		LF_Debug.Info(LF_CharacterSwitch.FEATURE, string.Format("player %1 stays as %2", playerId, LF_Utils.GetPlayerUID(playerId)));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: where the player's body stands, or the origin without one (RefuseNow refuses that).
+	protected static vector BodyOrigin(int playerId)
+	{
+		if (!GetGame() || !GetGame().GetPlayerManager())
+			return vector.Zero;
+
+		IEntity body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!body)
+			return vector.Zero;
+
+		return body.GetOrigin();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -307,6 +324,14 @@ class LF_CharacterCreationManager : Managed
 	protected void ServerSwitchPick(notnull SCR_PlayerController controller, int playerId, int slot)
 	{
 		m_SwitchOffered.RemoveItem(playerId);
+		bool holds = LF_CharacterSwitch.OfferHolds(playerId, LF_CharacterSwitch.Now(), BodyOrigin(playerId));
+		LF_CharacterSwitch.ForgetOffer(playerId);
+		if (!holds)
+		{
+			LF_CharacterSwitch.TellRefused(playerId, "#LF-CharSel_Refused", "the pick (the sheet went stale or the player left the clerk)");
+			return;
+		}
+
 		LF_PlayerAccount account = FindAccount(LF_Utils.GetAccountUID(playerId));
 		if (!account || !account.GetActiveCharacter())
 		{

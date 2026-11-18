@@ -190,6 +190,8 @@
   (`RpcAsk_LF_CharacterSwitch`, refused without the token) and `LF_CharacterSelectSheet` opens in switch mode: the
   character being played marked "On file now", the others, "register a new resident" while a slot is free, and "Stay
   as you are" (MenuBack too, `RpcAsk_LF_CancelCharacterSwitch`). The body stays in the world until the pick. The pick
+  counts only within 3 minutes of the sheet and 10 m of where it was sent (`LF_CharacterSwitch.OfferHolds`, test
+  `character/switch-offer`), so a client that skips the cancel cannot pick later elsewhere. The pick
   (`ServerSwitchPick`) checks again, then `StoreAndRemoveBody` stores the character the way a disconnect does
   (playtime, phone call, carried snapshot, unpaid store tags, last position, rejoin mark, dialogue and town-board
   state), takes and deletes the body, reopens the arrival flow and spawns the pick or opens form R-89. Refused, logged

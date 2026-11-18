@@ -54,12 +54,64 @@ class LF_CharacterSwitch
 	protected static ref map<int, float> s_mGrantedAt;
 	protected static int s_iSwitches;
 
+	//! How long an open switch sheet stays good on the server, and how far from where it opened the
+	//! pick may come. Without them a client that never sends the cancel keeps the offer and picks
+	//! later, far from the clerk, as a safe vanish with no logout body (#1794).
+	// lf-fixed: anti-abuse bounds for one sheet at the clerk's desk, not server tuning
+	static const float OFFER_SECONDS = 180;
+	// lf-fixed: the clerk's desk, not server tuning
+	static const float OFFER_RADIUS = 10;
+	//! Player id -> world seconds and body position the switch sheet was sent at.
+	protected static ref map<int, float> s_mOfferAt;
+	protected static ref map<int, vector> s_mOfferPos;
+
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_mCombatAt = null;
 		s_mGrantedAt = null;
+		s_mOfferAt = null;
+		s_mOfferPos = null;
 		s_iSwitches = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the switch sheet went to this player, standing at `at`.
+	static void NoteOffer(int playerId, float now, vector at)
+	{
+		if (!s_mOfferAt)
+			s_mOfferAt = new map<int, float>();
+
+		if (!s_mOfferPos)
+			s_mOfferPos = new map<int, vector>();
+
+		s_mOfferAt.Set(playerId, now);
+		s_mOfferPos.Set(playerId, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a pick from the switch sheet counts only within OFFER_SECONDS of the offer and within
+	//! OFFER_RADIUS of where the player stood when it was sent.
+	static bool OfferHolds(int playerId, float now, vector at)
+	{
+		if (!s_mOfferAt || !s_mOfferAt.Contains(playerId) || !s_mOfferPos)
+			return false;
+
+		float offeredAt = s_mOfferAt.Get(playerId);
+		if (now < offeredAt || now - offeredAt > OFFER_SECONDS)
+			return false;
+
+		return vector.Distance(s_mOfferPos.Get(playerId), at) <= OFFER_RADIUS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ForgetOffer(int playerId)
+	{
+		if (s_mOfferAt)
+			s_mOfferAt.Remove(playerId);
+
+		if (s_mOfferPos)
+			s_mOfferPos.Remove(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -275,6 +327,8 @@ class LF_CharacterSwitch
 	{
 		if (s_mGrantedAt)
 			s_mGrantedAt.Remove(playerId);
+
+		ForgetOffer(playerId);
 	}
 
 	//------------------------------------------------------------------------------------------------
