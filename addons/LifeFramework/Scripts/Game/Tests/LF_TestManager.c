@@ -13,6 +13,12 @@ class LF_TestManager
 	protected ref array<string> m_aOnly = {};
 	protected bool m_bRed;
 	protected bool m_bLogicWorld;
+	//! The fixture spawn point (the gate), what a run found standing there before its first test, how much a test
+	//! added to it, and the tests that added it (WatchGate, NoteLeftovers, FixtureLeftovers).
+	protected vector m_vGate;
+	protected ref LF_TestDebrisProbe m_GateProbe;
+	protected int m_iGateLeft;
+	protected ref array<string> m_aLeakers = {};
 	//! Duplicate class names already logged, so each is logged once per process.
 	protected static ref array<string> s_aLoggedDuplicates;
 
@@ -186,6 +192,7 @@ class LF_TestManager
 		string cases = "";
 
 		PrintFormat("[LFTEST] SUITE START tier=%1", tierName);
+		WatchGate(red);
 
 		foreach (LF_Test test : m_aTests)
 		{
@@ -248,6 +255,8 @@ class LF_TestManager
 			test.SetRedProof(red);
 			test.Run(ctx);
 			test.SetRedProof(false);
+			if (!red)
+				NoteLeftovers(name);
 
 			if (red)
 			{
@@ -317,12 +326,82 @@ class LF_TestManager
 			cases += string.Format("<testcase name=\"%1\" time=\"0\"><failure message=\"no test matches --only\"/></testcase>\n", missing);
 		}
 
+		// A run leaves no fixture character or loose physics prop at the gate (#2792). `tools\cli test` sends
+		// the whole suite as one --only list, so this covers a filtered run too (a red proof keeps its debris on purpose).
+		if (!red && m_GateProbe && total > 0)
+		{
+			total++;
+			string leftovers = FixtureLeftovers();
+			if (leftovers != "")
+			{
+				failures++;
+				PrintFormat("[LFTEST] FAIL suite/no-leftover-fixtures");
+				PrintFormat("[LFTEST]   - a test left characters or loose props at the gate (end the test with LF_TestCharacterFixture.Delete):%1", leftovers);
+				foreach (string leaker : m_aLeakers)
+					PrintFormat("[LFTEST]   - left by %1", leaker);
+				cases += string.Format("<testcase name=\"suite/no-leftover-fixtures\" time=\"0\"><failure message=\"fixtures left at the gate\">%1</failure></testcase>\n", EscapeXml(leftovers));
+			}
+			else
+			{
+				passed++;
+				PrintFormat("[LFTEST] PASS suite/no-leftover-fixtures (nothing left at the gate)");
+				cases += "<testcase name=\"suite/no-leftover-fixtures\" time=\"0\"/>\n";
+			}
+		}
+
 		PrintFormat("[LFTEST] SUMMARY tier=%1 passed=%2 failed=%3 total=%4 skipped=%5", tierName, passed, failures, total, skippedNeedsPack);
 		reportXml = string.Format(
 			"<testsuites><testsuite name=\"LifeFramework-%1\" tests=\"%2\" failures=\"%3\" errors=\"0\" time=\"0\">%4</testsuite></testsuites>",
 			tierName, total, failures, cases);
 
 		return failures;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Before the first test: remembers what already stands at the gate (the map's props, the spawn point) so the end-of-run
+	//! check names only what a test added. A run with no world or no spawn point has no gate and skips the check.
+	protected void WatchGate(bool red)
+	{
+		m_vGate = vector.Zero;
+		m_iGateLeft = 0;
+		m_aLeakers.Clear();
+		m_GateProbe = null;
+		// A red proof keeps its debris on purpose.
+		if (red || m_bLogicWorld || !GetGame() || !GetGame().GetWorld())
+			return;
+
+		m_vGate = LF_TestDebrisProbe.Gate();
+		if (m_vGate == vector.Zero)
+			return;
+
+		m_GateProbe = new LF_TestDebrisProbe();
+		m_GateProbe.Watch(m_vGate);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! After each test: names it in m_aLeakers when it left more characters or loose props at the gate than were there before.
+	//! Only counts (a query); a sweep that deleted them mid-suite crashed the engine (#2792).
+	protected void NoteLeftovers(string testName)
+	{
+		if (!m_GateProbe)
+			return;
+
+		m_GateProbe.Leftovers(m_vGate);
+		if (m_GateProbe.Count() > m_iGateLeft)
+			m_aLeakers.Insert(string.Format("%1 (+%2)", testName, m_GateProbe.Count() - m_iGateLeft));
+
+		m_iGateLeft = m_GateProbe.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fixture characters and loose props the run added at the gate and nothing deleted, as " | prefab@origin h=height"
+	//! entries; "" when the gate is clean (or the run has no gate to look at).
+	protected string FixtureLeftovers()
+	{
+		if (!m_GateProbe)
+			return "";
+
+		return m_GateProbe.Leftovers(m_vGate);
 	}
 
 	//------------------------------------------------------------------------------------------------

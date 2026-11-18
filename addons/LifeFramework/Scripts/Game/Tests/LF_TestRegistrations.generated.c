@@ -269,6 +269,7 @@ class LF_TestRegistrations
 		// self-registered: new LF_Test_FirstSpawnBed(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_FirstSpawnPersist(), LF_TestTier.PERSISTENCE;
 		// self-registered: new LF_Test_FittedBuildingIndestructible(), LF_TestTier.WORLD;
+		// self-registered: new LF_Test_FixtureLeftovers(), LF_TestTier.WORLD;
 		// self-registered: new LF_Test_FormatAbbreviate(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_UtilsMinMax(), LF_TestTier.LOGIC;
 		// self-registered: new LF_Test_FuelClerkDialogue(), LF_TestTier.WORLD;

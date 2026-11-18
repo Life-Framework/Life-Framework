@@ -74,6 +74,9 @@ class LF_Test_EveronPoliceKit : LF_Test
 		if (!patrolOfficer || !seniorOfficer || !civilian)
 		{
 			LF_PoliceConfig.Reload();
+			LF_TestCharacterFixture.Delete(patrolOfficer);
+			LF_TestCharacterFixture.Delete(seniorOfficer);
+			LF_TestCharacterFixture.Delete(civilian);
 			return;
 		}
 
@@ -113,5 +116,9 @@ class LF_Test_EveronPoliceKit : LF_Test
 		LF_TestPoliceKit.Release(SENIOR_UID);
 		LF_TestPoliceKit.Release(CIVILIAN_UID);
 		LF_PoliceConfig.Reload();
+
+		LF_TestCharacterFixture.Delete(patrolOfficer);
+		LF_TestCharacterFixture.Delete(seniorOfficer);
+		LF_TestCharacterFixture.Delete(civilian);
 	}
 }

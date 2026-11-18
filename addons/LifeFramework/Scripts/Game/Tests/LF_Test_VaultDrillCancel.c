@@ -52,5 +52,6 @@ class LF_Test_VaultDrillCancel : LF_Test
 		ctx.True(LF_VaultDrill.Step(true, false, 0, true, 99, 10) == LF_EVaultDrillStep.STOP_DOWN, "a downed robber stops it");
 		ctx.True(LF_VaultDrill.Step(true, true, 0, true, 9.5, 10) == LF_EVaultDrillStep.KEEP, "short of the time it keeps going");
 		LF_VaultDrill.s_fNowOverride = -1;
+		LF_TestVaultDrillFixture.Release(robber, vaultId);
 	}
 }
