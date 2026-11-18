@@ -1,5 +1,4 @@
 // red-proof: `test --no-build --red LF_Test_RaceRunner` -> RED PROOF OK (2026-11-16): with the hook on, the first Join is skipped, so no fee leaves carried cash, the pot stays 0 and the lobby never opens.
-// tier: WORLD
 //! Race runner (#1923): the entry fee leaves carried cash into the pot once, too few entrants
 //! refunds, a leaver forfeits, a finish pays the pot by the split, and a session end mid-race
 //! refunds everyone still in (the pot is session state). Bodies are fixture characters.

@@ -1,6 +1,5 @@
 // red-proof: RED-OK 2026-11-15 `tools/cli test --no-build --red LF_Test_RestartWarnerFires`: with the ticks skipped no warning, due event or close (all counts 0); with Tick on, green.
 
-// tier: LOGIC
 //! O6T (#1348): the restart ticker reads the schedule from an injected clock and publishes
 //! LF_OnRestartWarning once at each lead and LF_OnRestartDue once at the restart time. The flagship
 //! schedule (06:00 and 18:00, leads 15, 5, 1) drives it second by second; the toast (#1265) and the

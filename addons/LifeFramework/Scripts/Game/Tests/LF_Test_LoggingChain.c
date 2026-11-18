@@ -2,7 +2,6 @@
 // CuttableTree_Base.et m_aTools -> "{0}Prefabs/Missing.et") and run
 // `tools\cli test --tier all`; the "tree tool list maps the axe" assertion
 // fails. Proven red by that perturbation, then reverted.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LoggingChain : LF_Test
 {

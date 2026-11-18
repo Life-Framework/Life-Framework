@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_SearchCooldown` with MaySearch returning true failed `- inside the cooldown: refused`, `- a repeat a second later is refused`, `- still refused just inside the cooldown`. Restored; green.
-// tier: LOGIC
 //! Police search cooldown (#472): the same target cannot be searched again inside the configured
 //! window, so repeating a search cannot beat the find chance. Another target is unaffected.
 [LF_TestInfo(LF_TestTier.LOGIC)]

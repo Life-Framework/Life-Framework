@@ -1,5 +1,4 @@
 // red-proof: 2026-11-16 the old test failed in the main guard suite at 58aa54c8 (`- the drill opens the van box`) once #1847 made the drill a hand tool; `test --red LF_Test_WorkAnimTargets` (RedProof skips holding the drill) fails `- the held drill starts on the van box`.
-// tier: WORLD
 //! work/anim-targets (#513 follow-up): the working pose also starts for a locked vehicle's lockpick
 //! attempt, not only the door and the bank vault. The cash van box drill is a hand tool (#1847):
 //! holding it starts the timed drill and no pose. Drives the

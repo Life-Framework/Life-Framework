@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-16 `tools/cli test --no-build --red LF_Test_SearchSeizedList`: with the seizure skipped it failed `- the toast names the suspect`, `- the toast names the pistol`, `- the toast names the rifle`. Green without the hook.
-// tier: WORLD
 //! catalogue/search-seized-list (#2154, #1978): a police search tells the officer what it seized.
 //! SearchAndSeize on a carrier with two unlawful kinds fills an out list of display names (a count
 //! in front when more than one), and the toast text built from it names both; a long list is cut

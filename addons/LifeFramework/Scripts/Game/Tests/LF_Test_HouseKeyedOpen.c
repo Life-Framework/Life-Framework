@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 (bug fix) with `tools\cli test --no-build --only LF_Test_HouseKeyedOpen` on the unfixed LF_DoorUserAction.c (keyed open calls Unlock, gate checks the key only): `[LFTEST] FAIL houses/keyed-open-keeps-lock`, `- the door is still locked after the key holder opened it`, `- a stranger after the key holder is still refused`, `- a character with no key and no ownership is refused`. Green with the fix. The server re-check (review finding): with it removed the run failed `- the server does not move a locked door for a stranger`.
-// tier: WORLD
 //! houses/keyed-open-keeps-lock (#2410): a key holder opening a locked house door passes the gate and
 //! the door stays locked, so a stranger after them is still refused. The owner passes without a key;
 //! a cleared owner does not. Before the fix the vanilla door action called Unlock() on every keyed

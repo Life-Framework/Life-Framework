@@ -1,6 +1,5 @@
 // red-proof: pre-move guard: `tools\cli e2e --pre-move 502ebf39 --mission playtest` on main 92bafad7 (2026-11-16) failed "the clock resumes near the saved 03:00 (got 9.60158 h)" because the ref never sets 03:00; the same run passes with the guard.
 // red-proof: RED-OK 2026-11-15 `tools\cli test --no-build --red LF_Test_DayCycleSave`: without the continued-save override Apply set startHour, "the clock resumes at the saved 17:15, not startHour (expected 17.25, got 6.5)". Restart: `tools\cli wt e2e slice-1302` 2026-11-15, reload boot PASS time/save (5 assertions).
-// tier: PERSISTENCE
 //! #1302: accelerated time resumes from the save after a restart; in realtime the clock wins.
 //! The time is saved by vanilla persistence (TimeAndWeatherManagerEntitySerializer), so there is no
 //! LF payload; LF_DayCycleSave decides who wins on a continued save.

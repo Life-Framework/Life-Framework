@@ -4,7 +4,6 @@
 // red-proof: RED-OK licence/desk, observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_LicenceDesk`:
 // with the in-game day not advanced, `- a day later the permit is issued (expected 0, got 2)` and
 // `- with the desk's permit the gun counter sells (expected 0, got 13)`. Hook off: green.
-// tier: WORLD
 //! The licence desk (#1766) on the server path: refused while wanted, with an open crime report, with a
 //! conviction inside the look-back (#1995, at application and again at collection), or
 //! short of the fee, each naming the reason and taking nothing; an application takes the fee once

@@ -1,4 +1,3 @@
-// tier: LOGIC
 // red-proof: 2026-11-13, LF_AtmosphereMix.InRange without the stop margin: `--only LF_Test_AtmosphereMix` failed "a playing emitter keeps playing inside radius plus margin (expected '0', got '')". Restored, green.
 // red-proof: 2026-11-13, Select looping while `outIds.Count() <= cap`: failed "over the cap the nearest emitters sound" and "a cap of zero silences everything". Restored, green.
 //! Which ambient emitters sound (LF_AtmosphereMix, Feature/Atmosphere): the start radius and the

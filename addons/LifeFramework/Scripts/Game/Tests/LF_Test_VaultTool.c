@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-10 with `tools/cli test --no-build --only LF_Test_VaultTool`: flipping `roll < chance` to `roll > chance` in LF_Bank.Jams failed `crime/vault-tool` with `- a low roll jams`, `- a jammed drill opens nothing`, `- with a drill the breach starts`. Restored; green. The robber is not deleted at the end: deleting a character carrying the path-loaded field pack crashes the diag server.
-// tier: WORLD
 //! The vault needs a fence tool (#273). No drill: refused and nothing opens. With a drill: the
 //! breach starts, the drill is left at the vault and its serial names the buyer through the evidence
 //! path. A jammed drill opens nothing. A charge also works and is consumed.

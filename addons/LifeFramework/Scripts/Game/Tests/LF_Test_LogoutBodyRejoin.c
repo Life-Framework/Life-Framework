@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_LogoutBodyRejoin`: RED PROOF OK, with TakeBack skipped `the rejoin takes the body back`, `it is the same body`, `it is no longer a logout body`, `the save holds what the body holds (expected 0, got 1)` fail. Green after (`--only`, with LF_Test_LogoutBody).
-// tier: WORLD
 //! Acceptance of #1975: a rejoin inside the window takes back the same body with what is left of
 //! its inventory (and nothing restored on top); after the window there is no body and the normal
 //! rejoin rule spawns; the hospital comes first and ends the body; a body killed while its player

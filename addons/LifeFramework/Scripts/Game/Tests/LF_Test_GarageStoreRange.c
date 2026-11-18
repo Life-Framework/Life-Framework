@@ -3,7 +3,6 @@
 // "[LFTEST] FAIL security/garage-store-range" / "- a vehicle in an impound across the map
 // cannot be stored". Restored, it passes (3 assertions).
 
-// tier: LOGIC
 //! Storing a vehicle requires the vehicle, not only the player, at the garage.
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_GarageStoreRange : LF_Test

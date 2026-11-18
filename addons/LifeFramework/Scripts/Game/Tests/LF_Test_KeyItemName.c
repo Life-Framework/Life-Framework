@@ -2,7 +2,6 @@
 // shared prefab UIInfo): `- the house key's UIInfo is the inventory kind`, and the prefab name no longer read
 // '#EL-ItemName_HouseKey'. Green with LF_KeyItemUIInfo per item (#2470).
 
-// tier: WORLD
 //! houses/key-item-name (#2470): every house and car key names its own house or vehicle in the inventory, read
 //! from the replicated identifier, and the UIInfo every key of the prefab shares keeps its prefab name.
 [LF_TestInfo(LF_TestTier.WORLD)]

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-09 with the same `+= 2` flip: `crime/record-persist` failed `- the subscriber counted one robbery (expected 1, got 2)`. Restored; green. (Restart path stays with wt e2e.)
-// tier: PERSISTENCE
 //! The crime record rides the real save path (the "crimerecord" payload, now save version 16): a crime
 //! published on the bus is counted by the subscriber, comes back after the store is wiped, and
 //! loading twice leaves the same counts.

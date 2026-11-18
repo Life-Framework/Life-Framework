@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_EventPreconditions`: with the hook on the below-minimum player-count check is skipped and the test failed (`red proof: below-minimum check skipped`); `RED-OK events/preconditions`, `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; without the hook green, `SUMMARY tier=only passed=1 failed=0`.
-// tier: LOGIC
 //! Event preconditions and aborts (#1949): an hour range that wraps midnight, a player count that
 //! does not hold below the minimum, a cooldown condition, conditions AND-ed and aborts OR-ed, and
 //! the two feeding LF_EventPhaseRules.Decide. No world.

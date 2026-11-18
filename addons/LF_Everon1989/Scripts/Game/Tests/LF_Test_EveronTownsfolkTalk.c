@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 (#2164) with `tools\cli test --no-build --red LF_Test_EveronTownsfolkTalk`: RedProof() skips the spawn, so `- <who> spawns` fails, RED PROOF OK. Before the prefab change the first run failed too (no dialogue component, no talk action). Green without the hook (pack leg, worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #2164 (The relocated, #1015; beat 3 of #2142): under the Everon 1989 header (the pack leg of `tools\cli test`)
 //! each of the three townsfolk (old man, cafe owner, night-shift worker) carries an `LF_DialogueComponent` and a
 //! talk action, and the component's dialogue id resolves through the pack's index overlay to that person's voiced

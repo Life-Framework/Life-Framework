@@ -1,5 +1,4 @@
 // red-proof: 2026-11-15 `tools/cli test --no-build --red LF_Test_HandToolEquip,LF_Test_VaultDrillAction,LF_Test_VaultDrillCancel,LF_Test_VaultDrillPayOnce` RED-OK, hook on failed `- after the full time the vault opens`, `- the haul is paid (expected 1, got 0)`.
-// tier: WORLD
 //! A drill that runs its full time, held at the door, opens the vault and pays exactly once: the
 //! haul spawns on the tick the server clock passes the drill time; further ticks, a second rob and
 //! a repeated finish pay nothing more, and the drill is left at the vault.

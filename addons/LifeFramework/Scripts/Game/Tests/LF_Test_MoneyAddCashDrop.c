@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_MoneyAddCashDrop`: RED PROOF OK; the hook calls AddCash without the flag (main's behaviour): `- with the flag the full amount counts as added (expected 250, got 0)`, `- the ledger hears the add once (expected 1, got 0)`. Green with the flag.
-// tier: WORLD
 //! LF_MoneyUtils.AddCash's opt-in drop-overflow (#2503): cash that does not fit in the inventory lies
 //! at the target's feet, counts as added, and the ledger hears the full amount once. Without the flag
 //! nothing changes: a full inventory takes nothing and nothing lands on the ground.

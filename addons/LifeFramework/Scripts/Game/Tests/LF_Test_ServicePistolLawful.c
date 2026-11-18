@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-16 `tools/cli test --no-build --only LF_Test_ServicePistolLawful` on the unfixed code (SIDEARM still the plain M9) failed `- the duty sidearm is its own prefab, not the plain M9`, `- the service pistol is not listed as an offence (expected 0, got 1)`, `- an off-duty officer's service pistol is not seized (expected 0, got 1)`. Green after the service prefab and its catalogue row.
-// tier: WORLD
 //! catalogue/service-pistol-lawful (#2096): the duty kit's service pistol is lawful police issue. An
 //! off-duty officer searched with it keeps it and nothing is filed; the plain catalogue M9 carried
 //! without a permit is still seized as an unlicensed item.

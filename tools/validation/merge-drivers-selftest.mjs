@@ -432,6 +432,37 @@ ${clean.stderr}`);
     const locStatus = git(locRepo, ["status", "--porcelain"]).stdout.trim();
     if (locStatus) fail(`the localization driver left the worktree dirty:\n${locStatus}`);
   }
+
+  // #2549, #2746: a generator that never exits must not hang `git merge`. The stub replaces PowerShell with a
+  // child that never ends; its own 2 s limit kills it, the driver prints one line and exits 1, and the merge
+  // stops with the conf left conflicted for the human (or `regen-localization`) to resolve.
+  const hungRepo = join(temp, "loc-hung");
+  initRepo(hungRepo);
+  configureDriver(hungRepo, "lf-regen-localization", "regen-generated.mjs");
+  writeFileSync(join(hungRepo, ".gitattributes"), "everonlife_localization.en_us.conf merge=lf-regen-localization\n");
+  mkdirSync(join(hungRepo, langRel), { recursive: true });
+  writeFileSync(join(hungRepo, langRel, "everonlife_localization.st"), readFileSync(join(ROOT, langRel, "everonlife_localization.st")));
+  writeFileSync(join(hungRepo, confRel), "base-conf\n");
+  commitAll(hungRepo, "base");
+  git(hungRepo, ["checkout", "-q", "-b", "theirs"]);
+  writeFileSync(join(hungRepo, confRel), "theirs-conf\n");
+  commitAll(hungRepo, "theirs");
+  git(hungRepo, ["checkout", "-q", "master"]);
+  writeFileSync(join(hungRepo, confRel), "ours-conf\n");
+  commitAll(hungRepo, "ours");
+  const hangScript = join(temp, "hang-generator.mjs");
+  writeFileSync(hangScript, "setInterval(() => {}, 1000);\n");
+  const hungEnv = { ...process.env, LF_MERGE_DRIVER_GENERATOR_STUB: hangScript, LF_MERGE_DRIVER_STUB_TIMEOUT_MS: "2000" };
+  const hungStart = Date.now();
+  const hungMerge = git(hungRepo, ["merge", "theirs", "--no-edit"], hungEnv);
+  const hungSeconds = (Date.now() - hungStart) / 1000;
+  if (hungMerge.status === 0) fail("a hung generator should leave the conf conflicted, but the merge was clean");
+  else {
+    if (!/generator stub timed out after/.test(hungMerge.stderr)) fail(`a hung generator should print the timeout line, got:\n${hungMerge.stderr}`);
+    if (!git(hungRepo, ["ls-files", "-u"]).stdout.includes("everonlife_localization.en_us.conf")) fail("a hung generator should leave the conf unmerged");
+    if (hungSeconds > 60) fail(`a hung generator held the merge for ${hungSeconds.toFixed(0)} s`);
+  }
+  git(hungRepo, ["merge", "--abort"]);
 } finally {
   rmSync(temp, { recursive: true, force: true });
 }
@@ -441,4 +472,4 @@ if (failures.length) {
   for (const failure of failures) console.log(`  - ${failure}`);
   process.exit(1);
 }
-console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, generated files call regen, a hung generator is killed and leaves the file conflicted, lint baseline keeps both sides' fixes, keyed table rows and gallery JSON keys union with per-key conflicts)");
+console.log("merge-drivers-selftest: OK (string ids union, clashes keep both sides in markers, markdown both-append/no-op/duplication/loss/conflict fixtures, the localization driver regenerates the conf, a hung generator is killed and leaves the conf conflicted, lint baseline keeps both sides' fixes, keyed table rows and gallery JSON keys union with per-key conflicts)");

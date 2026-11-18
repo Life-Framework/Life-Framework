@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_OrgWarDeclare` (RedProof() skips the declaration and the answer): RED PROOF OK, "the target's holder accepts inside the window (expected '', got 'unknown_war')".
-// tier: WORLD
 //! org/war-declare (#2668, M7 gang war W3): the desk verbs behind the war desk. An officer whose rank
 //! holds DECLARE_WAR declares and the fund drops by the fee; a member without the right, a fund short
 //! of the fee and a target below the member minimum are each refused with the fund unchanged; a second

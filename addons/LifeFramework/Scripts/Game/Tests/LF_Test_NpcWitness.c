@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 `tools/cli test --no-build --only LF_Test_NpcWitness` on the unfixed LF_Witness.Ask failed `investigation/npc-witness` with `- asked again, the NPC is not re-rolled and says nothing more (#2419) (expected 0, got 2)`. Fixed: green. Earlier proof, 2026-11-10: dropping the range check in LF_Witness.AddWitness failed it with `- an NPC 80 m away saw nothing`.
-// tier: LOGIC
 //! Officers question witnesses in person (#267): a town NPC that stood in range gives a statement,
 //! one out of range saw nothing, a low-accuracy roll leaves a statement partial, a player witness
 //! says everything it could see, and the statement reaches the board.

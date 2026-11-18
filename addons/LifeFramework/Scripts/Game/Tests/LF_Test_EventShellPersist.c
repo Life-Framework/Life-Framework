@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_EventShellPersist`: with the hook on ApplySaved is skipped and the test failed (`A's int bag survives (expected 7, got 0)`, `B saved mid-phase loads into its full cooldown (expected 300, got 0)`), `RED PROOF OK`; without the hook `SUMMARY tier=only passed=2 failed=0`.
-// tier: WORLD
 //! Events survive a restart by phase name (#1951): the "worldevents" rows round trip a cooldown and
 //! the int bag onto a fresh shell clock; an event saved mid-phase loads into its full cooldown, not
 //! back into the phase; a phase name the event no longer has loads idle with a warning; an event id

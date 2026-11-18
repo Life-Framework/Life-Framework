@@ -6,7 +6,6 @@
 // IncreaseWantedLevel mirror): Observed 2026-11-08 with `tools\cli test --no-build --tier all`, LF_RobAction.PayCash reporting
 // the payout paid without calling AddCash failed it with `[LFTEST] FAIL e2e/narrative-loop`,
 // `- robbery payout lands as MoneyStack: cash 210 (expected 210, got 10)`. Restored; green.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_E2E_Narrative : LF_Test
 {

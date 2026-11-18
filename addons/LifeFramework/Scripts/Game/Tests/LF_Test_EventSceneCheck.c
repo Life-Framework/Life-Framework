@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_EventSceneCheck`: with the hook on the check is skipped and `a gap in the route breaks the scene (expected 1, got 0)` failed (20 assertions); `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; without the hook `SUMMARY tier=only passed=1 failed=0`.
-// tier: LOGIC
 //! Event scene check (#2067): lists of marker orders and roles go in, one fault line per broken
 //! scene comes out. A gap in the route, waypoints with no target and no spawn marker are each named
 //! once; a clean scene reports clean; a bad scene never stops the others. No world.

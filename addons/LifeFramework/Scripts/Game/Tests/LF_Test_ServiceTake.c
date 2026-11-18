@@ -24,7 +24,6 @@ class LF_TestTakenCounter : LF_EventSubscriber
 //! comms/take (#251): two medics take the same call and one wins; a civilian cannot take; the
 //! board shows the call taken; police allow two takers; each take publishes one event carrying
 //! the caller's uid.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ServiceTake : LF_Test
 {

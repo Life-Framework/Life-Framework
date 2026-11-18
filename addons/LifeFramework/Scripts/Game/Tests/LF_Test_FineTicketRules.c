@@ -2,7 +2,6 @@
 // then restored; green. LF_FineTicketRules.LateAmount returning the written amount failed
 // `[LFTEST] FAIL police/fine-ticket-rules`, `- the first deadline doubles the amount (expected 400, got 200)`.
 
-// tier: LOGIC
 //! The paper ticket's rules without a world: rank cap, online-time deadlines (doubles once, then
 //! +1 wanted once), payment from carried cash only and only once, and the save records.
 [LF_TestInfo(LF_TestTier.LOGIC)]

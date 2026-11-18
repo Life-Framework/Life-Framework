@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapMarksOffscreen: RED PROOF OK (the old shown-list-only count: "expected 3, got 1"). Green with the disabled list.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! map/marks-offscreen (#2236, the map proof pass): the marker manager moves a static marker that is off
 //! the shown map frame into its disabled list every map frame, so the player's personal marks are the

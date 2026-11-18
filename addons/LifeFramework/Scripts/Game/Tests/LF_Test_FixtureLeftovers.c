@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_FixtureLeftovers`: RED-OK, with the hook on the character stays and `- deleted, the gate lists nothing (expected 0, got 1)` fails; green without it. Before the payphone fix the booth step failed the same way, the loose part outliving DeleteEntityAndChildren.
-// tier: WORLD
 //! The end-of-run leftover check (#2792, LF_TestDebrisProbe): a fixture character left standing at the gate
 //! and the loose part a spawned payphone booth leaves are both listed; deleting them (the character, and the
 //! booth through LF_TestLooseSweep.DeleteBuilding) empties the list again.

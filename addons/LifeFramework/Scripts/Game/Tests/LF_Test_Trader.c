@@ -5,7 +5,6 @@
 // fields they had just set; they were deleted. Recipe validation is covered by
 // actions/guards (LF_ProcessAction.IsRecipeConfigured).
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_TraderSellRules : LF_Test
 {

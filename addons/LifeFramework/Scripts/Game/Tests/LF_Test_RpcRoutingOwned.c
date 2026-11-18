@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `--red` (RedProof() skips the three bare Rpc() calls): RED-OK core/rpc-routing-owned; red: "a Server Rpc on a server-owned entity runs here inside the call (expected 1, got 0)" and the Owner twin.
-// tier: WORLD
 //! #2641 case (a): the server calls a bare Rpc() on an entity it owns, with a valid RplId (a listen host's own
 //! body). Settles which receivers need a host branch. Findings: docs/architecture/rpc-routing.md.
 [LF_TestInfo(LF_TestTier.WORLD)]

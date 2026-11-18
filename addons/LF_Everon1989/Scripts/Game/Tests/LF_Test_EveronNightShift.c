@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 (#1963) with `tools\cli test --no-build --red LF_Test_EveronNightShift`: RedProof() skips the registry lookup, so the id names nothing; `- the night-shift worker's dialogue resolves by id`, RED PROOF OK. Green without the hook (pack leg, worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #1963 (The relocated, #1015): under the Everon 1989 header (the pack leg of `tools\cli test`) the
 //! night-shift worker's dialogue resolves by id through the pack's index overlay, is playable, and every
 //! line he says has a caption key that resolves, a sound event, a length and a mouth envelope. He remembers

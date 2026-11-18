@@ -1,4 +1,3 @@
-// tier: LOGIC
 // red-proof: 2026-11-18, `tools/cli test --no-build --red LF_Test_PlacementPolicyWho` printed RED PROOF OK (the RedProof hook skips filling the organization facts, so the officer, founder and unknown-rank assertions failed with 'is not in an organization (rule ORG_MEMBER)'); with the hook off it passes, and PlacementConfirm, PlacementComposition, SpikeStripPreview and Roadblock stay green.
 //! placement/policy-who (#2446): each `who` rule of the placement policy refuses the wrong player with
 //! its own reason and toast and lets the right one place. The spike strip and the roadblock still need an

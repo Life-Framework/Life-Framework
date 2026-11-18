@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 `tools\cli test --no-build --red LF_Test_PropertyConfig` printed `RED-OK property/config (fails with the hook on, 2 assertions)` (the hook points Get() at a missing config); `--only` then passed=1 failed=0.
-// tier: LOGIC
 //! Property config (#2647, slice P2 of #747): Configs/Property/LF_Property.conf describes plots (id,
 //! tier, price), house tiers with four build stages and what each stage needs (prefab and count, work
 //! units). A missing config logs LF_Debug.Error and every getter returns a safe default.

@@ -3,7 +3,6 @@
 // #2034: on main c32a9ee9 (123 modded layers) `--only LF_Test_StaticResetHooks` crashed with VME "Stack overflow" in
 // LF_StaticResetHooks.Run (logs_2026-11-16_10-08-33); on the flat registry it passed (128 hooks, logs_2026-11-16_10-09-15).
 
-// tier: LOGIC
 //! World-end static reset is found by reflection (#2755): LF_StaticReset walks every LF_StaticResetHook
 //! subclass, so a hook needs no static initializer (each one cost a share of the Game module's single
 //! static-init function, which the engine caps). Listing runs no hook, so the test resets nothing.

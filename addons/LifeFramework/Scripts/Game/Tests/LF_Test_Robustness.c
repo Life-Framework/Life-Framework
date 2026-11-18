@@ -2,7 +2,6 @@
 // `tools\cli test --no-build --tier all` failed robustness/lifetime with "299 s into a 300 s cooldown is still active"
 // and "half a second after a robbery is still active". Restored, it passes.
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Robustness : LF_Test
 {

@@ -16,7 +16,6 @@
 
 //------------------------------------------------------------------------------------------------
 //! The ATM keypad: digits append, the transaction limit holds, DEL drops the last digit.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ATMKeypad : LF_Test
 {
@@ -51,7 +50,6 @@ class LF_Test_ATMKeypad : LF_Test
 
 //------------------------------------------------------------------------------------------------
 //! Every refusal the server can send has its own line; an unknown wire value never reads as "OK".
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_CounterRefusalText : LF_Test
 {
@@ -111,7 +109,6 @@ class LF_Test_CounterRefusalText : LF_Test
 //! The ATM and shop screens open only on the machine of the player who used the counter: both
 //! placed actions run PerformAction on the acting machine only, and the owner check refuses
 //! anyone else. Reads the GridWorld placements Annex_ATM and Grid_shops_till_Store.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CounterLocalOnly : LF_Test
 {
@@ -165,7 +162,6 @@ class LF_Test_CounterLocalOnly : LF_Test
 
 //------------------------------------------------------------------------------------------------
 //! The ATM's server seams name why they refused, so the terminal can say it.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ATMRefusalReasons : LF_Test
 {
@@ -215,7 +211,6 @@ class LF_Test_ATMRefusalReasons : LF_Test
 //------------------------------------------------------------------------------------------------
 //! The till names why it refused, so the order slip can say it. Drives the GridWorld black
 //! market (it sells only the M9) with a real character.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ShopRefusalReasons : LF_Test
 {
@@ -272,7 +267,6 @@ class LF_Test_ShopRefusalReasons : LF_Test
 //------------------------------------------------------------------------------------------------
 //! Both counter screens assemble from the kit on the server's workspace: every part and key
 //! exists, the skins paint, and the keypad reaches the feature by key name.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_CounterScreenLayout : LF_Test
 {

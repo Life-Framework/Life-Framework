@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 with `tools\cli test --no-build --red LF_Test_PropertyRecord,LF_Test_PropertyPersist`: `RED-OK property/persist` with the store read skipped, `- the plot is back (load 1)`, `- one property row after the load (load 1) (expected 1, got 0)`. Green with the read.
-// tier: PERSISTENCE
 //! property/persist (#2646): the "properties" payload round trips a property row through the real
 //! store write and read, a second load of the same save is idempotent, and a save from the version
 //! before this payload loads with no property rows. Across a restart (`tools\cli wt e2e`): the save

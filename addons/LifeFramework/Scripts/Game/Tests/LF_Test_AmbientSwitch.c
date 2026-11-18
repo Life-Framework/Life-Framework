@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-13, Sawmill.et with m_bStartsOn 1: `--only LF_Test_AmbientSwitch` failed "a sawmill is quiet until a log is cut". Restored, green.
 //! The replicated on/off behind an ambient sound (LF_AmbientSwitchComponent, Feature/Atmosphere) on
 //! the server: the store radio starts on and a player's switch flips it; the sawmill starts off and

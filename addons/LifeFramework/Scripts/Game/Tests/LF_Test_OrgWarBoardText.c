@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18 batched `tools\cli test --no-build --red LF_Test_OrgWarBoardText`: RED-OK org/war-board-text (hook skips the war transitions: "a declared, an accepted and an ended war give three notices (expected 3, got 0)"). The first plain run failed 2 asserts (Math.Max is float: 480 read back as 512 at unix-time size), fixed with an int helper.
-// tier: LOGIC
 //! org/war-board-text (#2677, M7 gang war): the war notice board lists a declared, an accepted and an
 //! ended war as three notices in that order; an ended war drops after an hour; a notice crosses the
 //! board answer and comes back as the same line key. Times are plain unix seconds the test passes in.

@@ -7,7 +7,6 @@
 //! The owner file's schemaVersion (#302): missing reads as 1, a newer file logs an error and still
 //! applies the fields this build knows, an older file reads as-is, and a bad value reads as 1.
 //! No migrations; those are #303.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ConfigSchemaVersion : LF_Test
 {

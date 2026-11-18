@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `tools\cli test --no-build --only LF_Test_JobLevelWords` before the gates took their words from the helper: `test-e2e: FAILED (scripts do not compile)` (LF_ChainGate.LevelKey and LF_LicenseGate.RefusalKey did not exist); with them, green `passed=1 failed=0`.
-// tier: LOGIC
 //! A job-level gate refuses in words, never a number (#2700, outline decision 7): the helper picks a
 //! `#` key by job family and by distance, the chain gate and the licence gate take their keys from it.
 [LF_TestInfo(LF_TestTier.LOGIC)]

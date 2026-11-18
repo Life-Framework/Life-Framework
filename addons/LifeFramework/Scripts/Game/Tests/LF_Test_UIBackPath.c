@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-16 `tools\cli test --no-build --red LF_Test_UIBackPath`: with the hook on the Back press is skipped and "plain sheet closes on Back", the form and the ATM sheet fail; the green run passes 12 assertions.
-// tier: WORLD
 //! Back closes every kit sheet through one path: LF_UIScreen.Back(), reached by the MenuBack action
 //! listener and by the per-frame poll, with LF_UIBack refusing the second report of one press.
 //! The sheets open here are the kit's three shapes: a plain sheet with Close, a form with a text

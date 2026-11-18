@@ -6,7 +6,6 @@
 //! the core file (the real shipped overlay path), the owner's text over the pack, a per-language
 //! owner value, a missing form that falls back and logs once, the stream an owner's text rides to
 //! clients, and the one text path a toast, caption or board calls.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_Terms : LF_Test
 {

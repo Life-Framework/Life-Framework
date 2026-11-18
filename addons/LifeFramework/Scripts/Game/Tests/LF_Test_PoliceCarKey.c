@@ -7,7 +7,6 @@
 //! The starter police kit carries the key to the station car (maintainer playtest 2026-11-08).
 //! Station cars are bound to the shared "POLICE" identifier, so every officer's key opens every
 //! station car; the key lives in the duty inventory (LF_DutyLocker swaps it with the uniform).
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PoliceCarKey : LF_Test
 {

@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_DrinkQuenches` before the beer prefab carried a thirst amount: failed `a beer sip raises thirst (got 40)` (impairment already started), `SUMMARY tier=only passed=0 failed=1`; green after.
 
-// tier: WORLD
 //! #2159: one sip of beer quenches thirst and impairs the drinker. The engine takes one consumable
 //! effect per item, so the impair effect carries a thirst amount and applies it itself.
 [LF_TestInfo(LF_TestTier.WORLD)]

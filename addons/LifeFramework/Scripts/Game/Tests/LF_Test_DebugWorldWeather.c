@@ -5,7 +5,6 @@
 //! #602: DebugWorld (the test and playtest town) holds Clear weather. The engine's Cloudy volumetric
 //! clouds render as vertical streaks in this world, so the debug game mode pins the weather instead
 //! of letting the stock state machine drift from Clear into Cloudy after 6 to 10 game hours.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_DebugWorldWeather : LF_Test
 {

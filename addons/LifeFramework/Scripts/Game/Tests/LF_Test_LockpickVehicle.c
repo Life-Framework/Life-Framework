@@ -1,5 +1,4 @@
 // red-proof: 2026-11-10 `tools/cli test --no-build --only LF_Test_LockpickVehicle` with the keyed-start expectation flipped to True failed `- a keyed start is not stolen`. Restored; green.
-// tier: LOGIC
 //! Hotwire and vehicle picking rules (#412): an unkeyed start sets the stolen flag, a keyed start does
 //! not, a free ignition is never stolen, the start gate lets in a key holder or the hotwirer only.
 [LF_TestInfo(LF_TestTier.LOGIC)]
@@ -47,7 +46,6 @@ class LF_Test_LockpickVehicle : LF_Test
 }
 
 // red-proof: 2026-11-10 (QA) asserting `CanBeShownScript` on the placed car failed `- the lockpick action shows on the locked car` against the door-only check; green after LF_LockpickAction.CanBeShownScript went back to LF_Lockpick.ShowsPick. Earlier: wiring asserted on the placed car; green with 5 of 5 (`--only` the four lockpick tests and debugworld/entity-collision) on 2026-11-10; the door twin failed the same way before its fix (see LF_Test_LockpickDoor).
-// tier: WORLD
 //! The playtest lock-up car is wired (#412): locked, ignition locked, pickable, both actions on it,
 //! no stolen flag yet; the free-ignition car beside the lot starts for anyone. Spawns nothing. The
 //! held pick and hotwire are the two-client session proof.

@@ -1,6 +1,5 @@
 // red-proof: 2026-11-17 with `tools\cli test --no-build --only LF_Test_MoonshineCratePack` before the pack step and the station existed: `the moonshine chain has a pack step`, `the pack bench of the grid cell is registered` failed, `SUMMARY tier=only passed=0 failed=1`; with them in, green.
 
-// tier: WORLD
 //! The last step of the moonshine chain (#2441, Refs #2029): at a packing bench a set number of moonshine
 //! bottles become one `LF_Contraband` crate, so the barn-to-pub convoy can carry a crate the chain made.
 //! The step is checked in the shipped config; the bench of the grid cell `slice-2441` is driven through the

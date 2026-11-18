@@ -64,7 +64,8 @@ try {
   }
   if (existsSync(join(root, `${game}/Tests/LF_Test_RadarGun.c`))) {
     const t = read(`${game}/Tests/LF_Test_RadarGun.c`);
-    check(/^\/\/ tier: LOGIC$/m.test(t), "the logic test has no // tier: LOGIC line");
+    check(/^\[LF_TestInfo\(LF_TestTier\.LOGIC\)\]$/m.test(t), "the logic test has no [LF_TestInfo(LF_TestTier.LOGIC)] line");
+    check(!/^\/\/ tier:/m.test(t), "the logic test still writes a // tier: comment; the tier lives only in [LF_TestInfo]");
     check(/^\/\/ red-proof: PENDING/m.test(t), "the red-proof slot is not PENDING, so validate-tests would accept an unobserved proof");
     check(t.includes('return "police/radar-gun";'), "the test name is not <area>/<kebab>");
     check(/if \(!RedProof\(\)\)/.test(t) && /--red LF_Test_RadarGun/.test(t), "the logic test lacks the RedProof() hook or the --red red-proof instruction, so a new test would need a hand-made red proof");

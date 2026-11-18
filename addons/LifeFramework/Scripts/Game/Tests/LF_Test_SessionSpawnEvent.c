@@ -20,7 +20,6 @@ class LF_TestSpawnCollector : LF_EventSubscriber
 //! session/spawn-event (#1446): one LF_OnPlayerSpawnedEvent per spawn; the first spawn of an
 //! account uid in a session is flagged, a second spawn of the same uid is not, and a reset
 //! (world teardown) makes the next spawn a first again.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SessionSpawnEvent : LF_Test
 {

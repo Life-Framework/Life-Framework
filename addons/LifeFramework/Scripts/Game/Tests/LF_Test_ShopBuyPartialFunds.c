@@ -7,7 +7,6 @@
 //------------------------------------------------------------------------------------------------
 //! A buyer with half the price cannot buy. Drives LF_ShopComponent.BuyItem on the GridWorld
 //! black market with a real character, so cash is MoneyStack and delivery is a real insert.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ShopBuyPartialFunds : LF_Test
 {

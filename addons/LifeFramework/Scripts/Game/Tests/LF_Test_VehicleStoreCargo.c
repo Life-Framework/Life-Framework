@@ -1,7 +1,6 @@
 // red-proof: #2411, 2026-11-17, `tools/cli test --no-build --only LF_Test_VehicleStoreCargo` on the unfixed code
 // (Store deleted the car with its storage): FAIL - a car with cargo is not stored, - the apple is still in the car.
 // Green with LF_Garage.StoreRefusalKey; the emptied car (stock field dressings only) stores.
-// tier: WORLD
 //! Storing a car never deletes its cargo (#2411): the vehicle record keeps no inventory, so a car
 //! that still holds items stays on the street with them. Emptied, the same car stores.
 [LF_TestInfo(LF_TestTier.WORLD)]

@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-10 with `tools\cli test --no-build --only LF_Test_DebugMoneyTopUp`: changing the
 // expected bank top-up from 1000000 to 1000001 failed it with `[LFTEST] FAIL money/debug-topup`. Restored; green.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_DebugMoneyTopUp : LF_Test
 {

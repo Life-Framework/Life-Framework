@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools\cli test --no-build --red LF_Test_SafeTypes`: RED PROOF OK (RedProof() skips every LF_SafeTypes.Resolve act); failed "the bank's haul beats the box's", "the values the entity left alone come from the type (expected 10, got 0)", "the alarm kind it left alone comes from the type". Green without the hook.
-// tier: LOGIC
 //! crime/safe-types: the three safe tiers are data. The core table loads with store_box,
 //! bank_room and reserve_vault; a type's row fills every value an entity leaves at its default; a
 //! value the entity sets itself wins; an unknown or empty id degrades without a VME; and the store

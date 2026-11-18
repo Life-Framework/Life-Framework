@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18, `tools/cli test --no-build --only LF_Test_HideoutOrgBase` on main code: [LFTEST]   - the leased hideout is the organization's base; - a spot inside the base radius is allowed (got 'has no base: ... (zone ORG_BASE)'). Implemented: green.
-// tier: WORLD
 //! hideout/org-base (#2504, epic #927): an organization's leased hideout is its base for placement.
 //! The lease registers the hideout's door in LF_Places as "org_base" under the organization id, and
 //! LF_PlacementZones judges a spot inside the base radius as allowed; ending the lease unregisters it

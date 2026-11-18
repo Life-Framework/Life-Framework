@@ -8,7 +8,6 @@
 //   [LFTEST]   - a build without LF_HARNESS keeps the hosted harness gate closed
 // Restored it and the test passed.
 
-// tier: LOGIC
 //! M1-05: a multi-client session drives clients through the harness RPCs on a dedicated server.
 //! Those RPCs must stay behind LF_DevGate. On the playtest mission a non-admin's stand is refused
 //! before the server touches the character or the world, and the refusal is a named token the

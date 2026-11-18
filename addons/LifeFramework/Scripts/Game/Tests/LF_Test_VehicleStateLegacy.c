@@ -2,7 +2,6 @@
 // LF_VehicleOwnership.ApplyAll carrying the previous live record's state onto the loaded one (a state with
 // no row) failed `[LFTEST] FAIL persist/vehicle-state-legacy`, `- the car loads untowed (version 32 load 1)
 // (expected 0, got 1)`, `- the car loads with no compartment (version 23 load 1) ...`. Restored; green.
-// tier: PERSISTENCE
 //! #752a: a save from before the "vehiclestate" payload (version 32, and version 23, the e2e legacy
 //! save) has no state rows. Each loads, twice, with every vehicle untowed, uninspected and with no
 //! compartment, and the "vehicles" records unchanged. The test puts back the stores it found.

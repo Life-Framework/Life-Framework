@@ -3,7 +3,6 @@
 // run `tools\cli test --tier all`; the config assertions go red.
 // Observed red: expected 501 cash for CIVILIAN (config gives 500), then reverted.
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FactionLoadoutConfig : LF_Test
 {

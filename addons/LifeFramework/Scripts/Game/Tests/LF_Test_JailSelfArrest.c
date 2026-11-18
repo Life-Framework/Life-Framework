@@ -1,5 +1,5 @@
 // red-proof: 2026-11-17, a bug fix: one boot of this test against the unfixed LF_Jail.Arrest (no self check): `- an officer cannot arrest themself`, `- no sentence starts`. Green on the fixed code.
-// tier: WORLD (needs a cell origin, like jail/work)
+//! Needs a cell origin, like jail/work
 //! An on-duty officer who is also wanted cannot arrest themself (crime review 2026-11-17). The police
 //! menu RPC passed any uid in reach, and the officer's own body is always in reach.
 [LF_TestInfo(LF_TestTier.WORLD)]

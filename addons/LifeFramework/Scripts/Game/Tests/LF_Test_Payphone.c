@@ -3,7 +3,6 @@
 //------------------------------------------------------------------------------------------------
 //! comms/payphone (#247): a call charges the coin once and reaches dispatch once; the cooldown
 //! refuses a second call and takes no coin; a call nobody can answer takes no coin.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Payphone : LF_Test
 {

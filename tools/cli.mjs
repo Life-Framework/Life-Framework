@@ -47,6 +47,7 @@ import { dirname, join, resolve, sep } from "node:path";
 import { incrementalOff, loadState, plan, saveState, snapshotFiles } from "./lib/validate-incremental.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import * as wt from "./wt.mjs";
+import { registerDrivers } from "./merge/register-drivers.mjs";
 import { injectRegistrations, registerLine } from "./lib/mcp-register.mjs";
 import * as host from "./host/host.mjs";
 import * as hostPublic from "./host/public.mjs";
@@ -4564,6 +4565,8 @@ function wtHelpFull() {
                                        one SUMMARY line, exit 0 passed, 1 failed, 2 still going (re-run it)
   tools\\cli wt prune <slug> [--force] remove a merged worktree + its branch (a squash-merged PR counts as merged)
   tools\\cli wt prune --merged [--yes]  list every worktree with a MERGED PR, clean, idle (30 min), unlocked; --yes prunes them (ancestry alone never counts)
+  tools\\cli wt fix-drivers            drop merge drivers the repo no longer declares (lf-regen-tests) from the shared git
+                                       config and keep the one drivers include; 'wt new' and 'wt sync' run it too
   tools\\cli wt open <slug>            open a terminal in the worktree
   tools\\cli wt open <slug> --workbench launch Workbench on that worktree
   tools\\cli wt main                   print the main checkout path
@@ -4584,9 +4587,28 @@ flags:
   return 0;
 }
 
+// Makes the shared git config's merge drivers right: one include of the main checkout's drivers file, and no
+// `merge.lf-*` section it no longer declares (lf-regen-tests, #2618). Quiet unless it changed something or `loud`.
+function fixDriversCmd(loud) {
+  try {
+    const r = registerDrivers(ROOT);
+    if (r.skipped) {
+      if (loud) console.log(`merge drivers: skipped (${r.skipped})`);
+      return 0;
+    }
+    if (r.removed) console.log(`merge drivers: removed ${r.removed} stale include.path line(s)`);
+    if (r.pruned?.length) console.log(`merge drivers: removed stale driver(s) ${r.pruned.join(", ")}`);
+    if (loud && !r.removed && !r.pruned?.length) console.log("merge drivers: nothing stale");
+  } catch (e) {
+    if (loud) console.log(`merge drivers: ${e.message}`);
+  }
+  return 0;
+}
+
 function wtNewCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
+  fixDriversCmd(false);
   try {
     const r = wt.wtNew(ROOT, slug, { waitMs: args.includes("--wait") ? 600000 : 0, base: argValue(args, "--base") ?? "main", priority: priorityFlag(args), warm: !args.includes("--no-warm"), unchecked: args.includes("--unchecked-main") });
     console.log(`created worktree ${r.slug}${r.priority ? ` (pool priority ${r.priority})` : ""} in ${(r.ms / 1000).toFixed(1)} s (${r.warm ? "warm pool" : "fresh checkout"}; lock ${(r.lockMs / 1000).toFixed(1)} s)`);
@@ -4704,6 +4726,7 @@ function wtWarmCmd(args) {
 function wtSyncCmd(args) {
   const slug = wtSlug(args);
   if (!slug) return 1;
+  fixDriversCmd(false);
   try {
     const r = wt.wtSync(ROOT, slug);
     console.log(`synced ${r.slug}: merged origin/${r.base} into ${r.branch}`);
@@ -5510,6 +5533,7 @@ function cmdWt(rest) {
       return 0;
     },
     prune: () => wtPruneCmd(subArgs),
+    "fix-drivers": () => fixDriversCmd(true),
     open: () => wtOpenCmd(subArgs),
     main: () => {
       console.log(wt.mainRootOf(ROOT));

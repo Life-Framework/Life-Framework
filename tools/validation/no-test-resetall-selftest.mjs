@@ -44,12 +44,12 @@ try {
 
   copyFileSync(fx("LF_Test_BadResetAll.c"), join(core, "LF_Test_BadResetAll.c"));
   r = run();
-  check(r.status === 1 && /LF_Test_BadResetAll\.c:12 /.test(r.stdout), `a core test calling ResetAll fails (${r.stdout.trim().split("\n")[0]})`);
+  check(r.status === 1 && /LF_Test_BadResetAll\.c:11 /.test(r.stdout), `a core test calling ResetAll fails (${r.stdout.trim().split("\n")[0]})`);
   rmSync(join(core, "LF_Test_BadResetAll.c"));
 
   copyFileSync(fx("LF_Test_BadResetAll.c"), join(pack, "LF_Test_EveronBad.c"));
   r = run();
-  check(r.status === 1 && /LF_Everon1989\/Scripts\/Game\/Tests\/LF_Test_EveronBad\.c:12 /.test(r.stdout), "a pack test calling ResetAll fails");
+  check(r.status === 1 && /LF_Everon1989\/Scripts\/Game\/Tests\/LF_Test_EveronBad\.c:11 /.test(r.stdout), "a pack test calling ResetAll fails");
   rmSync(join(pack, "LF_Test_EveronBad.c"));
 
   r = run();

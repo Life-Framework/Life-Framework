@@ -17,7 +17,6 @@ class LF_TestJobLevelRecorder : LF_EventSubscriber
 	}
 }
 
-// tier: WORLD
 //! #749 review: the replicated DELIVERY level must follow every job level change, not only a run.
 //! A level rise from any grant (here a quest's reward XP routed to DELIVERY) publishes
 //! LF_OnJobLevelChanged, LF_JobLevelSync is subscribed at game start, and PullCareerFor puts the

@@ -5,7 +5,6 @@
 //! The graph, its instance and the three base-game CPR clips it names must load, and the loiter
 //! data must drive the graph the way the player graph's NPC attachment expects (binding NPC, the
 //! Gestures variable, no command), or the medic stands still while the server says "started".
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ReviveCprGraph : LF_Test
 {

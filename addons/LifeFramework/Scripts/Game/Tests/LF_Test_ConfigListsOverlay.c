@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --local --only LF_Test_ConfigListsOverlay`: making LF_PoliceRankList.RemoveRefusal skip the shipped-rung check (`index < 0`) failed `- police: the last rung is still refused when it is a shipped one` and `- police: that remove is a refused record (expected 1, got 0)`. Restored; green.
-// tier: LOGIC
 //! #1108: police ranks, organization rank defaults, zone rule sets, licence rules and the system
 //! catalog on the override model (#962). Per list: `op: remove` takes an entry out (or is refused
 //! with a reason where removing makes no sense), and `op: patch` of an id no lower layer has is

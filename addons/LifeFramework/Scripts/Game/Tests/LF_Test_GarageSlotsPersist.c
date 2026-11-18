@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 `tools/cli test --no-build --red LF_Test_GarageBuySlot,LF_Test_GarageSlotsPersist`: RED PROOF OK, first `one bought slot is back (expected 1, got 0)`. Before the fix the JSON key `slotRows` collided with the characters payload and the same line failed; green with `--only`. Restart: `tools/cli wt e2e slice-2656`.
-// tier: PERSISTENCE
 //! Bought garage slots ride the real save path (#2656, the "garageslots" payload, save version 55):
 //! rows are written per character, an emptied store reads the same counts back, loading twice gives
 //! the same store, a count past the config's max clamps, and a save from before the payload loads

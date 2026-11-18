@@ -2,7 +2,6 @@
 // the "idcards" load skipped LF_PhotoIdCard.ApplyAll; got `[LFTEST] FAIL persist/photo-id-cards`,
 // `- the three cards are back (load 1) (expected 3, got 0)`,
 // `- the next card is numbered after the loaded ones (expected 'EV 000004', got 'EV 000001')`. Restored; green.
-// tier: PERSISTENCE
 //! The identity card registry (#902) rides the real save path: the "idcards" payload, save version
 //! 30. After the registry is wiped the rows come back from the save, twice the same (idempotent),
 //! with the replaced card still void and the photo and the date of issue intact; numbering goes on

@@ -7,7 +7,6 @@
 // wanted level during the "wanted" payload: `- slot 2's poster survives the restart while slot 1 plays
 // (expected 1, got 0)`. Fixed (LF_WantedReports.PruneCleared after the last payload); green.
 
-// tier: PERSISTENCE
 //! #331 through the real save path ("characters" payload, save version 24). A two-character account
 //! saves and loads with each character's key, wanted level, police rank and bank balance where they
 //! were, twice without change. A version 23 save (the format before #331) loads its one character

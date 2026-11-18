@@ -1,5 +1,4 @@
 // red-proof: set the expected capture hour to 18.6 and ran `toolsi test --no-build --only LF_Test_HarnessProbe` (2026-11-10). Observed: [LFTEST]   - capture hour (expected 18.6, got 18.5). Restored it and the test passed.
-// tier: LOGIC
 //! tools\cli shots area: `probe` measures the world (ground, trace, cam, ent) and a world capture
 //! takes an optional clock hour that means a clean shot. Both ride the harness line parser.
 [LF_TestInfo(LF_TestTier.LOGIC)]

@@ -3,7 +3,6 @@
 // the locked-denies-unlocked-allows assertions fail. For the key path, clear the debug
 // prefab identifier or break IdentifiersMatch and the configured-key assertions fail.
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_VehicleLock : LF_Test
 {

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-16, `tools\cli test --no-build --red LF_Test_EveronDrinksImpair` (RedProof skips the overlay apply): RED PROOF OK, failed "the moonshine row applies" and "the beer row applies"; green without the hook (13 assertions, pack leg worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #2003 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's drink
 //! overlay applies over the neutral core table. Beer and moonshine get their rows, and moonshine is the
 //! strongest drink. This replaced the node selftest that read the overlay's text

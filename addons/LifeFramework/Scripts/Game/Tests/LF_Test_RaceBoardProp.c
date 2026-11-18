@@ -1,5 +1,4 @@
 // red-proof: batched `tools\cli test --no-build --red LF_Test_RaceBoardProp` (the hook skips the spawn, so the read action and the title are missing); the first run before RaceRecordBoard.et existed failed "record board prefab loads".
-// tier: WORLD
 //! #2098: the record board prop at the race track's start line. RaceRecordBoard.et carries the read
 //! action the "racerecords" board kind names and a printed title, and what it reads is the course the
 //! start sign enters: a time recorded on that course comes back in the board's answer.

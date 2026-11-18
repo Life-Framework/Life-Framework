@@ -3,7 +3,6 @@
 //   [LFTEST]   - the drill rests clear of the robber (0 m away, want 0.9 m or more)
 //   [LFTEST]   - it lies on the robber's right-hand side (expected 253.4, got 252.4)
 // Fixed (1 m to the right, ground height); green.
-// tier: LOGIC
 //! A drill left at a vault or the cash van box rests beside the robber, not under their feet: the bench drill
 //! spawned at the robber's origin and the robber stood inside it for the whole work animation (#571 trailer take).
 [LF_TestInfo(LF_TestTier.LOGIC)]
