@@ -1,0 +1,1723 @@
+{
+ "build": "26266485",
+ "source": "Configs/System/chimeraInputCommon.conf of the installed Arma Reforger (bare keyboard keys only; combo bindings are left out). Regenerate: node tools/validation/validate-input-vanilla-clash.mjs --extract <conf> --build <n>",
+ "extractedOn": "2026-11-18",
+ "liveWith": {
+  "IngameContext": [
+   "IngameContext",
+   "GlobalContext",
+   "CarContext",
+   "HelicopterContext",
+   "TrackedContext",
+   "TurretContext",
+   "CharacterGeneralContext",
+   "CharacterMovementContext",
+   "CharacterWeaponContext",
+   "CharacterCompartmentContext",
+   "CharacterPlacementContext",
+   "PlayerCameraContext",
+   "InventoryContext",
+   "ChatContext",
+   "ActionMenuContext",
+   "RadialMenuContext",
+   "GadgetContext",
+   "CommandingContext",
+   "VONContext",
+   "InstantVotingContext",
+   "GroupMenuContext",
+   "PlayerMenuContext"
+  ],
+  "CarContext": [
+   "IngameContext",
+   "GlobalContext",
+   "CarContext",
+   "HelicopterContext",
+   "TrackedContext",
+   "TurretContext",
+   "CharacterGeneralContext",
+   "CharacterMovementContext",
+   "CharacterWeaponContext",
+   "CharacterCompartmentContext",
+   "CharacterPlacementContext",
+   "PlayerCameraContext",
+   "InventoryContext",
+   "ChatContext",
+   "ActionMenuContext",
+   "RadialMenuContext",
+   "GadgetContext",
+   "CommandingContext",
+   "VONContext",
+   "InstantVotingContext",
+   "GroupMenuContext",
+   "PlayerMenuContext"
+  ],
+  "CharacterGeneralContext": [
+   "IngameContext",
+   "GlobalContext",
+   "CarContext",
+   "HelicopterContext",
+   "TrackedContext",
+   "TurretContext",
+   "CharacterGeneralContext",
+   "CharacterMovementContext",
+   "CharacterWeaponContext",
+   "CharacterCompartmentContext",
+   "CharacterPlacementContext",
+   "PlayerCameraContext",
+   "InventoryContext",
+   "ChatContext",
+   "ActionMenuContext",
+   "RadialMenuContext",
+   "GadgetContext",
+   "CommandingContext",
+   "VONContext",
+   "InstantVotingContext",
+   "GroupMenuContext",
+   "PlayerMenuContext"
+  ],
+  "InventoryContext": [
+   "IngameContext",
+   "GlobalContext",
+   "CarContext",
+   "HelicopterContext",
+   "TrackedContext",
+   "TurretContext",
+   "CharacterGeneralContext",
+   "CharacterMovementContext",
+   "CharacterWeaponContext",
+   "CharacterCompartmentContext",
+   "CharacterPlacementContext",
+   "PlayerCameraContext",
+   "InventoryContext",
+   "ChatContext",
+   "ActionMenuContext",
+   "RadialMenuContext",
+   "GadgetContext",
+   "CommandingContext",
+   "VONContext",
+   "InstantVotingContext",
+   "GroupMenuContext",
+   "PlayerMenuContext"
+  ],
+  "MenuContext": [
+   "MenuTextEditContext",
+   "MenuWidgetActiveContext",
+   "DialogContext"
+  ],
+  "MenuTextEditContext": [
+   "MenuTextEditContext",
+   "MenuWidgetActiveContext"
+  ]
+ },
+ "workbenchOnly": [
+  "MenuOpenWB",
+  "MenuBackWB"
+ ],
+ "knownClashes": [
+  {
+   "lf": "LF_Inventory_MoveQuantity",
+   "key": "KC_LMENU",
+   "reason": "Alt is a modifier held inside the inventory UI; vanilla Freelook is the on-foot camera. Tracked on #2496."
+  },
+  {
+   "lf": "LF_GiveUp",
+   "key": "KC_X",
+   "reason": "A hold, so a tap still crouches or gets out; no obvious replacement key. Tracked on #2496."
+  },
+  {
+   "lf": "LF_OpenDebugMenu",
+   "key": "KC_F10",
+   "reason": "Developer menu; clashes with InstantVoteAbstain while a vote is open. Tracked on #2496."
+  },
+  {
+   "lf": "LF_PlacementPlace",
+   "key": "KC_RETURN",
+   "reason": "Only while placing a prop; ChatSendMessage is live while typing. Tracked on #2496."
+  },
+  {
+   "lf": "LF_PlacementCancel",
+   "key": "KC_BACK",
+   "reason": "Only while placing a prop. Tracked on #2496."
+  },
+  {
+   "lf": "LF_PlacementFine",
+   "key": "KC_LSHIFT",
+   "reason": "A modifier held only while placing a prop. Tracked on #2496."
+  },
+  {
+   "lf": "LF_OpenEmoteMenu",
+   "key": "KC_F1",
+   "reason": "Deliberately replaces the vanilla emote menu on the same key (same action role). Tracked on #2496."
+  }
+ ],
+ "contexts": {
+  "ActionMenuContext": {
+   "PerformAction": [
+    "KC_F"
+   ]
+  },
+  "BetaWarningContext": {
+   "CloseSplashScreen": [
+    "KC_ESCAPE",
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ]
+  },
+  "CarContext": {
+   "CarBrake": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "CarClutch": [
+    "placeholder"
+   ],
+   "CarHandBrake": [
+    "KC_SPACE"
+   ],
+   "CarHandBrakePersistent": [
+    "KC_SPACE"
+   ],
+   "CarLightsHiBeamToggle": [
+    "KC_L"
+   ],
+   "CarShift": [
+    "KC_E",
+    "KC_Q"
+   ],
+   "CarShiftGear1": [
+    "KC_E"
+   ],
+   "CarShiftGear2": [
+    "placeholder"
+   ],
+   "CarShiftGear3": [
+    "placeholder"
+   ],
+   "CarShiftGear4": [
+    "placeholder"
+   ],
+   "CarShiftGear5": [
+    "placeholder"
+   ],
+   "CarShiftGear6": [
+    "placeholder"
+   ],
+   "CarShiftGear7": [
+    "placeholder"
+   ],
+   "CarShiftGear8": [
+    "placeholder"
+   ],
+   "CarShiftGear9": [
+    "placeholder"
+   ],
+   "CarShiftNeutral": [
+    "placeholder"
+   ],
+   "CarShiftReverse": [
+    "KC_Q"
+   ],
+   "CarSteering": [
+    "KC_A",
+    "KC_D",
+    "KC_LEFT",
+    "KC_RIGHT"
+   ],
+   "CarThrust": [
+    "KC_UP",
+    "KC_W"
+   ],
+   "CarTurbo": [
+    "KC_LSHIFT"
+   ],
+   "CarTurboToggle": [
+    "KC_LSHIFT"
+   ],
+   "VehicleEngineStart": [
+    "KC_R"
+   ],
+   "VehicleEngineStop": [
+    "KC_R"
+   ],
+   "VehicleLightsToggle": [
+    "KC_L"
+   ]
+  },
+  "CareerProfileContext": {
+   "CareerSpecializationNext": [
+    "KC_A"
+   ],
+   "CareerSpecializationPrev": [
+    "KC_D"
+   ]
+  },
+  "CharacterCompartmentContext": {
+   "GetOut": [
+    "KC_X"
+   ],
+   "JumpOut": [
+    "KC_X"
+   ],
+   "VehicleDoorToggle": [
+    "KC_Z"
+   ],
+   "VehicleTurnOutToggle": [
+    "KC_Z"
+   ]
+  },
+  "CharacterGeneralContext": {
+   "AutotuneRadio": [
+    "KC_F9"
+   ],
+   "CharacterAction": [
+    "KC_F"
+   ],
+   "CharacterCancelThrow": [
+    "KC_R"
+   ],
+   "CharacterInspect": [
+    "KC_R"
+   ],
+   "CharacterInspectTurn": [
+    "KC_R"
+   ],
+   "CharacterNextWeapon": [
+    "placeholder"
+   ],
+   "CharacterUseItem": [
+    "KC_R"
+   ],
+   "GadgetBinoculars": [
+    "KC_B"
+   ],
+   "GadgetCompass": [
+    "KC_K"
+   ],
+   "GadgetFlashlight": [
+    "KC_L"
+   ],
+   "GadgetFlashlightToggle": [
+    "KC_L"
+   ],
+   "GadgetMap": [
+    "KC_M"
+   ],
+   "GadgetWatch": [
+    "KC_O"
+   ],
+   "Inventory": [
+    "KC_TAB"
+   ],
+   "Inventory_WeaponSwitching": [
+    "KC_TAB"
+   ],
+   "Inventory_WeaponSwitchingRadial": [
+    "placeholder"
+   ],
+   "OpenCommandMenu": [
+    "KC_GRAVE"
+   ],
+   "OpenEmoteMenu": [
+    "KC_F1"
+   ],
+   "PerformAction": [
+    "KC_F"
+   ],
+   "SwitchWeaponCategory0": [
+    "KC_0"
+   ],
+   "SwitchWeaponCategory1": [
+    "KC_1"
+   ],
+   "SwitchWeaponCategory2": [
+    "KC_2"
+   ],
+   "SwitchWeaponCategory3": [
+    "KC_3"
+   ],
+   "SwitchWeaponCategory4": [
+    "KC_4"
+   ],
+   "SwitchWeaponCategory5": [
+    "KC_5"
+   ],
+   "SwitchWeaponCategory6": [
+    "KC_6"
+   ],
+   "SwitchWeaponCategory7": [
+    "KC_7"
+   ],
+   "SwitchWeaponCategory8": [
+    "KC_8"
+   ],
+   "SwitchWeaponCategory9": [
+    "KC_9"
+   ]
+  },
+  "CharacterMovementContext": {
+   "CharacterForward": [
+    "KC_DOWN",
+    "KC_S",
+    "KC_UP",
+    "KC_W"
+   ],
+   "CharacterJump": [
+    "KC_SPACE"
+   ],
+   "CharacterLeanLeft": [
+    "KC_Q"
+   ],
+   "CharacterLeanModifier": [
+    "KC_LCONTROL"
+   ],
+   "CharacterLeanRight": [
+    "KC_E"
+   ],
+   "CharacterLeanToggleLeft": [
+    "KC_Q"
+   ],
+   "CharacterLeanToggleRight": [
+    "KC_E"
+   ],
+   "CharacterProne": [
+    "KC_Z"
+   ],
+   "CharacterRight": [
+    "KC_A",
+    "KC_D",
+    "KC_LEFT",
+    "KC_RIGHT"
+   ],
+   "CharacterRoll": [
+    "KC_E",
+    "KC_Q"
+   ],
+   "CharacterSprint": [
+    "KC_LSHIFT"
+   ],
+   "CharacterSprintToggle": [
+    "KC_LSHIFT"
+   ],
+   "CharacterStanceModifier": [
+    "KC_LCONTROL"
+   ],
+   "CharacterStandCrouchToggle": [
+    "KC_X"
+   ]
+  },
+  "CharacterMovementLeanContext": {
+   "CharacterLeanAdjustLeft": [
+    "KC_Q"
+   ],
+   "CharacterLeanAdjustRight": [
+    "KC_E"
+   ]
+  },
+  "CharacterPlacementContext": {
+   "ChangePlacedItem": [
+    "KC_C"
+   ],
+   "ChangedPlacedVariant": [
+    "KC_V"
+   ]
+  },
+  "CharacterWeaponAimContext": {
+   "CharacterLeanToggleADSLeft": [
+    "placeholder"
+   ],
+   "CharacterLeanToggleADSRight": [
+    "placeholder"
+   ],
+   "WeaponZeroingADS": [
+    "KC_NEXT",
+    "KC_PRIOR"
+   ]
+  },
+  "CharacterWeaponContext": {
+   "CharacterNextFireMode": [
+    "KC_V"
+   ],
+   "CharacterNextMuzzle": [
+    "KC_V"
+   ],
+   "CharacterRaiseWeapon": [
+    "KC_LCONTROL"
+   ],
+   "CharacterReload": [
+    "KC_R"
+   ],
+   "CharacterWeaponBipod": [
+    "KC_V"
+   ],
+   "CharacterWeaponDeploy": [
+    "KC_C"
+   ],
+   "CharacterWeaponLowReady": [
+    "KC_LSHIFT"
+   ],
+   "CharacterWeaponRaised": [
+    "KC_C"
+   ],
+   "SwitchWeaponCategory0": [
+    "KC_0"
+   ],
+   "SwitchWeaponCategory1": [
+    "KC_1"
+   ],
+   "SwitchWeaponCategory2": [
+    "KC_2"
+   ],
+   "SwitchWeaponCategory3": [
+    "KC_3"
+   ],
+   "SwitchWeaponCategory4": [
+    "KC_4"
+   ],
+   "SwitchWeaponCategory5": [
+    "KC_5"
+   ],
+   "SwitchWeaponCategory6": [
+    "KC_6"
+   ],
+   "SwitchWeaponCategory7": [
+    "KC_7"
+   ],
+   "SwitchWeaponCategory8": [
+    "KC_8"
+   ],
+   "SwitchWeaponCategory9": [
+    "KC_9"
+   ],
+   "WeaponZeroing": [
+    "KC_NEXT",
+    "KC_PRIOR"
+   ]
+  },
+  "CharacterWeaponInspectionContext": {
+   "CharacterInspect": [
+    "KC_R"
+   ],
+   "CharacterInspectTurn": [
+    "KC_R"
+   ]
+  },
+  "CharacterWeaponMagnificationContext": {
+   "WeaponOpticsZoomIn": [
+    "KC_ADD"
+   ],
+   "WeaponOpticsZoomOut": [
+    "KC_SUBTRACT"
+   ]
+  },
+  "ChatContext": {
+   "ChatConfirm": [
+    "KC_SPACE"
+   ],
+   "ChatEscape": [
+    "KC_ESCAPE"
+   ],
+   "ChatSendMessage": [
+    "KC_RETURN"
+   ],
+   "ChatSwitchChannel": [
+    "KC_DOWN",
+    "KC_UP"
+   ],
+   "ChatSwitchChannelSpace": [
+    "KC_SPACE"
+   ]
+  },
+  "CommandPostMapContext": {
+   "MapEscape": [
+    "KC_ESCAPE",
+    "KC_M"
+   ]
+  },
+  "CommandingContext": {
+   "OpenCommandMenu": [
+    "KC_GRAVE"
+   ]
+  },
+  "CutsceneContext": {
+   "SkipScene": [
+    "KC_SPACE"
+   ]
+  },
+  "DeployMenuContext": {
+   "DeployMenuSelect": [
+    "KC_SPACE"
+   ],
+   "Deploy_NextPage": [
+    "KC_C"
+   ],
+   "Deploy_PrevPage": [
+    "KC_X"
+   ],
+   "InstantVote": [
+    "KC_F9"
+   ],
+   "MenuAddGroup": [
+    "KC_N"
+   ],
+   "MenuBack": [
+    "KC_ESCAPE"
+   ],
+   "MenuDeploy": [
+    "KC_SPACE"
+   ],
+   "MenuJoinGroup": [
+    "KC_J"
+   ],
+   "MenuLockGroup": [
+    "KC_G"
+   ],
+   "MenuQuickDeploy": [
+    "KC_F"
+   ],
+   "ShowGroupMenu": [
+    "KC_P"
+   ],
+   "ShowScoreboard": [
+    "KC_P"
+   ]
+  },
+  "DeployMenuMapContext": {
+   "MenuBack": [
+    "KC_ESCAPE"
+   ],
+   "SpawnPointNext": [
+    "KC_D"
+   ],
+   "SpawnPointPrev": [
+    "KC_A"
+   ],
+   "TasksOpen": [
+    "KC_J"
+   ]
+  },
+  "DialogContext": {
+   "AddonReDownload": [
+    "KC_V"
+   ],
+   "AddonValidateAll": [
+    "KC_R"
+   ],
+   "BrowserToS": [
+    "KC_X"
+   ],
+   "CreateAccount": [
+    "KC_R"
+   ],
+   "DialogConfirm": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "DialogConfirm2": [
+    "KC_R"
+   ],
+   "DialogConfirmReport": [
+    "KC_RETURN"
+   ],
+   "DialogContinueCalibration": [
+    "KC_RETURN"
+   ],
+   "InstantVote": [
+    "KC_F9"
+   ],
+   "InstantVoteAbstain": [
+    "KC_F10"
+   ],
+   "MenuAccount": [
+    "KC_L"
+   ],
+   "MenuAdvancedKeybind": [
+    "KC_TAB"
+   ],
+   "MenuAdvancedUnbind": [
+    "KC_R"
+   ],
+   "MenuBack": [
+    "KC_ESCAPE"
+   ],
+   "MenuBackHold": [
+    "KC_ESCAPE"
+   ],
+   "MenuBackKeybind": [
+    "KC_ESCAPE"
+   ],
+   "MenuBackWB": [
+    "KC_BACK"
+   ],
+   "MenuChange": [
+    "KC_X"
+   ],
+   "MenuConfigure": [
+    "KC_TAB"
+   ],
+   "MenuConnectManual": [
+    "KC_V"
+   ],
+   "MenuDelete": [
+    "KC_V"
+   ],
+   "MenuDeleteKeybind": [
+    "KC_F"
+   ],
+   "MenuDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "MenuDownload": [
+    "KC_H"
+   ],
+   "MenuDownloadManager": [
+    "KC_TAB"
+   ],
+   "MenuEnable": [
+    "KC_R"
+   ],
+   "MenuEnableAll": [
+    "KC_R"
+   ],
+   "MenuFavourite": [
+    "KC_F"
+   ],
+   "MenuFieldManual": [
+    "KC_H"
+   ],
+   "MenuFilter": [
+    "KC_X"
+   ],
+   "MenuHost": [
+    "KC_R"
+   ],
+   "MenuJoin": [
+    "KC_TAB"
+   ],
+   "MenuLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "MenuNavLeft": [
+    "KC_Z"
+   ],
+   "MenuNavLeft_NoScroll": [
+    "KC_Z"
+   ],
+   "MenuNavRight": [
+    "KC_C"
+   ],
+   "MenuNavRight_NoScroll": [
+    "KC_C"
+   ],
+   "MenuOpen": [
+    "KC_ESCAPE"
+   ],
+   "MenuOpenNews": [
+    "KC_F"
+   ],
+   "MenuOpenWB": [
+    "KC_F10"
+   ],
+   "MenuQuickJoin": [
+    "KC_RETURN"
+   ],
+   "MenuRefresh": [
+    "KC_R"
+   ],
+   "MenuRefreshAlt": [
+    "KC_R"
+   ],
+   "MenuRename": [
+    "KC_R"
+   ],
+   "MenuResetAllKeybind": [
+    "KC_F"
+   ],
+   "MenuResetKeybind": [
+    "KC_F"
+   ],
+   "MenuRestart": [
+    "KC_R"
+   ],
+   "MenuRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "MenuSave": [
+    "KC_X"
+   ],
+   "MenuSelectDouble": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuSelectHold": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuServerDetails": [
+    "KC_TAB"
+   ],
+   "MenuSettingsGroup": [
+    "KC_B"
+   ],
+   "MenuTabLeft": [
+    "KC_Q"
+   ],
+   "MenuTabRight": [
+    "KC_E"
+   ],
+   "MenuUnbindKeybind": [
+    "KC_R"
+   ],
+   "MenuUnsubscribeAll": [
+    "KC_V"
+   ],
+   "MenuUp": [
+    "KC_UP",
+    "KC_W"
+   ],
+   "MenuViewProfile": [
+    "KC_LSHIFT"
+   ],
+   "ProfileLogout": [
+    "KC_V"
+   ],
+   "ProfileTOS": [
+    "KC_X"
+   ],
+   "ShowGroupMenu": [
+    "KC_P"
+   ],
+   "ShowScoreboard": [
+    "KC_P"
+   ],
+   "SteamOverlayDummy": [
+    "KC_LSHIFT",
+    "KC_TAB"
+   ],
+   "WorkshopUnsubscribe": [
+    "KC_V"
+   ]
+  },
+  "EndgameScreenContext": {
+   "CareerSpecializationNext": [
+    "KC_A"
+   ],
+   "CareerSpecializationPrev": [
+    "KC_D"
+   ],
+   "EndGameLoadSave": [
+    "KC_SPACE"
+   ],
+   "EndGameRestart": [
+    "KC_R"
+   ],
+   "InstantVote": [
+    "KC_F9"
+   ],
+   "MenuBack": [
+    "KC_ESCAPE"
+   ],
+   "MenuNextScenario": [
+    "KC_SPACE"
+   ],
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "ShowGroupMenu": [
+    "KC_P"
+   ],
+   "ShowScoreboard": [
+    "KC_P"
+   ]
+  },
+  "GadgetContext": {
+   "CharacterInspect": [
+    "KC_R"
+   ],
+   "CharacterInspectTurn": [
+    "KC_R"
+   ]
+  },
+  "GadgetContextToggleable": {
+   "GadgetActivate": [
+    "KC_R"
+   ]
+  },
+  "GadgetMapContext": {
+   "GadgetMap": [
+    "KC_M"
+   ],
+   "MapEscape": [
+    "KC_ESCAPE",
+    "KC_M"
+   ]
+  },
+  "GamepadRemovalContext": {
+   "KeyboardAnyButton": [
+    "any_button"
+   ]
+  },
+  "GlobalContext": {
+   "OpenDebugConsole": [
+    "KC_GRAVE",
+    "KC_LSHIFT"
+   ],
+   "OpenNotificationDialog": [
+    "KC_F9"
+   ]
+  },
+  "GroupMenuContext": {
+   "GroupAcceptInvite": [
+    "KC_U"
+   ],
+   "GroupDeclineInvite": [
+    "KC_D"
+   ],
+   "MenuAddGroup": [
+    "KC_N"
+   ],
+   "MenuJoinGroup": [
+    "KC_J"
+   ],
+   "MenuRemoveGroup": [
+    "KC_R"
+   ]
+  },
+  "HelicopterContext": {
+   "HelicopterAntiTorqueLeft": [
+    "KC_Q"
+   ],
+   "HelicopterAntiTorqueRight": [
+    "KC_E"
+   ],
+   "HelicopterAutohoverToggle": [
+    "KC_C"
+   ],
+   "HelicopterCollectiveDecrease": [
+    "KC_LCONTROL",
+    "KC_RCONTROL"
+   ],
+   "HelicopterCollectiveIncrease": [
+    "KC_LSHIFT",
+    "KC_RSHIFT"
+   ],
+   "HelicopterCyclicBack": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "HelicopterCyclicForward": [
+    "KC_UP",
+    "KC_W"
+   ],
+   "HelicopterCyclicLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "HelicopterCyclicRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "HelicopterEngineStart": [
+    "KC_R"
+   ],
+   "HelicopterLightsLandingToggle": [
+    "KC_L"
+   ],
+   "HelicopterLightsTaxiToggle": [
+    "KC_L"
+   ],
+   "HelicopterSightZeroing": [
+    "KC_NEXT",
+    "KC_PRIOR"
+   ],
+   "HelicopterWheelBrake": [
+    "KC_SPACE"
+   ],
+   "HelicopterWheelBrakePersistent": [
+    "KC_SPACE"
+   ]
+  },
+  "IngameContext": {
+   "EditorPing": [
+    "KC_Y"
+   ],
+   "EditorToggle": [
+    "KC_Y"
+   ],
+   "HintContext": [
+    "KC_H"
+   ],
+   "HintDismiss": [
+    "KC_G"
+   ],
+   "HintToggle": [
+    "KC_H"
+   ],
+   "InstantVote": [
+    "KC_F9"
+   ],
+   "MenuOpen": [
+    "KC_ESCAPE"
+   ],
+   "MenuOpenWB": [
+    "KC_F10"
+   ],
+   "ShowGroupMenu": [
+    "KC_P"
+   ],
+   "ShowScoreboard": [
+    "KC_P"
+   ],
+   "TasksOpen": [
+    "KC_J"
+   ],
+   "TasksShowHint": [
+    "KC_J"
+   ]
+  },
+  "InstantVotingContext": {
+   "InstantVote": [
+    "KC_F9"
+   ],
+   "InstantVoteAbstain": [
+    "KC_F10"
+   ]
+  },
+  "InteractableDialogContext": {
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ]
+  },
+  "InventoryContext": {
+   "HintDismiss": [
+    "KC_G"
+   ],
+   "HintToggle": [
+    "KC_H"
+   ],
+   "Inventory": [
+    "KC_TAB"
+   ],
+   "InventoryEscape": [
+    "KC_ESCAPE"
+   ],
+   "InventoryQuickSlot1": [
+    "KC_1"
+   ],
+   "InventoryQuickSlot10": [
+    "KC_0"
+   ],
+   "InventoryQuickSlot2": [
+    "KC_2"
+   ],
+   "InventoryQuickSlot3": [
+    "KC_3"
+   ],
+   "InventoryQuickSlot4": [
+    "KC_4"
+   ],
+   "InventoryQuickSlot5": [
+    "KC_5"
+   ],
+   "InventoryQuickSlot6": [
+    "KC_6"
+   ],
+   "InventoryQuickSlot7": [
+    "KC_7"
+   ],
+   "InventoryQuickSlot8": [
+    "KC_8"
+   ],
+   "InventoryQuickSlot9": [
+    "KC_9"
+   ],
+   "InventoryWeapon": [
+    "KC_Q"
+   ],
+   "Inventory_Drop": [
+    "KC_X"
+   ],
+   "Inventory_Equip": [
+    "KC_F"
+   ],
+   "Inventory_Inspect": [
+    "KC_I"
+   ],
+   "Inventory_NextPage": [
+    "KC_E"
+   ],
+   "Inventory_PrevPage": [
+    "KC_Q"
+   ],
+   "Inventory_StepBack": [
+    "KC_ESCAPE"
+   ],
+   "Inventory_Swap": [
+    "KC_SPACE"
+   ],
+   "Inventory_Use": [
+    "KC_F"
+   ]
+  },
+  "InventoryMenuContext": {
+   "MenuDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "MenuLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "MenuRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "MenuUp": [
+    "KC_UP",
+    "KC_W"
+   ]
+  },
+  "InventoryPagingContext": {
+   "Inventory_NextPage": [
+    "KC_E"
+   ],
+   "Inventory_PrevPage": [
+    "KC_Q"
+   ]
+  },
+  "LogisticMapContext": {
+   "HintDismiss": [
+    "KC_G"
+   ],
+   "HintToggle": [
+    "KC_H"
+   ],
+   "LogisticClose": [
+    "KC_ESCAPE"
+   ],
+   "LogisticSwitchPriority": [
+    "KC_E"
+   ],
+   "MenuLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "MenuRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ]
+  },
+  "MapContext": {
+   "HintContext": [
+    "KC_H"
+   ],
+   "HintDismiss": [
+    "KC_G"
+   ],
+   "HintToggle": [
+    "KC_H"
+   ],
+   "MapMarkerDelete": [
+    "KC_DELETE"
+   ],
+   "MapOpenBase": [
+    "KC_F"
+   ],
+   "MapPanH": [
+    "KC_NUMPAD4",
+    "KC_NUMPAD6"
+   ],
+   "MapPanV": [
+    "KC_NUMPAD2",
+    "KC_NUMPAD8"
+   ],
+   "MapToggleShowSettings": [
+    "KC_H"
+   ],
+   "MapToolCompass": [
+    "KC_K"
+   ],
+   "MapToolPencil": [
+    "KC_N"
+   ],
+   "MapToolProtractor": [
+    "KC_B"
+   ],
+   "MapToolWatch": [
+    "KC_O"
+   ],
+   "MapZoomIn": [
+    "KC_ADD"
+   ],
+   "MapZoomOut": [
+    "KC_SUBTRACT"
+   ],
+   "TasksOpen": [
+    "KC_J"
+   ]
+  },
+  "MapMarkerEditContext": {
+   "MenuBack": [
+    "KC_ESCAPE"
+   ],
+   "MenuDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "MenuLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "MenuRefresh": [
+    "KC_R"
+   ],
+   "MenuRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuTabLeft": [
+    "KC_Q"
+   ],
+   "MenuTabRight": [
+    "KC_E"
+   ],
+   "MenuUp": [
+    "KC_UP",
+    "KC_W"
+   ]
+  },
+  "MenuTextEditContext": {
+   "MenuBack": [
+    "KC_ESCAPE"
+   ],
+   "MenuTextEditBack": [
+    "KC_RETURN"
+   ],
+   "MenuTextEditEnter": [
+    "KC_LCONTROL",
+    "KC_RETURN"
+   ]
+  },
+  "MenuWidgetActiveContext": {
+   "ActiveWidgetBack": [
+    "KC_ESCAPE"
+   ],
+   "MenuDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "MenuLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "MenuRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuTextEditBack": [
+    "KC_RETURN"
+   ],
+   "MenuTextEditEnter": [
+    "KC_LCONTROL",
+    "KC_RETURN"
+   ],
+   "MenuUp": [
+    "KC_UP",
+    "KC_W"
+   ]
+  },
+  "MenuWithEditorContext": {
+   "EditorToggle": [
+    "KC_Y"
+   ],
+   "MenuBack": [
+    "KC_ESCAPE"
+   ],
+   "MenuBackHold": [
+    "KC_ESCAPE"
+   ],
+   "MenuBackWB": [
+    "KC_BACK"
+   ],
+   "MenuChange": [
+    "KC_X"
+   ],
+   "MenuConfigure": [
+    "KC_TAB"
+   ],
+   "MenuDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "MenuFavourite": [
+    "KC_F"
+   ],
+   "MenuLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "MenuOpen": [
+    "KC_ESCAPE"
+   ],
+   "MenuOpenWB": [
+    "KC_F10"
+   ],
+   "MenuRefresh": [
+    "KC_R"
+   ],
+   "MenuRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuSelectHold": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuTabLeft": [
+    "KC_Q"
+   ],
+   "MenuTabRight": [
+    "KC_E"
+   ],
+   "MenuUp": [
+    "KC_UP",
+    "KC_W"
+   ]
+  },
+  "PlayerCameraContext": {
+   "FocusAnalog": [
+    "placeholder"
+   ],
+   "FocusToggle": [
+    "placeholder"
+   ],
+   "Freelook": [
+    "KC_LMENU"
+   ],
+   "FreelookReset": [
+    "KC_LMENU"
+   ],
+   "FreelookToggle": [
+    "KC_LMENU"
+   ],
+   "SwitchCameraType": [
+    "KC_BACK",
+    "KC_NUMPADENTER"
+   ]
+  },
+  "PlayerMenuContext": {
+   "GroupAcceptInvite": [
+    "KC_U"
+   ],
+   "HintContext": [
+    "KC_H"
+   ],
+   "HintDismiss": [
+    "KC_G"
+   ],
+   "HintToggle": [
+    "KC_H"
+   ],
+   "MenuAddGroup": [
+    "KC_N"
+   ],
+   "MenuJoinGroup": [
+    "KC_J"
+   ],
+   "MenuLockGroup": [
+    "KC_G"
+   ],
+   "PlayerMenuBlock": [
+    "KC_B"
+   ],
+   "PlayerMenuFriend": [
+    "KC_F"
+   ],
+   "PlayerMenuInvite": [
+    "KC_I"
+   ],
+   "PlayerMenuMute": [
+    "KC_M"
+   ],
+   "PlayerMenuVote": [
+    "KC_V"
+   ]
+  },
+  "RadialMenuContext": {
+   "MenuOpen": [
+    "KC_ESCAPE"
+   ],
+   "RadialBack": [
+    "KC_ESCAPE"
+   ],
+   "RadialNext": [
+    "KC_E"
+   ],
+   "RadialPrevious": [
+    "KC_Q"
+   ]
+  },
+  "ScriptCameraContext": {
+   "CamFreeFly": [
+    "KC_HOME"
+   ]
+  },
+  "ServerBrowserMenuContext": {
+   "MenuFilter": [
+    "KC_X"
+   ]
+  },
+  "TaskAssignGroupListContext": {
+   "HintContext": [
+    "KC_H"
+   ],
+   "HintDismiss": [
+    "KC_G"
+   ],
+   "HintToggle": [
+    "KC_H"
+   ],
+   "MenuDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "MenuLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "MenuRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuUp": [
+    "KC_UP",
+    "KC_W"
+   ],
+   "TasksCloseAssignGroupList": [
+    "KC_ESCAPE"
+   ],
+   "TasksConfirmGroupAssignment": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "TasksDetail": [
+    "KC_SPACE"
+   ],
+   "TasksShowHint": [
+    "KC_J"
+   ]
+  },
+  "TaskListContext": {
+   "HintContext": [
+    "KC_H"
+   ],
+   "HintDismiss": [
+    "KC_G"
+   ],
+   "HintToggle": [
+    "KC_H"
+   ],
+   "MenuDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "MenuLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "MenuRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuUp": [
+    "KC_UP",
+    "KC_W"
+   ],
+   "TasksAssign": [
+    "KC_X"
+   ],
+   "TasksClose": [
+    "KC_ESCAPE",
+    "KC_J"
+   ],
+   "TasksDetail": [
+    "KC_SPACE"
+   ],
+   "TasksOpen": [
+    "KC_J"
+   ],
+   "TasksShowHint": [
+    "KC_J"
+   ],
+   "TasksShowOnMap": [
+    "KC_F"
+   ]
+  },
+  "TaskListMapContext": {
+   "HintContext": [
+    "KC_H"
+   ],
+   "HintDismiss": [
+    "KC_G"
+   ],
+   "HintToggle": [
+    "KC_H"
+   ],
+   "MenuDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "MenuLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "MenuRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuUp": [
+    "KC_UP",
+    "KC_W"
+   ],
+   "TasksAssign": [
+    "KC_X"
+   ],
+   "TasksClose": [
+    "KC_ESCAPE",
+    "KC_J"
+   ],
+   "TasksDetail": [
+    "KC_SPACE"
+   ],
+   "TasksOpenAssignGroupList": [
+    "KC_F"
+   ],
+   "TasksShowHint": [
+    "KC_J"
+   ],
+   "TasksShowOnMap": [
+    "KC_F"
+   ]
+  },
+  "TasksPickAssigneeContext": {
+   "MenuBack": [
+    "KC_ESCAPE"
+   ],
+   "MenuDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "MenuUp": [
+    "KC_UP",
+    "KC_W"
+   ],
+   "TasksAssign": [
+    "KC_X"
+   ]
+  },
+  "TrackedContext": {
+   "TrackedBrake": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "TrackedEngineStart": [
+    "KC_R"
+   ],
+   "TrackedHandBrake": [
+    "KC_SPACE"
+   ],
+   "TrackedHandBrakePersistent": [
+    "KC_SPACE"
+   ],
+   "TrackedLightsHiBeamToggle": [
+    "KC_L"
+   ],
+   "TrackedSteeringLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "TrackedSteeringRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "TrackedThrottle": [
+    "KC_UP",
+    "KC_W"
+   ],
+   "TrackedTurboHold": [
+    "KC_LSHIFT"
+   ],
+   "TrackedTurboToggle": [
+    "KC_LSHIFT"
+   ],
+   "VehicleLightsToggle": [
+    "KC_L"
+   ]
+  },
+  "TurretContext": {
+   "TurretRotateDown": [
+    "KC_DOWN",
+    "KC_S"
+   ],
+   "TurretRotateLeft": [
+    "KC_A",
+    "KC_LEFT"
+   ],
+   "TurretRotateRight": [
+    "KC_D",
+    "KC_RIGHT"
+   ],
+   "TurretRotateUp": [
+    "KC_UP",
+    "KC_W"
+   ]
+  },
+  "TurretOpticsContext": {
+   "WeaponZeroing": [
+    "KC_NEXT",
+    "KC_PRIOR"
+   ]
+  },
+  "TurretWeaponAimContext": {
+   "WeaponZeroingADS": [
+    "KC_NEXT",
+    "KC_PRIOR"
+   ]
+  },
+  "TurretWeaponContext": {
+   "TurretNextWeapon": [
+    "KC_V"
+   ],
+   "TurretReload": [
+    "KC_R"
+   ],
+   "TurretWeaponNextFireMode": [
+    "KC_V"
+   ],
+   "TurretWeaponNextRippleQuantity": [
+    "KC_R"
+   ]
+  },
+  "TurretWeaponMagnificationContext": {
+   "WeaponOpticsZoomIn": [
+    "KC_ADD"
+   ],
+   "WeaponOpticsZoomOut": [
+    "KC_SUBTRACT"
+   ]
+  },
+  "TutorialFastTravelContext": {
+   "HintContext": [
+    "KC_H"
+   ],
+   "HintDismiss": [
+    "KC_G"
+   ],
+   "HintToggle": [
+    "KC_H"
+   ],
+   "MapPanH": [
+    "KC_NUMPAD4",
+    "KC_NUMPAD6"
+   ],
+   "MapPanV": [
+    "KC_NUMPAD2",
+    "KC_NUMPAD8"
+   ],
+   "MapToggleShowSettings": [
+    "KC_H"
+   ],
+   "MapZoomIn": [
+    "KC_ADD"
+   ],
+   "MapZoomOut": [
+    "KC_SUBTRACT"
+   ],
+   "TasksOpen": [
+    "KC_J"
+   ],
+   "TutorialFastTravelMapMenuClose": [
+    "KC_ESCAPE",
+    "KC_M"
+   ]
+  },
+  "VONContext": {
+   "VONChannel": [
+    "KC_CAPITAL"
+   ],
+   "VONDirect": [
+    "KC_T"
+   ],
+   "VONDirectToggle": [
+    "KC_T"
+   ],
+   "VONTransceiverCycle": [
+    "KC_CAPITAL"
+   ]
+  },
+  "VONMenuContext": {
+   "VONMenuAction": [
+    "KC_R"
+   ],
+   "VONMenuCycleChannel": [
+    "KC_E",
+    "KC_Q"
+   ],
+   "VONMenuMuteAction": [
+    "KC_M"
+   ]
+  },
+  "VONMenuOpeningContext": {
+   "VONMenu": [
+    "KC_G"
+   ]
+  },
+  "WorkshopDownloadManagerContext": {
+   "MenuSelect": [
+    "KC_NUMPADENTER",
+    "KC_RETURN"
+   ],
+   "WorkshopCancelDownload": [
+    "KC_V"
+   ],
+   "WorkshopPauseAllDownloads": [
+    "KC_R"
+   ],
+   "WorkshopPauseDownload": [
+    "KC_R"
+   ]
+  }
+ }
+}
