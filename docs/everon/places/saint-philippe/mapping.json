@@ -55,6 +55,13 @@
         "lead-approved: the vanilla police villa (4553, 10748)"
       ]
     },
+    "jail": {
+      "building": "b32",
+      "shared": true,
+      "why": [
+        "the villa's own barred cell, ground floor west: the jail cell rides in the police slot's building (b32)"
+      ]
+    },
     "clinic": {
       "building": "b39",
       "alternatives": [

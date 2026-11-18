@@ -69,6 +69,11 @@
       "places": ["TownBoard", "MapBoard"]
     },
     {
+      "id": "jail", "required": false, "kit": "jail", "host": "street", "with": "police", "poi": "none",
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 110 },
+      "places": ["JailCell"]
+    },
+    {
       "id": "taxi", "required": false, "kit": "taxi", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 70 },
       "places": ["TaxiRank"]

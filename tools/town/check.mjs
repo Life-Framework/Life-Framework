@@ -43,6 +43,8 @@ export const SLOT_MARGIN = { taxi: 8, board: 10 }; // a template slot's own `mar
 export const SLOT_SIZE = { arrival: "large", bank: "large", police: "large", board: "small", taxi: "small", parcel: "small", fence: "small" };
 // Per place: a slot set within this radius shares one view (docs/architecture/performance.md "Per place").
 export const PLACE_RADIUS = 60;
+// LF_Places kinds that only work with a real component on a placed entity, not the marker alone.
+export const BACKED_KINDS = { JailCell: "LF_JailCellComponent" };
 export const PLACE_LIMITS = { lights: 24, shadow: 12, entities: 1500 };
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
@@ -231,6 +233,16 @@ export function checkPlace(data, opts = {}) {
       for (const m of markers) if (promised.includes(m.kind) && m.id !== `${place}.${row.slot}`) errors.push(`slot ${row.slot}: ${m.kind} marker has id '${m.id}', expected '${place}.${row.slot}'`);
     }
     if (known) for (const kind of promised) if (!known.has(kind)) warnings.push(`slot ${row.slot}: kind ${kind} is in no system's m_aPlaces (LF_SystemCatalog.conf); the layer is right but nothing looks for it yet`);
+  }
+
+  // A kind whose system reads a real component, not the marker (#2937): the jail's cell is the entity with LF_JailCellComponent.
+  // A marker alone switches the system on and leaves it with no cell, so an arrest has nowhere to go.
+  for (const [kind, comp] of Object.entries(BACKED_KINDS)) {
+    const promisers = base.slots.filter((r) => r.layer !== null && (slotsById.get(r.slot)?.places ?? []).includes(kind));
+    if (!promisers.length || base.slots.some((r) => r.layer !== null && new RegExp(`\\b${comp}\\b`).test(r.layer))) continue;
+    const msg = `${kind} is promised by slot ${promisers.map((r) => r.slot).join(", ")} but no fitted layer carries ${comp}: the marker alone leaves the system with no ${kind} (fit the jail slot)`;
+    if (opts.complete) errors.push(msg);
+    else warnings.push(msg);
   }
 
   // The map POI-kind slot check (#2245): each slot's front kind has a POI row, or is `none`.

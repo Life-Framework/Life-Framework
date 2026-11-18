@@ -765,6 +765,15 @@
   (for `town fit` into a world with no cell) stages only the `LF_JailCell` marker, its zone fitted to the room (2 m), the
   release point in the hall and no door target; no `EL_JailDoor`, which would hang a second door in the villa's doorway.
   Breach and jailbreak on that cell need the villa door to carry `LF_BreachTarget` (#2373).
+- 🧪 **Saint-Philippe jail cell** (#2969, town draft, draft PR, in-dev). The police slot's `JailCell` marker (`LF_PlaceComponent`) is only
+  a marker: it switches the Jail system on and leaves `LF_Jail` with no cell, so an arrest had nowhere to send the prisoner. The island
+  now has the real cell: the `jail` slot (a street-style slot that rides in the police slot's building, `with: police` in
+  `tools/town/templates/town.json`, kit `tools/town/kits/jail.json`, layer `Place_saint-philippe_jail.layer`) puts one
+  `LF_JailCellComponent` (prefab `EL_JailCell`, zone 2 m, release point 3 0 2.5 in the cell's frame, no door target) in the villa's own
+  barred cell on the ground floor, west. `LF_Jail` finds it by component (`LF_Places` kind `JailCell`, id `cell`; one per world),
+  so arrests, sentences, the zone and release run on the island exactly as in DebugWorld. Breach and jailbreak on it still need
+  the villa door to carry `LF_BreachTarget` (#2373). `tools\cli town check <place>` now warns (an error under `--complete`) when
+  a slot promises `JailCell` and no fitted layer carries `LF_JailCellComponent`, so the marker alone cannot pass again.
 - ✅ **Map area data** (#2233, epic #2223, test `map/areas`; node twin `tools/map/rules/areas.mjs`). `LF_MapAreas` (`Feature/Map/LF_MapAreas.c`) turns an area into an outline vertex list: a polygon is its points, a circle a 32-gon, a box its four corners turned by yaw the way `LF_ZoneArea.Contains` turns it, a polyline corridor a mitred strip. `Collect` merges every `LF_Zones` zone that has a style (SAFE and LAWLESS draw; NORMAL draws nothing) with the map-only areas (`LF_MapAreaComponent`: town line, gated, custom; a polygon local to the entity, or a circle). Styles are tokens for the `map-*` theme rows (M6). The outline, centroid, style and rule cases are one table, `Configs/Map/Rules/areas.cases.json`, that the Enforce test and the emulator's node rule both run; `LF_MapAreaCases.generated.c` carries it as script because the game cannot read a loose `.json` from an addon (`node tools/map/rules/areas.mjs --gen` rewrites it; the selftest fails when stale). `LF_Zones.GetAll()` is the one hook in the zone service. Nothing draws yet (M6).
 - 🔧 **Crime review fixes** (2026-11-17, `docs/reviews/2026-11-17-crime.md`, merged, in-dev):
   - **Till robbery with no room for the cash.** `LF_RobAction.CommitRobbery` now refuses with `REFUSED_NO_ROOM` when the robber's inventory takes none of the cash. It starts no till cooldown, adds no wanted and calls no dispatch, and the robber gets the toast `#LF-Robbery_NoRoom`. Test `crime/rob-no-room`.
