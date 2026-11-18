@@ -16,10 +16,14 @@
       "speed": 0.95
     }
   },
-  "budget_chars": 1000,
+  "budget_chars": 1300,
   "hear_range_m": 8,
   "start": "greet",
   "nodes": [
+    { "id": "greet_refuses", "line": "greet_refuses" },
+    { "id": "greet_wary", "line": "greet_wary", "options": [{ "text": "bye", "next": "bye" }] },
+    { "id": "greet_friendly", "line": "greet_friendly", "options_from": "greet" },
+    { "id": "greet_regular", "line": "greet_regular", "options_from": "greet" },
     { "id": "greet", "line": "greet", "options": [
       { "text": "ask_zone", "next": "zone" },
       { "text": "ask_help", "next": "help" },
@@ -42,6 +46,10 @@
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
+    "greet_refuses": { "text": "I have nothing to say to you. Please leave my cafe." },
+    "greet_wary": { "text": "Oh. It is you. What do you need?" },
+    "greet_friendly": { "text": "Welcome back! You always bring a smile in with you. What can I do for you?" },
+    "greet_regular": { "text": "There is my favourite customer! Sit, sit. Ask me anything." },
     "greet": {
       "text": "Come in, come in. The coffee is hot. You are new here, I can tell. Nobody walks that slowly who has lived here long."
     },
