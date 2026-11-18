@@ -45,7 +45,7 @@ type RegAge 24
 click SignButton
 wait 8000
 
-step 1 Spawn on the south road and walk into the square
+step 1 Wake in the hostel safe circle and walk to the town hall
 expect cash =100
 expect bank =1000
 shot ui island_01_spawn
