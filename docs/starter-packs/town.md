@@ -12,7 +12,8 @@ dossier.json      mapping.json                          tools/town/kits   Place_
 ## Steps and commands
 ```
 tools\cli scout <place>                      # dossier: docs/everon/places/<slug>/dossier.{json,md} and img/
-tools\cli town map <slug> [--template town|village] [--force]   # proposes slot -> building; `--check` refuses an incomplete one
+tools\cli scout label <slug>                 # img/overview-top-labelled.jpg: mapped buildings (b01, b14) and slots on the overhead shot; attach it to the mapping PR
+tools\cli town map <slug> [--template town|village|districts] [--force]   # proposes slot -> building; `--check` refuses an incomplete one
 tools\cli town kit extract <layer> <group>   # a kit from a building that already works; no absolute positions
 tools\cli town fit <place> <slot>            # writes MainWorld_Layers/Place_<place>_<slot>.layer + a claim
 tools\cli town fit <place> <slot> --check    # per-row seat corrections (floor, wall, clip) against the layer on disk; writes nothing

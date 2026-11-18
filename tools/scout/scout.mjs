@@ -4,6 +4,8 @@
 //   scout 4502,10771 --radius 90           a place by coordinates (named xz-4502-10771)
 //   scout list [filter]                    the map's named places and where they are
 //   scout types                            the building and prop type names a dossier uses
+//   scout label <slug> [--view m]          img/overview-top-labelled.jpg: the mapped buildings (b01, b14 ...) and their slots drawn
+//                                          on the overhead picture from dossier.json and mapping.json (no Workbench; label.mjs)
 //   scout "Saint Philippe" --from-dump <dump.txt> --quick     analyse a dump already taken; no Workbench
 //
 // How it works: one `look` run on the CoreOnEveron world (vanilla Everon plus the core game mode) takes the overview
@@ -24,6 +26,7 @@ import { analyse, compass } from "./analyse.mjs";
 import { parseDump } from "./dump.mjs";
 import { catalogBuildings, loadCatalog, loadPlaceFile } from "./catalog.mjs";
 import { gazetteer, matchPlace, parseCoords, placesNear } from "./gazetteer.mjs";
+import { LABELLED_FILE, labelPlace, labelTopPicture, withLabelledPicture } from "./label.mjs";
 import { renderDossier } from "./render.mjs";
 import { typeTable } from "./types.mjs";
 
@@ -36,7 +39,7 @@ const LOOK_TIMEOUT_MS = 40 * 60 * 1000;
 export const LOOK_BOOT_BUDGET_S = 240;
 
 export const USAGE = `usage: tools\\cli scout <place name | x,z> [--radius 120] [--view 60] [--civic 6] [--interiors 2] [--quick] [--from-dump file] [--slug s] [--out dir] [--machine m] [--wait] [--budget s] [--catalog file] [--template town|village]
-       tools\\cli scout list [filter]      tools\\cli scout types`;
+       tools\\cli scout list [filter]      tools\\cli scout types      tools\\cli scout label <slug> [--view 60]`;
 
 // Pure: "Saint-Philippe" -> "saint-philippe"; accents folded, anything else a dash.
 export const slugOf = (name) =>
@@ -119,12 +122,12 @@ export const areaSpec = (x, z, r) => `${Math.round(x * 10) / 10},${Math.round(z 
 export const areaName = (x, z) => `xz-${Math.round(Math.round(x * 10) / 10)}-${Math.round(Math.round(z * 10) / 10)}`;
 
 // Pure: the dossier object from its parts. `pictures` are { role, building?, file?, caption, missing? }.
-export function buildDossier({ target, radius, analysis, pictures, build, world, at, command, nearby }) {
+export function buildDossier({ target, radius, view, analysis, pictures, build, world, at, command, nearby }) {
   return {
     schema: SCHEMA,
     place: { name: target.name, key: target.key, kind: target.kind, ...(target.template ? { template: target.template } : {}), source: target.source, slug: target.slug, x: target.x, y: target.y, z: target.z },
     radius,
-    generated: { at, tool: "tools\\cli scout", command, gameBuild: build, world },
+    generated: { at, tool: "tools\\cli scout", command, ...(view ? { view } : {}), gameBuild: build, world },
     nearbyPlaces: nearby,
     summary: analysis.summary,
     terrain: analysis.terrain,
@@ -224,6 +227,13 @@ export async function main(argv, { root = ROOT } = {}) {
     return 0;
   }
   if (pos[0] === "list") return listPlaces(pos.slice(1).join(" "));
+  if (pos[0] === "label") {
+    if (!pos[1]) {
+      console.log("usage: tools\\cli scout label <slug> [--view 60]   (docs/everon/places/<slug>/ needs dossier.json, mapping.json and img/overview-top.jpg)");
+      return 2;
+    }
+    return labelPlace(root, pos[1], { view: flags.view ? num(flags.view, undefined) : undefined });
+  }
 
   const t0 = Date.now();
   const wt = await import("../wt.mjs");
@@ -373,8 +383,18 @@ export async function main(argv, { root = ROOT } = {}) {
     .slice(0, 8)
     .map((p) => ({ name: p.name, kind: p.kind, distance: Math.round(p.dist), direction: compass(p.x - centre.x, p.z - centre.z) }));
   const command = `tools\\cli scout ${target.source === "coordinates" ? `${target.x},${target.z}` : `"${target.name}"`}${radius !== 120 ? ` --radius ${radius}` : ""}`;
-  const dossier = buildDossier({ target, radius, analysis, pictures, build, world: EVERON_WORLD, at: new Date().toISOString().slice(0, 10), command, nearby });
+  const dossier = buildDossier({ target, radius, view: flags["from-dump"] ? undefined : view, analysis, pictures, build, world: EVERON_WORLD, at: new Date().toISOString().slice(0, 10), command, nearby });
   mkdirSync(placeDir, { recursive: true });
+  // A mapping beside the dossier (the town pipeline): the overhead picture with its buildings labelled.
+  if (!flags["from-dump"] && existsSync(join(placeDir, "img", "overview-top.jpg")) && existsSync(join(placeDir, "mapping.json"))) {
+    try {
+      const { image } = await import("../../agent-box/shots.mjs");
+      const r = labelTopPicture({ dossier, mapping: JSON.parse(readFileSync(join(placeDir, "mapping.json"), "utf8")), plain: join(placeDir, "img", "overview-top.jpg"), out: join(placeDir, LABELLED_FILE), image, view });
+      if (r.ok) withLabelledPicture(dossier);
+    } catch (e) {
+      log(`the labelled overview was not made: ${e.message}`);
+    }
+  }
   writeFileSync(join(placeDir, "dossier.json"), JSON.stringify(dossier, null, 1) + "\n");
   writeFileSync(join(placeDir, "dossier.md"), renderDossier(dossier));
   const shown = pictures.filter((p) => p.file).length;

@@ -399,6 +399,16 @@
   <uid> (character <key>) rank <old> -> <new> (promotion|demotion|unchanged)`. A demotion restarts the character's
   on-duty seconds at the start of the new rank, so the next accrual does not promote them back. Refusals are logged
   and shown to the caller. Medic ranks are not covered yet (#2837 is not merged).
+- 🔨 **A rank change settles the shift at the old rank; a demotion takes kit above the new rank** (#2874, in-dev,
+  LOGIC `police/duty-pay-rank-change`, WORLD `police/armory-demotion-strip`). Every rank change (a promotion at the
+  station, a time promotion, `/policerank` up or down, a medic time promotion) first settles the duty clock, then
+  restates the unpaid seconds earned so far at the new rank's rate (`LF_DutyPay.AfterRankChange`, rounded up, logged
+  `rank change settled the shift: <s> unpaid s at rate <old> carried as <s2> s at rate <new>`), so clock-out pays each
+  part of the shift at the rank held for it. One settle that crosses a time-promotion threshold is split there
+  (`LF_PoliceRanks.SecondsToNextRank`). No save change and no money moves before clock-out. A `/policerank`
+  demotion takes off the officer every issued armory item the new rank's offer gate refuses and turns its serial in
+  (`LF_PoliceRanks.StripKitAboveRank`, logged `kit above rank <r> taken from <uid>`, toast); an offline officer loses
+  it at their next spawn. Plain kit lines with no serial (spike strip, roadblock kit) are not tracked and stay.
 - 🔨 **An expired trial ends the shift** (#2416, in-dev). `LF_PoliceTrialSweep` runs on the server every
   `trialSweepSeconds` (60): it expires trials (`ExpireTrials`), then clocks out each connected on-duty officer whose
   trial ended unpromoted and who may no longer clock in (`LF_PoliceApplications.TrialExpiredFor`, roster check), through

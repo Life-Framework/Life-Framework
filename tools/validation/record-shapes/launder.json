@@ -1,0 +1,19 @@
+{
+  "section": "launder",
+  "class": "LF_LaunderSavePayload",
+  "version": 1,
+  "roots": "LF_LaunderStationRow",
+  "records": {
+    "LF_LaunderStationRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sStationKey",
+        "string m_sOwnerKey",
+        "int m_iMarked",
+        "int m_iClean",
+        "int m_iWashLeft",
+        "int m_iReadySeconds"
+      ]
+    }
+  }
+}
