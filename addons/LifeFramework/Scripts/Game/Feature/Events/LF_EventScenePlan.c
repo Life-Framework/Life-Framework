@@ -54,7 +54,7 @@ class LF_EventScene
 	[Attribute("120", UIWidgets.Auto, "Seconds the scene's despawn (and a timed-out walker's) waits for a player who keeps it in sight; then it goes anyway, so a watcher cannot hold the phase, the scene slot and the AI budget forever (#2406)", params: "1 3600")]
 	float m_fForceDespawnSeconds;
 
-	[Attribute("", UIWidgets.EditBox, "Optional prefab slot id of a parked vehicle (#964). Empty means none")]
+	[Attribute("", UIWidgets.EditBox, "Optional parked vehicle: a prefab slot id (#964) or a {GUID}path prefab, as m_sRole takes an outfit. Empty means none")]
 	string m_sVehicleSlot;
 
 	[Attribute("", UIWidgets.ResourceNamePicker, "Optional walker prefabs, handed out in turn (walker 0 the first, walker 1 the second, round again). Set, they win over m_sRole (#2137)", "et")]

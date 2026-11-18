@@ -214,6 +214,20 @@ class LF_ReputationContracts
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \param[out] takenAt The world time (seconds) the character's contract in progress was taken.
+	//! \return The contract's id, or "" with none running.
+	static string ActiveRun(string playerUid, out float takenAt)
+	{
+		takenAt = 0;
+		string contractId = ActiveId(playerUid);
+		if (contractId.IsEmpty())
+			return string.Empty;
+
+		takenAt = s_mActive.Get(playerUid).m_fTakenAt;
+		return contractId;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A contract whose run ended outside the run paths (a wipe, a failed start) is dropped with no stake.
 	protected static void DropStale(string playerUid)
 	{

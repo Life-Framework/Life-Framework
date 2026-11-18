@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "kit": "harbour-master",
+  "system": "reputation",
+  "source": {
+    "file": "addons/LF_Everon1989/Configs/Npcs/LF_Npc_Townsfolk_HarbourMaster.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0,
+        0
+      ],
+      "max": [
+        0,
+        0
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "One person, standing on the ground floor of a small office (a site cabin or shed with a door). The row sits at the footprint centre; `town fit --check` shows the seat corrections. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "harbour-master",
+      "prefab": "{B45B7C6C168822D4}Configs/Npcs/LF_Npc_Townsfolk_HarbourMaster.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -0.9,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

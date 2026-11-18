@@ -17,6 +17,7 @@
 //   - the template is chosen from the flag, else the mapping's own template, else the dossier, else town (`chooseTemplate`);
 //   - the real dossiers' halls, shops and houses are found without a hand edit (Saint-Philippe fills the town template, Meaux
 //     fills the village one, and Meaux's approved mapping passes `--check` under its own template).
+// red-proof: with the `dossier` branch of checkMapping removed this printed "FAIL a building of another survey should pass and never clash with this place's own b08" (2026-11-18).
 // red-proof: with TYPE_ALIASES emptied this printed "FAIL alias: municipal-office resolves to government" (2026-11-17).
 // red-proof: before templates/districts.json existed this printed "FAIL cannot load the districts template: no template districts" (2026-11-18).
 // red-proof: with chooseTemplate ignoring the mapping this printed "FAIL template choice: a mapping for village beats the gazetteer kind" (2026-11-17).
@@ -186,7 +187,7 @@ for (const slot of town.slots) {
     check(!!p, `slot ${slot.id} maps to unknown plot ${e.plot}`);
     check(!!e.prefab && !!e.prefab.stem, `slot ${slot.id} maps to a plot with no prefab`);
   }
-  check(Array.isArray(e.why) && e.why.length > 0, `slot ${slot.id} carries no reason`);
+  check(e.none ? typeof e.reason === "string" && e.reason.length > 0 : Array.isArray(e.why) && e.why.length > 0, `slot ${slot.id} carries no reason`);
 }
 // Fit: the strong matches the doc names, by the scout's types.
 check(m.slots.clothing.building === "b03", `clothing should take the clothes shop b03, took ${m.slots.clothing.building}`);
@@ -223,6 +224,26 @@ check(mentions(mutated((x) => (x.slots.nonsense = { building: "b01", why: [] }))
 check(mentions(mutated((x) => (x.template = "village")), "template"), "check does not fail on a mapping made for another template");
 check(mentions(mutated((x) => (x.slots.taxi = { building: x.slots.bank.building, shared: true, why: [] })), "claimed") === false, "a street slot sharing a frontage should not count as a claim");
 check(mentions(mutated((x) => (x.slots.police.shared = true)), "police", "share"), "check does not fail on a non-street slot that shares a building");
+
+// ---- a slot whose building is in ANOTHER place's survey (`dossier` on the entry: the harbour master's cabin at the dock)
+{
+  const elsewhere = { elsewhere: dossier };
+  const viaOther = (building, name = "elsewhere") => {
+    const x = clone(m);
+    x.slots.harbour = { building, dossier: name, why: [] };
+    return map.checkMapping(x, dossier, town, name === "elsewhere" ? elsewhere : { [name]: dossier });
+  };
+  const bankId = m.slots.bank.building; // an interior building of the fixture; the same id as the bank's own slot, in the other survey
+  check(viaOther(bankId).length === 0, `a building of another survey should pass and never clash with this place's own ${bankId}: ${viaOther(bankId).join("; ")}`);
+  check(mentions(viaOther("b99"), "harbour", "b99", "elsewhere"), "check does not fail on a building the other survey lacks");
+  check(mentions(viaOther("b02"), "harbour", "interior"), "check does not fail on an other-survey building with no interior");
+  const own = clone(m);
+  own.slots.harbour = { building: bankId, dossier: own.place, why: [] };
+  check(mentions(map.checkMapping(own, dossier, town, {}), "harbour", "another place"), "check does not fail on a dossier that names this place itself");
+  const noSurvey = clone(m);
+  noSurvey.slots.harbour = { building: bankId, dossier: "ghost", why: [] };
+  check(mentions(map.checkMapping(noSurvey, dossier, town, elsewhere), "harbour", "ghost"), "check does not fail on a survey with no dossier");
+}
 
 // ---- no building for a slot: a free plot with a prefab, then none
 const noFuel = clone(dossier);
@@ -333,6 +354,29 @@ try {
 for (const kind of ["town", "village", "districts"]) {
   const text = readFileSync(join(ROOT, "tools", "town", "templates", `${kind}.json`), "utf8");
   check(!/\d{3,}\s*,\s*-?\d{3,}/.test(text), `templates/${kind}.json holds a coordinate-looking pair`);
+}
+
+// ---- the market, chess and range slots (#3078): optional, street furniture or an outbuilding, each kind backed by a real class
+{
+  const checkMod = await import(pathToFileURL(join(ROOT, "tools", "town", "check.mjs")).href);
+  for (const [id, host, kind, comp] of [["market", "street", "MarketTrader", "LF_TraderManagerComponent"], ["chess", "street", "ChessTable", "LF_ChessTableComponent"], ["range", "building", "RangeLane", "SCR_FiringRangeTarget"]]) {
+    const s = town.slots.find((x) => x.id === id);
+    check(!!s && s.required === false && s.host === host && s.places[0] === kind, `the town template should have an optional ${host} slot ${id} registering ${kind}`);
+    check(checkMod.BACKED_KINDS[kind] === comp, `BACKED_KINDS.${kind} should be ${comp}, got ${checkMod.BACKED_KINDS[kind]}`);
+  }
+  const spMap = join(ROOT, "docs", "everon", "places", "saint-philippe", "mapping.json");
+  if (existsSync(spMap)) {
+    const slots = JSON.parse(readFileSync(spMap, "utf8")).slots;
+    for (const id of ["market", "chess", "range"]) check(!!slots[id] && Array.isArray(slots[id].why) && slots[id].why.length > 0, `saint-philippe: the approved mapping has no ${id} slot with a reason`);
+  }
+  // A range lane is an entity class, found in a placed entity's head; a chess table is a component line in a placed prefab; a bare table backs nothing.
+  const prefabs = {
+    "{CCCCCCCCCCCCCCCC}Prefabs/Props/Chess/LF_ChessTable.et": { text: `GenericEntity : "{DDDDDDDDDDDDDDDD}Prefabs/Props/Furniture/Table.et" {\n components {\n  LF_ChessTableComponent "{29CDC8FC39C4E97E}" {\n  }\n }\n}\n` },
+  };
+  const resolve = (ref) => prefabs[ref] ?? null;
+  check(checkMod.layerBacking(`SCR_FiringRangeTarget R0 : "{AAAAAAAAAAAAAAAA}Prefabs/Props/Range/LF_RangeTarget.et" {\n}\n`, resolve).has("SCR_FiringRangeTarget"), "layerBacking should find the range target class in a placed entity head");
+  check(checkMod.layerBacking(`GenericEntity T : "{CCCCCCCCCCCCCCCC}Prefabs/Props/Chess/LF_ChessTable.et" {\n}\n`, resolve).has("LF_ChessTableComponent"), "layerBacking should find the chess component through the placed prefab");
+  check(!checkMod.layerBacking(`GenericEntity M : "{DDDDDDDDDDDDDDDD}Prefabs/Props/Furniture/Table.et" {\n}\n`, resolve).has("LF_ChessTableComponent"), "a plain table should not back ChessTable");
 }
 
 if (failed) {

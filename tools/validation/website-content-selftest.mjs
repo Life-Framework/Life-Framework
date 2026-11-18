@@ -2,6 +2,7 @@
 // and a failing content step is reported with the missing path. red-proof: with build-content.mjs pointing
 // its core scenario at the moved LF_PlaytestTown.conf.meta the real run printed
 // "FAIL website-content: ... ENOENT ... LF_PlaytestTown.conf.meta"; with EL_DebugTest.conf it is OK.
+// inputs: addons/**, docs/**, tools/test/config-fixtures/presets/**, website/**
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { websiteContent } from "./validate-website-content.mjs";

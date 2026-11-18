@@ -1,0 +1,56 @@
+GenericEntity {
+ ID "DB28C441CA18EA0F"
+ components {
+  MeshObject "{99C287DE5868DBB3}" {
+   Object "{3169A0CB357D3854}Assets/Props/Furniture/CupboardOld_01/CupboardOld_01_medium.xob"
+  }
+  RigidBody "{D3810595B2D72B16}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_LockComponent "{1B862D14CDF1022A}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{3B815C52359A65DB}" {
+   ActionContexts {
+    UserActionContext "{4DA3BB879AB3E9D0}" {
+     ContextName "default"
+     Position PointInfo "{9F303D49C52A5D7C}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_HospitalCabinetAction "{49FB31B70E6ACF37}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B65A470A4496EC45}" {
+      Name "#EL-Hospital_BreachCabinet"
+     }
+    }
+    LF_BreachRepairAction "{E4EE25A90CCF3409}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{2B7548D5D2E82DC0}" {
+   Enabled 1
+  }
+  LF_BreachTargetComponent "{1CED7C398B3479F9}" {
+   m_fFuseSeconds 0
+  }
+  LF_HospitalCabinetComponent "{721529CA2232801E}" {
+   m_aLootPrefabs {
+    "{A81F501D3EF6F38E}Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et"
+    "{0D9A5DCF89AE7AA9}Prefabs/Items/Medicine/MorphineInjection_01/MorphineInjection_01.et"
+    "{00E36F41CA310E2A}Prefabs/Items/Medicine/SalineBag_01/SalineBag_US_01.et"
+    "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et"
+   }
+  }
+ }
+}

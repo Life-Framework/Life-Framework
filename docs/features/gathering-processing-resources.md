@@ -126,3 +126,12 @@
   second start, or a nugget removed before the end logs `LF_Debug.Error` and
   yields no bar. A zero delay finishes inside the start.
 
+
+### Gather and process toasts (#3156) — `LF_GatherAction`, `LF_ProcessAction`
+- ✅ A finished gather shows one toast: `Iron ore x1 (+5 XP). The trader pays $50 for Iron bar.` The XP is what the
+  level source actually paid (a cooldown, the daily cap or a family with no XP leaves the `(+N XP)` part out).
+- ✅ The trader price comes from the merged market config: the item's own row, else the row of the first product a
+  processing machine makes from it (the bar for an ore). A live curve price wins over the base. An item no trader
+  buys omits the price sentence.
+- ✅ A finished process shows what came out (`Iron bar x1. The trader pays $50 for Iron bar.`), one toast per action.
+- ⚠️ The server builds the sentence, so item names are translated on the server; a dedicated server is a manual check.

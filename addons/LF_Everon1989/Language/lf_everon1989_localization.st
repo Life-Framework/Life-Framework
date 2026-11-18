@@ -699,10 +699,65 @@ StringTable {
      Target_en_us "Nearly there. A few more shifts at the quarry and the foreman will let you."
      Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
     }
+    CustomStringTableItem "{597379C162802B06}" {
+     Id "LF-LicenceWhere_FIREARM_PERMIT"
+     Target_en_us "The gun store counter"
+     Comment "Overrides the core row: the firearm permit is bought at the gun store counter (#3150)."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0E}" {
+     Id "LF-MapPoi_Cafe"
+     Target_en_us "Cafe"
+     Comment "Map POI kind name (#2247): the cafe."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0C}" {
+     Id "LF-MapPoi_ClothingStore"
+     Target_en_us "Clothing store"
+     Comment "Map POI kind name (#2247): the clothing store counter."
+    }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
      Target_en_us "Fence"
      Comment "Map POI kind name (#2230): the fence. A hidden kind, never public; shown only as a personal pencil mark after the player met them."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0F}" {
+     Id "LF-MapPoi_FillingStation"
+     Target_en_us "Filling station"
+     Comment "Map POI kind name (#2247): the fuel till."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0B}" {
+     Id "LF-MapPoi_GeneralStore"
+     Target_en_us "General store"
+     Comment "Map POI kind name (#2247): the general store counter."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0D}" {
+     Id "LF-MapPoi_GunStore"
+     Target_en_us "Gun store"
+     Comment "Map POI kind name (#2247): the gun store counter."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F13}" {
+     Id "LF-MapPoi_Hostel"
+     Target_en_us "Hostel"
+     Comment "Map POI kind name (#2247): the hostel."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F11}" {
+     Id "LF-MapPoi_NoticeBoard"
+     Target_en_us "Notice board"
+     Comment "Map POI kind name (#2247): the town board."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F12}" {
+     Id "LF-MapPoi_ParcelDepot"
+     Target_en_us "Parcel depot"
+     Comment "Map POI kind name (#2247): the parcel depot."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F10}" {
+     Id "LF-MapPoi_TaxiRank"
+     Target_en_us "Taxi rank"
+     Comment "Map POI kind name (#2247): the taxi rank."
+    }
+    CustomStringTableItem "{5A7C1E04B93D6F0A}" {
+     Id "LF-MapPoi_TownHall"
+     Target_en_us "Town hall"
+     Comment "Map POI kind name (#2247): the town hall, where the clerk sits."
     }
     CustomStringTableItem "{9C1E4A73D0B58F26}" {
      Id "LF-MedicRank_Emt"
@@ -899,6 +954,81 @@ StringTable {
      Target_en_us "First wages"
      Comment "Arrival chain step 3 title."
     }
+    CustomStringTableItem "{A089683A227009CA}" {
+     Id "LF-Quest_SettleFish_Desc"
+     Target_en_us "Catch a fish and sell it at the fish counter."
+     Comment "Settling-in chain: sell a fish at the fish counter."
+    }
+    CustomStringTableItem "{34CC25BF3950DC70}" {
+     Id "LF-Quest_SettleFish_Title"
+     Target_en_us "Sell a catch"
+     Comment "Settling-in chain, one of three errands after the car. Title."
+    }
+    CustomStringTableItem "{4D8E21B7A09C35F6}" {
+     Id "LF-Quest_SettleFoundation_Desc"
+     Target_en_us "Lay the foundation of your cottage. The general store sells gravel and cement."
+     Comment "Settling-in chain: finish the foundation stage on a plot (#3195)."
+    }
+    CustomStringTableItem "{91C6F3A82E5B704D}" {
+     Id "LF-Quest_SettleFoundation_Title"
+     Target_en_us "Lay your foundation"
+     Comment "Settling-in chain, after the plot. Title (#3195)."
+    }
+    CustomStringTableItem "{6E07D3A5B533B63A}" {
+     Id "LF-Quest_SettleFuel_Desc"
+     Target_en_us "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it."
+     Comment "Settling-in chain step 2: one paid fuel run."
+    }
+    CustomStringTableItem "{233D2662DE4FBD92}" {
+     Id "LF-Quest_SettleFuel_Title"
+     Target_en_us "Your first fuel run"
+     Comment "Settling-in chain step 2 title."
+    }
+    CustomStringTableItem "{066FD416F050DA24}" {
+     Id "LF-Quest_SettleParcels_Desc"
+     Target_en_us "Run five parcels for the post office. Five runs earns you the level for the fuel run, which comes next."
+     Comment "Settling-in chain step 1: five paid parcel runs."
+    }
+    CustomStringTableItem "{893130A1FA32D104}" {
+     Id "LF-Quest_SettleParcels_Title"
+     Target_en_us "Five parcel runs"
+     Comment "Settling-in chain step 1 title (#3125)."
+    }
+    CustomStringTableItem "{EC2F8F67C4ED1B67}" {
+     Id "LF-Quest_SettlePermit_Desc"
+     Target_en_us "Apply for a firearm permit at the gun store counter and collect it when it is ready."
+     Comment "Settling-in chain: collect the firearm permit."
+    }
+    CustomStringTableItem "{F789C21DFB0FD2E7}" {
+     Id "LF-Quest_SettlePermit_Title"
+     Target_en_us "A firearm permit"
+     Comment "Settling-in chain, one of three errands after the car. Title."
+    }
+    CustomStringTableItem "{87B321F40E5414E6}" {
+     Id "LF-Quest_SettlePlot_Desc"
+     Target_en_us "Find a plot for sale and read its sign. It says what the plot costs and how to buy it."
+     Comment "Settling-in chain: read a plot-for-sale sign."
+    }
+    CustomStringTableItem "{3C8729FB1CF04D6E}" {
+     Id "LF-Quest_SettlePlot_Title"
+     Target_en_us "A plot of your own"
+     Comment "Settling-in chain, one of three errands after the car. Title."
+    }
+    CustomStringTableItem "{32119D9F88CBF879}" {
+     Id "LF-Quest_SettlePlot_TurnIn"
+     Target_en_us "That is how land is bought here. Save up, and the plot is yours."
+     Comment "Settling-in chain: shown when the plot sign is read."
+    }
+    CustomStringTableItem "{8F2D02985CDF28BF}" {
+     Id "LF-Quest_SettleWheels_Desc"
+     Target_en_us "Buy any car at the car lot. The town board shows where it is."
+     Comment "Settling-in chain step 3: buy a car."
+    }
+    CustomStringTableItem "{71D42A3909D03894}" {
+     Id "LF-Quest_SettleWheels_Title"
+     Target_en_us "Your own wheels"
+     Comment "Settling-in chain step 3 title."
+    }
     CustomStringTableItem "{C2A7527A4FB2AAB1}" {
      Id "LF-QuizEveron_fear_A1"
      Target_en_us "Comply. Your life comes first."
@@ -1089,6 +1219,11 @@ StringTable {
      Target_en_us "Helene Roux"
      Comment "Saint-Philippe resident teller: display name (#2906)."
     }
+    CustomStringTableItem "{D48C1FE2090106F1}" {
+     Id "LF-Shop_Desc_Cafe"
+     Target_en_us "A drink, a snack, a word with the owner"
+     Comment "Shop description of the Saint-Philippe café till (#3063)."
+    }
     CustomStringTableItem "{CA4D10F34DED233D}" {
      Id "LF-Shop_Desc_ClothesShop"
      Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
@@ -1103,6 +1238,11 @@ StringTable {
      Id "LF-Shop_Desc_MedicStores"
      Target_en_us "Coats and a medical kit for the hospital staff."
      Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{3B9D4E10C1D6F1A1}" {
+     Id "LF-Shop_Desc_MinersSupply"
+     Target_en_us "Picks and shovels for working miners. A miner of rank 2 can buy the pickaxe."
+     Comment "General store counter (#3085): the miner's supply description."
     }
     CustomStringTableItem "{88A40BFFEF7CB897}" {
      Id "LF-Shop_Desc_PharmacyCounter"
@@ -1124,6 +1264,11 @@ StringTable {
      Target_en_us "Hard hats, work boots, gloves and a flashlight."
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
+    CustomStringTableItem "{0B134C85762A065A}" {
+     Id "LF-Shop_Name_Cafe"
+     Target_en_us "Café bar"
+     Comment "Shop name of the Saint-Philippe café till (#3063): the pub's bar counter, stock cafe."
+    }
     CustomStringTableItem "{3891D91F71F15DB1}" {
      Id "LF-Shop_Name_ClothesShop"
      Target_en_us "Clothes shop"
@@ -1133,6 +1278,11 @@ StringTable {
      Id "LF-Shop_Name_MedicStores"
      Target_en_us "Medic stores"
      Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{3B9D4E10A2C7F1A0}" {
+     Id "LF-Shop_Name_MinersSupply"
+     Target_en_us "Miner's supply"
+     Comment "General store counter (#3085): the miner's supply name."
     }
     CustomStringTableItem "{B1BC977506FDDA48}" {
      Id "LF-Shop_Name_PharmacyCounter"
@@ -1154,6 +1304,11 @@ StringTable {
      Target_en_us "Workwear counter"
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
+    CustomStringTableItem "{0EC694A26B780C12}" {
+     Id "LF-Shop_Open_Cafe"
+     Target_en_us "Order food and drink"
+     Comment "Interaction name at the café till (#3063): opens the café price list."
+    }
     CustomStringTableItem "{AB6C9C6741E3729B}" {
      Id "LF-Shop_Open_ClothesShop"
      Target_en_us "Browse the clothes rack"
@@ -1168,6 +1323,11 @@ StringTable {
      Id "LF-Shop_Open_MedicStores"
      Target_en_us "Open the medic stores"
      Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{3B9D4E10E0E5F1A2}" {
+     Id "LF-Shop_Open_MinersSupply"
+     Target_en_us "Miner's supply"
+     Comment "General store counter (#3085): the miner's supply action label."
     }
     CustomStringTableItem "{7729AC333C1E6567}" {
      Id "LF-Shop_Open_PharmacyCounter"

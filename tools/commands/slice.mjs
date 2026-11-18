@@ -19,10 +19,10 @@
 // `--fixture <json>` (list, brief) reads { issues: [...] } instead of gh; `--ledger <file>` moves the ledger, which
 // otherwise lives in the git common dir (lf/slice-ledger.jsonl) so every worktree appends to one file. The logic is
 // tools/lib/slice.mjs; the proof is tools/validation/slice-selftest.mjs.
-import { appendFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { gitCommonDir, ghBin, readMarker, readState, run, slugOfRoot } from "../wt.mjs";
-import { TEMPLATE, brief, cardBody, checkPlan, ledgerMinutes, ledgerRow, mergeVerdict, parseCard, parsePlan, renderList, renderStats, suggestModel, topo } from "../lib/slice.mjs";
+import { TEMPLATE, brief, cardBody, checkPlan, ledgerMinutes, ledgerRow, mergeVerdict, parseCard, parsePlan, renderList, renderStats, suggestModel, topo, waitMinutes } from "../lib/slice.mjs";
 
 export const help = "slice new|list|brief|record|stats   slice cards: scaffold a chapter's slices as sub-issues, show the DAG and the ready queue by critical path, print a slice's agent brief, log and report outcomes per model";
 
@@ -101,6 +101,13 @@ export function worktreeStart(root) {
   return null;
 }
 
+// The worktree's tmp/logs/*.log, read whole: each step's waits come from them (lib waitMinutes, #3200).
+export function readWorktreeLogs(root) {
+  const dir = join(root, "tmp", "logs");
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir).filter((f) => f.endsWith(".log")).map((name) => ({ name, text: readFileSync(join(dir, name), "utf8") }));
+}
+
 export function readLedger(file) {
   if (!existsSync(file)) return [];
   return readFileSync(file, "utf8").split("\n").filter(Boolean).map((l) => JSON.parse(l));
@@ -145,6 +152,7 @@ export async function main(args, ctx) {
         gate: val(args, "--gate"),
         ...ledgerMinutes({ started: val(args, "--started") || worktreeStart(root), now, agent: agentMin }),
         ...(val(args, "--wait") ? { wait: Number(val(args, "--wait")) } : {}),
+        waitMin: waitMinutes(readWorktreeLogs(root)),
       };
       const p = [...(row.issue ? [] : ["<issue>"]), ...ledgerRow(row)];
       if (p.length) throw new Error(`slice record needs ${p.join(", ")}`);

@@ -156,8 +156,11 @@ gate before a merge; the main guard (next section) checks `main` after it.
    `origin/<base>` in, pushes again and retries.
 4. Prints `SUMMARY ship ok|fail`, then `PR <url>, head <sha>`. No queue, no pool lane, no wait.
 
+Town cards (worktrees `town-draft-<place>-<slot>`, see docs/starter-packs/town.md) ship the same way: plain `wt ship`,
+auto-merge, no maintainer approval (since 2026-11-18). The `town-draft-` name is only the zone guard's key.
+
 `--draft` runs the same body checks, preflight and push, then opens the PR with `gh pr create --draft` and never runs
-`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Town-draft and maintainer-review PRs use it; a human
+`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Maintainer-review PRs use it; a human
 marks the PR ready and merges it (`ship-direct.mjs` `draft`, `wt-ship-draft-selftest.mjs`). Re-running on an open PR
 reuses it and, because an earlier ship may have left it ready with auto-merge queued, runs `gh pr merge --disable-auto` and
 `gh pr ready --undo` on it; ship prints `draft: auto-merge off (REVIEW-NEEDED)` (#2940). `prs heal` re-queues auto-merge only on a PR
@@ -1575,6 +1578,14 @@ fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/r
   (`# inputs:` in a .ps1). `*` stays in one folder, `**` crosses folders; the check's own file, `tools/validation/*.json`
   and `tools/validation/fixtures/**` are always inputs. `inputs: always` runs every time (a check that reads machine or
   git state: the worktree registry, `origin/main`); `inputs: ttl=300` trusts a green run for 300 s. No header means always.
+  Only five checks are `always` now (2026-11-18, #3115): `validate-repo.ps1` (hygiene over every .meta and text resource),
+  `validate-addon-source-isolation.ps1`, `validate-drivers-include.mjs` and `validate-rdb-fresh.mjs` (machine state) and
+  `validate-scripts.ps1` (the compile, full runs only); each says why on the line under its header.
+- A .mjs check's static import closure (`tools/lib/import-closure.mjs`: `import`, `export ... from`, `import("./x")`,
+  `require("./x")` with a literal relative path) is always an input too, so a header names only the data the check
+  reads, and `inputs: imports` means "nothing but my own code". Before this 159 of 337 declared checks missed a module
+  they import (editing `tools/lib/scratch.mjs` re-ran none of its users). A computed `import(pathToFileURL(...))` or a
+  child `node tools/x.mjs` is invisible to it: list that folder in the header.
 - State is `tmp/validate-state.json`: a fingerprint (path and git blob id of every matching file: `git ls-files -s`
   for clean tracked files, a blob hash of the bytes for modified and untracked ones) written only when the check
   passed, so a failing check is never skipped and an edit, add, delete or rename re-runs it. Delete the file to start cold.

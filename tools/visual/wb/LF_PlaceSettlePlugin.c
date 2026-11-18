@@ -540,9 +540,8 @@ class LF_PlaceSettlePlugin : WorldEditorPlugin
 			vector pos = m_aSettlePos[i];
 			vector ang = m_aSettleAng[i];
 			m_Api.SetVariableValue(src, null, "coords", string.Format("%1 %2 %3", pos[0], pos[1], pos[2]));
-			m_Api.SetVariableValue(src, null, "angleX", ang[0].ToString());
-			m_Api.SetVariableValue(src, null, "angleY", ang[1].ToString());
-			m_Api.SetVariableValue(src, null, "angleZ", ang[2].ToString());
+			// The layer key is the one vector `angles`; angleX/Y/Z are not stored keys (a write to them was dropped).
+			m_Api.SetVariableValue(src, null, "angles", string.Format("%1 %2 %3", ang[0], ang[1], ang[2]));
 			wrote++;
 		}
 

@@ -4,7 +4,7 @@ Putting the 1989 town onto the real Everon map (`docs/architecture/everon-world.
 one file each, so many agents run at once without touching each other.
 
 ```
-scout <place> ──> town map <place> (lead approves) ──> kits ──> town fit <place> <slot> ──> town check ──> draft PR
+scout <place> ──> town map <place> (lead approves) ──> kits ──> town fit <place> <slot> ──> town check ──> PR (auto-merge)
 dossier.json      mapping.json                          tools/town/kits   Place_<place>_<slot>.layer
 ```
 `tools\cli help` is the truth about which step exists; a step ships with its card (T1 to T5, #2202 to #2207).
@@ -26,16 +26,18 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
 ```
 - **Pictures come from `look place:<place>/<slot>`** (docs/visual-testing.md "look place:"): it opens the pack's MainWorld
   and reads the viewpoint from the dossier and mapping. A plain area, `town:<area>` or `x,z` opens DebugWorld, where an
-  island slot is sky. The "before" is the same command on main (the slot unfitted), the "after" on the draft branch.
-  The work is about a minute; the queue for the island's RAM can be 30 minutes, so run it once per draft, in the foreground.
+  island slot is sky. The "before" is the same command on main (the slot unfitted), the "after" on the card's branch.
+  The work is about a minute; the queue for the island's RAM can be 30 minutes, so run it once per card, in the foreground.
 - **Iterate without pictures.** Fix kit rows with `town fit --no-look` and `--check` (seconds each). A plain `town fit`
-  already takes both looks, so never follow it with `look place:` for the same slot. On 2026-11-18 a police draft re-ran
+  already takes both looks, so never follow it with `look place:` for the same slot. On 2026-11-18 a police card re-ran
   a plain fit four times at about 10 min each.
 - **A run past 600 s moves to the background.** Wait for its notification (or `t3_background_wait`). Never
   `Wait-Process`, `tail -F` or a second copy of the same look: that morning agents wrote 23 such waits.
 - The mapping is a PR that holds only `mapping.json`; nothing is placed before the lead merges it.
-- A fit runs in a worktree named `town-draft-<place>-<slot>`. Only that name writes an island layer.
-- Its PR is a **draft** with before and after pictures. The maintainer reviews it before any merge.
+- A fit runs in a worktree named `town-draft-<place>-<slot>`. Only that name writes an island layer. A follow-up on a slot whose PR is still open is `town-draft-<place>-<slot>-<word>`: `town fit` ignores the base card's own claim and the guard lets it change that one slot's layer (#3101).
+- Ship it like any card: `tools\cli wt ship <slug> --refs <N> --body-file tmp\pr-body-<slug>.md --commit "<subject>"`
+  opens the PR and turns on auto-merge. No maintainer approval is needed (since 2026-11-18). One island slot per card.
+  The PR body embeds the before and after `look place:` pictures and a contact sheet (docs/visual-testing.md).
 - Claims live in `tools/town/claims/<place>-<slot>.json`; a claim `origin/main` or an open PR holds is refused.
   `--refit` ignores this slot's own claim on `origin/main` (re-fitting a slot already merged) and still refuses an open PR, a sibling worktree or another slot holding it.
 
@@ -53,7 +55,7 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
 - Use Workbench `look`, not sessions: two island sessions do not fit the pool's RAM.
 - `validate` checks only your slot (layer and claim agree, footprint, branch guard). The other slots of the place being
   unfitted is fine; `town check <place>` lists them as "not fitted yet". `town check <place> --complete` (and
-  `town ready`) is the completeness gate, for the lead, not for a draft.
+  `town ready`) is the completeness gate, for the lead, not for a card's PR.
 - Building interiors: `brief building` is the fit-out recipe, run in the debug grid first.
 
 ## Environment
