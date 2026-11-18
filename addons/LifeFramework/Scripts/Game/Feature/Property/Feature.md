@@ -18,7 +18,8 @@ choice survive a restart.
 - A house's owner of record is in `houses` (`LF_Houses`); this book mirrors it. Contents of a house ride
   `LF_PersistentStorageComponent` under `property:<id>`, not this record.
 - Plot purchase (#2649): `LF_PlotComponent` on a plot sign; `RpcAsk_LF_BuyProperty` on the player
-  controller sends no id, the server picks the nearest sign within 5 m and pays with carried cash. Nothing
+  controller sends the used sign's plot key; the server sells it only when a sign with that key is within 5 m,
+  rate-limited (PURCHASE), for a living conscious buyer, paid with carried cash. Nothing
   builds yet.
 
 ## Rules

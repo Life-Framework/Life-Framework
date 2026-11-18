@@ -39,7 +39,7 @@ class LF_PlotBuyAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!pUserEntity || pUserEntity != LF_Utils.GetLocalCharacter())
+		if (!m_Plot || !pUserEntity || pUserEntity != LF_Utils.GetLocalCharacter())
 			return;
 
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
@@ -49,6 +49,6 @@ class LF_PlotBuyAction : ScriptedUserAction
 			return;
 		}
 
-		controller.LF_RequestBuyProperty();
+		controller.LF_RequestBuyProperty(m_Plot.GetPlotKey());
 	}
 }
