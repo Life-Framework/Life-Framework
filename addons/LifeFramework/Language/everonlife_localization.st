@@ -2180,6 +2180,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Treatment bill"
      Comment "Notification title for treatment bills."
     }
+    CustomStringTableItem "{7E1C40B2A93D5F06}" {
+     Id "LF-BuyerSale_Action"
+     Target_en_us "Sell the goods"
+     Comment "Illicit buyer action: sell every chain good carried (#2920)."
+    }
+    CustomStringTableItem "{2A9F63D1C84B7E50}" {
+     Id "LF-BuyerSale_ActionDesc"
+     Target_en_us "He pays for what he names."
+     Comment "Illicit buyer action description (#2920)."
+    }
+    CustomStringTableItem "{B05D8E27F1963A4C}" {
+     Id "LF-BuyerSale_Closed"
+     Target_en_us "He is not buying here, not today."
+     Comment "Toast: the buyer is absent, away from the open spot, or the price list is missing (#2920)."
+    }
+    CustomStringTableItem "{4C7A12E9D60B83F5}" {
+     Id "LF-BuyerSale_Nothing"
+     Target_en_us "You have nothing he wants."
+     Comment "Toast and cannot-perform reason: no chain goods the buyer names (#2920)."
+    }
+    CustomStringTableItem "{D83B5A0614EF9C27}" {
+     Id "LF-BuyerSale_Sold"
+     Target_en_us "He takes the goods and pays you %1."
+     Comment "Toast: goods sold to the illicit buyer. %1 = the amount paid (#2920)."
+    }
+    CustomStringTableItem "{19E6C4A7B25D0F83}" {
+     Id "LF-BuyerSale_Title"
+     Target_en_us "The buyer"
+     Comment "Toast title at the illicit buyer (#2920)."
+    }
     CustomStringTableItem "{7724C0B2311D85FD}" {
      Id "LF-CC_Error_NoIdentity"
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
@@ -2670,6 +2700,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Contraband"
      Comment "Toast title for contraband convoy messages"
     }
+    CustomStringTableItem "{2F9A63C8D5E1074B}" {
+     Id "LF-ContractTracker_Cost"
+     Target_en_us "They will remember if you drop this."
+     Comment "Contract tracker line (#2914): what walking away costs, in words, never points. Shown when the contract has a stake."
+    }
+    CustomStringTableItem "{8D40B6E3172A9C58}" {
+     Id "LF-ContractTracker_Line"
+     Target_en_us "%1: %2"
+     Comment "Contract tracker line (#2914): %1 = who it is for and what to do, %2 = the time left in words."
+    }
+    CustomStringTableItem "{19B4CE7D60A835F2}" {
+     Id "LF-ContractTracker_Time_Hurry"
+     Target_en_us "hurry"
+     Comment "Contract tracker line (#2914): under a fifth of the time is left."
+    }
+    CustomStringTableItem "{A7D2189E4B6C30F5}" {
+     Id "LF-ContractTracker_Time_Plenty"
+     Target_en_us "plenty of time"
+     Comment "Contract tracker line (#2914): more than half the time is left."
+    }
+    CustomStringTableItem "{E3518B0FC2A7D694}" {
+     Id "LF-ContractTracker_Time_Soon"
+     Target_en_us "time is getting on"
+     Comment "Contract tracker line (#2914): between a fifth and a half of the time is left."
+    }
+    CustomStringTableItem "{5C1E7A02B93D4F61}" {
+     Id "LF-ContractTracker_Title_Default"
+     Target_en_us "Your contract"
+     Comment "Contract tracker line (#2914): the title of a contract with no pack row of its own (LF-ContractTracker_Title_<contractId>)."
+    }
     CustomStringTableItem "{3565B0AEE39851EE}" {
      Id "LF-Contract_Busy"
      Target_en_us "You already have a contract. Finish that one first."
@@ -2722,7 +2782,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{27F672D865E0C90E}" {
      Id "LF-Credits_101"
-     Target_en_us "Radio track \"Accordion kolo\", a 2/4 Balkan kolo"
+     Target_en_us "Radio track \"Accordion waltz\", a 3/4 accordion waltz"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{52A89444BDFCFD47}" {
@@ -2732,7 +2792,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B34B54B3270EA1AB}" {
      Id "LF-Credits_103"
-     Target_en_us "Radio track \"Orchestral morning\", a light orchestral morning piece"
+     Target_en_us "Radio track \"Accordion kolo\", a 2/4 Balkan kolo"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{08B073F287287452}" {
@@ -2742,7 +2802,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{47D4FB9C4781CDA3}" {
      Id "LF-Credits_105"
-     Target_en_us "Radio track \"Orchestral serenade\", a Mediterranean serenade"
+     Target_en_us "Radio track \"Orchestral morning\", a light orchestral morning piece"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FBFB66BA23F58688}" {
@@ -2752,17 +2812,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{53B06789666BA9A0}" {
      Id "LF-Credits_107"
-     Target_en_us "Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle"
+     Target_en_us "Radio track \"Orchestral serenade\", a Mediterranean serenade"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{191CB88166129132}" {
      Id "LF-Credits_108"
-     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8D038048737972B}" {
      Id "LF-Credits_109"
-     Target_en_us "GENERATED VOICES"
+     Target_en_us "Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{857E5E05902D8F44}" {
@@ -2772,52 +2832,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C0DF6FBEA91CB184}" {
      Id "LF-Credits_110"
-     Target_en_us "Town clerk's spoken lines: all thirteen, the old arrival lines and the newcomer's welcome"
+     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E14413C1D94DD1F}" {
      Id "LF-Credits_111"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Julien - Serious\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "GENERATED VOICES"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{96FE8BDEC46005B9}" {
      Id "LF-Credits_112"
-     Target_en_us "Café owner's seven lines"
+     Target_en_us "Town clerk's spoken lines: all thirteen, the old arrival lines and the newcomer's welcome"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{863CCDCE20D8134D}" {
      Id "LF-Credits_113"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Mariva Viva Muse - Warm and Energetic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Julien - Serious\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{90202C71BA2045BB}" {
      Id "LF-Credits_114"
-     Target_en_us "Night-shift worker's spoken lines"
+     Target_en_us "Café owner's seven lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BD650073C9503BC9}" {
      Id "LF-Credits_115"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Mariva Viva Muse - Warm and Energetic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BF312B42B05FCAC5}" {
      Id "LF-Credits_116"
-     Target_en_us "Old man Gaspard Lenoir's five lines"
+     Target_en_us "Night-shift worker's spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD8474D21ADA71ED}" {
      Id "LF-Credits_117"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A20FA264480F9153}" {
      Id "LF-Credits_118"
-     Target_en_us "MUSIC"
+     Target_en_us "Old man Gaspard Lenoir's five lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8D2FBE7CB9BA1A19}" {
      Id "LF-Credits_119"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0A5B0A916F1F634A}" {
@@ -2827,12 +2887,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C06863243F369B82}" {
      Id "LF-Credits_120"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{034AB24F20B9C523}" {
      Id "LF-Credits_121"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6FE700B6BDC757ED}" {
@@ -2842,42 +2902,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{2B6B443BB2E0DFB9}" {
      Id "LF-Credits_123"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0C744196304685EB}" {
      Id "LF-Credits_124"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9954645FD5FC4292}" {
      Id "LF-Credits_125"
-     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C35B3ADBB9D89721}" {
      Id "LF-Credits_126"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9968FD984CF4FABF}" {
      Id "LF-Credits_127"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Target_en_us "Michael Hansen / Rhasspy, MIT"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9604C54EE7C42A8F}" {
      Id "LF-Credits_128"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2A31B23D96B99646}" {
      Id "LF-Credits_129"
-     Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4698D3AC325BC21D}" {
      Id "LF-Credits_13"
      Target_en_us "rekterakathom/EveronLife: parts of the inventory storage manager and the shop rules."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{EF83CE5E501404F6}" {
+     Id "LF-Credits_130"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{2E46C1E4691E2B33}" {
+     Id "LF-Credits_131"
+     Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CA6300164F63F92D}" {
@@ -3052,17 +3122,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{086D86A2EDA2B8CF}" {
      Id "LF-Credits_45"
-     Target_en_us "Evidence marker model"
+     Target_en_us "Fishing float model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2979BA666C42667B}" {
      Id "LF-Credits_46"
-     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Target_en_us "Modelled in Blender by tools/assets/fishing-float/model.py (a red-and-white round bobber on a quill), texture baked from procedural nodes"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F035DFEB809CA450}" {
      Id "LF-Credits_47"
-     Target_en_us "Pager model"
+     Target_en_us "Evidence marker model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{067B4509CC39E039}" {
@@ -3072,7 +3142,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D3F401496BAE82D2}" {
      Id "LF-Credits_49"
-     Target_en_us "Money bag model"
+     Target_en_us "Pager model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{024DCF01977FDC8E}" {
@@ -3087,7 +3157,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F30094F417F14EDD}" {
      Id "LF-Credits_51"
-     Target_en_us "Apple juicer model"
+     Target_en_us "Money bag model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BC78749D66D5773D}" {
@@ -3097,7 +3167,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BD94432B1728051F}" {
      Id "LF-Credits_53"
-     Target_en_us "Police scanner model"
+     Target_en_us "Apple juicer model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AE4C658004027BAA}" {
@@ -3107,7 +3177,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{280AE9553E12DCF0}" {
      Id "LF-Credits_55"
-     Target_en_us "Post parcel model"
+     Target_en_us "Police scanner model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{59A5E16ECC87C9D1}" {
@@ -3117,7 +3187,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{127400A67F429364}" {
      Id "LF-Credits_57"
-     Target_en_us "Moonshine still model"
+     Target_en_us "Post parcel model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{315390E10DFAFDB2}" {
@@ -3127,7 +3197,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3A91C10B099318FB}" {
      Id "LF-Credits_59"
-     Target_en_us "Smelter furnace model"
+     Target_en_us "Moonshine still model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{45A798B997EBD08B}" {
@@ -3142,7 +3212,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{80D21A43FAC2B85A}" {
      Id "LF-Credits_61"
-     Target_en_us "Dispatch console model"
+     Target_en_us "Smelter furnace model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{708E4EC4AFBEC67D}" {
@@ -3152,22 +3222,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3AC68A94A8103570}" {
      Id "LF-Credits_63"
-     Target_en_us "TEXTURES (CC0)"
+     Target_en_us "Dispatch console model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D08F14333F89DB8C}" {
      Id "LF-Credits_64"
-     Target_en_us "Metal 046 B"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3DC31C741325E00A}" {
      Id "LF-Credits_65"
-     Target_en_us "ambientCG, CC0 1.0"
+     Target_en_us "TEXTURES (CC0)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6973D488BECA5042}" {
      Id "LF-Credits_66"
-     Target_en_us "Metal 047 B"
+     Target_en_us "Metal 046 B"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3CAE93E3CE89F176}" {
@@ -3177,7 +3247,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{250D4D6A466ED5C6}" {
      Id "LF-Credits_68"
-     Target_en_us "Metal 048 B"
+     Target_en_us "Metal 047 B"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{115DDAA18230398D}" {
@@ -3192,7 +3262,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AF97E8FC2EF2C69E}" {
      Id "LF-Credits_70"
-     Target_en_us "Metal 058 C"
+     Target_en_us "Metal 048 B"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C96DB5CDAEB0CD3B}" {
@@ -3202,7 +3272,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F31FEA189E5AF4EA}" {
      Id "LF-Credits_72"
-     Target_en_us "Rust 009"
+     Target_en_us "Metal 058 C"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{46595D86CD131263}" {
@@ -3212,7 +3282,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AFAD89EA248BB053}" {
      Id "LF-Credits_74"
-     Target_en_us "Rock 035"
+     Target_en_us "Rust 009"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FE16DFCBBA5532B4}" {
@@ -3222,7 +3292,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4BB050278AF6FC4B}" {
      Id "LF-Credits_76"
-     Target_en_us "Rock 058"
+     Target_en_us "Rock 035"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C3252F897790C80D}" {
@@ -3232,7 +3302,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{50AF76D0FD61586D}" {
      Id "LF-Credits_78"
-     Target_en_us "Metal 038"
+     Target_en_us "Rock 058"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F5CCE61786E1F741}" {
@@ -3247,7 +3317,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{450BEEBC033F072C}" {
      Id "LF-Credits_80"
-     Target_en_us "Leather 014"
+     Target_en_us "Metal 038"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F386EBE00044EE4B}" {
@@ -3257,42 +3327,42 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{CFAB4F5659DE4528}" {
      Id "LF-Credits_82"
-     Target_en_us "POLY HAVEN MODELS (CC0)"
+     Target_en_us "Leather 014"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{01785E5C9E42AE6E}" {
      Id "LF-Credits_83"
-     Target_en_us "Cement Bag"
+     Target_en_us "ambientCG, CC0 1.0"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{50C157F2EB525B36}" {
      Id "LF-Credits_84"
-     Target_en_us "PierreB3D, CC0 1.0"
+     Target_en_us "POLY HAVEN MODELS (CC0)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{62B659557E7B6464}" {
      Id "LF-Credits_85"
-     Target_en_us "LIBRARY AND PURCHASED MODELS"
+     Target_en_us "Cement Bag"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BB3735C9B27F3750}" {
      Id "LF-Credits_86"
-     Target_en_us "Models taken from the open libraries through 3d-asset-server (CC0, CC-BY) or bought by a human on CGTrader and similar markets (Royalty Free), then run through clean and import..."
+     Target_en_us "PierreB3D, CC0 1.0"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{135C13CA084B8504}" {
      Id "LF-Credits_87"
-     Target_en_us "GENERATED SOUND EFFECTS (ELEVENLABS)"
+     Target_en_us "LIBRARY AND PURCHASED MODELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F7B8FCDCE0544A88}" {
      Id "LF-Credits_88"
-     Target_en_us "Taser sounds: shot, dry fire, cartridge out and in, stun buzz"
+     Target_en_us "Models taken from the open libraries through 3d-asset-server (CC0, CC-BY) or bought by a human on CGTrader and similar markets (Royalty Free), then run through clean and import..."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{7320D160EB0096E2}" {
      Id "LF-Credits_89"
-     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
+     Target_en_us "GENERATED SOUND EFFECTS (ELEVENLABS)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{99FF09A0FE490E2D}" {
@@ -3302,32 +3372,32 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AE8C2BFD5BDF0B32}" {
      Id "LF-Credits_90"
-     Target_en_us "GENERATED AUDIO"
+     Target_en_us "Taser sounds: shot, dry fire, cartridge out and in, stun buzz"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3D8F4A1805394D57}" {
      Id "LF-Credits_91"
-     Target_en_us "Retail store alarm"
+     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8501F8EBAEAC730A}" {
      Id "LF-Credits_92"
-     Target_en_us "Hospital robbery alarm"
+     Target_en_us "GENERATED AUDIO"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D633223051CC74DB}" {
      Id "LF-Credits_93"
-     Target_en_us "Store radio and pub music"
+     Target_en_us "Retail store alarm"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{359938F793945EA0}" {
      Id "LF-Credits_94"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Hospital robbery alarm"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9D89028E9844FF11}" {
      Id "LF-Credits_95"
-     Target_en_us "Radio track \"Estrada ballad\", a slow 92 bpm estrada ballad"
+     Target_en_us "Store radio and pub music"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D3080A6969C70816}" {
@@ -3337,7 +3407,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AA282A4B5F344509}" {
      Id "LF-Credits_97"
-     Target_en_us "Radio track \"Estrada dance\", an upbeat estrada dance number"
+     Target_en_us "Radio track \"Estrada ballad\", a slow 92 bpm estrada ballad"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FA45D273D68AA84A}" {
@@ -3347,7 +3417,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C38448870F6795CB}" {
      Id "LF-Credits_99"
-     Target_en_us "Radio track \"Accordion waltz\", a 3/4 accordion waltz"
+     Target_en_us "Radio track \"Estrada dance\", an upbeat estrada dance number"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B6C65DD4369872B}" {
@@ -6777,6 +6847,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Read today's prices"
      Comment "Action on the trader chalk price board."
     }
+    CustomStringTableItem "{E3A1B2C4D5F60723}" {
+     Id "LF-Market_SaleDown"
+     Target_en_us "I'm paying less for %1 today, I've plenty."
+     Comment "Toast from the trader after your sale moved a good into a lower price band. %1 = good name. Never a number (#2923)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60725}" {
+     Id "LF-Market_SaleTitle"
+     Target_en_us "Trader"
+     Comment "Title of the trader price remark toast (#2923)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60724}" {
+     Id "LF-Market_SaleUp"
+     Target_en_us "I'm paying full price for %1 again."
+     Comment "Toast from the trader to the next seller once a good recovered a price band. %1 = good name (#2923)."
+    }
     CustomStringTableItem "{DF4F6E621FD608FA}" {
      Id "LF-MedicRank_Doctor"
      Target_en_us "Doctor"
@@ -8542,6 +8627,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "It is past watering now."
      Comment "Toast: watering refused, the plant is ripe, dead or rotten (#2664)."
     }
+    CustomStringTableItem "{5C2E81D9A47B03F6}" {
+     Id "LF-Plant_NotOpenGround"
+     Target_en_us "Seeds only go in open ground: not indoors, under cover, on a road or in water."
+     Comment "Toast: planting refused, the spot is inside or under a building, on a road or below sea level (#2821)."
+    }
     CustomStringTableItem "{AFB196EB146950F9}" {
      Id "LF-Plant_NotRipe"
      Target_en_us "It is not ripe yet."
@@ -10112,10 +10202,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Equipamiento especial"
      Comment "DebugWorld black-market shop description"
     }
+    CustomStringTableItem "{2B108325B520AB97}" {
+     Id "LF-Shop_Desc_Chandler"
+     Target_en_us "Rods and tins of bait."
+     Comment "Shop description of the chandler (#2995)."
+    }
     CustomStringTableItem "{78CFC7A314AD1790}" {
      Id "LF-Shop_Desc_Fence"
      Target_en_us "Tools, no questions. If he knows you."
      Comment "Fence shop description (#271)."
+    }
+    CustomStringTableItem "{637D24F33F4A818B}" {
+     Id "LF-Shop_Desc_FishCounter"
+     Target_en_us "Sell your catch and buy bait."
+     Comment "Shop description of the fish counter (#2995)."
     }
     CustomStringTableItem "{595445544B0E7D7B}" {
      Id "LF-Shop_Desc_General"
@@ -10169,6 +10269,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Mercado negro"
      Comment "DebugWorld black-market shop name"
     }
+    CustomStringTableItem "{08A9491DE03AD84D}" {
+     Id "LF-Shop_Name_Chandler"
+     Target_en_us "Chandler"
+     Comment "Shop name of the chandler outlet that sells rods and bait (#2995)."
+    }
     CustomStringTableItem "{6190A2B8AD6F7862}" {
      Id "LF-Shop_Name_Fence"
      Target_en_us "The Fence"
@@ -10178,6 +10283,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_Name_FenceStall"
      Target_en_us "Under the counter"
      Comment "Title of the fence stall's price list."
+    }
+    CustomStringTableItem "{54974BC934AC8354}" {
+     Id "LF-Shop_Name_FishCounter"
+     Target_en_us "Fish counter"
+     Comment "Shop name of the fish counter outlet that buys the catch (#2995)."
     }
     CustomStringTableItem "{9B2FF881F1CB91D3}" {
      Id "LF-Shop_Name_General"
@@ -10223,10 +10333,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Abrir mercado negro"
      Comment "Interaction name on the black-market shop"
     }
+    CustomStringTableItem "{44F712AA62E8D66E}" {
+     Id "LF-Shop_Open_Chandler"
+     Target_en_us "Buy fishing tackle"
+     Comment "Action prompt at the chandler (#2995)."
+    }
     CustomStringTableItem "{FB0002094FEA5005}" {
      Id "LF-Shop_Open_Fence"
      Target_en_us "Talk to the fence"
      Comment "Interaction name on the fence NPC (#271)."
+    }
+    CustomStringTableItem "{7A090D0C714E7A03}" {
+     Id "LF-Shop_Open_FishCounter"
+     Target_en_us "Sell fish"
+     Comment "Action prompt at the fish counter (#2995)."
     }
     CustomStringTableItem "{65F7FEC08E8AAFA4}" {
      Id "LF-Shop_Open_General"
@@ -10333,6 +10453,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_RefuseQuantity"
      Target_en_us "Order between 1 and 99."
      Comment "Shop refusal: quantity outside the per-order limit."
+    }
+    CustomStringTableItem "{3A7C5E91D20B48F6}" {
+     Id "LF-Shop_RefuseResident"
+     Target_en_us "Not to you."
+     Comment "Shop refusal: the resident clerk will not serve this buyer (#2911)."
     }
     CustomStringTableItem "{2D906536332C3F77}" {
      Id "LF-Shop_RefuseTooFast"
@@ -10750,6 +10875,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This stall is taken, or you already rent one today."
      Comment "Toast: stall rent refused, the stall is rented or the player has another; nothing was taken (#2925)."
     }
+    CustomStringTableItem "{E3A1B2C4D5F60742}" {
+     Id "LF-Stall_Bought"
+     Target_en_us "You bought an item from the stall for %1."
+     Comment "Toast to the buyer: cash paid and the item is in the inventory (#2926). %1 = the price paid."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60740}" {
+     Id "LF-Stall_Buy"
+     Target_en_us "Buy from the stall"
+     Comment "Action on a rented market stall: buys the cheapest listing (#2926)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60741}" {
+     Id "LF-Stall_BuyDesc"
+     Target_en_us "Buy the cheapest item on this stall."
+     Comment "Description of the buy action on a market stall (#2926)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60744}" {
+     Id "LF-Stall_BuyerFull"
+     Target_en_us "You have no room to carry it. Nothing was taken."
+     Comment "Toast: buy refused, the item did not fit the buyer's inventory; cash refunded (#2926)."
+    }
     CustomStringTableItem "{E3A1B2C4D5F60735}" {
      Id "LF-Stall_Closed"
      Target_en_us "The market is closed. Stalls rent on market day."
@@ -10759,6 +10904,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Stall_NoCash"
      Target_en_us "You do not carry enough cash for the pitch fee."
      Comment "Toast: stall rent refused, short of cash; nothing was taken (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60746}" {
+     Id "LF-Stall_NoCashBuy"
+     Target_en_us "You do not carry enough cash for that."
+     Comment "Toast: buy refused, short of cash; nothing was taken (#2926)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60743}" {
+     Id "LF-Stall_NothingListed"
+     Target_en_us "This stall has nothing for sale right now."
+     Comment "Toast: buy refused, no open listing; nothing moved (#2926)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60747}" {
+     Id "LF-Stall_OwnStall"
+     Target_en_us "You cannot buy from your own stall."
+     Comment "Toast: the holder tried to buy their own listing (#2926)."
     }
     CustomStringTableItem "{E3A1B2C4D5F60731}" {
      Id "LF-Stall_Rent"
@@ -10775,6 +10935,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You rented a stall for today's market."
      Comment "Toast: the pitch fee was paid and the stall is yours until the market closes (#2925)."
     }
+    CustomStringTableItem "{E3A1B2C4D5F60748}" {
+     Id "LF-Stall_Sold"
+     Target_en_us "You sold an item at your stall and were paid %1."
+     Comment "Toast to the holder: a sale settled and the cash is in their pockets (#2926). %1 = the amount paid after the market's cut."
+    }
     CustomStringTableItem "{E3A1B2C4D5F60733}" {
      Id "LF-Stall_Taken"
      Target_en_us "Stall of %1"
@@ -10784,6 +10949,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Stall_Title"
      Target_en_us "Market stall"
      Comment "Toast title for a market stall rent (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60745}" {
+     Id "LF-Stall_Unavailable"
+     Target_en_us "That item is no longer available. Nothing was taken."
+     Comment "Toast: buy refused, the holder no longer has it or is away; cash refunded (#2926)."
     }
     CustomStringTableItem "{E3A1B2C4D5F60734}" {
      Id "LF-Stall_Unnamed"

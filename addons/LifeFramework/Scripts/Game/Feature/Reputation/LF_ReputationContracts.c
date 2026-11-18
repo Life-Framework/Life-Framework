@@ -223,6 +223,7 @@ class LF_ReputationContracts
 
 		LF_Debug.Warn(LF_Reputation.FEATURE, string.Format("contract %1 of %2 dropped: its run is gone (no stake taken)", s_mActive.Get(playerUid).m_sId, playerUid));
 		s_mActive.Remove(playerUid);
+		LF_ContractTracker.Hide(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -281,6 +282,7 @@ class LF_ReputationContracts
 		run.m_sId = contractId;
 		run.m_fTakenAt = now;
 		Active().Set(playerUid, run);
+		LF_ContractTracker.Show(playerUid, contractId);
 		LF_Debug.Info(LF_Reputation.FEATURE, string.Format("contract %1 taken by %2 (x%3, stake %4)", contractId, playerUid, def.Multiplier(), def.m_iStakePoints));
 		return true;
 	}
@@ -334,6 +336,7 @@ class LF_ReputationContracts
 	protected static void End(string playerUid, float now)
 	{
 		Active().Remove(playerUid);
+		LF_ContractTracker.Hide(playerUid);
 		float cooldown = 0;
 		LF_ReputationContractsConfig config = LF_ReputationContractsConfig.Get();
 		if (config)
@@ -360,6 +363,7 @@ class LF_ReputationContracts
 		{
 			LF_Debug.Warn(LF_Reputation.FEATURE, string.Format("contract %1 of %2 is no longer in the config; the run pays its base", run.m_sId, playerUid));
 			s_mActive.Remove(playerUid);
+			LF_ContractTracker.Hide(playerUid);
 			return basePay;
 		}
 
@@ -428,6 +432,7 @@ class LF_ReputationContracts
 		if (s_mActive)
 			s_mActive.Remove(playerUid);
 
+		LF_ContractTracker.Hide(playerUid);
 		if (s_mCooldownUntil)
 			s_mCooldownUntil.Remove(playerUid);
 

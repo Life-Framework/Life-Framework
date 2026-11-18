@@ -20,6 +20,7 @@
     "LF_LicencesConfig",
     "LF_MapAreaConfig",
     "LF_MapPoiConfig",
+    "LF_MarketConfig",
     "LF_MedicConfig",
     "LF_MissionHeader",
     "LF_NpcOutfitPreset",

@@ -1,3 +1,4 @@
+// red-proof: 2026-11-18 (#2995, FISHER xp and LF_OnFishCaught assertions) tools/cli test --no-build --red LF_Test_FishingFloat,LF_Test_FishingCast RED-PROOF OK (RedProof() skips the water cast, so no fish is landed: the xp, the event and the recorder assertions fail).
 // red-proof: 2026-11-18 tools/cli test --no-build --red LF_Test_FishingCast RED-OK (RedProof() makes no water cast and leaves the cast's player unset, so the cast, strike, catch and recipient assertions fail); the plain run is green.
 //! fishing/cast: the server's half of a cast (#2930). A cast onto land is refused and leaves nothing
 //! out; a cast onto water with the rod in the hands and bait in the pack is accepted; a second cast
@@ -5,6 +6,33 @@
 //! a strike inside the window after the bite gives exactly one fish of the table (open water: small,
 //! a spot: the spot's table, large) and spends one bait; a late strike gives none and spends the bait;
 //! a rod that is not in the hands, a target out of range and a forged target are refused.
+//! Records every LF_OnFishCaught the bus carries (#2995).
+class LF_TestFishCaughtRecorder : LF_EventSubscriber
+{
+	int m_iCount;
+	string m_sUid;
+	string m_sSpecies;
+	string m_sPrefab;
+	string m_sWater;
+	string m_sSpotTable;
+
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnFishCaught caught = LF_OnFishCaught.Cast(busEvent);
+		if (!caught)
+			return true;
+
+		m_iCount++;
+		m_sUid = caught.m_sPlayerUid;
+		m_sSpecies = caught.m_sSpeciesId;
+		m_sPrefab = caught.m_sFishPrefab;
+		m_sWater = caught.m_sWater;
+		m_sSpotTable = caught.m_sSpotTable;
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_FishingCast : LF_Test
 {
@@ -102,6 +130,9 @@ class LF_Test_FishingCast : LF_Test
 		LF_FishingSession.End(key);
 		vector water = angler.GetOrigin() + Vector(8, 0, 0);
 		float now = 1000;
+		LF_TestFishCaughtRecorder caught = new LF_TestFishCaughtRecorder();
+		LF_EventBus.Subscribe(LF_OnFishCaught, caught);
+		int xpBefore = LF_JobLevels.XpOf(key, LF_FishingSession.JOB);
 
 		// The cast's events go to the player who cast, not to whoever drives the body now: a body that
 		// died mid-cast maps to no player, and its lost ENDED left the client's line out for good.
@@ -137,6 +168,7 @@ class LF_Test_FishingCast : LF_Test
 		ctx.NotNull(cast, "the server holds the open cast");
 		if (!cast)
 		{
+			LF_EventBus.Unsubscribe(LF_OnFishCaught, caught);
 			Finish(angler, null, key);
 			return;
 		}
@@ -160,6 +192,15 @@ class LF_Test_FishingCast : LF_Test
 		ctx.Equal(0, Count(angler, TROUT_LARGE), "open water gave no large fish");
 		ctx.Equal(3, Count(angler, TIN), "the catch spent one bait");
 		ctx.True(LF_FishingSession.Open(key) == null, "the cast is over after the catch");
+
+		// The catch pays FISHER XP (the fish_catch row of the jobs config) and is published once (#2995).
+		ctx.True(LF_JobLevels.XpOf(key, LF_FishingSession.JOB) > xpBefore, "a landed fish books FISHER xp");
+		ctx.Equal(1, caught.m_iCount, "the bus saw one fish caught");
+		ctx.EqualStr(key, caught.m_sUid, "the event names the angler's record key");
+		ctx.EqualStr("trout", caught.m_sSpecies, "the event names the species");
+		ctx.EqualStr(TROUT_SMALL, caught.m_sPrefab, "the event names the fish prefab");
+		ctx.EqualStr("OCEAN", caught.m_sWater, "the event names the water");
+		ctx.EqualStr("", caught.m_sSpotTable, "open water has no spot table");
 		ctx.True(LF_FishingSession.Strike(angler, cast.m_iCastId, now + 21.1) == LF_EFishingStrike.IGNORED, "a second strike on the finished cast is ignored");
 		ctx.Equal(1, Count(angler, TROUT_SMALL), "the second strike gave nothing");
 
@@ -181,6 +222,9 @@ class LF_Test_FishingCast : LF_Test
 				ctx.Equal(1, Count(angler, TROUT_SMALL), "and no more small ones");
 				ctx.Equal(full - 1, spot.StockLeft(now + 41), "the catch thinned the spot by one");
 				ctx.Equal(2, Count(angler, TIN), "the second catch spent a second bait");
+				ctx.Equal(2, caught.m_iCount, "the spot catch was published too");
+				ctx.EqualStr("harbour", caught.m_sSpotTable, "the spot catch names the spot's table");
+				ctx.EqualStr("POND", caught.m_sWater, "the spot catch names the water");
 			}
 		}
 
@@ -195,6 +239,7 @@ class LF_Test_FishingCast : LF_Test
 			ctx.Equal(1, Count(angler, TROUT_SMALL), "the late strike gave no fish");
 			ctx.Equal(1, Count(angler, TROUT_LARGE), "the late strike gave no fish of the other size either");
 			ctx.Equal(1, Count(angler, TIN), "the late strike spent the bait");
+			ctx.Equal(2, caught.m_iCount, "a late strike publishes no catch");
 			ctx.True(LF_FishingSession.Open(key) == null, "the cast is over after the late strike");
 		}
 
@@ -203,6 +248,7 @@ class LF_Test_FishingCast : LF_Test
 		ctx.True(LF_FishingSession.CastOn(angler, water, "OCEAN", now + 56) == LF_EFishingRefusal.RATE, "the cast over the minute's limit is refused");
 		ctx.True(LF_FishingSession.Open(key) == null, "the rate refusal left nothing out");
 
+		LF_EventBus.Unsubscribe(LF_OnFishCaught, caught);
 		Finish(angler, spotEntity, key);
 	}
 
