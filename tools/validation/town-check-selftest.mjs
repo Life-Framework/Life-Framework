@@ -9,6 +9,7 @@
 // the lead's approval of that mapping (`status: approved`).
 // #3314 adds the M6-M8 outpost slots (bins, loot, buyer-spots: outposts; tow-yard; memorial) to the Saint-Philippe mapping; #3346 adds the wave-13 slots
 // (safe-zone, atms, payphones, street-life, parked-cars, fuel-run, fuel-drops, pond, orchard, night-lights, square-evening, cashvan, org) and the dock's fishing-quay.
+// #3350 fits the safe-zone slot, so it leaves the unfitted list.
 // red-proof: see tools/town/check.selftest.mjs; before the woodlot slot existed this printed "FAIL  saint-philippe: woodlot is not among the unfitted slots"
 // before the farm slot existed "FAIL  saint-philippe: farm is not among the unfitted slots", and before #3272 "FAIL  saint-philippe-dock: wholesale is not among the unfitted slots", before #3315 "FAIL  saint-philippe-dock: lockers is not among the unfitted slots" and "FAIL  saint-philippe-dock: the mapping status is not approved" (2026-11-18).
 // before #3314 "FAIL  saint-philippe: bins is not among the unfitted slots" and one such line for each of loot, buyer-spots, tow-yard and memorial (2026-11-18).
@@ -32,7 +33,7 @@ const check = (cond, msg) => {
 {
   const { loadPlace, checkPlace } = await import(pathToFileURL(join(ROOT, "tools", "town", "check.mjs")).href);
   // a mapped slot the template lacks is an error from checkMapping; an unclaimed one is only listed as not fitted yet
-  for (const [place, slots] of [["saint-philippe", ["woodlot", "farm", "merchant-timber", "bins", "loot", "buyer-spots", "tow-yard", "memorial", "safe-zone", "atms", "payphones", "street-life", "parked-cars", "fuel-run", "fuel-drops", "pond", "orchard", "night-lights", "square-evening", "cashvan", "org"]], ["saint-philippe-dock", ["wholesale", "lockers", "smokehouse", "warehouse", "quay-fishing", "fish-counter", "chandler", "fishing-quay"]]]) {
+  for (const [place, slots] of [["saint-philippe", ["woodlot", "farm", "merchant-timber", "bins", "loot", "buyer-spots", "tow-yard", "memorial", "atms", "payphones", "street-life", "parked-cars", "fuel-run", "fuel-drops", "pond", "orchard", "night-lights", "square-evening", "cashvan", "org"]], ["saint-philippe-dock", ["wholesale", "lockers", "smokehouse", "warehouse", "quay-fishing", "fish-counter", "chandler", "fishing-quay"]]]) {
     const result = checkPlace(loadPlace(ROOT, place), {});
     for (const slot of slots) {
       check(result.unfitted.includes(slot), `${place}: ${slot} is not among the unfitted slots`);

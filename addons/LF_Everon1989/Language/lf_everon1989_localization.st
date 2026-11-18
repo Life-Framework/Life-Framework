@@ -434,6 +434,46 @@ StringTable {
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
+    CustomStringTableItem "{F2B1DF023C756490}" {
+     Id "LF-Everon-Lock_Closed"
+     Target_en_us "Fermé"
+     Comment "Door prompt on the harbour company offices (#3204)."
+    }
+    CustomStringTableItem "{04E0632F53FEF329}" {
+     Id "LF-Everon-Lock_ForSaleSoon"
+     Target_en_us "À vendre bientôt"
+     Comment "Door prompt on a home that no sale card has opened yet (#3204); the house marker wins once it does."
+    }
+    CustomStringTableItem "{FB53912C7C2A947B}" {
+     Id "LF-Everon-Lock_Military"
+     Target_en_us "Zone militaire"
+     Comment "Door prompt on the dock barracks and the port guard house (#3204)."
+    }
+    CustomStringTableItem "{C5E2CABAD9F4D25D}" {
+     Id "LF-Everon-Lock_OpeningSoon"
+     Target_en_us "Ouverture prochaine"
+     Comment "Door prompt on a planned shop whose slot has not been fitted yet (#3204); the fitted place wins once it is."
+    }
+    CustomStringTableItem "{43FE7E120EB47887}" {
+     Id "LF-Everon-Lock_Private"
+     Target_en_us "Propriété privée"
+     Comment "Door prompt on a locked home, barn, lock-up or outbuilding of Saint-Philippe (Locks_saint-philippe.layer, #3204)."
+    }
+    CustomStringTableItem "{39FDDD7A03DF9AE7}" {
+     Id "LF-Everon-Lock_School"
+     Target_en_us "École : vacances d'été"
+     Comment "Door prompt on the Saint-Philippe school, shut for the summer holidays (#3204)."
+    }
+    CustomStringTableItem "{B3C06B7358DCA8A8}" {
+     Id "LF-Everon-Lock_StaffOnly"
+     Target_en_us "Réservé au personnel"
+     Comment "Door prompt on a locked fire station, co-op or dock warehouse, or the garage behind the gun counter (#3204)."
+    }
+    CustomStringTableItem "{318D1CFF0247C655}" {
+     Id "LF-Everon-Lock_ToLetSoon"
+     Target_en_us "À louer bientôt"
+     Comment "Door prompt on a dock workshop kept for the fishing chapter (#3204)."
+    }
     CustomStringTableItem "{10AEFC81EF1DE6FB}" {
      Id "LF-Everon_Tier_Police_0"
      Target_en_us "No record"
@@ -2473,6 +2513,31 @@ StringTable {
      Id "LF-Sign_SafeZone_What"
      Target_en_us "The town square is a safe zone. Within 30 metres of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
      Comment "Safe zone sign card, What section."
+    }
+    CustomStringTableItem "{327C120B0ED84A6C}" {
+     Id "LF-Sign_Supermarket_How"
+     Target_en_us "Take what you want off the shelves and *Pay* at the till|Or browse the till's list for everything we stock"
+     Comment "Sign card for the supermarket, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{409FE5719F11DCE3}" {
+     Id "LF-Sign_Supermarket_Needs"
+     Target_en_us "Cash."
+     Comment "Sign card for the supermarket, Needs section."
+    }
+    CustomStringTableItem "{D76920D84DA109D0}" {
+     Id "LF-Sign_Supermarket_Next"
+     Target_en_us "The other village shops are along the main street"
+     Comment "Sign card for the supermarket, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{6331B102EC3688DE}" {
+     Id "LF-Sign_Supermarket_Title"
+     Target_en_us "Supermarket"
+     Comment "Title of the fascia and sign at the village supermarket."
+    }
+    CustomStringTableItem "{01D9AC4455F43C50}" {
+     Id "LF-Sign_Supermarket_What"
+     Target_en_us "Groceries, drinks and the odd tin of dressings."
+     Comment "Sign card for the supermarket, What section."
     }
     CustomStringTableItem "{DFA15542C4155B52}" {
      Id "LF-Sign_TestOrg_How"
