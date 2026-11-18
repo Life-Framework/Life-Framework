@@ -507,6 +507,7 @@ class LF_Plants
 	//------------------------------------------------------------------------------------------------
 	protected static void Remove(string plantId)
 	{
+		LF_PlantReplication.Retract(plantId);
 		ClearVisual(plantId);
 		Plants().Remove(plantId);
 		if (Plants().IsEmpty())
@@ -537,6 +538,8 @@ class LF_Plants
 	//! server and a crop with no stage prefabs draw nothing.
 	protected static void RefreshVisual(LF_PlantRow row)
 	{
+		// Clients on a dedicated server draw from the carrier table (#2819), told only when the stage changes.
+		LF_PlantReplication.Publish(row);
 		if (RplSession.Mode() == RplMode.Dedicated)
 			return;
 
@@ -640,6 +643,7 @@ class LF_Plants
 	//! \return How many plants were kept.
 	static int ApplyAll(array<ref LF_PlantRow> records)
 	{
+		LF_PlantReplication.RetractAll();
 		ClearAllVisuals();
 		s_mPlants = new map<string, ref LF_PlantRow>();
 		int now = Now();

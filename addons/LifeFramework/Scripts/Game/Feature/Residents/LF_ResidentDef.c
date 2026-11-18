@@ -101,6 +101,9 @@ class LF_ResidentsConfig
 	[Attribute("5", UIWidgets.EditBox, "Seconds between spawner sweeps")]
 	int m_iSweepSeconds;
 
+	[Attribute("4", UIWidgets.EditBox, "Most residents walking between anchors at once (#2909); further moves place the resident directly")]
+	int m_iMaxWalking;
+
 	protected static ref LF_ResidentsConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -192,6 +195,15 @@ class LF_ResidentsConfig
 			return 24;	// lf-fixed: default live cap when the conf leaves it unset
 
 		return m_iMaxLive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int MaxWalking()
+	{
+		if (m_iMaxWalking <= 0)
+			return 4;	// lf-fixed: default walking cap when the conf leaves it unset
+
+		return m_iMaxWalking;
 	}
 
 	//------------------------------------------------------------------------------------------------

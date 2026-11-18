@@ -2180,6 +2180,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Treatment bill"
      Comment "Notification title for treatment bills."
     }
+    CustomStringTableItem "{7E1C40B2A93D5F06}" {
+     Id "LF-BuyerSale_Action"
+     Target_en_us "Sell the goods"
+     Comment "Illicit buyer action: sell every chain good carried (#2920)."
+    }
+    CustomStringTableItem "{2A9F63D1C84B7E50}" {
+     Id "LF-BuyerSale_ActionDesc"
+     Target_en_us "He pays for what he names."
+     Comment "Illicit buyer action description (#2920)."
+    }
+    CustomStringTableItem "{B05D8E27F1963A4C}" {
+     Id "LF-BuyerSale_Closed"
+     Target_en_us "He is not buying here, not today."
+     Comment "Toast: the buyer is absent, away from the open spot, or the price list is missing (#2920)."
+    }
+    CustomStringTableItem "{4C7A12E9D60B83F5}" {
+     Id "LF-BuyerSale_Nothing"
+     Target_en_us "You have nothing he wants."
+     Comment "Toast and cannot-perform reason: no chain goods the buyer names (#2920)."
+    }
+    CustomStringTableItem "{D83B5A0614EF9C27}" {
+     Id "LF-BuyerSale_Sold"
+     Target_en_us "He takes the goods and pays you %1."
+     Comment "Toast: goods sold to the illicit buyer. %1 = the amount paid (#2920)."
+    }
+    CustomStringTableItem "{19E6C4A7B25D0F83}" {
+     Id "LF-BuyerSale_Title"
+     Target_en_us "The buyer"
+     Comment "Toast title at the illicit buyer (#2920)."
+    }
     CustomStringTableItem "{7724C0B2311D85FD}" {
      Id "LF-CC_Error_NoIdentity"
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
@@ -3629,6 +3659,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Dialogue_HintLine"
      Target_en_us "Confirm: skip    Back: leave"
      Comment "Conversation scene, small hint under the caption while the NPC speaks. Confirm and Back are the menu confirm and back keys."
+    }
+    CustomStringTableItem "{6456C75F481973C0}" {
+     Id "LF-Dialogue_Resident_Bye"
+     Target_en_us "Take care."
+     Comment "Dialogue caption: a resident says goodbye (#2908)."
+    }
+    CustomStringTableItem "{F3EF6FF492DA0C0C}" {
+     Id "LF-Dialogue_Resident_GreetFriendly"
+     Target_en_us "Good to see you again. How are you keeping?"
+     Comment "Dialogue caption: how a resident greets a character they feel 'friendly' about (#2908)."
+    }
+    CustomStringTableItem "{99DC983EEF939A94}" {
+     Id "LF-Dialogue_Resident_GreetNeutral"
+     Target_en_us "Morning. Can I help you with something?"
+     Comment "Dialogue caption: how a resident greets a character they feel 'neutral' about (#2908)."
+    }
+    CustomStringTableItem "{BCA0CA792C68EAAA}" {
+     Id "LF-Dialogue_Resident_GreetRefuses"
+     Target_en_us "I've nothing to say to you."
+     Comment "Dialogue caption: how a resident greets a character they feel 'refuses' about (#2908)."
+    }
+    CustomStringTableItem "{7E0339705DFF2929}" {
+     Id "LF-Dialogue_Resident_GreetRegular"
+     Target_en_us "There you are! Come in, come in. It's always good to see you."
+     Comment "Dialogue caption: how a resident greets a character they feel 'regular' about (#2908)."
+    }
+    CustomStringTableItem "{9DC6BC29421DDF04}" {
+     Id "LF-Dialogue_Resident_GreetWary"
+     Target_en_us "Oh. It's you. Keep it short."
+     Comment "Dialogue caption: how a resident greets a character they feel 'wary' about (#2908)."
+    }
+    CustomStringTableItem "{24A6C708B0B2495C}" {
+     Id "LF-Dialogue_Resident_Name"
+     Target_en_us "Resident"
+     Comment "Dialogue speaker name for a townsperson who speaks through the core resident dialogue."
+    }
+    CustomStringTableItem "{7C2D782E00522C19}" {
+     Id "LF-Dialogue_Resident_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply: end the talk with a resident (#2908)."
     }
     CustomStringTableItem "{BC6FD589CFCCD2F2}" {
      Id "LF-Dialogue_Shopkeeper_Bye"
@@ -6716,6 +6786,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Market_Read"
      Target_en_us "Read today's prices"
      Comment "Action on the trader chalk price board."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60723}" {
+     Id "LF-Market_SaleDown"
+     Target_en_us "I'm paying less for %1 today, I've plenty."
+     Comment "Toast from the trader after your sale moved a good into a lower price band. %1 = good name. Never a number (#2923)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60725}" {
+     Id "LF-Market_SaleTitle"
+     Target_en_us "Trader"
+     Comment "Title of the trader price remark toast (#2923)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60724}" {
+     Id "LF-Market_SaleUp"
+     Target_en_us "I'm paying full price for %1 again."
+     Comment "Toast from the trader to the next seller once a good recovered a price band. %1 = good name (#2923)."
     }
     CustomStringTableItem "{DF4F6E621FD608FA}" {
      Id "LF-MedicRank_Doctor"
@@ -10714,6 +10799,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-SpikeStrip_PoliceOnly"
      Target_en_us "Only an on-duty officer can handle the spike strip."
      Comment "Toast and greyed-out reason when someone who is not on-duty police tries the strip."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60738}" {
+     Id "LF-Stall_AlreadyRented"
+     Target_en_us "This stall is taken, or you already rent one today."
+     Comment "Toast: stall rent refused, the stall is rented or the player has another; nothing was taken (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60735}" {
+     Id "LF-Stall_Closed"
+     Target_en_us "The market is closed. Stalls rent on market day."
+     Comment "Cannot-rent reason and toast outside market hours (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60737}" {
+     Id "LF-Stall_NoCash"
+     Target_en_us "You do not carry enough cash for the pitch fee."
+     Comment "Toast: stall rent refused, short of cash; nothing was taken (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60731}" {
+     Id "LF-Stall_Rent"
+     Target_en_us "Rent stall (%1)"
+     Comment "Action on a free market stall (#2925). %1 = the formatted pitch fee."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60732}" {
+     Id "LF-Stall_RentDesc"
+     Target_en_us "Rent this stall for today's market."
+     Comment "Description of the rent action on a market stall (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60736}" {
+     Id "LF-Stall_Rented"
+     Target_en_us "You rented a stall for today's market."
+     Comment "Toast: the pitch fee was paid and the stall is yours until the market closes (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60733}" {
+     Id "LF-Stall_Taken"
+     Target_en_us "Stall of %1"
+     Comment "Prompt on a rented market stall (#2925). %1 = the holder's name."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60730}" {
+     Id "LF-Stall_Title"
+     Target_en_us "Market stall"
+     Comment "Toast title for a market stall rent (#2925)."
+    }
+    CustomStringTableItem "{E3A1B2C4D5F60734}" {
+     Id "LF-Stall_Unnamed"
+     Target_en_us "a trader"
+     Comment "Holder label on a rented stall whose holder has no name (#2925)."
     }
     CustomStringTableItem "{C6CD1F2F0A61F3B5}" {
      Id "LF-Stolen_Already"
