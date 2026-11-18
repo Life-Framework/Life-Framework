@@ -265,8 +265,8 @@ town (`world-zones.md` "Tests do not read the town").
   `validate-island-zones`): every required slot of the template is mapped; per slot, a fitted slot (one with a
   layer or a claim) has both and they agree with the mapping; every layer registers the kinds the slot promises, which `town check` reads
   from the `.layer` text (a kind no system lists in `m_aPlaces` of `LF_SystemCatalog.conf` is a warning); a kind whose system runs a component, not the marker
-  (`BACKED_KINDS` in `tools/town/check.mjs`: JailCell, the shop counters), has that component in the layer or a prefab it places
-  (an error with `--complete`, a warning otherwise, #2937); the kits' prefabs resolve.
+  (`BACKED_KINDS` in `tools/town/check.mjs`: JailCell, the shop counters), has that component in the layer or a prefab it places, or in the layer of a companion slot that rides in its building
+  (`with: <slot id>` on the template slot: the jail cell beside the police desk, #3099) (an error with `--complete`, a warning otherwise, #2937); the kits' prefabs resolve.
   It also counts each slot's layer against the building budget of its size (the `perf building` counts) and the
   per-place limits within 60 m (24 lights, 12 shadow casters, 1,500 added entities; `performance.md`), and warns on a claim
   whose `destruction.mode` is `needs-hook` until the indestructible hook lands. The map POI-kind slot check (M17, #2245,
