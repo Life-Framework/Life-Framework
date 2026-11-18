@@ -1,0 +1,65 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "82FE7F419FF8C4DE"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{76C1B2BA574582F0}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 60 0
+      CameraDistanceToItem 2
+      FOV 20
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Furniture_Table_Name"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 12
+     SizeSetupStrategy Volume
+     ItemVolume 2500
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{EFCB9305FB18473E}Assets/Props/Furniture/Table_01/Table_01.xob"
+  }
+  LF_PlaceableComponent "{3F32EBC4211AE4FC}" {
+   m_sPlacedPrefab "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et"
+   m_vFootprintMins -0.6 0.1 -0.6
+   m_vFootprintMaxs 0.6 0.9 0.6
+   m_fReach 1
+   m_fAimReach 4
+   m_eSnap FLOOR
+   m_eWho HOUSE_OWNER_OR_KEY
+   m_sKind "Furniture_Table"
+   m_eLifetime PERMANENT
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     ContextName "default"
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.2119 0
+     }
+     Radius 1.07
+    }
+   }
+   additionalActions {
+    LF_PlacementAimAction "{785B8B2CD3044544}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{2098B1EEF3469A6F}" {
+   m_eAnimVariable LF_ITEM
+  }
+ }
+}
