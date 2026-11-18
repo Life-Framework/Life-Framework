@@ -1,7 +1,7 @@
 GenericEntity Fit_saint_philippe_hardware_Place {
  components {
   LF_PlaceComponent "{9DBB73692EC6AD14}" {
-   m_sKind "HardwareCounter"
+   m_sKind "StoreCounter"
    m_sId "saint-philippe.hardware"
   }
   LF_FittedBuildingComponent "{12AB0F10DCAE3B16}" {

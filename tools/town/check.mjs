@@ -50,7 +50,7 @@ export const PLACE_RADIUS = 60;
 // LF_Places kinds that only work with a real component on a placed entity, not the marker alone (#2937). The marker switches the
 // system on; the component is what it runs: the jail's cell, the shop a counter sells from. A kind absent here needs nothing but its
 // marker (a clerk or teller is a resident the pack's timetable spawns at the marker). Keep the value a class name.
-export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "LF_ShopComponent", ClothingCounter: "LF_ShopComponent", HardwareCounter: "LF_ShopComponent", HardwareCounter: "LF_ShopComponent", GunCounter: "LF_ShopComponent", CafeTable: "LF_ShopComponent" };
+export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "LF_ShopComponent", ClothingCounter: "LF_ShopComponent", GunCounter: "LF_ShopComponent", CafeTable: "LF_ShopComponent" };
 export const PLACE_LIMITS = { lights: 24, shadow: 12, entities: 1500 };
 // The market, chess and range slots (#3078): the trader's stall runs LF_TraderManagerComponent, the chess table LF_ChessTableComponent,
 // and a range lane is SCR_FiringRangeTarget, an entity class (BaseBuilding), not a component: `layerBacking` reads those heads too.

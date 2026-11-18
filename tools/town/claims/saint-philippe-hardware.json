@@ -6,7 +6,7 @@
   "kit": "hardware",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_hardware.layer",
   "kinds": [
-    "HardwareCounter"
+    "StoreCounter"
   ],
   "rows": 13,
   "destruction": {
