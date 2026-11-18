@@ -6,10 +6,10 @@ fails on a tunable constant that is neither baselined nor marked fixed (#277).
 
 ## Counts
 
-- Config roots (a `.conf` file whose root class is script-defined): **100**
-- Config attributes (`[Attribute(` in the root's script file): **1057**
-- Numeric constants in `Feature/`: **1196**; tunable **769**, fixed **167**, unclassified **260**
-- Tunables that are config defaults or marked `// lf-fixed:`: **618**; baselined debt for #284: **151**
+- Config roots (a `.conf` file whose root class is script-defined): **101**
+- Config attributes (`[Attribute(` in the root's script file): **1067**
+- Numeric constants in `Feature/`: **1201**; tunable **773**, fixed **168**, unclassified **260**
+- Tunables that are config defaults or marked `// lf-fixed:`: **622**; baselined debt for #284: **151**
 
 A constant is **tunable** when its name holds a time, range, price, cap or rate word
 (`_MS`, `_RADIUS`, `_FINE`, `MAX_`, ...). It is **fixed** when it holds a structural word
@@ -78,6 +78,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | `LF_QuizBank` | unrouted | core | 10 | `Configs/Rules/LF_QuizBank.conf` | `Scripts/Game/Feature/Rules/LF_QuizConfig.c` |
 | `LF_QuizConfig` | unrouted | core | 10 | `Configs/Rules/LF_Quiz.conf` | `Scripts/Game/Feature/Rules/LF_QuizConfig.c` |
 | `LF_ReputationConfig` | unrouted | core | 13 | `Configs/Reputation/LF_Reputation.conf` | `Scripts/Game/Feature/Reputation/LF_ReputationConfig.c` |
+| `LF_ReputationContractsConfig` | unrouted | core | 10 | `Configs/Reputation/LF_ReputationContracts.conf` | `Scripts/Game/Feature/Reputation/LF_ReputationContracts.c` |
 | `LF_ResidentsConfig` | unrouted | core | 9 | `Configs/Residents/LF_Residents.conf` | `Scripts/Game/Feature/Residents/LF_ResidentDef.c` |
 | `LF_ResourceChainConfig` | unrouted | core | 15 | `Configs/Resources/ResourceChains.conf` | `Scripts/Game/Feature/Resources/LF_ResourceChainCatalog.c` |
 | `LF_RespawnConfig` | persistence | split | 7 | `Configs/Spawning/LF_Respawn.conf` | `Scripts/Game/Feature/Character/Spawning/LF_RespawnConfig.c` |
@@ -132,7 +133,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | vehicles | 19 | 7 |
 | zones | 32 | 8 |
 | persistence | 33 | 8 |
-| unrouted | 271 | 26 |
+| unrouted | 275 | 26 |
 
 ## Tunable constants by feature area
 
@@ -140,7 +141,7 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 |---|---|---|---|
 | ATM | shops | 3 | 3 |
 | Account | persistence | 7 | 1 |
-| AgentHarness | unrouted | 25 | 3 |
+| AgentHarness | unrouted | 26 | 3 |
 | AssetAnim | unrouted | 1 | 0 |
 | Atmosphere | unrouted | 14 | 0 |
 | Catalogue | unrouted | 8 | 0 |
@@ -183,8 +184,8 @@ A constant is **tunable** when its name holds a time, range, price, cap or rate 
 | Quantity | unrouted | 1 | 1 |
 | Quests | jobs | 5 | 5 |
 | Racing | unrouted | 13 | 0 |
-| Reputation | unrouted | 3 | 0 |
-| Residents | unrouted | 1 | 0 |
+| Reputation | unrouted | 5 | 0 |
+| Residents | unrouted | 2 | 0 |
 | Rules | unrouted | 8 | 0 |
 | Shop | shops | 17 | 9 |
 | Signs | zones | 6 | 6 |
@@ -234,6 +235,7 @@ Owner is core for every row until the M3 move.
 | `AgentHarness/LF_HarnessPickup.c` | `REACH` | `3.0` | unrouted | fixed (marked) |
 | `AgentHarness/LF_HarnessPickup.c` | `STEP_MS` | `150` | unrouted | fixed (marked) |
 | `AgentHarness/LF_ParkBrakeHarness.c` | `WAKE_MS` | `1000` | unrouted | fixed (marked) |
+| `AgentHarness/LF_RpcStringProbe.c` | `MAX_CHARS` | `262144` | unrouted | fixed (marked) |
 | `AgentHarness/LF_SpikeStripHarness.c` | `SPEED` | `14` | unrouted | fixed (marked) |
 | `AgentHarness/LF_SpikeStripHarness.c` | `WHERE_RADIUS` | `6` | unrouted | fixed (marked) |
 | `AgentHarness/LF_TownReachHarness.c` | `DEFAULT_RATIO` | `3` | unrouted | fixed (marked) |
@@ -875,8 +877,11 @@ Owner is core for every row until the M3 move.
 | `Racing/LF_RaceRunner.c` | `RESCAN_MS` | `1000` | unrouted | fixed (marked) |
 | `Racing/LF_RaceRunner.c` | `TICK_MS` | `250` | unrouted | fixed (marked) |
 | `Reputation/LF_Reputation.c` | `DAY_SECONDS` | `7200` | unrouted | fixed (marked) |
+| `Reputation/LF_ReputationContracts.c` | `MAX_MULTIPLIER` | `1.6` | unrouted | fixed (marked) |
+| `Reputation/LF_ReputationContracts.c` | `MIN_MULTIPLIER` | `1.3` | unrouted | fixed (marked) |
 | `Reputation/LF_ReputationSync.c` | `JOURNAL_MAX` | `32` | unrouted | fixed (marked) |
 | `Reputation/LF_ReputationSync.c` | `SPAWN_RETRY_MS` | `2000` | unrouted | fixed (marked) |
+| `Residents/LF_ResidentAnchors.c` | `OWN_RADIUS` | `30` | unrouted | fixed (marked) |
 | `Residents/LF_ResidentTimetable.c` | `MINUTES_PER_DAY` | `1440` | unrouted | fixed (marked) |
 | `Rules/LF_JoinNotice.c` | `DURATION_S` | `12.0` | unrouted | fixed (marked) |
 | `Rules/LF_QuizConfig.c` | `ATTEMPTS_MAX` | `20` | unrouted | fixed (marked) |

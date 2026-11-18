@@ -479,6 +479,106 @@ StringTable {
      Target_en_us "I teach people to survive outside town. Water, food, a fire, a shelter. The weather turns fast on Everon."
      Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
     }
+    CustomStringTableItem "{894DEDBF2566803F}" {
+     Id "LF-OrgWarAnnounce_Accepted"
+     Target_en_us "NOTICE: the challenge is answered. War stands between %1."
+     Comment "Pack wording (#2687): toast, the target answered; %1 is 'Declarer / Target'. A typed notice from the commune registry."
+    }
+    CustomStringTableItem "{6B2968AE4D37B43B}" {
+     Id "LF-OrgWarAnnounce_Declared"
+     Target_en_us "NOTICE: war declared, %1. Entered in the commune register."
+     Comment "Pack wording (#2687): toast, a declaration was filed; %1 is 'Declarer / Target'."
+    }
+    CustomStringTableItem "{DF43B09F9542632C}" {
+     Id "LF-OrgWarAnnounce_Forfeit"
+     Target_en_us "NOTICE: war struck from the register, a party has no members left: %1"
+     Comment "Pack wording (#2687): toast, a party emptied and forfeited; %1 is 'Declarer / Target'."
+    }
+    CustomStringTableItem "{2D2EA5314BFF70E2}" {
+     Id "LF-OrgWarAnnounce_Lapsed"
+     Target_en_us "NOTICE: declaration lapsed, no answer was entered: %1"
+     Comment "Pack wording (#2687): toast, a declaration went unanswered; %1 is 'Declarer / Target'."
+    }
+    CustomStringTableItem "{BCE3B48C1AFA5908}" {
+     Id "LF-OrgWarAnnounce_MemberAccepted"
+     Target_en_us "Registry notice: your organization stands at war with %1."
+     Comment "Pack wording (#2687): member notice, the war started; %1 is the other organization."
+    }
+    CustomStringTableItem "{8D1E355F097B9209}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredIn"
+     Target_en_us "Registry notice: %1 has declared war on your organization. Enter your answer at the war desk before the window closes."
+     Comment "Pack wording (#2687): member notice, your side was challenged; %1 is the declaring organization."
+    }
+    CustomStringTableItem "{3D0D433C6A9B0736}" {
+     Id "LF-OrgWarAnnounce_MemberDeclaredOut"
+     Target_en_us "Registry notice: your declaration of war on %1 is entered. They have a short while to answer."
+     Comment "Pack wording (#2687): member notice, your side declared; %1 is the other organization."
+    }
+    CustomStringTableItem "{B8A01155184465E4}" {
+     Id "LF-OrgWarAnnounce_MemberForfeit"
+     Target_en_us "Registry notice: your war with %1 is struck from the register, a party has no members left."
+     Comment "Pack wording (#2687): member notice, forfeit; %1 is the other organization."
+    }
+    CustomStringTableItem "{BB7C911F87DB48D5}" {
+     Id "LF-OrgWarAnnounce_MemberLapsed"
+     Target_en_us "Registry notice: your declaration between your organization and %1 lapsed unanswered."
+     Comment "Pack wording (#2687): member notice, the declaration went unanswered; %1 is the other organization."
+    }
+    CustomStringTableItem "{51697BB4C899E53B}" {
+     Id "LF-OrgWarAnnounce_MemberTime"
+     Target_en_us "Registry notice: your war with %1 has run its term and is closed."
+     Comment "Pack wording (#2687): member notice, the war ran out; %1 is the other organization."
+    }
+    CustomStringTableItem "{43B80C35B8C70D2C}" {
+     Id "LF-OrgWarAnnounce_Time"
+     Target_en_us "NOTICE: war closed, the term has run out: %1"
+     Comment "Pack wording (#2687): toast, a war ran out; %1 is 'Declarer / Target'."
+    }
+    CustomStringTableItem "{ECF697E63340D4B1}" {
+     Id "LF-OrgWarAnnounce_Title"
+     Target_en_us "Public Notice, Commune Registry"
+     Comment "Pack wording (#2687): toast title for organization war announcements."
+    }
+    CustomStringTableItem "{55B8E2A6EE0328FD}" {
+     Id "LF-OrgWarBoard_Accepted"
+     Target_en_us "NOTICE. %1 and %2 stand at war by entry of the registry. The war closes in %3."
+     Comment "Pack wording (#2687): war notice board, a war in progress. %1 and %2 the sides, %3 time left."
+    }
+    CustomStringTableItem "{6653EC7BA0A42E2B}" {
+     Id "LF-OrgWarBoard_Declared"
+     Target_en_us "NOTICE. %1 has filed a declaration of war against %2. An answer is due within %3."
+     Comment "Pack wording (#2687): war notice board, a declaration waiting for the answer. %1 declarer, %2 target, %3 time left."
+    }
+    CustomStringTableItem "{B09A1BE26DCB4E81}" {
+     Id "LF-OrgWarBoard_Ended"
+     Target_en_us "NOTICE. The war between %1 and %2 is closed, the term having run out %3 ago."
+     Comment "Pack wording (#2687): war notice board, a war that ran out. %3 = time since the end."
+    }
+    CustomStringTableItem "{0D3A30839518352E}" {
+     Id "LF-OrgWarBoard_Forfeit"
+     Target_en_us "NOTICE. %1 and %2: the war was struck from the register when a party gave up, %3 ago."
+     Comment "Pack wording (#2687): war notice board, a war ended by forfeit. %3 = time since the end."
+    }
+    CustomStringTableItem "{6F51040220808FFE}" {
+     Id "LF-OrgWarBoard_Lapsed"
+     Target_en_us "NOTICE. %1 filed a declaration of war against %2. No answer was entered and it lapsed %3 ago."
+     Comment "Pack wording (#2687): war notice board, a declaration nobody answered. %3 = time since it lapsed."
+    }
+    CustomStringTableItem "{F444A385FAAADBCA}" {
+     Id "LF-OrgWarBoard_None"
+     Target_en_us "No notice of war is posted. The commune is quiet."
+     Comment "Pack wording (#2687): war notice board line when no notice is up."
+    }
+    CustomStringTableItem "{242AAC788D3EBF12}" {
+     Id "LF-OrgWarBoard_Read"
+     Target_en_us "Read the notices of war"
+     Comment "Pack wording (#2687): action on the war notice board."
+    }
+    CustomStringTableItem "{67B59D6E581EA252}" {
+     Id "LF-OrgWarBoard_Title"
+     Target_en_us "Commune Registry: Notices of War"
+     Comment "Pack wording (#2687): title of the war notice board card."
+    }
     CustomStringTableItem "{B0E7C6F894684DEC}" {
      Id "LF-Org_LedgerTitle"
      Target_en_us "{Org} Register - 1989 ledger"
@@ -1898,6 +1998,11 @@ StringTable {
      Id "LF-Sign_VehicleLot_What"
      Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
      Comment "Sign card for the vehicle lot counter, What section."
+    }
+    CustomStringTableItem "{C8A0D5FC27A2CA22}" {
+     Id "LF-SiteFlag_Unclaimed"
+     Target_en_us "No holder on record"
+     Comment "Pack wording (#2687): painted board on a contested site's flag pole when no organisation holds the site."
     }
     CustomStringTableItem "{08E024031EF25E98}" {
      Id "LF-TownBoard_Title"

@@ -62,6 +62,23 @@ expect(quiet.includes("No config changes.") && quiet.includes("No save version c
 const old = renderPage(template, { fromRef: "a", toRef: "b", d: diffAll({ ...was, shapes: null }, now) });
 expect(old.includes("has no record-shapes lock") && !old.includes("`null`"), "a ref without the shapes lock prints null");
 
+// Sections (#2841): the store writes format 1000 after the frozen legacy payloads; new payloads are
+// sections with their own versions, each locked in tools/validation/record-shapes/<name>.json.
+const legacyNow = { ...now.shapes, saveVersion: 58, payloads: { ...was.shapes.payloads } };
+const secWas = { ...was, shapes: { ...legacyNow, format: 1000, sections: { towing: 1, medicranks: 1 } } };
+const secNow = { ...was, shapes: { ...legacyNow, format: 1000, sections: { towing: 2, siterent: 1 } } };
+const sd = diffAll(secWas, secNow).shapes;
+expect(sd.sectionsAdded?.join() === "siterent" && sd.sectionsRemoved?.join() === "medicranks" && sd.sectionsRaised?.[0]?.name === "towing", `sections: ${JSON.stringify(sd)}`);
+const secPage = renderPage(template, { fromRef: "a", toRef: "b", d: diffAll(secWas, secNow) });
+for (const want of ["new section `siterent`", "section `medicranks` removed", "section `towing` version 1 -> 2", "save loaded: version 1000"]) {
+  expect(secPage.includes(want), `sectioned page lacks: ${want}`);
+}
+expect(!secPage.includes("save loaded: version 58"), "a sectioned save is announced as the legacy count");
+const switchPage = renderPage(template, { fromRef: "a", toRef: "b", d: diffAll({ ...was, shapes: { ...legacyNow } }, { ...was, shapes: { ...legacyNow, format: 1000, sections: { towing: 1 } } }) });
+expect(switchPage.includes("save loaded: version 1000") && switchPage.includes("new section `towing`") && !switchPage.includes("No save version changes"), "the switch to sections is not reported");
+const quietSec = renderPage(template, { fromRef: "a", toRef: "b", d: diffAll(secNow, secNow) });
+expect(quietSec.includes("No save version changes (save version 1000"), "an unchanged sectioned release names the written format");
+
 const m = parseManifest('LF_PackManifest {\n m_sPackId "LF_X"\n m_sCoreMin "0.1.0"\n m_sCoreBelow "0.2.0"\n}');
 expect(m?.id === "LF_X" && m.min === "0.1.0" && m.below === "0.2.0", "parseManifest");
 

@@ -25,3 +25,14 @@ bench, bus stop) near players.
   `LF_Places` does not know (no such place placed on the map) is logged and dropped; a day with no line left is
   refused.
 - **Proof:** `residents/resident-timetable` (LOGIC).
+
+## Resident anchors (#2857)
+
+- **Player sees:** nothing yet (the marker is invisible to players; wave 2 stands residents on it).
+- **Owner and side:** server. `LF_ResidentAnchorComponent` on the marker prefab `Prefabs/Systems/Residents/LF_ResidentAnchor.et`
+  (attribute `m_sAnchorId`: `counter`, `bench`, `door`); `LF_ResidentAnchors.Resolve(kind, anchorId, near, spot)` answers.
+- **Rules:** the place is the nearest `LF_Places` place of `kind` to `near`. An anchor belongs to it by parent hierarchy, else
+  by sitting within 30 m of it and nearer it than any other place of the kind. Empty anchor id: the place origin. Unknown
+  anchor id: the place origin, one `LF_Debug.Warn("Residents", ...)` per kind and id pair. No place of the kind: false.
+  Entries hold `EntityID`; statics reset through `LF_ResidentAnchors_StaticResetHook`. Persisted: nothing.
+- **Proof:** `residents/anchors` (WORLD).
