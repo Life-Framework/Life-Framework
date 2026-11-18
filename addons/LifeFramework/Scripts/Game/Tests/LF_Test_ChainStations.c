@@ -34,7 +34,6 @@ class LF_TestChainRecorder : LF_EventSubscriber
 	}
 }
 
-// tier: WORLD
 //! The three placed barrels of the Annex_Chains_Site (#417) on DebugWorld, driven through the server
 //! methods the held actions call: loading takes the step's inputs, work from two workers adds up on
 //! one barrel, a worker who asks faster than a hold can finish is refused, someone out of reach is

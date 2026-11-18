@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `toolsi test --no-build --red LF_Test_VaultGraceRepair`: RED-OK, 7 assertions fail with the hook on (grace robbery and breach start, off-duty repair offered and done, vault table 1 after the skipped reset); green without it.
-// tier: WORLD
 //! Vault abuse gates (#2539): a character in its grace cannot start a vault robbery or arm a breach
 //! (the charge stays in the pack's place: nothing arms); an off-duty police account cannot relock a
 //! vault, an on-duty one can; the bank's world-end reset hook leaves no vault behind.

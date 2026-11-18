@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_PlantHarvest,LF_Test_PlantPersist`: `RED PROOF OK`, the store read skipped failed `two plants after the load (load 2) (expected 2, got 0)`. Green with the read. Review (2026-11-18): with ApplyAll dropping rows when no catalogue loads, `--only LF_Test_PlantPersist` failed `with no catalogue every saved plant is kept (expected 2, got 0)`; green with the keep.
-// tier: PERSISTENCE
 //! farming/plant-persist (#2664): the "plants" payload round trips rows {plantId, cropId, position,
 //! plantedAt, wateredAt, ownerKey} through the real store write and read, positions set on the ground;
 //! a second load and a second apply give no duplicate; a save from before this payload loads no plants.

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_EventPhaseRules`: with the hook on the advance and idle-timeout acts are skipped and the test failed (`an idle timeout changes the state`, `an idle timeout ends the event`, `an idle timeout ends it into cooldown`, plus the phase-advance assertions); `RED PROOF OK (all 1 listed test(s) fail with the hook on)`; without the hook green, `SUMMARY tier=only passed=1 failed=0`.
-// tier: LOGIC
 //! Event phase rules (#1948): phases advance in order when their conditions hold, an idle timeout
 //! or an abort ends the event into cooldown, a cooldown blocks a restart until it runs out, and a
 //! malformed definition is refused. No world.

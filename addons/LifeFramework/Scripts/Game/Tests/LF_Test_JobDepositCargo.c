@@ -1,6 +1,5 @@
 // red-proof: #2481. `--red` skips ApplyDeposits, so the refund and 'the restart takes the carried cargo back' fail; on the unfixed code a restart refunded the deposit and the snapshot kept the parcel.
 // Observed 2026-11-18 `--red LF_Test_JobDepositCargo,LF_Test_JobDepositRestart`: RED-OK jobs/deposit-cargo (29 assertions), RED PROOF OK. Restart proof: `tools/cli wt e2e fix-2481`.
-// tier: LOGIC
 //! A restart refunds a held cargo deposit and takes that run's cargo out of the player's saved carried
 //! snapshot, so the player never keeps both (#2481). A cargo no longer carried is just refunded; a stack
 //! loses one; a fuel run takes a fuel can, not a parcel; a row whose job is unknown looks for either kind.

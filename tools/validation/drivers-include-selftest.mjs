@@ -93,9 +93,25 @@ try {
   registerCli(wtA);
   if (driversIncludes(main).length !== 1) fail(`after the lock cleared there are ${driversIncludes(main).length} includes`);
 
+  // stale driver: a `merge.lf-*` section the canonical file dropped (lf-regen-tests, #2618) goes; a live one and a
+  // non-lf one stay, from any worktree and through `wt fix-drivers`
+  writeFileSync(join(main, SUFFIX), '# fixture\n[merge "lf-markdown"]\n\tdriver = true\n');
+  const mergeKeys = () => {
+    try { return git(main, ["config", "--local", "--name-only", "--get-regexp", "^merge\\."]).split(/\r?\n/).sort(); } catch { return []; }
+  };
+  git(main, ["config", "--local", "merge.lf-regen-tests.name", "Regenerate the test registry"]);
+  git(main, ["config", "--local", "merge.lf-regen-tests.driver", "node tools/merge/regen-generated.mjs %O %A %B %P"]);
+  git(main, ["config", "--local", "merge.lf-markdown.driver", "true"]);
+  git(main, ["config", "--local", "merge.other-tool.driver", "true"]);
+  const pruneRun = registerCli(wtA);
+  if (pruneRun.status !== 0) fail(`stale driver prune made register-drivers exit ${pruneRun.status}`);
+  if (!/stale merge driver\(s\) lf-regen-tests/.test(pruneRun.stdout)) fail(`prune did not report lf-regen-tests: ${pruneRun.stdout}`);
+  if (mergeKeys().join() !== "merge.lf-markdown.driver,merge.other-tool.driver") fail(`prune left ${mergeKeys().join()}`);
+  if (registerDrivers(wtB).pruned.length) fail("a second prune removed something");
+
   // a correct config is not rewritten
   const r = registerDrivers(wtA);
-  if (r.removed || r.added) fail(`a correct config was rewritten: ${JSON.stringify(r)}`);
+  if (r.removed || r.added || r.pruned.length) fail(`a correct config was rewritten: ${JSON.stringify(r)}`);
 } catch (e) {
   fail(`scenario threw: ${e.stack || e.message}`);
 } finally {

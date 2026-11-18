@@ -1,6 +1,5 @@
 // red-proof: Observed 2026-11-09 with `tools\cli test --no-build --only LF_Test_ZoneRules`: asserting the lawless zone reads "safe" instead of "lawless" failed (`the lawless zone stamps lawless`); restored. Also 2026-11-12: asserting the table fine multiplier is 2.0 instead of 2.5 failed (`a lawless entry scales fines`); restored.
 
-// tier: LOGIC
 //! zones/rules: rule lookup by shape (circle, box turned by yaw, polyline corridor), strictest rule
 //! wins on overlap, a zone change reaches the bus, the incident log stamps the zone, and lawless
 //! keeps wanted unless config says so.

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-18, cli test --no-build --red (batched with the other review-map tests): RED-OK, "only the dialog mark counts toward the cap and the upload (expected 1, got 3)". Green with IsPersonal skipping read-only marks.
-// tier: LOGIC
 //------------------------------------------------------------------------------------------------
 //! map/share-not-personal (review 2026-11-17, docs/reviews/2026-11-17-map.md): a shared mark arrives as a
 //! local PLACED_CUSTOM marker with id -1, the same shape as a personal mark. Counted as personal it took

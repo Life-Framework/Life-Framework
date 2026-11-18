@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 on main (before the fix) `tools/cli test --no-build --only LF_Test_JobWhitelistRoster` failed: the account on the police roster was refused the police job.
-// tier: WORLD
 //! whitelist/job-roster (#2577): the police job and licence checks read the faction roster by account
 //! uid. An account on the POLICE roster passes with its second character active (the character key is
 //! not the roster key); an account off it fails; the old per-job list still passes, read only.

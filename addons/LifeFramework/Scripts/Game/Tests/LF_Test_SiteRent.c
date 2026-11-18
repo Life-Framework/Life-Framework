@@ -2,8 +2,8 @@
 // tier: PERSISTENCE
 //! sites/site-rent (#2683): a held site banks rentPerHour pro rata each sweep, capped at
 //! maxRentBanked (defaults 600/h, 3000); nothing banks while unheld, contested or changing hands; one
-//! `site_rent` money line per hour of banking; the "siterent" payload round trips the bank through
-//! the real store write and read, twice without change; a save from before the payload loads no bank.
+//! `site_rent` money line per hour of banking; the "siterent" save section round trips the bank through
+//! the real store write and read, twice without change; a save without the section loads no bank.
 //! Across a restart (`tools\cli wt e2e`): the save boot banks one site, the reload boot finds it.
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_SiteRent : LF_Test
@@ -31,13 +31,12 @@ class LF_Test_SiteRent : LF_Test
 		if (!persistence)
 			return;
 
-		int since = LF_PersistenceComponentSerializer.PayloadSinceVersion("siterent");
 #ifdef LF_E2E_LOAD_BOOT
-		if (LF_SaveStamp.BootSaveVersion() < since)
+		if (!LF_SaveSections.BootHadSection(LF_SiteRentSavePayload.NAME))
 		{
-			// The guard's pre-move e2e writes pass 1 with the build before this payload (#2812).
-			LF_Debug.Info(LF_SiteRent.FEATURE, string.Format("e2e restart: boot save version %1 predates siterent (%2), skipping the bank check", LF_SaveStamp.BootSaveVersion(), since));
-			ctx.Equal(0, LF_SiteRent.BankedOf(E2E_SITE), "a save older than the siterent payload loads no bank");
+			// The guard's pre-move e2e writes pass 1 with a build before this section (#2812).
+			LF_Debug.Info(LF_SiteRent.FEATURE, "e2e restart: the boot save has no siterent section, skipping the bank check");
+			ctx.Equal(0, LF_SiteRent.BankedOf(E2E_SITE), "a save without the siterent section loads no bank");
 			return;
 		}
 
@@ -46,11 +45,18 @@ class LF_Test_SiteRent : LF_Test
 		return;
 #endif
 
-		ctx.True(since > 0, "siterent is a registered payload");
+		bool registered;
+		foreach (LF_SavePayload section : LF_SaveSections.All())
+		{
+			if (section && section.Name() == LF_SiteRentSavePayload.NAME)
+				registered = true;
+		}
+
+		ctx.True(registered, "siterent is a registered save section");
 		array<ref LF_SiteRentRow> kept = LF_SiteRent.ExportAll();
 		Banking(ctx);
-		if (since > 1)
-			RoundTrip(ctx, persistence, since);
+		if (registered)
+			RoundTrip(ctx, persistence);
 		LF_SiteRent.ApplyAll(kept);
 
 #ifdef LF_E2E_HOST_STOP
@@ -121,7 +127,7 @@ class LF_Test_SiteRent : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void RoundTrip(LF_TestContext ctx, LF_PersistenceComponent persistence, int since)
+	protected void RoundTrip(LF_TestContext ctx, LF_PersistenceComponent persistence)
 	{
 		LF_SiteRent.ResetStatics();
 		array<ref LF_SiteRentRow> rows = {};
@@ -161,16 +167,17 @@ class LF_Test_SiteRent : LF_Test
 		ctx.Equal(3000, LF_SiteRent.BankedOf(SITE), "a bank above the cap loads at the cap");
 		LF_SiteRent.ApplyAll(rows);
 
-		// A save from the version before this payload holds no bank.
+		// A save written before this section holds no bank.
 		JsonSaveContext oldContext = new JsonSaveContext(false);
-		LF_PersistenceComponentSerializer.SerializeStoreAsVersion(persistence, oldContext, since - 1);
+		array<string> omit = {LF_SiteRentSavePayload.NAME};
+		LF_PersistenceComponentSerializer.SerializeStoreOmitting(persistence, oldContext, omit);
 		string oldSave = oldContext.SaveToString();
 		ctx.False(oldSave.Contains(OTHER), "the old save has no bank rows");
 		LF_SiteRent.ResetStatics();
 		JsonLoadContext oldLoad = new JsonLoadContext(false);
 		ctx.True(oldLoad.LoadFromString(oldSave), "the old save parses");
 		LF_PersistenceComponentSerializer.DeserializeStore(persistence, oldLoad);
-		ctx.Equal(0, LF_SiteRent.BankedOf(SITE), "a pre-payload save loads no bank");
+		ctx.Equal(0, LF_SiteRent.BankedOf(SITE), "a save without the section loads no bank");
 	}
 }
 

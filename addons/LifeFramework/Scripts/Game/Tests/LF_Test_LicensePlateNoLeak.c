@@ -1,7 +1,6 @@
 // red-proof: observed red on the unfixed manager: SetRegistration overwrote the spawn plate without releasing it, so A stayed live after B replaced it.
 
 //! An owned car keeps one plate: the plate EOnInit issued is released when the owner's plate replaces it.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_LicensePlateNoLeak : LF_Test
 {

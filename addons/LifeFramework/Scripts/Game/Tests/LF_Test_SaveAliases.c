@@ -29,7 +29,6 @@ class LF_Test_SaveAliasSourceStub : LF_ConfigPackSource
 //------------------------------------------------------------------------------------------------
 //! The alias table (#965): a pack file read through the mission-header seam, chains followed, a
 //! prefab matched by GUID whatever its path, a loop and a bad row refused, a missing prefab kept.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SaveAliases : LF_Test
 {

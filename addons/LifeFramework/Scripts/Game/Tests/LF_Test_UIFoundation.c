@@ -29,7 +29,6 @@ class LF_TestButtonListener : Managed
 	}
 }
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UIKitInitialFocus : LF_Test
 {
@@ -64,7 +63,6 @@ class LF_Test_UIKitInitialFocus : LF_Test
 	}
 }
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_UIKitButtonInvoker : LF_Test
 {
@@ -90,7 +88,6 @@ class LF_Test_UIKitButtonInvoker : LF_Test
 	}
 }
 
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_NotificationToastTiming : LF_Test
 {
@@ -110,7 +107,6 @@ class LF_Test_NotificationToastTiming : LF_Test
 	}
 }
 
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_NotificationToastLayout : LF_Test
 {

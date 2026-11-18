@@ -2,7 +2,12 @@
 # inputs: addons/**
 #
 # LF_PersistenceComponentSerializer.c writes one version integer.
-# RegisterPersistencePayloads is the only order. SerializeStore (the body the
+# RegisterPersistencePayloads is the legacy order, FROZEN at $FrozenLegacyCount
+# (#2841): a new payload is an LF_SavePayload section in its feature folder,
+# never an Insert here. SerializeStore writes SECTIONED_FORMAT, walks the
+# frozen list (LEGACY_COUNT long), then LF_SaveSections.WriteAll.
+# Before #2841 the written version was the list length; the fixtures below
+# keep that shape too. SerializeStore (the body the
 # Serialize override delegates to) walks that list. DeserializeStore walks the
 # same list and stops at the version stored in the save.
 # The written version, the list length, and the read order must agree.
@@ -13,6 +18,10 @@
 # and the read order disagree (or a fixture selftest failed).
 
 $ErrorActionPreference = "Stop"
+
+# The legacy payload list length at the #2841 switch. Raise it only if a positional payload that
+# predates the switch lands after it (and say so in the PR); never for a new payload.
+$FrozenLegacyCount = 58
 
 # A payload is its exact registered name (the string appended in
 # RegisterPersistencePayloads), lowercased. No prefix folding: `hideoutfoo` is
@@ -109,11 +118,11 @@ function Get-ReadOrder([string]$text, $list) {
     if (-not $loopBody) {
       return @{ Order = @(); Error = "read loop has no body" }
     }
-    if ($loopBody -notmatch 'if\s*\(\s*index\s*>=\s*version\s*\)') {
+    if ($loopBody -notmatch 'if\s*\(\s*index\s*>=\s*(version|legacyVersion)\s*\)') {
       return @{ Order = @(); Error = "read does not stop at the stored version" }
     }
     $stopAt = $loopBody.IndexOf("index")
-    $stopMatch = [regex]::Match($loopBody, 'index\s*>=\s*version')
+    $stopMatch = [regex]::Match($loopBody, 'index\s*>=\s*(version|legacyVersion)')
     $getMatch = [regex]::Match($loopBody, 'order\.Get\(\s*index\s*\)')
     if (-not $stopMatch.Success -or -not $getMatch.Success -or $stopMatch.Index -gt $getMatch.Index) {
       return @{ Order = @(); Error = "read does not walk the payload list" }
@@ -190,11 +199,22 @@ function Test-PersistenceContract([string]$text) {
   if ($listResult.Error) { return $listResult.Error }
   $list = @($listResult.Order)
 
-  $writes = [regex]::Matches($text, 'WriteValue\(\s*"version"\s*,\s*(\d+)\s*\)')
+  $storeBody = Get-BraceBody $text 'ESerializeResult\s+SerializeStore\s*\('
+  if (-not $storeBody) { $storeBody = "" }
+  $writes = [regex]::Matches($storeBody, 'WriteValue\(\s*"version"\s*,\s*(\d+|SECTIONED_FORMAT)\s*\)')
   if ($writes.Count -ne 1) {
     return "expected one version integer, found $($writes.Count)"
   }
-  $written = [int]$writes[0].Groups[1].Value
+  if ($writes[0].Groups[1].Value -eq "SECTIONED_FORMAT") {
+    # Sectioned (#2841): the positional part is LEGACY_COUNT payloads long, then the sections.
+    $legacy = [regex]::Match($text, 'static\s+const\s+int\s+LEGACY_COUNT\s*=\s*(\d+)\s*;')
+    if (-not $legacy.Success) { return "SerializeStore writes SECTIONED_FORMAT but LEGACY_COUNT is not declared" }
+    if (-not [regex]::IsMatch($text, 'static\s+const\s+int\s+SECTIONED_FORMAT\s*=\s*\d+\s*;')) { return "SECTIONED_FORMAT is not declared" }
+    if ($storeBody -notmatch 'LF_SaveSections\.WriteAll\(\s*context\s*\)') { return "SerializeStore writes SECTIONED_FORMAT but not the sections (LF_SaveSections.WriteAll)" }
+    $written = [int]$legacy.Groups[1].Value
+  } else {
+    $written = [int]$writes[0].Groups[1].Value
+  }
 
   if ($written -ne $list.Count) {
     if ($written -gt $list.Count) {
@@ -532,7 +552,91 @@ bool DeserializeStore()
 }
 '@
 
+# The frozen legacy list (#2841): $null when the list is exactly $frozen long, or an error string.
+function Test-Frozen([string]$text, [int]$frozen) {
+  $listResult = Get-PayloadList $text
+  if ($listResult.Error) { return $listResult.Error }
+  $count = @($listResult.Order).Count
+  if ($count -gt $frozen) {
+    $added = (@($listResult.Order) | Select-Object -Skip $frozen) -join ", "
+    return "the legacy payload list is frozen at $frozen (#2841) but has $count entries ($added): a new payload is an LF_SavePayload section in its feature folder (docs/persistence.md 'Sections'), not an Insert in RegisterPersistencePayloads"
+  }
+  if ($count -lt $frozen) {
+    return "the legacy payload list is frozen at $frozen (#2841) but has $count entries: a shipped payload was removed, and every positional save after it would misread"
+  }
+  if ([regex]::Matches($text, 'WriteValue\(\s*"version"\s*,\s*SECTIONED_FORMAT\s*\)').Count -lt 1) {
+    return "SerializeStore must write SECTIONED_FORMAT (#2841)"
+  }
+  return $null
+}
+
+$goodSectioned = @'
+static const int LEGACY_COUNT = 2;
+static const int SECTIONED_FORMAT = 1000;
+void RegisterPersistencePayloads(notnull array<string> order)
+{
+	order.Insert("survival");
+	order.Insert("organizations");
+}
+ESerializeResult SerializeStore()
+{
+	array<string> order = new array<string>();
+	RegisterPersistencePayloads(order);
+	context.WriteValue("version", SECTIONED_FORMAT);
+	foreach (string payload : order)
+	{
+		WritePersistencePayload(persistence, context, payload);
+	}
+	LF_SaveSections.WriteAll(context);
+}
+ESerializeResult SerializeStoreOmitting()
+{
+	context.WriteValue("version", SECTIONED_FORMAT);
+}
+bool DeserializeStore()
+{
+	array<string> order = new array<string>();
+	RegisterPersistencePayloads(order);
+	int version;
+	context.ReadValue("version", version);
+	int legacyVersion = version;
+	for (int index = 0; index < order.Count(); index++)
+	{
+		if (index >= legacyVersion)
+			break;
+		ReadPersistencePayload(persistence, context, order.Get(index));
+	}
+}
+void WritePersistencePayload(notnull LF_PersistenceComponent persistence, notnull SaveContext context, string payload)
+{
+	if (payload == "survival") return;
+	if (payload == "organizations") return;
+}
+void ReadPersistencePayload(notnull LF_PersistenceComponent persistence, notnull LoadContext context, string payload)
+{
+	if (payload == "survival") return;
+	if (payload == "organizations") return;
+}
+'@
+
 $fixtureErrors = @()
+$sectionedError = Test-PersistenceContract $goodSectioned
+if ($sectionedError) { $fixtureErrors += "good sectioned fixture was rejected: $sectionedError" }
+$noSectionsError = Test-PersistenceContract ($goodSectioned -replace 'LF_SaveSections\.WriteAll\(context\);', '')
+if (-not $noSectionsError) {
+  $fixtureErrors += "a sectioned store that never writes its sections was accepted"
+} elseif ($noSectionsError -notmatch "not the sections") {
+  $fixtureErrors += "missing sections failed for the wrong reason: $noSectionsError"
+}
+$frozenOk = Test-Frozen $goodSectioned 2
+if ($frozenOk) { $fixtureErrors += "a list at its frozen length was rejected: $frozenOk" }
+$appended = $goodSectioned.Replace('order.Insert("organizations");', ('order.Insert("organizations");' + [Environment]::NewLine + 'order.Insert("lockers2");'))
+$frozenAppend = Test-Frozen $appended 2
+if (-not $frozenAppend) {
+  $fixtureErrors += "an Insert past the frozen legacy list was accepted"
+} elseif ($frozenAppend -notmatch "LF_SavePayload section") {
+  $fixtureErrors += "an appended legacy payload failed for the wrong reason: $frozenAppend"
+}
 $goodError = Test-PersistenceContract $good
 if ($goodError) { $fixtureErrors += "good fixture was rejected: $goodError" }
 
@@ -601,6 +705,12 @@ if ($errorText) {
   exit 1
 }
 
+$frozenError = Test-Frozen $text $FrozenLegacyCount
+if ($frozenError) {
+  Write-Host "validate-persistence-version: FAIL $frozenError"
+  exit 1
+}
+
 $payloadCount = @((Get-PayloadList $text).Order).Count
-Write-Host "validate-persistence-version: OK (version $payloadCount matches the payload list; a skipped payload fails)"
+Write-Host "validate-persistence-version: OK ($payloadCount frozen legacy payloads match LEGACY_COUNT and the read and write order; new payloads are sections)"
 exit 0

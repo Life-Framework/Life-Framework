@@ -255,3 +255,52 @@ class LF_SiteRent_StaticResetHook : LF_StaticResetHook
 		LF_SiteRent.ResetStatics();
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! The "siterent" save section (#2683, sections #2841): one LF_SiteRentRow per site with a bank.
+class LF_SiteRentSavePayload : LF_SavePayload
+{
+	static const string NAME = "siterent";
+
+	//------------------------------------------------------------------------------------------------
+	override string Name()
+	{
+		return NAME;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override int Version()
+	{
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void WriteSection(notnull SaveContext context)
+	{
+		array<ref LF_SiteRentRow> rows = LF_SiteRent.ExportAll();
+		context.WriteValue("rows", rows);
+		LF_Debug.Log("Persistence", string.Format("saved %1 site rent bank(s)", rows.Count()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool ReadSection(notnull LoadContext context, int savedVersion)
+	{
+		array<ref LF_SiteRentRow> rows = new array<ref LF_SiteRentRow>();
+		if (!context.ReadValue("rows", rows))
+		{
+			LF_Debug.Error(LF_SiteRent.FEATURE, "site rent banks failed to read, the banks stay as they were");
+			return false;
+		}
+
+		int kept = LF_SiteRent.ApplyAll(rows);
+		LF_Debug.Info("Persistence", string.Format("applied %1 of %2 site rent bank(s)", kept, rows.Count()));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A save without the section (older, or written before #2683): every site's bank starts empty.
+	override void OnAbsent()
+	{
+		LF_SiteRent.ApplyAll(null);
+	}
+}

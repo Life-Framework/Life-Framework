@@ -1,4 +1,3 @@
-// tier: LOGIC
 // red-proof: 2026-11-13, HandsetUp as `state != IDLE`: `--only LF_Test_AmbientTown` failed "a ringing phone has its receiver down". Restored, green.
 //! The conditions behind the second batch of town sounds (#897): the payphone hum only while the
 //! receiver is up, and the pub's outdoor radio taking the music from the building while it is on.

@@ -6,7 +6,6 @@ class LF_PerfRefItem
 	int m_iValue;
 }
 
-// tier: PERF
 //! perf/budget-128 (#335): the server cost gate. Runs only under `tools\cli test --tier perf` (a timing
 //! measure is flaky in the shared suite and blunt there); `--only` runs it too, at the lenient settings below. Builds a synthetic population (accounts, bank
 //! balances, a crime history, a money log) of `m_iPlayers` characters through the public

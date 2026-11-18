@@ -1,5 +1,4 @@
 // red-proof: 2026-11-12 `tools/cli test --no-build --only LF_Test_VehiclePriceModel` with the impound-override expectation 99 changed to 98 failed `- the impound override wins`. Restored; green.
-// tier: LOGIC
 //! Vehicle prices (#688): each action price is base times its multiplier, an override wins, a vehicle
 //! is found by GUID whatever the path casing, and the shipped config reproduces today's car-lot,
 //! chop-shop and impound numbers.

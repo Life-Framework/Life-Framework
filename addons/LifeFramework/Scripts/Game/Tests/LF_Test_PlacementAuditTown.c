@@ -1,4 +1,3 @@
-// tier: WORLD
 // red-proof: 2026-11-11, LF_PlacementAudit.RunBatch with its `measured++` commented out: `tools\cli audit placement` failed "the town audit measured every listed entity (expected 732, got 0)" and "the town audit found the layer entities in the world". Restored, green.
 //! The town walk behind `tools\cli audit placement` (agent-box/place-audit.mjs). That command writes
 //! $profile:place-audit/in.txt (every entity the DebugWorld layers place) and runs this test alone;

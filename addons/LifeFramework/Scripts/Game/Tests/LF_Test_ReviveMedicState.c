@@ -4,7 +4,6 @@
 //! medic/revive-medic-state (#2624): a downed or dead medic is refused with MEDIC_DOWN and the patient
 //! stays down; the CPR start is throttled per medic (a start, a cancel and a start again inside the
 //! cooldown broadcasts once, the first refusal of the window is logged once).
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ReviveMedicState : LF_Test
 {

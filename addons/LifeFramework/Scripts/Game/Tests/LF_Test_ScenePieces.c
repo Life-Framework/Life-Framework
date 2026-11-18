@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_ScenePieces`: dropping the golden angle in LF_ScenePieces.Scatter (`index * 0`) failed `- casing 1 does not land on another`. Restored; green.
-// tier: LOGIC
 //! Scene pieces (#148), with no world: which crimes leave a footprint card, that a burst's casings
 //! land apart on a ring around the shooter, and how a statement's note is written.
 [LF_TestInfo(LF_TestTier.LOGIC)]

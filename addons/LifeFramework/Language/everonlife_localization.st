@@ -2670,6 +2670,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Contraband"
      Comment "Toast title for contraband convoy messages"
     }
+    CustomStringTableItem "{3565B0AEE39851EE}" {
+     Id "LF-Contract_Busy"
+     Target_en_us "You already have a contract. Finish that one first."
+     Comment "Contract refusal (#2702): one contract at a time per character."
+    }
+    CustomStringTableItem "{00EEFD92187745AF}" {
+     Id "LF-Contract_Cooldown"
+     Target_en_us "Nothing for you right now. Come back later."
+     Comment "Contract refusal (#2702): the cooldown after the last contract is still running."
+    }
+    CustomStringTableItem "{874C1FFFA39D4B3B}" {
+     Id "LF-Contract_NoRun"
+     Target_en_us "The contract could not be tied to your run; it pays as an ordinary run."
+     Comment "Contract start (#2702): the run started but the contract did not bind. Should not happen."
+    }
+    CustomStringTableItem "{FED9A73448625D00}" {
+     Id "LF-Contract_NotAble"
+     Target_en_us "You are in no state to take on work."
+     Comment "Contract refusal (#2702): the player is dead or downed."
+    }
+    CustomStringTableItem "{49069B1064628566}" {
+     Id "LF-Contract_Unknown"
+     Target_en_us "That contract isn't on offer."
+     Comment "Contract refusal (#2702): the contract id has no row or no delivery job."
+    }
     CustomStringTableItem "{E83AB3CDE17F447B}" {
      Id "LF-Credits_1"
      Target_en_us "PROJECTS WE BUILD ON AND BORROW FROM"
@@ -5083,6 +5108,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Lockpick"
      Comment "Item name (#411)."
     }
+    CustomStringTableItem "{B7CF3EC52549209E}" {
+     Id "LF-Item_MarkedCash"
+     Target_en_us "Marked notes"
+     Comment "Item name: stolen banknotes still in a bank band; they look like cash but no shop or ATM takes them"
+    }
+    CustomStringTableItem "{4D5896C4AF350BBF}" {
+     Id "LF-Item_MarkedCash_Desc"
+     Target_en_us "Banknotes still in the bank's band. No shop or teller will take them as they are."
+     Comment "Item description of the marked notes"
+    }
     CustomStringTableItem "{315A7D38264FAED4}" {
      Id "LF-Item_MoneyBag"
      Target_en_us "Cash sack"
@@ -6046,6 +6081,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Unemployed"
      Target_es_es "Desempleado"
      Comment "Licence name: no employment"
+    }
+    CustomStringTableItem "{E767EB7F650628AD}" {
+     Id "LF-LockerBank_AlreadyRented"
+     Target_en_us "You already rent a locker here."
+     Comment "Toast: a second rent at the same locker bank is refused."
+    }
+    CustomStringTableItem "{0D4C2B7A9E61F358}" {
+     Id "LF-LockerBank_CannotAfford"
+     Target_en_us "You do not have the rent in cash."
+     Comment "Toast or greyed prompt: the player carries less cash than the locker rent."
+    }
+    CustomStringTableItem "{93E1A6C04B7D2F85}" {
+     Id "LF-LockerBank_OutOfReach"
+     Target_en_us "Stand at the lockers to rent one."
+     Comment "Toast: the server found no locker bank within reach of the player."
+    }
+    CustomStringTableItem "{4F27D8B1C0A3E96D}" {
+     Id "LF-LockerBank_Refused"
+     Target_en_us "The locker could not be rented."
+     Comment "Toast: the rent was refused for a reason the player cannot fix (logged)."
+    }
+    CustomStringTableItem "{5B4F91955B355624}" {
+     Id "LF-LockerBank_Rent"
+     Target_en_us "Rent a locker"
+     Comment "Action on a locker bank: pay the rent for one locker here."
+    }
+    CustomStringTableItem "{5166BCD3DA9EC12C}" {
+     Id "LF-LockerBank_Rented"
+     Target_en_us "You rented a locker here."
+     Comment "Toast: the rent was paid and the locker at this bank is the player's."
+    }
+    CustomStringTableItem "{6A90D3BA614FE639}" {
+     Id "LF-LockerBank_Title"
+     Target_en_us "Lockers"
+     Comment "Title of the locker bank prompt and toast."
     }
     CustomStringTableItem "{606F8E5D11807BC8}" {
      Id "LF-Locker_Cases"
@@ -10039,6 +10109,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sit_StandUp"
      Target_en_us "Stand up"
      Comment "F-key action on the seat you are sitting on: stand up (#982)."
+    }
+    CustomStringTableItem "{E90742664100610A}" {
+     Id "LF-SiteFlag_Unclaimed"
+     Target_en_us "Unclaimed"
+     Comment "Painted board on a contested site's flag pole when no organisation holds the site."
     }
     CustomStringTableItem "{134044FE4B970260}" {
      Id "LF-SpawnHub_Close"

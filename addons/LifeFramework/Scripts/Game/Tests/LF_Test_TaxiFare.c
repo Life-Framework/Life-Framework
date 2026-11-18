@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 before LF_TaxiFare.c existed: `tools\cli test --no-build --only LF_Test_TaxiFare` failed ("Unknown type 'LF_TaxiFareConfig'", "Can't compile Game script module"), so the test could not pass. Then green on the feature.
-// tier: LOGIC
 //! Taxi fare pricing (#2690): LF_TaxiFare.Price turns the straight-line metres between the pickup and
 //! the drop-off into a fare. A short hop pays the floor, a longer run pays the floor plus the rate per
 //! metre, and a very long run pays the cap. A config that is zero or negative falls back to the

@@ -1,6 +1,5 @@
 // red-proof: 2026-11-14, cli test --no-build --red LF_Test_TestLogicWorld (the hook asks with tier WORLD):
 //   RED-OK tests/logic-world: a LOGIC test runs in the minimal world (expected '', got 'unit/a is tier=world ...')
-// tier: LOGIC
 //! tests/logic-world: the minimal LOGIC world's guard (Worlds/TestLogic, tools/lib/test-world.mjs).
 //! A LOGIC test may run there; a WORLD or PERSISTENCE test is refused by name and pointed at
 //! DebugWorld; a failing LOGIC test gets a hint naming it and the WORLD tier.

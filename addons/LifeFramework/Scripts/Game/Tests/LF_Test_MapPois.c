@@ -20,7 +20,6 @@ class LF_Test_MapPoiCase
 };
 
 //------------------------------------------------------------------------------------------------
-// tier: LOGIC
 //! map/pois: the POI visibility rule and the list it makes (#2230, everon-map.md section 1). The case
 //! table Configs/Map/Rules/visibility.cases.json is the one source: this test runs it through
 //! LF_MapPoiRules and LF_MapPois.Collect, and tools/validation/map-visibility-selftest.mjs runs it

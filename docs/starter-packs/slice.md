@@ -49,7 +49,7 @@ Five lines: `Changed:`, `Evidence:`, `Manual:`, `Next:`, then exactly
 ## Known traps
 - A new `LF_Test_*.c` needs `tools\cli regen-tests`; the registry is generated, never hand-edited.
 - A string is appended to `Language/everonlife_localization.st`, then `tools\cli regen-localization`. No `EL_` names.
-- `// tier: LOGIC|WORLD|PERSISTENCE` and a `// red-proof:` line sit above the class. A test never asserts a town
+- `[LF_TestInfo(LF_TestTier.LOGIC|WORLD|PERSISTENCE)]` and a `// red-proof:` line sit above the class. A test never asserts a town
   coordinate or distance.
 - Change a feature: update `docs/features/<area>.md` in the same PR; never add rows to `docs/features.md`.
 - Persistence tests use public mutators only; an in-session round trip proves nothing about restart.

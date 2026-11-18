@@ -2,7 +2,6 @@
 // LF_LicenseManagerComponent was on Character_Roleplay.et (no player body could hold a licence):
 // `- the refusal names the firearm permit (expected '#LF-License_FirearmPermit_Name', got
 // 'FIREARM_PERMIT')` and `- the test character has a licence manager`. With the component: green.
-// tier: WORLD
 //! The annex gun counter (#988) on the server path: a character without the firearm permit is refused
 //! with the permit's name and keeps its cash; with the permit the same order is paid and delivered.
 [LF_TestInfo(LF_TestTier.WORLD)]

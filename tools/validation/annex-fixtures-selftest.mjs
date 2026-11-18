@@ -24,7 +24,7 @@ function put(root, path, text) {
   writeFileSync(full, text);
 }
 
-const test = (body) => `// tier: WORLD\nclass LF_Test_X extends LF_Test\n{\n\toverride void Run(LF_TestContext ctx)\n\t{\n${body}\n\t}\n}\n`;
+const test = (body) => `[LF_TestInfo(LF_TestTier.WORLD)]\nclass LF_Test_X extends LF_Test\n{\n\toverride void Run(LF_TestContext ctx)\n\t{\n${body}\n\t}\n}\n`;
 const find = (n) => `\t\tctx.NotNull(GetGame().GetWorld().FindEntityByName("${n}"), "placed");`;
 
 function tree() {

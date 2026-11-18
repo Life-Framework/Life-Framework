@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-16 with `tools/cli test --no-build --red LF_Test_PersistLastPosition` (RED-OK spawn/last-position): with the payload read skipped, failed "the last position is back (load 1)"; green on the real code.
-// tier: PERSISTENCE
 //! #1777: a character's last position (position, heading, time taken) survives the "lastpos" payload
 //! and a restart. A save from before the payload (version 34, and the version just before "lastpos")
 //! loads with no rows; loading twice changes nothing.

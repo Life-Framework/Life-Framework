@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-17 `tools/cli test --no-build --only LF_Test_ChopShopDropPick` with the stolen-first pick disabled failed `crime/chop-drop-pick` with `- a stolen car further out beats an unstolen one at the bench (expected 1, got 0)`. Restored: green.
-// tier: LOGIC
 //! #2419: the bench takes the nearest STOLEN car in its drop area, so an unstolen car parked beside
 //! it cannot block the yard. With no stolen car it still names the nearest one, so the worker reads
 //! why the bench refuses.

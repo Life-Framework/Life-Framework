@@ -2,7 +2,6 @@
 //------------------------------------------------------------------------------------------------
 //! prefab/same-prefab (#323): LF_Utils.SamePrefab and PrefabGuid. The GUID decides; the path only
 //! when a side has no GUID; casing never matters; empty never matches.
-// tier: LOGIC
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_SamePrefab : LF_Test
 {

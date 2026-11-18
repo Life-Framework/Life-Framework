@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 with `tools\cli test --no-build --only LF_Test_StunContact` on unfixed main (contact part only): FAIL `an on-duty officer's stun is police contact` and `the stunned player is inside the contact window`; the civilian cases passed. Green after the change. The reset hooks did not exist on main (the test did not compile against it).
-// tier: WORLD
 //! A taser hit is police contact (#2543, review item 23): an on-duty officer who stuns a player stamps
 //! "police contact" on the victim, so a wanted player who is tased and logs out falls under the
 //! logout rule (LF_DisconnectRules). A stun from someone who is not an on-duty officer stamps nothing.

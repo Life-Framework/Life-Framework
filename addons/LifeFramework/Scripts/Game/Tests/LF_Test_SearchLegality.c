@@ -1,5 +1,4 @@
 // red-proof: RED-OK 2026-11-16 `tools/cli test --no-build --red LF_Test_SearchLegality`: with the seizure skipped it failed `- the unlicensed pistol is seized (expected 1, got 0)`, `- one offence is filed (expected 1, got 0)`, `- the offence reached the crime reports (expected 1, got 0)`. Green without the hook.
-// tier: WORLD
 //! catalogue/search-legality (#1764): a police search reads item legality. A pistol carried without
 //! FIREARM_PERMIT is flagged, seized and filed as #LF-Offence_UnlicensedItem; the same pistol with
 //! the permit is left alone and nothing is filed.

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-16, `tools\cli test --no-build --red LF_Test_EveronWelcomeGift` (RedProof skips the overlay apply): RED-OK, failed "the clerk's last step has a gift row"; green without the hook (11 assertions, pack leg worlds=LF_Everon1989_Test).
-// tier: WORLD
 //! #1781 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the clerk's last
 //! arrival step hands over a 1989 welcome gift: a folded paper map, a packet of crackers and a bottle
 //! of apple juice. The neutral core table ships no gift; the pack's overlay adds the row.

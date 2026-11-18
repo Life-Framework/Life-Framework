@@ -1,5 +1,4 @@
 // red-proof: 2026-11-16 `tools\cli test --no-build --only LF_Test_PolicePromoteRung` on the unfixed code printed [LFTEST] FAIL police/promote-rung: - rank 1 cannot promote rank 0 into rank 1; - rank 2 cannot promote rank 1 into rank 2 (equal, not above); - rank 1 is not offered the promote action on a five-rung ladder. Green after the fix.
-// tier: LOGIC
 //! #2095: on a ladder longer than two rungs the promoter must hold a rank above the rung the target
 //! is promoted INTO. A one- or two-rung ladder keeps the old rule (any senior may promote).
 [LF_TestInfo(LF_TestTier.LOGIC)]

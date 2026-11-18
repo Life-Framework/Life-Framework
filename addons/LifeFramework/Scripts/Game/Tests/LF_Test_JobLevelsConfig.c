@@ -1,6 +1,5 @@
 // red-proof: observed 2026-11-12 with `tools\cli test --no-build --only LF_Test_JobLevelsConfig`: LF_ConfigReader.ReadInts
 // without its minimum check failed `- a threshold below 1 refuses the whole list (expected 2, got 3)`. Restored; green.
-// tier: LOGIC
 //! The owner's "jobs" section (#749, D8): tracks, XP awards and licence gates merge per key over the
 //! shipped records, numbers outside the schema's range are refused, a threshold list with a bad
 //! element is refused whole, and whole numbers read as fractions where a float is expected.

@@ -1,5 +1,4 @@
 // red-proof: Observed 2026-11-18 with the same batched `--red` run: RED PROOF OK, the blocked point is not skipped with the clearance choice off. Green on the real code.
-// tier: WORLD
 //! spawn/house-point (#2652): a house's authored spawn point with a wall on it is skipped for the next
 //! clear one; with none clear the player is put outside the door; with none clear and no outside point
 //! there is no point and the login takes the role spawn.

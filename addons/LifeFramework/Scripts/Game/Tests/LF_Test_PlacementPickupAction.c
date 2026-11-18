@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-18 (#2751) with `tools\cli test --no-build --red LF_Test_PlacementPickupAction`: RedProof() skips the owner's PerformAction, so `the owner's Pick up removes the record` and `... removes the chair` fail (RED-OK placement/pickup-action).
-// tier: WORLD
 //! #2751 (after #2653): a placed permanent prop has a "Pick up" action. Every furniture item's placed
 //! prefab carries it and the owner stamp; the action is shown to the player who placed the prop and
 //! to nobody else; a bystander performing it changes nothing; the owner performing it takes the prop

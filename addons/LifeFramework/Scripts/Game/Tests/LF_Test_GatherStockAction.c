@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17, on the unfixed code (apple m_iMaxGathers 0) the 11th gather also paid: `--only LF_Test_GatherStockAction` failed "ten gathers pay and the eleventh is refused".
-// tier: WORLD
 //! gather/stock-action (#2409): the server stops paying when a spot is empty. The spot is the shipped
 //! apple tree; ten gathers pay, the eleventh pays nothing.
 [LF_TestInfo(LF_TestTier.WORLD)]

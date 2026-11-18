@@ -1,9 +1,7 @@
 // Git merge driver for generated files.
-// Language confs resolve by tools\cli regen-localization.
-// LF_TestRegistrations.generated.c resolves by tools\cli regen-tests.
-// The driver runs those commands. It does not hand-edit the generated text.
+// Language confs resolve by tools\cli regen-localization (the driver runs its script; it does not hand-edit the generated text).
 //
-// The driver runs mid-merge, so it must never write into the worktree: a test file that only the
+// The driver runs mid-merge, so it must never write into the worktree: a file that only the
 // incoming side has would land as an untracked file and git would then refuse to write its own copy
 // ("untracked working tree files would be overwritten by merge"). The inputs are materialised in a
 // scratch git repo under os.tmpdir(), the generator runs there, and only %A is written.
@@ -23,8 +21,6 @@ const ST_PATHS = [
   "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
 ];
 const TOOLS_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const TESTS_PREFIX = "addons/LifeFramework/Scripts/Game/Tests";
-const REGISTRY_NAME = "LF_TestRegistrations.generated.c";
 
 // Every child runs with a time limit, no stdin and a kill signal, so a stuck git or PowerShell can never
 // hang `git merge` (#2549). A timeout or spawn error throws BoundedRunError; runDriver turns it into one stderr
@@ -72,7 +68,7 @@ export function runBounded(step, command, args, options, defaultMs, overrideName
   return result;
 }
 
-let fixCommand = "tools\\cli regen-tests or tools\\cli regen-localization";
+let fixCommand = "tools\\cli regen-localization";
 
 function git(args, options = {}, limitMs = GIT_TIMEOUT_MS) {
   return runBounded(`git ${args.slice(0, 3).join(" ")}`, "git", args, options, limitMs);
@@ -93,9 +89,6 @@ export function regenKind(pathname) {
 
 export function regenPlan(pathname) {
   const kind = regenKind(pathname);
-  if (kind === "tests") {
-    return { kind, script: "tools/validation/gen-test-registry.ps1", args: ["-Write"] };
-  }
   if (kind === "localization") {
     return { kind, script: "tools/validation/regen-localization.ps1", args: ["-Write"] };
   }
@@ -158,58 +151,6 @@ function showPath(rev, path) {
   return result.stdout;
 }
 
-// path -> blob id of every test source under TESTS_PREFIX at one revision: one git process for the whole tree.
-function listTestBlobs(rev) {
-  const result = git(["ls-tree", "-r", "-z", rev, "--", TESTS_PREFIX]);
-  const blobs = new Map();
-  if (result.status !== 0) return blobs;
-  for (const entry of result.stdout.split("\0")) {
-    const match = /^\d+ blob ([0-9a-f]+)\t(.+)$/.exec(entry);
-    if (match && match[2].endsWith(".c") && !match[2].endsWith(REGISTRY_NAME)) blobs.set(match[2], match[1]);
-  }
-  return blobs;
-}
-
-// Blob id -> text for every id, through ONE `git cat-file --batch`. Spawning `git show` per file and side
-// (about 2300 children) took over 4 minutes on a loaded laptop and hit the backstop every merge.
-function readBlobs(ids) {
-  const texts = new Map();
-  const wanted = [...new Set(ids)];
-  if (!wanted.length) return texts;
-  const result = git(["cat-file", "--batch"], { input: Buffer.from(`${wanted.join("\n")}\n`), encoding: "buffer" }, 60_000);
-  if (result.status !== 0) throw new BoundedRunError(`git cat-file --batch failed: ${String(result.stderr).trim()}`);
-  const out = result.stdout;
-  let pos = 0;
-  while (pos < out.length) {
-    const eol = out.indexOf(10, pos);
-    if (eol < 0) break;
-    const header = out.toString("utf8", pos, eol).split(" ");
-    if (header[1] !== "blob") {
-      pos = eol + 1;
-      continue;
-    }
-    const size = Number(header[2]);
-    texts.set(header[0], out.toString("utf8", eol + 1, eol + 1 + size));
-    pos = eol + 1 + size + 1;
-  }
-  return texts;
-}
-
-function normalize(text) {
-  if (text == null) return null;
-  return text.replace(/\r\n/g, "\n");
-}
-
-function pickThree(base, ours, theirs) {
-  const baseNorm = normalize(base);
-  const oursNorm = normalize(ours);
-  const theirsNorm = normalize(theirs);
-  if (oursNorm === theirsNorm) return { ok: true, text: ours ?? theirs };
-  if (oursNorm === baseNorm) return { ok: true, text: theirs };
-  if (theirsNorm === baseNorm) return { ok: true, text: ours };
-  return { ok: false };
-}
-
 function writeInto(root, rel, text) {
   const full = join(root, rel);
   if (text == null) {
@@ -258,50 +199,14 @@ function materializeStringTable(scratch, sides) {
   return { ok: true };
 }
 
-function materializeTests(scratch, sides) {
-  const base = listTestBlobs(sides.base);
-  const ours = listTestBlobs(sides.ours);
-  const theirs = listTestBlobs(sides.theirs);
-  const paths = new Set([...base.keys(), ...ours.keys(), ...theirs.keys()]);
-  // Decide by blob id where possible (same as the text rules below, no content needed); read the rest in one batch.
-  const plan = new Map();
-  const need = [];
-  for (const path of paths) {
-    const [b, o, t] = [base.get(path), ours.get(path), theirs.get(path)];
-    if (o === t) plan.set(path, { take: o });
-    else if (o === b) plan.set(path, { take: t });
-    else if (t === b) plan.set(path, { take: o });
-    else {
-      plan.set(path, { three: [b, o, t] });
-      need.push(...[b, o, t].filter(Boolean));
-    }
-  }
-  const takeIds = [...plan.values()].map((entry) => entry.take).filter(Boolean);
-  const texts = readBlobs([...takeIds, ...need]);
-  for (const [path, entry] of plan) {
-    if (entry.three) {
-      const [b, o, t] = entry.three.map((id) => (id ? texts.get(id) : null));
-      const picked = pickThree(b, o, t);
-      if (!picked.ok) {
-        return { ok: false, error: `lf-regen-tests: ${path} conflicts; resolve that test file, then tools\\cli regen-tests` };
-      }
-      writeInto(scratch, path, picked.text);
-    } else {
-      writeInto(scratch, path, entry.take ? texts.get(entry.take) : null);
-    }
-  }
-  return { ok: true };
-}
-
 function runDriver() {
   const oursPath = process.argv[3];
   const pathname = process.argv[5] || "";
   const plan = regenPlan(pathname);
   if (!oursPath || !plan) {
-    console.error("lf-regen: expected a language conf or LF_TestRegistrations.generated.c");
+    console.error("lf-regen: expected a language conf");
     process.exit(1);
   }
-  fixCommand = plan.kind === "tests" ? "tools\\cli regen-tests" : "tools\\cli regen-localization";
   try {
     runPlan(plan, oursPath, pathname);
   } catch (error) {
@@ -323,7 +228,7 @@ function runPlan(plan, oursPath, pathname) {
   }
   const scratch = mkdtempSync(join(tmpdir(), "lf-regen-"));
   try {
-    const prepared = plan.kind === "tests" ? materializeTests(scratch, sides) : materializeStringTable(scratch, sides);
+    const prepared = materializeStringTable(scratch, sides);
     if (!prepared.ok) {
       console.error(prepared.error);
       process.exitCode = 1;
@@ -336,9 +241,7 @@ function runPlan(plan, oursPath, pathname) {
       process.exitCode = result.status || 1;
       return;
     }
-    const outputRel = plan.kind === "tests"
-      ? `${TESTS_PREFIX}/${REGISTRY_NAME}`
-      : pathname.replace(/\\/g, "/").replace(/^\.\//, "");
+    const outputRel = pathname.replace(/\\/g, "/").replace(/^\.\//, "");
     writeFileSync(oursPath, readFileSync(join(scratch, outputRel)));
   } finally {
     rmSync(scratch, { recursive: true, force: true });

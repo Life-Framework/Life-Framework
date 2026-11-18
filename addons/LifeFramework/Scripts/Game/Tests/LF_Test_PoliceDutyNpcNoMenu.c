@@ -7,7 +7,6 @@
 //! Search and Arrest buttons went in #2509, so the NPC's menu held only Close. The prefab keeps
 //! no LF_OpenPoliceMenuAction and the PoliceMenu preset is gone. The arrest RPC stays for the
 //! planned wanted-list sheet.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_PoliceDutyNpcNoMenu : LF_Test
 {

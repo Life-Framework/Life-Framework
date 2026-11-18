@@ -5,7 +5,6 @@
 // Restored; green.
 // red-proof: Observed 2026-11-16 with `tools\cli test --no-build --only LF_Test_PlacesEvidenceLocker --world Worlds/GridWorld/GridWorld.ent`
 // before Grid_signs_board_quests.layer placed a second locker: `both evidence lockers are found under their own breach target id`.
-// tier: WORLD
 //! places/evidence-locker: GridWorld places an evidence locker at the test annex and one in the
 //! signs-board-quests cell (the town's second one is at the village police station, #1004). Both are breach targets, so each carries its own id; sharing the
 //! prefab default made the second register refuse with "BreachTarget 'LF_EvidenceLocker' is already

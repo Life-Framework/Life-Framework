@@ -5,7 +5,6 @@
 //! graph the way the NPC attachment expects, one session runs per worker, and a cancel, a finish,
 //! walking out of range or a dead worker stops it. Broadcasts are silenced; the test counts the
 //! starts and stops the server decided.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_WorkAnim : LF_Test
 {

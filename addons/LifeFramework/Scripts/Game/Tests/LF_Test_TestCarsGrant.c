@@ -7,7 +7,6 @@
 //! the impound lot, as records with keys, so both flows can be tried at once. Granted only to an
 //! owner with no vehicle, so a second call (a respawn) grants nothing.
 // red-proof (#1892, 2026-11-16): `tools\cli test --no-build --only <the 7 slice-1892 tests> --world Worlds/GridWorld/GridWorld.ent` before Grid_orgs_vehicles.layer failed all 7 (no org hideout door, no flagged lot, no store, no impound pad); green with it.
-// tier: WORLD
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_TestCarsGrant : LF_Test
 {

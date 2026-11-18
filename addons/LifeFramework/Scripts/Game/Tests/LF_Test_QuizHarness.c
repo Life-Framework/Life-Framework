@@ -4,7 +4,6 @@
 //   [LFTEST] FAIL harness/quiz-clear
 //   [LFTEST]   - after the clear the quiz check says the player has not passed
 // Implemented; green.
-// tier: LOGIC
 //! Harness verb `quizclear` (#1567): forgets one account's rules-quiz pass in memory and in the progression
 //! store, so a proof can make a rejoin see the quiz again. Harness-only: a build without LF_HARNESS refuses it.
 [LF_TestInfo(LF_TestTier.LOGIC)]

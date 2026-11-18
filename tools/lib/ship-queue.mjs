@@ -20,11 +20,10 @@ export function driverMerged(path) {
   return conflictKind(path) !== null;
 }
 
-// Files a merge regenerates or derives from (the test registry, the language confs and the string table
-// they come from). A main commit touching one of them changes what the PR compiles, so it re-gates.
+// Files a merge regenerates or derives from (the language confs and the string table they come from). A main commit touching one of them changes what the PR compiles, so it re-gates.
 export function generated(path) {
   const k = conflictKind(path);
-  return k === "regen-tests" || k === "regen-localization" || k === "string-table";
+  return k === "regen-localization" || k === "string-table";
 }
 
 const norm = (p) => String(p).replace(/\\/g, "/");

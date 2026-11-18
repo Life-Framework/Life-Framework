@@ -3,7 +3,6 @@
 // failed read does not change live state (hunger stays 77)`. Green with the stop-at-first-failure fix.
 // Also `tools\cli test --no-build --red LF_Test_SaveNewerVersion,LF_Test_SaveStopsAfterFailedRead,LF_Test_SaveRefusedOnDamage`:
 // RED PROOF OK (all 3 listed test(s) fail with the hook on).
-// tier: PERSISTENCE
 //! #2489 (review P1): the store is read positionally, so after one payload fails to read every later
 //! read can be misaligned, and a later read that happens to succeed would replace live state with
 //! whatever it found. A save whose bank records cannot be read is followed by a survival payload

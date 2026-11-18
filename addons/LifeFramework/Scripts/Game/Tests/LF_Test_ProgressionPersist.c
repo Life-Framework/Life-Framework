@@ -73,7 +73,6 @@ class LF_TestProgressionKit
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_ProgressionRoundtrip : LF_Test
 {
@@ -207,7 +206,6 @@ class LF_Test_ProgressionRoundtrip : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-// tier: PERSISTENCE
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_ProgressionOldSave : LF_Test
 {

@@ -1,5 +1,4 @@
 // red-proof: 2026-11-17 `tools/cli test --no-build --red LF_Test_LogoutBodyDirty,...`: RED-OK rejoin/logout-body-dirty, with the loot skipped "only the looted body is captured again (expected 1, got 0)" and "the looted body's snapshot lost the bottle (expected 0, got 1)" failed. Green with the fix (--only, 8 passed).
-// tier: WORLD
 //! #2404: an item taken from one logout body re-captures that body's snapshot only. Before, any item
 //! change on any kept body re-captured every kept body (RecaptureAll), so looting one body item by
 //! item while dozens were kept serialised all of them per item.

@@ -3,7 +3,6 @@
 //   [LFTEST]   - the left drill is at the drill prefab's scale (expected 0.4, got 1)
 //   [LFTEST]   - the left drill is a safe drill's size (1.16937 m tall, want 0.3 to 0.6)
 //   and the server log: [LFDebug:Bank] drill out of the inventory at scale 1 (prefab 0.4). Restored; green.
-// tier: WORLD
 //! crime/drill-left-size: a drill left at a vault or the cash van box lies at the drill prefab's size, upright,
 //! with its serial. The prefab used to be the vanilla bench drill at 0.4, and an item that leaves an inventory is
 //! back at scale 1, so the left drill stood there as a 1.2 m green pillar drill (#571 review). Since #340 the

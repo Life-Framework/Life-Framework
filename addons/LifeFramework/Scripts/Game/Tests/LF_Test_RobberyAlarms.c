@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-14 with `tools\cli test --no-build --only LF_Test_RobberyAlarms`: expecting kind "bank" for the van offence failed with `an unnamed robbery takes the kind that lists its offence (expected 'bank', got 'van')`; restored, green.
-// tier: LOGIC
 //! Robbery alarms (#740): which alarm kind a robbery sounds, with no world. The kind the robbed thing names
 //! wins; otherwise the kind that lists the offence; otherwise none (the plain siren). A kind's loud twin is
 //! used when nobody is on duty, and a kind with no loud twin falls back to its normal alarm.

@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-16 with `tools\cli test --no-build --red LF_Test_StartingKit`: RED-OK catalogue/starting-kit (RedProof() skips the kit lookup; fails 'a kit outlet gives a loadout of its own'). Green with `--only LF_Test_StartingKit,LF_Test_FactionLoadoutConfig`.
-// tier: LOGIC
 //! The catalogue's `starting_kit` outlet (#1767): a civilian's spawn loadout is built from its offers
 //! (clothing into loadout slots, the rest carried), and with no such outlet the loadout the game mode
 //! names is returned unchanged. Other roles never read the kit.

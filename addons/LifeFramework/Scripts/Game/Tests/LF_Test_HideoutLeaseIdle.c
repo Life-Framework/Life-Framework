@@ -1,5 +1,4 @@
 // red-proof: observed 2026-11-17 `toolsi test --no-build --red LF_Test_HideoutLeaseIdle` (the first SweepIdle skipped by RedProof()): RED PROOF OK, `- the lease idle for 15 days is released (expected '', got ...)`, `- a member online restarts the clock`. Hook off: green.
-// tier: PERSISTENCE
 //! #2573 (epic #2533): a hideout lease keeps the last real time a member of its organization was
 //! connected, and a sweep releases a lease idle longer than LF_OrgConfig.HideoutLeaseIdleDays().
 //! A lease past the limit is released, one with a member online is kept (and its clock restarts),

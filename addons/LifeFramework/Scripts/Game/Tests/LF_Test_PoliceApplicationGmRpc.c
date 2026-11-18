@@ -1,5 +1,4 @@
 // red-proof: RedProof() skips the staff approve: "RED PROOF OK (all 1 listed test(s) fail with the hook on)", red lines "the answer names the applicant (expected 'Ann Lee', got '')" (2026-11-15)
-// tier: LOGIC
 //! #1288: the server handlers behind the Game Master applications panel. A non-staff sender is
 //! refused and changes nothing; staff approve and reject; a bad verb or target is refused; free text
 //! cannot forge a row or a string key.
