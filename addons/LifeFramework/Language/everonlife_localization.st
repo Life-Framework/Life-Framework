@@ -2180,6 +2180,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Treatment bill"
      Comment "Notification title for treatment bills."
     }
+    CustomStringTableItem "{7E1C40B2A93D5F06}" {
+     Id "LF-BuyerSale_Action"
+     Target_en_us "Sell the goods"
+     Comment "Illicit buyer action: sell every chain good carried (#2920)."
+    }
+    CustomStringTableItem "{2A9F63D1C84B7E50}" {
+     Id "LF-BuyerSale_ActionDesc"
+     Target_en_us "He pays for what he names."
+     Comment "Illicit buyer action description (#2920)."
+    }
+    CustomStringTableItem "{B05D8E27F1963A4C}" {
+     Id "LF-BuyerSale_Closed"
+     Target_en_us "He is not buying here, not today."
+     Comment "Toast: the buyer is absent, away from the open spot, or the price list is missing (#2920)."
+    }
+    CustomStringTableItem "{4C7A12E9D60B83F5}" {
+     Id "LF-BuyerSale_Nothing"
+     Target_en_us "You have nothing he wants."
+     Comment "Toast and cannot-perform reason: no chain goods the buyer names (#2920)."
+    }
+    CustomStringTableItem "{D83B5A0614EF9C27}" {
+     Id "LF-BuyerSale_Sold"
+     Target_en_us "He takes the goods and pays you %1."
+     Comment "Toast: goods sold to the illicit buyer. %1 = the amount paid (#2920)."
+    }
+    CustomStringTableItem "{19E6C4A7B25D0F83}" {
+     Id "LF-BuyerSale_Title"
+     Target_en_us "The buyer"
+     Comment "Toast title at the illicit buyer (#2920)."
+    }
     CustomStringTableItem "{7724C0B2311D85FD}" {
      Id "LF-CC_Error_NoIdentity"
      Target_en_us "The online service has not confirmed who you are yet, so your account cannot open. Sign the form again in a moment, or rejoin."
