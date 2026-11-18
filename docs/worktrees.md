@@ -1591,7 +1591,7 @@ fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/r
   checks skipped on a fresh worktree; before, each slice's first validate ran all of them, ~4-6 min under load).
   `always` and `ttl=` checks never use it. Delete the file to stop sharing.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
-- Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
+- Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile and `world-sync-selftest` and `selftest-scratch-selftest` (`SLOW_CHECK_S in `tools/cli.mjs`; it spawns ~500 git processes). A check over it
   prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
   validate process itself was frozen (a synchronous call beside the checks, as `ci` runs validate beside the build);
   that freeze is printed once as `WARN  validate: this process was frozen N s`.
