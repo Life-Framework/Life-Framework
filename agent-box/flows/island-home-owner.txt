@@ -1,0 +1,9 @@
+# Island home after a restart (#3603): run after island-home-buy and `node agent-box/session.mjs restart`.
+# The same client profile rejoins the server that loaded the SHUTDOWN save; the account is not new, so no quiz or form.
+step 1 The buyer still owns the cottage: the key is back, the door opens, the sign says Sold
+stand HomeSign_saint_philippe_sp_b83
+wait 1500
+expect item HouseKey
+use SCR_DoorUserAction
+wait 2000
+# The sign now says Sold: its buy action is shown but not performable, so `harness.mjs --client 1 use LF_HouseSaleBuyAction HomeSign_saint_philippe_sp_b83` prints `error cannot_perform` (a flow line cannot expect an error, run it by hand).

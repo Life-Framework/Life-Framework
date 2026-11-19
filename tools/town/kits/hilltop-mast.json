@@ -70,6 +70,7 @@
       "prefab": null,
       "role": "dressing",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         0,
         0,
@@ -94,6 +95,7 @@
       "prefab": "{DDE764E40C17C5DC}Prefabs/Sites/LF_SiteFlag.et",
       "role": "interactable",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         -3.4,
         0,
@@ -118,6 +120,7 @@
       "prefab": "{28F82DEA95808829}Prefabs/Sites/LF_SiteStrongbox.et",
       "role": "interactable",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         3.4,
         0,
@@ -142,6 +145,7 @@
       "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
       "role": "dressing",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         3.1,
         0,
@@ -157,6 +161,7 @@
       "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
       "role": "dressing",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         3.1,
         0,
@@ -172,6 +177,7 @@
       "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
       "role": "dressing",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         -2.2,
         0,

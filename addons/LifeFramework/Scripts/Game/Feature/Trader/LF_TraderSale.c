@@ -13,7 +13,8 @@ enum LF_ETraderSale
 	BLACK_MARKET,
 	UNPAYABLE,
 	NOT_REMOVED,
-	SELLER_DOWN		//!< A dead or downed seller (a forged request from a body)
+	SELLER_DOWN,	//!< A dead or downed seller (a forged request from a body)
+	BUYER_FULL		//!< A premium buyer with no demand left (#3599); the seller keeps the item
 }
 
 //------------------------------------------------------------------------------------------------
@@ -90,6 +91,15 @@ class LF_TraderSale
 		// 482b74a5a7e39e999d129b0657253696b9b8be15. This trader pays cash rather
 		// than spawning a barter prefab; the count is the same rule.
 		int outputUnits = LF_ShopRules.StackTradeOutputCount(GetItemQuantity(item));
+
+		// Premium buyer (#3599): a trader that names a buyer id pays that buyer's row, up to its demand.
+		if (!trader.m_sBuyerId.IsEmpty())
+		{
+			LF_BuyerDemandRow demandRow = LF_BuyerDemandBook.FindRow(trader.m_sBuyerId, itemPrefab);
+			if (demandRow)
+				return SellToBuyer(seller, item, inventory, trader.m_sBuyerId, itemPrefab, outputUnits, untrusted);
+		}
+
 		int totalValue = LF_ShopRules.StackTradeTotal(unitValue, outputUnits);
 
 		// Market (#2845): a curved good pays the curve's marginal sum instead of the fixed value. The
@@ -141,6 +151,92 @@ class LF_TraderSale
 		if (curved && newPrice != oldPrice)
 			LF_MarketSaleNotice.OnSale(seller, itemPrefab, oldPrice, newPrice);
 		return LF_ETraderSale.SOLD;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the premium-buyer half of Sell (#3599). The buyer's purse decides how many of the stack's
+	//! units are taken (the count is the server's own, from the item); the seller is paid for those, the
+	//! rest stays in the stack, and a buyer that has no demand left refuses with the full toast. Pay first,
+	//! then take the units; a failure puts the cash and the purse back.
+	//! \return SOLD (also for a part-stack sale), BUYER_FULL, or why the sale was refused.
+	protected static LF_ETraderSale SellToBuyer(IEntity seller, IEntity item, SCR_InventoryStorageManagerComponent inventory, string buyer, ResourceName itemPrefab, int outputUnits, bool untrusted)
+	{
+		int nowUnix = System.GetUnixTime();
+		LF_BuyerPurse purseBefore = LF_BuyerDemandBook.Snapshot(buyer, itemPrefab);
+		LF_BuyerDemandSale sale = LF_BuyerDemandBook.Sell(buyer, itemPrefab, outputUnits, nowUnix);
+		if (!sale)
+			return Refuse(seller, LF_ETraderSale.NOT_BOUGHT, "the buyer has no demand row for " + itemPrefab);
+
+		if (sale.m_iAccepted <= 0)
+		{
+			NotifyBuyerFull(seller, sale.m_iSecondsToNext);
+			LF_Debug.Warn("Trader", string.Format("sale refused (BUYER_FULL): %1 has enough %2 (back in %3 s)", buyer, itemPrefab, sale.m_iSecondsToNext));
+			return LF_ETraderSale.BUYER_FULL;
+		}
+
+		if (sale.m_iPayout <= 0)
+		{
+			LF_BuyerDemandBook.Restore(buyer, itemPrefab, purseBefore);
+			return Refuse(seller, LF_ETraderSale.NOT_BOUGHT, "the buyer pays nothing for " + itemPrefab);
+		}
+
+		int paid = LF_MoneyUtils.AddCash(seller, sale.m_iPayout, "trader-sell");
+		if (paid != sale.m_iPayout)
+		{
+			if (paid > 0)
+				LF_MoneyUtils.RemoveCash(seller, paid, "trader-sell-rollback");
+			LF_BuyerDemandBook.Restore(buyer, itemPrefab, purseBefore);
+			return Refuse(seller, LF_ETraderSale.UNPAYABLE, string.Format("cash payout failed (%1 of %2)", paid, sale.m_iPayout));
+		}
+
+		bool removed = false;
+		if (!s_bFailRemoveForTest)
+			removed = TakeUnits(inventory, item, sale.m_iAccepted, outputUnits);
+
+		if (!removed)
+		{
+			LF_MoneyUtils.RemoveCash(seller, paid, "trader-sell-rollback");
+			LF_BuyerDemandBook.Restore(buyer, itemPrefab, purseBefore);
+			return Refuse(seller, LF_ETraderSale.NOT_REMOVED, "the item could not be removed");
+		}
+
+		LF_Debug.Info("Trader", string.Format("sold %1 x%2 of %3 to %4 for %5 (refused %6, untrusted=%7)", itemPrefab, sale.m_iAccepted, outputUnits, buyer, sale.m_iPayout, sale.m_iRefused, untrusted));
+		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, sale.m_iPayout.ToString());
+		if (sale.m_iRefused > 0)
+			NotifyBuyerFull(seller, sale.m_iSecondsToNext);
+
+		return LF_ETraderSale.SOLD;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes `accepted` of the stack's `total` units: the whole item when all are taken, else the stack
+	//! shrinks by `accepted`. \return false when the item could not be reduced.
+	protected static bool TakeUnits(SCR_InventoryStorageManagerComponent inventory, IEntity item, int accepted, int total)
+	{
+		if (accepted >= total)
+			return inventory.TryDeleteItem(item);
+
+		LF_QuantityComponent quantity = LF_Component<LF_QuantityComponent>.Find(item);
+		if (!quantity)
+			return false;
+
+		int change;
+		quantity.RemoveQuantity(accepted, false, change);
+		return quantity.GetQuantity() == total - accepted;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Toast to the seller: the buyer has enough, and when it refills, in about how many minutes.
+	protected static void NotifyBuyerFull(IEntity seller, int secondsToNext)
+	{
+		if (secondsToNext < 0)
+		{
+			LF_Utils.NotifyEntity(seller, "#LF-Market_BuyerNever", "#LF-Market_BuyerFull_Title", 4.0);
+			return;
+		}
+
+		int minutes = LF_Utils.MaxInt((secondsToNext + 59) / 60, 1);
+		LF_Utils.NotifyEntity(seller, "#LF-Market_BuyerFull", "#LF-Market_BuyerFull_Title", 4.0, minutes.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
