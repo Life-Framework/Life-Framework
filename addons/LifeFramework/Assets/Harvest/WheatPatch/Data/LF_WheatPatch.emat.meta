@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{597A4F23AB0AD0AD}Assets/Harvest/WheatPatch/Data/LF_WheatPatch.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}
