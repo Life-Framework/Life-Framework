@@ -34,6 +34,10 @@ export const DROP_KITS = {
   "parcel-drops": { prefab: DROP_PREFAB, source: DROP_SOURCE },
   "fuel-drops": { prefab: "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et", source: "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_FuelDrop.et" },
   "buyer-spots": { prefab: "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et", source: "addons/LifeFramework/Prefabs/Systems/Laundering/LF_BuyerSpot.et" },
+  // The placeable ATM (#3352, #3355): each machine overrides the prefab's place id (`placeComp` is the prefab's own LF_PlaceComponent GUID) so the ATMs are told apart in LF_Places.
+  atms: { prefab: "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et", source: "addons/LifeFramework/Prefabs/Props/Money/LF_ATM.et", placeComp: "{7070D89FFB6DC889}", placeId: (dr) => `atm.${dr.place}.${dr.building}` },
+  // A payphone booth at a kerb beside a building (#3358): back to the wall, front to the street, like a mailbox.
+  payphones: { prefab: "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et", source: "addons/LifeFramework/Prefabs/Comms/LF_Payphone.et" },
   // A home's "For sale" sign (#3584, `town homes`): placed with the same entrance-wall seat as a drop.
   "house-sale": { prefab: "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et", source: "addons/LifeFramework/Prefabs/Props/Property/LF_HouseSaleSign.et" },
 };
@@ -120,7 +124,12 @@ async function gameReader() {
   }
 }
 
-const entityLine = (e) => `GenericEntity ${e.name} : "${e.ref}" {
+const entityLine = (e) => `GenericEntity ${e.name} : "${e.ref}" {${e.placeId ? `
+ components {
+  LF_PlaceComponent "${e.placeComp}" {
+   m_sId "${e.placeId}"
+  }
+ }` : ""}
  coords ${e.coords.join(" ")}
  angleY ${e.yaw}
 }`;
@@ -143,12 +152,15 @@ export async function planDrop({ drop, slotId, dossier, root, shell, readGame, k
   }
   // Off the wall by WALL_AIR along the mailbox's facing (the wall it was seated on is behind it).
   const e = plan?.ok ? plan.ents.rowEnts[0] : null;
-  if (e && plan.seat?.rows?.[0]?.wall) {
+  const prop = DROP_KITS[kitName];
+  if (e && prop?.placeId) Object.assign(e, { placeId: prop.placeId(drop), placeComp: prop.placeComp });
+  const onWall = !!plan?.seat?.rows?.[0]?.wall;
+  if (e && onWall) {
     const a = (e.yaw * Math.PI) / 180;
     e.coords = [r3(e.coords[0] + Math.sin(a) * WALL_AIR), e.coords[1], r3(e.coords[2] + Math.cos(a) * WALL_AIR)];
-    plan.layerText = `${entityLine(e)}
-`;
   }
+  if (e && (onWall || prop?.placeId)) plan.layerText = `${entityLine(e)}
+`;
   return plan;
 }
 
@@ -240,7 +252,8 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
     slot: slotId,
     drops: mapping.slots[slotId].drops.map((d) => ({ place: d.place, building: d.building })),
     kit: slotKit,
-    size: "small",
+    // Five lit booths are five lights: the small budget allows three (#3358), so a payphones slot is medium.
+    size: slotKit === "payphones" ? "medium" : "small",
     layer: `${LAYER_DIR}/${layerName}`,
     kinds: [],
     rows: plans.length,

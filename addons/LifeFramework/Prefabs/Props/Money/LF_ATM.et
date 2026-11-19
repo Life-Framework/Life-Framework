@@ -26,7 +26,7 @@ GenericEntity {
      }
      UIInfo UIInfo "{7070D89FFB6DC887}" {
       Name "#EL-ATM_Title"
-      Description "Gestionar cuenta bancaria"
+      Description "#LF-ATM_Manage"
      }
     }
    }
