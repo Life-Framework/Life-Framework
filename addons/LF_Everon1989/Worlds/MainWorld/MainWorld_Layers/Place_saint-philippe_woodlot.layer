@@ -113,15 +113,15 @@ GenericEntity Fit_saint_philippe_woodlot_fence_se3 : "{57873EAF69D5450E}Prefabs/
  coords 4364.611 14.26 10605.707
  angleY -11
 }
-GenericEntity Fit_saint_philippe_woodlot_light_1 : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+GenericEntity Fit_saint_philippe_woodlot_light_1 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
  coords 4333.682 16.9 10612.837
  angleY -11
 }
-GenericEntity Fit_saint_philippe_woodlot_light_2 : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+GenericEntity Fit_saint_philippe_woodlot_light_2 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
  coords 4345.462 16.9 10615.126
  angleY -11
 }
-GenericEntity Fit_saint_philippe_woodlot_light_3 : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+GenericEntity Fit_saint_philippe_woodlot_light_3 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
  coords 4357.241 16.9 10617.416
  angleY -11
 }

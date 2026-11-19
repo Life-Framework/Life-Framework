@@ -90,15 +90,15 @@ GenericEntity Source_TimberYard_Fence_Se3 : "{57873EAF69D5450E}Prefabs/Structure
  coords 17 0 -22.5
  angleY 0
 }
-GenericEntity Source_TimberYard_Light_1 : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+GenericEntity Source_TimberYard_Light_1 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
  coords -12 2.8 -9.6
  angleY 0
 }
-GenericEntity Source_TimberYard_Light_2 : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+GenericEntity Source_TimberYard_Light_2 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
  coords 0 2.8 -9.6
  angleY 0
 }
-GenericEntity Source_TimberYard_Light_3 : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+GenericEntity Source_TimberYard_Light_3 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
  coords 12 2.8 -9.6
  angleY 0
 }

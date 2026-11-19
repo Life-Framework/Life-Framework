@@ -368,7 +368,7 @@
     {
       "id": "light-1",
       "name": "TimberYard_Light_1",
-      "prefab": "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et",
+      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
       "role": "light",
       "verb": "against wall",
       "offset": [
@@ -383,7 +383,7 @@
     {
       "id": "light-2",
       "name": "TimberYard_Light_2",
-      "prefab": "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et",
+      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
       "role": "light",
       "verb": "against wall",
       "offset": [
@@ -398,7 +398,7 @@
     {
       "id": "light-3",
       "name": "TimberYard_Light_3",
-      "prefab": "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et",
+      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
       "role": "light",
       "verb": "against wall",
       "offset": [
