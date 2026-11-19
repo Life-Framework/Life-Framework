@@ -7139,6 +7139,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this desk to collect it."
      Comment "Licence desk: the fee was paid and the application filed. %1 = in-game hours until collection."
     }
+    CustomStringTableItem "{95873A41DBCA4881}" {
+     Id "LF-LicenceDesk_Banned"
+     Target_en_us "Refused: your firearm permit was seized. Come back in %1 days."
+     Comment "Licence desk refusal: a conviction seized the permit and its ban has not ended (#3432). %1 = in-game days left."
+    }
     CustomStringTableItem "{F6A22E21A8F71D11}" {
      Id "LF-LicenceDesk_Closed"
      Target_en_us "The licence desk cannot help you right now."
@@ -7158,6 +7163,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LicenceDesk_DrivingAlreadyHeld"
      Target_en_us "You already hold a driving licence."
      Comment "Licence desk: the player already has the driving licence (#3128)."
+    }
+    CustomStringTableItem "{4A9DFB45430F1EEF}" {
+     Id "LF-LicenceDesk_DrivingBanned"
+     Target_en_us "Refused: your driving licence was seized. Come back in %1 days."
+     Comment "Licence desk refusal: a conviction seized the driving licence and its ban has not ended (#3432). %1 = in-game days left."
     }
     CustomStringTableItem "{34BBF90BAF789D18}" {
      Id "LF-LicenceDesk_DrivingIssued"
@@ -7218,6 +7228,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LicenceDesk_Wanted"
      Target_en_us "Refused: you are wanted by the {police}."
      Comment "Licence desk refusal: the player's wanted level is above zero."
+    }
+    CustomStringTableItem "{A642D5DB4145E7D9}" {
+     Id "LF-LicenceSeized_Driving"
+     Target_en_us "Your driving licence has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took the driving licence (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{D92AB6624E66E7E3}" {
+     Id "LF-LicenceSeized_Firearm"
+     Target_en_us "Your firearm permit has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took the firearm permit (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{B409C651C883E235}" {
+     Id "LF-LicenceSeized_Generic"
+     Target_en_us "A licence of yours has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took a licence with no line of its own (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{190BA98B192ED320}" {
+     Id "LF-LicenceSeized_Plain"
+     Target_en_us "A licence of yours has been seized."
+     Comment "Toast to the arrested player: a conviction took a licence with no ban period (#3432)."
     }
     CustomStringTableItem "{AA51A5C85F69418F}" {
      Id "LF-LicenceWhere_DRIVING_LICENCE"
