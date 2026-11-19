@@ -12,7 +12,8 @@ enum LF_ECrewRobEnd
 {
 	NONE,		//!< The job goes on
 	GONE,		//!< The holder left the server, or the till is gone
-	DOWNED		//!< The holder went down, died or was cuffed
+	DOWNED,		//!< The holder went down, died or was cuffed
+	IDLE		//!< The take did not grow for the configured idle time-out
 }
 
 //------------------------------------------------------------------------------------------------
@@ -55,6 +56,8 @@ class LF_CrewRobJob : Managed
 	float m_fPoliceRadius;
 	bool m_bHolding;
 	float m_fSpotSeconds;
+	//! Seconds since the take last grew; the job ends at LF_CrewRobConfig.m_fIdleTimeoutSeconds.
+	float m_fIdleSeconds;
 	bool m_bClosed;
 	bool m_bPoliceNoted;
 	int m_iLastTickMs;
@@ -345,7 +348,17 @@ class LF_CrewRob
 			return LF_ECrewRobEnd.DOWNED;
 
 		bool onSpot = job.m_bHolding && vector.Distance(holder.GetOrigin(), job.m_vSpot) <= job.m_fRadius;
+		int takeBefore = job.Take();
 		job.m_fSpotSeconds = LF_CrewRobRules.AdvanceSpotSeconds(job.m_fSpotSeconds, dtSeconds, onSpot);
+		if (job.Take() > takeBefore)
+			job.m_fIdleSeconds = 0;
+		else if (dtSeconds > 0)
+			job.m_fIdleSeconds = job.m_fIdleSeconds + dtSeconds;
+
+		// A holder who stands idle (or sits on a capped take) does not keep the till forever.
+		float idleLimit = LF_CrewRobConfig.Get().m_fIdleTimeoutSeconds;
+		if (idleLimit > 0 && job.m_fIdleSeconds >= idleLimit)
+			return LF_ECrewRobEnd.IDLE;
 
 		bool policeNear = LF_RobHold.PoliceWithin(job.m_vSpot, job.m_fPoliceRadius);
 		if (WarnLookouts(policeNear, job.m_bPoliceNoted))
@@ -353,6 +366,13 @@ class LF_CrewRob
 
 		job.m_bPoliceNoted = policeNear;
 		return LF_ECrewRobEnd.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds between two tick-count readings in ms (float: a 250 ms tick is 0.25 s, not 0).
+	static float TickSeconds(int nowMs, int lastMs)
+	{
+		return (nowMs - lastMs) / 1000.0; // lf-float: a short span of ticks to seconds
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -416,6 +436,10 @@ class LF_CrewRob
 			if (!body || vector.Distance(body.GetOrigin(), job.m_vSpot) > PAY_RADIUS)
 				continue;
 
+			// A member who is down, dead or cuffed is not present for a share.
+			if (LF_Downed.IsDowned(body) || IsDead(body) || LF_Restraint.IsRestrained(body))
+				continue;
+
 			present.Insert(member);
 		}
 
@@ -460,7 +484,7 @@ class LF_CrewRob
 		for (int i = jobs.Count() - 1; i >= 0; i--)
 		{
 			LF_CrewRobJob job = jobs[i];
-			float dt = (nowMs - job.m_iLastTickMs) / 1000; // lf-float: a short span of ticks to seconds
+			float dt = TickSeconds(nowMs, job.m_iLastTickMs);
 			job.m_iLastTickMs = nowMs;
 			LF_ECrewRobEnd end = Step(job, dt);
 			if (end == LF_ECrewRobEnd.NONE)

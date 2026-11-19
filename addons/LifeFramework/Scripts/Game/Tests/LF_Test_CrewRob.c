@@ -1,4 +1,4 @@
-// red-proof: 2026-11-19 `tools\cli test --no-build --red LF_Test_CrewRob`: RED PROOF OK. With the hook on the holder's TakeMoney is skipped, so `the third member is paid a share (expected 50, got 0)`, `the job is over (expected 0, got 1)`. Green without the hook.
+// red-proof: 2026-11-19 `tools\cli test --no-build --red LF_Test_CrewRob`: RED PROOF OK. With the hook on the holder's TakeMoney is skipped, so `the third member is paid a share (expected 50, got 0)`, `the job is over (expected 0, got 1)`. Green without the hook. 2026-11-19 review: the idle time-out assertions failed with the IDLE return disabled (`--only LF_Test_CrewRob`: FAIL crime/crew-rob), green with it.
 //! A crew robbery of a till (#3404). Three fixture characters start a job, the holder holds the
 //! till for 30 s and takes the money: each of the three is paid a share, once. The holder steps
 //! off the spot and the take pauses. A lone player at a crew till is refused.
@@ -112,6 +112,30 @@ class LF_Test_CrewRob : LF_Test
 		// Once: a second take pays nothing more.
 		ctx.EqualStr(LF_CrewRob.REFUSED_NO_JOB, LF_CrewRob.TakeMoney(till, crew[0]), "a finished job takes no second payout");
 		ctx.Equal(shares[0], LF_MoneyUtils.GetCash(holder), "no second payout reached the holder");
+
+		// A 250 ms tick is a quarter second, not zero (the take must grow in live play).
+		ctx.EqualFloat(0.25, LF_CrewRob.TickSeconds(1250, 1000), 0.001, "a 250 ms tick counts 0.25 s");
+
+		// An idle holder releases the till: a held job whose take stops growing ends at the time-out.
+		float idleLimit = config.m_fIdleTimeoutSeconds;
+		ctx.True(idleLimit > 0, "the idle time-out is on");
+		LF_RobAction idleTill = new LF_RobAction();
+		ctx.EqualStr("", LF_CrewRob.Start(idleTill, spot, crew, POLICE), "a second till's job starts");
+		LF_CrewRobJob idleJob = LF_CrewRob.JobOf(idleTill);
+		ctx.NotNull(idleJob, "the second till has its job");
+		if (idleJob)
+		{
+			LF_CrewRob.Hold(idleTill, crew[0]);
+			LF_CrewRob.Step(idleJob, 1);
+			holder.SetOrigin(spot + "0 0 100");
+			ctx.True(LF_CrewRob.Step(idleJob, idleLimit / 2) == LF_ECrewRobEnd.NONE, "half the time-out off the spot keeps the job");
+			holder.SetOrigin(spot);
+			ctx.True(LF_CrewRob.Step(idleJob, 1) == LF_ECrewRobEnd.NONE, "back on the spot the take grows again");
+			ctx.True(LF_CrewRob.Step(idleJob, 0) == LF_ECrewRobEnd.NONE, "a zero step is not idle time");
+			holder.SetOrigin(spot + "0 0 100");
+			ctx.True(LF_CrewRob.Step(idleJob, idleLimit) == LF_ECrewRobEnd.IDLE, "the full time-out off the spot ends the job");
+			holder.SetOrigin(spot);
+		}
 
 		// The lookout's warning is once per approach.
 		ctx.True(LF_CrewRob.WarnLookouts(true, false), "an officer arriving warns the lookouts");
