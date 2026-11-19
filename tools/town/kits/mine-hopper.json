@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "kit": "mine-hopper",
+  "system": "mining",
+  "source": {
+    "file": "tools/town/kits/sources/mine-hopper.layer",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -8,
+        -4
+      ],
+      "max": [
+        8,
+        8
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "An ore hopper: the shaft tippler is the loader, a metal bin catches the load, a rail cart stands under the chute and a heap spills beside it. The base game has no standalone hopper prefab. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "tippler",
+      "name": "MineHopper_Tippler",
+      "prefab": "{8CBA9D089278A4D7}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_tippler.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bin",
+      "name": "MineHopper_Bin",
+      "prefab": "{17ADCDC2721AC2E7}Prefabs/Props/Construction/ContainerMetal_01/ContainerMetal_01_low_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        7
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cart",
+      "name": "MineHopper_Cart",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4,
+        0,
+        6
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "rack-cart",
+      "name": "MineHopper_RackCart",
+      "prefab": "{663FBF2CF8550F73}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_rack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -7,
+        0,
+        6
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "heap",
+      "name": "MineHopper_Heap",
+      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.5,
+        0,
+        6.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-1",
+      "name": "MineHopper_Barrel1",
+      "prefab": "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        0,
+        3.4
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-2",
+      "name": "MineHopper_Barrel2",
+      "prefab": "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.2,
+        0,
+        3.4
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lantern",
+      "name": "MineHopper_Lantern",
+      "prefab": "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -2,
+        0,
+        3.4
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
