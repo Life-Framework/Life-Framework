@@ -46,8 +46,8 @@ class LF_FuelStationComponentClass : ScriptComponentClass
 //!
 //! Server-authoritative: the action names the pump (its owner); the server finds the vehicle next to it and
 //! works out the litres from that vehicle's free tank room, the price from the config and the cash from the
-//! buyer's pockets. A client never sends a litre count or a price. The stock is not saved yet (the `fuelstock`
-//! section is a later card): a restart starts every station at its configured starting litres.
+//! buyer's pockets. A client never sends a litre count or a price. The stock rides the `fuelstock` save section
+//! (LF_FuelStockSave.c): a restart keeps each station's litres.
 class LF_FuelStationComponent : ScriptComponent
 {
 	static const string FEATURE = "Fuel";
@@ -59,6 +59,10 @@ class LF_FuelStationComponent : ScriptComponent
 
 	protected static ref map<string, ref LF_FuelStock> s_mStocks;
 	protected static ref LF_FuelChargeLedger s_Ledger;
+
+	//! How close an LF pump must stand to a vanilla pump to cover it, in metres.
+	static const float COVER_M = 0.6; // lf-fixed: a fit places the pump on the vanilla one's own spot
+	protected static bool s_bCovered;
 
 	protected static IEntity s_pFoundVehicle;
 	protected static vector s_vOrigin;
@@ -86,7 +90,41 @@ class LF_FuelStationComponent : ScriptComponent
 			return false;
 
 		LF_FuelStationComponent station = LF_FuelStationComponent.Cast(pump.FindComponent(LF_FuelStationComponent));
-		return station && station.SellsFromStock();
+		if (station)
+			return station.SellsFromStock();
+
+		return SellingPumpCovers(pump);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a selling LF pump stands on top of `vanillaPump` (a town fit puts `LF_FuelPump` on the exact spot of the
+	//! map's own pump, which a layer cannot delete), so the vanilla pump beneath gives no free refuel either.
+	static bool SellingPumpCovers(IEntity vanillaPump)
+	{
+		if (!vanillaPump || !GetGame() || !GetGame().GetWorld())
+			return false;
+
+		s_bCovered = false;
+		GetGame().GetWorld().QueryEntitiesBySphere(vanillaPump.GetOrigin(), COVER_M, CollectCover, null, EQueryEntitiesFlags.ALL);
+		bool covered = s_bCovered;
+		s_bCovered = false;
+		return covered;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectCover(IEntity entity)
+	{
+		if (!entity)
+			return true;
+
+		LF_FuelStationComponent station = LF_FuelStationComponent.Cast(entity.FindComponent(LF_FuelStationComponent));
+		if (station && station.SellsFromStock())
+		{
+			s_bCovered = true;
+			return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -108,6 +146,24 @@ class LF_FuelStationComponent : ScriptComponent
 		s_mStocks.Set(stationId, stock);
 		LF_Debug.Info(FEATURE, string.Format("fuel station '%1' opened with %2 of %3 litres", stationId, stock.m_iLitres, stock.m_iCapacity));
 		return stock;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every station opened so far, by id: what the `fuelstock` save section writes and reads (LF_FuelStockSave.c).
+	static map<string, ref LF_FuelStock> Stocks()
+	{
+		if (!s_mStocks)
+			s_mStocks = new map<string, ref LF_FuelStock>();
+
+		return s_mStocks;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Forgets every station's stock: the next sale opens each one at its starting litres. The owed
+	//! fractions stay.
+	static void ForgetStocks()
+	{
+		s_mStocks = null;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -141,6 +141,7 @@ addRepoDoc("docs/owner/day-cycle.md", { slug: "owner-day-cycle", group: "For ser
 addRepoDoc("docs/owner/log-lines.md", { slug: "owner-log-lines", group: "For server owners", order: 8, title: "Read your server log" });
 addRepoDoc("docs/owner/rented-host.md", { slug: "owner-rented-host", group: "For server owners", order: 9, title: "Run on a rented host" });
 addRepoDoc("docs/owner/host-the-flagship.md", { slug: "owner-host-the-flagship", group: "For server owners", order: 10, title: "Host the flagship server" });
+addRepoDoc("docs/integrations/map-generators.md", { slug: "map-generators", group: "For server owners", order: 11, title: "Making a map for Life Framework" });
 
 addRepoDoc("docs/direction.md", { slug: "direction", group: "Direction & decisions", order: 0 });
 // Lands in its own PR; addRepoDoc skips a file that is not there yet.

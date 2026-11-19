@@ -1,0 +1,64 @@
+// Grid cell c13r1 for mapper-junkyard-small: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_mapper_junkyard_small_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 179 0 35
+}
+SCR_DestructibleEntity Grid_mapper_junkyard_small_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 184 0 35
+}
+SCR_DestructibleEntity Grid_mapper_junkyard_small_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 35
+ angleY 270
+}
+SCR_DestructibleEntity Grid_mapper_junkyard_small_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 40
+ angleY 270
+}
+SCR_DestructibleEntity Grid_mapper_junkyard_small_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_mapper_junkyard_small_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 184 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_mapper_junkyard_small_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 179 0 45
+ angleY 90
+}
+GenericEntity Grid_mapper_junkyard_small_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:mapper-junkyard-small"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 178.2 0.505 35.6
+ angleY -90
+}
+GenericEntity Grid_mapper_junkyard_small_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "mapper-junkyard-small"
+  }
+ }
+ coords 178.3 0 37.5
+ angleY 90
+}
+GenericEntity Grid_mapper_junkyard_small_M1 : "{002B8C09F0E7E371}Prefabs/Props/Wrecks/S1203_wreck/S1203_wreck_static.et" {
+ coords 183.963 0.029 37.514
+ angleY 90
+}
+GenericEntity Grid_mapper_junkyard_small_M2 : "{1A1CE09F7BCA6650}Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et" {
+ coords 183.969 -0.015 42.492
+ angleY -90
+}
+GenericEntity Grid_mapper_junkyard_small_M3 : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+ coords 180.598 0 40.011
+ angleY 30
+}
+GenericEntity Grid_mapper_junkyard_small_M4 : "{530705FBB61026D2}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_03.et" {
+ coords 187.4 0.003 40.3
+}

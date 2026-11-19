@@ -1,0 +1,15 @@
+{
+  "section": "fuelstock",
+  "class": "LF_FuelStockSavePayload",
+  "version": 1,
+  "roots": "LF_FuelStockRow",
+  "records": {
+    "LF_FuelStockRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sId",
+        "int m_iLitres"
+      ]
+    }
+  }
+}

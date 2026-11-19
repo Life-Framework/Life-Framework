@@ -33,7 +33,7 @@
     },
     "front": "+x",
     "counters": [],
-    "adapt": "The vanilla fuel-station shop (FuelStation_E_01_building, 10.9 x 5.5 m) is already furnished: a shop counter with its register prop at the -x end (local x -4.7, z -0.65, register at y 1.139), the street door on the +x wall at about z 0.35. The kit adds what the systems read: the attended till (meshless `LF_FuelTill_Attended`, on the register's own spot, so the robbery hold and the fuel_clerk dialogue find it), the fuel clerk behind the counter and the resident anchors (`counter` beside the clerk for the night-shift attendant, `door` on the forecourt by the street door). The slot's marker is the FuelTill place. Rows are rigid: shift, never stretch."
+    "adapt": "The vanilla fuel-station shop (FuelStation_E_01_building, 10.9 x 5.5 m) is already furnished: a shop counter with its register prop at the -x end (local x -4.7, z -0.65, register at y 1.139), the street door on the +x wall at about z 0.35. The kit adds what the systems read: the attended till (meshless `LF_FuelTill_Attended`, on the register's own spot, so the robbery hold and the fuel_clerk dialogue find it), the fuel clerk behind the counter and the resident anchors (`counter` beside the clerk for the night-shift attendant, `door` on the forecourt by the street door). The slot's marker is the FuelTill place. Rows are rigid: shift, never stretch. The two forecourt pumps (`pump-a`, `pump-b`) are LF_FuelPump (the vanilla tank pistol with the fuel station component, station id saint-philippe): each stands on the exact spot of a vanilla pump under the canopy, 3.5 m off the building front, so the vanilla pump under it is covered and its free refuel is switched off by the pump overlap check."
   },
   "rows": [
     {
@@ -136,6 +136,36 @@
         }
       ],
       "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "pump-a",
+      "prefab": "{3328A0000000F001}Prefabs/Props/Fuel/LF_FuelPump.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "free": true,
+      "offset": [
+        9.52,
+        -0.25,
+        3.49
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pump-b",
+      "prefab": "{3328A0000000F001}Prefabs/Props/Fuel/LF_FuelPump.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "free": true,
+      "offset": [
+        -1.01,
+        -0.19,
+        3.44
+      ],
+      "yaw": 0,
+      "wall": "free",
       "floor": "f0"
     }
   ]

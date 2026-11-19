@@ -7,6 +7,10 @@
 [LF_TestInfo(LF_TestTier.LOGIC, pack: true)]
 class LF_Test_EveronScrapItems : LF_Test
 {
+	static const ResourceName SCRAP_METAL = "{EC59EAAEC5529F4A}Prefabs/Items/Scrap/LF_ScrapMetal.et";
+	static const ResourceName COPPER_WIRE = "{8092D345F08C5F22}Prefabs/Items/Scrap/LF_CopperWireCoil.et";
+	static const ResourceName RUBBER_SCRAP = "{0FC6120F0F62EFBA}Prefabs/Items/Scrap/LF_RubberScrap.et";
+
 	//! The legal band's hour, below the fuel haul.
 	static const int LEGAL_HOUR = 450;
 
@@ -17,6 +21,13 @@ class LF_Test_EveronScrapItems : LF_Test
 	override string GetName()
 	{
 		return "everon/scrap-items";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The three goods the scrapyard buys on its own curves (Market/LF_Market_Scrap_Everon1989.conf); LF_Test_EveronMarket skips them.
+	static bool IsScrapGood(ResourceName good)
+	{
+		return LF_Utils.SamePrefab(good, SCRAP_METAL) || LF_Utils.SamePrefab(good, COPPER_WIRE) || LF_Utils.SamePrefab(good, RUBBER_SCRAP);
 	}
 
 	//------------------------------------------------------------------------------------------------
