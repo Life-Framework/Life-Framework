@@ -7957,6 +7957,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logged out"
      Comment "World-space tag over a logged-out player's body (#1974)."
     }
+    CustomStringTableItem "{C2059960A9DF4550}" {
+     Id "LF-Loot_Cooldown"
+     Target_en_us "Nothing new here yet. Try again in about %1 min."
+     Comment "Toast: an emptied container has not refilled yet. %1 = minutes."
+    }
+    CustomStringTableItem "{0EFBD383AE6DFA08}" {
+     Id "LF-Loot_CrateName"
+     Target_en_us "Crate"
+     Comment "Name of a searchable loot crate in the inventory."
+    }
+    CustomStringTableItem "{9304B5DAB88FF982}" {
+     Id "LF-Loot_Found"
+     Target_en_us "You search the crate and find something."
+     Comment "Toast after a search filled the container."
+    }
+    CustomStringTableItem "{D21D64729C6E9008}" {
+     Id "LF-Loot_Open"
+     Target_en_us "Open crate"
+     Comment "Action on a loot container: opens it as normal storage."
+    }
+    CustomStringTableItem "{A9AB3A8A23789166}" {
+     Id "LF-Loot_Search"
+     Target_en_us "Search"
+     Comment "Action on a loot container: a short hold that fills it from its loot table (#3343)."
+    }
+    CustomStringTableItem "{292DEA0C67C02DD6}" {
+     Id "LF-Loot_StillStocked"
+     Target_en_us "There is still something in here."
+     Comment "Toast: a search added nothing because the container still holds items."
+    }
     CustomStringTableItem "{F4126E9A5B38D07C}" {
      Id "LF-LostAndFound_CannotAfford"
      Target_en_us "You do not have the fee in cash."

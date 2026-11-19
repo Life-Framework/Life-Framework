@@ -23,11 +23,23 @@ makes it and how long until it refills. A server tunes the tables in config; no 
   1..`MAX_ROLLS`, a negative refill time) logs `LF_Debug.Error("Loot", ...)` and rolls nothing; `CanRefill` is
   false. It never throws.
 
+## Containers (#3343)
+
+- `LF_LootContainerComponent` on a prop names its table kind (`m_sKind`). The held "Search" action
+  (`LF_LootSearchAction`, prefab Duration 3 s) asks the server: `Search(nowSeconds, seed)` fills the prop's
+  storage from the table through its `LF_LootStorageManagerComponent`. The items are spawned into the
+  storage, never handed to the searcher; the container then opens through the normal "Open storage" action.
+- The decision: never filled, fill; holds items, `STILL_STOCKED` (nothing added); empty inside the cooldown,
+  `COOLDOWN`; empty after it, refill. The fill time is stamped before anything spawns and the call is one
+  synchronous server step, so two searches at once fill once. A replicated `m_bFilled` lets a client hide
+  "Search" on a stocked container; the server never trusts it.
+- Nothing is saved: after a restart every container starts unsearched. `Prefabs/Props/Loot/LF_LootCrate.et`
+  (kind `crate`) is the core example; a pack adds containers by prefab and kinds by table overlay.
+
 ## Not built yet
 
-Tagged containers in the world, filling on first open, the saved fill time and the refill tick are later slices
-of #1020. Nothing in the world reads this yet.
+A pack's tagged containers in the world and the zone-tuned tables are later slices of #1020.
 
 ## Tests
 
-`LF_Test_LootRules` (`loot/rules`, LOGIC).
+`LF_Test_LootRules` (`loot/rules`, LOGIC), `LF_Test_LootContainer` (`loot/container`, WORLD).
