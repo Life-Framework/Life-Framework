@@ -2855,6 +2855,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You play white"
      Comment "Chess board: your seat."
     }
+    CustomStringTableItem "{53C4F6BAC7AAF841}" {
+     Id "LF-ChopFit_Action"
+     Target_en_us "Fit a hidden compartment"
+     Comment "Action: fit a hidden compartment to your car at the chop shop bench (#3776)."
+    }
+    CustomStringTableItem "{067E82FC427CEEAC}" {
+     Id "LF-ChopFit_AlreadyFitted"
+     Target_en_us "This car already has a compartment"
+     Comment "Toast: the car in the yard already has one (#3776)."
+    }
+    CustomStringTableItem "{1AD684CDD3AA9AF8}" {
+     Id "LF-ChopFit_Done"
+     Target_en_us "Compartment fitted for %1. Only you can open it."
+     Comment "Toast: fitted; %1 = the price paid (#3776)."
+    }
+    CustomStringTableItem "{733264AC2EA28EAA}" {
+     Id "LF-ChopFit_Failed"
+     Target_en_us "The yard could not fit it. You were not charged"
+     Comment "Toast: the compartment did not build and the price was handed back (#3776)."
+    }
+    CustomStringTableItem "{A8C83E644C7756E7}" {
+     Id "LF-ChopFit_NoVehicle"
+     Target_en_us "Park your car by the bench first"
+     Comment "Toast: no car in the drop area (#3776)."
+    }
+    CustomStringTableItem "{26A5C4DD24616668}" {
+     Id "LF-ChopFit_NotOwner"
+     Target_en_us "That is not your car"
+     Comment "Toast: the car in the yard is not owned by you (#3776)."
+    }
+    CustomStringTableItem "{1E8F5D0E98750F73}" {
+     Id "LF-ChopFit_ShortPurse"
+     Target_en_us "Fitting costs %1. You do not carry enough cash"
+     Comment "Toast: short of cash; %1 = the price (#3776)."
+    }
+    CustomStringTableItem "{A337DA90CA34D072}" {
+     Id "LF-ChopFit_TooFar"
+     Target_en_us "Step up to the bench"
+     Comment "Toast: too far from the bench (#3776)."
+    }
+    CustomStringTableItem "{8D7A5FEA2D016218}" {
+     Id "LF-ChopFit_Unsupported"
+     Target_en_us "The yard cannot fit a compartment in this car"
+     Comment "Toast: the car has no row in the compartment table (#3776)."
+    }
     CustomStringTableItem "{87229FC4BD0FB108}" {
      Id "LF-Chop_Busy"
      Target_en_us "The bench is busy"
@@ -10786,6 +10831,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the clerk"
      Comment "Interaction on the town clerk NPC."
     }
+    CustomStringTableItem "{3768F00000000011}" {
+     Id "LF-Quest_Action_PoliceDesk"
+     Target_en_us "Speak to the desk"
+     Comment "Action on the duty desk: talk about a report or hand something in (#3768)."
+    }
     CustomStringTableItem "{D85E266C2ACFBDC1}" {
      Id "LF-Quest_ArrivalBank_Desc"
      Target_en_us "Paid in cash. Cash in a pocket is lost if you die, money in the bank is not. Deposit some at an ATM."
@@ -10866,6 +10916,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Quest_Giver_Clerk"
      Target_en_us "Town clerk"
      Comment "Quest menu title for the town clerk on the square (arrival chain)."
+    }
+    CustomStringTableItem "{3768F00000000012}" {
+     Id "LF-Quest_Giver_PoliceDesk"
+     Target_en_us "Duty desk"
+     Comment "Name of the duty desk as a quest giver (#3768)."
     }
     CustomStringTableItem "{028FE3699291F64C}" {
      Id "LF-Quest_Giver_Start"
@@ -11043,6 +11098,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Missão ainda não concluída"
     Comment "Turn-in refused, quest not complete"
    }
+    CustomStringTableItem "{3768F00000000013}" {
+     Id "LF-Quest_PoliceDesk_Idle"
+     Target_en_us "Nothing for the desk right now."
+     Comment "The duty desk when there is nothing to hand in or report (#3768)."
+    }
    CustomStringTableItem "{C62FE3743E00B28C}" {
     Id "LF-Quest_Rejected"
     Target_en_us "Quest not available"

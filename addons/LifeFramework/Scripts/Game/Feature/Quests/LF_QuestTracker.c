@@ -88,6 +88,9 @@ class LF_QuestTracker
 		if (!def.m_sRequiredPreviousQuestId.IsEmpty() && !CompletedListContains(def.m_sRequiredPreviousQuestId, completedQuestIds))
 			return false;
 
+		if (ChoiceMade(def))
+			return false;
+
 		LF_QuestState existing = m_mStates.Get(def.m_sQuestId);
 		if (existing)
 		{
@@ -97,6 +100,24 @@ class LF_QuestTracker
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the other side of a choice is already done: a quest this one is exclusive with
+	//! (LF_QuestDefinition.m_aExclusiveQuestIds) is completed or turned in (#3768).
+	bool ChoiceMade(LF_QuestDefinition def)
+	{
+		if (!def || !def.m_aExclusiveQuestIds)
+			return false;
+
+		foreach (string otherId : def.m_aExclusiveQuestIds)
+		{
+			LF_EQuestStatus other = GetStatus(otherId);
+			if (other == LF_EQuestStatus.COMPLETED || other == LF_EQuestStatus.TURNED_IN)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -113,7 +134,28 @@ class LF_QuestTracker
 			m_mStates.Set(def.m_sQuestId, state);
 		}
 		state.Accept(def.m_sQuestId, def.m_fTimeLimitSeconds, now);
+		FailExclusive(def);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Taking one side of a choice closes the other if it was running (#3768): it fails, and as it
+	//! is a one-off it cannot be taken again.
+	//! \return How many quests failed.
+	int FailExclusive(LF_QuestDefinition def)
+	{
+		if (!def || !def.m_aExclusiveQuestIds)
+			return 0;
+
+		int failed;
+		foreach (string otherId : def.m_aExclusiveQuestIds)
+		{
+			LF_QuestState other = m_mStates.Get(otherId);
+			if (other && other.Fail())
+				failed++;
+		}
+
+		return failed;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -213,6 +255,10 @@ class LF_QuestTracker
 			if (m_mStates.Contains(questId))
 				continue;
 			if (!HasTurnedIn(def.m_sRequiredPreviousQuestId))
+				continue;
+
+			// The other side of a choice is done: this step is shut out, not rejected on every settle.
+			if (ChoiceMade(def))
 				continue;
 
 			outQuestIds.Insert(questId);

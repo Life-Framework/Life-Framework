@@ -7,9 +7,9 @@
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronShipmentQuest : LF_Test
 {
-	static const ResourceName SAMPLE = "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et";
+	static const ResourceName SAMPLE = "{A3BFEFD984031D81}Prefabs/Items/Contraband/LF_ShipmentSample.et";
 	static const string GATE = "contract:harbour_crates";
-	static const string DIALOGUE_ID = "shipment_harbour_master";
+	static const string DIALOGUE_ID = "harbour_master";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -63,6 +63,25 @@ class LF_Test_EveronShipmentQuest : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when the quest pays exactly the standing actions of `list` (";" between ids), each with a row in the tables.
+	protected static bool HasAwards(LF_QuestDefinition quest, string list)
+	{
+		array<string> wanted = {};
+		list.Split(";", wanted, false);
+		if (!quest.m_aTurnInAwards || quest.m_aTurnInAwards.Count() != wanted.Count())
+			return false;
+
+		LF_ReputationConfig config = LF_ReputationConfig.Get();
+		foreach (string action : wanted)
+		{
+			if (quest.m_aTurnInAwards.Find(action) == -1 || !config || !config.FindAward(action))
+				return false;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static bool HasText(string key)
 	{
 		string text = WidgetManager.Translate(key);
@@ -110,7 +129,10 @@ class LF_Test_EveronShipmentQuest : LF_Test
 			LF_QuestObjective open = count.GetObjective(0);
 			ctx.True(open && open.m_eType == LF_EQuestEventType.COLLECT_REPORT, "counting the crate is a collect objective");
 			if (open)
+			{
 				ctx.EqualStr(SAMPLE, open.m_sFilter, "the count objective names the sample item");
+				ctx.True(open.m_bKeepOnTurnIn, "counting leaves the sample in the bag");
+			}
 		}
 
 		// Report ending: the police desk takes the sample in hand (a collect objective is removed from the bag on turn-in).
@@ -123,6 +145,8 @@ class LF_Test_EveronShipmentQuest : LF_Test
 
 			ctx.EqualStr("shipment_count", report.m_sRequiredPreviousQuestId, "the report ending follows the count");
 			ctx.False(report.m_bAutoTurnIn, "the report is turned in at the desk, not on its own");
+			ctx.True(report.m_aExclusiveQuestIds && report.m_aExclusiveQuestIds.Find("shipment_sold") != -1, "reporting is a choice against selling");
+			ctx.True(HasAwards(report, "shipment_report_town;shipment_report_police;shipment_report_underworld"), "reporting pays the town and the police and costs the underworld");
 		}
 
 		// Sell ending: the buyer paying closes it.
@@ -131,9 +155,12 @@ class LF_Test_EveronShipmentQuest : LF_Test
 			LF_QuestObjective pay = sold.GetObjective(0);
 			ctx.True(pay && pay.m_eType == LF_EQuestEventType.SIGNAL, "selling is closed by a signal");
 			if (pay)
-				ctx.EqualStr("shipment.sold", pay.m_sFilter, "the sell objective listens for shipment.sold");
+				ctx.EqualStr(LF_QuestSignals.BuyerSold(SAMPLE), pay.m_sFilter, "the sell objective listens for the buyer paying for the sample");
 
 			ctx.EqualStr("shipment_count", sold.m_sRequiredPreviousQuestId, "the sell ending follows the count");
+			ctx.True(sold.m_bAutoAccept && sold.m_bAutoTurnIn, "the sell ending starts and closes on its own");
+			ctx.True(sold.m_aExclusiveQuestIds && sold.m_aExclusiveQuestIds.Find("shipment_report") != -1, "selling is a choice against reporting");
+			ctx.True(HasAwards(sold, "shipment_sold_underworld;shipment_sold_town"), "selling pays the underworld and costs the town");
 		}
 	}
 
@@ -152,14 +179,34 @@ class LF_Test_EveronShipmentQuest : LF_Test
 		if (def && gate)
 			ctx.EqualStr(gate.m_sFaction, def.m_sFaction, "the contract and its gate name the same faction");
 
-		LF_DialogueNode start = LF_DialogueFlow.FindNode(config, config.m_sStart);
-		ctx.NotNull(start, "the shipment dialogue has a start");
-		LF_DialogueOption ask = FindReply(start, "shipment.count", "Contract");
-		ctx.NotNull(ask, "the count request sits behind the Contract condition");
+		// The question sits on the harbour master's work answer (the greeting has no room: four replies), behind the Contract condition.
+		LF_DialogueNode job = LF_DialogueFlow.FindNode(config, "first_job");
+		ctx.NotNull(job, "the harbour master still has his work answer");
+		LF_DialogueOption ask = FindReply(job, "shipment.ask", "Contract");
+		ctx.NotNull(ask, "the question about the crate sits behind the Contract condition");
 		if (ask)
 		{
-			ctx.EqualStr("harbour_crates", ask.m_sParam, "the count request reads the harbour crates gate");
+			ctx.EqualStr("harbour_crates", ask.m_sParam, "the question reads the harbour crates gate");
 			ctx.True(LF_DialogueHook.Find(ask.m_sCondition) != null, "the Contract condition has a hook class");
+		}
+
+		// The harbour master's own talk is kept: taking the job, the crates contract and the goodbyes.
+		ctx.NotNull(FindReply(job, "go", ""), "the patch keeps taking the job");
+		ctx.NotNull(FindReply(job, "bye", ""), "the patch keeps the not-now reply");
+		LF_DialogueNode start = LF_DialogueFlow.FindNode(config, config.m_sStart);
+		ctx.NotNull(FindReply(start, "first_job", ""), "the greeting still asks about work");
+		ctx.NotNull(FindReply(start, "crates_offer", "Contract"), "the greeting still offers the crates");
+		ctx.NotNull(FindReply(start, "crates_early", "ContractLocked"), "the greeting still holds the early-crates reply");
+
+		// Taking the count runs the quest talk with the harbour master's giver.
+		LF_DialogueNode asked = LF_DialogueFlow.FindNode(config, "shipment.ask");
+		LF_DialogueOption take = FindReply(asked, "shipment.count", "QuestNotTurnedIn");
+		ctx.NotNull(take, "the count is offered until it is turned in");
+		if (take)
+		{
+			ctx.EqualStr("shipment_count", take.m_sParam, "the count reply reads shipment_count");
+			ctx.EqualStr("QuestConverse", take.m_sAction, "the count reply takes the count from the harbour master's giver");
+			ctx.True(LF_DialogueHook.Find(take.m_sAction) != null, "the QuestConverse action has a hook class");
 		}
 	}
 
@@ -174,12 +221,12 @@ class LF_Test_EveronShipmentQuest : LF_Test
 		if (path.IsEmpty())
 			return;
 
-		LF_DialogueConfig config = LF_DialogueConfig.Load(path);
-		ctx.NotNull(config, "the shipment dialogue loads");
+		LF_DialogueConfig config = LF_DialogueConfig.Layered(path);
+		ctx.NotNull(config, "the harbour master dialogue loads with the shipment patch");
 		if (!config)
 			return;
 
-		ctx.EqualStr(DIALOGUE_ID, config.m_sId, "the dialogue is the harbour master's shipment talk");
+		ctx.EqualStr(DIALOGUE_ID, config.m_sId, "the shipment talk is part of the harbour master dialogue");
 		ctx.EqualStr("Marcel Roux", WidgetManager.Translate(config.m_sSpeakerKey), "the speaker is Marcel Roux");
 
 		array<string> problems = {};
@@ -207,11 +254,11 @@ class LF_Test_EveronShipmentQuest : LF_Test
 		}
 
 		// Both endings thank the player only once the matching quest is turned in.
-		LF_DialogueNode start = LF_DialogueFlow.FindNode(config, config.m_sStart);
-		LF_DialogueOption reported = FindReply(start, "shipment.thanks_report", "QuestTurnedIn");
-		LF_DialogueOption sold = FindReply(start, "shipment.thanks_sell", "QuestTurnedIn");
-		ctx.NotNull(reported, "the greeting thanks a player who reported it");
-		ctx.NotNull(sold, "the greeting thanks a player who sold it");
+		LF_DialogueNode asked = LF_DialogueFlow.FindNode(config, "shipment.ask");
+		LF_DialogueOption reported = FindReply(asked, "shipment.thanks_report", "QuestTurnedIn");
+		LF_DialogueOption sold = FindReply(asked, "shipment.thanks_sell", "QuestTurnedIn");
+		ctx.NotNull(reported, "Marcel thanks a player who reported it");
+		ctx.NotNull(sold, "Marcel thanks a player who sold it");
 		if (reported)
 			ctx.EqualStr("shipment_report", reported.m_sParam, "the report thanks reads shipment_report");
 

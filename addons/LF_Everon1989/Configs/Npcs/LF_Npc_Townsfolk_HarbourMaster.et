@@ -13,6 +13,11 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
   LF_DialogueComponent "{21719F6375FBAB5D}" {
    m_sDialogueId "harbour_master"
   }
+  LF_QuestGiverComponent "{3768D00000000001}" {
+   m_sGiverId "harbour_master"
+   m_sDisplayName "#LF-Townsfolk_HarbourMaster_Name"
+   m_bConverse 1
+  }
   LF_PlaceComponent "{64AF5A8134B6B4FF}" {
    m_sKind "Townsfolk"
    m_sId "harbour_master"
