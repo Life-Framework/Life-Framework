@@ -1,0 +1,22 @@
+GenericEntity {
+ ID "774A792A4875BE52"
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOn 18
+   m_fHourOff 6
+  }
+ }
+ {
+  LightEntity {
+   ID "EDC99251FB6542C4"
+   coords 0 0 0
+   Color 1 0.72 0.42 1
+   LV 3
+   ClipEV -10
+   CastShadow 0
+   Radius 4
+   NearPlane 0.3
+   LensFlareType Disabled
+  }
+ }
+}

@@ -1459,6 +1459,11 @@ StringTable {
      Target_en_us "Uniform pieces, a radio and a flashlight for officers on duty."
      Comment "Everon 1989 outlet counter (#1770): police_stores."
     }
+    CustomStringTableItem "{3E7A91C04B52D691}" {
+     Id "LF-Shop_Desc_SeedFeed"
+     Target_en_us "Cabbage seeds, bait, fishing rods and bottled water for the farms and the harbour."
+     Comment "Shop description of the Saint-Philippe seed and feed store till (#3223)."
+    }
     CustomStringTableItem "{0BFE6BABD6975286}" {
      Id "LF-Shop_Desc_SurplusStall"
      Target_en_us "Older army jackets, boots, canteens, binoculars and packs."
@@ -1519,6 +1524,11 @@ StringTable {
      Target_en_us "Police stores"
      Comment "Everon 1989 outlet counter (#1770): police_stores."
     }
+    CustomStringTableItem "{3E7A91C04B52D692}" {
+     Id "LF-Shop_Name_SeedFeed"
+     Target_en_us "Seed & Feed"
+     Comment "Shop name of the Saint-Philippe seed and feed store till (#3223): stock seed_feed."
+    }
     CustomStringTableItem "{4D08F861A5C58B94}" {
      Id "LF-Shop_Name_SurplusStall"
      Target_en_us "Army surplus stall"
@@ -1538,6 +1548,11 @@ StringTable {
      Id "LF-Shop_OpenDesc_Newsagent"
      Target_en_us "Buy the tourist map or a paper"
      Comment "Action description on the newsagent kiosk till (#3222)."
+    }
+    CustomStringTableItem "{3E7A91C04B52D694}" {
+     Id "LF-Shop_OpenDesc_SeedFeed"
+     Target_en_us "Buy seeds, bait or a fishing rod"
+     Comment "Action description on the seed and feed store till (#3223)."
     }
     CustomStringTableItem "{5E3D7D45BF074AD0}" {
      Id "LF-Shop_Open_Butcher"
@@ -1593,6 +1608,11 @@ StringTable {
      Id "LF-Shop_Open_PoliceStores"
      Target_en_us "Open the police stores"
      Comment "Everon 1989 outlet counter (#1770): police_stores."
+    }
+    CustomStringTableItem "{3E7A91C04B52D693}" {
+     Id "LF-Shop_Open_SeedFeed"
+     Target_en_us "Browse the farm supplies"
+     Comment "Action label on the seed and feed store till (#3223)."
     }
     CustomStringTableItem "{E20C00A121F45328}" {
      Id "LF-Shop_Open_SurplusStall"
