@@ -62,6 +62,15 @@ const check = (cond, msg) => {
   const row = rows.find((r) => org && r.id === `sp:${org.building}`);
   check(!!row && row.purpose === "b" && /org registry/.test(row.use ?? ""), "saint-philippe: the org slot's building has no purpose row 'org registry'");
 }
+// the wheatfield slot (#3300) is mapped and the template knows it; its building stands in the farmwest survey, so the entry names that dossier.
+// red-proof: before #3300 this printed "FAIL  saint-philippe: the mapping has no wheatfield slot on a building of the farmwest survey" and "FAIL  the town template has no wheatfield slot".
+{
+  const wheat = JSON.parse(readFileSync(join(ROOT, "docs", "everon", "places", "saint-philippe", "mapping.json"), "utf8")).slots.wheatfield;
+  const farmwest = JSON.parse(readFileSync(join(ROOT, "docs", "everon", "places", "saint-philippe-farmwest", "dossier.json"), "utf8"));
+  check(!!wheat && wheat.dossier === "saint-philippe-farmwest" && farmwest.buildings.some((b) => b.id === wheat.building && /^Barn_E_03_open/.test(b.stem)), "saint-philippe: the mapping has no wheatfield slot on a building of the farmwest survey");
+  const tmpl = JSON.parse(readFileSync(join(ROOT, "tools", "town", "templates", "town.json"), "utf8"));
+  check(tmpl.slots.some((s) => s.id === "wheatfield"), "the town template has no wheatfield slot");
+}
 // the lead approves the dock mapping on merge (#3315): a `proposed` file is a draft nobody has accepted
 check(JSON.parse(readFileSync(join(ROOT, "docs", "everon", "places", "saint-philippe-dock", "mapping.json"), "utf8")).status === "approved", "saint-philippe-dock: the mapping status is not approved");
 process.exit(failed ? 1 : 0);
