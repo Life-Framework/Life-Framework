@@ -44,7 +44,7 @@ GenericEntity Source_PlantReagentStore_Pallet : "{D7F69BF7D2DCA0A8}Prefabs/Props
  angleY 0
 }
 GenericEntity Source_PlantReagentStore_Crate1 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 3 0.15 4.2
+ coords 3 0.144 4.2
  angleY 0
 }
 GenericEntity Source_PlantReagentStore_Lamp1 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
