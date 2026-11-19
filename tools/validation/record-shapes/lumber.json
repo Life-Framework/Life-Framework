@@ -1,0 +1,15 @@
+{
+  "section": "lumber",
+  "class": "LF_LumberSavePayload",
+  "version": 1,
+  "roots": "LF_TreeRegrowRow",
+  "records": {
+    "LF_TreeRegrowRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sKey",
+        "int m_iSecondsLeft"
+      ]
+    }
+  }
+}

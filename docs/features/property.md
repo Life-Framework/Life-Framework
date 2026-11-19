@@ -116,6 +116,10 @@
   owner who set it still owns the house; a sold house is never the buyer's spawn, in session or after a save. Any owner change
   (`LF_HouseManagerComponent.SetOwner`, whatever calls it) clears the flag, so buying the house back does not restore it.
 - 🟡 Applies at login only (the spawn flow reads `SpawnHouseOf`); deaths still wake at hospital. Proof: `property/set-home`.
+- 🟡 A dedicated client sees the offer too (#3375): the property book and `LF_Houses.Find` are server-only, so the client
+  compares its key with the house's replicated `GetOwnerKey()` and skips the `SpawnHouseOf` check (`LF_SetHomeAction.OfferSet`,
+  shared with the house sign, #3208). The server re-checks in `SetSpawnHouse`. Proof: `property/set-home-client-offer`
+  (host test of the client branch; dedicated-client session is a manual step).
 
 ### Spawn order at login — `Feature/Character/Spawning/LF_SpawnPriority.c`, `Feature/Property/LF_HouseSpawnComponent.c` (2026-11-18, #2652, spec #747)
 - 🟡 Login order: jail (the body is moved to the cell after it spawns), the hospital wake after a death, a rejoin
