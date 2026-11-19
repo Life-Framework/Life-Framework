@@ -839,6 +839,7 @@ class LF_PlacementAudit
 	//!   ray <id> <x> <y> <z> <x2> <y2> <z2> [exclude name]  a probe ray (RayLine), not an entity row
 	//!   settle <id> <name|@prefab:x,y,z>                    rest that entity by its mesh bottom (SettleLine); the entity rows
 	//!                                                       follow the extra lines, so they measure it already settled
+	//! A row may end with "rel": its y counts from the terrain (a terrain-relative class), so it is looked for at terrain + y.
 	//! Output lines: "<index> missing=1", "<index> <Format> found=<label>", "door ...", "ray ...". Returns the
 	//! entity rows written, or -1 when a file cannot be opened. `missing` counts entities not found.
 	static int RunBatch(string inPath, string outPath, out int missing)
@@ -897,7 +898,12 @@ class LF_PlacementAudit
 			string prefab = parts[2];
 			if (prefab == "-")
 				prefab = "";
-			IEntity entity = FindPlaced(name, prefab, Vector(parts[3].ToFloat(), parts[4].ToFloat(), parts[5].ToFloat()));
+			vector layerPos = Vector(parts[3].ToFloat(), parts[4].ToFloat(), parts[5].ToFloat());
+			// "rel": a class whose layer y counts from the terrain under it (SCR_DestructibleEntity, #3566), so it stands at
+			// terrain + y, not at y.
+			if (parts.Count() >= 8 && parts[7] == "rel")
+				layerPos[1] = layerPos[1] + GetGame().GetWorld().GetSurfaceY(layerPos[0], layerPos[2]);
+			IEntity entity = FindPlaced(name, prefab, layerPos);
 			measured++;
 			if (!entity)
 			{
