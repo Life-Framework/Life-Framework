@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkClaimsAndFootprints, distToPolygon, slotGround } from "../town/check.mjs";
-import { DROP_PREFAB, dropKit, exitDistance } from "../town/drops.mjs";
+import { DROP_KITS, DROP_PREFAB, dropKit, exitDistance } from "../town/drops.mjs";
 import { checkMapping, loadTemplate } from "../town/map.mjs";
 import { checkOutposts, dropAsEntry, dropKeys } from "../town/outposts.mjs";
 
@@ -37,6 +37,11 @@ check(Math.abs(shifted.kit.rows[0].offset[0] - 0.8 * 5) < 0.01 || shifted.kit.ro
 // turn: a quarter turn puts the mailbox on another side (here +x: the 10 m wide side is 5 m out, the row faces east).
 const turned = dropKit(building("b1", 0, 0), "parcel-drops", null, 0, 1).kit.rows[0];
 check(turned.offset[0] > 5 && turned.offset[0] < 8 && Math.abs(turned.yaw - 90) < 0.01, `turn 1 stands east of the box facing east, got ${JSON.stringify([turned.offset, turned.yaw])}`);
+
+// atms (#3355): the kit places the ATM prefab (not the mailbox) and each machine gets its own place id, so LF_Places tells them apart.
+const atmRow = dropKit(building("b1", 0, 0), "atms", null, 0, 0, "atms").kit.rows[0];
+check(/LF_ATM\.et$/.test(atmRow.prefab) && atmRow.prefab !== DROP_PREFAB, `the atms kit places LF_ATM, got ${atmRow.prefab}`);
+check(DROP_KITS.atms?.placeId({ place: "p", building: "b1" }) !== DROP_KITS.atms?.placeId({ place: "p", building: "b2" }) && DROP_KITS.atms?.placeComp, "each ATM gets its own m_sId override");
 
 // checkOutposts: an empty list, the own place (allowed since #3346: a village-wide slot lists its own buildings), a missing dossier, a missing building, a repeat.
 const own = "home";

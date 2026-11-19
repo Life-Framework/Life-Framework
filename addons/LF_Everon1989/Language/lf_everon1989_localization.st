@@ -2679,6 +2679,31 @@ StringTable {
      Target_en_us "Iron, copper, and gold ore in the rocks here. The furnace stands next to them."
      Comment "Mining sign card, What section."
     }
+    CustomStringTableItem "{2C369D85CBC200FE}" {
+     Id "LF-Sign_Orchard_How"
+     Target_en_us "*Gather Apple* or *Gather Plum* from a tree, then *Make 1 apple juice with 3 apples* at the juicer under the lean-to"
+     Comment "Sign card for the Saint-Philippe orchard, How section (#3388). Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{7830EE35680F0ABB}" {
+     Id "LF-Sign_Orchard_Needs"
+     Target_en_us "Nothing but your hands. Each tree gives ten fruit, then grows one back every three minutes."
+     Comment "Sign card for the Saint-Philippe orchard, You need section (#3388). Ten and three minutes are the gather stock of #2409."
+    }
+    CustomStringTableItem "{52B8F4AE092FEDC6}" {
+     Id "LF-Sign_Orchard_Next"
+     Target_en_us "Sell the juice and the fruit at the market, or keep the apples for cider."
+     Comment "Sign card for the Saint-Philippe orchard, Next section (#3388)."
+    }
+    CustomStringTableItem "{CC0A61DC5B26AE54}" {
+     Id "LF-Sign_Orchard_Title"
+     Target_en_us "Verger"
+     Comment "Title of the sign at the Saint-Philippe orchard (Everon 1989 pack, #3388). Printed on the sign and shown in the prompt as Read: Verger."
+    }
+    CustomStringTableItem "{A56C723327FC4794}" {
+     Id "LF-Sign_Orchard_What"
+     Target_en_us "The town orchard: apple and plum trees, and a juicer under a lean-to."
+     Comment "Sign card for the Saint-Philippe orchard, What section (#3388)."
+    }
     CustomStringTableItem "{DD5F159B6A7D8B1F}" {
      Id "LF-Sign_OrgRegistry_How"
      Target_en_us "Organization desk, then Found organization, Deposit cash, Withdraw cash, or Buy processing slot."

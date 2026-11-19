@@ -19,8 +19,9 @@ const PRICE = 80; // LF_BuyerPrices_Everon1989.conf
 const FEE = 150; // LF_Launder_Everon1989.conf, m_iInformantFee
 const HOME_ANCHOR = "Fit_saint_philippe_residents_anchor_door"; // the night-shift worker's doorstep (05:30)
 const TALK = "LF_DialogueTalkAction";
+const INFORMANT = "Resident_night_shift"; // LF_ResidentHarness: a spawned resident by id
 const SALE = "LF_BuyerSaleAction";
-const HIS_GREETING = /open node=greet_(regular|friendly|wary|refuses)/; // LF_Dialogue_NightShift.conf; the generic resident says greet_neutral
+const HIS_GREETING = /open node=greet(_(regular|friendly|wary|refuses))?(?![a-z_])/; // LF_Dialogue_NightShift.conf: start node `greet` or a standing variant; the generic resident says greet_neutral
 
 async function runDirtyMoneyIsland() {
   const h = await import("../harness.mjs");
@@ -80,18 +81,20 @@ async function runDirtyMoneyIsland() {
   for (let i = 0; i < BOTTLES; i++) if (on(1, { verb: "itemgive", prefab: MOONSHINE }, 10000).status === "ok") given++;
   step("2 the character carries moonshine to sell", given === BOTTLES, `${given}/${BOTTLES} bottles`, "the itemgive verb");
 
-  // 3. The informant: the night-shift worker is at his doorstep from 05:30. The player stands there and the clock is
-  // set to dawn so the resident spawner and timetable put him on the step; the talk takes the nearest speaker.
+  // 3. The informant: the night-shift worker is at his doorstep from 05:30. The clock is set to dawn so the resident
+  // spawner and timetable put him there; `Resident_night_shift` (#3650) addresses the spawned resident by id, so the
+  // stand and the talk reach him and never a neighbour. He spawns only with a player near his anchor, so the
+  // player first stands at the doorstep, then beside him.
   on(1, { verb: "time", hour: 6 }, 15000);
-  // He appears on the bench, then walks to the door within 25 s; the generic residents answer a talk too, so a
-  // reply that is not one of his own greeting nodes is closed and the next side of the doorstep is tried.
-  wait(35000);
-  let stand = { status: "none" };
+  on(1, { verb: "stand", entityName: HOME_ANCHOR, side: "e" }, 20000);
+  let stand = { status: "none", detail: "" };
   let opened = "";
-  for (let tries = 0; tries < 8 && !HIS_GREETING.test(opened); tries++) {
-    stand = on(1, { verb: "stand", entityName: HOME_ANCHOR, side: ["e", "w", "n", "s"][tries % 4] }, 20000);
-    wait(4000);
-    on(1, { verb: "use", className: TALK, entityName: "" }, 10000);
+  for (let tries = 0; tries < 12 && !HIS_GREETING.test(opened); tries++) {
+    wait(5000);
+    stand = on(1, { verb: "stand", entityName: INFORMANT }, 20000);
+    if (stand.status !== "ok") continue;
+    wait(1500);
+    on(1, { verb: "use", className: TALK, entityName: INFORMANT }, 10000);
     wait(900);
     opened = scene();
     if (!HIS_GREETING.test(opened)) {
@@ -99,7 +102,7 @@ async function runDirtyMoneyIsland() {
       wait(1500);
     }
   }
-  const greetOk = step("3 the night-shift worker answers the talk at the home doorstep", stand.status === "ok" && HIS_GREETING.test(opened), `stand=${stand.status} scene=${opened}`, "the harness cannot address a spawned resident by id: `use LF_DialogueTalkAction` reaches the nearest resident (a neighbour, greet_neutral), not night_shift (follow-up card: a harness verb to stand beside or talk to a resident by id)");
+  const greetOk = step("3 the night-shift worker answers the talk at the home doorstep", stand.status === "ok" && HIS_GREETING.test(opened), `stand=${stand.status} ${stand.detail.slice(0, 80)} scene=${opened}`, "the Resident_<id> harness target (#3650): he is not live (not due, or no player near), or his greeting nodes changed");
   if (!greetOk) { laundering(logStart); return finish(results); }
   let state = untilChoosing();
   // greet rows: zone, move, work, bye (a 'wary' greeting offers bye only: the standing was not enough).

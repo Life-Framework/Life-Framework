@@ -1,0 +1,306 @@
+{
+  "schema": 1,
+  "kit": "orchard",
+  "system": "harvest",
+  "source": {
+    "file": "tools/town/kits/sources/orchard.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -3.4,
+        -17
+      ],
+      "max": [
+        13.5,
+        5.5
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "Open ground beside a farm barn used as an anchor only: the kit frame is the barn turned to a quarter turn from the world (x east, z north on b100 of the Saint-Philippe survey). Four apple and three plum gather trees stand in two columns 8.5 and 13.5 m east of the barn centre on the open grass; the stall (a lean-to for the juicer) stands 2 m south of the barn's back wall facing away from it, the juicer on its counter, the tally desk, the sign, two fruit crates, a hay bale and a hand cart beside it. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "orchard-apple-1",
+      "name": "Orchard_Apple_1",
+      "prefab": "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        8.5,
+        0,
+        1.5
+      ],
+      "yaw": 10,
+      "class": "Tree",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "relative"
+    },
+    {
+      "id": "orchard-apple-2",
+      "name": "Orchard_Apple_2",
+      "prefab": "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        8.5,
+        0,
+        -6
+      ],
+      "yaw": 130,
+      "class": "Tree",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "relative"
+    },
+    {
+      "id": "orchard-apple-3",
+      "name": "Orchard_Apple_3",
+      "prefab": "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13.5,
+        0,
+        -2
+      ],
+      "yaw": -110,
+      "class": "Tree",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "relative"
+    },
+    {
+      "id": "orchard-apple-4",
+      "name": "Orchard_Apple_4",
+      "prefab": "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13.5,
+        0,
+        -9.5
+      ],
+      "yaw": 70,
+      "class": "Tree",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "relative"
+    },
+    {
+      "id": "orchard-plum-1",
+      "name": "Orchard_Plum_1",
+      "prefab": "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        8.5,
+        0,
+        -13.5
+      ],
+      "yaw": -170,
+      "class": "Tree",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "relative"
+    },
+    {
+      "id": "orchard-plum-2",
+      "name": "Orchard_Plum_2",
+      "prefab": "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13.5,
+        0,
+        -17
+      ],
+      "yaw": -50,
+      "class": "Tree",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "relative"
+    },
+    {
+      "id": "orchard-plum-3",
+      "name": "Orchard_Plum_3",
+      "prefab": "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13.5,
+        0,
+        5.5
+      ],
+      "yaw": 30,
+      "class": "Tree",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "relative"
+    },
+    {
+      "id": "orchard-stall",
+      "name": "Orchard_Stall",
+      "prefab": "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1,
+        0,
+        -7.2
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "orchard-juicer",
+      "name": "Orchard_Juicer",
+      "prefab": "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1,
+        1.03,
+        -7.2
+      ],
+      "yaw": 180,
+      "floor": "f0",
+      "mount": "free",
+      "wall": "free"
+    },
+    {
+      "id": "orchard-desk",
+      "name": "Orchard_Desk",
+      "prefab": "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.4,
+        0,
+        -8
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "LF_WorkplaceComponent",
+          "set": {
+            "m_sJob": "\"FARMER\"",
+            "m_sPlaceId": "\"saint_philippe_orchard\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "orchard-sign",
+      "name": "Orchard_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        5.5,
+        0,
+        -10.5
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"saint_philippe_orchard\"",
+            "m_vRimColor": "0.1 0.1 0.1",
+            "m_vPaintColor": "0.32 0.45 0.2",
+            "m_vTextColor": "0.96 0.93 0.85"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "orchard-crate-1",
+      "name": "Orchard_Crate_1",
+      "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.6,
+        0,
+        -10.6
+      ],
+      "yaw": 12,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "orchard-crate-2",
+      "name": "Orchard_Crate_2",
+      "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.4,
+        0,
+        -10.8
+      ],
+      "yaw": -10,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "orchard-hay-bale",
+      "name": "Orchard_HayBale",
+      "prefab": "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.3,
+        0,
+        -8.4
+      ],
+      "yaw": 80,
+      "floor": "f0",
+      "mount": "terrain",
+      "wall": "free"
+    },
+    {
+      "id": "orchard-cart",
+      "name": "Orchard_Cart",
+      "prefab": "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.4,
+        0,
+        -4.6
+      ],
+      "yaw": 95,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    }
+  ]
+}

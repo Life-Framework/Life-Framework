@@ -1,0 +1,28 @@
+GenericEntity Fit_saint_philippe_pond_Place {
+ components {
+  LF_PlaceComponent "{8A7F8C44BBD3BD56}" {
+   m_sKind "FishingSpot"
+   m_sId "saint-philippe.pond"
+  }
+  LF_FittedBuildingComponent "{8DB490FCF449C5E8}" {
+  }
+ }
+ coords 4645.4 17.8 10561.3
+}
+GenericEntity Fit_saint_philippe_pond_spot : "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingSpot.et" {
+ components {
+  LF_FishingSpotComponent "{4A0F573235D2E074}" {
+   m_sId "spring-pond"
+   m_sTable "pond"
+   m_fRadius 14
+   m_iStock 12
+   m_fRegrowSeconds 90
+  }
+ }
+ coords 4670.999 12.533 10504.005
+ angleY -156
+}
+GenericEntity Fit_saint_philippe_pond_bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 4683.994 13.355 10504.009
+ angleY -90
+}

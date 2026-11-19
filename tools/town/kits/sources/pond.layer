@@ -1,0 +1,20 @@
+// Source of the `pond` kit (tools/town/kits/pond.json, #3385): the fishing spot at Spring Pond and a bench on its bank.
+// `town fit` reads each row's prefab and component GUIDs from here. Coordinates are in the barn b64's own frame (origin = its footprint
+// centre, yaw = the barn's own yaw); the barn is only an anchor, the pond lies 62 m from it. The spot's table `pond` is in
+// Configs/Fishing/LF_Fishing.conf; its radius reaches the water from the marker.
+GenericEntity Pond_Spot : "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingSpot.et" {
+ components {
+  LF_FishingSpotComponent "{4A0F573235D2E074}" {
+   m_sId "spring-pond"
+   m_sTable "pond"
+   m_fRadius 14
+   m_iStock 12
+   m_fRegrowSeconds 90
+  }
+ }
+ coords -46.69 0 41.93
+}
+GenericEntity Pond_Bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords -58.56 0 36.64
+ angleY 66
+}

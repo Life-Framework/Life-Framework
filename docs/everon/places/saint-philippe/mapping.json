@@ -285,7 +285,7 @@
       "drops": [
         { "place": "saint-philippe", "building": "b79" },
         { "place": "saint-philippe", "building": "b97" },
-        { "place": "saint-philippe-dock", "building": "b08" }
+        { "place": "saint-philippe-dock", "building": "b08", "lift": -0.27 }
       ],
       "why": [
         "D10 pick (#3346), card X5 #3355: the three outside-wall ATMs: the bank's street front (b79, Office_E_01), the fuel station kiosk (b97, FuelStation_E_01_building_small, the kiosk the fuel slot keeps beside b107) and the dock road (dk:b08, Office_E_01_ENP, the harbour company offices on the road)",
@@ -298,7 +298,7 @@
         { "place": "saint-philippe", "building": "b97" },
         { "place": "saint-philippe", "building": "b39" },
         { "place": "saint-philippe-dock", "building": "b14" },
-        { "place": "saint-philippe-districts", "building": "b26" }
+        { "place": "saint-philippe-districts", "building": "b26", "turn": 1 }
       ],
       "why": [
         "D10 pick (#3346), card X6 #3358: five booths for the M6 beat 'a taxi from a payphone on the square': the square (b06, the town house row on the square, a kerb the market, chess table and board do not hold; the vanilla booth at 4406, 10653 stays alone), the fuel station (b97), the clinic (b39), the dock (dk:b14, the harbour master's cabin) and the districts junction (di:b26, the house at the five-road crossroads at 4577, 10737)",
