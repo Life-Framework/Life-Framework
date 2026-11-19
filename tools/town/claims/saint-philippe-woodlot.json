@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "woodlot",
+  "building": "b121",
+  "kit": "lumber-yard",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_woodlot.layer",
+  "kinds": [
+    "LogPile",
+    "Processor",
+    "Workplace"
+  ],
+  "rows": 25,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_woodlot_Place"
+  },
+  "date": "2026-11-19"
+}

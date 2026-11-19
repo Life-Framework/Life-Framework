@@ -1,0 +1,453 @@
+{
+  "schema": 1,
+  "kit": "lumber-yard",
+  "system": "lumber",
+  "source": {
+    "file": "tools/town/kits/sources/lumber-yard.layer",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -21,
+        -22.5
+      ],
+      "max": [
+        17.5,
+        0
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "Edge timber yard on the Warehouse_01 hall b121 (long side +x, the open apron on its -z side, away from the building front +z). The sawmill and the workplace desk stand on the hall floor; log decks, plank stacks, a saw bench, pallets, a truck bay, net fence with a gate gap, work lights on the south wall and the Scierie sign stand on the apron. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "saw",
+      "name": "TimberYard_Saw",
+      "prefab": "{61418A72BA63D059}Prefabs/Processor/Sawmill.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -9,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "desk",
+      "name": "TimberYard_Desk",
+      "prefab": "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2,
+        0,
+        0
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_WorkplaceComponent",
+          "set": {
+            "m_sJob": "\"LUMBERJACK\"",
+            "m_sPlaceId": "\"saint_philippe_timber_yard\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "deck-1",
+      "name": "TimberYard_Deck_1",
+      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -17,
+        0,
+        -13
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "deck-2",
+      "name": "TimberYard_Deck_2",
+      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -17,
+        0,
+        -18
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "deck-3",
+      "name": "TimberYard_Deck_3",
+      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -12,
+        0,
+        -20.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "planks-1",
+      "name": "TimberYard_Planks_1",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        14,
+        0,
+        -12.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "planks-2",
+      "name": "TimberYard_Planks_2",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        17.5,
+        0,
+        -12.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "planks-3",
+      "name": "TimberYard_Planks_3",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        16,
+        0,
+        -16.5
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "saw-bench",
+      "name": "TimberYard_Saw_Bench",
+      "prefab": "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -6,
+        0,
+        -12.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-1",
+      "name": "TimberYard_Pallet_1",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.5,
+        0,
+        -12.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-2",
+      "name": "TimberYard_Pallet_2",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        -12.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "truck",
+      "name": "TimberYard_Truck",
+      "prefab": "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5,
+        0,
+        -17
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-w1",
+      "name": "TimberYard_Fence_W1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -21,
+        0,
+        -12
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-w2",
+      "name": "TimberYard_Fence_W2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -21,
+        0,
+        -16
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-w3",
+      "name": "TimberYard_Fence_W3",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -21,
+        0,
+        -20
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-sw1",
+      "name": "TimberYard_Fence_Sw1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -19,
+        0,
+        -22.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-sw2",
+      "name": "TimberYard_Fence_Sw2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -15,
+        0,
+        -22.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-sw3",
+      "name": "TimberYard_Fence_Sw3",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11,
+        0,
+        -22.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-se1",
+      "name": "TimberYard_Fence_Se1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        9,
+        0,
+        -22.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-se2",
+      "name": "TimberYard_Fence_Se2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13,
+        0,
+        -22.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-se3",
+      "name": "TimberYard_Fence_Se3",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        17,
+        0,
+        -22.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "light-1",
+      "name": "TimberYard_Light_1",
+      "prefab": "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et",
+      "role": "light",
+      "verb": "against wall",
+      "offset": [
+        -12,
+        2.8,
+        -9.6
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "light-2",
+      "name": "TimberYard_Light_2",
+      "prefab": "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et",
+      "role": "light",
+      "verb": "against wall",
+      "offset": [
+        0,
+        2.8,
+        -9.6
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "light-3",
+      "name": "TimberYard_Light_3",
+      "prefab": "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et",
+      "role": "light",
+      "verb": "against wall",
+      "offset": [
+        12,
+        2.8,
+        -9.6
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "sign",
+      "name": "TimberYard_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        2.5,
+        0,
+        -21.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"saint_philippe_timber_yard\"",
+            "m_vRimColor": "0.1 0.1 0.1",
+            "m_vPaintColor": "0.55 0.36 0.16",
+            "m_vTextColor": "0.96 0.93 0.85"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
