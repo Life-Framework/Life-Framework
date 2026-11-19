@@ -140,7 +140,8 @@ enum LF_EGarbageResult
 	NO_BINS = 6,		// the world has no bin to build a route from
 	NO_TRUCK = 7,		// the company truck could not be handed out
 	BAD_CONFIG = 8,
-	TOO_FAST = 9		// tip asked before the round's minimum time has passed
+	TOO_FAST = 9,		// tip asked before the round's minimum time has passed
+	UNFIT = 10		// the worker is dead, downed or cuffed (no toast: they cannot act)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -157,7 +158,7 @@ class LF_GarbageRun
 //------------------------------------------------------------------------------------------------
 //! The garbage round (#3325): sign up at the depot and take the company truck, "Empty bin" at each bin
 //! of the route in order (the bin's contents are deleted server-side, a bag goes on the truck), "Tip the
-//! load" at the dump ends the round and pays once through the job cash path. The route is the bins
+//! load" at the dump ends the round, takes the truck back and pays once through the job cash path. The route is the bins
 //! nearest the depot, found by component through LF_BinComponent, never by name. Server state only: a
 //! round is not saved, a restart ends it (the truck is gone too).
 class LF_GarbageRound
@@ -250,6 +251,9 @@ class LF_GarbageRound
 		if (!rules)
 			return LF_EGarbageResult.BAD_CONFIG;
 
+		if (!CanWork(user, uid, "start"))
+			return LF_EGarbageResult.UNFIT;
+
 		Close(uid);
 
 		LF_GarbageRun run = new LF_GarbageRun();
@@ -286,6 +290,9 @@ class LF_GarbageRound
 		if (!run)
 			return LF_EGarbageResult.NO_ROUND;
 
+		if (!CanWork(user, uid, "bin"))
+			return LF_EGarbageResult.UNFIT;
+
 		int index = run.m_aBins.Find(binEntity.GetID());
 		if (index < 0)
 			return LF_EGarbageResult.NOT_ON_ROUTE;
@@ -316,6 +323,9 @@ class LF_GarbageRound
 		if (!run)
 			return LF_EGarbageResult.NO_ROUND;
 
+		if (!CanWork(user, uid, "tip"))
+			return LF_EGarbageResult.UNFIT;
+
 		if (!run.m_Rules.IsComplete())
 			return LF_EGarbageResult.NOT_ENOUGH;
 
@@ -328,6 +338,7 @@ class LF_GarbageRound
 
 		paid = run.m_Rules.PayAtEnd();
 		Runs().Remove(uid);
+		ReturnTruck(truck);
 		LF_CivilianJob.HandCash(user, paid, "garbage-round");
 		LF_Debug.Info(FEATURE, string.Format("garbage round tipped by %1: paid %2", uid, paid));
 		return LF_EGarbageResult.OK;
@@ -342,9 +353,35 @@ class LF_GarbageRound
 			return;
 
 		Runs().Remove(uid);
-		IEntity truck = GetGame().GetWorld().FindEntityByID(run.m_Truck);
-		if (truck)
-			SCR_EntityHelper.DeleteEntityAndChildren(truck);
+		ReturnTruck(GetGame().GetWorld().FindEntityByID(run.m_Truck));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: takes the company truck back (deleted). An occupied truck is left where it stands, logged:
+	//! deleting a vehicle with its children would delete the people in its seats.
+	protected static void ReturnTruck(IEntity truck)
+	{
+		if (!truck)
+			return;
+
+		if (LF_StolenVehicles.HasOccupant(truck))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("garbage round: company truck %1 has someone aboard, left in place", truck.GetID()));
+			return;
+		}
+
+		SCR_EntityHelper.DeleteEntityAndChildren(truck);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a dead, downed or cuffed worker takes no round step (logged, nothing changes).
+	protected static bool CanWork(IEntity user, string uid, string step)
+	{
+		if (LF_Utils.IsAliveState(user) && !LF_Downed.IsDowned(user) && !LF_Restraint.IsRestrained(user))
+			return true;
+
+		LF_Debug.Warn(FEATURE, string.Format("garbage round %1 refused for %2: dead, downed or cuffed", step, uid));
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

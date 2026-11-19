@@ -1,8 +1,9 @@
-// red-proof: Observed before LF_GarbageRound.c existed: `tools\cli test --no-build --only LF_Test_GarbageRound` failed to compile ("Unknown type 'LF_GarbageRound'"), so the test could not pass. Then green on the feature; `--red` records RedProof() skipping the tip.
+// red-proof: Observed before LF_GarbageRound.c existed: `tools\cli test --no-build --only LF_Test_GarbageRound` failed to compile ("Unknown type 'LF_GarbageRound'"), so the test could not pass. Then green on the feature; `--red` records RedProof() skipping the tip. Review of #3862: the new truck-return and dead-worker checks failed on the unfixed code (truck left after the tip; a dead worker was paid 70) and pass on the fix.
 //! jobs/garbage-round (#3325): a round of three bins emptied in order then tipped at the dump pays the
 //! configured amount once. A bin emptied out of order is refused (the refusal has a toast key) and
 //! changes nothing; tipping before the last bin, or with the truck away from the dump, pays nothing.
-//! The route is the bins nearest the depot, found by component, never by name.
+//! The route is the bins nearest the depot, found by component, never by name. The tip takes the truck
+//! back, and a dead worker's tip is refused (review of #3862).
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_GarbageRound : LF_Test
 {
@@ -112,6 +113,7 @@ class LF_Test_GarbageRound : LF_Test
 		if (!truck)
 			return;
 
+		EntityID truckId = run.m_Truck;
 		vector home = truck.GetOrigin();
 		truck.SetOrigin(home + Vector(60, 0, 0));
 		ctx.True(LF_GarbageRound.Tip(user, UID, dump, paid) == LF_EGarbageResult.TRUCK_FAR, "a tip with the truck away is refused");
@@ -132,5 +134,30 @@ class LF_Test_GarbageRound : LF_Test
 		ctx.False(LF_GarbageRound.HasRound(UID), "the round is closed");
 		ctx.True(LF_GarbageRound.Tip(user, UID, dump, paid) == LF_EGarbageResult.NO_ROUND, "a second tip is refused");
 		ctx.Equal(70, LF_MoneyUtils.GetCash(user), "and pays nothing more");
+
+		// The tipped truck goes back to the company: a round never leaves a free truck behind.
+		ctx.True(!GetGame().GetWorld().FindEntityByID(truckId), "the company truck is taken back at the tip");
+
+		CheckDeadWorker(ctx, depot, bins, dump, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A dead (or downed, or cuffed) worker tips nothing.
+	protected void CheckDeadWorker(LF_TestContext ctx, IEntity depot, array<IEntity> bins, IEntity dump, IEntity user)
+	{
+		ctx.True(LF_GarbageRound.Start(user, UID, depot) == LF_EGarbageResult.OK, "a second round starts");
+		foreach (IEntity bin : bins)
+			LF_GarbageRound.EmptyBin(user, UID, bin);
+
+		SCR_CharacterDamageManagerComponent damage = SCR_CharacterDamageManagerComponent.Cast(user.FindComponent(SCR_CharacterDamageManagerComponent));
+		ctx.NotNull(damage, "the worker has a damage manager");
+		if (!damage)
+			return;
+
+		damage.Kill(Instigator.CreateInstigator(null));
+		int paid;
+		ctx.True(LF_GarbageRound.Tip(user, UID, dump, paid) == LF_EGarbageResult.UNFIT, "a dead worker's tip is refused");
+		ctx.Equal(0, paid, "and pays nothing");
+		ctx.Equal(70, LF_MoneyUtils.GetCash(user), "the dead worker's cash is unchanged");
 	}
 }
