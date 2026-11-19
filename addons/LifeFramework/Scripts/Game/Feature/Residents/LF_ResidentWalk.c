@@ -218,6 +218,10 @@ class LF_ResidentWalk
 				return LF_EResidentMove.NONE;
 		}
 
+		// The walk ends on a free spot, not on the one somebody else stands on (#3831).
+		if (!spotOverride)
+			spot = LF_ResidentActivity.FreeSpot(spot, slot.m_sActivity, id, body.GetID());
+
 		// 0 reads the config (the spawner passes its own despawn radius).
 		LF_ResidentsConfig config = LF_ResidentsConfig.Get();
 		if (maxWalking <= 0)

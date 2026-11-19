@@ -1,5 +1,5 @@
 // red-proof: observed 2026-11-17 (#1961) with `tools\cli test --no-build --red LF_Test_EveronCafeOwner`: RedProof() makes the act load a dialogue the pack lacks, so no conversation loads (RED-OK everon/cafe-owner, 3 assertions, `the café owner's dialogue loads`). Green without the hook (pack leg, worlds=LF_Everon1989_Test).
-//! #1961 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the café owner Odile Marchand
+//! #1961 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the café owner Odilon Marchand
 //! has a voiced conversation about the zone and the move, and three useful pointers (work, the clerk, the handbook).
 //! Every line has a caption key that resolves, a sound event and a length with a mouth envelope; every reply
 //! has its text; the conversation is playable and ends. The dialogue is pack content, voiced with ElevenLabs
@@ -33,7 +33,7 @@ class LF_Test_EveronCafeOwner : LF_Test
 
 		ctx.EqualStr("cafe_owner", config.m_sId, "the dialogue is the café owner's");
 		ctx.True(!config.m_sSoundProject.IsEmpty(), "the dialogue names its audio project");
-		ctx.EqualStr("Odile Marchand", WidgetManager.Translate(config.m_sSpeakerKey), "the speaker is Odile Marchand");
+		ctx.EqualStr("Odilon Marchand", WidgetManager.Translate(config.m_sSpeakerKey), "the speaker is Odilon Marchand");
 
 		array<string> problems = {};
 		LF_DialogueFlow.Problems(config, problems);

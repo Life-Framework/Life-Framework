@@ -90,7 +90,7 @@ class LF_Test_EveronTownsfolk : LF_Test
 		CheckPerson(ctx, "{ED4DD018891346D0}Configs/Npcs/LF_Npc_Townsfolk_OldMan.et", "the old man", "Gaspard Lenoir", "old_man",
 			{"Jacket_Denim_01_brownShirt.et", "Pants_Trousers_01_DarkBrown.et", "CombatBoots_US_01.et", "Hat_FlatCap_01_lightgrey.et"});
 
-		CheckPerson(ctx, "{83D04234954B8914}Configs/Npcs/LF_Npc_Townsfolk_CafeOwner.et", "the cafe owner", "Odile Marchand", "cafe_owner",
+		CheckPerson(ctx, "{83D04234954B8914}Configs/Npcs/LF_Npc_Townsfolk_CafeOwner.et", "the cafe owner", "Odilon Marchand", "cafe_owner",
 			{"Shirt_CottonShirt_01_V2.et", "Pants_Trousers_01_DarkGrey.et", "CombatBoots_US_01.et"});
 
 		CheckPerson(ctx, "{FB61502DB411C69E}Configs/Npcs/LF_Npc_Townsfolk_NightShift.et", "the night-shift worker", "Duval", "night_shift",

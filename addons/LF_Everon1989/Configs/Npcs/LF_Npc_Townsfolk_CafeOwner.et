@@ -3,7 +3,7 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
  components {
   SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
-    Name "Odile"
+    Name "Odilon"
     Surname "Marchand"
    }
   }
