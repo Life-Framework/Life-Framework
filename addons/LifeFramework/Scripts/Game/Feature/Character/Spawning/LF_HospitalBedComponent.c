@@ -55,12 +55,20 @@ class LF_HospitalBedComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! World position on the floor beside the bed where the woken body ends up.
-	vector GetStandPosition()
+	//! World transform a respawned body wakes at: feet on the floor at the free side, back to the
+	//! mattress, where the bed wake animation sits up from (LF_BedWakePose). The wake transform
+	//! above is the mattress, for a patient laid in the bed.
+	void GetSitTransform(out vector transform[4])
 	{
-		vector bed[4];
-		GetOwner().GetWorldTransform(bed);
-		return bed[3] + m_vStandOffset.Multiply3(bed);
+		LF_BedWakePose.SitTransform(GetOwner(), m_vStandOffset, transform);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! World position on the floor beside the bed where the woken body ends up (probed floor height).
+	//! \param ignore A body to see through (the owner's own, standing at the bed).
+	vector GetStandPosition(IEntity ignore = null)
+	{
+		return LF_BedWakePose.StandOnFloor(GetOwner(), m_vStandOffset, ignore);
 	}
 
 	//------------------------------------------------------------------------------------------------
