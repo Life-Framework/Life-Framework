@@ -218,6 +218,7 @@ class LF_EventModuleLoader
 		LF_EventPrecondition condition = LF_EventPrecondition.Cast(module);
 		LF_EventAbort abort = LF_EventAbort.Cast(module);
 		LF_EventScene scene = LF_EventScene.Cast(module);
+		LF_EventDispatchSeize seize = LF_EventDispatchSeize.Cast(module);
 		if (condition)
 		{
 			kind = "condition";
@@ -240,12 +241,24 @@ class LF_EventModuleLoader
 
 			registered = LF_EventShell.RegisterOperation(id, new LF_EventSceneOperation(id, scene));
 		}
+		else if (seize)
+		{
+			kind = "dispatch and seize";
+			string seizeReason = seize.Validate();
+			if (!seizeReason.IsEmpty())
+			{
+				LF_Debug.Error(FEATURE, string.Format("event module %1: dispatch and seize in %2 refused: %3", id, source, seizeReason));
+				return false;
+			}
+
+			registered = LF_EventShell.RegisterOperation(id, new LF_EventDispatchSeizeOperation(id, seize));
+		}
 		else
 		{
 			string root = "nothing";
 			if (module)
 				root = module.ClassName();
-			LF_Debug.Error(FEATURE, string.Format("event module %1: %2 holds %3, not a condition, abort or scene", id, source, root));
+			LF_Debug.Error(FEATURE, string.Format("event module %1: %2 holds %3, not a condition, abort, scene or dispatch and seize", id, source, root));
 			return false;
 		}
 
