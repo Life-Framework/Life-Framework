@@ -226,6 +226,15 @@
         "weight": 50,
         "size": [70, 70, 70]
       }
+    },
+    {
+      "id": "Stool",
+      "label": "Stool",
+      "vanilla": "Prefabs/Props/Furniture/Stool_01.et",
+      "snap": "FLOOR",
+      "weight": 3,
+      "buy": 40,
+      "sell": 16
     }
   ]
 }

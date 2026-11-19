@@ -27,5 +27,6 @@
   "Prefabs/Placeables/Furniture/Furniture_Chest_Placed.et": { "anchor": "center" },
   "Prefabs/Placeables/Furniture/Furniture_Crate_Placed.et": { "anchor": "center" },
   "Prefabs/Placeables/Furniture/Furniture_Fridge_Placed.et": { "anchor": "center" },
-  "Prefabs/Placeables/Furniture/Furniture_KitchenUnit_Placed.et": { "anchor": "center" }
+  "Prefabs/Placeables/Furniture/Furniture_KitchenUnit_Placed.et": { "anchor": "center" },
+  "Prefabs/Placeables/Furniture/Furniture_Stool_Placed.et": { "anchor": "center" }
 }
