@@ -22,6 +22,8 @@ enum LF_EATMTransferReply
 	TOO_FAR,
 	RATE_LIMITED,
 	NO_ACCOUNT,
+	RESTRAINED,
+	DOWNED,
 	FAILED
 }
 
@@ -89,6 +91,21 @@ class LF_ATMTransferService
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether the sender's body may send at all. A forged RPC (or a page left open) must not let a cuffed
+	//! player move the account to a friend before the custody fine, nor a downed or dead one send.
+	//! \return SENT when the sender may go on, else the refusal.
+	static LF_EATMTransferReply SenderReply(bool alive, bool downed, bool restrained)
+	{
+		if (!alive || downed)
+			return LF_EATMTransferReply.DOWNED;
+
+		if (restrained)
+			return LF_EATMTransferReply.RESTRAINED;
+
+		return LF_EATMTransferReply.SENT;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The wire reply for a rule refusal.
 	static LF_EATMTransferReply FromRefusal(LF_EBankTransferRefusal refusal)
 	{
@@ -143,6 +160,12 @@ class LF_ATMTransferService
 
 		if (reply == LF_EATMTransferReply.NO_ACCOUNT)
 			return "#LF-ATM_RefuseAccount";
+
+		if (reply == LF_EATMTransferReply.RESTRAINED)
+			return "#LF-CharSwitch_Cuffed";
+
+		if (reply == LF_EATMTransferReply.DOWNED)
+			return "#LF-CharSwitch_Downed";
 
 		if (reply == LF_EATMTransferReply.FAILED)
 			return "#LF-ATMTransfer_RefuseFailed";
@@ -253,6 +276,14 @@ modded class LF_CharacterATMComponent
 		if (playerKey > 0 && !LF_ATMTransferService.TakeSlot(playerKey, System.GetTickCount()))
 		{
 			ReplyTransfer(LF_EATMTransferReply.RATE_LIMITED, 0, 0, string.Empty, 0);
+			return;
+		}
+
+		LF_EATMTransferReply senderReply = LF_ATMTransferService.SenderReply(LF_Utils.IsAliveState(character), LF_Downed.IsDowned(character), LF_Restraint.IsRestrained(character));
+		if (senderReply != LF_EATMTransferReply.SENT)
+		{
+			LF_Debug.Warn(LF_ATMTransferService.FEATURE, string.Format("transfer refused: sender cannot act, %1 (uid %2)", typename.EnumToString(LF_EATMTransferReply, senderReply), playerUid));
+			ReplyTransfer(senderReply, 0, 0, string.Empty, 0);
 			return;
 		}
 

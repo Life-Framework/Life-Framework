@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-19 `tools/cli test --no-build --red LF_Test_ATMTransferPage` printed `RED PROOF OK (all 1 listed test(s) fail with the hook on)`: RedProof() keys in a number with a stray character, so the transfer is refused and the balances do not move; `--only` then passed=1 failed=0.
+// red-proof: observed 2026-11-19 `tools/cli test --no-build --red LF_Test_ATMTransferPage` printed `RED PROOF OK (all 1 listed test(s) fail with the hook on)`: RedProof() keys in a number with a stray character, so the transfer is refused and the balances do not move; `--only` then passed=1 failed=0. Review fix 2026-11-19: the SenderReply asserts failed on a stub that always allowed (`a cuffed sender is refused (expected 10, got 0)`, downed and dead the same), then passed with the guard.
 //! The ATM transfer page's server side (#3320, slice of #638). A transfer request names an account number
 //! and an amount; the server trims the number, makes its own transfer id, runs the #3318 rules again and
 //! moves the money once. A bad number, your own number, a zero amount and an over-long number are refused
@@ -69,6 +69,13 @@ class LF_Test_ATMTransferPage : LF_Test
 		ctx.True(LF_ATMTransferService.Key(LF_EATMTransferReply.SENT).IsEmpty(), "a sent transfer has no refusal line");
 		ctx.Equal(LF_EATMTransferReply.FAILED, LF_ATMTransferService.FromWire(99), "an unknown wire value reads as failed");
 		ctx.EqualStr("ab", LF_ATMTransferService.LastFour("ab"), "a number shorter than four is shown whole");
+
+		// A sender who cannot act is refused before the rules: a cuffed player cannot empty the account
+		// to a friend before the custody fine, a downed or dead one cannot send from the ground.
+		ctx.Equal(LF_EATMTransferReply.SENT, LF_ATMTransferService.SenderReply(true, false, false), "a free, standing sender may send");
+		ctx.Equal(LF_EATMTransferReply.RESTRAINED, LF_ATMTransferService.SenderReply(true, false, true), "a cuffed sender is refused");
+		ctx.Equal(LF_EATMTransferReply.DOWNED, LF_ATMTransferService.SenderReply(true, true, false), "a downed sender is refused");
+		ctx.Equal(LF_EATMTransferReply.DOWNED, LF_ATMTransferService.SenderReply(false, false, false), "a dead sender is refused");
 
 		// Rate limit: a burst passes, the next request is refused, a new window opens again.
 		LF_ATMTransferService.ResetStatics();
