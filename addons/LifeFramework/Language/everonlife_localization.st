@@ -4778,6 +4778,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
     }
+    CustomStringTableItem "{3330B0000000F004}" {
+     Id "LF-FuelHaul_Delivered"
+     Target_en_us "Delivered: %1."
+     Comment "Toast after a pump-in. %1 = litres that arrived and the cash paid, for example 300 L, $300."
+    }
+    CustomStringTableItem "{3330B0000000F001}" {
+     Id "LF-FuelHaul_Load"
+     Target_en_us "Load the tanker"
+     Comment "Action at the fuel depot: buys a tanker load at the wholesale price into the tanker parked beside it."
+    }
+    CustomStringTableItem "{3330B0000000F003}" {
+     Id "LF-FuelHaul_Loaded"
+     Target_en_us "Tanker loaded: %1."
+     Comment "Toast after a depot load. %1 = litres and the cash charged, for example 500 L, $300."
+    }
+    CustomStringTableItem "{3330B0000000F005}" {
+     Id "LF-FuelHaul_NoTanker"
+     Target_en_us "Park the tanker next to the point."
+     Comment "Toast: no vehicle with a cargo tank is within reach of the depot or the pump."
+    }
+    CustomStringTableItem "{3330B0000000F002}" {
+     Id "LF-FuelHaul_PumpIn"
+     Target_en_us "Pump into the station tanks"
+     Comment "Action at a fuel pump: moves the tanker's load into the station stock and pays for the litres that arrived."
+    }
+    CustomStringTableItem "{3330B0000000F008}" {
+     Id "LF-FuelHaul_StationFull"
+     Target_en_us "The station tanks are full."
+     Comment "Toast: the station has no room, so nothing was pumped and nothing is paid."
+    }
+    CustomStringTableItem "{3330B0000000F007}" {
+     Id "LF-FuelHaul_TankerEmpty"
+     Target_en_us "The tanker is empty."
+     Comment "Toast: the tanker holds no fuel to pump into the station."
+    }
+    CustomStringTableItem "{3330B0000000F006}" {
+     Id "LF-FuelHaul_TankerFull"
+     Target_en_us "The tanker is already full."
+     Comment "Toast: the tanker has no room for a litre at the depot."
+    }
     CustomStringTableItem "{3328B0000000F001}" {
      Id "LF-Fuel_Buy"
      Target_en_us "Fill the tank"
