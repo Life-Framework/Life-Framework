@@ -32,7 +32,7 @@ class LF_Test_EveronMarket : LF_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! The `m_aTradableItems` rows of a trader prefab's LF_TraderManagerComponent, or null.
-	protected static BaseContainerList TraderRows(ResourceName prefab)
+	static BaseContainerList TraderRows(ResourceName prefab)
 	{
 		Resource resource = Resource.Load(prefab);
 		if (!resource || !resource.IsValid())
@@ -54,7 +54,7 @@ class LF_Test_EveronMarket : LF_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! What the trader prefab pays for a good, or -1 when it does not list it.
-	protected static int TraderPrice(BaseContainerList rows, ResourceName good)
+	static int TraderPrice(BaseContainerList rows, ResourceName good)
 	{
 		for (int i = 0, count = rows.Count(); i < count; i++)
 		{
@@ -73,7 +73,7 @@ class LF_Test_EveronMarket : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static bool TraderBuys(ResourceName prefab, ResourceName good)
+	static bool TraderBuys(ResourceName prefab, ResourceName good)
 	{
 		Resource resource = Resource.Load(prefab);
 		if (!resource || !resource.IsValid())
@@ -135,7 +135,8 @@ class LF_Test_EveronMarket : LF_Test
 		ctx.True(config.FindGood(GOLD_BAR) == null, "the pack removes the gold bar curve");
 		// The set of goods, not a count: the eight the trader buys, the four lumber goods of the wholesale warehouse (#3269)
 		// and the granary grain (#3622, its own lot curve, read by LF_Test_EveronGrainBuyers).
-		array<ResourceName> expected = {IRON_BAR, APPLE, PLUM, CEMENT, GRAVEL, SAND, WOOD_PLANK, CABBAGE, LF_Test_EveronLumberBuyers.BOARD, LF_Test_EveronLumberBuyers.POST, LF_Test_EveronLumberBuyers.FIREWOOD, LF_Test_EveronGrainBuyers.GRAIN};
+		// The honey jar and honeycomb (#3448) have their own slow curves, read by LF_Test_EveronHoney.
+		array<ResourceName> expected = {IRON_BAR, APPLE, PLUM, CEMENT, GRAVEL, SAND, WOOD_PLANK, CABBAGE, LF_Test_EveronLumberBuyers.BOARD, LF_Test_EveronLumberBuyers.POST, LF_Test_EveronLumberBuyers.FIREWOOD, LF_Test_EveronGrainBuyers.GRAIN, LF_Test_EveronHoney.JAR, LF_Test_EveronHoney.COMB};
 		foreach (ResourceName want : expected)
 			ctx.True(config.FindGood(want) != null, "a curve exists for " + want);
 		foreach (LF_MarketGoodDef have : config.m_aGoods)
@@ -156,7 +157,7 @@ class LF_Test_EveronMarket : LF_Test
 		if (!rows || !coreRows)
 			return;
 
-		ctx.Equal(14, rows.Count(), "the pack trader lists 14 goods, each once");
+		ctx.Equal(16, rows.Count(), "the pack trader lists 16 goods, each once");
 		ctx.Equal(TraderPrice(rows, WOOD_PLANK), 6, "the pack trader buys planks at 6");
 		ctx.Equal(TraderPrice(rows, CABBAGE), 4, "the pack trader buys cabbages at 4");
 		ctx.Equal(-1, TraderPrice(coreRows, WOOD_PLANK), "the core trader list is untouched: no planks");
@@ -170,6 +171,10 @@ class LF_Test_EveronMarket : LF_Test
 
 			// The granary grain is priced per lot with its own curve (#3622); LF_Test_EveronGrainBuyers reads it.
 			if (LF_Utils.SamePrefab(good.m_sGood, LF_Test_EveronGrainBuyers.GRAIN))
+				continue;
+
+			// Honey drops 6 percent a unit (#3448); LF_Test_EveronHoney reads it.
+			if (LF_Test_EveronHoney.IsHoneyGood(good.m_sGood))
 				continue;
 
 			string name = good.m_sGood;

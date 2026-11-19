@@ -6258,6 +6258,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Bait tin"
      Comment "Item name: the bait tin (#2928)."
     }
+    CustomStringTableItem "{5FAF17A9D2358E1C}" {
+     Id "LF-Item_BeehiveKit"
+     Target_en_us "Beehive"
+     Comment "Item name: a beehive kit that is placed outdoors to keep bees (#3448)."
+    }
+    CustomStringTableItem "{9BDC6A38FFE77DE8}" {
+     Id "LF-Item_BeehiveKitDesc"
+     Target_en_us "A beehive to set up outdoors. Bees work it by day in fair weather; take the honeycomb when it is full."
+     Comment "Item description: beehive kit (#3448)."
+    }
     CustomStringTableItem "{39E8DFFDB0869E08}" {
      Id "LF-Item_CarParts_Description"
      Target_en_us "Spare parts stripped off a stolen car. A trader pays a little for them."
@@ -6537,6 +6547,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_HandsetRadio_Name"
      Target_en_us "Radio set"
      Comment "Item name: a civilian handheld radio set that calls services."
+    }
+    CustomStringTableItem "{8927D8A09220929D}" {
+     Id "LF-Item_HoneyJar"
+     Target_en_us "Honey jar"
+     Comment "Item name: a jar of honey made from two honeycombs at a kitchen (#3448)."
+    }
+    CustomStringTableItem "{9A31E991372C98FD}" {
+     Id "LF-Item_HoneyJarDesc"
+     Target_en_us "A jar of local honey. Sells slowly but steadily."
+     Comment "Item description: honey jar (#3448)."
     }
     CustomStringTableItem "{3F0A5624D409C535}" {
      Id "LF-Item_Honeycomb"
