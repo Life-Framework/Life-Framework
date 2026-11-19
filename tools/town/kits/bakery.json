@@ -1,0 +1,585 @@
+{
+  "schema": 1,
+  "kit": "bakery",
+  "system": "store",
+  "source": {
+    "file": "tools/town/kits/sources/bakery.layer",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{38A5F3E4578087AB}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et"
+  },
+  "anchoring": {
+    "floorY": 0.2,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.2
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -5.5,
+        -3.2
+      ],
+      "max": [
+        -2.3,
+        4.5
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "The ground-floor west room of the town house House_Town_E_2I01 (about 4.5 m wide from the west wall to the party wall, doors on the street side at +z): a shop counter of two CounterShop_01 across the room at local z 3, the till and a few loaves on it, three ShelfUniversal_01_wide against the west wall behind it with loaves resting on the boards, and the painted fascia above the street doors. The floors above stay the baker's flat. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "bakery-counter-1",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        -4.55,
+        0.2,
+        3
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-counter-2",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        -3.05,
+        0.2,
+        3
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-till",
+      "name": "Shop_Bakery_Till",
+      "prefab": "{08F8B49C5124F437}Prefabs/Props/Commercial/LF_BakeryTill.et",
+      "role": "till",
+      "verb": "on bakery-counter-2",
+      "offset": [
+        -3.05,
+        1.239,
+        2.9
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "furniture",
+      "verb": "against wall",
+      "offset": [
+        -5.69,
+        0.2,
+        -3.2
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1-loaf-11",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-1",
+      "offset": [
+        -5.48,
+        0.788,
+        -2.1
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1-loaf-12",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-1",
+      "offset": [
+        -5.48,
+        0.788,
+        -2.48
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1-loaf-13",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-1",
+      "offset": [
+        -5.48,
+        0.788,
+        -2.86
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1-loaf-21",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-1",
+      "offset": [
+        -5.48,
+        1.281,
+        -2.1
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1-loaf-22",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-1",
+      "offset": [
+        -5.48,
+        1.281,
+        -2.48
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1-loaf-23",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-1",
+      "offset": [
+        -5.48,
+        1.281,
+        -2.86
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1-loaf-31",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-1",
+      "offset": [
+        -5.48,
+        1.774,
+        -2.1
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1-loaf-32",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-1",
+      "offset": [
+        -5.48,
+        1.774,
+        -2.48
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-1-loaf-33",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-1",
+      "offset": [
+        -5.48,
+        1.774,
+        -2.86
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "furniture",
+      "verb": "against wall",
+      "offset": [
+        -5.69,
+        0.2,
+        -1.6
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2-loaf-11",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-2",
+      "offset": [
+        -5.48,
+        0.788,
+        -0.5
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2-loaf-12",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-2",
+      "offset": [
+        -5.48,
+        0.788,
+        -0.88
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2-loaf-13",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-2",
+      "offset": [
+        -5.48,
+        0.788,
+        -1.26
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2-loaf-21",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-2",
+      "offset": [
+        -5.48,
+        1.281,
+        -0.5
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2-loaf-22",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-2",
+      "offset": [
+        -5.48,
+        1.281,
+        -0.88
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2-loaf-23",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-2",
+      "offset": [
+        -5.48,
+        1.281,
+        -1.26
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2-loaf-31",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-2",
+      "offset": [
+        -5.48,
+        1.774,
+        -0.5
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2-loaf-32",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-2",
+      "offset": [
+        -5.48,
+        1.774,
+        -0.88
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-2-loaf-33",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-2",
+      "offset": [
+        -5.48,
+        1.774,
+        -1.26
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "furniture",
+      "verb": "against wall",
+      "offset": [
+        -5.69,
+        0.2,
+        0
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3-loaf-11",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.48,
+        0.788,
+        1.1
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3-loaf-12",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.48,
+        0.788,
+        0.72
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3-loaf-13",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.48,
+        0.788,
+        0.34
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3-loaf-21",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.48,
+        1.281,
+        1.1
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3-loaf-22",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.48,
+        1.281,
+        0.72
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3-loaf-23",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.48,
+        1.281,
+        0.34
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3-loaf-31",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.48,
+        1.774,
+        1.1
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3-loaf-32",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.48,
+        1.774,
+        0.72
+      ],
+      "yaw": 102,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-rack-3-loaf-33",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.48,
+        1.774,
+        0.34
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-counter-loaf-1",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-counter-1",
+      "offset": [
+        -4.2,
+        1.239,
+        3.15
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-counter-loaf-2",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-counter-1",
+      "offset": [
+        -3.9,
+        1.239,
+        3.15
+      ],
+      "yaw": 20,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-counter-loaf-3",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-counter-2",
+      "offset": [
+        -3.3,
+        1.239,
+        3.15
+      ],
+      "yaw": 40,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-counter-loaf-4",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-counter-2",
+      "offset": [
+        -2.9,
+        1.239,
+        3.15
+      ],
+      "yaw": 60,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bakery-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -3.8,
+        3.3,
+        7.6
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"bakery\"",
+            "m_vRimColor": "0.9 0.82 0.55",
+            "m_vPaintColor": "0.45 0.2 0.12",
+            "m_vTextColor": "0.96 0.93 0.82"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+GenericEntity : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ ID "7A3F0B15D2C94E68"
+ components {
+  LF_ShopComponent "{5B83F735A9938B15}" {
+   m_sShopName "#LF-Shop_Name_Bakery"
+   m_sShopDescription "#LF-Shop_Desc_Bakery"
+   m_sStockId "bakery"
+  }
+  ActionsManagerComponent "{88D1A76B7015FE9A}" {
+   ActionContexts {
+    UserActionContext "{6E408DDF71546060}" {
+     ContextName "default"
+     Position PointInfo "{22569105E676C67F}" {
+      Offset 0 0.25 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{5D86AC8032703755}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{DB7338A92FE47726}" {
+      Name "#LF-Shop_Open_Bakery"
+      Description "#LF-Shop_Desc_Bakery"
+     }
+    }
+    LF_RobAction "{CB2175D0F77777AF}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{F7C6AAE8CFBD351F}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_sAlarmKind "shopbell"
+     m_iMoneyAmount 120
+     m_iMinPayout 120
+     m_iMaxPayout 120
+     m_fCooldown 600
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+}
