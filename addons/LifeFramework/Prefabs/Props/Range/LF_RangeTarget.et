@@ -1,5 +1,31 @@
 SCR_FiringRangeTarget : "{379D34B0D41DA810}Prefabs/Props/Military/Training/TargetInfantry_01.et" {
  ID "7C2E4A91B05D38F6"
+ components {
+  LF_RangeLaneComponent "{0702356C2FD5C48C}" {
+  }
+  ActionsManagerComponent "{46B0ED8FDD75059D}" {
+   ActionContexts {
+    UserActionContext "{B4F3C8BD3B729D5F}" {
+     ContextName "LF_RangeTarget"
+     Position PointInfo "{C81672781EBB1C54}" {
+      Offset 0 1 0
+     }
+     Radius 1
+    }
+   }
+   additionalActions {
+    LF_RangeStartAction "{5D9E2A47C1B8F036}" {
+     ParentContextList {
+      "LF_RangeTarget"
+     }
+     UIInfo UIInfo "{A3C7E15B92D40F68}" {
+      Name "#LF-Range_StartRound"
+     }
+     VisibilityRange 12
+    }
+   }
+  }
+ }
  m_fTimeInFoldedPosition 2
  m_iTargetDistance 6
  m_fTimeInErectedPosition 3

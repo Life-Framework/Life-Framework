@@ -107,9 +107,9 @@
       "places": ["StoreCounter"]
     },
     {
-      "id": "woodlot", "required": false, "kit": "woodlot", "host": "building", "poi": "none", "margin": 14,
+      "id": "woodlot", "required": false, "kit": "lumber-yard", "host": "building", "poi": "Workplace", "margin": 14,
       "needs": { "interior": "optional", "minArea": 80, "prefer": "far", "types": ["industrial", "shed", "farm", "garage"] },
-      "places": ["LogPile", "Processor"]
+      "places": ["LogPile", "Processor", "Workplace"]
     },
     {
       "id": "farm", "required": false, "kit": "farm", "host": "building", "poi": "none", "margin": 20,

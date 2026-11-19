@@ -1,0 +1,116 @@
+// Source of the `lumber-yard` kit (tools/town/kits/lumber-yard.json, #3175): the Saint-Philippe edge timber yard on the Warehouse_01 hall.
+// `town fit` reads each row's prefab and component GUIDs from here. Frame: the hall's centre, +z its far side, the apron on -z.
+GenericEntity Source_TimberYard_Saw : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
+ coords -9 0 0
+ angleY 0
+}
+GenericEntity Source_TimberYard_Desk : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
+ components {
+  LF_WorkplaceComponent "{BB227AA77D72A6F6}" {
+   m_sJob "LUMBERJACK"
+   m_sPlaceId "saint_philippe_timber_yard"
+  }
+ }
+ coords 2 0 0
+ angleY 90
+}
+GenericEntity Source_TimberYard_Deck_1 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords -17 0 -13
+ angleY 90
+}
+GenericEntity Source_TimberYard_Deck_2 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords -17 0 -18
+ angleY 90
+}
+GenericEntity Source_TimberYard_Deck_3 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords -12 0 -20.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Planks_1 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 14 0 -12.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Planks_2 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 17.5 0 -12.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Planks_3 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 16 0 -16.5
+ angleY 90
+}
+GenericEntity Source_TimberYard_Saw_Bench : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+ coords -6 0 -12.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords -2.5 0 -12.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Pallet_2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 0 0 -12.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Truck : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et" {
+ coords 5 0 -17
+ angleY 0
+}
+GenericEntity Source_TimberYard_Fence_W1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -21 0 -12
+ angleY 90
+}
+GenericEntity Source_TimberYard_Fence_W2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -21 0 -16
+ angleY 90
+}
+GenericEntity Source_TimberYard_Fence_W3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -21 0 -20
+ angleY 90
+}
+GenericEntity Source_TimberYard_Fence_Sw1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -19 0 -22.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Fence_Sw2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -15 0 -22.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Fence_Sw3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -11 0 -22.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Fence_Se1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 9 0 -22.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Fence_Se2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 13 0 -22.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Fence_Se3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 17 0 -22.5
+ angleY 0
+}
+GenericEntity Source_TimberYard_Light_1 : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+ coords -12 2.8 -9.6
+ angleY 0
+}
+GenericEntity Source_TimberYard_Light_2 : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+ coords 0 2.8 -9.6
+ angleY 0
+}
+GenericEntity Source_TimberYard_Light_3 : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+ coords 12 2.8 -9.6
+ angleY 0
+}
+GenericEntity Source_TimberYard_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{4B1D7E2A9C305F61}" {
+   m_sSignId "saint_philippe_timber_yard"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.55 0.36 0.16
+   m_vTextColor 0.96 0.93 0.85
+  }
+ }
+ coords 2.5 0 -21.5
+ angleY 0
+}

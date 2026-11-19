@@ -266,6 +266,19 @@ class LF_PlantReplication
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client: the plant whose stage mesh is this entity, or empty (#3177, the stage prefab's actions).
+	static string ClientPlantOf(EntityID visual)
+	{
+		foreach (string id, EntityID drawn : ClientVisuals())
+		{
+			if (drawn == visual)
+				return id;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: the whole table replaces the mirror (a join snapshot, or the server cleared).
 	//! \return how many plants were kept.
 	static int ClientApplyAll(array<ref LF_PlantViewRow> rows)

@@ -1447,10 +1447,10 @@
    "z": 10623.2,
    "doors": 4,
    "purpose": "e",
-   "use": "co-op warehouse: Coopérative, staff only",
+   "use": "timber yard",
    "status": "planned",
-   "card": "L0",
-   "issue": 3204
+   "card": "Y6",
+   "issue": 3175
   },
   {
    "id": "sp:b122",
