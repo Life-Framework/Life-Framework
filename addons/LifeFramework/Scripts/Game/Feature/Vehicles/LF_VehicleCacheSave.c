@@ -12,6 +12,7 @@ class LF_VehicleCacheItemRow : Managed
 	int m_iAmmo;
 	string m_sSerial;
 	bool m_bStolen;
+	string m_sHouseKey; //!< The house a bound key opens (#2410), empty otherwise.
 
 	//------------------------------------------------------------------------------------------------
 	static LF_VehicleCacheItemRow From(notnull LF_StorageItemRecord item)
@@ -25,6 +26,7 @@ class LF_VehicleCacheItemRow : Managed
 		row.m_iAmmo = item.m_iAmmo;
 		row.m_sSerial = item.m_sSerial;
 		row.m_bStolen = item.m_bStolen;
+		row.m_sHouseKey = item.m_sHouseKey;
 		return row;
 	}
 
@@ -35,6 +37,7 @@ class LF_VehicleCacheItemRow : Managed
 		item.m_iAmmo = m_iAmmo;
 		item.m_sSerial = m_sSerial;
 		item.m_bStolen = m_bStolen;
+		item.m_sHouseKey = m_sHouseKey;
 		return item;
 	}
 }

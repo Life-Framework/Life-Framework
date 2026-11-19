@@ -22,7 +22,8 @@
         "int m_iSlot",
         "int m_iAmmo",
         "string m_sSerial",
-        "bool m_bStolen"
+        "bool m_bStolen",
+        "string m_sHouseKey"
       ]
     }
   }
