@@ -28,6 +28,8 @@ class LF_EventSceneOperation : LF_EventOperation
 	//! Seconds the despawn has been due (the walk is over and the delay has run); a watcher holds it
 	//! only up to the plan's m_fForceDespawnSeconds (#2406).
 	protected float m_fDespawnDueS;
+	//! The scene this one last waited for (#3780), so the wait is logged once per other scene.
+	protected string m_sWaitingOn;
 
 	//------------------------------------------------------------------------------------------------
 	void LF_EventSceneOperation(string moduleId, LF_EventScene scene)
@@ -46,7 +48,11 @@ class LF_EventSceneOperation : LF_EventOperation
 	//------------------------------------------------------------------------------------------------
 	override bool Busy()
 	{
-		return m_Crew && LF_EventSceneSpawn.Running() == m_Crew;
+		if (m_Crew && LF_EventSceneSpawn.Running() == m_Crew)
+			return true;
+
+		// Waiting for the stage (#3780): holds the phase while the other scene is still on it.
+		return m_sWaitingOn != "" && LF_EventScenePlanner.RunningScene() != "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -60,6 +66,22 @@ class LF_EventSceneOperation : LF_EventOperation
 
 		if (ctx && m_bStaged && ctx.m_fPhaseStartedAt == m_fStagedPhaseAt)
 			return false;
+
+		// One scene on stage at a time (#3780): a scene whose phase opens while another plays waits for it.
+		// Busy() holds the phase (before this, the unplayed scene left nothing busy and the last phase
+		// ended the event into its cooldown) and the wait counts as acting, so the idle clock cannot run
+		// out; the next cadence after the other scene has left stages this one. Logged once, not per cadence.
+		string other = LF_EventScenePlanner.RunningScene();
+		if (other != "")
+		{
+			if (m_sWaitingOn != other)
+			{
+				m_sWaitingOn = other;
+				LF_Debug.Info(FEATURE, string.Format("event %1 phase %2: module %3 waits for scene %4 to leave the stage", eventId, phaseName, m_sModuleId, other));
+			}
+			return true;
+		}
+		m_sWaitingOn = "";
 
 		int free = m_iFreeAiOverride;
 		if (free < 0)
