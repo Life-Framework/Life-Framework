@@ -370,11 +370,12 @@ class LF_GatherAction : ScriptedUserAction
 		if (!def)
 			return 0;
 
+		// A price per lot (#3622) is shown per unit: 0 (no hint) when one unit fetches less than 1 cash.
 		int live = LF_MarketBook.CurrentPrice(good);
 		if (live > 0)
-			return live;
+			return live / def.Lot();
 
-		return def.m_iBase;
+		return def.m_iBase / def.Lot();
 	}
 
 	//------------------------------------------------------------------------------------------------

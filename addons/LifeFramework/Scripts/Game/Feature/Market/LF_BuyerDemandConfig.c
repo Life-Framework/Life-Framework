@@ -166,6 +166,13 @@ class LF_BuyerDemandConfig
 		if (!curve)
 			LF_Debug.Warn(FEATURE, string.Format("buyer demand '%1' names curve good %2 that the market does not list; pricing flat", row.Label(), row.m_sCurveGood));
 
+		// The curve's floor is whole cash per ITS lot: a different lot size would mix two units (#3622).
+		if (curve && curve.Lot() != row.Lot())
+		{
+			LF_Debug.Warn(FEATURE, string.Format("buyer demand '%1' has lot size %2 but curve good %3 has %4; pricing flat", row.Label(), row.Lot(), row.m_sCurveGood, curve.Lot()));
+			return null;
+		}
+
 		return curve;
 	}
 }
@@ -248,7 +255,7 @@ class LF_BuyerDemandList : LF_ConfigList
 	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
 	{
 		LF_BuyerDemandRow row = LF_BuyerDemandRow.Cast(record);
-		LF_BuyerDemandRow before = LF_BuyerDemandRow.Make(row.m_sBuyer, row.m_sGood, row.m_iCap, row.m_iRefillPerHour, row.m_iPrice, row.m_sCurveGood);
+		LF_BuyerDemandRow before = LF_BuyerDemandRow.Make(row.m_sBuyer, row.m_sGood, row.m_iCap, row.m_iRefillPerHour, row.m_iPrice, row.m_sCurveGood, row.m_iLotSize);
 		int changed;
 		if (container.IsVariableSetDirectly("m_iCap") && container.Get("m_iCap", row.m_iCap))
 			changed++;
@@ -257,6 +264,8 @@ class LF_BuyerDemandList : LF_ConfigList
 		if (container.IsVariableSetDirectly("m_iPrice") && container.Get("m_iPrice", row.m_iPrice))
 			changed++;
 		if (container.IsVariableSetDirectly("m_sCurveGood") && container.Get("m_sCurveGood", row.m_sCurveGood))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iLotSize") && container.Get("m_iLotSize", row.m_iLotSize))
 			changed++;
 
 		string problem = row.Problem();
@@ -267,6 +276,7 @@ class LF_BuyerDemandList : LF_ConfigList
 			row.m_iRefillPerHour = before.m_iRefillPerHour;
 			row.m_iPrice = before.m_iPrice;
 			row.m_sCurveGood = before.m_sCurveGood;
+			row.m_iLotSize = before.m_iLotSize;
 			return 0;
 		}
 

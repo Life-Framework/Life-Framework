@@ -7732,6 +7732,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Safe zone"
      Comment "Map label of a safe zone at the closest zoom."
     }
+    CustomStringTableItem "{7C3A91D5E208B4F6}" {
+     Id "LF-Market_BelowLot"
+     Target_en_us "This buyer takes whole lots of %1. Bring at least one full lot."
+     Comment "Toast to the seller (#3622): the stack is smaller than one lot of a good priced per lot, so nothing was sold. %1 = the units in one lot."
+    }
     CustomStringTableItem "{5E8B1D70A3C94F26}" {
      Id "LF-Market_BoardNext"
      Target_en_us "Sell your goods to the trader at the price on the board."

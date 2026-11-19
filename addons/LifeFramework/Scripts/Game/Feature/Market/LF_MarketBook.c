@@ -78,14 +78,42 @@ class LF_MarketBook
 
 	//------------------------------------------------------------------------------------------------
 	//! \return What `units` of a curved good pay together at `nowUnix` (the marginal sum of the
-	//! curve, rounded to whole cash once). 0 when the good is not curved or no units.
+	//! curve over whole lots, rounded to whole cash once; #3622: a lot is the row's `m_iLotSize` units and a
+	//! part lot pays nothing). 0 when the good is not curved or the units fill no lot.
 	static int QuoteAt(ResourceName good, int units, int nowUnix)
 	{
 		LF_MarketGoodDef def = Curved(good);
 		if (!def || units <= 0)
 			return 0;
 
-		return def.BulkTotal(RecoveredPrice(def, nowUnix), ClampUnits(units));
+		int lots = def.Lots(units);
+		if (lots <= 0)
+			return 0;
+
+		return def.BulkTotal(RecoveredPrice(def, nowUnix), ClampUnits(lots));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return How many of `units` a sale of a curved good takes: whole lots only, the rest stays with the
+	//! seller (#3622). `units` itself when the good is not curved (every unit sells); 0 below one lot.
+	static int SellableUnits(ResourceName good, int units)
+	{
+		LF_MarketGoodDef def = Curved(good);
+		if (!def)
+			return units;
+
+		return def.SellableUnits(units);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The lot size of a curved good, 1 when the good is not curved.
+	static int LotOf(ResourceName good)
+	{
+		LF_MarketGoodDef def = Curved(good);
+		if (!def)
+			return 1;
+
+		return def.Lot();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -95,7 +123,7 @@ class LF_MarketBook
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: books a sale of `units` at `nowUnix`: the recovered price moves down the curve and the
+	//! Server: books a sale of `units` (whole lots count, #3622) at `nowUnix`: the recovered price moves down the curve and the
 	//! stamp becomes now. Publishes nothing (the caller does, once the sale completed).
 	//! \param[out] oldPrice The price before the sale (recovery applied), whole cash.
 	//! \return The new price in whole cash (the book keeps it in hundredths); 0 when the good is not curved
@@ -107,12 +135,17 @@ class LF_MarketBook
 		if (!def || units <= 0)
 			return 0;
 
+		// The price falls per lot sold; a part lot books nothing (#3622).
+		int lots = def.Lots(units);
+		if (lots <= 0)
+			return 0;
+
 		int oldFine = RecoveredPrice(def, nowUnix);
-		int newFine = def.PriceAfterSale(oldFine, ClampUnits(units));
+		int newFine = def.PriceAfterSale(oldFine, ClampUnits(lots));
 		s_mPrices.Set(good, LF_MarketPrice.Make(newFine, StampAfterSale(good, nowUnix)));
 		oldPrice = LF_PriceCurve.ToCash(oldFine);
 		int newPrice = LF_PriceCurve.ToCash(newFine);
-		LF_Debug.Info(FEATURE, string.Format("%1 sold x%2: price %3 -> %4 (hundredths %5 -> %6)", good, units, oldPrice, newPrice, oldFine, newFine));
+		LF_Debug.Info(FEATURE, string.Format("%1 sold x%2 (%3 lots): price %4 -> %5 (hundredths %6 -> %7)", good, units, lots, oldPrice, newPrice, oldFine, newFine));
 		return newPrice;
 	}
 

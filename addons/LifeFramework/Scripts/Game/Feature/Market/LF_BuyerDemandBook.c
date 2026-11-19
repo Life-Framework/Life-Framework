@@ -38,6 +38,17 @@ class LF_BuyerDemandBook
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return The lot size of the buyer's row for `good` (#3622), 1 with no row.
+	static int LotOf(string buyer, ResourceName good)
+	{
+		LF_BuyerDemandRow row = FindRow(buyer, good);
+		if (!row)
+			return 1;
+
+		return row.Lot();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return Units the buyer would take for `good` at `nowUnix` (refill applied); 0 with no row.
 	static int RemainingAt(string buyer, ResourceName good, int nowUnix)
 	{
