@@ -2619,6 +2619,31 @@ StringTable {
      Target_en_us "The island sawmill: saw hardwood and softwood logs into boards, posts and firewood."
      Comment "Sign card for the Everon sawmill, What section."
     }
+    CustomStringTableItem "{F868DCD01EFFA837}" {
+     Id "LF-Sign_EveronScrapyard_How"
+     Target_en_us "*Load the recycler*, then *Break it down*, then *Collect the parts*. Sell the parts at the cabin."
+     Comment "Sign card for the scrapyard, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{E941251646E022BE}" {
+     Id "LF-Sign_EveronScrapyard_Needs"
+     Target_en_us "Something to break down: a car door, an old radio, a worn tool. Search the dump piles at night."
+     Comment "Sign card for the scrapyard, You need section."
+    }
+    CustomStringTableItem "{4AF72E50CF5DB8D0}" {
+     Id "LF-Sign_EveronScrapyard_Next"
+     Target_en_us "Parts and scrap metal sell at the yard cabin. A flooded yard pays less."
+     Comment "Sign card for the scrapyard, Next section."
+    }
+    CustomStringTableItem "{F569F72B499FF384}" {
+     Id "LF-Sign_EveronScrapyard_Title"
+     Target_en_us "Casse"
+     Comment "Title of the sign at the scrapyard (Everon 1989 pack, #3357). Printed on the sign and shown in the prompt as Read: Casse."
+    }
+    CustomStringTableItem "{782813B1DA8109EA}" {
+     Id "LF-Sign_EveronScrapyard_What"
+     Target_en_us "The island scrapyard: wrecks to pick over, a recycler bench and a dealer in the cabin."
+     Comment "Sign card for the scrapyard, What section."
+    }
     CustomStringTableItem "{4E7B1C9A2D8F5036}" {
      Id "LF-Sign_FarmCompound_What"
      Target_en_us "Abandoned farm. Whoever holds the yard longest holds the barn."

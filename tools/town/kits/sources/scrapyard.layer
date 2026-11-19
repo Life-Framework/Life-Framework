@@ -1,0 +1,165 @@
+// Source of the `scrapyard` kit (tools/town/kits/scrapyard.json, #3357): the scrapyard of the north-east industrial compound.
+// Coordinates are in the host's frame (origin = the concrete plant's footprint centre, +z = east, x to the right of it).
+// Three groups: the recycler apron, the dealer's yard round the site cabin and the dump with its wrecks and scrap piles.
+GenericEntity Source_Scrapyard_Origin {
+ coords 0 0 0
+}
+GenericEntity Scrapyard_Recycler_Bench : "{F1984B044B2AF24B}Prefabs/Props/Processing/LF_Recycler.et" {
+ coords -0.71 0 18.7
+ angleY -94
+}
+GenericEntity Scrapyard_Recycler_Drum_1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 1.44 0 20.95
+ angleY -74
+}
+GenericEntity Scrapyard_Recycler_Drum_2 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 0.18 0 21.77
+ angleY -19
+}
+GenericEntity Scrapyard_Recycler_Drum_3 : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
+ coords 3.41 0 15.68
+ angleY -94
+}
+GenericEntity Scrapyard_Recycler_Pallets : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
+ coords -5.23 0 16.07
+ angleY -82
+}
+GenericEntity Scrapyard_Recycler_Palletbox : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords -4.88 0 22.51
+ angleY -109
+}
+GenericEntity Scrapyard_Recycler_Crate_1 : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
+ coords 4.39 0 21.76
+ angleY -86
+}
+GenericEntity Scrapyard_Recycler_Tyres : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+ coords -1.51 0 25.96
+ angleY -54
+}
+GenericEntity Scrapyard_Dealer_Lamp : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
+ coords -7.78 3.5 -9.17
+}
+GenericEntity Scrapyard_Dealer_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "everon_scrapyard"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.82 0.55 0.12
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords -11.12 0 -2.98
+ angleY -94
+}
+GenericEntity Scrapyard_Dealer_Crate_1 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords -13.15 0 -8.34
+ angleY -80
+}
+GenericEntity Scrapyard_Dealer_Crate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords -12.6 0 -10.5
+ angleY -100
+}
+GenericEntity Scrapyard_Dealer_Drum : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords -13.46 0 -12.57
+ angleY -94
+}
+GenericEntity Scrapyard_Dealer_Tyres : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ coords -15.9 0 -6.32
+ angleY -72
+}
+GenericEntity Scrapyard_Dealer_Scrap : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
+ coords -18.08 0 -0.86
+ angleY -64
+}
+GenericEntity Scrapyard_Dump_Wreck_469 : "{3386EAA823BE462E}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_static.et" {
+ coords -30.24 0 18.13
+ angleY -69
+}
+GenericEntity Scrapyard_Dump_Wreck_Ural : "{AE300E34EA8FF40C}Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et" {
+ coords -39.2 0 31.54
+ angleY 6
+}
+GenericEntity Scrapyard_Dump_Wreck_452 : "{56FFF0C990358ED2}Prefabs/Props/Wrecks/UAZ452_wreck/UAZ452_wreck_static.et" {
+ coords -34.19 0 45.93
+ angleY -114
+}
+GenericEntity Scrapyard_Dump_Wreck_151 : "{EB084C400AABD1D3}Prefabs/Props/Wrecks/M151A2_wreck/M151A2_wreck.et" {
+ coords -43.86 0 55.27
+ angleY 66
+}
+GenericEntity Scrapyard_Dump_Wreck_S105 : "{1A1CE09F7BCA6650}Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et" {
+ coords -46.69 0 24
+ angleY -24
+}
+GenericEntity Scrapyard_Dump_Plow : "{A98BA618430E9BAA}Prefabs/Props/Agriculture/PlowWreck_01.et" {
+ coords -48.73 0 38.9
+ angleY -54
+}
+GenericEntity Scrapyard_Dump_Cultivator : "{DE59CB05202006E8}Prefabs/Props/Agriculture/CultivatorWreck_01.et" {
+ coords -30.62 0 52.19
+ angleY -94
+}
+GenericEntity Scrapyard_Dump_Container_1 : "{1B79BB823DC46F9D}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_20ft_green.et" {
+ coords -41.93 0 13.31
+ angleY -86
+}
+GenericEntity Scrapyard_Dump_Container_2 : "{35E211705F8FED68}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_40ft_blue.et" {
+ coords -34.31 0 61.96
+ angleY -94
+}
+GenericEntity Scrapyard_Dump_Tyres_1 : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+ coords -34.51 0 21.85
+ angleY -94
+}
+GenericEntity Scrapyard_Dump_Tyres_2 : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ coords -32.63 0 38.02
+ angleY -44
+}
+GenericEntity Scrapyard_Dump_Tyres_3 : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
+ coords -41.38 0 48.43
+ angleY 36
+}
+GenericEntity Scrapyard_Dump_Tyres_4 : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ coords -26.52 0 29.42
+ angleY -84
+}
+GenericEntity Scrapyard_Dump_Pile_1 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
+ coords -39 0 20.13
+ angleY -74
+}
+GenericEntity Scrapyard_Dump_Pile_2 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
+ coords -43.48 0 28.24
+ angleY 56
+}
+GenericEntity Scrapyard_Dump_Pile_3 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
+ coords -39.54 0 36.53
+ angleY -24
+}
+GenericEntity Scrapyard_Dump_Pile_4 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
+ coords -43.49 0 42.77
+ angleY 106
+}
+GenericEntity Scrapyard_Dump_Pile_5 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
+ coords -37.56 0 51.2
+ angleY 6
+}
+GenericEntity Scrapyard_Dump_Pile_6 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
+ coords -38.52 0 57.65
+ angleY -94
+}
+GenericEntity Scrapyard_Dump_Drum_1 : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
+ coords -34.76 0 34.06
+ angleY -94
+}
+GenericEntity Scrapyard_Dump_Drum_2 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords -34.05 0 35.31
+ angleY -34
+}
+GenericEntity Scrapyard_Dump_Lamp_1 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
+ coords -41.93 2.6 13.31
+ angleY -86
+}
+GenericEntity Scrapyard_Dump_Lamp_2 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
+ coords -34.31 2.6 61.96
+ angleY -94
+}
