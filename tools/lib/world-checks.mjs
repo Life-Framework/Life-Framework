@@ -22,6 +22,7 @@ export const HARD_CHECKS = [
   "validate-debugworld-layout.ps1",
   "validate-debugworld-layer-order.ps1",
   "validate-quoted-vectors.mjs", // a quoted vector ("5 3 7") drops the entity at world origin (#3671)
+  "validate-dialogue-refs.mjs", // a sign id, dialogue id or #LF- key a layer names has no def or row: a broken reference
 ];
 
 export const LAYOUT_CHECKS = [

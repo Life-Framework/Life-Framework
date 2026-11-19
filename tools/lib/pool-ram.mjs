@@ -179,7 +179,11 @@ export function unrealisedMb(procs, peaks, profile = "full") {
 // procs with the highest working set recordLive has seen for each (maxMb), from the live file of `tag`.
 export function withSeenMax(hubDir, procs, tag = "local") {
   const seen = readJson(liveFile(hubDir, tag), {});
-  return (procs ?? []).map((p) => (seen[p.pid]?.maxMb ? { ...p, maxMb: seen[p.pid].maxMb } : p));
+  return (procs ?? []).map((p) => {
+    const s = seen[p.pid];
+    if (!s?.maxMb && !s?.maxPrivMb) return p;
+    return { ...p, ...(s.maxMb ? { maxMb: s.maxMb } : {}), ...(s.maxPrivMb ? { maxPrivMb: s.maxPrivMb } : {}) };
+  });
 }
 
 // The processes counted as island-sized: an island server, test server or client.
@@ -276,6 +280,9 @@ export function trackPeaks(prevLive, procs, peaks, profile = "full") {
   for (const p of procs ?? []) {
     const prev = prevLive?.[p.pid];
     live[p.pid] = { kind: p.kind, world: p.world, profile: procProfile(p, profile), maxMb: Math.max(Number(p.wsMb) || 0, prev?.maxMb ?? 0) };
+    // Private bytes are the process's commit charge (pool-commit.mjs): the highest seen is its commit peak.
+    const priv = Math.max(Number(p.privMb) || 0, prev?.maxPrivMb ?? 0);
+    if (priv) live[p.pid].maxPrivMb = priv;
   }
   let out = peaks;
   let recorded = 0;
@@ -283,7 +290,13 @@ export function trackPeaks(prevLive, procs, peaks, profile = "full") {
     if (now.has(Number(pid))) continue;
     const before = out;
     out = recordPeak(out, v.kind, v.world, v.profile, v.maxMb);
-    if (out !== before) recorded++;
+    let sampled = out !== before;
+    if (v.maxPrivMb >= MIN_SAMPLE_MB) {
+      const key = `commit:${v.kind}`;
+      out = { ...out, [key]: [...(Array.isArray(out[key]) ? out[key] : []), Math.round(v.maxPrivMb)].slice(-MAX_SAMPLES) };
+      sampled = true;
+    }
+    if (sampled) recorded++;
   }
   return { live, peaks: out, recorded };
 }

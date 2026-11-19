@@ -1,6 +1,30 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "BB4860AEBDEF409F"
  components {
+  LF_DialogueComponent "{AE9E80149D37239F}" {
+   m_sDialogueId "gendarme"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{B53CBB9F1969EBC6}" {
+     ContextName "Talk"
+     Position PointInfo "{C79DD6183C205665}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{CB6B074536C8B437}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{A0E217482CFA1C3D}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
   BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
    Slots {
     LoadoutSlotInfo Hat {

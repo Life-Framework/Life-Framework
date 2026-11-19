@@ -105,3 +105,21 @@
 
 ### A voice matches its body (#3831, 2026-11-19)
 - 🧪 A woman's voice came out of a man (the cafe owner was recorded as Odile with a female voice on a male character). The base game has male bodies only, so every voiced NPC that stands in the world speaks in a male voice, and each `tools/assets/dialogue/<npc>/dialogue.json` records `voice.sex`; `validate-voice-sex` fails a body with a female or undeclared voice (`node tools/validation/validate-voice-sex.mjs --report` lists all nine). The cafe owner is now Odilon Marchand with the voice "Marcel" and the lines were recorded again. A voice stays fixed per named NPC: it is the one entry in the NPC's own dialogue spec.
+
+### `LF_DialogueAudit` and the Everon townsfolk talks — `Feature/Dialogue/LF_DialogueAudit.c` (2026-11-19)
+- 🟡 Every NPC a player can walk up to on the island has a conversation of its own. The four island residents
+  (Helene Roux the teller, Pierre Vasseur of the general store, Anselme and Mireille Caron) left the core's neutral
+  "Resident" sheet (a greeting, then only "Goodbye") for their own pack dialogues (`resident_teller`,
+  `resident_store_clerk`, `resident_anselme`, `resident_mireille`: name, mood greetings, three topics). The scene
+  walkers had no talk at all: the square-evening and anniversary crowd now talk through `passerby` (pack children
+  `LF_Passerby_*.et` of the base game civilians), the relocated arrivals through `relocated_walker`, the dock
+  hands through `dockworker` (`LF_Dockworker_1..3.et`) and the raid gendarme through `gendarme`. All text only,
+  written in `tools/assets/dialogue/<id>/dialogue.json`; the index overlay is
+  `LF_DialogueIndex_OldMan/LF_DialogueIndex_Townsfolk.conf`.
+- Offline: `validate-dialogue-refs.mjs` (a world check) fails a `#LF-` key with no row, an unregistered dialogue id,
+  a broken node or reply, a talk action with no dialogue, a pack scene spawning a character nobody can talk to, a
+  pack NPC on a one-reply sheet, and an empty or placeholder sign title or unresolved placed sign id.
+  Red proof: `dialogue-refs-selftest.mjs`.
+- In a session: harness verb `talkaudit [radius]` counts, on the client, keys that show raw in every loaded
+  dialogue and role conversation, and NPCs nearby with no conversation or a one-reply greeting
+  (`[LFDebug:Dialogue] audit ...` lines, summary `text= notalk= thin=`).

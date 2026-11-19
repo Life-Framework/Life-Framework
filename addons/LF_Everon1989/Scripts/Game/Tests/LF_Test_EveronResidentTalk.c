@@ -1,7 +1,8 @@
-// red-proof: RedProof() skips the spawn and the greeting lookups, so `<who> spawns` and `<id> opens differently for <word>` fail; the batched `--red` run is in the PR. Before the prefab and dialogue change (#2998) the four generic residents had no dialogue component or talk action and the three townsfolk dialogues had no greet_<word> node, so every word fell back to `greet`.
+// red-proof: 2026-11-19 (fix-missing-dialogue): `--red LF_Test_EveronResidentTalk` (RedProof() skips the spawns) fails every new `<who> spawns` (observed: RED PROOF OK, 2026-11-19); on main the four residents talked through the core `resident` sheet and the scene walkers had no talk at all (validate-dialogue-refs counted 24 such failures there). Older: RedProof() skips the spawn and the greeting lookups, so `<who> spawns` and `<id> opens differently for <word>` fail; the batched `--red` run is in the PR. Before the prefab and dialogue change (#2998) the four generic residents had no dialogue component or talk action and the three townsfolk dialogues had no greet_<word> node, so every word fell back to `greet`.
 //! #2998 (residents you can talk to, epic #1012): under the Everon 1989 header (the pack leg) the four generic
-//! residents (teller, store clerk, two neighbours) carry the core `resident` dialogue and a talk action, and the
-//! three townsfolk dialogues (old man, cafe owner, night-shift worker) open on a `greet_<word>` node, so the
+//! residents (teller, store clerk, two neighbours) and every scene walker (square and anniversary crowd, relocated
+//! arrivals, dockworkers, the raid gendarme) carry a dialogue of their own and a talk action, and the
+//! townsfolk and resident dialogues open on a `greet_<word>` node, so the
 //! opener follows the player's standing (`LF_ResidentMemory.Tier`); neutral keeps the dialogue's own `greet`.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronResidentTalk : LF_Test
@@ -31,7 +32,7 @@ class LF_Test_EveronResidentTalk : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void CheckGeneric(LF_TestContext ctx, ResourceName prefab, string who)
+	protected void CheckTalk(LF_TestContext ctx, ResourceName prefab, string who, string dialogueId)
 	{
 		IEntity npc;
 		if (!RedProof())
@@ -46,7 +47,11 @@ class LF_Test_EveronResidentTalk : LF_Test
 		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
 		ctx.NotNull(config, who + " has a playable dialogue");
 		if (config)
-			ctx.EqualStr("resident", config.m_sId, who + " talks with the core resident dialogue");
+		{
+			ctx.EqualStr(dialogueId, config.m_sId, who + " talks with its own dialogue");
+			LF_DialogueNode greet = LF_DialogueFlow.FindNode(config, config.m_sStart);
+			ctx.True(greet != null && greet.m_aOptions && greet.m_aOptions.Count() >= 2, who + " offers more than Goodbye");
+		}
 
 		SCR_EntityHelper.DeleteEntityAndChildren(npc);
 	}
@@ -99,13 +104,21 @@ class LF_Test_EveronResidentTalk : LF_Test
 		LF_MissionHeader header = LF_MissionHeader.GetCurrent();
 		ctx.NotNull(header, "the pack leg runs under an LF mission header");
 
-		CheckGeneric(ctx, "{7C27C5AD4C1C5D2D}Configs/Residents/Npcs/LF_Resident_Teller.et", "the teller");
-		CheckGeneric(ctx, "{559ECE12ABB3673F}Configs/Residents/Npcs/LF_Resident_StoreClerk.et", "the store clerk");
-		CheckGeneric(ctx, "{312B29D7CD3C51BF}Configs/Residents/Npcs/LF_Resident_NeighbourCardigan.et", "the cardigan neighbour");
-		CheckGeneric(ctx, "{3AF4A6EF424C916C}Configs/Residents/Npcs/LF_Resident_NeighbourCoat.et", "the coat neighbour");
+		CheckTalk(ctx, "{7C27C5AD4C1C5D2D}Configs/Residents/Npcs/LF_Resident_Teller.et", "the teller", "resident_teller");
+		CheckTalk(ctx, "{559ECE12ABB3673F}Configs/Residents/Npcs/LF_Resident_StoreClerk.et", "the store clerk", "resident_store_clerk");
+		CheckTalk(ctx, "{312B29D7CD3C51BF}Configs/Residents/Npcs/LF_Resident_NeighbourCardigan.et", "the cardigan neighbour", "resident_anselme");
+		CheckTalk(ctx, "{3AF4A6EF424C916C}Configs/Residents/Npcs/LF_Resident_NeighbourCoat.et", "the coat neighbour", "resident_mireille");
+		CheckTalk(ctx, "{DE8256F994DD6BA3}Prefabs/Characters/Npcs/LF_Passerby_DenimJacket_1.et", "a square passerby", "passerby");
+		CheckTalk(ctx, "{0D5FF1C869239694}Prefabs/Characters/Npcs/LF_Walker_Relocated_Coat.et", "a relocated arrival", "relocated_walker");
+		CheckTalk(ctx, "{1C869AB4232D876C}Prefabs/Characters/Npcs/LF_Dockworker_1.et", "a dockworker", "dockworker");
+		CheckTalk(ctx, "{B29C75414B43DCCA}Prefabs/Characters/Npcs/LF_Gendarme_1.et", "the raid gendarme", "gendarme");
 
 		CheckGreetings(ctx, "old_man");
 		CheckGreetings(ctx, "cafe_owner");
 		CheckGreetings(ctx, "night_shift");
+		CheckGreetings(ctx, "resident_teller");
+		CheckGreetings(ctx, "resident_store_clerk");
+		CheckGreetings(ctx, "resident_anselme");
+		CheckGreetings(ctx, "resident_mireille");
 	}
 }
