@@ -876,3 +876,12 @@
   offer changes nothing. The state is `SCR_ChimeraCharacter.m_bLF_HandsUp` (`RplProp`, `BumpMe` on change, so a late joiner
   reads it); the owner's machine plays the vanilla halt gesture (id 2) until the state ends (no two-hand pose exists in the
   base game). Harness verb `handsup state|choose <0|1|2>|offer <playerId>`. Logs `[LFDebug:HandsUp]`. No save change.
+- 🔧 **Search needs a target that has given up: the hands-up gate** (#3399, parent #1024, #782; merged, in-dev): `LF_HandsUpGate`
+  (`Feature/Crime/LF_HandsUpGate.c`) is the one gate a search or robbery of a PLAYER goes through. The target has given up when
+  their hands are up or they are restrained; otherwise the action refuses with "They haven't given up." (`#LF-HandsUp_NotGivenUp`).
+  The hands-up flag counts only from a target that is alive, controlled by a player and not downed (a dead body, a downed player or an
+  AI never counts); restraint counts on its own. `LF_ConfiscateAction` (the officer's search) shows the reason on the offer (client,
+  replicated flags) and refuses on the server before the search or the police-contact stamp. No action robs a player yet; `LF_RobAction`
+  and the weapon and vehicle robberies rob a till, a weapon or a vehicle, so they are unchanged and a future player robbery calls
+  `LF_HandsUpGate.Check`. Proof `search-proof` now raises the target's hands first and checks the down-hands refusal. Test
+  `crime/hands-up-gate` (`LF_Test_HandsUpGate`, LOGIC). Logs `[LFDebug:HandsUp]`. No save change.
