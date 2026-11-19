@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "AD15AEEA9BCF4FA4"
+ components {
+  MeshObject "{6583404EA35B2E1D}" {
+   Object "{F19084A507544A24}Assets/Harvest/WheatPatch/LF_WheatStubble_01.xob"
+   CastShadow 0
+  }
+ }
+}

@@ -50,3 +50,9 @@ receive keys, walk to the property, unlock your door. Police/bailiffs raiding
 - `Money` / `Banking` (purchase funds), `Account` (ownership identity),
   `Character` (inventory for keys), `Police` (raiding), `Persistence`
   (ownership state).
+## House marker (#3584)
+
+`LF_HouseMarker.et` = `LF_BuildingLockComponent` + `LF_HouseManagerComponent` + `RplComponent`. `LF_BuildingLocks.Register` sees the
+manager on the marker and records building -> marker; `ReasonFor(door, user)` frees the door for the owner (replicated owner key) or a key
+holder (`LF_BuildSiteComponent.UserHoldsKey`). Unowned: the marker's sign key; owned: `m_sOwnedSignKey`. Never a coordinate in core: the
+pack's `Homes_<place>.layer` places the markers (`tools\cli town homes`).

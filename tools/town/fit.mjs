@@ -257,6 +257,18 @@ export function claimOfBase(c, { branch, place, slot }) {
   return new RegExp(`^open PR #[0-9]+ \\(${base}\\)$`).test(c.where) || c.where === `worktree Life-Framework-ws-town-draft-${place}-${slot}`;
 }
 
+// The blob ids claim file `file` has had on `ref`: a sibling worktree whose copy is one of these is cut from some main, not a rival.
+export function mainClaimBlobs(exec, file, ref = "origin/main") {
+  const log = exec("git", ["log", ref, "--format=%H", "--", file]);
+  if (log.status !== 0) return new Set();
+  const blobs = new Set();
+  for (const sha of String(log.stdout).split(/\r?\n/).filter(Boolean)) {
+    const b = exec("git", ["rev-parse", `${sha}:${file}`]);
+    if (b.status === 0) blobs.add(String(b.stdout).trim());
+  }
+  return blobs;
+}
+
 // Uncommitted claim files in sibling local worktrees: no network, read from `git worktree list --porcelain`.
 export function worktreeTownClaims(exec, root) {
   const ls = exec("git", ["worktree", "list", "--porcelain"]);
@@ -270,7 +282,10 @@ export function worktreeTownClaims(exec, root) {
     if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir).filter((n) => n.endsWith(".json"))) {
       const c = asClaim(readFileSync(join(dir, f), "utf8"), { file: `${CLAIMS_DIR}/${f}`, where: `worktree ${basename(path)}` });
-      if (c) claims.push(c);
+      if (!c) continue;
+      // Where that copy lives, to hash it later: a worktree cut from an older main holds an older main version (#3566).
+      Object.defineProperty(c, "path", { value: join(dir, f), enumerable: false });
+      claims.push(c);
     }
   }
   return { claims, note: "" };
@@ -369,7 +384,17 @@ export function planFit(opts, ctx = {}) {
   // A sibling worktree that has not touched the claim holds byte-for-byte what main holds (every worktree is cut from main), so under
   // `--refit` that copy is main's own claim and not a rival either (all sixteen worktrees blocked a re-fit of the supermarket, #3516).
   const mainOwn = taken.find((c) => c.place === place && c.slot === slotId && c.where === "origin/main");
-  const sameAsMain = (c) => Boolean(mainOwn) && /^worktree /.test(c.where) && claimBody(c) === claimBody(mainOwn);
+  // A worktree cut from an older main carries an older version of the file (police: 56 rows on main's earlier head, 57 now): its blob is
+  // in main's history for that file, so it is main's too (#3566).
+  const historyBlobs = new Map();
+  const inMainHistory = (c) => {
+    if (!c.path || !/^worktree /.test(c.where)) return false;
+    const h = exec("git", ["hash-object", c.path]);
+    if (h.status !== 0) return false;
+    if (!historyBlobs.has(c.file)) historyBlobs.set(c.file, mainClaimBlobs(exec, c.file));
+    return historyBlobs.get(c.file).has(String(h.stdout).trim());
+  };
+  const sameAsMain = (c) => /^worktree /.test(c.where) && ((Boolean(mainOwn) && claimBody(c) === claimBody(mainOwn)) || inMainHistory(c));
   const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && (c.where === "origin/main" || sameAsMain(c)))) : taken;
   errors.push(...conflicts(blocking, { place, slot: slotId, building: buildingKey, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };

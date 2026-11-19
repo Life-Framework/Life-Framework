@@ -8,7 +8,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
    ActionContexts {
     UserActionContext "{598F21A871DA7304}" {
      Position PointInfo "{598F21A875320722}" {
-      Offset 0 1 2.2
+      Offset 0 0.2 2.1
      }
     }
    }

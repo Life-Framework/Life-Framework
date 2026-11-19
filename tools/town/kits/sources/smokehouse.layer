@@ -1,0 +1,21 @@
+// Source of the `smokehouse` kit (tools/town/kits/smokehouse.json, #3453): the vanilla dressing of the dock's fish smoker. Each entity
+// below only names a base-game prefab with the GUID the game pak gives it, so `town kit check` can verify the kit's references
+// (the pack's own LF_Smokehouse.et and the core sign are checked against their .meta files). Nothing here is loaded by a world.
+GenericEntity Source_WoodPile : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords 0 0 0
+}
+GenericEntity Source_NetHangerShort : "{996DC070C5A96B7B}Prefabs/Props/Naval/NetHanger_01_short.et" {
+ coords 0 0 0
+}
+GenericEntity Source_SmokingFire : "{D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_Crate : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
+ coords 0 0 0
+}
+GenericEntity Source_BrineBarrel : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 0 0 0
+}
+GenericEntity Source_Kindling : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
+ coords 0 0 0
+}

@@ -34,6 +34,8 @@ export const DROP_KITS = {
   "parcel-drops": { prefab: DROP_PREFAB, source: DROP_SOURCE },
   "fuel-drops": { prefab: "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et", source: "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_FuelDrop.et" },
   "buyer-spots": { prefab: "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et", source: "addons/LifeFramework/Prefabs/Systems/Laundering/LF_BuyerSpot.et" },
+  // A home's "For sale" sign (#3584, `town homes`): placed with the same entrance-wall seat as a drop.
+  "house-sale": { prefab: "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et", source: "addons/LifeFramework/Prefabs/Props/Property/LF_HouseSaleSign.et" },
 };
 const OUTSIDE = 1.0; // the mailbox starts this far outside the footprint; the wall seat slides it the rest of the way
 const GROUND_LIFT = 0.03; // the mailbox's foot stands this far above the dossier's floor height: a hairline over the ground, never in it

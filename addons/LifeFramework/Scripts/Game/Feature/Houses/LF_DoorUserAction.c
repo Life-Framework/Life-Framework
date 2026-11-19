@@ -30,12 +30,12 @@ modded class SCR_DoorUserAction
 	//------------------------------------------------------------------------------------------------
 	//! The sign key that keeps this door shut because its building is locked by a marker, or "" when
 	//! the door is free or already open (a closing is always allowed).
-	protected string BuildingReason()
+	protected string BuildingReason(IEntity user = null)
 	{
 		if (LF_HouseDoorClose.IsOpen(m_pDoorEntity))
 			return "";
 
-		return LF_BuildingLocks.ReasonFor(m_pDoorEntity);
+		return LF_BuildingLocks.ReasonFor(m_pDoorEntity, user);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -78,7 +78,7 @@ modded class SCR_DoorUserAction
 
 		// A building a lock marker shuts (#3203): nobody opens it, the marker's sign key is the reason.
 		// Closing an open door still works. Static data on every machine, so client and server agree.
-		string buildingReason = BuildingReason();
+		string buildingReason = BuildingReason(user);
 		if (!buildingReason.IsEmpty())
 		{
 			SetCannotPerformReason(buildingReason);
@@ -140,9 +140,9 @@ modded class SCR_DoorUserAction
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		// The server refuses a forged open of a locked building too (#3203).
-		if (Replication.IsServer() && !BuildingReason().IsEmpty())
+		if (Replication.IsServer() && !BuildingReason(pUserEntity).IsEmpty())
 		{
-			LF_Debug.Warn(LF_BuildingLocks.FEATURE, string.Format("door of a locked building refused on the server: %1", BuildingReason()));
+			LF_Debug.Warn(LF_BuildingLocks.FEATURE, string.Format("door of a locked building refused on the server: %1", BuildingReason(pUserEntity)));
 			return;
 		}
 

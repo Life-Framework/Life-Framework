@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "F9B212984C92B7AD"
+ components {
+  MeshObject "{7CFC1F1C1E493530}" {
+   Object "{BB54F8CD944D97FF}Assets/Harvest/WheatPatch/LF_WheatPatch_01.xob"
+   CastShadow 0
+  }
+ }
+}
