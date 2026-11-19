@@ -132,3 +132,21 @@ GenericEntity Fit_saint_philippe_wheatfield_wheat_field_unload {
  }
  coords 4432.702 23.323 10499.296
 }
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_board : "{194CC74891AEC339}Prefabs/Harvest/LF_HarvestBoard.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "harvest_board"
+  }
+ }
+ coords 4440.051 23.723 10510.967
+ angleY -3
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_sign : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "harvest"
+  }
+ }
+ coords 4426.569 23.307 10510.26
+ angleY 177
+}

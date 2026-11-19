@@ -30,7 +30,7 @@
     },
     "front": "-x",
     "counters": [],
-    "adapt": "Open pasture beside an open barn: the barn is the host and only an anchor. The kit frame is the barn turned to a quarter turn from the world (x east, z north on the farmwest barn b19), the field box (60 x 40 m, centred 59 m from the barn, yaw ignored) stands 50 m east and 25 m south of the barn centre, a wooden fence runs along its west and south sides with a gate opening mid-south, the cart, sacks, hay and implement wrecks stand on the ground beside the opening and the west fence, and a weighbridge (vanilla WeightStation_01 plus an LF_GranaryUnloadAction prompt entity) stands 16 m south of the gate opening. Rows are rigid: shift, never stretch."
+    "adapt": "Open pasture beside an open barn: the barn is the host and only an anchor. The kit frame is the barn turned to a quarter turn from the world (x east, z north on the farmwest barn b19), the field box (60 x 40 m, centred 59 m from the barn, yaw ignored) stands 50 m east and 25 m south of the barn centre, a wooden fence runs along its west and south sides with a gate opening mid-south, the cart, sacks, hay and implement wrecks stand on the ground beside the opening and the west fence, and a weighbridge (vanilla WeightStation_01 plus an LF_GranaryUnloadAction prompt entity) stands 16 m south of the gate opening, and the farm contract board (LF_HarvestBoard, #3656) and the `harvest` chalkboard stand just outside the fence either side of the gate opening. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -451,6 +451,56 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-board",
+      "name": "WheatField_Board",
+      "prefab": "{194CC74891AEC339}Prefabs/Harvest/LF_HarvestBoard.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        51.5,
+        0,
+        -52
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"harvest_board\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "wheat-field-sign",
+      "name": "WheatField_Sign",
+      "prefab": "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        38,
+        0,
+        -52
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"harvest\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }
