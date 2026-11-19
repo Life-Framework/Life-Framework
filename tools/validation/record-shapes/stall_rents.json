@@ -1,0 +1,17 @@
+{
+  "section": "stall_rents",
+  "class": "LF_StallSavePayload",
+  "version": 1,
+  "roots": "LF_StallRentRow",
+  "records": {
+    "LF_StallRentRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sHolder",
+        "string m_sToken",
+        "int m_iDay",
+        "int m_iFee"
+      ]
+    }
+  }
+}

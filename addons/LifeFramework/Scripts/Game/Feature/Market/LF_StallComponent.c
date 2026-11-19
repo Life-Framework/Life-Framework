@@ -14,8 +14,9 @@
 //! holder's display name (a short string). The holder's key (uid) never leaves the server. A client reads
 //! only those two to show the prompt; a late joiner gets them with the entity snapshot.
 //!
-//! NOT SAVED. The rent lives in server memory: a restart before closing hour frees the stall and the fee is
-//! not refunded. A save section is a later card.
+//! RESTART (#3279). The stall lives in server memory, so a restart frees it. Each paid rent is also kept in
+//! `LF_StallRentBook`; the "stall_rents" save section writes the held ones and the load refunds the fee into the
+//! holder's bank (`LF_StallSave.c`), so a restart before closing hour never eats a fee.
 //------------------------------------------------------------------------------------------------
 //! The in-game day and hour the stalls use. The day is the whole in-game days since 1970-01-01 (the
 //! rules take `day % 7` as the week day); the hour is 0..23.
@@ -113,6 +114,9 @@ class LF_StallComponent : ScriptComponent
 
 	//! Server: the rules' state for this stall; the holder key is the renter's uid.
 	protected ref LF_Stall m_Stall;
+
+	//! Server: this rent's key in `LF_StallRentBook`, empty while unrented.
+	protected string m_sRentToken;
 
 	//! Live stalls; the component's own OnDelete removes it.
 	protected static ref array<LF_StallComponent> s_aLive;
@@ -212,8 +216,30 @@ class LF_StallComponent : ScriptComponent
 
 		LF_Debug.Info(LF_StallConfig.FEATURE, string.Format("stall of %1 lapsed: rented for day %2, now day %3 hour %4", m_sHolderName, m_Stall.m_iRentedDay, day, hour));
 		m_Stall.m_iRentedDay = LF_Stall.NOT_RENTED;
+		ReleaseRent();
 		SetShown(false, "");
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: ends every live stall's rent that is past its day or closing hour (the save calls this first).
+	static void LapseAll()
+	{
+		if (!s_aLive)
+			return;
+
+		foreach (LF_StallComponent stall : s_aLive)
+		{
+			if (stall)
+				stall.Lapse();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReleaseRent()
+	{
+		LF_StallRentBook.Release(m_sRentToken);
+		m_sRentToken = "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -304,6 +330,8 @@ class LF_StallComponent : ScriptComponent
 		}
 
 		m_Stall = candidate;
+		ReleaseRent();
+		m_sRentToken = LF_StallRentBook.Record(uid, day, fee, System.GetUnixTime());
 		string name = LF_Utils.GetCharacterName(renter);
 		if (!s_sNameForTest.IsEmpty())
 			name = s_sNameForTest;
@@ -323,6 +351,7 @@ class LF_StallComponent : ScriptComponent
 		if (m_Stall)
 			m_Stall.m_iRentedDay = LF_Stall.NOT_RENTED;
 
+		ReleaseRent();
 		if (Replication.IsServer())
 			SetShown(false, "");
 	}

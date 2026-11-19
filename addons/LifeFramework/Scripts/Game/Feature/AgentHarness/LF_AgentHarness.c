@@ -4297,7 +4297,11 @@ class LF_AgentHarness
 		s_sWantedName = entityName;
 		s_pFoundEntity = null;
 		s_fBestDist = 999999;
-		s_vOrigin = user.GetOrigin();
+		// A character in a seat is a child of the vehicle: GetOrigin is then the seat offset, not a place in
+		// the world, so the search would run around the world's origin (the grain prompts need a driver).
+		vector userTransform[4];
+		user.GetWorldTransform(userTransform);
+		s_vOrigin = userTransform[3];
 
 		// Another player is named Player<id>: their character, if it carries the action.
 		IEntity player = PlayerNamed(entityName);
@@ -4332,6 +4336,15 @@ class LF_AgentHarness
 		float radius = 5;
 		if (entityName != "")
 			radius = 80;
+
+		// A named entity with no mesh (the weighbridge's invisible prompt) is missed by the sphere query beyond a
+		// metre or two, and a driver sits metres from it: look the layer name up directly first.
+		if (entityName != "")
+		{
+			IEntity byName = world.FindEntityByName(entityName);
+			if (byName && vector.Distance(byName.GetOrigin(), s_vOrigin) <= radius && FindOnEntity(byName, className))
+				return byName;
+		}
 
 		world.QueryEntitiesBySphere(s_vOrigin, radius, CollectActionEntity, null, EQueryEntitiesFlags.ALL);
 		return s_pFoundEntity;
