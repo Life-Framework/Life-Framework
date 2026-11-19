@@ -1,0 +1,30 @@
+GenericEntity : "{5E37C6EAF3E6A034}Prefabs/Props/Agriculture/Beehive_01/Beehive_01_base.et" {
+ ID "1A01E5702E04422C"
+ components {
+  LF_HiveComponent "{F1F5F194CF1AE092}" {
+   m_HoneycombPrefab "{9DC40F97DF4CCFC4}Prefabs/Items/Food/LF_Honeycomb.et"
+  }
+  ActionsManagerComponent "{60D69B6CE33C5A5B}" {
+   ActionContexts {
+    UserActionContext "{3B7A1E5D9C2F4A61}" {
+     ContextName "LF_Hive"
+     Position PointInfo "{8E2D4C6A1F3B5D72}" {
+      Offset 0 0.6 0
+     }
+     Radius 1.2
+    }
+   }
+   additionalActions {
+    LF_HiveTakeAction "{5C9E1A3D7B2F4E83}" {
+     ParentContextList {
+      "LF_Hive"
+     }
+     UIInfo UIInfo "{2A6F8C4E1D3B5A94}" {
+      Name "#LF-Hive_Take"
+     }
+     Duration 2
+    }
+   }
+  }
+ }
+}

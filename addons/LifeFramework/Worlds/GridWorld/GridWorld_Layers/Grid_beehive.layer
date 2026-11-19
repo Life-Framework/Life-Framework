@@ -1,0 +1,53 @@
+// Grid cell c13r5 for beehive: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_beehive_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 179 0 83
+}
+SCR_DestructibleEntity Grid_beehive_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 184 0 83
+}
+SCR_DestructibleEntity Grid_beehive_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 83
+ angleY 270
+}
+SCR_DestructibleEntity Grid_beehive_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 88
+ angleY 270
+}
+SCR_DestructibleEntity Grid_beehive_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 189 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_beehive_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 184 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_beehive_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 179 0 93
+ angleY 90
+}
+GenericEntity Grid_beehive_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:beehive"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 178.2 0.505 83.6
+ angleY -90
+}
+GenericEntity Grid_beehive_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "beehive"
+  }
+ }
+ coords 178.3 0 85.5
+ angleY 90
+}
+GenericEntity Grid_beehive_R0 : "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et" {
+ coords 186.459 0.065 87.999
+ angleY -90
+}
