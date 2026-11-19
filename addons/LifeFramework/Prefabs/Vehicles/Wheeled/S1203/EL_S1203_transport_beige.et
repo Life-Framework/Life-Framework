@@ -23,6 +23,11 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
     }
    }
    additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_CargoBedAction "{E1A1203BE1C04000}" {
      ParentContextList {
       "lf_cargo"

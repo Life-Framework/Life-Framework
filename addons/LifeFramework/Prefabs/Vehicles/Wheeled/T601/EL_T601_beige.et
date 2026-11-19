@@ -7,6 +7,11 @@ Vehicle : "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et" {
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {
    additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_VehicleLockAction "{E1A601BE1A000006}" {
      ParentContextList {
       "door_l01"

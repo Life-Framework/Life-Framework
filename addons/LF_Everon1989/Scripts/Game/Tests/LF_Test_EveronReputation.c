@@ -1,4 +1,4 @@
-// red-proof: #3440 main guard went red on ddd49572e when the shipment award rows (`LF_Reputation_Shipment.conf`) met the old core-only action rule (five `award shipment_* names an action the core publishes` failures); the rule now reads the pack quest turn-in awards (#3768), green after. Earlier: #3083 observed 2026-11-18 `--only LF_Test_EveronReputation` on the old +4 award (cap 60) failed `ten parcel runs open the crates gate` and `ten parcel runs take a newcomer to Known (tier 1) (expected 1, got 0)`, then passed on +10 with the town cap at 120. Earlier: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronReputation` printed `RED PROOF OK` (pack leg); with an empty header as the pack source it failed `a newcomer does not pass the crates gate` and `a Known character passes the crates gate` (no gate row, no contract, core tier words). `--only` then passed under the pack header. An earlier green run caught the town's daily cap of 60 holding back the 100 test points, lifted on the loaded copy.
+// red-proof: #3806 main guard went red on acbf20db (#3805, reverted by #3811): `award anniversary_memorial names an action the core publishes`, the rite's award row landed before the core rite (LF_EventMemorial) did; the rule now reads the pack rite's award too. Earlier: #3440 main guard went red on ddd49572e when the shipment award rows (`LF_Reputation_Shipment.conf`) met the old core-only action rule (five `award shipment_* names an action the core publishes` failures); the rule now reads the pack quest turn-in awards (#3768), green after. Earlier: #3083 observed 2026-11-18 `--only LF_Test_EveronReputation` on the old +4 award (cap 60) failed `ten parcel runs open the crates gate` and `ten parcel runs take a newcomer to Known (tier 1) (expected 1, got 0)`, then passed on +10 with the town cap at 120. Earlier: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronReputation` printed `RED PROOF OK` (pack leg); with an empty header as the pack source it failed `a newcomer does not pass the crates gate` and `a Known character passes the crates gate` (no gate row, no contract, core tier words). `--only` then passed under the pack header. An earlier green run caught the town's daily cap of 60 holding back the 100 test points, lifted on the loaded copy.
 //! #2709 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's standing overlays
 //! replace the core tier words with the pack's own (the pack's own tier keys, three factions of six, the ladder itself
 //! untouched), add an award row per civilian job whose action the core subscriber actually raises
@@ -15,11 +15,28 @@ class LF_Test_EveronReputation : LF_Test
 	static const string TIER_KEY_PREFIX = "LF-Everon_Tier_";
 	static const string CONTRACT = "harbour_crates";
 	static const ResourceName QUEST_AWARDS = "{3440A00000000001}Configs/Quests/LF_Quest_Shipment.conf";
+	//! The pack's memorial rite: the core event operation (LF_EventMemorialOperation, #3806) pays its award row.
+	static const ResourceName RITE_AWARDS = "{0198079B059A452B}Configs/Events/LF_Rite_AnniversaryMemorial.conf";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
 	{
 		return "everon/reputation";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the pack's memorial rite pays this action (the core event operation raises it).
+	protected static bool IsRiteAward(string action)
+	{
+		Resource resource = BaseContainerTools.LoadContainer(RITE_AWARDS);
+		if (!resource || !resource.GetResource())
+			return false;
+
+		LF_EventMemorial rite = LF_EventMemorial.Cast(BaseContainerTools.CreateInstanceFromContainer(resource.GetResource().ToBaseContainer()));
+		if (!rite || action.IsEmpty())
+			return false;
+
+		return rite.m_sAwardAction == action;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -67,6 +84,10 @@ class LF_Test_EveronReputation : LF_Test
 
 		// A quest turn-in pays standing too (LF_QuestDefinition.m_aTurnInAwards, #3768): the shipment's endings.
 		if (IsQuestAward(action))
+			return true;
+
+		// A memorial rite pays standing to the people present (LF_EventMemorial.m_sAwardAction, #3806).
+		if (IsRiteAward(action))
 			return true;
 
 		string prefix = LF_ReputationSubscriber.ACTION_JOB_COMPLETED + ":";

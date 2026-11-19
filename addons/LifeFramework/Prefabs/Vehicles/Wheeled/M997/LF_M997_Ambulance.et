@@ -18,6 +18,11 @@ Vehicle : "{00C9BBE426F7D459}Prefabs/Vehicles/Wheeled/M998/M997_maxi_ambulance.e
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {
    additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_SirenModeAction "{A3D1C0DE00000923}" {
      UIInfo UIInfo "{A3D1C0DE00000924}" {
       Name "#LF-Siren_AmbulanceOn"
