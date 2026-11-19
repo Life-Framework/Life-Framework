@@ -86,6 +86,9 @@ class LF_Test_BankTransferRules : LF_Test
 		ctx.Equal(LF_EBankTransferRefusal.DISABLED, disabled.m_eRefusal, "transfers off refuses every transfer");
 		LF_BankTransferVerdict defaults = LF_BankTransferRules.Evaluate(null, FROM, TO, true, 10, 500, 0);
 		ctx.True(defaults.IsAllowed(), "a null config reads as the defaults");
+		LF_BankTransferConfig fresh = LF_BankTransferConfig.CreateDefault();
+		ctx.True(fresh.m_bEnabled, "the script defaults have transfers on");
+		ctx.Equal(LF_BankTransferConfig.DEFAULT_DAILY_LIMIT, fresh.m_iDailyLimit, "the script defaults carry the default daily limit");
 
 		// Every refusal says why in words; a good transfer has no key.
 		ctx.EqualStr("", LF_BankTransferRules.Key(LF_EBankTransferRefusal.NONE), "NONE has no key");

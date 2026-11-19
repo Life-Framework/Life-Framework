@@ -75,7 +75,7 @@ class LF_BankTransferRules
 	static LF_BankTransferVerdict Evaluate(LF_BankTransferConfig config, string fromAccount, string toAccount, bool toAccountKnown, int amount, int balance, int sentToday)
 	{
 		if (!config)
-			return Evaluate(new LF_BankTransferConfig(), fromAccount, toAccount, toAccountKnown, amount, balance, sentToday);
+			return Evaluate(LF_BankTransferConfig.CreateDefault(), fromAccount, toAccount, toAccountKnown, amount, balance, sentToday);
 
 		if (!config.m_bEnabled)
 			return LF_BankTransferVerdict.Refuse(LF_EBankTransferRefusal.DISABLED);

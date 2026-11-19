@@ -11,19 +11,31 @@ class LF_BankTransferConfig
 	static const int DEFAULT_DAILY_LIMIT = 50000;
 
 	[Attribute("1", UIWidgets.CheckBox, "Whether bank transfers are on. Off refuses every transfer")]
-	bool m_bEnabled = true;
+	bool m_bEnabled;
 
 	[Attribute("0", UIWidgets.Auto, "Flat fee charged to the sender on every transfer, on top of the amount", params: "0 1000000")]
-	int m_iFee = 0;
+	int m_iFee;
 
 	[Attribute("0", UIWidgets.Auto, "Percent of the amount charged to the sender on top of the flat fee (whole percent, rounded down)", params: "0 100")]
-	int m_iFeePercent = 0;
+	int m_iFeePercent;
 
 	[Attribute("50000", UIWidgets.Auto, "Most one account may send in a day, fees not counted. 0 means no limit", params: "0 100000000")]
-	int m_iDailyLimit = 50000;
+	int m_iDailyLimit;
 
 	protected static ref LF_BankTransferConfig s_Config;
 	protected static bool s_bLoadAttempted;
+
+	//------------------------------------------------------------------------------------------------
+	//! A fresh config holding the script defaults: on, no fee, the default daily limit.
+	static LF_BankTransferConfig CreateDefault()
+	{
+		LF_BankTransferConfig config();
+		config.m_bEnabled = true;
+		config.m_iFee = DEFAULT_FEE;
+		config.m_iFeePercent = DEFAULT_FEE_PERCENT;
+		config.m_iDailyLimit = DEFAULT_DAILY_LIMIT;
+		return config;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Reads a config file. Null (logged) when it does not resolve or has another root class.
@@ -63,6 +75,6 @@ class LF_BankTransferConfig
 		if (config)
 			return config;
 
-		return new LF_BankTransferConfig();
+		return CreateDefault();
 	}
 }
