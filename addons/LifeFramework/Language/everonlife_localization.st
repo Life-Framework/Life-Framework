@@ -13308,6 +13308,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take %1"
      Comment "UI kit quantity face for the amount that leaves. %1 is the count."
     }
+    CustomStringTableItem "{7B2D91E4A0C358F6}" {
+     Id "LF-VehicleCompartment_Open"
+     Target_en_us "Open the panel"
+     Comment "Action on a fitted car, shown to its owner only: opens the hidden compartment (#3434)."
+    }
+    CustomStringTableItem "{2E84C0B7D1596A3F}" {
+     Id "LF-VehicleCompartment_Title"
+     Target_en_us "Hidden compartment"
+     Comment "Title of a car's hidden compartment storage (#3434)."
+    }
     CustomStringTableItem "{C470CD4C9E58C70D}" {
      Id "LF-VehicleLock_NoTarget"
      Target_en_us "No vehicle of yours in reach"

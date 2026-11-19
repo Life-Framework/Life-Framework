@@ -42,3 +42,11 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 - **Owner and side:** the server. The engine's `PersistenceSystem` tracked every vehicle entity and restored it where it stood, with a new lock identifier and no owner, while the restart impound brought the record back too. `LF_VehicleWorldSave.Hold` calls `StopTracking(vehicle, true)` on every car `LF_VehicleOwnership` spawns (the lot purchase and `SpawnOwned`, used by collect and retrieve). The car's record and its cargo snapshot are its only save. This is the same pattern as `LF_StoreShelfSave` (#3127).
 - **Old saves:** a save written before the fix still holds the copies. The first boot on it restores them once as unowned, keyless cars, and they are not dropped later. Wipe the save, or delete those cars, when this ships.
 - **Proof:** `vehicles/restart-one-car` (PERSISTENCE): collected and retrieved cars are not tracked. Under `tools\cli wt e2e` the reload boot finds no copy and no loose apple by the impound, then exactly one truck after the collect, holding its apple.
+
+## Hidden compartment (#3434)
+
+- **Player sees:** the owner of a fitted car gets an "Open the panel" row that opens a small extra storage. The quick vehicle search never lists it; the detective's full search does, and seizes what it finds.
+- **Owner and side:** the server. The compartment is a child entity of the car (`LF_VehicleCompartment.et`), found by `LF_VehicleCompartmentStorageComponent`, so `LF_ChainSearch.Collect` (which walks the car's own storage) never sees it. `LF_VehicleCompartment.SearchFull` runs the quick search, then rolls the compartment's own load and deletes its goods.
+- **Not wired yet:** `Fit` is called by the pack (Q11); the "Full search" row and its detective gate are #3427 and call `SearchFull`. Goods in a compartment are not saved: the saved compartment level only says whether to fit one.
+- **Data:** none.
+- **Proof:** `vehicles/compartment` (WORLD).
