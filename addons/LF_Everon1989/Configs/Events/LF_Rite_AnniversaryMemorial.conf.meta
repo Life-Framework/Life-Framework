@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{0198079B059A452B}Configs/Events/LF_Rite_AnniversaryMemorial.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

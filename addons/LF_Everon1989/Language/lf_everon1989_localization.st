@@ -19,6 +19,26 @@ StringTable {
      Target_en_us "FIRST BANK OF EVERON"
      Comment "ATM terminal screen header. Upper case: a 1989 green-screen terminal."
     }
+    CustomStringTableItem "{D260354EBA36FC1E}" {
+     Id "LF-Anniversary_Memorial_Title"
+     Target_en_us "The anniversary"
+     Comment "Anniversary memorial (#3806): the toast title shown to players at the memorial."
+    }
+    CustomStringTableItem "{4C0D76B1AE7F668D}" {
+     Id "LF-Anniversary_Memorial_Toast"
+     Target_en_us "The bells ring and the town falls quiet for those the Zone took."
+     Comment "Anniversary memorial (#3806): the toast text shown to players at the memorial when the bells ring."
+    }
+    CustomStringTableItem "{5858EDDD03770CE6}" {
+     Id "LF-Anniversary_Priest_Line"
+     Target_en_us "Three years ago they walked out of the night with what they could carry. We remember each of them. Stand with us a moment."
+     Comment "Anniversary memorial (#3806): the priest's line to players at the memorial (arc 4, docs/everon/world-bible-internal.md)."
+    }
+    CustomStringTableItem "{9DB0CED7E880920F}" {
+     Id "LF-Anniversary_Priest_Name"
+     Target_en_us "Father Étienne Morel"
+     Comment "Anniversary memorial (#3806): the priest's name over his line at the memorial."
+    }
     CustomStringTableItem "{BE2579D48B439241}" {
      Id "LF-BuyerSale_Closed"
      Target_en_us "The man is not buying here, not tonight."

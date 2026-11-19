@@ -84,3 +84,11 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Owner and side:** server; `LF_EventMapShare` listens to `LF_OnEventPhase` and puts or removes the `EVERYONE` row `event:<eventId>` in `LF_MapShares`; the row carries the radius and the `EVENT` style, and each client draws the circle in its own `LF_MapAreas` (`LF_MapShareAreas`). Nothing is saved.
 - **Data:** the place is the `LF_EventPlace` binding (scene id, radius) resolved to the `event_target` marker through `LF_Places`; label `#LF-EventMap_Place`.
 - **Proof:** `events/map-share` (WORLD).
+
+## Memorial rite (#3806)
+
+- **Player sees:** at a memorial the church bell tolls, the nearby radios fall quiet for a while, and each player standing there gets a toast and the speaker's line (a text toast titled with the speaker's name) and a standing award, once per phase run.
+- **Owner and side:** `LF_EventMemorialOperation` (server, an operation module; a pack .conf with root class `LF_EventMemorial` registers it through `LF_EventModuleLoader`). The bells are a one-shot RPC on the game mode (`LF_AnnounceMemorialBells`) that each rendering client plays on the nearest vanilla `SCR_BellSoundComponent` (`LF_MemorialBells`); nothing replicates but the existing `LF_AmbientSwitchComponent` of each radio.
+- **Data:** the scene id whose `event_target` marker is the memorial, the radius, the toast and line keys, the radio sound slots, ring and silence seconds, the bell strokes and search radius, the award row id. The core names no place, person or sound.
+- **Rules:** the first run of a phase run (its start time moved) opens the rite: bells, then the radios of the named slots within the ring go off and come back after the silence (only the ones this switched off). Every run serves the players within the radius not yet served in this phase run. A scene with no placed marker does nothing and logs once per run.
+- **Proof:** `events/memorial` (WORLD); the pack's data is checked in `everon/anniversary-memorial`.
