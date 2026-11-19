@@ -310,8 +310,9 @@ class LF_ChessTable
 		{
 			LF_Debug.Info(FEATURE, "grace period over; the absent side resigns");
 			m_Game.Resign(seat == SEAT_WHITE);
-			// A player who did not come back aborts the game: every stake goes back.
-			m_Stake.Settle(m_Game.GetResult(), true, m_aPayouts);
+			// A player who did not come back forfeits: the opponent wins the pot. Both away: refund both.
+			bool bothAway = m_iWhiteLeftMs >= 0 && m_iBlackLeftMs >= 0;
+			m_Stake.Settle(m_Game.GetResult(), bothAway, m_aPayouts);
 		}
 		FreeSeat(seat);
 	}
@@ -787,6 +788,10 @@ class LF_ChessSitAction : ScriptedUserAction
 			return;
 
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
+		// A staked sit moves cash: it counts against the player's chess bucket like any other ask.
+		if (m_iStake > 0 && !LF_ChessTableComponent.AllowAsk(playerId, "chess staked sit"))
+			return;
+
 		// The stake comes from this action's own setting, never from the client.
 		table.ServerSitFor(playerId, pUserEntity, m_iStake);
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));

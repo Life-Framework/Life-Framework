@@ -1,5 +1,7 @@
 // red-proof: new test, no failing state to restore. `tools\cli test --no-build --red LF_Test_ChessStake`
 // skips the mating move behind the RedProof() hook so the pot is never paid (2026-11-19).
+// red-proof (review #3672): with Expire refunding both (the old abort), "a forfeit pays one payout" failed
+// (2026-11-19, FAIL chess/stake); the chess_escrow section did not exist before, so its NotNull failed too.
 
 //! #3196: playing chess for a stake. The first player sits at a fixed stake, the second sits only by
 //! paying the same one. Both stakes leave carried cash into escrow; the winner is paid the pot
@@ -24,6 +26,8 @@ class LF_Test_ChessStake : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		CheckRules(ctx);
+		CheckForfeit(ctx);
+		CheckRestartRefund(ctx);
 		CheckCash(ctx);
 	}
 
@@ -83,6 +87,82 @@ class LF_Test_ChessStake : LF_Test
 		payouts.Clear();
 		lone.TakePayouts(payouts);
 		ctx.Equal(50, SumPayouts(payouts), "the stake of a game that never started goes back");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lead decision (#3672): a player who stands up mid-game and does not come back forfeits, the
+	//! opponent wins the pot; both away refunds both.
+	protected void CheckForfeit(LF_TestContext ctx)
+	{
+		array<ref LF_ChessPayout> payouts = {};
+		LF_ChessTable table = new LF_ChessTable();
+		table.SitStaked(WHITE, 0, 20, "uw", 100);
+		table.SitStaked(BLACK, 0, 20, "ub", 100);
+		table.Move(WHITE, "e2e4", 10);
+		table.StandUp(BLACK, 100);
+		table.Tick(100 + LF_ChessTable.GRACE_MS);
+		table.TakePayouts(payouts);
+		ctx.Equal(1, payouts.Count(), "a forfeit pays one payout");
+		if (payouts.Count() == 1)
+		{
+			ctx.Equal(WHITE, payouts.Get(0).m_iPlayerId, "the player who stayed wins the forfeit");
+			ctx.Equal(40, payouts.Get(0).m_iAmount, "the forfeit pays the whole pot");
+		}
+
+		LF_ChessTable both = new LF_ChessTable();
+		both.SitStaked(WHITE, 0, 50, "uw", 100);
+		both.SitStaked(BLACK, 0, 50, "ub", 100);
+		both.StandUp(WHITE, 100);
+		both.StandUp(BLACK, 200);
+		both.Tick(200 + LF_ChessTable.GRACE_MS);
+		payouts.Clear();
+		both.TakePayouts(payouts);
+		ctx.Equal(2, payouts.Count(), "both away refunds both");
+		ctx.Equal(100, SumPayouts(payouts), "both away returns exactly the escrow");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lead decision (#3672): a crash with stakes in escrow refunds them into the bank on the next boot,
+	//! once, through the chess_escrow save section; a re-apply in the live session pays nothing.
+	protected void CheckRestartRefund(LF_TestContext ctx)
+	{
+		LF_SavePayload section = LF_SaveSections.Get(LF_ChessStakeSavePayload.NAME);
+		ctx.NotNull(section, "chess_escrow is a registered save section");
+		if (!section)
+			return;
+
+		LF_ATMManager.Reset();
+		LF_BankAccount white = LF_ATMManager.GetOrCreate("test-chess-crash-w");
+		LF_BankAccount black = LF_ATMManager.GetOrCreate("test-chess-crash-b");
+		LF_ChessTable table = new LF_ChessTable();
+		table.SitStaked(WHITE, 0, 50, "test-chess-crash-w", 100);
+		table.SitStaked(BLACK, 0, 50, "test-chess-crash-b", 100);
+
+		JsonSaveContext save = new JsonSaveContext(false);
+		section.WriteSection(save);
+		string saved = save.SaveToString();
+
+		JsonLoadContext live = new JsonLoadContext(false);
+		live.LoadFromString(saved);
+		section.ReadSection(live, 1);
+		ctx.Equal(0, white.GetBalance() + black.GetBalance(), "a re-apply while the stakes are live refunds nothing");
+
+		// The crash: the table and its escrow are gone with no refund, the statics start fresh.
+		table = null;
+		LF_ChessStake.ResetStatics();
+		JsonLoadContext boot = new JsonLoadContext(false);
+		ctx.True(boot.LoadFromString(saved), "the save parses");
+		if (!RedProof())
+			section.ReadSection(boot, 1);
+		ctx.Equal(50, white.GetBalance(), "white's stake is back in the bank after the crash");
+		ctx.Equal(50, black.GetBalance(), "black's stake is back in the bank after the crash");
+
+		JsonLoadContext again = new JsonLoadContext(false);
+		again.LoadFromString(saved);
+		section.ReadSection(again, 1);
+		ctx.Equal(100, white.GetBalance() + black.GetBalance(), "a second load pays nothing twice");
+		LF_ChessStake.ResetStatics();
+		LF_ATMManager.Reset();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -180,7 +260,7 @@ class LF_Test_ChessStake : LF_Test
 			ctx.Equal(-20, last.Get(1).m_iDelta, "the stake left black's cash");
 		}
 
-		// An abort: black stands up mid-game and does not come back; both stakes go back.
+		// A forfeit: black stands up mid-game and does not come back; white wins the pot.
 		w0 = LF_MoneyUtils.GetCash(white);
 		b0 = LF_MoneyUtils.GetCash(black);
 		table.GetTable().StandUp(WHITE, 100);
@@ -193,11 +273,12 @@ class LF_Test_ChessStake : LF_Test
 		table.ServerMove(WHITE, "e2e4");
 		table.GetTable().StandUp(BLACK, 5000);
 		table.ServerTickAt(5000 + LF_ChessTable.GRACE_MS);
-		ctx.Equal(w0, LF_MoneyUtils.GetCash(white), "an abort refunds white");
-		ctx.Equal(b0, LF_MoneyUtils.GetCash(black), "an abort refunds black");
-		ctx.Equal(total, LF_MoneyUtils.GetCash(white) + LF_MoneyUtils.GetCash(black), "no cash leaked on an abort");
+		ctx.Equal(w0 + 50, LF_MoneyUtils.GetCash(white), "a forfeit pays white the pot");
+		ctx.Equal(b0 - 50, LF_MoneyUtils.GetCash(black), "the player who walked away loses the stake");
+		ctx.Equal(total, LF_MoneyUtils.GetCash(white) + LF_MoneyUtils.GetCash(black), "no cash leaked on a forfeit");
 
 		// A seat refunds before the game ran.
+		w0 = LF_MoneyUtils.GetCash(white);
 		table.GetTable().StandUp(WHITE, 6000);
 		ctx.Equal(LF_ChessTable.SEAT_WHITE, table.ServerSitFor(WHITE, white, 20), "white sits for $20 again");
 		table.ServerStandUp(WHITE);

@@ -33,7 +33,7 @@ class LF_ChessPayout : Managed
 //! turns a game ending into payouts. Every amount in equals the amount out: a payout empties the
 //! holds it pays from, so a second ending finds nothing to pay (no double payout, no refund after a
 //! payout).
-class LF_ChessStake
+class LF_ChessStake : Managed
 {
 	static const string FEATURE = "Chess";
 	//! The ledger reason of a stake leaving a player and of the pot reaching the winner.
@@ -54,6 +54,93 @@ class LF_ChessStake
 	protected ref array<int> m_aHold = {0, 0};
 	protected ref array<int> m_aPlayer = {0, 0};
 	protected ref array<string> m_aUid = {"", ""};
+	//! One hold's identity across a restart (uid, second, counter): the crash refund pays each once.
+	protected ref array<string> m_aToken = {"", ""};
+
+	//! Every table's escrow on this server (weak: a deleted table drops out), for the save section.
+	protected static ref array<LF_ChessStake> s_aLive;
+	//! Tokens this session held or refunded: a load re-applied to a live session pays them nothing.
+	protected static ref array<string> s_aSeen;
+	protected static int s_iCounter;
+
+	//------------------------------------------------------------------------------------------------
+	void LF_ChessStake()
+	{
+		Live().Insert(this);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static array<LF_ChessStake> Live()
+	{
+		if (!s_aLive)
+			s_aLive = new array<LF_ChessStake>();
+		return s_aLive;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static array<string> Seen()
+	{
+		if (!s_aSeen)
+			s_aSeen = new array<string>();
+		return s_aSeen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: every stake in escrow on the server, keyed by the payer's uid.
+	static array<ref LF_ChessEscrowRow> ExportEscrow()
+	{
+		array<ref LF_ChessEscrowRow> rows = new array<ref LF_ChessEscrowRow>();
+		foreach (LF_ChessStake stake : Live())
+		{
+			if (!stake)
+				continue;
+			for (int seat = 0; seat < 2; seat++)
+			{
+				if (stake.m_aHold[seat] > 0 && !stake.m_aUid[seat].IsEmpty())
+					rows.Insert(LF_ChessEscrowRow.Create(stake.m_aUid[seat], stake.m_aToken[seat], stake.m_aHold[seat]));
+			}
+		}
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: the server went down with stakes in escrow (a crash; a clean world end refunds
+	//! first). Each saved stake goes back into its payer's bank account once; a token this session
+	//! held or refunded is skipped, so a second load pays nothing twice.
+	//! \return how many stakes were paid back
+	static int RefundSaved(notnull array<ref LF_ChessEscrowRow> rows)
+	{
+		int refunded;
+		foreach (LF_ChessEscrowRow row : rows)
+		{
+			if (!row || row.m_sKey.IsEmpty() || row.m_sToken.IsEmpty() || row.m_iAmount <= 0)
+				continue;
+			if (Seen().Contains(row.m_sToken))
+				continue;
+
+			int amount = LF_Utils.MinInt(row.m_iAmount, STAKE_HIGH);
+			LF_BankAccount account = LF_ATMManager.GetOrCreate(row.m_sKey);
+			if (!account)
+			{
+				LF_Debug.Error(FEATURE, string.Format("restart refund of a $%1 stake failed: no bank account for %2", amount, row.m_sKey));
+				continue;
+			}
+
+			Seen().Insert(row.m_sToken);
+			account.Deposit(amount, REASON_REFUND);
+			refunded++;
+			LF_Debug.Info(FEATURE, string.Format("restart refund: a $%1 chess stake left in escrow is back in %2's bank", amount, row.m_sKey));
+		}
+		return refunded;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		s_aLive = null;
+		s_aSeen = null;
+		s_iCounter = 0;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! True for a stake a table offers: 0 (free), STAKE_LOW or STAKE_HIGH.
@@ -119,6 +206,9 @@ class LF_ChessStake
 		m_aHold[seat] = amount;
 		m_aPlayer[seat] = playerId;
 		m_aUid[seat] = uid;
+		s_iCounter++;
+		m_aToken[seat] = uid + "|" + System.GetUnixTime().ToString() + "|" + s_iCounter.ToString();
+		Seen().Insert(m_aToken[seat]);
 		LF_Debug.Info(FEATURE, string.Format("stake: player %1 put %2 in escrow, %3 held", playerId, amount, Total()));
 	}
 
@@ -185,6 +275,22 @@ class LF_ChessStake
 		m_aHold[seat] = 0;
 		m_aPlayer[seat] = 0;
 		m_aUid[seat] = "";
+		m_aToken[seat] = "";
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_ChessStake's statics (LF_StaticReset finds it by reflection).
+class LF_ChessStake_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_ChessStake";
+	}
+
+	override void Apply()
+	{
+		LF_ChessStake.ResetStatics();
 	}
 }
 

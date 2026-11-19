@@ -59,8 +59,11 @@
   (`LF_ChessSitAction.m_iStake`, set on the prefab; the tiers are `LF_ChessStake.STAKE_LOW` and `STAKE_HIGH`, from config in a
   follow-up). The first player sits at a tier; the second sits only by paying the same stake and carrying the cash. Each stake
   leaves carried cash into server-side escrow (`LF_ChessStake`, ledger reason `chess_stake`); the client sends nothing but the
-  action it used. The winner of a mate is paid the pot (2x the stake). A draw, a player who did not come back inside the grace
-  period (an abort), a table deleted at world end, and a stand-up before the second seat paid all refund (reason `chess_refund`).
+  action it used. The winner of a mate is paid the pot (2x the stake). A player who leaves or stands up mid-game and does not
+  come back inside the grace period forfeits: the opponent wins the pot. A draw, both players away, a table deleted at world end,
+  and a stand-up before the second seat paid all refund (reason `chess_refund`). A crash with stakes in escrow refunds them into
+  the payers' bank accounts once on the next boot (save section `chess_escrow`, `LF_ChessStakeSavePayload`). A staked sit
+  counts against the chess rate limit.
   A refund for a player with no body goes to their bank account by uid. Every ending drains the escrow, so a second ending or a
   refund after a payout pays nothing. A seat the cash cannot cover, or whose stake differs from the other seat's, is refused and
   nothing moves; a free sit at a staked table only watches.
