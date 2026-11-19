@@ -3153,7 +3153,7 @@ function cmdSessionWait(dir, flags) {
   }
 }
 
-// Playtest only: the host stop file closes the server gracefully (the engine
+// Playtest and island only (both inherit the flagship header's m_bLF_HostStopFile): the host stop file closes the server gracefully (the engine
 // writes its SHUTDOWN save), then the same client profiles rejoin, in the same
 // order, a server that loaded that save.
 function cmdSessionRestart(root, dir, flags) {
@@ -3165,8 +3165,8 @@ function cmdSessionRestart(root, dir, flags) {
     console.log("session: no running session to restart; 'node agent-box/session.mjs up --mission playtest' first");
     return 1;
   }
-  if (prev.mission !== "playtest") {
-    console.log("session: restart needs --mission playtest (the bare DebugWorld has no stop file, so no shutdown save)");
+  if (prev.mission !== "playtest" && prev.mission !== "island") {
+    console.log("session: restart needs --mission playtest or island (the bare DebugWorld has no stop file, so no shutdown save)");
     return 1;
   }
   const exe = serverExe();

@@ -1,0 +1,24 @@
+# Island home seen by a late joiner (#3603): client 2 joins after the restart (`session join 2`) with a fresh profile (quiz and R-89 first).
+# The cottage is Sold for them and its door stays shut.
+ui
+click QuizOption1Button
+wait 500
+click QuizOption0Button
+wait 500
+click QuizOption2Button
+wait 500
+click QuizOption1Button
+wait 500
+click QuizOption0Button
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Newcomer
+type RegAge 24
+click SignButton
+wait 8000
+
+step 1 A stranger: the sign says Sold and the door will not open
+stand HomeSign_saint_philippe_sp_b83
+wait 1500

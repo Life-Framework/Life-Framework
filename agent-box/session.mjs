@@ -4,7 +4,7 @@
 //
 //   node agent-box/session.mjs up --clients 2     boot the server, launch the clients
 //   node agent-box/session.mjs up --clients 2 --mission playtest   the pack header LF_PlaytestTown.conf, harness build
-//   node agent-box/session.mjs restart            save, stop, load, rejoin (playtest mission)
+//   node agent-box/session.mjs restart            save, stop, load, rejoin (playtest or island mission)
 //   node agent-box/session.mjs wait [--timeout 600]   block until a starting session is ready (exit 0), or say why not
 //   node agent-box/session.mjs down               close every process the session started
 //   node agent-box/session.mjs status             pids, profiles, logs
@@ -24,7 +24,7 @@
 // with -scrDefine LF_HARNESS on the server and every client: the harness
 // (stand, pose, use) passes its own gate in that build only, the debug menu
 // stays closed, and a client without the define is refused at the door.
-// `restart` (playtest only) stops the server through the host stop file (the
+// `restart` (playtest and island: both headers carry the stop file) stops the server through the host stop file (the
 // engine writes its SHUTDOWN save), boots it with -loadSessionSave, and
 // rejoins the same client profiles in the same order (same player ids, so the
 // same LF_SESSION_IDENTITY accounts).
