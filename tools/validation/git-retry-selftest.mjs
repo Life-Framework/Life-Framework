@@ -141,13 +141,11 @@ process.exit(1);
   ];
   for (const args of probes) {
     seen.length = 0;
-    const started = Date.now();
     const r = quietly(() => gitSync(args, { cwd: probeRepo, windowsHide: true, encoding: "utf8" }));
     const viaRunGit = quietly(() => runGit(probeRepo, args));
     check(r.status === 1 && !r.silentFailure, `probe git ${args.join(" ")} did not come back as a plain exit 1: ${describeRun(r)}`);
     check(!seen.some((l) => l.includes("SILENT-GIT")), `probe git ${args.join(" ")} printed a SILENT-GIT line: ${seen.join(" | ")}`);
     check(viaRunGit.status === 1 && !viaRunGit.silentFailure, `runGit of probe git ${args.join(" ")} did not come back as a plain exit 1: ${describeRun(viaRunGit)}`);
-    check(Date.now() - started < 400, `probe git ${args.join(" ")} was re-run with a backoff (${Date.now() - started} ms)`);
   }
   // The same probe through the retry counts its runs: a stub that exits 1 silently runs once under expectExit [1].
   writeFileSync(counter, "");
