@@ -21,8 +21,8 @@ enum LF_ELostAndFoundResult
 //!
 //! Server only. The owner is always derived on the server from the acting entity and the box from that
 //! entity's own position; nothing a client sends picks either. The lapse is decided by LF_LockerRules and
-//! applied by MoveLapsed, from a slow sweep (LF_LostAndFoundBoxComponent) and again for the one renter
-//! standing at the box, so a lapsed locker never hands its contents out for free.
+//! applied by MoveLapsed, from a slow sweep (armed by the first bank or box) and again for the one renter
+//! at the box or opening the locker (OpenAtTime), so a lapsed locker never hands its contents out for free.
 class LF_LostAndFound
 {
 	static const string SLOT_PREFIX = "lostfound:";
@@ -124,7 +124,7 @@ class LF_LostAndFound
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Starts the slow lapse sweep once, from the first box placed. The timer reads the clock and the
+	//! Starts the slow lapse sweep once, from the first bank or box placed. The timer reads the clock and the
 	//! config each time it fires and does nothing off the server.
 	static void ArmSweep()
 	{
@@ -133,6 +133,13 @@ class LF_LostAndFound
 
 		s_bSweepArmed = true;
 		GetGame().GetCallqueue().CallLater(SweepTick, SWEEP_MS, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True once the lapse sweep is running.
+	static bool IsSweepArmed()
+	{
+		return s_bSweepArmed;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -50,8 +50,8 @@ only; `/configreload` re-reads it.
   same `m_sSiteId` as the bank (a box with none is keyed by position and warns) and a 2.5 m reach.
 - **Lapse.** `LF_LostAndFound.MoveLapsed` runs when `LF_LockerRules.MoveToLostAndFound` says so: an open locker is
   closed first, the contents (snapshot `locker:<siteId>`) are appended to the owner's `lostfound:<siteId>` snapshot, and the
-  rental is freed (`LF_LockerBank.Free`). The same call runs for the one renter standing at the box, and a slow sweep
-  (every 5 minutes, armed by the first box placed) runs it for every rental.
+  rental is freed (`LF_LockerBank.Free`). The same call runs for the one renter at the box or opening the locker, and a slow sweep
+  (every 5 minutes, armed by the first bank or box placed) runs it for every rental.
 - **Reclaim.** "Reclaim your things (fee)" on the box: the server finds the box from the character's position and the owner
   from their own record key. A stranger or an owner with nothing waiting gets `NOTHING_TO_RECLAIM`; short of `reclaimFee` is
   refused with nothing taken; otherwise the fee is taken after every check, the record is unpacked into the box's storage
@@ -60,5 +60,4 @@ only; `/configreload` re-reads it.
 
 ## Not built here
 
-Renewal and a rent sheet are later slices of #1038. The sweep is armed by the first box placed, so a world with a bank
-and no box never lapses a locker. No box is placed in the pack's world yet.
+Renewal and a rent sheet are later slices of #1038. No box is placed in the pack's world yet.
