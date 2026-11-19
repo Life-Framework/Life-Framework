@@ -1,0 +1,134 @@
+GenericEntity Fit_chopyard_yard_Place {
+ components {
+  LF_PlaceComponent "{AF3EE10F51264851}" {
+   m_sKind "ChopYard"
+   m_sId "chopyard.yard"
+  }
+  LF_FittedBuildingComponent "{74C2F12924092B02}" {
+  }
+ }
+ coords 5361.3 20.6 9900
+}
+GenericEntity Fit_chopyard_yard_chop_shop_welder {
+ components {
+  MeshObject "{6C0A5D00A1B24F01}" {
+   Object "{79EE1F126728BF6C}Assets/Props/Industrial/Repair/GasWelder_01/GasWelder_01.xob"
+  }
+  RigidBody "{6C0A5D00A1B24F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 5371.091 20.633 9893.033
+ angleY -53
+}
+GenericEntity Fit_chopyard_yard_chop_shop_door_1 {
+ components {
+  MeshObject "{6C0A5D00A1B20F01}" {
+   Object "{F753CFA0BE5000FF}Assets/Props/VehicleParts/Door_M998/Door_M998_L1.xob"
+  }
+  RigidBody "{6C0A5D00A1B20F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 5377.574 20.569 9901.926
+ angleY 7
+}
+GenericEntity Fit_chopyard_yard_chop_shop_door_2 {
+ components {
+  MeshObject "{6C0A5D00A1B21F01}" {
+   Object "{382314ED6EF301BF}Assets/Props/VehicleParts/Door_M998/Door_M998_R1.xob"
+  }
+  RigidBody "{6C0A5D00A1B21F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 5375.242 20.592 9902.848
+ angleY 27
+}
+GenericEntity Fit_chopyard_yard_chop_shop_jack {
+ components {
+  MeshObject "{6C0A5D00A1B22F01}" {
+   Object "{A195F0214C0A0528}Assets/Props/Industrial/Repair/HydraulicCarJack_01/HydraulicCarJack_01.xob"
+  }
+  RigidBody "{6C0A5D00A1B22F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 5376.405 20.633 9898.101
+ angleY -43
+}
+GenericEntity Fit_chopyard_yard_chop_shop_scrap {
+ components {
+  MeshObject "{6C0A5D00A1B23F01}" {
+   Object "{516F33579E693014}Assets/Props/Industrial/Repair/VehicleGarbage_01/VehicleGarbage_01_pile_medium.xob"
+  }
+  RigidBody "{6C0A5D00A1B23F02}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 5372.017 20.593 9901.534
+ angleY -73
+}
+GenericEntity Fit_chopyard_yard_tool_box_01_base : "{174E332EF84362B2}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_base.et" {
+ coords 5372.844 21.698 9891.242
+ angleY 17
+}
+GenericEntity Fit_chopyard_yard_workbench_vice_01 : "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et" {
+ coords 5371.299 21.804 9891.662
+ angleY 17
+}
+GenericEntity Fit_chopyard_yard_tire_m151_a2_pile : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ coords 5375.992 20.7 9890.594
+ angleY -53
+}
+GenericEntity Fit_chopyard_yard_barrel_metal_01_blue : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 5368.025 20.632 9892.925
+ angleY -73
+}
+GenericEntity Fit_chopyard_yard_barrel_metal_01_blue_2 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 5368.766 20.621 9893.639
+ angleY -73
+}
+GenericEntity Fit_chopyard_yard_workbench_01 : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ coords 5372.064 20.684 9891.428
+ angleY 17
+}
+GenericEntity Fit_chopyard_yard_chop_shop : "{9C2E4A7B1D5F8036}Prefabs/Crime/LF_ChopBench.et" {
+ components {
+  LF_ChopShopComponent "{4531DCE1B778380A}" {
+   m_sShopId "chopyard-yard"
+  }
+ }
+ coords 5374.688 20.655 9895.907
+ angleY 107
+}
+GenericEntity Fit_chopyard_yard_tire_m151_a2 : "{A81F99C793D11875}Prefabs/Props/VehicleParts/Tires/Tire_M151A2.et" {
+ coords 5375.96 20.7 9891.858
+ angleY -73
+}
+GenericEntity Fit_chopyard_yard_tire_m151_a2_2 : "{A81F99C793D11875}Prefabs/Props/VehicleParts/Tires/Tire_M151A2.et" {
+ coords 5374.783 20.7 9892.113
+ angleY -33
+}
+GenericEntity Fit_chopyard_yard_crate_01_brown : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 5370.794 20.601 9894.797
+ angleY -63
+}
+GenericEntity Fit_chopyard_yard_barrel_metal_01_base : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ coords 5368.886 20.636 9892.661
+ angleY -73
+}
+GenericEntity Fit_chopyard_yard_m151_a2_wreck : "{EB084C400AABD1D3}Prefabs/Props/Wrecks/M151A2_wreck/M151A2_wreck.et" {
+ coords 5375.842 20.339 9900.364
+ angleY -73
+}

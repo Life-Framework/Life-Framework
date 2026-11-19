@@ -1,0 +1,6 @@
+// Source of the `barber` kit (tools/town/kits/barber.json): the base-game prefabs its rows place. The kit checker reads a
+// vanilla prefab's reference from here (asset GUIDs resolved with tools/lib/game-prefab.mjs resolvePrefab, 2026-11-19).
+// No entity: every row is a whole prefab, none overrides a nested component of its own.
+//   {34E90D599E5E3517}Prefabs/Props/Furniture/MirrorBathroom_02/MirrorBathroom_02.et
+//   {49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et
+//   {E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et

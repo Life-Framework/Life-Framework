@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "parked-cars",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b12"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b38"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b03"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b15"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b17"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b06"
+    }
+  ],
+  "kit": "parked-cars",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_parked-cars.layer",
+  "kinds": [],
+  "rows": 6,
+  "date": "2026-11-19"
+}
