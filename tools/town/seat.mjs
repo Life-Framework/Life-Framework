@@ -26,6 +26,7 @@
 //   reader.shell(path) -> { mesh, surfaces: [{ y, x:[a,b], z:[a,b], area }], walls: [{ n:[nx,ny,nz], p:[[x,y,z] x3] }] } | null
 import { BELOW_PIVOT, isHung, footOf, scaleOf, gameReader as surfaceReader, prefabChildren as prefabChildrenOf } from "../buildings/pipeline/surface.mjs";
 import { toWorld, toLocal } from "./kit.mjs";
+import { TERRAIN_RELATIVE_CLASSES } from "../lib/terrain-classes.mjs";
 
 export const TOL = 0.02; // a row within 2 cm of its support is left alone
 export const FLOOR_BAND = 0.75; // a floor row seats on a host top this far above or below its kit height, no further
@@ -34,9 +35,9 @@ export const HUNG_REACH = 6; // a wall-mounted row looks this far along its faci
 export const NUDGE = 0.3; // a clipping row is pushed out of a wall by at most this much
 export const CLIP_TOL = 0.03; // bounds may touch a wall by this much (paint, skirting) before it counts as a clip
 export const WALL_GAP = 0.005; // a wall row stands this far off the plane
-// Classes whose layer `coords` height is measured from the terrain under them, not from the world's zero (checked on the
-// island's test server: the entity's origin was terrain + the layer's y). A kit row of one of these needs no probe.
-export const TERRAIN_RELATIVE_CLASSES = ["SCR_DestructibleEntity"];
+// Classes whose layer `coords` height is measured from the terrain under them (tools/lib/terrain-classes.mjs). A kit row
+// of one of these needs no probe.
+export { TERRAIN_RELATIVE_CLASSES };
 
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
