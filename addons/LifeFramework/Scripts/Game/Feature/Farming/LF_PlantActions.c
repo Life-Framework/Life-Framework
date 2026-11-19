@@ -8,10 +8,11 @@ enum LF_EPlantActionMode
 }
 
 //------------------------------------------------------------------------------------------------
-//! What a gardener does with free crops (#2664), one class with a mode. The plants themselves are
-//! rows on the server with local meshes, so the action sits on a replicated item the gardener holds
-//! (PLANT on a seed, WATER on a water container; HARVEST and INSPECT are not wired, never on the character) and acts on
-//! the spot in front of the user or the nearest plant within reach. The server checks everything.
+//! What a gardener does with free crops (#2664), one class with a mode. PLANT sits on a seed and WATER
+//! on a water container: replicated items the gardener holds, acting on the spot in front of the user
+//! or the nearest plant within reach. HARVEST and INSPECT sit on the crop's stage prefabs (#3177),
+//! never on the character: the mesh is local, so the acting player's machine sends the plant id
+//! through LF_PlantHarvestRpc. The server checks everything.
 class LF_PlantAction : ScriptedUserAction
 {
 	[Attribute("0", UIWidgets.ComboBox, "What this action does", "", ParamEnumArray.FromEnum(LF_EPlantActionMode))]
@@ -35,9 +36,30 @@ class LF_PlantAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! HARVEST and INSPECT act on a plant's own stage mesh (#3177).
+	protected bool OnPlant()
+	{
+		return m_eMode == LF_EPlantActionMode.HARVEST || m_eMode == LF_EPlantActionMode.INSPECT;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		return user && LF_Systems.IsEnabled(LF_FarmPlots.SYSTEM);
+		if (!user || !LF_Systems.IsEnabled(LF_FarmPlots.SYSTEM))
+			return false;
+
+		if (OnPlant())
+			return !PlantIdOf(m_Owner).IsEmpty();
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The stage mesh is local to each machine: only the acting player's machine runs the action and
+	//! sends the request. PLANT and WATER sit on replicated items and run on the server.
+	override bool HasLocalEffectOnlyScript()
+	{
+		return OnPlant();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -55,6 +77,21 @@ class LF_PlantAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The plant a stage mesh draws, or empty. A client's mirror knows its meshes; a listen host or
+	//! Workbench draws through LF_Plants at the row's own position.
+	static string PlantIdOf(IEntity visual)
+	{
+		if (!visual)
+			return "";
+
+		string plantId = LF_PlantReplication.ClientPlantOf(visual.GetID());
+		if (plantId.IsEmpty() && Replication.IsServer())
+			plantId = LF_Plants.FindNearest(visual.GetOrigin(), 0.05);
+
+		return plantId;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Where a seed goes: on the ground a little in front of the user.
 	static vector SpotAhead(IEntity user, float ahead)
 	{
@@ -66,7 +103,16 @@ class LF_PlantAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!pUserEntity || !Replication.IsServer())
+		if (!pUserEntity)
+			return;
+
+		if (OnPlant())
+		{
+			AskOnPlant(pOwnerEntity, pUserEntity);
+			return;
+		}
+
+		if (!Replication.IsServer())
 			return;
 
 		LF_EPlantResult result;
@@ -79,12 +125,7 @@ class LF_PlantAction : ScriptedUserAction
 		else
 		{
 			plantId = LF_Plants.FindNearest(pUserEntity.GetOrigin(), LF_Plants.REACH);
-			if (m_eMode == LF_EPlantActionMode.WATER)
-				result = LF_Plants.Water(pUserEntity, plantId);
-			else if (m_eMode == LF_EPlantActionMode.HARVEST)
-				result = LF_Plants.Harvest(pUserEntity, plantId);
-			else
-				result = Inspect(pUserEntity, plantId);
+			result = LF_Plants.Water(pUserEntity, plantId);
 		}
 
 		string key = MessageKey(result, place);
@@ -96,8 +137,26 @@ class LF_PlantAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! HARVEST or INSPECT on a stage mesh: the acting player's controller sends the plant id.
+	protected void AskOnPlant(IEntity visual, IEntity user)
+	{
+		if (user != LF_Utils.GetLocalCharacter())
+			return;
+
+		string plantId = PlantIdOf(visual);
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (plantId.IsEmpty() || !controller)
+		{
+			LF_Debug.Warn(LF_Plants.FEATURE, string.Format("%1 not sent: plant '%2', controller %3", typename.EnumToString(LF_EPlantActionMode, m_eMode), plantId, controller != null));
+			return;
+		}
+
+		controller.LF_AskPlant(plantId, m_eMode);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! INSPECT: the plant's stage and water in words, as a toast.
-	protected static LF_EPlantResult Inspect(IEntity user, string plantId)
+	static LF_EPlantResult Inspect(IEntity user, string plantId)
 	{
 		LF_PlantRow row = LF_Plants.Find(plantId);
 		if (!row)
