@@ -161,7 +161,7 @@ class LF_EvidenceConvoy
 		LF_Debug.Info(FEATURE, string.Format("convoy leaves with %1 row(s) in the crate", rows.Count()));
 		convoy.NotifyPolice();
 		if (tick)
-			GetGame().GetCallqueue().CallLater(convoy.Tick, TICK_MS, true);
+			convoy.StartTicking();
 
 		return convoy;
 	}
@@ -346,6 +346,13 @@ class LF_EvidenceConvoy
 			s_Active = null;
 
 		LF_Debug.Info(FEATURE, "convoy despawned");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the convoy on the call queue; Cleanup takes it off.
+	protected void StartTicking()
+	{
+		GetGame().GetCallqueue().CallLater(Tick, TICK_MS, true);
 	}
 
 	//------------------------------------------------------------------------------------------------
