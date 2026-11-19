@@ -88,6 +88,19 @@ class LF_QuestState
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Close a running quest without a reward: the other side of a choice was taken (#3768).
+	//! Only a quest still in progress fails; a turned-in one stays turned in.
+	//! \return True when the quest was running and now failed.
+	bool Fail()
+	{
+		if (m_eStatus != LF_EQuestStatus.ACTIVE)
+			return false;
+
+		m_eStatus = LF_EQuestStatus.FAILED;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Claim the reward, recording the time as the cooldown basis.
 	void TurnIn(float now)
 	{

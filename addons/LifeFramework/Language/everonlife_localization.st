@@ -10746,6 +10746,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the clerk"
      Comment "Interaction on the town clerk NPC."
     }
+    CustomStringTableItem "{3768F00000000011}" {
+     Id "LF-Quest_Action_PoliceDesk"
+     Target_en_us "Speak to the desk"
+     Comment "Action on the duty desk: talk about a report or hand something in (#3768)."
+    }
     CustomStringTableItem "{D85E266C2ACFBDC1}" {
      Id "LF-Quest_ArrivalBank_Desc"
      Target_en_us "Paid in cash. Cash in a pocket is lost if you die, money in the bank is not. Deposit some at an ATM."
@@ -10826,6 +10831,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Quest_Giver_Clerk"
      Target_en_us "Town clerk"
      Comment "Quest menu title for the town clerk on the square (arrival chain)."
+    }
+    CustomStringTableItem "{3768F00000000012}" {
+     Id "LF-Quest_Giver_PoliceDesk"
+     Target_en_us "Duty desk"
+     Comment "Name of the duty desk as a quest giver (#3768)."
     }
     CustomStringTableItem "{028FE3699291F64C}" {
      Id "LF-Quest_Giver_Start"
@@ -11003,6 +11013,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Missão ainda não concluída"
     Comment "Turn-in refused, quest not complete"
    }
+    CustomStringTableItem "{3768F00000000013}" {
+     Id "LF-Quest_PoliceDesk_Idle"
+     Target_en_us "Nothing for the desk right now."
+     Comment "The duty desk when there is nothing to hand in or report (#3768)."
+    }
    CustomStringTableItem "{C62FE3743E00B28C}" {
     Id "LF-Quest_Rejected"
     Target_en_us "Quest not available"
