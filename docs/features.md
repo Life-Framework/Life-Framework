@@ -55,6 +55,7 @@
 - [Payphone (#247)](features/payphone.md)
 - [Processing](features/processing.md)
 - [Property](features/property.md)
+- [Qualifications](features/qualifications.md)
 - [Quests](features/quests.md)
 - [Racing](features/racing.md)
 - [Reputation (standing)](features/reputation.md)
