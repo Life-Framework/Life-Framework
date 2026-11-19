@@ -13318,6 +13318,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "No sale"
      Comment "Title of the refused-sale toast."
     }
+    CustomStringTableItem "{B976D15E0E9B0B4B}" {
+     Id "LF-Training_Course_detective_course"
+     Target_en_us "Detective"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{78F252053EA90564}" {
+     Id "LF-Training_Course_first_aid_course"
+     Target_en_us "First Aid"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{B100F982AE5EF187}" {
+     Id "LF-Training_Course_paramedic_course"
+     Target_en_us "Paramedic"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{2616F2C90F266CD7}" {
+     Id "LF-Training_Course_traffic_course"
+     Target_en_us "Traffic"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{86202AB25CDA24C1}" {
+     Id "LF-Training_Desc"
+     Target_en_us "Hold to study. The fee is paid when you finish."
+     Comment "Training desk: action description."
+    }
+    CustomStringTableItem "{90AE055011CAE1B5}" {
+     Id "LF-Training_NotOnDuty"
+     Target_en_us "Clock in at the duty desk before you take a course."
+     Comment "Training desk: refused while off duty."
+    }
+    CustomStringTableItem "{7C378EF666F77691}" {
+     Id "LF-Training_Qualified"
+     Target_en_us "You've qualified: %1"
+     Comment "Training desk: %1 is the course name, e.g. Detective."
+    }
+    CustomStringTableItem "{45E04447DEFE233C}" {
+     Id "LF-Training_Take_detective_course"
+     Target_en_us "Take the Detective course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{F77B74BC9E316996}" {
+     Id "LF-Training_Take_first_aid_course"
+     Target_en_us "Take the First Aid course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{0AED5736C8FBD7FB}" {
+     Id "LF-Training_Take_paramedic_course"
+     Target_en_us "Take the Paramedic course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{735DD85BF3F2A589}" {
+     Id "LF-Training_Take_traffic_course"
+     Target_en_us "Take the Traffic course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{F3F6CF6F64F0E4DA}" {
+     Id "LF-Training_Title"
+     Target_en_us "Training desk"
+     Comment "Training desk: toast title."
+    }
     CustomStringTableItem "{D820B2BCD7FC410A}" {
      Id "LF-UIKit_Keep"
      Target_en_us "Keep %1"
