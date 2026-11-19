@@ -86,6 +86,7 @@ class LF_StoreComponent : ScriptComponent
 	protected static ResourceName s_StrayPrefab;
 	protected static vector s_vStrayPoint;
 	protected static float s_fStrayHeight;
+	protected static LF_StoreComponent s_StoreAudit;
 
 	protected ref array<ref LF_StoreLineState> m_aState = {};
 	protected float m_fLastRestockMs;
@@ -751,6 +752,49 @@ class LF_StoreComponent : ScriptComponent
 	{
 		AdoptStrays();
 		Sync(false);
+		AuditShelf();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One greppable line per stock line after a fill or a load (#3197): the copies the store tracks, the
+	//! copies it should show for its stock, and the loose copies of that prefab really standing inside the
+	//! shop boundary. `orphan` is loose beyond tracked: a copy nobody owns (a restart that doubled the
+	//! shelf). `agent-box/proofs/shelf-restart-proof.mjs` reads these lines.
+	protected void AuditShelf()
+	{
+		vector centre = GetOwner().CoordToParent(m_vBoundaryCenter);
+		float radius = Math.Max(m_vBoundaryHalf[0], m_vBoundaryHalf[2]) * 1.5 + 1;
+		foreach (LF_StoreLineState line : m_aState)
+		{
+			if (!s_aStrays)
+				s_aStrays = new array<EntityID>();
+
+			s_aStrays.Clear();
+			s_StrayPrefab = line.m_Prefab;
+			s_StoreAudit = this;
+			GetGame().GetWorld().QueryEntitiesBySphere(centre, radius, CollectInShop, null, EQueryEntitiesFlags.ALL);
+			s_StoreAudit = null;
+			int tracked = line.Occupied();
+			int loose = s_aStrays.Count();
+			int orphan = Math.Max(loose - tracked, 0);
+			LF_Debug.Info(LF_Stores.FEATURE, string.Format("store %1 shelf audit: %2 stock=%3 want=%4 tracked=%5 loose=%6 orphan=%7", m_sStoreKey, line.m_Prefab, line.m_iStock, LF_StoreRules.ShelfCount(line.m_iStock, line.m_aSlots.Count()), tracked, loose, orphan));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectInShop(IEntity entity)
+	{
+		if (!entity || !s_StoreAudit || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(entity), s_StrayPrefab))
+			return true;
+
+		// Tracked shelf copies count too (HoldsApart would skip them); only an item in a pocket does not.
+		if (LF_InventoryUtils.GetStorageHierachyRoot(entity) != entity)
+			return true;
+
+		if (s_StoreAudit.Contains(entity.GetOrigin()))
+			s_aStrays.Insert(entity.GetID());
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
