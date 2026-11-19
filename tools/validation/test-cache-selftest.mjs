@@ -17,7 +17,7 @@
 //   `rdb` dropped                        -> FAIL "a changed resourceDatabase.rdb";
 //   "tools/test" dropped from KEY_PATHS  -> FAIL "a changed test-e2e.ps1";
 //   lookup accepting code != 0           -> FAIL "a stored timeout (code 124) is never a hit".
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { mkdirSync, readdirSync, readFileSync, writeFileSync, appendFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
@@ -29,7 +29,7 @@ const tc = await import(pathToFileURL(modPath).href);
 
 const failures = [];
 const git = (cwd, args) => {
-  const r = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true });
+  const r = gitSync(args, { cwd, encoding: "utf8", windowsHide: true });
   if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);
   return r.stdout.trim();
 };

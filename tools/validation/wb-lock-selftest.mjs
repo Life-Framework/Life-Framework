@@ -6,7 +6,8 @@
 // processes failed 8/8 ("the waiter queued with one status line", "held lock shows busy"); on a stdin release, 8/8 pass.
 // inputs: tools/pool.json
 
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -37,7 +38,7 @@ check("FIFO: nothing free, nobody takes", !wb.mayTake(t, "a", 0).ok);
 // only after the waiter printed its "queued" line (the old 1500 ms holder timer let a loaded machine
 // finish the holder before the waiter started: no queued line, "held lock shows busy" false).
 const dir = scratchDir("lf-wb-lock-");
-spawnSync("git", ["init", "-q", dir], { windowsHide: true });
+gitSync(["init", "-q", dir], { windowsHide: true });
 writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { workbenchLimit: 1 } }));
 const lib = pathToFileURL(join(import.meta.dirname, "..", "lib", "wb-lock.mjs")).href;
 const holderJs = `const w = await import(${JSON.stringify(lib)}); await w.acquireWorkbench(${JSON.stringify(dir)}, { purpose: "selftest-holder", log: () => {} }); console.log("HELD"); process.stdin.resume(); process.stdin.on("end", () => process.exit(0));`;

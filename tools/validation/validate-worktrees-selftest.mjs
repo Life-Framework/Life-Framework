@@ -9,6 +9,7 @@
 // with Test-StillRegistered always true "a worktree pruned mid-scan is not an error" failed; both restored.
 
 import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, readFileSync, utimesSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
@@ -33,7 +34,7 @@ const base = scratchDir("lf-vwt-");
 try {
   const fx = join(base, "main");
   mkdirSync(fx);
-  spawnSync("git", ["init", "-q", fx], { windowsHide: true });
+  gitSync(["init", "-q", fx], { windowsHide: true });
   const hub = join(fx, "tmp", "wt");
   mkdirSync(hub, { recursive: true });
   const ghost = join(base, "ghost"); // a half-removed worktree: the folder is there, its .git is not
@@ -107,7 +108,7 @@ try {
   const fx = join(live, "main");
   const wtPath = (slug) => join(live, `wt-${slug}`);
   const git = (cwd, args) => {
-    const r = spawnSync("git", args, { cwd, env: hermeticGitEnv(), encoding: "utf8", windowsHide: true });
+    const r = gitSync(args, { cwd, env: hermeticGitEnv(), encoding: "utf8", windowsHide: true });
     if (r.status !== 0) throw new Error(`git ${args.join(" ")} failed (${r.status}): ${r.stderr}`);
     return r.stdout;
   };

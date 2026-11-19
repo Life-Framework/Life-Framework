@@ -13,7 +13,7 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { scratchDir } from "../lib/scratch.mjs";
 
@@ -37,7 +37,7 @@ try {
   // 1. A local slot is nameable through LF_SERVER_SLOT_HELD.
   const root = join(tmp, "root");
   mkdirSync(root, { recursive: true });
-  spawnSync("git", ["init", "-q", root], { windowsHide: true });
+  gitSync(["init", "-q", root], { windowsHide: true });
   mkdirSync(join(root, "tmp", "wt", "locks"), { recursive: true });
   const local = { name: "local", via: "local", slots: 1, lanes: null };
   const slot = pool.tryLocal(root, local, { lock: "server-test-1", index: 1, port: 2002 }, { slug: "drill", purpose: "drill", root }, { freeMb: 9000, runs: [] });

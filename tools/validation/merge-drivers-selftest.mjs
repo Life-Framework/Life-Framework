@@ -1,7 +1,7 @@
 // Proves the merge drivers on fixture files and a temporary git repo.
 // inputs: tools/**, agent-box/**, .githooks/**
 // Does not boot the game and does not merge this worktree.
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -158,7 +158,7 @@ for (const [path, driver] of [
 }
 
 function git(dir, args, env) {
-  return spawnSync("git", args, { windowsHide: true, cwd: dir, encoding: "utf8", env: env ?? process.env });
+  return gitSync(args, { windowsHide: true, cwd: dir, encoding: "utf8", env: env ?? process.env });
 }
 
 function initRepo(dir) {
@@ -454,12 +454,12 @@ ${clean.stderr}`);
     return repo;
   };
   const flakyRepo = initFixture("loc-init-flaky");
-  const flakyMerge = git(flakyRepo, ["merge", "theirs", "--no-edit"], { ...process.env, LF_MERGE_DRIVER_INIT_FAILS: "1" });
+  const flakyMerge = git(flakyRepo, ["merge", "theirs", "--no-edit"], { ...process.env, LF_GIT_FAIL_SILENTLY: "1" });
   if (flakyMerge.status !== 0) fail(`one silent scratch git init failure should be retried and the merge clean:\n${flakyMerge.stdout}\n${flakyMerge.stderr}`);
   const deadRepo = initFixture("loc-init-dead");
-  const deadMerge = git(deadRepo, ["merge", "theirs", "--no-edit"], { ...process.env, LF_MERGE_DRIVER_INIT_FAILS: "9" });
+  const deadMerge = git(deadRepo, ["merge", "theirs", "--no-edit"], { ...process.env, LF_GIT_FAIL_SILENTLY: "9" });
   if (deadMerge.status === 0) fail("a scratch git init that always fails should leave the conf conflicted");
-  else if (!/lf-regen: git init in the scratch repo failed 3 times/.test(deadMerge.stderr)) fail(`a persistent git init failure should say so, got:\n${deadMerge.stderr}`);
+  else if (!/lf-git: git .* failed 3 times \(exit 1, signal none\) with no output/.test(deadMerge.stderr)) fail(`a persistent git init failure should say so, got:\n${deadMerge.stderr}`);
   git(deadRepo, ["merge", "--abort"]);
 
   // #2549, #2746: a generator that never exits must not hang `git merge`. The stub replaces PowerShell with a

@@ -13,6 +13,7 @@
 // world and profile", "an island client grows to the island client peak" and machinePeaks checks fail.
 
 import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import * as pr from "../lib/pool-ram.mjs";
@@ -25,7 +26,7 @@ const failures = [];
 // A scratch git checkout: the pool derives its hub (tmp/wt) from the checkout it is given.
 const scratchRepo = (tag) => {
   const dir = scratchDir(tag);
-  spawnSync("git", ["init", "-q", dir], { windowsHide: true });
+  gitSync(["init", "-q", dir], { windowsHide: true });
   return dir;
 };
 const check = (ok, msg) => {

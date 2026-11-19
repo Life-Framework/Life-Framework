@@ -6,7 +6,7 @@
 // red-proof: buildAddon/this test calling wt.acquireLock instead of wt.acquireLockAsync -> "the event
 //   loop ticks while waiting" fails (0 ticks) and the lock is never freed (its release timer cannot run).
 // inputs: tools/wt.mjs, tools/validation/lock-async-selftest.mjs
-import { execFileSync } from "node:child_process";
+import { execGit } from "../lib/git-retry.mjs";
 import { existsSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as wt from "../wt.mjs";
@@ -19,7 +19,7 @@ const check = (ok, msg) => {
 
 const dir = scratchDir("lf-lockasync-");
 try {
-  execFileSync("git", ["init", "-q", dir], { windowsHide: true });
+  execGit(["init", "-q", dir], { windowsHide: true });
   const lockFile = join(wt.ensureHub(dir), "locks", "build.lock");
   // Held by a live process (this one), as another worktree's build would hold it.
   writeFileSync(lockFile, JSON.stringify({ pid: process.pid, at: new Date().toISOString(), name: "build" }));

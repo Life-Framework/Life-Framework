@@ -17,6 +17,7 @@
 
 import { cpSync, existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { dirname, join, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -50,7 +51,7 @@ try {
   const skip = (src) => !src.includes("node_modules") && !src.includes(`${sep}tools${sep}mcp`);
   cpSync(join(ROOT, "tools"), join(main, "tools"), { recursive: true, filter: skip });
   cpSync(join(ROOT, "agent-box"), join(main, "agent-box"), { recursive: true, filter: skip });
-  const git = spawnSync("git", ["init", "-q", main], { encoding: "utf8", windowsHide: true });
+  const git = gitSync(["init", "-q", main], { encoding: "utf8", windowsHide: true });
   if (git.status !== 0) fail(`git init failed: ${git.stderr}`);
 
   const env = { ...process.env, LF_HOST_DIR: join(scratch, "hostdir"), ENFUSION_SERVER_PATH: join(scratch, "no-server") };

@@ -14,7 +14,7 @@
 //   with each issue edited alone it printed "label edits were not grouped";
 //   (older:) with the ancestor check removed from promotionPlan it printed "moving stable backwards was
 // accepted"; with planMerged's reopen forced false it printed "legacy Closes: issue 101 stayed closed".
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as rg from "../lib/release-gates.mjs";
@@ -215,7 +215,7 @@ try {
   res = await mute(() => cmdPromote(work, ["--to", m11, "--confirm"], { gh, guardStatus: () => "green" }));
   check(res.code === 1 && /not a fast-forward/.test(res.out), `moving stable backwards was accepted: ${res.out}`);
   check(sh(origin, "rev-parse", "stable") === m12, "stable moved on a refusal");
-  const direct = spawnSync("git", ["push", "origin", `${side}:refs/heads/stable`], { cwd: work, encoding: "utf8", windowsHide: true });
+  const direct = gitSync(["push", "origin", `${side}:refs/heads/stable`], { cwd: work, encoding: "utf8", windowsHide: true });
   check(direct.status === 0 ? false : true, "git accepted a raw non-ff push (bare repo should refuse with denyNonFastForwards)") ;
 
   // ---- 3b. second promotion to main: PR 13's issues verified, 101 now verified too
