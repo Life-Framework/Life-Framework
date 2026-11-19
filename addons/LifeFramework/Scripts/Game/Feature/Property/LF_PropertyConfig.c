@@ -68,6 +68,24 @@ class LF_PropertyPlotDef : LF_ConfigRecord
 }
 
 //------------------------------------------------------------------------------------------------
+//! A house for sale at its "For sale" sign (#3207): what it is and what it costs, keyed by the house
+//! identifier the sign names (LF_HouseManagerComponent's, the one a house key is bound to). Which house is
+//! where is decided by the placed sign and the world; here only the price and the label. A pack prices its
+//! houses by overlay, the same way plots work (#2976).
+[BaseContainerProps()]
+class LF_PropertyHouseDef : LF_ConfigRecord
+{
+	[Attribute("", UIWidgets.EditBox, "House identifier, unique across the config and never a plot id: the m_sDebugIdentifier of the house the sign sells")]
+	string m_sHouseId;
+
+	[Attribute("", UIWidgets.EditBox, "Tier label shown with the price (a string key or plain words): cottage, townhouse, farmhouse")]
+	string m_sTierLabel;
+
+	[Attribute("0", UIWidgets.Auto, "Purchase price of the house. 0 means not for sale")]
+	int m_iPrice;
+}
+
+//------------------------------------------------------------------------------------------------
 [BaseContainerProps(configRoot: true)]
 class LF_PropertyConfig
 {
@@ -78,6 +96,9 @@ class LF_PropertyConfig
 
 	[Attribute("", UIWidgets.Object, "The plot catalogue")]
 	ref array<ref LF_PropertyPlotDef> m_aPlots;
+
+	[Attribute("", UIWidgets.Object, "The houses for sale at a sign (#3207), by house identifier")]
+	ref array<ref LF_PropertyHouseDef> m_aHouses;
 
 	protected static ref LF_PropertyConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -106,12 +127,15 @@ class LF_PropertyConfig
 	//------------------------------------------------------------------------------------------------
 	//! Merges each pack overlay (the mission header's m_aLF_ConfigOverlays, in load order) over this
 	//! instance, which holds the core `.conf`: the plot catalogue by plot id (add, replace, patch,
-	//! remove; docs/config/override-model.md). Tiers are not layered. A plot a pack adds whose key is a
-	//! house identifier is refused like a core one (#2783).
+	//! remove; docs/config/override-model.md), and the house catalogue (#3207) the same way. Tiers are not
+	//! layered. A plot a pack adds whose key is a house identifier is refused like a core one (#2783).
 	void ApplyLayers()
 	{
 		if (!m_aPlots)
 			m_aPlots = new array<ref LF_PropertyPlotDef>();
+
+		if (!m_aHouses)
+			m_aHouses = new array<ref LF_PropertyHouseDef>();
 
 		array<ref Resource> resources = {};
 		array<ResourceName> names = {};
@@ -128,7 +152,7 @@ class LF_PropertyConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Applies one pack overlay's `m_aPlots` by plot id. \return Plots changed.
+	//! Applies one pack overlay's `m_aPlots` by plot id and `m_aHouses` by house id. \return Entries changed.
 	//! \param[in] root The overlay's root container.
 	//! \param[in] source The overlay file, for log lines.
 	int ApplyPackContainer(notnull BaseContainer root, string source, LF_ConfigClaims claims = null)
@@ -136,7 +160,12 @@ class LF_PropertyConfig
 		if (!m_aPlots)
 			m_aPlots = new array<ref LF_PropertyPlotDef>();
 
-		return LF_ConfigOverlay.ApplyContainerList(new LF_PropertyPlotList(this), root, "m_aPlots", source, claims);
+		if (!m_aHouses)
+			m_aHouses = new array<ref LF_PropertyHouseDef>();
+
+		int changed = LF_ConfigOverlay.ApplyContainerList(new LF_PropertyPlotList(this), root, "m_aPlots", source, claims);
+		changed += LF_ConfigOverlay.ApplyContainerList(new LF_PropertyHouseList(this), root, "m_aHouses", source, claims);
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -176,7 +205,8 @@ class LF_PropertyConfig
 			if (!plot || plot.m_sPlotId.IsEmpty())
 				continue;
 
-			if (!LF_Houses.Get(plot.m_sPlotId) && !LF_Houses.Find(plot.m_sPlotId))
+			// A house for sale in the catalogue (#3207) counts as a house here: its id never sells as a plot.
+			if (!LF_Houses.Get(plot.m_sPlotId) && !LF_Houses.Find(plot.m_sPlotId) && !FindHouse(plot.m_sPlotId))
 				continue;
 
 			LF_Debug.Error("Property", string.Format("plot key %1 equals the house identifier %1: the plot is not for sale (rename the plot key in the property config, the house is untouched)", plot.m_sPlotId));
@@ -233,6 +263,52 @@ class LF_PropertyConfig
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The house for sale with this identifier, null when the catalogue has none.
+	LF_PropertyHouseDef FindHouse(string houseId)
+	{
+		if (!m_aHouses || houseId.IsEmpty())
+			return null;
+
+		foreach (LF_PropertyHouseDef house : m_aHouses)
+		{
+			if (house && house.m_sHouseId == houseId)
+				return house;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Price of a house for sale; 0 for an unknown house, a house that is not for sale or a missing config.
+	static int HousePrice(string houseId)
+	{
+		LF_PropertyConfig config = Get();
+		if (!config)
+			return 0;
+
+		LF_PropertyHouseDef house = config.FindHouse(houseId);
+		if (!house)
+			return 0;
+
+		return LF_Utils.MaxInt(0, house.m_iPrice);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tier label of a house for sale; empty for an unknown house or a missing config.
+	static string HouseTierLabel(string houseId)
+	{
+		LF_PropertyConfig config = Get();
+		if (!config)
+			return "";
+
+		LF_PropertyHouseDef house = config.FindHouse(houseId);
+		if (!house)
+			return "";
+
+		return house.m_sTierLabel;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -505,6 +581,119 @@ class LF_PropertyPlotList : LF_ConfigList
 			else
 			{
 				LF_Debug.Error("Property", string.Format("property.plots %1: pack price is below 0; keeping %2", plot.m_sPlotId, plot.m_iPrice));
+			}
+		}
+
+		return changed;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The house catalogue for the shared merge (LF_ConfigOverlay), keyed by house id (#3207). A new house
+//! starts at price 0 (not for sale) until the entry gives one. A house id equal to a plot key is refused:
+//! LF_Properties keys both in one table.
+class LF_PropertyHouseList : LF_ConfigList
+{
+	protected LF_PropertyConfig m_Config;
+
+	void LF_PropertyHouseList(LF_PropertyConfig config)
+	{
+		m_Config = config;
+		if (!m_Config.m_aHouses)
+			m_Config.m_aHouses = new array<ref LF_PropertyHouseDef>();
+	}
+
+	override string GetName()
+	{
+		return "property.houses";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aHouses.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aHouses[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_PropertyHouseDef.Cast(record).m_sHouseId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sHouseId", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "a house identifier";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		LF_PropertyHouseDef house = new LF_PropertyHouseDef();
+		house.m_sHouseId = id;
+		return house;
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_PropertyHouseDef house = LF_PropertyHouseDef.Cast(record);
+		if (index < m_Config.m_aHouses.Count())
+			m_Config.m_aHouses.Set(index, house);
+		else
+			m_Config.m_aHouses.Insert(house);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aHouses.RemoveOrdered(index);
+	}
+
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		LF_PropertyHouseDef house = LF_PropertyHouseDef.Cast(record);
+		if (house.m_sHouseId.IsEmpty())
+			return "the entry has no house id";
+		if (house.m_iPrice < 0)
+			return string.Format("price %1 is below 0", house.m_iPrice);
+		if (m_Config.FindPlot(house.m_sHouseId))
+			return string.Format("house id %1 equals a plot key (rename the house or the plot)", house.m_sHouseId);
+
+		return string.Empty;
+	}
+
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_PropertyHouseDef house = LF_PropertyHouseDef.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_sTierLabel"))
+		{
+			string label;
+			if (container.Get("m_sTierLabel", label))
+			{
+				house.m_sTierLabel = label;
+				changed++;
+			}
+		}
+
+		if (container.IsVariableSetDirectly("m_iPrice"))
+		{
+			int price;
+			if (container.Get("m_iPrice", price) && price >= 0)
+			{
+				house.m_iPrice = price;
+				changed++;
+			}
+			else
+			{
+				LF_Debug.Error("Property", string.Format("property.houses %1: pack price is below 0; keeping %2", house.m_sHouseId, house.m_iPrice));
 			}
 		}
 

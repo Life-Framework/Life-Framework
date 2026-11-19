@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "template": "everonsawmill",
+  "place": "everon-sawmill",
+  "status": "approved",
+  "note": "Hand-written for #3271 (LB14): the island's own sawmill, 5.7 km from the Saint-Philippe square. The dossier is a scout at the sawmill's coordinates (the gazetteer label 'sawmill' is 35 m from it) at radius 120; the yard is the sawmill hall itself (b01, Sawmill_E_01). The map point is the Workplace kind the desk registers. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 9,
+    "freePlots": 8
+  },
+  "slots": {
+    "yard": {
+      "building": "b01",
+      "why": [
+        "Sawmill_E_01 (type industrial), 864 m2 with a walkable ground floor 15.6 x 30.5 m, the island's own sawmill at the centre of the scout",
+        "paved yard and two real log decks already stand around it; the road junction is 40 m to the east"
+      ]
+    }
+  }
+}

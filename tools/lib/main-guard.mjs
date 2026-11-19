@@ -16,6 +16,11 @@ export function needsSkip(stepName, plainCode) {
   return stepName === "pre-move e2e" && plainCode === 0;
 }
 
+// The env of a recheck and of every bisect probe (#3586): the shared rdb cache is off, so a corrupt entry that made the
+// first run red cannot make the same head (or a bisect probe) red again and pass for a deterministic failure.
+// 2026-11-19 it blamed an innocent #3557. The guard also drops the run worktree's rdb first (rdb-cache.dropAllRdbs).
+export const RECHECK_ENV = { LF_RDB_CACHE: "0" };
+
 // The full post-merge check, one step per entry. `recheck(failing)` is the cheap command that reruns only what failed.
 export const STEPS = [
   // --wait: a build lock held by another worktree queues (900 s) instead of failing at once (#2759).
