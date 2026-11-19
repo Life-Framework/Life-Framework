@@ -1,0 +1,32 @@
+GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ ID "3C71A9E5D20B84F6"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  LF_GarbageSiteComponent "{7E0B2D94A6C1F385}" {
+  }
+  ActionsManagerComponent "{2B94E6C0D1A7385F}" {
+   ActionContexts {
+    UserActionContext "{9D3A5F72E8B1C046}" {
+     ContextName "LF_GarbageDepot"
+     Position PointInfo "{14C8E0B6A3F29D75}" {
+      Offset 0 0.9 0
+     }
+     Radius 2
+    }
+   }
+   additionalActions {
+    LF_GarbageStartAction "{A60D4F1B83E7C259}" {
+     ParentContextList {
+      "LF_GarbageDepot"
+     }
+     UIInfo UIInfo "{E5B7129C0D46A83F}" {
+      Name "#LF-Garbage_Start"
+      Description "#LF-Garbage_StartDesc"
+     }
+    }
+   }
+  }
+ }
+}
