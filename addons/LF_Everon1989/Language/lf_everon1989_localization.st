@@ -864,6 +864,11 @@ StringTable {
      Target_en_us "Clothing store"
      Comment "Map POI kind name (#2247): the clothing store counter."
     }
+    CustomStringTableItem "{C9B0363AD1349FDD}" {
+     Id "LF-MapPoi_ContestedSite"
+     Target_en_us "Contested ground"
+     Comment "Map POI kind name (#3552): a contested site (LF_Places kind contested-site), held ground an organisation can take. Public story pin, so a newcomer finds the farm compound, the hilltop mast and the quarry."
+    }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
      Target_en_us "Fence"

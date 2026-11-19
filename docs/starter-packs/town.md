@@ -19,6 +19,7 @@ tools\cli town fit <place> <slot> --no-look  # iterate with this: writes MainWor
 tools\cli town fit <place> <slot>            # the same, then TWO island looks (outside and --interior auto): once, at the end
 tools\cli town fit <place> <slot> --refit   # re-fit a slot already claimed on main (its own claim); another PR's or slot's claim still refuses
 tools\cli town fit <place> <slot> --check    # per-row seat corrections (floor, wall, clip) against the layer on disk; writes nothing
+tools\cli town fit <place> <slot> --refit --terrain --no-look   # open-ground site (kit rows `"mount": "terrain"`): the server probes the ground under each row into tools/town/terrain/<place>-<slot>.json; a plain fit and --check read that file. A SCR_DestructibleEntity row (a net fence) counts its y over the ground: no probe, y about 0
 tools\cli town check <place>                 # static kinds and claims; then audit placement --world MainWorld
 tools\cli town ready <state>                 # every place of the state passes, systems present, arrival route walks
 tools\cli look place:<place>/<slot>          # the slot on the island (MainWorld): wide, obliques, top, kit close-ups
