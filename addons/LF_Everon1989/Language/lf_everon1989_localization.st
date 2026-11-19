@@ -764,6 +764,66 @@ StringTable {
      Target_en_us "A jar of pickled gherkins in brine. Sharp, and still filling."
      Comment "Item description: jar of pickles."
     }
+    CustomStringTableItem "{1672D28C6515BA4F}" {
+     Id "LF-Item_SmokedBass_Description"
+     Target_en_us "A bass, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked bass."
+    }
+    CustomStringTableItem "{391C34F57F1E36EE}" {
+     Id "LF-Item_SmokedBass_Name"
+     Target_en_us "Smoked bass"
+     Comment "Smokehouse (#3450): the smoked bass the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{1632CDECB8C02552}" {
+     Id "LF-Item_SmokedCarp_Description"
+     Target_en_us "A carp, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked carp."
+    }
+    CustomStringTableItem "{220A91677BAE4E81}" {
+     Id "LF-Item_SmokedCarp_Name"
+     Target_en_us "Smoked carp"
+     Comment "Smokehouse (#3450): the smoked carp the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{ECB29290C5067FC1}" {
+     Id "LF-Item_SmokedMackerel_Description"
+     Target_en_us "A mackerel, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked mackerel."
+    }
+    CustomStringTableItem "{5A40576F15D0E793}" {
+     Id "LF-Item_SmokedMackerel_Name"
+     Target_en_us "Smoked mackerel"
+     Comment "Smokehouse (#3450): the smoked mackerel the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{CF0D12B6045FB3DF}" {
+     Id "LF-Item_SmokedPerch_Description"
+     Target_en_us "A perch, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked perch."
+    }
+    CustomStringTableItem "{7EE13F0BF6EAEB87}" {
+     Id "LF-Item_SmokedPerch_Name"
+     Target_en_us "Smoked perch"
+     Comment "Smokehouse (#3450): the smoked perch the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{D7B8D893DDB9D1EA}" {
+     Id "LF-Item_SmokedTrout_Description"
+     Target_en_us "A trout, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked trout."
+    }
+    CustomStringTableItem "{92CD9D16FE1BE131}" {
+     Id "LF-Item_SmokedTrout_Name"
+     Target_en_us "Smoked trout"
+     Comment "Smokehouse (#3450): the smoked trout the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{7F0E62887B92D9CA}" {
+     Id "LF-Item_SmokedTuna_Description"
+     Target_en_us "A tuna, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked tuna."
+    }
+    CustomStringTableItem "{799FA963B0584824}" {
+     Id "LF-Item_SmokedTuna_Name"
+     Target_en_us "Smoked tuna"
+     Comment "Smokehouse (#3450): the smoked tuna the smokehouse makes from a fresh one."
+    }
     CustomStringTableItem "{96286076F1D0C747}" {
      Id "LF-Item_SodaBottle"
      Target_en_us "Soda water"
@@ -863,6 +923,11 @@ StringTable {
      Id "LF-MapPoi_ClothingStore"
      Target_en_us "Clothing store"
      Comment "Map POI kind name (#2247): the clothing store counter."
+    }
+    CustomStringTableItem "{C9B0363AD1349FDD}" {
+     Id "LF-MapPoi_ContestedSite"
+     Target_en_us "Contested ground"
+     Comment "Map POI kind name (#3552): a contested site (LF_Places kind contested-site), held ground an organisation can take. Public story pin, so a newcomer finds the farm compound, the hilltop mast and the quarry."
     }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
@@ -2141,8 +2206,8 @@ StringTable {
     }
     CustomStringTableItem "{98AD9902C05C38A0}" {
      Id "LF-Sign_GeneralStore_Special1"
-     Target_en_us "Bread"
-     Comment "Store A-frame special 1: a chalk row on the general store pavement board (#3305). Price 3 matches LF_ShopStock_Everon1989."
+     Target_en_us "Chocolate bar"
+     Comment "Store A-frame special 1: a chalk row on the general store pavement board (#3305, #3547). Price 3 matches LF_ShopStock_Everon1989. Bread is the bakery's, not the store's."
     }
     CustomStringTableItem "{0AA236A7C73670FE}" {
      Id "LF-Sign_GeneralStore_Special2"

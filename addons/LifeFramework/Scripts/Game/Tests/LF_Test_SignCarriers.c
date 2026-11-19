@@ -1,7 +1,7 @@
 // red-proof: the carrier kit (#3307) had no size rows: with LF_SignStyles.conf as it stood, `tools\cli test --no-build --only LF_Test_SignCarriers`
 // failed "the quad1x1 size is in the core config" (and the five rows after it) before the rows and carriers existed.
 
-//! The carrier kit (docs/architecture/sign-system.md "Sizes"): one-mesh quads at six aspects beside the 16:9 one. Every
+//! The carrier kit (docs/architecture/sign-system.md "Sizes"): one-mesh quads at seven aspects beside the 16:9 one. Every
 //! `quad*` size row in LF_SignStyles.conf resolves its carrier prefab, the aspect its shown area keeps is the aspect
 //! its id names, the render target keeps that aspect (no stretched lettering), and the carrier mesh itself is that
 //! shape. A row may name only the id's own ratio, so a size added later is held to the same rule.
@@ -43,7 +43,7 @@ class LF_Test_SignCarriers : LF_Test
 		if (!config)
 			return;
 
-		array<string> expected = { "quad1x1", "quad4x3", "quad3x2", "quad2x1", "quad4x1", "quad1x2", "quad16x9" };
+		array<string> expected = { "quad1x1", "quad4x3", "quad3x2", "quad2x1", "quad4x1", "quad1x2", "quad5x8", "quad16x9" };
 		foreach (string id : expected)
 		{
 			ExpectCarrier(ctx, config, id);
@@ -63,7 +63,7 @@ class LF_Test_SignCarriers : LF_Test
 				ctx.EqualFloat(aspect, size.m_vShown[0] / size.m_vShown[1], aspect * 0.01, "shown area keeps the id's aspect: " + size.m_sId);
 		}
 
-		ctx.True(quads >= expected.Count(), "the kit has at least its seven quad rows");
+		ctx.True(quads >= expected.Count(), "the kit has at least its eight quad rows");
 	}
 
 	//------------------------------------------------------------------------------------------------

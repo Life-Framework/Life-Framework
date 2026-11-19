@@ -65,8 +65,27 @@ class LF_SetHomeAction : ScriptedUserAction
 		if (!house || house.GetHouseIdentifier().IsEmpty())
 			return false;
 
-		string key = LF_Houses.CharacterKeyOf(user);
-		if (key.IsEmpty() || key != LF_Properties.GetOwnerKey(house.GetHouseIdentifier()))
+		return OfferSet(house, LF_Houses.CharacterKeyOf(user), !Replication.IsServer());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The offer rule, shared with the house sign (#3208). The property book (LF_Properties.GetOwnerKey,
+	//! SpawnHouseOf) and LF_Houses.Find are server-only, so a dedicated client compares the key with the
+	//! house's replicated owner (LF_HouseManagerComponent.GetOwnerKey) and skips the spawn-house check
+	//! (#3375). The server keeps the full check and LF_Properties.SetSpawnHouse re-checks ownership.
+	//! \param house The house of the door.
+	//! \param key The user's character key.
+	//! \param asClient True on a client: read only what the house replicates.
+	//! \return True when the user owns the house and, on the server, it is not already their spawn house.
+	static bool OfferSet(LF_HouseManagerComponent house, string key, bool asClient)
+	{
+		if (!house || house.GetHouseIdentifier().IsEmpty() || key.IsEmpty())
+			return false;
+
+		if (asClient)
+			return key == house.GetOwnerKey();
+
+		if (key != LF_Properties.GetOwnerKey(house.GetHouseIdentifier()))
 			return false;
 
 		return LF_Properties.SpawnHouseOf(key) != house.GetHouseIdentifier();
