@@ -1,4 +1,4 @@
-// red-proof: #3083 observed 2026-11-18 `--only LF_Test_EveronReputation` on the old +4 award (cap 60) failed `ten parcel runs open the crates gate` and `ten parcel runs take a newcomer to Known (tier 1) (expected 1, got 0)`, then passed on +10 with the town cap at 120. Earlier: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronReputation` printed `RED PROOF OK` (pack leg); with an empty header as the pack source it failed `a newcomer does not pass the crates gate` and `a Known character passes the crates gate` (no gate row, no contract, core tier words). `--only` then passed under the pack header. An earlier green run caught the town's daily cap of 60 holding back the 100 test points, lifted on the loaded copy.
+// red-proof: #3440 observed 2026-11-19 `--only LF_Test_EveronReputation` with the shipment award rows (`LF_Reputation_Shipment.conf`) in the overlay list and the old core-only action rule failed five `award shipment_* names an action the core publishes` checks (main guard red on ddd49572e); passed once the pack quest actions were named in QUEST_ACTIONS. Earlier: #3083 observed 2026-11-18 `--only LF_Test_EveronReputation` on the old +4 award (cap 60) failed `ten parcel runs open the crates gate` and `ten parcel runs take a newcomer to Known (tier 1) (expected 1, got 0)`, then passed on +10 with the town cap at 120. Earlier: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronReputation` printed `RED PROOF OK` (pack leg); with an empty header as the pack source it failed `a newcomer does not pass the crates gate` and `a Known character passes the crates gate` (no gate row, no contract, core tier words). `--only` then passed under the pack header. An earlier green run caught the town's daily cap of 60 holding back the 100 test points, lifted on the loaded copy.
 //! #2709 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's standing overlays
 //! replace the core tier words with the pack's own (the pack's own tier keys, three factions of six, the ladder itself
 //! untouched), add an award row per civilian job whose action the core subscriber actually raises
@@ -14,6 +14,8 @@ class LF_Test_EveronReputation : LF_Test
 	static const string UID = "test-everon-reputation";
 	static const string TIER_KEY_PREFIX = "LF-Everon_Tier_";
 	static const string CONTRACT = "harbour_crates";
+	//! Award rows a pack quest raises itself, not the core subscriber. LF_Test_EveronShipmentQuest (#3440) owns these five and checks their signs.
+	static const ref array<string> QUEST_ACTIONS = {"shipment_report_town", "shipment_report_police", "shipment_report_underworld", "shipment_sold_underworld", "shipment_sold_town"};
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -34,7 +36,7 @@ class LF_Test_EveronReputation : LF_Test
 			LF_ReputationSubscriber.ACTION_VEHICLE_CHOPPED, LF_ReputationSubscriber.ACTION_CHAIN_STEP,
 			LF_ReputationSubscriber.ACTION_HEIST_LOOT
 		};
-		if (fixedActions.Find(action) != -1)
+		if (fixedActions.Find(action) != -1 || QUEST_ACTIONS.Find(action) != -1)
 			return true;
 
 		string prefix = LF_ReputationSubscriber.ACTION_JOB_COMPLETED + ":";
@@ -146,10 +148,10 @@ class LF_Test_EveronReputation : LF_Test
 		if (town)
 			ctx.EqualStr("#LF-Everon_Tier_Town_1", LF_Reputation.TierWordKey(town, 1), "town tier 1 reads as the pack's Known");
 
-		// Every award row names an action the core publishes and a faction the table lists.
+		// Every award row names an action the core publishes (or a pack quest raises) and a faction the table lists.
 		foreach (LF_ReputationAwardDef award : config.m_aAwards)
 		{
-			ctx.True(IsPublishedAction(award.m_sAction), "award " + award.m_sAction + " names an action the core publishes");
+			ctx.True(IsPublishedAction(award.m_sAction), "award " + award.m_sAction + " names an action the core or a pack quest publishes");
 			ctx.NotNull(config.FindFaction(award.m_sFaction), "award " + award.m_sAction + " feeds a faction the table lists");
 		}
 
