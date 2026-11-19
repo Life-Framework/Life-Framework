@@ -22,6 +22,7 @@
     "LF_LaunderConfig",
     "LF_LedgerConfig",
     "LF_LicencesConfig",
+    "LF_LockerConfig",
     "LF_MapAreaConfig",
     "LF_MapPoiConfig",
     "LF_MarketConfig",

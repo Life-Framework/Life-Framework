@@ -202,6 +202,29 @@
       "floor": "f0"
     },
     {
+      "id": "lf-locker-bank",
+      "prefab": "{271A5DA917F4DF47}Prefabs/Props/Lockers/LF_LockerBank.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        3,
+        1.053,
+        0.4
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_LockerBankComponent",
+          "set": {
+            "m_sSiteId": "\"saint_philippe_bank\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
       "id": "electricity-box-small-01",
       "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
       "role": "alarm",
