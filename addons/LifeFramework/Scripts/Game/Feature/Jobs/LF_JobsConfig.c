@@ -133,6 +133,9 @@ class LF_JobRunPayDef : LF_ConfigRecord
 	[Attribute("40", UIWidgets.Auto, "Cash one finished run of the job pays. Below 1 is refused and the shipped pay is used", params: "1 1000000")]
 	int m_iPay;
 
+	[Attribute("1", UIWidgets.Auto, "Night rate (#3148): a run finished inside the night window pays this times the pay, the extra shown as its own part of the pay toast. 1 (or below) pays no night rate. The core ships 1; a pack raises it", params: "0 10")]
+	float m_fNightRate;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_JobRunPayDef Make(string job, int pay)
 	{
@@ -160,6 +163,12 @@ class LF_JobsConfig
 	static const float PAY_RATE_MAX = 100;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int CASH_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int CASH_MAX = 1000000;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const float NIGHT_RATE_MIN = 0;	// lf-fixed: the schema limit, a rate below 1 pays no night rate
+	static const float NIGHT_RATE_MAX = 10;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int NIGHT_HOUR_MIN = 0;	// lf-fixed: the schema limit, an hour of the day
+	static const int NIGHT_HOUR_MAX = 24;	// lf-fixed: the schema limit, an hour of the day
+	static const int DEFAULT_NIGHT_START = 21;	// lf-fixed: fallback only, the window when the conf holds none (both hours 0)
+	static const int DEFAULT_NIGHT_END = 5;	// lf-fixed: fallback only, the window when the conf holds none (both hours 0)
 	static const int RUN_PAY_MIN = 1;	// lf-fixed: the schema limit, a run that pays nothing is refused
 	static const float COOLDOWN_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const float COOLDOWN_MAX = 86400;	// lf-fixed: the schema limit, one day
@@ -223,6 +232,12 @@ class LF_JobsConfig
 
 	[Attribute("10", UIWidgets.Auto, "Delivery run: road speed in metres per second used to work out the expected driving time of a run", params: "1 100")]
 	float m_fRunRoadSpeed;
+
+	[Attribute("21", UIWidgets.Auto, "Night window (#3148): the hour of the world clock the night rate starts at. Both hours 0 reads as the shipped 21 to 5", params: "0 24")]
+	int m_iNightRunStartHour;
+
+	[Attribute("5", UIWidgets.Auto, "Night window (#3148): the hour of the world clock the night rate ends at (the window may wrap midnight). Equal non-zero hours make a day with no night", params: "0 24")]
+	int m_iNightRunEndHour;
 
 	[Attribute("100", UIWidgets.Auto, "Delivery cargo deposit: percent of the cargo's shop sell price taken at the start of a run. It is returned on delivery and kept when the run is abandoned. 0 turns the deposit off", params: "0 1000")]
 	int m_iCargoDepositPercent;
@@ -346,7 +361,7 @@ class LF_JobsConfig
 	//! \param[in] source The file, for log lines.
 	void ApplyOwner(notnull LF_ConfigReader reader, string source = "config.json")
 	{
-		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "dutyIdleSeconds", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "runMinDistance", "runMinTimeFraction", "runRoadSpeed", "cargoDepositPercent", "cargoDepositFallback", "jobXpFirstLevel", "jobXpLevelGrowth", "testUnlockAll", "tracks", "xpAwards", "licenceGates", "runPays"};
+		array<string> ownerKeys = {"policeDutyPayPerSecond", "medicDutyPayPerSecond", "dutyIdleSeconds", "benefitBalanceThreshold", "benefitAmount", "benefitCooldownSeconds", "runMinDistance", "runMinTimeFraction", "runRoadSpeed", "cargoDepositPercent", "cargoDepositFallback", "nightRunStartHour", "nightRunEndHour", "jobXpFirstLevel", "jobXpLevelGrowth", "testUnlockAll", "tracks", "xpAwards", "licenceGates", "runPays"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadBool("testUnlockAll", m_bTestUnlockAll);
 		reader.ReadFloat("policeDutyPayPerSecond", m_fPoliceDutyPayPerSecond, PAY_RATE_MIN, PAY_RATE_MAX);
@@ -360,6 +375,8 @@ class LF_JobsConfig
 		reader.ReadFloat("runRoadSpeed", m_fRunRoadSpeed, RUN_SPEED_MIN, RUN_SPEED_MAX);
 		reader.ReadInt("cargoDepositPercent", m_iCargoDepositPercent, DEPOSIT_PERCENT_MIN, DEPOSIT_PERCENT_MAX);
 		reader.ReadInt("cargoDepositFallback", m_iCargoDepositFallback, CASH_MIN, CASH_MAX);
+		reader.ReadInt("nightRunStartHour", m_iNightRunStartHour, NIGHT_HOUR_MIN, NIGHT_HOUR_MAX);
+		reader.ReadInt("nightRunEndHour", m_iNightRunEndHour, NIGHT_HOUR_MIN, NIGHT_HOUR_MAX);
 		reader.ReadInt("jobXpFirstLevel", m_iJobXpFirstLevel, LEGACY_FIRST_MIN, LEGACY_FIRST_MAX);
 		reader.ReadFloat("jobXpLevelGrowth", m_fJobXpLevelGrowth, LEGACY_GROWTH_MIN, LEGACY_GROWTH_MAX);
 
@@ -394,6 +411,35 @@ class LF_JobsConfig
 
 		LF_Debug.Error("Jobs", string.Format("no run pay row for %1: paying the shipped %2", job, fallback));
 		return fallback;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The night rate of `job` (#3148): the row's rate, or 1 (no night rate) when there is no row.
+	float NightRateFor(string job)
+	{
+		if (!m_aRunPays)
+			return 1;
+
+		foreach (LF_JobRunPayDef row : m_aRunPays)
+		{
+			if (row && row.m_sJob == job)
+				return row.m_fNightRate;
+		}
+
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The night window of the world clock (#3148). Both hours 0 means the conf holds none: the shipped 21 to 5.
+	void NightWindow(out int startHour, out int endHour)
+	{
+		startHour = m_iNightRunStartHour;
+		endHour = m_iNightRunEndHour;
+		if (startHour == 0 && endHour == 0)
+		{
+			startHour = DEFAULT_NIGHT_START;
+			endHour = DEFAULT_NIGHT_END;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -834,15 +880,18 @@ class LF_JobRunPayList : LF_ConfigList
 		int changed;
 		if (container.IsVariableSetDirectly("m_iPay") && container.Get("m_iPay", row.m_iPay))
 			changed++;
+		if (container.IsVariableSetDirectly("m_fNightRate") && container.Get("m_fNightRate", row.m_fNightRate))
+			changed++;
 		return changed;
 	}
 
 	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
 	{
 		LF_JobRunPayDef row = LF_JobRunPayDef.Cast(record);
-		array<string> recordKeys = {"op", "pay"};
+		array<string> recordKeys = {"op", "pay", "nightRate"};
 		reader.WarnUnknownKeys(recordKeys);
 		reader.ReadInt("pay", row.m_iPay, LF_JobsConfig.RUN_PAY_MIN, LF_JobsConfig.CASH_MAX);
+		reader.ReadFloat("nightRate", row.m_fNightRate, LF_JobsConfig.NIGHT_RATE_MIN, LF_JobsConfig.NIGHT_RATE_MAX);
 	}
 
 	override string Incomplete(notnull LF_ConfigRecord record)

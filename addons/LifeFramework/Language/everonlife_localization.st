@@ -7155,6 +7155,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "{Police} de servicio"
      Comment "Hint title when a police officer starts a shift"
     }
+    CustomStringTableItem "{3148B2D8F16CAE32}" {
+     Id "LF-Job_Paid_Bonus"
+     Target_en_us "Paid {currency:sym}%1: run {currency:sym}%2, bonus +{currency:sym}%3"
+     Comment "Toast: a delivery run with a contract or standing bonus (#3148). %1 = all of it, %2 = the run's pay, %3 = the bonus."
+    }
+    CustomStringTableItem "{3148A1C7E05B9D21}" {
+     Id "LF-Job_Paid_Night"
+     Target_en_us "Paid {currency:sym}%1: run {currency:sym}%2, night +{currency:sym}%3"
+     Comment "Toast: a delivery run finished at night (#3148). %1 = all of it, %2 = the run's pay, %3 = the night rate's extra."
+    }
+    CustomStringTableItem "{3148C3E90A27BF43}" {
+     Id "LF-Job_Paid_NightBonus"
+     Target_en_us "Paid {currency:sym}%1: run {currency:sym}%2, night +{currency:sym}%3, bonus +{currency:sym}%4"
+     Comment "Toast: a delivery run finished at night with a bonus (#3148). %1 = all of it, %2 = the run's pay, %3 = the night extra, %4 = the bonus."
+    }
     CustomStringTableItem "{4A1C9E27B05D3F19}" {
      Id "LF-Job_ParcelDest"
      Target_en_us "the porch past the brick-walled lock-up, east end of the street"

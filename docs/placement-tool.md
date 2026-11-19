@@ -280,3 +280,10 @@ edits first, one session.
 - Tests: `tools/validation/place-tool-selftest.mjs` (in `tools\cli validate`; one red-proof per
   primitive, listed at its top) and `LF_Test_PlacementProbe` (WORLD: a ray down onto a spawned table,
   a ray from its side, a ray through open air).
+
+## Importing a Reforger Mapper layout: `mapper import`
+
+`tools\cli mapper import <project.json> [--cell cXrY]` puts the placed prefabs of a Reforger Mapper project (a browser
+site-layout sketcher, MIT) into one debug-grid cell through `grid place` and `place ground`, with unknown or unmeshed prefabs
+dropped and reported (spike #3839, `docs/architecture/reforger-mapper-import.md`). `--slot <Layer.layer> --at x,z` targets a
+playtest-town layer on a `ws/town-*` branch only.
