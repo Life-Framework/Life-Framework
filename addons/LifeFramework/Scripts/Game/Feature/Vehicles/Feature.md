@@ -48,13 +48,20 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 - **Player sees:** the owner of a fitted car gets an "Open the panel" row that opens a small extra storage. The quick vehicle search never lists it; the detective's full search does, and seizes what it finds.
 - **Owner and side:** the server. The compartment is a child entity of the car (`LF_VehicleCompartment.et`), found by `LF_VehicleCompartmentStorageComponent`, so `LF_ChainSearch.Collect` (which walks the car's own storage) never sees it. `LF_VehicleCompartment.SearchFull` runs the quick search, then rolls the compartment's own load and deletes its goods.
 - **Access:** the "Open the panel" row is display only; vanilla's nearby list can show the storage to anyone. `LF_VehicleCompartmentStorageComponent.HandleAccessValidation` refuses, on the server, a take by anyone but the car's owner (the lock's owner key); an unowned car's compartment refuses everyone.
-- **Not wired yet:** `Fit` is called by the pack (Q11); the "Full search" row and its detective gate are #3427 and call `SearchFull`. Goods in a compartment are not saved: the saved compartment level only says whether to fit one. The compartment is a child of the car, so a garage store, tow or impound deletes it with its goods (`CaptureCargo` walks the car's own storages only); the pack fit (#3436) must snapshot and refit it.
-- **Data:** none.
+- **Not wired yet:** `Fit` is called by the pack (Q11); the "Full search" row and its detective gate are #3427 and call `SearchFull`. The compartment is a child of the car, so a garage store, tow or impound deletes it with its goods; `LF_VehicleCache` (#3435) snapshots it each time `CaptureCargo` runs and refits it with its goods when `SpawnOwned` brings the car back.
+- **Data:** the `vehiclecache` save section (see below).
 - **Proof:** `vehicles/compartment` (WORLD).
 
 ## Inspection stickers (#3433)
 
 - **Player sees:** an officer at an inspection desk picks "Inspect vehicle" and the car beside the desk gets a sticker valid for 7 game days; "Check the sticker" says valid, expired or none.
 - **Owner and side:** the server (`LF_Inspection`: expiry game day per lock identifier). The client only hides the actions from anyone who is not on-duty police; the server re-checks the officer.
-- **Data:** none saved yet. The sticker is session only; the save card (Q10) maps it onto the `m_iInspectedAt` stamp of the vehicle record.
+- **Data:** an owned car's sticker is saved in the `vehiclecache` section (below) under its garage id, which is also its lock identifier. A car nobody owns loses its sticker at a restart.
 - **Proof:** `vehicles/inspection` (LOGIC). The desk prefab is not placed in any world; a car-side action needs a hook on the car prefabs.
+
+## Stickers and compartments across a restart (#3435)
+
+- **Player sees:** a garaged, towed, impounded or street-parked owned car keeps its inspection sticker and its hidden compartment's goods across a restart; after a garage trip or impound collect the compartment is back with what it held.
+- **Owner and side:** the server. `LF_VehicleCache` (`LF_VehicleCacheSave.c`) keeps each owned car's compartment as an `LF_StorageSnapshot` record (slot `vehiclecompartment`, not in the carried table), taken by a hook in `LF_VehicleOwnership.CaptureCargo` (store, tow, every save point), dropped by `ForgetCargo` (scrapped, burned, gone without a capture), and put back by `SpawnOwned` (`Fit` again, then the snapshot applied; idempotent). Stickers stay in `LF_Inspection`; `LF_Inspection.Restore` sets one from the save.
+- **Data:** save section `vehiclecache` v1 (`LF_VehicleCacheSavePayload`, lock `tools/validation/record-shapes/vehiclecache.json`): one `LF_VehicleCacheRow` per owned car with a sticker or a compartment, keyed by garage id: sticker expiry game day (-1 = none), whether a compartment is fitted, and its goods (prefab, quantity, nesting, ammo, serial, stolen flag). A read replaces every owned car's sticker and the ledger; a row for a vehicle with no record is dropped with a `[LFDebug:Vehicle]` warning. A save from before the section holds no sticker and no compartment.
+- **Proof:** `vehicles/cache-restart` (PERSISTENCE), and its `wt e2e` leg (the save boot leaves a car on the street, the reload boot collects it with both).

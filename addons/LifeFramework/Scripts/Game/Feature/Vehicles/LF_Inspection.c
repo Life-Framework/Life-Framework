@@ -11,9 +11,10 @@ enum LF_EInspectionStatus
 //! Inspection stickers (#3433, card Q8 of #1035): an officer's inspection stamps a sticker that is
 //! valid for N game days; a road check reads valid, expired or none. The sticker is the expiry game
 //! day (days since 1970-01-01, the licence desk's day count) per vehicle id: the lock's vehicle
-//! identifier, so a car keeps its sticker wherever it is driven. Session only: the saved
-//! `m_iInspectedAt` stamp on the vehicle record (#752a) is taken up by the save card (Q10), until
-//! then a restart wipes every sticker. Server-side state; the actions answer the officer by toast.
+//! identifier, so a car keeps its sticker wherever it is driven. An owned car's sticker is saved in
+//! the "vehiclecache" section (LF_VehicleCacheSave.c, #3435) under its garage id, which is also its
+//! lock identifier; a car nobody owns loses its sticker at a restart. Server-side state; the actions
+//! answer the officer by toast.
 //------------------------------------------------------------------------------------------------
 class LF_Inspection
 {
@@ -63,6 +64,19 @@ class LF_Inspection
 		Stickers().Set(vehicleId, expiry);
 		LF_Debug.Info(FEATURE, string.Format("vehicle %1 inspected on day %2, sticker valid to day %3", vehicleId, today, expiry));
 		return expiry;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Sets a sticker's expiry day from a save (#3435); a negative day removes the sticker.
+	static void Restore(string vehicleId, int expiry)
+	{
+		if (vehicleId.IsEmpty())
+			return;
+
+		if (expiry < 0)
+			Stickers().Remove(vehicleId);
+		else
+			Stickers().Set(vehicleId, expiry);
 	}
 
 	//------------------------------------------------------------------------------------------------
