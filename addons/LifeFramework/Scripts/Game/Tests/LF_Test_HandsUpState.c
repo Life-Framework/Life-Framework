@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-19 with `toolsi test --no-build --red LF_Test_HandsUpState`: RED-OK crime/hands-up-state (fails with the hook on, 12 assertions); hook off, green.
+// red-proof: Observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_HandsUpState`: RED-OK crime/hands-up-state (fails with the hook on, 12 assertions); hook off, green.
 //! Hands-up answer rules on the server (#3396, LF_HandsUp): only a live offer lets a raise through,
 //! ignoring the prompt forces nothing, lowering needs raised hands, and an offer expires.
 [LF_TestInfo(LF_TestTier.LOGIC)]
