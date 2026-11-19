@@ -93,6 +93,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_CrimeRecord.EnsureSubscribed();
 		// Every arrest stamps a dated conviction, read by the permit desk (server only, #1914).
 		LF_ConvictionRecord.EnsureSubscribed();
+		// An arrest for a mapped crime code seizes the licence and bans it for days (server only, #3432).
+		LF_LicenceSeizure.EnsureSubscribed();
 		// The record board keeps each character's best race time per course (server only, #1925).
 		LF_RaceRecords.EnsureSubscribed();
 		// The war notice board keeps each ended war for an hour (server only, #2677).

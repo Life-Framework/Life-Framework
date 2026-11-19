@@ -175,6 +175,6 @@ class LF_Test_LicenceBansRestart : LF_Test
 		ctx.True(end > 0, "e2e licence ban is back after the restart");
 		ctx.True(end > LF_LicenceBans.Now(), string.Format("e2e licence ban still in force after the restart (ends %1, now %2)", end, LF_LicenceBans.Now()));
 		LF_Debug.Info(LF_LicenceBans.FEATURE, string.Format("e2e restart: %1's permit ban ends at minute %2", E2E_UID, end));
-		LF_LicenceBans.ResetStatics();
+		// The bans stay for the next reload check (LF_Test_LicenceSeizure.VerifyE2E, which runs after this one and resets them).
 	}
 }

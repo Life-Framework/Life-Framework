@@ -6033,6 +6033,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Heard he is buying today. I marked it on your map; the spot will not hold past this shift."
      Comment "Informant answer (#2921): the fee was paid and the buyer's spot is on the map; also the toast."
     }
+    CustomStringTableItem "{B1A4C6D2E8F03955}" {
+     Id "LF-Inspection_CannotInspect"
+     Target_en_us "This car cannot be inspected right now."
+     Comment "Inspection toast (#3433): the car has no id or the world has no clock."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03952}" {
+     Id "LF-Inspection_Check"
+     Target_en_us "Check the sticker"
+     Comment "Action on the inspection desk (#3433): read the sticker of the car beside the desk."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03958}" {
+     Id "LF-Inspection_Expired"
+     Target_en_us "The sticker has expired."
+     Comment "Sticker check result (#3433): inspected, expiry day passed."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03951}" {
+     Id "LF-Inspection_Inspect"
+     Target_en_us "Inspect vehicle"
+     Comment "Action on the inspection desk (#3433): stamp the car beside the desk with a sticker."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03954}" {
+     Id "LF-Inspection_NoCar"
+     Target_en_us "No car beside the desk."
+     Comment "Inspection toast (#3433): no vehicle within reach."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03959}" {
+     Id "LF-Inspection_None"
+     Target_en_us "This car has no inspection sticker."
+     Comment "Sticker check result (#3433): never inspected."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03953}" {
+     Id "LF-Inspection_OnDutyOnly"
+     Target_en_us "Only an on-duty officer can do this."
+     Comment "Inspection action refused (#3433): the user is not on-duty police."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03956}" {
+     Id "LF-Inspection_Stamped"
+     Target_en_us "Inspection passed. The sticker is valid for %1 days."
+     Comment "Inspection toast (#3433). %1 = the sticker's validity in game days."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03957}" {
+     Id "LF-Inspection_Valid"
+     Target_en_us "The sticker is valid."
+     Comment "Sticker check result (#3433): inspected and not yet expired."
+    }
     CustomStringTableItem "{00B6F39DAD843E76}" {
      Id "LF-Interact_AlreadyKnown"
      Target_en_us "They already know your name."
@@ -7139,6 +7184,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this desk to collect it."
      Comment "Licence desk: the fee was paid and the application filed. %1 = in-game hours until collection."
     }
+    CustomStringTableItem "{95873A41DBCA4881}" {
+     Id "LF-LicenceDesk_Banned"
+     Target_en_us "Refused: your firearm permit was seized. Come back in %1 days."
+     Comment "Licence desk refusal: a conviction seized the permit and its ban has not ended (#3432). %1 = in-game days left."
+    }
     CustomStringTableItem "{F6A22E21A8F71D11}" {
      Id "LF-LicenceDesk_Closed"
      Target_en_us "The licence desk cannot help you right now."
@@ -7158,6 +7208,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LicenceDesk_DrivingAlreadyHeld"
      Target_en_us "You already hold a driving licence."
      Comment "Licence desk: the player already has the driving licence (#3128)."
+    }
+    CustomStringTableItem "{4A9DFB45430F1EEF}" {
+     Id "LF-LicenceDesk_DrivingBanned"
+     Target_en_us "Refused: your driving licence was seized. Come back in %1 days."
+     Comment "Licence desk refusal: a conviction seized the driving licence and its ban has not ended (#3432). %1 = in-game days left."
     }
     CustomStringTableItem "{34BBF90BAF789D18}" {
      Id "LF-LicenceDesk_DrivingIssued"
@@ -7218,6 +7273,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LicenceDesk_Wanted"
      Target_en_us "Refused: you are wanted by the {police}."
      Comment "Licence desk refusal: the player's wanted level is above zero."
+    }
+    CustomStringTableItem "{A642D5DB4145E7D9}" {
+     Id "LF-LicenceSeized_Driving"
+     Target_en_us "Your driving licence has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took the driving licence (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{D92AB6624E66E7E3}" {
+     Id "LF-LicenceSeized_Firearm"
+     Target_en_us "Your firearm permit has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took the firearm permit (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{B409C651C883E235}" {
+     Id "LF-LicenceSeized_Generic"
+     Target_en_us "A licence of yours has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took a licence with no line of its own (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{190BA98B192ED320}" {
+     Id "LF-LicenceSeized_Plain"
+     Target_en_us "A licence of yours has been seized."
+     Comment "Toast to the arrested player: a conviction took a licence with no ban period (#3432)."
     }
     CustomStringTableItem "{AA51A5C85F69418F}" {
      Id "LF-LicenceWhere_DRIVING_LICENCE"
