@@ -131,6 +131,58 @@
       "request_id": "LKl5D1fZ5rhtFBY4YiYa",
       "seconds": 2.21,
       "mouth": "236999873698710599623768445761175578986421000"
+    },
+    "shipment_ask": {
+      "hash": "f184e88eb503071b",
+      "date": "2026-11-19",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?",
+      "chars": 120,
+      "chars_total": 48,
+      "request_id": "jmh8IhGpu4VCTHuZPCKk",
+      "seconds": 9.83,
+      "mouth": "15752569944525799964531066758604899992439999787303758987984568699752276799737778899346746612310000000000000000001756998899884468710679876334997756431000000000000000004545721899873674445887999521100"
+    },
+    "shipment_count": {
+      "hash": "c95f9f5f2a3f9661",
+      "date": "2026-11-19",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Open it, count what is in there and come back. If it is only fish, no harm done.",
+      "chars": 80,
+      "chars_total": 32,
+      "request_id": "w8fKHUpmcguNjkkDSfYV",
+      "seconds": 8.42,
+      "mouth": "9841699996036532100000000000045788745367999324037965007599739997666513677662998520321000000000000000035445567742067997788434599888752100000000003269975888675579776411000"
+    },
+    "shipment_thanks_report": {
+      "hash": "691022ecc484e14e",
+      "date": "2026-11-19",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "You took it to the desk. Good. The town will sleep better, whatever the dockers say.",
+      "chars": 84,
+      "chars_total": 34,
+      "request_id": "hsxMcfLYTdDuMRw0Q1SQ",
+      "seconds": 7.07,
+      "mouth": "4589499258417878739999689723420000021001357999232210000000000000025516789988997785797002995469653100000000248627998994772599148878869996531000"
+    },
+    "shipment_thanks_sell": {
+      "hash": "4fc4b71deb07734d",
+      "date": "2026-11-19",
+      "voice_id": "LifjXiNLcYfyYJD8PCDT",
+      "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
+      "model": "eleven_multilingual_v2",
+      "text": "I did not ask where it went. I will not ask. Keep your head down on the quay for a few days.",
+      "chars": 92,
+      "chars_total": 37,
+      "request_id": "RWWLuYc84fW0s1SxekRG",
+      "seconds": 10.42,
+      "mouth": "67367568945119998795034105799998105824379996414211000000000000100000476899899151789857625332100000000000000100055305898635996210699999875321000005998578113667887432110000010100135585057744567862899998654542000"
     }
   },
   "voice": {
