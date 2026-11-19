@@ -1,0 +1,55 @@
+{
+  "_about": "What `tools\\cli economy` cannot read from a config for the mining chains (#3240, E1 of #3206): gather rates, haul distances, vehicle loads. Everything the configs hold (recipes in Configs/Resources/ResourceChains.conf, wholesale curves in market.goods, hardware premium rows in buyerDemand.rows) is read from them, not repeated here. Numbers are the design note's (mining-chains.md, 2026-11-18) with the real map distances between the sites; #3246 (E2) tunes them from measured rates. A distance is straight-line km, driven at minutesPerKm.",
+  "version": 1,
+  "minutesPerKm": { "car": 1, "pickup": 1, "truck": 1.1, "foot": 15.9 },
+  "vehicles": {
+    "_about": "Load per trip. sacks: whole sacks the cargo bed or shoulder holds (#3265 pickup 6, truck 12; #3263 shoulder carry). looseUnits: loose items a car boot holds (a car bed holds no sacks).",
+    "foot": { "sacks": 2 },
+    "car": { "sacks": 0, "looseUnits": 20 },
+    "pickup": { "sacks": 6 },
+    "truck": { "sacks": 12 }
+  },
+  "sackUnits": { "iron-ore": 10, "copper-ore": 10, "limestone": 5, "coal": 10 },
+  "chains": [
+    {
+      "id": "iron-pickup", "label": "iron by pickup", "recipe": "smelter-iron", "vehicle": "pickup",
+      "gather": { "item": "iron-ore", "units": 20, "perMinute": 4 },
+      "reagents": [{ "item": "coal", "guidName": "CoalLump", "unitCost": 2, "source": "bought from coal feeders at about $2" }],
+      "buyer": "hardware", "premiumGood": "BCD1E8CD7F975074", "wholesaleGood": "BCD1E8CD7F975074",
+      "km": { "mineToPlant": 2.5, "plantToBuyer": 4.7, "returnToMine": 2.3 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
+      "note": "Highstone hill to the centre-east smelter, sold at Saint-Philippe"
+    },
+    {
+      "id": "copper-car", "label": "copper by car", "recipe": "refinery-copper", "vehicle": "car",
+      "gather": { "item": "copper-ore", "units": 16, "perMinute": 4 },
+      "reagents": [{ "item": "acid", "guidName": "AcidCarboy", "unitCost": 8, "source": "bought at the Saint-Philippe hardware store, $8" }],
+      "buyer": "hardware", "premiumGood": "577A665F1662E7AD", "wholesaleGood": "577A665F1662E7AD",
+      "km": { "mineToPlant": 5.6, "plantToBuyer": 7, "returnToMine": 4.1 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
+      "note": "Humboldt Hill to the Levie refinery, sold at Saint-Philippe"
+    },
+    {
+      "id": "stone-truck", "label": "stone by truck", "recipe": "cement-works", "vehicle": "truck",
+      "gather": { "item": "limestone", "units": 60, "perMinute": 4 },
+      "reagents": [{ "item": "sand", "guidName": "Sandbag", "unitCost": 0, "source": "dug free at Goat Bay" }],
+      "buyer": "hardware", "premiumGood": "D58674633332DC86", "wholesaleGood": "D58674633332DC86",
+      "km": { "mineToPlant": 2.6, "plantToBuyer": 7, "returnToMine": 7.9 }, "overheadMinutes": 1.5, "fuelPerHour": 30,
+      "note": "east mountains quarry to the Morton cement works, 12 sacks of limestone per trip, sold at Saint-Philippe"
+    },
+    {
+      "id": "stone-foot", "label": "stone on foot", "recipe": "cement-works", "vehicle": "foot",
+      "gather": { "item": "limestone", "units": 10, "perMinute": 4 },
+      "reagents": [{ "item": "sand", "guidName": "Sandbag", "unitCost": 0, "source": "dug free at Goat Bay" }],
+      "buyer": "hardware", "premiumGood": "D58674633332DC86", "wholesaleGood": "D58674633332DC86",
+      "km": { "mineToPlant": 2.6, "plantToBuyer": 7, "returnToMine": 7.9 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
+      "note": "the same route with two sacks (10 limestone) carried on the shoulder"
+    },
+    {
+      "id": "coal-feeder", "label": "coal feeder", "recipe": null, "vehicle": "car",
+      "gather": { "item": "coal", "units": 20, "perMinute": 2.5 },
+      "reagents": [],
+      "buyer": null, "premiumGood": null, "wholesaleGood": "C2AE9B7E62F0369F", "outputItem": "coal",
+      "km": { "mineToPlant": 0, "plantToBuyer": 3.7, "returnToMine": 3.7 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
+      "note": "East Rise ridge coal sold wholesale in Saint-Philippe (no plant)"
+    }
+  ]
+}
