@@ -27,7 +27,7 @@ GenericEntity Fit_hilltopmast_a_site {
    m_sHideoutId "hilltop_mast"
   }
  }
- coords 9953.9 314.9 2283.4
+ coords 9953.9 315.155 2283.4
  angleY 90
 }
 GenericEntity Fit_hilltopmast_a_flag : "{DDE764E40C17C5DC}Prefabs/Sites/LF_SiteFlag.et" {
@@ -36,7 +36,7 @@ GenericEntity Fit_hilltopmast_a_flag : "{DDE764E40C17C5DC}Prefabs/Sites/LF_SiteF
    m_sHideoutId "hilltop_mast"
   }
  }
- coords 9952.9 314.9 2286.8
+ coords 9952.9 315.252 2286.8
  angleY 90
 }
 GenericEntity Fit_hilltopmast_a_strongbox : "{28F82DEA95808829}Prefabs/Sites/LF_SiteStrongbox.et" {
@@ -45,18 +45,18 @@ GenericEntity Fit_hilltopmast_a_strongbox : "{28F82DEA95808829}Prefabs/Sites/LF_
    m_sHideoutId "hilltop_mast"
   }
  }
- coords 9950.9 314.9 2280
+ coords 9950.9 315.141 2280
  angleY -90
 }
 GenericEntity Fit_hilltopmast_a_crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 9954.1 314.9 2280.3
+ coords 9954.1 315.165 2280.3
  angleY 110
 }
 GenericEntity Fit_hilltopmast_a_crate_2 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 9955.1 314.9 2280.3
+ coords 9955.1 315.18 2280.3
  angleY 80
 }
 GenericEntity Fit_hilltopmast_a_barrel : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 9950.3 314.9 2285.6
+ coords 9950.3 315.183 2285.6
  angleY 90
 }
