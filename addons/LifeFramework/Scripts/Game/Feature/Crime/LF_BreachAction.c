@@ -35,6 +35,13 @@ class LF_BreachArmAction : ScriptedUserAction
 			return false;
 		}
 
+		string heistRefusal = LF_HeistRun.ArmRefusal(target.GetTargetId(), LF_AccountReplication.GetPoliceOnDutyCount());
+		if (!heistRefusal.IsEmpty())
+		{
+			SetCannotPerformReason(LF_Terms.Text(heistRefusal));
+			return false;
+		}
+
 		return true;
 	}
 
@@ -58,6 +65,15 @@ class LF_BreachArmAction : ScriptedUserAction
 		if (playerUid.IsEmpty())
 		{
 			LF_Debug.Error("Breach", "arm action refused: player has no account id");
+			return;
+		}
+
+		// A heist job's door waits for its police minimum (#3748); the server counts live.
+		string heistRefusal = LF_HeistRun.ArmRefusal(target.GetTargetId(), LF_AccountReplication.CountPoliceOnDuty());
+		if (!heistRefusal.IsEmpty())
+		{
+			LF_Debug.Info(LF_HeistRun.FEATURE, string.Format("arm on %1 refused for %2: too few police on duty", target.GetTargetId(), playerUid));
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text(heistRefusal), "", 4.0);
 			return;
 		}
 

@@ -5448,6 +5448,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Nothing left in there"
      Comment "Offer: the heist target is out of stock until it refills (#275)."
     }
+    CustomStringTableItem "{C3E7A15B90D24F68}" {
+     Id "LF-Heist_NeedPolice"
+     Target_en_us "Not enough {police} on duty for this job"
+     Comment "Breach charge refused on a heist job's door because fewer police are on duty than the job needs"
+    }
     CustomStringTableItem "{287FBFE0C09D4B2C}" {
      Id "LF-Heist_Van_Open"
      Target_en_us "Break open the cash box"
