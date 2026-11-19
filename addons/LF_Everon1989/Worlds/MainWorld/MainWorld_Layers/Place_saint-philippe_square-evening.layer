@@ -32,7 +32,7 @@ GenericEntity Fit_saint_philippe_square_evening_wp0 : "{06E93733B0BBD01C}Prefabs
    m_iOrder 0
   }
  }
- coords 4471 13.125 10721
+ coords 4510 14.656 10724
 }
 GenericEntity Fit_saint_philippe_square_evening_wp1 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
  components {
@@ -41,7 +41,7 @@ GenericEntity Fit_saint_philippe_square_evening_wp1 : "{06E93733B0BBD01C}Prefabs
    m_iOrder 1
   }
  }
- coords 4482 13.438 10722
+ coords 4499 14.078 10725
 }
 GenericEntity Fit_saint_philippe_square_evening_wp2 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
  components {
@@ -50,16 +50,7 @@ GenericEntity Fit_saint_philippe_square_evening_wp2 : "{06E93733B0BBD01C}Prefabs
    m_iOrder 2
   }
  }
- coords 4492 13.781 10723.5
-}
-GenericEntity Fit_saint_philippe_square_evening_wp3 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
- components {
-  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
-   m_sSceneId "square_evening"
-   m_iOrder 3
-  }
- }
- coords 4499 14.078 10725
+ coords 4500.5 14.125 10721
 }
 GenericEntity Fit_saint_philippe_square_evening_target : "{F716FD32069F2BE8}Prefabs/Systems/Events/LF_EventMarker_Target.et" {
  components {
