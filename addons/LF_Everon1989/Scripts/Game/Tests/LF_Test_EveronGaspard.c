@@ -2,8 +2,8 @@
 //! #3451 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), Gaspard (the old man) has a reply
 //! about a cove that shows only once the character has landed three fish and, when picked, marks the cove on their
 //! map (`LF_MapKnown`); the cove is a fishing table whose species bite at the dusk hours. The core ships no cove: the
-//! pack's `LF_Coves_Everon1989.conf` is a fishing overlay (`LF_FishingLayers`) and `LF_Dialogue_Gaspard.conf` a patch
-//! of the old man's dialogue.
+//! pack's `LF_Coves_Everon1989.conf` is a fishing overlay (`LF_FishingLayers`); the reply and the tip are part of the old man's
+//! own dialogue (`tools/assets/dialogue/old_man/dialogue.json`), and the tip is recorded in his voice (#3762).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronGaspard : LF_Test
 {
@@ -29,7 +29,7 @@ class LF_Test_EveronGaspard : LF_Test
 
 		// The talk: the reply is gated by the hook and runs it.
 		LF_DialogueConfig config = LF_DialogueConfig.Layered(OLD_MAN);
-		ctx.NotNull(config, "the old man's dialogue loads with the cove patch");
+		ctx.NotNull(config, "the old man's dialogue loads with the cove reply");
 		if (!config)
 		{
 			LF_FishingConfig.Reload();
@@ -47,6 +47,7 @@ class LF_Test_EveronGaspard : LF_Test
 			string caption = WidgetManager.Translate(coveLine.m_sTextKey);
 			ctx.True(caption != coveLine.m_sTextKey && !caption.IsEmpty(), "the cove line has its caption in the string table");
 			ctx.True(caption.IndexOf("dusk") != -1, "the tip says when to go: dusk");
+			ctx.True(!coveLine.m_sEvent.IsEmpty() && coveLine.m_fSeconds > 0, "the tip is recorded in Gaspard's voice (a sound event and a length)");
 		}
 
 		LF_DialogueOption reply;
