@@ -21,7 +21,7 @@
       "source": "rows",
       "min": [
         7.35,
-        -59.48
+        -66.42
       ],
       "max": [
         60.6,
@@ -30,7 +30,7 @@
     },
     "front": "-x",
     "counters": [],
-    "adapt": "Open pasture beside an open barn: the barn is the host and only an anchor. The kit frame is the barn turned to a quarter turn from the world (x east, z north on the farmwest barn b19), the field box (60 x 40 m, centred 59 m from the barn, yaw ignored) stands 50 m east and 25 m south of the barn centre, a wooden fence runs along its west and south sides with a gate opening mid-south, and the cart, sacks, hay and implement wrecks stand on the ground beside the opening and the west fence. Rows are rigid: shift, never stretch."
+    "adapt": "Open pasture beside an open barn: the barn is the host and only an anchor. The kit frame is the barn turned to a quarter turn from the world (x east, z north on the farmwest barn b19), the field box (60 x 40 m, centred 59 m from the barn, yaw ignored) stands 50 m east and 25 m south of the barn centre, a wooden fence runs along its west and south sides with a gate opening mid-south, the cart, sacks, hay and implement wrecks stand on the ground beside the opening and the west fence, and a weighbridge (vanilla WeightStation_01 plus an LF_GranaryUnloadAction prompt entity) stands 16 m south of the gate opening. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -391,14 +391,64 @@
       "name": "WheatField_CultivatorWreck",
       "prefab": "{DE59CB05202006E8}Prefabs/Props/Agriculture/CultivatorWreck_01.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         32.53,
         0,
         -59.48
       ],
       "yaw": 163,
-      "wall": "-z",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-weighbridge",
+      "name": "WheatField_Weighbridge",
+      "prefab": "{B461AC17AE9B29EF}Prefabs/Structures/Agriculture/WeightStation/WeightStation_01/WeightStation_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        40.68,
+        0,
+        -66.42
+      ],
+      "yaw": 3,
+      "class": "SCR_DestructibleBuildingEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-unload",
+      "name": "WheatField_Unload",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        43.55,
+        0,
+        -63.27
+      ],
+      "yaw": 3,
+      "config": [
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "RplComponent",
+          "set": {
+            "Enabled": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
       "floor": "f0",
       "mount": "terrain"
     }
