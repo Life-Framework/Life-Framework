@@ -1,0 +1,31 @@
+GenericEntity Fit_roadfarm_a_Place {
+ components {
+  LF_PlaceComponent "{E70AF16699F8E964}" {
+   m_sKind "RoadFarm"
+   m_sId "roadfarm.a"
+  }
+  LF_FittedBuildingComponent "{8E7B448BA143DDF8}" {
+  }
+ }
+ coords 5130.89 176.3 7013.48
+}
+GenericEntity Fit_roadfarm_a_payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 5146.687 176.3 7027.639
+ angleY 40
+}
+GenericEntity Fit_roadfarm_a_fuel_drop : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
+ coords 5130.353 176.3 7021.241
+ angleY -20
+}
+GenericEntity Fit_roadfarm_a_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "roadfarm"
+   m_vRimColor 1 1 1
+   m_vPaintColor 0.16 0.3 0.15
+   m_vTextColor 1 1 1
+  }
+ }
+ coords 5142.473 176.3 7031.174
+ angleY 40
+}

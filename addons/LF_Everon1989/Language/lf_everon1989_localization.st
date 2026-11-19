@@ -3024,6 +3024,26 @@ StringTable {
      Target_en_us "The town clerk registers new arrivals and issues the identity card."
      Comment "Sign card for the registry office (the town clerk, arrival chain), What section."
     }
+    CustomStringTableItem "{6BB6BAED2EF2DAC0}" {
+     Id "LF-Sign_RoadFarm_How"
+     Target_en_us "Fuel drop: bring a full barrel to the tank by the machine shed on the fuel delivery job. The payphone at the gate calls the town."
+     Comment "Sign card for the roadside farm yard, How section (#3381)."
+    }
+    CustomStringTableItem "{34C32AFD1EDAADC4}" {
+     Id "LF-Sign_RoadFarm_Next"
+     Target_en_us "The farm sells nothing. Fill up in town, or take the delivery job and earn from the drop."
+     Comment "Sign card for the roadside farm yard, Next section (#3381)."
+    }
+    CustomStringTableItem "{756BB84E4D298624}" {
+     Id "LF-Sign_RoadFarm_Title"
+     Target_en_us "Ferme des Silos"
+     Comment "Title of the farm-name sign at the roadside farm yard gate (Everon 1989 pack, #3381). Printed on the sign and shown in the prompt as Read: Ferme des Silos."
+    }
+    CustomStringTableItem "{6151BE35A15D9BD7}" {
+     Id "LF-Sign_RoadFarm_What"
+     Target_en_us "A working farm off the main road: cow sheds, silos and a machine shed. The tank by the shed takes fuel for the delivery job."
+     Comment "Sign card for the roadside farm yard, What section (#3381)."
+    }
     CustomStringTableItem "{2AFCEED3736DE810}" {
      Id "LF-Sign_Rules_Next"
      Target_en_us "Take a complaint to staff after the scene, not during it. This is an alpha: the world can be wiped, with 24 hours' notice."
