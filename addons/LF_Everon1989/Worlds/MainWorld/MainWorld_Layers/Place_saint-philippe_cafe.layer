@@ -31,3 +31,20 @@ GenericEntity Fit_saint_philippe_cafe_anchor_door {
  coords 4445.785 13.1 10701.17
  angleY -98
 }
+GenericEntity Fit_saint_philippe_cafe_seat_west : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
+ coords 4451.799 13.1 10702.457
+ angleY -98
+}
+GenericEntity Fit_saint_philippe_cafe_seat_east : "{3145FC3DB0E675E8}Prefabs/Buildings/Pub/Seats/LF_Seat_Chair_01_red.et" {
+ coords 4451.018 13.1 10702.347
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_cafe_anchor_bench {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "bench"
+  }
+ }
+ coords 4451.209 13.1 10703.245
+ angleY 172
+}
