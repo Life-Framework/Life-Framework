@@ -900,6 +900,17 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The escort's take-out: a seated prisoner steps out at position, the vehicle stays put.
+	//! \return False when the body is not seated.
+	static bool DismountPrisoner(IEntity body, vector position)
+	{
+		if (!body)
+			return false;
+
+		return DismountTo(body, position);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Waits for the dismount, then makes sure the body stands at position. A body still seated
 	//! after DISMOUNT_MAX_TRIES is left where it is (logged) rather than moving the vehicle.
 	static void FinishDismount(IEntity body, vector position, int attempt)

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7B2E5A1C93D40F30}Configs/Chains/LF_Chain_Wheat_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

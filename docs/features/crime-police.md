@@ -236,6 +236,24 @@
   `Roadmap_Escort_Car` at `247.5 0 238` (beside the police station) on `Street_Jail.layer`, the police M151 with
   `LF_JailPutInVehicleAction`. The action is listed at the car. Performing it
   still requires an on-duty officer and a prisoner on foot. (verified 2026-10-11)
+  **The escort car works on any police car (#3431, merged, in-dev).** Until then the escort path was
+  bookkeeping only: the put-in and take-out actions were on no Everon prefab, the on-foot detain action
+  (`LF_JailEscortArrestAction`) was on none either, nothing registered a vehicle, and no one was
+  physically seated. Now `LF_UAZ469_Police.et` carries `LF_JailPutInVehicleAction` and
+  `LF_JailTakeOutOfVehicleAction` (door context `door_l01`) so every police UAZ, the Everon station kit's
+  `PoliceKit_PatrolCar` and `PoliceKit_EscortCar` included, offers them, and `Character_Roleplay.et` carries
+  "Detain for escort" on the interaction menu. The officer detains a wanted suspect, stands at the car and
+  puts them in: `LF_JailEscortCar.PutIn` (server) checks the hold and that the suspect is within 8 m, then
+  moves them into a real cargo seat through `MoveInVehicle` (the owning client answers; a lost request is
+  asked again up to 4 times, a refused one rolls the hold back to on foot and the officer is told). The
+  car's escort id is its placed name or its entity id, so a car spawned with no name works; seat rows
+  are made on demand. Take-out at the placed cell starts the sentence (`LF_JailEscort.Arrive`); anywhere
+  else the suspect steps out 2.5 m beside the car and stays held on foot. The hold is server state, so
+  neither action refuses from the client: the server judges and toasts the reason. Test `jail/escort-car`
+  (LOGIC); proof `session.mjs police-arrest-proof --escort [--car <entity>]` on two clients reads the seat on both.
+  A suspect held for escort, cuffed or not, is refused the driver's seat like a cuffed one
+  (`LF_CuffEnforcement.HeldFromDriving`), so an uncuffed suspect cannot slide over and drive the police car
+  off; a seat retry stops once the hold has left the car. Test `police/escort-no-driving` (LOGIC).
 - ✅ **Sentences survive a restart** (2026-11-07, tests
   `restart/jail-serializer-roundtrip` and `e2e/pass2-verify-load` across a real
   restart, verified 2026-11-07): `LF_Jail.ExportAll` / `ApplyAll` are the `jail` payload of
@@ -821,3 +839,4 @@
 - 🔧 **The evidence locker orders a convoy when it fills** (#3378, merged, in-dev): `LF_EvidenceLockerFill` counts the locker's rows against `LF_EvidenceConfig.m_iConvoyThreshold` (default 12, `LF_Evidence.conf`). The locker calls `Check()` after a bag or a back-room seizure is logged or a raid empties it; reaching the threshold publishes `LF_OnEvidenceConvoyDue` (rows, threshold, reason `full`) once, and dropping below it (a raid, a world reset, a load) re-arms. A break-in at the locker (`LF_Breach.Reset` or `CancelCharge` on target `LF_EvidenceLocker`) publishes it at once with reason `break-in`, once until re-armed. Nothing subscribes yet, and the locker's rows and save are unchanged. Test `investigation/locker-fill`.
 
 - 🔧 **Chop yard outside town** (#3403, X29, merged, in-dev): a lone farm yard 1.2 km from the Saint-Philippe square, in the hamlet scouted as `chopyard` (the big barn at its south edge, open ground east of its doors, the road 59 m beyond). `LF_ChopBench` (shop id `chopyard-yard`, drop area 10 m left clear) stands 14 m in front of the barn, dressed with the engine hoist (the bench mesh), a welder, jack, vehicle doors and scrap, tyres, barrels, a workbench and one wreck. No sign and no POI (`poi` none, kind `ChopYard`). Place `chopyard`, template `chopyard`, kit `chop-yard` (lifted from DebugWorld `Street_ChopShop.layer`), layer `Place_chopyard_yard.layer`. `audit placement --strict` clean, `town check chopyard` ok. ⚠️ Not checked live: driving a stolen car in and chopping it (session proof).
+- **Furniture offer from a dedicated client (#3361):** the HOUSE_OWNER_OR_KEY rule read `LF_HouseManagerComponent.Live()`, which only the server fills, so a remote client never saw the furniture prompt, even in its own house. A client now reads the house managers streamed in within 30 m (`LF_PlacementPolicy.GatherHouseClient`, a static-entity sphere query) and the replicated `m_sHouseIdentifier` / `m_sOwnerKey`, plus the keys it carries. It only decides whether the prompt shows; the server's `Confirm` still re-checks with the live table. Test `placement/client-offer` (a fixture house outside the live table). ⚠️ Not checked live: a dedicated-server client in an owned house (session proof `placement-furniture-proof` not yet written); the built-plot cottage as a source stays with #3173.

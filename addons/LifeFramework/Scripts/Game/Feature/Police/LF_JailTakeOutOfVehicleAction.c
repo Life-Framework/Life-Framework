@@ -20,8 +20,9 @@
 // SOFTWARE.
 //
 //------------------------------------------------------------------------------------------------
-//! Takes the prisoner out of this vehicle. At the placed cell the sentence
-//! starts. Anywhere else they leave the seat and the sentence stays unstarted.
+//! Takes the prisoner out of this vehicle (LF_JailEscortCar.TakeOut). At the
+//! placed cell the sentence starts. Anywhere else they step out beside the car
+//! and the sentence stays unstarted.
 //------------------------------------------------------------------------------------------------
 class LF_JailTakeOutOfVehicleAction : ScriptedUserAction
 {
@@ -46,14 +47,7 @@ class LF_JailTakeOutOfVehicleAction : ScriptedUserAction
 			return false;
 		}
 
-		// Escort holds live on the server; a client leaves this check to the server.
-		string officerUid = LF_Utils.GetPlayerUid(user);
-		if (Replication.IsServer() && LF_JailEscort.GetSeatedPrisoner(officerUid).IsEmpty())
-		{
-			SetCannotPerformReason("#EL-Escort_NoPrisoner");
-			return false;
-		}
-
+		// The escort hold lives only on the server: PerformAction judges it and tells the officer (#3431).
 		return true;
 	}
 
@@ -69,19 +63,7 @@ class LF_JailTakeOutOfVehicleAction : ScriptedUserAction
 		if (!pOwnerEntity || !pUserEntity)
 			return;
 
-		string officerUid = LF_Utils.GetPlayerUid(pUserEntity);
-		string prisonerUid = LF_JailEscort.GetSeatedPrisoner(officerUid);
-		if (officerUid.IsEmpty() || prisonerUid.IsEmpty())
-		{
-			LF_Debug.Error("Jail", "escort take-out refused: officer or prisoner id is empty");
-			return;
-		}
-
-		vector position = pOwnerEntity.GetOrigin();
-		if (LF_JailEscort.IsAtCell(position))
-			LF_JailEscort.Arrive(officerUid, prisonerUid, position);
-		else
-			LF_JailEscort.TakeOut(officerUid, prisonerUid);
+		LF_JailEscortCar.TakeOut(pUserEntity, pOwnerEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------

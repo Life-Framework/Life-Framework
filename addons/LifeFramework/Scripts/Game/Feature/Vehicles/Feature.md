@@ -35,3 +35,10 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 - **Rule:** `LF_VehicleDlcGate`. DlcManager answers only for the machine it runs on (vanilla checks DLC on the acting client), so the buyer's client asks its own licence (`LocalOwns`, in `LF_AskBuyVehicle`) and sends the answer with the buy; the server (`LF_VehicleLot.Buy`) refuses a `/Wheeled/Z7211/` prefab before `BuyColour` charges anything when the answer is no. The answer is a hint: a lying client buys a tractor whose driver seat vanilla still refuses it. A base-game vehicle is never asked.
 - **Data:** the price row (`LF_VehiclePrices.conf`, $3,000) and the locked child `EL_Z7211_red_CIV.et`. The offer row on a lot layer is a town/pack edit and is not part of the gate.
 - **Proof:** `vehicles/dlc-gate` (LOGIC). A non-owner client on a dedicated server is a manual check.
+
+## Owned cars stay out of the engine save (#3614)
+
+- **Player sees:** after a restart, a car left on the street is at the impound only. Collecting it gives back one car with its cargo. Before the fix, an unowned copy was also left at the parking spot with whatever the trunk held.
+- **Owner and side:** the server. The engine's `PersistenceSystem` tracked every vehicle entity and restored it where it stood, with a new lock identifier and no owner, while the restart impound brought the record back too. `LF_VehicleWorldSave.Hold` calls `StopTracking(vehicle, true)` on every car `LF_VehicleOwnership` spawns (the lot purchase and `SpawnOwned`, used by collect and retrieve). The car's record and its cargo snapshot are its only save. This is the same pattern as `LF_StoreShelfSave` (#3127).
+- **Old saves:** a save written before the fix still holds the copies. The first boot on it restores them once as unowned, keyless cars, and they are not dropped later. Wipe the save, or delete those cars, when this ships.
+- **Proof:** `vehicles/restart-one-car` (PERSISTENCE): collected and retrieved cars are not tracked. Under `tools\cli wt e2e` the reload boot finds no copy and no loose apple by the impound, then exactly one truck after the collect, holding its apple.

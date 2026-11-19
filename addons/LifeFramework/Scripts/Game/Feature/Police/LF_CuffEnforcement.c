@@ -90,17 +90,34 @@ class LF_CuffEnforcement
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: a cuffed character in a driver's seat is put out of it. \return True when it was refused.
+	//! Cuffed, or held by an officer for escort (#3431): an uncuffed suspect the officer put in the
+	//! police car's cargo seat must not move to the driver's seat and drive the car off.
+	static bool HeldFromDriving(bool restrained, string playerUid)
+	{
+		if (restrained)
+			return true;
+
+		return LF_JailEscort.IsEscorted(playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsHeldFromDriving(IEntity character)
+	{
+		return HeldFromDriving(LF_Restraint.IsRestrained(character), LF_Utils.GetPlayerUid(character));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a cuffed or escorted character in a driver's seat is put out of it. \return True when it was refused.
 	static bool RefuseSeat(IEntity character, BaseCompartmentSlot slot)
 	{
 		if (!Replication.IsServer() || !character || !slot)
 			return false;
 
-		if (!RefusesSeat(LF_Restraint.IsRestrained(character), PilotCompartmentSlot.Cast(slot) != null))
+		if (!RefusesSeat(IsHeldFromDriving(character), PilotCompartmentSlot.Cast(slot) != null))
 			return false;
 
 		s_sLastRefused = "driver seat";
-		LF_Debug.Warn(FEATURE, string.Format("cuffed %1 is in a driver's seat: put out", LF_Utils.GetPlayerUID(character)));
+		LF_Debug.Warn(FEATURE, string.Format("cuffed or escorted %1 is in a driver's seat: put out", LF_Utils.GetPlayerUID(character)));
 		int playerId = LF_PlayerInteraction.PlayerIdOf(character);
 		if (playerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Restrain_Title", "#LF-Restrain_NotWhileCuffed", 3.0, LF_ENotificationType.WARNING);
@@ -174,7 +191,7 @@ class LF_CuffEnforcement
 			return false;
 
 		ChimeraCharacter character = ChimeraCharacter.Cast(GetGame().GetWorld().FindEntityByID(characterId));
-		if (!character || !LF_Restraint.IsRestrained(character))
+		if (!character || !IsHeldFromDriving(character))
 			return false;
 
 		CompartmentAccessComponent access = character.GetCompartmentAccessComponent();
