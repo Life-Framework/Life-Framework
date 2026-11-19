@@ -1,0 +1,53 @@
+// Grid cell c21r6 for loot: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_loot_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 275 0 95
+}
+SCR_DestructibleEntity Grid_loot_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 280 0 95
+}
+SCR_DestructibleEntity Grid_loot_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 285 0 95
+ angleY 270
+}
+SCR_DestructibleEntity Grid_loot_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 285 0 100
+ angleY 270
+}
+SCR_DestructibleEntity Grid_loot_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 285 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_loot_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 280 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_loot_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 275 0 105
+ angleY 90
+}
+GenericEntity Grid_loot_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:loot"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 274.2 0.505 95.6
+ angleY -90
+}
+GenericEntity Grid_loot_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "loot"
+  }
+ }
+ coords 274.3 0 97.5
+ angleY 90
+}
+GenericEntity Grid_loot_R0 : "{4EC3252A043DB67F}Prefabs/Props/Loot/LF_LootCrate.et" {
+ coords 282.501 0 100.001
+ angleY -90
+}
