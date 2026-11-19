@@ -60,6 +60,10 @@ class LF_FuelStationComponent : ScriptComponent
 	protected static ref map<string, ref LF_FuelStock> s_mStocks;
 	protected static ref LF_FuelChargeLedger s_Ledger;
 
+	//! How close an LF pump must stand to a vanilla pump to cover it, in metres.
+	static const float COVER_M = 0.6; // lf-fixed: a fit places the pump on the vanilla one's own spot
+	protected static bool s_bCovered;
+
 	protected static IEntity s_pFoundVehicle;
 	protected static vector s_vOrigin;
 	protected static float s_fBest;
@@ -86,7 +90,41 @@ class LF_FuelStationComponent : ScriptComponent
 			return false;
 
 		LF_FuelStationComponent station = LF_FuelStationComponent.Cast(pump.FindComponent(LF_FuelStationComponent));
-		return station && station.SellsFromStock();
+		if (station)
+			return station.SellsFromStock();
+
+		return SellingPumpCovers(pump);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a selling LF pump stands on top of `vanillaPump` (a town fit puts `LF_FuelPump` on the exact spot of the
+	//! map's own pump, which a layer cannot delete), so the vanilla pump beneath gives no free refuel either.
+	static bool SellingPumpCovers(IEntity vanillaPump)
+	{
+		if (!vanillaPump || !GetGame() || !GetGame().GetWorld())
+			return false;
+
+		s_bCovered = false;
+		GetGame().GetWorld().QueryEntitiesBySphere(vanillaPump.GetOrigin(), COVER_M, CollectCover, null, EQueryEntitiesFlags.ALL);
+		bool covered = s_bCovered;
+		s_bCovered = false;
+		return covered;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectCover(IEntity entity)
+	{
+		if (!entity)
+			return true;
+
+		LF_FuelStationComponent station = LF_FuelStationComponent.Cast(entity.FindComponent(LF_FuelStationComponent));
+		if (station && station.SellsFromStock())
+		{
+			s_bCovered = true;
+			return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
