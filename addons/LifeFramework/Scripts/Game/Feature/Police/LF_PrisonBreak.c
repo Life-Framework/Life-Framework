@@ -156,6 +156,7 @@ class LF_PrisonBreak
 			return false;
 
 		s_sWindowDoor = LF_Jail.DoorTargetId();
+		LF_PrisonEscape.OnOpened(starterUid);
 		LF_Dispatch.Report(starterUid, body, LF_WantedReports.OFFENCE_JAILBREAK, vector.Zero, officersOnDuty);
 
 		LF_PrisonBreakConfig config = LF_PrisonBreakConfig.Get();
