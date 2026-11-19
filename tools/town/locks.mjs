@@ -68,6 +68,9 @@ export function loadPlace(root, place) {
   // The homes `tools\cli town homes` gave a house marker (#3584): the marker locks the building itself (owner and key holders pass).
   const homesFile = join(root, "docs/everon/places", place, "homes.json");
   const homes = new Set(existsSync(homesFile) ? (JSON.parse(readFileSync(homesFile, "utf8")).homes ?? []).map((h) => h.id) : []);
+  // The resident homes `tools\cli town residenthomes` gave a house marker (#3233): the marker locks the building (nobody owns it), so no Private lock marker too.
+  const residentFile = join(root, "docs/everon/places", place, "resident-homes.json");
+  if (existsSync(residentFile)) for (const h of JSON.parse(readFileSync(residentFile, "utf8")).homes ?? []) homes.add(h.id);
   return { purpose, dossier, homes };
 }
 
