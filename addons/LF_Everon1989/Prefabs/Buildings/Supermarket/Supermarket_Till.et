@@ -35,6 +35,15 @@ GenericEntity : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
       Description "#LF-Shop_OpenDesc_Supermarket"
      }
     }
+    LF_StoreTillAction "{7B2E4C19A05D3F68}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C41D8E7A92B05F36}" {
+      Name "#LF-Store_Pay"
+     }
+     m_sStoreKey "everon_sp_supermarket"
+    }
     LF_RobAction "{129E734249490218}" {
      ParentContextList {
       "default"
