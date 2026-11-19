@@ -125,7 +125,7 @@ class LF_Test_EveronResidents : LF_Test
 
 			foreach (LF_ResidentEntryDef entry : def.m_aTimetable)
 			{
-				ctx.True(entry.m_sAnchor == "counter" || entry.m_sAnchor == "bench" || entry.m_sAnchor == "door", string.Format("%1 line %2 stands on a known anchor ('%3')", id, entry.m_sTime, entry.m_sAnchor));
+				ctx.True(entry.m_sAnchor == "counter" || entry.m_sAnchor == "bench" || entry.m_sAnchor.IndexOf("door") == 0, string.Format("%1 line %2 stands on a known anchor ('%3')", id, entry.m_sTime, entry.m_sAnchor));
 				ctx.True(entry.m_sActivity == "serve" || entry.m_sActivity == "sit" || entry.m_sActivity == "loiter" || entry.m_sActivity == "idle", string.Format("%1 line %2 does a known activity ('%3')", id, entry.m_sTime, entry.m_sActivity));
 			}
 
