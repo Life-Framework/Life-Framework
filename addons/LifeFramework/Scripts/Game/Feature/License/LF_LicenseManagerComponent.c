@@ -549,11 +549,15 @@ class LF_LicenseManagerComponent : ScriptComponent
 		// Ya desbloqueada
 		if (HasLicense(licenseType))
 			return false;
-		
+
+		// A conviction's licence ban refuses it until the ban ends (#3430).
+		if (LF_LicenceBans.IsBanned(LF_Utils.GetPlayerUID(GetOwner()), licenseType))
+			return false;
+
 		LF_LicenseConfig config = m_mLicenseConfigs.Get(licenseType);
 		if (!config)
 			return false;
-		
+
 		// Verificar whitelist si es necesaria
 		if (config.m_bRequiresWhitelist)
 		{
