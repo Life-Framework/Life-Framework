@@ -46,7 +46,7 @@ FrameWidgetClass {
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
      FontProperties FontProperties "{7312404EB5204D54}" {
-      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     TextWidgetClass "{9036C67953B8EC27}" {
@@ -59,14 +59,14 @@ FrameWidgetClass {
       SizeY 100
       OffsetBottom -100
      }
-     Color 0.93 0.93 0.89 0.85
+     Color 0.93 0.93 0.89 0.93
      Text ""
      "Font Size" 120
      "Min Font Size" 24
      "Horizontal Alignment" Center
      "Vertical Alignment" Center
      FontProperties FontProperties "{CB2C51A40457F512}" {
-      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
      }
     }
     FrameWidgetClass "{6AE0E5F00DB3726A}" {

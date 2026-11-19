@@ -259,6 +259,32 @@
       "from": "Grid_hostel.layer",
       "wall": "+z",
       "floor": "f0"
+    },
+    {
+      "id": "hostel-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -2.25,
+        3.3,
+        6.03
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"hostel\"",
+            "m_vRimColor": "0.9 0.82 0.55",
+            "m_vPaintColor": "0.1 0.26 0.2",
+            "m_vTextColor": "0.96 0.93 0.82"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
     }
   ]
 }
