@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "roadfuel",
+  "slot": "fuel",
+  "building": "b02",
+  "kit": "roadfuel",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_roadfuel_fuel.layer",
+  "kinds": [
+    "RoadFuel"
+  ],
+  "rows": 3,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_roadfuel_fuel_Place"
+  },
+  "date": "2026-11-19"
+}
