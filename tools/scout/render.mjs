@@ -37,6 +37,21 @@ export function renderDossier(d) {
   L.push("");
   for (const n of d.terrain.notes ?? []) L.push(`- ${n}`);
   L.push("");
+  // Lakes and ponds (#3666): the ocean probe cannot see them, so they come from the dump's outlines.
+  if (d.water?.bodies?.length) {
+    L.push("## Water");
+    L.push("");
+    L.push(table(["Id", "Name", "Kind", "Centre x", "Centre z", "Area (m2)", "Surface y (m)", "From centre"], d.water.bodies.map((w) => [w.id, w.name, w.kind, w.cx, w.cz, w.area, w.surfaceY, `${w.distance} m`])));
+    L.push("");
+    if (d.water.shore?.length) {
+      L.push("Shore points (dry ground a step from the outline, facing the water):");
+      L.push("");
+      L.push(table(["Water", "x", "z", "Ground y (m)", "Faces", "Yaw", "From centre"], d.water.shore.map((s) => [s.water, s.x, s.z, s.y, s.facing, s.yaw, `${s.distance} m`])));
+      L.push("");
+    }
+    L.push(d.water.note);
+    L.push("");
+  }
 
   L.push("## Roads and junctions");
   L.push("");

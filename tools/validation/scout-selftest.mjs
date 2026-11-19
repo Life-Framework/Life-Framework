@@ -10,12 +10,13 @@
 // the top-view projector without the camera height (60 m view -> 132 m) failed "a point 10 m east lands 10 scale-px right of the centre";
 // labelPlan() grouping by slot instead of by building failed "a shared building is one label naming both slots";
 // blockNames() reading Texts at the same index as Ids failed "the string table's offset is found, not assumed".
+// red-proof: 2026-11-19 (#3666) against the old analyse.mjs (no lakeShapes, markLakes, waterBodies, onWater) the selftest could not load it ("does not provide an export named inPolygon"); the lake checks (waterShare rises, no plot on the lake, shore points dry, a lake-named spline is no road) exist only with the water probe.
 
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { scratchDir } from "../lib/scratch.mjs";
-import { analyse, catalogBuilding, compass, facing, footprint, inQuad, junctions, largestRect, rot, roadsIn } from "../scout/analyse.mjs";
+import { analyse, catalogBuilding, compass, facing, footprint, inPolygon, inQuad, isLakeShape, junctions, lakeShapes, largestRect, onWater, rot, roadsIn } from "../scout/analyse.mjs";
 import { catalogBuildings, matchByPrefab } from "../scout/catalog.mjs";
 import { formatDump, parseDump } from "../scout/dump.mjs";
 import { blockNames, buildEntries, kindOf, matchPlace, normalise, parseCoords, parseLocationPrefab, placesNear, stringBlock } from "../scout/gazetteer.mjs";
@@ -225,6 +226,26 @@ check("a plot names its nearest road and building", plots.every((p) => p.nearest
 const blocked = Array.from({ length: 6 }, (_, j) => Uint8Array.from({ length: 6 }, (_, i) => (i === 2 && j === 3 ? 1 : 0)));
 const lr = largestRect(blocked, 6);
 check("the largest rectangle skips a blocked cell", lr.w * lr.h === 18 && !(lr.i <= 2 && 2 < lr.i + lr.w && lr.j <= 3 && 3 < lr.j + lr.h));
+// ------------------------------------------------------------------ lakes and ponds (#3666)
+
+const lakeOutline = [[1030, 2030], [1070, 2030], [1070, 2062], [1030, 2062]];
+const lakeDump = parseDump(`${formatDump({ ...dump, waters: [{ cls: "SplineShapeEntity", name: "Lake_Test", points: lakeOutline.map(([x, z]) => [x, 207, z]) }] })}`);
+check("a W row is a water outline and survives format and parse", lakeDump.waters.length === 1 && lakeDump.waters[0].name === "Lake_Test" && lakeDump.waters[0].points.length === 4 && lakeDump.roads.length === 3);
+const aw = analyse(lakeDump, centre, 100, measured);
+check("the lake is a water body with its area, kind and surface", aw.water.bodies.length === 1 && aw.water.bodies[0].area === 1280 && aw.water.bodies[0].kind === "pond" && aw.water.bodies[0].surfaceY === 207 && aw.summary.waterBodies === 1);
+check("the sea-only probe read no lake, the outline does (waterShare rises)", aw.terrain.waterShare > a.terrain.waterShare);
+check("no free plot lies on the lake", aw.freePlots.plots.every((p) => !(Math.abs(p.x - 1050) < (p.width + 40) / 2 && Math.abs(p.z - 2046) < (p.depth + 32) / 2)) && onWater(aw.water.bodies, 1050, 2046)?.id === "w1" && onWater(aw.water.bodies, 1000, 2100) === null);
+check("shore points are dry, outside the outline, facing the water", aw.water.shore.length >= 2 && aw.water.shore.every((s) => !inPolygon(lakeOutline, s.x, s.z) && s.facing && Number.isFinite(s.yaw) && Number.isFinite(s.y)));
+check("a lake-named spline in an older dump is water, not a road, and the road ids keep their numbers", (() => {
+  const old = { ...dump, roads: [...dump.roads, { cls: "SplineShapeEntity", name: "Lake_Old", points: lakeOutline.map(([x, z]) => [x, 207, z]) }] };
+  const r = analyse(old, centre, 100, measured);
+  return r.roads.length === 3 && r.roads.every((x) => x.name !== "Lake_Old") && r.water.bodies.length === 1 && r.water.bodies[0].source === "named-spline" && r.roads.map((x) => x.id).join() === a.roads.map((x) => x.id).join();
+})());
+check("no outline, no water section content", a.water.bodies.length === 0 && a.water.shore.length === 0 && /no lake or pond outline/.test(a.water.note));
+check("the dossier carries the water and the markdown lists it", (() => {
+  const d = buildDossier({ target: { name: "Mini", key: null, kind: null, source: "coordinates", slug: "mini", x: 1000, y: null, z: 2000 }, radius: 100, analysis: aw, pictures: [], build: "t", world: "w", at: "2026-11-19", command: "c", nearby: [] });
+  return d.water.bodies.length === 1 && /## Water/.test(renderDossier(d)) && /Lake_Test/.test(renderDossier(d));
+})());
 check("no grid, no plots, and the note says why", /no ground grid/.test(analyse({ ...dump, grid: null }, centre, 100, measured).freePlots.note));
 
 // ------------------------------------------------------------------ the dossier

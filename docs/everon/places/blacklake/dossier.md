@@ -9,7 +9,7 @@ Generated 2026-11-19 by `tools\cli scout`. Do not edit by hand; run `tools\cli s
 
 ## At a glance
 
-0 buildings (0 homes, 0 civic, 0 ruins), 0 enterable (a door entity below them), 0 entrances from outside among 0 door entities; 4 road(s), 1 junction(s); 0 notable props; 0 trees, bushes and other generated vegetation; 8 free plot(s).
+0 buildings (0 homes, 0 civic, 0 ruins), 0 enterable (a door entity below them), 0 entrances from outside among 0 door entities; 3 road(s), 1 junction(s); 0 notable props; 0 trees, bushes and other generated vegetation; 8 free plot(s).
 
 _none_
 
@@ -27,23 +27,38 @@ _none_
 
 ## Terrain
 
-- ground 204.4 to 228.9 m (24.4 m of relief) within 120 m; mean 212.7 m
-- 7% of the ground is under 3 degrees, 34% 3 to 8, 15% over 15
-- overall the ground falls 1.9 degrees toward the S
+- ground 207.3 to 228.9 m (21.5 m of relief) within 120 m; mean 214.3 m
+- 4% of the ground is under 3 degrees, 28% 3 to 8, 17% over 15
+- overall the ground falls 1.4 degrees toward the S
 - steepest ground 32.1 degrees at 9372.5, 3092.7
+- open water (the sea or a lake) is 0 m away to the N (21% of the circle is water)
+
+## Water
+
+| Id | Name | Kind | Centre x | Centre z | Area (m2) | Surface y (m) | From centre |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| w1 | Lake_Durras | lake | 9478.9 | 3023.1 | 9351 | 207.4 | 24.8 m |
+
+Shore points (dry ground a step from the outline, facing the water):
+
+| Water | x | z | Ground y (m) | Faces | Yaw | From centre |
+| --- | --- | --- | --- | --- | --- | --- |
+| w1 | 9517.9 | 3042 | 208.2 | SW | 244 | 35.9 m |
+| w1 | 9512.1 | 3077.4 | 208 | SW | 211 | 41.9 m |
+| w1 | 9463.3 | 3085.2 | 207.9 | S | 166 | 42.1 m |
+| w1 | 9434.7 | 3049.8 | 211.2 | SE | 121 | 47.9 m |
+| w1 | 9519 | 2997 | 208.5 | NW | 303 | 62.5 m |
+| w1 | 9457.6 | 2971.3 | 208.4 | N | 22 | 80.3 m |
+
+lakes and ponds are the closed outlines of the dump's water shapes (the sea probe cannot see them); the grid, the terrain share and the free plots count the cells inside them as water. Shore points are dry ground 2.5 m outside an outline, not checked against trees or props
 
 ## Roads and junctions
 
-**Main street:** Lake_Durras, 0 buildings within 25 m of it; its busiest stretch is at x 9516, z 3044.6.
-
-![Lake_Durras (N-S), looking along it](img/main-street-wide.jpg)
-
-![from the east](img/main-street-ob090.jpg)
+**Main street:** NW-SE road r04, 0 buildings within 25 m of it; its busiest stretch is at x 9441.6, z 2965.4.
 
 | Id | Road | Length in radius (m) | Points |
 | --- | --- | --- | --- |
 | r01 | NW-SE road r01 | 138.8 | 7 |
-| r03 | Lake_Durras | 346.5 | 11 |
 | r04 | NW-SE road r04 | 162.8 | 7 |
 | r05 | NE-SW road r05 | 20.5 | 2 |
 
@@ -71,14 +86,14 @@ _none_
 
 | Id | x | z | Size (m) | Area (m2) | Ground (m) | Nearest road | Nearest building | From centre |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| p1 | 9481.5 | 3027.7 | 54 x 88 | 4752 | 204.4 to 208 | Lake_Durras 32.8 m | - | 20 m |
-| p2 | 9553.5 | 3075.7 | 62 x 40 | 2480 | 208.6 to 216.8 | Lake_Durras 36.8 m | - | 76.3 m |
-| p3 | 9527.5 | 3125.7 | 46 x 40 | 1840 | 210.4 to 217.5 | Lake_Durras 47.6 m | - | 90 m |
-| p4 | 9402.5 | 3069.7 | 36 x 40 | 1440 | 216.5 to 220.1 | Lake_Durras 39.6 m | - | 83 m |
-| p5 | 9427.5 | 3105.7 | 46 x 20 | 920 | 212.5 to 219.7 | Lake_Durras 38.8 m | - | 79.9 m |
-| p6 | 9485.5 | 3111.7 | 30 x 28 | 840 | 208.1 to 211.9 | Lake_Durras 17.8 m | - | 64.1 m |
-| p7 | 9529.5 | 2989.7 | 10 x 80 | 800 | 209.4 to 212.4 | Lake_Durras 10.7 m | - | 74.7 m |
-| p8 | 9495.5 | 2972.7 | 42 x 18 | 756 | 205.7 to 208.4 | Lake_Durras 16.7 m | - | 76.1 m |
+| p1 | 9552.5 | 3075.7 | 64 x 40 | 2560 | 208.3 to 216.8 | NW-SE road r04 144.4 m | - | 75.4 m |
+| p2 | 9527.5 | 3125.7 | 46 x 40 | 1840 | 210.4 to 217.5 | NW-SE road r04 181.8 m | - | 90 m |
+| p3 | 9402.5 | 3069.7 | 36 x 40 | 1440 | 216.5 to 220.1 | NW-SE road r01 54.2 m | - | 83 m |
+| p4 | 9527.5 | 2989.7 | 14 x 80 | 1120 | 208.8 to 212.4 | NW-SE road r04 54.9 m | - | 73.4 m |
+| p5 | 9427.5 | 3105.7 | 46 x 20 | 920 | 212.5 to 219.7 | NW-SE road r01 97.2 m | - | 79.9 m |
+| p6 | 9485.5 | 3110.7 | 30 x 30 | 900 | 208.1 to 211.9 | NW-SE road r01 145.5 m | - | 63.1 m |
+| p7 | 9387.5 | 3036.7 | 26 x 22 | 572 | 213.3 to 217.4 | NW-SE road r01 22.7 m | - | 95.6 m |
+| p8 | 9450.5 | 2942.7 | 28 x 14 | 392 | 209.1 to 210.6 | NW-SE road r04 16.3 m | - | 109.8 m |
 
 plots are open rectangles at least 10 m on the short side, kept 2.5 m off buildings, 4.5 m off a road's centre line, 2 m off a tree, on ground under 12 degrees; axis aligned, not the best use of the land
 

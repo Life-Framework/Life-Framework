@@ -32,6 +32,7 @@ import { deflateSync, inflateSync } from "node:zlib";
 import { quietSpawn } from "../lib/quiet-launch.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { townWorld } from "../lib/addons.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
 import { GRID_WORLD, ISLAND_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor, islandLayersDir } from "../lib/worlds.mjs";
 import { PLACE_RX, resolvePlace } from "./look-place.mjs";
@@ -1070,6 +1071,22 @@ export async function selftest() {
       ok(board.front === 0, `a building with no known entrance faces its yaw (+z at yaw 0), got ${board.front}`);
       ok(worldOfAreas([arr]) === "Worlds/MainWorld/MainWorld.ent" && planText(shotsFor(arr, [], { close: 0 }), [arr]).startsWith("world Worlds/MainWorld/MainWorld.ent\n"), "a place: plan must open the pack's MainWorld");
       ok(/ - 2014 /.test(shotsFor(arr, [], { close: 0 })[0].line), "a place: wide must take its ground height from the terrain (ty -)");
+      // A slot whose kit lies outside its host's frame (the pond, 62 m from the barn it anchors on) is framed on its rows (#3666).
+      // red-proof: 2026-11-19 with frameRows() absent the arrival area stayed on the host and the far rows were never in a picture ("a far kit row must be in the frame").
+      {
+        const { frameRows, layerRows } = await import("./look-place.mjs");
+        const far = placeArea(placeData, "sample-square", "arrival", undefined, null, [[1012 + 70, 2014 + 4], [1012 + 83, 2014 + 4]]);
+        ok(Math.hypot(1012 + 83 - far.x, 2018 - far.z) <= far.radius - 4 && Math.hypot(1012 + 70 - far.x, 2018 - far.z) <= far.radius - 4 && far.x > 1012 + 60, `a far kit row must be in the frame: ${JSON.stringify(far)}`);
+        const near = placeArea(placeData, "sample-square", "arrival", undefined, null, [[1012 + 2, 2014 + 1]]);
+        ok(near.x === arr.x && near.z === arr.z && near.radius === arr.radius, "rows inside the host's frame must leave the host's own view");
+        ok(frameRows([], { x: 0, z: 0 }, 10) === null && frameRows([[500, 0], [1000, 0]], { x: 0, z: 0 }, 10).radius === 90, "no rows frame nothing, and the frame is capped at 90 m");
+        const dir = scratchDir("lf-lookrows-");
+        const layerDir = join(dir, "addons", "LF_Everon1989", "Worlds", "MainWorld", "MainWorld_Layers");
+        mkdirSync(layerDir, { recursive: true });
+        writeFileSync(join(layerDir, "Place_p_s.layer"), 'GenericEntity Fit_p_s_Place {\n coords 1 2 3\n}\nGenericEntity Fit_p_s_spot : "{E8C5BD1716B703E0}Prefabs/X.et" {\n components {\n }\n coords 40.5 12.5 90.25\n angleY -156\n}\n');
+        const rows = layerRows(dir, "p", "s");
+        ok(rows.length === 1 && rows[0][0] === 40.5 && rows[0][1] === 90.25 && layerRows(dir, "p", "none").length === 0, `layerRows read ${JSON.stringify(rows)}: the place marker is not a kit row`);
+      }
       const inside = resolveInterior(arr, "auto");
       ok(inside.interior && inside.y === 12.4 && inside.x === 1012 && inside.radius >= 4 && inside.radius <= 8, `--interior auto: ${JSON.stringify(inside)}`);
       let refused = 0;
