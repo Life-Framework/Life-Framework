@@ -266,6 +266,22 @@
       "floor": "f0"
     },
     {
+      "id": "lot-display-uaz452",
+      "name": "Lot_Display_uaz452",
+      "prefab": "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.2,
+        -1.1,
+        6.4
+      ],
+      "yaw": 160,
+      "class": "Vehicle",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "id": "vehicle-lot-sign",
       "name": "Sign_VehicleLot",
       "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
