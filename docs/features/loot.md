@@ -11,3 +11,12 @@
   filled. An empty, zero-weight or otherwise bad table logs `LF_Debug.Error("Loot", ...)` and rolls nothing.
 - Nothing in the world reads it yet: tagged containers, fill on first open and the saved fill time are the next
   slices of #1020. Proof: `LF_Test_LootRules` (`loot/rules`).
+
+### `LF_LootContainerComponent`, `LF_LootSearchAction` — `Feature/Loot/` (2026-11-19, #3343, framework #1020)
+- 🟡 A prop with `LF_LootContainerComponent` (`m_sKind` names its table) is searched with a short held "Search"
+  (3 s). The first search fills its storage on the server from the table; it then opens as normal storage through
+  "Open crate". The core ships `Prefabs/Props/Loot/LF_LootCrate.et` (kind `crate`).
+- 🟡 An emptied container refills on the next search once the table's refill time has passed; while it still holds
+  items, or inside the cooldown, a search adds nothing (a toast says so, with the minutes left). Two searches at
+  once fill it once. Nothing is saved: a restart leaves every container unsearched. Proof: `LF_Test_LootContainer`
+  (`loot/container`); picture: `look grid:loot`.
