@@ -9,13 +9,18 @@
 //   3. a failure that printed something (a bad ref) is NOT retried: the stub counts its runs;
 //   4. a failure whose output was not captured (stdio ignore) and a spawn error are not retried either;
 //   5. runGit (selftest-git.mjs) rides the same hook, and the merge driver's runBounded retries a silent git
-//      failure but not another command.
+//      failure but not another command;
+//   6. a probe's silent exit 1 (`rev-parse -q --verify` of an absent ref, `cat-file -e`, `config --get`, `show-ref
+//      -q`, or any call marked `expectExit: [1]`) returns at once: one run, no backoff, no SILENT-GIT line; a
+//      probe that dies another way is still re-run.
+// red-proof (2026-11-19, case 6): without expectExit the probes ran three times behind a 450 ms backoff and printed
+//   "SILENT-GIT lf-git: git rev-parse -q --verify failed 3 times" (the CI log of main run 19f958076).
 // red-proof (2026-11-19): with the retry loop cut to one attempt this selftest FAILS on cases 1, 3 and 5 ("1 silent
 //   failure(s) were not retried to a pass", "a silent failure ran 1 times, expected 3", runGit and the merge driver's
 //   runner likewise); with the loop in it passes. A helper that retried every failure fails case 3 (stub ran 3, not 1).
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { GIT_ATTEMPTS, FAIL_SILENTLY_ENV, describeRun, execGit, gitSync, spawnRetrying } from "../lib/git-retry.mjs";
+import { GIT_ATTEMPTS, FAIL_SILENTLY_ENV, describeRun, execGit, expectedGitExits, gitSync, spawnRetrying } from "../lib/git-retry.mjs";
 import { runBounded } from "../merge/regen-generated.mjs";
 import { removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -120,6 +125,46 @@ process.exit(1);
   inject(0);
   const driverStub = quietly(() => runBounded("stub", process.execPath, [stub, "quiet"], { cwd: root }, 20000));
   check(driverStub.status === 1 && runs() === 1, `the merge driver's runner retried a command that is not git (${runs()} runs)`);
+  // 6. A probe's silent "no" (exit 1) is an answer: returned at once, never re-run, never a SILENT-GIT line
+  //    (main run 19f958076: `rev-parse -q --verify MERGE_HEAD` ran three times and was logged as a failure).
+  inject(0);
+  const probeRepo = join(root, "probe");
+  mkdirSync(probeRepo);
+  quietly(() => gitSync(["init", "-q"], { cwd: probeRepo, windowsHide: true, encoding: "utf8" }));
+  quietly(() => gitSync(["commit", "-q", "--allow-empty", "-m", "base"], { cwd: probeRepo, windowsHide: true, encoding: "utf8" }));
+  const probes = [
+    ["rev-parse", "-q", "--verify", "refs/heads/lf-nope"],
+    ["rev-parse", "--verify", "--quiet", "MERGE_HEAD"],
+    ["cat-file", "-e", "0000000000000000000000000000000000000001"],
+    ["config", "--get", "lf.nothing"],
+    ["show-ref", "--verify", "-q", "refs/heads/lf-nope"],
+  ];
+  for (const args of probes) {
+    seen.length = 0;
+    const started = Date.now();
+    const r = quietly(() => gitSync(args, { cwd: probeRepo, windowsHide: true, encoding: "utf8" }));
+    const viaRunGit = quietly(() => runGit(probeRepo, args));
+    check(r.status === 1 && !r.silentFailure, `probe git ${args.join(" ")} did not come back as a plain exit 1: ${describeRun(r)}`);
+    check(!seen.some((l) => l.includes("SILENT-GIT")), `probe git ${args.join(" ")} printed a SILENT-GIT line: ${seen.join(" | ")}`);
+    check(viaRunGit.status === 1 && !viaRunGit.silentFailure, `runGit of probe git ${args.join(" ")} did not come back as a plain exit 1: ${describeRun(viaRunGit)}`);
+    check(Date.now() - started < 400, `probe git ${args.join(" ")} was re-run with a backoff (${Date.now() - started} ms)`);
+  }
+  // The same probe through the retry counts its runs: a stub that exits 1 silently runs once under expectExit [1].
+  writeFileSync(counter, "");
+  const expected = quietly(() => spawnRetrying(process.execPath, [stub, "quiet"], { encoding: "utf8", windowsHide: true }, { expectExit: [1] }));
+  check(expected.status === 1 && runs() === 1 && !expected.silentFailure, `expectExit [1] ran the stub ${runs()} times, expected 1`);
+  // A probe that dies another way (exit 2 here) is still re-run: only the exit it uses for "no" is an answer.
+  writeFileSync(counter, "");
+  const stub2 = join(root, "stub2.mjs");
+  writeFileSync(stub2, `import { appendFileSync } from "node:fs";
+appendFileSync(${JSON.stringify(counter)}, "x");
+process.exit(2);
+`);
+  const other = quietly(() => spawnRetrying(process.execPath, [stub2], { encoding: "utf8", windowsHide: true }, { expectExit: [1] }));
+  check(other.status === 2 && runs() === GIT_ATTEMPTS, `a probe's exit 2 ran ${runs()} times, expected ${GIT_ATTEMPTS}`);
+  // expectedGitExits knows the probes and leaves the real commands alone.
+  check(expectedGitExits(["-C", "x", "rev-parse", "-q", "--verify", "r"]).join() === "1", "expectedGitExits missed rev-parse -q --verify behind -C");
+  check(expectedGitExits(["rev-parse", "HEAD"]).length === 0 && expectedGitExits(["commit", "-q", "-m", "x"]).length === 0 && expectedGitExits(["init", "-q"]).length === 0, "expectedGitExits treated a plain command as a probe");
 } catch (e) {
   failures.push(`selftest threw: ${e.stack || e.message}`);
 } finally {

@@ -96,7 +96,13 @@ try {
     console.error = (...a) => seen.push(a.join(" "));
     let real, flaky;
     try {
-      real = runGit(repo, ["rev-parse", "-q", "--verify", "refs/heads/lf-nope"], { retries: 1 });
+      // (a probe's silent exit 1, such as `rev-parse -q --verify` of a missing ref, is an answer since #3616's
+      // expectExit; the stub stands in for a call that must have printed something)
+      const dead = join(root, "dead.mjs");
+      writeFileSync(dead, "process.exit(1);\n");
+      real = runGit(repo, [], { retries: 1, command: [process.execPath, dead] });
+      const probe = runGit(repo, ["rev-parse", "-q", "--verify", "refs/heads/lf-nope"], { retries: 1 });
+      check(probe.status === 1 && !probe.silentFailure, `a probe's silent exit 1 was reported as a failure: ${describeRun(probe)}`);
       const flag = join(root, "flaky.flag");
       const script = join(root, "flaky.mjs");
       writeFileSync(script, `import { existsSync, writeFileSync } from "node:fs";

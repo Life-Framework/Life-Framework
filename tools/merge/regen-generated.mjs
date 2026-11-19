@@ -12,7 +12,7 @@ import { appendFileSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readd
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { GIT_ATTEMPTS, spawnRetrying } from "../lib/git-retry.mjs";
+import { GIT_ATTEMPTS, expectedGitExits, spawnRetrying } from "../lib/git-retry.mjs";
 import { mergeStringTables } from "./union-string-table.mjs";
 
 // The core's string table and each pack's (#325): the driver unions every one, then regenerates all confs.
@@ -54,7 +54,7 @@ export function runBounded(step, command, args, options, defaultMs, overrideName
     stdio: [options.input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
     timeout: limit,
     killSignal: "SIGKILL",
-  }, { attempts: command === "git" ? GIT_ATTEMPTS : 1, label: step });
+  }, { attempts: command === "git" ? GIT_ATTEMPTS : 1, label: step, expectExit: command === "git" ? expectedGitExits(args) : [] });
   if (process.env.LF_MERGE_DRIVER_TRACE) {
     try {
       appendFileSync(process.env.LF_MERGE_DRIVER_TRACE, `${Date.now() - started} ${step}\n`);
