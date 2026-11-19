@@ -24,3 +24,20 @@ holstered, the hands are busy and a gadget in the hands replicates natively, lat
 - **Refusals** (each logs `[LFDebug:Carry]`): no profile, carrier down, a load already carried, the item
   already in a slot, out of reach, no hand-carry storage.
 - **Proof:** `carry/shoulder-carry` (WORLD), `node agent-box/session.mjs shoulder-carry`.
+
+## Truck cargo bed (#3265)
+
+- **Player sees:** a hauler walks to the tailgate carrying a log and presses F (*Load onto the truck*): the log leaves
+  the shoulder and joins a stack of logs on the bed, drawn on every machine, a late joiner included. F again with free
+  hands (*Unload onto your shoulder*) takes the top log back. A full bed or a car says so in a toast.
+- **Owner and side:** the server owns the stack. `LF_CargoBedComponent` on the vehicle holds one kind index per unit
+  (softwood log 1, hardwood log 2; ore sack 1 and crate 2 have rows but no prefab yet) and replicates it as one short
+  string through `RpcDo_SetStack` and `RplSave`/`RplLoad`. Every client draws physics-free local copies on bed slots
+  (the `LF_FarmPlotComponent` pattern). Rules: `LF_CargoBed` (`DecideLoad`, `Pack`/`Unpack`). Nothing persists (#3266).
+- **Data:** capacity and layout are attributes on the vehicle `.et` (1989 truck `EL_M923A1_transport` 12, vans
+  `EL_UAZ452_base` and `EL_S1203_transport_beige` 6, a car none). The tailgate is a `lf_cargo` action context.
+  Bed positions on the vans are estimates; the truck's come from its measured bounds.
+- **Hauling gate:** both log prefabs now inherit `ShoulderCarryItem_Base`, so F hoists (no vanilla pick-up), and
+  `LF_CargoHaulingGate` refuses the inventory screen's `InsertItem` of a log into anything but the hand-carry slot.
+  Scripted inserts (`AddAmount`, used by the sawmill chain and its tests) are unchanged until a carried-log sawmill card.
+- **Proof:** `carry/cargo-bed` (WORLD), `node agent-box/session.mjs cargo-bed`.
