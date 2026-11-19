@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{7B4E0C91A2D63F58}UI/Layouts/HUD/Crime/LF_HandsUpPrompt.layout"
+ Configurations {
+  LayoutResourceClass PC {
+  }
+  LayoutResourceClass XBOX_ONE : PC {
+  }
+  LayoutResourceClass XBOX_SERIES : PC {
+  }
+  LayoutResourceClass PS4 : PC {
+  }
+  LayoutResourceClass PS5 : PC {
+  }
+  LayoutResourceClass HEADLESS : PC {
+  }
+ }
+}
