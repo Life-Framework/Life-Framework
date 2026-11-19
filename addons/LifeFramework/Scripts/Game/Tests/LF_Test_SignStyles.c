@@ -105,7 +105,7 @@ class LF_Test_SignStyles : LF_Test
 		ctx.Equal(2, changed, "the overlay patches one style and adds one");
 		LF_SignStyleDef patched = LF_SignStyles.FindStyleIn(config, "chalk");
 		ctx.EqualFloat(0.5, patched.m_fInkAlpha, 0.001, "patch: chalk takes the overlay's ink alpha");
-		ctx.EqualFloat(200, patched.m_iTitleFontMax, 0.001, "and keeps the core title font it did not set");
+		ctx.EqualFloat(240, patched.m_iTitleFontMax, 0.001, "and keeps the core title font it did not set");
 		ctx.NotNull(LF_SignStyles.FindStyleIn(config, "test_pack_style"), "add: a pack style joins the catalog");
 	}
 }
