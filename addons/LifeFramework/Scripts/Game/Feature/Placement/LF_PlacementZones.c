@@ -233,7 +233,7 @@ class LF_PlacementZones
 	static bool GatherPlot(vector at, string characterKey, notnull array<string> heldKeys, notnull LF_PlacementWhoFacts facts)
 	{
 		LF_BuildSiteComponent site = FinishedPlotAt(at);
-		if (!site)
+		if (!site || HouseNearerThanPlot(at, site))
 			return false;
 
 		string plotKey = site.GetSiteKey();
@@ -248,6 +248,28 @@ class LF_PlacementZones
 			facts.m_bHouseOwner = true;
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a live house's origin lies nearer `at` than the site's shell origin: the spot is in that
+	//! house, not the plot, so a cottage built beside a neighbour's house does not claim it. Houses pick the
+	//! nearest origin the same way (FillHouseNearest). The live table is filled on the server only, so a
+	//! client keeps the plot and the server's Confirm decides.
+	static bool HouseNearerThanPlot(vector at, notnull LF_BuildSiteComponent site)
+	{
+		vector shell = site.GetShellOrigin();
+		float plotDistance = vector.Distance(Vector(at[0], 0, at[2]), Vector(shell[0], 0, shell[2]));
+		map<string, LF_HouseManagerComponent> live = LF_HouseManagerComponent.Live();
+		foreach (string id, LF_HouseManagerComponent house : live)
+		{
+			if (!house || !house.GetOwner())
+				continue;
+
+			if (vector.Distance(at, house.GetOwner().GetOrigin()) < plotDistance)
+				return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------

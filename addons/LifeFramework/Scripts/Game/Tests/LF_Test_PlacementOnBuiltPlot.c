@@ -1,4 +1,4 @@
-// red-proof: 2026-11-19 `tools\cli test --no-build --red LF_Test_PlacementOnBuiltPlot` printed RED PROOF OK: with the hook on the plot stays unfinished (as every plot reads on main, where only LF_HouseManagerComponent houses count), so `a key holder places inside the cottage (expected '', got 'is not inside a property (no house within 30 m of the spot, zone OWNED_PROPERTY)')`.
+// red-proof: 2026-11-19 `tools\cli test --no-build --red LF_Test_PlacementOnBuiltPlot` printed RED PROOF OK: with the hook on the plot stays unfinished (as every plot reads on main, where only LF_HouseManagerComponent houses count), so `a key holder places inside the cottage (expected '', got 'is not inside a property (no house within 30 m of the spot, zone OWNED_PROPERTY)')`. Review fix 2026-11-19: case 7 (a neighbour house 6 m from the shell) failed on the PR head with `expected 'lf-test-build-neighbour-house', got 'plot-a'` and passes with HouseNearerThanPlot.
 //! placement/on-built-plot (#3173): furniture goes down inside the cottage a player built. plot-a's sign is
 //! spawned beside a fixture character and every stage of its tier is marked built. A spot within
 //! LF_PlacementZones.PLOT_RADIUS_M of the shell's origin is the plot: its owner may place there (zone
@@ -14,6 +14,8 @@ class LF_Test_PlacementOnBuiltPlot : LF_Test
 	protected static const string FRIEND = "lf-test-build-friend";
 	protected static const string STRANGER = "lf-test-build-stranger";
 	protected static const string NEW_OWNER = "lf-test-build-new-owner";
+	protected static const string NEIGHBOUR_HOUSE = "lf-test-build-neighbour-house";
+	protected static const ResourceName BUILDING = "{74676598DF38F201}Prefabs/Structures/Core/EL_Building_Base.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -116,7 +118,39 @@ class LF_Test_PlacementOnBuiltPlot : LF_Test
 		ctx.False(Where(inside, OWNER, noKeys, houseId).IsEmpty(), "the old owner is refused at once");
 		ctx.EqualStr("", Where(inside, NEW_OWNER, noKeys, houseId), "the new owner places");
 
+		// 7. A neighbour's house beside the cottage stays the neighbour's: a spot nearer its origin than the
+		// shell's is that house, so the plot owner cannot furnish it.
+		RunNeighbourHouse(ctx, shell, inside);
+
 		Cleanup(character, sign, before);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RunNeighbourHouse(LF_TestContext ctx, vector shell, vector inside)
+	{
+		array<ref LF_HouseLockRecord> houses = LF_Houses.ExportAll();
+		LF_Houses.ApplyAll(null);
+		IEntity building = LF_Utils.SpawnEntityPrefab(BUILDING, shell + "6 0 0");
+		LF_HouseManagerComponent house;
+		if (building)
+			house = LF_Component<LF_HouseManagerComponent>.Find(building);
+
+		ctx.NotNull(house, "the neighbour's house spawns with a house manager");
+		if (house)
+		{
+			ctx.True(house.BindIdentifier(NEIGHBOUR_HOUSE), "the neighbour's house is bound");
+			house.SetOwner(STRANGER);
+			array<string> noKeys = {};
+			string houseId;
+			string why = Where(building.GetOrigin(), NEW_OWNER, noKeys, houseId);
+			ctx.EqualStr(NEIGHBOUR_HOUSE, houseId, "a spot in the neighbour's house within the plot radius is the neighbour's house");
+			ctx.False(why.IsEmpty(), "the plot owner is refused in the neighbour's house: " + why);
+			ctx.EqualStr("", Where(inside, NEW_OWNER, noKeys, houseId), "the cottage itself is still the plot");
+			ctx.EqualStr(PLOT, houseId, "the spot inside the shell is still the plot");
+		}
+
+		LF_TestCharacterFixture.Delete(building);
+		LF_Houses.ApplyAll(houses);
 	}
 
 	//------------------------------------------------------------------------------------------------
