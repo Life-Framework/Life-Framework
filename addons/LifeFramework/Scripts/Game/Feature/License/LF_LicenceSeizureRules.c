@@ -40,7 +40,7 @@ class LF_LicenceSeizureRules
 {
 	static const ResourceName CONFIG_PATH = "{AAE3CE9E3D8CA45A}Configs/Crime/LF_LicenceSeizure.conf";
 	static const string FEATURE = "License";
-	static const string SECTION = "licenceSeizure";
+	static const string OVERLAY_NAME = "licenceSeizure";	// pack overlays only: no owner config.json section
 	static const int BAN_DAYS_MAX = 3650;	// lf-fixed: the schema limit, mirrors the attribute params
 
 	[Attribute("", UIWidgets.Object, "Seizure rules, keyed by crime id")]
@@ -89,7 +89,7 @@ class LF_LicenceSeizureRules
 
 		array<ref Resource> resources = {};
 		array<ResourceName> names = {};
-		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_LicenceSeizureRules, SECTION, resources, names);
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_LicenceSeizureRules, OVERLAY_NAME, resources, names);
 		LF_ConfigClaims claims = new LF_ConfigClaims();
 		LF_LicenceSeizureList list = new LF_LicenceSeizureList(this);
 		foreach (int i, Resource resource : resources)
