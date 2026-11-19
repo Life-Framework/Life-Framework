@@ -69,6 +69,9 @@ class LF_ResourceMachineDef
 
 	[Attribute("1", UIWidgets.Auto, "Whole batches one interaction runs at most, as far as the inventory covers them (#3226)")]
 	int m_iMaxBatches;
+
+	[Attribute("0", UIWidgets.Auto, "Seconds a run takes: the inputs go in, the outputs drop at the machine after the delay, one run at a time per machine. 0: instant (#3229)")]
+	int m_iProcessSeconds;
 }
 
 //------------------------------------------------------------------------------------------------

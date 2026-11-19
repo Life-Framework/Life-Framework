@@ -10718,6 +10718,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Officer's trousers"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
     }
+    CustomStringTableItem "{3A7C91E05B2D4F68}" {
+     Id "LF-Process_Busy"
+     Target_en_us "Still running. Wait for it to finish."
+     Comment "Processing refused (#3229): a timed machine already has a run under way."
+    }
     CustomStringTableItem "{4140D26F74D7F5F3}" {
      Id "LF-Process_Needs"
      Target_en_us "Needs %1"
@@ -10727,6 +10732,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Process_NoItems"
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
+    }
+    CustomStringTableItem "{9D4E21B7C0A35F86}" {
+     Id "LF-Process_Started"
+     Target_en_us "Running. The parts come out here in %1 seconds."
+     Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
      Id "LF-Property_Bought"
