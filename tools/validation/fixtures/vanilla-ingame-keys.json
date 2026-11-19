@@ -148,6 +148,11 @@
    "lf": "LF_OpenEmoteMenu",
    "key": "KC_F1",
    "reason": "Deliberately replaces the vanilla emote menu on the same key (same action role). Tracked on #2496."
+  },
+  {
+   "lf": "LF_ThrowHeld",
+   "key": "KC_G",
+   "reason": "Fires only with food or drink in the hands; vanilla G is HintDismiss, live only while the inventory screen is open."
   }
  ],
  "contexts": {

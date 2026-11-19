@@ -3095,6 +3095,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
     }
+    CustomStringTableItem "{4E1D7A30B6C2F907}" {
+     Id "LF-Consume_Keybind_Throw"
+     Target_en_us "Throw the food or drink in your hands"
+     Comment "Keybind menu entry for the throw action (default key G, with food or drink in the hands)."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F902}" {
+     Id "LF-Consume_Refused_Busy"
+     Target_en_us "You cannot do that right now."
+     Comment "Toast: eating, drinking or throwing refused, no better reason (not a character)."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F904}" {
+     Id "LF-Consume_Refused_Cuffed"
+     Target_en_us "You cannot eat or drink with your hands cuffed."
+     Comment "Toast: eating, drinking or throwing refused while restrained."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F903}" {
+     Id "LF-Consume_Refused_Down"
+     Target_en_us "You are in no state to eat or drink."
+     Comment "Toast: eating, drinking or throwing refused while dead, downed or knocked out."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F905}" {
+     Id "LF-Consume_Refused_Vehicle"
+     Target_en_us "Get out of the vehicle first."
+     Comment "Toast: eating, drinking or throwing refused while seated in a vehicle."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F906}" {
+     Id "LF-Consume_Refused_Water"
+     Target_en_us "You cannot eat or drink while swimming."
+     Comment "Toast: eating, drinking or throwing refused while swimming."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F901}" {
+     Id "LF-Consume_Title"
+     Target_en_us "Eating and drinking"
+     Comment "Toast title when eating, drinking or throwing food is refused."
+    }
     CustomStringTableItem "{5C1E7A3B90D24F68}" {
      Id "LF-Contraband_Cooldown"
      Target_en_us "Your crew needs a breather. Wait a few minutes before the next run."
