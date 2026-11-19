@@ -102,3 +102,21 @@
 
 ### The anniversary's voices (#3466, M8 arc 4 of #1039, 2026-11-19)
 - 🧪 The anniversary's spoken lines are recorded with ElevenLabs through `tools\cli asset dialogue`. The mayor (`anniversary_mayor`, voice "Henri", four lines) replaces the hand-written text-only conf with the generated `LF_Dialogue_AnniversaryMayor.conf`. Gaspard's two letter lines (`anniversary_letter_thanks`, `anniversary_letter_secret`, node and line ids with underscores because the tool refuses dots) are folded into the `old_man` spec and recorded into his `old_man_*.wav` set; the hand-written `LF_Dialogue_AnniversaryLetter.conf` overlay is gone (its replies are now `OldMan_SayHandIn` and `OldMan_SaySecret`). The priest's memorial speech is recorded as `anniversary_priest` (voice "JC", one line, `SOUND_DLG_ANNIVERSARY_PRIEST_MEMORIAL` in `Dialogue_anniversary_priest.acp`); nothing plays it yet, because the rite (`LF_EventMemorial`) shows the caption only, a follow-up card wires the event. Test: `everon/anniversary-letter`, `everon/anniversary-mayor`.
+
+### `LF_DialogueAudit` and the Everon townsfolk talks — `Feature/Dialogue/LF_DialogueAudit.c` (2026-11-19)
+- 🟡 Every NPC a player can walk up to on the island has a conversation of its own. The four island residents
+  (Helene Roux the teller, Pierre Vasseur of the general store, Anselme and Mireille Caron) left the core's neutral
+  "Resident" sheet (a greeting, then only "Goodbye") for their own pack dialogues (`resident_teller`,
+  `resident_store_clerk`, `resident_anselme`, `resident_mireille`: name, mood greetings, three topics). The scene
+  walkers had no talk at all: the square-evening and anniversary crowd now talk through `passerby` (pack children
+  `LF_Passerby_*.et` of the base game civilians), the relocated arrivals through `relocated_walker`, the dock
+  hands through `dockworker` (`LF_Dockworker_1..3.et`) and the raid gendarme through `gendarme`. All text only,
+  written in `tools/assets/dialogue/<id>/dialogue.json`; the index overlay is
+  `LF_DialogueIndex_OldMan/LF_DialogueIndex_Townsfolk.conf`.
+- Offline: `validate-dialogue-refs.mjs` (a world check) fails a `#LF-` key with no row, an unregistered dialogue id,
+  a broken node or reply, a talk action with no dialogue, a pack scene spawning a character nobody can talk to, a
+  pack NPC on a one-reply sheet, and an empty or placeholder sign title or unresolved placed sign id.
+  Red proof: `dialogue-refs-selftest.mjs`.
+- In a session: harness verb `talkaudit [radius]` counts, on the client, keys that show raw in every loaded
+  dialogue and role conversation, and NPCs nearby with no conversation or a one-reply greeting
+  (`[LFDebug:Dialogue] audit ...` lines, summary `text= notalk= thin=`).

@@ -28,6 +28,7 @@ class LF_WorkbenchPlay
 	protected static int s_iFastPlay = -1;
 	protected static bool s_bHeaderSearched;
 	protected static ref LF_MissionHeader s_FallbackHeader;
+	protected static string s_sSearchedWorld;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -35,6 +36,7 @@ class LF_WorkbenchPlay
 		s_iFastPlay = -1;
 		s_bHeaderSearched = false;
 		s_FallbackHeader = null;
+		s_sSearchedWorld = string.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -116,6 +118,11 @@ class LF_WorkbenchPlay
 
 		path.Replace("\\", "/");
 		path.ToLower();
+		// The World Editor names its world by absolute path (d:/.../addons/x/worlds/w/w.ent).
+		int worlds = path.LastIndexOf("worlds/");
+		if (worlds > 0)
+			path = path.Substring(worlds, path.Length() - worlds); // lf-bounded: a resource path
+
 		return path.Trim();
 	}
 
@@ -176,18 +183,45 @@ class LF_WorkbenchPlay
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Workbench play with no mission header: the header of the open world, found once among the
-	//! loaded addons' Missions/*.conf. Null outside Workbench, or when no header names this world.
+	//! The world being played, else the world open in the World Editor (an absolute path), else "".
+	static string OpenWorld()
+	{
+		string world;
+		if (GetGame())
+			world = GetGame().GetWorldFile();
+
+#ifdef WORKBENCH
+		if (world.IsEmpty())
+		{
+			WorldEditor editor = Workbench.GetModule(WorldEditor);
+			if (editor && editor.GetApi())
+				editor.GetApi().GetWorldPath(world);
+		}
+#endif
+		return world;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Workbench with no mission header (Play, or the World Editor itself): the header of the open
+	//! world, found once per world among the loaded addons' Missions/*.conf. Null outside Workbench,
+	//! or when no header lists an overlay. The editor case matters for the sign faces it draws: with no
+	//! header there, every pack-only sign read "has no titled entry in LF_Signs.conf" (2026-11-19).
 	static LF_MissionHeader FallbackHeader()
 	{
-		if (!IsWorkbench() || s_bHeaderSearched)
+		if (!IsWorkbench())
+			return null;
+
+		string openWorld = OpenWorld();
+		if (s_bHeaderSearched && NormalizeWorld(openWorld) == NormalizeWorld(s_sSearchedWorld))
 			return s_FallbackHeader;
 
 		// Asked before the world has loaded (no world file yet): try again on the next call.
-		if (!GetGame() || GetGame().GetWorldFile().IsEmpty())
+		if (openWorld.IsEmpty())
 			return null;
 
 		s_bHeaderSearched = true;
+		s_sSearchedWorld = openWorld;
+		s_FallbackHeader = null;
 
 		LF_WorkbenchHeaderSearch search = new LF_WorkbenchHeaderSearch();
 		search.Run();
@@ -206,17 +240,17 @@ class LF_WorkbenchPlay
 			overlayCounts.Insert(header.m_aLF_ConfigOverlays.Count());
 		}
 
-		int pick = PickFallbackHeader(worlds, overlayCounts, GetGame().GetWorldFile());
+		int pick = PickFallbackHeader(worlds, overlayCounts, openWorld);
 		if (pick < 0)
 		{
-			LF_Debug.Warn(FEATURE, string.Format("Workbench play with no mission header, and none of %1 mission header(s) (%2 LF) lists a pack overlay; no pack overlay loads, so the dialogue voices, signs and quiz are the core's (world %3)", search.m_aFound.Count(), headers.Count(), GetGame().GetWorldFile()));
+			LF_Debug.Warn(FEATURE, string.Format("Workbench play with no mission header, and none of %1 mission header(s) (%2 LF) lists a pack overlay; no pack overlay loads, so the dialogue voices, signs and quiz are the core's (world %3)", search.m_aFound.Count(), headers.Count(), openWorld));
 			return null;
 		}
 
 		s_FallbackHeader = headers[pick];
 		string forWorld = "for this world";
-		if (NormalizeWorld(worlds[pick]) != NormalizeWorld(GetGame().GetWorldFile()))
-			forWorld = "of the pack (no header for this world lists overlays: " + GetGame().GetWorldFile() + ")";
+		if (NormalizeWorld(worlds[pick]) != NormalizeWorld(openWorld))
+			forWorld = "of the pack (no header for this world lists overlays: " + openWorld + ")";
 
 		LF_Debug.Info(FEATURE, string.Format("Workbench play with no mission header: pack overlays come from the header %1 (%2 overlays)", forWorld, overlayCounts[pick]));
 		return s_FallbackHeader;

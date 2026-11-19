@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A145B08279F7DA9F}Configs/Dialogue/LF_Dialogue_ResidentAnselme.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

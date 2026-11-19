@@ -53,3 +53,9 @@ is the building's usable box; `building` records the vanilla villa it overrides.
 done with row id prefixes (`front-desk-*`, `cell-*`, `armoury-*`) and `--role`/`--verb` overrides. Anything the
 format cannot say yet goes in a new optional field of `anchoring` (not a new top-level key), and
 `checkKit` in `kit.mjs` gets the matching check.
+
+## Proving a kit in a grid claim
+
+`node tools/town/kit-grid.mjs put <kit> <grid-slug> <x> <z> [yaw] [--skip=id,id]` writes a kit's rows into a claim's layer
+(`clear` removes them), classes read from the prefabs; follow with `place settle` and `look grid:<slug>` (#3857). Row sizes
+come from `place bounds`: a `GravelPile_01_large` is 12 x 12 m and `Mine_01_cart_*` sits 0.33 m above its pivot (settle sinks it).
