@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "kind": "hilltopmast",
+  "about": "A radio mast on a hilltop with one road up and a relay hut at its foot: the hut is a contested site's hideout door. One slot, no sign and no map marker. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "a", "required": true, "kit": "hilltop-mast", "host": "building", "poi": "none", "margin": 24,
+      "needs": { "interior": "optional", "minArea": 15, "prefer": "far", "types": ["industrial", "shed"] },
+      "places": ["HilltopMast"]
+    }
+  ]
+}

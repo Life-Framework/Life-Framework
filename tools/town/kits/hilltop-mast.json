@@ -1,0 +1,185 @@
+{
+  "schema": 1,
+  "kit": "hilltop-mast",
+  "system": "sites",
+  "source": {
+    "file": "tools/town/kits/sources/hilltop-mast.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -3.4,
+        3.2
+      ],
+      "max": [
+        3.4,
+        9.2
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "A lone relay hut on a hilltop: the hut is the host and its door is the hideout door. Rows stand on the open ground in front of the door (z 3 to 9 m): the site marker 8 m out, the flag and the strongbox beside the path, a few crates and a barrel by the wall. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "door",
+      "name": "HilltopMast_Door",
+      "prefab": "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        0.6,
+        0,
+        3.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_LockComponent",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        },
+        {
+          "component": "LF_HideoutDoorComponent",
+          "set": {
+            "m_sHideoutId": "\"hilltop_mast\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
+    },
+    {
+      "id": "site",
+      "name": "HilltopMast_Site",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        8
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ContestedSiteComponent",
+          "set": {
+            "m_sHideoutId": "\"hilltop_mast\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "flag",
+      "name": "HilltopMast_Flag",
+      "prefab": "{DDE764E40C17C5DC}Prefabs/Sites/LF_SiteFlag.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -3.4,
+        0,
+        7
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SiteFlagComponent",
+          "set": {
+            "m_sHideoutId": "\"hilltop_mast\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "strongbox",
+      "name": "HilltopMast_Strongbox",
+      "prefab": "{28F82DEA95808829}Prefabs/Sites/LF_SiteStrongbox.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        3.4,
+        0,
+        5
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_SiteStrongboxComponent",
+          "set": {
+            "m_sHideoutId": "\"hilltop_mast\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "crate-1",
+      "name": "HilltopMast_Crate_1",
+      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.1,
+        0,
+        8.2
+      ],
+      "yaw": 20,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "crate-2",
+      "name": "HilltopMast_Crate_2",
+      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.1,
+        0,
+        9.2
+      ],
+      "yaw": -10,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel",
+      "name": "HilltopMast_Barrel",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.2,
+        0,
+        4.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
