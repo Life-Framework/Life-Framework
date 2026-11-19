@@ -1,0 +1,311 @@
+{
+  "schema": 1,
+  "kit": "wholesale",
+  "system": "market",
+  "source": {
+    "file": "tools/town/kits/wholesale.json",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{80A5B37A1472B084}Prefabs/Structures/Industrial/Garages/Garage_E_02/Garage_E_02.et"
+  },
+  "anchoring": {
+    "floorY": 0.1,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.1
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [-12.8, -8],
+      "max": [12.8, 9.4]
+    },
+    "front": "+z",
+    "counters": [
+      {
+        "id": "wholesale-counter",
+        "wall": "free",
+        "edgeGap": 4.5
+      }
+    ],
+    "adapt": "The harbour wholesale warehouse (Garage_E_02, 28 x 19 m, one big ground-floor hall with truck bays all round, a mezzanine over the east end that stays). The kit shows the same model as the host, so its offsets are in the building's own frame, front +z. The buyer's counter stands mid-hall facing the front bays, the clerk behind it and the chalk price board beside it; planks and logs stack along the west wall, ore bins and a barrel row along the back wall, cement and iron on pallets on the east side; work lights hang over the bays. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "wholesale-counter",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [0, 0.03, 4.5],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "wholesale-buyer",
+      "name": "Wholesale_Buyer",
+      "prefab": "{7C1E5A2D9B3F4608}Prefabs/Trader/LF_WholesaleBuyer_Everon1989.et",
+      "role": "interactable",
+      "verb": "on wholesale-counter",
+      "offset": [0, 1.07, 4.5],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [0, 0.03, 3.1],
+      "yaw": 0,
+      "name": "Wholesale_Clerk",
+      "class": "LF_NpcBaseEntity",
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "price-board",
+      "name": "Wholesale_PriceBoard",
+      "prefab": "{B47D2C9E5A1F8036}Prefabs/Props/Market/LF_PriceBoard.et",
+      "role": "board",
+      "verb": "on floor",
+      "offset": [-3.2, 0, 5.2],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "plank-pile-1",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [-11.4, 0.03, -2],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "plank-pile-2",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [-11.4, 0.03, 1.2],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "wood-pile-1",
+      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [-11.4, 0.03, 4.4],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "wood-pile-2",
+      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [-11.4, 0.03, -5.4],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "ore-bin-1",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [-7, 0.03, -7.3],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "ore-bin-2",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [-4.2, 0.03, -7.3],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "ore-bin-3",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [-1.4, 0.03, -7.3],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-1",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [1.8, 0.03, -7.5],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-2",
+      "prefab": "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [2.8, 0.03, -7.5],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cement-pallet-1",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [6.5, 0.03, -5.5],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cement-bag-1",
+      "prefab": "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et",
+      "role": "dressing",
+      "verb": "on cement-pallet-1",
+      "offset": [6.3, 0.2, -5.5],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cement-bag-2",
+      "prefab": "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et",
+      "role": "dressing",
+      "verb": "on cement-pallet-1",
+      "offset": [6.8, 0.2, -5.5],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cement-pallet-2",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [8.8, 0.03, -5.5],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cement-bag-3",
+      "prefab": "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et",
+      "role": "dressing",
+      "verb": "on cement-pallet-2",
+      "offset": [8.6, 0.2, -5.5],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "crate-1",
+      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [6.5, 0.03, 4],
+      "yaw": 20,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "crate-2",
+      "prefab": "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [7.9, 0.03, 4.4],
+      "yaw": -10,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "work-light-1",
+      "prefab": "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [-6, 3, 4],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "work-light-2",
+      "prefab": "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [4, 3, 4],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "work-light-3",
+      "prefab": "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [0, 3, -3],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-sign-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [0, 3.2, 9.3],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"wholesale\"",
+            "m_vRimColor": "0.85 0.72 0.3",
+            "m_vPaintColor": "0.16 0.2 0.18",
+            "m_vTextColor": "0.95 0.92 0.8"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+// Source of the `everon-sawmill` kit (tools/town/kits/everon-sawmill.json, #3271): the hardwood yard of the island's own sawmill.
+// Coordinates are in the host's frame (origin = the Sawmill_E_01 prefab origin, +z = its front, x to the right of it). The hall floor
+// is the host's own (y 0.07); the hall spans x -7.7..7.9, z -14.5..16. The two machines stand in the hall, the board stacks and the
+// workplace desk beside them; log decks, the sign and a net-fence run dress the yard outside the front end, with the
+// ground in front of the loading end left open for a truck to turn.
+GenericEntity Source_Sawmill_Saw_1 : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
+ coords -4.8 0 -8.5
+ angleY 0
+}
+GenericEntity Source_Sawmill_Saw_2 : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
+ coords -4.8 0 2.5
+ angleY 0
+}
+GenericEntity Source_Sawmill_Boards_1 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 5.2 0 -10.5
+ angleY 90
+}
+GenericEntity Source_Sawmill_Boards_2 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 5.2 0 -6
+ angleY 90
+}
+GenericEntity Source_Sawmill_Desk : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
+ components {
+  LF_WorkplaceComponent "{BB227AA77D72A6F6}" {
+   m_sJob "LUMBERJACK"
+   m_sPlaceId "everon_sawmill"
+  }
+ }
+ coords 6.9 0 9
+ angleY 270
+}
+GenericEntity Source_Sawmill_Deck_1 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords -11 0 22
+ angleY 90
+}
+GenericEntity Source_Sawmill_Deck_2 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords -11 0 27
+ angleY 90
+}
+GenericEntity Source_Sawmill_Boards_3 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 10.5 0 20
+ angleY 0
+}
+GenericEntity Source_Sawmill_Boards_4 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 10.5 0 25.2
+ angleY 0
+}
+GenericEntity Source_Sawmill_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{4B1D7E2A9C305F61}" {
+   m_sSignId "everon_sawmill"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.55 0.36 0.16
+   m_vTextColor 0.96 0.93 0.85
+  }
+ }
+ coords 3.5 0 18.5
+ angleY 0
+}
+GenericEntity Source_Sawmill_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -15 0 20
+ angleY 90
+}
+GenericEntity Source_Sawmill_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -15 0 24
+ angleY 90
+}
+GenericEntity Source_Sawmill_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -15 0 28
+ angleY 90
+}
+GenericEntity Source_Sawmill_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords -15 0 32
+ angleY 90
+}
+GenericEntity Source_Sawmill_Centre {
+ coords 0 0 0
+}

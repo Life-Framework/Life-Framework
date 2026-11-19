@@ -28,6 +28,12 @@ choice survive a restart.
   The owner key is never sent. The face is the core sign `plot_for_sale` (`Prefabs/Props/Property/LF_PlotSign.et`).
 - Finding plots (#2984): a sign for sale is an `LF_Places` place of kind `PlotForSale` (id = plot key) until the plot is
   owned; the core POI row draws it on the map and a town board card with place id `*` points at the nearest.
+- House purchase (#3207): `LF_HouseSaleComponent` on `Prefabs/Props/Property/LF_HouseSaleSign.et` names a house id; the price
+  and tier label are `LF_PropertyHouseDef` rows in `m_aHouses` (a pack prices houses by overlay, like plots). The request
+  (`RpcAsk_LF_BuyHouse`, `LF_HouseSaleRequest.c`) carries the used sign's house id; the server sells it only for a free,
+  conscious buyer with a sign of that id within 5 m, takes exactly the price (ledger `property_buy_house`), sets the owner
+  through `LF_Properties.SetOwner` and hands over a `HouseKeyItem` bound to the id. The sign replicates `m_bOwned` like
+  the plot sign and shows "Sold". A house id in `m_aHouses` is never a plot key (`RefuseHouseCollisions`).
 - Spawn house (#2651): "Make this my spawn" on the house door, owner only; `m_bOwnerSpawnsHere` on the row, one
   per owner, read by `LF_Properties.SpawnHouseOf` at login only.
 

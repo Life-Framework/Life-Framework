@@ -1,0 +1,115 @@
+GenericEntity Fit_saint_philippe_dock_wholesale_Place {
+ components {
+  LF_PlaceComponent "{500B4616C7A5EE08}" {
+   m_sKind "WholesaleCounter"
+   m_sId "saint-philippe-dock.wholesale"
+  }
+  LF_FittedBuildingComponent "{61395E448CB5BDAF}" {
+  }
+ }
+ coords 4472.1 5.9 11194.1
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_wholesale_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4467.606 5.83 11193.864
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_wholesale_buyer : "{7C1E5A2D9B3F4608}Prefabs/Trader/LF_WholesaleBuyer_Everon1989.et" {
+ coords 4467.606 6.87 11193.864
+ angleY -93
+}
+LF_NpcBaseEntity Fit_saint_philippe_dock_wholesale_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 4469.004 5.83 11193.938
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_price_board : "{B47D2C9E5A1F8036}Prefabs/Props/Market/LF_PriceBoard.et" {
+ coords 4467.075 5.866 11190.632
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_plank_pile_1 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 4474.694 5.83 11182.82
+ angleY -3
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_plank_pile_2 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 4471.498 5.83 11182.653
+ angleY -3
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_wood_pile_1 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords 4468.303 5.83 11182.485
+ angleY -3
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_wood_pile_2 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords 4478.089 5.83 11182.998
+ angleY -3
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_ore_bin_1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 4479.756 5.83 11187.492
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_ore_bin_2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 4479.61 5.83 11190.288
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_ore_bin_3 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 4479.463 5.83 11193.084
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_barrel_1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4479.496 5.83 11196.29
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_barrel_2 : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ coords 4479.443 5.83 11197.289
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_cement_pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4477.252 5.83 11200.879
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_cement_bag_1 : "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et" {
+ coords 4477.263 6 11200.679
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_cement_bag_2 : "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et" {
+ coords 4477.237 6 11201.179
+ angleY -3
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_cement_pallet_2 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4477.132 5.83 11203.176
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_cement_bag_3 : "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et" {
+ coords 4477.142 6 11202.976
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 4467.765 5.83 11200.382
+ angleY -73
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_crate_2 : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+ coords 4467.293 5.83 11201.759
+ angleY -103
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_work_light_1 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+ coords 4468.419 8.8 11187.899
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_work_light_2 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+ coords 4467.896 8.8 11197.885
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_work_light_3 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+ coords 4480.465 8.8 11194.538
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_wholesale_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "wholesale"
+   m_vRimColor 0.85 0.72 0.3
+   m_vPaintColor 0.16 0.2 0.18
+   m_vTextColor 0.95 0.92 0.8
+  }
+ }
+ coords 4462.864 9 11193.616
+ angleY -93
+}

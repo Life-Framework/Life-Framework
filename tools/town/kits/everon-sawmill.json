@@ -1,0 +1,269 @@
+{
+  "schema": 1,
+  "kit": "everon-sawmill",
+  "system": "lumber",
+  "source": {
+    "file": "tools/town/kits/sources/everon-sawmill.layer",
+    "group": "*",
+    "origin": "Source_Sawmill_Centre",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -15,
+        -10.5
+      ],
+      "max": [
+        10.5,
+        32
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "A sawmill hall as the host: two saws and the board stacks inside on its ground floor, the workplace desk by the east wall, log decks, the sign and a net-fence run in the yard past its front end (+z), with the ground in front of the hall end left open for a truck to turn. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "source-sawmill-saw-1",
+      "name": "Source_Sawmill_Saw_1",
+      "prefab": "{61418A72BA63D059}Prefabs/Processor/Sawmill.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.8,
+        0,
+        -8.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-saw-2",
+      "name": "Source_Sawmill_Saw_2",
+      "prefab": "{61418A72BA63D059}Prefabs/Processor/Sawmill.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.8,
+        0,
+        2.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-boards-1",
+      "name": "Source_Sawmill_Boards_1",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.2,
+        0,
+        -10.5
+      ],
+      "yaw": 90,
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-boards-2",
+      "name": "Source_Sawmill_Boards_2",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.2,
+        0,
+        -6
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-desk",
+      "name": "Source_Sawmill_Desk",
+      "prefab": "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.9,
+        0,
+        9
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "LF_WorkplaceComponent",
+          "set": {
+            "m_sJob": "\"LUMBERJACK\"",
+            "m_sPlaceId": "\"everon_sawmill\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-deck-1",
+      "name": "Source_Sawmill_Deck_1",
+      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11,
+        0,
+        22
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-deck-2",
+      "name": "Source_Sawmill_Deck_2",
+      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11,
+        0,
+        27
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-boards-3",
+      "name": "Source_Sawmill_Boards_3",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10.5,
+        0,
+        20
+      ],
+      "yaw": 0,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-boards-4",
+      "name": "Source_Sawmill_Boards_4",
+      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10.5,
+        0,
+        25.2
+      ],
+      "yaw": 0,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-sign",
+      "name": "Source_Sawmill_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        3.5,
+        0,
+        18.5
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"everon_sawmill\"",
+            "m_vRimColor": "0.1 0.1 0.1",
+            "m_vPaintColor": "0.55 0.36 0.16",
+            "m_vTextColor": "0.96 0.93 0.85"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-fence-1",
+      "name": "Source_Sawmill_Fence_1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -15,
+        0,
+        20
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-fence-2",
+      "name": "Source_Sawmill_Fence_2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -15,
+        0,
+        24
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-fence-3",
+      "name": "Source_Sawmill_Fence_3",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -15,
+        0,
+        28
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "source-sawmill-fence-4",
+      "name": "Source_Sawmill_Fence_4",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -15,
+        0,
+        32
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    }
+  ]
+}

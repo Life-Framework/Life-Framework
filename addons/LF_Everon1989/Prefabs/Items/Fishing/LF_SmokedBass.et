@@ -1,0 +1,13 @@
+GenericEntity : "{C240073B498C7A71}Prefabs/Items/Fishing/LF_FishBass.et" {
+ ID "183BBA86486F46D8"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_SmokedBass_Name"
+     Description "#LF-Item_SmokedBass_Description"
+    }
+   }
+  }
+ }
+}

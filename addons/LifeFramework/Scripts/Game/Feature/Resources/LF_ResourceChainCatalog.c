@@ -110,7 +110,77 @@ class LF_ResourceChainCatalog
 
 		s_Config = LF_ResourceChainConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
+		{
 			LF_Debug.Error("Resources", string.Format("chain config has an unexpected root class: %1", CONFIG_PATH));
+			return;
+		}
+
+		ApplyPackOverlays();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Adds the machine rows of each pack overlay (the mission header's m_aLF_ConfigOverlays, then
+	//! the folder beside a listed file) to the core config (#3450). A pack adds machines: an id the
+	//! config already has is refused and logged, so a pack never rewrites a core recipe. Nodes and
+	//! chains are not overlaid.
+	protected static void ApplyPackOverlays()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_ResourceChainConfig, "chains", resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			int added = ApplyPackMachines(resource.GetResource().ToBaseContainer(), names[i]);
+			LF_Debug.Info("Resources", string.Format("chains: pack overlay %1 added %2 machines", names[i], added));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Machines added from one overlay's root container.
+	protected static int ApplyPackMachines(BaseContainer root, string source)
+	{
+		if (!root || !s_Config)
+			return 0;
+
+		if (!s_Config.m_aMachines)
+			s_Config.m_aMachines = {};
+
+		BaseContainerList entries = root.GetObjectArray("m_aMachines");
+		if (!entries)
+			return 0;
+
+		int added;
+		for (int i = 0; i < entries.Count(); i++)
+		{
+			BaseContainer entry = entries.Get(i);
+			if (!entry)
+				continue;
+
+			LF_ResourceMachineDef machine = LF_ResourceMachineDef.Cast(BaseContainerTools.CreateInstanceFromContainer(entry));
+			if (!machine || machine.m_sMachineId.IsEmpty())
+			{
+				LF_Debug.Error("Resources", string.Format("chains: %1 has a machine row with no id, skipped", source));
+				continue;
+			}
+
+			bool known;
+			foreach (LF_ResourceMachineDef have : s_Config.m_aMachines)
+			{
+				if (have && have.m_sMachineId == machine.m_sMachineId)
+					known = true;
+			}
+
+			if (known)
+			{
+				LF_Debug.Warn("Resources", string.Format("chains: %1 names machine %2 the config already has, skipped", source, machine.m_sMachineId));
+				continue;
+			}
+
+			s_Config.m_aMachines.Insert(machine);
+			added++;
+		}
+
+		return added;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -10068,6 +10068,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Buy plot (%1)"
      Comment "Action on a for-sale plot sign (#2649). %1 = the formatted price (LF_MoneyFormat)."
     }
+    CustomStringTableItem "{4263DB02B36FDA37}" {
+     Id "LF-Property_HouseBought"
+     Target_en_us "You bought house %1. The key is in your inventory."
+     Comment "Toast: the house purchase went through (#3207). %1 = the house id."
+    }
+    CustomStringTableItem "{D44434DE82747CDF}" {
+     Id "LF-Property_HouseBuy"
+     Target_en_us "Buy house (%1, %2)"
+     Comment "Action on a house for-sale sign (#3207). %1 = the tier label, %2 = the formatted price (LF_MoneyFormat)."
+    }
+    CustomStringTableItem "{E8139375F9985FE0}" {
+     Id "LF-Property_HouseNoCash"
+     Target_en_us "You do not carry enough cash for this house."
+     Comment "Toast: house purchase refused, short of cash; nothing was taken (#3207)."
+    }
+    CustomStringTableItem "{32F7CFE0FED0514B}" {
+     Id "LF-Property_HouseNotHere"
+     Target_en_us "There is no house for sale here."
+     Comment "Toast: house purchase refused, no for-sale house sign in reach (#3207)."
+    }
+    CustomStringTableItem "{1DD4EE13D4F89E6A}" {
+     Id "LF-Property_HouseOwned"
+     Target_en_us "This house is already sold."
+     Comment "Toast: house purchase refused, somebody owns it (#3207)."
+    }
+    CustomStringTableItem "{913DC2A62580BE71}" {
+     Id "LF-Property_HouseSold"
+     Target_en_us "Sold"
+     Comment "Action label on a house sign once somebody owns the house (#3207); it cannot be used."
+    }
     CustomStringTableItem "{2E4ED8FC8172E6AA}" {
      Id "LF-Property_NoCash"
      Target_en_us "You do not carry enough cash for this plot."
@@ -11640,6 +11670,21 @@ CustomStringTableItem "{44869271883D0402}" {
    Target_en_us "Notice"
    Comment "Title of a sign card whose own text is not available (its pack is not loaded). Shown in the prompt as Read: Notice."
   }
+    CustomStringTableItem "{116893FFB2C8AD3B}" {
+     Id "LF-Sign_HouseForSale_Next"
+     Target_en_us "Stand at the sign with the price in carried cash and choose Buy house."
+     Comment "Read card of the house sale sign: what to do next (#3207)."
+    }
+    CustomStringTableItem "{BAEE50039356D187}" {
+     Id "LF-Sign_HouseForSale_Title"
+     Target_en_us "For sale"
+     Comment "Core house sale sign face and Read title (#3207): a house nobody owns yet."
+    }
+    CustomStringTableItem "{8D334B4254D966D0}" {
+     Id "LF-Sign_HouseForSale_What"
+     Target_en_us "A house nobody owns yet. Use the sign to buy it with cash and get its key."
+     Comment "Read card of the house sale sign (#3207)."
+    }
     CustomStringTableItem "{6A32B827033280BE}" {
      Id "LF-Sign_How"
      Target_en_us "How"

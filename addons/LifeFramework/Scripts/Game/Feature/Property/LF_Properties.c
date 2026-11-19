@@ -100,6 +100,7 @@ class LF_Properties
 
 		LF_Debug.Info(FEATURE, string.Format("property %1 owner set to '%2'", propertyId, ownerKey));
 		LF_PlotComponent.RefreshKey(propertyId);
+		LF_HouseSaleComponent.RefreshKey(propertyId); // #3207: the house signs learn the sale too
 		return true;
 	}
 
@@ -172,6 +173,7 @@ class LF_Properties
 		}
 
 		LF_PlotComponent.RefreshKey(""); // the signs already in the world learn the loaded owners (#2780)
+		LF_HouseSaleComponent.RefreshKey("");
 		return s_mRecords.Count();
 	}
 }

@@ -1,0 +1,81 @@
+GenericEntity Fit_everon_sawmill_yard_Place {
+ components {
+  LF_PlaceComponent "{296ECC50C507DB4F}" {
+   m_sKind "Workplace"
+   m_sId "everon-sawmill.yard"
+  }
+  LF_FittedBuildingComponent "{21DE04ABB107769D}" {
+  }
+ }
+ coords 3092.7 118.5 5240.8
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_saw_1 : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
+ coords 3094.654 118.5 5231.236
+ angleY -41
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_saw_2 : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
+ coords 3087.437 118.5 5239.538
+ angleY -41
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_boards_1 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 3103.513 118.5 5236.287
+ angleY 49
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_boards_2 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 3100.561 118.5 5239.683
+ angleY 49
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_desk : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
+ components {
+  LF_WorkplaceComponent "{BB227AA77D72A6F6}" {
+   m_sJob "LUMBERJACK"
+   m_sPlaceId "everon_sawmill"
+  }
+ }
+ coords 3092.003 118.5 5252.119
+ angleY -131
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_deck_1 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords 3069.965 118.5 5250.187
+ angleY 49
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_deck_2 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords 3066.685 118.5 5253.961
+ angleY 49
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_boards_3 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 3087.503 118.5 5262.783
+ angleY -41
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_boards_4 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
+ coords 3084.092 118.5 5266.707
+ angleY -41
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "everon_sawmill"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.55 0.36 0.16
+   m_vTextColor 0.96 0.93 0.85
+  }
+ }
+ coords 3084.736 118.5 5255.295
+ angleY -41
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 3068.258 118.5 5246.053
+ angleY 49
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 3065.634 118.5 5249.072
+ angleY 49
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 3063.01 118.5 5252.091
+ angleY 49
+}
+GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 3060.385 118.5 5255.11
+ angleY 49
+}
