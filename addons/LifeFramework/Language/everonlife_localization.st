@@ -5218,6 +5218,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "HANDBOOK"
      Comment "Printed heading of the handbook screen (#1773)."
     }
+    CustomStringTableItem "{7B4E0C91A2D63F71}" {
+     Id "LF-HandsUp_Hint"
+     Target_en_us "Press F7 to raise your hands. Ignore this and nothing changes."
+     Comment "HUD prompt: the key hint (default key F7)."
+    }
+    CustomStringTableItem "{7B4E0C91A2D63F72}" {
+     Id "LF-HandsUp_Keybind"
+     Target_en_us "Hands up (answer the prompt, or lower them)"
+     Comment "Keybind menu entry for the hands-up action."
+    }
+    CustomStringTableItem "{7B4E0C91A2D63F70}" {
+     Id "LF-HandsUp_Title"
+     Target_en_us "Put your hands up?"
+     Comment "HUD prompt to a player held up or aimed at: the title."
+    }
     CustomStringTableItem "{57403D2F7D7CFD8A}" {
      Id "LF-Handset_CallMedic"
      Target_en_us "Radio for a doctor"

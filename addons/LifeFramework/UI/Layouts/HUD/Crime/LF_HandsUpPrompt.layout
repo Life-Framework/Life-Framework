@@ -1,0 +1,91 @@
+FrameWidgetClass "{13F7804E13896581}" {
+ Name "HandsUpRoot"
+ Slot FrameWidgetSlot "{9DC30B0B97DA8B04}" {
+  Anchor 0 0 1 1
+ }
+ {
+  FrameWidgetClass "{9A84D1AACE67F13F}" {
+   Name "Panel"
+   Slot FrameWidgetSlot "{B6288D89A4818264}" {
+    Anchor 0.5 0.2 0.5 0.2
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 460
+    OffsetRight -460
+    SizeY 84
+    OffsetBottom -84
+    Alignment 0.5 0
+   }
+   {
+    ImageWidgetClass "{962385CE26D1EF07}" {
+     Name "Back"
+     Slot FrameWidgetSlot "{FF9C50C4B1FEE821}" {
+      Anchor 0 0 1 1
+     }
+     Color 0.035 0.033 0.03 0.86
+    }
+    ImageWidgetClass "{349B5EA3C9786D2F}" {
+     Name "Edge"
+     Slot FrameWidgetSlot "{F1E4673E216375F8}" {
+      Anchor 0 0 0 0
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 460
+      OffsetRight -460
+      SizeY 3
+      OffsetBottom -3
+     }
+     Color 0.86 0.66 0.22 1
+    }
+    TextWidgetClass "{BD307CCAC7427B0F}" {
+     Name "Title"
+     Slot FrameWidgetSlot "{33105C44B96B8C8F}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 12
+      OffsetTop 12
+      SizeX 420
+      OffsetRight -440
+      SizeY 30
+      OffsetBottom -42
+     }
+     Color 0.95 0.93 0.88 1
+     Text "#LF-HandsUp_Title"
+     "Font Size" 26
+     "Min Font Size" 18
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{BE9CC75D2C3756E6}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{8E5FF723C654A624}" {
+     Name "Hint"
+     Slot FrameWidgetSlot "{5A1C3E7B90D2F468}" {
+      Anchor 0 0 0 0
+      PositionX 20
+      OffsetLeft 20
+      PositionY 48
+      OffsetTop 48
+      SizeX 420
+      OffsetRight -440
+      SizeY 24
+      OffsetBottom -72
+     }
+     Color 0.82 0.8 0.74 1
+     Text "#LF-HandsUp_Hint"
+     "Font Size" 18
+     "Min Font Size" 14
+     "Horizontal Alignment" Center
+     FontProperties FontProperties "{6C2D4F8A1B3E5079}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+     }
+    }
+   }
+  }
+ }
+}

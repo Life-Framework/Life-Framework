@@ -74,6 +74,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		}
 		LF_IncidentLog.Install();
 		LF_AimIntent.Start();
+		// A hold-up or held aim offers the target the hands-up prompt (server only, #3396).
+		LF_HandsUp.EnsureSubscribed();
 		LF_DevGameMaster.Install(AreDevToolsEnabled());
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
