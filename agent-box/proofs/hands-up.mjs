@@ -45,7 +45,13 @@ async function runHandsUpProof() {
     return 1;
   }
   const [aId, bId] = ids;
-  const flag = (s, id) => s[`p${id}`];
+  // The client prints the bool as 1/0 (older builds true/false); normalise to "true"/"false".
+  const flag = (s, id) => {
+    const v = s[`p${id}`];
+    if (v === "1" || v === "true") return "true";
+    if (v === "0" || v === "false") return "false";
+    return v;
+  };
 
   // 1. Ignoring the prompt forces nothing; the offer reaches only B.
   on(1, { verb: "handsup", words: ["offer", String(bId)] }, 10000);
@@ -78,6 +84,18 @@ async function runHandsUpProof() {
   } else {
     arrive(on, 3, wait);
     wait(6000);
+    // The 30 s timeout (LF_HandsUpRules) can end the state while client 3 joins: raise it again
+    // (after the 20 s re-offer pause). That checks a change after the join, not the JIP snapshot;
+    // the log line below says which path ran.
+    const jip = flag(read(1), bId) === "true";
+    console.log(jip ? "late joiner: B still up at arrival (JIP snapshot path)" : "late joiner: the state timed out during the join; raising again (live-change path)");
+    if (!jip) {
+      wait(20000);
+      on(1, { verb: "handsup", words: ["offer", String(bId)] }, 10000);
+      until(2, (s) => s.prompt === "shown", 8000);
+      on(2, { verb: "handsup", words: ["choose", "1"] }, 10000);
+      until(1, (s) => flag(s, bId) === "true", 8000);
+    }
     const late = until(3, (s) => flag(s, bId) === "true", 15000);
     check("a late joiner sees B with hands up", flag(late, bId) === "true", `client 3 p${bId}=${flag(late, bId)}`);
   }

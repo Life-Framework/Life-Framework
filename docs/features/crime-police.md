@@ -870,7 +870,7 @@
 ### `LF_HandsUp` — `Feature/Crime/LF_HandsUp.c`, `LF_HandsUpPrompt.c` (#3396, slice H2 of #1024)
 - 🧪 **Hands up, the target chooses** (2026-11-19, LOGIC `crime/hands-up-state`, proof `hands-up`): a hold-up (`LF_OnHoldUp`)
   or a held aim (`LF_OnAimedAt`) offers the target a prompt, "Put your hands up?" (`UI/Layouts/HUD/Crime/LF_HandsUpPrompt.layout`),
-  for 8 s, not again for 20 s. The key (`LF_HandsUp`, F7 / gamepad X; every letter key clashes with a vanilla action, `validate-input-vanilla-clash`) sends `RpcAsk_LF_HandsUp` on the target's own controller;
+  for 8 s, not again for 20 s. The key (`LF_HandsUp`, F7 / gamepad RB+X: every letter key and bare gamepad X, which is vanilla Reload and Interact, clash with a vanilla action, `validate-input-vanilla-clash`) sends `RpcAsk_LF_HandsUp` on the target's own controller;
   the server takes the player id from that controller, needs a live offer, and raises the hands through `LF_HandsUpRules`
   (#3394: walk past 1.5 m, draw a weapon, lower them with the key, or 30 s ends it). Ignoring the prompt or answering with no
   offer changes nothing. The state is `SCR_ChimeraCharacter.m_bLF_HandsUp` (`RplProp`, `BumpMe` on change, so a late joiner
