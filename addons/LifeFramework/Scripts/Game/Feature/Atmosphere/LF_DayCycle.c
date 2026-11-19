@@ -44,6 +44,13 @@ class LF_DayCycle
 	static const float FALLBACK_SUNRISE_HOUR = 5;	// lf-fixed: the vanilla handler's DEFAULT_DAYTIME_START
 	static const float FALLBACK_SUNSET_HOUR = 19;	// lf-fixed: the vanilla handler's DEFAULT_DAYTIME_END
 
+	//! Sane bounds for a world's own sunrise and sunset (#3641): the test world reported 1.55 h and 13.36 h, which
+	//! started the faster night at 13:22. A value outside these falls back to the vanilla hours above.
+	static const float MIN_SUNRISE_HOUR = 4;	// lf-fixed: earliest believable sunrise
+	static const float MAX_SUNRISE_HOUR = 8;	// lf-fixed: latest believable sunrise
+	static const float MIN_SUNSET_HOUR = 17;	// lf-fixed: earliest believable sunset
+	static const float MAX_SUNSET_HOUR = 21;	// lf-fixed: latest believable sunset
+
 	//! A duration change under this many seconds is no change (float noise; never re-set the manager for it).
 	static const float DURATION_EPSILON = 0.5;	// lf-fixed: half a real second
 
@@ -106,6 +113,17 @@ class LF_DayCycle
 			LF_Debug.Error(FEATURE, string.Format("dayCycle.mode = %1 is not vanilla, accelerated or realtime; keeping the vanilla day", config.m_sMode));
 
 		return settings;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure (#3641): true when a world's sunrise and sunset are inside the sane bounds, so the night switch can
+	//! trust them. Anything else (a test world's 1.55 h and 13.36 h) means the fallback hours apply.
+	static bool AreSunHoursSane(float sunriseHour, float sunsetHour)
+	{
+		if (sunriseHour < MIN_SUNRISE_HOUR || sunriseHour > MAX_SUNRISE_HOUR)
+			return false;
+
+		return sunsetHour >= MIN_SUNSET_HOUR && sunsetHour <= MAX_SUNSET_HOUR;
 	}
 
 	//------------------------------------------------------------------------------------------------
