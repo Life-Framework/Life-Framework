@@ -35,7 +35,7 @@ class LF_EventSceneWalk
 	static const float ARRIVE_M = 3; // lf-fixed: a little over a walking group's spread at a waypoint
 	//! Once the AI group has finished its route, its members stop in formation around the leader, a
 	//! line abreast about this far apart: the outer member of six stood 18.8 m out (#2174).
-	static const float FORMATION_SPACING_M = 4; // lf-fixed: the vanilla line's spacing seen in the #2174 runs
+	static const float FORMATION_SPACING_M = 6; // lf-fixed: the vanilla line's spacing seen in the #2174 and #3724 runs (a member of four stood 18.7 m out)
 	//! Getting this much further along the route counts as progress.
 	static const float PROGRESS_M = 0.5; // lf-fixed: well under a second of walking
 	//! A walker that makes no progress this long is stuck.
@@ -313,7 +313,7 @@ class LF_EventSceneWalk
 
 	//------------------------------------------------------------------------------------------------
 	//! How far from the target a member of a finished group of `members` may stand: the leader within
-	//! ARRIVE_M, the line abreast FORMATION_SPACING_M per member beside it (23 m for six).
+	//! ARRIVE_M, the line abreast FORMATION_SPACING_M per member beside it (33 m for six, 21 m for four).
 	static float FormationArriveM(int members)
 	{
 		return ARRIVE_M + FORMATION_SPACING_M * Math.Max(0, members - 1);
