@@ -589,7 +589,11 @@ before the save code, then the `store` line's slowest parts.
   fails it. `e2e/shutdown-save-loaded` opens a marker account only after the
   manual save finished, so pass 2 finds it (77 and its ledger line) only when
   it loaded the shutdown save and that save was written before the statics
-  reset.
+  reset. Pass 2 keeps the profile, so pass 1's log folder (with its SUMMARY)
+  is still in it: the harness skips every `logs_*` folder that existed before
+  its launch, and `e2e` fails pass 2 unless a folder of its own boot holds a
+  `session continued from a save point` line (#3569; before it, pass 2 could
+  report green in about 1 s from the previous boot's SUMMARY).
 - `persist/carried-roundtrip` (PERSISTENCE) and `persist/carried-death-no-dupe`
   (WORLD) drive the carried payload through the real serializer and the death rule.
 - `persist/save-aliases` (WORLD): the alias file read through the pack-source seam, chains, the

@@ -25,6 +25,7 @@
 - [Account & Persistence](features/account-persistence.md)
 - [Agent box](features/agent-box.md)
 - [Atmosphere (music and background sound)](features/atmosphere.md)
+- [Carry](features/carry.md)
 - [Character & Survival](features/character-survival.md)
 - [Chess](features/chess.md)
 - [Core](features/core.md)

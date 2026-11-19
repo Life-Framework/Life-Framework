@@ -66,6 +66,22 @@
   plot still for sale and "Set waypoint" marks it. Reading it records no single plot as heard of. Proof:
   `property/plot-for-sale-marks` (owned vs unowned map marks, the card's nearest plot, a cleared owner).
 
+### Buy a house at its "For sale" sign — `Feature/Property/LF_HouseSaleComponent.c` (2026-11-19, #3207, chapter #3201)
+- 🟡 `Prefabs/Props/Property/LF_HouseSaleSign.et` (face: core sign `house_for_sale`) names a house identifier. The house's
+  price and tier label are `LF_PropertyHouseDef` rows in the property config's `m_aHouses` (`LF_Property.conf`: `sale-house-a`,
+  `sale-house-b` as neutral examples); a pack prices its houses through its overlay, patching price and label by house id
+  like plots. A house id equal to a plot key is refused (`RefuseHouseCollisions` works both ways).
+- 🟡 "Buy house (tier, $price)" sends the used sign's house id; the server sells only when a sign of that id is within 5 m
+  of a free (not cuffed), conscious buyer who carries the price (rate-limited as a purchase). Exactly the price leaves carried
+  cash (ledger reason `property_buy_house`), the buyer becomes the owner (`LF_Properties.SetOwner` sets it on the live house,
+  saved in `houses`; the `properties` row records the purchase time), a `HouseKeyItem` bound to the identifier goes into their
+  inventory and a toast says so. Refused with nothing taken: an owned house, short cash, no sign in reach, a cuffed or downed
+  buyer, a house with no price. If the owner cannot be set the cash is refunded.
+- 🟡 The sign replicates one bool, `m_bOwned` (the #2780 plot-sign pattern), refreshed from `LF_Properties.SetOwner` / `ApplyAll`
+  and from every `LF_HouseManagerComponent.SetOwner`; the action reads only that flag: "Buy house" while for sale, "Sold"
+  (not usable) after. The owner key is never sent. Proof: `property/house-sale-buy`; the dedicated-client view of the Sold flip
+  is a manual step.
+
 ### Build site — `Feature/Property/LF_BuildSiteComponent.c` (2026-11-18, #2650, spec #756)
 - 🟡 The plot sign also carries an `LF_BuildSiteComponent` and two actions. "Need N more <item>" deposits
   everything the caller carries of what the stage being built still lacks, up to what it lacks: the items leave
@@ -100,6 +116,10 @@
   owner who set it still owns the house; a sold house is never the buyer's spawn, in session or after a save. Any owner change
   (`LF_HouseManagerComponent.SetOwner`, whatever calls it) clears the flag, so buying the house back does not restore it.
 - 🟡 Applies at login only (the spawn flow reads `SpawnHouseOf`); deaths still wake at hospital. Proof: `property/set-home`.
+- 🟡 A dedicated client sees the offer too (#3375): the property book and `LF_Houses.Find` are server-only, so the client
+  compares its key with the house's replicated `GetOwnerKey()` and skips the `SpawnHouseOf` check (`LF_SetHomeAction.OfferSet`,
+  shared with the house sign, #3208). The server re-checks in `SetSpawnHouse`. Proof: `property/set-home-client-offer`
+  (host test of the client branch; dedicated-client session is a manual step).
 
 ### Spawn order at login — `Feature/Character/Spawning/LF_SpawnPriority.c`, `Feature/Property/LF_HouseSpawnComponent.c` (2026-11-18, #2652, spec #747)
 - 🟡 Login order: jail (the body is moved to the cell after it spawns), the hospital wake after a death, a rejoin

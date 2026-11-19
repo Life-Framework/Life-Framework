@@ -52,6 +52,11 @@ class LF_SignStyledFace
 		}
 
 		m_wTexture = RTTextureWidget.Cast(m_wRoot.FindAnyWidget("RTTexture0"));
+		// A carrier quad samples its whole render target (UV 0..1), so the target takes the size row's shape: the
+		// layout authors a 1920 x 1080 one, and a portrait quad on it showed only the strip the style paints (#3547).
+		if (m_wTexture && m_bOwnCarrier && size.m_vTarget[0] > 0 && size.m_vTarget[1] > 0)
+			FrameSlot.SetSize(m_wTexture, size.m_vTarget[0], size.m_vTarget[1]);
+
 		TextWidget title = TextWidget.Cast(m_wRoot.FindAnyWidget("Title"));
 		ImageWidget ground = ImageWidget.Cast(m_wRoot.FindAnyWidget("Ground"));
 		Widget rows = m_wRoot.FindAnyWidget("Rows");

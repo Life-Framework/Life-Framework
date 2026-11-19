@@ -3,15 +3,16 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildReport, renderReport } from "../lib/economy.mjs";
 
-export const help = "economy [--mission LF_Everon1989] [--run-minutes parcel=6,fuel=8,taxi=10] [--taxi-metres 2000] [--hours 1,2,4,6] [--root <dir>] [--json]   what a newcomer earns and can buy by hour 1, 2, 4 and 6 (core + pack overlays + server/flagship/config.json): rank duty pay, taxi fares, contracts, licence fees, and flags for loops, empty fish and zero pay";
+export const help = "economy [--mission LF_Everon1989] [--run-minutes parcel=6,fuel=8,taxi=10] [--taxi-metres 2000] [--wholesale-carry] [--hours 1,2,4,6] [--root <dir>] [--json]   what a newcomer earns and can buy by hour 1, 2, 4 and 6 (core + pack overlays + server/flagship/config.json): rank duty pay, taxi fares, contracts, licence fees, and flags for loops, empty fish and zero pay; the lumber loops (#3270) with steady and first-hour $/h and a flag outside the 1.5 to 2.5 duty band (--wholesale-carry keeps the wholesale curve between hours)";
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
 export async function main(args = []) {
-  const opt = { json: false, mission: undefined, root: REPO, runMinutes: {} };
+  const opt = { json: false, lumber: {}, mission: undefined, root: REPO, runMinutes: {} };
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === "--json") opt.json = true;
+    else if (a === "--wholesale-carry") opt.lumber.carryCurve = true;
     else if (a === "--mission") opt.mission = args[++i];
     else if (a === "--root") opt.root = args[++i];
     else if (a === "--taxi-metres") {

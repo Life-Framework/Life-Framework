@@ -34,7 +34,7 @@ const check = (cond, msg) => {
 {
   const { loadPlace, checkPlace } = await import(pathToFileURL(join(ROOT, "tools", "town", "check.mjs")).href);
   // a mapped slot the template lacks is an error from checkMapping; an unclaimed one is only listed as not fitted yet
-  for (const [place, slots] of [["saint-philippe", ["woodlot", "farm", "merchant-timber", "bins", "loot", "buyer-spots", "tow-yard", "memorial", "atms", "payphones", "street-life", "fuel-run", "pond", "orchard", "night-lights", "square-evening", "org"]], ["saint-philippe-dock", ["wholesale", "lockers", "smokehouse", "warehouse", "quay-fishing", "fish-counter", "chandler", "fishing-quay"]]]) {
+  for (const [place, slots] of [["saint-philippe", ["woodlot", "farm", "merchant-timber", "bins", "loot", "buyer-spots", "tow-yard", "memorial", "atms", "payphones", "street-life", "fuel-run", "pond", "orchard", "night-lights", "square-evening", "org"]], ["saint-philippe-dock", ["lockers", "smokehouse", "warehouse", "quay-fishing", "fish-counter", "chandler", "fishing-quay"]]]) {
     const result = checkPlace(loadPlace(ROOT, place), {});
     for (const slot of slots) {
       check(result.unfitted.includes(slot), `${place}: ${slot} is not among the unfitted slots`);
