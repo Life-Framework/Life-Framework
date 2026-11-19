@@ -245,6 +245,31 @@ class LF_EvidenceLocker
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: the evidence convoy delivered these rows to the central store (LF_EvidenceConvoy, #3382),
+	//! so they leave the locker. Rows logged since stay; numbering is not reused, so a case board card
+	//! keeps pointing at its row's number. \return How many rows left.
+	static int RemoveDelivered(notnull array<int> numbers)
+	{
+		if (!Replication.IsServer())
+			return 0;
+
+		int removed;
+		array<ref LF_EvidenceLockerRow> rows = Rows();
+		for (int i = rows.Count() - 1; i >= 0; i--)
+		{
+			if (numbers.Contains(rows[i].m_iNumber))
+			{
+				rows.RemoveOrdered(i);
+				removed++;
+			}
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("%1 row(s) delivered to the central store, %2 left in the locker", removed, rows.Count()));
+		LF_EvidenceLockerFill.Check();
+		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One line per logged bag, newest first, for the locker's read card.
 	static void DescribeAll(notnull array<string> outLines)
 	{
