@@ -6,6 +6,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { worldLayerDirs } from "../tools/lib/addons.mjs";
+import { isTerrainRelative } from "../tools/lib/terrain-classes.mjs";
 
 // A repo resource path in the core or, failing that, the pack; null when neither holds it.
 function addonFile(root, rel) {
@@ -41,7 +42,7 @@ function classify(line) {
     /^(?:\$grp\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"/,
   );
   if (namedPrefab && !line.startsWith("$grp")) {
-    return { entity: true, name: namedPrefab[2], actionName: "", prefab: namedPrefab[3] };
+    return { entity: true, name: namedPrefab[2], actionName: "", prefab: namedPrefab[3], cls: namedPrefab[1] };
   }
 
   const groupPrefab = line.match(/^\$grp\s+[A-Za-z_][A-Za-z0-9_]*\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"/);
@@ -49,8 +50,8 @@ function classify(line) {
 
   // An unnamed placement (`SCR_SpawnPoint : "{GUID}path" {`). The town manifest
   // can match it by prefab; `stand` cannot address it.
-  const anonPrefab = line.match(/^[A-Za-z_][A-Za-z0-9_]*\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"\s*\{$/);
-  if (anonPrefab) return { entity: true, name: "", actionName: "", prefab: "", anonPrefab: anonPrefab[1] };
+  const anonPrefab = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"\s*\{$/);
+  if (anonPrefab) return { entity: true, name: "", actionName: "", prefab: "", anonPrefab: anonPrefab[2], cls: anonPrefab[1] };
 
   const generic = line.match(/^GenericEntity\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{/);
   if (generic) return { entity: true, name: generic[1], actionName: "", prefab: "" };
@@ -221,6 +222,8 @@ function walkLayer(text, layerFile, root) {
             prefab,
           };
           if (signId) record.signId = signId;
+          // A class whose y counts from the terrain (#3566): the audit looks for it at terrain + y.
+          if (isTerrainRelative(frame.cls)) record.cls = frame.cls;
           if (frame.mesh) record.mesh = frame.mesh;
           if (frame.yaw !== undefined) record.yaw = frame.yaw;
           if (frame.scale !== undefined) record.scale = frame.scale;

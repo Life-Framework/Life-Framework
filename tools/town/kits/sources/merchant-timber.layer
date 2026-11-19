@@ -1,0 +1,47 @@
+GenericEntity MerchantTimber_Origin {
+ coords 0 0 0
+}
+$grp GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ MerchantTimber_Counter {
+  coords 0.6 0 9.4
+ }
+}
+$grp GenericEntity : "{31E740A9BE82E617}Prefabs/Characters/Npcs/Outfits/LF_Npc_Logger_2.et" {
+ MerchantTimber_Man {
+  coords 0.6 0 8.3
+ }
+}
+$grp GenericEntity : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ MerchantTimber_Pallet_1 {
+  coords -2.4 0 8.4
+  angleY 90
+ }
+ MerchantTimber_Pallet_2 {
+  coords 3.6 0 8.4
+  angleY 90
+ }
+}
+$grp GenericEntity : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ MerchantTimber_Stack_1 {
+  coords -2.4 0.15 8.4
+  angleY 90
+ }
+ MerchantTimber_Stack_2 {
+  coords 3.6 0.15 8.4
+  angleY 90
+ }
+}
+$grp SCR_DestructibleEntity : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ MerchantTimber_Board {
+  components {
+   LF_SignComponent "{DF6A14A1AD2B41F0}" {
+    m_sSignId "merchant_timber"
+    m_sStyle ""
+    m_sSize ""
+    m_vFaceAngles 0 -15 0
+    m_fFaceScale 2.6
+   }
+  }
+  coords 2.9 0 10.9
+ }
+}

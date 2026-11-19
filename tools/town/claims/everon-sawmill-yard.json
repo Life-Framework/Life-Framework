@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "everon-sawmill",
+  "slot": "yard",
+  "building": "b01",
+  "kit": "everon-sawmill",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_everon-sawmill_yard.layer",
+  "kinds": [
+    "Workplace"
+  ],
+  "rows": 14,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_everon_sawmill_yard_Place"
+  },
+  "date": "2026-11-19"
+}

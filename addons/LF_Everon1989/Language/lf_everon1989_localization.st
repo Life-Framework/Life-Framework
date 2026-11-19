@@ -1009,6 +1009,11 @@ StringTable {
      Target_en_us "Town hall"
      Comment "Map POI kind name (#2247): the town hall, where the clerk sits."
     }
+    CustomStringTableItem "{7C1E5A2D9B3F4A06}" {
+     Id "LF-MapPoi_Wholesale"
+     Target_en_us "Wholesale warehouse"
+     Comment "Map POI name (#3273): the harbour wholesale warehouse counter."
+    }
     CustomStringTableItem "{9C1E4A73D0B58F26}" {
      Id "LF-MedicRank_Emt"
      Target_en_us "Emergency Medical Technician"
@@ -2054,6 +2059,31 @@ StringTable {
      Target_en_us "Calls waiting for this service, newest first."
      Comment "Dispatch board sign card: what it is."
     }
+    CustomStringTableItem "{F962FB99DD0ED9A6}" {
+     Id "LF-Sign_EveronSawmill_How"
+     Target_en_us "*Saw logs into planks* or *Saw hardwood into boards* at a saw in the hall"
+     Comment "Sign card for the Everon sawmill, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{2F1E48F6D38417AF}" {
+     Id "LF-Sign_EveronSawmill_Needs"
+     Target_en_us "Logs from the forest and a lumberjack licence."
+     Comment "Sign card for the Everon sawmill, You need section."
+    }
+    CustomStringTableItem "{91F819EF3267293A}" {
+     Id "LF-Sign_EveronSawmill_Next"
+     Target_en_us "Carry the boards to Saint-Philippe: builders and joiners pay for them."
+     Comment "Sign card for the Everon sawmill, Next section."
+    }
+    CustomStringTableItem "{AE02BB5B348530BB}" {
+     Id "LF-Sign_EveronSawmill_Title"
+     Target_en_us "Scierie"
+     Comment "Title of the sign at the Everon sawmill yard (Everon 1989 pack, #3271). Printed on the sign and shown in the prompt as Read: Scierie."
+    }
+    CustomStringTableItem "{52CBFEEB2D04FA91}" {
+     Id "LF-Sign_EveronSawmill_What"
+     Target_en_us "The island sawmill: saw hardwood and softwood logs into boards, posts and firewood."
+     Comment "Sign card for the Everon sawmill, What section."
+    }
     CustomStringTableItem "{4E7B1C9A2D8F5036}" {
      Id "LF-Sign_FarmCompound_What"
      Target_en_us "Abandoned farm. Whoever holds the yard longest holds the barn."
@@ -2478,6 +2508,31 @@ StringTable {
      Id "LF-Sign_LotPrice_Title"
      Target_en_us "%1 %2"
      Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
+    }
+    CustomStringTableItem "{3B335C0E2FA32B9B}" {
+     Id "LF-Sign_MerchantTimber_Board"
+     Target_en_us "Hardwood board"
+     Comment "Chalk board row label at the timber counter."
+    }
+    CustomStringTableItem "{7DBA677D775C31B6}" {
+     Id "LF-Sign_MerchantTimber_Next"
+     Target_en_us "When we cannot take more, sell the rest to the wholesale warehouse at the dock."
+     Comment "Sign card for the timber counter, Next section."
+    }
+    CustomStringTableItem "{436E2ECC8C95C171}" {
+     Id "LF-Sign_MerchantTimber_Plank"
+     Target_en_us "Plank"
+     Comment "Chalk board row label at the timber counter."
+    }
+    CustomStringTableItem "{1986D36F54987E6D}" {
+     Id "LF-Sign_MerchantTimber_Title"
+     Target_en_us "We buy timber"
+     Comment "Title of the chalk board at the Saint-Philippe hardware store timber counter (#3274). Printed on the board and shown in the prompt as Read: We buy timber."
+    }
+    CustomStringTableItem "{F40B323DAAD33F77}" {
+     Id "LF-Sign_MerchantTimber_What"
+     Target_en_us "The hardware store buys planks and hardwood boards over the timber counter, a limited amount each hour. Price per piece in dollars."
+     Comment "Sign card for the timber counter, What section."
     }
     CustomStringTableItem "{EACF0508930A1624}" {
      Id "LF-Sign_Mining_How"
@@ -3003,6 +3058,31 @@ StringTable {
      Id "LF-Sign_VehicleLot_What"
      Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
      Comment "Sign card for the vehicle lot counter, What section."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A03}" {
+     Id "LF-Sign_Wholesale_How"
+     Target_en_us "*Sell Items* at the counter: drop the goods into the crate and the clerk pays cash|Read the chalk board for today's prices"
+     Comment "Sign card for the wholesale warehouse, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A04}" {
+     Id "LF-Sign_Wholesale_Needs"
+     Target_en_us "Goods from the sawmill, the quarry or the mine"
+     Comment "Sign card for the wholesale warehouse, Needs section."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A05}" {
+     Id "LF-Sign_Wholesale_Next"
+     Target_en_us "Every lot you sell lowers the price a little; it climbs back while the counter is quiet. The hardware store pays more, but only for what it needs."
+     Comment "Sign card for the wholesale warehouse, Next section."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A01}" {
+     Id "LF-Sign_Wholesale_Title"
+     Target_en_us "Entrepôt de gros"
+     Comment "Title of the fascia sign over the harbour wholesale warehouse (Everon 1989 pack, #3273). Printed on the sign and shown in the prompt as Read: Entrepôt de gros."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A02}" {
+     Id "LF-Sign_Wholesale_What"
+     Target_en_us "The island's wholesale warehouse on the quay road. The clerk buys planks, boards, posts, firewood, cement, iron, coal, ore and stone in any quantity."
+     Comment "Sign card for the wholesale warehouse, What section."
     }
     CustomStringTableItem "{C8A0D5FC27A2CA22}" {
      Id "LF-SiteFlag_Unclaimed"

@@ -9,7 +9,7 @@ Design and card list: the harvester spike (epic #3282).
 ## Interaction pattern
 
 In-world only: the field is the interface and the hopper is a number on the reaper's prompt. Nothing opens a sheet.
-This slice is the pure rules; the entity (#3287), the replication (#3288) and the reaper (#3289) build on it.
+The rules (#3285) and the field entity (#3287) are in; the replication (#3288) and the reaper (#3289) build on them.
 
 ## Wheat field rules (#3285)
 
@@ -25,3 +25,12 @@ This slice is the pure rules; the entity (#3287), the replication (#3288) and th
   (`HOPPER_FULL`). Strings: `LF-Harvest_TooFast`, `LF-Harvest_HopperFull`. Nothing is persisted: the cut state is
   session-only and a restart regrows the field.
 - **Proof:** `harvest/wheat-field-rules` (LOGIC).
+
+## Wheat field entity (#3287)
+
+- **Player sees:** a field of wheat patches in a placed box; cut cells show stubble (the cut itself comes with the reaper, #3289).
+- **Owner and side:** `LF_WheatField` (entity, holds the `LF_WheatGrid`) and `LF_WheatFieldView` (the local meshes). Every machine
+  but a dedicated server draws its own patches from the bitset; they are local entities, never replicated. `CutCells` and `Regrow`
+  are the server calls the replication (#3288) will broadcast.
+- **Data:** `Configs/Harvest/LF_WheatFields.conf` (patch, stubble, cell size). The box is `m_fSizeX` x `m_fSizeZ` on the entity.
+- **Proof:** `harvest/wheat-field-cut` (WORLD).

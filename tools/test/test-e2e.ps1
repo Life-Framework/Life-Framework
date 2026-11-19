@@ -347,6 +347,12 @@ if ($Tier -eq "perf") {
   else { Write-Host ("WARN  test-e2e: perf idle check: CPU still {0}% (limit {1}%) after {2} s; measuring on a busy machine, so a pass is meaningful and a fail may be noise: rerun when idle" -f $cpu, $idlePct, $idleMax) }
 }
 
+# With -KeepProfile the profile still holds the previous boot's logs_* folders (the reload pass of
+# `wt e2e`). Get-LogDir skips every folder that existed before this launch, so a SUMMARY left by the
+# previous boot is never taken for this boot's verdict (#3569: pass 2 went green in ~1 s without booting).
+$preLogDirs = @{}
+foreach ($d in @(Get-ChildItem (Join-Path $profile "logs") -Directory -ErrorAction SilentlyContinue)) { $preLogDirs[$d.Name] = $true }
+
 Write-Host "test-e2e: launching $exe (tier=$Tier)"
 Write-Host "test-e2e: args $($args -join ' ')"
 # The server runs on the private LF-Agents desktop with no console window, so a
@@ -358,6 +364,7 @@ $p = Start-LfQuietProcess -FilePath $exe -ArgumentList $args -WorkingDirectory $
 
 function Get-LogDir {
   Get-ChildItem (Join-Path $profile "logs") -Directory -ErrorAction SilentlyContinue |
+    Where-Object { -not $preLogDirs.ContainsKey($_.Name) } |
     Sort-Object Name | Select-Object -Last 1
 }
 
