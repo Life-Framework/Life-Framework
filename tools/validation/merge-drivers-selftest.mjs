@@ -433,6 +433,35 @@ ${clean.stderr}`);
     if (locStatus) fail(`the localization driver left the worktree dirty:\n${locStatus}`);
   }
 
+  // The scratch `git init` the driver runs has exited 1 with no output on the CI runner (main run d4c47e373: the
+  // conf left conflicted and no message). One silent failure is retried and the merge is clean; one that
+  // persists leaves the conf conflicted and the driver says why.
+  const initFixture = (name) => {
+    const repo = join(temp, name);
+    initRepo(repo);
+    configureDriver(repo, "lf-regen-localization", "regen-generated.mjs");
+    writeFileSync(join(repo, ".gitattributes"), "everonlife_localization.en_us.conf merge=lf-regen-localization\n");
+    mkdirSync(join(repo, langRel), { recursive: true });
+    writeFileSync(join(repo, langRel, "everonlife_localization.st"), readFileSync(join(ROOT, langRel, "everonlife_localization.st")));
+    writeFileSync(join(repo, confRel), "base-conf\n");
+    commitAll(repo, "base");
+    git(repo, ["checkout", "-q", "-b", "theirs"]);
+    writeFileSync(join(repo, confRel), "theirs-conf\n");
+    commitAll(repo, "theirs");
+    git(repo, ["checkout", "-q", "master"]);
+    writeFileSync(join(repo, confRel), "ours-conf\n");
+    commitAll(repo, "ours");
+    return repo;
+  };
+  const flakyRepo = initFixture("loc-init-flaky");
+  const flakyMerge = git(flakyRepo, ["merge", "theirs", "--no-edit"], { ...process.env, LF_MERGE_DRIVER_INIT_FAILS: "1" });
+  if (flakyMerge.status !== 0) fail(`one silent scratch git init failure should be retried and the merge clean:\n${flakyMerge.stdout}\n${flakyMerge.stderr}`);
+  const deadRepo = initFixture("loc-init-dead");
+  const deadMerge = git(deadRepo, ["merge", "theirs", "--no-edit"], { ...process.env, LF_MERGE_DRIVER_INIT_FAILS: "9" });
+  if (deadMerge.status === 0) fail("a scratch git init that always fails should leave the conf conflicted");
+  else if (!/lf-regen: git init in the scratch repo failed 3 times/.test(deadMerge.stderr)) fail(`a persistent git init failure should say so, got:\n${deadMerge.stderr}`);
+  git(deadRepo, ["merge", "--abort"]);
+
   // #2549, #2746: a generator that never exits must not hang `git merge`. The stub replaces PowerShell with a
   // child that never ends; its own 2 s limit kills it, the driver prints one line and exits 1, and the merge
   // stops with the conf left conflicted for the human (or `regen-localization`) to resolve.
