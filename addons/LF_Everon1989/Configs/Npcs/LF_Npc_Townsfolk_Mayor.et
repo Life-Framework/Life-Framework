@@ -1,0 +1,60 @@
+LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
+ ID "D7BB1E1FDA76F961"
+ components {
+  CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
+   Identity Identity "{5A4B0B84AF44A913}" {
+    Name "Bastien"
+    Surname "Girard"
+   }
+  }
+  LF_NpcRoleComponent "{5F27733A56847CDC}" {
+   m_sRole "townsfolk"
+  }
+  LF_DialogueComponent "{21719F6375FBAB5D}" {
+   m_sDialogueId "anniversary_mayor"
+  }
+  LF_QuestGiverComponent "{3794D00000000001}" {
+   m_sGiverId "mayor"
+   m_sDisplayName "#LF-Townsfolk_Mayor_Name"
+   m_bConverse 1
+  }
+  LF_PlaceComponent "{64AF5A8134B6B4FF}" {
+   m_sKind "Townsfolk"
+   m_sId "mayor"
+  }
+  BaseLoadoutManagerComponent "{5A4B0B84C86D5843}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{52AB6EC3FE535303}Prefabs/Characters/Uniforms/Jacket_Suit_01/Jacket_Suit_01_Brown_V1.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{E65D5C9848AC18E9}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_brown_V1.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{5A4B13A9811FB113}" {
+   ActionContexts + {
+    UserActionContext "{9BEBC01936C414EC}" {
+     ContextName "Talk"
+     Position PointInfo "{38CE24673FD9BFCD}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{89BEE8667C396EAC}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{C1E496EBAF182103}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}
