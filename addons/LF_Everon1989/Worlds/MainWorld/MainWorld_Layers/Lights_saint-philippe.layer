@@ -1,0 +1,353 @@
+GenericEntity Glow_saint_philippe_sp_b03_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 1
+  }
+ }
+ coords 4460.5 15.2 10711.15
+}
+GenericEntity Glow_saint_philippe_sp_b03_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 1
+  }
+ }
+ coords 4453.89 18.4 10710.22
+}
+GenericEntity Glow_saint_philippe_sp_b03_2 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 1
+  }
+ }
+ coords 4450.25 15.2 10709.71
+}
+GenericEntity Glow_saint_philippe_sp_b07_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4436.33 15 10723.34
+}
+GenericEntity Glow_saint_philippe_sp_b07_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4458.84 18.2 10726.5
+}
+GenericEntity Glow_saint_philippe_sp_b09_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 2
+  }
+ }
+ coords 4501.53 17 10735.79
+}
+GenericEntity Glow_saint_philippe_sp_b09_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 2
+  }
+ }
+ coords 4508.22 20.2 10736.85
+}
+GenericEntity Glow_saint_philippe_sp_b12_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4513.32 17.4 10737.28
+}
+GenericEntity Glow_saint_philippe_sp_b12_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4519.89 20.6 10738.32
+}
+GenericEntity Glow_saint_philippe_sp_b14_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 2
+  }
+ }
+ coords 4468.01 14.3 10770.13
+}
+GenericEntity Glow_saint_philippe_sp_b14_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 2
+  }
+ }
+ coords 4470.14 17.5 10758.06
+}
+GenericEntity Glow_saint_philippe_sp_b15_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4436.87 14.6 10675.66
+}
+GenericEntity Glow_saint_philippe_sp_b15_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4438.58 17.8 10663.5
+}
+GenericEntity Glow_saint_philippe_sp_b17_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 1
+  }
+ }
+ coords 4480.13 17.5 10651.65
+}
+GenericEntity Glow_saint_philippe_sp_b17_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 1
+  }
+ }
+ coords 4478 20.7 10663.75
+}
+GenericEntity Glow_saint_philippe_sp_b32_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4549.14 20.3 10739.56
+}
+GenericEntity Glow_saint_philippe_sp_b32_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4558.98 23.5 10741.12
+}
+GenericEntity Glow_saint_philippe_sp_b33_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4539.56 18.8 10670.37
+}
+GenericEntity Glow_saint_philippe_sp_b36_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4540.77 18.8 10663.84
+}
+GenericEntity Glow_saint_philippe_sp_b38_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4442.28 13.4 10779.79
+}
+GenericEntity Glow_saint_philippe_sp_b38_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4449.16 16.6 10783.3
+}
+GenericEntity Glow_saint_philippe_sp_b39_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4425.24 12.8 10772.45
+}
+GenericEntity Glow_saint_philippe_sp_b39_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4436.42 16 10778.4
+}
+GenericEntity Glow_saint_philippe_sp_b45_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4425.35 14.6 10657.75
+}
+GenericEntity Glow_saint_philippe_sp_b45_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4418.9 17.8 10656.84
+}
+GenericEntity Glow_saint_philippe_sp_b45_2 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4409.88 14.6 10655.58
+}
+GenericEntity Glow_saint_philippe_sp_b48_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4556.22 19.8 10781.29
+}
+GenericEntity Glow_saint_philippe_sp_b48_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4546.11 23 10779.52
+}
+GenericEntity Glow_saint_philippe_sp_b50_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 1
+  }
+ }
+ coords 4396.75 12.4 10743.05
+}
+GenericEntity Glow_saint_philippe_sp_b50_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 1
+  }
+ }
+ coords 4396.54 15.6 10755.3
+}
+GenericEntity Glow_saint_philippe_sp_b55_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4398.13 12.1 10758.3
+}
+GenericEntity Glow_saint_philippe_sp_b55_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4404.66 15.3 10761.63
+}
+GenericEntity Glow_saint_philippe_sp_b77_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4388.88 17.7 10625.36
+}
+GenericEntity Glow_saint_philippe_sp_b79_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4378.39 14.1 10653.07
+}
+GenericEntity Glow_saint_philippe_sp_b79_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4377.24 17.3 10662.46
+}
+GenericEntity Glow_saint_philippe_sp_b107_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 23
+  }
+ }
+ coords 4613.49 20.9 10659.43
+}
+GenericEntity Glow_saint_philippe_sp_b117_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 0
+  }
+ }
+ coords 4645.63 24.3 10734.48
+}
+GenericEntity Glow_saint_philippe_sp_b117_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
+ components {
+  LF_NightLightComponent "{56B3030CD27BB27B}" {
+   m_fHourOff 0
+  }
+ }
+ coords 4638.45 27.5 10734.1
+}
+GenericEntity LampHead_saint_philippe_1 : "{E8943F7063E1262D}Prefabs/Props/Lights/LF_LampHeadNight.et" {
+ coords 4382.1 16.15 10666.9
+}
+GenericEntity LampHead_saint_philippe_2 : "{E8943F7063E1262D}Prefabs/Props/Lights/LF_LampHeadNight.et" {
+ coords 4352.9 12.45 10706.9
+}
+GenericEntity LampHead_saint_philippe_3 : "{E8943F7063E1262D}Prefabs/Props/Lights/LF_LampHeadNight.et" {
+ coords 4521.9 17.15 10840.3
+}
+GenericEntity Lamp_saint_philippe_1 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4522.26 16.2 10631.99
+ angleY -9.05
+}
+GenericEntity Lamp_saint_philippe_2 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4425.2 12.04 10688.38
+ angleY 83.02
+}
+GenericEntity Lamp_saint_philippe_3 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4409.3 11.9 10700.46
+ angleY -96.62
+}
+GenericEntity Lamp_saint_philippe_4 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4412.48 12.02 10676.59
+ angleY -98.19
+}
+GenericEntity Lamp_saint_philippe_5 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4469.92 12.95 10696.33
+ angleY 80.11
+}
+GenericEntity Lamp_saint_philippe_6 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4403.59 12.57 10654.35
+ angleY -7.66
+}
+GenericEntity Lamp_saint_philippe_7 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4427.39 12.44 10670.51
+ angleY 83.02
+}
+GenericEntity Lamp_saint_philippe_8 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4383.36 9.8 10702
+ angleY -9.16
+}
+GenericEntity Lamp_saint_philippe_9 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4459.65 12.55 10748.54
+ angleY 79.07
+}
+GenericEntity Lamp_saint_philippe_10 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
+ coords 4364.88 9.21 10699.11
+ angleY -8.61
+}

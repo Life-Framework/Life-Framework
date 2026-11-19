@@ -19,6 +19,7 @@
 //   seatRows floor branch skipped (no `l.y += top - bottom`)  -> FAIL floor offset: a row that sank stayed 0.301 m off the host floor
 //   wall snap returning null                                     -> FAIL wall offset: the box stayed 1.250 m off the wall at z -4
 //   cutWalls returning []                                        -> FAIL clip: a counter half through a wall was not refused (and the shallow one stayed in it)
+//   the `lift` line in seatRows removed                          -> FAIL lift: a floor row with lift -0.045 stands at y 0.200, not 0.155 (2026-11-19)
 //   anchorFor ignoring sameShell                                 -> FAIL same shell: the kit was not anchored at the host's origin and yaw (yaw -90)
 
 import { readFileSync, readdirSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
@@ -122,6 +123,15 @@ for (const [floorY, what] of [[0.5, "sank"], [0, "floated"]]) {
   check(Boolean(res.rows[0].furniture) && /Table/.test(res.rows[0].furniture), "a row standing in the host's own furniture was not flagged");
   check(!res.rows[1].furniture && res.furniture.length === 1, "a row clear of the host's furniture was flagged");
   check(near(local(rows[0].coords)[0], before[0]) && near(local(rows[0].coords)[2], before[2]), "a row in the host's furniture was moved instead of flagged");
+}
+
+// ---- a kit row's `lift` sinks a floor row below the model's top surface (the hall tiles of House_Town_E_2I02, #3236)
+{
+  const rows = [at("lifted", -3, 0.2, 2)];
+  const kitRows = [{ id: "lifted", verb: "on floor", role: "counter", prefab: STALL, lift: -0.045 }];
+  const res = await seat.seatRows(rows, kitRows, HOST, { reader: reader({ "Fixture/Host.et": room(0.2) }) });
+  check(near(local(rows[0].coords)[1], 0.2 - 0.045), `lift: a floor row with lift -0.045 stands at y ${local(rows[0].coords)[1].toFixed(3)}, not 0.155`);
+  check(res.rows[0].notes.some((n) => /lifted/.test(n)), "lift: the seat report does not say the row was lifted");
 }
 
 // ---- a socket row is left out; a furniture set with no bounds stays where the kit puts it

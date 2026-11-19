@@ -95,6 +95,21 @@ function hostKids(root, vfs, gp, path, rows) {
   };
   try {
     visit(path, { x: 0, y: 0, z: 0, yaw: 0 }, 0);
+    // A building prefab saved from a world instance (House_Town_E_2I02_yellow) keeps that instance's own `coords` and
+    // `angles` on its root, and its furniture children carry them too: take them out so a kid is in the building's own
+    // frame, as the kit rows and the shell are (the barber's chairs sat on the sofa and nothing flagged it, #3236).
+    const rootText = gp.readText(root, vfs, path) ?? "";
+    const rc = /^ coords\s+(\S+)\s+(\S+)\s+(\S+)/m.exec(rootText);
+    const ra = /^ angles\s+(\S+)\s+(\S+)\s+(\S+)/m.exec(rootText);
+    if (rc && Number(rc[1]) !== 0) {
+      const yaw = ra ? Number(ra[2]) : 0;
+      for (const k of out) {
+        const [lx, lz] = toLocal(k.x - Number(rc[1]), k.z - Number(rc[3]), yaw);
+        k.x = lx;
+        k.z = lz;
+        k.yaw = k.yaw - yaw;
+      }
+    }
   } catch {
     // an unreadable child list is no furniture to flag
   }
@@ -345,6 +360,12 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false 
           const top = tops.sort((a, b2) => Math.abs(a - bottom) - Math.abs(b2 - bottom))[0];
           if (Math.abs(top - bottom) > TOL) l.y += top - bottom;
         } else res.notes.push(`no host floor within ${FLOOR_BAND} m of its kit height under it`);
+        // A host whose walkable floor lies below its model's top surface (the House_Town_E_2I02 hall tiles: 4.5 cm, measured by
+        // `look contact`, #3236): the kit row says how far, as `lift` in metres (negative sinks it), applied after the snap.
+        if (Number.isFinite(s.lift) && s.lift !== 0 && tops.length) {
+          l.y += s.lift;
+          res.notes.push(`lifted ${s.lift} m from the model's top surface`);
+        }
         if (m.against) {
           const w = wallSnap(NEAR_WALL, NEAR_WALL);
           if (w && Math.abs(w.shift) > TOL) {

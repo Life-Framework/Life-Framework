@@ -1699,6 +1699,16 @@ StringTable {
      Target_en_us "The vault door on the bank's east wall. Behind it, a bag of cash."
      Comment "Sign card for the bank vault door (a robbery site), What section."
     }
+    CustomStringTableItem "{A5CB85E823411AF3}" {
+     Id "LF-Sign_Barber_Title"
+     Target_en_us "Coiffeur"
+     Comment "Fascia of the Saint-Philippe barber shop (#3236): the board over the door and the prompt Read: Coiffeur."
+    }
+    CustomStringTableItem "{E17DC6149D683CEE}" {
+     Id "LF-Sign_Barber_What"
+     Target_en_us "The village coiffeur: sit in a chair and pick a new cut, colour or beard|Prices are 1989 prices, cash only"
+     Comment "Sign card for the Saint-Philippe barber shop, What section (#3236)."
+    }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
      Target_en_us "Stand at the stall and knock (F). The price list opens: pick the handgun and pay."
@@ -2093,6 +2103,21 @@ StringTable {
      Id "LF-Sign_GeneralStore_Next"
      Target_en_us "Sell what you gather at the market stalls next door, to the east|Cars are sold at the vehicle lot across the street"
      Comment "Sign card for the general store, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{98AD9902C05C38A0}" {
+     Id "LF-Sign_GeneralStore_Special1"
+     Target_en_us "Bread"
+     Comment "Store A-frame special 1: a chalk row on the general store pavement board (#3305). Price 3 matches LF_ShopStock_Everon1989."
+    }
+    CustomStringTableItem "{0AA236A7C73670FE}" {
+     Id "LF-Sign_GeneralStore_Special2"
+     Target_en_us "Fresh milk"
+     Comment "Store A-frame special 2 (#3305). Price 4 matches LF_ShopStock_Everon1989."
+    }
+    CustomStringTableItem "{48226C495DB4B471}" {
+     Id "LF-Sign_GeneralStore_Special3"
+     Target_en_us "Tinned fish"
+     Comment "Store A-frame special 3 (#3305). Price 6 matches LF_ShopStock_Everon1989."
     }
     CustomStringTableItem "{10B8F417BFC331B0}" {
      Id "LF-Sign_GeneralStore_Title"
@@ -2804,6 +2829,21 @@ StringTable {
      Target_en_us "Paid in cash, a fixed price per item."
      Comment "Sign card for the market stalls that buy produce, Rules section."
     }
+    CustomStringTableItem "{FD941F33CF6FF710}" {
+     Id "LF-Sign_Traders_Special1"
+     Target_en_us "Apples"
+     Comment "Market A-frame line 1: what the traders buy, a chalk row (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{EAC2FC02DE625E9C}" {
+     Id "LF-Sign_Traders_Special2"
+     Target_en_us "Plums"
+     Comment "Market A-frame line 2 (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{A85914EECAC56866}" {
+     Id "LF-Sign_Traders_Special3"
+     Target_en_us "Cabbages"
+     Comment "Market A-frame line 3 (#3305). Value is the base price in LF_Market_Everon1989."
+    }
     CustomStringTableItem "{83FF557EE9B09C57}" {
      Id "LF-Sign_Traders_Title"
      Target_en_us "Market"
@@ -2848,6 +2888,21 @@ StringTable {
      Id "LF-SiteFlag_Unclaimed"
      Target_en_us "No holder on record"
      Comment "Pack wording (#2687): painted board on a contested site's flag pole when no organisation holds the site."
+    }
+    CustomStringTableItem "{179A8ED2FA171BFA}" {
+     Id "LF-SiteName_farm_compound"
+     Target_en_us "Farm Compound"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is farm_compound."
+    }
+    CustomStringTableItem "{63EEEDDB7220E37C}" {
+     Id "LF-SiteName_hilltop_mast"
+     Target_en_us "Hilltop Mast"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is hilltop_mast."
+    }
+    CustomStringTableItem "{8391E4196D2A45D3}" {
+     Id "LF-SiteName_quarry_hideout"
+     Target_en_us "Quarry Hideout"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is quarry_hideout."
     }
     CustomStringTableItem "{08E024031EF25E98}" {
      Id "LF-TownBoard_Title"

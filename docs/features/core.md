@@ -226,6 +226,18 @@
   so it survives death, respawn and restart. A listen host puts its preview back before paying, so its server does not refuse the look as already worn. `LF_WantedLook.Capture` records the head (`|h=HEADGUID`), so wanted posters and photo IDs show the paid look. Tests `barber/changes-hair`, `barber/persist`, `barber/host-and-portrait`. Placing the chair
   in the Saint-Philippe barber (b43) is the shop card.
 
+- 🧪 **The Saint-Philippe barber slot (#3236, in-dev).** Town house b43 (`House_Town_E_2I02_yellow`, on the square row
+  beside the clinic) holds the `barber` slot: `LF_PlaceComponent` kind `BarberChair` (`saint-philippe.barber`; the map
+  POI comes from the template, #3518) plus the kit `tools/town/kits/barber.json`. The salon is the empty south end of the
+  tiled carriage hall (the flat's furnished rooms stay behind their doors): one wide wall mirror
+  (`MirrorBathroom_02`) on the east wall, two `LF_BarberChair` seats 1.4 m in front of it, a basin on the same wall, a
+  `CounterShop_01` against the west wall, and a barber-red `LF_Sign_Fascia` over the carriage doors reading COIFFEUR
+  (pack sign `barber`, `LF-Sign_Barber_*` strings). Floor rows carry a `lift` of -0.045 m (counter -0.055): the hall's
+  walkable floor lies below its model's top surface, so `look contact` reads 0 cm. The fascia stands 0.1 m off the
+  collider wall because the plaster is proud of it (text hidden behind it otherwise). `seat.mjs` now takes the root
+  transform off the host's furniture so a row standing in the flat's sofa is flagged. Layer
+  `Place_saint-philippe_barber.layer`, claim `saint-philippe-barber.json`.
+
 ### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
 - ✅ One list on another player's body (`Character_Roleplay.et`, context
   `LF_ID`): Introduce yourself, Show ID, Give cash, Give what you hold; on-duty

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "chopyard",
+  "slot": "yard",
+  "building": "b13",
+  "kit": "chop-yard",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_chopyard_yard.layer",
+  "kinds": [
+    "ChopYard"
+  ],
+  "rows": 17,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_chopyard_yard_Place"
+  },
+  "date": "2026-11-19"
+}

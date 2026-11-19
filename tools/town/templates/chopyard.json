@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "kind": "chopyard",
+  "about": "A lone yard away from any town: one farm shed, barn or garage with open ground in front of it, where stolen cars are chopped. One slot, no sign and no map marker. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "yard", "required": true, "kit": "chop-yard", "host": "building", "poi": "none", "margin": 24,
+      "needs": { "interior": "optional", "minArea": 25, "prefer": "far", "types": ["farm", "farm-small", "garage", "shed", "industrial"] },
+      "places": ["ChopYard"]
+    }
+  ]
+}
