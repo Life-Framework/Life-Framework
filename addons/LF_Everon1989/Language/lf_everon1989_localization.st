@@ -1349,6 +1349,11 @@ StringTable {
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
     }
+    CustomStringTableItem "{069AD0D1539E7BB7}" {
+     Id "LF-MapPoi_Mine"
+     Target_en_us "Mine"
+     Comment "Map POI kind name (#3241): a mine, where a miner digs ore or coal (LF_Places kind mine). The map adds the town."
+    }
     CustomStringTableItem "{046B777F2F3B3DC1}" {
      Id "LF-MapPoi_Newsagent"
      Target_en_us "Newsagent"
@@ -1368,6 +1373,11 @@ StringTable {
      Id "LF-MapPoi_Pharmacy"
      Target_en_us "Pharmacy"
      Comment "Map POI name (#3515): the pharmacy counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{6A6E592B5FF9A7FD}" {
+     Id "LF-MapPoi_Plant"
+     Target_en_us "Plant"
+     Comment "Map POI kind name (#3241): a processing plant, a smelter, refinery or cement works (LF_Places kind plant)."
     }
     CustomStringTableItem "{1FA54D4B3E7D5BC1}" {
      Id "LF-MapPoi_SeedFeed"
@@ -2619,6 +2629,31 @@ StringTable {
      Target_en_us "The island sawmill: saw hardwood and softwood logs into boards, posts and firewood."
      Comment "Sign card for the Everon sawmill, What section."
     }
+    CustomStringTableItem "{F868DCD01EFFA837}" {
+     Id "LF-Sign_EveronScrapyard_How"
+     Target_en_us "*Load the recycler*, then *Break it down*, then *Collect the parts*. Sell the parts at the cabin."
+     Comment "Sign card for the scrapyard, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{E941251646E022BE}" {
+     Id "LF-Sign_EveronScrapyard_Needs"
+     Target_en_us "Something to break down: a car door, an old radio, a worn tool. Search the dump piles at night."
+     Comment "Sign card for the scrapyard, You need section."
+    }
+    CustomStringTableItem "{4AF72E50CF5DB8D0}" {
+     Id "LF-Sign_EveronScrapyard_Next"
+     Target_en_us "Parts and scrap metal sell at the yard cabin. A flooded yard pays less."
+     Comment "Sign card for the scrapyard, Next section."
+    }
+    CustomStringTableItem "{F569F72B499FF384}" {
+     Id "LF-Sign_EveronScrapyard_Title"
+     Target_en_us "Casse"
+     Comment "Title of the sign at the scrapyard (Everon 1989 pack, #3357). Printed on the sign and shown in the prompt as Read: Casse."
+    }
+    CustomStringTableItem "{782813B1DA8109EA}" {
+     Id "LF-Sign_EveronScrapyard_What"
+     Target_en_us "The island scrapyard: wrecks to pick over, a recycler bench and a dealer in the cabin."
+     Comment "Sign card for the scrapyard, What section."
+    }
     CustomStringTableItem "{4E7B1C9A2D8F5036}" {
      Id "LF-Sign_FarmCompound_What"
      Target_en_us "Abandoned farm. Whoever holds the yard longest holds the barn."
@@ -2708,6 +2743,31 @@ StringTable {
      Id "LF-Sign_FishermansBay_What"
      Target_en_us "A sheltered cove below the lighthouse, with a bench and a lantern on its shore. Bass come in close at dusk."
      Comment "Sign card for the Fisherman's Bay plate, What section."
+    }
+    CustomStringTableItem "{D3B5326222E01DEA}" {
+     Id "LF-Sign_FuelDepot_How"
+     Target_en_us "Fill a tanker at the depot and drive it to a filling station."
+     Comment "Sign card for the Montignac fuel depot, How section."
+    }
+    CustomStringTableItem "{B36BFEC7627B930C}" {
+     Id "LF-Sign_FuelDepot_Needs"
+     Target_en_us "A tanker truck and a driving licence."
+     Comment "Sign card for the Montignac fuel depot, You need section."
+    }
+    CustomStringTableItem "{D7656097F74F86FF}" {
+     Id "LF-Sign_FuelDepot_Next"
+     Target_en_us "The stations pay for every litre that fits their tank."
+     Comment "Sign card for the Montignac fuel depot, Next section."
+    }
+    CustomStringTableItem "{0E902C79A08FF34E}" {
+     Id "LF-Sign_FuelDepot_Title"
+     Target_en_us "Collective-farm fuel depot"
+     Comment "Title of the sign at the Montignac fuel depot yard (Everon 1989 pack, #3336)."
+    }
+    CustomStringTableItem "{D448F9A388D58121}" {
+     Id "LF-Sign_FuelDepot_What"
+     Target_en_us "The collective farm fuel store: diesel for the island filling stations is loaded here."
+     Comment "Sign card for the Montignac fuel depot, What section."
     }
     CustomStringTableItem "{D47AD7112B2DF884}" {
      Id "LF-Sign_FuelStation_How"

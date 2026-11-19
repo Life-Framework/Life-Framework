@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5D2C8E1A7B94F306}Configs/Jobs/LF_GarbageRound.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

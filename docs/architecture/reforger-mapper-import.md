@@ -82,6 +82,7 @@ Vectors are written by the placement tool's `appendEntity`, bare (`coords 183.96
 ```
 tools\cli mapper import <project.json> [--cell cXrY] [--span WxH] [--slug s] [--dry] [--no-verify] [--no-fetch]
 tools\cli mapper import <project.json> --slot <Layer.layer> --at x,z [--dry]        (a ws/town-* branch only)
+tools\cli mapper import <project.json> --slot Place_<place>_<slot>.layer [--at x,z] [--dry] [--keep]   (an island slot; a ws/town-draft-<place>-<slot>[-word] branch)
 ```
 
 1. Parse. A project that is not JSON, not `version: 0`, or has no `entities` (shapes only) is refused with the reason.
@@ -93,21 +94,32 @@ tools\cli mapper import <project.json> --slot <Layer.layer> --at x,z [--dry]    
    `grid place`); `--span` overrides.
 4. **Cell mode (default).** `grid place <slug> [--cell] --span --no-verify` claims the cell (yard fence, label sign, claim
    file, world-zone checks, the claim clash checks against `origin/main`, open PRs and sibling worktrees); the slug is
-   `mapper-<file name>` unless `--slug`. Then `place ground x,z <ref> --layer Grid_<slug>.layer --yaw a --name ...
-   --y-hint 0 --no-verify` per prop (offline overlap, carriageway, door-swing and scale checks, the ground probe), one
-   `place settle` for the lot and `audit placement --grid --strict --layer Grid_<slug>.layer`. A prop the checks refuse is
-   reported and the exit is 1; the others stay written. If nothing was placed the claim is freed again. A second import
-   of the same slug is refused until `grid free <slug>`.
-5. **Slot mode.** `--slot <Layer.layer>` writes into a layer of the **playtest town** (DebugWorld and Everon1989Town
+   `mapper-<file name>` unless `--slug`. Then ONE `place ground-many <plan.json> --layer Grid_<slug>.layer --no-verify --y-hint 0`
+   for every prop (the plan is a JSON array of `{ at: [x, z], prefab, yaw, name }`: the offline overlap, carriageway, door-swing
+   and scale checks, one ground probe boot and one write; all or nothing, and a refused batch falls back to `place ground` per
+   prop to name the refused one and keep the others), one `place settle` for the lot and
+   `audit placement --grid --strict --layer Grid_<slug>.layer`. A prop the checks refuse is reported and the exit is 1;
+   the others stay written. If nothing was placed the claim is freed again. A second import of the same slug is refused until
+   `grid free <slug>`.
+5. **Slot mode, playtest town.** `--slot <Layer.layer>` writes into a layer of the **playtest town** (DebugWorld and Everon1989Town
    layers, the ones `place` reaches), only on a `ws/town-*` branch (`world-zones.md` "The guard"), only with `--at x,z`
-   (the tool never invents a town coordinate), then `place verify` on what it wrote. A `Grid_` layer, an unknown layer and an
-   island slot layer (`MainWorld_Layers/Place_*`) are refused with a message that says which.
-6. `--dry` prints the plan and writes nothing; it needs no pool machine.
+   (the tool never invents a town coordinate), then `place verify` on what it wrote. A `Grid_` layer and an unknown layer
+   are refused with a message that says which.
+6. **Slot mode, island** (#3851, `tools/mapper/island.mjs`). `--slot Place_<place>_<slot>.layer` (`MainWorld_Layers`) adds the props to an
+   island slot that `town fit` already made (it needs its claim in `tools/town/claims/`), only on a
+   `ws/town-draft-<place>-<slot>[-<word>]` branch (the zone guard). `--at` is optional: the default is the slot's ground
+   centre (the plot's or the building's, from the dossier). Every prop's footprint must stand inside that ground plus the slot's
+   margin. ONE test-server boot on the island probes the terrain under every footprint (the probe `town fit --terrain` uses); the
+   props stand on it by the place tool's own level-ground rule (a prop on a slope is refused); overlap with the slot's entities
+   and the batch is refused; the entities are appended as `Mapper_<place>_<slot>_M<n>`; the zone check `validate-island-zones`
+   runs is applied to the written layer; `audit placement --strict --world MainWorld --layer` judges it. A flagged layer is
+   restored byte for byte (`--keep` leaves it); a layer that holds an import already is refused. A later
+   `town fit <place> <slot> --refit` rewrites the layer from the kit and drops the props: import again after it.
+7. `--dry` prints the plan and writes nothing; it needs no pool machine.
 
-Time: each prop is one test-server boot for its ground probe (about 25 s with the queue), plus one for the settle and
-about 35 s for the audit. The spike's 4 props took about 3.5 minutes; a 30-prop layout is a quarter of an hour. Batching
-the probes of all props into one boot is the obvious speed-up (`groundPlans` in `tools/place/place.mjs` already takes a
-list; `place ground` exposes one).
+Time: three test-server boots for a whole cell import however many props (one `ground-many` probe, one settle, one audit,
+about 2 minutes with the queue); the spike's per-prop `place ground` took 3.5 minutes for 4 props and a quarter of an hour
+for 30. An island slot is two boots: one terrain probe and the audit.
 
 ## Sample and proof
 
@@ -119,21 +131,24 @@ as `Grid_mapper_junkyard_small.layer`; `tools\cli look grid:mapper-junkyard-smal
 `tools/validation/mapper-selftest.mjs` covers the converter with fakes (fixture to calls, unknown prefab dropped, a quoted
 vector impossible, slot guards).
 
-**The fixture is hand-written, not exported by running Mapper.** The format is small and documented, the junkyard module
-is TypeScript behind a map UI, and the card allowed either. A real export, and a check that Mapper's yaw turns props the
-same way `angleY` does in a shot, are still open (both writers use the Enfusion yaw, so it should).
+**The fixtures are hand-written, not exported by running Mapper.** The format is small and documented, the junkyard module
+is TypeScript behind a map UI, and the card allowed either. A real export is still open.
+
+**Island slot proof (#3851, 2026-11-19).** `tools/test/fixtures/mapper/lakeshore-small.json` (a street bench at yaw 270, a bucket, a crate
+and a barrel) went into `blacklake/shore` from `town-draft-blacklake-shore-mapper`: `mapper import ... --slot Place_blacklake_shore.layer`,
+no `--at` (the plot's centre), 4 props placed, one island terrain probe plus the audit (2 boots), the strict island audit flagged none of
+them. The four `Mapper_blacklake_shore_M<n>` entities are committed in that slot's layer. **Yaw:** the bench at Mapper yaw 270 is
+written as `angleY -90` and stands facing west, towards the lake, in the `look` close-up (`from-east` and `bench-yaw` in the PR): our
+`angleY` is the Enfusion yaw Mapper's plugin writes (`angles "0 <yaw> 0"`, read from its source), 0 north, 90 east. That is what the shot
+proves on our side; Mapper's own export was not run.
 
 ## Not done
 
-- **Island slots.** `place` only reaches the playtest town's layers; the island's `Place_<place>_<slot>.layer` files
-  (`MainWorld_Layers`) are written by `town fit`, with claims, a host building and a place marker. Importing into an
-  island slot needs a `town fit`-style writer for loose props: a follow-up card. Slot mode is checked by guards and `--dry`
-  only; no `--slot` run was made in a `town-` worktree.
+- **Island slots on a building host.** The writer is done and proven on a hostless plot (`blacklake/shore`); a slot with a host building keeps its kit's interior: a layout there is checked only against the building's footprint plus margin, so the import fits outdoor dressing, not furnishing.
 - **Shapes as props.** Walls and fences (`WG_*`) and hedge lines (`PG_*`) could become rows of our fence and hedge
   prefabs along the polyline; today they are reported and skipped.
 - **Rotating a layout** to face a cell's gap, or fitting a layout bigger than the free block, are not handled: the layout
   keeps Mapper's orientation and `--span` or a larger cell is the answer.
-- **Batching** the per-prop probes (above).
 
 ## Wish list for a "gameplay markers" export (upstream suggestion, for later)
 

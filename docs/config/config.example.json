@@ -71,6 +71,8 @@
     "runMinDistance": 300,
     "runMinTimeFraction": 0.6,
     "runRoadSpeed": 10,
+    "nightRunStartHour": 21,
+    "nightRunEndHour": 5,
     "cargoDepositPercent": 100,
     "cargoDepositFallback": 50,
     "jobXpFirstLevel": 500,

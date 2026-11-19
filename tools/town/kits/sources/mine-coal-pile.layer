@@ -1,0 +1,37 @@
+// Source of the `mine-coal-pile` kit (tools/town/kits/mine-coal-pile.json, #3241): vanilla base-game props, GUIDs read by `town fit`. Frame: the kit origin, +z the open side.
+GenericEntity Source_MineCoalPile_Heap1 : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_large.et" {
+ coords 0 0 0
+ angleY 0
+}
+GenericEntity Source_MineCoalPile_Heap2 : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_large.et" {
+ coords 5 0 1.4
+ angleY 110
+}
+GenericEntity Source_MineCoalPile_Heap3 : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et" {
+ coords -4.2 0 1
+ angleY 40
+}
+GenericEntity Source_MineCoalPile_Barrow : "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et" {
+ coords 2.2 0 4.2
+ angleY 25
+}
+GenericEntity Source_MineCoalPile_Bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 0.6 0 4.4
+ angleY 0
+}
+GenericEntity Source_MineCoalPile_Cart1 : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords -5.5 0 5
+ angleY 90
+}
+GenericEntity Source_MineCoalPile_Cart2 : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords -7.5 0 5
+ angleY 90
+}
+GenericEntity Source_MineCoalPile_Picks : "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et" {
+ coords 3.8 0 5.4
+ angleY 70
+}
+GenericEntity Source_MineCoalPile_Lantern : "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et" {
+ coords -2 0 5
+ angleY 0
+}
