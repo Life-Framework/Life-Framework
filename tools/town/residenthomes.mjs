@@ -47,6 +47,8 @@ export const HOMES = [
 const PLATE_LIFT = 1.4; // metres over the ground: a name plate sits at about door-handle height
 const PLATE_SCALE = 0.5; // the vanilla 90 x 45 cm plate, halved
 const DOOR_OUT = 1.5; // the door anchor stands this far in front of the plate
+const BENCH_OUT = 3.2; // the bench anchor: further out on the street side, and to the side along the wall
+const BENCH_SIDE = 1.5;
 const SURVEYS = { sp: "", di: "-districts", dk: "-dock" };
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const guid = (seed) => `{${createHash("sha1").update(seed).digest("hex").slice(0, 16).toUpperCase()}}`;
@@ -95,6 +97,20 @@ export function renderHome({ place, h, marker, plate }) {
     ` scale ${PLATE_SCALE}`,
     "}",
   ];
+  // The `bench` anchor stands outside too: without one a resident sits at the house marker origin, inside the shell, and the walk out is a
+  // 34 s stuck timeout (teller, 2026-11-19). b15 keeps the residents slot anchors (door and bench); the others get both outside.
+  const benchAt = [r3(plate.coords[0] + Math.sin(a) * BENCH_OUT + Math.cos(a) * BENCH_SIDE), r3(plate.coords[1] - PLATE_LIFT), r3(plate.coords[2] + Math.cos(a) * BENCH_OUT - Math.sin(a) * BENCH_SIDE)];
+  const benchstep = h.existing ? [] : [
+    `GenericEntity ${entityName("ResidentBench", place, id)} {`,
+    " components {",
+    `  LF_ResidentAnchorComponent "${guid(`resident-home-bench:${id}`)}" {`,
+    '   m_sAnchorId "bench"',
+    "  }",
+    " }",
+    ` coords ${benchAt.join(" ")}`,
+    ` angleY ${plate.yaw}`,
+    "}",
+  ];
   // b15 keeps its own door anchor (the residents slot placed it); the others get one on the doorstep.
   const doorstep = h.existing ? [] : [
     `GenericEntity ${entityName("ResidentDoor", place, id)} {`,
@@ -107,7 +123,7 @@ export function renderHome({ place, h, marker, plate }) {
     ` angleY ${plate.yaw}`,
     "}",
   ];
-  return [...marked, ...plated, ...doorstep, ""].join(String.fromCharCode(10));
+  return [...marked, ...plated, ...doorstep, ...benchstep, ""].join(String.fromCharCode(10));
 }
 
 // Pure: the sign rows (one per plate): the title only; the card shows just the name.

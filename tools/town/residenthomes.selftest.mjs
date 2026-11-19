@@ -35,6 +35,7 @@ for (const h of HOMES) {
   else {
     check(layer.includes(`m_sId "${id}"`) && layer.includes('m_sKind "House"'), `${h.resident}: the layer places the House ${id}`);
     check(layer.includes(`m_sSignId "${signId(h)}"`), `${h.resident}: the layer has a plate`);
+    check(layer.includes(`ResidentBench_saint_philippe_${h.row.replace(":", "_")} `) && layer.includes('m_sAnchorId "bench"'), `${h.resident}: the layer has a bench anchor outside the house`);
     check(layer.includes("LF_HouseManagerComponent"), "the markers are house markers");
   }
   const at = conf.indexOf(`m_sId "${h.resident}"`);
