@@ -84,3 +84,63 @@ class LF_DialogueHook_QuestItemsHeld : LF_DialogueHook
 		return collects;
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Condition: the player handed in one of the quests lately (#3441). The param is `id[,id]:days`: any
+//! of the listed quests turned in within that many game days. Talk of the town fades this way; a
+//! restart or a respawn counts the days from the restore (the turn-in time is not saved).
+class LF_DialogueHook_QuestTurnedInRecent : LF_DialogueHook
+{
+	static const float GAME_DAY_SECONDS = 7200;	// lf-fixed: one in-game day at the 2 hour day (LF_OrgWarConfig, M4)
+
+	//------------------------------------------------------------------------------------------------
+	//! Splits `id[,id]:days`. \return false when the param names no quest or the days are not a positive number.
+	static bool ParseParam(string param, notnull array<string> questIds, out float days)
+	{
+		questIds.Clear();
+		days = 0;
+		array<string> halves = {};
+		param.Split(":", halves, true);
+		if (halves.Count() != 2)
+			return false;
+
+		halves[0].Split(",", questIds, true);
+		days = halves[1].ToFloat();
+		return questIds.Count() > 0 && days > 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[in] turnedInAt World second of the turn-in, -1 when not turned in.
+	static bool IsRecent(float turnedInAt, float now, float days)
+	{
+		if (turnedInAt < 0)
+			return false;
+
+		return now - turnedInAt < days * GAME_DAY_SECONDS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool Allows(IEntity player, IEntity npc, string param)
+	{
+		array<string> questIds = {};
+		float days;
+		if (!ParseParam(param, questIds, days))
+		{
+			LF_Debug.Error("Quests", "dialogue condition QuestTurnedInRecent has a bad param '" + param + "' (want id[,id]:days)");
+			return false;
+		}
+
+		LF_QuestTrackerComponent tracker = LF_Component<LF_QuestTrackerComponent>.Find(player);
+		if (!tracker)
+			return false;
+
+		float now = GetGame().GetWorld().GetWorldTime() / 1000.0;
+		foreach (string questId : questIds)
+		{
+			if (IsRecent(tracker.GetTurnedInAt(questId), now, days))
+				return true;
+		}
+
+		return false;
+	}
+}
