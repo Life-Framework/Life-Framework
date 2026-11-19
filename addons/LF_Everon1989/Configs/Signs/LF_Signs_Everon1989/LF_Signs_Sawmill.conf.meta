@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{AC876B9F7533ACAA}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Sawmill.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
