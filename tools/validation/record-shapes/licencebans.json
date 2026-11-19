@@ -1,0 +1,16 @@
+{
+  "section": "licencebans",
+  "class": "LF_LicenceBansSavePayload",
+  "version": 1,
+  "roots": "LF_LicenceBanRow",
+  "records": {
+    "LF_LicenceBanRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sPlayerUid",
+        "string m_sLicence",
+        "int m_iEndMinute"
+      ]
+    }
+  }
+}
