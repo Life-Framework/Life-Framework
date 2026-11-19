@@ -20,10 +20,10 @@
 // SOFTWARE.
 //
 //------------------------------------------------------------------------------------------------
-//! Puts the escorted prisoner in the nearest free non-driver seat. The vehicle
-//! id is this entity's name. Seat rows come from LF_JailEscort.OfferSeat. A
-//! vehicle with no free passenger seat is refused and logged. The sentence
-//! does not start here.
+//! Puts the escorted prisoner in a free passenger seat of this car
+//! (LF_JailEscortCar.PutIn: the real seat, the escort hold, the reach check).
+//! A car with no free passenger seat is refused and the officer told. The
+//! sentence does not start here.
 //------------------------------------------------------------------------------------------------
 class LF_JailPutInVehicleAction : ScriptedUserAction
 {
@@ -51,20 +51,9 @@ class LF_JailPutInVehicleAction : ScriptedUserAction
 			return false;
 		}
 
-		if (GetOwner().GetName().IsEmpty())
-		{
-			SetCannotPerformReason("#EL-Escort_NoPrisoner");
-			return false;
-		}
-
-		// Escort holds live on the server; a client leaves this check to the server.
-		string officerUid = LF_Utils.GetPlayerUid(user);
-		if (Replication.IsServer() && LF_JailEscort.GetOnFootPrisoner(officerUid).IsEmpty())
-		{
-			SetCannotPerformReason("#EL-Escort_NoPrisoner");
-			return false;
-		}
-
+		// The escort hold lives only on the server. A dedicated server never shows the officer a
+		// reason from here, so the hold, the reach and the seat are judged in PerformAction, which
+		// tells the officer why it refused (#3431).
 		return true;
 	}
 
@@ -80,16 +69,7 @@ class LF_JailPutInVehicleAction : ScriptedUserAction
 		if (!pOwnerEntity || !pUserEntity)
 			return;
 
-		string officerUid = LF_Utils.GetPlayerUid(pUserEntity);
-		string prisonerUid = LF_JailEscort.GetOnFootPrisoner(officerUid);
-		string vehicleId = pOwnerEntity.GetName();
-		if (officerUid.IsEmpty() || prisonerUid.IsEmpty() || vehicleId.IsEmpty())
-		{
-			LF_Debug.Error("Jail", "escort put-in refused: officer, prisoner, or vehicle id is empty");
-			return;
-		}
-
-		LF_JailEscort.Load(officerUid, prisonerUid, vehicleId);
+		LF_JailEscortCar.PutIn(pUserEntity, pOwnerEntity);
 	}
 
 	//------------------------------------------------------------------------------------------------
