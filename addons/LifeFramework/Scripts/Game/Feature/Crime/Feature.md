@@ -120,6 +120,7 @@ ob refused logged, offer reads #LF-Bank_NeedTool.
 - `LF_ChopShopComponent` (a bench) with `LF_ChopAction` in three modes (load, work, collect), `LF_StationProgress` for the work. `LF_ChopShopRules` is the pure rule set (payout, check, cooldown); `LF_ChopShopConfig` reads `Configs/Crime/LF_ChopShop.conf`.
 - Collect: cash through `LF_MoneyUtils.AddCash` (`chopshop`), `LF_CarParts` items, `LF_StolenVehicles.Clear`, `LF_VehicleOwnership.Scrap`, the effect (`LF_BroadcastChopEffect`, a local particle on every rendering machine), then `LF_WantedReports.Report(... OFFENCE_CHOP)` for the evidence and `LF_OnVehicleChopped`.
 - Session state; test `chopshop/payout`, `e2e/chopshop-yard`; proof `session.mjs chop-proof`. Log `[LFDebug:ChopShop]`.
+- Fitting a hidden compartment (#3776): `LF_ChopFitAction` calls `LF_ChopFit.Serve`, which charges the compartment table price (`LF_VehicleCompartmentConfig`, pack data) and runs `LF_VehicleCompartment.Fit` for the car owner; the rules are `LF_ChopFitRules`. Test `crime/chop-fit-rules`, pack test `everon/chop-fit`.
 
 ## Stolen vehicles (#414)
 
