@@ -289,10 +289,80 @@ StringTable {
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
      Comment "Pack patch of the clerk dialogue's line work_errand (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{7BDFAF37D3BDD834}" {
+     Id "LF-Dialogue_Dockworker_AboutCargo"
+     Target_en_us "Flour, diesel, machine parts. What is in the other crates is the harbour master's business, and he does not share."
+     Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
+    }
+    CustomStringTableItem "{4682C7C311BB4E55}" {
+     Id "LF-Dialogue_Dockworker_AboutWork"
+     Target_en_us "Ask the harbour master. He hires by the day when a boat comes in, and pays when the boat is empty."
+     Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
+    }
+    CustomStringTableItem "{9522D9D58323D43B}" {
+     Id "LF-Dialogue_Dockworker_Bye"
+     Target_en_us "Off you go, then."
+     Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
+    }
+    CustomStringTableItem "{08B2BF1FE8852698}" {
+     Id "LF-Dialogue_Dockworker_Greet"
+     Target_en_us "Mind your feet, the crane swings wide. You want something, or are you just watching us sweat?"
+     Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
+    }
+    CustomStringTableItem "{49995D617FA2989A}" {
+     Id "LF-Dialogue_Dockworker_Name"
+     Target_en_us "Dockworker"
+     Comment "Speaker name above the dialogue caption: a dockworker at the Saint-Philippe harbour during the shipment scene."
+    }
+    CustomStringTableItem "{5FC37E736C816BA5}" {
+     Id "LF-Dialogue_Dockworker_SayBye"
+     Target_en_us "I'll leave you to it."
+     Comment "Dialogue reply the player can pick when talking to the dockworker NPC."
+    }
+    CustomStringTableItem "{16C0FB05BC2B9B46}" {
+     Id "LF-Dialogue_Dockworker_SayCargo"
+     Target_en_us "What came in on the boat?"
+     Comment "Dialogue reply the player can pick when talking to the dockworker NPC."
+    }
+    CustomStringTableItem "{0E7A25E6B31313F7}" {
+     Id "LF-Dialogue_Dockworker_SayWork"
+     Target_en_us "Any work on the docks?"
+     Comment "Dialogue reply the player can pick when talking to the dockworker NPC."
+    }
     CustomStringTableItem "{4E29407E130F00C3}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
-     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
+     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, maps and snacks in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{632BADA7E940D7F6}" {
+     Id "LF-Dialogue_Gendarme_AboutWhat"
+     Target_en_us "A routine inspection of a shipment. If you saw anything on these docks tonight, the station on the square takes statements."
+     Comment "Dialogue caption, spoken by the gendarme NPC (text only; tools/assets/dialogue/gendarme). Changing it needs: tools\\cli asset dialogue gendarme"
+    }
+    CustomStringTableItem "{AB1C3152CF016882}" {
+     Id "LF-Dialogue_Gendarme_Bye"
+     Target_en_us "Move along now. Thank you."
+     Comment "Dialogue caption, spoken by the gendarme NPC (text only; tools/assets/dialogue/gendarme). Changing it needs: tools\\cli asset dialogue gendarme"
+    }
+    CustomStringTableItem "{BB548D11A912F53A}" {
+     Id "LF-Dialogue_Gendarme_Greet"
+     Target_en_us "Gendarmerie. Stand back from the warehouse, please. This is a police matter."
+     Comment "Dialogue caption, spoken by the gendarme NPC (text only; tools/assets/dialogue/gendarme). Changing it needs: tools\\cli asset dialogue gendarme"
+    }
+    CustomStringTableItem "{1851DF85B4179C76}" {
+     Id "LF-Dialogue_Gendarme_Name"
+     Target_en_us "Gendarme"
+     Comment "Speaker name above the dialogue caption: a gendarme guarding the dock warehouse during the shipment raid."
+    }
+    CustomStringTableItem "{BB5B2C7FA9F33B11}" {
+     Id "LF-Dialogue_Gendarme_SayBye"
+     Target_en_us "I am going."
+     Comment "Dialogue reply the player can pick when talking to the gendarme NPC."
+    }
+    CustomStringTableItem "{5E82226A90E19C18}" {
+     Id "LF-Dialogue_Gendarme_SayWhat"
+     Target_en_us "What is going on here?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme NPC."
     }
     CustomStringTableItem "{A5BFE7A72F0C053D}" {
      Id "LF-Dialogue_HarbourMaster_Bye"
@@ -578,6 +648,346 @@ StringTable {
      Id "LF-Dialogue_OldMan_Zone"
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{BC1BAB3B06E2E1D5}" {
+     Id "LF-Dialogue_Passerby_AboutWhat"
+     Target_en_us "Nothing much, and that is the point. A drink, the band if they turn up, somebody's uncle telling the same story about the war."
+     Comment "Dialogue caption, spoken by the passerby NPC (text only; tools/assets/dialogue/passerby). Changing it needs: tools\\cli asset dialogue passerby"
+    }
+    CustomStringTableItem "{6CAD837815E806A0}" {
+     Id "LF-Dialogue_Passerby_AboutWhere"
+     Target_en_us "The cafe is on the square, the bank across from it. For anything official, the town hall clerk. For anything unofficial, nobody saw me say a word."
+     Comment "Dialogue caption, spoken by the passerby NPC (text only; tools/assets/dialogue/passerby). Changing it needs: tools\\cli asset dialogue passerby"
+    }
+    CustomStringTableItem "{8925AD9FFCA979D0}" {
+     Id "LF-Dialogue_Passerby_Bye"
+     Target_en_us "Enjoy the evening."
+     Comment "Dialogue caption, spoken by the passerby NPC (text only; tools/assets/dialogue/passerby). Changing it needs: tools\\cli asset dialogue passerby"
+    }
+    CustomStringTableItem "{73729ADBBDD98B05}" {
+     Id "LF-Dialogue_Passerby_Greet"
+     Target_en_us "Evening. Lovely night for it, isn't it? Half the town is out on the square."
+     Comment "Dialogue caption, spoken by the passerby NPC (text only; tools/assets/dialogue/passerby). Changing it needs: tools\\cli asset dialogue passerby"
+    }
+    CustomStringTableItem "{79C148CCB0DADFAD}" {
+     Id "LF-Dialogue_Passerby_Name"
+     Target_en_us "Townsperson"
+     Comment "Speaker name above the dialogue caption: a townsperson out on the square during an evening or anniversary scene."
+    }
+    CustomStringTableItem "{03E4899CF1C5E0A0}" {
+     Id "LF-Dialogue_Passerby_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the passerby NPC."
+    }
+    CustomStringTableItem "{B40024D0FFD27C3C}" {
+     Id "LF-Dialogue_Passerby_SayWhat"
+     Target_en_us "What is going on tonight?"
+     Comment "Dialogue reply the player can pick when talking to the passerby NPC."
+    }
+    CustomStringTableItem "{9EB3A27E46F9D774}" {
+     Id "LF-Dialogue_Passerby_SayWhere"
+     Target_en_us "Where can I find things around here?"
+     Comment "Dialogue reply the player can pick when talking to the passerby NPC."
+    }
+    CustomStringTableItem "{D706E5724264476D}" {
+     Id "LF-Dialogue_RelocatedWalker_AboutFrom"
+     Target_en_us "From near the Zone. They gave us one suitcase each and a paper with an address on it. That is all of it, here."
+     Comment "Dialogue caption, spoken by the relocated_walker NPC (text only; tools/assets/dialogue/relocated_walker). Changing it needs: tools\\cli asset dialogue relocated_walker"
+    }
+    CustomStringTableItem "{95C23064D57F8EF3}" {
+     Id "LF-Dialogue_RelocatedWalker_AboutHelp"
+     Target_en_us "Just point us at the town hall, if you would. The clerk is meant to have our names and a key."
+     Comment "Dialogue caption, spoken by the relocated_walker NPC (text only; tools/assets/dialogue/relocated_walker). Changing it needs: tools\\cli asset dialogue relocated_walker"
+    }
+    CustomStringTableItem "{B611154030D5A065}" {
+     Id "LF-Dialogue_RelocatedWalker_Bye"
+     Target_en_us "Thank you. Thank you, really."
+     Comment "Dialogue caption, spoken by the relocated_walker NPC (text only; tools/assets/dialogue/relocated_walker). Changing it needs: tools\\cli asset dialogue relocated_walker"
+    }
+    CustomStringTableItem "{0316F4A142D30329}" {
+     Id "LF-Dialogue_RelocatedWalker_Greet"
+     Target_en_us "Sorry, we have only just come off the bus. Is this Saint-Philippe? They said someone would meet us."
+     Comment "Dialogue caption, spoken by the relocated_walker NPC (text only; tools/assets/dialogue/relocated_walker). Changing it needs: tools\\cli asset dialogue relocated_walker"
+    }
+    CustomStringTableItem "{C26AD1BAC4237BDC}" {
+     Id "LF-Dialogue_RelocatedWalker_Name"
+     Target_en_us "New arrival"
+     Comment "Speaker name above the dialogue caption: a family member just off the relocation bus."
+    }
+    CustomStringTableItem "{57F56F43353F146D}" {
+     Id "LF-Dialogue_RelocatedWalker_SayBye"
+     Target_en_us "Welcome to town."
+     Comment "Dialogue reply the player can pick when talking to the relocated_walker NPC."
+    }
+    CustomStringTableItem "{98C1B7E8787D268B}" {
+     Id "LF-Dialogue_RelocatedWalker_SayFrom"
+     Target_en_us "Where have you come from?"
+     Comment "Dialogue reply the player can pick when talking to the relocated_walker NPC."
+    }
+    CustomStringTableItem "{317166EC520F5200}" {
+     Id "LF-Dialogue_RelocatedWalker_SayHelp"
+     Target_en_us "Can I help with anything?"
+     Comment "Dialogue reply the player can pick when talking to the relocated_walker NPC."
+    }
+    CustomStringTableItem "{CD365C03E5B40FA0}" {
+     Id "LF-Dialogue_ResidentAnselme_AboutFamily"
+     Target_en_us "Mireille is my wife. She spends her mornings at the cafe and knows everything before the newspaper does."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{04C501AFD83A49C8}" {
+     Id "LF-Dialogue_ResidentAnselme_AboutTown"
+     Target_en_us "We came over from the mainland long before all this. Now half the street are new faces from the Zone. Good people. Tired people."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{A5BA275D87A49B27}" {
+     Id "LF-Dialogue_ResidentAnselme_AboutWork"
+     Target_en_us "Letters, parcels, the odd crate of machine parts for the farms. If you want work, the depot pays by the drop. Ask at the counter."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{A4A16334CC080119}" {
+     Id "LF-Dialogue_ResidentAnselme_Bye"
+     Target_en_us "Take care now."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{A38CD21D1F928316}" {
+     Id "LF-Dialogue_ResidentAnselme_Greet"
+     Target_en_us "Anselme Caron. I sort the parcels at the depot, so if your post is late, blame the ferry, not me."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{86B0D34320EBCD31}" {
+     Id "LF-Dialogue_ResidentAnselme_GreetFriendly"
+     Target_en_us "Hello, hello. No parcel for you today, I am afraid."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{43D7938263666FDD}" {
+     Id "LF-Dialogue_ResidentAnselme_GreetRefuses"
+     Target_en_us "No. I have heard what you did. Leave me be."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{F5F45D4080B74718}" {
+     Id "LF-Dialogue_ResidentAnselme_GreetRegular"
+     Target_en_us "Ah, my friend! Mireille made too much soup again. Come by tonight."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{9FADC716B9FC0BBA}" {
+     Id "LF-Dialogue_ResidentAnselme_GreetWary"
+     Target_en_us "You. Keep your distance, please."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{F880A69372803162}" {
+     Id "LF-Dialogue_ResidentAnselme_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{9C7587601E0525A8}" {
+     Id "LF-Dialogue_ResidentAnselme_SayFamily"
+     Target_en_us "Who is Mireille?"
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{56A57C39752E93D7}" {
+     Id "LF-Dialogue_ResidentAnselme_SayTown"
+     Target_en_us "Have you lived here long?"
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{89C193968FE10340}" {
+     Id "LF-Dialogue_ResidentAnselme_SayWork"
+     Target_en_us "What do you do at the depot?"
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{AA8C36A200C82511}" {
+     Id "LF-Dialogue_ResidentMireille_AboutAnniversary"
+     Target_en_us "The town anniversary is coming. The mayor has the whole square scrubbed. Bastien does love a speech."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{C9F228A9AA9EAB3C}" {
+     Id "LF-Dialogue_ResidentMireille_AboutCafe"
+     Target_en_us "Odile runs the cafe. She keeps the best table for the mayor and pretends she does not."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{54FD7200DA7DFF55}" {
+     Id "LF-Dialogue_ResidentMireille_AboutGossip"
+     Target_en_us "They say the harbour master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{D804C106D3DFEC19}" {
+     Id "LF-Dialogue_ResidentMireille_Bye"
+     Target_en_us "See you soon, dear."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{ECD55BE8D4B9C801}" {
+     Id "LF-Dialogue_ResidentMireille_Greet"
+     Target_en_us "Bonjour. Mireille. Forgive me, I only came out for a coffee and a little conversation."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{D608E1EFD91B9415}" {
+     Id "LF-Dialogue_ResidentMireille_GreetFriendly"
+     Target_en_us "Hello, dear. Sit. The coffee here is terrible, but it is hot."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{D91EFB7C83A367BD}" {
+     Id "LF-Dialogue_ResidentMireille_GreetRefuses"
+     Target_en_us "I know what you are. I do not speak to people like you."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{1E1D746AB72C4E67}" {
+     Id "LF-Dialogue_ResidentMireille_GreetRegular"
+     Target_en_us "There you are! I was just telling Odile about you."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{C7DD49231882FF53}" {
+     Id "LF-Dialogue_ResidentMireille_GreetWary"
+     Target_en_us "Oh. Hello. I would rather not chat today."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{D8186454058B6919}" {
+     Id "LF-Dialogue_ResidentMireille_SayAnniversary"
+     Target_en_us "What is happening on the square?"
+     Comment "Dialogue reply the player can pick when talking to the resident_mireille NPC."
+    }
+    CustomStringTableItem "{8576FA43FF44D73F}" {
+     Id "LF-Dialogue_ResidentMireille_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the resident_mireille NPC."
+    }
+    CustomStringTableItem "{8A75A4051AC3E201}" {
+     Id "LF-Dialogue_ResidentMireille_SayCafe"
+     Target_en_us "Tell me about the cafe."
+     Comment "Dialogue reply the player can pick when talking to the resident_mireille NPC."
+    }
+    CustomStringTableItem "{4983C75825B7DC8D}" {
+     Id "LF-Dialogue_ResidentMireille_SayGossip"
+     Target_en_us "Heard any gossip?"
+     Comment "Dialogue reply the player can pick when talking to the resident_mireille NPC."
+    }
+    CustomStringTableItem "{8552D2F221FAA3D0}" {
+     Id "LF-Dialogue_ResidentStoreClerk_AboutFerry"
+     Target_en_us "Everything comes by the ferry. When the weather turns the shelves go bare, and everybody blames me."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{1B72F02DA19BE523}" {
+     Id "LF-Dialogue_ResidentStoreClerk_AboutTown"
+     Target_en_us "Quiet, mostly. Since the new families came there is more bread to bake and more faces to learn."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{17E4C7B8C8E760FF}" {
+     Id "LF-Dialogue_ResidentStoreClerk_AboutWork"
+     Target_en_us "Tins, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{B713054422C71238}" {
+     Id "LF-Dialogue_ResidentStoreClerk_Bye"
+     Target_en_us "Mind how you go."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{F55E5E74B09A1BB9}" {
+     Id "LF-Dialogue_ResidentStoreClerk_Greet"
+     Target_en_us "Pierre Vasseur, general store. If we do not have it, the ferry might bring it on Thursday."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{8E3DA3857FDC829F}" {
+     Id "LF-Dialogue_ResidentStoreClerk_GreetFriendly"
+     Target_en_us "Good to see you. The bread came in fresh this morning."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{080592BB654DEAE6}" {
+     Id "LF-Dialogue_ResidentStoreClerk_GreetRefuses"
+     Target_en_us "You are not welcome at my counter. Go on."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{86DEB827F5774B5E}" {
+     Id "LF-Dialogue_ResidentStoreClerk_GreetRegular"
+     Target_en_us "My best customer! I put a tin of the good coffee aside for you."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{B1ED0C5D5934330F}" {
+     Id "LF-Dialogue_ResidentStoreClerk_GreetWary"
+     Target_en_us "I have my eye on you. Pay for what you take."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{64C9BFBCF919ABD4}" {
+     Id "LF-Dialogue_ResidentStoreClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the resident_store_clerk NPC."
+    }
+    CustomStringTableItem "{7AD51DB89AE01558}" {
+     Id "LF-Dialogue_ResidentStoreClerk_SayFerry"
+     Target_en_us "Where does your stock come from?"
+     Comment "Dialogue reply the player can pick when talking to the resident_store_clerk NPC."
+    }
+    CustomStringTableItem "{B85C72A57B228AF5}" {
+     Id "LF-Dialogue_ResidentStoreClerk_SayTown"
+     Target_en_us "How is the town these days?"
+     Comment "Dialogue reply the player can pick when talking to the resident_store_clerk NPC."
+    }
+    CustomStringTableItem "{74EC021358C25DE9}" {
+     Id "LF-Dialogue_ResidentStoreClerk_SayWork"
+     Target_en_us "What does the store sell?"
+     Comment "Dialogue reply the player can pick when talking to the resident_store_clerk NPC."
+    }
+    CustomStringTableItem "{491C02ED121C93FA}" {
+     Id "LF-Dialogue_ResidentTeller_AboutAdvice"
+     Target_en_us "Bank your pay the day you get it. What sits in your pocket can walk off. What sits with us stays yours."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{CFBCAA93DD23E07D}" {
+     Id "LF-Dialogue_ResidentTeller_AboutTown"
+     Target_en_us "Saint-Philippe gossips faster than the telephone. If you want to know a thing, sit at the cafe and wait."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{7ABFA0FA91264BC4}" {
+     Id "LF-Dialogue_ResidentTeller_AboutWork"
+     Target_en_us "I keep the counter at the First Bank of Everon. Deposits, withdrawals, and listening to the farmers argue about the price of feed."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{48A118DC6002BAED}" {
+     Id "LF-Dialogue_ResidentTeller_Bye"
+     Target_en_us "Good day to you."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{574C7DDD6C967AF5}" {
+     Id "LF-Dialogue_ResidentTeller_Greet"
+     Target_en_us "Good day. I am off the counter just now, but I don't bite. Helene, from the bank."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{61EEE4365FEB146C}" {
+     Id "LF-Dialogue_ResidentTeller_GreetFriendly"
+     Target_en_us "Ah, hello again. Your account is in better shape than most, you know."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{CCF9738AF8A9EC1D}" {
+     Id "LF-Dialogue_ResidentTeller_GreetRefuses"
+     Target_en_us "I count other people's money all day. I will not waste my words on you."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{C6E819E143305811}" {
+     Id "LF-Dialogue_ResidentTeller_GreetRegular"
+     Target_en_us "There you are! Sit down a minute. The bank can wait."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{589632E8B515A198}" {
+     Id "LF-Dialogue_ResidentTeller_GreetWary"
+     Target_en_us "Mm. I remember you. Mind your manners and we will get along."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{5D46CBA6E324523D}" {
+     Id "LF-Dialogue_ResidentTeller_SayAdvice"
+     Target_en_us "Any advice about money?"
+     Comment "Dialogue reply the player can pick when talking to the resident_teller NPC."
+    }
+    CustomStringTableItem "{EEDCEA14BDC8BFF5}" {
+     Id "LF-Dialogue_ResidentTeller_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the resident_teller NPC."
+    }
+    CustomStringTableItem "{66C07B73B876D808}" {
+     Id "LF-Dialogue_ResidentTeller_SayTown"
+     Target_en_us "What is the town like?"
+     Comment "Dialogue reply the player can pick when talking to the resident_teller NPC."
+    }
+    CustomStringTableItem "{986E7E5916906E46}" {
+     Id "LF-Dialogue_ResidentTeller_SayWork"
+     Target_en_us "What do you do at the bank?"
+     Comment "Dialogue reply the player can pick when talking to the resident_teller NPC."
     }
     CustomStringTableItem "{3441F00000000001}" {
      Id "LF-Dialogue_Rumour_SayAsk"
@@ -1626,7 +2036,7 @@ StringTable {
     }
     CustomStringTableItem "{07E23A077F643979}" {
      Id "LF-Quest_ArrivalRegister_Desc"
-     Target_en_us "You are new in town and carry no papers. The clerk on the square keeps the register: talk to him and he hands you your ID card."
+     Target_en_us "You are new in town and carry no papers. Walk south from the hostel to the town hall on the square: the clerk behind the desk keeps the register and hands you your ID card. A mark on your map and screen shows the way."
      Comment "Arrival chain step 1: talk to the clerk, receive the ID card."
     }
     CustomStringTableItem "{C15A1290314AA204}" {
@@ -1921,7 +2331,7 @@ StringTable {
     }
     CustomStringTableItem "{1357AE90EB122FE9}" {
      Id "LF-Resident_cafe_owner_Name"
-     Target_en_us "Odile Marchand"
+     Target_en_us "Odilon Marchand"
      Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
     }
     CustomStringTableItem "{C506DE77282216DB}" {
@@ -1993,6 +2403,11 @@ StringTable {
      Id "LF-Shop_Desc_FarmSupply"
      Target_en_us "Farm machinery for hire-purchase on the spot: a reaper to hitch behind a tractor or a UAZ."
      Comment "Shop description of the farm supply counter till (#3631): outlet farm_supply."
+    }
+    CustomStringTableItem "{816F70B82A3F716F}" {
+     Id "LF-Shop_Desc_FuelKiosk"
+     Target_en_us "Maps of Everon, bottled water, soda, chocolate and crackers."
+     Comment "Shop description of the Saint-Philippe fuel station kiosk till: stock fuel_kiosk."
     }
     CustomStringTableItem "{1B4CFC6B76803431}" {
      Id "LF-Shop_Desc_Furniture"
@@ -2079,6 +2494,11 @@ StringTable {
      Target_en_us "Farm Supply"
      Comment "Shop name of the farm supply counter till (#3631): outlet farm_supply."
     }
+    CustomStringTableItem "{2A524DAA3F49F9F9}" {
+     Id "LF-Shop_Name_FuelKiosk"
+     Target_en_us "Filling-station kiosk"
+     Comment "Shop name of the Saint-Philippe fuel station kiosk till: stock fuel_kiosk."
+    }
     CustomStringTableItem "{5610D2FB07972A2F}" {
      Id "LF-Shop_Name_Furniture"
      Target_en_us "Meubles"
@@ -2139,6 +2559,11 @@ StringTable {
      Target_en_us "Buy a reaper"
      Comment "Action description on the farm supply counter till (#3631)."
     }
+    CustomStringTableItem "{5160FD4B0C8E4B67}" {
+     Id "LF-Shop_OpenDesc_FuelKiosk"
+     Target_en_us "Buy a map of Everon or a snack"
+     Comment "Action description on the fuel station kiosk counter."
+    }
     CustomStringTableItem "{BC9B8CB431998AA0}" {
      Id "LF-Shop_OpenDesc_Hardware"
      Target_en_us "Browse the tools and building supplies."
@@ -2183,6 +2608,11 @@ StringTable {
      Id "LF-Shop_Open_FarmSupply"
      Target_en_us "Browse the farm machinery"
      Comment "Action label on the farm supply counter till (#3631)."
+    }
+    CustomStringTableItem "{A5E2099F0CE9680A}" {
+     Id "LF-Shop_Open_FuelKiosk"
+     Target_en_us "Browse the kiosk"
+     Comment "Action label on the fuel station kiosk counter."
     }
     CustomStringTableItem "{0E816968A7BE847A}" {
      Id "LF-Shop_Open_Furniture"
@@ -3113,6 +3543,21 @@ StringTable {
      Id "LF-Sign_Hospital_What"
      Target_en_us "The village hospital: a medic duty desk, three beds, a call board and the ambulance bay|Bills are 1989 prices, cash only|Playtest: a practice patient lies on the grass between the bay and the till"
      Comment "Sign card for the hospital (medicine cabinet and till), What section."
+    }
+    CustomStringTableItem "{1EB77C0BCC89F072}" {
+     Id "LF-Sign_Hostel_How"
+     Target_en_us "Go upstairs and take any free bunk in the dormitory. It is plain, but it is warm."
+     Comment "How line of the hostel sign: the first building a newcomer sees; matches the clerk welcome."
+    }
+    CustomStringTableItem "{B0EE34267D1F6795}" {
+     Id "LF-Sign_Hostel_Title"
+     Target_en_us "Hostel"
+     Comment "Title painted on the hostel fascia and shown in the prompt as Read: Hostel."
+    }
+    CustomStringTableItem "{56F590E37C51D1B1}" {
+     Id "LF-Sign_Hostel_What"
+     Target_en_us "The village hostel: a bed for anyone with nowhere to sleep."
+     Comment "What line of the hostel sign."
     }
     CustomStringTableItem "{F209D5D9A5D3E58D}" {
      Id "LF-Sign_Impound_How"
@@ -4116,13 +4561,13 @@ StringTable {
     }
     CustomStringTableItem "{3E81A47C5D0B92F6}" {
      Id "LF-Townsfolk_CafeOwner_Name"
-     Target_en_us "Odile Marchand"
+     Target_en_us "Odilon Marchand"
      Comment "Townsfolk (The relocated, #1961): the café owner's name, the speaker line of her dialogue."
     }
     CustomStringTableItem "{6784DBE972ED4ECD}" {
      Id "LF-Townsfolk_CafeOwner_Role"
      Target_en_us "Café owner"
-     Comment "Townsfolk (The relocated, #1960): what Odile Marchand does, the role line under the name."
+     Comment "Townsfolk (The relocated, #1960): what Odilon Marchand does, the role line under the name."
     }
     CustomStringTableItem "{D20E34A328504890}" {
      Id "LF-Townsfolk_HarbourMaster_Name"

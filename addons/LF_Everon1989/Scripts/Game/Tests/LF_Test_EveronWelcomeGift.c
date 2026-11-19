@@ -1,7 +1,8 @@
 // red-proof: 2026-11-16, `tools\cli test --no-build --red LF_Test_EveronWelcomeGift` (RedProof skips the overlay apply): RED-OK, failed "the clerk's last step has a gift row"; green without the hook (11 assertions, pack leg worlds=LF_Everon1989_Test).
 //! #1781 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the clerk's last
-//! arrival step hands over a 1989 welcome gift: a folded paper map, a packet of crackers and a bottle
-//! of apple juice. The neutral core table ships no gift; the pack's overlay adds the row.
+//! arrival step hands over a 1989 welcome gift: a packet of crackers and a bottle of apple juice. The
+//! folded paper map is no longer in it: a newcomer starts with one (LF_Test_EveronStartingMap), so the gift
+//! must not hand a second. The neutral core table ships no gift; the pack's overlay adds the row.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronWelcomeGift : LF_Test
 {
@@ -55,8 +56,8 @@ class LF_Test_EveronWelcomeGift : LF_Test
 		if (!gift)
 			return;
 
-		ctx.Equal(3, gift.m_aItems.Count(), "the gift is a map, food and a drink");
-		ctx.True(gift.m_aItems.Find(MAP) != -1, "the gift holds the folded paper map");
+		ctx.Equal(2, gift.m_aItems.Count(), "the gift is food and a drink");
+		ctx.True(gift.m_aItems.Find(MAP) == -1, "the gift holds no second paper map (the starting kit has the one)");
 		ctx.True(gift.m_aItems.Find(FOOD) != -1, "the gift holds food");
 		ctx.True(gift.m_aItems.Find(DRINK) != -1, "the gift holds a drink");
 		ctx.EqualStr(string.Empty, LF_WelcomeGiftConfig.Problem(gift), "every gift item resolves to a prefab");
@@ -65,7 +66,7 @@ class LF_Test_EveronWelcomeGift : LF_Test
 		LF_WelcomeGiftTable.ResetStatics();
 		array<ResourceName> live = {};
 		LF_WelcomeGiftTable.ItemsOf("arrival_done", live);
-		ctx.Equal(3, live.Count(), "LF_WelcomeGiftTable hands the three items to the turn-in");
+		ctx.Equal(2, live.Count(), "LF_WelcomeGiftTable hands the two items to the turn-in");
 		LF_WelcomeGiftTable.ResetStatics();
 	}
 }

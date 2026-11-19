@@ -1,0 +1,52 @@
+GenericEntity {
+ ID "6EAD6BB2BFD6865D"
+ {
+  GenericEntity {
+   ID "935486E36F7216AE"
+   components {
+    MeshObject "{7DE9F15B3C82C39C}" {
+     Object "{E443663E5241622A}Assets/Items/Equipment/Maps/Map_Paper_01/Map_Paper_01_folded.xob"
+    }
+   }
+   coords 0.42 1.187 0.19
+  }
+  GenericEntity {
+   ID "D98141D756A6D50D"
+   components {
+    MeshObject "{DCA11F14A5D63BB8}" {
+     Object "{52F9D510E620CE32}Assets/Items/Store1989/ChocolateBar/ChocolateBar.xob"
+    }
+   }
+   coords 0.74 1.194 0.19
+  }
+  GenericEntity {
+   ID "2880304D6F52C072"
+   components {
+    MeshObject "{E6C088DFEC988CEC}" {
+     Object "{A47ED22E6647430A}Assets/Items/Food/ArmyCrackers_Soviet_01.xob"
+    }
+   }
+   coords 1 1.191 0.19
+  }
+  GenericEntity {
+   ID "79F37569A719CB65"
+   components {
+    MeshObject "{07FC3F7CAE8C2D54}" {
+     Object "{1B98D6F1E0135F12}Assets/Props/Civilian/SodaBottle_01/SodaBottle_01.xob"
+    }
+   }
+   coords 0.45 1.677 0.19
+   angleY 180
+  }
+  GenericEntity {
+   ID "9C0B1ECF81CA0A09"
+   components {
+    MeshObject "{F791E6878EC0E148}" {
+     Object "{1F941A15AF4D93BF}Assets/Items/Drinks/WaterBottle/Bottle.xob"
+    }
+   }
+   coords 0.85 1.677 0.19
+   angleY 180
+  }
+ }
+}

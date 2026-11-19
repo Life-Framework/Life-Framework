@@ -1,3 +1,4 @@
+// red-proof: observed 2026-11-19 (fuel kiosk stock): `toolscli test --no-build --red LF_Test_EveronVillageStock` printed `red: the fuel_kiosk has a stock under the pack header` (RED PROOF OK); with the new LF_ShopStock_FuelKiosk.conf overlay unlisted, the same line is the failure.
 // red-proof: observed 2026-11-19 (#3334): with the repair kit rows on the hardware and mechanic stocks and the old counts (10 and 1), `--only everon/village-stock` failed `the hardware stock lists 10 items` and `the mechanic stock lists 1 items` (main guard, PR #3835 reverted); the lists now name the kit and the counts are 11 and 2.
 // red-proof: observed 2026-11-19 (#3225): with the bakery and butcher stocks lacking baguette, croissant, saucisson and ham, `toolscli test --no-build --only LF_Test_EveronVillageStock` failed `the bakery stock lists 5 items`, `the butcher stock lists 4 items` and each new `is in the stock` line; `--red` fails on the `bakery_missing` and `butcher_missing` lookups.
 // red-proof (cafe and general store loop check): 2026-11-18 with the cafe and general store apple rows at $2, `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed 4 lines (cafe and general_store: `Apple.et sells for 2 and buys back for 4` and `sells for 2 and the market pays up to 5`); at $6 it passes.
@@ -14,6 +15,7 @@ class LF_Test_EveronVillageStock : LF_Test
 	protected static const ResourceName JUICE = "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et";
 	protected static const ResourceName BEER = "{4CBB1F9A04D15772}Prefabs/Items/Drinks/BeerBottle.et";
 	protected static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
+	protected static const ResourceName SODA = "{EE04C7556D2C9F49}Prefabs/Items/Store1989/LF_SodaBottle.et";
 	protected static const ResourceName CABBAGE = "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et";
 	protected static const ResourceName PLUM = "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
 	protected static const ResourceName CRACKERS = "{8F2C06D1F757C40F}Prefabs/Items/Food/LF_Crackers.et";
@@ -63,6 +65,8 @@ class LF_Test_EveronVillageStock : LF_Test
 		CheckStock(ctx, manager, "mechanic", {PARTS, REPAIR_KIT});
 		CheckStock(ctx, manager, "bakery", {BREAD, CRACKERS, CHOCOLATE, BAGUETTE, CROISSANT});
 		CheckStock(ctx, manager, "butcher", {DRIED_MEAT, CANNED_MEAT, SAUCISSON, HAM});
+		//! The fuel station kiosk (its own overlay file): the goods the clerk's line promises, no motor oil (no base-game item).
+		CheckStock(ctx, manager, "fuel_kiosk", {MAP, WATER, SODA, CHOCOLATE, CRACKERS});
 
 		//! #3225: the four new bakery and butcher foods eat through the survival path like the other foods.
 		CheckEats(ctx, "baguette", BAGUETTE);

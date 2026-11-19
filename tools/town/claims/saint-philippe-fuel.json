@@ -8,7 +8,7 @@
   "kinds": [
     "FuelTill"
   ],
-  "rows": 7,
+  "rows": 9,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

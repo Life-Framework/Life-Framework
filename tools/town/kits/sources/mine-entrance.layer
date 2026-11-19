@@ -4,42 +4,45 @@ GenericEntity Source_MineEntrance_Portal : "{02128ED43CA97BCF}Prefabs/Structures
  angleY 0
 }
 GenericEntity Source_MineEntrance_PostL : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
- coords -2.6 0 1.2
- angleY 0
+ coords -1.5 1.5 5
+ angles 90 0 0
+ scale 0.5
 }
 GenericEntity Source_MineEntrance_PostR : "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et" {
- coords 2.6 0 1.2
- angleY 0
+ coords 1.5 1.5 5
+ angles 90 0 0
+ scale 0.5
 }
 GenericEntity Source_MineEntrance_Lintel : "{5E317DC74EA1F1A4}Prefabs/Props/Forest/WoodPile/WoodLog_01_B.et" {
- coords 0 2.6 1.2
+ coords 0 3.05 5
  angleY 90
+ scale 0.5
 }
-GenericEntity Source_MineEntrance_HeapL : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_large.et" {
- coords -5.2 0 4.5
- angleY 20
+GenericEntity Source_MineEntrance_HeapL : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et" {
+ coords -5.6 0 1.5
+ angleY 90
 }
 GenericEntity Source_MineEntrance_HeapR : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et" {
- coords 5 0 4
- angleY -30
-}
-GenericEntity Source_MineEntrance_Cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
- coords -1.6 0 5.5
+ coords 5.6 0 1.5
  angleY 90
 }
+GenericEntity Source_MineEntrance_Cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords -1 0 8.5
+ angleY 0
+}
 GenericEntity Source_MineEntrance_Picks : "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et" {
- coords 1.8 0 3.4
+ coords 1.8 0 7.5
  angleY 0
 }
 GenericEntity Source_MineEntrance_Lantern : "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et" {
- coords -3.6 0 2.2
+ coords -2.4 0 6
  angleY 0
 }
 GenericEntity Source_MineEntrance_Flood : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
- coords 6.8 0 1.2
+ coords 3.2 0 6
  angleY 200
 }
 GenericEntity Source_MineEntrance_Sign : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
- coords -7 0 6.5
+ coords -4.5 0 8
  angleY 0
 }

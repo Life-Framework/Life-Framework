@@ -2090,6 +2090,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "PLEASE WAIT ..."
      Comment "ATM terminal status line while the server handles a request."
     }
+    CustomStringTableItem "{5E1B7A39C2D40F68}" {
+     Id "LF-Arrival_ClerkMark"
+     Target_en_us "The registry clerk"
+     Comment "Name on the waypoint and the map mark that guide a new player to the registry clerk (the arrival chain, first and last step). 32 characters at most."
+    }
     CustomStringTableItem "{EA5E950371F7CE44}" {
      Id "LF-Atmosphere_SwitchOff"
      Target_en_us "Switch off"
@@ -4237,7 +4242,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D472603DD9705158}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
-     Target_en_us "This is the only fuel in town, friend. Petrol at the pumps, oil and maps in here."
+     Target_en_us "This is the only fuel in town, friend. Petrol at the pumps, maps and snacks in here."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
     CustomStringTableItem "{EB24FB16C4F34B2F}" {
@@ -4645,6 +4650,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Event"
      Comment "Map mark and area label: where a story event is running, shown to everyone until it ends. A pack may override the Id with a place or event name."
     }
+    CustomStringTableItem "{7D3E91A4C26B58F1}" {
+     Id "LF-EvidenceConvoy_Title"
+     Target_en_us "Evidence transfer"
+     Comment "Title of the dispatch toast the on-duty police get when the evidence convoy leaves."
+    }
+    CustomStringTableItem "{3B6A0F58E1D47C92}" {
+     Id "LF-EvidenceConvoy_Underway"
+     Target_en_us "Evidence transfer under way."
+     Comment "Dispatch toast to on-duty police: the evidence convoy has left the station with the seized goods."
+    }
     CustomStringTableItem "{4587AF3655D18A21}" {
      Id "LF-Evidence_Bag_Action"
      Target_en_us "Bag as evidence"
@@ -4882,6 +4897,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-FuelClerk_Talk"
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
+    }
+    CustomStringTableItem "{3330B0000000F004}" {
+     Id "LF-FuelHaul_Delivered"
+     Target_en_us "Delivered: %1."
+     Comment "Toast after a pump-in. %1 = litres that arrived and the cash paid, for example 300 L, $300."
+    }
+    CustomStringTableItem "{3330B0000000F001}" {
+     Id "LF-FuelHaul_Load"
+     Target_en_us "Load the tanker"
+     Comment "Action at the fuel depot: buys a tanker load at the wholesale price into the tanker parked beside it."
+    }
+    CustomStringTableItem "{3330B0000000F003}" {
+     Id "LF-FuelHaul_Loaded"
+     Target_en_us "Tanker loaded: %1."
+     Comment "Toast after a depot load. %1 = litres and the cash charged, for example 500 L, $300."
+    }
+    CustomStringTableItem "{3330B0000000F005}" {
+     Id "LF-FuelHaul_NoTanker"
+     Target_en_us "Park the tanker next to the point."
+     Comment "Toast: no vehicle with a cargo tank is within reach of the depot or the pump."
+    }
+    CustomStringTableItem "{3330B0000000F009}" {
+     Id "LF-FuelHaul_NotBought"
+     Target_en_us "That fuel was not bought at the depot."
+     Comment "Toast: the tanker holds fuel, but none of it is a load bought at the depot, so the station takes nothing and pays nothing."
+    }
+    CustomStringTableItem "{3330B0000000F002}" {
+     Id "LF-FuelHaul_PumpIn"
+     Target_en_us "Pump into the station tanks"
+     Comment "Action at a fuel pump: moves the tanker's load into the station stock and pays for the litres that arrived."
+    }
+    CustomStringTableItem "{3330B0000000F008}" {
+     Id "LF-FuelHaul_StationFull"
+     Target_en_us "The station tanks are full."
+     Comment "Toast: the station has no room, so nothing was pumped and nothing is paid."
+    }
+    CustomStringTableItem "{3330B0000000F007}" {
+     Id "LF-FuelHaul_TankerEmpty"
+     Target_en_us "The tanker is empty."
+     Comment "Toast: the tanker holds no fuel to pump into the station."
+    }
+    CustomStringTableItem "{3330B0000000F006}" {
+     Id "LF-FuelHaul_TankerFull"
+     Target_en_us "The tanker is already full."
+     Comment "Toast: the tanker has no room for a litre at the depot."
     }
     CustomStringTableItem "{3328B0000000F001}" {
      Id "LF-Fuel_Buy"
@@ -7681,7 +7741,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9BA33F2D2CD65A73}" {
      Id "LF-LicenceDesk_Wanted"
-     Target_en_us "Refused: you are wanted by the {police}."
+     Target_en_us "Refused: you're wanted by the {police}."
      Comment "Licence desk refusal: the player's wanted level is above zero."
     }
     CustomStringTableItem "{A642D5DB4145E7D9}" {
@@ -12729,10 +12789,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "One order at a time. Give the till a moment."
      Comment "Shop refusal: too many orders in a short time (#693b rate limit)."
     }
+    CustomStringTableItem "{9B4E445A7689D74C}" {
+     Id "LF-Shop_RefuseUnfit"
+     Target_en_us "The clerk won't hand that over to you in this state."
+     Comment "Order slip line: a licensed line is not sold to a dead, downed or cuffed buyer."
+    }
     CustomStringTableItem "{CD2FED1EA8EFF86B}" {
      Id "LF-Shop_RefuseUnpriced"
      Target_en_us "That item has no price here."
      Comment "Shop refusal: the item has no price."
+    }
+    CustomStringTableItem "{1CFEA3E02996B1FC}" {
+     Id "LF-Shop_RefuseWanted"
+     Target_en_us "You're wanted by the {police}. The counter won't sell you that."
+     Comment "Order slip line: a licensed line (a firearm) is not sold to a wanted buyer."
     }
     CustomStringTableItem "{F612D2192DFC33C8}" {
      Id "LF-Shop_SaleFailed_Title"
