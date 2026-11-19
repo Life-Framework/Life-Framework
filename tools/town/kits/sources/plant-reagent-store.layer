@@ -1,0 +1,57 @@
+// Source of the `plant-reagent-store` kit (tools/town/kits/plant-reagent-store.json, #3241): vanilla base-game props, GUIDs read by `town fit`. Frame: the kit origin, +z the open side.
+GenericEntity Source_PlantReagentStore_Shelf1 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 0.45 0 1.2
+ angleY 90
+}
+GenericEntity Source_PlantReagentStore_Shelf2 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 0.45 0 2.9
+ angleY 90
+}
+GenericEntity Source_PlantReagentStore_Shelf3 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 0.45 0 4.5
+ angleY 90
+}
+GenericEntity Source_PlantReagentStore_Shelf4 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 2.2 0 0.45
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Shelf5 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 3.9 0 0.45
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Drum1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 5.8 0 1.2
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Drum2 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 6.6 0 1.2
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Drum3 : "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et" {
+ coords 6.2 0 2.1
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Tank1 : "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et" {
+ coords 5.8 0 3.6
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Tank2 : "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et" {
+ coords 6.6 0 3.6
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Pallet : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 3 0 4.2
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Crate1 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 3 0.15 4.2
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Lamp1 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
+ coords 2.5 2.8 0.2
+ angleY 0
+}
+GenericEntity Source_PlantReagentStore_Lamp2 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
+ coords 5.2 2.8 0.2
+ angleY 0
+}

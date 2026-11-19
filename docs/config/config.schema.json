@@ -520,6 +520,20 @@
           "minimum": 1,
           "maximum": 100
         },
+        "nightRunStartHour": {
+          "type": "integer",
+          "description": "Night window (#3148): the hour of the world clock the night rate starts at. Both hours 0 reads as the shipped 21 to 5",
+          "default": 21,
+          "minimum": 0,
+          "maximum": 24
+        },
+        "nightRunEndHour": {
+          "type": "integer",
+          "description": "Night window (#3148): the hour of the world clock the night rate ends at (the window may wrap midnight). Equal non-zero hours make a day with no night",
+          "default": 5,
+          "minimum": 0,
+          "maximum": 24
+        },
         "cargoDepositPercent": {
           "type": "integer",
           "description": "Delivery cargo deposit: percent of the cargo's shop sell price taken at the start of a run. It is returned on delivery and kept when the run is abandoned. 0 turns the deposit off",
@@ -689,6 +703,13 @@
                 "default": 40,
                 "minimum": 1,
                 "maximum": 1000000
+              },
+              "nightRate": {
+                "type": "number",
+                "description": "Night rate (#3148): a run finished inside the night window pays this times the pay, the extra shown as its own part of the pay toast. 1 (or below) pays no night rate. The core ships 1; a pack raises it",
+                "default": 1,
+                "minimum": 0,
+                "maximum": 10
               }
             },
             "additionalProperties": false

@@ -37,15 +37,15 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     }
     LF_TraderItem "{59693C53B6A5E005}" {
      m_ItemPrefab "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et"
-     m_ValuePerItem 12
+     m_ValuePerItem 7
     }
     LF_TraderItem "{59693C53B6A5E006}" {
      m_ItemPrefab "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
-     m_ValuePerItem 50
+     m_ValuePerItem 20
     }
     LF_TraderItem "{59693C53B6A5E007}" {
      m_ItemPrefab "{C2AE9B7E62F0369F}Prefabs/Resources/Mining/CoalLump.et"
-     m_ValuePerItem 6
+     m_ValuePerItem 3
     }
     LF_TraderItem "{59693C53B6A5E008}" {
      m_ItemPrefab "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
@@ -57,7 +57,7 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     }
     LF_TraderItem "{59693C53B6A5E00A}" {
      m_ItemPrefab "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
-     m_ValuePerItem 40
+     m_ValuePerItem 50
     }
     LF_TraderItem "{59693C53B6A5E00B}" {
      m_ItemPrefab "{88F43FF542BB6767}Prefabs/Resources/Mining/Stone.et"

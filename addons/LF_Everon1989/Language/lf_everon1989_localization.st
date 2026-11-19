@@ -1349,6 +1349,11 @@ StringTable {
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
     }
+    CustomStringTableItem "{069AD0D1539E7BB7}" {
+     Id "LF-MapPoi_Mine"
+     Target_en_us "Mine"
+     Comment "Map POI kind name (#3241): a mine, where a miner digs ore or coal (LF_Places kind mine). The map adds the town."
+    }
     CustomStringTableItem "{046B777F2F3B3DC1}" {
      Id "LF-MapPoi_Newsagent"
      Target_en_us "Newsagent"
@@ -1368,6 +1373,11 @@ StringTable {
      Id "LF-MapPoi_Pharmacy"
      Target_en_us "Pharmacy"
      Comment "Map POI name (#3515): the pharmacy counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{6A6E592B5FF9A7FD}" {
+     Id "LF-MapPoi_Plant"
+     Target_en_us "Plant"
+     Comment "Map POI kind name (#3241): a processing plant, a smelter, refinery or cement works (LF_Places kind plant)."
     }
     CustomStringTableItem "{1FA54D4B3E7D5BC1}" {
      Id "LF-MapPoi_SeedFeed"
