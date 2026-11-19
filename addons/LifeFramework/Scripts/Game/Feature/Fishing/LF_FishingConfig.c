@@ -364,6 +364,7 @@ class LF_FishingConfig
 			return null;
 		}
 
+		LF_FishingLayers.Apply(s_Config);
 		s_Config.Sanitize();
 		return s_Config;
 	}

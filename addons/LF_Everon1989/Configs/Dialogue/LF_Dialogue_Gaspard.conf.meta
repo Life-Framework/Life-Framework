@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F966A3F1DFD619E4}Configs/Dialogue/LF_Dialogue_Gaspard.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
