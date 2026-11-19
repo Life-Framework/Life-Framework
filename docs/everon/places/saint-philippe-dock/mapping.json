@@ -96,6 +96,14 @@
         "lead update 2026-11-18, card W1 #3273: the island's one wholesale warehouse (buyer id wholesale) for lumber, ore, metal and cement; it replaces the old timber-warehouse slot planned on dk:b22, which stays the staff-only dock warehouse (L0 #3204). The parcel-drop mailbox on its wall stays where it is"
       ]
     },
+    "shipment": {
+      "building": "b06",
+      "shared": true,
+      "why": [
+        "street furniture between the quay and the harbour warehouse b06 (Warehouse_01_Office, 735 m2, which holds the warehouse slot): the scene markers of the shipment docks event (#3439, card #3766): three spawn markers and the truck spot on the open quay strip beside the quay road r18, four waypoints east over the open ground to the road r05, and the target on the warehouse's north-west face",
+        "the 60 m margin reaches the quay strip from the warehouse; the route stays on open ground, clear of the light tower b01, the fuel tank b02 and the smokehouse shed b05"
+      ]
+    },
     "fishing-quay": {
       "building": "b01",
       "shared": true,
