@@ -57,7 +57,7 @@
       "offset": [
         0,
         0,
-        7
+        5.5
       ],
       "yaw": 0,
       "mount": "terrain",
@@ -73,7 +73,7 @@
       "offset": [
         -4,
         0,
-        6
+        4
       ],
       "yaw": 90,
       "mount": "terrain",
@@ -87,9 +87,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -7,
+        -6.5,
         0,
-        6
+        4
       ],
       "yaw": 90,
       "mount": "terrain",
@@ -103,11 +103,11 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        4.5,
+        6,
         0,
-        6.5
+        3
       ],
-      "yaw": 0,
+      "yaw": 90,
       "mount": "terrain",
       "wall": "free",
       "floor": "f0"
@@ -121,7 +121,7 @@
       "offset": [
         3.2,
         0,
-        3.4
+        4.6
       ],
       "yaw": 0,
       "mount": "terrain",
@@ -137,7 +137,7 @@
       "offset": [
         4.2,
         0,
-        3.4
+        4.6
       ],
       "yaw": 0,
       "mount": "terrain",
@@ -151,7 +151,7 @@
       "role": "light",
       "verb": "on floor",
       "offset": [
-        -2,
+        -2.2,
         0,
         3.4
       ],

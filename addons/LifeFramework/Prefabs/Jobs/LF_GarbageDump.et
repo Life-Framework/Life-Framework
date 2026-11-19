@@ -1,0 +1,33 @@
+GenericEntity : "{72E42BEAFED9B5A7}Prefabs/Props/Garbage/Bins/GarbageContainer_01.et" {
+ ID "8F26B0D3E41C97A5"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  LF_GarbageSiteComponent "{C3F81A5D9B6E7204}" {
+   m_eSite DUMP
+  }
+  ActionsManagerComponent "{4E7D0A92B5C318F6}" {
+   ActionContexts {
+    UserActionContext "{6B1C9E40F7A2D835}" {
+     ContextName "LF_GarbageDump"
+     Position PointInfo "{D82F5A13C640B7E9}" {
+      Offset 0 1 0
+     }
+     Radius 2.5
+    }
+   }
+   additionalActions {
+    LF_GarbageTipAction "{0A5E83D7C1B92F46}" {
+     ParentContextList {
+      "LF_GarbageDump"
+     }
+     UIInfo UIInfo "{B9340D6E8A1F52C7}" {
+      Name "#LF-Garbage_Tip"
+      Description "#LF-Garbage_TipDesc"
+     }
+    }
+   }
+  }
+ }
+}

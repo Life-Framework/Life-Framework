@@ -46,7 +46,7 @@ a placed sign without touching the layer). The component keeps `m_sSignId`, the 
 
 | Style id | Look | Carrier |
 |---|---|---|
-| `chalk` | Dark smudged slate, chalk-white lettering at 0.85 alpha, a faint ghost of rubbed-out writing, a slight hand tilt, dot leaders on price rows | the chalkboard, the A-frame pavement board, the price board |
+| `chalk` | Dark smudged slate, chalk-white lettering at 0.93 alpha (the title in RobotoCondensed Bold, up to 240 units; rows Regular), a faint ghost of rubbed-out writing, a slight hand tilt, dot leaders on price rows | the chalkboard, the A-frame pavement board, the price board |
 | `poster` | Printed paper, off-white, black ink, a red band, worn edges and tape at the corners | notices, wanted and event posters |
 | `wood` | Painted wooden board, cream letters on a stained ground, grain texture | farm, hideout, hand-made signs |
 | `enamel` | Enamel metal plate: white rim, deep colour, chipped corners | civic plates (police, post, hospital), pole plates |

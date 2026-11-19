@@ -46,6 +46,23 @@ class LF_BinComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Fills `into` with every live bin entity (the garbage round, #3325, builds its route from them).
+	static int FindAllBins(notnull array<IEntity> into)
+	{
+		if (!s_aBins || !GetGame() || !GetGame().GetWorld())
+			return 0;
+
+		foreach (EntityID id : s_aBins)
+		{
+			IEntity entity = GetGame().GetWorld().FindEntityByID(id);
+			if (entity)
+				into.Insert(entity);
+		}
+
+		return into.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The items at the top level of the bin's storage (what a player sees when it opens), without the
 	//! contents of a bag inside it.
 	array<IEntity> GetItems()

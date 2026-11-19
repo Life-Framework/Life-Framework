@@ -1,0 +1,69 @@
+// Grid cell c16r3 for garbage-round: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_garbage_round_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 215 0 59
+}
+SCR_DestructibleEntity Grid_garbage_round_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 220 0 59
+}
+SCR_DestructibleEntity Grid_garbage_round_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 225 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_garbage_round_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 225 0 64
+ angleY 270
+}
+SCR_DestructibleEntity Grid_garbage_round_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 225 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_garbage_round_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 220 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_garbage_round_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 215 0 69
+ angleY 90
+}
+GenericEntity Grid_garbage_round_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:garbage-round"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 214.2 0.505 59.6
+ angleY -90
+}
+GenericEntity Grid_garbage_round_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "garbage-round"
+  }
+ }
+ coords 214.3 0 61.5
+ angleY 90
+}
+GenericEntity Grid_garbage_round_R0_1 : "{9C1E4B7A2D58F360}Prefabs/Jobs/LF_GarbageDepot.et" {
+ coords 222.873 0.001 60.851
+ angleY -90
+}
+GenericEntity Grid_garbage_round_R0_2 : "{E48A06D3B1F7C925}Prefabs/Jobs/LF_GarbageDump.et" {
+ coords 222.585 0.001 62.157
+ angleY -90
+}
+SCR_DestructibleEntity Grid_garbage_round_R0_3 : "{C53D93D86C6CD2EE}Prefabs/Props/Bins/LF_StreetBin.et" {
+ coords 222.629 0.462 64.25
+ angleY -90
+}
+SCR_DestructibleEntity Grid_garbage_round_R0_4 : "{C53D93D86C6CD2EE}Prefabs/Props/Bins/LF_StreetBin.et" {
+ coords 222.629 0.462 66.375
+ angleY -90
+}
+SCR_DestructibleEntity Grid_garbage_round_R0_5 : "{C53D93D86C6CD2EE}Prefabs/Props/Bins/LF_StreetBin.et" {
+ coords 222.629 0.462 68.5
+ angleY -90
+}
