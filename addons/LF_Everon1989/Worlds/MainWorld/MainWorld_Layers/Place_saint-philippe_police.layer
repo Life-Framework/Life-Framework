@@ -510,18 +510,18 @@ GenericEntity Fit_saint_philippe_police_police_kit_decor_33 : "{944594496FA41CBD
  angleY 171
 }
 SCR_DestructibleEntity Fit_saint_philippe_police_police_kit_decor_34 : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
- coords 4550.776 18.2 10740.642
+ coords 4550.779 -0.001 10740.621
  angleY 171
 }
 SCR_DestructibleEntity Fit_saint_philippe_police_police_kit_decor_35 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
- coords 4552.245 18.702 10741.267
+ coords 4552.25 0 10741.238
  angleY 171
 }
 SCR_DestructibleEntity Fit_saint_philippe_police_police_kit_decor_36 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 4557.014 18.2 10741.527
+ coords 4557.017 0.002 10741.507
  angleY 171
 }
 SCR_DestructibleEntity Fit_saint_philippe_police_police_kit_decor_37 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
- coords 4552.716 18.2 10740.856
+ coords 4552.721 0.002 10740.827
  angleY 171
 }
