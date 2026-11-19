@@ -15,6 +15,9 @@ class LF_BuildingLockComponent : ScriptComponent
 	[Attribute("#LF-BuildingLock_Private", UIWidgets.EditBox, desc: "Localization key shown on the door prompt: #LF-BuildingLock_Private, _StaffOnly, _ForSaleSoon, _OpeningSoon, _Closed, or a pack key.")]
 	protected string m_sSignKey;
 
+	[Attribute("#LF-BuildingLock_Private", UIWidgets.EditBox, desc: "House marker only (#3584): the key a stranger's prompt shows once the house has an owner.")]
+	protected string m_sOwnedSignKey;
+
 	[Attribute("25", UIWidgets.Auto, desc: "How far from the marker the building may stand, in metres. The building whose bounds hold the marker wins.", params: "1 100 1")]
 	protected float m_fSearchRadius;
 
@@ -37,7 +40,7 @@ class LF_BuildingLockComponent : ScriptComponent
 		if (!owner)
 			return false;
 
-		return LF_BuildingLocks.Register(owner, m_fSearchRadius, m_sSignKey);
+		return LF_BuildingLocks.Register(owner, m_fSearchRadius, m_sSignKey, m_sOwnedSignKey);
 	}
 
 	//------------------------------------------------------------------------------------------------

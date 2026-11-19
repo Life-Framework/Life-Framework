@@ -26,13 +26,19 @@ class LF_BuildingLocks
 	protected static ref map<EntityID, EntityID> s_mMarkerBuilding = new map<EntityID, EntityID>();
 	//! Building -> the sign key of the lock marker that locked it last.
 	protected static ref map<EntityID, string> s_mBuildingKey = new map<EntityID, string>();
+	//! Building -> the house marker (an LF_HouseManagerComponent on the lock marker) whose owner and key holders pass (#3584).
+	protected static ref map<EntityID, EntityID> s_mBuildingHouse = new map<EntityID, EntityID>();
+	//! Building -> the sign key its door shows a stranger once its house has an owner.
+	protected static ref map<EntityID, string> s_mBuildingOwnedKey = new map<EntityID, string>();
 	//! Open marker id (a fitted place's position) -> the building it keeps open.
 	protected static ref map<string, EntityID> s_mOpen = new map<string, EntityID>();
 
 	//------------------------------------------------------------------------------------------------
 	//! Finds the building around the marker and locks it with `signKey`.
+	//! A marker that also carries an LF_HouseManagerComponent makes the building a house (#3584): its owner and anyone
+	//! holding its key pass, and once it has an owner a stranger's prompt shows `ownedSignKey` instead of `signKey`.
 	//! \return true when a building was found and locked (an already registered marker counts).
-	static bool Register(IEntity marker, float radius, string signKey)
+	static bool Register(IEntity marker, float radius, string signKey, string ownedSignKey = "")
 	{
 		if (!marker)
 			return false;
@@ -49,6 +55,12 @@ class LF_BuildingLocks
 
 		s_mMarkerBuilding.Set(marker.GetID(), building.GetID());
 		s_mBuildingKey.Set(building.GetID(), signKey);
+		if (LF_Component<LF_HouseManagerComponent>.Find(marker))
+		{
+			s_mBuildingHouse.Set(building.GetID(), marker.GetID());
+			s_mBuildingOwnedKey.Set(building.GetID(), ownedSignKey);
+		}
+
 		LF_Debug.Info(FEATURE, string.Format("building %1 at %2 is locked: %3", building.GetPrefabData().GetPrefabName(), building.GetOrigin(), signKey));
 		return true;
 	}
@@ -72,6 +84,8 @@ class LF_BuildingLocks
 		}
 
 		s_mBuildingKey.Remove(building);
+		s_mBuildingHouse.Remove(building);
+		s_mBuildingOwnedKey.Remove(building);
 		LF_Debug.Info(FEATURE, string.Format("lock marker %1 removed: its building opens again", marker.GetName()));
 	}
 
@@ -100,8 +114,9 @@ class LF_BuildingLocks
 
 	//------------------------------------------------------------------------------------------------
 	//! The sign key that locks `door`'s building, or "" when the door is free. Walks the door's parents;
-	//! the first locked building up the chain decides.
-	static string ReasonFor(IEntity door)
+	//! the first locked building up the chain decides. A house marker's building (#3584) is free for `user` when they
+	//! own the house or hold its key; with no user it stays locked.
+	static string ReasonFor(IEntity door, IEntity user = null)
 	{
 		if (s_mBuildingKey.IsEmpty())
 			return "";
@@ -115,13 +130,53 @@ class LF_BuildingLocks
 				if (IsKeptOpen(node.GetID()))
 					return "";
 
-				return key;
+				return HouseReason(node.GetID(), key, user);
 			}
 
 			node = node.GetParent();
 		}
 
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The reason a lock holds `user` out of `building`: `key` for a plain lock or an unowned house, the owned
+	//! key for an owned house, "" when the user owns the house or holds its key. Reads the marker's replicated owner
+	//! key and house id, so the client's prompt and the server's refusal agree.
+	protected static string HouseReason(EntityID building, string key, IEntity user)
+	{
+		EntityID markerId;
+		if (!s_mBuildingHouse.Find(building, markerId))
+			return key;
+
+		BaseWorld world = GetGame().GetWorld();
+		IEntity marker;
+		if (world)
+			marker = world.FindEntityByID(markerId);
+
+		LF_HouseManagerComponent house;
+		if (marker)
+			house = LF_Component<LF_HouseManagerComponent>.Find(marker);
+
+		if (!house)
+			return key;
+
+		if (user && LF_BuildSiteComponent.UserHoldsKey(user, house.GetHouseIdentifier()))
+			return "";
+
+		string ownerKey = house.GetOwnerKey();
+		if (ownerKey.IsEmpty())
+			return key;
+
+		if (user && LF_VehicleLockComponent.IdentifiersMatch(LF_Houses.CharacterKeyOf(user), ownerKey))
+			return "";
+
+		string ownedKey;
+		s_mBuildingOwnedKey.Find(building, ownedKey);
+		if (ownedKey.IsEmpty())
+			return key;
+
+		return ownedKey;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,6 +190,8 @@ class LF_BuildingLocks
 	{
 		s_mMarkerBuilding.Clear();
 		s_mBuildingKey.Clear();
+		s_mBuildingHouse.Clear();
+		s_mBuildingOwnedKey.Clear();
 		s_mOpen.Clear();
 	}
 

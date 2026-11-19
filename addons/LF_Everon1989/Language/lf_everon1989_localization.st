@@ -439,6 +439,11 @@ StringTable {
      Target_en_us "Fermé"
      Comment "Door prompt on the harbour company offices (#3204)."
     }
+    CustomStringTableItem "{7D3A91C2E54B08F6}" {
+     Id "LF-Everon-Lock_ForSale"
+     Target_en_us "À vendre : voir le panneau"
+     Comment "Door prompt on a home for sale whose house marker is in the world and nobody owns yet (#3584); once bought it shows Lock_Private to everyone but the owner and key holders."
+    }
     CustomStringTableItem "{04E0632F53FEF329}" {
      Id "LF-Everon-Lock_ForSaleSoon"
      Target_en_us "À vendre bientôt"

@@ -1,0 +1,11 @@
+GenericEntity {
+ ID "5A8C2E71D40B9F36"
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+  }
+  RplComponent "{91C4E7A20B5D3F86}" {
+  }
+ }
+}
