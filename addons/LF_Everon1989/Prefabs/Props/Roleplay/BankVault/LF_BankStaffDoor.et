@@ -1,0 +1,38 @@
+GenericEntity : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ ID "C4A81E5D7B2F3096"
+ components {
+  MeshObject "{309366462BDAFB24}" {
+   Object "{ED2F500AB16EFD41}Assets/Structures/BuildingsParts/Doors/Door_Metal/Door_Metal_01_LEFT_EXT_COV_B.xob"
+  }
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   ActionContexts {
+    UserActionContext "{50888D37F529F720}" {
+     Position PointInfo "{50888D37F0EB77E0}" {
+      Offset 0.8441 1.1849 -0.0102
+     }
+     Radius 0.4726
+     Height 2.3596
+    }
+   }
+   additionalActions {
+    LF_BreachArmAction "{C4A81E5D7B2F3097}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{C4A81E5D7B2F3098}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_BreachTargetComponent "{C4A81E5D7B2F3099}" {
+   m_sTargetId "bank_staff_door"
+   m_fFuseSeconds 0
+  }
+ }
+}

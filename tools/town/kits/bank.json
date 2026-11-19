@@ -320,6 +320,36 @@
       ],
       "wall": "+z",
       "floor": "f0"
+    },
+    {
+      "id": "bank-staff-door",
+      "name": "Bank_Staff_Door",
+      "prefab": "{D31F7A5C92B84E06}Prefabs/Props/Roleplay/BankVault/LF_BankStaffDoor.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        8.1,
+        1.1,
+        0.5
+      ],
+      "yaw": 90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "bank-heist-site",
+      "name": "Bank_Heist_Site",
+      "prefab": "{A82E4D7B1F6C3590}Prefabs/Props/Roleplay/BankVault/LF_HeistSite_Bank.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        1.053,
+        2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }

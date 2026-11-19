@@ -101,3 +101,11 @@ GenericEntity Fit_saint_philippe_bank_lf_sign_atm : "{884DF4029C8307DB}Prefabs/P
  coords 4376.154 14.3 10650.165
  angleY 173
 }
+GenericEntity Fit_saint_philippe_bank_bank_staff_door : "{D31F7A5C92B84E06}Prefabs/Props/Roleplay/BankVault/LF_BankStaffDoor.et" {
+ coords 4360.821 13.1 10654.417
+ angleY -97
+}
+GenericEntity Fit_saint_philippe_bank_bank_heist_site : "{A82E4D7B1F6C3590}Prefabs/Props/Roleplay/BankVault/LF_HeistSite_Bank.et" {
+ coords 4369.044 13.053 10653.915
+ angleY 173
+}
