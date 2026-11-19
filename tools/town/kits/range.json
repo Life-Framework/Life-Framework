@@ -151,6 +151,7 @@
       "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
       "role": "sign",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         -5.618,
         0.505,
@@ -178,6 +179,7 @@
       "prefab": "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et",
       "role": "dressing",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         -7.405,
         0,
@@ -194,6 +196,7 @@
       "prefab": "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et",
       "role": "dressing",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         -9.293,
         0,
@@ -210,6 +213,7 @@
       "prefab": "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et",
       "role": "dressing",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         -11.181,
         0,
