@@ -110,3 +110,7 @@ Stolen money is a separate item that never counts as cash.
 - ✅ All or nothing on the inventory side: goods are taken first; a short take, or a payout that does not land, puts every unit
   back (and takes back any part paid). Cash is booked on the ledger with reason `buyer-sale`; marked notes get a `marked` trail line.
 - Test: `LF_Test_BuyerSale` (WORLD).
+
+### The buyer's spots on Saint-Philippe — `Place_saint-philippe_buyer-spots.layer` (#3416, Refs #3400)
+- 🧪 The island has three `LF_BuyerSpot` markers (the core prefab, `LF_BuyerSpotComponent` on a traffic cone), so `LF_BuyerRotation` has spots to rotate through and the police cannot camp one. Each stands out of sight against a wall: the dock warehouse (`saint-philippe-dock` b22), the east end of a concrete vehicle ramp in the districts' back lane (b21) and a barn at the village edge (b64). The spot id is the entity name (`Fit_saint_philippe_<place>_buyer_spots_drop_<building>`). All three are 200 m or more outside both safe circles (#3350).
+- Fitted by `tools\cli town drops saint-philippe buyer-spots` (a new `buyer-spots` entry in `DROP_KITS`); claim `tools/town/claims/saint-philippe-buyer-spots.json`; `audit placement --strict` clean, `town check saint-philippe` shows the slot fitted.
