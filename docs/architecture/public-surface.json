@@ -28,6 +28,7 @@
     "LF_OrgConfig",
     "LF_OrgWarConfig",
     "LF_PackManifest",
+    "LF_ParkedCarConfig",
     "LF_PersistenceConfig",
     "LF_PhoneConfig",
     "LF_PhotoIdCardConfig",

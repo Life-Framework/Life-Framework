@@ -1404,6 +1404,11 @@ StringTable {
      Target_en_us "Helene Roux"
      Comment "Saint-Philippe resident teller: display name (#2906)."
     }
+    CustomStringTableItem "{08F8B49C5124F438}" {
+     Id "LF-Shop_Desc_Bakery"
+     Target_en_us "Bread and something sweet, still warm"
+     Comment "Shop description of the Saint-Philippe bakery till (#3227)."
+    }
     CustomStringTableItem "{D48C1FE2090106F1}" {
      Id "LF-Shop_Desc_Cafe"
      Target_en_us "A drink, a snack, a word with the owner"
@@ -1468,6 +1473,11 @@ StringTable {
      Id "LF-Shop_Desc_Workwear"
      Target_en_us "Hard hats, work boots, gloves and a flashlight."
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{DBCD0C2289FBA157}" {
+     Id "LF-Shop_Name_Bakery"
+     Target_en_us "Boulangerie"
+     Comment "Shop name of the Saint-Philippe bakery till (#3227): town house b06 on the square, stock bakery."
     }
     CustomStringTableItem "{0B134C85762A065A}" {
      Id "LF-Shop_Name_Cafe"
@@ -1543,6 +1553,11 @@ StringTable {
      Id "LF-Shop_OpenDesc_SeedFeed"
      Target_en_us "Buy seeds, bait or a fishing rod"
      Comment "Action description on the seed and feed store till (#3223)."
+    }
+    CustomStringTableItem "{633EF19AA18FF9B0}" {
+     Id "LF-Shop_Open_Bakery"
+     Target_en_us "Buy bread and pastries"
+     Comment "Interaction name at the bakery till (#3227): opens the bakery price list."
     }
     CustomStringTableItem "{0EC694A26B780C12}" {
      Id "LF-Shop_Open_Cafe"
@@ -1638,6 +1653,21 @@ StringTable {
      Id "LF-Sign_Atm_What"
      Target_en_us "Your bank account. Jobs and sales pay cash; this is where cash goes in and out."
      Comment "Sign card for the ATM on the bank's front, What section."
+    }
+    CustomStringTableItem "{C39E7024FB5D6183}" {
+     Id "LF-Sign_Bakery_How"
+     Target_en_us "Go to the counter, choose what you want and pay. Bread fills you up for a few dollars. The family live upstairs."
+     Comment "How line of the bakery sign (#3227): the upper floors are the baker's flat."
+    }
+    CustomStringTableItem "{A17C5E02D93B4F61}" {
+     Id "LF-Sign_Bakery_Title"
+     Target_en_us "Boulangerie"
+     Comment "Title painted on the bakery's fascia (#3227) and shown in the prompt as Read: Boulangerie."
+    }
+    CustomStringTableItem "{B28D6F13EA4C5072}" {
+     Id "LF-Sign_Bakery_What"
+     Target_en_us "The village bakery: fresh bread, biscuits and chocolate."
+     Comment "What line of the bakery sign (#3227)."
     }
     CustomStringTableItem "{DAF800340D8F2049}" {
      Id "LF-Sign_Bank_How"
@@ -2063,6 +2093,21 @@ StringTable {
      Id "LF-Sign_GeneralStore_Next"
      Target_en_us "Sell what you gather at the market stalls next door, to the east|Cars are sold at the vehicle lot across the street"
      Comment "Sign card for the general store, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{98AD9902C05C38A0}" {
+     Id "LF-Sign_GeneralStore_Special1"
+     Target_en_us "Bread"
+     Comment "Store A-frame special 1: a chalk row on the general store pavement board (#3305). Price 3 matches LF_ShopStock_Everon1989."
+    }
+    CustomStringTableItem "{0AA236A7C73670FE}" {
+     Id "LF-Sign_GeneralStore_Special2"
+     Target_en_us "Fresh milk"
+     Comment "Store A-frame special 2 (#3305). Price 4 matches LF_ShopStock_Everon1989."
+    }
+    CustomStringTableItem "{48226C495DB4B471}" {
+     Id "LF-Sign_GeneralStore_Special3"
+     Target_en_us "Tinned fish"
+     Comment "Store A-frame special 3 (#3305). Price 6 matches LF_ShopStock_Everon1989."
     }
     CustomStringTableItem "{10B8F417BFC331B0}" {
      Id "LF-Sign_GeneralStore_Title"
@@ -2748,6 +2793,21 @@ StringTable {
      Id "LF-Sign_Traders_Rules"
      Target_en_us "Paid in cash, a fixed price per item."
      Comment "Sign card for the market stalls that buy produce, Rules section."
+    }
+    CustomStringTableItem "{FD941F33CF6FF710}" {
+     Id "LF-Sign_Traders_Special1"
+     Target_en_us "Apples"
+     Comment "Market A-frame line 1: what the traders buy, a chalk row (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{EAC2FC02DE625E9C}" {
+     Id "LF-Sign_Traders_Special2"
+     Target_en_us "Plums"
+     Comment "Market A-frame line 2 (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{A85914EECAC56866}" {
+     Id "LF-Sign_Traders_Special3"
+     Target_en_us "Cabbages"
+     Comment "Market A-frame line 3 (#3305). Value is the base price in LF_Market_Everon1989."
     }
     CustomStringTableItem "{83FF557EE9B09C57}" {
      Id "LF-Sign_Traders_Title"

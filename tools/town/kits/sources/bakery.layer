@@ -1,0 +1,15 @@
+// Source of the `bakery` kit (tools/town/kits/bakery.json, #3227): the vanilla shop furniture it places and the
+// bakery's own props. `town fit` reads a row's prefab and component GUIDs from here (a vanilla prefab the kit uses must
+// be named in its source). The kit is built for the ground-floor west room of the town house House_Town_E_2I01 (b06).
+GenericEntity Source_BakeryCounter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_BakeryRack : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 3 0 0
+}
+GenericEntity Source_BakeryTill : "{08F8B49C5124F437}Prefabs/Props/Commercial/LF_BakeryTill.et" {
+ coords 6 0 0
+}
+GenericEntity Source_BakeryLoaf : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 9 0 0
+}
