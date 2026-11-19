@@ -1,4 +1,4 @@
-// red-proof: on main (no Configs/Loot overlay) `tools\cli test --no-build --only LF_Test_EveronLootTables` fails every `has a loot table` line; RedProof() looks the kinds up under a missing name.
+// red-proof: on main (no Configs/Loot overlay) `tools\cli test --no-build --only LF_Test_EveronLootTables` fails every `has a loot table` line; RedProof() looks the kinds up under a missing name. #3345: before the three prefabs exist (and under RedProof) every `prefab spawns` line fails.
 //! #3344 (slice of #1020): the 1989 pack's loot tables for homes, shop back rooms, sheds and the dump
 //! (`Configs/Loot/LF_Loot_Everon1989.conf`, merged over the core crate table). Checked against the merged
 //! pack config (pack leg): each table is rollable, every row's prefab loads and has a sell price, the dump
@@ -12,6 +12,9 @@ class LF_Test_EveronLootTables : LF_Test
 	static const ResourceName COPPER_NUGGET = "{1881C4F2BD43E3E1}Prefabs/Resources/Mining/CopperNugget.et";
 	static const ResourceName ETOOL = "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et";
 	static const ResourceName AXE = "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et";
+	static const ResourceName TOOL_CHEST = "{38318F0369D1959B}Prefabs/Props/Loot/LF_LootToolChest.et";
+	static const ResourceName KITCHEN_CUPBOARD = "{51C99823106DB7C9}Prefabs/Props/Loot/LF_LootKitchenCupboard.et";
+	static const ResourceName SCRAP_PILE = "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et";
 
 	//! The same 6 minutes a parcel run takes as in `tools\cli economy` (an assumption, not measured).
 	protected static const float PARCEL_MINUTES = 6;
@@ -66,12 +69,58 @@ class LF_Test_EveronLootTables : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! #3345: a loot prop carries LF_LootContainerComponent, names the kind its table is under, that table
+	//! exists in the merged pack config, and one search of it puts items in its storage.
+	protected void CheckContainerPrefab(LF_TestContext ctx, ResourceName prefab, string label, string expectedKind, vector origin)
+	{
+		IEntity prop = LF_Utils.SpawnEntityPrefab(prefab, origin);
+		ctx.NotNull(prop, string.Format("%1 prefab spawns", label));
+		if (!prop)
+			return;
+
+		LF_LootContainerComponent container = LF_Component<LF_LootContainerComponent>.Find(prop);
+		ctx.NotNull(container, string.Format("%1 carries LF_LootContainerComponent", label));
+		if (container)
+		{
+			ctx.EqualStr(expectedKind, container.GetKind(), string.Format("%1 names the %2 table", label, expectedKind));
+			ctx.NotNull(LF_LootConfig.TableOf(container.GetKind()), string.Format("the pack defines the %1 table %2 names", expectedKind, label));
+			ctx.NotNull(LF_Component<InventoryStorageManagerComponent>.Find(prop), string.Format("%1 has a storage manager", label));
+			ctx.True(container.IsEmpty() && container.CanOfferSearch(), string.Format("%1 starts empty and offers Search", label));
+			ctx.True(container.Search(1000, 12345) == LF_ELootSearch.FILLED, string.Format("the first search of %1 fills it", label));
+			ctx.True(!container.IsEmpty(), string.Format("%1 holds items after a search", label));
+		}
+
+		ctx.NotNull(LF_Component<ActionsManagerComponent>.Find(prop), string.Format("%1 has the action manager that offers Search", label));
+		SCR_EntityHelper.DeleteEntityAndChildren(prop);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
 		LF_ShopManagerComponent manager = LF_ShopManagerComponent.GetInstance();
 		ctx.NotNull(manager, "the shop manager exists");
 		if (!manager)
 			return;
+
+		IEntity anchor = GetGame().GetWorld().FindEntityByName(LF_TestAnnex.APPLE_TRADE_CONTAINER);
+		ctx.NotNull(anchor, "Annex_AppleTradeContainer resolves in the DebugWorld");
+		if (anchor)
+		{
+			vector at = anchor.GetOrigin() + Vector(4, 0.1, 4);
+			ResourceName toolChest = TOOL_CHEST;
+			ResourceName cupboard = KITCHEN_CUPBOARD;
+			ResourceName scrapPile = SCRAP_PILE;
+			if (RedProof())
+			{
+				toolChest = "";
+				cupboard = "";
+				scrapPile = "";
+			}
+
+			CheckContainerPrefab(ctx, toolChest, "the tool chest", "shed", at);
+			CheckContainerPrefab(ctx, cupboard, "the kitchen cupboard", "home", at + Vector(3, 0, 0));
+			CheckContainerPrefab(ctx, scrapPile, "the scrap pile", "dump", at + Vector(6, 0, 0));
+		}
 
 		int parcelPay = LF_CivilianJob.PayFor(LF_EJobType.PARCEL);
 		float parcelHourly = parcelPay * 60 / PARCEL_MINUTES;
