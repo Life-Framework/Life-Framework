@@ -1905,6 +1905,71 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "Placa de lista de permissões"
      Comment "Whitelist sign interactive action name"
     }
+    CustomStringTableItem "{AA8EFD68EBC44F28}" {
+     Id "LF-ATMTransfer_Done"
+     Target_en_us "SENT %1 TO ...%2. BALANCE %3."
+     Comment "ATM transfer page status line after a transfer. %1 amount, %2 last four characters of the recipient's number, %3 the new balance."
+    }
+    CustomStringTableItem "{8359F0DA9137A580}" {
+     Id "LF-ATMTransfer_FieldTarget"
+     Target_en_us "SEND TO ACCOUNT NUMBER"
+     Comment "ATM transfer page: caption over the box where the recipient's account number is typed."
+    }
+    CustomStringTableItem "{B07FF790CDDE54BC}" {
+     Id "LF-ATMTransfer_Header"
+     Target_en_us "TRANSFER"
+     Comment "ATM transfer page title."
+    }
+    CustomStringTableItem "{6FDD215150BDD14B}" {
+     Id "LF-ATMTransfer_KeyMenu"
+     Target_en_us "MENU"
+     Comment "ATM transfer page: key back to the terminal's main screen."
+    }
+    CustomStringTableItem "{C08EF8EC1F48F181}" {
+     Id "LF-ATMTransfer_KeySend"
+     Target_en_us "SEND"
+     Comment "ATM transfer page: confirm key."
+    }
+    CustomStringTableItem "{6CAF1AF5B5009021}" {
+     Id "LF-ATMTransfer_LineAmount"
+     Target_en_us "AMOUNT > %1_"
+     Comment "ATM transfer page entry line with a cursor. %1 is the amount keyed in so far."
+    }
+    CustomStringTableItem "{7E5731E1EBAE9D1A}" {
+     Id "LF-ATMTransfer_LineFee"
+     Target_en_us "FEE %1  TOTAL %2"
+     Comment "ATM transfer page: the fee for the amount keyed in and what leaves the account. %1 fee, %2 total."
+    }
+    CustomStringTableItem "{FC75BE37C547EB67}" {
+     Id "LF-ATMTransfer_LineOwn"
+     Target_en_us "YOUR NUMBER: %1"
+     Comment "ATM transfer page: the player's own account number, to tell someone. %1 is the number."
+    }
+    CustomStringTableItem "{6005A6BA2670AB55}" {
+     Id "LF-ATMTransfer_Prompt"
+     Target_en_us "KEY IN THE NUMBER AND AMOUNT, THEN SEND."
+     Comment "ATM transfer page status line while idle."
+    }
+    CustomStringTableItem "{D2E85BF67E21E2DC}" {
+     Id "LF-ATMTransfer_RefuseFailed"
+     Target_en_us "THE TRANSFER DID NOT GO THROUGH. NO MONEY MOVED."
+     Comment "ATM transfer page refusal: the transfer id was used or the bank refused for a reason the player cannot fix."
+    }
+    CustomStringTableItem "{B77B1450A1912D0E}" {
+     Id "LF-ATMTransfer_RefuseRate"
+     Target_en_us "SLOW DOWN. TRY AGAIN IN A MOMENT."
+     Comment "ATM transfer page refusal: too many requests from this player in a few seconds."
+    }
+    CustomStringTableItem "{B49AD51FE0064222}" {
+     Id "LF-ATMTransfer_Sent"
+     Target_en_us "You sent %1 to the account ending %2."
+     Comment "Toast after a bank transfer. %1 is the amount, %2 the last four characters of the recipient's number."
+    }
+    CustomStringTableItem "{EA0C8B8F73FBDA3F}" {
+     Id "LF-ATMTransfer_ToastTitle"
+     Target_en_us "Bank transfer"
+     Comment "Toast title after a bank transfer went through."
+    }
     CustomStringTableItem "{4A64CBDDC70A3B14}" {
      Id "LF-ATM_Deposited"
      Target_en_us "DEPOSITED %1. THANK YOU."
@@ -1939,6 +2004,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ATM_KeyDeposit"
      Target_en_us "DEPOSIT"
      Comment "ATM terminal key: pay the keyed amount of carried cash into the account."
+    }
+    CustomStringTableItem "{ACF0AF7CCD90F1B7}" {
+     Id "LF-ATM_KeyTransfer"
+     Target_en_us "TRANSFER"
+     Comment "ATM terminal key that opens the transfer page."
     }
     CustomStringTableItem "{9BA4937AFAD95E3E}" {
      Id "LF-ATM_KeyWithdraw"
@@ -2299,6 +2369,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Bill_Title"
      Target_en_us "Treatment bill"
      Comment "Notification title for treatment bills."
+    }
+    CustomStringTableItem "{3C8E1F5A7D2B9406}" {
+     Id "LF-Bin_Name"
+     Target_en_us "Bin"
+     Comment "Inventory name of a tagged bin: an open container that is emptied by the world reset."
+    }
+    CustomStringTableItem "{B7A20D6E94C31F58}" {
+     Id "LF-Bin_Open"
+     Target_en_us "Look in bin"
+     Comment "Action on a bin: opens it as normal storage."
     }
     CustomStringTableItem "{312172B24DB5B820}" {
      Id "LF-BreakIn_Barely"
@@ -4768,6 +4848,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
     }
+    CustomStringTableItem "{3328B0000000F001}" {
+     Id "LF-Fuel_Buy"
+     Target_en_us "Fill the tank"
+     Comment "Action on a fuel pump that sells from stock: fills the nearest vehicle and charges cash."
+    }
+    CustomStringTableItem "{3328B0000000F004}" {
+     Id "LF-Fuel_Dry"
+     Target_en_us "The tanks are dry. The depot truck is due."
+     Comment "Toast: the station has no fuel to sell until a delivery arrives."
+    }
+    CustomStringTableItem "{3328B0000000F008}" {
+     Id "LF-Fuel_Failed"
+     Target_en_us "The pump jams. Try again."
+     Comment "Toast: the sale could not be completed (a logged fault)."
+    }
+    CustomStringTableItem "{3328B0000000F003}" {
+     Id "LF-Fuel_Filled"
+     Target_en_us "Tank filled: %1."
+     Comment "Toast after a fill. %1 = litres and the cash charged, for example 30 L, $60."
+    }
+    CustomStringTableItem "{3328B0000000F005}" {
+     Id "LF-Fuel_NoMoney"
+     Target_en_us "You do not have the cash for a litre."
+     Comment "Toast: the buyer cannot pay for one litre."
+    }
+    CustomStringTableItem "{3328B0000000F007}" {
+     Id "LF-Fuel_NoVehicle"
+     Target_en_us "Park a vehicle next to the pump."
+     Comment "Toast: no vehicle is within reach of the pump."
+    }
+    CustomStringTableItem "{3328B0000000F006}" {
+     Id "LF-Fuel_TankFull"
+     Target_en_us "This tank is already full."
+     Comment "Toast: the vehicle at the pump has no room for fuel."
+    }
+    CustomStringTableItem "{3328B0000000F002}" {
+     Id "LF-Fuel_Title"
+     Target_en_us "Fuel station"
+     Comment "Toast title for a pump sale or refusal."
+    }
     CustomStringTableItem "{251C7BC1C7871641}" {
      Id "LF-FurnitureStorage_Open"
      Target_en_us "Open"
@@ -6723,6 +6843,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A taped cardboard parcel for the drop-off address."
      Comment "Courier parcel item description"
     }
+    CustomStringTableItem "{9195B0483F2D0148}" {
+     Id "LF-Item_RepairKit_Description"
+     Target_en_us "A toolbox of wrenches and patches. Holds one repair on a damaged vehicle."
+     Comment "Item description (#3332)."
+    }
+    CustomStringTableItem "{1B57B817BF5340F0}" {
+     Id "LF-Item_RepairKit_Name"
+     Target_en_us "Repair kit"
+     Comment "Item name (#3332)."
+    }
     CustomStringTableItem "{C387085823DBA47D}" {
      Id "LF-Item_Scanner_Description"
      Target_en_us "Listens in on police and medic calls. Receives only. Illegal: an officer who finds it takes it and files a charge."
@@ -7024,6 +7154,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "{Police} on duty"
      Target_es_es "{Police} de servicio"
      Comment "Hint title when a police officer starts a shift"
+    }
+    CustomStringTableItem "{3148B2D8F16CAE32}" {
+     Id "LF-Job_Paid_Bonus"
+     Target_en_us "Paid {currency:sym}%1: run {currency:sym}%2, bonus +{currency:sym}%3"
+     Comment "Toast: a delivery run with a contract or standing bonus (#3148). %1 = all of it, %2 = the run's pay, %3 = the bonus."
+    }
+    CustomStringTableItem "{3148A1C7E05B9D21}" {
+     Id "LF-Job_Paid_Night"
+     Target_en_us "Paid {currency:sym}%1: run {currency:sym}%2, night +{currency:sym}%3"
+     Comment "Toast: a delivery run finished at night (#3148). %1 = all of it, %2 = the run's pay, %3 = the night rate's extra."
+    }
+    CustomStringTableItem "{3148C3E90A27BF43}" {
+     Id "LF-Job_Paid_NightBonus"
+     Target_en_us "Paid {currency:sym}%1: run {currency:sym}%2, night +{currency:sym}%3, bonus +{currency:sym}%4"
+     Comment "Toast: a delivery run finished at night with a bonus (#3148). %1 = all of it, %2 = the run's pay, %3 = the night extra, %4 = the bonus."
     }
     CustomStringTableItem "{4A1C9E27B05D3F19}" {
      Id "LF-Job_ParcelDest"
@@ -10728,6 +10873,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Officer's trousers"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
     }
+    CustomStringTableItem "{3A7C91E05B2D4F68}" {
+     Id "LF-Process_Busy"
+     Target_en_us "Still running. Wait for it to finish."
+     Comment "Processing refused (#3229): a timed machine already has a run under way."
+    }
     CustomStringTableItem "{4140D26F74D7F5F3}" {
      Id "LF-Process_Needs"
      Target_en_us "Needs %1"
@@ -10737,6 +10887,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Process_NoItems"
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
+    }
+    CustomStringTableItem "{9D4E21B7C0A35F86}" {
+     Id "LF-Process_Started"
+     Target_en_us "Running. The parts come out here in %1 seconds."
+     Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
      Id "LF-Property_Bought"
@@ -11585,6 +11740,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{FC5B69E6943AB0F2}" {
+     Id "LF-RepairKit_Action"
+     Target_en_us "Repair with kit"
+     Comment "Action name on a damaged vehicle (#3332)."
+    }
+    CustomStringTableItem "{D8DBAE73FEF4E915}" {
+     Id "LF-RepairKit_Busy"
+     Target_en_us "Someone is already working on this vehicle."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{A5624E1FC287F5D3}" {
+     Id "LF-RepairKit_Cooldown"
+     Target_en_us "This vehicle was only just repaired. Give it a moment."
+     Comment "Refusal while the car cools down (#3332)."
+    }
+    CustomStringTableItem "{BA771C4080B358CC}" {
+     Id "LF-RepairKit_Done"
+     Target_en_us "Repaired. The kit is used up."
+     Comment "Toast when the repair applies (#3332)."
+    }
+    CustomStringTableItem "{E2EBFA0CCD41EE95}" {
+     Id "LF-RepairKit_Interrupted"
+     Target_en_us "You stopped before the repair was done. The kit is kept."
+     Comment "Toast when the job is dropped (#3332)."
+    }
+    CustomStringTableItem "{12A97ADFF80A9AB4}" {
+     Id "LF-RepairKit_NeedKit"
+     Target_en_us "You need a repair kit."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{B6A1FD9D408C30D7}" {
+     Id "LF-RepairKit_NotDamaged"
+     Target_en_us "This vehicle needs no repair."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{FBEC31E712CFA92E}" {
+     Id "LF-RepairKit_Started"
+     Target_en_us "You start working on the vehicle."
+     Comment "Toast when the repair starts (#3332)."
+    }
+    CustomStringTableItem "{45F52AF20227E07B}" {
+     Id "LF-RepairKit_Title"
+     Target_en_us "Repair kit"
+     Comment "Toast title (#3332)."
+    }
+    CustomStringTableItem "{87D8723475C6D323}" {
+     Id "LF-RepairKit_TooFar"
+     Target_en_us "Stand closer to the vehicle."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{5CAA2E7A7672C8C9}" {
+     Id "LF-RepairKit_Wrecked"
+     Target_en_us "This vehicle is wrecked beyond a kit."
+     Comment "Refusal (#3332)."
     }
     CustomStringTableItem "{C80275F691522CBC}" {
      Id "LF-Reputation_Faction_Police"

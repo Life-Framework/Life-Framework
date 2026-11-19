@@ -55,6 +55,13 @@
   rollback, and pays job rewards once per batch. A short input is named in the refusal ("Needs
   Coal") instead of "Missing the input materials". Defaults (no job, cap 1) keep every existing
   machine as it was. Test: `LF_Test_MachineRecipeRules`.
+- ✅ Timed machine runs (#3229). A machine row with `m_iProcessSeconds` > 0 takes the inputs at the
+  start and keeps the outputs back: `LF_ProcessRun` (`Feature/Processing/LF_ProcessRun.c`) drops them
+  at the machine when the time is up and pays the job reward then. The machine is heard running for
+  the run (`LF_AmbientSwitchComponent.PulseOn`). One run per machine entity: a second worker reads
+  "Still running" (`#LF-Process_Busy`) and keeps their inputs. The run is session-only; the game mode's
+  OnGameEnd drops every owed output at its machine before the shutdown save, so a restart loses
+  nothing. The row's default 0 stays instant. Test: `LF_Test_ProcessRunTimer`.
 - ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
   empty recipe or a prefab that does not resolve logs `LF_Debug.Error` and
   returns before inventory changes (verified 2026-10-11).
@@ -184,3 +191,6 @@
 ### Saint-Philippe edge timber yard (#3175) — `Place_saint-philippe_woodlot.layer`, kit `lumber-yard`
 - 🧪 **A dressed timber yard on the Warehouse_01 hall `b121`** at the village edge (slot `woodlot`, purpose row `timber yard`): the sawmill and a lumberjack workplace desk (map POI `Workplace`) stand on the hall floor; log decks, plank stacks, a saw bench, pallets, a parked truck for the loading bay, net fence with a gate gap, three wall work lights and the `Scierie` sign (`saint_philippe_timber_yard`, pack strings `LF-Sign_TimberYard_*`) stand on the apron. Built with `town fit saint-philippe woodlot`; the template slot now names kit `lumber-yard` and places `Workplace` beside `LogPile` and `Processor`.
 - ⚠️ The woodlot sign and map point at the forest edge 100 to 200 m away are not built: the slot's 14 m margin cannot hold them (follow-up card).
+
+### Mining chain rows (#3232) — `ResourceChains.conf`
+- 🧪 **Three plants and three gather nodes for the iron, copper and stone chains.** Machines: `smelter-iron` (2 iron ore + 1 coal = 1 iron bar, MINER 4, up to 5 batches, 60 s a run), `refinery-copper` (2 copper ore + 1 acid carboy = 1 copper bar, MINER 3, up to 3 batches, 90 s) and `cement-works` (4 limestone + 1 sand = 2 cement bags, no gate, up to 10 batches, 30 s). Nodes: `coal` (pickaxe, MINING, 6 gathers, 2 min regrow), `limestone` (shovel, DIGGING, stock 20, 3 min regrow) and `sand-beach` (shovel, DIGGING, stock 10, 2 min regrow). The direct `cement` node stays debug-world only. No island site places any of these yet (site cards S1 to S9); pay rates are tuned in #3246. `LF_Test_MiningChainRecipes` checks each row.

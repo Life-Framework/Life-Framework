@@ -1009,6 +1009,16 @@ StringTable {
      Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
      Comment "Item description: instant coffee."
     }
+    CustomStringTableItem "{DD99AAF5FD3E4FC8}" {
+     Id "LF-Item_CopperWireCoil_Description"
+     Target_en_us "A coil of stripped copper wire. Scrapyards pay more for copper than for iron."
+     Comment "Item description: copper wire coil (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{2D29328690DD8A4F}" {
+     Id "LF-Item_CopperWireCoil_Name"
+     Target_en_us "Copper wire coil"
+     Comment "Item name: copper wire coil (scrapyard, #3823)."
+    }
     CustomStringTableItem "{8DAE041BDBAD8F4B}" {
      Id "LF-Item_Croissant"
      Target_en_us "Croissant"
@@ -1039,6 +1049,16 @@ StringTable {
      Target_en_us "Fresh milk in a glass bottle with a foil cap. Drink it soon."
      Comment "Item description: bottle of milk."
     }
+    CustomStringTableItem "{23D974D8CDFB5F7D}" {
+     Id "LF-Item_OldRadio_Description"
+     Target_en_us "A dead wireless set. The case is steel and the coils are copper wire."
+     Comment "Item description: old radio (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{7DBF12F89D8B1692}" {
+     Id "LF-Item_OldRadio_Name"
+     Target_en_us "Old radio"
+     Comment "Item name: old radio (scrapyard, #3823)."
+    }
     CustomStringTableItem "{60D2B9C1E45A6CC4}" {
      Id "LF-Item_PickleJar"
      Target_en_us "Jar of pickles"
@@ -1049,6 +1069,16 @@ StringTable {
      Target_en_us "A jar of pickled gherkins in brine. Sharp, and still filling."
      Comment "Item description: jar of pickles."
     }
+    CustomStringTableItem "{6342C0C34CC2ED27}" {
+     Id "LF-Item_RubberScrap_Description"
+     Target_en_us "A worn-out tyre with its steel bead still in it. Not worth much, but the bead is."
+     Comment "Item description: rubber scrap (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{1FCB1E70B50BA956}" {
+     Id "LF-Item_RubberScrap_Name"
+     Target_en_us "Rubber scrap"
+     Comment "Item name: rubber scrap (scrapyard, #3823)."
+    }
     CustomStringTableItem "{E4B1EB83A0FA9C56}" {
      Id "LF-Item_Saucisson"
      Target_en_us "Dry sausage"
@@ -1058,6 +1088,16 @@ StringTable {
      Id "LF-Item_SaucissonDesc"
      Target_en_us "A dry-cured saucisson tied with twine. Slice it thin and it keeps you going for hours."
      Comment "Item description: dry sausage."
+    }
+    CustomStringTableItem "{23FE92B459F50077}" {
+     Id "LF-Item_ScrapMetal_Description"
+     Target_en_us "Bent offcuts and broken castings. A scrapyard pays by the kilo."
+     Comment "Item description: scrap metal (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{F9EDBA4B9D9C3709}" {
+     Id "LF-Item_ScrapMetal_Name"
+     Target_en_us "Scrap metal"
+     Comment "Item name: scrap metal (scrapyard, #3823)."
     }
     CustomStringTableItem "{1672D28C6515BA4F}" {
      Id "LF-Item_SmokedBass_Description"
@@ -1138,6 +1178,16 @@ StringTable {
      Id "LF-Item_TouristMap_Name"
      Target_en_us "Tourist map of Everon"
      Comment "Tourist map (#2242): the item's name in the inventory."
+    }
+    CustomStringTableItem "{66654F6ED99E5F5B}" {
+     Id "LF-Item_WornHandTool_Description"
+     Target_en_us "A wrench worn smooth and loose in the jaw. Good for scrap and not much else."
+     Comment "Item description: worn hand tool (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{BC8CB99A2688023F}" {
+     Id "LF-Item_WornHandTool_Name"
+     Target_en_us "Worn hand tool"
+     Comment "Item name: worn hand tool (scrapyard, #3823)."
     }
     CustomStringTableItem "{E5D6ABA466DA481F}" {
      Id "LF-Launder_Closed"
@@ -1299,6 +1349,11 @@ StringTable {
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
     }
+    CustomStringTableItem "{069AD0D1539E7BB7}" {
+     Id "LF-MapPoi_Mine"
+     Target_en_us "Mine"
+     Comment "Map POI kind name (#3241): a mine, where a miner digs ore or coal (LF_Places kind mine). The map adds the town."
+    }
     CustomStringTableItem "{046B777F2F3B3DC1}" {
      Id "LF-MapPoi_Newsagent"
      Target_en_us "Newsagent"
@@ -1318,6 +1373,11 @@ StringTable {
      Id "LF-MapPoi_Pharmacy"
      Target_en_us "Pharmacy"
      Comment "Map POI name (#3515): the pharmacy counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{6A6E592B5FF9A7FD}" {
+     Id "LF-MapPoi_Plant"
+     Target_en_us "Plant"
+     Comment "Map POI kind name (#3241): a processing plant, a smelter, refinery or cement works (LF_Places kind plant)."
     }
     CustomStringTableItem "{1FA54D4B3E7D5BC1}" {
      Id "LF-MapPoi_SeedFeed"

@@ -28,6 +28,11 @@ Vehicle : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
       "default"
      }
     }
+    LF_RepairKitAction "{3332A1C0E5D70011}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_CargoBedAction "{E1A452BE1AC04000}" {
      ParentContextList {
       "lf_cargo"

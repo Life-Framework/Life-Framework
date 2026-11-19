@@ -1,0 +1,33 @@
+GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" {
+ ID "E8ABE82A6C304339"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_CopperWireCoil_Name"
+     Description "#LF-Item_CopperWireCoil_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.8
+     SizeSetupStrategy Volume
+     ItemVolume 600
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{59BCA073459D6271}" {
+     HandAdditiveRotation 0 0 0
+     HandAdditiveTranslation 0 0.005 -0.065
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{59BCA073459D626C}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 3
+      FOV 10
+     }
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{6180F7E00B3E16E7}Assets/Props/Military/Fortification/BarbedTape_Coil_02/BarbedTape_Coil_02.xob"
+  }
+ }
+}

@@ -400,7 +400,21 @@ class LF_NotificationManagerComponent : ScriptComponent
 			string displayArg = messageArg;
 			if (displayArg.StartsWith("#"))
 				displayArg = LF_Terms.Text(displayArg);
-			displayMessage = LF_Terms.Text(displayMessage, displayArg);
+			if (displayArg.StartsWith(LF_JobPayParts.PACKED_MARK))
+			{
+				// A packed argument ("~a|b|c") fills %1 to %4 (the pay toast's parts, #3148).
+				array<string> packed = {};
+				string packedText = displayArg.Substring(1, displayArg.Length() - 1);
+				packedText.Split(LF_JobPayParts.PACKED_SEP, packed, false);
+				while (packed.Count() < 4)
+					packed.Insert(string.Empty);
+
+				displayMessage = LF_Terms.Text(displayMessage, packed[0], packed[1], packed[2], packed[3]);
+			}
+			else
+			{
+				displayMessage = LF_Terms.Text(displayMessage, displayArg);
+			}
 		}
 		
 		// Create notification widget on HUD layer

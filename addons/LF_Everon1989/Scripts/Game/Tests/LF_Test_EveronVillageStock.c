@@ -1,3 +1,4 @@
+// red-proof: observed 2026-11-19 (#3334): with the repair kit rows on the hardware and mechanic stocks and the old counts (10 and 1), `--only everon/village-stock` failed `the hardware stock lists 10 items` and `the mechanic stock lists 1 items` (main guard, PR #3835 reverted); the lists now name the kit and the counts are 11 and 2.
 // red-proof: observed 2026-11-19 (#3225): with the bakery and butcher stocks lacking baguette, croissant, saucisson and ham, `toolscli test --no-build --only LF_Test_EveronVillageStock` failed `the bakery stock lists 5 items`, `the butcher stock lists 4 items` and each new `is in the stock` line; `--red` fails on the `bakery_missing` and `butcher_missing` lookups.
 // red-proof (cafe and general store loop check): 2026-11-18 with the cafe and general store apple rows at $2, `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed 4 lines (cafe and general_store: `Apple.et sells for 2 and buys back for 4` and `sells for 2 and the market pays up to 5`); at $6 it passes.
 // red-proof: observed 2026-11-18 (#3218): on main (no supermarket, hardware, seed_feed, newsagent or mechanic stock) `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed on every `has a stock under the pack header` line.
@@ -39,6 +40,7 @@ class LF_Test_EveronVillageStock : LF_Test
 	protected static const ResourceName ROD = "{0327968D17D249FD}Prefabs/Items/Fishing/LF_FishingRod.et";
 	protected static const ResourceName MAP = "{A5EDB92E7A42913E}Prefabs/Items/LF_TouristMap.et";
 	protected static const ResourceName PARTS = "{7A94C1E05D3B2F68}Prefabs/Items/Resources/LF_CarParts.et";
+	protected static const ResourceName REPAIR_KIT = "{3F5A9C1E7B2D4806}Prefabs/Items/Vehicles/LF_RepairKit.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -55,10 +57,10 @@ class LF_Test_EveronVillageStock : LF_Test
 			return;
 
 		CheckStock(ctx, manager, "supermarket", {WATER, JUICE, BEER, APPLE, CABBAGE, PLUM, CRACKERS, DRIED_MEAT});
-		CheckStock(ctx, manager, "hardware", {ETOOL, AXE, GRAVEL, CEMENT, BRICK, PLANK, DOOR_KIT, SANDBAG, FLASHLIGHT, RADIO});
+		CheckStock(ctx, manager, "hardware", {ETOOL, AXE, GRAVEL, CEMENT, BRICK, PLANK, DOOR_KIT, SANDBAG, FLASHLIGHT, RADIO, REPAIR_KIT});
 		CheckStock(ctx, manager, "seed_feed", {SEEDS, BAIT, ROD, WATER});
 		CheckStock(ctx, manager, "newsagent", {MAP, WATER});
-		CheckStock(ctx, manager, "mechanic", {PARTS});
+		CheckStock(ctx, manager, "mechanic", {PARTS, REPAIR_KIT});
 		CheckStock(ctx, manager, "bakery", {BREAD, CRACKERS, CHOCOLATE, BAGUETTE, CROISSANT});
 		CheckStock(ctx, manager, "butcher", {DRIED_MEAT, CANNED_MEAT, SAUCISSON, HAM});
 

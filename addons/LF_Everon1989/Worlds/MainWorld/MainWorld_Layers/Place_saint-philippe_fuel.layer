@@ -45,3 +45,11 @@ GenericEntity Fit_saint_philippe_fuel_electricity_box_small_01 : "{CDE4035B661F9
  coords 4620.076 21.1 10653.931
  angleY -100
 }
+GenericEntity Fit_saint_philippe_fuel_pump_a : "{3328A0000000F001}Prefabs/Props/Fuel/LF_FuelPump.et" {
+ coords 4611.51 18.55 10667.469
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_fuel_pump_b : "{3328A0000000F001}Prefabs/Props/Fuel/LF_FuelPump.et" {
+ coords 4613.388 18.61 10657.108
+ angleY -100
+}

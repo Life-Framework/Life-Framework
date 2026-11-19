@@ -21,8 +21,14 @@ delivery drop-off and the stock sign are later cards.
   `LF_FuelChargeLedger` keeps the sub-unit remainder per key (unsaved on purpose).
 - `LF_FuelConfig` (`LF_FuelConfig.c`, `Configs/Fuel/LF_Fuel.conf`): one table, off in the core. Per-station rows and
   pack overlays arrive with the station component.
+- `LF_FuelStationComponent` / `LF_FuelBuyAction` (#3328): a pump that sells from its station's stock. The server picks the
+  vehicle at the pump, the litres (tank room, then stock, then cash) and the price; the vanilla free refuel is off at a pump
+  that sells, only while `LF_FuelConfig.m_bEnabled`. The stock is per station id and rides the `fuelstock` save section (below).
 
 ## Not yet
 
-Station component, pump and delivery actions, the `fuelstock` save section (a `LF_<Area>SavePayload`), the
-out-of-fuel sign.
+Delivery actions, a pack pump prefab per station (the Saint-Philippe forecourt has its pumps, #3337), the out-of-fuel sign.
+
+## Saved
+
+The `fuelstock` save section (`LF_FuelStockSave.c`, #3329) keeps each station's litres by station id across a restart; see `docs/features/fuel.md`.

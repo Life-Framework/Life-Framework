@@ -4,7 +4,9 @@
 //!  - the first run opens the rite once per phase run: the church bells ring (a one-shot RPC the
 //!    clients play on the vanilla bell of the nearest church, LF_MemorialBells) and the town's radios
 //!    within a ring of the marker go quiet for a while (the replicated LF_AmbientSwitchComponent
-//!    of each radio whose sound slot the config names), then come back on;
+//!    of each radio whose sound slot the config names), then come back on; the speaker's recorded
+//!    line (a voiced line of a dialogue conf, #3827) plays at the marker at the same moment the
+//!    people present get the caption (LF_MemorialVoice), and the rite is busy for its length;
 //!  - every run, each player standing within the radius for the first time in this phase run gets
 //!    the event toast and the speaker's line, and one standing award (LF_Reputation.Award) once per
 //!    character per phase run, so a late arrival is counted and a player who stays is not paid twice.
@@ -55,12 +57,24 @@ class LF_EventMemorial
 	[Attribute("", UIWidgets.EditBox, "Standing award row id (Configs/Reputation) given once per character per phase run. Empty: no award")]
 	string m_sAwardAction;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Dialogue .conf (Configs/Dialogue) holding the speaker's recorded line; played at the memorial when the rite opens, with the caption. Empty: no voice", "conf")]
+	ResourceName m_sVoiceDialogue;
+
+	[Attribute("", UIWidgets.EditBox, "Id of the voiced line in that dialogue; its sound event, audio project and length are the clip")]
+	string m_sVoiceLine;
+
+	[Attribute("1.65", UIWidgets.Auto, "Metres above the marker the clip plays from (the speaker's head)", params: "0 10")]
+	float m_fVoiceHeight;
+
 	//------------------------------------------------------------------------------------------------
 	//! \return an empty string when usable, else why not.
 	string Validate()
 	{
 		if (m_sSceneId.IsEmpty())
 			return "no scene id";
+
+		if (m_sVoiceDialogue.IsEmpty() != m_sVoiceLine.IsEmpty())
+			return "a voice needs both a dialogue conf and a line id";
 
 		if (m_fRadius <= 0)
 			return "radius must be above 0";
@@ -129,6 +143,17 @@ class LF_EventMemorialOperation : LF_EventOperation
 	int m_iLastAwarded;
 	//! Radios switched off by the last opening, not back on yet (tests read it).
 	ref array<EntityID> m_aSilenced = {};
+	//! Tests: the speaker's dialogue to use instead of loading m_Config.m_sVoiceDialogue.
+	ref LF_DialogueConfig m_VoiceTest;
+	//! The clip the last opening asked the clients to play (tests read it): event, project, seconds, where.
+	string m_sLastClipEvent;
+	string m_sLastClipProject;
+	float m_fLastClipSeconds;
+	vector m_vLastClipAt;
+	//! How many clips the operation has started.
+	int m_iClips;
+	//! Tick count at which the clip started speaking ends; the rite is busy until then.
+	protected int m_iClipEndsMs;
 
 	protected bool m_bRan;
 	protected float m_fRanPhaseAt;
@@ -151,6 +176,13 @@ class LF_EventMemorialOperation : LF_EventOperation
 	{
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(RestoreRadios);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rite waits for the clip: the phase does not advance while the speaker is still talking.
+	override bool Busy()
+	{
+		return m_iClipEndsMs != 0 && System.GetTickCount() < m_iClipEndsMs;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -210,6 +242,53 @@ class LF_EventMemorialOperation : LF_EventOperation
 			LF_MemorialBells.Announce(site, m_Config.m_fBellSearchRadius, m_Config.m_iBellStrokes);
 
 		SilenceRadios(site);
+
+		// The clip starts with the caption: ServePresent runs right after in the same run.
+		StartVoice(site);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Asks every client to play the speaker's recorded line from the memorial, and holds the rite for
+	//! its length. No voice configured, or a line that does not resolve (logged): the caption is all.
+	protected void StartVoice(vector site)
+	{
+		m_iClipEndsMs = 0;
+		m_sLastClipEvent = "";
+		m_sLastClipProject = "";
+		m_fLastClipSeconds = 0;
+		if (m_Config.m_sVoiceDialogue.IsEmpty() || m_Config.m_sVoiceLine.IsEmpty())
+			return;
+
+		LF_DialogueConfig dialogue = m_VoiceTest;
+		if (!dialogue)
+			dialogue = LF_DialogueConfig.Load(m_Config.m_sVoiceDialogue);
+
+		if (!dialogue)
+		{
+			LF_Debug.Error(FEATURE, string.Format("memorial %1: voice dialogue %2 does not load; caption only", m_sModuleId, m_Config.m_sVoiceDialogue));
+			return;
+		}
+
+		LF_DialogueLine line = LF_DialogueFlow.FindLine(dialogue, m_Config.m_sVoiceLine);
+		if (!line || line.IsTextOnly() || line.m_sEvent.IsEmpty() || dialogue.m_sSoundProject.IsEmpty())
+		{
+			LF_Debug.Error(FEATURE, string.Format("memorial %1: voice line '%2' of %3 has no recording; caption only", m_sModuleId, m_Config.m_sVoiceLine, dialogue.m_sId));
+			return;
+		}
+
+		m_sLastClipEvent = line.m_sEvent;
+		m_sLastClipProject = dialogue.m_sSoundProject;
+		m_fLastClipSeconds = line.m_fSeconds;
+		m_vLastClipAt = site + Vector(0, m_Config.m_fVoiceHeight, 0);
+		m_iClips++;
+		int clipMs = Math.Round(line.m_fSeconds * 1000);
+		m_iClipEndsMs = System.GetTickCount() + clipMs;
+		if (m_iClipEndsMs == 0)
+			m_iClipEndsMs = 1;
+
+		LF_Debug.Info(FEATURE, string.Format("memorial %1: voice %2 (%3 s) starts with the caption", m_sModuleId, line.m_sEvent, line.m_fSeconds));
+		if (!m_bQuiet)
+			LF_MemorialVoice.Announce(m_vLastClipAt, m_sLastClipProject, m_sLastClipEvent);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -533,6 +612,84 @@ class LF_MemorialBells_StaticResetHook : LF_StaticResetHook
 }
 
 //------------------------------------------------------------------------------------------------
+//! The speaker's recorded line of the memorial on the clients (#3827). The server announces a
+//! position (the speaker's head at the memorial), an audio project and a sound event; each machine
+//! that renders plays it there as a 3D sound, so a player near the church hears the priest and one
+//! far away hears nothing (the project's own range). Nothing is decided here; a dedicated server
+//! never plays.
+class LF_MemorialVoice
+{
+	static const string FEATURE = "Events";
+	protected static int s_iPlayed;
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: tell every client to play the clip, and play it here when this machine renders (a listen host).
+	static void Announce(vector at, string project, string soundEvent)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		LF_GameModeRoleplay mode = LF_GameModeRoleplay.Cast(GetGame().GetGameMode());
+		if (!mode)
+		{
+			LF_Debug.Error(FEATURE, "memorial voice skipped: no roleplay game mode to announce on");
+			return;
+		}
+
+		mode.LF_AnnounceMemorialVoice(at, project, soundEvent);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! This machine: plays the clip at `at`.
+	static void Play(vector at, string project, string soundEvent)
+	{
+		if (RplSession.Mode() == RplMode.Dedicated || System.IsConsoleApp() || project.IsEmpty() || soundEvent.IsEmpty())
+			return;
+
+		vector mat[4];
+		Math3D.MatrixIdentity4(mat);
+		mat[3] = at;
+		AudioHandle handle = AudioSystem.PlayEvent(project, soundEvent, mat);
+		if (handle == AudioHandle.Invalid)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("memorial voice %1 did not start (out of earshot here, or %2 failed to load)", soundEvent, project));
+			return;
+		}
+
+		s_iPlayed++;
+		LF_Debug.Info(FEATURE, string.Format("memorial voice %1 plays at the memorial", soundEvent));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Clips started on this machine (the harness and a session proof read it).
+	static int PlayedCount()
+	{
+		return s_iPlayed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		s_iPlayed = 0;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_MemorialVoice's statics (LF_StaticReset finds it by reflection).
+class LF_MemorialVoice_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_MemorialVoice";
+	}
+
+	override void Apply()
+	{
+		LF_MemorialVoice.ResetStatics();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! Carries the memorial bells from the server to the clients on the game mode, like the event
 //! announcement (LF_EventShell.c), without editing LF_GameModeRoleplay.c (M4 rule).
 modded class LF_GameModeRoleplay
@@ -554,5 +711,24 @@ modded class LF_GameModeRoleplay
 	protected void RpcDo_LF_MemorialBells(vector at, float searchRadius, int strokes)
 	{
 		LF_MemorialBells.Ring(at, searchRadius, strokes);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: every client plays the speaker's clip at `at`. A listen-server host plays it directly.
+	void LF_AnnounceMemorialVoice(vector at, string project, string soundEvent)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		Rpc(RpcDo_LF_MemorialVoice, at, project, soundEvent);
+		if (RplSession.Mode() != RplMode.Dedicated)
+			RpcDo_LF_MemorialVoice(at, project, soundEvent);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
+	protected void RpcDo_LF_MemorialVoice(vector at, string project, string soundEvent)
+	{
+		LF_MemorialVoice.Play(at, project, soundEvent);
 	}
 }

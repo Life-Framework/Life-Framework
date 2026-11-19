@@ -1,0 +1,19 @@
+{
+  "version": 0,
+  "shapes": [
+    {
+      "id": "JY1_wall",
+      "kind": "polyline",
+      "closed": true,
+      "points": [4114, 2204, 4127, 2204, 4127, 2216, 4114, 2216],
+      "generator": "{191C938B76395B29}PrefabLibrary/DefaultLibrary/Generators/Walls/Metal/WG_MetalWall_01.et"
+    }
+  ],
+  "entities": [
+    { "id": "JY1_wreck_1", "prefab": "{002B8C09F0E7E371}Prefabs/Props/Wrecks/S1203_wreck/S1203_wreck_static.et", "x": 4120.5, "z": 2207.75, "yaw": 90, "role": "clutter" },
+    { "id": "JY1_wreck_2", "prefab": "{1A1CE09F7BCA6650}Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et", "x": 4120.5, "z": 2212.75, "yaw": 270, "role": "clutter" },
+    { "id": "JY1_pallets", "prefab": "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et", "x": 4117.1, "z": 2210.25, "yaw": 30, "role": "clutter" },
+    { "id": "JY1_cardboard", "prefab": "{530705FBB61026D2}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_03.et", "x": 4123.9, "z": 2210.55, "yaw": 0, "role": "clutter" },
+    { "id": "JY1_oil", "prefab": "{BD7194E89FF448BA}PrefabLibrary/DefaultLibrary/Decals/Stains/Decal_OilStain_01_large.et", "x": 4120.5, "z": 2210.25, "yaw": 137, "role": "clutter" }
+  ]
+}

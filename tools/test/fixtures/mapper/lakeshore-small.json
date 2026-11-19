@@ -1,0 +1,10 @@
+{
+  "version": 0,
+  "shapes": [],
+  "entities": [
+    { "id": "LS1_bench", "prefab": "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et", "x": 4120, "z": 2210, "yaw": 270, "role": "essential" },
+    { "id": "LS1_bucket", "prefab": "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et", "x": 4121.9, "z": 2211.2, "yaw": 40, "role": "clutter" },
+    { "id": "LS1_crate", "prefab": "{6FC9E85153AE41B1}Prefabs/Props/Civilian/WoodKindling_Crate_01.et", "x": 4122.6, "z": 2208.8, "yaw": 90, "role": "clutter" },
+    { "id": "LS1_barrel", "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et", "x": 4118.2, "z": 2208.4, "yaw": 0, "role": "clutter" }
+  ]
+}
