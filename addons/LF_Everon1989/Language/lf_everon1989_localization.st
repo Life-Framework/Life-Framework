@@ -739,6 +739,16 @@ StringTable {
      Target_en_us "He is buying tonight. I marked the spot on your map; it will not keep past this shift."
      Comment "Informant answer (#2922, 1989 pack voice): the fee was paid and the buyer's spot is on the map."
     }
+    CustomStringTableItem "{10FBB25BFFCCF1A6}" {
+     Id "LF-Item_Baguette"
+     Target_en_us "Baguette"
+     Comment "Item name: baguette, sold at the Saint-Philippe bakery."
+    }
+    CustomStringTableItem "{98BD6D89F74A354F}" {
+     Id "LF-Item_BaguetteDesc"
+     Target_en_us "A long, crusty baguette still warm from the oven. Gone by tomorrow."
+     Comment "Item description: baguette."
+    }
     CustomStringTableItem "{772ECF227821D478}" {
      Id "LF-Item_Bread"
      Target_en_us "Bread loaf"
@@ -789,6 +799,26 @@ StringTable {
      Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
      Comment "Item description: instant coffee."
     }
+    CustomStringTableItem "{8DAE041BDBAD8F4B}" {
+     Id "LF-Item_Croissant"
+     Target_en_us "Croissant"
+     Comment "Item name: croissant, sold at the Saint-Philippe bakery."
+    }
+    CustomStringTableItem "{6449170C10223C19}" {
+     Id "LF-Item_CroissantDesc"
+     Target_en_us "A butter croissant, flaky and still a little warm."
+     Comment "Item description: croissant."
+    }
+    CustomStringTableItem "{8347C13A7154E70A}" {
+     Id "LF-Item_Ham"
+     Target_en_us "Ham joint"
+     Comment "Item name: ham joint, sold at the Saint-Philippe butcher."
+    }
+    CustomStringTableItem "{DA8D2D8EEECB147E}" {
+     Id "LF-Item_HamDesc"
+     Target_en_us "A whole ham joint from the butcher's hook. Heavy, and good for a few meals."
+     Comment "Item description: ham joint."
+    }
     CustomStringTableItem "{8A052A0C4B10AE83}" {
      Id "LF-Item_MilkBottle"
      Target_en_us "Bottle of milk"
@@ -808,6 +838,16 @@ StringTable {
      Id "LF-Item_PickleJarDesc"
      Target_en_us "A jar of pickled gherkins in brine. Sharp, and still filling."
      Comment "Item description: jar of pickles."
+    }
+    CustomStringTableItem "{E4B1EB83A0FA9C56}" {
+     Id "LF-Item_Saucisson"
+     Target_en_us "Dry sausage"
+     Comment "Item name: dry sausage, sold at the Saint-Philippe butcher."
+    }
+    CustomStringTableItem "{2A2A6CD5824FB9A5}" {
+     Id "LF-Item_SaucissonDesc"
+     Target_en_us "A dry-cured saucisson tied with twine. Slice it thin and it keeps you going for hours."
+     Comment "Item description: dry sausage."
     }
     CustomStringTableItem "{1672D28C6515BA4F}" {
      Id "LF-Item_SmokedBass_Description"

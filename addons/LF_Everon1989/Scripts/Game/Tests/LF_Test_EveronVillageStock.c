@@ -1,3 +1,4 @@
+// red-proof: observed 2026-11-19 (#3225): with the bakery and butcher stocks lacking baguette, croissant, saucisson and ham, `toolscli test --no-build --only LF_Test_EveronVillageStock` failed `the bakery stock lists 5 items`, `the butcher stock lists 4 items` and each new `is in the stock` line; `--red` fails on the `bakery_missing` and `butcher_missing` lookups.
 // red-proof (cafe and general store loop check): 2026-11-18 with the cafe and general store apple rows at $2, `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed 4 lines (cafe and general_store: `Apple.et sells for 2 and buys back for 4` and `sells for 2 and the market pays up to 5`); at $6 it passes.
 // red-proof: observed 2026-11-18 (#3218): on main (no supermarket, hardware, seed_feed, newsagent or mechanic stock) `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed on every `has a stock under the pack header` line.
 //! #3218: the new Saint-Philippe village shops each have a stock in the pack's shop stock overlay.
@@ -15,6 +16,13 @@ class LF_Test_EveronVillageStock : LF_Test
 	protected static const ResourceName CABBAGE = "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et";
 	protected static const ResourceName PLUM = "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
 	protected static const ResourceName CRACKERS = "{8F2C06D1F757C40F}Prefabs/Items/Food/LF_Crackers.et";
+	protected static const ResourceName BREAD = "{28AC0D92535C01B9}Prefabs/Items/Store1989/LF_Bread.et";
+	protected static const ResourceName CHOCOLATE = "{F407598417C980D2}Prefabs/Items/Store1989/LF_ChocolateBar.et";
+	protected static const ResourceName CANNED_MEAT = "{A0A5D34D6F8232B4}Prefabs/Items/Store1989/LF_CannedMeat.et";
+	protected static const ResourceName BAGUETTE = "{787AA46A1D92C7F7}Prefabs/Items/Food/LF_Baguette.et";
+	protected static const ResourceName CROISSANT = "{D02A9DF07910C5A7}Prefabs/Items/Food/LF_Croissant.et";
+	protected static const ResourceName SAUCISSON = "{A2A09084A440CB11}Prefabs/Items/Food/LF_Saucisson.et";
+	protected static const ResourceName HAM = "{753BC751EC3BABC0}Prefabs/Items/Food/LF_Ham.et";
 	protected static const ResourceName DRIED_MEAT = "{486317A3719FD166}Prefabs/Items/Food/LF_DriedMeat.et";
 	protected static const ResourceName ETOOL = "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et";
 	protected static const ResourceName AXE = "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et";
@@ -50,12 +58,48 @@ class LF_Test_EveronVillageStock : LF_Test
 		CheckStock(ctx, manager, "seed_feed", {SEEDS, BAIT, ROD, WATER});
 		CheckStock(ctx, manager, "newsagent", {MAP, WATER});
 		CheckStock(ctx, manager, "mechanic", {PARTS});
+		CheckStock(ctx, manager, "bakery", {BREAD, CRACKERS, CHOCOLATE, BAGUETTE, CROISSANT});
+		CheckStock(ctx, manager, "butcher", {DRIED_MEAT, CANNED_MEAT, SAUCISSON, HAM});
+
+		//! #3225: the four new bakery and butcher foods eat through the survival path like the other foods.
+		CheckEats(ctx, "baguette", BAGUETTE);
+		CheckEats(ctx, "croissant", CROISSANT);
+		CheckEats(ctx, "saucisson", SAUCISSON);
+		CheckEats(ctx, "ham", HAM);
 
 
 		//! The cafe menu and the general store were priced apart from the market curve: an apple was $2 at both
 		//! while the trader paid up to $5. Every row of both stocks gets the same no-loop checks.
 		CheckNoLoops(ctx, manager, "cafe");
 		CheckNoLoops(ctx, manager, "general_store");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The food prefab spawns and carries a survival consumable effect.
+	protected void CheckEats(LF_TestContext ctx, string label, ResourceName prefab)
+	{
+		Resource res = Resource.Load(prefab);
+		if (!res || !res.IsValid())
+		{
+			ctx.Fail(string.Format("the %1 prefab does not load: %2", label, prefab));
+			return;
+		}
+
+		EntitySpawnParams params();
+		params.TransformMode = ETransformMode.WORLD;
+		IEntity item = GetGame().SpawnEntityPrefab(res, GetGame().GetWorld(), params);
+		SCR_ConsumableItemComponent consumable;
+		if (item)
+			consumable = SCR_ConsumableItemComponent.Cast(item.FindComponent(SCR_ConsumableItemComponent));
+
+		LF_ConsumableEffectSurvival effect;
+		if (consumable)
+			effect = LF_ConsumableEffectSurvival.Cast(consumable.GetConsumableEffect());
+
+		ctx.NotNull(effect, string.Format("the %1 has a survival consumable effect", label));
+
+		if (item)
+			SCR_EntityHelper.DeleteEntityAndChildren(item);
 	}
 
 	//------------------------------------------------------------------------------------------------
