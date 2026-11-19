@@ -184,6 +184,14 @@ class LF_ResourceChainCatalog
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Drops the cached config; the next lookup loads the `.conf` and its pack overlays again (tests).
+	static void Reload()
+	{
+		s_Config = null;
+		s_bLoadAttempted = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static LF_ResourceChainConfig GetConfig()
 	{
 		EnsureLoaded();
