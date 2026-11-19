@@ -194,7 +194,7 @@ under "Hard-coded flagship values in script".
 | `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
 | `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`): the Everon wording and the voiced lines, listed in the pack's mission header |
 | `Dialogue/LF_Dialogue_OldMan.conf` (in `LF_Everon1989`) | pack | The old man on the bench: a pack's own full dialogue (`tools/assets/dialogue/old_man/`, #1962), voiced; flavour of this server, so the core knows nothing of it |
-| `Sounds/Dialogue/old_man/` (in `LF_Everon1989`) | pack | His five recordings (ElevenLabs, voice Alder) and audio project (#1962) |
+| `Sounds/Dialogue/old_man/` (in `LF_Everon1989`) | pack | His six recordings (ElevenLabs, voice Alder) and audio project (#1962) |
 | `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's thirteen recordings and audio project (the ten from #323 batch 4, moved out of the core's `Sounds/Dialogue/clerk/`, and the three welcome lines of #1959), all ElevenLabs, voice Julien - Serious (#1959, #1015) |
 | `Dialogue/LF_Dialogue_CafeOwner.conf` (in `LF_Everon1989`) | pack | The café owner Odile Marchand's own dialogue (#1961, `tools/assets/dialogue/cafe_owner/`): the zone, the move and three pointers. Pack content: it names the story and the town's places. Not yet in the dialogue index (follow-up with her talk action) |
 | `Sounds/Dialogue/cafe_owner/` (in `LF_Everon1989`) | pack | The café owner's seven recordings and audio project (#1961, ElevenLabs, voice Mariva Viva Muse) |

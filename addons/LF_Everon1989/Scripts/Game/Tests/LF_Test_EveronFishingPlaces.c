@@ -1,5 +1,5 @@
 // red-proof: RedProof() skips the lantern spawn, the sign lookups and the POI row, so every check below fails.
-//! everon/fishing-places (#3667): under the Everon 1989 header (the pack leg), the Black Lake plate is in the sign catalog
+//! everon/fishing-places (#3667, #3762): under the Everon 1989 header (the pack leg), the Black Lake and Fisherman's Bay plates are in the sign catalog
 //! (its own folder file) with strings that resolve, the FishingSpot place kind has a map POI row named by a pack string, and the Black Lake
 //! lantern is a lamp prefab that spawns.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
@@ -17,6 +17,7 @@ class LF_Test_EveronFishingPlaces : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		CheckSign(ctx, "black-lake");
+		CheckSign(ctx, "fishermans-bay");
 
 		LF_MapPoiConfig.Reload();
 		LF_MapPoiConfig config = LF_MapPoiConfig.Get();
