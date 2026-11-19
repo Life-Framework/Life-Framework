@@ -112,14 +112,14 @@ GenericEntity Fit_saint_philippe_wheatfield_wheat_field_unload {
    additionalActions {
     LF_GranaryUnloadAction "{3E9A1C0B7D5F4B04}" {
      m_eMode 0
-     m_vHalfExtents "5 3 7"
+     m_vHalfExtents 5 3 7
      ParentContextList {
       "default"
      }
     }
     LF_GranaryUnloadAction "{3E9A1C0B7D5F4B05}" {
      m_eMode 1
-     m_vHalfExtents "5 3 7"
+     m_vHalfExtents 5 3 7
      ParentContextList {
       "default"
      }
