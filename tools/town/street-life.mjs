@@ -83,7 +83,7 @@ async function planProp({ kind, building, dossier, root, shell, readGame, others
   const turn = prop.wall ? 0 : 2;
   const refusals = {};
   for (const sideways of prop.wall ? SIDEWAYS : [0, 0.5, -0.5]) {
-    const { id, kit } = dropKit(building, SLOT, sideways, 0.03, turn, `street-${kind}`);
+    const { id, kit } = dropKit(building, SLOT, sideways, 0, turn, `street-${kind}`);
     kit.source.also = VANILLA_ALSO;
     const row = kit.rows[0];
     if (!prop.wall) {

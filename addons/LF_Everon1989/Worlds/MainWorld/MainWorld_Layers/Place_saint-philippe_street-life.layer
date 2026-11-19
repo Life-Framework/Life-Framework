@@ -1,56 +1,56 @@
 GenericEntity Fit_saint_philippe_street_life_bench_b10 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 4505.823 14.83 10718.441
+ coords 4505.823 14.8 10718.441
  angleY -98
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_bin_b10 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
- coords 4506.435 14.83 10716.305
+ coords 4506.435 14.8 10716.305
  angleY -98
 }
 GenericEntity Fit_saint_philippe_street_life_bench_b17 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 4472.312 15.43 10648.007
+ coords 4472.312 15.4 10648.006
  angleY 170
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_bin_b17 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
- coords 4477.388 15.43 10649.334
+ coords 4477.388 15.4 10649.334
  angleY 170
 }
 GenericEntity Fit_saint_philippe_street_life_bench_red_b09 : "{24388E37E11BA18F}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et" {
- coords 4501.643 14.93 10736.094
+ coords 4501.644 14.9 10736.087
  angleY 171
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_bin_b09 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
- coords 4500.055 14.93 10736.212
+ coords 4500.056 14.9 10736.205
  angleY 171
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_flowers_b09 : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
- coords 4503.77 14.93 10736.546
+ coords 4503.771 14.9 10736.543
  angleY 171
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_flowers_b50 : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
- coords 4386.535 10.33 10758.718
+ coords 4386.535 10.3 10758.717
  angleY -1
 }
 GenericEntity Fit_saint_philippe_street_life_line_b50 : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
- coords 4391.438 10.33 10735.451
+ coords 4391.438 10.3 10735.451
  angleY -91
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_bin_b47 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
- coords 4466.329 9.73 10799.09
+ coords 4466.329 9.7 10799.089
  angleY 166
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_flowers_b47 : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
- coords 4476.278 9.73 10798.857
+ coords 4476.278 9.7 10798.857
  angleY 166
 }
 GenericEntity Fit_saint_philippe_street_life_line_b47 : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
- coords 4467.46 9.73 10815.32
+ coords 4467.46 9.7 10815.32
  angleY 76
 }
 GenericEntity Fit_saint_philippe_street_life_bench_b16 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 4539.441 16.43 10723.764
+ coords 4539.44 16.4 10723.771
  angleY -8
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_flowers_b16 : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
- coords 4541.913 16.43 10723.997
+ coords 4541.913 16.4 10724.002
  angleY -8
 }
