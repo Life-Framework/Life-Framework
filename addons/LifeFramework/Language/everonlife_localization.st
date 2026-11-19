@@ -7677,6 +7677,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "What the trader pays today for each good, chalked on the board."
      Comment "Sign catalog 'what' text of the trader price board face (never shown: the board's own Read action opens the prices card)."
     }
+    CustomStringTableItem "{3B7C9A10E4D25F81}" {
+     Id "LF-Market_BuyerFull"
+     Target_en_us "They have enough for now. Try again in about %1 min."
+     Comment "Toast to the seller: a premium buyer's demand is spent. %1 = minutes until it takes one more unit (#3599). A pack row with the same Id adds where else to sell."
+    }
+    CustomStringTableItem "{3B7C9A10E4D25F83}" {
+     Id "LF-Market_BuyerFull_Title"
+     Target_en_us "Enough for now"
+     Comment "Title of the buyer-full toast (#3599)."
+    }
+    CustomStringTableItem "{3B7C9A10E4D25F82}" {
+     Id "LF-Market_BuyerNever"
+     Target_en_us "They have all they need of that."
+     Comment "Toast to the seller: a premium buyer's demand is spent and never refills (#3599)."
+    }
     CustomStringTableItem "{E3A1B2C4D5F60719}" {
      Id "LF-Market_NoPrices"
      Target_en_us "No prices today."

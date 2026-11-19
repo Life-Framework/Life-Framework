@@ -25,15 +25,15 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     }
     LF_TraderItem "{59693C53B6A5E002}" {
      m_ItemPrefab "{D2A8639FA0CA09EF}Prefabs/Resources/WoodCutting/HardwoodBoard.et"
-     m_ValuePerItem 10
+     m_ValuePerItem 7
     }
     LF_TraderItem "{59693C53B6A5E003}" {
      m_ItemPrefab "{7EB79C84E76D667D}Prefabs/Resources/WoodCutting/FencePost.et"
-     m_ValuePerItem 8
+     m_ValuePerItem 5
     }
     LF_TraderItem "{59693C53B6A5E004}" {
      m_ItemPrefab "{F96D821A8E47FBBA}Prefabs/Resources/WoodCutting/FirewoodBundle.et"
-     m_ValuePerItem 5
+     m_ValuePerItem 2
     }
     LF_TraderItem "{59693C53B6A5E005}" {
      m_ItemPrefab "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et"
