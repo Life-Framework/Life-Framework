@@ -1,0 +1,9 @@
+MatPBRBasic {
+ Color 0.022 0.05 0.02 1
+ BCRMap "{6390F3AA091C74E1}Assets/_SharedData/Metal/ST_MetalPaint_Mate_1m_BCR.edds"
+ NMOMap "{E33A5A9E39D9E660}Assets/_SharedData/Metal/ST_MetalPaint_Mate_1m_NMO.edds"
+ GlobalMapsUVTransform MatUVTransform "{E5EAABF4C63A5D76}" {
+  TilingU 1
+  TilingV 1
+ }
+}
