@@ -5,9 +5,10 @@
 // deposit comes back when the kit is returned at the board. One taker per field. A kit that is not returned within
 // the timeout is lost: the deposit stays with the farm, the kit is deleted and the field is free again.
 //
-// Server only, session only: contracts are never saved. A restart deletes a rented kit with the world, so the
-// deposit of a kit that is out at a restart is not refunded (the kit is a job vehicle, never an owned record, and
-// is kept out of the world save). Posting a contract on a board prop and the board prompt are a follow-up card.
+// Server only. Contracts are session state; the kit is a job vehicle, never an owned record, and is kept out of the
+// world save. Only the open deposits are saved (section "harvest_deposits"): a restart with a kit out pays its
+// deposit back into the taker's bank on the next boot, once. Posting a contract on a board prop and the board
+// prompt are a follow-up card.
 
 enum LF_EHarvestContract
 {
@@ -70,12 +71,20 @@ class LF_HarvestContract
 	static const int TIMEOUT_SECONDS = 1800; // lf-fixed: the card's timeout; a 60 x 40 m field takes a few minutes
 	//! How often the server looks at taken contracts.
 	static const int SWEEP_MS = 5000; // lf-fixed: a settle cadence, not gameplay
+	//! A kit with someone seated is never deleted with them: they are put out and the delete waits and tries again.
+	static const int KIT_RETRY_MS = 5000; // lf-fixed: retry cadence, not gameplay
+	static const int KIT_RETRIES = 60; // lf-fixed: five minutes of retries before the kit is left to the restart
 
 	static const string REASON_DEPOSIT = "harvest-deposit";
 	static const string REASON_BONUS = "harvest-bonus";
 
 	protected static ref map<string, ref LF_HarvestContractRow> s_mRows;
 	protected static bool s_bSweeping;
+	//! Every deposit token this session took or refunded: a saved deposit with one of these is not paid back again.
+	protected static ref array<string> s_aSeenDeposits;
+	//! Kits whose delete waits for a seat to clear, and the retries each has left.
+	protected static ref array<EntityID> s_aPendingKits;
+	protected static ref array<int> s_aPendingTries;
 
 	//------------------------------------------------------------------------------------------------
 	protected static map<string, ref LF_HarvestContractRow> Rows()
@@ -84,6 +93,69 @@ class LF_HarvestContract
 			s_mRows = new map<string, ref LF_HarvestContractRow>();
 
 		return s_mRows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static array<string> SeenDeposits()
+	{
+		if (!s_aSeenDeposits)
+			s_aSeenDeposits = new array<string>();
+
+		return s_aSeenDeposits;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One deposit's identity across a restart: taker, field and the second it was taken.
+	protected static string DepositToken(LF_HarvestContractRow row)
+	{
+		return row.m_sTaker + "|" + row.m_sField + "|" + row.m_iTakenAt.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: every deposit still held (a rental kit is out).
+	static array<ref LF_HarvestDepositRow> ExportDeposits()
+	{
+		array<ref LF_HarvestDepositRow> rows = new array<ref LF_HarvestDepositRow>();
+		foreach (string id, LF_HarvestContractRow row : Rows())
+		{
+			if (row && row.m_bRental && row.m_iDeposit > 0 && !row.m_sTaker.IsEmpty())
+				rows.Insert(LF_HarvestDepositRow.Create(row.m_sTaker, DepositToken(row), row.m_iDeposit));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Persistence seam: pays saved deposits back into the takers' bank accounts. Their kits went with the last
+	//! session, so nothing can be returned any more. A deposit this session took, settled or already refunded is
+	//! skipped, so a second load (or a re-apply to a live session) pays nothing twice.
+	//! \return How many deposits were paid back.
+	static int RefundSavedDeposits(notnull array<ref LF_HarvestDepositRow> rows)
+	{
+		int refunded;
+		foreach (LF_HarvestDepositRow row : rows)
+		{
+			if (!row || row.m_sKey.IsEmpty() || row.m_sToken.IsEmpty() || row.m_iAmount <= 0)
+				continue;
+
+			if (SeenDeposits().Contains(row.m_sToken))
+				continue;
+
+			int amount = LF_Utils.MinInt(row.m_iAmount, DEPOSIT);
+			LF_BankAccount account = LF_ATMManager.GetOrCreate(row.m_sKey);
+			if (!account)
+			{
+				LF_Debug.Error(FEATURE, string.Format("restart refund of a $%1 deposit failed: no bank account for %2", amount, row.m_sKey));
+				continue;
+			}
+
+			SeenDeposits().Insert(row.m_sToken);
+			account.Deposit(amount, REASON_DEPOSIT + "-restart-refund");
+			refunded++;
+			LF_Debug.Info(FEATURE, string.Format("restart refund: the $%1 deposit of a rental kit out at the restart is back in %2's bank", amount, row.m_sKey));
+		}
+
+		return refunded;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -276,6 +348,9 @@ class LF_HarvestContract
 		if (kit)
 			row.m_Kit = kit.GetID();
 
+		if (deposit > 0)
+			SeenDeposits().Insert(DepositToken(row));
+
 		LF_Debug.Info(FEATURE, string.Format("harvest contract of %1 taken by %2 (rental %3, deposit $%4, %5 cells already cut)", Name(field), key, rental, deposit, row.m_iStartCut));
 		StartSweep();
 		return LF_EHarvestContract.OK;
@@ -424,7 +499,12 @@ class LF_HarvestContract
 
 		LF_VehicleWorldSave.Hold(vehicle);
 		string reason;
-		if (!LF_ImplementHitch.Hitch(vehicle, reason))
+		IEntity reaper = LF_ImplementHitch.Hitch(vehicle, reason);
+		// The reaper belongs to the kit too: a restart must not leave it standing at the board.
+		if (reaper)
+			LF_VehicleWorldSave.Hold(reaper);
+
+		if (!reaper)
 		{
 			LF_Debug.Error(FEATURE, "rental kit has no reaper (" + reason + "): " + prefab);
 			RplComponent.DeleteRplEntity(vehicle, false);
@@ -440,13 +520,71 @@ class LF_HarvestContract
 		if (row.m_Kit == EntityID.INVALID)
 			return;
 
-		IEntity kit = GetGame().GetWorld().FindEntityByID(row.m_Kit);
+		EntityID kitId = row.m_Kit;
 		row.m_Kit = EntityID.INVALID;
+		RemoveKit(kitId, KIT_RETRIES);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Deletes a kit with its reaper. Deleting a vehicle deletes whoever sits in it, so anyone seated is put out
+	//! first; a seat that stays taken keeps the kit and the delete is tried again later (RetryKits).
+	//! \return True when the kit is gone or was never there.
+	static bool RemoveKit(EntityID kitId, int triesLeft)
+	{
+		IEntity kit = GetGame().GetWorld().FindEntityByID(kitId);
 		if (!kit)
+			return true;
+
+		if (LF_Garage.HasOccupants(kit))
+			LF_Garage.StopAndEject(kit);
+
+		if (LF_Garage.HasOccupants(kit))
+		{
+			if (triesLeft <= 0)
+			{
+				LF_Debug.Error(FEATURE, "rental kit still has someone seated after every retry; it stays until the restart");
+				return true;
+			}
+
+			LF_Debug.Warn(FEATURE, "rental kit has someone seated; the delete waits for the seat to clear");
+			if (!s_aPendingKits)
+			{
+				s_aPendingKits = new array<EntityID>();
+				s_aPendingTries = new array<int>();
+			}
+
+			s_aPendingKits.Insert(kitId);
+			s_aPendingTries.Insert(triesLeft - 1);
+			if (s_aPendingKits.Count() == 1)
+				GetGame().GetCallqueue().CallLater(RetryKits, KIT_RETRY_MS, false);
+
+			return false;
+		}
+
+		if (LF_ImplementHitch.FindHitched(kit))
+			LF_ImplementHitch.Unhitch(kit);
+
+		RplComponent.DeleteRplEntity(kit, false);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tries every kit that still had someone seated once more.
+	static void RetryKits()
+	{
+		if (!s_aPendingKits)
 			return;
 
-		LF_ImplementHitch.Unhitch(kit);
-		RplComponent.DeleteRplEntity(kit, false);
+		array<EntityID> kits = {};
+		array<int> tries = {};
+		kits.Copy(s_aPendingKits);
+		tries.Copy(s_aPendingTries);
+		s_aPendingKits.Clear();
+		s_aPendingTries.Clear();
+		for (int i = 0; i < kits.Count(); i++)
+		{
+			RemoveKit(kits[i], tries[i]);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -524,8 +662,12 @@ class LF_HarvestContract
 	static void ResetStatics()
 	{
 		GetGame().GetCallqueue().Remove(Sweep);
+		GetGame().GetCallqueue().Remove(RetryKits);
 		s_mRows = null;
 		s_bSweeping = false;
+		s_aSeenDeposits = null;
+		s_aPendingKits = null;
+		s_aPendingTries = null;
 	}
 }
 

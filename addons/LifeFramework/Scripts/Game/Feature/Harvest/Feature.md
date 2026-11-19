@@ -67,5 +67,5 @@ The rules (#3285), the field entity (#3287), its cut replication (#3288) and the
 ## Harvest contract (#3297)
 
 - **Player sees:** at the farm board, one contract per ripe field; take it with an own reaper or a $300-deposit rental kit (Z7211 with the DLC, else UAZ469); at 95 % cut a $40 bonus and FARMER XP; returning the kit gives the deposit back, keeping it past 30 minutes forfeits it. The board prompts come with the placement card.
-- **Owner and side:** `LF_HarvestContract` (server statics: `Post`, `Take`, `Settle`, `ReturnKit`, a 5 s sweep). Session only; money moves state-first so a repeat pays nothing.
+- **Owner and side:** `LF_HarvestContract` (server statics: `Post`, `Take`, `Settle`, `ReturnKit`, a 5 s sweep). Contracts are session state; open deposits are the save section `harvest_deposits`, refunded to the bank once on the next boot. Money moves state-first so a repeat pays nothing; a kit is never deleted with someone seated.
 - **Proof:** `harvest/harvest-contract` (WORLD).

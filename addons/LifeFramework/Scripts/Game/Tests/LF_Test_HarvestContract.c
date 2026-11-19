@@ -1,16 +1,19 @@
-// red-proof: Observed 2026-11-19 with `--no-build --red LF_Test_HarvestContract`: `RED PROOF OK (all 1 listed test(s) fail with the hook on)`, the 95 % cut skipped so the contract never completes (no bonus, no XP, no refund path).
+// red-proof: Observed 2026-11-19 with `--no-build --red LF_Test_HarvestContract`: `RED PROOF OK (all 1 listed test(s) fail with the hook on)`, the 95 % cut and the boot load skipped (no bonus, no XP, "the deposit of a kit out at the restart is back in the bank (expected 300, got 0)").
 //! harvest/harvest-contract (#3297): the farm board's harvest contract. A ripe field is posted once; a second taker
 //! is refused while it is held; a rental kit costs a $300 deposit and spawns a vehicle with a reaper hitched; when the
 //! field is cut to 95 % through the H4 server API the taker is paid the $40 bonus and FARMER XP exactly once; the
 //! kit's return pays the deposit back; a kit that is kept past the timeout is deleted and its deposit stays with the
-//! farm. A taker with no reaper and no cash is refused before anything moves. The test deletes what it spawns.
+//! farm. A taker with no reaper and no cash is refused before anything moves. A deposit out at a restart is paid
+//! into the bank once on the next boot (the "harvest_deposits" section). The test deletes what it spawns.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_HarvestContract : LF_Test
 {
 	protected static const ResourceName FIELD = "{5FF806585DB556B3}Prefabs/Harvest/LF_WheatField.et";
 	protected static const vector SPOT_A = "160 0 140";
 	protected static const vector SPOT_B = "260 0 140";
+	protected static const vector SPOT_C = "360 0 140";
 	protected static const vector BOARD = "160 0 100";
+	protected static const int DEPOSIT_CASH = 300;
 	protected static const string TAKER = "test-contract-taker";
 	protected static const string STRANGER = "test-contract-stranger";
 
@@ -27,14 +30,20 @@ class LF_Test_HarvestContract : LF_Test
 		LF_OwnedImplements.ResetStatics();
 		IEntity entityA = SpawnAt(FIELD, SPOT_A);
 		IEntity entityB = SpawnAt(FIELD, SPOT_B);
+		IEntity entityC = SpawnAt(FIELD, SPOT_C);
 		LF_WheatField fieldA = LF_WheatField.Cast(entityA);
 		LF_WheatField fieldB = LF_WheatField.Cast(entityB);
+		LF_WheatField fieldC = LF_WheatField.Cast(entityC);
 		IEntity taker = LF_TestCharacterFixture.Spawn(ctx);
 		IEntity stranger = LF_TestCharacterFixture.Spawn(ctx);
 		ctx.NotNull(fieldA, "the wheat field prefab spawns");
 		ctx.NotNull(fieldB, "a second wheat field spawns");
 		if (fieldA && fieldB && taker && stranger)
 			Check(ctx, fieldA, fieldB, taker, stranger);
+
+		ctx.NotNull(fieldC, "a third wheat field spawns");
+		if (fieldC && taker)
+			CheckRestartRefund(ctx, fieldC, taker);
 
 		LF_Utils.SetUidForTests(null, "");
 		LF_HarvestContract.ResetStatics();
@@ -56,6 +65,12 @@ class LF_Test_HarvestContract : LF_Test
 
 		if (entityB)
 			SCR_EntityHelper.DeleteEntityAndChildren(entityB);
+
+		if (fieldC)
+			fieldC.ClearLocal();
+
+		if (entityC)
+			SCR_EntityHelper.DeleteEntityAndChildren(entityC);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -139,6 +154,58 @@ class LF_Test_HarvestContract : LF_Test
 		ctx.True(LF_HarvestContract.Post(fieldA) == LF_EHarvestContract.NOT_RIPE, "a field cut to the line has nothing left to post");
 
 		CheckRefusalsAndTimeout(ctx, fieldB, taker, stranger);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A restart with a kit out: the save carries the open deposit, the next boot pays it into the taker's bank once,
+	//! and a load while the deposit is still live in this session pays nothing.
+	protected void CheckRestartRefund(LF_TestContext ctx, LF_WheatField field, IEntity taker)
+	{
+		LF_SavePayload section = LF_SaveSections.Get(LF_HarvestContractSavePayload.NAME);
+		ctx.NotNull(section, "harvest_deposits is a registered save section");
+		if (!section)
+			return;
+
+		LF_Utils.SetUidForTests(taker, TAKER);
+		LF_BankAccount bank = LF_ATMManager.GetOrCreate(TAKER);
+		int bankBefore = bank.GetBalance();
+		LF_MoneyUtils.AddCash(taker, DEPOSIT_CASH);
+		int cashBefore = LF_MoneyUtils.GetCash(taker);
+		ctx.True(LF_HarvestContract.Post(field) == LF_EHarvestContract.OK, "the third field is posted");
+		IEntity kit;
+		ctx.True(LF_HarvestContract.Take(field, taker, true, false, BOARD, "0 0 0", kit) == LF_EHarvestContract.OK, "the taker rents a kit for the third field");
+		ctx.Equal(cashBefore - LF_HarvestContract.DEPOSIT, LF_MoneyUtils.GetCash(taker), "the deposit is taken");
+		if (kit)
+			ctx.False(LF_VehicleWorldSave.IsSaved(LF_ImplementHitch.FindHitched(kit)), "the kit's reaper is kept out of the world save too");
+
+		JsonSaveContext save = new JsonSaveContext(false);
+		section.WriteSection(save);
+		string saved = save.SaveToString();
+
+		// A load while the deposit is live in this session (a re-apply) pays nothing.
+		JsonLoadContext live = new JsonLoadContext(false);
+		live.LoadFromString(saved);
+		section.ReadSection(live, 1);
+		ctx.Equal(bankBefore, bank.GetBalance(), "a re-apply in the session that took the deposit refunds nothing");
+
+		// Restart: the session and the kit are gone.
+		LF_HarvestContract.ResetStatics();
+		if (kit)
+			SCR_EntityHelper.DeleteEntityAndChildren(kit);
+
+		JsonLoadContext boot = new JsonLoadContext(false);
+		ctx.True(boot.LoadFromString(saved), "the save parses");
+		// RedProof(): the boot load is skipped, so the refund never arrives (`--red`).
+		if (!RedProof())
+			section.ReadSection(boot, 1);
+
+		ctx.Equal(bankBefore + LF_HarvestContract.DEPOSIT, bank.GetBalance(), "the deposit of a kit out at the restart is back in the bank");
+		JsonLoadContext again = new JsonLoadContext(false);
+		again.LoadFromString(saved);
+		section.ReadSection(again, 1);
+		ctx.Equal(bankBefore + LF_HarvestContract.DEPOSIT, bank.GetBalance(), "a second load refunds nothing twice");
+		ctx.Equal(0, LF_HarvestContract.ExportDeposits().Count(), "the next save holds no deposit");
+		bank.SetBalance(bankBefore);
 	}
 
 	//------------------------------------------------------------------------------------------------
