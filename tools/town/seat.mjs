@@ -359,6 +359,11 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false,
       else {
         const f = bounded ? footOf(l, info) : { bottom: 0 };
         l.y = Math.max(...heights) - f.bottom - host.y;
+        // The same kit `lift` as the floor branch (metres, negative sinks it): a desk whose legs sit 1.5 cm over the probed ground (#3685).
+        if (Number.isFinite(s.lift) && s.lift !== 0) {
+          l.y += s.lift;
+          res.notes.push(`lifted ${s.lift} m from the probed ground`);
+        }
         res.notes.push(`on the terrain: ${r3(Math.min(...heights))} to ${r3(Math.max(...heights))} m under its footprint`);
       }
     } else if (m.mount === "stack") {
