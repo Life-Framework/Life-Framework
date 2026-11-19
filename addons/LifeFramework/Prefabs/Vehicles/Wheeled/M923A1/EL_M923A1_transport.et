@@ -28,6 +28,11 @@ Vehicle : "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et
       "default"
      }
     }
+    LF_RepairKitAction "{3332A1C0E5D70011}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_CargoBedAction "{E1A923BE1AC04000}" {
      ParentContextList {
       "lf_cargo"

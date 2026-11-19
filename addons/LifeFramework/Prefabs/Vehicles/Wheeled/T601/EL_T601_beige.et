@@ -12,6 +12,11 @@ Vehicle : "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et" {
       "default"
      }
     }
+    LF_RepairKitAction "{3332A1C0E5D70011}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_VehicleLockAction "{E1A601BE1A000006}" {
      ParentContextList {
       "door_l01"
