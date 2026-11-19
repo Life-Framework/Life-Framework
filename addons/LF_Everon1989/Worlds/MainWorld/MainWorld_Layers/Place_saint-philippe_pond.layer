@@ -1,0 +1,43 @@
+GenericEntity Fit_saint_philippe_pond_Place {
+ components {
+  LF_PlaceComponent "{8A7F8C44BBD3BD56}" {
+   m_sKind "FishingSpot"
+   m_sId "saint-philippe.pond"
+  }
+  LF_FittedBuildingComponent "{8DB490FCF449C5E8}" {
+  }
+ }
+ coords 4645.4 17.8 10561.3
+}
+GenericEntity Fit_saint_philippe_pond_spot : "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingSpot.et" {
+ components {
+  LF_FishingSpotComponent "{4A0F573235D2E074}" {
+   m_sId "spring-pond"
+   m_sTable "pond"
+   m_fRadius 22
+   m_iStock 12
+   m_fRegrowSeconds 90
+  }
+ }
+ coords 4670.999 12.533 10504.005
+ angleY -156
+}
+GenericEntity Fit_saint_philippe_pond_bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 4693.629 16.33 10509.987
+ angleY -90
+}
+GenericEntity Fit_saint_philippe_pond_jetty : "{35AC8C84785CB8B1}Prefabs/Structures/Infrastructure/Naval/Piers/Pier_Wood_Long_01.et" {
+ coords 4689.027 15.05 10504.987
+}
+GenericEntity Fit_saint_philippe_pond_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "spring-pond"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 4693.63 16.274 10500.475
+ angleY 90
+}

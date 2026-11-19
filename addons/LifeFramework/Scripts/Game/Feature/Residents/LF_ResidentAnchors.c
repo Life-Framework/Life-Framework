@@ -45,7 +45,17 @@ class LF_ResidentAnchors
 	//! \return false only when no place of the kind exists (spot is then untouched).
 	static bool Resolve(string kind, string anchorId, vector near, notnull LF_ResidentSpot spot)
 	{
-		IEntity place = NearestPlace(kind, near);
+		return ResolveIn(kind, string.Empty, anchorId, near, spot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Resolve for a resident whose place is one named house (#3231): `placeId` is the LF_Places id of
+	//! the place of `kind`. An empty `placeId` is the nearest place, as Resolve. An id no live place
+	//! holds logs one warning per kind and id and falls back to the nearest.
+	//! \return false only when no place of the kind exists (spot is then untouched).
+	static bool ResolveIn(string kind, string placeId, string anchorId, vector near, notnull LF_ResidentSpot spot)
+	{
+		IEntity place = PlaceFor(kind, placeId, near);
 		if (!place)
 		{
 			WarnOnce(kind, anchorId, string.Format("no place of kind '%1' is placed", kind));
@@ -100,6 +110,23 @@ class LF_ResidentAnchors
 		s_mWarned.Insert(key);
 		s_iWarnCount++;
 		LF_Debug.Warn(FEATURE, message);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place a resident uses: the one of `kind` with id `placeId`, else (no id, or no live place
+	//! holds it, which warns once) the nearest of `kind` to `near`. Null when the kind has no place.
+	static IEntity PlaceFor(string kind, string placeId, vector near)
+	{
+		if (!placeId.IsEmpty())
+		{
+			IEntity named = LF_Places.Find(kind, placeId);
+			if (named)
+				return named;
+
+			WarnOnce(kind, "#" + placeId, string.Format("no '%1' place with id '%2' is placed; the resident uses the nearest", kind, placeId));
+		}
+
+		return NearestPlace(kind, near);
 	}
 
 	//------------------------------------------------------------------------------------------------

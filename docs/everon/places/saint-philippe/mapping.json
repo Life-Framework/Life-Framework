@@ -273,6 +273,28 @@
         "D10 pick (#3314), memorial card #3467 and #3464: a stone memorial with a plaque and wreath spots on the church frontage (the kit picks the kerb side), the gathering points and the priest's spot (kind Memorial); street furniture, so it shares b07 with the church kit (b08, the crypt and attic, stands at the same spot)"
       ]
     },
+    "church": {
+      "building": "b07",
+      "why": [
+        "Church_01_red (church), 676 m2, interior yes, 18 doors, 36.7 m north-west of the scout centre: the red church beside the square (its crypt b08 stands at the same spot and is carried by the same marker)",
+        "D10 pick (#3314), card D1 #3238: open and kept (D15, indestructible): a fitted `Church` place marker, candles and flowers as dressing, a `bench` resident anchor so a resident line can sit there later"
+      ]
+    },
+    "chapel": {
+      "building": "b122",
+      "why": [
+        "Chapel_01_base (chapel), 22 m2, interior yes, 1 door, 166 m west of the scout centre: the wayside chapel",
+        "D10 pick (#3314), card D1 #3238: open and kept (D15, indestructible): a fitted `Church` place marker, candles and flowers as dressing, a `bench` resident anchor so a resident line can sit there later"
+      ]
+    },
+    "chapel-pink": {
+      "building": "b17",
+      "dossier": "saint-philippe-districts",
+      "why": [
+        "Chapel_01_pink (chapel), interior yes, 1 door, in the districts survey (purpose row di:b17): the pink chapel",
+        "D10 pick (#3314), card D1 #3238: open and kept (D15, indestructible): a fitted `Church` place marker, candles and flowers as dressing, a `bench` resident anchor so a resident line can sit there later"
+      ]
+    },
     "safe-zone": {
       "building": "b45",
       "shared": true,

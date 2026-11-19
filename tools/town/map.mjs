@@ -402,7 +402,9 @@ export function checkMapping(mapping, dossierJson, template, others = null) {
       const p = byPlot.get(e.plot);
       if (!p) out.push(`slot ${slot.id}: plot ${e.plot} is not in the dossier`);
       else if (slot.plot && !plotFits(p, slot.plot)) out.push(`slot ${slot.id}: plot ${p.id} is ${p.width} x ${p.depth} m, under the ${slot.plot.minWidth} x ${slot.plot.minDepth} the slot needs`);
-      if (!e.shared && !(e.prefab && typeof e.prefab.stem === "string" && e.prefab.stem)) out.push(`slot ${slot.id}: a plot needs a prefab to place on it`);
+      // A hostless plot (a lake, a pond, a field: nothing is built on it, the kit stands on the open ground) needs no prefab (#3666).
+      if (e.hostless && !(e.plot && !e.building)) out.push(`slot ${slot.id}: "hostless" belongs on a plot entry`);
+      if (!e.shared && !e.hostless && !(e.prefab && typeof e.prefab.stem === "string" && e.prefab.stem)) out.push(`slot ${slot.id}: a plot needs a prefab to place on it`);
       if (!e.shared) {
         const k = `plot:${e.plot}`;
         if (claimed.has(k)) out.push(`slot ${slot.id}: plot ${e.plot} is already claimed by slot ${claimed.get(k)}`);

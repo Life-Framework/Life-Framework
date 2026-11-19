@@ -739,6 +739,16 @@ StringTable {
      Target_en_us "He is buying tonight. I marked the spot on your map; it will not keep past this shift."
      Comment "Informant answer (#2922, 1989 pack voice): the fee was paid and the buyer's spot is on the map."
     }
+    CustomStringTableItem "{10FBB25BFFCCF1A6}" {
+     Id "LF-Item_Baguette"
+     Target_en_us "Baguette"
+     Comment "Item name: baguette, sold at the Saint-Philippe bakery."
+    }
+    CustomStringTableItem "{98BD6D89F74A354F}" {
+     Id "LF-Item_BaguetteDesc"
+     Target_en_us "A long, crusty baguette still warm from the oven. Gone by tomorrow."
+     Comment "Item description: baguette."
+    }
     CustomStringTableItem "{772ECF227821D478}" {
      Id "LF-Item_Bread"
      Target_en_us "Bread loaf"
@@ -789,6 +799,26 @@ StringTable {
      Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
      Comment "Item description: instant coffee."
     }
+    CustomStringTableItem "{8DAE041BDBAD8F4B}" {
+     Id "LF-Item_Croissant"
+     Target_en_us "Croissant"
+     Comment "Item name: croissant, sold at the Saint-Philippe bakery."
+    }
+    CustomStringTableItem "{6449170C10223C19}" {
+     Id "LF-Item_CroissantDesc"
+     Target_en_us "A butter croissant, flaky and still a little warm."
+     Comment "Item description: croissant."
+    }
+    CustomStringTableItem "{8347C13A7154E70A}" {
+     Id "LF-Item_Ham"
+     Target_en_us "Ham joint"
+     Comment "Item name: ham joint, sold at the Saint-Philippe butcher."
+    }
+    CustomStringTableItem "{DA8D2D8EEECB147E}" {
+     Id "LF-Item_HamDesc"
+     Target_en_us "A whole ham joint from the butcher's hook. Heavy, and good for a few meals."
+     Comment "Item description: ham joint."
+    }
     CustomStringTableItem "{8A052A0C4B10AE83}" {
      Id "LF-Item_MilkBottle"
      Target_en_us "Bottle of milk"
@@ -808,6 +838,16 @@ StringTable {
      Id "LF-Item_PickleJarDesc"
      Target_en_us "A jar of pickled gherkins in brine. Sharp, and still filling."
      Comment "Item description: jar of pickles."
+    }
+    CustomStringTableItem "{E4B1EB83A0FA9C56}" {
+     Id "LF-Item_Saucisson"
+     Target_en_us "Dry sausage"
+     Comment "Item name: dry sausage, sold at the Saint-Philippe butcher."
+    }
+    CustomStringTableItem "{2A2A6CD5824FB9A5}" {
+     Id "LF-Item_SaucissonDesc"
+     Target_en_us "A dry-cured saucisson tied with twine. Slice it thin and it keeps you going for hours."
+     Comment "Item description: dry sausage."
     }
     CustomStringTableItem "{1672D28C6515BA4F}" {
      Id "LF-Item_SmokedBass_Description"
@@ -1003,6 +1043,11 @@ StringTable {
      Id "LF-MapPoi_FillingStation"
      Target_en_us "Filling station"
      Comment "Map POI kind name (#2247): the fuel till."
+    }
+    CustomStringTableItem "{E20FC1E39F2F3576}" {
+     Id "LF-MapPoi_FishingSpot"
+     Target_en_us "Fishing spot"
+     Comment "Map POI kind name (#3667): a fishing spot marker (LF_Places kind FishingSpot) at Black Lake or Spring Pond. Discovered by walking past, like the shops."
     }
     CustomStringTableItem "{3EF58CE81E5B58BA}" {
      Id "LF-MapPoi_Furniture"
@@ -1594,6 +1639,11 @@ StringTable {
      Target_en_us "Tools, building materials, lamps and radios for the plot owner and the working man."
      Comment "Hardware store counter (#3220): the shop description."
     }
+    CustomStringTableItem "{FBE651522FAB6C3B}" {
+     Id "LF-Shop_Desc_Mechanic"
+     Target_en_us "Spare parts for the village's cars, sold across the workshop counter."
+     Comment "Mechanic counter (#3224): the shop description."
+    }
     CustomStringTableItem "{CE06D40741D4A653}" {
      Id "LF-Shop_Desc_MedicStores"
      Target_en_us "Coats and a medical kit for the hospital staff."
@@ -1669,6 +1719,11 @@ StringTable {
      Target_en_us "Hardware store"
      Comment "Hardware store counter (#3220): the shop name."
     }
+    CustomStringTableItem "{CD9F8522A264158A}" {
+     Id "LF-Shop_Name_Mechanic"
+     Target_en_us "Garage"
+     Comment "Mechanic counter (#3224): the shop name."
+    }
     CustomStringTableItem "{D815E73D4340CE7D}" {
      Id "LF-Shop_Name_MedicStores"
      Target_en_us "Medic stores"
@@ -1719,6 +1774,11 @@ StringTable {
      Target_en_us "Browse the tools and building supplies."
      Comment "Hardware store counter (#3220): the shop action description."
     }
+    CustomStringTableItem "{179870A0D78BDB64}" {
+     Id "LF-Shop_OpenDesc_Mechanic"
+     Target_en_us "Browse the car parts."
+     Comment "Mechanic counter (#3224): the shop action description."
+    }
     CustomStringTableItem "{3E7A91C04B52D684}" {
      Id "LF-Shop_OpenDesc_Newsagent"
      Target_en_us "Buy the tourist map or a paper"
@@ -1768,6 +1828,11 @@ StringTable {
      Id "LF-Shop_Open_Hardware"
      Target_en_us "Hardware store"
      Comment "Hardware store counter (#3220): the shop action label."
+    }
+    CustomStringTableItem "{C5A9EDCC211E5F78}" {
+     Id "LF-Shop_Open_Mechanic"
+     Target_en_us "Garage"
+     Comment "Mechanic counter (#3224): the shop action label."
     }
     CustomStringTableItem "{8D1EB732FECFCC26}" {
      Id "LF-Shop_Open_MedicStores"
@@ -1893,6 +1958,21 @@ StringTable {
      Id "LF-Sign_Barber_What"
      Target_en_us "The village coiffeur: sit in a chair and pick a new cut, colour or beard|Prices are 1989 prices, cash only"
      Comment "Sign card for the Saint-Philippe barber shop, What section (#3236)."
+    }
+    CustomStringTableItem "{C27AF568161F7892}" {
+     Id "LF-Sign_BlackLake_How"
+     Target_en_us "Bring a rod and a bait tin, cast onto the water from the shore, and strike when the float dips"
+     Comment "Sign card for the Black Lake plate, How section."
+    }
+    CustomStringTableItem "{468950476749EE18}" {
+     Id "LF-Sign_BlackLake_Title"
+     Target_en_us "Black Lake"
+     Comment "Title of the pole plate on the Black Lake shore (Everon 1989 pack, #3667). Printed on the sign and shown in the prompt as Read: Black Lake."
+    }
+    CustomStringTableItem "{57D8B0D20620C8D3}" {
+     Id "LF-Sign_BlackLake_What"
+     Target_en_us "A quiet lake with a bench and a lantern on its north-west shore. Perch and carp bite here; carp are best at dawn and in the evening."
+     Comment "Sign card for the Black Lake plate, What section."
     }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
@@ -2444,6 +2524,46 @@ StringTable {
      Target_en_us "The village hardware store: shovels and axes, cement, bricks, planks and sandbags, flashlights and radios. Miners buy their pickaxe at the second counter."
      Comment "Sign card for the hardware store, What section."
     }
+    CustomStringTableItem "{3656B1B2C3D40008}" {
+     Id "LF-Sign_HarvestBoard_Next"
+     Target_en_us "Own a reaper? Take the field with it. Otherwise rent a tractor and reaper for a deposit."
+     Comment "Sign card for the farm contract board, Next section (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40006}" {
+     Id "LF-Sign_HarvestBoard_Title"
+     Target_en_us "Harvest contracts"
+     Comment "Poster title of the farm contract board at the wheat field gate (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40007}" {
+     Id "LF-Sign_HarvestBoard_What"
+     Target_en_us "One contract per field. Post it, take it with your own reaper or a rental kit, and bring the kit back here."
+     Comment "Sign card for the farm contract board, What section (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40005}" {
+     Id "LF-Sign_Harvest_Bonus"
+     Target_en_us "Bonus at 95 percent"
+     Comment "Chalk board row label at the wheat field (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40004}" {
+     Id "LF-Sign_Harvest_Deposit"
+     Target_en_us "Kit deposit"
+     Comment "Chalk board row label at the wheat field (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40003}" {
+     Id "LF-Sign_Harvest_Next"
+     Target_en_us "Cut 95 percent of the field for the bonus and farming experience. Bring a rental kit back to the board within half an hour to get the deposit back."
+     Comment "Sign card for the wheat field chalk board, Next section (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40001}" {
+     Id "LF-Sign_Harvest_Title"
+     Target_en_us "Harvest"
+     Comment "Title of the chalk board at the Saint-Philippe wheat field gate (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40002}" {
+     Id "LF-Sign_Harvest_What"
+     Target_en_us "Cut the wheat with a reaper hitched behind a tractor. Contracts are posted on the board by the gate. Price in dollars."
+     Comment "Sign card for the wheat field chalk board, What section (#3656)."
+    }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
      Target_en_us "Members open the gate|Inside, *Process contraband* at the machine|Keep the crew's goods in the chest: *Open hideout stash*"
@@ -2473,6 +2593,31 @@ StringTable {
      Id "LF-Sign_Hideout_What"
      Target_en_us "A walled yard owned by one organization."
      Comment "Sign card for the organization hideout yard, What section."
+    }
+    CustomStringTableItem "{4259F2E50006FDFF}" {
+     Id "LF-Sign_Home_CafeOwner_Title"
+     Target_en_us "Mme O. Marchand"
+     Comment "Brass name plate beside the door of cafe_owner's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme O. Marchand."
+    }
+    CustomStringTableItem "{B1D02944F6C717F6}" {
+     Id "LF-Sign_Home_NightShift_Title"
+     Target_en_us "M. R. Duval"
+     Comment "Brass name plate beside the door of night_shift's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. R. Duval."
+    }
+    CustomStringTableItem "{0955F0CE2E0152B0}" {
+     Id "LF-Sign_Home_OldMan_Title"
+     Target_en_us "M. G. Lenoir"
+     Comment "Brass name plate beside the door of old_man's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. G. Lenoir."
+    }
+    CustomStringTableItem "{55231116164D7341}" {
+     Id "LF-Sign_Home_StoreClerk_Title"
+     Target_en_us "M. P. Roche"
+     Comment "Brass name plate beside the door of store_clerk's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. P. Roche."
+    }
+    CustomStringTableItem "{524960714D7C41A7}" {
+     Id "LF-Sign_Home_Teller_Title"
+     Target_en_us "Mme C. Girard"
+     Comment "Brass name plate beside the door of teller's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme C. Girard."
     }
     CustomStringTableItem "{DFFD828F05D29321}" {
      Id "LF-Sign_HospitalBay_How"
@@ -2623,6 +2768,31 @@ StringTable {
      Id "LF-Sign_LotPrice_Title"
      Target_en_us "%1 %2"
      Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
+    }
+    CustomStringTableItem "{832AC83992CD1389}" {
+     Id "LF-Sign_Mechanic_How"
+     Target_en_us "*Garage* at the workshop counter, one price per part"
+     Comment "Sign card for the village garage, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{6F2254812571B657}" {
+     Id "LF-Sign_Mechanic_Needs"
+     Target_en_us "Money for the counter"
+     Comment "Sign card for the village garage, Needs section."
+    }
+    CustomStringTableItem "{AF20BB3181AD8266}" {
+     Id "LF-Sign_Mechanic_Next"
+     Target_en_us "Car parts mend a damaged vehicle."
+     Comment "Sign card for the village garage, Next section."
+    }
+    CustomStringTableItem "{EA83B183BA657FA1}" {
+     Id "LF-Sign_Mechanic_Title"
+     Target_en_us "Garage"
+     Comment "Title of the painted fascia over the village garage door in the east workshop (Everon 1989 pack, #3224). Printed on the sign and shown in the prompt as Read: Garage."
+    }
+    CustomStringTableItem "{6C1557BEA197814A}" {
+     Id "LF-Sign_Mechanic_What"
+     Target_en_us "The village garage: car parts at the workshop counter. The ramp beside it is where the mechanic works."
+     Comment "Sign card for the village garage, What section."
     }
     CustomStringTableItem "{3B335C0E2FA32B9B}" {
      Id "LF-Sign_MerchantTimber_Board"
@@ -2959,6 +3129,26 @@ StringTable {
      Target_en_us "The town clerk registers new arrivals and issues the identity card."
      Comment "Sign card for the registry office (the town clerk, arrival chain), What section."
     }
+    CustomStringTableItem "{6BB6BAED2EF2DAC0}" {
+     Id "LF-Sign_RoadFarm_How"
+     Target_en_us "Fuel drop: bring a full barrel to the tank by the machine shed on the fuel delivery job. The payphone at the gate calls the town."
+     Comment "Sign card for the roadside farm yard, How section (#3381)."
+    }
+    CustomStringTableItem "{34C32AFD1EDAADC4}" {
+     Id "LF-Sign_RoadFarm_Next"
+     Target_en_us "The farm sells nothing. Fill up in town, or take the delivery job and earn from the drop."
+     Comment "Sign card for the roadside farm yard, Next section (#3381)."
+    }
+    CustomStringTableItem "{756BB84E4D298624}" {
+     Id "LF-Sign_RoadFarm_Title"
+     Target_en_us "Ferme des Silos"
+     Comment "Title of the farm-name sign at the roadside farm yard gate (Everon 1989 pack, #3381). Printed on the sign and shown in the prompt as Read: Ferme des Silos."
+    }
+    CustomStringTableItem "{6151BE35A15D9BD7}" {
+     Id "LF-Sign_RoadFarm_What"
+     Target_en_us "A working farm off the main road: cow sheds, silos and a machine shed. The tank by the shed takes fuel for the delivery job."
+     Comment "Sign card for the roadside farm yard, What section (#3381)."
+    }
     CustomStringTableItem "{2AFCEED3736DE810}" {
      Id "LF-Sign_Rules_Next"
      Target_en_us "Take a complaint to staff after the scene, not during it. This is an alpha: the world can be wiped, with 24 hours' notice."
@@ -3043,6 +3233,21 @@ StringTable {
      Id "LF-Sign_Smokehouse_What"
      Target_en_us "The dock smokehouse on the east apron. One fresh fish and one bundle of firewood come out as smoked fish, which sells for half as much again and can be eaten."
      Comment "Sign card for the dock smokehouse plate, What section."
+    }
+    CustomStringTableItem "{5F88AA844B7BCA38}" {
+     Id "LF-Sign_SpringPond_How"
+     Target_en_us "Bring a rod and a bait tin, cast onto the water from the jetty or the bank, and strike when the float dips"
+     Comment "Sign card for the Spring Pond plate, How section."
+    }
+    CustomStringTableItem "{E3BA6C2EBFE96532}" {
+     Id "LF-Sign_SpringPond_Title"
+     Target_en_us "Spring Pond"
+     Comment "Title of the pole plate on the Spring Pond bank (Everon 1989 pack, #3667). Printed on the sign and shown in the prompt as Read: Spring Pond."
+    }
+    CustomStringTableItem "{BA377CAE82EDDA68}" {
+     Id "LF-Sign_SpringPond_What"
+     Target_en_us "A small pond south-east of the village with a wooden jetty and a bench. Trout, perch and carp bite here; carp are best at dawn and in the evening."
+     Comment "Sign card for the Spring Pond plate, What section."
     }
     CustomStringTableItem "{327C120B0ED84A6C}" {
      Id "LF-Sign_Supermarket_How"

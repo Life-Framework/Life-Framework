@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "template": "lake",
+  "place": "blacklake",
+  "status": "approved",
+  "note": "Hand-written for #3667 (fishing places). Black Lake has no building, so its one slot is a hostless plot (#3666): the kit anchors on the plot's centre and every row rests on the probed ground. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 0,
+    "freePlots": 8
+  },
+  "slots": {
+    "shore": {
+      "plot": "p4",
+      "hostless": true,
+      "why": [
+        "free plot p4 (14 x 80 m, dry ground 208.8 to 212.4 m) on the lake's north-west bank: the dossier's shore point at 9519, 2997 lies 9 m from its west edge, facing the water, and the plot is the nearest dry ground to the lake that is clear of the road (r04 is 55 m away)",
+        "the kit's spots, bench, lantern and sign stand on the bank at the dossier's own shore points, which the dossier says are dry and face the water"
+      ]
+    }
+  }
+}

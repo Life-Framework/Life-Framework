@@ -1,0 +1,57 @@
+// Source of the `garage` kit (tools/town/kits/garage.json): the mechanic counter's till. `town fit` reads each component's GUID
+// and the nested blocks (action contexts, additional actions) from here, matched on the row's prefab and name. It is the
+// hardware store's till (tools/town/kits/sources/hardware.layer, #3220) pointed at the pack's `mechanic` stock (#3218).
+GenericEntity Mechanic_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{9AA33D561FE4F951}" {
+   m_sShopName "#LF-Shop_Name_Mechanic"
+   m_sShopDescription "#LF-Shop_Desc_Mechanic"
+   m_sStockId "mechanic"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{4CA4725D850B4E7B}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{1656ECB098CE371A}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{3595229CFA97493A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{77F6A5C7AF587609}" {
+      Name "#LF-Shop_Open_Mechanic"
+      Description "#LF-Shop_OpenDesc_Mechanic"
+     }
+    }
+   }
+  }
+ }
+ coords 0 0 0
+}
+// The vanilla props the kit dresses with: listed here so the kit check can read their GUIDs from the source.
+GenericEntity Source_CounterShop_01 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_EL_FuelTill : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ coords 0 0 0
+}
+GenericEntity Source_LF_Npc_Mechanic_1 : "{2C553E1AEE62231E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Mechanic_1.et" {
+ coords 0 0 0
+}
+GenericEntity Source_ShelfShop_01 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_ToolRack_01 : "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_Tire_M151A2_pile : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
+ coords 0 0 0
+}
+GenericEntity Source_LF_Sign_Fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ coords 0 0 0
+}

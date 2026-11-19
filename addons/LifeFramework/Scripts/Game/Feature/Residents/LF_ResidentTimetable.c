@@ -11,6 +11,8 @@ class LF_ResidentSlot
 	int m_iStartMinute;
 	string m_sRole;
 	string m_sKind;
+	//! The one place of the kind (LF_Places id), or empty for the nearest (#3231).
+	string m_sPlaceId;
 	string m_sAnchor;
 	string m_sActivity;
 }
@@ -132,8 +134,12 @@ class LF_ResidentTimetable
 			string role = entry.m_sPlace;
 			role.ToLower();
 			string kind;
+			string placeId;
 			if (role == ROLE_HOME)
+			{
 				kind = def.m_sHomeKind;
+				placeId = def.m_sHomePlaceId;
+			}
 			else if (role == ROLE_WORK)
 				kind = def.m_sWorkKind;
 			else
@@ -147,6 +153,7 @@ class LF_ResidentTimetable
 			slot.m_iStartMinute = start;
 			slot.m_sRole = role;
 			slot.m_sKind = kind;
+			slot.m_sPlaceId = placeId;
 			slot.m_sAnchor = entry.m_sAnchor;
 			slot.m_sActivity = entry.m_sActivity;
 			parsed.Insert(slot);

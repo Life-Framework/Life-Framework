@@ -4,9 +4,11 @@
 // instead of their worktree, and each one blocked the lead's `git pull --ff-only`. Two cheap pieces stop it:
 //
 //   1. A Claude Code PreToolUse hook (.claude/settings.json -> tools/hooks/main-write-guard.mjs) calls `decideWrite`
-//      for Write, Edit, MultiEdit and NotebookEdit and denies a file under the main checkout's tracked areas when the
-//      session is an agent working in a worktree. Pure fs, no git process: about 60 ms a call.
-//   2. `tools\cli lead` calls `findStrays`/`moveStrays` and moves untracked leftovers out of the main checkout.
+//      for Write, Edit, MultiEdit and NotebookEdit (and, #3700, a Bash or PowerShell command that writes a file) and denies
+//      a file under the main checkout's tracked areas when the session is an agent working in a worktree. Pure fs, no git
+//      process: about 60 ms a call.
+//   2. `tools\cli lead` calls `findStrays`/`moveStrays` and moves untracked leftovers out of the main checkout. A tracked
+//      edit that blocks the fast-forward is stashed by tools/lib/main-ff-heal.mjs (#3700).
 //
 // "The session is an agent" is either of two facts, because most agents are launched with the main checkout as their
 // cwd and only `cd` into the worktree for shell commands:
@@ -23,6 +25,7 @@ import { basename, dirname, isAbsolute, join, relative, resolve } from "node:pat
 export const GUARDED = ["addons", "tools", "docs", "website", "agent-box", ".claude", ".githooks", ".github"];
 export const CLAIM_TTL_MS = 48 * 3600 * 1000;
 const WRITE_TOOLS = new Set(["Write", "Edit", "MultiEdit", "NotebookEdit"]);
+const SHELL_TOOLS = new Set(["Bash", "PowerShell"]);
 
 // ---------------------------------------------------------------- paths
 
@@ -115,39 +118,164 @@ export function liveClaim(mainRoot, sessionId, now = Date.now()) {
   }
 }
 
+// ---------------------------------------------------------------- shell commands (#3700)
+
+// The Write/Edit hook cannot see a shell write, and twice on 2026-11-19 a `sed -i` / script edit in the main checkout
+// (docs/features/sites.md, tools/town/drops.mjs) blocked its fast-forward. `shellWriteTargets` reads a Bash or PowerShell
+// command line and returns the paths it writes: a `>` / `>>` redirect, `tee`, an in-place `sed`/`perl`, Set-Content /
+// Add-Content / Out-File / New-Item / Remove-Item / Move-Item / Rename-Item, rm, mv, touch, and the destination of cp /
+// Copy-Item. It is a heuristic over quoted tokens, not a shell: a script that writes by itself (`node x.mjs`) is not seen
+// (the lead's stray pass is the net for those), and a read (`cat`, `grep`, a `cp` source) never counts. Relative paths
+// resolve against the cwd the command starts in, followed through `cd`/`pushd`/`Set-Location` in the same command line.
+const WRITE_ANY = new Set([
+  "tee", "set-content", "add-content", "out-file", "new-item", "remove-item", "move-item", "rename-item", "clear-content",
+  "rm", "del", "erase", "ri", "mv", "move", "ren", "rename", "touch", "mkdir", "rmdir", "truncate", "patch", "sc", "ac", "ni", "mi", "rni",
+]);
+const COPY = new Set(["cp", "copy", "copy-item", "cpi"]);
+const CD = new Set(["cd", "chdir", "pushd", "set-location", "sl"]);
+
+// Splits on unquoted ; && || | & and newlines; each token is { text, quoted }. A `>&2` / `2>&1` stays in its segment.
+function shellSegments(command) {
+  const segs = [];
+  let tokens = [];
+  let cur = "";
+  let quoted = false;
+  let started = false;
+  let quote = "";
+  const endToken = () => {
+    if (started) tokens.push({ text: cur, quoted });
+    cur = ""; quoted = false; started = false;
+  };
+  const endSeg = () => { endToken(); if (tokens.length) segs.push(tokens); tokens = []; };
+  const s = String(command);
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (quote) {
+      if (c === quote) quote = "";
+      else if (c === "\\" && quote === '"' && s[i + 1] === '"') { cur += '"'; i++; }
+      else cur += c;
+      continue;
+    }
+    if (c === '"' || c === "'") { quote = c; quoted = true; started = true; continue; }
+    if (c === ";" || c === "\n" || c === "|") { endSeg(); continue; }
+    if (c === "&") {
+      if (s[i - 1] === ">" || s[i + 1] === ">") { cur += c; started = true; continue; } // >&2, &>file
+      endSeg();
+      continue;
+    }
+    if (/\s/.test(c)) { endToken(); continue; }
+    if (c === "`" && s[i + 1]) { cur += s[i + 1]; started = true; i++; continue; } // PowerShell escape
+    cur += c;
+    started = true;
+  }
+  endSeg();
+  return segs;
+}
+
+const unwrap = (t) => t.replace(/^[(@{]+/, "").replace(/[)}]+$/, "");
+const isFlag = (t) => /^-{1,2}[A-Za-z]/.test(t.text) && !t.quoted;
+const isPathLike = (t) => t.length > 0 && !/[$*?%<>|]/.test(t) && !t.startsWith("~");
+
+// startCwd: where the command starts. Returns [{ path, cwd }]: each written path as typed plus the cwd it resolves from
+// (null when a `cd $var` made it unknown, so a relative path is skipped rather than guessed).
+export function shellWriteTargets(command, startCwd) {
+  const out = [];
+  let cwd = startCwd ?? null;
+  for (const seg of shellSegments(command)) {
+    const names = seg.map((t) => (t.quoted ? "" : unwrap(t.text).replace(/^.*[\\/]/, "").toLowerCase().replace(/\.exe$/, "")));
+    const first = names.find((n) => n && n !== "sudo" && n !== "&" && n !== "command") ?? "";
+
+    if (CD.has(first)) {
+      const arg = seg.slice(names.indexOf(first) + 1).find((t) => !isFlag(t));
+      if (arg && isPathLike(unwrap(arg.text)) && arg.text !== "-") cwd = cwd ? norm(isAbsolute(arg.text) || /^\/[a-zA-Z]\//.test(arg.text) ? arg.text : resolve(cwd, unwrap(arg.text))) : /^([a-zA-Z]:|\/)/.test(arg.text) ? norm(arg.text) : null;
+      else cwd = null;
+      continue;
+    }
+
+    // redirects: `> f`, `>> f`, `1>f`, `2> f` (not `2>&1`, not /dev/null)
+    for (let i = 0; i < seg.length; i++) {
+      const t = seg[i];
+      if (t.quoted) continue;
+      const m = /^\d?&?>{1,2}(.*)$/.exec(t.text);
+      if (!m || /^&\d?$/.test(m[1])) continue;
+      const target = m[1] ? m[1] : seg[i + 1]?.text;
+      if (target && isPathLike(unwrap(target)) && !/^\/dev\//.test(target) && !/^\$?null$/i.test(target)) out.push({ path: unwrap(target), cwd });
+    }
+
+    const vi = names.indexOf(first);
+    const args = seg.filter((t, i) => i !== vi && !isFlag(t) && (t.quoted || !/^\d?&?>/.test(t.text)));
+    const inPlace = (first === "sed" || first === "perl") && seg.some((t) => !t.quoted && (/^-[a-zA-Z]*i[a-zA-Z.]*$/.test(t.text) || /^--in-place/.test(t.text)));
+    if (WRITE_ANY.has(first) || inPlace) {
+      for (const t of args) if (isPathLike(unwrap(t.text))) out.push({ path: unwrap(t.text), cwd });
+    } else if (COPY.has(first)) {
+      const di = seg.findIndex((t) => !t.quoted && /^-destination$/i.test(t.text));
+      const dest = di >= 0 ? seg[di + 1] : args[args.length - 1];
+      if (dest && isPathLike(unwrap(dest.text))) out.push({ path: unwrap(dest.text), cwd });
+    }
+  }
+  return out;
+}
+
 // ---------------------------------------------------------------- the decision
+
+// The worktree an agent session works in: the cwd's linked worktree, else the session's live `wt new` claim; null for the
+// lead or the maintainer working in the main checkout itself.
+function agentWorktree(input, repo, ctx) {
+  if (repo.linked) return repo.root;
+  const sessionId = input.session_id || basename(String(input.transcript_path ?? ""), ".jsonl");
+  return liveClaim(repo.mainRoot, sessionId, ctx.now)?.path ?? null;
+}
+
+// The deny for `abs` (a normalised path), or null when it is not a guarded path of the main checkout.
+function denyFor(abs, repo, input, ctx, how) {
+  if (!isInside(abs, repo.mainRoot)) return null;
+  const rel = norm(abs).slice(norm(repo.mainRoot).length).replace(/^\/+/, "");
+  if (!GUARDED.includes(rel.split("/")[0])) return null;
+  if (repo.linked && isInside(abs, repo.root)) return null; // a worktree nested inside the main folder
+  const worktree = agentWorktree(input, repo, ctx);
+  if (!worktree) return null; // the lead or the maintainer working in the main checkout itself
+  const reason =
+    `Refused: ${norm(abs)} is inside the lead's main checkout (${norm(repo.mainRoot)}), and this session works in the worktree ${worktree}. ` +
+    `${how} ${worktree}/${rel} instead (use absolute paths under your worktree; never a relative path). ` +
+    `Stray edits there block the lead's git pull (#2785, #3700).`;
+  return { block: true, reason, worktree, rel };
+}
 
 // input: the hook payload { tool_name, tool_input, cwd, session_id, transcript_path }.
 // ctx: { env, projectDir, now }. Returns { block: false } or { block: true, reason, worktree, rel }.
 export function decideWrite(input, ctx = {}) {
   const env = ctx.env ?? process.env;
   if (env.LF_ALLOW_MAIN_WRITE === "1") return { block: false };
-  if (!WRITE_TOOLS.has(input?.tool_name)) return { block: false };
+  const tool = input?.tool_name;
+  const cwd = input?.cwd || ctx.projectDir || process.cwd();
+
+  if (SHELL_TOOLS.has(tool)) {
+    const command = input.tool_input?.command;
+    if (typeof command !== "string" || !command) return { block: false };
+    const targets = shellWriteTargets(command, cwd);
+    if (!targets.length) return { block: false }; // no write verb: no file system work at all
+    const repo = repoOf(cwd) ?? repoOf(ctx.projectDir);
+    if (!repo) return { block: false };
+    for (const t of targets) {
+      let abs;
+      if (isAbsolute(t.path) || /^\/[a-zA-Z]\//.test(t.path)) abs = norm(t.path);
+      else if (t.cwd) abs = norm(resolve(t.cwd, t.path));
+      else continue;
+      const d = denyFor(abs, repo, input, ctx, "Run that command on");
+      if (d) return d;
+    }
+    return { block: false };
+  }
+
+  if (!WRITE_TOOLS.has(tool)) return { block: false };
   const ti = input.tool_input ?? {};
   const target = ti.file_path ?? ti.notebook_path ?? ti.path;
   if (!target || typeof target !== "string") return { block: false };
 
-  const cwd = input.cwd || ctx.projectDir || process.cwd();
   const repo = repoOf(cwd) ?? repoOf(ctx.projectDir);
   if (!repo) return { block: false };
   const abs = isAbsolute(target) || /^\/[a-zA-Z]\//.test(target) ? norm(target) : norm(resolve(cwd, target));
-  if (!isInside(abs, repo.mainRoot)) return { block: false };
-  const rel = norm(abs).slice(norm(repo.mainRoot).length).replace(/^\/+/, "");
-  if (!GUARDED.includes(rel.split("/")[0])) return { block: false };
-  if (repo.linked && isInside(abs, repo.root)) return { block: false }; // a worktree nested inside the main folder
-
-  let worktree = repo.linked ? repo.root : null;
-  if (!worktree) {
-    const sessionId = input.session_id || basename(String(input.transcript_path ?? ""), ".jsonl");
-    worktree = liveClaim(repo.mainRoot, sessionId, ctx.now)?.path ?? null;
-  }
-  if (!worktree) return { block: false }; // the lead or the maintainer working in the main checkout itself
-
-  const reason =
-    `Refused: ${norm(abs)} is inside the lead's main checkout (${norm(repo.mainRoot)}), and this session works in the worktree ${worktree}. ` +
-    `Write ${worktree}/${rel} instead (use absolute paths under your worktree; never a relative path). ` +
-    `Stray files there block the lead's git pull (#2785).`;
-  return { block: true, reason, worktree, rel };
+  return denyFor(abs, repo, input, ctx, "Write") ?? { block: false };
 }
 
 // ---------------------------------------------------------------- strays (the lead's side)

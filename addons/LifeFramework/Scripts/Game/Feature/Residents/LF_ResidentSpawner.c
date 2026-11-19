@@ -320,7 +320,7 @@ class LF_ResidentSpawner
 		bool near;
 		foreach (vector player : where)
 		{
-			if (!LF_ResidentAnchors.Resolve(slot.m_sKind, slot.m_sAnchor, player, spot))
+			if (!LF_ResidentAnchors.ResolveIn(slot.m_sKind, slot.m_sPlaceId, slot.m_sAnchor, player, spot))
 				return null;
 
 			if (DistanceSqXZ(player, spot.m_vOrigin) <= spawnSq)

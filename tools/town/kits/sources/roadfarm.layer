@@ -1,0 +1,27 @@
+// Source of the `roadfarm` kit (tools/town/kits/roadfarm.json, #3381): what a working farm off the main road adds for the weekend:
+// a fuel drop tank beside the machine shed (the far drop of the fuel delivery job, #3370), and a payphone and the farm's name sign
+// at the lane where it leaves the yard.
+// `town fit` reads each row's prefab and component GUIDs and nested blocks from here. Coordinates are in the machine shed's own frame
+// (origin = the shed's centre, +x = its door side, z to the left of the door side); the shed itself is the vanilla building of the place.
+// The payphone is the core prefab (dial, answer and report-crime actions); the drop is the pack's LF_FuelDrop (a closed old fuel barrel
+// with the job drop-off action); the sign is the pole plate carrying the pack's `roadfarm` sign (Ferme des Silos).
+GenericEntity Source_RoadFarm_FuelDrop : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
+ coords 5.6 0 5.4
+ angleY 30
+}
+GenericEntity Source_RoadFarm_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 21 0 -3
+ angleY 90
+}
+GenericEntity Source_RoadFarm_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "roadfarm"
+   m_vRimColor 1 1 1
+   m_vPaintColor 0.16 0.3 0.15
+   m_vTextColor 1 1 1
+  }
+ }
+ coords 21 0 2.5
+ angleY 90
+}

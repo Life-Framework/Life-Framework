@@ -30,6 +30,7 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { onWater } from "../scout/analyse.mjs";
 import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
 import { sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
@@ -399,11 +400,18 @@ export function planFit(opts, ctx = {}) {
   errors.push(...conflicts(blocking, { place, slot: slotId, building: buildingKey, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
 
-  // The building: a mapped one stands where the dossier says; a plot gets the purpose-built building first (D9).
+  // The building: a mapped one stands where the dossier says; a plot gets the purpose-built building first (D9); a hostless
+  // plot (a lake, a pond, a field: `"hostless": true` on a plot entry, #3666) has no building at all, the kit stands on the open ground.
   let host;
   const out = [];
   let destruction;
-  if (building) {
+  if (entry.hostless) {
+    if (!plotE) return (errors.push(`slot ${slotId}: a hostless slot needs a plot of the dossier (${entry.plot ?? "none named"})`), { ...fail(), notes });
+    const wet = onWater(dossier.water?.bodies, plotE.x, plotE.z);
+    if (wet) return (errors.push(`slot ${slotId}: plot ${plotE.id} lies on the water ${wet.id} (${wet.name}); anchor it on a dry plot or a shore point`), { ...fail(), notes });
+    host = { x: plotE.x, y: plotE.ground ? r3((plotE.ground.min + plotE.ground.max) / 2) : plotE.y ?? 0, z: plotE.z, yaw: 0, entrances: [], footprint: null, prefab: null };
+    destruction = { mode: "none", reason: "hostless plot: no building stands in the slot" };
+  } else if (building) {
     host = building;
     destruction = null; // decided below: hooked through the place marker, or needs-hook without one
   } else {
@@ -472,7 +480,7 @@ export function planFit(opts, ctx = {}) {
     schema: 1,
     place,
     slot: slotId,
-    ...(entry.building ? { building: buildingKey } : { plot: entry.plot }),
+    ...(entry.building ? { building: buildingKey } : { plot: entry.plot, ...(entry.hostless ? { hostless: true } : {}) }),
     ...(entry.shared ? { shared: true } : {}),
     kit: slot.kit,
     layer: `${LAYER_DIR}/${layerName}`,
@@ -507,6 +515,21 @@ export async function planFitSeated(opts, ctx = {}) {
   const plan = planFit({ ...opts, sameShell: same }, ctx);
   if (!plan.ok) return plan;
   plan.anchor.sameShell = same;
+  if (opts.mapping?.slots?.[opts.slot]?.hostless) {
+    // No host shell to seat on: an open-ground row rests on the ground the server probed under its point (`--terrain`), else it keeps the plot's height.
+    plan.terrainPoints = plan.rows.filter((r) => plan.kit.rows.find((q) => q.id === r.id)?.mount === "terrain").map((r) => [r.coords[0], r.coords[2]]);
+    for (const r of plan.rows) {
+      const src = plan.kit.rows.find((q) => q.id === r.id);
+      const h = src?.mount === "terrain" ? ctx.terrain?.at(r.coords[0], r.coords[2]) : null;
+      if (Number.isFinite(h)) r.coords[1] = r3(h);
+    }
+    for (const e of plan.ents.rowEnts) {
+      const r = plan.rows.find((q) => q.id === e.id);
+      if (r) e.coords = r.coords;
+    }
+    plan.layerText = renderLayer(plan.ents);
+    return plan;
+  }
   if (!plan.host?.prefab) {
     plan.warnings.push("the host has no prefab in the dossier: rows were not seated on it");
     return plan;

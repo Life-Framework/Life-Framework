@@ -301,6 +301,7 @@ Detail lives in `.claude/skills/enfusion-resource-authoring` and `enfusion-blast
 - Prefer prefab inheritance over duplication; duplicate vanilla prefabs with `game_duplicate`.
 - Override an inherited component by its GUID; a second component of the same class shadows it.
 - A `MeshObject` needs a real `.xob` or the entity is invisible.
+- A vector is written bare (`m_vHalfExtents 5 3 7`, `coords 1 2 3`), never quoted: a quoted list is a string, the load logs `Unexpected data at offset` and drops the entity at world origin. `validate-quoted-vectors` fails a layer, prefab, `m_v*` conf member or generator that writes one (`// lf-quoted-vector-ok: <why>` allows a real string).
 - A textured mod item bakes its real `.emat` into the `.xob`; a prefab material override over a placeholder bake renders white.
 - Textures are verified visually only; the dedicated server has no renderer.
 - Place world props with `tools\cli place on|against|ground|arrange` (`docs/placement-tool.md`), never with typed coordinates: it reads real bounds, probes the surface or wall, checks, writes the layer entry and audits it.

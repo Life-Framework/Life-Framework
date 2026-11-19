@@ -52,7 +52,7 @@ GenericEntity Fit_saint_philippe_orchard_orchard_desk : "{F2DA01057E99744B}Prefa
    m_sPlaceId "saint_philippe_orchard"
   }
  }
- coords 4613.297 19.064 10772.287
+ coords 4613.297 19.049 10772.287
  angleY -99
 }
 GenericEntity Fit_saint_philippe_orchard_orchard_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

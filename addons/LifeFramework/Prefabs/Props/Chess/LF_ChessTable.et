@@ -19,6 +19,18 @@ GenericEntity : "{00C9C0860D1D8A84}Prefabs/Props/Furniture/TableSmall_01/TableSm
       "LF_ChessBoard"
      }
     }
+    LF_ChessSitAction "{5B1D7A3C90E24F86}" {
+     ParentContextList {
+      "LF_ChessBoard"
+     }
+     m_iStake 20
+    }
+    LF_ChessSitAction "{7E42C9D15A083B64}" {
+     ParentContextList {
+      "LF_ChessBoard"
+     }
+     m_iStake 50
+    }
    }
   }
  }

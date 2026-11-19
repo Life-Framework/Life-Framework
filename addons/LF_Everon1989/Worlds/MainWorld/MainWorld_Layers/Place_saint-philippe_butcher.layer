@@ -34,7 +34,7 @@ GenericEntity Fit_saint_philippe_butcher_butcher_chiller_2 : "{613F68B39D0A4A64}
  angleY -10
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_freezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
- coords 4473.853 12 10774.953
+ coords 4473.853 12.05 10774.953
  angleY -10
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
@@ -50,11 +50,11 @@ GenericEntity Fit_saint_philippe_butcher_butcher_meat_3 : "{F1E319DF62725A34}Pre
  angleY -30
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_freezer_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4474.001 12.84 10774.979
+ coords 4474.001 12.89 10774.979
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_freezer_meat_2 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4473.706 12.84 10774.927
+ coords 4473.706 12.89 10774.927
  angleY -60
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {

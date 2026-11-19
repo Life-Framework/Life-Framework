@@ -25,6 +25,7 @@ import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import { wtDirFor } from "./lib/local-config.mjs";
 import * as mg from "./lib/main-guard.mjs";
+import { healBlockedFastForward, noteAlert } from "./lib/main-ff-heal.mjs";
 import * as rdbCache from "./lib/rdb-cache.mjs";
 import * as pin from "./lib/guard-pin.mjs";
 import { hostname } from "node:os";
@@ -102,8 +103,12 @@ const codeDriftNow = (dir) => mg.codeDrift(LOADED_CODE, originCodeIds(dir));
 function freshenMainCheckout(root) {
   const mr = mainRoot(root);
   if (git(mr, ["symbolic-ref", "--short", "HEAD"]).stdout.trim() === "main") {
-    const ff = git(mr, ["merge", "--ff-only", "-q", "origin/main"]);
-    if (ff.status !== 0) log(root, `main checkout did not fast-forward: ${String(ff.stderr || ff.stdout).trim().split(/\r?\n/)[0]}`);
+    // A stray tracked edit an agent left there is stashed (never discarded) so the checkout can move; the maintainer's
+    // Worlds/ edits are left alone and alerted (#3700).
+    const heal = healBlockedFastForward(mr, (args) => git(mr, args));
+    if (heal.line) {
+      if (noteAlert(hub(root), heal.line)) log(root, `ALERT ${heal.line}`);
+    }
   }
   return mg.codeDrift(diskCodeIds(mr), originCodeIds(mr)).length === 0;
 }

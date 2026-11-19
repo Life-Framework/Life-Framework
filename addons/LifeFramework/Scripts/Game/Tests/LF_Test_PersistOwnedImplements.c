@@ -42,7 +42,7 @@ class LF_Test_PersistOwnedImplements : LF_Test
 		JsonSaveContext saveContext = new JsonSaveContext(false);
 		ctx.True(LF_PersistenceComponentSerializer.SerializeStore(persistence, saveContext) == ESerializeResult.OK, "the store serializes");
 		string saved = saveContext.SaveToString();
-		ctx.True(saved.Contains(LF_SaveSections.OBJECT_PREFIX + LF_HarvestSavePayload.NAME), "the save carries the harvest section");
+		ctx.True(saved.Contains(SectionKey()), "the save carries the harvest section");
 		ctx.Equal(0, LF_PersistenceComponentSerializer.PayloadSinceVersion(LF_HarvestSavePayload.NAME), "harvest is not a legacy positional payload");
 
 		// Restart: the session holds no list.
@@ -70,7 +70,7 @@ class LF_Test_PersistOwnedImplements : LF_Test
 		JsonSaveContext oldContext = new JsonSaveContext(false);
 		array<string> omit = {LF_HarvestSavePayload.NAME};
 		LF_PersistenceComponentSerializer.SerializeStoreOmitting(persistence, oldContext, omit);
-		ctx.False(oldContext.SaveToString().Contains(LF_SaveSections.OBJECT_PREFIX + LF_HarvestSavePayload.NAME), "the older save has no harvest section");
+		ctx.False(oldContext.SaveToString().Contains(SectionKey()), "the older save has no harvest section");
 		LF_SavePayload section = LF_SaveSections.Get(LF_HarvestSavePayload.NAME);
 		if (section)
 			section.OnAbsent();
@@ -80,6 +80,14 @@ class LF_Test_PersistOwnedImplements : LF_Test
 		// Every non-reload run (the e2e save boot among them) leaves the e2e character's reaper in the store.
 		LF_OwnedImplements.ResetStatics();
 		LF_OwnedImplements.Grant(E2E_KEY, LF_OwnedImplements.ID_REAPER);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	// The quoted JSON key: a bare "sec_harvest" is also the start of "sec_harvest_deposits" (#3297), so a plain
+	// Contains on the prefix matched the neighbouring section and the "older save has no section" check failed.
+	protected static string SectionKey()
+	{
+		return "\"" + LF_SaveSections.OBJECT_PREFIX + LF_HarvestSavePayload.NAME + "\"";
 	}
 
 	//------------------------------------------------------------------------------------------------

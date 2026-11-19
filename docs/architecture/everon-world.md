@@ -170,6 +170,11 @@ measures each building (`tools\cli measure`) and finds its footprint, entrances,
 height, plus the roads, junctions, free plots and slope. `look --interior` (#2194) shoots the first rooms.
 The output is `docs/everon/places/<slug>/dossier.json` (schema 1), `dossier.md` and `img/`. The dossier
 supplies every coordinate the later steps use. No step types a coordinate.
+Lakes and ponds (#3666): the engine's water probe (the `GW` rows) sees the sea only, so Black Lake read `waterShare 0` and a
+free plot lay on its middle. The dossier's `water` section lists each lake or pond from its closed outline (the plugin's `W` row for a
+shape that owns a lake generator, or a lake-named spline, which older dumps hold as an `R` row), marks the grid cells inside it as water
+(so `terrain.waterShare`, `nearestWater` and the free plots count them), and gives dry `shore` points facing the water, where a fishing
+spot can be seeded.
 
 ### 3.2 Mapping: templates, then a per-place mapping file
 
@@ -209,6 +214,12 @@ supplies every coordinate the later steps use. No step types a coordinate.
   the kit. The relative geometry is kept; the absolute positions are dropped.
 - **Placed buildings (D9).** Where the mapping names a free plot, `town fit` first places the
   purpose-built building with `place ground` on the plot, then fits its kit like any other building.
+- **Hostless plots (#3666).** A lake, a pond or a field has no building to fit into: a mapping entry
+  `{ "plot": "p3", "hostless": true }` (no `prefab`) anchors the kit on that dossier plot's centre, unturned, with no purpose-built
+  building and no `LF_FittedBuildingComponent` (claim `destruction.mode: "none"`, `hostless: true`). Rows marked `"mount": "terrain"`
+  rest on the probed ground (`--terrain`). `town fit` refuses a hostless plot that lies on a dossier water body.
+  `look place:<place>/<slot>` frames the slot's own layer rows when they lie outside the host's frame (the Spring Pond bench, 69 m from
+  the barn it anchors on, was never in a picture: the layer was loaded, the camera looked at the barn).
 - **Indestructible (D15).** A placed building (D9) is written into the slot layer with its destruction
   off. A vanilla building stands in the terrain, so no layer can override it: `town fit` puts
   `LF_FittedBuildingComponent` on the slot's place marker inside the building, and on the server the

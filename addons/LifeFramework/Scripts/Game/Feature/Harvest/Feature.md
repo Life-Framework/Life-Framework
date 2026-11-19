@@ -63,3 +63,18 @@ The rules (#3285), the field entity (#3287), its cut replication (#3288) and the
 - **Owner and side:** `LF_ReaperCutTick` (server only): a registry of reapers (filled by `LF_ImplementComponent`) and a 200 ms loop. Speed is the towing vehicle's physics velocity; the bar sits at the implement's hitch offset in the vehicle's frame; the field is the `LF_WheatField` whose box holds it.
 - **Data:** the hopper is `LF_ImplementComponent` `m_iHopperKg` (`RplProp`), capped at `LF_WheatFieldRules.HOPPER_CAP_KG`. Session-only: the reaper is not saved, so a restart or an unhitch loses the grain (H7 and H8 own persistence or payout).
 - **Proof:** `harvest/reaper-cut` (WORLD); session `hitch fieldspawn|drive|state` on grid cell slice-3287.
+
+## Harvest contract (#3297)
+
+- **Player sees:** at the farm board, one contract per ripe field; take it with an own reaper or a $300-deposit rental kit (Z7211 with the DLC, else UAZ469); at 95 % cut a $40 bonus and FARMER XP; returning the kit gives the deposit back, keeping it past 30 minutes forfeits it. The board prompts are `LF_HarvestBoard` (#3656).
+- **Owner and side:** `LF_HarvestContract` (server statics: `Post`, `Take`, `Settle`, `ReturnKit`, a 5 s sweep). Contracts are session state; open deposits are the save section `harvest_deposits`, refunded to the bank once on the next boot. Money moves state-first so a repeat pays nothing; a kit is never deleted with someone seated.
+- **Proof:** `harvest/harvest-contract` (WORLD).
+
+## Farm contract board (#3656)
+
+- **Player sees:** a cork notice board (poster style) at the wheat field gate with four prompts: *Post contract*, *Take with own reaper*, *Take with rental kit*, *Return kit*. The server answers each with a toast. A rental kit stands five metres from the board on the side away from the field. A `harvest` chalkboard (the deposit and the bonus) stands on the other side of the gate.
+- **Owner and side:** `LF_HarvestBoard` (server) finds the board's field (nearest `LF_WheatField` within 90 m), checks the user stands within 6 m and calls `LF_HarvestContract`. `LF_HarvestBoardAction` is the prompt; the rental prompt runs on the acting client only (`HasLocalEffectOnlyScript`), asks `LF_VehicleDlcGate.LocalOwns` for the Z7211 and sends it with one RPC (`SCR_PlayerController.LF_AskHarvestRental`); the other three run on the server. Prefab `Prefabs/Harvest/LF_HarvestBoard.et` inherits `LF_Sign_Board`.
+- **Proof:** `harvest/harvest-board` (WORLD); a rental with the DLC answer on a server with no Rally content gets the UAZ469 instead (#3670 review).
+
+
+- **Player sees:** at the farm board, one contract per ripe field; take it with an own reaper or a $300-deposit rental kit (Z7211 with the DLC, else UAZ469); at 95 % cut a $40 bonus and FARMER XP; returning the kit gives the deposit back, keeping it past 30 minutes forfeits it. The board prompts come with the placement card.
