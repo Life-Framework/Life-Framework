@@ -62,7 +62,8 @@
       ],
       "yaw": 90,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.045
     },
     {
       "id": "barber-chair-2",
@@ -76,7 +77,8 @@
       ],
       "yaw": 90,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.045
     },
     {
       "id": "barber-basin",
@@ -104,7 +106,8 @@
       ],
       "yaw": 90,
       "wall": "-x",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.055
     },
     {
       "id": "barber-sign-fascia",
@@ -113,8 +116,8 @@
       "verb": "against wall",
       "offset": [
         -2.4,
-        3,
-        5.951
+        3.3,
+        6.13
       ],
       "yaw": 0,
       "config": [

@@ -14,11 +14,11 @@ GenericEntity Fit_saint_philippe_barber_barber_mirror : "{34E90D599E5E3517}Prefa
  angleY 62
 }
 GenericEntity Fit_saint_philippe_barber_barber_chair_1 : "{4F2A9C61B7E03D85}Prefabs/Props/Roleplay/LF_BarberChair.et" {
- coords 4411.386 10.26 10778.383
+ coords 4411.386 10.215 10778.383
  angleY -118
 }
 GenericEntity Fit_saint_philippe_barber_barber_chair_2 : "{4F2A9C61B7E03D85}Prefabs/Props/Roleplay/LF_BarberChair.et" {
- coords 4412.09 10.26 10777.058
+ coords 4412.09 10.215 10777.058
  angleY -118
 }
 GenericEntity Fit_saint_philippe_barber_barber_basin : "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et" {
@@ -26,18 +26,18 @@ GenericEntity Fit_saint_philippe_barber_barber_basin : "{49012FE1DEF653EE}Prefab
  angleY 62
 }
 GenericEntity Fit_saint_philippe_barber_barber_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4412.857 10.26 10779.133
+ coords 4412.857 10.205 10779.133
  angleY -118
 }
 GenericEntity Fit_saint_philippe_barber_barber_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {
   LF_SignComponent "{6E3FF3980D87CACE}" {
-   m_sSignId "grid:coiffeur"
+   m_sSignId "barber"
    m_vRimColor 0.72 0.08 0.1
    m_vPaintColor 0.96 0.95 0.9
    m_vTextColor 0.72 0.08 0.1
   }
  }
- coords 4416.846 13 10768.645
+ coords 4416.597 13.3 10769.114
  angleY 152
 }

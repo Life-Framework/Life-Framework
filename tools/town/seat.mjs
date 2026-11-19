@@ -360,6 +360,12 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false 
           const top = tops.sort((a, b2) => Math.abs(a - bottom) - Math.abs(b2 - bottom))[0];
           if (Math.abs(top - bottom) > TOL) l.y += top - bottom;
         } else res.notes.push(`no host floor within ${FLOOR_BAND} m of its kit height under it`);
+        // A host whose walkable floor lies below its model's top surface (the House_Town_E_2I02 hall tiles: 4.5 cm, measured by
+        // `look contact`, #3236): the kit row says how far, as `lift` in metres (negative sinks it), applied after the snap.
+        if (Number.isFinite(s.lift) && s.lift !== 0 && tops.length) {
+          l.y += s.lift;
+          res.notes.push(`lifted ${s.lift} m from the model's top surface`);
+        }
         if (m.against) {
           const w = wallSnap(NEAR_WALL, NEAR_WALL);
           if (w && Math.abs(w.shift) > TOL) {
