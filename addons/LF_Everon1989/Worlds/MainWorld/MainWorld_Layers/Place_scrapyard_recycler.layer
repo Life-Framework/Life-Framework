@@ -70,7 +70,7 @@ GenericEntity Fit_scrapyard_recycler_dealer_tyres : "{5CA44F8D9F7491ED}Prefabs/P
  angleY 22
 }
 GenericEntity Fit_scrapyard_recycler_dealer_scrap : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5016.203 28.809 10877.196
+ coords 5016.203 28.909 10877.196
  angleY 30
 }
 GenericEntity Fit_scrapyard_recycler_dump_wreck_469 : "{3386EAA823BE462E}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_static.et" {
@@ -123,27 +123,27 @@ GenericEntity Fit_scrapyard_recycler_dump_tyres_4 : "{5CA44F8D9F7491ED}Prefabs/P
  angleY 10
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_1 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5038.601 28.781 10896.601
+ coords 5038.601 28.881 10896.601
  angleY 20
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_2 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5047.004 28.695 10900.504
+ coords 5047.004 28.795 10900.504
  angleY 150
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_3 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5054.999 28.5 10895.995
+ coords 5054.999 28.6 10895.995
  angleY 70
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_4 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5061.5 28.531 10899.501
+ coords 5061.5 28.631 10899.501
  angleY -160
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_5 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5069.495 28.461 10892.997
+ coords 5069.495 28.561 10892.997
  angleY 100
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_6 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5075.997 28.266 10893.505
+ coords 5075.997 28.366 10893.505
 }
 GenericEntity Fit_scrapyard_recycler_dump_drum_1 : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
  coords 5052.202 28.434 10891.399

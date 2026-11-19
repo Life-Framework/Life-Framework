@@ -68,7 +68,7 @@ GenericEntity Scrapyard_Dealer_Tyres : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleP
  angleY -72
 }
 GenericEntity Scrapyard_Dealer_Scrap : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords -18.08 0 -0.86
+ coords -18.08 0.1 -0.86
  angleY -64
 }
 GenericEntity Scrapyard_Dump_Wreck_469 : "{3386EAA823BE462E}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_static.et" {
@@ -124,27 +124,27 @@ GenericEntity Scrapyard_Dump_Tyres_4 : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleP
  angleY -84
 }
 GenericEntity Scrapyard_Dump_Pile_1 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords -39 0 20.13
+ coords -39 0.1 20.13
  angleY -74
 }
 GenericEntity Scrapyard_Dump_Pile_2 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords -43.48 0 28.24
+ coords -43.48 0.1 28.24
  angleY 56
 }
 GenericEntity Scrapyard_Dump_Pile_3 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords -39.54 0 36.53
+ coords -39.54 0.1 36.53
  angleY -24
 }
 GenericEntity Scrapyard_Dump_Pile_4 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords -43.49 0 42.77
+ coords -43.49 0.1 42.77
  angleY 106
 }
 GenericEntity Scrapyard_Dump_Pile_5 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords -37.56 0 51.2
+ coords -37.56 0.1 51.2
  angleY 6
 }
 GenericEntity Scrapyard_Dump_Pile_6 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords -38.52 0 57.65
+ coords -38.52 0.1 57.65
  angleY -94
 }
 GenericEntity Scrapyard_Dump_Drum_1 : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
