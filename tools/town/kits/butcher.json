@@ -133,7 +133,8 @@
       ],
       "yaw": 90,
       "wall": "-x",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.05
     },
     {
       "id": "butcher-meat-1",
