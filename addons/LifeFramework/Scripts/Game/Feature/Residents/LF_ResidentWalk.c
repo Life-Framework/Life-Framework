@@ -308,6 +308,15 @@ class LF_ResidentWalk
 		vector mat[4];
 		Math3D.AnglesToMatrix(Vector(spot.m_vAngles[0], 0, 0), mat);
 		mat[3] = spot.m_vOrigin;
+		// A character is moved by Teleport: SetWorldTransform leaves a resident where they stand (the walk's
+		// timeout and a placed resident never reached the cafe bench, #3707). A static body has no such call.
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(body);
+		if (character)
+		{
+			character.Teleport(mat);
+			return;
+		}
+
 		body.SetWorldTransform(mat);
 		body.Update();
 	}
