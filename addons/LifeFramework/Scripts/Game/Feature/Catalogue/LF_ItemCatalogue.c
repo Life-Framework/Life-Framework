@@ -30,7 +30,9 @@ enum LF_EOutletGate
 	NEEDS_LICENCE,
 	NEEDS_JOB,
 	NEEDS_RANK,
-	NEEDS_ORG_RIGHT
+	NEEDS_ORG_RIGHT,
+	WANTED,
+	UNFIT
 }
 
 class LF_ItemCatalogue
@@ -233,6 +235,14 @@ class LF_ItemCatalogue
 
 		if (!offer.m_sLicence.IsEmpty())
 		{
+			// A licensed line (a firearm, its magazines) goes over the counter only to a buyer who
+			// stands there able to take it and is not wanted, whatever the client asked from.
+			if (!buyer.CanTrade())
+				return LF_EOutletGate.UNFIT;
+
+			if (buyer.WantedLevel() > 0)
+				return LF_EOutletGate.WANTED;
+
 			LF_ELicenseType licence;
 			if (!ParseLicence(offer.m_sLicence, licence))
 			{
@@ -298,6 +308,10 @@ class LF_ItemCatalogue
 			return LF_EShopRefusal.NEEDS_RANK;
 		if (gate == LF_EOutletGate.NEEDS_ORG_RIGHT)
 			return LF_EShopRefusal.NEEDS_ORG_RIGHT;
+		if (gate == LF_EOutletGate.WANTED)
+			return LF_EShopRefusal.WANTED;
+		if (gate == LF_EOutletGate.UNFIT)
+			return LF_EShopRefusal.UNFIT;
 
 		return LF_EShopRefusal.NOT_SOLD_HERE;
 	}

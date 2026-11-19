@@ -58,7 +58,7 @@ class LF_DeathScreen
 	{
 		string text = WidgetManager.Translate("#LF-Death_CostWake");
 		if (bill > 0)
-			text = text + " " + WidgetManager.Translate("#LF-Death_CostBill", bill.ToString());
+			text = text + " " + LF_Terms.Text("#LF-Death_CostBill", bill.ToString());
 
 		// The currency symbol is a term ({currency:sym}) a pack can rename.
 		return LF_Terms.Expand(text + " " + WidgetManager.Translate("#LF-Death_CostKeeps"));
