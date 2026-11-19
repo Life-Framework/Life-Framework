@@ -10,6 +10,11 @@ Vehicle : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {
    additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_VehicleLockAction "{E1A105BE1A000006}" {
      ParentContextList {
       "door_l01"

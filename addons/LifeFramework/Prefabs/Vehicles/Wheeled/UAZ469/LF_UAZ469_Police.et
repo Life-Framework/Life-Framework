@@ -23,6 +23,11 @@ Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {
    additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_VehicleLockAction "{E8BD9E1428464528}" {
      ParentContextList {
       "door_l01"
