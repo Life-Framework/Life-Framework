@@ -3387,7 +3387,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E884C0110C5B632F}" {
      Id "LF-Credits_147"
-     Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{427FC7360D73D3A9}" {
+     Id "LF-Credits_148"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E61840F28B6ADBC}" {
@@ -5227,6 +5232,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-HandsUp_Keybind"
      Target_en_us "Hands up (answer the prompt, or lower them)"
      Comment "Keybind menu entry for the hands-up action."
+    }
+    CustomStringTableItem "{339D1913E2EBFE37}" {
+     Id "LF-HandsUp_NotGivenUp"
+     Target_en_us "They haven't given up."
+     Comment "Search or robbery of a player refused: the target has neither hands up nor cuffs on (#3399)."
     }
     CustomStringTableItem "{7B4E0C91A2D63F70}" {
      Id "LF-HandsUp_Title"

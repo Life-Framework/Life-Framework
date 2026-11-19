@@ -30,6 +30,7 @@
     "LF_LicenceSeizureRules",
     "LF_LicencesConfig",
     "LF_LockerConfig",
+    "LF_LootConfig",
     "LF_MapAreaConfig",
     "LF_MapPoiConfig",
     "LF_MarketConfig",
