@@ -47,6 +47,14 @@ check(g.judgeRecheck(true, false) === "flake", "a failure that passes on recheck
 check(g.judgeRecheck(true, true) === "red", "a failure that reproduces is red");
 check(g.judgeRecheck(false, false) === "green", "green is green");
 
+// #3586: the recheck and every bisect probe run with the shared rdb cache off and the checkout's rdb dropped.
+check(g.RECHECK_ENV.LF_RDB_CACHE === "0", "RECHECK_ENV must switch the shared rdb cache off");
+{
+  const src = readFileSync(new URL("../main-guard.mjs", import.meta.url), "utf8");
+  const calls = src.split(/\r?\n/).filter((l) => /await runCli\(/.test(l) && /(recheck|bisect-)/.test(l));
+  check(calls.length === 3 && calls.every((l) => /mg\.RECHECK_ENV, true\)/.test(l)), `the recheck and both bisect probes must pass RECHECK_ENV and drop the rdb: ${calls.length} call(s)`);
+}
+
 // Environmental exits: a logoff/shutdown kill (0x40010004 = 1073807364), Ctrl+C, a budget kill: never a recheck or a revert.
 check(g.isEnvExit(1073807364) && g.isEnvExit(3221225786) && g.isEnvExit(124) && g.isEnvExit(null), "NTSTATUS, budget-kill and missing exit codes are environmental");
 check(!g.isEnvExit(1) && !g.isEnvExit(2) && !g.isEnvExit(0), "ordinary failing exit codes are the commit's");

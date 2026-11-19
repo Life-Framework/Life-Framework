@@ -82,7 +82,10 @@ const real = loadPlace(ROOT, "saint-philippe");
 const made = buildLocks(real);
 check(made.errors.length === 0, `Saint-Philippe locks build: ${made.errors.join("; ")}`);
 for (const key of Object.values(KEYS)) check(pack.includes(`Id "${key}"`), `the pack table has ${key}`);
-check(new Set(made.locks.map((l) => l.key)).size === Object.keys(KEYS).length, "Saint-Philippe uses every purpose");
+// ForSaleSoon is for a home no house marker covers yet (#3584: `town homes` gives one to every home, and `town locks` skips it).
+const homeIds = new Set((real.purpose.buildings ?? []).filter((r) => r.purpose === "a" && r.houseId).map((r) => r.id));
+const allHomesDone = [...homeIds].every((id) => real.homes.has(id));
+check(new Set(made.locks.map((l) => l.key)).size === Object.keys(KEYS).length - (allHomesDone ? 1 : 0), "Saint-Philippe uses every purpose (but ForSaleSoon once every home has a house marker)");
 const file = layerPath(ROOT, "saint-philippe");
 check(existsSync(file) && readFileSync(file, "utf8") === renderLayer("saint-philippe", made.locks), "Locks_saint-philippe.layer matches the script (rerun node tools/town/locks.mjs saint-philippe)");
 const doors = checkDoors({ ...loadDoors(ROOT, "saint-philippe"), planned: true });

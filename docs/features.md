@@ -35,6 +35,7 @@
 - [Dispatch board (#250)](features/dispatch-board.md)
 - [Events](features/events.md)
 - [Fishing](features/fishing.md)
+- [Fuel](features/fuel.md)
 - [Gathering / Processing / Resources](features/gathering-processing-resources.md)
 - [Harvest](features/harvest.md)
 - [Hidden crime record (#270)](features/hidden-crime-record.md)
