@@ -145,6 +145,9 @@ class LF_CargoBedComponent : ScriptComponent
 		if (m_aStack.IsEmpty())
 			return Refuse(LF_ECargoRefusal.EMPTY);
 
+		if (IsLockedFor(user))
+			return Refuse(LF_ECargoRefusal.LOCKED);
+
 		if (user && LF_ShoulderCarry.Carried(user))
 			return Refuse(LF_ECargoRefusal.NO_HANDS);
 
@@ -204,7 +207,22 @@ class LF_CargoBedComponent : ScriptComponent
 		if (user && vector.Distance(user.GetOrigin(), GetTailgateWorld()) > LF_CargoBed.REACH)
 			return LF_ECargoRefusal.TOO_FAR;
 
+		if (IsLockedFor(user))
+			return LF_ECargoRefusal.LOCKED;
+
 		return LF_ECargoRefusal.NONE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a player (`user` set) meets a locked vehicle: the bed follows the trunk's lock, so nobody
+	//! empties or fills a locked truck. A null user is a script call (harness, tests) and is not gated.
+	bool IsLockedFor(IEntity user)
+	{
+		if (!user)
+			return false;
+
+		LF_VehicleStorageAccessControl access = LF_Component<LF_VehicleStorageAccessControl>.Find(GetOwner());
+		return access && access.IsStorageLocked(user);
 	}
 
 	//------------------------------------------------------------------------------------------------

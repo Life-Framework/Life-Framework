@@ -56,6 +56,12 @@ class LF_CargoBedAction : ScriptedUserAction
 			return false;
 		}
 
+		if (m_Bed.IsLockedFor(user))
+		{
+			SetCannotPerformReason(LF_CargoBed.RefusalKey(LF_ECargoRefusal.LOCKED));
+			return false;
+		}
+
 		if (LF_ShoulderCarry.Carried(user))
 		{
 			SetCannotPerformReason("#LF-Cargo_HandsFull");

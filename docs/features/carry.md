@@ -6,5 +6,6 @@
 
 ### `LF_CargoBedComponent` — `Feature/Carry/Cargo/LF_CargoBedComponent.c` (#3265, 2026-11-19)
 - ✅ A vehicle's cargo bed: load a shoulder-carried log at the tailgate (server deletes it, counts its units), see the stack on every machine (local copies, `RpcDo_SetStack` plus `RplSave`/`RplLoad`), unload the top item onto the shoulder. Capacity: 1989 truck 12, vans 6, cars 0; softwood log 1 unit, hardwood 2. Full bed or no bed refuses with a toast. Tests: `carry/cargo-bed` (WORLD); session proof `cargo-bed`.
+- ✅ The bed follows the vehicle lock: a locked truck can be neither loaded nor unloaded (same rule as the trunk, `LF_VehicleStorageAccessControl`).
 - ✅ Both log prefabs are shoulder loads; the inventory screen can no longer put one in a pack (`LF_CargoHaulingGate`).
 - ⏳ The bed stack does not persist (#3266); van bed positions are estimates; the two-player and late-joiner pictures need a placed truck in the debug grid.

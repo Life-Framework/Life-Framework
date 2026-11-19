@@ -12,7 +12,8 @@ enum LF_ECargoRefusal
 	EMPTY,
 	TOO_FAR,
 	NO_HANDS,
-	NO_ITEM_PREFAB
+	NO_ITEM_PREFAB,
+	LOCKED
 }
 
 //------------------------------------------------------------------------------------------------
@@ -114,6 +115,7 @@ class LF_CargoBed
 			case LF_ECargoRefusal.FULL: return "#LF-Cargo_Full";
 			case LF_ECargoRefusal.EMPTY: return "#LF-Cargo_Empty";
 			case LF_ECargoRefusal.NO_HANDS: return "#LF-Cargo_HandsFull";
+			case LF_ECargoRefusal.LOCKED: return "#EL-VehicleLock_Reason";
 		}
 
 		return "";
@@ -132,6 +134,7 @@ class LF_CargoBed
 			case LF_ECargoRefusal.TOO_FAR: return "too far from the bed";
 			case LF_ECargoRefusal.NO_HANDS: return "the unloader's hands are not free";
 			case LF_ECargoRefusal.NO_ITEM_PREFAB: return "the kind has no item prefab yet";
+			case LF_ECargoRefusal.LOCKED: return "the vehicle is locked";
 		}
 
 		return "ok";

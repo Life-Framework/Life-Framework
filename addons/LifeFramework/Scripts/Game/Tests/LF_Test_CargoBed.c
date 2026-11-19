@@ -1,4 +1,5 @@
 // red-proof: observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_CargoBed`: RED-OK carry/cargo-bed (fails with the hook on, 56 assertions); the loads are skipped, so the counts, the refusal, the unload order and the round trip fail.
+// red-proof (lock, review 2026-11-19): with IsLockedFor forced false, `--only LF_Test_CargoBed` failed "a locked truck takes no load" and "a locked truck cannot be unloaded"; green with the fix.
 
 //! Truck cargo bed (#3265): 3 softwood and 2 hardwood logs (7 units) go into a 12-unit bed, a 13th unit is
 //! refused, unloading returns the last kind first onto the shoulder, and the stack round-trips through the
@@ -93,6 +94,19 @@ class LF_Test_CargoBed : LF_Test
 		ctx.True(unloadedProfile && unloadedProfile.GetKind() == "hardwood", "the first item out is the hardwood log (last in, first out)");
 		ctx.Equal(5, bed.GetUnits(), "a hardwood log leaving frees 2 units");
 		ctx.True(bed.ServerUnload(carrier) == LF_ECargoRefusal.NO_HANDS, "a second unload with full hands is refused");
+
+		// A locked truck: the bed follows the trunk's lock, so a stranger can neither empty nor fill it.
+		LF_VehicleLockComponent truckLock = LF_Component<LF_VehicleLockComponent>.Find(truck);
+		ctx.NotNull(truckLock, "the truck has a lock");
+		if (truckLock)
+		{
+			truckLock.SetLocked(true);
+			ctx.True(bed.ServerLoad(carrier) == LF_ECargoRefusal.LOCKED, "a locked truck takes no load");
+			ctx.NotNull(LF_ShoulderCarry.Carried(carrier), "a refused load stays on the shoulder");
+			ctx.True(bed.ServerUnload(carrier) == LF_ECargoRefusal.LOCKED, "a locked truck cannot be unloaded");
+			ctx.Equal(5, bed.GetUnits(), "a locked refusal leaves the stack alone");
+			truckLock.SetLocked(false);
+		}
 
 		// Put it back, fill the bed, and the 13th unit is refused.
 		ctx.True(bed.ServerLoad(carrier) == LF_ECargoRefusal.NONE, "the hardwood log goes back on");
