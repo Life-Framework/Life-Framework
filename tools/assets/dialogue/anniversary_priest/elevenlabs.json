@@ -1,0 +1,24 @@
+{
+  "id": "anniversary_priest",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "memorial": {
+      "hash": "13598a0df6ed653f",
+      "date": "2026-11-19",
+      "voice_id": "pB0wYnYoA5t7xU302lqw",
+      "voice_name": "JC - Deep, Thoughful and Encouraging",
+      "model": "eleven_multilingual_v2",
+      "text": "Three years ago they walked out of the night with what they could carry. We remember each of them. Stand with us a moment.",
+      "chars": 122,
+      "chars_total": 49,
+      "request_id": "3QcrzvTYHKzN3hB6YWnR",
+      "seconds": 9.43,
+      "mouth": "228986459998644645999544687756999422115888435632677677664332110010000025995334995427964236432257768532211100000001677589979885995357536676432654322110345317887754597457554589988986543222000"
+    }
+  },
+  "voice": {
+    "id": "pB0wYnYoA5t7xU302lqw",
+    "name": "JC - Deep, Thoughful and Encouraging",
+    "source": "voice library"
+  }
+}
