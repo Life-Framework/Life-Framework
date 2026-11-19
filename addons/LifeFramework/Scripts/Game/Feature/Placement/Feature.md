@@ -201,3 +201,7 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Owner and side:** server. `LF_PlacementSave` attaches `LF_PersistentStorageComponent` through `LF_PlacedStorage.Attach` (key `furniture:<placement id>`), no new save section: the contents ride the carried payload (`LF_StorageSnapshot`, slot placed). `LF_PlacementPickup` refuses a non-empty piece. `LF_FurnitureStorageManagerComponent.HandleAccessValidation` is the server check behind the placer-only Open.
 - **Data:** `storage` rows of `tools/furniture/items.json` (volume, weight, item size); strings `#LF-FurnitureStorage_Open`, `#LF-Placement_EmptyFirst`.
 - **Proof:** `housing/furniture-storage`, `housing/furniture-storage-save` (PERSISTENCE), `everon/furniture-storage-stock`. A real restart and a second player are manual.
+
+- **Client offer (#3361):** on a client the house rule reads the house managers within 30 m and their replicated
+  identifier and owner key (`LF_PlacementPolicy.GatherHouseClient`), never the server-only `Live()` table. It only
+  decides whether the prompt shows; `Confirm` re-checks on the server.

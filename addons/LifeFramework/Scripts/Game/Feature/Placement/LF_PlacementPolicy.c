@@ -311,6 +311,14 @@ class LF_PlacementPolicy
 	//------------------------------------------------------------------------------------------------
 	protected static void GatherHouse(IEntity player, notnull LF_PlacementWhoFacts facts)
 	{
+		// The live-house table is filled on the server only (LF_Houses.Register), so a remote client reads
+		// the houses around it and what each replicates (#3361).
+		if (!Replication.IsServer())
+		{
+			GatherHouseClient(player, facts);
+			return;
+		}
+
 		vector origin = player.GetOrigin();
 		LF_HouseManagerComponent nearest;
 		float nearestDistance = HOUSE_RANGE;
@@ -334,6 +342,57 @@ class LF_PlacementPolicy
 		array<string> heldKeys = {};
 		HeldKeyHouseIds(player, heldKeys);
 		FillHouse(nearest.GetHouseIdentifier(), nearest.GetOwnerKey(), LF_Houses.CharacterKeyOf(player), heldKeys, facts);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the house facts from the house managers streamed in around the player and the identifier and
+	//! owner key they replicate. Never reads the server's live table. It only decides whether the prompt shows;
+	//! the server's Confirm re-checks with the live table.
+	static void GatherHouseClient(IEntity player, notnull LF_PlacementWhoFacts facts)
+	{
+		string houseId;
+		string ownerKey;
+		if (!NearestReplicatedHouse(player.GetOrigin(), houseId, ownerKey))
+			return;
+
+		array<string> heldKeys = {};
+		HeldKeyHouseIds(player, heldKeys);
+		FillHouse(houseId, ownerKey, LF_Houses.CharacterKeyOf(player), heldKeys, facts);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The client branch for a spot, character key and held key house ids (the tests pass these without a
+	//! player). Same rule as GatherHouseClient.
+	static void GatherHouseClientFor(vector at, string characterKey, notnull array<string> heldKeyHouseIds, notnull LF_PlacementWhoFacts facts)
+	{
+		string houseId;
+		string ownerKey;
+		if (NearestReplicatedHouse(at, houseId, ownerKey))
+			FillHouse(houseId, ownerKey, characterKey, heldKeyHouseIds, facts);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest house within HOUSE_RANGE of `at`, found by a world query rather than the live table, so it
+	//! works where only replicated state exists.
+	//! \param[out] houseId The house's replicated identifier.
+	//! \param[out] ownerKey The house's replicated owner key, empty when unowned.
+	//! \return True when a house with an identifier lies within reach.
+	static bool NearestReplicatedHouse(vector at, out string houseId, out string ownerKey)
+	{
+		houseId = "";
+		ownerKey = "";
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return false;
+
+		LF_PlacementHouseQuery query = new LF_PlacementHouseQuery(at, HOUSE_RANGE);
+		world.QueryEntitiesBySphere(at, HOUSE_RANGE, query.Collect, null, EQueryEntitiesFlags.STATIC);
+		if (!query.m_Nearest)
+			return false;
+
+		houseId = query.m_Nearest.GetHouseIdentifier();
+		ownerKey = query.m_Nearest.GetOwnerKey();
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -412,5 +471,38 @@ class LF_PlacementPolicy
 			return "";
 
 		return LF_PlacementZones.Judge(zone, LF_PlacementZones.Gather(player, spot, zone, baseRadius), toastKey);
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Collects the nearest house manager with an identifier from a world query (#3361).
+class LF_PlacementHouseQuery
+{
+	vector m_vAt;
+	float m_fNearest;
+	LF_HouseManagerComponent m_Nearest;
+
+	//------------------------------------------------------------------------------------------------
+	void LF_PlacementHouseQuery(vector at, float range)
+	{
+		m_vAt = at;
+		m_fNearest = range;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool Collect(IEntity entity)
+	{
+		LF_HouseManagerComponent house = LF_Component<LF_HouseManagerComponent>.Find(entity);
+		if (!house || house.GetHouseIdentifier().IsEmpty())
+			return true;
+
+		float distance = vector.Distance(m_vAt, entity.GetOrigin());
+		if (distance <= m_fNearest)
+		{
+			m_Nearest = house;
+			m_fNearest = distance;
+		}
+
+		return true;
 	}
 }
