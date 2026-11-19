@@ -7407,6 +7407,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This tree is already down."
      Comment "Toast: felling refused, the tree is felled and has not regrown (#3259)."
     }
+    CustomStringTableItem "{C80E5A37B2F94D16}" {
+     Id "LF-Lumber_ClassHardwood"
+     Target_en_us "hardwood"
+     Comment "Wood class word in the fell prompt (#3260)."
+    }
+    CustomStringTableItem "{2D94B6F8C1A07E53}" {
+     Id "LF-Lumber_ClassSoftwood"
+     Target_en_us "softwood"
+     Comment "Wood class word in the fell prompt (#3260)."
+    }
+    CustomStringTableItem "{91B7D2E4A6F30C58}" {
+     Id "LF-Lumber_ClassTree"
+     Target_en_us "tree"
+     Comment "Wood class word in the fell prompt when the class is unknown (#3260)."
+    }
+    CustomStringTableItem "{5F2A8C41D7E36B90}" {
+     Id "LF-Lumber_Fell"
+     Target_en_us "Fell tree (%1, %2 s)"
+     Comment "Prompt of the axe hold action on a map tree (#3260). %1 = wood class, %2 = hold seconds."
+    }
+    CustomStringTableItem "{A7C3E19B50D84F26}" {
+     Id "LF-Lumber_Felled"
+     Target_en_us "Tree down. %1 log(s) on the ground."
+     Comment "Toast: a map tree was felled (#3260). %1 = logs dropped."
+    }
     CustomStringTableItem "{994FBED5D9F12308}" {
      Id "LF-Lumber_NearBuilding"
      Target_en_us "Too close to a building."

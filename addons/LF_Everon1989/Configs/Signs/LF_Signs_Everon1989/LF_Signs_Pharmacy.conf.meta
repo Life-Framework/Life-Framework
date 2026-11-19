@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F6E7ED1BBAC3A8CB}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Pharmacy.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
