@@ -42,3 +42,10 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 - **Owner and side:** the server. The engine's `PersistenceSystem` tracked every vehicle entity and restored it where it stood, with a new lock identifier and no owner, while the restart impound brought the record back too. `LF_VehicleWorldSave.Hold` calls `StopTracking(vehicle, true)` on every car `LF_VehicleOwnership` spawns (the lot purchase and `SpawnOwned`, used by collect and retrieve). The car's record and its cargo snapshot are its only save. This is the same pattern as `LF_StoreShelfSave` (#3127).
 - **Old saves:** a save written before the fix still holds the copies. The first boot on it restores them once as unowned, keyless cars, and they are not dropped later. Wipe the save, or delete those cars, when this ships.
 - **Proof:** `vehicles/restart-one-car` (PERSISTENCE): collected and retrieved cars are not tracked. Under `tools\cli wt e2e` the reload boot finds no copy and no loose apple by the impound, then exactly one truck after the collect, holding its apple.
+
+## Inspection stickers (#3433)
+
+- **Player sees:** an officer at an inspection desk picks "Inspect vehicle" and the car beside the desk gets a sticker valid for 7 game days; "Check the sticker" says valid, expired or none.
+- **Owner and side:** the server (`LF_Inspection`: expiry game day per lock identifier). The client only hides the actions from anyone who is not on-duty police; the server re-checks the officer.
+- **Data:** none saved yet. The sticker is session only; the save card (Q10) maps it onto the `m_iInspectedAt` stamp of the vehicle record.
+- **Proof:** `vehicles/inspection` (LOGIC). The desk prefab is not placed in any world; a car-side action needs a hook on the car prefabs.

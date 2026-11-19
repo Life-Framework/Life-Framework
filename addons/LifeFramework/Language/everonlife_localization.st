@@ -5958,6 +5958,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Heard he is buying today. I marked it on your map; the spot will not hold past this shift."
      Comment "Informant answer (#2921): the fee was paid and the buyer's spot is on the map; also the toast."
     }
+    CustomStringTableItem "{B1A4C6D2E8F03955}" {
+     Id "LF-Inspection_CannotInspect"
+     Target_en_us "This car cannot be inspected right now."
+     Comment "Inspection toast (#3433): the car has no id or the world has no clock."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03952}" {
+     Id "LF-Inspection_Check"
+     Target_en_us "Check the sticker"
+     Comment "Action on the inspection desk (#3433): read the sticker of the car beside the desk."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03958}" {
+     Id "LF-Inspection_Expired"
+     Target_en_us "The sticker has expired."
+     Comment "Sticker check result (#3433): inspected, expiry day passed."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03951}" {
+     Id "LF-Inspection_Inspect"
+     Target_en_us "Inspect vehicle"
+     Comment "Action on the inspection desk (#3433): stamp the car beside the desk with a sticker."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03954}" {
+     Id "LF-Inspection_NoCar"
+     Target_en_us "No car beside the desk."
+     Comment "Inspection toast (#3433): no vehicle within reach."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03959}" {
+     Id "LF-Inspection_None"
+     Target_en_us "This car has no inspection sticker."
+     Comment "Sticker check result (#3433): never inspected."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03953}" {
+     Id "LF-Inspection_OnDutyOnly"
+     Target_en_us "Only an on-duty officer can do this."
+     Comment "Inspection action refused (#3433): the user is not on-duty police."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03956}" {
+     Id "LF-Inspection_Stamped"
+     Target_en_us "Inspection passed. The sticker is valid for %1 days."
+     Comment "Inspection toast (#3433). %1 = the sticker's validity in game days."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03957}" {
+     Id "LF-Inspection_Valid"
+     Target_en_us "The sticker is valid."
+     Comment "Sticker check result (#3433): inspected and not yet expired."
+    }
     CustomStringTableItem "{00B6F39DAD843E76}" {
      Id "LF-Interact_AlreadyKnown"
      Target_en_us "They already know your name."
