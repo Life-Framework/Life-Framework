@@ -117,14 +117,14 @@ GenericEntity WheatField_Unload {
       "default"
      }
      m_eMode 0
-     m_vHalfExtents "5 3 7"
+     m_vHalfExtents 5 3 7
     }
     LF_GranaryUnloadAction "{3E9A1C0B7D5F4B05}" {
      ParentContextList {
       "default"
      }
      m_eMode 1
-     m_vHalfExtents "5 3 7"
+     m_vHalfExtents 5 3 7
     }
    }
   }

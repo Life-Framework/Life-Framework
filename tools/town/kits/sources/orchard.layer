@@ -1,0 +1,80 @@
+// Source of the `orchard` kit (tools/town/kits/orchard.json, #3388): the apple and plum orchard on the Saint-Philippe town edge, beside the farm barn
+// b100. Coordinates are in the barn's frame (origin = its footprint centre; the kit's front is "+z", so the frame is the world turned by the barn's
+// own yaw: x east, z north). Four apple trees and three plum trees (the capped gather spots, #2409; the prefabs carry LF_GatherAction) stand in two
+// columns east of the barn on the open grass inside the garden fence; the juicer stands on a plank stall that works as its lean-to against the
+// barn's back wall, the sign and a tally desk (the Workplace, kind FARMER) stand at the stall's front, and fruit crates, a hay bale and a hand cart
+// dress the path between the stall and the trees.
+Tree Orchard_Apple_1 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 8.5 0 1.5
+ angleY 10
+}
+Tree Orchard_Apple_2 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 8.5 0 -6
+ angleY 130
+}
+Tree Orchard_Apple_3 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 13.5 0 -2
+ angleY 250
+}
+Tree Orchard_Apple_4 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 13.5 0 -9.5
+ angleY 70
+}
+Tree Orchard_Plum_1 : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ coords 8.5 0 -13.5
+ angleY 190
+}
+Tree Orchard_Plum_2 : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ coords 13.5 0 -17
+ angleY 310
+}
+Tree Orchard_Plum_3 : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ coords 13.5 0 5.5
+ angleY 30
+}
+GenericEntity Orchard_Stall : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
+ coords 1 0 -7.2
+ angleY 180
+}
+GenericEntity Orchard_Juicer : "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et" {
+ coords 1 1.03 -7.2
+ angleY 180
+}
+GenericEntity Orchard_Desk : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
+ components {
+  LF_WorkplaceComponent "{BB227AA77D72A6F6}" {
+   m_sJob "FARMER"
+   m_sPlaceId "saint_philippe_orchard"
+  }
+ }
+ coords 4.4 0 -8
+ angleY 270
+}
+GenericEntity Orchard_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{4B1D7E2A9C305F61}" {
+   m_sSignId "saint_philippe_orchard"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.32 0.45 0.2
+   m_vTextColor 0.96 0.93 0.85
+  }
+ }
+ coords 5.5 0 -10.5
+ angleY 180
+}
+GenericEntity Orchard_Crate_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords -1.6 0 -10.6
+ angleY 12
+}
+GenericEntity Orchard_Crate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords -0.4 0 -10.8
+ angleY 350
+}
+GenericEntity Orchard_HayBale : "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et" {
+ coords -2.3 0 -8.4
+ angleY 80
+}
+GenericEntity Orchard_Cart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ coords 6.4 0 -4.6
+ angleY 95
+}

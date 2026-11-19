@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{BA78978A3968B257}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Orchard.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

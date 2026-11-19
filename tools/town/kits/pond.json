@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "kit": "pond",
+  "system": "fishing",
+  "source": {
+    "file": "tools/town/kits/sources/pond.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -58.56,
+        36.64
+      ],
+      "max": [
+        -46.69,
+        41.93
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "Spring Pond lies 62 m from the barn b64, which is only the anchor (the kit keeps the barn's own yaw). The fishing spot marker (table pond, radius 14 m) stands at the pond centre and a street bench on the east bank, between the water and the road, faces the water. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "spot",
+      "name": "Pond_Spot",
+      "prefab": "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingSpot.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -46.69,
+        0,
+        41.93
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_FishingSpotComponent",
+          "set": {
+            "m_sId": "\"spring-pond\"",
+            "m_sTable": "\"pond\"",
+            "m_fRadius": "14",
+            "m_iStock": "12",
+            "m_fRegrowSeconds": "90"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bench",
+      "name": "Pond_Bench",
+      "prefab": "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -58.56,
+        0,
+        36.64
+      ],
+      "yaw": 66,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
