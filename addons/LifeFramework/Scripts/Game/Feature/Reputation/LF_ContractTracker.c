@@ -278,11 +278,13 @@ class LF_ContractTracker
 			if (!payload.IsEmpty())
 				LF_Debug.Warn(FEATURE, string.Format("contract line ignored: '%1' is not a line", payload));
 
+			LF_Debug.Info(FEATURE, "contract line received: cleared");
 			ClearClient();
 			LF_ContractTrackerHud.Refresh();
 			return;
 		}
 
+		LF_Debug.Info(FEATURE, string.Format("contract line received: %1 limit=%2 left=%3", contractId, limit, secondsLeft));
 		s_sClientId = contractId;
 		s_iClientLimit = limit;
 		s_bClientCost = hasStake;
