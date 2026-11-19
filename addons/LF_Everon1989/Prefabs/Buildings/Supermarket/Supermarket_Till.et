@@ -1,15 +1,6 @@
 GenericEntity : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
  ID "BECBF3103387B2E8"
  components {
-  MeshObject "{FA4E0DFD51F51115}" {
-   Object ""
-  }
-  RigidBody "{E26B128F8F391BE7}" {
-   Enabled 0
-  }
-  SCR_DestructionMultiPhaseComponent "{21F760B4D5CD9649}" {
-   Enabled 0
-  }
   LF_ShopComponent "{B70A6E0594CFE39A}" {
    m_sShopName "#LF-Shop_Name_Supermarket"
    m_sShopDescription "#LF-Shop_Desc_Supermarket"

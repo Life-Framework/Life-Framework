@@ -8,7 +8,7 @@
   "kinds": [
     "WheatField"
   ],
-  "rows": 23,
+  "rows": 25,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
