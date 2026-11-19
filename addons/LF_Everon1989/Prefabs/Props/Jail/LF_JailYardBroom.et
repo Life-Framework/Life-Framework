@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "5B010CCEBF6C946A"
+ components {
+  MeshObject "{A747ED4F38B97589}" {
+   Object "{1012CD8635D9487A}Assets/Props/Civilian/Broom_01/Broom_01.xob"
+  }
+  RigidBody "{C5AE431D95AA2AC2}" {
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{FA4B9DEDF901955C}" {
+   ActionContexts {
+    UserActionContext "{2AAB5D12DC83450B}" {
+     ContextName "default"
+     Position PointInfo "{A48A66511D8D3ADC}" {
+      Offset 0 0.5 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_JailWorkAction "{A1A4294F11972DA7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{1347CC5C8B377F53}" {
+      Name "#LF-JailWork_Yard"
+     }
+     m_sJobId "yard_broom"
+     m_fSecondsOff 8
+     m_fCooldownSeconds 30
+     m_fWorkSeconds 8
+     m_eKind PICK
+    }
+   }
+  }
+ }
+}
