@@ -251,6 +251,9 @@
   else the suspect steps out 2.5 m beside the car and stays held on foot. The hold is server state, so
   neither action refuses from the client: the server judges and toasts the reason. Test `jail/escort-car`
   (LOGIC); proof `session.mjs police-arrest-proof --escort [--car <entity>]` on two clients reads the seat on both.
+  A suspect held for escort, cuffed or not, is refused the driver's seat like a cuffed one
+  (`LF_CuffEnforcement.HeldFromDriving`), so an uncuffed suspect cannot slide over and drive the police car
+  off; a seat retry stops once the hold has left the car. Test `police/escort-no-driving` (LOGIC).
 - ✅ **Sentences survive a restart** (2026-11-07, tests
   `restart/jail-serializer-roundtrip` and `e2e/pass2-verify-load` across a real
   restart, verified 2026-11-07): `LF_Jail.ExportAll` / `ApplyAll` are the `jail` payload of

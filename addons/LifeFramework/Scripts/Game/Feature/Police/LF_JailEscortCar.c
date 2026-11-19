@@ -97,6 +97,10 @@ class LF_JailEscortCar
 			return;
 		}
 
+		// The hold left the car meanwhile (take-out, disconnect, cell): never seat them again.
+		if (!LF_JailEscort.IsSeated(LF_Utils.GetPlayerUid(prisoner)))
+			return;
+
 		if (attempt >= SEAT_TRIES)
 		{
 			LF_Debug.Error(FEATURE, string.Format("%1 is still not in a seat after %2 checks", LF_Utils.GetPlayerUid(prisoner), attempt));
