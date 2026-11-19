@@ -43,7 +43,7 @@ The rules (#3285), the field entity (#3287), its cut replication (#3288) and the
   `LF_ImplementComponent` on the reaper (width, replicated hopper kg, a log line per machine as the vehicle moves).
 - **Data:** `Configs/Harvest/LF_Hitches.conf`: the reaper prefab and one row per towing vehicle (prefab or ancestor,
   local offset and angles). The reaper is a rigid child with no physics body; detaching deletes it.
-- **Proof:** `harvest/implement-hitch` (WORLD). The two-client and late-join session proof is a manual step (see the PR).
+- **Proof:** `harvest/implement-hitch` (WORLD); `session hitch-sync` (`up --clients 1 --profile full`, it joins client 2 late): harness verb `hitch` (`LF_ImplementHitchHarness.c`) spawns a UAZ469 on the grass south of the debug grid, hitches, pushes it 50 m east and deletes it the garage way; both clients must see the reaper behind it, then gone.
 
 ## Cut replication (#3288)
 
