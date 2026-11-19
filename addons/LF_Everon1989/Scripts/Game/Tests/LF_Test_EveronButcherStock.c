@@ -5,6 +5,8 @@
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronButcherStock : LF_Test
 {
+	protected static const ResourceName SAUCISSON = "{A2A09084A440CB11}Prefabs/Items/Food/LF_Saucisson.et";
+	protected static const ResourceName HAM = "{753BC751EC3BABC0}Prefabs/Items/Food/LF_Ham.et";
 	protected static const ResourceName DRIED_MEAT = "{486317A3719FD166}Prefabs/Items/Food/LF_DriedMeat.et";
 	protected static const ResourceName CANNED_MEAT = "{A0A5D34D6F8232B4}Prefabs/Items/Store1989/LF_CannedMeat.et";
 	protected static const ResourceName TILL = "{7CA6A8139045323E}Prefabs/Props/Commercial/LF_ButcherTill.et";
@@ -33,7 +35,7 @@ class LF_Test_EveronButcherStock : LF_Test
 		if (!stock)
 			return;
 
-		array<ResourceName> wanted = {DRIED_MEAT, CANNED_MEAT};
+		array<ResourceName> wanted = {DRIED_MEAT, CANNED_MEAT, SAUCISSON, HAM};
 		ctx.True(stock.m_aItems && stock.m_aItems.Count() == wanted.Count(), string.Format("the butcher stock lists %1 items", wanted.Count()));
 		foreach (ResourceName prefab : wanted)
 		{

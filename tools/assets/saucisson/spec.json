@@ -1,0 +1,43 @@
+{
+  "slug": "saucisson",
+  "name": "Saucisson",
+  "kind": "gadget",
+  "roadmap": "",
+  "concept": "A dry-cured saucisson in a pale dusted casing tied with butcher's twine and a hanging cord: from the Saint-Philippe boucherie-charcuterie.",
+  "prompt": "Modelled in Blender by model.py: A dry-cured saucisson in a pale dusted casing tied with butcher's twine and a hanging cord: from the Saint-Philippe boucherie-charcuterie. no text, no logos.",
+  "texture_prompt": "",
+  "size_m": {
+    "length": 0.23,
+    "height": 0.05,
+    "width": 0.05
+  },
+  "budget": {
+    "lod0_tris": 700,
+    "lod_ratios": [
+      0.6,
+      0.3
+    ],
+    "texture_px": 512,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Items/Food/Saucisson",
+  "prefab_dir": "Prefabs/Items/Food",
+  "prefab": false,
+  "addon": "LF_Everon1989",
+  "materials": {
+    "default": "scanned",
+    "regions": [],
+    "classes": {}
+  },
+  "source": {
+    "blender": "model.py"
+  }
+}

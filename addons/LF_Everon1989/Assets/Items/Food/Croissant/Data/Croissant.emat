@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{158ECC7FF7A1055E}Assets/Items/Food/Croissant/Data/Croissant_BCR.edds"
+ NMOMap "{7704C4760C785E36}Assets/Items/Food/Croissant/Data/Croissant_NMO.edds"
+}
