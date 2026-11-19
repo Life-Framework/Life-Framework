@@ -1,0 +1,31 @@
+{
+ "schema": 1,
+ "place": "saint-philippe",
+ "homes": [
+  {
+   "id": "sp:b15",
+   "resident": "cafe_owner",
+   "placeId": "saint-philippe.residents"
+  },
+  {
+   "id": "sp:b17",
+   "resident": "old_man",
+   "placeId": "saint-philippe.home.old_man"
+  },
+  {
+   "id": "sp:b117",
+   "resident": "night_shift",
+   "placeId": "saint-philippe.home.night_shift"
+  },
+  {
+   "id": "sp:b50",
+   "resident": "teller",
+   "placeId": "saint-philippe.home.teller"
+  },
+  {
+   "id": "sp:b09",
+   "resident": "store_clerk",
+   "placeId": "saint-philippe.home.store_clerk"
+  }
+ ]
+}

@@ -2444,6 +2444,46 @@ StringTable {
      Target_en_us "The village hardware store: shovels and axes, cement, bricks, planks and sandbags, flashlights and radios. Miners buy their pickaxe at the second counter."
      Comment "Sign card for the hardware store, What section."
     }
+    CustomStringTableItem "{3656B1B2C3D40008}" {
+     Id "LF-Sign_HarvestBoard_Next"
+     Target_en_us "Own a reaper? Take the field with it. Otherwise rent a tractor and reaper for a deposit."
+     Comment "Sign card for the farm contract board, Next section (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40006}" {
+     Id "LF-Sign_HarvestBoard_Title"
+     Target_en_us "Harvest contracts"
+     Comment "Poster title of the farm contract board at the wheat field gate (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40007}" {
+     Id "LF-Sign_HarvestBoard_What"
+     Target_en_us "One contract per field. Post it, take it with your own reaper or a rental kit, and bring the kit back here."
+     Comment "Sign card for the farm contract board, What section (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40005}" {
+     Id "LF-Sign_Harvest_Bonus"
+     Target_en_us "Bonus at 95 percent"
+     Comment "Chalk board row label at the wheat field (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40004}" {
+     Id "LF-Sign_Harvest_Deposit"
+     Target_en_us "Kit deposit"
+     Comment "Chalk board row label at the wheat field (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40003}" {
+     Id "LF-Sign_Harvest_Next"
+     Target_en_us "Cut 95 percent of the field for the bonus and farming experience. Bring a rental kit back to the board within half an hour to get the deposit back."
+     Comment "Sign card for the wheat field chalk board, Next section (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40001}" {
+     Id "LF-Sign_Harvest_Title"
+     Target_en_us "Harvest"
+     Comment "Title of the chalk board at the Saint-Philippe wheat field gate (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40002}" {
+     Id "LF-Sign_Harvest_What"
+     Target_en_us "Cut the wheat with a reaper hitched behind a tractor. Contracts are posted on the board by the gate. Price in dollars."
+     Comment "Sign card for the wheat field chalk board, What section (#3656)."
+    }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
      Target_en_us "Members open the gate|Inside, *Process contraband* at the machine|Keep the crew's goods in the chest: *Open hideout stash*"
@@ -2473,6 +2513,31 @@ StringTable {
      Id "LF-Sign_Hideout_What"
      Target_en_us "A walled yard owned by one organization."
      Comment "Sign card for the organization hideout yard, What section."
+    }
+    CustomStringTableItem "{4259F2E50006FDFF}" {
+     Id "LF-Sign_Home_CafeOwner_Title"
+     Target_en_us "Mme O. Marchand"
+     Comment "Brass name plate beside the door of cafe_owner's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme O. Marchand."
+    }
+    CustomStringTableItem "{B1D02944F6C717F6}" {
+     Id "LF-Sign_Home_NightShift_Title"
+     Target_en_us "M. R. Duval"
+     Comment "Brass name plate beside the door of night_shift's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. R. Duval."
+    }
+    CustomStringTableItem "{0955F0CE2E0152B0}" {
+     Id "LF-Sign_Home_OldMan_Title"
+     Target_en_us "M. G. Lenoir"
+     Comment "Brass name plate beside the door of old_man's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. G. Lenoir."
+    }
+    CustomStringTableItem "{55231116164D7341}" {
+     Id "LF-Sign_Home_StoreClerk_Title"
+     Target_en_us "M. P. Roche"
+     Comment "Brass name plate beside the door of store_clerk's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. P. Roche."
+    }
+    CustomStringTableItem "{524960714D7C41A7}" {
+     Id "LF-Sign_Home_Teller_Title"
+     Target_en_us "Mme C. Girard"
+     Comment "Brass name plate beside the door of teller's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme C. Girard."
     }
     CustomStringTableItem "{DFFD828F05D29321}" {
      Id "LF-Sign_HospitalBay_How"

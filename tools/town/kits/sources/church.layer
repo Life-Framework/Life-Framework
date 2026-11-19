@@ -1,0 +1,19 @@
+// Source of the `church` and `chapel` kits (tools/town/kits/church.json, chapel.json): the vanilla dressing props they place and the one
+// component their anchor row carries (a bare entity with LF_ResidentAnchorComponent, no mesh, no body). `town fit` reads the GUIDs from here.
+GenericEntity Source_Candle : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+ coords 0 0 0
+}
+GenericEntity Source_FlowersPink : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
+ coords 1 0 0
+}
+GenericEntity Source_FlowersRed : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
+ coords 2 0 0
+}
+GenericEntity Source_ResidentAnchor {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "bench"
+  }
+ }
+ coords 3 0 0
+}

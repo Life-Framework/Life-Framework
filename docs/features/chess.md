@@ -53,3 +53,19 @@
 ### Chess griefing fixes (#2405, life review 2026-11-17)
 - ✅ Chess asks (move, stand up) have their own rate bucket, `LF_ERequestKind.CHESS` (6 per 5 s, `LF_ChessTableComponent.AllowAsk`), so a game no longer eats the phone's COMMS bucket and a phone call no longer blocks a move. Test `chess/rate-bucket`.
 - ✅ A bystander cannot wipe a finished game. With both seats held and the game over, `LF_ChessTable.Sit` refuses a third player (they watch) until `RESULT_HOLD_MS` (60 s) after the last move; the two players keep their seats, and a free seat still starts a new game for a newcomer. A refused sit no longer re-publishes the table's RplProps. Test `chess/result-hold`.
+
+### Play for a stake — `LF_ChessStake` (#3196, chapter #1011)
+- 🧪 The pub chess table has a reason to sit down. The table offers "Play chess" (free) plus "Play for $20" and "Play for $50"
+  (`LF_ChessSitAction.m_iStake`, set on the prefab; the tiers are `LF_ChessStake.STAKE_LOW` and `STAKE_HIGH`, from config in a
+  follow-up). The first player sits at a tier; the second sits only by paying the same stake and carrying the cash. Each stake
+  leaves carried cash into server-side escrow (`LF_ChessStake`, ledger reason `chess_stake`); the client sends nothing but the
+  action it used. The winner of a mate is paid the pot (2x the stake). A player who leaves or stands up mid-game and does not
+  come back inside the grace period forfeits: the opponent wins the pot. A draw, both players away, a table deleted at world end,
+  and a stand-up before the second seat paid all refund (reason `chess_refund`). A crash with stakes in escrow refunds them into
+  the payers' bank accounts once on the next boot (save section `chess_escrow`, `LF_ChessStakeSavePayload`). A staked sit
+  counts against the chess rate limit.
+  A refund for a player with no body goes to their bank account by uid. Every ending drains the escrow, so a second ending or a
+  refund after a payout pays nothing. A seat the cash cannot cover, or whose stake differs from the other seat's, is refused and
+  nothing moves; a free sit at a staked table only watches.
+  Tested by `LF_Test_ChessStake` (rules, charge, pot, refunds, conservation of cash). Not yet: stakes from a config file, the stake
+  shown on the board sheet, the pack's own stakes.
