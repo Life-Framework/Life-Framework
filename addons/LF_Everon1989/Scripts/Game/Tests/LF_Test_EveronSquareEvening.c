@@ -1,4 +1,5 @@
 // red-proof: observed 2026-11-19 (#3181) on main, before the event existed: `tools\cli test --no-build --only LF_Test_EveronSquareEvening` failed (`the square evening event resolves through the overlay`, the module and scene confs did not load). `RedProof()` skips the overlay lookup, so the event reads as missing.
+// red-proof (#3724): `RedProof()` also makes the outfit count read as one, so "the four walkers wear at least three different civilian outfits" fails; the single-jacket conf failed it on main.
 //! #3181 under the Everon 1989 header (the pack leg of `tools\cli test`): the flagship's evening event is pack
 //! data layered over the core event list (#1952). It is in the merged table and enabled, its hour window is
 //! the evening (true at 20:00, false at 03:00 and noon), and its scene names walkers who wear a real role outfit
@@ -77,6 +78,29 @@ class LF_Test_EveronSquareEvening : LF_Test
 			ctx.EqualStr("", LF_EventScenePlanner.Validate(scene), "the planner accepts the scene");
 			ctx.True(scene.m_iNpcCount >= 3 && scene.m_iNpcCount <= 4, "three or four walkers come out");
 			ctx.True(scene.m_aWaypointIds.Count() >= 3, "the route has waypoints from a lane to the square");
+
+			// #3724: the walkers do not all wear the same jacket, and every outfit is a real prefab with an AI body.
+			// RedProof() skips the count, so the single-jacket scene fails here.
+			int distinct = 0;
+			array<string> seen = {};
+			if (scene.m_aPrefabs)
+			{
+				foreach (ResourceName walkerPrefab : scene.m_aPrefabs)
+				{
+					string walkerKey = walkerPrefab;
+					if (seen.Find(walkerKey) != -1)
+						continue;
+
+					seen.Insert(walkerKey);
+					distinct++;
+					Resource walkerResource = Resource.Load(walkerPrefab);
+					ctx.True(walkerResource && walkerResource.IsValid(), string.Format("the walker prefab %1 resolves", walkerKey));
+				}
+			}
+			if (RedProof())
+				distinct = 1;
+
+			ctx.True(distinct >= 3, "the four walkers wear at least three different civilian outfits");
 			for (int i = 0; i < scene.m_aWaypointIds.Count(); i++)
 				ctx.EqualStr(LF_Places.OrderedId(scene.m_sSceneId, i), scene.m_aWaypointIds[i], string.Format("waypoint %1 is the scene's placed marker %1, in order", i));
 
