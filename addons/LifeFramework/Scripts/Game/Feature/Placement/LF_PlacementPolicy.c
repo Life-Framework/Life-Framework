@@ -311,6 +311,13 @@ class LF_PlacementPolicy
 	//------------------------------------------------------------------------------------------------
 	protected static void GatherHouse(IEntity player, notnull LF_PlacementWhoFacts facts)
 	{
+		// A player standing in the cottage they built is at that plot (#3173); the plot facts replace the
+		// house ones, on the server from LF_Properties, on a client from the replicated mirror.
+		array<string> plotKeys = {};
+		HeldKeyHouseIds(player, plotKeys);
+		if (LF_PlacementZones.GatherPlot(player.GetOrigin(), LF_Houses.CharacterKeyOf(player), plotKeys, facts))
+			return;
+
 		// The live-house table is filled on the server only (LF_Houses.Register), so a remote client reads
 		// the houses around it and what each replicates (#3361).
 		if (!Replication.IsServer())
