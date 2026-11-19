@@ -2,6 +2,7 @@
 //
 //   mapper import <project.json> [--cell cXrY] [--span WxH] [--slug s] [--dry] [--no-verify] [--no-fetch]
 //   mapper import <project.json> --slot <Layer.layer> --at x,z [--dry] [--no-verify]      (a `town-` branch only)
+//   mapper import <project.json> --slot Place_<place>_<slot>.layer [--at x,z] [--dry] [--no-verify] [--keep]   (an island slot; a `town-draft-<place>-<slot>[-word]` branch)
 //
 // Mapper (https://github.com/benjibossk/mappingenfusiontest, MIT) sketches site layouts in a browser and sends a
 // "mapgen.json" project to Workbench. This reads the placed-prefab part of that project (`entities`: prefab, x, z,
@@ -12,22 +13,25 @@
 //   3. cell mode claims the cell with `grid place` (yard fence and sign, the world-zone claim), then `place ground`
 //      stands each prop on the probed ground with the offline checks (overlap, carriageway, door swing, scale), one
 //      `place settle` rests them, and `audit placement --grid --strict` judges the whole layer;
-//   4. slot mode is for the playtest town only and needs a `ws/town-*` branch, because a town layer is written only by
-//      a town-placement pass (docs/architecture/world-zones.md "The guard").
+//   4. slot mode needs a `ws/town-*` branch, because a town layer is written only by a town-placement pass
+//      (docs/architecture/world-zones.md "The guard"). A playtest-town layer goes through `place`; an island slot
+//      (`Place_<place>_<slot>.layer`, branch town-draft-<place>-<slot>[-word]) through tools/mapper/island.mjs.
+// All props of one import go through ONE `place ground-many` run (one probe boot), not one boot per prop (#3851).
 // Vectors are written by the same `appendEntity` as every placement, bare, never quoted. Shapes, terrain, masks and
 // roads in the project are not imported (a generator is Workbench's to run). Nothing of Mapper's code is used.
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { centreOf, entityName, fit, parseProject, translate } from "../mapper/convert.mjs";
 import { SLUG_RX, claimRect, entityPrefix, isPackPrefab, layerOfSlug, readCells } from "../lib/world-zones.mjs";
 import { islandLayersDir } from "../lib/worlds.mjs";
+import { intoIslandSlot } from "../mapper/island.mjs";
 
-export const help = "mapper import <project.json> [--cell cXrY] [--span WxH] [--slug s] [--dry] | --slot <Layer.layer> --at x,z   a Reforger Mapper layout into a debug-grid cell (or a playtest-town layer on a town- branch), through the placement checks";
+export const help = "mapper import <project.json> [--cell cXrY] [--span WxH] [--slug s] [--dry] | --slot <Layer.layer> --at x,z | --slot Place_<place>_<slot>.layer [--at x,z]   a Reforger Mapper layout into a debug-grid cell, a playtest-town layer (town- branch) or an island slot (town-draft- branch), through the placement checks";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
-const VALUE_FLAGS = new Set(["cell", "span", "slug", "slot", "at"]);
+const VALUE_FLAGS = new Set(["cell", "span", "slug", "slot", "at"]); // --keep, --dry, --no-verify, --no-fetch are switches
 const r2 = (n) => Math.round(n * 100) / 100;
 
 function parseArgs(argv) {
@@ -119,18 +123,36 @@ async function importProject(root, args, flags, ctx) {
   return flags.slot ? intoSlot(root, P, kept, dropped, flags, ctx) : intoCell(root, P, path, kept, dropped, f, flags, ctx);
 }
 
-// Runs the placement tool for each prop of a plan; returns the names placed and the refusals.
-async function placeAll(P, plan, layer, prefix, extra, ctx) {
+// Runs the placement tool for a plan: ONE `place ground-many` (one probe boot, one offline review, one write) for every prop.
+// The batch is all or nothing; when it refuses, nothing is written, so the props go one at a time (`place ground`) to find
+// and name the refused one and keep the others. Returns the names placed and the refusals.
+async function placeAll(root, P, plan, layer, prefix, extra, ctx) {
+  const run = ctx.placeMain ?? P.main;
+  const names = plan.map((_, i) => entityName(prefix, i + 1));
+  const rows = plan.map((e, i) => ({ at: [r2(e.x), r2(e.z)], prefab: e.ref, yaw: e.yaw, name: names[i] }));
+  const dir = join(root, "tmp");
+  mkdirSync(dir, { recursive: true });
+  const file = join(dir, `mapper-plan-${process.pid}.json`);
+  writeFileSync(file, `${JSON.stringify(rows, null, 1)}
+`);
+  let code;
+  try {
+    const argv = ["ground-many", file, "--layer", layer, "--no-verify", ...extra];
+    console.log(`  tools\\cli place ${argv.join(" ")}   (${plan.length} prop(s), one probe boot)`);
+    code = await run(argv);
+  } finally {
+    rmSync(file, { force: true });
+  }
+  if (code === 0) return { placed: names, refused: [] };
+  console.log("mapper: the batch was refused (nothing written); placing the props one at a time to name the refused ones");
   const placed = [];
   const refused = [];
   for (let i = 0; i < plan.length; i++) {
     const e = plan[i];
-    const name = entityName(prefix, i + 1);
-    const argv = ["ground", `${r2(e.x)},${r2(e.z)}`, e.ref, "--layer", layer, "--yaw", String(e.yaw), "--name", name, "--no-verify", ...extra];
+    const argv = ["ground", `${r2(e.x)},${r2(e.z)}`, e.ref, "--layer", layer, "--yaw", String(e.yaw), "--name", names[i], "--no-verify", ...extra];
     console.log(`  tools\\cli place ${argv.join(" ")}   (${e.id})`);
-    const code = await (ctx.placeMain ?? P.main)(argv);
-    if (code === 0) placed.push(name);
-    else refused.push({ e, name });
+    if ((await run(argv)) === 0) placed.push(names[i]);
+    else refused.push({ e, name: names[i] });
   }
   return { placed, refused };
 }
@@ -183,7 +205,7 @@ async function intoCell(root, P, path, kept, dropped, f, flags, ctx) {
   }
   const plan = translate(kept, centreOf(rect));
   console.log(`mapper: ${slug} -> cell ${rect.id}${rect.w * rect.h > 1 ? `+${rect.w}x${rect.h}` : ""}; centre ${centreOf(rect).map(r2).join(",")}`);
-  const { placed, refused } = await placeAll(P, plan, layer, prefix, ["--y-hint", "0"], ctx);
+  const { placed, refused } = await placeAll(root, P, plan, layer, prefix, ["--y-hint", "0"], ctx);
   if (!placed.length) {
     console.log(`mapper: nothing was placed, so the claim ${slug} is freed again`);
     await G(["free", slug], { root });
@@ -219,6 +241,14 @@ async function intoSlot(root, P, kept, dropped, flags, ctx) {
     console.log(`mapper: --slot writes a town layer, which only a town-placement pass may do (worktree slug town-<chapter>, branch ws/town-<chapter>; this branch is ${branch || "unknown"}). Import into a grid cell instead, or ask the lead for a town- worktree (docs/architecture/world-zones.md "The guard")`);
     return 1;
   }
+  const known = (ctx.layerExists ?? ((name) => existsSync(P.layerPath(root, name))))(layer);
+  if (!known) {
+    // An island slot (MainWorld_Layers/Place_<place>_<slot>.layer) is written by its own writer: terrain-seated, inside the
+    // slot's claim, audited on the island (tools/mapper/island.mjs). `--at` is optional there (the slot's ground centre).
+    if ((ctx.islandLayerExists ?? ((name) => existsSync(join(islandLayersDir(root), name))))(layer)) return intoIslandSlot({ root, P, layer, kept, flags, ctx, branch, translate });
+    console.log(`mapper: no layer ${layer} in the playtest town (DebugWorld_Layers or Everon1989Town_Layers) or among the island slots (MainWorld_Layers)`);
+    return 1;
+  }
   if (flags.at == null) {
     console.log("mapper: --slot needs --at x,z, the point the layout's centre goes to (the tool never invents a town coordinate)");
     return 1;
@@ -228,12 +258,6 @@ async function intoSlot(root, P, kept, dropped, flags, ctx) {
     at = pair(flags.at, "--at");
   } catch (e) {
     console.log(`mapper: ${e.message}`);
-    return 1;
-  }
-  const known = (ctx.layerExists ?? ((name) => existsSync(P.layerPath(root, name))))(layer);
-  if (!known) {
-    const island = existsSync(join(islandLayersDir(root), layer));
-    console.log(island ? `mapper: ${layer} is an island slot layer (MainWorld_Layers); tools\\cli place only reaches the playtest town's layers, so island slots are not supported yet (docs/architecture/reforger-mapper-import.md "Not done")` : `mapper: no layer ${layer} in the playtest town (DebugWorld_Layers or Everon1989Town_Layers)`);
     return 1;
   }
   const plan = translate(kept, at);
@@ -248,7 +272,7 @@ async function intoSlot(root, P, kept, dropped, flags, ctx) {
     console.log("mapper: REFUSE: this is the main checkout. Create a worktree first: tools\\cli wt new town-<chapter>");
     return 1;
   }
-  const { placed, refused } = await placeAll(P, plan, layer, prefix, [], ctx);
+  const { placed, refused } = await placeAll(root, P, plan, layer, prefix, [], ctx);
   let code = refused.length ? 1 : 0;
   if (placed.length && !flags["no-verify"]) {
     const v = await (ctx.placeMain ?? P.main)(["verify", ...placed]);
@@ -259,7 +283,7 @@ async function intoSlot(root, P, kept, dropped, flags, ctx) {
 }
 
 function usage() {
-  console.log("usage: tools\\cli mapper import <project.json> [--cell cXrY] [--span WxH] [--slug s] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli mapper import <project.json> --slot <Layer.layer> --at x,z [--dry] [--no-verify]   (a ws/town-* branch)\n(docs/architecture/reforger-mapper-import.md)");
+  console.log("usage: tools\\cli mapper import <project.json> [--cell cXrY] [--span WxH] [--slug s] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli mapper import <project.json> --slot <Layer.layer> --at x,z [--dry] [--no-verify]   (a ws/town-* branch)\n       tools\\cli mapper import <project.json> --slot Place_<place>_<slot>.layer [--at x,z] [--dry] [--no-verify] [--keep]   (an island slot; a ws/town-draft-<place>-<slot>[-word] branch)\n(docs/architecture/reforger-mapper-import.md)");
   return 1;
 }
 
