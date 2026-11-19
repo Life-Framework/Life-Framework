@@ -19,6 +19,9 @@ class LF_CrewRobConfig
 	[Attribute("90", UIWidgets.Auto, "Seconds from the alarm until the police response window closes", params: "1 3600")]
 	float m_fResponseWindowSeconds;
 
+	[Attribute("120", UIWidgets.Auto, "Seconds the take may stay the same (holder off the spot, not holding, or at the cap) before the job ends unpaid and the till is free; 0 turns the time-out off", params: "0 3600")]
+	float m_fIdleTimeoutSeconds;
+
 	protected static ref LF_CrewRobConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
