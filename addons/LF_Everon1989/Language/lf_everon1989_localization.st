@@ -469,6 +469,11 @@ StringTable {
      Target_en_us "Open it, count what is in there and come back. If it is only fish, no harm done."
      Comment "Harbour master sends the player to the crate (#3440)."
     }
+    CustomStringTableItem "{3768F00000000001}" {
+     Id "LF-Dialogue_ShipmentHarbourMaster_SayAskCrate"
+     Target_en_us "Anything odd on the quay today?"
+     Comment "Reply: ask the harbour master about the red crate (#3768)."
+    }
     CustomStringTableItem "{3440F00000000112}" {
      Id "LF-Dialogue_ShipmentHarbourMaster_SayCount"
      Target_en_us "I will count the crate for you."

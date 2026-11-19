@@ -33,7 +33,7 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "An open farm yard: the barn is the host (its front at +z), three cabbage beds in a row 9 m in front of it, the seed crate and the farm_plots chalkboard at the west end. Rows are rigid: shift, never stretch."
+    "adapt": "An open farm yard: the barn is the host (its front at +z), three cabbage beds in a row 9 m in front of it, the seed crate and the farm_plots chalkboard at the west end, the honey kitchen bench and three beehives at the east end. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -145,6 +145,97 @@
           "component": "LF_SignComponent",
           "set": {
             "m_sSignId": "\"farm_plots\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-honey-kitchen",
+      "name": "SPFarm_HoneyKitchen",
+      "prefab": "{699A4C9829E46B12}Prefabs/Props/Farming/LF_HoneyKitchen.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        7.5,
+        0,
+        9
+      ],
+      "yaw": 270,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-hive-1",
+      "name": "SPFarm_Hive_1",
+      "prefab": "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10.5,
+        0,
+        8.5
+      ],
+      "yaw": 255,
+      "config": [
+        {
+          "component": "LF_HiveComponent",
+          "set": {
+            "m_sHiveKey": "\"sp_farm_hive_1\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-hive-2",
+      "name": "SPFarm_Hive_2",
+      "prefab": "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        11.5,
+        0,
+        11
+      ],
+      "yaw": 270,
+      "config": [
+        {
+          "component": "LF_HiveComponent",
+          "set": {
+            "m_sHiveKey": "\"sp_farm_hive_2\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-hive-3",
+      "name": "SPFarm_Hive_3",
+      "prefab": "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10.5,
+        0,
+        13.5
+      ],
+      "yaw": 285,
+      "config": [
+        {
+          "component": "LF_HiveComponent",
+          "set": {
+            "m_sHiveKey": "\"sp_farm_hive_3\""
           },
           "blocks": []
         }
