@@ -15,6 +15,13 @@ Every entry in a list has a stable id. A layer names entries by id and gives eac
 The merge is `LF_ConfigOverlay.Apply` (`Core/Config/LF_ConfigOverlay.c`). A section describes its
 list once (`LF_ConfigList`: how to find, make, patch and check a record) and has no merge code of its own.
 
+**A folder of overlays beside a listed one (#3555).** A listed overlay `Configs/Signs/LF_Signs_X.conf` also loads
+every `.conf` under `Configs/Signs/LF_Signs_X/` (the file name without `.conf`, as a folder), each right after its
+parent in path order and only if its root class matches the parent's section. A feature's PR adds its own file there
+(with its `.meta`) instead of appending to the shared overlay or to the header's list, so parallel PRs merge with no
+hand work. It works for every section that reads `LF_ConfigOverlay.LoadPackOverlays` (signs, shop stock, prices,
+catalogue); `pack check` and `pack explain` read the folder the same way (`tools/pack/layers.mjs`).
+
 ## Verbs
 
 | Verb | What it does | Id the list lacks | Id the list has |
