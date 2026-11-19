@@ -34,6 +34,14 @@ Vehicle : "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et" {
       Name "#LF-Search_Vehicle_Action"
      }
     }
+    LF_VehicleSearchFullAction "{5EA2C509000000D7}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C50A000000D7}" {
+      Name "#LF-Search_Full_Action"
+     }
+    }
    }
   }
  }

@@ -10673,6 +10673,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Property"
      Comment "Toast title for a plot purchase answer (#2649)."
     }
+    CustomStringTableItem "{3427A1D0C9E84B17}" {
+     Id "LF-Qual_DetectiveWork"
+     Target_en_us "That's detective work. The training desk runs the course."
+     Comment "Toast to an officer without the detective qualification who tried the full vehicle search or to open a case on the case board (#3427)."
+    }
     CustomStringTableItem "{2E48875B943A483E}" {
      Id "LF-Qual_Held"
      Target_en_us "You already hold this qualification."
@@ -11800,6 +11805,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Search_Found"
      Target_en_us "Contraband found and seized"
      Comment "Officer search found chain goods (#419)."
+    }
+    CustomStringTableItem "{3427B2E1D0F95C28}" {
+     Id "LF-Search_Full_Action"
+     Target_en_us "Full search"
+     Comment "Vehicle action: the detective's full search, hidden compartment included (#3427)."
     }
     CustomStringTableItem "{2154A1C0B7D34E01}" {
      Id "LF-Search_SeizedCount"
