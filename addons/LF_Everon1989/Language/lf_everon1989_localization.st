@@ -1404,6 +1404,16 @@ StringTable {
      Target_en_us "Helene Roux"
      Comment "Saint-Philippe resident teller: display name (#2906)."
     }
+    CustomStringTableItem "{08F8B49C5124F438}" {
+     Id "LF-Shop_Desc_Bakery"
+     Target_en_us "Bread and something sweet, still warm"
+     Comment "Shop description of the Saint-Philippe bakery till (#3227)."
+    }
+    CustomStringTableItem "{CE6BABB3EA7EE854}" {
+     Id "LF-Shop_Desc_Butcher"
+     Target_en_us "Cured meat, tins and the day's cuts"
+     Comment "Shop description of the Saint-Philippe butcher till (#3228)."
+    }
     CustomStringTableItem "{D48C1FE2090106F1}" {
      Id "LF-Shop_Desc_Cafe"
      Target_en_us "A drink, a snack, a word with the owner"
@@ -1468,6 +1478,16 @@ StringTable {
      Id "LF-Shop_Desc_Workwear"
      Target_en_us "Hard hats, work boots, gloves and a flashlight."
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
+    }
+    CustomStringTableItem "{DBCD0C2289FBA157}" {
+     Id "LF-Shop_Name_Bakery"
+     Target_en_us "Boulangerie"
+     Comment "Shop name of the Saint-Philippe bakery till (#3227): town house b06 on the square, stock bakery."
+    }
+    CustomStringTableItem "{086D9D3FDC39EA2C}" {
+     Id "LF-Shop_Name_Butcher"
+     Target_en_us "Boucherie-charcuterie"
+     Comment "Shop name of the Saint-Philippe butcher till (#3228): town house b20 by the clothes shop, stock butcher."
     }
     CustomStringTableItem "{0B134C85762A065A}" {
      Id "LF-Shop_Name_Cafe"
@@ -1543,6 +1563,16 @@ StringTable {
      Id "LF-Shop_OpenDesc_SeedFeed"
      Target_en_us "Buy seeds, bait or a fishing rod"
      Comment "Action description on the seed and feed store till (#3223)."
+    }
+    CustomStringTableItem "{633EF19AA18FF9B0}" {
+     Id "LF-Shop_Open_Bakery"
+     Target_en_us "Buy bread and pastries"
+     Comment "Interaction name at the bakery till (#3227): opens the bakery price list."
+    }
+    CustomStringTableItem "{5E3D7D45BF074AD0}" {
+     Id "LF-Shop_Open_Butcher"
+     Target_en_us "Buy meat and charcuterie"
+     Comment "Interaction name at the butcher till (#3228): opens the butcher price list."
     }
     CustomStringTableItem "{0EC694A26B780C12}" {
      Id "LF-Shop_Open_Cafe"
@@ -1639,6 +1669,21 @@ StringTable {
      Target_en_us "Your bank account. Jobs and sales pay cash; this is where cash goes in and out."
      Comment "Sign card for the ATM on the bank's front, What section."
     }
+    CustomStringTableItem "{C39E7024FB5D6183}" {
+     Id "LF-Sign_Bakery_How"
+     Target_en_us "Go to the counter, choose what you want and pay. Bread fills you up for a few dollars. The family live upstairs."
+     Comment "How line of the bakery sign (#3227): the upper floors are the baker's flat."
+    }
+    CustomStringTableItem "{A17C5E02D93B4F61}" {
+     Id "LF-Sign_Bakery_Title"
+     Target_en_us "Boulangerie"
+     Comment "Title painted on the bakery's fascia (#3227) and shown in the prompt as Read: Boulangerie."
+    }
+    CustomStringTableItem "{B28D6F13EA4C5072}" {
+     Id "LF-Sign_Bakery_What"
+     Target_en_us "The village bakery: fresh bread, biscuits and chocolate."
+     Comment "What line of the bakery sign (#3227)."
+    }
     CustomStringTableItem "{DAF800340D8F2049}" {
      Id "LF-Sign_Bank_How"
      Target_en_us "*Breach* the vault|Carry off the bag that comes out"
@@ -1669,6 +1714,16 @@ StringTable {
      Target_en_us "The vault door on the bank's east wall. Behind it, a bag of cash."
      Comment "Sign card for the bank vault door (a robbery site), What section."
     }
+    CustomStringTableItem "{A5CB85E823411AF3}" {
+     Id "LF-Sign_Barber_Title"
+     Target_en_us "Coiffeur"
+     Comment "Fascia of the Saint-Philippe barber shop (#3236): the board over the door and the prompt Read: Coiffeur."
+    }
+    CustomStringTableItem "{E17DC6149D683CEE}" {
+     Id "LF-Sign_Barber_What"
+     Target_en_us "The village coiffeur: sit in a chair and pick a new cut, colour or beard|Prices are 1989 prices, cash only"
+     Comment "Sign card for the Saint-Philippe barber shop, What section (#3236)."
+    }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
      Target_en_us "Stand at the stall and knock (F). The price list opens: pick the handgun and pay."
@@ -1698,6 +1753,21 @@ StringTable {
      Id "LF-Sign_BlackMarket_What"
      Target_en_us "Equipment the general store does not sell."
      Comment "Sign card for the back room shop in the alley (no printed title), What section."
+    }
+    CustomStringTableItem "{B098F47FDF83358E}" {
+     Id "LF-Sign_Butcher_How"
+     Target_en_us "Go to the counter, choose what you want and pay. Dried meat keeps you going for hours. The shed behind is our store and stays locked."
+     Comment "How line of the butcher sign (#3228): the shed b19 behind the shop is the store room."
+    }
+    CustomStringTableItem "{37BDDA2AE961D87D}" {
+     Id "LF-Sign_Butcher_Title"
+     Target_en_us "Boucherie-charcuterie"
+     Comment "Title painted on the butcher's fascia (#3228) and shown in the prompt as Read: Boucherie-charcuterie."
+    }
+    CustomStringTableItem "{F3F99ACA2323BCB4}" {
+     Id "LF-Sign_Butcher_What"
+     Target_en_us "The village butcher: dried meat, tinned meat and cured cuts."
+     Comment "What line of the butcher sign (#3228)."
     }
     CustomStringTableItem "{155AD337C15BEB65}" {
      Id "LF-Sign_ConvoyDrop_How"
@@ -2064,6 +2134,21 @@ StringTable {
      Target_en_us "Sell what you gather at the market stalls next door, to the east|Cars are sold at the vehicle lot across the street"
      Comment "Sign card for the general store, Next section: where the player goes after this place."
     }
+    CustomStringTableItem "{98AD9902C05C38A0}" {
+     Id "LF-Sign_GeneralStore_Special1"
+     Target_en_us "Bread"
+     Comment "Store A-frame special 1: a chalk row on the general store pavement board (#3305). Price 3 matches LF_ShopStock_Everon1989."
+    }
+    CustomStringTableItem "{0AA236A7C73670FE}" {
+     Id "LF-Sign_GeneralStore_Special2"
+     Target_en_us "Fresh milk"
+     Comment "Store A-frame special 2 (#3305). Price 4 matches LF_ShopStock_Everon1989."
+    }
+    CustomStringTableItem "{48226C495DB4B471}" {
+     Id "LF-Sign_GeneralStore_Special3"
+     Target_en_us "Tinned fish"
+     Comment "Store A-frame special 3 (#3305). Price 6 matches LF_ShopStock_Everon1989."
+    }
     CustomStringTableItem "{10B8F417BFC331B0}" {
      Id "LF-Sign_GeneralStore_Title"
      Target_en_us "General store"
@@ -2378,6 +2463,31 @@ StringTable {
      Id "LF-Sign_OrgRegistry_What"
      Target_en_us "Register a crew, keep a shared fund, buy upgrades."
      Comment "Sign card for the organization registry desk, What section."
+    }
+    CustomStringTableItem "{1B1ADEBF61205537}" {
+     Id "LF-Sign_Pharmacy_How"
+     Target_en_us "*Ask the pharmacist* at the counter, one price per item"
+     Comment "Sign card for the pharmacy, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{019FD733B2103174}" {
+     Id "LF-Sign_Pharmacy_Needs"
+     Target_en_us "Money for the counter."
+     Comment "Sign card for the pharmacy, You need section."
+    }
+    CustomStringTableItem "{13F12E4679EB7B56}" {
+     Id "LF-Sign_Pharmacy_Next"
+     Target_en_us "The medicines are kept behind the counter: ask the pharmacist."
+     Comment "Sign card for the pharmacy, Next section."
+    }
+    CustomStringTableItem "{B9B325005BD70EE6}" {
+     Id "LF-Sign_Pharmacy_Title"
+     Target_en_us "Pharmacie"
+     Comment "Title of the fascia sign over the pharmacy door on Saint-Philippe (Everon 1989 pack, #3526). Printed on the sign and shown in the prompt as Read: Pharmacie."
+    }
+    CustomStringTableItem "{00C0910067CFAAD8}" {
+     Id "LF-Sign_Pharmacy_What"
+     Target_en_us "The village pharmacy: the medicines sold over the pharmacist's counter."
+     Comment "Sign card for the pharmacy, What section."
     }
     CustomStringTableItem "{F33E84A46C3A3659}" {
      Id "LF-Sign_PoliceCases_How"
@@ -2749,6 +2859,21 @@ StringTable {
      Target_en_us "Paid in cash, a fixed price per item."
      Comment "Sign card for the market stalls that buy produce, Rules section."
     }
+    CustomStringTableItem "{FD941F33CF6FF710}" {
+     Id "LF-Sign_Traders_Special1"
+     Target_en_us "Apples"
+     Comment "Market A-frame line 1: what the traders buy, a chalk row (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{EAC2FC02DE625E9C}" {
+     Id "LF-Sign_Traders_Special2"
+     Target_en_us "Plums"
+     Comment "Market A-frame line 2 (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{A85914EECAC56866}" {
+     Id "LF-Sign_Traders_Special3"
+     Target_en_us "Cabbages"
+     Comment "Market A-frame line 3 (#3305). Value is the base price in LF_Market_Everon1989."
+    }
     CustomStringTableItem "{83FF557EE9B09C57}" {
      Id "LF-Sign_Traders_Title"
      Target_en_us "Market"
@@ -2793,6 +2918,21 @@ StringTable {
      Id "LF-SiteFlag_Unclaimed"
      Target_en_us "No holder on record"
      Comment "Pack wording (#2687): painted board on a contested site's flag pole when no organisation holds the site."
+    }
+    CustomStringTableItem "{179A8ED2FA171BFA}" {
+     Id "LF-SiteName_farm_compound"
+     Target_en_us "Farm Compound"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is farm_compound."
+    }
+    CustomStringTableItem "{63EEEDDB7220E37C}" {
+     Id "LF-SiteName_hilltop_mast"
+     Target_en_us "Hilltop Mast"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is hilltop_mast."
+    }
+    CustomStringTableItem "{8391E4196D2A45D3}" {
+     Id "LF-SiteName_quarry_hideout"
+     Target_en_us "Quarry Hideout"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is quarry_hideout."
     }
     CustomStringTableItem "{08E024031EF25E98}" {
      Id "LF-TownBoard_Title"

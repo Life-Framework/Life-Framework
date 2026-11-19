@@ -12,6 +12,8 @@ GenericEntity : "{4A5F4809440FAEE5}Prefabs/Props/Commercial/Posters/Notice_A4_Ho
    }
   }
   LF_SignComponent "{18C0F82DD8448393}" {
+   m_sStyle "poster"
+   m_sSize "a4"
    m_bFaceOnOwner 1
   }
   ActionsManagerComponent "{6D6B77A2F10EB212}" {

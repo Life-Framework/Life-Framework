@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{C48202E5BB6761C0}Prefabs/Systems/Vehicles/LF_ParkedCarMarker.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

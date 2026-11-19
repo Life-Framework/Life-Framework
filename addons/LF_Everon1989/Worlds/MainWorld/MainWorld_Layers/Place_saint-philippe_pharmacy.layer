@@ -9,6 +9,18 @@ GenericEntity Fit_saint_philippe_pharmacy_Place {
  }
  coords 4431.4 9.2 10841.5
 }
+GenericEntity Fit_saint_philippe_pharmacy_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "pharmacy"
+   m_vRimColor 0.86 0.9 0.86
+   m_vPaintColor 0.1 0.4 0.3
+   m_vTextColor 0.96 0.95 0.9
+  }
+ }
+ coords 4437.821 12.3 10847.018
+ angleY 76
+}
 GenericEntity Fit_saint_philippe_pharmacy_shop_house_e_2_i01t_furniture_drugstore_lf_01 : "{1D49EA09388829EB}Prefabs/Buildings/Drugstore/Furniture/ShopHouse_E_2I01t_furniture_drugstore_lf_01.et" {
  coords 4431.4 9 10841.5
  angleY 76
@@ -22,14 +34,6 @@ GenericEntity Fit_saint_philippe_pharmacy_electricity_box_small_01 : "{CDE4035B6
  }
  coords 4439.901 11.6 10838.569
  angleY 76
-}
-GenericEntity Fit_saint_philippe_pharmacy_counter_shop_01 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4431.466 9.199 10839.898
- angleY 76
-}
-GenericEntity Fit_saint_philippe_pharmacy_cashier_shop_01 : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
- coords 4431.365 10.238 10840.296
- angleY -104
 }
 GenericEntity Fit_saint_philippe_pharmacy_lf_pharmacy_counter : "{E66CFB8EA2048E05}Prefabs/Props/Commercial/LF_PharmacyCounter.et" {
  components {

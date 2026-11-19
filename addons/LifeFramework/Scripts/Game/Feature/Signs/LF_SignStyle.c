@@ -18,6 +18,12 @@ class LF_SignStyleDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.ResourceNamePicker, "Row layout: Label, Leader and Value text widgets, made once per price row", "layout")]
 	ResourceName m_sRowLayout;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Optional finish: an imageset drawn over the ground and under nothing else, the layout's Finish image widget sized to the shown area (worn edges, tape, chips). Empty draws none", "imageset")]
+	ResourceName m_sFinishImage;
+
+	[Attribute("full", UIWidgets.EditBox, "Image name inside the finish imageset")]
+	string m_sFinishName;
+
 	[Attribute("0.11 0.13 0.12", UIWidgets.ColorPicker, "Ground colour (RGB 0..1)")]
 	vector m_vGround;
 
@@ -221,6 +227,10 @@ class LF_SignStyleList : LF_ConfigList
 		if (container.IsVariableSetDirectly("m_sLayout") && container.Get("m_sLayout", style.m_sLayout))
 			changed++;
 		if (container.IsVariableSetDirectly("m_sRowLayout") && container.Get("m_sRowLayout", style.m_sRowLayout))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sFinishImage") && container.Get("m_sFinishImage", style.m_sFinishImage))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sFinishName") && container.Get("m_sFinishName", style.m_sFinishName))
 			changed++;
 		if (container.IsVariableSetDirectly("m_vGround") && container.Get("m_vGround", style.m_vGround))
 			changed++;
