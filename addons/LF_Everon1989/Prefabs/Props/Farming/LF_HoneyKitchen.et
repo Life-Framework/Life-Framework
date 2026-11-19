@@ -1,0 +1,31 @@
+GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
+ ID "7C3522DC1BD9273C"
+ components {
+  MeshObject "{598F21A867C4015C}" {
+   Object "{2BEC4216AC68FA6B}Assets/Props/Furniture/Kitchen_02/Kitchen_02.xob"
+  }
+  ActionsManagerComponent "{598F21A8710B89C1}" {
+   ActionContexts {
+    UserActionContext "{598F21A871DA7304}" {
+     ContextName "default"
+     Position PointInfo "{598F21A875320722}" {
+      Offset -1.109 1.088 0.372
+     }
+     Radius 2.071
+    }
+   }
+   additionalActions {
+    LF_ProcessAction "{598F21A877BE6DEE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9EC2EFFC4EE1F167}" {
+      Name "Jar honey from 2 honeycombs"
+     }
+     m_sMachineId "kitchen-honey"
+     Duration 4
+    }
+   }
+  }
+ }
+}

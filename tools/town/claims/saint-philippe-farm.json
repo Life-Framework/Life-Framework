@@ -9,7 +9,7 @@
     "FarmPlot",
     "SeedCrate"
   ],
-  "rows": 5,
+  "rows": 9,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

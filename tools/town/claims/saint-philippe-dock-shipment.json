@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "place": "saint-philippe-dock",
+  "slot": "shipment",
+  "building": "b06",
+  "shared": true,
+  "kit": "shipment",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe-dock_shipment.layer",
+  "kinds": [],
+  "rows": 8,
+  "date": "2026-11-19"
+}
