@@ -23,6 +23,7 @@
 // red-proof: with the source-name preference removed from sourceComponent() the prefab-less taxi pad took the drop pad's guid and this printed "FAIL a prefab-less row took the wrong source entity" (2026-11-18, #2318).
 // red-proof: before the sameAsMain filter, `town fit saint-philippe supermarket --refit` printed "town-fit fail ... 16 problem(s)" (REFUSE ... already claimed on worktree ...), one per sibling worktree holding main's own claim file (2026-11-19, #3516, observed on the real repo).
 // red-proof: with the kit rows' yaw ignored (anchor yaw 0) this printed "FAIL shop row fit-display is not where kit apply puts it" (2026-11-16).
+// red-proof: 2026-11-19 (#3666) with the hostless branch of planFit()/planFitSeated() and the map check left out this printed 7 FAILs: "a hostless plot slot did not plan: mapping: slot shop: a plot needs a prefab to place on it", "the hostless claim is undefined", "a hostless plot on a lake was not refused", "a hostless terrain row did not take the probed height".
 
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -309,6 +310,33 @@ try {
   const blobs = fitMod.mainClaimBlobs(fakeExec, "tools/town/claims/x.json");
   check(blobs.has("blobOld") && blobs.has("blobNew") && !blobs.has("blobEdited"), "main's claim-file history was not read as a set of blobs");
   check(fitMod.mainClaimBlobs(() => ({ status: 1, stdout: "" }), "x").size === 0, "a failed git log did not give an empty set");
+}
+
+// ---- a hostless plot (#3666): a lake, a pond or a field has no building; the kit stands on a dossier plot's open ground
+{
+  const p1 = dossier.freePlots.plots.find((p) => p.id === "p1");
+  const hostless = { ...mapping, slots: { ...mapping.slots, shop: { plot: "p1", hostless: true, why: ["fixture"] } } };
+  const hp = fitMod.planFit({ ...base, mapping: hostless }, ctx());
+  check(hp.ok, `a hostless plot slot did not plan: ${(hp.errors || []).join("; ")}`);
+  check(hp.claim?.plot === "p1" && hp.claim.hostless === true && !hp.claim.building && hp.claim.destruction?.mode === "none", `the hostless claim is ${JSON.stringify(hp.claim)}`);
+  check(!/LF_FittedBuildingComponent|SCR_DestructionMultiPhaseComponent/.test(hp.layerText || ""), "a hostless slot wrote a building hook or a building");
+  check(hp.anchor?.x === p1.x && hp.anchor?.z === p1.z && hp.anchor?.yaw === 0, `the hostless anchor is ${JSON.stringify(hp.anchor)}: it must be the plot's own centre, unturned`);
+  check(/m_sKind "StoreCounter"/.test(hp.layerText || ""), "a hostless slot lost its place marker");
+  // On a lake: refused. Off it: planned.
+  const wetDossier = { ...dossier, water: { bodies: [{ id: "w1", name: "Lake_Fixture", outline: [[p1.x - 10, p1.z - 10], [p1.x + 10, p1.z - 10], [p1.x + 10, p1.z + 10], [p1.x - 10, p1.z + 10]] }] } };
+  const wet = fitMod.planFit({ ...base, dossier: wetDossier, mapping: hostless }, ctx());
+  check(!wet.ok && /lies on the water w1/.test((wet.errors || []).join(" ")), "a hostless plot on a lake was not refused");
+  // The same plot needs no prefab in the mapping check; an ordinary plot entry still does.
+  const mapMod = await import(pathToFileURL(join(ROOT, "tools", "town", "map.mjs")).href);
+  const probs = mapMod.checkMapping(hostless, dossier, template);
+  check(!probs.some((p) => /needs a prefab/.test(p)), `a hostless plot was asked for a prefab: ${probs.join("; ")}`);
+  const noPre = mapMod.checkMapping({ ...mapping, slots: { ...mapping.slots, shop: { plot: "p1", why: ["fixture"] } } }, dossier, template);
+  check(noPre.some((p) => /needs a prefab/.test(p)), "a plain plot entry with no prefab was accepted");
+  // An open-ground row rests on the probed terrain, with no host shell to seat on.
+  const tk = JSON.parse(JSON.stringify(kit));
+  tk.rows[0].mount = "terrain";
+  const seated = await fitMod.planFitSeated({ ...base, kits: { "fit-kit": tk }, mapping: hostless }, { ...ctx(), shell: { shell: async () => null }, terrain: { at: () => 77.5 } });
+  check(seated.ok && seated.terrainPoints.length === 1 && seated.rows[0].coords[1] === 77.5, `a hostless terrain row did not take the probed height (${JSON.stringify(seated.rows?.[0]?.coords)})`);
 }
 
 console.log(failed ? `SUMMARY town-fit-selftest fail ${failed}` : "SUMMARY town-fit-selftest ok");

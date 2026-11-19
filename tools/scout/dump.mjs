@@ -9,6 +9,8 @@
 //   D <i> <prefab|-> <x> <y> <z>                        a door entity below entity i (an entrance)
 //   T <x> <z>                                           a tree or bush
 //   R <class> <name|-> <n> x y z x y z ...              a road or other spline, world space
+//   W <class> <name|-> <n> x y z x y z ...              a lake or pond outline (a shape that owns a lake generator); the ocean probe
+//                                                       behind GW cannot see a lake (#3666)
 //   RV <class> <var> <var> ...                          a spline whose points the plugin could not read: its variable names
 //   C <class> <count>                                   entities of each class the query returned
 //   G <x0> <z0> <step> <nx> <nz>                        ground grid header; GH <j> y y y ...  heights of row j (z), GW <j> 0101...  1 = under the sea
@@ -17,9 +19,9 @@
 
 const num = (s) => Number(s);
 
-// Pure: dump text -> { request, entities, trees, roads, roadVars, classes, grid }.
+// Pure: dump text -> { request, entities, trees, roads, waters, roadVars, classes, grid }.
 export function parseDump(text) {
-  const out = { request: null, entities: [], trees: [], roads: [], roadVars: {}, classes: {}, grid: null };
+  const out = { request: null, entities: [], trees: [], roads: [], waters: [], roadVars: {}, classes: {}, grid: null };
   const byIndex = new Map();
   let grid = null;
   for (const raw of String(text).split(/\r?\n/)) {
@@ -64,6 +66,14 @@ export function parseDump(text) {
         out.roads.push({ cls: t[1], name: t[2] === "-" ? "" : t[2], points });
         break;
       }
+      case "W": {
+        // A lake or pond outline: a shape that owns a lake generator, same fields as R (#3666).
+        const n = num(t[3]);
+        const points = [];
+        for (let k = 0; k < n; k++) points.push([num(t[4 + k * 3]), num(t[5 + k * 3]), num(t[6 + k * 3])]);
+        out.waters.push({ cls: t[1], name: t[2] === "-" ? "" : t[2], points });
+        break;
+      }
       case "RV":
         out.roadVars[t[1]] = t.slice(2);
         break;
@@ -88,7 +98,7 @@ export function parseDump(text) {
 }
 
 // Pure: one dump as the text the plugin writes (the selftest's fixtures are made with it).
-export function formatDump({ request, entities = [], trees = [], roads = [], classes = {}, grid = null }) {
+export function formatDump({ request, entities = [], trees = [], roads = [], waters = [], classes = {}, grid = null }) {
   const rows = [];
   if (request) rows.push(`H ${request.name} ${request.x} ${request.z} ${request.radius} ${request.step}`);
   entities.forEach((e, i) => {
@@ -97,6 +107,7 @@ export function formatDump({ request, entities = [], trees = [], roads = [], cla
   });
   for (const [x, z] of trees) rows.push(`T ${x} ${z}`);
   for (const r of roads) rows.push(`R ${r.cls ?? "RoadEntity"} ${r.name || "-"} ${r.points.length} ${r.points.map((p) => p.join(" ")).join(" ")}`);
+  for (const r of waters) rows.push(`W ${r.cls ?? "SplineShapeEntity"} ${r.name || "-"} ${r.points.length} ${r.points.map((p) => p.join(" ")).join(" ")}`);
   for (const [c, n] of Object.entries(classes)) rows.push(`C ${c} ${n}`);
   if (grid) {
     rows.push(`G ${grid.x0} ${grid.z0} ${grid.step} ${grid.nx} ${grid.nz}`);
