@@ -50,6 +50,11 @@
       "places": ["FishingSpot"]
     },
     {
+      "id": "shipment", "required": false, "kit": "shipment", "host": "street", "poi": "none", "margin": 60,
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 120 },
+      "places": []
+    },
+    {
       "id": "chandler", "required": false, "kit": "chandler", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 30, "prefer": "near", "maxDistance": 140, "types": ["shed", "industrial", "garage", "house", "shop"] },
       "plot": { "minWidth": 10, "minDepth": 8, "prefabs": [{ "type": "garage", "stem": "HouseAddon_Garage_E_01" }] },
