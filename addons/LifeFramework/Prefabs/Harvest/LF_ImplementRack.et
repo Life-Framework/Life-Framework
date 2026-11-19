@@ -2,14 +2,14 @@ GenericEntity {
  ID "12E8B981B1D96B05"
  components {
   MeshObject "{1AFCDF541C49D516}" {
-   Object "{C2AEF1F8600A8929}Assets/Props/Furniture/Shelf_01/Shelf_01.xob"
+   Object "{B9300D91C0050901}Assets/Props/Furniture/Rack_01/Rack_01_Long.xob"
   }
   ActionsManagerComponent "{9778D033E0A5AE62}" {
    ActionContexts {
     UserActionContext "{58245DBC558275BA}" {
      ContextName "LF_ImplementRack"
      Position PointInfo "{D6D5F9264246C2E3}" {
-      Offset 0 1 0
+      Offset -1.2 1 0.4
      }
      Radius 2
     }

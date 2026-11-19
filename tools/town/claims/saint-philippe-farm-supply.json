@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "farm-supply",
+  "building": "b73",
+  "shared": true,
+  "kit": "farm-supply",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_farm-supply.layer",
+  "kinds": [
+    "StoreCounter"
+  ],
+  "rows": 8,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_farm_supply_Place"
+  },
+  "date": "2026-11-19"
+}

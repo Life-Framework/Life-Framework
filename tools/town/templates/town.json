@@ -117,6 +117,11 @@
       "places": ["FarmPlot", "SeedCrate"]
     },
     {
+      "id": "farm-supply", "required": false, "kit": "farm-supply", "host": "street", "poi": "StoreCounter", "margin": 20,
+      "needs": { "interior": "optional", "prefer": "far", "types": ["farm"] },
+      "places": ["StoreCounter"]
+    },
+    {
       "id": "merchant-timber", "required": false, "kit": "merchant-timber", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 160 },
       "places": ["TimberCounter"]
