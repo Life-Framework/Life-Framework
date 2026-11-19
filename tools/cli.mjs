@@ -5320,6 +5320,7 @@ async function wtSyncBaseCmd(args) {
 async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody }) {
   const draft = flags.includes("--draft"); // a draft PR, auto-merge never requested
   const { shipDirect, shipMergeBase } = await import("./lib/ship-direct.mjs");
+  const { regenConfigSchema } = await import("./lib/config-schema-regen.mjs");
   const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
   const body = refsBody(customBody ?? [`Automated ship from worktree \`${slug}\`.`, "", "## Commits", ...subjects.map((x) => `- ${x}`)].join("\n"), closes);
   const gh = (a) => wt.run(wt.ghBin(), a, { cwd: wtRoot });
@@ -5329,6 +5330,19 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
     mergeBase: () => {
       wt.git(wtRoot, ["fetch", "origin", "--prune"]);
       shipMergeBase(wtRoot, base, healMergeSync, (l) => console.log(l));
+    },
+    regenSchema: () => {
+      return regenConfigSchema({
+        log: (l) => console.log(l),
+        changed: () => wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean),
+        write: () => spawnSync(process.execPath, [join(wtRoot, "tools", "config", "schema.mjs"), "--write"], { cwd: wtRoot, encoding: "utf8", windowsHide: true }),
+        dirty: () => wt.git(wtRoot, ["status", "--porcelain", "--", "docs/config"]).stdout.split(/\r?\n/).filter(Boolean),
+        commit: () => {
+          const a = wt.git(wtRoot, ["add", "--", "docs/config"]);
+          if (a.status !== 0) return a;
+          return wt.git(wtRoot, ["commit", "-q", "-m", "Regenerate docs/config schema (config classes or confs changed)", "--", "docs/config"]);
+        },
+      });
     },
     validate: () => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1,
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
