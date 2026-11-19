@@ -1,7 +1,7 @@
 // red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_StallConfigOverlay,LF_Test_EveronStalls` printed `RED PROOF OK`; with an empty header as the pack source it failed `the flagship is open at 19:00` and `the flagship is open at 19:00 on any day`; `--only` then passed.
 //! #3182 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's stall overlay opens
-//! the market every day from 16:00 to 22:00. The flagship keeps stalls switched OFF for now: a rent is not saved
-//! (a restart frees the stall and eats the fee), so the pack sets only the hours until the rent persists.
+//! the market every day from 16:00 to 22:00 and switches stalls ON (#3279: a rent held at a restart is refunded
+//! into the bank by the "stall_rents" save section, so the fee is never eaten).
 [LF_TestInfo(LF_TestTier.LOGIC, pack: true)]
 class LF_Test_EveronStalls : LF_Test
 {
@@ -43,6 +43,6 @@ class LF_Test_EveronStalls : LF_Test
 		ctx.True(LF_StallRules.IsMarketOpen(config, 103, 19), "the flagship is open at 19:00 on any day");
 		ctx.False(LF_StallRules.IsMarketOpen(config, 100, 23), "the flagship is closed at 23:00");
 		ctx.False(LF_StallRules.IsMarketOpen(config, 100, 12), "the flagship is closed at noon");
-		ctx.False(config.m_bEnabled, "stalls stay off on the flagship until the rent is saved");
+		ctx.True(config.m_bEnabled, "stalls are on for the flagship now that a held rent is refunded at a restart");
 	}
 }
