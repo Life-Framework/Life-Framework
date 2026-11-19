@@ -1,0 +1,95 @@
+GenericEntity Fit_saint_philippe_wheatfield_Place {
+ components {
+  LF_PlaceComponent "{FDC068DE758FC4DD}" {
+   m_sKind "WheatField"
+   m_sId "saint-philippe.wheatfield"
+  }
+  LF_FittedBuildingComponent "{FC5142E0082179B5}" {
+  }
+ }
+ coords 4385.9 17.9 10560.2
+}
+LF_WheatField Fit_saint_philippe_wheatfield_wheat_field_field : "{5FF806585DB556B3}Prefabs/Harvest/LF_WheatField.et" {
+ coords 4434.999 22.703 10537.999
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_s_1 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4400.999 0 10513.997
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_s_9 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4409 0 10513.996
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_s_17 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4417 0 10514.004
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_s_25 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4425.001 0 10514.003
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_s_41 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4441.003 0 10514.001
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_s_49 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4449.004 0 10513.999
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_0 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4400.996 0 10562.003
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_8 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4400.995 0 10554.002
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_16 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4401.004 0 10546.001
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_24 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4401.003 0 10538
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_32 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4401.001 0 10529.999
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_40 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4401 0 10521.998
+ angleY 90
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_cart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ coords 4430.003 23.363 10507.997
+ angleY 20
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_sack_pile : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
+ coords 4432.598 23.419 10507.001
+ angleY -30
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_sack_1 : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+ coords 4427.497 23.305 10506.503
+ angleY 70
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_sack_2 : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+ coords 4426.504 23.281 10505.2
+ angleY 100
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_haystack_1 : "{520626A206926F47}Prefabs/Props/Agriculture/Farm/Haystack_01.et" {
+ coords 4412.002 24.102 10508.495
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_haystack_2 : "{520626A206926F47}Prefabs/Props/Agriculture/Farm/Haystack_01.et" {
+ coords 4394.004 20.093 10546.005
+ angleY 40
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_bale_1 : "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et" {
+ coords 4396.496 22.453 10533.999
+ angleY 90
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_bale_2 : "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et" {
+ coords 4396.5 21.712 10538.495
+ angleY 80
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_plow_wreck : "{A98BA618430E9BAA}Prefabs/Props/Agriculture/PlowWreck_01.et" {
+ coords 4418.003 23.484 10505.004
+ angleY 100
+}
+GenericEntity Fit_saint_philippe_wheatfield_wheat_field_cultivator_wreck : "{DE59CB05202006E8}Prefabs/Props/Agriculture/CultivatorWreck_01.et" {
+ coords 4421.498 23.363 10502.504
+ angleY 160
+}
