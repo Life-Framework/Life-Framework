@@ -554,6 +554,51 @@ StringTable {
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
+    CustomStringTableItem "{3804F10000000008}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Bye"
+     Target_en_us "Mind how you go."
+     Comment "Hugo Valmy's goodbye (#3804)."
+    }
+    CustomStringTableItem "{3804F10000000003}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Greet"
+     Target_en_us "Hugo Valmy. I help people who have more than they need meet people who need more than they have. Sit if you like, the coffee is honest, but I do not talk business with a face I do not know."
+     Comment "Hugo Valmy's greeting, which also says who he is (#3804). Captions only until the voices card (#3444) records him."
+    }
+    CustomStringTableItem "{3804F1000000000D}" {
+     Id "LF-Dialogue_ShipmentGoBetween_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Reply: end the talk with Hugo Valmy (#3804)."
+    }
+    CustomStringTableItem "{3804F1000000000A}" {
+     Id "LF-Dialogue_ShipmentGoBetween_SayCrate"
+     Target_en_us "I opened the red crate on the quay."
+     Comment "Reply: tell Hugo Valmy about the crate (#3804)."
+    }
+    CustomStringTableItem "{3804F1000000000B}" {
+     Id "LF-Dialogue_ShipmentGoBetween_SayReported"
+     Target_en_us "I took what was in the crate to the police."
+     Comment "Reply: tell Hugo Valmy the sample was reported (#3804)."
+    }
+    CustomStringTableItem "{3804F1000000000C}" {
+     Id "LF-Dialogue_ShipmentGoBetween_SaySold"
+     Target_en_us "I found a buyer for what was in the crate."
+     Comment "Reply: tell Hugo Valmy the sample was sold (#3804)."
+    }
+    CustomStringTableItem "{3804F10000000005}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Sell"
+     Target_en_us "So you opened the red crate. If you still have what was in it, I know a buyer: cash on the spot, no questions. He keeps to the lanes and the quay after dark. The gendarmerie will only thank you."
+     Comment "Hugo Valmy introduces the sell ending of the shipment; he never names the buyer's spot, the buyer rotates (#3804)."
+    }
+    CustomStringTableItem "{3804F10000000006}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Sold"
+     Target_en_us "Then we have never met, and you have never seen the red crate. A pleasure doing no business with you."
+     Comment "Hugo Valmy reacts to a player who sold the sample (#3804)."
+    }
+    CustomStringTableItem "{3804F10000000007}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Threat"
+     Target_en_us "You walked it to the desk. Fine. Mind the coast road at night, friend. It is long, and it is short of lamps."
+     Comment "Hugo Valmy's one threat to a player who reported the sample (#3804)."
+    }
     CustomStringTableItem "{F2B1DF023C756490}" {
      Id "LF-Everon-Lock_Closed"
      Target_en_us "Fermé"
@@ -1793,6 +1838,11 @@ StringTable {
      Id "LF-Resident_old_man_Name"
      Target_en_us "Gaspard Lenoir"
      Comment "Saint-Philippe resident old_man: display name (#2906)."
+    }
+    CustomStringTableItem "{3804F10000000001}" {
+     Id "LF-Resident_shipment_go_between_Name"
+     Target_en_us "Hugo Valmy"
+     Comment "Saint-Philippe resident shipment_go_between: display name (#3804)."
     }
     CustomStringTableItem "{9FE5B987FD8FD9D2}" {
      Id "LF-Resident_store_clerk_Name"
@@ -3938,6 +3988,11 @@ StringTable {
      Id "LF-Townsfolk_OldMan_Role"
      Target_en_us "Retired fisherman"
      Comment "Townsfolk (The relocated, #1960): what Gaspard Lenoir does, the role line under the name."
+    }
+    CustomStringTableItem "{3804F10000000002}" {
+     Id "LF-Townsfolk_ShipmentGoBetween_Name"
+     Target_en_us "Hugo Valmy"
+     Comment "Townsfolk (The shipment, #3804): the go-between's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{AEFD273B4E3FE2B7}" {
      Id "LF_Everon1989_AlphaNotice"
