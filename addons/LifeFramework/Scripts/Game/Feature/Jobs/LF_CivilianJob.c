@@ -25,6 +25,70 @@ class LF_JobWorker : Managed
 	bool m_bRunTimed;
 	//! Cash held against the cargo of the active run: returned on delivery, kept on abandon.
 	int m_iDeposit;
+	//! The night-rate part of the last paid run (#3148), taken once by Dropoff for the pay toast.
+	int m_iLastNight;
+	//! The parts of the last drop-off's pay (#3148), taken once by the drop-off action for the toast.
+	ref LF_JobPayParts m_LastParts;
+}
+
+//------------------------------------------------------------------------------------------------
+//! What a paid run was made of (#3148): the run's base pay, the night rate's extra and the bonus
+//! (contract and standing tier), and the toast that names each part. Pure: nothing reads the world.
+class LF_JobPayParts : Managed
+{
+	//! Joins the numbers of a packed toast argument; the client splits it back (LF_NotificationManagerComponent).
+	static const string PACKED_MARK = "~";
+	static const string PACKED_SEP = "|";
+
+	int m_iTotal;
+	int m_iBase;
+	int m_iNight;
+	int m_iBonus;
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[in] paid Everything the run paid.
+	//! \param[in] bonus The contract and standing bonus inside `paid`.
+	//! \param[in] night The night rate's extra inside `paid`.
+	static LF_JobPayParts Make(int paid, int bonus, int night)
+	{
+		LF_JobPayParts parts = new LF_JobPayParts();
+		parts.m_iTotal = paid;
+		parts.m_iBonus = LF_Utils.ClampInt(bonus, 0, paid);
+		parts.m_iNight = LF_Utils.ClampInt(night, 0, paid - parts.m_iBonus);
+		parts.m_iBase = paid - parts.m_iBonus - parts.m_iNight;
+		return parts;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The string key of the pay toast: the plain one when the run was all base, else the one that names the parts.
+	string ToastKey()
+	{
+		if (m_iNight > 0 && m_iBonus > 0)
+			return "#LF-Job_Paid_NightBonus";
+		if (m_iNight > 0)
+			return "#LF-Job_Paid_Night";
+		if (m_iBonus > 0)
+			return "#LF-Job_Paid_Bonus";
+
+		return "#EL-Job_Paid";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The toast argument: the plain total for a run with no extras, else "~total|base|part[|part]"
+	//! (the client fills %1.. of the key from it).
+	string ToastArg()
+	{
+		if (m_iNight <= 0 && m_iBonus <= 0)
+			return m_iTotal.ToString();
+
+		string arg = PACKED_MARK + m_iTotal.ToString() + PACKED_SEP + m_iBase.ToString();
+		if (m_iNight > 0)
+			arg = arg + PACKED_SEP + m_iNight.ToString();
+		if (m_iBonus > 0)
+			arg = arg + PACKED_SEP + m_iBonus.ToString();
+
+		return arg;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -43,6 +107,9 @@ class LF_CivilianJob
 {
 	//! The system id the Jobs switch answers to (#1074).
 	static const string SYSTEM = "Jobs";
+
+	//! The ledger reason of the night rate's part of a run's pay (#3148).
+	static const string REASON_NIGHT = "night-rate";
 
 	//! Run pay when the jobs config has no usable row (#3147); the core LF_Jobs.conf `runPays` mirrors them.
 	static const int PAY_PARCEL = 40;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
@@ -79,6 +146,8 @@ class LF_CivilianJob
 
 	protected static ref map<string, ref LF_JobWorker> s_mWorkers;
 	protected static ref LF_CivilianJobDeathWatch s_DeathWatch;
+	//! The "no world clock" warning is logged once (#3148).
+	protected static bool s_bNoClockLogged;
 
 	//------------------------------------------------------------------------------------------------
 	protected static map<string, ref LF_JobWorker> Workers()
@@ -346,6 +415,90 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether `hour` (0 to 24, the world clock) is inside the night window. The window may wrap
+	//! midnight (21 to 5); equal hours make no night.
+	static bool IsNightHour(float hour, int startHour, int endHour)
+	{
+		if (startHour == endHour)
+			return false;
+
+		if (startHour < endHour)
+			return hour >= startHour && hour < endHour;
+
+		return hour >= startHour || hour < endHour;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The extra a night rate adds to a base pay: round(base * (rate - 1)); nothing for a rate of 1 or less.
+	static int NightExtra(int basePay, float rate)
+	{
+		if (basePay <= 0 || rate <= 1)
+			return 0;
+
+		return Math.Round(basePay * (rate - 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The world clock's hour on the server, or -1 when the world has no TimeAndWeatherManager
+	//! (logged once: such a world pays the base).
+	static float ClockHour()
+	{
+		ChimeraWorld world;
+		if (GetGame())
+			world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+
+		TimeAndWeatherManagerEntity clock;
+		if (world)
+			clock = world.GetTimeAndWeatherManager();
+
+		if (!clock)
+		{
+			if (!s_bNoClockLogged)
+				LF_Debug.Warn("Jobs", "no world clock: runs pay no night rate");
+
+			s_bNoClockLogged = true;
+			return -1;
+		}
+
+		return clock.GetTimeOfTheDay();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The night rate's extra for a run of `job` paying `basePay` finished now (#3148): 0 by day,
+	//! with no night rate on the job's row, or in a world with no clock.
+	static int NightPay(LF_EJobType job, int basePay)
+	{
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return 0;
+
+		float rate = config.NightRateFor(typename.EnumToString(LF_EJobType, job));
+		if (rate <= 1)
+			return 0;
+
+		float hour = ClockHour();
+		if (hour < 0)
+			return 0;
+
+		int startHour, endHour;
+		config.NightWindow(startHour, endHour);
+		if (!IsNightHour(hour, startHour, endHour))
+			return 0;
+
+		return NightExtra(basePay, rate);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The night part of the player's last paid run, and clears it.
+	static int TakeLastNight(string playerUid)
+	{
+		LF_JobWorker worker = Worker(playerUid);
+		int night = worker.m_iLastNight;
+		worker.m_iLastNight = 0;
+		return night;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static ResourceName PrefabFor(LF_EJobType job)
 	{
 		if (job == LF_EJobType.FUEL_DELIVERY)
@@ -518,6 +671,7 @@ class LF_CivilianJob
 			LF_EventBus.Unsubscribe(LF_OnPlayerKilled, s_DeathWatch);
 
 		s_DeathWatch = null;
+		s_bNoClockLogged = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1039,10 +1193,23 @@ class LF_CivilianJob
 
 		GiveDepositBack(user, uid);
 		int bonus = LF_ReputationContracts.TakeLastBonus(uid) + LF_ReputationPay.TakeLastBonus(uid);
-		bonus = LF_Utils.ClampInt(bonus, 0, paid);
-		HandCash(user, paid - bonus);
-		HandCash(user, bonus, LF_ReputationContracts.REASON_BONUS);
+		int night = TakeLastNight(uid);
+		LF_JobPayParts parts = LF_JobPayParts.Make(paid, bonus, night);
+		Worker(uid).m_LastParts = parts;
+		HandCash(user, parts.m_iBase);
+		HandCash(user, parts.m_iNight, REASON_NIGHT);
+		HandCash(user, parts.m_iBonus, LF_ReputationContracts.REASON_BONUS);
 		return paid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return What the player's last drop-off paid, part by part, and clears it; null when there is none.
+	static LF_JobPayParts TakeLastParts(string playerUid)
+	{
+		LF_JobWorker worker = Worker(playerUid);
+		LF_JobPayParts parts = worker.m_LastParts;
+		worker.m_LastParts = null;
+		return parts;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1101,6 +1268,11 @@ class LF_CivilianJob
 		amount = LF_ReputationContracts.Settle(playerUid, basePay, LF_JobGuards.Now());
 		// The standing bonus is a percent of the base only, never of a contract's multiplier (#2703).
 		amount = amount + LF_ReputationPay.Bonus(playerUid, basePay);
+
+		// The night rate is its own part, a rate on the base only (#3148): the clock is read at the drop-off.
+		int night = NightPay(worker.m_eActiveJob, basePay);
+		amount = amount + night;
+		worker.m_iLastNight = night;
 
 		LF_EJobType finished = worker.m_eActiveJob;
 		worker.m_bActive = false;
