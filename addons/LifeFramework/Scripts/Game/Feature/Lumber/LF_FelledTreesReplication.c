@@ -99,7 +99,7 @@ class LF_FelledTreeQuery : Managed
 //!  - a late joiner gets the whole table in the game mode's RplSave/RplLoad (a prefab list, then x, z
 //!    and prefab index per tree);
 //!  - a client keeps a mirror of the keys, finds the map tree near each key by prefab and position, and
-//!    hides it (invisible, untraceable, no collision) or shows it again. A key whose tree is not
+//!    hides it (invisible, untraceable, out of the collision world) or shows it again. A key whose tree is not
 //!    streamed in yet stays pending and is tried again every few seconds.
 //! The server side of a fell (the real hide, the ledger, regrow and save) belongs to the axe action and
 //! the regrow tick, which call Publish and Retract. A broadcast never runs on its sender, so a listen host
@@ -689,30 +689,37 @@ class LF_FelledTreesReplication
 	//------------------------------------------------------------------------------------------------
 	//! Takes a tree out of the world as a player sees and bumps into it: not drawn, not hit by a trace
 	//! or a bullet, no collision. Public so the axe action hides the server's own copy the same way.
-	//! \return the collision layer it had, to hand back to ShowTree; -1 when it has no physics.
+	//! The body leaves the collision world (SimulationState.NONE, as a spent ore node does): a static
+	//! body ignores SetInteractionLayer(0), so a layer change left an invisible tree players walk into.
+	//! \return the simulation state it had, to hand back to ShowTree; -1 when it has no physics or was
+	//! already hidden. On a listen host the axe action hides the tree, then the local broadcast handler
+	//! finds the same entity; whoever hid it first holds the state, so a second show cannot undo it wrong.
 	static int HideTree(notnull IEntity tree)
 	{
+		if (IsHidden(tree))
+			return -1;
+
 		tree.ClearFlags(EntityFlags.VISIBLE | EntityFlags.TRACEABLE, false);
 		Physics physics = tree.GetPhysics();
 		if (!physics)
 			return -1;
 
-		int layer = physics.GetInteractionLayer();
-		physics.SetInteractionLayer(0);
-		return layer;
+		int state = physics.GetSimulationState();
+		physics.ChangeSimulationState(SimulationState.NONE);
+		return state;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Puts a hidden tree back: drawn, traceable, with the collision layer HideTree returned (-1: none to restore).
-	static void ShowTree(notnull IEntity tree, int layer)
+	//! Puts a hidden tree back: drawn, traceable, with the simulation state HideTree returned (-1: none to restore).
+	static void ShowTree(notnull IEntity tree, int state)
 	{
 		tree.SetFlags(EntityFlags.VISIBLE | EntityFlags.TRACEABLE, false);
-		if (layer < 0)
+		if (state < 0)
 			return;
 
 		Physics physics = tree.GetPhysics();
 		if (physics)
-			physics.SetInteractionLayer(layer);
+			physics.ChangeSimulationState(state);
 	}
 
 	//------------------------------------------------------------------------------------------------
