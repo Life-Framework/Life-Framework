@@ -19,8 +19,8 @@ class LF_Test_PlacementDoorProbe : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		BaseWorld world = GetGame().GetWorld();
-		float groundY = world.GetSurfaceY(310, 100);
-		IEntity door = LF_Utils.SpawnEntityPrefab(DOOR, Vector(310, groundY, 100));
+		float groundY = world.GetSurfaceY(360, 100);
+		IEntity door = LF_Utils.SpawnEntityPrefab(DOOR, Vector(360, groundY, 100));
 		ctx.NotNull(door, "a house door spawned");
 		if (!door)
 			return;

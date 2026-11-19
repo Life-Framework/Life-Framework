@@ -30,6 +30,11 @@ move the matching `Annex.layer` wall, run `node tools/grid/lattice.mjs write`. A
   (`docs/roadmap/m1-25-village.md` "Test annex");
 - the track in through the north gate, x 66..82, z 100..112.
 
+A test that spawns a prop on bare ground picks ground outside the grid, east of the annex fence (x above 328; the
+placement tests use 350 and 360, z 100), never a lattice cell: a cell claimed later puts a fence or a patch under
+the fixture (the wheat cell `slice-3290` broke `agent-harness/placement-audit` and `placement-probe` at 300..310, 100,
+2026-11-19).
+
 Each legacy station a town pass retires, or moves into a cell of its own, frees ground. After the
 2026-11-16 growth the east columns (`c7` to `c10`) are free of stations and reserved ground, so `grid list`
 shows 28 more free cells.
