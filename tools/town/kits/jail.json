@@ -38,7 +38,7 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "The villa's own barred cell (west, back), the laundry tub and kitchen sink in the free west room of the ground floor, and the yard broom on the open ground behind the villa (+z is the front, so the yard is at -z). Offsets are in the police kit's frame, so the slot shares the police slot's building and anchor. The villa's own barred door is the cell door: no door target. Rows are rigid: shift, never stretch."
+    "adapt": "The villa's own barred cell (west, back) with the laundry tub, the kitchen sink and the broom inside it: the cell zone is a 2 m sphere (LF_Jail.Confines), so a prisoner can reach only a station within it (#3754). Offsets are in the police kit's frame, so the slot shares the police slot's building and anchor. The villa's own barred door is the cell door: no door target. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -74,28 +74,28 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        -3.2,
-        3.8,
-        -3
+        -6.6,
+        0,
+        -2.6
       ],
       "yaw": 90,
       "wall": "free",
-      "floor": "f1"
+      "floor": "f0"
     },
     {
       "id": "jail-kitchen-sink",
       "name": "JailKit_KitchenSink",
       "prefab": "{AD8A93936711F255}Prefabs/Props/Jail/LF_JailKitchenSink.et",
       "role": "interactable",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
-        -5.5,
-        3.8,
-        -3.5
+        -3.6,
+        0,
+        -2.7
       ],
-      "yaw": 0,
-      "wall": "-z",
-      "floor": "f1"
+      "yaw": 270,
+      "wall": "free",
+      "floor": "f0"
     },
     {
       "id": "jail-yard-broom",
@@ -103,11 +103,10 @@
       "prefab": "{4DFF61251337EEF8}Prefabs/Props/Jail/LF_JailYardBroom.et",
       "role": "interactable",
       "verb": "on floor",
-      "mount": "terrain",
       "offset": [
-        0.7,
+        -2.45,
         0,
-        -8
+        -3.55
       ],
       "yaw": 0,
       "wall": "free",

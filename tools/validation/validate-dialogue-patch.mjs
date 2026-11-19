@@ -151,6 +151,18 @@ export function checkDialoguePatches(root) {
   const coreIndex = new Set(existsSync(indexFile) ? (parseConf(readFileSync(indexFile, "utf8")).lists.m_aEntries || []).map((e) => e.fields.m_sId) : []);
   const keys = stringKeys(root), hooks = hookClasses(root);
   const addons = readdirSync(addonsDir).filter((d) => statSync(join(addonsDir, d)).isDirectory());
+  // A pack's own full dialogue (it names a speaker and a start) is the base another pack file may patch
+  // by id: the old man is the pack's (#1962) and a later pack file patches him (#3451).
+  const packFull = new Map();
+  for (const pack of addons.filter((d) => d !== CORE)) {
+    for (const file of walk(join(addonsDir, pack))) {
+      if (!file.endsWith(".conf")) continue;
+      const text = readFileSync(file, "utf8");
+      if (!/^\s*LF_DialogueConfig\s*\{/m.test(text)) continue;
+      const conf = parseConf(text);
+      if (conf.fields.m_sId && conf.fields.m_sSpeakerKey && conf.fields.m_sStart && !core.has(conf.fields.m_sId)) packFull.set(conf.fields.m_sId, conf);
+    }
+  }
   for (const pack of addons.filter((d) => d !== CORE)) {
     for (const file of walk(join(addonsDir, pack))) {
       if (!file.endsWith(".conf")) continue;
@@ -170,7 +182,8 @@ export function checkDialoguePatches(root) {
         continue;
       }
       const id = conf.fields.m_sId;
-      const base = core.get(id);
+      let base = core.get(id);
+      if (!base && !(conf.fields.m_sSpeakerKey && conf.fields.m_sStart)) base = packFull.get(id);
       if (!base) {
         // A pack's own full dialogue (#1962): it names a speaker and a start, so it is read whole, not against a core one.
         if (conf.fields.m_sSpeakerKey && conf.fields.m_sStart) {
