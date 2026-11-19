@@ -85,6 +85,14 @@ class LF_ProcessAction : ScriptedUserAction
 			return;
 		}
 
+		// A timed machine runs one job at a time (#3229); the second worker reads that it is busy.
+		if (m_Machine && m_Machine.m_iProcessSeconds > 0 && LF_ProcessRun.IsBusy(pOwnerEntity))
+		{
+			LF_Debug.Info("Processing", string.Format("refused process at %1: a run is under way", m_sMachineId));
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text("#LF-Process_Busy"), "", 4.0);
+			return;
+		}
+
 		InventoryStorageManagerComponent inventoryManager = LF_Component<InventoryStorageManagerComponent>.Find(pUserEntity);
 
 		// As many whole batches as the inventory covers, up to the machine's cap.
@@ -108,6 +116,20 @@ class LF_ProcessAction : ScriptedUserAction
 		// Every input is verified and removed together, or none is.
 		if (!TryConsumeInputs(inventoryManager, inputs))
 			return;
+
+		// A timed machine keeps the outputs back: they drop at the machine when the time is up (#3229).
+		if (m_Machine && m_Machine.m_iProcessSeconds > 0)
+		{
+			if (!LF_ProcessRun.Start(pOwnerEntity, pUserEntity, m_sMachineId, outputs, batches, m_Machine.m_iProcessSeconds, m_vDropOffset, m_vRotation))
+			{
+				RestoreInputs(inventoryManager, inputs);
+				LF_Debug.Error("Processing", string.Format("rejected process at %1: the timed run did not start, inputs given back", m_sMachineId));
+				return;
+			}
+
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text("#LF-Process_Started", m_Machine.m_iProcessSeconds.ToString()), "", 4.0);
+			return;
+		}
 
 		array<IEntity> spawnedOutputs = {};
 		foreach (LF_ProcessingOutput processingOutput : outputs)
