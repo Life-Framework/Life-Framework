@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "blacklake",
+  "slot": "shore",
+  "plot": "p4",
+  "hostless": true,
+  "kit": "lake-shore",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_blacklake_shore.layer",
+  "kinds": [
+    "FishingSpot"
+  ],
+  "rows": 4,
+  "destruction": {
+    "mode": "none",
+    "reason": "hostless plot: no building stands in the slot"
+  },
+  "date": "2026-11-19"
+}

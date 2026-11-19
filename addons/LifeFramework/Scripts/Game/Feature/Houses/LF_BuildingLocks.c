@@ -121,6 +121,10 @@ class LF_BuildingLocks
 		if (s_mBuildingKey.IsEmpty())
 			return "";
 
+		// A resident on a walk goes in and out of its own home through the locked door: the lock keeps players out.
+		if (user && LF_ResidentWalk.IsWalkingBody(user))
+			return "";
+
 		IEntity node = door;
 		while (node)
 		{

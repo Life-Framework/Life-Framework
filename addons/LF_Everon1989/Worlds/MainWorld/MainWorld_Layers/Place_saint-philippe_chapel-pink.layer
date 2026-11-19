@@ -1,0 +1,36 @@
+GenericEntity Fit_saint_philippe_chapel_pink_Place {
+ components {
+  LF_PlaceComponent "{491A56047B7884DF}" {
+   m_sKind "Church"
+   m_sId "saint-philippe.chapel-pink"
+  }
+  LF_FittedBuildingComponent "{CCD6A5C72EE7894B}" {
+  }
+ }
+ coords 4707 22.7 10740
+}
+GenericEntity Fit_saint_philippe_chapel_pink_candle_1 : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+ coords 4708.44 22.679 10739.274
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_chapel_pink_candle_2 : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+ coords 4708.356 22.679 10740.872
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_chapel_pink_flowers_pink : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
+ coords 4708.277 22.678 10738.565
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_chapel_pink_flowers_red : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
+ coords 4708.118 22.678 10741.596
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_chapel_pink_anchor_bench {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "bench"
+  }
+ }
+ coords 4706.8 22.7 10739.99
+ angleY -93
+}

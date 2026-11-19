@@ -33,15 +33,15 @@ GenericEntity Fit_saint_philippe_org_registry_desk : "{6B7B7CCC74AACA67}Prefabs/
    }
   }
  }
- coords 4501.957 16.451 10624.425
+ coords 4501.957 16.478 10624.425
  angleY 177
 }
 GenericEntity Fit_saint_philippe_org_registry_chair : "{D19D5E8950BC4DD1}Prefabs/Props/Furniture/ChairOffice_01.et" {
- coords 4501.994 16.451 10623.726
+ coords 4501.994 16.478 10623.726
  angleY -3
 }
 GenericEntity Fit_saint_philippe_org_war_board : "{C0DFDD43EA7E58CB}Prefabs/Organizations/LF_OrgWarBoard.et" {
- coords 4501.416 16.451 10625.198
+ coords 4501.416 16.478 10625.198
  angleY 177
 }
 GenericEntity Fit_saint_philippe_org_registry_sign : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {

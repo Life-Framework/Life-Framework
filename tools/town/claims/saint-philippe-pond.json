@@ -8,7 +8,7 @@
   "kinds": [
     "FishingSpot"
   ],
-  "rows": 2,
+  "rows": 4,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

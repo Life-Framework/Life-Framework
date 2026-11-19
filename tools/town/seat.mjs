@@ -359,6 +359,11 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false,
       else {
         const f = bounded ? footOf(l, info) : { bottom: 0 };
         l.y = Math.max(...heights) - f.bottom - host.y;
+        // The same kit `lift` as the floor branch (metres, negative sinks it): a desk whose legs sit 1.5 cm over the probed ground (#3685).
+        if (Number.isFinite(s.lift) && s.lift !== 0) {
+          l.y += s.lift;
+          res.notes.push(`lifted ${s.lift} m from the probed ground`);
+        }
         res.notes.push(`on the terrain: ${r3(Math.min(...heights))} to ${r3(Math.max(...heights))} m under its footprint`);
       }
     } else if (m.mount === "stack") {
@@ -394,9 +399,13 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false,
       if (m.mount === "wall") {
         const w = wallSnap(HUNG_REACH, NEAR_WALL);
         if (w) {
-          l.x += fwd[0] * w.shift;
-          l.z += fwd[2] * w.shift;
-          res.wall = { side: w.side, shift: r3(w.shift) };
+          // A facade that steps back under a long plate leaves one end in the wall (pharmacy fascia, 6.6 cm, #3685): the kit row
+          // says how far to stand off the plane, `standoff` in metres, so the whole plate clears it.
+          const off = Number.isFinite(s.standoff) ? (w.side === "back" ? -s.standoff : s.standoff) : 0;
+          l.x += fwd[0] * (w.shift - off);
+          l.z += fwd[2] * (w.shift - off);
+          res.wall = { side: w.side, shift: r3(w.shift - off) };
+          if (off) res.notes.push(`stands ${Math.abs(off)} m off the wall`);
         } else res.notes.push(`no host wall within ${HUNG_REACH} m behind or ${NEAR_WALL} m in front of it`);
       } else {
         const f = footOf(l, info);

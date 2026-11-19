@@ -5,7 +5,7 @@ GenericEntity {
    m_fWidth 3
   }
   MeshObject "{C5B7BAF3E19BB6CE}" {
-   Object "{7990C4AF9278E3F4}Assets/Props/Agricultural/CultivatorWreck_01/CultivatorWreck_01.xob"
+   Object "{8D656E956EBCBA7B}Assets/Harvest/Reaper/LF_Reaper_01.xob"
   }
   Hierarchy "{64E245F677B16503}" {
   }

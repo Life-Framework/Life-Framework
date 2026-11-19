@@ -7,7 +7,7 @@ GenericEntity Pond_Spot : "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingS
   LF_FishingSpotComponent "{4A0F573235D2E074}" {
    m_sId "spring-pond"
    m_sTable "pond"
-   m_fRadius 14
+   m_fRadius 22
    m_iStock 12
    m_fRegrowSeconds 90
   }
@@ -15,6 +15,22 @@ GenericEntity Pond_Spot : "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingS
  coords -46.69 0 41.93
 }
 GenericEntity Pond_Bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords -58.56 0 36.64
+ coords -64.93 0 27.26
  angleY 66
+}
+GenericEntity Pond_Jetty : "{35AC8C84785CB8B1}Prefabs/Structures/Infrastructure/Naval/Piers/Pier_Wood_Long_01.et" {
+ coords -62.76 -2.75 33.7
+ angleY 156
+}
+GenericEntity Pond_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "spring-pond"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords -68.8 0 35.95
+ angleY 246
 }

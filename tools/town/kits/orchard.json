@@ -208,7 +208,8 @@
       ],
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": -0.015
     },
     {
       "id": "orchard-sign",

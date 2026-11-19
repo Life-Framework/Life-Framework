@@ -18,7 +18,7 @@ GenericEntity Fit_saint_philippe_pharmacy_lf_sign_fascia : "{4697D9464B596C24}Pr
    m_vTextColor 0.96 0.95 0.9
   }
  }
- coords 4437.821 12.3 10847.018
+ coords 4437.889 12.3 10847.035
  angleY 76
 }
 GenericEntity Fit_saint_philippe_pharmacy_shop_house_e_2_i01t_furniture_drugstore_lf_01 : "{1D49EA09388829EB}Prefabs/Buildings/Drugstore/Furniture/ShopHouse_E_2I01t_furniture_drugstore_lf_01.et" {

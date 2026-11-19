@@ -199,6 +199,21 @@
       "places": ["Memorial"]
     },
     {
+      "id": "church", "required": false, "kit": "church", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "minArea": 100, "prefer": "near", "maxDistance": 80, "types": ["church"] },
+      "places": ["Church"]
+    },
+    {
+      "id": "chapel", "required": false, "kit": "chapel", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "prefer": "far", "types": ["chapel"] },
+      "places": ["Church"]
+    },
+    {
+      "id": "chapel-pink", "required": false, "kit": "chapel", "host": "building", "poi": "none",
+      "needs": { "interior": "required", "prefer": "far", "types": ["chapel"] },
+      "places": ["Church"]
+    },
+    {
       "id": "safe-zone", "required": false, "kit": "safe-zone", "host": "street", "poi": "none", "margin": 120,
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 60 },
       "places": ["SafeZone"]
