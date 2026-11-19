@@ -59,3 +59,6 @@
 
 ### Harness target by resident id (#3650, 2026-11-19)
 - The agent harness names a spawned resident `Resident_<id>` (`LF_ResidentHarness`, a `LF_ResidentSpawner.GetLive` lookup): `stand Resident_night_shift` stands beside them, `use LF_DialogueTalkAction Resident_night_shift` talks to them and never to a neighbour. Not live: `entity_not_found` (stand) or `action_not_found` (use), one `Residents` warning. A client-local action (the talk) takes the nearest host on the client, so the proof stands beside the resident first. `agent-box/proofs/dirty-money-island.mjs` step 3 uses it. Test `residents/harness-name` (LOGIC); the live path is the island proof.
+
+### Resident home as one named house (#3231, 2026-11-19)
+- `LF_ResidentDef.m_sHomePlaceId` (optional) names the `LF_Places` id of the one house of the home kind the resident lives in, so five residents can live in five houses. Empty keeps the nearest place of the kind. An id no live place holds logs one `Residents` warning and falls back to the nearest. Home lines carry it in `LF_ResidentSlot.m_sPlaceId`; `LF_ResidentAnchors.ResolveIn(kind, placeId, anchorId, near, spot)` resolves it (the spawner and the walk call it; `Resolve` is unchanged). Work lines still pick the nearest. Test `LF_Test_ResidentHomePlaceId`.

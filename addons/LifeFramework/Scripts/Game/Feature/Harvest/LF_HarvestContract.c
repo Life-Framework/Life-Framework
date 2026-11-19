@@ -491,6 +491,14 @@ class LF_HarvestContract
 	{
 		ResourceName prefab = KitPrefab(dlcOwned);
 		IEntity vehicle = LF_Utils.SpawnEntityPrefab(prefab, at, angles);
+		// A server without Rally content cannot spawn the Z7211: the DLC owner gets the UAZ469 rather than no rental.
+		if (!vehicle && dlcOwned)
+		{
+			LF_Debug.Warn(FEATURE, "the Rally tractor did not spawn (no Rally content on this server); the rental kit is the UAZ469");
+			prefab = KitPrefab(false);
+			vehicle = LF_Utils.SpawnEntityPrefab(prefab, at, angles);
+		}
+
 		if (!vehicle)
 		{
 			LF_Debug.Error(FEATURE, "rental kit vehicle did not spawn: " + prefab);

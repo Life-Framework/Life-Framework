@@ -8,6 +8,11 @@
 //   hitch state     the server's view: vehicle origin, metres moved since the spawn, implement rpl id
 //   hitch delete    the server deletes the vehicle the way the garage and impound do (DeleteEntityAndChildren)
 //   hitch seen      THIS machine's view: every implement within 300 m, its parent, local offset, behind, proxy
+// The island proof (agent-box/proofs/harvest-island.mjs, #3302) adds:
+//   hitch rackspawn   the server spawns a plain UAZ469 (no reaper) on empty ground within 8 m of the nearest implement rack
+//   hitch goto X Z S  the server steers the pushed vehicle to X Z at S m/s (whole numbers), then brakes; state says arrived=1
+//   hitch seat        the server seats the asking character at the wheel of the harness vehicle
+//   hitch warp X Z Y  the server sets the vehicle down at X Z facing yaw Y degrees (a fallback when a building is in the way)
 // Dev gate: a client asks through its character, refused outside a harness or dev build.
 
 //------------------------------------------------------------------------------------------------
@@ -26,9 +31,24 @@ class LF_ImplementHitchHarness
 	//! How far `seen` looks for implements.
 	static const float SEEN_RADIUS_M = 300; // lf-fixed: harness reach, not a gameplay knob
 
+	//! The rack prefab `rackspawn` looks for.
+	static const ResourceName RACK_PREFAB = "{21B9456F3B79410E}Prefabs/Harvest/LF_ImplementRack.et";
+	//! `goto` counts the waypoint reached within this many metres.
+	static const float ARRIVE_M = 2.5; // lf-fixed: harness geometry, not a gameplay knob
+	//! `goto` steering: radians per second of yaw rate per radian of heading error, and its cap.
+	static const float STEER_GAIN = 1.5; // lf-fixed: harness steering, not a gameplay knob
+	static const float STEER_MAX = 0.9; // lf-fixed: harness steering, not a gameplay knob
+	//! Above this heading error (radians) `goto` slows to a crawl so the turn is tight.
+	static const float TURN_SLOW_RAD = 0.6; // lf-fixed: harness steering, not a gameplay knob
+	static const float TURN_SPEED_MS = 1.5; // lf-fixed: harness steering, not a gameplay knob
+
 	protected static EntityID s_Vehicle = EntityID.INVALID;
 	protected static vector s_vStart;
 	protected static EntityID s_Field = EntityID.INVALID;
+	protected static bool s_bGoto;
+	protected static bool s_bArrived;
+	protected static vector s_vGoto;
+	protected static float s_fGotoSpeed = SPEED_MS;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -37,6 +57,10 @@ class LF_ImplementHitchHarness
 		s_Vehicle = EntityID.INVALID;
 		s_vStart = vector.Zero;
 		s_Field = EntityID.INVALID;
+		s_bGoto = false;
+		s_bArrived = false;
+		s_vGoto = vector.Zero;
+		s_fGotoSpeed = SPEED_MS;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -86,6 +110,155 @@ class LF_ImplementHitchHarness
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a plain UAZ469 on empty ground within reach of the implement rack nearest the character, facing
+	//! south, with no reaper: the rack's take-out hitches one (#3295). Also remembers the nearest wheat field.
+	static string SpawnAtRack(IEntity character)
+	{
+		IEntity old = HarnessVehicle();
+		if (old)
+			SCR_EntityHelper.DeleteEntityAndChildren(old);
+
+		vector around = vector.Zero;
+		if (character)
+			around = character.GetOrigin();
+
+		LF_ImplementHitchHarnessRackQuery query = new LF_ImplementHitchHarnessRackQuery();
+		GetGame().GetWorld().QueryEntitiesBySphere(around, FIELD_REACH_M, query.Collect, null, EQueryEntitiesFlags.ALL);
+		IEntity rack = null;
+		float best = FIELD_REACH_M * 2;
+		foreach (IEntity candidate : query.m_aRacks)
+		{
+			float distance = vector.Distance(candidate.GetOrigin(), around);
+			if (distance < best)
+			{
+				best = distance;
+				rack = candidate;
+			}
+		}
+
+		if (!rack)
+			return "error no_rack";
+
+		LF_WheatField field = NearestField(rack);
+		if (field)
+			s_Field = field.GetID();
+
+		// Empty ground a UAZ fits on, at most 7.5 m from the rack (the take-out reaches 8 m).
+		vector rackAt = rack.GetOrigin();
+		array<vector> centres = {};
+		centres.Insert(Vector(0, 0, 4));
+		centres.Insert(Vector(0, 0, -4));
+		centres.Insert(Vector(-4, 0, 0));
+		centres.Insert(Vector(4, 0, 0));
+		vector at = rackAt + centres[0];
+		bool found = false;
+		foreach (vector offset : centres)
+		{
+			if (SCR_WorldTools.FindEmptyTerrainPosition(at, rackAt + offset, 4, 2, 2.5))
+			{
+				found = true;
+				break;
+			}
+		}
+
+		if (!found)
+		{
+			at = rackAt + centres[0];
+			LF_Debug.Warn(LF_ImplementHitch.FEATURE, "harness: no empty ground found beside the rack, the UAZ is set down 4 m north of it");
+		}
+
+		at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]) + 0.3;
+		IEntity vehicle = LF_Utils.SpawnEntityPrefab(UAZ, at, Vector(180, 0, 0));
+		if (!vehicle)
+			return "error no_vehicle";
+
+		s_Vehicle = vehicle.GetID();
+		s_vStart = vehicle.GetOrigin();
+		s_bGoto = false;
+		s_bArrived = false;
+		LF_Debug.Info(LF_ImplementHitch.FEATURE, string.Format("harness: a plain UAZ469 stands %1 m from the rack at %2", Math.Round(vector.Distance(at, rackAt) * 10) / 10, FormatPos(at)));
+		return string.Format("ok vehicle=%1 at=%2 rack=%3 rackDist=%4 found=%5", LF_ImplementHitch.RplIdOf(vehicle), FormatPos(at), FormatPos(rackAt), Math.Round(vector.Distance(at, rackAt) * 10) / 10, found);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: seats the character at the wheel of the harness vehicle (the grain prompts need a driver).
+	static string Seat(IEntity character)
+	{
+		IEntity vehicle = HarnessVehicle();
+		if (!vehicle)
+			return "error no_vehicle";
+
+		ChimeraCharacter chimera = ChimeraCharacter.Cast(character);
+		if (!chimera)
+			return "error no_character";
+
+		SCR_CompartmentAccessComponent access = SCR_CompartmentAccessComponent.Cast(chimera.GetCompartmentAccessComponent());
+		if (!access)
+			return "error no_access";
+
+		if (!access.MoveInVehicle(vehicle, ECompartmentType.PILOT))
+			return "error seat_refused";
+
+		LF_Debug.Info(LF_ImplementHitch.FEATURE, "harness: the character sits at the wheel of the harness UAZ");
+		return "ok seated";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: steer the pushed vehicle to the point x z at `speed` m/s (the proof reads `arrived=1` in `state`).
+	static string Goto(string x, string z, string speed)
+	{
+		IEntity vehicle = HarnessVehicle();
+		if (!vehicle)
+			return "error no_vehicle";
+
+		s_vGoto = Vector(x.ToFloat(), 0, z.ToFloat());
+		s_fGotoSpeed = speed.ToFloat();
+		if (s_fGotoSpeed <= 0)
+			s_fGotoSpeed = SPEED_MS;
+
+		s_bGoto = true;
+		s_bArrived = false;
+		CarControllerComponent controller = CarControllerComponent.Cast(vehicle.FindComponent(CarControllerComponent));
+		if (controller)
+		{
+			controller.SetPersistentHandBrake(false);
+			controller.StartEngine();
+		}
+
+		Pedal();
+		GetGame().GetCallqueue().Remove(Pedal);
+		GetGame().GetCallqueue().CallLater(Pedal, PEDAL_MS, true);
+		LF_Debug.Info(LF_ImplementHitch.FEATURE, string.Format("harness: the UAZ is steered to %1 at %2 m/s", FormatPos(s_vGoto), s_fGotoSpeed));
+		return string.Format("ok goto=%1 speed=%2", FormatPos(s_vGoto), s_fGotoSpeed);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: set the vehicle down at x z facing `yaw` degrees, at rest. A fallback only: the proof says so when it uses it.
+	static string Warp(string x, string z, string yaw)
+	{
+		IEntity vehicle = HarnessVehicle();
+		if (!vehicle)
+			return "error no_vehicle";
+
+		GetGame().GetCallqueue().Remove(Pedal);
+		s_bGoto = false;
+		float px = x.ToFloat();
+		float pz = z.ToFloat();
+		vehicle.SetAngles(Vector(0, yaw.ToFloat(), 0));
+		vehicle.SetOrigin(Vector(px, GetGame().GetWorld().GetSurfaceY(px, pz) + 0.4, pz));
+		Physics physics = vehicle.GetPhysics();
+		if (physics)
+		{
+			physics.SetVelocity(vector.Zero);
+			physics.SetAngularVelocity(vector.Zero);
+			physics.SetActive(ActiveState.ACTIVE);
+		}
+
+		LF_Debug.Warn(LF_ImplementHitch.FEATURE, string.Format("harness: WARP the UAZ to %1 facing %2 (not driven)", FormatPos(vehicle.GetOrigin()), yaw));
+		return string.Format("ok warped at=%1", FormatPos(vehicle.GetOrigin()));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The wheat field closest to the character, or null.
 	protected static LF_WheatField NearestField(IEntity character)
 	{
@@ -124,6 +297,7 @@ class LF_ImplementHitchHarness
 			controller.StartEngine();
 		}
 
+		s_bGoto = false;
 		Pedal();
 		GetGame().GetCallqueue().Remove(Pedal);
 		GetGame().GetCallqueue().CallLater(Pedal, PEDAL_MS, true);
@@ -160,7 +334,40 @@ class LF_ImplementHitchHarness
 		vector forward = transform[2];
 		forward[1] = 0;
 		forward.Normalize();
-		vector velocity = forward * SPEED_MS;
+		float speed = SPEED_MS;
+		if (s_bGoto)
+		{
+			vector here = vehicle.GetOrigin();
+			float dx = s_vGoto[0] - here[0];
+			float dz = s_vGoto[2] - here[2];
+			if (Math.Sqrt(dx * dx + dz * dz) <= ARRIVE_M)
+			{
+				s_bGoto = false;
+				s_bArrived = true;
+				Stop();
+				LF_Debug.Info(LF_ImplementHitch.FEATURE, "harness: the UAZ reached " + FormatPos(here));
+				return;
+			}
+
+			// Heading is a yaw with 0 facing +Z; a positive spin about Y turns +Z toward +X.
+			float error = Math.Atan2(dx, dz) - Math.Atan2(forward[0], forward[2]);
+			while (error > Math.PI)
+			{
+				error -= Math.PI * 2;
+			}
+
+			while (error < -Math.PI)
+			{
+				error += Math.PI * 2;
+			}
+
+			physics.SetAngularVelocity(Vector(0, Math.Clamp(error * STEER_GAIN, -STEER_MAX, STEER_MAX), 0));
+			speed = s_fGotoSpeed;
+			if (Math.AbsFloat(error) > TURN_SLOW_RAD && speed > TURN_SPEED_MS)
+				speed = TURN_SPEED_MS;
+		}
+
+		vector velocity = forward * speed;
 		velocity[1] = physics.GetVelocity()[1];
 		physics.SetVelocity(velocity);
 	}
@@ -169,6 +376,7 @@ class LF_ImplementHitchHarness
 	static string Stop()
 	{
 		GetGame().GetCallqueue().Remove(Pedal);
+		s_bGoto = false;
 		IEntity vehicle = HarnessVehicle();
 		if (!vehicle)
 			return "error no_vehicle";
@@ -179,6 +387,10 @@ class LF_ImplementHitchHarness
 			simulation.SetThrottle(0);
 			simulation.SetBreak(1, true);
 		}
+
+		Physics physics = vehicle.GetPhysics();
+		if (physics)
+			physics.SetAngularVelocity(vector.Zero);
 
 		return "ok stopped";
 	}
@@ -207,7 +419,7 @@ class LF_ImplementHitchHarness
 		if (field)
 			cut = field.CutCount();
 
-		return string.Format("ok vehicle=%1 at=%2 moved=%3 implement=%4 hopper=%5 cut=%6", LF_ImplementHitch.RplIdOf(vehicle), FormatPos(now), Math.Round(moved * 10) / 10, LF_ImplementHitch.RplIdOf(implement), hopper, cut);
+		return string.Format("ok vehicle=%1 at=%2 moved=%3 implement=%4 hopper=%5 cut=%6 arrived=%7 going=%8", LF_ImplementHitch.RplIdOf(vehicle), FormatPos(now), Math.Round(moved * 10) / 10, LF_ImplementHitch.RplIdOf(implement), hopper, cut, s_bArrived, s_bGoto);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -284,6 +496,23 @@ class LF_ImplementHitchHarnessQuery
 }
 
 //------------------------------------------------------------------------------------------------
+//! One `hitch rackspawn` sphere query: the implement racks it met, dropped with the query.
+class LF_ImplementHitchHarnessRackQuery
+{
+	ref array<IEntity> m_aRacks = {};
+
+	//------------------------------------------------------------------------------------------------
+	bool Collect(IEntity entity)
+	{
+		EntityPrefabData prefab = entity.GetPrefabData();
+		if (prefab && LF_Utils.SamePrefab(prefab.GetPrefabName(), LF_ImplementHitchHarness.RACK_PREFAB))
+			m_aRacks.Insert(entity);
+
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 modded class LF_AgentHarnessVerbs
 {
 	override bool Handle(LF_AgentCommand cmd)
@@ -299,13 +528,13 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
-		if (!character || (cmd.Arg1 != "spawn" && cmd.Arg1 != "fieldspawn" && cmd.Arg1 != "drive" && cmd.Arg1 != "stop" && cmd.Arg1 != "state" && cmd.Arg1 != "delete"))
+		if (!character || (cmd.Arg1 != "spawn" && cmd.Arg1 != "fieldspawn" && cmd.Arg1 != "rackspawn" && cmd.Arg1 != "seat" && cmd.Arg1 != "goto" && cmd.Arg1 != "warp" && cmd.Arg1 != "drive" && cmd.Arg1 != "stop" && cmd.Arg1 != "state" && cmd.Arg1 != "delete"))
 		{
-			LF_AgentHarness.Answer(cmd.Id, "error", "usage: hitch spawn|fieldspawn|drive|stop|state|delete|seen (all but seen need a character)");
+			LF_AgentHarness.Answer(cmd.Id, "error", "usage: hitch spawn|fieldspawn|rackspawn|seat|goto X Z SPEED|warp X Z YAW|drive|stop|state|delete|seen (all but seen need a character)");
 			return true;
 		}
 
-		character.LF_AskHarnessHitch(cmd.Id, cmd.Arg1);
+		character.LF_AskHarnessHitch(cmd.Id, cmd.Arg1, cmd.Arg2, cmd.Arg3, cmd.Arg4);
 		return true;
 	}
 }
@@ -314,20 +543,20 @@ modded class LF_AgentHarnessVerbs
 modded class SCR_ChimeraCharacter
 {
 	//------------------------------------------------------------------------------------------------
-	void LF_AskHarnessHitch(int commandId, string action)
+	void LF_AskHarnessHitch(int commandId, string action, string arg1 = "", string arg2 = "", string arg3 = "")
 	{
 		if (Replication.IsServer())
 		{
-			LF_HarnessHitchDo(commandId, action);
+			LF_HarnessHitchDo(commandId, action, arg1, arg2, arg3);
 			return;
 		}
 
-		Rpc(RpcAsk_LF_HarnessHitch, commandId, action);
+		Rpc(RpcAsk_LF_HarnessHitch, commandId, action, arg1, arg2, arg3);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_HarnessHitch(int commandId, string action)
+	protected void RpcAsk_LF_HarnessHitch(int commandId, string action, string arg1, string arg2, string arg3)
 	{
 		if (!LF_DevGate.CheckHarnessRequest(this, "hitch"))
 		{
@@ -335,17 +564,25 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		LF_HarnessHitchDo(commandId, action);
+		LF_HarnessHitchDo(commandId, action, arg1, arg2, arg3);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void LF_HarnessHitchDo(int commandId, string action)
+	protected void LF_HarnessHitchDo(int commandId, string action, string arg1, string arg2, string arg3)
 	{
 		string answer;
 		if (action == "spawn")
 			answer = LF_ImplementHitchHarness.Spawn(this);
 		else if (action == "fieldspawn")
 			answer = LF_ImplementHitchHarness.Spawn(this, true);
+		else if (action == "rackspawn")
+			answer = LF_ImplementHitchHarness.SpawnAtRack(this);
+		else if (action == "seat")
+			answer = LF_ImplementHitchHarness.Seat(this);
+		else if (action == "goto")
+			answer = LF_ImplementHitchHarness.Goto(arg1, arg2, arg3);
+		else if (action == "warp")
+			answer = LF_ImplementHitchHarness.Warp(arg1, arg2, arg3);
 		else if (action == "drive")
 			answer = LF_ImplementHitchHarness.Drive();
 		else if (action == "stop")
