@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "template": "chopyard",
+  "place": "chopyard",
+  "status": "approved",
+  "note": "Hand-written for #3403 (X29): a lone farm yard, 1.2 km from the Saint-Philippe square, on the hamlet's southern road. The dossier is a scout of the hamlet's gazetteer label at radius 120; the yard is the big barn at its south edge, with the open ground in front of its east doors for the cars. No sign and no map marker: `poi` is none. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-18",
+    "buildings": 15,
+    "freePlots": 8
+  },
+  "slots": {
+    "yard": {
+      "building": "b13",
+      "why": [
+        "Barn_E_01 (type farm), 163 m2, the hamlet's southernmost building, 72 m from the scout centre and away from its two houses, with free plot p4 (50 x 48 m, ground 20.3 to 22.5 m) on its open east side and the north-south road 59 m beyond",
+        "a car can drive in from the road across open ground; 1.2 km from the Saint-Philippe square (card X29 asks for 1 km or more)"
+      ]
+    }
+  }
+}
