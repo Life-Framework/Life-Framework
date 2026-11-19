@@ -8,6 +8,28 @@ class LF_VehicleCompartmentStorageComponentClass : ScriptedInventoryStorageManag
 //! Marks the storage of a car's hidden compartment. LF_VehicleCompartment finds it by this component.
 class LF_VehicleCompartmentStorageComponent : ScriptedInventoryStorageManagerComponent
 {
+	//------------------------------------------------------------------------------------------------
+	//! Whether this inventory may take from the compartment: its own manager, or the car owner's.
+	//! "Open the panel" only hides the row; vanilla's nearby list can still show the storage.
+	bool AllowsAccessFrom(InventoryStorageManagerComponent instigatorManager)
+	{
+		if (!instigatorManager || instigatorManager == this)
+			return true;
+
+		return LF_VehicleCompartment.IsOwnerOf(instigatorManager.GetOwner(), GetOwner().GetParent());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The engine asks this when a client's inventory request moves or removes an item the
+	//! compartment holds. Only the car's owner may; everyone else is refused and it is logged.
+	override protected bool HandleAccessValidation(InventoryStorageManagerComponent instigatorManager, IEntity item, EInventoryManagerOperation operation)
+	{
+		if (!Replication.IsServer() || AllowsAccessFrom(instigatorManager))
+			return true;
+
+		LF_Debug.Warn(LF_VehicleCompartment.FEATURE, string.Format("compartment kept %1: the taker is not the car's owner", LF_Utils.GetPrefabName(item)));
+		return false;
+	}
 }
 
 //------------------------------------------------------------------------------------------------

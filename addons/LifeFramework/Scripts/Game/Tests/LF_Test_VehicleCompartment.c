@@ -1,4 +1,4 @@
-// red-proof: 2026-11-19 with `test --no-build --red LF_Test_VehicleCompartment`: RED PROOF OK, the RedProof() hook skips loading the compartment so "the full search finds both bottles (expected 2, got 0)" and the quick-search take-nothing check fail; with the hook off it is green.
+// red-proof: 2026-11-19 with `test --no-build --red LF_Test_VehicleCompartment`: RED PROOF OK (full search found 0 of 2, quick-search take-nothing check failed). Review fix: with AllowsAccessFrom returning true (no HandleAccessValidation) "a stranger's inventory may not take from the compartment" and "an unowned car's compartment refuses everyone" failed; green with the owner check.
 //! vehicles/compartment (#3434, Q9 of #1035): a fitted hidden compartment is a second storage that hangs off the
 //! vehicle, not in its inventory tree. The quick search (LF_ChainSearch.SearchVehicle) lists the normal storage only
 //! and misses it; the full search (LF_VehicleCompartment.SearchFull) lists it too and seizes it, once. The test
@@ -36,15 +36,51 @@ class LF_Test_VehicleCompartment : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Vanilla's inventory can reach the compartment's storage too (the nearby list, which "Open the
+	//! panel" itself relies on), so the server refuses a take by anyone but the car's owner.
+	protected void CheckAccess(LF_TestContext ctx, IEntity vehicle, IEntity panel)
+	{
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
+		LF_VehicleCompartmentStorageComponent compartment = LF_VehicleCompartmentStorageComponent.Cast(panel.FindComponent(LF_VehicleCompartmentStorageComponent));
+		ctx.NotNull(vehicleLock, "the car has a lock with an owner key");
+		ctx.NotNull(compartment, "the compartment has its storage manager");
+		if (!vehicleLock || !compartment)
+			return;
+
+		IEntity owner = LF_TestCharacterFixture.Spawn(ctx);
+		IEntity stranger = LF_TestCharacterFixture.Spawn(ctx);
+		if (owner && stranger)
+		{
+			InventoryStorageManagerComponent ownerManager = LF_InventoryUtils.GetResponsibleStorageManager(owner);
+			InventoryStorageManagerComponent strangerManager = LF_InventoryUtils.GetResponsibleStorageManager(stranger);
+			vehicleLock.SetOwnerUid("lf-test-compartment-owner");
+			LF_Utils.SetUidForTests(owner, "lf-test-compartment-owner");
+			ctx.True(compartment.AllowsAccessFrom(ownerManager), "the car's owner may take from the compartment");
+			LF_Utils.SetUidForTests(stranger, "lf-test-compartment-stranger");
+			ctx.False(compartment.AllowsAccessFrom(strangerManager), "a stranger's inventory may not take from the compartment");
+			vehicleLock.SetOwnerUid("");
+			ctx.False(compartment.AllowsAccessFrom(strangerManager), "an unowned car's compartment refuses everyone");
+			LF_Utils.SetUidForTests(null, "");
+		}
+
+		LF_TestCharacterFixture.Delete(owner);
+		LF_TestCharacterFixture.Delete(stranger);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void Check(LF_TestContext ctx, IEntity vehicle)
 	{
 		ctx.True(LF_VehicleCompartment.Find(vehicle) == null, "a stock car has no compartment");
 		ctx.Equal(0, LF_VehicleCompartment.SearchFull(vehicle, 0.0), "a stock car's full search finds nothing");
 
+		LF_VehicleWorldSave.Hold(vehicle); // an owned car: LF_VehicleOwnership holds every car it spawns (#3614)
 		IEntity panel = LF_VehicleCompartment.Fit(vehicle);
 		ctx.NotNull(panel, "fitting builds the compartment");
 		if (!panel)
 			return;
+
+		ctx.False(LF_VehicleWorldSave.IsSaved(panel), "the compartment of a car held out of the engine save is held too (no orphan after a restart)");
+		CheckAccess(ctx, vehicle, panel);
 
 		ctx.True(LF_VehicleCompartment.Fit(vehicle) == panel, "fitting twice keeps the one compartment");
 		ctx.True(LF_VehicleCompartment.Find(vehicle) == panel, "the fitted compartment is found again");

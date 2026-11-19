@@ -47,6 +47,7 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 
 - **Player sees:** the owner of a fitted car gets an "Open the panel" row that opens a small extra storage. The quick vehicle search never lists it; the detective's full search does, and seizes what it finds.
 - **Owner and side:** the server. The compartment is a child entity of the car (`LF_VehicleCompartment.et`), found by `LF_VehicleCompartmentStorageComponent`, so `LF_ChainSearch.Collect` (which walks the car's own storage) never sees it. `LF_VehicleCompartment.SearchFull` runs the quick search, then rolls the compartment's own load and deletes its goods.
-- **Not wired yet:** `Fit` is called by the pack (Q11); the "Full search" row and its detective gate are #3427 and call `SearchFull`. Goods in a compartment are not saved: the saved compartment level only says whether to fit one.
+- **Access:** the "Open the panel" row is display only; vanilla's nearby list can show the storage to anyone. `LF_VehicleCompartmentStorageComponent.HandleAccessValidation` refuses, on the server, a take by anyone but the car's owner (the lock's owner key); an unowned car's compartment refuses everyone.
+- **Not wired yet:** `Fit` is called by the pack (Q11); the "Full search" row and its detective gate are #3427 and call `SearchFull`. Goods in a compartment are not saved: the saved compartment level only says whether to fit one. The compartment is a child of the car, so a garage store, tow or impound deletes it with its goods (`CaptureCargo` walks the car's own storages only); the pack fit (#3436) must snapshot and refit it.
 - **Data:** none.
 - **Proof:** `vehicles/compartment` (WORLD).
