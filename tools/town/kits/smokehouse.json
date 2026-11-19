@@ -6,7 +6,8 @@
     "file": "tools/town/kits/sources/smokehouse.layer",
     "group": "*",
     "also": [
-      "addons/LF_Everon1989/Prefabs/Props/Fishing/LF_Smokehouse.et"
+      "addons/LF_Everon1989/Prefabs/Props/Fishing/LF_Smokehouse.et",
+      "addons/LF_Everon1989/Prefabs/Props/Fishing/LF_SmokehouseFire.et"
     ],
     "origin": "building",
     "frame": "building-local"
@@ -46,9 +47,9 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        -5.6,
+        -3.2,
         1.023,
-        0
+        0.2
       ],
       "yaw": 0,
       "wall": "free",
@@ -75,7 +76,7 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        0.2,
+        2.6,
         0.499,
         0.9
       ],
@@ -89,7 +90,7 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        0.2,
+        2.6,
         0.499,
         1.7
       ],
@@ -99,7 +100,7 @@
     },
     {
       "id": "smoking-fire",
-      "prefab": "{D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et",
+      "prefab": "{34BA147AE88D0D24}Prefabs/Props/Fishing/LF_SmokehouseFire.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
