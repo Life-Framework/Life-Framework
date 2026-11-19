@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5B3F8D1A6C2E7094}Configs/Events/LF_Condition_ShipmentDawn.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
