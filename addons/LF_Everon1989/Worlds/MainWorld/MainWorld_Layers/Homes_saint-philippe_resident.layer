@@ -48,6 +48,15 @@ GenericEntity ResidentDoor_saint_philippe_sp_b17 {
  coords 4472.498 15.4 10646.946
  angleY 170
 }
+GenericEntity ResidentBench_saint_philippe_sp_b17 {
+ components {
+  LF_ResidentAnchorComponent "{1E7437F642A43707}" {
+   m_sAnchorId "bench"
+  }
+ }
+ coords 4471.316 15.4 10645.011
+ angleY 170
+}
 GenericEntity ResidentHome_saint_philippe_sp_b117 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
  components {
   LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
@@ -83,6 +92,15 @@ GenericEntity ResidentDoor_saint_philippe_sp_b117 {
   }
  }
  coords 4644.418 22.2 10734.4
+ angleY -3
+}
+GenericEntity ResidentBench_saint_philippe_sp_b117 {
+ components {
+  LF_ResidentAnchorComponent "{9A923E8E184436BC}" {
+   m_sAnchorId "bench"
+  }
+ }
+ coords 4645.827 22.2 10736.176
  angleY -3
 }
 GenericEntity ResidentHome_saint_philippe_sp_b50 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
@@ -122,6 +140,15 @@ GenericEntity ResidentDoor_saint_philippe_sp_b50 {
  coords 4386.514 10.3 10759.922
  angleY -1
 }
+GenericEntity ResidentBench_saint_philippe_sp_b50 {
+ components {
+  LF_ResidentAnchorComponent "{76443D44F00406EC}" {
+   m_sAnchorId "bench"
+  }
+ }
+ coords 4387.984 10.3 10761.648
+ angleY -1
+}
 GenericEntity ResidentHome_saint_philippe_sp_b09 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
  components {
   LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
@@ -157,5 +184,14 @@ GenericEntity ResidentDoor_saint_philippe_sp_b09 {
   }
  }
  coords 4504.168 14.9 10739.977
+ angleY 171
+}
+GenericEntity ResidentBench_saint_philippe_sp_b09 {
+ components {
+  LF_ResidentAnchorComponent "{8F6303CA099A22BB}" {
+   m_sAnchorId "bench"
+  }
+ }
+ coords 4502.952 14.9 10738.064
  angleY 171
 }
