@@ -2360,6 +2360,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Connecting to the online service. Your registration form opens in a moment."
      Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
     }
+    CustomStringTableItem "{B27102B0C486F20E}" {
+     Id "LF-Cargo_Empty"
+     Target_en_us "The bed is empty."
+     Comment "Toast: unload pressed on an empty bed (#3265)."
+    }
+    CustomStringTableItem "{3B4A64303E9729FD}" {
+     Id "LF-Cargo_Full"
+     Target_en_us "The bed is full."
+     Comment "Toast and reason: no room for this load (#3265)."
+    }
+    CustomStringTableItem "{EE82A1CD38C1F4B8}" {
+     Id "LF-Cargo_HandsFull"
+     Target_en_us "Your hands are full."
+     Comment "Toast and reason: unload needs free hands (#3265)."
+    }
+    CustomStringTableItem "{26FEFFF494632DD3}" {
+     Id "LF-Cargo_Load"
+     Target_en_us "Load onto the truck"
+     Comment "F-key action name: put the carried load on the bed (#3265)."
+    }
+    CustomStringTableItem "{0854C8AB56AD9EFB}" {
+     Id "LF-Cargo_NoBed"
+     Target_en_us "This vehicle has no cargo bed."
+     Comment "Toast: a car cannot carry a load (#3265)."
+    }
+    CustomStringTableItem "{BF7D47302660AF18}" {
+     Id "LF-Cargo_NoLoad"
+     Target_en_us "You are not carrying anything."
+     Comment "Toast: load pressed with empty shoulders (#3265)."
+    }
+    CustomStringTableItem "{F17DC59B6A1E5566}" {
+     Id "LF-Cargo_NotAccepted"
+     Target_en_us "The bed does not take this."
+     Comment "Toast: a kind the bed refuses (#3265)."
+    }
+    CustomStringTableItem "{1DCA2E1743D81081}" {
+     Id "LF-Cargo_Title"
+     Target_en_us "Cargo"
+     Comment "Toast title for the truck bed (#3265)."
+    }
+    CustomStringTableItem "{B742E763B9E68070}" {
+     Id "LF-Cargo_Unload"
+     Target_en_us "Unload onto your shoulder"
+     Comment "F-key action name: take the top load off the bed (#3265)."
+    }
     CustomStringTableItem "{7A30C5E1D49B6A08}" {
      Id "LF-Carry_Busy"
      Target_en_us "Your hands are full."
@@ -7701,6 +7746,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Market_BoardWhat"
      Target_en_us "What the trader pays today for each good, chalked on the board."
      Comment "Sign catalog 'what' text of the trader price board face (never shown: the board's own Read action opens the prices card)."
+    }
+    CustomStringTableItem "{3B7C9A10E4D25F81}" {
+     Id "LF-Market_BuyerFull"
+     Target_en_us "They have enough for now. Try again in about %1 min."
+     Comment "Toast to the seller: a premium buyer's demand is spent. %1 = minutes until it takes one more unit (#3599). A pack row with the same Id adds where else to sell."
+    }
+    CustomStringTableItem "{3B7C9A10E4D25F83}" {
+     Id "LF-Market_BuyerFull_Title"
+     Target_en_us "Enough for now"
+     Comment "Title of the buyer-full toast (#3599)."
+    }
+    CustomStringTableItem "{3B7C9A10E4D25F82}" {
+     Id "LF-Market_BuyerNever"
+     Target_en_us "They have all they need of that."
+     Comment "Toast to the seller: a premium buyer's demand is spent and never refills (#3599)."
     }
     CustomStringTableItem "{E3A1B2C4D5F60719}" {
      Id "LF-Market_NoPrices"

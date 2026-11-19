@@ -298,5 +298,18 @@ try {
   check(claimBody(main) !== claimBody({ ...copy, rows: 5 }), "a worktree's edited claim compared equal to main's");
 }
 
+// A worktree cut from an older main holds an older version of main's claim file: its blob is in main's history for that file (#3566).
+// red-proof: 2026-11-19, `town fit saint-philippe police --refit` printed "town-fit fail ... 96 problem(s)", one REFUSE per sibling worktree whose claim had 56 rows where main's has 57.
+{
+  const fakeExec = (cmd, args) => {
+    if (args[0] === "log") return { status: 0, stdout: "c2\nc1\n" };
+    if (args[0] === "rev-parse") return { status: 0, stdout: args[1].startsWith("c2") ? "blobNew\n" : "blobOld\n" };
+    return { status: 1, stdout: "" };
+  };
+  const blobs = fitMod.mainClaimBlobs(fakeExec, "tools/town/claims/x.json");
+  check(blobs.has("blobOld") && blobs.has("blobNew") && !blobs.has("blobEdited"), "main's claim-file history was not read as a set of blobs");
+  check(fitMod.mainClaimBlobs(() => ({ status: 1, stdout: "" }), "x").size === 0, "a failed git log did not give an empty set");
+}
+
 console.log(failed ? `SUMMARY town-fit-selftest fail ${failed}` : "SUMMARY town-fit-selftest ok");
 process.exit(failed ? 1 : 0);

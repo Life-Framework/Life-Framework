@@ -153,3 +153,16 @@
   Left out: fitted or in-flight rows, the churches and chapels (D1), `sp:b49` (org registry) and side buildings of a
   fitted business. `tools\cli town doors saint-philippe --planned` shows the carriers; a shop or home card that fits
   its building needs no edit here (the open marker wins). Selftest: `node tools/town/locks.selftest.mjs`.
+
+### Homes for sale in the real town — `LF_HouseMarker.et`, `tools/town/homes.mjs` (2026-11-19, #3584, chapter #3201)
+- 🟡 `Prefabs/Systems/Houses/LF_HouseMarker.et` is the lock marker plus an `LF_HouseManagerComponent` (and an `RplComponent`): dropped inside a
+  vanilla building with a `m_sDebugIdentifier`, it makes that building a house. Its doors refuse a stranger; the owner (their character
+  key against the replicated owner key) and anyone holding a key bound to the house id pass, on the client prompt and on the server. An
+  unowned house shows the marker's `m_sSignKey`; once it has an owner a stranger sees `m_sOwnedSignKey`. A plain lock marker is unchanged.
+- 🟡 `tools\cli town homes saint-philippe` (from `ws/town-draft-saint-philippe-homes`) does it for every purpose row with purpose `a`, a
+  `houseId` and a tier: a house marker at the footprint centre, `LF_HouseSaleSign.et` with the same house id on the entrance wall (the
+  drop planner's wall seat; a building whose entrance wall takes no sign uses another side), one `m_aHouses` row per home in
+  `addons/LF_Everon1989/Configs/Property/LF_Property_Everon1989/LF_Property_Homes_SaintPhilippe.conf`, and `docs/everon/places/<place>/homes.json`,
+  which `town locks` reads to drop those homes' ForSaleSoon markers. Layer `Homes_saint-philippe.layer`; a generated file, rerun the script.
+- 🟡 Prices by tier (a courier earns about $600 an hour, `tools\cli economy`): cottage 4000, village house 6000, family house 8000,
+  town house 10000, farmhouse 13000, villa 20000. Selftest `node tools/town/homes.selftest.mjs`; in-game `houses/house-marker`.

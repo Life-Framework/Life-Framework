@@ -1,0 +1,198 @@
+{
+ "schema": 1,
+ "place": "saint-philippe",
+ "homes": [
+  {
+   "id": "sp:b01",
+   "houseId": "saint-philippe.home.sp-b01",
+   "tier": "T5",
+   "price": 13000
+  },
+  {
+   "id": "sp:b10",
+   "houseId": "saint-philippe.home.sp-b10",
+   "tier": "T3",
+   "price": 8000
+  },
+  {
+   "id": "sp:b16",
+   "houseId": "saint-philippe.home.sp-b16",
+   "tier": "T4",
+   "price": 10000
+  },
+  {
+   "id": "sp:b18",
+   "houseId": "saint-philippe.home.sp-b18",
+   "tier": "T4",
+   "price": 10000
+  },
+  {
+   "id": "sp:b40",
+   "houseId": "saint-philippe.home.sp-b40",
+   "tier": "T5",
+   "price": 13000
+  },
+  {
+   "id": "sp:b44",
+   "houseId": "saint-philippe.home.sp-b44",
+   "tier": "T5",
+   "price": 13000
+  },
+  {
+   "id": "sp:b47",
+   "houseId": "saint-philippe.home.sp-b47",
+   "tier": "T3",
+   "price": 8000
+  },
+  {
+   "id": "sp:b60",
+   "houseId": "saint-philippe.home.sp-b60",
+   "tier": "T5",
+   "price": 13000
+  },
+  {
+   "id": "sp:b63",
+   "houseId": "saint-philippe.home.sp-b63",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "sp:b68",
+   "houseId": "saint-philippe.home.sp-b68",
+   "tier": "T5",
+   "price": 13000
+  },
+  {
+   "id": "sp:b72",
+   "houseId": "saint-philippe.home.sp-b72",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "sp:b74",
+   "houseId": "saint-philippe.home.sp-b74",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "sp:b75",
+   "houseId": "saint-philippe.home.sp-b75",
+   "tier": "T6",
+   "price": 20000
+  },
+  {
+   "id": "sp:b81",
+   "houseId": "saint-philippe.home.sp-b81",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "sp:b83",
+   "houseId": "saint-philippe.home.sp-b83",
+   "tier": "T1",
+   "price": 4000
+  },
+  {
+   "id": "sp:b87",
+   "houseId": "saint-philippe.home.sp-b87",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "sp:b92",
+   "houseId": "saint-philippe.home.sp-b92",
+   "tier": "T5",
+   "price": 13000
+  },
+  {
+   "id": "sp:b101",
+   "houseId": "saint-philippe.home.sp-b101",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "sp:b106",
+   "houseId": "saint-philippe.home.sp-b106",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "sp:b108",
+   "houseId": "saint-philippe.home.sp-b108",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "sp:b110",
+   "houseId": "saint-philippe.home.sp-b110",
+   "tier": "T3",
+   "price": 8000
+  },
+  {
+   "id": "sp:b111",
+   "houseId": "saint-philippe.home.sp-b111",
+   "tier": "T3",
+   "price": 8000
+  },
+  {
+   "id": "sp:b112",
+   "houseId": "saint-philippe.home.sp-b112",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "sp:b114",
+   "houseId": "saint-philippe.home.sp-b114",
+   "tier": "T5",
+   "price": 13000
+  },
+  {
+   "id": "sp:b119",
+   "houseId": "saint-philippe.home.sp-b119",
+   "tier": "T2",
+   "price": 6000
+  },
+  {
+   "id": "di:b05",
+   "houseId": "saint-philippe.home.di-b05",
+   "tier": "T5",
+   "price": 13000
+  },
+  {
+   "id": "di:b10",
+   "houseId": "saint-philippe.home.di-b10",
+   "tier": "T5",
+   "price": 13000
+  },
+  {
+   "id": "di:b34",
+   "houseId": "saint-philippe.home.di-b34",
+   "tier": "T1",
+   "price": 4000
+  },
+  {
+   "id": "di:b46",
+   "houseId": "saint-philippe.home.di-b46",
+   "tier": "T3",
+   "price": 8000
+  },
+  {
+   "id": "di:b48",
+   "houseId": "saint-philippe.home.di-b48",
+   "tier": "T1",
+   "price": 4000
+  },
+  {
+   "id": "di:b53",
+   "houseId": "saint-philippe.home.di-b53",
+   "tier": "T3",
+   "price": 8000
+  },
+  {
+   "id": "dk:b45",
+   "houseId": "saint-philippe.home.dk-b45",
+   "tier": "T6",
+   "price": 20000
+  }
+ ]
+}

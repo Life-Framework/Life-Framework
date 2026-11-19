@@ -8,7 +8,7 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
    ActionContexts {
     UserActionContext "{598F21A871DA7304}" {
      Position PointInfo "{598F21A875320722}" {
-      Offset 0 1 2.2
+      Offset 0 0.2 2.1
      }
     }
    }
@@ -74,6 +74,15 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
      Duration 30
     }
    }
+  }
+ }
+ {
+  ParticleEffectEntity SmokehouseSmoke {
+   ID "A5ED9A8FB7DEEC96"
+   coords 0 3.9 0
+   scale 0.35
+   UseFrameEvent 1
+   EffectPath "{059E612718472C0A}Particles/Enviroment/Smoke_Smokestack_Medium.ptc"
   }
  }
 }
