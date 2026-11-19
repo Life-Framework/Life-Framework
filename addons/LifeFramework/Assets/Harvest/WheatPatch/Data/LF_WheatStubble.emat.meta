@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{16BEEA41EAC95B72}Assets/Harvest/WheatPatch/Data/LF_WheatStubble.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}
