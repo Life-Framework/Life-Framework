@@ -4,7 +4,7 @@
   "about": "A fenced industrial yard beside a road: a big open shed where scrap is sorted and recycled, a site cabin where the dealer buys and sells, and a bare patch of open ground for the dump. Three slots, no sign and no map marker. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
   "slots": [
     {
-      "id": "recycler", "required": true, "kit": "scrap-recycler", "host": "building", "poi": "none", "margin": 24,
+      "id": "recycler", "required": true, "kit": "scrapyard", "host": "building", "poi": "none", "margin": 64,
       "needs": { "interior": "optional", "minArea": 150, "prefer": "near", "types": ["industrial", "garage", "shed"] },
       "places": ["ScrapRecycler"]
     },
