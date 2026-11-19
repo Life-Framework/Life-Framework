@@ -79,6 +79,8 @@ Object.assign(SECTIONS, {
   // Keyed by buyer plus good (#3267); no owner section. The core ships no rows, so the core layer is empty: a pack adds.
   "buyerDemand.rows": { ...row("buyerDemand", "rows", "LF_BuyerDemandConfig", "Configs/Market/LF_BuyerDemand.conf", "m_aRows", "m_sBuyer", (p) => `${p.m_sBuyer ?? ""}|${guidOf(p.m_sGood)}`, noOwner), idFields: ["m_sBuyer", "m_sGood"] },
   // The core file lists no rung (LF_MedicRanks falls back to the built-in three in script), so the core layer is empty: a pack adds.
+  "fishing.species": row("fishing", "species", "LF_FishingConfig", "Configs/Fishing/LF_Fishing.conf", "m_aSpecies", "m_sId", byField("m_sId"), noOwner),
+  "fishing.tables": row("fishing", "tables", "LF_FishingConfig", "Configs/Fishing/LF_Fishing.conf", "m_aTables", "m_sId", byField("m_sId"), noOwner),
   "farming.crops": row("farming", "crops", "LF_CropCatalogue", "Configs/Farming/LF_Crops.conf", "m_aCrops", "m_sCropId", byField("m_sCropId"), noOwner),
   "medic.ranks": row("medic", "ranks", "LF_MedicConfig", null, "m_aRanks", "m_sId", byField("m_sId"), noOwner),
   "reputation.factions": row("reputation", "factions", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aFactions", "m_sId", byField("m_sId")),

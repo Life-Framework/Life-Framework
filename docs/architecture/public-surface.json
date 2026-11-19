@@ -14,6 +14,7 @@
     "LF_EventScene",
     "LF_EventsConfig",
     "LF_EvidenceConfig",
+    "LF_FishingConfig",
     "LF_GarageConfig",
     "LF_HandbookConfig",
     "LF_HeistConfig",

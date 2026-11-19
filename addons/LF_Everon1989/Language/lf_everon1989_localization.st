@@ -389,6 +389,11 @@ StringTable {
      Target_en_us "Go well. Come and sit with me again some time."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
+    CustomStringTableItem "{14C00C49DD440471}" {
+     Id "LF-Dialogue_OldMan_Cove"
+     Target_en_us "You have the hands for it now. There is a cove past the point beyond the quay, Fisherman Bay. Go at dusk, when the bass come in close. I have marked it on your map."
+     Comment "Gaspard tells a player who has landed three fish about the cove Fisherman Bay (#3451); text only, no recording yet."
+    }
     CustomStringTableItem "{EE06F137A9E223A3}" {
      Id "LF-Dialogue_OldMan_Greet"
      Target_en_us "Sit down a minute. Everyone is in a hurry these days. I only watch the square."
@@ -423,6 +428,11 @@ StringTable {
      Id "LF-Dialogue_OldMan_SayBye"
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{3747C32C2EB98228}" {
+     Id "LF-Dialogue_OldMan_SayCove"
+     Target_en_us "Know a good place to fish?"
+     Comment "Dialogue reply to Gaspard (the old man), offered once the player has landed three fish (#3451)."
     }
     CustomStringTableItem "{98D9AB69AB1E7F3A}" {
      Id "LF-Dialogue_OldMan_SayMove"
