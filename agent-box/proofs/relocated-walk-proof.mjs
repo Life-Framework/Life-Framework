@@ -31,7 +31,8 @@ export function readMarkers(text) {
     const order = /m_iOrder\s+(\d+)/.exec(m[3]);
     const c = /coords\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)/.exec(m[3]);
     if (!c) continue;
-    out.push({ name: m[1], role: m[2], order: order ? Number(order[1]) : 0, x: Number(c[1]), y: Number(c[2]), z: Number(c[3]) });
+    const scene = /m_sSceneId\s+"([^"]*)"/.exec(m[3]);
+    out.push({ name: m[1], scene: scene ? scene[1] : "", role: m[2], order: order ? Number(order[1]) : 0, x: Number(c[1]), y: Number(c[2]), z: Number(c[3]) });
   }
   return out;
 }
@@ -88,6 +89,8 @@ async function walk(args) {
   const fixture = opt("--fixture", FIXTURE);
   const layerOpt = opt("--layer", "");
   const want = Number(opt("--npcs", 6));
+  // --hour <h>: the hour the event shell reads (default 6, the dawn events; the anniversary walks need 12).
+  const hour = opt("--hour", "6");
   // --island: the route is the markers of the island's arrival layer (a `session up --mission island` session), not the CoreOnEveron proof layer (#3088).
   const island = args.includes("--island");
   args = args.filter((a) => a !== "--control" && a !== "--island");
@@ -97,7 +100,9 @@ async function walk(args) {
     console.log(`relocated-walk: no route layer at ${layerFile}`);
     return 2;
   }
-  const markers = readMarkers(readFileSync(layerFile, "utf8"));
+  const allMarkers = readMarkers(readFileSync(layerFile, "utf8"));
+  // A layer that holds several scenes (the anniversary slot): only this scene's markers are the route.
+  const markers = allMarkers.some((m) => m.scene === sceneId) ? allMarkers.filter((m) => m.scene === sceneId) : allMarkers;
   const route = markers.filter((m) => m.role === "Waypoint").sort((a, b) => a.order - b.order);
   const spawn = markers.find((m) => m.role === "Spawn");
   const target = markers.find((m) => m.role === "Target");
@@ -113,7 +118,7 @@ async function walk(args) {
     console.log(`marker ${m.name}: y ${m.y}, ground ${y.toFixed(2)}, ${(m.y - y).toFixed(2)} m above`);
   }
   // Stand away from the spawn: the scene spawns out of sight (LF_EventSceneSpawn sight check).
-  const start = on({ verb: "eventscene", words: ["start", fixture, "6"] }, 15000);
+  const start = on({ verb: "eventscene", words: ["start", fixture, hour] }, 15000);
   if (start.status !== "ok") {
     console.log(`relocated-walk: FAIL eventscene start: ${start.detail}`);
     return 1;
