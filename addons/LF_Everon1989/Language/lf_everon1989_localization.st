@@ -584,6 +584,11 @@ StringTable {
      Target_en_us "Not trusted"
      Comment "Standing tier word (#2709): underworld tier -2. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
     }
+    CustomStringTableItem "{57D5CF2EF598E9B9}" {
+     Id "LF-Garage_SlotsFull"
+     Target_en_us "No room left in your garage: %1 cars and that is the lot. Take one out before you put another in."
+     Comment "Garage store refused (#3458, 1989 pack voice): the owner's stored cars fill every slot. %1 is the cap. Overrides the core row."
+    }
     CustomStringTableItem "{5AFB8F50443E2D63}" {
      Id "LF-Handbook_Everon_CrimeBody1"
      Target_en_us "Hold up a shop, break into a vault or force a door and the police are told. Your wanted level goes up, and they come looking for you. You leave marks at the scene, and officers read them."
@@ -3473,6 +3478,11 @@ StringTable {
      Id "LF-SiteName_quarry_hideout"
      Target_en_us "Quarry Hideout"
      Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is quarry_hideout."
+    }
+    CustomStringTableItem "{A014D70CFB1F92A3}" {
+     Id "LF-Tow_Towed"
+     Target_en_us "Your car %1 was towed to the yard. Pay the fee at the impound desk to get it back."
+     Comment "Toast to the owner (#3458, 1989 pack voice): their abandoned car was towed. %1 is the plate. Overrides the core row."
     }
     CustomStringTableItem "{08E024031EF25E98}" {
      Id "LF-TownBoard_Title"

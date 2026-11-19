@@ -34,6 +34,14 @@ Vehicle : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
       Name "#LF-Search_Vehicle_Action"
      }
     }
+    LF_VehicleSearchFullAction "{5EA2C509000000D6}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C50A000000D6}" {
+      Name "#LF-Search_Full_Action"
+     }
+    }
    }
   }
  }

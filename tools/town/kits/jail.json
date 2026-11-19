@@ -19,22 +19,26 @@
       {
         "id": "f0",
         "y": 0
+      },
+      {
+        "id": "f1",
+        "y": 3.8
       }
     ],
     "footprint": {
       "source": "rows",
       "min": [
-        -4.5,
-        -2
+        -6.1,
+        -8
       ],
       "max": [
-        -4.5,
-        -2
+        0.7,
+        3.4
       ]
     },
     "front": "+z",
     "counters": [],
-    "adapt": "One logic entity, no mesh: the LF_JailCellComponent the jail system reads (cell origin, 2 m zone, release point). Offsets are in the police kit's frame (the villa's own barred cell, ground floor west, x -6.85..-2.12 and z -3.7..-0.43), so the slot shares the police slot's building and anchor; its front is +z like the police kit's. The villa's own barred door is the cell door: no door target. Rows are rigid: shift, never stretch."
+    "adapt": "The villa's own barred cell (west, back), the laundry tub and kitchen sink in the free west room of the ground floor, and the yard broom on the open ground behind the villa (+z is the front, so the yard is at -z). Offsets are in the police kit's frame, so the slot shares the police slot's building and anchor. The villa's own barred door is the cell door: no door target. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -60,6 +64,52 @@
           "blocks": []
         }
       ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "jail-laundry-tub",
+      "name": "JailKit_LaundryTub",
+      "prefab": "{73912A59FDEEF731}Prefabs/Props/Jail/LF_JailLaundryTub.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -3.2,
+        3.8,
+        -3
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f1"
+    },
+    {
+      "id": "jail-kitchen-sink",
+      "name": "JailKit_KitchenSink",
+      "prefab": "{AD8A93936711F255}Prefabs/Props/Jail/LF_JailKitchenSink.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        -5.5,
+        3.8,
+        -3.5
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f1"
+    },
+    {
+      "id": "jail-yard-broom",
+      "name": "JailKit_YardBroom",
+      "prefab": "{4DFF61251337EEF8}Prefabs/Props/Jail/LF_JailYardBroom.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0.7,
+        0,
+        -8
+      ],
+      "yaw": 0,
       "wall": "free",
       "floor": "f0"
     }
