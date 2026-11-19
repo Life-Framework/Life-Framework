@@ -1,0 +1,73 @@
+// Grid cell c15r3 for slice-3307: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_slice_3307_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 203 0 59
+}
+SCR_DestructibleEntity Grid_slice_3307_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 208 0 59
+}
+SCR_DestructibleEntity Grid_slice_3307_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_3307_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 64
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_3307_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 213 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_3307_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 208 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_3307_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 203 0 69
+ angleY 90
+}
+GenericEntity Grid_slice_3307_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-3307"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 202.2 0.505 59.6
+ angleY -90
+}
+GenericEntity Grid_slice_3307_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "slice-3307"
+  }
+ }
+ coords 202.3 0 61.5
+ angleY 90
+}
+GenericEntity Grid_slice_3307_R0_1 : "{7EABAD6CF44FEDDA}Prefabs/Props/Signs/Carriers/LF_SignQuad_1x1.et" {
+ coords 210.5 0.501 61
+ angleY -90
+}
+GenericEntity Grid_slice_3307_R0_2 : "{7E53247AA05C4CA2}Prefabs/Props/Signs/Carriers/LF_SignQuad_4x3.et" {
+ coords 210.5 0.501 64
+ angleY -90
+}
+GenericEntity Grid_slice_3307_R0_3 : "{59B68A4C48A81A13}Prefabs/Props/Signs/Carriers/LF_SignQuad_3x2.et" {
+ coords 210.5 0.501 67
+ angleY -90
+}
+GenericEntity Grid_slice_3307_R1_1 : "{9C6FD12B0A95150F}Prefabs/Props/Signs/Carriers/LF_SignQuad_2x1.et" {
+ coords 207 0.501 60
+ angleY -90
+}
+GenericEntity Grid_slice_3307_R1_2 : "{95D1347A9DE1098E}Prefabs/Props/Signs/Carriers/LF_SignQuad_4x1.et" {
+ coords 207 0.501 64
+ angleY -90
+}
+GenericEntity Grid_slice_3307_R1_3 : "{1468F7E42675E6C7}Prefabs/Props/Signs/Carriers/LF_SignQuad_1x2.et" {
+ coords 207 0.501 68
+ angleY -90
+}
