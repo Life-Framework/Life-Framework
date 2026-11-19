@@ -3064,6 +3064,21 @@ StringTable {
      Target_en_us "The village hospital: a medic duty desk, three beds, a call board and the ambulance bay|Bills are 1989 prices, cash only|Playtest: a practice patient lies on the grass between the bay and the till"
      Comment "Sign card for the hospital (medicine cabinet and till), What section."
     }
+    CustomStringTableItem "{1EB77C0BCC89F072}" {
+     Id "LF-Sign_Hostel_How"
+     Target_en_us "Go upstairs and take any free bunk in the dormitory. It is plain, but it is warm."
+     Comment "How line of the hostel sign: the first building a newcomer sees; matches the clerk welcome."
+    }
+    CustomStringTableItem "{B0EE34267D1F6795}" {
+     Id "LF-Sign_Hostel_Title"
+     Target_en_us "Hostel"
+     Comment "Title painted on the hostel fascia and shown in the prompt as Read: Hostel."
+    }
+    CustomStringTableItem "{56F590E37C51D1B1}" {
+     Id "LF-Sign_Hostel_What"
+     Target_en_us "The village hostel: a bed for anyone with nowhere to sleep."
+     Comment "What line of the hostel sign."
+    }
     CustomStringTableItem "{F209D5D9A5D3E58D}" {
      Id "LF-Sign_Impound_How"
      Target_en_us "Pay the fee and collect your vehicle at this desk. It waits in the yard, and you get a key."
