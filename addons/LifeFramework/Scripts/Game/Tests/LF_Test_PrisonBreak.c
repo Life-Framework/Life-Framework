@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_PrisonBreak`: RED PROOF OK, with the break never started and the section load skipped, e.g. "the saved remaining time is back (expected 80, got 0)" and "loading twice does not duplicate the row (expected 1, got 0)". The unhooked run passes.
+// red-proof: Observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_PrisonBreak`: RED PROOF OK, with the break never started and the section load skipped, e.g. "the saved remaining time is back (expected 80, got 0)" and "loading twice does not duplicate the row (expected 1, got 0)". The unhooked run passes. Review 2026-11-19: "the escapee's clock holds while out (expected 80, got 50)" failed on the unfixed LF_Jail.TickOnline, passes with the escaped skip.
 
 //! The break (#3421): a member who passes the rules (#3420) forces the jail door, the window opens and
 //! dispatch radios the officers; a prisoner who walks out in it is `escaped` with the remaining time
@@ -122,6 +122,13 @@ class LF_Test_PrisonBreak : LF_Test
 		ctx.True(SamePlace(LF_Jail.ResolvePosition(runnerUid, outside), outside), "the escaped runner is not pulled back");
 		ctx.EqualFloat(80, LF_Jail.GetRemaining(runnerUid), 0.01, "the runner's remaining time is kept");
 		ctx.EqualFloat(80, LF_Jail.GetRemaining(stayerUid), 0.01, "the stayer serves on");
+
+		// Out on the run the clock holds: an escapee online does not serve the rest free and get
+		// released (teleported to the jail gate) wherever they are.
+		array<string> runnerOnline = {runnerUid};
+		LF_Jail.TickOnline(30, runnerOnline);
+		ctx.True(LF_Jail.IsServing(runnerUid), "the escapee's sentence does not run out on the run");
+		ctx.EqualFloat(80, LF_Jail.GetRemaining(runnerUid), 0.01, "the escapee's clock holds while out");
 
 		// Save and load: the sentence is the jail payload, the status is the section.
 		array<ref LF_JailRecord> sentences = LF_Jail.ExportAll();

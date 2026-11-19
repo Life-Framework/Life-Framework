@@ -539,6 +539,11 @@ class LF_Jail
 			if (!sentence.m_bServing)
 				continue;
 
+			// Out on the run after a break (#3421): the clock holds, so the rest is served after a
+			// recapture rather than run out (and released at the gate) while they roam.
+			if (LF_PrisonBreak.IsEscaped(playerUid))
+				continue;
+
 			bool online = onlineUids.Find(playerUid) >= 0;
 			// Owner rule (#691): the clock may run while the prisoner is away; only the online one is confined.
 			if (!online && clockOffline)
