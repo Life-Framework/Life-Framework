@@ -56,6 +56,9 @@ class LF_QuestDefinition
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Localization key the giver says on turn-in (empty = the generic turned-in hint)")]
 	string m_sTurnInKey;
 
+	[Attribute(defvalue: "", UIWidgets.EditBox, "Resident id (LF_ResidentDef.m_sId) who remembers the help when this quest is turned in (#3465). Empty = none. A resident who asked for the quest through m_sNeedQuest needs no value here")]
+	string m_sMemoryResident;
+
 	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Hand over the holder's registered ID card on turn-in (the town clerk). A player who turned this in gets the card back on every spawn.")]
 	bool m_bRewardIdCard;
 
