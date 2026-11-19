@@ -69,6 +69,22 @@
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
   values `> 0`.
 
+### Eat, drink and throw — `LF_ConsumableEffectEat.c`, `LF_FoodThrow.c` (2026-11-19, play report: "no eating or drinking action or animation")
+- 🧪 `LF_ConsumableEffectEat` is the one shared base of `LF_ConsumableEffectSurvival` and `LF_ConsumableEffectImpair`; the
+  settings live on `ConsumeableItem_Base`, `Food_Base` and `Drink_Base`, so every food and drink gets them (an inventory
+  Use entry, Use when held, the use animation) and a new item sets only its numbers. The animation is the vanilla canteen's
+  (`Canteen_Soviet` item graph, `CMD_Item_Action`, hand to mouth) for food and drink alike.
+- 🧪 Hunger or thirst is restored on the server when the use animation completes, once per item (`LF_ConsumeRules.Claim`); a
+  stack of food gives up one unit. Refused while dead, downed or unconscious, cuffed, seated in a vehicle or swimming
+  (`LF_ConsumeRules.RefusalFor`, checked at the start on the client and again on the server), with a toast. The server log
+  line `consumed <prefab>: hunger a -> b, thirst c -> d` is the proof (`session.mjs food-proof`).
+- 🧪 The engine can clear the gadget's owner before it reports the use finished, which made vanilla drop the effect without a
+  word (the food was gone, nothing restored); the owner recorded at `ModeSwitch` is restored for these items.
+- 🧪 Throw: the `LF_ThrowHeld` input (G, gamepad right shoulder plus B) with food or a drink in the hands. The server takes the
+  item out of the inventory and launches the item's own rigid body; the launch goes to every machine through the item's own
+  RPC (a velocity set on the server alone left each client's copy lying at the thrower's feet). It lands as a plain world item,
+  no damage, and can be picked up again. Tests: `LF_Test_FoodConsume`.
+
 ### `LF_Impairment` and `LF_ConsumableEffectImpair` — `Feature/Survival/` (#1919)
 - ✅ Any consumable can carry `LF_ConsumableEffectImpair` (strength, duration,
   `LINEAR` or `EXPONENTIAL` curve, stack cap). Use on the server adds a dose to the

@@ -29,6 +29,7 @@ const ALLOW_VOLUME = {
   "Items/Drinks/WaterBottle.et": BASE_VOLUME,
   "Items/Drinks/AppleJuice.et": BASE_VOLUME,
   "Items/Drinks/Drink_Base.et": "base prefab, children set their own",
+  "Items/Core/ConsumeableItem_Base.et": "base prefab (the shared use animation), children set their own",
   "Items/Food/Cabbage.et": BASE_VOLUME,
   "Items/Food/Food_Base.et": "base prefab, children set their own",
   "Items/Core/HandCarryItem_Base.et": "base prefab for hand-carry props",
