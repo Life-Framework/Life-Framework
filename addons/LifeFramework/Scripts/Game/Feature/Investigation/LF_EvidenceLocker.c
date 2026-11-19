@@ -78,6 +78,7 @@ class LF_EvidenceLocker
 	{
 		int dropped = Count();
 		ResetStatics();
+		LF_EvidenceLockerFill.ResetStatics();
 		return dropped;
 	}
 
@@ -169,6 +170,7 @@ class LF_EvidenceLocker
 		LF_Debug.Info(FEATURE, string.Format("bag #%1 logged for report #%2 (%3, %4): serial '%5' identified=%6", row.m_iNumber, row.m_iReport, row.m_sKind, row.m_sPlace, row.m_sSerial, row.m_bIdentified));
 		// The case board keeps the card for it (unpinned until an officer pins it).
 		LF_CaseBoard.OnLogged(row, bagComponent.GetNote());
+		LF_EvidenceLockerFill.Check();
 		SCR_EntityHelper.DeleteEntityAndChildren(bag);
 		return row;
 	}
@@ -198,6 +200,7 @@ class LF_EvidenceLocker
 		}
 
 		LF_Debug.Info(FEATURE, string.Format("back room seizure #%1 logged: %2 from '%3'", row.m_iNumber, prefab, place));
+		LF_EvidenceLockerFill.Check();
 		return row;
 	}
 
@@ -237,6 +240,7 @@ class LF_EvidenceLocker
 		LF_Debug.Warn(FEATURE, string.Format("locker raided by %1: %2 logged bag(s) destroyed", raiderUid, destroyed));
 		// The case file is burned: its cards come off the case board too.
 		LF_CaseBoard.OnCaseFileBurned();
+		LF_EvidenceLockerFill.Check();
 		return destroyed;
 	}
 
@@ -277,6 +281,7 @@ class LF_EvidenceLocker
 	{
 		s_aRows = new array<ref LF_EvidenceLockerRow>();
 		s_iNumber = 0;
+		LF_EvidenceLockerFill.ResetStatics();
 		if (!records)
 			return;
 
