@@ -1,0 +1,73 @@
+GenericEntity FarmSupply_Origin {
+ coords 0 0 0
+}
+GenericEntity FarmSupply_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords -8 0 -8
+ angleY 180
+}
+GenericEntity Source_FarmSupplyTill : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{A4F8CB053836E968}" {
+   m_sShopName "#LF-Shop_Name_FarmSupply"
+   m_sShopDescription "#LF-Shop_Desc_FarmSupply"
+   m_sOutletId "farm_supply"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{5302375DBA31C588}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{C230C2489F6ADA9F}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{6BB38C44379A9E0F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{DE6285E6B01111EF}" {
+      Name "#LF-Shop_Open_FarmSupply"
+      Description "#LF-Shop_OpenDesc_FarmSupply"
+     }
+    }
+   }
+  }
+ }
+ coords -8 1.039 -8
+ angleY 180
+}
+LF_NpcBaseEntity FarmSupply_Clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords -8 0 -6.9
+ angleY 180
+}
+GenericEntity FarmSupply_Sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords -5.4 0 -7.6
+ angleY 90
+}
+GenericEntity FarmSupply_Sacks_2 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords -5.4 0 -9.4
+ angleY 90
+}
+GenericEntity FarmSupply_Crate : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords -9.6 0 -7.2
+ angleY 180
+}
+SCR_DestructibleEntity FarmSupply_Board : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ components {
+  LF_SignComponent "{3DB1B6C563C23CD6}" {
+   m_sSignId "farm_supply"
+   m_sStyle ""
+   m_sSize ""
+   m_vFaceAngles 0 -15 0
+   m_fFaceScale 2.6
+  }
+ }
+ coords -10.5 0 -9.6
+ angleY 180
+}
+GenericEntity FarmSupply_ImplementRack : "{21B9456F3B79410E}Prefabs/Harvest/LF_ImplementRack.et" {
+ coords -14 0 -7.6
+ angleY 180
+}

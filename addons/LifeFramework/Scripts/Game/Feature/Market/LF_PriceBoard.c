@@ -29,7 +29,12 @@ class LF_PriceBoard
 			if (!def)
 				continue;
 
-			answer.m_aTexts.Insert(LF_ShopManagerComponent.ResolveDisplayName(def.m_sGood));
+			// A good priced per lot (#3622) shows its lot after the name ("Grain sack x200"): the price is per lot.
+			string name = LF_ShopManagerComponent.ResolveDisplayName(def.m_sGood);
+			if (def.Lot() > 1)
+				name = name + " x" + def.Lot().ToString();
+
+			answer.m_aTexts.Insert(name);
 			int price = LF_MarketBook.CurrentPriceAt(def.m_sGood, nowUnix);
 			answer.m_aNumbers.Insert(price);
 			// Only what the board shows crosses: the arrow, never the base or the curve.

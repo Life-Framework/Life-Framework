@@ -36,7 +36,17 @@
     },
     { "id": "zone", "line": "about_zone", "options_from": "greet" },
     { "id": "move", "line": "about_move", "options_from": "greet" },
-    { "id": "work", "line": "about_work", "options_from": "greet" },
+    {
+      "id": "work",
+      "line": "about_work",
+      "options": [
+        { "text": "zone", "next": "zone" },
+        { "text": "move", "next": "move" },
+        { "text": "tip", "next": "tip", "condition": "Informant", "action": "Informant" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "tip", "options_from": "greet" },
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
@@ -54,6 +64,7 @@
     "zone": "You worked near the Zone?",
     "move": "How was the move?",
     "work": "Is there work for me?",
+    "tip": "Heard anyone's buying, quiet like?",
     "bye": "Goodbye."
   }
 }

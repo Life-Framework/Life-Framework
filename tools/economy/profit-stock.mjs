@@ -63,7 +63,9 @@ function payouts(src, catalogue) {
   for (const file of (src.market || []).filter(existsSync)) {
     const conf = parseConf(readFileSync(file, "utf8"));
     for (const g of conf?.props.m_aGoods?.list || []) {
-      if (typeof g.props.m_iCeiling === "number") offer(g.props.m_sGood, g.props.m_iCeiling, `the market at its ceiling (${rel(file)})`);
+      // A ceiling is a price per lot (#3622): the unit pays ceiling / lot.
+      const lot = typeof g.props.m_iLotSize === "number" && g.props.m_iLotSize > 1 ? g.props.m_iLotSize : 1;
+      if (typeof g.props.m_iCeiling === "number") offer(g.props.m_sGood, g.props.m_iCeiling / lot, `the market at its ceiling (${rel(file)})`);
     }
   }
   for (const it of catalogue) offer(it.prefab, it.sell, `catalogue outlet ${it.id}`);

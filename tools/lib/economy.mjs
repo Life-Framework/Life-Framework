@@ -14,6 +14,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { parseConf, guidOf } from "../economy/profit-loops.mjs";
 import { buildLumber, lumberFlags, renderLumber } from "./economy-lumber.mjs";
+import { buildWheat, renderWheat, wheatFlags } from "./economy-wheat.mjs";
 import { SECTIONS, loadOwner, loadPackOverlays, mergeList, metaIndex, sectionLayers } from "../pack/layers.mjs";
 
 /** Minutes a courier, fuel or taxi run takes on the real map (an assumption; `--run-minutes` overrides). */
@@ -261,9 +262,12 @@ export function buildReport(root, opts = {}) {
   // The lumber loops (#3270): read from the lumber and market configs; a flag for a loop outside the duty band.
   const lumber = buildLumber({ addonsDir, packLayers, owner, opts, duty: { police: duty.police.rank0, medic: duty.medic.rank0 } });
   flags.push(...lumberFlags(lumber));
+  // The wheat loops (#3622): the granary curve and the bakery flour row, priced per lot; a flag outside the duty band.
+  const wheat = buildWheat({ addonsDir, packLayers, owner, opts, duty: { police: duty.police.rank0, medic: duty.medic.rank0 } });
+  flags.push(...wheatFlags(wheat));
 
   return {
-    lumber, mission, pack, overlays: loaded.overlays.map((o) => o.file), problems: loaded.problems.map((p) => p.msg), ownerFile: owner ? ownerFile : null,
+    lumber, wheat, mission, pack, overlays: loaded.overlays.map((o) => o.file), problems: loaded.problems.map((p) => p.msg), ownerFile: owner ? ownerFile : null,
     start: { bank: startBank, cash: startCash }, runs, contracts, benefit, duty, sinks, ladder, flags, assumptions: { runMinutes, taxiMetres },
   };
 }
@@ -299,6 +303,7 @@ export function renderReport(r) {
     L.push(`  hour ${h.hour}: ${h.runs} runs (${jobsDone}), earned ${money(h.earned)}, total ${money(h.total)}; can afford: ${buys}`);
   }
   if (r.lumber) L.push(...renderLumber(r.lumber));
+  if (r.wheat) L.push(...renderWheat(r.wheat));
   if (r.flags.length === 0) L.push("flags: none");
   else {
     L.push("flags:");

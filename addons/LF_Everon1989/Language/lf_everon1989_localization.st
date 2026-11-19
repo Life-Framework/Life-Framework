@@ -19,6 +19,16 @@ StringTable {
      Target_en_us "FIRST BANK OF EVERON"
      Comment "ATM terminal screen header. Upper case: a 1989 green-screen terminal."
     }
+    CustomStringTableItem "{BE2579D48B439241}" {
+     Id "LF-BuyerSale_Closed"
+     Target_en_us "The man is not buying here, not tonight."
+     Comment "Toast (#2922, 1989 pack voice): the buyer is absent, away from the open spot, or the price list is missing."
+    }
+    CustomStringTableItem "{20C3F3155FCF7F4B}" {
+     Id "LF-BuyerSale_Nothing"
+     Target_en_us "You have nothing he drinks or smokes."
+     Comment "Toast (#2922, 1989 pack voice): no chain goods the buyer names."
+    }
     CustomStringTableItem "{6F65DE9EB00006ED}" {
      Id "LF-CharSel_Title"
      Target_en_us "Civil Registry of Everon, Residents on File"
@@ -358,6 +368,11 @@ StringTable {
      Id "LF-Dialogue_NightShift_SayMove"
      Target_en_us "How was the move?"
      Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{934605F1DC35249E}" {
+     Id "LF-Dialogue_NightShift_SayTip"
+     Target_en_us "Heard anyone's buying, quiet like?"
+     Comment "Night-shift worker reply (#2922): asks the informant where the buyer stands today; shown only to someone he would tell."
     }
     CustomStringTableItem "{BCCC43C3AC789D1A}" {
      Id "LF-Dialogue_NightShift_SayWork"
@@ -699,6 +714,31 @@ StringTable {
      Target_en_us "Republic of Everon, Identity Card"
      Comment "Title of the ID card view another player holds up."
     }
+    CustomStringTableItem "{AB301A21E6C4933D}" {
+     Id "LF-Informant_Already"
+     Target_en_us "I told you already. He is where I marked it."
+     Comment "Informant answer (#2922, 1989 pack voice): the player already holds this shift's mark; nothing was taken."
+    }
+    CustomStringTableItem "{F1374BA6D82ABEFA}" {
+     Id "LF-Informant_NeverHeard"
+     Target_en_us "Never heard of him. Go home."
+     Comment "Informant refusal (#2922, 1989 pack voice): police on duty, or too little standing; the same words either way."
+    }
+    CustomStringTableItem "{E4C147CBA15470AB}" {
+     Id "LF-Informant_NoCash"
+     Target_en_us "A tip costs {currency:sym}%1, friend. Come back when you have it."
+     Comment "Informant refusal toast (#2922, 1989 pack voice): not enough cash; %1 is the fee. Nothing was taken."
+    }
+    CustomStringTableItem "{B80B0DA1C60DDE2C}" {
+     Id "LF-Informant_NoSpot"
+     Target_en_us "Nobody is buying tonight. Nothing to tell you."
+     Comment "Informant answer (#2922, 1989 pack voice): no buyer spot is placed; nothing was taken."
+    }
+    CustomStringTableItem "{FF75CE36995683B2}" {
+     Id "LF-Informant_Told"
+     Target_en_us "He is buying tonight. I marked the spot on your map; it will not keep past this shift."
+     Comment "Informant answer (#2922, 1989 pack voice): the fee was paid and the buyer's spot is on the map."
+    }
     CustomStringTableItem "{772ECF227821D478}" {
      Id "LF-Item_Bread"
      Target_en_us "Bread loaf"
@@ -849,6 +889,21 @@ StringTable {
      Target_en_us "Tourist map of Everon"
      Comment "Tourist map (#2242): the item's name in the inventory."
     }
+    CustomStringTableItem "{E5D6ABA466DA481F}" {
+     Id "LF-Launder_Closed"
+     Target_en_us "Nobody is washing money tonight."
+     Comment "Toast (#2922, 1989 pack voice): the laundering rules config is missing or refused."
+    }
+    CustomStringTableItem "{9FA29FCFFE44A9BC}" {
+     Id "LF-Launder_DailyCap"
+     Target_en_us "That is all the washing the town can hide in a day. Come back tomorrow."
+     Comment "Toast (#2922, 1989 pack voice): the character reached the 24 h laundering cap."
+    }
+    CustomStringTableItem "{FADAC5CC77FBDC89}" {
+     Id "LF-Launder_Loaded"
+     Target_en_us "The notes are in the machine. Come back when they are clean, minus the house's share."
+     Comment "Toast (#2922, 1989 pack voice): marked notes loaded into the laundering station; the cut is the pack's."
+    }
     CustomStringTableItem "{78E9902BB0209A7E}" {
      Id "LF-Level_Far_Farmer"
      Target_en_us "You have not put in enough seasons on the land for that."
@@ -933,6 +988,11 @@ StringTable {
      Id "LF-MapPoi_ContestedSite"
      Target_en_us "Contested ground"
      Comment "Map POI kind name (#3552): a contested site (LF_Places kind contested-site), held ground an organisation can take. Public story pin, so a newcomer finds the farm compound, the hilltop mast and the quarry."
+    }
+    CustomStringTableItem "{BFF48978815D4687}" {
+     Id "LF-MapPoi_FarmSupply"
+     Target_en_us "Farm supply"
+     Comment "Map POI name (#3631): the Saint-Philippe farm supply counter by the farm barn."
     }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
@@ -1514,6 +1574,11 @@ StringTable {
      Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
+    CustomStringTableItem "{01FD5CE2F519BD5D}" {
+     Id "LF-Shop_Desc_FarmSupply"
+     Target_en_us "Farm machinery for hire-purchase on the spot: a reaper to hitch behind a tractor or a UAZ."
+     Comment "Shop description of the farm supply counter till (#3631): outlet farm_supply."
+    }
     CustomStringTableItem "{1B4CFC6B76803431}" {
      Id "LF-Shop_Desc_Furniture"
      Target_en_us "Beds, sofas, tables, wardrobes and lamps for the new home."
@@ -1589,6 +1654,11 @@ StringTable {
      Target_en_us "Clothes shop"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
+    CustomStringTableItem "{4E605F7F63F4AF47}" {
+     Id "LF-Shop_Name_FarmSupply"
+     Target_en_us "Farm Supply"
+     Comment "Shop name of the farm supply counter till (#3631): outlet farm_supply."
+    }
     CustomStringTableItem "{5610D2FB07972A2F}" {
      Id "LF-Shop_Name_Furniture"
      Target_en_us "Meubles"
@@ -1639,6 +1709,11 @@ StringTable {
      Target_en_us "Workwear counter"
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
+    CustomStringTableItem "{D0DAC06750DA2554}" {
+     Id "LF-Shop_OpenDesc_FarmSupply"
+     Target_en_us "Buy a reaper"
+     Comment "Action description on the farm supply counter till (#3631)."
+    }
     CustomStringTableItem "{BC9B8CB431998AA0}" {
      Id "LF-Shop_OpenDesc_Hardware"
      Target_en_us "Browse the tools and building supplies."
@@ -1673,6 +1748,11 @@ StringTable {
      Id "LF-Shop_Open_ClothesShop"
      Target_en_us "Browse the clothes rack"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{EF58B7CBF7ED945F}" {
+     Id "LF-Shop_Open_FarmSupply"
+     Target_en_us "Browse the farm machinery"
+     Comment "Action label on the farm supply counter till (#3631)."
     }
     CustomStringTableItem "{0E816968A7BE847A}" {
      Id "LF-Shop_Open_Furniture"
@@ -2128,6 +2208,26 @@ StringTable {
      Id "LF-Sign_FarmPlots_What"
      Target_en_us "Grow your own cabbages in the dirt plots."
      Comment "Info board at the farm plots, What section."
+    }
+    CustomStringTableItem "{E7F58ACC29F1A769}" {
+     Id "LF-Sign_FarmSupply_Next"
+     Target_en_us "Take it out at the implement rack beside the barn, hitch it to a UAZ or a Z7211 and drive to the field. Put it back at the rack when you are done."
+     Comment "Sign card for the farm supply counter, Next section (#3631)."
+    }
+    CustomStringTableItem "{093093E54CF70A83}" {
+     Id "LF-Sign_FarmSupply_Reaper"
+     Target_en_us "Reaper"
+     Comment "Chalk board row label at the farm supply counter (#3631)."
+    }
+    CustomStringTableItem "{4363B8E0446F2520}" {
+     Id "LF-Sign_FarmSupply_Title"
+     Target_en_us "Farm supply"
+     Comment "Title of the chalk board at the Saint-Philippe farm supply counter (#3631). Printed on the board and shown in the prompt as Read: Farm supply."
+    }
+    CustomStringTableItem "{E32383E42223461E}" {
+     Id "LF-Sign_FarmSupply_What"
+     Target_en_us "Farm machinery sold over the counter, one of each per customer. Price in dollars."
+     Comment "Sign card for the farm supply counter, What section (#3631)."
     }
     CustomStringTableItem "{905E4015631C43F6}" {
      Id "LF-Sign_Farm_How"
