@@ -1,0 +1,662 @@
+{
+ "schema": 1,
+ "place": {
+  "name": "xz-9946-2283",
+  "key": null,
+  "kind": null,
+  "source": "coordinates",
+  "slug": "hilltopmast",
+  "x": 9946,
+  "y": 315.3,
+  "z": 2283
+ },
+ "radius": 120,
+ "generated": {
+  "at": "2026-11-19",
+  "tool": "tools\\cli scout",
+  "command": "tools\\cli scout 9946,2283",
+  "view": 60,
+  "gameBuild": "Arma Reforger build 26266485 (installed 2026-11-08)",
+  "world": "Worlds/CoreOnEveron/CoreOnEveron.ent"
+ },
+ "nearbyPlaces": [
+  {
+   "name": "PICK MOUNTAIN",
+   "kind": "natural",
+   "distance": 18,
+   "direction": "N"
+  },
+  {
+   "name": "Pick Creek",
+   "kind": "aquatic",
+   "distance": 534,
+   "direction": "SE"
+  },
+  {
+   "name": "Millstone Creek",
+   "kind": "aquatic",
+   "distance": 682,
+   "direction": "SW"
+  }
+ ],
+ "summary": {
+  "buildings": 1,
+  "byType": {
+   "industrial": 1
+  },
+  "civic": 0,
+  "homes": 0,
+  "ruins": 0,
+  "enterable": 1,
+  "entrances": 1,
+  "doors": 1,
+  "props": 0,
+  "trees": 6,
+  "roads": 6,
+  "junctions": 11,
+  "freePlots": 2,
+  "walls": 17,
+  "otherEntities": 8,
+  "portPieces": 0
+ },
+ "terrain": {
+  "min": 236.4,
+  "max": 318.6,
+  "mean": 289.6,
+  "range": 82.2,
+  "flatShare": 0.01,
+  "gentleShare": 0.02,
+  "steepShare": 0.88,
+  "steepest": {
+   "deg": 57.8,
+   "x": 9856,
+   "z": 2258
+  },
+  "tilt": {
+   "deg": 8.3,
+   "fallsToward": "S"
+  },
+  "waterShare": 0,
+  "nearestWater": null,
+  "notes": [
+   "ground 236.4 to 318.6 m (82.2 m of relief) within 120 m; mean 289.6 m",
+   "1% of the ground is under 3 degrees, 2% 3 to 8, 88% over 15",
+   "overall the ground falls 8.3 degrees toward the S",
+   "steepest ground 57.8 degrees at 9856, 2258"
+  ]
+ },
+ "mainStreet": {
+  "road": "NW-SE road r07",
+  "roadId": "r07",
+  "buildingsAlong": 1,
+  "at": [
+   9927,
+   2268.8
+  ],
+  "runs": "NW-SE"
+ },
+ "roads": [
+  {
+   "id": "r01",
+   "name": "N-S road r01",
+   "cls": "RoadEntity",
+   "runs": "N-S",
+   "points": [
+    [
+     9961.7,
+     2285.3
+    ],
+    [
+     9960.9,
+     2301
+    ],
+    [
+     9947.4,
+     2343
+    ],
+    [
+     9936,
+     2356.8
+    ],
+    [
+     9922.9,
+     2374.8
+    ],
+    [
+     9922.1,
+     2394.8
+    ],
+    [
+     9933,
+     2412
+    ]
+   ],
+   "length": 140.4
+  },
+  {
+   "id": "r03",
+   "name": "NW-SE road r03",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     9898.7,
+     2386.4
+    ],
+    [
+     9896.3,
+     2391.9
+    ],
+    [
+     9891.3,
+     2396.7
+    ]
+   ],
+   "length": 12.9
+  },
+  {
+   "id": "r05",
+   "name": "NW-SE road r05",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     9955.4,
+     2303
+    ],
+    [
+     9948,
+     2312
+    ],
+    [
+     9938.3,
+     2326
+    ],
+    [
+     9926.1,
+     2330.5
+    ],
+    [
+     9908.1,
+     2345.5
+    ],
+    [
+     9908.8,
+     2361.2
+    ],
+    [
+     9900.3,
+     2371.9
+    ],
+    [
+     9897.2,
+     2390.9
+    ],
+    [
+     9883.9,
+     2408.3
+    ]
+   ],
+   "length": 135.6
+  },
+  {
+   "id": "r06",
+   "name": "NW-SE road r06",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     9973,
+     2248.2
+    ],
+    [
+     9983.7,
+     2238.1
+    ],
+    [
+     9990.2,
+     2228.7
+    ],
+    [
+     10003.1,
+     2225.1
+    ],
+    [
+     10016.6,
+     2221
+    ],
+    [
+     10026.8,
+     2220.1
+    ],
+    [
+     10039.7,
+     2209.1
+    ],
+    [
+     10048.1,
+     2200.8
+    ]
+   ],
+   "length": 92.6
+  },
+  {
+   "id": "r07",
+   "name": "NW-SE road r07",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     9916.9,
+     2337.4
+    ],
+    [
+     9919.4,
+     2331.6
+    ],
+    [
+     9918.5,
+     2322.9
+    ],
+    [
+     9915.4,
+     2312.4
+    ],
+    [
+     9914.3,
+     2296.5
+    ],
+    [
+     9914.3,
+     2287.4
+    ],
+    [
+     9921.8,
+     2275.5
+    ],
+    [
+     9928,
+     2267.5
+    ],
+    [
+     9930.3,
+     2260.6
+    ],
+    [
+     9932.3,
+     2252.9
+    ],
+    [
+     9941.7,
+     2250.4
+    ],
+    [
+     9948.6,
+     2253.3
+    ],
+    [
+     9958,
+     2253.1
+    ],
+    [
+     9970.5,
+     2248.8
+    ],
+    [
+     9982,
+     2244.6
+    ],
+    [
+     9986.4,
+     2230.5
+    ],
+    [
+     9991.7,
+     2226.3
+    ],
+    [
+     10000.8,
+     2227.6
+    ],
+    [
+     10013,
+     2220.4
+    ],
+    [
+     10021.9,
+     2221.3
+    ],
+    [
+     10032.9,
+     2217.2
+    ],
+    [
+     10036.6,
+     2208.6
+    ],
+    [
+     10046.3,
+     2204.9
+    ]
+   ],
+   "length": 227.8
+  },
+  {
+   "id": "r08",
+   "name": "NW-SE road r08",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     9910.7,
+     2341.3
+    ],
+    [
+     9903.7,
+     2340.3
+    ],
+    [
+     9894,
+     2351.1
+    ],
+    [
+     9894.8,
+     2358.6
+    ],
+    [
+     9887.6,
+     2368.8
+    ],
+    [
+     9884.1,
+     2373.4
+    ],
+    [
+     9876,
+     2380.1
+    ],
+    [
+     9867.9,
+     2384.4
+    ]
+   ],
+   "length": 67.1
+  }
+ ],
+ "junctions": [
+  {
+   "x": 9916.9,
+   "z": 2337.4,
+   "roads": [
+    "r07",
+    "r05",
+    "r08"
+   ],
+   "arms": 4,
+   "kind": "crossroads"
+  },
+  {
+   "x": 9984.3,
+   "z": 2237.2,
+   "roads": [
+    "r06",
+    "r07"
+   ],
+   "arms": 4,
+   "kind": "crossroads"
+  },
+  {
+   "x": 9996.4,
+   "z": 2227,
+   "roads": [
+    "r06",
+    "r07"
+   ],
+   "arms": 4,
+   "kind": "crossroads"
+  },
+  {
+   "x": 10007.1,
+   "z": 2223.9,
+   "roads": [
+    "r06",
+    "r07"
+   ],
+   "arms": 4,
+   "kind": "crossroads"
+  },
+  {
+   "x": 10017.8,
+   "z": 2220.9,
+   "roads": [
+    "r06",
+    "r07"
+   ],
+   "arms": 4,
+   "kind": "crossroads"
+  },
+  {
+   "x": 10028.1,
+   "z": 2219,
+   "roads": [
+    "r06",
+    "r07"
+   ],
+   "arms": 4,
+   "kind": "crossroads"
+  },
+  {
+   "x": 10034.5,
+   "z": 2213.6,
+   "roads": [
+    "r06",
+    "r07"
+   ],
+   "arms": 4,
+   "kind": "crossroads"
+  },
+  {
+   "x": 9897.5,
+   "z": 2389.2,
+   "roads": [
+    "r03",
+    "r05"
+   ],
+   "arms": 3,
+   "kind": "t-junction"
+  },
+  {
+   "x": 9891.3,
+   "z": 2396.7,
+   "roads": [
+    "r03",
+    "r05"
+   ],
+   "arms": 3,
+   "kind": "t-junction"
+  },
+  {
+   "x": 9973.5,
+   "z": 2247.7,
+   "roads": [
+    "r06",
+    "r07"
+   ],
+   "arms": 3,
+   "kind": "t-junction"
+  },
+  {
+   "x": 10042.5,
+   "z": 2206.4,
+   "roads": [
+    "r06",
+    "r07"
+   ],
+   "arms": 2,
+   "kind": "bend-or-join"
+  }
+ ],
+ "buildings": [
+  {
+   "prefab": "{E30E1250FD927736}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_beige.et",
+   "path": "Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_beige.et",
+   "stem": "PortableCabin_E_01_beige",
+   "type": "industrial",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 9945.9,
+   "y": 315.1,
+   "z": 2283.4,
+   "yaw": 90,
+   "facing": "E",
+   "scale": 1,
+   "distance": 0.4,
+   "bearing": "N",
+   "footprint": {
+    "source": "catalog",
+    "w": 3.8,
+    "d": 6.4,
+    "h": 3.5,
+    "area": 24.3,
+    "cx": 9945.9,
+    "cz": 2283.4,
+    "corners": [
+     [
+      9942.7,
+      2285.3
+     ],
+     [
+      9942.7,
+      2281.5
+     ],
+     [
+      9949.1,
+      2281.5
+     ],
+     [
+      9949.1,
+      2285.3
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": -0.2,
+   "basement": 3.2,
+   "height": 3.5,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 1 door entity and a walkable floor (2 floors)"
+   },
+   "doors": 1,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 9948.9,
+     "y": 315.4,
+     "z": 2282.8,
+     "side": "front",
+     "facing": "E",
+     "edge": 0.2
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b01"
+  }
+ ],
+ "props": [],
+ "propCounts": {},
+ "freePlots": {
+  "plots": [
+   {
+    "id": "p1",
+    "x": 9954,
+    "z": 2268,
+    "width": 20,
+    "depth": 22,
+    "area": 440,
+    "ground": {
+     "min": 314.9,
+     "max": 316.8
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r07",
+     "distance": 14.8
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "industrial",
+     "stem": "PortableCabin_E_01_beige",
+     "distance": 14.4
+    },
+    "distance": 17
+   },
+   {
+    "id": "p2",
+    "x": 9956,
+    "z": 2380,
+    "width": 24,
+    "depth": 10,
+    "area": 240,
+    "ground": {
+     "min": 295.4,
+     "max": 299.2
+    },
+    "nearestRoad": {
+     "name": "N-S road r01",
+     "distance": 29.8
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "industrial",
+     "stem": "PortableCabin_E_01_beige",
+     "distance": 95
+    },
+    "distance": 97.5
+   }
+  ],
+  "note": "plots are open rectangles at least 10 m on the short side, kept 2.5 m off buildings, 4.5 m off a road's centre line, 2 m off a tree, on ground under 12 degrees; axis aligned, not the best use of the land"
+ },
+ "pictures": [
+  {
+   "role": "overview",
+   "file": "img/overview-top.jpg",
+   "caption": "from above, north up"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-wide.jpg",
+   "caption": "wide, from the south"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob270.jpg",
+   "caption": "from the west"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob000.jpg",
+   "caption": "from the north"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob090.jpg",
+   "caption": "from the east"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-wide.jpg",
+   "caption": "NW-SE road r07 (NW-SE), looking along it"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-ob090.jpg",
+   "caption": "from the east"
+  }
+ ],
+ "notes": [
+  "buildings (types, footprints, floors, interiors) are read from the Everon catalog, docs/everon/catalog-buildings.json; 1 of 1 matched an entity of the engine dump, which adds the door positions"
+ ]
+}

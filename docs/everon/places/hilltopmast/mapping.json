@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "template": "hilltopmast",
+  "place": "hilltopmast",
+  "status": "approved",
+  "note": "Hand-written for #3413 (X35): the radio mast on Pick Mountain (north-east uplands) and the portable cabin at its foot, found in the Everon catalog as the one rural cabin that stands on a named summit. The dossier is a scout of x 9946, z 2283 at radius 120; the cabin is the only building. One road climbs to it (r07 passes 15 m south-east of the door). No sign and no map marker: `poi` is none. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 1,
+    "freePlots": 2
+  },
+  "slots": {
+    "a": {
+      "building": "b01",
+      "why": [
+        "PortableCabin_E_01_beige (type industrial), 24 m2, the only building on the summit, 18 m from the label PICK MOUNTAIN and beside the radio mast; it has one door on its east side",
+        "free plot p1 (20 x 22 m, ground 314.9 to 316.8 m, about 17 m from the centre) is the flat top east and south of the cabin, with road r07 14.8 m beyond, so the site's flag, strongbox and a car or two fit",
+        "2 km from the quarry and clear of the airport and the military land (D11)"
+      ]
+    }
+  }
+}

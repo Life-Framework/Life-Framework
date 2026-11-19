@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{95D1347A9DE1098E}Prefabs/Props/Signs/Carriers/LF_SignQuad_4x1.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
