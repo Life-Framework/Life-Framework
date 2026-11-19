@@ -3487,6 +3487,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
       const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState, files });
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
+      judgeRestoredRdb(root, !!r.summary, "");
       if (r.sync) extra.syncS = Math.round(r.sync.ms / 100) / 10;
       recordTestTimes(root, r.localLog, tier, only, opts);
       if (!lastTry && pool.machineGone(root, slot, code)) {
@@ -3500,6 +3501,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     code = runLocalTest(root, tier, only, opts.world, opts.coreOnly, red);
     // test-e2e.ps1 stamps summaries.jsonl lazily (at the next boot), so read this run's printed SUMMARY.
     const sum = lastLocalSummary ?? newestStamp(root, before, opts.coreOnly);
+    judgeRestoredRdb(root, !!lastLocalSummary, lastLocalText);
     if (sum) extra = { passed: sum.passed, total: sum.total };
     if (sum) recordTestTimes(root, sum.consoleLog, tier, only, opts);
     // A stale rdb (refresh failed or timed out) never yields a silent pass (tools/lib/rdb-stale-verdict.mjs).
@@ -3732,10 +3734,21 @@ function runLocalTest(root, tier, only, world, coreOnly, red = false) {
     process.stdout.write(res.stdout + res.stderr);
     const m = /test-e2e: SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)/.exec(res.stdout);
     lastLocalSummary = m ? { tier: m[1], passed: +m[2], failed: +m[3], total: +m[4] } : null;
+    lastLocalText = res.stdout + res.stderr;
     return res.status;
   });
 }
 let lastLocalSummary = null;
+let lastLocalText = "";
+
+// An rdb that came from the shared cache (tools/lib/rdb-cache.mjs) is trusted only once a boot printed a SUMMARY with it.
+// A boot that died with none evicts the entry and this worktree's copy, so the next run refreshes (#3586).
+function judgeRestoredRdb(root, hasSummary, text) {
+  try {
+    if (hasSummary) rdbCache.confirmRestored(root);
+    else if (rdbCache.bootDiedWithoutVerdict({ hasSummary, text })) rdbCache.evictRestored(root);
+  } catch {}
+}
 
 async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   // Fast dev loop: skip the headless Workbench build (the dedicated server
