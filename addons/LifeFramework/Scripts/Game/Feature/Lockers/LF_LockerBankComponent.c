@@ -28,6 +28,9 @@ class LF_LockerBankComponent : ScriptComponent
 		s_aBanks.Insert(owner.GetID());
 		if (m_sSiteId.IsEmpty())
 			LF_Debug.Warn(LF_LockerBank.FEATURE, string.Format("locker bank at %1 has no site id; keyed by position", owner.GetOrigin()));
+
+		// Rents lapse at every bank, with or without a lost-and-found box beside it (#3457).
+		LF_LostAndFound.ArmSweep();
 	}
 
 	//------------------------------------------------------------------------------------------------

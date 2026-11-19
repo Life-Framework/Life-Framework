@@ -14,6 +14,9 @@ class LF_HeistRunComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, desc: "Site id. Empty uses the entity name.")]
 	protected string m_sSiteId;
 
+	[Attribute("", UIWidgets.EditBox, desc: "Heist job id in LF_HeistConfig (e.g. bank). Set: the job row's door, vault, getaway radius, clock and police minimum replace the four fields below.")]
+	protected string m_sHeistId;
+
 	[Attribute("", UIWidgets.EditBox, desc: "Stage one: target id of the breach door (LF_BreachTargetComponent).")]
 	protected string m_sDoorTargetId;
 
@@ -60,12 +63,35 @@ class LF_HeistRunComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The run a site builds (#3748): with a heist id, from that LF_HeistConfig row (the radius
+	//! attribute is the fallback when the row's getaway names none); without one, from the attributes.
+	//! \return null (logged) when the id names no row or the row cannot run.
+	static LF_HeistRun BuildRun(string siteId, string heistId, string doorId, string vaultId, vector centre, float radius, float clockSeconds)
+	{
+		if (heistId.IsEmpty())
+			return LF_HeistRun.Create(siteId, doorId, vaultId, centre, radius, clockSeconds * 1000);
+
+		LF_HeistSiteRow row;
+		LF_HeistConfig config = LF_HeistConfig.Get();
+		if (config)
+			row = config.Find(heistId);
+
+		if (!row)
+		{
+			LF_Debug.Error(LF_HeistRun.FEATURE, string.Format("heist site %1: no heist job '%2' in the heist config", siteId, heistId));
+			return null;
+		}
+
+		return LF_HeistRun.FromRow(siteId, row, centre, radius);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void NewRun()
 	{
 		if (m_Run)
 			m_Run.Stop();
 
-		m_Run = LF_HeistRun.Create(GetSiteId(), m_sDoorTargetId, m_sVaultId, GetOwner().GetOrigin(), m_fGetawayRadius, m_fClockSeconds * 1000);
+		m_Run = BuildRun(GetSiteId(), m_sHeistId, m_sDoorTargetId, m_sVaultId, GetOwner().GetOrigin(), m_fGetawayRadius, m_fClockSeconds);
 		if (!m_Run || !m_Run.Listen())
 			return;
 

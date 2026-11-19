@@ -5448,6 +5448,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Nothing left in there"
      Comment "Offer: the heist target is out of stock until it refills (#275)."
     }
+    CustomStringTableItem "{C3E7A15B90D24F68}" {
+     Id "LF-Heist_NeedPolice"
+     Target_en_us "Not enough {police} on duty for this job"
+     Comment "Breach charge refused on a heist job's door because fewer police are on duty than the job needs"
+    }
     CustomStringTableItem "{287FBFE0C09D4B2C}" {
      Id "LF-Heist_Van_Open"
      Target_en_us "Break open the cash box"
@@ -7862,6 +7867,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logged out"
      Comment "World-space tag over a logged-out player's body (#1974)."
     }
+    CustomStringTableItem "{F4126E9A5B38D07C}" {
+     Id "LF-LostAndFound_CannotAfford"
+     Target_en_us "You do not have the fee in cash."
+     Comment "Toast: the reclaim fee is not in hand; nothing was taken and nothing moved."
+    }
+    CustomStringTableItem "{0D58B6F3C7A1924E}" {
+     Id "LF-LostAndFound_Nothing"
+     Target_en_us "Nothing of yours is waiting here."
+     Comment "Toast: nothing waits at this site's lost-and-found for the player (a stranger, or already taken)."
+    }
+    CustomStringTableItem "{67B3D08E2C915FA4}" {
+     Id "LF-LostAndFound_OutOfReach"
+     Target_en_us "Step closer to the lost-and-found box."
+     Comment "Toast: no lost-and-found box within reach."
+    }
+    CustomStringTableItem "{3E71A5C08D294B6F}" {
+     Id "LF-LostAndFound_Reclaim"
+     Target_en_us "Reclaim your things (fee)"
+     Comment "Action on the lost-and-found box: pay the reclaim fee and take back what a lapsed locker held."
+    }
+    CustomStringTableItem "{A90C42E7165DB83F}" {
+     Id "LF-LostAndFound_Reclaimed"
+     Target_en_us "You paid the fee and took your things back."
+     Comment "Toast: the reclaim fee was taken and every waiting item moved to the player."
+    }
+    CustomStringTableItem "{C28E5A1F90D64B37}" {
+     Id "LF-LostAndFound_Refused"
+     Target_en_us "The lost-and-found could not hand your things over."
+     Comment "Toast: the reclaim was refused for another reason; see the log."
+    }
+    CustomStringTableItem "{19F7C4B6E3A85D02}" {
+     Id "LF-LostAndFound_Title"
+     Target_en_us "Lost and found"
+     Comment "Title of the lost-and-found box prompt and toast."
+    }
     CustomStringTableItem "{EBA0820132F44791}" {
      Id "LF-Lot_Browse"
      Target_en_us "Look at the cars"
@@ -8816,6 +8856,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Offence_DrunkDriving"
      Target_en_us "Drunk driving"
      Comment "Offence a licence seizure rule names (#3428): driving while impaired. Not in the crime catalog yet."
+    }
+    CustomStringTableItem "{3B7D5E1A94C2F608}" {
+     Id "LF-Offence_EscapedCustody"
+     Target_en_us "Escaped custody"
+     Comment "Offence on a wanted poster: a prisoner walked out of the jail in a break window (#3422)."
     }
     CustomStringTableItem "{6E4CC71CE2AF3D51}" {
      Id "LF-Offence_HospitalRobbery"
@@ -13408,6 +13453,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "No sale"
      Comment "Title of the refused-sale toast."
     }
+    CustomStringTableItem "{B976D15E0E9B0B4B}" {
+     Id "LF-Training_Course_detective_course"
+     Target_en_us "Detective"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{78F252053EA90564}" {
+     Id "LF-Training_Course_first_aid_course"
+     Target_en_us "First Aid"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{B100F982AE5EF187}" {
+     Id "LF-Training_Course_paramedic_course"
+     Target_en_us "Paramedic"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{2616F2C90F266CD7}" {
+     Id "LF-Training_Course_traffic_course"
+     Target_en_us "Traffic"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{86202AB25CDA24C1}" {
+     Id "LF-Training_Desc"
+     Target_en_us "Hold to study. The fee is paid when you finish."
+     Comment "Training desk: action description."
+    }
+    CustomStringTableItem "{90AE055011CAE1B5}" {
+     Id "LF-Training_NotOnDuty"
+     Target_en_us "Clock in at the duty desk before you take a course."
+     Comment "Training desk: refused while off duty."
+    }
+    CustomStringTableItem "{7C378EF666F77691}" {
+     Id "LF-Training_Qualified"
+     Target_en_us "You've qualified: %1"
+     Comment "Training desk: %1 is the course name, e.g. Detective."
+    }
+    CustomStringTableItem "{45E04447DEFE233C}" {
+     Id "LF-Training_Take_detective_course"
+     Target_en_us "Take the Detective course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{F77B74BC9E316996}" {
+     Id "LF-Training_Take_first_aid_course"
+     Target_en_us "Take the First Aid course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{0AED5736C8FBD7FB}" {
+     Id "LF-Training_Take_paramedic_course"
+     Target_en_us "Take the Paramedic course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{735DD85BF3F2A589}" {
+     Id "LF-Training_Take_traffic_course"
+     Target_en_us "Take the Traffic course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{F3F6CF6F64F0E4DA}" {
+     Id "LF-Training_Title"
+     Target_en_us "Training desk"
+     Comment "Training desk: toast title."
+    }
     CustomStringTableItem "{D820B2BCD7FC410A}" {
      Id "LF-UIKit_Keep"
      Target_en_us "Keep %1"
@@ -13472,6 +13577,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-UIKit_Take"
      Target_en_us "Take %1"
      Comment "UI kit quantity face for the amount that leaves. %1 is the count."
+    }
+    CustomStringTableItem "{7B2D91E4A0C358F6}" {
+     Id "LF-VehicleCompartment_Open"
+     Target_en_us "Open the panel"
+     Comment "Action on a fitted car, shown to its owner only: opens the hidden compartment (#3434)."
+    }
+    CustomStringTableItem "{2E84C0B7D1596A3F}" {
+     Id "LF-VehicleCompartment_Title"
+     Target_en_us "Hidden compartment"
+     Comment "Title of a car's hidden compartment storage (#3434)."
     }
     CustomStringTableItem "{C470CD4C9E58C70D}" {
      Id "LF-VehicleLock_NoTarget"

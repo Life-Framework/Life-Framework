@@ -1,0 +1,22 @@
+GenericEntity : "{10C26F96EF7A8CF5}Prefabs/Props/Core/Props_Base.et" {
+ ID "6B1E5D0A3C94F7A2"
+ components {
+  LF_VehicleCompartmentStorageComponent "{3F7A91D2C508E4B6}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{A24C60E9B7153D8F}" {
+   Attributes SCR_ItemAttributeCollection "{5D8E2B7A41C096F3}" {
+    ItemDisplayName SCR_InventoryUIInfo "{E91A4C73D2B8605F}" {
+     Name "#LF-VehicleCompartment_Title"
+     Description "#LF-VehicleCompartment_Title"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 20000
+   MaxItemSize 40 40 40
+   m_fMaxWeight 15
+  }
+  RplComponent "{7C03E8A1B95D2F46}" {
+   Enabled 1
+  }
+ }
+}

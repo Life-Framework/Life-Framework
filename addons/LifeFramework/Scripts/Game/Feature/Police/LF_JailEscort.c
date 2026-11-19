@@ -379,7 +379,7 @@ class LF_JailEscort
 			return false;
 		}
 
-		if (LF_Jail.IsServing(prisonerUid))
+		if (LF_Jail.IsInCustody(prisonerUid))
 		{
 			Note(string.Format("escort refused: %1 is already serving", prisonerUid));
 			return false;
@@ -420,7 +420,7 @@ class LF_JailEscort
 			return false;
 		}
 
-		if (LF_Jail.IsServing(prisonerUid))
+		if (LF_Jail.IsInCustody(prisonerUid))
 		{
 			Note(string.Format("escort refused: %1 is already serving", prisonerUid));
 			return false;

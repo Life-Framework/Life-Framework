@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{4E2A7C91B3D58F06}Prefabs/Vehicles/LF_VehicleCompartment.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

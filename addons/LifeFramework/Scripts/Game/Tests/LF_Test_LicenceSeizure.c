@@ -4,7 +4,7 @@
 //! arrested player is told, an open permit application is dropped, and the licence desk refuses the
 //! buyer with the days left. A conviction with no mapped code changes nothing. The bus path (an
 //! LF_OnArrested with the suspect's open reports) does the same on the saved record. Across a restart
-//! (`tools\cli wt e2e`): the save boot books a real conviction (murder, a 30-day ban) for E2E_UID; the reload boot finds the
+//! (`tools\cli wt e2e`): the save boot books a real conviction (brandishing, a 7-day ban, the shortest mapped one) for E2E_UID; the reload boot finds the
 //! licence still gone and the desk still refusing.
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_LicenceSeizure : LF_Test
@@ -14,7 +14,6 @@ class LF_Test_LicenceSeizure : LF_Test
 	protected static const string UID_UNMAPPED = "test-licseize-none";
 	static const string E2E_UID = "test-licseize-e2e";
 	protected static const string BRANDISHING = "#LF-Ticket_OffenceBrandishing";
-	protected static const string MURDER = "#LF-Offence_Murder";	// a 30-day ban: it outlasts the e2e restart
 	protected static const string UNMAPPED = "unmapped-offence";
 	protected static const int T0 = 10000000;	// in-game minute the test pins the clock at
 	protected static const int DAY = 1440;
@@ -170,12 +169,12 @@ class LF_Test_LicenceSeizure : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! wt e2e save boot: a real murder arrest (a 30-day ban, longer than the clock moves across the restart) on the real game clock, for the shutdown save.
+	//! wt e2e save boot: a real brandishing arrest (a 7-day ban) on the real game clock; the clock does not move across the restart (#3741), for the shutdown save.
 	static void SeedE2E(LF_TestContext ctx)
 	{
 		array<LF_ELicenseType> held = {LF_ELicenseType.UNEMPLOYED, LF_ELicenseType.FIREARM_PERMIT};
 		LF_Progression.NoteLicenses(E2E_UID, held);
-		LF_WantedReports.Add(E2E_UID, MURDER, "", "", "grid 0-0", true);
+		LF_WantedReports.Add(E2E_UID, BRANDISHING, "", "", "grid 0-0", true);
 		LF_EventBus.Publish(LF_OnArrested.Create(E2E_UID, 300, 2));
 		LF_WantedReports.ClearFor(E2E_UID);
 		ctx.True(LF_LicenceBans.IsBanned(E2E_UID, LF_ELicenseType.FIREARM_PERMIT), "e2e conviction banned the permit before the save");

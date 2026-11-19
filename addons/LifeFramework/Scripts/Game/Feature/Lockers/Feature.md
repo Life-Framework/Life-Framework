@@ -44,7 +44,20 @@ Rung 1: a locker bank prop (`Prefabs/Props/Lockers/LF_LockerBank.et`, a vanilla 
 `rentPeriodDays` 7 (0 = never lapses), `gracePeriodDays` 2, `reclaimFee` 50, `weightCapacity` 60 kg. Server
 only; `/configreload` re-reads it.
 
+## Lost-and-found (#3457)
+
+- `Prefabs/Props/Lockers/LF_LostAndFoundBox.et` is the box beside a bank. Its `LF_LostAndFoundBoxComponent` carries the
+  same `m_sSiteId` as the bank (a box with none is keyed by position and warns) and a 2.5 m reach.
+- **Lapse.** `LF_LostAndFound.MoveLapsed` runs when `LF_LockerRules.MoveToLostAndFound` says so: an open locker is
+  closed first, the contents (snapshot `locker:<siteId>`) are appended to the owner's `lostfound:<siteId>` snapshot, and the
+  rental is freed (`LF_LockerBank.Free`). The same call runs for the one renter at the box or opening the locker, and a slow sweep
+  (every 5 minutes, armed by the first bank or box placed) runs it for every rental.
+- **Reclaim.** "Reclaim your things (fee)" on the box: the server finds the box from the character's position and the owner
+  from their own record key. A stranger or an owner with nothing waiting gets `NOTHING_TO_RECLAIM`; short of `reclaimFee` is
+  refused with nothing taken; otherwise the fee is taken after every check, the record is unpacked into the box's storage
+  (nesting and per-item state kept), each item goes to the owner's inventory or at their feet, and the record is cleared.
+- The things ride the existing `carried` payload (owner key, slot `lostfound:<siteId>`): no new save section.
+
 ## Not built here
 
-Renewal, the lost-and-found prop, the reclaim action, the stored contents and their persistence, a rent
-sheet, and the daily lapse sweep are later slices of #1038. No bank is placed in a world yet.
+Renewal and a rent sheet are later slices of #1038. No box is placed in the pack's world yet.
