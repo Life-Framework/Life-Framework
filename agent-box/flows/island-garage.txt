@@ -1,4 +1,4 @@
-# Island garage (#3363): buy a car at the Saint-Philippe lot, store it at the garage pad, retrieve it, and
+﻿# Island garage (#3363): buy a car at the Saint-Philippe lot, store it at the garage pad, retrieve it, and
 # reach the impound desk, on real Everon (MainWorld). Needs a fresh client profile (quiz, form R-89, $100 cash,
 # $1000 bank).
 #
@@ -28,21 +28,11 @@ type RegAge 24
 click SignButton
 wait 8000
 
-step 1 Withdraw $700 at the bank
-stand Fit_saint_philippe_bank_bank_teller
+step 1 Grant the driving licence the lot asks for (#3151; the dev gate, no licence desk visit)
+licence DRIVING_LICENCE
 wait 1500
-use LF_ATMAction Fit_saint_philippe_bank_bank_teller
-wait 1200
-click Key7Button
-click Key0Button
-click Key0Button
-click WithdrawButton
-wait 1500
-click CloseButton
-wait 500
-expect cash +700
 
-step 2 Buy the cheapest car at the lot
+step 2 Buy the cheapest car at the lot (paid from the $1000 bank: a car over the lot's $500 cash ceiling is a bank sale)
 stand Fit_saint_philippe_carlot_vehicle_lot
 wait 1500
 use LF_VehicleBuyAction Fit_saint_philippe_carlot_vehicle_lot
