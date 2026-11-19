@@ -2300,6 +2300,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Treatment bill"
      Comment "Notification title for treatment bills."
     }
+    CustomStringTableItem "{3C8E1F5A7D2B9406}" {
+     Id "LF-Bin_Name"
+     Target_en_us "Bin"
+     Comment "Inventory name of a tagged bin: an open container that is emptied by the world reset."
+    }
+    CustomStringTableItem "{B7A20D6E94C31F58}" {
+     Id "LF-Bin_Open"
+     Target_en_us "Look in bin"
+     Comment "Action on a bin: opens it as normal storage."
+    }
     CustomStringTableItem "{312172B24DB5B820}" {
      Id "LF-BreakIn_Barely"
      Target_en_us "Barely started"
