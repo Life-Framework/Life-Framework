@@ -1,0 +1,27 @@
+GenericEntity Fit_saint_philippe_atms_drop_b79 : "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et" {
+ components {
+  LF_PlaceComponent "{7070D89FFB6DC889}" {
+   m_sId "atm.saint-philippe.b79"
+  }
+ }
+ coords 4375.568 12.03 10649.741
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_atms_drop_b97 : "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et" {
+ components {
+  LF_PlaceComponent "{7070D89FFB6DC889}" {
+   m_sId "atm.saint-philippe.b97"
+  }
+ }
+ coords 4615.019 18.83 10666.783
+ angleY 170
+}
+GenericEntity Fit_saint_philippe_dock_atms_drop_b08 : "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et" {
+ components {
+  LF_PlaceComponent "{7070D89FFB6DC889}" {
+   m_sId "atm.saint-philippe-dock.b08"
+  }
+ }
+ coords 4421.267 1.73 11022.522
+ angleY -60
+}
