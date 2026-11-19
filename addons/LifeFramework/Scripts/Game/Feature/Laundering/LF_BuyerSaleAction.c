@@ -170,6 +170,9 @@ class LF_BuyerSale
 
 		paid = total;
 		LF_Debug.Info(FEATURE, string.Format("buyer sale by %1: %2 line(s) for %3 (%4)", key, prefabs.Count(), total, LF_BuyerSale.Currency(marked)));
+
+		// A sale can close a quest ("sell the sample"): the quests hear which goods were paid for (#3768).
+		LF_QuestSignals.ReportBuyerSale(user, prefabs);
 		return LF_EBuyerSale.OK;
 	}
 

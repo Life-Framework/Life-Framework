@@ -11,6 +11,7 @@ class LF_QuestSignals
 	static const string SIGN_READ = "sign.read:";
 	static const string JOB_RUN_COMPLETE = "job.run_complete:";
 	static const string ATM_DEPOSIT = "atm.deposit";
+	static const string BUYER_SOLD = "buyer.sold:";
 
 	protected static string s_sWantedSign;
 	protected static bool s_bSignFound;
@@ -29,6 +30,29 @@ class LF_QuestSignals
 		string name = typename.EnumToString(LF_EJobType, job);
 		name.ToLower();
 		return JOB_RUN_COMPLETE + name;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "buyer.sold:<GUID>" when the illicit buyer paid for a prefab: the prefab's GUID in upper case
+	//! (LF_Utils.PrefabGuid), so a quest names the item it wants sold by GUID and survives a move.
+	static string BuyerSold(ResourceName prefab)
+	{
+		return BUYER_SOLD + LF_Utils.PrefabGuid(prefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the illicit buyer paid `user` for these prefabs (LF_BuyerSale.ServerSell); each is one
+	//! SIGNAL for the user's quests, so a quest can be closed by selling a particular good (#3768).
+	static void ReportBuyerSale(IEntity user, notnull array<ResourceName> prefabs)
+	{
+		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		if (!manager)
+			return;
+
+		foreach (ResourceName prefab : prefabs)
+		{
+			manager.ReportSignal(user, BuyerSold(prefab));
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

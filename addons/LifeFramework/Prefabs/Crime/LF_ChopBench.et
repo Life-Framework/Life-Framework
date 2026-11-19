@@ -55,6 +55,15 @@ GenericEntity : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.
      Duration 1
      m_eMode COLLECT
     }
+    LF_ChopFitAction "{37760A1F5C2E8B94}" {
+     ParentContextList {
+      "LF_ChopBench"
+     }
+     UIInfo UIInfo "{37761D4E9A7B03C5}" {
+      Name "#LF-ChopFit_Action"
+     }
+     Duration 2
+    }
    }
   }
   LF_AmbientEmitterComponent "{C2EB66268349B3A3}" {

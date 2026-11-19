@@ -12,6 +12,7 @@ class LF_Test_BuyerSale : LF_Test
 	protected static const string SPOT_A = "bs-a";
 	protected static const string SPOT_B = "bs-b";
 	protected static const string KEY = "test-buyer-sale";
+	protected static const string SALE_QUEST = "test_buyer_sale_quest";
 	protected static const int PERIOD_HOURS = 4;
 	protected static const int PRICE = 60;
 
@@ -79,6 +80,23 @@ class LF_Test_BuyerSale : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A one-step quest closed by the buyer paying for the moonshine, taken by the seller.
+	protected void AcceptSaleQuest(LF_TestContext ctx, LF_QuestTrackerComponent tracker)
+	{
+		LF_QuestObjective objective = new LF_QuestObjective();
+		objective.m_eType = LF_EQuestEventType.SIGNAL;
+		objective.m_sFilter = LF_QuestSignals.BuyerSold(MOONSHINE);
+		objective.m_iTarget = 1;
+		LF_QuestDefinition def = new LF_QuestDefinition();
+		def.m_sQuestId = SALE_QUEST;
+		def.m_aObjectives = {};
+		def.m_aObjectives.Insert(objective);
+		LF_QuestManager.GetInstance().RegisterDefinition(def);
+		tracker.SetUidForTests(KEY);
+		ctx.True(tracker.AcceptQuest(SALE_QUEST, false, true), "the seller takes the sale quest");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void RunWith(LF_TestContext ctx, IEntity seller, IEntity a, IEntity b)
 	{
 		int period = PERIOD_HOURS * 3600;
@@ -110,9 +128,19 @@ class LF_Test_BuyerSale : LF_Test
 		ctx.Equal(2, LF_InventoryUtils.AddAmount(seller, MOONSHINE, 2), "the seller carries two moonshine bottles");
 		int cash = LF_MoneyUtils.GetCash(seller);
 		int paid;
+
+		// #3768: a quest that waits for the buyer to pay for this good hears the sale.
+		LF_QuestTrackerComponent tracker = LF_Component<LF_QuestTrackerComponent>.Find(seller);
+		ctx.NotNull(tracker, "the seller carries a quest tracker");
+		if (tracker)
+			AcceptSaleQuest(ctx, tracker);
+
 		LF_EBuyerSale result = LF_EBuyerSale.FAILED;
 		if (!RedProof())
 			result = LF_BuyerSale.ServerSell(seller, buyer, start, 1000, paid);
+
+		if (tracker)
+			ctx.True(tracker.GetTracker().GetStatus(SALE_QUEST) == LF_EQuestStatus.COMPLETED, "the buyer paying for the bottles completes a quest that waits for that sale");
 
 		ctx.Equal(LF_EBuyerSale.OK, result, "the sale at the open spot goes through");
 		ctx.Equal(2 * PRICE, paid, "the buyer paid 2 x price");

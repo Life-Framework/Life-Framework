@@ -58,3 +58,34 @@ GenericEntity Fit_saint_philippe_farm_farm_sign : "{F82F6440A45EE705}Prefabs/Pro
  coords 4434.476 17.511 10601.009
  angleY -4
 }
+GenericEntity Fit_saint_philippe_farm_farm_honey_kitchen : "{699A4C9829E46B12}Prefabs/Props/Farming/LF_HoneyKitchen.et" {
+ coords 4420.046 16.763 10599.499
+ angleY 86
+}
+GenericEntity Fit_saint_philippe_farm_farm_hive_1 : "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et" {
+ components {
+  LF_HiveComponent "{F1F5F194CF1AE092}" {
+   m_sHiveKey "sp_farm_hive_1"
+  }
+ }
+ coords 4417.019 16.531 10599.788
+ angleY 71
+}
+GenericEntity Fit_saint_philippe_farm_farm_hive_2 : "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et" {
+ components {
+  LF_HiveComponent "{F1F5F194CF1AE092}" {
+   m_sHiveKey "sp_farm_hive_2"
+  }
+ }
+ coords 4416.195 16.474 10597.225
+ angleY 86
+}
+GenericEntity Fit_saint_philippe_farm_farm_hive_3 : "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et" {
+ components {
+  LF_HiveComponent "{F1F5F194CF1AE092}" {
+   m_sHiveKey "sp_farm_hive_3"
+  }
+ }
+ coords 4417.367 16.531 10594.8
+ angleY 101
+}

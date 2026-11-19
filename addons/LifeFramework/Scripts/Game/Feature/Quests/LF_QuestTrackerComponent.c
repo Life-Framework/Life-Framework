@@ -378,8 +378,10 @@ class LF_QuestTrackerComponent : ScriptComponent
 		// (and remembered), never completed and payable a second time.
 		m_Tracker.TurnIn(questId, GetGame().GetWorld().GetWorldTime() / 1000.0);
 		LF_Progression.NoteTurnedIn(uid, questId);
+		LF_QuestDoneLog.Note(questId, GetGame().GetWorld().GetWorldTime() / 1000.0);	// an event condition waits on it (#3784)
 		RefreshFrameMask();
 		GrantReward(def);
+		GrantStanding(def, uid);
 
 		int rewardItems = 0;
 		if (def.m_aRewardItems)
@@ -404,6 +406,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 	protected bool TakeCollectedItems(LF_QuestDefinition def)
 	{
 		map<string, int> needed = new map<string, int>();
+		array<string> kept = {};
 		for (int i = 0; i < def.GetObjectiveCount(); i++)
 		{
 			LF_QuestObjective objective = def.GetObjective(i);
@@ -413,6 +416,8 @@ class LF_QuestTrackerComponent : ScriptComponent
 				continue;
 
 			needed.Set(objective.m_sFilter, needed.Get(objective.m_sFilter) + objective.m_iTarget);
+			if (objective.m_bKeepOnTurnIn)
+				kept.Insert(objective.m_sFilter);
 		}
 
 		if (needed.IsEmpty())
@@ -438,6 +443,10 @@ class LF_QuestTrackerComponent : ScriptComponent
 		map<string, int> taken = new map<string, int>();
 		foreach (string prefab, int amount : needed)
 		{
+			// A show-it step: held, checked above, and left in the bag.
+			if (kept.Find(prefab) != -1)
+				continue;
+
 			int removed = LF_InventoryUtils.RemoveAmount(owner, prefab, amount);
 			taken.Set(prefab, removed);
 			if (removed >= amount)
@@ -493,6 +502,21 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		LF_Debug.Error("Quests", string.Format("turn-in refused quest=%1 (the reward items have no inventory to go into)", def.m_sQuestId));
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The standing a turn-in earns (#3768): each reputation award action the quest names, paid once.
+	//! An action with no row is logged by LF_Reputation.Award and skipped; one bad row never stops the rest.
+	protected void GrantStanding(LF_QuestDefinition def, string uid)
+	{
+		if (!def.m_aTurnInAwards)
+			return;
+
+		foreach (string action : def.m_aTurnInAwards)
+		{
+			if (!action.IsEmpty())
+				LF_Reputation.Award(uid, action);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -823,6 +847,11 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		manager.ReportTalk(GetOwner(), giverId);
 
+		// What the player holds counts as they talk (a collect quest is checked at the giver, as the quest
+		// menu does when it opens), and a chain step that this settles is taken (#3768).
+		manager.ReportCollect(GetOwner());
+		SettleChain();
+
 		bool acted = false;
 		// Each pass hands in, then takes on at most one new quest whose talk may finish it at once.
 		for (int pass = 0; pass < MAX_CHAIN_PASSES; pass++)
@@ -840,6 +869,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 				if (next && AcceptQuest(next.m_sQuestId, true, IsTalkOnly(next, giver.GetGiverId())))
 				{
 					manager.ReportTalk(GetOwner(), giverId);
+					manager.ReportCollect(GetOwner());
 					moved = true;
 				}
 			}

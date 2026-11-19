@@ -69,6 +69,17 @@ class LF_QuestDefinition
 	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Turned in on its own wherever the player stands once complete (chain step)")]
 	bool m_bAutoTurnIn;
 
+	//! A choice between endings (#3768). Each id names a quest that this one shuts out: once either is
+	//! done (completed or turned in) the other cannot be taken, and taking one fails the other if it
+	//! was running. Both quests name each other.
+	[Attribute(defvalue: "", UIWidgets.Auto, "Quest ids this quest is a choice against: only one of them can be done")]
+	ref array<string> m_aExclusiveQuestIds;
+
+	//! Standing the turn-in earns: reputation award action ids (Configs/Reputation), each paid once
+	//! when the quest is turned in (#3768).
+	[Attribute(defvalue: "", UIWidgets.Auto, "Reputation award actions paid on turn-in (LF_Reputation.Award)")]
+	ref array<string> m_aTurnInAwards;
+
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Objectives")]
 	ref array<ref LF_QuestObjective> m_aObjectives;
 
