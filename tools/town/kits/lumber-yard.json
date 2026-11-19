@@ -45,7 +45,8 @@
       ],
       "yaw": 0,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.052
     },
     {
       "id": "desk",
@@ -70,7 +71,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.032
     },
     {
       "id": "deck-1",
@@ -86,7 +88,8 @@
       "yaw": 90,
       "mount": "terrain",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.079
     },
     {
       "id": "deck-2",
@@ -102,23 +105,8 @@
       "yaw": 90,
       "mount": "terrain",
       "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "deck-3",
-      "name": "TimberYard_Deck_3",
-      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -12,
-        0,
-        -20.5
-      ],
-      "yaw": 0,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.086
     },
     {
       "id": "planks-1",
@@ -230,7 +218,8 @@
       "yaw": 0,
       "mount": "terrain",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.031
     },
     {
       "id": "fence-w1",

@@ -28,7 +28,7 @@ GenericEntity Fit_saint_philippe_woodlot_Place_Workplace {
  coords 4343.63 14.1 10624.55
 }
 GenericEntity Fit_saint_philippe_woodlot_saw : "{61418A72BA63D059}Prefabs/Processor/Sawmill.et" {
- coords 4334.795 14.12 10622.833
+ coords 4334.795 14.068 10622.833
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_desk : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
@@ -38,20 +38,16 @@ GenericEntity Fit_saint_philippe_woodlot_desk : "{F2DA01057E99744B}Prefabs/Jobs/
    m_sPlaceId "saint_philippe_timber_yard"
   }
  }
- coords 4345.593 14.1 10624.932
+ coords 4345.593 14.068 10624.932
  angleY 79
 }
 GenericEntity Fit_saint_philippe_woodlot_deck_1 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
- coords 4329.423 13.741 10608.545
+ coords 4329.423 13.82 10608.545
  angleY 79
 }
 GenericEntity Fit_saint_philippe_woodlot_deck_2 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
- coords 4330.377 13.756 10603.637
+ coords 4330.377 13.842 10603.637
  angleY 79
-}
-GenericEntity Fit_saint_philippe_woodlot_deck_3 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
- coords 4335.762 13.869 10602.137
- angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_planks_1 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
  coords 4359.758 14.244 10614.951
@@ -78,7 +74,7 @@ GenericEntity Fit_saint_philippe_woodlot_pallet_2 : "{51B08BDA20AF8FF7}Prefabs/P
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_truck : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et" {
- coords 4351.782 13.774 10608.816
+ coords 4351.782 13.743 10608.816
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_w1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {

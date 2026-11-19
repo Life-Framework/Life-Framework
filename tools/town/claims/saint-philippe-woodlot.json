@@ -10,7 +10,7 @@
     "Processor",
     "Workplace"
   ],
-  "rows": 25,
+  "rows": 24,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
