@@ -350,7 +350,12 @@ class LF_JobDropoffAction : ScriptedUserAction
 		else
 			LF_Debug.Error("Jobs", "dropoff action: player has no LF_PlayerJobComponent");
 
-		LF_Utils.NotifyEntity(pUserEntity, "#EL-Job_Paid", LF_CivilianJob.NameKey(finished), 4.0, paid.ToString());
+		// The toast names each part of the pay (#3148): the run, the night rate, the bonus.
+		LF_JobPayParts parts = LF_CivilianJob.TakeLastParts(uid);
+		if (!parts)
+			parts = LF_JobPayParts.Make(paid, 0, 0);
+
+		LF_Utils.NotifyEntity(pUserEntity, parts.ToastKey(), LF_CivilianJob.NameKey(finished), 4.0, parts.ToastArg());
 
 		// Hidden progression: no level text. When the experience opens new work, the clerk says so.
 		LF_EJobType opened = LF_CivilianJob.NewlyOpened(levelBefore, LF_CivilianJob.GetLevel(uid));
