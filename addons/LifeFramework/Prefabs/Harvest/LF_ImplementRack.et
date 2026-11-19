@@ -1,0 +1,44 @@
+GenericEntity {
+ ID "12E8B981B1D96B05"
+ components {
+  MeshObject "{1AFCDF541C49D516}" {
+   Object "{C2AEF1F8600A8929}Assets/Props/Furniture/Shelf_01/Shelf_01.xob"
+  }
+  ActionsManagerComponent "{9778D033E0A5AE62}" {
+   ActionContexts {
+    UserActionContext "{58245DBC558275BA}" {
+     ContextName "LF_ImplementRack"
+     Position PointInfo "{D6D5F9264246C2E3}" {
+      Offset 0 1 0
+     }
+     Radius 2
+    }
+   }
+   additionalActions {
+    LF_ImplementRackAction "{147C32E2A3F76F34}" {
+     ParentContextList {
+      "LF_ImplementRack"
+     }
+     UIInfo UIInfo "{586C0DFD369A60BF}" {
+      Name "#LF-Harvest_RackTakeOut"
+     }
+     m_eMode TAKE_OUT
+    }
+    LF_ImplementRackAction "{F4E8C8D274FD5026}" {
+     ParentContextList {
+      "LF_ImplementRack"
+     }
+     UIInfo UIInfo "{19F4827682C43DB8}" {
+      Name "#LF-Harvest_RackPutBack"
+     }
+     m_eMode PUT_BACK
+    }
+   }
+  }
+  Hierarchy "{1CEBD2547637432D}" {
+  }
+  RplComponent "{E63B58C865652502}" {
+  }
+ }
+ coords 0 0 0
+}

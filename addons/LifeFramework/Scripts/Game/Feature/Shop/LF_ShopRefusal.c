@@ -24,7 +24,9 @@ enum LF_EShopRefusal
 	//! The Shop system is off on this server (#1074).
 	SYSTEM_OFF,
 	//! The resident clerk turned the buyer away (#2911).
-	RESIDENT_REFUSES
+	RESIDENT_REFUSES,
+	//! An implement the buyer already owns (#3295): bought once.
+	ALREADY_OWNED
 }
 
 class LF_ShopRefusal
@@ -90,6 +92,9 @@ class LF_ShopRefusal
 		if (reason == LF_EShopRefusal.RESIDENT_REFUSES)
 			return "#LF-Shop_RefuseResident";
 
+		if (reason == LF_EShopRefusal.ALREADY_OWNED)
+			return "#LF-Shop_RefuseAlreadyOwned";
+
 		return string.Empty;
 	}
 
@@ -117,7 +122,7 @@ class LF_ShopRefusal
 	//! The upper bound is the last enum value: it was OUT_OF_STOCK, which read CLOSED as no shop.
 	static LF_EShopRefusal FromWire(int reason)
 	{
-		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.RESIDENT_REFUSES)
+		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.ALREADY_OWNED)
 			return LF_EShopRefusal.NO_SHOP;
 
 		return reason;
