@@ -65,16 +65,20 @@ export function loadPlace(root, place) {
       dossier.set(`${prefix}:${b.id}`, { cx: fp.cx ?? b.x, cz: fp.cz ?? b.z, y: b.y, stem: b.stem ?? "" });
     }
   }
-  return { purpose, dossier };
+  // The homes `tools\cli town homes` gave a house marker (#3584): the marker locks the building itself (owner and key holders pass).
+  const homesFile = join(root, "docs/everon/places", place, "homes.json");
+  const homes = new Set(existsSync(homesFile) ? (JSON.parse(readFileSync(homesFile, "utf8")).homes ?? []).map((h) => h.id) : []);
+  return { purpose, dossier, homes };
 }
 
 // -> { locks: [{ id, key, x, y, z, use }], errors }
-export function buildLocks({ purpose, dossier }) {
+export function buildLocks({ purpose, dossier, homes = new Set() }) {
   const rows = purpose.buildings ?? [];
   const byId = new Map(rows.map((r) => [r.id, r]));
   const locks = [];
   const errors = [];
   for (const r of rows) {
+    if (homes.has(r.id)) continue; // a home with a house marker and a For sale sign needs no ForSaleSoon lock
     const key = keyFor(r, byId);
     if (!key) continue;
     const d = dossier.get(r.id);

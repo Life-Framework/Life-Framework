@@ -439,6 +439,11 @@ StringTable {
      Target_en_us "Fermé"
      Comment "Door prompt on the harbour company offices (#3204)."
     }
+    CustomStringTableItem "{7D3A91C2E54B08F6}" {
+     Id "LF-Everon-Lock_ForSale"
+     Target_en_us "À vendre : voir le panneau"
+     Comment "Door prompt on a home for sale whose house marker is in the world and nobody owns yet (#3584); once bought it shows Lock_Private to everyone but the owner and key holders."
+    }
     CustomStringTableItem "{04E0632F53FEF329}" {
      Id "LF-Everon-Lock_ForSaleSoon"
      Target_en_us "À vendre bientôt"
@@ -988,6 +993,11 @@ StringTable {
      Id "LF-MapPoi_SeedFeed"
      Target_en_us "Seed and feed store"
      Comment "Map POI name (#3515): the seed and feed store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{7A231C1ED753723E}" {
+     Id "LF-MapPoi_Smokehouse"
+     Target_en_us "Smokehouse"
+     Comment "Map POI kind name (#3453): the dock fish smoker (LF_Places kind Smokehouse). Discovered by walking past, like the shops."
     }
     CustomStringTableItem "{47A0ACEF429D7700}" {
      Id "LF-MapPoi_Supermarket"
@@ -2893,6 +2903,21 @@ StringTable {
      Id "LF-Sign_SafeZone_What"
      Target_en_us "The town square is a safe zone. Within 30 metres of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
      Comment "Safe zone sign card, What section."
+    }
+    CustomStringTableItem "{80DF0709304FBA51}" {
+     Id "LF-Sign_Smokehouse_How"
+     Target_en_us "Bring a fresh fish and a *Firewood* bundle, then use the smoker and pick the species"
+     Comment "Sign card for the dock smokehouse plate, How section."
+    }
+    CustomStringTableItem "{AA50F7AE23A6CDF4}" {
+     Id "LF-Sign_Smokehouse_Title"
+     Target_en_us "Smokehouse"
+     Comment "Title of the pole plate at the dock smokehouse (Everon 1989 pack, #3453). Printed on the sign and shown in the prompt as Read: Smokehouse."
+    }
+    CustomStringTableItem "{8656FA19EDAA382B}" {
+     Id "LF-Sign_Smokehouse_What"
+     Target_en_us "The dock smokehouse on the east apron. One fresh fish and one bundle of firewood come out as smoked fish, which sells for half as much again and can be eaten."
+     Comment "Sign card for the dock smokehouse plate, What section."
     }
     CustomStringTableItem "{327C120B0ED84A6C}" {
      Id "LF-Sign_Supermarket_How"

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "saint-philippe-dock",
+  "slot": "smokehouse",
+  "building": "b05",
+  "kit": "smokehouse",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe-dock_smokehouse.layer",
+  "kinds": [
+    "Smokehouse"
+  ],
+  "rows": 10,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_dock_smokehouse_Place"
+  },
+  "date": "2026-11-19"
+}

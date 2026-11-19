@@ -1,0 +1,16 @@
+MatPBRTreeCrown {
+ SpecularIBL 0.45 0.45 0.4 1
+ PorosityScale 0.2
+ MetalnessScale 0
+ BCRMap "{6ADD1434EC0522EE}Assets/Vegetation/_Polyplanes/polyplane_wheat_01_BCR.edds"
+ OpacityMap "{176459F4491F2679}Assets/Vegetation/_Polyplanes/polyplane_wheat_01_A.edds"
+ NTCMap "{F9B3F9B3277FA1EB}Assets/Vegetation/_Polyplanes/polyplane_wheat_01_NTC.edds"
+ WindLocalBranchSpeed 0.45
+ WindLocalBranchLength 0.012
+ WindObjectScale 1
+ GeometryAOIntensity 0
+ ThicknessScale 0.35
+ SSSIndirectionIntensity 0.5
+ SSSColor 1 1 1 1
+ SSSColorMultiply 1
+}
