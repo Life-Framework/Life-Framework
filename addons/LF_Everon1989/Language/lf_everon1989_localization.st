@@ -1984,6 +1984,31 @@ StringTable {
      Target_en_us "Calls waiting for this service, newest first."
      Comment "Dispatch board sign card: what it is."
     }
+    CustomStringTableItem "{F962FB99DD0ED9A6}" {
+     Id "LF-Sign_EveronSawmill_How"
+     Target_en_us "*Saw logs into planks* or *Saw hardwood into boards* at a saw in the hall"
+     Comment "Sign card for the Everon sawmill, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{2F1E48F6D38417AF}" {
+     Id "LF-Sign_EveronSawmill_Needs"
+     Target_en_us "Logs from the forest and a lumberjack licence."
+     Comment "Sign card for the Everon sawmill, You need section."
+    }
+    CustomStringTableItem "{91F819EF3267293A}" {
+     Id "LF-Sign_EveronSawmill_Next"
+     Target_en_us "Carry the boards to Saint-Philippe: builders and joiners pay for them."
+     Comment "Sign card for the Everon sawmill, Next section."
+    }
+    CustomStringTableItem "{AE02BB5B348530BB}" {
+     Id "LF-Sign_EveronSawmill_Title"
+     Target_en_us "Scierie"
+     Comment "Title of the sign at the Everon sawmill yard (Everon 1989 pack, #3271). Printed on the sign and shown in the prompt as Read: Scierie."
+    }
+    CustomStringTableItem "{52CBFEEB2D04FA91}" {
+     Id "LF-Sign_EveronSawmill_What"
+     Target_en_us "The island sawmill: saw hardwood and softwood logs into boards, posts and firewood."
+     Comment "Sign card for the Everon sawmill, What section."
+    }
     CustomStringTableItem "{4E7B1C9A2D8F5036}" {
      Id "LF-Sign_FarmCompound_What"
      Target_en_us "Abandoned farm. Whoever holds the yard longest holds the barn."
