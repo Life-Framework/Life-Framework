@@ -59,26 +59,6 @@ StringTable {
      Target_en_us "Harbour crates"
      Comment "Contract tracker title (#2709): the harbour master's early crates run (LF-ContractTracker_Title_<contractId>)."
     }
-    CustomStringTableItem "{3465F00000000009}" {
-     Id "LF-Dialogue_AnniversaryLetter_SayHandIn"
-     Target_en_us "I found a letter in the church flowers. It is addressed to you."
-     Comment "Reply: hand in the letter; offered only to a player who holds it (#3465, #3793)."
-    }
-    CustomStringTableItem "{3465F0000000000A}" {
-     Id "LF-Dialogue_AnniversaryLetter_SaySecret"
-     Target_en_us "What did Dominique know?"
-     Comment "Reply: ask for the old secret (#3465)."
-    }
-    CustomStringTableItem "{3465F00000000008}" {
-     Id "LF-Dialogue_AnniversaryLetter_Secret"
-     Target_en_us "Dominique counted the drums before they emptied the Zone. He wrote the markings down for the mayor. I saw the same marks on the night boats, and I said nothing. Keep this to yourself until you know who is listening."
-     Comment "Gaspard tells the old secret after the hand-in (#3465)."
-    }
-    CustomStringTableItem "{3465F00000000007}" {
-     Id "LF-Dialogue_AnniversaryLetter_Thanks"
-     Target_en_us "Dominique. Three years, and it comes to me out of a heap of flowers. Thank you for carrying it."
-     Comment "Gaspard takes the letter (#3465)."
-    }
     CustomStringTableItem "{3794F00000000008}" {
      Id "LF-Dialogue_AnniversaryMayor_Bye"
      Target_en_us "Till the day, then."
@@ -113,6 +93,11 @@ StringTable {
      Id "LF-Dialogue_AnniversaryMayor_SayOffer"
      Target_en_us "Can I help with the preparations?"
      Comment "Reply: take the mayor's errand, or hand in what is done (#3794)."
+    }
+    CustomStringTableItem "{18255E21BCB0A61B}" {
+     Id "LF-Dialogue_AnniversaryPriest_Memorial"
+     Target_en_us "Three years ago they walked out of the night with what they could carry. We remember each of them. Stand with us a moment."
+     Comment "Dialogue caption, spoken by the anniversary_priest NPC (voiced; tools/assets/dialogue/anniversary_priest). Changing it needs: tools\\cli asset dialogue anniversary_priest"
     }
     CustomStringTableItem "{3E9F5343A58B4851}" {
      Id "LF-Dialogue_CafeOwner_Bye"
@@ -499,6 +484,16 @@ StringTable {
      Target_en_us "You worked near the Zone?"
      Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
     }
+    CustomStringTableItem "{E5E24AE2CCC8C2D2}" {
+     Id "LF-Dialogue_OldMan_AnniversaryLetterSecret"
+     Target_en_us "Dominique counted the drums before they emptied the Zone. He wrote the markings down for the mayor. I saw the same marks on the night boats, and I said nothing. Keep this to yourself until you know who is listening."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{B3AF520461B54CC4}" {
+     Id "LF-Dialogue_OldMan_AnniversaryLetterThanks"
+     Target_en_us "Dominique. Three years, and it comes to me out of a heap of flowers. Thank you for carrying it."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
     CustomStringTableItem "{AA83C29649EB0D96}" {
      Id "LF-Dialogue_OldMan_Bye"
      Target_en_us "Go well. Come and sit with me again some time."
@@ -549,9 +544,19 @@ StringTable {
      Target_en_us "Know a good place to fish?"
      Comment "Dialogue reply to Gaspard (the old man), offered once the player has landed three fish (#3451)."
     }
+    CustomStringTableItem "{832F4B08E545D1A4}" {
+     Id "LF-Dialogue_OldMan_SayHandIn"
+     Target_en_us "I found a letter in the church flowers. It is addressed to you."
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
     CustomStringTableItem "{98D9AB69AB1E7F3A}" {
      Id "LF-Dialogue_OldMan_SayMove"
      Target_en_us "What was the move like?"
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{C5A97F774527E844}" {
+     Id "LF-Dialogue_OldMan_SaySecret"
+     Target_en_us "What did Dominique know?"
      Comment "Dialogue reply the player can pick when talking to the old_man NPC."
     }
     CustomStringTableItem "{2FA08445AB21D4F7}" {
@@ -1198,6 +1203,21 @@ StringTable {
      Id "LF-LicenceWhere_FIREARM_PERMIT"
      Target_en_us "The gun store counter"
      Comment "Overrides the core row: the firearm permit is bought at the gun store counter (#3150)."
+    }
+    CustomStringTableItem "{A3CFDDFF48ABE630}" {
+     Id "LF-Loot_KitchenCupboardName"
+     Target_en_us "Kitchen cupboard"
+     Comment "Name of the searchable kitchen cupboard loot prop in the inventory (#3345)."
+    }
+    CustomStringTableItem "{CD45D96E8C799492}" {
+     Id "LF-Loot_ScrapPileName"
+     Target_en_us "Scrap pile"
+     Comment "Name of the searchable dump scrap pile loot prop in the inventory (#3345)."
+    }
+    CustomStringTableItem "{580F76CE8E3C873E}" {
+     Id "LF-Loot_ToolChestName"
+     Target_en_us "Tool chest"
+     Comment "Name of the searchable tool chest loot prop in the inventory (#3345)."
     }
     CustomStringTableItem "{CA4B6B802EFD710E}" {
      Id "LF-Lot_NeedsDrivingLicence"

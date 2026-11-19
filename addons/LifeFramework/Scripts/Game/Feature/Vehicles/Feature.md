@@ -73,3 +73,11 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 - **Wiring:** the action is on every LF car prefab's `ActionsManagerComponent` (`additionalActions`, context `default`).
 - **Data:** none; strings `LF-Unflip_*`.
 - **Proof:** `vehicles/unflip` (WORLD). A car with a driver seated refuses by the pure rule (the engine seats a frame late, so a seated car is not built in the test); standing at a real overturned car and pressing the key is a manual check.
+
+## Repair kit (#3332)
+
+- **Player sees:** a "Repair with kit" action on a damaged car for a player who carries a repair kit (`LF_RepairKit.et`, a toolbox). After the work time the car's health rises by the kit's share (40 % by default, capped at full), the kit is used up, and the same car refuses another kit for 90 s so nobody chain-repairs in a fight. A car at full health or a wreck refuses.
+- **Owner and side:** the server. `LF_RepairKit.Begin` checks, runs the job on a timer and drops it when the player walks off (5 m), goes down, is cuffed or loses the kit; `Finish` re-checks and calls `Try`, which takes the kit first and only then raises every hit zone of the car by the share. A refused or interrupted job costs no kit. The cooldown is per car, in memory, not saved. The client action (`LF_RepairKitAction`) only hides itself when the server would refuse.
+- **Data:** the numbers are `LF_RepairKitComponent` attributes on the kit prefab (`m_fRestoreScaled` 0.4, `m_fWorkSeconds` 8, `m_iCooldownSeconds` 90), so a pack's kit child retunes them. Strings `LF-RepairKit_*`, `LF-Item_RepairKit_*`. No parts system: the share applies to every hit zone alike.
+- **Wiring:** the action is on every LF car prefab beside "Push it back over". The kit is not yet sold or spawned anywhere; a shop row is a pack card.
+- **Proof:** `vehicles/repair-kit` (WORLD): a car at 40 % and two kits. The held key and the two-client view are manual.

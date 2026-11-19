@@ -29,3 +29,10 @@
 - 🟡 Pay: an hour of searching, at the rate the cooldowns allow, sells for under half of the parcel job's hour at the shop's sell prices
   (the dump about $150 an hour, a home about $125). No coin item exists yet, so no table pays small cash; that wants a coin prefab (follow-up).
   Proof (pack leg): `LF_Test_EveronLootTables` (`everon/loot-tables`). Containers placed in the world are later slices.
+
+### Everon 1989 loot props — `LF_Everon1989/Prefabs/Props/Loot/` (2026-11-19, #3345, framework #1020)
+- 🟡 Three searchable props over vanilla models, each with `LF_LootContainerComponent`, storage and the Search and Open actions of the core crate:
+  `LF_LootToolChest` (a red toolbox, kind `shed`), `LF_LootKitchenCupboard` (the old cupboard, kind `home`) and `LF_LootScrapPile` (the large junk pile, kind `dump`).
+  Names are pack strings (`LF-Loot_ToolChestName`, `LF-Loot_KitchenCupboardName`, `LF-Loot_ScrapPileName`). Not placed anywhere yet: the island fit cards place them.
+  The toolbox and the pile carry an explicit `RplComponent` (their vanilla chain has none at runtime, so the storage component refused the prefab).
+  Proof (pack leg): `LF_Test_EveronLootTables` spawns each, checks the kind names a pack table and one search fills it.

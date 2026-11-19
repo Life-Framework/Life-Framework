@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{2992592460023135}Sounds/Dialogue/anniversary_mayor/Dialogue_anniversary_mayor.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

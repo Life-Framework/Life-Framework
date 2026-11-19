@@ -123,7 +123,7 @@ class LF_Test_EveronAnniversaryLetter : LF_Test
 		LF_DialogueFlow.HookProblems(config, problems);
 		ctx.Equal(0, problems.Count(), "Gaspard's talk with the letter is playable");
 
-		array<string> ids = {"anniversary.letter.thanks", "anniversary.letter.secret"};
+		array<string> ids = {"anniversary_letter_thanks", "anniversary_letter_secret"};
 		foreach (string id : ids)
 		{
 			ctx.NotNull(LF_DialogueFlow.FindNode(config, id), "the dialogue has the node " + id);
@@ -147,7 +147,7 @@ class LF_Test_EveronAnniversaryLetter : LF_Test
 		{
 			LF_DialogueNode node = LF_DialogueFlow.FindNode(config, greeting);
 			ctx.NotNull(node, "Gaspard still has the greeting " + greeting);
-			LF_DialogueOption hand = FindReply(node, "anniversary.letter.thanks", "QuestItemsHeld");
+			LF_DialogueOption hand = FindReply(node, "anniversary_letter_thanks", "QuestItemsHeld");
 			ctx.NotNull(hand, greeting + " offers the hand-in only to a player holding the letter");
 			if (hand)
 			{
@@ -165,12 +165,12 @@ class LF_Test_EveronAnniversaryLetter : LF_Test
 		foreach (string id : talk)
 		{
 			LF_DialogueNode talkNode = LF_DialogueFlow.FindNode(config, id);
-			ctx.NotNull(FindReply(talkNode, "anniversary.letter.secret", "QuestTurnedIn"), id + " tells the secret only after the hand-in");
+			ctx.NotNull(FindReply(talkNode, "anniversary_letter_secret", "QuestTurnedIn"), id + " tells the secret only after the hand-in");
 			ctx.NotNull(FindReply(talkNode, "bye", ""), id + " keeps the goodbye");
 		}
 
 		ctx.NotNull(FindReply(LF_DialogueFlow.FindNode(config, "zone"), "move", ""), "his talk of moving stays one reply from the greeting");
-		ctx.NotNull(FindReply(LF_DialogueFlow.FindNode(config, "anniversary.letter.thanks"), "anniversary.letter.secret", ""), "he tells the secret straight after taking the letter");
+		ctx.NotNull(FindReply(LF_DialogueFlow.FindNode(config, "anniversary_letter_thanks"), "anniversary_letter_secret", ""), "he tells the secret straight after taking the letter");
 	}
 
 	//------------------------------------------------------------------------------------------------

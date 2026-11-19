@@ -31,6 +31,14 @@ class LF_ConfiscateAction : ScriptedUserAction
 			return false;
 		}
 
+		// Only a target that has given up (hands up or restrained) is searched (#3399).
+		string notGivenUp = LF_HandsUpGate.Refusal(GetOwner());
+		if (!notGivenUp.IsEmpty())
+		{
+			SetCannotPerformReason(notGivenUp);
+			return false;
+		}
+
 		return true;
 	}
 
@@ -62,6 +70,9 @@ class LF_ConfiscateAction : ScriptedUserAction
 			LF_Debug.Warn("Police", "confiscate refused: " + typename.EnumToString(LF_EInteractionRefusal, refusal));
 			return;
 		}
+
+		if (!LF_HandsUpGate.Check(pUserEntity, pOwnerEntity, "search"))
+			return;
 
 		// The search is police contact for the logout rule (#2102), found or clean: stamped before it
 		// runs, so an offence the search files still lands on a suspect who just met an officer.

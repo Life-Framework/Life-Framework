@@ -1,0 +1,55 @@
+GenericEntity : "{2B26287DC5B7F9D0}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_red.et" {
+ ID "7A3C1D50E2B94F01"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  LF_LootContainerComponent "{E898E7F35B012FC9}" {
+   m_sKind "shed"
+  }
+  LF_LootStorageManagerComponent "{9D815E23BB4C4497}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{987C13D14F0DDC0E}" {
+   Attributes SCR_ItemAttributeCollection "{F0DD03F210E510F3}" {
+    ItemDisplayName SCR_InventoryUIInfo "{FA1323A6B916A3E8}" {
+     Name "#LF-Loot_ToolChestName"
+     Description "#LF-Loot_ToolChestName"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 100000
+   MaxItemSize 100 200 100
+   m_fMaxWeight 200
+  }
+  ActionsManagerComponent "{5858A7F82E763ED6}" {
+   ActionContexts {
+    UserActionContext "{711092BD79F1F2B1}" {
+     ContextName "LF_LootCrate"
+     Position PointInfo "{84C95A8988CAB522}" {
+      Offset 0 0.35 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_LootSearchAction "{4DACDA08EE0EA02F}" {
+     ParentContextList {
+      "LF_LootCrate"
+     }
+     UIInfo UIInfo "{715882051E63FBA5}" {
+      Name "#LF-Loot_Search"
+     }
+     Duration 3
+    }
+    SCR_OpenStorageAction "{E52F1CF292BD3AA5}" {
+     ParentContextList {
+      "LF_LootCrate"
+     }
+     UIInfo UIInfo "{BFCDB29BDFFD3F25}" {
+      Name "#LF-Loot_Open"
+     }
+    }
+   }
+  }
+ }
+}
