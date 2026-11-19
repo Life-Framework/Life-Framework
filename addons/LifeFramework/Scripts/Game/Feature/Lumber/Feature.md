@@ -25,8 +25,12 @@ everything on a falling curve.
   (`gather_logging` through `LF_OnGathered` family LOGGING for softwood; `fell_hardwood` directly for
   hardwood), calls `LF_FelledTreesReplication.Publish` so every client hides the tree, and publishes
   `LF_OnTreeFelled` (`LF_LumberEvents.c`). The ledger only grows here.
+- `LF_TreeRegrow` and `LF_LumberSavePayload` (#3262): a 10 s server tick stands the trees whose time
+  has come (`LF_FelledTrees.Show`, then `LF_FelledTreesReplication.Retract`); the ledger is the save
+  section `lumber` (key and seconds left), and a load hides the trees again, so a restart does not
+  grow a stand that was just cut.
 - Not yet: the prompt on a real map tree (the helper entity that carries `LF_FellAction` and finds the
-  nearest tree), regrow and save (#3262, which also calls `LF_FelledTreesReplication.Retract`).
+  nearest tree).
 - `LF_FelledTreesReplication` (#3261): the server table of felled keys, a broadcast RPC per change, the
   join snapshot in the game mode `RplSave`/`RplLoad`, and the client that hides or shows the map tree a key names.
 
