@@ -3,6 +3,7 @@
 // pushes again and retries; a human conflict or a red validate pushes nothing; and the cli wiring calls
 // shipDirect, never the queue.
 // inputs: tools/lib/ship-direct.mjs, tools/lib/ship-queue.mjs, tools/cli.mjs, tools/commands/wait.mjs
+// red-proof 2026-11-19 (driver overlap): before shipDirect merged main on a both-sides driver-merged edit it printed "FAIL driver overlap: main merged before validate and push".
 // red-proof 2026-11-16: before tools/lib/ship-direct.mjs existed this printed "FAIL cannot load
 // tools/lib/ship-direct.mjs"; with the BEHIND retry removed (break on any auto-merge result) it printed "FAIL behind:
 // main merged in and pushed again"; with cli.mjs still calling shipViaQueue it printed "FAIL cli: wt ship calls
@@ -76,12 +77,29 @@ function fakes(over = {}) {
   const r = await lib.shipDirect(d, { slug: "x" });
   check(r.code === 1 && !d.calls.includes("mergeBase"), "other refusal: fail, no merge");
 }
+// 6a. merge-tree runs the lf-markdown driver, so it calls a both-sides docs/features append clean while GitHub (no
+// custom drivers) calls the PR CONFLICTING (#3735, #3736). When both sides touched a driver-merged file the branch
+// merges origin/main here before the push, so the driver runs and GitHub sees main already in.
+{
+  const d = fakes({ driverOverlap: () => ["docs/features/crime-police.md"] });
+  const r = await lib.shipDirect(d, { slug: "x" });
+  check(r.code === 0, "driver overlap: ship succeeds");
+  check(d.calls.join(",") === "mergeTree,mergeBase,validate,push,findPr,createPr,autoMerge", `driver overlap: main merged before validate and push, order was ${d.calls.join(",")}`);
+  const n = fakes({ driverOverlap: () => [] });
+  await lib.shipDirect(n, { slug: "x" });
+  check(!n.calls.includes("mergeBase"), "no driver overlap: main is not merged");
+  const q = fakes({ driverOverlap: () => ["docs/features/crime-police.md"] });
+  await lib.shipDirect(q, { slug: "x", preflight: false });
+  check(q.calls.join(",").startsWith("mergeBase,push"), "driver overlap without preflight: still merged before the push");
+  check(JSON.stringify(lib.bothSidesTouched(["a", "b\\c", "d"], ["b/c", "d", "e"])) === JSON.stringify(["b/c", "d"]), "bothSidesTouched: intersection, slashes normalised");
+}
 // 6. Wiring: wt ship goes through shipDirect; the queue is out of the flow.
 {
   const cli = readFileSync(new URL("../cli.mjs", import.meta.url), "utf8");
   const ship = cli.slice(cli.indexOf("async function wtShipCmd"), cli.indexOf("function cmdWt("));
   check(/shipDirectCmd\(/.test(ship), "cli: wt ship calls shipDirectCmd");
   check(!/shipViaQueue|ensureWorker|withQueue/.test(cli), "cli: no ship queue in the ship flow");
+  check(/driverOverlap:/.test(cli.slice(cli.indexOf("async function shipDirectCmd"))), "cli: ship passes driverOverlap");
   check(/--auto", "--merge"/.test(cli.slice(cli.indexOf("async function shipDirectCmd"))), "cli: auto-merge --merge");
 }
 
