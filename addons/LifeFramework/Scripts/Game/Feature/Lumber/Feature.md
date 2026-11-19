@@ -18,7 +18,9 @@ everything on a falling curve.
   0.1 m plus prefab).
 - `LF_TreeFellingConfig`: the species and yield tables, `Configs/Lumber/LF_TreeSpecies.conf`.
 - `LF_TreeFellingLedger`: felled keys and their regrow time, in whole seconds on a caller clock.
-- Nothing in the world uses these yet. The axe action is #3260, replication #3261, regrow and save
+- `LF_FelledTreesReplication` (#3261): the server table of felled keys, a broadcast RPC per change, the
+  join snapshot in the game mode `RplSave`/`RplLoad`, and the client that hides or shows the map tree a key names.
+- Nothing in the world fells a tree yet. The axe action is #3260, replication #3261, regrow and save
   #3262.
 
 ## Dependencies
