@@ -9,6 +9,25 @@ class LF_EventContext
 	float m_fNow;			//!< Server seconds.
 	float m_fLastEndedAt;	//!< When this event last ended; a negative value means it never has.
 	float m_fPhaseStartedAt;//!< When the running phase began.
+	ref map<string, float> m_mQuestDoneAt;	//!< Quest id to the server second it was last turned in (LF_QuestDoneLog, #3784).
+
+	//------------------------------------------------------------------------------------------------
+	void NoteQuestDone(string questId, float at)
+	{
+		if (!m_mQuestDoneAt)
+			m_mQuestDoneAt = new map<string, float>();
+		m_mQuestDoneAt.Set(questId, at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return the server second `questId` was last turned in, -1 when it has not been.
+	float QuestDoneAt(string questId)
+	{
+		float at;
+		if (m_mQuestDoneAt && m_mQuestDoneAt.Find(questId, at))
+			return at;
+		return -1;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static LF_EventContext Make(float hour, int online, int nearby, float now)
@@ -30,7 +49,8 @@ enum LF_EEventConditionKind
 	HOUR_RANGE,			//!< Holds while the in-game hour is in [m_fFromHour, m_fToHour); may wrap midnight.
 	PLAYERS_ONLINE,		//!< Holds while at least m_iMinPlayers are connected.
 	PLAYERS_NEARBY,		//!< Holds while at least m_iMinPlayers are near the event place.
-	COOLDOWN			//!< Holds once m_fSeconds have passed since the event last ended.
+	COOLDOWN,			//!< Holds once m_fSeconds have passed since the event last ended.
+	QUEST_DONE			//!< Holds m_fDelaySeconds after a player turned in m_sQuestId, for m_fWindowSeconds (0 = until a restart). New kinds go last: the value is saved in conf files.
 }
 
 //------------------------------------------------------------------------------------------------
@@ -53,6 +73,26 @@ class LF_EventPrecondition
 
 	[Attribute("0", UIWidgets.Auto, "COOLDOWN: seconds that must pass since the event last ended", params: "0 604800")]
 	float m_fSeconds;
+
+	[Attribute("", UIWidgets.Auto, "QUEST_DONE: the quest id whose turn-in the event waits on (for example shipment_report)")]
+	string m_sQuestId;
+
+	[Attribute("0", UIWidgets.Auto, "QUEST_DONE: seconds after the turn-in before it holds (the tip-off reaches the gendarmerie)", params: "0 604800")]
+	float m_fDelaySeconds;
+
+	[Attribute("0", UIWidgets.Auto, "QUEST_DONE: seconds it keeps holding once the delay has passed; 0 holds until the server restarts", params: "0 604800")]
+	float m_fWindowSeconds;
+
+	//------------------------------------------------------------------------------------------------
+	static LF_EventPrecondition MakeQuestDone(string questId, float delaySeconds, float windowSeconds)
+	{
+		LF_EventPrecondition c = new LF_EventPrecondition();
+		c.m_eKind = LF_EEventConditionKind.QUEST_DONE;
+		c.m_sQuestId = questId;
+		c.m_fDelaySeconds = delaySeconds;
+		c.m_fWindowSeconds = windowSeconds;
+		return c;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static LF_EventPrecondition MakeHourRange(float fromHour, float toHour)
@@ -108,8 +148,26 @@ class LF_EventPrecondition
 			case LF_EEventConditionKind.COOLDOWN:
 				// Never ended (negative) is over: the first run is not held back.
 				return ctx.m_fLastEndedAt < 0 || ctx.m_fNow - ctx.m_fLastEndedAt >= m_fSeconds;
+			case LF_EEventConditionKind.QUEST_DONE:
+				return QuestDoneHolds(ctx);
 		}
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! QUEST_DONE: no quest id or no turn-in holds nothing; else it holds from the delay on, for the
+	//! window when there is one.
+	protected bool QuestDoneHolds(LF_EventContext ctx)
+	{
+		if (m_sQuestId.IsEmpty())
+			return false;
+		float doneAt = ctx.QuestDoneAt(m_sQuestId);
+		if (doneAt < 0)
+			return false;
+		float since = ctx.m_fNow - doneAt;
+		if (since < m_fDelaySeconds)
+			return false;
+		return m_fWindowSeconds <= 0 || since < m_fDelaySeconds + m_fWindowSeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------

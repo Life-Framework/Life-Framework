@@ -373,6 +373,7 @@ class LF_EventShell
 
 		LF_EventContext ctx = LF_EventContext.Make(hour, online, run.m_iLastNearby, now);
 		ctx.m_fLastEndedAt = run.m_fLastEndedAt;
+		LF_QuestDoneLog.Fill(ctx);
 		if (LF_EventPhaseRules.IsRunning(run.m_State))
 			ctx.m_fPhaseStartedAt = run.m_State.m_fPhaseStartedAt;
 		return ctx;
