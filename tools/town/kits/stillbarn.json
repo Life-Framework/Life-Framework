@@ -1,0 +1,317 @@
+{
+    "schema":  1,
+    "kit":  "stillbarn",
+    "system":  "chains",
+    "source":  {
+                   "file":  "tools/town/kits/sources/stillbarn.layer",
+                   "group":  "*",
+                   "origin":  "0,0,0",
+                   "frame":  "origin-entity"
+               },
+    "scope":  "room",
+    "anchoring":  {
+                      "floorY":  0,
+                      "floors":  [
+                                     {
+                                         "id":  "f0",
+                                         "y":  0
+                                     }
+                                 ],
+                      "footprint":  {
+                                        "source":  "rows",
+                                        "min":  [
+                                                    -6.4,
+                                                    -4.4
+                                                ],
+                                        "max":  [
+                                                    6.4,
+                                                    3.8
+                                                ]
+                                    },
+                      "front":  null,
+                      "counters":  [
+                                       {
+                                           "id":  "source-still-barn-still",
+                                           "wall":  "-z",
+                                           "edgeGap":  0.8
+                                       }
+                                   ],
+                      "adapt":  "A lone barn with a big open floor: the back wall (-z) carries the mash barrels, the still and the packing bench in a row, the laundering bench stands against the right wall, hay and crates fill the corners and two lamps light the bays. Rows are rigid: shift, never stretch."
+                  },
+    "rows":  [
+                 {
+                     "id":  "source-still-barn-mash-1",
+                     "name":  "Source_StillBarn_Mash_1",
+                     "prefab":  "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et",
+                     "role":  "interactable",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    -5.2,
+                                    0,
+                                    -4
+                                ],
+                     "yaw":  0,
+                     "config":  [
+                                    {
+                                        "component":  "LF_ChainStationComponent",
+                                        "set":  {
+                                                    "m_sStationKey":  "\"StillBarn_Mash_1\"",
+                                                    "m_sSiteId":  "\"stillbarn_site\"",
+                                                    "m_sChainId":  "\"moonshine\"",
+                                                    "m_sStepId":  "\"mash\""
+                                                },
+                                        "blocks":  [
+
+                                                   ]
+                                    }
+                                ],
+                     "wall":  "-z",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-mash-2",
+                     "name":  "Source_StillBarn_Mash_2",
+                     "prefab":  "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et",
+                     "role":  "interactable",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    -3.9,
+                                    0,
+                                    -4.2
+                                ],
+                     "yaw":  40,
+                     "config":  [
+                                    {
+                                        "component":  "LF_ChainStationComponent",
+                                        "set":  {
+                                                    "m_sStationKey":  "\"StillBarn_Mash_2\"",
+                                                    "m_sSiteId":  "\"stillbarn_site\"",
+                                                    "m_sChainId":  "\"moonshine\"",
+                                                    "m_sStepId":  "\"mash\""
+                                                },
+                                        "blocks":  [
+
+                                                   ]
+                                    }
+                                ],
+                     "wall":  "-z",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-mash-3",
+                     "name":  "Source_StillBarn_Mash_3",
+                     "prefab":  "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et",
+                     "role":  "interactable",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    -2.6,
+                                    0,
+                                    -4
+                                ],
+                     "yaw":  80,
+                     "config":  [
+                                    {
+                                        "component":  "LF_ChainStationComponent",
+                                        "set":  {
+                                                    "m_sStationKey":  "\"StillBarn_Mash_3\"",
+                                                    "m_sSiteId":  "\"stillbarn_site\"",
+                                                    "m_sChainId":  "\"moonshine\"",
+                                                    "m_sStepId":  "\"mash\""
+                                                },
+                                        "blocks":  [
+
+                                                   ]
+                                    }
+                                ],
+                     "wall":  "-z",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-still",
+                     "name":  "Source_StillBarn_Still",
+                     "prefab":  "{4C1A9E07B35D8210}Prefabs/Chains/LF_ChainStill.et",
+                     "role":  "interactable",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    0,
+                                    0,
+                                    -3.6
+                                ],
+                     "yaw":  0,
+                     "config":  [
+                                    {
+                                        "component":  "LF_ChainStationComponent",
+                                        "set":  {
+                                                    "m_sStationKey":  "\"StillBarn_Still\"",
+                                                    "m_sSiteId":  "\"stillbarn_site\""
+                                                },
+                                        "blocks":  [
+
+                                                   ]
+                                    }
+                                ],
+                     "wall":  "-z",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-pack",
+                     "name":  "Source_StillBarn_Pack",
+                     "prefab":  "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et",
+                     "role":  "interactable",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    3,
+                                    0,
+                                    -4
+                                ],
+                     "yaw":  0,
+                     "config":  [
+                                    {
+                                        "component":  "LF_ChainStationComponent",
+                                        "set":  {
+                                                    "m_sStationKey":  "\"StillBarn_Pack\"",
+                                                    "m_sSiteId":  "\"stillbarn_site\"",
+                                                    "m_sChainId":  "\"moonshine\"",
+                                                    "m_sStepId":  "\"pack\""
+                                                },
+                                        "blocks":  [
+
+                                                   ]
+                                    }
+                                ],
+                     "wall":  "-z",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-launder",
+                     "name":  "Source_StillBarn_Launder",
+                     "prefab":  "{978FC469D81E785A}Prefabs/Props/Laundering/LF_LaunderStation.et",
+                     "role":  "interactable",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    6,
+                                    0,
+                                    0.5
+                                ],
+                     "yaw":  -90,
+                     "config":  [
+                                    {
+                                        "component":  "LF_LaunderStationComponent",
+                                        "set":  {
+                                                    "m_sSiteId":  "\"stillbarn_launder\""
+                                                },
+                                        "blocks":  [
+
+                                                   ]
+                                    }
+                                ],
+                     "wall":  "+x",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-crate-1",
+                     "name":  "Source_StillBarn_Crate_1",
+                     "prefab":  "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+                     "role":  "dressing",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    6,
+                                    0,
+                                    -4.2
+                                ],
+                     "yaw":  10,
+                     "wall":  "-z",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-crate-2",
+                     "name":  "Source_StillBarn_Crate_2",
+                     "prefab":  "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
+                     "role":  "dressing",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    4.6,
+                                    0,
+                                    -4.4
+                                ],
+                     "yaw":  -15,
+                     "wall":  "-z",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-hay-1",
+                     "name":  "Source_StillBarn_Hay_1",
+                     "prefab":  "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et",
+                     "role":  "dressing",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    -6,
+                                    0,
+                                    3.4
+                                ],
+                     "yaw":  90,
+                     "wall":  "+z",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-hay-2",
+                     "name":  "Source_StillBarn_Hay_2",
+                     "prefab":  "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et",
+                     "role":  "dressing",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    -6,
+                                    0,
+                                    1.6
+                                ],
+                     "yaw":  85,
+                     "wall":  "-x",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-sacks",
+                     "name":  "Source_StillBarn_Sacks",
+                     "prefab":  "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et",
+                     "role":  "dressing",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    6,
+                                    0,
+                                    3.8
+                                ],
+                     "yaw":  0,
+                     "wall":  "+z",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-lamp-w",
+                     "name":  "Source_StillBarn_Lamp_W",
+                     "prefab":  "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et",
+                     "role":  "light",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    -6.4,
+                                    0,
+                                    -1
+                                ],
+                     "yaw":  0,
+                     "wall":  "-x",
+                     "floor":  "f0"
+                 },
+                 {
+                     "id":  "source-still-barn-lamp-e",
+                     "name":  "Source_StillBarn_Lamp_E",
+                     "prefab":  "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et",
+                     "role":  "light",
+                     "verb":  "against wall",
+                     "offset":  [
+                                    6.4,
+                                    0,
+                                    -2
+                                ],
+                     "yaw":  0,
+                     "wall":  "+x",
+                     "floor":  "f0"
+                 }
+             ]
+}
