@@ -3,7 +3,7 @@
 //! licence from the holder and refuses it back; after a save and load the licence is still gone, the
 //! ban ends at the same in-game minute, and a ban that ended while the server was down is lifted.
 //! Loading twice gives the same bans; a save without the section has none. Across a restart
-//! (`tools\cli wt e2e`): every non-reload run leaves a 30-day ban for E2E_UID; the reload boot finds it.
+//! (`tools\cli wt e2e`): every non-reload run leaves a 7-day ban for E2E_UID (the shortest real one, brandishing); the reload boot finds it on the same in-game minute (#3741: the clock is restored before the section loads).
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_LicenceBansRestart : LF_Test
 {
@@ -160,11 +160,12 @@ class LF_Test_LicenceBansRestart : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! wt e2e save boot: a 30-day ban on the real game clock, for the shutdown save.
+	//! wt e2e save boot: a 7-day ban on the real game clock, for the shutdown save.
 	static void SeedE2E(LF_TestContext ctx)
 	{
-		int end = LF_LicenceBans.Ban(E2E_UID, LF_ELicenseType.FIREARM_PERMIT, 30);
+		int end = LF_LicenceBans.Ban(E2E_UID, LF_ELicenseType.FIREARM_PERMIT, 7);
 		ctx.True(end > 0, string.Format("e2e ban is in force before the save (ends at minute %1)", end));
+		LF_Debug.Info(LF_LicenceBans.FEATURE, string.Format("e2e save boot: 7-day ban until minute %1, game clock %2", end, LF_LicenceDesk.ClockText()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -174,7 +175,7 @@ class LF_Test_LicenceBansRestart : LF_Test
 		int end = LF_LicenceBans.EndOf(E2E_UID, LF_ELicenseType.FIREARM_PERMIT);
 		ctx.True(end > 0, "e2e licence ban is back after the restart");
 		ctx.True(end > LF_LicenceBans.Now(), string.Format("e2e licence ban still in force after the restart (ends %1, now %2)", end, LF_LicenceBans.Now()));
-		LF_Debug.Info(LF_LicenceBans.FEATURE, string.Format("e2e restart: %1's permit ban ends at minute %2", E2E_UID, end));
+		LF_Debug.Info(LF_LicenceBans.FEATURE, string.Format("e2e restart: %1's permit ban ends at minute %2, game clock %3", E2E_UID, end, LF_LicenceDesk.ClockText()));
 		// The bans stay for the next reload check (LF_Test_LicenceSeizure.VerifyE2E, which runs after this one and resets them).
 	}
 }

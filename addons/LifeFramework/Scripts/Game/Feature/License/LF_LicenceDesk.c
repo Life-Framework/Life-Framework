@@ -110,6 +110,23 @@ class LF_LicenceDesk
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return The game clock as "Y-M-D h (minute N)" for logs, or "no clock".
+	static string ClockText()
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		TimeAndWeatherManagerEntity clock;
+		if (world)
+			clock = world.GetTimeAndWeatherManager();
+
+		if (!clock)
+			return "no clock";
+
+		int days = DaysFromCivil(clock.GetYear(), clock.GetMonth(), clock.GetDay());
+		int minute = days * MINUTES_PER_DAY + (int)(clock.GetTimeOfTheDay() * 60);
+		return string.Format("%1-%2-%3 %4 h (minute %5)", clock.GetYear(), clock.GetMonth(), clock.GetDay(), clock.GetTimeOfTheDay(), minute);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return The in-game minute the open application is due, or -1 when there is none.
 	static int DueMinutes(string uid)
 	{
