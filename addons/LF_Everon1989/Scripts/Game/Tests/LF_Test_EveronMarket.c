@@ -1,4 +1,5 @@
 // red-proof: observed 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronMarket` printed `RED PROOF OK`; with the pack layer removed (an empty header as the pack source) it failed e.g. `GoldBar.et base is today's sell price (expected 120, got 200)` and the market-on, copper-removed and eight-goods checks. `--only` then passed under the pack header. 2026-11-18 (#3028): the recovery check passes hundredths (it went hollow when Recover moved to hundredths); with a 1 h window instead of 24 h it failed `everon/market`, with 24 h it passes.
+// red-proof (2026-11-19, #3622): with the granary grain curve (#3638) the old count of 11 failed on a `--tier all` run (found 12). The test now asserts the set of goods; `--red LF_Test_EveronMarket` printed RED PROOF OK and `--tier all` is green.
 //! #2849 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the pack's market overlay
 //! switches the market on and gives the eight goods the 1989 trader buys (apples, plums, cement, gravel, sand,
 //! iron bars, planks, cabbages) a curve. Each curve is read against the pack trader's own price list: ceiling
@@ -15,6 +16,12 @@ class LF_Test_EveronMarket : LF_Test
 	static const ResourceName GOLD_BAR = "{ACC9A10F0F20F5C4}Prefabs/Resources/Mining/GoldBar.et";
 	static const ResourceName WOOD_PLANK = "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et";
 	static const ResourceName CABBAGE = "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et";
+	static const ResourceName IRON_BAR = "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et";
+	static const ResourceName APPLE = "{C9D661E5B0714711}Prefabs/Items/Food/Apple.et";
+	static const ResourceName PLUM = "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
+	static const ResourceName CEMENT = "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et";
+	static const ResourceName GRAVEL = "{344090890C63F4CA}Prefabs/Items/Resources/GravelBag.et";
+	static const ResourceName SAND = "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et";
 	static const int HOURS_24 = 86400;
 
 	//------------------------------------------------------------------------------------------------
@@ -126,7 +133,21 @@ class LF_Test_EveronMarket : LF_Test
 		ctx.True(config.m_bEnabled, "the pack switches the market on");
 		ctx.True(config.FindGood(COPPER_BAR) == null, "the pack removes the copper bar curve");
 		ctx.True(config.FindGood(GOLD_BAR) == null, "the pack removes the gold bar curve");
-		ctx.Equal(11, config.m_aGoods.Count(), "eleven goods ride a curve: the eight the trader buys and the board, post and firewood the wholesale warehouse buys (#3269)");
+		// The set of goods, not a count: the eight the trader buys, the four lumber goods of the wholesale warehouse (#3269)
+		// and the granary grain (#3622, its own lot curve, read by LF_Test_EveronGrainBuyers).
+		array<ResourceName> expected = {IRON_BAR, APPLE, PLUM, CEMENT, GRAVEL, SAND, WOOD_PLANK, CABBAGE, LF_Test_EveronLumberBuyers.BOARD, LF_Test_EveronLumberBuyers.POST, LF_Test_EveronLumberBuyers.FIREWOOD, LF_Test_EveronGrainBuyers.GRAIN};
+		foreach (ResourceName want : expected)
+			ctx.True(config.FindGood(want) != null, "a curve exists for " + want);
+		foreach (LF_MarketGoodDef have : config.m_aGoods)
+		{
+			bool known;
+			foreach (ResourceName want2 : expected)
+			{
+				if (LF_Utils.SamePrefab(have.m_sGood, want2))
+					known = true;
+			}
+			ctx.True(known, "no unexpected curve: " + have.m_sGood);
+		}
 
 		BaseContainerList rows = TraderRows(TRADER);
 		BaseContainerList coreRows = TraderRows(CORE_TRADER);
@@ -145,6 +166,10 @@ class LF_Test_EveronMarket : LF_Test
 		{
 			// The lumber goods ride the wholesale curves of #3269 (own floor, drop and recovery); LF_Test_EveronLumberBuyers reads them.
 			if (LF_Test_EveronLumberBuyers.IsLumberGood(good.m_sGood))
+				continue;
+
+			// The granary grain is priced per lot with its own curve (#3622); LF_Test_EveronGrainBuyers reads it.
+			if (LF_Utils.SamePrefab(good.m_sGood, LF_Test_EveronGrainBuyers.GRAIN))
 				continue;
 
 			string name = good.m_sGood;

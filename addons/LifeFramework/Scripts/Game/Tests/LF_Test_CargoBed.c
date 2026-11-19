@@ -1,5 +1,6 @@
 // red-proof: observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_CargoBed`: RED-OK carry/cargo-bed (fails with the hook on, 56 assertions); the loads are skipped, so the counts, the refusal, the unload order and the round trip fail.
 // red-proof (layout, review 2026-11-19): the SlotTransform assertions came with the fix (the old code had no such function); the before picture is in website/public/docs-images/3265/bed-stack-before.png.
+// red-proof (leftover logs, 2026-11-19): the unload-and-drop loop left four loose WoodLog_01_Small at the gate, which blocked housing/furniture's shelf and farming's seed spot in a `--tier all` run; with the new "leaves no log at the gate" check and the loop's logs not deleted, `--only LF_Test_CargoBed` failed it; with each dropped log deleted it passes.
 // red-proof (lock, review 2026-11-19): with IsLockedFor forced false, `--only LF_Test_CargoBed` failed "a locked truck takes no load" and "a locked truck cannot be unloaded"; green with the fix.
 
 //! Truck cargo bed (#3265): 3 softwood and 2 hardwood logs (7 units) go into a 12-unit bed, a 13th unit is
@@ -140,7 +141,9 @@ class LF_Test_CargoBed : LF_Test
 		for (int j = 0; j < 4; j++)
 		{
 			bed.ServerUnload(carrier);
+			IEntity dropped = LF_ShoulderCarry.Carried(carrier);
 			LF_ShoulderCarry.Drop(carrier);
+			LF_TestCharacterFixture.Delete(dropped); // a dropped log is a loose entity at the gate; it must not outlive the test
 		}
 
 		ctx.True(bed.GetUnits() < 12, "the bed was emptied a little before the reload");
@@ -150,7 +153,12 @@ class LF_Test_CargoBed : LF_Test
 		bed.LoadText("");
 		ctx.Equal(0, bed.GetUnits(), "an empty save loads an empty bed");
 
+		// Every log this test unloaded and dropped is deleted with the rest: a loose log left at the gate
+		// blocked the shelf spot of housing/furniture and a seed spot of the farming tests (#3265).
+		vector gate = carrier.GetOrigin();
 		Cleanup(carrier, truck, softLog, hardLog);
+		LF_TestDebrisProbe probe = new LF_TestDebrisProbe();
+		ctx.False(probe.Describe(gate).Contains("WoodLog"), "the test leaves no log at the gate:" + probe.Describe(gate));
 	}
 
 	//------------------------------------------------------------------------------------------------
