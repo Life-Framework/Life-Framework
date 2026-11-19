@@ -73,6 +73,7 @@ class LF_SignStyledFace
 		vector inkColor;
 		FaceColors(style, painted, paint, text, groundColor, inkColor);
 		PaintGround(ground, style, size, groundColor);
+		PaintFinish(style, size);
 		Color ink = new Color(inkColor[0], inkColor[1], inkColor[2], style.m_fInkAlpha);
 		PlaceText(title, plan.m_sTitle, plan.m_vTitlePos, plan.m_vTitleSize, plan.m_iTitleFont, plan.m_fTitleTilt, ink);
 
@@ -172,6 +173,42 @@ class LF_SignStyledFace
 		ground.SetColor(Color.FromVector(color));
 		if (!style.m_sGroundTexture.IsEmpty() && !ground.LoadImageTexture(0, style.m_sGroundTexture, true))
 			LF_Debug.Warn("Signs", "style " + style.m_sId + ": ground texture does not load, the ground is plain: " + style.m_sGroundTexture);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The style's finish (worn edges, tape): the layout's Finish image over the shown area. A style with
+	//! no finish hides the widget; a layout without one, or an imageset that does not load, logs and
+	//! prints the face without wear.
+	protected void PaintFinish(LF_SignStyleDef style, LF_SignSizeDef size)
+	{
+		ImageWidget finish = ImageWidget.Cast(m_wRoot.FindAnyWidget("Finish"));
+		if (style.m_sFinishImage.IsEmpty())
+		{
+			if (finish)
+				finish.SetVisible(false);
+
+			return;
+		}
+
+		if (!finish)
+		{
+			LF_Debug.Warn("Signs", "style " + style.m_sId + ": its layout has no Finish image widget, printed without wear");
+			return;
+		}
+
+		FrameSlot.SetAnchorMin(finish, 0, 0);
+		FrameSlot.SetAnchorMax(finish, 0, 0);
+		FrameSlot.SetPos(finish, 0, 0);
+		FrameSlot.SetSize(finish, size.m_vShown[0], size.m_vShown[1]);
+		string name = style.m_sFinishName;
+		if (name.IsEmpty())
+			name = "full";
+
+		if (!finish.LoadImageFromSet(0, style.m_sFinishImage, name))
+		{
+			LF_Debug.Warn("Signs", string.Format("style %1: finish image '%2' does not load from %3, printed without wear", style.m_sId, name, style.m_sFinishImage));
+			finish.SetVisible(false);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------

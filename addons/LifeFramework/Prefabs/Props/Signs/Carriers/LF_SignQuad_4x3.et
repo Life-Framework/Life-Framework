@@ -1,0 +1,15 @@
+GenericEntity {
+ ID "A179E85941C433DF"
+ components {
+  MeshObject "{FD317F91B6FB235F}" {
+   Object "{0FA061F6AB2945E7}Assets/Signs/Carriers/LF_SignQuad_4x3.xob"
+   Materials {
+    MaterialAssignClass "{7D79F7A9F61C64F2}" {
+     SourceMaterial "LF_SignFace"
+     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+    }
+   }
+   CastShadow 0
+  }
+ }
+}
