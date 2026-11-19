@@ -911,9 +911,10 @@ export function mergeFailureDetail(unmerged, raw) {
 }
 
 // True when merging `theirs` into the worktree branch would conflict. Uses
-// `git merge-tree --write-tree` (no checkout, no index change). merge-tree may
-// not run the custom drivers in tools/merge/, so a "conflict" here only means
-// "try the real merge"; wtSync then applies the drivers.
+// `git merge-tree --write-tree` (no checkout, no index change). merge-tree DOES run the
+// custom drivers in tools/merge/ (a both-sides docs/features append is "clean" here), while
+// GitHub runs none: a clean answer does not mean GitHub calls the PR mergeable (ship-direct.mjs
+// bothSidesTouched covers that).
 export function mergeWouldConflict(wtRoot, theirs = "origin/main") {
   const res = git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", theirs]);
   if (res.status === 0) return false;
