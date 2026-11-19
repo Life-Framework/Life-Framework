@@ -142,6 +142,14 @@ for (const id of ["arrival", "hostel", "cafe", "bank", "police", "clinic", "gene
   }
 }
 
+// ---- the village depot and factory slots (#3828): optional building slots, so a village that has neither (Meaux) still checks
+{
+  for (const [id, kit] of [["depot", "fuel-depot"], ["factory", "factory"]]) {
+    const s = village.slots.find((x) => x.id === id);
+    check(!!s && s.required === false && s.host === "building" && s.kit === kit, `the village template should have an optional building slot ${id} with kit ${kit}`);
+  }
+}
+
 if (failed) {
   console.log(`SUMMARY town-map-selftest fail ${failed}`);
   process.exit(1);
