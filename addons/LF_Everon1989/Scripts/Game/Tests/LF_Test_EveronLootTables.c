@@ -1,4 +1,4 @@
-// red-proof: on main (no Configs/Loot overlay) `tools\cli test --no-build --only LF_Test_EveronLootTables` fails every `has a loot table` line; RedProof() looks the kinds up under a missing name. #3345: before the three prefabs exist (and under RedProof) every `prefab spawns` line fails.
+// red-proof: #3844: with no scrap rows in the tables (before this change) every `drops` / `holds the most` line fails on the unfixed conf; the pay guard stays green. On main (no Configs/Loot overlay) `tools\cli test --no-build --only LF_Test_EveronLootTables` fails every `has a loot table` line; RedProof() looks the kinds up under a missing name. #3345: before the three prefabs exist (and under RedProof) every `prefab spawns` line fails.
 //! #3344 (slice of #1020): the 1989 pack's loot tables for homes, shop back rooms, sheds and the dump
 //! (`Configs/Loot/LF_Loot_Everon1989.conf`, merged over the core crate table). Checked against the merged
 //! pack config (pack leg): each table is rollable, every row's prefab loads and has a sell price, the dump
@@ -14,6 +14,12 @@ class LF_Test_EveronLootTables : LF_Test
 	static const ResourceName AXE = "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et";
 	static const ResourceName TOOL_CHEST = "{38318F0369D1959B}Prefabs/Props/Loot/LF_LootToolChest.et";
 	static const ResourceName KITCHEN_CUPBOARD = "{51C99823106DB7C9}Prefabs/Props/Loot/LF_LootKitchenCupboard.et";
+	//! #3844: the five scrap items of #3823 (Prefabs/Items/Scrap/).
+	static const ResourceName SCRAP_METAL = "{EC59EAAEC5529F4A}Prefabs/Items/Scrap/LF_ScrapMetal.et";
+	static const ResourceName COPPER_WIRE = "{8092D345F08C5F22}Prefabs/Items/Scrap/LF_CopperWireCoil.et";
+	static const ResourceName RUBBER_SCRAP = "{0FC6120F0F62EFBA}Prefabs/Items/Scrap/LF_RubberScrap.et";
+	static const ResourceName WORN_TOOL = "{507AAEC2A7BBFFBB}Prefabs/Items/Scrap/LF_WornHandTool.et";
+	static const ResourceName OLD_RADIO = "{3F771F8119B03303}Prefabs/Items/Scrap/LF_OldRadio.et";
 	static const ResourceName SCRAP_PILE = "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et";
 
 	//! The same 6 minutes a parcel run takes as in `tools\cli economy` (an assumption, not measured).
@@ -32,6 +38,23 @@ class LF_Test_EveronLootTables : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What one item sells for. The shop manager prices an unlisted prefab at the config default (25), which is far
+	//! above what a scrap item fetches, so the five scrap items (#3844) are valued at their catalogue sell price,
+	//! the one the scrapyard pays; everything else keeps the shop manager's price.
+	protected static int SaleValue(ResourceName prefab, LF_ShopManagerComponent manager)
+	{
+		array<ResourceName> scrapItems = {SCRAP_METAL, COPPER_WIRE, RUBBER_SCRAP, WORN_TOOL, OLD_RADIO};
+		if (scrapItems.Contains(prefab))
+		{
+			LF_CatalogueItem item = LF_ItemCatalogue.ItemByPrefab(LF_ItemCatalogueConfig.Get(), prefab);
+			if (item)
+				return item.m_iSellPrice;
+		}
+
+		return manager.GetSellPrice(prefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Expected sale value of one fill of the table at the shop's sell prices.
 	protected static float ValuePerFill(LF_LootTableDef table, LF_ShopManagerComponent manager)
 	{
@@ -40,7 +63,7 @@ class LF_Test_EveronLootTables : LF_Test
 		foreach (LF_LootRowDef row : table.m_aRows)
 		{
 			total += row.m_iWeight;
-			value += row.m_iWeight * (row.m_iCountMin + row.m_iCountMax) * 0.5 * manager.GetSellPrice(row.m_Prefab);
+			value += row.m_iWeight * (row.m_iCountMin + row.m_iCountMax) * 0.5 * SaleValue(row.m_Prefab, manager);
 		}
 
 		if (total <= 0)
@@ -129,8 +152,18 @@ class LF_Test_EveronLootTables : LF_Test
 		array<string> kinds = {"home", "backroom", "shed", "dump"};
 		array<ResourceName> scrap = {IRON_NUGGET, COPPER_NUGGET};
 		array<ResourceName> tools = {ETOOL, AXE};
+		array<ResourceName> metal = {SCRAP_METAL};
+		array<ResourceName> rubber = {RUBBER_SCRAP};
+		array<ResourceName> radio = {OLD_RADIO};
+		array<ResourceName> wire = {COPPER_WIRE};
+		array<ResourceName> wornTool = {WORN_TOOL};
 		map<string, float> scrapPerFill = new map<string, float>();
 		map<string, float> toolsPerFill = new map<string, float>();
+		map<string, float> metalPerFill = new map<string, float>();
+		map<string, float> rubberPerFill = new map<string, float>();
+		map<string, float> radioPerFill = new map<string, float>();
+		map<string, float> wirePerFill = new map<string, float>();
+		map<string, float> wornToolPerFill = new map<string, float>();
 		foreach (string kind : kinds)
 		{
 			string lookup = kind;
@@ -163,6 +196,11 @@ class LF_Test_EveronLootTables : LF_Test
 			ctx.True(hourly < parcelHourly * MAX_SHARE_OF_PARCEL, string.Format("%1: %2 searches an hour at %3 a fill is %4 an hour, under %5 percent of the parcel job's %6", kind, searches, perFill, hourly, MAX_SHARE_OF_PARCEL * 100, parcelHourly));
 			scrapPerFill.Set(kind, CountPerFill(table, scrap));
 			toolsPerFill.Set(kind, CountPerFill(table, tools));
+			metalPerFill.Set(kind, CountPerFill(table, metal));
+			rubberPerFill.Set(kind, CountPerFill(table, rubber));
+			radioPerFill.Set(kind, CountPerFill(table, radio));
+			wirePerFill.Set(kind, CountPerFill(table, wire));
+			wornToolPerFill.Set(kind, CountPerFill(table, wornTool));
 		}
 
 		if (RedProof())
@@ -173,5 +211,18 @@ class LF_Test_EveronLootTables : LF_Test
 		ctx.True(scrapPerFill.Get("dump") > scrapPerFill.Get("backroom"), "the dump holds more scrap than a back room");
 		ctx.True(toolsPerFill.Get("shed") > toolsPerFill.Get("home"), "a shed holds more tools than a home");
 		ctx.True(toolsPerFill.Get("shed") > toolsPerFill.Get("dump"), "a shed holds more tools than the dump");
+
+		// #3844: each scrap item drops where the card says; the dump holds most scrap, rubber and radios, sheds
+		// the worn tools and wire, and a home an occasional radio.
+		ctx.True(metalPerFill.Get("dump") > 0 && metalPerFill.Get("dump") > metalPerFill.Get("shed"), "scrap metal drops at the dump, more than in a shed");
+		ctx.True(rubberPerFill.Get("dump") > 0, "rubber scrap drops at the dump");
+		ctx.True(rubberPerFill.Get("dump") > rubberPerFill.Get("shed") && rubberPerFill.Get("dump") > rubberPerFill.Get("home"), "the dump holds the most rubber scrap");
+		ctx.True(radioPerFill.Get("dump") > radioPerFill.Get("home"), "the dump holds more old radios than a home");
+		ctx.True(radioPerFill.Get("home") > 0, "a home drops an old radio now and then");
+		ctx.True(radioPerFill.Get("dump") > radioPerFill.Get("shed"), "the dump holds more old radios than a shed");
+		ctx.True(wornToolPerFill.Get("shed") > 0, "a shed drops worn hand tools");
+		ctx.True(wornToolPerFill.Get("shed") > wornToolPerFill.Get("dump") && wornToolPerFill.Get("shed") > wornToolPerFill.Get("home"), "a shed holds the most worn hand tools");
+		ctx.True(wirePerFill.Get("shed") > 0, "a shed drops copper wire");
+		ctx.True(wirePerFill.Get("shed") > wirePerFill.Get("home"), "a shed holds more copper wire than a home");
 	}
 }

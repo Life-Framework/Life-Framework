@@ -1,0 +1,33 @@
+GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" {
+ ID "96CAB0C267EB4947"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_WornHandTool_Name"
+     Description "#LF-Item_WornHandTool_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 1
+     SizeSetupStrategy Volume
+     ItemVolume 700
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{59BCA073459D6271}" {
+     HandAdditiveRotation 0 0 0
+     HandAdditiveTranslation 0 0.005 -0.065
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{59BCA073459D626C}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 1
+      FOV 10
+     }
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{8FDEE3196C8B75AB}Assets/Items/Equipment/Kits/RepairKit_01/RepairKit_01_wrench.xob"
+  }
+ }
+}

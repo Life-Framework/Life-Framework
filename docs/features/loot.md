@@ -29,6 +29,11 @@
 - 🟡 Pay: an hour of searching, at the rate the cooldowns allow, sells for under half of the parcel job's hour at the shop's sell prices
   (the dump about $150 an hour, a home about $125). No coin item exists yet, so no table pays small cash; that wants a coin prefab (follow-up).
   Proof (pack leg): `LF_Test_EveronLootTables` (`everon/loot-tables`). Containers placed in the world are later slices.
+- 🟡 Scrap drops (#3844): the five scrap items of #3823 (scrap metal, copper wire coil, rubber scrap, worn hand tool, old radio) are rows in
+  the tables. The dump holds the most scrap metal, rubber and old radios, sheds the worn hand tools and wire, and a home an occasional old
+  radio (one weight in 22). To keep the pay rule the dump now refills every 5400 s (the other tables stay 3600). The pay guard values the
+  five items at their catalogue sell price (5, 15, 5, 20, 40), since the shop manager prices an unlisted prefab at the config default of 25.
+  Proof: `LF_Test_EveronLootTables` asserts each item drops in the expected tables and the pay guard still passes.
 
 ### Everon 1989 loot props — `LF_Everon1989/Prefabs/Props/Loot/` (2026-11-19, #3345, framework #1020)
 - 🟡 Three searchable props over vanilla models, each with `LF_LootContainerComponent`, storage and the Search and Open actions of the core crate:

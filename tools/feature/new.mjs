@@ -455,6 +455,15 @@ function checklist(id, slug) {
 
 // ------------------------------------------------------------------ writing
 
+// Where new string rows go: just before the closing of the Items block (a "}" line then a "}" line at the end of the
+// file). `regen-localization` sorts the table and rewrites the last item's indentation, so no fixed marker line
+// survives it (#3833); the closing is found by shape, whatever the indentation or line endings.
+export function insertStRows(text, rows, what = "string table") {
+  const m = /\r?\n[ \t]*\}[ \t]*\r?\n[ \t]*\}[ \t]*\r?\n?$/.exec(text);
+  if (!m) throw new Error(`${what}: the closing braces of the table were not found`);
+  return text.slice(0, m.index) + `\n${rows}` + text.slice(m.index);
+}
+
 function insertBefore(text, marker, addition, what) {
   const at = text.lastIndexOf(marker);
   if (at === -1) throw new Error(`${what}: marker not found`);
@@ -494,7 +503,7 @@ export function plan(root, id) {
 
   const st = read(ST);
   if (st.includes(`"LF-${id.name}_Action"`)) throw new Error(`string table already has LF-${id.name}_Action`);
-  edit(ST, insertBefore(st, "\n  }\n }\n}", `\n${stRows(id)}`, ST));
+  edit(ST, insertStRows(st, stRows(id), ST));
 
   const areaDoc = featuresDoc(id);
   if (has(areaDoc)) edit(areaDoc, `${read(areaDoc).replace(/\n*$/, "\n")}${featuresRow(id)}`);

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7359DCF841DC4A5B}Configs/Market/LF_Market_Scrap_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

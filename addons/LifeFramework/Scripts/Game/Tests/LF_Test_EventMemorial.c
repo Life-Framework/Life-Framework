@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-19 with `tools\cli test --no-build --red LF_Test_EventMemorial`: RED-OK (`RedProof()` skips the opening run, so no radio goes quiet and nobody is served or paid). Green with `--only`.
+// red-proof: observed 2026-11-19 with `tools\cli test --no-build --red LF_Test_EventMemorial`: RED-OK (`RedProof()` skips the opening run, so no radio goes quiet and nobody is served or paid). Green with `--only`. The voice step (#3827) is inside the same hook: observed 2026-11-19 with a batched `--red` run (this test and the pack test): RED-OK; the skipped opening asks for no clip.
 //! events/memorial (#3806): the memorial rite operation of an event phase. The first run of a phase
 //! run switches off the radios of the configured slots within the ring (and puts back the ones it
 //! switched off), serves each player within the radius once (a standing award per character), and a
@@ -78,6 +78,92 @@ class LF_Test_EventMemorial : LF_Test
 
 		emitter.SetSoundSlot(slot);
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_DialogueConfig VoiceDialogue(string eventName, float seconds)
+	{
+		LF_DialogueConfig dialogue = new LF_DialogueConfig();
+		dialogue.m_sId = "test_memorial_voice";
+		dialogue.m_sSoundProject = "{0000000000000000}Sounds/Test/test_memorial_voice.acp";
+		dialogue.m_aLines = {};
+		LF_DialogueLine line = new LF_DialogueLine();
+		line.m_sId = "speech";
+		line.m_sTextKey = "test caption";
+		line.m_sEvent = eventName;
+		line.m_fSeconds = seconds;
+		dialogue.m_aLines.Insert(line);
+		return dialogue;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The voice step: the opening asks for the clip of the named line (event, project, length, the
+	//! speaker's head at the memorial) in the same run that serves the caption; a later run and a late
+	//! arrival do not ask again; the rite is busy for the clip's length; a missing line or no voice
+	//! asks for nothing.
+	protected void CheckVoice(LF_TestContext ctx, vector site)
+	{
+		LF_EventMemorial noLine = Config();
+		noLine.m_sVoiceDialogue = "{65C163E3C4868E76}Configs/Dialogue/LF_Dialogue_Clerk.conf";
+		ctx.False(noLine.Validate().IsEmpty(), "a voice with no line id is refused");
+		LF_EventMemorial noDialogue = Config();
+		noDialogue.m_sVoiceLine = "speech";
+		ctx.False(noDialogue.Validate().IsEmpty(), "a voice line with no dialogue conf is refused");
+
+		LF_EventMemorial voiced = Config();
+		voiced.m_sVoiceDialogue = "{65C163E3C4868E76}Configs/Dialogue/LF_Dialogue_Clerk.conf";
+		voiced.m_sVoiceLine = "speech";
+		voiced.m_fVoiceHeight = 1.5;
+		ctx.True(voiced.Validate().IsEmpty(), "a voice with a dialogue conf and a line id is accepted");
+
+		LF_EventMemorialOperation operation = new LF_EventMemorialOperation(MODULE_ID, voiced);
+		operation.m_bSiteOverride = true;
+		operation.m_vSiteOverride = site;
+		operation.m_bQuiet = true;
+		operation.m_VoiceTest = VoiceDialogue("SOUND_TEST_MEMORIAL_SPEECH", 30);
+		operation.m_aTestPeople = {};
+		operation.m_aTestPeople.Insert(LF_EventMemorialPerson.Make(1, UID_A, site + Vector(5, 0, 0)));
+
+		LF_EventContext phase = LF_EventContext.Make(12, 3, 2, 5000);
+		bool acted;
+		if (!RedProof())
+			acted = operation.Run("test_event", "memorial", phase);
+
+		ctx.True(acted, "the voiced opening acted");
+		ctx.EqualStr("SOUND_TEST_MEMORIAL_SPEECH", operation.m_sLastClipEvent, "the opening asks for the clip of the named line");
+		ctx.EqualStr("{0000000000000000}Sounds/Test/test_memorial_voice.acp", operation.m_sLastClipProject, "the clip is in the dialogue's audio project");
+		ctx.EqualFloat(30, operation.m_fLastClipSeconds, 0.01, "the clip's length is the line's");
+		ctx.EqualFloat(site[1] + 1.5, operation.m_vLastClipAt[1], 0.01, "the clip plays from the speaker's head above the marker");
+		ctx.Equal(1, operation.m_iLastServed, "the caption is served in the same run as the clip");
+		ctx.True(operation.Busy(), "the rite waits for the clip's length");
+
+		operation.Run("test_event", "memorial", phase);
+		ctx.Equal(1, operation.m_iClips, "a later run of the same phase run does not ask for the clip again");
+
+		operation.Run("test_event", "memorial", LF_EventContext.Make(12, 3, 2, 8000));
+		ctx.Equal(2, operation.m_iClips, "a new phase run asks for the clip again");
+
+		// No voice configured: nothing is asked for and the rite is never busy.
+		LF_EventMemorialOperation silent = Operation(site);
+		silent.m_aTestPeople.Insert(LF_EventMemorialPerson.Make(1, UID_A, site + Vector(5, 0, 0)));
+		silent.Run("test_event", "memorial", LF_EventContext.Make(12, 3, 2, 11000));
+		ctx.Equal(0, silent.m_iClips, "no voice configured: no clip asked for");
+		ctx.False(silent.Busy(), "no voice configured: the rite is not busy");
+		silent.RestoreRadios();
+
+		// A line the dialogue does not hold: the caption is all, and the rite is not held.
+		LF_EventMemorialOperation lost = new LF_EventMemorialOperation(MODULE_ID, voiced);
+		lost.m_bSiteOverride = true;
+		lost.m_vSiteOverride = site;
+		lost.m_bQuiet = true;
+		lost.m_VoiceTest = VoiceDialogue("SOUND_TEST_MEMORIAL_SPEECH", 30);
+		lost.m_VoiceTest.m_aLines[0].m_sId = "other";
+		lost.Run("test_event", "memorial", LF_EventContext.Make(12, 3, 2, 14000));
+		ctx.Equal(0, lost.m_iClips, "a voice line the dialogue lacks asks for no clip");
+		ctx.False(lost.Busy(), "a voice line the dialogue lacks does not hold the rite");
+
+		operation.RestoreRadios();
+		lost.RestoreRadios();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -178,6 +264,9 @@ class LF_Test_EventMemorial : LF_Test
 		lost.m_bQuiet = true;
 		lost.Run("test_event", "memorial", LF_EventContext.Make(12, 3, 2, 1200));
 		ctx.Equal(LF_EMemorialOutcome.NO_SITE, lost.m_eLast, "no placed event_target: no site");
+
+		// 6. The speaker's recorded line (#3827): asked for once, with the caption, and the rite is busy for its length.
+		CheckVoice(ctx, site);
 
 		operation.RestoreRadios();
 		LF_ExploitGuardsWorldFixture.Despawn(near);

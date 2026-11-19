@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{0FC6120F0F62EFBA}Prefabs/Items/Scrap/LF_RubberScrap.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
