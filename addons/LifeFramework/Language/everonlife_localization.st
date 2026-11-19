@@ -6658,10 +6658,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Job done. Time left: %1"
      Comment "Toast after a jail job. %1 is the remaining sentence as m:ss."
     }
+    CustomStringTableItem "{0B188B4AD2B2F068}" {
+     Id "LF-JailWork_Kitchen"
+     Target_en_us "Wash the dishes"
+     Comment "Action at the jail kitchen sink: wash dishes to shorten the sentence."
+    }
     CustomStringTableItem "{B2F316158144F2CB}" {
      Id "LF-JailWork_Laundry"
      Target_en_us "Sort the laundry"
      Comment "Action in the cell: sort laundry to shorten the sentence."
+    }
+    CustomStringTableItem "{9149AEEB14C38188}" {
+     Id "LF-JailWork_LaundryTub"
+     Target_en_us "Scrub the laundry"
+     Comment "Action at the jail laundry tub: scrub laundry to shorten the sentence."
     }
     CustomStringTableItem "{7AB47127A2E6C90C}" {
      Id "LF-JailWork_NotPrisoner"
@@ -6672,6 +6682,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-JailWork_Scrub"
      Target_en_us "Scrub the floor"
      Comment "Action in the cell: scrub the floor to shorten the sentence."
+    }
+    CustomStringTableItem "{D5FF62032D49E07F}" {
+     Id "LF-JailWork_Yard"
+     Target_en_us "Sweep the yard"
+     Comment "Action at the jail yard broom: sweep the yard to shorten the sentence."
     }
     CustomStringTableItem "{6C2C86A5611DFD9A}" {
      Id "LF-Jail_SlipHanded"
