@@ -71,16 +71,6 @@
     "front": "-x",
     "counters": [
       {
-        "id": "counter-shop-01",
-        "wall": "free",
-        "edgeGap": 3.24
-      },
-      {
-        "id": "cashier-shop-01",
-        "wall": "free",
-        "edgeGap": 2.83
-      },
-      {
         "id": "lf-pharmacy-counter",
         "wall": "free",
         "edgeGap": 2.43
@@ -90,27 +80,29 @@
   },
   "rows": [
     {
-      "id": "sign-commercial-01-drugstore",
-      "prefab": "{44A1CCEB43D989CA}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_Drugstore.et",
+      "id": "lf-sign-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
       "role": "sign",
       "verb": "against wall",
       "offset": [
-        -0.05,
-        1.412,
-        -0.159
+        -3.8,
+        3.3,
+        7.5
       ],
-      "yaw": 180,
-      "from": "ShopHouse_E_2I01t_drugstore_lf.et",
+      "yaw": 0,
       "config": [
         {
-          "component": "Hierarchy",
+          "component": "LF_SignComponent",
           "set": {
-            "PivotID": "\"socket_win_420x275_01\""
+            "m_sSignId": "\"pharmacy\"",
+            "m_vRimColor": "0.86 0.9 0.86",
+            "m_vPaintColor": "0.1 0.4 0.3",
+            "m_vTextColor": "0.96 0.95 0.9"
           },
           "blocks": []
         }
       ],
-      "wall": "free",
+      "wall": "+z",
       "floor": "f0"
     },
     {
@@ -150,33 +142,6 @@
         }
       ],
       "wall": "+z",
-      "floor": "f0"
-    },
-    {
-      "id": "counter-shop-01",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
-      "role": "counter",
-      "verb": "on floor",
-      "offset": [
-        1.57,
-        0.199,
-        -0.323
-      ],
-      "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "cashier-shop-01",
-      "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
-      "role": "till",
-      "verb": "on counter-shop-01",
-      "offset": [
-        1.16,
-        1.238,
-        -0.325
-      ],
-      "yaw": 180,
       "floor": "f0"
     },
     {
