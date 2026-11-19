@@ -1315,6 +1315,7 @@ class LF_VehicleOwnership
 		if (vehicleId.IsEmpty() || !vehicle)
 			return false;
 
+		LF_CargoBedPersist.Capture(vehicleId, vehicle); // the truck bed load rides its own save section (#3266)
 		LF_StorageSnapshotRecord cargo = LF_StorageSnapshot.Capture(vehicleId, SLOT_CARGO, vehicle);
 		if (!cargo)
 			return false;
@@ -1329,6 +1330,7 @@ class LF_VehicleOwnership
 	//! old snapshot never comes back next to items that already left.
 	protected static void ForgetCargo(string vehicleId, string why)
 	{
+		LF_CargoBedPersist.Forget(vehicleId, why);
 		if (LF_StorageSnapshot.Clear(vehicleId, SLOT_CARGO))
 			LF_Debug.Info("Vehicle", string.Format("cargo of %1 dropped: %2", vehicleId, why));
 	}
@@ -1751,6 +1753,7 @@ class LF_VehicleOwnership
 		}
 
 		session.m_Vehicle = vehicle.GetID();
+		LF_CargoBedPersist.Apply(record.m_sVehicleId, vehicle); // the saved truck bed load (#3266)
 
 		// The saved cargo goes back in once the car's storages have registered (#2809).
 		if (LF_StorageSnapshot.Has(record.m_sVehicleId, SLOT_CARGO) && GetGame() && GetGame().GetCallqueue())

@@ -196,6 +196,17 @@ class LF_CargoBedComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: replaces the stack with a saved one (#3266) and tells every machine. Same text twice, same bed.
+	void ServerRestore(string packed)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		LoadText(packed);
+		Sync();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Whether a load of this kind index would go in now (user may be null: no reach check).
 	LF_ECargoRefusal DecideFor(IEntity user, int kindIndex)
 	{
