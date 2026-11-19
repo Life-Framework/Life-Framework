@@ -19,7 +19,7 @@ const SOURCE = join(ADDON, "Assets", "Signs", "LF_BoardFace.fbx");
 const EMAT = "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat";
 const MATERIAL = "LF_SignFace";
 
-export const KEYS = ["1x1", "4x3", "3x2", "2x1", "4x1", "1x2"];
+export const KEYS = ["1x1", "4x3", "3x2", "2x1", "4x1", "1x2", "5x8"];
 
 // The carrier prefab: one MeshObject, the xob, the face material assigned, no shadow, like LF_BoardFace.et.
 export function prefabText(xob, ids) {
