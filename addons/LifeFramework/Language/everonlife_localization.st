@@ -10996,6 +10996,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This race is not available."
      Comment "Toast: the sign's course is missing or broken (#1923)."
     }
+    CustomStringTableItem "{C5ADAB68CA19613F}" {
+     Id "LF-Range_Busy"
+     Target_en_us "A round is already running on this lane."
+     Comment "Toast refusing a second start while a round runs."
+    }
+    CustomStringTableItem "{2363ADEA13DC1C23}" {
+     Id "LF-Range_NoShooter"
+     Target_en_us "Your character is not ready for a round yet."
+     Comment "Toast when the shooter has no record key yet."
+    }
+    CustomStringTableItem "{E473247834E47101}" {
+     Id "LF-Range_NoTargets"
+     Target_en_us "This lane has no targets."
+     Comment "Toast when the lane has no live target."
+    }
+    CustomStringTableItem "{2B4E8D9FF1DEF7AD}" {
+     Id "LF-Range_Result"
+     Target_en_us "%1/%2 in %3 s, your best %4 s"
+     Comment "Toast when a round clears the lane. %1 hits, %2 targets, %3 seconds, %4 best seconds."
+    }
+    CustomStringTableItem "{1A71F0442F4EF714}" {
+     Id "LF-Range_StartRound"
+     Target_en_us "Start a round"
+     Comment "Action on a range target: starts the timed round on its lane."
+    }
+    CustomStringTableItem "{121111F8BA6810D0}" {
+     Id "LF-Range_Started"
+     Target_en_us "Round on: %1 targets, %2 s"
+     Comment "Toast when a round starts. %1 targets in the lane, %2 seconds."
+    }
+    CustomStringTableItem "{BB662DD733C9F321}" {
+     Id "LF-Range_TimeUp"
+     Target_en_us "Time up: %1/%2 in %3 s"
+     Comment "Toast when the 60 s run out. %1 hits, %2 targets, %3 seconds."
+    }
+    CustomStringTableItem "{9B59E79F970EA709}" {
+     Id "LF-Range_Title"
+     Target_en_us "Range"
+     Comment "Title of the range toasts (Feature/Range)."
+    }
     CustomStringTableItem "{5985DB962913E1DE}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"
