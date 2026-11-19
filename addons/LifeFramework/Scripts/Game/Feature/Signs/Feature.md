@@ -168,3 +168,7 @@ hospital at 67 sat 20; measured on a 1280x720 client, straight on, 2026-11-18). 
 0.25, a share of the title font; 0 keeps the plain box) puts the title in a box `LF_SignFacePlan.TITLE_BOX_EM` ems tall,
 centred on the title area and raised by that share; the drop shadow follows. After it the bank and the gendarmerie
 lettering sits within 1 px of the face centre and the hospital within 3.
+
+## A-frame back face (#3547)
+
+`LF_Sign_Pub` (the A-frame) prints its styled face on both slates: `m_bBackFace` with `m_vBackFaceOffset` and `m_vBackFaceAngles` builds a second `LF_SignStyledFace` (own carrier, own render target) beside the front one; both are released and repainted together (`ReleaseStyledFaces`). The front is yaw -90, roll -14 at `0 0.571 0.17`; the back is the front turned 180 degrees about the vertical: yaw 90, roll -14, z negated. A carrier size (`m_sCarrier` set) makes `LF_SignStyledFace` size the layout's `RTTexture0` to `m_vTarget`, because the quad samples its whole render target. A face lean of the opposite sign intersects the vanilla slate and is cut at the crossing line.
