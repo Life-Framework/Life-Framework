@@ -12,6 +12,7 @@ class LF_Test_EveronAnniversaryMemorial : LF_Test
 	static const ResourceName MEMORIAL_SCENE_CONF = "{0F6E04B0DFACEE84}Configs/Events/LF_Scene_AnniversaryMemorial.conf";
 	static const ResourceName GATHER_HOURS_CONF = "{EF11EE5E405393FD}Configs/Events/LF_Condition_AnniversaryGather.conf";
 	static const ResourceName GATHER_SCENE_CONF = "{5B6448D007777542}Configs/Events/LF_Scene_AnniversaryGather.conf";
+	static const ResourceName RITE_CONF = "{0198079B059A452B}Configs/Events/LF_Rite_AnniversaryMemorial.conf";
 	static const string EVENT_ID = "anniversary";
 	static const string AWARD_ACTION = "anniversary_memorial";
 	static const float GAME_DAY_SECONDS = 7200;
@@ -112,6 +113,7 @@ class LF_Test_EveronAnniversaryMemorial : LF_Test
 				LF_EventPhase memorial = anniversary.m_aPhases[memorialAt];
 				ctx.True(memorial.m_aModules && memorial.m_aModules.Find("anniversary_memorial_hours") != -1, "the memorial phase waits on its noon window");
 				ctx.True(memorial.m_aModules && memorial.m_aModules.Find("anniversary_memorial_scene") != -1, "the memorial phase runs the walk to the memorial");
+				ctx.True(memorial.m_aModules && memorial.m_aModules.Find("anniversary_memorial_rite") != -1, "the memorial phase runs the rite (bells, radios, the priest's line, the standing)");
 			}
 
 			if (gatherAt != -1)
@@ -129,7 +131,7 @@ class LF_Test_EveronAnniversaryMemorial : LF_Test
 		CheckScene(ctx, GATHER_SCENE_CONF, "anniversary_gather", "the gathering");
 
 		// Every module the new phases name registers through the loader.
-		array<string> modules = {"anniversary_memorial_hours", "anniversary_memorial_scene", "anniversary_gather_hours", "anniversary_gather_scene"};
+		array<string> modules = {"anniversary_memorial_hours", "anniversary_memorial_scene", "anniversary_memorial_rite", "anniversary_gather_hours", "anniversary_gather_scene"};
 		foreach (string moduleId : modules)
 		{
 			ctx.True(events && LF_EventOverlay.FindModule(events, moduleId) != -1, "the overlay lists module " + moduleId);
@@ -142,6 +144,7 @@ class LF_Test_EveronAnniversaryMemorial : LF_Test
 			ctx.True(LF_EventShell.IsRegistered("anniversary_gather_hours"), "the gathering window registers");
 			ctx.True(LF_EventSceneOperation.Cast(LF_EventShell.FindOperation("anniversary_memorial_scene")) != null, "the memorial walk registers as a scene operation");
 			ctx.True(LF_EventSceneOperation.Cast(LF_EventShell.FindOperation("anniversary_gather_scene")) != null, "the gathering walk registers as a scene operation");
+			ctx.True(LF_EventMemorialOperation.Cast(LF_EventShell.FindOperation("anniversary_memorial_rite")) != null, "the memorial rite registers as a memorial operation");
 		}
 
 		// The day's standing award: a little town standing, with a cooldown so a player earns it once a day.
@@ -162,6 +165,26 @@ class LF_Test_EveronAnniversaryMemorial : LF_Test
 			ctx.True(award.m_fCooldownSeconds > 0, "the award has a cooldown, so it is earned once");
 		}
 
+		CheckRite(ctx);
 		LF_ReputationConfig.Reload();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The rite's data (#3806): it loads, is usable, and names the memorial's scene, the day's award row,
+	//! radios whose sound slots the pack fills, and texts the pack's string table holds.
+	protected void CheckRite(LF_TestContext ctx)
+	{
+		LF_EventMemorial rite = LF_EventMemorial.Cast(Load(RITE_CONF));
+		ctx.NotNull(rite, "the rite config loads");
+		if (!rite)
+			return;
+
+		ctx.EqualStr("", rite.Validate(), "the rite is usable");
+		ctx.EqualStr("anniversary_memorial", rite.m_sSceneId, "the rite is held at the memorial scene's target");
+		ctx.EqualStr(AWARD_ACTION, rite.m_sAwardAction, "the rite gives the day's standing award");
+		ctx.True(rite.m_aRadioSlots && rite.m_aRadioSlots.Count() >= 3, "the rite quiets the town's radios");
+		ctx.True(rite.m_iBellStrokes > 0, "the church bells ring");
+		ctx.True(rite.m_sSpeakerName.StartsWith("#") && rite.m_sSpeakerLine.StartsWith("#"), "the priest's name and line are localisation keys");
+		ctx.True(rite.m_sToastTitle.StartsWith("#") && rite.m_sToastText.StartsWith("#"), "the toast is localisation keys");
 	}
 }
