@@ -113,33 +113,68 @@ const prop = (lines, key) => {
 
 // Totals for a list of entity blocks, following prefab references (a reference's own root block is the
 // referencing entity, so only its insides are added). depth guards a reference loop.
-export function countTree(nodes, resolve, seen = new Map(), depth = 0) {
-  const t = { entities: 0, lights: 0, shadow: 0, unset: 0, point: 0, unresolved: new Set() };
-  const add = (o) => {
-    for (const k of ["entities", "lights", "shadow", "unset", "point"]) t[k] += o[k];
-    for (const u of o.unresolved) t.unresolved.add(u);
-  };
-  for (const n of nodes) {
-    t.entities++;
-    if (n.cls === "LightEntity") {
-      t.lights++;
-      const cast = prop(n.lines, "CastShadow");
-      const type = prop(n.lines, "Type") ?? "Point";
-      if (cast === null) t.unset++;
-      if (cast !== "0") {
-        t.shadow++;
-        if (/^point$/i.test(type)) t.point++;
-      }
+const COUNTS = ["entities", "lights", "shadow", "unset", "point"];
+const newTotals = () => ({ entities: 0, lights: 0, shadow: 0, unset: 0, point: 0, unresolved: new Set(), byId: new Map() });
+
+// What one light adds to the totals (sign +1) or takes back (-1). `cast` and `type` are null when the block does not write them.
+function lightDelta(t, rec, sign) {
+  t.lights += sign;
+  if (rec.cast === null) t.unset += sign;
+  if (rec.cast !== "0") {
+    t.shadow += sign;
+    if (/^point$/i.test(rec.type ?? "Point")) t.point += sign;
+  }
+}
+
+const unquote = (s) => (s === null ? null : s.replace(/^"|"$/g, ""));
+
+// Fold the totals of `o` into `t`. A block of `o` whose ID `t` already holds is the same entity written again (a prefab
+// that inherits a vanilla child by its ID and overrides a property, e.g. `LightEntity { ID "..." CastShadow 0 }`): it is
+// one entity, with the properties the later block writes laid over the earlier ones, not two.
+function mergeInto(t, o) {
+  for (const k of COUNTS) t[k] += o[k];
+  for (const u of o.unresolved) t.unresolved.add(u);
+  for (const [id, rec] of o.byId) {
+    const old = t.byId.get(id);
+    if (!old) {
+      t.byId.set(id, rec);
+      continue;
     }
-    if (n.ref && depth < 12) add(refInsides(n.ref, resolve, seen, depth));
-    add(countTree(n.children, resolve, seen, depth));
+    t.entities--;
+    const merged = { light: old.light || rec.light, cast: rec.cast ?? old.cast, type: rec.type ?? old.type };
+    if (old.light) lightDelta(t, old, -1);
+    if (rec.light) lightDelta(t, rec, -1);
+    if (merged.light) lightDelta(t, merged, 1);
+    t.byId.set(id, merged);
+  }
+}
+
+export function countTree(nodes, resolve, seen = new Map(), depth = 0) {
+  const t = newTotals();
+  for (const n of nodes) {
+    // One node's own block, its prefab's insides and its children share one ID space; sibling nodes do not.
+    const nt = newTotals();
+    nt.entities++;
+    const rec = { light: n.cls === "LightEntity", cast: null, type: null };
+    if (rec.light) {
+      rec.cast = prop(n.lines, "CastShadow");
+      rec.type = prop(n.lines, "Type");
+      lightDelta(nt, rec, 1);
+    }
+    if (n.ref && depth < 12) mergeInto(nt, refInsides(n.ref, resolve, seen, depth));
+    mergeInto(nt, countTree(n.children, resolve, seen, depth));
+    const id = unquote(prop(n.lines, "ID"));
+    if (id && !nt.byId.has(id)) nt.byId.set(id, rec);
+    for (const k of COUNTS) t[k] += nt[k];
+    for (const u of nt.unresolved) t.unresolved.add(u);
+    for (const [k, v] of nt.byId) t.byId.set(k, v);
   }
   return t;
 }
 
 function refInsides(ref, resolve, seen, depth) {
   if (seen.has(ref)) return seen.get(ref);
-  const empty = { entities: 0, lights: 0, shadow: 0, unset: 0, point: 0, unresolved: new Set() };
+  const empty = newTotals();
   seen.set(ref, empty);
   const got = resolve(ref);
   if (!got) {
@@ -149,16 +184,10 @@ function refInsides(ref, resolve, seen, depth) {
   const blocks = parseEntities(got.text);
   // The file's own root block is the referencing entity: count its parent chain's insides and children,
   // and a root that is itself a light (a vanilla `_on` lamp is a mesh entity with LightEntity children).
-  const out = { entities: 0, lights: 0, shadow: 0, unset: 0, point: 0, unresolved: new Set() };
+  const out = newTotals();
   for (const b of blocks) {
-    if (b.ref) {
-      const up = refInsides(b.ref, resolve, seen, depth + 1);
-      for (const k of ["entities", "lights", "shadow", "unset", "point"]) out[k] += up[k];
-      for (const u of up.unresolved) out.unresolved.add(u);
-    }
-    const inner = countTree(b.children, resolve, seen, depth + 1);
-    for (const k of ["entities", "lights", "shadow", "unset", "point"]) out[k] += inner[k];
-    for (const u of inner.unresolved) out.unresolved.add(u);
+    if (b.ref) mergeInto(out, refInsides(b.ref, resolve, seen, depth + 1));
+    mergeInto(out, countTree(b.children, resolve, seen, depth + 1));
   }
   seen.set(ref, out);
   return out;

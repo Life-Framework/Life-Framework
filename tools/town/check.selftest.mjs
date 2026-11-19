@@ -13,6 +13,7 @@
 //   - a jail slot of a marker and no LF_JailCellComponent fails --complete (the #2975 case);
 //   - the cell may sit in a companion slot that rides in the promiser's building (`with: police`, the jail beside the police desk, #3099);
 //   - the committed Saint-Philippe place loads and checks without throwing.
+// red-proof: with the exact-id rule back this printed "FAIL a marker id <slot>-<suffix> is accepted" (2026-11-19, #3562).
 // red-proof: before BACKED_KINDS and the component check existed this printed "FAIL clothing [complete]: expected fail, got pass" (2026-11-18).
 // red-proof: before a companion slot counted, the "police [cell in the jail slot that rides with it]" case printed FAIL expecting a pass (2026-11-18).
 // red-proof: with the prefab walk reduced to the layer's own text this printed "FAIL clothing [shop in a prefab]: expected pass" (2026-11-18).
@@ -116,6 +117,12 @@ const resolve_ = (ref) => {
 {
   const clerk = checkPlace(place("desk", "Clerk", counter), { resolve: resolve_, complete: true });
   check(clerk.ok && !has(clerk.warnings, "Component"), `clerk: a marker alone is enough (errors: ${clerk.errors.join(" | ")}; warnings: ${clerk.warnings.join(" | ")})`);
+  // A slot may carry a second circle of its kind (`<place>.<slot>-<suffix>`, the hostel's safe circle, #3350); any other id is still wrong.
+  const circle = (id) => `GenericEntity Fit_desk_Circle {\n components {\n  LF_PlaceComponent "{AAAAAAAAAAAAAAA2}" {\n   m_sKind "Clerk"\n   m_sId "${id}"\n  }\n }\n coords 984 12.4 2015\n}\n`;
+  const extra = checkPlace(place("desk", "Clerk", counter + circle("sample-square.desk-hostel")), { resolve: resolve_, complete: true });
+  check(extra.ok, `a marker id <slot>-<suffix> is accepted (errors: ${extra.errors.join(" | ")})`);
+  const stray = checkPlace(place("desk", "Clerk", counter + circle("sample-square.deskhostel")), { resolve: resolve_, complete: true });
+  check(!stray.ok && has(stray.errors, "marker has id 'sample-square.deskhostel'"), `a marker id that is not <slot> or <slot>-<suffix> still fails (errors: ${stray.errors.join(" | ") || "none"})`);
   const blind = checkPlace(place("clothing", "ClothingCounter", mannequins), { resolve: null, complete: true });
   check(blind.ok && has(blind.notes, "LF_ShopComponent"), `no resolver: expected a pass with a note naming LF_ShopComponent (ok ${blind.ok}; notes: ${blind.notes.join(" | ") || "none"})`);
   const jail = place("police", "JailCell", counter);
