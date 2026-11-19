@@ -8702,6 +8702,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Chop shop dismantling"
      Comment "Offence on a wanted poster: a stolen car was chopped (#415)."
     }
+    CustomStringTableItem "{6860E84495F88846}" {
+     Id "LF-Offence_DrunkDriving"
+     Target_en_us "Drunk driving"
+     Comment "Offence a licence seizure rule names (#3428): driving while impaired. Not in the crime catalog yet."
+    }
     CustomStringTableItem "{6E4CC71CE2AF3D51}" {
      Id "LF-Offence_HospitalRobbery"
      Target_en_us "Hospital robbery"
@@ -10512,6 +10517,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Property_Title"
      Target_en_us "Property"
      Comment "Toast title for a plot purchase answer (#2649)."
+    }
+    CustomStringTableItem "{2E48875B943A483E}" {
+     Id "LF-Qual_Held"
+     Target_en_us "You already hold this qualification."
+     Comment "Qualifications: the course is already held."
+    }
+    CustomStringTableItem "{8BF9C67BE39BDC9F}" {
+     Id "LF-Qual_RankTooLow"
+     Target_en_us "You need rank %1 to take this course."
+     Comment "Qualifications: %1 is the minimum rank."
+    }
+    CustomStringTableItem "{3F57A312C35253F9}" {
+     Id "LF-Qual_ShortPurse"
+     Target_en_us "You need %1 in cash to take this course."
+     Comment "Qualifications: %1 is the fee."
+    }
+    CustomStringTableItem "{4FC9952C71D9E1F0}" {
+     Id "LF-Qual_Unknown"
+     Target_en_us "There is no such course."
+     Comment "Qualifications: the course id is not in the table."
+    }
+    CustomStringTableItem "{EB5A73F654E37D13}" {
+     Id "LF-Qual_WrongFaction"
+     Target_en_us "This course is not open to your service."
+     Comment "Qualifications: the character is of the wrong faction."
     }
    CustomStringTableItem "{468EF5CBF215416A}" {
     Id "LF-Quest_Accept"

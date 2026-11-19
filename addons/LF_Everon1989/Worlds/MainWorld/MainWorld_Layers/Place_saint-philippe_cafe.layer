@@ -31,3 +31,16 @@ GenericEntity Fit_saint_philippe_cafe_anchor_door {
  coords 4445.785 13.1 10701.17
  angleY -98
 }
+GenericEntity Fit_saint_philippe_cafe_street_bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 4445.408 13.1 10703.137
+ angleY -98
+}
+GenericEntity Fit_saint_philippe_cafe_anchor_bench {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "bench"
+  }
+ }
+ coords 4444.814 13.1 10703.053
+ angleY 172
+}

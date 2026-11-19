@@ -70,6 +70,7 @@ Object.assign(SECTIONS, {
   "drinkImpairment.drinks": row("drinkImpairment", "drinks", "LF_DrinkImpairmentConfig", "Configs/Survival/LF_DrinkImpairment.conf", "m_aDrinks", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
   "systems.catalog": row("systems", "catalog", "LF_SystemCatalog", "Configs/Systems/LF_SystemCatalog.conf", "m_aSystems", "m_sId", byField("m_sId")),
   "terms.terms": row("terms", "terms", "LF_TermsConfig", "Configs/Terms/LF_Terms.conf", "m_aTerms", "m_sId", byField("m_sId")),
+  "qualifications.courses": row("qualifications", "courses", "LF_QualificationConfig", "Configs/Qualifications/LF_Qualifications.conf", "m_aCourses", "m_sId", byField("m_sId")),
   "property.plots": row("property", "plots", "LF_PropertyConfig", "Configs/Property/LF_Property.conf", "m_aPlots", "m_sPlotId", byField("m_sPlotId")),
   "property.houses": row("property", "houses", "LF_PropertyConfig", "Configs/Property/LF_Property.conf", "m_aHouses", "m_sHouseId", byField("m_sHouseId")),
   "loot.tables": row("loot", "tables", "LF_LootConfig", "Configs/Loot/LF_Loot.conf", "m_aTables", "m_sKind", byField("m_sKind"), noOwner),
@@ -87,6 +88,7 @@ Object.assign(SECTIONS, {
   "townBoard.cards": row("townBoard", "cards", "LF_TownBoardConfig", "Configs/TownBoard/LF_TownBoard.conf", "m_aCards", "m_sId", byField("m_sId")),
   "ui-theme.themes": row("ui-theme", "themes", "LF_UIThemeConfig", "Configs/UI/LF_UITheme.conf", "m_aThemes", "m_sThemeId", byField("m_sThemeId")),
   "parkedcars.cars": row("parkedcars", "cars", "LF_ParkedCarConfig", "Configs/Vehicles/LF_ParkedCars.conf", "m_aCars", "m_sPrefab", (p) => guidOf(p.m_sPrefab), noOwner),
+  "licenceSeizure.rules": row("licenceSeizure", "rules", "LF_LicenceSeizureRules", "Configs/Crime/LF_LicenceSeizure.conf", "m_aRules", "m_sCrimeId", byField("m_sCrimeId")),
   "vehicle-colours.models": row("vehicle-colours", "models", "LF_VehicleColoursConfig", "Configs/Vehicles/LF_VehicleColours.conf", "m_aModels", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
 });
 

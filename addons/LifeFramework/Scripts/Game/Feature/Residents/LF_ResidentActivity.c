@@ -70,7 +70,13 @@ class LF_ResidentActivity
 
 		if (what == SIT)
 		{
-			LF_SitAction seat = LF_NpcLoiter.FindFreeSeat(entity, SEAT_RANGE);
+			// Around the anchor, not the body: a teleport to the anchor lands a frame later (#3707).
+			LF_SitAction seat;
+			if (spot)
+				seat = LF_NpcLoiter.FindFreeSeatAt(spot.m_vOrigin, SEAT_RANGE);
+			else
+				seat = LF_NpcLoiter.FindFreeSeat(entity, SEAT_RANGE);
+
 			if (seat && LF_NpcLoiter.Sit(entity, seat))
 				return SIT;
 
