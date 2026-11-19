@@ -40,8 +40,10 @@
       ]
     },
     "garage": {
-      "none": true,
-      "reason": "not a state 2a slot; b76 is 158 m out at the edge of the survey and no 2a chapter needs a garage there"
+      "building": "b20",
+      "why": [
+        "the east workshop (Workshop_01_Main, 92.7 m2, 4 doors, interior yes) with its side workshop b19 and the vehicle ramp b21 beside it: the village mechanic, selling car parts on the mechanic stock (#3224). Replaces the none entry: the b76 edge garage stays unused"
+      ]
     },
     "farm-plot": {
       "none": true,

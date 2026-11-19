@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{330BA95D7BDD8C0D}Assets/Harvest/Reaper/Data/LF_Reaper_Red.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

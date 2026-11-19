@@ -12,7 +12,7 @@
 //
 // Pure apart from loadPoiKinds' file reads. `town map --check` calls checkSlotPois; `town check` (T4, #2206) calls it
 // the same way.
-import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 export const NONE = "none";
@@ -39,6 +39,10 @@ export function loadPoiKinds(root) {
     for (const f of readdirSync(dir).sort()) {
       const file = join(dir, f);
       if (/^LF_MapPois.*\.conf$/.test(f) && !files.includes(file)) files.push(file);
+      // The folder beside a listed overlay (LF_MapPois_X/) owns every .conf under it, as the game loads them (LF_ConfigOverlay.LoadFolderOverlays).
+      else if (/^LF_MapPois\w*$/.test(f) && statSync(file).isDirectory()) {
+        for (const g of readdirSync(file).sort()) if (/\.conf$/.test(g)) files.push(join(file, g));
+      }
     }
   }
   const kinds = new Set();

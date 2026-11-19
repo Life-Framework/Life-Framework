@@ -1044,6 +1044,11 @@ StringTable {
      Target_en_us "Filling station"
      Comment "Map POI kind name (#2247): the fuel till."
     }
+    CustomStringTableItem "{E20FC1E39F2F3576}" {
+     Id "LF-MapPoi_FishingSpot"
+     Target_en_us "Fishing spot"
+     Comment "Map POI kind name (#3667): a fishing spot marker (LF_Places kind FishingSpot) at Black Lake or Spring Pond. Discovered by walking past, like the shops."
+    }
     CustomStringTableItem "{3EF58CE81E5B58BA}" {
      Id "LF-MapPoi_Furniture"
      Target_en_us "Furniture store"
@@ -1634,6 +1639,11 @@ StringTable {
      Target_en_us "Tools, building materials, lamps and radios for the plot owner and the working man."
      Comment "Hardware store counter (#3220): the shop description."
     }
+    CustomStringTableItem "{FBE651522FAB6C3B}" {
+     Id "LF-Shop_Desc_Mechanic"
+     Target_en_us "Spare parts for the village's cars, sold across the workshop counter."
+     Comment "Mechanic counter (#3224): the shop description."
+    }
     CustomStringTableItem "{CE06D40741D4A653}" {
      Id "LF-Shop_Desc_MedicStores"
      Target_en_us "Coats and a medical kit for the hospital staff."
@@ -1709,6 +1719,11 @@ StringTable {
      Target_en_us "Hardware store"
      Comment "Hardware store counter (#3220): the shop name."
     }
+    CustomStringTableItem "{CD9F8522A264158A}" {
+     Id "LF-Shop_Name_Mechanic"
+     Target_en_us "Garage"
+     Comment "Mechanic counter (#3224): the shop name."
+    }
     CustomStringTableItem "{D815E73D4340CE7D}" {
      Id "LF-Shop_Name_MedicStores"
      Target_en_us "Medic stores"
@@ -1759,6 +1774,11 @@ StringTable {
      Target_en_us "Browse the tools and building supplies."
      Comment "Hardware store counter (#3220): the shop action description."
     }
+    CustomStringTableItem "{179870A0D78BDB64}" {
+     Id "LF-Shop_OpenDesc_Mechanic"
+     Target_en_us "Browse the car parts."
+     Comment "Mechanic counter (#3224): the shop action description."
+    }
     CustomStringTableItem "{3E7A91C04B52D684}" {
      Id "LF-Shop_OpenDesc_Newsagent"
      Target_en_us "Buy the tourist map or a paper"
@@ -1808,6 +1828,11 @@ StringTable {
      Id "LF-Shop_Open_Hardware"
      Target_en_us "Hardware store"
      Comment "Hardware store counter (#3220): the shop action label."
+    }
+    CustomStringTableItem "{C5A9EDCC211E5F78}" {
+     Id "LF-Shop_Open_Mechanic"
+     Target_en_us "Garage"
+     Comment "Mechanic counter (#3224): the shop action label."
     }
     CustomStringTableItem "{8D1EB732FECFCC26}" {
      Id "LF-Shop_Open_MedicStores"
@@ -1933,6 +1958,21 @@ StringTable {
      Id "LF-Sign_Barber_What"
      Target_en_us "The village coiffeur: sit in a chair and pick a new cut, colour or beard|Prices are 1989 prices, cash only"
      Comment "Sign card for the Saint-Philippe barber shop, What section (#3236)."
+    }
+    CustomStringTableItem "{C27AF568161F7892}" {
+     Id "LF-Sign_BlackLake_How"
+     Target_en_us "Bring a rod and a bait tin, cast onto the water from the shore, and strike when the float dips"
+     Comment "Sign card for the Black Lake plate, How section."
+    }
+    CustomStringTableItem "{468950476749EE18}" {
+     Id "LF-Sign_BlackLake_Title"
+     Target_en_us "Black Lake"
+     Comment "Title of the pole plate on the Black Lake shore (Everon 1989 pack, #3667). Printed on the sign and shown in the prompt as Read: Black Lake."
+    }
+    CustomStringTableItem "{57D8B0D20620C8D3}" {
+     Id "LF-Sign_BlackLake_What"
+     Target_en_us "A quiet lake with a bench and a lantern on its north-west shore. Perch and carp bite here; carp are best at dawn and in the evening."
+     Comment "Sign card for the Black Lake plate, What section."
     }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
@@ -2728,6 +2768,31 @@ StringTable {
      Id "LF-Sign_LotPrice_Title"
      Target_en_us "%1 %2"
      Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
+    }
+    CustomStringTableItem "{832AC83992CD1389}" {
+     Id "LF-Sign_Mechanic_How"
+     Target_en_us "*Garage* at the workshop counter, one price per part"
+     Comment "Sign card for the village garage, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{6F2254812571B657}" {
+     Id "LF-Sign_Mechanic_Needs"
+     Target_en_us "Money for the counter"
+     Comment "Sign card for the village garage, Needs section."
+    }
+    CustomStringTableItem "{AF20BB3181AD8266}" {
+     Id "LF-Sign_Mechanic_Next"
+     Target_en_us "Car parts mend a damaged vehicle."
+     Comment "Sign card for the village garage, Next section."
+    }
+    CustomStringTableItem "{EA83B183BA657FA1}" {
+     Id "LF-Sign_Mechanic_Title"
+     Target_en_us "Garage"
+     Comment "Title of the painted fascia over the village garage door in the east workshop (Everon 1989 pack, #3224). Printed on the sign and shown in the prompt as Read: Garage."
+    }
+    CustomStringTableItem "{6C1557BEA197814A}" {
+     Id "LF-Sign_Mechanic_What"
+     Target_en_us "The village garage: car parts at the workshop counter. The ramp beside it is where the mechanic works."
+     Comment "Sign card for the village garage, What section."
     }
     CustomStringTableItem "{3B335C0E2FA32B9B}" {
      Id "LF-Sign_MerchantTimber_Board"

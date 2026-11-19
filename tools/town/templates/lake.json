@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "kind": "lake",
+  "about": "An open-air water place away from any town: a lake whose shore takes fishing spots, a bench, a lantern and a sign. No building stands there, so the slot is hostless: its kit rests on the probed ground of one free plot. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "shore", "required": true, "kit": "lake-shore", "host": "plot", "poi": "FishingSpot",
+      "needs": { "interior": "optional", "prefer": "near" },
+      "plot": { "minWidth": 10, "minDepth": 10, "prefabs": [] },
+      "places": ["FishingSpot"]
+    }
+  ]
+}
