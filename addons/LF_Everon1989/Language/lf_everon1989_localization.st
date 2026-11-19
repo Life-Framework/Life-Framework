@@ -39,15 +39,10 @@ StringTable {
      Target_en_us "Harbour crates"
      Comment "Contract tracker title (#2709): the harbour master's early crates run (LF-ContractTracker_Title_<contractId>)."
     }
-    CustomStringTableItem "{3465F00000000006}" {
-     Id "LF-Dialogue_AnniversaryLetter_Ask"
-     Target_en_us "That hand... I know that hand. Where did you find the paper you are holding?"
-     Comment "Gaspard greets a player carrying the anniversary letter (#3465)."
-    }
     CustomStringTableItem "{3465F00000000009}" {
      Id "LF-Dialogue_AnniversaryLetter_SayHandIn"
-     Target_en_us "Hand him the letter."
-     Comment "Reply: hand in the letter (#3465)."
+     Target_en_us "I found a letter in the church flowers. It is addressed to you."
+     Comment "Reply: hand in the letter; offered only to a player who holds it (#3465, #3793)."
     }
     CustomStringTableItem "{3465F0000000000A}" {
      Id "LF-Dialogue_AnniversaryLetter_SaySecret"
@@ -828,6 +823,21 @@ StringTable {
      Id "LF-Item_AnniversaryLetter_Name"
      Target_en_us "Old letter, sealed"
      Comment "Item name: the letter from the memorial's flowers (#3465)."
+    }
+    CustomStringTableItem "{3793F00000000001}" {
+     Id "LF-Item_AnniversaryLetter_Read"
+     Target_en_us "Read the letter"
+     Comment "Action prompt on the anniversary letter lying in the world (#3793)."
+    }
+    CustomStringTableItem "{3793F00000000003}" {
+     Id "LF-Item_AnniversaryLetter_ReadText"
+     Target_en_us "Gaspard, if you read this I could not tell you myself. I counted the drums and wrote their marks down for the mayor. He kept it quiet. Tell them what the island will store. D."
+     Comment "Toast text: the anniversary letter itself, written by Dominique Bouvier (#3793, world bible beat 3)."
+    }
+    CustomStringTableItem "{3793F00000000002}" {
+     Id "LF-Item_AnniversaryLetter_ReadTitle"
+     Target_en_us "A letter from D. Bouvier"
+     Comment "Toast title when the anniversary letter is read (#3793)."
     }
     CustomStringTableItem "{10FBB25BFFCCF1A6}" {
      Id "LF-Item_Baguette"
