@@ -33,7 +33,9 @@ enum LF_ELicenceDesk
 	NOT_ENOUGH_CASH,
 	NOT_ALLOWED,
 	NO_CLOCK,
-	FAILED
+	FAILED,
+	//! A conviction seized the licence and its ban has not ended (#3432, LF_LicenceBans).
+	BANNED
 }
 
 //------------------------------------------------------------------------------------------------
@@ -223,6 +225,12 @@ class LF_LicenceDesk
 			return LF_ELicenceDesk.ALREADY_HELD;
 		}
 
+		if (LF_LicenceSeizure.MinutesLeft(uid, DRIVING) > 0)
+		{
+			LF_Debug.Info(FEATURE, string.Format("driving licence refused for %1: banned for %2 more in-game day(s)", uid, LF_LicenceSeizure.DaysLeft(uid, DRIVING)));
+			return LF_ELicenceDesk.BANNED;
+		}
+
 		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(player);
 		if (licences && !licences.CanUnlockLicense(DRIVING))
 		{
@@ -273,6 +281,7 @@ class LF_LicenceDesk
 			case LF_ELicenceDesk.ALREADY_HELD: return "#LF-LicenceDesk_DrivingAlreadyHeld";
 			case LF_ELicenceDesk.NOT_ENOUGH_CASH: return "#LF-LicenceDesk_NoCash";
 			case LF_ELicenceDesk.NOT_ALLOWED: return "#LF-LicenceDesk_DrivingNotAllowed";
+			case LF_ELicenceDesk.BANNED: return "#LF-LicenceDesk_DrivingBanned";
 		}
 
 		return "#LF-LicenceDesk_Closed";
@@ -280,8 +289,11 @@ class LF_LicenceDesk
 
 	//------------------------------------------------------------------------------------------------
 	//! The %1 of a driving licence answer: the fee when short of cash; else empty.
-	static string DrivingAnswerArg(LF_ELicenceDesk outcome)
+	static string DrivingAnswerArg(LF_ELicenceDesk outcome, string uid = string.Empty)
 	{
+		if (outcome == LF_ELicenceDesk.BANNED)
+			return LF_LicenceSeizure.DaysLeft(uid, DRIVING).ToString();
+
 		if (outcome == LF_ELicenceDesk.NOT_ENOUGH_CASH)
 			return LF_MoneyFormat.FormatMoney(LF_LicencesConfig.DriverLicenceFee());
 
@@ -325,6 +337,13 @@ class LF_LicenceDesk
 		int now = NowMinutes();
 		if (now < 0)
 			return LF_ELicenceDesk.NO_CLOCK;
+
+		minutesLeft = LF_LicenceSeizure.MinutesLeft(uid, PERMIT);
+		if (minutesLeft > 0)
+		{
+			LF_Debug.Info(FEATURE, string.Format("licence desk refused %1: the firearm permit is seized for %2 more in-game minutes", uid, minutesLeft));
+			return LF_ELicenceDesk.BANNED;
+		}
 
 		LF_ELicenceDesk record = RecordRefusal(uid);
 		int due = DueMinutes(uid);
@@ -578,6 +597,9 @@ class LF_LicenceDesk
 		if (outcome == LF_ELicenceDesk.APPLIED || outcome == LF_ELicenceDesk.WAITING)
 			return ((int)Math.Ceil(minutesLeft / 60.0)).ToString();
 
+		if (outcome == LF_ELicenceDesk.BANNED)
+			return ((int)Math.Ceil(minutesLeft / (float)MINUTES_PER_DAY)).ToString();
+
 		if (outcome == LF_ELicenceDesk.NOT_ENOUGH_CASH)
 			return LF_MoneyFormat.FormatMoney(LF_LicencesConfig.PermitFee());
 
@@ -599,6 +621,7 @@ class LF_LicenceDesk
 			case LF_ELicenceDesk.CONVICTED: return "#LF-LicenceDesk_Convicted";
 			case LF_ELicenceDesk.NOT_ENOUGH_CASH: return "#LF-LicenceDesk_NoCash";
 			case LF_ELicenceDesk.NOT_ALLOWED: return "#LF-LicenceDesk_NotAllowed";
+			case LF_ELicenceDesk.BANNED: return "#LF-LicenceDesk_Banned";
 		}
 
 		return "#LF-LicenceDesk_Closed";

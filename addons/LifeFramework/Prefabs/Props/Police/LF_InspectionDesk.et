@@ -1,0 +1,46 @@
+GenericEntity {
+ ID "A5F2E7A0CEC4634C"
+ components {
+  MeshObject "{ADA70BCDA27E20F9}" {
+   Object "{2D6DB9D5AFEAB643}Assets/Props/Services/Post/CounterPostOffice_01/CounterPostOffice_01.xob"
+  }
+  RigidBody "{F92539B9BCF00AE2}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{BD1CB43F0AEB95FA}" {
+   ActionContexts {
+    UserActionContext "{CB4B35E068DA35E9}" {
+     ContextName "default"
+     Position PointInfo "{7D0B3AB60B56EBBE}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_InspectVehicleAction "{C67385D3C78CF5BE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{1B5DDE77F3940C4E}" {
+      Name "#LF-Inspection_Inspect"
+     }
+    }
+    LF_CheckStickerAction "{68C91899292C6B7B}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{EEA8F3C960720F85}" {
+      Name "#LF-Inspection_Check"
+     }
+    }
+   }
+  }
+  RplComponent "{00F91D66584FA693}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}

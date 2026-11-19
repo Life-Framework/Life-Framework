@@ -51,3 +51,10 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 - **Not wired yet:** `Fit` is called by the pack (Q11); the "Full search" row and its detective gate are #3427 and call `SearchFull`. Goods in a compartment are not saved: the saved compartment level only says whether to fit one. The compartment is a child of the car, so a garage store, tow or impound deletes it with its goods (`CaptureCargo` walks the car's own storages only); the pack fit (#3436) must snapshot and refit it.
 - **Data:** none.
 - **Proof:** `vehicles/compartment` (WORLD).
+
+## Inspection stickers (#3433)
+
+- **Player sees:** an officer at an inspection desk picks "Inspect vehicle" and the car beside the desk gets a sticker valid for 7 game days; "Check the sticker" says valid, expired or none.
+- **Owner and side:** the server (`LF_Inspection`: expiry game day per lock identifier). The client only hides the actions from anyone who is not on-duty police; the server re-checks the officer.
+- **Data:** none saved yet. The sticker is session only; the save card (Q10) maps it onto the `m_iInspectedAt` stamp of the vehicle record.
+- **Proof:** `vehicles/inspection` (LOGIC). The desk prefab is not placed in any world; a car-side action needs a hook on the car prefabs.

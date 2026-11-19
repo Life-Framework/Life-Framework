@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "86094A3381DE4536"
+ components {
+  MeshObject "{7EB9EF2EF7DCAEF2}" {
+   Object "{70A7CBC9D5C866DC}Assets/Props/Furniture/Bathtub_01/Bathtub_01.xob"
+  }
+  RigidBody "{ED9CFFB028D959A9}" {
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{3DAFBD590D2ADD21}" {
+   ActionContexts {
+    UserActionContext "{EF979FD5335219E0}" {
+     ContextName "default"
+     Position PointInfo "{DDD4F023D4E1098C}" {
+      Offset 0 0.4 0
+     }
+     Radius 1.8
+    }
+   }
+   additionalActions {
+    LF_JailWorkAction "{C4643DF01CCAF73C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{785DFBD761CEE9EE}" {
+      Name "#LF-JailWork_LaundryTub"
+     }
+     m_sJobId "laundry_tub"
+     m_fSecondsOff 10
+     m_fCooldownSeconds 30
+     m_fWorkSeconds 6
+     m_eKind PICK
+    }
+   }
+  }
+ }
+}

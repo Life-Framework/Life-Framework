@@ -32,3 +32,7 @@ refusal, the rule order, an open course, unlock-list trimming, a missing table.
 `LF_Test_QualificationsRestart` (`qualifications/restart`, PERSISTENCE): two grants survive a save and load, a
 second load changes nothing, an unknown saved course is dropped, `OnAbsent()` gives none; the `wt e2e` reload boot
 finds the e2e character's two courses.
+
+## Training desk (#3426)
+
+`LF_TrainingDesk.Take(user, courseId)` is the server step the desk's held action (`LF_TrainingDeskAction`, one per course on `Prefabs/Props/Police/LF_TrainingDesk.et`) runs when the hold completes: on duty, `LF_QualificationRules.Check`, `LF_MoneyUtils.RemoveCash` for the fee, `LF_Qualifications.Grant`, a toast. All or nothing: a failed grant refunds the fee. The prefab's `Duration` per action is a quarter second per in-game study minute. Leaving mid-study never reaches the server, so nothing is charged. Test: `LF_Test_TrainingDesk` (`qualifications/training-desk`, WORLD).

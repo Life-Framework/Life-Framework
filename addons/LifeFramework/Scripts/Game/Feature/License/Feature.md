@@ -67,6 +67,9 @@ in-world document; a license is another document you carry.
   never longer. On-duty police revoke the permit (and any open application) with the "Revoke firearm
   permit" player interaction (`LF_LicenceRevokeRole`). The desk stands in GridWorld cell c0r5; the
   town desk is a later town pass.
+- **Arrest seizes the licence** (#3432, `LF_LicenceSeizure.c`): an `LF_OnArrested` books the licence bans the suspect's open crime
+  reports map to (`LF_LicenceSeizureRules`, `LF_LicenceBans.Ban`), tells the player, drops an open permit application, and the desk
+  (`LF_ELicenceDesk.BANNED`) refuses the banned buyer with the in-game days left.
 
 ## Dependencies
 
