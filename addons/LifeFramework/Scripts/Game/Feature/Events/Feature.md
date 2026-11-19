@@ -55,6 +55,14 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Proof:** `events/scene-check` (LOGIC, marker lists in script, no world).
 
 
+## Quest-done condition (#3784)
+
+- **Player sees:** nothing directly; an event that follows a player's errand (a police report, then a raid some minutes later).
+- **Owner and side:** server. `LF_QuestTrackerComponent.TurnInQuest` notes the turn-in in `LF_QuestDoneLog` (world seconds); `LF_EventShell.Measure` copies it into `LF_EventContext.m_mQuestDoneAt`. Nothing replicates, nothing is saved.
+- **Data:** a condition module `.conf` of root `LF_EventPrecondition`: `m_eKind QUEST_DONE`, `m_sQuestId`, `m_fDelaySeconds` (wait after the turn-in), `m_fWindowSeconds` (how long it then holds; 0 until a restart).
+- **Rules:** it holds nothing until the quest was turned in this boot; the latest turn-in counts; an empty quest id holds nothing. A restart forgets the tip-off, so a raid never fires from an earlier session's report.
+- **Proof:** `events/quest-done-condition` (LOGIC), `events/quest-done-shell` (WORLD).
+
 ## Modules from config (#2137)
 
 - **Player sees:** what the modules do (a scene of walkers); the loader itself is invisible.

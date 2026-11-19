@@ -378,6 +378,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 		// (and remembered), never completed and payable a second time.
 		m_Tracker.TurnIn(questId, GetGame().GetWorld().GetWorldTime() / 1000.0);
 		LF_Progression.NoteTurnedIn(uid, questId);
+		LF_QuestDoneLog.Note(questId, GetGame().GetWorld().GetWorldTime() / 1000.0);	// an event condition waits on it (#3784)
 		RefreshFrameMask();
 		GrantReward(def);
 		GrantStanding(def, uid);
