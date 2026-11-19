@@ -2090,6 +2090,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "PLEASE WAIT ..."
      Comment "ATM terminal status line while the server handles a request."
     }
+    CustomStringTableItem "{5E1B7A39C2D40F68}" {
+     Id "LF-Arrival_ClerkMark"
+     Target_en_us "The registry clerk"
+     Comment "Name on the waypoint and the map mark that guide a new player to the registry clerk (the arrival chain, first and last step). 32 characters at most."
+    }
     CustomStringTableItem "{EA5E950371F7CE44}" {
      Id "LF-Atmosphere_SwitchOff"
      Target_en_us "Switch off"
