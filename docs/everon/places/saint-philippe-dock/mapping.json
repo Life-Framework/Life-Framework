@@ -104,6 +104,14 @@
         "the 60 m margin reaches the quay strip from the warehouse; the route stays on open ground, clear of the light tower b01, the fuel tank b02 and the smokehouse shed b05"
       ]
     },
+    "raid": {
+      "building": "b06",
+      "shared": true,
+      "why": [
+        "street furniture on the open ground in front of the harbour warehouse b06's loading dock: the scene markers of the shipment raid event (#3443, card #3786): two spawn markers on the east edge of the road r05, two short waypoints south over open ground, and the target at the dock's front, a few metres from the sliding doors (the door entities stand in pairs about 5 m in from the footprint's west face)",
+        "the 60 m margin reaches the dock from the warehouse; the route is about 25 m, clear of the smokehouse b05 and its fire, the light tower b01 and the shipment docks route (#3766)"
+      ]
+    },
     "fishing-quay": {
       "building": "b01",
       "shared": true,

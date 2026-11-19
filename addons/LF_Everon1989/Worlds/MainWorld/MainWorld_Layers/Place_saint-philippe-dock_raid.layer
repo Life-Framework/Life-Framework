@@ -1,0 +1,44 @@
+GenericEntity Fit_saint_philippe_dock_shipment_raid_spawn0 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "shipment_raid"
+   m_iOrder 0
+  }
+ }
+ coords 4451 1.304 11111
+}
+GenericEntity Fit_saint_philippe_dock_shipment_raid_spawn1 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "shipment_raid"
+   m_iOrder 1
+  }
+ }
+ coords 4451 1.283 11107.5
+}
+GenericEntity Fit_saint_philippe_dock_shipment_raid_wp0 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "shipment_raid"
+   m_iOrder 0
+  }
+ }
+ coords 4452 1.286 11099
+}
+GenericEntity Fit_saint_philippe_dock_shipment_raid_wp1 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "shipment_raid"
+   m_iOrder 1
+  }
+ }
+ coords 4457.5 1.727 11095
+}
+GenericEntity Fit_saint_philippe_dock_shipment_raid_target : "{F716FD32069F2BE8}Prefabs/Systems/Events/LF_EventMarker_Target.et" {
+ components {
+  LF_EventWaypointComponent "{E01299EF5C4B8221}" {
+   m_sSceneId "shipment_raid"
+  }
+ }
+ coords 4458.2 2.085 11090.5
+}
