@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-19 with `tools\cli test --no-build --red LF_Test_FuelStationStock`: RED PROOF OK (all 1 listed test(s) fail with the hook on), first `the cash is spent (expected 0, got 30)`; RedProof() skips the sale, so the tank, stock and cash assertions fail; green with `--only`: passed=2 failed=0.
+// red-proof: observed 2026-11-19 with `tools\cli test --no-build --red LF_Test_FuelStationStock`: RED PROOF OK (all 1 listed test(s) fail with the hook on), first `the cash is spent (expected 0, got 30)`; RedProof() skips the sale, so the tank, stock and cash assertions fail; green with `--only`: passed=2 failed=0. Review 2026-11-19: the cuffed-buyer case failed on the unguarded Sell (`a cuffed buyer is refused (expected 9, got 0)`), green with the guard.
 //! A fuel pump sells from its station's stock (#3328): a fill moves litres into a real vehicle's fuel tank, takes
 //! the same litres out of the station and charges cash for them; an empty station refuses and charges nothing;
 //! a buyer with no cash gets nothing; a full tank is refused; fuel stock off leaves the vanilla pump alone; and
@@ -100,6 +100,22 @@ class LF_Test_FuelStationStock : LF_Test
 		ctx.Equal(expected * 2, top.m_iCash, "charged for the litres that moved only");
 		ctx.Equal(85 - expected, LF_FuelStationComponent.StockFor(id).m_iLitres, "the station dropped by those litres");
 		ctx.Equal(100000 - top.m_iCash, LF_MoneyUtils.GetCash(buyer), "the cash dropped by the charge");
+
+		// A cuffed buyer is refused; nothing moves.
+		SCR_ChimeraCharacter chimera = SCR_ChimeraCharacter.Cast(buyer);
+		if (chimera)
+		{
+			DrainTanks(car);
+			int cuffCash = LF_MoneyUtils.GetCash(buyer);
+			int cuffStock = LF_FuelStationComponent.StockFor(id).m_iLitres;
+			chimera.LF_SetRestrained(true);
+			LF_FuelSaleResult cuffed = LF_FuelStationComponent.Sell(id, car, buyer);
+			chimera.LF_SetRestrained(false);
+			ctx.Equal(LF_EFuelSale.UNFIT, cuffed.m_eResult, "a cuffed buyer is refused");
+			ctx.Equal(cuffCash, LF_MoneyUtils.GetCash(buyer), "a cuffed buyer pays nothing");
+			ctx.Equal(cuffStock, LF_FuelStationComponent.StockFor(id).m_iLitres, "a cuffed buyer takes no litres");
+			ctx.Equal(0, Math.Round(manager.GetTotalFuel()), "a cuffed buyer fills nothing");
+		}
 
 		// A full tank is refused; nothing is charged.
 		FillTanks(manager);

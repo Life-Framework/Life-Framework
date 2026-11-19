@@ -13,7 +13,8 @@ enum LF_EFuelSale
 	TANK_FULL,
 	EMPTY,
 	NO_MONEY,
-	FAILED
+	FAILED,
+	UNFIT
 }
 
 //------------------------------------------------------------------------------------------------
@@ -189,6 +190,9 @@ class LF_FuelStationComponent : ScriptComponent
 			return Refuse(result, LF_EFuelSale.OFF, "fuel stock is off on this server");
 		if (!buyer)
 			return Refuse(result, LF_EFuelSale.NO_BUYER, "no buyer");
+		// A dead, downed or cuffed buyer buys nothing (a modified client can send the action anyway).
+		if (!LF_Utils.IsAliveState(buyer) || LF_Downed.IsDowned(buyer) || LF_Restraint.IsRestrained(buyer))
+			return Refuse(result, LF_EFuelSale.UNFIT, "the buyer is dead, downed or cuffed");
 		if (!vehicle)
 			return Refuse(result, LF_EFuelSale.NO_VEHICLE, "no vehicle at the pump");
 
