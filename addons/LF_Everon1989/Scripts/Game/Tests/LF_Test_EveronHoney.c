@@ -1,4 +1,5 @@
 // red-proof: red first, 2026-11-19: before the pack files existed every line failed (no kitchen-honey machine, no farm_beehive offer, no jar curve). `--red` swaps the pack source for an empty header, so the same lines fail.
+// red-proof (2026-11-19, #3772): `--red` leaves the bench unspawned, so the bench and hive lines fail.
 // red-proof (2026-11-19, #3448 review): before the trader rows and the comb curve, `--only LF_Test_EveronHoney,LF_Test_EveronMarket` failed (`no unexpected curve: LF_HoneyJar.et`, and no buyer for jars or combs); with them both pass.
 //! #3448: the 1989 honey, read through the overlays under the Everon 1989 header (the pack leg). The kitchen
 //! turns 2 honeycombs into 1 honey jar (`kitchen-honey`, the LF_ProcessAction recipe row), the seed and feed
@@ -11,6 +12,9 @@ class LF_Test_EveronHoney : LF_Test
 	static const ResourceName MARKET_OVERLAY = "{696C5C44DC198A3C}Configs/Market/LF_Market_Honey_Everon1989.conf";
 	static const ResourceName JAR = "{0CBDB38CA152E98C}Prefabs/Items/Farming/LF_HoneyJar.et";
 	static const ResourceName KIT = "{DA8DBB9B5A97E39D}Prefabs/Items/Farming/LF_BeehiveKit.et";
+	static const ResourceName BENCH = "{699A4C9829E46B12}Prefabs/Props/Farming/LF_HoneyKitchen.et";
+	static const ResourceName HIVE = "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et";
+	static const vector BENCH_SPOT = "60 0 70";
 	static const ResourceName COMB = "{9DC40F97DF4CCFC4}Prefabs/Items/Food/LF_Honeycomb.et";
 	static const int NOW = 1800000480;	// lf-fixed: a unix time past 2^24, where float maths loses seconds
 	static const int GAME_DAYS = 7;	// lf-fixed: the week the earnings check runs over
@@ -55,6 +59,7 @@ class LF_Test_EveronHoney : LF_Test
 		Reload();
 		CheckPrefabs(ctx);
 		CheckRecipe(ctx);
+		CheckBench(ctx);
 		CheckHiveStock(ctx);
 		int jarsPerWeek = CheckHiveWeek(ctx);
 		CheckBuyer(ctx, jarsPerWeek);
@@ -84,6 +89,50 @@ class LF_Test_EveronHoney : LF_Test
 		ctx.True(kit && kit.IsValid(), "the beehive kit resolves to a real prefab");
 		Resource comb = Resource.Load(COMB);
 		ctx.True(comb && comb.IsValid(), "the honeycomb the recipe takes resolves");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #3772: the world has a kitchen bench that carries the recipe, and the hive prefab it sits beside spawns with its component.
+	protected void CheckBench(LF_TestContext ctx)
+	{
+		float y = GetGame().GetWorld().GetSurfaceY(BENCH_SPOT[0], BENCH_SPOT[2]);
+		vector at = Vector(BENCH_SPOT[0], y, BENCH_SPOT[2]);
+		IEntity bench;
+		if (!RedProof())
+			bench = LF_Utils.SpawnEntityPrefab(BENCH, at);
+		ctx.NotNull(bench, "the honey kitchen bench spawns");
+		if (bench)
+		{
+			int recipes = 0;
+			ActionsManagerComponent actions = LF_Component<ActionsManagerComponent>.Find(bench);
+			if (actions)
+			{
+				array<BaseUserAction> list = {};
+				actions.GetActionsList(list);
+				foreach (BaseUserAction base : list)
+				{
+					LF_ProcessAction process = LF_ProcessAction.Cast(base);
+					if (!process)
+						continue;
+
+					recipes++;
+					ctx.EqualStr("kitchen-honey", process.m_sMachineId, "the bench action runs the honey recipe");
+				}
+			}
+
+			ctx.Equal(1, recipes, "the bench carries exactly one process action");
+			SCR_EntityHelper.DeleteEntityAndChildren(bench);
+		}
+
+		IEntity hive;
+		if (!RedProof())
+			hive = LF_Utils.SpawnEntityPrefab(HIVE, at + "6 0 0");
+		ctx.NotNull(hive, "the beehive spawns");
+		if (hive)
+		{
+			ctx.NotNull(LF_Component<LF_HiveComponent>.Find(hive), "the beehive carries its hive component");
+			SCR_EntityHelper.DeleteEntityAndChildren(hive);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
