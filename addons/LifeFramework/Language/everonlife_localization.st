@@ -8627,6 +8627,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Chop shop dismantling"
      Comment "Offence on a wanted poster: a stolen car was chopped (#415)."
     }
+    CustomStringTableItem "{6860E84495F88846}" {
+     Id "LF-Offence_DrunkDriving"
+     Target_en_us "Drunk driving"
+     Comment "Offence a licence seizure rule names (#3428): driving while impaired. Not in the crime catalog yet."
+    }
     CustomStringTableItem "{6E4CC71CE2AF3D51}" {
      Id "LF-Offence_HospitalRobbery"
      Target_en_us "Hospital robbery"
