@@ -33,7 +33,7 @@
     },
     "front": "+x",
     "counters": [],
-    "adapt": "The vanilla village pub (PubVillage_E_2L01 family) is already furnished: a bar along local z -4.5 from x -8.5 to -4.4, tables and chairs on the -z side, the kitchen (stove, fridge, sink) behind the bar on the +z side, a street door on the +x wall at about z -2 and a back door on the -z wall. The kit adds the café till (`LF_CafeTill`, a mesh-less entity on the pub's own cashier at local -5.345 1.018 -4.734: it sells the pack's `cafe` stock and is robbed with the shop bell) and what the residents system reads: the `counter` anchor behind the bar (the owner serves there, facing the room) and the `door` anchor on the pavement outside the +x door (a resident loitering between rounds). The slot's marker is the CafeTable place. Rows are rigid: shift, never stretch."
+    "adapt": "The vanilla village pub (PubVillage_E_2L01 family) is already furnished: a bar along local z -4.5 from x -8.5 to -4.4, tables and chairs on the -z side, the kitchen (stove, fridge, sink) behind the bar on the +z side, a street door on the +x wall at about z -2 and a back door on the -z wall. The kit adds the café till (`LF_CafeTill`, a mesh-less entity on the pub's own cashier at local -5.345 1.018 -4.734: it sells the pack's `cafe` stock and is robbed with the shop bell) and what the residents system reads: the `counter` anchor behind the bar (the owner serves there, facing the room) and the `door` anchor on the pavement outside the +x door (a resident loitering between rounds), and a street bench (`LF_Seat_BenchStreet_01_green`, two sit places) on the pavement by that door at local 9.5 -4.2 facing the street, with the `bench` anchor in front of it, so an evening resident's `sit` line finds a real seat within 2.5 m of the anchor (the pub's own chairs are plain props with no sit action, and the pack's `LF_Seat_Chair_01_*` finds no action manager on the server). The slot's marker is the CafeTable place. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -92,6 +92,45 @@
           "component": "LF_ResidentAnchorComponent",
           "set": {
             "m_sAnchorId": "\"door\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "street-bench",
+      "prefab": "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        9.5,
+        0,
+        -4.2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "anchor-bench",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        10.1,
+        0,
+        -4.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"bench\""
           },
           "blocks": []
         }
