@@ -113,6 +113,15 @@ class LF_Test_ResidentTimetable : LF_Test
 	}
 }
 
+//! A world that has every non-empty place kind: for a test that reads a shipped day, not the map (#3180).
+class LF_Test_AnyKinds : LF_ResidentKindCheck
+{
+	override bool Knows(string kind)
+	{
+		return !kind.IsEmpty();
+	}
+}
+
 //! The place kinds the core example residents name.
 class LF_Test_ShippedKinds : LF_ResidentKindCheck
 {
