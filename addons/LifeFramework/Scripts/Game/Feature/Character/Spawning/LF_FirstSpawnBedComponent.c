@@ -11,13 +11,7 @@ class LF_FirstSpawnBedComponentClass : ScriptComponentClass
 
 class LF_FirstSpawnBedComponent : ScriptComponent
 {
-	[Attribute("0 0 0", UIWidgets.EditBox, "Where the waking body stands, relative to the bed origin (bed space, metres)")]
-	protected vector m_vWakeOffset;
-
-	[Attribute("0", UIWidgets.EditBox, "Yaw of the waking body relative to the bed, degrees")]
-	protected float m_fWakeYaw;
-
-	[Attribute("0.85 0 0", UIWidgets.EditBox, "Where the woken body steps down to beside the bed, relative to the bed origin (bed space, metres)")]
+	[Attribute("0.85 0 0", UIWidgets.EditBox, "The free side of the bed: where the woken body stands beside it, relative to the bed origin (bed space, metres). Its X sign picks the side the body sits up on; the height comes from the floor under it")]
 	protected vector m_vStandOffset;
 
 	//------------------------------------------------------------------------------------------------
@@ -35,26 +29,19 @@ class LF_FirstSpawnBedComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! World transform the waking body takes: the bed origin plus the offset, facing the bed's yaw
-	//! plus the configured yaw.
+	//! World transform the waking body takes: feet on the floor at the free side, back to the
+	//! mattress, where the bed wake animation sits up from (LF_BedWakePose).
 	void GetWakeTransform(out vector transform[4])
 	{
-		IEntity owner = GetOwner();
-		vector bed[4];
-		owner.GetWorldTransform(bed);
-
-		vector angles = owner.GetYawPitchRoll();
-		Math3D.AnglesToMatrix(Vector(angles[0] + m_fWakeYaw, 0, 0), transform);
-		transform[3] = bed[3] + m_vWakeOffset.Multiply3(bed);
+		LF_BedWakePose.SitTransform(GetOwner(), m_vStandOffset, transform);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! World position on the floor beside the bed where the woken body ends up.
-	vector GetStandPosition()
+	//! World position on the floor beside the bed where the woken body ends up (probed floor height).
+	//! \param ignore A body to see through (the owner's own, standing at the bed).
+	vector GetStandPosition(IEntity ignore = null)
 	{
-		vector bed[4];
-		GetOwner().GetWorldTransform(bed);
-		return bed[3] + m_vStandOffset.Multiply3(bed);
+		return LF_BedWakePose.StandOnFloor(GetOwner(), m_vStandOffset, ignore);
 	}
 }
 
@@ -265,28 +252,26 @@ class LF_FirstSpawnBeds
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The floor position beside the nearest first-spawn bed to a body that woke on it.
-	//! \return False when no first-spawn bed is within maxDistance.
-	static bool FindStandPosition(vector position, float maxDistance, out vector stand)
+	//! The first-spawn bed nearest a body that was spawned beside it, by the bed's own position: the
+	//! owner never recomputes the server's wake point.
+	//! \return Null when no first-spawn bed is within maxDistance (horizontal metres).
+	static LF_FirstSpawnBedComponent FindNearest(vector position, float maxDistance)
 	{
 		array<LF_FirstSpawnBedComponent> beds = {};
 		GetBeds(beds);
 		float best = maxDistance * maxDistance;
-		bool found;
+		LF_FirstSpawnBedComponent nearest;
 		foreach (LF_FirstSpawnBedComponent bed : beds)
 		{
-			vector transform[4];
-			bed.GetWakeTransform(transform);
-			float distance = vector.DistanceSqXZ(transform[3], position);
+			float distance = vector.DistanceSqXZ(bed.GetOwner().GetOrigin(), position);
 			if (distance <= best)
 			{
 				best = distance;
-				stand = bed.GetStandPosition();
-				found = true;
+				nearest = bed;
 			}
 		}
 
-		return found;
+		return nearest;
 	}
 }
 

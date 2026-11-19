@@ -160,7 +160,7 @@ class LF_HospitalRespawn
 		s_iBedCursor = index + 1;
 
 		vector transform[4];
-		beds[index].GetWakeTransform(transform);
+		beds[index].GetSitTransform(transform);
 		position = transform[3];
 		yawPitchRoll = Math3D.MatrixToAngles(transform);
 
@@ -266,6 +266,22 @@ class LF_HospitalWake
 	static const int RETRY_MS = 500;
 	static const int MAX_START_TRIES = 6;
 	static const int MAX_WAIT_TRIES = 40;
+	//! The spawn put the body this close (horizontal metres) to the origin of the bed it wakes in.
+	static const float BED_SEARCH = 2.0;
+	//! A body that got up farther than this from the stand spot was carried away by the get-up.
+	static const float CARRIED_AWAY = 2.5;
+
+	//! The floor spot beside the bed this owner's body woke in, read once at the wake start while the
+	//! body is still at the bed. The get-up can carry the body away, so the step down never searches
+	//! around where it ended up.
+	protected static bool s_bHasBed;
+	protected static vector s_vStand;
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		s_bHasBed = false;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static void Begin(SCR_ChimeraCharacter character, int loiterType, int charged, int number, string date, int minutes)
@@ -274,6 +290,7 @@ class LF_HospitalWake
 			return;
 
 		LF_Debug.Info("Respawn", string.Format("waking in hospital: bill %1 (#%2), animation %3", charged, number, loiterType));
+		RememberBed(character);
 
 		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
 		if (world && world.GetMusicManager())
@@ -297,6 +314,8 @@ class LF_HospitalWake
 
 		if (!controller.IsLoitering())
 		{
+			// The server spawned the body on the bed's sit transform (LF_BedWakePose): the animation
+			// plays from where it stands.
 			vector transform[4];
 			controller.GetOwner().GetWorldTransform(transform);
 			controller.StartLoitering(null, loiterType, false, RootMotion(), true, transform, false);
@@ -331,7 +350,7 @@ class LF_HospitalWake
 			return;
 		}
 
-		// The bed loiter holds the body lying down until stopped; the stop plays the get-up.
+		// The bed loiter holds the body sitting on the bed until stopped; the stop plays the get-up.
 		int lieTicks = LieTicks();
 		if (lieTicks > 0 && attempt == lieTicks)
 		{
@@ -371,26 +390,64 @@ class LF_HospitalWake
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The bed wake ends with the body standing on the mattress; step it down to the bed's stand
-	//! point on the floor. The owner moves its own body (a server move is overwritten by it).
+	//! Owner, at the wake start: the hospital or first-spawn bed (#1965) the body was spawned at.
+	protected static void RememberBed(IEntity body)
+	{
+		s_bHasBed = false;
+		LF_HospitalBedComponent bed = LF_HospitalBedComponent.FindNearest(body.GetOrigin(), BED_SEARCH);
+		if (bed)
+		{
+			s_vStand = bed.GetStandPosition(body);
+		}
+		else
+		{
+			LF_FirstSpawnBedComponent firstBed = LF_FirstSpawnBeds.FindNearest(body.GetOrigin(), BED_SEARCH);
+			if (!firstBed)
+			{
+				LF_Debug.Warn("Respawn", string.Format("no bed within %1 m of the waking body at %2; it wakes where it stands", BED_SEARCH, body.GetOrigin()));
+				return;
+			}
+
+			s_vStand = firstBed.GetStandPosition(body);
+		}
+
+		s_bHasBed = true;
+		LF_Debug.Info("Respawn", string.Format("wakes beside the bed at %1, stands at %2", body.GetOrigin(), s_vStand));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a body that got up at `body` is not standing on the floor beside its bed (off the
+	//! floor height, or carried away by the get-up) and must be put on the stand spot.
+	static bool NeedsStepDown(vector body, vector stand)
+	{
+		if (Math.AbsFloat(body[1] - stand[1]) > LF_BedWakePose.ON_FLOOR)
+			return true;
+
+		return vector.DistanceSqXZ(body, stand) > CARRIED_AWAY * CARRIED_AWAY;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The get-up ends with the body standing at the bed edge on the floor. When it is not (off the
+	//! floor height, or carried away), it is put on the remembered stand spot. The owner moves its
+	//! own body (a server move is overwritten by it).
 	protected static void StepOffBed(IEntity character)
 	{
 		SCR_ChimeraCharacter body = SCR_ChimeraCharacter.Cast(character);
-		if (!body)
+		if (!body || !s_bHasBed)
 			return;
 
-		vector stand;
-		LF_HospitalBedComponent bed = LF_HospitalBedComponent.FindNearest(body.GetOrigin(), 1.5);
-		if (bed)
-			stand = bed.GetStandPosition();
-		else if (!LF_FirstSpawnBeds.FindStandPosition(body.GetOrigin(), 1.5, stand)) // a first-spawn bed wake (#1965)
+		s_bHasBed = false;
+		if (!NeedsStepDown(body.GetOrigin(), s_vStand))
+		{
+			LF_Debug.Info("Respawn", string.Format("got up on the floor beside the bed at %1 (floor %2)", body.GetOrigin(), s_vStand[1]));
 			return;
+		}
 
 		vector transform[4];
 		body.GetWorldTransform(transform);
-		transform[3] = stand;
+		transform[3] = s_vStand;
 		body.Teleport(transform);
-		LF_Debug.Info("Respawn", string.Format("stepped off the hospital bed to %1", transform[3]));
+		LF_Debug.Info("Respawn", string.Format("stepped from %1 to the floor beside the bed at %2", body.GetOrigin(), s_vStand));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -443,5 +500,20 @@ class LF_HospitalRespawn_StaticResetHook : LF_StaticResetHook
 	override void Apply()
 	{
 		LF_HospitalRespawn.Reset();
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_HospitalWake's remembered bed (LF_StaticReset finds it by reflection).
+class LF_HospitalWake_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_HospitalWake";
+	}
+
+	override void Apply()
+	{
+		LF_HospitalWake.ResetStatics();
 	}
 }
