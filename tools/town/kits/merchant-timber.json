@@ -29,7 +29,7 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "Street kit for the hardware store b59 (Workshop_02, the door in the +z end, the fascia at x 0.6). The kerb 3 m in front of the door is the timber counter: a shop counter facing the street, the timber man behind it, stacked planks on both sides of the door line and a chalk board with the buying prices (merchant_timber). Offsets are building-local, +z is the street side. Rows are rigid: shift, never stretch."
+    "adapt": "Street kit for the hardware store b59 (Workshop_02, the door in the +z end, the fascia at x 0.6). The kerb 3 m in front of the door is the timber counter: a shop counter facing the street, the till clerk behind it, the premium buyer (`hardware`, #3599) on its top, stacked planks on both sides of the door line and a chalk board with the buying prices (merchant_timber). Offsets are building-local, +z is the street side. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -47,8 +47,23 @@
       "floor": "f0"
     },
     {
-      "id": "timber-man",
-      "prefab": "{31E740A9BE82E617}Prefabs/Characters/Npcs/Outfits/LF_Npc_Logger_2.et",
+      "id": "timber-buyer",
+      "name": "Timber_Buyer",
+      "prefab": "{7C1E5A2D9B3F460C}Prefabs/Trader/LF_TimberBuyer_Everon1989.et",
+      "role": "interactable",
+      "verb": "on timber-counter",
+      "offset": [
+        0.6,
+        0.48,
+        9.9
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "timber-clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
       "role": "npc",
       "verb": "on floor",
       "offset": [
@@ -57,7 +72,7 @@
         8.8
       ],
       "yaw": 0,
-      "name": "Timber_Man",
+      "name": "Timber_Clerk",
       "class": "LF_NpcBaseEntity",
       "wall": "free",
       "floor": "f0"

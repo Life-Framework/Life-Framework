@@ -50,6 +50,24 @@ Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_
       Name "#LF-Search_Vehicle_Action"
      }
     }
+    LF_JailPutInVehicleAction "{B2E1080B00000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{B2E1080B00000002}" {
+      Name "#EL-Escort_PutIn"
+     }
+     "Sort Priority" 7
+    }
+    LF_JailTakeOutOfVehicleAction "{3431A0E100000003}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{3431A0E100000004}" {
+      Name "#EL-Escort_TakeOut"
+     }
+     "Sort Priority" 8
+    }
    }
   }
  }
