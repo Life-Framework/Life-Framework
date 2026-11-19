@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "kit": "chapel",
+  "system": "residents",
+  "source": {
+    "file": "tools/town/kits/sources/chapel.layer",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside"
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -1.5,
+        -1.4
+      ],
+      "max": [
+        1.5,
+        0.2
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "A one-room wayside chapel in the building's own frame: the door side is +z, the back wall -z, the room about 4 m square. Two candle holders and two flower pots dress the back wall and the `bench` resident anchor stands in the middle, so a resident whose line says `sit` has a place to be. The slot's place marker is the `Church` kind and switches the building's destruction off (D15). Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "candle-1",
+      "prefab": "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.8,
+        0,
+        -1.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "candle-2",
+      "prefab": "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.8,
+        0,
+        -1.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "flowers-pink",
+      "prefab": "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.5,
+        0,
+        -1.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "flowers-red",
+      "prefab": "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.5,
+        0,
+        -1.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-bench",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"bench\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
