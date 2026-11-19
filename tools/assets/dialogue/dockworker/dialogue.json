@@ -1,0 +1,34 @@
+{
+  "id": "dockworker",
+  "name": "Dockworker",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Dialogue_Dockworker_Name",
+  "text_only": true,
+  "hear_range_m": 6,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        { "text": "cargo", "next": "cargo" },
+        { "text": "work", "next": "work" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "cargo", "line": "about_cargo", "options_from": "greet" },
+    { "id": "work", "line": "about_work", "options_from": "greet" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Mind your feet, the crane swings wide. You want something, or are you just watching us sweat?" },
+    "about_cargo": { "text": "Flour, diesel, machine parts. What is in the other crates is the harbour master's business, and he does not share." },
+    "about_work": { "text": "Ask the harbour master. He hires by the day when a boat comes in, and pays when the boat is empty." },
+    "bye": { "text": "Off you go, then." }
+  },
+  "replies": {
+    "cargo": "What came in on the boat?",
+    "work": "Any work on the docks?",
+    "bye": "I'll leave you to it."
+  }
+}

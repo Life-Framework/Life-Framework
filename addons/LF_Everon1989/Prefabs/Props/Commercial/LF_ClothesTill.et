@@ -1,0 +1,39 @@
+GenericEntity {
+ ID "AD3FD08BFD38EC1C"
+ components {
+  MeshObject "{D250B99061534A3C}" {
+   Object "{CD7B21DA4D8AE5FB}Assets/Props/Commercial/CashierShop_01/CashierShop_01.xob"
+  }
+  RigidBody "{6FA286C50BB18200}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{27277D9B39113799}" {
+   ActionContexts {
+    UserActionContext "{24CCF1FFB1A22252}" {
+     ContextName "default"
+     Position PointInfo "{E0B1DEFAB52E0350}" {
+      Offset 0 0.25 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_StoreTillAction "{983BC5444BA64782}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C3C8F4A6C1D73A7F}" {
+      Name "#LF-Store_Pay"
+     }
+     m_sStoreKey "everon_clothingstore"
+    }
+   }
+  }
+  RplComponent "{662648AE009564AE}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}

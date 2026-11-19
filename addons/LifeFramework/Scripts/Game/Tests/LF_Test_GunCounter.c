@@ -3,7 +3,10 @@
 // `- the refusal names the firearm permit (expected '#LF-License_FirearmPermit_Name', got
 // 'FIREARM_PERMIT')` and `- the test character has a licence manager`. With the component: green.
 //! The annex gun counter (#988) on the server path: a character without the firearm permit is refused
-//! with the permit's name and keeps its cash; with the permit the same order is paid and delivered.
+//! with the permit's name and keeps its cash; a cuffed permit holder is refused; with the permit the
+//! same order is paid and delivered.
+// red-proof (cuffed, 2026-11-19): `tools\cli test --no-build --red LF_Test_GunCounter` RED-OK: `- a cuffed
+// permit holder is refused (expected 21, got 0)`, `- the cuffed buyer got no pistol (expected 0, got 1)`.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_GunCounter : LF_Test
 {
@@ -56,6 +59,17 @@ class LF_Test_GunCounter : LF_Test
 		if (licences)
 		{
 			ctx.True(licences.UnlockLicense(LF_ELicenseType.FIREARM_PERMIT, true), "the permit is granted");
+
+			// A cuffed permit holder is not served: the client can send the order from any state.
+			SCR_ChimeraCharacter chimera = SCR_ChimeraCharacter.Cast(buyer);
+			if (chimera && !RedProof())
+				chimera.LF_SetRestrained(true);
+			ctx.Equal(LF_EShopRefusal.UNFIT, shop.Buy(PISTOL, 1, buyer, charged, missing), "a cuffed permit holder is refused");
+			ctx.Equal(0, LF_InventoryUtils.GetAmount(buyer, PISTOL), "the cuffed buyer got no pistol");
+			ctx.Equal(price, LF_MoneyUtils.GetCash(buyer), "the cuffed buyer kept the cash");
+			if (chimera)
+				chimera.LF_SetRestrained(false);
+
 			ctx.Equal(LF_EShopRefusal.NONE, shop.Buy(PISTOL, 1, buyer, charged, missing), "with the permit the order is paid");
 			ctx.EqualStr("", missing, "a paid order names nothing missing");
 			ctx.Equal(price, charged, "the slip reports the catalogue price");

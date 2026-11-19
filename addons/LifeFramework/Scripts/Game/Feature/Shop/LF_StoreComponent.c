@@ -149,6 +149,12 @@ class LF_StoreComponent : ScriptComponent
 				continue;
 			}
 
+			if (!LF_StoreRules.MayShelve(line.m_ItemPrefab, LF_ItemCatalogue.ItemByPrefab(LF_ItemCatalogueConfig.Get(), line.m_ItemPrefab)))
+			{
+				LF_Debug.Error(LF_Stores.FEATURE, string.Format("store %1 line %2 is a weapon or a licensed item: a shelf copy would be a free pickup; skipped (sell it over a counter)", m_sStoreKey, line.m_ItemPrefab));
+				continue;
+			}
+
 			LF_StoreLineState state = new LF_StoreLineState();
 			state.m_Prefab = line.m_ItemPrefab;
 			state.m_iMax = Math.Max(line.m_iMaxStock, 0);

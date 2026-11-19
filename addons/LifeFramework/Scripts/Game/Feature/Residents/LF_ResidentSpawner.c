@@ -365,6 +365,8 @@ class LF_ResidentSpawner
 		else if (def && !def.m_sNeedQuest.IsEmpty())
 			prefab = LF_ResidentNeeds.GIVER_PREFAB;
 
+		// Nobody spawns inside another character: the nearest free spot beside the anchor when it is taken (#3831).
+		spot = LF_ResidentActivity.FreeSpot(spot, slot.m_sActivity, id);
 		IEntity entity = LF_Utils.SpawnEntityPrefab(prefab, spot.m_vOrigin, spot.m_vAngles, true);
 		if (!entity)
 		{
@@ -372,6 +374,7 @@ class LF_ResidentSpawner
 			return false;
 		}
 
+		LF_NpcSpots.Claim(entity);
 		Dormant(entity);
 		LF_ResidentNeeds.Attach(entity, def);
 		LF_ResidentActivity.Apply(entity, slot.m_sActivity, spot);

@@ -1,0 +1,47 @@
+{
+  "id": "resident_teller",
+  "name": "ResidentTeller",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Resident_teller_Name",
+  "text_only": true,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet_refuses", "line": "greet_refuses" },
+    { "id": "greet_wary", "line": "greet_wary", "options": [{ "text": "bye", "next": "bye" }] },
+    { "id": "greet_neutral", "line": "greet", "options_from": "greet" },
+    { "id": "greet_friendly", "line": "greet_friendly", "options_from": "greet" },
+    { "id": "greet_regular", "line": "greet_regular", "options_from": "greet" },
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        { "text": "work", "next": "work" },
+        { "text": "advice", "next": "advice" },
+        { "text": "town", "next": "town" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "work", "line": "about_work", "options_from": "greet" },
+    { "id": "advice", "line": "about_advice", "options_from": "greet" },
+    { "id": "town", "line": "about_town", "options_from": "greet" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet_refuses": { "text": "I count other people's money all day. I will not waste my words on you." },
+    "greet_wary": { "text": "Mm. I remember you. Mind your manners and we will get along." },
+    "greet": { "text": "Good day. I am off the counter just now, but I don't bite. Helene, from the bank." },
+    "greet_friendly": { "text": "Ah, hello again. Your account is in better shape than most, you know." },
+    "greet_regular": { "text": "There you are! Sit down a minute. The bank can wait." },
+    "about_work": { "text": "I keep the counter at the First Bank of Everon. Deposits, withdrawals, and listening to the farmers argue about the price of feed." },
+    "about_advice": { "text": "Bank your pay the day you get it. What sits in your pocket can walk off. What sits with us stays yours." },
+    "about_town": { "text": "Saint-Philippe gossips faster than the telephone. If you want to know a thing, sit at the cafe and wait." },
+    "bye": { "text": "Good day to you." }
+  },
+  "replies": {
+    "work": "What do you do at the bank?",
+    "advice": "Any advice about money?",
+    "town": "What is the town like?",
+    "bye": "Goodbye."
+  }
+}

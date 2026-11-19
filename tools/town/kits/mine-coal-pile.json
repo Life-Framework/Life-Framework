@@ -35,13 +35,13 @@
     {
       "id": "heap-1",
       "name": "MineCoalPile_Heap1",
-      "prefab": "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_large.et",
+      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
+        -1,
         0,
-        0,
-        0
+        -0.5
       ],
       "yaw": 0,
       "mount": "terrain",
@@ -51,15 +51,15 @@
     {
       "id": "heap-2",
       "name": "MineCoalPile_Heap2",
-      "prefab": "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_large.et",
+      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5,
+        6.8,
         0,
-        1.4
+        -0.5
       ],
-      "yaw": 110,
+      "yaw": 90,
       "mount": "terrain",
       "wall": "free",
       "floor": "f0"
@@ -71,11 +71,11 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -4.2,
+        -8.2,
         0,
-        1
+        -0.5
       ],
-      "yaw": 40,
+      "yaw": 90,
       "mount": "terrain",
       "wall": "free",
       "floor": "f0"
@@ -87,9 +87,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.2,
+        3,
         0,
-        4.2
+        5.5
       ],
       "yaw": 25,
       "mount": "terrain",
@@ -103,9 +103,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        0.6,
+        0.5,
         0,
-        4.4
+        5.2
       ],
       "yaw": 0,
       "mount": "terrain",
@@ -119,9 +119,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -5.5,
+        -6,
         0,
-        5
+        6
       ],
       "yaw": 90,
       "mount": "terrain",
@@ -135,9 +135,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -7.5,
+        -8.4,
         0,
-        5
+        6
       ],
       "yaw": 90,
       "mount": "terrain",
@@ -151,9 +151,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        3.8,
+        5.2,
         0,
-        5.4
+        6
       ],
       "yaw": 70,
       "mount": "terrain",
@@ -167,9 +167,9 @@
       "role": "light",
       "verb": "on floor",
       "offset": [
-        -2,
+        -3.5,
         0,
-        5
+        5.5
       ],
       "yaw": 0,
       "mount": "terrain",

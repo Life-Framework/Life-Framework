@@ -266,6 +266,10 @@ class LF_EventSceneSpawn
 		if (rank % 2 == 0)
 			side = -side;
 		vector at = transform[3] + transform[0] * side;
+		// Whoever already stands there (a resident on the anchor, a walker of a nearby marker, a placed host)
+		// keeps the spot: the walker takes the nearest free one (#3831).
+		vector angles = marker.GetYawPitchRoll();
+		at = LF_NpcSpots.Free(at, angles[0], string.Format("scene %1 walker %2", crew.m_sSceneId, index));
 
 		IEntity person = LF_Utils.SpawnEntityPrefab(outfit, at, marker.GetYawPitchRoll());
 		if (!person)
@@ -274,6 +278,7 @@ class LF_EventSceneSpawn
 			return null;
 		}
 
+		LF_NpcSpots.Claim(person);
 		LF_Debug.Info(FEATURE, string.Format("scene %1 walker %2 spawned at %3 (%4)", crew.m_sSceneId, index, marker.GetName(), outfit));
 		return person;
 	}

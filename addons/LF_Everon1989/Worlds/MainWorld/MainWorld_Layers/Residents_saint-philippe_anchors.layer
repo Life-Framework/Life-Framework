@@ -1,0 +1,45 @@
+GenericEntity Anchor_saint_philippe_newsagent_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
+ coords 4435.47 11.95 10690.94
+ angleY 175
+}
+GenericEntity Anchor_saint_philippe_newsagent_anchor_door {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4438.5 11.9 10692.6
+ angleY 175
+}
+GenericEntity Anchor_saint_philippe_residents_anchor_door2 {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door2"
+  }
+ }
+ coords 4436.365 12.7 10668.947
+ angleY -98
+}
+GenericEntity Anchor_saint_philippe_residents_anchor_door3 {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door3"
+  }
+ }
+ coords 4437.565 12.7 10667.447
+ angleY -98
+}
+GenericEntity Anchor_saint_philippe_residents_anchor_door4 {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door4"
+  }
+ }
+ coords 4436.365 12.7 10667.447
+ angleY -98
+}

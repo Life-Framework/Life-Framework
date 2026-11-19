@@ -5,6 +5,7 @@
   "speaker_key": "#LF-Townsfolk_Mayor_Name",
   "voice": {
     "id": "CKPSX8kOS9MJCGVaFNok",
+    "sex": "male",
     "name": "Henri - French-American Narrator",
     "public_owner_id": "15fdf03d302ba8063c042033cae3ddee96c92320e17b8d832548020c8f1742f9",
     "why": "Bastien Girard has run the town hall since before the evacuation and wants the day to go smoothly. Henri is a warm, mature, classy French-accented man: an official who is formal but kind, a long way from the harbour master's rasp and the clerk's flat seriousness. Stability 0.55 and speed 0.95 for a man who has made this speech before.",

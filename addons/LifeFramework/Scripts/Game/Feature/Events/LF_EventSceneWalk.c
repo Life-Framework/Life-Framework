@@ -440,6 +440,9 @@ class LF_EventSceneWalk
 			{
 				walker.m_bArrived = true;
 				LF_Debug.Info(FEATURE, string.Format("scene %1 walker %2 reached the target after %3 s", m_Crew.m_sSceneId, index, walker.m_fWalked));
+				// The group's walkers stop on the same few metres of the target, and a resident may already
+				// stand there: nobody stays inside another body (#3831).
+				LF_NpcSpots.Settle(person, string.Format("scene %1 walker %2", m_Crew.m_sSceneId, index));
 				continue;
 			}
 

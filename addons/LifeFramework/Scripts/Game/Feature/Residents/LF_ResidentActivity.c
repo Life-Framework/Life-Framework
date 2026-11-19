@@ -98,6 +98,29 @@ class LF_ResidentActivity
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The spot a resident about to stand at `spot` takes (#3831): the spot itself when it is a `sit` and a
+	//! free seat is within reach (the seat takes the body) or when nobody stands on it; else the nearest free
+	//! spot beside it, facing the same way. Two residents due on one anchor (a third on a two-seat bench, a
+	//! resident on the counter a scene's walker stands at) never share a body. `ignore` is the body asking
+	//! (a resident already in the world); a copy comes back, the anchor's own spot is never edited.
+	static LF_ResidentSpot FreeSpot(notnull LF_ResidentSpot spot, string activity, string who, EntityID ignore = EntityID.INVALID)
+	{
+		bool known;
+		if (Normalise(activity, known) == SIT && LF_NpcLoiter.FindFreeSeatAt(spot.m_vOrigin, SEAT_RANGE))
+			return spot;
+
+		vector free = LF_NpcSpots.Free(spot.m_vOrigin, spot.m_vAngles[0], "resident '" + who + "'", ignore);
+		if (vector.DistanceXZ(free, spot.m_vOrigin) < 0.01)
+			return spot;
+
+		LF_ResidentSpot moved = new LF_ResidentSpot();
+		moved.m_vOrigin = free;
+		moved.m_vAngles = spot.m_vAngles;
+		moved.m_bAnchored = spot.m_bAnchored;
+		return moved;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True when the resident holds a seat.
 	static bool IsSeated(IEntity entity)
 	{

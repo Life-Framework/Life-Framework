@@ -29,7 +29,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "A collective-farm fuel yard: the barn is the host (yard on its -z side). Fuel tanks and a pump stand on the -x side of the yard, the tanker is parked nose along it on the +x side, drums and pallets lie by the barn front, an attendant hut and a price board by the gate, and a net-fence ring with an 8 m gate gap closes the yard. The kit has no front: a long barn has an entrance far to one side, so the quarter-turn rule would turn the yard onto the barn end; the yard keeps the barn yaw (the yard lies on the -z side, the barn back, where the open dirt yard is). Rows are rigid: shift, never stretch. No LF_FuelDepotComponent row yet: the depot's buy action does not exist on main."
+    "adapt": "A collective-farm fuel yard: the barn is the host (yard on its -z side). Fuel tanks and a pump stand on the -x side of the yard, the tanker is parked nose along it on the +x side, drums and pallets lie by the barn front, an attendant hut and a price board by the gate, and a net-fence ring with an 8 m gate gap closes the yard. The kit has no front: a long barn has an entrance far to one side, so the quarter-turn rule would turn the yard onto the barn end; the yard keeps the barn yaw (the yard lies on the -z side, the barn back, where the open dirt yard is). Rows are rigid: shift, never stretch. The `depot-load` barrel (LF_FuelDepot: LF_FuelDepotComponent plus \"Load the tanker\", #3330) stands 4 m from the tanker's origin, inside the 12 m reach of the haul."
   },
   "rows": [
     {
@@ -93,6 +93,21 @@
       ],
       "yaw": 270,
       "class": "Vehicle",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "depot-load",
+      "prefab": "{3330A0000000F001}Prefabs/Props/Fuel/LF_FuelDepot.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -2.5,
+        0,
+        -9.5
+      ],
+      "yaw": 180,
       "wall": "free",
       "floor": "f0"
     },

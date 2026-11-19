@@ -17,6 +17,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { findMarketLoops, marketFiles } from "./profit-market.mjs";
 import { findStockLoops, stockFiles } from "./profit-stock.mjs";
+import { findMiningRecipeLoops, sellPrices } from "../lib/economy-mining-recipes.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 export const ROOT = join(here, "..", "..");
@@ -31,6 +32,9 @@ export const DEFAULT_SOURCES = {
   layers: ["Street_Vehicles.layer", "Annex.layer"].map((f) => join(LAYERS, f)),
   market: marketFiles(join(here, "..", "..")),
   stocks: stockFiles(join(here, "..", "..")),
+  // #3240: the mining plant recipes that must exist and make no shop-to-trader loop (a fixture source omits this). A literal, not the
+  // MINING_RECIPES import: that module imports this one, and a const read at load would hit the cycle (economy-mining-selftest pins them equal).
+  miningRecipes: ["smelter-iron", "refinery-copper", "cement-works"],
   owner: null,
 };
 // LF_ChopShop.PARTS_PREFAB: what the yard hands over beside the cash.
@@ -326,7 +330,8 @@ export function checkProfitLoops(src = DEFAULT_SOURCES) {
   const chains = parseConf(read(src.chains));
   const veh = loadVehicles(maybe(src.vehicles), maybe(src.chop), (src.layers || []).filter(existsSync).map(read));
   const catalogue = loadCatalogue(maybe(src.catalogue), owner?.catalogue);
-  return [...findShopLoops(shop), ...findRecipeLoops(shop, chains), ...findVehicleLoops(shop, veh), ...findCatalogueLoops(shop, catalogue), ...findMarketLoops(shop, src, catalogue), ...findStockLoops(shop, src, catalogue)]
+  return [...findShopLoops(shop), ...findRecipeLoops(shop, chains), ...findVehicleLoops(shop, veh), ...findCatalogueLoops(shop, catalogue), ...findMarketLoops(shop, src, catalogue), ...findStockLoops(shop, src, catalogue),
+    ...(src.miningRecipes ? findMiningRecipeLoops(shop, chains, sellPrices(src.market ?? [], src.market ?? []), src.miningRecipes) : [])]
     .sort((a, b) => b.margin - a.margin || a.id.localeCompare(b.id));
 }
 
