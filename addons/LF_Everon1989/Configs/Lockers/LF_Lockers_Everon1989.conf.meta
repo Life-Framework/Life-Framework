@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9E3B6A2F1D84C057}Configs/Lockers/LF_Lockers_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

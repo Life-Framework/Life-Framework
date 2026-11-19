@@ -22,7 +22,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
-import { describeRun, nap, spawnRetrying } from "./git-retry.mjs";
+import { describeRun, expectedGitExits, nap, spawnRetrying } from "./git-retry.mjs";
 import { scratchDir } from "./scratch.mjs";
 
 export { describeRun };
@@ -109,13 +109,14 @@ function silentEvidence(cwd, label, first, second) {
 // with GIT_TRACE on, the evidence printed to stderr each time; the first re-run that passes is returned, because
 // a git call that failed changed nothing. A failure that did print something is returned as it is. Callers
 // decide whether a nonzero status is an error.
-export function runGit(cwd, args, { retries = 2, command = ["git"] } = {}) {
+export function runGit(cwd, args, { retries = 2, command = ["git"], expectExit } = {}) {
   const opts = { cwd, encoding: "utf8", windowsHide: true };
   const label = `git ${args.join(" ")}`;
   const traceFile = (attempt) => join(tmpdir(), `lf-git-trace-${process.pid}-${attempt - 2}.log`);
   let result = spawnRetrying(command[0], [...command.slice(1), ...args], opts, {
     attempts: retries + 1,
     label,
+    expectExit: expectExit ?? (command[0] === "git" ? expectedGitExits(args) : []), // a probe's "no" is an answer
     optionsFor: (attempt, o) => ({ ...o, env: { ...process.env, GIT_TRACE: traceFile(attempt), GIT_TRACE_SETUP: traceFile(attempt) } }),
     onAttempt: (attempt, traced, first) => {
       const file = traceFile(attempt);

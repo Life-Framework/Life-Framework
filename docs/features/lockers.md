@@ -19,7 +19,12 @@
   Proof: `LF_Test_LockerRent` (WORLD).
 - ✅ Saved as the `lockers` payload (save v57); a pre-v57 save loads with nobody renting. Proof: `LF_Test_LockerPersist`
   (PERSISTENCE), `tools\cli wt e2e`.
-- ⚠️ No bank placed in a world yet; a pack placement sets `m_sSiteId`.
+- 🧪 The Saint-Philippe bank holds one locker bank (2026-11-19, #3192): kit row `lf-locker-bank` in `tools/town/kits/bank.json`,
+  site id `saint_philippe_bank`, fitted into `Place_saint-philippe_bank.layer` in the ground-floor corridor. Needs a session
+  check on the island (rent, store, rejoin, reopen).
+- 🧪 Pack rent (2026-11-19, #3192): `LF_LockerConfig` reads pack overlays (the mission header's `m_aLF_ConfigOverlays`); a root
+  `LF_LockerConfig` sets the fields it names, an out-of-range one is refused. Everon 1989 rents at 40 cash a week, reclaim 25
+  (`LF_Lockers_Everon1989.conf`). Proof: `LF_Test_LockerPackOverlay` (LOGIC).
 
 ### `LF_LockerStorageManagerComponent` — `Feature/Lockers/LF_LockerStorageManagerComponent.c`, `LF_LockerOpenAction.c`, `LF_LockerPlayerController.c`
 - 🧪 Open your own locker (2026-11-18, #2661): "Open your locker" on the bank. The server finds the bank from the

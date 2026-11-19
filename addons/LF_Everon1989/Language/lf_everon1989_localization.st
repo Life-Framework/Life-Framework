@@ -3299,6 +3299,31 @@ StringTable {
      Target_en_us "Playtest only: a shared organisation for one tester."
      Comment "Sign card of the playtest organisation sign (#934)."
     }
+    CustomStringTableItem "{119DA9523C0D03F4}" {
+     Id "LF-Sign_TimberYard_How"
+     Target_en_us "Carry logs in from the woodlot, then *Saw logs into planks* at the saw"
+     Comment "Sign card for the Saint-Philippe timber yard, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{193332E8CB7FD60B}" {
+     Id "LF-Sign_TimberYard_Needs"
+     Target_en_us "Logs cut at the woodlot, an axe, and a lumberjack licence."
+     Comment "Sign card for the Saint-Philippe timber yard, You need section."
+    }
+    CustomStringTableItem "{056E05DAE9CEB084}" {
+     Id "LF-Sign_TimberYard_Next"
+     Target_en_us "Sell the planks to the builders' merchant, or load a truck for the harbour."
+     Comment "Sign card for the Saint-Philippe timber yard, Next section."
+    }
+    CustomStringTableItem "{2885C8350729DA74}" {
+     Id "LF-Sign_TimberYard_Title"
+     Target_en_us "Scierie"
+     Comment "Title of the sign at the Saint-Philippe timber yard (#3175). Printed on the sign."
+    }
+    CustomStringTableItem "{BBA380EC32C5BE74}" {
+     Id "LF-Sign_TimberYard_What"
+     Target_en_us "The village timber yard: saw logs into planks, boards and posts at the saw in the hall."
+     Comment "Sign card for the Saint-Philippe timber yard, What section."
+    }
     CustomStringTableItem "{E2E6939EC03F1D07}" {
      Id "LF-Sign_TownMap_How"
      Target_en_us "Walking east, on your left: post office, bank and ATM, vehicle lot, garage, hospital, organization office, then an alley north to the back room and a walled yard|On your right: general store, market stalls, police station with the jail behind it, fuel station|The farm is north of this square|The quarry is south of the street|The barn is at the end of the dirt track east"

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{4F6D8A2B1C7E3095}Configs/Events/LF_Condition_Evening.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
