@@ -1204,6 +1204,21 @@ StringTable {
      Target_en_us "The gun store counter"
      Comment "Overrides the core row: the firearm permit is bought at the gun store counter (#3150)."
     }
+    CustomStringTableItem "{A3CFDDFF48ABE630}" {
+     Id "LF-Loot_KitchenCupboardName"
+     Target_en_us "Kitchen cupboard"
+     Comment "Name of the searchable kitchen cupboard loot prop in the inventory (#3345)."
+    }
+    CustomStringTableItem "{CD45D96E8C799492}" {
+     Id "LF-Loot_ScrapPileName"
+     Target_en_us "Scrap pile"
+     Comment "Name of the searchable dump scrap pile loot prop in the inventory (#3345)."
+    }
+    CustomStringTableItem "{580F76CE8E3C873E}" {
+     Id "LF-Loot_ToolChestName"
+     Target_en_us "Tool chest"
+     Comment "Name of the searchable tool chest loot prop in the inventory (#3345)."
+    }
     CustomStringTableItem "{CA4B6B802EFD710E}" {
      Id "LF-Lot_NeedsDrivingLicence"
      Target_en_us "Not without a driving licence. The town hall desk issues it for %1."
