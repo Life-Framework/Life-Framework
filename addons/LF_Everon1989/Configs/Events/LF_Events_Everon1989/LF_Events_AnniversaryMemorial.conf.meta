@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{3465A00000000004}Configs/Dialogue/LF_Dialogue_AnniversaryLetterIndex.conf"
+ Name "{51041575931B0703}Configs/Events/LF_Events_Everon1989/LF_Events_AnniversaryMemorial.conf"
  Configurations {
   CONFResourceClass PC {
   }

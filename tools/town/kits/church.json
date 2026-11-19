@@ -120,6 +120,20 @@
       "floor": "f0"
     },
     {
+      "id": "letter-altar",
+      "prefab": "{3465A00000000003}Prefabs/Items/Story/LF_AnniversaryLetter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3,
+        0,
+        -13.2
+      ],
+      "yaw": 20,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "id": "anchor-bench",
       "prefab": null,
       "free": true,

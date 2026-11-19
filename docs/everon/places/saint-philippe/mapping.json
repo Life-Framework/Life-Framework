@@ -432,6 +432,34 @@
         "the 25 m margin lets a marker stand at the end of a lane; the fit card reads the roads of the dossier to pick which lane ends"
       ]
     },
+    "anniversary": {
+      "drops": [
+        {
+          "place": "saint-philippe",
+          "building": "b03"
+        },
+        {
+          "place": "saint-philippe",
+          "building": "b07"
+        },
+        {
+          "place": "saint-philippe",
+          "building": "b12"
+        },
+        {
+          "place": "saint-philippe",
+          "building": "b38"
+        },
+        {
+          "place": "saint-philippe",
+          "building": "b45"
+        }
+      ],
+      "why": [
+        "#3794, arc 4 of #1039 (the anniversary, beat 1): the mayor Bastien Girard on the town hall b45 steps and the markers of the anniversary_prepare scene (#3463): three spawns at lane ends, three waypoints and one target on the square; the same ground as the square-evening slot, on the pub b03, the church b07, the general store b12, the clothes shop b38 and the town hall b45",
+        "the 25 m margin lets a marker stand at the end of a lane; the mayor stands on the forecourt north of the town hall, where the arrival walkers end (Place_saint-philippe_arrival target)"
+      ]
+    },
     "cashvan": {
       "drops": [
         { "place": "saint-philippe", "building": "b79" },

@@ -52,7 +52,7 @@ named but does not load as an `LF_PackManifest` also refuses.
 | Heist jobs | `LF_HeistConfig` (`Configs/Crime/LF_Heist.conf`): a pack adds a job by site id, with a clock, a police minimum and ordered stage rows (kind door, vault or getaway, plus the world id it binds to); `LF_HeistKinds` names the components and gates the kinds resolve to (#3414) | class listed |
 | Quest giver quests | `LF_QuestGiverConfig` (`Configs/Quests/LF_QuestGiverTable.conf`): a pack adds quests to a giver already in the world by giver id (`m_sGiverId`); a quest id the giver already has is refused (#3124, first used by the Everon clerk's settling-in chain, #3125) | class listed |
 | Terms list | `LF_TermsConfig` (`Configs/Terms/LF_Terms.conf`): a pack patches a term's forms by id, each form a key in its own table; the term ids are the core file's `m_sId` rows | class listed; term ids to be listed (#958) |
-| Events | `LF_EventsConfig` (`Configs/Events/LF_Events.conf`): a pack adds, patches or removes an event by id (#1952); a pack may also ship `LF_EventScene` and `LF_EventPrecondition` confs for its events (#1957) | classes listed |
+| Events | `LF_EventsConfig` (`Configs/Events/LF_Events.conf`): a pack adds, patches or removes an event by id (#1952); a pack may also ship `LF_EventScene`, `LF_EventPrecondition` and `LF_EventDispatchSeize` confs for its events (#1957, #3785) | classes listed |
 | Systems list | the system ids the owner switches on and off | to be listed (#960) |
 
 A surface not yet listed is internal until it is. Adding a name is free; removing or renaming

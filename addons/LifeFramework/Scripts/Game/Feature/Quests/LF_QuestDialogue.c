@@ -45,3 +45,42 @@ class LF_DialogueHook_QuestNotTurnedIn : LF_DialogueHook
 		return tracker && !tracker.HasTurnedIn(param);
 	}
 }
+
+//------------------------------------------------------------------------------------------------
+//! Condition: the reply's quest is not handed in yet and the player holds every item its collect
+//! objectives ask for. A reply "I found this for you" is offered only to a player who has it (#3793).
+class LF_DialogueHook_QuestItemsHeld : LF_DialogueHook
+{
+	//------------------------------------------------------------------------------------------------
+	override bool Allows(IEntity player, IEntity npc, string param)
+	{
+		LF_QuestTrackerComponent tracker = LF_Component<LF_QuestTrackerComponent>.Find(player);
+		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		if (!tracker || !manager || tracker.HasTurnedIn(param))
+			return false;
+
+		return HoldsAll(manager, player, manager.GetDefinition(param));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the quest has at least one collect objective and the player holds each one's target.
+	static bool HoldsAll(notnull LF_QuestManager manager, IEntity player, LF_QuestDefinition def)
+	{
+		if (!def)
+			return false;
+
+		bool collects;
+		for (int i = 0; i < def.GetObjectiveCount(); i++)
+		{
+			LF_QuestObjective objective = def.GetObjective(i);
+			if (!objective || objective.m_eType != LF_EQuestEventType.COLLECT_REPORT)
+				continue;
+
+			collects = true;
+			if (manager.CountItem(player, objective.m_sFilter) < objective.m_iTarget)
+				return false;
+		}
+
+		return collects;
+	}
+}

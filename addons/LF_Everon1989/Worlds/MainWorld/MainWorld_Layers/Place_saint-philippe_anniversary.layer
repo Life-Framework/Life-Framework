@@ -1,0 +1,66 @@
+LF_NpcBaseEntity Fit_saint_philippe_anniversary_mayor : "{5D554143B2EB77B6}Configs/Npcs/LF_Npc_Townsfolk_Mayor.et" {
+ coords 4414.8 12.41 10662.6
+ angleY 0
+}
+GenericEntity Fit_saint_philippe_anniversary_prepare_spawn0 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "anniversary_prepare"
+   m_iOrder 0
+  }
+ }
+ coords 4539 16.313 10730
+}
+GenericEntity Fit_saint_philippe_anniversary_prepare_spawn1 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "anniversary_prepare"
+   m_iOrder 1
+  }
+ }
+ coords 4421 11.516 10712
+}
+GenericEntity Fit_saint_philippe_anniversary_prepare_spawn2 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "anniversary_prepare"
+   m_iOrder 2
+  }
+ }
+ coords 4451 4.781 10817
+}
+GenericEntity Fit_saint_philippe_anniversary_prepare_wp0 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "anniversary_prepare"
+   m_iOrder 0
+  }
+ }
+ coords 4509 14.656 10723
+}
+GenericEntity Fit_saint_philippe_anniversary_prepare_wp1 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "anniversary_prepare"
+   m_iOrder 1
+  }
+ }
+ coords 4498 14.078 10726
+}
+GenericEntity Fit_saint_philippe_anniversary_prepare_wp2 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "anniversary_prepare"
+   m_iOrder 2
+  }
+ }
+ coords 4501.5 14.125 10720
+}
+GenericEntity Fit_saint_philippe_anniversary_prepare_target : "{F716FD32069F2BE8}Prefabs/Systems/Events/LF_EventMarker_Target.et" {
+ components {
+  LF_EventWaypointComponent "{E01299EF5C4B8221}" {
+   m_sSceneId "anniversary_prepare"
+  }
+ }
+ coords 4504 14.266 10722.5
+}
