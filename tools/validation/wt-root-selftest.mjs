@@ -4,7 +4,7 @@
 // still found there.
 // inputs: tools/wt.mjs, tools/lib/local-config.mjs
 // red-proof (2026-11-17): with wtNew using dirname(main) again this printed "wt new ignored LF_WT_ROOT: ...".
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { scratchDir } from "../lib/scratch.mjs";
 import { join, resolve } from "node:path";
@@ -19,7 +19,7 @@ const failures = [];
 const ok = (cond, msg) => { if (!cond) failures.push(msg); };
 const base = realpathSync(scratchDir("lf-wt-root-"));
 const g = (cwd, args) => {
-  const r = spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, windowsHide: true, encoding: "utf8" });
+  const r = gitSync(["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, windowsHide: true, encoding: "utf8" });
   if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);
   return r.stdout.trim();
 };

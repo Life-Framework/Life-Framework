@@ -5,7 +5,7 @@
 // red-proof: waitForLock calling acquire(left) instead of acquire(Math.min(sliceMs, left)) -> "progress is
 //   printed every slice" fails (one silent wait for the whole budget, the 25-minute gate of 2026-11-14).
 // inputs: tools/lib/lock-wait.mjs, tools/validation/lock-wait-selftest.mjs, tools/cli.mjs, tools/wt.mjs
-import { execFileSync } from "node:child_process";
+import { execGit } from "../lib/git-retry.mjs";
 import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -102,7 +102,7 @@ const held = () => {
 {
   const dir = scratchDir("lf-lockwait-");
   try {
-    execFileSync("git", ["init", "-q", dir], { windowsHide: true });
+    execGit(["init", "-q", dir], { windowsHide: true });
     const lockFile = join(wt.ensureHub(dir), "locks", "build.lock");
     writeFileSync(lockFile, JSON.stringify({ pid: process.pid, at: new Date().toISOString(), name: "build", what: "build", root: "ws-other" }));
     const logs = [];

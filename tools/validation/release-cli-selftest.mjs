@@ -9,7 +9,7 @@
 // and the push guard removed).
 
 import { cpSync, mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { dirname, join } from "node:path";
 import { runRelease, gateSteps } from "../release/release.mjs";
 import { safeRemoveTree } from "../link-safety.mjs";
@@ -19,7 +19,7 @@ const failures = [];
 const ok = (cond, msg) => { if (!cond) failures.push(msg); };
 
 function sh(cwd, ...args) {
-  const r = spawnSync("git", args, { cwd, encoding: "utf8", windowsHide: true });
+  const r = gitSync(args, { cwd, encoding: "utf8", windowsHide: true });
   return (r.stdout ?? "").trim();
 }
 function put(root, path, text) {

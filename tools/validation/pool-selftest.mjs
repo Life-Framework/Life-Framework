@@ -68,6 +68,7 @@
 // floor "3x p95 of 9 s runs is under the 30 s floor but was not floored"; with the
 // RAM verdict always ok "RAM gate: a second server started with 0.9 GB free".
 import { spawn, spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, symlinkSync, utimesSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -101,7 +102,7 @@ const REAL_SESSION_BASE = sessionBase();
 const ISO = scratchDir("lf-pool-iso-");
 mkdirSync(join(ISO, "home", "AppData", "Local"), { recursive: true });
 mkdirSync(join(ISO, "cwd"), { recursive: true });
-spawnSync("git", ["init", "-q", join(ISO, "cwd")], { windowsHide: true });
+gitSync(["init", "-q", join(ISO, "cwd")], { windowsHide: true });
 copyFileSync(join(REAL_REPO, "tools", "pool.json"), join(ISO, "pool.json"));
 process.env.LF_POOL_JSON = join(ISO, "pool.json");
 process.env.LOCALAPPDATA = join(ISO, "home", "AppData", "Local");
@@ -161,7 +162,7 @@ try {
 
 const dir = scratchDir("lf-pool-selftest-");
 try {
-  spawnSync("git", ["init", "-q", dir], { windowsHide: true });
+  gitSync(["init", "-q", dir], { windowsHide: true });
 
   // 2. config flip while waiting
   const cfg = (disabled) => writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", disabled }] } }));
@@ -353,7 +354,7 @@ try {
   const live = spawn(process.execPath, ["-e", "setTimeout(()=>{},120000)"], { stdio: "ignore", windowsHide: true });
   const rLockDir = join(rdir, "tmp", "wt", "locks");
   mkdirSync(rLockDir, { recursive: true });
-  spawnSync("git", ["init", "-q", rdir], { windowsHide: true });
+  gitSync(["init", "-q", rdir], { windowsHide: true });
   writeFileSync(join(rdir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", disabled: true }, { name: "local", lanes: { test: 1 } }] } }));
   const hold = (name, extra = {}) => writeFileSync(join(rLockDir, `${name}.lock`), JSON.stringify({ pid: live.pid, at: new Date().toISOString(), name, root: rdir, slug: "holder", ...extra }));
   const envKeys = ["LF_POOL_MIN_FREE_MB", "LF_POOL_PROMOTE_MIN", "LF_POOL_SESSION_IDLE_MIN", "LF_POOL_SESSION_RESERVE_SERVER_MB", "LF_POOL_SESSION_RESERVE_CLIENT_MB"];
@@ -899,7 +900,7 @@ try {
 
 const dir0 = () => {
   const d = scratchDir("lf-holdercfg2-");
-  spawnSync("git", ["init", "-q", d], { windowsHide: true });
+  gitSync(["init", "-q", d], { windowsHide: true });
   return d;
 };
 // 6. Throughput (pool-throughput): sessions of any size on any machine, live RAM per machine,
@@ -921,7 +922,7 @@ const dir0 = () => {
   check(pool.heldMbOf(settings, [{ purpose: "session", clients: 2, profile: "full" }, { purpose: "test only" }, { purpose: "session", clients: 1, profile: "lowspec", alive: false }]) === 2300 + 600, "heldMbOf");
   // Remote tests use every test lane of the laptop (54 of 54 laptop test runs used server-test-1 only), behind the RAM gate.
   const tdir = scratchDir("lf-holdercfg-");
-  spawnSync("git", ["init", "-q", tdir], { windowsHide: true });
+  gitSync(["init", "-q", tdir], { windowsHide: true });
   const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
   const hc = pool.holderConfig(tdir, laptop, snap, { purpose: "test only", settings });
   check(hc.slots.map((x) => x.lock).join() === "server-test-1,server-test-2,server-test-3", `remote tests do not try every test lane (${hc.slots.map((x) => x.lock).join()})`);
@@ -985,7 +986,7 @@ const dir0 = () => {
     const sl = ["server-test-1", "server-test-2", "server-test-3", "server-test-4"].map((lock) => ({ lock }));
     check(q.rotateSlots(sl, ["server-test-2", "server-test-4"], 1).map((x) => x.lock).join() === "server-test-4,server-test-1,server-test-2,server-test-3" && q.rotateSlots(sl, ["server-test-2"], 0) === sl, "rotateSlots");
     const tdir2 = scratchDir("lf-burstcfg-");
-    spawnSync("git", ["init", "-q", tdir2], { windowsHide: true });
+    gitSync(["init", "-q", tdir2], { windowsHide: true });
     const hb = pool.holderConfig(tdir2, cloud, { sha: "a".repeat(40), head: "b".repeat(40) }, { purpose: "test fast", settings: bst, aheadMb: 2400, freeLocks: ["server-test-3", "server-test-5"], position: 1 });
     check(hb.ram.aheadMb === 2400 && hb.ram.testMb === 800 && hb.ram.testBootS === 60 && hb.slots[0].lock === "server-test-5" && /Life-Framework-lane-server-test-5$/.test(hb.slots[0].dir) && hb.slots.length === 16, "the holder of a burst start does not carry the in-flight reserves or its own first lane");
     rmSync(tdir2, { recursive: true, force: true });
@@ -1054,10 +1055,10 @@ const dir0 = () => {
     // One snapshot per burst: runs asked together from one worktree share it (14 private snapshots at
     // once took 5-19 s and one failed on a loose object another was writing).
     const sr = scratchDir("lf-snapshare-");
-    spawnSync("git", ["init", "-q", sr], { windowsHide: true });
+    gitSync(["init", "-q", sr], { windowsHide: true });
     writeFileSync(join(sr, "a.txt"), "a");
-    spawnSync("git", ["-C", sr, "add", "-A"], { windowsHide: true });
-    spawnSync("git", ["-C", sr, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "a"], { windowsHide: true });
+    gitSync(["-C", sr, "add", "-A"], { windowsHide: true });
+    gitSync(["-C", sr, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "a"], { windowsHide: true });
     let takes = 0;
     let clock = 1000000;
     const fake = () => ({ sha: "c".repeat(40), head: "d".repeat(40), n: ++takes });
@@ -1135,7 +1136,7 @@ const dir0 = () => {
   // nobody waiting; a lease protects one; a fresh client command counts as activity.
   {
     const rroot = scratchDir("lf-rreap-");
-    spawnSync("git", ["init", "-q", rroot], { windowsHide: true });
+    gitSync(["init", "-q", rroot], { windowsHide: true });
     const now = Date.parse("2026-11-14T12:00:00Z");
     const ago2 = (min) => new Date(now - min * 60000).toISOString();
     const row = (name, idleMin, extra = {}) => ({ name, lock: { slug: name, root: "C:/LF/rt-" + name, at: ago2(60) }, readyAt: ago2(60), lease: { lastCommandAt: ago2(idleMin) }, mtimes: [], dir: "x", ...extra });
@@ -1151,7 +1152,7 @@ const dir0 = () => {
   // A machine that went away mid-run: the run is queued again, the machine marked down.
   {
     const groot = scratchDir("lf-gone-");
-    spawnSync("git", ["init", "-q", groot], { windowsHide: true });
+    gitSync(["init", "-q", groot], { windowsHide: true });
     const slot = { local: false, machine: laptop, lost: false };
     check(pool.machineGone(groot, slot, 255, { probe: () => ({ reachable: false }) }) === true, "a run whose machine stopped answering was not queued again");
     const hf = join(groot, "tmp", "wt", "pool", "health.json");
@@ -1166,7 +1167,7 @@ const dir0 = () => {
   // timed out, and `pool status` said DOWN. A busy machine that answered lately stays in use as "slow".
   {
     const hroot = scratchDir("lf-health-");
-    spawnSync("git", ["init", "-q", hroot], { windowsHide: true });
+    gitSync(["init", "-q", hroot], { windowsHide: true });
     const hf = join(hroot, "tmp", "wt", "pool", "health.json");
     const cloud = { name: "lf-cloud", via: "ssh", host: "lf-cloud", root: "C:/LF/Life-Framework" };
     const OK = { stdout: "lf-remote: buildid 123\nlf-pool: ok\n" };
@@ -1240,7 +1241,7 @@ const dir0 = () => {
   // request keeps every machine and takes the laptop as soon as it answers.
   {
     const croot = scratchDir("lf-choose-");
-    spawnSync("git", ["init", "-q", croot], { windowsHide: true });
+    gitSync(["init", "-q", croot], { windowsHide: true });
     writeFileSync(join(croot, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", lanes: { test: 1, session: 1 } }] } }));
     const holder = spawn(process.execPath, ["-e", "setTimeout(()=>{},60000)"], { stdio: "ignore", windowsHide: true });
     mkdirSync(join(croot, "tmp", "wt", "locks"), { recursive: true });
@@ -1270,7 +1271,7 @@ const dir0 = () => {
   // client session to the machine whose card holds its clients, though the other has the RAM and is faster.
   {
     const vroot = scratchDir("lf-vram-");
-    spawnSync("git", ["init", "-q", vroot], { windowsHide: true });
+    gitSync(["init", "-q", vroot], { windowsHide: true });
     writeFileSync(join(vroot, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", lanes: { test: 1, session: 1 } }] } }));
     mkdirSync(join(vroot, "tmp", "wt", "locks"), { recursive: true });
     const quiet = () => {};
@@ -1409,7 +1410,7 @@ const dir0 = () => {
 {
   const lroot = scratchDir("lf-lanes-");
   try {
-    spawnSync("git", ["init", "-q", lroot], { windowsHide: true });
+    gitSync(["init", "-q", lroot], { windowsHide: true });
     const box = { name: "lf-x", via: "ssh", host: "lf-x", root: "C:/LF/Life-Framework", slots: 1, lanes: { test: 2, session: 1 } };
     const lsettings = { minFreeMb: 1500, sessionReserveServerMb: 600, sessionReserveClientMb: 850, sessionReserve: { lowspec: { serverMb: 600, clientMb: 800 } } };
     const snap = { sha: "a".repeat(40), head: "b".repeat(40) };
@@ -1429,7 +1430,7 @@ const dir0 = () => {
     writeFileSync(join(main, "tools", "link-safety.mjs"), readFileSync(new URL("../link-safety.mjs", import.meta.url)));
     writeFileSync(join(main, "addons", "A", "Tracked.c"), "tracked");
     writeFileSync(join(main, ".gitignore"), "tmp/\nresourceDatabase.rdb\n");
-    const g = (...a) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...a], { windowsHide: true, encoding: "utf8" });
+    const g = (...a) => gitSync(["-c", "user.name=t", "-c", "user.email=t@t", ...a], { windowsHide: true, encoding: "utf8" });
     g("init", "-q", main);
     g("-C", main, "add", "-A");
     g("-C", main, "commit", "-q", "-m", "base");

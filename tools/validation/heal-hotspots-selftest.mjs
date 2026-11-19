@@ -15,7 +15,7 @@
 // red-proof: 2026-11-16 healBranch with the hook step removed (calls not placed) printed
 // FAIL "heal: LF_Delta's reset is now a hook in Feature/Delta/LF_Delta.c"; step 4's plain merge printing
 // "PASS old branch + migrated main: a plain merge conflicts" is the standing red for the problem itself.
-import { execFileSync, spawnSync } from "node:child_process";
+import { execGit, gitSync } from "../lib/git-retry.mjs";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { CENTRAL, addHooks, centralCalls, centralFile, hookedCalls, registryHooks, staticResetProblems } from "../lib/static-reset-hooks.mjs";
@@ -31,7 +31,7 @@ const check = (ok, msg) => {
 };
 
 const dir = scratchDir("lf-heal-selftest-");
-const g = (...args) => execFileSync("git", args, { cwd: dir, encoding: "utf8", windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
+const g = (...args) => execGit(args, { cwd: dir, encoding: "utf8", windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
 const put = (rel, text) => {
   mkdirSync(dirname(join(dir, rel)), { recursive: true });
   writeFileSync(join(dir, rel), text);
@@ -103,7 +103,7 @@ try {
   const filesY = branch("pr-y", "Gamma", alphaArea, "alpha row (pr-y)");
   check(!filesX.includes(CENTRAL) && !filesY.includes(CENTRAL), "neither new-style branch touches LF_StaticReset.c");
   check(overlap(filesX, filesY).length === 0, `ship queue: the two reset PRs share no file, so neither waits (${filesX.join(", ")} | ${filesY.join(", ")})`);
-  const mt = spawnSync("git", ["merge-tree", "--write-tree", "pr-x", "pr-y"], { cwd: dir, encoding: "utf8", windowsHide: true });
+  const mt = gitSync(["merge-tree", "--write-tree", "pr-x", "pr-y"], { cwd: dir, encoding: "utf8", windowsHide: true });
   check(mt.status === 0, "git merge-tree: pr-x and pr-y merge cleanly");
   g("checkout", "-q", "main");
   g("merge", "-q", "--no-edit", "pr-x");
@@ -113,7 +113,7 @@ try {
 
   // 4b. the old branch: a plain merge conflicts (the problem), healBranch does not
   g("checkout", "-q", "old-pr");
-  const plain = spawnSync("git", ["merge", "--no-commit", "--no-ff", "main"], { cwd: dir, encoding: "utf8", windowsHide: true });
+  const plain = gitSync(["merge", "--no-commit", "--no-ff", "main"], { cwd: dir, encoding: "utf8", windowsHide: true });
   const conflicted = g("diff", "--name-only", "--diff-filter=U").split("\n").filter(Boolean);
   check(plain.status !== 0 && conflicted.includes(CENTRAL), `old branch + migrated main: a plain merge conflicts (${conflicted.join(", ")})`);
   g("merge", "--abort");

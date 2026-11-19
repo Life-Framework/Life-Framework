@@ -9,7 +9,8 @@
 // 'acquireLock threw under contention (not "held"): {"EPERM":5}'; a longer 5 s probe of the same loop printed
 // {"held":3864,"EPERM":5423} with 877 acquired, and {"held":2642} with 885 acquired after the fix. Restored.
 
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -41,7 +42,7 @@ if (process.argv[2] === "worker") {
 const failures = [];
 const root = scratchDir("lf-lockcontention-");
 try {
-  spawnSync("git", ["init", "-q", root], { windowsHide: true });
+  gitSync(["init", "-q", root], { windowsHide: true });
   const outs = await Promise.all(Array.from({ length: 4 }, () => new Promise((res) => {
     const c = spawn(process.execPath, [import.meta.filename, "worker", root], { stdio: ["ignore", "pipe", "inherit"], windowsHide: true });
     let o = "";

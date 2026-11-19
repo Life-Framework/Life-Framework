@@ -3,7 +3,7 @@
 // Scratch git repos with a bare origin and a stubbed gh lookup; no game, no network.
 // red-proof: see the PR body (parseIssueFlag accepting 0; branchMerged ignoring the merged-PR head; prMergedVerdict falling back to ancestry keeps no fresh branch).
 import { mkdirSync, writeFileSync, utimesSync, rmSync } from "node:fs";
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { join } from "node:path";
 import * as wt from "../wt.mjs";
 import * as pq from "../lib/pr-quality.mjs";
@@ -13,7 +13,7 @@ import { scratchDir } from "../lib/scratch.mjs";
 const failures = [];
 const ok = (c, m) => { if (!c) failures.push(m); };
 const sh = (cwd, ...a) => {
-  const r = spawnSync("git", a, { cwd, encoding: "utf8", windowsHide: true });
+  const r = gitSync(a, { cwd, encoding: "utf8", windowsHide: true });
   if (r.status !== 0) throw new Error(`git ${a.join(" ")}: ${r.stderr}`);
   return r.stdout.trim();
 };
@@ -124,7 +124,7 @@ try {
 } catch (e) {
   failures.push(`selftest crashed: ${e.stack || e.message}`);
 } finally {
-  spawnSync("git", ["-C", repo, "worktree", "prune"], { windowsHide: true });
+  gitSync(["-C", repo, "worktree", "prune"], { windowsHide: true });
   try { rmSync(dir, { recursive: true, force: true }); } catch { /* temp dir, no junctions inside */ }
 }
 

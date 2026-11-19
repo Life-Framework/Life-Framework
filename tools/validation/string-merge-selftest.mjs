@@ -11,7 +11,7 @@
 //   3. the merged conf equals the conf derived from the merged .st (Ids and Texts stay paired);
 //   4. canonicalStringTable is idempotent and refuses a table that does not parse whole.
 
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -22,7 +22,7 @@ const failures = [];
 const fail = (m) => failures.push(m);
 
 function git(dir, args) {
-  return spawnSync("git", args, { windowsHide: true, cwd: dir, encoding: "utf8" });
+  return gitSync(args, { windowsHide: true, cwd: dir, encoding: "utf8" });
 }
 
 function item(guid, id, text, indent = "  ") {

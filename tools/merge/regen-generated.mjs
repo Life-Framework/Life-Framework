@@ -8,11 +8,11 @@
 //
 //   node tools/merge/regen-generated.mjs %O %A %B %P
 
-import { spawnSync } from "node:child_process";
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { GIT_ATTEMPTS, spawnRetrying } from "../lib/git-retry.mjs";
 import { mergeStringTables } from "./union-string-table.mjs";
 
 // The core's string table and each pack's (#325): the driver unions every one, then regenerates all confs.
@@ -44,7 +44,9 @@ export function timeoutFor(defaultMs, env = process.env, name = "LF_MERGE_DRIVER
 export function runBounded(step, command, args, options, defaultMs, overrideName) {
   const limit = timeoutFor(defaultMs, process.env, overrideName);
   const started = Date.now();
-  const result = spawnSync(command, args, {
+  // A git call that fails with no output is run again (tools/lib/git-retry.mjs: the silent failures of the CI runner,
+  // main run d4c47e373 `git init` in the scratch repo left the conf conflicted with no message); a timeout is not.
+  const result = spawnRetrying(command, args, {
     windowsHide: true,
     encoding: "utf8",
     maxBuffer: 256 * 1024 * 1024,
@@ -52,7 +54,7 @@ export function runBounded(step, command, args, options, defaultMs, overrideName
     stdio: [options.input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
     timeout: limit,
     killSignal: "SIGKILL",
-  });
+  }, { attempts: command === "git" ? GIT_ATTEMPTS : 1, label: step });
   if (process.env.LF_MERGE_DRIVER_TRACE) {
     try {
       appendFileSync(process.env.LF_MERGE_DRIVER_TRACE, `${Date.now() - started} ${step}\n`);
@@ -161,32 +163,6 @@ function writeInto(root, rel, text) {
   writeFileSync(full, text);
 }
 
-// `git init` in the scratch repo has exited 1 with no output on the CI runner (the same silent git failure
-// tools/lib/selftest-git.mjs documents; a rerun passes), which left the conf conflicted with no message
-// (merge-drivers-selftest, main run d4c47e373). A failed init changed nothing, so it is retried; a failure
-// that persists says its exit code and signal. LF_MERGE_DRIVER_INIT_FAILS=<n> makes the first n attempts
-// fail silently (the selftest's stand-in for the runner).
-export const INIT_ATTEMPTS = 3;
-function initScratchRepo(scratch, env) {
-  let injected = Number(process.env.LF_MERGE_DRIVER_INIT_FAILS);
-  if (!Number.isFinite(injected) || injected < 0) injected = 0;
-  let result = null;
-  for (let attempt = 1; attempt <= INIT_ATTEMPTS; attempt++) {
-    if (injected > 0) {
-      injected--;
-      result = { status: 1, stdout: "", stderr: "" };
-    } else {
-      result = git(["init", "-q"], { cwd: scratch, env });
-      if (result.status === 0) return result;
-    }
-    if (result.stdout || result.stderr) break;
-  }
-  if (!result.stdout && !result.stderr) {
-    result = { ...result, stderr: `lf-regen: git init in the scratch repo failed ${INIT_ATTEMPTS} times (exit ${result.status}, signal ${result.signal ?? "none"}) with no output\n` };
-  }
-  return result;
-}
-
 // The generators ask git for the work tree root, so run them in a scratch repo with a clean git env.
 function runPowershell(scratch, script, args) {
   const powershell = process.platform === "win32" ? "powershell.exe" : "pwsh";
@@ -194,7 +170,7 @@ function runPowershell(scratch, script, args) {
   for (const [key, value] of Object.entries(process.env)) {
     if (!/^GIT_(DIR|WORK_TREE|INDEX_FILE|PREFIX|COMMON_DIR|OBJECT_DIRECTORY|ALTERNATE_OBJECT_DIRECTORIES|NAMESPACE)$/i.test(key)) env[key] = value;
   }
-  const init = initScratchRepo(scratch, env);
+  const init = git(["init", "-q"], { cwd: scratch, env });
   if (init.status !== 0) return init;
   const stub = process.env.LF_MERGE_DRIVER_GENERATOR_STUB;
   if (stub) return runBounded("generator stub", process.execPath, [stub], { cwd: scratch, env }, GENERATOR_TIMEOUT_MS, "LF_MERGE_DRIVER_STUB_TIMEOUT_MS");

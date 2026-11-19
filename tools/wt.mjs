@@ -23,6 +23,7 @@ import { dirname, join, normalize, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { findReparsePoints, recycleWorktree, removeWorktree, safeRemoveTree } from "./link-safety.mjs";
 import { localSetting, wtParent } from "./lib/local-config.mjs";
+import { describeRun } from "./lib/git-retry.mjs";
 export { wtParent };
 import { ADDONS } from "./lib/addons.mjs";
 import { sessionDirOf } from "./lib/session-lease.mjs";
@@ -67,18 +68,7 @@ export function run(cmd, args, opts = {}) {
 // One line saying what a finished run printed and how it ended, for an error message. The old
 // `(res.stderr || res.stdout).trim()` was empty when git failed without a word (a signal, a spawn
 // error, a hook that only set an exit code), which left a CI failure with nothing to read.
-export function describeRun(res) {
-  const parts = [];
-  if (res.error) parts.push(`spawn error ${res.error.code ?? ""} ${res.error.message}`.replace(/\s+/g, " "));
-  if (res.signal) parts.push(`ended by ${res.signal}`);
-  parts.push(`exit ${res.status ?? "none"}`);
-  const err = String(res.stderr ?? "").trim();
-  const out = String(res.stdout ?? "").trim();
-  if (err) parts.push(`stderr: ${err}`);
-  if (out) parts.push(`stdout: ${out}`);
-  if (!err && !out) parts.push("no output");
-  return parts.join("; ");
-}
+export { describeRun };
 
 export function git(root, args) {
   return run("git", ["-C", root, ...args]);

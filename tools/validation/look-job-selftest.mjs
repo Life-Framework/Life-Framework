@@ -11,7 +11,7 @@
 // 2026-11-17: mirrorMode without the REOPEN_SAFE_EXT check failed "a modified addons/A/Prefabs/Shop.et restarts even
 // when listed for reopen"; renderProblem returning null always failed "another tree rendered: refused".
 
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { mkdirSync, statSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import { idleVerdict, lookStartVerdict, lookSummaryLine, lookTiming, mirrorMode, parseLookSummary, phaseText, renderProblem, requestNeedsRam, samePairProblem, timeline, LOOK_IDLE_MIN } from "../lib/look-job.mjs";
@@ -77,7 +77,7 @@ check("a script restarts even when .layer is proven", mirrorMode({ changes: [M("
 check("classifyChange delegates the same rule", classifyChange({ from: "a", to: "b", changes: [M("M", "addons/A/W.layer")], reopenExt: [".layer"] }).reload === "reopen" && classifyChange({ from: "a", to: "b", changes: [M("D", "addons/A/W.layer")], reopenExt: [".layer"] }).reload === "restart");
 
 // ---- the in-place viewer write, on a real repo
-const git = (cwd, ...a) => spawnSync("git", ["-C", cwd, "-c", "user.name=t", "-c", "user.email=t@t", ...a], { encoding: "utf8" });
+const git = (cwd, ...a) => gitSync(["-C", cwd, "-c", "user.name=t", "-c", "user.email=t@t", ...a], { encoding: "utf8" });
 const tmp = scratchDir("lf-look-job-");
 const repo = join(tmp, "repo");
 const viewer = join(tmp, "viewer");
