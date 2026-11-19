@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3441A00000000001}Configs/Dialogue/LF_Rumours_Shipment_CafeOwner.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
