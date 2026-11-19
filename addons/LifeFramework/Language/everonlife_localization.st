@@ -5138,6 +5138,71 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Too fast to cut, slow down"
      Comment "Hint when the hitched reaper is driven above its cutting speed (#3285)."
     }
+    CustomStringTableItem "{75ADFCA12F6308D2}" {
+     Id "LF-Harvest_UnloadBag"
+     Target_en_us "Bag grain"
+     Comment "Weighbridge prompt (#3294): fill grain sacks into the vehicle from the hopper. Also the toast title."
+    }
+    CustomStringTableItem "{43CAC0C011BC3F37}" {
+     Id "LF-Harvest_UnloadBagged"
+     Target_en_us "Bagged %1 kg of grain into the vehicle"
+     Comment "Toast (#3294): sacks went into the vehicle storage. %1 = kilograms bagged."
+    }
+    CustomStringTableItem "{C79F60A8AF8029DF}" {
+     Id "LF-Harvest_UnloadBelowLot"
+     Target_en_us "The granary buys whole lots of %1 kg. Cut more, or bag it"
+     Comment "Toast (#3294): the hopper holds less than one lot. %1 = kilograms in a lot."
+    }
+    CustomStringTableItem "{B7D75EE9BC51A3BA}" {
+     Id "LF-Harvest_UnloadEmpty"
+     Target_en_us "The hopper is empty"
+     Comment "Toast (#3294): nothing to unload."
+    }
+    CustomStringTableItem "{78F9B96C35EFB762}" {
+     Id "LF-Harvest_UnloadFailed"
+     Target_en_us "The sale did not go through, the grain stays in the hopper"
+     Comment "Toast (#3294): the payout failed and was rolled back."
+    }
+    CustomStringTableItem "{5E44FCFE9C91F4F6}" {
+     Id "LF-Harvest_UnloadNoPrice"
+     Target_en_us "The granary pays nothing for grain right now"
+     Comment "Toast (#3294): the market does not price grain."
+    }
+    CustomStringTableItem "{CF02DAF30144B9D7}" {
+     Id "LF-Harvest_UnloadNoReaper"
+     Target_en_us "Hitch a reaper to unload grain"
+     Comment "Toast (#3294): the vehicle tows no reaper."
+    }
+    CustomStringTableItem "{C435B184BB196816}" {
+     Id "LF-Harvest_UnloadNoRoom"
+     Target_en_us "No room in the vehicle for grain sacks"
+     Comment "Toast (#3294): the vehicle storage took no sack."
+    }
+    CustomStringTableItem "{2651785AF83988E5}" {
+     Id "LF-Harvest_UnloadNoVehicle"
+     Target_en_us "Drive your reaper onto the weighbridge"
+     Comment "Toast (#3294): the user is not in a vehicle."
+    }
+    CustomStringTableItem "{C831FED3CB2B1ABE}" {
+     Id "LF-Harvest_UnloadNotDriver"
+     Target_en_us "Only the driver can unload the reaper"
+     Comment "Toast (#3294): a passenger used the prompt."
+    }
+    CustomStringTableItem "{DC9F11F308A8512A}" {
+     Id "LF-Harvest_UnloadOutside"
+     Target_en_us "Drive onto the weighbridge to unload"
+     Comment "Toast (#3294): the vehicle is outside the unload box."
+    }
+    CustomStringTableItem "{916A8158813D3E43}" {
+     Id "LF-Harvest_UnloadSell"
+     Target_en_us "Sell grain"
+     Comment "Weighbridge prompt (#3294): sell the reaper's hopper at the wholesale price. Also the toast title."
+    }
+    CustomStringTableItem "{FF63B481C8E5AA1E}" {
+     Id "LF-Harvest_UnloadSold"
+     Target_en_us "Sold the grain for {currency:sym}%1"
+     Comment "Toast (#3294): the hopper was sold. %1 = cash paid."
+    }
     CustomStringTableItem "{9306F928F7A81EBC}" {
      Id "LF-Heist_Armory_Open"
      Target_en_us "Breach the armory store"
