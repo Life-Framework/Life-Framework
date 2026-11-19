@@ -76,4 +76,13 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
    }
   }
  }
+ {
+  ParticleEffectEntity SmokehouseSmoke {
+   ID "A5ED9A8FB7DEEC96"
+   coords 0 3.9 0
+   scale 0.35
+   UseFrameEvent 1
+   EffectPath "{059E612718472C0A}Particles/Enviroment/Smoke_Smokestack_Medium.ptc"
+  }
+ }
 }

@@ -7,9 +7,6 @@ GenericEntity Source_WoodPile : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile
 GenericEntity Source_NetHangerShort : "{996DC070C5A96B7B}Prefabs/Props/Naval/NetHanger_01_short.et" {
  coords 0 0 0
 }
-GenericEntity Source_SmokingFire : "{D9842C11742C00CF}Prefabs/Props/Civilian/Fireplace_01.et" {
- coords 0 0 0
-}
 GenericEntity Source_Crate : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
  coords 0 0 0
 }
