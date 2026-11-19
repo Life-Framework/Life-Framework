@@ -600,6 +600,17 @@ class LF_QuestTrackerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return World second the quest was turned in (the restore second after a restart), -1 when it is not turned in.
+	float GetTurnedInAt(string questId)
+	{
+		LF_QuestState state = m_Tracker.GetState(questId);
+		if (!state || state.GetStatus() != LF_EQuestStatus.TURNED_IN)
+			return -1;
+
+		return state.GetLastTurnedInAt();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return Quest ids this character has turned in.
 	array<string> GetTurnedInQuestIds()
 	{
