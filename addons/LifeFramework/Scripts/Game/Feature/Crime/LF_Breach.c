@@ -165,6 +165,7 @@ class LF_Breach
 	//! next stop and the armory store is refilled; neither is a player repair.
 	static void Reset(string targetId)
 	{
+		LF_EvidenceLockerFill.OnBreakIn(targetId);
 		LF_BreachTarget target = Targets().Get(targetId);
 		if (!target)
 			return;
@@ -328,6 +329,7 @@ class LF_Breach
 		if (!target || !target.m_bChargeArmed)
 			return;
 
+		LF_EvidenceLockerFill.OnBreakIn(targetId);
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
 		target.m_Footprint = null;
