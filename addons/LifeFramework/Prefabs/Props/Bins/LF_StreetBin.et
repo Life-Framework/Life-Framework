@@ -36,6 +36,15 @@ SCR_DestructibleEntity : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet
       Name "#LF-Bin_Open"
      }
     }
+    LF_GarbageEmptyBinAction "{3E92C7A05D1B84F6}" {
+     ParentContextList {
+      "LF_Bin"
+     }
+     UIInfo UIInfo "{7A04D1E68B3C2F95}" {
+      Name "#LF-Garbage_EmptyBin"
+      Description "#LF-Garbage_EmptyBinDesc"
+     }
+    }
    }
   }
  }

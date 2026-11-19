@@ -17,12 +17,16 @@ class LF_ATMTerminal
 
 	static const string DEPOSIT = "DepositButton";
 	static const string WITHDRAW = "WithdrawButton";
+	static const string TRANSFER = "TransferButton";
 	static const string CLEAR = "KeyClearButton";
 	static const string BACK = "KeyBackButton";
 
 	protected static ref LF_ATMTerminal s_Current;
 
 	protected ref LF_UIScreen m_Screen;
+	//! The machine and action this screen was opened at, for the transfer page (#3320).
+	protected EntityID m_MachineId = EntityID.INVALID;
+	protected ref LF_ATMAction m_Action;
 	protected int m_iAmount;
 	protected int m_iBalance = -1;
 	protected int m_iCash = -1;
@@ -59,6 +63,8 @@ class LF_ATMTerminal
 		}
 
 		LF_ATMTerminal terminal = new LF_ATMTerminal();
+		terminal.m_MachineId = machine.GetID();
+		terminal.m_Action = action;
 		if (action)
 		{
 			terminal.m_sKeySound = action.GetKeySound();
@@ -111,7 +117,7 @@ class LF_ATMTerminal
 		parts.Insert(Keys("Keys2", "Key4Button,Key5Button,Key6Button", "4,5,6"));
 		parts.Insert(Keys("Keys3", "Key7Button,Key8Button,Key9Button", "7,8,9"));
 		parts.Insert(Keys("Keys4", CLEAR + ",Key0Button," + BACK, "#LF-ATM_KeyClear,0,#LF-ATM_KeyBack"));
-		parts.Insert(Keys("Actions", DEPOSIT + "," + WITHDRAW, "#LF-ATM_KeyDeposit,#LF-ATM_KeyWithdraw"));
+		parts.Insert(Keys("Actions", DEPOSIT + "," + WITHDRAW + "," + TRANSFER, "#LF-ATM_KeyDeposit,#LF-ATM_KeyWithdraw,#LF-ATM_KeyTransfer"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "CloseButton", "#LF-ATM_Exit"));
 		return parts;
 	}
@@ -185,6 +191,12 @@ class LF_ATMTerminal
 			return;
 		}
 
+		if (name == TRANSFER)
+		{
+			OpenTransferPage();
+			return;
+		}
+
 		if (name == DEPOSIT)
 		{
 			Send(true);
@@ -198,6 +210,19 @@ class LF_ATMTerminal
 		}
 
 		LF_Debug.Warn("ATM", "terminal ignored button " + name);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! TRANSFER: the transfer page takes this screen's place at the same machine (#3320).
+	protected void OpenTransferPage()
+	{
+		IEntity machine = null;
+		if (GetGame() && GetGame().GetWorld())
+			machine = GetGame().GetWorld().FindEntityByID(m_MachineId);
+
+		LF_ATMAction action = m_Action;
+		Hide();
+		LF_ATMTransferPage.Open(machine, action);
 	}
 
 	//------------------------------------------------------------------------------------------------

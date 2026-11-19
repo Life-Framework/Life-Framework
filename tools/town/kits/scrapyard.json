@@ -1,0 +1,667 @@
+{
+  "schema": 1,
+  "kit": "scrapyard",
+  "system": "processing",
+  "source": {
+    "file": "tools/town/kits/sources/scrapyard.layer",
+    "group": "*",
+    "origin": "Source_Scrapyard_Origin",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -49,
+        -13
+      ],
+      "max": [
+        5,
+        62
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "An industrial compound on open gravel: the concrete plant is the host (no entrance, so the kit keeps the plant's own yaw, +z east). Three groups, all on the ground (terrain rows, run town fit --terrain): the recycler bench on the apron 20 m east of the plant, the dealer's yard round the site cabin on its north side, the dump (wrecks, tyres, searchable scrap piles) on the open plot north-east. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "recycler-bench",
+      "name": "Scrapyard_Recycler_Bench",
+      "prefab": "{F1984B044B2AF24B}Prefabs/Props/Processing/LF_Recycler.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -0.71,
+        0,
+        18.7
+      ],
+      "yaw": -94,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "recycler-drum-1",
+      "name": "Scrapyard_Recycler_Drum_1",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        1.44,
+        0,
+        20.95
+      ],
+      "yaw": -74,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "recycler-drum-2",
+      "name": "Scrapyard_Recycler_Drum_2",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0.18,
+        0,
+        21.77
+      ],
+      "yaw": -19,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "recycler-drum-3",
+      "name": "Scrapyard_Recycler_Drum_3",
+      "prefab": "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        3.41,
+        0,
+        15.68
+      ],
+      "yaw": -94,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "recycler-pallets",
+      "name": "Scrapyard_Recycler_Pallets",
+      "prefab": "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -5.23,
+        0,
+        16.07
+      ],
+      "yaw": -82,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "recycler-palletbox",
+      "name": "Scrapyard_Recycler_Palletbox",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -4.88,
+        0,
+        22.51
+      ],
+      "yaw": -109,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "recycler-crate-1",
+      "name": "Scrapyard_Recycler_Crate_1",
+      "prefab": "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        4.39,
+        0,
+        21.76
+      ],
+      "yaw": -86,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "recycler-tyres",
+      "name": "Scrapyard_Recycler_Tyres",
+      "prefab": "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -1.51,
+        0,
+        25.96
+      ],
+      "yaw": -54,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dealer-lamp",
+      "name": "Scrapyard_Dealer_Lamp",
+      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
+      "role": "light",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -7.78,
+        0,
+        -9.17
+      ],
+      "yaw": 0,
+      "lift": 3.5,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dealer-sign",
+      "name": "Scrapyard_Dealer_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -11.12,
+        0,
+        -2.98
+      ],
+      "yaw": -94,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"everon_scrapyard\"",
+            "m_vRimColor": "0.1 0.1 0.1",
+            "m_vPaintColor": "0.82 0.55 0.12",
+            "m_vTextColor": "0.1 0.1 0.1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dealer-crate-1",
+      "name": "Scrapyard_Dealer_Crate_1",
+      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -13.15,
+        0,
+        -8.34
+      ],
+      "yaw": -80,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dealer-crate-2",
+      "name": "Scrapyard_Dealer_Crate_2",
+      "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -12.6,
+        0,
+        -10.5
+      ],
+      "yaw": -100,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dealer-drum",
+      "name": "Scrapyard_Dealer_Drum",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -13.46,
+        0,
+        -12.57
+      ],
+      "yaw": -94,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dealer-tyres",
+      "name": "Scrapyard_Dealer_Tyres",
+      "prefab": "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -15.9,
+        0,
+        -6.32
+      ],
+      "yaw": -72,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dealer-scrap",
+      "name": "Scrapyard_Dealer_Scrap",
+      "prefab": "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -18.08,
+        0,
+        -0.86
+      ],
+      "yaw": -64,
+      "lift": 0.1,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-wreck-469",
+      "name": "Scrapyard_Dump_Wreck_469",
+      "prefab": "{3386EAA823BE462E}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_static.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -30.24,
+        0,
+        18.13
+      ],
+      "yaw": -69,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-wreck-ural",
+      "name": "Scrapyard_Dump_Wreck_Ural",
+      "prefab": "{AE300E34EA8FF40C}Prefabs/Props/Wrecks/Ural4320_wreck/Ural4320_wreck_static.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -39.2,
+        0,
+        31.54
+      ],
+      "yaw": 6,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-wreck-452",
+      "name": "Scrapyard_Dump_Wreck_452",
+      "prefab": "{56FFF0C990358ED2}Prefabs/Props/Wrecks/UAZ452_wreck/UAZ452_wreck_static.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -34.19,
+        0,
+        45.93
+      ],
+      "yaw": -114,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-wreck-151",
+      "name": "Scrapyard_Dump_Wreck_151",
+      "prefab": "{EB084C400AABD1D3}Prefabs/Props/Wrecks/M151A2_wreck/M151A2_wreck.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -43.86,
+        0,
+        55.27
+      ],
+      "yaw": 66,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-wreck-s105",
+      "name": "Scrapyard_Dump_Wreck_S105",
+      "prefab": "{1A1CE09F7BCA6650}Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -46.69,
+        0,
+        24
+      ],
+      "yaw": -24,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-plow",
+      "name": "Scrapyard_Dump_Plow",
+      "prefab": "{A98BA618430E9BAA}Prefabs/Props/Agriculture/PlowWreck_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -48.73,
+        0,
+        38.9
+      ],
+      "yaw": -54,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-cultivator",
+      "name": "Scrapyard_Dump_Cultivator",
+      "prefab": "{DE59CB05202006E8}Prefabs/Props/Agriculture/CultivatorWreck_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -30.62,
+        0,
+        52.19
+      ],
+      "yaw": -94,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-container-1",
+      "name": "Scrapyard_Dump_Container_1",
+      "prefab": "{1B79BB823DC46F9D}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_20ft_green.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -41.93,
+        0,
+        13.31
+      ],
+      "yaw": -86,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-container-2",
+      "name": "Scrapyard_Dump_Container_2",
+      "prefab": "{35E211705F8FED68}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_40ft_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -34.31,
+        0,
+        61.96
+      ],
+      "yaw": -94,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-tyres-1",
+      "name": "Scrapyard_Dump_Tyres_1",
+      "prefab": "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -34.51,
+        0,
+        21.85
+      ],
+      "yaw": -94,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-tyres-2",
+      "name": "Scrapyard_Dump_Tyres_2",
+      "prefab": "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -32.63,
+        0,
+        38.02
+      ],
+      "yaw": -44,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-tyres-3",
+      "name": "Scrapyard_Dump_Tyres_3",
+      "prefab": "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -41.38,
+        0,
+        48.43
+      ],
+      "yaw": 36,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-tyres-4",
+      "name": "Scrapyard_Dump_Tyres_4",
+      "prefab": "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -26.52,
+        0,
+        29.42
+      ],
+      "yaw": -84,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-pile-1",
+      "name": "Scrapyard_Dump_Pile_1",
+      "prefab": "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -39,
+        0,
+        20.13
+      ],
+      "yaw": -74,
+      "lift": 0.1,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-pile-2",
+      "name": "Scrapyard_Dump_Pile_2",
+      "prefab": "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -43.48,
+        0,
+        28.24
+      ],
+      "yaw": 56,
+      "lift": 0.1,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-pile-3",
+      "name": "Scrapyard_Dump_Pile_3",
+      "prefab": "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -39.54,
+        0,
+        36.53
+      ],
+      "yaw": -24,
+      "lift": 0.1,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-pile-4",
+      "name": "Scrapyard_Dump_Pile_4",
+      "prefab": "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -43.49,
+        0,
+        42.77
+      ],
+      "yaw": 106,
+      "lift": 0.1,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-pile-5",
+      "name": "Scrapyard_Dump_Pile_5",
+      "prefab": "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -37.56,
+        0,
+        51.2
+      ],
+      "yaw": 6,
+      "lift": 0.1,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-pile-6",
+      "name": "Scrapyard_Dump_Pile_6",
+      "prefab": "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -38.52,
+        0,
+        57.65
+      ],
+      "yaw": -94,
+      "lift": 0.1,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-drum-1",
+      "name": "Scrapyard_Dump_Drum_1",
+      "prefab": "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -34.76,
+        0,
+        34.06
+      ],
+      "yaw": -94,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-drum-2",
+      "name": "Scrapyard_Dump_Drum_2",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -34.05,
+        0,
+        35.31
+      ],
+      "yaw": -34,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-lamp-1",
+      "name": "Scrapyard_Dump_Lamp_1",
+      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
+      "role": "light",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -41.93,
+        0,
+        13.31
+      ],
+      "yaw": -86,
+      "lift": 2.6,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "dump-lamp-2",
+      "name": "Scrapyard_Dump_Lamp_2",
+      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
+      "role": "light",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -34.31,
+        0,
+        61.96
+      ],
+      "yaw": -94,
+      "lift": 2.6,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

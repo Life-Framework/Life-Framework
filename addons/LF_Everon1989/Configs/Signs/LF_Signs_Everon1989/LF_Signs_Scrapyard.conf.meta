@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{308CF8E9FFAD085B}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Scrapyard.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

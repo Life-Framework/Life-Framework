@@ -1,5 +1,5 @@
 // tools/validation/mapper-selftest.mjs
-// inputs: tools/mapper/**, tools/commands/mapper.mjs, tools/test/fixtures/mapper/**, tools/grid/cells/mapper-junkyard-small.json, addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_mapper_junkyard_small.layer
+// inputs: tools/mapper/**, tools/commands/mapper.mjs, tools/place/place.mjs, tools/test/fixtures/mapper/**, addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_blacklake_shore.layer, tools/grid/cells/mapper-junkyard-small.json, addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_mapper_junkyard_small.layer
 //
 // Proves `tools\cli mapper import` (docs/architecture/reforger-mapper-import.md) with the game, the grid tool and the
 // placement tool replaced by fakes, so it needs no Workbench and no game install:
@@ -8,20 +8,29 @@
 //   - a prefab the resolver does not know is dropped and reported, never handed to the placement tool, and the layout's
 //     centre is worked out from what is kept;
 //   - cell mode claims the cell through `grid place --cell`, moves the layout's centre onto the cell's centre, keeps the yaw,
-//     and calls `place ground` once per kept prop with a bare `x,z`, never a quoted vector or a `coords` text of its own;
+//     and sends every kept prop in ONE `place ground-many` run (a JSON plan with bare x,z), never a boot per prop, never a
+//     quoted vector or a `coords` text of its own; a refused batch falls back to `place ground` per prop to name the refusal;
 //   - the committed sample layer has no quoted vector (the writer is the placement tool's `appendEntity`);
 //   - slot mode refuses a branch that is not a `ws/town-*` pass, a missing --at, a Grid_ layer and an unknown layer, and
-//     with all of them right plans the props without writing in --dry.
+//     with all of them right plans the props without writing in --dry;
+//   - an island slot (`Place_<place>_<slot>.layer`): a branch that does not own the slot, a layer with no claim, props outside
+//     the slot's ground, ground that is not level, a layer that already holds an import and a flagged audit are refused (the
+//     layer restored byte for byte); a good run writes the props with the Mapper yaw as `angleY`, from ONE terrain probe,
+//     through the strict island audit.
+// red-proof: with the `ground-many` call in placeAll turned back into one `ground` per prop this printed "FAIL the 4 kept props should go in ONE ground-many run, got 0" (2026-11-19).
+// red-proof: with the branch check of intoIslandSlot removed this printed "FAIL an island slot should refuse a branch that does not own it" (2026-11-19).
+// red-proof: with the yaw left out of the written entity this printed "FAIL the bench keeps Mapper's yaw 270 as angleY -90" (2026-11-19).
 // red-proof: with the `if (v.drop)` branch of importProject removed this printed "FAIL an unknown prefab should be dropped, not placed" (2026-11-19).
 // red-proof: with isTownPass always true this printed "FAIL slot mode should refuse a branch that is not a town pass" (2026-11-19).
 // red-proof: with the modulo left out of normYaw this printed "FAIL yaw -190 should read as 170, got -190" (2026-11-19).
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { scratchDir } from "../lib/scratch.mjs";
 import { centreOf, fit, parseProject, splitPrefab, translate } from "../mapper/convert.mjs";
 import { main as mapperMain } from "../commands/mapper.mjs";
+import { pinKey } from "../town/terrain.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIXTURE = join(ROOT, "tools", "test", "fixtures", "mapper", "junkyard-small.json");
@@ -113,8 +122,10 @@ const inspect = async (prefab) => {
     }
     return 0;
   };
+  const plansSeen = [];
   const placeMain = async (argv) => {
     placeCalls.push(argv);
+    if (argv[0] === "ground-many") plansSeen.push(JSON.parse(readFileSync(argv[1], "utf8")));
     return 0;
   };
   const auditMain = async (argv) => {
@@ -127,13 +138,17 @@ const inspect = async (prefab) => {
   const r = await run(["import", proj, "--cell", "c3r3", "--no-fetch"], { root, inspect, gridMain, placeMain, auditMain, P: noPlace });
   check(r.code === 0, `cell mode should succeed through the fakes, got ${r.code}: ${r.text}`);
   check(gridCalls[0]?.slice(0, 2).join(" ") === "place mapper-mini" && gridCalls[0].includes("--cell") && gridCalls[0].includes("--no-verify") && gridCalls[0].includes("1x1"), `grid place should claim the cell (got ${JSON.stringify(gridCalls[0])})`);
-  const grounds = placeCalls.filter((a) => a[0] === "ground");
-  check(grounds.length === 4, `the 4 kept props should each get one place ground, got ${grounds.length}`);
-  check(!placeCalls.some((a) => a.some((x) => /Decal_OilStain/.test(x))), "an unmeshed prefab should be dropped, not placed");
-  check(grounds.every((a) => /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(a[1])), "each place ground gets a bare x,z");
+  const many = placeCalls.filter((a) => a[0] === "ground-many");
+  check(many.length === 1 && placeCalls.filter((a) => a[0] === "ground").length === 0, `the 4 kept props should go in ONE ground-many run, got ${many.length}`);
+  const rows = plansSeen[0] ?? [];
+  check(rows.length === 4, `the batch plan should hold the 4 kept props, got ${rows.length}`);
+  check(!JSON.stringify(rows).includes("Decal_OilStain"), "an unmeshed prefab should be dropped, not placed");
+  check(rows.every((r) => Array.isArray(r.at) && r.at.length === 2 && r.at.every(Number.isFinite)), "each batch row gets a bare x,z");
   check(placeCalls.every((a) => a.every((x) => !/["']/.test(x) && x !== "coords")), "no argument carries a quote or a coords text: vectors are the placement tool's to write");
-  check(grounds[0][1] === "64,61.5", `the layout centre should land on c3r3 centre (64,64); the first wreck sits 2.5 m south of it at 64,61.5, got ${grounds[0]?.[1]}`);
-  check(grounds[0].includes("--yaw") && grounds[0][grounds[0].indexOf("--yaw") + 1] === "90", "the wreck keeps its yaw of 90");
+  check(rows[0]?.at.join(",") === "64,61.5", `the layout centre should land on c3r3 centre (64,64); the first wreck sits 2.5 m south of it at 64,61.5, got ${rows[0]?.at}`);
+  check(rows[0]?.yaw === 90, "the wreck keeps its yaw of 90");
+  check(Boolean(many[0]?.includes("--layer") && many[0].includes("--no-verify") && many[0].includes("--y-hint")), "the batch is written unaudited at y-hint 0 (settle and audit follow once for the cell)");
+  check(!existsSync(many[0]?.[1] ?? ""), "the plan file is removed after the run");
   check(placeCalls.some((a) => a[0] === "settle") && auditCalls.some((a) => a.includes("--strict") && a.includes("--grid")), "the cell is settled and audited strict at the grid bar");
   check(/dropped JY1_oil/.test(r.text) && /1 dropped/.test(r.text), "the dropped decal is reported");
   const again = await run(["import", proj, "--cell", "c3r3"], { root, inspect, gridMain, placeMain, auditMain, P: noPlace });
@@ -163,11 +178,11 @@ const inspect = async (prefab) => {
       return 0;
     },
     placeMain: async (argv) => {
-      placed.push(argv);
+      placed.push(...JSON.parse(readFileSync(argv[1], "utf8")));
       return 0;
     },
   });
-  check(r2.code === 0 && placed.length === 1 && placed[0].includes("{0000000000000001}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et"), `an unknown prefab should be dropped, not placed (placed ${placed.length}): ${r2.text}`);
+  check(r2.code === 0 && placed.length === 1 && placed[0].prefab === "{0000000000000001}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et", `an unknown prefab should be dropped, not placed (placed ${placed.length}): ${r2.text}`);
   const refused = await run(["import", proj, "--cell", "c4r4", "--slug", "unk2", "--no-verify"], { root, inspect, P: {}, gridMain: async (argv) => {
     if (argv[0] === "place") writeFileSync(join(root, "tools", "grid", "cells", "unk2.json"), `${JSON.stringify({ slug: "unk2", cell: "c4r4", layer: "Grid_unk2.layer", rows: 0, created: "2026-11-19" })}\n`);
     return 0;
@@ -194,6 +209,150 @@ const inspect = async (prefab) => {
   check(r.code === 1 && /two targets/.test(r.text), "--cell and --slot together are refused");
 }
 
+// ---- a refused batch falls back to one prop at a time, keeping the props the checks accept
+{
+  const root = scratchDir("lf-mapper-selftest-");
+  const proj = join(root, "fall.json");
+  writeFileSync(proj, fixtureText);
+  const calls = [];
+  const r = await run(["import", proj, "--cell", "c6r6", "--slug", "fall", "--no-verify", "--no-fetch"], {
+    root, inspect, P: {},
+    gridMain: async (argv) => {
+      if (argv[0] === "place") {
+        mkdirSync(join(root, "tools", "grid", "cells"), { recursive: true });
+        writeFileSync(join(root, "tools", "grid", "cells", "fall.json"), `${JSON.stringify({ slug: "fall", cell: "c6r6", layer: "Grid_fall.layer", rows: 0, created: "2026-11-19" })}\n`);
+      }
+      return 0;
+    },
+    placeMain: async (argv) => {
+      calls.push(argv[0]);
+      if (argv[0] === "ground-many") return 1;
+      return argv[argv.indexOf("--yaw") + 1] === "-90" ? 1 : 0; // the second wreck is the one the checks refuse
+    },
+  });
+  check(calls[0] === "ground-many" && calls.filter((c) => c === "ground").length === 4, `a refused batch should fall back to one place ground per prop (calls ${calls})`);
+  check(r.code === 1 && /3 placed/.test(r.text) && /1 refused by the placement checks/.test(r.text), `the refused prop is counted and the others kept: ${r.text}`);
+}
+
+// ---- island slots, through fakes: the place tool's geometry is real; the game, the terrain probe and the audit are not
+{
+  const realP = await import("../place/place.mjs");
+  const LAYER = "Place_lakeplace_shore.layer";
+  const BOX = { min: [-1, 0, -0.5], max: [1, 1, 0.5] };
+  const P = { ...realP, ROOT: "", prefabInfo: () => ({ bounds: BOX, scale: 1, cls: "GenericEntity", dynamic: false }), modelOf: () => [] };
+  const proj = join(scratchDir("lf-mapper-selftest-"), "lake.json");
+  writeFileSync(proj, JSON.stringify({ version: 0, entities: [
+    { id: "bench", prefab: "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et", x: 10, z: 10, yaw: 270 },
+    { id: "bucket", prefab: "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et", x: 13, z: 10, yaw: 40 },
+    { id: "crate", prefab: "{6FC9E85153AE41B1}Prefabs/Props/Civilian/WoodKindling_Crate_01.et", x: 10, z: 13, yaw: 90 },
+  ] }));
+  // `place ground-many` refuses a bad plan before any boot: no file, not JSON, empty, a row without x,z, a name twice
+  const bad = join(scratchDir("lf-mapper-selftest-"), "plan.json");
+  const many = async (body) => {
+    if (body != null) writeFileSync(bad, body);
+    const lines = [];
+    const orig = console.log;
+    console.log = (...a) => lines.push(a.join(" "));
+    let code;
+    try {
+      code = await realP.main(["ground-many", body == null ? join(bad, "..", "missing.json") : bad, "--layer", "Street_Police.layer"]);
+    } finally {
+      console.log = orig;
+    }
+    return { code, text: lines.join("\n") };
+  };
+  check((await many(null)).code === 1 && /no plan file/.test((await many(null)).text), "ground-many with no plan file says so");
+  check(/is not JSON/.test((await many("{nope")).text), "ground-many refuses a plan that is not JSON");
+  check(/holds no rows/.test((await many("[]")).text), "ground-many refuses an empty plan");
+  check(/needs at: \[x, z\]/.test((await many(JSON.stringify([{ prefab: "X.et" }]))).text), "ground-many refuses a row with no at");
+  check(/names A twice/.test((await many(JSON.stringify([{ at: [1, 2], prefab: "X.et", name: "A" }, { at: [3, 4], prefab: "X.et", name: "A" }]))).text), "ground-many refuses one name twice");
+  const known = async (p) => ({ ref: `{${p.guid}}${p.path}` });
+  const MARKER = "GenericEntity Fit_lakeplace_shore_Place {\n coords 100 50 200\n}\n";
+  const setup = () => {
+    const root = scratchDir("lf-mapper-selftest-");
+    const dir = join(root, "addons", "LF_Everon1989", "Worlds", "MainWorld", "MainWorld_Layers");
+    mkdirSync(dir, { recursive: true });
+    writeFileSync(join(dir, LAYER), MARKER);
+    mkdirSync(join(root, "tools", "town", "claims"), { recursive: true });
+    const claim = { schema: 1, place: "lakeplace", slot: "shore", plot: "p1", hostless: true, layer: `addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/${LAYER}`, rows: 1, date: "2026-11-19" };
+    writeFileSync(join(root, "tools", "town", "claims", "lakeplace-shore.json"), `${JSON.stringify(claim)}\n`);
+    const placeData = () => ({
+      place: "lakeplace",
+      dossier: { freePlots: { plots: [{ id: "p1", x: 100, z: 200, width: 14, depth: 80 }] } },
+      mapping: { slots: { shore: { plot: "p1", hostless: true } } },
+      template: { slots: [{ id: "shore" }] },
+      claims: { "lakeplace-shore.json": claim },
+      layers: { [LAYER]: readFileSync(join(dir, LAYER), "utf8") },
+    });
+    return { root, file: join(dir, LAYER), placeData };
+  };
+  const ctxOf = (s, over = {}) => {
+    const probes = [];
+    const audits = [];
+    const ctx = {
+      root: s.root, inspect: known, P, placeData: s.placeData, branch: "ws/town-draft-lakeplace-shore-mapper",
+      probe: async (points) => {
+        probes.push(points);
+        return { points: Object.fromEntries(points.map((p) => [pinKey(p[0], p[1]), 50])), missing: [] };
+      },
+      auditMain: async (argv) => {
+        audits.push(argv);
+        return 0;
+      },
+      ...over,
+    };
+    return { ctx, probes, audits };
+  };
+  const args = ["import", proj, "--slot", LAYER];
+
+  let s = setup();
+  let c = ctxOf(s, { branch: "ws/town-draft-other-slot" });
+  let r = await run(args, c.ctx);
+  check(r.code === 1 && /town-draft-lakeplace-shore/.test(r.text) && readFileSync(s.file, "utf8") === MARKER, `an island slot should refuse a branch that does not own it: ${r.text}`);
+  r = await run(args, ctxOf(s, { branch: "ws/town-draft-lakeplace" }).ctx);
+  check(r.code === 1 && /town-draft-lakeplace-shore/.test(r.text), "the place alone is not the slot: the branch names both");
+  rmSync(join(s.root, "tools", "town", "claims", "lakeplace-shore.json"));
+  r = await run(args, ctxOf(s).ctx);
+  check(r.code === 1 && /has no claim/.test(r.text), `a layer nobody fitted has no claim: ${r.text}`);
+
+  s = setup();
+  c = ctxOf(s);
+  r = await run([...args, "--dry"], c.ctx);
+  check(r.code === 0 && /slot's ground centre/.test(r.text) && /nothing written/.test(r.text) && c.probes.length === 0 && readFileSync(s.file, "utf8") === MARKER, `--dry plans from the slot's ground centre and boots nothing: ${r.text}`);
+  r = await run([...args, "--dry", "--at", "100,300"], c.ctx);
+  check(r.code === 1 && /outside plot p1/.test(r.text), `props outside the plot are refused: ${r.text}`);
+  r = await run([...args, "--at", "100,300"], c.ctx);
+  check(r.code === 1 && /outside plot p1/.test(r.text) && c.probes.length === 0 && readFileSync(s.file, "utf8") === MARKER, "an outside layout stops before the probe boot and writes nothing");
+
+  // a good run: ONE probe, the Mapper yaw as angleY, the strict island audit
+  r = await run(args, c.ctx);
+  const text = readFileSync(s.file, "utf8");
+  check(r.code === 0, `an island import should succeed through the fakes, got ${r.code}: ${r.text}`);
+  check(c.probes.length === 1 && c.probes[0].length === 15, `ONE terrain probe for every prop (3 props x 5 points), got ${c.probes.length} probe(s) of ${c.probes[0]?.length}`);
+  check((text.match(/^GenericEntity Mapper_lakeplace_shore_M\d+ : "\{[0-9A-F]{16}\}Prefabs\//gm) || []).length === 3, "the three props are written with their {GUID}path refs");
+  check(text.startsWith(MARKER), "the slot's own entities are kept byte for byte");
+  check(/Mapper_lakeplace_shore_M1 : "[^"]*" \{\n coords [\d.]+ 50 [\d.]+\n angleY -90\n/.test(text), "the bench keeps Mapper's yaw 270 as angleY -90, standing on the probed terrain (mesh base at the pivot)");
+  check(c.audits.length === 1 && ["--strict", "--world", "MainWorld", "--layer", LAYER, "--hard-layer"].every((x) => c.audits[0].includes(x)), "the layer is audited strict on the island");
+  check(!/(coords|angleY)\s+"/.test(text), "no quoted vector");
+  r = await run(args, c.ctx);
+  check(r.code === 1 && /already holds an import/.test(r.text) && c.probes.length === 1, "a second import into the same slot is refused");
+
+  // a flagged audit restores the layer byte for byte
+  s = setup();
+  r = await run(args, ctxOf(s, { auditMain: async () => 1 }).ctx);
+  check(r.code === 1 && /restored/.test(r.text) && readFileSync(s.file, "utf8") === MARKER, `a flagged audit restores the layer: ${r.text}`);
+
+  // ground that is not level refuses the props: nothing placed, nothing written
+  s = setup();
+  r = await run(args, ctxOf(s, { probe: async (points) => ({ points: Object.fromEntries(points.map((p) => [pinKey(p[0], p[1]), 50 + p[0] * 0.5])), missing: [] }) }).ctx);
+  check(r.code === 1 && /not level/.test(r.text) && /nothing was placed/.test(r.text) && readFileSync(s.file, "utf8") === MARKER, `sloping ground refuses the props: ${r.text}`);
+
+  // a prop whose probe points got no answer is refused, the others kept
+  s = setup();
+  r = await run(args, ctxOf(s, { probe: async (points) => ({ points: Object.fromEntries(points.slice(5).map((p) => [pinKey(p[0], p[1]), 50])), missing: [] }) }).ctx);
+  check(r.code === 1 && /no terrain height/.test(r.text) && (readFileSync(s.file, "utf8").match(/Mapper_lakeplace_shore_M\d+ :/g) || []).length === 2, `a prop with no probe answer is refused, the others kept: ${r.text}`);
+}
+
 // ---- the committed sample layer: its vectors are bare
 {
   check(existsSync(SAMPLE_LAYER), "the sample layer Grid_mapper_junkyard_small.layer should be committed");
@@ -201,6 +360,15 @@ const inspect = async (prefab) => {
   check(!/(coords|angles?|Position)\s+"/.test(layer), "no vector in the sample layer is quoted");
   check((layer.match(/^GenericEntity Grid_mapper_junkyard_small_M\d+ : "\{[0-9A-F]{16}\}Prefabs\//gm) || []).length === 4, "the sample layer holds the 4 imported props, each with a {GUID}path ref");
   check(!/Decal_OilStain/.test(layer), "the dropped decal is not in the sample layer");
+}
+
+// ---- the committed island import: the four props of lakeshore-small.json in the Black Lake slot, bare vectors, the bench's yaw
+{
+  const island = join(ROOT, "addons", "LF_Everon1989", "Worlds", "MainWorld", "MainWorld_Layers", "Place_blacklake_shore.layer");
+  const text = existsSync(island) ? readFileSync(island, "utf8") : "";
+  check((text.match(/^GenericEntity Mapper_blacklake_shore_M\d+ : "\{[0-9A-F]{16}\}Prefabs\//gm) || []).length === 4, "the Black Lake slot should hold the 4 imported props, each with a {GUID}path ref");
+  check(!/(coords|angleY)\s+"/.test(text), "no vector in the island slot is quoted");
+  check(/Mapper_blacklake_shore_M1 : "[^"]*BenchStreet_01_green[^"]*" \{\n coords [\d.]+ [\d.]+ [\d.]+\n angleY -90\n/.test(text), "the committed bench keeps Mapper's yaw 270 as angleY -90");
 }
 
 if (failed) {
