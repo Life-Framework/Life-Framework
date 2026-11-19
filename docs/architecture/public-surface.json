@@ -10,6 +10,7 @@
     "LF_DialogueConfig",
     "LF_DialogueIndexConfig",
     "LF_DrinkImpairmentConfig",
+    "LF_EventDispatchSeize",
     "LF_EventPrecondition",
     "LF_EventScene",
     "LF_EventsConfig",
