@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{3440A00000000003}Configs/Dialogue/LF_Dialogue_ShipmentIndex.conf"
+ Name "{3768A00000000001}Configs/Crime/LF_BuyerPrices_Everon1989/LF_BuyerPrices_Shipment.conf"
  Configurations {
   CONFResourceClass PC {
   }
