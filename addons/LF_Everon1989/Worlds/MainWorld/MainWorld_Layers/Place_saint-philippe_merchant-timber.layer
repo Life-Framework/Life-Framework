@@ -13,7 +13,11 @@ GenericEntity Fit_saint_philippe_merchant_timber_timber_counter : "{E214337C6E19
  coords 4527.078 15.94 10628.844
  angleY -99
 }
-LF_NpcBaseEntity Fit_saint_philippe_merchant_timber_timber_man : "{31E740A9BE82E617}Prefabs/Characters/Npcs/Outfits/LF_Npc_Logger_2.et" {
+GenericEntity Fit_saint_philippe_merchant_timber_timber_buyer : "{7C1E5A2D9B3F460C}Prefabs/Trader/LF_TimberBuyer_Everon1989.et" {
+ coords 4527.078 16.98 10628.844
+ angleY -99
+}
+LF_NpcBaseEntity Fit_saint_philippe_merchant_timber_timber_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
  coords 4528.164 15.94 10629.016
  angleY -99
 }
@@ -31,6 +35,6 @@ SCR_DestructibleEntity Fit_saint_philippe_merchant_timber_timber_board : "{7B452
    m_fFaceScale 2.6
   }
  }
- coords 4528.797 16 10630.939
+ coords 4524.525 0.006 10630.262
  angleY -99
 }

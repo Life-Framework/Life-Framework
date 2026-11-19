@@ -9,7 +9,7 @@ Design and card list: the harvester spike (epic #3282).
 ## Interaction pattern
 
 In-world only: the field is the interface and the hopper is a number on the reaper's prompt. Nothing opens a sheet.
-The rules (#3285), the field entity (#3287), its cut replication (#3288) and the hitch (#3284) are in; the cut tick (#3289) builds on them.
+The rules (#3285), the field entity (#3287), its cut replication (#3288) and the hitch (#3284) are in; the cut tick (#3289) is in.
 
 ## Wheat field rules (#3285)
 
@@ -56,3 +56,10 @@ The rules (#3285), the field entity (#3287), its cut replication (#3288) and the
 - **Player sees:** buy a reaper at the farm supply counter ($1,200, once); at the implement rack, *Take out reaper* hitches it to a UAZ469 or Z7211 within 8 m, *Put back reaper* unhitches it and dumps the hopper with a warning toast.
 - **Owner and side:** `LF_OwnedImplements` (server: owned list per character record key, what is out, `Purchase`, `TakeOut`, `PutBack`), `LF_ImplementRackAction` (the two prompts), `LF_HarvestSavePayload` (save section `harvest`). Only the owned list is saved; what is out is session state, so a reaper that is out at a restart is back on the list, not in the world.
 - **Proof:** `harvest/implement-rack` (WORLD), `harvest/persist-owned-implements` (PERSISTENCE), `everon/farm-supply` (pack leg).
+
+## Reaper cut tick (#3289)
+
+- **Player sees:** the wheat under the bar of a hitched reaper turns to stubble at 0.5 to 6 m/s, the hopper climbs 10 kg a cell, and a hint says *Too fast to cut, slow down* or *Hopper full, unload at the granary* once each time it starts.
+- **Owner and side:** `LF_ReaperCutTick` (server only): a registry of reapers (filled by `LF_ImplementComponent`) and a 200 ms loop. Speed is the towing vehicle's physics velocity; the bar sits at the implement's hitch offset in the vehicle's frame; the field is the `LF_WheatField` whose box holds it.
+- **Data:** the hopper is `LF_ImplementComponent` `m_iHopperKg` (`RplProp`), capped at `LF_WheatFieldRules.HOPPER_CAP_KG`. Session-only: the reaper is not saved, so a restart or an unhitch loses the grain (H7 and H8 own persistence or payout).
+- **Proof:** `harvest/reaper-cut` (WORLD); session `hitch fieldspawn|drive|state` on grid cell slice-3287.
