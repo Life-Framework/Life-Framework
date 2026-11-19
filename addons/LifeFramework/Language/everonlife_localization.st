@@ -2300,6 +2300,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Treatment bill"
      Comment "Notification title for treatment bills."
     }
+    CustomStringTableItem "{3C8E1F5A7D2B9406}" {
+     Id "LF-Bin_Name"
+     Target_en_us "Bin"
+     Comment "Inventory name of a tagged bin: an open container that is emptied by the world reset."
+    }
+    CustomStringTableItem "{B7A20D6E94C31F58}" {
+     Id "LF-Bin_Open"
+     Target_en_us "Look in bin"
+     Comment "Action on a bin: opens it as normal storage."
+    }
     CustomStringTableItem "{312172B24DB5B820}" {
      Id "LF-BreakIn_Barely"
      Target_en_us "Barely started"
@@ -4767,6 +4777,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-FuelClerk_Talk"
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
+    }
+    CustomStringTableItem "{3328B0000000F001}" {
+     Id "LF-Fuel_Buy"
+     Target_en_us "Fill the tank"
+     Comment "Action on a fuel pump that sells from stock: fills the nearest vehicle and charges cash."
+    }
+    CustomStringTableItem "{3328B0000000F004}" {
+     Id "LF-Fuel_Dry"
+     Target_en_us "The tanks are dry. The depot truck is due."
+     Comment "Toast: the station has no fuel to sell until a delivery arrives."
+    }
+    CustomStringTableItem "{3328B0000000F008}" {
+     Id "LF-Fuel_Failed"
+     Target_en_us "The pump jams. Try again."
+     Comment "Toast: the sale could not be completed (a logged fault)."
+    }
+    CustomStringTableItem "{3328B0000000F003}" {
+     Id "LF-Fuel_Filled"
+     Target_en_us "Tank filled: %1."
+     Comment "Toast after a fill. %1 = litres and the cash charged, for example 30 L, $60."
+    }
+    CustomStringTableItem "{3328B0000000F005}" {
+     Id "LF-Fuel_NoMoney"
+     Target_en_us "You do not have the cash for a litre."
+     Comment "Toast: the buyer cannot pay for one litre."
+    }
+    CustomStringTableItem "{3328B0000000F007}" {
+     Id "LF-Fuel_NoVehicle"
+     Target_en_us "Park a vehicle next to the pump."
+     Comment "Toast: no vehicle is within reach of the pump."
+    }
+    CustomStringTableItem "{3328B0000000F006}" {
+     Id "LF-Fuel_TankFull"
+     Target_en_us "This tank is already full."
+     Comment "Toast: the vehicle at the pump has no room for fuel."
+    }
+    CustomStringTableItem "{3328B0000000F002}" {
+     Id "LF-Fuel_Title"
+     Target_en_us "Fuel station"
+     Comment "Toast title for a pump sale or refusal."
     }
     CustomStringTableItem "{251C7BC1C7871641}" {
      Id "LF-FurnitureStorage_Open"
@@ -10753,6 +10803,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Officer's trousers"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
     }
+    CustomStringTableItem "{3A7C91E05B2D4F68}" {
+     Id "LF-Process_Busy"
+     Target_en_us "Still running. Wait for it to finish."
+     Comment "Processing refused (#3229): a timed machine already has a run under way."
+    }
     CustomStringTableItem "{4140D26F74D7F5F3}" {
      Id "LF-Process_Needs"
      Target_en_us "Needs %1"
@@ -10762,6 +10817,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Process_NoItems"
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
+    }
+    CustomStringTableItem "{9D4E21B7C0A35F86}" {
+     Id "LF-Process_Started"
+     Target_en_us "Running. The parts come out here in %1 seconds."
+     Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
      Id "LF-Property_Bought"

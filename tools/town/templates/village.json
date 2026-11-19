@@ -36,6 +36,16 @@
       "places": ["House"]
     },
     {
+      "id": "depot", "required": false, "kit": "fuel-depot", "host": "building", "poi": "none", "margin": 20,
+      "needs": { "interior": "optional", "minArea": 80, "prefer": "far", "types": ["industrial", "industrial-tank", "farm", "shed"] },
+      "places": ["FuelDepot"]
+    },
+    {
+      "id": "factory", "required": false, "kit": "factory", "host": "building", "poi": "none", "margin": 20,
+      "needs": { "interior": "optional", "minArea": 150, "prefer": "far", "types": ["industrial"] },
+      "places": ["Workplace"]
+    },
+    {
       "id": "farm-plot", "required": false, "kit": "farm-plot", "host": "plot", "poi": "none",
       "needs": { "interior": "optional", "prefer": "far" },
       "plot": { "minWidth": 20, "minDepth": 16, "prefabs": [] },

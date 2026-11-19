@@ -1,7 +1,8 @@
 // Selftest for the feature scaffold (tools/feature/new.mjs), the PR body checks `wt ship` runs
 // inputs: tools/**, agent-box/**, .githooks/**, addons/**, docs/**, website/**, video/**
 // (tools/lib/pr-quality.mjs) and the evidence table (tools/commands/evidence.mjs). No game, no git.
-// red-proof: see the two observed lines in docs/architecture/agent-quality.md "Proof of the checks".
+// red-proof: see the two observed lines in docs/architecture/agent-quality.md "Proof of the checks". #3833, 2026-11-19: with the old fixed closing-braces marker in
+// tools/feature/new.mjs this exited 1 (the scaffold threw "marker not found" on the sorted table); with insertStRows it prints OK.
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import * as feature from "../feature/new.mjs";
@@ -15,7 +16,9 @@ const check = (ok, msg) => {
 };
 
 // ------------------------------------------------------------- the scaffold
-const ST_TAIL = "\n  }\n }\n}\n";
+// The shape `regen-localization` leaves: the last item closes at 4 spaces, then " }" and "}" (#3833). The scaffold once
+// looked for the older "\n  }\n }\n}" marker and died with "marker not found" on the real, sorted table.
+const ST_TAIL = "\n }\n}\n";
 function scratchTree() {
   const root = scratchDir("lf-feature-ws-selftest-");
   const put = (rel, text) => {
@@ -100,6 +103,23 @@ try {
   check(!existsSync(join(root, "agent-box/proofs/curfew-proof.mjs")) && !existsSync(join(root, `${game}/Tests/LF_Test_CurfewWorld.c`)), "the logic kind wrote a proof or a WORLD test");
 } finally {
   rmSync(root, { recursive: true, force: true });
+}
+
+// insertStRows finds the table's closing by shape: sorted, unterminated and CRLF tails all take rows; a broken table throws.
+{
+  const item = '    CustomStringTableItem "{0000000000000002}" {\n     Id "LF-New"\n    }';
+  const rows = "ROWS";
+  for (const [name, tail] of [["sorted", "\n }\n}\n"], ["no final newline", "\n }\n}"],["CRLF", "\r\n }\r\n}\r\n"]]) {
+    const out = feature.insertStRows(`StringTable {\n Items {\n${item}${tail}`, rows);
+    check(out.endsWith(`${item}\n${rows}${tail}`), `insertStRows (${name} tail) did not put the rows between the last item and the closing braces`);
+  }
+  let threw = false;
+  try {
+    feature.insertStRows("StringTable {\n Items {\n", rows);
+  } catch {
+    threw = true;
+  }
+  check(threw, "insertStRows accepted a table with no closing braces");
 }
 
 // ------------------------------------------------------------ the PR body
