@@ -147,3 +147,19 @@ class LF_OnHeistLoot : LF_Event
 		return e;
 	}
 }
+
+//! A breach target (door, gate, vault) came open (LF_Breach.Open, #3411): a charge fired or a drill
+//! finished. m_sPlayerUid is who armed it; empty when the arm was not traced to a player.
+class LF_OnBreachOpened : LF_Event
+{
+	string m_sTargetId;
+	string m_sPlayerUid;
+
+	static LF_OnBreachOpened Create(string targetId, string playerUid)
+	{
+		LF_OnBreachOpened e = new LF_OnBreachOpened();
+		e.m_sTargetId = targetId;
+		e.m_sPlayerUid = playerUid;
+		return e;
+	}
+}
