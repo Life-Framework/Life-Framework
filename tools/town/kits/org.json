@@ -63,7 +63,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.027
     },
     {
       "id": "registry-chair",
@@ -77,7 +78,8 @@
       ],
       "yaw": -90,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.027
     },
     {
       "id": "war-board",
@@ -93,7 +95,8 @@
       "yaw": 90,
       "wall": "-x",
       "floor": "f0",
-      "from": "Grid_slice_2677.layer"
+      "from": "Grid_slice_2677.layer",
+      "lift": 0.027
     },
     {
       "id": "registry-sign",
