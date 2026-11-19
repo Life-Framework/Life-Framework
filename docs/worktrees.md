@@ -151,6 +151,10 @@ gate before a merge; the main guard (next section) checks `main` after it.
    no open finding in `tmp/review-<slug>.md`).
 2. Preflight, seconds: `git merge-tree` against `origin/<base>` (a conflict outside the driver-merged files stops it; a
    driver-only conflict merges main in here) and `validate` of the changed inputs. `--no-preflight` skips it.
+   `git merge-tree` runs the custom merge drivers and GitHub does not, so a file with a `lf-*` merge driver (a
+   `docs/features/*.md` row append) that both the branch and `origin/<base>` changed is called clean locally and
+   CONFLICTING on GitHub (#3735, #3736, and five crime-police PRs the night of 2026-11-19). Ship merges `origin/<base>` in
+   before the push in that case, even with `--no-preflight`, so the driver runs and the PR is born mergeable.
    Before that validate, a branch that changes a config class (`Scripts/**/*.c`), a `.conf` under `Configs/` or
    `Missions/`, or `tools/config/schema-overrides.json` gets `node tools/config/schema.mjs --write` run, and any change
    in `docs/config/` is committed with it (`tools/lib/config-schema-regen.mjs`, #3717; main went red on a stale

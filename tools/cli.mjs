@@ -5319,7 +5319,7 @@ async function wtSyncBaseCmd(args) {
 
 async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody }) {
   const draft = flags.includes("--draft"); // a draft PR, auto-merge never requested
-  const { shipDirect, shipMergeBase } = await import("./lib/ship-direct.mjs");
+  const { shipDirect, shipMergeBase, bothSidesTouched } = await import("./lib/ship-direct.mjs");
   const { regenConfigSchema } = await import("./lib/config-schema-regen.mjs");
   const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
   const body = refsBody(customBody ?? [`Automated ship from worktree \`${slug}\`.`, "", "## Commits", ...subjects.map((x) => `- ${x}`)].join("\n"), closes);
@@ -5327,6 +5327,17 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
   const r = await shipDirect({
     log: (l) => console.log(l),
     mergeTree: () => wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]),
+    driverOverlap: () => {
+      const lines = (a) => wt.git(wtRoot, a).stdout.split(/\r?\n/).filter(Boolean);
+      const mb = wt.git(wtRoot, ["merge-base", "HEAD", `origin/${base}`]);
+      if (mb.status !== 0) return [];
+      const sha = mb.stdout.trim();
+      const both = bothSidesTouched(lines(["diff", "--name-only", sha, "HEAD"]), lines(["diff", "--name-only", sha, `origin/${base}`]));
+      if (!both.length) return [];
+      // Only a file with a custom merge driver (a `merge=lf-...` attribute) is the case: a plain text conflict is merge-tree's to report.
+      const attr = wt.git(wtRoot, ["check-attr", "merge", "--", ...both]).stdout.split(/\r?\n/);
+      return both.filter((f) => attr.some((l) => l.startsWith(`${f}: merge: lf-`)));
+    },
     mergeBase: () => {
       wt.git(wtRoot, ["fetch", "origin", "--prune"]);
       shipMergeBase(wtRoot, base, healMergeSync, (l) => console.log(l));

@@ -3830,6 +3830,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "CREDITS"
      Comment "Heading of the in-game credits screen (#481)."
     }
+    CustomStringTableItem "{67770498C05C0FBE}" {
+     Id "LF-CrewRob_ActionHold"
+     Target_en_us "Hold the till"
+     Comment "Action name on a crew till: the holder keeps the spot while the take grows. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{8EB8592BEBD4AE2D}" {
+     Id "LF-CrewRob_ActionStart"
+     Target_en_us "Start the job"
+     Comment "Action name on a crew till: forms the crew and sounds the alarm. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{457F6AD0EAA7943A}" {
+     Id "LF-CrewRob_ActionTake"
+     Target_en_us "Take the money"
+     Comment "Action name on a crew till: the holder ends the job and the crew is paid. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{C322408C87718678}" {
+     Id "LF-CrewRob_Failed"
+     Target_en_us "The job fell through."
+     Comment "Toast to the crew when the holder went down, was cuffed or left. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{84917ADCBAB1B882}" {
+     Id "LF-CrewRob_Holding"
+     Target_en_us "You hold the till. Stay on the spot while the take grows."
+     Comment "Toast to the holder when they begin holding the till. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{D3D593ECA8A52107}" {
+     Id "LF-CrewRob_Paid"
+     Target_en_us "Your cut: %1"
+     Comment "Toast to a crew member paid a share. %1 = the amount. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{76F2D351B5B1A676}" {
+     Id "LF-CrewRob_PoliceNear"
+     Target_en_us "Lookout: an officer is coming!"
+     Comment "Toast to the lookouts when an on-duty officer comes within range of the till. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{46FA120726B4AAC4}" {
+     Id "LF-CrewRob_Refused_Busy"
+     Target_en_us "A job is already running at this till."
+     Comment "Toast: a crew job cannot start, one is running. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{23A32E84E4438425}" {
+     Id "LF-CrewRob_Refused_Crew"
+     Target_en_us "You need armed partners close by to start a job."
+     Comment "Toast: too few armed crew to start a crew job. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{3BA8E7838D3118D9}" {
+     Id "LF-CrewRob_Refused_Holding"
+     Target_en_us "You are already holding the till."
+     Comment "Toast: hold pressed twice. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{87D05614C8D3B0D4}" {
+     Id "LF-CrewRob_Refused_NoJob"
+     Target_en_us "No job is running here."
+     Comment "Toast: hold or take pressed with no job running. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{2AF6238C7A3DFF23}" {
+     Id "LF-CrewRob_Refused_NotHolder"
+     Target_en_us "Only the one who started the job can do that."
+     Comment "Toast: a lookout pressed the holder's action. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{F7C397C4E7B78F30}" {
+     Id "LF-CrewRob_Refused_Nothing"
+     Target_en_us "There is nothing to take yet. Hold the till first."
+     Comment "Toast: take pressed with an empty take. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{21B51EAAD8601D52}" {
+     Id "LF-CrewRob_Started"
+     Target_en_us "The job is on. The holder holds the till; stay close."
+     Comment "Toast to every crew member when a crew till robbery starts. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{0E341FD4A5F997EA}" {
+     Id "LF-CrewRob_Title"
+     Target_en_us "Crew job"
+     Comment "Toast title of the crew till robbery. (Feature/Crime/LF_CrewRobActions.c)"
+    }
     CustomStringTableItem "{7E4AE1269E743655}" {
      Id "LF-Crime_RobCar_Desc"
      Target_en_us "Steal an armoured car"
@@ -5958,6 +6033,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Heard he is buying today. I marked it on your map; the spot will not hold past this shift."
      Comment "Informant answer (#2921): the fee was paid and the buyer's spot is on the map; also the toast."
     }
+    CustomStringTableItem "{B1A4C6D2E8F03955}" {
+     Id "LF-Inspection_CannotInspect"
+     Target_en_us "This car cannot be inspected right now."
+     Comment "Inspection toast (#3433): the car has no id or the world has no clock."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03952}" {
+     Id "LF-Inspection_Check"
+     Target_en_us "Check the sticker"
+     Comment "Action on the inspection desk (#3433): read the sticker of the car beside the desk."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03958}" {
+     Id "LF-Inspection_Expired"
+     Target_en_us "The sticker has expired."
+     Comment "Sticker check result (#3433): inspected, expiry day passed."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03951}" {
+     Id "LF-Inspection_Inspect"
+     Target_en_us "Inspect vehicle"
+     Comment "Action on the inspection desk (#3433): stamp the car beside the desk with a sticker."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03954}" {
+     Id "LF-Inspection_NoCar"
+     Target_en_us "No car beside the desk."
+     Comment "Inspection toast (#3433): no vehicle within reach."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03959}" {
+     Id "LF-Inspection_None"
+     Target_en_us "This car has no inspection sticker."
+     Comment "Sticker check result (#3433): never inspected."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03953}" {
+     Id "LF-Inspection_OnDutyOnly"
+     Target_en_us "Only an on-duty officer can do this."
+     Comment "Inspection action refused (#3433): the user is not on-duty police."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03956}" {
+     Id "LF-Inspection_Stamped"
+     Target_en_us "Inspection passed. The sticker is valid for %1 days."
+     Comment "Inspection toast (#3433). %1 = the sticker's validity in game days."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03957}" {
+     Id "LF-Inspection_Valid"
+     Target_en_us "The sticker is valid."
+     Comment "Sticker check result (#3433): inspected and not yet expired."
+    }
     CustomStringTableItem "{00B6F39DAD843E76}" {
      Id "LF-Interact_AlreadyKnown"
      Target_en_us "They already know your name."
@@ -7064,6 +7184,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this desk to collect it."
      Comment "Licence desk: the fee was paid and the application filed. %1 = in-game hours until collection."
     }
+    CustomStringTableItem "{95873A41DBCA4881}" {
+     Id "LF-LicenceDesk_Banned"
+     Target_en_us "Refused: your firearm permit was seized. Come back in %1 days."
+     Comment "Licence desk refusal: a conviction seized the permit and its ban has not ended (#3432). %1 = in-game days left."
+    }
     CustomStringTableItem "{F6A22E21A8F71D11}" {
      Id "LF-LicenceDesk_Closed"
      Target_en_us "The licence desk cannot help you right now."
@@ -7083,6 +7208,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LicenceDesk_DrivingAlreadyHeld"
      Target_en_us "You already hold a driving licence."
      Comment "Licence desk: the player already has the driving licence (#3128)."
+    }
+    CustomStringTableItem "{4A9DFB45430F1EEF}" {
+     Id "LF-LicenceDesk_DrivingBanned"
+     Target_en_us "Refused: your driving licence was seized. Come back in %1 days."
+     Comment "Licence desk refusal: a conviction seized the driving licence and its ban has not ended (#3432). %1 = in-game days left."
     }
     CustomStringTableItem "{34BBF90BAF789D18}" {
      Id "LF-LicenceDesk_DrivingIssued"
@@ -7143,6 +7273,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LicenceDesk_Wanted"
      Target_en_us "Refused: you are wanted by the {police}."
      Comment "Licence desk refusal: the player's wanted level is above zero."
+    }
+    CustomStringTableItem "{A642D5DB4145E7D9}" {
+     Id "LF-LicenceSeized_Driving"
+     Target_en_us "Your driving licence has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took the driving licence (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{D92AB6624E66E7E3}" {
+     Id "LF-LicenceSeized_Firearm"
+     Target_en_us "Your firearm permit has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took the firearm permit (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{B409C651C883E235}" {
+     Id "LF-LicenceSeized_Generic"
+     Target_en_us "A licence of yours has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took a licence with no line of its own (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{190BA98B192ED320}" {
+     Id "LF-LicenceSeized_Plain"
+     Target_en_us "A licence of yours has been seized."
+     Comment "Toast to the arrested player: a conviction took a licence with no ban period (#3432)."
     }
     CustomStringTableItem "{AA51A5C85F69418F}" {
      Id "LF-LicenceWhere_DRIVING_LICENCE"
