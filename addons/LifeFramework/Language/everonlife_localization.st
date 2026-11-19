@@ -5143,6 +5143,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Bring the vehicle to the garage first"
      Comment "Garage store refused because the owned vehicle is not parked at the garage the player is using"
     }
+    CustomStringTableItem "{F91197344A75BE03}" {
+     Id "LF-Garbage_EmptyBin"
+     Target_en_us "Empty bin"
+     Comment "Action on a street bin during a garbage round."
+    }
+    CustomStringTableItem "{D036ADB55B9871A1}" {
+     Id "LF-Garbage_EmptyBinDesc"
+     Target_en_us "Bag the rubbish onto the truck."
+     Comment "Description of the empty-bin action."
+    }
+    CustomStringTableItem "{A9C0133F738C8E8F}" {
+     Id "LF-Garbage_NoBins"
+     Target_en_us "There are no bins to collect today."
+     Comment "Toast: the world has no bin to build a route from."
+    }
+    CustomStringTableItem "{0CF2638908349C68}" {
+     Id "LF-Garbage_NoRound"
+     Target_en_us "You are not on a garbage round. Take one at the depot."
+     Comment "Toast: a bin or dump action with no round open."
+    }
+    CustomStringTableItem "{2F0D378D85A3F2CB}" {
+     Id "LF-Garbage_NoTruck"
+     Target_en_us "The company truck is not available."
+     Comment "Toast: the truck did not spawn."
+    }
+    CustomStringTableItem "{D7C496F1D48B0E59}" {
+     Id "LF-Garbage_NotEnough"
+     Target_en_us "There are still bins to empty before you can tip."
+     Comment "Toast: tip asked before every bin is done."
+    }
+    CustomStringTableItem "{A93E6E6C5E0A44F8}" {
+     Id "LF-Garbage_NotOnRoute"
+     Target_en_us "That bin is not on your route."
+     Comment "Toast: a bin that is not one of the round bins."
+    }
+    CustomStringTableItem "{E1CB7F2381C5C2E1}" {
+     Id "LF-Garbage_OutOfOrder"
+     Target_en_us "Not that one yet: empty the bins in order."
+     Comment "Toast: a route bin emptied out of order."
+    }
+    CustomStringTableItem "{27AEAA0E0829E94D}" {
+     Id "LF-Garbage_Paid"
+     Target_en_us "Round done. You were paid {currency:sym}%1."
+     Comment "Toast: the garbage round paid. %1 = the cash."
+    }
+    CustomStringTableItem "{22366B508087A675}" {
+     Id "LF-Garbage_Start"
+     Target_en_us "Take the garbage round"
+     Comment "Action at the depot desk: start the round and take the company truck."
+    }
+    CustomStringTableItem "{AF715C965D4C2353}" {
+     Id "LF-Garbage_StartDesc"
+     Target_en_us "Empty the bins on your route, then tip at the dump."
+     Comment "Description of the depot action."
+    }
+    CustomStringTableItem "{00D9E7AED62B6134}" {
+     Id "LF-Garbage_Started"
+     Target_en_us "The truck is outside. Empty the bins nearest the depot in order, then tip the load at the dump."
+     Comment "Toast: the round began."
+    }
+    CustomStringTableItem "{CC20960FA42008DF}" {
+     Id "LF-Garbage_Tip"
+     Target_en_us "Tip the load"
+     Comment "Action at the dump: end the round and get paid."
+    }
+    CustomStringTableItem "{D3D5F43917D0BCAB}" {
+     Id "LF-Garbage_TipDesc"
+     Target_en_us "Tip the rubbish and collect your pay."
+     Comment "Description of the tip action."
+    }
+    CustomStringTableItem "{1240A91D844B207D}" {
+     Id "LF-Garbage_Title"
+     Target_en_us "Garbage round"
+     Comment "Toast title for every garbage-round message."
+    }
+    CustomStringTableItem "{4B7E1A90C3D5F268}" {
+     Id "LF-Garbage_TooFast"
+     Target_en_us "You are done too quickly. Take a breather, then tip the load."
+     Comment "Toast: tip asked before the round's minimum time has passed."
+    }
+    CustomStringTableItem "{4D1D1033459A6CDB}" {
+     Id "LF-Garbage_TruckFar"
+     Target_en_us "Bring the truck to the dump first."
+     Comment "Toast: tip asked with the truck away from the dump."
+    }
     CustomStringTableItem "{DDFD7A1F8207F359}" {
      Id "LF-Gather_Action"
      Target_en_us "Gather %1"
