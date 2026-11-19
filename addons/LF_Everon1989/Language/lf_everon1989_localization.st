@@ -2709,6 +2709,31 @@ StringTable {
      Target_en_us "A sheltered cove below the lighthouse, with a bench and a lantern on its shore. Bass come in close at dusk."
      Comment "Sign card for the Fisherman's Bay plate, What section."
     }
+    CustomStringTableItem "{D3B5326222E01DEA}" {
+     Id "LF-Sign_FuelDepot_How"
+     Target_en_us "Fill a tanker at the depot and drive it to a filling station."
+     Comment "Sign card for the Montignac fuel depot, How section."
+    }
+    CustomStringTableItem "{B36BFEC7627B930C}" {
+     Id "LF-Sign_FuelDepot_Needs"
+     Target_en_us "A tanker truck and a driving licence."
+     Comment "Sign card for the Montignac fuel depot, You need section."
+    }
+    CustomStringTableItem "{D7656097F74F86FF}" {
+     Id "LF-Sign_FuelDepot_Next"
+     Target_en_us "The stations pay for every litre that fits their tank."
+     Comment "Sign card for the Montignac fuel depot, Next section."
+    }
+    CustomStringTableItem "{0E902C79A08FF34E}" {
+     Id "LF-Sign_FuelDepot_Title"
+     Target_en_us "Collective-farm fuel depot"
+     Comment "Title of the sign at the Montignac fuel depot yard (Everon 1989 pack, #3336)."
+    }
+    CustomStringTableItem "{D448F9A388D58121}" {
+     Id "LF-Sign_FuelDepot_What"
+     Target_en_us "The collective farm fuel store: diesel for the island filling stations is loaded here."
+     Comment "Sign card for the Montignac fuel depot, What section."
+    }
     CustomStringTableItem "{D47AD7112B2DF884}" {
      Id "LF-Sign_FuelStation_How"
      Target_en_us "Take fuel can for a fuel delivery run. Rob the till takes the cash in it."

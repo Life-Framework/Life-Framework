@@ -1,0 +1,433 @@
+{
+  "schema": 1,
+  "kit": "fuel-depot",
+  "system": "fuel",
+  "source": {
+    "file": "tools/town/kits/fuel-depot.json",
+    "origin": "authored",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -16,
+        -20
+      ],
+      "max": [
+        10,
+        -6
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "A collective-farm fuel yard: the barn is the host (yard on its -z side). Fuel tanks and a pump stand on the -x side of the yard, the tanker is parked nose along it on the +x side, drums and pallets lie by the barn front, an attendant hut and a price board by the gate, and a net-fence ring with an 8 m gate gap closes the yard. The kit has no front: a long barn has an entrance far to one side, so the quarter-turn rule would turn the yard onto the barn end; the yard keeps the barn yaw (the yard lies on the -z side, the barn back, where the open dirt yard is). Rows are rigid: shift, never stretch. No LF_FuelDepotComponent row yet: the depot's buy action does not exist on main."
+  },
+  "rows": [
+    {
+      "id": "tank-grey",
+      "prefab": "{389D6DF9941FF22D}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_01/FuelTank_01_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        6.5,
+        0,
+        -12
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleBuildingEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "tank-rust",
+      "prefab": "{AD207D3DE43922D8}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_01/FuelTank_01_rust.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        6.5,
+        0,
+        -16.5
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleBuildingEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pump-tank",
+      "prefab": "{2D4B0333F2858BDD}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_02/FuelTank_02_Pump_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        1.5,
+        0,
+        -12
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleBuildingEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "tanker",
+      "prefab": "{4A59DAEFE645E8A0}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_tanker_CIV_orange.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -6,
+        0,
+        -12
+      ],
+      "yaw": 270,
+      "class": "Vehicle",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "drum-blue-1",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        1.6,
+        0,
+        -9
+      ],
+      "yaw": 200,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "drum-blue-2",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0.7,
+        0,
+        -9.5
+      ],
+      "yaw": 260,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "drum-base-1",
+      "prefab": "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        1.8,
+        0,
+        -10
+      ],
+      "yaw": 320,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "drum-base-2",
+      "prefab": "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0.9,
+        0,
+        -10.5
+      ],
+      "yaw": 190,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-1",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -9.5,
+        0,
+        -6.5
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-box",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -11.2,
+        0,
+        -6.5
+      ],
+      "yaw": 188,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "hut",
+      "prefab": "{B9F18808252E22C3}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_yellow.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -12.5,
+        0,
+        -9
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleBuildingEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0.5,
+        0,
+        -19.2
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"fuel_depot\"",
+            "m_vRimColor": "0.1 0.1 0.1",
+            "m_vPaintColor": "0.95 0.78 0.1",
+            "m_vTextColor": "0.1 0.1 0.1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "board",
+      "prefab": "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et",
+      "role": "board",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -9.2,
+        0,
+        -18.6
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"price_board\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10,
+        0,
+        -20
+      ],
+      "yaw": 270,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        6,
+        0,
+        -20
+      ],
+      "yaw": 270,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-3",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        2,
+        0,
+        -20
+      ],
+      "yaw": 270,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-4",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -10,
+        0,
+        -20
+      ],
+      "yaw": 270,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-5",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -14,
+        0,
+        -20
+      ],
+      "yaw": 270,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-6",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10,
+        0,
+        -8
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-7",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -16,
+        0,
+        -8
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-8",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10,
+        0,
+        -12
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-9",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -16,
+        0,
+        -12
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-10",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10,
+        0,
+        -16
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-11",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -16,
+        0,
+        -16
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
