@@ -1,0 +1,28 @@
+GenericEntity : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
+ ID "3330A0000000F010"
+ components {
+  SCR_DestructionMultiPhaseComponent "{5624A88D86EFE8BA}" {
+   Enabled 0
+  }
+  ActionsManagerComponent "{3330A0000000F011}" {
+   ActionContexts {
+    UserActionContext "{3330A0000000F012}" {
+     ContextName "default"
+     Position PointInfo "{3330A0000000F013}" {
+      Offset 0 0.5 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_FuelDepotLoadAction "{3330A0000000F014}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_FuelDepotComponent "{3330A0000000F015}" {
+  }
+ }
+}

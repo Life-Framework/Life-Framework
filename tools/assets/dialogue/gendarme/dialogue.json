@@ -1,0 +1,30 @@
+{
+  "id": "gendarme",
+  "name": "Gendarme",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Dialogue_Gendarme_Name",
+  "text_only": true,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        { "text": "what", "next": "what" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "what", "line": "about_what", "options_from": "greet" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Gendarmerie. Stand back from the warehouse, please. This is a police matter." },
+    "about_what": { "text": "A routine inspection of a shipment. If you saw anything on these docks tonight, the station on the square takes statements." },
+    "bye": { "text": "Move along now. Thank you." }
+  },
+  "replies": {
+    "what": "What is going on here?",
+    "bye": "I am going."
+  }
+}

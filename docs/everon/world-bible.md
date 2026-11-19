@@ -67,7 +67,7 @@ that they have to make a life.
 
 The islanders feel two ways about the newcomers:
 
-- Some, like the café owner Odile Marchand, came the same way a few years earlier and help.
+- Some, like the café owner Odilon Marchand, came the same way a few years earlier and help.
 - Some resent the housing and the jobs the newcomers take.
 
 That tension drives the story chapters. The newcomers need work, papers, a roof and respect, and the
@@ -153,7 +153,7 @@ says how, borrowing layout and pacing ideas from three well-made game worlds.
 **Two more that fit.**
 
 - **Red Dead Redemption 2 and Mafia, for grounded towns.** The town is its people: a barber, a saloon, a
-  shopkeeper who remembers you. The townspeople with names and routines (Odile, Gaspard, Rémi) are how
+  shopkeeper who remembers you. The townspeople with names and routines (Odilon, Gaspard, Rémi) are how
   Everon earns that. A cheap way to do it is that night changes who is on the street.
 - **Stardew Valley, for the calendar.** A small world stays alive through routine: the market day, the
   weekly race, the Saturday dance in the hall. The weekly alpha session (Saturday 19:00 UK) is the
@@ -522,7 +522,7 @@ spoilers.
 | Person | Role | Where | First seen |
 |---|---|---|---|
 | The clerk | Municipal clerk; files Form R-89, issues the ID card, sends you to the hostel. Voiced | Town hall, first location | Arrival (M5) |
-| Odile Marchand | Café owner; came out of the zone three years ago with her mother's cups. Voiced | The café, first location | The relocated (M5) |
+| Odilon Marchand | Café owner; came out of the zone three years ago with his mother's cups. Voiced | The café, first location | The relocated (M5) |
 | Gaspard Lenoir | Retired fisherman; one suitcase, his wife's coat. Voiced | The square, the harbour | The relocated (M5) |
 | Rémi Duval | Night-shift worker; worked 12 km from the reactor and still keeps his house key. Voiced | The streets at night; the work town | The relocated (M5) |
 | Vince | The fence; sells tools to people with a record | A barn at the edge of the first location | Crime pays (M2) |

@@ -79,7 +79,7 @@ class LF_HideoutDoorRules
 		if (key.IsEmpty())
 			return key;
 
-		return WidgetManager.Translate(key, ownerName);
+		return LF_Terms.Text(key, ownerName);
 	}
 }
 

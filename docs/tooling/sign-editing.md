@@ -62,7 +62,10 @@ update) is how vanilla's `EditorCommentEntity` puts words in the editor view, an
 
 - The preview is text, not the printed sheet: the painted rim, the wrapping and font fit are what play mode shows.
 - **Edit sign text** opens the config at the top. It cannot jump to the row, so find the row by its `m_sId`.
-- A pack overlay that is not in the mission header the editor loads does not change the preview.
+- A pack overlay that is not in the mission header the editor loads does not change the preview. The editor has no
+  mission of its own, so it borrows the header whose world is open (`LF_WorkbenchPlay.FallbackHeader`, by the
+  editor's own world path since 2026-11-19). Before that, outside Play every pack-only sign (the Saint-Philippe shops
+  in `LF_Signs_Everon1989/`, `rules`, `registry`, ...) read "has no titled entry" in red.
 
 ## Black faces (fixed after #1820)
 

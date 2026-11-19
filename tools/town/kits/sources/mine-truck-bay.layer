@@ -1,55 +1,55 @@
 // Source of the `mine-truck-bay` kit (tools/town/kits/mine-truck-bay.json, #3241): vanilla base-game props, GUIDs read by `town fit`. Frame: the kit origin, +z the open side.
 GenericEntity Source_MineTruckBay_Truck : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et" {
- coords 0 0 -1
+ coords 0 0 -3.5
  angleY 0
 }
 GenericEntity Source_MineTruckBay_FenceW1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords -8 0 -2
+ coords -10 0 2
  angleY 90
 }
 GenericEntity Source_MineTruckBay_FenceW2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords -8 0 -6
+ coords -10 0 -3
  angleY 90
 }
 GenericEntity Source_MineTruckBay_FenceE1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 8 0 -2
+ coords 10 0 2
  angleY 90
 }
 GenericEntity Source_MineTruckBay_FenceE2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 8 0 -6
+ coords 10 0 -3
  angleY 90
 }
 GenericEntity Source_MineTruckBay_FenceN1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords -6 0 -8
+ coords -10 0 -8
  angleY 0
 }
 GenericEntity Source_MineTruckBay_FenceN2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords -2 0 -8
+ coords -5 0 -8
  angleY 0
 }
 GenericEntity Source_MineTruckBay_FenceN3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 2 0 -8
+ coords 0 0 -8
  angleY 0
 }
 GenericEntity Source_MineTruckBay_FenceN4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 6 0 -8
+ coords 5 0 -8
  angleY 0
 }
 GenericEntity Source_MineTruckBay_Pallet1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
- coords -5.5 0 -4.5
+ coords -7 0 -6.5
  angleY 0
 }
 GenericEntity Source_MineTruckBay_Pallet2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords -5.5 0 -2.5
+ coords -7 0 -4.2
  angleY 90
 }
 GenericEntity Source_MineTruckBay_Cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
- coords 5.2 0 -4.5
+ coords 7 0 -6.5
  angleY 90
 }
-GenericEntity Source_MineTruckBay_Heap : "{19A3C48FC2665A3F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_large.et" {
- coords 5.5 0 1.5
- angleY 0
+GenericEntity Source_MineTruckBay_Heap : "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et" {
+ coords 6.8 0 -1.2
+ angleY 90
 }
 GenericEntity Source_MineTruckBay_Cone1 : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
  coords -3 0 4
@@ -60,10 +60,10 @@ GenericEntity Source_MineTruckBay_Cone2 : "{25C8B889A777399D}Prefabs/Props/Infra
  angleY 0
 }
 GenericEntity Source_MineTruckBay_Flood : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
- coords -6.5 0 1.8
+ coords -8 0 1
  angleY 160
 }
 GenericEntity Source_MineTruckBay_Sign : "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et" {
- coords 7.2 0 3.8
+ coords 8 0 4
  angleY 0
 }

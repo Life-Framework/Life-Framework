@@ -517,7 +517,7 @@ class LF_ShopPriceList
 			return LF_ShopRefusal.Text(reason, string.Empty);
 
 		LF_ELicenceDesk answer = outcome;
-		return WidgetManager.Translate(LF_LicenceDesk.CounterAnswerKey(answer), arg);
+		return LF_Terms.Text(LF_LicenceDesk.CounterAnswerKey(answer), arg);
 	}
 
 	//------------------------------------------------------------------------------------------------

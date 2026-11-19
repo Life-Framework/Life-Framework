@@ -1,7 +1,7 @@
 // red-proof: with the pack layer removed (an empty header as the pack source, the `RedProof()` hook) the market has no copper bar, coal or lot-priced iron and cement curves and the buyer demand table has no mining rows, so every `has a wholesale curve` and `has a premium row` line fails.
 //! #3237: the pack's mining buyers (docs/roadmap, mining chains "Selling"), read through the overlays under the Everon
 //! 1989 header (the pack leg). Every product has its own wholesale curve at the harbour warehouse: iron bar 20 / 14,
-//! copper bar 50 / 25, cement bag 7 / 5, coal lump 3 / 2. The price drop and the recovery differ per product so a flooded
+//! copper bar 40 / 20, cement bag 7 / 5, coal lump 7 / 5 (tuned into the duty band by #3246). The price drop and the recovery differ per product so a flooded
 //! market pushes players to the next chain: copper falls fastest (3 percent a unit) and recovers slowest, the cement
 //! bag falls slowest (0.2 percent a unit), iron recovers faster than copper. A drop below 1 percent is a lot price:
 //! 1 percent a lot of 2 iron bars is 0.5 percent a bar, 1 percent a lot of 5 bags is 0.2 percent a bag. The premium
@@ -134,9 +134,9 @@ class LF_Test_EveronMiningMarket : LF_Test
 			return;
 
 		LF_MarketGoodDef iron = CheckCurve(ctx, market, "iron bar", IRON_BAR, 20, 14, 1, 30, 2);
-		LF_MarketGoodDef copper = CheckCurve(ctx, market, "copper bar", COPPER_BAR, 50, 25, 3, 10, 1);
+		LF_MarketGoodDef copper = CheckCurve(ctx, market, "copper bar", COPPER_BAR, 40, 20, 3, 10, 1);
 		LF_MarketGoodDef cement = CheckCurve(ctx, market, "cement bag", CEMENT, 7, 5, 1, 40, 5);
-		LF_MarketGoodDef coal = CheckCurve(ctx, market, "coal lump", COAL, 3, 2, 1, 25, 1);
+		LF_MarketGoodDef coal = CheckCurve(ctx, market, "coal lump", COAL, 7, 5, 1, 25, 1);
 
 		// The gate: each product falls at its own rate.
 		if (iron && copper && cement && coal)
@@ -159,9 +159,9 @@ class LF_Test_EveronMiningMarket : LF_Test
 		}
 
 		// Premium rows: copper the smallest purse and slowest refill, cement the largest purse and fastest refill.
-		LF_BuyerDemandRow copperRow = CheckPremium(ctx, demand, "copper bar", COPPER_BAR, 62, 12, 4, copper);
-		LF_BuyerDemandRow ironRow = CheckPremium(ctx, demand, "iron bar", IRON_BAR, 26, 30, 15, iron);
-		LF_BuyerDemandRow cementRow = CheckPremium(ctx, demand, "cement bag", CEMENT, 9, 120, 60, cement);
+		LF_BuyerDemandRow copperRow = CheckPremium(ctx, demand, "copper bar", COPPER_BAR, 52, 12, 4, copper);
+		LF_BuyerDemandRow ironRow = CheckPremium(ctx, demand, "iron bar", IRON_BAR, 22, 30, 15, iron);
+		LF_BuyerDemandRow cementRow = CheckPremium(ctx, demand, "cement bag", CEMENT, 10, 120, 60, cement);
 		if (copperRow && ironRow && cementRow)
 		{
 			ctx.True(copperRow.m_iCap < ironRow.m_iCap && ironRow.m_iCap < cementRow.m_iCap, "the purse grows from copper to iron to cement");

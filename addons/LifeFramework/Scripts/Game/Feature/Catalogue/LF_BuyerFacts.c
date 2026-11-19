@@ -26,6 +26,20 @@ class LF_BuyerFacts
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The buyer's wanted level; 0 when clean.
+	int WantedLevel()
+	{
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the buyer can take an item over a counter: alive, not downed, not restrained.
+	bool CanTrade()
+	{
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The localization key of a licence's name, for a refusal.
 	string LicenceName(LF_ELicenseType licence)
 	{
@@ -101,6 +115,32 @@ class LF_EntityBuyerFacts : LF_BuyerFacts
 			return 0;
 
 		return LF_OrgRules.RightsOf(LF_OrganizationManager.GetByCharacter(characterId), characterId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override int WantedLevel()
+	{
+		LF_PlayerAccountManager accounts = LF_PlayerAccountManager.GetInstance();
+		if (!accounts)
+			return 0;
+
+		LF_PlayerAccount account = accounts.GetAccount(m_Buyer);
+		if (!account)
+			return 0;
+
+		return account.GetWantedLevel();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override bool CanTrade()
+	{
+		if (!LF_Utils.IsAliveState(m_Buyer))
+			return false;
+
+		if (LF_Downed.IsDowned(m_Buyer))
+			return false;
+
+		return !LF_Restraint.IsRestrained(m_Buyer);
 	}
 
 	//------------------------------------------------------------------------------------------------

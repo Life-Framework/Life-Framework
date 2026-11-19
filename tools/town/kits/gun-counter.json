@@ -85,21 +85,6 @@
   },
   "rows": [
     {
-      "id": "gun-store-furniture-01",
-      "prefab": "{3C567594DE66D4C8}Prefabs/Buildings/GunStore/Furniture/GunStore_furniture_01.et",
-      "role": "furniture",
-      "verb": "on floor",
-      "offset": [
-        0,
-        0,
-        0
-      ],
-      "yaw": 0,
-      "from": "GunStore.et",
-      "wall": "free",
-      "floor": "all"
-    },
-    {
       "id": "lf-sign-fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
       "role": "sign",
@@ -170,12 +155,12 @@
       "role": "dressing",
       "verb": "against wall",
       "offset": [
-        5.75,
+        0.75,
         0.199,
-        0.6
+        6.75
       ],
-      "yaw": -90,
-      "wall": "+x",
+      "yaw": 180,
+      "wall": "+z",
       "floor": "f0"
     },
     {
@@ -193,30 +178,31 @@
       "floor": "f0"
     },
     {
-      "id": "shelf-shop-01",
-      "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+      "id": "gun-display-cabinet",
+      "prefab": "{CA5DA99524FFF646}Prefabs/Buildings/GunStore/Furniture/GunStore_RackDisplay_Cabinet.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.52,
+        0.75,
         0.199,
-        4.25
+        6.75
       ],
-      "yaw": 90,
+      "yaw": 180,
       "wall": "free",
       "floor": "f0"
     },
     {
-      "id": "cashier-shop-01",
-      "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
-      "role": "till",
-      "verb": "on lf-gun-counter",
+      "id": "gun-display-stand",
+      "prefab": "{AC4B253352965EE9}Prefabs/Buildings/GunStore/Furniture/GunStore_RackDisplay_Stand.et",
+      "role": "dressing",
+      "verb": "on floor",
       "offset": [
-        2.55,
-        1.238,
-        -0.6
+        3,
+        0.199,
+        6.7
       ],
       "yaw": 0,
+      "wall": "free",
       "floor": "f0"
     },
     {
@@ -225,7 +211,7 @@
       "role": "counter",
       "verb": "on floor",
       "offset": [
-        3,
+        3.08,
         0.199,
         -0.5
       ],
@@ -239,6 +225,22 @@
           "blocks": []
         }
       ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "gun-counter-clerk",
+      "prefab": "{7DF1D48E0AF60852}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_2.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        3,
+        0.199,
+        -1.6
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "free": true,
       "wall": "free",
       "floor": "f0"
     }

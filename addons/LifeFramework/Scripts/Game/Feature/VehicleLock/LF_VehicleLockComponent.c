@@ -238,6 +238,13 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 		if (!Replication.IsServer() || !user || !GetOwner())
 			return false;
 
+		// A company garbage truck waiting to be taken back is never lockable (#3325).
+		if (LF_GarbageRound.IsPendingRemoval(GetOwner()))
+		{
+			LF_Debug.Warn("VehicleLock", string.Format("toggle refused (%1): company truck waiting to be taken back", source));
+			return false;
+		}
+
 		float distance = vector.Distance(user.GetOrigin(), GetOwner().GetOrigin());
 		if (!MayToggle(UserHasValidKey(user), distance))
 		{

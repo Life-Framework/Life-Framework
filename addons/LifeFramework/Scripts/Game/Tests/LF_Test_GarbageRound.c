@@ -1,4 +1,4 @@
-// red-proof: Observed before LF_GarbageRound.c existed: `tools\cli test --no-build --only LF_Test_GarbageRound` failed to compile ("Unknown type 'LF_GarbageRound'"), so the test could not pass. Then green on the feature; `--red` records RedProof() skipping the tip. Review of #3862: the new truck-return and dead-worker checks failed on the unfixed code (truck left after the tip; a dead worker was paid 70) and pass on the fix.
+// red-proof: Observed before LF_GarbageRound.c existed: `tools\cli test --no-build --only LF_Test_GarbageRound` failed to compile ("Unknown type 'LF_GarbageRound'"), so the test could not pass. Then green on the feature; `--red` records RedProof() skipping the tip. Review of #3862: the new truck-return and dead-worker checks failed on the unfixed code (truck left after the tip; a dead worker was paid 70) and pass on the fix. Occupied-truck exploit: before the fix an occupied truck was left in place for good (a free truck per round); `--red` skips the sweep after the seats empty and the "taken back once it is empty" check fails.
 //! jobs/garbage-round (#3325): a round of three bins emptied in order then tipped at the dump pays the
 //! configured amount once. A bin emptied out of order is refused (the refusal has a toast key) and
 //! changes nothing; tipping before the last bin, or with the truck away from the dump, pays nothing.
@@ -138,7 +138,51 @@ class LF_Test_GarbageRound : LF_Test
 		// The tipped truck goes back to the company: a round never leaves a free truck behind.
 		ctx.True(!GetGame().GetWorld().FindEntityByID(truckId), "the company truck is taken back at the tip");
 
+		CheckOccupiedTruck(ctx, depot, bins, dump, user);
 		CheckDeadWorker(ctx, depot, bins, dump, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A friend sits in the truck at the tip: the truck is not deleted under them, but it is marked, never
+	//! lets the round keep it, and is deleted once the seats are empty (a free truck every round otherwise).
+	protected void CheckOccupiedTruck(LF_TestContext ctx, IEntity depot, array<IEntity> bins, IEntity dump, IEntity user)
+	{
+		ctx.True(LF_GarbageRound.Start(user, UID, depot) == LF_EGarbageResult.OK, "a round for the occupied-truck case starts");
+		foreach (IEntity bin : bins)
+			LF_GarbageRound.EmptyBin(user, UID, bin);
+
+		LF_GarbageRun run = LF_GarbageRound.GetRound(UID);
+		if (!run)
+			return;
+
+		EntityID truckId = run.m_Truck;
+		IEntity truck = GetGame().GetWorld().FindEntityByID(truckId);
+		ctx.NotNull(truck, "the second company truck stands by the depot");
+		if (!truck)
+			return;
+
+		LF_GarbageRound.SetOccupiedForTest(truckId, true);
+		int cash = LF_MoneyUtils.GetCash(user);
+		int paid;
+		ctx.True(LF_GarbageRound.Tip(user, UID, dump, paid) == LF_EGarbageResult.OK, "a tip with someone in the truck still pays");
+		ctx.True(GetGame().GetWorld().FindEntityByID(truckId) != null, "the occupied truck is not deleted under its passenger");
+		ctx.True(LF_GarbageRound.IsPendingRemoval(truck), "the occupied truck is marked for removal");
+		ctx.Equal(1, LF_GarbageRound.PendingCount(), "one truck waits to be taken back");
+
+		LF_GarbageRound.SweepTrucks();
+		ctx.True(GetGame().GetWorld().FindEntityByID(truckId) != null, "the sweep leaves a truck with someone aboard");
+		ctx.True(LF_GarbageRound.IsPendingRemoval(truck), "and it stays marked");
+
+		// The friend steps out: the truck goes.
+		LF_GarbageRound.SetOccupiedForTest(truckId, false);
+		if (!RedProof())
+			LF_GarbageRound.SweepTrucks();
+
+		ctx.True(!GetGame().GetWorld().FindEntityByID(truckId), "the truck is taken back once it is empty");
+		ctx.Equal(0, LF_GarbageRound.PendingCount(), "nothing waits any more");
+
+		if (paid > 0)
+			LF_MoneyUtils.RemoveCash(user, LF_MoneyUtils.GetCash(user) - cash);
 	}
 
 	//------------------------------------------------------------------------------------------------

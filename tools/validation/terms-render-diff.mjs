@@ -50,9 +50,11 @@ for (const item of newItems) {
     checked++;
     const was = before.texts[lang] === undefined ? undefined : render(before.texts[lang], lang);
     if (rendered !== was) {
-      // Only a string that now uses a term placeholder is the migration this proves; a plain copy
-      // edit (new words, no placeholder) is listed and does not fail validate.
-      const migrated = new RegExp(PLACEHOLDER.source).test(text);
+      // Only a string whose placeholders changed (words rewritten to a term) is the migration this
+      // proves; a plain copy edit (new words, the same placeholders or none) is listed and does not
+      // fail validate.
+      const marks = (t) => (t || "").match(new RegExp(PLACEHOLDER.source, "g")) || [];
+      const migrated = marks(text).join("|") !== marks(before.texts[lang]).join("|");
       if (migrated) differing++;
       else edits++;
       console.log(`${migrated ? "DIFF" : "EDIT"} ${item.id} (${lang})\n  was: ${was}\n  now: ${rendered}`);

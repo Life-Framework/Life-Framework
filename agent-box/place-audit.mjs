@@ -29,6 +29,7 @@ import { isTerrainRelative, TERRAIN_RELATIVE_MAX_Y } from "../tools/lib/terrain-
 import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
 import { gridLayerDirs, gridWorldFor, ISLAND_WORLD, islandLayersDir } from "../tools/lib/worlds.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
+import { floatingRows, runtimeKind, runtimeRows, selftest as runtimeSelftest, vehicleEntry } from "./place-runtime.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const LAYERS_DIR = join(ROOT, "addons", "LifeFramework", "Worlds", "DebugWorld", "DebugWorld_Layers");
@@ -457,6 +458,15 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
       continue;
     }
     const sp = line.indexOf(" ");
+    // What a spawner put out (place-runtime.mjs): a car or vehicle is measured like a placed prop; lights, characters and loose props are judged there.
+    if (runtimeKind(line)) {
+      const v = vehicleEntry(line, records);
+      if (v) {
+        const m = parseRow(v.rest);
+        if (!m.missing) list.push({ idx: `rt:${list.length}`, e: { ...v.e, x: m.box.c[0], y: m.box.c[1], z: m.box.c[2], found: m.found }, m });
+      }
+      continue;
+    }
     if (line.startsWith("shelf ")) {
       // A display copy a store spawned at load (no layer entry): measured like a placed prop.
       const sp2 = line.indexOf(" ", 6);
@@ -493,7 +503,9 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
     problems = problems.filter((p) => !allowed(allow, e, p));
     rows.push({ name: label(e), layer: e.layer, x: e.x, y: e.y, z: e.z, actions: e.actions, area: areaOf(areas, e), problems, allowed: suppressed.map((p) => p.kind) });
   }
-  return { ranked: rank(rows), measured: list.length, sizeCovered: covered, missing, doors: doors.length };
+  const runtime = runtimeRows(outText, records);
+  const ranked = [...rank(rows), ...runtime].sort((a, b) => b.score - a.score || a.layer.localeCompare(b.layer));
+  return { ranked, measured: list.length, sizeCovered: covered, missing, doors: doors.length, runtime: runtime.length };
 }
 
 // ----------------------------------------------------------------------------- inputs
@@ -570,12 +582,14 @@ export function noOutputDiagnosis({ status, signal, error, text = "", outFile, r
 // `extra` input lines (the placement tool's probe rays). Returns the raw out.txt (null when the server
 // wrote none) and whether the test failed. The list goes in and the result comes out through this
 // checkout's test profile, on whichever machine the pool picked.
-export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log, local = false, preferLocal = false, grid = false, island = false } = {}) {
+export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log, local = false, preferLocal = false, grid = false, island = false, runtime = false } = {}) {
   mkdirSync(outDir, { recursive: true });
   const inFile = join(outDir, "in.txt");
   const outFile = join(PROFILE_DIR, "out.txt");
   rmSync(outFile, { force: true });
-  writeFileSync(inFile, inputText(records, extra, island ? islandCircle(records) : grid ? GRID_CIRCLE : TOWN));
+  const circle = island ? islandCircle(records) : grid ? GRID_CIRCLE : TOWN;
+  // runtime: also sweep the circle for what spawners put out (LF_PlacementAudit.RuntimeLines, place-runtime.mjs).
+  writeFileSync(inFile, inputText(records, runtime ? [`runtime ${circle.x} ${circle.z} ${circle.r}`, ...extra] : extra, circle));
   writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
   const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...auditTestArgs({ local, grid, island, preferLocal })], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
   const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
@@ -654,7 +668,9 @@ async function placement(argv) {
     if (existsSync(saved)) records = JSON.parse(readFileSync(saved, "utf8"));
     else console.log("audit placement: no records.json beside " + flags.from + "; matching rows to the current layers");
   } else {
-    const run = measureTown(records, { outDir, grid, island });
+    // The whole island (no --layer) also audits what spawners put out; a slot's own fit (--layer) judges only its rows unless --runtime.
+    const runtime = island && (!layerNames || !!flags.runtime);
+    const run = measureTown(records, { outDir, grid, island, runtime });
     if (run.outText == null) return 1;
     outText = run.outText;
     testFailed = run.failed;
@@ -686,6 +702,13 @@ async function placement(argv) {
   // entity prints as WARN on every branch. What blocks is a flagged entity in a non-town layer the branch itself
   // adds or moves (--hard-layer A.layer,B.layer; without it every non-town layer, measured with --annex).
   // docs/architecture/world-zones.md, tools/lib/town-findings.mjs.
+  // --floating: exit 1 when anything hangs in the air (a prop, a runtime car, a light attached to nothing, a character), in every zone.
+  if (flags.floating) {
+    const fl = floatingRows(res.ranked);
+    console.log(`floating: ${fl.length} row(s) hang in the air${fl.length ? "" : " (none)"}`);
+    for (const r of fl.slice(0, 60)) console.log(`  ${r.name} [${r.layer}] @${r.x},${r.y},${r.z}: ${r.problems.map((p) => p.text).join("; ")}`);
+    if (fl.length) return 1;
+  }
   if (!flags.strict) return testFailed ? 1 : 0;
   const hardLayers = flags["hard-layer"] ? String(flags["hard-layer"]).split(",").filter(Boolean) : null;
   const verdict = judgeStrict(res.ranked, world, { hardLayers });
@@ -877,6 +900,7 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   const relLines = inputText([fenceHigh, fenceSeated, { name: "P", prefab: "a/B.et", x: 0, y: 0, z: 0 }]).split(/\r?\n/);
   if (!relLines.includes("0 Fence_High NetFence_01_4m 1 19.1 2 0 rel") || !relLines.includes("2 P B 0 0 0 0")) fail("only a terrain-relative row is sent with the rel flag");
   worldSelftest(fail);
+  runtimeSelftest(fail);
   contactSelftest(fail);
   gridSelftest(fail);
   islandSelftest(fail);
