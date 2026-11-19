@@ -8727,6 +8727,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Drunk driving"
      Comment "Offence a licence seizure rule names (#3428): driving while impaired. Not in the crime catalog yet."
     }
+    CustomStringTableItem "{3B7D5E1A94C2F608}" {
+     Id "LF-Offence_EscapedCustody"
+     Target_en_us "Escaped custody"
+     Comment "Offence on a wanted poster: a prisoner walked out of the jail in a break window (#3422)."
+    }
     CustomStringTableItem "{6E4CC71CE2AF3D51}" {
      Id "LF-Offence_HospitalRobbery"
      Target_en_us "Hospital robbery"

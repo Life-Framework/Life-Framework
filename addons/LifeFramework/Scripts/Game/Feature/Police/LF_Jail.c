@@ -341,16 +341,27 @@ class LF_Jail
 			return false;
 		}
 
-		if (prisoner.GetWantedLevel() <= 0)
+		// An escapee (#3422) is still serving but out on the run: the arrest puts them back in the cell.
+		bool escapee = LF_PrisonBreak.IsEscaped(prisonerUid);
+		if (prisoner.GetWantedLevel() <= 0 && !escapee)
 		{
 			LF_Debug.Log("Jail", string.Format("arrest refused: %1 is not wanted", prisonerUid));
 			return false;
 		}
 
-		if (IsServing(prisonerUid))
+		if (IsServing(prisonerUid) && !escapee)
 		{
 			LF_Debug.Log("Jail", string.Format("arrest refused: %1 is already serving", prisonerUid));
 			return false;
+		}
+
+		if (escapee)
+		{
+			if (!Recapture(prisonerUid, LF_PrisonEscape.TermSeconds(), standIn))
+				return false;
+
+			LF_Restraint.OnJailed(prisonerUid, officerUid, standIn);
+			return true;
 		}
 
 		if (!Imprison(prisonerUid, LF_CrimeCatalog.SentenceFor(prisonerUid, SentenceSeconds(prisoner.GetWantedLevel())), prisoner.GetWantedLevel(), standIn))
@@ -399,6 +410,43 @@ class LF_Jail
 			Complete(prisonerUid);
 		}
 
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Serving and held: a sentence with time left whose prisoner is not out on the run after a break.
+	//! The escort checks this instead of IsServing, so an escapee can be walked back to the cell.
+	static bool IsInCustody(string playerUid)
+	{
+		return IsServing(playerUid) && !LF_PrisonBreak.IsEscaped(playerUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An escapee is caught (#3422): the rest of the sentence plus `extraSeconds`, the escaped status
+	//! cleared, the body back in the cell and the slip refreshed. Arrest checks who may do this.
+	//! Returns false when the prisoner has no running sentence.
+	static bool Recapture(string prisonerUid, int extraSeconds, IEntity standIn)
+	{
+		LF_JailSentence sentence = Sentences().Get(prisonerUid);
+		if (!sentence || !sentence.m_bServing)
+		{
+			LF_Debug.Log("Jail", string.Format("recapture refused: %1 has no running sentence", prisonerUid));
+			return false;
+		}
+
+		if (extraSeconds < 0)
+			extraSeconds = 0;
+
+		sentence.m_fRemaining = sentence.m_fRemaining + extraSeconds;
+		sentence.m_bEscaped = false;
+		LF_PrisonBreak.ClearEscaped(prisonerUid);
+		LF_JailEscort.Drop(prisonerUid);
+		IEntity body = MoveToCell(prisonerUid, standIn);
+		if (body)
+			sentence.m_BodyId = body.GetID();
+
+		RefreshSlip(prisonerUid);
+		LF_Debug.Warn("Jail", string.Format("%1 recaptured: back in the cell remaining=%2 (escape term %3)", prisonerUid, sentence.m_fRemaining, extraSeconds));
 		return true;
 	}
 
@@ -1132,9 +1180,12 @@ class LF_Jail
 			return false;
 
 		sentence.m_bEscaped = true;
-		LF_PrisonBreak.OnWalkedOut(playerUid, sentence.m_fRemaining, System.GetUnixTime());
+		bool firstEscape = LF_PrisonBreak.OnWalkedOut(playerUid, sentence.m_fRemaining, System.GetUnixTime());
 		LF_Debug.Warn("Jail", string.Format("%1 escaped the cell through the open door remaining=%2", playerUid, sentence.m_fRemaining));
 		LF_Dispatch.Report(playerUid, body, LF_WantedReports.OFFENCE_JAILBREAK, vector.Zero);
+		if (firstEscape)
+			LF_PrisonEscape.OnEscaped(playerUid, body);
+
 		return true;
 	}
 
