@@ -1,0 +1,26 @@
+// Source of the `roadfuel` kit (tools/town/kits/roadfuel.json, #3379): what a roadside fuel station outside town adds for the weekend:
+// a fuel drop tank for the fuel delivery job (#3370), a payphone for a broken-down driver and a pole sign by the forecourt.
+// `town fit` reads each row's prefab and component GUIDs and nested blocks from here. Coordinates are in the kiosk's own frame
+// (origin = the kiosk's centre, +x = the road side, z to the left of the road side (north when the road lies east)); the kiosk itself is the vanilla building of the place.
+// The payphone is the core prefab (it carries the dial, answer and report-crime actions and the phone component); the drop is the pack's
+// LF_FuelDrop (a closed old fuel barrel with the job drop-off action); the sign is the `fuel_station` sign the debug grid already uses.
+GenericEntity Source_RoadFuel_Payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 2.9 0 -1.2
+ angleY 90
+}
+GenericEntity Source_RoadFuel_FuelDrop : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
+ coords 0.8 0 -3.4
+ angleY 40
+}
+GenericEntity Source_RoadFuel_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "fuel_station"
+   m_vRimColor 1 1 1
+   m_vPaintColor 0.75 0.1 0.08
+   m_vTextColor 1 1 1
+  }
+ }
+ coords 7.5 0 -2
+ angleY 90
+}

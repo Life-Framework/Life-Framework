@@ -84,3 +84,5 @@
 - ⚠️ Not built: nothing in this section. Manual: three
   players on three barrels, see the PR.
 
+
+- **Moonshine barn in the hills (#3402).** Place `stillbarn` (a lone vanilla barn about 1 km from Saint-Philippe, no sign, no POI) holds three mash barrels, a still and a packing barrel on one site id (`stillbarn_site`, shared heat), plus a laundering bench with its own site id, with hay, crates and two lamps. Kit `stillbarn`, layer `Place_stillbarn_1.layer`. Manual: run one batch mash to a packed crate, see the PR.

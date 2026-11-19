@@ -81,6 +81,13 @@
   parcel, fuel delivery and taxi sign-ups again (#3373; they were dropped on 2026-11-18 while the island had no fuel or
   taxi sites). The fuel pickup and drop props (#3370) and the taxi rank (#3114) are the sites those two jobs run from.
 
+- **Fuel drops at the farms** (2026-11-19, #3377): a fuel run now ends at a tank in a yard, not a letter box.
+  `Place_saint-philippe_fuel-drops.layer` holds four `LF_FuelDrop` drums (the DROP site and drop-off action of #3370): beside
+  the henhouse and the greenhouse on the village's far edge (296 m from the fuel station) and under the two open sheds above
+  the quay (560 and 600 m). `town drops saint-philippe fuel-drops` writes them: the slot's kit now picks the prop
+  (`DROP_KITS` in `tools/town/drops.mjs`; `parcel-drops` keeps its mailbox). Each stands within 1 cm of the ground
+  (`look contact`). `look place:<place>/<slot>@<building>` now pictures one drop of an outposts slot.
+
 - ✅ **Sign-up offers on a dedicated client** (2026-11-08, #157): the greyed reason reads
   `#LF-Job_MoreRunsFirst` ("Do more parcel runs first"), not "Your work level is too low".
   A client reads the level replicated on `LF_PlayerJobComponent` (the career map is

@@ -1,0 +1,100 @@
+// Source of the `stillbarn` kit (tools/town/kits/stillbarn.json, #3402): a moonshine barn in the hills (#3339).
+// `town fit` reads each row's prefab and component GUIDs and nested blocks from here. Coordinates are in the barn's own frame
+// (origin = the barn's centre, +z = its front, x to the right of the front). The barn itself is the vanilla building of the place.
+// The three mash barrels, the still and the packing bench share one site id, so they share heat (LF_ChainStationComponent);
+// the laundering bench has its own. No sign and no POI.
+GenericEntity Source_StillBarn_Mash_1 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Mash_1"
+   m_sSiteId "stillbarn_site"
+   m_sChainId "moonshine"
+   m_sStepId "mash"
+  }
+ }
+ coords -5.2 0 -4
+ angleY 0
+}
+GenericEntity Source_StillBarn_Mash_2 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Mash_2"
+   m_sSiteId "stillbarn_site"
+   m_sChainId "moonshine"
+   m_sStepId "mash"
+  }
+ }
+ coords -3.9 0 -4.2
+ angleY 40
+}
+GenericEntity Source_StillBarn_Mash_3 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Mash_3"
+   m_sSiteId "stillbarn_site"
+   m_sChainId "moonshine"
+   m_sStepId "mash"
+  }
+ }
+ coords -2.6 0 -4
+ angleY 80
+}
+GenericEntity Source_StillBarn_Still : "{4C1A9E07B35D8210}Prefabs/Chains/LF_ChainStill.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Still"
+   m_sSiteId "stillbarn_site"
+  }
+ }
+ coords 0 0 -3.6
+ angleY 0
+}
+GenericEntity Source_StillBarn_Pack : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Pack"
+   m_sSiteId "stillbarn_site"
+   m_sChainId "moonshine"
+   m_sStepId "pack"
+  }
+ }
+ coords 3 0 -4
+ angleY 0
+}
+GenericEntity Source_StillBarn_Launder : "{978FC469D81E785A}Prefabs/Props/Laundering/LF_LaunderStation.et" {
+ components {
+  LF_LaunderStationComponent "{F2121BD019E65A01}" {
+   m_sSiteId "stillbarn_launder"
+  }
+ }
+ coords 6 0 0.5
+ angleY -90
+}
+GenericEntity Source_StillBarn_Crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 6 0 -4.2
+ angleY 10
+}
+GenericEntity Source_StillBarn_Crate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 4.6 0 -4.4
+ angleY -15
+}
+GenericEntity Source_StillBarn_Hay_1 : "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et" {
+ coords -6 0 3.4
+ angleY 90
+}
+GenericEntity Source_StillBarn_Hay_2 : "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et" {
+ coords -6 0 1.6
+ angleY 85
+}
+GenericEntity Source_StillBarn_Sacks : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 6 0 3.8
+ angleY 0
+}
+GenericEntity Source_StillBarn_Lamp_W : "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et" {
+ coords -6.4 0 -1
+ angleY 0
+}
+GenericEntity Source_StillBarn_Lamp_E : "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et" {
+ coords 6.4 0 -2
+ angleY 0
+}
