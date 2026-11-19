@@ -1409,6 +1409,11 @@ StringTable {
      Target_en_us "Bread and something sweet, still warm"
      Comment "Shop description of the Saint-Philippe bakery till (#3227)."
     }
+    CustomStringTableItem "{CE6BABB3EA7EE854}" {
+     Id "LF-Shop_Desc_Butcher"
+     Target_en_us "Cured meat, tins and the day's cuts"
+     Comment "Shop description of the Saint-Philippe butcher till (#3228)."
+    }
     CustomStringTableItem "{D48C1FE2090106F1}" {
      Id "LF-Shop_Desc_Cafe"
      Target_en_us "A drink, a snack, a word with the owner"
@@ -1478,6 +1483,11 @@ StringTable {
      Id "LF-Shop_Name_Bakery"
      Target_en_us "Boulangerie"
      Comment "Shop name of the Saint-Philippe bakery till (#3227): town house b06 on the square, stock bakery."
+    }
+    CustomStringTableItem "{086D9D3FDC39EA2C}" {
+     Id "LF-Shop_Name_Butcher"
+     Target_en_us "Boucherie-charcuterie"
+     Comment "Shop name of the Saint-Philippe butcher till (#3228): town house b20 by the clothes shop, stock butcher."
     }
     CustomStringTableItem "{0B134C85762A065A}" {
      Id "LF-Shop_Name_Cafe"
@@ -1558,6 +1568,11 @@ StringTable {
      Id "LF-Shop_Open_Bakery"
      Target_en_us "Buy bread and pastries"
      Comment "Interaction name at the bakery till (#3227): opens the bakery price list."
+    }
+    CustomStringTableItem "{5E3D7D45BF074AD0}" {
+     Id "LF-Shop_Open_Butcher"
+     Target_en_us "Buy meat and charcuterie"
+     Comment "Interaction name at the butcher till (#3228): opens the butcher price list."
     }
     CustomStringTableItem "{0EC694A26B780C12}" {
      Id "LF-Shop_Open_Cafe"
@@ -1738,6 +1753,21 @@ StringTable {
      Id "LF-Sign_BlackMarket_What"
      Target_en_us "Equipment the general store does not sell."
      Comment "Sign card for the back room shop in the alley (no printed title), What section."
+    }
+    CustomStringTableItem "{B098F47FDF83358E}" {
+     Id "LF-Sign_Butcher_How"
+     Target_en_us "Go to the counter, choose what you want and pay. Dried meat keeps you going for hours. The shed behind is our store and stays locked."
+     Comment "How line of the butcher sign (#3228): the shed b19 behind the shop is the store room."
+    }
+    CustomStringTableItem "{37BDDA2AE961D87D}" {
+     Id "LF-Sign_Butcher_Title"
+     Target_en_us "Boucherie-charcuterie"
+     Comment "Title painted on the butcher's fascia (#3228) and shown in the prompt as Read: Boucherie-charcuterie."
+    }
+    CustomStringTableItem "{F3F99ACA2323BCB4}" {
+     Id "LF-Sign_Butcher_What"
+     Target_en_us "The village butcher: dried meat, tinned meat and cured cuts."
+     Comment "What line of the butcher sign (#3228)."
     }
     CustomStringTableItem "{155AD337C15BEB65}" {
      Id "LF-Sign_ConvoyDrop_How"

@@ -1,0 +1,48 @@
+GenericEntity : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ ID "3CAEC259F261062D"
+ components {
+  LF_ShopComponent "{5F9B9B8BD57FCF22}" {
+   m_sShopName "#LF-Shop_Name_Butcher"
+   m_sShopDescription "#LF-Shop_Desc_Butcher"
+   m_sStockId "butcher"
+  }
+  ActionsManagerComponent "{223EA87CF2F051C0}" {
+   ActionContexts {
+    UserActionContext "{9CD3EB68CD5D93C9}" {
+     ContextName "default"
+     Position PointInfo "{BC43572F74D6553F}" {
+      Offset 0 0.25 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{3E76499105DC4DEA}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{D50EE1DCFC46A4AA}" {
+      Name "#LF-Shop_Open_Butcher"
+      Description "#LF-Shop_Desc_Butcher"
+     }
+    }
+    LF_RobAction "{BDFB8023D2EE1247}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7413DCFF561D44CD}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_sAlarmKind "shopbell"
+     m_iMoneyAmount 120
+     m_iMinPayout 120
+     m_iMaxPayout 120
+     m_fCooldown 600
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+}
