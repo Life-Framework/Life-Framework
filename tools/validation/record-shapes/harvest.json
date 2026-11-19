@@ -1,0 +1,15 @@
+{
+  "section": "harvest",
+  "class": "LF_HarvestSavePayload",
+  "version": 1,
+  "roots": "LF_OwnedImplementRow",
+  "records": {
+    "LF_OwnedImplementRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sKey",
+        "string m_sImplement"
+      ]
+    }
+  }
+}

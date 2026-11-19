@@ -50,3 +50,9 @@ The rules (#3285), the field entity (#3287), its cut replication (#3288) and the
 - **Player sees:** the same cut strips and stubble as every other player, also when joining late; a dedicated server draws nothing.
 - **Owner and side:** a `modded class LF_WheatField` in `LF_WheatFieldReplication.c`. The server batches newly cut cells (one reliable RPC per field per 250 ms, packed bitset words in a string) and sends one regrow RPC; `RplSave/RplLoad` carries the whole bitset for a late joiner. `LF_WheatFieldWire` and `LF_WheatCutBatch` are the pure parts.
 - **Proof:** `harvest/wheat-field-snapshot` (LOGIC); the dedicated-server session with a late joiner is in the PR.
+
+## Owned implements and the rack (#3295)
+
+- **Player sees:** buy a reaper at the farm supply counter ($1,200, once); at the implement rack, *Take out reaper* hitches it to a UAZ469 or Z7211 within 8 m, *Put back reaper* unhitches it and dumps the hopper with a warning toast.
+- **Owner and side:** `LF_OwnedImplements` (server: owned list per character record key, what is out, `Purchase`, `TakeOut`, `PutBack`), `LF_ImplementRackAction` (the two prompts), `LF_HarvestSavePayload` (save section `harvest`). Only the owned list is saved; what is out is session state, so a reaper that is out at a restart is back on the list, not in the world.
+- **Proof:** `harvest/implement-rack` (WORLD), `harvest/persist-owned-implements` (PERSISTENCE), `everon/farm-supply` (pack leg).

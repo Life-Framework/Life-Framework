@@ -632,6 +632,10 @@ class LF_ShopComponent : ScriptComponent
 		if (gate != LF_EShopRefusal.NONE)
 			return gate;
 
+		// A farm implement (#3295) is not an inventory item: the purchase goes on the buyer's owned list.
+		if (!LF_OwnedImplements.IdForPrefab(prefab).IsEmpty())
+			return LF_OwnedImplements.ShopBuy(prefab, buyer, unitPrice, quantity, charged);
+
 		string buyerUid;
 		if (m_bFence)
 		{
