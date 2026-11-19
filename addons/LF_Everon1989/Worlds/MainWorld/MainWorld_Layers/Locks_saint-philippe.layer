@@ -6,14 +6,6 @@ GenericEntity Lock_saint_philippe_sp_b06 : "{9D4A2E6B1F83C570}Prefabs/Systems/Ho
  }
  coords 4480.64 12.5 10750.8
 }
-GenericEntity Lock_saint_philippe_sp_b09 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
- components {
-  LF_BuildingLockComponent "{5C81D0A7E3F2B469}" {
-   m_sSignKey "#LF-Everon-Lock_Private"
-  }
- }
- coords 4503.38 14.9 10744.95
-}
 GenericEntity Lock_saint_philippe_sp_b13 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
  components {
   LF_BuildingLockComponent "{5C81D0A7E3F2B469}" {
@@ -21,14 +13,6 @@ GenericEntity Lock_saint_philippe_sp_b13 : "{9D4A2E6B1F83C570}Prefabs/Systems/Ho
   }
  }
  coords 4437 11.9 10691.4
-}
-GenericEntity Lock_saint_philippe_sp_b17 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
- components {
-  LF_BuildingLockComponent "{5C81D0A7E3F2B469}" {
-   m_sSignKey "#LF-Everon-Lock_Private"
-  }
- }
- coords 4473.1 15.4 10657.8
 }
 GenericEntity Lock_saint_philippe_sp_b19 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
  components {
@@ -141,14 +125,6 @@ GenericEntity Lock_saint_philippe_sp_b46 : "{9D4A2E6B1F83C570}Prefabs/Systems/Ho
   }
  }
  coords 4565.1 18.1 10682.5
-}
-GenericEntity Lock_saint_philippe_sp_b50 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
- components {
-  LF_BuildingLockComponent "{5C81D0A7E3F2B469}" {
-   m_sSignKey "#LF-Everon-Lock_Private"
-  }
- }
- coords 4391.2 10.3 10749.1
 }
 GenericEntity Lock_saint_philippe_sp_b51 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
  components {
@@ -333,14 +309,6 @@ GenericEntity Lock_saint_philippe_sp_b116 : "{9D4A2E6B1F83C570}Prefabs/Systems/H
   }
  }
  coords 4517.8 13.2 10872.3
-}
-GenericEntity Lock_saint_philippe_sp_b117 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
- components {
-  LF_BuildingLockComponent "{5C81D0A7E3F2B469}" {
-   m_sSignKey "#LF-Everon-Lock_Private"
-  }
- }
- coords 4642.5 22.2 10723.7
 }
 GenericEntity Lock_saint_philippe_sp_b121 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
  components {

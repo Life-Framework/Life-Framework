@@ -19,6 +19,7 @@
 //   seatRows floor branch skipped (no `l.y += top - bottom`)  -> FAIL floor offset: a row that sank stayed 0.301 m off the host floor
 //   wall snap returning null                                     -> FAIL wall offset: the box stayed 1.250 m off the wall at z -4
 //   cutWalls returning []                                        -> FAIL clip: a counter half through a wall was not refused (and the shallow one stayed in it)
+//   the `standoff` term in the wall branch removed               -> FAIL standoff: a wall row with standoff 0.07 stands at z -3.745, not 0.07 m off the wall
 //   the `lift` line in seatRows removed                          -> FAIL lift: a floor row with lift -0.045 stands at y 0.200, not 0.155 (2026-11-19)
 //   (#3552, 2026-11-19, each broken once, FAIL seen, then restored)
 //   terrain branch using the centre height only                  -> FAIL terrain row: the row rests on the centre ground, so its high corner sinks into the slope
@@ -137,6 +138,15 @@ for (const [floorY, what] of [[0.5, "sank"], [0, "floated"]]) {
   const res = await seat.seatRows(rows, kitRows, HOST, { reader: reader({ "Fixture/Host.et": room(0.2) }) });
   check(near(local(rows[0].coords)[1], 0.2 - 0.045), `lift: a floor row with lift -0.045 stands at y ${local(rows[0].coords)[1].toFixed(3)}, not 0.155`);
   check(res.rows[0].notes.some((n) => /lifted/.test(n)), "lift: the seat report does not say the row was lifted");
+}
+
+// ---- a kit row's `standoff` stands a wall row off the wall plane (a stepped facade under a long fascia, #3685)
+{
+  const rows = [at("plate", 0, 1.5, -2.5, 0)];
+  const kitRows = [{ id: "plate", verb: "against wall", role: "sign", on: "wall", prefab: STALL, standoff: 0.07 }];
+  const res = await seat.seatRows(rows, kitRows, HOST, { reader: reader({ "Fixture/Host.et": room(0.2) }) });
+  check(near(local(rows[0].coords)[2], -4 + 0.25 + seat.WALL_GAP + 0.07), `standoff: a wall row with standoff 0.07 stands at z ${local(rows[0].coords)[2].toFixed(3)}, not 0.07 m off the wall`);
+  check(res.rows[0].notes.some((n) => /off the wall/.test(n)), "standoff: the seat report does not say the row stands off");
 }
 
 // ---- a socket row is left out; a furniture set with no bounds stays where the kit puts it

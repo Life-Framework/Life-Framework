@@ -30,6 +30,8 @@ Roles: `counter till npc board dressing sign light alarm interactable furniture`
 turns with the building it is fitted to. Layer kits are rebased so the lowest row is y 0; prefab kits keep the
 building origin as y 0 and say where the interior floor is in `anchoring.floorY`.
 
+A wall row may carry `standoff` (metres): `town fit` stands it that far off the wall plane, for a long plate on a facade that steps back (the pharmacy fascia, #3685). A floor row may carry `lift` (metres, negative sinks it) after the floor snap.
+
 ### Config is referenced, not copied
 
 A row keeps the scalar properties it sets itself (`m_sOutletId`, `m_sStoreKey`, `m_vOffset`, `m_fReach`), because
