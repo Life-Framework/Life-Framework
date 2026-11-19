@@ -14,6 +14,14 @@ GenericEntity : "{A4D0B331414901A5}Prefabs/Structures/Commercial/FuelStations/Fu
       Name "#LF-Fuel_Buy"
      }
     }
+    LF_FuelHaulPumpAction "{3330A0000000F016}" {
+     ParentContextList {
+      "nozzle_l_out"
+     }
+     UIInfo UIInfo "{3330A0000000F017}" {
+      Name "#LF-FuelHaul_PumpIn"
+     }
+    }
    }
   }
  }

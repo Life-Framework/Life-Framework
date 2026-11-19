@@ -161,6 +161,7 @@ class LF_GarbageRun
 //! load" at the dump ends the round, takes the truck back and pays once through the job cash path. The route is the bins
 //! nearest the depot, found by component through LF_BinComponent, never by name. Server state only: a
 //! round is not saved, a restart ends it (the truck is gone too).
+//! A truck with someone in its seats at the tip is marked for removal and deleted once empty, never kept.
 class LF_GarbageRound
 {
 	static const string FEATURE = "Jobs";
@@ -169,7 +170,13 @@ class LF_GarbageRound
 	static const string PLACE_DEPOT = "garbage_depot";
 	static const string PLACE_DUMP = "garbage_dump";
 
+	//! How often (ms) the sweep checks the trucks marked for removal; it runs only while one is marked.
+	protected static const int TRUCK_SWEEP_MS = 2000; // lf-fixed: an internal poll interval, not a game number
+
 	protected static ref map<string, ref LF_GarbageRun> s_mRuns;
+	protected static ref array<EntityID> s_aPendingTrucks;
+	protected static bool s_bSweepOn;
+	protected static ref array<EntityID> s_aTestOccupied;
 
 	//------------------------------------------------------------------------------------------------
 	protected static map<string, ref LF_GarbageRun> Runs()
@@ -357,20 +364,120 @@ class LF_GarbageRound
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: takes the company truck back (deleted). An occupied truck is left where it stands, logged:
-	//! deleting a vehicle with its children would delete the people in its seats.
+	//! Server: takes the company truck back (deleted). An occupied truck is not deleted yet (deleting a
+	//! vehicle with its children would delete the people in its seats): it is marked for removal and the
+	//! sweep deletes it once it is empty, so sitting in it at the tip never keeps a free truck.
 	protected static void ReturnTruck(IEntity truck)
 	{
 		if (!truck)
 			return;
 
-		if (LF_StolenVehicles.HasOccupant(truck))
+		if (IsOccupied(truck))
 		{
-			LF_Debug.Warn(FEATURE, string.Format("garbage round: company truck %1 has someone aboard, left in place", truck.GetID()));
+			MarkForRemoval(truck);
 			return;
 		}
 
 		SCR_EntityHelper.DeleteEntityAndChildren(truck);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone sits in the truck's seats (or a test says so: the suite runs synchronously and the
+	//! engine seats a character a frame later, so a live seated body cannot be arranged there).
+	protected static bool IsOccupied(notnull IEntity truck)
+	{
+		if (s_aTestOccupied && s_aTestOccupied.Contains(truck.GetID()))
+			return true;
+
+		return LF_StolenVehicles.HasOccupant(truck);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: makes `truck` count as occupied (or empty again). Cleared by `ResetStatics`.
+	static void SetOccupiedForTest(EntityID truck, bool occupied)
+	{
+		if (!s_aTestOccupied)
+			s_aTestOccupied = {};
+
+		int index = s_aTestOccupied.Find(truck);
+		if (occupied && index < 0)
+			s_aTestOccupied.Insert(truck);
+		else if (!occupied && index >= 0)
+			s_aTestOccupied.Remove(index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: an occupied company truck waits for its seats to empty. While marked it is not a vehicle
+	//! anyone can own, lock or chop (`IsPendingRemoval`).
+	protected static void MarkForRemoval(notnull IEntity truck)
+	{
+		if (IsPendingRemoval(truck))
+			return;
+
+		PendingTrucks().Insert(truck.GetID());
+		LF_Debug.Warn(FEATURE, string.Format("garbage round: company truck %1 has someone aboard, marked for removal once it is empty", truck.GetID()));
+		if (!s_bSweepOn)
+		{
+			s_bSweepOn = true;
+			GetGame().GetCallqueue().CallLater(SweepTrucks, TRUCK_SWEEP_MS, true);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: true while this company truck is marked for removal (a round tipped with someone aboard).
+	static bool IsPendingRemoval(IEntity truck)
+	{
+		return truck && s_aPendingTrucks && s_aPendingTrucks.Contains(truck.GetID());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: how many trucks wait for their seats to empty.
+	static int PendingCount()
+	{
+		if (!s_aPendingTrucks)
+			return 0;
+
+		return s_aPendingTrucks.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: deletes every marked truck that is empty now, forgets one that is gone, and stops the
+	//! timer when nothing waits. Runs every `TRUCK_SWEEP_MS`, and only while a truck is marked.
+	static void SweepTrucks()
+	{
+		if (!s_aPendingTrucks)
+			return;
+
+		for (int i = s_aPendingTrucks.Count() - 1; i >= 0; i--)
+		{
+			EntityID id = s_aPendingTrucks[i];
+			IEntity truck = GetGame().GetWorld().FindEntityByID(id);
+			if (truck && IsOccupied(truck))
+				continue;
+
+			if (truck)
+			{
+				LF_Debug.Info(FEATURE, string.Format("garbage round: company truck %1 is empty, taken back", id));
+				SCR_EntityHelper.DeleteEntityAndChildren(truck);
+			}
+
+			s_aPendingTrucks.Remove(i);
+		}
+
+		if (s_aPendingTrucks.IsEmpty() && s_bSweepOn)
+		{
+			s_bSweepOn = false;
+			GetGame().GetCallqueue().Remove(SweepTrucks);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static array<EntityID> PendingTrucks()
+	{
+		if (!s_aPendingTrucks)
+			s_aPendingTrucks = {};
+
+		return s_aPendingTrucks;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -406,6 +513,12 @@ class LF_GarbageRound
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
+		if (s_bSweepOn && GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(SweepTrucks);
+
+		s_bSweepOn = false;
+		s_aPendingTrucks = null;
+		s_aTestOccupied = null;
 		s_mRuns = null;
 		LF_GarbageRoundConfig.Reload();
 	}
