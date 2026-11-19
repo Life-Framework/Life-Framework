@@ -25,7 +25,7 @@ class LF_LicenceBansSavePayload : LF_SavePayload
 	{
 		array<ref LF_LicenceBanRow> rows = LF_LicenceBans.ExportAll(LF_LicenceBans.Now());
 		context.WriteValue("rows", rows);
-		LF_Debug.Log("Persistence", string.Format("saved %1 licence ban row(s)", rows.Count()));
+		LF_Debug.Log("Persistence", string.Format("saved %1 licence ban row(s), game clock %2", rows.Count(), LF_LicenceDesk.ClockText()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -39,7 +39,7 @@ class LF_LicenceBansSavePayload : LF_SavePayload
 		}
 
 		int kept = LF_LicenceBans.ApplyAll(rows, LF_LicenceBans.Now());
-		LF_Debug.Info("Persistence", string.Format("applied %1 of %2 licence ban row(s); the rest had ended", kept, rows.Count()));
+		LF_Debug.Info("Persistence", string.Format("applied %1 of %2 licence ban row(s); the rest had ended; game clock %3", kept, rows.Count(), LF_LicenceDesk.ClockText()));
 		return true;
 	}
 }
