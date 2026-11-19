@@ -81,7 +81,7 @@ class LF_LicenceDeskDrivingAction : ScriptedUserAction
 		if (outcome == LF_ELicenceDesk.ISSUED)
 			LF_PlayerInteraction.PlayHandoverSound(pUserEntity, LF_PlayerInteraction.SOUND_HANDOVER);
 
-		LF_NotificationManagerComponent.NotifyPlayer(LF_PlayerInteraction.PlayerIdOf(pUserEntity), "#LF-LicenceDesk_Title", LF_LicenceDesk.DrivingAnswerKey(outcome), 6.0, type, LF_LicenceDesk.DrivingAnswerArg(outcome));
+		LF_NotificationManagerComponent.NotifyPlayer(LF_PlayerInteraction.PlayerIdOf(pUserEntity), "#LF-LicenceDesk_Title", LF_LicenceDesk.DrivingAnswerKey(outcome), 6.0, type, LF_LicenceDesk.DrivingAnswerArg(outcome, LF_Utils.GetPlayerUID(pUserEntity)));
 	}
 
 	//------------------------------------------------------------------------------------------------
