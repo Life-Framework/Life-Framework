@@ -16,6 +16,7 @@
 class LF_GarageConfig
 {
 	static const ResourceName CONFIG_PATH = "{6A1E5C0D2B7F4E93}Configs/Vehicles/LF_Garage.conf";
+	static const string OVERLAY_NAME = "garage";
 	//! Used when the config does not resolve, so the desk still works and the error is logged.
 	static const int DEFAULT_IMPOUND_FEE = 250;
 	static const float DEFAULT_DESK_REACH = 5;
@@ -91,8 +92,115 @@ class LF_GarageConfig
 		s_Config = LF_GarageConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error("Garage", string.Format("garage config has an unexpected root class: %1", CONFIG_PATH));
+		else
+			s_Config.ApplyLayers();
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: forget the loaded config so the next Get() reads the file and its pack layers again.
+	static void Reload()
+	{
+		ResetStatics();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Lays each pack overlay of this class over the core values, in load order (LF_ConfigOverlay).
+	//! An overlay sets only the fields it writes.
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_GarageConfig, OVERLAY_NAME, resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer(), names[i]);
+			LF_Debug.Info("Garage", string.Format("garage: pack overlay %1 changed %2 fields (base %3, max %4, first slot %5)", names[i], changed, m_iBaseSlots, m_iMaxSlots, m_iSlotPriceStart));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Copies the fields one pack overlay writes directly. A value below its floor is refused and
+	//! logged; the earlier value stays. The cap never drops below the free slots.
+	//! \return Fields changed.
+	int ApplyPackContainer(notnull BaseContainer root, string source)
+	{
+		int changed;
+		int value;
+		if (PatchInt(root, "m_iImpoundFee", 0, source, value))
+		{
+			m_iImpoundFee = value;
+			changed++;
+		}
+
+		if (PatchInt(root, "m_iBaseSlots", 0, source, value))
+		{
+			m_iBaseSlots = value;
+			changed++;
+		}
+
+		if (PatchInt(root, "m_iMaxSlots", 1, source, value))
+		{
+			m_iMaxSlots = value;
+			changed++;
+		}
+
+		if (PatchInt(root, "m_iSlotPriceStart", 0, source, value))
+		{
+			m_iSlotPriceStart = value;
+			changed++;
+		}
+
+		if (PatchInt(root, "m_iSlotPriceStep", 0, source, value))
+		{
+			m_iSlotPriceStep = value;
+			changed++;
+		}
+
+		if (PatchInt(root, "m_iTowAfterMinutes", 1, source, value))
+		{
+			m_iTowAfterMinutes = value;
+			changed++;
+		}
+
+		if (PatchInt(root, "m_iTowFee", 0, source, value))
+		{
+			m_iTowFee = value;
+			changed++;
+		}
+
+		float distance;
+		if (root.IsVariableSetDirectly("m_fTowExemptNearGarage") && root.Get("m_fTowExemptNearGarage", distance) && distance >= 0)
+		{
+			m_fTowExemptNearGarage = distance;
+			changed++;
+		}
+
+		if (m_iMaxSlots < m_iBaseSlots)
+		{
+			LF_Debug.Error("Garage", string.Format("garage: %1 leaves max slots %2 under the %3 free ones; the cap is the free slots", source, m_iMaxSlots, m_iBaseSlots));
+			m_iMaxSlots = m_iBaseSlots;
+		}
+
+		return changed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when the overlay writes `field` directly with a value at or above `floor`; a
+	//! value under it is logged and refused.
+	protected static bool PatchInt(notnull BaseContainer root, string field, int floor, string source, out int value)
+	{
+		if (!root.IsVariableSetDirectly(field) || !root.Get(field, value))
+			return false;
+
+		if (value < floor)
+		{
+			LF_Debug.Error("Garage", string.Format("garage: %1 sets %2 to %3, below %4; keeping the earlier value", source, field, value, floor));
+			return false;
+		}
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

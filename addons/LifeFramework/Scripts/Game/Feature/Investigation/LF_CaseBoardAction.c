@@ -66,6 +66,10 @@ class LF_CaseBoardPinAction : LF_CaseBoardActionBase
 		if (!ServerAllows(pUserEntity))
 			return;
 
+		// Opening a case is detective work (#3427); unpinning stays with every officer.
+		if (!LF_QualificationGate.AllowsUser(pUserEntity, LF_QualificationGate.ACT_OPEN_CASE))
+			return;
+
 		int pinned = LF_CaseBoard.Pin(pUserEntity);
 		if (pinned > 0)
 			Tell(pUserEntity, "#LF-CaseBoard_Pinned", pinned.ToString());

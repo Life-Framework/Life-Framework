@@ -268,6 +268,14 @@
   `LF_JailArrestableComponent` hosts `LF_JailEscort.Tick` on one live instance
   and hands it to the next registered one when that host is deleted.
 - ✅ **Jail work shortens the sentence (#127, merged, in-dev).** Two job spots in the DebugWorld cell: *Scrub the floor* (`Roadmap_Jail_ScrubBucket`, 30 s off, 6 s of work, 45 s cooldown) and *Sort the laundry* (`Roadmap_Jail_LaundryBasket`, 20 s off, 5 s, 30 s). `LF_JailWorkAction` carries the job id, seconds off, cooldown and work time as config; the client sends nothing. `LF_JailWork.Begin` (server) refuses anyone who is not serving, is already working or is inside that job's cooldown (cooldown toast shows the time left), then bends the prisoner into the existing work pose (`LF_WorkAnim`: PICK for the scrub, DRILL for the laundry). When the work time is up and the prisoner is alive and within reach, `LF_JailWork.Complete` calls `LF_Jail.Credit` once, which takes the seconds off the remaining time (a task past the remaining time ends the sentence like any release), refreshes the sentence slip, and toasts "Job done. Time left: m:ss". Nothing new is saved: the reduction lands on the sentence's remaining seconds that the `jail` payload already carries; the cooldown is session-only. Test `jail/work` (LOGIC); demo `node agent-box/session.mjs jail-work-proof` (needs `session.mjs roster 2` before `up --clients 2`). Localized `LF-JailWork_*`. The work poses are reused, so the scrub and laundry both show the existing bend; a mop or laundry clip is not made.
+- ✅ **Island work stations (#3419, #3754, merged, in-dev).** The Saint-Philippe jail slot (`Place_saint-philippe_jail.layer`, kit
+  `tools/town/kits/jail.json`) carries the three 1989 stations from #3418 inside the villa's barred cell: the laundry tub on
+  the west side, the kitchen sink beside the cell door and the broom leaned in the north-east corner, all on the ground floor.
+  #3419 first put the tub and sink in an upstairs room and the broom behind the villa; a jailed prisoner could reach none of
+  them, because `LF_Jail.Confines` pulls them back to the cell origin when they are more than the cell's 2 m zone away (and the
+  cell door is locked). The rows now stand within the zone, clear of the villa's own bunk bed, benches and wash basin
+  (`town fit --refit`, no terrain row any more; `audit placement --strict` clean, seated on the tile floor). Checked by the
+  interior `look place:saint-philippe/jail`; not walked as a booked prisoner (manual step in the PR). No script or save change.
 - ⚠️ Moving a connected prisoner to the cell, or pulling them back into it,
   goes through `SCR_Global.TeleportPlayer` (the vanilla server-side player
   teleport) instead of a server-only `SetOrigin` that the owning client can
