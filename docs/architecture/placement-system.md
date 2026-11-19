@@ -200,6 +200,19 @@ World-building research for the lead, 2026-11-19 (no code in this change):
 Adopted: grid-authored, building-relative kits stamped onto the island (above), plus an optional pack-only GUID override
 of the furniture child for a shop type where every copy on the island can be the same shop.
 
+### Lessons from the clothing store fix (#3901)
+
+- **Prefab children are a blind spot.** The door-clearance test reads layer entities only, so furniture baked into a
+  building prefab's children is never boxed. The same box test over the prefab's children flags all three props that
+  blocked the clothing store. The audit runs the door and lane tests over prefab children too (card #3883).
+- **Aim after stand.** `unreachable` asks only for a standing spot. An interactable also needs an `aim` check: what
+  the F key acts on from that spot (the harness verb from #3901). The till's pay action sat on a mesh-less entity 1.2 m from
+  the register, and a radio 0.45 m behind it took the F key. Static rules: no action context more than about 0.5 m from a
+  mesh, and no other action within about 0.5 m of a till (card #3883).
+- **Doubled furniture.** The island building keeps its own vanilla furniture, and the slot adds the pack's set on top, so
+  Broom, Bucket, Chair, Stepladder and CoatRack exist twice. `town stamp` dedupes the kit against the building's own
+  furniture (the clear list), or the kit overrides the furniture child by GUID as above (card #3881).
+
 ### Reforger Mapper
 
 Studied in spike #3839 (`docs/architecture/reforger-mapper-import.md`; MIT, credited in `THIRD_PARTY.md`). What we take
