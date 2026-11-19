@@ -88,13 +88,13 @@ class LF_PlaceSnap
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Loose things that never count as a support: characters, inventory items (store stock beside it), the
-	//! entity itself and its children.
+	//! Loose things that never count as a support: characters, inventory items (store stock beside it), vegetation
+	//! (a parked car seated on a juniper bush stood 0.23 m over the street, placement-system.md), the entity itself and its children.
 	protected static bool Skip(IEntity self, IEntity hit)
 	{
 		if (!hit)
 			return false;
-		if (ChimeraCharacter.Cast(hit) || hit.FindComponent(InventoryItemComponent))
+		if (ChimeraCharacter.Cast(hit) || BaseTree.Cast(hit) || hit.FindComponent(InventoryItemComponent))
 			return true;
 
 		IEntity walk = hit;
