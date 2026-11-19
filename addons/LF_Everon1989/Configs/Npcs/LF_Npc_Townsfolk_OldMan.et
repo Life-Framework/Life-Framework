@@ -13,6 +13,11 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
   LF_DialogueComponent "{3759E48D9BEE51BC}" {
    m_sDialogueId "old_man"
   }
+  LF_QuestGiverComponent "{3793D00000000001}" {
+   m_sGiverId "old_man"
+   m_sDisplayName "#LF-Townsfolk_OldMan_Name"
+   m_bConverse 1
+  }
   LF_PlaceComponent "{F42C6DF2C1A31EA2}" {
    m_sKind "Townsfolk"
    m_sId "old_man"

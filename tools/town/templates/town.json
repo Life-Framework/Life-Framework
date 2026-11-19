@@ -274,6 +274,11 @@
       "places": []
     },
     {
+      "id": "anniversary", "required": false, "kit": "anniversary", "host": "outposts", "poi": "none", "margin": 25,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
       "id": "cashvan", "required": false, "kit": "cashvan", "host": "outposts", "poi": "none", "margin": 20,
       "needs": { "interior": "optional" },
       "places": []

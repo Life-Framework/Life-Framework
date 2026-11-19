@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{3465A00000000004}Configs/Dialogue/LF_Dialogue_AnniversaryLetterIndex.conf"
+ Name "{D5969DE4F818C4E3}Configs/Events/LF_Condition_ShipmentRaidTip.conf"
  Configurations {
   CONFResourceClass PC {
   }
