@@ -1,0 +1,151 @@
+{
+  "schema": 1,
+  "template": "village",
+  "place": "montignac",
+  "status": "proposed",
+  "note": "A proposal. A human or the lead edits it; approval is a reviewed PR holding only this file (label town-mapping). `tools\\cli town map <place> --check` must pass first.",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 52,
+    "freePlots": 8
+  },
+  "slots": {
+    "hall": {
+      "building": "b02",
+      "score": 0.861,
+      "why": [
+        "type government (first choice)",
+        "large: 429 m2, 35.7 m out",
+        "interior yes"
+      ],
+      "alternatives": [
+        {
+          "building": "b01",
+          "score": 0.816
+        },
+        {
+          "building": "b14",
+          "score": 0.783
+        },
+        {
+          "building": "b46",
+          "score": 0.684
+        }
+      ]
+    },
+    "pub": {
+      "building": "b38",
+      "score": 0.775,
+      "why": [
+        "type pub (first choice)",
+        "near: 304.3 m2, 88.3 m out",
+        "interior yes"
+      ],
+      "alternatives": [
+        {
+          "building": "b01",
+          "score": 0.718
+        },
+        {
+          "building": "b11",
+          "score": 0.673
+        },
+        {
+          "building": "b04",
+          "score": 0.666
+        }
+      ]
+    },
+    "shop": {
+      "building": "b01",
+      "score": 0.763,
+      "why": [
+        "type house",
+        "near: 663 m2, 26.7 m out",
+        "interior yes"
+      ],
+      "alternatives": [
+        {
+          "building": "b11",
+          "score": 0.718
+        },
+        {
+          "building": "b04",
+          "score": 0.711
+        },
+        {
+          "building": "b14",
+          "score": 0.698
+        }
+      ]
+    },
+    "fuel": {
+      "none": true,
+      "reason": "no building fits (16 x type shed is not one of fuel, 12 x type house is not one of fuel) and the slot has no plot fallback"
+    },
+    "garage": {
+      "building": "b32",
+      "score": 0.852,
+      "why": [
+        "type garage (first choice)",
+        "far: 48.5 m2, 85.4 m out"
+      ],
+      "alternatives": [
+        {
+          "building": "b33",
+          "score": 0.851
+        },
+        {
+          "building": "b35",
+          "score": 0.85
+        },
+        {
+          "building": "b40",
+          "score": 0.85
+        }
+      ]
+    },
+    "house": {
+      "building": "b11",
+      "score": 0.853,
+      "why": [
+        "type house (first choice)",
+        "near: 192.8 m2, 60 m out",
+        "interior yes"
+      ],
+      "alternatives": [
+        {
+          "building": "b01",
+          "score": 0.898
+        },
+        {
+          "building": "b04",
+          "score": 0.846
+        },
+        {
+          "building": "b14",
+          "score": 0.833
+        }
+      ]
+    },
+    "farm-plot": {
+      "none": true,
+      "reason": "plot p4 (28 x 18 m) is the free plot that fits, but the village template lists no farm-plot prefab, so there is nothing to place on it; revisit when one is added"
+    },
+    "board": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (house), 26.7 m from the centre; the kit sets it against the kerb"
+      ]
+    },
+    "taxi": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (house), 26.7 m from the centre; the kit sets it against the kerb"
+      ]
+    }
+  }
+}

@@ -3387,7 +3387,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E884C0110C5B632F}" {
      Id "LF-Credits_147"
-     Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{427FC7360D73D3A9}" {
+     Id "LF-Credits_148"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E61840F28B6ADBC}" {
@@ -5268,6 +5273,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hands up (answer the prompt, or lower them)"
      Comment "Keybind menu entry for the hands-up action."
     }
+    CustomStringTableItem "{339D1913E2EBFE37}" {
+     Id "LF-HandsUp_NotGivenUp"
+     Target_en_us "They haven't given up."
+     Comment "Search or robbery of a player refused: the target has neither hands up nor cuffs on (#3399)."
+    }
     CustomStringTableItem "{7B4E0C91A2D63F70}" {
      Id "LF-HandsUp_Title"
      Target_en_us "Put your hands up?"
@@ -6752,6 +6762,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Parcel_Desc"
      Target_en_us "A taped cardboard parcel for the drop-off address."
      Comment "Courier parcel item description"
+    }
+    CustomStringTableItem "{9195B0483F2D0148}" {
+     Id "LF-Item_RepairKit_Description"
+     Target_en_us "A toolbox of wrenches and patches. Holds one repair on a damaged vehicle."
+     Comment "Item description (#3332)."
+    }
+    CustomStringTableItem "{1B57B817BF5340F0}" {
+     Id "LF-Item_RepairKit_Name"
+     Target_en_us "Repair kit"
+     Comment "Item name (#3332)."
     }
     CustomStringTableItem "{C387085823DBA47D}" {
      Id "LF-Item_Scanner_Description"
@@ -11615,6 +11635,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{FC5B69E6943AB0F2}" {
+     Id "LF-RepairKit_Action"
+     Target_en_us "Repair with kit"
+     Comment "Action name on a damaged vehicle (#3332)."
+    }
+    CustomStringTableItem "{D8DBAE73FEF4E915}" {
+     Id "LF-RepairKit_Busy"
+     Target_en_us "Someone is already working on this vehicle."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{A5624E1FC287F5D3}" {
+     Id "LF-RepairKit_Cooldown"
+     Target_en_us "This vehicle was only just repaired. Give it a moment."
+     Comment "Refusal while the car cools down (#3332)."
+    }
+    CustomStringTableItem "{BA771C4080B358CC}" {
+     Id "LF-RepairKit_Done"
+     Target_en_us "Repaired. The kit is used up."
+     Comment "Toast when the repair applies (#3332)."
+    }
+    CustomStringTableItem "{E2EBFA0CCD41EE95}" {
+     Id "LF-RepairKit_Interrupted"
+     Target_en_us "You stopped before the repair was done. The kit is kept."
+     Comment "Toast when the job is dropped (#3332)."
+    }
+    CustomStringTableItem "{12A97ADFF80A9AB4}" {
+     Id "LF-RepairKit_NeedKit"
+     Target_en_us "You need a repair kit."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{B6A1FD9D408C30D7}" {
+     Id "LF-RepairKit_NotDamaged"
+     Target_en_us "This vehicle needs no repair."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{FBEC31E712CFA92E}" {
+     Id "LF-RepairKit_Started"
+     Target_en_us "You start working on the vehicle."
+     Comment "Toast when the repair starts (#3332)."
+    }
+    CustomStringTableItem "{45F52AF20227E07B}" {
+     Id "LF-RepairKit_Title"
+     Target_en_us "Repair kit"
+     Comment "Toast title (#3332)."
+    }
+    CustomStringTableItem "{87D8723475C6D323}" {
+     Id "LF-RepairKit_TooFar"
+     Target_en_us "Stand closer to the vehicle."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{5CAA2E7A7672C8C9}" {
+     Id "LF-RepairKit_Wrecked"
+     Target_en_us "This vehicle is wrecked beyond a kit."
+     Comment "Refusal (#3332)."
     }
     CustomStringTableItem "{C80275F691522CBC}" {
      Id "LF-Reputation_Faction_Police"

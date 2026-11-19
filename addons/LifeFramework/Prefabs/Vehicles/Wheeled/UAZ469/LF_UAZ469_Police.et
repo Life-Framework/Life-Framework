@@ -28,6 +28,11 @@ Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_
       "default"
      }
     }
+    LF_RepairKitAction "{3332A1C0E5D70011}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_VehicleLockAction "{E8BD9E1428464528}" {
      ParentContextList {
       "door_l01"
