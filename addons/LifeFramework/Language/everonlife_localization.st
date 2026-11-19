@@ -4763,6 +4763,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
     }
+    CustomStringTableItem "{3328B0000000F001}" {
+     Id "LF-Fuel_Buy"
+     Target_en_us "Fill the tank"
+     Comment "Action on a fuel pump that sells from stock: fills the nearest vehicle and charges cash."
+    }
+    CustomStringTableItem "{3328B0000000F004}" {
+     Id "LF-Fuel_Dry"
+     Target_en_us "The tanks are dry. The depot truck is due."
+     Comment "Toast: the station has no fuel to sell until a delivery arrives."
+    }
+    CustomStringTableItem "{3328B0000000F008}" {
+     Id "LF-Fuel_Failed"
+     Target_en_us "The pump jams. Try again."
+     Comment "Toast: the sale could not be completed (a logged fault)."
+    }
+    CustomStringTableItem "{3328B0000000F003}" {
+     Id "LF-Fuel_Filled"
+     Target_en_us "Tank filled: %1."
+     Comment "Toast after a fill. %1 = litres and the cash charged, for example 30 L, $60."
+    }
+    CustomStringTableItem "{3328B0000000F005}" {
+     Id "LF-Fuel_NoMoney"
+     Target_en_us "You do not have the cash for a litre."
+     Comment "Toast: the buyer cannot pay for one litre."
+    }
+    CustomStringTableItem "{3328B0000000F007}" {
+     Id "LF-Fuel_NoVehicle"
+     Target_en_us "Park a vehicle next to the pump."
+     Comment "Toast: no vehicle is within reach of the pump."
+    }
+    CustomStringTableItem "{3328B0000000F006}" {
+     Id "LF-Fuel_TankFull"
+     Target_en_us "This tank is already full."
+     Comment "Toast: the vehicle at the pump has no room for fuel."
+    }
+    CustomStringTableItem "{3328B0000000F002}" {
+     Id "LF-Fuel_Title"
+     Target_en_us "Fuel station"
+     Comment "Toast title for a pump sale or refusal."
+    }
     CustomStringTableItem "{251C7BC1C7871641}" {
      Id "LF-FurnitureStorage_Open"
      Target_en_us "Open"
