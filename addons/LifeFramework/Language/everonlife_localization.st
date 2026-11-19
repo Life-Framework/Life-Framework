@@ -2760,6 +2760,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Black wins"
      Comment "Chess board: the game ended."
     }
+    CustomStringTableItem "{1F68D2A4E70B93C5}" {
+     Id "LF-Chess_CannotAfford"
+     Target_en_us "Not enough cash for the stake"
+     Comment "Reason a staked chess action cannot be used: the player carries less than the stake."
+    }
     CustomStringTableItem "{8441B5995A901878}" {
      Id "LF-Chess_Draw"
      Target_en_us "Drawn game"
@@ -2774,6 +2779,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Chess_Play"
      Target_en_us "Play chess"
      Comment "Action on a chess table: sit and play, or watch when both seats are taken."
+    }
+    CustomStringTableItem "{4C0E9B7A21D358F6}" {
+     Id "LF-Chess_PlayFor"
+     Target_en_us "Play for {currency:sym}%1"
+     Comment "Action on a chess table: sit and play a game where each player puts the stake (%1, 20 or 50) in escrow and the winner takes the pot."
     }
     CustomStringTableItem "{EAB56E5EA3549E64}" {
      Id "LF-Chess_Selected"
