@@ -1319,6 +1319,26 @@ StringTable {
      Target_en_us "Application to the Everon {Police}"
      Comment "Police application form title."
     }
+    CustomStringTableItem "{B4A2D6F89C3E5071}" {
+     Id "LF-Quest_AnniversaryChairs_Desc"
+     Target_en_us "The anniversary is tomorrow and the square is short of seats. Bring four chairs for the trestles."
+     Comment "Quest description for anniversary_chairs (#3463)."
+    }
+    CustomStringTableItem "{A3F1C5E78B2D4960}" {
+     Id "LF-Quest_AnniversaryChairs_Title"
+     Target_en_us "Chairs for the square"
+     Comment "Quest title: the mayor needs chairs for the day before the anniversary (#3463)."
+    }
+    CustomStringTableItem "{D6C4F8BABE507293}" {
+     Id "LF-Quest_AnniversaryFlowers_Desc"
+     Target_en_us "The tables want flowers before dusk tomorrow. Bring three potted plants from the shops."
+     Comment "Quest description for anniversary_flowers (#3463)."
+    }
+    CustomStringTableItem "{C5B3E7A9AD4F6182}" {
+     Id "LF-Quest_AnniversaryFlowers_Title"
+     Target_en_us "Flowers for the square"
+     Comment "Quest title: the mayor wants flowers for the memorial tables (#3463)."
+    }
     CustomStringTableItem "{41BDF9AA8EA3352E}" {
      Id "LF-Quest_ArrivalBank_Desc"
      Target_en_us "Paid in cash. Cash in a pocket is lost if you die, money in the bank is not. Deposit some at the ATM on the bank wall, next to the post office."
