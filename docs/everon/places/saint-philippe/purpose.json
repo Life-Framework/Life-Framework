@@ -695,9 +695,8 @@
    "doors": 13,
    "purpose": "b",
    "use": "furniture store (Meubles): all house furniture, stock furniture",
-   "status": "planned",
-   "card": "S9",
-   "issue": 3256
+   "status": "flight",
+   "card": "FLIGHT"
   },
   {
    "id": "sp:b56",

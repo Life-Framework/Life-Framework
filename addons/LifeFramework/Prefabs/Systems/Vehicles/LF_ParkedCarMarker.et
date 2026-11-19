@@ -1,0 +1,7 @@
+GenericEntity {
+ ID "C72983C19E1DE20B"
+ components {
+  LF_ParkedCarMarkerComponent "{99006DF19C865F0E}" {
+  }
+ }
+}

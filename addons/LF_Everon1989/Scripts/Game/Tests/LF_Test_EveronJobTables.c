@@ -1,14 +1,14 @@
 // red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronJobTables`: RED PROOF OK (RedProof() reads no gates, looks for the pickaxe in the stock and for an outlet no pack names). Green with the overlays in the pack leg.
 //! everon/job-tables (#2710, slice of #1018): under the Everon 1989 header (the pack leg of `tools\cli test`),
 //! every pack job has a level table with one unlock per level (a track whose thresholds make levels 2..N, and
-//! exactly one licence gate on each of those levels), the general store stock has the shovel from a base-game
+//! exactly one licence gate on each of those levels), the hardware store stock has the shovel from a base-game
 //! item, and the pickaxe is sold at the miners' supply outlet only to a MINER past the first level.
 //! Medic ranks wait on a pack overlay for `LF_MedicConfig` (the core has none yet), so they are not read here.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronJobTables : LF_Test
 {
 	protected static const string OUTLET = "miners_supply";
-	protected static const string STOCK = "general_store";
+	protected static const string STOCK = "hardware";
 	protected static const ResourceName SHOVEL = "{0619993AE6CDBF85}Prefabs/Items/Equipment/Accessories/ETool_ALICE/ETool_ALICE.et";
 	protected static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
 
@@ -79,7 +79,7 @@ class LF_Test_EveronJobTables : LF_Test
 	protected void CheckShovel(LF_TestContext ctx)
 	{
 		LF_ShopStock stock = LF_ShopStockConfig.Get().Find(STOCK);
-		ctx.NotNull(stock, "the general store has a stock under the pack header");
+		ctx.NotNull(stock, "the hardware store has a stock under the pack header");
 		if (!stock)
 			return;
 
@@ -88,7 +88,7 @@ class LF_Test_EveronJobTables : LF_Test
 			shovel = PICKAXE;
 
 		LF_ShopStockItem row = stock.FindItem(shovel);
-		ctx.NotNull(row, "the shovel (the vanilla entrenching tool) is in the general store stock");
+		ctx.NotNull(row, "the shovel (the vanilla entrenching tool) is in the hardware store stock (#3220)");
 		if (row)
 			ctx.True(row.m_iPrice > 0, "the shovel has a price");
 	}
