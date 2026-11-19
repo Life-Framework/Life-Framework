@@ -9,7 +9,7 @@ Vehicle : "{F1FBD0972FA5FE09}Prefabs/Vehicles/Wheeled/M923A1/M923A1_transport.et
    m_iCapacity 12
    m_vTailgate 0 1.0 -4.7
    m_vBedCentre 0 1.4 -2.5
-   m_fBedLength 3.8
+   m_fBedWidth 2.0
    m_iPerLayer 6
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {

@@ -1,4 +1,5 @@
 // red-proof: observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_CargoBed`: RED-OK carry/cargo-bed (fails with the hook on, 56 assertions); the loads are skipped, so the counts, the refusal, the unload order and the round trip fail.
+// red-proof (layout, review 2026-11-19): the SlotTransform assertions came with the fix (the old code had no such function); the before picture is in website/public/docs-images/3265/bed-stack-before.png.
 // red-proof (lock, review 2026-11-19): with IsLockedFor forced false, `--only LF_Test_CargoBed` failed "a locked truck takes no load" and "a locked truck cannot be unloaded"; green with the fix.
 
 //! Truck cargo bed (#3265): 3 softwood and 2 hardwood logs (7 units) go into a 12-unit bed, a 13th unit is
@@ -33,6 +34,21 @@ class LF_Test_CargoBed : LF_Test
 		ctx.Equal(4, packedOut.Count(), "pack and unpack keep the stack");
 		LF_CargoBed.Unpack("0,9,x,1", packedOut, 12);
 		ctx.Equal(2, packedOut.Count(), "a bad token in a save is dropped, not a crash");
+
+		// The drawn log lies along the bed, centred on its slot, whatever its pivot (review: the stack stuck
+		// 3 m out of the truck's side because the 4 m log mesh has its pivot at one end and was turned across).
+		vector mat[4];
+		vector slot = "0 1.4 -2.5";
+		LF_CargoBedComponent.SlotTransform("-0.15 0 -4", "0.15 0.3 0", slot, 0, mat);
+		vector endA = Vector(0, 0, 0).Multiply4(mat);
+		vector endB = Vector(0, 0, -4).Multiply4(mat);
+		ctx.True(vector.Distance(Vector(0, 0, -2).Multiply4(mat), slot) < 0.01, "the log's bottom centre sits on its slot");
+		ctx.True(Math.AbsFloat(endA[0] - endB[0]) < 0.01, "the log lies along the bed, not across it");
+		ctx.True(Math.AbsFloat(endA[2] - endB[2] - 4) < 0.01, "both ends 2 m either side of the slot");
+		LF_CargoBedComponent.SlotTransform("-2 0 -0.15", "2 0.3 0.15", slot, 0, mat);
+		endA = Vector(-2, 0, 0).Multiply4(mat);
+		endB = Vector(2, 0, 0).Multiply4(mat);
+		ctx.True(Math.AbsFloat(endA[0] - endB[0]) < 0.01, "a mesh long on x is turned to lie along the bed");
 
 		IEntity carrier = LF_TestCharacterFixture.Spawn(ctx);
 		if (!carrier)

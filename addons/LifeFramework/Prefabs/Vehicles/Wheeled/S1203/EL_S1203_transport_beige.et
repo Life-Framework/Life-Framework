@@ -9,7 +9,7 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
    m_iCapacity 6
    m_vTailgate 0 0.8 -2.4
    m_vBedCentre 0 0.9 -0.9
-   m_fBedLength 2.2
+   m_fBedWidth 1.2
    m_iPerLayer 3
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {

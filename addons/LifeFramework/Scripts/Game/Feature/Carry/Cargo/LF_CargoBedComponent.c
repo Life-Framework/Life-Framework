@@ -21,10 +21,10 @@ class LF_CargoBedComponent : ScriptComponent
 	[Attribute("0 1.3 -1", UIWidgets.EditBox, "Centre of the bed floor, local: the stack is drawn around it")]
 	protected vector m_vBedCentre;
 
-	[Attribute("4", UIWidgets.EditBox, "Length of the loading area along the vehicle (metres)")]
-	protected float m_fBedLength;
+	[Attribute("2", UIWidgets.EditBox, "Width of the loading area across the vehicle (metres): the logs lie along the bed, side by side across it")]
+	protected float m_fBedWidth;
 
-	[Attribute("4", UIWidgets.EditBox, "Units side by side along the bed in one layer")]
+	[Attribute("4", UIWidgets.EditBox, "Units side by side across the bed in one layer")]
 	protected int m_iPerLayer;
 
 	[Attribute("0.25", UIWidgets.EditBox, "Height of one layer of the stack (metres)")]
@@ -313,7 +313,8 @@ class LF_CargoBedComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Local position of unit slot `index` on the bed.
+	//! Local point of unit slot `index` on the bed: the bottom centre of that log. Columns run across the
+	//! bed (x), layers stack up (y); every log lies along the bed (z) through the bed centre.
 	vector SlotPosition(int index)
 	{
 		int perLayer = m_iPerLayer;
@@ -322,9 +323,25 @@ class LF_CargoBedComponent : ScriptComponent
 
 		int layer = index / perLayer;
 		int column = index - layer * perLayer;
-		float step = m_fBedLength / perLayer;
-		float z = (column - (perLayer - 1) * 0.5) * step;
-		return m_vBedCentre + Vector(0, (layer + 0.5) * m_fLayerHeight, z);
+		float step = m_fBedWidth / perLayer;
+		float x = (column - (perLayer - 1) * 0.5) * step;
+		return m_vBedCentre + Vector(x, layer * m_fLayerHeight, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The local transform that lays a mesh with these bounds along the bed, its bottom centre on `slot`.
+	//! A log mesh has its pivot at one end (WoodLog_01_C runs 0 to -4 m on z), so the bounds place it, not
+	//! the pivot; a mesh longer on x than on z is turned a quarter first. `wobble` is a small yaw (degrees).
+	static void SlotTransform(vector mins, vector maxs, vector slot, float wobble, out vector mat[4])
+	{
+		vector size = maxs - mins;
+		float yaw = wobble;
+		if (size[0] > size[2])
+			yaw = yaw + 90;
+
+		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), mat);
+		vector bottomCentre = Vector((mins[0] + maxs[0]) * 0.5, mins[1], (mins[2] + maxs[2]) * 0.5);
+		mat[3] = slot - bottomCentre.Multiply3(mat);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -360,8 +377,6 @@ class LF_CargoBedComponent : ScriptComponent
 			EntitySpawnParams params();
 			params.TransformMode = ETransformMode.LOCAL;
 			params.Parent = owner;
-			// The logs lie across the bed; a small turn per slot so the stack does not look stamped.
-			Math3D.AnglesToMatrix(Vector(90 + (index - (index / 3) * 3 - 1) * 2, 0, 0), params.Transform);
 			params.Transform[3] = SlotPosition(index);
 
 			IEntity visual = GetGame().SpawnEntity(GenericEntity, owner.GetWorld(), params);
@@ -372,6 +387,13 @@ class LF_CargoBedComponent : ScriptComponent
 			}
 
 			visual.SetObject(model.GetResource().ToVObject(), "");
+			// Lay it along the bed by its own bounds; a small turn per slot so the stack does not look stamped.
+			vector mins, maxs;
+			visual.GetBounds(mins, maxs);
+			vector mat[4];
+			SlotTransform(mins, maxs, SlotPosition(index), (index - (index / 3) * 3 - 1) * 1.5, mat);
+			visual.SetLocalTransform(mat);
+
 			m_aVisualIds.Insert(visual.GetID());
 		}
 	}
