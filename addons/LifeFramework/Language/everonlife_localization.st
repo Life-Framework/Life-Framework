@@ -5073,6 +5073,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Radio set"
      Comment "Toast title for calls placed on a carried radio set."
     }
+    CustomStringTableItem "{3297A1B2C3D40008}" {
+     Id "LF-Harvest_ContractKitFar"
+     Target_en_us "Bring the kit back to the board first"
+     Comment "Toast (#3297): the rental kit is not at the board."
+    }
+    CustomStringTableItem "{3297A1B2C3D40004}" {
+     Id "LF-Harvest_ContractLapsed"
+     Target_en_us "The contract lapsed. The kit is taken away and the deposit is kept"
+     Comment "Toast (#3297): the timeout passed with the kit still out."
+    }
+    CustomStringTableItem "{3297A1B2C3D40007}" {
+     Id "LF-Harvest_ContractNoCash"
+     Target_en_us "The kit deposit is {currency:sym}300. You do not have it"
+     Comment "Toast (#3297): the rental deposit could not be paid."
+    }
+    CustomStringTableItem "{3297A1B2C3D40006}" {
+     Id "LF-Harvest_ContractNoReaper"
+     Target_en_us "You own no reaper. Rent a kit or buy one at the farm supply"
+     Comment "Toast (#3297): the own-reaper route without a reaper."
+    }
+    CustomStringTableItem "{3297A1B2C3D40002}" {
+     Id "LF-Harvest_ContractPaid"
+     Target_en_us "Contract done: {currency:sym}%1 bonus and farming experience"
+     Comment "Toast (#3297): the field is cut to the line. %1 = the bonus paid."
+    }
+    CustomStringTableItem "{3297A1B2C3D40003}" {
+     Id "LF-Harvest_ContractRefund"
+     Target_en_us "Kit returned, {currency:sym}%1 deposit back"
+     Comment "Toast (#3297): the rental kit is back at the board. %1 = the deposit refunded."
+    }
+    CustomStringTableItem "{3297A1B2C3D40005}" {
+     Id "LF-Harvest_ContractTaken"
+     Target_en_us "Someone already holds this contract"
+     Comment "Toast (#3297): one taker per field."
+    }
+    CustomStringTableItem "{3297A1B2C3D40001}" {
+     Id "LF-Harvest_ContractTitle"
+     Target_en_us "Harvest contract"
+     Comment "Toast title (#3297)."
+    }
     CustomStringTableItem "{1C50A1F8B0E1940A}" {
      Id "LF-Harvest_HopperFull"
      Target_en_us "Hopper full, unload at the granary"
