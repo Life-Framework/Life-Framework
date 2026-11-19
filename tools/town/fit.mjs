@@ -195,6 +195,9 @@ const asClaim = (text, extra) => {
   }
 };
 
+// A claim without where it was read from: what two copies of one claim file share.
+export const claimBody = (c) => JSON.stringify(Object.fromEntries(Object.entries(c).filter(([k]) => k !== "where" && k !== "file").sort(([a], [b]) => (a < b ? -1 : 1))));
+
 // Claim files origin/main holds.
 export function mainTownClaims(exec, { ref = "origin/main", fetch = true } = {}) {
   let note = "";
@@ -360,12 +363,11 @@ export function planFit(opts, ctx = {}) {
   // `--refit`: this slot's own claim, already committed on origin/main (every worktree carries it), does not block its re-fit.
   // The same slot held by an open PR or a sibling worktree, and any other slot's claim on the building, still refuse.
   for (let i = taken.length - 1; i >= 0; i--) if (claimOfBase(taken[i], { branch: opts.branch, place, slot: slotId })) taken.splice(i, 1);
-  // A sibling worktree that merged main carries a byte-identical copy of that same claim: it is main's, not a rival draft.
-  const bare = ({ file, where, ...rest }) => JSON.stringify(rest);
-  const mainOwn = taken.filter((c) => c.place === place && c.slot === slotId && c.where === "origin/main").map(bare);
-  const blocking = opts.refit
-    ? taken.filter((c) => !(c.place === place && c.slot === slotId && (c.where === "origin/main" || (c.where.startsWith("worktree ") && mainOwn.includes(bare(c))))))
-    : taken;
+  // A sibling worktree that has not touched the claim holds byte-for-byte what main holds (every worktree is cut from main), so under
+  // `--refit` that copy is main's own claim and not a rival either (all sixteen worktrees blocked a re-fit of the supermarket, #3516).
+  const mainOwn = taken.find((c) => c.place === place && c.slot === slotId && c.where === "origin/main");
+  const sameAsMain = (c) => Boolean(mainOwn) && /^worktree /.test(c.where) && claimBody(c) === claimBody(mainOwn);
+  const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && (c.where === "origin/main" || sameAsMain(c)))) : taken;
   errors.push(...conflicts(blocking, { place, slot: slotId, building: buildingKey, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
 

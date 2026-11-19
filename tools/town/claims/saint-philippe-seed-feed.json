@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "seed-feed",
+  "building": "b25",
+  "kit": "seed-feed",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_seed-feed.layer",
+  "kinds": [
+    "StoreCounter"
+  ],
+  "rows": 11,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_seed_feed_Place"
+  },
+  "date": "2026-11-18"
+}
