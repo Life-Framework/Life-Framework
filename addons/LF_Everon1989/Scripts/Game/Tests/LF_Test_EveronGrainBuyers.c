@@ -1,9 +1,10 @@
 // red-proof: observed 2026-11-19 in the batched `--red` run with LF_Test_MarketLotSale and LF_Test_MarketLotSize: RED PROOF OK. With the pack layer removed (an empty header as the pack source, the `RedProof()` hook) the market has no grain curve and the buyer demand table has no bakery flour row, so every grain and flour line fails.
 //! #3622: the pack's grain buyers (harvester spike, section 6), read through the overlays under the Everon 1989
-//! header (the pack leg). Grain is counted in kg, so its prices are per lot: the granary curve is $9 a 200 kg lot
-//! ($0.045 a kg) falling 1 percent a lot to a $7 floor, and the bakery's flour row is $1 a 5 kg lot ($0.20 a kg)
-//! from a 1,000 kg purse. A sale pays whole lots only, the milled kg of flour fetches more than the grain it came
-//! from, and the table sells a field of grain (2,600 kg, 13 lots) at about $0.04 a kg.
+//! header (the pack leg). Grain is counted in kg, so its prices are per lot: the granary curve is $2 a 50 kg lot
+//! (one full sack, $0.04 a kg), flat (the smallest step, 1 percent a lot, would push the loop out of the duty band)
+//! over a $1 floor, and the bakery's flour row is $1 a 5 kg lot ($0.20 a kg) from a 1,000 kg purse. A sale pays
+//! whole lots only, the milled kg of flour fetches more than the grain it came from, and the table sells a field of
+//! grain (2,600 kg, 52 lots) at $0.04 a kg.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronGrainBuyers : LF_Test
 {
@@ -72,19 +73,20 @@ class LF_Test_EveronGrainBuyers : LF_Test
 			return;
 
 		ctx.EqualStr("", curve.Problem(), "the grain curve is valid");
-		ctx.Equal(200, curve.m_iLotSize, "grain is priced per 200 kg");
-		ctx.Equal(9, curve.m_iBase, "a lot starts at $9, which is $0.045 a kg");
-		ctx.Equal(9, curve.m_iCeiling, "the ceiling is the base");
-		ctx.Equal(7, curve.m_iFloor, "the floor is $7 a lot");
-		ctx.Equal(1, curve.m_iDropPerUnitPct, "each lot sold takes 1 percent off");
+		ctx.Equal(50, curve.m_iLotSize, "grain is priced per 50 kg, one full sack");
+		ctx.Equal(2, curve.m_iBase, "a lot starts at $2, which is $0.04 a kg");
+		ctx.Equal(2, curve.m_iCeiling, "the ceiling is the base");
+		ctx.Equal(1, curve.m_iFloor, "the floor is $1 a lot");
+		ctx.Equal(0, curve.m_iDropPerUnitPct, "the granary price is flat (1 percent a lot would leave the duty band)");
 		ctx.True(curve.m_iRecoverPctPerHour > 0, "the price recovers");
 
-		// A field of grain (2,600 kg, 13 lots) sells at the granary near $0.04 a kg, never at a whole $1 a kg.
+		// A field of grain (2,600 kg, 52 lots) sells at the granary at $0.04 a kg, never at a whole $1 a kg.
 		ctx.True(market.m_bEnabled, "the pack switches the market on");
 		int field = LF_MarketBook.QuoteAt(GRAIN, 2600, NOW);
-		ctx.True(field > 90 && field <= 117, string.Format("a 2,600 kg field pays between 90 and 117, got %1", field));
-		ctx.Equal(0, LF_MarketBook.QuoteAt(GRAIN, 199, NOW), "199 kg is below one lot and pays nothing");
-		ctx.Equal(400, LF_MarketBook.SellableUnits(GRAIN, 450), "450 kg sells 400 and keeps 50");
+		ctx.Equal(104, field, "a 2,600 kg field pays 52 lots at $2");
+		ctx.Equal(0, LF_MarketBook.QuoteAt(GRAIN, 49, NOW), "49 kg is below one lot and pays nothing");
+		ctx.Equal(2, LF_MarketBook.QuoteAt(GRAIN, 50, NOW), "one full 50 kg sack pays $2");
+		ctx.Equal(450, LF_MarketBook.SellableUnits(GRAIN, 470), "470 kg sells 450 and keeps 20");
 	}
 
 	//------------------------------------------------------------------------------------------------
