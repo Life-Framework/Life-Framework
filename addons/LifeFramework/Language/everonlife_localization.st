@@ -11431,6 +11431,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Slow down"
      Comment "Toast title when the server refuses a request sent too fast (#693b)."
     }
+    CustomStringTableItem "{A0F831CF41BB55DC}" {
+     Id "LF-Recycler_Busy"
+     Target_en_us "The bench is busy."
+     Comment "Toast: an item is already on the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{55C12BD2712F8C61}" {
+     Id "LF-Recycler_Collect"
+     Target_en_us "Collect the parts"
+     Comment "Action: take the parts off the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{B238E182E0A35393}" {
+     Id "LF-Recycler_Collected"
+     Target_en_us "You take the parts."
+     Comment "Toast: the recycler parts were handed over (#3349)."
+    }
+    CustomStringTableItem "{C2F19F3AFF4BDE7A}" {
+     Id "LF-Recycler_Load"
+     Target_en_us "Load the recycler"
+     Comment "Action: put an item on the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{1EA41B7B70469311}" {
+     Id "LF-Recycler_NoItem"
+     Target_en_us "You do not have that item."
+     Comment "Toast: the item to recycle is not in the inventory (#3349)."
+    }
+    CustomStringTableItem "{ED78E758588DF841}" {
+     Id "LF-Recycler_NoRecipe"
+     Target_en_us "Nothing you carry can be broken down here."
+     Comment "Toast: no carried item has a recycle recipe (#3349)."
+    }
+    CustomStringTableItem "{E4540181784B2876}" {
+     Id "LF-Recycler_Title"
+     Target_en_us "Recycler"
+     Comment "Toast title for the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{55F29754BA4C5F7D}" {
+     Id "LF-Recycler_TooFar"
+     Target_en_us "Stand at the bench first."
+     Comment "Toast: the worker is out of reach of the recycler (#3349)."
+    }
+    CustomStringTableItem "{CAFDBC0B153EF566}" {
+     Id "LF-Recycler_Work"
+     Target_en_us "Break it down"
+     Comment "Action, held: work the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{8810DCBD5B449AC8}" {
+     Id "LF-Recycler_WrongState"
+     Target_en_us "The bench has nothing to do right now."
+     Comment "Toast: the recycler bench has no job to work or collect (#3349)."
+    }
     CustomStringTableItem "{A45A061D749A854A}" {
      Id "LF-Reg_Age"
      Target_en_us "Age in years (18 to 80)"
