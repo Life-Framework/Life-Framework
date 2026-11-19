@@ -151,6 +151,10 @@ gate before a merge; the main guard (next section) checks `main` after it.
    no open finding in `tmp/review-<slug>.md`).
 2. Preflight, seconds: `git merge-tree` against `origin/<base>` (a conflict outside the driver-merged files stops it; a
    driver-only conflict merges main in here) and `validate` of the changed inputs. `--no-preflight` skips it.
+   Before that validate, a branch that changes a config class (`Scripts/**/*.c`), a `.conf` under `Configs/` or
+   `Missions/`, or `tools/config/schema-overrides.json` gets `node tools/config/schema.mjs --write` run, and any change
+   in `docs/config/` is committed with it (`tools/lib/config-schema-regen.mjs`, #3717; main went red on a stale
+   schema in #3510, #3527 and #3716). It runs again after a behind-merge.
 3. Pushes, opens the PR (or reuses the open one) and runs `gh pr merge --auto --merge` at once. If GitHub refuses
    because the branch is behind ("Base branch was modified", not up to date) or reports it `BEHIND`, ship merges
    `origin/<base>` in, pushes again and retries.

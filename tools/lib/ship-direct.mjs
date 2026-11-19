@@ -24,11 +24,13 @@ export const isBehindRefusal = (text) => BEHIND.test(String(text ?? ""));
 
 // deps: mergeTree() -> {status, stdout, stderr}; mergeBase() -> throws on failure; validate() -> exit code;
 // push() -> {status, stdout, stderr}; findPr() -> pr|null; createPr() -> pr; autoMerge(n) -> {status, stdout, stderr};
-// mergeState(n) -> "BEHIND"|"DIRTY"|...; log(line).
+// mergeState(n) -> "BEHIND"|"DIRTY"|...; regenSchema() (optional) rebuilds and commits docs/config/ when the branch needs it; log(line).
 // draft: the PR is opened as a draft and auto-merge is never planned (town-draft and maintainer-review PRs).
 export async function shipDirect(deps, { base = "main", slug = "?", preflight = true, retries = 2, draft = false } = {}) {
   const log = deps.log ?? (() => {});
   const fail = (why) => { log(`FAIL  ${why}`); return { code: 1, why }; };
+  // Rebuild docs/config/ when the branch touches a config class or conf (#3717); optional dependency, never fatal.
+  const regen = () => { try { deps.regenSchema?.(); } catch (e) { log(`ship: config schema regeneration threw (${e.message}); validate will report it`); } };
   if (preflight) {
     const mt = deps.mergeTree();
     if (mt.status === 1) {
@@ -38,11 +40,13 @@ export async function shipDirect(deps, { base = "main", slug = "?", preflight = 
       log(`ship: origin/${base} conflicts only in driver-merged files (${paths.join(", ")}); merging it here`);
       try { deps.mergeBase(); } catch (e) { return fail(`merge origin/${base}: ${e.message}. Nothing was pushed.`); }
     } else if (mt.status !== 0) log(`ship: git merge-tree failed (${String(mt.stderr || mt.stdout).trim().slice(0, 200)}); GitHub reports any conflict`);
+    regen();
     const v = await deps.validate();
     if (v !== 0) return fail(`preflight: validate failed (exit ${v}); fix it, commit, re-run 'tools\\cli wt ship ${slug}'. Nothing was pushed.`);
   }
+  if (!preflight) regen();
   const push = deps.push();
-  if (push.status !== 0) return fail(`push: ${String(push.stderr || push.stdout).trim()}`);
+  if (push.status !== 0) return fail(`push:${String(push.stderr || push.stdout).trim()}`);
   let pr;
   let reused = false;
   try {
@@ -76,6 +80,7 @@ export async function shipDirect(deps, { base = "main", slug = "?", preflight = 
     if (attempt >= retries) return { ...fail(`auto-merge: the branch is still behind origin/${base} after ${retries} merge(s) (PR ${pr.url})`), pr };
     log(`ship: GitHub says the branch is behind origin/${base}; merging it in and pushing again`);
     try { deps.mergeBase(); } catch (e) { return { ...fail(`merge origin/${base}: ${e.message} (PR ${pr.url})`), pr }; }
+    regen();
     const p2 = deps.push();
     if (p2.status !== 0) return { ...fail(`push after merging origin/${base}: ${String(p2.stderr || p2.stdout).trim()}`), pr };
   }
