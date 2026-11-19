@@ -1905,6 +1905,71 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "Placa de lista de permissões"
      Comment "Whitelist sign interactive action name"
     }
+    CustomStringTableItem "{AA8EFD68EBC44F28}" {
+     Id "LF-ATMTransfer_Done"
+     Target_en_us "SENT %1 TO ...%2. BALANCE %3."
+     Comment "ATM transfer page status line after a transfer. %1 amount, %2 last four characters of the recipient's number, %3 the new balance."
+    }
+    CustomStringTableItem "{8359F0DA9137A580}" {
+     Id "LF-ATMTransfer_FieldTarget"
+     Target_en_us "SEND TO ACCOUNT NUMBER"
+     Comment "ATM transfer page: caption over the box where the recipient's account number is typed."
+    }
+    CustomStringTableItem "{B07FF790CDDE54BC}" {
+     Id "LF-ATMTransfer_Header"
+     Target_en_us "TRANSFER"
+     Comment "ATM transfer page title."
+    }
+    CustomStringTableItem "{6FDD215150BDD14B}" {
+     Id "LF-ATMTransfer_KeyMenu"
+     Target_en_us "MENU"
+     Comment "ATM transfer page: key back to the terminal's main screen."
+    }
+    CustomStringTableItem "{C08EF8EC1F48F181}" {
+     Id "LF-ATMTransfer_KeySend"
+     Target_en_us "SEND"
+     Comment "ATM transfer page: confirm key."
+    }
+    CustomStringTableItem "{6CAF1AF5B5009021}" {
+     Id "LF-ATMTransfer_LineAmount"
+     Target_en_us "AMOUNT > %1_"
+     Comment "ATM transfer page entry line with a cursor. %1 is the amount keyed in so far."
+    }
+    CustomStringTableItem "{7E5731E1EBAE9D1A}" {
+     Id "LF-ATMTransfer_LineFee"
+     Target_en_us "FEE %1  TOTAL %2"
+     Comment "ATM transfer page: the fee for the amount keyed in and what leaves the account. %1 fee, %2 total."
+    }
+    CustomStringTableItem "{FC75BE37C547EB67}" {
+     Id "LF-ATMTransfer_LineOwn"
+     Target_en_us "YOUR NUMBER: %1"
+     Comment "ATM transfer page: the player's own account number, to tell someone. %1 is the number."
+    }
+    CustomStringTableItem "{6005A6BA2670AB55}" {
+     Id "LF-ATMTransfer_Prompt"
+     Target_en_us "KEY IN THE NUMBER AND AMOUNT, THEN SEND."
+     Comment "ATM transfer page status line while idle."
+    }
+    CustomStringTableItem "{D2E85BF67E21E2DC}" {
+     Id "LF-ATMTransfer_RefuseFailed"
+     Target_en_us "THE TRANSFER DID NOT GO THROUGH. NO MONEY MOVED."
+     Comment "ATM transfer page refusal: the transfer id was used or the bank refused for a reason the player cannot fix."
+    }
+    CustomStringTableItem "{B77B1450A1912D0E}" {
+     Id "LF-ATMTransfer_RefuseRate"
+     Target_en_us "SLOW DOWN. TRY AGAIN IN A MOMENT."
+     Comment "ATM transfer page refusal: too many requests from this player in a few seconds."
+    }
+    CustomStringTableItem "{B49AD51FE0064222}" {
+     Id "LF-ATMTransfer_Sent"
+     Target_en_us "You sent %1 to the account ending %2."
+     Comment "Toast after a bank transfer. %1 is the amount, %2 the last four characters of the recipient's number."
+    }
+    CustomStringTableItem "{EA0C8B8F73FBDA3F}" {
+     Id "LF-ATMTransfer_ToastTitle"
+     Target_en_us "Bank transfer"
+     Comment "Toast title after a bank transfer went through."
+    }
     CustomStringTableItem "{4A64CBDDC70A3B14}" {
      Id "LF-ATM_Deposited"
      Target_en_us "DEPOSITED %1. THANK YOU."
@@ -1939,6 +2004,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ATM_KeyDeposit"
      Target_en_us "DEPOSIT"
      Comment "ATM terminal key: pay the keyed amount of carried cash into the account."
+    }
+    CustomStringTableItem "{ACF0AF7CCD90F1B7}" {
+     Id "LF-ATM_KeyTransfer"
+     Target_en_us "TRANSFER"
+     Comment "ATM terminal key that opens the transfer page."
     }
     CustomStringTableItem "{9BA4937AFAD95E3E}" {
      Id "LF-ATM_KeyWithdraw"
