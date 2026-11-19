@@ -3174,6 +3174,21 @@ StringTable {
      Target_en_us "The dock smokehouse on the east apron. One fresh fish and one bundle of firewood come out as smoked fish, which sells for half as much again and can be eaten."
      Comment "Sign card for the dock smokehouse plate, What section."
     }
+    CustomStringTableItem "{5F88AA844B7BCA38}" {
+     Id "LF-Sign_SpringPond_How"
+     Target_en_us "Bring a rod and a bait tin, cast onto the water from the jetty or the bank, and strike when the float dips"
+     Comment "Sign card for the Spring Pond plate, How section."
+    }
+    CustomStringTableItem "{E3BA6C2EBFE96532}" {
+     Id "LF-Sign_SpringPond_Title"
+     Target_en_us "Spring Pond"
+     Comment "Title of the pole plate on the Spring Pond bank (Everon 1989 pack, #3667). Printed on the sign and shown in the prompt as Read: Spring Pond."
+    }
+    CustomStringTableItem "{BA377CAE82EDDA68}" {
+     Id "LF-Sign_SpringPond_What"
+     Target_en_us "A small pond south-east of the village with a wooden jetty and a bench. Trout, perch and carp bite here; carp are best at dawn and in the evening."
+     Comment "Sign card for the Spring Pond plate, What section."
+    }
     CustomStringTableItem "{327C120B0ED84A6C}" {
      Id "LF-Sign_Supermarket_How"
      Target_en_us "Take what you want off the shelves and *Pay* at the till|Or browse the till's list for everything we stock"
@@ -3614,5 +3629,6 @@ StringTable {
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
      Comment "Join notice toast at a player's first spawn of the session (#1448); the joinNotice.key of the flagship."
     }
+  }
  }
 }
