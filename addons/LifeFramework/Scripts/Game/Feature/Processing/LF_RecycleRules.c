@@ -104,8 +104,55 @@ class LF_RecycleConfig
 			return null;
 		}
 
+		s_Config.ApplyLayers();
 		s_Config.Sanitize(LF_ItemCatalogueConfig.Get());
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts each pack overlay of this class (the mission header's m_aLF_ConfigOverlays, in load order) over
+	//! this instance, which holds the core `.conf`. A recipe row with an item the core or an earlier pack
+	//! already has replaces it; any other row is added. No pack: the core file alone.
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_RecycleConfig, "recycle", resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer());
+			LF_Debug.Info(LF_RecycleRules.FEATURE, string.Format("recycle: pack overlay %1 set %2 recipes", names[i], changed));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the recipe rows one overlay container writes. \return How many rows were applied.
+	int ApplyPackContainer(notnull BaseContainer root)
+	{
+		if (!m_aRecipes)
+			m_aRecipes = {};
+
+		BaseContainerList rows = root.GetObjectArray("m_aRecipes");
+		if (!rows)
+			return 0;
+
+		int changed;
+		for (int i = 0; i < rows.Count(); i++)
+		{
+			LF_RecycleRecipe recipe = LF_RecycleRecipe.Cast(BaseContainerTools.CreateInstanceFromContainer(rows.Get(i)));
+			if (!recipe)
+				continue;
+
+			int at = FirstIndexOf(recipe.m_sItem);
+			if (at >= 0)
+				m_aRecipes[at] = recipe;
+			else
+				m_aRecipes.Insert(recipe);
+
+			changed++;
+		}
+
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------
