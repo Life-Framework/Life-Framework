@@ -2,6 +2,7 @@
   "version": 1,
   "configClasses": [
     "LF_BuyerDemandConfig",
+    "LF_BuyerPrices",
     "LF_CharacterConfig",
     "LF_ChopShopConfig",
     "LF_CrimeCatalogConfig",
@@ -18,6 +19,7 @@
     "LF_IncidentConfig",
     "LF_ItemCatalogueConfig",
     "LF_JobsConfig",
+    "LF_LaunderConfig",
     "LF_LedgerConfig",
     "LF_LicencesConfig",
     "LF_MapAreaConfig",

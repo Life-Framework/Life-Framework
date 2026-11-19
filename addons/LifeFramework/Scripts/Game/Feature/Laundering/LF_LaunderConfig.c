@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! The Laundering feature's one config (M7, parent #1025). Loaded from Configs/Crime/LF_Launder.conf;
-//! a pack overrides the file. Core ships every switch off, so a server without the pack pays crime
+//! a pack layers an overlay over it (ApplyLayers, #2922). Core ships every switch off, so a server without the pack pays crime
 //! in plain cash exactly as before.
 [BaseContainerProps(configRoot: true)]
 class LF_LaunderConfig
@@ -61,8 +61,50 @@ class LF_LaunderConfig
 			return null;
 		}
 
+		loaded.ApplyLayers();
 		Install(loaded);
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts each pack overlay of this class (the mission header's m_aLF_ConfigOverlays, in load order) over
+	//! this instance, which holds the core `.conf` (#2922). An overlay sets only the fields it writes; a
+	//! field it leaves out keeps the core (or an earlier pack's) value. No pack: the core file alone.
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_LaunderConfig, "launder", resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer());
+			LF_Debug.Info("Laundering", string.Format("launder: pack overlay %1 set %2 fields", names[i], changed));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies the fields one overlay container writes directly. \return How many it set.
+	int ApplyPackContainer(notnull BaseContainer root)
+	{
+		int changed;
+		if (root.IsVariableSetDirectly("m_bCrimePaysMarked") && root.Get("m_bCrimePaysMarked", m_bCrimePaysMarked))
+			changed++;
+		if (root.IsVariableSetDirectly("m_iBuyerPeriodHours") && root.Get("m_iBuyerPeriodHours", m_iBuyerPeriodHours))
+			changed++;
+		if (root.IsVariableSetDirectly("m_iCutPct") && root.Get("m_iCutPct", m_iCutPct))
+			changed++;
+		if (root.IsVariableSetDirectly("m_iBatchMax") && root.Get("m_iBatchMax", m_iBatchMax))
+			changed++;
+		if (root.IsVariableSetDirectly("m_iBatchSeconds") && root.Get("m_iBatchSeconds", m_iBatchSeconds))
+			changed++;
+		if (root.IsVariableSetDirectly("m_iDailyCap") && root.Get("m_iDailyCap", m_iDailyCap))
+			changed++;
+		if (root.IsVariableSetDirectly("m_iInformantFee") && root.Get("m_iInformantFee", m_iInformantFee))
+			changed++;
+		if (root.IsVariableSetDirectly("m_iInformantMinTier") && root.Get("m_iInformantMinTier", m_iInformantMinTier))
+			changed++;
+
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------
