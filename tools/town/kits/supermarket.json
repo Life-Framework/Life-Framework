@@ -62,6 +62,20 @@
       "floor": "f0"
     },
     {
+      "id": "supermarket-shelves",
+      "prefab": "{5153D03AA99A065A}Prefabs/Buildings/Supermarket/Supermarket_Shelves.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "id": "lf-sign-fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
       "role": "sign",
