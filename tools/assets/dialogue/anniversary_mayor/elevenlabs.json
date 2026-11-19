@@ -1,0 +1,63 @@
+{
+  "id": "anniversary_mayor",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "dc5fc2f31bad210f",
+      "date": "2026-11-19",
+      "voice_id": "CKPSX8kOS9MJCGVaFNok",
+      "voice_name": "Henri - French-American Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Ah, a face I do not know yet. Bastien Girard, mayor. Forgive the mess, the whole town is busy with the day.",
+      "chars": 107,
+      "chars_total": 43,
+      "request_id": "Hi0aw27gOfO6QNuFB9dt",
+      "seconds": 12.14,
+      "mouth": "678887420111000384211899995544100467963189988773122355666666423336742012101100035349955520158876576448973587788862243124568888999999721001000019985359999432454697667764443213435973139999992158777666511563332487433566532367433563354333100111100"
+    },
+    "day": {
+      "hash": "75f5ffa103227834",
+      "date": "2026-11-19",
+      "voice_id": "CKPSX8kOS9MJCGVaFNok",
+      "voice_name": "Henri - French-American Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Three years since the first families walked in from the dark. We lay trestles in the square, we light candles, we say thank you. Everyone remembers that night a little differently, and the town must hold all of it.",
+      "chars": 214,
+      "chars_total": 86,
+      "request_id": "iaDaRzjyQmkBU1N3JBm8",
+      "seconds": 19.37,
+      "mouth": "3343387898755799999994233222333365444127621118994331132115655456556642333667310124665553111454446278788992101355535545785122489644799995434564655113997888899882246467752002776554999999995334775111100278844379985126966621268999951159934677799754438777755598743223359851266666761221566651386326821267612598852111000003667739315997666656534576888441120003799999995364102689875762113320032000"
+    },
+    "errand": {
+      "hash": "3e4f44996389a0bc",
+      "date": "2026-11-19",
+      "voice_id": "CKPSX8kOS9MJCGVaFNok",
+      "voice_name": "Henri - French-American Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Then take what the square still lacks, and come back when it is done. I will not forget it.",
+      "chars": 91,
+      "chars_total": 36,
+      "request_id": "IeRnSElBAylUaSTAFJVV",
+      "seconds": 8.2,
+      "mouth": "439975553016999832103569986212003763367343028977776234117766679998224441024555631248678397763112244655555214521553203432221000378759878887211795329995999523011111000"
+    },
+    "bye": {
+      "hash": "ca9a62c08799dd79",
+      "date": "2026-11-19",
+      "voice_id": "CKPSX8kOS9MJCGVaFNok",
+      "voice_name": "Henri - French-American Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Till the day, then.",
+      "chars": 19,
+      "chars_total": 8,
+      "request_id": "SpfNbDeJBYl4nsaarBfP",
+      "seconds": 1.63,
+      "mouth": "399973895298877663103335421111000"
+    }
+  },
+  "voice": {
+    "id": "CKPSX8kOS9MJCGVaFNok",
+    "name": "Henri - French-American Narrator",
+    "source": "voice library"
+  }
+}

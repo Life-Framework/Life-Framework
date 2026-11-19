@@ -55,6 +55,13 @@
   rollback, and pays job rewards once per batch. A short input is named in the refusal ("Needs
   Coal") instead of "Missing the input materials". Defaults (no job, cap 1) keep every existing
   machine as it was. Test: `LF_Test_MachineRecipeRules`.
+- ✅ Timed machine runs (#3229). A machine row with `m_iProcessSeconds` > 0 takes the inputs at the
+  start and keeps the outputs back: `LF_ProcessRun` (`Feature/Processing/LF_ProcessRun.c`) drops them
+  at the machine when the time is up and pays the job reward then. The machine is heard running for
+  the run (`LF_AmbientSwitchComponent.PulseOn`). One run per machine entity: a second worker reads
+  "Still running" (`#LF-Process_Busy`) and keeps their inputs. The run is session-only; the game mode's
+  OnGameEnd drops every owed output at its machine before the shutdown save, so a restart loses
+  nothing. The row's default 0 stays instant. Test: `LF_Test_ProcessRunTimer`.
 - ✅ A machine id copies inputs and outputs from `ResourceChains.conf`. An
   empty recipe or a prefab that does not resolve logs `LF_Debug.Error` and
   returns before inventory changes (verified 2026-10-11).
