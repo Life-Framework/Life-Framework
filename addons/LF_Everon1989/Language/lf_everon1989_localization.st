@@ -291,7 +291,7 @@ StringTable {
     }
     CustomStringTableItem "{4E29407E130F00C3}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
-     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
+     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, maps and snacks in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
     CustomStringTableItem "{A5BFE7A72F0C053D}" {
@@ -1994,6 +1994,11 @@ StringTable {
      Target_en_us "Farm machinery for hire-purchase on the spot: a reaper to hitch behind a tractor or a UAZ."
      Comment "Shop description of the farm supply counter till (#3631): outlet farm_supply."
     }
+    CustomStringTableItem "{816F70B82A3F716F}" {
+     Id "LF-Shop_Desc_FuelKiosk"
+     Target_en_us "Maps of Everon, bottled water, soda, chocolate and crackers."
+     Comment "Shop description of the Saint-Philippe fuel station kiosk till: stock fuel_kiosk."
+    }
     CustomStringTableItem "{1B4CFC6B76803431}" {
      Id "LF-Shop_Desc_Furniture"
      Target_en_us "Beds, sofas, tables, wardrobes and lamps for the new home."
@@ -2079,6 +2084,11 @@ StringTable {
      Target_en_us "Farm Supply"
      Comment "Shop name of the farm supply counter till (#3631): outlet farm_supply."
     }
+    CustomStringTableItem "{2A524DAA3F49F9F9}" {
+     Id "LF-Shop_Name_FuelKiosk"
+     Target_en_us "Filling-station kiosk"
+     Comment "Shop name of the Saint-Philippe fuel station kiosk till: stock fuel_kiosk."
+    }
     CustomStringTableItem "{5610D2FB07972A2F}" {
      Id "LF-Shop_Name_Furniture"
      Target_en_us "Meubles"
@@ -2139,6 +2149,11 @@ StringTable {
      Target_en_us "Buy a reaper"
      Comment "Action description on the farm supply counter till (#3631)."
     }
+    CustomStringTableItem "{5160FD4B0C8E4B67}" {
+     Id "LF-Shop_OpenDesc_FuelKiosk"
+     Target_en_us "Buy a map of Everon or a snack"
+     Comment "Action description on the fuel station kiosk counter."
+    }
     CustomStringTableItem "{BC9B8CB431998AA0}" {
      Id "LF-Shop_OpenDesc_Hardware"
      Target_en_us "Browse the tools and building supplies."
@@ -2183,6 +2198,11 @@ StringTable {
      Id "LF-Shop_Open_FarmSupply"
      Target_en_us "Browse the farm machinery"
      Comment "Action label on the farm supply counter till (#3631)."
+    }
+    CustomStringTableItem "{A5E2099F0CE9680A}" {
+     Id "LF-Shop_Open_FuelKiosk"
+     Target_en_us "Browse the kiosk"
+     Comment "Action label on the fuel station kiosk counter."
     }
     CustomStringTableItem "{0E816968A7BE847A}" {
      Id "LF-Shop_Open_Furniture"

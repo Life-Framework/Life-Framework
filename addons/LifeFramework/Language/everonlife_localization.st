@@ -4202,7 +4202,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D472603DD9705158}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
-     Target_en_us "This is the only fuel in town, friend. Petrol at the pumps, oil and maps in here."
+     Target_en_us "This is the only fuel in town, friend. Petrol at the pumps, maps and snacks in here."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
     CustomStringTableItem "{EB24FB16C4F34B2F}" {
