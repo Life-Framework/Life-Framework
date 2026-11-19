@@ -373,6 +373,14 @@
         "D10 pick (#3346), card X20 #3388: six to eight capped apple and plum gather trees and the juicer under a lean-to by this barn (kind Orchard, 25 m margin); b23 is the other farm barn near the village; b100 stays locked 'Propriete privee' since the slot uses its yard, not its door"
       ]
     },
+    "wheatfield": {
+      "building": "b19",
+      "dossier": "saint-philippe-farmwest",
+      "why": [
+        "Barn_E_03_open (farm), 130 m2, 2 floors, 5 doors, the open barn on the pasture south of the farm barn b73 (dossier saint-philippe-farmwest, scouted at 4415, 10600, radius 110; 64 m from b73, so the farm supply counter and implement rack of #3631 are one short drive from the field and the cabbage plots of #3191, which stand within 20 m of b73, are far clear of it)",
+        "Wheat harvest epic #3282, card H11 #3300: one LF_WheatField (60 x 40 m, a flat open box off the roads) on the open pasture east of this barn, inside free plot p1 of the farmwest scout (about 4403 to 4463 by 10500 to 10570: 60 x 70 m, ground 18.5 to 25.1 m, grass, not the terrain wheat clutter surface). The barn is the implement shed: the cart, sacks and yard dressing stand beside it and along the field (kind WheatField; the 85 m margin covers the box and its fence). The card's first idea, the south-west cluster (cow shed 4522, 10379 and the weighbridge at 4552, 10403, outside every Saint-Philippe survey), has only a 30 m strip and a 32 x 34 m plot of open ground, too small for the box; the weighbridge stays the granary unload (#3294)"
+      ]
+    },
     "night-lights": {
       "drops": [
         { "place": "saint-philippe", "building": "b03" },

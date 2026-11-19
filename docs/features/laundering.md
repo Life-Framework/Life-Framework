@@ -104,7 +104,7 @@ Stolen money is a separate item that never counts as cash.
 - ✅ `LF_BuyerSaleAction` ("Sell the goods", `#LF-BuyerSale_Action`) sits on `LF_IllicitBuyer.et`. `LF_BuyerSale.ServerSell` takes
   every chain good (`LF_ChainSearch.IsGood`, the `m_bGoods` outputs) the character carries that the price list
   (`Configs/Crime/LF_BuyerPrices.conf`, `LF_BuyerPrices`) names, and pays the sum: marked notes when the dirty-money switch
-  (`LF_LaunderConfig.m_bCrimePaysMarked`) is on, cash when it is off. The core list prices moonshine; the 1989 pack overrides the file (B4).
+  (`LF_LaunderConfig.m_bCrimePaysMarked`) is on, cash when it is off. The core list prices moonshine; the 1989 pack layers its own prices over it (#2922).
 - ✅ Server only, and checked again there: a living standing seller, not cuffed (`LF_CuffEnforcement`), the buyer is the live one
   and stands at the spot the rotation has open now, within `m_fReach` (4 m), not repeating inside `m_iMinActionMs` (1 s), something to sell.
 - ✅ All or nothing on the inventory side: goods are taken first; a short take, or a payout that does not land, puts every unit
@@ -114,3 +114,10 @@ Stolen money is a separate item that never counts as cash.
 ### The buyer's spots on Saint-Philippe — `Place_saint-philippe_buyer-spots.layer` (#3416, Refs #3400)
 - 🧪 The island has three `LF_BuyerSpot` markers (the core prefab, `LF_BuyerSpotComponent` on a traffic cone), so `LF_BuyerRotation` has spots to rotate through and the police cannot camp one. Each stands out of sight against a wall: the dock warehouse (`saint-philippe-dock` b22), the east end of a concrete vehicle ramp in the districts' back lane (b21) and a barn at the village edge (b64). The spot id is the entity name (`Fit_saint_philippe_<place>_buyer_spots_drop_<building>`). All three are 200 m or more outside both safe circles (#3350).
 - Fitted by `tools\cli town drops saint-philippe buyer-spots` (a new `buyer-spots` entry in `DROP_KITS`); claim `tools/town/claims/saint-philippe-buyer-spots.json`; `audit placement --strict` clean, `town check saint-philippe` shows the slot fitted.
+
+### The 1989 pack turns dirty money on (#2922, B4 of #1025)
+- ✅ `LF_LaunderConfig` and `LF_BuyerPrices` read pack overlays (`ApplyLayers`, `LF_ConfigOverlay.LoadPackOverlays`, pattern of #2977). The launder overlay sets only the fields it writes; a buyer price row replaces the core row of the same prefab or adds one. Test: `LF_Test_LaunderPackOverlay` (LOGIC, test overlays in `Configs/Tests/`).
+- ✅ `LF_Everon1989/Configs/Crime/LF_Launder_Everon1989.conf`: robberies and vault bags pay marked notes, the house cut is 35 %, a batch takes up to 1500 notes and 90 s, the daily cap is 6000, the informant's tip costs 150 and needs underworld tier 1.
+- ✅ `LF_BuyerPrices_Everon1989.conf`: the buyer pays 80 for a bottle of moonshine (its plums and cabbages cost 30 in the supermarket).
+- ✅ `LF_Dialogue_NightShift.conf` (a pack-only dialogue cannot be patched from another file, `validate-dialogue-patch`): the night-shift worker (the informant) offers "Heard anyone's buying, quiet like?" after he has talked about work (a menu shows four replies at most, so it takes the place of the work reply's repeat); shown only to a player he would tell (the `Informant` hook as condition). His answers and the station's cap, loaded and closed toasts and the buyer's two refusals are pack strings (same Ids as the core rows, so the pack's words win).
+- ⚠️ Not here: tobacco and paper chains (no such chain exists yet, only moonshine is priced) and the buyer's pack work jacket (the outfit is outside this card). Test: `LF_Test_EveronDirtyMoney` (pack leg).

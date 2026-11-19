@@ -244,6 +244,11 @@
       "places": ["Orchard"]
     },
     {
+      "id": "wheatfield", "required": false, "kit": "wheatfield", "host": "building", "poi": "none", "margin": 85,
+      "needs": { "interior": "optional", "minArea": 60, "prefer": "far", "types": ["farm"] },
+      "places": ["WheatField"]
+    },
+    {
       "id": "night-lights", "required": false, "kit": "night-lights", "host": "outposts", "poi": "none", "margin": 6,
       "needs": { "interior": "optional" },
       "places": []

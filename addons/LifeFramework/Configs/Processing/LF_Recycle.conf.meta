@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F0B2DCA7A67C8BA3}Configs/Processing/LF_Recycle.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

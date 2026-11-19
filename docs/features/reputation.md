@@ -71,6 +71,7 @@ Design: [`architecture/reputation.md`](../architecture/reputation.md). Player-fa
   `LF_ReputationContracts.ActiveRun`), so the client's countdown and time word carry on instead of starting full. No new
   RPC and no JIP state; a spawn with no contract, or one already out of time, sends nothing. A contract still ends on a
   server restart. Test `reputation/contract-tracker-resend`.
+- ✅ **The rejoin proof reads the receiving client** (#3198, merged, in-dev): `LF_ContractTracker.Receive` logs `[LFDebug:Reputation] contract line received: <id> limit=N left=M` (or `cleared`) on the client, and session proof `tracker-rejoin-proof` (`agent-box/proofs/tracker-rejoin-proof.mjs`, `up --mission island`) takes `harbour_crates`, waits 30 s, runs `session rejoin 1` on the dedicated server and checks the new client process logged the line again with less than the full limit left and no line for another contract. Passed 2026-11-19: 1500 s limit, 1424 s left after the rejoin, server re-sent `harbour_crates|1500|1|1424`. Needs no fix in the tracker.
 - 🟡 **The standing tables read pack overlays** (#3044): `LF_ReputationConfig.Get()` and `LF_ReputationContractsConfig.Get()`
   layer each overlay the mission header lists (`LF_ReputationOverlay.c`, load order) over the core file: factions (key `m_sId`),
   awards (`m_sAction`), gates (`m_sGate`), pays (`m_sFaction`) and contracts (`m_sId`) take add, replace, patch and remove
