@@ -1,3 +1,4 @@
+// order-proof (2026-11-19): the seeded e2e truck stayed in every plain run; `--only LF_Test_CargoBedPersist,LF_Test_DebugWorldCollision` failed debugworld/entity-collision (6 SupplyStack_Large_01_Vehicle props at <106,1.4,62> not traceable). Seeded only under LF_E2E_HOST_STOP now: green.
 // red-proof: observed 2026-11-19 `tools/cli test --no-build --red LF_Test_CargoBedPersist`: RED PROOF OK (RedProof() skips the section read, so the row and the bed load never come back after the restart). Restart: `tools/cli wt e2e slice-3266`.
 //! A parked truck keeps its logs across a restart (#3266, the "cargobed" save section). An owned truck on
 //! the street holds a mixed load; the save point writes it under the truck's garage key; after a restart
@@ -158,8 +159,12 @@ class LF_Test_CargoBedPersist : LF_Test
 
 		Cleanup(owner, before, snapshotsBefore);
 
-		// Every non-reload run (the e2e save boot among them) leaves one loaded truck on the street.
+		// Only the e2e save boot leaves one loaded truck on the street for the shutdown save. A plain suite
+		// run leaving it put six non-traceable SupplyStack props of the M923 bed in front of
+		// debugworld/entity-collision (red on main 13228af58, 2026-11-19).
+#ifdef LF_E2E_HOST_STOP
 		SeedE2E(ctx);
+#endif
 	}
 
 	//------------------------------------------------------------------------------------------------

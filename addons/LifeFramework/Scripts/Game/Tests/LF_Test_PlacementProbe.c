@@ -2,7 +2,7 @@
 // red-proof: 2026-11-12, FindExcluded returning null for the "@prefab:x,y,z" token: --only LF_Test_PlacementProbe failed (1 failing). Restored, green.
 //! The probe ray behind `tools\cli place` (LF_PlacementAudit.RayLine, tools/place/place.mjs): the
 //! placement tool asks the test server where a surface's top and a wall's face really are instead of
-//! trusting mesh bounds. On a table spawned on open ground south of the DebugWorld town (310, 100):
+//! trusting mesh bounds. On a table spawned on open ground east of the GridWorld annex fence (360, 100):
 //! a ray down finds the table top and names the table, a ray from the side stops at its edge, and a
 //! ray through open air reports its full length and no hit.
 [LF_TestInfo(LF_TestTier.WORLD)]
@@ -20,8 +20,8 @@ class LF_Test_PlacementProbe : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		BaseWorld world = GetGame().GetWorld();
-		float groundY = world.GetSurfaceY(310, 100);
-		IEntity table = LF_Utils.SpawnEntityPrefab(TABLE, Vector(310, groundY, 100));
+		float groundY = world.GetSurfaceY(360, 100);
+		IEntity table = LF_Utils.SpawnEntityPrefab(TABLE, Vector(360, groundY, 100));
 		ctx.NotNull(table, "the table spawned");
 		if (!table)
 			return;
