@@ -4650,6 +4650,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You need bait. Buy a tin at the chandler."
      Comment "Toast: a cast with no bait in the inventory (#2930)."
     }
+    CustomStringTableItem "{7D3E91A0C54B2F68}" {
+     Id "LF-Fishing_NoLicence"
+     Target_en_us "You need a fishing licence to cast. %1"
+     Comment "Toast: a cast when the fishing config names a licence the angler lacks (#3449); %1 says where to get it and the fee (#3150)."
+    }
     CustomStringTableItem "{10A11C7FDC837A35}" {
      Id "LF-Fishing_NoRod"
      Target_en_us "Take the fishing rod into your hands first."

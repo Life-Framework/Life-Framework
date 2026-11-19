@@ -318,6 +318,9 @@ class LF_FishingConfig
 	[Attribute("6", UIWidgets.Auto, "Most casts one player makes in a minute", params: "1 60")]
 	int m_iCastsPerMinute;
 
+	[Attribute(defvalue: "0", UIWidgets.ComboBox, "Licence a cast needs (#3449); UNEMPLOYED means none, casting is open", "", ParamEnumArray.FromEnum(LF_ELicenseType))]
+	LF_ELicenseType m_eRequiredLicence;
+
 	[Attribute("", UIWidgets.Object, "Rods")]
 	ref array<ref LF_FishingRodDef> m_aRods;
 
@@ -394,6 +397,7 @@ class LF_FishingConfig
 		config.m_fBaitBoost = 2;
 		config.m_sOpenWaterTable = "open_water";
 		config.m_iCastsPerMinute = 6;
+		config.m_eRequiredLicence = LF_ELicenseType.UNEMPLOYED;
 		config.m_aRods = {};
 		config.m_aBaits = {};
 		config.m_aSpecies = {};

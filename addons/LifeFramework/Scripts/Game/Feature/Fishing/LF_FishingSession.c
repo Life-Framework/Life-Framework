@@ -11,7 +11,8 @@ enum LF_EFishingRefusal
 	ALREADY_OUT,	//! a cast of this player is already out
 	RANGE,			//! the target is farther than the rod casts
 	NOT_WATER,		//! the target is not OCEAN or POND water
-	NO_BAIT			//! no bait item in the inventory
+	NO_BAIT,		//! no bait item in the inventory
+	NO_LICENCE		//! the fishing config names a licence and the angler lacks it (#3449)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -159,7 +160,10 @@ class LF_FishingSession
 		if (why != LF_EFishingRefusal.NONE)
 		{
 			LF_Debug.Info(LF_FishingConfig.FEATURE, string.Format("cast refused for %1: %2", KeyOf(character), typename.EnumToString(LF_EFishingRefusal, why)));
-			Toast(PlayerIdOf(character), RefusalText(why));
+			if (why == LF_EFishingRefusal.NO_LICENCE)
+				ToastLicence(PlayerIdOf(character));
+			else
+				Toast(PlayerIdOf(character), RefusalText(why));
 		}
 
 		return why;
@@ -178,6 +182,9 @@ class LF_FishingSession
 		ChimeraCharacter chimera = ChimeraCharacter.Cast(character);
 		if (!chimera || chimera.IsInVehicle())
 			return LF_EFishingRefusal.NO_CHARACTER;
+
+		if (!LF_FishingLicenceGate.Allows(character, config))
+			return LF_EFishingRefusal.NO_LICENCE;
 
 		string key = KeyOf(character);
 		IEntity rodItem = LF_HandTool.HeldTool(character, TOOL_ID);
@@ -560,6 +567,15 @@ class LF_FishingSession
 	{
 		if (playerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Fishing_Title", text, 4.0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The licence refusal toast: no licence, no cast, with where to get it and the fee (#3150, #3449).
+	protected static void ToastLicence(int playerId)
+	{
+		LF_FishingConfig config = LF_FishingConfig.Get();
+		if (playerId > 0 && config)
+			LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Fishing_Title", LF_FishingLicenceGate.KEY_NEED, 4.0, LF_ENotificationType.INFO, LF_FishingLicenceGate.Where(config.m_eRequiredLicence));
 	}
 
 	//------------------------------------------------------------------------------------------------
