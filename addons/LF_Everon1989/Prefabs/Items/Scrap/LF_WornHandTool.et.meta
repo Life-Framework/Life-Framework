@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{507AAEC2A7BBFFBB}Prefabs/Items/Scrap/LF_WornHandTool.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

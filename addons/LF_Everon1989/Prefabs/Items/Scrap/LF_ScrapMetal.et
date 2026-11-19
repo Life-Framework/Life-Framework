@@ -1,0 +1,33 @@
+GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" {
+ ID "6AC3404AC5905410"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_ScrapMetal_Name"
+     Description "#LF-Item_ScrapMetal_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 1.5
+     SizeSetupStrategy Volume
+     ItemVolume 1200
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{59BCA073459D6271}" {
+     HandAdditiveRotation 0 0 0
+     HandAdditiveTranslation 0 0.005 -0.065
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{59BCA073459D626C}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 6
+      FOV 10
+     }
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{D77A6113A48E1B80}Assets/Props/Civilian/PotOld_01/PotOld_01.xob"
+  }
+ }
+}
