@@ -1,6 +1,8 @@
 //------------------------------------------------------------------------------------------------
-//! The lockers owner-config section (#2658): Configs/Lockers/LF_Lockers.conf with the owner's
-//! `lockers` section layered over it. Read on the server only (rent and lost-and-found are server rules).
+//! The lockers owner-config section (#2658): Configs/Lockers/LF_Lockers.conf with each pack overlay (the
+//! mission header's m_aLF_ConfigOverlays, #3192) and then the owner's `lockers` section layered over it. A
+//! pack overlay is a root-level LF_LockerConfig whose set fields replace the core ones. Read on the server
+//! only (rent and lost-and-found are server rules).
 //!
 //! Owner JSON:
 //!   "lockers": { "rentPrice": 100, "rentPeriodDays": 7, "gracePeriodDays": 2, "reclaimFee": 50, "weightCapacity": 60 }
@@ -76,12 +78,64 @@ class LF_LockerConfig
 	//! Merges the owner's "lockers" section over this instance, which holds the core `.conf`.
 	void ApplyLayers()
 	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_LockerConfig, "lockers", resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer());
+			LF_Debug.Info("Lockers", string.Format("lockers: pack overlay %1 changed %2 fields", names[i], changed));
+		}
+
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
 		if (!reader)
 			return;
 
 		ApplyOwner(reader);
 		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("lockers: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack overlay's root fields: only a field the overlay sets directly changes, and a value out
+	//! of the owner section's range is refused so the shipped one stays.
+	//! \return Fields changed.
+	//! \param[in] root The overlay's root container.
+	int ApplyPackContainer(notnull BaseContainer root)
+	{
+		int changed;
+		int number;
+		float kilograms;
+		if (root.IsVariableSetDirectly("m_iRentPrice") && root.Get("m_iRentPrice", number) && number >= 0 && number <= 1000000)
+		{
+			m_iRentPrice = number;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iRentPeriodDays") && root.Get("m_iRentPeriodDays", number) && number >= 0 && number <= 3650)
+		{
+			m_iRentPeriodDays = number;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iGracePeriodDays") && root.Get("m_iGracePeriodDays", number) && number >= 0 && number <= 3650)
+		{
+			m_iGracePeriodDays = number;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_iReclaimFee") && root.Get("m_iReclaimFee", number) && number >= 0 && number <= 1000000)
+		{
+			m_iReclaimFee = number;
+			changed++;
+		}
+
+		if (root.IsVariableSetDirectly("m_fWeightCapacity") && root.Get("m_fWeightCapacity", kilograms) && kilograms >= 1 && kilograms <= 10000)
+		{
+			m_fWeightCapacity = kilograms;
+			changed++;
+		}
+
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------

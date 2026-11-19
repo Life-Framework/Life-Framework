@@ -54,6 +54,15 @@ GenericEntity Fit_saint_philippe_bank_lf_money_bag : "{65DE48DCC1D4DD01}Prefabs/
  coords 4359.218 12.497 10652.295
  angleY 173
 }
+GenericEntity Fit_saint_philippe_bank_lf_locker_bank : "{271A5DA917F4DF47}Prefabs/Props/Lockers/LF_LockerBank.et" {
+ components {
+  LF_LockerBankComponent "{8C396AE2B9915D0A}" {
+   m_sSiteId "saint_philippe_bank"
+  }
+ }
+ coords 4365.905 13.053 10654.856
+ angleY 173
+}
 GenericEntity Fit_saint_philippe_bank_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
  components {
   LF_AlarmMountComponent "{9ACA0BDAD2FE2665}" {
