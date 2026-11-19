@@ -47,6 +47,7 @@ Object.assign(SECTIONS, {
   "prefabs.slots": row("prefabs", "slots", "LF_PrefabSlotsConfig", "Configs/PrefabSlots/LF_PrefabSlots.conf", "m_aSlots", "m_sSlot", byField("m_sSlot")),
   "sounds.slots": row("sounds", "slots", "LF_SoundSlotsConfig", "Configs/SoundSlots/LF_SoundSlots.conf", "m_aSlots", "m_sSlot", byField("m_sSlot")),
   "safeTypes.types": row("safeTypes", "types", "LF_SafeTypeConfig", "Configs/Crime/LF_SafeTypes.conf", "m_aTypes", "m_sId", byField("m_sId")),
+  "heist.sites": row("heist", "sites", "LF_HeistConfig", "Configs/Crime/LF_Heist.conf", "m_aSites", "m_sId", byField("m_sId")),
   "dialogue.index": row("dialogue", "index", "LF_DialogueIndexConfig", "Configs/Dialogue/LF_DialogueIndex.conf", "m_aEntries", "m_sId", byField("m_sId")),
   "events.events": row("events", "events", "LF_EventsConfig", "Configs/Events/LF_Events.conf", "m_aEvents", "m_sEventId", byField("m_sEventId")),
   "jobs.tracks": row("jobs", "tracks", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aTracks", "m_sJob", byField("m_sJob"), same),
