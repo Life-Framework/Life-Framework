@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "template": "farmcompound",
+  "place": "farmcompound",
+  "status": "approved",
+  "note": "Hand-written for #3412 (contested site farm_compound): a farm yard north-west of the Chotain road, scouted at radius 90. The compound is the Barn_E_01 at its north edge, with open ground in front of its north-east doors for the flag and the strongbox. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 14,
+    "freePlots": 8
+  },
+  "slots": {
+    "compound": {
+      "building": "b13",
+      "why": [
+        "Barn_E_01 (type farm), 163 m2, the northernmost building of the farm, 62 m from the scout centre, with free plot p4 (80 x 12 m) behind it and open ground in front of its two front doors",
+        "away from the farm's houses and from any road junction: the nearest road is 44 m off, so the inner circle stays on private ground"
+      ]
+    }
+  }
+}

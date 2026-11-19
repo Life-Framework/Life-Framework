@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "kind": "farmcompound",
+  "about": "A contested site away from any town: one farm barn with a yard in front of it, held by whichever organisation keeps the inner circle (#3339). One slot, no sign on the map. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "compound", "required": true, "kit": "farm-compound", "host": "building", "poi": "none", "margin": 24,
+      "needs": { "interior": "optional", "minArea": 100, "prefer": "far", "types": ["farm"] },
+      "places": ["FarmCompound"]
+    }
+  ]
+}

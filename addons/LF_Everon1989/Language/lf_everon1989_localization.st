@@ -1984,6 +1984,11 @@ StringTable {
      Target_en_us "Calls waiting for this service, newest first."
      Comment "Dispatch board sign card: what it is."
     }
+    CustomStringTableItem "{4E7B1C9A2D8F5036}" {
+     Id "LF-Sign_FarmCompound_What"
+     Target_en_us "Abandoned farm. Whoever holds the yard longest holds the barn."
+     Comment "What line of the farm compound name plate (#3412)."
+    }
     CustomStringTableItem "{122025DCEE6F8713}" {
      Id "LF-Sign_FarmPlots_How"
      Target_en_us "Take Cabbage seeds from the crate. Plant Cabbage seeds in an empty plot. When the cabbages are ripe, Harvest Cabbage."
