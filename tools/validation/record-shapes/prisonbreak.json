@@ -1,0 +1,14 @@
+{
+  "section": "prisonbreak",
+  "class": "LF_PrisonBreakSavePayload",
+  "version": 1,
+  "roots": "LF_PrisonBreakRow",
+  "records": {
+    "LF_PrisonBreakRow": {
+      "fields": [
+        "string m_sUid",
+        "float m_fRemaining"
+      ]
+    }
+  }
+}

@@ -294,6 +294,7 @@ class LF_Breach
 
 		target.m_bChargeArmed = true;
 		target.m_fElapsed = 0;
+		LF_PrisonBreak.OnArmed(targetId, playerUid, suspect);
 		target.m_sArmedBy = playerUid;
 
 		if (FuseElapsed(target.m_fFuseSeconds, 0))
@@ -503,6 +504,7 @@ class LF_Breach
 		SyncTarget(target);
 		LF_Debug.Log("Breach", string.Format("lock opened: %1", target.m_sTargetId));
 		LeaveEvidence(target);
+		LF_PrisonBreak.OnOpened(target.m_sTargetId);
 		if (Replication.IsServer())
 			LF_EventBus.Publish(LF_OnBreachOpened.Create(target.m_sTargetId, target.m_sArmedBy));
 	}
