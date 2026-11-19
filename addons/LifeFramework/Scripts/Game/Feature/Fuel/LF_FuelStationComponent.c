@@ -46,8 +46,8 @@ class LF_FuelStationComponentClass : ScriptComponentClass
 //!
 //! Server-authoritative: the action names the pump (its owner); the server finds the vehicle next to it and
 //! works out the litres from that vehicle's free tank room, the price from the config and the cash from the
-//! buyer's pockets. A client never sends a litre count or a price. The stock is not saved yet (the `fuelstock`
-//! section is a later card): a restart starts every station at its configured starting litres.
+//! buyer's pockets. A client never sends a litre count or a price. The stock rides the `fuelstock` save section
+//! (LF_FuelStockSave.c): a restart keeps each station's litres.
 class LF_FuelStationComponent : ScriptComponent
 {
 	static const string FEATURE = "Fuel";
@@ -108,6 +108,24 @@ class LF_FuelStationComponent : ScriptComponent
 		s_mStocks.Set(stationId, stock);
 		LF_Debug.Info(FEATURE, string.Format("fuel station '%1' opened with %2 of %3 litres", stationId, stock.m_iLitres, stock.m_iCapacity));
 		return stock;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every station opened so far, by id: what the `fuelstock` save section writes and reads (LF_FuelStockSave.c).
+	static map<string, ref LF_FuelStock> Stocks()
+	{
+		if (!s_mStocks)
+			s_mStocks = new map<string, ref LF_FuelStock>();
+
+		return s_mStocks;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Forgets every station's stock: the next sale opens each one at its starting litres. The owed
+	//! fractions stay.
+	static void ForgetStocks()
+	{
+		s_mStocks = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
