@@ -5127,6 +5127,15 @@ function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, b
       pass2 = 1;
     }
   }
+  // #3630: a restart proof whose pass-2 check skips quietly (no seed, no section) must not turn the leg green.
+  // An older save (--legacy-save, --pre-move) holds none of it, so those runs are not asked.
+  if (pass2 === 0 && !legacySave && !preMove) {
+    for (const p of e2eShutdown.missingRestartProofs(log2 ? readFileSync(log2, "utf8") : "", only)) {
+      console.log(`e2e: FAILED in pass 2 (restart proof): ${p.what} never reached its check (the reload boot's log has no "${p.text}" line: the seed or the section read was skipped)`);
+      console.log(`e2e: log ${log2 ?? "(none)"}`);
+      pass2 = 1;
+    }
+  }
   console.log(`e2e: profile ${profile}`);
   console.log(`e2e: pass1 exit=${pass1} pass2 exit=${pass2} ${pass1 === 0 && pass2 === 0 ? "OK" : "FAILED"}`);
   return pass1 === 0 && pass2 === 0 ? 0 : (pass1 === 0 ? pass2 : pass1);
