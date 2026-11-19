@@ -1,0 +1,29 @@
+SCR_ChimeraCharacter : "{8C7093AF368F496A}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_CottonShirt_1.et" {
+ ID "2A7976A9683F0D3B"
+ components {
+  LF_DialogueComponent "{C387415AFA25F09D}" {
+   m_sDialogueId "passerby"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{95F923BD0BC6B4FC}" {
+     ContextName "Talk"
+     Position PointInfo "{EA9A7C9B2C8C3463}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{40D1F97953189071}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{1A532930D676F672}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}

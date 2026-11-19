@@ -149,7 +149,7 @@
     },
     {
       "id": "cashier-shop-01",
-      "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
+      "prefab": "{2B5B0D22672580AA}Prefabs/Props/Commercial/LF_ClothesTill.et",
       "role": "till",
       "verb": "on counter-shop-01",
       "offset": [

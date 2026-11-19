@@ -66,6 +66,11 @@ class LF_ParkedCarMarkerComponent : ScriptComponent
 	[Attribute("8", UIWidgets.Auto, desc: "The car counts as gone once it is farther than this from the marker, in metres.", params: "1 100")]
 	protected float m_fHomeMetres;
 
+	//! The seat traces start this far above the car's bottom (a car spawned with its wheels in the kerb still finds the kerb top)
+	//! and reach this far under it (a marker up to 2.5 m over the street still lands the car on it).
+	static const float SETTLE_LIFT = 1.2;
+	static const float SETTLE_REACH = 2.5; // lf-fixed: a geometry bound of the seat trace, not a tunable
+
 	protected EntityID m_CarId = EntityID.INVALID;
 	protected int m_iGoneSince;
 	protected int m_iSpawned;
@@ -160,10 +165,16 @@ class LF_ParkedCarMarkerComponent : ScriptComponent
 		else
 			LF_Debug.Warn(LF_ParkedCarConfig.FEATURE, string.Format("%1 has no LF_VehicleLockComponent: the parked car stands unlocked", prefab));
 
+		// The marker's height came from the place's survey, not from the street under it (placement-system.md): rest the car's
+		// wheels on the surface under its footprint (pavement, kerb, forecourt), traced from SETTLE_LIFT above its bottom.
+		LF_PlaceSnapResult seat = LF_PlaceSnap.Settle(car, SETTLE_LIFT, SETTLE_REACH);
+		if (seat)
+			LF_Debug.Info(LF_ParkedCarConfig.FEATURE, string.Format("parked car seated on %1 (gap %2 m before, %3 m after)", seat.m_sOn, seat.m_fGapBefore, seat.m_fGap));
+
 		m_CarId = car.GetID();
 		m_iGoneSince = 0;
 		m_iSpawned++;
-		LF_Debug.Info(LF_ParkedCarConfig.FEATURE, string.Format("parked car out (%1): %2 at %3", why, prefab, origin));
+		LF_Debug.Info(LF_ParkedCarConfig.FEATURE, string.Format("parked car out (%1): %2 at %3", why, prefab, car.GetOrigin()));
 		return car;
 	}
 
