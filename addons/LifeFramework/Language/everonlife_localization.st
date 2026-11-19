@@ -5078,6 +5078,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Radio set"
      Comment "Toast title for calls placed on a carried radio set."
     }
+    CustomStringTableItem "{3656A1B2C3D4000B}" {
+     Id "LF-Harvest_BoardAlreadyPosted"
+     Target_en_us "This field already has its contract"
+     Comment "Toast (#3656): one contract per field."
+    }
+    CustomStringTableItem "{3656A1B2C3D4000E}" {
+     Id "LF-Harvest_BoardKitFailed"
+     Target_en_us "The rental kit did not come out. Your deposit is back"
+     Comment "Toast (#3656): the vehicle did not spawn."
+    }
+    CustomStringTableItem "{3656A1B2C3D40008}" {
+     Id "LF-Harvest_BoardNoField"
+     Target_en_us "No wheat field belongs to this board"
+     Comment "Toast (#3656): no field near the board."
+    }
+    CustomStringTableItem "{3656A1B2C3D4000D}" {
+     Id "LF-Harvest_BoardNoKit"
+     Target_en_us "You have no rental kit to return"
+     Comment "Toast (#3656): no rental kit out."
+    }
+    CustomStringTableItem "{3656A1B2C3D40009}" {
+     Id "LF-Harvest_BoardNotPosted"
+     Target_en_us "Post the contract first"
+     Comment "Toast (#3656): take or return with no contract on the field."
+    }
+    CustomStringTableItem "{3656A1B2C3D4000A}" {
+     Id "LF-Harvest_BoardNotRipe"
+     Target_en_us "This field is already cut"
+     Comment "Toast (#3656): nothing left to harvest."
+    }
+    CustomStringTableItem "{3656A1B2C3D4000C}" {
+     Id "LF-Harvest_BoardNotTaker"
+     Target_en_us "Only whoever took the contract can return the kit"
+     Comment "Toast (#3656): a stranger tried to return the kit."
+    }
+    CustomStringTableItem "{3656A1B2C3D40001}" {
+     Id "LF-Harvest_BoardPost"
+     Target_en_us "Post contract"
+     Comment "Prompt (#3656): the farm board posts the field's contract."
+    }
+    CustomStringTableItem "{3656A1B2C3D40005}" {
+     Id "LF-Harvest_BoardPosted"
+     Target_en_us "Contract posted for this field"
+     Comment "Toast (#3656): the field now has its contract."
+    }
+    CustomStringTableItem "{3656A1B2C3D40004}" {
+     Id "LF-Harvest_BoardReturn"
+     Target_en_us "Return kit"
+     Comment "Prompt (#3656): bring the rental kit back for the deposit."
+    }
+    CustomStringTableItem "{3656A1B2C3D40002}" {
+     Id "LF-Harvest_BoardTakeOwn"
+     Target_en_us "Take with own reaper"
+     Comment "Prompt (#3656): take the contract with the reaper from the owned list."
+    }
+    CustomStringTableItem "{3656A1B2C3D40003}" {
+     Id "LF-Harvest_BoardTakeRental"
+     Target_en_us "Take with rental kit"
+     Comment "Prompt (#3656): take the contract with a rented tractor and reaper."
+    }
+    CustomStringTableItem "{3656A1B2C3D40006}" {
+     Id "LF-Harvest_BoardTakenOwn"
+     Target_en_us "Contract taken. Hitch your reaper at the rack and cut the field"
+     Comment "Toast (#3656): the own-reaper route started."
+    }
+    CustomStringTableItem "{3656A1B2C3D40007}" {
+     Id "LF-Harvest_BoardTakenRental"
+     Target_en_us "Contract taken. The rental kit stands by the board"
+     Comment "Toast (#3656): the rental kit spawned."
+    }
     CustomStringTableItem "{3297A1B2C3D40008}" {
      Id "LF-Harvest_ContractKitFar"
      Target_en_us "Bring the kit back to the board first"
