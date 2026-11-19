@@ -394,9 +394,13 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false,
       if (m.mount === "wall") {
         const w = wallSnap(HUNG_REACH, NEAR_WALL);
         if (w) {
-          l.x += fwd[0] * w.shift;
-          l.z += fwd[2] * w.shift;
-          res.wall = { side: w.side, shift: r3(w.shift) };
+          // A facade that steps back under a long plate leaves one end in the wall (pharmacy fascia, 6.6 cm, #3685): the kit row
+          // says how far to stand off the plane, `standoff` in metres, so the whole plate clears it.
+          const off = Number.isFinite(s.standoff) ? (w.side === "back" ? -s.standoff : s.standoff) : 0;
+          l.x += fwd[0] * (w.shift - off);
+          l.z += fwd[2] * (w.shift - off);
+          res.wall = { side: w.side, shift: r3(w.shift - off) };
+          if (off) res.notes.push(`stands ${Math.abs(off)} m off the wall`);
         } else res.notes.push(`no host wall within ${HUNG_REACH} m behind or ${NEAR_WALL} m in front of it`);
       } else {
         const f = footOf(l, info);

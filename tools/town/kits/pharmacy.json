@@ -103,7 +103,8 @@
         }
       ],
       "wall": "+z",
-      "floor": "f0"
+      "floor": "f0",
+      "standoff": 0.07
     },
     {
       "id": "shop-house-e-2-i01t-furniture-drugstore-lf-01",
