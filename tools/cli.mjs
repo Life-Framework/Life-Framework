@@ -5101,9 +5101,19 @@ function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, b
   }
   const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : "", preMove ? "LF_E2E_PRE_MOVE" : ""].filter(Boolean).join(",");
   console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, ${pass2Defines})`);
-  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines, requireFreshRdb: preMove, only: only ? only.join(",") : undefined });
-  const log2 = e2eShutdown.newestTestConsole(e.path);
+  // Pass 2 keeps the profile, so pass 1's log folder is still there: only a folder pass 2's own boot made counts (#3569).
+  const before2 = e2eShutdown.testLogDirs(e.path);
+  let pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines, requireFreshRdb: preMove, only: only ? only.join(",") : undefined });
+  const log2 = e2eShutdown.newestTestConsole(e.path, before2);
   for (const line of e2eShutdown.loadLines(log2 ? readFileSync(log2, "utf8") : "")) console.log(`e2e: pass 2 ${line}`);
+  if (pass2 === 0) {
+    const boot = e2eShutdown.checkReloadBoot(log2 ? readFileSync(log2, "utf8") : null);
+    if (!boot.ok) {
+      console.log(`e2e: FAILED in pass 2 (reload boot): ${boot.reason}`);
+      console.log(`e2e: log ${log2 ?? "(none)"}`);
+      pass2 = 1;
+    }
+  }
   console.log(`e2e: profile ${profile}`);
   console.log(`e2e: pass1 exit=${pass1} pass2 exit=${pass2} ${pass1 === 0 && pass2 === 0 ? "OK" : "FAILED"}`);
   return pass1 === 0 && pass2 === 0 ? 0 : (pass1 === 0 ? pass2 : pass1);
