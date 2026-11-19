@@ -327,7 +327,9 @@ export function checkPlace(data, opts = {}) {
       const markers = layerMarkers(row.layer);
       const have = new Set(markers.map((m) => m.kind));
       for (const kind of promised) if (!have.has(kind)) errors.push(`slot ${row.slot}: the layer registers no LF_PlaceComponent of kind ${kind}`);
-      for (const m of markers) if (promised.includes(m.kind) && m.id !== `${place}.${row.slot}`) errors.push(`slot ${row.slot}: ${m.kind} marker has id '${m.id}', expected '${place}.${row.slot}'`);
+      // A slot may carry extra circles of one kind (the hostel's second safe circle, #3350): `<place>.<slot>` or `<place>.<slot>-<suffix>`.
+      const slotId = `${place}.${row.slot}`;
+      for (const m of markers) if (promised.includes(m.kind) && m.id !== slotId && !m.id.startsWith(`${slotId}-`)) errors.push(`slot ${row.slot}: ${m.kind} marker has id '${m.id}', expected '${slotId}' or '${slotId}-<suffix>'`);
     }
     if (known) for (const kind of promised) if (!known.has(kind)) warnings.push(`slot ${row.slot}: kind ${kind} is in no system's m_aPlaces (LF_SystemCatalog.conf); the layer is right but nothing looks for it yet`);
   }

@@ -156,6 +156,7 @@ class LF_FellAction : ScriptedUserAction
 
 		LF_FelledTrees.Hide(tree, key);
 		LF_FelledTreesReplication.Publish(key);
+		LF_TreeRegrow.EnsureTicking();
 		DropLogs(tree, yield.m_iLogs, logs);
 		SpendStamina(user, yield.m_iStaminaPct);
 		LF_Debug.Info(LF_FelledTrees.FEATURE, string.Format("felled %1 (%2 logs, %3)", key, logs.Count(), typename.EnumToString(LF_TreeWoodClass, kind.m_eClass)));

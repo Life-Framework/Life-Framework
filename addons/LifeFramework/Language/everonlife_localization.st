@@ -11540,6 +11540,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the shopkeeper"
      Comment "Action on a store's shopkeeper: opens the conversation (#1143)."
     }
+    CustomStringTableItem "{126190E6CA344F29}" {
+     Id "LF-ShoulderCarry_Action"
+     Target_en_us "Hoist onto shoulder"
+     Comment "F-key action name for shoulder carry (#3263)."
+    }
+    CustomStringTableItem "{4C9A65177C3AA068}" {
+     Id "LF-ShoulderCarry_Denied"
+     Target_en_us "Your hands are full."
+     Comment "Greyed-out reason and toast when shoulder carry is refused (#3263)."
+    }
     CustomStringTableItem "{6511ED0DDAE0AF1B}" {
      Id "LF-Sign_ChalkSample_Bait"
      Target_en_us "Fishing bait"

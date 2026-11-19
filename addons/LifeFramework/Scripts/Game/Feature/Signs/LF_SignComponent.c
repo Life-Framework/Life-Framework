@@ -82,6 +82,15 @@ class LF_SignComponent : ScriptComponent
 	[Attribute("1", UIWidgets.EditBox, "Sheet scale. 1 is an A4 sheet (0.21 x 0.30 m)")]
 	protected float m_fFaceScale;
 
+	[Attribute("0", UIWidgets.CheckBox, "Styled face on an A-frame: print the same face a second time on the far side, at m_vBackFaceOffset and m_vBackFaceAngles, so both slates carry it (#3547)")]
+	protected bool m_bBackFace;
+
+	[Attribute("0 0 0", UIWidgets.EditBox, "Back face position relative to the prop (m_bBackFace)")]
+	protected vector m_vBackFaceOffset;
+
+	[Attribute("0 0 0", UIWidgets.EditBox, "Back face rotation relative to the prop (yaw pitch roll, degrees; m_bBackFace)")]
+	protected vector m_vBackFaceAngles;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Painted face layout (RTTexture0 with a Title text). Empty: the printed paper sheet (LF_SignFace.layout)", "layout")]
 	protected ResourceName m_sFaceLayout;
 
@@ -125,6 +134,7 @@ class LF_SignComponent : ScriptComponent
 	protected bool m_bResolved;
 
 	protected ref LF_SignStyledFace m_StyledFace;
+	protected ref LF_SignStyledFace m_BackFace;
 	protected int m_iRowVersion;
 	protected int m_iRowAskMs;
 	protected IEntity m_Face;
@@ -236,6 +246,13 @@ class LF_SignComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when a styled face is printed on the far side too (an A-frame, #3547).
+	bool HasBackFace()
+	{
+		return m_bBackFace;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A styled face (docs/architecture/sign-system.md). False when the sign has no style, or its style
 	//! or size does not resolve (logged): the legacy face is drawn instead.
 	protected bool BuildStyledFace(IEntity owner, LF_SignDef sign)
@@ -256,6 +273,9 @@ class LF_SignComponent : ScriptComponent
 		LF_SignDef printed = LiveSign(sign);
 		if (m_StyledFace.Build(owner, printed, style, size, m_vFaceOffset, m_vFaceAngles, m_fFaceScale, HasPaintedFace(), m_vPaintColor, m_vTextColor))
 		{
+			if (m_bBackFace)
+				BuildBackFace(owner, printed, style, size);
+
 			StartRowPoll();
 			return true;
 		}
@@ -263,6 +283,32 @@ class LF_SignComponent : ScriptComponent
 		m_StyledFace.Release();
 		m_StyledFace = null;
 		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The far slate of an A-frame: the same face again on its own carrier and render target. A failure
+	//! is logged by the face and leaves the front printed.
+	protected void BuildBackFace(IEntity owner, LF_SignDef printed, LF_SignStyleDef style, LF_SignSizeDef size)
+	{
+		m_BackFace = new LF_SignStyledFace();
+		if (m_BackFace.Build(owner, printed, style, size, m_vBackFaceOffset, m_vBackFaceAngles, m_fFaceScale, HasPaintedFace(), m_vPaintColor, m_vTextColor))
+			return;
+
+		m_BackFace.Release();
+		m_BackFace = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReleaseStyledFaces()
+	{
+		if (m_StyledFace)
+			m_StyledFace.Release();
+
+		m_StyledFace = null;
+		if (m_BackFace)
+			m_BackFace.Release();
+
+		m_BackFace = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -348,10 +394,7 @@ class LF_SignComponent : ScriptComponent
 		if (!sign)
 			return;
 
-		if (m_StyledFace)
-			m_StyledFace.Release();
-
-		m_StyledFace = null;
+		ReleaseStyledFaces();
 		BuildStyledFace(owner, sign);
 	}
 
@@ -720,9 +763,7 @@ class LF_SignComponent : ScriptComponent
 			GetGame().GetCallqueue().Remove(PollRows);
 		}
 
-		if (m_StyledFace)
-			m_StyledFace.Release();
-		m_StyledFace = null;
+		ReleaseStyledFaces();
 
 		if (m_wFaceTexture && m_FaceTarget && !m_FaceTarget.IsDeleted())
 			m_wFaceTexture.RemoveRenderTarget(m_FaceTarget);
@@ -967,6 +1008,9 @@ class LF_SignComponent : ScriptComponent
 		src.Get("m_vFaceOffset", m_vFaceOffset);
 		src.Get("m_vFaceAngles", m_vFaceAngles);
 		src.Get("m_fFaceScale", m_fFaceScale);
+		src.Get("m_bBackFace", m_bBackFace);
+		src.Get("m_vBackFaceOffset", m_vBackFaceOffset);
+		src.Get("m_vBackFaceAngles", m_vBackFaceAngles);
 		src.Get("m_sFaceLayout", m_sFaceLayout);
 		src.Get("m_fTitleRotation", m_fTitleRotation);
 		src.Get("m_vTitlePos", m_vTitlePos);
