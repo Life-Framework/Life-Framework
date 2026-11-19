@@ -6133,6 +6133,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A packet of dry crackers. Keeps for months."
      Comment "Item description: crackers (#1143)."
     }
+    CustomStringTableItem "{B94E7A21D5C03F68}" {
+     Id "LF-Item_DoorKit_Description"
+     Target_en_us "A boxed house door with its hinges and lock. The last stage of a cottage asks for one."
+     Comment "Item description (#3172)."
+    }
+    CustomStringTableItem "{A17C60E9F3B2D845}" {
+     Id "LF-Item_DoorKit_Name"
+     Target_en_us "Door kit"
+     Comment "Item name: boxed door for the cottage's door stage (#3172)."
+    }
     CustomStringTableItem "{8D5931803863C15C}" {
      Id "LF-Item_DriedMeat"
      Target_en_us "Dried sausage"
