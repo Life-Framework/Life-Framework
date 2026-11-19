@@ -1,0 +1,22 @@
+{
+  "slug": "atm-wall",
+  "about": "The 1989 wall cash dispenser (distributeur automatique de billets) for LF_ATM.et: a beige-painted steel fascia in a steel mounting plate on a brushed-steel base, a green-on-black CRT screen with a small hood, side keys, a metal keypad, a card slot, a ticket slot, a cash slot and a blue bank sign plate that reads only BANQUE. Built by build.py in headless Blender from simple geometry and procedural textures: no library model fit (the base game has no cash machine, the CC0 libraries only a cash register) and no Meshy credits. Core asset: the machine is a capability of the game, its text is neutral, and no bank brand is on it.",
+  "asset_dir": "Assets/Props/Money/ATM",
+  "prefab_dir": "Prefabs/Props/Money",
+  "script": "build.py",
+  "layout_m": {
+    "about": "Enfusion metres: x right, y up, z forward; the front faces +z. The ORIGIN is on the ground and the BACK of the mounting plate is the plane z -0.30: the vanilla Safe_01 this replaces had its back at z -0.300 too, so every placed ATM (they were seated flush to a wall by that back plane, #3355) stays flush without a move.",
+    "back_z": -0.3,
+    "plate": { "half_width": 0.38, "y0": 0.78, "y1": 1.86, "depth": 0.02 },
+    "plinth": { "half_width": 0.33, "height": 0.1, "front_z": -0.12 },
+    "cabinet": { "half_width": 0.31, "y0": 0.1, "y1": 0.8, "front_z": -0.14 },
+    "fascia": { "half_width": 0.31, "y0": 0.8, "y1": 1.66, "front_z": -0.06 },
+    "header": { "half_width": 0.33, "y0": 1.66, "y1": 1.82, "front_z": -0.02 },
+    "screen": { "half_width": 0.13, "y0": 1.27, "y1": 1.47 }
+  },
+  "lod_ratios": [0.5, 0.2],
+  "texture_px": { "tile": 512, "atlas": [2048, 1024] },
+  "colliders": {
+    "ATMWall": { "layerPreset": "PropFireView", "gamemat": "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat" }
+  }
+}
