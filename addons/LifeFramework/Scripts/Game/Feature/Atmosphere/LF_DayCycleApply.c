@@ -19,6 +19,7 @@ class LF_DayCycleApply
 	static const float RATE_TOLERANCE = 0.15;	// lf-fixed: a check within 15% of the promised rate is healthy
 
 	protected static string s_sLastLog;
+	protected static bool s_bWarnedSunHours;
 	protected static float s_fCheckStartHour;
 	protected static int s_iCheckStartTick;
 	protected static float s_fCheckDaySeconds;
@@ -171,6 +172,13 @@ class LF_DayCycleApply
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World-end reset: the next world warns again about its own sun hours.
+	static void ResetSunHoursWarning()
+	{
+		s_bWarnedSunHours = false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void CheckPhase()
 	{
 		if (!s_PhaseSettings)
@@ -193,8 +201,16 @@ class LF_DayCycleApply
 		float worldSunrise, worldSunset;
 		if (clock.GetSunriseHour(worldSunrise) && clock.GetSunsetHour(worldSunset))
 		{
-			sunrise = worldSunrise;
-			sunset = worldSunset;
+			if (LF_DayCycle.AreSunHoursSane(worldSunrise, worldSunset))
+			{
+				sunrise = worldSunrise;
+				sunset = worldSunset;
+			}
+			else if (!s_bWarnedSunHours)
+			{
+				s_bWarnedSunHours = true;
+				LF_Debug.Warn(FEATURE, string.Format("day cycle: the world reports sunrise %1 h and sunset %2 h, outside the sane bounds; using %3 h and %4 h", worldSunrise, worldSunset, sunrise, sunset));
+			}
 		}
 
 		float hour = clock.GetTimeOfTheDay();
@@ -234,5 +250,6 @@ class LF_DayCycleApply_StaticResetHook : LF_StaticResetHook
 	override void Apply()
 	{
 		LF_DayCycleApply.StopPhaseWatch();
+		LF_DayCycleApply.ResetSunHoursWarning();
 	}
 }
