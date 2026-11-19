@@ -237,11 +237,19 @@ class LF_Test_EveronShipmentQuest : LF_Test
 		array<string> ids = {"shipment.ask", "shipment.count", "shipment.thanks_report", "shipment.thanks_sell"};
 		foreach (string id : ids)
 		{
-			ctx.NotNull(LF_DialogueFlow.FindNode(config, id), "the dialogue has the node " + id);
-			LF_DialogueLine line = LF_DialogueFlow.FindLine(config, id);
-			ctx.NotNull(line, "the dialogue has the line " + id);
+			LF_DialogueNode shipNode = LF_DialogueFlow.FindNode(config, id);
+			ctx.NotNull(shipNode, "the dialogue has the node " + id);
+			if (!shipNode)
+				continue;
+
+			// The talk is voiced (#3444): each node's line is a recording with a caption.
+			LF_DialogueLine line = LF_DialogueFlow.FindLine(config, shipNode.m_sLine);
+			ctx.NotNull(line, "the dialogue has the line of " + id);
 			if (line)
+			{
 				ctx.True(HasText(line.m_sTextKey), id + " has its caption");
+				ctx.True(!line.m_sEvent.IsEmpty() && line.m_fSeconds > 0, id + " is a recording (an event and a length)");
+			}
 		}
 
 		foreach (LF_DialogueNode node : config.m_aNodes)

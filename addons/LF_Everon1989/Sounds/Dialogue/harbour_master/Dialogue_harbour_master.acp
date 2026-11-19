@@ -268,7 +268,7 @@ AudioClass {
   }
   SoundClass {
    id 111625
-   name "SOUND_DLG_HARBOUR_MASTER_BYE"
+   name "SOUND_DLG_HARBOUR_MASTER_SHIPMENT_ASK"
    version 5
    tl 680 2520
    ins {
@@ -277,6 +277,94 @@ AudioClass {
      links {
       ConnectionClass connection {
        id 214034
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 112649
+   name "SOUND_DLG_HARBOUR_MASTER_SHIPMENT_COUNT"
+   version 5
+   tl 680 2800
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 215058
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 113673
+   name "SOUND_DLG_HARBOUR_MASTER_SHIPMENT_THANKS_REPORT"
+   version 5
+   tl 680 3080
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 216082
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 114697
+   name "SOUND_DLG_HARBOUR_MASTER_SHIPMENT_THANKS_SELL"
+   version 5
+   tl 680 3360
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 217106
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 115721
+   name "SOUND_DLG_HARBOUR_MASTER_BYE"
+   version 5
+   tl 680 3640
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 218130
        port 65
       }
      }
@@ -338,6 +426,22 @@ AudioClass {
       }
       ConnectionClass connection {
        id 111625
+       port 65
+      }
+      ConnectionClass connection {
+       id 112649
+       port 65
+      }
+      ConnectionClass connection {
+       id 113673
+       port 65
+      }
+      ConnectionClass connection {
+       id 114697
+       port 65
+      }
+      ConnectionClass connection {
+       id 115721
        port 65
       }
      }
@@ -805,7 +909,7 @@ AudioClass {
   }
   ShaderClass {
    id 214034
-   name "SOUND_DLG_HARBOUR_MASTER_BYE"
+   name "SOUND_DLG_HARBOUR_MASTER_SHIPMENT_ASK"
    version 5
    tl 432 2520
    ins {
@@ -841,6 +945,194 @@ AudioClass {
      links {
       ConnectionClass connection {
        id 316420
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 215058
+   name "SOUND_DLG_HARBOUR_MASTER_SHIPMENT_COUNT"
+   version 5
+   tl 432 2800
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 317444
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 216082
+   name "SOUND_DLG_HARBOUR_MASTER_SHIPMENT_THANKS_REPORT"
+   version 5
+   tl 432 3080
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 318468
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 217106
+   name "SOUND_DLG_HARBOUR_MASTER_SHIPMENT_THANKS_SELL"
+   version 5
+   tl 432 3360
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 319492
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 218130
+   name "SOUND_DLG_HARBOUR_MASTER_BYE"
+   version 5
+   tl 432 3640
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 320516
        port 65
       }
      }
@@ -992,9 +1284,57 @@ AudioClass {
   }
   BankLocalClass {
    id 316420
-   name "DLG_HARBOUR_MASTER_BYE"
+   name "DLG_HARBOUR_MASTER_SHIPMENT_ASK"
    version 7
    tl 150 2520
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{D5D7944F1DF2F72E}Sounds/Dialogue/harbour_master/harbour_master_shipment_ask.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 317444
+   name "DLG_HARBOUR_MASTER_SHIPMENT_COUNT"
+   version 7
+   tl 150 2800
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{9BC082D3B08B55EE}Sounds/Dialogue/harbour_master/harbour_master_shipment_count.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 318468
+   name "DLG_HARBOUR_MASTER_SHIPMENT_THANKS_REPORT"
+   version 7
+   tl 150 3080
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{3707CE6F855B0068}Sounds/Dialogue/harbour_master/harbour_master_shipment_thanks_report.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 319492
+   name "DLG_HARBOUR_MASTER_SHIPMENT_THANKS_SELL"
+   version 7
+   tl 150 3360
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{2650E914B877B560}Sounds/Dialogue/harbour_master/harbour_master_shipment_thanks_sell.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 320516
+   name "DLG_HARBOUR_MASTER_BYE"
+   version 7
+   tl 150 3640
    Volume 0
    Samples {
     AudioBankSampleClass Sample {
@@ -1078,6 +1418,22 @@ AudioClass {
        id 111625
        port 5
       }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -1153,6 +1509,22 @@ AudioClass {
        id 111625
        port 5
       }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -1226,6 +1598,22 @@ AudioClass {
       }
       ConnectionClass connection {
        id 111625
+       port 5
+      }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
        port 5
       }
      }
