@@ -1,4 +1,5 @@
 // red-proof: red first, 2026-11-19: before the pack files existed every line failed (no kitchen-honey machine, no farm_beehive offer, no jar curve). `--red` swaps the pack source for an empty header, so the same lines fail.
+// red-proof (2026-11-19, #3448 review): before the trader rows and the comb curve, `--only LF_Test_EveronHoney,LF_Test_EveronMarket` failed (`no unexpected curve: LF_HoneyJar.et`, and no buyer for jars or combs); with them both pass.
 //! #3448: the 1989 honey, read through the overlays under the Everon 1989 header (the pack leg). The kitchen
 //! turns 2 honeycombs into 1 honey jar (`kitchen-honey`, the LF_ProcessAction recipe row), the seed and feed
 //! store (`farm_supply`) sells the beehive kit for $120, and the jar sells on a market curve from $8 down to a
@@ -17,6 +18,16 @@ class LF_Test_EveronHoney : LF_Test
 	static const int PARCEL_RUNS_PER_HOUR = 10;	// lf-fixed: economy tool, a parcel run takes about 6 minutes
 
 	//------------------------------------------------------------------------------------------------
+	static const int KIT_PAYBACK_GAME_DAYS = 30;	// lf-fixed: honey pays slowly but a kit must pay for itself (#3448 review)
+	static const int KIT_PRICE = 120;	// lf-fixed: the farm_beehive catalogue price CheckHiveStock asserts
+
+	//------------------------------------------------------------------------------------------------
+	//! \return true for the goods this test owns the curves of (LF_Test_EveronMarket skips them).
+	static bool IsHoneyGood(ResourceName good)
+	{
+		return LF_Utils.SamePrefab(good, JAR) || LF_Utils.SamePrefab(good, COMB);
+	}
+
 	override string GetName()
 	{
 		return "everon/honey";
@@ -47,6 +58,7 @@ class LF_Test_EveronHoney : LF_Test
 		CheckHiveStock(ctx);
 		int jarsPerWeek = CheckHiveWeek(ctx);
 		CheckBuyer(ctx, jarsPerWeek);
+		CheckTraderAndPayback(ctx);
 
 		if (RedProof())
 			LF_ConfigService.Reset();
@@ -172,5 +184,53 @@ class LF_Test_EveronHoney : LF_Test
 		int jobDay = pay * PARCEL_RUNS_PER_HOUR * WORK_HOURS;
 		ctx.True(jobDay > 0, "a parcel run pays");
 		ctx.True(week < jobDay, string.Format("a week of one hive ($%1) pays less than a day of full-time work ($%2)", week, jobDay));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Someone in the world buys what a hive makes, and the $120 kit pays for itself. The general store is
+	//! a stocked shop with no buyback, so the Saint-Philippe trader is the buyer: jars, and the raw combs
+	//! until a kitchen prop carries `kitchen-honey`.
+	protected void CheckTraderAndPayback(LF_TestContext ctx)
+	{
+		BaseContainerList rows = LF_Test_EveronMarket.TraderRows(LF_Test_EveronMarket.TRADER);
+		ctx.True(rows != null, "the pack trader prefab lists its prices");
+		if (rows)
+		{
+			ctx.Equal(8, LF_Test_EveronMarket.TraderPrice(rows, JAR), "the trader lists honey jars at $8");
+			ctx.Equal(3, LF_Test_EveronMarket.TraderPrice(rows, COMB), "the trader lists honeycomb at $3");
+		}
+		ctx.True(LF_Test_EveronMarket.TraderBuys(LF_Test_EveronMarket.TRADER, JAR), "the trader storage takes honey jars");
+		ctx.True(LF_Test_EveronMarket.TraderBuys(LF_Test_EveronMarket.TRADER, COMB), "the trader storage takes honeycomb");
+
+		LF_MarketConfig market = LF_MarketConfig.Get();
+		LF_HiveConfig hives = LF_HiveConfig.Get();
+		if (!market || !hives)
+			return;
+
+		LF_MarketGoodDef comb = market.FindGood(COMB);
+		ctx.NotNull(comb, "honeycomb has a market curve");
+		if (!comb)
+			return;
+
+		ctx.EqualStr("", comb.Problem(), "the comb curve is valid");
+		// Two combs sold raw fetch less than the jar they make: the kitchen is worth the walk.
+		ctx.True(comb.m_iBase * 2 < 8, "two raw combs fetch less than a jar");
+
+		// A full hive (its comb cap) sold at once, harvest after harvest.
+		int harvest = LF_MarketBook.QuoteAt(COMB, hives.m_iMaxCombs, NOW);
+		ctx.True(harvest > 0, string.Format("a full hive of combs sells (%1 combs, $%2)", hives.m_iMaxCombs, harvest));
+		if (harvest <= 0)
+			return;
+
+		CheckKitPayback(ctx, harvest, hives);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CheckKitPayback(LF_TestContext ctx, int harvest, LF_HiveConfig hives)
+	{
+		int harvests = (KIT_PRICE + harvest - 1) / harvest;
+		float dayHours = hives.m_fNightStartHour - hives.m_fNightEndHour;
+		float gameDays = harvests * hives.m_iMaxCombs * hives.m_fHoursPerComb / dayHours;
+		ctx.True(gameDays <= KIT_PAYBACK_GAME_DAYS, string.Format("the $120 kit pays back in %1 game days selling raw combs (at most %2)", gameDays, KIT_PAYBACK_GAME_DAYS));
 	}
 }
