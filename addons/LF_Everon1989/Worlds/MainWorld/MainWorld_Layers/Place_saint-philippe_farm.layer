@@ -1,0 +1,60 @@
+GenericEntity Fit_saint_philippe_farm_Place {
+ components {
+  LF_PlaceComponent "{27DC926B131FC6CC}" {
+   m_sKind "FarmPlot"
+   m_sId "saint-philippe.farm"
+  }
+  LF_FittedBuildingComponent "{EEBFA782A576B95B}" {
+  }
+ }
+ coords 4426.9 16.8 10609
+}
+GenericEntity Fit_saint_philippe_farm_Place_SeedCrate {
+ components {
+  LF_PlaceComponent "{E9B1E2DCE858B603}" {
+   m_sKind "SeedCrate"
+   m_sId "saint-philippe.farm"
+  }
+ }
+ coords 4426.9 16.8 10609
+}
+GenericEntity Fit_saint_philippe_farm_farm_plot_1 : "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et" {
+ components {
+  LF_FarmPlotComponent "{2E13CAF530967224}" {
+   m_sPlotKey "sp_farm_plot_1"
+  }
+ }
+ coords 4431.089 17.216 10599.269
+ angleY 176
+}
+GenericEntity Fit_saint_philippe_farm_farm_plot_2 : "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et" {
+ components {
+  LF_FarmPlotComponent "{2E13CAF530967224}" {
+   m_sPlotKey "sp_farm_plot_2"
+  }
+ }
+ coords 4427.598 16.964 10599.024
+ angleY 176
+}
+GenericEntity Fit_saint_philippe_farm_farm_plot_3 : "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et" {
+ components {
+  LF_FarmPlotComponent "{2E13CAF530967224}" {
+   m_sPlotKey "sp_farm_plot_3"
+  }
+ }
+ coords 4424.106 16.824 10598.78
+ angleY 176
+}
+GenericEntity Fit_saint_philippe_farm_farm_seed_crate : "{696B13AE8A088B79}Prefabs/Props/Commercial/LF_SeedCrate_Cabbage.et" {
+ coords 4433.443 17.39 10601.438
+ angleY -19
+}
+GenericEntity Fit_saint_philippe_farm_farm_sign : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "farm_plots"
+  }
+ }
+ coords 4434.476 17.511 10601.009
+ angleY -4
+}
