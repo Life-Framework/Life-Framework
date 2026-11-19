@@ -7,6 +7,10 @@ GenericEntity : "{6E5B06E7CD970830}Prefabs/Structures/BuildingParts/Signs/SignWa
      SourceMaterial "SignWall_01_90X45"
      AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
     }
+    MaterialAssignClass "{70F15A16789E6391}" {
+     SourceMaterial "SignWall_01_90X45_MLOD"
+     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+    }
    }
   }
   SCR_DestructionMultiPhaseComponent "{58F896B4CD371A8B}" {
