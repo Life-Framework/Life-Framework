@@ -161,6 +161,7 @@ under "Hard-coded flagship values in script".
 | `Props/Signs/LF_BoardFace.et` | core | The 16:9 render-target face a board draws on (wanted posters, #758) |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack, moved (batch 1) | Soviet undermined-area warning sign; its placement left the core `MiningChain.layer` for the pack layer `Village_Signs` |
+| `Prefabs/Props/Money/LF_ATM.et`, `Assets/Props/Money/ATM/` | core | The wall cash dispenser: the cash-to-account boundary is what the game can do. A neutral 1989 French machine with a plate that reads only BANQUE; no real bank brand. Built by `tools/assets/atm-wall/build.py` (no Meshy); where an ATM stands is the pack's (`Place_saint-philippe_atms.layer`) |
 | `Props/Roleplay/SpikeStrip/` | split | The deployed strip and the folded item are the core's working deployable that `LF_Test_SpikeStrip` loads (#646); the 1989 stinger look, its place in the rank kits and the DebugWorld display strip are pack (#647) |
 | `Prefabs/Props/Commercial/LF_SafeBox.et` | core | The store box safe: the vanilla `Safe_01` mesh with the heist rob, breach and `LF_HeistVaultComponent` set to the `store_box` safe type. A generic robbable shop safe: what the game can do. Where a shop gets one is the pack's |
 | `Configs/Crime/LF_SafeTypes.conf` | core | The three safe tiers (`store_box`, `bank_room`, `reserve_vault`) as neutral numbers. `LF_Everon1989/Configs/Crime/LF_SafeTypes_Everon1989.conf` is the pack overlay (1989 till takings) |

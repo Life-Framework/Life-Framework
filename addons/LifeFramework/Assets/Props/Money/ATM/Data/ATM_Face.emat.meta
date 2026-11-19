@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{D5D4CBA5B47A12A2}Assets/Props/Money/ATM/Data/ATM_Face.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

@@ -46,7 +46,10 @@
   only resolves them.
 
 - ✅ (2026-11-19, #3352) **The ATM is a placeable prefab**: `Prefabs/Props/Money/LF_ATM.et` is a
-  vanilla `Safe_01` steel safe (the game has no ATM mesh) with `LF_ATMAction`, an `RplComponent` and an
+  1989 French wall cash dispenser (`Assets/Props/Money/ATM/ATMWall.xob`, built by `tools/assets/atm-wall/build.py`:
+  beige steel fascia on a steel mounting plate, green CRT screen under a hood, side keys, keypad, card, ticket and
+  cash slots, a blue plate that reads only BANQUE; the game has no ATM mesh and no bank brand is on it; the back of the
+  plate is the plane z -0.30, so a wall-seated ATM stays flush, and the action point is on the screen) with `LF_ATMAction`, an `RplComponent` and an
   `LF_PlaceComponent` of kind `ATM`, id `atm` by default. A place id is unique, so a second machine
   overrides `m_sId` in its layer entry (the grid cell `slice-3352` does). Test `money/atm-prefab`; the old
   inline `ATM.layer` entity in DebugWorld stays as it is.
