@@ -3307,32 +3307,32 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A636049B1615FBC6}" {
      Id "LF-Credits_132"
-     Target_en_us "Harbour master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Go-between Hugo Valmy's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{16186E0A5EB3A7AA}" {
      Id "LF-Credits_133"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FE189EB428AF142A}" {
      Id "LF-Credits_134"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbour master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4D04FB45B8DBCE90}" {
      Id "LF-Credits_135"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{282E8AC7953417F3}" {
      Id "LF-Credits_136"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A096E2717EAFA002}" {
      Id "LF-Credits_137"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8B2E6676A5FC762}" {
@@ -3342,7 +3342,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4165A33B0CDDFEFA}" {
      Id "LF-Credits_139"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CA6300164F63F92D}" {
@@ -3352,31 +3352,41 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{ADFB88278344FB5B}" {
      Id "LF-Credits_140"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{856667E0087DE2BB}" {
      Id "LF-Credits_141"
-     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8A3DCF36786BA71}" {
      Id "LF-Credits_142"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{740D77BACEA78D9C}" {
      Id "LF-Credits_143"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Target_en_us "Michael Hansen / Rhasspy, MIT"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3CA96CAAEC9AB85D}" {
      Id "LF-Credits_144"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{66D2E150BBB2BBDF}" {
      Id "LF-Credits_145"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{92C2B4F451409735}" {
+     Id "LF-Credits_146"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{E884C0110C5B632F}" {
+     Id "LF-Credits_147"
      Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
