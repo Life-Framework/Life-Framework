@@ -8,6 +8,8 @@
 // Writes addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_<place>_<slot>.layer   (pack content, never a core layer)
 //        tools/town/claims/<place>-<slot>.json
 // Then runs `audit placement --strict --world MainWorld --layer <file>` and takes the `look` pictures (--no-audit, --no-look skip).
+// Open-ground kit rows (`"mount": "terrain"`) rest on terrain heights kept in tools/town/terrain/<place>-<slot>.json;
+// `--terrain` probes them on the island's test server first (tools/town/terrain.mjs), a plain fit and `--check` read the file.
 //
 // No step types a coordinate: every number comes from the dossier (the building's centre, floor and entrance) and the kit's
 // building-local offsets (`kit apply`). A host that shows the kit's own building model (the .xob of the kit's
@@ -31,6 +33,7 @@ import { fileURLToPath } from "node:url";
 import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
 import { sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
+import { probeTerrain, readPins, terrainFromPins, writePins } from "./terrain.mjs";
 
 export const help = "fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-audit] [--no-look]   apply the slot's kit into its mapped building, rows seated on the host's floors and walls: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
 
@@ -39,7 +42,7 @@ export const LAYER_DIR = "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers
 export const CLAIMS_DIR = "tools/town/claims";
 const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
 const REF_RE = /^\{([0-9A-Fa-f]{16})\}(.+)$/;
-const FLAGS = new Set(["dry", "check", "refit", "allow-clip", "no-fetch", "no-audit", "no-look", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
+const FLAGS = new Set(["dry", "check", "refit", "allow-clip", "no-fetch", "no-audit", "no-look", "terrain", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
 const WITH_VALUE = new Set(["building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir"]);
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const norm = (d) => {
@@ -483,8 +486,9 @@ export async function planFitSeated(opts, ctx = {}) {
     plan.warnings.push("the host has no prefab in the dossier: rows were not seated on it");
     return plan;
   }
-  const seat = await seatRows(plan.rows, plan.kit.rows, plan.host, { reader, allowClip: Boolean(opts.allowClip) });
+  const seat = await seatRows(plan.rows, plan.kit.rows, plan.host, { reader, allowClip: Boolean(opts.allowClip), terrain: ctx.terrain ?? null });
   plan.seat = seat;
+  plan.terrainPoints = seat.terrainPoints ?? [];
   if (!seat.host) {
     plan.warnings.push(seat.note);
     return plan;
@@ -535,7 +539,7 @@ function parseArgs(args) {
   return { flags, pos, bad };
 }
 
-const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
+const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--terrain] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
 const readJson = (f, what) => {
   if (!existsSync(f)) throw new Error(`no ${what}: ${f} does not exist`);
   return JSON.parse(readFileSync(f, "utf8"));
@@ -619,6 +623,8 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
   }
 
   let plan;
+  let fitOpts0;
+  let fitCtx;
   try {
     const placeDir = join(root, "docs", "everon", "places", place);
     const mappingDossier = readJson(resolve(root, flags.dossier ?? join(placeDir, "dossier.json")), "dossier");
@@ -636,7 +642,9 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
     }
     const shell = ctxShell ?? shellReader(root);
     const fitOpts = { place, slot: slotId, dossier, mappingDossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
-    plan = await planFitSeated(fitOpts, { root, run, readGame: await gameReader(), shell });
+    fitOpts0 = fitOpts;
+    fitCtx = { root, run, readGame: await gameReader(), shell, terrain: terrainFromPins(readPins(root, place, slotId)) };
+    plan = await planFitSeated(fitOpts, fitCtx);
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);
     return 1;
@@ -663,6 +671,30 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
   mkdirSync(dirname(claimFile), { recursive: true });
   writeFileSync(layerFile, plan.layerText);
   writeFileSync(claimFile, `${JSON.stringify(plan.claim, null, 2)}\n`);
+
+  // --terrain: the island server measures the ground under every open-ground row (the layer just written gives it the
+  // world to boot around), the answers are kept in tools/town/terrain/, and the layer is written again on them.
+  if (flags.terrain && plan.terrainPoints?.length) {
+    try {
+      const probed = await probeTerrain(plan.terrainPoints, { layerName: plan.layerName, aroundY: plan.anchor.y });
+      if (probed.missing.length) console.log(`warn  the server gave no ground height at ${probed.missing.length} point(s): ${probed.missing.join(" ")}`);
+      const pinFile = writePins(root, place, slotId, probed.points, (fitCtx.now ? fitCtx.now() : new Date()).toISOString().slice(0, 10));
+      console.log(`terrain  ${Object.keys(probed.points).length} point(s) probed -> ${shown(pinFile)}`);
+      fitCtx.terrain = terrainFromPins({ points: probed.points });
+      plan = await planFitSeated(fitOpts0, fitCtx);
+      for (const w of plan.warnings ?? []) console.log(`warn  ${w}`);
+      if (!plan.ok) {
+        for (const e of plan.errors) console.log(`REFUSE  ${e}`);
+        console.log(`SUMMARY town-fit fail ${place}.${slotId}: ${plan.errors.length} problem(s) after the terrain probe`);
+        return 1;
+      }
+      writeFileSync(layerFile, plan.layerText);
+      writeFileSync(claimFile, `${JSON.stringify(plan.claim, null, 2)}\n`);
+    } catch (e) {
+      console.log(`REFUSE  terrain probe: ${e.message}`);
+      return 1;
+    }
+  } else if (flags.terrain) console.log("note  --terrain: the kit has no open-ground row, nothing to probe");
 
   // Verify: the placement audit on the new layer, then the pictures. Each runs on a pool machine with a Workbench.
   const steps = [];
