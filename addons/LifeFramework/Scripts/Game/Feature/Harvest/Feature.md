@@ -9,7 +9,7 @@ Design and card list: the harvester spike (epic #3282).
 ## Interaction pattern
 
 In-world only: the field is the interface and the hopper is a number on the reaper's prompt. Nothing opens a sheet.
-The rules (#3285), the field entity (#3287), its cut replication (#3288) and the hitch (#3284) are in; the cut tick (#3289) builds on them.
+The rules (#3285), the field entity (#3287), its cut replication (#3288) and the hitch (#3284) are in; the cut tick (#3289) is in.
 
 ## Wheat field rules (#3285)
 
@@ -50,3 +50,10 @@ The rules (#3285), the field entity (#3287), its cut replication (#3288) and the
 - **Player sees:** the same cut strips and stubble as every other player, also when joining late; a dedicated server draws nothing.
 - **Owner and side:** a `modded class LF_WheatField` in `LF_WheatFieldReplication.c`. The server batches newly cut cells (one reliable RPC per field per 250 ms, packed bitset words in a string) and sends one regrow RPC; `RplSave/RplLoad` carries the whole bitset for a late joiner. `LF_WheatFieldWire` and `LF_WheatCutBatch` are the pure parts.
 - **Proof:** `harvest/wheat-field-snapshot` (LOGIC); the dedicated-server session with a late joiner is in the PR.
+
+## Reaper cut tick (#3289)
+
+- **Player sees:** the wheat under the bar of a hitched reaper turns to stubble at 0.5 to 6 m/s, the hopper climbs 10 kg a cell, and a hint says *Too fast to cut, slow down* or *Hopper full, unload at the granary* once each time it starts.
+- **Owner and side:** `LF_ReaperCutTick` (server only): a registry of reapers (filled by `LF_ImplementComponent`) and a 200 ms loop. Speed is the towing vehicle's physics velocity; the bar sits at the implement's hitch offset in the vehicle's frame; the field is the `LF_WheatField` whose box holds it.
+- **Data:** the hopper is `LF_ImplementComponent` `m_iHopperKg` (`RplProp`), capped at `LF_WheatFieldRules.HOPPER_CAP_KG`. Session-only: the reaper is not saved, so a restart or an unhitch loses the grain (H7 and H8 own persistence or payout).
+- **Proof:** `harvest/reaper-cut` (WORLD); session `hitch fieldspawn|drive|state` on grid cell slice-3287.

@@ -73,6 +73,9 @@ class LF_ImplementComponent : ScriptComponent
 		// (the replicated hierarchy, a late joiner's snapshot included).
 		GetGame().GetCallqueue().CallLater(Watch, 0, false);
 		GetGame().GetCallqueue().CallLater(Watch, WATCH_MS, true);
+
+		// The server's cut tick (#3289) runs over every implement that spawns on it.
+		LF_ReaperCutTick.Register(owner);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -107,9 +110,14 @@ class LF_ImplementComponent : ScriptComponent
 		if (m_bLogged && vector.Distance(parentPos, m_vLastLoggedParentPos) < LOG_STEP_M)
 			return;
 
+		// "present" is the proof's anchor (info); the 10 m "follows" lines are debug level so a drive does not flood the log.
 		string what = "follows";
+		LogLevel level = LogLevel.DEBUG;
 		if (!m_bLogged)
+		{
 			what = "present";
+			level = LogLevel.NORMAL;
+		}
 
 		m_bLogged = true;
 		m_vLastLoggedParentPos = parentPos;
@@ -117,8 +125,8 @@ class LF_ImplementComponent : ScriptComponent
 		owner.GetLocalTransform(local);
 		// Behind = the implement's position in the vehicle's frame has a negative Z (the vehicle faces +Z).
 		vector inVehicle = parent.CoordToLocal(owner.GetOrigin());
-		LF_Debug.Info("Harvest", string.Format("implement %1 on %2 (rpl %3, proxy %4): local %5, vehicle at %6, implement at %7, behind %8",
-			what, LF_ImplementHitch.Describe(parent), LF_ImplementHitch.RplIdOf(owner), IsProxy(), local[3], parentPos, owner.GetOrigin(), inVehicle[2] < 0));
+		LF_Debug.Log("Harvest", string.Format("implement %1 on %2 (rpl %3, proxy %4): local %5, vehicle at %6, implement at %7, behind %8",
+			what, LF_ImplementHitch.Describe(parent), LF_ImplementHitch.RplIdOf(owner), IsProxy(), local[3], parentPos, owner.GetOrigin(), inVehicle[2] < 0), level);
 	}
 
 	//------------------------------------------------------------------------------------------------
