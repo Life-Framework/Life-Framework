@@ -11,6 +11,32 @@ class LF_Test_BinEmptiesOnRestart : LF_Test
 	protected static const ResourceName PLUM = "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
 	protected static const ResourceName NUGGET = "{6853E2E2AE878611}Prefabs/Resources/Mining/IronNugget.et";
 	protected static const vector SPOT = "100 0 80"; // inside the test annex (x/z 18..114), never on the town
+	protected static const vector E2E_SPOT = "110 0 90"; // the e2e bin, also in the annex
+
+	//------------------------------------------------------------------------------------------------
+	//! wt e2e save boot (called by LF_Test_E2E_SaveStateWrite): a bin holding an apple stands through the shutdown save.
+	static void SeedE2E(LF_TestContext ctx)
+	{
+		vector at = E2E_SPOT;
+		at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]);
+		IEntity bin = LF_Utils.SpawnEntityPrefab(BIN, at);
+		ctx.NotNull(bin, "e2e the bin spawns");
+		if (!bin)
+			return;
+
+		ctx.Equal(1, LF_InventoryUtils.AddAmount(bin, APPLE, 1), "e2e an apple goes into the bin");
+		LF_TestDebrisProbe.Keep(bin);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! wt e2e reload boot (called by LF_Test_E2E_SaveStateVerify): nothing of the bin came back, neither the bin nor its apple.
+	static void VerifyE2E(LF_TestContext ctx)
+	{
+		vector at = E2E_SPOT;
+		at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]);
+		ctx.Equal(0, LF_Test_LockerContentsPersist.CountNear(at, 5, BIN, false), "e2e no bin came back from the save: a bin is never stored");
+		ctx.Equal(0, LF_Test_LockerContentsPersist.CountNear(at, 5, APPLE, false), "e2e the bin's apple did not come back, loose or inside");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
