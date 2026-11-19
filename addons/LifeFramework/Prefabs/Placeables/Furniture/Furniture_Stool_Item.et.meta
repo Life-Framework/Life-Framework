@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A06F23CE0EA04EF1}Prefabs/Placeables/Furniture/Furniture_Stool_Item.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

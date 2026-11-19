@@ -4713,6 +4713,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sofa"
      Comment "Inventory name of the carried sofa a player places in their own house."
     }
+    CustomStringTableItem "{D3D2D71766E3DB37}" {
+     Id "LF-Furniture_Stool_Name"
+     Target_en_us "Stool"
+     Comment "Inventory name of the carried stool a player places in their own house."
+    }
     CustomStringTableItem "{82829910DC892680}" {
      Id "LF-Furniture_Stove_Name"
      Target_en_us "Stove"
@@ -13433,6 +13438,5 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They can't recall anything useful."
      Comment "Toast to the officer: the witness remembered nothing they could describe."
     }
-  }
  }
 }

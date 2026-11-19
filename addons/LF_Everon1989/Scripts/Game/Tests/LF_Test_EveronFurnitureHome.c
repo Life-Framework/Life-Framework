@@ -33,6 +33,7 @@ class LF_Test_EveronFurnitureHome : LF_Test
 		items.Insert("{2FBFFB568731A3AF}Prefabs/Placeables/Furniture/Furniture_Stove_Item.et");
 		items.Insert("{183AE088E111C537}Prefabs/Placeables/Furniture/Furniture_Bookcase_Item.et");
 		items.Insert("{B54C355FF2C0C37D}Prefabs/Placeables/Furniture/Furniture_Workbench_Item.et");
+		items.Insert("{A06F23CE0EA04EF1}Prefabs/Placeables/Furniture/Furniture_Stool_Item.et");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -64,7 +65,7 @@ class LF_Test_EveronFurnitureHome : LF_Test
 
 		array<ResourceName> items = {};
 		Items(items);
-		ctx.True(items.Count() == 14, "fourteen home furniture items are listed");
+		ctx.True(items.Count() == 15, "fifteen home furniture items are listed");
 		int n;
 		foreach (ResourceName prefab : items)
 		{
