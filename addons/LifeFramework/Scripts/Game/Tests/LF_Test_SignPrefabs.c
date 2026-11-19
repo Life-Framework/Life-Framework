@@ -1,3 +1,4 @@
+// red-proof (A-frame back face, #3547): RedProof() reports no back face, so "the A-frame prints the same face on its far slate too" fails.
 // red-proof (A-frame, #3305): RedProof() blanks the A-frame's style id, so "the A-frame names the chalk style" fails.
 // red-proof: expected 2 Read actions; `tools\cli test --no-build --tier all`
 // (2026-11-08) failed signs/prefabs with "sign carries one Read action:
@@ -61,7 +62,7 @@ class LF_Test_SignPrefabs : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The A-frame pavement board prints in chalk on the 16:9 quad (#3305): the prefab names a style and
+	//! The A-frame pavement board prints in chalk on the portrait 5:8 quad (#3305, #3547): the prefab names a style and
 	//! a size, and both resolve in LF_SignStyles.conf.
 	protected void ExpectChalkPub(LF_TestContext ctx)
 	{
@@ -90,7 +91,17 @@ class LF_Test_SignPrefabs : LF_Test
 			LF_SignSizeDef size = LF_SignStyles.FindSize(sign.GetSizeId());
 			ctx.NotNull(size, "the A-frame's size resolves: " + sign.GetSizeId());
 			if (size)
+			{
 				ctx.True(!size.m_sCarrier.IsEmpty(), "and its size draws on a carrier quad");
+				// The slate is portrait (about 0.57 x 0.9 m), so a landscape quad shows the vanilla chalk around it (#3547).
+				ctx.True(size.m_vShown[1] > size.m_vShown[0], "the A-frame's carrier is portrait, so it covers the slate");
+			}
+
+			bool backFace = sign.HasBackFace();
+			if (RedProof())
+				backFace = false;
+
+			ctx.True(backFace, "the A-frame prints the same face on its far slate too");
 		}
 
 		SCR_EntityHelper.DeleteEntityAndChildren(pub);

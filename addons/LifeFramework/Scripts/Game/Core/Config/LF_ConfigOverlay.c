@@ -190,6 +190,52 @@ class LF_ConfigOverlay
 
 			resources.Insert(resource);
 			names.Insert(overlay);
+			LoadFolderOverlays(overlay, type, section, resources, names);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The folder beside a listed overlay: `Configs/Signs/LF_Signs_X.conf` owns every `.conf` under
+	//! `Configs/Signs/LF_Signs_X/`. Each file is one more overlay of the same class, loaded right
+	//! after its parent in path order, so a feature adds its own file instead of appending to a
+	//! shared one (parallel PRs merge; the mission header is not touched). A file already loaded (the header lists it above its parent) loads
+	//! once. Files of another class are skipped quietly.
+	static void LoadFolderOverlays(ResourceName parent, typename type, string section, notnull array<ref Resource> resources, notnull array<ResourceName> names)
+	{
+		string path = parent.GetPath();
+		if (!path.EndsWith(".conf"))
+			return;
+
+		string folder = path.Substring(0, path.Length() - 5) + "/"; // lf-bounded: a resource path
+		LF_PackFolderCollector collector = new LF_PackFolderCollector(folder);
+		SearchResourcesFilter filter = new SearchResourcesFilter();
+		filter.fileExtensions = { "conf" };
+		filter.recursive = true;
+		ResourceDatabase.SearchResources(filter, collector.OnFound);
+
+		array<string> sorted = collector.GetSorted();
+		foreach (string entry : sorted)
+		{
+			ResourceName overlay = entry.Substring(entry.IndexOf("|") + 1, entry.Length() - entry.IndexOf("|") - 1);
+			if (names.Contains(overlay))
+				continue;
+
+			Resource resource = BaseContainerTools.LoadContainer(overlay);
+			if (!resource || !resource.IsValid() || !resource.GetResource())
+			{
+				LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("%1: pack folder overlay does not resolve, skipped: %2", section, overlay));
+				continue;
+			}
+
+			BaseContainer container = resource.GetResource().ToBaseContainer();
+			typename overlayType;
+			if (container)
+				overlayType = container.GetClassName().ToType();
+			if (!overlayType || !overlayType.IsInherited(type))
+				continue;
+
+			resources.Insert(resource);
+			names.Insert(overlay);
 		}
 	}
 
@@ -351,5 +397,37 @@ class LF_ConfigOverlay
 
 		LF_Debug.Error(LF_ConfigService.FEATURE, string.Format("%1: %2 %3: %4; entry skipped", source, list.GetName(), id, reason));
 		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! SearchResources callback for LF_ConfigOverlay.LoadFolderOverlays: keeps the `.conf` files whose
+//! path holds the folder, as "path|resourceName" rows so a sort orders them by path.
+class LF_PackFolderCollector
+{
+	protected string m_sFolder;
+	protected ref array<string> m_aRows = {};
+
+	void LF_PackFolderCollector(string folder)
+	{
+		m_sFolder = folder;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void OnFound(ResourceName resourceName, string exactPath = "")
+	{
+		string path = resourceName.GetPath();
+		if (path.IndexOf(m_sFolder) < 0)
+			return;
+
+		m_aRows.Insert(path + "|" + resourceName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The rows ordered by path.
+	array<string> GetSorted()
+	{
+		m_aRows.Sort();
+		return m_aRows;
 	}
 }

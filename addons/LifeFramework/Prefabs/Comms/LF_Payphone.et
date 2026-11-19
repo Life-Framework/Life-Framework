@@ -159,4 +159,15 @@ SCR_DestructibleBuildingEntity : "{B5963E922C972A4A}Prefabs/Structures/Infrastru
   }
  }
  scale 0.8
+ {
+  GameEntity {
+   ID "5F0B08C0B7BE37EE"
+   {
+    LightEntity {
+     ID "5878F673B04BA318"
+     CastShadow 0
+    }
+   }
+  }
+ }
 }

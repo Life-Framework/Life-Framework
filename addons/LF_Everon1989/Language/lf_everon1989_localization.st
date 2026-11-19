@@ -2146,8 +2146,8 @@ StringTable {
     }
     CustomStringTableItem "{98AD9902C05C38A0}" {
      Id "LF-Sign_GeneralStore_Special1"
-     Target_en_us "Bread"
-     Comment "Store A-frame special 1: a chalk row on the general store pavement board (#3305). Price 3 matches LF_ShopStock_Everon1989."
+     Target_en_us "Chocolate bar"
+     Comment "Store A-frame special 1: a chalk row on the general store pavement board (#3305, #3547). Price 3 matches LF_ShopStock_Everon1989. Bread is the bakery's, not the store's."
     }
     CustomStringTableItem "{0AA236A7C73670FE}" {
      Id "LF-Sign_GeneralStore_Special2"

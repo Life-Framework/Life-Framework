@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "kind": "stillbarn",
+  "about": "A lone barn out in the hills with the illicit moonshine chain inside it. One slot, no sign and no map marker. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "1", "required": true, "kit": "stillbarn", "host": "building", "poi": "none", "margin": 24,
+      "needs": { "interior": "optional", "minArea": 100, "prefer": "far", "types": ["farm"] },
+      "places": ["StillBarn"]
+    }
+  ]
+}
