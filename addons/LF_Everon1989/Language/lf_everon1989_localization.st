@@ -2514,6 +2514,31 @@ StringTable {
      Target_en_us "A walled yard owned by one organization."
      Comment "Sign card for the organization hideout yard, What section."
     }
+    CustomStringTableItem "{4259F2E50006FDFF}" {
+     Id "LF-Sign_Home_CafeOwner_Title"
+     Target_en_us "Mme O. Marchand"
+     Comment "Brass name plate beside the door of cafe_owner's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme O. Marchand."
+    }
+    CustomStringTableItem "{B1D02944F6C717F6}" {
+     Id "LF-Sign_Home_NightShift_Title"
+     Target_en_us "M. R. Duval"
+     Comment "Brass name plate beside the door of night_shift's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. R. Duval."
+    }
+    CustomStringTableItem "{0955F0CE2E0152B0}" {
+     Id "LF-Sign_Home_OldMan_Title"
+     Target_en_us "M. G. Lenoir"
+     Comment "Brass name plate beside the door of old_man's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. G. Lenoir."
+    }
+    CustomStringTableItem "{55231116164D7341}" {
+     Id "LF-Sign_Home_StoreClerk_Title"
+     Target_en_us "M. P. Roche"
+     Comment "Brass name plate beside the door of store_clerk's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. P. Roche."
+    }
+    CustomStringTableItem "{524960714D7C41A7}" {
+     Id "LF-Sign_Home_Teller_Title"
+     Target_en_us "Mme C. Girard"
+     Comment "Brass name plate beside the door of teller's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme C. Girard."
+    }
     CustomStringTableItem "{DFFD828F05D29321}" {
      Id "LF-Sign_HospitalBay_How"
      Target_en_us "A medic on duty takes a call at the board, drives out, then Loads the patient into the ambulance and drives them to a bed."
