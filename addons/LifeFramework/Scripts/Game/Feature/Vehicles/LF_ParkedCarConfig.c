@@ -147,10 +147,33 @@ class LF_ParkedCarConfig
 	//! \return A random car prefab from the list, or empty when the list is empty.
 	ResourceName PickPrefab()
 	{
-		if (!m_aCars || m_aCars.IsEmpty())
+		return PickPrefabAvoiding(null);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \param failed Car ids (LF_ParkedCarList.CarId) that did not spawn this session; those rows are skipped.
+	//! \return A random car prefab from the rows not in `failed`, or empty when there is none left.
+	ResourceName PickPrefabAvoiding(array<string> failed)
+	{
+		array<ResourceName> usable = {};
+		if (m_aCars)
+		{
+			foreach (LF_ParkedCarDef def : m_aCars)
+			{
+				if (!def)
+					continue;
+
+				if (failed && failed.Find(LF_ParkedCarList.CarId(def.m_sPrefab)) >= 0)
+					continue;
+
+				usable.Insert(def.m_sPrefab);
+			}
+		}
+
+		if (usable.IsEmpty())
 			return ResourceName.Empty;
 
-		return m_aCars[Math.RandomInt(0, m_aCars.Count())].m_sPrefab;
+		return usable[Math.RandomInt(0, usable.Count())];
 	}
 }
 
