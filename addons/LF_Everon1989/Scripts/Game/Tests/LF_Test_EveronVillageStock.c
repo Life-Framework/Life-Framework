@@ -30,7 +30,8 @@ class LF_Test_EveronVillageStock : LF_Test
 	protected static const ResourceName CEMENT = "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et";
 	protected static const ResourceName BRICK = "{0D5DA590E223A195}Prefabs/Items/Resources/Brick.et";
 	protected static const ResourceName PLANK = "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et";
-	protected static const ResourceName SANDBAG = "{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et";
+	protected static const ResourceName DOOR_KIT = "{4E8B13D6A0C957F2}Prefabs/Items/Resources/LF_DoorKit.et";
+	protected static const ResourceName SANDBAG ="{5B10C0DE7A11E030}Prefabs/Items/Resources/Sandbag.et";
 	protected static const ResourceName FLASHLIGHT = "{575EA58E67448C2A}Prefabs/Items/Equipment/Flashlights/Flashlight_Soviet_01/Flashlight_Soviet_01.et";
 	protected static const ResourceName RADIO = "{D58E740DC2168D92}Prefabs/Items/Comms/LF_HandsetRadio.et";
 	protected static const ResourceName SEEDS = "{F77BE55D8D3AEBA3}Prefabs/Items/Seeds/CabbageSeeds.et";
@@ -54,7 +55,7 @@ class LF_Test_EveronVillageStock : LF_Test
 			return;
 
 		CheckStock(ctx, manager, "supermarket", {WATER, JUICE, BEER, APPLE, CABBAGE, PLUM, CRACKERS, DRIED_MEAT});
-		CheckStock(ctx, manager, "hardware", {ETOOL, AXE, GRAVEL, CEMENT, BRICK, PLANK, SANDBAG, FLASHLIGHT, RADIO});
+		CheckStock(ctx, manager, "hardware", {ETOOL, AXE, GRAVEL, CEMENT, BRICK, PLANK, DOOR_KIT, SANDBAG, FLASHLIGHT, RADIO});
 		CheckStock(ctx, manager, "seed_feed", {SEEDS, BAIT, ROD, WATER});
 		CheckStock(ctx, manager, "newsagent", {MAP, WATER});
 		CheckStock(ctx, manager, "mechanic", {PARTS});

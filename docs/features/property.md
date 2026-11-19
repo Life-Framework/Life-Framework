@@ -166,3 +166,8 @@
   which `town locks` reads to drop those homes' ForSaleSoon markers. Layer `Homes_saint-philippe.layer`; a generated file, rerun the script.
 - 🟡 Prices by tier (a courier earns about $600 an hour, `tools\cli economy`): cottage 4000, village house 6000, family house 8000,
   town house 10000, farmhouse 13000, villa 20000. Selftest `node tools/town/homes.selftest.mjs`; in-game `houses/house-marker`.
+- 🟡 The cottage's door stage asks for a door kit (`Prefabs/Items/Resources/LF_DoorKit.et`, #3172), not the structure door
+  prefab (a building part nobody can pick up, so no house could be finished). The kit is a boxed item ($250 at the Everon
+  1989 hardware store, `hardware` stock and `LF_ShopPrices_GeneralStore.conf`). A save that holds a half-deposited door stage
+  loses that one count (deposits are counts by prefab). Proof: `property/build-door-kit` (every stage requirement loads and
+  fits a character's inventory, the kit counts at a build site) and `everon/door-kit-stock` (pack leg).
