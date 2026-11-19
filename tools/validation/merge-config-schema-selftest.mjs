@@ -45,6 +45,8 @@ function makeRepo(withAttributes) {
   const dir = scratchDir("lf-cfg-schema-");
   git(dir, "init", "-q", "-b", "main");
   cpSync(join(ROOT, "tools", "merge"), join(dir, "tools", "merge"), { recursive: true });
+  mkdirSync(join(dir, "tools", "lib"), { recursive: true });
+  cpSync(join(ROOT, "tools", "lib", "git-retry.mjs"), join(dir, "tools", "lib", "git-retry.mjs")); // regen-generated.mjs imports it
   mkdirSync(join(dir, "tools", "config"), { recursive: true });
   for (const f of ["schema.mjs", "pack-sections.mjs"]) cpSync(join(ROOT, "tools", "config", f), join(dir, "tools", "config", f));
   mkdirSync(join(dir, "tools", "economy"), { recursive: true });

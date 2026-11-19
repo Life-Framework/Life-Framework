@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{38B6B5EBA4C9F634}Configs/Catalogue/LF_Catalogue_Kit_Everon1989/LF_Catalogue_FarmSupply.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

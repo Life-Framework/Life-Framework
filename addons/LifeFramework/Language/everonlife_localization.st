@@ -5078,6 +5078,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hopper full, unload at the granary"
      Comment "Hint when the reaper's hopper is at its cap and cutting stops (#3285)."
     }
+    CustomStringTableItem "{BF338F251412CB57}" {
+     Id "LF-Harvest_RackAlreadyOut"
+     Target_en_us "Your reaper is already out"
+     Comment "Toast (#3295): take-out while the player's reaper is hitched somewhere."
+    }
+    CustomStringTableItem "{B22321ACD509B257}" {
+     Id "LF-Harvest_RackDumped"
+     Target_en_us "Reaper put back. The hopper was dumped: %1 kg of grain lost"
+     Comment "Warning toast (#3295): put back with grain in the hopper. %1 = kilograms dumped."
+    }
+    CustomStringTableItem "{3355FF558340E68F}" {
+     Id "LF-Harvest_RackFailed"
+     Target_en_us "The reaper would not hitch"
+     Comment "Toast (#3295): the hitch failed; the server log says why."
+    }
+    CustomStringTableItem "{DB422FE9426E93B2}" {
+     Id "LF-Harvest_RackNoVehicle"
+     Target_en_us "Park a UAZ469 or a Z7211 beside the rack first"
+     Comment "Toast (#3295): no free hitch-list vehicle within reach of the rack."
+    }
+    CustomStringTableItem "{76DD952E4AE4819E}" {
+     Id "LF-Harvest_RackNotOut"
+     Target_en_us "You have no reaper out"
+     Comment "Toast (#3295): put-back with nothing out."
+    }
+    CustomStringTableItem "{008EA7B9C6EDB74C}" {
+     Id "LF-Harvest_RackNotOwned"
+     Target_en_us "You do not own a reaper. The farm supply counter sells one"
+     Comment "Toast (#3295): take-out by a player with no reaper."
+    }
+    CustomStringTableItem "{DBBAC35BF4F45EDA}" {
+     Id "LF-Harvest_RackPutBack"
+     Target_en_us "Put back reaper"
+     Comment "Implement rack prompt (#3295): unhitch your reaper and return it to the rack. Also the toast title."
+    }
+    CustomStringTableItem "{8139653E1150737F}" {
+     Id "LF-Harvest_RackPutBackDone"
+     Target_en_us "Your reaper is back on the rack"
+     Comment "Toast (#3295): put back with an empty hopper."
+    }
+    CustomStringTableItem "{5693A725630DADEF}" {
+     Id "LF-Harvest_RackTakeOut"
+     Target_en_us "Take out reaper"
+     Comment "Implement rack prompt (#3295): hitch your reaper to a vehicle beside the rack. Also the toast title."
+    }
+    CustomStringTableItem "{DF31D8D79C5EF941}" {
+     Id "LF-Harvest_RackTakenOut"
+     Target_en_us "Your reaper is hitched on"
+     Comment "Toast (#3295): the reaper is now behind the vehicle."
+    }
+    CustomStringTableItem "{CED0297A3041F904}" {
+     Id "LF-Harvest_RackVehicleFar"
+     Target_en_us "Bring the vehicle that tows your reaper to the rack"
+     Comment "Toast (#3295): put-back with the towing vehicle out of reach."
+    }
     CustomStringTableItem "{3E7A1E93CB13CBFC}" {
      Id "LF-Harvest_TooFast"
      Target_en_us "Too fast to cut, slow down"
@@ -11513,6 +11568,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_PickFirst"
      Target_en_us "Pick a line from the list first."
      Comment "Shop refusal on the client: Pay or Sell with no item on the slip."
+    }
+    CustomStringTableItem "{7788EC6B8586AE96}" {
+     Id "LF-Shop_RefuseAlreadyOwned"
+     Target_en_us "You already own one of these"
+     Comment "Order slip line (#3295): an implement is bought once."
     }
     CustomStringTableItem "{601C97E84CB077AF}" {
      Id "LF-Shop_RefuseCash"

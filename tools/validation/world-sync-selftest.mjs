@@ -13,7 +13,7 @@
 // "FAIL failure after the working tree moved: restored=false". With the library absent:
 // "FAIL cannot load tools/lib/world-sync.mjs or tools/commands/world-sync.mjs".
 
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -42,7 +42,7 @@ function git(dir, ...args) {
   let r;
   // clone/push between local repos now and then fail on Windows when something else holds a file for a moment.
   for (let i = 0; i < 4; i++) {
-    r = spawnSync("git", args, { cwd: dir, env: { ...process.env, ...GENV }, encoding: "utf8", windowsHide: true, maxBuffer: 1 << 28 });
+    r = gitSync(args, { cwd: dir, env: { ...process.env, ...GENV }, encoding: "utf8", windowsHide: true, maxBuffer: 1 << 28 });
     if (r.status === 0 || !["clone", "push"].includes(args[0])) break;
   }
   if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${dir}: ${r.stderr}`);

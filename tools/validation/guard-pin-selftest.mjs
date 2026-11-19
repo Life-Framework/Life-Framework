@@ -5,7 +5,7 @@
 // red-proof 2026-11-16: before tools/lib/guard-pin.mjs existed this printed "FAIL cannot load"; with syncWorktree
 // ignoring `target` it printed "FAIL world sync stops at the compiled-ok commit".
 
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -47,7 +47,7 @@ try {
 
 const tmp = scratchDir("lf-guard-pin-");
 const git = (dir, ...a) => {
-  const r = spawnSync("git", ["-C", dir, "-c", "user.name=t", "-c", "user.email=t@t", ...a], { encoding: "utf8" });
+  const r = gitSync(["-C", dir, "-c", "user.name=t", "-c", "user.email=t@t", ...a], { encoding: "utf8" });
   if (r.status !== 0) throw new Error(`git ${a.join(" ")}: ${r.stderr}`);
   return r.stdout.trim();
 };
@@ -63,15 +63,15 @@ try {
 
   // 3. Real repos: origin main = A (compiled-ok) <- B (unchecked). The maintainer clone is at the root commit.
   const origin = join(tmp, "origin.git");
-  spawnSync("git", ["init", "-q", "--bare", "-b", "main", origin]);
+  gitSync(["init", "-q", "--bare", "-b", "main", origin]);
   const up = join(tmp, "up");
-  spawnSync("git", ["clone", "-q", origin, up]);
+  gitSync(["clone", "-q", origin, up]);
   writeFileSync(join(up, "a.txt"), "0\n");
   git(up, "add", ".");
   git(up, "commit", "-qm", "root");
   git(up, "push", "-q", "origin", "HEAD:main");
   const me = join(tmp, "me");
-  spawnSync("git", ["clone", "-q", origin, me]);
+  gitSync(["clone", "-q", origin, me]);
   git(me, "checkout", "-qb", "ws/town-maintainer-edits");
   writeFileSync(join(up, "a.txt"), "A\n");
   git(up, "commit", "-qam", "A");

@@ -12,7 +12,7 @@
 //    with the fixed one: run-driver.mjs must run the newer copy.
 // inputs: tools/**, .gitattributes
 
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
@@ -25,7 +25,7 @@ const failures = [];
 const fail = (message) => failures.push(message);
 
 function git(dir, args) {
-  return spawnSync("git", args, { windowsHide: true, cwd: dir, encoding: "utf8" });
+  return gitSync(args, { windowsHide: true, cwd: dir, encoding: "utf8" });
 }
 
 function initRepo(dir) {

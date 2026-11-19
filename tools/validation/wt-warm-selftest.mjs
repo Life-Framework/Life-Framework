@@ -8,7 +8,7 @@
 // red-proof (2026-11-14): with claimWarm's link and pristine checks removed, the
 // junction tree was moved into Life-Framework-ws-gamma and this printed "a warm
 // tree holding a junction is not claimed" and "the refused tree is marked broken".
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { unlinkReparsePoints } from "../link-safety.mjs";
@@ -23,7 +23,7 @@ const failures = [];
 const ok = (cond, msg) => { if (!cond) failures.push(msg); };
 const base = realpathSync(scratchDir("lf-wt-warm-"));
 const g = (cwd, args) => {
-  const r = spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, windowsHide: true, encoding: "utf8" });
+  const r = gitSync(["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, windowsHide: true, encoding: "utf8" });
   if (r.status !== 0) throw new Error(`git ${args.join(" ")}: ${r.stderr}`);
   return r.stdout.trim();
 };
@@ -103,7 +103,7 @@ try {
   for (const slug of ["alpha", "beta", "gamma"]) {
     const r = wt.wtPrune(main, slug, { force: true });
     ok(!existsSync(r.path), `${slug} directory removed`);
-    ok(spawnSync("git", ["-C", main, "show-ref", "--verify", `refs/heads/ws/${slug}`], { windowsHide: true }).status !== 0, `${slug} branch removed`);
+    ok(gitSync(["-C", main, "show-ref", "--verify", `refs/heads/ws/${slug}`], { windowsHide: true }).status !== 0, `${slug} branch removed`);
   }
   process.env.LF_WT_WARM = "1";
   wt.wtWarmFill(main);

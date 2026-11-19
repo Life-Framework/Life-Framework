@@ -20,6 +20,7 @@
 // "FAIL a slice that edits Street_Hospital.layer is refused" and exited 1 (2026-11-15); restored, it passes.
 
 import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
@@ -135,7 +136,7 @@ const natural = allocate("clash-probe");
 const mainClaim = (slug, c) => JSON.stringify({ slug, cell: c, layer: layerOfSlug(slug), rows: 0, created: "2026-11-15" });
 const root2 = scratchDir("lf-grid-main-");
 try {
-  const git = (...a) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...a], { cwd: root2, encoding: "utf8" });
+  const git = (...a) => gitSync(["-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...a], { cwd: root2, encoding: "utf8" });
   git("init", "-q");
   put(root2, `${CELLS_DIR}/earlier-slice.json`, mainClaim("earlier-slice", natural.id));
   put(root2, `${GRID_LAYERS}/Annex.layer`, "");
@@ -337,7 +338,7 @@ try {
 // (ws/police-station-kit and ws/building-bank both took c3r1 for a 2x2, 2026-11-16). Real git worktrees.
 {
   const dir = scratchDir("lf-grid-wt-");
-  const git = (cwd, ...args) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, encoding: "utf8" });
+  const git = (cwd, ...args) => gitSync(["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, encoding: "utf8" });
   try {
     const mainTree = join(dir, "main");
     const sibTree = join(dir, "Life-Framework-ws-building-bank");

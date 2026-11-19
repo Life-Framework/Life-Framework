@@ -19,6 +19,16 @@ StringTable {
      Target_en_us "FIRST BANK OF EVERON"
      Comment "ATM terminal screen header. Upper case: a 1989 green-screen terminal."
     }
+    CustomStringTableItem "{BE2579D48B439241}" {
+     Id "LF-BuyerSale_Closed"
+     Target_en_us "The man is not buying here, not tonight."
+     Comment "Toast (#2922, 1989 pack voice): the buyer is absent, away from the open spot, or the price list is missing."
+    }
+    CustomStringTableItem "{20C3F3155FCF7F4B}" {
+     Id "LF-BuyerSale_Nothing"
+     Target_en_us "You have nothing he drinks or smokes."
+     Comment "Toast (#2922, 1989 pack voice): no chain goods the buyer names."
+    }
     CustomStringTableItem "{6F65DE9EB00006ED}" {
      Id "LF-CharSel_Title"
      Target_en_us "Civil Registry of Everon, Residents on File"
@@ -358,6 +368,11 @@ StringTable {
      Id "LF-Dialogue_NightShift_SayMove"
      Target_en_us "How was the move?"
      Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{934605F1DC35249E}" {
+     Id "LF-Dialogue_NightShift_SayTip"
+     Target_en_us "Heard anyone's buying, quiet like?"
+     Comment "Night-shift worker reply (#2922): asks the informant where the buyer stands today; shown only to someone he would tell."
     }
     CustomStringTableItem "{BCCC43C3AC789D1A}" {
      Id "LF-Dialogue_NightShift_SayWork"
@@ -699,6 +714,31 @@ StringTable {
      Target_en_us "Republic of Everon, Identity Card"
      Comment "Title of the ID card view another player holds up."
     }
+    CustomStringTableItem "{AB301A21E6C4933D}" {
+     Id "LF-Informant_Already"
+     Target_en_us "I told you already. He is where I marked it."
+     Comment "Informant answer (#2922, 1989 pack voice): the player already holds this shift's mark; nothing was taken."
+    }
+    CustomStringTableItem "{F1374BA6D82ABEFA}" {
+     Id "LF-Informant_NeverHeard"
+     Target_en_us "Never heard of him. Go home."
+     Comment "Informant refusal (#2922, 1989 pack voice): police on duty, or too little standing; the same words either way."
+    }
+    CustomStringTableItem "{E4C147CBA15470AB}" {
+     Id "LF-Informant_NoCash"
+     Target_en_us "A tip costs {currency:sym}%1, friend. Come back when you have it."
+     Comment "Informant refusal toast (#2922, 1989 pack voice): not enough cash; %1 is the fee. Nothing was taken."
+    }
+    CustomStringTableItem "{B80B0DA1C60DDE2C}" {
+     Id "LF-Informant_NoSpot"
+     Target_en_us "Nobody is buying tonight. Nothing to tell you."
+     Comment "Informant answer (#2922, 1989 pack voice): no buyer spot is placed; nothing was taken."
+    }
+    CustomStringTableItem "{FF75CE36995683B2}" {
+     Id "LF-Informant_Told"
+     Target_en_us "He is buying tonight. I marked the spot on your map; it will not keep past this shift."
+     Comment "Informant answer (#2922, 1989 pack voice): the fee was paid and the buyer's spot is on the map."
+    }
     CustomStringTableItem "{772ECF227821D478}" {
      Id "LF-Item_Bread"
      Target_en_us "Bread loaf"
@@ -848,6 +888,21 @@ StringTable {
      Id "LF-Item_TouristMap_Name"
      Target_en_us "Tourist map of Everon"
      Comment "Tourist map (#2242): the item's name in the inventory."
+    }
+    CustomStringTableItem "{E5D6ABA466DA481F}" {
+     Id "LF-Launder_Closed"
+     Target_en_us "Nobody is washing money tonight."
+     Comment "Toast (#2922, 1989 pack voice): the laundering rules config is missing or refused."
+    }
+    CustomStringTableItem "{9FA29FCFFE44A9BC}" {
+     Id "LF-Launder_DailyCap"
+     Target_en_us "That is all the washing the town can hide in a day. Come back tomorrow."
+     Comment "Toast (#2922, 1989 pack voice): the character reached the 24 h laundering cap."
+    }
+    CustomStringTableItem "{FADAC5CC77FBDC89}" {
+     Id "LF-Launder_Loaded"
+     Target_en_us "The notes are in the machine. Come back when they are clean, minus the house's share."
+     Comment "Toast (#2922, 1989 pack voice): marked notes loaded into the laundering station; the cut is the pack's."
     }
     CustomStringTableItem "{78E9902BB0209A7E}" {
      Id "LF-Level_Far_Farmer"

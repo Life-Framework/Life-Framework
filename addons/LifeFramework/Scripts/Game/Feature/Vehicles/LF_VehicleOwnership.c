@@ -997,6 +997,8 @@ class LF_VehicleOwnership
 		session.m_Vehicle = vehicle.GetID();
 		session.m_Key = key.GetID();
 		Sessions().Set(id, session);
+		// The record restores the car; the engine's own save would put back an unowned copy (#3614).
+		LF_VehicleWorldSave.Hold(vehicle);
 
 		vehicleId = id;
 		cashCharged = cashDebit;
@@ -1753,6 +1755,8 @@ class LF_VehicleOwnership
 		}
 
 		session.m_Vehicle = vehicle.GetID();
+		// The record restores the car; the engine's own save would put back an unowned copy (#3614).
+		LF_VehicleWorldSave.Hold(vehicle);
 		LF_CargoBedPersist.Apply(record.m_sVehicleId, vehicle); // the saved truck bed load (#3266)
 
 		// The saved cargo goes back in once the car's storages have registered (#2809).

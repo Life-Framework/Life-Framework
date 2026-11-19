@@ -10,7 +10,7 @@
 // red-proof (d, 2026-11-15): with gate-warnings.mjs, world-test-judge.mjs and cli.mjs from main, (d) printed FAIL for every case (no demoteTests, tier=all-core unparsed, bare test steps).
 // red-proof: before the fix this printed FAIL for every case below (ownBase, gate-warnings.mjs and the body cap did not
 //   exist; createPrGh passed --body) and exited 1 (2026-11-15); with the fix it passes.
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as gt from "../lib/gate-tier.mjs";
@@ -26,7 +26,7 @@ const check = (ok, msg) => { if (!ok) fails.push(msg); };
 // ---- (b) own change only: a temp repo whose local origin/main is stale.
 const dir = scratchDir("lf-maint-gate-");
 const g = (...a) => {
-  const r = spawnSync("git", ["-C", dir, "-c", "user.email=t@t", "-c", "user.name=t", ...a], { encoding: "utf8", windowsHide: true });
+  const r = gitSync(["-C", dir, "-c", "user.email=t@t", "-c", "user.name=t", ...a], { encoding: "utf8", windowsHide: true });
   if (r.status !== 0) throw new Error(`git ${a.join(" ")}: ${r.stderr}`);
   return r.stdout.trim();
 };
@@ -49,7 +49,7 @@ const c2 = g("rev-parse", "HEAD");
 g("checkout", "-q", "ws/town-maintainer-edits");
 g("merge", "-q", "--no-ff", "-m", "Merge remote-tracking branch 'origin/main' into ws/town-maintainer-edits", c2);
 // origin/main stays at c1: stale, as when the gate runs before the next fetch.
-const gitFn = (args) => { const r = spawnSync("git", ["-C", dir, ...args], { encoding: "utf8", windowsHide: true }); return { status: r.status, stdout: r.stdout ?? "" }; };
+const gitFn = (args) => { const r = gitSync(["-C", dir, ...args], { encoding: "utf8", windowsHide: true }); return { status: r.status, stdout: r.stdout ?? "" }; };
 const read = (p) => { try { return readFileSync(join(dir, p), "utf8"); } catch { return null; } };
 const files = gt.collectDiff({ git: gitFn, read, base: "main" });
 const paths = (files ?? []).map((f) => f.path).sort();

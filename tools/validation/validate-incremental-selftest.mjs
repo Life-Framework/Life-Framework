@@ -16,7 +16,7 @@
 // red-proof: 2026-11-14, with fingerprint() no longer hashing each matched file path and stat signature
 // (only the match count), the run printed `FAIL editing a matched file did not re-run the check`,
 // `FAIL renaming a matched file ...`, `FAIL editing the check itself ...` and exited 1; restored, it passes.
-import { execFileSync } from "node:child_process";
+import { execGit } from "../lib/git-retry.mjs";
 import { mkdirSync, readdirSync, readFileSync, renameSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -74,7 +74,7 @@ for (const f of readdirSync(realDir)) {
 // Fingerprints on a scratch repo.
 const root = scratchDir("lf-validate-inc-");
 try {
-  const sh = (...a) => execFileSync("git", a, { cwd: root, stdio: "ignore" });
+  const sh = (...a) => execGit(a, { cwd: root, stdio: "ignore" });
   sh("init", "-q");
   const put = (rel, text = "x") => {
     mkdirSync(dirname(join(root, rel)), { recursive: true });

@@ -13,6 +13,7 @@
 // until() case threw "workbench: no free Workbench slot within 20 s" (no until(), no limit re-read) and exited 1.
 
 import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as cache from "../lib/rdb-cache.mjs";
@@ -31,7 +32,7 @@ const check = (name, ok) => {
 };
 
 const root = scratchDir("lf-rdb-cache-");
-spawnSync("git", ["init", "-q", root], { windowsHide: true });
+gitSync(["init", "-q", root], { windowsHide: true });
 const hub = wt.ensureHub(root);
 const addonDir = join(root, "addons", "Demo");
 mkdirSync(addonDir, { recursive: true });

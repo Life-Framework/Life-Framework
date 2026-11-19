@@ -89,6 +89,21 @@ export function checkReloadBoot(text) {
   return { ok: true, reason: null };
 }
 
+// Tests whose restart proof is a seed (pass 1) plus a verify (pass 2) behind a silent skip (`LF_E2E.RequiresSeed`,
+// `RequiresSection`): a pass 2 that skipped is green. Each prints one line only when its restart check ran to the end, so
+// the harness fails a leg that holds the test but whose pass 2 log lacks the line (#3630: the cargo truck seed was
+// gated to the save boot and nothing noticed when the reload boot stopped finding it).
+export const RESTART_PROOFS = [
+  { cls: "LF_Test_CargoBedPersist", what: "cargo bed truck keeps its logs (#3266)", text: "[LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with N unit(s) on its bed", line: /\[LFDebug:Cargo\] e2e restart: e2e-cargo-bed-truck collected with [1-9]\d* unit\(s\) on its bed/ },
+];
+
+// Pass 2's console.log text and the leg's class list (null: the whole tier) -> the proofs that never printed.
+// A pass 2 on an older save (--legacy-save, --pre-move) holds no such data: the caller does not ask.
+export function missingRestartProofs(text, classes) {
+  const t = String(text ?? "");
+  return RESTART_PROOFS.filter((p) => (!classes || classes.includes(p.cls)) && !p.line.test(t));
+}
+
 // Fixtures cut from real pass 1 logs (2026-11-12); returns failure strings.
 export function selftestE2eShutdown() {
   const failures = [];
@@ -126,5 +141,12 @@ export function selftestE2eShutdown() {
   if (checkReloadBoot(null).ok) failures.push("a pass 2 with no log folder of its own passes");
   if (checkReloadBoot(good.join("\n")).ok) failures.push("a pass 2 log that never loaded a save passes (it is pass 1's log)");
   if (!checkReloadBoot("x [LFDebug:Persistence] session continued from a save point (-loadSessionSave)\n[LFTEST] SUMMARY tier=persistence passed=1 failed=0 total=1").ok) failures.push("a real reload boot fails");
+  // #3630: a leg that holds the cargo test fails when its pass 2 never printed the restart line; a leg without it does not.
+  const cargoLine = "SCRIPT       : [LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with 4 unit(s) on its bed";
+  if (missingRestartProofs(`${cargoLine}\n`, ["LF_Test_CargoBedPersist"]).length) failures.push("a pass 2 that ran the cargo restart check is reported missing");
+  if (missingRestartProofs("[LFTEST] SUMMARY tier=only passed=1 failed=0 total=1\n", ["LF_Test_CargoBedPersist", "LF_Test_X"]).length !== 1) failures.push("a pass 2 that skipped the cargo restart check passes");
+  if (missingRestartProofs("x\n", null).length !== 1) failures.push("a whole-tier pass 2 without the cargo restart line passes");
+  if (missingRestartProofs("x\n", ["LF_Test_X"]).length) failures.push("a leg without the cargo test is asked for its line");
+  if (missingRestartProofs("[LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with 0 unit(s) on its bed\n", null).length !== 1) failures.push("an empty bed counts as a restored load");
   return failures;
 }

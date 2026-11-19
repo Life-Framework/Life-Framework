@@ -9,7 +9,8 @@
 // the box lock" check records a failure (acquireLock took server-2001 beside a live remote holder) and the next acquire
 // throws, exit 1. Restored.
 
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
@@ -26,7 +27,7 @@ const check = (ok, msg) => {
 };
 const gitInit = (dir) => {
   mkdirSync(dir, { recursive: true });
-  const r = spawnSync("git", ["init", "-q", dir], { windowsHide: true });
+  const r = gitSync(["init", "-q", dir], { windowsHide: true });
   if (r.status !== 0) throw new Error(`git init ${dir} failed`);
 };
 const norm = (p) => String(p).replace(/\\/g, "/").toLowerCase();

@@ -13,7 +13,7 @@
 //   unclassified it printed "registry-only: expected healed, got needs-human".
 import { mkdirSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { conflictKind, healMerge, isLive, predictConflicts, pushBranch, LIVE_MS } from "../prs.mjs";
 import { describeRun, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -28,7 +28,7 @@ const REGISTRY = "addons/LifeFramework/Language/everonlife_localization.en_us.co
 const SCRIPT = "addons/LifeFramework/Scripts/Game/Core/LF_Foo.c";
 
 function git(dir, args) {
-  return spawnSync("git", args, { cwd: dir, windowsHide: true, encoding: "utf8" });
+  return gitSync(args, { cwd: dir, windowsHide: true, encoding: "utf8" });
 }
 function must(dir, args) {
   const r = runGit(dir, args); // a probe through git() may fail quietly on purpose; a must() may not
@@ -207,7 +207,7 @@ ${t}`);
   write(stale, "docs/a.md", "a\n");
   must(stale, ["add", "-A", "-f"]);
   const old = new Date(Date.now() - 3 * 3600 * 1000).toISOString();
-  spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "old"], {
+  gitSync(["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "-m", "old"], {
     cwd: stale, windowsHide: true, env: { ...process.env, GIT_COMMITTER_DATE: old, GIT_AUTHOR_DATE: old },
   });
   const past = new Date(Date.now() - 3 * 3600 * 1000);

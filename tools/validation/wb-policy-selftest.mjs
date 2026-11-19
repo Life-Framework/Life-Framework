@@ -17,7 +17,7 @@
 
 import { writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { chooseGate, chooseRefresh } from "../lib/wb-gate.mjs";
 import * as wb from "../lib/wb-lock.mjs";
 import * as route from "../lib/wb-route.mjs";
@@ -79,7 +79,7 @@ ok("no local entry keeps the old behaviour", route.localPolicy({ machines: [{ na
 // 4. the real registry: a temp checkout whose lf.local.json removes the cap, like this PC's
 pool.setHostnameForTest("selftest-host");
 const dir = scratchDir("lf-wb-policy-");
-spawnSync("git", ["init", "-q", dir], { windowsHide: true });
+gitSync(["init", "-q", dir], { windowsHide: true });
 writeFileSync(join(dir, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "local", caps: ["server"] }] } }));
 ok("registry: this PC's caps lack workbench", route.localWorkbench(dir, { env: {} }).allowed === false);
 ok("registry: --local (LF_WB_LOCAL=1) allows it", route.localWorkbench(dir, { env: { LF_WB_LOCAL: "1" } }).allowed === true);
