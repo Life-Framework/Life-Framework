@@ -1,0 +1,171 @@
+GenericEntity Fit_saint_philippe_bakery_Place {
+ components {
+  LF_PlaceComponent "{70C35615BCBD13AA}" {
+   m_sKind "StoreCounter"
+   m_sId "saint-philippe.bakery"
+  }
+  LF_FittedBuildingComponent "{3CDD191DFF644A1C}" {
+  }
+ }
+ coords 4480.3 12.7 10750.7
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_counter_1 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4478.136 12.7 10745.698
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4477.875 12.7 10747.175
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_till : "{08F8B49C5124F437}Prefabs/Props/Commercial/LF_BakeryTill.et" {
+ coords 4477.974 13.739 10747.193
+ angleY 80
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 4484.439 12.7 10745.652
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1_loaf_11 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4483.32 13.288 10745.668
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1_loaf_12 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4483.694 13.288 10745.734
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1_loaf_13 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4484.068 13.288 10745.8
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1_loaf_21 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4483.32 13.781 10745.668
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1_loaf_22 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4483.694 13.781 10745.734
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1_loaf_23 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4484.068 13.781 10745.8
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1_loaf_31 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4483.32 14.274 10745.668
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1_loaf_32 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4483.694 14.274 10745.734
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_1_loaf_33 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4484.068 14.274 10745.8
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 4482.864 12.7 10745.374
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2_loaf_11 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4481.744 13.288 10745.39
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2_loaf_12 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4482.118 13.288 10745.456
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2_loaf_13 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4482.492 13.288 10745.522
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2_loaf_21 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4481.744 13.781 10745.39
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2_loaf_22 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4482.118 13.781 10745.456
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2_loaf_23 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4482.492 13.781 10745.522
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2_loaf_31 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4481.744 14.274 10745.39
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2_loaf_32 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4482.118 14.274 10745.456
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_2_loaf_33 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4482.492 14.274 10745.522
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 4481.288 12.7 10745.096
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3_loaf_11 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4480.168 13.288 10745.112
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3_loaf_12 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4480.543 13.288 10745.178
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3_loaf_13 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4480.917 13.288 10745.244
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3_loaf_21 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4480.168 13.781 10745.112
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3_loaf_22 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4480.543 13.781 10745.178
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3_loaf_23 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4480.917 13.781 10745.244
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3_loaf_31 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4480.168 14.274 10745.112
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3_loaf_32 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4480.543 14.274 10745.178
+ angleY 2
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_rack_3_loaf_33 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4480.917 14.274 10745.244
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_counter_loaf_1 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4477.927 13.739 10746.017
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_counter_loaf_2 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4477.875 13.739 10746.312
+ angleY -80
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_counter_loaf_3 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4477.771 13.739 10746.903
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_counter_loaf_4 : "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et" {
+ coords 4477.701 13.739 10747.297
+ angleY -40
+}
+GenericEntity Fit_saint_philippe_bakery_bakery_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "bakery"
+   m_vRimColor 0.9 0.82 0.55
+   m_vPaintColor 0.45 0.2 0.12
+   m_vTextColor 0.96 0.93 0.82
+  }
+ }
+ coords 4473.489 15.8 10745.64
+ angleY -100
+}

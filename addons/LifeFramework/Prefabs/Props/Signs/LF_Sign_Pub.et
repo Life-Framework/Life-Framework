@@ -3,9 +3,11 @@ SCR_DestructibleEntity : "{45849C84A20B71C1}Prefabs/Props/Commercial/SignPub_01_
  components {
   LF_SignComponent "{DF6A14A1AD2B41F0}" {
    m_bShowFace 1
-   m_vFaceOffset 0 0.62 0.26
-   m_vFaceAngles 0 -15 0
-   m_fFaceScale 2.6
+   m_sStyle "chalk"
+   m_sSize "quad16x9"
+   m_vFaceOffset 0 0.58 0.3
+   m_vFaceAngles -90 0 15
+   m_fFaceScale 0.52
    m_fTitleRotation 0
    m_vTitlePos 40 102 0
    m_vTitleSize 432 520 0
