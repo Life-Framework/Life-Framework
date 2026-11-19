@@ -11,7 +11,7 @@
     "origin": "building",
     "frame": "building-local"
   },
-  "scope": "building",
+  "scope": "room",
   "building": {
     "mode": "inside",
     "vanilla": "{EBD26252635EDDCE}Prefabs/Structures/Industrial/Houses/HouseAddon_ShedMetal_01/HouseAddon_ShedMetal_01_Long.et"
