@@ -279,6 +279,7 @@ try {
 if (failures.length) {
   console.log("promote-selftest: FAIL");
   for (const f of failures) console.log("  " + f);
-  process.exit(1);
+  process.exitCode = 1; // not process.exit(1): on a pipe it can drop the lines just printed (the CI log showed none)
+} else {
+  console.log("promote-selftest: OK");
 }
-console.log("promote-selftest: OK");
