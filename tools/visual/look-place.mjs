@@ -13,7 +13,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-export const PLACE_RX = /^place:([a-z0-9][a-z0-9-]*)\/([a-z0-9][a-z0-9-]*)$/;
+export const PLACE_RX = /^place:([a-z0-9][a-z0-9-]*)\/([a-z0-9][a-z0-9-]*)(?:@([a-z0-9]+))?$/;
 const PLACE_SLUG = /^[a-z0-9][a-z0-9-]*$/;
 const r1 = (v) => Math.round(v * 10) / 10;
 const norm = (az) => ((Math.round(az) % 360) + 360) % 360;
@@ -28,20 +28,33 @@ export function readPlace(root, place, { dossierFile, mappingFile } = {}) {
   const mapping = JSON.parse(readFileSync(mFile, "utf8"));
   const others = {};
   for (const e of Object.values(mapping?.slots ?? {})) {
-    const f = typeof e?.dossier === "string" && PLACE_SLUG.test(e.dossier) ? join(root, "docs", "everon", "places", e.dossier, "dossier.json") : null;
-    if (f && !others[e.dossier] && existsSync(f)) others[e.dossier] = JSON.parse(readFileSync(f, "utf8"));
+    // An outposts slot (`drops`) stands on buildings of several places' surveys: load each one named.
+    for (const slug of [e?.dossier, ...(e?.drops ?? []).map((dr) => dr?.place)]) {
+      const f = typeof slug === "string" && PLACE_SLUG.test(slug) ? join(root, "docs", "everon", "places", slug, "dossier.json") : null;
+      if (f && !others[slug] && existsSync(f)) others[slug] = JSON.parse(readFileSync(f, "utf8"));
+    }
   }
   return { dossier: JSON.parse(readFileSync(dFile, "utf8")), mapping, others };
 }
 
 // Pure: { dossier, mapping } and a slot -> the look area { name, x, y, z, radius, front, world: "island", room, wideCands, slot }.
-export function placeArea({ dossier, mapping, others }, place, slot, radius) {
+export function placeArea({ dossier, mapping, others }, place, slot, radius, pick = null) {
   const entry = mapping?.slots?.[slot];
   if (!entry || entry.none) {
     const known = Object.entries(mapping?.slots ?? {}).filter(([, e]) => e && !e.none).map(([id]) => id);
     throw new Error(`place ${place} maps no slot "${slot}" (mapped: ${known.join(", ") || "none"})`);
   }
-  const name = `place-${place}-${slot}`;
+  let name = `place-${place}-${slot}`;
+  // An outposts slot is several drops: `place:<place>/<slot>@<building>` looks at that drop, the first one without a suffix.
+  let hostPlace = entry.dossier;
+  let hostBuilding = entry.building;
+  if (Array.isArray(entry.drops)) {
+    const dr = pick ? entry.drops.find((q) => q.building === pick) : entry.drops[0];
+    if (!dr) throw new Error(`slot ${slot}: no drop on building ${pick} (drops: ${entry.drops.map((q) => q.building).join(", ")})`);
+    hostPlace = dr.place === place ? undefined : dr.place;
+    hostBuilding = dr.building;
+    name = `${name}-${dr.building}`;
+  }
   if (entry.plot) {
     const p = (dossier.freePlots?.plots ?? []).find((q) => q.id === entry.plot);
     if (!p) throw new Error(`slot ${slot}: plot ${entry.plot} is not in the dossier of ${place}`);
@@ -49,9 +62,9 @@ export function placeArea({ dossier, mapping, others }, place, slot, radius) {
     return { name, x: p.x, y: 0, z: p.z, radius: R, front: 180, world: "island", slot: { place, id: slot, plot: p.id } };
   }
   // An entry with `dossier` stands in another place's survey (the harbour master's cabin at the dock): read that one.
-  const from = entry.dossier ? (others?.[entry.dossier] ?? { buildings: [] }) : dossier;
-  const b = (from.buildings ?? []).find((q) => q.id === entry.building);
-  if (!b) throw new Error(`slot ${slot}: building ${entry.building} is not in the dossier of ${entry.dossier ?? place}`);
+  const from = hostPlace ? (others?.[hostPlace] ?? { buildings: [] }) : dossier;
+  const b = (from.buildings ?? []).find((q) => q.id === hostBuilding);
+  if (!b) throw new Error(`slot ${slot}: building ${hostBuilding} is not in the dossier of ${hostPlace ?? place}`);
   const fp = b.footprint ?? {};
   const cx = fp.cx ?? b.x;
   const cz = fp.cz ?? b.z;
@@ -80,5 +93,5 @@ export function placeArea({ dossier, mapping, others }, place, slot, radius) {
 export function resolvePlace(arg, root, radius, files = {}) {
   const m = PLACE_RX.exec(String(arg));
   if (!m) throw new Error(`"${arg}" is not place:<place>/<slot> (e.g. place:saint-philippe/arrival)`);
-  return placeArea(readPlace(root, m[1], files), m[1], m[2], radius);
+  return placeArea(readPlace(root, m[1], files), m[1], m[2], radius, m[3] ?? null);
 }

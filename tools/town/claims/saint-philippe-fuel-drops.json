@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "fuel-drops",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b120"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b128"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b23"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b27"
+    }
+  ],
+  "kit": "fuel-drops",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_fuel-drops.layer",
+  "kinds": [],
+  "rows": 4,
+  "date": "2026-11-19"
+}

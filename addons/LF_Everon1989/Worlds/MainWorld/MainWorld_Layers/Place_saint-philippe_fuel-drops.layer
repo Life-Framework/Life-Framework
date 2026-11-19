@@ -1,0 +1,16 @@
+GenericEntity Fit_saint_philippe_fuel_drops_drop_b120 : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
+ coords 4321.406 6.744 10675.579
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_fuel_drops_drop_b128 : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
+ coords 4409.457 7.815 10870.52
+ angleY 74
+}
+GenericEntity Fit_saint_philippe_dock_fuel_drops_drop_b23 : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
+ coords 4439.753 5.813 11212.06
+ angleY 87
+}
+GenericEntity Fit_saint_philippe_dock_fuel_drops_drop_b27 : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
+ coords 4327.584 1.594 10993.169
+ angleY 57
+}
