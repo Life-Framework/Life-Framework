@@ -167,27 +167,6 @@ GenericEntity {
    m_vBoundaryHalf 3.75 0 7.9
    m_iRestockSeconds 300
   }
-  ActionsManagerComponent "{80F4E525437D3DA7}" {
-   ActionContexts {
-    UserActionContext "{E584219082840231}" {
-     ContextName "till1"
-     Position PointInfo "{A7762FB7208621BD}" {
-      Offset 1.16 1.488 -0.325
-     }
-     Radius 1.5
-    }
-   }
-   additionalActions {
-    LF_StoreTillAction "{3C4CC0853F676019}" {
-     ParentContextList {
-      "till1"
-     }
-     UIInfo UIInfo "{67B09259BCBDEAB5}" {
-      Name "#LF-Store_Pay"
-     }
-    }
-   }
-  }
   RplComponent "{88BFB004E7CF0F74}" {
    Enabled 1
   }

@@ -162,21 +162,22 @@ wear("suitJacketGrey", 5.53, F + 0.1, 0.3, -90);
 put(P.paintingBig9, 5.765, 2.45, 4.6, -90);
 put(P.paintingSmall3, 5.765, 2.4, 2, -90);
 put(P.mirrorFull, 5.745, F + 1.3, 6.35, -90, 1, "0 -90 90"); // full length: the 2.1 m wide mirror stood on its side
-// x -1.54 wall (faces +x): coat boards by the hall door, a painting over the shelf, the poster by the window
-put(P.coatBoard, -1.535, F, 1.9, 90);
-wear("denimJacket", -1.32, F + 0.1, 1.9, 90);
-put(P.coatBoard, -1.535, F, 2.8, 90);
-wear("raincoatGreen", -1.32, F + 0.1, 2.8, 90);
+// x -1.54 wall (faces +x): one coat board beside the hall door (the door leaf spans z 0.64..1.96; a board 0.87 m wide at 2.65
+// stands 0.26 m clear of it and 0.1 m short of the shelf), a painting over the shelf, the poster by the window.
+// Two boards at z 1.9 and 2.8 stood half in the doorway (0.49 m into the door's clearance, 2026-11-19).
+put(P.coatBoard, -1.535, F, 2.65, 90);
+wear("denimJacket", -1.32, F + 0.1, 2.65, 90);
 put(P.paintingBig4, -1.535, 2.35, 4.4, 90);
 put(P.radioPoster, -1.535, 1.6, 6.4, 90);
 // back wall z -3.0 (faces +z): clock, notices, and the hat rack
 put(P.clock, 2.3, 2.6, -3.015);
 put(P.noticeH3, 0.9, 1.7, -2.995);
-put(P.insurance, 4.85, 1.7, -2.995);
-put(P.hatBoard, 3.95, F, -2.995, 0);
-wear("capDark", 3.7, F + 0.0, -2.88, 0);
-wear("knitBrown", 3.97, F - 0.05, -2.88, 10);
-wear("capBlue", 4.2, F + 0.0, -2.88, -8);
+put(P.insurance, 5.35, 1.7, -2.995);
+// The back-room door leaf spans x 3.55..4.87 on this wall: the hat board stands left of it, clear of the swing.
+put(P.hatBoard, 1.95, F, -2.995, 0);
+wear("capDark", 1.7, F + 0.0, -2.88, 0);
+wear("knitBrown", 1.97, F - 0.05, -2.88, 10);
+wear("capBlue", 2.2, F + 0.0, -2.88, -8);
 
 // ---- The fitting corner and the shoe corner ----
 put(P.stool, 5.05, F, 6.2, 90);
@@ -189,7 +190,7 @@ put(P.plant, 5.3, F, 7);
 put(P.notebook, 1.75, 1.238, -0.25, 180);
 put(P.pen, 1.98, 1.245, -0.2, 25);
 put(P.phone, 2.1, 1.238, -0.65, 200);
-put(P.radio, 1, 1.238, -0.75, 0);
+// no radio here: its turn-on action sat 0.45 m from the register and won the F key over the till (2026-11-19)
 put(P.frame, 2.25, 1.238, -0.05, 195);
 put(P.sewing, 0, F, -2.5, 0);
 put(P.box06, -0.95, F, -2.5, 0);
