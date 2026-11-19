@@ -50,6 +50,11 @@
   `LF_PlaceComponent` of kind `ATM`, id `atm` by default. A place id is unique, so a second machine
   overrides `m_sId` in its layer entry (the grid cell `slice-3352` does). Test `money/atm-prefab`; the old
   inline `ATM.layer` entity in DebugWorld stays as it is.
+- ✅ (2026-11-19, #3355) **Three ATMs stand in Saint-Philippe**: the `atms` outposts slot (`town drops saint-philippe atms`,
+  layer `Place_saint-philippe_atms.layer`) puts an `LF_ATM.et` on the outer wall of the bank's street front (b79, under the
+  bank's ATM sign), the fuel station kiosk (b97) and the harbour offices on the dock road (dock b08). Each overrides
+  `m_sId` as `atm.<place>.<building>`. The action description is the key `LF-ATM_Manage` (it was Spanish text in the prefab).
+  Seated flush to the wall, gap within 1 cm (`look contact`). Proof: `tools\cli look place:saint-philippe/atms`.
 
 ### ATM terminal — `Feature/ATM/LF_ATMTerminal.c` (was `LF_ATMMenu`)
 - ✅ (2026-11-08, M1-13) **Terminal screen** on `LF_UIScreen` with the

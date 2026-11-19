@@ -1965,6 +1965,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "AMOUNT > %1_"
      Comment "ATM terminal entry line with a cursor. %1 is the amount keyed in so far."
     }
+    CustomStringTableItem "{6B1D3E9A0C4F7285}" {
+     Id "LF-ATM_Manage"
+     Target_en_us "Manage bank account"
+     Comment "Action description on a placed ATM (LF_ATM.et)."
+    }
     CustomStringTableItem "{7880A378781D2C8D}" {
      Id "LF-ATM_NoReply"
      Target_en_us "NO REPLY FROM THE BANK. TRY AGAIN."
