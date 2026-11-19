@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{2209769166451407}Sounds/Dialogue/shipment_go_between/Dialogue_shipment_go_between.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

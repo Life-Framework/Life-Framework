@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{3440A00000000002}Configs/Dialogue/LF_Dialogue_ShipmentHarbourMaster.conf"
+ Name "{3804A00000000004}Configs/Residents/LF_Residents_Everon1989/LF_Residents_ShipmentGoBetween.conf"
  Configurations {
   CONFResourceClass PC {
   }

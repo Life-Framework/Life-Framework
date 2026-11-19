@@ -7,6 +7,11 @@ Vehicle : "{939AC713213C2BA1}Prefabs/Vehicles/Wheeled/Z7211/Z7211_red_CIV.et" {
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {
    additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_VehicleLockAction "{E1A7211BE1A00006}" {
      ParentContextList {
       "door_l01"

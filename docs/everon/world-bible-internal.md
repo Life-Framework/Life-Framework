@@ -99,7 +99,7 @@ its GUID here when chosen). Taking it out of the crate is "the crate is opened".
 |---|---|---|---|---|---|
 | `harbour_master` | Marcel Roux | Gives dock work | Signed a manifest he suspects; wants someone he trusts to count. Does not know what the cargo is | Harbour cabin, dock b14 (placed, #3055) | Exists. Dialogue `harbour_master` (`LF_Dialogue_HarbourMaster.conf`) stays untouched |
 | `shipment_foreman` | Thierry Vasseur | The dock foreman | Paid by Hugo to look away from the red crate | The quay and warehouse, as the scene's lead docker | Scene crew only (no dialogue, no resident row); appears in rumours and the quest text |
-| `shipment_go_between` | Hugo Valmy | A regular in the village pub | Speaks for the coast-road gang; buys or fights, never explains | Village pub b03 (the `cafe` place) | **New NPC, needs card S8** (below) |
+| `shipment_go_between` | Hugo Valmy | A regular in the village pub | Speaks for the coast-road gang; buys or fights, never explains | Village pub b03 (the `cafe` place) | NPC, dialogue `shipment_go_between` and resident row `shipment_go_between` (S8, #3804; voiced in #3809) |
 | `shipment_officer` | Brigadier Colette Aubry | Gendarmerie | Wants the seizure for her record, not the culprit | Voice in the dispatch call text and the evidence slip; two AI gendarmes at the door | No NPC; text and AI crew only |
 | `cafe_owner` | Odile Marchand | The barman's role: the pub is her café | Hears everything, shares it with the relocated | Pub counter | Exists. Rumour rows only |
 | `old_man` | Gaspard Lenoir | Retired fisherman | Saw the coaster ride too low | Pub or square bench | Exists. Rumour rows only |
