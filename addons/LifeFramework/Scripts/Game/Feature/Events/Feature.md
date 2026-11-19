@@ -67,7 +67,7 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 
 - **Player sees:** what the modules do (a scene of walkers); the loader itself is invisible.
 - **Owner and side:** `LF_EventModuleLoader`, server, at game start from `LF_EventShell.StartIfServer`.
-- **Data:** `LF_EventsConfig.m_aModules` of `LF_EventModuleRef` (id + `.conf`), core and pack overlays merged by id. The `.conf` root class picks the kind: `LF_EventPrecondition` condition, `LF_EventAbort` abort, `LF_EventScene` scene operation (`LF_EventSceneOperation`).
+- **Data:** `LF_EventsConfig.m_aModules` of `LF_EventModuleRef` (id + `.conf`), core and pack overlays merged by id. The `.conf` root class picks the kind: `LF_EventPrecondition` condition, `LF_EventAbort` abort, `LF_EventScene` scene operation (`LF_EventSceneOperation`), `LF_EventDispatchSeize` a dispatch and seize operation (`LF_EventDispatchSeizeOperation`, #3785).
 - **Rules:** a bad ref is logged and skipped, so its phase holds. A scene stages once per phase run and keeps its phase busy until its walkers have left out of sight. Only one scene is on stage: a scene whose phase opens while another plays waits (phase held, idle clock restarted each cadence) and goes on the cadence after the other has left (#3780).
 - **Proof:** `events/module-loader` (WORLD), `everon/arrival-event` (pack leg).
 
