@@ -1,0 +1,71 @@
+GenericEntity Fit_saint_philippe_dock_shipment_docks_spawn0 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "shipment_docks"
+   m_iOrder 0
+  }
+ }
+ coords 4414 1.594 11092
+}
+GenericEntity Fit_saint_philippe_dock_shipment_docks_spawn1 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "shipment_docks"
+   m_iOrder 1
+  }
+ }
+ coords 4414 1.625 11097
+}
+GenericEntity Fit_saint_philippe_dock_shipment_docks_spawn2 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
+ components {
+  LF_EventWaypointComponent "{3854D4B12B60D6D9}" {
+   m_sSceneId "shipment_docks"
+   m_iOrder 2
+  }
+ }
+ coords 4414 1.625 11101
+}
+GenericEntity Fit_saint_philippe_dock_shipment_docks_wp0 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "shipment_docks"
+   m_iOrder 0
+  }
+ }
+ coords 4425 1.609 11104
+}
+GenericEntity Fit_saint_philippe_dock_shipment_docks_wp1 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "shipment_docks"
+   m_iOrder 1
+  }
+ }
+ coords 4435 2.313 11103
+}
+GenericEntity Fit_saint_philippe_dock_shipment_docks_wp2 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "shipment_docks"
+   m_iOrder 2
+  }
+ }
+ coords 4444 1.25 11101.5
+}
+GenericEntity Fit_saint_philippe_dock_shipment_docks_wp3 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
+ components {
+  LF_EventWaypointComponent "{1728E58A9BBA3B40}" {
+   m_sSceneId "shipment_docks"
+   m_iOrder 3
+  }
+ }
+ coords 4452 1.25 11098.5
+}
+GenericEntity Fit_saint_philippe_dock_shipment_docks_target : "{F716FD32069F2BE8}Prefabs/Systems/Events/LF_EventMarker_Target.et" {
+ components {
+  LF_EventWaypointComponent "{E01299EF5C4B8221}" {
+   m_sSceneId "shipment_docks"
+  }
+ }
+ coords 4459.5 1.828 11096.5
+}

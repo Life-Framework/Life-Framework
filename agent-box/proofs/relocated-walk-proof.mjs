@@ -82,11 +82,17 @@ async function survey(args) {
 async function walk(args) {
   args = [...args];
   const control = args.includes("--control");
+  // --scene <id> --fixture <{GUID}conf> --layer <repo path> --npcs <n>: prove another scene's island route (#3766 shipment_docks) the same way.
+  const opt = (name, dflt) => { const i = args.indexOf(name); if (i < 0) return dflt; const v = args[i + 1]; args.splice(i, 2); return v; };
+  const sceneId = opt("--scene", "relocated_arrival");
+  const fixture = opt("--fixture", FIXTURE);
+  const layerOpt = opt("--layer", "");
+  const want = Number(opt("--npcs", 6));
   // --island: the route is the markers of the island's arrival layer (a `session up --mission island` session), not the CoreOnEveron proof layer (#3088).
   const island = args.includes("--island");
   args = args.filter((a) => a !== "--control" && a !== "--island");
   const out = args[0] ? resolve(String(args[0])) : "";
-  const layerFile = island ? ISLAND_LAYER : LAYER;
+  const layerFile = layerOpt ? join(ROOT, layerOpt) : island ? ISLAND_LAYER : LAYER;
   if (!existsSync(layerFile)) {
     console.log(`relocated-walk: no route layer at ${layerFile}`);
     return 2;
@@ -107,7 +113,7 @@ async function walk(args) {
     console.log(`marker ${m.name}: y ${m.y}, ground ${y.toFixed(2)}, ${(m.y - y).toFixed(2)} m above`);
   }
   // Stand away from the spawn: the scene spawns out of sight (LF_EventSceneSpawn sight check).
-  const start = on({ verb: "eventscene", words: ["start", FIXTURE, "6"] }, 15000);
+  const start = on({ verb: "eventscene", words: ["start", fixture, "6"] }, 15000);
   if (start.status !== "ok") {
     console.log(`relocated-walk: FAIL eventscene start: ${start.detail}`);
     return 1;
@@ -120,13 +126,13 @@ async function walk(args) {
   let spawned = 0;
   while ((Date.now() - t0) / 1000 < WALK_BUDGET_S) {
     wait(3000);
-    const s = on({ verb: "eventscene", words: ["status", "relocated_arrival"] }, 10000).detail;
+    const s = on({ verb: "eventscene", words: ["status", sceneId] }, 10000).detail;
     last = s;
     spawned = Number(/(\d+) spawned/.exec(s)?.[1] ?? 0);
     const walking = Number(/walking (\d+)/.exec(s)?.[1] ?? 0);
     arrived = Number(/arrived (\d+)/.exec(s)?.[1] ?? 0);
     const elapsed = Number(/, ([\d.]+) s(;|$)/.exec(s)?.[1] ?? 0);
-    if (!shots.spawn && spawned >= 6) {
+    if (!shots.spawn && spawned >= want) {
       on({ verb: "capture", mode: "world", name: "walk_spawn", x: spawn.x, y: spawn.y + 1, z: spawn.z, ox: 7, oy: 1.8, oz: 7, hour: 12 }, 25000);
       shots.spawn = true;
     }
