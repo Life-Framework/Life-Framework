@@ -208,6 +208,48 @@ class LF_JailEscort
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The escort id of a real vehicle: its placed name, else its entity id (session-local, server
+	//! only, never sent or saved). A police car spawned without a name still gets one.
+	static string VehicleIdOf(IEntity vehicle)
+	{
+		if (!vehicle)
+			return "";
+
+		string name = vehicle.GetName();
+		if (!name.IsEmpty())
+			return name;
+
+		return string.Format("veh-%1", vehicle.GetID());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A real vehicle is a base-game one: register it and make sure one passenger seat row is free.
+	//! The real seat is taken by the engine (MoveInVehicle); this row only holds the escort's
+	//! bookkeeping, and the engine refuses when no real seat is free. \return The free slot.
+	static int EnsurePassengerSeat(string vehicleId)
+	{
+		if (vehicleId.IsEmpty())
+		{
+			FailNote("escort seat refused: empty vehicle id");
+			return -1;
+		}
+
+		if (!Vehicles().Contains(vehicleId))
+			RegisterVehicle(vehicleId, true);
+
+		int free = NearestFreePassengerSlot(vehicleId);
+		if (free >= 0)
+			return free;
+
+		int slot = 1;
+		while (Seats().Contains(SeatKey(vehicleId, slot)))
+			slot++;
+
+		OfferSeat(vehicleId, slot, false, 0, "");
+		return slot;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Lowest distance among free seats that are not the driver. -1 when none are free.
 	static int NearestFreePassengerSlot(string vehicleId)
 	{
