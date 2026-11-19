@@ -20,3 +20,12 @@
   items, or inside the cooldown, a search adds nothing (a toast says so, with the minutes left). Two searches at
   once fill it once. Nothing is saved: a restart leaves every container unsearched. Proof: `LF_Test_LootContainer`
   (`loot/container`); picture: `look grid:loot`.
+
+### Everon 1989 loot tables — `LF_Everon1989/Configs/Loot/LF_Loot_Everon1989.conf` (2026-11-19, #3344, framework #1020)
+- 🟡 The pack adds four tables over the core `crate` one (listed in the mission header, merged by `LF_LootConfig.ApplyLayers`): `home`,
+  `backroom` (a shop's back room), `shed` and `dump`. Period goods only: tinned food, jars, chocolate, bread, soda, a flashlight, brick,
+  an entrenching tool and iron and copper nuggets as scrap. The dump holds the most scrap, the shed the tools; a find above a few dollars
+  (flashlight, entrenching tool, iron nugget) is a one-in-twenty roll. Every table refills after 3600 s.
+- 🟡 Pay: an hour of searching, at the rate the cooldowns allow, sells for under half of the parcel job's hour at the shop's sell prices
+  (the dump about $150 an hour, a home about $125). No coin item exists yet, so no table pays small cash; that wants a coin prefab (follow-up).
+  Proof (pack leg): `LF_Test_EveronLootTables` (`everon/loot-tables`). Containers placed in the world are later slices.
