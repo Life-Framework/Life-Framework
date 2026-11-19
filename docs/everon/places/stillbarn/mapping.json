@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "template": "stillbarn",
+  "place": "stillbarn",
+  "status": "approved",
+  "note": "Hand-written for #3402 (X35): a lone barn in the hills, found by scanning the island for a barn at least 800 m from Saint-Philippe with no road within 40 m and at most two other buildings within 80 m. The dossier is a scout of x 5361, z 9900 at radius 80. No sign and no map marker: `poi` is none. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 3,
+    "freePlots": 4
+  },
+  "slots": {
+    "1": {
+      "building": "b01",
+      "why": [
+        "Barn_E_01 (type farm), 163 m2, the only barn there; the nearest road is about 47 m away and the only other buildings are a small shed and a house on the far side of the lot",
+        "1,093 m from Saint-Philippe, clear of every safe zone"
+      ]
+    }
+  }
+}

@@ -20,6 +20,12 @@ class LF_FellAction : ScriptedUserAction
 	static const float LOG_RING_M = 1.2;
 	static const float LOG_STEP_DEG = 60;
 
+	//! The prompt helper that carries this action (client side, never replicated; LF_FellPrompt spawns it).
+	static const ResourceName HELPER = "{7A3C5E91D2B40F60}Prefabs/Lumber/LF_FellHelper.et";
+
+	//! The Duration the helper prefab declares, in seconds; the longest hardwood row (60 s).
+	static const float HELPER_DURATION_S = 60; // lf-fixed: mirrors the Duration in LF_FellHelper.et, not a tunable
+
 	protected IEntity m_Tree;
 
 	//------------------------------------------------------------------------------------------------
@@ -89,15 +95,34 @@ class LF_FellAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
-		if (!pOwnerEntity || !pUserEntity || !LF_NetworkUtils.ShouldApplyAction(pOwnerEntity))
+		// The prompt helper lives on the machine of the player who holds the axe (LF_FellPrompt), so this
+		// runs there: a listen host fells at once, a client asks the server, which re-checks everything.
+		if (!pUserEntity || !m_Tree || !LF_FellPrompt.IsLocalUser(pUserEntity))
 			return;
 
-		array<IEntity> logs = {};
-		LF_FellRefusal refusal = TryFell(pUserEntity, m_Tree, HoldsAxe(pUserEntity), logs);
-		if (refusal != LF_FellRefusal.OK)
-			LF_Utils.NotifyEntity(pUserEntity, LF_TreeFelling.RefusalKey(refusal), "", 4.0);
-
+		vector at = m_Tree.GetOrigin();
 		m_Tree = null;
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+			return;
+
+		controller.LF_AskFell(at);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The hold lasts the chop seconds of the tree's yield row: the prefab's Duration is the longest
+	//! row (HELPER_DURATION_S), and a quicker tree speeds the progress up by the ratio.
+	override float GetActionProgressScript(float fProgress, float timeSlice)
+	{
+		LF_TreeFellingConfig config = LF_TreeFellingConfig.Get();
+		if (m_Tree && config)
+		{
+			LF_TreeYieldRow yield = LF_TreeFelling.YieldFor(PrefabOf(m_Tree), config);
+			if (yield && yield.m_iChopSeconds > 0)
+				timeSlice = timeSlice * HELPER_DURATION_S / yield.m_iChopSeconds;
+		}
+
+		return super.GetActionProgressScript(fProgress, timeSlice);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -194,12 +219,32 @@ class LF_FellAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Best effort: AddStamina has to run on the owner, so a remote player's cost may not land.
+	//! AddStamina has to run on the machine that owns the character, so the cost goes to the owner's
+	//! controller (an Owner RPC; a host's own player runs it at once). With no controller (a test body)
+	//! it is applied here.
 	protected static void SpendStamina(IEntity user, int percent)
+	{
+		SCR_PlayerController controller;
+		PlayerManager players = GetGame().GetPlayerManager();
+		if (players)
+			controller = SCR_PlayerController.Cast(players.GetPlayerController(players.GetPlayerIdFromControlledEntity(user)));
+
+		if (controller)
+		{
+			controller.LF_SpendFellStamina(percent / 100.0);
+			return;
+		}
+
+		ApplyStamina(user, percent / 100.0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes `fraction` of the stamina bar from the character; runs on the machine that owns it.
+	static void ApplyStamina(IEntity user, float fraction)
 	{
 		CharacterStaminaComponent stamina = LF_Component<CharacterStaminaComponent>.Find(user);
 		if (stamina)
-			stamina.AddStamina(-percent / 100.0);
+			stamina.AddStamina(-fraction);
 	}
 
 	//------------------------------------------------------------------------------------------------

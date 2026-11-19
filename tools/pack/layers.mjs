@@ -192,6 +192,17 @@ export function loadPackOverlays(addonsDir, pack, meta) {
     const root = parseConf(readFileSync(full, "utf8"));
     if (!root) { out.problems.push({ file: hit.file, id: "", msg: "overlay is empty or not a .conf object" }); continue; }
     out.overlays.push({ file: hit.file, root });
+    // LF_ConfigOverlay.LoadFolderOverlays: every .conf under `<overlay without .conf>/` is one more
+    // overlay right after its parent, in path order. A file the header also lists keeps its header place.
+    const folder = full.replace(/\.conf$/, "");
+    for (const f of existsSync(folder) ? walk(folder).filter((p) => p.endsWith(".conf")).sort() : []) {
+      const r = rel(dir, f);
+      if (listed.has(r) || out.overlays.some((o) => o.file === r)) continue;
+      const sub = parseConf(readFileSync(f, "utf8"));
+      if (!sub) { out.problems.push({ file: r, id: "", msg: "folder overlay is empty or not a .conf object" }); continue; }
+      listed.add(r);
+      out.overlays.push({ file: r, root: sub });
+    }
   }
   for (const f of walk(join(dir, "Configs")).filter((p) => p.endsWith(".conf"))) {
     const r = rel(dir, f);

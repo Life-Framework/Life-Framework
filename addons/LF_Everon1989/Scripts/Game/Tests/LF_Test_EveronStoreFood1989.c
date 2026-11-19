@@ -1,7 +1,8 @@
 // red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronStoreFood1989`: RED-OK everon/store-food-1989 (RedProof() skips the stock lookup, so the test fails); green with the stock and price overlays in the pack leg: `SUMMARY test ok tier=all legs=1 passed=2 failed=0`.
-//! shop/store-food-1989: the Saint-Philippe general store sells eight 1989 food and drink items
-//! (bread, canned meat, tinned sardines, soda, milk, instant coffee, chocolate, pickles). Each one is
-//! on the `general_store` shelf stock at its price, has its own price rule with a sell-back below the
+//! shop/store-food-1989: the Saint-Philippe general store sells seven 1989 food and drink items
+//! (canned meat, tinned sardines, soda, milk, instant coffee, chocolate, pickles); the loaf is the
+//! bakery's alone at $4, not on the general store shelf (#3547: it was $3 there, so the bakery's was
+//! pointless). Each one is on its shop's shelf stock at its price, has its own price rule with a sell-back below the
 //! buy price (no profit loop), and eats or drinks: the prefab carries a survival consumable effect
 //! that raises the stat it names.
 //! Lives in the pack because it needs the pack's stock and price overlays (pack leg).
@@ -17,6 +18,7 @@ class LF_Test_EveronStoreFood1989 : LF_Test
 	static const ResourceName CHOCOLATE = "{F407598417C980D2}Prefabs/Items/Store1989/LF_ChocolateBar.et";
 	static const ResourceName PICKLES = "{843F6EC285385B9F}Prefabs/Items/Store1989/LF_PickleJar.et";
 	static const string STORE_STOCK = "general_store";
+	static const string BAKERY_STOCK = "bakery";
 	static const string CHARACTER_ID = "test-store-food-1989";
 	static const int PRICE_MIN = 2;
 	static const int PRICE_MAX = 12;
@@ -36,8 +38,16 @@ class LF_Test_EveronStoreFood1989 : LF_Test
 			return;
 
 		LF_ShopStock stock = null;
+		LF_ShopStock bakery = null;
 		if (!RedProof())
+		{
 			stock = LF_ShopStockConfig.Get().Find(STORE_STOCK);
+			bakery = LF_ShopStockConfig.Get().Find(BAKERY_STOCK);
+		}
+
+		ctx.NotNull(bakery, "the bakery stock exists in the merged stock config");
+		if (bakery && stock)
+			ctx.False(StockPrice(stock, BREAD) > 0, "the general store does not sell bread: the bakery's loaf would be pointless");
 
 		ctx.NotNull(stock, "the general_store stock exists in the merged stock config");
 		if (!stock)
@@ -62,7 +72,8 @@ class LF_Test_EveronStoreFood1989 : LF_Test
 			return;
 		}
 
-		CheckItem(ctx, manager, stock, stats, character, "bread", BREAD, true, false);
+		if (bakery)
+			CheckItem(ctx, manager, bakery, stats, character, "bread", BREAD, true, false);
 		CheckItem(ctx, manager, stock, stats, character, "canned meat", CANNED_MEAT, true, false);
 		CheckItem(ctx, manager, stock, stats, character, "tinned sardines", CANNED_FISH, true, false);
 		CheckItem(ctx, manager, stock, stats, character, "soda", SODA, false, true);
@@ -75,17 +86,24 @@ class LF_Test_EveronStoreFood1989 : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void CheckItem(LF_TestContext ctx, LF_ShopManagerComponent manager, LF_ShopStock stock, LF_SurvivalStats stats, IEntity character, string label, ResourceName prefab, bool feeds, bool quenches)
+	//! The price a stock lists the prefab at; 0 when it does not.
+	protected int StockPrice(notnull LF_ShopStock stock, ResourceName prefab)
 	{
-		// On the shelf stock, at a villager's price.
-		int stockPrice = 0;
 		foreach (LF_ShopStockItem row : stock.m_aItems)
 		{
 			if (row && row.m_Prefab == prefab)
-				stockPrice = row.m_iPrice;
+				return row.m_iPrice;
 		}
 
-		ctx.True(stockPrice > 0, string.Format("the %1 is on the general_store stock", label));
+		return 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CheckItem(LF_TestContext ctx, LF_ShopManagerComponent manager, LF_ShopStock stock, LF_SurvivalStats stats, IEntity character, string label, ResourceName prefab, bool feeds, bool quenches)
+	{
+		// On the shelf stock, at a villager's price.
+		int stockPrice = StockPrice(stock, prefab);
+		ctx.True(stockPrice > 0, string.Format("the %1 is on the %2 stock", label, stock.m_sId));
 		ctx.True(stockPrice >= PRICE_MIN && stockPrice <= PRICE_MAX, string.Format("the %1 costs a villager's price, $2 to $12 (got %2)", label, stockPrice));
 
 		// Priced by the pack overlay's own rule, visible, with a sell-back under the buy price.

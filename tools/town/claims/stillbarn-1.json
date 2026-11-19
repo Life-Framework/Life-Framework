@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "stillbarn",
+  "slot": "1",
+  "building": "b01",
+  "kit": "stillbarn",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_stillbarn_1.layer",
+  "kinds": [
+    "StillBarn"
+  ],
+  "rows": 13,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_stillbarn_1_Place"
+  },
+  "date": "2026-11-19"
+}

@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "kind": "roadfuel",
+  "about": "A roadside fuel station outside town: the small kiosk of a vanilla station on a main road gets a fuel drop tank, a payphone and a sign. One slot, no map marker (the payphone carries its own point of interest). Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "fuel", "required": true, "kit": "roadfuel", "host": "building", "poi": "none", "margin": 24,
+      "needs": { "interior": "optional", "minArea": 10, "prefer": "near", "types": ["fuel"] },
+      "places": ["RoadFuel"]
+    }
+  ]
+}

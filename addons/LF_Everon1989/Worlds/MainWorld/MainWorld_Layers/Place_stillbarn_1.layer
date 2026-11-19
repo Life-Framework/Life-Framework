@@ -1,0 +1,106 @@
+GenericEntity Fit_stillbarn_1_Place {
+ components {
+  LF_PlaceComponent "{48536B9885F72A00}" {
+   m_sKind "StillBarn"
+   m_sId "stillbarn.1"
+  }
+  LF_FittedBuildingComponent "{84267C59BBFFB1BC}" {
+  }
+ }
+ coords 5361.3 20.6 9900
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_mash_1 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Mash_1"
+   m_sSiteId "stillbarn_site"
+   m_sChainId "moonshine"
+   m_sStepId "mash"
+  }
+ }
+ coords 5358.995 20.6 9906.142
+ angleY 107
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_mash_2 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Mash_2"
+   m_sSiteId "stillbarn_site"
+   m_sChainId "moonshine"
+   m_sStepId "mash"
+  }
+ }
+ coords 5358.424 20.6 9904.958
+ angleY 147
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_mash_3 : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Mash_3"
+   m_sSiteId "stillbarn_site"
+   m_sChainId "moonshine"
+   m_sStepId "mash"
+  }
+ }
+ coords 5358.235 20.6 9903.656
+ angleY -173
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_still : "{4C1A9E07B35D8210}Prefabs/Chains/LF_ChainStill.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Still"
+   m_sSiteId "stillbarn_site"
+  }
+ }
+ coords 5357.857 20.6 9901.053
+ angleY 107
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_pack : "{4C1A9E07B35D8200}Prefabs/Chains/LF_ChainBarrel.et" {
+ components {
+  LF_ChainStationComponent "{4C1A9E07B35D8303}" {
+   m_sStationKey "StillBarn_Pack"
+   m_sSiteId "stillbarn_site"
+   m_sChainId "moonshine"
+   m_sStepId "pack"
+  }
+ }
+ coords 5356.598 20.6 9898.301
+ angleY 107
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_launder : "{978FC469D81E785A}Prefabs/Props/Laundering/LF_LaunderStation.et" {
+ components {
+  LF_LaunderStationComponent "{F2121BD019E65A01}" {
+   m_sSiteId "stillbarn_launder"
+  }
+ }
+ coords 5360.024 20.6 9894.116
+ angleY 17
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 5355.529 20.6 9895.49
+ angleY 117
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_crate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 5355.747 20.6 9896.887
+ angleY 92
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_hay_1 : "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et" {
+ coords 5366.306 20.6 9904.744
+ angleY -163
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_hay_2 : "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et" {
+ coords 5364.584 20.6 9905.27
+ angleY -168
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_sacks : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 5363.18 20.6 9893.151
+ angleY 107
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_lamp_w : "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et" {
+ coords 5362.215 20.6 9906.413
+ angleY 107
+}
+GenericEntity Fit_stillbarn_1_source_still_barn_lamp_e : "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et" {
+ coords 5357.516 20.6 9894.464
+ angleY 107
+}

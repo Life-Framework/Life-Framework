@@ -58,6 +58,7 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
   unfitted is fine; `town check <place>` lists them as "not fitted yet". `town check <place> --complete` (and
   `town ready`) is the completeness gate, for the lead, not for a card's PR.
 - Building interiors: `brief building` is the fit-out recipe, run in the debug grid first.
+- A shop fit's sign def is its own file `addons/LF_Everon1989/Configs/Signs/LF_Signs_Everon1989/LF_Signs_<Shop>.conf` plus `.meta` (fresh GUID); never append to `LF_Signs_Everon1989.conf` or the mission header (`docs/architecture/sign-system.md`).
 
 ## Environment
 No Workbench on the maintainer's PC (Gaming-Box); on lf-testbox (PC1) it is allowed through the pool (`toolscli status` says which you are on). Never pin a machine. Run in the foreground (timeout up to 600000 ms) or
