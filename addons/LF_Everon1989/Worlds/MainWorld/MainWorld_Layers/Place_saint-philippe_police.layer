@@ -107,6 +107,10 @@ GenericEntity Fit_saint_philippe_police_police_kit_dispatch_board : "{5BC90DB066
  coords 4547.879 19.45 10751.258
  angleY 171
 }
+GenericEntity Fit_saint_philippe_police_police_kit_case_board : "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et" {
+ coords 4546.724 19.7 10747.977
+ angleY -99
+}
 GenericEntity Fit_saint_philippe_police_police_kit_handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
  coords 4549.621 19.107 10747.929
  angleY -169
@@ -212,7 +216,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_display_taser_1 {
 }
 GenericEntity Fit_saint_philippe_police_police_kit_display_taser_2 {
  components {
-  MeshObject "{D15C000000000001}" {
+  MeshObject "{D15C000000000002}" {
    Object "{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob"
   }
  }
@@ -221,7 +225,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_display_taser_2 {
 }
 GenericEntity Fit_saint_philippe_police_police_kit_display_taser_3 {
  components {
-  MeshObject "{D15C000000000001}" {
+  MeshObject "{D15C000000000003}" {
    Object "{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob"
   }
  }
@@ -239,7 +243,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_display_m9_4 {
 }
 GenericEntity Fit_saint_philippe_police_police_kit_display_m9_5 {
  components {
-  MeshObject "{D15C000000000004}" {
+  MeshObject "{D15C000000000005}" {
    Object "{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob"
   }
  }
@@ -257,7 +261,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_display_cuffs_6 {
 }
 GenericEntity Fit_saint_philippe_police_police_kit_display_cuffs_7 {
  components {
-  MeshObject "{D15C000000000006}" {
+  MeshObject "{D15C000000000007}" {
    Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
   }
  }
@@ -266,7 +270,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_display_cuffs_7 {
 }
 GenericEntity Fit_saint_philippe_police_police_kit_display_cuffs_8 {
  components {
-  MeshObject "{D15C000000000006}" {
+  MeshObject "{D15C000000000008}" {
    Object "{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob"
   }
  }
@@ -313,7 +317,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_decor_5 : "{4DBA189750F6F017}
  coords 4549.471 19.107 10747.602
  angleY 11
 }
-GenericEntity Fit_saint_philippe_police_police_kit_decor_6 : "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et" {
+GenericEntity Fit_saint_philippe_police_police_kit_decor_6 : "{9BDAE42023AB3357}Prefabs/Comms/LF_DispatchPhone.et" {
  components {
   RigidBody "{5872F0EB7DFB5A9D}" {
    Static 1
@@ -426,7 +430,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_decor_22 : "{8F17372BAB5A9CF8
  components {
   MeshObject "{5111E74D5E891458}" {
    Materials {
-    MaterialAssignClass "{D0C0000000000015}" {
+    MaterialAssignClass "{D0C0000000000016}" {
      SourceMaterial "Glass"
      AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
     }
