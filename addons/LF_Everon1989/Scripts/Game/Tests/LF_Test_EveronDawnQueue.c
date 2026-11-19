@@ -37,6 +37,7 @@ class LF_Test_EveronDawnQueue : LF_Test
 		for (int i = 0; i < 4; i++)
 			operation.m_Scene.m_aWaypointIds.Insert(LF_Places.OrderedId(GRID_SCENE, i));
 		operation.m_Scene.m_sVehicleSlot = "";
+		operation.m_Scene.m_bDriveVehicle = false;	// the shipment scene drives its truck (#3831); this world parks none
 		operation.m_Scene.m_fSpawnStaggerSeconds = 0;	// every walker spawns at once, so the scene is fully on stage in one tick
 		operation.m_iFreeAiOverride = 20;
 		operation.m_bDriveAi = false;
