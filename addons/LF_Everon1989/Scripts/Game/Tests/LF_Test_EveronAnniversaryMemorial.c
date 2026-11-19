@@ -186,5 +186,23 @@ class LF_Test_EveronAnniversaryMemorial : LF_Test
 		ctx.True(rite.m_iBellStrokes > 0, "the church bells ring");
 		ctx.True(rite.m_sSpeakerName.StartsWith("#") && rite.m_sSpeakerLine.StartsWith("#"), "the priest's name and line are localisation keys");
 		ctx.True(rite.m_sToastTitle.StartsWith("#") && rite.m_sToastText.StartsWith("#"), "the toast is localisation keys");
+
+		// The priest's recorded speech (#3827): the rite names his dialogue conf and its voiced line, which
+		// has an event, a length and the audio project that holds it.
+		ctx.False(rite.m_sVoiceDialogue.IsEmpty() || rite.m_sVoiceLine.IsEmpty(), "the rite names the priest's recorded line");
+		LF_DialogueConfig priest = LF_DialogueConfig.Load(rite.m_sVoiceDialogue);
+		ctx.NotNull(priest, "the priest's dialogue conf loads");
+		if (!priest)
+			return;
+
+		LF_DialogueLine speech = LF_DialogueFlow.FindLine(priest, rite.m_sVoiceLine);
+		ctx.NotNull(speech, "the priest's dialogue holds the rite's voiced line");
+		ctx.False(priest.m_sSoundProject.IsEmpty(), "the priest's dialogue names its audio project");
+		if (!speech)
+			return;
+
+		ctx.False(speech.IsTextOnly(), "the priest's line is recorded");
+		ctx.EqualStr("SOUND_DLG_ANNIVERSARY_PRIEST_MEMORIAL", speech.m_sEvent, "the clip is the priest's memorial speech");
+		ctx.True(speech.m_fSeconds > 1, "the clip has a length the rite can wait for");
 	}
 }
