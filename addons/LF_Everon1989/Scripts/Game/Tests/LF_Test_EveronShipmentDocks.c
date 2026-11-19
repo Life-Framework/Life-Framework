@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-19 (#3439) on main, before the event existed: `tools\cli test --no-build --only LF_Test_EveronShipmentDocks` failed (`the shipment docks event resolves through the overlay`, the module and scene confs did not load). `RedProof()` skips the overlay lookup, so the event reads as missing.
+// red-proof: observed 2026-11-19 (#3439) on main, before the event existed: `tools\cli test --no-build --only LF_Test_EveronShipmentDocks` failed (`the shipment docks event resolves through the overlay`, the module and scene confs did not load). `RedProof()` skips the overlay lookup, so the event reads as missing. #3783 added: `--red LF_Test_EventSceneDrop,LF_Test_EveronShipmentDocks` printed `RED-OK everon/shipment-docks (fails with the hook on, 36 assertions)`; the sample and plan assertions go red with the overlay lookup skipped.
 //! #3439 under the Everon 1989 header (the pack leg of `tools\cli test`): beat 1 of the shipment arc. The coaster
 //! never docks (the base game has no ship), so a truck backs onto the quay and a crew walks it in. The event is
 //! pack data layered over the core event list (#1952) from its own file in `Configs/Events/LF_Events_Everon1989/`:
@@ -12,6 +12,7 @@ class LF_Test_EveronShipmentDocks : LF_Test
 	static const ResourceName SCENE_CONF = "{7A1D3E5C9B2F4806}Configs/Events/LF_Scene_ShipmentDocks.conf";
 	static const ResourceName DAWN_CONF = "{5B3F8D1A6C2E7094}Configs/Events/LF_Condition_ShipmentDawn.conf";
 	static const ResourceName CRATE_PREFAB = "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et";
+	static const ResourceName SAMPLE_PREFAB = "{A3BFEFD984031D81}Prefabs/Items/Contraband/LF_ShipmentSample.et";
 	static const string EVENT_ID = "shipment_docks";
 	static const string DAWN_MODULE = "shipment_docks_dawn";
 	static const string SCENE_MODULE = "shipment_docks_scene";
@@ -113,11 +114,17 @@ class LF_Test_EveronShipmentDocks : LF_Test
 			Resource crate = Resource.Load(CRATE_PREFAB);
 			ctx.True(crate && crate.IsValid(), "the red crate prefab resolves");
 
+			// The shipment's sample (#3783): the scene leaves one on the placed item spot when the ship docks.
+			ctx.True(scene.m_sDropPrefab == SAMPLE_PREFAB, "the scene leaves the shipment sample");
+			Resource sample = Resource.Load(scene.m_sDropPrefab);
+			ctx.True(sample && sample.IsValid(), "the sample prefab resolves");
+
 			// The scene fits the AI budget: it plans with room, and skips with a plain reason when the budget is spent.
 			LF_EventScenePlan plan = LF_EventScenePlanner.Plan(scene, 99);
 			ctx.True(plan.m_bGo, "the planner makes a plan with room in the AI budget");
 			ctx.Equal(scene.m_iNpcCount, plan.m_aNpcs.Count(), "the plan keeps every docker");
 			ctx.EqualStr(scene.m_sVehicleSlot, plan.m_sVehicleSlot, "the plan carries the truck");
+			ctx.True(plan.m_sDropPrefab == SAMPLE_PREFAB, "the plan carries the sample");
 			LF_EventScenePlanner.ResetStatics();
 
 			LF_EventScenePlan tight = LF_EventScenePlanner.Plan(scene, scene.m_iNpcCount - 1);

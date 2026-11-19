@@ -1,0 +1,8 @@
+GenericEntity {
+ ID "A4D7B7D35A571E4F"
+ components {
+  LF_EventWaypointComponent "{6ECC42BB4549A820}" {
+   m_eRole ITEM
+  }
+ }
+}

@@ -60,6 +60,9 @@ class LF_EventScene
 	[Attribute("", UIWidgets.ResourceNamePicker, "Optional walker prefabs, handed out in turn (walker 0 the first, walker 1 the second, round again). Set, they win over m_sRole (#2137)", "et")]
 	ref array<ResourceName> m_aPrefabs;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "Optional item left once on the scene's placed item spot (an `event_item` marker) when the scene starts. The copy the last run left, if nobody took it, is removed first, so one run leaves at most one", "et")]
+	ResourceName m_sDropPrefab;
+
 	//------------------------------------------------------------------------------------------------
 	//! The attribute defaults above, for a scene built in script (a field initializer would beat a config value of 0, #1077).
 	static LF_EventScene CreateDefault()
@@ -100,6 +103,7 @@ class LF_EventScenePlan
 	ref array<string> m_aWaypointIds = {};
 	ref array<ref LF_EventSceneNpc> m_aNpcs = {};
 	string m_sVehicleSlot;
+	ResourceName m_sDropPrefab;
 	float m_fWalkTimeoutSeconds;
 	float m_fDespawnDelaySeconds;
 	float m_fForceDespawnSeconds;
@@ -204,6 +208,7 @@ class LF_EventScenePlanner
 			plan.m_aNpcs.Insert(LF_EventSceneNpc.Make(wears, dialogueId, i * scene.m_fSpawnStaggerSeconds));
 		}
 		plan.m_sVehicleSlot = scene.m_sVehicleSlot;
+		plan.m_sDropPrefab = scene.m_sDropPrefab;
 		plan.m_fWalkTimeoutSeconds = scene.m_fWalkTimeoutSeconds;
 		plan.m_fDespawnDelaySeconds = scene.m_fDespawnDelaySeconds;
 		plan.m_fForceDespawnSeconds = scene.m_fForceDespawnSeconds;

@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-19 with `--no-build --red`: `RED-OK everon/farm-supply (3 assertions)`, the offer lookup skipped.
+// red-proof: Observed 2026-11-19: the old `Equal(1, offers.Count())` failed on main once the beehive kit (#3448) joined the counter (main guard, 0fe3cdd3); the reaper lookup by item id passes with it and fails under `--red` (the offer lookup skipped).
 //! everon/farm-supply (#3295): under the Everon 1989 header (the pack leg), the farm_supply outlet sells the reaper
 //! for $1,200 from its own file under Configs/Catalogue/LF_Catalogue_Kit_Everon1989/, and the offer's prefab is
 //! the implement the rack hands out (LF_OwnedImplements reads it as the 'reaper').
@@ -23,12 +23,15 @@ class LF_Test_EveronFarmSupply : LF_Test
 		if (!RedProof())
 			LF_ItemCatalogue.Offers(catalogue, "farm_supply", offers);
 
-		ctx.Equal(1, offers.Count(), "the farm supply counter has one offer");
-		if (offers.IsEmpty())
-			return;
+		// The counter also sells other stock (the beehive kit, #3448); this test owns only the reaper offer.
+		LF_CatalogueItem item = null;
+		foreach (LF_OutletOffer offer : offers)
+		{
+			if (offer && offer.m_sItem == "farm_reaper")
+				item = LF_ItemCatalogue.Item(catalogue, offer.m_sItem);
+		}
 
-		LF_CatalogueItem item = LF_ItemCatalogue.Item(catalogue, offers[0].m_sItem);
-		ctx.NotNull(item, "the offer names a catalogue item");
+		ctx.NotNull(item, "the farm supply counter offers the reaper");
 		if (!item)
 			return;
 

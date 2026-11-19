@@ -81,3 +81,12 @@ GenericEntity Fit_saint_philippe_dock_warehouse_scene_crate : "{C8C36ADC9DFC5FBB
  coords 4457.1 2.64 11067.21
  angleY -60
 }
+GenericEntity Fit_saint_philippe_dock_warehouse_scene_sample : "{00DD12BB38DAD61B}Prefabs/Systems/Events/LF_EventMarker_Item.et" {
+ components {
+  LF_EventWaypointComponent "{6ECC42BB4549A820}" {
+   m_sSceneId "shipment_docks"
+  }
+ }
+ coords 4457.1 2.863 11067.21
+ angleY -60
+}
