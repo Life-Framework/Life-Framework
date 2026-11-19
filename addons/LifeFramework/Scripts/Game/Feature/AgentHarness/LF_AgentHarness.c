@@ -3340,13 +3340,19 @@ class LF_AgentHarness
 				localClass = localClass.Substring(0, localIndexAt);
 			}
 
-			IEntity target = FindTarget(character, localClass, cmd.Arg2);
+			// A Resident_<id> lives in the server's table only (#3650): a client takes the nearest host of the
+			// action, which is the resident the proof just stood beside; the server never sees this local use.
+			string localName = cmd.Arg2;
+			if (LF_ResidentHarness.IdOf(localName) != "")
+				localName = "";
+
+			IEntity target = FindTarget(character, localClass, localName);
 			// A replicated NPC has no layer name on a client: take the nearest host of the action.
-			if (!target && cmd.Arg2 != "")
+			if (!target && localName != "")
 			{
 				target = FindTarget(character, localClass, "");
 				// #2935: a named use that lands on a different named prop is a miss, not a pass.
-				string refusal = FallbackRefusal(cmd.Arg2, NameOfHit(target));
+				string refusal = FallbackRefusal(localName, NameOfHit(target));
 				if (refusal != "")
 				{
 					WriteResult(cmd.Id, "error", refusal);
@@ -4201,6 +4207,11 @@ class LF_AgentHarness
 		if (patient)
 			return patient;
 
+		// A spawned resident has no layer name: Resident_<id> (#3650).
+		IEntity resident = LF_ResidentHarness.Named(entityName);
+		if (resident)
+			return resident;
+
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return null;
@@ -4304,6 +4315,16 @@ class LF_AgentHarness
 		{
 			if (FindOnEntity(patient, className))
 				return patient;
+
+			return null;
+		}
+
+		// A spawned resident by id (#3650): the server's live table; null on a client or when not live.
+		if (LF_ResidentHarness.IdOf(entityName) != "")
+		{
+			IEntity resident = LF_ResidentHarness.Named(entityName);
+			if (resident && FindOnEntity(resident, className))
+				return resident;
 
 			return null;
 		}
