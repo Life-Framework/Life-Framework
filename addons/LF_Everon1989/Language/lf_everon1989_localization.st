@@ -2044,6 +2044,21 @@ StringTable {
      Target_en_us "Sell what you gather at the market stalls next door, to the east|Cars are sold at the vehicle lot across the street"
      Comment "Sign card for the general store, Next section: where the player goes after this place."
     }
+    CustomStringTableItem "{98AD9902C05C38A0}" {
+     Id "LF-Sign_GeneralStore_Special1"
+     Target_en_us "Bread"
+     Comment "Store A-frame special 1: a chalk row on the general store pavement board (#3305). Price 3 matches LF_ShopStock_Everon1989."
+    }
+    CustomStringTableItem "{0AA236A7C73670FE}" {
+     Id "LF-Sign_GeneralStore_Special2"
+     Target_en_us "Fresh milk"
+     Comment "Store A-frame special 2 (#3305). Price 4 matches LF_ShopStock_Everon1989."
+    }
+    CustomStringTableItem "{48226C495DB4B471}" {
+     Id "LF-Sign_GeneralStore_Special3"
+     Target_en_us "Tinned fish"
+     Comment "Store A-frame special 3 (#3305). Price 6 matches LF_ShopStock_Everon1989."
+    }
     CustomStringTableItem "{10B8F417BFC331B0}" {
      Id "LF-Sign_GeneralStore_Title"
      Target_en_us "General store"
@@ -2728,6 +2743,21 @@ StringTable {
      Id "LF-Sign_Traders_Rules"
      Target_en_us "Paid in cash, a fixed price per item."
      Comment "Sign card for the market stalls that buy produce, Rules section."
+    }
+    CustomStringTableItem "{FD941F33CF6FF710}" {
+     Id "LF-Sign_Traders_Special1"
+     Target_en_us "Apples"
+     Comment "Market A-frame line 1: what the traders buy, a chalk row (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{EAC2FC02DE625E9C}" {
+     Id "LF-Sign_Traders_Special2"
+     Target_en_us "Plums"
+     Comment "Market A-frame line 2 (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{A85914EECAC56866}" {
+     Id "LF-Sign_Traders_Special3"
+     Target_en_us "Cabbages"
+     Comment "Market A-frame line 3 (#3305). Value is the base price in LF_Market_Everon1989."
     }
     CustomStringTableItem "{83FF557EE9B09C57}" {
      Id "LF-Sign_Traders_Title"
