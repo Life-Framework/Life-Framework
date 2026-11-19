@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! One tradable good's price curve (#2844). The key is `m_sGood`, the item prefab ResourceName the trader
-//! list uses. The prices in the row are whole cash; the curve itself runs in hundredths of a cash unit
+//! list uses. The prices in the row are whole cash per lot (#3622: a lot is `m_iLotSize` units, 1 by
+//! default, so a good counted in kg can be priced per 200 kg); the curve itself runs in hundredths of a cash unit
 //! (LF_PriceCurve, #3028), so the Fine-named members and the price arguments of the curve methods below
 //! are hundredths.
 [BaseContainerProps()]
@@ -24,8 +25,11 @@ class LF_MarketGoodDef : LF_ConfigRecord
 	[Attribute("0", UIWidgets.Auto, "Percent of the gap to the base the price closes each real hour; 0 never recovers", params: "0 100")]
 	int m_iRecoverPctPerHour;
 
+	[Attribute("1", UIWidgets.Auto, "Units one price covers. A sale pays whole lots only (units / lot, rounded down) and the rest stays with the seller; the price and the drop are per lot. 1 prices every unit", params: "1 60000")]
+	int m_iLotSize;
+
 	//------------------------------------------------------------------------------------------------
-	static LF_MarketGoodDef Make(ResourceName good, int base, int floorPrice, int ceilingPrice, int dropPct, int recoverPct)
+	static LF_MarketGoodDef Make(ResourceName good, int base, int floorPrice, int ceilingPrice, int dropPct, int recoverPct, int lotSize = 1)
 	{
 		LF_MarketGoodDef def = new LF_MarketGoodDef();
 		def.m_sGood = good;
@@ -34,7 +38,32 @@ class LF_MarketGoodDef : LF_ConfigRecord
 		def.m_iCeiling = ceilingPrice;
 		def.m_iDropPerUnitPct = dropPct;
 		def.m_iRecoverPctPerHour = recoverPct;
+		def.m_iLotSize = lotSize;
 		return def;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Units one price covers: `m_iLotSize`, 1 when the row leaves it unset.
+	int Lot()
+	{
+		return LF_Utils.MaxInt(m_iLotSize, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Whole lots in `units` (rounded down); `units` below one lot is 0.
+	int Lots(int units)
+	{
+		if (units <= 0)
+			return 0;
+
+		return units / Lot();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The units `units` actually trade: whole lots only, the remainder stays with the seller.
+	int SellableUnits(int units)
+	{
+		return Lots(units) * Lot();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -56,6 +85,8 @@ class LF_MarketGoodDef : LF_ConfigRecord
 			return string.Format("drop per unit %1 percent is outside 0 to 100", m_iDropPerUnitPct);
 		if (m_iRecoverPctPerHour < 0 || m_iRecoverPctPerHour > 100)
 			return string.Format("recovery %1 percent per hour is outside 0 to 100", m_iRecoverPctPerHour);
+		if (m_iLotSize < 0 || m_iLotSize > LF_PriceCurve.MAX_BULK_UNITS)
+			return string.Format("lot size %1 is outside 1 to %2", m_iLotSize, LF_PriceCurve.MAX_BULK_UNITS);
 
 		return "";
 	}
@@ -387,7 +418,7 @@ class LF_MarketGoodList : LF_ConfigList
 	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
 	{
 		LF_MarketGoodDef def = LF_MarketGoodDef.Cast(record);
-		LF_MarketGoodDef before = LF_MarketGoodDef.Make(def.m_sGood, def.m_iBase, def.m_iFloor, def.m_iCeiling, def.m_iDropPerUnitPct, def.m_iRecoverPctPerHour);
+		LF_MarketGoodDef before = LF_MarketGoodDef.Make(def.m_sGood, def.m_iBase, def.m_iFloor, def.m_iCeiling, def.m_iDropPerUnitPct, def.m_iRecoverPctPerHour, def.m_iLotSize);
 		int changed;
 		if (container.IsVariableSetDirectly("m_iBase") && container.Get("m_iBase", def.m_iBase))
 			changed++;
@@ -399,6 +430,8 @@ class LF_MarketGoodList : LF_ConfigList
 			changed++;
 		if (container.IsVariableSetDirectly("m_iRecoverPctPerHour") && container.Get("m_iRecoverPctPerHour", def.m_iRecoverPctPerHour))
 			changed++;
+		if (container.IsVariableSetDirectly("m_iLotSize") && container.Get("m_iLotSize", def.m_iLotSize))
+			changed++;
 
 		string problem = def.Problem();
 		if (!problem.IsEmpty())
@@ -409,6 +442,7 @@ class LF_MarketGoodList : LF_ConfigList
 			def.m_iCeiling = before.m_iCeiling;
 			def.m_iDropPerUnitPct = before.m_iDropPerUnitPct;
 			def.m_iRecoverPctPerHour = before.m_iRecoverPctPerHour;
+			def.m_iLotSize = before.m_iLotSize;
 			return 0;
 		}
 

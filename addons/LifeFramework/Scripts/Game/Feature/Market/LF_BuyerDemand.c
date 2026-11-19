@@ -19,14 +19,17 @@ class LF_BuyerDemandRow : LF_ConfigRecord
 	[Attribute("0", UIWidgets.Auto, "Units the purse refills each real hour; 0 never refills", params: "0 60000")]
 	int m_iRefillPerHour;
 
-	[Attribute("0", UIWidgets.Auto, "Whole cash one unit fetches from a full purse", params: "0 10000000")]
+	[Attribute("0", UIWidgets.Auto, "Whole cash one lot fetches from a full purse (one unit while the lot size is 1)", params: "0 10000000")]
 	int m_iPrice;
+
+	[Attribute("1", UIWidgets.Auto, "Units one price covers (#3622). The buyer takes whole lots only; a stack smaller than a lot is refused and the part lot stays with the seller. A curve good named below must use the same lot size", params: "1 60000")]
+	int m_iLotSize;
 
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Optional market curve good (LF_MarketConfig): its drop percent and floor make the price fall as the purse empties. Empty keeps a flat price", "et")]
 	ResourceName m_sCurveGood;
 
 	//------------------------------------------------------------------------------------------------
-	static LF_BuyerDemandRow Make(string buyer, ResourceName good, int cap, int refillPerHour, int price, ResourceName curveGood = "")
+	static LF_BuyerDemandRow Make(string buyer, ResourceName good, int cap, int refillPerHour, int price, ResourceName curveGood = "", int lotSize = 1)
 	{
 		LF_BuyerDemandRow row = new LF_BuyerDemandRow();
 		row.m_sBuyer = buyer;
@@ -35,7 +38,15 @@ class LF_BuyerDemandRow : LF_ConfigRecord
 		row.m_iRefillPerHour = refillPerHour;
 		row.m_iPrice = price;
 		row.m_sCurveGood = curveGood;
+		row.m_iLotSize = lotSize;
 		return row;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Units one price covers: `m_iLotSize`, 1 when the row leaves it unset.
+	int Lot()
+	{
+		return LF_Utils.MaxInt(m_iLotSize, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -64,6 +75,10 @@ class LF_BuyerDemandRow : LF_ConfigRecord
 			return string.Format("refill %1 per hour is above the largest purse %2", m_iRefillPerHour, LF_BuyerDemand.MAX_CAP);
 		if (m_iPrice < 0 || m_iPrice > LF_PriceCurve.MAX_CASH)
 			return string.Format("price %1 is outside 0 to %2", m_iPrice, LF_PriceCurve.MAX_CASH);
+		if (m_iLotSize < 0 || m_iLotSize > LF_BuyerDemand.MAX_CAP)
+			return string.Format("lot size %1 is outside 1 to %2", m_iLotSize, LF_BuyerDemand.MAX_CAP);
+		if (m_iCap < Lot())
+			return string.Format("cap %1 is below one lot of %2", m_iCap, Lot());
 
 		return "";
 	}
@@ -104,6 +119,9 @@ class LF_BuyerDemandSale
 {
 	int m_iAccepted;
 	int m_iRefused;
+	//! Of the refused units, those that only fall short of a whole lot (#3622): the seller keeps them and the
+	//! buyer is not full. Refused minus this is what the purse could not hold.
+	int m_iUnderLot;
 	int m_iPayout;
 	//! Seconds until the purse has one unit again: 0 when it has one now, -1 when it never refills.
 	int m_iSecondsToNext;
@@ -172,20 +190,23 @@ class LF_BuyerDemand
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return Seconds until the purse (after a refill to `now`) holds one unit: 0 when it holds one now,
-	//! -1 when it holds none and never refills.
+	//! \return Seconds until the purse (after a refill to `now`) holds one lot (one unit while the lot size
+	//! is 1): 0 when it holds one now, -1 when it holds less and never refills.
 	static int SecondsToNextUnit(notnull LF_BuyerDemandRow row, notnull LF_BuyerPurse purse, int now)
 	{
 		Refill(row, purse, now);
-		if (purse.m_iRemaining > 0)
+		int lot = row.Lot();
+		if (purse.m_iRemaining >= lot)
 			return 0;
 
 		int refill = LF_Utils.MinInt(row.m_iRefillPerHour, MAX_CAP);
 		if (refill <= 0)
 			return -1;
 
-		int unitSeconds = (LF_PriceCurve.SECONDS_PER_HOUR + refill - 1) / refill;
-		return LF_Utils.MaxInt(unitSeconds - (now - purse.m_iStamp), 0);
+		// Units still missing from one lot: at most MAX_CAP, so missing * 3600 stays inside an int.
+		int missing = lot - purse.m_iRemaining;
+		int lotSeconds = (missing * LF_PriceCurve.SECONDS_PER_HOUR + refill - 1) / refill;
+		return LF_Utils.MaxInt(lotSeconds - (now - purse.m_iStamp), 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -200,8 +221,14 @@ class LF_BuyerDemand
 		LF_BuyerDemandSale sale = new LF_BuyerDemandSale();
 		Refill(row, purse, now);
 		units = LF_Utils.MaxInt(units, 0);
-		sale.m_iAccepted = LF_Utils.MinInt(units, purse.m_iRemaining);
+		// Whole lots only (#3622): the units the stack fills and the units the purse still holds, each
+		// rounded down to a lot. A part lot is refused and stays with the seller.
+		int lot = row.Lot();
+		int stackLots = units / lot;
+		int purseLots = purse.m_iRemaining / lot;
+		sale.m_iAccepted = LF_Utils.MinInt(stackLots, purseLots) * lot;
 		sale.m_iRefused = units - sale.m_iAccepted;
+		sale.m_iUnderLot = units % lot;
 		if (sale.m_iAccepted > 0)
 		{
 			int used = row.m_iCap - purse.m_iRemaining;
@@ -214,9 +241,14 @@ class LF_BuyerDemand
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! \return The whole cash `units` fetch when `used` units of the cap are already gone.
+	//! \return The whole cash `units` fetch when `used` units of the cap are already gone. The price is per
+	//! lot (#3622): the sold units and the used units count in whole lots, rounded down, and the curve falls
+	//! per lot.
 	static int Payout(notnull LF_BuyerDemandRow row, int used, int units, LF_MarketGoodDef curve = null)
 	{
+		int lot = row.Lot();
+		used = used / lot;
+		units = units / lot;
 		int ceilingFine = LF_PriceCurve.ToFine(row.m_iPrice);
 		int drop = 0;
 		int floorFine = ceilingFine;

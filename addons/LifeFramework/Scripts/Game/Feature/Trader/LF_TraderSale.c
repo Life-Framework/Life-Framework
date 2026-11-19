@@ -14,7 +14,8 @@ enum LF_ETraderSale
 	UNPAYABLE,
 	NOT_REMOVED,
 	SELLER_DOWN,	//!< A dead or downed seller (a forged request from a body)
-	BUYER_FULL		//!< A premium buyer with no demand left (#3599); the seller keeps the item
+	BUYER_FULL,		//!< A premium buyer with no demand left (#3599); the seller keeps the item
+	BELOW_LOT		//!< The stack is smaller than one lot of a good priced per lot (#3622); the seller keeps the item
 }
 
 //------------------------------------------------------------------------------------------------
@@ -106,9 +107,19 @@ class LF_TraderSale
 		// trader list still decides whether the good is bought at all; market off changes nothing.
 		bool curved = LF_MarketBook.Curved(itemPrefab) != null;
 		int nowUnix = System.GetUnixTime();
+		// A good priced per lot (#3622) sells whole lots only; the part lot stays in the stack.
+		int soldUnits = outputUnits;
 		if (curved)
 		{
-			totalValue = LF_MarketBook.QuoteAt(itemPrefab, outputUnits, nowUnix);
+			soldUnits = LF_MarketBook.SellableUnits(itemPrefab, outputUnits);
+			if (soldUnits <= 0)
+			{
+				NotifyBelowLot(seller, LF_MarketBook.LotOf(itemPrefab));
+				LF_Debug.Warn("Trader", string.Format("sale refused (BELOW_LOT): %1 of %2 is less than one lot of %3", outputUnits, itemPrefab, LF_MarketBook.LotOf(itemPrefab)));
+				return LF_ETraderSale.BELOW_LOT;
+			}
+
+			totalValue = LF_MarketBook.QuoteAt(itemPrefab, soldUnits, nowUnix);
 			if (totalValue <= 0)
 				return Refuse(seller, LF_ETraderSale.NOT_BOUGHT, "the market pays nothing for " + itemPrefab);
 		}
@@ -128,12 +139,12 @@ class LF_TraderSale
 		if (curved)
 		{
 			priceBefore = LF_MarketBook.Snapshot(itemPrefab);
-			newPrice = LF_MarketBook.ApplySaleAt(itemPrefab, outputUnits, nowUnix, oldPrice);
+			newPrice = LF_MarketBook.ApplySaleAt(itemPrefab, soldUnits, nowUnix, oldPrice);
 		}
 
 		bool removed = false;
 		if (!s_bFailRemoveForTest)
-			removed = inventory.TryDeleteItem(item);
+			removed = TakeUnits(inventory, item, soldUnits, outputUnits);
 
 		if (!removed)
 		{
@@ -146,7 +157,7 @@ class LF_TraderSale
 		if (curved && newPrice != oldPrice)
 			LF_EventBus.Publish(LF_OnMarketPriceMoved.Create(itemPrefab, oldPrice, newPrice));
 
-		LF_Debug.Info("Trader", string.Format("sold %1 for %2 (untrusted=%3)", itemPrefab, totalValue, untrusted));
+		LF_Debug.Info("Trader", string.Format("sold %1 x%2 of %3 for %4 (untrusted=%5)", itemPrefab, soldUnits, outputUnits, totalValue, untrusted));
 		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, totalValue.ToString());
 		if (curved && newPrice != oldPrice)
 			LF_MarketSaleNotice.OnSale(seller, itemPrefab, oldPrice, newPrice);
@@ -166,6 +177,15 @@ class LF_TraderSale
 		LF_BuyerDemandSale sale = LF_BuyerDemandBook.Sell(buyer, itemPrefab, outputUnits, nowUnix);
 		if (!sale)
 			return Refuse(seller, LF_ETraderSale.NOT_BOUGHT, "the buyer has no demand row for " + itemPrefab);
+
+		if (sale.m_iAccepted <= 0 && sale.m_iRefused <= sale.m_iUnderLot)
+		{
+			// Nothing short of a whole lot to sell (#3622): the buyer has room, the stack is just too small.
+			int lot = LF_BuyerDemandBook.LotOf(buyer, itemPrefab);
+			NotifyBelowLot(seller, lot);
+			LF_Debug.Warn("Trader", string.Format("sale refused (BELOW_LOT): %1 of %2 is less than one lot of %3 for %4", outputUnits, itemPrefab, lot, buyer));
+			return LF_ETraderSale.BELOW_LOT;
+		}
 
 		if (sale.m_iAccepted <= 0)
 		{
@@ -202,10 +222,18 @@ class LF_TraderSale
 
 		LF_Debug.Info("Trader", string.Format("sold %1 x%2 of %3 to %4 for %5 (refused %6, untrusted=%7)", itemPrefab, sale.m_iAccepted, outputUnits, buyer, sale.m_iPayout, sale.m_iRefused, untrusted));
 		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, sale.m_iPayout.ToString());
-		if (sale.m_iRefused > 0)
+		// Only what the purse could not hold says "enough"; a part lot just stays with the seller.
+		if (sale.m_iRefused > sale.m_iUnderLot)
 			NotifyBuyerFull(seller, sale.m_iSecondsToNext);
 
 		return LF_ETraderSale.SOLD;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Toast to the seller: the stack is smaller than one lot of a good priced per lot (#3622).
+	protected static void NotifyBelowLot(IEntity seller, int lot)
+	{
+		LF_Utils.NotifyEntity(seller, "#LF-Market_BelowLot", "#LF-Trader_SaleRefused_Title", 3.0, lot.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------

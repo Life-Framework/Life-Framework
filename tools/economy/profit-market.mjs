@@ -1,7 +1,8 @@
 // Market-floor loops (#2848, framework #762). A good on the market curve (Configs/Market/LF_Market.conf, plus
 // any pack overlay under addons/<pack>/Configs/Market/) is sold at a price that climbs to its `m_iCeiling`.
 // If a shop asks less than that ceiling, a player buys it there and sells it to the market: a loop.
-// The rule: for every curved good, the cheapest shop buy price >= the highest ceiling any file gives it.
+// The rule: for every curved good, the cheapest shop buy price >= the highest ceiling any file gives it. A ceiling is
+// a price per LOT (`m_iLotSize` units, 1 when unset, #3622), so the unit a player sells for is ceiling / lot.
 // Called from checkProfitLoops in profit-loops.mjs (src.market = the files to read, core first).
 import { readFileSync, readdirSync, existsSync } from "node:fs";
 import { basename, join, relative } from "node:path";
@@ -38,12 +39,13 @@ function shopGoods(shop) {
 export function findMarketLoops(shop, src, catalogue = []) {
   const files = (src.market || []).filter(existsSync);
   if (files.length === 0) return [];
-  const goods = new Map(); // key -> { res, ceiling, file }; the highest ceiling wins, the first file on a tie
+  const goods = new Map(); // key -> { res, ceiling (per unit), file }; the highest per-unit ceiling wins, the first file on a tie
   for (const file of files) {
     const conf = parseConf(readFileSync(file, "utf8"));
     for (const g of conf?.props.m_aGoods?.list || []) {
-      const ceiling = g.props.m_iCeiling;
-      if (typeof ceiling !== "number") continue;
+      const lot = typeof g.props.m_iLotSize === "number" && g.props.m_iLotSize > 1 ? g.props.m_iLotSize : 1;
+      const ceiling = typeof g.props.m_iCeiling === "number" ? g.props.m_iCeiling / lot : null;
+      if (ceiling === null) continue;
       const k = keyOf(g.props.m_sGood);
       if (!goods.has(k) || ceiling > goods.get(k).ceiling) goods.set(k, { res: g.props.m_sGood, ceiling, file });
     }
@@ -61,9 +63,10 @@ export function findMarketLoops(shop, src, catalogue = []) {
     const [where, buy] = offers.reduce((a, b) => (b[1] < a[1] ? b : a));
     if (buy >= g.ceiling) continue;
     const name = nameOf(g.res);
+    const cents = (n) => Math.round(n * 1000) / 1000;
     out.push({
-      kind: "market", id: `market:${name}`, cost: buy, revenue: g.ceiling, margin: g.ceiling - buy,
-      path: `buy ${name} ${buy} (${where}), sell to the market at its ceiling ${g.ceiling} (${rel(g.file)})`,
+      kind: "market", id: `market:${name}`, cost: buy, revenue: cents(g.ceiling), margin: cents(g.ceiling - buy),
+      path: `buy ${name} ${buy} (${where}), sell to the market at its ceiling ${cents(g.ceiling)} a unit (${rel(g.file)})`,
     });
   }
   return out;
