@@ -63,3 +63,9 @@ The rules (#3285), the field entity (#3287), its cut replication (#3288) and the
 - **Owner and side:** `LF_ReaperCutTick` (server only): a registry of reapers (filled by `LF_ImplementComponent`) and a 200 ms loop. Speed is the towing vehicle's physics velocity; the bar sits at the implement's hitch offset in the vehicle's frame; the field is the `LF_WheatField` whose box holds it.
 - **Data:** the hopper is `LF_ImplementComponent` `m_iHopperKg` (`RplProp`), capped at `LF_WheatFieldRules.HOPPER_CAP_KG`. Session-only: the reaper is not saved, so a restart or an unhitch loses the grain (H7 and H8 own persistence or payout).
 - **Proof:** `harvest/reaper-cut` (WORLD); session `hitch fieldspawn|drive|state` on grid cell slice-3287.
+
+## Harvest contract (#3297)
+
+- **Player sees:** at the farm board, one contract per ripe field; take it with an own reaper or a $300-deposit rental kit (Z7211 with the DLC, else UAZ469); at 95 % cut a $40 bonus and FARMER XP; returning the kit gives the deposit back, keeping it past 30 minutes forfeits it. The board prompts come with the placement card.
+- **Owner and side:** `LF_HarvestContract` (server statics: `Post`, `Take`, `Settle`, `ReturnKit`, a 5 s sweep). Session only; money moves state-first so a repeat pays nothing.
+- **Proof:** `harvest/harvest-contract` (WORLD).
