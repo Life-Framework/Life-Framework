@@ -80,6 +80,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
 		LF_ChainTrace.Install();
+		// The evidence locker's convoy order starts the truck and its escort (server only, #3382).
+		LF_EvidenceConvoy.Install();
 		// The replicated DELIVERY level follows every job level change (server only, #749).
 		LF_JobLevelSync.EnsureSubscribed();
 		// Mining, logging and medic work earn MINER, LUMBERJACK and MEDIC XP (server only, #2707).
