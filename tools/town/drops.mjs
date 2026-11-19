@@ -36,6 +36,8 @@ export const DROP_KITS = {
   "buyer-spots": { prefab: "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et", source: "addons/LifeFramework/Prefabs/Systems/Laundering/LF_BuyerSpot.et" },
   // The placeable ATM (#3352, #3355): each machine overrides the prefab's place id (`placeComp` is the prefab's own LF_PlaceComponent GUID) so the ATMs are told apart in LF_Places.
   atms: { prefab: "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et", source: "addons/LifeFramework/Prefabs/Props/Money/LF_ATM.et", placeComp: "{7070D89FFB6DC889}", placeId: (dr) => `atm.${dr.place}.${dr.building}` },
+  // A payphone booth at a kerb beside a building (#3358): back to the wall, front to the street, like a mailbox.
+  payphones: { prefab: "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et", source: "addons/LifeFramework/Prefabs/Comms/LF_Payphone.et" },
   // A home's "For sale" sign (#3584, `town homes`): placed with the same entrance-wall seat as a drop.
   "house-sale": { prefab: "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et", source: "addons/LifeFramework/Prefabs/Props/Property/LF_HouseSaleSign.et" },
 };
@@ -250,7 +252,8 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
     slot: slotId,
     drops: mapping.slots[slotId].drops.map((d) => ({ place: d.place, building: d.building })),
     kit: slotKit,
-    size: "small",
+    // Five lit booths are five lights: the small budget allows three (#3358), so a payphones slot is medium.
+    size: slotKit === "payphones" ? "medium" : "small",
     layer: `${LAYER_DIR}/${layerName}`,
     kinds: [],
     rows: plans.length,
