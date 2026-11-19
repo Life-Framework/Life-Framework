@@ -20,6 +20,7 @@
     "LF_GarageConfig",
     "LF_HandbookConfig",
     "LF_HeistConfig",
+    "LF_FuelConfig",
     "LF_IncidentConfig",
     "LF_ItemCatalogueConfig",
     "LF_JobsConfig",
