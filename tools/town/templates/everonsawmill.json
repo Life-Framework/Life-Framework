@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "kind": "everonsawmill",
+  "about": "A working site away from any town: the island's own sawmill, a hall with two saws, a yard of log decks and board stacks, a sign and a map point. One slot. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "yard", "required": true, "kit": "everon-sawmill", "host": "building", "poi": "Workplace", "margin": 40,
+      "needs": { "interior": "required", "minArea": 400, "prefer": "far", "types": ["industrial"] },
+      "places": ["Workplace"]
+    }
+  ]
+}

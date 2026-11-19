@@ -1,0 +1,108 @@
+{
+  "schema": 1,
+  "kit": "merchant-timber",
+  "system": "store",
+  "source": {
+    "file": "tools/town/kits/sources/merchant-timber.layer",
+    "origin": "MerchantTimber_Origin",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -4.2,
+        8.8
+      ],
+      "max": [
+        2.4,
+        12.2
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "Street kit for the hardware store b59 (Workshop_02, the door in the +z end, the fascia at x 0.6). The kerb 3 m in front of the door is the timber counter: a shop counter facing the street, the timber man behind it, stacked planks on both sides of the door line and a chalk board with the buying prices (merchant_timber). Offsets are building-local, +z is the street side. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "timber-counter",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        0.6,
+        -0.56,
+        9.9
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "timber-man",
+      "prefab": "{31E740A9BE82E617}Prefabs/Characters/Npcs/Outfits/LF_Npc_Logger_2.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        0.6,
+        -0.56,
+        8.8
+      ],
+      "yaw": 0,
+      "name": "Timber_Man",
+      "class": "LF_NpcBaseEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "timber-stack-1",
+      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.2,
+        -0.45,
+        9.8
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "timber-board",
+      "prefab": "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et",
+      "role": "board",
+      "verb": "on floor",
+      "offset": [
+        2.4,
+        -0.5,
+        12.2
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"merchant_timber\"",
+            "m_sStyle": "\"\"",
+            "m_sSize": "\"\"",
+            "m_vFaceAngles": "0 -15 0",
+            "m_fFaceScale": "2.6"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

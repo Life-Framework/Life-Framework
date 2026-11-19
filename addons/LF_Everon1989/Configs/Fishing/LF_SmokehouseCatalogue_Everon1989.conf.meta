@@ -1,0 +1,7 @@
+MetaFileClass {
+ Name "{D4C9F500AA1ECA38}Configs/Fishing/LF_SmokehouseCatalogue_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+ }
+}

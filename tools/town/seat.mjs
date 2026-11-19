@@ -11,15 +11,22 @@
 //           electricity box, sign, poster; see surface.mjs HUNG) moves along its facing onto the nearest host wall plane;
 //           a floor row whose verb is `against wall` also backs onto a wall within NEAR_WALL, keeping its floor;
 //   stack   a row `on <row>` moves with the row it stands on;
-//   clip    a row whose bounds cut a host wall is pushed out along that wall's normal by up to NUDGE; a row that still
+//   terrain a row in open ground (kit row `"mount": "terrain"`, no building under it): it rests on the ground the server
+//           probed under its footprint (tools/town/terrain.mjs, `town fit --terrain`), the highest of the centre and the four
+//           corners, so a prop on a slope never sinks at its high side. Without a probed height it is left and reported;
+//   relative a row of a class whose layer height counts from the TERRAIN (SCR_DestructibleEntity: the net fence of the
+//           range stood 20 m up in the air on 2026-11-19, y 19.1 + terrain 20.2): its height is the bottom of its bounds
+//           over the ground, no probe needed;
+//   clip   a row whose bounds cut a host wall is pushed out along that wall's normal by up to NUDGE; a row that still
 //           cuts the shell is reported as a clip (town fit refuses it unless --allow-clip).
 //
 // Everything is computed in the host's own frame (host-local x, y, z, +z the prefab's front), with the same yaw rule as
 // `kit apply` (tools/town/kit.mjs toWorld). The reader is injectable: the selftest passes fixture hosts.
 //   reader.info(path)  -> { bounds: { min, max }, scale } | null        a row prefab's visual bounds (surface.mjs gameReader)
 //   reader.shell(path) -> { mesh, surfaces: [{ y, x:[a,b], z:[a,b], area }], walls: [{ n:[nx,ny,nz], p:[[x,y,z] x3] }] } | null
-import { isHung, footOf, scaleOf, gameReader as surfaceReader, prefabChildren as prefabChildrenOf } from "../buildings/pipeline/surface.mjs";
+import { BELOW_PIVOT, isHung, footOf, scaleOf, gameReader as surfaceReader, prefabChildren as prefabChildrenOf } from "../buildings/pipeline/surface.mjs";
 import { toWorld, toLocal } from "./kit.mjs";
+import { TERRAIN_RELATIVE_CLASSES } from "../lib/terrain-classes.mjs";
 
 export const TOL = 0.02; // a row within 2 cm of its support is left alone
 export const FLOOR_BAND = 0.75; // a floor row seats on a host top this far above or below its kit height, no further
@@ -28,6 +35,9 @@ export const HUNG_REACH = 6; // a wall-mounted row looks this far along its faci
 export const NUDGE = 0.3; // a clipping row is pushed out of a wall by at most this much
 export const CLIP_TOL = 0.03; // bounds may touch a wall by this much (paint, skirting) before it counts as a clip
 export const WALL_GAP = 0.005; // a wall row stands this far off the plane
+// Classes whose layer `coords` height is measured from the terrain under them (tools/lib/terrain-classes.mjs). A kit row
+// of one of these needs no probe.
+export { TERRAIN_RELATIVE_CLASSES };
 
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -263,11 +273,31 @@ function topsUnder(surfaces, x, z, edge = 0.03) {
 
 // ------------------------------------------------------------------ classifying a kit row
 
-// How a kit row is held: "wall", "floor" (with `against` when its verb is `against wall`), "stack" (on another row), "free".
+// The world (x, z) points a terrain row's footprint touches: the centre first, then the four corners of its bounds turned
+// by its yaw. A row with no bounds (a marker) has just its own point. Pure; keys the probe's answers (terrain.mjs pinKey).
+export function footprintPoints(coords, yaw, info, scale = null) {
+  const b = info?.bounds;
+  if (!b || !Number.isFinite(b.min?.[0])) return [[r3(coords[0]), r3(coords[2])]];
+  // A prop whose mesh runs below its pivot (a pole, the site flag: -0.8 m) stands by the pivot, as the audit judges it
+  // (surface.mjs footOf): the ground under the pivot is the one that matters, not the cloth's corners.
+  if (b.min[1] < -BELOW_PIVOT) return [[r3(coords[0]), r3(coords[2])]];
+  const k = scaleOf({ scale }, info);
+  const at = (x, z) => {
+    const [dx, dz] = toWorld(x * k, z * k, yaw);
+    return [r3(coords[0] + dx), r3(coords[2] + dz)];
+  };
+  const [cx, cz] = [(b.min[0] + b.max[0]) / 2, (b.min[2] + b.max[2]) / 2];
+  return [at(cx, cz), at(b.min[0], b.min[2]), at(b.max[0], b.min[2]), at(b.min[0], b.max[2]), at(b.max[0], b.max[2])];
+}
+
+// How a kit row is held: "wall", "floor" (with `against` when its verb is `against wall`), "stack" (on another row), "free",
+// "terrain" (open ground, probed) or "relative" (a class whose height counts from the terrain).
 export function mountOf(src) {
   const tags = [].concat(src.tags ?? [], src.kind ?? []).map(String);
   const verb = String(src.verb ?? "");
   if (src.free || src.mount === "free") return { mount: "free" };
+  if (src.mount === "relative" || TERRAIN_RELATIVE_CLASSES.includes(String(src.class ?? ""))) return { mount: "relative" };
+  if (src.mount === "terrain") return { mount: "terrain" };
   if (src.on === "wall" || src.mount === "wall" || tags.includes("wall") || tags.includes("wall-mounted") || isHung(src.prefab) || src.role === "sign") return { mount: "wall" };
   if (verb.startsWith("on ") && verb !== "on floor") return { mount: "stack", on: verb.slice(3) };
   return { mount: "floor", against: verb === "against wall" };
@@ -283,7 +313,7 @@ const socketOf = (src) => {
 // Seat world rows (applyKit output, coords mutated in place) in `host` ({ x, y, z, yaw, prefab|path }).
 //   kitRows: the kit's own rows (for verb, role, tags, config); reader: shellReader() or a fixture.
 // Returns { ok, host: { mesh } | null, rows: [{ id, mount, from, to, moved, dy, wall, clip, notes }], clips, unseated }.
-export async function seatRows(rows, kitRows, host, { reader, allowClip = false } = {}) {
+export async function seatRows(rows, kitRows, host, { reader, allowClip = false, terrain = null } = {}) {
   const shell = await reader.shell(host.prefab ?? host.path);
   if (!shell) return { ok: false, host: null, rows: [], clips: [], unseated: [], note: `the host ${pathOf(host.prefab ?? host.path)} has no readable model; rows were not seated` };
   const src = new Map(kitRows.map((r) => [r.id, r]));
@@ -314,7 +344,24 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false 
       res.skip = `hangs on socket ${sock} of the kit's source building: its offset is socket-relative, so it is left out of the layer (give the kit row a building-space offset)`;
       res.notes.push(res.skip);
     } else if (m.mount === "free") res.notes.push("free: left as the kit puts it");
-    else if (m.mount === "stack") {
+    else if (m.mount === "relative") {
+      // The layer's y is the height over the terrain under the entity: the bottom of its bounds on the ground (0 for a
+      // prop whose pivot is its base, the fence panel).
+      const f = bounded ? footOf(l, info) : null;
+      l.y = (f ? -f.bottom : 0) - host.y;
+      res.notes.push("terrain-relative class: the layer's y counts from the ground under it");
+    } else if (m.mount === "terrain") {
+      const world = toW(l);
+      const pts = footprintPoints(world, row.yaw, bounded ? info : null, l.scale);
+      res.samples = pts;
+      const heights = terrain ? pts.map((p) => terrain.at(p[0], p[1])) : [];
+      if (!terrain || heights.some((h) => !Number.isFinite(h))) res.notes.push("no probed terrain height under it: kept at the kit height (run town fit with --terrain)");
+      else {
+        const f = bounded ? footOf(l, info) : { bottom: 0 };
+        l.y = Math.max(...heights) - f.bottom - host.y;
+        res.notes.push(`on the terrain: ${r3(Math.min(...heights))} to ${r3(Math.max(...heights))} m under its footprint`);
+      }
+    } else if (m.mount === "stack") {
       const base = byId.get(m.on);
       if (base) {
         l.x += base.d[0];
@@ -425,7 +472,9 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false 
   }
   const clips = out.filter((r) => r.clip);
   const keep = rows.map((r) => out.find((o) => o.id === r.id));
-  return { ok: allowClip || !clips.length, host: { mesh: shell.mesh }, rows: keep, clips, skipped: out.filter((r) => r.skip), furniture: out.filter((r) => r.furniture), unseated: out.filter((r) => r.notes.some((n) => /^no /.test(n))) };
+  // every (x, z) a terrain row stands on: what `town fit --terrain` asks the server for
+  const terrainPoints = out.flatMap((r) => r.samples ?? []);
+  return { ok: allowClip || !clips.length, host: { mesh: shell.mesh }, rows: keep, terrainPoints, clips, skipped: out.filter((r) => r.skip), furniture: out.filter((r) => r.furniture), unseated: out.filter((r) => r.notes.some((n) => /^no /.test(n))) };
 }
 
 // Does the host show the same model as the building the kit was lifted from? Then the kit's offsets are in the host's own

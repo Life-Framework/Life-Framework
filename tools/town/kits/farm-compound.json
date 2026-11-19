@@ -43,6 +43,7 @@
       "prefab": null,
       "role": "dressing",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         0,
         0,
@@ -69,7 +70,7 @@
       "verb": "on floor",
       "offset": [
         0.15,
-        0,
+        -0.024,
         5.3
       ],
       "yaw": 0,
@@ -98,6 +99,7 @@
       "prefab": "{DDE764E40C17C5DC}Prefabs/Sites/LF_SiteFlag.et",
       "role": "dressing",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         7,
         0,
@@ -121,6 +123,7 @@
       "prefab": "{28F82DEA95808829}Prefabs/Sites/LF_SiteStrongbox.et",
       "role": "interactable",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         -4.5,
         0,
@@ -144,6 +147,7 @@
       "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
       "role": "sign",
       "verb": "on floor",
+      "mount": "terrain",
       "offset": [
         -8.5,
         0,

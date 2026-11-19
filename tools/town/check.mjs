@@ -54,7 +54,7 @@ export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "L
 export const PLACE_LIMITS = { lights: 24, shadow: 12, entities: 1500 };
 // The market, chess and range slots (#3078): the trader's stall runs LF_TraderManagerComponent, the chess table LF_ChessTableComponent,
 // and a range lane is SCR_FiringRangeTarget, an entity class (BaseBuilding), not a component: `layerBacking` reads those heads too.
-Object.assign(BACKED_KINDS, { MarketTrader: "LF_TraderManagerComponent", ChessTable: "LF_ChessTableComponent", RangeLane: "SCR_FiringRangeTarget" });
+Object.assign(BACKED_KINDS, { MarketTrader: "LF_TraderManagerComponent", WholesaleCounter: "LF_TraderManagerComponent", ChessTable: "LF_ChessTableComponent", RangeLane: "SCR_FiringRangeTarget" });
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
 export const claimNameOf = (place, slot) => `${place}-${slot}.json`;
@@ -327,7 +327,9 @@ export function checkPlace(data, opts = {}) {
       const markers = layerMarkers(row.layer);
       const have = new Set(markers.map((m) => m.kind));
       for (const kind of promised) if (!have.has(kind)) errors.push(`slot ${row.slot}: the layer registers no LF_PlaceComponent of kind ${kind}`);
-      for (const m of markers) if (promised.includes(m.kind) && m.id !== `${place}.${row.slot}`) errors.push(`slot ${row.slot}: ${m.kind} marker has id '${m.id}', expected '${place}.${row.slot}'`);
+      // A slot may carry extra circles of one kind (the hostel's second safe circle, #3350): `<place>.<slot>` or `<place>.<slot>-<suffix>`.
+      const slotId = `${place}.${row.slot}`;
+      for (const m of markers) if (promised.includes(m.kind) && m.id !== slotId && !m.id.startsWith(`${slotId}-`)) errors.push(`slot ${row.slot}: ${m.kind} marker has id '${m.id}', expected '${slotId}' or '${slotId}-<suffix>'`);
     }
     if (known) for (const kind of promised) if (!known.has(kind)) warnings.push(`slot ${row.slot}: kind ${kind} is in no system's m_aPlaces (LF_SystemCatalog.conf); the layer is right but nothing looks for it yet`);
   }

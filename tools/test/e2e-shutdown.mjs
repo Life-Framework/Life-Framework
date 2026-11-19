@@ -55,16 +55,38 @@ export function loadLines(text) {
   return String(text ?? "").split(/\r?\n/).filter((l) => LOADED.test(l)).map((l) => l.trim());
 }
 
-// The newest console.log of a worktree's test profile, or null.
-export function newestTestConsole(root) {
+// The log folders a worktree's test profile holds now (a Set of names). Taken before pass 2 boots, it names
+// the boots that came before: pass 2 may only trust a log in a folder that is not in it (#3569).
+export function testLogDirs(root) {
+  const logs = join(root, "server", "profile", "test", "logs");
+  if (!existsSync(logs)) return new Set();
+  return new Set(readdirSync(logs).filter((d) => d.startsWith("logs_")));
+}
+
+// The newest console.log of a worktree's test profile, or null. `exclude`: folder names (testLogDirs) to skip,
+// so a reload boot that never created its own log yields null instead of the previous boot's.
+export function newestTestConsole(root, exclude = null) {
   const logs = join(root, "server", "profile", "test", "logs");
   if (!existsSync(logs)) return null;
-  const dirs = readdirSync(logs).filter((d) => d.startsWith("logs_")).sort();
+  const dirs = readdirSync(logs).filter((d) => d.startsWith("logs_") && !(exclude && exclude.has(d))).sort();
   for (let i = dirs.length - 1; i >= 0; i--) {
     const f = join(logs, dirs[i], "console.log");
     if (existsSync(f)) return f;
   }
   return null;
+}
+
+// Pass 2's verdict on its own boot (#3569). `text` is the console.log of a folder that did not exist before the
+// boot (null when there was none: the harness read the previous boot's SUMMARY, or the server never started).
+// A real reload boot prints "session continued from a save point" (about 10 s); a stale green prints nothing.
+export function checkReloadBoot(text) {
+  if (text === null || text === undefined) {
+    return { ok: false, reason: "pass 2 wrote no log folder of its own: it never booted, so any green it reported came from an earlier boot" };
+  }
+  if (!loadLines(text).length) {
+    return { ok: false, reason: "pass 2 booted but its log has no `session continued from a save point` line: it did not load the shutdown save" };
+  }
+  return { ok: true, reason: null };
 }
 
 // Fixtures cut from real pass 1 logs (2026-11-12); returns failure strings.
@@ -100,5 +122,9 @@ export function selftestE2eShutdown() {
   const r5 = checkShutdownSave(good.filter((l) => !/StaticReset/.test(l)).join("\n"));
   if (r5.ok) failures.push("a log without the statics reset passes");
   if (loadLines("x [LFDebug:Persistence] session continued from a save point (-loadSessionSave)\ny\n[LF_Tests] e2e shutdown save loaded: x").length !== 2) failures.push("loadLines misses a load line");
+  // #3569: a stale pass 2 (no log folder of its own, or a log with no load line) fails; a real reload passes.
+  if (checkReloadBoot(null).ok) failures.push("a pass 2 with no log folder of its own passes");
+  if (checkReloadBoot(good.join("\n")).ok) failures.push("a pass 2 log that never loaded a save passes (it is pass 1's log)");
+  if (!checkReloadBoot("x [LFDebug:Persistence] session continued from a save point (-loadSessionSave)\n[LFTEST] SUMMARY tier=persistence passed=1 failed=0 total=1").ok) failures.push("a real reload boot fails");
   return failures;
 }

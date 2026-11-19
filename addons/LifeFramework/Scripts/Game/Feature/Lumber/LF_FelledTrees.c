@@ -17,7 +17,7 @@ class LF_FellQuery : Managed
 //------------------------------------------------------------------------------------------------
 //! The server's felled-tree ledger and the world facts a fell needs (#3260, design
 //! docs/roadmap/lumber.md "Felling a real map tree"). The ledger is LF_TreeFellingLedger on the world
-//! clock; here it only grows (replication is #3261, regrow and save are #3262). The tree is hidden
+//! clock (replication is #3261; regrow, LF_TreeRegrow, and the save section, LF_LumberSavePayload, are #3262). The tree is hidden
 //! by flags, never killed, so it can stand again. Server only: every call here is a no-op elsewhere.
 class LF_FelledTrees
 {
@@ -79,6 +79,21 @@ class LF_FelledTrees
 			s_mLayers.Set(key, physics.GetInteractionLayer());
 
 		physics.SetInteractionLayer(0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts a tree Hide took out of the world back: drawn, traceable, its collision layer returned (#3262).
+	static void Show(notnull IEntity tree, string key)
+	{
+		tree.SetFlags(EntityFlags.VISIBLE | EntityFlags.TRACEABLE, false);
+		int layer;
+		if (!s_mLayers || !s_mLayers.Find(key, layer))
+			return;
+
+		s_mLayers.Remove(key);
+		Physics physics = tree.GetPhysics();
+		if (physics)
+			physics.SetInteractionLayer(layer);
 	}
 
 	//------------------------------------------------------------------------------------------------

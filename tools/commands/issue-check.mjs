@@ -7,7 +7,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { ghBin, run } from "../wt.mjs";
 import { keywords, namedIssues, render, skipListNumbers, verdict } from "../lib/issue-preflight.mjs";
 
-export const help = "issue-check <N...> [--skip-list f] [--json]   before dispatch: is the issue already done under another number? (merged PRs and main commits citing it, done labels, similar merged PRs, done sub-issues)";
+export const help = "issue-check <N...> [--skip-list f] [--json]   before dispatch: is the issue already done under another number? (LIKELY DONE: a merged PR or commit that is for it, i.e. title ends (#N) or a Refs/Closes/Fixes #N line, or a done label; a plain mention is only CHECK)";
 
 function gh(root, args) {
   const bin = ghBin();

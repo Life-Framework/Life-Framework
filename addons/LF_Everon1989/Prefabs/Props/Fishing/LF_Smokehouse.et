@@ -1,0 +1,79 @@
+GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
+ ID "5B7376A7C355CB78"
+ components {
+  MeshObject "{598F21A867C4015C}" {
+   Object "{5071BCB7F29A6C14}Assets/Structures/Houses/Shed/Shed_03/Shed_03.xob"
+  }
+  ActionsManagerComponent "{598F21A8710B89C1}" {
+   ActionContexts {
+    UserActionContext "{598F21A871DA7304}" {
+     Position PointInfo "{598F21A875320722}" {
+      Offset 0 1 2.2
+     }
+    }
+   }
+   additionalActions {
+    LF_ProcessAction "{9334BD30620A6430}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{38CA485D695EABF5}" {
+      Name "Smoke a mackerel"
+     }
+     m_sMachineId "smokehouse-mackerel"
+     Duration 30
+    }
+    LF_ProcessAction "{0FD787DB17225AE2}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9AA6969732B592B0}" {
+      Name "Smoke a bass"
+     }
+     m_sMachineId "smokehouse-bass"
+     Duration 30
+    }
+    LF_ProcessAction "{030840E644DB9A3A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2E214C4A923E18BB}" {
+      Name "Smoke a tuna"
+     }
+     m_sMachineId "smokehouse-tuna"
+     Duration 30
+    }
+    LF_ProcessAction "{B2C240F99638F7DB}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{F60785F10B2C88A5}" {
+      Name "Smoke a perch"
+     }
+     m_sMachineId "smokehouse-perch"
+     Duration 30
+    }
+    LF_ProcessAction "{5060335EF20A7891}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8E3A66C214936F4E}" {
+      Name "Smoke a carp"
+     }
+     m_sMachineId "smokehouse-carp"
+     Duration 30
+    }
+    LF_ProcessAction "{E90715D2553DB435}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{16FBBFD6C8FE0698}" {
+      Name "Smoke a trout"
+     }
+     m_sMachineId "smokehouse-trout"
+     Duration 30
+    }
+   }
+  }
+ }
+}
