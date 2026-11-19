@@ -1,0 +1,26 @@
+GenericEntity {
+ ID "7A3C5E91D2B40F68"
+ components {
+  ActionsManagerComponent "{7A3C5E91D2B40F71}" {
+   ActionContexts {
+    UserActionContext "{7A3C5E91D2B40F72}" {
+     ContextName "LF_FellTree"
+     Position PointInfo "{7A3C5E91D2B40F73}" {
+     }
+     Radius 3.5
+    }
+   }
+   additionalActions {
+    LF_FellAction "{7A3C5E91D2B40F74}" {
+     ParentContextList {
+      "LF_FellTree"
+     }
+     UIInfo UIInfo "{7A3C5E91D2B40F75}" {
+      Name "#LF-Lumber_Fell"
+     }
+     Duration 60
+    }
+   }
+  }
+ }
+}
