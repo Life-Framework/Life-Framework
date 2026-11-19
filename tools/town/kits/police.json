@@ -203,6 +203,21 @@
       "floor": "f0"
     },
     {
+      "id": "police-kit-case-board",
+      "name": "PoliceKit_CaseBoard",
+      "prefab": "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et",
+      "role": "board",
+      "verb": "against wall",
+      "offset": [
+        5.9,
+        1.5,
+        -0.6
+      ],
+      "yaw": 90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
       "id": "police-kit-handcuffs",
       "name": "PoliceKit_Handcuffs",
       "prefab": "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et",
@@ -622,8 +637,8 @@
     {
       "id": "police-kit-decor-6",
       "name": "PoliceKit_Decor_6",
-      "prefab": "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et",
-      "role": "dressing",
+      "prefab": "{9BDAE42023AB3357}Prefabs/Comms/LF_DispatchPhone.et",
+      "role": "interactable",
       "verb": "on police-kit-duty-desk",
       "offset": [
         3.55,

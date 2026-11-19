@@ -29,6 +29,11 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
 export const DROP_PREFAB = "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et";
 export const DROP_SOURCE = "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_ParcelDrop.et";
+// The slot's kit picks the prop: the parcel run's mailbox, or the fuel run's drum (LF_FuelDrop, #3370). Both carry the DROP site.
+export const DROP_KITS = {
+  "parcel-drops": { prefab: DROP_PREFAB, source: DROP_SOURCE },
+  "fuel-drops": { prefab: "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et", source: "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_FuelDrop.et" },
+};
 const OUTSIDE = 1.0; // the mailbox starts this far outside the footprint; the wall seat slides it the rest of the way
 const GROUND_LIFT = 0.03; // the mailbox's foot stands this far above the dossier's floor height: a hairline over the ground, never in it
 const WALL_AIR = 0.05; // the seat puts the back on the wall plane; a corrugated or ribbed wall still clips it, so it stands this far off
@@ -62,7 +67,8 @@ export function exitDistance(poly, x, z, dx, dz) {
 // (metres) off the dossier's floor height, for a drop on sloping ground.
 // `turn` (0 to 3, quarter turns) puts the mailbox on another side than the entrance side (0), for a building whose entrance
 // side is a loading dock or a canopy.
-export function dropKit(building, slotId, sideways = null, lift = GROUND_LIFT, turn = 0) {
+export function dropKit(building, slotId, sideways = null, lift = GROUND_LIFT, turn = 0, kitName = "parcel-drops") {
+  const prop = DROP_KITS[kitName] ?? DROP_KITS["parcel-drops"];
   const front = "+z";
   const a = anchorFor(building, { anchoring: { front, floorY: building.firstFloor ?? 0 } });
   const [lx, lz] = [[0, 1], [1, 0], [0, -1], [-1, 0]][((turn % 4) + 4) % 4];
@@ -91,12 +97,12 @@ export function dropKit(building, slotId, sideways = null, lift = GROUND_LIFT, t
     id,
     kit: {
       schema: 1,
-      kit: "parcel-drops",
+      kit: kitName,
       system: "jobs",
-      source: { file: DROP_SOURCE, group: "*", origin: "prefab", frame: "building-local" },
+      source: { file: prop.source, group: "*", origin: "prefab", frame: "building-local" },
       scope: "room",
       anchoring: { floorY: building.firstFloor ?? 0, floors: [{ id: "f0", y: building.firstFloor ?? 0 }], footprint: { source: "rows", min: [offset[0], offset[2]], max: [offset[0], offset[2]] }, front, counters: [], adapt: "One mailbox outside the entrance wall; the offset is the footprint's own reach, then the host's wall seat slides it to the wall." },
-      rows: [{ id, prefab: DROP_PREFAB, role: "interactable", verb: "against wall", tags: ["wall"], offset, yaw, config: [], wall: "+z", floor: "f0" }],
+      rows: [{ id, prefab: prop.prefab, role: "interactable", verb: "against wall", tags: ["wall"], offset, yaw, config: [], wall: "+z", floor: "f0" }],
     },
   };
 }
@@ -117,17 +123,17 @@ const entityLine = (e) => `GenericEntity ${e.name} : "${e.ref}" {
 }`;
 
 // One drop's plan: the shared town-fit planner, with an in-memory mapping and template for the drop's own place.
-export async function planDrop({ drop, slotId, dossier, root, shell, readGame }) {
+export async function planDrop({ drop, slotId, dossier, root, shell, readGame, kitName = "parcel-drops" }) {
   const building = dossier.buildings.find((b) => b.id === drop.building);
   if (!building) return { ok: false, errors: [`${drop.place}: building ${drop.building} is not in its dossier`], warnings: [] };
-  const template = { schema: 1, kind: "drops", slots: [{ id: slotId, required: false, kit: "parcel-drops", host: "building", needs: { interior: "optional" }, places: [] }] };
+  const template = { schema: 1, kind: "drops", slots: [{ id: slotId, required: false, kit: kitName, host: "building", needs: { interior: "optional" }, places: [] }] };
   const mapping = { schema: 1, template: template.kind, place: dossier.place.slug, slots: { [slotId]: { building: building.id } } };
   // The wall in front of a doorway or window is no wall to sit on: try the door side, then the middle and both thirds of the wall.
   let plan = null;
   // A mapping entry's own `sideways` and `lift` (set after a look or the audit shows the default spot clips) skip the search.
   const tries = drop.sideways !== undefined ? [drop.sideways] : [null, 0, 0.45, -0.45, 0.8, -0.8];
   for (const sideways of tries) {
-    const { id, kit } = dropKit(building, slotId, sideways, drop.lift ?? GROUND_LIFT, drop.turn ?? 0);
+    const { id, kit } = dropKit(building, slotId, sideways, drop.lift ?? GROUND_LIFT, drop.turn ?? 0, kitName);
     const opts = { place: drop.place, slot: slotId, dossier, mapping, template, kits: { [kit.kit]: kit }, skipClaims: true, fetch: false };
     plan = { ...(await planFitSeated(opts, { root, readGame, shell })), rowId: id, building };
     if (!plan.ok || plan.seat?.rows?.[0]?.wall) break;
@@ -181,6 +187,7 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
 
   let plans;
   let mapping;
+  let slotKit = "parcel-drops";
   try {
     const placeDir = join(root, "docs", "everon", "places", place);
     const dossier = readJson(join(placeDir, "dossier.json"), "dossier");
@@ -188,6 +195,7 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
     const template = loadTemplate(mapping.template, root);
     const slot = template.slots.find((s) => s.id === slotId);
     if (!slot || slot.host !== "outposts") throw new Error(`the ${template.kind} template has no outposts slot '${slotId}'`);
+    slotKit = slot.kit;
     const entry = mapping.slots?.[slotId];
     if (!entry || entry.none) throw new Error(`slot ${slotId} is not mapped (an entry with "drops": [{ place, building }])`);
     const outposts = {};
@@ -197,7 +205,7 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
     const shell = ctxShell ?? shellReader(root);
     const readGame = await gameReader();
     plans = [];
-    for (const drop of entry.drops) plans.push({ drop, plan: await planDrop({ drop, slotId, dossier: outposts[drop.place], root, shell, readGame }) });
+    for (const drop of entry.drops) plans.push({ drop, plan: await planDrop({ drop, slotId, dossier: outposts[drop.place], root, shell, readGame, kitName: slotKit }) });
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);
     return 1;
@@ -228,7 +236,7 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
     place,
     slot: slotId,
     drops: mapping.slots[slotId].drops.map((d) => ({ place: d.place, building: d.building })),
-    kit: "parcel-drops",
+    kit: slotKit,
     size: "small",
     layer: `${LAYER_DIR}/${layerName}`,
     kinds: [],

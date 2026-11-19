@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "farmcompound",
+  "slot": "compound",
+  "building": "b13",
+  "kit": "farm-compound",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_farmcompound_compound.layer",
+  "kinds": [
+    "FarmCompound"
+  ],
+  "rows": 17,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_farmcompound_compound_Place"
+  },
+  "date": "2026-11-19"
+}

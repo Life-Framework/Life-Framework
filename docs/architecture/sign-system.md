@@ -84,6 +84,11 @@ The legacy path (`m_sStyle` empty) is unchanged until each prefab migrates.
 
 ## Config and the pack
 
+**A new pack sign goes in its own file.** Put it under `Configs/Signs/LF_Signs_Everon1989/`
+(`LF_Signs_<Shop>.conf`, root `LF_SignConfig`, `add` verb, plus a `.meta` with a fresh GUID). The pack overlay
+loads the folder after `LF_Signs_Everon1989.conf` with no header line and no append to the shared file, so two
+shop-fit PRs never conflict on the signs conf (#3555; `docs/config/override-model.md`). `pharmacy` is the first.
+
 `LF_SignStyles.conf` follows the sign catalog's overlay model (`LF_ConfigOverlay`, verbs add, replace, patch, remove;
 `docs/config/override-model.md`), overlay name `signstyles`. A pack style is a row plus its own layout under the pack's
 `UI/Layouts/Signs/Styles/`. Content stays in `LF_Signs.conf`; a pack row may `patch` a core sign's `m_sStyle`. Price
