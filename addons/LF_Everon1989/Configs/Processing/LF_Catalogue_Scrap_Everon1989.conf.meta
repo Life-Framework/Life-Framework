@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6A041BB311A4EB97}Configs/Processing/LF_Catalogue_Scrap_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
