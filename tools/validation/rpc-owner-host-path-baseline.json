@@ -15,6 +15,14 @@
     {
       "site": "addons/LifeFramework/Scripts/Game/Feature/Farming/LF_PlantReplication.c::LF_PlantBroadcastClear",
       "reason": "Same as LF_PlantBroadcastUpsert: the host's own LF_Plants meshes are cleared by LF_Plants, the broadcast serves the client mirror."
+    },
+    {
+      "site": "addons/LifeFramework/Scripts/Game/Feature/Harvest/LF_WheatFieldReplication.c::Regrow",
+      "reason": "The server's own Regrow() already stood the field up and, on a listen host, redrew it; the broadcast only reaches remote clients, and running the handler locally would call Regrow() again (#3288)."
+    },
+    {
+      "site": "addons/LifeFramework/Scripts/Game/Feature/Harvest/LF_WheatFieldReplication.c::SendDue",
+      "reason": "The server's own CutCells() already cut the bitset and swapped the local stubble on a listen host; the broadcast only reaches remote clients (#3288)."
     }
   ]
 }

@@ -73,7 +73,10 @@ export function placeArea({ dossier, mapping, others }, place, slot, radius, pic
   // Far enough that the wide holds the whole front, close enough that the building fills it.
   const R = radius ?? Math.max(14, r1(Math.hypot(w, d) / 2 + 8));
   // The front: the first known entrance seen from the centre, else the building's local +z (its yaw).
-  const door = (b.entrances ?? []).find((e) => Number.isFinite(e?.x) && Number.isFinite(e?.z));
+  // A door on the building's own front side (the dossier's `side: "front"`) beats the first one listed: the harbour
+  // warehouse lists a side door first and its wide stood in the grass beside it (#3577).
+  const doors = (b.entrances ?? []).filter((e) => Number.isFinite(e?.x) && Number.isFinite(e?.z));
+  const door = doors.find((e) => e.side === "front") ?? doors[0];
   const front = door && Math.hypot(door.x - cx, door.z - cz) > 0.5 ? norm((Math.atan2(door.x - cx, door.z - cz) * 180) / Math.PI) : norm(b.yaw ?? 180);
   // Eye level on the street in front, straight on, then a step back and up: tried before look's own fan.
   const reach = Math.max(w, d) / 2;

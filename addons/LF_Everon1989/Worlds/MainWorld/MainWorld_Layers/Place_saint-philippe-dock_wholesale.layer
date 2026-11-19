@@ -82,24 +82,24 @@ GenericEntity Fit_saint_philippe_dock_wholesale_cement_bag_3 : "{D58674633332DC8
  angleY -93
 }
 GenericEntity Fit_saint_philippe_dock_wholesale_crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 4467.765 5.83 11200.382
+ coords 4467.765 5.852 11200.382
  angleY -73
 }
 GenericEntity Fit_saint_philippe_dock_wholesale_crate_2 : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
- coords 4467.293 5.83 11201.759
+ coords 4467.293 5.848 11201.759
  angleY -103
 }
 GenericEntity Fit_saint_philippe_dock_wholesale_work_light_1 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
- coords 4468.419 8.8 11187.899
- angleY -93
+ coords 4472.307 9 11180.611
+ angleY -3
 }
 GenericEntity Fit_saint_philippe_dock_wholesale_work_light_2 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
- coords 4467.896 8.8 11197.885
+ coords 4480.622 9 11191.543
  angleY -93
 }
 GenericEntity Fit_saint_philippe_dock_wholesale_work_light_3 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
- coords 4480.465 8.8 11194.538
- angleY -93
+ coords 4472.392 9 11207.643
+ angleY 177
 }
 GenericEntity Fit_saint_philippe_dock_wholesale_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {

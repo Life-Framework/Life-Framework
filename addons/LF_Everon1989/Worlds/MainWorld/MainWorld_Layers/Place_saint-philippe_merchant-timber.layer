@@ -1,0 +1,36 @@
+GenericEntity Fit_saint_philippe_merchant_timber_Place {
+ components {
+  LF_PlaceComponent "{CC9FD21135487796}" {
+   m_sKind "TimberCounter"
+   m_sId "saint-philippe.merchant-timber"
+  }
+  LF_FittedBuildingComponent "{C6F6E28073E64CA0}" {
+  }
+ }
+ coords 4536.95 16.5 10629.8
+}
+GenericEntity Fit_saint_philippe_merchant_timber_timber_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4527.078 15.94 10628.844
+ angleY -99
+}
+LF_NpcBaseEntity Fit_saint_philippe_merchant_timber_timber_man : "{31E740A9BE82E617}Prefabs/Characters/Npcs/Outfits/LF_Npc_Logger_2.et" {
+ coords 4528.164 15.94 10629.016
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_merchant_timber_timber_stack_1 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords 4527.928 16.05 10624.119
+ angleY -9
+}
+SCR_DestructibleEntity Fit_saint_philippe_merchant_timber_timber_board : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ components {
+  LF_SignComponent "{DF6A14A1AD2B41F0}" {
+   m_sSignId "merchant_timber"
+   m_sStyle ""
+   m_sSize ""
+   m_vFaceAngles 0 -15 0
+   m_fFaceScale 2.6
+  }
+ }
+ coords 4528.797 16 10630.939
+ angleY -99
+}

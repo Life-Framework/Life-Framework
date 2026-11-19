@@ -2509,6 +2509,31 @@ StringTable {
      Target_en_us "%1 %2"
      Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
     }
+    CustomStringTableItem "{3B335C0E2FA32B9B}" {
+     Id "LF-Sign_MerchantTimber_Board"
+     Target_en_us "Hardwood board"
+     Comment "Chalk board row label at the timber counter."
+    }
+    CustomStringTableItem "{7DBA677D775C31B6}" {
+     Id "LF-Sign_MerchantTimber_Next"
+     Target_en_us "When we cannot take more, sell the rest to the wholesale warehouse at the dock."
+     Comment "Sign card for the timber counter, Next section."
+    }
+    CustomStringTableItem "{436E2ECC8C95C171}" {
+     Id "LF-Sign_MerchantTimber_Plank"
+     Target_en_us "Plank"
+     Comment "Chalk board row label at the timber counter."
+    }
+    CustomStringTableItem "{1986D36F54987E6D}" {
+     Id "LF-Sign_MerchantTimber_Title"
+     Target_en_us "We buy timber"
+     Comment "Title of the chalk board at the Saint-Philippe hardware store timber counter (#3274). Printed on the board and shown in the prompt as Read: We buy timber."
+    }
+    CustomStringTableItem "{F40B323DAAD33F77}" {
+     Id "LF-Sign_MerchantTimber_What"
+     Target_en_us "The hardware store buys planks and hardwood boards over the timber counter, a limited amount each hour. Price per piece in dollars."
+     Comment "Sign card for the timber counter, What section."
+    }
     CustomStringTableItem "{EACF0508930A1624}" {
      Id "LF-Sign_Mining_How"
      Target_en_us "Swing your pickaxe at the rock. Every few swings a nugget breaks off and drops at your feet; pick it up. At the furnace, use Smelt Iron Nuggets or Smelt Gold Nuggets."
