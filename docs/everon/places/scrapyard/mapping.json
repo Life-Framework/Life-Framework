@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "template": "scrapyard",
+  "place": "scrapyard",
+  "status": "approved",
+  "note": "Hand-checked for #3354 (X8): the fenced gravel yard of the north-east industrial compound, about 600 m east of the Saint-Philippe square, with the landfill 300 m further east. Picked with the scout's industrial filter: it is the only industrial compound on the island within a kilometre of the town (the other, in the centre-east, is about 5 km away). The site has a concrete plant, two long open metal sheds, silos, a fuel tank, a weigh station and two site cabins inside a wire fence, off a road. The dossier is a scout of the compound's coordinates at radius 120. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 12,
+    "freePlots": 8
+  },
+  "slots": {
+    "recycler": {
+      "building": "b06",
+      "score": 0.776,
+      "why": [
+        "ConcretePlant_E_01 (type industrial), 264 m2 with a walkable ground floor and the silos b07 and b08 at its side, the yard's heaviest building, 38 m from the scout centre and beside the N-S road r06",
+        "the sorting and crushing line goes inside and in front of it; the open sheds b03 and b05 are the alternatives"
+      ],
+      "alternatives": [
+        {
+          "building": "b03",
+          "score": 0.768
+        },
+        {
+          "building": "b05",
+          "score": 0.714
+        }
+      ]
+    },
+    "dealer": {
+      "building": "b11",
+      "score": 0.771,
+      "why": [
+        "PortableCabin_E_01_white (type industrial), 24 m2 with a door and an interior, the site cabin next to the plant on the road side, so the first stop for a car that drives in",
+        "a counter inside takes the scrap and sells the parts; the other cabin b12 and the weigh station b09 are the alternatives"
+      ],
+      "alternatives": [
+        {
+          "building": "b12",
+          "score": 0.706
+        },
+        {
+          "building": "b09"
+        }
+      ]
+    },
+    "dump": {
+      "plot": "p3",
+      "prefab": {
+        "type": "industrial",
+        "stem": "ShedMetal_02_short_nowalls"
+      },
+      "why": [
+        "free plot p3, 86 x 32 m, ground 26.8 to 31.2 m, 31 m south of the E-W road r04 and 22 m from the concrete vehicle ramp b02, open ground out of the way of the sheds",
+        "room for a heap of wrecks and dumped scrap; a car can drive in from the road"
+      ]
+    }
+  }
+}
