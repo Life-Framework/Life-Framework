@@ -459,6 +459,41 @@ StringTable {
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
+    CustomStringTableItem "{3440F00000000108}" {
+     Id "LF-Dialogue_ShipmentHarbourMaster_Ask"
+     Target_en_us "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?"
+     Comment "Harbour master asks a trusted player to count the red crate (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000109}" {
+     Id "LF-Dialogue_ShipmentHarbourMaster_Count"
+     Target_en_us "Open it, count what is in there and come back. If it is only fish, no harm done."
+     Comment "Harbour master sends the player to the crate (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000112}" {
+     Id "LF-Dialogue_ShipmentHarbourMaster_SayCount"
+     Target_en_us "I will count the crate for you."
+     Comment "Reply: take the counting errand (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000113}" {
+     Id "LF-Dialogue_ShipmentHarbourMaster_SayReported"
+     Target_en_us "I took what was in the crate to the police."
+     Comment "Reply: the player reported the sample (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000114}" {
+     Id "LF-Dialogue_ShipmentHarbourMaster_SaySold"
+     Target_en_us "I found a buyer for what was in the crate."
+     Comment "Reply: the player sold the sample (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000110}" {
+     Id "LF-Dialogue_ShipmentHarbourMaster_ThanksReport"
+     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockers say."
+     Comment "Harbour master thanks a player who reported the sample (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000111}" {
+     Id "LF-Dialogue_ShipmentHarbourMaster_ThanksSell"
+     Target_en_us "I did not ask where it went. I will not ask. Keep your head down on the quay for a few days."
+     Comment "Harbour master reacts to a player who sold the sample (#3440)."
+    }
     CustomStringTableItem "{F2B1DF023C756490}" {
      Id "LF-Everon-Lock_Closed"
      Target_en_us "Fermé"
@@ -1423,6 +1458,41 @@ StringTable {
      Id "LF-Quest_SettleWheels_Title"
      Target_en_us "Your own wheels"
      Comment "Settling-in chain step 3 title."
+    }
+    CustomStringTableItem "{3440F00000000102}" {
+     Id "LF-Quest_ShipmentCount_Desc"
+     Target_en_us "Marcel Roux says the red crate on the quay weighs too much. Open it and count what is inside."
+     Comment "Quest description for shipment_count (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000101}" {
+     Id "LF-Quest_ShipmentCount_Title"
+     Target_en_us "Count the red crate"
+     Comment "Quest title: the harbour master asks a trusted player to count one crate (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000106}" {
+     Id "LF-Quest_ShipmentReport_Desc"
+     Target_en_us "What was under the tinned fish belongs with the police. Hand it in at the desk."
+     Comment "Quest description for shipment_report (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000105}" {
+     Id "LF-Quest_ShipmentReport_Title"
+     Target_en_us "Hand it in at the police desk"
+     Comment "Quest title: the report ending of the shipment (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000107}" {
+     Id "LF-Quest_ShipmentReport_TurnIn"
+     Target_en_us "The desk logs it and thanks you. The gendarmes will want a word with the quay."
+     Comment "Line the police desk says when the shipment sample is handed in (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000104}" {
+     Id "LF-Quest_ShipmentSold_Desc"
+     Target_en_us "What was under the tinned fish is worth money to the right person. Sell it to a buyer."
+     Comment "Quest description for shipment_sold (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000103}" {
+     Id "LF-Quest_ShipmentSold_Title"
+     Target_en_us "A buyer who asks no questions"
+     Comment "Quest title: the sell ending of the shipment (#3440)."
     }
     CustomStringTableItem "{C2A7527A4FB2AAB1}" {
      Id "LF-QuizEveron_fear_A1"
