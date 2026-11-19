@@ -58,9 +58,13 @@ a placed sign without touching the layer). The component keeps `m_sSignId`, the 
 ### Sizes (carriers)
 
 Every face is drawn on a one-mesh quad with UV 0..1, so the layout's whole area is the shown area and no text is
-rotated. Size rows today: `quad16x9` (`LF_BoardFace.et`, 1920 x 1080 units). The carrier kit card adds Blender quads
+rotated. Size rows today: `quad16x9` (`LF_BoardFace.et`, 1920 x 1080 units) and the carrier kit (#3307), Blender quads
 at 1:1, 4:3, 3:2, 2:1, 4:1 and 1:2 (one mesh, `LF_SignFace.emat` baked, the merge-face rule from #3039), each with a
-size row. Plates whose vanilla mesh is the face (`SignWall_01`, `SignCommercial_01`) keep their re-materialed body
+size row named `quad<W>x<H>`. A carrier is 1 m tall (the 4:1 is 4 m wide, the 1:2 half a metre) and faces +X like
+`LF_BoardFace`; the prefab's scale sets the real size. `node tools/assets/sign-carriers/build.mjs` rebuilds the six
+FBX files from `LF_BoardFace.fbx` and writes their metas and prefabs (`tools\cli rebuild-fbx` then bakes the `.xob`).
+A new aspect is one entry in `build.py` plus a size row; `LF_Test_SignCarriers` holds every `quad*` row to its id's
+shape. Plates whose vanilla mesh is the face (`SignWall_01`, `SignCommercial_01`) keep their re-materialed body
 as the carrier and get a size row with the measured shown area (from the 2026-11-08 quadrant cards in the feature doc).
 
 ## Rendering
