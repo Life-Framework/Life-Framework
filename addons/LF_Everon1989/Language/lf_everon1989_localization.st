@@ -2629,6 +2629,31 @@ StringTable {
      Target_en_us "The island sawmill: saw hardwood and softwood logs into boards, posts and firewood."
      Comment "Sign card for the Everon sawmill, What section."
     }
+    CustomStringTableItem "{F868DCD01EFFA837}" {
+     Id "LF-Sign_EveronScrapyard_How"
+     Target_en_us "*Load the recycler*, then *Break it down*, then *Collect the parts*. Sell the parts at the cabin."
+     Comment "Sign card for the scrapyard, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{E941251646E022BE}" {
+     Id "LF-Sign_EveronScrapyard_Needs"
+     Target_en_us "Something to break down: a car door, an old radio, a worn tool. Search the dump piles at night."
+     Comment "Sign card for the scrapyard, You need section."
+    }
+    CustomStringTableItem "{4AF72E50CF5DB8D0}" {
+     Id "LF-Sign_EveronScrapyard_Next"
+     Target_en_us "Parts and scrap metal sell at the yard cabin. A flooded yard pays less."
+     Comment "Sign card for the scrapyard, Next section."
+    }
+    CustomStringTableItem "{F569F72B499FF384}" {
+     Id "LF-Sign_EveronScrapyard_Title"
+     Target_en_us "Casse"
+     Comment "Title of the sign at the scrapyard (Everon 1989 pack, #3357). Printed on the sign and shown in the prompt as Read: Casse."
+    }
+    CustomStringTableItem "{782813B1DA8109EA}" {
+     Id "LF-Sign_EveronScrapyard_What"
+     Target_en_us "The island scrapyard: wrecks to pick over, a recycler bench and a dealer in the cabin."
+     Comment "Sign card for the scrapyard, What section."
+    }
     CustomStringTableItem "{4E7B1C9A2D8F5036}" {
      Id "LF-Sign_FarmCompound_What"
      Target_en_us "Abandoned farm. Whoever holds the yard longest holds the barn."
@@ -2718,6 +2743,31 @@ StringTable {
      Id "LF-Sign_FishermansBay_What"
      Target_en_us "A sheltered cove below the lighthouse, with a bench and a lantern on its shore. Bass come in close at dusk."
      Comment "Sign card for the Fisherman's Bay plate, What section."
+    }
+    CustomStringTableItem "{D3B5326222E01DEA}" {
+     Id "LF-Sign_FuelDepot_How"
+     Target_en_us "Fill a tanker at the depot and drive it to a filling station."
+     Comment "Sign card for the Montignac fuel depot, How section."
+    }
+    CustomStringTableItem "{B36BFEC7627B930C}" {
+     Id "LF-Sign_FuelDepot_Needs"
+     Target_en_us "A tanker truck and a driving licence."
+     Comment "Sign card for the Montignac fuel depot, You need section."
+    }
+    CustomStringTableItem "{D7656097F74F86FF}" {
+     Id "LF-Sign_FuelDepot_Next"
+     Target_en_us "The stations pay for every litre that fits their tank."
+     Comment "Sign card for the Montignac fuel depot, Next section."
+    }
+    CustomStringTableItem "{0E902C79A08FF34E}" {
+     Id "LF-Sign_FuelDepot_Title"
+     Target_en_us "Collective-farm fuel depot"
+     Comment "Title of the sign at the Montignac fuel depot yard (Everon 1989 pack, #3336)."
+    }
+    CustomStringTableItem "{D448F9A388D58121}" {
+     Id "LF-Sign_FuelDepot_What"
+     Target_en_us "The collective farm fuel store: diesel for the island filling stations is loaded here."
+     Comment "Sign card for the Montignac fuel depot, What section."
     }
     CustomStringTableItem "{D47AD7112B2DF884}" {
      Id "LF-Sign_FuelStation_How"
@@ -3063,6 +3113,21 @@ StringTable {
      Id "LF-Sign_Hospital_What"
      Target_en_us "The village hospital: a medic duty desk, three beds, a call board and the ambulance bay|Bills are 1989 prices, cash only|Playtest: a practice patient lies on the grass between the bay and the till"
      Comment "Sign card for the hospital (medicine cabinet and till), What section."
+    }
+    CustomStringTableItem "{1EB77C0BCC89F072}" {
+     Id "LF-Sign_Hostel_How"
+     Target_en_us "Go upstairs and take any free bunk in the dormitory. It is plain, but it is warm."
+     Comment "How line of the hostel sign: the first building a newcomer sees; matches the clerk welcome."
+    }
+    CustomStringTableItem "{B0EE34267D1F6795}" {
+     Id "LF-Sign_Hostel_Title"
+     Target_en_us "Hostel"
+     Comment "Title painted on the hostel fascia and shown in the prompt as Read: Hostel."
+    }
+    CustomStringTableItem "{56F590E37C51D1B1}" {
+     Id "LF-Sign_Hostel_What"
+     Target_en_us "The village hostel: a bed for anyone with nowhere to sleep."
+     Comment "What line of the hostel sign."
     }
     CustomStringTableItem "{F209D5D9A5D3E58D}" {
      Id "LF-Sign_Impound_How"

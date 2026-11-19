@@ -93,6 +93,9 @@ class LF_EventSceneHarness
 			return head + " no scene running";
 
 		string line = string.Format("%1 scene %2: %3 spawned", head, crew.m_sSceneId, crew.m_aPeople.Count());
+		if (crew.m_Plan.m_bDriveVehicle)
+			return line + DriveText(crew);
+
 		LF_EventSceneWalk walk = LF_EventSceneWalk.Active();
 		if (!walk || walk.m_Crew != crew)
 		{
@@ -105,6 +108,39 @@ class LF_EventSceneHarness
 		int walking = walk.m_aWalkers.Count() - walk.CountArrived() - walk.CountTimedOut();
 		line = string.Format("%1, walking %2, arrived %3, timed out %4, %5 s", line, walking, walk.CountArrived(), walk.CountTimedOut(), walk.m_fElapsed);
 		return line + AiText(walk) + ControlText();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A driving scene (#3831): the vehicle's position and the metres it has left, or how the drive ended.
+	static string DriveText(notnull LF_EventSceneCrew crew)
+	{
+		LF_EventSceneDrive drive = LF_EventSceneDrive.Active();
+		if (!drive || drive.m_Crew != crew)
+		{
+			if (!LF_EventSceneDrive.LastOver().IsEmpty())
+				return string.Format(", not driving (drive over: %1)", LF_EventSceneDrive.LastOver());
+
+			return ", not driving";
+		}
+
+		string text = string.Format(", driving %1 s, %2 moved on", drive.m_fElapsed, drive.m_iRecoveries);
+		BaseWorld world = GetGame().GetWorld();
+		IEntity vehicle;
+		if (world)
+			vehicle = world.FindEntityByID(crew.m_VehicleId);
+
+		if (vehicle)
+			text += string.Format(", vehicle at %1, %2 m of the route left, next point %3 of %4", vehicle.GetOrigin(), drive.RemainingM(vehicle.GetOrigin()), drive.m_iNext, drive.m_aRoute.Count() - 1);
+
+		AIGroup group;
+		if (world)
+			group = AIGroup.Cast(world.FindEntityByID(drive.m_GroupId));
+
+		if (!group)
+			return text + "; ai: no group";
+
+		text += string.Format("; ai: group agents=%1 seated=%2 waypoint=%3 active=%4 lod=%5", group.GetAgentsCount(), drive.CountSeated(), group.GetCurrentWaypoint() != null, group.IsAIActivated(), group.GetLOD());
+		return text;
 	}
 
 	//------------------------------------------------------------------------------------------------

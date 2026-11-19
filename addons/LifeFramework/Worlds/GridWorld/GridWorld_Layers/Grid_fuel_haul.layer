@@ -1,0 +1,62 @@
+// Grid cell c17r3 for fuel-haul: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_fuel_haul_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 227 0 59
+}
+SCR_DestructibleEntity Grid_fuel_haul_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 232 0 59
+}
+SCR_DestructibleEntity Grid_fuel_haul_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 237 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_fuel_haul_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 237 0 64
+ angleY 270
+}
+SCR_DestructibleEntity Grid_fuel_haul_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 237 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fuel_haul_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 232 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_fuel_haul_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 227 0 69
+ angleY 90
+}
+GenericEntity Grid_fuel_haul_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:fuel-haul"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 226.2 0.505 59.6
+ angleY -90
+}
+GenericEntity Grid_fuel_haul_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "fuel-haul"
+  }
+ }
+ coords 226.3 0 61.5
+ angleY 90
+}
+GenericEntity Grid_fuel_haul_Prop_1 : "{3330A0000000F001}Prefabs/Props/Fuel/LF_FuelDepot.et" {
+ coords 234.511 0.001 60.978
+ angleY -90
+}
+GenericEntity Grid_fuel_haul_Prop_2 : "{3328A0000000F001}Prefabs/Props/Fuel/LF_FuelPump.et" {
+ components {
+  LF_FuelStationComponent "{3328A0000000F011}" {
+   m_sStationId "grid-haul"
+  }
+ }
+ coords 234.5 0.001 67.21
+ angleY -90
+}
