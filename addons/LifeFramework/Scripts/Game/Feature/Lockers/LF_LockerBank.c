@@ -202,6 +202,22 @@ class LF_LockerBank
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Frees a rental: the locker lapsed and its contents moved to lost-and-found (#3457, LF_LostAndFound).
+	//! \return True when there was a rental to free.
+	static bool Free(string siteId, string characterKey)
+	{
+		if (!s_mRentals)
+			return false;
+
+		map<string, int> site = s_mRentals.Get(siteId);
+		if (!site || !site.Contains(characterKey))
+			return false;
+
+		site.Remove(characterKey);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The "lockers" payload rows: one per rental.
 	static array<ref LF_LockerRentalRow> ExportAll()
 	{

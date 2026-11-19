@@ -1,0 +1,43 @@
+GenericEntity : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+ ID "3D8A5E1C7B2F9046"
+ components {
+  LF_LostAndFoundBoxComponent "{5E2B9A07C41D8F36}" {
+  }
+  LF_LostAndFoundStorageManagerComponent "{9C47D1E8A3B50F62}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{71A6C3F0D2E94B58}" {
+   Attributes SCR_ItemAttributeCollection "{2F8E5B17A9C04D63}" {
+    ItemDisplayName SCR_InventoryUIInfo "{B04D6E92C7F31A85}" {
+     Name "#LF-LostAndFound_Title"
+     Description "#LF-LostAndFound_Title"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 100000
+   MaxItemSize 100 200 100
+   m_fMaxWeight 200
+  }
+  ActionsManagerComponent "{E6193B7D54A2C80F}" {
+   ActionContexts {
+    UserActionContext "{4A7F0C95E1D8B362}" {
+     ContextName "LF_LostAndFound"
+     Position PointInfo "{D3825A6F19B7E04C}" {
+      Offset 0 0.6 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_LostAndFoundReclaimAction "{83C1E5A9072D4B6F}" {
+     ParentContextList {
+      "LF_LostAndFound"
+     }
+     UIInfo UIInfo "{1B9D4F70E3A6C528}" {
+      Name "#LF-LostAndFound_Reclaim"
+      Description "#LF-LostAndFound_Title"
+     }
+    }
+   }
+  }
+ }
+}
