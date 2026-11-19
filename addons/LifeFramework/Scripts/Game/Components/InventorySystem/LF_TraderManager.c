@@ -24,6 +24,9 @@ class LF_TraderManagerComponent : GameComponent
 	[Attribute(defvalue: "false", uiwidget: UIWidgets.CheckBox, desc: "Is this a black market trader?")]
 	bool m_bBlackMarket;
 
+	[Attribute("", UIWidgets.EditBox, "Premium buyer id (#3599). When a LF_BuyerDemand row names this buyer and the good, the sale pays the row's price up to its demand instead of the list value above. Empty is an ordinary trader")]
+	string m_sBuyerId;
+
 	//------------------------------------------------------------------------------------------------
 	//! Sell seam: the unit value a trader pays for one prefab. An unlisted prefab, a missing list,
 	//! or a null row is worth 0, which the sell path refuses.

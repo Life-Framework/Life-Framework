@@ -1019,6 +1019,16 @@ StringTable {
      Target_en_us "Wholesale warehouse"
      Comment "Map POI name (#3273): the harbour wholesale warehouse counter."
     }
+    CustomStringTableItem "{5E2A7C91B0D43F61}" {
+     Id "LF-Market_BuyerFull"
+     Target_en_us "They have enough - try the wholesale warehouse at the dock. More in about %1 min."
+     Comment "Pack override of the core toast (#3599): the timber counter is full, the dock wholesale warehouse still buys. %1 = minutes."
+    }
+    CustomStringTableItem "{5E2A7C91B0D43F62}" {
+     Id "LF-Market_BuyerNever"
+     Target_en_us "They have enough - try the wholesale warehouse at the dock."
+     Comment "Pack override of the core toast (#3599): a buyer that never refills."
+    }
     CustomStringTableItem "{9C1E4A73D0B58F26}" {
      Id "LF-MedicRank_Emt"
      Target_en_us "Emergency Medical Technician"
