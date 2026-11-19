@@ -4868,6 +4868,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Park the tanker next to the point."
      Comment "Toast: no vehicle with a cargo tank is within reach of the depot or the pump."
     }
+    CustomStringTableItem "{3330B0000000F009}" {
+     Id "LF-FuelHaul_NotBought"
+     Target_en_us "That fuel was not bought at the depot."
+     Comment "Toast: the tanker holds fuel, but none of it is a load bought at the depot, so the station takes nothing and pays nothing."
+    }
     CustomStringTableItem "{3330B0000000F002}" {
      Id "LF-FuelHaul_PumpIn"
      Target_en_us "Pump into the station tanks"

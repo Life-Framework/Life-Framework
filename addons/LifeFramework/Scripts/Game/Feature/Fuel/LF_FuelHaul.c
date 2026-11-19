@@ -12,6 +12,7 @@ enum LF_EFuelHaul
 	NO_STATION,
 	STATION_FULL,
 	NO_MONEY,
+	NOT_BOUGHT,
 	FAILED
 }
 
@@ -48,6 +49,10 @@ class LF_FuelHaul
 
 	protected static ref LF_FuelChargeLedger s_BuyLedger;
 	protected static ref LF_FuelChargeLedger s_PayLedger;
+	//! Litres bought at a depot and still in each tanker, by tanker. Only these are paid at a station: a vanilla
+	//! Ural spawns with 900 l in its cistern and a vanilla pump refills it for free, and neither is a load.
+	//! Unsaved by design: LF does not save vehicle fuel, so a tanker after a restart is a fresh spawn.
+	protected static ref map<EntityID, int> s_mBought;
 	protected static IEntity s_pFoundTanker;
 	protected static vector s_vOrigin;
 	protected static float s_fBest;
@@ -161,6 +166,36 @@ class LF_FuelHaul
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Litres of `tanker`'s load that were bought at a depot (0 for a tanker that never loaded).
+	static int BoughtLitres(IEntity tanker)
+	{
+		if (!tanker || !s_mBought)
+			return 0;
+
+		int litres;
+		if (!s_mBought.Find(tanker.GetID(), litres))
+			return 0;
+
+		return litres;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void AddBought(IEntity tanker, int litres)
+	{
+		if (!tanker)
+			return;
+
+		if (!s_mBought)
+			s_mBought = new map<EntityID, int>();
+
+		int now = LF_Utils.MaxInt(0, BoughtLitres(tanker) + litres);
+		if (now > 0)
+			s_mBought.Set(tanker.GetID(), now);
+		else
+			s_mBought.Remove(tanker.GetID());
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static LF_FuelHaulResult Refuse(LF_EFuelHaul code, string why)
 	{
 		LF_FuelHaulResult result = new LF_FuelHaulResult();
@@ -256,6 +291,7 @@ class LF_FuelHaul
 			LF_Debug.Warn(FEATURE, string.Format("fuel load: planned %1 litres, the tank took %2", plan.m_iLitres, added));
 
 		s_BuyLedger.Commit(key, plan);
+		AddBought(tanker, added);
 		LF_FuelHaulResult result = new LF_FuelHaulResult();
 		result.m_eResult = LF_EFuelHaul.OK;
 		result.m_iLitres = added;
@@ -284,9 +320,14 @@ class LF_FuelHaul
 		if (refused)
 			return refused;
 
-		int offered = CargoLitres(tanker);
-		if (offered < 1)
+		int cargo = CargoLitres(tanker);
+		if (cargo < 1)
 			return Refuse(LF_EFuelHaul.TANKER_EMPTY, "the tanker holds no fuel");
+
+		// Only litres bought at a depot are a load: the spawn fill and a free vanilla refill are not paid.
+		int offered = LF_Utils.MinInt(cargo, BoughtLitres(tanker));
+		if (offered < 1)
+			return Refuse(LF_EFuelHaul.NOT_BOUGHT, string.Format("none of the tanker's %1 litres was bought at a depot", cargo));
 
 		LF_FuelStock stock = LF_FuelStationComponent.StockFor(stationId);
 		if (!stock)
@@ -319,6 +360,15 @@ class LF_FuelHaul
 				AddCargo(tanker, taken);
 				return Refuse(LF_EFuelHaul.FAILED, "the delivery could not be re-planned, litres put back");
 			}
+		}
+
+		// Taken came out of the bought load: forget those litres before anything is paid. Litres the re-plan did
+		// not land go back into the tanker as bought.
+		AddBought(tanker, -taken);
+		if (taken > plan.m_iLitres)
+		{
+			int back = AddCargo(tanker, taken - plan.m_iLitres);
+			AddBought(tanker, back);
 		}
 
 		LF_FuelStockRules.ApplyDelivery(stock, plan);
@@ -381,6 +431,8 @@ class LF_FuelHaul
 			return "#LF-FuelHaul_TankerEmpty";
 		if (code == LF_EFuelHaul.STATION_FULL)
 			return "#LF-FuelHaul_StationFull";
+		if (code == LF_EFuelHaul.NOT_BOUGHT)
+			return "#LF-FuelHaul_NotBought";
 
 		return "#LF-Fuel_Failed";
 	}
@@ -419,6 +471,7 @@ class LF_FuelHaul
 	{
 		s_BuyLedger = null;
 		s_PayLedger = null;
+		s_mBought = null;
 		s_pFoundTanker = null;
 	}
 }

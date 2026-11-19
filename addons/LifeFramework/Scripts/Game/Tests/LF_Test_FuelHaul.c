@@ -1,4 +1,4 @@
-// red-proof: `tools\cli test --no-build --red LF_Test_FuelHaul` (RedProof() skips the depot load and the pump-in, so the cash, cargo and stock assertions fail); the observed run is in the PR body.
+// red-proof: `tools\cli test --no-build --red LF_Test_FuelHaul` (RedProof() skips the depot load and the pump-in, so the cash, cargo and stock assertions fail); the observed run is in the PR body. The not-bought lines (#3871 review) failed on the unfixed PumpIn (it paid the whole tank) and pass with the bought-litres ledger.
 //! The fuel haul (#3330): at the depot the hauler pays the wholesale price for a load into the tanker's cargo
 //! tank; at a station the pump-in moves only the litres the station has room for into its stock and pays the
 //! delivery price for exactly those, the rest staying in the tanker. 500 l bought, a station with 300 l of
@@ -138,6 +138,25 @@ class LF_Test_FuelHaul : LF_Test
 		ctx.Equal(100, top.m_iLitres, "only the 100 litres of room load");
 		ctx.Equal(60, top.m_iCash, "and are charged at 0.60 a litre");
 		ctx.Equal(cashBefore - 60, LF_MoneyUtils.GetCash(hauler), "the hauler paid for those 100 only");
+
+		// Fuel that was never bought is not a load (#3871 review): the tanker is full, but only the 200 left from
+		// the first load and the 100 just topped up were bought. The rest stands for the vanilla spawn fill and a
+		// free vanilla refill. The station has 900 l of room; it takes and pays the 300 bought litres, then refuses.
+		ctx.Equal(300, LF_FuelHaul.BoughtLitres(tanker), "the tanker holds 300 bought litres");
+		int cargoBefore = LF_FuelHaul.CargoLitres(tanker);
+		cashBefore = LF_MoneyUtils.GetCash(hauler);
+		LF_FuelHaulResult mixed = LF_FuelHaul.PumpIn(id, tanker, hauler);
+		ctx.Equal(LF_EFuelHaul.OK, mixed.m_eResult, "a tanker with a bought part delivers it");
+		ctx.Equal(300, mixed.m_iLitres, "only the 300 bought litres land");
+		ctx.Equal(cashBefore + 300, LF_MoneyUtils.GetCash(hauler), "and only those are paid");
+		ctx.Equal(400, LF_FuelStationComponent.StockFor(id).m_iLitres, "the station took 300 litres");
+		ctx.Equal(cargoBefore - 300, LF_FuelHaul.CargoLitres(tanker), "the unbought litres stay in the tanker");
+		cashBefore = LF_MoneyUtils.GetCash(hauler);
+		LF_FuelHaulResult unbought = LF_FuelHaul.PumpIn(id, tanker, hauler);
+		ctx.Equal(LF_EFuelHaul.NOT_BOUGHT, unbought.m_eResult, "fuel that was not bought at a depot is refused");
+		ctx.Equal(cashBefore, LF_MoneyUtils.GetCash(hauler), "unbought fuel pays nothing");
+		ctx.Equal(400, LF_FuelStationComponent.StockFor(id).m_iLitres, "unbought fuel leaves the station stock alone");
+		ctx.EqualStr("#LF-FuelHaul_NotBought", LF_FuelHaul.RefusalKey(unbought.m_eResult), "the refusal is the not-bought line");
 
 		// Fuel stock off: neither step does anything.
 		LF_FuelConfig.UseForTest(LF_FuelConfig.Make(false, 200, 100, 1000, 700, 500, 1));
