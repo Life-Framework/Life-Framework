@@ -224,6 +224,6 @@
   save loads unchanged. Test `hideout/lease-per-site` (WORLD).
 - ✅ (2026-11-19, #3410) Saint-Philippe has a registry: the site cabin `b49` beside the workshop row holds a clerk's
   desk (`LF_OrganizationDeskAction`), an office chair and the war board (`LF_OrgWarBoard.et`), with a "Registry"
-  plate on the outside wall (pack sign `org_registry`). Fitted from the `org` kit by `town fit saint-philippe org`
+  plate on the outside wall (core sign `org_registry`). Fitted from the `org` kit by `town fit saint-philippe org`
   into `Place_saint-philippe_org.layer` (place kind `OrgDesk`); a gang can now form on the island, not only in
   DebugWorld and the grid.

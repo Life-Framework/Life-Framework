@@ -2679,11 +2679,6 @@ StringTable {
      Target_en_us "Iron, copper, and gold ore in the rocks here. The furnace stands next to them."
      Comment "Mining sign card, What section."
     }
-    CustomStringTableItem "{8DA814665AB68692}" {
-     Id "LF-Sign_OrgRegistry_How"
-     Target_en_us "Step inside and use the *desk* to register an organisation, or read the war board"
-     Comment "Sign card for the registry plate, How section. The capitalized word is the action name the player sees."
-    }
     CustomStringTableItem "{DD5F159B6A7D8B1F}" {
      Id "LF-Sign_OrgRegistry_How"
      Target_en_us "Organization desk, then Found organization, Deposit cash, Withdraw cash, or Buy processing slot."
@@ -2708,16 +2703,6 @@ StringTable {
      Id "LF-Sign_OrgRegistry_Title"
      Target_en_us "Organization office"
      Comment "Title of the sign at the organization registry desk. Printed on the board and shown in the prompt as Read: Organization office."
-    }
-    CustomStringTableItem "{386797B68D03BB7F}" {
-     Id "LF-Sign_OrgRegistry_Title"
-     Target_en_us "Registry"
-     Comment "Title of the plate beside the door of the registry cabin near the square (Everon 1989 pack, #3410). Printed on the sign and shown in the prompt as Read: Registry."
-    }
-    CustomStringTableItem "{9C4B060611C0E286}" {
-     Id "LF-Sign_OrgRegistry_What"
-     Target_en_us "The registry office. Found an organisation at the clerk's desk, and read the war board for who is at war."
-     Comment "Sign card for the registry plate, What section."
     }
     CustomStringTableItem "{C10BBED232D40D39}" {
      Id "LF-Sign_OrgRegistry_What"
