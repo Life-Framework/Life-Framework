@@ -59,6 +59,41 @@ StringTable {
      Target_en_us "Dominique. Three years, and it comes to me out of a heap of flowers. Thank you for carrying it."
      Comment "Gaspard takes the letter (#3465)."
     }
+    CustomStringTableItem "{3794F00000000008}" {
+     Id "LF-Dialogue_AnniversaryMayor_Bye"
+     Target_en_us "Till the day, then."
+     Comment "The mayor says goodbye (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000004}" {
+     Id "LF-Dialogue_AnniversaryMayor_Day"
+     Target_en_us "Three years since the first families walked in from the dark. We lay trestles in the square, we light candles, we say thank you. Everyone remembers that night a little differently, and the town must hold all of it."
+     Comment "The mayor explains the anniversary, a thank-you in his telling (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000006}" {
+     Id "LF-Dialogue_AnniversaryMayor_Errand"
+     Target_en_us "Then take what the square still lacks, and come back when it is done. I will not forget it."
+     Comment "The mayor hands out an errand or thanks the player (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000002}" {
+     Id "LF-Dialogue_AnniversaryMayor_Greet"
+     Target_en_us "Ah, a face I do not know yet. Bastien Girard, mayor. Forgive the mess, the whole town is busy with the day."
+     Comment "The mayor's greeting at the town hall (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000003}" {
+     Id "LF-Dialogue_AnniversaryMayor_SayAskDay"
+     Target_en_us "What is the day for?"
+     Comment "Reply: ask the mayor about the anniversary (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000007}" {
+     Id "LF-Dialogue_AnniversaryMayor_SayBye"
+     Target_en_us "Another time."
+     Comment "Reply: leave the mayor (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000005}" {
+     Id "LF-Dialogue_AnniversaryMayor_SayOffer"
+     Target_en_us "Can I help with the preparations?"
+     Comment "Reply: take the mayor's errand, or hand in what is done (#3794)."
+    }
     CustomStringTableItem "{3E9F5343A58B4851}" {
      Id "LF-Dialogue_CafeOwner_Bye"
      Target_en_us "Come back when you are hungry. Or lonely. It is the same to me."
@@ -1368,6 +1403,26 @@ StringTable {
      Id "LF-PoliceApp_Title"
      Target_en_us "Application to the Everon {Police}"
      Comment "Police application form title."
+    }
+    CustomStringTableItem "{B4A2D6F89C3E5071}" {
+     Id "LF-Quest_AnniversaryChairs_Desc"
+     Target_en_us "The anniversary is tomorrow and the square is short of seats. Bring four chairs for the trestles."
+     Comment "Quest description for anniversary_chairs (#3463)."
+    }
+    CustomStringTableItem "{A3F1C5E78B2D4960}" {
+     Id "LF-Quest_AnniversaryChairs_Title"
+     Target_en_us "Chairs for the square"
+     Comment "Quest title: the mayor needs chairs for the day before the anniversary (#3463)."
+    }
+    CustomStringTableItem "{D6C4F8BABE507293}" {
+     Id "LF-Quest_AnniversaryFlowers_Desc"
+     Target_en_us "The tables want flowers before dusk tomorrow. Bring three potted plants from the shops."
+     Comment "Quest description for anniversary_flowers (#3463)."
+    }
+    CustomStringTableItem "{C5B3E7A9AD4F6182}" {
+     Id "LF-Quest_AnniversaryFlowers_Title"
+     Target_en_us "Flowers for the square"
+     Comment "Quest title: the mayor wants flowers for the memorial tables (#3463)."
     }
     CustomStringTableItem "{3465F00000000004}" {
      Id "LF-Quest_AnniversaryLetter_Desc"
@@ -3858,6 +3913,11 @@ StringTable {
      Id "LF-Townsfolk_HarbourMaster_Name"
      Target_en_us "Marcel Roux"
      Comment "Townsfolk (M6, #2692): the harbour master's name, the speaker line of his dialogue."
+    }
+    CustomStringTableItem "{3794F00000000001}" {
+     Id "LF-Townsfolk_Mayor_Name"
+     Target_en_us "Bastien Girard"
+     Comment "Townsfolk (#3794): the mayor's name over his dialogue and the quest menu."
     }
     CustomStringTableItem "{7C3E5A19D04B82F6}" {
      Id "LF-Townsfolk_NightShift_Name"

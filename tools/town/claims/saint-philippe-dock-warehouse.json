@@ -8,7 +8,7 @@
   "kinds": [
     "Warehouse"
   ],
-  "rows": 18,
+  "rows": 19,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

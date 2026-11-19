@@ -1,0 +1,22 @@
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ ID "BB4860AEBDEF409F"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{CD05F51AF7A904B3}Prefabs/Characters/Uniforms/LF/PoliceCap.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{0E64DC32FA7BBF30}Prefabs/Characters/Uniforms/LF/PoliceShirt.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{EA29B6E9594A4C23}Prefabs/Characters/Uniforms/LF/PoliceTrousers.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+ }
+}

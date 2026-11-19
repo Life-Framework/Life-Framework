@@ -4,11 +4,15 @@
 //      checkout fast-forwards, the edit is still in `git stash list` (never discarded) and one alert line says so;
 //   3. a Worlds/ layer edit (the maintainer's hand work) is never stashed: the checkout stays blocked, the layer
 //      keeps its edit, and the alert names it; a mixed set stashes only the non-maintainer files;
-//   4. an untracked file that blocks is not stashed (the lead's stray mover owns that); the alert says the cause is not a tracked edit;
+//   4. (#3795) an untracked file origin/main now tracks is stashed with -u (alone or beside a tracked edit), an untracked
+//      file origin does not track stays put, an untracked Worlds/ collision is left alone, and a block with nothing to stash
+//      is reported as not a tracked edit;
 //   5. the alert is written to the hub file the lead view reads, and the lead reads it back as one MAINFF line, only while fresh.
 // inputs: tools/lib/main-ff-heal.mjs
 // red-proof: 2026-11-19, with the module absent the selftest failed on import; with `maintainerPath` always false check 3 failed
 // (the layer was stashed); with the retry ff removed check 2 failed (still blocked); restored.
+// red-proof (#3795): 2026-11-19, check 4 on the module before the change: an untracked collision was "blocked", nothing stashed
+// (the `stash@{0}^3` read threw); with the colliding filter dropped check 4's unrelated file was stashed; restored.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { gitMust, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
@@ -89,15 +93,52 @@ sh(main, ["stash", "drop"]);
 sh(main, ["checkout", "--", "addons/LifeFramework/Worlds/W/town.layer"]); // the fixture maintainer is done
 sh(main, ["merge", "--ff-only", "-q", "origin/main"]);
 
-// 4. an untracked file in the way is the stray mover's job
-advance([["new/file.txt", "from origin\n"]], "six");
-// Make the untracked file collide with origin's new path, then re-run: git refuses ("would be overwritten").
+// 4. an untracked file origin/main now tracks (#3795: an agent's copy of a file main later added) is stashed with -u
+advance([["new/file.txt", "from origin\n"], ["new/other.txt", "from origin 2\n"]], "six");
+// Make the untracked files collide with origin's new paths, then re-run: git refuses ("would be overwritten").
 sh(main, ["reset", "--hard", "-q", "HEAD~1"]);
 put(main, "new/file.txt", "local untracked\n");
-const behind = head();
+put(main, "new/other.txt", "local untracked 2\n");
+put(main, "mine/unrelated.txt", "not in origin\n");
+r = healBlockedFastForward(main, runner, { now: new Date("2026-11-19T10:00:00Z") });
+check(r.action === "stashed" && head() === originHead(), `untracked files origin/main now tracks are stashed and the checkout fast-forwards (${JSON.stringify(r)})`);
+check(stashes().length === 1 && stashes()[0].includes("new/file.txt") && stashes()[0].includes("lf-main-ff-heal") && /untracked/.test(stashes()[0]), `the stash is labelled with the untracked file (${stashes().join(" / ")})`);
+check(readFileSync(join(main, "new/file.txt"), "utf8") === "from origin\n", "the checkout holds origin's file after the heal");
+check(existsSync(join(main, "mine/unrelated.txt")), "an untracked file origin does not track is left where it was");
+check(sh(main, ["show", "stash@{0}^3:new/file.txt"]).includes("local untracked"), "the untracked copy is kept in the stash, not discarded");
+check(/stashed 2 untracked file/.test(r.line ?? "") && r.line.includes("new/file.txt") && r.line.includes("git stash pop"), `one alert line names the untracked files and the restore command (${r.line})`);
+sh(main, ["stash", "drop"]);
+
+// 4b. tracked edit and untracked collision together: one stash holds both
+advance([["docs/a.md", "a3 from origin\n"], ["new/third.txt", "from origin 3\n"]], "seven");
+sh(main, ["reset", "--hard", "-q", "HEAD~1"]);
+writeFileSync(join(main, "docs/a.md"), "a2 stray edit\n");
+put(main, "new/third.txt", "local untracked 3\n");
 r = healBlockedFastForward(main, runner);
-check(r.action === "blocked" && head() === behind && stashes().length === 0, `an untracked collision is not stashed (${JSON.stringify(r)})`);
-check(/not a tracked edit/.test(r.line ?? ""), `the alert says the block is not a tracked edit (${r.line})`);
+check(r.action === "stashed" && head() === originHead() && stashes().length === 1 && stashes()[0].includes("docs/a.md") && stashes()[0].includes("new/third.txt"), `a tracked edit and an untracked collision are healed in one stash (${JSON.stringify(r)} / ${stashes().join(" / ")})`);
+sh(main, ["stash", "drop"]);
+
+// 4c. an untracked collision under Worlds/ is the maintainer's: never stashed, the alert names it
+advance([["addons/LifeFramework/Worlds/W/new.layer", "layer from origin\n"]], "eight");
+sh(main, ["reset", "--hard", "-q", "HEAD~1"]);
+put(main, "addons/LifeFramework/Worlds/W/new.layer", "maintainer hand layer\n");
+put(main, "new/fourth.txt", "x\n");
+const keptHead = head();
+r = healBlockedFastForward(main, runner);
+check(r.action === "maintainer" && head() === keptHead && stashes().length === 0, `an untracked Worlds/ collision is left alone (${JSON.stringify(r)})`);
+check(readFileSync(join(main, "addons/LifeFramework/Worlds/W/new.layer"), "utf8") === "maintainer hand layer\n" && /new\.layer/.test(r.line ?? "") && /maintainer/i.test(r.line), `the alert names the layer (${r.line})`);
+sh(main, ["clean", "-fdq"]);
+sh(main, ["merge", "--ff-only", "-q", "origin/main"]);
+
+// 4d. blocked and nothing to stash (no tracked edit, no untracked collision): reported, not guessed at
+advance([["other.txt", "o3\n"]], "nine");
+sh(main, ["reset", "--hard", "-q", "HEAD~1"]);
+put(main, "mine/another.txt", "not in origin\n");
+const stuck = head();
+r = healBlockedFastForward(main, (args) => (args[0] === "merge" ? { status: 1, stdout: "", stderr: "fatal: not possible to fast-forward\n" } : runGit(main, args)));
+check(r.action === "blocked" && head() === stuck && stashes().length === 0 && /not a tracked edit/.test(r.line ?? ""), `nothing stashable: blocked with a reason (${JSON.stringify(r)})`);
+sh(main, ["clean", "-fdq"]);
+sh(main, ["merge", "--ff-only", "-q", "origin/main"]);
 
 // 5. the alert file the lead reads
 const hub = join(base, "hub");

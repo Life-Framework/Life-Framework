@@ -9,12 +9,14 @@
 //!   event_waypoint  `<scene>#<order>`  one stop of the route, order from 0
 //!   event_spawn     `<scene>#<order>`  one start spot, order from 0
 //!   event_target    `<scene>`          the one place the route ends
+//!   event_item      `<scene>`          the one spot the scene leaves its item on (LF_EventScene.m_sDropPrefab)
 //------------------------------------------------------------------------------------------------
 enum LF_EEventMarkerRole
 {
 	WAYPOINT,
 	SPAWN,
-	TARGET
+	TARGET,
+	ITEM
 }
 
 //------------------------------------------------------------------------------------------------
@@ -30,11 +32,12 @@ class LF_EventWaypointComponent : ScriptComponent
 	static const string KIND_WAYPOINT = "event_waypoint";
 	static const string KIND_SPAWN = "event_spawn";
 	static const string KIND_TARGET = "event_target";
+	static const string KIND_ITEM = "event_item";
 
 	[Attribute("", UIWidgets.EditBox, desc: "Scene id an event names (arrival_square). Every marker of one scene shares it")]
 	protected string m_sSceneId;
 
-	[Attribute("0", UIWidgets.ComboBox, desc: "WAYPOINT is a stop of the route, SPAWN a start spot, TARGET the place the route ends", enums: ParamEnumArray.FromEnum(LF_EEventMarkerRole))]
+	[Attribute("0", UIWidgets.ComboBox, desc: "WAYPOINT is a stop of the route, SPAWN a start spot, TARGET the place the route ends, ITEM the spot the scene's item is left on", enums: ParamEnumArray.FromEnum(LF_EEventMarkerRole))]
 	protected LF_EEventMarkerRole m_eRole;
 
 	[Attribute("0", UIWidgets.Auto, desc: "Position in the scene's route or spawn list, from 0. Unique per scene and role; the target ignores it")]
@@ -88,15 +91,18 @@ class LF_EventWaypointComponent : ScriptComponent
 		if (role == LF_EEventMarkerRole.TARGET)
 			return KIND_TARGET;
 
+		if (role == LF_EEventMarkerRole.ITEM)
+			return KIND_ITEM;
+
 		return KIND_WAYPOINT;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The LF_Places id of a marker: the scene id, plus `#order` for a route or spawn list; the target
-	//! is one per scene and has no order.
+	//! and the item spot are one per scene and have no order.
 	static string PlaceId(string sceneId, LF_EEventMarkerRole role, int order)
 	{
-		if (role == LF_EEventMarkerRole.TARGET)
+		if (role == LF_EEventMarkerRole.TARGET || role == LF_EEventMarkerRole.ITEM)
 			return sceneId;
 
 		return LF_Places.OrderedId(sceneId, order);
@@ -125,6 +131,16 @@ class LF_EventWaypointComponent : ScriptComponent
 			return null;
 
 		return LF_Places.Find(KIND_TARGET, sceneId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The spot the scene leaves its item on, or null when the scene has none placed.
+	static IEntity FindItemSpot(string sceneId)
+	{
+		if (sceneId.IsEmpty())
+			return null;
+
+		return LF_Places.Find(KIND_ITEM, sceneId);
 	}
 
 	//------------------------------------------------------------------------------------------------
