@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{81A0B9555BD615CF}Configs/Events/LF_Events_Everon1989/LF_Events_ShipmentRaid.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
