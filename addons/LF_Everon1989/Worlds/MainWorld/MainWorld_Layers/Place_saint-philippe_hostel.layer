@@ -67,3 +67,15 @@ GenericEntity Fit_saint_philippe_hostel_hostel_kit_decor_13 : "{8F05D427252644F8
  coords 4474.296 12.46 10757.788
  angleY -20
 }
+GenericEntity Fit_saint_philippe_hostel_hostel_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "hostel"
+   m_vRimColor 0.9 0.82 0.55
+   m_vPaintColor 0.1 0.26 0.2
+   m_vTextColor 0.96 0.93 0.82
+  }
+ }
+ coords 4470.452 15.5 10762.137
+ angleY -100
+}

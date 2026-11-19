@@ -1,0 +1,29 @@
+SCR_ChimeraCharacter : "{3AE3C1A509298D9D}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_DenimJacket_2.et" {
+ ID "2FAB2339C3DAAE9A"
+ components {
+  LF_DialogueComponent "{753C0E2171163278}" {
+   m_sDialogueId "passerby"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{BD95B292413A1F3A}" {
+     ContextName "Talk"
+     Position PointInfo "{7F6829A9F484753A}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{BFF28AE6BE4E641B}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{B716C0D49A58DA1C}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}

@@ -27,7 +27,7 @@ GenericEntity Fit_saint_philippe_clothing_counter_shop_01 : "{37C56F70D97B0214}P
  coords 4439.854 11.499 10788.375
  angleY 153
 }
-GenericEntity Fit_saint_philippe_clothing_cashier_shop_01 : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
+GenericEntity Fit_saint_philippe_clothing_cashier_shop_01 : "{2B5B0D22672580AA}Prefabs/Props/Commercial/LF_ClothesTill.et" {
  coords 4440.219 12.538 10788.563
  angleY -27
 }

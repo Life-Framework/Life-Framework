@@ -1,6 +1,30 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "C1185E597ECAF5DA"
  components {
+  LF_DialogueComponent "{3F74E217C7D59367}" {
+   m_sDialogueId "relocated_walker"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{7861082E75BEC228}" {
+     ContextName "Talk"
+     Position PointInfo "{1AB7ED422A128C87}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{03D4CBE7D519DCB6}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{1471326B97623B85}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
   LF_CarriedPropComponent "{6CE037C6257B7A82}" {
   }
   BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {

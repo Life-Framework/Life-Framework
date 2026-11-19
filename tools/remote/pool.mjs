@@ -31,6 +31,7 @@ import * as wt from "../wt.mjs";
 import * as q from "../lib/pool-queue.mjs";
 import { PS_GPU_PROBE, PS_READ_HEARTBEAT, desktopLine, parseProbe, readLocalProbe } from "../lib/gpu-session.mjs";
 import * as pr from "../lib/pool-ram.mjs";
+import * as pc from "../lib/pool-commit.mjs";
 import * as pv from "../lib/pool-vram.mjs";
 import { idleVerdict } from "../lib/look-job.mjs";
 import * as gc from "../lib/session-gc.mjs";
@@ -84,6 +85,7 @@ export function poolSettings(root) {
     promoteMin: pick("promoteMin", "LF_POOL_PROMOTE_MIN"),
     starveMin: pick("starveMin", "LF_POOL_STARVE_MIN"),
     minFreeMb: pick("minFreeMb", "LF_POOL_MIN_FREE_MB"),
+    minFreeCommitMb: pick("minFreeCommitMb", "LF_POOL_MIN_FREE_COMMIT_MB"),
     roomyMb: pick("roomyMb", "LF_POOL_ROOMY_MB"),
     bootBudgetS: pick("bootBudgetS", "LF_POOL_BOOT_BUDGET_S"),
     sessionHoldMin: pick("sessionHoldMin", "LF_POOL_SESSION_HOLD_MIN"),
@@ -670,7 +672,7 @@ export function localAdmission(root, m, except, meta, settings, opts = {}) {
   // reserve only in the seconds before; without one, by the old boot windows.
   const pendingMb = (procs ? pr.lockGapMb(infos, settings, peaks) : otherSessionLanes(root, m, except).reduce((n, s) => n + s.pendingMb, 0) + localBootingTestsMb(root, m, except, settings)) + (Number(opts.aheadMb) || 0);
   const growthMb = procs ? pr.unrealisedMb(seen, peaks, meta?.profile ?? "full") : 0;
-  return pr.admit({
+  const ram = pr.admit({
     freeMb: opts.freeMb ?? (seam || Math.round(freemem() / 1048576)),
     minFreeMb: settings.minFreeMb,
     reserveMb,
@@ -680,6 +682,27 @@ export function localAdmission(root, m, except, meta, settings, opts = {}) {
     islandRunning: procs ? pr.islandCount(procs) : 0,
     what: spec.kind === "session" ? "the session" : "the test",
   });
+  if (!ram.ok) return ram;
+  // Commit headroom (tools/lib/pool-commit.mjs): physical RAM can be free while the commit limit is not.
+  // A free-RAM seam (opts.freeMb) reads no commit unless opts.commit is given: a selftest never depends on this PC.
+  const commit = opts.commit !== undefined ? opts.commit : opts.freeMb !== undefined ? null : pc.readLocalCommit();
+  if (!commit) return ram;
+  const cv = pc.commitAdmit({
+    usedMb: commit.usedMb,
+    limitMb: commit.limitMb,
+    floorMb: settings.minFreeCommitMb,
+    reserveMb: pc.jobCommitMb(peaks, spec),
+    pendingMb: procs ? pc.lockGapCommitMb(infos, peaks) : 0,
+    growthMb: procs ? pc.unrealisedCommitMb(seen, peaks) : 0,
+    what: spec.kind === "session" ? "the session" : "the test",
+  });
+  return cv.ok ? ram : { ok: false, needMb: ram.needMb, commit: true, reason: cv.reason };
+}
+
+function commitPeaksText(peaks) {
+  const t = pc.commitPeakTable(peaks);
+  const gb = (kind) => `${(t[kind] / 1024).toFixed(1)}${Array.isArray(peaks[pc.commitKey(kind)]) && peaks[pc.commitKey(kind)].length >= pr.MIN_SAMPLES ? "" : "*"}`;
+  return `client ${gb("client")}, Workbench ${gb("workbench")}, server ${gb("server")}, test ${gb("test")}`;
 }
 
 // One line for `pool status`: the peak each job kind reserves (GB), measured p90 or seed.
@@ -689,7 +712,7 @@ export function peaksLine(root) {
     const t = pr.peakTable(peaks);
     const n = (key) => (Array.isArray(peaks[key]) ? peaks[key].length : 0);
     const gb = (key) => `${(t[key] / 1024).toFixed(1)}${n(key) >= pr.MIN_SAMPLES ? "" : "*"}`;
-    return `RAM peaks (GB, p90 of observed runs, * = seed): server ${gb("server:small")} / island ${gb("server:island")}, client ${gb("client:small")} / island ${gb("client:island")}, test ${gb("test:small")}, Workbench ${gb("workbench:small")}`;
+    return `RAM peaks (GB, p90 of observed runs, * = seed): server ${gb("server:small")} / island ${gb("server:island")}, client ${gb("client:small")} / island ${gb("client:island")}, test ${gb("test:small")}, Workbench ${gb("workbench:small")}; commit peaks (GB, p90 of observed private bytes): ${commitPeaksText(peaks)}`;
   } catch {
     return "RAM peaks: unreadable";
   }
@@ -734,11 +757,13 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
   const verdict = () => localAdmission(root, m, name, meta, settings, opts);
   let ram = opts.noRam ? { ok: true } : verdict();
   // Before refusing for RAM, trim what idle sessions hold resident and look again (not under test seams).
-  if (!ram.ok && opts.freeMb === undefined && !opts.noTrim && trimLiveSessions(root, m) > 0) ram = verdict();
+  // A commit refusal is not helped by it (a trim frees physical RAM, not commit): the lease reaper closes the idle session.
+  if (!ram.ok && !ram.commit && opts.freeMb === undefined && !opts.noTrim && trimLiveSessions(root, m) > 0) ram = verdict();
   if (!ram.ok) {
     if (opts.blocked) {
       opts.blocked.ram = ram.reason;
-      opts.blocked.needMb = ram.needMb;
+      opts.blocked.needMb = ram.commit ? undefined : ram.needMb;
+      if (ram.commit) opts.blocked.commit = true;
     }
     return null;
   }
@@ -842,7 +867,7 @@ export const PS_RAM_GATE = String.raw`
 if ($cfg.ram -and $slots.Count -gt 0) {
   $os = Get-CimInstance Win32_OperatingSystem
   $free = [int]($os.FreePhysicalMemory / 1024)
-  $running = 0; $pending = 0
+  $running = 0; $pending = 0; $cpending = 0; $cm = $cfg.ram.commit
   # With the measured peaks (cfg.ram.peaks) the pool's own jobs count by their processes once those exist, so
   # a lock counts by its reserve only for its first 45 s; without them, the old boot windows.
   $sWin = 180; $tWin = [int]$cfg.ram.testBootS
@@ -853,12 +878,12 @@ if ($cfg.ram -and $slots.Count -gt 0) {
     try { $h = [IO.File]::ReadAllText($f) | ConvertFrom-Json } catch { continue }
     if (-not (Test-Alive $h.pid)) { continue }
     $running++
-    if ($h.purpose -eq 'session') { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt $sWin) { $c = 1; if ($h.clients) { $c = [int]$h.clients }; $pending += $cfg.ram.serverMb + $cfg.ram.clientMb * $c } } catch {} }
-    elseif ($h.purpose -and $cfg.ram.testMb) { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt $tWin) { $tm = [int]$cfg.ram.testMb; if ($h.world -eq 'island') { $ti = 0; try { $ti = [int]$cfg.ram.peaks.'test:island' } catch {}; if ($ti -gt $tm) { $tm = $ti } }; $pending += $tm } } catch {} }
+    if ($h.purpose -eq 'session') { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt $sWin) { $c = 1; if ($h.clients) { $c = [int]$h.clients }; $pending += $cfg.ram.serverMb + $cfg.ram.clientMb * $c; if ($cm) { $cpending += $cm.serverMb + $cm.clientMb * $c } } } catch {} }
+    elseif ($h.purpose -and $cfg.ram.testMb) { try { if (((Get-Date) - [datetime]$h.at).TotalSeconds -lt $tWin) { $tm = [int]$cfg.ram.testMb; if ($h.world -eq 'island') { $ti = 0; try { $ti = [int]$cfg.ram.peaks.'test:island' } catch {}; if ($ti -gt $tm) { $tm = $ti } }; $pending += $tm; if ($cm) { $cpending += $cm.testMb } } } catch {} }
   }
   # What every ArmaReforger process on the box (Workbench, guard, other pool jobs, the user's own) still grows
   # into: its kind's peak less the working set it holds now. A second island job also needs both peaks.
-  $growth = 0; $islands = 0
+  $growth = 0; $islands = 0; $cgrowth = 0
   if ($cfg.ram.peaks) {
 ${pr.PS_PROC_ROWS}
     foreach ($lfRow in @(Get-LfArmaRows)) {
@@ -868,6 +893,7 @@ ${pr.PS_PROC_ROWS}
       $pk = 0; try { $pk = [int]$cfg.ram.peaks.$key } catch {}
       if (-not $pk) { try { $pk = [int]$cfg.ram.peaks.($lfRow.k + ':' + $w) } catch {} }
       if ($pk -gt $lfRow.ws -and $lfRow.priv -lt $pk) { $growth += ($pk - $lfRow.ws) }
+      if ($cm) { $cpk = 0; try { $cpk = [int]$cm.peaks.($lfRow.k) } catch {}; if ($cpk -gt $lfRow.priv) { $cgrowth += ($cpk - $lfRow.priv) } }
     }
   }
   $need = $cfg.ram.reserveMb + $pending + $growth + $cfg.ram.floorMb + [int]$cfg.ram.aheadMb
@@ -876,6 +902,12 @@ ${pr.PS_PROC_ROWS}
   $anyFree = $false
   foreach ($s in $slots) { $h = $null; try { $h = [IO.File]::ReadAllText((Join-Path $ld ($s.lock + '.lock'))) | ConvertFrom-Json } catch {}; if (-not $h -or -not (Test-Alive $h.pid)) { $anyFree = $true } }
   if ($anyFree -and $free -lt $need) { Write-Host "lf-pool: ram $free $need $running"; exit 0 }
+  # Commit headroom (tools/lib/pool-commit.mjs): committed memory against the commit limit, with its own floor.
+  if ($anyFree -and $cm) {
+    $chead = [int](($os.FreeVirtualMemory) / 1024)
+    $cneed = [int]$cm.reserveMb + $cpending + $cgrowth + [int]$cm.floorMb
+    if ($chead -lt $cneed) { Write-Host "lf-pool: commit-short $chead $cneed $running"; exit 0 }
+  }
   if ($anyFree -and $cfg.ram.thermal) {
     $thermDir = $cfg.ram.thermal.dir
 ${PS_THERMAL}
@@ -1168,6 +1200,7 @@ function spawnHolder(root, m, cfg, { onLost, onAcquired } = {}) {
       else if (t === "lf-pool: busy") done({ busy });
       else if ((mm = /^lf-pool: hot ([\d.]+)$/.exec(t))) done({ hot: Number(mm[1]) });
       else if ((mm = /^lf-pool: ram (\d+) (\d+) (\d+)$/.exec(t))) done({ ram: { freeMb: Number(mm[1]), needMb: Number(mm[2]), running: Number(mm[3]) } });
+      else if ((mm = /^lf-pool: commit-short (-?\d+) (\d+) (\d+)$/.exec(t))) done({ ram: { freeMb: Number(mm[1]), needMb: Number(mm[2]), running: Number(mm[3]), commit: true } });
       else if ((mm = /^lf-pool: error (.*)$/.exec(t))) done({ error: `${m.name}: ${mm[1]}` });
       else if (/^lf-pool: (reclaiming|stopping)/.test(t)) console.log(`pool: ${m.name}: ${t.slice(9)}`);
       else if (t === "lf-pool: ready") {
@@ -1297,6 +1330,14 @@ function holderReserveMb(root, settings, purpose, world, peaks = pr.readPeaks(wt
   return pr.jobReserveMb(settings, peaks, { kind: "test", world });
 }
 
+// The commit gate's part of the holder config: floor, the job's commit peak, the pool's own jobs' peaks per kind.
+function holderCommitConfig(root, m, settings, purpose) {
+  const peaks = machinePeaks(root, m);
+  const t = pc.commitPeakTable(peaks);
+  const reserveMb = laneKind(purpose) === "session" ? pc.jobCommitMb(peaks, { kind: "session", clients: 1 }) : pc.jobCommitMb(peaks, { kind: "test" });
+  return { floorMb: settings.minFreeCommitMb ?? q.DEFAULTS.minFreeCommitMb, reserveMb, serverMb: t.server, clientMb: t.client, testMb: t.test, peaks: t };
+}
+
 // The peaks a job on machine m is admitted by: this PC's hub, with m's own measured keys over them (its
 // remoteState read carries its hub's pool-peaks.json; the cached read, so this costs no ssh).
 export function machinePeaks(root, m, state = m?.via === "local" ? null : stateCache.get(m?.name)?.state) {
@@ -1334,7 +1375,7 @@ export function holderConfig(root, m, snap, { slots, purpose = "test", suffix = 
     candidates: [...new Set([snap.sha, snap.head, last, base].filter(Boolean))],
     slots: q.rotateSlots(slotList, freeLocks, position),
     dir: remoteRunDir(m, slug, 1, suffix),
-    ram: { ...(m.thermalLog ? { thermal: { dir: m.thermalLog, holdC: m.thermalHoldC } } : {}), locks: q.allLaneLocks(m), floorMb: settings.minFreeMb, reserveMb: holderReserveMb(root, settings, purpose, world, machinePeaks(root, m)), island: laneKind(purpose) === "session" && pr.worldClass(world) === pr.ISLAND, peaks: pr.peakTable(machinePeaks(root, m)), serverMb: settings.sessionReserveServerMb, clientMb: settings.sessionReserveClientMb, testMb: settings.testReserveMb, testBootS: settings.testBootS, aheadMb: Math.max(0, Math.round(Number(aheadMb) || 0)) },
+    ram: { ...(m.thermalLog ? { thermal: { dir: m.thermalLog, holdC: m.thermalHoldC } } : {}), locks: q.allLaneLocks(m), floorMb: settings.minFreeMb, reserveMb: holderReserveMb(root, settings, purpose, world, machinePeaks(root, m)), island: laneKind(purpose) === "session" && pr.worldClass(world) === pr.ISLAND, peaks: pr.peakTable(machinePeaks(root, m)), serverMb: settings.sessionReserveServerMb, clientMb: settings.sessionReserveClientMb, testMb: settings.testReserveMb, testBootS: settings.testBootS, aheadMb: Math.max(0, Math.round(Number(aheadMb) || 0)), commit: holderCommitConfig(root, m, settings, purpose) },
   };
 }
 
@@ -2422,10 +2463,11 @@ export async function acquireSlot(root, opts = {}) {
         if (r.ram) {
           // A free lane there, but not the RAM: the same wait as this PC's gate.
           const gb = (x) => (x / 1024).toFixed(1);
-          ramBlocked = ramBlocked ?? { ram: `${m.name} has ${gb(r.ram.freeMb)} GB free, needs ${gb(r.ram.needMb)}`, needMb: r.ram.needMb };
+          const what = r.ram.commit ? "commit headroom" : "RAM";
+          ramBlocked = ramBlocked ?? { ram: `${m.name} has ${gb(r.ram.freeMb)} GB ${r.ram.commit ? "commit headroom" : "free"}, needs ${gb(r.ram.needMb)}`, ...(r.ram.commit ? {} : { needMb: r.ram.needMb }) };
           triedRemote = true;
           waits.add(`${m.name}:ram`);
-          note(`ram-${m.name}`, `pool: ${m.name} is short of RAM (${gb(r.ram.freeMb)} GB free, ${gb(r.ram.needMb)} GB needed with ${r.ram.running} server(s) there); waiting`);
+          note(`ram-${m.name}`, `pool: ${m.name} is short of ${what} (${gb(r.ram.freeMb)} GB ${r.ram.commit ? "headroom" : "free"}, ${gb(r.ram.needMb)} GB needed with ${r.ram.running} server(s) there); waiting`);
           continue;
         }
         if (r.busy) triedRemote = true;
@@ -2562,6 +2604,7 @@ export function remoteState(m) {
     `try { $dr = Get-PSDrive -Name ((Split-Path -Qualifier ${tb.psQuote(m.root)}).TrimEnd(':')) -ErrorAction Stop; Write-Host ('lf-pool: disk ' + ([math]::Round($dr.Free / 1GB, 1)).ToString([Globalization.CultureInfo]::InvariantCulture)) } catch {}`,
     "$os = Get-CimInstance Win32_OperatingSystem; Write-Host \"lf-pool: ram $([int]($os.FreePhysicalMemory / 1024)) $([int]($os.TotalVisibleMemorySize / 1024))\"",
     pr.PS_PROC_SCAN,
+    pc.PS_COMMIT_READ,
     // The box's own measured peaks (its look, rdb and holder jobs record there), one JSON line.
     `$pf = Join-Path ${tb.psQuote(m.root)} 'tmp\\wt\\pool-peaks.json'; if (Test-Path -LiteralPath $pf) { Write-Host ('lf-pool: peaks ' + ([IO.File]::ReadAllText($pf)).Trim()) }`,
     pv.PS_VRAM_READ,
@@ -2603,7 +2646,7 @@ export function parseRemoteState(text) {
   // The ArmaReforger processes there (Workbench, servers, clients: the pool's or not); null when the box
   // answered without the scan lines (an older holder), so its gate falls back to lock-based pending.
   const procs = freeMb !== null ? pr.parseScan(text) : null;
-  return { locks, freeMb, totalMb, vramFreeMb: pv.parseVramLine(text), vramTotalMb: pv.parseVramTotalLine(text), thermalC, diskGb, procs, peaks, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
+  return { locks, freeMb, totalMb, commit: pc.parseCommit(text), vramFreeMb: pv.parseVramLine(text), vramTotalMb: pv.parseVramTotalLine(text), thermalC, diskGb, procs, peaks, gpuProbe: parseProbe(text), heartbeat: (/^lf-gpu-hb: (.*)$/m.exec(String(text)) ?? [])[1] ?? null };
 }
 
 function remoteLocks(m) {
@@ -2640,19 +2683,20 @@ export function orderMachines(root, machines, settings, opts = {}) {
 // The rows of q.rankMachines for these machines ({ name, room, headroomMb, score }, best first).
 // vramReserveMb (#2634): what a client session takes on the GPU; with it a machine whose free VRAM cannot
 // hold the clients ranks as no room (q.rankMachines). localVramMb is a test seam for this PC's free VRAM.
-export function rankedMachines(root, machines, settings, { reserveMb = 0, vramReserveMb = 0, stateOf = () => null, localFreeMb, localVramMb } = {}) {
+export function rankedMachines(root, machines, settings, { reserveMb = 0, vramReserveMb = 0, stateOf = () => null, localFreeMb, localVramMb, localCommit, commitReserveMb = 0 } = {}) {
   const views = machines.map((m) => {
     if (m.via === "local") {
       // A scan counts what every running process still grows into (a Workbench loading included).
       const procs = localFreeMb !== undefined || ramSeamMb() ? null : localScan();
       const pendingMb = procs ? pr.unrealisedMb(procs, pr.readPeaks(wt.hubDirOf(root))) : otherSessionLanes(root, m, null).reduce((n, s) => n + s.pendingMb, 0);
-      return { name: m.name, freeMb: localFreeMb ?? Math.round(freemem() / 1048576), pendingMb, multiplier: m.budgetMultiplier, ...vramView(m, vramReserveMb, localVramFreeMb(localVramMb, vramReserveMb), localLockInfos(root, m), settings) };
+      const lc = localCommit !== undefined ? localCommit : localFreeMb !== undefined ? null : pc.readLocalCommit();
+      return { name: m.name, freeMb: localFreeMb ?? Math.round(freemem() / 1048576), pendingMb, ...(lc ? { commitFreeMb: lc.limitMb - lc.usedMb } : {}), multiplier: m.budgetMultiplier, ...vramView(m, vramReserveMb, localVramFreeMb(localVramMb, vramReserveMb), localLockInfos(root, m), settings) };
     }
     const st = stateOf(m);
     const pendingMb = st ? (st.procs ? pr.unrealisedMb(st.procs, pr.mergePeaks(pr.readPeaks(wt.hubDirOf(root)), st.peaks)) : remotePendingMb(settings, Object.values(st.locks ?? {}).filter((i) => i?.alive))) : 0;
-    return { name: m.name, freeMb: st?.freeMb ?? null, pendingMb, multiplier: m.budgetMultiplier, ...vramView(m, vramReserveMb, st?.vramFreeMb ?? null, Object.values(st?.locks ?? {}).filter((i) => i?.alive), settings) };
+    return { name: m.name, freeMb: st?.freeMb ?? null, pendingMb, ...(st?.commit ? { commitFreeMb: st.commit.limitMb - st.commit.usedMb } : {}), multiplier: m.budgetMultiplier, ...vramView(m, vramReserveMb, st?.vramFreeMb ?? null, Object.values(st?.locks ?? {}).filter((i) => i?.alive), settings) };
   });
-  return q.rankMachines(views, { minFreeMb: settings.minFreeMb, reserveMb, roomyMb: settings.roomyMb, vramReserveMb, minFreeVramMb: settings.minFreeVramMb });
+  return q.rankMachines(views, { minFreeMb: settings.minFreeMb, reserveMb, roomyMb: settings.roomyMb, vramReserveMb, minFreeVramMb: settings.minFreeVramMb, commitReserveMb, minFreeCommitMb: settings.minFreeCommitMb });
 }
 
 // This PC's free VRAM (MB) for a job that takes some (reserveMb > 0), else null without running nvidia-smi.
@@ -2726,7 +2770,7 @@ export function remoteAdmission(m, st, settings, { kind = "session", clients = 1
   const spec = { kind, clients, profile, world: pr.worldClass(world) };
   const reserveMb = pr.jobReserveMb(settings, peaks, spec);
   const pendingMb = procs ? pr.lockGapMb(live, settings, peaks, now) : remotePendingMb(settings, live, now);
-  return pr.admit({
+  const ram = pr.admit({
     freeMb: st.freeMb,
     minFreeMb: settings.minFreeMb,
     reserveMb,
@@ -2736,6 +2780,17 @@ export function remoteAdmission(m, st, settings, { kind = "session", clients = 1
     islandRunning: procs ? pr.islandCount(procs) : 0,
     what: kind === "session" ? "the session" : "the test",
   });
+  if (!ram.ok || !st.commit) return ram;
+  const cv = pc.commitAdmit({
+    usedMb: st.commit.usedMb,
+    limitMb: st.commit.limitMb,
+    floorMb: settings.minFreeCommitMb,
+    reserveMb: pc.jobCommitMb(peaks, spec),
+    pendingMb: procs ? pc.lockGapCommitMb(live, peaks, now) : 0,
+    growthMb: procs ? pc.unrealisedCommitMb(procs, peaks) : 0,
+    what: kind === "session" ? "the session" : "the test",
+  });
+  return cv.ok ? ram : { ok: false, needMb: ram.needMb, commit: true, reason: cv.reason };
 }
 
 // Whether a session (clients, profile) may start on a remote right now: a free session lane and
@@ -2760,9 +2815,11 @@ function mins(ms) {
   return m < 1 ? `${Math.max(0, Math.round(ms / 1000))}s` : m < 10 ? `${m.toFixed(1)}m` : `${Math.round(m)}m`;
 }
 
-function ramText(root) {
+function ramText(root, commit = pc.readLocalCommit()) {
   const free = freemem() / 1073741824;
-  return `RAM ${free.toFixed(1)}/${(totalmem() / 1073741824).toFixed(1)} GB free (floor ${(poolSettings(root).minFreeMb / 1024).toFixed(1)})`;
+  const settings = poolSettings(root);
+  const ct = commit ? `  ${pc.commitText(commit.usedMb, commit.limitMb, settings.minFreeCommitMb)}` : "";
+  return `RAM ${free.toFixed(1)}/${(totalmem() / 1073741824).toFixed(1)} GB free (floor ${(settings.minFreeMb / 1024).toFixed(1)})${ct}`;
 }
 
 // The hold cap of the session holding the lane, for pool status.
@@ -2871,7 +2928,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     for (const n of m.laneNotes ?? []) console.log(`WARN  ${m.name}: ${n}`);
     const st = h.reachable && m.via !== "local" ? remoteState(m) : null;
     const heat = st && Number.isFinite(st.thermalC) ? `  ${st.thermalC} °C (holds new jobs at ${m.thermalHoldC})` : m.thermalLog && st ? "  temperature unknown (thermal log stale)" : "";
-    const ram = m.via === "local" ? ramText(root) : st && Number.isFinite(st.freeMb) ? `RAM ${(st.freeMb / 1024).toFixed(1)}/${(st.totalMb / 1024).toFixed(1)} GB free (floor ${(settings.minFreeMb / 1024).toFixed(1)})${heat}` : "";
+    const ram = m.via === "local" ? ramText(root) : st && Number.isFinite(st.freeMb) ? `RAM ${(st.freeMb / 1024).toFixed(1)}/${(st.totalMb / 1024).toFixed(1)} GB free (floor ${(settings.minFreeMb / 1024).toFixed(1)})${st.commit ? `  ${pc.commitText(st.commit.usedMb, st.commit.limitMb, settings.minFreeCommitMb)}` : ""}${heat}` : "";
     // GPU memory (#2634): free and used VRAM; nothing when nvidia-smi is missing or does not answer.
     const vram = m.via === "local" ? pv.vramUsageText(pv.readVramFreeMb(), pv.readVramTotalMb()) : st ? pv.vramUsageText(st.vramFreeMb, st.vramTotalMb) : "";
     const head = `${m.name}  ${where}  ${healthWord(h, now)}  ${build}  ${ram ? `${ram}${vram}  ` : vram ? `${vram.trim()}  ` : ""}${lanes}`.replace(/ {2,}$/, "");
@@ -2911,7 +2968,8 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     console.log(`  desktop: ${desk}`);
     for (const r of shown) console.log(r);
     const freeMb = m.via === "local" ? Math.round(freemem() / 1048576) : st?.freeMb;
-    seen.set(m.name, { m, infos, capMin, freeMb });
+    const commit = m.via === "local" ? pc.readLocalCommit() : st?.commit;
+    seen.set(m.name, { m, infos, capMin, freeMb, commitText: commit ? pc.commitText(commit.usedMb, commit.limitMb) : "" });
   }
   const diskGb = gc.freeDiskGb(sessionBase());
   console.log(statusLine(root)); // the Workbench limit of this PC (tools/lib/wb-lock.mjs)
@@ -2924,6 +2982,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
   const perLane = new Map();
   const dupFiles = q.duplicateSessionTickets(tickets);
   const freeMbOf = (name) => seen.get(name)?.freeMb;
+  const commitOf = (name) => seen.get(name)?.commitText;
   for (const t of ordered) {
     const lane = t.lane ?? "session";
     if (!verbose && (perLane.get(lane) ?? 0) >= 4) {
@@ -2935,7 +2994,7 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const base = q.normalizePriority(t.priority) ?? "normal";
     const eff = q.PRIORITIES[q.effectiveRank(t, now, promoteMs)];
     const prio = eff === base ? base : `${base}>${eff}`;
-    const why = q.waitReason(t, pos - 1, { now, starveMs, freeMbOf, otherMachines: machines.map((x) => x.name) });
+    const why = q.waitReason(t, pos - 1, { now, starveMs, freeMbOf, commitOf, otherMachines: machines.map((x) => x.name) });
     // Estimated start: the (ahead+1)-th projected lane release on the machines it can use. A RAM wait
     // ends when a session on those machines lets go (a test frees little and is gone in seconds).
     const releases = [];

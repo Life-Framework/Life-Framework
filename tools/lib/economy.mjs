@@ -15,6 +15,7 @@ import { join } from "node:path";
 import { parseConf, guidOf } from "../economy/profit-loops.mjs";
 import { buildLumber, lumberFlags, renderLumber } from "./economy-lumber.mjs";
 import { buildWheat, renderWheat, wheatFlags } from "./economy-wheat.mjs";
+import { buildMining, miningFlags, renderMining } from "./economy-mining.mjs";
 import { SECTIONS, loadOwner, loadPackOverlays, mergeList, metaIndex, sectionLayers } from "../pack/layers.mjs";
 
 /** Minutes a courier, fuel or taxi run takes on the real map (an assumption; `--run-minutes` overrides). */
@@ -265,9 +266,12 @@ export function buildReport(root, opts = {}) {
   // The wheat loops (#3622): the granary curve and the bakery flour row, priced per lot; a flag outside the duty band.
   const wheat = buildWheat({ addonsDir, packLayers, owner, opts, duty: { police: duty.police.rank0, medic: duty.medic.rank0 } });
   flags.push(...wheatFlags(wheat));
+  // The mining loops (#3240): recipes, curves and hardware premium rows from config, haul and gather rates from tools/economy/mining-assumptions.json.
+  const mining = buildMining({ root, addonsDir, packLayers, owner, opts, duty: { police: duty.police.rank0, medic: duty.medic.rank0 } });
+  flags.push(...miningFlags(mining));
 
   return {
-    lumber, wheat, mission, pack, overlays: loaded.overlays.map((o) => o.file), problems: loaded.problems.map((p) => p.msg), ownerFile: owner ? ownerFile : null,
+    lumber, wheat, mining, mission, pack, overlays: loaded.overlays.map((o) => o.file), problems: loaded.problems.map((p) => p.msg), ownerFile: owner ? ownerFile : null,
     start: { bank: startBank, cash: startCash }, runs, contracts, benefit, duty, sinks, ladder, flags, assumptions: { runMinutes, taxiMetres },
   };
 }
@@ -304,6 +308,7 @@ export function renderReport(r) {
   }
   if (r.lumber) L.push(...renderLumber(r.lumber));
   if (r.wheat) L.push(...renderWheat(r.wheat));
+  if (r.mining) L.push(...renderMining(r.mining));
   if (r.flags.length === 0) L.push("flags: none");
   else {
     L.push("flags:");

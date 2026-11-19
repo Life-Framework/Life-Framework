@@ -11,9 +11,10 @@
 //                 itself on at dusk: the 22:00 look of #3534) in the biggest gaps of the vanilla lamps beside the square and main street.
 // A generated file: rerun the script, never hand-edit. `--check` writes nothing and exits 1 when the file on disk differs.
 // Core names no coordinates: this is pack data (core-vs-pack.md "Map independence").
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { measureTown } from "../../agent-box/place-audit.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const LAYER_DIR = "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers";
@@ -167,7 +168,7 @@ export function buildGlows({ purpose, buildings, roads }) {
       const x = wall.mid[0] + wall.tan[0] * along + wall.normal[0] * WALL_OFFSET;
       const z = wall.mid[1] + wall.tan[1] * along + wall.normal[1] * WALL_OFFSET;
       const y = b.y + FLOOR_Y[i % 2 === 0 ? 0 : 1];
-      glows.push({ name: `Glow_${r.id.replace(":", "_")}_${i}`, id: r.id, x: r2(x), y: r2(y), z: r2(z), off });
+      glows.push({ name: `Glow_${r.id.replace(":", "_")}_${i}`, id: r.id, x: r2(x), y: r2(y), z: r2(z), off, normal: wall.normal, floor: FLOOR_Y[i % 2 === 0 ? 0 : 1] });
     }
   }
   return { glows, errors };
@@ -264,10 +265,83 @@ export function buildHeads({ props }) {
     .map((p, i) => ({ name: `LampHead_${i + 1}`, x: r2(p.x), y: r2(p.y + HEAD_HEIGHT), z: r2(p.z) }));
 }
 
-export function buildAll(loaded) {
+// ------------------------------------------------------------------ seats (placement-system.md: the world answers how high)
+//
+// The survey's one height per building put 31 of 38 glows more than 1.5 m from any wall and 8 of 10 new lamps off the street
+// (audit placement --world MainWorld, 2026-11-19). `--probe` asks the island: one ray per glow from 2.5 m out through the
+// footprint wall (the real wall it hits, and the terrain under that point), one ray down per new lamp (the pavement under it).
+// The answers go in tools/town/probes/lights-<place>.json, which every later run (and --check) reads, so the layer stays
+// reproducible without a server. A glow whose ray meets no wall is not written: a light is attached to something or absent.
+export const SEATS_DIR = "tools/town/probes";
+export const seatsPath = (root, place) => join(root, SEATS_DIR, `lights-${place}.json`);
+const GLOW_OUT = 2.5; // the wall ray starts this far outside the footprint wall
+const GLOW_IN = 1.5; // and ends this far inside it
+const LAMP_UP = 3;
+const LAMP_DOWN = 4;
+
+// The probe rays (LF_PlacementAudit.RayLine input lines) for the unseated glows and lamps.
+export function probeRays({ glows, lamps }) {
+  const rays = [];
+  for (const g of glows) {
+    const [nx, nz] = g.normal;
+    const out = GLOW_OUT - WALL_OFFSET;
+    const inn = GLOW_IN + WALL_OFFSET;
+    rays.push(`ray ${g.name} ${r2(g.x + nx * out)} ${g.y} ${r2(g.z + nz * out)} ${r2(g.x - nx * inn)} ${g.y} ${r2(g.z - nz * inn)}`);
+  }
+  for (const l of lamps) rays.push(`ray ${l.name} ${l.x} ${r2(l.y + LAMP_UP)} ${l.z} ${l.x} ${r2(l.y - LAMP_DOWN)} ${l.z}`);
+  return rays;
+}
+
+const kvOf = (rest) => Object.fromEntries(rest.trim().split(/\s+/).map((t) => [t.slice(0, t.indexOf("=")), t.slice(t.indexOf("=") + 1)]).filter(([k]) => k));
+
+// The seats from a probe run's out.txt: { glows: { name: { x, y, z, on } | null }, lamps: { name: { y, on } } }.
+export function seatsFromRays(outText, { glows, lamps }) {
+  const byId = new Map();
+  for (const line of outText.split(/\r?\n/)) {
+    if (!line.startsWith("ray ")) continue;
+    const rest = line.slice(4);
+    const sp = rest.indexOf(" ");
+    byId.set(rest.slice(0, sp), kvOf(rest.slice(sp + 1)));
+  }
+  const seats = { glows: {}, lamps: {} };
+  for (const g of glows) {
+    const r = byId.get(g.name);
+    if (!r) continue;
+    const hit = Number(r.d) < Number(r.len) - 0.01 && r.hit !== "none";
+    if (!hit) {
+      seats.glows[g.name] = null;
+      continue;
+    }
+    const [px, , pz] = r.p.split(",").map(Number);
+    seats.glows[g.name] = { x: r2(px + g.normal[0] * WALL_OFFSET), y: r2(Number(r.sy) + g.floor), z: r2(pz + g.normal[1] * WALL_OFFSET), on: r.root };
+  }
+  for (const l of lamps) {
+    const r = byId.get(l.name);
+    if (!r) continue;
+    const py = Number(r.p.split(",")[1]);
+    const hit = Number(r.d) < Number(r.len) - 0.01 && r.hit !== "none";
+    seats.lamps[l.name] = { y: r2(hit ? Math.max(py, Number(r.sy)) : Number(r.sy)), on: hit ? r.root : "terrain" };
+  }
+  return seats;
+}
+
+// The glows and lamps moved onto their seats; a glow seated on nothing is dropped. Without seats, as generated.
+export function applySeats(built, seats) {
+  if (!seats) return built;
+  const glows = [];
+  for (const g of built.glows) {
+    const s = seats.glows?.[g.name];
+    if (s === null) continue;
+    glows.push(s ? { ...g, x: s.x, y: s.y, z: s.z } : g);
+  }
+  const lamps = built.lamps.map((l) => (seats.lamps?.[l.name] ? { ...l, y: seats.lamps[l.name].y } : l));
+  return { ...built, glows, lamps };
+}
+
+export function buildAll(loaded, seats = null) {
   const g = buildGlows(loaded);
   const l = buildLamps(loaded);
-  return { glows: g.glows, lamps: l.lamps, heads: buildHeads(loaded), errors: [...g.errors, ...l.errors] };
+  return applySeats({ glows: g.glows, lamps: l.lamps, heads: buildHeads(loaded), errors: [...g.errors, ...l.errors] }, seats);
 }
 
 export function renderLayer(place, { glows, lamps, heads }) {
@@ -300,7 +374,7 @@ export function main(args, { root = ROOT } = {}) {
   const check = args.includes("--check");
   const place = args.find((a) => !a.startsWith("--"));
   if (!place || !/^[a-z0-9][a-z0-9-]*$/.test(place)) {
-    console.log("usage: node tools/town/nightlights.mjs <place> [--check]");
+    console.log("usage: node tools/town/nightlights.mjs <place> [--check] [--probe]");
     return 1;
   }
   let loaded;
@@ -310,7 +384,22 @@ export function main(args, { root = ROOT } = {}) {
     console.log(`nightlights: ${e.message}`);
     return 1;
   }
-  const built = buildAll(loaded);
+  const seatsFile = seatsPath(root, place);
+  if (args.includes("--probe")) {
+    const raw = buildAll(loaded);
+    const outDir = join(root, "tmp", "nightlights-probe");
+    const run = measureTown([], { outDir, extra: probeRays(raw), island: true });
+    if (run.outText == null) {
+      console.log("SUMMARY nightlights fail: the island probe wrote no out.txt (lines above)");
+      return 1;
+    }
+    const seats = seatsFromRays(run.outText, raw);
+    mkdirSync(dirname(seatsFile), { recursive: true });
+    writeFileSync(seatsFile, JSON.stringify({ place, at: new Date().toISOString().slice(0, 10), ...seats }, null, 1) + "\n");
+    const dropped = Object.values(seats.glows).filter((s) => s === null).length;
+    console.log(`nightlights: probed ${Object.keys(seats.glows).length} glows (${dropped} meet no wall: not written) and ${Object.keys(seats.lamps).length} lamps into ${SEATS_DIR}/lights-${place}.json`);
+  }
+  const built = buildAll(loaded, existsSync(seatsFile) ? JSON.parse(readFileSync(seatsFile, "utf8")) : null);
   for (const e of built.errors) console.log(`ERROR ${e}`);
   const text = renderLayer(place, built);
   const file = layerPath(root, place);

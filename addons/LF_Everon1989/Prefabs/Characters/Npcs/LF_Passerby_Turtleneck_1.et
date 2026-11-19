@@ -1,0 +1,29 @@
+SCR_ChimeraCharacter : "{C943F3CC53D187B6}Prefabs/Characters/Factions/CIV/GenericCivilians/Character_CIV_Turtleneck_1.et" {
+ ID "215AB03636F1D573"
+ components {
+  LF_DialogueComponent "{71A1338A14A10C21}" {
+   m_sDialogueId "passerby"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{DD42A270CE5536B8}" {
+     ContextName "Talk"
+     Position PointInfo "{5E89EAA1D00B4B5A}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{2061108116E38BA0}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{9FC53A776F6F3FBF}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}

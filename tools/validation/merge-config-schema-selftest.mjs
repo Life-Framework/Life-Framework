@@ -1,14 +1,25 @@
 // Proves the config schema merge driver (#1258) in a temporary git repo: two branches that each add
 // a config field merge cleanly, and docs/config/config.schema.json and config.example.json hold both.
 // A control merge without the .gitattributes lines leaves conflict markers, so the fixture is real.
-// inputs: tools/merge/**, tools/config/**, tools/economy/profit-loops.mjs, .gitattributes
+// inputs: tools/merge/**, tools/config/**, tools/economy/profit-loops.mjs, tools/lib/selftest-git.mjs, .gitattributes
 // Does not boot the game and does not merge this worktree.
+// Hermetic git (2026-11-19): validate and `wt ship` run this under a git hook, which exports GIT_DIR and
+// GIT_INDEX_FILE. The scratch repo's git then acted on the OUTER repo (branches alpha/beta created there, the
+// scratch files dropped from its index) and the selftest died with ENOENT on docs/config/config.schema.json or
+// "merged schema lost the alpha field"; GitHub has no such variables, so it passed there. useHermeticGit()
+// removes them (and the machine's git config) for this process and its children, and every scratch step is checked.
+// red-proof (2026-11-19): GIT_DIR=<throwaway repo>/.git GIT_INDEX_FILE=<same>/index node this-file FAILED
+//   ("merged schema lost the "alpha" field", alpha and beta branches appeared in the throwaway repo) before the
+//   hermetic env went in, and passes with it.
 import { spawnSync } from "node:child_process";
-import { cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { pickThree } from "../merge/regen-config-schema.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
+import { describeRun, gitMust, removeScratch, runGit, useHermeticGit } from "../lib/selftest-git.mjs";
+
+useHermeticGit();
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const failures = [];
@@ -35,10 +46,15 @@ ${names.map(field).join("")}}
 `;
 
 function run(cwd, cmd, args, env = {}) {
-  return spawnSync(cmd, args, { cwd, encoding: "utf8", windowsHide: true, env: { ...process.env, ...env } });
+  return spawnSync(cmd, args, { cwd, encoding: "utf8", windowsHide: true, timeout: 120000, env: { ...process.env, ...env } });
 }
+// A scratch step that must work: a failure throws with the exit code and what git printed.
 function git(cwd, ...args) {
-  return run(cwd, "git", ["-c", "user.name=t", "-c", "user.email=t@t", "-c", "core.autocrlf=false", ...args]);
+  return gitMust(cwd, args);
+}
+// The merge under test may legitimately fail (the control), so its result is returned, not thrown.
+function gitTry(cwd, ...args) {
+  return runGit(cwd, args);
 }
 
 function makeRepo(withAttributes) {
@@ -47,6 +63,7 @@ function makeRepo(withAttributes) {
   cpSync(join(ROOT, "tools", "merge"), join(dir, "tools", "merge"), { recursive: true });
   mkdirSync(join(dir, "tools", "lib"), { recursive: true });
   cpSync(join(ROOT, "tools", "lib", "git-retry.mjs"), join(dir, "tools", "lib", "git-retry.mjs")); // regen-generated.mjs imports it
+  cpSync(join(ROOT, "tools", "lib", "economy-mining-recipes.mjs"), join(dir, "tools", "lib", "economy-mining-recipes.mjs")); // profit-loops.mjs imports it (#3240)
   mkdirSync(join(dir, "tools", "config"), { recursive: true });
   for (const f of ["schema.mjs", "pack-sections.mjs"]) cpSync(join(ROOT, "tools", "config", f), join(dir, "tools", "config", f));
   mkdirSync(join(dir, "tools", "economy"), { recursive: true });
@@ -67,7 +84,12 @@ function makeRepo(withAttributes) {
   return dir;
 }
 
-const regen = (dir) => run(dir, process.execPath, ["tools/config/schema.mjs", "--write"]);
+function regen(dir) {
+  const r = run(dir, process.execPath, ["tools/config/schema.mjs", "--write"]);
+  if (r.error || r.status !== 0) throw new Error(`schema.mjs --write in ${dir}: ${describeRun(r)}`);
+  const schema = join(dir, "docs", "config", "config.schema.json");
+  if (!existsSync(schema)) throw new Error(`schema.mjs --write exited 0 but wrote no ${schema}`);
+}
 
 function branchAdding(dir, branch, names) {
   git(dir, "checkout", "-q", "-b", branch, "main");
@@ -83,7 +105,7 @@ function scenario(withAttributes) {
     branchAdding(dir, "alpha", ["Alpha", "Base"]);
     branchAdding(dir, "beta", ["Base", "Beta"]);
     git(dir, "checkout", "-q", "alpha");
-    const merge = git(dir, "merge", "--no-edit", "beta");
+    const merge = gitTry(dir, "merge", "--no-edit", "beta");
     const read = (f) => readFileSync(join(dir, "docs", "config", f), "utf8");
     return {
       merge,
@@ -92,7 +114,7 @@ function scenario(withAttributes) {
       stale: run(dir, process.execPath, ["tools/config/schema.mjs", "--check"]).status,
     };
   } finally {
-    rmSync(dir, { recursive: true, force: true });
+    removeScratch(dir);
   }
 }
 

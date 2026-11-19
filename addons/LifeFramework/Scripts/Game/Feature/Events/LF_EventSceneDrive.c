@@ -1,18 +1,21 @@
 //------------------------------------------------------------------------------------------------
-//! A scene's parked vehicle driven along the scene's waypoints (#3380, chapter #1023): the crew's first
-//! person takes the driver's seat, the rest take cargo seats, and one vanilla AI group with a move
-//! waypoint on every route point drives the vehicle there in order. Progress is read from the
+//! A scene's parked vehicle driven along the scene's waypoints (#3380, chapter #1023): the crew joins one
+//! vanilla AI group that boards the vehicle (a boarding waypoint) and then drives it along a move
+//! waypoint on every route point, in order. Progress is read from the
 //! vehicle's position only, so the same bookkeeping runs where no AI moves anything (GridWorld, the
 //! tests). A vehicle that makes no progress for STUCK_SECONDS is moved on to the next waypoint (logged
 //! [LFDebug:Events] warn) instead of sitting there for the whole event; the last point (the scene's
-//! target) is where it stops. Opt-in: nothing calls it from the scene operation yet (LF_EventSceneWalk
-//! still walks the crew). The driver must be an AI-capable prefab (AIControlComponent): the vanilla
+//! target) is where it stops. Opt-in per scene (#3831): a scene with `m_bDriveVehicle` is driven by the
+//! scene operation (LF_EventSceneOperation starts it once the crew is spawned and holds the scene
+//! until it is over) instead of walked by LF_EventSceneWalk. The driver must be an AI-capable prefab (AIControlComponent): the vanilla
 //! civilians are, the `LF_Npc_*` outfits are not. Short per-lane waypoints work best: the AI follows
 //! the nearest road or open ground, so a long cut across a field leaves it on the grass. Server only;
 //! one drive at a time. A restart drops it.
 class LF_EventSceneDrive
 {
 	static const string FEATURE = "Events";
+	//! Vanilla boarding waypoint on an entity (the crew's vehicle), ahead of the move waypoints.
+	static const ResourceName GETIN_WAYPOINT_PREFAB = "{8AD8C82346156494}Prefabs/AI/Waypoints/AIWaypoint_GetInSelected.et";
 	static const int TICK_MS = 1000; // lf-fixed: progress check resolution only
 	//! The vehicle within this of a route point has passed it; the AI waypoints complete at the same radius.
 	static const float ARRIVE_M = 6; // lf-fixed: a truck's length, so a lane waypoint completes under its cab
@@ -20,6 +23,8 @@ class LF_EventSceneDrive
 	static const float PROGRESS_M = 0.5; // lf-fixed: under a second of driving
 	//! A vehicle that makes no progress this long is stuck.
 	static const float STUCK_SECONDS = 20; // lf-fixed: long enough for a reverse and a turn round a wreck
+	//! The crew has this long to climb in; the stuck timer starts when they are in, or when it runs out.
+	static const float BOARD_TIMEOUT_S = 45; // lf-fixed: a crew lined up on a quay walks a few metres and climbs in
 	//! A moved-on vehicle stands this far above the ground point, and settles.
 	static const float DROP_M = 0.4; // lf-fixed: clears the road surface without a visible fall
 
@@ -41,6 +46,10 @@ class LF_EventSceneDrive
 	string m_sLastRecovery;
 	EntityID m_GroupId = EntityID.INVALID;
 	ref array<EntityID> m_aAiWaypoints = {};
+	//! The AI crew is still climbing in: the stuck timer waits for it.
+	bool m_bBoarding;
+	//! The boarding waypoint: deleted last, after the group (deleting it first crashed the server).
+	EntityID m_BoardingId = EntityID.INVALID;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_EventSceneDrive Active()
@@ -129,8 +138,9 @@ class LF_EventSceneDrive
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Seats the crew (driver first) and gives one vanilla AI group a move waypoint on every route
-	//! point. Without an AIWorld nobody is driven and the drive only keeps the books (logged).
+	//! Puts the crew in one vanilla AI group: a boarding waypoint on the vehicle first (the crew climbs in
+	//! and the group counts the vehicle as usable), then a move waypoint on every route point. Without an
+	//! AIWorld nobody is driven and the drive only keeps the books (logged).
 	protected void SetUpAi(notnull BaseWorld world)
 	{
 		if (!GetGame().GetAIWorld())
@@ -148,19 +158,39 @@ class LF_EventSceneDrive
 		}
 
 		m_GroupId = group.GetID();
-		int seated = 0;
+		int enlisted = 0;
 		foreach (int index, EntityID id : m_Crew.m_aPeople)
 		{
 			IEntity person = world.FindEntityByID(id);
 			if (!person)
 				continue;
 
-			if (Seat(group, person, vehicle, index))
-				seated++;
+			if (Enlist(group, person, index))
+				enlisted++;
 		}
 
-		if (seated == 0)
-			LF_Debug.Error(FEATURE, string.Format("scene %1: nobody could take a seat in the vehicle; it stands", m_Crew.m_sSceneId));
+		if (enlisted == 0)
+		{
+			LF_Debug.Error(FEATURE, string.Format("scene %1: nobody could join the AI group; the vehicle stands", m_Crew.m_sSceneId));
+			return;
+		}
+
+		m_bBoarding = true;
+		// The group only drives a vehicle it counts as usable, and the base game registers that through a
+		// boarding waypoint on the vehicle (SCR_AIGetInActivity.OnActionSelected); its crew climbs in, and
+		// the waypoint completes by itself once they have. Completing it from script crashed the server.
+		SCR_BoardingEntityWaypoint boarding = SCR_BoardingEntityWaypoint.Cast(LF_Utils.SpawnEntityPrefab(GETIN_WAYPOINT_PREFAB, vehicle.GetOrigin()));
+		if (boarding)
+		{
+			boarding.SetEntity(vehicle);
+			boarding.SetCompletionRadius(ARRIVE_M);
+			m_BoardingId = boarding.GetID();
+			group.AddWaypoint(boarding);
+		}
+		else
+		{
+			LF_Debug.Error(FEATURE, string.Format("scene %1: boarding waypoint %2 did not spawn; the group may not drive the vehicle", m_Crew.m_sSceneId, GETIN_WAYPOINT_PREFAB));
+		}
 
 		foreach (vector point : m_aRoute)
 		{
@@ -178,9 +208,8 @@ class LF_EventSceneDrive
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Person `index` of the crew into the vehicle (the first behind the wheel, the rest in the back)
-	//! and into the AI group. False (logged) for a person with no AI or no seat.
-	protected bool Seat(notnull AIGroup group, notnull IEntity person, notnull IEntity vehicle, int index)
+	//! Person `index` of the crew into the AI group. False (logged) for a person with no AI.
+	protected bool Enlist(notnull AIGroup group, notnull IEntity person, int index)
 	{
 		AIControlComponent control = AIControlComponent.Cast(person.FindComponent(AIControlComponent));
 		if (!control)
@@ -198,24 +227,30 @@ class LF_EventSceneDrive
 		}
 
 		group.AddAgent(agent);
-		SCR_CompartmentAccessComponent access = SCR_CompartmentAccessComponent.Cast(person.FindComponent(SCR_CompartmentAccessComponent));
-		if (!access)
-		{
-			LF_Debug.Error(FEATURE, string.Format("scene %1 crew %2 has no compartment access; it cannot ride", m_Crew.m_sSceneId, index));
-			return false;
-		}
-
-		ECompartmentType seat = ECompartmentType.CARGO;
-		if (index == 0)
-			seat = ECompartmentType.PILOT;
-
-		if (!access.MoveInVehicle(vehicle, seat, true))
-		{
-			LF_Debug.Error(FEATURE, string.Format("scene %1 crew %2: the vehicle refused the %3 seat", m_Crew.m_sSceneId, index, typename.EnumToString(ECompartmentType, seat)));
-			return false;
-		}
-
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many of the crew sit in a vehicle seat.
+	int CountSeated()
+	{
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return 0;
+
+		int seated;
+		foreach (EntityID id : m_Crew.m_aPeople)
+		{
+			IEntity person = world.FindEntityByID(id);
+			if (!person)
+				continue;
+
+			SCR_CompartmentAccessComponent access = SCR_CompartmentAccessComponent.Cast(person.FindComponent(SCR_CompartmentAccessComponent));
+			if (access && access.IsInCompartment())
+				seated++;
+		}
+
+		return seated;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -265,6 +300,15 @@ class LF_EventSceneDrive
 			m_bArrived = true;
 			Finish(string.Format("the vehicle reached the target after %1 s, %2 moved on", m_fElapsed, m_iRecoveries));
 			return;
+		}
+
+		if (m_bBoarding)
+		{
+			if (CountSeated() < m_Crew.m_aPeople.Count() && m_fElapsed < BOARD_TIMEOUT_S)
+				return;
+
+			m_bBoarding = false;
+			LF_Debug.Info(FEATURE, string.Format("scene %1: %2 of %3 crew in the vehicle after %4 s", m_Crew.m_sSceneId, CountSeated(), m_Crew.m_aPeople.Count(), m_fElapsed));
 		}
 
 		float remaining = RemainingM(at);
@@ -390,9 +434,15 @@ class LF_EventSceneDrive
 
 				SCR_EntityHelper.DeleteEntityAndChildren(group);
 			}
+
+			// Last: the group's boarding activity holds it, and deleting it first crashed the server.
+			IEntity boarding = world.FindEntityByID(m_BoardingId);
+			if (boarding)
+				SCR_EntityHelper.DeleteEntityAndChildren(boarding);
 		}
 
 		m_aAiWaypoints.Clear();
+		m_BoardingId = EntityID.INVALID;
 		m_GroupId = EntityID.INVALID;
 		if (s_Active == this)
 			s_Active = null;
