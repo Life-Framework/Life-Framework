@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "template": "roadfuel",
+  "place": "roadfuel",
+  "status": "approved",
+  "note": "Hand-written for #3379 (X15): the nearest vanilla fuel station outside Saint-Philippe on the main road, at the Etoupe road end (about 1.2 km south-east of the square). The dossier is a scout of the station's own coordinates at radius 120. The slot is the station's small kiosk; the big shop b01 beside it stays vanilla and is left alone. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 18,
+    "freePlots": 8
+  },
+  "slots": {
+    "fuel": {
+      "building": "b02",
+      "alternatives": [
+        {
+          "building": "b01"
+        }
+      ],
+      "why": [
+        "FuelStation_E_01_building_small (type fuel), 17.8 m2, the station's kiosk, 13.8 m south of the shop b01 and about 17 m west of the N-S road r01 that runs out of Saint-Philippe; both station buildings face the road",
+        "card X15 asks for the payphone by the kiosk, a fuel drop tank and a sign: the kiosk is the host, the rows stand on the forecourt in front of it and at its back corner"
+      ]
+    }
+  }
+}
