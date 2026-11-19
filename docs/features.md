@@ -44,6 +44,7 @@
 - [Jobs / Level / Licenses / Whitelist](features/jobs-level-licenses-whitelist.md)
 - [Laundering](features/laundering.md)
 - [Lockers](features/lockers.md)
+- [Loot](features/loot.md)
 - [Map emulator](features/map-emulator.md)
 - [The Everon map (epic #2223)](features/map.md)
 - [Market (price curve)](features/market.md)
