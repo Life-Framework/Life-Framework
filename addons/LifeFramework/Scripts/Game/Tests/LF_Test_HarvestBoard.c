@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-19 with `--no-build --red LF_Test_HarvestBoard`: the red hook skips the 95 % cut, so the bonus, the XP and the done-state lines fail.
+// red-proof: Observed 2026-11-19 with `--no-build --red LF_Test_HarvestBoard`: the red hook skips the 95 % cut, so the bonus, the XP and the done-state lines fail. Rally fallback (#3670 review, 2026-11-19): "always gets a kit" failed on the unfixed SpawnKit (KIT_FAILED) and passes with the UAZ469 fallback.
 //! harvest/harvest-board (#3656): the farm board's prompts through LF_HarvestBoard.Use, the server entry both the
 //! prompt and the rental RPC call. The board prefab carries four LF_HarvestBoardAction rows and finds its field; Post,
 //! Take (rental and own reaper), the DLC answer picking the Z7211 or the UAZ469, a stranger at the kit, Return and
@@ -160,17 +160,17 @@ class LF_Test_HarvestBoard : LF_Test
 
 		ctx.True(Use(board, taker, LF_EHarvestBoardMode.POST, true) == LF_EHarvestContract.OK, "the second field is posted");
 		int cashBefore = LF_MoneyUtils.GetCash(taker);
-		// The Rally licence answer picks the Z7211 (LF_HarvestContract.KitPrefab, LF_Test_HarvestContract). The headless test
-		// server has no Rally content to spawn it, so a "yes" here would fail the spawn; the refusal rolls the deposit back.
-		ctx.True(Use(board, taker, LF_EHarvestBoardMode.TAKE_RENTAL, true) == LF_EHarvestContract.KIT_FAILED || LF_HarvestContract.KitOf(field) != null, "a rental with the licence answer takes the Z7211 or, with no Rally content, gives the deposit back");
+		// The Rally licence answer picks the Z7211 (LF_HarvestContract.KitPrefab, LF_Test_HarvestContract). A server with no
+		// Rally content (the test server, a dedicated server without it) cannot spawn it, so the kit falls back to the
+		// UAZ469: a DLC owner still gets a rental (#3670 review; it was KIT_FAILED on every try).
+		ctx.True(Use(board, taker, LF_EHarvestBoardMode.TAKE_RENTAL, true) == LF_EHarvestContract.OK, "a rental with the licence answer always gets a kit");
+		ctx.NotNull(LF_HarvestContract.KitOf(field), "the licence answer's kit stands at the board");
 		if (LF_HarvestContract.KitOf(field))
 		{
-			ctx.True(Use(board, taker, LF_EHarvestBoardMode.RETURN_KIT, false) == LF_EHarvestContract.OK, "the Rally kit goes back");
+			ctx.True(Use(board, taker, LF_EHarvestBoardMode.RETURN_KIT, false) == LF_EHarvestContract.OK, "the kit goes back");
 		}
-		else
-		{
-			ctx.Equal(cashBefore, LF_MoneyUtils.GetCash(taker), "a failed Rally kit leaves the cash as it was");
-		}
+
+		ctx.Equal(cashBefore, LF_MoneyUtils.GetCash(taker), "the returned kit leaves the cash as it was");
 
 		LF_OwnedImplements.Grant(TAKER, LF_OwnedImplements.ID_REAPER);
 		ctx.True(Use(board, taker, LF_EHarvestBoardMode.TAKE_OWN, false) == LF_EHarvestContract.OK, "the taker takes the field with an own reaper");
