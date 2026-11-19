@@ -14,7 +14,7 @@
     {
       "id": "iron-pickup", "label": "iron by pickup", "recipe": "smelter-iron", "vehicle": "pickup",
       "gather": { "item": "iron-ore", "units": 20, "perMinute": 4 },
-      "reagents": [{ "item": "coal", "guidName": "CoalLump", "unitCost": 2, "source": "bought from coal feeders at about $2" }],
+      "reagents": [{ "item": "coal", "guidName": "CoalLump", "unitCost": 5, "source": "bought from coal feeders at about $5" }],
       "buyer": "hardware", "premiumGood": "BCD1E8CD7F975074", "wholesaleGood": "BCD1E8CD7F975074",
       "km": { "mineToPlant": 2.5, "plantToBuyer": 4.7, "returnToMine": 2.3 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
       "note": "Highstone hill to the centre-east smelter, sold at Saint-Philippe"
