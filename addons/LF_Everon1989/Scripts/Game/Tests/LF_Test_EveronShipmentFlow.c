@@ -9,7 +9,7 @@ class LF_Test_EveronShipmentFlow : LF_Test
 {
 	static const ResourceName HARBOUR_MASTER = "{B45B7C6C168822D4}Configs/Npcs/LF_Npc_Townsfolk_HarbourMaster.et";
 	static const ResourceName POLICE_DESK = "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et";
-	static const ResourceName SAMPLE = "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et";
+	static const ResourceName SAMPLE = "{A3BFEFD984031D81}Prefabs/Items/Contraband/LF_ShipmentSample.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()

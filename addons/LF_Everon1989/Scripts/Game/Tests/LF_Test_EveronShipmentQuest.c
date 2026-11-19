@@ -7,7 +7,7 @@
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronShipmentQuest : LF_Test
 {
-	static const ResourceName SAMPLE = "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et";
+	static const ResourceName SAMPLE = "{A3BFEFD984031D81}Prefabs/Items/Contraband/LF_ShipmentSample.et";
 	static const string GATE = "contract:harbour_crates";
 	static const string DIALOGUE_ID = "harbour_master";
 
