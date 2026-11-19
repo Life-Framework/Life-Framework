@@ -3307,7 +3307,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A636049B1615FBC6}" {
      Id "LF-Credits_132"
-     Target_en_us "Harbour master Marcel Roux's ten spoken lines"
+     Target_en_us "Harbour master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{16186E0A5EB3A7AA}" {
