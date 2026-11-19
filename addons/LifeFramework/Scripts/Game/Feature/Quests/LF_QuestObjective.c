@@ -18,6 +18,11 @@ class LF_QuestObjective
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Filter key (faction, resource, area id, giver id; empty = any)")]
 	string m_sFilter;
 
+	//! COLLECT_REPORT only: the quest is turned in on holding the item, and the item stays in the bag
+	//! (a "show it" step, such as counting a crate before choosing what to do with it).
+	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Collect objective: the item stays in the bag on turn-in (a show-it step)")]
+	bool m_bKeepOnTurnIn;
+
 	//! AREA_ENTER only: world-space center and radius the manager checks against
 	//! the player position.
 	[Attribute(defvalue: "0 0 0", UIWidgets.EditBox, "Area center (AREA_ENTER only)")]
