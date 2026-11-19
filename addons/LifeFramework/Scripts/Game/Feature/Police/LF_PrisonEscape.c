@@ -6,7 +6,7 @@
 //! - The member who forced the door has the jailbreak on their record and is wanted (OnOpened,
 //!   from LF_PrisonBreak.Start), so an officer can arrest them like any wanted player.
 //! - An officer who arrests an escapee (LF_Jail.Arrest) puts them back in the cell: the rest of the
-//!   sentence plus the escape term (TermSeconds), the escaped status cleared (LF_Jail.Recapture).
+//!   sentence plus the escape term (TermSeconds, from LF_PrisonBreakConfig), the escaped status cleared (LF_Jail.Recapture).
 //!
 //! No state of its own: the status is the "prisonbreak" section (LF_PrisonBreak), the sentence is the
 //! "jail" payload, the reports are the wanted store, so there is nothing new to save.
@@ -15,13 +15,16 @@ class LF_PrisonEscape
 	static const string FEATURE = "PrisonEscape";
 	static const string OFFENCE_ESCAPED = "#LF-Offence_EscapedCustody";
 
-	//! Seconds added to the rest of the sentence when an escapee is arrested again.
-	static const int TERM_SECONDS = 300;	// lf-fixed: the shipped escape term, five minutes on top of the rest
-
 	//------------------------------------------------------------------------------------------------
+	//! Seconds added to the rest of the sentence when an escapee is arrested again
+	//! (LF_PrisonBreakConfig.m_iEscapeTermSeconds; the shipped default when the config is missing).
 	static int TermSeconds()
 	{
-		return TERM_SECONDS;
+		LF_PrisonBreakConfig config = LF_PrisonBreakConfig.Get();
+		if (!config)
+			return LF_PrisonBreakConfig.DEFAULT_ESCAPE_TERM_SECONDS;
+
+		return config.EscapeTermSeconds();
 	}
 
 	//------------------------------------------------------------------------------------------------

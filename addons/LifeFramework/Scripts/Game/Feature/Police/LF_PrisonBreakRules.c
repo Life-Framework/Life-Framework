@@ -13,12 +13,14 @@ class LF_PrisonBreakConfig
 	static const int DEFAULT_MIN_OFFICERS = 3;	// lf-fixed: the shipped default, mirrors the attribute and the conf
 	static const int DEFAULT_COOLDOWN_SECONDS = 7200;	// lf-fixed: the shipped default, mirrors the attribute and the conf
 	static const int DEFAULT_WINDOW_SECONDS = 90;	// lf-fixed: the shipped default, mirrors the attribute and the conf
+	static const int DEFAULT_ESCAPE_TERM_SECONDS = 300;	// lf-fixed: the shipped default, mirrors the attribute and the conf
 
 	static const int OFFICERS_MIN = 0;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int OFFICERS_MAX = 32;	// lf-fixed: the schema limit, mirrors the attribute params
 	static const int COOLDOWN_MAX = 86400;	// lf-fixed: the schema limit, one day
 	static const int WINDOW_MIN = 10;	// lf-fixed: the schema limit, a door shorter than this cannot be used
 	static const int WINDOW_MAX = 600;	// lf-fixed: the schema limit, ten minutes
+	static const int ESCAPE_TERM_MAX = 7200;	// lf-fixed: the schema limit, two hours
 
 	[Attribute("0", UIWidgets.CheckBox, "Prison breaks are allowed. Off by default: the owner turns the feature on")]
 	bool m_bEnabled;
@@ -31,6 +33,9 @@ class LF_PrisonBreakConfig
 
 	[Attribute("90", UIWidgets.Auto, "Seconds the door stays open after a good start", params: "10 600")]
 	int m_iWindowSeconds;
+
+	[Attribute("300", UIWidgets.Auto, "Seconds added to the rest of the sentence when an escapee is arrested again", params: "0 7200")]
+	int m_iEscapeTermSeconds;
 
 	protected static ref LF_PrisonBreakConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -82,6 +87,7 @@ class LF_PrisonBreakConfig
 		config.m_iMinOfficersOnDuty = DEFAULT_MIN_OFFICERS;
 		config.m_iCooldownSeconds = DEFAULT_COOLDOWN_SECONDS;
 		config.m_iWindowSeconds = DEFAULT_WINDOW_SECONDS;
+		config.m_iEscapeTermSeconds = DEFAULT_ESCAPE_TERM_SECONDS;
 		return config;
 	}
 
@@ -101,6 +107,12 @@ class LF_PrisonBreakConfig
 	int WindowSeconds()
 	{
 		return Math.ClampInt(m_iWindowSeconds, WINDOW_MIN, WINDOW_MAX);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int EscapeTermSeconds()
+	{
+		return Math.ClampInt(m_iEscapeTermSeconds, 0, ESCAPE_TERM_MAX);
 	}
 }
 

@@ -9,6 +9,8 @@
 class LF_Test_PrisonBreak : LF_Test
 {
 	static const string E2E_KEY = "e2e-prison-break-escapee";
+	//! Escaped and recaptured (#3422) before the save: back inside with the escape term, not escaped.
+	static const string E2E_RECAPTURED_KEY = "e2e-prison-break-recaptured";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -33,6 +35,11 @@ class LF_Test_PrisonBreak : LF_Test
 		{
 			ctx.True(LF_Jail.IsServing(E2E_KEY), "the e2e escapee still has a sentence after the restart");
 			ctx.True(LF_PrisonBreak.IsEscaped(E2E_KEY), "the e2e escapee is still escaped after the restart");
+			ctx.True(LF_Jail.IsServing(E2E_RECAPTURED_KEY), "the recaptured e2e prisoner still serves after the restart");
+			ctx.False(LF_PrisonBreak.IsEscaped(E2E_RECAPTURED_KEY), "the recaptured e2e prisoner is not escaped after the restart");
+			float recapturedLeft = LF_Jail.GetRemaining(E2E_RECAPTURED_KEY);
+			ctx.True(recapturedLeft > 600 && recapturedLeft <= 900, string.Format("the recaptured e2e prisoner keeps the rest plus the escape term (600 < %1 <= 900)", recapturedLeft));
+			Print(string.Format("[LFTEST] prison-break recapture restart check ok remaining=%1", recapturedLeft));
 		}
 
 		return;
@@ -196,7 +203,13 @@ class LF_Test_PrisonBreak : LF_Test
 		LF_Jail.Imprison(E2E_KEY, 3600, 1, null);
 		array<ref LF_PrisonBreakRow> e2eRows = {};
 		e2eRows.Insert(LF_PrisonBreakRow.Create(E2E_KEY, 3600));
+		LF_Jail.Imprison(E2E_RECAPTURED_KEY, 600, 1, null);
+		e2eRows.Insert(LF_PrisonBreakRow.Create(E2E_RECAPTURED_KEY, 600));
 		LF_PrisonBreak.ApplyAll(e2eRows);
+		ctx.True(LF_PrisonBreak.IsEscaped(E2E_RECAPTURED_KEY), "the second e2e prisoner is escaped before the recapture");
+		ctx.True(LF_Jail.Recapture(E2E_RECAPTURED_KEY, 300, null), "the second e2e prisoner is recaptured before the save");
+		ctx.False(LF_PrisonBreak.IsEscaped(E2E_RECAPTURED_KEY), "the recapture clears the status before the save");
+		ctx.EqualFloat(900, LF_Jail.GetRemaining(E2E_RECAPTURED_KEY), 0.01, "the recaptured e2e prisoner serves the rest plus the term");
 	}
 
 	//------------------------------------------------------------------------------------------------

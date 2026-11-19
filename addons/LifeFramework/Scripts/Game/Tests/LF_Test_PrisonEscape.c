@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_PrisonEscape`: RED PROOF OK with the recapture arrest skipped: `the runner serves the rest plus the escape term (expected 380, got 80)`, `a recaptured prisoner is not arrested a third time`. The unhooked run passes (3 passed with LF_Test_PrisonBreak).
+// red-proof: Observed 2026-11-19 with `tools/cli test --no-build --red LF_Test_PrisonEscape`: RED PROOF OK with the recapture arrest skipped: `the runner serves the rest plus the escape term (expected 380, got 80)`, `a recaptured prisoner is not arrested a third time`. The unhooked run passes (3 passed with LF_Test_PrisonBreak). Review 2026-11-19: "one escape is one dispatch call (expected 3, got 4)" and "one escape is one wanted row (expected 1, got 2)" failed on the unfixed LF_Jail.NoteEscape (jailbreak report plus Escaped custody), pass with one report.
 //! The search afterwards (#3422): an escapee is on the wanted board as "Escaped custody", an officer can
 //! arrest them again (back to the cell with the rest of the sentence plus the escape term, the status
 //! cleared), and the member who opened the door has the jailbreak on their record and is wanted.
@@ -28,6 +28,7 @@ class LF_Test_PrisonEscape : LF_Test
 		LF_PrisonBreakConfig config = LF_PrisonBreakConfig.CreateDefault();
 		config.m_bEnabled = true;
 		config.m_iMinOfficersOnDuty = 0;
+		config.m_iEscapeTermSeconds = 300;
 		LF_PrisonBreakConfig.UseForTest(config);
 
 		LF_Jail.Configure(40, 200, 1, 4);
@@ -65,7 +66,13 @@ class LF_Test_PrisonEscape : LF_Test
 
 		// The runner walks out: the escape is a wanted row, the stayer has none.
 		ctx.False(LF_PrisonEscape.HasWantedRow(runnerUid, LF_PrisonEscape.OFFENCE_ESCAPED), "nothing is posted before the walk");
+		int callsBefore = LF_Dispatch.CallCount();
+		int rowsBefore = LF_WantedReports.CountFor(runnerUid);
 		ctx.True(LF_Jail.NoteEscape(runnerUid, outside, null), "the runner walks out through the open door");
+		ctx.Equal(callsBefore + 1, LF_Dispatch.CallCount(), "one escape is one dispatch call");
+		ctx.Equal(rowsBefore + 1, LF_WantedReports.CountFor(runnerUid), "one escape is one wanted row");
+		ctx.False(LF_Jail.NoteEscape(runnerUid, outside, null), "standing outside does not report the escape again");
+		ctx.Equal(callsBefore + 1, LF_Dispatch.CallCount(), "no second call while out");
 		ctx.True(LF_PrisonEscape.HasWantedRow(runnerUid, LF_PrisonEscape.OFFENCE_ESCAPED), "the escapee is on the wanted board as Escaped custody");
 		ctx.False(LF_PrisonEscape.HasWantedRow(stayerUid, LF_PrisonEscape.OFFENCE_ESCAPED), "the stayer is not posted");
 		ctx.True(LF_PrisonBreak.IsEscaped(runnerUid), "the runner is escaped");

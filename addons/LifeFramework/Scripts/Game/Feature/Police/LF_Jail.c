@@ -1182,9 +1182,12 @@ class LF_Jail
 		sentence.m_bEscaped = true;
 		bool firstEscape = LF_PrisonBreak.OnWalkedOut(playerUid, sentence.m_fRemaining, System.GetUnixTime());
 		LF_Debug.Warn("Jail", string.Format("%1 escaped the cell through the open door remaining=%2", playerUid, sentence.m_fRemaining));
-		LF_Dispatch.Report(playerUid, body, LF_WantedReports.OFFENCE_JAILBREAK, vector.Zero);
+		// One report per escape: the first walk in a break window is "Escaped custody" (#3422); a walk
+		// out of an open door with no window (or a second walk) stays the plain jailbreak report.
 		if (firstEscape)
 			LF_PrisonEscape.OnEscaped(playerUid, body);
+		else
+			LF_Dispatch.Report(playerUid, body, LF_WantedReports.OFFENCE_JAILBREAK, vector.Zero);
 
 		return true;
 	}
