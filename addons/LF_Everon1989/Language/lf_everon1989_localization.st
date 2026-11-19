@@ -989,6 +989,11 @@ StringTable {
      Target_en_us "Contested ground"
      Comment "Map POI kind name (#3552): a contested site (LF_Places kind contested-site), held ground an organisation can take. Public story pin, so a newcomer finds the farm compound, the hilltop mast and the quarry."
     }
+    CustomStringTableItem "{BFF48978815D4687}" {
+     Id "LF-MapPoi_FarmSupply"
+     Target_en_us "Farm supply"
+     Comment "Map POI name (#3631): the Saint-Philippe farm supply counter by the farm barn."
+    }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
      Target_en_us "Fence"
@@ -1569,6 +1574,11 @@ StringTable {
      Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
+    CustomStringTableItem "{01FD5CE2F519BD5D}" {
+     Id "LF-Shop_Desc_FarmSupply"
+     Target_en_us "Farm machinery for hire-purchase on the spot: a reaper to hitch behind a tractor or a UAZ."
+     Comment "Shop description of the farm supply counter till (#3631): outlet farm_supply."
+    }
     CustomStringTableItem "{1B4CFC6B76803431}" {
      Id "LF-Shop_Desc_Furniture"
      Target_en_us "Beds, sofas, tables, wardrobes and lamps for the new home."
@@ -1644,6 +1654,11 @@ StringTable {
      Target_en_us "Clothes shop"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
+    CustomStringTableItem "{4E605F7F63F4AF47}" {
+     Id "LF-Shop_Name_FarmSupply"
+     Target_en_us "Farm Supply"
+     Comment "Shop name of the farm supply counter till (#3631): outlet farm_supply."
+    }
     CustomStringTableItem "{5610D2FB07972A2F}" {
      Id "LF-Shop_Name_Furniture"
      Target_en_us "Meubles"
@@ -1694,6 +1709,11 @@ StringTable {
      Target_en_us "Workwear counter"
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
+    CustomStringTableItem "{D0DAC06750DA2554}" {
+     Id "LF-Shop_OpenDesc_FarmSupply"
+     Target_en_us "Buy a reaper"
+     Comment "Action description on the farm supply counter till (#3631)."
+    }
     CustomStringTableItem "{BC9B8CB431998AA0}" {
      Id "LF-Shop_OpenDesc_Hardware"
      Target_en_us "Browse the tools and building supplies."
@@ -1728,6 +1748,11 @@ StringTable {
      Id "LF-Shop_Open_ClothesShop"
      Target_en_us "Browse the clothes rack"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{EF58B7CBF7ED945F}" {
+     Id "LF-Shop_Open_FarmSupply"
+     Target_en_us "Browse the farm machinery"
+     Comment "Action label on the farm supply counter till (#3631)."
     }
     CustomStringTableItem "{0E816968A7BE847A}" {
      Id "LF-Shop_Open_Furniture"
@@ -2183,6 +2208,26 @@ StringTable {
      Id "LF-Sign_FarmPlots_What"
      Target_en_us "Grow your own cabbages in the dirt plots."
      Comment "Info board at the farm plots, What section."
+    }
+    CustomStringTableItem "{E7F58ACC29F1A769}" {
+     Id "LF-Sign_FarmSupply_Next"
+     Target_en_us "Take it out at the implement rack beside the barn, hitch it to a UAZ or a Z7211 and drive to the field. Put it back at the rack when you are done."
+     Comment "Sign card for the farm supply counter, Next section (#3631)."
+    }
+    CustomStringTableItem "{093093E54CF70A83}" {
+     Id "LF-Sign_FarmSupply_Reaper"
+     Target_en_us "Reaper"
+     Comment "Chalk board row label at the farm supply counter (#3631)."
+    }
+    CustomStringTableItem "{4363B8E0446F2520}" {
+     Id "LF-Sign_FarmSupply_Title"
+     Target_en_us "Farm supply"
+     Comment "Title of the chalk board at the Saint-Philippe farm supply counter (#3631). Printed on the board and shown in the prompt as Read: Farm supply."
+    }
+    CustomStringTableItem "{E32383E42223461E}" {
+     Id "LF-Sign_FarmSupply_What"
+     Target_en_us "Farm machinery sold over the counter, one of each per customer. Price in dollars."
+     Comment "Sign card for the farm supply counter, What section (#3631)."
     }
     CustomStringTableItem "{905E4015631C43F6}" {
      Id "LF-Sign_Farm_How"

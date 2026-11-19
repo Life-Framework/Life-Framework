@@ -548,6 +548,14 @@
         "D10 pick (#3190), lumber epic #3169 sibling (Z2): the cabbage plots, the seed crate and the farm_plots sign (kinds FarmPlot, SeedCrate) go on the open ground round this barn, which stays locked 'Propriete privee' (L0 #3204) since the slot uses its yard, not its door. None of the four free plots was used: all four carry sale signs (Plots_saint-philippe.layer). Every henhouse stands in a house yard, and b96 is the barn behind the range, so b73 is the one farm barn clear of both. b100 (north-east edge) and b23 are the same kind of barn"
       ]
     },
+    "farm-supply": {
+      "building": "b73",
+      "shared": true,
+      "why": [
+        "Barn_E_02 (farm), 80.8 m2, the farm barn b73 the farm slot holds (#3190); front doors on the south-east side, open ground in front",
+        "Wheat chain card #3631 (parent #3282): the farm supply counter (outlet farm_supply, sells the reaper) and the implement rack stand on the open ground in front of the barn, so a player buys the reaper, takes it out onto a UAZ469 or Z7211 and drives to the field. Street furniture that shares the building with the farm slot (the chess-on-the-pub pattern, #3078): the farm kit keeps the cabbage plots, this kit keeps the counter and the rack"
+      ]
+    },
     "merchant-timber": {
       "building": "b59",
       "shared": true,
