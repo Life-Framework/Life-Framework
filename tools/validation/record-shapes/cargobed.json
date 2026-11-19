@@ -1,0 +1,15 @@
+{
+  "section": "cargobed",
+  "class": "LF_CargoBedSavePayload",
+  "version": 1,
+  "roots": "LF_CargoBedRow",
+  "records": {
+    "LF_CargoBedRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sVehicleId",
+        "string m_sStack"
+      ]
+    }
+  }
+}

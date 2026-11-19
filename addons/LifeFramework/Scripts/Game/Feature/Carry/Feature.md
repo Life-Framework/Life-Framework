@@ -33,7 +33,7 @@ holstered, the hands are busy and a gadget in the hands replicates natively, lat
 - **Owner and side:** the server owns the stack. `LF_CargoBedComponent` on the vehicle holds one kind index per unit
   (softwood log 1, hardwood log 2; ore sack 1 and crate 2 have rows but no prefab yet) and replicates it as one short
   string through `RpcDo_SetStack` and `RplSave`/`RplLoad`. Every client draws physics-free local copies on bed slots
-  (the `LF_FarmPlotComponent` pattern). Rules: `LF_CargoBed` (`DecideLoad`, `Pack`/`Unpack`). Nothing persists (#3266).
+  (the `LF_FarmPlotComponent` pattern). Rules: `LF_CargoBed` (`DecideLoad`, `Pack`/`Unpack`). The load persists (#3266).
 - **Data:** capacity and layout are attributes on the vehicle `.et` (1989 truck `EL_M923A1_transport` 12, vans
   `EL_UAZ452_base` and `EL_S1203_transport_beige` 6, a car none). The tailgate is a `lf_cargo` action context.
   Bed positions on the vans are estimates; the truck's come from its measured bounds.
@@ -41,3 +41,10 @@ holstered, the hands are busy and a gadget in the hands replicates natively, lat
   `LF_CargoHaulingGate` refuses the inventory screen's `InsertItem` of a log into anything but the hand-carry slot.
   Scripted inserts (`AddAmount`, used by the sawmill chain and its tests) are unchanged until a carried-log sawmill card.
 - **Proof:** `carry/cargo-bed` (WORLD), `node agent-box/session.mjs cargo-bed`.
+- **Persistence (#3266):** save section `cargobed` (`LF_CargoBedSavePayload`), one row per owned truck: the vehicle's
+  garage id and the stack text. `LF_VehicleOwnership.CaptureCargo` (garage store, tow, every save point) takes the bed
+  into the `LF_CargoBedPersist` ledger; `SpawnOwned` (garage retrieve, impound collect) puts it back through
+  `LF_CargoBedComponent.ServerRestore`, which also tells the clients. A load replaces the ledger and every live bed, so
+  reading twice is the same as once; a row for a vehicle with no record, or no readable load, is dropped with an Info
+  line. An empty bed clears its row; a scrapped or destroyed truck loses its load. Only owned vehicles keep a load.
+  Proof: `carry/cargo-bed-persist` (PERSISTENCE), `tools\cli wt e2e` (the truck comes back from the impound loaded).
