@@ -13,6 +13,11 @@ class LF_Test_EveronDirtyMoney : LF_Test
 	static const ResourceName PLUM = "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
 	static const ResourceName CABBAGE = "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et";
 	static const string SUPERMARKET = "supermarket";
+	static const ResourceName CRATE = "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et";
+	static const int CRATE_BOTTLES = 6;
+	//! The shipment quest's sample (#3768): a crate of its own, so the buyer's price for it never reaches the
+	//! convoy's free crates or the chain's packed ones.
+	static const ResourceName SAMPLE = "{A3BFEFD984031D81}Prefabs/Items/Contraband/LF_ShipmentSample.et";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -25,6 +30,16 @@ class LF_Test_EveronDirtyMoney : LF_Test
 	//! recipe for (a new priced good adds its recipe here) or an ingredient the supermarket does not sell.
 	protected static int IngredientCost(ResourceName good)
 	{
+		// The shipment sample is a crate of six bottles (the moonshine chain's pack step), priced as one (#3768).
+		if (LF_Utils.SamePrefab(good, SAMPLE))
+		{
+			int bottle = IngredientCost(MOONSHINE);
+			if (bottle <= 0)
+				return -1;
+
+			return CRATE_BOTTLES * bottle;
+		}
+
 		array<ResourceName> raw = {};
 		array<int> amounts = {};
 		if (LF_Utils.SamePrefab(good, MOONSHINE))
@@ -107,7 +122,9 @@ class LF_Test_EveronDirtyMoney : LF_Test
 			foreach (LF_BuyerPriceRow row : prices.m_aPrices)
 			{
 				int bulk;
-				ctx.True(LF_ChainSearch.IsGood(row.m_Prefab, bulk), string.Format("%1 is a chain goods item", row.m_Prefab));
+				// The shipment sample is the one quest item the buyer names (#3768).
+				if (!LF_Utils.SamePrefab(row.m_Prefab, SAMPLE))
+					ctx.True(LF_ChainSearch.IsGood(row.m_Prefab, bulk), string.Format("%1 is a chain goods item", row.m_Prefab));
 				int cost = IngredientCost(row.m_Prefab);
 				ctx.True(cost > 0, string.Format("%1: its ingredients have a supermarket cost", row.m_Prefab));
 				if (cost > 0)
@@ -115,6 +132,9 @@ class LF_Test_EveronDirtyMoney : LF_Test
 			}
 
 			ctx.Equal(80, LF_BuyerPrices.PriceOf(MOONSHINE), "the buyer pays the pack's moonshine price");
+			ctx.Equal(480, LF_BuyerPrices.PriceOf(SAMPLE), "the buyer pays 480 for the shipment sample");
+			// The convoy start hands a free crate on every press: a price on it would be a money tap (#3778 review).
+			ctx.Equal(0, LF_BuyerPrices.PriceOf(CRATE), "the buyer does not buy the convoy's contraband crate");
 		}
 
 		// The informant: after he has talked about work the night-shift worker offers the reply, only through the Informant hook

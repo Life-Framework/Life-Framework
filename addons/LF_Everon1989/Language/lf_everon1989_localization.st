@@ -39,6 +39,31 @@ StringTable {
      Target_en_us "Harbour crates"
      Comment "Contract tracker title (#2709): the harbour master's early crates run (LF-ContractTracker_Title_<contractId>)."
     }
+    CustomStringTableItem "{3465F00000000006}" {
+     Id "LF-Dialogue_AnniversaryLetter_Ask"
+     Target_en_us "That hand... I know that hand. Where did you find the paper you are holding?"
+     Comment "Gaspard greets a player carrying the anniversary letter (#3465)."
+    }
+    CustomStringTableItem "{3465F00000000009}" {
+     Id "LF-Dialogue_AnniversaryLetter_SayHandIn"
+     Target_en_us "Hand him the letter."
+     Comment "Reply: hand in the letter (#3465)."
+    }
+    CustomStringTableItem "{3465F0000000000A}" {
+     Id "LF-Dialogue_AnniversaryLetter_SaySecret"
+     Target_en_us "What did Dominique know?"
+     Comment "Reply: ask for the old secret (#3465)."
+    }
+    CustomStringTableItem "{3465F00000000008}" {
+     Id "LF-Dialogue_AnniversaryLetter_Secret"
+     Target_en_us "Dominique counted the drums before they emptied the Zone. He wrote the markings down for the mayor. I saw the same marks on the night boats, and I said nothing. Keep this to yourself until you know who is listening."
+     Comment "Gaspard tells the old secret after the hand-in (#3465)."
+    }
+    CustomStringTableItem "{3465F00000000007}" {
+     Id "LF-Dialogue_AnniversaryLetter_Thanks"
+     Target_en_us "Dominique. Three years, and it comes to me out of a heap of flowers. Thank you for carrying it."
+     Comment "Gaspard takes the letter (#3465)."
+    }
     CustomStringTableItem "{3E9F5343A58B4851}" {
      Id "LF-Dialogue_CafeOwner_Bye"
      Target_en_us "Come back when you are hungry. Or lonely. It is the same to me."
@@ -469,6 +494,11 @@ StringTable {
      Target_en_us "Open it, count what is in there and come back. If it is only fish, no harm done."
      Comment "Harbour master sends the player to the crate (#3440)."
     }
+    CustomStringTableItem "{3768F00000000001}" {
+     Id "LF-Dialogue_ShipmentHarbourMaster_SayAskCrate"
+     Target_en_us "Anything odd on the quay today?"
+     Comment "Reply: ask the harbour master about the red crate (#3768)."
+    }
     CustomStringTableItem "{3440F00000000112}" {
      Id "LF-Dialogue_ShipmentHarbourMaster_SayCount"
      Target_en_us "I will count the crate for you."
@@ -788,6 +818,16 @@ StringTable {
      Id "LF-Informant_Told"
      Target_en_us "He is buying tonight. I marked the spot on your map; it will not keep past this shift."
      Comment "Informant answer (#2922, 1989 pack voice): the fee was paid and the buyer's spot is on the map."
+    }
+    CustomStringTableItem "{3465F00000000002}" {
+     Id "LF-Item_AnniversaryLetter_Desc"
+     Target_en_us "Yellowed paper in a careful hand. It is addressed to Gaspard Lenoir, the old fisherman, and signed D. Bouvier, three years ago. Bring it to him."
+     Comment "Inspect text of the anniversary letter: names the resident to bring it to (#3465)."
+    }
+    CustomStringTableItem "{3465F00000000001}" {
+     Id "LF-Item_AnniversaryLetter_Name"
+     Target_en_us "Old letter, sealed"
+     Comment "Item name: the letter from the memorial's flowers (#3465)."
     }
     CustomStringTableItem "{10FBB25BFFCCF1A6}" {
      Id "LF-Item_Baguette"
@@ -1318,6 +1358,21 @@ StringTable {
      Id "LF-PoliceApp_Title"
      Target_en_us "Application to the Everon {Police}"
      Comment "Police application form title."
+    }
+    CustomStringTableItem "{3465F00000000004}" {
+     Id "LF-Quest_AnniversaryLetter_Desc"
+     Target_en_us "The letter in the memorial's flowers is addressed to Gaspard Lenoir. Bring it to him."
+     Comment "Quest description for anniversary_letter (#3465)."
+    }
+    CustomStringTableItem "{3465F00000000003}" {
+     Id "LF-Quest_AnniversaryLetter_Title"
+     Target_en_us "A letter from the past"
+     Comment "Quest title for anniversary_letter (#3465)."
+    }
+    CustomStringTableItem "{3465F00000000005}" {
+     Id "LF-Quest_AnniversaryLetter_TurnIn"
+     Target_en_us "Gaspard reads it twice without a word. Then he asks you to sit."
+     Comment "Giver line on turn-in of anniversary_letter (#3465)."
     }
     CustomStringTableItem "{41BDF9AA8EA3352E}" {
      Id "LF-Quest_ArrivalBank_Desc"

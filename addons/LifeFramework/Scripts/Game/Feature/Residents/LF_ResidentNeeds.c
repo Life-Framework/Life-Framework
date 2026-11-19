@@ -141,6 +141,14 @@ class LF_ResidentNeeds
 	{
 		string resident = ResidentOf(questId);
 		if (resident.IsEmpty())
+		{
+			// A quest a pack hangs on a giver names the resident it helps in its own data (#3465).
+			LF_QuestDefinition def = LF_QuestManager.GetInstance().GetDefinition(questId);
+			if (def)
+				resident = def.m_sMemoryResident;
+		}
+
+		if (resident.IsEmpty())
 			return false;
 
 		int now;

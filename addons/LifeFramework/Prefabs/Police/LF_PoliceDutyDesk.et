@@ -14,8 +14,23 @@ GenericEntity : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
   GenericEntity DutyClock {
    ID "281D3BD880CE964E"
    components {
+    LF_QuestGiverComponent "{3768D00000000002}" {
+     m_sGiverId "police_desk"
+     m_sDisplayName "#LF-Quest_Giver_PoliceDesk"
+     m_bConverse 1
+     m_sIdleKey "#LF-Quest_PoliceDesk_Idle"
+    }
     ActionsManagerComponent "{775836274AF8BE66}" {
      additionalActions {
+      LF_QuestAction "{3768D00000000003}" {
+       ParentContextList {
+        "LF_DutyClock"
+       }
+       UIInfo UIInfo "{3768D00000000004}" {
+        Name "#LF-Quest_Action_PoliceDesk"
+       }
+       "Sort Priority" 5
+      }
       LF_FineTicketPayAction "{6F2B91D4C8A3E517}" {
        ParentContextList {
         "LF_DutyClock"

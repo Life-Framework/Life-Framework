@@ -110,7 +110,7 @@ its GUID here when chosen). Taking it out of the crate is "the crate is opened".
 | Beat | Card | Id(s) | What it is |
 |---|---|---|---|
 | 1 The ship docks | S2 #3439 | event `shipment_docks`; phases `dawn`, `unload`; scene id `shipment_docks`; scene config `LF_Scene_ShipmentDocks.conf`; precondition module `shipment_docks_dawn` (hour window, once per game week); scene operation module `shipment_docks_scene`; crate spot `scene-crate`; crate prefab chosen by S2 | Truck parks on the quay (#3074), two dockers walk crates to the warehouse, Marcel stands by, the red crate is left at `scene-crate`. Pack file `LF_Events_Everon1989.conf` (shared with S5: S5 rebases on S2) |
-| 2 A crate is opened | S3 #3440 | quests `shipment_count` (giver `harbour_master`, gate `contract:harbour_crates`, the existing TOWN contract gate, no new gate row), `shipment_report` (giver: the police desk, S3 confirms the giver id), `shipment_sold`; item `shipment_sample`; dialogue id `shipment_harbour_master` (file `LF_Dialogue_ShipmentHarbourMaster.conf`) with rows `shipment.ask`, `shipment.count`, `shipment.thanks_report`, `shipment.thanks_sell`; reuses the existing giver-table overlay (`LF_QuestGiverTable_Everon1989.conf`, no edit to Marcel's existing conf) | Marcel asks a trusted player to count the red crate. Collecting `shipment_sample` is the opening. `shipment_report` is turned in at the desk; `shipment_sold` is closed by the buyer paying for it. Both write the state the other cards read |
+| 2 A crate is opened | S3 #3440 | quests `shipment_count` (giver `harbour_master`, gate `contract:harbour_crates`, the existing TOWN contract gate, no new gate row), `shipment_report` (giver: the police desk, S3 confirms the giver id), `shipment_sold`; item `shipment_sample`; a patch of the `harbour_master` dialogue (file `LF_Dialogue_ShipmentHarbourMaster.conf`, #3768 made it a patch: the greeting is full at four replies) with rows `shipment.ask`, `shipment.count`, `shipment.thanks_report`, `shipment.thanks_sell`; reuses the existing giver-table overlay (`LF_QuestGiverTable_Everon1989.conf`, no edit to Marcel's existing conf) | Marcel asks a trusted player to count the red crate. Collecting `shipment_sample` is the opening. `shipment_report` is turned in at the desk; `shipment_sold` is closed by the buyer paying for it. Both write the state the other cards read |
 | 3 Rumours in the pub | S4 #3441 | rumour rows `rumour.shipment.reported` and `rumour.shipment.sold` for residents `cafe_owner`, `old_man`, `night_shift` (and the neighbours if S4 wants); file `LF_Rumours_Shipment.conf`; each row gated on the quest ids above and fading after 3 game days | Same rows, different line for a reporter and a seller. No new resident rows |
 | 4 The raid | S5 #3443 | event `shipment_raid`; phases `dispatch`, `door`; scene id `shipment_raid`; scene config `LF_Scene_ShipmentRaid.conf`; precondition `shipment_raid_after_report` (reads `shipment_report` done; dusk); service call `police` at the dock warehouse; evidence row for `shipment_sample` | A police call for officers on duty, two AI gendarmes at the door, the crate seized into the evidence locker unless it already left (the sold branch has no raid) |
 | Voices | S6 #3444 | folder `Sounds/Dialogue/Shipment/`; sources `tools/assets/dialogue/<npc>/dialogue.json` for `harbour_master` (shipment rows) and `shipment_go_between` | Lines for beat 2 and the go-between voiced through `asset dialogue`. The foreman and officer have no voiced lines |
@@ -141,6 +141,85 @@ its GUID here when chosen). Taking it out of the crate is "the crate is opened".
 - M8 (the anniversary): which way the town leaned (the `TOWN` and `UNDERWORLD` standing at the anniversary) is
   the shipment's lasting effect.
 
+## Arc 4: The anniversary (M8, #1039, story sheet #3462)
+
+The public pitch is `story/the-anniversary.md`. This section is the twist, the cast notes and every id the content
+cards must agree on. Card numbers are not cut yet; each row says what a card would own. It uses existing systems
+only: dialogue, quests, the event shell, residents, standing and rumour rows (source ideas #214; residents #991
+carry the town). No new system.
+
+**What the day remembers.** Three years ago the Zone was evacuated in a night. The relocated count it from the
+arrival at dawn; the town counts it from the day the first families walked in. The mayor, the priest and the widow
+have each told it differently since.
+
+**The letter.** Dominique Bouvier, the widow's husband, was on the clean-up crew that logged the Zone's drums
+before the evacuation. He wrote to the mayor three weeks before he died, naming the plant's contractor and the
+markings on the drums, and asking that the relocated be told what the island's new factory would store. The
+mayor kept the letter and signed the factory contract anyway (the contract is a cover, arc 2). The widow found
+the carbon copy in his coat after the evacuation and gave it to the priest for safekeeping. The priest brings it
+to the memorial.
+
+**Who knows what.**
+
+| Id | Who | Public | Hidden | Where | Status |
+|---|---|---|---|---|---|
+| `mayor` | Bastien Girard | Runs the town hall; the day's host | Held Dominique's letter back and signed the factory contract. Wants it read as a thank-you, not a reckoning | Town hall steps, then the square | **New NPC** (proposal) |
+| `priest` | Father Étienne Morel | Leads the walk and the blessing | Holds the carbon copy of the letter; will read it only if a player asks him to | Church b07, then the square | **New NPC** (proposal) |
+| `widow` | Hélène Bouvier | Reads the names | Wants the letter read; does not know its contents, only that it exists | Square, by the candles | **New NPC** (proposal) |
+| `clerk` | The clerk | The town hall's face | Filed the second copy of R-89; stands at the back and will not meet the widow's eye | Square crowd | Exists (`LF_Dialogue_ClerkEveron.conf`), rumour rows only |
+| `cafe_owner` | Odile Marchand | The café owner | Brings the coats and the soup; sides with the relocated | Square | Exists, rumour rows only |
+| `old_man` | Gaspard Lenoir | The retired fisherman | Recognises Dominique's drum markings when the letter is read | Square | Exists, rumour rows only |
+| `night_shift` | Rémi Duval | The night worker | Learns what he has been unloading, if the letter is read | Square, apart from the crowd | Exists, rumour rows only |
+
+New names are proposals, like the rest of this file. Voices follow `docs/architecture/npc-dialogue.md`.
+
+**The player's choice, and what it moves.**
+
+| Choice | Done by | Standing | Next |
+|---|---|---|---|
+| Read the letter | Ask the priest to read it aloud (`anniversary_letter_read`) | TOWN down, POLICE up, UNDERWORLD up a little (the gangs hear first) | The town learns what the factory stored; the island's goodwill drops; the relocated keep their names clean |
+| Hold the letter | Give it to the mayor, or let the walk end without it (`anniversary_letter_held`) | TOWN up, POLICE down | The town is told the day was a thank-you; the clerk's second copy stays hidden; arc 4 closes quietly |
+| Burn it | Burn it in the candle tray at the widow's feet | TOWN up a little, UNDERWORLD down a little | The widow knows; the letter is gone; the priest's carbon copy is the only record (a later hook, not this card) |
+
+The shipment's lasting effect decides the room. If the player's TOWN standing from the shipment is high, the
+mayor listens; if UNDERWORLD is high, a gang runner is in the crowd and the letter's reading becomes an incident
+(an event escalation, not a new system).
+
+### Beats, one event, quest or dialogue row each
+
+| Beat | Id(s) | What it is |
+|---|---|---|
+| 1 Preparations | event `anniversary` phase `prepare`; quests `anniversary_chairs` (giver `mayor`, carry chairs to the square), `anniversary_candles` (giver `priest`, buy candles at the general store), `anniversary_names` (giver `widow`, fetch the list from the town hall registry); dialogue ids `anniversary_mayor`, `anniversary_priest`, `anniversary_widow`; precondition module `anniversary_week` (a fixed game date, once) | The square fills up; three requests, any order. Files: `LF_Events_Everon1989/LF_Events_Anniversary.conf`, `LF_Dialogue_Anniversary*.conf` |
+| 2 The memorial | phase `walk`; scene id `anniversary_walk` (walkers leave the church and cross to the square); scene config `LF_Scene_AnniversaryWalk.conf`; scene operation module `anniversary_walk_scene`; markers kind `Church` and the `square-evening` place | The town walks at dusk; the priest and the mayor speak; the widow lays the first candle. A player who carried a candle or a chair is named in the crowd's talk (state from beat 1) |
+| 3 A letter from the past | phase `letter`; quests `anniversary_letter_read`, `anniversary_letter_held`; item `anniversary_letter` (an existing paper prefab the card picks); dialogue rows `anniversary.letter.ask`, `anniversary.letter.read`, `anniversary.letter.hold` | The priest holds the letter; the player decides (table above). Both quests write the state beat 4 reads |
+| 4 The town gathers | phase `gather`; rumour rows `rumour.anniversary.read`, `rumour.anniversary.held` for residents `cafe_owner`, `old_man`, `night_shift` and the neighbours; file `LF_Rumours_Anniversary.conf`; each row gated on the quest ids above and fading after 5 game days | The same rows, a different line for each branch. One standing award row for each branch in `LF_Reputation_Everon1989.conf` (about 10 lines; the card says so in its PR) |
+
+### Places the arc uses
+
+| Place | Id or layer | Used by |
+|---|---|---|
+| Church | slot `church`, b07, `Place_saint-philippe_church.layer`, kind `Church` | Beat 2 start; the priest's resident place |
+| The square | slot `square-evening`, `Place_saint-philippe_square-evening.layer` | Beats 1 to 4; the candle tray (a placed prop) |
+| Town hall | the `clerk` place (registry desk) | Beat 1, `anniversary_names` |
+| General store | the `store_clerk` place | Beat 1, `anniversary_candles` |
+| Cemetery | Calvary Hill (world bible, "Calvary Hill, the cemetery") | Optional epilogue; not part of the four beats |
+
+### Cards still needed
+
+- **A new NPC card for the mayor, the priest and the widow.** Pack NPC prefabs, dialogue confs, resident rows and
+  anchors. No card owns this yet. Beats 1 to 4 can run with the existing residents until it lands, using the
+  clerk's voice for the mayor's lines.
+- **Voices.** Folder `Sounds/Dialogue/Anniversary/`; sources `tools/assets/dialogue/<npc>/dialogue.json`.
+- **The candle tray.** A placed prop in the square cell (or the town pass); `tools\cli place` only.
+
+### Joins to other arcs
+
+- Arc 1 (the relocated): the day marks the first arrival; the clerk's second copy of R-89 is the quiet proof that
+  the town knew who the relocated were before they arrived.
+- Arc 2 (the factory): the contract is a cover; the letter names the drums the factory takes in.
+- Arc 3 (the shipment): the shipment's TOWN and UNDERWORLD standing decides who is in the crowd and how the
+  mayor answers.
+
 ## Spoiler terms
 
 The website check (`tools\cli validate`, `validate-public-bible`) fails when the public page, a place dossier's
@@ -161,6 +240,12 @@ pick phrases that appear only here, and add a term when a new twist is written d
 - Hugo Valmy
 - Thierry Vasseur
 - Colette Aubry
+- Dominique Bouvier
+- Bastien Girard
+- Étienne Morel
+- Hélène Bouvier
+- anniversary_letter
+- held the letter back
 
 ## Open questions (internal)
 

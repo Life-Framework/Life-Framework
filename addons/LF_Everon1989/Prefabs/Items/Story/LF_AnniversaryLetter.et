@@ -1,0 +1,13 @@
+GenericEntity : "{5CF603986376EAA9}Prefabs/Items/Misc/IntelligenceFolder_E_01/IntelligenceFolder_E_01_base.et" {
+ ID "3465C00000000001"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_AnniversaryLetter_Name"
+     Description "#LF-Item_AnniversaryLetter_Desc"
+    }
+   }
+  }
+ }
+}
