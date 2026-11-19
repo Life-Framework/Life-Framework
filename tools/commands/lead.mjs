@@ -24,6 +24,7 @@ import {
 import { readQueue } from "../lib/ship-queue.mjs";
 import { diskLines, oldestFirst, parseOldest } from "../lib/disk-guard.mjs";
 import { findStrays, moveStrays, parseStatus, strayRootOf } from "../lib/main-write-guard.mjs";
+import { alertFresh, healBlockedFastForward, noteAlert, readAlert } from "../lib/main-ff-heal.mjs";
 
 export const help = "lead [--prs N] | lead stray [--dry-run] | lead prune-safe [--dry-run] [--oldest N]   one-screen dispatch view: milestones, PRs, worktrees, pool, ship queue, accounts, slices";
 
@@ -470,7 +471,24 @@ export function strayPass(root, { dry = false, env = process.env } = {}) {
     }
   }
   if (found.fresh.length) lines.push(`STRAY ${found.fresh.length} untracked file(s) under 2 min old, left for the next pass: ${found.fresh.slice(0, 4).join(", ")}`);
-  if (found.modified.length) lines.push(`STRAY ${found.modified.length} tracked file(s) modified in the main checkout (blocks git pull): ${found.modified.slice(0, 6).join(", ")}  -> git diff, then restore or move by hand`);
+  if (found.modified.length) {
+    // #3700: a stray tracked edit that blocks the fast-forward is stashed (never discarded), the maintainer's Worlds/ edits are not.
+    const behind = wt.git(root, ["rev-list", "--count", "HEAD..origin/main"]);
+    if (!dry && behind.status === 0 && Number(behind.stdout.trim()) > 0) {
+      const heal = healBlockedFastForward(root, (args) => wt.git(root, args));
+      if (heal.line) {
+        const hub = wt.ensureHub(root);
+        noteAlert(hub, heal.line);
+        lines.push(`MAINFF ${heal.line}`);
+        return lines;
+      }
+      return lines; // it fast-forwarded: the edits no longer block anything
+    }
+    lines.push(`STRAY ${found.modified.length} tracked file(s) modified in the main checkout (blocks git pull): ${found.modified.slice(0, 6).join(", ")}  -> ${dry ? "lead stray stashes them when origin/main is ahead and the fast-forward is blocked; " : ""}git diff, then restore or move by hand`);
+  }
+  // The guard's own alert (tools/main-guard.mjs): shown for 12 h.
+  const alert = readAlert(wt.hubDirOf(root));
+  if (alertFresh(alert) && !lines.some((l) => l.startsWith("MAINFF"))) lines.push(`MAINFF ${alert.line} (${Math.round((Date.now() - alert.at) / 60000)} min ago)`);
   return lines;
 }
 

@@ -1,5 +1,5 @@
-// PreToolUse hook (.claude/settings.json): refuses a Write/Edit/NotebookEdit into the lead's main checkout from an agent
-// that works in a worktree (#2785). The rule is tools/lib/main-write-guard.mjs; this file only reads the payload from
+// PreToolUse hook (.claude/settings.json): refuses a Write/Edit/NotebookEdit, or a Bash/PowerShell command that redirects
+// or edits in place (#3700), into the lead's main checkout from an agent that works in a worktree (#2785). The rule is tools/lib/main-write-guard.mjs; this file only reads the payload from
 // stdin and prints the deny. Any failure here allows the call: a broken guard must never stop work.
 import { decideWrite } from "../lib/main-write-guard.mjs";
 
