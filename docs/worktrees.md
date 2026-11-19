@@ -896,6 +896,23 @@ it, picks a lane and a budget, and prints one line per outcome.
   for an idle session's 3-5 min reap instead of starting beside it. Selftests: `tools/validation/pool-ram-selftest.mjs`
   (full machine queues, island refused, small test admitted, Workbench counted); `pool-selftest` pins its RAM with
   `LF_POOL_TEST_FREE_MB` so this PC's real load never decides it.
+- **Commit headroom (2026-11-19, `tools/lib/pool-commit.mjs`).** Free physical RAM is not what Windows refuses
+  allocations on: committed memory (every private page promised to a process, resident or not) against the commit limit
+  (RAM plus the fixed pagefile) is. lf-testbox sat at 70.2 of 71.2 GB committed with about 9 GB of RAM free, so the pool kept
+  starting clients (3.8-5.3 GB of commit each), Workbenches (2.7-5.7 GB) and servers (1-2.6 GB), and git (0xc000012d,
+  STATUS_COMMITMENT_LIMIT), gh ("out of memory allocating heap arena map"), bash fork and the Claude agents (0xC0000409)
+  crashed. Every start now also needs commit headroom: `limit - committed - fresh lane locks - what running processes still
+  grow into - the job's commit peak` must stay at or over **`minFreeCommitMb`** (default 6 GB, kept free for agents, git and
+  node; `pool.json` / `lf.local.json` "pool", env `LF_POOL_MIN_FREE_COMMIT_MB`), else the job queues with a reason that
+  names it (`commit 70.2/71.2 GB used (1.0 GB headroom) minus 5.5 GB commit peak for the session would be under 6.0 GB`).
+  Per-kind commit peaks: seeds client 5.5, Workbench 6, server 2.6, test 1.5 GB, then the p90 of the highest private bytes
+  each ended process held (`commit:<kind>` in `pool-peaks.json`, same samples rule as the RAM peaks). The commit is read
+  with the same PowerShell call that reads RAM (`Win32_OperatingSystem`: `TotalVirtualMemorySize - FreeVirtualMemory`
+  over `TotalVirtualMemorySize`), here, over ssh (`remoteState`) and in the slot holder's own gate (`commit-short`). A
+  machine under its commit floor ranks as having no room, and `pool status` prints `commit used/limit GB used (floor ...)`
+  beside the RAM figure and on the queue line of a job waiting on RAM; the peaks line adds the commit peaks. A working-set
+  trim frees physical RAM but no commit, so a commit refusal skips it: what frees commit is a session closing, which the
+  idle-session reaper does after 3 min while a job waits. Selftest: `tools/validation/pool-commit-selftest.mjs` (faked 70.2/71.2 GB with 9 GB of RAM free).
 - **What each process is, and whose peaks (2026-11-17, `docs/architecture/ram-budget.md`).** One PowerShell classifier
   (`Get-LfArmaRows` in `pool-ram.mjs`) serves the pool's scan and the box holder's gate. A server whose `-profile` is
   `<checkout>\server\profile\test` is a **test** (its peaks used to land under `server`, so `test:*` never left its seed);
