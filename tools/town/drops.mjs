@@ -29,10 +29,11 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
 export const DROP_PREFAB = "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et";
 export const DROP_SOURCE = "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_ParcelDrop.et";
-// The slot's kit picks the prop: the parcel run's mailbox, or the fuel run's drum (LF_FuelDrop, #3370). Both carry the DROP site.
+// The slot's kit picks the prop: the parcel run's mailbox, the fuel run's drum (LF_FuelDrop, #3370) or the illicit buyer's spot marker (core LF_BuyerSpot, #3416).
 export const DROP_KITS = {
   "parcel-drops": { prefab: DROP_PREFAB, source: DROP_SOURCE },
   "fuel-drops": { prefab: "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et", source: "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_FuelDrop.et" },
+  "buyer-spots": { prefab: "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et", source: "addons/LifeFramework/Prefabs/Systems/Laundering/LF_BuyerSpot.et" },
   // A home's "For sale" sign (#3584, `town homes`): placed with the same entrance-wall seat as a drop.
   "house-sale": { prefab: "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et", source: "addons/LifeFramework/Prefabs/Props/Property/LF_HouseSaleSign.et" },
 };

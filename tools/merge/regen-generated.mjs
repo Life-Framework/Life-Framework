@@ -161,6 +161,32 @@ function writeInto(root, rel, text) {
   writeFileSync(full, text);
 }
 
+// `git init` in the scratch repo has exited 1 with no output on the CI runner (the same silent git failure
+// tools/lib/selftest-git.mjs documents; a rerun passes), which left the conf conflicted with no message
+// (merge-drivers-selftest, main run d4c47e373). A failed init changed nothing, so it is retried; a failure
+// that persists says its exit code and signal. LF_MERGE_DRIVER_INIT_FAILS=<n> makes the first n attempts
+// fail silently (the selftest's stand-in for the runner).
+export const INIT_ATTEMPTS = 3;
+function initScratchRepo(scratch, env) {
+  let injected = Number(process.env.LF_MERGE_DRIVER_INIT_FAILS);
+  if (!Number.isFinite(injected) || injected < 0) injected = 0;
+  let result = null;
+  for (let attempt = 1; attempt <= INIT_ATTEMPTS; attempt++) {
+    if (injected > 0) {
+      injected--;
+      result = { status: 1, stdout: "", stderr: "" };
+    } else {
+      result = git(["init", "-q"], { cwd: scratch, env });
+      if (result.status === 0) return result;
+    }
+    if (result.stdout || result.stderr) break;
+  }
+  if (!result.stdout && !result.stderr) {
+    result = { ...result, stderr: `lf-regen: git init in the scratch repo failed ${INIT_ATTEMPTS} times (exit ${result.status}, signal ${result.signal ?? "none"}) with no output\n` };
+  }
+  return result;
+}
+
 // The generators ask git for the work tree root, so run them in a scratch repo with a clean git env.
 function runPowershell(scratch, script, args) {
   const powershell = process.platform === "win32" ? "powershell.exe" : "pwsh";
@@ -168,7 +194,7 @@ function runPowershell(scratch, script, args) {
   for (const [key, value] of Object.entries(process.env)) {
     if (!/^GIT_(DIR|WORK_TREE|INDEX_FILE|PREFIX|COMMON_DIR|OBJECT_DIRECTORY|ALTERNATE_OBJECT_DIRECTORIES|NAMESPACE)$/i.test(key)) env[key] = value;
   }
-  const init = git(["init", "-q"], { cwd: scratch, env });
+  const init = initScratchRepo(scratch, env);
   if (init.status !== 0) return init;
   const stub = process.env.LF_MERGE_DRIVER_GENERATOR_STUB;
   if (stub) return runBounded("generator stub", process.execPath, [stub], { cwd: scratch, env }, GENERATOR_TIMEOUT_MS, "LF_MERGE_DRIVER_STUB_TIMEOUT_MS");

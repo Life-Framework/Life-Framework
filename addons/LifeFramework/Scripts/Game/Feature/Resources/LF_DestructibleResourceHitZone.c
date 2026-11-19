@@ -25,21 +25,13 @@ class LF_DestructibleResourceHitZone : SCR_HitZone
 			return;
 		}
 
-		if (System.IsConsoleApp()) return;
-
 		LF_DestructibleResourceComponent destructibleResource = LF_Component<LF_DestructibleResourceComponent>.Find(owner);
 		if (!destructibleResource)
 			return;
 
-		LF_DestructibleResourceComponentClass settings = LF_DestructibleResourceComponentClass.Cast(destructibleResource.GetComponentData(owner));
-		if (!settings || !settings.m_rHitEffect)
-		{
-			LF_Debug.Warn("Resources", "hit effect spawn skipped: no configured hit effect");
-			return;
-		}
-
-		LF_Debug.Log("Resources", string.Format("hit fx spawned at %1", damageContext.hitPosition));
-		LF_Utils.SpawnEntityPrefab(settings.m_rHitEffect, damageContext.hitPosition, damageContext.hitNormal.VectorToAngles(), false);
+		// Damage runs on the server: it broadcasts the effect to clients and plays it itself
+		// when it renders (a listen host), so a dedicated server's players see chips (#3372).
+		destructibleResource.OnToolHit(damageContext.hitPosition, damageContext.hitNormal);
 	}
 
 	//------------------------------------------------------------------------------------------------
