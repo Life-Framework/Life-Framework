@@ -9,8 +9,9 @@
 // the lead's approval of that mapping (`status: approved`).
 // #3314 adds the M6-M8 outpost slots (bins, loot, buyer-spots: outposts; tow-yard; memorial) to the Saint-Philippe mapping; #3346 adds the wave-13 slots
 // (safe-zone, atms, payphones, street-life, parked-cars, fuel-run, fuel-drops, pond, orchard, night-lights, square-evening, cashvan, org) and the dock's fishing-quay.
-// #3350 fits the safe-zone slot, so it leaves the unfitted list; #3532 fits parked-cars, so it leaves too; #3377 fits fuel-drops; #3398 fits cashvan; #3453 fits the dock smokehouse.
-// red-proof: see tools/town/check.selftest.mjs; before the woodlot slot existed this printed "FAIL  saint-philippe: woodlot is not among the unfitted slots"
+// #3350 fits the safe-zone slot, so it leaves the unfitted list; #3532 fits parked-cars, so it leaves too; #3377 fits fuel-drops.
+// The unfitted list is derived from the mapping, the claims and the layers (a mapped slot with neither is expected to be unfitted), so fitting a slot edits no line here (2026-11-19).
+// red-proof: see tools/town/check.selftest.mjs; a mapped slot with no claim that check.mjs fails to list reads "FAIL  <place>: N unfitted slot(s) but M mapped slot(s) have no claim or layer"; before the woodlot slot existed this printed "FAIL  saint-philippe: woodlot is not among the unfitted slots"
 // before the farm slot existed "FAIL  saint-philippe: farm is not among the unfitted slots", and before #3272 "FAIL  saint-philippe-dock: wholesale is not among the unfitted slots", before #3315 "FAIL  saint-philippe-dock: lockers is not among the unfitted slots" and "FAIL  saint-philippe-dock: the mapping status is not approved" (2026-11-18).
 // before #3532 left the list, the next line read the parked-cars slot as unclaimed (2026-11-19).
 // before #3314 "FAIL  saint-philippe: bins is not among the unfitted slots" and one such line for each of loot, buyer-spots, tow-yard and memorial (2026-11-18).
@@ -32,10 +33,21 @@ const check = (cond, msg) => {
   }
 };
 {
-  const { loadPlace, checkPlace } = await import(pathToFileURL(join(ROOT, "tools", "town", "check.mjs")).href);
-  // a mapped slot the template lacks is an error from checkMapping; an unclaimed one is only listed as not fitted yet
-  for (const [place, slots] of [["saint-philippe", ["woodlot", "farm", "bins", "loot", "buyer-spots", "tow-yard", "memorial", "atms", "payphones", "street-life", "fuel-run", "pond", "orchard", "night-lights", "square-evening", "org"]], ["saint-philippe-dock", ["lockers", "quay-fishing", "fish-counter", "chandler", "fishing-quay"]]]) {
-    const result = checkPlace(loadPlace(ROOT, place), {});
+  const { loadPlace, checkPlace, claimNameOf, layerNameOf } = await import(pathToFileURL(join(ROOT, "tools", "town", "check.mjs")).href);
+  // a mapped slot the template lacks is an error from checkMapping; an unclaimed one is only listed as not fitted yet.
+  // The expected list is derived from the repo (a mapped slot with no claim file and no layer), not hard-coded: every
+  // slot PR used to edit a shared list here and the PRs conflicted on that one line (#3580, #3581, #3585).
+  const unclaimed = (data) => {
+    const have = new Set(data.template.slots.map((s) => s.id));
+    return Object.entries(data.mapping.slots ?? {})
+      .filter(([id, e]) => e && !e.none && have.has(id) && !data.claims[claimNameOf(data.place, id)] && data.layers[layerNameOf(data.place, id)] === undefined)
+      .map(([id]) => id);
+  };
+  for (const place of ["saint-philippe", "saint-philippe-dock"]) {
+    const data = loadPlace(ROOT, place);
+    const slots = unclaimed(data);
+    const result = checkPlace(data, {});
+    check(slots.length === result.unfitted.length, `${place}: ${result.unfitted.length} unfitted slot(s) but ${slots.length} mapped slot(s) have no claim or layer`);
     for (const slot of slots) {
       check(result.unfitted.includes(slot), `${place}: ${slot} is not among the unfitted slots`);
       check(result.notes.some((n) => n.includes("not fitted yet") && n.split(/[\s,:()]+/).includes(slot)), `${place}: town check does not name the ${slot} slot as not fitted yet`);
