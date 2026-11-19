@@ -34,6 +34,8 @@ export const DROP_KITS = {
   "parcel-drops": { prefab: DROP_PREFAB, source: DROP_SOURCE },
   "fuel-drops": { prefab: "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et", source: "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_FuelDrop.et" },
   "buyer-spots": { prefab: "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et", source: "addons/LifeFramework/Prefabs/Systems/Laundering/LF_BuyerSpot.et" },
+  // A payphone booth at a kerb beside a building (#3358): back to the wall, front to the street, like a mailbox.
+  payphones: { prefab: "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et", source: "addons/LifeFramework/Prefabs/Comms/LF_Payphone.et" },
   // A home's "For sale" sign (#3584, `town homes`): placed with the same entrance-wall seat as a drop.
   "house-sale": { prefab: "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et", source: "addons/LifeFramework/Prefabs/Props/Property/LF_HouseSaleSign.et" },
 };
@@ -240,7 +242,8 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
     slot: slotId,
     drops: mapping.slots[slotId].drops.map((d) => ({ place: d.place, building: d.building })),
     kit: slotKit,
-    size: "small",
+    // Five lit booths are five lights: the small budget allows three (#3358), so a payphones slot is medium.
+    size: slotKit === "payphones" ? "medium" : "small",
     layer: `${LAYER_DIR}/${layerName}`,
     kinds: [],
     rows: plans.length,
