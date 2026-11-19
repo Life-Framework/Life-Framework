@@ -1,0 +1,13 @@
+GenericEntity : "{8F2C06D1F757C40F}Prefabs/Items/Food/LF_Crackers.et" {
+ ID "7E3A9C1B5D2F4A60"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_Honeycomb"
+     Description "#LF-Item_HoneycombDesc"
+    }
+   }
+  }
+ }
+}

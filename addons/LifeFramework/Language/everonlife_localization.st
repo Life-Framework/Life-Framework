@@ -5518,6 +5518,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Nobody holds this yard. Found an organisation and take the lease at the registry desk."
      Comment "Refusal under the hideout door prompt when no organisation holds the yard (#934)."
     }
+    CustomStringTableItem "{365677AB07466EB7}" {
+     Id "LF-Hive_Empty"
+     Target_en_us "The hive has no comb to take yet."
+     Comment "Toast: the beehive is empty (#3447)."
+    }
+    CustomStringTableItem "{5D9EA11919FB2F2E}" {
+     Id "LF-Hive_Take"
+     Target_en_us "Take honeycomb (%1)"
+     Comment "Action at a beehive with combs; %1 is how many combs it holds (#3447)."
+    }
     CustomStringTableItem "{51B7F3A9C8D20E64}" {
      Id "LF-HockeyMask_Description"
      Target_en_us "A yellowed, cracked fibreglass hockey mask with eye slits and drilled vent holes. Anyone wearing it can't be recognised by their face."
@@ -6522,6 +6532,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_HandsetRadio_Name"
      Target_en_us "Radio set"
      Comment "Item name: a civilian handheld radio set that calls services."
+    }
+    CustomStringTableItem "{3F0A5624D409C535}" {
+     Id "LF-Item_Honeycomb"
+     Target_en_us "Honeycomb"
+     Comment "Item name: a frame of honeycomb taken from a beehive (#3447)."
+    }
+    CustomStringTableItem "{29701E64E31CE659}" {
+     Id "LF-Item_HoneycombDesc"
+     Target_en_us "A frame of honeycomb, heavy with honey."
+     Comment "Item description: honeycomb (#3447)."
     }
     CustomStringTableItem "{D905B60D78F7B540}" {
      Id "LF-Item_Keycard_Description"

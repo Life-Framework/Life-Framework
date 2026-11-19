@@ -1,0 +1,16 @@
+{
+  "section": "hives",
+  "class": "LF_HiveSavePayload",
+  "version": 1,
+  "roots": "LF_HiveRow",
+  "records": {
+    "LF_HiveRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sHiveKey",
+        "int m_iCombs",
+        "int m_iProgressMinutes"
+      ]
+    }
+  }
+}
