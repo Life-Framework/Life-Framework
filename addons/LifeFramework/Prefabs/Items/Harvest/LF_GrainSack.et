@@ -1,0 +1,26 @@
+GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" {
+ ID "7B2E5A1C93D40F21"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 50
+   m_iInitQuantity 50
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Grain sack"
+     Description "Wheat grain, counted in kilograms. Carries the look of a feed sack."
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 1
+     SizeSetupStrategy Volume
+     ItemVolume 1000
+    }
+    m_Size SLOT_2x2
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{5A8FB8F81E2ECC9D}Assets/Props/Civilian/SackUniversal_01/SackUniversal_01.xob"
+  }
+ }
+}
