@@ -2794,6 +2794,21 @@ StringTable {
      Target_en_us "No holder on record"
      Comment "Pack wording (#2687): painted board on a contested site's flag pole when no organisation holds the site."
     }
+    CustomStringTableItem "{179A8ED2FA171BFA}" {
+     Id "LF-SiteName_farm_compound"
+     Target_en_us "Farm Compound"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is farm_compound."
+    }
+    CustomStringTableItem "{63EEEDDB7220E37C}" {
+     Id "LF-SiteName_hilltop_mast"
+     Target_en_us "Hilltop Mast"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is hilltop_mast."
+    }
+    CustomStringTableItem "{8391E4196D2A45D3}" {
+     Id "LF-SiteName_quarry_hideout"
+     Target_en_us "Quarry Hideout"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is quarry_hideout."
+    }
     CustomStringTableItem "{08E024031EF25E98}" {
      Id "LF-TownBoard_Title"
      Target_en_us "Everon town board"
