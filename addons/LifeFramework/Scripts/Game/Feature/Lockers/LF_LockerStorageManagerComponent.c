@@ -129,7 +129,16 @@ class LF_LockerStorageManagerComponent : ScriptedInventoryStorageManagerComponen
 			return LF_ELockerOpenResult.OUT_OF_REACH;
 		}
 
-		return OpenAt(user, LF_Utils.GetPlayerUID(user), bank.GetSiteId(), user.GetOrigin(), bank.GetOwner().GetOrigin(), bank.GetReach(), container);
+		return OpenAtTime(System.GetUnixTime(), user, LF_Utils.GetPlayerUID(user), bank.GetSiteId(), user.GetOrigin(), bank.GetOwner().GetOrigin(), bank.GetReach(), LF_LockerConfig.RentPeriodDays(), LF_LockerConfig.GracePeriodDays(), container);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! OpenAt with the lapse applied first (#3457): a rent that has lapsed since the last sweep moves to the
+	//! site's lost-and-found here, so the lapsed renter is refused instead of opening the locker for free.
+	static LF_ELockerOpenResult OpenAtTime(int now, IEntity user, string characterKey, string siteId, vector userPos, vector bankPos, float reach, int rentPeriodDays, int gracePeriodDays, out IEntity container)
+	{
+		LF_LostAndFound.MoveLapsed(now, siteId, characterKey, rentPeriodDays, gracePeriodDays);
+		return OpenAt(user, characterKey, siteId, userPos, bankPos, reach, container);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -47,3 +47,12 @@
 - ⚠️ A snapshot is current at every capture, not marked "open" in the save: a crash between a change and the next capture
   loses that change, it never duplicates an item (the opener's carried inventory is captured with it). The lost-and-found
   sweep and reclaim are wave 2.
+
+### `LF_LostAndFound` — `Feature/Lockers/LF_LostAndFound.c`, `LF_LostAndFoundBoxComponent.c`, `LF_LostAndFoundReclaimAction.c`
+- ✅ Lapse and reclaim (2026-11-19, #3457): `Prefabs/Props/Lockers/LF_LostAndFoundBox.et` beside a bank. A locker past paid-until plus grace is
+  freed (`LF_LockerBank.Free`) and its contents move to the owner's `lostfound:<siteId>` snapshot (the existing `carried`
+  payload, no new section); a slow sweep armed by the first bank or box, the renter's visit to the box and their next open all run it. "Reclaim your things
+  (fee)" takes `reclaimFee` after every check and moves every item to the owner's inventory or feet; a stranger gets nothing,
+  short of the fee is refused, a second try finds nothing. Proof: `LF_Test_LostAndFound`, `LF_Test_LockerLapseOnOpen` (WORLD).
+- ⚠️ The prompt is hidden from non-owners on a listen host only; a dedicated client shows it and the server refuses with a toast.
+  No box is placed in a world yet.

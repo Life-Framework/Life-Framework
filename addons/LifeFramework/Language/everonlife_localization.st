@@ -7862,6 +7862,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logged out"
      Comment "World-space tag over a logged-out player's body (#1974)."
     }
+    CustomStringTableItem "{F4126E9A5B38D07C}" {
+     Id "LF-LostAndFound_CannotAfford"
+     Target_en_us "You do not have the fee in cash."
+     Comment "Toast: the reclaim fee is not in hand; nothing was taken and nothing moved."
+    }
+    CustomStringTableItem "{0D58B6F3C7A1924E}" {
+     Id "LF-LostAndFound_Nothing"
+     Target_en_us "Nothing of yours is waiting here."
+     Comment "Toast: nothing waits at this site's lost-and-found for the player (a stranger, or already taken)."
+    }
+    CustomStringTableItem "{67B3D08E2C915FA4}" {
+     Id "LF-LostAndFound_OutOfReach"
+     Target_en_us "Step closer to the lost-and-found box."
+     Comment "Toast: no lost-and-found box within reach."
+    }
+    CustomStringTableItem "{3E71A5C08D294B6F}" {
+     Id "LF-LostAndFound_Reclaim"
+     Target_en_us "Reclaim your things (fee)"
+     Comment "Action on the lost-and-found box: pay the reclaim fee and take back what a lapsed locker held."
+    }
+    CustomStringTableItem "{A90C42E7165DB83F}" {
+     Id "LF-LostAndFound_Reclaimed"
+     Target_en_us "You paid the fee and took your things back."
+     Comment "Toast: the reclaim fee was taken and every waiting item moved to the player."
+    }
+    CustomStringTableItem "{C28E5A1F90D64B37}" {
+     Id "LF-LostAndFound_Refused"
+     Target_en_us "The lost-and-found could not hand your things over."
+     Comment "Toast: the reclaim was refused for another reason; see the log."
+    }
+    CustomStringTableItem "{19F7C4B6E3A85D02}" {
+     Id "LF-LostAndFound_Title"
+     Target_en_us "Lost and found"
+     Comment "Title of the lost-and-found box prompt and toast."
+    }
     CustomStringTableItem "{EBA0820132F44791}" {
      Id "LF-Lot_Browse"
      Target_en_us "Look at the cars"
