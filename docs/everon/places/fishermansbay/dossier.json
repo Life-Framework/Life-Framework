@@ -1,0 +1,1471 @@
+{
+ "schema": 1,
+ "place": {
+  "name": "xz-4018-10705",
+  "key": null,
+  "kind": null,
+  "source": "coordinates",
+  "slug": "fishermansbay",
+  "x": 4018,
+  "y": 0.3,
+  "z": 10705
+ },
+ "radius": 140,
+ "generated": {
+  "at": "2026-11-19",
+  "tool": "tools\\cli scout",
+  "command": "tools\\cli scout 4018,10705 --radius 140",
+  "view": 60,
+  "gameBuild": "Arma Reforger build 26266485 (installed 2026-11-08)",
+  "world": "Worlds/CoreOnEveron/CoreOnEveron.ent"
+ },
+ "nearbyPlaces": [
+  {
+   "name": "Lighthouse",
+   "kind": "other",
+   "distance": 117,
+   "direction": "NW"
+  },
+  {
+   "name": "Charlet Bay",
+   "kind": "aquatic",
+   "distance": 249,
+   "direction": "N"
+  },
+  {
+   "name": "Saint-Philippe",
+   "kind": "other",
+   "distance": 410,
+   "direction": "E"
+  },
+  {
+   "name": "Coalman's Brow",
+   "kind": "natural",
+   "distance": 478,
+   "direction": "SE"
+  },
+  {
+   "name": "Saint-Philippe",
+   "kind": "urban",
+   "distance": 489,
+   "direction": "E"
+  },
+  {
+   "name": "factory",
+   "kind": "urban",
+   "distance": 538,
+   "direction": "E"
+  },
+  {
+   "name": "Spring Pond",
+   "kind": "aquatic",
+   "distance": 683,
+   "direction": "E"
+  },
+  {
+   "name": "power plant",
+   "kind": "other",
+   "distance": 694,
+   "direction": "SE"
+  }
+ ],
+ "summary": {
+  "buildings": 3,
+  "byType": {
+   "house": 1,
+   "garage": 1,
+   "military": 1
+  },
+  "civic": 0,
+  "homes": 1,
+  "ruins": 0,
+  "enterable": 3,
+  "entrances": 4,
+  "doors": 10,
+  "props": 40,
+  "trees": 148,
+  "roads": 3,
+  "junctions": 1,
+  "freePlots": 7,
+  "waterBodies": 0,
+  "walls": 28,
+  "otherEntities": 41,
+  "portPieces": 16
+ },
+ "terrain": {
+  "min": 0,
+  "max": 16.1,
+  "mean": 4.3,
+  "range": 16.1,
+  "flatShare": 0.16,
+  "gentleShare": 0.44,
+  "steepShare": 0.12,
+  "steepest": {
+   "deg": 39,
+   "x": 3913,
+   "z": 10785
+  },
+  "tilt": {
+   "deg": 2.2,
+   "fallsToward": "NW"
+  },
+  "waterShare": 0.52,
+  "nearestWater": {
+   "distance": 14.1,
+   "direction": "NE"
+  },
+  "notes": [
+   "ground 0 to 16.1 m (16.1 m of relief) within 140 m; mean 4.3 m",
+   "16% of the ground is under 3 degrees, 44% 3 to 8, 12% over 15",
+   "overall the ground falls 2.2 degrees toward the NW",
+   "steepest ground 39 degrees at 3913, 10785",
+   "open water (the sea or a lake) is 14.1 m away to the NE (52% of the circle is water)"
+  ]
+ },
+ "water": {
+  "bodies": [],
+  "shore": [],
+  "note": "no lake or pond outline in the dump (the sea is read from the ground grid)"
+ },
+ "mainStreet": {
+  "road": "NW-SE road r01",
+  "roadId": "r01",
+  "buildingsAlong": 3,
+  "at": [
+   4035.7,
+   10659.3
+  ],
+  "runs": "E-W"
+ },
+ "roads": [
+  {
+   "id": "r01",
+   "name": "NW-SE road r01",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     3931.6,
+     10767.6
+    ],
+    [
+     3932.8,
+     10763.4
+    ],
+    [
+     3937,
+     10759.3
+    ],
+    [
+     3943,
+     10755.1
+    ],
+    [
+     3950.9,
+     10748.8
+    ],
+    [
+     3956.1,
+     10742.8
+    ],
+    [
+     3968.2,
+     10723.4
+    ],
+    [
+     3976.1,
+     10710.9
+    ],
+    [
+     3983.1,
+     10701.4
+    ],
+    [
+     3990.6,
+     10692.1
+    ],
+    [
+     3997.5,
+     10683.8
+    ],
+    [
+     4001.9,
+     10674.5
+    ],
+    [
+     4005.2,
+     10663.5
+    ],
+    [
+     4012.1,
+     10658.6
+    ],
+    [
+     4020.5,
+     10655.5
+    ],
+    [
+     4027.7,
+     10656.9
+    ],
+    [
+     4035.7,
+     10659.3
+    ],
+    [
+     4056.8,
+     10663.4
+    ],
+    [
+     4093.9,
+     10637.5
+    ],
+    [
+     4102.5,
+     10631.8
+    ],
+    [
+     4109.9,
+     10630.6
+    ],
+    [
+     4195.6,
+     10614.5
+    ]
+   ],
+   "length": 334.4
+  },
+  {
+   "id": "r02",
+   "name": "E-W road r02",
+   "cls": "RoadEntity",
+   "runs": "E-W",
+   "points": [
+    [
+     4159.9,
+     10692
+    ],
+    [
+     4153.8,
+     10694
+    ],
+    [
+     4147.7,
+     10697.7
+    ],
+    [
+     4142.4,
+     10699.9
+    ],
+    [
+     4138.6,
+     10700.2
+    ],
+    [
+     4134.4,
+     10699.7
+    ],
+    [
+     4131.3,
+     10697.5
+    ],
+    [
+     4128,
+     10696.3
+    ],
+    [
+     4123.3,
+     10695.4
+    ],
+    [
+     4120.7,
+     10693
+    ],
+    [
+     4113.6,
+     10691
+    ],
+    [
+     4108.7,
+     10690.2
+    ],
+    [
+     4101.2,
+     10692.6
+    ],
+    [
+     4097.4,
+     10695.2
+    ],
+    [
+     4093.6,
+     10697.9
+    ],
+    [
+     4088.5,
+     10700.4
+    ],
+    [
+     4084.9,
+     10703.2
+    ],
+    [
+     4080,
+     10703.9
+    ],
+    [
+     4074.3,
+     10703.7
+    ],
+    [
+     4061.4,
+     10701.7
+    ],
+    [
+     4057.2,
+     10700.7
+    ],
+    [
+     4051,
+     10699.1
+    ],
+    [
+     4038.9,
+     10700.1
+    ],
+    [
+     4030.7,
+     10701.8
+    ],
+    [
+     4027,
+     10704.4
+    ],
+    [
+     4022.7,
+     10703.8
+    ],
+    [
+     4015.5,
+     10703.5
+    ],
+    [
+     4009.1,
+     10706
+    ],
+    [
+     4002.7,
+     10711.2
+    ],
+    [
+     3997,
+     10718
+    ],
+    [
+     3991.5,
+     10721.6
+    ],
+    [
+     3986.6,
+     10725.4
+    ],
+    [
+     3984.6,
+     10731.2
+    ],
+    [
+     3981.3,
+     10733
+    ],
+    [
+     3974.1,
+     10734.2
+    ],
+    [
+     3969.7,
+     10735.4
+    ],
+    [
+     3964,
+     10736.7
+    ],
+    [
+     3959.8,
+     10737.7
+    ],
+    [
+     3957.3,
+     10741
+    ]
+   ],
+   "length": 226.5
+  },
+  {
+   "id": "r04",
+   "name": "NE-SW road r04",
+   "cls": "RoadEntity",
+   "runs": "NE-SW",
+   "points": [
+    [
+     3905.5,
+     10548.8
+    ],
+    [
+     3922.4,
+     10605.7
+    ],
+    [
+     3950,
+     10608.6
+    ],
+    [
+     3967.1,
+     10623.6
+    ]
+   ],
+   "length": 109.9
+  }
+ ],
+ "junctions": [
+  {
+   "x": 3957.3,
+   "z": 10741,
+   "roads": [
+    "r02",
+    "r01"
+   ],
+   "arms": 3,
+   "kind": "t-junction"
+  }
+ ],
+ "buildings": [
+  {
+   "prefab": "{C212C8AC6001F002}Prefabs/Structures/Houses/Wooden/House_Wooden_E_1I01/House_Wooden_E_1I01.et",
+   "path": "Prefabs/Structures/Houses/Wooden/House_Wooden_E_1I01/House_Wooden_E_1I01.et",
+   "stem": "House_Wooden_E_1I01",
+   "type": "house",
+   "civic": false,
+   "home": true,
+   "ruin": false,
+   "name": "",
+   "x": 4055.3,
+   "y": 5,
+   "z": 10650.5,
+   "yaw": 40,
+   "facing": "NE",
+   "scale": 1,
+   "distance": 66,
+   "bearing": "SE",
+   "footprint": {
+    "source": "catalog",
+    "w": 13.5,
+    "d": 7.1,
+    "h": 8.4,
+    "area": 95.9,
+    "cx": 4055.93,
+    "cz": 10649.9,
+    "corners": [
+     [
+      4048.48,
+      10651.52
+     ],
+     [
+      4058.82,
+      10642.84
+     ],
+     [
+      4063.38,
+      10648.28
+     ],
+     [
+      4053.04,
+      10656.96
+     ]
+    ],
+    "note": "centred on the engine's bounds (the catalog gives extents only)"
+   },
+   "floors": 2,
+   "firstFloor": 1.2,
+   "basement": 0,
+   "height": 8.4,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 3 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 3,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 4060.2,
+     "y": 6.2,
+     "z": 10646.4,
+     "side": "right",
+     "facing": "SE",
+     "edge": 1.2
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b01"
+  },
+  {
+   "prefab": "{CF7E43120709D9BE}Prefabs/Structures/Industrial/Houses/Workshop_02/Workshop_02_grey.et",
+   "path": "Prefabs/Structures/Industrial/Houses/Workshop_02/Workshop_02_grey.et",
+   "stem": "Workshop_02_grey",
+   "type": "garage",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 3942.6,
+   "y": 7.3,
+   "z": 10771.9,
+   "yaw": -53,
+   "facing": "NW",
+   "scale": 1,
+   "distance": 100.8,
+   "bearing": "NW",
+   "footprint": {
+    "source": "catalog",
+    "w": 8.9,
+    "d": 15.5,
+    "h": 6.2,
+    "area": 138,
+    "cx": 3943.79,
+    "cz": 10771,
+    "corners": [
+     [
+      3947.3,
+      10762.78
+     ],
+     [
+      3952.66,
+      10769.89
+     ],
+     [
+      3940.28,
+      10779.22
+     ],
+     [
+      3934.92,
+      10772.11
+     ]
+    ],
+    "note": "centred on the engine's bounds (the catalog gives extents only)"
+   },
+   "floors": 1,
+   "firstFloor": 0.5,
+   "basement": 3,
+   "height": 6.2,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 4 door entities and a walkable floor (1 floor)"
+   },
+   "doors": 4,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 3938.4,
+     "y": 7.8,
+     "z": 10775.8,
+     "side": "front",
+     "facing": "NW",
+     "edge": 0.5
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b02"
+  },
+  {
+   "prefab": "{44B2776836744D69}Prefabs/Structures/Military/Bunkers/Bunker_01/Bunker_01_1fp.et",
+   "path": "Prefabs/Structures/Military/Bunkers/Bunker_01/Bunker_01_1fp.et",
+   "stem": "Bunker_01_1fp",
+   "type": "military",
+   "civic": false,
+   "home": false,
+   "ruin": false,
+   "name": "",
+   "x": 4091.7,
+   "y": 12,
+   "z": 10616.7,
+   "yaw": 23,
+   "facing": "NE",
+   "scale": 1,
+   "distance": 115,
+   "bearing": "SE",
+   "footprint": {
+    "source": "catalog",
+    "w": 5.5,
+    "d": 6.2,
+    "h": 3.9,
+    "area": 34.1,
+    "cx": 4091.7,
+    "cz": 10616.7,
+    "corners": [
+     [
+      4087.96,
+      10614.92
+     ],
+     [
+      4093.02,
+      10612.77
+     ],
+     [
+      4095.44,
+      10618.48
+     ],
+     [
+      4090.38,
+      10620.63
+     ]
+    ]
+   },
+   "floors": 2,
+   "firstFloor": 0.2,
+   "basement": 2.3,
+   "height": 3.9,
+   "interior": {
+    "value": "yes",
+    "basis": "catalog: 2 door entities and a walkable floor (2 floors)"
+   },
+   "doors": 3,
+   "entrances": [
+    {
+     "prefab": "",
+     "x": 4092.7,
+     "y": 13.7,
+     "z": 10618.6,
+     "side": "front",
+     "facing": "NE",
+     "edge": 0.9
+    },
+    {
+     "prefab": "",
+     "x": 4092.4,
+     "y": 13.7,
+     "z": 10618.7,
+     "side": "front",
+     "facing": "N",
+     "edge": 1
+    }
+   ],
+   "entrancesKnown": true,
+   "matched": true,
+   "id": "b03"
+  }
+ ],
+ "props": [
+  {
+   "prefab": "{6C60A5750A40FC63}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_25m_abandoned.et",
+   "stem": "PierWooden_01_25m_abandoned",
+   "kind": "pier-or-dock",
+   "x": 4006.1,
+   "y": -0.3,
+   "z": 10734,
+   "yaw": 50,
+   "distance": 31.3,
+   "size": [
+    18,
+    16.3,
+    15.5
+   ]
+  },
+  {
+   "prefab": "{6C60A5750A40FC63}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_25m_abandoned.et",
+   "stem": "PierWooden_01_25m_abandoned",
+   "kind": "pier-or-dock",
+   "x": 4017.8,
+   "y": -0.3,
+   "z": 10741.3,
+   "yaw": -40,
+   "distance": 36.3,
+   "size": [
+    15.5,
+    16.3,
+    18
+   ]
+  },
+  {
+   "prefab": "{6C60A5750A40FC63}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_25m_abandoned.et",
+   "stem": "PierWooden_01_25m_abandoned",
+   "kind": "pier-or-dock",
+   "x": 4014.6,
+   "y": -0.3,
+   "z": 10741.1,
+   "yaw": 140,
+   "distance": 36.3,
+   "size": [
+    15.5,
+    16.3,
+    18
+   ]
+  },
+  {
+   "prefab": "{6C60A5750A40FC63}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_25m_abandoned.et",
+   "stem": "PierWooden_01_25m_abandoned",
+   "kind": "pier-or-dock",
+   "x": 4018.8,
+   "y": -0.3,
+   "z": 10744.1,
+   "yaw": 140,
+   "distance": 39.1,
+   "size": [
+    15.5,
+    16.3,
+    18
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4000.1,
+   "y": -0.3,
+   "z": 10765.2,
+   "yaw": -48.3,
+   "distance": 62.8,
+   "size": [
+    7.6,
+    13.9,
+    8.5
+   ]
+  },
+  {
+   "prefab": "{046F9EF6593F91E4}Prefabs/Structures/Infrastructure/Naval/Piers/PierCover_01.et",
+   "stem": "PierCover_01",
+   "kind": "pier-or-dock",
+   "x": 3998.7,
+   "y": -4.7,
+   "z": 10767.5,
+   "yaw": -139.9,
+   "distance": 65.4,
+   "size": [
+    4.5,
+    5.8,
+    3.8
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3995.9,
+   "y": -0.4,
+   "z": 10768.8,
+   "yaw": -48.3,
+   "distance": 67.5,
+   "size": [
+    7.7,
+    13.9,
+    8.5
+   ]
+  },
+  {
+   "prefab": "{6C60A5750A40FC63}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_25m_abandoned.et",
+   "stem": "PierWooden_01_25m_abandoned",
+   "kind": "pier-or-dock",
+   "x": 3982.7,
+   "y": -0.3,
+   "z": 10762.7,
+   "yaw": 50,
+   "distance": 67.7,
+   "size": [
+    18,
+    16.3,
+    15.5
+   ]
+  },
+  {
+   "prefab": "{046F9EF6593F91E4}Prefabs/Structures/Infrastructure/Naval/Piers/PierCover_01.et",
+   "stem": "PierCover_01",
+   "kind": "pier-or-dock",
+   "x": 3994.1,
+   "y": -4.7,
+   "z": 10771.3,
+   "yaw": -139.9,
+   "distance": 70.5,
+   "size": [
+    4.5,
+    5.8,
+    3.9
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3990.8,
+   "y": -0.5,
+   "z": 10773,
+   "yaw": -48.3,
+   "distance": 73.2,
+   "size": [
+    7.6,
+    13.9,
+    8.4
+   ]
+  },
+  {
+   "prefab": "{046F9EF6593F91E4}Prefabs/Structures/Infrastructure/Naval/Piers/PierCover_01.et",
+   "stem": "PierCover_01",
+   "kind": "pier-or-dock",
+   "x": 3989.6,
+   "y": -4.7,
+   "z": 10775.2,
+   "yaw": -139.9,
+   "distance": 75.7,
+   "size": [
+    4.6,
+    5.8,
+    3.9
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3987.3,
+   "y": -0.3,
+   "z": 10776,
+   "yaw": -48.3,
+   "distance": 77.4,
+   "size": [
+    7.7,
+    13.9,
+    8.4
+   ]
+  },
+  {
+   "prefab": "{6C60A5750A40FC63}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_25m_abandoned.et",
+   "stem": "PierWooden_01_25m_abandoned",
+   "kind": "pier-or-dock",
+   "x": 4099,
+   "y": -0.3,
+   "z": 10710.6,
+   "yaw": 0,
+   "distance": 81.1,
+   "size": [
+    1.7,
+    16.3,
+    22
+   ]
+  },
+  {
+   "prefab": "{6C60A5750A40FC63}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_25m_abandoned.et",
+   "stem": "PierWooden_01_25m_abandoned",
+   "kind": "pier-or-dock",
+   "x": 4099,
+   "y": -0.3,
+   "z": 10733.9,
+   "yaw": 0,
+   "distance": 86,
+   "size": [
+    1.7,
+    16.3,
+    22
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3969,
+   "y": -0.7,
+   "z": 10789.5,
+   "yaw": -43,
+   "distance": 97.7,
+   "size": [
+    8.6,
+    13.8,
+    7.6
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3969.7,
+   "y": -0.8,
+   "z": 10789.9,
+   "yaw": -48.8,
+   "distance": 97.7,
+   "size": [
+    0.6,
+    17.6,
+    1.2
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3961.3,
+   "y": -0.5,
+   "z": 10796.2,
+   "yaw": -43,
+   "distance": 107.4,
+   "size": [
+    8.6,
+    13.8,
+    7.6
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3961.9,
+   "y": -0.6,
+   "z": 10796.7,
+   "yaw": -48.8,
+   "distance": 107.5,
+   "size": [
+    0.6,
+    17.6,
+    1.2
+   ]
+  },
+  {
+   "prefab": "{95274C6C9B84E104}Prefabs/Props/Naval/MooringBuoy_01.et",
+   "stem": "MooringBuoy_01",
+   "kind": "mooring",
+   "x": 4102.2,
+   "y": 0.2,
+   "z": 10776.3,
+   "yaw": 0,
+   "distance": 110.3,
+   "size": [
+    20.1,
+    28.9,
+    20.2
+   ]
+  },
+  {
+   "prefab": "{6C60A5750A40FC63}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_25m_abandoned.et",
+   "stem": "PierWooden_01_25m_abandoned",
+   "kind": "pier-or-dock",
+   "x": 3946.8,
+   "y": -0.7,
+   "z": 10793.8,
+   "yaw": 44.6,
+   "distance": 113.8,
+   "size": [
+    16.7,
+    16.3,
+    16.9
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3952.9,
+   "y": -0.3,
+   "z": 10802.8,
+   "yaw": -49.9,
+   "distance": 117.5,
+   "size": [
+    7.4,
+    13.9,
+    8.7
+   ]
+  },
+  {
+   "prefab": "{046F9EF6593F91E4}Prefabs/Structures/Infrastructure/Naval/Piers/PierCover_01.et",
+   "stem": "PierCover_01",
+   "kind": "pier-or-dock",
+   "x": 3951.5,
+   "y": -4.7,
+   "z": 10805.1,
+   "yaw": -141.5,
+   "distance": 120.2,
+   "size": [
+    4.7,
+    5.8,
+    3.7
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3948.7,
+   "y": -0.4,
+   "z": 10806.3,
+   "yaw": -49.9,
+   "distance": 122.8,
+   "size": [
+    7.4,
+    13.9,
+    8.7
+   ]
+  },
+  {
+   "prefab": "{046F9EF6593F91E4}Prefabs/Structures/Infrastructure/Naval/Piers/PierCover_01.et",
+   "stem": "PierCover_01",
+   "kind": "pier-or-dock",
+   "x": 3946.8,
+   "y": -4.7,
+   "z": 10808.8,
+   "yaw": -141.5,
+   "distance": 125.9,
+   "size": [
+    4.7,
+    5.8,
+    3.7
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3943.4,
+   "y": -0.5,
+   "z": 10810.3,
+   "yaw": -49.9,
+   "distance": 129,
+   "size": [
+    7.4,
+    13.9,
+    8.7
+   ]
+  },
+  {
+   "prefab": "{046F9EF6593F91E4}Prefabs/Structures/Infrastructure/Naval/Piers/PierCover_01.et",
+   "stem": "PierCover_01",
+   "kind": "pier-or-dock",
+   "x": 3942.1,
+   "y": -4.7,
+   "z": 10812.5,
+   "yaw": -141.5,
+   "distance": 131.6,
+   "size": [
+    4.6,
+    5.8,
+    3.8
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3939.8,
+   "y": -0.3,
+   "z": 10813.3,
+   "yaw": -49.9,
+   "distance": 133.6,
+   "size": [
+    7.4,
+    13.9,
+    8.7
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4156.5,
+   "y": 0,
+   "z": 10718.7,
+   "yaw": -112.3,
+   "distance": 139.2,
+   "size": [
+    0.7,
+    14.8,
+    0.3
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4156.9,
+   "y": -0.4,
+   "z": 10715,
+   "yaw": 97.2,
+   "distance": 139.3,
+   "size": [
+    0.9,
+    16.3,
+    0.6
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4156.7,
+   "y": 0,
+   "z": 10721.6,
+   "yaw": 130.1,
+   "distance": 139.7,
+   "size": [
+    0.9,
+    16.1,
+    0.5
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4157,
+   "y": 0,
+   "z": 10724.6,
+   "yaw": -125.3,
+   "distance": 140.4,
+   "size": [
+    0.8,
+    16.7,
+    0.4
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3933.3,
+   "y": 0,
+   "z": 10817.7,
+   "yaw": -63.5,
+   "distance": 141,
+   "size": [
+    5.2,
+    13.9,
+    10.1
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4156.9,
+   "y": -0.1,
+   "z": 10730.6,
+   "yaw": -164.2,
+   "distance": 141.2,
+   "size": [
+    8.1,
+    12.8,
+    3.1
+   ]
+  },
+  {
+   "prefab": "{6C60A5750A40FC63}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_25m_abandoned.et",
+   "stem": "PierWooden_01_25m_abandoned",
+   "kind": "pier-or-dock",
+   "x": 3921.9,
+   "y": -0.7,
+   "z": 10809.3,
+   "yaw": 27.1,
+   "distance": 141.8,
+   "size": [
+    11.6,
+    16.3,
+    20.4
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4157.2,
+   "y": -0.1,
+   "z": 10734.6,
+   "yaw": -164.2,
+   "distance": 142.3,
+   "size": [
+    8.1,
+    12.8,
+    3.1
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4157.5,
+   "y": -0.1,
+   "z": 10738.1,
+   "yaw": -165.1,
+   "distance": 143.4,
+   "size": [
+    8.1,
+    12.8,
+    3
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4157.7,
+   "y": 0,
+   "z": 10741.8,
+   "yaw": -165.1,
+   "distance": 144.5,
+   "size": [
+    8.1,
+    12.8,
+    2.9
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4157.9,
+   "y": -0.2,
+   "z": 10744.5,
+   "yaw": 79,
+   "distance": 145.4,
+   "size": [
+    9.2,
+    14,
+    1.8
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 4158,
+   "y": -0.2,
+   "z": 10745.3,
+   "yaw": 137.4,
+   "distance": 145.7,
+   "size": [
+    7.4,
+    12.8,
+    7.7
+   ]
+  },
+  {
+   "prefab": "{EE9EBF59E9FB1306}Prefabs/Structures/Infrastructure/Naval/Piers/PierWooden_01_pole_01.et",
+   "stem": "PierWooden_01_pole_01",
+   "kind": "pier-or-dock",
+   "x": 3927.4,
+   "y": -0.2,
+   "z": 10820.8,
+   "yaw": -63.5,
+   "distance": 147.1,
+   "size": [
+    5.2,
+    13.9,
+    10.1
+   ]
+  }
+ ],
+ "propCounts": {
+  "pier-or-dock": 39,
+  "mooring": 1
+ },
+ "freePlots": {
+  "plots": [
+   {
+    "id": "p1",
+    "x": 4043,
+    "z": 10619,
+    "width": 66,
+    "depth": 44,
+    "area": 2904,
+    "ground": {
+     "min": 3,
+     "max": 11.6
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 40.7
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "house",
+     "stem": "House_Wooden_E_1I01",
+     "distance": 28.6
+    },
+    "distance": 89.6
+   },
+   {
+    "id": "p2",
+    "x": 4108,
+    "z": 10673,
+    "width": 88,
+    "depth": 20,
+    "area": 1760,
+    "ground": {
+     "min": 2.8,
+     "max": 6.6
+    },
+    "nearestRoad": {
+     "name": "E-W road r02",
+     "distance": 17.2
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "house",
+     "stem": "House_Wooden_E_1I01",
+     "distance": 51
+    },
+    "distance": 95.5
+   },
+   {
+    "id": "p3",
+    "x": 4021,
+    "z": 10576,
+    "width": 70,
+    "depth": 14,
+    "area": 980,
+    "ground": {
+     "min": 2.7,
+     "max": 10.2
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r04",
+     "distance": 71.9
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "house",
+     "stem": "House_Wooden_E_1I01",
+     "distance": 76.8
+    },
+    "distance": 129
+   },
+   {
+    "id": "p4",
+    "x": 4121,
+    "z": 10648,
+    "width": 30,
+    "depth": 26,
+    "area": 780,
+    "ground": {
+     "min": 5.7,
+     "max": 10
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 19.2
+    },
+    "nearestBuilding": {
+     "id": "b03",
+     "type": "military",
+     "stem": "Bunker_01_1fp",
+     "distance": 39
+    },
+    "distance": 117.7
+   },
+   {
+    "id": "p5",
+    "x": 3964,
+    "z": 10595,
+    "width": 44,
+    "depth": 16,
+    "area": 704,
+    "ground": {
+     "min": 0.1,
+     "max": 1.3
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r04",
+     "distance": 19.5
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "house",
+     "stem": "House_Wooden_E_1I01",
+     "distance": 101.6
+    },
+    "distance": 122.5
+   },
+   {
+    "id": "p6",
+    "x": 3991,
+    "z": 10636,
+    "width": 10,
+    "depth": 62,
+    "area": 620,
+    "ground": {
+     "min": 0.2,
+     "max": 1.7
+    },
+    "nearestRoad": {
+     "name": "NE-SW road r04",
+     "distance": 26.9
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "house",
+     "stem": "House_Wooden_E_1I01",
+     "distance": 59.5
+    },
+    "distance": 74.1
+   },
+   {
+    "id": "p7",
+    "x": 4018,
+    "z": 10685,
+    "width": 24,
+    "depth": 24,
+    "area": 576,
+    "ground": {
+     "min": 0.8,
+     "max": 2.3
+    },
+    "nearestRoad": {
+     "name": "E-W road r02",
+     "distance": 18.6
+    },
+    "nearestBuilding": {
+     "id": "b01",
+     "type": "house",
+     "stem": "House_Wooden_E_1I01",
+     "distance": 44.9
+    },
+    "distance": 20
+   }
+  ],
+  "note": "plots are open rectangles at least 10 m on the short side, kept 2.5 m off buildings, 4.5 m off a road's centre line, 2 m off a tree, on ground under 12 degrees; axis aligned, not the best use of the land"
+ },
+ "pictures": [
+  {
+   "role": "overview",
+   "file": "img/overview-top.jpg",
+   "caption": "from above, north up"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-wide.jpg",
+   "caption": "wide, from the south"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob270.jpg",
+   "caption": "from the west"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob000.jpg",
+   "caption": "from the north"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob090.jpg",
+   "caption": "from the east"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-wide.jpg",
+   "caption": "NW-SE road r01 (E-W), looking along it"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-ob090.jpg",
+   "caption": "from the east"
+  }
+ ],
+ "notes": [
+  "buildings (types, footprints, floors, interiors) are read from the Everon catalog, docs/everon/catalog-buildings.json; 3 of 3 matched an entity of the engine dump, which adds the door positions",
+  "16 quay, pier and waterworks pieces are counted, not listed"
+ ]
+}

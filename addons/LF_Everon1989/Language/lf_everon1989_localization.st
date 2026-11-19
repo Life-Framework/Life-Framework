@@ -391,7 +391,7 @@ StringTable {
     }
     CustomStringTableItem "{14C00C49DD440471}" {
      Id "LF-Dialogue_OldMan_Cove"
-     Target_en_us "You have the hands for it now. There is a cove past the point beyond the quay, Fisherman Bay. Go at dusk, when the bass come in close. I have marked it on your map."
+     Target_en_us "You have the hands for it now. There is a cove below the lighthouse, Fisherman Bay. Go at dusk, when the bass come in close. I have marked it on your map."
      Comment "Gaspard tells a player who has landed three fish about the cove Fisherman Bay (#3451); text only, no recording yet."
     }
     CustomStringTableItem "{EE06F137A9E223A3}" {
@@ -2348,6 +2348,21 @@ StringTable {
      Id "LF-Sign_Farm_What"
      Target_en_us "Dirt plots to grow cabbages, a greenhouse, and an orchard."
      Comment "Sign card for the farm north of the square, What section."
+    }
+    CustomStringTableItem "{32CEDBEDFA32663E}" {
+     Id "LF-Sign_FishermansBay_How"
+     Target_en_us "Bring a rod and a bait tin, cast onto the water from the beach, and strike when the float dips. Come at dusk for the bass."
+     Comment "Sign card for the Fisherman's Bay plate, How section."
+    }
+    CustomStringTableItem "{936E797B77A23A02}" {
+     Id "LF-Sign_FishermansBay_Title"
+     Target_en_us "Fisherman's Bay"
+     Comment "Title of the pole plate above the cove below the lighthouse (Everon 1989 pack, #3762). Printed on the sign and shown in the prompt as Read: Fisherman's Bay."
+    }
+    CustomStringTableItem "{93101FA5232EAD0F}" {
+     Id "LF-Sign_FishermansBay_What"
+     Target_en_us "A sheltered cove below the lighthouse, with a bench and a lantern on its shore. Bass come in close at dusk."
+     Comment "Sign card for the Fisherman's Bay plate, What section."
     }
     CustomStringTableItem "{D47AD7112B2DF884}" {
      Id "LF-Sign_FuelStation_How"

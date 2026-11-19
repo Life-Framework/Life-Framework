@@ -1,0 +1,40 @@
+GenericEntity Fit_fishermansbay_cove_Place {
+ components {
+  LF_PlaceComponent "{ECB7723703DA2AB8}" {
+   m_sKind "FishingSpot"
+   m_sId "fishermansbay.cove"
+  }
+ }
+ coords 4018 1.55 10685
+}
+GenericEntity Fit_fishermansbay_cove_spot : "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingSpot.et" {
+ components {
+  LF_FishingSpotComponent "{4A0F573235D2E074}" {
+   m_sId "fishermans-bay"
+   m_sTable "cove"
+   m_fRadius 30
+   m_iStock 14
+   m_fRegrowSeconds 90
+  }
+ }
+ coords 4021 0.891 10699
+}
+GenericEntity Fit_fishermansbay_cove_bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 4016.5 1.014 10698.2
+ angleY 20
+}
+GenericEntity Fit_fishermansbay_cove_lantern : "{57354E1D82BCF650}Prefabs/Props/Fishing/LF_LakeLantern.et" {
+ coords 4018.3 0.923 10698
+}
+GenericEntity Fit_fishermansbay_cove_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "fishermans-bay"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 4012 1.188 10695.5
+ angleY -160
+}
