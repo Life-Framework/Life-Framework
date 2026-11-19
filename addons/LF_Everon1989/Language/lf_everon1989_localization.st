@@ -514,6 +514,11 @@ StringTable {
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
+    CustomStringTableItem "{3441F00000000001}" {
+     Id "LF-Dialogue_Rumour_SayAsk"
+     Target_en_us "Any talk in the café lately?"
+     Comment "Reply: ask the café owner what the town is saying about the shipment (#3441)."
+    }
     CustomStringTableItem "{3440F00000000108}" {
      Id "LF-Dialogue_ShipmentHarbourMaster_Ask"
      Target_en_us "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?"
@@ -1803,6 +1808,16 @@ StringTable {
      Id "LF-Resident_teller_Name"
      Target_en_us "Helene Roux"
      Comment "Saint-Philippe resident teller: display name (#2906)."
+    }
+    CustomStringTableItem "{3441F00000000002}" {
+     Id "LF-Rumour_Shipment_CafeOwner_Reported"
+     Target_en_us "They say someone carried a crate off the quay straight to the gendarmes. The dockers have not touched a drink here all week. Whoever it was, keep your head down."
+     Comment "Café owner rumour for a player who reported the shipment (#3441); fades after 3 game days."
+    }
+    CustomStringTableItem "{3441F00000000003}" {
+     Id "LF-Rumour_Shipment_CafeOwner_Sold"
+     Target_en_us "They say a crate went missing off the quay and somebody in town is richer for it. Nobody asks who. The man at the corner table has stopped counting his change."
+     Comment "Café owner rumour for a player who sold the shipment (#3441); fades after 3 game days."
     }
     CustomStringTableItem "{08F8B49C5124F438}" {
      Id "LF-Shop_Desc_Bakery"
