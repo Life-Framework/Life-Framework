@@ -135,7 +135,7 @@
       "verb": "against wall",
       "offset": [
         9.95,
-        0.007,
+        0.792,
         4.4
       ],
       "yaw": 0,
@@ -158,7 +158,7 @@
       "verb": "against wall",
       "offset": [
         9.85,
-        2.907,
+        3.475,
         4.056
       ],
       "yaw": 0,
@@ -173,7 +173,7 @@
       "verb": "against wall",
       "offset": [
         9.95,
-        0.497,
+        1.263,
         2.41
       ],
       "yaw": 0,
@@ -222,7 +222,8 @@
         }
       ],
       "wall": "-z",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.044
     },
     {
       "id": "electricity-box-small-01",
