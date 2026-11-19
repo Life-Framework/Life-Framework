@@ -9,7 +9,7 @@ Design and card list: the harvester spike (epic #3282).
 ## Interaction pattern
 
 In-world only: the field is the interface and the hopper is a number on the reaper's prompt. Nothing opens a sheet.
-The rules (#3285), the field entity (#3287), its replication (#3288) and the hitch (#3284) are in; the cut tick (#3289) builds on them.
+The rules (#3285), the field entity (#3287), its cut replication (#3288) and the hitch (#3284) are in; the cut tick (#3289) builds on them.
 
 ## Wheat field rules (#3285)
 
@@ -44,3 +44,9 @@ The rules (#3285), the field entity (#3287), its replication (#3288) and the hit
 - **Data:** `Configs/Harvest/LF_Hitches.conf`: the reaper prefab and one row per towing vehicle (prefab or ancestor,
   local offset and angles). The reaper is a rigid child with no physics body; detaching deletes it.
 - **Proof:** `harvest/implement-hitch` (WORLD). The two-client and late-join session proof is a manual step (see the PR).
+
+## Cut replication (#3288)
+
+- **Player sees:** the same cut strips and stubble as every other player, also when joining late; a dedicated server draws nothing.
+- **Owner and side:** a `modded class LF_WheatField` in `LF_WheatFieldReplication.c`. The server batches newly cut cells (one reliable RPC per field per 250 ms, packed bitset words in a string) and sends one regrow RPC; `RplSave/RplLoad` carries the whole bitset for a late joiner. `LF_WheatFieldWire` and `LF_WheatCutBatch` are the pure parts.
+- **Proof:** `harvest/wheat-field-snapshot` (LOGIC); the dedicated-server session with a late joiner is in the PR.

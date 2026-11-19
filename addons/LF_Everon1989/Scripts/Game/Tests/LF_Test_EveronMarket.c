@@ -126,7 +126,7 @@ class LF_Test_EveronMarket : LF_Test
 		ctx.True(config.m_bEnabled, "the pack switches the market on");
 		ctx.True(config.FindGood(COPPER_BAR) == null, "the pack removes the copper bar curve");
 		ctx.True(config.FindGood(GOLD_BAR) == null, "the pack removes the gold bar curve");
-		ctx.Equal(8, config.m_aGoods.Count(), "eight goods ride a curve");
+		ctx.Equal(11, config.m_aGoods.Count(), "eleven goods ride a curve: the eight the trader buys and the board, post and firewood the wholesale warehouse buys (#3269)");
 
 		BaseContainerList rows = TraderRows(TRADER);
 		BaseContainerList coreRows = TraderRows(CORE_TRADER);
@@ -143,6 +143,10 @@ class LF_Test_EveronMarket : LF_Test
 
 		foreach (LF_MarketGoodDef good : config.m_aGoods)
 		{
+			// The lumber goods ride the wholesale curves of #3269 (own floor, drop and recovery); LF_Test_EveronLumberBuyers reads them.
+			if (LF_Test_EveronLumberBuyers.IsLumberGood(good.m_sGood))
+				continue;
+
 			string name = good.m_sGood;
 			Resource prefab = Resource.Load(good.m_sGood);
 			ctx.True(prefab != null && prefab.IsValid(), name + " resolves to a real prefab");

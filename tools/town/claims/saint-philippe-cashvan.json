@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "cashvan",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b79"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b107"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b12"
+    }
+  ],
+  "kit": "cashvan",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_cashvan.layer",
+  "kinds": [],
+  "rows": 6,
+  "date": "2026-11-19"
+}
