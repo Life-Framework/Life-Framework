@@ -69,6 +69,14 @@ Vehicle : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
       Name "#LF-Search_Vehicle_Action"
      }
     }
+    LF_VehicleSearchFullAction "{5EA2C50600000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C50600000002}" {
+      Name "#LF-Search_Full_Action"
+     }
+    }
    }
   }
  }
