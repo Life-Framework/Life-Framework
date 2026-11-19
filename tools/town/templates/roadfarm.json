@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "kind": "roadfarm",
+  "about": "A working farm off the main road: the machine shed of a vanilla farm yard gets a fuel drop tank beside it, and a payphone and the farm's name sign stand at the gate. One slot, no map marker (the payphone carries its own point of interest). Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "a", "required": true, "kit": "roadfarm", "host": "building", "poi": "none", "margin": 24,
+      "needs": { "interior": "optional", "minArea": 40, "prefer": "near", "types": ["garage"] },
+      "places": ["RoadFarm"]
+    }
+  ]
+}

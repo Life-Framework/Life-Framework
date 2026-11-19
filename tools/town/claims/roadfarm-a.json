@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "roadfarm",
+  "slot": "a",
+  "building": "b03",
+  "kit": "roadfarm",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_roadfarm_a.layer",
+  "kinds": [
+    "RoadFarm"
+  ],
+  "rows": 3,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_roadfarm_a_Place"
+  },
+  "date": "2026-11-19"
+}

@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "template": "roadfarm",
+  "place": "roadfarm",
+  "status": "approved",
+  "note": "Hand-written for #3381 (X16): the state farm yard 3.7 km south of the Saint-Philippe square on the Montignac road, scouted at x 5134, z 7044 radius 110 (the gazetteer label 'farm' is the Montignac farm). It is not a card of the lumber, mining or cabbage-farm chains: the saint-philippe-farm, farmcompound (Chotain) and Montignac depot places are other yards. The machine shed is the grey Workshop_02 (b03) beside the yard's east lane; the farm has no gate prefab, so the payphone and the farm sign stand on the lane verge where it leaves the yard. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 21,
+    "freePlots": 8
+  },
+  "slots": {
+    "a": {
+      "building": "b03",
+      "why": [
+        "Workshop_02_grey (type garage), 138 m2, the yard's machine shed: one door on its north-east side, 29 m from the scout centre and 27 m from the lane r18 that leaves the yard to the east",
+        "the cow sheds (b08, b14), the hayloft and the silos stand on the other side of the lane, so the shed is the farm's own machinery end and a fuel tank belongs beside it"
+      ]
+    }
+  }
+}
