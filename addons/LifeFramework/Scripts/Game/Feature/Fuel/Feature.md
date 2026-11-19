@@ -27,7 +27,7 @@ delivery drop-off and the stock sign are later cards.
 
 ## Not yet
 
-Delivery actions, a pack pump prefab per station, the out-of-fuel sign.
+Delivery actions, a pack pump prefab per station (the Saint-Philippe forecourt has its pumps, #3337), the out-of-fuel sign.
 
 ## Saved
 

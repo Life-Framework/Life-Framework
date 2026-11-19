@@ -286,4 +286,7 @@ edits first, one session.
 `tools\cli mapper import <project.json> [--cell cXrY]` puts the placed prefabs of a Reforger Mapper project (a browser
 site-layout sketcher, MIT) into one debug-grid cell through `grid place` and `place ground`, with unknown or unmeshed prefabs
 dropped and reported (spike #3839, `docs/architecture/reforger-mapper-import.md`). `--slot <Layer.layer> --at x,z` targets a
-playtest-town layer on a `ws/town-*` branch only.
+playtest-town layer on a `ws/town-*` branch only; `--slot Place_<place>_<slot>.layer` adds the props to an island slot on a
+`town-draft-<place>-<slot>[-word]` branch (#3851). Every prop of an import goes through one `place ground-many <plan.json>`
+run (a JSON array of `{ at: [x, z], prefab, yaw, name }`: one probe boot, one review, one write, all or nothing), not one
+`place ground` boot per prop.

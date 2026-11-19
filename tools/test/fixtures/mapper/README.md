@@ -8,3 +8,7 @@ Prefab GUIDs are vanilla ones that Mapper's own library lists. Nothing here was 
 
 Mapper is MIT, (c) 2026 Benji; the notice is `LICENSE-Mapper.txt`. The format notes are in
 `docs/architecture/reforger-mapper-import.md`.
+
+`lakeshore-small.json` (#3851) is the same kind of hand-written project for an island slot: a street bench facing west
+(yaw 270, towards the water), a bucket, a crate and a barrel in about 4 x 3 m. It is the input of the real island-slot
+import into `blacklake/shore` and of the selftest's island cases. Also hand-written, also not exported by Mapper.

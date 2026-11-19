@@ -38,3 +38,18 @@ GenericEntity Fit_blacklake_shore_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/
  coords 9520.1 208.58 2994.1
  angleY 123
 }
+GenericEntity Mapper_blacklake_shore_M1 : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+ coords 9527.057 209.752 2989.899
+ angleY -90
+}
+GenericEntity Mapper_blacklake_shore_M2 : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 9529 210.112 2991.1
+ angleY 40
+}
+GenericEntity Mapper_blacklake_shore_M3 : "{6FC9E85153AE41B1}Prefabs/Props/Civilian/WoodKindling_Crate_01.et" {
+ coords 9529.69 210.178 2988.697
+ angleY 90
+}
+GenericEntity Mapper_blacklake_shore_M4 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 9525.3 209.433 2988.301
+}
