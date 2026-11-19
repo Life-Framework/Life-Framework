@@ -274,7 +274,9 @@ export function buildLine(id, spec) {
     return `${id} click ${widget} ${index}`;
   }
   if (spec.verb === "type") {
-    return `${id} type ${token(spec.widget, "field")} ${token(spec.text, "text")}`;
+    // The typed text may carry dashes: an account number is a uid such as 00bbbddd-5e55-0000-0000-000000000002 (#3320).
+    if (!/^[A-Za-z0-9_-]+$/.test(spec.text)) throw new Error(`text must be letters, digits, underscore, or dash: ${spec.text}`);
+    return `${id} type ${token(spec.widget, "field")} ${spec.text}`;
   }
   if (spec.verb === "input") {
     if (!MENU_ACTIONS.has(spec.action)) {

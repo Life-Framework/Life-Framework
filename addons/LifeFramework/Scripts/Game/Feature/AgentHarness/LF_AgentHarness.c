@@ -559,7 +559,7 @@ class LF_AgentCommand
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! type <PartName> <Text>: both tokens are letters, digits, or underscore.
+	//! type <PartName> <Text>: both tokens are letters, digits, or underscore (the text may also hold dashes).
 	protected static bool ParseType(array<string> parts, LF_AgentCommand cmd)
 	{
 		if (parts.Count() < 4)
@@ -570,7 +570,10 @@ class LF_AgentCommand
 
 		cmd.Arg1 = parts[2];
 		cmd.Arg2 = parts[3];
-		if (!IsClassToken(cmd.Arg1) || !IsClassToken(cmd.Arg2))
+		// The text may carry dashes: an account number is a uid such as 00bbbddd-5e55-0000-0000-000000000002 (#3320).
+		string dashless = cmd.Arg2;
+		dashless.Replace("-", "_");
+		if (!IsClassToken(cmd.Arg1) || !IsClassToken(dashless))
 		{
 			cmd.Error = "bad_field_or_text";
 			return false;

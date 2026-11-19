@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A0F292AEB75A6077}Configs/Signs/LF_Signs_Everon1989/LF_Signs_FuelDepot.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
