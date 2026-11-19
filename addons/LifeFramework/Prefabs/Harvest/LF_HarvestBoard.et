@@ -1,0 +1,43 @@
+GenericEntity : "{220A96D43DC3C3AE}Prefabs/Props/Signs/LF_Sign_Board.et" {
+ ID "4F9FFA72B7C2440F"
+ components {
+  ActionsManagerComponent "{6E065C9694DC3BE5}" {
+   ActionContexts {
+    UserActionContext "{258E42C01A05C38B}" {
+     ContextName "LF_HarvestBoard"
+     Position PointInfo "{564EB633686F9776}" {
+      Offset 0 1.1 -0.2
+     }
+     Radius 2.4
+     Height 2.5
+    }
+   }
+   additionalActions {
+    LF_HarvestBoardAction "{F5290DC8E4F6FD20}" {
+     ParentContextList {
+      "LF_HarvestBoard"
+     }
+     m_eMode POST
+    }
+    LF_HarvestBoardAction "{07E89C25E9054471}" {
+     ParentContextList {
+      "LF_HarvestBoard"
+     }
+     m_eMode TAKE_OWN
+    }
+    LF_HarvestBoardAction "{07E89C25E9054472}" {
+     ParentContextList {
+      "LF_HarvestBoard"
+     }
+     m_eMode TAKE_RENTAL
+    }
+    LF_HarvestBoardAction "{07E89C25E9054473}" {
+     ParentContextList {
+      "LF_HarvestBoard"
+     }
+     m_eMode RETURN_KIT
+    }
+   }
+  }
+ }
+}

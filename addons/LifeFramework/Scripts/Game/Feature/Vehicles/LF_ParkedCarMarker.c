@@ -130,23 +130,28 @@ class LF_ParkedCarMarkerComponent : ScriptComponent
 		if (!config)
 			return null;
 
-		ResourceName prefab = config.PickPrefab();
-		if (prefab.IsEmpty())
-		{
-			LF_Debug.Error(LF_ParkedCarConfig.FEATURE, "marker has no car to put out: the parked car list is empty");
-			return null;
-		}
-
 		vector transform[4];
 		owner.GetWorldTransform(transform);
 		vector angles = Math3D.MatrixToAngles(transform);
 		vector origin = owner.GetOrigin();
 		origin[1] = origin[1] + 0.3;
-		IEntity car = LF_Utils.SpawnEntityPrefab(prefab, origin, angles);
-		if (!car)
+
+		// A car that does not spawn (the Z7211 on a server without the Rally content, #3676) is remembered for the
+		// session and the next car in the list is tried, so the marker still puts something out.
+		IEntity car;
+		ResourceName prefab;
+		while (!car)
 		{
-			LF_Debug.Error(LF_ParkedCarConfig.FEATURE, string.Format("marker could not spawn %1", prefab));
-			return null;
+			prefab = config.PickPrefabAvoiding(LF_ParkedCars.FailedCars());
+			if (prefab.IsEmpty())
+			{
+				LF_ParkedCars.ReportNoCar(config.m_aCars && !config.m_aCars.IsEmpty());
+				return null;
+			}
+
+			car = LF_Utils.SpawnEntityPrefab(prefab, origin, angles);
+			if (!car)
+				LF_ParkedCars.NoteFailed(prefab);
 		}
 
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(car);
@@ -212,6 +217,46 @@ class LF_ParkedCars
 	//! Test seam: positions that count as a player standing there.
 	protected static ref array<vector> s_aStandIns;
 	protected static bool s_bScheduled;
+	//! Car ids (LF_ParkedCarList.CarId) whose prefab did not spawn this session; never tried again.
+	protected static ref array<string> s_aFailedCars;
+	protected static bool s_bNoCarReported;
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The cars that failed to spawn this session (never null).
+	static array<string> FailedCars()
+	{
+		if (!s_aFailedCars)
+			s_aFailedCars = new array<string>();
+
+		return s_aFailedCars;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Remembers a prefab that did not spawn; logs once per prefab. The spawn itself already logged why.
+	static void NoteFailed(ResourceName prefab)
+	{
+		string id = LF_ParkedCarList.CarId(prefab);
+		if (FailedCars().Find(id) >= 0)
+			return;
+
+		FailedCars().Insert(id);
+		LF_Debug.Error(LF_ParkedCarConfig.FEATURE, string.Format("parked car %1 did not spawn: skipped for this session, the marker tries the next car in the list", prefab));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A marker found no car to try. Logged once per session so a respawn sweep does not repeat it.
+	//! \param listHasCars False when the config list itself is empty.
+	static void ReportNoCar(bool listHasCars)
+	{
+		if (s_bNoCarReported)
+			return;
+
+		s_bNoCarReported = true;
+		if (listHasCars)
+			LF_Debug.Error(LF_ParkedCarConfig.FEATURE, "marker has no car to put out: every car in the parked car list failed to spawn");
+		else
+			LF_Debug.Error(LF_ParkedCarConfig.FEATURE, "marker has no car to put out: the parked car list is empty");
+	}
 
 	//------------------------------------------------------------------------------------------------
 	protected static array<EntityID> Markers()
@@ -318,6 +363,8 @@ class LF_ParkedCars
 		s_bScheduled = false;
 		s_aMarkers = null;
 		s_aStandIns = null;
+		s_aFailedCars = null;
+		s_bNoCarReported = false;
 	}
 }
 

@@ -135,3 +135,21 @@ GenericEntity WheatField_Unload {
  coords 43.55 0 -63.27
  angleY 3
 }
+GenericEntity WheatField_Board : "{194CC74891AEC339}Prefabs/Harvest/LF_HarvestBoard.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "harvest_board"
+  }
+ }
+ coords 51.5 0 -52
+ angleY 0
+}
+GenericEntity WheatField_Sign : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "harvest"
+  }
+ }
+ coords 38 0 -52
+ angleY 180
+}

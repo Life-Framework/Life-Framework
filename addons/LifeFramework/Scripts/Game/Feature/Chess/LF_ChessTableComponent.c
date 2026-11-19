@@ -31,6 +31,11 @@ class LF_ChessTable
 	protected int m_iWhiteLeftMs = -1;
 	protected int m_iBlackLeftMs = -1;
 	protected int m_iOverMs = -1;
+	protected ref LF_ChessStake m_Stake = new LF_ChessStake();
+	//! Cash owed after a mutation, drained by the component (TakePayouts) and paid.
+	protected ref array<ref LF_ChessPayout> m_aPayouts = {};
+	//! Why the last staked sit was refused (an LF_ChessStake verdict), OK when it was not.
+	protected int m_iRefusal;
 
 	//------------------------------------------------------------------------------------------------
 	LF_ChessGame GetGame()
@@ -61,6 +66,27 @@ class LF_ChessTable
 	}
 
 	//------------------------------------------------------------------------------------------------
+	LF_ChessStake GetStake()
+	{
+		return m_Stake;
+	}
+
+	//! The LF_ChessStake verdict of the last SitStaked (OK when it was seated).
+	int GetRefusal()
+	{
+		return m_iRefusal;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Moves the queued payouts into `queue` and empties the queue.
+	void TakePayouts(notnull array<ref LF_ChessPayout> queue)
+	{
+		foreach (LF_ChessPayout payout : m_aPayouts)
+			queue.Insert(payout);
+		m_aPayouts.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! True while the player has stood up and the grace period runs.
 	bool IsAway(int playerId)
 	{
@@ -78,6 +104,65 @@ class LF_ChessTable
 	//! but not while both seats are still held by its players: a bystander must not wipe their result
 	//! (#2405); once RESULT_HOLD_MS has passed since the last move, anyone may.
 	int Sit(int playerId, int nowMs)
+	{
+		return SitStaked(playerId, nowMs, 0, "", 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Takes a seat for `stake` (0 free, else an LF_ChessStake tier) by a player carrying `cash`. A
+	//! player already seated keeps the seat and the stake they paid. A stake the other seat did not
+	//! pay, a cash shortfall or a bad tier refuses the seat (GetRefusal) and changes nothing. On a
+	//! staked seat the hold is recorded here; the component has to take the cash (Cancel undoes the
+	//! seat when it cannot).
+	int SitStaked(int playerId, int nowMs, int stake, string uid, int cash)
+	{
+		m_iRefusal = LF_ChessStake.OK;
+		if (playerId <= 0 || SeatOf(playerId) != SEAT_NONE)
+			return SitSeat(playerId, nowMs);
+
+		int seat = SitSeat(playerId, nowMs);
+		if (seat == SEAT_NONE)
+			return SEAT_NONE;
+
+		bool otherSeated = m_iBlackId != 0;
+		if (seat == SEAT_BLACK)
+			otherSeated = m_iWhiteId != 0;
+		m_iRefusal = m_Stake.Accepts(seat, stake, cash, otherSeated);
+		if (m_iRefusal != LF_ChessStake.OK)
+		{
+			LF_Debug.Info(FEATURE, string.Format("player %1 refused a seat at stake %2 (verdict %3); watching", playerId, stake, m_iRefusal));
+			FreeSeat(seat);
+			return SEAT_NONE;
+		}
+
+		if (stake > 0)
+			m_Stake.Hold(seat, playerId, uid, stake);
+		return seat;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The component could not take the stake it was told to: the seat goes back, no refund (nothing
+	//! was taken).
+	void Cancel(int playerId)
+	{
+		int seat = SeatOf(playerId);
+		if (seat == SEAT_NONE)
+			return;
+
+		m_Stake.Release(seat, false, m_aPayouts);
+		FreeSeat(seat);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The table is going away (world end) or the game cannot go on: every stake in escrow goes back.
+	void Abort()
+	{
+		if (m_Stake.Settle(m_Game.GetResult(), true, m_aPayouts))
+			LF_Debug.Info(FEATURE, "table aborted; every stake refunded");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected int SitSeat(int playerId, int nowMs)
 	{
 		if (playerId <= 0)
 		{
@@ -194,7 +279,10 @@ class LF_ChessTable
 			return false;
 
 		if (m_Game.IsOver())
+		{
 			m_iOverMs = nowMs;
+			m_Stake.Settle(m_Game.GetResult(), false, m_aPayouts);
+		}
 		return true;
 	}
 
@@ -222,6 +310,9 @@ class LF_ChessTable
 		{
 			LF_Debug.Info(FEATURE, "grace period over; the absent side resigns");
 			m_Game.Resign(seat == SEAT_WHITE);
+			// A player who did not come back forfeits: the opponent wins the pot. Both away: refund both.
+			bool bothAway = m_iWhiteLeftMs >= 0 && m_iBlackLeftMs >= 0;
+			m_Stake.Settle(m_Game.GetResult(), bothAway, m_aPayouts);
 		}
 		FreeSeat(seat);
 	}
@@ -229,6 +320,8 @@ class LF_ChessTable
 	//------------------------------------------------------------------------------------------------
 	protected void FreeSeat(int seat)
 	{
+		// A hold still in escrow (a seat freed before the game ran) goes back with the player.
+		m_Stake.Release(seat, true, m_aPayouts);
 		if (seat == SEAT_WHITE)
 		{
 			m_iWhiteId = 0;
@@ -287,8 +380,13 @@ class LF_ChessTableComponent : ScriptComponent
 	protected string m_sLastMove;
 	[RplProp(onRplName: "OnStateRpl")]
 	protected bool m_bCheck;
+	//! The stake in escrow at the table (0 when nobody paid in): the action shows only what can be matched.
+	[RplProp(onRplName: "OnStateRpl")]
+	protected int m_iStake;
 
 	protected ref ScriptInvoker m_OnChanged = new ScriptInvoker();
+	//! Tests only: bodies for player ids that have no controller (a test character).
+	protected ref map<int, EntityID> m_mTestBodies;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -304,6 +402,9 @@ class LF_ChessTableComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnDelete(IEntity owner)
 	{
+		// A world end (or any delete) while stakes sit in escrow: both go back, to the bank when a
+		// body is already gone.
+		ServerAbort();
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(ServerTick);
 		super.OnDelete(owner);
@@ -359,6 +460,12 @@ class LF_ChessTableComponent : ScriptComponent
 		return m_bCheck;
 	}
 
+	//! The stake in escrow at the table, 0 when nobody paid in.
+	int GetStake()
+	{
+		return m_iStake;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Server only: the seats and the game (null on a client).
 	LF_ChessTable GetTable()
@@ -376,10 +483,109 @@ class LF_ChessTableComponent : ScriptComponent
 			return LF_ChessTable.SEAT_NONE;
 		}
 		int seat = m_Table.Sit(playerId, NowMs());
+		PayOut();
 		// A refused sit changed nothing: do not rebuild the FEN and bump seven props for a watcher.
 		if (seat != LF_ChessTable.SEAT_NONE)
 			Publish();
 		return seat;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the player (carrying `body`) sits for `stake` (0 free, else a fixed tier). A staked
+	//! seat takes the stake from the body's carried cash into escrow; a seat the cash cannot cover, or
+	//! whose stake does not match the other seat's, is refused and nothing moves. Returns the seat.
+	//! \param uid the player's ledger uid; empty takes it from the body
+	int ServerSitFor(int playerId, IEntity body, int stake, string uid = "")
+	{
+		if (!m_Table)
+		{
+			LF_Debug.Error(LF_ChessTable.FEATURE, "sit asked off the server");
+			return LF_ChessTable.SEAT_NONE;
+		}
+		if (stake <= 0)
+			return ServerSit(playerId);
+
+		if (uid.IsEmpty() && body)
+			uid = LF_Utils.GetPlayerUID(body);
+		bool seatedBefore = m_Table.SeatOf(playerId) != LF_ChessTable.SEAT_NONE;
+		int cash = 0;
+		if (body)
+			cash = LF_Utils.MaxInt(LF_MoneyUtils.GetCash(body), 0);
+
+		int seat = m_Table.SitStaked(playerId, NowMs(), stake, uid, cash);
+		if (seat == LF_ChessTable.SEAT_NONE)
+		{
+			PayOut();
+			return seat;
+		}
+
+		if (!seatedBefore && !LF_ChessStakeCash.Take(body, stake))
+		{
+			LF_Debug.Warn(LF_ChessTable.FEATURE, string.Format("player %1: the stake of %2 could not be taken, seat undone", playerId, stake));
+			m_Table.Cancel(playerId);
+			PayOut();
+			return LF_ChessTable.SEAT_NONE;
+		}
+
+		PayOut();
+		Publish();
+		return seat;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the table is going away (world end, deleted): every stake in escrow goes back, to the
+	//! body or the bank. Nothing in escrow, nothing moves.
+	void ServerAbort()
+	{
+		if (!m_Table)
+			return;
+
+		m_Table.Abort();
+		PayOut();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: pays what the table queued (the pot to a winner, refunds) to each player's body, or the
+	//! bank account when the body is gone.
+	protected void PayOut()
+	{
+		if (!m_Table)
+			return;
+
+		array<ref LF_ChessPayout> payouts = {};
+		m_Table.TakePayouts(payouts);
+		foreach (LF_ChessPayout payout : payouts)
+		{
+			LF_ChessStakeCash.Pay(payout, BodyOf(payout.m_iPlayerId));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The body of a player: its controlled character, else the test body set for the id.
+	protected IEntity BodyOf(int playerId)
+	{
+		IEntity body;
+		if (GetGame() && GetGame().GetPlayerManager())
+			body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!body && m_mTestBodies)
+		{
+			EntityID id;
+			if (m_mTestBodies.Find(playerId, id))
+				body = GetGame().GetWorld().FindEntityByID(id);
+		}
+		return body;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests only: the character that stands for `playerId`, as a controller would give one. A null
+	//! body takes the stand-in away (the player has left).
+	void SetBodyForTests(int playerId, IEntity body)
+	{
+		if (!m_mTestBodies)
+			m_mTestBodies = new map<int, EntityID>();
+		m_mTestBodies.Remove(playerId);
+		if (body)
+			m_mTestBodies.Set(playerId, body.GetID());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -388,7 +594,9 @@ class LF_ChessTableComponent : ScriptComponent
 	{
 		if (!m_Table)
 			return;
-		if (m_Table.StandUp(playerId, NowMs()))
+		bool stood = m_Table.StandUp(playerId, NowMs());
+		PayOut();
+		if (stood)
 			Publish();
 	}
 
@@ -404,6 +612,8 @@ class LF_ChessTableComponent : ScriptComponent
 		if (!m_Table.Move(playerId, name, NowMs()))
 			return false;
 
+		// A mate (or any end) queued the pot: pay it once, here.
+		PayOut();
 		m_sLastMove = name;
 		LF_Debug.Info(LF_ChessTable.FEATURE, string.Format("player %1 played %2", playerId, name));
 		Publish();
@@ -414,7 +624,12 @@ class LF_ChessTableComponent : ScriptComponent
 	//! Server: runs the grace clock at a given time (the tick passes the world time; tests pass theirs).
 	void ServerTickAt(int nowMs)
 	{
-		if (m_Table && m_Table.Tick(nowMs))
+		if (!m_Table)
+			return;
+
+		bool changed = m_Table.Tick(nowMs);
+		PayOut();
+		if (changed)
 			Publish();
 	}
 
@@ -462,6 +677,7 @@ class LF_ChessTableComponent : ScriptComponent
 		m_iResult = game.GetResult();
 		m_iEnd = game.GetEnd();
 		m_bCheck = !game.IsOver() && game.IsCheck();
+		m_iStake = m_Table.GetStake().Pending();
 		if (game.MoveCount() == 0)
 			m_sLastMove = string.Empty;
 		Replication.BumpMe();
@@ -497,6 +713,9 @@ class LF_ChessTableComponent : ScriptComponent
 //! player's machine. Both seats taken: the board opens to watch.
 class LF_ChessSitAction : ScriptedUserAction
 {
+	[Attribute("0", UIWidgets.ComboBox, "Cash each player puts in escrow: 0 is a free game, else 20 or 50 (LF_ChessStake)", enums: {ParamEnum("Free", "0"), ParamEnum("20", "20"), ParamEnum("50", "50")})]
+	protected int m_iStake;
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBroadcastScript()
 	{
@@ -506,7 +725,51 @@ class LF_ChessSitAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		outName = "#LF-Chess_Play";
+		if (m_iStake > 0)
+			outName = LF_Terms.Text("#LF-Chess_PlayFor", m_iStake.ToString());
+		else
+			outName = "#LF-Chess_Play";
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A staked action shows only while the table can still take that stake: both seats empty, or one
+	//! seat paid exactly this stake and the other is empty. The server checks again on the sit.
+	override bool CanBeShownScript(IEntity user)
+	{
+		if (m_iStake == 0)
+			return true;
+
+		LF_ChessTableComponent table = LF_ChessTableComponent.Of(GetOwner());
+		if (!table)
+			return false;
+
+		int seated = 0;
+		if (table.GetWhiteId() != 0)
+			seated++;
+		if (table.GetBlackId() != 0)
+			seated++;
+		if (seated == 0)
+			return true;
+
+		return seated == 1 && table.GetStake() == m_iStake;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A staked seat needs the cash in hand: the client's own view of its carried cash (the server
+	//! counts it again).
+	override bool CanBePerformedScript(IEntity user)
+	{
+		if (m_iStake == 0)
+			return true;
+		if (!user)
+			return false;
+
+		if (LF_MoneyUtils.GetCash(user) < m_iStake)
+		{
+			SetCannotPerformReason("#LF-Chess_CannotAfford");
+			return false;
+		}
 		return true;
 	}
 
@@ -525,7 +788,12 @@ class LF_ChessSitAction : ScriptedUserAction
 			return;
 
 		int playerId = GetGame().GetPlayerManager().GetPlayerIdFromControlledEntity(pUserEntity);
-		table.ServerSit(playerId);
+		// A staked sit moves cash: it counts against the player's chess bucket like any other ask.
+		if (m_iStake > 0 && !LF_ChessTableComponent.AllowAsk(playerId, "chess staked sit"))
+			return;
+
+		// The stake comes from this action's own setting, never from the client.
+		table.ServerSitFor(playerId, pUserEntity, m_iStake);
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
 		if (!controller)
 		{

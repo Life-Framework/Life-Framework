@@ -1,0 +1,161 @@
+GenericEntity ResidentPlate_saint_philippe_sp_b15 : "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et" {
+ components {
+  LF_SignComponent "{A19037297E81C6EC}" {
+   m_sSignId "home_cafe_owner"
+   m_vRimColor 0.42 0.3 0.1
+   m_vPaintColor 0.72 0.55 0.22
+   m_vTextColor 0.1 0.07 0.03
+  }
+ }
+ coords 4438.932 13.9 10667.561
+ angleY -98
+ scale 0.5
+}
+GenericEntity ResidentHome_saint_philippe_sp_b17 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_Private"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+  }
+  LF_PlaceComponent "{3CBE99A428368074}" {
+   m_sKind "House"
+   m_sId "saint-philippe.home.old_man"
+  }
+ }
+ coords 4473.1 15.4 10657.8
+}
+GenericEntity ResidentPlate_saint_philippe_sp_b17 : "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et" {
+ components {
+  LF_SignComponent "{A19037297E81C6EC}" {
+   m_sSignId "home_old_man"
+   m_vRimColor 0.42 0.3 0.1
+   m_vPaintColor 0.72 0.55 0.22
+   m_vTextColor 0.1 0.07 0.03
+  }
+ }
+ coords 4472.238 16.8 10648.423
+ angleY 170
+ scale 0.5
+}
+GenericEntity ResidentDoor_saint_philippe_sp_b17 {
+ components {
+  LF_ResidentAnchorComponent "{16BAA0CCBFCFBF86}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4472.498 15.4 10646.946
+ angleY 170
+}
+GenericEntity ResidentHome_saint_philippe_sp_b117 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_Private"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+  }
+  LF_PlaceComponent "{F64620B33F22D79E}" {
+   m_sKind "House"
+   m_sId "saint-philippe.home.night_shift"
+  }
+ }
+ coords 4642.5 22.2 10723.7
+}
+GenericEntity ResidentPlate_saint_philippe_sp_b117 : "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et" {
+ components {
+  LF_SignComponent "{A19037297E81C6EC}" {
+   m_sSignId "home_night_shift"
+   m_vRimColor 0.42 0.3 0.1
+   m_vPaintColor 0.72 0.55 0.22
+   m_vTextColor 0.1 0.07 0.03
+  }
+ }
+ coords 4644.497 23.6 10732.902
+ angleY -3
+ scale 0.5
+}
+GenericEntity ResidentDoor_saint_philippe_sp_b117 {
+ components {
+  LF_ResidentAnchorComponent "{5232AFC68A959548}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4644.418 22.2 10734.4
+ angleY -3
+}
+GenericEntity ResidentHome_saint_philippe_sp_b50 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_Private"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+  }
+  LF_PlaceComponent "{052795A823E9908E}" {
+   m_sKind "House"
+   m_sId "saint-philippe.home.teller"
+  }
+ }
+ coords 4391.2 10.3 10749.1
+}
+GenericEntity ResidentPlate_saint_philippe_sp_b50 : "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et" {
+ components {
+  LF_SignComponent "{A19037297E81C6EC}" {
+   m_sSignId "home_teller"
+   m_vRimColor 0.42 0.3 0.1
+   m_vPaintColor 0.72 0.55 0.22
+   m_vTextColor 0.1 0.07 0.03
+  }
+ }
+ coords 4386.54 11.7 10758.422
+ angleY -1
+ scale 0.5
+}
+GenericEntity ResidentDoor_saint_philippe_sp_b50 {
+ components {
+  LF_ResidentAnchorComponent "{773CB7271FF2F550}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4386.514 10.3 10759.922
+ angleY -1
+}
+GenericEntity ResidentHome_saint_philippe_sp_b09 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_Private"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+  }
+  LF_PlaceComponent "{7DAE89278B2E2548}" {
+   m_sKind "House"
+   m_sId "saint-philippe.home.store_clerk"
+  }
+ }
+ coords 4503.38 14.9 10744.95
+}
+GenericEntity ResidentPlate_saint_philippe_sp_b09 : "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et" {
+ components {
+  LF_SignComponent "{A19037297E81C6EC}" {
+   m_sSignId "home_store_clerk"
+   m_vRimColor 0.42 0.3 0.1
+   m_vPaintColor 0.72 0.55 0.22
+   m_vTextColor 0.1 0.07 0.03
+  }
+ }
+ coords 4503.933 16.3 10741.459
+ angleY 171
+ scale 0.5
+}
+GenericEntity ResidentDoor_saint_philippe_sp_b09 {
+ components {
+  LF_ResidentAnchorComponent "{2F2A5529D2EBD28F}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4504.168 14.9 10739.977
+ angleY 171
+}
