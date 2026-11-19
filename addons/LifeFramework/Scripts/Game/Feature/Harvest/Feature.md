@@ -9,7 +9,7 @@ Design and card list: the harvester spike (epic #3282).
 ## Interaction pattern
 
 In-world only: the field is the interface and the hopper is a number on the reaper's prompt. Nothing opens a sheet.
-The rules (#3285), the field entity (#3287) and the cut replication (#3288) are in; the reaper (#3289) builds on them.
+The rules (#3285), the field entity (#3287), its cut replication (#3288) and the hitch (#3284) are in; the cut tick (#3289) builds on them.
 
 ## Wheat field rules (#3285)
 
@@ -34,6 +34,16 @@ The rules (#3285), the field entity (#3287) and the cut replication (#3288) are 
   are the server calls the replication (#3288) will broadcast.
 - **Data:** `Configs/Harvest/LF_WheatFields.conf` (patch, stubble, cell size). The box is `m_fSizeX` x `m_fSizeZ` on the entity.
 - **Proof:** `harvest/wheat-field-cut` (WORLD).
+
+## Implement hitch (#3284)
+
+- **Player sees:** a reaper behind a UAZ469 or a Z7211 once something hitches it (the implement rack, H8). Other players
+  and late joiners see it follow the vehicle.
+- **Owner and side:** `LF_ImplementHitch` (server statics: `Hitch`, `Unhitch`, `FindHitched`, `RowFor`) and
+  `LF_ImplementComponent` on the reaper (width, replicated hopper kg, a log line per machine as the vehicle moves).
+- **Data:** `Configs/Harvest/LF_Hitches.conf`: the reaper prefab and one row per towing vehicle (prefab or ancestor,
+  local offset and angles). The reaper is a rigid child with no physics body; detaching deletes it.
+- **Proof:** `harvest/implement-hitch` (WORLD); `session hitch-sync` (`up --clients 1 --profile full`, it joins client 2 late): harness verb `hitch` (`LF_ImplementHitchHarness.c`) spawns a UAZ469 on the grass south of the debug grid, hitches, pushes it 50 m east and deletes it the garage way; both clients must see the reaper behind it, then gone.
 
 ## Cut replication (#3288)
 
