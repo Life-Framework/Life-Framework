@@ -1,0 +1,13 @@
+GameEntity : "{862432FB57C1C1B3}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_green.et" {
+ ID "0974D11EE1E6869C"
+ components {
+  SCR_LampComponent "{5D2AB5C8865F22C4}" {
+   m_aLightData {
+    SCR_BaseLightData "{5D2AB5C89A9EA28D}" {
+     m_fRadius 9
+     m_eLightFlags 1
+    }
+   }
+  }
+ }
+}

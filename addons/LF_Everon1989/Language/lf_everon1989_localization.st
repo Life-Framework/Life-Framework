@@ -1004,6 +1004,11 @@ StringTable {
      Target_en_us "Filling station"
      Comment "Map POI kind name (#2247): the fuel till."
     }
+    CustomStringTableItem "{E20FC1E39F2F3576}" {
+     Id "LF-MapPoi_FishingSpot"
+     Target_en_us "Fishing spot"
+     Comment "Map POI kind name (#3667): a fishing spot marker (LF_Places kind FishingSpot) at Black Lake or Spring Pond. Discovered by walking past, like the shops."
+    }
     CustomStringTableItem "{3EF58CE81E5B58BA}" {
      Id "LF-MapPoi_Furniture"
      Target_en_us "Furniture store"
@@ -1893,6 +1898,21 @@ StringTable {
      Id "LF-Sign_Barber_What"
      Target_en_us "The village coiffeur: sit in a chair and pick a new cut, colour or beard|Prices are 1989 prices, cash only"
      Comment "Sign card for the Saint-Philippe barber shop, What section (#3236)."
+    }
+    CustomStringTableItem "{C27AF568161F7892}" {
+     Id "LF-Sign_BlackLake_How"
+     Target_en_us "Bring a rod and a bait tin, cast onto the water from the shore, and strike when the float dips"
+     Comment "Sign card for the Black Lake plate, How section."
+    }
+    CustomStringTableItem "{468950476749EE18}" {
+     Id "LF-Sign_BlackLake_Title"
+     Target_en_us "Black Lake"
+     Comment "Title of the pole plate on the Black Lake shore (Everon 1989 pack, #3667). Printed on the sign and shown in the prompt as Read: Black Lake."
+    }
+    CustomStringTableItem "{57D8B0D20620C8D3}" {
+     Id "LF-Sign_BlackLake_What"
+     Target_en_us "A quiet lake with a bench and a lantern on its north-west shore. Perch and carp bite here; carp are best at dawn and in the evening."
+     Comment "Sign card for the Black Lake plate, What section."
     }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
