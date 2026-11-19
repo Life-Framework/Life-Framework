@@ -25,8 +25,11 @@ everything on a falling curve.
   (`gather_logging` through `LF_OnGathered` family LOGGING for softwood; `fell_hardwood` directly for
   hardwood), calls `LF_FelledTreesReplication.Publish` so every client hides the tree, and publishes
   `LF_OnTreeFelled` (`LF_LumberEvents.c`). The ledger only grows here.
-- Not yet: the prompt on a real map tree (the helper entity that carries `LF_FellAction` and finds the
-  nearest tree), regrow and save (#3262, which also calls `LF_FelledTreesReplication.Retract`).
+- `LF_FellPrompt` (#3554): while the local player holds the axe, a client-local helper (`Prefabs/Lumber/LF_FellHelper.et`, no
+  `RplComponent`) carries `LF_FellAction` on the nearest standing fellable tree within reach. Completing the hold sends the tree's
+  position to the server (`SCR_PlayerController.LF_AskFell`), which finds the tree itself and runs `TryFell`. The stamina cost runs
+  on the owner (`LF_SpendFellStamina`, an Owner RPC).
+- Not yet: regrow and save (#3262, which also calls `LF_FelledTreesReplication.Retract`).
 - `LF_FelledTreesReplication` (#3261): the server table of felled keys, a broadcast RPC per change, the
   join snapshot in the game mode `RplSave`/`RplLoad`, and the client that hides or shows the map tree a key names.
 
