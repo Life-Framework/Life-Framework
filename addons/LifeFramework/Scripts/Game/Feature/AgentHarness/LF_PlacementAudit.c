@@ -699,6 +699,157 @@ class LF_PlacementAudit
 		return true;
 	}
 
+	protected static ref array<EntityID> s_aRuntimeIds;
+
+	//! Clutter a script, a proof or a player can leave behind; one no layer row owns is an orphan (placement-system.md). Our own
+	//! prefabs (LF_) and cones and roadblocks: base-map pallets, barrels and crash barriers are the map's (3577 of them on Everon).
+	static const string LOOSE_WORDS = "LF_,Cone,Roadblock";
+
+	protected static bool CollectRuntime(IEntity entity)
+	{
+		if (!entity)
+			return true;
+
+		if (entity.FindComponent(LF_NightLightComponent) || entity.FindComponent(LF_ParkedCarMarkerComponent) || ChimeraCharacter.Cast(entity) || Vehicle.Cast(entity))
+		{
+			s_aRuntimeIds.Insert(entity.GetID());
+			return true;
+		}
+
+		if (!entity.GetParent() && IsLoose(entity))
+			s_aRuntimeIds.Insert(entity.GetID());
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the entity's prefab file names a kind of street clutter (LOOSE_WORDS).
+	static bool IsLoose(IEntity entity)
+	{
+		EntityPrefabData data = entity.GetPrefabData();
+		if (!data)
+			return false;
+
+		string file = FilePath.StripPath(data.GetPrefabName());
+		array<string> words = {};
+		LOOSE_WORDS.Split(",", words, true);
+		foreach (string word : words)
+		{
+			if (file.Contains(word))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Distance from `from` to the nearest surface along the six axes (up to `reach` m), `self` traced through.
+	static float AttachDistance(vector from, IEntity self, float reach, out string to)
+	{
+		array<vector> dirs = {"1 0 0", "-1 0 0", "0 1 0", "0 -1 0", "0 0 1", "0 0 -1"};
+		float best = reach;
+		to = "none";
+		foreach (vector dir : dirs)
+		{
+			IEntity hit;
+			float d = SurfaceTrace(from, from + dir * reach, self, hit);
+			if (hit && d < best)
+			{
+				best = d;
+				to = Label(hit);
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What scripts put in the world, which no layer row lists (#placement-system): one line per thing found within
+	//! `radius` of `center` after the world has run its spawners.
+	//!   car marker=<marker> <Format> found=<car>     a parked-car marker's car (or "car marker=<m> nocar=1")
+	//!   vehicle <Format> found=<label>               any other vehicle standing in the circle
+	//!   light name=<label> p=<x,y,z> att=<m> to=<label>   a night light and how far the nearest surface is
+	//!   char name=<label> p=<x,y,z> gap=<m> on=<label>    a character and its feet above the surface under it
+	//!   loose name=<label> prefab=<file> p=<x,y,z>        street clutter (LOOSE_WORDS) standing on its own
+	static void RuntimeLines(vector center, float radius, notnull array<string> lines)
+	{
+		s_aRuntimeIds = {};
+		BaseWorld world = GetGame().GetWorld();
+		world.QueryEntitiesBySphere(center, radius, CollectRuntime, null, EQueryEntitiesFlags.ALL);
+		array<EntityID> markerCars = {};
+		int cars;
+		int lights;
+		int chars;
+		int loose;
+		foreach (EntityID id : s_aRuntimeIds)
+		{
+			IEntity e = world.FindEntityByID(id);
+			if (!e)
+				continue;
+
+			LF_ParkedCarMarkerComponent marker = LF_ParkedCarMarkerComponent.Cast(e.FindComponent(LF_ParkedCarMarkerComponent));
+			if (!marker)
+				continue;
+
+			// The marker puts its first car out a second after world start; the audit runs it now, as StockRows fills the shelves.
+			IEntity car = marker.GetCar();
+			if (!car)
+				car = marker.SpawnCar("placement audit");
+			if (!car)
+			{
+				lines.Insert(string.Format("car marker=%1 nocar=1 p=%2", Label(e), V(e.GetOrigin())));
+				continue;
+			}
+
+			markerCars.Insert(car.GetID());
+			cars++;
+			lines.Insert(string.Format("car marker=%1 %2 found=%3", Label(e), Format(Measure(car, false)), Label(car)));
+		}
+
+		foreach (EntityID id : s_aRuntimeIds)
+		{
+			IEntity e = world.FindEntityByID(id);
+			if (!e || e.FindComponent(LF_ParkedCarMarkerComponent))
+				continue;
+
+			if (e.FindComponent(LF_NightLightComponent))
+			{
+				string to;
+				float att = AttachDistance(e.GetOrigin(), e, 1.5, to);
+				lines.Insert(string.Format("light name=%1 p=%2 att=%3 to=%4", Label(e), V(e.GetOrigin()), F(att), to));
+				lights++;
+				continue;
+			}
+
+			if (ChimeraCharacter.Cast(e))
+			{
+				vector feet = e.GetOrigin();
+				IEntity under;
+				float d = SurfaceTrace(feet + "0 0.5 0", feet - "0 3 0", e, under);
+				float gap = d - 0.5;
+				if (!under)
+					gap = feet[1] - world.GetSurfaceY(feet[0], feet[2]);
+				lines.Insert(string.Format("char name=%1 p=%2 gap=%3 on=%4", Label(e), V(feet), F(gap), Label(under)));
+				chars++;
+				continue;
+			}
+
+			if (Vehicle.Cast(e))
+			{
+				if (!markerCars.Contains(e.GetID()))
+					lines.Insert(string.Format("vehicle %1 found=%2", Format(Measure(e, false)), Label(e)));
+				continue;
+			}
+
+			string prefab = FilePath.StripPath(e.GetPrefabData().GetPrefabName());
+			lines.Insert(string.Format("loose name=%1 prefab=%2 p=%3", Label(e), prefab, V(e.GetOrigin())));
+			loose++;
+		}
+
+		LF_Debug.Info("PlaceAudit", string.Format("runtime sweep: %1 parked cars, %2 night lights, %3 characters, %4 loose props within %5 m", cars, lights, chars, loose, radius));
+		s_aRuntimeIds = null;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! One row per display copy a physical store puts on its shelf at load: "shelf <store>/<prefab>@<slot> <measure>".
 	//! They are spawned by script, not placed in a layer, so the layer list never names them; a slot
@@ -854,6 +1005,8 @@ class LF_PlacementAudit
 
 		array<string> rows = {};
 		int measured;
+		vector runtimeAt;
+		float runtimeRadius;
 		string line;
 		while (input.ReadLine(line) >= 0)
 		{
@@ -866,6 +1019,14 @@ class LF_PlacementAudit
 			if (parts.Count() == 4 && parts[0] == "town")
 			{
 				DoorLines(Vector(parts[1].ToFloat(), 0, parts[2].ToFloat()), parts[3].ToFloat(), rows);
+				continue;
+			}
+
+			// "runtime <x> <z> <radius>": also sweep that circle for what spawners put out (RuntimeLines); the island audit asks for it.
+			if (parts.Count() == 4 && parts[0] == "runtime")
+			{
+				runtimeAt = Vector(parts[1].ToFloat(), 0, parts[2].ToFloat());
+				runtimeRadius = parts[3].ToFloat();
 				continue;
 			}
 
@@ -917,6 +1078,8 @@ class LF_PlacementAudit
 
 		input.Close();
 		StockRows(rows);
+		if (runtimeRadius > 0)
+			RuntimeLines(runtimeAt, runtimeRadius, rows);
 		FileHandle output = FileIO.OpenFile(outPath, FileMode.WRITE);
 		if (!output)
 		{

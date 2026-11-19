@@ -15,6 +15,10 @@ GenericEntity : "{31CE12B3D1F6789E}Prefabs/Structures/Military/Flags/FlagPole_01
        SourceMaterial "SignGeneric_01"
        AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
       }
+      MaterialAssignClass "{04CC3C9401280EAD}" {
+       SourceMaterial "SignGeneric_01_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
      }
     }
     SCR_DestructionMultiPhaseComponent "{5496C1EF00137501}" {

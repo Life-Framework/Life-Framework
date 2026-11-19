@@ -13,6 +13,9 @@ export const DEFAULTS = {
   sessionIdleMaxMin: 5,
   promoteMin: 20, starveMin: 20,
   minFreeMb: 1500,
+  // Commit (physical RAM plus pagefile, promised to processes) kept free after a start, for agents, git and node: the
+  // pool queues a job that would cross it (tools/lib/pool-commit.mjs; 2026-11-19 git and the agents died at 70.2 of 71.2 GB).
+  minFreeCommitMb: 6144,
   // RAM headroom past which a machine counts as roomy: the speed (budgetMultiplier) then decides
   // between machines, not more RAM (rankMachines).
   roomyMb: 6144,
@@ -239,18 +242,21 @@ export function canBackfill(t, now, ctx = {}) {
 // Why a ticket waits, for `pool status`: "ram 2-client full: needs 3.8 GB free, local has 1.1 GB",
 // "lane", "behind N", plus "starved: holds the machine" once it reserves. freeMbOf(name) gives a
 // machine's live free RAM (MB) when known.
-export function waitReason(t, ahead = 0, { now = Date.now(), starveMs, freeMbOf, otherMachines = [] } = {}) {
+export function waitReason(t, ahead = 0, { now = Date.now(), starveMs, freeMbOf, commitOf, otherMachines = [] } = {}) {
   const hold = (t.stuck === "ram" || t.stuck === "lane") && starved(t, now, { starveMs }) ? "; starved, so it holds its place" : "";
   if (t.stuck === "ram") {
     const what = `ram${t.clients ? ` ${t.clients}-client` : ""}${t.profile && t.clients ? ` ${t.profile}` : ""}`;
     // A pinned job (--local / --machine) will not move: say which machine it is not allowed to use has room.
     const roomy = t.pinned ? roomElsewhere(t.needMb, t.machines, otherMachines.map((n) => ({ name: n, freeMb: freeMbOf?.(n) }))) : [];
     const pin = roomy.length ? ` (pinned; ${roomy.join(", ")} ${roomy.length > 1 ? "have" : "has"} room)` : "";
-    if (!Number.isFinite(t.needMb)) return `${what}${pin}${hold}`;
+    // The machines' commit (committed memory against the limit): a job can wait on it with free RAM to spare.
+    const cm = (t.machines ?? []).map((n) => [n, commitOf?.(n)]).filter(([, c]) => c).map(([n, c]) => `${n} ${c}`);
+    const commit = cm.length ? `; ${cm.join(", ")}` : "";
+    if (!Number.isFinite(t.needMb)) return `${what}${commit}${pin}${hold}`;
     const gb = (x) => (x / 1024).toFixed(1);
     const busy = t.busyOn ?? [];
     const have = (t.machines ?? []).filter((n) => !busy.includes(n)).map((n) => [n, freeMbOf?.(n)]).filter(([, f]) => Number.isFinite(f)).map(([n, f]) => `${n} has ${gb(f)}`);
-    return `${what}: needs ${gb(t.needMb)} GB free${have.length ? `, ${have.join(", ")}` : ""}${busy.length ? `; every session lane taken on ${busy.join(", ")}` : ""}${pin}${hold}`;
+    return `${what}: needs ${gb(t.needMb)} GB free${have.length ? `, ${have.join(", ")}` : ""}${commit}${busy.length ? `; every session lane taken on ${busy.join(", ")}` : ""}${pin}${hold}`;
   }
   if (t.stuck === "lane") return `lane${hold}`;
   return ahead > 0 ? `behind ${ahead}` : "";
@@ -376,13 +382,16 @@ export function ramVerdict({ running = 0, freeMb, minFreeMb, reserveMb = 0, pend
 // needs vramFreeMb - vramPendingMb - vramReserveMb >= minFreeVramMb to count as having room; one that
 // cannot fit goes with the no-room machines even when its RAM is roomy. Unknown VRAM, or a job with no
 // client, leaves the rule out, so the order is the RAM order.
-export function rankMachines(cands, { minFreeMb = DEFAULTS.minFreeMb, reserveMb = 0, roomyMb = DEFAULTS.roomyMb, vramReserveMb = 0, minFreeVramMb = DEFAULTS.minFreeVramMb } = {}) {
+// Commit: a candidate with commitFreeMb (commit limit - committed, known) whose headroom less the job's
+// commitReserveMb is under minFreeCommitMb has no room either, whatever its free RAM (tools/lib/pool-commit.mjs).
+export function rankMachines(cands, { minFreeMb = DEFAULTS.minFreeMb, reserveMb = 0, roomyMb = DEFAULTS.roomyMb, vramReserveMb = 0, minFreeVramMb = DEFAULTS.minFreeVramMb, commitReserveMb = 0, minFreeCommitMb = DEFAULTS.minFreeCommitMb } = {}) {
   const rows = cands.map((c, i) => {
     const known = Number.isFinite(c.freeMb);
     const headroomMb = known ? c.freeMb - (Number(c.pendingMb) || 0) - reserveMb : null;
     const multiplier = Number(c.multiplier) > 0 ? Number(c.multiplier) : 1;
     const vramOk = vramVerdict({ freeMb: c.vramFreeMb, minFreeMb: minFreeVramMb, reserveMb: vramReserveMb, pendingMb: Number(c.vramPendingMb) || 0 }).ok;
-    const room = known ? headroomMb >= minFreeMb && vramOk : vramOk ? null : false;
+    const commitOk = !Number.isFinite(c.commitFreeMb) || c.commitFreeMb - (Number(c.commitPendingMb) || 0) - commitReserveMb >= minFreeCommitMb;
+    const room = known ? headroomMb >= minFreeMb && vramOk && commitOk : vramOk && commitOk ? null : false;
     const score = known ? Math.min(headroomMb, roomyMb) / multiplier : 0;
     return { name: c.name, room, headroomMb, score, multiplier, i };
   });

@@ -264,6 +264,9 @@ class LF_QuestTrackerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void DoGreetNewcomer()
 	{
+		// First, so a character mid-quest is guided to their step again (rejoin, respawn).
+		RefreshGuide();
+
 		foreach (string questId, LF_QuestDefinition def : LF_QuestManager.GetInstance().GetDefinitions())
 		{
 			if (!def || !def.m_bRewardIdCard)
@@ -275,6 +278,17 @@ class LF_QuestTrackerComponent : ScriptComponent
 			Notify(def.m_sDescriptionKey, def.m_sTitleKey, STORY_SECONDS);
 			return;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: puts this character's current guided step on their screen and map (LF_ArrivalGuide), or
+	//! clears the marks when none is left. A spawn, a rejoin mid-quest and every turn-in call it.
+	void RefreshGuide()
+	{
+		if (!Replication.IsServer() || !GetOwner())
+			return;
+
+		LF_ArrivalGuide.Refresh(OwnerUid(), GetOwner().GetOrigin(), GetTurnedInQuestIds());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -382,6 +396,8 @@ class LF_QuestTrackerComponent : ScriptComponent
 		RefreshFrameMask();
 		GrantReward(def);
 		GrantStanding(def, uid);
+		// The step is done: the waypoint and the map mark move to the next one, or clear.
+		RefreshGuide();
 
 		int rewardItems = 0;
 		if (def.m_aRewardItems)

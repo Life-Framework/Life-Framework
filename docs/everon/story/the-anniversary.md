@@ -26,7 +26,7 @@ who lost her husband in the evacuation.
 - **The mayor**, who has run the town hall since before the evacuation and wants the day to go smoothly.
 - **The priest**, who wants it to be honest.
 - **The widow**, who wants her husband's name said in public.
-- **The clerk**, **Odile Marchand**, **Gaspard Lenoir** and **Rémi Duval**, the faces the player already knows.
+- **The clerk**, **Odilon Marchand**, **Gaspard Lenoir** and **Rémi Duval**, the faces the player already knows.
   Each stands in the crowd with a different view of the day.
 
 ## Where it happens

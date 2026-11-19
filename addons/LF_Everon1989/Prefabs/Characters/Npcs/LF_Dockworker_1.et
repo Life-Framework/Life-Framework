@@ -1,0 +1,29 @@
+SCR_ChimeraCharacter : "{C6FAF52907A544AC}Prefabs/Characters/Factions/CIV/Dockworker/Character_CIV_Dockworker_1.et" {
+ ID "D0150FAD51B25782"
+ components {
+  LF_DialogueComponent "{090FEA7E684DDD85}" {
+   m_sDialogueId "dockworker"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{F7768BA08CD02ACA}" {
+     ContextName "Talk"
+     Position PointInfo "{84E9A3C634EE40F1}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{45E51B105AB34C87}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{894DE8005E0A0B66}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}

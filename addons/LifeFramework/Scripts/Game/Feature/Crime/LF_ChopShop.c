@@ -476,8 +476,9 @@ class LF_ChopShopComponent : ScriptComponent
 		{
 			vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
 			vehicleId = vehicleLock.GetVehicleIdentifier();
-			stolen = vehicleLock.IsStolen();
-			isOwned = !LF_VehicleOwnership.GetOwner(vehicleId).IsEmpty();
+			// A company garbage truck waiting to be taken back is never a car to sell (#3325).
+			stolen = vehicleLock.IsStolen() && !LF_GarbageRound.IsPendingRemoval(vehicle);
+			isOwned =!LF_VehicleOwnership.GetOwner(vehicleId).IsEmpty();
 			hasKey = vehicleLock.UserHasValidKey(user);
 			occupied = LF_StolenVehicles.HasOccupant(vehicle);
 		}

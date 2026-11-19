@@ -32,3 +32,9 @@ Delivery actions, a pack pump prefab per station (the Saint-Philippe forecourt h
 ## Saved
 
 The `fuelstock` save section (`LF_FuelStockSave.c`, #3329) keeps each station's litres by station id across a restart; see `docs/features/fuel.md`.
+
+## The haul (#3330)
+
+`LF_FuelHaul` (static, server) is the tanker job: `Buy` charges the wholesale price for the litres that went into the tanker's
+fuel-storage node, `PumpIn` moves only the station's free room into its stock and pays the delivery price for exactly those litres.
+`LF_FuelDepotComponent` and `LF_FuelHaulPumpAction` are the world ends of the two steps.

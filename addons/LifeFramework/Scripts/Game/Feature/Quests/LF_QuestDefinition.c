@@ -62,6 +62,18 @@ class LF_QuestDefinition
 	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Hand over the holder's registered ID card on turn-in (the town clerk). A player who turned this in gets the card back on every spawn.")]
 	bool m_bRewardIdCard;
 
+	//! Where the player is guided while this step is the one they are on (LF_ArrivalGuide): a waypoint on
+	//! the screen and a mark on their map. The kind is an LF_Places kind ("Sign", "ATM") or "giver" for
+	//! the quest giver named by the id; the id picks one place of that kind, empty means the nearest.
+	[Attribute(defvalue: "", UIWidgets.EditBox, "Guide the player to this LF_Places kind (or 'giver') while this step is theirs. Empty: no guide.")]
+	string m_sTargetKind;
+
+	[Attribute(defvalue: "", UIWidgets.EditBox, "The place id of the kind (or the giver id); empty means the nearest of the kind")]
+	string m_sTargetId;
+
+	[Attribute(defvalue: "", UIWidgets.EditBox, "Name shown on the waypoint and the map mark; empty uses the step title")]
+	string m_sTargetLabelKey;
+
 	//! Chain steps. A chained step needs no trip back to the giver between errands.
 	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Accepted on its own once the previous quest is turned in (chain step)")]
 	bool m_bAutoAccept;

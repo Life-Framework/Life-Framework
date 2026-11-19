@@ -38,7 +38,7 @@ approves it. Nothing in this file is canon yet.
 | Person | Public | Hidden |
 |---|---|---|
 | The clerk | The kind face of the town hall | Files the second copy of R-89 under orders, and is uneasy about it. Becomes an informant in M7 if players earn the clerk's trust (a reputation gate) |
-| Odile Marchand | The café owner who helps newcomers | Runs a quiet support network for the relocated (warm coats, a spare bed). Clean, and the moral centre of the arc |
+| Odilon Marchand | The café owner who helps newcomers | Runs a quiet support network for the relocated (warm coats, a spare bed). Clean, and the moral centre of the arc |
 | Gaspard Lenoir | The retired fisherman | Knows the coves. Recognises the drums' markings from the evacuation. The first to talk in M7 |
 | Rémi Duval | The night-shift worker | Unloads the drums in M6. Keeps his old house key because he means to go back. Can be turned either way in M7 |
 | Vince | The fence | Buys salvage from the military sites and knows who sells the drums. Never says it outright |
@@ -101,7 +101,7 @@ its GUID here when chosen). Taking it out of the crate is "the crate is opened".
 | `shipment_foreman` | Thierry Vasseur | The dock foreman | Paid by Hugo to look away from the red crate | The quay and warehouse, as the scene's lead docker | Scene crew only (no dialogue, no resident row); appears in rumours and the quest text |
 | `shipment_go_between` | Hugo Valmy | A regular in the village pub | Speaks for the coast-road gang; buys or fights, never explains | Village pub b03 (the `cafe` place) | NPC, dialogue `shipment_go_between` and resident row `shipment_go_between` (S8, #3804; voiced in #3809) |
 | `shipment_officer` | Brigadier Colette Aubry | Gendarmerie | Wants the seizure for her record, not the culprit | Voice in the dispatch call text and the evidence slip; two AI gendarmes at the door | No NPC; text and AI crew only |
-| `cafe_owner` | Odile Marchand | The barman's role: the pub is her café | Hears everything, shares it with the relocated | Pub counter | Exists. Rumour rows only |
+| `cafe_owner` | Odilon Marchand | The barman's role: the pub is his café | Hears everything, shares it with the relocated | Pub counter | Exists. Rumour rows only |
 | `old_man` | Gaspard Lenoir | Retired fisherman | Saw the coaster ride too low | Pub or square bench | Exists. Rumour rows only |
 | `night_shift` | Rémi Duval | Night worker | Knows the markings from the factory yard and says nothing | Pub | Exists. Rumour rows only |
 
@@ -167,7 +167,7 @@ to the memorial.
 | `priest` | Father Étienne Morel | Leads the walk and the blessing | Holds the carbon copy of the letter; will read it only if a player asks him to | Church b07, then the square | **New NPC** (proposal) |
 | `widow` | Hélène Bouvier | Reads the names | Wants the letter read; does not know its contents, only that it exists | Square, by the candles | **New NPC** (proposal) |
 | `clerk` | The clerk | The town hall's face | Filed the second copy of R-89; stands at the back and will not meet the widow's eye | Square crowd | Exists (`LF_Dialogue_ClerkEveron.conf`), rumour rows only |
-| `cafe_owner` | Odile Marchand | The café owner | Brings the coats and the soup; sides with the relocated | Square | Exists, rumour rows only |
+| `cafe_owner` | Odilon Marchand | The café owner | Brings the coats and the soup; sides with the relocated | Square | Exists, rumour rows only |
 | `old_man` | Gaspard Lenoir | The retired fisherman | Recognises Dominique's drum markings when the letter is read | Square | Exists, rumour rows only |
 | `night_shift` | Rémi Duval | The night worker | Learns what he has been unloading, if the letter is read | Square, apart from the crowd | Exists, rumour rows only |
 

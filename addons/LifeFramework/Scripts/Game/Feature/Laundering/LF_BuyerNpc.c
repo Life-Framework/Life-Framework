@@ -171,12 +171,16 @@ class LF_BuyerNpc
 	{
 		vector mat[4];
 		spot.GetWorldTransform(mat);
-		IEntity entity = LF_Utils.SpawnEntityPrefab(PREFAB, spot.GetOrigin(), Math3D.MatrixToAngles(mat), true);
+		vector angles = Math3D.MatrixToAngles(mat);
+		vector at = LF_NpcSpots.Free(spot.GetOrigin(), angles[0], "illicit buyer " + id);
+		IEntity entity = LF_Utils.SpawnEntityPrefab(PREFAB, at, angles, true);
 		if (!entity)
 		{
 			LF_Debug.Error(FEATURE, string.Format("illicit buyer could not be spawned from %1", PREFAB));
 			return false;
 		}
+
+		LF_NpcSpots.Claim(entity);
 
 		// He stands where he is put: any AI on the character is switched off (no pathing), then he loiters.
 		AIControlComponent control = AIControlComponent.Cast(entity.FindComponent(AIControlComponent));

@@ -2,7 +2,7 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
  ID "D203E76B3D282E08"
  components {
   LF_DialogueComponent "{0EFF2857B213C3EF}" {
-   m_sDialogueId "resident"
+   m_sDialogueId "resident_teller"
   }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    ActionContexts + {
