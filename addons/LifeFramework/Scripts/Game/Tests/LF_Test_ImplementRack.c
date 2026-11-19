@@ -78,6 +78,8 @@ class LF_Test_ImplementRack : LF_Test
 		ctx.True(LF_ImplementHitch.FindHitched(uaz) == null, "the refused take-out hitched nothing");
 		ctx.True(LF_OwnedImplements.TakeOut(KEY, LF_OwnedImplements.ID_REAPER, at, reaper) == LF_EImplementResult.OK, "the owner takes the reaper out");
 		ctx.True(reaper != null && reaper.GetParent() == uaz, "the reaper hangs off the UAZ469 within reach");
+		ctx.NotNull(PersistenceSystem.GetInstance(), "the world has the engine's persistence system");
+		ctx.False(LF_VehicleWorldSave.IsSaved(reaper), "a reaper that is out is not in the engine's world save, so a restart leaves no orphan (#3625)");
 		IEntity again;
 		ctx.True(LF_OwnedImplements.TakeOut(KEY, LF_OwnedImplements.ID_REAPER, at, again) == LF_EImplementResult.ALREADY_OUT, "a second take-out while it is out is refused");
 
