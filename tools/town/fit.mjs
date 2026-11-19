@@ -360,7 +360,12 @@ export function planFit(opts, ctx = {}) {
   // `--refit`: this slot's own claim, already committed on origin/main (every worktree carries it), does not block its re-fit.
   // The same slot held by an open PR or a sibling worktree, and any other slot's claim on the building, still refuse.
   for (let i = taken.length - 1; i >= 0; i--) if (claimOfBase(taken[i], { branch: opts.branch, place, slot: slotId })) taken.splice(i, 1);
-  const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && c.where === "origin/main")) : taken;
+  // A sibling worktree's copy of that same committed claim (byte-for-byte what origin/main holds: every checkout carries it) is the
+  // same claim, not a rival; one a worktree edited or wrote itself still blocks.
+  const stripWhere = (c) => JSON.stringify({ ...c, where: "", file: "" });
+  const mainOwn = taken.find((c) => c.place === place && c.slot === slotId && c.where === "origin/main");
+  const isMainCopy = (c) => Boolean(mainOwn) && c.place === place && c.slot === slotId && c.where.startsWith("worktree ") && stripWhere(c) === stripWhere(mainOwn);
+  const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && (c.where === "origin/main" || isMainCopy(c)))) : taken;
   errors.push(...conflicts(blocking, { place, slot: slotId, building: buildingKey, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
 
