@@ -214,7 +214,7 @@ class LF_ResidentWalk
 		if (!spot)
 		{
 			spot = new LF_ResidentSpot();
-			if (!LF_ResidentAnchors.Resolve(slot.m_sKind, slot.m_sAnchor, nearestAt, spot))
+			if (!LF_ResidentAnchors.ResolveIn(slot.m_sKind, slot.m_sPlaceId, slot.m_sAnchor, nearestAt, spot))
 				return LF_EResidentMove.NONE;
 		}
 

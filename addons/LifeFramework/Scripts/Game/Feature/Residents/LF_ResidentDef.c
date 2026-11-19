@@ -41,6 +41,9 @@ class LF_ResidentDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.EditBox, "LF_Places kind of this resident's home")]
 	string m_sHomeKind;
 
+	[Attribute("", UIWidgets.EditBox, "LF_Places id of the one house of the home kind this resident lives in (#3231). Empty: the nearest place of the kind. An id no place holds warns and falls back to the nearest")]
+	string m_sHomePlaceId;
+
 	[Attribute("", UIWidgets.EditBox, "LF_Places kind of this resident's workplace. Empty for a resident who never works")]
 	string m_sWorkKind;
 
