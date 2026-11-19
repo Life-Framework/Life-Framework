@@ -1180,10 +1180,28 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A road or other spline: `R <class> <name> <count> x y z x y z ...` in world space. The points come from the
+	//! True when the entity owns a lake generator (a LakeGeneratorEntity child): its shape is then a water outline.
+	protected bool OwnsLake(notnull IEntity entity)
+	{
+		IEntity child = entity.GetChildren();
+		while (child)
+		{
+			if (child.ClassName().IndexOf("Lake") >= 0)
+				return true;
+
+			child = child.GetSibling();
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A road or other spline: `R <class> <name> <count> x y z x y z ...` in world space. A shape that owns a lake
+	//! generator is written as `W` with the same fields: the closed outline of a lake or pond, which GetOceanHeight cannot
+	//! see (#3666). The points come from the
 	//! shape (ShapeEntity) or, for a RoadEntity, from the entity source's Points / SplinePoints array; when neither
 	//! gives any, the source's variable names are written as an `RV` row so the reader can be corrected.
-	protected void DumpShape(notnull IEntity entity, notnull array<string> rows, notnull map<string, bool> seenVars)
+	protected void DumpShape(notnull IEntity entity, notnull array<string> rows, notnull map<string, bool> seenVars, string rowKind = "R")
 	{
 		string cls = entity.ClassName();
 		string name = entity.GetName();
@@ -1248,7 +1266,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 			return;
 		}
 
-		string row = "R " + cls + " " + name + " " + points.Count().ToString();
+		string row = rowKind + " " + cls + " " + name + " " + points.Count().ToString();
 		foreach (vector p : points)
 		{
 			row += " " + DumpNum(p[0]) + " " + DumpNum(p[1]) + " " + DumpNum(p[2]);
@@ -1263,7 +1281,7 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 	//!   E <i> <class> <prefab|-> <x> <y> <z> <yaw> <scale> <minx> <miny> <minz> <maxx> <maxy> <maxz> <name|->
 	//!   D <i> <prefab|-> <x> <y> <z>                          a door below entity i
 	//!   T <x> <z>                                             a tree or bush (an entity with a model and no prefab is generator output)
-	//!   R / RV                                                splines (DumpShape)
+	//!   R / RV                                                splines (DumpShape); W is a lake or pond outline (a shape that owns a LakeGeneratorEntity)
 	//!   C <class> <count>                                     how many entities of each class the query returned
 	//!   G <x0> <z0> <step> <nx> <nz>, then GH <j> y y y ...   ground height rows, GW <j> 0101...  water flags
 	protected void DumpArea(string spec)
@@ -1317,7 +1335,11 @@ class LF_VisualShotsPlugin : WorldEditorPlugin
 			string prefab = DumpPrefab(entity);
 			if (cls == "RoadEntity" || cls.IndexOf("Shape") >= 0 || cls.IndexOf("Generator") >= 0 || cls.IndexOf("River") >= 0)
 			{
-				DumpShape(entity, rows, seenVars);
+				if (OwnsLake(entity))
+					DumpShape(entity, rows, seenVars, "W");
+				else
+					DumpShape(entity, rows, seenVars);
+
 				continue;
 			}
 

@@ -38,48 +38,171 @@
   "doors": 0,
   "props": 0,
   "trees": 0,
-  "roads": 4,
+  "roads": 3,
   "junctions": 1,
   "freePlots": 8,
+  "waterBodies": 1,
   "walls": 0,
   "otherEntities": 10,
   "portPieces": 0
  },
  "terrain": {
-  "min": 204.4,
+  "min": 207.3,
   "max": 228.9,
-  "mean": 212.7,
-  "range": 24.4,
-  "flatShare": 0.07,
-  "gentleShare": 0.34,
-  "steepShare": 0.15,
+  "mean": 214.3,
+  "range": 21.5,
+  "flatShare": 0.04,
+  "gentleShare": 0.28,
+  "steepShare": 0.17,
   "steepest": {
    "deg": 32.1,
    "x": 9372.5,
    "z": 3092.7
   },
   "tilt": {
-   "deg": 1.9,
+   "deg": 1.4,
    "fallsToward": "S"
   },
-  "waterShare": 0,
-  "nearestWater": null,
+  "waterShare": 0.21,
+  "nearestWater": {
+   "distance": 0,
+   "direction": "N"
+  },
   "notes": [
-   "ground 204.4 to 228.9 m (24.4 m of relief) within 120 m; mean 212.7 m",
-   "7% of the ground is under 3 degrees, 34% 3 to 8, 15% over 15",
-   "overall the ground falls 1.9 degrees toward the S",
-   "steepest ground 32.1 degrees at 9372.5, 3092.7"
+   "ground 207.3 to 228.9 m (21.5 m of relief) within 120 m; mean 214.3 m",
+   "4% of the ground is under 3 degrees, 28% 3 to 8, 17% over 15",
+   "overall the ground falls 1.4 degrees toward the S",
+   "steepest ground 32.1 degrees at 9372.5, 3092.7",
+   "open water (the sea or a lake) is 0 m away to the N (21% of the circle is water)"
   ]
  },
+ "water": {
+  "bodies": [
+   {
+    "id": "w1",
+    "name": "Lake_Durras",
+    "kind": "lake",
+    "source": "named-spline",
+    "cx": 9478.9,
+    "cz": 3023.1,
+    "area": 9351,
+    "surfaceY": 207.4,
+    "distance": 24.8,
+    "outline": [
+     [
+      9512,
+      2952.5
+     ],
+     [
+      9472.7,
+      2960
+     ],
+     [
+      9444.4,
+      2987.3
+     ],
+     [
+      9430.4,
+      3015.5
+     ],
+     [
+      9428,
+      3025.8
+     ],
+     [
+      9445.6,
+      3071.3
+     ],
+     [
+      9482.1,
+      3094.2
+     ],
+     [
+      9503.6,
+      3084.5
+     ],
+     [
+      9518,
+      3065.9
+     ],
+     [
+      9513.4,
+      3016
+     ],
+     [
+      9520.4,
+      2980.7
+     ]
+    ]
+   }
+  ],
+  "shore": [
+   {
+    "water": "w1",
+    "x": 9517.9,
+    "z": 3042,
+    "y": 208.2,
+    "facing": "SW",
+    "yaw": 244,
+    "distance": 35.9
+   },
+   {
+    "water": "w1",
+    "x": 9512.1,
+    "z": 3077.4,
+    "y": 208,
+    "facing": "SW",
+    "yaw": 211,
+    "distance": 41.9
+   },
+   {
+    "water": "w1",
+    "x": 9463.3,
+    "z": 3085.2,
+    "y": 207.9,
+    "facing": "S",
+    "yaw": 166,
+    "distance": 42.1
+   },
+   {
+    "water": "w1",
+    "x": 9434.7,
+    "z": 3049.8,
+    "y": 211.2,
+    "facing": "SE",
+    "yaw": 121,
+    "distance": 47.9
+   },
+   {
+    "water": "w1",
+    "x": 9519,
+    "z": 2997,
+    "y": 208.5,
+    "facing": "NW",
+    "yaw": 303,
+    "distance": 62.5
+   },
+   {
+    "water": "w1",
+    "x": 9457.6,
+    "z": 2971.3,
+    "y": 208.4,
+    "facing": "N",
+    "yaw": 22,
+    "distance": 80.3
+   }
+  ],
+  "note": "lakes and ponds are the closed outlines of the dump's water shapes (the sea probe cannot see them); the grid, the terrain share and the free plots count the cells inside them as water. Shore points are dry ground 2.5 m outside an outline, not checked against trees or props"
+ },
  "mainStreet": {
-  "road": "Lake_Durras",
-  "roadId": "r03",
+  "road": "NW-SE road r04",
+  "roadId": "r04",
   "buildingsAlong": 0,
   "at": [
-   9516,
-   3044.6
+   9441.6,
+   2965.4
   ],
-  "runs": "N-S"
+  "runs": "NW-SE"
  },
  "roads": [
   {
@@ -118,59 +241,6 @@
     ]
    ],
    "length": 138.8
-  },
-  {
-   "id": "r03",
-   "name": "Lake_Durras",
-   "cls": "SplineShapeEntity",
-   "runs": "N-S",
-   "points": [
-    [
-     9512,
-     2952.5
-    ],
-    [
-     9472.7,
-     2960
-    ],
-    [
-     9444.4,
-     2987.3
-    ],
-    [
-     9430.4,
-     3015.5
-    ],
-    [
-     9428,
-     3025.8
-    ],
-    [
-     9445.6,
-     3071.3
-    ],
-    [
-     9482.1,
-     3094.2
-    ],
-    [
-     9503.6,
-     3084.5
-    ],
-    [
-     9518,
-     3065.9
-    ],
-    [
-     9513.4,
-     3016
-    ],
-    [
-     9520.4,
-     2980.7
-    ]
-   ],
-   "length": 346.5
   },
   {
    "id": "r04",
@@ -246,42 +316,24 @@
   "plots": [
    {
     "id": "p1",
-    "x": 9481.5,
-    "z": 3027.7,
-    "width": 54,
-    "depth": 88,
-    "area": 4752,
-    "ground": {
-     "min": 204.4,
-     "max": 208
-    },
-    "nearestRoad": {
-     "name": "Lake_Durras",
-     "distance": 32.8
-    },
-    "nearestBuilding": null,
-    "distance": 20
-   },
-   {
-    "id": "p2",
-    "x": 9553.5,
+    "x": 9552.5,
     "z": 3075.7,
-    "width": 62,
+    "width": 64,
     "depth": 40,
-    "area": 2480,
+    "area": 2560,
     "ground": {
-     "min": 208.6,
+     "min": 208.3,
      "max": 216.8
     },
     "nearestRoad": {
-     "name": "Lake_Durras",
-     "distance": 36.8
+     "name": "NW-SE road r04",
+     "distance": 144.4
     },
     "nearestBuilding": null,
-    "distance": 76.3
+    "distance": 75.4
    },
    {
-    "id": "p3",
+    "id": "p2",
     "x": 9527.5,
     "z": 3125.7,
     "width": 46,
@@ -292,14 +344,14 @@
      "max": 217.5
     },
     "nearestRoad": {
-     "name": "Lake_Durras",
-     "distance": 47.6
+     "name": "NW-SE road r04",
+     "distance": 181.8
     },
     "nearestBuilding": null,
     "distance": 90
    },
    {
-    "id": "p4",
+    "id": "p3",
     "x": 9402.5,
     "z": 3069.7,
     "width": 36,
@@ -310,11 +362,29 @@
      "max": 220.1
     },
     "nearestRoad": {
-     "name": "Lake_Durras",
-     "distance": 39.6
+     "name": "NW-SE road r01",
+     "distance": 54.2
     },
     "nearestBuilding": null,
     "distance": 83
+   },
+   {
+    "id": "p4",
+    "x": 9527.5,
+    "z": 2989.7,
+    "width": 14,
+    "depth": 80,
+    "area": 1120,
+    "ground": {
+     "min": 208.8,
+     "max": 212.4
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r04",
+     "distance": 54.9
+    },
+    "nearestBuilding": null,
+    "distance": 73.4
    },
    {
     "id": "p5",
@@ -328,8 +398,8 @@
      "max": 219.7
     },
     "nearestRoad": {
-     "name": "Lake_Durras",
-     "distance": 38.8
+     "name": "NW-SE road r01",
+     "distance": 97.2
     },
     "nearestBuilding": null,
     "distance": 79.9
@@ -337,56 +407,56 @@
    {
     "id": "p6",
     "x": 9485.5,
-    "z": 3111.7,
+    "z": 3110.7,
     "width": 30,
-    "depth": 28,
-    "area": 840,
+    "depth": 30,
+    "area": 900,
     "ground": {
      "min": 208.1,
      "max": 211.9
     },
     "nearestRoad": {
-     "name": "Lake_Durras",
-     "distance": 17.8
+     "name": "NW-SE road r01",
+     "distance": 145.5
     },
     "nearestBuilding": null,
-    "distance": 64.1
+    "distance": 63.1
    },
    {
     "id": "p7",
-    "x": 9529.5,
-    "z": 2989.7,
-    "width": 10,
-    "depth": 80,
-    "area": 800,
+    "x": 9387.5,
+    "z": 3036.7,
+    "width": 26,
+    "depth": 22,
+    "area": 572,
     "ground": {
-     "min": 209.4,
-     "max": 212.4
+     "min": 213.3,
+     "max": 217.4
     },
     "nearestRoad": {
-     "name": "Lake_Durras",
-     "distance": 10.7
+     "name": "NW-SE road r01",
+     "distance": 22.7
     },
     "nearestBuilding": null,
-    "distance": 74.7
+    "distance": 95.6
    },
    {
     "id": "p8",
-    "x": 9495.5,
-    "z": 2972.7,
-    "width": 42,
-    "depth": 18,
-    "area": 756,
+    "x": 9450.5,
+    "z": 2942.7,
+    "width": 28,
+    "depth": 14,
+    "area": 392,
     "ground": {
-     "min": 205.7,
-     "max": 208.4
+     "min": 209.1,
+     "max": 210.6
     },
     "nearestRoad": {
-     "name": "Lake_Durras",
-     "distance": 16.7
+     "name": "NW-SE road r04",
+     "distance": 16.3
     },
     "nearestBuilding": null,
-    "distance": 76.1
+    "distance": 109.8
    }
   ],
   "note": "plots are open rectangles at least 10 m on the short side, kept 2.5 m off buildings, 4.5 m off a road's centre line, 2 m off a tree, on ground under 12 degrees; axis aligned, not the best use of the land"
@@ -415,16 +485,6 @@
   {
    "role": "overview",
    "file": "img/overview-ob090.jpg",
-   "caption": "from the east"
-  },
-  {
-   "role": "main-street",
-   "file": "img/main-street-wide.jpg",
-   "caption": "Lake_Durras (N-S), looking along it"
-  },
-  {
-   "role": "main-street",
-   "file": "img/main-street-ob090.jpg",
    "caption": "from the east"
   }
  ],
