@@ -106,6 +106,14 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
       Name "#EL-Jail_Arrest"
      }
     }
+    LF_JailEscortArrestAction "{3431A0E100000011}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{3431A0E100000012}" {
+      Name "#EL-Escort_Arrest"
+     }
+    }
     LF_RestrainAction "{3751D3B9F77802F3}" {
      ParentContextList {
       "LF_ID"

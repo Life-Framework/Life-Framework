@@ -2,7 +2,8 @@
 // The harness cannot sit in a seat and an empty seat gives no drive torque, so the server pushes the empty UAZ469
 // along its own forward axis (brake off, engine on, physics velocity). Verbs:
 //   hitch spawn     the server spawns a UAZ469 on open DebugWorld grass south of the grid (60 5) and hitches a reaper
-//   hitch drive     the server lets go of the brake and pushes the UAZ east at 6 m/s
+//   hitch fieldspawn  as spawn, but on the wheat field of grid cell slice-3287, bar just west of the field (#3289)
+//   hitch drive     the server lets go of the brake and pushes the UAZ east at 4 m/s (inside the reaper's cutting band)
 //   hitch stop      the server takes the throttle off and brakes
 //   hitch state     the server's view: vehicle origin, metres moved since the spawn, implement rpl id
 //   hitch delete    the server deletes the vehicle the way the garage and impound do (DeleteEntityAndChildren)
@@ -15,9 +16,11 @@ class LF_ImplementHitchHarness
 	static const ResourceName UAZ = "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et";
 	//! Open DebugWorld grass south of the debug grid (cells start at z 22); the UAZ faces east along it.
 	static const vector SPOT = "60 0 5";
+	//! How far `fieldspawn` looks for the nearest wheat field (the proof runs on the grid cell that has one).
+	static const float FIELD_REACH_M = 3000; // lf-fixed: harness reach, not a gameplay knob
 	static const float HEADING = 90; // lf-fixed: harness geometry, not a gameplay knob
 	//! Ground speed the server holds the UAZ at while the proof drives (an empty seat gives no drive torque).
-	static const float SPEED_MS = 6; // lf-fixed: harness speed, not a gameplay knob
+	static const float SPEED_MS = 4; // lf-fixed: harness speed, not a gameplay knob
 	//! Milliseconds between throttle refreshes while the proof drives.
 	static const int PEDAL_MS = 250; // lf-fixed: harness timing, not a gameplay knob
 	//! How far `seen` looks for implements.
@@ -25,6 +28,7 @@ class LF_ImplementHitchHarness
 
 	protected static EntityID s_Vehicle = EntityID.INVALID;
 	protected static vector s_vStart;
+	protected static EntityID s_Field = EntityID.INVALID;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -32,6 +36,7 @@ class LF_ImplementHitchHarness
 		GetGame().GetCallqueue().Remove(Pedal);
 		s_Vehicle = EntityID.INVALID;
 		s_vStart = vector.Zero;
+		s_Field = EntityID.INVALID;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -45,13 +50,26 @@ class LF_ImplementHitchHarness
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: a UAZ469 in front of the character, with a reaper hitched.
-	static string Spawn(IEntity character)
+	static string Spawn(IEntity character, bool onField = false)
 	{
 		IEntity old = HarnessVehicle();
 		if (old)
 			SCR_EntityHelper.DeleteEntityAndChildren(old);
 
 		vector at = SPOT;
+		if (onField)
+		{
+			LF_WheatField field = NearestField(character);
+			if (!field)
+				return "error no_field";
+
+			s_Field = field.GetID();
+
+			// Middle row of the field, the bar (3.4 m behind the origin) 3 m west of the first cell.
+			at = field.GetOrigin();
+			at[0] = at[0] - field.m_fSizeX * 0.5 - 3 + 3.4;
+		}
+
 		at[1] = GetGame().GetWorld().GetSurfaceY(at[0], at[2]) + 0.3;
 		IEntity vehicle = LF_Utils.SpawnEntityPrefab(UAZ, at, Vector(HEADING, 0, 0));
 		if (!vehicle)
@@ -65,6 +83,31 @@ class LF_ImplementHitchHarness
 			return "error hitch_refused " + reason;
 
 		return string.Format("ok vehicle=%1 implement=%2 at=%3", LF_ImplementHitch.RplIdOf(vehicle), LF_ImplementHitch.RplIdOf(implement), FormatPos(s_vStart));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The wheat field closest to the character, or null.
+	protected static LF_WheatField NearestField(IEntity character)
+	{
+		vector around = vector.Zero;
+		if (character)
+			around = character.GetOrigin();
+
+		LF_ReaperFieldQuery query = new LF_ReaperFieldQuery();
+		GetGame().GetWorld().QueryEntitiesBySphere(around, FIELD_REACH_M, query.Collect, null, EQueryEntitiesFlags.ALL);
+		LF_WheatField nearest = null;
+		float best = FIELD_REACH_M * 2;
+		foreach (LF_WheatField candidate : query.m_aFields)
+		{
+			float distance = vector.Distance(candidate.GetOrigin(), around);
+			if (distance < best)
+			{
+				best = distance;
+				nearest = candidate;
+			}
+		}
+
+		return nearest;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -149,7 +192,22 @@ class LF_ImplementHitchHarness
 
 		vector now = vehicle.GetOrigin();
 		float moved = vector.Distance(Vector(now[0], 0, now[2]), Vector(s_vStart[0], 0, s_vStart[2]));
-		return string.Format("ok vehicle=%1 at=%2 moved=%3 implement=%4", LF_ImplementHitch.RplIdOf(vehicle), FormatPos(now), Math.Round(moved * 10) / 10, LF_ImplementHitch.RplIdOf(LF_ImplementHitch.FindHitched(vehicle)));
+		IEntity implement = LF_ImplementHitch.FindHitched(vehicle);
+		int hopper = -1;
+		LF_ImplementComponent component = LF_ImplementComponent.Of(implement);
+		if (component)
+			hopper = component.GetHopperKg();
+
+		int cut = -1;
+		IEntity fieldEntity = null;
+		if (s_Field != EntityID.INVALID)
+			fieldEntity = GetGame().GetWorld().FindEntityByID(s_Field);
+
+		LF_WheatField field = LF_WheatField.Cast(fieldEntity);
+		if (field)
+			cut = field.CutCount();
+
+		return string.Format("ok vehicle=%1 at=%2 moved=%3 implement=%4 hopper=%5 cut=%6", LF_ImplementHitch.RplIdOf(vehicle), FormatPos(now), Math.Round(moved * 10) / 10, LF_ImplementHitch.RplIdOf(implement), hopper, cut);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -241,9 +299,9 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
-		if (!character || (cmd.Arg1 != "spawn" && cmd.Arg1 != "drive" && cmd.Arg1 != "stop" && cmd.Arg1 != "state" && cmd.Arg1 != "delete"))
+		if (!character || (cmd.Arg1 != "spawn" && cmd.Arg1 != "fieldspawn" && cmd.Arg1 != "drive" && cmd.Arg1 != "stop" && cmd.Arg1 != "state" && cmd.Arg1 != "delete"))
 		{
-			LF_AgentHarness.Answer(cmd.Id, "error", "usage: hitch spawn|drive|stop|state|delete|seen (all but seen need a character)");
+			LF_AgentHarness.Answer(cmd.Id, "error", "usage: hitch spawn|fieldspawn|drive|stop|state|delete|seen (all but seen need a character)");
 			return true;
 		}
 
@@ -286,6 +344,8 @@ modded class SCR_ChimeraCharacter
 		string answer;
 		if (action == "spawn")
 			answer = LF_ImplementHitchHarness.Spawn(this);
+		else if (action == "fieldspawn")
+			answer = LF_ImplementHitchHarness.Spawn(this, true);
 		else if (action == "drive")
 			answer = LF_ImplementHitchHarness.Drive();
 		else if (action == "stop")
