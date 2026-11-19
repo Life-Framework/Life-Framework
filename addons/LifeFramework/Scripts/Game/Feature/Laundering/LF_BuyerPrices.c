@@ -54,8 +54,73 @@ class LF_BuyerPrices
 			return null;
 		}
 
+		loaded.ApplyLayers();
 		Install(loaded);
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts each pack overlay of this class (the mission header's m_aLF_ConfigOverlays, in load order) over
+	//! this instance, which holds the core `.conf` (#2922). The reach and repeat gap an overlay writes
+	//! replace the core's; each price row of an overlay replaces the row of the same prefab or adds a new one.
+	void ApplyLayers()
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_BuyerPrices, "buyer prices", resources, names);
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyPackContainer(resource.GetResource().ToBaseContainer());
+			LF_Debug.Info("Laundering", string.Format("buyer prices: pack overlay %1 changed %2 entries", names[i], changed));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one overlay container. \return Fields and price rows changed.
+	int ApplyPackContainer(notnull BaseContainer root)
+	{
+		int changed;
+		if (root.IsVariableSetDirectly("m_iMinActionMs") && root.Get("m_iMinActionMs", m_iMinActionMs))
+			changed++;
+		if (root.IsVariableSetDirectly("m_fReach") && root.Get("m_fReach", m_fReach))
+			changed++;
+
+		if (!m_aPrices)
+			m_aPrices = new array<ref LF_BuyerPriceRow>();
+
+		BaseContainerList rows = root.GetObjectArray("m_aPrices");
+		if (!rows)
+			return changed;
+
+		for (int i = 0; i < rows.Count(); i++)
+		{
+			BaseContainer entry = rows.Get(i);
+			if (!entry)
+				continue;
+
+			LF_BuyerPriceRow row = LF_BuyerPriceRow.Cast(BaseContainerTools.CreateInstanceFromContainer(entry));
+			if (!row)
+				continue;
+
+			int at = -1;
+			foreach (int j, LF_BuyerPriceRow existing : m_aPrices)
+			{
+				if (existing && LF_Utils.SamePrefab(existing.m_Prefab, row.m_Prefab))
+				{
+					at = j;
+					break;
+				}
+			}
+
+			if (at >= 0)
+				m_aPrices.Set(at, row);
+			else
+				m_aPrices.Insert(row);
+
+			changed++;
+		}
+
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------
