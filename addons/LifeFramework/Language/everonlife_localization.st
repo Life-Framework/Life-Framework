@@ -5228,6 +5228,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hands up (answer the prompt, or lower them)"
      Comment "Keybind menu entry for the hands-up action."
     }
+    CustomStringTableItem "{339D1913E2EBFE37}" {
+     Id "LF-HandsUp_NotGivenUp"
+     Target_en_us "They haven't given up."
+     Comment "Search or robbery of a player refused: the target has neither hands up nor cuffs on (#3399)."
+    }
     CustomStringTableItem "{7B4E0C91A2D63F70}" {
      Id "LF-HandsUp_Title"
      Target_en_us "Put your hands up?"
