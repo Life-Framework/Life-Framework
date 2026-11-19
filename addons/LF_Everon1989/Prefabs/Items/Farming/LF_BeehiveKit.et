@@ -1,0 +1,72 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "4350E8ACC7D072F9"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{76C1B2BA574582F0}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 2.5
+      FOV 20
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_BeehiveKit"
+     Description "#LF-Item_BeehiveKitDesc"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 12
+     SizeSetupStrategy Volume
+     ItemVolume 20000
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 0
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{C3A0FFF0A2B19FB8}Assets/Props/Agricultural/Beehive_01/Beehive_01.xob"
+   Materials {
+    MaterialAssignClass "{555A86DBFD0EFF39}" {
+     SourceMaterial "Color_palette_01"
+     AssignedMaterial "{DCE5517CBC98BD76}Assets/Props/Agricultural/Beehive_01/Data/BeeHive_01_CP_Yellow.emat"
+    }
+   }
+  }
+  LF_PlaceableComponent "{2A2BE9E51516AA08}" {
+   m_sPlacedPrefab "{1A01E5702E04422C}Prefabs/Props/Farming/LF_Beehive.et"
+   m_vFootprintMins -0.4 0 -0.4
+   m_vFootprintMaxs 0.4 1.0 0.4
+   m_fReach 1
+   m_fAimReach 4
+   m_eSnap GROUND
+   m_eWho ANYONE
+   m_sKind "Beehive"
+   m_eLifetime PERMANENT
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   ActionContexts {
+    UserActionContext "{508AC2ABEC97066C}" {
+     ContextName "default"
+     Position PointInfo "{508AC2ABEAC4A0F5}" {
+      Offset 0 0.3 0
+     }
+     Radius 1.07
+    }
+   }
+   additionalActions {
+    LF_PlacementAimAction "{1AA65C6E11A649B7}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{2098B1EEF3469A6F}" {
+   m_eAnimVariable LF_ITEM
+  }
+ }
+}
