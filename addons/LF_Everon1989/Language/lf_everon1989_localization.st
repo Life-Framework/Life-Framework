@@ -2359,6 +2359,31 @@ StringTable {
      Target_en_us "Register a crew, keep a shared fund, buy upgrades."
      Comment "Sign card for the organization registry desk, What section."
     }
+    CustomStringTableItem "{1B1ADEBF61205537}" {
+     Id "LF-Sign_Pharmacy_How"
+     Target_en_us "*Ask the pharmacist* at the counter, one price per item"
+     Comment "Sign card for the pharmacy, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{019FD733B2103174}" {
+     Id "LF-Sign_Pharmacy_Needs"
+     Target_en_us "Money for the counter."
+     Comment "Sign card for the pharmacy, You need section."
+    }
+    CustomStringTableItem "{13F12E4679EB7B56}" {
+     Id "LF-Sign_Pharmacy_Next"
+     Target_en_us "The medicines are kept behind the counter: ask the pharmacist."
+     Comment "Sign card for the pharmacy, Next section."
+    }
+    CustomStringTableItem "{B9B325005BD70EE6}" {
+     Id "LF-Sign_Pharmacy_Title"
+     Target_en_us "Pharmacie"
+     Comment "Title of the fascia sign over the pharmacy door on Saint-Philippe (Everon 1989 pack, #3526). Printed on the sign and shown in the prompt as Read: Pharmacie."
+    }
+    CustomStringTableItem "{00C0910067CFAAD8}" {
+     Id "LF-Sign_Pharmacy_What"
+     Target_en_us "The village pharmacy: the medicines sold over the pharmacist's counter."
+     Comment "Sign card for the pharmacy, What section."
+    }
     CustomStringTableItem "{F33E84A46C3A3659}" {
      Id "LF-Sign_PoliceCases_How"
      Target_en_us "Bag what a scene left (casings, footprint cards, dropped items, witness statements), then Pin evidence here. Unpin takes down the last card."
