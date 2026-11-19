@@ -13,6 +13,8 @@ class LF_Test_EveronDirtyMoney : LF_Test
 	static const ResourceName PLUM = "{C3E35D690317B5BE}Prefabs/Items/Food/Plum.et";
 	static const ResourceName CABBAGE = "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et";
 	static const string SUPERMARKET = "supermarket";
+	static const ResourceName CRATE = "{968892A9535FE6A4}Prefabs/Items/Contraband/LF_ContrabandCrate.et";
+	static const int CRATE_BOTTLES = 6;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -25,6 +27,16 @@ class LF_Test_EveronDirtyMoney : LF_Test
 	//! recipe for (a new priced good adds its recipe here) or an ingredient the supermarket does not sell.
 	protected static int IngredientCost(ResourceName good)
 	{
+		// The packed crate is six bottles (the moonshine chain's pack step): the shipment sample is priced as one (#3768).
+		if (LF_Utils.SamePrefab(good, CRATE))
+		{
+			int bottle = IngredientCost(MOONSHINE);
+			if (bottle <= 0)
+				return -1;
+
+			return CRATE_BOTTLES * bottle;
+		}
+
 		array<ResourceName> raw = {};
 		array<int> amounts = {};
 		if (LF_Utils.SamePrefab(good, MOONSHINE))

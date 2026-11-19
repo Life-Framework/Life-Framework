@@ -241,7 +241,9 @@ class LF_Test_EveronHarbourMaster : LF_Test
 		{
 			string caption = WidgetManager.Translate(each.m_sTextKey);
 			ctx.True(caption != each.m_sTextKey && !caption.IsEmpty(), each.m_sId + " has its caption in the string table");
-			ctx.False(each.IsTextOnly(), each.m_sId + " is voiced (ElevenLabs pipeline, #3050)");
+			// The shipment talk (#3768 patch) is captions only until the voices card (#3444) records it.
+			if (!each.m_sId.StartsWith("shipment."))
+				ctx.False(each.IsTextOnly(), each.m_sId + " is voiced (ElevenLabs pipeline, #3050)");
 		}
 
 		// The first job: the line, said by the node that follows the greeting.

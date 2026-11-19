@@ -14,11 +14,39 @@ class LF_Test_EveronReputation : LF_Test
 	static const string UID = "test-everon-reputation";
 	static const string TIER_KEY_PREFIX = "LF-Everon_Tier_";
 	static const string CONTRACT = "harbour_crates";
+	static const ResourceName QUEST_AWARDS = "{3440A00000000001}Configs/Quests/LF_Quest_Shipment.conf";
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
 	{
 		return "everon/reputation";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a quest of the pack's shipment file pays this action on turn-in (the core quest feature raises it).
+	protected static bool IsQuestAward(string action)
+	{
+		Resource resource = BaseContainerTools.LoadContainer(QUEST_AWARDS);
+		if (!resource || !resource.GetResource())
+			return false;
+
+		LF_QuestGiverConfig table = LF_QuestGiverConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(resource.GetResource().ToBaseContainer()));
+		if (!table || !table.m_aGivers)
+			return false;
+
+		foreach (LF_QuestGiverRow row : table.m_aGivers)
+		{
+			if (!row || !row.m_aQuests)
+				continue;
+
+			foreach (LF_QuestDefinition quest : row.m_aQuests)
+			{
+				if (quest && quest.m_aTurnInAwards && quest.m_aTurnInAwards.Find(action) != -1)
+					return true;
+			}
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -35,6 +63,10 @@ class LF_Test_EveronReputation : LF_Test
 			LF_ReputationSubscriber.ACTION_HEIST_LOOT
 		};
 		if (fixedActions.Find(action) != -1)
+			return true;
+
+		// A quest turn-in pays standing too (LF_QuestDefinition.m_aTurnInAwards, #3768): the shipment's endings.
+		if (IsQuestAward(action))
 			return true;
 
 		string prefix = LF_ReputationSubscriber.ACTION_JOB_COMPLETED + ":";
