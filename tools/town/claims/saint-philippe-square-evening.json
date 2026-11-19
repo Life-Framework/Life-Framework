@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "square-evening",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b03"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b07"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b12"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b38"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b45"
+    }
+  ],
+  "kit": "square-evening",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_square-evening.layer",
+  "kinds": [],
+  "rows": 8,
+  "date": "2026-11-19"
+}
