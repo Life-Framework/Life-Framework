@@ -1,0 +1,38 @@
+GenericEntity {
+ ID "F205741AA06B8E9B"
+ components {
+  MeshObject "{EF9CE5A0F56173F9}" {
+   Object "{BC31E49B33B35104}Assets/Props/Furniture/SinkOld_01/SinkOld_01.xob"
+  }
+  RigidBody "{1DDF8EC3A4E63981}" {
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{044003B4810D444A}" {
+   ActionContexts {
+    UserActionContext "{88038E69CE05A287}" {
+     ContextName "default"
+     Position PointInfo "{8CB2961CC338501C}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_JailWorkAction "{82ABF79ECFEE775C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{1F4613DA2780C8DD}" {
+      Name "#LF-JailWork_Kitchen"
+     }
+     m_sJobId "kitchen_sink"
+     m_fSecondsOff 8
+     m_fCooldownSeconds 30
+     m_fWorkSeconds 5
+     m_eKind PICK
+    }
+   }
+  }
+ }
+}
