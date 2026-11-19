@@ -80,10 +80,14 @@ class LF_EventSceneSpawn
 	static const float SPACING_M = 1.2;
 	//! The parked vehicle stands this far to the side of the first spawn marker.
 	static const float VEHICLE_SIDE_M = 5;
+	//! A left item still this close to its spot counts as never taken (a nudge by a passer-by is not a pick-up).
+	static const float UNTAKEN_RADIUS_M = 1.5; // lf-fixed: a physics nudge, not a tunable
 
 	protected static ref LF_EventSceneCrew s_Running;
 	//! How many times the players' eyes were collected since the last reset (a regression counter, #2406).
 	protected static int s_iEyeScans;
+	//! The item the last scene left (DropItem); not part of the crew, so a despawn leaves it.
+	protected static EntityID s_DropId = EntityID.INVALID;
 
 	//------------------------------------------------------------------------------------------------
 	//! How many AI the engine can still take: AIWorld's limit of active AIs minus the active ones.
@@ -145,11 +149,64 @@ class LF_EventSceneSpawn
 		s_Running = crew;
 
 		SpawnVehicle(crew, spawns[0]);
+		if (!plan.m_sDropPrefab.IsEmpty())
+			DropItem(plan.m_sSceneId, plan.m_sDropPrefab, LF_EventWaypointComponent.FindItemSpot(plan.m_sSceneId));
+
 		SpawnDue(crew, 0);
 		if (!crew.IsFullySpawned())
 			GetGame().GetCallqueue().CallLater(crew.Tick, TICK_MS, true);
 
 		return crew;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The item the scene left, or INVALID when none stands (taken and deleted, or never left).
+	static EntityID DropId()
+	{
+		return s_DropId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Leaves one `prefab` on `spot` (the scene's `event_item` marker), exactly where the marker stands. The copy
+	//! an earlier run left is removed first when nobody took it (still loose, still on its spot), so runs never
+	//! pile up; a taken one is the player's and stays. The item is not part of the crew and outlives the scene's
+	//! despawn: the players come to it. \return the item, or null (logged) when there is no spot or no prefab.
+	static IEntity DropItem(string sceneId, ResourceName prefab, IEntity spot)
+	{
+		if (!Replication.IsServer())
+			return null;
+
+		if (prefab.IsEmpty())
+		{
+			LF_Debug.Error(FEATURE, string.Format("scene %1 has no item prefab to leave", sceneId));
+			return null;
+		}
+
+		if (!spot)
+		{
+			LF_Debug.Error(FEATURE, string.Format("scene %1 has no item spot placed (an event_item marker); its item is not left", sceneId));
+			return null;
+		}
+
+		vector at = spot.GetOrigin();
+		IEntity old = GetGame().GetWorld().FindEntityByID(s_DropId);
+		s_DropId = EntityID.INVALID;
+		if (old && !old.GetParent() && vector.Distance(old.GetOrigin(), at) < UNTAKEN_RADIUS_M)
+		{
+			LF_Debug.Info(FEATURE, string.Format("scene %1: the item of the last run was never taken; removed", sceneId));
+			SCR_EntityHelper.DeleteEntityAndChildren(old);
+		}
+
+		IEntity item = LF_Utils.SpawnEntityPrefab(prefab, at, spot.GetYawPitchRoll());
+		if (!item)
+		{
+			LF_Debug.Error(FEATURE, string.Format("scene %1: item %2 did not spawn at %3", sceneId, prefab, spot.GetName()));
+			return null;
+		}
+
+		s_DropId = item.GetID();
+		LF_Debug.Info(FEATURE, string.Format("scene %1 left %2 at %3", sceneId, prefab, spot.GetName()));
+		return item;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -372,6 +429,7 @@ class LF_EventSceneSpawn
 
 		s_Running = null;
 		s_iEyeScans = 0;
+		s_DropId = EntityID.INVALID;
 	}
 }
 
