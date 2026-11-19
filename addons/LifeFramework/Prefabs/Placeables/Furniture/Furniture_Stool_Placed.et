@@ -1,0 +1,28 @@
+GenericEntity : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ ID "678FF45E2988E725"
+ components {
+  ActionsManagerComponent "{E8564854452C7853}" {
+   ActionContexts {
+    UserActionContext "{5F5475E44DBB51D1}" {
+     ContextName "default"
+     Position PointInfo "{8406B442A578BE55}" {
+      Offset -0.001 0.252 0
+     }
+     Radius 1.4
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{7AF6E9FE22ED0DD3}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{569BD63E2EB6EC91}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

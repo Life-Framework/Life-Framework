@@ -786,7 +786,7 @@
     },
     "lockers": {
       "type": "object",
-      "description": "The lockers owner-config section: Configs/Lockers/LF_Lockers.conf with the owner's `lockers` section layered over it.",
+      "description": "The lockers owner-config section: Configs/Lockers/LF_Lockers.conf with each pack overlay (the mission header's m_aLF_ConfigOverlays, #3192) and then the owner's `lockers` section layered over it.",
       "properties": {
         "rentPrice": {
           "type": "integer",
