@@ -2300,6 +2300,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Treatment bill"
      Comment "Notification title for treatment bills."
     }
+    CustomStringTableItem "{312172B24DB5B820}" {
+     Id "LF-BreakIn_Barely"
+     Target_en_us "Barely started"
+     Comment "Break-in progress word: under a third of the way."
+    }
+    CustomStringTableItem "{C4526971F8C1E519}" {
+     Id "LF-BreakIn_Halfway"
+     Target_en_us "Halfway"
+     Comment "Break-in progress word: about halfway."
+    }
+    CustomStringTableItem "{77D4B7DDEE0EFF43}" {
+     Id "LF-BreakIn_Nearly"
+     Target_en_us "Nearly through"
+     Comment "Break-in progress word: close to done."
+    }
+    CustomStringTableItem "{54827F9A7CED2A2C}" {
+     Id "LF-BreakIn_Through"
+     Target_en_us "Through"
+     Comment "Break-in progress word: the last stage is finished."
+    }
     CustomStringTableItem "{F2A63B8D5C07E914}" {
      Id "LF-BuildingLock_Closed"
      Target_en_us "Closed"
