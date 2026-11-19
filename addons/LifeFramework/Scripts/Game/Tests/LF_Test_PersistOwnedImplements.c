@@ -70,7 +70,8 @@ class LF_Test_PersistOwnedImplements : LF_Test
 		JsonSaveContext oldContext = new JsonSaveContext(false);
 		array<string> omit = {LF_HarvestSavePayload.NAME};
 		LF_PersistenceComponentSerializer.SerializeStoreOmitting(persistence, oldContext, omit);
-		ctx.False(oldContext.SaveToString().Contains(LF_SaveSections.OBJECT_PREFIX + LF_HarvestSavePayload.NAME), "the older save has no harvest section");
+		// The closing quote ends the key: "sec_harvest" is a prefix of the "sec_harvest_deposits" section (#3297, #3656).
+		ctx.False(oldContext.SaveToString().Contains(LF_SaveSections.OBJECT_PREFIX + LF_HarvestSavePayload.NAME + "\""), "the older save has no harvest section");
 		LF_SavePayload section = LF_SaveSections.Get(LF_HarvestSavePayload.NAME);
 		if (section)
 			section.OnAbsent();
