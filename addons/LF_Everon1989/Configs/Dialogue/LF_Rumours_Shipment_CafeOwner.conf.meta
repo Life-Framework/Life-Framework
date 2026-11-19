@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{3440A00000000002}Configs/Dialogue/LF_Dialogue_ShipmentHarbourMaster.conf"
+ Name "{3441A00000000001}Configs/Dialogue/LF_Rumours_Shipment_CafeOwner.conf"
  Configurations {
   CONFResourceClass PC {
   }

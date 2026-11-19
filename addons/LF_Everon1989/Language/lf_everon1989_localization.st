@@ -339,6 +339,11 @@ StringTable {
      Target_en_us "Harbour office. Mind the crane and mind the ropes. What can I do for you?"
      Comment "Harbour master caption (#2692): the greeting."
     }
+    CustomStringTableItem "{793B568C770FF5C5}" {
+     Id "LF-Dialogue_HarbourMaster_SayAskCrate"
+     Target_en_us "Anything odd on the quay today?"
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
     CustomStringTableItem "{31104EFBD559B194}" {
      Id "LF-Dialogue_HarbourMaster_SayAskCrates"
      Target_en_us "Have you got a bigger load?"
@@ -354,9 +359,24 @@ StringTable {
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
     }
+    CustomStringTableItem "{EF5EE2BB381B5506}" {
+     Id "LF-Dialogue_HarbourMaster_SayCount"
+     Target_en_us "I will count the crate for you."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
     CustomStringTableItem "{5644E7F72839DB8C}" {
      Id "LF-Dialogue_HarbourMaster_SayNotNow"
      Target_en_us "Not just now."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{3DA14485E225D599}" {
+     Id "LF-Dialogue_HarbourMaster_SayReported"
+     Target_en_us "I took what was in the crate to the police."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{7A5ECE2E6B6349A6}" {
+     Id "LF-Dialogue_HarbourMaster_SaySold"
+     Target_en_us "I found a buyer for what was in the crate."
      Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
     }
     CustomStringTableItem "{DF9EF80D315A7206}" {
@@ -368,6 +388,26 @@ StringTable {
      Id "LF-Dialogue_HarbourMaster_SayTakeJob"
      Target_en_us "I'll carry the crates."
      Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{3736E0D6C96857B0}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentAsk"
+     Target_en_us "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?"
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{BC6917D6F28F88CF}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentCount"
+     Target_en_us "Open it, count what is in there and come back. If it is only fish, no harm done."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{126E2D08A174D4AD}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentThanksReport"
+     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockers say."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{61996AD6C64B434C}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentThanksSell"
+     Target_en_us "I did not ask where it went. I will not ask. Keep your head down on the quay for a few days."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
     CustomStringTableItem "{29B583DBF009AF66}" {
      Id "LF-Dialogue_NightShift_AboutMove"
@@ -514,6 +554,11 @@ StringTable {
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
+    CustomStringTableItem "{3441F00000000001}" {
+     Id "LF-Dialogue_Rumour_SayAsk"
+     Target_en_us "Any talk in the café lately?"
+     Comment "Reply: ask the café owner what the town is saying about the shipment (#3441)."
+    }
     CustomStringTableItem "{3804F10000000008}" {
      Id "LF-Dialogue_ShipmentGoBetween_Bye"
      Target_en_us "Mind how you go."
@@ -558,46 +603,6 @@ StringTable {
      Id "LF-Dialogue_ShipmentGoBetween_Threat"
      Target_en_us "You walked it to the desk. Fine. Mind the coast road at night, friend. It is long, and it is short of lamps."
      Comment "Hugo Valmy's one threat to a player who reported the sample (#3804)."
-    }
-    CustomStringTableItem "{3440F00000000108}" {
-     Id "LF-Dialogue_ShipmentHarbourMaster_Ask"
-     Target_en_us "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?"
-     Comment "Harbour master asks a trusted player to count the red crate (#3440)."
-    }
-    CustomStringTableItem "{3440F00000000109}" {
-     Id "LF-Dialogue_ShipmentHarbourMaster_Count"
-     Target_en_us "Open it, count what is in there and come back. If it is only fish, no harm done."
-     Comment "Harbour master sends the player to the crate (#3440)."
-    }
-    CustomStringTableItem "{3768F00000000001}" {
-     Id "LF-Dialogue_ShipmentHarbourMaster_SayAskCrate"
-     Target_en_us "Anything odd on the quay today?"
-     Comment "Reply: ask the harbour master about the red crate (#3768)."
-    }
-    CustomStringTableItem "{3440F00000000112}" {
-     Id "LF-Dialogue_ShipmentHarbourMaster_SayCount"
-     Target_en_us "I will count the crate for you."
-     Comment "Reply: take the counting errand (#3440)."
-    }
-    CustomStringTableItem "{3440F00000000113}" {
-     Id "LF-Dialogue_ShipmentHarbourMaster_SayReported"
-     Target_en_us "I took what was in the crate to the police."
-     Comment "Reply: the player reported the sample (#3440)."
-    }
-    CustomStringTableItem "{3440F00000000114}" {
-     Id "LF-Dialogue_ShipmentHarbourMaster_SaySold"
-     Target_en_us "I found a buyer for what was in the crate."
-     Comment "Reply: the player sold the sample (#3440)."
-    }
-    CustomStringTableItem "{3440F00000000110}" {
-     Id "LF-Dialogue_ShipmentHarbourMaster_ThanksReport"
-     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockers say."
-     Comment "Harbour master thanks a player who reported the sample (#3440)."
-    }
-    CustomStringTableItem "{3440F00000000111}" {
-     Id "LF-Dialogue_ShipmentHarbourMaster_ThanksSell"
-     Target_en_us "I did not ask where it went. I will not ask. Keep your head down on the quay for a few days."
-     Comment "Harbour master reacts to a player who sold the sample (#3440)."
     }
     CustomStringTableItem "{F2B1DF023C756490}" {
      Id "LF-Everon-Lock_Closed"
@@ -1853,6 +1858,16 @@ StringTable {
      Id "LF-Resident_teller_Name"
      Target_en_us "Helene Roux"
      Comment "Saint-Philippe resident teller: display name (#2906)."
+    }
+    CustomStringTableItem "{3441F00000000002}" {
+     Id "LF-Rumour_Shipment_CafeOwner_Reported"
+     Target_en_us "They say someone carried a crate off the quay straight to the gendarmes. The dockers have not touched a drink here all week. Whoever it was, keep your head down."
+     Comment "Café owner rumour for a player who reported the shipment (#3441); fades after 3 game days."
+    }
+    CustomStringTableItem "{3441F00000000003}" {
+     Id "LF-Rumour_Shipment_CafeOwner_Sold"
+     Target_en_us "They say a crate went missing off the quay and somebody in town is richer for it. Nobody asks who. The man at the corner table has stopped counting his change."
+     Comment "Café owner rumour for a player who sold the shipment (#3441); fades after 3 game days."
     }
     CustomStringTableItem "{08F8B49C5124F438}" {
      Id "LF-Shop_Desc_Bakery"
