@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7D3B5E19A4C2680F}Configs/Vehicles/LF_VehicleCompartments.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

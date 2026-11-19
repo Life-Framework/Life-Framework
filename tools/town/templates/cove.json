@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "kind": "cove",
+  "about": "A sheltered cove on the sea coast away from any town: its shore takes a fishing spot, a bench, a lantern and a sign. No building stands there, so the slot is hostless: its kit rests on the probed ground beside one free plot. Same shape as lake.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "cove",
+      "required": true,
+      "kit": "cove-shore",
+      "host": "plot",
+      "poi": "FishingSpot",
+      "needs": {
+        "interior": "optional",
+        "prefer": "near"
+      },
+      "plot": {
+        "minWidth": 10,
+        "minDepth": 10,
+        "prefabs": []
+      },
+      "places": [
+        "FishingSpot"
+      ]
+    }
+  ]
+}

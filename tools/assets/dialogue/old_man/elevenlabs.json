@@ -118,6 +118,19 @@
       "request_id": "NGunjsehGOjhgyWfSsxO",
       "seconds": 6.85,
       "mouth": "68996766999777562111010000002996799995599979914888664655679834656555544441152100000000011147416786867899856777997557663655577444344433200"
+    },
+    "cove": {
+      "hash": "1bd6f7b4d8848071",
+      "date": "2026-11-19",
+      "voice_id": "nTMUXLFSfbWmdKKy7nDC",
+      "voice_name": "Alder - Warm, Raspy and Comforting",
+      "model": "eleven_multilingual_v2",
+      "text": "You have the hands for it now. There is a cove below the lighthouse, Fisherman Bay. Go at dusk, when the bass come in close. I have marked it on your map.",
+      "chars": 154,
+      "chars_total": 62,
+      "request_id": "SetUdYe5Ilkugk7r3Icl",
+      "seconds": 12.2,
+      "mouth": "46547995477457976799347875234555433210000000000000016788779623379997512977998484566523476448985100000012658856566764445666421000000000000005779962179849991210000002787763599949914455553224654379986100000000005678654559971176566555433455431111000"
     }
   },
   "voice": {

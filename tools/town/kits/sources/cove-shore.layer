@@ -1,0 +1,35 @@
+// Source of the `cove-shore` kit (tools/town/kits/cove-shore.json, #3762): the fishing place of the cove below the lighthouse. `town fit` reads each row's prefab and
+// component GUIDs from here. Coordinates are offsets from the centre of the hostless plot the slot anchors on (frame: the plot, unturned).
+// The spot's table `cove` is the pack's Configs/Fishing/LF_Coves_Everon1989.conf; the lantern is the pack prefab LF_LakeLantern.et and the sign def `fishermans-bay`
+// is in the pack's Configs/Signs/LF_Signs_Everon1989/LF_Signs_FishermansBay.conf.
+GenericEntity Cove_Spot : "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingSpot.et" {
+ components {
+  LF_FishingSpotComponent "{4A0F573235D2E074}" {
+   m_sId "fishermans-bay"
+   m_sTable "cove"
+   m_fRadius 30
+   m_iStock 14
+   m_fRegrowSeconds 90
+  }
+ }
+ coords 3 0 14
+}
+GenericEntity Cove_Bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords -1.5 0 13.2
+ angleY 20
+}
+GenericEntity Cove_Lantern : "{57354E1D82BCF650}Prefabs/Props/Fishing/LF_LakeLantern.et" {
+ coords 0.3 0 13
+}
+GenericEntity Cove_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "fishermans-bay"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords -6 0 10.5
+ angleY 200
+}

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "fishermansbay",
+  "slot": "cove",
+  "plot": "p7",
+  "hostless": true,
+  "kit": "cove-shore",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_fishermansbay_cove.layer",
+  "kinds": [
+    "FishingSpot"
+  ],
+  "rows": 4,
+  "destruction": {
+    "mode": "none",
+    "reason": "hostless plot: no building stands in the slot"
+  },
+  "date": "2026-11-19"
+}
