@@ -219,6 +219,19 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The breach target id of the jail door, "" when none is set.
+	static string DoorTargetId()
+	{
+		return s_sDoorId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsDoorTarget(string targetId)
+	{
+		return !targetId.IsEmpty() && targetId == s_sDoorId;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Points the sentence back at the placed cell (the entity carrying LF_JailCellComponent)
 	//! and the jail door that cell names. Tests call this after a reset.
 	static void SyncPlacedCell()
@@ -467,6 +480,10 @@ class LF_Jail
 	static bool Confines(string playerUid)
 	{
 		if (!IsServing(playerUid))
+			return false;
+
+		// Out in a break window (#3421): the status keeps them out after the door locks again.
+		if (LF_PrisonBreak.IsEscaped(playerUid))
 			return false;
 
 		return DoorIsLocked();
@@ -1110,6 +1127,7 @@ class LF_Jail
 			return false;
 
 		sentence.m_bEscaped = true;
+		LF_PrisonBreak.OnWalkedOut(playerUid, sentence.m_fRemaining, System.GetUnixTime());
 		LF_Debug.Warn("Jail", string.Format("%1 escaped the cell through the open door remaining=%2", playerUid, sentence.m_fRemaining));
 		LF_Dispatch.Report(playerUid, body, LF_WantedReports.OFFENCE_JAILBREAK, vector.Zero);
 		return true;
