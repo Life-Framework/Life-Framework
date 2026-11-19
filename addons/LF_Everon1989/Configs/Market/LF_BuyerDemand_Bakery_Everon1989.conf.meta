@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{8D41A7C2E5F30B92}Configs/Market/LF_BuyerDemand_Bakery_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
