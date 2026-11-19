@@ -35,3 +35,30 @@ GenericEntity Fit_saint_philippe_residents_anchor_bench {
  coords 4435.939 12.7 10672.606
  angleY -98
 }
+GenericEntity Fit_saint_philippe_residents_anchor_door2 {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door2"
+  }
+ }
+ coords 4436.365 12.7 10668.947
+ angleY -98
+}
+GenericEntity Fit_saint_philippe_residents_anchor_door3 {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door3"
+  }
+ }
+ coords 4437.565 12.7 10667.447
+ angleY -98
+}
+GenericEntity Fit_saint_philippe_residents_anchor_door4 {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door4"
+  }
+ }
+ coords 4436.365 12.7 10667.447
+ angleY -98
+}

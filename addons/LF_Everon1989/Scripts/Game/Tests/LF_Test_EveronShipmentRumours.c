@@ -1,6 +1,6 @@
 // red-proof: batched `tools\cli test --no-build --red LF_Test_EveronShipmentRumours`: RedProof() loads the café owner's plain core dialogue (no pack patch) and an unknown quest param, so no rumour rows resolve and the gate checks fail.
 //! #3441 (M7 arc 3, beat 3 of #1036): "Rumours in the pub". Once the crate is opened the café talks. Under the Everon 1989
-//! header (the pack leg of `tools\cli test`): the café owner Odile Marchand (resident `cafe_owner`, the barman's role,
+//! header (the pack leg of `tools\cli test`): the café owner Odilon Marchand (resident `cafe_owner`, the barman's role,
 //! #3438) gains a "Any talk in the café lately?" reply on every greeting behind the QuestTurnedInRecent condition, and
 //! it leads to one line for a player who reported (`shipment_report`) and another for one who sold (`shipment_sold`),
 //! each offered for 3 game days. Her old replies stay. The resident exists and the quest ids are the real ones.

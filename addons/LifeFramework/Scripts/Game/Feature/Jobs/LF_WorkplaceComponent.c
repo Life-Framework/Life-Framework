@@ -201,6 +201,7 @@ class LF_WorkplaceComponent : ScriptComponent
 		vector at = owner.CoordToParent(m_vNpcOffset);
 		vector yaw = owner.GetYawPitchRoll();
 		yaw[0] = yaw[0] + m_fNpcYaw;
+		at = LF_NpcSpots.Free(at, yaw[0], "workplace " + GetPlaceId() + " NPC");
 		IEntity npc = LF_Utils.SpawnEntityPrefab(m_NpcPrefab, at, yaw);
 		if (!npc)
 		{
@@ -208,6 +209,7 @@ class LF_WorkplaceComponent : ScriptComponent
 			return;
 		}
 
+		LF_NpcSpots.Claim(npc);
 		m_NpcId = npc.GetID();
 		LF_Debug.Log(LF_Workplace.FEATURE, string.Format("workplace %1 (%2): NPC placed", GetPlaceId(), m_sJob));
 	}

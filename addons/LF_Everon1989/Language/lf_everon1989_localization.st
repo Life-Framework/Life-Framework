@@ -1921,7 +1921,7 @@ StringTable {
     }
     CustomStringTableItem "{1357AE90EB122FE9}" {
      Id "LF-Resident_cafe_owner_Name"
-     Target_en_us "Odile Marchand"
+     Target_en_us "Odilon Marchand"
      Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
     }
     CustomStringTableItem "{C506DE77282216DB}" {
@@ -4066,13 +4066,13 @@ StringTable {
     }
     CustomStringTableItem "{3E81A47C5D0B92F6}" {
      Id "LF-Townsfolk_CafeOwner_Name"
-     Target_en_us "Odile Marchand"
+     Target_en_us "Odilon Marchand"
      Comment "Townsfolk (The relocated, #1961): the café owner's name, the speaker line of her dialogue."
     }
     CustomStringTableItem "{6784DBE972ED4ECD}" {
      Id "LF-Townsfolk_CafeOwner_Role"
      Target_en_us "Café owner"
-     Comment "Townsfolk (The relocated, #1960): what Odile Marchand does, the role line under the name."
+     Comment "Townsfolk (The relocated, #1960): what Odilon Marchand does, the role line under the name."
     }
     CustomStringTableItem "{D20E34A328504890}" {
      Id "LF-Townsfolk_HarbourMaster_Name"

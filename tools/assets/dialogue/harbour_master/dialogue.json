@@ -5,6 +5,7 @@
   "speaker_key": "#LF-Townsfolk_HarbourMaster_Name",
   "voice": {
     "id": "LifjXiNLcYfyYJD8PCDT",
+    "sex": "male",
     "name": "LaRauque - Hoarse, Deep, and Dramatic",
     "public_owner_id": "2a19c73048bc69fa256328b635f8f02808d46e770d97e50a2c6e8a91636081d6",
     "why": "Marcel Roux is a weathered dock worker with a French name who has shouted over cranes for thirty years. LaRauque is a hoarse, deep, natural French-accented man: it reads as salt and diesel, not a narrator. Stability 0.5 and style 0.15 keep it from going dramatic, speed 1.0 for a brisk quay.",
