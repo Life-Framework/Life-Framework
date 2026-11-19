@@ -236,12 +236,9 @@ class LF_ItemCatalogue
 		if (!offer.m_sLicence.IsEmpty())
 		{
 			// A licensed line (a firearm, its magazines) goes over the counter only to a buyer who
-			// stands there able to take it and is not wanted, whatever the client asked from.
+			// stands there able to take it, whatever the client asked from.
 			if (!buyer.CanTrade())
 				return LF_EOutletGate.UNFIT;
-
-			if (buyer.WantedLevel() > 0)
-				return LF_EOutletGate.WANTED;
 
 			LF_ELicenseType licence;
 			if (!ParseLicence(offer.m_sLicence, licence))
@@ -250,6 +247,10 @@ class LF_ItemCatalogue
 				missing = offer.m_sLicence;
 				return LF_EOutletGate.NEEDS_LICENCE;
 			}
+
+			// A lawful counter will not serve a wanted buyer; the black market (a criminal licence) does.
+			if (buyer.WantedLevel() > 0 && !IsCriminalLicence(licence))
+				return LF_EOutletGate.WANTED;
 
 			if (!buyer.HasLicence(licence))
 			{
@@ -359,6 +360,13 @@ class LF_ItemCatalogue
 			if (item.m_bConcealsBuild)
 				build = true;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a licence is a criminal one (black market, illegal weapons): its outlets serve the wanted.
+	static bool IsCriminalLicence(LF_ELicenseType licence)
+	{
+		return licence >= LF_ELicenseType.CRIMINAL_WEED && licence <= LF_ELicenseType.CRIMINAL_CLOTHES;
 	}
 
 	//------------------------------------------------------------------------------------------------

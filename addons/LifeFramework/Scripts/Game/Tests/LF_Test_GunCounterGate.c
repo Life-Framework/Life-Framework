@@ -1,5 +1,6 @@
 // red-proof: observed 2026-11-19, `tools\cli test --no-build --red LF_Test_GunCounterGate` RED-OK: `- a wanted
-// permit holder is refused (expected 6, got 0)`, `- a dead, downed or cuffed permit holder is refused (expected 7, got 0)`.
+// permit holder is refused (expected 6, got 0)`, `- a dead, downed or cuffed permit holder is refused (expected 7, got 0)`. Black market (review of #3902): `a wanted
+// criminal still buys at the black market` failed on the PR's gate (expected 0, got 6), passes with the fix.
 //! The gun counter's server gate (LF_ItemCatalogue.Check) for a firearm offer: no permit is refused,
 //! the permit opens it, and a permit holder who is wanted, or dead, downed or cuffed, is refused before
 //! the permit is even read. The refusals map to their own slip lines.
@@ -50,6 +51,17 @@ class LF_Test_GunCounterGate : LF_Test
 		buyer.m_iWanted = 3;
 		ctx.Equal(LF_EOutletGate.OPEN, LF_ItemCatalogue.Check(hat, buyer, missing), "a wanted buyer can still buy an unlicensed line");
 
+		// The black market serves the wanted: a criminal licence line skips the wanted gate, not the fitness one.
+		LF_OutletOffer blackPistol = new LF_OutletOffer();
+		blackPistol.m_sOutlet = "black_market";
+		blackPistol.m_sItem = "pistol_pm";
+		blackPistol.m_sLicence = "CRIMINAL_WEAPONS";
+		buyer.m_bCriminal = true;
+		ctx.Equal(LF_EOutletGate.OPEN, LF_ItemCatalogue.Check(blackPistol, buyer, missing), "a wanted criminal still buys at the black market");
+		buyer.m_bCanTrade = false;
+		ctx.Equal(LF_EOutletGate.UNFIT, LF_ItemCatalogue.Check(blackPistol, buyer, missing), "a cuffed criminal is refused at the black market");
+		buyer.m_bCanTrade = true;
+
 		// A self-service shelf copy is a free pickup until paid: no weapon or licensed item stands on one.
 		ResourceName pistolPrefab = "{1353C6EAD1DCFE43}Prefabs/Weapons/Handguns/M9/Handgun_M9.et";
 		ResourceName hatPrefab = "{A22C976003AA5BA3}Prefabs/Characters/HeadGear/Hat_Ushanka_01/Hat_Ushanka_01_folded.et";
@@ -66,12 +78,16 @@ class LF_Test_GunCounterGate : LF_Test
 class LF_Test_GunCounterGateBuyer : LF_BuyerFacts
 {
 	bool m_bPermit;
+	bool m_bCriminal;
 	int m_iWanted;
 	bool m_bCanTrade = true;
 
 	//------------------------------------------------------------------------------------------------
 	override bool HasLicence(LF_ELicenseType licence)
 	{
+		if (licence == LF_ELicenseType.CRIMINAL_WEAPONS)
+			return m_bCriminal;
+
 		return m_bPermit && licence == LF_ELicenseType.FIREARM_PERMIT;
 	}
 
