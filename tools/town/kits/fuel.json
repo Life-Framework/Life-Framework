@@ -33,7 +33,7 @@
     },
     "front": "+x",
     "counters": [],
-    "adapt": "The vanilla fuel-station shop (FuelStation_E_01_building, 10.9 x 5.5 m) is already furnished: a shop counter with its register prop at the -x end (local x -4.7, z -0.65, register at y 1.139), the street door on the +x wall at about z 0.35. The kit adds what the systems read: the attended till (meshless `LF_FuelTill_Attended`, on the register's own spot, so the robbery hold and the fuel_clerk dialogue find it), the fuel clerk behind the counter and the resident anchors (`counter` beside the clerk for the night-shift attendant, `door` on the forecourt by the street door). The slot's marker is the FuelTill place. Rows are rigid: shift, never stretch. The two forecourt pumps (`pump-a`, `pump-b`) are LF_FuelPump (the vanilla tank pistol with the fuel station component, station id saint-philippe): each stands on the exact spot of a vanilla pump under the canopy, 3.5 m off the building front, so the vanilla pump under it is covered and its free refuel is switched off by the pump overlap check."
+    "adapt": "The vanilla fuel-station shop (FuelStation_E_01_building, 10.9 x 5.5 m) is already furnished: a shop counter with its register prop at the -x end (local x -4.7, z -0.65, register at y 1.139), the street door on the +x wall at about z 0.35. The kit adds what the systems read: the attended till (meshless `LF_FuelTill_Attended`, on the register's own spot, so the robbery hold and the fuel_clerk dialogue find it), the fuel clerk behind the counter (local x -4.95, z -1.45, facing +z to the customers: the counter's front, and the register's back, are on its -z side) and the resident anchors (`counter` beside the clerk for the night-shift attendant, `door` on the forecourt by the street door). The slot's marker is the FuelTill place. Rows are rigid: shift, never stretch. The two forecourt pumps (`pump-a`, `pump-b`) are LF_FuelPump (the vanilla tank pistol with the fuel station component, station id saint-philippe): each stands on the exact spot of a vanilla pump under the canopy, 3.5 m off the building front, so the vanilla pump under it is covered and its free refuel is switched off by the pump overlap check. The kiosk sells the pack's `fuel_kiosk` stock (map, water, soda, chocolate, crackers; LF_ShopStock_FuelKiosk.conf) through `kiosk-shop`, a bare shop entity on the counter top; `kiosk-display` is the goods themselves, one model per spot on the building's own wooden shelf unit (ShelfUniversal_01_narrow, local x 0.26 to 1.16, z 0.01 to 0.38, boards at y 1.188 and 1.677): the map, chocolate and crackers lie on the waist board, the soda and water bottles stand on the next (FuelKiosk_Display.et, meshes only: nothing to take, the till sells). The sales lane runs from the street door (+x wall, z 0.35) north of the vanilla clutter along z 0.6 to 1.9 to the counter front; nothing of the kit stands in it. The pumps are LF_FuelPump on the exact origin of each vanilla pump (platform-local -8.105,-0.769 and 2.541,-0.643 of FuelStation_E_01_V1, turned into the building frame), so the vanilla pump and the selling pump are one mesh."
   },
   "rows": [
     {
@@ -58,11 +58,11 @@
       "verb": "on floor",
       "free": true,
       "offset": [
-        -5.1,
+        -4.95,
         0.1,
-        -0.1
+        -1.45
       ],
-      "yaw": 90,
+      "yaw": 0,
       "wall": "free",
       "floor": "f0"
     },
@@ -73,11 +73,11 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        -5.1,
+        -4,
         0.1,
         -1.45
       ],
-      "yaw": 90,
+      "yaw": 0,
       "config": [
         {
           "component": "LF_ResidentAnchorComponent",
@@ -139,15 +139,72 @@
       "floor": "f0"
     },
     {
+      "id": "kiosk-shop",
+      "name": "Source_KioskShop",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -4.4,
+        1.139,
+        -0.55
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sShopName": "\"#LF-Shop_Name_FuelKiosk\"",
+            "m_sShopDescription": "\"#LF-Shop_Desc_FuelKiosk\"",
+            "m_sStockId": "\"fuel_kiosk\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "RplComponent",
+          "set": {
+            "Enabled": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "kiosk-display",
+      "prefab": "{FFC606F20579CCA5}Prefabs/Buildings/FuelStation/FuelKiosk_Display.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "free": true,
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "id": "pump-a",
       "prefab": "{3328A0000000F001}Prefabs/Props/Fuel/LF_FuelPump.et",
       "role": "interactable",
       "verb": "on floor",
       "free": true,
       "offset": [
-        9.52,
-        -0.25,
-        3.49
+        11.355,
+        0.0215,
+        4.141
       ],
       "yaw": 0,
       "wall": "free",
@@ -160,9 +217,9 @@
       "verb": "on floor",
       "free": true,
       "offset": [
-        -1.01,
-        -0.19,
-        3.44
+        0.709,
+        0.0215,
+        4.015
       ],
       "yaw": 0,
       "wall": "free",

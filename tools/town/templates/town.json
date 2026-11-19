@@ -132,7 +132,7 @@
       "places": ["GunCounter"]
     },
     {
-      "id": "fuel", "required": true, "kit": "fuel", "host": "building", "poi": "none", "margin": 6,
+      "id": "fuel", "required": true, "kit": "fuel", "host": "building", "poi": "none", "margin": 8,
       "needs": { "interior": "optional", "minArea": 40, "prefer": "far", "types": ["fuel"] },
       "plot": { "minWidth": 16, "minDepth": 14, "prefabs": [{ "type": "fuel", "stem": "FuelStation_E_01_building" }] },
       "places": ["FuelTill"]

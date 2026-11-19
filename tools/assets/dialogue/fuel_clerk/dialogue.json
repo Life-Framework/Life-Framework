@@ -53,7 +53,7 @@
   ],
   "lines": {
     "greet": { "text": "Hello. Pump two sticks, so use pump one. What can I do for you?" },
-    "about_where": { "text": "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street." },
+    "about_where": { "text": "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, maps and snacks in here. The square is just up the street." },
     "chat_quiet": { "text": "Quiet as a church. A tractor at nine, the post van at noon, and now you. The radio says rain by Thursday." },
     "chat_news": { "text": "Army trucks on the coast road again, all night long. Nobody tells us anything. My mother says it is like sixty eight." },
     "rob_panic": {
