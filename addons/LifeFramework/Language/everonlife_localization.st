@@ -7696,7 +7696,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9BA33F2D2CD65A73}" {
      Id "LF-LicenceDesk_Wanted"
-     Target_en_us "Refused: you are wanted by the {police}."
+     Target_en_us "Refused: you're wanted by the {police}."
      Comment "Licence desk refusal: the player's wanted level is above zero."
     }
     CustomStringTableItem "{A642D5DB4145E7D9}" {
@@ -12744,10 +12744,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "One order at a time. Give the till a moment."
      Comment "Shop refusal: too many orders in a short time (#693b rate limit)."
     }
+    CustomStringTableItem "{9B4E445A7689D74C}" {
+     Id "LF-Shop_RefuseUnfit"
+     Target_en_us "The clerk won't hand that over to you in this state."
+     Comment "Order slip line: a licensed line is not sold to a dead, downed or cuffed buyer."
+    }
     CustomStringTableItem "{CD2FED1EA8EFF86B}" {
      Id "LF-Shop_RefuseUnpriced"
      Target_en_us "That item has no price here."
      Comment "Shop refusal: the item has no price."
+    }
+    CustomStringTableItem "{1CFEA3E02996B1FC}" {
+     Id "LF-Shop_RefuseWanted"
+     Target_en_us "You're wanted by the {police}. The counter won't sell you that."
+     Comment "Order slip line: a licensed line (a firearm) is not sold to a wanted buyer."
     }
     CustomStringTableItem "{F612D2192DFC33C8}" {
      Id "LF-Shop_SaleFailed_Title"

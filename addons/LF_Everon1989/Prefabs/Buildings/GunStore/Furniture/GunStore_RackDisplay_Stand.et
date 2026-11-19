@@ -1,0 +1,105 @@
+GenericEntity {
+ ID "42A7ED1B5D1237B9"
+ {
+  GenericEntity {
+   ID "FED5552DA2CD447C"
+   components {
+    MeshObject "{78F20D8E30F769DD}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords -0.763 0.665 0.235
+   angles 80 180 180
+  }
+  GenericEntity {
+   ID "C58CC702E5BF5B25"
+   components {
+    MeshObject "{7FD9CE7EFCB7CE15}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords -0.591 0.665 0.235
+   angles 80 180 180
+  }
+  GenericEntity {
+   ID "D3A3DE1EAA3DC82B"
+   components {
+    MeshObject "{E7E2AC8BAA35B60E}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords -0.422 0.665 0.235
+   angles 80 180 180
+  }
+  GenericEntity {
+   ID "4F621F4DCF816138"
+   components {
+    MeshObject "{9E01FEDAEDFA0790}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords -0.252 0.665 0.235
+   angles 80 180 180
+  }
+  GenericEntity {
+   ID "8B661D252C8E55D6"
+   components {
+    MeshObject "{89C69C8A11E34A3E}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords -0.078 0.665 0.235
+   angles 80 180 180
+  }
+  GenericEntity {
+   ID "4211A412CC3D1FA1"
+   components {
+    MeshObject "{95E898FBD6221BFD}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 0.084 0.665 0.235
+   angles 80 180 180
+  }
+  GenericEntity {
+   ID "82DBD4529F2F02C9"
+   components {
+    MeshObject "{562AA755086A700C}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 0.242 0.665 0.235
+   angles 80 180 180
+  }
+  GenericEntity {
+   ID "4E9546D9EF09A182"
+   components {
+    MeshObject "{3E82FF72F842339D}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 0.417 0.665 0.235
+   angles 80 180 180
+  }
+  GenericEntity {
+   ID "7A5165E19835EAB7"
+   components {
+    MeshObject "{EAFCBA4B9029750D}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 0.587 0.665 0.235
+   angles 80 180 180
+  }
+  GenericEntity {
+   ID "DA73D736242D2765"
+   components {
+    MeshObject "{9CB768631CD641C7}" {
+     Object "{F70651096E49F939}Assets/Weapons/Rifles/M14/M21_body.xob"
+    }
+   }
+   coords 0.749 0.665 0.235
+   angles 80 180 180
+  }
+ }
+}

@@ -34,7 +34,7 @@ class LF_BarberSheet
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_STATUS, ""));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_PREV, "#LF-Barber_Prev"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_NEXT, "#LF-Barber_Next"));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_PAY, WidgetManager.Translate("#LF-Barber_Pay", fee)));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_PAY, LF_Terms.Text("#LF-Barber_Pay", fee.ToString())));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, PART_CLOSE, "#LF-Barber_Close"));
 		return parts;
 	}
