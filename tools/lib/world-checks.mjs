@@ -21,6 +21,7 @@ export const HARD_CHECKS = [
   "validate-debugworld.ps1", // required layers exist and parse
   "validate-debugworld-layout.ps1",
   "validate-debugworld-layer-order.ps1",
+  "validate-quoted-vectors.mjs", // a quoted vector ("5 3 7") drops the entity at world origin (#3671)
 ];
 
 export const LAYOUT_CHECKS = [

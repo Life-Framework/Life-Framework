@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5F9C4A8D60E818D2}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Mechanic.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

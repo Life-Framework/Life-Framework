@@ -252,6 +252,11 @@ const ctx = { root: ROOT, run: noGit, shell: reader(shells) };
   check(near(rows[0].coords[1], Math.max(...heights)), `terrain row: y ${rows[0].coords[1]} is not the highest ground under its footprint ${Math.max(...heights)}`);
   check(rows[0].coords[1] > heights[0] + 0.01, "terrain row: the row rests on the centre ground, so its high corner sinks into the slope");
   check(res.terrainPoints.length === 5, `terrain row: seatRows named ${res.terrainPoints.length} probe point(s), not 5`);
+  {
+    const lr = [rows[0] && { ...rows[0], coords: [...rows[0].coords] }];
+    await seat.seatRows(lr, [slopeKit("t", { lift: -0.015 })], HOST, { reader: rd, terrain: slope });
+    check(near(lr[0].coords[1], Math.max(...heights) - 0.015), `terrain lift: a terrain row with lift -0.015 stands at y ${lr[0].coords[1]}, not 1.5 cm under the highest ground`);
+  }
 
   // no probed height: kept at the kit height and reported as unseated
   const kept = [at("t", 1.5, 3, 1)];
