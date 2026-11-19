@@ -1599,6 +1599,11 @@ StringTable {
      Target_en_us "Tools, building materials, lamps and radios for the plot owner and the working man."
      Comment "Hardware store counter (#3220): the shop description."
     }
+    CustomStringTableItem "{FBE651522FAB6C3B}" {
+     Id "LF-Shop_Desc_Mechanic"
+     Target_en_us "Spare parts for the village's cars, sold across the workshop counter."
+     Comment "Mechanic counter (#3224): the shop description."
+    }
     CustomStringTableItem "{CE06D40741D4A653}" {
      Id "LF-Shop_Desc_MedicStores"
      Target_en_us "Coats and a medical kit for the hospital staff."
@@ -1674,6 +1679,11 @@ StringTable {
      Target_en_us "Hardware store"
      Comment "Hardware store counter (#3220): the shop name."
     }
+    CustomStringTableItem "{CD9F8522A264158A}" {
+     Id "LF-Shop_Name_Mechanic"
+     Target_en_us "Garage"
+     Comment "Mechanic counter (#3224): the shop name."
+    }
     CustomStringTableItem "{D815E73D4340CE7D}" {
      Id "LF-Shop_Name_MedicStores"
      Target_en_us "Medic stores"
@@ -1724,6 +1734,11 @@ StringTable {
      Target_en_us "Browse the tools and building supplies."
      Comment "Hardware store counter (#3220): the shop action description."
     }
+    CustomStringTableItem "{179870A0D78BDB64}" {
+     Id "LF-Shop_OpenDesc_Mechanic"
+     Target_en_us "Browse the car parts."
+     Comment "Mechanic counter (#3224): the shop action description."
+    }
     CustomStringTableItem "{3E7A91C04B52D684}" {
      Id "LF-Shop_OpenDesc_Newsagent"
      Target_en_us "Buy the tourist map or a paper"
@@ -1773,6 +1788,11 @@ StringTable {
      Id "LF-Shop_Open_Hardware"
      Target_en_us "Hardware store"
      Comment "Hardware store counter (#3220): the shop action label."
+    }
+    CustomStringTableItem "{C5A9EDCC211E5F78}" {
+     Id "LF-Shop_Open_Mechanic"
+     Target_en_us "Garage"
+     Comment "Mechanic counter (#3224): the shop action label."
     }
     CustomStringTableItem "{8D1EB732FECFCC26}" {
      Id "LF-Shop_Open_MedicStores"
@@ -2709,6 +2729,31 @@ StringTable {
      Target_en_us "%1 %2"
      Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
     }
+    CustomStringTableItem "{832AC83992CD1389}" {
+     Id "LF-Sign_Mechanic_How"
+     Target_en_us "*Garage* at the workshop counter, one price per part"
+     Comment "Sign card for the village garage, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{6F2254812571B657}" {
+     Id "LF-Sign_Mechanic_Needs"
+     Target_en_us "Money for the counter"
+     Comment "Sign card for the village garage, Needs section."
+    }
+    CustomStringTableItem "{AF20BB3181AD8266}" {
+     Id "LF-Sign_Mechanic_Next"
+     Target_en_us "Car parts mend a damaged vehicle."
+     Comment "Sign card for the village garage, Next section."
+    }
+    CustomStringTableItem "{EA83B183BA657FA1}" {
+     Id "LF-Sign_Mechanic_Title"
+     Target_en_us "Garage"
+     Comment "Title of the painted fascia over the village garage door in the east workshop (Everon 1989 pack, #3224). Printed on the sign and shown in the prompt as Read: Garage."
+    }
+    CustomStringTableItem "{6C1557BEA197814A}" {
+     Id "LF-Sign_Mechanic_What"
+     Target_en_us "The village garage: car parts at the workshop counter. The ramp beside it is where the mechanic works."
+     Comment "Sign card for the village garage, What section."
+    }
     CustomStringTableItem "{3B335C0E2FA32B9B}" {
      Id "LF-Sign_MerchantTimber_Board"
      Target_en_us "Hardwood board"
@@ -3569,6 +3614,5 @@ StringTable {
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
      Comment "Join notice toast at a player's first spawn of the session (#1448); the joinNotice.key of the flagship."
     }
-  }
  }
 }
