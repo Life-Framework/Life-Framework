@@ -1,0 +1,13 @@
+GenericEntity : "{9DC40F97DF4CCFC4}Prefabs/Items/Food/LF_Honeycomb.et" {
+ ID "DC46B9A072D2AE93"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_HoneyJar"
+     Description "#LF-Item_HoneyJarDesc"
+    }
+   }
+  }
+ }
+}
