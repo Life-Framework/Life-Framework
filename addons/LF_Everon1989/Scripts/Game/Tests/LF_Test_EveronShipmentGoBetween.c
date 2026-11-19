@@ -51,6 +51,40 @@ class LF_Test_EveronShipmentGoBetween : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What a player is offered as the shipment goes on: the sell intro only between opening the crate and
+	//! reporting or selling what was in it, never next to the threat or the sold answer (#3809).
+	protected void CheckOffers(LF_TestContext ctx, LF_DialogueOption crate, LF_DialogueOption sold, LF_DialogueOption reported)
+	{
+		IEntity player = LF_TestCharacterFixture.Spawn(ctx);
+		if (!player)
+			return;
+
+		LF_QuestTrackerComponent tracker = LF_Component<LF_QuestTrackerComponent>.Find(player);
+		ctx.NotNull(tracker, "the test character carries the quest tracker");
+		if (!tracker)
+		{
+			LF_TestCharacterFixture.Delete(player);
+			return;
+		}
+
+		ctx.False(LF_DialogueHook.Offers(crate, player, null), "a stranger is not offered the sell intro");
+
+		array<string> turnedIn = {"shipment_count"};
+		tracker.RestoreTurnedIn(turnedIn);
+		ctx.True(LF_DialogueHook.Offers(crate, player, null), "after the crate is opened the sell intro is offered");
+		ctx.False(LF_DialogueHook.Offers(reported, player, null), "the threat is not offered before the report");
+
+		turnedIn.Clear();
+		turnedIn.Insert("shipment_report");
+		tracker.RestoreTurnedIn(turnedIn);
+		ctx.True(LF_DialogueHook.Offers(reported, player, null), "after the report the threat is offered");
+		ctx.False(LF_DialogueHook.Offers(crate, player, null), "after the report the sell intro is no longer offered next to the threat");
+		ctx.False(LF_DialogueHook.Offers(sold, player, null), "the sold answer is not offered to a player who reported");
+
+		LF_TestCharacterFixture.Delete(player);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void CheckDialogue(LF_TestContext ctx, LF_DialogueConfig config)
 	{
 		ctx.EqualStr(RESIDENT_ID, config.m_sId, "the dialogue is the go-between's");
@@ -60,11 +94,14 @@ class LF_Test_EveronShipmentGoBetween : LF_Test
 		LF_DialogueFlow.Problems(config, problems);
 		ctx.Equal(0, problems.Count(), "the go-between's dialogue is playable");
 
-		// Captions first: every line and every reply has its text (the voices come with #3444).
+		// Captions first: every line and every reply has its text. The talk is voiced (#3809): every line is a recording.
+		ctx.True(!config.m_sSoundProject.IsEmpty(), "the talk names its audio project");
 		foreach (LF_DialogueLine each : config.m_aLines)
 		{
 			string caption = WidgetManager.Translate(each.m_sTextKey);
 			ctx.True(caption != each.m_sTextKey && !caption.IsEmpty(), each.m_sId + " has its caption in the string table");
+			ctx.True(!each.IsTextOnly(), each.m_sId + " is a recording (an event and a length)");
+			ctx.True(!each.m_sEvent.IsEmpty() && each.m_fSeconds > 0.5, each.m_sId + " has a sound event and a length");
 		}
 
 		foreach (LF_DialogueNode node : config.m_aNodes)
@@ -82,13 +119,16 @@ class LF_Test_EveronShipmentGoBetween : LF_Test
 		// The replies follow the shipment quests; each condition hook has its class.
 		LF_DialogueNode start = LF_DialogueFlow.FindNode(config, config.m_sStart);
 		ctx.NotNull(start, "the conversation has a start");
-		LF_DialogueOption crate = FindReply(start, "sell", "QuestTurnedIn", "shipment_count");
+		LF_DialogueOption crate = FindReply(start, "sell", "QuestTurnedInOnly", "shipment_count,shipment_report,shipment_sold");
 		LF_DialogueOption sold = FindReply(start, "sold", "QuestTurnedIn", "shipment_sold");
 		LF_DialogueOption reported = FindReply(start, "threat", "QuestTurnedIn", "shipment_report");
-		ctx.NotNull(crate, "the greeting offers the sell intro once the crate is opened (shipment_count)");
+		ctx.NotNull(crate, "the greeting offers the sell intro once the crate is opened and nothing is reported or sold yet");
 		ctx.NotNull(sold, "the greeting offers the sold answer once the sample is sold (shipment_sold)");
 		ctx.NotNull(reported, "the greeting offers the threat once the sample is reported (shipment_report)");
 		ctx.True(LF_DialogueHook.Find("QuestTurnedIn") != null, "the QuestTurnedIn condition has a class");
+		ctx.True(LF_DialogueHook.Find("QuestTurnedInOnly") != null, "the QuestTurnedInOnly condition has a class");
+		if (crate && sold && reported)
+			CheckOffers(ctx, crate, sold, reported);
 
 		LF_DialogueNode sell = LF_DialogueFlow.FindNode(config, "sell");
 		ctx.NotNull(sell, "the sell intro is a node");
