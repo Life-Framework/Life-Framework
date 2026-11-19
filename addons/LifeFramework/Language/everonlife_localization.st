@@ -4540,6 +4540,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Event"
      Comment "Map mark and area label: where a story event is running, shown to everyone until it ends. A pack may override the Id with a place or event name."
     }
+    CustomStringTableItem "{7D3E91A4C26B58F1}" {
+     Id "LF-EvidenceConvoy_Title"
+     Target_en_us "Evidence transfer"
+     Comment "Title of the dispatch toast the on-duty police get when the evidence convoy leaves."
+    }
+    CustomStringTableItem "{3B6A0F58E1D47C92}" {
+     Id "LF-EvidenceConvoy_Underway"
+     Target_en_us "Evidence transfer under way."
+     Comment "Dispatch toast to on-duty police: the evidence convoy has left the station with the seized goods."
+    }
     CustomStringTableItem "{4587AF3655D18A21}" {
      Id "LF-Evidence_Bag_Action"
      Target_en_us "Bag as evidence"
