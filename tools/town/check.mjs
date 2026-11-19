@@ -54,7 +54,7 @@ export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "L
 export const PLACE_LIMITS = { lights: 24, shadow: 12, entities: 1500 };
 // The market, chess and range slots (#3078): the trader's stall runs LF_TraderManagerComponent, the chess table LF_ChessTableComponent,
 // and a range lane is SCR_FiringRangeTarget, an entity class (BaseBuilding), not a component: `layerBacking` reads those heads too.
-Object.assign(BACKED_KINDS, { MarketTrader: "LF_TraderManagerComponent", ChessTable: "LF_ChessTableComponent", RangeLane: "SCR_FiringRangeTarget" });
+Object.assign(BACKED_KINDS, { MarketTrader: "LF_TraderManagerComponent", WholesaleCounter: "LF_TraderManagerComponent", ChessTable: "LF_ChessTableComponent", RangeLane: "SCR_FiringRangeTarget" });
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
 export const claimNameOf = (place, slot) => `${place}-${slot}.json`;

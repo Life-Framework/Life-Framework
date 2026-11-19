@@ -3179,6 +3179,36 @@ StringTable {
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
      Comment "Join notice toast at a player's first spawn of the session (#1448); the joinNotice.key of the flagship."
     }
+    CustomStringTableItem "{7C1E5A2D9B3F4A01}" {
+     Id "LF-Sign_Wholesale_Title"
+     Target_en_us "Entrepôt de gros"
+     Comment "Title of the fascia sign over the harbour wholesale warehouse (Everon 1989 pack, #3273). Printed on the sign and shown in the prompt as Read: Entrepôt de gros."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A02}" {
+     Id "LF-Sign_Wholesale_What"
+     Target_en_us "The island's wholesale warehouse on the quay road. The clerk buys planks, boards, posts, firewood, cement, iron, coal, ore and stone in any quantity."
+     Comment "Sign card for the wholesale warehouse, What section."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A03}" {
+     Id "LF-Sign_Wholesale_How"
+     Target_en_us "*Sell Items* at the counter: drop the goods into the crate and the clerk pays cash|Read the chalk board for today's prices"
+     Comment "Sign card for the wholesale warehouse, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A04}" {
+     Id "LF-Sign_Wholesale_Needs"
+     Target_en_us "Goods from the sawmill, the quarry or the mine"
+     Comment "Sign card for the wholesale warehouse, Needs section."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A05}" {
+     Id "LF-Sign_Wholesale_Next"
+     Target_en_us "Every lot you sell lowers the price a little; it climbs back while the counter is quiet. The hardware store pays more, but only for what it needs."
+     Comment "Sign card for the wholesale warehouse, Next section."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A06}" {
+     Id "LF-MapPoi_Wholesale"
+     Target_en_us "Wholesale warehouse"
+     Comment "Map POI name (#3273): the harbour wholesale warehouse counter."
+    }
   }
  }
 }
