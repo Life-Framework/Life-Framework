@@ -116,6 +116,9 @@
     "permitConvictionDays": 7,
     "driverLicenceFee": 100
   },
+  "licenceSeizure": {
+    "rules": {}
+  },
   "lockers": {
     "rentPrice": 100,
     "rentPeriodDays": 7,

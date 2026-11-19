@@ -784,6 +784,56 @@
       "additionalProperties": false,
       "x-class": "LF_LicencesConfig"
     },
+    "licenceSeizure": {
+      "type": "object",
+      "description": "The seizure rules config: Configs/Crime/LF_LicenceSeizure.conf with the pack overlays layered over it (LF_ConfigOverlay, #962).",
+      "properties": {
+        "rules": {
+          "type": "object",
+          "description": "Seizure rules, keyed by crime id. ",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "op": {
+                "type": "string",
+                "description": "Overlay verb for this id: add, replace, patch or remove. Empty patches an id that exists and adds one that does not (docs/config/override-model.md).",
+                "default": "",
+                "enum": [
+                  "",
+                  "add",
+                  "replace",
+                  "patch",
+                  "remove"
+                ]
+              },
+              "crimeId": {
+                "type": "string",
+                "description": "Offence id this rule belongs to, as LF_CrimeCatalog spells it (#LF-Ticket_OffenceBrandishing)",
+                "default": ""
+              },
+              "licences": {
+                "type": "array",
+                "description": "Licence names the conviction takes, as LF_ELicenseType spells them (FIREARM_PERMIT, DRIVING_LICENCE)",
+                "items": {
+                  "type": "string"
+                },
+                "default": []
+              },
+              "banDays": {
+                "type": "integer",
+                "description": "In-game days the holder cannot get each of these licences back. 0 seizes with no ban",
+                "default": 0,
+                "minimum": 0,
+                "maximum": 3650
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_LicenceSeizureRules"
+    },
     "lockers": {
       "type": "object",
       "description": "The lockers owner-config section: Configs/Lockers/LF_Lockers.conf with each pack overlay (the mission header's m_aLF_ConfigOverlays, #3192) and then the owner's `lockers` section layered over it.",
