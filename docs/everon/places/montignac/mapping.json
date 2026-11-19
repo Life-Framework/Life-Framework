@@ -7,7 +7,7 @@
   "dossier": {
     "schema": 1,
     "generated": "2026-11-19",
-    "buildings": 52,
+    "buildings": 164,
     "freePlots": 8
   },
   "slots": {
@@ -127,6 +127,32 @@
           "building": "b14",
           "score": 0.833
         }
+      ]
+    },
+    "depot": {
+      "building": "b95",
+      "score": 0.691,
+      "why": [
+        "type farm (Barn_E_03_closed, interior yes)",
+        "far: 129.9 m2, 180.5 m out SW, in the barn cluster with b93, b141 and greenhouse b97: the collective-farm yard"
+      ],
+      "alternatives": [
+        {
+          "building": "b140",
+          "score": 0.696
+        },
+        {
+          "building": "b141",
+          "score": 0.682
+        }
+      ]
+    },
+    "factory": {
+      "building": "b41",
+      "score": 0.744,
+      "why": [
+        "type industrial (first choice)",
+        "far: 255 m2, 90 m out W, the only industrial building of the survey, beside portable cabin b30"
       ]
     },
     "farm-plot": {

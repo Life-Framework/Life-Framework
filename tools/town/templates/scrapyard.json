@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "kind": "scrapyard",
+  "about": "A fenced industrial yard beside a road: a big open shed where scrap is sorted and recycled, a site cabin where the dealer buys and sells, and a bare patch of open ground for the dump. Three slots, no sign and no map marker. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "recycler", "required": true, "kit": "scrap-recycler", "host": "building", "poi": "none", "margin": 24,
+      "needs": { "interior": "optional", "minArea": 150, "prefer": "near", "types": ["industrial", "garage", "shed"] },
+      "places": ["ScrapRecycler"]
+    },
+    {
+      "id": "dealer", "required": true, "kit": "scrap-dealer", "host": "building", "poi": "none", "margin": 24,
+      "needs": { "interior": "required", "minArea": 15, "prefer": "near", "types": ["industrial", "garage", "shed"] },
+      "places": ["ScrapDealer"]
+    },
+    {
+      "id": "dump", "required": true, "kit": "scrap-dump", "host": "plot", "poi": "none", "margin": 24,
+      "needs": { "interior": "optional", "minArea": 0, "prefer": "near", "types": [] },
+      "plot": { "minWidth": 18, "minDepth": 14, "prefabs": [{ "type": "industrial", "stem": "ShedMetal_02_short_nowalls" }] },
+      "places": ["ScrapDump"]
+    }
+  ]
+}
