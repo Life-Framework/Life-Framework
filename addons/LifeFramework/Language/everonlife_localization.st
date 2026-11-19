@@ -2065,6 +2065,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take bank robbery kit"
      Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
     }
+    CustomStringTableItem "{45B885CB207E6AFA}" {
+     Id "LF-BankTransfer_RefuseAmount"
+     Target_en_us "Enter an amount above zero."
+     Comment "Bank transfer refusal: the amount is zero or negative."
+    }
+    CustomStringTableItem "{095535993A8D1611}" {
+     Id "LF-BankTransfer_RefuseBalance"
+     Target_en_us "Your balance doesn't cover the amount and the fee."
+     Comment "Bank transfer refusal: the balance is short of the amount plus the fee."
+    }
+    CustomStringTableItem "{EED4BC3488E3080F}" {
+     Id "LF-BankTransfer_RefuseLimit"
+     Target_en_us "That would pass today's transfer limit."
+     Comment "Bank transfer refusal: the amount would take the sender past the daily limit."
+    }
+    CustomStringTableItem "{65E7F78A397137B3}" {
+     Id "LF-BankTransfer_RefuseOwn"
+     Target_en_us "You can't transfer money to your own account."
+     Comment "Bank transfer refusal: the account number keyed in is the sender's own."
+    }
+    CustomStringTableItem "{2D4831EC50F493F3}" {
+     Id "LF-BankTransfer_RefuseUnknown"
+     Target_en_us "There is no account with that number."
+     Comment "Bank transfer refusal: no account holds the number keyed in."
+    }
     CustomStringTableItem "{A3AB2264A6CAAA6D}" {
      Id "LF-Bank_Drill"
      Target_en_us "Drill the vault door"
