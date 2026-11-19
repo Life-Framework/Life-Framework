@@ -1,0 +1,53 @@
+GenericEntity {
+ ID "CE55AA075066DD1A"
+ components {
+  MeshObject "{9CC1291F12254DF3}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{819CFAD078760817}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{C8DC7A0E9734D885}" {
+   ActionContexts {
+    UserActionContext "{E7AD9D8E0D63C48B}" {
+     ContextName "default"
+     Position PointInfo "{23591B2E71B1F5A6}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_RobAction "{077BE117A4E6B3F2}" {
+     ParentContextList {
+      "default"
+     }
+     m_iMoneyAmount 0
+     m_fCooldown 60
+     m_iMinPoliceOnDuty 0
+     m_bCrewJob 1
+    }
+    LF_CrewRobStartAction "{00E36B32A1ECAB84}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_CrewRobHoldAction "{48C87217F1208DEE}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_CrewRobTakeAction "{93DBA3339C9ACF07}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{3CBD6DFDC64DBC85}" {
+   Enabled 1
+  }
+ }
+}

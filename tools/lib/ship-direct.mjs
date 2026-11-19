@@ -19,10 +19,20 @@ export function shipMergeBase(wtRoot, base, heal, log = () => {}) {
   throw new Error(`merge origin/${base} into this branch failed: ${files}${m.reason}); run git merge origin/${base}, fix, commit, re-run`);
 }
 
+// Files both the branch and origin/<base> changed since their merge-base. `git merge-tree` runs the custom merge
+// drivers (docs/features/*.md and friends), so it calls a both-sides append clean; GitHub runs no custom driver and
+// reports the PR CONFLICTING (#3735, #3736: five crime-police.md PRs the same night). Any such file that carries a
+// merge driver sends ship to merge origin/<base> locally first, where the driver resolves it.
+export function bothSidesTouched(ours, theirs) {
+  const norm = (p) => String(p).replace(/\\/g, "/");
+  const t = new Set(theirs.map(norm));
+  return [...new Set(ours.map(norm))].filter((p) => t.has(p));
+}
+
 export const BEHIND = /base branch was modified|not up to date|is behind|out of date|update the branch/i;
 export const isBehindRefusal = (text) => BEHIND.test(String(text ?? ""));
 
-// deps: mergeTree() -> {status, stdout, stderr}; mergeBase() -> throws on failure; validate() -> exit code;
+// deps: driverOverlap() (optional) -> driver-merged files both sides changed; mergeTree() -> {status, stdout, stderr}; mergeBase() -> throws on failure; validate() -> exit code;
 // push() -> {status, stdout, stderr}; findPr() -> pr|null; createPr() -> pr; autoMerge(n) -> {status, stdout, stderr};
 // mergeState(n) -> "BEHIND"|"DIRTY"|...; regenSchema() (optional) rebuilds and commits docs/config/ when the branch needs it; log(line).
 // draft: the PR is opened as a draft and auto-merge is never planned (town-draft and maintainer-review PRs).
@@ -31,6 +41,15 @@ export async function shipDirect(deps, { base = "main", slug = "?", preflight = 
   const fail = (why) => { log(`FAIL  ${why}`); return { code: 1, why }; };
   // Rebuild docs/config/ when the branch touches a config class or conf (#3717); optional dependency, never fatal.
   const regen = () => { try { deps.regenSchema?.(); } catch (e) { log(`ship: config schema regeneration threw (${e.message}); validate will report it`); } };
+  // merge-tree called the merge clean, but a driver-merged file changed on both sides: GitHub would call it CONFLICTING.
+  const mergeForDrivers = () => {
+    let files = [];
+    try { files = deps.driverOverlap?.() ?? []; } catch (e) { log(`ship: driver-overlap check threw (${e.message}); GitHub reports any conflict`); }
+    if (!files.length) return null;
+    log(`ship: ${files.join(", ")} changed on both sides and GitHub cannot run the merge driver; merging origin/${base} here`);
+    try { deps.mergeBase(); } catch (e) { return fail(`merge origin/${base}: ${e.message}. Nothing was pushed.`); }
+    return null;
+  };
   if (preflight) {
     const mt = deps.mergeTree();
     if (mt.status === 1) {
@@ -40,11 +59,12 @@ export async function shipDirect(deps, { base = "main", slug = "?", preflight = 
       log(`ship: origin/${base} conflicts only in driver-merged files (${paths.join(", ")}); merging it here`);
       try { deps.mergeBase(); } catch (e) { return fail(`merge origin/${base}: ${e.message}. Nothing was pushed.`); }
     } else if (mt.status !== 0) log(`ship: git merge-tree failed (${String(mt.stderr || mt.stdout).trim().slice(0, 200)}); GitHub reports any conflict`);
+    if (mt.status !== 1) { const f = mergeForDrivers(); if (f) return f; }
     regen();
     const v = await deps.validate();
     if (v !== 0) return fail(`preflight: validate failed (exit ${v}); fix it, commit, re-run 'tools\\cli wt ship ${slug}'. Nothing was pushed.`);
   }
-  if (!preflight) regen();
+  if (!preflight) { const f = mergeForDrivers(); if (f) return f; regen(); }
   const push = deps.push();
   if (push.status !== 0) return fail(`push:${String(push.stderr || push.stdout).trim()}`);
   let pr;

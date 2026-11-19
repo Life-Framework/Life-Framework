@@ -14,10 +14,21 @@ returns an `LF_QualificationVerdict`: a pass carries the unlock ids, the fee to 
 a refusal carries a localization key and, where the sentence has a number, that number (`%1`). The first failing rule
 wins, in this order: unknown course, already held, wrong faction, rank too low, short purse.
 
-Nothing here charges money, times the study or saves a held course. Those belong to the course desk and the
-persistence slice that build on this one.
+Nothing in the rules charges money or times the study; the course desk does.
+
+## Held courses (#3425)
+
+`LF_Qualifications` keeps each character's held course ids under the character's record key. `Grant(character,
+courseId)` adds a course the table lists; `Has(character, unlock)` reads the held courses' unlock ids from the table each
+time, so a pack that changes a course's unlocks changes them for every holder. The `qualifications` save section
+(`LF_QualificationsSavePayload`, one row per held course) replaces the whole set on load, drops and logs a course the
+table no longer lists, and a boot whose save predates the section (`OnAbsent()`) starts with nobody holding a course; a re-apply to a live session keeps the live set.
 
 ## Tests
 
 `LF_Test_QualificationRules` (`qualifications/rules`, LOGIC): the shipped table, a pass with its unlocks, each
 refusal, the rule order, an open course, unlock-list trimming, a missing table.
+
+`LF_Test_QualificationsRestart` (`qualifications/restart`, PERSISTENCE): two grants survive a save and load, a
+second load changes nothing, an unknown saved course is dropped, `OnAbsent()` gives none; the `wt e2e` reload boot
+finds the e2e character's two courses.
