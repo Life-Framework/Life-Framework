@@ -23,6 +23,8 @@ class LF_EventSceneOperation : LF_EventOperation
 	//! The phase run that staged the scene (its start second): one scene per phase run.
 	protected bool m_bStaged;
 	protected float m_fStagedPhaseAt;
+	//! A driving scene (#3831) started its drive (once the crew was fully spawned).
+	protected bool m_bDriveStarted;
 	protected float m_fSinceWalkOver;
 	protected float m_fSinceDespawnTry;
 	//! Seconds the despawn has been due (the walk is over and the delay has run); a watcher holds it
@@ -104,7 +106,10 @@ class LF_EventSceneOperation : LF_EventOperation
 		m_fDespawnDueS = 0;
 		LF_Debug.Info(FEATURE, string.Format("event %1 phase %2: module %3 put scene %4 on stage (%5 walkers)", eventId, phaseName, m_sModuleId, crew.m_sSceneId, plan.m_aNpcs.Count()));
 
-		if (!LF_EventSceneWalk.Begin(crew, m_bDriveAi, m_bTick))
+		m_bDriveStarted = false;
+		// A scene that drives (#3831) starts its drive once every crew member has spawned (Advance): the
+		// seats are given out at the start, so a crew still on its stagger would miss them.
+		if (!plan.m_bDriveVehicle && !LF_EventSceneWalk.Begin(crew, m_bDriveAi, m_bTick))
 			LF_Debug.Warn(FEATURE, string.Format("scene %1 is on stage but does not walk; it leaves after its despawn delay", crew.m_sSceneId));
 
 		if (m_bTick)
@@ -142,6 +147,9 @@ class LF_EventSceneOperation : LF_EventOperation
 		if (!m_Crew.IsFullySpawned())
 			return false;
 
+		if (m_Crew.m_Plan.m_bDriveVehicle && !AdvanceDrive())
+			return false;
+
 		LF_EventSceneWalk walk = LF_EventSceneWalk.Active();
 		bool ourWalk = walk && walk.m_Crew == m_Crew;
 		if (ourWalk && !walk.IsDone())
@@ -164,7 +172,39 @@ class LF_EventSceneOperation : LF_EventOperation
 		if (ourWalk)
 			walk.Stop();
 
+		LF_EventSceneDrive drive = LF_EventSceneDrive.Active();
+		if (drive && drive.m_Crew == m_Crew)
+			drive.Stop();
+
 		m_Crew = null;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The scene drives its vehicle (#3831): starts the drive on the first call once the crew is fully
+	//! spawned, then holds the scene's end until the drive is over (arrived, or its walk timeout ran
+	//! out). \return true when the drive is over or never started, so the despawn delay may run.
+	protected bool AdvanceDrive()
+	{
+		if (!m_bDriveStarted)
+		{
+			m_bDriveStarted = true;
+			if (!LF_EventSceneDrive.Begin(m_Crew, m_bDriveAi, m_bTick))
+			{
+				LF_Debug.Warn(FEATURE, string.Format("scene %1 is on stage but does not drive; it leaves after its despawn delay", m_Crew.m_sSceneId));
+				return true;
+			}
+		}
+
+		LF_EventSceneDrive drive = LF_EventSceneDrive.Active();
+		if (!drive || drive.m_Crew != m_Crew || drive.m_bOver)
+			return true;
+
+		if (drive.m_fElapsed < m_Crew.m_Plan.m_fWalkTimeoutSeconds)
+			return false;
+
+		LF_Debug.Warn(FEATURE, string.Format("scene %1: the vehicle did not reach the target in %2 s; the scene ends anyway", m_Crew.m_sSceneId, m_Crew.m_Plan.m_fWalkTimeoutSeconds));
+		drive.Stop();
 		return true;
 	}
 

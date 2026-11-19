@@ -93,7 +93,9 @@ async function walk(args) {
   const hour = opt("--hour", "6");
   // --island: the route is the markers of the island's arrival layer (a `session up --mission island` session), not the CoreOnEveron proof layer (#3088).
   const island = args.includes("--island");
-  args = args.filter((a) => a !== "--control" && a !== "--island");
+  // --drive: the scene drives its truck (#3831, m_bDriveVehicle): PASS is the log line `drive over: the vehicle reached the target`.
+  const drive = args.includes("--drive");
+  args = args.filter((a) => a !== "--control" && a !== "--island" && a !== "--drive");
   const out = args[0] ? resolve(String(args[0])) : "";
   const layerFile = layerOpt ? join(ROOT, layerOpt) : island ? ISLAND_LAYER : LAYER;
   if (!existsSync(layerFile)) {
@@ -129,6 +131,7 @@ async function walk(args) {
   let last = "";
   let arrived = 0;
   let spawned = 0;
+  let driven = "";
   while ((Date.now() - t0) / 1000 < WALK_BUDGET_S) {
     wait(3000);
     const s = on({ verb: "eventscene", words: ["status", sceneId] }, 10000).detail;
@@ -156,6 +159,21 @@ async function walk(args) {
     }
     // The walk stops the moment it is over; the status then carries its result, and the family
     // still stands at the target until the despawn delay, so the arrival pictures go now.
+    if (drive) {
+      // Once the truck rolls under its own AI (past the second lane point), a picture of it on the lane.
+      const at = /vehicle at <([-\d.]+),([-\d.]+),([-\d.]+)>/.exec(s);
+      if (!shots.mid && at && Number(at[1]) > route[1].x + 3) {
+        on({ verb: "capture", mode: "world", name: "drive_mid", x: Number(at[1]), y: Number(at[2]) + 1, z: Number(at[3]), ox: 12, oy: 4, oz: 9, hour: 12 }, 25000);
+        shots.mid = true;
+      }
+      const driveOver = /drive over: ([^)]*)/.exec(s);
+      if (driveOver) {
+        driven = driveOver[1];
+        break;
+      }
+      if (/no scene running/.test(s) && (Date.now() - t0) / 1000 > 60) break;
+      continue;
+    }
     const over = /walk over: (\d+) reached the target, (\d+) timed out/.exec(s);
     if (over) {
       arrived = Number(over[1]);
@@ -174,6 +192,11 @@ async function walk(args) {
   shots.target = true;
 
   console.log(`relocated-walk: last status: ${last}`);
+  if (drive) {
+    const reached = driven.includes("reached the target");
+    console.log(reached ? `relocated-walk: PASS (drive over: ${driven})` : `relocated-walk: FAIL (drive over: ${driven || "never"})`);
+    return reached ? 0 : 1;
+  }
   const ok = spawned > 0 && arrived >= spawned;
   console.log(ok ? `relocated-walk: PASS (${arrived}/${spawned} reached the target)` : `relocated-walk: FAIL (${arrived}/${spawned} reached the target)`);
   return ok ? 0 : 1;

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{E7A3C95B1D4F6082}Configs/Tests/LF_Test_ShipmentDriveFixture.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
