@@ -13693,6 +13693,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take %1"
      Comment "UI kit quantity face for the amount that leaves. %1 is the count."
     }
+    CustomStringTableItem "{3333A1C0E5D70001}" {
+     Id "LF-Unflip_Action"
+     Target_en_us "Push it back over"
+     Comment "Action name on an overturned empty vehicle (#3333)."
+    }
+    CustomStringTableItem "{3333A1C0E5D70003}" {
+     Id "LF-Unflip_Cooldown"
+     Target_en_us "It was only just pushed over. Give it a moment."
+     Comment "Unflip refusal toast (#3333): inside the cooldown."
+    }
+    CustomStringTableItem "{3333A1C0E5D70005}" {
+     Id "LF-Unflip_NotOverturned"
+     Target_en_us "It is already on its wheels."
+     Comment "Unflip refusal toast (#3333): the vehicle is not overturned."
+    }
+    CustomStringTableItem "{3333A1C0E5D70002}" {
+     Id "LF-Unflip_Occupied"
+     Target_en_us "Someone is still inside."
+     Comment "Unflip refusal toast (#3333): the vehicle has an occupant."
+    }
+    CustomStringTableItem "{3333A1C0E5D70004}" {
+     Id "LF-Unflip_TooFar"
+     Target_en_us "Get closer to push it over."
+     Comment "Unflip refusal toast (#3333): the player is out of reach."
+    }
     CustomStringTableItem "{7B2D91E4A0C358F6}" {
      Id "LF-VehicleCompartment_Open"
      Target_en_us "Open the panel"
