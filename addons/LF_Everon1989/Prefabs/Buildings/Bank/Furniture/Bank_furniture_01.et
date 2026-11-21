@@ -650,10 +650,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "BA4C4F929AB0B08B"
    coords 1.95 1.758 1.8
   }
-  StaticModelEntity : "{CD9C68B74E4AB068}Prefabs/Props/Roadblocks/RallySafteyTape_01/RallySafetyTape_01_2m.et" {
-   ID "BA4CF0E5E808D4B8"
-   coords -0.6 1.053 3.55
-  }
   GenericEntity : "{8BB5855208F77724}Prefabs/Props/Furniture/BenchWooden_01.et" {
    ID "BA4C883109A380A4"
    coords -1.95 1.053 2.55

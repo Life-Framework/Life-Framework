@@ -30,7 +30,7 @@ export const P = {
   ledgers: "Prefabs/Props/Civilian/Notebook_01_Stack.et",
   pen: "Prefabs/Props/Civilian/Pen_01/Pen_01_base.et",
   typewriter: "Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_Base.et",
-  tape: "{CD9C68B74E4AB068}Prefabs/Props/Roadblocks/RallySafteyTape_01/RallySafetyTape_01_2m.et",
+  // no queue tape: RallySafetyTape_01 is Rally DLC content (tools/validation/dlc-owned-prefabs.txt), which the server never loads
   insurance: "Prefabs/Props/Commercial/Posters/PosterSingle_A3_Insurance_V1.et",
   noticeV: "Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et",
   noticeH: "Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V3.et",
@@ -80,12 +80,11 @@ put(P.chairOffice, 1.7, F, 5.3, 190);
 put(P.chairOffice, 0.1, F, 5.3, 170);
 put(P.cabinet, -1.85, F, 5.85, 90, { id: "tcab" });
 put(P.ledgers, -1.85, F + 2, 5.85, 80, { on: "tcab" });
-// the public side: deposit-slip desk with slips, a pen and the rates notice, the queue tape, a bench and a plant
+// the public side: deposit-slip desk with slips, a pen and the rates notice, a bench and a plant
 put(P.tableSmall, 2.1, F, 2.0, 0, { id: "slip" });
 put(P.notebook, 2.05, F + 0.7, 2.0, 20, { on: "slip" });
 put(P.pen, 2.2, F + 0.7, 2.1, 70, { on: "slip" });
 put(P.ashtray, 1.95, F + 0.7, 1.8, 0, { on: "slip" });
-put(P.tape, -0.6, F, 3.55, 0);
 put(P.bench, -1.95, F, 2.55, 90);
 put(P.plant, 2.2, F, 3.4, 0);
 put(P.bin, -1.95, F, 1.6, 0);
