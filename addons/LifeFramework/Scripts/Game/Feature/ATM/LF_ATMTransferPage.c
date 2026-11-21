@@ -44,8 +44,13 @@ class LF_ATMTransferService
 	//! The client holds a request until the server answers or this long has passed (past the server's own
 	//! duplicate window, so a held page never sends twice).
 	static const int PENDING_TIMEOUT_MS = 30000; // lf-fixed: a UI wait bound, not a gameplay knob
+	//! Fee asks one player may make per window: the page asks once when it opens, so a few page opens pass
+	//! and a client spamming the read-only ask is cut off (its own bucket, so it never eats a SEND slot).
+	static const int FEE_RATE_WINDOW_MS = 5000; // lf-fixed: anti-spam floor, like RATE_WINDOW_MS
+	static const int FEE_RATE_BURST = 3; // lf-fixed: see FEE_RATE_WINDOW_MS
 
 	protected static ref LF_RateLimiter s_Limiter;
+	protected static ref LF_RateLimiter s_FeeLimiter;
 	//! Server: the last sent transfer per player, "number|amount", and when.
 	protected static ref map<int, string> s_mLastSent;
 	protected static ref map<int, int> s_mLastSentMs;
@@ -59,6 +64,7 @@ class LF_ATMTransferService
 	static void ResetStatics()
 	{
 		s_Limiter = null;
+		s_FeeLimiter = null;
 		s_mLastSent = null;
 		s_mLastSentMs = null;
 		s_iPendingSinceMs = 0;
@@ -191,6 +197,25 @@ class LF_ATMTransferService
 
 		if (verdict == LF_ERateVerdict.REJECT)
 			LF_Debug.Warn(FEATURE, string.Format("transfer request refused: player %1 is over %2 per %3 ms", playerKey, RATE_BURST, RATE_WINDOW_MS));
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: counts one fee ask from a player against its own bucket.
+	//! \return True when the ask may be answered.
+	static bool TakeFeeSlot(int playerKey, int nowMs)
+	{
+		if (!s_FeeLimiter)
+			s_FeeLimiter = new LF_RateLimiter();
+
+		int refusedBefore;
+		LF_ERateVerdict verdict = s_FeeLimiter.Take(playerKey, LF_ERequestKind.COMMS, nowMs, FEE_RATE_WINDOW_MS, FEE_RATE_BURST, refusedBefore);
+		if (verdict == LF_ERateVerdict.ALLOW)
+			return true;
+
+		if (verdict == LF_ERateVerdict.REJECT)
+			LF_Debug.Warn(FEATURE, string.Format("fee ask refused: player %1 is over %2 per %3 ms", playerKey, FEE_RATE_BURST, FEE_RATE_WINDOW_MS));
 
 		return false;
 	}
@@ -451,6 +476,16 @@ modded class LF_CharacterATMComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
 	protected void RpcAsk_TransferFee()
 	{
+		IEntity character = GetOwner();
+		PlayerManager playerManager = GetGame().GetPlayerManager();
+		int playerKey = 0;
+		if (character && playerManager)
+			playerKey = playerManager.GetPlayerIdFromControlledEntity(character);
+
+		// Read-only, but a client spamming it would make the server answer every one: its own small bucket.
+		if (playerKey > 0 && !LF_ATMTransferService.TakeFeeSlot(playerKey, System.GetTickCount()))
+			return;
+
 		LF_BankTransferConfig config = LF_BankTransferConfig.GetOrDefaults();
 		if (IsLocalPlayer())
 			RpcDo_TransferFee(config.m_iFee, config.m_iFeePercent);
