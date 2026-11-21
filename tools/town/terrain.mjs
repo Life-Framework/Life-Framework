@@ -51,12 +51,19 @@ export function probeLines(points, aroundY) {
   return uniq(points).map((p, i) => `ray t${i} ${p[0]} ${r3(aroundY + REACH)} ${p[1]} ${p[0]} ${r3(aroundY - REACH)} ${p[1]}`);
 }
 
+// A paved surface laid on the terrain (asphalt, a pavement slab, cobbles) is the ground a prop stands on: the terrain's own height is
+// 10 cm under it (the residents' benches stood 10.9 cm into AsphaltPavement_01_Narrow_4m_A, #3888).
+export const SURFACE_HIT = /^(Asphalt|Pavement|Road|Cobble|Kerb|Curb|Sidewalk)/i;
+
 export function pinsFromRays(points, rays) {
   const out = {};
   const missing = [];
   uniq(points).forEach((p, i) => {
-    const sy = rays.get(`t${i}`)?.sy;
-    if (Number.isFinite(sy)) out[pinKey(p[0], p[1])] = r3(sy);
+    const ray = rays.get(`t${i}`);
+    const sy = ray?.sy;
+    const hitY = ray?.p?.[1];
+    const onSurface = SURFACE_HIT.test(String(ray?.hit ?? "")) && Number.isFinite(hitY) && Number.isFinite(sy) && hitY > sy;
+    if (Number.isFinite(sy)) out[pinKey(p[0], p[1])] = r3(onSurface ? hitY : sy);
     else missing.push(pinKey(p[0], p[1]));
   });
   return { points: out, missing };
