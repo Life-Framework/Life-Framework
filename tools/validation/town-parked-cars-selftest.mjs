@@ -2,10 +2,11 @@
 // other markers, heads along the road, and the committed Saint-Philippe plan is deterministic and refuses nothing.
 // inputs: tools/town/parked-cars.mjs, docs/everon/places/saint-philippe/mapping.json, docs/everon/places/saint-philippe/dossier.json, docs/everon/places/saint-philippe-dock/dossier.json
 // red-proof: 2026-11-19, with the road test in refuse() removed the "on the carriageway" case below printed FAIL (a car 1 m off a road centre line was accepted); restored, it passes.
+// red-proof: 2026-11-21 (#3879), with the level-ray test in bodyWhy removed the "WoodenWall_01_2m" case printed FAIL (b15 stood against it); restored, it passes.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { carBox, distToLine, distToPoly, nearestRoad, plan, planCar, refuse } from "../town/parked-cars.mjs";
+import { SPREAD, bodyRays, bodyWhy, candidates, carBox, distToLine, distToPoly, groundRays, nearestRoad, parseRays, plan, planCar, refuse, surfaceOf } from "../town/parked-cars.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const fails = [];
@@ -32,6 +33,27 @@ const found = planCar(house, world);
 check(found.spot && refuse(found.spot.x, found.spot.z, found.spot.yaw, world) === null, "planCar returns a spot that passes every check");
 check(found.spot && Math.abs(found.spot.yaw) < 1 && found.spot.roadDistance > 4, `the car heads along the road and stands off it, got ${JSON.stringify(found.spot)}`);
 check(planCar({ id: "b2", footprint: { corners: [[100, 100], [110, 100], [110, 110], [100, 110]] } }, world).spot === null, "a building with no road in reach gets no spot");
+
+// The island probe (#3879): candidates, the surface under a box, the level rays and the door swing are judged without a server.
+const many = candidates(house, world, 14, 5);
+check(many.list.length === 5 && many.list.every((c, i) => c.idx === i && many.list.slice(0, i).every((k) => Math.hypot(k.x - c.x, k.z - c.z) >= SPREAD)), "candidates keeps the best few, spread apart, indexed");
+check(many.list[0].x === found.spot.x && many.list[0].z === found.spot.z, "the first candidate is planCar's spot");
+const ray = (id, o) => `ray ${id} d=${o.d ?? 6} len=${o.len ?? 6} hit=${o.hit ?? "none"} root=${o.root ?? "none"} p=${o.p ?? "0,5,0"} sy=${o.sy ?? 5}`;
+const down = (ys) => parseRays(ys.map((y, i) => ray(`c_g${i}`, { sy: y, p: `0,${y},0` })).join("\n"));
+check(surfaceOf("c", down([5, 5, 5.1, 5.2, 5])).g === 5, "a flat street gives the centre's height");
+check(/varies/.test(surfaceOf("c", down([5, 5, 5, 6.2, 5])).why), "a box over a step is refused");
+check(/not the street/.test(surfaceOf("c", parseRays([ray("c_g0", { hit: "Garage", root: "Garage", d: 3, p: "0,7.5,0", sy: 5 }), ...[1, 2, 3, 4].map((i) => ray(`c_g${i}`, {}))].join("\n"))).why), "a roof or canopy over the centre is not the street");
+const spot = { x: 0, z: 0, yaw: 0, idx: 0 };
+check(groundRays([{ id: "c", c: spot, y0: 5 }]).length === 5 && bodyRays([{ id: "c", c: spot, g: 5 }]).length === 14, "5 down rays and 7 level rays at 2 heights per candidate");
+const clear = parseRays(Array.from({ length: 14 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, {})).join("\n"));
+check(bodyWhy("c", spot, 5, clear, []) === null, "clear rays and no door: clean");
+const wall = parseRays(Array.from({ length: 14 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, i === 9 ? { hit: "WoodenWall_01_2m", root: "WoodenWall_01_2m", d: 1 } : {})).join("\n"));
+check(/WoodenWall_01_2m at car height/.test(bodyWhy("c", spot, 5, wall, []) ?? ""), "a wall on an outline ray refuses the spot");
+const leaf = { root: "DoorSet_MetalGate_01_Short", box: { c: [1.6, 6, 0], h: [1.2, 1.1, 0.05], a: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } };
+check(/swing of a door of DoorSet_MetalGate_01_Short/.test(bodyWhy("c", spot, 5, clear, [leaf]) ?? ""), "a gate leaf whose swing reaches the car refuses the spot");
+check(bodyWhy("c", spot, 5, clear, [{ ...leaf, box: { ...leaf.box, c: [30, 6, 0] } }]) === null, "a gate far away is no reason");
+const shortlist = plan({ mapping: { slots: { "parked-cars": { drops: [{ place: "t", building: "b1" }] } } }, dossiers: { t: { place: { slug: "t" }, buildings: [house], roads: [road], props: [] } }, others: { all: [], taxi: [] }, tries: 4, accept: (_d, c) => (c.idx === 2 ? { ok: true, y: 7 } : { ok: false, why: "no" }) });
+check(shortlist.out.length === 1 && shortlist.out[0].spot.idx === 2 && shortlist.out[0].spot.y === 7, "the probe's answer picks the first accepted candidate and its height");
 
 // The committed plan: the real mapping and dossiers, every drop placed, deterministic.
 const read = (...p) => JSON.parse(readFileSync(join(ROOT, ...p), "utf8"));
