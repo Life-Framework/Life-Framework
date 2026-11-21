@@ -31,6 +31,8 @@ export const SQUARE = [4437, 10670];
 export const LAMP_REACH = 95; // metres from the square centre
 export const LAMP_COUNT = 10; // new self-lit lamps; the dead posts come on top
 export const LAMP_GAP = 12; // a new lamp stands this far from every lamp already there, and from each other
+export const MAX_REJECTS = 4; // probe rounds that may reject lamps
+export const REJECT_RADIUS = 3; // a candidate this close to a spot the probe rejected is skipped
 export const LAMP_OFFSET = 5.2; // metres from the road centre line to the post
 export const HEAD_HEIGHT = 4.05; // the lamp head on a 4 m post; a taller post (E_03) is left alone
 export const WALL_OFFSET = 0.35; // a glow stands this far outside the wall plane (the light has no shadow: it lights both sides)
@@ -212,7 +214,7 @@ const grow = (corners, c, m) =>
     return [q[0] + ((q[0] - c[0]) / d) * m, q[1] + ((q[1] - c[1]) / d) * m];
   });
 
-export function buildLamps({ buildings, roads, lamps, props }) {
+export function buildLamps({ buildings, roads, lamps, props }, rejected = []) {
   const errors = [];
   const out = [];
   // Existing lights a new post must keep away from.
@@ -236,6 +238,7 @@ export function buildLamps({ buildings, roads, lamps, props }) {
           if (nearestRoad(roads, p).d < LAMP_OFFSET - 1.2) continue; // another carriageway
           if (polys.some((q) => inPoly(p, q))) continue;
           if (props.some((q) => dist([q.x, q.z], p) < 2.2)) continue;
+          if (rejected.some((q) => dist(q, p) < REJECT_RADIUS)) continue; // the island probe found this spot blocked or sloped (`--probe`)
           const y = groundNear(p, props);
           if (y === null) continue;
           cands.push({ p, face: c, y });
@@ -279,6 +282,12 @@ const GLOW_OUT = 2.5; // the wall ray starts this far outside the footprint wall
 const GLOW_IN = 1.5; // and ends this far inside it
 const LAMP_UP = 3;
 const LAMP_DOWN = 4;
+export const RING_RADIUS = 1; // a new lamp's ground is probed on a ring this wide round its post
+export const RING_POINTS = 8;
+export const LEVEL_MAX = 0.45; // the ground under the post and its ring may differ by this much
+// A rock or a cliff within the ring blocks a lamp: lamp 10 stood beside a granite rock the centre ray missed and read 36 cm over it
+// (#3938). Kerbs, walls and bushes beside a street post are normal and do not block.
+export const BLOCK_ROOT = /(Cliff|Rock|Boulder)/i;
 
 // The probe rays (LF_PlacementAudit.RayLine input lines) for the unseated glows and lamps.
 export function probeRays({ glows, lamps }) {
@@ -291,6 +300,49 @@ export function probeRays({ glows, lamps }) {
   }
   for (const l of lamps) rays.push(`ray ${l.name} ${l.x} ${r2(l.y + LAMP_UP)} ${l.z} ${l.x} ${r2(l.y - LAMP_DOWN)} ${l.z}`);
   return rays;
+}
+
+// The ring rays round each new lamp: `<lamp>_r<i>`, same reach as the centre ray.
+export function ringRays(lamps) {
+  const rays = [];
+  for (const l of lamps) {
+    for (let i = 0; i < RING_POINTS; i++) {
+      const a = (2 * Math.PI * i) / RING_POINTS;
+      const x = r2(l.x + Math.sin(a) * RING_RADIUS);
+      const z = r2(l.z + Math.cos(a) * RING_RADIUS);
+      rays.push(`ray ${l.name}_r${i} ${x} ${r2(l.y + LAMP_UP)} ${z} ${x} ${r2(l.y - LAMP_DOWN)} ${z}`);
+    }
+  }
+  return rays;
+}
+
+// Which lamps stand on clear, level ground: the centre ray's seat and the ring's hits (from the same out.txt). A ring hit on a
+// rock or a cliff, or a height spread over LEVEL_MAX, or a post that would stand on top of something (a wall, a stall) rather than
+// the ground, blocks the lamp. Returns { name: reason } for the blocked ones. `only`: the lamps this run moved, the only ones also judged for standing on top of something.
+export function blockedLamps(outText, lamps, only = null) {
+  const byId = new Map();
+  for (const line of outText.split(/\r?\n/)) {
+    if (!line.startsWith("ray ")) continue;
+    const rest = line.slice(4);
+    const sp = rest.indexOf(" ");
+    byId.set(rest.slice(0, sp), kvOf(rest.slice(sp + 1)));
+  }
+  const blocked = {};
+  for (const l of lamps) {
+    const heights = [];
+    const mid = byId.get(l.name);
+    if (only?.has(l.name) && mid && Number(mid.d) < Number(mid.len) - 0.01 && mid.hit !== "none" && !/^(Eden|RoadEntity|Asphalt|Pavement)/i.test(String(mid.root)) && Number(mid.p.split(",")[1]) - Number(mid.sy) > 0.3) blocked[l.name] = `stands on ${mid.root}`;
+    const names = [l.name, ...Array.from({ length: RING_POINTS }, (_, i) => `${l.name}_r${i}`)];
+    for (const n of names) {
+      const r = byId.get(n);
+      if (!r) continue;
+      const hit = Number(r.d) < Number(r.len) - 0.01 && r.hit !== "none";
+      if (hit && BLOCK_ROOT.test(String(r.root))) blocked[l.name] = `${r.root} within ${RING_RADIUS} m`;
+      if (Number.isFinite(Number(r.sy))) heights.push(Number(r.sy)); // the terrain under the ray, whatever stands on it
+    }
+    if (!blocked[l.name] && heights.length && Math.max(...heights) - Math.min(...heights) > LEVEL_MAX) blocked[l.name] = `ground varies ${r2(Math.max(...heights) - Math.min(...heights))} m`;
+  }
+  return blocked;
 }
 
 const kvOf = (rest) => Object.fromEntries(rest.trim().split(/\s+/).map((t) => [t.slice(0, t.indexOf("=")), t.slice(t.indexOf("=") + 1)]).filter(([k]) => k));
@@ -341,7 +393,7 @@ export function applySeats(built, seats) {
 
 export function buildAll(loaded, seats = null) {
   const g = buildGlows(loaded);
-  const l = buildLamps(loaded);
+  const l = buildLamps(loaded, seats?.rejected ?? []);
   return applySeats({ glows: g.glows, lamps: l.lamps, heads: buildHeads(loaded), errors: [...g.errors, ...l.errors] }, seats);
 }
 
@@ -404,14 +456,39 @@ export function main(args, { root = ROOT } = {}) {
   }
   const seatsFile = seatsPath(root, place);
   if (args.includes("--probe")) {
-    const raw = buildAll(loaded);
+    // A re-probe changes only what moved: every committed glow, and every lamp that stands where the committed seats put it, keeps its
+    // seat (the world has changed since: re-seating them all would shift lights nobody asked to move). A lamp with a
+    // rock or cliff within a metre or a steep slope, or a moved one on top of a wall or stall, is rejected and the next best gap is
+    // probed instead (at most MAX_REJECTS rounds).
     const outDir = join(root, "tmp", "nightlights-probe");
-    const run = measureTown([], { outDir, extra: probeRays(raw), island: true });
-    if (run.outText == null) {
-      console.log("SUMMARY nightlights fail: the island probe wrote no out.txt (lines above)");
-      return 1;
+    const old = existsSync(seatsFile) ? JSON.parse(readFileSync(seatsFile, "utf8")) : null;
+    const rejected = [...(old?.rejected ?? [])];
+    const before = buildAll(loaded, { rejected: [...rejected] }).lamps;
+    let raw;
+    let seats;
+    for (let round = 0; ; round++) {
+      raw = buildAll(loaded, { rejected });
+      const fresh = new Set(raw.lamps.filter((l) => !old?.lamps?.[l.name] || !before.some((q) => q.name === l.name && q.x === l.x && q.z === l.z)).map((l) => l.name));
+      const run = measureTown([], { outDir, extra: [...probeRays(raw), ...ringRays(raw.lamps)], island: true });
+      if (run.outText == null) {
+        console.log("SUMMARY nightlights fail: the island probe wrote no out.txt (lines above)");
+        return 1;
+      }
+      seats = seatsFromRays(run.outText, raw);
+      const blocked = blockedLamps(run.outText, raw.lamps, fresh);
+      for (const [name, why] of Object.entries(blocked)) console.log(`nightlights: ${name} rejected (${why})`);
+      if (!Object.keys(blocked).length || round >= MAX_REJECTS) {
+        if (Object.keys(blocked).length) console.log("nightlights: still blocked after the last round: " + Object.keys(blocked).join(" "));
+        for (const l of raw.lamps) if (!fresh.has(l.name) && old?.lamps?.[l.name]) seats.lamps[l.name] = old.lamps[l.name];
+        break;
+      }
+      for (const name of Object.keys(blocked)) {
+        const l = raw.lamps.find((q) => q.name === name);
+        rejected.push([l.x, l.z]);
+      }
     }
-    const seats = seatsFromRays(run.outText, raw);
+    seats.rejected = rejected;
+    if (old?.glows) seats.glows = old.glows;
     mkdirSync(dirname(seatsFile), { recursive: true });
     writeFileSync(seatsFile, JSON.stringify({ place, at: new Date().toISOString().slice(0, 10), ...seats }, null, 1) + "\n");
     const dropped = Object.values(seats.glows).filter((s) => s === null).length;

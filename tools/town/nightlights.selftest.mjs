@@ -11,7 +11,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildAll, frameRows, buildGlows, glowCount, GLOW, GLOW_COMPONENT, hourOff, layerPath, loadPlace, nearestRoad, occupied, renderLayer, seatsPath, streetWall, WALL_OFFSET } from "./nightlights.mjs";
+import { blockedLamps, buildAll, frameRows, ringRays, buildGlows, glowCount, GLOW, GLOW_COMPONENT, hourOff, layerPath, loadPlace, nearestRoad, occupied, renderLayer, seatsPath, streetWall, WALL_OFFSET } from "./nightlights.mjs";
 import { gameVfsSync } from "../lib/height-frame.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -80,6 +80,24 @@ const file = layerPath(ROOT, "saint-philippe");
 // the rows cannot be put in their frame, so the committed layer is compared where the paks are (every dev box, the main guard).
 if (gameVfsSync()) check(existsSync(file) && readFileSync(file, "utf8") === text, "Lights_saint-philippe.layer matches the script (rerun node tools/town/nightlights.mjs saint-philippe)");
 else console.log("note: no game install here: the committed Lights layer is not compared (its lamps' frame needs the paks)");
+
+// A lamp whose ring meets a rock, stands on a wall, or sits on a steep bank is blocked; a lamp on level ground beside a kerb is not;
+// a rejected spot is skipped by the lamp builder (#3938: lamp 10 stood beside a granite rock).
+{
+  const lamp = (name) => ({ name, x: 100, y: 10, z: 200 });
+  const ray = (id, root, py, sy, hit = true) => `ray ${id} d=${hit ? 3 : 7} len=7 hit=${hit ? root : "none"} root=${hit ? root : "none"} p=100,${py},200 sy=${sy}`;
+  const ring = (roots) => roots.map((r, i) => ray(`L_r${i}`, r, 10, 10)).join("\n");
+  const ok = ["Eden", "ConcreteKerb_01_2m_v2", "Eden", "Eden", "Eden", "Eden", "Eden", "Eden"];
+  check(Object.keys(blockedLamps(`${ray("L", "Eden", 10, 10)}\n${ring(ok)}`, [lamp("L")])).length === 0, "a lamp on level ground beside a kerb is not blocked");
+  const rock = [...ok];
+  rock[3] = "GraniteCliff_01";
+  check(blockedLamps(`${ray("L", "Eden", 10, 10)}\n${ring(rock)}`, [lamp("L")]).L?.includes("GraniteCliff_01"), "a granite rock within the ring blocks the lamp");
+  check(blockedLamps(`${ray("L", "BrickWall_02_8m", 11.9, 10)}\n${ring(ok)}`, [lamp("L")], new Set(["L"])).L?.includes("stands on"), "a moved lamp on top of a wall is blocked");
+  check(!blockedLamps(`${ray("L", "BrickWall_02_8m", 11.9, 10)}\n${ring(ok)}`, [lamp("L")]).L, "a committed lamp is not judged for what it stands on");
+  const steep = ok.map((r, i) => ray(`L_r${i}`, r, 10, i === 2 ? 10.7 : 10)).join("\n");
+  check(blockedLamps(`${ray("L", "Eden", 10, 10)}\n${steep}`, [lamp("L")]).L?.includes("ground varies"), "a 0.7 m step in the ground blocks the lamp");
+  check(ringRays([lamp("L")]).length === 8, "eight ring rays per lamp");
+}
 
 if (failed) {
   console.log(`SUMMARY nightlights-selftest fail ${failed}`);
