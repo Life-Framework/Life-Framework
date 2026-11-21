@@ -1,6 +1,6 @@
 GenericEntity Fit_saint_philippe_hardware_Place {
  components {
-  LF_PlaceComponent "{9DBB73692EC6AD14}" {
+  LF_PlaceComponent "{9163C8C6FE5B9F32}" {
    m_sKind "StoreCounter"
    m_sId "saint-philippe.hardware"
   }
@@ -9,15 +9,68 @@ GenericEntity Fit_saint_philippe_hardware_Place {
  }
  coords 4535.4 16.5 10629.6
 }
-GenericEntity Fit_saint_philippe_hardware_shop_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4532.025 16.457 10631.09
+LF_NpcBaseEntity Fit_saint_philippe_hardware_hardware_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 4533.408 16.496 10631.309
  angleY -99
 }
-GenericEntity Fit_saint_philippe_hardware_miners_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4534.791 16.457 10631.528
+GenericEntity Fit_saint_philippe_hardware_hardware_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "hardware"
+   m_vRimColor 0.9 0.78 0.35
+   m_vPaintColor 0.12 0.25 0.4
+   m_vTextColor 0.96 0.93 0.82
+  }
+ }
+ coords 4529.664 19 10627.173
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_miners_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4534.297 16.501 10631.45
  angleY 81
 }
-GenericEntity Fit_saint_philippe_hardware_shop_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+GenericEntity Fit_saint_philippe_hardware_hardware_miners_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{6B3C1D2E4F5A7091}" {
+   m_sShopName "#LF-Shop_Name_MinersSupply"
+   m_sShopDescription "#LF-Shop_Desc_MinersSupply"
+   m_sOutletId "miners_supply"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{7C21A0B5D93E4F11}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C21A0B5D93E4F12}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C21A0B5D93E4F13}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C21A0B5D93E4F14}" {
+      Name "#LF-Shop_Open_Hardware"
+      Description "#LF-Shop_OpenDesc_Hardware"
+     }
+    }
+   }
+  }
+ }
+ coords 4534.099 17.541 10631.419
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_shelf_1 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 4536.861 16.497 10633.157
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_shop_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4532.025 16.501 10631.09
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_hardware_hardware_shop_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
  components {
   LF_ShopComponent "{7C21A0B5D93E4F10}" {
    m_sShopName "#LF-Shop_Name_Hardware"
@@ -47,83 +100,10 @@ GenericEntity Fit_saint_philippe_hardware_shop_till : "{4E4E1620C6B02E1F}Prefabs
    }
   }
  }
- coords 4532.223 17.496 10631.122
+ coords 4532.223 17.541 10631.122
  angleY 81
 }
-GenericEntity Fit_saint_philippe_hardware_miners_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
- components {
-  LF_ShopComponent "{6B3C1D2E4F5A7091}" {
-   m_sShopName "#LF-Shop_Name_MinersSupply"
-   m_sShopDescription "#LF-Shop_Desc_MinersSupply"
-   m_sOutletId "miners_supply"
-  }
-  ActionsManagerComponent "{6B3C1D2E4F5A7092}" {
-   ActionContexts {
-    UserActionContext "{6B3C1D2E4F5A7093}" {
-     ContextName "default"
-     Radius 1.6
-     Position PointInfo "{6B3C1D2E4F5A7094}" {
-      Offset 0 0.3 0.35
-     }
-    }
-   }
-   additionalActions {
-    LF_ShopAction "{6B3C1D2E4F5A7095}" {
-     ParentContextList {
-      "default"
-     }
-     UIInfo UIInfo "{6B3C1D2E4F5A7096}" {
-      Name "#LF-Shop_Open_MinersSupply"
-      Description "#LF-Shop_Desc_MinersSupply"
-     }
-    }
-   }
-  }
- }
- coords 4534.593 17.496 10631.497
- angleY -99
-}
-LF_NpcBaseEntity Fit_saint_philippe_hardware_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
- coords 4533.408 16.457 10631.309
- angleY -99
-}
-GenericEntity Fit_saint_philippe_hardware_shelf_1 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
- coords 4536.861 16.457 10633.157
- angleY 171
-}
-GenericEntity Fit_saint_philippe_hardware_tool_rack_1 : "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et" {
+GenericEntity Fit_saint_philippe_hardware_hardware_tool_rack_1 : "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et" {
  coords 4536.836 18.4 10633.32
  angleY 171
-}
-GenericEntity Fit_saint_philippe_hardware_yard_pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
- coords 4534.389 16.122 10634.705
- angleY -9
-}
-GenericEntity Fit_saint_philippe_hardware_yard_bricks : "{B808D460E33CDFAF}Prefabs/Props/Construction/BrickPile/BrickPile_01_Medium.et" {
- coords 4534.389 16.262 10634.705
- angleY -9
-}
-GenericEntity Fit_saint_philippe_hardware_yard_mortar : "{3C44DBCDA1FD917A}Prefabs/Props/Construction/BoxMortar_01/BoxMortar_01.et" {
- coords 4530.537 16.044 10634.095
- angleY -9
-}
-GenericEntity Fit_saint_philippe_hardware_yard_pallet_3 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
- coords 4536.759 16.165 10635.08
- angleY -9
-}
-GenericEntity Fit_saint_philippe_hardware_yard_bricks_2 : "{B808D460E33CDFAF}Prefabs/Props/Construction/BrickPile/BrickPile_01_Medium.et" {
- coords 4536.759 16.305 10635.08
- angleY -9
-}
-GenericEntity Fit_saint_philippe_hardware_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
- components {
-  LF_SignComponent "{6E3FF3980D87CACE}" {
-   m_sSignId "hardware"
-   m_vRimColor 0.9 0.78 0.35
-   m_vPaintColor 0.12 0.25 0.4
-   m_vTextColor 0.96 0.93 0.82
-  }
- }
- coords 4529.336 19 10629.247
- angleY -99
 }
