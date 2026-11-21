@@ -10,11 +10,11 @@ GenericEntity Fit_roadfarm_a_Place {
  coords 5130.89 176.3 7013.48
 }
 GenericEntity Fit_roadfarm_a_payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
- coords 5146.687 176.3 7027.639
+ coords 5146.687 0.449 7027.639
  angleY 40
 }
 GenericEntity Fit_roadfarm_a_fuel_drop : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
- coords 5130.353 176.3 7021.241
+ coords 5130.353 175.838 7021.241
  angleY -20
 }
 GenericEntity Fit_roadfarm_a_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

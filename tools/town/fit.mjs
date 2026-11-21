@@ -33,7 +33,7 @@ import { fileURLToPath } from "node:url";
 import { onWater } from "../scout/analyse.mjs";
 import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
-import { sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
+import { mountOf, sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
 import { probeTerrain, readPins, terrainFromPins, writePins } from "./terrain.mjs";
 
 export const help = "fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-audit] [--no-look]   apply the slot's kit into its mapped building, rows seated on the host's floors and walls: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
@@ -56,6 +56,24 @@ const FRONT = { "+x": [1, 0], "-x": [-1, 0], "+z": [0, 1], "-z": [0, -1] };
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
 export const claimFileOf = (place, slot) => `${CLAIMS_DIR}/${place}-${slot}.json`;
+// The vanilla props a kit hides inside its building (card #3882/#3924): kit.stamp.clear (what `town author` writes), or a top-level
+// kit.clear for a kit that is fitted rather than stamped. An entry is a resource name or { prefab }.
+export const clearListOf = (kit) => [...new Set([...(kit?.stamp?.clear ?? []), ...(kit?.clear ?? [])].map((c) => (typeof c === "string" ? c : c?.prefab)).filter(Boolean))].sort();
+
+// The base-world clear carrier of one stamped copy: a GenericEntity at the building's x and z with LF_BaseWorldClearComponent.
+// It names the building prefab and the clear list; the game finds the building by prefab within 3 m on x and z and takes the
+// height from it, so the row's height is only a placeholder (the building origin), never a measured value.
+export function clearCarrier({ place, slot, host, clear }) {
+  if (!clear.length || !host?.prefab) return null;
+  const list = ["{", ...clear.map((p) => `    "${p}"`), "   }"].join("\n");
+  return {
+    name: `Fit_${ident(place)}_${ident(slot)}_clear`,
+    comps: [{ cls: "LF_BaseWorldClearComponent", guid: guidOf(place, slot, "base-world-clear"), set: { m_sBuilding: `"${host.prefab}"`, m_aPrefabs: list } }],
+    coords: [host.x, host.y, host.z],
+    yaw: 0,
+  };
+}
+
 const guidOf = (...parts) => createHash("sha1").update(parts.join("|")).digest("hex").slice(0, 16).toUpperCase();
 
 // ------------------------------------------------------------------ geometry from the dossier
@@ -447,6 +465,9 @@ export function planFit(opts, ctx = {}) {
     }
   }
 
+  const carrier = clearCarrier({ place, slot: slotId, host, clear: clearListOf(kit) });
+  if (carrier) out.push(carrier);
+
   const sourceCache = new Map();
   const srcRows = new Map(kit.rows.map((r) => [r.id, r]));
   const rowEnts = rows.map((r) => {
@@ -459,7 +480,7 @@ export function planFit(opts, ctx = {}) {
       // Nested blocks, and a component the prefabs do not have, come from the kit's source. An inherited GUID always wins:
       // the layer overrides that component, it never adds a second one.
       const fromSrc = sourceComponent(kit, src, c, root, sourceCache);
-      const guid = componentGuid(r.prefab, c.component, root, 6, ctx.readGame) ?? fromSrc?.guid ?? null;
+      const guid = componentGuid(r.prefab, c.component, root, 6, ctx.readGame) ?? (/^[0-9A-Fa-f]{16}$/.test(c.guid ?? "") ? c.guid.toUpperCase() : null) ?? fromSrc?.guid ?? null;
       if (!guid) {
         warnings.push(`row ${r.id}: no guid for ${c.component} in ${r.prefab}, its parents or the kit's source; its overrides were not written`);
         continue;
@@ -511,7 +532,8 @@ export async function planFitSeated(opts, ctx = {}) {
   const tmpl = opts.template?.slots?.find((s) => s.id === opts.slot);
   const kit = tmpl ? opts.kits?.[tmpl.kit] : null;
   const ref = hostRefOf(opts);
-  const same = kit && ref ? await sameShell(kit, ref, reader) : false;
+  // opts.sameShell (`town stamp`: the kit was authored around this very prefab) is taken as given; `town fit` asks the models.
+  const same = opts.sameShell != null ? Boolean(opts.sameShell) : kit && ref ? await sameShell(kit, ref, reader) : false;
   const plan = planFit({ ...opts, sameShell: same }, ctx);
   if (!plan.ok) return plan;
   plan.anchor.sameShell = same;
@@ -534,7 +556,11 @@ export async function planFitSeated(opts, ctx = {}) {
     plan.warnings.push("the host has no prefab in the dossier: rows were not seated on it");
     return plan;
   }
-  const seat = await seatRows(plan.rows, plan.kit.rows, plan.host, { reader, allowClip: Boolean(opts.allowClip), terrain: ctx.terrain ?? null });
+  // opts.seatOnly (`town stamp`): seat just the rows held that way (["wall"]); the others stand where the grid proved them.
+  const only = Array.isArray(opts.seatOnly) ? new Set(opts.seatOnly) : null;
+  const srcOf = new Map(plan.kit.rows.map((q) => [q.id, q]));
+  const toSeat = only ? plan.rows.filter((r) => only.has(mountOf({ ...(srcOf.get(r.id) ?? {}), prefab: r.prefab }).mount)) : plan.rows;
+  const seat = await seatRows(toSeat, plan.kit.rows, plan.host, { reader, allowClip: Boolean(opts.allowClip), terrain: ctx.terrain ?? null, flatWalls: Boolean(opts.flatWalls) });
   plan.seat = seat;
   plan.terrainPoints = seat.terrainPoints ?? [];
   if (!seat.host) {

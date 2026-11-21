@@ -7,14 +7,17 @@ building in a pack grid cell, lifted as a building-local kit, and stamped onto e
 ## Commands, in order
 
 ```
-tools\cli town author <kit> --from <place>/<slot> --dry   # which building prefab, which cell (author-<kit>)
-tools\cli town author <kit> --from <place>/<slot>         # grid place <slug> <prefab> --pack, then the kit's rows at the building
+toolscli town author <kit> --from <place>/<slot> --dry   # which building prefab, which authoring bay (author-<kit>)
+toolscli town author <kit> --from <place>/<slot> [--margin 1.5]   # grid place <slug> <prefab> --pack --bay [--margin m], then the kit's rows at the building
 tools\cli look grid:author-<kit> --interior auto          # look, fix the rows in the cell's layer, look again
 tools\cli audit placement --grid --strict                 # clean in the grid first
-tools\cli town author extract <the cell's Grid_*.layer> '<group>' --kit <kit> [--clear {GUID}path,...]
+tools\cli town author extract <the cell's Grid_*.layer> '<group>' --kit <kit> [--clear {GUID}path,...]   # also releases the bay
+tools\cli town author --reopen <kit>                       # edit it again: a bay is rebuilt from the kit
 tools\cli town stamp <kit> --dry                          # every mapped island copy, writes nothing
 tools\cli town stamp <kit>                                # writes Place_<place>_<slot>.layer + claim, then the island audit
 ```
+
+The bay is scratch space (six 2x2 bays, `docs/architecture/world-zones.md` "Authoring bays"): extract saves the kit, archives the layer as `tools/town/kits/sources/<kit>.layer` and frees the bay so the next shop can use it; `--keep-bay` keeps it. No free bay means another author has not extracted yet.
 
 `town stamp --all` re-stamps every kit that carries a `stamp` block (after a kit change).
 
@@ -23,15 +26,25 @@ tools\cli town stamp <kit>                                # writes Place_<place>
 - Rows in the building's own frame: `offset` (x, y, z relative to the building entity; the same prefab has the same floors, so
   the height is the shell's, never the terrain's), `yaw`, and `attach` (`floor`, `wall`, `shelf:<row>`, `counter:<row>`,
   `table:<row>`).
+- `config` per row: the component overrides (till stock id, sign def, clerk and host settings) with the component GUID. Extract
+  reads them from the grid row's components; a row the grid holds as a bare prop takes the config of the same row of the kit on
+  disk (same id, a shared id suffix, or the one prefab; the command prints who carried and who is bare), and that kit's source
+  files stay in `source.also` so nested blocks (stock lines) are still found. `extract --fresh` carries nothing.
 - `stamp.prefab`: the vanilla building it was authored around. A stamp onto any other prefab is refused.
 - `stamp.lanes`: entrance to every till, counter and shelf face, 1.2 m (measured by the audit card #3883).
-- `stamp.clear`: vanilla clutter the building brings that the shop does not want; it stays an obstacle until #3882 can hide it.
+- `stamp.clear`: vanilla clutter the building brings that the shop does not want; `town stamp` writes one `Fit_<slot>_clear` carrier per copy (`LF_BaseWorldClearComponent`) that hides it at load, on the
+  server and every client, nothing saved (`docs/architecture/base-world-clear.md`). A fitted (not stamped) kit may carry a top-level `clear`.
 
 ## Rules the stamp enforces
 
 - Same bytes twice: rows sorted by kit row id, mm rounding, the claim keeps its date while the layer is unchanged.
 - The island audit is the verdict: a `floating`, `sunk`, `blocks-door`, `clips` or `overlaps` finding on a stamped row puts
   the previous layer and claim back and exits 1. Fix it in the grid, extract, stamp again.
+- Wall-mounted rows (role `sign`, a hung kind, `mount: wall`) are seated on the island building's real wall, not carried by the
+  grid offset: the stamp reads the host model, finds the wall plane under the plate (nine points across it), and where it
+  steps (a door recess, a lintel) slides the row along the wall in 10 cm steps to the nearest flat run that cuts nothing, at
+  most 3 m each way (`slide: <m>` on the kit row changes the reach). No flat run in reach: it stays seated at its centre and the
+  stamp warns; the island audit decides. Floor rows are never moved by the stamp.
 - Island layer branches are `ws/town-draft-<place>-<slot>-...` (`validate-island-zones`).
 
 ## Traps

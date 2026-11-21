@@ -30,7 +30,7 @@ GenericEntity Fit_saint_philippe_church_flowers_altar_red : "{8393B4106B8D45A0}P
  angleY -98
 }
 GenericEntity Fit_saint_philippe_church_flowers_door : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
- coords 4431.524 12.901 10736.648
+ coords 4431.524 12.6 10736.648
  angleY -98
 }
 GenericEntity Fit_saint_philippe_church_letter_altar : "{3465A00000000003}Prefabs/Items/Story/LF_AnniversaryLetter.et" {

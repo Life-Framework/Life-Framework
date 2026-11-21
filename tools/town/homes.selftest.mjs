@@ -6,11 +6,13 @@
 //   - the committed overlay prices every home once, by tier, and the tier prices rise with the tier;
 //   - no home keeps a ForSaleSoon lock marker, and `town locks --check` agrees with the committed layer;
 //   - every sign key the layer names is a row of the pack string table.
+//   - a sign beside a door passes and a sign in a leaf's swing or walk-up is refused (fixture), and no committed sign stands in a probed door's swing or walk-up (#3886).
+// red-proof (#3886): before the planner checked doors, the committed HomeSign_saint_philippe_sp_b44 stood in a door's swing and the "no committed sign in a door's swing" case printed FAIL.
 // red-proof: with homes.json moved away, `town locks` put a ForSaleSoon marker back on every home and the "homes.json is committed", "every home is done" and "locks --check" cases printed FAIL (2026-11-19).
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { CONF_DIR, KEY_FOR_SALE, KEY_OWNED, LAYER_DIR, TIERS, homeRows, renderOverlay } from "./homes.mjs";
+import { CONF_DIR, KEY_FOR_SALE, KEY_OWNED, LAYER_DIR, TIERS, doorHit, homeRows, loadDoors, renderOverlay, signBox } from "./homes.mjs";
 import { main as locksMain } from "./locks.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -56,6 +58,21 @@ console.log = () => {};
 const locksOk = locksMain([place, "--check"], { root: ROOT }) === 0;
 console.log = log;
 check(locksOk, "town locks --check agrees with the committed lock layer");
+
+// A door leaf on the world x axis facing +z, 1.3 m wide, 2.4 m tall, centre at the origin (the audit's door box: half sizes 0.65, 1.2, 0.1).
+const door = { root: "Fixture", rp: [0, -1.2, 0], c: [0, 0, 0], h: [0.65, 1.2, 0.1], a: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] };
+const at = (x, z) => signBox([x, -1.2, z], 0);
+check(doorHit(at(0, 0.5), [door]) !== null, "fixture: a sign 0.5 m in front of the leaf is in its swing");
+check(doorHit(at(0, 2.5), [door]) !== null, "fixture: a sign 2.5 m in front of the leaf is in its walk-up");
+check(doorHit(at(1.2, 0.05), [door]) === null, "fixture: a sign 1.2 m along the wall from the leaf (beside the frame) is clear");
+check(doorHit(at(0, 3.5), [door]) === null, "fixture: a sign 3.5 m in front of the door is out of the walk-up");
+
+const doors = loadDoors(ROOT, place);
+check(doors.length > 0, `the door probe tools/town/probes/doors-${place}.json has door leaves`);
+for (const m of layer.matchAll(/GenericEntity (HomeSign_\S+) : [^\n]*\{[\s\S]*?coords (\S+) (\S+) (\S+)\s+angleY (\S+)/g)) {
+  const hit = doorHit(signBox([Number(m[2]), Number(m[3]), Number(m[4])], Number(m[5])), doors);
+  check(!hit, `${m[1]}: no committed sign in a door's swing or walk-up (${hit?.text ?? ""})`);
+}
 
 const st = readFileSync(join(ROOT, "addons/LF_Everon1989/Language/lf_everon1989_localization.st"), "utf8");
 for (const key of [KEY_FOR_SALE, KEY_OWNED]) check(st.includes(`Id "${key.slice(1)}"`), `${key} is a row of the pack string table`);

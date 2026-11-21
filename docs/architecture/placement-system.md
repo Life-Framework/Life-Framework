@@ -71,7 +71,7 @@ copy of the SAME vanilla building  ──>   tools/town/kits/<kit>.json     ─�
                                          clear list (vanilla clutter)          re-stamp = same bytes (idempotent)
 ```
 
-1. **Author** (`tools\cli town author <kit> [--from <place>/<slot>]`): claims a grid cell and puts a copy of the island
+1. **Author** (`tools\cli town author <kit> [--from <place>/<slot>]`): claims an authoring bay (a 2x2 at the east end of the grid, `docs/architecture/world-zones.md` "Authoring bays"; the extract below releases it, `town author --reopen <kit>` builds it again) and puts a copy of the island
    building's vanilla prefab in it (the dossier's `prefab` for the mapped building, the same `{GUID}path`). With `--from`
    it seeds the cell from the slot's kit so a broken island shop is rebuilt where it can be looked at and walked:
    `look grid:<slug>`, `look grid:<slug> --interior`, a session walk for lanes, `audit placement --grid --strict`.
@@ -220,6 +220,34 @@ from its placement model: **a layout carries no height**. Mapper's entities are 
 from `GetTerrainSurfaceY` at apply time and lets a bank prefab follow the slope. That is the rule above: writers state
 where and on what, the world answers how high. Mapper's apply plugin also reports what it built against what was sent;
 our equivalent is the audit's `missing` count, which the gate will judge. No Mapper code is copied in this change.
+
+### Rebuild notes
+
+- **Authoring has its own bays.** `town author` no longer claims a permanent normal cell: it takes one of six 2x2 authoring bays and `town author extract` frees it (the kit and its archived source layer stay). Build in a bay, extract, stamp; to edit the shop again, `town author --reopen <kit>`. A building bigger than 2x2 does not fit a bay.
+
+Written by the pilot rebuild (#3890, bakery) for R1 and R3 to R8. What was hard, and what to do instead:
+
+- **Name the grid rows after the kit, not the seed.** `town author` seeds rows as `Kit_<kit>_<id>`; extracting them gives ids
+  like `kit-bakery-bakery-till` and island names `Fit_..._kit_bakery_bakery_till`. Rename the cell's rows to `<Shop>_<id>`
+  (`sed 's/ Kit_bakery_bakery_/ Bakery_/'`) and extract with the group `'<Shop>_*'`; the ids then stay `bakery-till`.
+- **Settle in two passes.** `place settle` the floor pieces (counters, racks, the clerk) first, then what stands on them
+  (till, goods). Every seeded row was 5 cm low on the grid copy's floor. A row `settle` cannot seat ("support varies 18 cm")
+  straddles a step or a prefab child: move it or drop it, never force it.
+- **The grid audit does not box the building shell; the island stamp does.** `audit placement --grid --strict` passed a rack
+  whose back was inside the west wall; `town stamp` refused it (`clips House_Town_E_2I01`). Keep wall-backed furniture
+  about 15 cm off the inner wall plane in the grid (the bakery rack moved from local x -5.69 to -5.54), or the stamp loop
+  costs an island boot per try.
+- **Furnish lightly.** The old bakery had three racks and 27 loaves; one rack clipped the wall and the loaves "hung off" each
+  other on the island. The rebuild is two counters, the till, a store clerk (`LF_Npc_StoreClerk_1`, class
+  `LF_NpcBaseEntity`), one rack with three loaves on one board and two loaves on the counter: one item per spot.
+- **`--floating` reads the whole town.** The acceptance audit with `--floating` also lists runtime store stock of other
+  shops (clothing trousers, supermarket dried meat); judge only the rows of your own layer, and leave the rest to their slot.
+- **The island floor is not the grid floor.** Rows settled to 0.1 cm in the grid came out 2.8 cm sunk on the island
+  (counters and clerk, the 1 cm contact sheet): the island b06 shell sits 2.8 cm higher relative to its origin than the grid
+  copy. Under the hard limits, but the stamp still copies the grid height; the plan's floor probe at stamp time would
+  close it.
+- **The interior look's camera stands in the hallway** of House_Town_E_2I01; only the fifth shot (the kit close-up) shows the
+  shop room. Read that one.
 
 ## Cleanup cards
 

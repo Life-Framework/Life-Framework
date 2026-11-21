@@ -17,6 +17,15 @@
     "via": "{5B1494161ABF8F6D}Prefabs/Buildings/ClothingStore/ShopHouse_E_2I01t_clothesstore_lf.et",
     "vanilla": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et"
   },
+  "clear": [
+    "{7BB30759D09C70B5}Prefabs/Props/Civilian/StepladderWooden_01.et",
+    "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et",
+    "{76E3962626F4B633}Prefabs/Props/Furniture/CoatRack_02.et",
+    "{9C231B6AC1BD0A26}Prefabs/Props/Civilian/Broom_01.et",
+    "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et",
+    "{4A6CAB11852FD31C}Prefabs/Props/Furniture/Chair_01/Chair_01_yellow.et",
+    "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et"
+  ],
   "store": {
     "prefab": "{B73B1D0B02F5C87C}Prefabs/Buildings/ClothingStore/ClothingStore_Store.et",
     "config": [

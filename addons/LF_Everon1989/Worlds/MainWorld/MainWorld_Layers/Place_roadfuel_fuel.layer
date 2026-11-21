@@ -10,11 +10,11 @@ GenericEntity Fit_roadfuel_fuel_Place {
  coords 5299.2 21.5 9830.7
 }
 GenericEntity Fit_roadfuel_fuel_payphone : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
- coords 5301.195 21.5 9833.122
+ coords 5304.3 0.578 9834.2
  angleY 17
 }
 GenericEntity Fit_roadfuel_fuel_fuel_drop : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
- coords 5302.685 21.5 9830.471
+ coords 5295.9 21.313 9829
  angleY -33
 }
 GenericEntity Fit_roadfuel_fuel_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

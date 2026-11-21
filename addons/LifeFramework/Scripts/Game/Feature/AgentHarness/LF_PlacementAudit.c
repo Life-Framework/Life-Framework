@@ -552,7 +552,24 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The physical problems, comma separated ("" when none): floating, sunk, overhang, scaled, tilted.
+	//! True when a clip name (`Clips`, ";"-separated) is a building or a wall: a prop stands through one.
+	static bool ClipsWall(string clips)
+	{
+		if (clips.IsEmpty() || clips == "none")
+			return false;
+
+		array<string> words = {"Wall", "Building", "House", "Shop", "Office", "Barn", "Church", "Garage", "Shed", "Warehouse"};
+		foreach (string word : words)
+		{
+			if (clips.Contains(word))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The physical problems, comma separated ("" when none): floating, sunk, overhang, scaled, tilted, through-wall.
 	//! Context the Node side knows (a hung sign, a sack laid down on purpose) is applied there.
 	static string Flags(LF_PlacementMeasure m)
 	{
@@ -573,6 +590,8 @@ class LF_PlacementAudit
 			flags.Insert("scaled");
 		if (m.m_fTilt > TILT)
 			flags.Insert("tilted");
+		if (ClipsWall(m.m_sClips))
+			flags.Insert("through-wall");
 
 		string text;
 		foreach (int i, string flag : flags)
@@ -640,6 +659,8 @@ class LF_PlacementAudit
 			return true;
 		else if (!s_sFindPrefab.IsEmpty() && PrefabBase(entity) == s_sFindPrefab)
 			score = score - 100;
+		else if (!s_sFindPrefab.IsEmpty())
+			return true; // a row with a prefab is that prefab or nothing: a furniture prefab that never spawned is not the building, the marker or the door leaf standing at its origin
 
 		if (!s_FindBest || score < s_fFindScore)
 		{
@@ -650,9 +671,69 @@ class LF_PlacementAudit
 		return true;
 	}
 
+	protected static string s_sNearPrefab;
+	protected static vector s_vNearPos;
+	protected static IEntity s_NearBest;
+	protected static float s_fNearDist;
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectNear(IEntity entity)
+	{
+		if (!entity || PrefabBase(entity) != s_sNearPrefab)
+			return true;
+
+		float d = vector.Distance(entity.GetOrigin(), s_vNearPos);
+		if (!s_NearBest || d < s_fNearDist)
+		{
+			s_NearBest = entity;
+			s_fNearDist = d;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A `missing` row's tail: " near=<m> nearname=<label>" for the closest entity of prefab `prefabBase` within `radius` of
+	//! `pos` (the row was moved, not deleted), " near=-1" when none stands that close (never spawned).
+	static string NearestOfPrefab(string prefabBase, vector pos, float radius)
+	{
+		if (prefabBase.IsEmpty())
+			return " near=-1";
+
+		s_sNearPrefab = prefabBase;
+		s_vNearPos = pos;
+		s_NearBest = null;
+		s_fNearDist = 0;
+		GetGame().GetWorld().QueryEntitiesBySphere(pos, radius, CollectNear, null, EQueryEntitiesFlags.ALL);
+		IEntity best = s_NearBest;
+		float dist = s_fNearDist;
+		s_NearBest = null;
+		if (!best)
+			return " near=-1";
+
+		return string.Format(" near=%1 nearname=%2", F(dist), Label(best));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A `missing` row's tail when the entity the layer named exists but stands elsewhere: " at=x,y,z surfy=<terrain y at the
+	//! layer x,z>" (the engine put a lamp, fence or pump at terrain + the layer's y; a group prefab is flattened and has no entity
+	//! of its own, so it is never found here). Empty when no entity carries that name.
+	static string StandsAt(string name, vector layerPos)
+	{
+		if (name.IsEmpty())
+			return "";
+
+		IEntity named = GetGame().GetWorld().FindEntityByName(name);
+		if (!named)
+			return "";
+
+		vector at = named.GetOrigin();
+		return " at=" + F(at[0]) + "," + F(at[1]) + "," + F(at[2]) + " surfy=" + F(GetGame().GetWorld().GetSurfaceY(layerPos[0], layerPos[2]));
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! The world entity a layer placed at `pos`: the one named `name` within 1.5 m, else the nearest
-	//! within 1 m (one of prefab `prefabBase` first). Null when nothing is there.
+	//! within 1 m (one of prefab `prefabBase` first; with a prefab given, only that prefab). Null when nothing is there.
 	static IEntity FindPlaced(string name, string prefabBase, vector pos)
 	{
 		s_sFindName = name;
@@ -1097,18 +1178,29 @@ class LF_PlacementAudit
 			vector layerPos = Vector(parts[3].ToFloat(), parts[4].ToFloat(), parts[5].ToFloat());
 			// "rel": a class whose layer y counts from the terrain under it (SCR_DestructibleEntity, #3566), so it stands at
 			// terrain + y, not at y.
-			if (parts.Count() >= 8 && parts[7] == "rel")
+			vector absolutePos = layerPos;
+			bool relRow = parts.Count() >= 8 && parts[7] == "rel";
+			if (relRow)
 				layerPos[1] = layerPos[1] + GetGame().GetWorld().GetSurfaceY(layerPos[0], layerPos[2]);
 			IEntity entity = FindPlaced(name, prefab, layerPos);
+			// The layer class says "rel" but the prefab decides: a bench, bin or flowerpot of that class stands at the layer's y as it
+			// is (the island server, 2026-11-21), so look there too before calling the row missing.
+			string absoluteTag = "";
+			if (!entity && relRow)
+			{
+				entity = FindPlaced(name, prefab, absolutePos);
+				if (entity)
+					absoluteTag = " absolute=1";
+			}
 			measured++;
 			if (!entity)
 			{
 				missing++;
-				rows.Insert(parts[0] + " missing=1");
+				rows.Insert(parts[0] + " missing=1" + NearestOfPrefab(prefab, layerPos, 40) + StandsAt(name, layerPos));
 				continue;
 			}
 
-			rows.Insert(parts[0] + " " + Format(Measure(entity, parts[6] == "1")) + " found=" + Label(entity));
+			rows.Insert(parts[0] + " " + Format(Measure(entity, parts[6] == "1")) + " found=" + Label(entity) + absoluteTag);
 		}
 
 		input.Close();
