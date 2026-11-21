@@ -55,7 +55,7 @@ GenericEntity Fit_saint_philippe_districts_garage_shelf_1 : "{B7669B7F8B7923F6}P
  angleY 93
 }
 GenericEntity Fit_saint_philippe_districts_garage_tool_rack_1 : "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et" {
- coords 4692.842 22.7 10754.095
+ coords 4693.466 22.8 10757.017
  angleY 93
 }
 GenericEntity Fit_saint_philippe_districts_garage_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
