@@ -25,7 +25,7 @@ GenericEntity Fit_saint_philippe_jail_jail_laundry_tub : "{73912A59FDEEF731}Pref
  angleY -99
 }
 GenericEntity Fit_saint_philippe_jail_jail_kitchen_sink : "{AD8A93936711F255}Prefabs/Props/Jail/LF_JailKitchenSink.et" {
- coords 4554.989 18.2 10751.412
+ coords 4554.989 18.236 10751.412
  angleY 81
 }
 GenericEntity Fit_saint_philippe_jail_jail_yard_broom : "{4DFF61251337EEF8}Prefabs/Props/Jail/LF_JailYardBroom.et" {
