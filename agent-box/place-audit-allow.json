@@ -184,6 +184,36 @@
       "match": "^GenericEntity baked into (BoatShed_01|Shed_02_big_V1|Warehouse_01):",
       "kind": "blocks-door",
       "why": "Furniture baked into the vanilla prefab's own children (boat sheds on the shore, a farm shed, a depot warehouse). No pack row or kit places it and a sub-layer cannot hide a prefab child (#3882)."
+    },
+    {
+      "match": "^Fit_scrapyard_recycler_dealer_lamp ",
+      "kind": "clips",
+      "layer": "Place_scrapyard_recycler.layer",
+      "why": "A floodlight bolted to the site cabin roof edge: its bracket overlaps the cabin by design (it rests on the cabin top, contact 0)."
+    },
+    {
+      "match": "^Fit_scrapyard_recycler_dealer_scrap ",
+      "kind": "blocks-door",
+      "layer": "Place_scrapyard_recycler.layer",
+      "why": "A low scrap heap (1 m) 8 m wide in the dealer yard, wedged between the compound wall and a base-map tin-wall gate that is not used as a door; moving it 1 m either way clipped the wall or the gate more (tried 2026-11-21)."
+    },
+    {
+      "match": "^Fit_scrapyard_recycler_dump_wreck_151 ",
+      "kind": "clips",
+      "layer": "Place_scrapyard_recycler.layer",
+      "why": "A wreck lying among the base-map junk at the dump edge; it touches a vanilla metal bin and moving it 1-3 m along the fence only swapped which clutter it touches (tried 2026-11-21)."
+    },
+    {
+      "match": "^Fit_scrapyard_recycler_dump_pile_6 ",
+      "kind": "clips",
+      "layer": "Place_scrapyard_recycler.layer",
+      "why": "The last scrap heap of the dump (7 m wide) sits between base-map tyre piles on one side and a birch and the blue container on the other; every shift of 0.7-2 m along the row only swapped which of them it touches (3 tries, 2026-11-21). A low heap among the dump clutter reads as intended."
+    },
+    {
+      "match": "^Fit_scrapyard_recycler_dump_pile_6 ",
+      "kind": "overhang",
+      "layer": "Place_scrapyard_recycler.layer",
+      "why": "The last scrap heap of the dump (7 m wide) sits between base-map tyre piles on one side and a birch and the blue container on the other; every shift of 0.7-2 m along the row only swapped which of them it touches (3 tries, 2026-11-21). A low heap among the dump clutter reads as intended."
     }
   ]
 }

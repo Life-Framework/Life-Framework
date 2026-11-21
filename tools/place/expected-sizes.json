@@ -184,6 +184,13 @@
    "why": "A hand cart is 1.2-2 m"
   },
   {
+   "id": "tire-pile",
+   "match": "TirePile",
+   "min": 1.2,
+   "max": 3,
+   "why": "A vanilla TirePile prefab is a heap of tyres, not one tyre: TirePile_01_small measures 2.27 m across by place bounds"
+  },
+  {
    "id": "tyre",
    "match": "Tire|Tyre",
    "min": 0.6,
