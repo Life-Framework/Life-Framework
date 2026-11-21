@@ -552,7 +552,24 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The physical problems, comma separated ("" when none): floating, sunk, overhang, scaled, tilted.
+	//! True when a clip name (`Clips`, ";"-separated) is a building or a wall: a prop stands through one.
+	static bool ClipsWall(string clips)
+	{
+		if (clips.IsEmpty() || clips == "none")
+			return false;
+
+		array<string> words = {"Wall", "Building", "House", "Shop", "Office", "Barn", "Church", "Garage", "Shed", "Warehouse"};
+		foreach (string word : words)
+		{
+			if (clips.Contains(word))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The physical problems, comma separated ("" when none): floating, sunk, overhang, scaled, tilted, through-wall.
 	//! Context the Node side knows (a hung sign, a sack laid down on purpose) is applied there.
 	static string Flags(LF_PlacementMeasure m)
 	{
@@ -573,6 +590,8 @@ class LF_PlacementAudit
 			flags.Insert("scaled");
 		if (m.m_fTilt > TILT)
 			flags.Insert("tilted");
+		if (ClipsWall(m.m_sClips))
+			flags.Insert("through-wall");
 
 		string text;
 		foreach (int i, string flag : flags)
@@ -640,6 +659,8 @@ class LF_PlacementAudit
 			return true;
 		else if (!s_sFindPrefab.IsEmpty() && PrefabBase(entity) == s_sFindPrefab)
 			score = score - 100;
+		else if (!s_sFindPrefab.IsEmpty())
+			return true; // a row with a prefab is that prefab or nothing: a furniture prefab that never spawned is not the building, the marker or the door leaf standing at its origin
 
 		if (!s_FindBest || score < s_fFindScore)
 		{
@@ -650,9 +671,52 @@ class LF_PlacementAudit
 		return true;
 	}
 
+	protected static string s_sNearPrefab;
+	protected static vector s_vNearPos;
+	protected static IEntity s_NearBest;
+	protected static float s_fNearDist;
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectNear(IEntity entity)
+	{
+		if (!entity || PrefabBase(entity) != s_sNearPrefab)
+			return true;
+
+		float d = vector.Distance(entity.GetOrigin(), s_vNearPos);
+		if (!s_NearBest || d < s_fNearDist)
+		{
+			s_NearBest = entity;
+			s_fNearDist = d;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A `missing` row's tail: " near=<m> nearname=<label>" for the closest entity of prefab `prefabBase` within `radius` of
+	//! `pos` (the row was moved, not deleted), " near=-1" when none stands that close (never spawned).
+	static string NearestOfPrefab(string prefabBase, vector pos, float radius)
+	{
+		if (prefabBase.IsEmpty())
+			return " near=-1";
+
+		s_sNearPrefab = prefabBase;
+		s_vNearPos = pos;
+		s_NearBest = null;
+		s_fNearDist = 0;
+		GetGame().GetWorld().QueryEntitiesBySphere(pos, radius, CollectNear, null, EQueryEntitiesFlags.ALL);
+		IEntity best = s_NearBest;
+		float dist = s_fNearDist;
+		s_NearBest = null;
+		if (!best)
+			return " near=-1";
+
+		return string.Format(" near=%1 nearname=%2", F(dist), Label(best));
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! The world entity a layer placed at `pos`: the one named `name` within 1.5 m, else the nearest
-	//! within 1 m (one of prefab `prefabBase` first). Null when nothing is there.
+	//! within 1 m (one of prefab `prefabBase` first; with a prefab given, only that prefab). Null when nothing is there.
 	static IEntity FindPlaced(string name, string prefabBase, vector pos)
 	{
 		s_sFindName = name;
@@ -1104,7 +1168,7 @@ class LF_PlacementAudit
 			if (!entity)
 			{
 				missing++;
-				rows.Insert(parts[0] + " missing=1");
+				rows.Insert(parts[0] + " missing=1" + NearestOfPrefab(prefab, layerPos, 40));
 				continue;
 			}
 

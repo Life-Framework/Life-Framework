@@ -28,7 +28,8 @@ The bay is scratch space (six 2x2 bays, `docs/architecture/world-zones.md` "Auth
   `table:<row>`).
 - `stamp.prefab`: the vanilla building it was authored around. A stamp onto any other prefab is refused.
 - `stamp.lanes`: entrance to every till, counter and shelf face, 1.2 m (measured by the audit card #3883).
-- `stamp.clear`: vanilla clutter the building brings that the shop does not want; it stays an obstacle until #3882 can hide it.
+- `stamp.clear`: vanilla clutter the building brings that the shop does not want; `town stamp` writes one `Fit_<slot>_clear` carrier per copy (`LF_BaseWorldClearComponent`) that hides it at load, on the
+  server and every client, nothing saved (`docs/architecture/base-world-clear.md`). A fitted (not stamped) kit may carry a top-level `clear`.
 
 ## Rules the stamp enforces
 

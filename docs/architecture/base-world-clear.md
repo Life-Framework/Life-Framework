@@ -52,9 +52,19 @@ Log line: `[LFDebug:Placement] base-world clear: hid 2 vanilla props in {92E8F78
 - A hidden prop with its own `RplComponent` (a destructible vanilla prop) is hidden only locally on each machine, which
   is what we want; its replicated state is untouched.
 
-## Next (split from this card)
+## The stamp writes the carrier (#3924)
 
-`town stamp` writes one `Fit_<slot>_clear` carrier per stamped copy from the kit's `stamp.clear` list (today
-`town author` records it as `{ prefab, until: "#3882" }`): a `GenericEntity` at the building origin with
-`LF_BaseWorldClearComponent`, the building prefab and the list. The carrier's height comes from the building at apply
-(radius search on x and z), so the layout stores no height.
+`town stamp` (and `town fit`, through `planFit`) writes one `Fit_<place>_<slot>_clear` row per stamped copy when the kit
+has a clear list: `kit.stamp.clear` (what `town author extract --clear` records, entries `{ prefab }`) or a top-level
+`kit.clear` for a kit that is fitted rather than stamped. The row is a `GenericEntity` at the building's x and z with
+`LF_BaseWorldClearComponent` (`m_sBuilding` = the building prefab, `m_aPrefabs` = the list). The row's height is only the
+building origin; the game finds the building by prefab within 3 m on x and z, so the layout stores no measured height. An
+empty list writes no carrier. Selftest: `town-stamp-selftest` (the carrier row in both copies, none for an empty list).
+
+## Outdoor clutter: the same hide with its own box (#3924)
+
+Clutter outside a building (the base map's crates and pallets in the dock yard) has no building box to search. The carrier
+with `m_sBuilding` empty and `m_vBoxHalfM` set (half size on x and z, `m_fBoxHeightM` tall) hides the listed prefabs inside
+a box centred on the carrier, turned by its yaw, standing on the terrain under it (`GetSurfaceY`, 1 m below to
+`m_fBoxHeightM` above), so this row stores no height either. `LF_BaseWorldClear.HideInBox` is the same query and the same
+hide. Test: `LF_Test_BaseWorldClearBox` (`placement/base-world-clear-box`).
