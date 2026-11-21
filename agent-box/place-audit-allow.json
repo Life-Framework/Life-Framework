@@ -150,6 +150,12 @@
       "why": "maintainer town fix pending #2956: the contact audit (#2953) measures it resting wrong; `place settle` (#2954) writes the settled height. The ID card sits 8 cm into its support. (The grid copies in Grid_npcs and Grid_whitelist_chat are settled.)"
     },
     {
+      "match": "^Fit_saint_philippe_street_life_bench_b16 ",
+      "kind": "contact",
+      "layer": "Place_saint-philippe_street-life.layer",
+      "why": "The b16 bench stands on a pavement edge that falls 9 cm under its 1.6 m seat; it is seated on the highest of five probed points (street-life.mjs benchGround), so the low side shows a 1.4 cm gap at one foot."
+    },
+    {
       "match": "^Fit_blacklake_shore_(bench|spot|lantern) ",
       "kind": "contact",
       "layer": "Place_blacklake_shore.layer",
