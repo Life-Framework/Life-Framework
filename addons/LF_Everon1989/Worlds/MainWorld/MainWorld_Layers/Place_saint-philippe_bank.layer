@@ -70,7 +70,7 @@ GenericEntity Fit_saint_philippe_bank_electricity_box_small_01 : "{CDE4035B661F9
    m_fReach 12
   }
  }
- coords 4370.101 15 10648.584
+ coords 4370 15.7 10649.41
  angleY 173
 }
 GenericEntity Fit_saint_philippe_bank_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
