@@ -204,7 +204,8 @@ export function parseKv(text) {
 // One out.txt row -> numbers. "<index> missing=1" -> { missing: true }.
 export function parseRow(rest) {
   const kv = parseKv(rest);
-  if (kv.missing) return { missing: true };
+  // `near` (m) and `nearname`: the closest entity of the row's prefab within 40 m, -1 when none (LF_PlacementAudit.NearestOfPrefab).
+  if (kv.missing) return { missing: true, near: kv.near === undefined ? null : Number(kv.near), nearName: kv.nearname ?? null };
   return {
     gap: Number(kv.gap),
     // LF_PlaceSnap's contact gap: the mesh bottom minus the highest support under a 3x3 footprint, proxy boxes ignored. null: no support found ("cgap=none").
@@ -241,7 +242,9 @@ const label = (e) => e.name || (e.prefab ? e.prefab.split("/").pop().replace(/\.
 // ----------------------------------------------------------------------------- checks
 
 // Severity points per problem kind; the rank sums them and weights interactables and named areas.
-export const WEIGHT = { floating: 10, contact: 8, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "door-path": 4, "in-road": 5, scaled: 6, "odd-scale": 2, size: 6, tilted: 2, unreachable: 6, "relative-y": 6, ...LANE_WEIGHT };
+// The clip names LF_PlacementAudit.ClipsWall calls a wall (keep in step with it).
+export const WALL_CLIP = /Wall|Building|House|Shop|Office|Barn|Church|Garage|Shed|Warehouse/;
+export const WEIGHT = { floating: 10, contact: 8, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "door-path": 4, "in-road": 5, scaled: 6, "odd-scale": 2, size: 6, tilted: 2, unreachable: 6, "relative-y": 6, "through-wall": 7, missing: 8, ...LANE_WEIGHT };
 
 // Expected sizes (tools/place/expected-sizes.json): the first entry whose regex matches the prefab file name
 // (or, for a bare mesh entity, the mesh file name) gives the sane range for the largest side, in metres, in
@@ -318,7 +321,11 @@ export function singleProblems(e, m) {
   else if (!/^Sign_/.test(e.name || "") && (m.scale < LIMITS.oddLow || m.scale > LIMITS.oddHigh)) out.push({ kind: "odd-scale", amount: 1, text: `scale ${r2(m.scale)}` });
   // A building's walls meet roads, fences and its neighbours by design; a prop in a building is reported from the prop.
   const clips = building || isKind(e, "surface") ? [] : m.clip.filter((c) => !(mounted && RX.building.test(c)) && !RX.surface.test(c) && c !== "unnamed" && !(vehicle && c === "GenericEntity") && !(isKind(e, "chain") && RX.chain.test(c)));
-  if (clips.length && !veg) out.push({ kind: "clips", amount: clips.length, text: `clips ${clips.join(", ")}` });
+  // A prop pushed through a building or a wall (LF_PlacementAudit.ClipsWall) is its own finding: the wardrobe half through an interior wall.
+  const walls = clips.filter((c) => WALL_CLIP.test(c));
+  const others = clips.filter((c) => !WALL_CLIP.test(c));
+  if (walls.length && !veg) out.push({ kind: "through-wall", amount: walls.length, text: `stands through ${walls.join(", ")}` });
+  if (others.length && !veg) out.push({ kind: "clips", amount: others.length, text: `clips ${others.join(", ")}` });
   if (e.actions?.length && m.walk >= 0) {
     const lim = /^Sign_/.test(e.name || "") ? LIMITS.signWalk : LIMITS.walk;
     if (m.walk > lim) out.push({ kind: "unreachable", amount: 1, text: m.walk >= 99 ? "unreachable (no standing spot within 3 m of its edge)" : `reach ${r2(m.walk)} m from its edge to standing room` });
@@ -448,6 +455,13 @@ export function rank(rows) {
   return rows.filter((r) => r.problems.length).sort((a, b) => b.score - a.score || a.layer.localeCompare(b.layer));
 }
 
+// A layer row whose entity is not at its position: a finding, with how far the nearest entity of its prefab stands (the fuel pumps, a furniture
+// prefab that never spawned). `near` -1: none within 40 m, it never spawned.
+export function missingRow(e, m) {
+  const where = m.near === null || m.near === undefined ? "" : m.near < 0 ? "; no entity of its prefab within 40 m (it never spawned)" : `; the nearest ${m.nearName || "entity"} of its prefab stands ${r2(m.near)} m away`;
+  return { name: label(e), layer: e.layer, x: e.x, y: e.y, z: e.z, actions: e.actions, area: null, problems: [{ kind: "missing", amount: m.near > 0 ? Math.min(m.near / 5, 2) : 1, text: `not in the world at its layer position${where}` }], allowed: [] };
+}
+
 export function analyse(records, outText, { allow = [], areas = [], roads = [], sizes = loadSizes() } = {}) {
   const list = [];
   const doors = [];
@@ -487,10 +501,12 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
   const pairs = [overlapProblems(list), doorProblems(list, doors), roadProblems(list, roads), actionProblems(list)];
   const rows = [];
   const missing = [];
+  const missingRows = [];
   let covered = 0;
   for (const { idx, e, m } of list) {
     if (m.missing) {
-      missing.push(e);
+      missing.push({ ...e, near: m.near, nearName: m.nearName });
+      missingRows.push(missingRow(e, m));
       continue;
     }
     let problems = singleProblems(e, m);
@@ -506,8 +522,8 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
   }
   const runtime = runtimeRows(outText, records);
   // Shop walk lanes, action reach, room crowding and furniture baked into a building prefab (place-lanes.mjs, card #3883).
-  const lanes = laneFindings(list, doors, outText, { allow });
-  const ranked = [...rank(rows), ...lanes, ...runtime].sort((a, b) => b.score - a.score || a.layer.localeCompare(b.layer));
+  const lanes = laneFindings(list, doors, outText, { allow, propRows: rows });
+  const ranked = [...rank(rows), ...rank(missingRows), ...lanes, ...runtime].sort((a, b) => b.score - a.score || a.layer.localeCompare(b.layer));
   return { ranked, measured: list.length, sizeCovered: covered, missing, doors: doors.length, runtime: runtime.length };
 }
 
@@ -900,6 +916,19 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   if (!singleProblems(fenceHigh, fenceM).some((p) => p.kind === "relative-y")) fail("a SCR_DestructibleEntity at layer y 19.1 is flagged relative-y");
   if (singleProblems(fenceSeated, fenceM).length) fail("a SCR_DestructibleEntity at layer y 0 is clean");
   if (singleProblems({ ...fenceHigh, cls: undefined, name: "Plain_High" }, fenceM).some((p) => p.kind === "relative-y")) fail("an absolute-height class is not flagged relative-y");
+  // #3884: a prop standing through a building or wall is `through-wall` (not plain `clips`); a missing row says how far the nearest entity of its prefab is.
+  // red-proof: 2026-11-21, with WALL_CLIP never matching the selftest printed "FAILED a prop clipping Office_E_01 is flagged through-wall"; restored, OK.
+  const wardrobe = { name: "Wardrobe_1", prefab: "Prefabs/Props/Furniture/Wardrobe_01.et", layer: "t.layer", x: 0, y: 0, z: 0 };
+  const wardrobeM = { gap: 0, pgap: 0, over: 0, tilt: 0, scale: 1, walk: -1, backed: false, clip: ["Office_E_01", "GenericEntity"], box: { h: [0.5, 1, 0.3] } };
+  const wardrobeKinds = singleProblems(wardrobe, wardrobeM).map((p) => p.kind);
+  if (!wardrobeKinds.includes("through-wall")) fail(`a prop clipping Office_E_01 is flagged through-wall (got ${wardrobeKinds})`);
+  if (!wardrobeKinds.includes("clips")) fail(`a prop clipping a GenericEntity is still plain clips (got ${wardrobeKinds})`);
+  const gone = parseRow("missing=1 near=2.05 nearname=BoxWooden_01");
+  if (!gone.missing || gone.near !== 2.05 || gone.nearName !== "BoxWooden_01") fail(`missing row carries near=: ${JSON.stringify(gone)}`);
+  if (parseRow("missing=1").near !== null) fail("a missing row from before the near= field has near null");
+  const goneRow = missingRow(wardrobe, gone);
+  if (goneRow.problems[0].kind !== "missing" || !/2.05 m away/.test(goneRow.problems[0].text) || !/BoxWooden_01/.test(goneRow.problems[0].text)) fail(`missing row text: ${goneRow.problems[0].text}`);
+  if (!/never spawned/.test(missingRow(wardrobe, parseRow("missing=1 near=-1")).problems[0].text)) fail("near=-1 says it never spawned");
   const relLines = inputText([fenceHigh, fenceSeated, { name: "P", prefab: "a/B.et", x: 0, y: 0, z: 0 }]).split(/\r?\n/);
   if (!relLines.includes("0 Fence_High NetFence_01_4m 1 19.1 2 0 rel") || !relLines.includes("2 P B 0 0 0 0")) fail("only a terrain-relative row is sent with the rel flag");
   worldSelftest(fail);

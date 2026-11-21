@@ -12,7 +12,10 @@
 //            shelf, rack or display: some free cell of that lane map lies within 1.1 m of the thing, and the entrance reaches it
 //   reach    every interactable (a prop with an action) is reachable from the entrance through a 0.9 m lane and has a standing cell within
 //            1.5 m: nothing walls it in (the audit's `unreachable` only asks for a spot, never for a way there from the door)
-//   crowded  prop footprints over the room's floor area over 0.30 (overlapping props count twice: that is the point)
+//   crowded  prop footprints over the furnished floor area over 0.30 (overlapping props count twice: that is the point). The furnished area
+//            is the box round the floor props and the entrances, a metre out, inside the building: a real shop is a corner of a building
+//            with stairs, halls and upper floors, and its whole footprint never reached 30% (#3884)
+//   room-clips  props in a room (a building with a ground-floor door) that stand through a wall or overlap another prop, one row per room
 //   action-off-mesh   an action on a mesh-less entity more than 0.5 m from any mesh: the F key never offers it (the clothing till, #3901)
 //   action-crowds-till  another action within 0.5 m of a till: the interact key picks it instead (a radio behind the register, #3901)
 //   blocks-door (prefab children)  furniture baked into a building prefab (a `child` line: same fields as a `door` line) inside a door
@@ -21,6 +24,8 @@
 // standing spot is for.
 
 import { isKind, LIMITS, obbAabb, obbPenetration, doorZone, parseDoor, parseKv, rank } from "./place-audit.mjs";
+
+const ROOM_CLIP_KINDS = new Set(["through-wall", "clips", "overlaps"]);
 
 export const LANE_LIMITS = {
   shopLane: 1.2, // the walk lane to a till and to each shelf face
@@ -36,7 +41,7 @@ export const LANE_LIMITS = {
   cell: 0.1,
 };
 
-export const LANE_WEIGHT = { lane: 7, reach: 6, crowded: 5, "action-off-mesh": 6, "action-crowds-till": 6 };
+export const LANE_WEIGHT = { lane: 7, reach: 6, crowded: 5, "action-off-mesh": 6, "action-crowds-till": 6, "room-clips": 6 };
 export const LANE_LAYER = "(shop lanes)";
 
 const r2 = (n) => Math.round(n * 100) / 100;
@@ -195,6 +200,9 @@ export function refineFloor(room, list, kids = []) {
   const bottoms = [];
   const take = (m, id) => {
     if (m.missing || m.point || m.character || id === room.buildingIdx || 2 * m.box.h[1] < LANE_LIMITS.minHeight) return;
+    // A door leaf, a window or a wall panel (taller than a person's chest: half height over 1 m) stands on the ground floor of the hall too:
+    // the leaves are the lowest things in the footprint, so they used to pick the floor. A till on a counter is not on the floor either.
+    if (m.box.h[1] > 1.0 || (m.on && !/^(terrain|none)$/.test(m.on) && !/Building|House|Shop|Office|Floor/.test(m.on) && Math.abs(m.gap) <= 0.15)) return;
     if (!inRoom(room, m.box.c[0], m.box.c[2])) return;
     const b = m.box.c[1] - m.box.h[1];
     if (b >= room.floorY - 0.3 && b <= room.floorY + 1.6) bottoms.push(b);
@@ -206,6 +214,19 @@ export function refineFloor(room, list, kids = []) {
 }
 
 const inRoom = (room, x, z) => x > room.min[0] && x < room.max[0] && z > room.min[1] && z < room.max[1];
+
+// The floor a shop is judged over: the box round its floor props, 0.5 m out, inside the building's footprint (at least 6 m2).
+// The building's own footprint holds the hall, the stairs and the walls, and counted every floor's worth of building in one: no shop reached 30%.
+export function furnishedArea(room, obst) {
+  const pts = [];
+  for (const { f } of obst)
+    for (const [a, b] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) pts.push([f.c[0] + a * f.u[0] * f.hu + b * f.v[0] * f.hv, f.c[1] + a * f.u[1] * f.hu + b * f.v[1] * f.hv]);
+  if (!pts.length) return 0;
+  const lo = [Math.max(room.min[0], Math.min(...pts.map((q) => q[0])) - 0.5), Math.max(room.min[1], Math.min(...pts.map((q) => q[1])) - 0.5)];
+  const hi = [Math.min(room.max[0], Math.max(...pts.map((q) => q[0])) + 0.5), Math.min(room.max[1], Math.max(...pts.map((q) => q[1])) + 0.5)];
+  const whole = (room.max[0] - room.min[0]) * (room.max[1] - room.min[1]);
+  return Math.min(whole, Math.max(6, (hi[0] - lo[0]) * (hi[1] - lo[1])));
+}
 
 // What stands in the way of a person in `room`: furniture on the floor (not a building, a plant, a wall run, a vehicle, a hung thing, a
 // stepped-over mat, or something resting on another prop).
@@ -253,10 +274,10 @@ export function laneRows(list, doors, kids = [], { allow = [], bounds = {} } = {
     const obst = obstaclesOf(room, list, kids);
     const targets = targetsOf(room, list);
     const problems = [];
-    const area = (room.max[0] - room.min[0]) * (room.max[1] - room.min[1]);
     const used = obst.reduce((s, o) => s + footprintArea(o.f), 0);
+    const area = furnishedArea(room, obst);
     const ratio = area > 0 ? used / area : 0;
-    if (ratio > LANE_LIMITS.crowding) problems.push({ kind: "crowded", amount: ratio, text: `props cover ${Math.round(ratio * 100)}% of the floor (${r2(used)} of ${r2(area)} m2; limit ${Math.round(LANE_LIMITS.crowding * 100)}%): ${obst.length} props in ${room.name}` });
+    if (ratio > LANE_LIMITS.crowding) problems.push({ kind: "crowded", amount: ratio, text: `props cover ${Math.round(ratio * 100)}% of the furnished floor (${r2(used)} of ${r2(area)} m2; limit ${Math.round(LANE_LIMITS.crowding * 100)}%): ${obst.length} props in ${room.name}` });
     const wide = laneMap(room, obst.map((o) => o.f), LANE_LIMITS.shopLane / 2);
     const narrow = laneMap(room, obst.map((o) => o.f), LANE_LIMITS.interactLane / 2);
     const fromDoor = (map) => room.entrances.map((d) => ({ d, seen: flood(map, ...entrancePoint(d, room)) }));
@@ -276,6 +297,26 @@ export function laneRows(list, doors, kids = [], { allow = [], bounds = {} } = {
     }
     const kept = problems.filter((p) => !allow.some((a) => (!a.kind || a.kind === p.kind) && new RegExp(a.match).test(`${room.name} ${p.text}`)));
     if (kept.length) rows.push({ name: `Room_${room.name}`, layer: LANE_LAYER, x: r2(room.at[0]), y: r2(room.at[1]), z: r2(room.at[2]), actions: [], problems: kept, allowed: [] });
+  }
+  return rows;
+}
+
+// One row per room whose props stand through a wall or overlap each other: the per-prop rows say which; this says the room is the problem.
+// `propRows` are the audit's own per-prop rows ({ name, layer, x, y, z, problems }).
+export function roomClipRows(list, doors, propRows, { bounds = {}, kids = [] } = {}) {
+  const rows = [];
+  for (const room of roomsOf(list, doors, bounds)) {
+    if (room.max[0] - room.min[0] < 2 || room.max[1] - room.min[1] < 2) continue; // a gate or a booth is no room
+    room.floorY = refineFloor(room, list, kids);
+    const hits = propRows.filter((r) => r.layer !== LANE_LAYER && inRoom(room, r.x, r.z) && Math.abs(r.y - room.floorY) < 3 && r.problems.some((p) => ROOM_CLIP_KINDS.has(p.kind)));
+    if (!hits.length) continue;
+    const kindsOf = (k) => hits.filter((r) => r.problems.some((p) => p.kind === k)).map((r) => r.name);
+    const through = [...new Set([...kindsOf("through-wall"), ...kindsOf("clips")])];
+    const overlap = kindsOf("overlaps");
+    const parts = [];
+    if (through.length) parts.push(`${through.length} prop${through.length > 1 ? "s" : ""} stand through a wall or other surface (${through.slice(0, 3).join(", ")}${through.length > 3 ? ", ..." : ""})`);
+    if (overlap.length) parts.push(`${overlap.length} overlap another prop (${overlap.slice(0, 3).join(", ")}${overlap.length > 3 ? ", ..." : ""})`);
+    rows.push({ name: `Room_${room.name}`, layer: LANE_LAYER, x: r2(room.at[0]), y: r2(room.at[1]), z: r2(room.at[2]), actions: [], problems: [{ kind: "room-clips", amount: Math.min(hits.length / 3, 2), text: `in ${room.name}: ${parts.join("; ")}` }], allowed: [] });
   }
   return rows;
 }
@@ -352,7 +393,16 @@ export function aimVerdict(detail, action, entity) {
 // Ranked rows for place-audit: the lane rows, the prefab-child rows, each scored.
 export function laneFindings(list, doors, outText, opts = {}) {
   const kids = parseChildren(outText);
-  return rank([...laneRows(list, doors, kids, { ...opts, bounds: rootBounds(outText) }), ...childRows(kids, doors)]);
+  const bounds = rootBounds(outText);
+  const lanes = laneRows(list, doors, kids, { ...opts, bounds });
+  const clips = roomClipRows(list, doors, opts.propRows ?? [], { bounds, kids });
+  // A room's lane row and its clip row are one row with both problems.
+  for (const c of clips) {
+    const same = lanes.find((r) => r.name === c.name);
+    if (same) same.problems.push(...c.problems);
+    else lanes.push(c);
+  }
+  return rank([...lanes, ...childRows(kids, doors)]);
 }
 
 // ---------------------------------------------------------------------------- selftest
@@ -408,6 +458,34 @@ export function selftest(fail = (m) => {
   if (kr.length !== 1 || kr[0].name !== "Furniture_Cabinet" || !kr[0].problems.some((p) => p.kind === "blocks-door")) fail(`prefab child in the door swing: ${JSON.stringify(kr.map((r) => r.name))}`);
   const noKids = laneRows(list, doors, [], { bounds: rootBounds(outText) });
   if (noKids.some((r) => r.name === "Room_Shop_Base" && !r.problems.length)) fail("rows carry problems");
+  // #3884: a shop up a step from its door, the door leaves and a till on a counter must not pick the floor, and a shop is judged over its
+  // furnished floor, not the whole building footprint. Built by hand: a 12 x 12 m building (all floors), a shop in one corner, door
+  // leaves 1 m under the shop floor, eight shelves across it with a counter and a till on it, and a wardrobe and a bed in one room.
+  // red-proof: 2026-11-21, with furnishedArea returning the whole footprint the selftest printed "FAILED stepped shop: not crowded"; restored, OK.
+  const ob = (c, h, yaw = 0) => ({ c, h, a: [[Math.cos(yaw), 0, -Math.sin(yaw)], [0, 1, 0], [Math.sin(yaw), 0, Math.cos(yaw)]] });
+  const mk = (name, box, extra = {}) => ({ idx: name, e: { name, prefab: `Prefabs/${name}.et`, layer: "t.layer", x: box.c[0], y: box.c[1], z: box.c[2], actions: [] }, m: { gap: 0, point: false, character: false, found: name, bmin: [0, 0, 0], bmax: [0, 0, 0], box, on: "terrain", clip: [], ...extra } });
+  const stepList = [];
+  for (let i = 0; i < 8; i++) stepList.push(mk(`Shelf_${i}`, ob([102 + (i % 4), 11.9, 103 + Math.floor(i / 4) * 0.6], [0.6, 0.9, 0.3])));
+  stepList.push(mk("Till_Step", ob([103.5, 11.5, 105], [0.3, 0.25, 0.25]), { on: "Counter_Step", gap: 0.02 }), mk("Counter_Step", ob([103.5, 11.0, 105], [0.6, 0.5, 0.3]), { on: "terrain" }));
+  const stepDoors = [0, 1, 2].map((i) => ({ name: "Door", root: "Shop_Step", rp: [100, 10, 100], box: ob([100 + i * 3, 11, 100], [0.7, 1.2, 0.1]), clip: [] }));
+  const stepBounds = { "Shop_Step@100,100": { min: [100, 100], max: [112, 112] } };
+  const stepRoom = roomsOf(stepList, stepDoors, stepBounds)[0];
+  if (!stepRoom) fail("stepped shop: no room");
+  else {
+    stepRoom.floorY = refineFloor(stepRoom, stepList, [{ name: "Window", root: "Shop_Step", box: ob([104, 11, 100], [0.8, 1.2, 0.1]) }]);
+    if (stepRoom.floorY < 10.95 || stepRoom.floorY > 11.1) fail(`stepped shop: the floor is the door leaves' foot or the till's (${r2(stepRoom.floorY)}), want ~11`);
+    const furnished = furnishedArea(stepRoom, obstaclesOf(stepRoom, stepList, []));
+    if (furnished >= 60) fail(`stepped shop: the furnished floor is the whole building (${r2(furnished)} m2)`);
+  }
+  const stepRows = laneRows(stepList, stepDoors, [], { bounds: stepBounds });
+  if (!stepRows.some((r) => r.problems.some((p) => p.kind === "crowded"))) fail("stepped shop: not crowded");
+  const wallRows = [
+    { name: "Wardrobe_1", layer: "t.layer", x: 108, y: 11, z: 108, problems: [{ kind: "through-wall", amount: 1, text: "stands through Office" }] },
+    { name: "Bed_1", layer: "t.layer", x: 109, y: 11, z: 109, problems: [{ kind: "overlaps", amount: 1, text: "overlaps Wardrobe_1 by 0.3 m" }] },
+    { name: "Garden_Gnome", layer: "t.layer", x: 300, y: 11, z: 300, problems: [{ kind: "through-wall", amount: 1, text: "elsewhere" }] },
+  ];
+  const clipRows = roomClipRows(stepList, stepDoors, wallRows, { bounds: stepBounds });
+  if (clipRows.length !== 1 || !/Wardrobe_1/.test(clipRows[0].problems[0].text) || !/Bed_1/.test(clipRows[0].problems[0].text) || /Gnome/.test(clipRows[0].problems[0].text)) fail(`room-clips row: ${JSON.stringify(clipRows.map((r) => r.problems))}`);
   // aim after stand
   const aim = "aim selected=LF_StoreTillAction@Till_Clear context=x (Till_Clear) offered=LF_StoreTillAction@Till_Clear:1,LF_RadioAction@Radio_1:1";
   if (!aimVerdict(aim, "LF_StoreTillAction", "Till_Clear").selected) fail("aim: the till's action is the selected one");
