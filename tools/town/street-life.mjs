@@ -36,8 +36,8 @@ export const PROPS = {
   bench: { prefab: "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et", source: "addons/LifeFramework/Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et", wall: true, gap: 1.6, ground: true, optional: true },
   "bench-red": { prefab: "{24388E37E11BA18F}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et", source: "addons/LifeFramework/Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et", wall: true, gap: 1.6, ground: true, optional: true },
   bin: { prefab: "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et", source: VANILLA_SOURCE, wall: true, gap: 0.9, cls: "SCR_DestructibleEntity" },
-  flowers: { prefab: "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et", source: VANILLA_SOURCE, wall: true, gap: 1.2, cls: "SCR_DestructibleEntity", ground: true, optional: true, half: 0.5 },
-  line: { prefab: "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et", source: VANILLA_SOURCE, wall: false, gap: 2.5, rear: 3.2 },
+  flowers: { prefab: "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et", source: VANILLA_SOURCE, wall: true, gap: 1.2, cls: "SCR_DestructibleEntity", ground: true, optional: true, half: 0.5, out: 0.15 },
+  line: { prefab: "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et", source: VANILLA_SOURCE, wall: false, gap: 2.5, rear: 3.2, doors: true, half: 1.2 },
 };
 
 // One house, its props in order. A bench and a bin sit at the door, flower boxes under the front windows, a washing line behind.
@@ -51,6 +51,7 @@ export const PLAN = {
 };
 
 const SIDEWAYS = [null, 0.5, -0.5, 0.75, -0.75, 0.3, -0.3, 0.9, -0.9, 0.15, -0.15];
+const LINE_SIDEWAYS = [0, 0.5, -0.5, 1, -1, 1.5, -1.5, 2, -2]; // a washing line also slides along the back wall to clear a door's swing (b50 stood 0.12 m in one, #3888)
 const DOOR_CLEAR = 1.4;
 // A bench stands on the ground the server probed (one vertical ray from just above its seat height at five points of its
 // footprint: the middle, each end of the seat, front and back), not on the dossier's floor height of the house. It is refused
@@ -119,7 +120,7 @@ async function planProp({ kind, building, dossier, root, shell, readGame, others
   const mapping = { schema: 1, template: template.kind, place: dossier.place.slug, slots: { [SLOT]: { building: building.id } } };
   // A bench tries the entrance wall first, then the two side walls and the back one, when the ground at the door is a slope or stairs.
   const turns = prop.ground ? [0, 1, 3, 2] : [prop.wall ? 0 : 2];
-  const cands = turns.flatMap((t) => (prop.wall ? SIDEWAYS : [0, 0.5, -0.5]).map((s) => [t, s]));
+  const cands = turns.flatMap((t) => (prop.wall ? SIDEWAYS : prop.doors ? LINE_SIDEWAYS : [0, 0.5, -0.5]).map((s) => [t, s]));
   const refusals = {};
   for (const [turn, sideways] of cands) {
     const { id, kit } = dropKit(building, SLOT, sideways, 0, turn, `street-${kind}`);
@@ -157,7 +158,8 @@ async function planProp({ kind, building, dossier, root, shell, readGame, others
     }
     if (prop.wall) {
       const a = (e.yaw * Math.PI) / 180;
-      e.coords = [r3(e.coords[0] + Math.sin(a) * 0.05), e.coords[1], r3(e.coords[2] + Math.cos(a) * 0.05)];
+      const out = prop.out ?? 0.05; // a long planter needs more than the bench's 5 cm: b16's stood through the house wall (#3888)
+      e.coords = [r3(e.coords[0] + Math.sin(a) * out), e.coords[1], r3(e.coords[2] + Math.cos(a) * out)];
       if (prop.ground && need) {
         const pts = benchPoints(e.coords[0], e.coords[2], e.yaw, prop.half);
         const hs = pts.map((q) => pins?.points?.[pinKey(q[0], q[1])]);
@@ -189,10 +191,23 @@ async function planProp({ kind, building, dossier, root, shell, readGame, others
     } else {
       // Along the back wall: the row's facing is away from the house, the frame's long side is across it.
       e.yaw = r3(((e.yaw + 90 + 540) % 360) - 180);
+      // The island's door leaves (the back and side doors the dossier lacks): the frame's two ends and its middle stay out of every swing.
+      if (prop.doors && need) {
+        const pts = benchPoints(e.coords[0], e.coords[2], e.yaw, prop.half);
+        const unknown = pts.some((q) => !Number.isFinite(pins?.points?.[pinKey(q[0], q[1])]) || pins?.hits?.[pinKey(q[0], q[1])] === undefined);
+        if (unknown) {
+          for (const q of pts) need.push([q[0], q[1], e.coords[1] + RAY_UP]);
+          continue;
+        }
+        if ((pins?.doors ?? []).some((d) => pts.some((q) => Math.hypot(q[0] - d[0], q[1] - d[1]) < DOOR_SWING))) {
+          refusals["in a door's swing"] = 1;
+          continue;
+        }
+      }
     }
     return { ok: true, e, kind, building: building.id, gap: prop.gap };
   }
-  if (need?.length && prop.ground) return { ok: false, pending: true, kind, building: building.id, why: "ground heights not probed yet" };
+  if (need?.length && (prop.ground || prop.doors)) return { ok: false, pending: true, kind, building: building.id, why: "ground heights not probed yet" };
   return { ok: false, kind, building: building.id, why: Object.keys(refusals).join("; ") };
 }
 
