@@ -275,17 +275,19 @@ class LF_PlacementAudit
 
 	//------------------------------------------------------------------------------------------------
 	//! Clips: a surface of another entity passes through this entity's own volume. A building's overall
-	//! bounds say nothing about where its walls are, so rays cross the bounds (shrunk 0.15 m) on all
-	//! three axes from both sides and keep hits that land inside. A single graze does not count.
-	static string Clips(vector mins, vector maxs, IEntity self)
+	//! bounds say nothing about where its walls are, so rays cross the box (shrunk 0.15 m) on all
+	//! three of ITS OWN axes from both sides and keep hits that land inside. A single graze does not count.
+	//! The box is the oriented one: a thin fascia plate on a wall turned 9 degrees off the world axes has a
+	//! thick world-axis box that always contains its own wall, and was flagged as clipping it (#3891).
+	static string Clips(LF_PlacementMeasure m, IEntity self)
 	{
 		s_sClipNames = "";
 		s_iClipCount = 0;
-		vector lo = mins + "0.15 0.15 0.15";
-		vector hi = maxs - "0.15 0.15 0.15";
-		if (hi[0] - lo[0] < 0.1 || hi[1] - lo[1] < 0.1 || hi[2] - lo[2] < 0.1)
+		vector half = m.m_vHalf - "0.15 0.15 0.15";
+		if (half[0] * 2 < 0.1 || half[1] * 2 < 0.1 || half[2] * 2 < 0.1)
 			return "none";
 
+		array<vector> axes = {m.m_vAxis0, m.m_vAxis1, m.m_vAxis2};
 		array<string> hitNames = {};
 		array<int> hitCounts = {};
 		for (int axis = 0; axis < 3; axis++)
@@ -301,20 +303,15 @@ class LF_PlacementAudit
 						if (s_iClipCount >= 3)
 							return s_sClipNames;
 
-						vector from = lo;
-						from[a1] = lo[a1] + (hi[a1] - lo[a1]) * (i + 0.5) / 3;
-						from[a2] = lo[a2] + (hi[a2] - lo[a2]) * (j + 0.5) / 3;
-						vector to = from;
-						if (side == 0)
-						{
-							from[axis] = mins[axis] - 0.4;
-							to[axis] = maxs[axis] + 0.4;
-						}
-						else
-						{
-							from[axis] = maxs[axis] + 0.4;
-							to[axis] = mins[axis] - 0.4;
-						}
+						float u = -half[a1] + half[a1] * 2 * (i + 0.5) / 3;
+						float v = -half[a2] + half[a2] * 2 * (j + 0.5) / 3;
+						float reach = m.m_vHalf[axis] + 0.4;
+						if (side == 1)
+							reach = -reach;
+
+						vector lane = m.m_vCenter + axes[a1] * u + axes[a2] * v;
+						vector from = lane - axes[axis] * reach;
+						vector to = lane + axes[axis] * reach;
 
 						IEntity hit;
 						float total = vector.Distance(from, to);
@@ -332,7 +329,8 @@ class LF_PlacementAudit
 							continue;
 
 						vector p = from + (to - from) * (d / total);
-						if (p[0] < lo[0] || p[1] < lo[1] || p[2] < lo[2] || p[0] > hi[0] || p[1] > hi[1] || p[2] > hi[2])
+						vector rel = p - m.m_vCenter;
+						if (Math.AbsFloat(vector.Dot(rel, axes[0])) > half[0] || Math.AbsFloat(vector.Dot(rel, axes[1])) > half[1] || Math.AbsFloat(vector.Dot(rel, axes[2])) > half[2])
 							continue;
 
 						string label = Label(hit);
@@ -542,7 +540,7 @@ class LF_PlacementAudit
 		{
 			Overhang(entity, m);
 			m.m_bBacked = Backed(entity, m);
-			m.m_sClips = Clips(m.m_vMins, m.m_vMaxs, entity);
+			m.m_sClips = Clips(m, entity);
 		}
 
 		if (withWalk)
@@ -712,6 +710,23 @@ class LF_PlacementAudit
 			return " near=-1";
 
 		return string.Format(" near=%1 nearname=%2", F(dist), Label(best));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A `missing` row's tail when the entity the layer named exists but stands elsewhere: " at=x,y,z surfy=<terrain y at the
+	//! layer x,z>" (the engine put a lamp, fence or pump at terrain + the layer's y; a group prefab is flattened and has no entity
+	//! of its own, so it is never found here). Empty when no entity carries that name.
+	static string StandsAt(string name, vector layerPos)
+	{
+		if (name.IsEmpty())
+			return "";
+
+		IEntity named = GetGame().GetWorld().FindEntityByName(name);
+		if (!named)
+			return "";
+
+		vector at = named.GetOrigin();
+		return " at=" + F(at[0]) + "," + F(at[1]) + "," + F(at[2]) + " surfy=" + F(GetGame().GetWorld().GetSurfaceY(layerPos[0], layerPos[2]));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1161,18 +1176,29 @@ class LF_PlacementAudit
 			vector layerPos = Vector(parts[3].ToFloat(), parts[4].ToFloat(), parts[5].ToFloat());
 			// "rel": a class whose layer y counts from the terrain under it (SCR_DestructibleEntity, #3566), so it stands at
 			// terrain + y, not at y.
-			if (parts.Count() >= 8 && parts[7] == "rel")
+			vector absolutePos = layerPos;
+			bool relRow = parts.Count() >= 8 && parts[7] == "rel";
+			if (relRow)
 				layerPos[1] = layerPos[1] + GetGame().GetWorld().GetSurfaceY(layerPos[0], layerPos[2]);
 			IEntity entity = FindPlaced(name, prefab, layerPos);
+			// The layer class says "rel" but the prefab decides: a bench, bin or flowerpot of that class stands at the layer's y as it
+			// is (the island server, 2026-11-21), so look there too before calling the row missing.
+			string absoluteTag = "";
+			if (!entity && relRow)
+			{
+				entity = FindPlaced(name, prefab, absolutePos);
+				if (entity)
+					absoluteTag = " absolute=1";
+			}
 			measured++;
 			if (!entity)
 			{
 				missing++;
-				rows.Insert(parts[0] + " missing=1" + NearestOfPrefab(prefab, layerPos, 40));
+				rows.Insert(parts[0] + " missing=1" + NearestOfPrefab(prefab, layerPos, 40) + StandsAt(name, layerPos));
 				continue;
 			}
 
-			rows.Insert(parts[0] + " " + Format(Measure(entity, parts[6] == "1")) + " found=" + Label(entity));
+			rows.Insert(parts[0] + " " + Format(Measure(entity, parts[6] == "1")) + " found=" + Label(entity) + absoluteTag);
 		}
 
 		input.Close();

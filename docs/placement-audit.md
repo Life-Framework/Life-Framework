@@ -156,7 +156,15 @@ Add an entry only with a reason a reviewer can check in a shot.
 - A child of a rotated parent is placed where `layers.mjs` sums the coordinates, which ignores the
   parent's rotation; no layer nests that way today. An entity the test cannot find is listed under
   "not found".
-- **Terrain-relative classes** (`tools/lib/terrain-classes.mjs`: `SCR_DestructibleEntity`, a net fence) take their layer y as a height over the terrain, so a world height in the layer stands in the air (the range fence at y 19.1 spawned at 39.3, #3566). The audit looks for such a row at terrain + y (the input row ends with `rel`, `LF_PlacementAudit.RunBatch`) and flags a layer y above 2 m as `relative-y`; seat one with `town fit` (y about 0). Weight 6. The payphone prefab (`LF_Payphone`, `TERRAIN_RELATIVE_PREFABS`) stands the same way though its layer class is GenericEntity: its y is the pavement height over the terrain plus 0.44 m (the booth mesh sits 0.55 m x 0.8 under its origin), #3878.
+- **Terrain-frame rows** take their layer y as a height over the terrain: the prefab's flags carry `RELATIVE_Y` (the row's own `Flags`, else the prefab chain; `tools/lib/height-frame.mjs`, docs/architecture/placement-system.md "Height frame"). Lamps, net and wooden fences, buildings (the weighbridge, the payphone booth) and the fuel pumps do; benches, bins, flowerpots and sign boards do not, whatever the layer's class token says. A world height in such a row stands in the air (the range fence at y 19.1 spawned at 39.3, #3566; the forecourt pumps at 37.5, #3938). The audit looks for such a row at terrain + y (the input row ends with `rel`, `LF_PlacementAudit.RunBatch`) and flags a layer y above 3 m as `relative-y`. Weight 6. `validate-layer-height-frame` fails both wrong-frame shapes offline.
+- **A row the audit cannot find at its layer position** (`missing` before 2026-11-21, 61 rows on the island): three different things.
+  A `*_furniture_01` group prefab (root `BuildingFurniture_base`, no mesh) is flattened by the engine when the world loads: its
+  children stand at the top level with no prefab or name and the parent is no entity, so it is counted as `groups` in the
+  summary, not as a finding (the cabinets are there; look at them with `look`). An entity that carries the row's name but stands
+  elsewhere is `displaced` and the text says where: a lamp, net fence, fuel pump, depot hut or weighbridge whose height counts
+  from the terrain stands at terrain + the layer's y (the two Saint-Philippe fuel pumps at y 37.5 over a terrain of 18.7). A row
+  of a `rel` class that stands at its layer y as written (bench, bin, flowerpot, sign) is measured there. `missing` now means
+  nothing of that name exists, which is a prefab that failed to load.
 - It measures where the layer puts each entity. A dynamic rigid body (a pickup with `RigidBody Active Active`,
   such as `WoodLog_01_Small`) is simulated on clients and can tip off a table that the audit passed: on
   2026-11-11 the logging stand's logs, laid along a 1.2 m table, fell upright in the after shot. Lay such

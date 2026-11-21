@@ -100,6 +100,26 @@ now asks the island for the wall each glow hangs on (`tools/town/probes/lights-<
 seated on the surface under them at spawn. This reseat (cars, lights, payphones) ships first, before any shop is
 rebuilt; the two LF fuel pumps belong to the gas-station agent and are left alone here.
 
+### Height frame: what a layer's y means
+
+**Rule.** A top-level layer row's `coords` y is the height over the terrain under its x and z when the entity's flags carry
+`EntityFlags.RELATIVE_Y` (0x80000), and a world height otherwise. The flags are the row's own `Flags` line, else the nearest
+`Flags` up its prefab chain, else none. A row nested in another entity is in its parent's frame. This is the engine's rule (the
+Workbench script that saves a position subtracts the terrain on that bit, `ViewOrientationTool.c`), not a class list: the layer's
+class token (`SCR_DestructibleEntity`, `GenericEntity`) says nothing about it.
+
+Which vanilla bases carry it (island audit of 2026-11-21, #3938): `Lamps_Base` 0x80403, `Wall_Base` 0x80003 (net and wooden
+fences), `Building_Base` 0x80403 (cabins, the weighbridge, the payphone), `FuelStation_E_01_tankpistol_base` 0x80000 (the pumps),
+`Tree` 0x80103. `DestructibleMultiPhase_Props_Base` 0x403 (benches, bins, flowerpots, sign boards) does not.
+
+`tools/lib/height-frame.mjs` is the one implementation (`frameOf`, `layerY`, `annotateFrames`). Every writer plans in world
+heights and converts at the point it writes the row: `town fit` (`framedRows`, ground heights from the slot's `--terrain` pins; a
+row that needs one and has none is refused), `town stamp` and `town drops` (through the same render, refused when a terrain-frame
+row has no probed ground), the night-light lamps (the probe's terrain `ty` beside each seat), `mapper import --slot` (the pivot is
+probed too) and `place` (the town and grid terrains are flat at 0, where both frames agree). `validate-layer-height-frame` fails an
+island row in the wrong frame: a terrain-frame y above 3 m, or a world-frame y under 3 m with the world-frame rows within 40 m at
+least 5 m higher. The audit sends a terrain-frame row as `rel`, so it measures it at terrain + y.
+
 ### One placement path
 
 Everything a player sees, layer row or runtime spawn, gets its transform from one resolver with a stated attach target.
@@ -246,6 +266,7 @@ Written by the pilot rebuild (#3890, bakery) for R1 and R3 to R8. What was hard,
   (counters and clerk, the 1 cm contact sheet): the island b06 shell sits 2.8 cm higher relative to its origin than the grid
   copy. Under the hard limits, but the stamp still copies the grid height; the plan's floor probe at stamp time would
   close it.
+- **Butcher (b20, orange): the island floor is 4.3 cm above the grid copy's, not 2.8.** The 1 cm contact sheet read -4.3 cm on counters, clerk and freezer. The kit rows (all but the fascia) carry +0.043 m, and the chiller +0.045 (a floor lip along the west wall: a second chiller at local z -0.1 found "support varies 14 cm" and was dropped). The grid source layer keeps the grid heights, so a `--reopen` re-extract loses the offset until the stamp probes the floor.
 - **The interior look's camera stands in the hallway** of House_Town_E_2I01; only the fifth shot (the kit close-up) shows the
   shop room. Read that one.
 

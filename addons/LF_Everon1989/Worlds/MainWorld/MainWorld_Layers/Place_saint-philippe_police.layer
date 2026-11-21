@@ -91,7 +91,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_case_board : "{C8B78C628082CA
  angleY -99
 }
 GenericEntity Fit_saint_philippe_police_police_kit_decor_1 : "{25B473F35DCBDA7A}Prefabs/Props/Civilian/ClockUniversal_01.et" {
- coords 4547.148 20.4 10745.007
+ coords 4547.247 20.4 10745.023
  angleY 81
 }
 GenericEntity Fit_saint_philippe_police_police_kit_decor_12 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
@@ -107,7 +107,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_decor_15 : "{D62A80FF7E61B2FA
  angleY -129
 }
 GenericEntity Fit_saint_philippe_police_police_kit_decor_19 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
- coords 4546.96 23.2 10746.192
+ coords 4546.919 23.2 10746.894
  angleY 81
 }
 GenericEntity Fit_saint_philippe_police_police_kit_decor_21 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
@@ -121,7 +121,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_decor_21 : "{8F17372BAB5A9CF8
    }
   }
  }
- coords 4552.247 20.75 10741.258
+ coords 4552.344 20.75 10741.283
  angleY 171
 }
 GenericEntity Fit_saint_philippe_police_police_kit_decor_22 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
@@ -192,7 +192,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_duty_clock_hall : "{E7EA9EA10
    }
   }
  }
- coords 4551.627 18.708 10749.806
+ coords 4551.605 18.708 10749.803
  angleY 81
 }
 GenericEntity Fit_saint_philippe_police_police_kit_duty_clock_room : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {

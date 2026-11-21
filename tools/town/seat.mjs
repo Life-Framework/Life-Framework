@@ -14,9 +14,10 @@
 //   terrain a row in open ground (kit row `"mount": "terrain"`, no building under it): it rests on the ground the server
 //           probed under its footprint (tools/town/terrain.mjs, `town fit --terrain`), the highest of the centre and the four
 //           corners, so a prop on a slope never sinks at its high side. Without a probed height it is left and reported;
-//   relative a row of a class whose layer height counts from the TERRAIN (SCR_DestructibleEntity: the net fence of the
-//           range stood 20 m up in the air on 2026-11-19, y 19.1 + terrain 20.2): its height is the bottom of its bounds
-//           over the ground, no probe needed;
+//   ground  a row the kit stands on the ground under it (`"mount": "ground"`, a fence panel, a street bin): its y is the
+//           height of its pivot over the terrain (the bottom of its bounds on the ground), no probe needed for that;
+//           `town fit` writes it in the row's own frame (tools/lib/height-frame.mjs), which for a world-frame prefab
+//           needs the probed terrain height;
 //   clip   a row whose bounds cut a host wall is pushed out along that wall's normal by up to NUDGE; a row that still
 //           cuts the shell is reported as a clip (town fit refuses it unless --allow-clip).
 //
@@ -26,7 +27,6 @@
 //   reader.shell(path) -> { mesh, surfaces: [{ y, x:[a,b], z:[a,b], area }], walls: [{ n:[nx,ny,nz], p:[[x,y,z] x3] }] } | null
 import { BELOW_PIVOT, isHung, footOf, scaleOf, gameReader as surfaceReader, prefabChildren as prefabChildrenOf } from "../buildings/pipeline/surface.mjs";
 import { toWorld, toLocal } from "./kit.mjs";
-import { TERRAIN_RELATIVE_CLASSES } from "../lib/terrain-classes.mjs";
 
 export const TOL = 0.02; // a row within 2 cm of its support is left alone
 export const FLOOR_BAND = 0.75; // a floor row seats on a host top this far above or below its kit height, no further
@@ -35,9 +35,9 @@ export const HUNG_REACH = 6; // a wall-mounted row looks this far along its faci
 export const NUDGE = 0.3; // a clipping row is pushed out of a wall by at most this much
 export const CLIP_TOL = 0.03; // bounds may touch a wall by this much (paint, skirting) before it counts as a clip
 export const WALL_GAP = 0.005; // a wall row stands this far off the plane
-// Classes whose layer `coords` height is measured from the terrain under them (tools/lib/terrain-classes.mjs). A kit row
-// of one of these needs no probe.
-export { TERRAIN_RELATIVE_CLASSES };
+export const FLAT_TOL = 0.02; // `flatWalls`: the wall plane under a wall row's width and height may differ by this much
+export const SLIDE_STEP = 0.1; // `flatWalls`: a wall row on an uneven wall slides along it in steps of this
+export const SLIDE_MAX = 3; // ... and at most this far each way (a kit row's `slide` overrides it, metres)
 
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -291,12 +291,13 @@ export function footprintPoints(coords, yaw, info, scale = null) {
 }
 
 // How a kit row is held: "wall", "floor" (with `against` when its verb is `against wall`), "stack" (on another row), "free",
-// "terrain" (open ground, probed) or "relative" (a class whose height counts from the terrain).
+// "terrain" (open ground, probed) or "ground" (on the ground, its y the height over the terrain; "relative" is the old name).
+// The layer class token says nothing about the frame: that is the prefab's RELATIVE_Y flag (tools/lib/height-frame.mjs).
 export function mountOf(src) {
   const tags = [].concat(src.tags ?? [], src.kind ?? []).map(String);
   const verb = String(src.verb ?? "");
   if (src.free || src.mount === "free") return { mount: "free" };
-  if (src.mount === "relative" || TERRAIN_RELATIVE_CLASSES.includes(String(src.class ?? ""))) return { mount: "relative" };
+  if (src.mount === "ground" || src.mount === "relative") return { mount: "ground" };
   if (src.mount === "terrain") return { mount: "terrain" };
   if (src.on === "wall" || src.mount === "wall" || tags.includes("wall") || tags.includes("wall-mounted") || isHung(src.prefab) || src.role === "sign") return { mount: "wall" };
   if (verb.startsWith("on ") && verb !== "on floor") return { mount: "stack", on: verb.slice(3) };
@@ -313,7 +314,11 @@ const socketOf = (src) => {
 // Seat world rows (applyKit output, coords mutated in place) in `host` ({ x, y, z, yaw, prefab|path }).
 //   kitRows: the kit's own rows (for verb, role, tags, config); reader: shellReader() or a fixture.
 // Returns { ok, host: { mesh } | null, rows: [{ id, mount, from, to, moved, dy, wall, clip, notes }], clips, unseated }.
-export async function seatRows(rows, kitRows, host, { reader, allowClip = false, terrain = null } = {}) {
+// flatWalls (`town stamp`, #3931): a wall row must stand flush on a wall that is flat under its whole plate. Where the wall under
+// its centre steps (a door recess, a lintel, a neighbour's gable: the b59 fascia clipped at z <= 6.35 and floated at z >= 6.45),
+// the row slides along the wall to the nearest run that is flat and cuts nothing; none within the reach leaves it seated at its
+// centre and says so.
+export async function seatRows(rows, kitRows, host, { reader, allowClip = false, terrain = null, flatWalls = false } = {}) {
   const shell = await reader.shell(host.prefab ?? host.path);
   if (!shell) return { ok: false, host: null, rows: [], clips: [], unseated: [], note: `the host ${pathOf(host.prefab ?? host.path)} has no readable model; rows were not seated` };
   const src = new Map(kitRows.map((r) => [r.id, r]));
@@ -337,19 +342,21 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false,
     const sock = socketOf(s);
     const info = reader.info(row.prefab);
     const bounded = info?.bounds && Number.isFinite(info.bounds.min?.[0]);
-    if (sock) {
+    if (sock && flatWalls) res.notes.push(`hangs on socket ${sock}: kept as the kit puts it (a stamp never drops a row)`);
+    else if (sock) {
       // Its offset counts from a socket of the source building (a Hierarchy PivotID), not from the building's origin, and a
       // layer cannot hang an entity on a terrain building's socket: placed by offset it lands inside the shell (the bank
       // fascia floated 5 m, #2378). Left out; the kit needs the row as a building-space wall row.
       res.skip = `hangs on socket ${sock} of the kit's source building: its offset is socket-relative, so it is left out of the layer (give the kit row a building-space offset)`;
       res.notes.push(res.skip);
     } else if (m.mount === "free") res.notes.push("free: left as the kit puts it");
-    else if (m.mount === "relative") {
-      // The layer's y is the height over the terrain under the entity: the bottom of its bounds on the ground (0 for a
-      // prop whose pivot is its base, the fence panel).
+    else if (m.mount === "ground") {
+      // Its y becomes the height of its pivot over the terrain under it: the bottom of its bounds on the ground (0 for a
+      // prop whose pivot is its base, the fence panel). `town fit` turns it into the prefab's frame when it writes the row.
       const f = bounded ? footOf(l, info) : null;
       l.y = (f ? -f.bottom : 0) - host.y;
-      res.notes.push("terrain-relative class: the layer's y counts from the ground under it");
+      res.overGround = true;
+      res.notes.push("on the ground: y is its height over the terrain under it");
     } else if (m.mount === "terrain") {
       const world = toW(l);
       const pts = footprintPoints(world, row.yaw, bounded ? info : null, l.scale);
@@ -398,14 +405,72 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false,
       };
       if (m.mount === "wall") {
         const w = wallSnap(HUNG_REACH, NEAR_WALL);
+        // A facade that steps back under a long plate leaves one end in the wall (pharmacy fascia, 6.6 cm, #3685): the kit row
+        // says how far to stand off the plane, `standoff` in metres, so the whole plate clears it.
+        const standoff = (side) => (Number.isFinite(s.standoff) ? (side === "back" ? -s.standoff : s.standoff) : 0);
+        const seatOn = (pick) => {
+          const off = standoff(pick.side);
+          l.x += fwd[0] * (pick.shift - off);
+          l.z += fwd[2] * (pick.shift - off);
+          return off;
+        };
         if (w) {
-          // A facade that steps back under a long plate leaves one end in the wall (pharmacy fascia, 6.6 cm, #3685): the kit row
-          // says how far to stand off the plane, `standoff` in metres, so the whole plate clears it.
-          const off = Number.isFinite(s.standoff) ? (w.side === "back" ? -s.standoff : s.standoff) : 0;
-          l.x += fwd[0] * (w.shift - off);
-          l.z += fwd[2] * (w.shift - off);
+          const off = seatOn(w);
           res.wall = { side: w.side, shift: r3(w.shift - off) };
           if (off) res.notes.push(`stands ${Math.abs(off)} m off the wall`);
+          if (flatWalls) {
+            const yawR = (l.yaw * Math.PI) / 180;
+            const ax = [Math.cos(yawR), 0, -Math.sin(yawR)];
+            const [ox, oz] = toWorld(((b.min[0] + b.max[0]) / 2) * k, 0, l.yaw);
+            const hx = Math.max(0, ((b.max[0] - b.min[0]) / 2) * k - 0.02);
+            const hy = ((b.max[1] - b.min[1]) / 2) * k * 0.8;
+            // the wall plane at nine points over the plate (3 across, 3 up): how far along the facing each lies; a miss is a hole
+            const spread = (side) => {
+              const dir = side === "back" ? [-fwd[0], 0, -fwd[2]] : fwd;
+              const sign = side === "back" ? 1 : -1;
+              const alongs = [];
+              for (const dx of [-hx, 0, hx]) {
+                for (const dy of [-hy, 0, hy]) {
+                  const base = [l.x + ox + ax[0] * dx, cy + dy, l.z + oz + ax[2] * dx];
+                  const hit = rayWall(shell.walls, [base[0] + fwd[0] * 0.05 * sign, base[1], base[2] + fwd[2] * 0.05 * sign], dir, NEAR_WALL + 0.05);
+                  if (!hit) return Infinity;
+                  alongs.push(dot([hit.point[0] - base[0], 0, hit.point[2] - base[2]], fwd));
+                }
+              }
+              return Math.max(...alongs) - Math.min(...alongs);
+            };
+            const flat = (side) => spread(side) <= FLAT_TOL && !cutWalls(shell.walls, boxOf(l, info, CLIP_TOL)).length;
+            if (!flat(w.side)) {
+              const reach = Number.isFinite(s.slide) ? s.slide : SLIDE_MAX;
+              const home = { x: l.x, z: l.z };
+              let slid = null;
+              for (let i = 1; i <= Math.round(reach / SLIDE_STEP) && slid === null; i++) {
+                for (const sgn of [1, -1]) {
+                  const d = r3(sgn * i * SLIDE_STEP);
+                  l.x = home.x + ax[0] * d;
+                  l.z = home.z + ax[2] * d;
+                  const w2 = wallSnap(HUNG_REACH, NEAR_WALL);
+                  if (w2) {
+                    seatOn(w2);
+                    if (flat(w2.side)) {
+                      slid = { d, side: w2.side, shift: r3(w2.shift - standoff(w2.side)) };
+                      break;
+                    }
+                  }
+                  l.x = home.x;
+                  l.z = home.z;
+                }
+              }
+              if (slid) {
+                res.wall = { side: slid.side, shift: slid.shift, slide: slid.d };
+                res.notes.push(`slid ${slid.d} m along the wall to a flat run (the wall under its centre steps)`);
+              } else {
+                l.x = home.x;
+                l.z = home.z;
+                res.notes.push(`no flat wall run within ${reach} m along the wall: left seated at the wall under its centre`);
+              }
+            }
+          }
         } else res.notes.push(`no host wall within ${HUNG_REACH} m behind or ${NEAR_WALL} m in front of it`);
       } else {
         const f = footOf(l, info);
@@ -502,7 +567,7 @@ export function seatReport(seat, { against = null } = {}) {
     const was = against?.get(r.id) ?? r.from;
     const d = r.to.map((v, i) => r3(v - was[i]));
     const moved = r3(Math.hypot(...d));
-    const tags = [r.mount, r.wall ? `wall ${r.wall.side} ${r.wall.shift} m` : null, r.clip ? "CLIP" : null, r.furniture ? "FURN" : null].filter(Boolean).join(", ");
+    const tags = [r.mount, r.wall ? `wall ${r.wall.side} ${r.wall.shift} m${r.wall.slide ? ` slid ${r.wall.slide} m` : ""}` : null, r.clip ? "CLIP" : null, r.furniture ? "FURN" : null].filter(Boolean).join(", ");
     lines.push(`${r.skip ? "SKIP " : r.clip ? "CLIP " : moved > TOL ? "fix  " : "ok   "} ${r.id.padEnd(44)} ${moved > TOL ? `moves ${moved} m (dx ${d[0]} dy ${d[1]} dz ${d[2]})` : "stays"}  [${tags}]${r.notes.length ? `  ${r.notes.join("; ")}` : ""}${r.clip ? `  ${r.clip.text}` : ""}${r.furniture ? `  ${r.furniture}` : ""}`);
   }
   return lines;

@@ -117,7 +117,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     }
   ]
 }

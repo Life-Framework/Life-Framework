@@ -18,7 +18,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { CLAIMS_DIR, LAYER_DIR, claimNameOf, layerNameOf } from "./check.mjs";
-import { anchorFor, planFitSeated } from "./fit.mjs";
+import { anchorFor, framedRows, planFitSeated } from "./fit.mjs";
 import { toLocal, toWorld } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
 import { shellReader } from "./seat.mjs";
@@ -169,8 +169,14 @@ export async function planDrop({ drop, slotId, dossier, root, shell, readGame, k
     const a = (e.yaw * Math.PI) / 180;
     e.coords = [r3(e.coords[0] + Math.sin(a) * WALL_AIR), e.coords[1], r3(e.coords[2] + Math.cos(a) * WALL_AIR)];
   }
-  if (e && (onWall || prop?.placeId)) plan.layerText = `${entityLine(e)}
+  if (e && (onWall || prop?.placeId)) {
+    // Written in its prefab's frame like every fitted row (tools/lib/height-frame.mjs); a drop prop that reads y over the
+    // terrain has no probed ground here and is refused rather than written in the wrong frame.
+    const f = framedRows([e], { root, frameOfRef: shell?.frameOf ?? null });
+    if (f.pending.length) plan = { ...plan, ok: false, errors: [...(plan.errors ?? []), `${e.ref} reads y over the terrain (RELATIVE_Y): a wall drop is planned in world heights`] };
+    else plan.layerText = `${entityLine(f.rowEnts[0])}
 `;
+  }
   return plan;
 }
 

@@ -272,10 +272,13 @@ const ctx = { root: ROOT, run: noGit, shell: reader(shells) };
   const r4 = await seat.seatRows(pole, [slopeKit("p", { prefab: POLE })], HOST, { reader: rd, terrain: slope });
   check(r4.rows[0].samples.length === 1 && near(pole[0].coords[1], slope.at(pole[0].coords[0], pole[0].coords[2])), `pole: ${r4.rows[0].samples.length} point(s), y ${pole[0].coords[1]} is not the ground under its pivot`);
 
-  // a terrain-relative class: the layer's y is the height over the ground, the bottom of its bounds (here 0.1 up: -0.1)
+  // a "ground" row: its y is the height over the ground, the bottom of its bounds (here 0.1 up: -0.1); fit turns it into the prefab's frame
   const fence = [at("f", -3, 3, 4, 0, FENCE)];
-  const r5 = await seat.seatRows(fence, [{ id: "f", verb: "on floor", role: "dressing", prefab: FENCE, class: "SCR_DestructibleEntity" }], HOST, { reader: rd });
-  check(r5.rows[0].mount === "relative" && near(fence[0].coords[1], -0.1), `fence: held as ${r5.rows[0].mount}, layer y ${fence[0].coords[1]} (want relative, -0.1 over the ground)`);
+  const r5 = await seat.seatRows(fence, [{ id: "f", verb: "on floor", role: "dressing", prefab: FENCE, mount: "ground" }], HOST, { reader: rd });
+  check(r5.rows[0].mount === "ground" && r5.rows[0].overGround && near(fence[0].coords[1], -0.1), `fence: held as ${r5.rows[0].mount}, layer y ${fence[0].coords[1]} (want ground, -0.1 over the ground)`);
+  // the layer class token says nothing about the frame (the police street bins of #3566 sank 17 m under it): no ground mount from it
+  // red-proof: 2026-11-21, with mountOf still reading class SCR_DestructibleEntity this printed "FAILED a class token alone ...".
+  check(seat.mountOf({ verb: "on floor", class: "SCR_DestructibleEntity", prefab: FENCE }).mount === "floor", "a class token alone does not make a row a ground row");
 
   // terrain.mjs: the answers are keyed by point; a missing ray is named, never guessed
   const pts = [[1, 2], [3.0004, 4], [1, 2]];
