@@ -715,6 +715,23 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A `missing` row's tail when the entity the layer named exists but stands elsewhere: " at=x,y,z surfy=<terrain y at the
+	//! layer x,z>" (the engine put a lamp, fence or pump at terrain + the layer's y; a group prefab is flattened and has no entity
+	//! of its own, so it is never found here). Empty when no entity carries that name.
+	static string StandsAt(string name, vector layerPos)
+	{
+		if (name.IsEmpty())
+			return "";
+
+		IEntity named = GetGame().GetWorld().FindEntityByName(name);
+		if (!named)
+			return "";
+
+		vector at = named.GetOrigin();
+		return " at=" + F(at[0]) + "," + F(at[1]) + "," + F(at[2]) + " surfy=" + F(GetGame().GetWorld().GetSurfaceY(layerPos[0], layerPos[2]));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The world entity a layer placed at `pos`: the one named `name` within 1.5 m, else the nearest
 	//! within 1 m (one of prefab `prefabBase` first; with a prefab given, only that prefab). Null when nothing is there.
 	static IEntity FindPlaced(string name, string prefabBase, vector pos)
@@ -1161,18 +1178,29 @@ class LF_PlacementAudit
 			vector layerPos = Vector(parts[3].ToFloat(), parts[4].ToFloat(), parts[5].ToFloat());
 			// "rel": a class whose layer y counts from the terrain under it (SCR_DestructibleEntity, #3566), so it stands at
 			// terrain + y, not at y.
-			if (parts.Count() >= 8 && parts[7] == "rel")
+			vector absolutePos = layerPos;
+			bool relRow = parts.Count() >= 8 && parts[7] == "rel";
+			if (relRow)
 				layerPos[1] = layerPos[1] + GetGame().GetWorld().GetSurfaceY(layerPos[0], layerPos[2]);
 			IEntity entity = FindPlaced(name, prefab, layerPos);
+			// The layer class says "rel" but the prefab decides: a bench, bin or flowerpot of that class stands at the layer's y as it
+			// is (the island server, 2026-11-21), so look there too before calling the row missing.
+			string absoluteTag = "";
+			if (!entity && relRow)
+			{
+				entity = FindPlaced(name, prefab, absolutePos);
+				if (entity)
+					absoluteTag = " absolute=1";
+			}
 			measured++;
 			if (!entity)
 			{
 				missing++;
-				rows.Insert(parts[0] + " missing=1" + NearestOfPrefab(prefab, layerPos, 40));
+				rows.Insert(parts[0] + " missing=1" + NearestOfPrefab(prefab, layerPos, 40) + StandsAt(name, layerPos));
 				continue;
 			}
 
-			rows.Insert(parts[0] + " " + Format(Measure(entity, parts[6] == "1")) + " found=" + Label(entity));
+			rows.Insert(parts[0] + " " + Format(Measure(entity, parts[6] == "1")) + " found=" + Label(entity) + absoluteTag);
 		}
 
 		input.Close();
