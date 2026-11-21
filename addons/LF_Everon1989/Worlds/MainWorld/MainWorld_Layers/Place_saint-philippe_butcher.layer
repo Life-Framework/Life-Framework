@@ -14,15 +14,15 @@ GenericEntity Fit_saint_philippe_butcher_butcher_chiller_1 : "{613F68B39D0A4A64}
  angleY -10
 }
 LF_NpcBaseEntity Fit_saint_philippe_butcher_butcher_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
- coords 4472.976 11.996 10776.474
+ coords 4472.976 12.039 10776.474
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_counter_1 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4472.336 12.001 10775.498
+ coords 4472.336 12.044 10775.498
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4472.075 12.001 10776.975
+ coords 4472.075 12.044 10776.975
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
@@ -30,26 +30,26 @@ GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Pre
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_freezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
- coords 4473.827 12.011 10775.101
+ coords 4473.827 12.054 10775.101
  angleY -10
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_freezer_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4473.975 12.861 10775.127
+ coords 4473.975 12.904 10775.127
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4472.176 13.049 10775.825
+ coords 4472.176 13.092 10775.825
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_meat_3 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4472.072 13.049 10776.416
+ coords 4472.072 13.092 10776.416
  angleY -30
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_scale : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et" {
- coords 4472.362 13.038 10775.35
+ coords 4472.362 13.081 10775.35
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_till : "{7CA6A8139045323E}Prefabs/Props/Commercial/LF_ButcherTill.et" {
- coords 4472.174 13.041 10776.993
+ coords 4472.174 13.084 10776.993
  angleY 80
 }

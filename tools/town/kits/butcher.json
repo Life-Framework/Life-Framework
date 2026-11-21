@@ -65,7 +65,7 @@
       "verb": "against wall",
       "offset": [
         -4.55,
-        0.201,
+        0.244,
         3
       ],
       "yaw": 0,
@@ -81,7 +81,7 @@
       "verb": "against wall",
       "offset": [
         -3.05,
-        0.201,
+        0.244,
         3
       ],
       "yaw": 0,
@@ -97,7 +97,7 @@
       "verb": "on butcher-counter-2",
       "offset": [
         -3.05,
-        1.241,
+        1.284,
         2.9
       ],
       "yaw": 180,
@@ -112,7 +112,7 @@
       "verb": "on butcher-counter-1",
       "offset": [
         -4.7,
-        1.238,
+        1.281,
         3
       ],
       "yaw": 0,
@@ -143,7 +143,7 @@
       "verb": "against wall",
       "offset": [
         -5.2,
-        0.211,
+        0.254,
         1.6
       ],
       "yaw": 90,
@@ -159,7 +159,7 @@
       "verb": "on butcher-counter-1",
       "offset": [
         -4.2,
-        1.249,
+        1.292,
         3.1
       ],
       "yaw": 0,
@@ -174,7 +174,7 @@
       "verb": "on butcher-counter-1",
       "offset": [
         -3.6,
-        1.249,
+        1.292,
         3.1
       ],
       "yaw": 70,
@@ -189,7 +189,7 @@
       "verb": "on butcher-freezer",
       "offset": [
         -5.2,
-        1.061,
+        1.104,
         1.45
       ],
       "yaw": 0,
@@ -220,7 +220,7 @@
       "verb": "on floor",
       "offset": [
         -3.7,
-        0.196,
+        0.239,
         2.2
       ],
       "yaw": 0,
