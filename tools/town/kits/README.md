@@ -30,7 +30,7 @@ Roles: `counter till npc board dressing sign light alarm interactable furniture`
 turns with the building it is fitted to. Layer kits are rebased so the lowest row is y 0; prefab kits keep the
 building origin as y 0 and say where the interior floor is in `anchoring.floorY`.
 
-A wall row may carry `standoff` (metres): `town fit` stands it that far off the wall plane, for a long plate on a facade that steps back (the pharmacy fascia, #3685). A floor row may carry `lift` (metres, negative sinks it) after the floor snap.
+A wall row may carry `standoff` (metres): `town fit` stands it that far off the wall plane, for a long plate on a facade that steps back (the pharmacy fascia, #3685). A floor row may carry `lift` (metres, negative sinks it) after the floor snap. A `ground` row (a fence panel) may carry `lift` too: its pivot stands that far over the terrain, so a panel on a slope meets the ground at its middle (the wheat field west fence, #3968).
 
 ### Config is referenced, not copied
 

@@ -357,6 +357,12 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false,
       l.y = (f ? -f.bottom : 0) - host.y;
       res.overGround = true;
       res.notes.push("on the ground: y is its height over the terrain under it");
+      // A kit row's `lift` (metres) raises the pivot over the terrain under it: a fence panel on a slope stands with its pivot
+      // (the low end) as far up as the ground rises to its middle, or the high half of the panel is under the grass (#3968).
+      if (Number.isFinite(s.lift) && s.lift !== 0) {
+        l.y += s.lift;
+        res.notes.push(`lifted ${s.lift} m over the terrain at its pivot`);
+      }
     } else if (m.mount === "terrain") {
       const world = toW(l);
       const pts = footprintPoints(world, row.yaw, bounded ? info : null, l.scale);
