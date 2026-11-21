@@ -57,6 +57,7 @@ export const LAYER_READERS_KEPT_HARD = {
   "validate-sound-slots.mjs":"a sound slot id a layer asks for must exist: a broken reference",
   "validate-plot-house-ids.mjs": "a plot key equal to a house id sells the house at the plot price: a config collision, not a position",
   "validate-no-town-layout-asserts.mjs": "judges new test files, and already only warns when the town moved under an old literal",
+  "validate-layer-height-frame.mjs": "island layers only (never a town layer): a row in the wrong height frame stands metres in the air or under the ground",
 };
 
 export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
