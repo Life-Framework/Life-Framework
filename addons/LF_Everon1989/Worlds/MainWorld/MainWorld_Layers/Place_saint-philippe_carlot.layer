@@ -63,7 +63,7 @@ GenericEntity Fit_saint_philippe_carlot_vehicle_lot {
   }
   LF_VehicleSpawnPointComponent "{E1B0E70100000005}" {
    m_sShopId "roadmap-lot"
-   m_vOffset -0.7 0 12.5
+   m_vOffset 1 0 11.8
   }
   MeshObject "{E1B0E70100000001}" {
    Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
@@ -107,7 +107,7 @@ GenericEntity Fit_saint_philippe_carlot_vehicle_lot {
    Enabled 1
   }
  }
- coords 4390.762 15.8 10626.926
+ coords 4388.974 15.742 10627.352
  angleY -9
 }
 GenericEntity Fit_saint_philippe_carlot_garage {

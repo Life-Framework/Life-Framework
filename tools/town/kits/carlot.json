@@ -40,9 +40,9 @@
       "role": "interactable",
       "verb": "against wall",
       "offset": [
-        -0.7,
-        0,
-        -2.9
+        -2.4,
+        -0.058,
+        -2.2
       ],
       "yaw": 0,
       "config": [
@@ -62,7 +62,7 @@
           "component": "LF_VehicleSpawnPointComponent",
           "set": {
             "m_sShopId": "\"roadmap-lot\"",
-            "m_vOffset": "-0.7 0 12.5"
+            "m_vOffset": "1 0 11.8"
           },
           "blocks": []
         },
