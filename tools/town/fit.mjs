@@ -33,7 +33,7 @@ import { fileURLToPath } from "node:url";
 import { onWater } from "../scout/analyse.mjs";
 import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
-import { sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
+import { mountOf, sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
 import { probeTerrain, readPins, terrainFromPins, writePins } from "./terrain.mjs";
 import { frameOf, gameVfsSync } from "../lib/height-frame.mjs";
 
@@ -481,7 +481,7 @@ export function planFit(opts, ctx = {}) {
       // Nested blocks, and a component the prefabs do not have, come from the kit's source. An inherited GUID always wins:
       // the layer overrides that component, it never adds a second one.
       const fromSrc = sourceComponent(kit, src, c, root, sourceCache);
-      const guid = componentGuid(r.prefab, c.component, root, 6, ctx.readGame) ?? fromSrc?.guid ?? null;
+      const guid = componentGuid(r.prefab, c.component, root, 6, ctx.readGame) ?? (/^[0-9A-Fa-f]{16}$/.test(c.guid ?? "") ? c.guid.toUpperCase() : null) ?? fromSrc?.guid ?? null;
       if (!guid) {
         warnings.push(`row ${r.id}: no guid for ${c.component} in ${r.prefab}, its parents or the kit's source; its overrides were not written`);
         continue;
@@ -572,7 +572,8 @@ export async function planFitSeated(opts, ctx = {}) {
   const tmpl = opts.template?.slots?.find((s) => s.id === opts.slot);
   const kit = tmpl ? opts.kits?.[tmpl.kit] : null;
   const ref = hostRefOf(opts);
-  const same = kit && ref ? await sameShell(kit, ref, reader) : false;
+  // opts.sameShell (`town stamp`: the kit was authored around this very prefab) is taken as given; `town fit` asks the models.
+  const same = opts.sameShell != null ? Boolean(opts.sameShell) : kit && ref ? await sameShell(kit, ref, reader) : false;
   const plan = planFit({ ...opts, sameShell: same }, ctx);
   if (!plan.ok) return plan;
   plan.anchor.sameShell = same;
@@ -596,7 +597,11 @@ export async function planFitSeated(opts, ctx = {}) {
     plan.warnings.push("the host has no prefab in the dossier: rows were not seated on it");
     return plan;
   }
-  const seat = await seatRows(plan.rows, plan.kit.rows, plan.host, { reader, allowClip: Boolean(opts.allowClip), terrain: ctx.terrain ?? null });
+  // opts.seatOnly (`town stamp`): seat just the rows held that way (["wall"]); the others stand where the grid proved them.
+  const only = Array.isArray(opts.seatOnly) ? new Set(opts.seatOnly) : null;
+  const srcOf = new Map(plan.kit.rows.map((q) => [q.id, q]));
+  const toSeat = only ? plan.rows.filter((r) => only.has(mountOf({ ...(srcOf.get(r.id) ?? {}), prefab: r.prefab }).mount)) : plan.rows;
+  const seat = await seatRows(toSeat, plan.kit.rows, plan.host, { reader, allowClip: Boolean(opts.allowClip), terrain: ctx.terrain ?? null, flatWalls: Boolean(opts.flatWalls) });
   plan.seat = seat;
   plan.terrainPoints = seat.terrainPoints ?? [];
   if (!seat.host) {
