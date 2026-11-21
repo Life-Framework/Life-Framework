@@ -3,6 +3,7 @@
 // red-proof: observed 2026-11-19 (#3225): with the bakery and butcher stocks lacking baguette, croissant, saucisson and ham, `toolscli test --no-build --only LF_Test_EveronVillageStock` failed `the bakery stock lists 5 items`, `the butcher stock lists 4 items` and each new `is in the stock` line; `--red` fails on the `bakery_missing` and `butcher_missing` lookups.
 // red-proof (cafe and general store loop check): 2026-11-18 with the cafe and general store apple rows at $2, `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed 4 lines (cafe and general_store: `Apple.et sells for 2 and buys back for 4` and `sells for 2 and the market pays up to 5`); at $6 it passes.
 // red-proof: observed 2026-11-21 (#3893): with the five new newsagent items in the stock and no `LF_ShopPrices_Newsagent.conf`, `--only LF_Test_EveronVillageStock` failed `newsagent: ...LF_Newspaper.et sells for 1 and buys back for 25: no profit loop` (and the same for the magazine, postcard, notebook and pen); the price rules (sell 0 to 2) make it pass.
+// red-proof: observed 2026-11-21 (#3893 pharmacy): with the new LF_ShopStock_Pharmacy.conf overlay unlisted from the mission header, `--only LF_Test_EveronVillageStock` fails `the pharmacy has a stock under the pack header`; its buy-back is capped by LF_ShopPrices_Drugstore.conf (sell under buy).
 // red-proof: observed 2026-11-18 (#3218): on main (no supermarket, hardware, seed_feed, newsagent or mechanic stock) `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed on every `has a stock under the pack header` line.
 //! #3218: the new Saint-Philippe village shops each have a stock in the pack's shop stock overlay.
 //! Checked against the merged pack config (pack leg): each stock id loads with the items the card names,
@@ -47,6 +48,11 @@ class LF_Test_EveronVillageStock : LF_Test
 	protected static const ResourceName POSTCARD = "{F4935CB74CA81B10}Prefabs/Items/Newsagent/LF_Postcard.et";
 	protected static const ResourceName NOTEBOOK = "{858F926E8089F6A1}Prefabs/Items/Newsagent/LF_Notebook.et";
 	protected static const ResourceName PEN = "{54D003FBA42CB033}Prefabs/Items/Newsagent/LF_Pen.et";
+	protected static const ResourceName ASPIRIN = "{C98FCC6CA6C56069}Prefabs/Items/Medicine/AspirinBottle.et";
+	protected static const ResourceName GAUZE_1 = "{CDCC313B2FB76FE7}Prefabs/Items/Medicine/FieldDressing_01/Gauze_01.et";
+	protected static const ResourceName GAUZE_2 = "{AF3411AAF94D18C2}Prefabs/Items/Medicine/Gauze_02/Gauze_02.et";
+	protected static const ResourceName TOURNIQUET_US = "{D70216B1B2889129}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_US_01.et";
+	protected static const ResourceName TOURNIQUET_USSR = "{80E75A71C29190DB}Prefabs/Items/Medicine/Tourniquet_01/Tourniquet_USSR_01.et";
 	protected static const ResourceName PARTS = "{7A94C1E05D3B2F68}Prefabs/Items/Resources/LF_CarParts.et";
 	protected static const ResourceName REPAIR_KIT = "{3F5A9C1E7B2D4806}Prefabs/Items/Vehicles/LF_RepairKit.et";
 
@@ -69,6 +75,8 @@ class LF_Test_EveronVillageStock : LF_Test
 		CheckStock(ctx, manager, "seed_feed", {SEEDS, BAIT, ROD, WATER});
 		//! #3893: the newsagent sells what its racks show: papers, magazines, postcards, the island map, stationery.
 		CheckStock(ctx, manager, "newsagent", {MAP, WATER, NEWSPAPER, MAGAZINE, POSTCARD, NOTEBOOK, PEN});
+		//! #3893: the pharmacy till sells the medicine its counter shows (buy-back capped by the drugstore price rules).
+		CheckStock(ctx, manager, "pharmacy", {ASPIRIN, GAUZE_1, GAUZE_2, TOURNIQUET_US, TOURNIQUET_USSR});
 		CheckStock(ctx, manager, "mechanic", {PARTS, REPAIR_KIT});
 		CheckStock(ctx, manager, "bakery", {BREAD, CRACKERS, CHOCOLATE, BAGUETTE, CROISSANT});
 		CheckStock(ctx, manager, "butcher", {DRIED_MEAT, CANNED_MEAT, SAUCISSON, HAM});

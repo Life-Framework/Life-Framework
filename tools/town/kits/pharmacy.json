@@ -1,95 +1,72 @@
 {
   "schema": 1,
   "kit": "pharmacy",
-  "system": "store",
+  "system": "",
   "source": {
-    "file": "addons/LF_Everon1989/Prefabs/Buildings/Drugstore/Drugstore_Store.et",
-    "group": "*",
-    "origin": "prefab",
-    "frame": "building-local",
-    "also": [
-      "addons/LF_Everon1989/Prefabs/Buildings/Drugstore/ShopHouse_E_2I01t_drugstore_lf.et"
-    ]
+    "file": "tools/town/kits/sources/pharmacy.layer",
+    "group": "Pharmacy_*",
+    "origin": "building",
+    "frame": "building-local"
   },
-  "scope": "building",
+  "scope": "room",
   "building": {
-    "mode": "override",
-    "via": "{9090774B54A3747C}Prefabs/Buildings/Drugstore/ShopHouse_E_2I01t_drugstore_lf.et",
-    "vanilla": "{9064E65F34097C8F}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_Base.et"
-  },
-  "store": {
-    "prefab": "{BD40585C1FC1DCCF}Prefabs/Buildings/Drugstore/Drugstore_Store.et",
-    "config": [
-      {
-        "component": "LF_ShopComponent",
-        "set": {},
-        "blocks": [
-          "m_aShopItems"
-        ]
-      },
-      {
-        "component": "LF_StoreComponent",
-        "set": {
-          "m_sStoreKey": "\"everon_drugstore\"",
-          "m_vBoundaryCenter": "2.08 0 -0.45",
-          "m_vBoundaryHalf": "3.75 0 7.9",
-          "m_iRestockSeconds": "300"
-        },
-        "blocks": [
-          "m_aLines"
-        ]
-      },
-      {
-        "component": "ActionsManagerComponent",
-        "set": {},
-        "blocks": [
-          "ActionContexts",
-          "additionalActions"
-        ]
-      }
-    ]
+    "mode": "inside",
+    "vanilla": "{FF48B5059EB0AC65}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_drugstore.et"
   },
   "anchoring": {
-    "floorY": 0.199,
+    "floorY": 0.196,
     "floors": [
       {
         "id": "f0",
-        "y": 0.199
+        "y": 0.196
+      },
+      {
+        "id": "f1",
+        "y": 3.196
       }
     ],
     "footprint": {
-      "source": "store-boundary",
+      "source": "rows",
       "min": [
-        -1.67,
-        -8.35
+        2.95,
+        -1.3
       ],
       "max": [
-        5.83,
-        7.45
+        5.676,
+        -0.15
       ]
     },
-    "front": "-x",
+    "front": "+z",
     "counters": [
       {
-        "id": "lf-pharmacy-counter",
-        "wall": "free",
-        "edgeGap": 2.43
+        "id": "pharmacy-counter",
+        "wall": "+z",
+        "edgeGap": 0.173
+      },
+      {
+        "id": "pharmacy-till",
+        "wall": "-x",
+        "edgeGap": 0
       }
     ],
     "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
-      "id": "lf-sign-fascia",
+      "id": "pharmacy-fascia",
+      "name": "Pharmacy_fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
       "role": "sign",
       "verb": "against wall",
       "offset": [
         -3.8,
-        3.3,
+        3.25,
         7.5
       ],
       "yaw": 0,
+      "wall": "+z",
+      "floor": "f1",
+      "attach": "wall",
       "config": [
         {
           "component": "LF_SignComponent",
@@ -101,61 +78,23 @@
           },
           "blocks": []
         }
-      ],
-      "wall": "+z",
-      "floor": "f0",
-      "standoff": 0.07
+      ]
     },
     {
-      "id": "shop-house-e-2-i01t-furniture-drugstore-lf-01",
-      "prefab": "{1D49EA09388829EB}Prefabs/Buildings/Drugstore/Furniture/ShopHouse_E_2I01t_furniture_drugstore_lf_01.et",
-      "role": "furniture",
-      "verb": "on floor",
-      "offset": [
-        0,
-        0,
-        0
-      ],
-      "yaw": 0,
-      "from": "ShopHouse_E_2I01t_drugstore_lf.et",
-      "wall": "free",
-      "floor": "all"
-    },
-    {
-      "id": "electricity-box-small-01",
-      "prefab": "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et",
-      "role": "alarm",
-      "verb": "against wall",
-      "offset": [
-        4.9,
-        2.6,
-        8.08
-      ],
-      "yaw": 0,
-      "config": [
-        {
-          "component": "LF_AlarmMountComponent",
-          "set": {
-            "m_vOffset": "0 0.167 0.065",
-            "m_fReach": "10"
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "+z",
-      "floor": "f0"
-    },
-    {
-      "id": "lf-pharmacy-counter",
+      "id": "pharmacy-counter",
+      "name": "Pharmacy_counter",
       "prefab": "{E66CFB8EA2048E05}Prefabs/Props/Commercial/LF_PharmacyCounter.et",
       "role": "counter",
-      "verb": "on floor",
+      "verb": "against wall",
       "offset": [
         3.4,
-        0.199,
+        0.236,
         -0.323
       ],
       "yaw": 0,
+      "wall": "+z",
+      "floor": "f0",
+      "attach": "wall",
       "config": [
         {
           "component": "LF_ShopComponent",
@@ -164,26 +103,122 @@
           },
           "blocks": []
         }
-      ],
-      "wall": "free",
-      "floor": "f0"
+      ]
     },
     {
-      "id": "village-drugstore-pharmacist",
-      "name": "Village_Drugstore_Pharmacist",
+      "id": "pharmacy-pharmacist",
+      "name": "Pharmacy_pharmacist",
       "prefab": "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et",
       "role": "npc",
       "verb": "on floor",
       "offset": [
         3.1,
-        0.199,
+        0.231,
         -1.25
       ],
       "yaw": 0,
       "class": "LF_NpcBaseEntity",
-      "from": "Village_Buildings.layer",
-      "wall": "free",
-      "floor": "f0"
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "pharmacy-till",
+      "name": "Pharmacy_till",
+      "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
+      "role": "till",
+      "verb": "on pharmacy-counter",
+      "offset": [
+        2.95,
+        1.276,
+        -0.35
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "guid": "7C4D2E1A5B6F80A3",
+          "set": {
+            "m_sShopName": "\"#LF-Shop_Name_Pharmacy\"",
+            "m_sShopDescription": "\"#LF-Shop_Desc_Pharmacy\"",
+            "m_sStockId": "\"pharmacy\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "guid": "5A4B0B84C86E4845",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "floor": "f0",
+      "attach": "counter:pharmacy-counter"
+    },
+    {
+      "id": "pharmacy-aspirin",
+      "name": "Pharmacy_aspirin",
+      "prefab": "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et",
+      "role": "dressing",
+      "verb": "on pharmacy-counter",
+      "offset": [
+        3.55,
+        1.276,
+        -0.15
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "counter:pharmacy-counter"
+    },
+    {
+      "id": "pharmacy-gauze",
+      "name": "Pharmacy_gauze",
+      "prefab": "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et",
+      "role": "dressing",
+      "verb": "on pharmacy-counter",
+      "offset": [
+        3.85,
+        1.28,
+        -0.15
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "counter:pharmacy-counter"
+    },
+    {
+      "id": "pharmacy-tourniquet",
+      "name": "Pharmacy_tourniquet",
+      "prefab": "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et",
+      "role": "dressing",
+      "verb": "on pharmacy-counter",
+      "offset": [
+        3.25,
+        1.276,
+        0.1
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "counter:pharmacy-counter"
     }
-  ]
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{FF48B5059EB0AC65}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_drugstore.et",
+    "lanes": [
+      {
+        "from": "entrance",
+        "to": "pharmacy-counter",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "pharmacy-till",
+        "width": 1.2
+      }
+    ],
+    "clear": []
+  }
 }

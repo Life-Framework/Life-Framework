@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "F6DB9F9AE4D293D6"
+ components {
+  MeshObject "{33A04C5C40C204D1}" {
+   Object "{A833815CADDECDC8}Assets/Items/Medicine/Tourniquet_01/Tourniquet_US_01/Tourniquet_US_01_rolledup.xob"
+  }
+ }
+ coords 0 0 0
+}

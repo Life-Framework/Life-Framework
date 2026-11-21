@@ -9,7 +9,20 @@ GenericEntity Fit_saint_philippe_pharmacy_Place {
  }
  coords 4431.4 9.2 10841.5
 }
-GenericEntity Fit_saint_philippe_pharmacy_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_aspirin : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4432.113 10.276 10838.019
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_counter : "{E66CFB8EA2048E05}Prefabs/Props/Commercial/LF_PharmacyCounter.et" {
+ components {
+  LF_ShopComponent "{837E80AF6CCDBB47}" {
+   m_sOutletId "pharmacy_counter"
+  }
+ }
+ coords 4431.909 9.236 10838.123
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {
   LF_SignComponent "{6E3FF3980D87CACE}" {
    m_sSignId "pharmacy"
@@ -18,33 +31,51 @@ GenericEntity Fit_saint_philippe_pharmacy_lf_sign_fascia : "{4697D9464B596C24}Pr
    m_vTextColor 0.96 0.95 0.9
   }
  }
- coords 4437.889 12.3 10847.035
+ coords 4437.821 12.25 10847.018
  angleY 76
 }
-GenericEntity Fit_saint_philippe_pharmacy_shop_house_e_2_i01t_furniture_drugstore_lf_01 : "{1D49EA09388829EB}Prefabs/Buildings/Drugstore/Furniture/ShopHouse_E_2I01t_furniture_drugstore_lf_01.et" {
- coords 4431.4 9 10841.5
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_gauze : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4432.186 10.28 10837.728
  angleY 76
 }
-GenericEntity Fit_saint_philippe_pharmacy_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+LF_NpcBaseEntity Fit_saint_philippe_pharmacy_pharmacy_pharmacist : "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et" {
+ coords 4430.937 9.231 10838.19
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
  components {
-  LF_AlarmMountComponent "{B18DF3E384CC59BD}" {
-   m_vOffset 0 0.167 0.065
-   m_fReach 10
+  LF_ShopComponent "{7C4D2E1A5B6F80A3}" {
+   m_sShopName "#LF-Shop_Name_Pharmacy"
+   m_sShopDescription "#LF-Shop_Desc_Pharmacy"
+   m_sStockId "pharmacy"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{7C4D2E1A5B6F80A4}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C4D2E1A5B6F80A5}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C4D2E1A5B6F80A6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C4D2E1A5B6F80A7}" {
+      Name "#LF-Shop_Open_Pharmacy"
+      Description "#LF-Shop_OpenDesc_Pharmacy"
+     }
+    }
+   }
   }
  }
- coords 4439.901 11.6 10838.569
+ coords 4431.774 10.276 10838.553
  angleY 76
 }
-GenericEntity Fit_saint_philippe_pharmacy_lf_pharmacy_counter : "{E66CFB8EA2048E05}Prefabs/Props/Commercial/LF_PharmacyCounter.et" {
- components {
-  LF_ShopComponent "{837E80AF6CCDBB47}" {
-   m_sOutletId "pharmacy_counter"
-  }
- }
- coords 4431.909 9.199 10838.123
- angleY 76
-}
-LF_NpcBaseEntity Fit_saint_philippe_pharmacy_village_drugstore_pharmacist : "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et" {
- coords 4430.937 9.199 10838.19
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_tourniquet : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4432.283 10.276 10838.371
  angleY 76
 }
