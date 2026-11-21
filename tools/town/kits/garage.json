@@ -113,13 +113,13 @@
       "role": "dressing",
       "verb": "against wall",
       "offset": [
-        -3.4,
-        0.157,
-        -3.4
+        -4.85,
+        0.229,
+        -3
       ],
       "yaw": 0,
-      "free": true,
       "wall": "-z",
+      "mount": "wall",
       "floor": "f0"
     },
     {

@@ -11,7 +11,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { benchGround, benchPoints, withoutBenches } from "./street-life.mjs";
+import { benchGround, benchPoints, hitBlocks, withoutBenches } from "./street-life.mjs";
 import { pinKey } from "./terrain.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -33,8 +33,13 @@ check(Math.abs(pts[0][0] - 100) < 0.001 && Math.abs(pts[0][1] - 200) < 0.001, "t
 check(Math.abs(pts[3][0] - 100.12) < 0.01 && Math.abs(pts[3][1] - 200) < 0.01, "facing east (yaw 90) the front point lies east of the middle");
 check(Math.abs(pts[1][1] - 199.2) < 0.01, "an end of the seat lies 0.8 m along the wall (yaw 90: towards -z)");
 
+check(hitBlocks(["terrain", "WoodPile_02_B", "terrain"]) === "WoodPile_02_B", "a point whose ground is a wood pile is refused");
+check(hitBlocks(["terrain", "AsphaltPavement_01_Wide_4m_A", "ConcreteStairs_02_Wide"]) === null, "pavement, stairs and terrain are ground");
+check(benchPoints(100, 200, 90, 0.5)[1][1] > 199.45 && benchPoints(100, 200, 90, 0.5)[1][1] < 199.55, "a flower box is probed along 0.5 m each way");
+
 const layer = "GenericEntity Fit_x_street_life_bench_b10 : \"{A}p.et\" {\n coords 1 2 3\n}\nSCR_DestructibleEntity Fit_x_street_life_bin_b10 : \"{B}q.et\" {\n coords 4 5 6\n}\nGenericEntity Fit_x_street_life_bench_red_b09 : \"{C}r.et\" {\n coords 7 8 9\n}\n";
-const kept = withoutBenches(layer);
+const kept = withoutBenches(layer + "SCR_DestructibleEntity Fit_x_street_life_flowers_b09 : \"{D}s.et\" {\n coords 1 1 1\n}\n");
+check(!kept.includes("flowers_b09"), "withoutBenches also drops the flower boxes the probe must not land on");
 check(!kept.includes("bench") && kept.includes("bin_b10") && kept.includes("coords 4 5 6"), "withoutBenches drops the benches and keeps the bin");
 
 const layerFile = join(ROOT, "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_street-life.layer");

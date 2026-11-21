@@ -34,16 +34,28 @@ SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_0 : "{A
  coords 4400.996 0 10562.003
  angleY 90
 }
-SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_8 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
- coords 4400.995 0 10554.002
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_8 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4400.995 0.406 10554.002
  angleY 90
 }
-SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_16 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
- coords 4401.004 0 10546.001
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_12 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4400.995 0.375 10550.002
  angleY 90
 }
-SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_24 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
- coords 4401.003 0 10538
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_16 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4401.004 0.328 10546.001
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_20 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4401.004 0.328 10542.001
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_24 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4401.003 0.281 10538
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_28 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4401.003 0.265 10534
  angleY 90
 }
 SCR_DestructibleEntity Fit_saint_philippe_wheatfield_wheat_field_fence_w_32 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
