@@ -117,7 +117,8 @@
       ],
       "yaw": 0,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "terrain"
     },
     {
       "id": "letter-altar",
