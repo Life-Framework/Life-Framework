@@ -66,6 +66,9 @@ class LF_ParkedCarMarkerComponent : ScriptComponent
 	[Attribute("8", UIWidgets.Auto, desc: "The car counts as gone once it is farther than this from the marker, in metres.", params: "1 100")]
 	protected float m_fHomeMetres;
 
+	[Attribute("", UIWidgets.ResourcePickerThumbnail, desc: "A police-car marker (#3875): put out always this car instead of one from the parked car list, and keep it a service vehicle that no civilian can pick, wire, key, chop or store. Empty: the normal list.", params: "et")]
+	protected ResourceName m_sServiceCar;
+
 	//! The seat traces start this far above the car's bottom (a car spawned with its wheels in the kerb still finds the kerb top)
 	//! and reach this far under it (a marker up to 2.5 m over the street still lands the car on it).
 	static const float SETTLE_LIFT = 1.2;
@@ -147,7 +150,17 @@ class LF_ParkedCarMarkerComponent : ScriptComponent
 		ResourceName prefab;
 		while (!car)
 		{
-			prefab = config.PickPrefabAvoiding(LF_ParkedCars.FailedCars());
+			if (!m_sServiceCar.IsEmpty())
+			{
+				prefab = m_sServiceCar;
+				if (LF_ParkedCars.FailedCars().Find(LF_ParkedCarList.CarId(prefab)) >= 0)
+					return null;
+			}
+			else
+			{
+				prefab = config.PickPrefabAvoiding(LF_ParkedCars.FailedCars());
+			}
+
 			if (prefab.IsEmpty())
 			{
 				LF_ParkedCars.ReportNoCar(config.m_aCars && !config.m_aCars.IsEmpty());
@@ -161,7 +174,10 @@ class LF_ParkedCarMarkerComponent : ScriptComponent
 
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(car);
 		if (vehicleLock)
+			{
 			vehicleLock.SetLocked(true);
+			vehicleLock.SetServiceVehicle(!m_sServiceCar.IsEmpty());
+		}
 		else
 			LF_Debug.Warn(LF_ParkedCarConfig.FEATURE, string.Format("%1 has no LF_VehicleLockComponent: the parked car stands unlocked", prefab));
 
