@@ -245,6 +245,26 @@ try {
   r = await run(["0grind", "config", "push", "--admins-pending", "--only", "name,staff"]);
   if (r.code !== 0 || !/only name/.test(r.out) || !/staff\.txt: unchanged/.test(r.out)) fail(`config push --only name,staff: ${r.out}`);
 
+  // ---- config push --only owner: only the mod's config.json; the box's staff webhook survives a PC with no secrets
+  const HOOK = "https://discord.com/api/webhooks/1/selftest-hook-value";
+  state.files.set("/profile/LifeFramework/config.json", Buffer.from(`${JSON.stringify({ staff: { webhookUrl: HOOK }, jobs: { benefitAmount: 999 } })}\n`, "utf8"));
+  const cfgBeforeO = state.files.get("/ServerConfig.json").toString("utf8");
+  const staffBeforeO = state.files.get("/profile/LifeFramework/staff.txt").toString("utf8");
+  const wO1 = writes().length;
+  r = await run(["0grind", "config", "push", "--only", "owner"]);
+  if (r.code !== 0 || writes().length !== wO1 || !/config\.json: \d+ to change \(the box's staff\.webhookUrl kept\)/.test(r.out) || !/dry run/.test(r.out)) fail(`config push --only owner dry run wrote or hid the diff: ${r.out}`);
+  if (r.out.includes(HOOK)) fail("config push --only owner printed the box's webhook");
+  r = await run(["0grind", "config", "push", "--only", "owner", "--yes"]);
+  const ownerWrites = writes().slice(wO1);
+  if (r.code !== 0 || ownerWrites.length !== 1 || ownerWrites[0].method !== "PUT" || ownerWrites[0].query !== "/profile/LifeFramework/config.json") fail(`config push --only owner wrote ${JSON.stringify(ownerWrites.map((c) => `${c.method} ${c.query ?? c.path}`))} instead of just config.json: ${r.out}`);
+  const ownerAfter = JSON.parse(state.files.get("/profile/LifeFramework/config.json").toString("utf8"));
+  if (ownerAfter.staff?.webhookUrl !== HOOK) fail("config push --only owner dropped the box's staff webhook");
+  if (ownerAfter.dayCycle === undefined || ownerAfter.jobs?.benefitAmount === 999) fail("config push --only owner did not upload the repo's config.json");
+  if (state.files.get("/ServerConfig.json").toString("utf8") !== cfgBeforeO || state.files.get("/profile/LifeFramework/staff.txt").toString("utf8") !== staffBeforeO) fail("config push --only owner changed ServerConfig.json or staff.txt");
+  const wO2 = writes().length;
+  r = await run(["0grind", "config", "push", "--only", "owner", "--yes"]);
+  if (r.code !== 0 || writes().length !== wO2 || !/config\.json: unchanged/.test(r.out)) fail(`a second config push --only owner is not a no-op: ${r.out}`);
+
   // ---- system fix: the flagship's System-page settings
   const w3 = writes().length;
   r = await run(["0grind", "system", "fix"]);
