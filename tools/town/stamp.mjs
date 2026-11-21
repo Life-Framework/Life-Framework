@@ -10,19 +10,26 @@
 // the SAME vanilla building in the grid, so its building-local offsets, height included, land on the same floors and walls. The
 // stamp refuses a building whose prefab differs from the kit's (`stamp.prefab`, else `building.vanilla`). Rows go out sorted by kit
 // row id and rounded to the mm, so stamping twice writes the same bytes and a moved kit row moves in every copy.
+// Open-ground rows (kit rows with `"mount": "terrain"` or `"ground"`, a yard round the building) are seated on the ISLAND ground, not on
+// the flat grid's: building-local heights copied from the grid would float or sink a yard on the island slope (card #3961). The
+// ground comes from the pins of tools/town/terrain/<place>-<slot>.json (`town fit --terrain` keeps them too); `town stamp --terrain`
+// probes them on the island's test server first, one boot per slot. Without a pin a stamp that needs one is refused with that hint, never
+// written at the grid height. Each row keeps its building-relative x, z and yaw; only its height changes, in the frame its prefab reads
+// (tools/lib/height-frame.mjs).
 // Then `audit placement --strict --world MainWorld --layer <the stamped layers>` runs, and a hard finding on a stamped row
 // (STAMP_HARD) puts the previous files back and exits 1: the island audit is the stamp's verdict, not a warning.
 // Pure parts (stampTargets, planStamp, stampVerdict) are what tools/town/stamp.selftest.mjs runs on tools/town/fixtures/stamp/.
 import { spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkKit } from "./kit.mjs";
 import { CLAIMS_DIR, LAYER_DIR, planFitSeated } from "./fit.mjs";
 import { mountOf, shellReader } from "./seat.mjs";
+import { probeTerrain, readPins, terrainFromPins, writePins } from "./terrain.mjs";
 
-export const help = "stamp <kit> [--place p] [--dry] [--no-audit] | stamp --all   write a grid-authored building-local kit onto every island building mapped to it (same prefab only), then the island audit judges it: a hard finding refuses the stamp";
+export const help = "stamp <kit> [--place p] [--dry] [--terrain] [--no-audit] | stamp --all   write a grid-authored building-local kit onto every island building mapped to it (same prefab only), then the island audit judges it: a hard finding refuses the stamp";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const REF_RE = /^\{([0-9A-Fa-f]{16})\}(.+)$/;
@@ -34,6 +41,9 @@ const refKey = (ref) => {
   const m = REF_RE.exec(String(ref ?? ""));
   return m ? `${m[1].toUpperCase()}|${m[2].toLowerCase()}` : String(ref ?? "").toLowerCase();
 };
+// Mounts the stamp seats on the island instead of copying the grid height: the wall rows on the real wall, the yard rows on the real ground.
+export const STAMP_SEAT = ["wall", "terrain", "ground"];
+export const needsShell = (kit) => kit.rows.some((r) => STAMP_SEAT.includes(mountOf(r).mount));
 export const kitPrefab = (kit) => kit.stamp?.prefab ?? kit.building?.vanilla ?? null;
 
 // A kit with its rows in id order: the layer is written in that order, so the bytes never depend on the order a grid edit left.
@@ -67,14 +77,15 @@ export function stampTargets(kitName, { placesDir, templatesDir, place = null })
 }
 
 // Pure but for the prefab reads planFit makes (and, with `shell`, the host model reads). Returns { ok, errors, copies: [{ place, slot, layerFile, layerText, claimFile, claim }] }.
-export async function planStamp(kit, targets, { root = ROOT, layerDir = LAYER_DIR, claimsDir = CLAIMS_DIR, skipClaims = false, branch = null, now = null, readGame = null, outRoot = root, shell = null } = {}) {
+export async function planStamp(kit, targets, { root = ROOT, layerDir = LAYER_DIR, claimsDir = CLAIMS_DIR, skipClaims = false, branch = null, now = null, readGame = null, outRoot = root, shell = null, terrainOf = null, frameOf = null, allowUnprobed = false } = {}) {
   const errors = [...checkKit(kit, { root }).map((e) => `kit: ${e}`)];
   const want = kitPrefab(kit);
   if (!want) errors.push(`kit ${kit.kit}: names no building prefab (stamp.prefab or building.vanilla); author it around a vanilla building first (town author)`);
   if (!targets.length) errors.push(`kit ${kit.kit}: no place mapping assigns it to a building`);
-  if (errors.length) return { ok: false, errors, copies: [] };
+  if (errors.length) return { ok: false, errors, copies: [], probes: [] };
   const sk = sortedKit(kit);
   const copies = [];
+  const probes = [];
   for (const t of targets) {
     const where = `${t.place}.${t.slot}`;
     if (!t.building) {
@@ -87,18 +98,27 @@ export async function planStamp(kit, targets, { root = ROOT, layerDir = LAYER_DI
     }
     // The grid proved every row except the ones hung on a wall: those are seated on the island building's real wall (seat.mjs
     // flatWalls), which is flat under the plate or slid along to a run that is. With no readable host model they stay as authored.
+    const terrain = terrainOf ? terrainOf(t.place, t.slot) : terrainFromPins(readPins(root, t.place, t.slot));
     const plan = await planFitSeated(
-      { place: t.place, slot: t.slot, dossier: t.dossier, mapping: t.mapping, template: t.template, kits: { [t.template.slots.find((s) => s.id === t.slot).kit]: sk }, sameShell: true, refit: true, skipClaims, branch, fetch: false, seatOnly: ["wall"], flatWalls: true },
-      { root, now, readGame, shell },
+      { place: t.place, slot: t.slot, dossier: t.dossier, mapping: t.mapping, template: t.template, kits: { [t.template.slots.find((s) => s.id === t.slot).kit]: sk }, sameShell: true, refit: true, skipClaims, branch, fetch: false, seatOnly: STAMP_SEAT, flatWalls: true },
+      { root, now, readGame, shell, terrain, frameOf },
     );
     if (!plan.ok) {
       errors.push(...plan.errors.map((e) => `${where}: ${e}`));
       continue;
     }
-    // A row whose prefab reads y over the terrain (RELATIVE_Y, tools/lib/height-frame.mjs) cannot be stamped from building-local
-    // heights alone: it needs the ground under it, which only `town fit --terrain` probes.
-    if (plan.framePending?.length) {
-      errors.push(`${where}: ${plan.framePending.join(", ")} read y over the terrain (their prefab flags carry RELATIVE_Y); a stamp writes world heights only: fit the slot with town fit --terrain, or use a prefab without the flag`);
+    // A yard row seated on nothing keeps the flat grid height; there is no host model to seat it with, so refuse rather than write that.
+    const yard = kit.rows.filter((r) => ["terrain", "ground"].includes(mountOf(r).mount));
+    if (yard.length && !plan.seat?.host) {
+      errors.push(`${where}: ${yard.length} open-ground row(s) cannot be seated: no readable host model (${plan.warnings.slice(-1)[0] ?? "no reader"}); a stamp never copies the grid height onto the island slope`);
+      continue;
+    }
+    // A yard row (or a row whose prefab reads y over the terrain, tools/lib/height-frame.mjs) needs the island ground under it. With no
+    // pin for a point the row would keep the grid height or be written in the wrong frame: refuse, and say what probes it.
+    const unprobed = [...new Set([...(plan.seat?.rows ?? []).filter((r) => r.mount === "terrain" && r.notes.some((n) => /^no probed terrain height/.test(n))).map((r) => r.id), ...(plan.framePending ?? [])])];
+    if (unprobed.length && !allowUnprobed) {
+      errors.push(`${where}: ${unprobed.join(", ")} need the island ground height under them (open-ground rows, or a prefab that reads y over the terrain) and tools/town/terrain/${t.place}-${t.slot}.json has none: run town stamp ${kit.kit} --terrain`);
+      probes.push({ place: t.place, slot: t.slot, layerName: plan.layerName, aroundY: plan.anchor.y, points: plan.terrainPoints ?? [] });
       continue;
     }
     const layerFile = `${layerDir}/${plan.layerName}`;
@@ -115,9 +135,9 @@ export async function planStamp(kit, targets, { root = ROOT, layerDir = LAYER_DI
         /* a broken claim is rewritten */
       }
     }
-    copies.push({ place: t.place, slot: t.slot, building: t.building.id, layerFile, layerText: plan.layerText, claimFile, claim: JSON.stringify(claim, null, 2) + "\n", warnings: plan.warnings });
+    copies.push({ place: t.place, slot: t.slot, building: t.building.id, layerFile, layerText: plan.layerText, claimFile, claim: JSON.stringify(claim, null, 2) + "\n", warnings: plan.warnings, terrainRows: (plan.seat?.rows ?? []).filter((r) => r.mount === "terrain").length });
   }
-  return { ok: errors.length === 0, errors, copies };
+  return { ok: errors.length === 0, errors, copies, probes };
 }
 
 // The audit's report.json against the stamped layers: every hard finding on a stamped row, as text.
@@ -174,6 +194,32 @@ function islandAudit(root, kitName) {
   };
 }
 
+// `--terrain`: the island's test server measures the ground under the yard rows. It boots around the slot's own layer, so the copies are
+// written once with the grid heights, probed, and the previous bytes put back before the plan runs again on the pins (the real write and the
+// island audit come after, so a refused stamp leaves nothing behind but the pins). A point the server gave no height for leaves its row unprobed and the re-plan refuses it.
+export async function probeAndReplan(kit, targets, po, plan, { root, dry, probe = probeTerrain, log = console.log }) {
+  const interim = await planStamp(kit, targets, { ...po, allowUnprobed: true });
+  if (!interim.ok) return interim;
+  const want = new Set(plan.probes.map((p) => `${p.place}.${p.slot}`));
+  const files = interim.copies.filter((c) => want.has(`${c.place}.${c.slot}`)).flatMap((c) => [[c.layerFile, c.layerText], [c.claimFile, c.claim]]);
+  const before = new Map(files.map(([f]) => [f, existsSync(join(root, f)) ? readFileSync(join(root, f), "utf8") : null]));
+  for (const [f, text] of files) {
+    mkdirSync(dirname(join(root, f)), { recursive: true });
+    writeFileSync(join(root, f), text);
+  }
+  try {
+    for (const p of plan.probes) {
+      const probed = await probe(p.points, { layerName: p.layerName, aroundY: p.aroundY });
+      if (probed.missing.length) log(`  warning ${p.place}.${p.slot}: the server gave no ground height at ${probed.missing.length} point(s): ${probed.missing.join(" ")}`);
+      const pinFile = writePins(root, p.place, p.slot, probed.points, new Date().toISOString().slice(0, 10));
+      log(`  terrain ${p.place}.${p.slot}: ${Object.keys(probed.points).length} point(s) probed -> ${relative(root, pinFile).replaceAll("\\", "/")}`);
+    }
+  } finally {
+    for (const [f, text] of before) (text === null ? rmSync(join(root, f), { force: true }) : writeFileSync(join(root, f), text));
+  }
+  return planStamp(kit, targets, po);
+}
+
 function parseArgs(args) {
   const o = { _: [] };
   const valued = new Set(["place", "places-dir", "templates-dir", "kits-dir", "layer-dir", "claims-dir"]);
@@ -209,8 +255,10 @@ export async function main(args, { root = ROOT } = {}) {
     }
     const kit = readJson(f);
     console.log(`town stamp ${name}:`);
-    const hasWall = kit.rows.some((r) => mountOf(r).mount === "wall");
-    const plan = await planStamp(kit, stampTargets(name, opts), { root, shell: hasWall ? shellReader(root) : null, layerDir: a["layer-dir"] ?? LAYER_DIR, claimsDir: a["claims-dir"] ?? CLAIMS_DIR, skipClaims: Boolean(a["no-claims"]), branch });
+    const targets = stampTargets(name, opts);
+    const po = { root, shell: needsShell(kit) ? shellReader(root) : null, layerDir: a["layer-dir"] ?? LAYER_DIR, claimsDir: a["claims-dir"] ?? CLAIMS_DIR, skipClaims: Boolean(a["no-claims"]), branch };
+    let plan = await planStamp(kit, targets, po);
+    if (plan.probes.length && a.terrain) plan = await probeAndReplan(kit, targets, po, plan, { root, dry: Boolean(a.dry) });
     for (const c of plan.copies) for (const w of c.warnings ?? []) console.log(`  warning ${c.place}.${c.slot}: ${w}`);
     if (applyStamp(plan, { root, dry: Boolean(a.dry), audit: a["no-audit"] ? null : islandAudit(root, name) })) fails++;
   }
