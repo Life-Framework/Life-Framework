@@ -7,14 +7,17 @@ building in a pack grid cell, lifted as a building-local kit, and stamped onto e
 ## Commands, in order
 
 ```
-tools\cli town author <kit> --from <place>/<slot> --dry   # which building prefab, which cell (author-<kit>)
-tools\cli town author <kit> --from <place>/<slot> [--margin 1.5]   # grid place <slug> <prefab> --pack [--margin m], then the kit's rows
+toolscli town author <kit> --from <place>/<slot> --dry   # which building prefab, which authoring bay (author-<kit>)
+toolscli town author <kit> --from <place>/<slot> [--margin 1.5]   # grid place <slug> <prefab> --pack --bay [--margin m], then the kit's rows at the building
 tools\cli look grid:author-<kit> --interior auto          # look, fix the rows in the cell's layer, look again
 tools\cli audit placement --grid --strict                 # clean in the grid first
-tools\cli town author extract <the cell's Grid_*.layer> '<group>' --kit <kit> [--clear {GUID}path,...]
+tools\cli town author extract <the cell's Grid_*.layer> '<group>' --kit <kit> [--clear {GUID}path,...]   # also releases the bay
+tools\cli town author --reopen <kit>                       # edit it again: a bay is rebuilt from the kit
 tools\cli town stamp <kit> --dry                          # every mapped island copy, writes nothing
 tools\cli town stamp <kit>                                # writes Place_<place>_<slot>.layer + claim, then the island audit
 ```
+
+The bay is scratch space (six 2x2 bays, `docs/architecture/world-zones.md` "Authoring bays"): extract saves the kit, archives the layer as `tools/town/kits/sources/<kit>.layer` and frees the bay so the next shop can use it; `--keep-bay` keeps it. No free bay means another author has not extracted yet.
 
 `town stamp --all` re-stamps every kit that carries a `stamp` block (after a kit change).
 

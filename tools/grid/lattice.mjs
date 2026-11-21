@@ -27,7 +27,8 @@ import { frameSpawnLines } from "./cell-spawn.mjs";
 // (GRID.x1 below follows), `node tools/grid/lattice.mjs write`. The terrain (GridTerrain, 257 x 257 points
 // at 2 m = 512 m) is far larger than the grid; keep GRID inside 0..512 (tools/validation/grid-world-selftest.mjs).
 // GRID_CENTRE stays where it was so no old cell's gap flips to another side.
-export const CELL = { size: 12, origin: 22, cols: 25, rows: 7, inset: 1, fence: 5 };
+// It grew east from 25 to 29 columns for the authoring bays (2026-11-21, see AUTHORING below): c0r0 to c24r6 keep their ids and coordinates.
+export const CELL = { size: 12, origin: 22, cols: 29, rows: 7, inset: 1, fence: 5 };
 export const GRID_CENTRE = [66, 66];
 // The outer fence (Annex.layer): 2 m outside the lattice on the west and south, 6 m on the east and north
 // (the north gate and the track in through it live in that margin). x 20..160, z 20..112.
@@ -39,6 +40,31 @@ export const GRID_FENCE = {
   z1: CELL.origin + CELL.rows * CELL.size + FENCE_MARGIN.high,
 };
 export const TERRAIN_SIZE = 512;
+
+// Authoring bays: the east end of the lattice, c25 to c28, rows r0 to r5, is cut into 2 x 2 bays (c25r0, c27r0, c25r2, c27r2, c25r4, c27r4).
+// `town author` (and only it, with `grid place ... --bay`) claims a bay for the copy of a vanilla building a shop is made around; the claim
+// carries "authoring": true. The kit is the source of truth: `town author extract` frees the bay, `town author --reopen <kit>` builds it again.
+// `grid place` for any other claim never takes one (allocate in tools/lib/world-zones.mjs), so the bays cannot fill up with test cells.
+export const AUTHORING = { col0: 25, cols: 4, row0: 0, rows: 6, bay: [2, 2] };
+// The bays: [{ id (the claim's cell, its south-west corner), span, cells }].
+export function authoringBays() {
+  const [w, h] = AUTHORING.bay;
+  const out = [];
+  for (let r = AUTHORING.row0; r + h <= AUTHORING.row0 + AUTHORING.rows; r += h) {
+    for (let c = AUTHORING.col0; c + w <= AUTHORING.col0 + AUTHORING.cols; c += w) {
+      const cells = [];
+      for (let dr = 0; dr < h; dr++) for (let dc = 0; dc < w; dc++) cells.push(cellId(c + dc, r + dr));
+      out.push({ id: cellId(c, r), span: [w, h], cells });
+    }
+  }
+  return out;
+}
+// A cell id inside the authoring region (any cell of any bay).
+export const isAuthoringCell = (id) => authoringBays().some((b) => b.cells.includes(id));
+// A claim is an authoring claim when it says so.
+export const isAuthoringClaim = (c) => !!c && c.authoring === true;
+// A claim that sits exactly on one bay (its corner and its 2 x 2 span).
+export const isBayClaim = (c) => !!c && authoringBays().some((b) => b.id === c.cell && claimSpan(c)?.w === b.span[0] && claimSpan(c)?.h === b.span[1]);
 
 export const FRAME_SLUG = "frame";
 export const FRAME_CELL = "lattice";
@@ -122,6 +148,7 @@ const COLOURS = {
   marker: { rim: [0.1, 0.1, 0.1], paint: [0.25, 0.6, 0.95], text: [0.05, 0.05, 0.05] },
   claimed: { rim: [0.1, 0.1, 0.1], paint: [0.95, 0.78, 0.1], text: [0.1, 0.1, 0.1] },
   free: { rim: [0.1, 0.1, 0.1], paint: [0.4, 0.8, 0.4], text: [0.05, 0.05, 0.05] },
+  bay: { rim: [0.1, 0.1, 0.1], paint: [0.7, 0.45, 0.9], text: [0.05, 0.05, 0.05] },
   blocked: { rim: [0.1, 0.1, 0.1], paint: [0.62, 0.62, 0.62], text: [0.1, 0.1, 0.1] },
   board: { rim: [0.1, 0.1, 0.1], paint: [0.95, 0.95, 0.9], text: [0.05, 0.05, 0.05] },
 };
@@ -137,7 +164,7 @@ export function cellStates(claims, blocked = new Set()) {
   const bySlug = new Map(claims.filter((c) => c.slug && !c.error && !isFrameClaim(c)).flatMap((c) => claimCellIds(c).map((id) => [id, c.slug])));
   return allCells().map((c) => {
     const slug = bySlug.get(c.id);
-    const state = slug ? "claimed" : blocked.has(c.id) ? "blocked" : "free";
+    const state = slug ? "claimed" : blocked.has(c.id) ? "blocked" : isAuthoringCell(c.id) ? "bay" : "free";
     return { ...c, state, label: slug ?? state };
   });
 }

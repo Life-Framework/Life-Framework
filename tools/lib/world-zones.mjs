@@ -1,6 +1,6 @@
 // tools/lib/world-zones.mjs: the two world zones (docs/architecture/world-zones.md).
 //
-// Grid: the net-fenced annex (x 20..328, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
+// Grid: the net-fenced annex (x 20..376, z 20..112; it was 20..112 before the lattice grew east), which lives in GridWorld
 // (Worlds/GridWorld/GridWorld_Layers, docs/architecture/three-worlds.md); until slice W6 deletes
 // it, the legacy annex layers also sit in DebugWorld. One feature per cell, low look bar, written
 // by `tools\cli grid`. Town: every other layer the playtest town loads
@@ -15,10 +15,10 @@ import { existsSync, readFileSync, readdirSync, realpathSync, writeFileSync } fr
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { CORE_ADDON, GRID_WORLD, PACK_ADDON, PACK_GRID_WORLD, PLAYTEST_WORLD, layersOf } from "./worlds.mjs";
-import { CELL, GRID_CENTRE, GRID_FENCE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, isFrameClaim, parseCellId } from "../grid/lattice.mjs";
+import { CELL, GRID_CENTRE, GRID_FENCE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, isFrameClaim, parseCellId, AUTHORING, authoringBays, isAuthoringCell, isAuthoringClaim, isBayClaim } from "../grid/lattice.mjs";
 
 // The lattice constants and cell maths live in tools/grid/lattice.mjs (with the grid frame).
-export { CELL, GRID_CENTRE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, parseCellId };
+export { CELL, GRID_CENTRE, allCells, cellBounds, cellId, claimCellIds, claimRect, claimSpan, parseCellId, AUTHORING, authoringBays, isAuthoringCell, isAuthoringClaim, isBayClaim };
 
 export const DEBUG_LAYERS = `addons/${CORE_ADDON}/${layersOf(PLAYTEST_WORLD)}`;
 // Where Grid_<slug>.layer files are written and claims are checked: GridWorld, not the playtest world.
@@ -131,15 +131,27 @@ export function slugHash(slug) {
 // `taken` is a Set of cell ids claimed in tools/grid/cells/.
 // `span` is [cols, rows] for a big item: the first free block of that size, returned as the claim's rectangle
 // (its low corner's id, so a one-cell span is the same cell as before).
-export function allocate(slug, { ents = [], taken = new Set(), span = [1, 1] } = {}) {
+// The authoring bays (lattice.mjs AUTHORING) belong to `town author`: a normal call never returns a block that touches one, and
+// `authoring: true` returns only a free bay (the span is the bay's, a 2 x 2).
+export function allocate(slug, { ents = [], taken = new Set(), span = [1, 1], authoring = false } = {}) {
   const cells = allCells();
+  if (authoring) {
+    const bays = authoringBays();
+    const from = slugHash(slug) % bays.length;
+    for (let k = 0; k < bays.length; k++) {
+      const bay = bays[(from + k) % bays.length];
+      if (bay.cells.some((id) => taken.has(id) || blockers(cells.find((x) => x.id === id), ents).length)) continue;
+      return claimRect({ cell: bay.id, span: bay.span });
+    }
+    return null;
+  }
   const start = slugHash(slug) % cells.length;
   for (let k = 0; k < cells.length; k++) {
     const c = cells[(start + k) % cells.length];
     const rect = claimRect({ cell: c.id, span });
     if (!rect) continue;
     const ids = claimCellIds({ cell: c.id, span });
-    if (ids.some((id) => taken.has(id))) continue;
+    if (ids.some((id) => taken.has(id) || isAuthoringCell(id))) continue;
     if (ids.some((id) => blockers(cells.find((x) => x.id === id), ents).length)) continue;
     return rect;
   }
