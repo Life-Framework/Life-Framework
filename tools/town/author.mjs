@@ -19,13 +19,16 @@
 //       component GUIDs) is read from the layer row; a row the grid holds as a bare prop takes the config of the same row in the kit already on
 //       disk (matched by id, a shared id suffix, or the one prefab), and that kit's source files stay the kit's `also` sources for the nested
 //       blocks. `--fresh` skips it.
+//       A reopened bay holds each row with its component blocks and a `KitClear_<kit>` carrier for stamp.clear (#3987); extract keeps
+//       the kit's hand-tuned role, verb, wall, attach, footprint, front, counter walls and lane widths for a row that did not move
+//       (inheritPrev), and reads the clear list from the carrier (`--clear <res,...>` overrides, `--clear none` empties it).
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { isAuthoringClaim } from "../grid/lattice.mjs";
 import { layerOfSlug, readCells } from "../lib/world-zones.mjs";
-import { checkKit, entitiesOf, extractKit, KITS_DIR, parseBlocks } from "./kit.mjs";
+import { bayClearName, bayRowName, checkKit, entitiesOf, extractKit, KITS_DIR, parseBlocks } from "./kit.mjs";
 import { kitPrefab } from "./stamp.mjs";
 
 export const help = "author <kit> [--from <place>/<slot>] [--margin m] | author --reopen <kit> | author extract <Grid layer> <group> --kit k   build a shop in an authoring bay (a 2x2 at the east end of the grid) around a copy of the island building, then lift it building-local for `town stamp` (extract frees the bay; --reopen rebuilds it from the kit)";
@@ -72,8 +75,7 @@ export function previousRow(row, prev, used) {
 // Give every row the grid held as a bare prop the config of its previous kit row (config and component GUIDs), and keep the previous
 // kit's source files as `source.also` so a nested block (stock lines, shop items) is still found at stamp time.
 // Returns { carried: [{ id, from }], bare: [id] }: rows that took config, and rows that have none.
-export function carryConfig(out, prev) {
-  const used = new Set();
+export function carryConfig(out, prev, used = new Set()) {
   const carried = [];
   for (const r of out.rows) {
     if (r.config?.length) continue;
@@ -85,18 +87,92 @@ export function carryConfig(out, prev) {
   }
   if (carried.length) {
     const also = [prev.source?.file, ...(prev.source?.also ?? [])].filter((f) => f && f !== out.source.file && !out.source.also?.includes(f));
-    if (also.length) out.source.also = [...(out.source.also ?? []), ...also];
+    if (also.length) out.source.also = [...new Set([...also, ...(out.source.also ?? [])])];
   }
   return { carried, bare: out.rows.filter((r) => !r.config?.length).map((r) => r.id) };
 }
 
+// A row that moved more than this since the kit was extracted re-reads its verb and wall from the new place; one that did not keeps the
+// kit's (hand-tuned) values. SAME_*: the rounding a layer round trip adds (3 decimals through a rotation) is not a move.
+const MOVED_M = 0.1;
+const MOVED_DEG = 5;
+const SAME_M = 0.002;
+const SAME_DEG = 0.01;
+const angDiff = (a, b) => Math.abs((((a - b) % 360) + 540) % 360 - 180);
+const setIf = (row, key, value) => {
+  if (value === undefined) delete row[key];
+  else if (JSON.stringify(row[key]) !== JSON.stringify(value)) row[key] = value;
+};
+
+// The clear list a bay layer's carrier holds (`kit-grid.mjs put` writes it; an author may edit it there): resource names, or null when
+// the layer has no carrier.
+export function carrierClear(ents) {
+  const carrier = ents.find((e) => e.name.startsWith("KitClear_") && e.comps.some((c) => c.head.startsWith("LF_BaseWorldClearComponent")));
+  if (!carrier) return null;
+  const comp = carrier.comps.find((c) => c.head.startsWith("LF_BaseWorldClearComponent"));
+  const list = comp.kids.find((k) => k.head.startsWith("m_aPrefabs"));
+  return (list?.props ?? []).map((p) => p.replace(/^"|"[,]?$/g, "")).filter(Boolean);
+}
+
+// Hand-tuned kit values survive an extract (#3987). A layer row stands for the kit row of the same bay name (`Kit_<kit>_<id>`, what
+// `town author --reopen` writes) or of the same recorded name and prefab. That row keeps its id, name, role, verb, wall, attach and
+// any field the extract does not read from the layer; the layer gives it its place, prefab class, children and config. A row that
+// moved re-reads verb, wall and attach. The kit's footprint, front, counter walls, lane widths, system and scope stay. Mutates `out`;
+// returns the ids of the previous rows that were matched. `--fresh` (prev null) skips all of it.
+export function inheritPrev(out, prev, kitName) {
+  const idMap = new Map();
+  const matchedPrev = new Set();
+  const pairs = [];
+  out.rows.forEach((r, i) => {
+    const p = prev.rows.find((o) => !matchedPrev.has(o.id) && o.prefab === r.prefab && (r.name === bayRowName(kitName, o.id) || (o.name && o.name === r.name)));
+    if (!p) return;
+    matchedPrev.add(p.id);
+    idMap.set(r.id, p.id);
+    pairs.push([i, r, p]);
+  });
+  const mapVerb = (v) => (v.startsWith("on ") && v !== "on floor" ? `on ${idMap.get(v.slice(3)) ?? v.slice(3)}` : v);
+  for (const r of out.rows) r.verb = mapVerb(r.verb);
+  for (const [i, r, p] of pairs) {
+    const m = JSON.parse(JSON.stringify(p));
+    const moved = Math.hypot(r.offset[0] - p.offset[0], r.offset[1] - p.offset[1], r.offset[2] - p.offset[2]) > MOVED_M || angDiff(r.yaw, p.yaw) > MOVED_DEG;
+    m.offset = r.offset.map((v, k) => (Math.abs(v - p.offset[k]) <= SAME_M ? p.offset[k] : v));
+    m.yaw = angDiff(r.yaw, p.yaw) <= SAME_DEG ? p.yaw : r.yaw;
+    for (const k of ["pitch", "roll", "scale"]) setIf(m, k, r[k] !== undefined && p[k] !== undefined && Math.abs(r[k] - p[k]) <= 0.01 ? p[k] : r[k]);
+    setIf(m, "class", r.class);
+    setIf(m, "children", r.children);
+    setIf(m, "floor", r.floor);
+    if (r.config?.length) setIf(m, "config", r.config);
+    if (moved) {
+      setIf(m, "verb", r.verb);
+      setIf(m, "wall", r.wall);
+      delete m.attach;
+    }
+    out.rows[i] = m;
+  }
+  const a = out.anchoring;
+  const pa = prev.anchoring ?? {};
+  a.counters = a.counters.map((c) => {
+    const id = idMap.get(c.id) ?? c.id;
+    return pa.counters?.find((o) => o.id === id) ?? { ...c, id };
+  });
+  for (const k of ["footprint", "front", "adapt"]) if (pa[k] !== undefined) a[k] = pa[k];
+  if (!out.system && prev.system) out.system = prev.system;
+  if (prev.scope) out.scope = prev.scope;
+  if (prev.source?.group) out.source.group = prev.source.group; // what the kit was first authored from; a reopened bay names its rows Kit_<kit>_*
+  for (const k of Object.keys(prev)) if (!(k in out)) out[k] = prev[k];
+  if (prev.source?.also?.length) out.source.also = [...new Set([...(out.source.also ?? []), ...prev.source.also])];
+  return matchedPrev;
+}
+
 // Pure but for the file reads: the grid layer -> a building-local kit with attach targets, clear lanes and the clear list.
-// prev: the kit already on disk (null for a first extract), whose config the bare rows take.
-export function authorExtract(layerPath, group, { kit, building = null, clear = [], system = "", prev = null } = {}) {
+// prev: the kit already on disk (null for a first extract): matched rows keep their hand-tuned values (inheritPrev), bare rows take its config.
+// clear: resource names the stamp hides; null reads the bay's carrier entity, else the previous kit's list ([] means none).
+export function authorExtract(layerPath, group, { kit, building = null, clear = null, system = "", prev = null } = {}) {
   const ents = entitiesOf(parseBlocks(readFileSync(layerPath, "utf8")));
   const b = findBuilding(ents, building);
   if (!b.name) throw new Error("the building entity has no name; name it in the grid layer");
-  const out = extractKit(layerPath, group, { kit, system, origin: b.name, exclude: b.name, inside: b.prefab });
+  const out = extractKit(layerPath, group, { kit, system, origin: b.name, exclude: `${b.name},${bayClearName(kit)}`, inside: b.prefab });
+  const clearList = clear ?? carrierClear(ents) ?? (prev?.stamp?.clear ?? []).map((c) => (typeof c === "string" ? c : c?.prefab)).filter(Boolean);
   // extractKit rebases a layer kit onto its lowest row; a stamp needs the height in the building's frame (the same prefab has the
   // same floors), so every offset is put back relative to the building origin.
   const picked = new Map(ents.map((e) => [e.name, e]));
@@ -104,10 +180,11 @@ export function authorExtract(layerPath, group, { kit, building = null, clear = 
     const e = picked.get(r.name);
     if (e) r.offset[1] = r3(e.coords[1] - b.coords[1]);
   }
+  const matched = prev ? inheritPrev(out, prev, kit) : new Set();
   const floorY = Math.min(...out.rows.filter((r) => r.floor === "f0" || !r.floor).map((r) => r.offset[1]));
   out.anchoring.floorY = r3(Number.isFinite(floorY) ? floorY : 0);
   for (const f of out.anchoring.floors) f.y = r3(out.anchoring.floorY + 3 * Number(f.id.slice(1)));
-  for (const r of out.rows) r.attach = attachOf(r, out.rows);
+  for (const r of out.rows) if (!r.attach) r.attach = attachOf(r, out.rows);
   out.source.origin = "building";
   out.source.frame = "building-local";
   const tills = out.rows.filter((r) => r.role === "till" || r.role === "counter").map((r) => r.id);
@@ -116,13 +193,14 @@ export function authorExtract(layerPath, group, { kit, building = null, clear = 
     schema: 1,
     prefab: b.prefab,
     // Lanes the audit keeps free (card #3883 measures them): entrance to every till and every shelf face, 1.2 m wide.
-    lanes: [...tills, ...faces].map((to) => ({ from: "entrance", to, width: LANE_WIDTH })),
+    // A lane the kit already had keeps its (hand-tuned) width.
+    lanes: [...tills, ...faces].map((to) => prev?.stamp?.lanes?.find((l) => l.from === "entrance" && l.to === to) ?? { from: "entrance", to, width: LANE_WIDTH }),
     // Vanilla clutter the building prefab brings that this shop does not want: `town stamp` writes one clear carrier per copy
     // (LF_BaseWorldClearComponent) that hides it at load (#3882, #3924).
-    clear: clear.map((prefab) => ({ prefab })),
+    clear: clearList.map((prefab) => ({ prefab })),
   };
   // Not a kit field: what the carry did, for the command to print.
-  const carry = prev ? carryConfig(out, prev) : { carried: [], bare: out.rows.filter((r) => !r.config?.length).map((r) => r.id) };
+  const carry = prev ? carryConfig(out, prev, matched) : { carried: [], bare: out.rows.filter((r) => !r.config?.length).map((r) => r.id) };
   Object.defineProperty(out, "carry", { value: carry, enumerable: false });
   return out;
 }
@@ -198,7 +276,7 @@ export function extractToKit(root, layerPath, group, a, { free }) {
   const prev = !a.fresh && existsSync(prevFile) ? JSON.parse(readFileSync(prevFile, "utf8")) : null;
   const claim = out.startsWith(kitsDir + sep) ? bayClaimOfLayer(root, layerPath) : null;
   const release = Boolean(claim) && !a["keep-bay"];
-  const kit = authorExtract(layerPath, group, { kit: a.kit, building: a.building ?? null, clear: String(a.clear ?? "").split(",").filter(Boolean), system: a.system ?? "", prev });
+  const kit = authorExtract(layerPath, group, { kit: a.kit, building: a.building ?? null, clear: clearArg(a.clear), system: a.system ?? "", prev });
   const archive = join(kitsDir, "sources", `${kit.kit}.layer`);
   const rel = (p) => relative(root, p).split(sep).join("/");
   const had = existsSync(archive);
@@ -232,6 +310,9 @@ export function extractToKit(root, layerPath, group, a, { free }) {
 }
 
 const ARCHIVE_HEAD = (kit) => `// Source of the \`${kit}\` kit (tools/town/kits/${kit}.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). \`town fit\` reads the components the kit names from here; \`town author --reopen ${kit}\` builds a bay again.\n`;
+
+// --clear: a comma list of resource names; "none" is an empty list; absent is null (read the bay's carrier, else the previous kit's list).
+export const clearArg = (v) => (v === undefined || v === true ? null : v === "none" ? [] : String(v).split(",").filter(Boolean));
 
 function cli(root, args) {
   const r = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), ...args], { cwd: root, encoding: "utf8", timeout: 600000, windowsHide: true });
@@ -282,9 +363,18 @@ export async function main(args, { root = ROOT } = {}) {
     const { layerFileOf } = await import("./kit-grid.mjs");
     const ents = entitiesOf(parseBlocks(readFileSync(layerFileOf(plan.slug), "utf8")));
     const b = findBuilding(ents);
-    const r = spawnSync(process.execPath, [join(root, "tools", "town", "kit-grid.mjs"), "put", kitName, plan.slug, String(b.coords[0]), String(b.coords[2]), String(b.yaw)], { cwd: root, encoding: "utf8", windowsHide: true });
+    const r = spawnSync(process.execPath, [join(root, "tools", "town", "kit-grid.mjs"), "put", kitName, plan.slug, String(b.coords[0]), String(b.coords[2]), String(b.yaw), `--y=${b.coords[1]}`], { cwd: root, encoding: "utf8", windowsHide: true });
     process.stdout.write(r.stdout ?? "");
     if (r.status) return 1;
+  }
+  if (!plan.seed && clearArg(a.clear)?.length) {
+    // a first build: the bay hides the clutter the shop will clear at stamp time, so its audit and look see the building as the stamp leaves it
+    const { layerFileOf, clearCarrierBlock } = await import("./kit-grid.mjs");
+    const file = layerFileOf(plan.slug);
+    const b = findBuilding(entitiesOf(parseBlocks(readFileSync(file, "utf8"))));
+    const block = clearCarrierBlock(kitName, plan.prefab, clearArg(a.clear), b.coords[0], b.coords[2], b.coords[1]);
+    writeFileSync(file, readFileSync(file, "utf8").replace(/\n*$/, "\n") + block + "\n");
+    console.log(`bay ${plan.slug}: clear carrier for ${clearArg(a.clear).length} props (extract reads the list back from it)`);
   }
   console.log(`next: tools\\cli look grid:${plan.slug} --interior auto; tools\\cli audit placement --grid --strict; then town author extract <the cell's layer> '<group>' --kit ${kitName} (it frees the bay)`);
   return 0;

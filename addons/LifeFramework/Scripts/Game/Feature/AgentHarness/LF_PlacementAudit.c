@@ -322,6 +322,11 @@ class LF_PlacementAudit
 							continue;
 
 						// The terrain and other huge entities (roads, ground plates) pass through anything sunk: not a clip.
+						// The world entity is the ground too: a lamp or a post planted in a slope has terrain through its foot by design.
+						typename hitType = hit.Type();
+						if (hitType.IsInherited(GenericTerrainEntity) || hitType.IsInherited(GenericWorldEntity))
+							continue;
+
 						vector omin;
 						vector omax;
 						hit.GetWorldBounds(omin, omax);

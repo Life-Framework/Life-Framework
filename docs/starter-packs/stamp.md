@@ -20,6 +20,8 @@ tools\cli town stamp <kit> --terrain                      # a kit with yard rows
 
 The bay is scratch space (six 2x2 bays, `docs/architecture/world-zones.md` "Authoring bays"): extract saves the kit, archives the layer as `tools/town/kits/sources/<kit>.layer` and frees the bay so the next shop can use it; `--keep-bay` keeps it. No free bay means another author has not extracted yet.
 
+`--reopen` is lossless (#3987): the bay holds every row with its till, sign and action blocks and a `KitClear_<kit>` carrier for `stamp.clear`, so the bay's audit and look see the building without the clutter the stamp hides. The next extract keeps what you hand-tuned (role, verb, wall, attach, footprint, front, counter walls, lane widths, system) for every row you did not move more than 10 cm or 5 degrees; a moved row re-reads its verb and wall. Edit the clear list in the carrier, or pass `--clear <res,...>` (`--clear none` empties it); `--fresh` recomputes everything. A first build can hide clutter in its bay too: `town author <kit> --from <place>/<slot> --clear <res,...>`.
+
 `town stamp --all` re-stamps every kit that carries a `stamp` block (after a kit change).
 
 ## What the kit holds

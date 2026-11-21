@@ -492,6 +492,22 @@ export function missingRow(e, m) {
   return { name: label(e), layer: e.layer, x: e.x, y: e.y, z: e.z, actions: e.actions, area: null, problems: [{ kind: "missing", amount: m.near > 0 ? Math.min(m.near / 5, 2) : 1, text: `not in the world at its layer position${where}` }], allowed: [] };
 }
 
+// The allowlist for the rows the sweep and the lane tests write (a base-map cone, a vanilla building's baked-in child): their
+// name plus the finding's text, the way a room is matched (place-lanes.mjs); a row left with no problem is dropped.
+export function allowSweepRows(rows, allow) {
+  if (!allow.length) return rows;
+  const out = [];
+  for (const r of rows) {
+    if (!/^\((runtime|prefab child)/.test(r.layer ?? "")) {
+      out.push(r);
+      continue;
+    }
+    const kept = r.problems.filter((p) => !allow.some((a) => (!a.kind || a.kind === p.kind) && new RegExp(a.match).test(`${r.name} ${p.text}`) && (!a.layer || a.layer === r.layer)));
+    if (kept.length) out.push({ ...r, problems: kept });
+  }
+  return out;
+}
+
 export function analyse(records, outText, { allow = [], areas = [], roads = [], sizes = loadSizes() } = {}) {
   const list = [];
   const doors = [];
@@ -560,9 +576,9 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
     problems = problems.filter((p) => !allowed(allow, e, p));
     rows.push({ name: label(e), layer: e.layer, x: e.x, y: e.y, z: e.z, actions: e.actions, area: areaOf(areas, e), problems, allowed: suppressed.map((p) => p.kind) });
   }
-  const runtime = runtimeRows(outText, records);
+  const runtime = allowSweepRows(runtimeRows(outText, records), allow);
   // Shop walk lanes, action reach, room crowding and furniture baked into a building prefab (place-lanes.mjs, card #3883).
-  const lanes = laneFindings(list, doors, outText, { allow, propRows: rows });
+  const lanes = allowSweepRows(laneFindings(list, doors, outText, { allow, propRows: rows }), allow);
   const ranked = [...rank(rows), ...rank(missingRows), ...lanes, ...runtime].sort((a, b) => b.score - a.score || a.layer.localeCompare(b.layer));
   return { ranked, measured: list.length, sizeCovered: covered, missing, groups, displaced, seated, doors: doors.length, runtime: runtime.length };
 }
@@ -961,6 +977,10 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   if (res.ranked[0]?.name !== "FloatCrate") fail(`rank order: ${res.ranked.map((r) => r.name)}`);
   const suppressed = analyse(recs, out, { allow: [{ match: "^FloatCrate", kind: "floating", why: "test" }] });
   if (suppressed.ranked.some((r) => r.name === "FloatCrate")) fail("the allowlist suppresses a problem");
+  // The allowlist also covers a sweep row and a prefab-child row (a base-map cone, a vanilla shed's baked-in child).
+  const sweep = [{ name: "ConeTraffic_01_red", layer: "(runtime: loose props)", problems: [{ kind: "orphan", text: "ConeTraffic_01_red.et stands here" }] }, { name: "GenericEntity", layer: "(prefab child of Shed_X)", problems: [{ kind: "blocks-door", text: "baked into Shed_X: in the swing" }] }, { name: "Glow_x", layer: "(runtime: night lights)", problems: [{ kind: "unattached-light", text: "a light" }] }];
+  const swept = allowSweepRows(sweep, [{ match: "^ConeTraffic_01", kind: "orphan", why: "t" }, { match: "^GenericEntity baked into Shed_X", kind: "blocks-door", why: "t" }]);
+  if (swept.length !== 1 || swept[0].name !== "Glow_x") fail(`the allowlist covers sweep and prefab-child rows: ${swept.map((r) => r.name)}`);
   const text = inputText(recs.slice(0, 2));
   if (!text.startsWith("town ") || !text.includes("\n0 FloatCrate BoxWooden_01 0 1 0 0")) fail(`input text: ${text}`);
   // "Roadmap_" holds "map": a backed prop named that way was read as a hung map and never checked for floating or
