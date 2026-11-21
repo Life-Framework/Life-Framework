@@ -266,6 +266,7 @@ Written by the pilot rebuild (#3890, bakery) for R1 and R3 to R8. What was hard,
   (counters and clerk, the 1 cm contact sheet): the island b06 shell sits 2.8 cm higher relative to its origin than the grid
   copy. Under the hard limits, but the stamp still copies the grid height; the plan's floor probe at stamp time would
   close it.
+- **Butcher (b20, orange): the island floor is 4.3 cm above the grid copy's, not 2.8.** The 1 cm contact sheet read -4.3 cm on counters, clerk and freezer. The kit rows (all but the fascia) carry +0.043 m, and the chiller +0.045 (a floor lip along the west wall: a second chiller at local z -0.1 found "support varies 14 cm" and was dropped). The grid source layer keeps the grid heights, so a `--reopen` re-extract loses the offset until the stamp probes the floor.
 - **The interior look's camera stands in the hallway** of House_Town_E_2I01; only the fifth shot (the kit close-up) shows the
   shop room. Read that one.
 

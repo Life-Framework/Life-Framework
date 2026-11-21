@@ -9,63 +9,47 @@ GenericEntity Fit_saint_philippe_butcher_Place {
  }
  coords 4474.5 12 10780.5
 }
+GenericEntity Fit_saint_philippe_butcher_butcher_chiller_1 : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
+ coords 4477.5 12.046 10776.155
+ angleY -10
+}
+LF_NpcBaseEntity Fit_saint_philippe_butcher_butcher_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 4472.976 12.039 10776.474
+ angleY -100
+}
 GenericEntity Fit_saint_philippe_butcher_butcher_counter_1 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4472.336 12 10775.498
+ coords 4472.336 12.044 10775.498
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4472.075 12 10776.975
+ coords 4472.075 12.044 10776.975
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ coords 4467.689 15.05 10775.44
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_freezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
+ coords 4473.827 12.054 10775.101
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_freezer_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 4473.975 12.904 10775.127
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 4472.176 13.092 10775.825
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_meat_3 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 4472.072 13.092 10776.416
+ angleY -30
+}
+GenericEntity Fit_saint_philippe_butcher_butcher_scale : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et" {
+ coords 4472.362 13.081 10775.35
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_till : "{7CA6A8139045323E}Prefabs/Props/Commercial/LF_ButcherTill.et" {
- coords 4472.174 13.039 10776.993
+ coords 4472.174 13.084 10776.993
  angleY 80
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_scale : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et" {
- coords 4472.362 13.039 10775.35
- angleY -100
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_chiller_1 : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
- coords 4477.546 12 10775.893
- angleY -10
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_chiller_2 : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
- coords 4475.478 12 10775.529
- angleY -10
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_freezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
- coords 4473.853 12.05 10774.953
- angleY -10
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4472.176 13.039 10775.825
- angleY -100
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_meat_2 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4472.066 13.039 10776.161
- angleY -75
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_meat_3 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4472.046 13.039 10776.564
- angleY -30
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_freezer_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4474.001 12.89 10774.979
- angleY -100
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_freezer_meat_2 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
- coords 4473.706 12.89 10774.927
- angleY -60
-}
-GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
- components {
-  LF_SignComponent "{6E3FF3980D87CACE}" {
-   m_sSignId "butcher"
-   m_vRimColor 0.9 0.82 0.55
-   m_vPaintColor 0.42 0.1 0.12
-   m_vTextColor 0.96 0.93 0.82
-  }
- }
- coords 4467.689 15.1 10775.44
- angleY -100
 }
