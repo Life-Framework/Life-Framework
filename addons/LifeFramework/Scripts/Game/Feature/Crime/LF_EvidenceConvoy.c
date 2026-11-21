@@ -313,6 +313,11 @@ class LF_EvidenceConvoy
 			LF_EvidenceLockerFill.ResetStatics();
 			LF_EvidenceLockerFill.Check();
 		}
+		else
+		{
+			// Called off: the rows are still in the locker and the order is still "due"; re-arm it after a cool-down.
+			LF_EvidenceLockerFill.ScheduleRearm();
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -432,7 +437,10 @@ class LF_EvidenceConvoySubscriber : LF_EventSubscriber
 		if (!due)
 			return true;
 
-		LF_EvidenceConvoy.Start(LF_EvidenceConvoy.SCENE_ID);
+		// A refused start (no route markers, no AI budget, one under way) left the order "due" for good; re-arm after a cool-down.
+		if (!LF_EvidenceConvoy.Start(LF_EvidenceConvoy.SCENE_ID))
+			LF_EvidenceLockerFill.ScheduleRearm();
+
 		return true;
 	}
 }

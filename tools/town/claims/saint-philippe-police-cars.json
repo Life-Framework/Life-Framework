@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "police-cars",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b32"
+    }
+  ],
+  "kit": "parked-cars",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_police-cars.layer",
+  "kinds": [],
+  "rows": 3,
+  "date": "2026-11-21"
+}

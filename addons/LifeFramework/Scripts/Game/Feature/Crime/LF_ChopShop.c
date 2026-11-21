@@ -443,7 +443,8 @@ class LF_ChopShopComponent : ScriptComponent
 		foreach (IEntity vehicle : nearby)
 		{
 			LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
-			if (!vehicleLock)
+			// A police car on a marker is never a car to sell (#3875).
+			if (!vehicleLock || vehicleLock.IsServiceVehicle())
 				continue;
 
 			candidates.Insert(vehicle);

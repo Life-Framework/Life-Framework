@@ -158,6 +158,22 @@
       "match": "^Fit_saint_philippe_general_store_general_store_till ",
       "kind": "contact",
       "why": "The till rests on the host counter (CounterShop_01, flat top 1.039 m, island height 16.486): a row of probe radios at the same height read a contact gap of 0 cm over the whole of that top (2026-11-21, #3888 baseline cleanup), while the 3x3 contact trace reads a support 7 to 11 cm higher only under this till, moving with its x and not with its z. The same till prefab on the miner counter beside it measures clean. A measurement artefact of the host furniture, not a sunk till."
+    },
+    {
+      "match": "^ResidentPlate_",
+      "kind": "odd-scale",
+      "why": "The plate is the vanilla full-size door number plate shipped at scale 0.5 on purpose: about 45 x 22 cm beside a house door (PLATE_SCALE and PLATE_BOX in tools/town/residenthomes.mjs)."
+    },
+    {
+      "match": "^ConeTraffic_01_(red|stack) ",
+      "kind": "orphan",
+      "layer": "(runtime: loose props)",
+      "why": "Vanilla Everon road-works cones baked into the base map (roadside works on the island's roads, outside the fitted town streets); no layer row or script owns them and none can remove them. The sweep reads the whole island, so they appear as strays."
+    },
+    {
+      "match": "^GenericEntity baked into (BoatShed_01|Shed_02_big_V1|Warehouse_01):",
+      "kind": "blocks-door",
+      "why": "Furniture baked into the vanilla prefab's own children (boat sheds on the shore, a farm shed, a depot warehouse). No pack row or kit places it and a sub-layer cannot hide a prefab child (#3882)."
     }
   ]
 }

@@ -205,7 +205,7 @@ class LF_Hotwire
 	static LF_EHotwireCheck CheckVehicle(IEntity vehicle, IEntity user)
 	{
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
-		if (!vehicleLock)
+		if (!vehicleLock || vehicleLock.IsServiceVehicle())
 			return LF_EHotwireCheck.NO_IGNITION_LOCK;
 
 		int playerId = PlayerIdOf(user);
@@ -218,7 +218,7 @@ class LF_Hotwire
 	static bool ShowsHotwire(IEntity vehicle, IEntity user)
 	{
 		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
-		if (!vehicleLock || !vehicleLock.IsIgnitionLocked())
+		if (!vehicleLock || !vehicleLock.IsIgnitionLocked() || vehicleLock.IsServiceVehicle())
 			return false;
 
 		return IsAtWheel(vehicle, user);

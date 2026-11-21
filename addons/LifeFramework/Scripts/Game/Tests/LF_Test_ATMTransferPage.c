@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-19 `tools/cli test --no-build --red LF_Test_ATMTransferPage` printed `RED PROOF OK (all 1 listed test(s) fail with the hook on)`: RedProof() keys in a number with a stray character, so the transfer is refused and the balances do not move; `--only` then passed=1 failed=0. Review fix 2026-11-19: the SenderReply asserts failed on a stub that always allowed (`a cuffed sender is refused (expected 10, got 0)`, downed and dead the same), then passed with the guard.
+// red-proof: observed 2026-11-19 `tools/cli test --no-build --red LF_Test_ATMTransferPage` printed `RED PROOF OK (all 1 listed test(s) fail with the hook on)`: RedProof() keys in a number with a stray character, so the transfer is refused and the balances do not move; `--only` then passed=1 failed=0. Review fix 2026-11-19: the SenderReply asserts failed on a stub that always allowed (`a cuffed sender is refused (expected 10, got 0)`, downed and dead the same), then passed with the guard. Double-send fix 2026-11-21: `--red LF_Test_ATMTransferPage` RED PROOF OK ("the same transfer 6 s after a sent one is a duplicate" fails with NoteSent skipped), `--only` passed=1 failed=0. Review 2026-11-21: fee ask rate limit; `--red` RED PROOF OK ("a fee ask past the burst is refused" fails with the burst skipped), `--only` passed=1 failed=0.
 //! The ATM transfer page's server side (#3320, slice of #638). A transfer request names an account number
 //! and an amount; the server trims the number, makes its own transfer id, runs the #3318 rules again and
 //! moves the money once. A bad number, your own number, a zero amount and an over-long number are refused
@@ -88,6 +88,56 @@ class LF_Test_ATMTransferPage : LF_Test
 		ctx.False(LF_ATMTransferService.TakeSlot(7, now + 10), "the request past the burst is refused");
 		ctx.True(LF_ATMTransferService.TakeSlot(8, now + 10), "another player has their own bucket");
 		ctx.True(LF_ATMTransferService.TakeSlot(7, now + LF_ATMTransferService.RATE_WINDOW_MS + 1), "a new window admits the player again");
+
+		// The read-only fee ask has its own bucket: a few page opens pass, a spam is cut off, a SEND is not eaten.
+		LF_ATMTransferService.ResetStatics();
+		if (!RedProof())
+		{
+			for (int k = 0; k < LF_ATMTransferService.FEE_RATE_BURST; k++)
+			{
+				ctx.True(LF_ATMTransferService.TakeFeeSlot(9, now + k), "fee ask " + k.ToString() + " inside the burst passes");
+			}
+		}
+
+		ctx.False(LF_ATMTransferService.TakeFeeSlot(9, now + 10), "a fee ask past the burst is refused");
+		ctx.True(LF_ATMTransferService.TakeSlot(9, now + 10), "fee asks do not eat the player's SEND bucket");
+		ctx.True(LF_ATMTransferService.TakeFeeSlot(9, now + LF_ATMTransferService.FEE_RATE_WINDOW_MS + 1), "a new window answers fee asks again");
+
+		// A second SEND of a slow reply (PR #3860 review): the server refuses a repeat of the last sent transfer
+		// inside the window, only for the same player, number and amount, and only after a sent one.
+		LF_ATMTransferService.ResetStatics();
+		int t0 = 500000;
+		ctx.False(LF_ATMTransferService.IsDuplicate(7, RECIPIENT, 50, t0), "a first request is never a duplicate");
+		if (!RedProof())
+			LF_ATMTransferService.NoteSent(7, RECIPIENT, 50, t0);
+
+		ctx.True(LF_ATMTransferService.IsDuplicate(7, RECIPIENT, 50, t0 + 6000), "the same transfer 6 s after a sent one is a duplicate");
+		ctx.False(LF_ATMTransferService.IsDuplicate(7, RECIPIENT, 60, t0 + 6000), "another amount is a new transfer");
+		ctx.False(LF_ATMTransferService.IsDuplicate(7, SENDER, 50, t0 + 6000), "another number is a new transfer");
+		ctx.False(LF_ATMTransferService.IsDuplicate(8, RECIPIENT, 50, t0 + 6000), "another player is not blocked");
+		ctx.False(LF_ATMTransferService.IsDuplicate(7, RECIPIENT, 50, t0 + LF_ATMTransferService.DUPLICATE_WINDOW_MS + 1), "past the window the same transfer is allowed again");
+
+		// The client holds a pending request until the answer or the long timeout, past the page.
+		ctx.False(LF_ATMTransferService.IsPending(t0), "no request in flight at first");
+		LF_ATMTransferService.BeginPending(t0);
+		ctx.True(LF_ATMTransferService.IsPending(t0 + 6000), "still pending after the old 5 s timeout");
+		ctx.True(LF_ATMTransferService.IsPending(t0 + LF_ATMTransferService.PENDING_TIMEOUT_MS - 1), "pending until the long timeout");
+		ctx.False(LF_ATMTransferService.IsPending(t0 + LF_ATMTransferService.PENDING_TIMEOUT_MS + 1), "the long timeout frees the page");
+		ctx.True(LF_ATMTransferService.PENDING_TIMEOUT_MS > LF_ATMTransferService.DUPLICATE_WINDOW_MS, "the client holds longer than the server's duplicate window");
+		LF_ATMTransferService.EndPending();
+		ctx.False(LF_ATMTransferService.IsPending(t0 + 1), "the answer frees the page");
+
+		// The fee line reads the server's settings once they arrive, not the local defaults.
+		ctx.Equal(LF_BankTransferRules.Fee(LF_BankTransferConfig.GetOrDefaults(), 1000), LF_ATMTransferService.FeeFor(1000), "before the server answers the line shows the local settings");
+		LF_ATMTransferService.SetServerFee(5, 10);
+		ctx.Equal(105, LF_ATMTransferService.FeeFor(1000), "the line shows the server's flat fee plus percent");
+		ctx.Equal(0, LF_ATMTransferService.FeeFor(0), "no fee on no amount");
+
+		// The typed-text colour in the transfer page's edit box is not the phosphor green of the tube.
+		LF_UISkin terminal = LF_UISkin.Terminal();
+		ctx.True(terminal.m_FieldInk != null, "the terminal skin names a field ink");
+		if (terminal.m_FieldInk)
+			ctx.True(terminal.m_FieldInk.GetLuminance() < terminal.m_Ink.GetLuminance() * 0.5, "the field ink is darker than the tube's green, for the cream well");
 
 		LF_ATMManager.ApplyAll(bankBefore);
 		LF_BankTransfer.ResetStatics();

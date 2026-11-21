@@ -1,0 +1,8 @@
+GenericEntity : "{C48202E5BB6761C0}Prefabs/Systems/Vehicles/LF_ParkedCarMarker.et" {
+ ID "3A7E19D4C0852B6F"
+ components {
+  LF_ParkedCarMarkerComponent "{99006DF19C865F0E}" {
+   m_sServiceCar "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et"
+  }
+ }
+}
