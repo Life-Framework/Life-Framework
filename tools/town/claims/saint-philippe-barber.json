@@ -8,7 +8,7 @@
   "kinds": [
     "BarberChair"
   ],
-  "rows": 5,
+  "rows": 6,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
@@ -18,6 +18,6 @@
   "stamp": {
     "kit": "barber",
     "prefab": "{7B197693AE45574A}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_yellow.et",
-    "layer": "277d391483f1"
+    "layer": "498ca692508e"
   }
 }
