@@ -173,7 +173,7 @@ GenericEntity ResidentPlate_saint_philippe_sp_b09 : "{9182BD264965878C}Prefabs/P
    m_vTextColor 0.1 0.07 0.03
   }
  }
- coords 4503.933 16.3 10741.459
+ coords 4501.873 16.3 10736.625
  angleY 171
  scale 0.5
 }
@@ -183,7 +183,7 @@ GenericEntity ResidentDoor_saint_philippe_sp_b09 {
    m_sAnchorId "door"
   }
  }
- coords 4504.168 14.9 10739.977
+ coords 4502.108 14.9 10735.143
  angleY 171
 }
 GenericEntity ResidentBench_saint_philippe_sp_b09 {
@@ -192,6 +192,6 @@ GenericEntity ResidentBench_saint_philippe_sp_b09 {
    m_sAnchorId "bench"
   }
  }
- coords 4502.952 14.9 10738.064
+ coords 4500.892 14.9 10733.23
  angleY 171
 }

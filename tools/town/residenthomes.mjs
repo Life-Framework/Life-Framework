@@ -19,6 +19,8 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { planDrop } from "./drops.mjs";
+import { doorHit, loadDoors } from "./homes.mjs";
+import { toLocal } from "./kit.mjs";
 import { shellReader } from "./seat.mjs";
 
 export const help = "residenthomes <place> [--dry]   the resident cast's houses (#3233): a locked house marker that is an LF_Places House with its own id, a brass name plate on the entrance wall and a door anchor; writes the layer, the sign rows, the plate strings and resident-homes.json";
@@ -59,6 +61,67 @@ const entityName = (prefix, place, id) => `${prefix}_${place.replace(/-/g, "_")}
 export const placeIdOf = (place, h) => (h.existing ? h.existing.replace("{place}", place) : `${place}.home.${h.resident}`);
 export const titleKey = (h) => `LF-Sign_Home_${h.key}_Title`;
 export const signId = (h) => `home_${h.resident}`;
+
+// ---- the plate must hang on the OUTSIDE of the house (#3887). The drop planner seats a plate on the first wall its ray finds, and a ray that
+// goes in through the doorway finds a room wall (b09's plate hung over the kitchen sink). A spot is taken only when nothing of the house's
+// shell stands in front of it: three horizontal rays from the plate's face (straight out and 40 degrees either side) meet no wall within
+// OUT_REACH. In a room they hit the opposite walls; on the street they leave the building behind.
+export const OUT_REACH = 10;
+export const OUT_SPREAD = 40;
+export const OUT_STEP = 0.3; // the rays start this far in front of the plate's origin
+const PLATE_BOX = { half: [0.23, 0.12, 0.03] }; // the scaled plate: about 45 x 22 cm, a few cm deep
+
+// Segment/ray against one triangle, both faces (Moller-Trumbore): the distance along `d`, or null.
+function rayTri(o, d, [a, b, c], max) {
+  const sub = (p, q) => [p[0] - q[0], p[1] - q[1], p[2] - q[2]];
+  const cross = (p, q) => [p[1] * q[2] - p[2] * q[1], p[2] * q[0] - p[0] * q[2], p[0] * q[1] - p[1] * q[0]];
+  const dot = (p, q) => p[0] * q[0] + p[1] * q[1] + p[2] * q[2];
+  const e1 = sub(b, a);
+  const e2 = sub(c, a);
+  const h = cross(d, e2);
+  const det = dot(e1, h);
+  if (Math.abs(det) < 1e-9) return null;
+  const s = sub(o, a);
+  const u = dot(s, h) / det;
+  if (u < -1e-4 || u > 1 + 1e-4) return null;
+  const q = cross(s, e1);
+  const v = dot(d, q) / det;
+  if (v < -1e-4 || u + v > 1 + 1e-4) return null;
+  const t = dot(e2, q) / det;
+  return t > 1e-4 && t <= max ? t : null;
+}
+
+// Pure: the nearest wall triangle in front of a plate, or null when it faces open air. `walls` are the host shell's triangles in host-local
+// space ({ p: [[x,y,z] x3] }); `host` { x, y, z, yaw } is where that shell stands; `coords` and `yaw` are the plate's world place.
+export function wallInFront(walls, host, coords, yaw) {
+  const [lx, lz] = toLocal(coords[0] - host.x, coords[2] - host.z, host.yaw ?? 0);
+  let best = null;
+  for (const off of [0, -OUT_SPREAD, OUT_SPREAD]) {
+    const k = ((yaw + off - (host.yaw ?? 0)) * Math.PI) / 180;
+    const d = [Math.sin(k), 0, Math.cos(k)];
+    const k0 = ((yaw - (host.yaw ?? 0)) * Math.PI) / 180;
+    const o = [lx + Math.sin(k0) * OUT_STEP, coords[1] - host.y, lz + Math.cos(k0) * OUT_STEP];
+    for (const w of walls) {
+      const t = rayTri(o, d, w.p, OUT_REACH);
+      if (t !== null && (!best || t < best.t)) best = { t, angle: off };
+    }
+  }
+  return best;
+}
+
+// Pure: the plate's oriented box in the audit's shape ({ c, h, a }), for the door swing and walk-up test.
+export function plateBox(coords, yaw) {
+  const k = (yaw * Math.PI) / 180;
+  return { c: [coords[0], coords[1] + PLATE_BOX.half[1], coords[2]], h: PLATE_BOX.half, a: [[Math.cos(k), 0, -Math.sin(k)], [0, 1, 0], [Math.sin(k), 0, Math.cos(k)]] };
+}
+
+// Pure-ish: why a plate at `coords` is not on a street-side wall, or null when it is. `walls` null (no readable shell) judges by the doors alone.
+export function plateProblem({ walls, host, doors = [], coords, yaw }) {
+  const hit = walls ? wallInFront(walls, host, coords, yaw) : null;
+  if (hit) return `a wall stands ${Math.round(hit.t * 100) / 100} m in front of it (${hit.angle} deg): it hangs inside the house`;
+  const door = doorHit(plateBox(coords, yaw), doors);
+  return door ? door.text : null;
+}
 
 // Pure: the layer text for one home: the marker that is the House place, the plate and the door anchor.
 export function renderHome({ place, h, marker, plate }) {
@@ -207,6 +270,7 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
   const shell = ctxShell ?? shellReader(root);
   const readGame = await gameReader();
 
+  const doors = loadDoors(root, place);
   const done = [];
   const refused = [];
   let layerText = "";
@@ -227,8 +291,15 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
     // The entrance side first; a building with no known entrance, or one whose wall takes no plate, tries its other sides.
     let plan = null;
     let e = null;
+    // A wall spot is taken only when it is on the street side of the house and clear of every door's swing and walk-up (#3887).
+    const walls = (await shell.shell(building.prefab))?.walls ?? null;
+    const accept = (ent) => {
+      const k = (ent.yaw * Math.PI) / 180;
+      const at = [r3(ent.coords[0] + Math.sin(k) * 0.03), ent.coords[1], r3(ent.coords[2] + Math.cos(k) * 0.03)];
+      return !plateProblem({ walls, host: building, doors, coords: at, yaw: ent.yaw });
+    };
     for (const turn of [0, 1, 3, 2]) {
-      plan = await planDrop({ drop: { place: dossier.place.slug, building: row.building, turn, lift: PLATE_LIFT }, slotId: "resident-homes", dossier, root, shell, readGame, kitName: "resident-plate" });
+      plan = await planDrop({ drop: { place: dossier.place.slug, building: row.building, turn, lift: PLATE_LIFT }, slotId: "resident-homes", dossier, root, shell, readGame, kitName: "resident-plate", accept });
       e = plan?.ok ? plan.ents?.rowEnts?.[0] : null;
       if (e && plan.seat?.rows?.[0]?.wall) break;
       e = null;
