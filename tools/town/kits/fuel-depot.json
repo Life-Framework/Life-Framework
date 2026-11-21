@@ -169,7 +169,8 @@
       ],
       "yaw": 190,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.012
     },
     {
       "id": "pallet-1",
@@ -193,7 +194,7 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -11.2,
+        -7.9,
         0,
         -6.5
       ],
