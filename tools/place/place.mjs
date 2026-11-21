@@ -28,6 +28,7 @@ import { spawnSync } from "node:child_process";
 import { layerFile as townLayerFile, worldLayerDirs } from "../lib/addons.mjs";
 import { GRID_LAYERS, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
 import { layerEntityPrefabs } from "../lib/layer-prefabs.mjs";
+import { frameOf, gameVfsSync } from "../lib/height-frame.mjs";
 import { boundsOf, braceBlock, matchBlock, parentOf, readResource, resolveChain } from "../actions/place-action-contexts.mjs";
 import { meshOf, ownMesh, parseTree, prefabOf } from "../actions/prop-on-surface.mjs";
 import { LIMITS, analyse, auditRecords, doorZone, gridBar, insideFraction, isKind, measureTown, obbAabb, obbPenetration, parseDoor, parseKv, parseRoads, parseRow, polylineDistance, readJson } from "../../agent-box/place-audit.mjs";
@@ -1139,12 +1140,15 @@ function commit(ctx, plans, flags) {
         const [lx, lz] = unrot(par.yaw, p.x - par.x, p.z - par.z);
         coords = [lx, p.y - par.y, lz];
         yaw = p.yaw - par.yaw;
-      }
+      } else if (Number.isFinite(p.ty) && frameOf(ROOT, gameVfsSync(), it.prefab ?? it.ent?.prefab) === "terrain") coords = [p.x, r3(p.y - p.ty), p.z];
       edit(ctx.prefabFile ?? layerFile(ROOT, it.ent.file), (t) => setTransform(t, it.ent.name || it.ent, { coords, yaw, scale: it.setScale ?? null }));
       p.at = at(ctx.prefabFile ?? layerFile(ROOT, it.ent.file), coords);
     } else {
-      edit(layerFile(ROOT, it.layer), (t) => appendEntity(t, { cls: it.info.cls, name: it.name, guid: it.ref.guid, path: it.ref.path, coords: [p.x, p.y, p.z], yaw: p.yaw, scale: it.setScale }));
-      p.at = at(layerFile(ROOT, it.layer), [p.x, p.y, p.z]);
+      // The layer holds y in the prefab's own frame (tools/lib/height-frame.mjs): a RELATIVE_Y prefab counts from the terrain.
+      // The town and the grid stand on flat terrain at 0, where both frames agree; a probed ground height is used when there is one.
+      const ly = frameOf(ROOT, gameVfsSync(), it.prefab) === "terrain" && Number.isFinite(p.ty) ? r3(p.y - p.ty) : p.y;
+      edit(layerFile(ROOT, it.layer), (t) => appendEntity(t, { cls: it.info.cls, name: it.name, guid: it.ref.guid, path: it.ref.path, coords: [p.x, ly, p.z], yaw: p.yaw, scale: it.setScale }));
+      p.at = at(layerFile(ROOT, it.layer), [p.x, ly, p.z]);
     }
   }
   const files = [...originals.keys()].map((f) => f.slice(ROOT.length + 1).replace(/\\/g, "/"));
@@ -1386,7 +1390,8 @@ function groundPlans(ctx, wants, flags) {
     const under = samples[0].hit;
     const notes = [...res.notes];
     if (under !== "terrain" && under !== "none") notes.push(`standing on ${under}`);
-    return { x: w.pivot[0], y: res.y, z: w.pivot[1], yaw: w.yaw, notes, item: w.item };
+    // The terrain under the footprint centre: what a RELATIVE_Y prefab's layer y counts from (tools/lib/height-frame.mjs).
+    return { x: w.pivot[0], y: res.y, z: w.pivot[1], yaw: w.yaw, notes, item: w.item, ty: run.rays.get(`g${i}_0`)?.sy };
   });
   return commit(ctx, plans, flags);
 }

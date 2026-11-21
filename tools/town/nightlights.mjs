@@ -15,6 +15,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { measureTown } from "../../agent-box/place-audit.mjs";
+import { frameOf, gameVfsSync } from "../lib/height-frame.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const LAYER_DIR = "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers";
@@ -320,7 +321,7 @@ export function seatsFromRays(outText, { glows, lamps }) {
     if (!r) continue;
     const py = Number(r.p.split(",")[1]);
     const hit = Number(r.d) < Number(r.len) - 0.01 && r.hit !== "none";
-    seats.lamps[l.name] = { y: r2(hit ? Math.max(py, Number(r.sy)) : Number(r.sy)), on: hit ? r.root : "terrain" };
+    seats.lamps[l.name] = { y: r2(hit ? Math.max(py, Number(r.sy)) : Number(r.sy)), ty: r2(Number(r.sy)), on: hit ? r.root : "terrain" };
   }
   return seats;
 }
@@ -334,7 +335,7 @@ export function applySeats(built, seats) {
     if (s === null) continue;
     glows.push(s ? { ...g, x: s.x, y: s.y, z: s.z } : g);
   }
-  const lamps = built.lamps.map((l) => (seats.lamps?.[l.name] ? { ...l, y: seats.lamps[l.name].y } : l));
+  const lamps = built.lamps.map((l) => (seats.lamps?.[l.name] ? { ...l, y: seats.lamps[l.name].y, ...(Number.isFinite(seats.lamps[l.name].ty) ? { ty: seats.lamps[l.name].ty } : {}) } : l));
   return { ...built, glows, lamps };
 }
 
@@ -342,6 +343,23 @@ export function buildAll(loaded, seats = null) {
   const g = buildGlows(loaded);
   const l = buildLamps(loaded);
   return applySeats({ glows: g.glows, lamps: l.lamps, heads: buildHeads(loaded), errors: [...g.errors, ...l.errors] }, seats);
+}
+
+// Every row in the frame its prefab reads y in (tools/lib/height-frame.mjs): the seats are world heights, and a prefab whose
+// flags carry RELATIVE_Y (the vanilla street lamp: Lamps_Base 0x80403) reads y as the height over the terrain, so it is written
+// as its seat minus the probed ground under it (`ty`). Without that ground height the row cannot be written right: an error.
+// The ten new lamps stood 9 to 16 m in the air when their world seat went in as written (#3938).
+export function frameRows(built, frameOfRef = (ref) => frameOf(ROOT, gameVfsSync(), ref)) {
+  const errors = [];
+  const conv = (list, ref) => {
+    if (frameOfRef(ref) !== "terrain") return list;
+    return list.map((l) => {
+      if (Number.isFinite(l.ty)) return { ...l, y: r2(l.y - l.ty) };
+      errors.push(`${l.name}: ${ref.split("/").pop()} reads y over the terrain and its seat keeps no ground height (rerun with --probe)`);
+      return l;
+    });
+  };
+  return { ...built, glows: conv(built.glows, GLOW), heads: conv(built.heads, HEAD), lamps: conv(built.lamps, LAMP), errors: [...(built.errors ?? []), ...errors] };
 }
 
 export function renderLayer(place, { glows, lamps, heads }) {
@@ -399,7 +417,7 @@ export function main(args, { root = ROOT } = {}) {
     const dropped = Object.values(seats.glows).filter((s) => s === null).length;
     console.log(`nightlights: probed ${Object.keys(seats.glows).length} glows (${dropped} meet no wall: not written) and ${Object.keys(seats.lamps).length} lamps into ${SEATS_DIR}/lights-${place}.json`);
   }
-  const built = buildAll(loaded, existsSync(seatsFile) ? JSON.parse(readFileSync(seatsFile, "utf8")) : null);
+  const built = frameRows(buildAll(loaded, existsSync(seatsFile) ? JSON.parse(readFileSync(seatsFile, "utf8")) : null));
   for (const e of built.errors) console.log(`ERROR ${e}`);
   const text = renderLayer(place, built);
   const file = layerPath(root, place);

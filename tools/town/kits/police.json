@@ -1180,7 +1180,8 @@
       "yaw": 0,
       "class": "SCR_DestructibleEntity",
       "wall": "+z",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "police-kit-decor-35",
@@ -1195,7 +1196,8 @@
       ],
       "yaw": 0,
       "class": "SCR_DestructibleEntity",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "police-kit-decor-36",
@@ -1211,7 +1213,8 @@
       "yaw": 0,
       "class": "SCR_DestructibleEntity",
       "wall": "+z",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "police-kit-decor-37",
@@ -1227,7 +1230,8 @@
       "yaw": 0,
       "class": "SCR_DestructibleEntity",
       "wall": "+z",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     }
   ]
 }

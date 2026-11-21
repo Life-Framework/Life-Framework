@@ -64,7 +64,8 @@
       "yaw": 3,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-s-9",
@@ -80,7 +81,8 @@
       "yaw": 3,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-s-17",
@@ -96,7 +98,8 @@
       "yaw": 3,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-s-25",
@@ -112,7 +115,8 @@
       "yaw": 3,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-s-41",
@@ -128,7 +132,8 @@
       "yaw": 3,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-s-49",
@@ -144,7 +149,8 @@
       "yaw": 3,
       "class": "SCR_DestructibleEntity",
       "wall": "+x",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-w-0",
@@ -160,7 +166,8 @@
       "yaw": 93,
       "class": "SCR_DestructibleEntity",
       "wall": "+z",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-w-8",
@@ -176,7 +183,8 @@
       "yaw": 93,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-w-16",
@@ -192,7 +200,8 @@
       "yaw": 93,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-w-24",
@@ -208,7 +217,8 @@
       "yaw": 93,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-w-32",
@@ -224,7 +234,8 @@
       "yaw": 93,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-fence-w-40",
@@ -240,7 +251,8 @@
       "yaw": 93,
       "class": "SCR_DestructibleEntity",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "mount": "ground"
     },
     {
       "id": "wheat-field-cart",

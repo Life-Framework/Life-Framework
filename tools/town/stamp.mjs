@@ -95,6 +95,12 @@ export async function planStamp(kit, targets, { root = ROOT, layerDir = LAYER_DI
       errors.push(...plan.errors.map((e) => `${where}: ${e}`));
       continue;
     }
+    // A row whose prefab reads y over the terrain (RELATIVE_Y, tools/lib/height-frame.mjs) cannot be stamped from building-local
+    // heights alone: it needs the ground under it, which only `town fit --terrain` probes.
+    if (plan.framePending?.length) {
+      errors.push(`${where}: ${plan.framePending.join(", ")} read y over the terrain (their prefab flags carry RELATIVE_Y); a stamp writes world heights only: fit the slot with town fit --terrain, or use a prefab without the flag`);
+      continue;
+    }
     const layerFile = `${layerDir}/${plan.layerName}`;
     const claimFile = `${claimsDir}/${t.place}-${t.slot}.json`;
     // The claim keeps the date it was first stamped with while nothing else changed, so a re-stamp is byte-equal.

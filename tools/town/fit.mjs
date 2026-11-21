@@ -35,6 +35,7 @@ import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
 import { mountOf, sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
 import { probeTerrain, readPins, terrainFromPins, writePins } from "./terrain.mjs";
+import { frameOf, gameVfsSync } from "../lib/height-frame.mjs";
 
 export const help = "fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-audit] [--no-look]   apply the slot's kit into its mapped building, rows seated on the host's floors and walls: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
 
@@ -510,10 +511,49 @@ export function planFit(opts, ctx = {}) {
     destruction,
     date: (ctx.now ? ctx.now() : new Date()).toISOString().slice(0, 10),
   };
-  return { ok: true, errors, warnings, notes, layerName, layerText, claimFile: claimFileOf(place, slotId), claim, anchor, rows, host, kit, ents: { markers, out, rowEnts } };
+  const plan = { ok: true, errors, warnings, notes, layerName, layerText, claimFile: claimFileOf(place, slotId), claim, anchor, rows, host, kit, ents: { markers, out, rowEnts } };
+  renderFramed(plan, ctx);
+  return plan;
 }
 
 const renderLayer = ({ markers, out, rowEnts }) => `${[...markers, ...out, ...rowEnts].map(entityText).join("\n")}\n`;
+
+// The rows as the layer must hold them. Every row is planned in world heights (a host floor, the probed ground), or, for a
+// "ground" row (seat.mjs), as its height over the terrain. The engine reads a row's y in the frame its prefab's flags set
+// (tools/lib/height-frame.mjs: RELATIVE_Y means the height over the terrain, else a world height), so each row is turned
+// into that frame here, the one place the layer text is made. A conversion that needs the ground height under the row takes
+// it from the slot's probe pins (`--terrain`); without one the row is pending and the fit refuses.
+// Returns { rowEnts, pending: [id], points: [[x, z]], frames: { id: frame } }.
+export function framedRows(rowEnts, { root = ROOT, terrain = null, overGround = new Set(), frameOfRef = null } = {}) {
+  const fr = frameOfRef ?? ((ref) => frameOf(root, gameVfsSync(), ref));
+  const pending = [];
+  const points = [];
+  const frames = {};
+  const rows = rowEnts.map((e) => {
+    const frame = fr(e.ref);
+    frames[e.id] = frame;
+    const terrainFrame = frame === "terrain";
+    if (terrainFrame === overGround.has(e.id) || !e.coords) return e; // already in its frame
+    const [x, y, z] = e.coords;
+    points.push([x, z]);
+    const t = terrain?.at(x, z);
+    if (!Number.isFinite(t)) {
+      pending.push(e.id);
+      return e;
+    }
+    return { ...e, coords: [x, r3(terrainFrame ? y - t : y + t), z] };
+  });
+  return { rowEnts: rows, pending, points, frames };
+}
+
+// Render the plan's layer with every row in its prefab's frame; the pending rows and the ground points they need go on the plan.
+function renderFramed(plan, ctx, overGround = new Set()) {
+  const f = framedRows(plan.ents.rowEnts, { root: ctx.root ?? ROOT, terrain: ctx.terrain ?? null, overGround, frameOfRef: ctx.frameOf ?? null });
+  plan.framePending = f.pending;
+  plan.framePoints = f.points;
+  plan.frames = f.frames;
+  plan.layerText = renderLayer({ ...plan.ents, rowEnts: f.rowEnts });
+}
 
 // The host prefab the dossier (or the --building-prefab of a plot) gives, before planFit runs; null when the slot has none.
 function hostRefOf(opts) {
@@ -549,7 +589,8 @@ export async function planFitSeated(opts, ctx = {}) {
       const r = plan.rows.find((q) => q.id === e.id);
       if (r) e.coords = r.coords;
     }
-    plan.layerText = renderLayer(plan.ents);
+    renderFramed(plan, ctx);
+    plan.terrainPoints = [...plan.terrainPoints, ...plan.framePoints];
     return plan;
   }
   if (!plan.host?.prefab) {
@@ -574,7 +615,8 @@ export async function planFitSeated(opts, ctx = {}) {
   for (const r of seat.skipped) plan.warnings.push(`row ${r.id} ${r.skip}`);
   for (const r of seat.furniture) plan.warnings.push(`row ${r.id} ${r.furniture}`);
   plan.claim.rows = plan.ents.rowEnts.length;
-  plan.layerText = renderLayer(plan.ents);
+  renderFramed(plan, ctx, new Set(seat.rows.filter((r) => r.overGround).map((r) => r.id)));
+  plan.terrainPoints = [...plan.terrainPoints, ...plan.framePoints];
   for (const r of seat.unseated) plan.warnings.push(`row ${r.id}: ${r.notes.filter((n) => /^no /.test(n)).join("; ")}`);
   const hostPath = String(plan.host.prefab).replace(/^\{[0-9A-Fa-f]{16}\}/, "");
   for (const c of seat.clips) {
@@ -644,7 +686,7 @@ export function verifySteps(place, slotId, layerName, flags = {}) {
 
 // `town fit --check`: per-row corrections, against the slot's layer on disk when there is one (a draft branch), else
 // against the kit's unseated positions. Writes nothing. Exit 1 on a clip or when the host cannot be read.
-function checkReport(plan, { root, place, slotId, layerFile }) {
+function checkReport(plan, { root, place, slotId, layerFile, terrain = null }) {
   const shown = relative(root, layerFile).replaceAll("\\", "/");
   if (!plan.seat?.host) {
     for (const e of plan.errors ?? []) console.log(`REFUSE  ${e}`);
@@ -654,7 +696,16 @@ function checkReport(plan, { root, place, slotId, layerFile }) {
   }
   const written = existsSync(layerFile) ? layerCoords(readFileSync(layerFile, "utf8"), place, slotId) : null;
   // the layer names a row by ident(id) (dashes become underscores); a row the layer lacks is judged against its unseated spot
-  const onDisk = written ? new Map(plan.seat.rows.map((r) => [r.id, written.get(ident(r.id)) ?? r.from])) : null;
+  // The disk holds each row in its prefab's frame (tools/lib/height-frame.mjs); the seat plans it in world heights, or over
+  // the ground for a "ground" row. Compared in the seat's frame when the pins know the ground under it.
+  const worldOf = (id, c) => {
+    const diskOver = plan.frames?.[id] === "terrain";
+    const seatOver = Boolean(plan.seat.rows.find((r) => r.id === id)?.overGround);
+    if (!c || diskOver === seatOver) return c;
+    const t = terrain?.at(c[0], c[2]);
+    return Number.isFinite(t) ? [c[0], diskOver ? c[1] + t : c[1] - t, c[2]] : c;
+  };
+  const onDisk = written ? new Map(plan.seat.rows.map((r) => [r.id, written.has(ident(r.id)) ? worldOf(r.id, written.get(ident(r.id))) : r.from])) : null;
   const a = plan.anchor;
   console.log(`anchor ${a.x} ${a.y} ${a.z} yaw ${a.yaw} (${a.note}); host model ${plan.seat.host.mesh}`);
   console.log(onDisk ? `corrections against ${shown}:` : "no layer on disk: corrections against the kit's unseated positions:");
@@ -723,12 +774,19 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
     console.log(`REFUSE  ${e.message}`);
     return 1;
   }
-  if (flags.check) return checkReport(plan, { root, place, slotId, layerFile: join(resolve(root, flags["out-dir"] ?? LAYER_DIR), layerNameOf(place, slotId)) });
+  if (flags.check) return checkReport(plan, { root, place, slotId, terrain: fitCtx.terrain, layerFile: join(resolve(root, flags["out-dir"] ?? LAYER_DIR), layerNameOf(place, slotId)) });
   for (const n of plan.notes ?? []) console.log(`note  ${n}`);
   for (const w of plan.warnings ?? []) console.log(`warn  ${w}`);
   if (!plan.ok) {
     for (const e of plan.errors) console.log(`REFUSE  ${e}`);
     console.log(`SUMMARY town-fit fail ${place}.${slotId}: ${plan.errors.length} problem(s)`);
+    return 1;
+  }
+  // A row whose frame needs the ground height under it and has none would be written in the wrong frame: refuse, unless
+  // --terrain is about to probe it (the first write only gives the probe server the world to boot around).
+  if (plan.framePending?.length && !flags.terrain) {
+    console.log(`REFUSE  ${plan.framePending.length} row(s) need the ground height under them to be written in their prefab's frame (tools/lib/height-frame.mjs): ${plan.framePending.slice(0, 6).join(", ")}${plan.framePending.length > 6 ? ", ..." : ""}; run town fit ${place} ${slotId} --terrain`);
+    console.log(`SUMMARY town-fit fail ${place}.${slotId}: ${plan.framePending.length} row(s) without a probed ground height`);
     return 1;
   }
 
@@ -757,6 +815,7 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
       fitCtx.terrain = terrainFromPins({ points: probed.points });
       plan = await planFitSeated(fitOpts0, fitCtx);
       for (const w of plan.warnings ?? []) console.log(`warn  ${w}`);
+      if (plan.framePending?.length) plan = { ...plan, ok: false, errors: [...plan.errors, `no ground height came back for ${plan.framePending.join(", ")}: they cannot be written in their prefab's frame`] };
       if (!plan.ok) {
         for (const e of plan.errors) console.log(`REFUSE  ${e}`);
         console.log(`SUMMARY town-fit fail ${place}.${slotId}: ${plan.errors.length} problem(s) after the terrain probe`);

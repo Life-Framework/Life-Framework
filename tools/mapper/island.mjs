@@ -22,6 +22,7 @@ import { CLAIMS_DIR, checkClaimsAndFootprints, distToPolygon, loadPlace, marginO
 import { pinKey, probeTerrain } from "../town/terrain.mjs";
 import { islandLayersDir } from "../lib/worlds.mjs";
 import { entityName } from "./convert.mjs";
+import { frameOf, gameVfsSync, layerY } from "../lib/height-frame.mjs";
 
 const r2 = (n) => Math.round(n * 100) / 100;
 const r3 = (n) => Math.round(n * 1000) / 1000;
@@ -72,7 +73,16 @@ export function seatOnTerrain(P, e, pins) {
   const samples = pts.map((p) => ({ y: pins[pinKey(p[0], p[1])] }));
   if (samples.some((s) => !Number.isFinite(s.y))) throw new Error("the island's probe gave no terrain height under it");
   const res = P.onGround({ samples, prop: { name: e.name, prefab: e.item.prefab, bounds: e.item.bounds, scale: e.item.scale } });
-  return { x: r3(pivot[0]), y: r3(res.y), z: r3(pivot[1]), notes: res.notes };
+  return { x: r3(pivot[0]), y: r3(res.y), z: r3(pivot[1]), notes: res.notes, ty: pins[pinKey(pivot[0], pivot[1])] };
+}
+
+// The y the layer must hold for a seat (a world height): the prefab's own frame (tools/lib/height-frame.mjs). A terrain-frame
+// prefab with no probed ground under its pivot throws.
+export function layerYOf(seat, prefabRef, { root, frameOfRef = null } = {}) {
+  const frame = (frameOfRef ?? ((ref) => frameOf(root, gameVfsSync(), ref)))(prefabRef);
+  if (frame !== "terrain") return seat.y;
+  if (!Number.isFinite(seat.ty)) throw new Error("its prefab reads y over the terrain (RELATIVE_Y) and the probe gave no ground height under its pivot");
+  return r3(layerY(seat.y, seat.ty, frame));
 }
 
 // ------------------------------------------------------------------ the writer
@@ -142,7 +152,11 @@ export async function intoIslandSlot({ root, P, layer, kept, flags, ctx, branch,
     return 1;
   }
   // 1. ONE boot on the island for every footprint's terrain heights.
-  const points = todo.flatMap((e) => P.groundProbePoints(e.item, [e.x, e.z], e.yaw).pts);
+  // The pivot too: a prefab whose flags carry RELATIVE_Y reads its y over the terrain under its pivot (tools/lib/height-frame.mjs).
+  const points = todo.flatMap((e) => {
+    const g = P.groundProbePoints(e.item, [e.x, e.z], e.yaw);
+    return [...g.pts, g.pivot];
+  });
   const aroundY = markerY(layerText) ?? 0;
   console.log(`  probing the island's terrain under ${todo.length} prop(s) (${points.length} points, one test-server boot)`);
   let pins;
@@ -179,7 +193,15 @@ export async function intoIslandSlot({ root, P, layer, kept, flags, ctx, branch,
       staged.pop();
       continue;
     }
-    text = P.appendEntity(text, { cls: e.item.cls, name: e.name, guid: m[1], path: m[2], coords: [seat.x, seat.y, seat.z], yaw: e.yaw, scale: null });
+    let ly;
+    try {
+      ly = layerYOf(seat, e.ref, { root, frameOfRef: ctx.frameOf ?? null });
+    } catch (err) {
+      refused.push({ e, why: err.message });
+      staged.pop();
+      continue;
+    }
+    text = P.appendEntity(text, { cls: e.item.cls, name: e.name, guid: m[1], path: m[2], coords: [seat.x, ly, seat.z], yaw: e.yaw, scale: null });
     console.log(`  ${e.name}  ${e.prefab.path.split("/").pop()}  ${seat.x},${seat.z}  y ${seat.y}  yaw ${e.yaw}  (${seat.notes[0]})`);
   }
   const placed = staged.map((s) => s.name);

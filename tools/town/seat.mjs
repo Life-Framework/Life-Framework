@@ -14,9 +14,10 @@
 //   terrain a row in open ground (kit row `"mount": "terrain"`, no building under it): it rests on the ground the server
 //           probed under its footprint (tools/town/terrain.mjs, `town fit --terrain`), the highest of the centre and the four
 //           corners, so a prop on a slope never sinks at its high side. Without a probed height it is left and reported;
-//   relative a row of a class whose layer height counts from the TERRAIN (SCR_DestructibleEntity: the net fence of the
-//           range stood 20 m up in the air on 2026-11-19, y 19.1 + terrain 20.2): its height is the bottom of its bounds
-//           over the ground, no probe needed;
+//   ground  a row the kit stands on the ground under it (`"mount": "ground"`, a fence panel, a street bin): its y is the
+//           height of its pivot over the terrain (the bottom of its bounds on the ground), no probe needed for that;
+//           `town fit` writes it in the row's own frame (tools/lib/height-frame.mjs), which for a world-frame prefab
+//           needs the probed terrain height;
 //   clip   a row whose bounds cut a host wall is pushed out along that wall's normal by up to NUDGE; a row that still
 //           cuts the shell is reported as a clip (town fit refuses it unless --allow-clip).
 //
@@ -26,7 +27,6 @@
 //   reader.shell(path) -> { mesh, surfaces: [{ y, x:[a,b], z:[a,b], area }], walls: [{ n:[nx,ny,nz], p:[[x,y,z] x3] }] } | null
 import { BELOW_PIVOT, isHung, footOf, scaleOf, gameReader as surfaceReader, prefabChildren as prefabChildrenOf } from "../buildings/pipeline/surface.mjs";
 import { toWorld, toLocal } from "./kit.mjs";
-import { TERRAIN_RELATIVE_CLASSES } from "../lib/terrain-classes.mjs";
 
 export const TOL = 0.02; // a row within 2 cm of its support is left alone
 export const FLOOR_BAND = 0.75; // a floor row seats on a host top this far above or below its kit height, no further
@@ -38,9 +38,6 @@ export const WALL_GAP = 0.005; // a wall row stands this far off the plane
 export const FLAT_TOL = 0.02; // `flatWalls`: the wall plane under a wall row's width and height may differ by this much
 export const SLIDE_STEP = 0.1; // `flatWalls`: a wall row on an uneven wall slides along it in steps of this
 export const SLIDE_MAX = 3; // ... and at most this far each way (a kit row's `slide` overrides it, metres)
-// Classes whose layer `coords` height is measured from the terrain under them (tools/lib/terrain-classes.mjs). A kit row
-// of one of these needs no probe.
-export { TERRAIN_RELATIVE_CLASSES };
 
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -294,12 +291,13 @@ export function footprintPoints(coords, yaw, info, scale = null) {
 }
 
 // How a kit row is held: "wall", "floor" (with `against` when its verb is `against wall`), "stack" (on another row), "free",
-// "terrain" (open ground, probed) or "relative" (a class whose height counts from the terrain).
+// "terrain" (open ground, probed) or "ground" (on the ground, its y the height over the terrain; "relative" is the old name).
+// The layer class token says nothing about the frame: that is the prefab's RELATIVE_Y flag (tools/lib/height-frame.mjs).
 export function mountOf(src) {
   const tags = [].concat(src.tags ?? [], src.kind ?? []).map(String);
   const verb = String(src.verb ?? "");
   if (src.free || src.mount === "free") return { mount: "free" };
-  if (src.mount === "relative" || TERRAIN_RELATIVE_CLASSES.includes(String(src.class ?? ""))) return { mount: "relative" };
+  if (src.mount === "ground" || src.mount === "relative") return { mount: "ground" };
   if (src.mount === "terrain") return { mount: "terrain" };
   if (src.on === "wall" || src.mount === "wall" || tags.includes("wall") || tags.includes("wall-mounted") || isHung(src.prefab) || src.role === "sign") return { mount: "wall" };
   if (verb.startsWith("on ") && verb !== "on floor") return { mount: "stack", on: verb.slice(3) };
@@ -352,12 +350,13 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false,
       res.skip = `hangs on socket ${sock} of the kit's source building: its offset is socket-relative, so it is left out of the layer (give the kit row a building-space offset)`;
       res.notes.push(res.skip);
     } else if (m.mount === "free") res.notes.push("free: left as the kit puts it");
-    else if (m.mount === "relative") {
-      // The layer's y is the height over the terrain under the entity: the bottom of its bounds on the ground (0 for a
-      // prop whose pivot is its base, the fence panel).
+    else if (m.mount === "ground") {
+      // Its y becomes the height of its pivot over the terrain under it: the bottom of its bounds on the ground (0 for a
+      // prop whose pivot is its base, the fence panel). `town fit` turns it into the prefab's frame when it writes the row.
       const f = bounded ? footOf(l, info) : null;
       l.y = (f ? -f.bottom : 0) - host.y;
-      res.notes.push("terrain-relative class: the layer's y counts from the ground under it");
+      res.overGround = true;
+      res.notes.push("on the ground: y is its height over the terrain under it");
     } else if (m.mount === "terrain") {
       const world = toW(l);
       const pts = footprintPoints(world, row.yaw, bounded ? info : null, l.scale);
