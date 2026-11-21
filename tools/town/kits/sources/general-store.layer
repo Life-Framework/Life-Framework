@@ -1,0 +1,78 @@
+// Source of the `general-store` kit's two tills (tools/town/kits/general-store.json). `town fit` reads each component's GUID and
+// nested blocks (shop component, action contexts, pay and shop actions) from here, matched on the row's prefab and name, so a
+// refit keeps them. The general till pays for the shelf stock; the miner's till opens the `miners_supply` catalogue outlet (#3085).
+GenericEntity Shop_GeneralStore_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "FilmTill"
+   m_sId "street"
+  }
+  LF_ShopComponent "{6B3C1D2E4F5A7081}" {
+   m_sShopName "#LF-Shop_Name_General"
+   m_sShopDescription "#LF-Shop_Desc_General"
+   m_sStockId "general_store"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86E4846}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{5A4B0B84C86E4847}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_StoreTillAction "{5A4B0B84C86E4848}" {
+     m_sStoreKey "general_store"
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86E4849}" {
+      Name "#LF-Store_Pay"
+     }
+    }
+    LF_ShopAction "{6B3C1D2E4F5A7082}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6B3C1D2E4F5A7083}" {
+      Name "#LF-Shop_Open_General"
+      Description "#LF-Shop_OpenDesc_General"
+     }
+    }
+   }
+  }
+ }
+}
+GenericEntity Shop_GeneralStore_MinersTill : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{6B3C1D2E4F5A7091}" {
+   m_sShopName "#LF-Shop_Name_MinersSupply"
+   m_sShopDescription "#LF-Shop_Desc_MinersSupply"
+   m_sOutletId "miners_supply"
+  }
+  ActionsManagerComponent "{6B3C1D2E4F5A7092}" {
+   ActionContexts {
+    UserActionContext "{6B3C1D2E4F5A7093}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{6B3C1D2E4F5A7094}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{6B3C1D2E4F5A7095}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6B3C1D2E4F5A7096}" {
+      Name "#LF-Shop_Open_MinersSupply"
+      Description "#LF-Shop_Desc_MinersSupply"
+     }
+    }
+   }
+  }
+ }
+}
