@@ -2,7 +2,7 @@
 //
 // The world zones (docs/architecture/world-zones.md, three-worlds.md).
 //
-// 1. Grid claims. Each tools/grid/cells/<slug>.json names a cell of the lattice, no two claim one
+// 1. Grid claims (an "authoring": true claim is exactly one authoring bay, nothing else touches one: lattice.mjs AUTHORING). Each tools/grid/cells/<slug>.json names a cell of the lattice, no two claim one
 //    cell, each has its GridWorld_Layers/Grid_<slug>.layer, each Grid_*.layer has a claim, and every
 //    entity a grid layer places stands inside its own cell (a feature never sprawls past its fence).
 //    The frame (tools/grid/lattice.mjs, claim frame.json with cell "lattice") is the one claim that spans the
@@ -32,7 +32,7 @@ import { spawnSync } from "node:child_process";
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { FRAME_CELL, claimCellIds, claimRect, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
+import { FRAME_CELL, authoringBays, claimCellIds, claimRect, isAuthoringCell, isAuthoringClaim, isBayClaim, isFrameClaim, latticeRect } from "../grid/lattice.mjs";
 import { DEBUG_LAYERS, GRID_LAYERS, PACK_GRID_LAYERS, allCells, cellBounds, inAnnexRect, layerOfSlug, mainClaims, openPrClaims, parseCellId, readCells, zoneOfPath } from "../lib/world-zones.mjs";
 
 export const BASELINE = "tools/validation/zone-guard-baseline.json";
@@ -113,6 +113,10 @@ export function checkClaims(root, { mainClaims: onMain = [], prClaims = [] } = {
       errors.push(`${c.file}: span ${JSON.stringify(c.span ?? [1, 1])} from ${c.cell} is not a block of whole cells inside the lattice`);
       continue;
     }
+    // The authoring bays (lattice.mjs AUTHORING) belong to `town author`: an authoring claim sits exactly on one bay, and no other claim touches one.
+    if (c.authoring !== undefined && c.authoring !== true) errors.push(`${c.file}: "authoring" is true or absent`);
+    if (isAuthoringClaim(c) && !isBayClaim(c)) errors.push(`${c.file}: an authoring claim sits exactly on one 2x2 authoring bay (${authoringBays().map((x) => x.id).join(", ")}), not ${c.cell}${c.span ? ` span ${JSON.stringify(c.span)}` : ""}`);
+    if (!isAuthoringClaim(c) && claimCellIds(c).some(isAuthoringCell)) errors.push(`${c.file}: ${c.cell} touches an authoring bay; only \`town author\` (grid place --bay) claims those. Run tools\\cli grid free ${c.slug} and grid place ${c.slug} again for a free cell`);
     for (const id of claimCellIds(c)) {
       if (seen.has(id)) errors.push(`${c.file}: cell ${id} is claimed by ${seen.get(id)} too. Run tools\cli grid free ${c.slug} and grid place again for a free cell`);
       else seen.set(id, c.file);

@@ -3,7 +3,7 @@
   "kit": "bakery",
   "system": "",
   "source": {
-    "file": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_author_bakery.layer",
+    "file": "tools/town/kits/sources/bakery.layer",
     "group": "Bakery_*",
     "origin": "building",
     "frame": "building-local"

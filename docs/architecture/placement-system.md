@@ -71,7 +71,7 @@ copy of the SAME vanilla building  ──>   tools/town/kits/<kit>.json     ─�
                                          clear list (vanilla clutter)          re-stamp = same bytes (idempotent)
 ```
 
-1. **Author** (`tools\cli town author <kit> [--from <place>/<slot>]`): claims a grid cell and puts a copy of the island
+1. **Author** (`tools\cli town author <kit> [--from <place>/<slot>]`): claims an authoring bay (a 2x2 at the east end of the grid, `docs/architecture/world-zones.md` "Authoring bays"; the extract below releases it, `town author --reopen <kit>` builds it again) and puts a copy of the island
    building's vanilla prefab in it (the dossier's `prefab` for the mapped building, the same `{GUID}path`). With `--from`
    it seeds the cell from the slot's kit so a broken island shop is rebuilt where it can be looked at and walked:
    `look grid:<slug>`, `look grid:<slug> --interior`, a session walk for lanes, `audit placement --grid --strict`.
@@ -222,6 +222,8 @@ where and on what, the world answers how high. Mapper's apply plugin also report
 our equivalent is the audit's `missing` count, which the gate will judge. No Mapper code is copied in this change.
 
 ### Rebuild notes
+
+- **Authoring has its own bays.** `town author` no longer claims a permanent normal cell: it takes one of six 2x2 authoring bays and `town author extract` frees it (the kit and its archived source layer stay). Build in a bay, extract, stamp; to edit the shop again, `town author --reopen <kit>`. A building bigger than 2x2 does not fit a bay.
 
 Written by the pilot rebuild (#3890, bakery) for R1 and R3 to R8. What was hard, and what to do instead:
 
