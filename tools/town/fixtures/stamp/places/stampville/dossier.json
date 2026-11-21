@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "place": { "slug": "stampville", "name": "Stampville (selftest fixture)" },
+  "buildings": [
+    { "id": "b1", "prefab": "{38A5F3E4578087AB}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et", "x": 5000, "y": 20, "z": 6000, "yaw": 0, "firstFloor": 0, "ruin": false, "interior": { "value": "yes" } },
+    { "id": "b2", "prefab": "{38A5F3E4578087AB}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et", "x": 5100, "y": 25.5, "z": 6050, "yaw": 180, "firstFloor": 0, "ruin": false, "interior": { "value": "yes" } },
+    { "id": "b3", "prefab": "{B2172573ED15AA82}Prefabs/Structures/Houses/Village/House_Village_E_1L03/House_Village_E_1L03t.et", "x": 5200, "y": 18, "z": 6100, "yaw": 82, "firstFloor": 0, "ruin": false, "interior": { "value": "yes" } }
+  ]
+}
