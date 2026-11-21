@@ -179,9 +179,11 @@ modded class SCR_PlayerController
 		LF_PoliceApplications.ExpireTrials(now);
 		bool onRoster = LF_WhitelistManager.IsWhitelistedForFaction(uid, LF_EFactionType.POLICE);
 
-		// A playtest mission approves on submit and skips the gates with it.
+		// A playtest mission, or the alpha owner switch police.alphaInstantApproval, approves on submit and skips the gates with it.
 		LF_MissionHeader header = LF_MissionHeader.GetCurrent();
-		bool playtest = header && header.m_bLF_InstantPoliceApproval;
+		bool playtest = LF_PoliceApplicationRules.ApprovesOnSubmit(header && header.m_bLF_InstantPoliceApproval, LF_PoliceConfig.AlphaInstantApproval());
+		if (playtest && LF_PoliceConfig.AlphaInstantApproval())
+			LF_Debug.Info("Police", string.Format("police application from player %1 approved on submit: police.alphaInstantApproval is on (alpha only)", GetPlayerId()));
 		// A harness session (LF_HARNESS) can turn approve-on-submit off and the playtime gate off to prove the staff path.
 		playtest = LF_HarnessStaff.InstantApproval(playtest);
 		string refusal;

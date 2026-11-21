@@ -166,6 +166,9 @@ class LF_PoliceConfig
 	[Attribute("1", UIWidgets.Auto, "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder")]
 	bool m_bOfficerKillOfWantedExempt;
 
+	[Attribute("0", UIWidgets.Auto, "ALPHA ONLY: a police application filed at the station desk is approved at once, with no playtime gate, cooldown or trial, so testers can clock in without an administrator. Off on a live server")]
+	bool m_bAlphaInstantApproval;
+
 	[Attribute("120", UIWidgets.Auto, "Seconds before the same player or vehicle can be searched for chain goods again. A repeat inside it is not rolled again. 0 disables", params: "0 3600")]
 	int m_iSearchCooldownSeconds;
 
@@ -339,7 +342,7 @@ class LF_PoliceConfig
 	//! \param[in] reader A reader on the section.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours", "armoryCooldownMinutes", "dutyShiftMaxSeconds", "trialSweepSeconds", "ticketRateWindowSeconds", "ticketRateBurst", "spikeStripMaxPerOfficer", "callReward", "callRadius"};
+		array<string> ownerKeys = {"arrestMinRank", "escortMinRank", "ranks", "alarmKinds", "catchInActRadius", "placeRadius", "boardReadDistance", "boardMaxPosters", "alarmSeconds", "loudAlarmSeconds", "alarmPrefab", "loudAlarmPrefab", "radioSoundProject", "radioSoundEvent", "dispatchLogLines", "ticketFirstDeadline", "ticketSecondDeadline", "ticketLateMultiplier", "officerKillOfWantedExempt", "searchCooldownSeconds", "ticketMaxOpen", "ticketKeepPaid", "arrestReach", "jailArrivalRadius", "applyDeskRange", "compliantSeconds", "spikeStripLifetimeSeconds", "applyMinPlaytimeHours", "applyRejectCooldownHours", "trialHours", "armoryCooldownMinutes", "dutyShiftMaxSeconds", "trialSweepSeconds", "ticketRateWindowSeconds", "ticketRateBurst", "spikeStripMaxPerOfficer", "callReward", "callRadius", "alphaInstantApproval"};
 		reader.WarnUnknownKeys(ownerKeys);
 		reader.ReadInt("arrestMinRank", m_iArrestMinRank, RANK_MIN, RANK_MAX);
 		reader.ReadInt("escortMinRank", m_iEscortMinRank, RANK_MIN, RANK_MAX);
@@ -358,6 +361,7 @@ class LF_PoliceConfig
 		reader.ReadInt("ticketSecondDeadline", m_iTicketSecondDeadline, DEADLINE_MIN, DEADLINE_MAX);
 		reader.ReadFloat("ticketLateMultiplier", m_fTicketLateMultiplier, LATE_MULTIPLIER_MIN, LATE_MULTIPLIER_MAX);
 		reader.ReadBool("officerKillOfWantedExempt", m_bOfficerKillOfWantedExempt);
+		reader.ReadBool("alphaInstantApproval", m_bAlphaInstantApproval);
 		reader.ReadInt("searchCooldownSeconds", m_iSearchCooldownSeconds, SEARCH_COOLDOWN_MIN, SEARCH_COOLDOWN_MAX);
 		reader.ReadInt("ticketMaxOpen", m_iTicketMaxOpen, TICKET_OPEN_MIN, TICKET_OPEN_MAX);
 		reader.ReadInt("ticketKeepPaid", m_iTicketKeepPaid, TICKET_PAID_MIN, TICKET_PAID_MAX);
@@ -490,6 +494,7 @@ class LF_PoliceConfig
 		ctx.WriteValue("ticketSecondDeadline", m_iTicketSecondDeadline);
 		ctx.WriteValue("ticketLateMultiplier", m_fTicketLateMultiplier);
 		ctx.WriteValue("officerKillOfWantedExempt", m_bOfficerKillOfWantedExempt);
+		ctx.WriteValue("alphaInstantApproval", m_bAlphaInstantApproval);
 		ctx.WriteValue("searchCooldownSeconds", m_iSearchCooldownSeconds);
 		ctx.WriteValue("ticketMaxOpen", m_iTicketMaxOpen);
 		ctx.WriteValue("ticketKeepPaid", m_iTicketKeepPaid);
@@ -565,6 +570,17 @@ class LF_PoliceConfig
 			return DEFAULT_JAIL_ARRIVAL_RADIUS;
 
 		return config.m_fJailArrivalRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ALPHA ONLY (owner config police.alphaInstantApproval): the station desk approves an application on submit.
+	static bool AlphaInstantApproval()
+	{
+		LF_PoliceConfig config = Get();
+		if (!config)
+			return false;
+
+		return config.m_bAlphaInstantApproval;
 	}
 
 	//------------------------------------------------------------------------------------------------
