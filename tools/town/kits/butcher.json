@@ -1,236 +1,255 @@
 {
   "schema": 1,
   "kit": "butcher",
-  "system": "store",
+  "system": "",
   "source": {
     "file": "tools/town/kits/sources/butcher.layer",
+    "group": "Butcher_*",
     "origin": "building",
     "frame": "building-local"
   },
   "scope": "room",
   "building": {
     "mode": "inside",
-    "vanilla": "{38A5F3E4578087AB}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et"
+    "vanilla": "{C50CF821412A2E0F}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01_orange.et"
   },
   "anchoring": {
-    "floorY": 0.2,
+    "floorY": 0.196,
     "floors": [
       {
         "id": "f0",
-        "y": 0.2
+        "y": 0.196
+      },
+      {
+        "id": "f1",
+        "y": 3.196
       }
     ],
     "footprint": {
       "source": "rows",
       "min": [
-        -5.7,
-        -3.2
+        -5.2,
+        -2.2
       ],
       "max": [
-        -2.3,
-        4.5
+        -3.05,
+        3.1
       ]
     },
     "front": "+z",
-    "counters": [],
-    "adapt": "The ground-floor west room of the town house House_Town_E_2I01_orange (b20, the same plan as the bakery's b06; doors on the street side at +z): a shop counter of two CounterShop_01 across the room at local z 3 with the till, a scale and cuts of dried meat on it, two open chillers and a chest freezer against the west wall with meat on the freezer lid, and the painted fascia above the street doors. The floors above stay the butcher's flat; the shed b19 behind is its locked store. Rows are rigid: shift, never stretch."
+    "counters": [
+      {
+        "id": "butcher-counter-1",
+        "wall": "+z",
+        "edgeGap": 0.1
+      },
+      {
+        "id": "butcher-counter-2",
+        "wall": "+x",
+        "edgeGap": 0
+      },
+      {
+        "id": "butcher-till",
+        "wall": "+x",
+        "edgeGap": 0
+      }
+    ],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
       "id": "butcher-counter-1",
+      "name": "Butcher_counter_1",
       "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
       "role": "counter",
-      "verb": "on floor",
+      "verb": "against wall",
       "offset": [
         -4.55,
-        0.2,
+        0.201,
         3
       ],
       "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
+      "wall": "+z",
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "butcher-counter-2",
+      "name": "Butcher_counter_2",
       "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
       "role": "counter",
-      "verb": "on floor",
+      "verb": "against wall",
       "offset": [
         -3.05,
-        0.2,
+        0.201,
         3
       ],
       "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "butcher-till",
-      "name": "Shop_Butcher_Till",
+      "name": "Butcher_till",
       "prefab": "{7CA6A8139045323E}Prefabs/Props/Commercial/LF_ButcherTill.et",
       "role": "till",
       "verb": "on butcher-counter-2",
       "offset": [
         -3.05,
-        1.239,
+        1.241,
         2.9
       ],
       "yaw": 180,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "counter:butcher-counter-2"
     },
     {
       "id": "butcher-scale",
+      "name": "Butcher_scale",
       "prefab": "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et",
       "role": "dressing",
       "verb": "on butcher-counter-1",
       "offset": [
         -4.7,
-        1.239,
+        1.238,
         3
       ],
       "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "counter:butcher-counter-1"
     },
     {
       "id": "butcher-chiller-1",
+      "name": "Butcher_chiller_1",
       "prefab": "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et",
-      "role": "furniture",
+      "role": "dressing",
       "verb": "against wall",
       "offset": [
-        -5.1,
-        0.2,
+        -4.95,
+        0.201,
         -2.2
       ],
       "yaw": 90,
-      "wall": "-x",
-      "floor": "f0"
-    },
-    {
-      "id": "butcher-chiller-2",
-      "prefab": "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et",
-      "role": "furniture",
-      "verb": "against wall",
-      "offset": [
-        -5.1,
-        0.2,
-        -0.1
-      ],
-      "yaw": 90,
-      "wall": "-x",
-      "floor": "f0"
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "butcher-freezer",
+      "name": "Butcher_freezer",
       "prefab": "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et",
-      "role": "furniture",
+      "role": "dressing",
       "verb": "against wall",
       "offset": [
-        -5.35,
-        0.2,
+        -5.2,
+        0.211,
         1.6
       ],
       "yaw": 90,
       "wall": "-x",
       "floor": "f0",
-      "lift": 0.05
+      "attach": "wall"
     },
     {
       "id": "butcher-meat-1",
+      "name": "Butcher_meat_1",
       "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
       "role": "dressing",
       "verb": "on butcher-counter-1",
       "offset": [
         -4.2,
-        1.239,
+        1.249,
         3.1
       ],
       "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "counter:butcher-counter-1"
     },
     {
-      "id": "butcher-meat-2",
+      "id": "butcher-meat-3",
+      "name": "Butcher_meat_3",
       "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
       "role": "dressing",
       "verb": "on butcher-counter-1",
       "offset": [
-        -3.85,
-        1.239,
-        3.15
-      ],
-      "yaw": 25,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "butcher-meat-3",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
-      "role": "dressing",
-      "verb": "on butcher-counter-2",
-      "offset": [
-        -3.45,
-        1.239,
+        -3.6,
+        1.249,
         3.1
       ],
       "yaw": 70,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "counter:butcher-counter-1"
     },
     {
       "id": "butcher-freezer-meat-1",
+      "name": "Butcher_freezer_meat_1",
       "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
       "role": "dressing",
       "verb": "on butcher-freezer",
       "offset": [
-        -5.35,
-        1.04,
+        -5.2,
+        1.061,
         1.45
       ],
       "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "butcher-freezer-meat-2",
-      "prefab": "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et",
-      "role": "dressing",
-      "verb": "on butcher-freezer",
-      "offset": [
-        -5.35,
-        1.04,
-        1.75
-      ],
-      "yaw": 40,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "table:butcher-freezer"
     },
     {
       "id": "butcher-fascia",
-      "config": [
-        {
-          "component": "LF_SignComponent",
-          "set": {
-            "m_sSignId": "\"butcher\"",
-            "m_vRimColor": "0.9 0.82 0.55",
-            "m_vPaintColor": "0.42 0.1 0.12",
-            "m_vTextColor": "0.96 0.93 0.82"
-          },
-          "blocks": []
-        }
-      ],
+      "name": "Butcher_fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
       "role": "sign",
       "verb": "against wall",
       "offset": [
         -3.8,
-        3.3,
+        3.25,
         7.6
       ],
       "yaw": 0,
       "wall": "+z",
-      "floor": "f0"
+      "floor": "f1",
+      "attach": "wall"
+    },
+    {
+      "id": "butcher-clerk",
+      "name": "Butcher_clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -3.05,
+        0.196,
+        2.2
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "floor"
     }
-  ]
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{C50CF821412A2E0F}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01_orange.et",
+    "lanes": [
+      {
+        "from": "entrance",
+        "to": "butcher-counter-1",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "butcher-counter-2",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "butcher-till",
+        "width": 1.2
+      }
+    ],
+    "clear": []
+  }
 }
