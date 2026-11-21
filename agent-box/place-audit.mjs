@@ -9,7 +9,7 @@
 //     with --layer it audits only those layers, and an empty selection fails with the layer names instead of measuring something else.
 //   audit selftest
 //
-// red-proof: 2026-11-19, with isTerrainRelative returning false the selftest printed "FAILED a SCR_DestructibleEntity at layer y 19.1 is flagged relative-y"; restored, OK.
+// red-proof: 2026-11-19, with isTerrainRelative (now the frame from tools/lib/height-frame.mjs) returning false the selftest printed "FAILED a SCR_DestructibleEntity at layer y 19.1 is flagged relative-y"; restored, OK.
 // red-proof: 2026-11-14, the fixture layer's twin crate moved 1 m away printed "FAILED duplicate not named"; restored, OK.
 // red-proof: 2026-11-15, with the bounds scan reading every "{GUID}path.et" again (loadout-slot clothing counted) the fixture check printed
 //   "FAILED entity prefabs read from a layer: ...CombatBoots_US_01.et..." and exited 1; with layerEntityPrefabs it prints OK.
@@ -25,7 +25,7 @@ import { fileURLToPath } from "node:url";
 import { loadWorld } from "./layers.mjs";
 import { boundsGapVerdict, layerEntityPrefabs } from "../tools/lib/layer-prefabs.mjs";
 import { judgeStrict } from "../tools/lib/town-findings.mjs";
-import { isTerrainRelative, TERRAIN_RELATIVE_MAX_Y } from "../tools/lib/terrain-classes.mjs";
+import { annotateFrames, TERRAIN_FRAME_MAX_Y } from "../tools/lib/height-frame.mjs";
 import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
 import { gridLayerDirs, gridWorldFor, ISLAND_WORLD, islandLayersDir } from "../tools/lib/worlds.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
@@ -299,8 +299,8 @@ export function singleProblems(e, m) {
   const out = [];
   if (m.missing || m.point) return out;
   const veg = isKind(e, "vegetation");
-  // A class whose layer y counts from the terrain (SCR_DestructibleEntity, #3566) with a world height in it stands that high in the air.
-  if (isTerrainRelative(e.cls) && !m.absolute && Math.abs(e.y) > TERRAIN_RELATIVE_MAX_Y) out.push({ kind: "relative-y", amount: Math.abs(e.y) / 10, text: `${e.cls} y ${r2(e.y)} counts from the terrain, so it stands ${r2(e.y)} m up (use y about 0, or town fit)` });
+  // A row whose prefab flags carry RELATIVE_Y reads its y from the terrain (tools/lib/height-frame.mjs): a world height in it stands that high in the air.
+  if (e.frame === "terrain" && !m.absolute && Math.abs(e.y) > TERRAIN_FRAME_MAX_Y) out.push({ kind: "relative-y", amount: Math.abs(e.y) / 10, text: `its prefab flags carry RELATIVE_Y, so layer y ${r2(e.y)} counts from the terrain and it stands ${r2(e.y)} m up (write the height over the ground: tools/lib/height-frame.mjs layerY)` });
   // Hung on something: a sign, board or poster with a wall (or another entity) at its back, or any thin thing
   // more than 0.5 m up against one. A pole sign or a board on legs has nothing behind it and must stand.
   const mounted = m.backed && (isKind(e, "mounted") || (m.gap > 0.5 && Math.min(m.box.h[0], m.box.h[2]) < 0.15));
@@ -542,7 +542,7 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
       // is there (the cabinets stand at the offsets the prefab gives); it is not a missing row.
       if (!m.at && m.near !== null && m.near < 0 && isFlattenedGroup(e.prefab)) { groups++; continue; }
       // A row seated terrain-relative on purpose (layer y 0 to 2, the entity at terrain + y: an orchard tree, `town fit`'s y about 0) stands where it was meant to.
-      if (m.at && m.surfy !== null && Math.abs(e.y) <= TERRAIN_RELATIVE_MAX_Y && Math.abs(m.at[1] - (m.surfy + e.y)) < 0.5) { seated++; continue; }
+      if (m.at && m.surfy !== null && Math.abs(e.y) <= TERRAIN_FRAME_MAX_Y && Math.abs(m.at[1] - (m.surfy + e.y)) < 0.5) { seated++; continue; }
       if (m.at) displaced++;
       missing.push({ ...e, near: m.near, nearName: m.nearName, at: m.at });
       missingRows.push(missingRow(e, m));
@@ -576,6 +576,8 @@ export function auditRecords({ layers, area, areas, annex, grid, island } = {}) 
   // --world MainWorld: every entity of the island's own layers (the Place_<place>_<slot>.layer files), the playtest town is not read.
   let recs = island ? loadWorld(ROOT, islandLayersDir(ROOT)).filter((e) => !SKIP_LAYERS.has(e.layer)) : grid ? loadWorld(ROOT, gridLayerDirs(ROOT)).filter((e) => !SKIP_LAYERS.has(e.layer)) : loadWorld(ROOT).filter((e) => !SKIP_LAYERS.has(e.layer) && (annex || !inAnnex(e)));
   if (layers) recs = recs.filter((e) => layers.includes(e.layer));
+  // Which frame each row's y is in (its own Flags, else the prefab chain's RELATIVE_Y bit): a terrain-frame row is sent as `rel`.
+  annotateFrames(ROOT, recs);
   if (area) {
     const a = areas.find((x) => x.name === area);
     if (!a) throw new Error(`unknown area ${area}`);
@@ -590,7 +592,7 @@ export function inputText(records, extra = [], circle = TOWN) {
   const lines = [`town ${circle.x} ${circle.z} ${circle.r}`, ...extra];
   records.forEach((e, i) => {
     const base = e.prefab ? e.prefab.split("/").pop().replace(/\.et$/, "") : "";
-    lines.push(`${i} ${tokenOf(e.name)} ${tokenOf(base)} ${e.x} ${e.y} ${e.z} ${e.actions?.length ? 1 : 0}${isTerrainRelative(e.cls) ? " rel" : ""}`);
+    lines.push(`${i} ${tokenOf(e.name)} ${tokenOf(base)} ${e.x} ${e.y} ${e.z} ${e.actions?.length ? 1 : 0}${e.frame === "terrain" ? " rel" : ""}`);
   });
   return lines.join("\n") + "\n";
 }
@@ -947,14 +949,14 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   const sunkM = { gap: -0.346, pgap: -0.345, over: 0, tilt: 0, scale: 1, walk: -1, backed: true, clip: [], box: { h: [0.75, 0.52, 0.56] } };
   if (!singleProblems(kioskCounter, sunkM).some((p) => p.kind === "sunk")) fail("a backed prop named Roadmap_* sunk 0.35 m into a floor is flagged");
   if (singleProblems({ name: "Roadmap_Sign_Map", prefab: "Prefabs/Props/Signs/Map_01.et" }, sunkM).length !== 0) fail("a real map on a wall is still hung");
-  // Terrain-relative classes (#3566): a net fence at layer y 19.1 stands 19 m up (flagged by its y alone), is sent to the server
+  // Terrain-frame rows (RELATIVE_Y in the prefab flags, tools/lib/height-frame.mjs): a net fence at layer y 19.1 stands 19 m up (flagged by its y alone), is sent to the server
   // as a "rel" row (found at terrain + y), and one at y 0 is clean.
-  const fenceHigh = { name: "Fence_High", layer: "T.layer", x: 1, y: 19.1, z: 2, prefab: "Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et", cls: "SCR_DestructibleEntity" };
+  const fenceHigh = { name: "Fence_High", layer: "T.layer", x: 1, y: 19.1, z: 2, prefab: "Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et", frame: "terrain" };
   const fenceSeated = { ...fenceHigh, name: "Fence_Seated", y: 0 };
   const fenceM = { gap: 0, pgap: 0, over: 0, tilt: 0, scale: 1, walk: -1, backed: false, clip: [], box: { h: [2, 1, 0.1] } };
-  if (!singleProblems(fenceHigh, fenceM).some((p) => p.kind === "relative-y")) fail("a SCR_DestructibleEntity at layer y 19.1 is flagged relative-y");
-  if (singleProblems(fenceSeated, fenceM).length) fail("a SCR_DestructibleEntity at layer y 0 is clean");
-  if (singleProblems({ ...fenceHigh, cls: undefined, name: "Plain_High" }, fenceM).some((p) => p.kind === "relative-y")) fail("an absolute-height class is not flagged relative-y");
+  if (!singleProblems(fenceHigh, fenceM).some((p) => p.kind === "relative-y")) fail("a terrain-frame row at layer y 19.1 is flagged relative-y");
+  if (singleProblems(fenceSeated, fenceM).length) fail("a terrain-frame row at layer y 0 is clean");
+  if (singleProblems({ ...fenceHigh, frame: "world", name: "Plain_High" }, fenceM).some((p) => p.kind === "relative-y")) fail("a world-frame row is not flagged relative-y");
   // #3884: a prop standing through a building or wall is `through-wall` (not plain `clips`); a missing row says how far the nearest entity of its prefab is.
   // red-proof: 2026-11-21, with WALL_CLIP never matching the selftest printed "FAILED a prop clipping Office_E_01 is flagged through-wall"; restored, OK.
   const wardrobe = { name: "Wardrobe_1", prefab: "Prefabs/Props/Furniture/Wardrobe_01.et", layer: "t.layer", x: 0, y: 0, z: 0 };
@@ -985,7 +987,7 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   const relLines = inputText([fenceHigh, fenceSeated, { name: "P", prefab: "a/B.et", x: 0, y: 0, z: 0 }]).split(/\r?\n/);
   if (!relLines.includes("0 Fence_High NetFence_01_4m 1 19.1 2 0 rel") || !relLines.includes("2 P B 0 0 0 0")) fail("only a terrain-relative row is sent with the rel flag");
   // A payphone (a GenericEntity row of a prefab that stands terrain-relative) is sent with the rel flag too.
-  const booth = { name: "Booth", prefab: "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et", x: 0, y: 0.5, z: 0, cls: "TerrainRelativePrefab" };
+  const booth = { name: "Booth", prefab: "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et", x: 0, y: 0.5, z: 0, frame: "terrain" };
   if (!inputText([booth]).split(/\r?\n/).includes("0 Booth LF_Payphone 0 0.5 0 0 rel")) fail("a payphone row is sent with the rel flag");
   worldSelftest(fail);
   runtimeSelftest(fail);

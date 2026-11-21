@@ -328,7 +328,7 @@ const inspect = async (prefab) => {
   r = await run(args, c.ctx);
   const text = readFileSync(s.file, "utf8");
   check(r.code === 0, `an island import should succeed through the fakes, got ${r.code}: ${r.text}`);
-  check(c.probes.length === 1 && c.probes[0].length === 15, `ONE terrain probe for every prop (3 props x 5 points), got ${c.probes.length} probe(s) of ${c.probes[0]?.length}`);
+  check(c.probes.length === 1 && c.probes[0].length === 18, `ONE terrain probe for every prop (3 props x 5 footprint points + the pivot, for a terrain-frame prefab), got ${c.probes.length} probe(s) of ${c.probes[0]?.length}`);
   check((text.match(/^GenericEntity Mapper_lakeplace_shore_M\d+ : "\{[0-9A-F]{16}\}Prefabs\//gm) || []).length === 3, "the three props are written with their {GUID}path refs");
   check(text.startsWith(MARKER), "the slot's own entities are kept byte for byte");
   check(/Mapper_lakeplace_shore_M1 : "[^"]*" \{\n coords [\d.]+ 50 [\d.]+\n angleY -90\n/.test(text), "the bench keeps Mapper's yaw 270 as angleY -90, standing on the probed terrain (mesh base at the pivot)");

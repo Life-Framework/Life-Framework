@@ -1,0 +1,5 @@
+# Rows of Place_everon-sawmill_yard.layer written in the wrong height frame when validate-layer-height-frame landed; the PR that corrects the layer deletes this file.
+Fit_everon_sawmill_yard_source_sawmill_fence_1
+Fit_everon_sawmill_yard_source_sawmill_fence_2
+Fit_everon_sawmill_yard_source_sawmill_fence_3
+Fit_everon_sawmill_yard_source_sawmill_fence_4
