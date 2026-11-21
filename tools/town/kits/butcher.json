@@ -126,8 +126,8 @@
       "role": "dressing",
       "verb": "against wall",
       "offset": [
-        -4.95,
-        0.201,
+        -4.8,
+        0.246,
         -2.2
       ],
       "yaw": 90,
@@ -219,7 +219,7 @@
       "role": "npc",
       "verb": "on floor",
       "offset": [
-        -3.05,
+        -3.7,
         0.196,
         2.2
       ],

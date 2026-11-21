@@ -110,7 +110,7 @@ GenericEntity Butcher_scale : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleS
  angleY -90
 }
 GenericEntity Butcher_chiller_1 : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
- coords 335.875 0.251 29.014
+ coords 335.875 0.296 29.164
 }
 GenericEntity Butcher_freezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
  coords 332.075 0.261 28.764
@@ -132,6 +132,6 @@ GenericEntity Butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fa
  angleY -90
 }
 LF_NpcBaseEntity Butcher_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
- coords 331.475 0.246 30.914
+ coords 331.475 0.246 30.264
  angleY -90
 }

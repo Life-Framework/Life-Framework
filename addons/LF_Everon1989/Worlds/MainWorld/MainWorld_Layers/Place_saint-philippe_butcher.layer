@@ -10,11 +10,11 @@ GenericEntity Fit_saint_philippe_butcher_Place {
  coords 4474.5 12 10780.5
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_chiller_1 : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
- coords 4477.526 12.001 10776.007
+ coords 4477.5 12.046 10776.155
  angleY -10
 }
 LF_NpcBaseEntity Fit_saint_philippe_butcher_butcher_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
- coords 4472.863 11.996 10777.114
+ coords 4472.976 11.996 10776.474
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_counter_1 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
@@ -26,7 +26,7 @@ GenericEntity Fit_saint_philippe_butcher_butcher_counter_2 : "{E214337C6E1931C5}
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
- coords 4467.675 15.05 10775.438
+ coords 4467.689 15.05 10775.44
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_freezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
