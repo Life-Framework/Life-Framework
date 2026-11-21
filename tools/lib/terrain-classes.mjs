@@ -8,4 +8,11 @@ export const TERRAIN_RELATIVE_CLASSES = ["SCR_DestructibleEntity"];
 // copied into a layer that counts from the ground.
 export const TERRAIN_RELATIVE_MAX_Y = 2;
 
-export const isTerrainRelative = (cls) => TERRAIN_RELATIVE_CLASSES.includes(String(cls ?? ""));
+export const isTerrainRelative = (cls) => TERRAIN_RELATIVE_CLASSES.includes(String(cls ?? "")) || String(cls ?? "") === PREFAB_RELATIVE_CLASS;
+
+// A prefab whose own class is not SCR_DestructibleEntity but stands the same way: the layer class says GenericEntity, yet the
+// island's test server put the booth's base at terrain + the layer's y (payphone reseat #3878: y 1.63 over a terrain of 1.53
+// hung it 1.19 m up). layers.mjs gives such a row this marker class, so the audit looks for it at terrain + y too.
+export const TERRAIN_RELATIVE_PREFABS = ["Prefabs/Comms/LF_Payphone.et"];
+export const PREFAB_RELATIVE_CLASS = "TerrainRelativePrefab";
+export const isTerrainRelativePrefab = (prefab) => TERRAIN_RELATIVE_PREFABS.some((p) => String(prefab ?? "").endsWith(p));

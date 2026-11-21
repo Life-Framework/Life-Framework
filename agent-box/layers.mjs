@@ -6,7 +6,7 @@
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { worldLayerDirs } from "../tools/lib/addons.mjs";
-import { isTerrainRelative } from "../tools/lib/terrain-classes.mjs";
+import { isTerrainRelative, isTerrainRelativePrefab, PREFAB_RELATIVE_CLASS } from "../tools/lib/terrain-classes.mjs";
 
 // A repo resource path in the core or, failing that, the pack; null when neither holds it.
 function addonFile(root, rel) {
@@ -224,6 +224,7 @@ function walkLayer(text, layerFile, root) {
           if (signId) record.signId = signId;
           // A class whose y counts from the terrain (#3566): the audit looks for it at terrain + y.
           if (isTerrainRelative(frame.cls)) record.cls = frame.cls;
+          else if (isTerrainRelativePrefab(prefab)) record.cls = PREFAB_RELATIVE_CLASS;
           if (frame.mesh) record.mesh = frame.mesh;
           if (frame.yaw !== undefined) record.yaw = frame.yaw;
           if (frame.scale !== undefined) record.scale = frame.scale;
