@@ -3,456 +3,319 @@
   "kit": "furniture",
   "system": "store",
   "source": {
-    "file": "tools/town/kits/furniture.json",
+    "file": "tools/town/kits/sources/furniture.layer",
+    "group": "Furniture_*",
     "origin": "building",
     "frame": "building-local"
   },
   "scope": "room",
   "building": {
     "mode": "inside",
-    "vanilla": "{38A5F3E4578087AB}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et"
+    "vanilla": "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et"
   },
   "anchoring": {
-    "floorY": 0.207,
+    "floorY": 0.001,
     "floors": [
       {
         "id": "f0",
-        "y": 0.207
+        "y": 0.001
+      },
+      {
+        "id": "f1",
+        "y": 3.001
       }
     ],
     "footprint": {
       "source": "rows",
       "min": [
-        -5.7,
-        -7.95
+        -7.08,
+        -3.64
       ],
       "max": [
-        -1.8,
-        7.62
+        5.2,
+        4.4
       ]
     },
     "front": "+z",
     "counters": [
       {
         "id": "furniture-counter",
-        "wall": "+x",
-        "edgeGap": 0.45
+        "wall": "+z",
+        "edgeGap": 0.9
+      },
+      {
+        "id": "furniture-cashier",
+        "wall": "+z",
+        "edgeGap": 0.9
       }
     ],
-    "adapt": "The showroom is the long west hall of the vanilla town house House_Town_E_2I01 (ground floor, x -5.7..-1.8, z -8..7 in the house's own frame, +z the street front; the two street doors open into it at x -5.1 and -2.6, a rear door at z -6.2 on the west wall). One of each stock piece stands on the floor as scenery (the base-game props behind the sellable furniture items, never the _Placed prefabs, so nobody can loot or pick them up); the counter sells the pack's furniture stock; the fascia hangs on the front wall above the doors. Rows are rigid: shift, never stretch."
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
-      "id": "furniture-wardrobe",
-      "prefab": "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -5.69,
-        0.207,
-        -5.6
-      ],
-      "yaw": 90,
-      "wall": "-x",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-dresser",
-      "prefab": "{A319C11D446D88B3}Prefabs/Props/Furniture/Dresser_01.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -5.69,
-        0.207,
-        -4
-      ],
-      "yaw": 90,
-      "wall": "-x",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-bookcase",
-      "prefab": "{F77F7F847CC6455F}Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -5.69,
-        0.207,
-        -2.5
-      ],
-      "yaw": 90,
-      "wall": "-x",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-cupboard",
-      "prefab": "{23EDC2B8CDEE124F}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -5.69,
-        0.207,
-        -0.2
-      ],
-      "yaw": 90,
-      "wall": "-x",
-      "floor": "f0"
-    },
-    {
       "id": "furniture-fridge",
+      "name": "Furniture_fridge",
       "prefab": "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et",
       "role": "dressing",
       "verb": "against wall",
       "offset": [
-        -5.68,
-        0.207,
-        1.44
+        -6.67,
+        0.001,
+        1.14
       ],
       "yaw": 90,
       "wall": "-x",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "furniture-stove",
+      "name": "Furniture_stove",
       "prefab": "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et",
       "role": "dressing",
       "verb": "against wall",
       "offset": [
-        -5.66,
-        0.207,
-        1.55
+        -6.65,
+        0.001,
+        1.25
       ],
       "yaw": 90,
       "wall": "-x",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "furniture-kitchen",
+      "name": "Furniture_kitchen",
       "prefab": "{E1D3E7F0A1833454}Prefabs/Props/Furniture/Kitchen_02.et",
       "role": "dressing",
       "verb": "against wall",
       "offset": [
-        -5.69,
-        0.207,
-        2.3
+        -6.68,
+        0.001,
+        2
       ],
       "yaw": 90,
       "wall": "-x",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-chest",
-      "prefab": "{0BB4B21E4F560431}Prefabs/Props/Furniture/Chest_01.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -5.48,
-        0.207,
-        5.45
-      ],
-      "yaw": 90,
-      "wall": "-x",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-bed-double",
-      "prefab": "{8A6DD31A4FF94E48}Prefabs/Props/Furniture/BedDouble_01.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -3.53,
-        0.207,
-        -6.64
-      ],
-      "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-bed",
-      "prefab": "{0164749D6EAA4518}Prefabs/Props/Furniture/Bed_01.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -2.96,
-        0.207,
-        -3.85
-      ],
-      "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-plant",
-      "prefab": "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -5.005,
-        0.207,
-        -7.52
-      ],
-      "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-workbench",
-      "prefab": "{D349CAB0A6544C59}Prefabs/Props/Furniture/TableWorkshop_01_short.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -2.27,
-        0.207,
-        2.45
-      ],
-      "yaw": -90,
-      "wall": "+x",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-crate",
-      "prefab": "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -2.26,
-        0.207,
-        3.73
-      ],
-      "yaw": 0,
-      "wall": "+x",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-rug",
-      "prefab": "{2DD4D94957E1DC2B}Prefabs/Props/Furniture/Carpet_03_red.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -3.45,
-        0.207,
-        -0.745
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-sofa",
-      "prefab": "{A0A76057A66049D0}Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et",
-      "role": "dressing",
-      "verb": "on furniture-rug",
-      "offset": [
-        -2.495,
-        0.237,
-        -0.85
-      ],
-      "yaw": -90,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-coffee-table",
-      "prefab": "{E3382F292BA2A27D}Prefabs/Props/Furniture/TableCoffee_01.et",
-      "role": "dressing",
-      "verb": "on furniture-rug",
-      "offset": [
-        -3.55,
-        0.237,
-        -0.85
-      ],
-      "yaw": -90,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-armchair",
-      "prefab": "{EE22BB8259C1A594}Prefabs/Props/Furniture/Armchair_03.et",
-      "role": "dressing",
-      "verb": "on furniture-rug",
-      "offset": [
-        -3.9,
-        0.237,
-        -2.02
-      ],
-      "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "furniture-lamp",
-      "prefab": "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -2.4,
-        0.207,
-        0.545
-      ],
-      "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "furniture-table",
+      "name": "Furniture_table",
       "prefab": "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -3.905,
-        0.207,
+        -4.405,
+        0.001,
         2.75
       ],
       "yaw": 0,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "floor"
     },
     {
       "id": "furniture-chair-north",
+      "name": "Furniture_chair_north",
       "prefab": "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -3.9,
-        0.207,
+        -4.4,
+        0.001,
         1.51
       ],
       "yaw": 0,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "floor"
     },
     {
       "id": "furniture-chair-south",
+      "name": "Furniture_chair_south",
       "prefab": "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -3.9,
-        0.207,
+        -4.4,
+        0.001,
         3.99
       ],
       "yaw": 180,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-wardrobe",
+      "name": "Furniture_wardrobe",
+      "prefab": "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -6.68,
+        0.001,
+        -2.6
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "furniture-bed-double",
+      "name": "Furniture_bed_double",
+      "prefab": "{8A6DD31A4FF94E48}Prefabs/Props/Furniture/BedDouble_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.4,
+        0.001,
+        -2.6
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-rug",
+      "name": "Furniture_rug",
+      "prefab": "{2DD4D94957E1DC2B}Prefabs/Props/Furniture/Carpet_03_red.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.15,
+        0.001,
+        -2.245
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-sofa",
+      "name": "Furniture_sofa",
+      "prefab": "{A0A76057A66049D0}Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.105,
+        0.021,
+        -2.35
+      ],
+      "yaw": -90,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-coffee-table",
+      "name": "Furniture_coffee_table",
+      "prefab": "{E3382F292BA2A27D}Prefabs/Props/Furniture/TableCoffee_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.05,
+        0.021,
+        -2.35
+      ],
+      "yaw": -90,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-armchair",
+      "name": "Furniture_armchair",
+      "prefab": "{EE22BB8259C1A594}Prefabs/Props/Furniture/Armchair_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.7,
+        0.021,
+        -3.52
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-lamp",
+      "name": "Furniture_lamp",
+      "prefab": "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        5.2,
+        0.001,
+        -0.955
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "floor"
     },
     {
       "id": "furniture-counter",
+      "name": "Furniture_counter",
       "prefab": "{B0C1CC8AA15B21D2}Prefabs/Props/Commercial/LF_FurnitureCounter.et",
       "role": "counter",
       "verb": "on floor",
       "offset": [
-        -2.83,
-        0.207,
-        5.25
+        3.6,
+        0.001,
+        3.1
       ],
-      "yaw": -90,
-      "wall": "free",
+      "yaw": 180,
       "floor": "f0",
-      "name": "Shop_Furniture_Counter"
-    },
-    {
-      "id": "furniture-tv",
-      "prefab": "{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et",
-      "role": "dressing",
-      "verb": "on furniture-dresser",
-      "offset": [
-        -5.075,
-        1.207,
-        -3.25
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
+      "attach": "floor"
     },
     {
       "id": "furniture-cashier",
+      "name": "Furniture_cashier",
       "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
       "role": "till",
       "verb": "on furniture-counter",
       "offset": [
-        -2.875,
-        1.247,
-        5.055
+        3.6,
+        1.04,
+        3.1
       ],
-      "yaw": -90,
-      "wall": "free",
+      "yaw": 180,
       "floor": "f0",
-      "name": "Shop_Furniture_Till"
+      "attach": "counter:furniture-counter"
     },
     {
-      "id": "furniture-mirror",
-      "prefab": "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et",
-      "role": "dressing",
-      "verb": "against wall",
+      "id": "furniture-clerk",
+      "name": "Furniture_clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
       "offset": [
-        -5.695,
-        2.007,
-        5.45
+        3.6,
+        0.001,
+        4
       ],
-      "yaw": 90,
-      "wall": "-x",
+      "yaw": 180,
+      "class": "LF_NpcBaseEntity",
+      "wall": "+z",
       "floor": "f0",
-      "mount": "wall"
+      "attach": "floor"
     },
     {
-      "id": "furniture-shelf",
-      "prefab": "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -5.605,
-        1.307,
-        5.415
-      ],
-      "yaw": 90,
-      "wall": "-x",
-      "floor": "f0",
-      "mount": "wall"
-    },
-    {
-      "id": "furniture-picture",
-      "prefab": "{2F8BC4454FD8081B}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Forest_V1.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -1.805,
-        1.707,
-        3.75
-      ],
-      "yaw": -90,
-      "wall": "+x",
-      "floor": "f0",
-      "mount": "wall"
-    },
-    {
-      "id": "furniture-radio",
-      "prefab": "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et",
-      "role": "dressing",
-      "verb": "on furniture-shelf",
-      "offset": [
-        -5.385,
-        1.557,
-        5.45
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "lf-sign-fascia",
+      "id": "furniture-fascia",
+      "name": "Furniture_fascia",
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
       "role": "sign",
       "verb": "against wall",
       "offset": [
-        -3.85,
-        3.207,
-        7.62
+        4.66,
+        2.95,
+        5.034
       ],
       "yaw": 0,
       "config": [
         {
           "component": "LF_SignComponent",
+          "guid": "6E3FF3980D87CACE",
           "set": {
             "m_sSignId": "\"furniture_store\"",
             "m_vRimColor": "0.92 0.86 0.7",
@@ -463,7 +326,107 @@
         }
       ],
       "wall": "+z",
+      "floor": "f1",
+      "attach": "wall"
+    },
+    {
+      "id": "anchor-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        2.7,
+        0.001,
+        4
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-door",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0.4,
+        0.001,
+        3
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"door\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
       "floor": "f0"
     }
-  ]
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et",
+    "lanes": [
+      {
+        "from": "entrance",
+        "to": "furniture-counter",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "furniture-cashier",
+        "width": 1.2
+      }
+    ],
+    "clear": [
+      {
+        "prefab": "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et"
+      },
+      {
+        "prefab": "{96A3F39C918787E5}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big_bottom.et"
+      },
+      {
+        "prefab": "{E537DCDB9B3F2278}Prefabs/Props/Agriculture/Farm/HayPile_01.et"
+      },
+      {
+        "prefab": "{3AB2B7156B3A0F3D}Prefabs/Props/Agriculture/MilkCan_01.et"
+      },
+      {
+        "prefab": "{6929659CE9375CAF}Prefabs/Props/Garbage/Tires/TireTractor_01_single.et"
+      },
+      {
+        "prefab": "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et"
+      },
+      {
+        "prefab": "{B69B4902BAF5B1B9}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_02.et"
+      },
+      {
+        "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et"
+      },
+      {
+        "prefab": "{EECACC5F25A31B0F}Prefabs/Props/Civilian/LadderWooden_01_Long.et"
+      },
+      {
+        "prefab": "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et"
+      },
+      {
+        "prefab": "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et"
+      }
+    ]
+  }
 }

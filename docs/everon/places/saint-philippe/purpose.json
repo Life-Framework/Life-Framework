@@ -301,11 +301,10 @@
    "x": 4501.3,
    "z": 10648.5,
    "doors": 4,
-   "purpose": "e",
-   "use": "farm barn: Propriété privée",
-   "status": "planned",
-   "card": "L0",
-   "issue": 3204
+   "purpose": "b",
+   "use": "furniture store (Meubles): all house furniture, stock furniture; the cleared farm barn (#3891)",
+   "status": "flight",
+   "card": "FLIGHT"
   },
   {
    "id": "sp:b24",
