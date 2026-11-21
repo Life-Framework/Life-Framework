@@ -37,7 +37,7 @@ export const PROPS = {
   "bench-red": { prefab: "{24388E37E11BA18F}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et", source: "addons/LifeFramework/Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et", wall: true, gap: 1.6, ground: true, optional: true },
   bin: { prefab: "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et", source: VANILLA_SOURCE, wall: true, gap: 0.9, cls: "SCR_DestructibleEntity" },
   flowers: { prefab: "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et", source: VANILLA_SOURCE, wall: true, gap: 1.2, cls: "SCR_DestructibleEntity", ground: true, optional: true, half: 0.5, out: 0.15 },
-  line: { prefab: "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et", source: VANILLA_SOURCE, wall: false, gap: 2.5, rear: 3.2, doors: true, half: 1.2 },
+  line: { prefab: "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et", source: VANILLA_SOURCE, wall: false, gap: 2.5, rear: 3.2, doors: true, half: 1.2, optional: true },
 };
 
 // One house, its props in order. A bench and a bin sit at the door, flower boxes under the front windows, a washing line behind.
@@ -108,6 +108,19 @@ export function refuse(x, z, gap, building, roads, others) {
   for (const r of roads) if ((r.points ?? []).length > 1 && distToLine(x, z, r.points) < ROAD_CLEAR) return `on the carriageway of ${r.id}`;
   for (const o of others) if (Math.hypot(o.x - x, o.z - z) < Math.max(gap, o.gap)) return "too close to another prop";
   return null;
+}
+
+// Pure: true when (x, z) is inside a building's footprint polygon or within `margin` of its edge. The first washing line of b50 stood inside
+// the neighbouring house b44: the yard behind a house can belong to another one (#3888).
+export function nearFootprint(x, z, corners, margin) {
+  if (!Array.isArray(corners) || corners.length < 3) return false;
+  let inside = false;
+  for (let i = 0, j = corners.length - 1; i < corners.length; j = i++) {
+    const [xi, zi] = corners[i];
+    const [xj, zj] = corners[j];
+    if (zi > z !== zj > z && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi) inside = !inside;
+  }
+  return inside || distToLine(x, z, [...corners, corners[0]]) < margin;
 }
 
 // One prop's plan on one house: the first sideways offset that seats on the wall and passes `refuse`.
@@ -197,6 +210,11 @@ async function planProp({ kind, building, dossier, root, shell, readGame, others
         const unknown = pts.some((q) => !Number.isFinite(pins?.points?.[pinKey(q[0], q[1])]) || pins?.hits?.[pinKey(q[0], q[1])] === undefined);
         if (unknown) {
           for (const q of pts) need.push([q[0], q[1], e.coords[1] + RAY_UP]);
+          continue;
+        }
+        const other = (dossier.buildings ?? []).find((o) => pts.some((q) => nearFootprint(q[0], q[1], o.footprint?.corners, 0.5)));
+        if (other) {
+          refusals[`inside the footprint of ${other.id}`] = 1;
           continue;
         }
         if ((pins?.doors ?? []).some((d) => pts.some((q) => Math.hypot(q[0] - d[0], q[1] - d[1]) < DOOR_SWING))) {
@@ -367,7 +385,7 @@ export async function main(args, { root = ROOT } = {}) {
   for (const r of results) {
     if (!r.ok && PROPS[r.kind].optional) {
       // A bench with no level ground along any wall of its house is left out: a bench on a slope or on the stairs hovers or sinks.
-      console.log(`skip  ${r.building} ${r.kind}: no level ground for it (${r.why.split("; ").slice(0, 3).join("; ")}...)`);
+      console.log(`skip  ${r.building} ${r.kind}: no clear spot for it (${r.why.split("; ").slice(0, 3).join("; ")}...)`);
       continue;
     }
     if (!r.ok) {

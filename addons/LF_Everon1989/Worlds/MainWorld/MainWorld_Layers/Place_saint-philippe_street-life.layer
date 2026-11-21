@@ -22,10 +22,6 @@ SCR_DestructibleEntity Fit_saint_philippe_street_life_flowers_b50 : "{06ABA7878E
  coords 4392.557 10.138 10758.93
  angleY -1
 }
-GenericEntity Fit_saint_philippe_street_life_line_b50 : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
- coords 4394.742 10.3 10735.6
- angleY -91
-}
 SCR_DestructibleEntity Fit_saint_philippe_street_life_bin_b47 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
  coords 4466.329 9.7 10799.089
  angleY 166
