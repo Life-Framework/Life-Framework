@@ -1,2 +1,0 @@
-# Rows of Place_saint-philippe_merchant-timber.layer written in the wrong height frame when validate-layer-height-frame landed; the PR that corrects the layer deletes this file.
-Fit_saint_philippe_merchant_timber_timber_board

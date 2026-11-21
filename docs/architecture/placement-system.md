@@ -296,3 +296,10 @@ audit checks (A), then shop rebuilds through the grid (R) and the gate (C1) once
 | #3894 | R6 | Rebuild clinic, chapel: grid first, then stamp | G1 |
 | #3895 | R7 | Rebuild the dock wholesale yard: grid first, then stamp | G1, G2 |
 | #3896 | R8 | Re-stamp tonight's hand-fixed shops through the grid | G1 |
+
+### Clinic rebuild notes (#3894)
+
+- **Read the host's floor plan before placing furniture.** `town fit <place> <slot> --check` reports what each row cuts and what vanilla furniture it overlaps, offline in seconds; a scratch rasteriser over `shellReader(root).shell(<prefab>)` (`walls`, `kids`) shows the ground-floor walls and the host's own furniture. The clinic's first beds crossed an inner wall at host-local z 1.3 and the grid audit never saw it; only the island stamp did.
+- **The building's own furniture is a second set.** The island building keeps its vanilla furniture child (`House_Town_E_2I02_furniture_01`) under the pack's `Clinic_furniture_01` row. A kit's `stamp.clear` hides vanilla-only prefabs by path inside the building's box; a prefab that both sets contain cannot be cleared without hiding the pack's copy too (it stays and the row moves instead). The stamp refuses a row that clips either set.
+- **A bed's respawn point needs 0.6 m of floor beside the mattress** (`LF_BedWakePose.BodyFitsBy`; the stand offset is 0.85 m, the sit search takes 0.4 m off the rail). The pack's infusion stand and the other bed both count as blockers. The clinic's beds sit 1.0 m apart (rail to rail) and the stand is cleared.
+- **Wall rows in the grid copy.** The clinic's fascia and electricity box sat 1 m off the facade in the old kit; `audit placement --grid` read them as floating until they were backed onto the ground-floor facade plane (host-local z 5.8). The island stamp seats wall rows itself; the fascia still warns "no host wall within 6 m" at height (follow-up).
