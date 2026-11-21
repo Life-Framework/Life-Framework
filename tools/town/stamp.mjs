@@ -195,8 +195,8 @@ function islandAudit(root, kitName) {
 }
 
 // `--terrain`: the island's test server measures the ground under the yard rows. It boots around the slot's own layer, so the copies are
-// written once with the grid heights (the same files the real stamp writes next), probed, and planned again on the pins; a --dry run puts
-// the previous bytes back. A point the server gave no height for leaves its row unprobed and the re-plan refuses it.
+// written once with the grid heights, probed, and the previous bytes put back before the plan runs again on the pins (the real write and the
+// island audit come after, so a refused stamp leaves nothing behind but the pins). A point the server gave no height for leaves its row unprobed and the re-plan refuses it.
 export async function probeAndReplan(kit, targets, po, plan, { root, dry, probe = probeTerrain, log = console.log }) {
   const interim = await planStamp(kit, targets, { ...po, allowUnprobed: true });
   if (!interim.ok) return interim;
@@ -215,7 +215,7 @@ export async function probeAndReplan(kit, targets, po, plan, { root, dry, probe 
       log(`  terrain ${p.place}.${p.slot}: ${Object.keys(probed.points).length} point(s) probed -> ${relative(root, pinFile).replaceAll("\\", "/")}`);
     }
   } finally {
-    if (dry) for (const [f, text] of before) (text === null ? rmSync(join(root, f), { force: true }) : writeFileSync(join(root, f), text));
+    for (const [f, text] of before) (text === null ? rmSync(join(root, f), { force: true }) : writeFileSync(join(root, f), text));
   }
   return planStamp(kit, targets, po);
 }

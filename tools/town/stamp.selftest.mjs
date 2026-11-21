@@ -237,6 +237,7 @@ ok(dry.ok && probed === 2, `the probe runs once per slot and the plan then passe
 ok(!existsSync(join(root2, "layers", first2.probes[0].layerName)), "a dry probe puts the interim layer back (it did not exist)");
 ok(existsSync(join(root2, "tools/town/terrain", `stampville-shop-a.json`)) && readPins(root2, "stampville", "shop-a")?.place === "stampville", "the pins are kept for the slot");
 const real = await probeAndReplan(yardKit, targets, po2, first2, { root: root2, dry: false, probe: spy, log: quiet });
+ok(real.ok && real.copies.every((c) => !existsSync(join(root2, c.layerFile))), "the interim layers are gone before the real stamp writes");
 ok(real.ok && applyStamp(real, { root: root2, log: quiet }) === 0, "the stamp after a probe writes");
 ok(real.copies.every((c) => existsSync(join(root2, c.layerFile))), "the probed stamp is on disk");
 const missingProbe = async (points) => ({ points: {}, missing: points.map((p) => String(p)) });
