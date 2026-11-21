@@ -174,7 +174,7 @@ town circle (`runtime <x> <z> <r>` input line, `LF_PlacementAudit.RuntimeLines`,
 |---|---|---|
 | `(runtime: parked cars)` | each marker's car, measured like a prop (bounds bottom against the surface under it) | `floating` over 15 cm, `sunk`, overlaps, `no-car` |
 | `(runtime: vehicles)` | any other vehicle in the circle | the same |
-| `(runtime: night lights)` | each `LF_NightLightComponent` owner: distance to the nearest surface on six axes | `unattached-light`: nothing within 0.6 m |
+| `(runtime: night lights)` | each `LF_NightLightComponent` owner: distance to the nearest surface up, down and on 16 horizontal directions (22.5 deg apart; six axes alone read a glow 0.33 m from a diagonal wall as 0.66 m) | `unattached-light`: nothing within 0.6 m |
 | `(runtime: characters)` | each character's feet against the surface under it, and every pair | `char-floating` over 15 cm, `char-sunk` over 30 cm, `char-overlap` closer than 0.45 m |
 | `(runtime: loose props)` | street clutter (`LOOSE_WORDS`: cones, barriers, pallets, barrels, crates, tyres) standing alone | `orphan`: no layer row of that prefab within 1.5 m |
 

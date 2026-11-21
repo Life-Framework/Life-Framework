@@ -860,10 +860,17 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Distance from `from` to the nearest surface along the six axes (up to `reach` m), `self` traced through.
+	//! Distance from `from` to the nearest surface along up, down and 16 horizontal directions 22.5 degrees apart (up to `reach` m),
+	//! `self` traced through. Six axis rays alone read a window glow 0.33 m from a wall that runs 30 degrees off the axes as 0.66 m.
 	static float AttachDistance(vector from, IEntity self, float reach, out string to)
 	{
-		array<vector> dirs = {"1 0 0", "-1 0 0", "0 1 0", "0 -1 0", "0 0 1", "0 0 -1"};
+		array<vector> dirs = {"0 1 0", "0 -1 0"};
+		for (int i = 0; i < 16; i++)
+		{
+			float a = i * 22.5 * Math.DEG2RAD;
+			dirs.Insert(Vector(Math.Sin(a), 0, Math.Cos(a)));
+		}
+
 		float best = reach;
 		to = "none";
 		foreach (vector dir : dirs)

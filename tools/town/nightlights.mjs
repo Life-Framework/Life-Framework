@@ -278,7 +278,7 @@ export function buildHeads({ props }) {
 // reproducible without a server. A glow whose ray meets no wall is not written: a light is attached to something or absent.
 export const SEATS_DIR = "tools/town/probes";
 export const seatsPath = (root, place) => join(root, SEATS_DIR, `lights-${place}.json`);
-const GLOW_OUT = 2.5; // the wall ray starts this far outside the footprint wall
+const GLOW_OUT = 1.2; // the wall ray starts this far outside the footprint wall (2.5 m started behind a street prop: glow b12_0 was seated on a post in the road, #3888)
 const GLOW_IN = 1.5; // and ends this far inside it
 const LAMP_UP = 3;
 const LAMP_DOWN = 4;
@@ -444,7 +444,7 @@ export function main(args, { root = ROOT } = {}) {
   const check = args.includes("--check");
   const place = args.find((a) => !a.startsWith("--"));
   if (!place || !/^[a-z0-9][a-z0-9-]*$/.test(place)) {
-    console.log("usage: node tools/town/nightlights.mjs <place> [--check] [--probe]");
+    console.log("usage: node tools/town/nightlights.mjs <place> [--check] [--probe [--reseat Glow_a,Glow_b]]");
     return 1;
   }
   let loaded;
@@ -488,7 +488,9 @@ export function main(args, { root = ROOT } = {}) {
       }
     }
     seats.rejected = rejected;
-    if (old?.glows) seats.glows = old.glows;
+    // `--reseat a,b`: the named glows take this probe's seat instead of the committed one (a world that moved under them).
+    const reseat = new Set(String(args[args.indexOf("--reseat") + 1] ?? "").split(",").filter((n) => n && !n.startsWith("--")));
+    if (old?.glows) seats.glows = { ...old.glows, ...Object.fromEntries(Object.entries(seats.glows).filter(([n]) => reseat.has(n))) };
     mkdirSync(dirname(seatsFile), { recursive: true });
     writeFileSync(seatsFile, JSON.stringify({ place, at: new Date().toISOString().slice(0, 10), ...seats }, null, 1) + "\n");
     const dropped = Object.values(seats.glows).filter((s) => s === null).length;
