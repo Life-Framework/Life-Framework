@@ -1,0 +1,47 @@
+# Island garage part 2 (#3363, #3491): run `node agent-box/harness.mjs --client 1 park` first (it stands in for driving the car to the garage pad), then this flow.
+# Needs a FRESH client profile ($100 cash, $1000 bank). Steps 6 and 7 put the car at the impound lot
+# with the dev impound verb (`impound`, an administrator or harness build only) and collect it at the desk for the fee.
+
+step 3 Store the car at the garage pad
+stand Fit_saint_philippe_carlot_garage
+wait 1500
+use LF_VehicleStoreAction Fit_saint_philippe_carlot_garage
+wait 2500
+state
+
+step 4 Retrieve the car
+use LF_VehicleRetrieveAction Fit_saint_philippe_carlot_garage
+wait 2500
+state
+
+step 5 Read the ledger at the garage and the impound desk
+use LF_GarageLedgerAction Fit_saint_philippe_carlot_garage
+wait 1500
+stand Fit_saint_philippe_carlot_impound_desk
+wait 1500
+use LF_GarageLedgerAction Fit_saint_philippe_carlot_impound_desk
+wait 1500
+
+step 6 Withdraw $200 at the bank for the impound fee ($100 cash left after the purchase, the fee is $250)
+stand Fit_saint_philippe_bank_bank_teller
+wait 1500
+use LF_ATMAction Fit_saint_philippe_bank_bank_teller
+wait 1200
+click Key2Button
+click Key0Button
+click Key0Button
+click WithdrawButton
+wait 1500
+click CloseButton
+wait 500
+expect cash +200
+
+step 7 Impound the car, then collect it at the desk
+send impound
+wait 1500
+stand Fit_saint_philippe_carlot_impound_desk
+wait 1500
+use LF_ImpoundCollectAction Fit_saint_philippe_carlot_impound_desk
+wait 2500
+state
+expect cash -250

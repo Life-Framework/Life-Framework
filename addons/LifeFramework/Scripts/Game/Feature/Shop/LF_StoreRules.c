@@ -91,6 +91,29 @@ class LF_StoreRules
 	//! The most a payer may stand from the till when the server takes the money (#582) is LF_ShopLimitsConfig.TillReach().
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether an item may stand on a self-service shelf. A shelf copy is a real item anyone can pick up
+	//! before paying, so a weapon, or anything the law gates (licensed, restricted, illegal), never
+	//! goes on one: it is sold over a counter that checks the buyer on the server. A gun on show is a
+	//! display-only prop.
+	//! \param[in] item The catalogue entry for the prefab, or null when the catalogue does not list it.
+	static bool MayShelve(ResourceName prefab, LF_CatalogueItem item)
+	{
+		string path = prefab;
+		path.ToLower();
+		if (path.Contains("prefabs/weapons/"))
+			return false;
+
+		if (!item)
+			return true;
+
+		if (item.GetCategory() == LF_EItemCategory.WEAPON)
+			return false;
+
+		LF_EItemLegality legality = item.GetLegality();
+		return legality == LF_EItemLegality.LEGAL || legality == LF_EItemLegality.UNKNOWN;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return How many display copies stand on the shelf: the stock, never more than the slots.
 	static int ShelfCount(int stock, int slots)
 	{

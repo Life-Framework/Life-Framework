@@ -30,6 +30,8 @@ Roles: `counter till npc board dressing sign light alarm interactable furniture`
 turns with the building it is fitted to. Layer kits are rebased so the lowest row is y 0; prefab kits keep the
 building origin as y 0 and say where the interior floor is in `anchoring.floorY`.
 
+A wall row may carry `standoff` (metres): `town fit` stands it that far off the wall plane, for a long plate on a facade that steps back (the pharmacy fascia, #3685). A floor row may carry `lift` (metres, negative sinks it) after the floor snap. A `ground` row (a fence panel) may carry `lift` too: its pivot stands that far over the terrain, so a panel on a slope meets the ground at its middle (the wheat field west fence, #3968).
+
 ### Config is referenced, not copied
 
 A row keeps the scalar properties it sets itself (`m_sOutletId`, `m_sStoreKey`, `m_vOffset`, `m_fReach`), because
@@ -51,3 +53,9 @@ is the building's usable box; `building` records the vanilla villa it overrides.
 done with row id prefixes (`front-desk-*`, `cell-*`, `armoury-*`) and `--role`/`--verb` overrides. Anything the
 format cannot say yet goes in a new optional field of `anchoring` (not a new top-level key), and
 `checkKit` in `kit.mjs` gets the matching check.
+
+## Proving a kit in a grid claim
+
+`node tools/town/kit-grid.mjs put <kit> <grid-slug> <x> <z> [yaw] [--skip=id,id]` writes a kit's rows into a claim's layer
+(`clear` removes them), classes read from the prefabs; follow with `place settle` and `look grid:<slug>` (#3857). Row sizes
+come from `place bounds`: a `GravelPile_01_large` is 12 x 12 m and `Mine_01_cart_*` sits 0.33 m above its pivot (settle sinks it).

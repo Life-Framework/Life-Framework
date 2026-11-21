@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "barber",
+  "building": "b43",
+  "kit": "barber",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_barber.layer",
+  "kinds": [
+    "BarberChair"
+  ],
+  "rows": 6,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_barber_Place"
+  },
+  "date": "2026-11-21",
+  "stamp": {
+    "kit": "barber",
+    "prefab": "{7B197693AE45574A}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_yellow.et",
+    "layer": "498ca692508e"
+  }
+}

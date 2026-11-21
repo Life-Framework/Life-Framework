@@ -5,12 +5,26 @@
 # The runner has no Arma Reforger install and no MCP build, so the two checks
 # that need them are skipped and named in the log. Script compilation and the
 # in-game suite stay local: tools\cli test --no-build in a worktree.
+#
+# Green set (#3189): a PR skips a check whose inputs (the content of the files it declares, its own file and its
+# import closure) match a fingerprint an earlier run published as green. The set is one small JSON file kept by
+# actions/cache: a pull request restores the newest one from its own branch, else from main. The file carries the
+# hash of tools/lib/validate-incremental.mjs and its modules; a file another tool version wrote is ignored whole,
+# and so is a missing or damaged one (everything runs). A changed input changes the fingerprint, so that check
+# runs. 'always' and machine-state checks still run, the base-clean skip is off (LF_VALIDATE_NO_BASE), and a push
+# to main (and a manual run with "all") runs every check: main is the full run the cached greens come from.
 name: validate
 
 on:
   pull_request:
   push:
     branches: [main]
+  workflow_dispatch:
+    inputs:
+      all:
+        description: "Run every check, ignoring the cached green set"
+        type: boolean
+        default: true
 
 concurrency:
   group: validate-${{ github.ref }}
@@ -27,12 +41,29 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - name: restore green set
+        id: green
+        uses: actions/cache/restore@v4
+        with:
+          path: ${{ runner.temp }}\lf-validate-green
+          key: validate-green-v1-${{ runner.os }}-${{ hashFiles('tools/lib/validate-incremental.mjs', 'tools/lib/import-closure.mjs', 'tools/lib/atomic-file.mjs', '.github/workflows/validate.yml') }}-${{ github.sha }}
+          restore-keys: |
+            validate-green-v1-${{ runner.os }}-${{ hashFiles('tools/lib/validate-incremental.mjs', 'tools/lib/import-closure.mjs', 'tools/lib/atomic-file.mjs', '.github/workflows/validate.yml') }}-
       - name: cli validate
         shell: pwsh
         env:
+          LF_VALIDATE_GREEN_FILE: ${{ runner.temp }}\lf-validate-green\validate-green.json
+          LF_VALIDATE_NO_BASE: "1"
+          LF_VALIDATE_ALL: ${{ (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.all)) && '1' || '' }}
           GH_TOKEN: ${{ github.token }} # validate-world-zones reads the claims of other open PRs (warning only)
           LF_VALIDATE_SKIP: validate-scripts.ps1,validate-action-contexts.mjs,validate-action-reach.mjs,validate-modded-container-props.mjs
         run: node tools/cli.mjs validate --verbose
+      - name: save green set
+        if: ${{ !cancelled() && steps.green.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: ${{ runner.temp }}\lf-validate-green
+          key: validate-green-v1-${{ runner.os }}-${{ hashFiles('tools/lib/validate-incremental.mjs', 'tools/lib/import-closure.mjs', 'tools/lib/atomic-file.mjs', '.github/workflows/validate.yml') }}-${{ github.sha }}
       - name: generated files are committed
         shell: pwsh
         run: |

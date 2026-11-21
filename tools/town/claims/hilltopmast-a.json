@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "hilltopmast",
+  "slot": "a",
+  "building": "b01",
+  "kit": "hilltop-mast",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_hilltopmast_a.layer",
+  "kinds": [
+    "HilltopMast"
+  ],
+  "rows": 7,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_hilltopmast_a_Place"
+  },
+  "date": "2026-11-19"
+}

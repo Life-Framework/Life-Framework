@@ -1,0 +1,327 @@
+{
+  "schema": 1,
+  "kit": "warehouse",
+  "system": "events",
+  "source": {
+    "file": "tools/town/kits/warehouse.json",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{BBCEDBF2C4E3E896}Prefabs/Structures/Industrial/Houses/Warehouse_01/Warehouse_01_Office.et"
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -15.5,
+        -3
+      ],
+      "max": [
+        8,
+        3
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "A long industrial shed (Warehouse_01_Office, 38 x 19 m) that already holds shelving, barrels and crates along its walls. The kit adds pallet bays down the middle aisle and a marked crate on its own pallet at the far end; the shelving stays. `town fit --check` shows the seat corrections. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "pallet-1",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11,
+        0,
+        -2.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "crate-1-a",
+      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+      "role": "dressing",
+      "verb": "on pallet-1",
+      "offset": [
+        -11,
+        0.14,
+        -2.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-2",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11,
+        0,
+        2.2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "crate-2-a",
+      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+      "role": "dressing",
+      "verb": "on pallet-2",
+      "offset": [
+        -11,
+        0.14,
+        2.2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-3",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -7.5,
+        0,
+        -1.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "crate-3-a",
+      "prefab": "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et",
+      "role": "dressing",
+      "verb": "on pallet-3",
+      "offset": [
+        -7.5,
+        0.14,
+        -1.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-4",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.5,
+        0,
+        1.2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "crate-4-a",
+      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+      "role": "dressing",
+      "verb": "on pallet-4",
+      "offset": [
+        -3.5,
+        0.14,
+        1.2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-5",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3,
+        0,
+        -2.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "crate-5-a",
+      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+      "role": "dressing",
+      "verb": "on pallet-5",
+      "offset": [
+        3,
+        0.14,
+        -2.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-6",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3,
+        0,
+        2.2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "crate-6-a",
+      "prefab": "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et",
+      "role": "dressing",
+      "verb": "on pallet-6",
+      "offset": [
+        3,
+        0.14,
+        2.2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "palletbox-1",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.5,
+        0,
+        -2.4
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "palletbox-2",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.5,
+        0,
+        2.4
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "boxes-1",
+      "prefab": "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -13.5,
+        0,
+        -2.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "boxes-2",
+      "prefab": "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -13.5,
+        0,
+        2.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "scene-pallet",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -15,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "scene-crate",
+      "prefab": "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et",
+      "role": "interactable",
+      "verb": "on scene-pallet",
+      "offset": [
+        -15,
+        0.14,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "scene-sample",
+      "prefab": "{00DD12BB38DAD61B}Prefabs/Systems/Events/LF_EventMarker_Item.et",
+      "role": "dressing",
+      "verb": "on scene-crate",
+      "offset": [
+        -15,
+        0.363,
+        0
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_EventWaypointComponent",
+          "set": {
+            "m_sSceneId": "\"shipment_docks\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    }
+  ]
+}

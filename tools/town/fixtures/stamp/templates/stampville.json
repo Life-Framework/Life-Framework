@@ -1,0 +1,7 @@
+{
+  "kind": "stampville",
+  "slots": [
+    { "id": "shop-a", "required": true, "kit": "fixture-shop", "host": "building", "needs": { "interior": "required" }, "places": ["Shop"] },
+    { "id": "shop-b", "required": true, "kit": "fixture-shop", "host": "building", "needs": { "interior": "required" }, "places": ["Shop"] }
+  ]
+}

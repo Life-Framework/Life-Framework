@@ -1,0 +1,253 @@
+{
+  "schema": 1,
+  "kit": "farm",
+  "system": "farming",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/FarmingChain.layer",
+    "group": "*",
+    "origin": "FarmPlot_2",
+    "frame": "origin-entity",
+    "also": [
+      "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Signs.layer"
+    ]
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -5,
+        7
+      ],
+      "max": [
+        5,
+        13
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "An open farm yard: the barn is the host (its front at +z), three cabbage beds in a row 9 m in front of it, the seed crate and the farm_plots chalkboard at the west end, the honey kitchen bench and three beehives at the east end. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "farm-plot-1",
+      "name": "SPFarm_Plot_1",
+      "prefab": "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -3.5,
+        0,
+        10
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_FarmPlotComponent",
+          "set": {
+            "m_sPlotKey": "\"sp_farm_plot_1\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-plot-2",
+      "name": "SPFarm_Plot_2",
+      "prefab": "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0,
+        0,
+        10
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_FarmPlotComponent",
+          "set": {
+            "m_sPlotKey": "\"sp_farm_plot_2\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-plot-3",
+      "name": "SPFarm_Plot_3",
+      "prefab": "{A77FFCD72FB618B8}Prefabs/Vegetation/Crops/FarmPlot_Cabbage.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        3.5,
+        0,
+        10
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_FarmPlotComponent",
+          "set": {
+            "m_sPlotKey": "\"sp_farm_plot_3\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-seed-crate",
+      "name": "SPFarm_SeedCrate",
+      "prefab": "{696B13AE8A088B79}Prefabs/Props/Commercial/LF_SeedCrate_Cabbage.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -6,
+        0,
+        8
+      ],
+      "yaw": 165,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-sign",
+      "name": "SPFarm_Sign",
+      "prefab": "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -7,
+        0,
+        8.5
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"farm_plots\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-honey-kitchen",
+      "name": "SPFarm_HoneyKitchen",
+      "prefab": "{699A4C9829E46B12}Prefabs/Props/Farming/LF_HoneyKitchen.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        7.5,
+        0,
+        9
+      ],
+      "yaw": 270,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-hive-1",
+      "name": "SPFarm_Hive_1",
+      "prefab": "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        11,
+        0,
+        16
+      ],
+      "yaw": 255,
+      "config": [
+        {
+          "component": "LF_HiveComponent",
+          "set": {
+            "m_sHiveKey": "\"sp_farm_hive_1\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-hive-2",
+      "name": "SPFarm_Hive_2",
+      "prefab": "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        11.5,
+        0,
+        11
+      ],
+      "yaw": 270,
+      "config": [
+        {
+          "component": "LF_HiveComponent",
+          "set": {
+            "m_sHiveKey": "\"sp_farm_hive_2\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-hive-3",
+      "name": "SPFarm_Hive_3",
+      "prefab": "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10.5,
+        0,
+        13.5
+      ],
+      "yaw": 285,
+      "config": [
+        {
+          "component": "LF_HiveComponent",
+          "set": {
+            "m_sHiveKey": "\"sp_farm_hive_3\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{F5A2DC0597B53E19}Prefabs/Structures/Agriculture/Barn/Barn_E_02/Barn_E_02.et",
+    "lanes": [],
+    "clear": []
+  }
+}

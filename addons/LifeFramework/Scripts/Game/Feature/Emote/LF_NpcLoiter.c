@@ -129,8 +129,16 @@ class LF_NpcLoiter
 		if (!npc)
 			return null;
 
+		return FindFreeSeatAt(npc.GetOrigin(), range);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The nearest free sit place within range of a point, or null. A resident just teleported to an
+	//! anchor asks here with the anchor: the body's own origin is the old spot until the next frame (#3707).
+	static LF_SitAction FindFreeSeatAt(vector at, float range = SEAT_RANGE)
+	{
 		LF_NpcLoiterQuery query = new LF_NpcLoiterQuery();
-		GetGame().GetWorld().QueryEntitiesBySphere(npc.GetOrigin(), range, query.Add, null, EQueryEntitiesFlags.ALL);
+		GetGame().GetWorld().QueryEntitiesBySphere(at, range, query.Add, null, EQueryEntitiesFlags.ALL);
 
 		LF_SitAction best;
 		float bestDistance = range;
@@ -148,9 +156,9 @@ class LF_NpcLoiter
 				if (!sit || IsTaken(sit))
 					continue;
 
-				vector at[4];
-				sit.LF_GetSeatTransform(at);
-				float distance = vector.Distance(at[3], npc.GetOrigin());
+				vector seatAt[4];
+				sit.LF_GetSeatTransform(seatAt);
+				float distance = vector.Distance(seatAt[3], at);
 				if (distance < bestDistance)
 				{
 					best = sit;

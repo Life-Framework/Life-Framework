@@ -55,6 +55,11 @@ class LF_ResidentSpawner
 	static const ResourceName DEFAULT_PREFAB = "{D9D016A65F3245D7}Prefabs/Characters/Residents/Resident_Civilian.et";
 	static const int DEFAULT_SWEEP_SECONDS = 5;	// lf-fixed: used only when the config does not resolve
 
+	//! The floor search starts this far above the spot (a table top is not reached from a floor anchor) ...
+	static const float FLOOR_UP_M = 0.5; // lf-fixed: a step up, not a counter
+	//! ... and looks this far below it (an anchor written a little high).
+	static const float FLOOR_DOWN_M = 1.5; // lf-fixed: a typed anchor is never further off the ground than a body is tall
+
 	protected static ref map<string, ref LF_ResidentLive> s_mLive;
 	protected static ref set<string> s_mCapped;
 	protected static bool s_bScheduled;
@@ -320,7 +325,7 @@ class LF_ResidentSpawner
 		bool near;
 		foreach (vector player : where)
 		{
-			if (!LF_ResidentAnchors.Resolve(slot.m_sKind, slot.m_sAnchor, player, spot))
+			if (!LF_ResidentAnchors.ResolveIn(slot.m_sKind, slot.m_sPlaceId, slot.m_sAnchor, player, spot))
 				return null;
 
 			if (DistanceSqXZ(player, spot.m_vOrigin) <= spawnSq)
@@ -365,6 +370,10 @@ class LF_ResidentSpawner
 		else if (def && !def.m_sNeedQuest.IsEmpty())
 			prefab = LF_ResidentNeeds.GIVER_PREFAB;
 
+		// Nobody spawns inside another character: the nearest free spot beside the anchor when it is taken (#3831).
+		spot = LF_ResidentActivity.FreeSpot(spot, slot.m_sActivity, id);
+		// Feet on the floor under the spot, not on the height the anchor was written at (#3885).
+		spot = OnFloor(spot, id);
 		IEntity entity = LF_Utils.SpawnEntityPrefab(prefab, spot.m_vOrigin, spot.m_vAngles, true);
 		if (!entity)
 		{
@@ -372,6 +381,7 @@ class LF_ResidentSpawner
 			return false;
 		}
 
+		LF_NpcSpots.Claim(entity);
 		Dormant(entity);
 		LF_ResidentNeeds.Attach(entity, def);
 		LF_ResidentActivity.Apply(entity, slot.m_sActivity, spot);
@@ -396,6 +406,45 @@ class LF_ResidentSpawner
 
 		LF_Debug.Info(FEATURE, string.Format("resident '%1' appeared at %2 anchor '%3', %4", id, slot.m_sRole, slot.m_sAnchor, activity));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The floor under `at`: the first solid under it (every layer; characters, trees and loose items are not
+	//! floor), searched FLOOR_UP_M above to FLOOR_DOWN_M below. Returns false when nothing is there.
+	static bool FloorAt(vector at, out float floorY)
+	{
+		if (!GetGame() || !GetGame().GetWorld())
+			return false;
+
+		IEntity hit;
+		vector from = at + Vector(0, FLOOR_UP_M, 0);
+		float y = LF_PlaceSnap.Down(null, from, FLOOR_UP_M + FLOOR_DOWN_M, -1, hit);
+		if (y < -1e8)
+			return false;
+
+		floorY = y;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A copy of `spot` with its height on the floor under it, so a body spawned there stands on it and does
+	//! not drop (or hover) from an anchor written at another height. No floor found: the spot comes back and
+	//! a line is logged.
+	static LF_ResidentSpot OnFloor(notnull LF_ResidentSpot spot, string who)
+	{
+		float floorY;
+		if (!FloorAt(spot.m_vOrigin, floorY))
+		{
+			LF_Debug.Warn(FEATURE, string.Format("resident '%1': no floor within %2 m of %3; it spawns at the anchor height", who, FLOOR_DOWN_M, spot.m_vOrigin));
+			return spot;
+		}
+
+		LF_ResidentSpot snapped = new LF_ResidentSpot();
+		snapped.m_vOrigin = spot.m_vOrigin;
+		snapped.m_vOrigin[1] = floorY;
+		snapped.m_vAngles = spot.m_vAngles;
+		snapped.m_bAnchored = spot.m_bAnchored;
+		return snapped;
 	}
 
 	//------------------------------------------------------------------------------------------------

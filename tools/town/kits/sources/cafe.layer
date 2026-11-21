@@ -1,0 +1,11 @@
+// Source of the `cafe` kit (tools/town/kits/cafe.json): the one component the kit's anchor rows carry. A resident anchor
+// is a bare entity with LF_ResidentAnchorComponent (no mesh, no body: Prefabs/Systems/Residents/LF_ResidentAnchor.et inherits a
+// physical traffic cone, which a player would see and push). `town fit` reads the component GUID from here.
+GenericEntity Source_ResidentAnchor {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 0 0 0
+}

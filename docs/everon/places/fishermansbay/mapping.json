@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "template": "cove",
+  "place": "fishermansbay",
+  "status": "approved",
+  "note": "Hand-written for #3762 (the cove Gaspard's tip points to). The sheltered cove east of the lighthouse point has no building, so its one slot is a hostless plot (#3666): the kit anchors on the plot's centre and every row rests on the probed ground. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-19",
+    "buildings": 3,
+    "freePlots": 7
+  },
+  "slots": {
+    "cove": {
+      "plot": "p7",
+      "hostless": true,
+      "why": [
+        "free plot p7 (24 x 24 m, dry ground 0.8 to 2.3 m) on the grass above the cove's south shore: the plot is the one nearest the beach (20 m from the scout centre) and clear of the track (r01 is 18.6 m away)",
+        "the cove is the sheltered sea inlet east of the lighthouse point: its shallows and beach lie 10 to 25 m north of the plot, so the kit's spot stands on the dry beach beside the plot and covers the water in its radius"
+      ]
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "street-life",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b10"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b17"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b09"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b50"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b47"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b16"
+    }
+  ],
+  "kit": "street-life",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_street-life.layer",
+  "kinds": [],
+  "rows": 12,
+  "date": "2026-11-21"
+}

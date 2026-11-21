@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{ABF6B5EAA951F747}Configs/Market/LF_BuyerDemand.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

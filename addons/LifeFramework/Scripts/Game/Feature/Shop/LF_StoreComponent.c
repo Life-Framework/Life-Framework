@@ -86,6 +86,7 @@ class LF_StoreComponent : ScriptComponent
 	protected static ResourceName s_StrayPrefab;
 	protected static vector s_vStrayPoint;
 	protected static float s_fStrayHeight;
+	protected static LF_StoreComponent s_StoreAudit;
 
 	protected ref array<ref LF_StoreLineState> m_aState = {};
 	protected float m_fLastRestockMs;
@@ -145,6 +146,12 @@ class LF_StoreComponent : ScriptComponent
 			if (!line || line.m_ItemPrefab.IsEmpty())
 			{
 				LF_Debug.Error(LF_Stores.FEATURE, string.Format("store %1 has a line with no item; skipped", m_sStoreKey));
+				continue;
+			}
+
+			if (!LF_StoreRules.MayShelve(line.m_ItemPrefab, LF_ItemCatalogue.ItemByPrefab(LF_ItemCatalogueConfig.Get(), line.m_ItemPrefab)))
+			{
+				LF_Debug.Error(LF_Stores.FEATURE, string.Format("store %1 line %2 is a weapon or a licensed item: a shelf copy would be a free pickup; skipped (sell it over a counter)", m_sStoreKey, line.m_ItemPrefab));
 				continue;
 			}
 
@@ -371,6 +378,8 @@ class LF_StoreComponent : ScriptComponent
 				if (shop)
 					price = shop.GetBuyPrice(line.m_Prefab);
 
+				LF_StoreGarbage.Release(item);
+				LF_StoreShelfSave.Release(item);
 				LF_Stores.Tag(this, item, line.m_Prefab, price);
 			}
 		}
@@ -404,6 +413,8 @@ class LF_StoreComponent : ScriptComponent
 			return null;
 
 		RestOnBoard(copy, line, index);
+		LF_StoreGarbage.Hold(copy);
+		LF_StoreShelfSave.Hold(copy);
 		return copy;
 	}
 
@@ -651,10 +662,11 @@ class LF_StoreComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A shelf item is a plain world item with a quantity component, so the engine's own persistence
-	//! saves it and brings it back after a restart, at the same spot, beside the copies this store
-	//! spawns from its saved stock. Any loose copy of a line's item sitting on a shelf point is therefore
-	//! the shelf's own: it is adopted into an empty slot, or deleted when the slot already has one.
+	//! A shelf copy is left out of the world save (LF_StoreShelfSave, #3127), but a save written before
+	//! that still holds copies the engine brings back after a restart, beside the ones this store spawns
+	//! from its saved stock. Any loose copy of a line's item sitting on a shelf point is therefore the
+	//! shelf's own: it is adopted into an empty slot (and untracked, so its record goes at the next save),
+	//! or deleted when the slot already has one.
 	protected void AdoptStrays()
 	{
 		foreach (LF_StoreLineState line : m_aState)
@@ -687,6 +699,8 @@ class LF_StoreComponent : ScriptComponent
 					if (line.m_aShelf[i] == EntityID.INVALID && LF_StoreRules.ShelfCount(line.m_iStock, line.m_aSlots.Count()) > line.Occupied())
 					{
 						line.m_aShelf[i] = id;
+						LF_StoreGarbage.Hold(stray);
+						LF_StoreShelfSave.Hold(stray);
 						continue;
 					}
 
@@ -744,6 +758,49 @@ class LF_StoreComponent : ScriptComponent
 	{
 		AdoptStrays();
 		Sync(false);
+		AuditShelf();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One greppable line per stock line after a fill or a load (#3197): the copies the store tracks, the
+	//! copies it should show for its stock, and the loose copies of that prefab really standing inside the
+	//! shop boundary. `orphan` is loose beyond tracked: a copy nobody owns (a restart that doubled the
+	//! shelf). `agent-box/proofs/shelf-restart-proof.mjs` reads these lines.
+	protected void AuditShelf()
+	{
+		vector centre = GetOwner().CoordToParent(m_vBoundaryCenter);
+		float radius = Math.Max(m_vBoundaryHalf[0], m_vBoundaryHalf[2]) * 1.5 + 1;
+		foreach (LF_StoreLineState line : m_aState)
+		{
+			if (!s_aStrays)
+				s_aStrays = new array<EntityID>();
+
+			s_aStrays.Clear();
+			s_StrayPrefab = line.m_Prefab;
+			s_StoreAudit = this;
+			GetGame().GetWorld().QueryEntitiesBySphere(centre, radius, CollectInShop, null, EQueryEntitiesFlags.ALL);
+			s_StoreAudit = null;
+			int tracked = line.Occupied();
+			int loose = s_aStrays.Count();
+			int orphan = Math.Max(loose - tracked, 0);
+			LF_Debug.Info(LF_Stores.FEATURE, string.Format("store %1 shelf audit: %2 stock=%3 want=%4 tracked=%5 loose=%6 orphan=%7", m_sStoreKey, line.m_Prefab, line.m_iStock, LF_StoreRules.ShelfCount(line.m_iStock, line.m_aSlots.Count()), tracked, loose, orphan));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectInShop(IEntity entity)
+	{
+		if (!entity || !s_StoreAudit || !LF_Utils.SamePrefab(LF_Utils.GetPrefabName(entity), s_StrayPrefab))
+			return true;
+
+		// Tracked shelf copies count too (HoldsApart would skip them); only an item in a pocket does not.
+		if (LF_InventoryUtils.GetStorageHierachyRoot(entity) != entity)
+			return true;
+
+		if (s_StoreAudit.Contains(entity.GetOrigin()))
+			s_aStrays.Insert(entity.GetID());
+
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------

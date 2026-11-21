@@ -15,7 +15,8 @@ import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 // The route is the scene markers in Worlds/CoreOnEveron/CoreOnEveron_Layers/RelocatedWalk.layer.
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const LAYER = join(ROOT, "addons", "LifeFramework", "Worlds", "CoreOnEveron", "CoreOnEveron_Layers", "RelocatedWalk.layer");
-const FIXTURE = "{6C3B1E8A4F2D9705}Configs/Tests/LF_Test_RelocatedWalkFixture.conf";
+const ISLAND_LAYER = join(ROOT, "addons", "LF_Everon1989", "Worlds", "MainWorld", "MainWorld_Layers", "Place_saint-philippe_arrival.layer");
+const FIXTURE ="{6C3B1E8A4F2D9705}Configs/Tests/LF_Test_RelocatedWalkFixture.conf";
 const SPAWN = [4471.854, 10535.136];
 const WALK_BUDGET_S = 330;
 // The control walker: vanilla, CIV faction, no LF prefab in between.
@@ -30,7 +31,8 @@ export function readMarkers(text) {
     const order = /m_iOrder\s+(\d+)/.exec(m[3]);
     const c = /coords\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)/.exec(m[3]);
     if (!c) continue;
-    out.push({ name: m[1], role: m[2], order: order ? Number(order[1]) : 0, x: Number(c[1]), y: Number(c[2]), z: Number(c[3]) });
+    const scene = /m_sSceneId\s+"([^"]*)"/.exec(m[3]);
+    out.push({ name: m[1], scene: scene ? scene[1] : "", role: m[2], order: order ? Number(order[1]) : 0, x: Number(c[1]), y: Number(c[2]), z: Number(c[3]) });
   }
   return out;
 }
@@ -81,13 +83,28 @@ async function survey(args) {
 async function walk(args) {
   args = [...args];
   const control = args.includes("--control");
-  args = args.filter((a) => a !== "--control");
+  // --scene <id> --fixture <{GUID}conf> --layer <repo path> --npcs <n>: prove another scene's island route (#3766 shipment_docks) the same way.
+  const opt = (name, dflt) => { const i = args.indexOf(name); if (i < 0) return dflt; const v = args[i + 1]; args.splice(i, 2); return v; };
+  const sceneId = opt("--scene", "relocated_arrival");
+  const fixture = opt("--fixture", FIXTURE);
+  const layerOpt = opt("--layer", "");
+  const want = Number(opt("--npcs", 6));
+  // --hour <h>: the hour the event shell reads (default 6, the dawn events; the anniversary walks need 12).
+  const hour = opt("--hour", "6");
+  // --island: the route is the markers of the island's arrival layer (a `session up --mission island` session), not the CoreOnEveron proof layer (#3088).
+  const island = args.includes("--island");
+  // --drive: the scene drives its truck (#3831, m_bDriveVehicle): PASS is the log line `drive over: the vehicle reached the target`.
+  const drive = args.includes("--drive");
+  args = args.filter((a) => a !== "--control" && a !== "--island" && a !== "--drive");
   const out = args[0] ? resolve(String(args[0])) : "";
-  if (!existsSync(LAYER)) {
-    console.log(`relocated-walk: no route layer at ${LAYER}`);
+  const layerFile = layerOpt ? join(ROOT, layerOpt) : island ? ISLAND_LAYER : LAYER;
+  if (!existsSync(layerFile)) {
+    console.log(`relocated-walk: no route layer at ${layerFile}`);
     return 2;
   }
-  const markers = readMarkers(readFileSync(LAYER, "utf8"));
+  const allMarkers = readMarkers(readFileSync(layerFile, "utf8"));
+  // A layer that holds several scenes (the anniversary slot): only this scene's markers are the route.
+  const markers = allMarkers.some((m) => m.scene === sceneId) ? allMarkers.filter((m) => m.scene === sceneId) : allMarkers;
   const route = markers.filter((m) => m.role === "Waypoint").sort((a, b) => a.order - b.order);
   const spawn = markers.find((m) => m.role === "Spawn");
   const target = markers.find((m) => m.role === "Target");
@@ -103,7 +120,7 @@ async function walk(args) {
     console.log(`marker ${m.name}: y ${m.y}, ground ${y.toFixed(2)}, ${(m.y - y).toFixed(2)} m above`);
   }
   // Stand away from the spawn: the scene spawns out of sight (LF_EventSceneSpawn sight check).
-  const start = on({ verb: "eventscene", words: ["start", FIXTURE, "6"] }, 15000);
+  const start = on({ verb: "eventscene", words: ["start", fixture, hour] }, 15000);
   if (start.status !== "ok") {
     console.log(`relocated-walk: FAIL eventscene start: ${start.detail}`);
     return 1;
@@ -114,15 +131,16 @@ async function walk(args) {
   let last = "";
   let arrived = 0;
   let spawned = 0;
+  let driven = "";
   while ((Date.now() - t0) / 1000 < WALK_BUDGET_S) {
     wait(3000);
-    const s = on({ verb: "eventscene", words: ["status", "relocated_arrival"] }, 10000).detail;
+    const s = on({ verb: "eventscene", words: ["status", sceneId] }, 10000).detail;
     last = s;
     spawned = Number(/(\d+) spawned/.exec(s)?.[1] ?? 0);
     const walking = Number(/walking (\d+)/.exec(s)?.[1] ?? 0);
     arrived = Number(/arrived (\d+)/.exec(s)?.[1] ?? 0);
     const elapsed = Number(/, ([\d.]+) s(;|$)/.exec(s)?.[1] ?? 0);
-    if (!shots.spawn && spawned >= 6) {
+    if (!shots.spawn && spawned >= want) {
       on({ verb: "capture", mode: "world", name: "walk_spawn", x: spawn.x, y: spawn.y + 1, z: spawn.z, ox: 7, oy: 1.8, oz: 7, hour: 12 }, 25000);
       shots.spawn = true;
     }
@@ -141,6 +159,21 @@ async function walk(args) {
     }
     // The walk stops the moment it is over; the status then carries its result, and the family
     // still stands at the target until the despawn delay, so the arrival pictures go now.
+    if (drive) {
+      // Once the truck rolls under its own AI (past the second lane point), a picture of it on the lane.
+      const at = /vehicle at <([-\d.]+),([-\d.]+),([-\d.]+)>/.exec(s);
+      if (!shots.mid && at && Number(at[1]) > route[1].x + 3) {
+        on({ verb: "capture", mode: "world", name: "drive_mid", x: Number(at[1]), y: Number(at[2]) + 1, z: Number(at[3]), ox: 12, oy: 4, oz: 9, hour: 12 }, 25000);
+        shots.mid = true;
+      }
+      const driveOver = /drive over: ([^)]*)/.exec(s);
+      if (driveOver) {
+        driven = driveOver[1];
+        break;
+      }
+      if (/no scene running/.test(s) && (Date.now() - t0) / 1000 > 60) break;
+      continue;
+    }
     const over = /walk over: (\d+) reached the target, (\d+) timed out/.exec(s);
     if (over) {
       arrived = Number(over[1]);
@@ -159,6 +192,11 @@ async function walk(args) {
   shots.target = true;
 
   console.log(`relocated-walk: last status: ${last}`);
+  if (drive) {
+    const reached = driven.includes("reached the target");
+    console.log(reached ? `relocated-walk: PASS (drive over: ${driven})` : `relocated-walk: FAIL (drive over: ${driven || "never"})`);
+    return reached ? 0 : 1;
+  }
   const ok = spawned > 0 && arrived >= spawned;
   console.log(ok ? `relocated-walk: PASS (${arrived}/${spawned} reached the target)` : `relocated-walk: FAIL (${arrived}/${spawned} reached the target)`);
   return ok ? 0 : 1;
@@ -230,7 +268,7 @@ async function grip(args) {
 
 export default {
   name: "relocated-walk-proof",
-  usage: "relocated-walk-proof [out] [--control] | survey [x,z] [radius] [out] | grip [out] [x,y,z]   (run in a --mission everon --profile full session)",
+  usage: "relocated-walk-proof [out] [--control] [--island] | survey [x,z] [radius] [out] | grip [out] [x,y,z]   (run in a --mission everon --profile full session)",
   run: (ctx) => {
     const args = ctx?.args ?? [];
     if (args[0] === "survey") return survey(args.slice(1));

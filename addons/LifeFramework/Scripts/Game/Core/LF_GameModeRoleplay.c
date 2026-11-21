@@ -74,10 +74,14 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		}
 		LF_IncidentLog.Install();
 		LF_AimIntent.Start();
+		// A hold-up or held aim offers the target the hands-up prompt (server only, #3396).
+		LF_HandsUp.EnsureSubscribed();
 		LF_DevGameMaster.Install(AreDevToolsEnabled());
 		LF_ServiceCallDispatch.Install();
 		LF_ServiceBoard.Install();
 		LF_ChainTrace.Install();
+		// The evidence locker's convoy order starts the truck and its escort (server only, #3382).
+		LF_EvidenceConvoy.Install();
 		// The replicated DELIVERY level follows every job level change (server only, #749).
 		LF_JobLevelSync.EnsureSubscribed();
 		// Mining, logging and medic work earn MINER, LUMBERJACK and MEDIC XP (server only, #2707).
@@ -93,6 +97,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_CrimeRecord.EnsureSubscribed();
 		// Every arrest stamps a dated conviction, read by the permit desk (server only, #1914).
 		LF_ConvictionRecord.EnsureSubscribed();
+		// An arrest for a mapped crime code seizes the licence and bans it for days (server only, #3432).
+		LF_LicenceSeizure.EnsureSubscribed();
 		// The record board keeps each character's best race time per course (server only, #1925).
 		LF_RaceRecords.EnsureSubscribed();
 		// The war notice board keeps each ended war for an hour (server only, #2677).

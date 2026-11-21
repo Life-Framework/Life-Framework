@@ -161,6 +161,7 @@ under "Hard-coded flagship values in script".
 | `Props/Signs/LF_BoardFace.et` | core | The 16:9 render-target face a board draws on (wanted posters, #758) |
 | `Props/Signs/EL_WhitelistSign.et` | core | Action sign |
 | `Props/Signs/EL_MiningSign.et` | pack, moved (batch 1) | Soviet undermined-area warning sign; its placement left the core `MiningChain.layer` for the pack layer `Village_Signs` |
+| `Prefabs/Props/Money/LF_ATM.et`, `Assets/Props/Money/ATM/` | core | The wall cash dispenser: the cash-to-account boundary is what the game can do. A neutral 1989 French machine with a plate that reads only BANQUE; no real bank brand. Built by `tools/assets/atm-wall/build.py` (no Meshy); where an ATM stands is the pack's (`Place_saint-philippe_atms.layer`) |
 | `Props/Roleplay/SpikeStrip/` | split | The deployed strip and the folded item are the core's working deployable that `LF_Test_SpikeStrip` loads (#646); the 1989 stinger look, its place in the rank kits and the DebugWorld display strip are pack (#647) |
 | `Prefabs/Props/Commercial/LF_SafeBox.et` | core | The store box safe: the vanilla `Safe_01` mesh with the heist rob, breach and `LF_HeistVaultComponent` set to the `store_box` safe type. A generic robbable shop safe: what the game can do. Where a shop gets one is the pack's |
 | `Configs/Crime/LF_SafeTypes.conf` | core | The three safe tiers (`store_box`, `bank_room`, `reserve_vault`) as neutral numbers. `LF_Everon1989/Configs/Crime/LF_SafeTypes_Everon1989.conf` is the pack overlay (1989 till takings) |
@@ -194,14 +195,16 @@ under "Hard-coded flagship values in script".
 | `Dialogue/LF_DialogueIndex.conf` | core | The dialogue registry (#957): id to file; a pack overlay adds, replaces or removes an id |
 | `Dialogue/LF_Dialogue_ClerkEveron.conf` (in `LF_Everon1989`) | pack | The Everon clerk as a pack patch of the core clerk (`tools/assets/dialogue/clerk_everon/`): the Everon wording and the voiced lines, listed in the pack's mission header |
 | `Dialogue/LF_Dialogue_OldMan.conf` (in `LF_Everon1989`) | pack | The old man on the bench: a pack's own full dialogue (`tools/assets/dialogue/old_man/`, #1962), voiced; flavour of this server, so the core knows nothing of it |
-| `Sounds/Dialogue/old_man/` (in `LF_Everon1989`) | pack | His five recordings (ElevenLabs, voice Alder) and audio project (#1962) |
+| `Sounds/Dialogue/old_man/` (in `LF_Everon1989`) | pack | His six recordings (ElevenLabs, voice Alder) and audio project (#1962) |
 | `Sounds/Dialogue/clerk_everon/` (in `LF_Everon1989`) | pack | The clerk's thirteen recordings and audio project (the ten from #323 batch 4, moved out of the core's `Sounds/Dialogue/clerk/`, and the three welcome lines of #1959), all ElevenLabs, voice Julien - Serious (#1959, #1015) |
-| `Dialogue/LF_Dialogue_CafeOwner.conf` (in `LF_Everon1989`) | pack | The café owner Odile Marchand's own dialogue (#1961, `tools/assets/dialogue/cafe_owner/`): the zone, the move and three pointers. Pack content: it names the story and the town's places. Not yet in the dialogue index (follow-up with her talk action) |
+| `Dialogue/LF_Dialogue_CafeOwner.conf` (in `LF_Everon1989`) | pack | The café owner Odilon Marchand's own dialogue (#1961, `tools/assets/dialogue/cafe_owner/`): the zone, the move and three pointers. Pack content: it names the story and the town's places. Not yet in the dialogue index (follow-up with her talk action) |
 | `Sounds/Dialogue/cafe_owner/` (in `LF_Everon1989`) | pack | The café owner's seven recordings and audio project (#1961, ElevenLabs, voice Mariva Viva Muse) |
 | `Dialogue/LF_Dialogue_NightShift.conf`, `Dialogue/LF_DialogueIndex_NightShift.conf` (in `LF_Everon1989`) | pack | The night-shift worker's (Rémi Duval) dialogue and the pack index overlay that adds the id `night_shift` (#1963) |
 | `Dialogue/LF_DialogueIndex_CafeOwner.conf`, `Dialogue/LF_DialogueIndex_OldMan.conf` (in `LF_Everon1989`) | pack | Pack index overlays that add the ids `cafe_owner` and `old_man`, so the townsfolk prefabs' `LF_DialogueComponent` resolves their voiced dialogues (#2164) |
 | `Dialogue/LF_Dialogue_HarbourMaster.conf`, `Sounds/Dialogue/harbour_master/` (in `LF_Everon1989`) | pack | Marcel Roux the harbour master: his full dialogue (`tools/assets/dialogue/harbour_master/`, #3050), voiced (ElevenLabs, voice LaRauque): the crate run and the harbour crates contract offer; his index overlay is `LF_DialogueIndex_HarbourMaster.conf` |
 | `Sounds/Dialogue/night_shift/` (in `LF_Everon1989`) | pack | The night-shift worker's five recordings and audio project, ElevenLabs, voice Raspy (#1963) |
+| `Npcs/LF_Npc_Townsfolk_ShipmentGoBetween.et`, `Dialogue/LF_Dialogue_ShipmentGoBetween.conf`, `Dialogue/LF_DialogueIndex_OldMan/LF_DialogueIndex_ShipmentGoBetween.conf`, `Residents/LF_Residents_Everon1989/LF_Residents_ShipmentGoBetween.conf` (in `LF_Everon1989`) | pack | Hugo Valmy, the shipment's go-between (#3804, story sheet #3438): his prefab, captioned dialogue, the index folder overlay that adds the id `shipment_go_between` and his resident row (pub regular). A character of this server's story; the core knows none of it. Voiced in #3809 (`tools/assets/dialogue/shipment_go_between/`, ElevenLabs voice Cyril) |
+| `Sounds/Dialogue/shipment_go_between/` (in `LF_Everon1989`) | pack | Hugo Valmy's five recordings and audio project (#3809). Pack content: the voice of one character of this server |
 | `Dialogue/LF_Dialogue_Shopkeeper.conf` | core | A store's shopkeeper, neutral and text only (#1143, `tools/assets/dialogue/shopkeeper/`): greeting, how to pay, what the store sells, and the line a store's staff say on a walk-out. The prefab `Characters/Npcs/LF_Shopkeeper.et` is core too; the pack places it in its supermarket |
 | `Dialogue/LF_Dialogue_Clerk.conf` | core | The neutral, text-only clerk conversation (generated from `tools/assets/dialogue/clerk/`, `text_only`); the Everon voice is a pack patch (#323) |
 | `Weapons/Ammo/` | core | Ammunition list override the engine needs for any mod projectile, and the stun weapon's magazine config |
@@ -316,7 +319,7 @@ set them. File and constant, then the value.
 
 | File | Constant or literal | Value | Moves to |
 | --- | --- | --- | --- |
-| `Feature/Jobs/LF_CivilianJob.c` | `PAY_PARCEL`, `PAY_FUEL`, `PAY_TAXI` | 40, 60, 80 | `LF_Jobs.conf` |
+| `Feature/Jobs/LF_CivilianJob.c` | `PAY_PARCEL`, `PAY_FUEL`, `PAY_TAXI` | 40, 60, 80 | `LF_Jobs.conf` `runPays` (moved #3147; the constants are the fallback) |
 | `Feature/Jobs/LF_CivilianJob.c` | `TAXI_PREFAB` | vanilla `S105_beige.et` | jobs config (catalogue pick) |
 | `Feature/Jobs/LF_CivilianJob.c` | `DEPOT_PREFAB` | vanilla post office counter | jobs config |
 | `Feature/Jobs/LF_JobGuards.c` | `FruitPrefab()` | apple, tomato, plum, rowan berries | jobs config |

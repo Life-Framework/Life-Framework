@@ -19,7 +19,12 @@
   Proof: `LF_Test_LockerRent` (WORLD).
 - ✅ Saved as the `lockers` payload (save v57); a pre-v57 save loads with nobody renting. Proof: `LF_Test_LockerPersist`
   (PERSISTENCE), `tools\cli wt e2e`.
-- ⚠️ No bank placed in a world yet; a pack placement sets `m_sSiteId`.
+- 🧪 The Saint-Philippe bank holds one locker bank (2026-11-19, #3192): kit row `lf-locker-bank` in `tools/town/kits/bank.json`,
+  site id `saint_philippe_bank`, fitted into `Place_saint-philippe_bank.layer` in the ground-floor corridor. Needs a session
+  check on the island (rent, store, rejoin, reopen).
+- 🧪 Pack rent (2026-11-19, #3192): `LF_LockerConfig` reads pack overlays (the mission header's `m_aLF_ConfigOverlays`); a root
+  `LF_LockerConfig` sets the fields it names, an out-of-range one is refused. Everon 1989 rents at 40 cash a week, reclaim 25
+  (`LF_Lockers_Everon1989.conf`). Proof: `LF_Test_LockerPackOverlay` (LOGIC).
 
 ### `LF_LockerStorageManagerComponent` — `Feature/Lockers/LF_LockerStorageManagerComponent.c`, `LF_LockerOpenAction.c`, `LF_LockerPlayerController.c`
 - 🧪 Open your own locker (2026-11-18, #2661): "Open your locker" on the bank. The server finds the bank from the
@@ -34,6 +39,20 @@
   the renter's own inventory touch an open locker. Weight capacity is 60 kg on the container prefab (the config's
   `weightCapacity` is not read by the prefab yet). Logs `[LFDebug:Lockers]`.
   Proof: `LF_Test_LockerRoundtrip`, `LF_Test_LockerIsolation` (WORLD), `tools\cli wt e2e` (a stored handgun survives the restart).
+- 🧪 Opens on a dedicated client (2026-11-18, #3369): the server spawns the container and sends its `RplId` in the same call,
+  so the client could resolve it before it streamed in and drop the open (9 of 9 opens on a dedicated server with one remote
+  client, a listen host never saw it). `LF_LockerPlayerController` now retries the lookup 10 times, 100 ms apart, then gives up
+  with the same warning; a newer open cancels a pending retry. Proof: `node agent-box/session.mjs locker-open-proof` (up
+  `--mission grid --clients 1`, ten rent-and-open cycles at the bank in grid cell `slice-3369`): 0 dropped lines.
 - ⚠️ A snapshot is current at every capture, not marked "open" in the save: a crash between a change and the next capture
   loses that change, it never duplicates an item (the opener's carried inventory is captured with it). The lost-and-found
   sweep and reclaim are wave 2.
+
+### `LF_LostAndFound` — `Feature/Lockers/LF_LostAndFound.c`, `LF_LostAndFoundBoxComponent.c`, `LF_LostAndFoundReclaimAction.c`
+- ✅ Lapse and reclaim (2026-11-19, #3457): `Prefabs/Props/Lockers/LF_LostAndFoundBox.et` beside a bank. A locker past paid-until plus grace is
+  freed (`LF_LockerBank.Free`) and its contents move to the owner's `lostfound:<siteId>` snapshot (the existing `carried`
+  payload, no new section); a slow sweep armed by the first bank or box, the renter's visit to the box and their next open all run it. "Reclaim your things
+  (fee)" takes `reclaimFee` after every check and moves every item to the owner's inventory or feet; a stranger gets nothing,
+  short of the fee is refused, a second try finds nothing. Proof: `LF_Test_LostAndFound`, `LF_Test_LockerLapseOnOpen` (WORLD).
+- ⚠️ The prompt is hidden from non-owners on a listen host only; a dedicated client shows it and the server refuses with a toast.
+  No box is placed in a world yet.

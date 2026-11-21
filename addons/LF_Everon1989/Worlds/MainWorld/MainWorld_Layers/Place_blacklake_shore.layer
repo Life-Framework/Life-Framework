@@ -1,0 +1,55 @@
+GenericEntity Fit_blacklake_shore_Place {
+ components {
+  LF_PlaceComponent "{283488668C7A7884}" {
+   m_sKind "FishingSpot"
+   m_sId "blacklake.shore"
+  }
+ }
+ coords 9527.5 210.6 2989.7
+}
+GenericEntity Fit_blacklake_shore_spot : "{E8C5BD1716B703E0}Prefabs/Systems/Fishing/LF_FishingSpot.et" {
+ components {
+  LF_FishingSpotComponent "{4A0F573235D2E074}" {
+   m_sId "black-lake"
+   m_sTable "pond"
+   m_fRadius 26
+   m_iStock 14
+   m_fRegrowSeconds 90
+  }
+ }
+ coords 9519 208.453 2997
+}
+GenericEntity Fit_blacklake_shore_bench : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
+ coords 9521.1 208.759 2995.6
+ angleY -57
+}
+GenericEntity Fit_blacklake_shore_lantern : "{57354E1D82BCF650}Prefabs/Props/Fishing/LF_LakeLantern.et" {
+ coords 9521.9 208.905 2996.9
+}
+GenericEntity Fit_blacklake_shore_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "black-lake"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 9520.1 208.58 2994.1
+ angleY 123
+}
+GenericEntity Mapper_blacklake_shore_M1 : "{5BAA975FE04E94EF}Prefabs/Props/Civilian/BenchStreet/StreetBench_01/BenchStreet_01_green.et" {
+ coords 9527.057 209.752 2989.899
+ angleY -90
+}
+GenericEntity Mapper_blacklake_shore_M2 : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 9529 210.112 2991.1
+ angleY 40
+}
+GenericEntity Mapper_blacklake_shore_M3 : "{6FC9E85153AE41B1}Prefabs/Props/Civilian/WoodKindling_Crate_01.et" {
+ coords 9529.69 210.178 2988.697
+ angleY 90
+}
+GenericEntity Mapper_blacklake_shore_M4 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 9525.3 209.433 2988.301
+}

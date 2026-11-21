@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "kit": "roadfarm",
+  "system": "fuel",
+  "source": {
+    "file": "tools/town/kits/sources/roadfarm.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        5.6,
+        -3
+      ],
+      "max": [
+        21,
+        5.4
+      ]
+    },
+    "front": "+x",
+    "counters": [],
+    "adapt": "A farm yard's machine shed: the shed is the host and its door side is +x. The fuel drop barrel stands by the shed's front left corner, the payphone and the farm sign 17.5 m out where the lane leaves the yard. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "payphone",
+      "name": "RoadFarm_Payphone",
+      "prefab": "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        21,
+        0,
+        -3
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "fuel-drop",
+      "name": "RoadFarm_FuelDrop",
+      "prefab": "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.6,
+        0,
+        5.4
+      ],
+      "yaw": 30,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "sign",
+      "name": "RoadFarm_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        21,
+        0,
+        2.5
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"roadfarm\"",
+            "m_vRimColor": "1 1 1",
+            "m_vPaintColor": "0.16 0.3 0.15",
+            "m_vTextColor": "1 1 1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    }
+  ]
+}

@@ -8,11 +8,11 @@
 //
 //   node tools/merge/regen-generated.mjs %O %A %B %P
 
-import { spawnSync } from "node:child_process";
 import { appendFileSync, copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { GIT_ATTEMPTS, expectedGitExits, spawnRetrying } from "../lib/git-retry.mjs";
 import { mergeStringTables } from "./union-string-table.mjs";
 
 // The core's string table and each pack's (#325): the driver unions every one, then regenerates all confs.
@@ -44,7 +44,9 @@ export function timeoutFor(defaultMs, env = process.env, name = "LF_MERGE_DRIVER
 export function runBounded(step, command, args, options, defaultMs, overrideName) {
   const limit = timeoutFor(defaultMs, process.env, overrideName);
   const started = Date.now();
-  const result = spawnSync(command, args, {
+  // A git call that fails with no output is run again (tools/lib/git-retry.mjs: the silent failures of the CI runner,
+  // main run d4c47e373 `git init` in the scratch repo left the conf conflicted with no message); a timeout is not.
+  const result = spawnRetrying(command, args, {
     windowsHide: true,
     encoding: "utf8",
     maxBuffer: 256 * 1024 * 1024,
@@ -52,7 +54,7 @@ export function runBounded(step, command, args, options, defaultMs, overrideName
     stdio: [options.input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
     timeout: limit,
     killSignal: "SIGKILL",
-  });
+  }, { attempts: command === "git" ? GIT_ATTEMPTS : 1, label: step, expectExit: command === "git" ? expectedGitExits(args) : [] });
   if (process.env.LF_MERGE_DRIVER_TRACE) {
     try {
       appendFileSync(process.env.LF_MERGE_DRIVER_TRACE, `${Date.now() - started} ${step}\n`);

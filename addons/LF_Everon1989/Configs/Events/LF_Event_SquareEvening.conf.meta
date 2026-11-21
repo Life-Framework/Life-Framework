@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9C3B7F1D2E5A4068}Configs/Events/LF_Event_SquareEvening.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

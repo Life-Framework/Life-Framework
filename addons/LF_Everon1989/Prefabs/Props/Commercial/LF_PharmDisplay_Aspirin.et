@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "FC992A0C72D766C2"
+ components {
+  MeshObject "{7160661F37E893DB}" {
+   Object "{22E1D76D80258FE3}Assets/Items/Medicine/Aspirin_01/Aspirin_01.xob"
+  }
+ }
+ coords 0 0 0
+}

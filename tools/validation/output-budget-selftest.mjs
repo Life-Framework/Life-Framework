@@ -12,6 +12,7 @@
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { PASSTHROUGH, summarize } from "../lib/quiet-run.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -93,7 +94,7 @@ for (const [name, args, max] of budgets) {
 {
   const fx = scratchDir("lf-pool-budget-");
   try {
-    spawnSync("git", ["init", "-q", fx], { windowsHide: true });
+    gitSync(["init", "-q", fx], { windowsHide: true });
     writeFileSync(join(fx, "lf.local.json"), JSON.stringify({ pool: { machines: [{ name: "lf-testbox", disabled: true }, { name: "lf-cloud", disabled: true }] } }));
     mkdirSync(join(fx, "tmp", "wt", "pool", "queue"), { recursive: true });
     const script = join(fx, "status.mjs");

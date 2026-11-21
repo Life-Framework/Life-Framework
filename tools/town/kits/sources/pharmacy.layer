@@ -1,0 +1,195 @@
+// Source of the `pharmacy` kit (tools/town/kits/pharmacy.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). `town fit` reads the components the kit names from here; `town author --reopen pharmacy` builds a bay again.
+// Grid cell c25r0 for author-pharmacy: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 23
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 327.4 0 23
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 331.8 0 23
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 336.2 0 23
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 340.6 0 23
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 27.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 31.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 36.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 40.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 340.6 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 336.2 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 331.8 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 327.4 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 45
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 40.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_pharmacy_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 36.2
+ angleY 90
+}
+GenericEntity Grid_author_pharmacy_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:author-pharmacy"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 322.2 0.505 23.6
+ angleY -90
+}
+GenericEntity Grid_author_pharmacy_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "author-pharmacy"
+  }
+ }
+ coords 322.3 0 27.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_author_pharmacy_Main : "{FF48B5059EB0AC65}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_drugstore.et" {
+ coords 333.675 0 33.964
+ angleY -90
+}
+GenericEntity Pharmacy_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ coords 326.175 3.25 30.164
+ angleY -90
+}
+GenericEntity Pharmacy_counter : "{E66CFB8EA2048E05}Prefabs/Props/Commercial/LF_PharmacyCounter.et" {
+ coords 333.998 0.201 37.364
+ angleY -90
+}
+LF_NpcBaseEntity Pharmacy_pharmacist : "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et" {
+ coords 334.925 0.196 37.064
+ angleY -90
+}
+GenericEntity Pharmacy_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{7C4D2E1A5B6F80A3}" {
+   m_sShopName "#LF-Shop_Name_Pharmacy"
+   m_sShopDescription "#LF-Shop_Desc_Pharmacy"
+   m_sStockId "pharmacy"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{7C4D2E1A5B6F80A4}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C4D2E1A5B6F80A5}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C4D2E1A5B6F80A6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C4D2E1A5B6F80A7}" {
+      Name "#LF-Shop_Open_Pharmacy"
+      Description "#LF-Shop_OpenDesc_Pharmacy"
+     }
+    }
+   }
+  }
+ }
+ coords 334.025 1.241 36.914
+ angleY -90
+}
+GenericEntity Pharmacy_aspirin : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 333.825 1.241 37.514
+ angleY -90
+}
+GenericEntity Pharmacy_gauze : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 333.825 1.245 37.814
+ angleY -90
+}
+GenericEntity Pharmacy_tourniquet : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 333.575 1.241 37.214
+ angleY -90
+}
+GenericEntity Pharmacy_shelf_1 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 329.975 0.196 39.564
+ angleY 180
+}
+GenericEntity Pharmacy_shelf_1_aspirin : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 330.325 1.277 39.354
+ angleY 180
+}
+GenericEntity Pharmacy_shelf_1_gauze : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 330.695 1.277 39.354
+ angleY 180
+}
+GenericEntity Pharmacy_shelf_1_tourniquet : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 331.075 1.277 39.354
+ angleY 180
+}
+GenericEntity Pharmacy_shelf_2 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 330.675 0.196 35.714
+ angleY -90
+}
+GenericEntity Pharmacy_shelf_2_tourniquet : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 330.465 0.784 35.364
+ angleY -90
+}
+GenericEntity Pharmacy_shelf_2_aspirin : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 330.465 0.784 34.994
+ angleY -90
+}
+GenericEntity Pharmacy_shelf_2_gauze : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 330.465 0.784 34.614
+ angleY -90
+}
+GenericEntity Grid_author_pharmacy_clear {
+ components {
+  LF_BaseWorldClearComponent "{5B1E7A3C92D4F608}" {
+   m_sBuilding "{FF48B5059EB0AC65}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_drugstore.et"
+   m_aPrefabs {
+    "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et"
+   }
+  }
+ }
+ coords 333.675 0 33.964
+}

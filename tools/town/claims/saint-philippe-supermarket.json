@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "supermarket",
+  "building": "b66",
+  "kit": "supermarket",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_supermarket.layer",
+  "kinds": [
+    "StoreCounter"
+  ],
+  "rows": 5,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_supermarket_Place"
+  },
+  "date": "2026-11-18"
+}

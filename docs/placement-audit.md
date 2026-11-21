@@ -74,6 +74,26 @@ overlap and clip checks by design. Look at the `look` close-up for those. A prop
 exempt for that kind: `Roadmap_Fuel_Counter` matched "Map" (a hung map) and was never checked for floating or sinking until
 #936's follow-up anchored `Map` to a word start; keep kind regexes anchored.
 
+### Shop lanes, action reach and prefab children (card #3883, `agent-box/place-lanes.mjs`)
+
+A room is a building with a ground-floor door leaf: a layer building, or a base-map one whose world bounds the game writes as a
+`root` line (LF_PlacementAudit.DoorLines, also one `child` line per mesh child of the building prefab, boxed like a door leaf).
+Its floor is where its own furniture stands; its obstacles are the floor-standing boxes inside it (a till on a counter is not one).
+A grid of 10 cm cells with the obstacles grown by the lane's half width answers every lane question from the door:
+
+| Kind | Rule |
+|---|---|
+| `lane` | a 1.2 m lane from an entrance to the till and to each shelf, rack or display (a free cell within 1.1 m of it) |
+| `reach` | every till or other interactable is reachable from an entrance through a 0.9 m lane to a standing cell within 1.5 m |
+| `crowded` | prop footprints over the room's footprint over 30%. The room is the building's bounds (all floors), so only a clearly stuffed shop trips it |
+| `action-off-mesh` | an action on a mesh-less entity more than 0.5 m from any mesh: the F key never offers it |
+| `action-crowds-till` | another action within 0.5 m of a till: the key picks it over the till |
+| `blocks-door` (prefab children) | furniture baked into a building prefab inside a door leaf's swing |
+
+`aimVerdict(reply, action, entity)` reads the harness `aim` reply after `stand` (what the F key acts on) for a proof.
+The fixture `agent-box/fixtures/place-lanes/` (`build.mjs` writes it) holds a crammed shop, a clear one and a base-map shop;
+`node agent-box/place-lanes.selftest.mjs` checks them. Rows are named `Room_<building>` in layer `(shop lanes)`.
+
 ## World checks
 
 Two checks read the layer entries alone (`agent-box/place-budget.mjs`, no measurement) and print under the
@@ -129,6 +149,24 @@ largest side, in metres, per kind of prop:
 `{ "match": "<regex on name or prefab>", "kind": "<problem>", "layer": "<optional>", "why": "..." }`.
 Add an entry only with a reason a reviewer can check in a shot.
 
+## The island gate
+
+A finding on the island (the pack's MainWorld) blocks the branch that caused it (#3888,
+`docs/architecture/placement-system.md` "The gate"). The findings that existed when the gate went on are in
+`tools/place/island-baseline.json`, one key per `layer|name|problem kind` (no coordinates); a baseline row prints as
+`WARN`, any other finding as `FAIL`.
+
+- **Trigger** (`islandScope` in `tools/lib/placement-gate.mjs`): a `MainWorld_Layers/*.layer` audits that layer
+  (`audit placement --world MainWorld --baseline --layer <changed>`); a town kit (`tools/town/kits/`), a town generator
+  (`tools/town/*.mjs`), a `*Marker*.et` prefab or spawn code (`Spawn*.c`, `LF_Utils.c`) audits the whole island with
+  the runtime sweep, so floating cars, lights attached to nothing and characters count.
+- **Where it runs:** the `wt ship` preflight after `validate` (a few minutes on a test lane, only for those diffs), the
+  placement step of `ci` / `wt gate`, and the main guard's `island placement audit` step on every checked head, which
+  goes red and opens a fix card on a new finding (fixed forward, never reverted). GitHub's `validate` cannot boot the game.
+- **The baseline only shrinks.** After a cleanup, `tools\cli audit placement --world MainWorld --baseline-shrink` (whole
+  island) drops the rows it no longer finds; it never adds one. `placement-gate-selftest` fails a branch whose baseline
+  holds a row `origin/main` lacks. Fix a new finding, or allowlist it with a reason above; never add it to the baseline.
+
 ## Limits
 
 - Bounds are mesh bounds. A prop with an odd mesh (an open frame counter, a T-posed NPC) has a box
@@ -136,6 +174,15 @@ Add an entry only with a reason a reviewer can check in a shot.
 - A child of a rotated parent is placed where `layers.mjs` sums the coordinates, which ignores the
   parent's rotation; no layer nests that way today. An entity the test cannot find is listed under
   "not found".
+- **Terrain-frame rows** take their layer y as a height over the terrain: the prefab's flags carry `RELATIVE_Y` (the row's own `Flags`, else the prefab chain; `tools/lib/height-frame.mjs`, docs/architecture/placement-system.md "Height frame"). Lamps, net and wooden fences, buildings (the weighbridge, the payphone booth) and the fuel pumps do; benches, bins, flowerpots and sign boards do not, whatever the layer's class token says. A world height in such a row stands in the air (the range fence at y 19.1 spawned at 39.3, #3566; the forecourt pumps at 37.5, #3938). The audit looks for such a row at terrain + y (the input row ends with `rel`, `LF_PlacementAudit.RunBatch`) and flags a layer y above 3 m as `relative-y`. Weight 6. `validate-layer-height-frame` fails both wrong-frame shapes offline.
+- **A row the audit cannot find at its layer position** (`missing` before 2026-11-21, 61 rows on the island): three different things.
+  A `*_furniture_01` group prefab (root `BuildingFurniture_base`, no mesh) is flattened by the engine when the world loads: its
+  children stand at the top level with no prefab or name and the parent is no entity, so it is counted as `groups` in the
+  summary, not as a finding (the cabinets are there; look at them with `look`). An entity that carries the row's name but stands
+  elsewhere is `displaced` and the text says where: a lamp, net fence, fuel pump, depot hut or weighbridge whose height counts
+  from the terrain stands at terrain + the layer's y (the two Saint-Philippe fuel pumps at y 37.5 over a terrain of 18.7). A row
+  of a `rel` class that stands at its layer y as written (bench, bin, flowerpot, sign) is measured there. `missing` now means
+  nothing of that name exists, which is a prefab that failed to load.
 - It measures where the layer puts each entity. A dynamic rigid body (a pickup with `RigidBody Active Active`,
   such as `WoodLog_01_Small`) is simulated on clients and can tip off a table that the audit passed: on
   2026-11-11 the logging stand's logs, laid along a 1.2 m table, fell upright in the after shot. Lay such

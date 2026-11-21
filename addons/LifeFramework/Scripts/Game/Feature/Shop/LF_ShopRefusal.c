@@ -24,7 +24,13 @@ enum LF_EShopRefusal
 	//! The Shop system is off on this server (#1074).
 	SYSTEM_OFF,
 	//! The resident clerk turned the buyer away (#2911).
-	RESIDENT_REFUSES
+	RESIDENT_REFUSES,
+	//! An implement the buyer already owns (#3295): bought once.
+	ALREADY_OWNED,
+	//! A licensed line (a firearm at the gun counter) is not sold to a wanted buyer.
+	WANTED,
+	//! A licensed line is not sold to a dead, downed or restrained buyer (a client can ask from any state).
+	UNFIT
 }
 
 class LF_ShopRefusal
@@ -90,6 +96,15 @@ class LF_ShopRefusal
 		if (reason == LF_EShopRefusal.RESIDENT_REFUSES)
 			return "#LF-Shop_RefuseResident";
 
+		if (reason == LF_EShopRefusal.ALREADY_OWNED)
+			return "#LF-Shop_RefuseAlreadyOwned";
+
+		if (reason == LF_EShopRefusal.WANTED)
+			return "#LF-Shop_RefuseWanted";
+
+		if (reason == LF_EShopRefusal.UNFIT)
+			return "#LF-Shop_RefuseUnfit";
+
 		return string.Empty;
 	}
 
@@ -103,7 +118,13 @@ class LF_ShopRefusal
 		if (key.IsEmpty() || detail.IsEmpty())
 			return key;
 
-		return WidgetManager.Translate(key, WidgetManager.Translate(detail));
+		string line = LF_Terms.Text(key, LF_Terms.Shown(detail));
+
+		//! #3150: a licence refusal also says where to get it and what it costs.
+		if (reason == LF_EShopRefusal.NEEDS_LICENCE)
+			line = line + " " + LF_LicenceWhere.LineForName(detail);
+
+		return line;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -111,7 +132,7 @@ class LF_ShopRefusal
 	//! The upper bound is the last enum value: it was OUT_OF_STOCK, which read CLOSED as no shop.
 	static LF_EShopRefusal FromWire(int reason)
 	{
-		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.RESIDENT_REFUSES)
+		if (reason < LF_EShopRefusal.NONE || reason > LF_EShopRefusal.UNFIT)
 			return LF_EShopRefusal.NO_SHOP;
 
 		return reason;

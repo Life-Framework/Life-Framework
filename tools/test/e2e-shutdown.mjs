@@ -55,16 +55,53 @@ export function loadLines(text) {
   return String(text ?? "").split(/\r?\n/).filter((l) => LOADED.test(l)).map((l) => l.trim());
 }
 
-// The newest console.log of a worktree's test profile, or null.
-export function newestTestConsole(root) {
+// The log folders a worktree's test profile holds now (a Set of names). Taken before pass 2 boots, it names
+// the boots that came before: pass 2 may only trust a log in a folder that is not in it (#3569).
+export function testLogDirs(root) {
+  const logs = join(root, "server", "profile", "test", "logs");
+  if (!existsSync(logs)) return new Set();
+  return new Set(readdirSync(logs).filter((d) => d.startsWith("logs_")));
+}
+
+// The newest console.log of a worktree's test profile, or null. `exclude`: folder names (testLogDirs) to skip,
+// so a reload boot that never created its own log yields null instead of the previous boot's.
+export function newestTestConsole(root, exclude = null) {
   const logs = join(root, "server", "profile", "test", "logs");
   if (!existsSync(logs)) return null;
-  const dirs = readdirSync(logs).filter((d) => d.startsWith("logs_")).sort();
+  const dirs = readdirSync(logs).filter((d) => d.startsWith("logs_") && !(exclude && exclude.has(d))).sort();
   for (let i = dirs.length - 1; i >= 0; i--) {
     const f = join(logs, dirs[i], "console.log");
     if (existsSync(f)) return f;
   }
   return null;
+}
+
+// Pass 2's verdict on its own boot (#3569). `text` is the console.log of a folder that did not exist before the
+// boot (null when there was none: the harness read the previous boot's SUMMARY, or the server never started).
+// A real reload boot prints "session continued from a save point" (about 10 s); a stale green prints nothing.
+export function checkReloadBoot(text) {
+  if (text === null || text === undefined) {
+    return { ok: false, reason: "pass 2 wrote no log folder of its own: it never booted, so any green it reported came from an earlier boot" };
+  }
+  if (!loadLines(text).length) {
+    return { ok: false, reason: "pass 2 booted but its log has no `session continued from a save point` line: it did not load the shutdown save" };
+  }
+  return { ok: true, reason: null };
+}
+
+// Tests whose restart proof is a seed (pass 1) plus a verify (pass 2) behind a silent skip (`LF_E2E.RequiresSeed`,
+// `RequiresSection`): a pass 2 that skipped is green. Each prints one line only when its restart check ran to the end, so
+// the harness fails a leg that holds the test but whose pass 2 log lacks the line (#3630: the cargo truck seed was
+// gated to the save boot and nothing noticed when the reload boot stopped finding it).
+export const RESTART_PROOFS = [
+  { cls: "LF_Test_CargoBedPersist", what: "cargo bed truck keeps its logs (#3266)", text: "[LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with N unit(s) on its bed", line: /\[LFDebug:Cargo\] e2e restart: e2e-cargo-bed-truck collected with [1-9]\d* unit\(s\) on its bed/ },
+];
+
+// Pass 2's console.log text and the leg's class list (null: the whole tier) -> the proofs that never printed.
+// A pass 2 on an older save (--legacy-save, --pre-move) holds no such data: the caller does not ask.
+export function missingRestartProofs(text, classes) {
+  const t = String(text ?? "");
+  return RESTART_PROOFS.filter((p) => (!classes || classes.includes(p.cls)) && !p.line.test(t));
 }
 
 // Fixtures cut from real pass 1 logs (2026-11-12); returns failure strings.
@@ -100,5 +137,16 @@ export function selftestE2eShutdown() {
   const r5 = checkShutdownSave(good.filter((l) => !/StaticReset/.test(l)).join("\n"));
   if (r5.ok) failures.push("a log without the statics reset passes");
   if (loadLines("x [LFDebug:Persistence] session continued from a save point (-loadSessionSave)\ny\n[LF_Tests] e2e shutdown save loaded: x").length !== 2) failures.push("loadLines misses a load line");
+  // #3569: a stale pass 2 (no log folder of its own, or a log with no load line) fails; a real reload passes.
+  if (checkReloadBoot(null).ok) failures.push("a pass 2 with no log folder of its own passes");
+  if (checkReloadBoot(good.join("\n")).ok) failures.push("a pass 2 log that never loaded a save passes (it is pass 1's log)");
+  if (!checkReloadBoot("x [LFDebug:Persistence] session continued from a save point (-loadSessionSave)\n[LFTEST] SUMMARY tier=persistence passed=1 failed=0 total=1").ok) failures.push("a real reload boot fails");
+  // #3630: a leg that holds the cargo test fails when its pass 2 never printed the restart line; a leg without it does not.
+  const cargoLine = "SCRIPT       : [LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with 4 unit(s) on its bed";
+  if (missingRestartProofs(`${cargoLine}\n`, ["LF_Test_CargoBedPersist"]).length) failures.push("a pass 2 that ran the cargo restart check is reported missing");
+  if (missingRestartProofs("[LFTEST] SUMMARY tier=only passed=1 failed=0 total=1\n", ["LF_Test_CargoBedPersist", "LF_Test_X"]).length !== 1) failures.push("a pass 2 that skipped the cargo restart check passes");
+  if (missingRestartProofs("x\n", null).length !== 1) failures.push("a whole-tier pass 2 without the cargo restart line passes");
+  if (missingRestartProofs("x\n", ["LF_Test_X"]).length) failures.push("a leg without the cargo test is asked for its line");
+  if (missingRestartProofs("[LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with 0 unit(s) on its bed\n", null).length !== 1) failures.push("an empty bed counts as a restored load");
   return failures;
 }

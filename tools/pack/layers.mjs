@@ -47,11 +47,13 @@ Object.assign(SECTIONS, {
   "prefabs.slots": row("prefabs", "slots", "LF_PrefabSlotsConfig", "Configs/PrefabSlots/LF_PrefabSlots.conf", "m_aSlots", "m_sSlot", byField("m_sSlot")),
   "sounds.slots": row("sounds", "slots", "LF_SoundSlotsConfig", "Configs/SoundSlots/LF_SoundSlots.conf", "m_aSlots", "m_sSlot", byField("m_sSlot")),
   "safeTypes.types": row("safeTypes", "types", "LF_SafeTypeConfig", "Configs/Crime/LF_SafeTypes.conf", "m_aTypes", "m_sId", byField("m_sId")),
+  "heist.sites": row("heist", "sites", "LF_HeistConfig", "Configs/Crime/LF_Heist.conf", "m_aSites", "m_sId", byField("m_sId")),
   "dialogue.index": row("dialogue", "index", "LF_DialogueIndexConfig", "Configs/Dialogue/LF_DialogueIndex.conf", "m_aEntries", "m_sId", byField("m_sId")),
   "events.events": row("events", "events", "LF_EventsConfig", "Configs/Events/LF_Events.conf", "m_aEvents", "m_sEventId", byField("m_sEventId")),
   "jobs.tracks": row("jobs", "tracks", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aTracks", "m_sJob", byField("m_sJob"), same),
   "jobs.xpAwards": row("jobs", "xpAwards", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aXpAwards", "m_sAction", byField("m_sAction"), same),
   "jobs.licenceGates": row("jobs", "licenceGates", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aLicenceGates", "m_sLicence", byField("m_sLicence"), same),
+  "jobs.runPays": row("jobs", "runPays", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aRunPays", "m_sJob", byField("m_sJob"), same),
   "mapAreas.areas": row("mapAreas", "areas", "LF_MapAreaConfig", "Configs/Map/LF_MapAreas.conf", "m_aAreas", "m_sId", byField("m_sId")),
   "mapPois.kinds": row("mapPois", "kinds", "LF_MapPoiConfig", "Configs/Map/LF_MapPois.conf", "m_aKinds", "m_sKind", byField("m_sKind")),
   "zones.ruleSets": row("zones", "ruleSets", "LF_ZoneConfig", "Configs/Moderation/LF_Zones.conf", "m_aRuleSets", "m_eRule", zoneRule, (k) => (ZONE_RULES.includes(k) ? k : "")),
@@ -64,12 +66,22 @@ Object.assign(SECTIONS, {
   "residents.residents": row("residents", "residents", "LF_ResidentsConfig", "Configs/Residents/LF_Residents.conf", "m_aResidents", "m_sId", byField("m_sId")),
   "handbook.pages": row("handbook", "pages", "LF_HandbookConfig", "Configs/Rules/LF_Handbook.conf", "m_aPages", "m_sId", byField("m_sId")),
   "signs.signs": row("signs", "signs", "LF_SignConfig", "Configs/Signs/LF_Signs.conf", "m_aSigns", "m_sId", byField("m_sId")),
+  "signstyles.styles": row("signstyles", "styles", "LF_SignStyleConfig", "Configs/Signs/LF_SignStyles.conf", "m_aStyles", "m_sId", byField("m_sId")),
+  "signstyles.sizes": row("signstyles", "sizes", "LF_SignStyleConfig", "Configs/Signs/LF_SignStyles.conf", "m_aSizes", "m_sId", byField("m_sId")),
   "drinkImpairment.drinks": row("drinkImpairment", "drinks", "LF_DrinkImpairmentConfig", "Configs/Survival/LF_DrinkImpairment.conf", "m_aDrinks", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
   "systems.catalog": row("systems", "catalog", "LF_SystemCatalog", "Configs/Systems/LF_SystemCatalog.conf", "m_aSystems", "m_sId", byField("m_sId")),
   "terms.terms": row("terms", "terms", "LF_TermsConfig", "Configs/Terms/LF_Terms.conf", "m_aTerms", "m_sId", byField("m_sId")),
+  "qualifications.courses": row("qualifications", "courses", "LF_QualificationConfig", "Configs/Qualifications/LF_Qualifications.conf", "m_aCourses", "m_sId", byField("m_sId")),
   "property.plots": row("property", "plots", "LF_PropertyConfig", "Configs/Property/LF_Property.conf", "m_aPlots", "m_sPlotId", byField("m_sPlotId")),
+  "property.houses": row("property", "houses", "LF_PropertyConfig", "Configs/Property/LF_Property.conf", "m_aHouses", "m_sHouseId", byField("m_sHouseId")),
+  "loot.tables": row("loot", "tables", "LF_LootConfig", "Configs/Loot/LF_Loot.conf", "m_aTables", "m_sKind", byField("m_sKind"), noOwner),
   "market.goods": row("market", "goods", "LF_MarketConfig", "Configs/Market/LF_Market.conf", "m_aGoods", "m_sGood", (p) => guidOf(p.m_sGood), noOwner),
+  // Keyed by buyer plus good (#3267); no owner section. The core ships no rows, so the core layer is empty: a pack adds.
+  "buyerDemand.rows": { ...row("buyerDemand", "rows", "LF_BuyerDemandConfig", "Configs/Market/LF_BuyerDemand.conf", "m_aRows", "m_sBuyer", (p) => `${p.m_sBuyer ?? ""}|${guidOf(p.m_sGood)}`, noOwner), idFields: ["m_sBuyer", "m_sGood"] },
   // The core file lists no rung (LF_MedicRanks falls back to the built-in three in script), so the core layer is empty: a pack adds.
+  "fishing.species": row("fishing", "species", "LF_FishingConfig", "Configs/Fishing/LF_Fishing.conf", "m_aSpecies", "m_sId", byField("m_sId"), noOwner),
+  "fishing.tables": row("fishing", "tables", "LF_FishingConfig", "Configs/Fishing/LF_Fishing.conf", "m_aTables", "m_sId", byField("m_sId"), noOwner),
+  "farming.crops": row("farming", "crops", "LF_CropCatalogue", "Configs/Farming/LF_Crops.conf", "m_aCrops", "m_sCropId", byField("m_sCropId"), noOwner),
   "medic.ranks": row("medic", "ranks", "LF_MedicConfig", null, "m_aRanks", "m_sId", byField("m_sId"), noOwner),
   "reputation.factions": row("reputation", "factions", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aFactions", "m_sId", byField("m_sId")),
   "reputation.awards": row("reputation", "awards", "LF_ReputationConfig", "Configs/Reputation/LF_Reputation.conf", "m_aAwards", "m_sAction", byField("m_sAction")),
@@ -78,6 +90,9 @@ Object.assign(SECTIONS, {
   "reputationContracts.contracts": row("reputationContracts", "contracts", "LF_ReputationContractsConfig", "Configs/Reputation/LF_ReputationContracts.conf", "m_aContracts", "m_sId", byField("m_sId")),
   "townBoard.cards": row("townBoard", "cards", "LF_TownBoardConfig", "Configs/TownBoard/LF_TownBoard.conf", "m_aCards", "m_sId", byField("m_sId")),
   "ui-theme.themes": row("ui-theme", "themes", "LF_UIThemeConfig", "Configs/UI/LF_UITheme.conf", "m_aThemes", "m_sThemeId", byField("m_sThemeId")),
+  "parkedcars.cars": row("parkedcars", "cars", "LF_ParkedCarConfig", "Configs/Vehicles/LF_ParkedCars.conf", "m_aCars", "m_sPrefab", (p) => guidOf(p.m_sPrefab), noOwner),
+  "vehicleCompartments.rows": row("vehicleCompartments", "rows", "LF_VehicleCompartmentConfig", "Configs/Vehicles/LF_VehicleCompartments.conf", "m_aRows", "m_sPrefab", (p) => guidOf(p.m_sPrefab), noOwner),
+  "licenceSeizure.rules": row("licenceSeizure", "rules", "LF_LicenceSeizureRules", "Configs/Crime/LF_LicenceSeizure.conf", "m_aRules", "m_sCrimeId", byField("m_sCrimeId")),
   "vehicle-colours.models": row("vehicle-colours", "models", "LF_VehicleColoursConfig", "Configs/Vehicles/LF_VehicleColours.conf", "m_aModels", "m_Prefab", (p) => guidOf(p.m_Prefab), noOwner),
 });
 
@@ -185,6 +200,17 @@ export function loadPackOverlays(addonsDir, pack, meta) {
     const root = parseConf(readFileSync(full, "utf8"));
     if (!root) { out.problems.push({ file: hit.file, id: "", msg: "overlay is empty or not a .conf object" }); continue; }
     out.overlays.push({ file: hit.file, root });
+    // LF_ConfigOverlay.LoadFolderOverlays: every .conf under `<overlay without .conf>/` is one more
+    // overlay right after its parent, in path order. A file the header also lists keeps its header place.
+    const folder = full.replace(/\.conf$/, "");
+    for (const f of existsSync(folder) ? walk(folder).filter((p) => p.endsWith(".conf")).sort() : []) {
+      const r = rel(dir, f);
+      if (listed.has(r) || out.overlays.some((o) => o.file === r)) continue;
+      const sub = parseConf(readFileSync(f, "utf8"));
+      if (!sub) { out.problems.push({ file: r, id: "", msg: "folder overlay is empty or not a .conf object" }); continue; }
+      listed.add(r);
+      out.overlays.push({ file: r, root: sub });
+    }
   }
   for (const f of walk(join(dir, "Configs")).filter((p) => p.endsWith(".conf"))) {
     const r = rel(dir, f);

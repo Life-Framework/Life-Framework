@@ -9,6 +9,8 @@ class LF_WantedLook
 {
 	static const string PART = "|";
 	static const string SLOT = "=";
+	//! The key of the head part ("h=HEADGUID").
+	static const string HEAD = "h";
 	//! "{" + 16 hex digits + "}".
 	static const int GUID_LENGTH = 16;	// lf-fixed: the engine's GUID format
 
@@ -59,7 +61,35 @@ class LF_WantedLook
 				look += PART + slot.ToString() + SLOT + guid;
 		}
 
-		return look;
+		return look + HeadPart(suspect);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "|h=HEADGUID" for the head the body wears (a barber's look, #3234), or "" without one.
+	protected static string HeadPart(IEntity suspect)
+	{
+		string head = GuidOf(LF_Barber.CurrentHead(suspect));
+		if (head.IsEmpty())
+			return string.Empty;
+
+		return PART + HEAD + SLOT + head;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The head of a look ("{GUID}"), or "" for a look from before heads were kept. Parse skips the
+	//! head part: its key is no slot number.
+	static ResourceName HeadOf(string look)
+	{
+		array<string> parts = {};
+		look.Split(PART, parts, true);
+		string prefix = HEAD + SLOT;
+		for (int i = 1; i < parts.Count(); i++)
+		{
+			if (parts[i].StartsWith(prefix))
+				return ResourceOf(parts[i].Substring(prefix.Length(), parts[i].Length() - prefix.Length()));
+		}
+
+		return ResourceName.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -205,6 +235,10 @@ class LF_WantedPortrait : Managed
 
 			dressed++;
 		}
+
+		ResourceName head = LF_WantedLook.HeadOf(look);
+		if (!head.IsEmpty())
+			LF_Barber.ApplyHead(m_Dummy, head);
 
 		manager.SetPreviewItem(photo, m_Dummy, null, true);
 		return dressed;

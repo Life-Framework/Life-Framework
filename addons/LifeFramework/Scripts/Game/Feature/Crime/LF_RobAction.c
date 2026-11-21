@@ -46,7 +46,62 @@ class LF_RobAction : ScriptedUserAction
 	[Attribute(defvalue: "30", uiwidget: UIWidgets.Auto, desc: "Dialogue robbery: an on-duty officer this close to the till ends it")]
 	protected float m_fPoliceRadius;
 
+	[Attribute(defvalue: "0", uiwidget: UIWidgets.CheckBox, desc: "Robbed by a crew (LF_CrewRob, #3404): Start the job, Hold the till, Take the money. The instant robbery action is hidden and refused here. Add the three LF_CrewRob*Action actions beside this one.")]
+	protected bool m_bCrewJob;
+
 	protected float m_fLastRobTime;
+
+	//------------------------------------------------------------------------------------------------
+	//! This till is robbed by a crew, not by the instant action.
+	bool IsCrewJob()
+	{
+		return m_bCrewJob;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The till action on `owner`, or null: how the crew actions beside it find their till.
+	static LF_RobAction FromOwner(IEntity owner)
+	{
+		if (!owner || !s_aTills)
+			return null;
+
+		foreach (LF_RobAction till : s_aTills)
+		{
+			if (till && till.GetOwner() == owner)
+				return till;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: why a crew job of this till may not start for the holder now (a REFUSED_* reason),
+	//! or empty. The gates of the instant robbery with this till's cooldown and officer minimum.
+	string CrewGate(string holderUid, int policeOnDuty, float nowMs)
+	{
+		// The payout is the crew's take, decided when the job ends: any positive stands in here.
+		return Gate(holderUid, 1, policeOnDuty, m_iMinPoliceOnDuty, m_fCooldown, m_fLastRobTime, nowMs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a crew job began; the till's cooldown starts now.
+	void MarkRobbed(float nowMs)
+	{
+		m_fLastRobTime = nowMs;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: pays `amount` to `user` as the till does (cash, or marked notes when dirty money is
+	//! on), all or nothing. \return What was paid.
+	static int PayLoot(IEntity user, int amount)
+	{
+		if (!user || amount <= 0)
+			return 0;
+
+		int paid = PayCash(user, amount);
+		NotePaid(LF_Utils.GetPlayerUid(user), paid);
+		return paid;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The alarm kind this till sounds (an LF_AlarmKind id), "" for the plain siren. Set per site on the action.
@@ -410,13 +465,13 @@ class LF_RobAction : ScriptedUserAction
 			return false;
 
 		// A dialogue-only till is robbed by talking to its attendant with a weapon drawn.
-		return !m_bDialogueOnly;
+		return !m_bDialogueOnly && !m_bCrewJob;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		if (m_bDialogueOnly)
+		if (m_bDialogueOnly || m_bCrewJob)
 			return false;
 
 		float nowMs = 0;
@@ -453,6 +508,12 @@ class LF_RobAction : ScriptedUserAction
 		// The server pays, raises wanted, and alerts. A client copy of the action does nothing.
 		if (!Replication.IsServer())
 			return;
+
+		if (m_bCrewJob)
+		{
+			LF_Debug.Warn("Crime", "the instant action of a crew till was performed and refused; rob it as a crew");
+			return;
+		}
 
 		if (m_bDialogueOnly)
 		{

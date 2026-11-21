@@ -43,6 +43,10 @@ GenericEntity : "{2F5C4F11D17E1725}Prefabs/Structures/Signs/Generic/SignGeneric_
        SourceMaterial "SignGeneric_01"
        AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
       }
+      MaterialAssignClass "{8441D3F71A01D317}" {
+       SourceMaterial "SignGeneric_01_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
      }
     }
     SCR_DestructionMultiPhaseComponent "{5496C1EF00137501}" {

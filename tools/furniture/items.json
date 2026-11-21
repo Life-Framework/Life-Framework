@@ -1,0 +1,240 @@
+{
+  "_doc": "House furniture built on vanilla props (maintainer 2026-11-18: base-game assets only, no Meshy). One row per item; tools/furniture/gen.mjs writes Furniture_<id>_Item.et and _Placed.et (+ .meta), the policy row, the string row and the pack price and stock rows from it. snap FLOOR stands on the floor, WALL lies flush on the wall the player aims at, hang lifts a wall item that many metres above the floor. weight is kilograms. buy and sell are the pack's general store prices (sell is under buy: no profit loop).",
+  "items": [
+    {
+      "id": "Bed",
+      "label": "Bed",
+      "vanilla": "Prefabs/Props/Furniture/Bed_01.et",
+      "snap": "FLOOR",
+      "weight": 25,
+      "buy": 150,
+      "sell": 60
+    },
+    {
+      "id": "BedDouble",
+      "label": "Double bed",
+      "vanilla": "Prefabs/Props/Furniture/BedDouble_01.et",
+      "snap": "FLOOR",
+      "weight": 35,
+      "buy": 260,
+      "sell": 105
+    },
+    {
+      "id": "Sofa",
+      "label": "Sofa",
+      "vanilla": "Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et",
+      "snap": "FLOOR",
+      "weight": 30,
+      "buy": 220,
+      "sell": 90
+    },
+    {
+      "id": "Armchair",
+      "label": "Armchair",
+      "vanilla": "Prefabs/Props/Furniture/Armchair_03.et",
+      "snap": "FLOOR",
+      "weight": 14,
+      "buy": 140,
+      "sell": 55
+    },
+    {
+      "id": "CoffeeTable",
+      "label": "Coffee table",
+      "vanilla": "Prefabs/Props/Furniture/TableCoffee_01.et",
+      "snap": "FLOOR",
+      "weight": 10,
+      "buy": 70,
+      "sell": 28
+    },
+    {
+      "id": "Rug",
+      "label": "Rug",
+      "vanilla": "Prefabs/Props/Furniture/Carpet_03_red.et",
+      "snap": "FLOOR",
+      "weight": 6,
+      "buy": 55,
+      "sell": 22
+    },
+    {
+      "id": "Tv",
+      "label": "Television",
+      "vanilla": "Prefabs/Props/Furniture/TVSet_01.et",
+      "snap": "FLOOR",
+      "weight": 14,
+      "buy": 180,
+      "sell": 75
+    },
+    {
+      "id": "Radio",
+      "label": "Radio",
+      "vanilla": "Prefabs/Props/Civilian/RadioSmall_01_black.et",
+      "snap": "FLOOR",
+      "weight": 2,
+      "buy": 45,
+      "sell": 18
+    },
+    {
+      "id": "Plant",
+      "label": "Potted plant",
+      "vanilla": "Prefabs/Props/Furniture/PlantRoom_01.et",
+      "snap": "FLOOR",
+      "weight": 4,
+      "buy": 25,
+      "sell": 10
+    },
+    {
+      "id": "Mirror",
+      "label": "Mirror",
+      "vanilla": "Prefabs/Props/Furniture/MirrorBathroom_01.et",
+      "snap": "WALL",
+      "hang": 1.3,
+      "weight": 3,
+      "buy": 40,
+      "sell": 16
+    },
+    {
+      "id": "Picture",
+      "label": "Picture",
+      "vanilla": "Prefabs/Props/Commercial/Posters/PosterSingle_A3_Forest_V1.et",
+      "snap": "WALL",
+      "hang": 1.5,
+      "weight": 1,
+      "buy": 20,
+      "sell": 8
+    },
+    {
+      "id": "Stove",
+      "label": "Stove",
+      "vanilla": "Prefabs/Props/Furniture/Stove_01.et",
+      "snap": "WALL",
+      "weight": 40,
+      "buy": 200,
+      "sell": 80
+    },
+    {
+      "id": "Bookcase",
+      "label": "Bookcase",
+      "vanilla": "Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et",
+      "snap": "WALL",
+      "weight": 30,
+      "buy": 110,
+      "sell": 45
+    },
+    {
+      "id": "Workbench",
+      "label": "Workbench",
+      "vanilla": "Prefabs/Props/Furniture/TableWorkshop_01_short.et",
+      "snap": "FLOOR",
+      "weight": 25,
+      "buy": 130,
+      "sell": 55
+    },
+    {
+      "id": "Wardrobe",
+      "label": "Wardrobe",
+      "vanilla": "Prefabs/Props/Furniture/Wardrobe_01.et",
+      "snap": "WALL",
+      "weight": 45,
+      "buy": 180,
+      "sell": 75,
+      "storage": {
+        "volume": 120000,
+        "weight": 60,
+        "size": [70, 140, 70]
+      }
+    },
+    {
+      "id": "Dresser",
+      "label": "Dresser",
+      "vanilla": "Prefabs/Props/Furniture/Dresser_01.et",
+      "snap": "WALL",
+      "weight": 35,
+      "buy": 140,
+      "sell": 55,
+      "storage": {
+        "volume": 80000,
+        "weight": 40,
+        "size": [70, 40, 70]
+      }
+    },
+    {
+      "id": "Cupboard",
+      "label": "Cupboard",
+      "vanilla": "Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et",
+      "snap": "WALL",
+      "weight": 30,
+      "buy": 120,
+      "sell": 50,
+      "storage": {
+        "volume": 90000,
+        "weight": 50,
+        "size": [70, 100, 70]
+      }
+    },
+    {
+      "id": "Chest",
+      "label": "Chest",
+      "vanilla": "Prefabs/Props/Furniture/Chest_01.et",
+      "snap": "FLOOR",
+      "weight": 15,
+      "buy": 90,
+      "sell": 35,
+      "storage": {
+        "volume": 60000,
+        "weight": 40,
+        "size": [60, 30, 40]
+      }
+    },
+    {
+      "id": "Crate",
+      "label": "Crate",
+      "vanilla": "Prefabs/Props/Crates/CrateWooden_01_plain.et",
+      "snap": "FLOOR",
+      "weight": 12,
+      "buy": 45,
+      "sell": 18,
+      "storage": {
+        "volume": 50000,
+        "weight": 40,
+        "size": [60, 60, 60]
+      }
+    },
+    {
+      "id": "Fridge",
+      "label": "Fridge",
+      "vanilla": "Prefabs/Props/Furniture/Fridge_01.et",
+      "snap": "WALL",
+      "weight": 50,
+      "buy": 260,
+      "sell": 105,
+      "storage": {
+        "volume": 70000,
+        "weight": 30,
+        "size": [60, 60, 60]
+      }
+    },
+    {
+      "id": "KitchenUnit",
+      "label": "Kitchen unit",
+      "vanilla": "Prefabs/Props/Furniture/Kitchen_02.et",
+      "snap": "WALL",
+      "weight": 60,
+      "buy": 240,
+      "sell": 100,
+      "storage": {
+        "volume": 100000,
+        "weight": 50,
+        "size": [70, 70, 70]
+      }
+    },
+    {
+      "id": "Stool",
+      "label": "Stool",
+      "vanilla": "Prefabs/Props/Furniture/Stool_01.et",
+      "snap": "FLOOR",
+      "weight": 3,
+      "buy": 40,
+      "sell": 16
+    }
+  ]
+}

@@ -17,6 +17,8 @@ class LF_SignComponent : ScriptComponent
 	//! LF_Places kind every sign claims under its sign id, so a reader (the town board) finds the
 	//! place a sign stands for by component, never by entity name or coordinates.
 	static const string PLACE_KIND = "Sign";
+	//! How often a face with live rows checks for a new reply or for a viewer in reach.
+	static const int ROW_POLL_MS = 2000;	// lf-fixed: a printed face, not an animation
 
 	//! The prefab (slot "sign_face"), or empty when no usable prefab resolves (logged).
 	static ResourceName FacePrefab()
@@ -59,6 +61,15 @@ class LF_SignComponent : ScriptComponent
 	[Attribute("1", UIWidgets.CheckBox, "Print the title on a paper sheet on the prop face (rendering clients only)")]
 	protected bool m_bShowFace;
 
+	[Attribute("", UIWidgets.EditComboBox, "Face style in Configs/Signs/LF_SignStyles.conf (chalk, ...). The sign's own m_sStyle wins. Empty: the legacy face below (docs/architecture/sign-system.md)")]
+	protected string m_sStyle;
+
+	[Attribute("", UIWidgets.EditComboBox, "Face size in Configs/Signs/LF_SignStyles.conf: the carrier mesh and its shown area. Needed with a style")]
+	protected string m_sSize;
+
+	[Attribute("", UIWidgets.EditBox, "Live rows on a styled face: a row source kind (market). The client asks the server when the viewer is within reach and repaints the rows. Empty: the sign's own config rows (LF_SignRowSource.c)")]
+	protected string m_sRowSource;
+
 	[Attribute("0", UIWidgets.CheckBox, "The prop mesh itself samples $rendertarget (an A4 notice with LF_SignFace.emat). No sheet is spawned")]
 	protected bool m_bFaceOnOwner;
 
@@ -70,6 +81,15 @@ class LF_SignComponent : ScriptComponent
 
 	[Attribute("1", UIWidgets.EditBox, "Sheet scale. 1 is an A4 sheet (0.21 x 0.30 m)")]
 	protected float m_fFaceScale;
+
+	[Attribute("0", UIWidgets.CheckBox, "Styled face on an A-frame: print the same face a second time on the far side, at m_vBackFaceOffset and m_vBackFaceAngles, so both slates carry it (#3547)")]
+	protected bool m_bBackFace;
+
+	[Attribute("0 0 0", UIWidgets.EditBox, "Back face position relative to the prop (m_bBackFace)")]
+	protected vector m_vBackFaceOffset;
+
+	[Attribute("0 0 0", UIWidgets.EditBox, "Back face rotation relative to the prop (yaw pitch roll, degrees; m_bBackFace)")]
+	protected vector m_vBackFaceAngles;
 
 	[Attribute("", UIWidgets.ResourceNamePicker, "Painted face layout (RTTexture0 with a Title text). Empty: the printed paper sheet (LF_SignFace.layout)", "layout")]
 	protected ResourceName m_sFaceLayout;
@@ -113,6 +133,10 @@ class LF_SignComponent : ScriptComponent
 	protected ref LF_SignDef m_Sign;
 	protected bool m_bResolved;
 
+	protected ref LF_SignStyledFace m_StyledFace;
+	protected ref LF_SignStyledFace m_BackFace;
+	protected int m_iRowVersion;
+	protected int m_iRowAskMs;
 	protected IEntity m_Face;
 	protected IEntity m_FaceTarget;
 	protected Widget m_wFaceRoot;
@@ -200,6 +224,181 @@ class LF_SignComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The style a face draws in: the sign row's, else the prop's. Empty: the legacy face.
+	static string StyleIdFor(LF_SignDef sign, string propStyle)
+	{
+		if (sign && !sign.m_sStyle.IsEmpty())
+			return sign.m_sStyle;
+
+		return propStyle;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetStyleId()
+	{
+		return StyleIdFor(GetSign(), m_sStyle);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetSizeId()
+	{
+		return m_sSize;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when a styled face is printed on the far side too (an A-frame, #3547).
+	bool HasBackFace()
+	{
+		return m_bBackFace;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A styled face (docs/architecture/sign-system.md). False when the sign has no style, or its style
+	//! or size does not resolve (logged): the legacy face is drawn instead.
+	protected bool BuildStyledFace(IEntity owner, LF_SignDef sign)
+	{
+		string styleId = StyleIdFor(sign, m_sStyle);
+		if (styleId.IsEmpty())
+			return false;
+
+		LF_SignStyleDef style = LF_SignStyles.FindStyle(styleId);
+		LF_SignSizeDef size = LF_SignStyles.FindSize(m_sSize);
+		if (!style || !size)
+		{
+			LF_Debug.Error("Signs", string.Format("sign %1: style '%2' or size '%3' is not in LF_SignStyles.conf; legacy face drawn", m_sSignId, styleId, m_sSize));
+			return false;
+		}
+
+		m_StyledFace = new LF_SignStyledFace();
+		LF_SignDef printed = LiveSign(sign);
+		if (m_StyledFace.Build(owner, printed, style, size, m_vFaceOffset, m_vFaceAngles, m_fFaceScale, HasPaintedFace(), m_vPaintColor, m_vTextColor))
+		{
+			if (m_bBackFace)
+				BuildBackFace(owner, printed, style, size);
+
+			StartRowPoll();
+			return true;
+		}
+
+		m_StyledFace.Release();
+		m_StyledFace = null;
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The far slate of an A-frame: the same face again on its own carrier and render target. A failure
+	//! is logged by the face and leaves the front printed.
+	protected void BuildBackFace(IEntity owner, LF_SignDef printed, LF_SignStyleDef style, LF_SignSizeDef size)
+	{
+		m_BackFace = new LF_SignStyledFace();
+		if (m_BackFace.Build(owner, printed, style, size, m_vBackFaceOffset, m_vBackFaceAngles, m_fFaceScale, HasPaintedFace(), m_vPaintColor, m_vTextColor))
+			return;
+
+		m_BackFace.Release();
+		m_BackFace = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ReleaseStyledFaces()
+	{
+		if (m_StyledFace)
+			m_StyledFace.Release();
+
+		m_StyledFace = null;
+		if (m_BackFace)
+			m_BackFace.Release();
+
+		m_BackFace = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when this sign prints rows from a live source: its Read card is the source's own card.
+	bool HasRowSource()
+	{
+		return !m_sRowSource.IsEmpty();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sign with the newest live rows, else the config sign. The title and style stay the config's.
+	protected LF_SignDef LiveSign(LF_SignDef sign)
+	{
+		if (m_sRowSource.IsEmpty())
+			return sign;
+
+		m_iRowVersion = LF_SignRowSources.VersionFor(m_sRowSource);
+		array<ref LF_SignRow> rows = LF_SignRowSources.RowsFor(m_sRowSource);
+		if (!rows)
+			return sign;
+
+		LF_SignDef copy = LF_SignCatalog.WithTitle(sign, sign.m_sTitle);
+		copy.m_aRows = rows;
+		return copy;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void StartRowPoll()
+	{
+		if (m_sRowSource.IsEmpty() || !GetGame() || !GetGame().GetCallqueue())
+			return;
+
+		if (!LF_SignRowSources.Find(m_sRowSource))
+		{
+			LF_Debug.Error("Signs", string.Format("sign %1: row source '%2' is not registered; the face prints its config rows", m_sSignId, m_sRowSource));
+			return;
+		}
+
+		GetGame().GetCallqueue().Remove(PollRows);
+		GetGame().GetCallqueue().CallLater(PollRows, ROW_POLL_MS, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every couple of seconds: repaint when a newer reply is held; else ask the server once when the
+	//! viewer is within reach (and again after the refresh window).
+	protected void PollRows()
+	{
+		IEntity owner = GetOwner();
+		if (!owner || owner.IsDeleted() || !m_StyledFace)
+			return;
+
+		LF_SignRowSource source = LF_SignRowSources.Find(m_sRowSource);
+		if (!source)
+			return;
+
+		if (LF_SignRowSources.VersionFor(m_sRowSource) != m_iRowVersion)
+		{
+			Repaint(owner);
+			return;
+		}
+
+		IEntity viewer = LF_Utils.GetLocalCharacter();
+		if (!viewer || !LF_SignRowSources.InAskRange(vector.Distance(viewer.GetOrigin(), owner.GetOrigin()), LF_PoliceConfig.BoardReadDistance()))
+			return;
+
+		int now = System.GetTickCount();
+		if (!LF_SignRowSources.ShouldAsk(m_iRowAskMs, now))
+			return;
+
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+			return;
+
+		m_iRowAskMs = now;
+		controller.LF_AskBoard(source.GetBoardKind(), true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Print the face again with the newest rows.
+	protected void Repaint(IEntity owner)
+	{
+		LF_SignDef sign = GetSign();
+		if (!sign)
+			return;
+
+		ReleaseStyledFaces();
+		BuildStyledFace(owner, sign);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The face is drawn only where something renders and a sheet is wanted.
 	static bool WantsFace(bool showFace, bool dedicated, bool hasWorkspace)
 	{
@@ -238,7 +437,7 @@ class LF_SignComponent : ScriptComponent
 	protected void BuildFace()
 	{
 		IEntity owner = GetOwner();
-		if (!owner || owner.IsDeleted() || m_wFaceRoot)
+		if (!owner || owner.IsDeleted() || m_wFaceRoot || m_StyledFace)
 			return;
 
 		LF_SignDef sign = GetSign();
@@ -247,6 +446,9 @@ class LF_SignComponent : ScriptComponent
 
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
+			return;
+
+		if (BuildStyledFace(owner, sign))
 			return;
 
 		if (m_bFaceOnChild)
@@ -556,7 +758,12 @@ class LF_SignComponent : ScriptComponent
 	protected void ClearFace()
 	{
 		if (GetGame() && GetGame().GetCallqueue())
+		{
 			GetGame().GetCallqueue().Remove(BuildFace);
+			GetGame().GetCallqueue().Remove(PollRows);
+		}
+
+		ReleaseStyledFaces();
 
 		if (m_wFaceTexture && m_FaceTarget && !m_FaceTarget.IsDeleted())
 			m_wFaceTexture.RemoveRenderTarget(m_FaceTarget);
@@ -793,11 +1000,17 @@ class LF_SignComponent : ScriptComponent
 	{
 		src.Get("m_sSignId", m_sSignId);
 		src.Get("m_bShowFace", m_bShowFace);
+		src.Get("m_sStyle", m_sStyle);
+		src.Get("m_sSize", m_sSize);
+		src.Get("m_sRowSource", m_sRowSource);
 		src.Get("m_bFaceOnOwner", m_bFaceOnOwner);
 		src.Get("m_bFaceOnChild", m_bFaceOnChild);
 		src.Get("m_vFaceOffset", m_vFaceOffset);
 		src.Get("m_vFaceAngles", m_vFaceAngles);
 		src.Get("m_fFaceScale", m_fFaceScale);
+		src.Get("m_bBackFace", m_bBackFace);
+		src.Get("m_vBackFaceOffset", m_vBackFaceOffset);
+		src.Get("m_vBackFaceAngles", m_vBackFaceAngles);
 		src.Get("m_sFaceLayout", m_sFaceLayout);
 		src.Get("m_fTitleRotation", m_fTitleRotation);
 		src.Get("m_vTitlePos", m_vTitlePos);
@@ -814,11 +1027,16 @@ class LF_SignComponent : ScriptComponent
 	//! The sign id picker: every id the catalog and its pack overlays know.
 	override array<ref ParamEnum> _WB_GetUserEnums(string varName, IEntity owner, IEntityComponentSource src)
 	{
-		if (varName != "m_sSignId")
+		array<string> ids = {};
+		if (varName == "m_sSignId")
+			LF_SignCatalog.WbIds(ids);
+		else if (varName == "m_sStyle")
+			LF_SignStyles.StyleIds(ids);
+		else if (varName == "m_sSize")
+			LF_SignStyles.SizeIds(ids);
+		else
 			return null;
 
-		array<string> ids = {};
-		LF_SignCatalog.WbIds(ids);
 		ids.Sort();
 		array<ref ParamEnum> result = {};
 		foreach (string id : ids)
@@ -856,6 +1074,7 @@ class LF_SignComponent : ScriptComponent
 		if (id == WB_MENU_RELOAD)
 		{
 			LF_SignCatalog.WbReload();
+			LF_SignStyles.ResetStatics();
 			s_iWbGeneration++;
 			LF_Debug.Info("Signs", "sign text reloaded");
 		}

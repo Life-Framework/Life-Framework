@@ -1,0 +1,20 @@
+GenericEntity Fit_saint_philippe_districts_parcel_drops_drop_b34 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 4753.736 23.83 10717.137
+ angleY 84
+}
+GenericEntity Fit_saint_philippe_dock_parcel_drops_drop_b05 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 4455.663 2.641 11078.051
+ angleY 120
+}
+GenericEntity Fit_saint_philippe_dock_parcel_drops_drop_b14 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 4473.138 1.63 11141.09
+ angleY 122
+}
+GenericEntity Fit_saint_philippe_dock_parcel_drops_drop_b24 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 4463.032 5.83 11185.183
+ angleY -93
+}
+GenericEntity Fit_saint_philippe_dock_parcel_drops_drop_b35 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 4467.731 6.03 11229.726
+ angleY 87
+}

@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "A68AE9F43B79AF1C"
+ components {
+  MeshObject "{3AAD1E2AFE8511AF}" {
+   Object "{EF0853B90BA0680C}Assets/Props/Civilian/Pen_01/Pen_01.xob"
+  }
+ }
+ coords 0 0 0
+}

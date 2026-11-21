@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{DB532E4230C1FA89}Assets/Props/Money/ATM/Data/ATM_Face_BCR.edds"
+ NMOMap "{052260A63CFCCEFA}Assets/Props/Money/ATM/Data/ATM_Face_NMO.edds"
+}

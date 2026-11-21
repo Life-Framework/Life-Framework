@@ -71,6 +71,8 @@
     "runMinDistance": 300,
     "runMinTimeFraction": 0.6,
     "runRoadSpeed": 10,
+    "nightRunStartHour": 21,
+    "nightRunEndHour": 5,
     "cargoDepositPercent": 100,
     "cargoDepositFallback": 50,
     "jobXpFirstLevel": 500,
@@ -98,7 +100,8 @@
         "job": "MINER",
         "minLevel": 4
       }
-    }
+    },
+    "runPays": {}
   },
   "joinNotice": {
     "enabled": false,
@@ -112,7 +115,8 @@
     },
     "permitFee": 250,
     "permitWaitDays": 1,
-    "permitConvictionDays": 7
+    "permitConvictionDays": 7,
+    "driverLicenceFee": 100
   },
   "lockers": {
     "rentPrice": 100,
@@ -271,6 +275,7 @@
     "chopValueCap": 3000,
     "impoundPercent": 10,
     "garagePercent": 0,
+    "lotNeedsDrivingLicence": false,
     "vehicles": {
       "54C3CC22DEBD57BE": {
         "basePrice": 1200,

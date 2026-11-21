@@ -1,0 +1,53 @@
+// Source of the `hilltop-mast` kit (tools/town/kits/hilltop-mast.json, #3413): the parts of a contested site (#3339) around a relay hut.
+// `town fit` reads each row's prefab and component GUIDs and nested blocks from here. Coordinates are in the hut's own frame
+// (origin = the hut's centre, +z = its door side, x to the right of the door); the hut itself is the vanilla building of the place.
+// The hideout door and the lock are the pair the annex hideout uses (Grid_hideout.layer). The site marker is the centre of the capture
+// zone (radius and rates come from the pack's Configs/Sites/LF_Sites.conf, hideout id `hilltop_mast`).
+GenericEntity Source_HilltopMast_Door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
+   m_sHideoutId "hilltop_mast"
+  }
+ }
+ coords 0.6 0 3.2
+}
+GenericEntity Source_HilltopMast_Site {
+ components {
+  LF_ContestedSiteComponent "{3E9A1C0B7D5F4A21}" {
+   m_sHideoutId "hilltop_mast"
+  }
+ }
+ coords 0 0 8
+}
+GenericEntity Source_HilltopMast_Flag : "{DDE764E40C17C5DC}Prefabs/Sites/LF_SiteFlag.et" {
+ components {
+  LF_SiteFlagComponent "{3E9A1C0B7D5F4A22}" {
+   m_sHideoutId "hilltop_mast"
+  }
+ }
+ coords -3.4 0 7
+ angleY 0
+}
+GenericEntity Source_HilltopMast_Strongbox : "{28F82DEA95808829}Prefabs/Sites/LF_SiteStrongbox.et" {
+ components {
+  LF_SiteStrongboxComponent "{3E9A1C0B7D5F4A23}" {
+   m_sHideoutId "hilltop_mast"
+  }
+ }
+ coords 3.4 0 5
+ angleY 180
+}
+GenericEntity Source_HilltopMast_Crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 3.1 0 8.2
+ angleY 20
+}
+GenericEntity Source_HilltopMast_Crate_2 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 3.1 0 9.2
+ angleY -10
+}
+GenericEntity Source_HilltopMast_Barrel : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords -2.2 0 4.4
+}

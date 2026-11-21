@@ -1,10 +1,14 @@
-import { ROB_TARGET, arrive, clientBox, parseState, sessionDir } from "../session.mjs";
+import { ROB_TARGET, arrive, clientBox, clientSeesPeer, parseState, sessionDir } from "../session.mjs";
 
 // #2494: the police menu had blank Search and Arrest buttons (removed, #2509/#2535). The real police
 // path is the player interaction menu on the suspect: Search (LF_ConfiscateAction) and Arrest
 // (LF_JailArrestAction). Client 1 robs the fuel till (wanted), client 2 clocks in, stands beside them,
 // the menu is photographed with both entries, then Search and Arrest run and the suspect is in the cell.
 // `roster 2` before `up --clients 2 --profile full`. `police-arrest-proof [--name <shot prefix>]`
+// `--escort [--car <entity>]` (#3431) adds the car step before the arrest: the officer detains the suspect
+// (LF_JailEscortArrestAction), puts them in the police car (LF_JailPutInVehicleAction), BOTH clients read the
+// suspect seated, then takes them out (LF_JailTakeOutOfVehicleAction) and both read them out of the seat. On a
+// dedicated server with a remote client this is the proof that the seat is the engine's, not a host-only effect.
 async function runPoliceArrestProof() {
   const h = await import("../harness.mjs");
   const dir = sessionDir();
@@ -54,6 +58,38 @@ async function runPoliceArrestProof() {
   must(on(2, { verb: "use", className: "LF_ConfiscateAction", entityName: "Player1" }, 10000), "search");
   wait(2500);
   on(2, { verb: "capture", mode: "ui", name: `${prefix}_search` }, 25000);
+
+  if (process.argv.includes("--escort")) {
+    const car = flag("--car", "Annex_Escort_Car");
+    on(2, { verb: "look" });
+    must(on(2, { verb: "use", className: "LF_JailEscortArrestAction", entityName: "Player1" }, 10000), "detain for escort");
+    wait(1500);
+    // Each takes a side of the car so the two capsules never overlap (#522).
+    on(1, { verb: "stand", entityName: car, side: "s" });
+    wait(2500);
+    on(2, { verb: "stand", entityName: car, side: "n" });
+    wait(2500);
+    on(2, { verb: "look" });
+    must(on(2, { verb: "use", className: "LF_JailPutInVehicleAction", entityName: car }, 10000), "put in car");
+    for (const n of [1, 2]) {
+      const r = clientSeesPeer(on, wait, n, 1, (p) => (p.seat === "1" ? [] : [`seat=${p.seat}`]), { label: "seated", budgetMs: 15000 });
+      console.log(`client ${n}: suspect ${r.fails.length ? "not " : ""}seated after ${r.seconds.toFixed(1)} s`);
+      for (const x of r.fails) fails.push(`put in car, ${x}`);
+    }
+    on(2, { verb: "capture", mode: "ui", name: `${prefix}_in_car` }, 25000);
+    on(2, { verb: "look" });
+    must(on(2, { verb: "use", className: "LF_JailTakeOutOfVehicleAction", entityName: car }, 10000), "take out of car");
+    for (const n of [1, 2]) {
+      const r = clientSeesPeer(on, wait, n, 1, (p) => (p.seat === "0" ? [] : [`seat=${p.seat}`]), { label: "out of the seat", budgetMs: 15000 });
+      console.log(`client ${n}: suspect ${r.fails.length ? "still " : "out of the seat after "}${r.seconds.toFixed(1)} s`);
+      for (const x of r.fails) fails.push(`take out of car, ${x}`);
+    }
+  }
+
+  if (process.argv.includes("--escort")) {
+    on(2, { verb: "stand", entityName: "Player1" });
+    wait(3000);
+  }
 
   let arrest;
   for (let i = 0; i < 4; i++) {

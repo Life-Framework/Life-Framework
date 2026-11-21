@@ -7,6 +7,7 @@ import { sameLeaseHost } from "./guard-pin.mjs";
 
 export const BATCH_MS = 10 * 60 * 1000; // a burst of merges is checked once, at most every 10 min
 export const PRE_MOVE = ["e2e", "--pre-move", "502ebf39", "--mission", "playtest"];
+export const ISLAND_AUDIT = ["audit", "placement", "--world", "MainWorld", "--baseline", "--top", "60"];
 export const PLAIN_E2E = ["e2e"]; // the same save round trip with no old build: tells a pre-move-only red from a real one (#2812)
 
 // A pre-move e2e that fails twice while the plain e2e passes at the same head: a pass-2 check needs data the ref
@@ -16,6 +17,11 @@ export function needsSkip(stepName, plainCode) {
   return stepName === "pre-move e2e" && plainCode === 0;
 }
 
+// The env of a recheck and of every bisect probe (#3586): the shared rdb cache is off, so a corrupt entry that made the
+// first run red cannot make the same head (or a bisect probe) red again and pass for a deterministic failure.
+// 2026-11-19 it blamed an innocent #3557. The guard also drops the run worktree's rdb first (rdb-cache.dropAllRdbs).
+export const RECHECK_ENV = { LF_RDB_CACHE: "0" };
+
 // The full post-merge check, one step per entry. `recheck(failing)` is the cheap command that reruns only what failed.
 export const STEPS = [
   // --wait: a build lock held by another worktree queues (900 s) instead of failing at once (#2759).
@@ -23,6 +29,8 @@ export const STEPS = [
   { name: "suite", args: ["test", "--no-build", "--tier", "all"], recheck: (failing) => (failing.length ? ["test", "--no-build", "--no-cache", "--only", failing.join(",")] : ["test", "--no-build", "--no-cache", "--tier", "all"]) },
   { name: "placement audit", args: ["audit", "placement", "--strict"], recheck: () => ["audit", "placement", "--strict"] },
   { name: "grid placement audit", args: ["audit", "placement", "--grid", "--strict"], recheck: () => ["audit", "placement", "--grid", "--strict"] },
+  // The whole island with the runtime sweep (floating rows included) against tools/place/island-baseline.json: a new finding is red (#3888).
+  { name: "island placement audit", args: ISLAND_AUDIT, recheck: () => ISLAND_AUDIT },
   { name: "pre-move e2e", args: PRE_MOVE, recheck: () => PRE_MOVE },
 ];
 
@@ -497,6 +505,7 @@ export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
 export function fixCardInstead(c, step, { needsSkip: skip = false } = {}) {
   if (!c || step === "compile") return null;
   if (skip && step === "pre-move e2e") return "the plain e2e passes at this head: the pre-move failure is a pass-2 check for data the ref build cannot write, a missing LF_E2E.RequiresPayload guard (#2812); fixed forward, never reverted";
+  if (step === "island placement audit") return "a new island placement finding turns the head red and opens a fix card; fixed forward, never reverted (#3888)";
   if (step === "placement audit" || step === "grid placement audit") return "a placement audit finding is fixed forward, never reverted (town layout warns, #1872)";
   const br = c.branch || branchOfMerge(c.subject);
   if (MAINTAINER_BRANCH.test(br)) return `#${prOfMerge(c.subject)} is the maintainer's town edit (${br}); only a compile break reverts it`;

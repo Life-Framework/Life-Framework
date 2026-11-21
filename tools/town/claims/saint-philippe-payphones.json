@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "payphones",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b06"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b97"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b39"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b14"
+    },
+    {
+      "place": "saint-philippe-districts",
+      "building": "b26"
+    }
+  ],
+  "kit": "payphones",
+  "size": "medium",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_payphones.layer",
+  "kinds": [],
+  "rows": 5,
+  "date": "2026-11-19"
+}

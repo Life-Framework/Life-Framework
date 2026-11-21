@@ -1,0 +1,59 @@
+// Source of the `fuel` kit (tools/town/kits/fuel.json): the one component the kit's anchor rows carry. A resident anchor
+// is a bare entity with LF_ResidentAnchorComponent (no mesh, no body: Prefabs/Systems/Residents/LF_ResidentAnchor.et inherits a
+// physical traffic cone, which a player would see and push). `town fit` reads the component GUID from here.
+GenericEntity Source_ResidentAnchor {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 0 0 0
+}
+// The alarm box row: the vanilla small electricity box with a bell mount (LF_AlarmMountComponent; the fuel till's `fuel` alarm
+// stands on it, #3072). Same box and offset as the clothing and fuel-station kits.
+GenericEntity Source_AlarmBox : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{F5F179D75F4DFC41}" {
+   m_vOffset 0 0.167 0.065
+   m_fReach 10
+  }
+ }
+ coords 0 0 0
+}
+// The kiosk's shop row: the pack's `fuel_kiosk` stock (LF_ShopStock_FuelKiosk.conf) sold over the counter. A bare entity
+// with no mesh, like the anchors: the vanilla register on the counter is the picture, this carries the shop and its action.
+GenericEntity Source_KioskShop {
+ components {
+  LF_ShopComponent "{7C4D2E1A5B6F80A1}" {
+   m_sShopName "#LF-Shop_Name_FuelKiosk"
+   m_sShopDescription "#LF-Shop_Desc_FuelKiosk"
+   m_sStockId "fuel_kiosk"
+  }
+  ActionsManagerComponent "{7C4D2E1A5B6F80A2}" {
+   ActionContexts {
+    UserActionContext "{7C4D2E1A5B6F80A3}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C4D2E1A5B6F80A4}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C4D2E1A5B6F80A5}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C4D2E1A5B6F80A6}" {
+      Name "#LF-Shop_Open_FuelKiosk"
+      Description "#LF-Shop_OpenDesc_FuelKiosk"
+     }
+    }
+   }
+  }
+  RplComponent "{7C4D2E1A5B6F80A7}" {
+   Enabled 1
+  }
+ }
+ coords 0 0 0
+}

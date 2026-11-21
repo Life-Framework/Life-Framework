@@ -23,11 +23,15 @@ class LF_EventSceneOperation : LF_EventOperation
 	//! The phase run that staged the scene (its start second): one scene per phase run.
 	protected bool m_bStaged;
 	protected float m_fStagedPhaseAt;
+	//! A driving scene (#3831) started its drive (once the crew was fully spawned).
+	protected bool m_bDriveStarted;
 	protected float m_fSinceWalkOver;
 	protected float m_fSinceDespawnTry;
 	//! Seconds the despawn has been due (the walk is over and the delay has run); a watcher holds it
 	//! only up to the plan's m_fForceDespawnSeconds (#2406).
 	protected float m_fDespawnDueS;
+	//! The scene this one last waited for (#3780), so the wait is logged once per other scene.
+	protected string m_sWaitingOn;
 
 	//------------------------------------------------------------------------------------------------
 	void LF_EventSceneOperation(string moduleId, LF_EventScene scene)
@@ -46,7 +50,11 @@ class LF_EventSceneOperation : LF_EventOperation
 	//------------------------------------------------------------------------------------------------
 	override bool Busy()
 	{
-		return m_Crew && LF_EventSceneSpawn.Running() == m_Crew;
+		if (m_Crew && LF_EventSceneSpawn.Running() == m_Crew)
+			return true;
+
+		// Waiting for the stage (#3780): holds the phase while the other scene is still on it.
+		return m_sWaitingOn != "" && LF_EventScenePlanner.RunningScene() != "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -60,6 +68,22 @@ class LF_EventSceneOperation : LF_EventOperation
 
 		if (ctx && m_bStaged && ctx.m_fPhaseStartedAt == m_fStagedPhaseAt)
 			return false;
+
+		// One scene on stage at a time (#3780): a scene whose phase opens while another plays waits for it.
+		// Busy() holds the phase (before this, the unplayed scene left nothing busy and the last phase
+		// ended the event into its cooldown) and the wait counts as acting, so the idle clock cannot run
+		// out; the next cadence after the other scene has left stages this one. Logged once, not per cadence.
+		string other = LF_EventScenePlanner.RunningScene();
+		if (other != "")
+		{
+			if (m_sWaitingOn != other)
+			{
+				m_sWaitingOn = other;
+				LF_Debug.Info(FEATURE, string.Format("event %1 phase %2: module %3 waits for scene %4 to leave the stage", eventId, phaseName, m_sModuleId, other));
+			}
+			return true;
+		}
+		m_sWaitingOn = "";
 
 		int free = m_iFreeAiOverride;
 		if (free < 0)
@@ -82,7 +106,10 @@ class LF_EventSceneOperation : LF_EventOperation
 		m_fDespawnDueS = 0;
 		LF_Debug.Info(FEATURE, string.Format("event %1 phase %2: module %3 put scene %4 on stage (%5 walkers)", eventId, phaseName, m_sModuleId, crew.m_sSceneId, plan.m_aNpcs.Count()));
 
-		if (!LF_EventSceneWalk.Begin(crew, m_bDriveAi, m_bTick))
+		m_bDriveStarted = false;
+		// A scene that drives (#3831) starts its drive once every crew member has spawned (Advance): the
+		// seats are given out at the start, so a crew still on its stagger would miss them.
+		if (!plan.m_bDriveVehicle && !LF_EventSceneWalk.Begin(crew, m_bDriveAi, m_bTick))
 			LF_Debug.Warn(FEATURE, string.Format("scene %1 is on stage but does not walk; it leaves after its despawn delay", crew.m_sSceneId));
 
 		if (m_bTick)
@@ -120,6 +147,9 @@ class LF_EventSceneOperation : LF_EventOperation
 		if (!m_Crew.IsFullySpawned())
 			return false;
 
+		if (m_Crew.m_Plan.m_bDriveVehicle && !AdvanceDrive())
+			return false;
+
 		LF_EventSceneWalk walk = LF_EventSceneWalk.Active();
 		bool ourWalk = walk && walk.m_Crew == m_Crew;
 		if (ourWalk && !walk.IsDone())
@@ -142,7 +172,39 @@ class LF_EventSceneOperation : LF_EventOperation
 		if (ourWalk)
 			walk.Stop();
 
+		LF_EventSceneDrive drive = LF_EventSceneDrive.Active();
+		if (drive && drive.m_Crew == m_Crew)
+			drive.Stop();
+
 		m_Crew = null;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The scene drives its vehicle (#3831): starts the drive on the first call once the crew is fully
+	//! spawned, then holds the scene's end until the drive is over (arrived, or its walk timeout ran
+	//! out). \return true when the drive is over or never started, so the despawn delay may run.
+	protected bool AdvanceDrive()
+	{
+		if (!m_bDriveStarted)
+		{
+			m_bDriveStarted = true;
+			if (!LF_EventSceneDrive.Begin(m_Crew, m_bDriveAi, m_bTick))
+			{
+				LF_Debug.Warn(FEATURE, string.Format("scene %1 is on stage but does not drive; it leaves after its despawn delay", m_Crew.m_sSceneId));
+				return true;
+			}
+		}
+
+		LF_EventSceneDrive drive = LF_EventSceneDrive.Active();
+		if (!drive || drive.m_Crew != m_Crew || drive.m_bOver)
+			return true;
+
+		if (drive.m_fElapsed < m_Crew.m_Plan.m_fWalkTimeoutSeconds)
+			return false;
+
+		LF_Debug.Warn(FEATURE, string.Format("scene %1: the vehicle did not reach the target in %2 s; the scene ends anyway", m_Crew.m_sSceneId, m_Crew.m_Plan.m_fWalkTimeoutSeconds));
+		drive.Stop();
 		return true;
 	}
 
@@ -218,6 +280,8 @@ class LF_EventModuleLoader
 		LF_EventPrecondition condition = LF_EventPrecondition.Cast(module);
 		LF_EventAbort abort = LF_EventAbort.Cast(module);
 		LF_EventScene scene = LF_EventScene.Cast(module);
+		LF_EventDispatchSeize seize = LF_EventDispatchSeize.Cast(module);
+		LF_EventMemorial memorial = LF_EventMemorial.Cast(module);
 		if (condition)
 		{
 			kind = "condition";
@@ -240,12 +304,36 @@ class LF_EventModuleLoader
 
 			registered = LF_EventShell.RegisterOperation(id, new LF_EventSceneOperation(id, scene));
 		}
+		else if (seize)
+		{
+			kind = "dispatch and seize";
+			string seizeReason = seize.Validate();
+			if (!seizeReason.IsEmpty())
+			{
+				LF_Debug.Error(FEATURE, string.Format("event module %1: dispatch and seize in %2 refused: %3", id, source, seizeReason));
+				return false;
+			}
+
+			registered = LF_EventShell.RegisterOperation(id, new LF_EventDispatchSeizeOperation(id, seize));
+		}
+		else if (memorial)
+		{
+			kind = "memorial";
+			string memorialReason = memorial.Validate();
+			if (!memorialReason.IsEmpty())
+			{
+				LF_Debug.Error(FEATURE, string.Format("event module %1: memorial in %2 refused: %3", id, source, memorialReason));
+				return false;
+			}
+
+			registered = LF_EventShell.RegisterOperation(id, new LF_EventMemorialOperation(id, memorial));
+		}
 		else
 		{
 			string root = "nothing";
 			if (module)
 				root = module.ClassName();
-			LF_Debug.Error(FEATURE, string.Format("event module %1: %2 holds %3, not a condition, abort or scene", id, source, root));
+			LF_Debug.Error(FEATURE, string.Format("event module %1: %2 holds %3, not a condition, abort, scene, dispatch and seize or memorial", id, source, root));
 			return false;
 		}
 

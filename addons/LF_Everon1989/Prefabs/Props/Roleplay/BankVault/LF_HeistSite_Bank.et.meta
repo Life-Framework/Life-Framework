@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A82E4D7B1F6C3590}Prefabs/Props/Roleplay/BankVault/LF_HeistSite_Bank.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

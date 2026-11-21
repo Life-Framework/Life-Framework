@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{BA2C1C694CBDEED9}Configs/Dialogue/LF_Dialogue_AnniversaryPriest.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

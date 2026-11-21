@@ -8,6 +8,7 @@
   { "item": "hat_flatcap_darkgrey" },
   { "item": "cash_start" },
   { "item": "kit_canvas_sack" },
+  { "item": "kit_paper_map" },
   { "item": "jacket_m70", "present": false },
   { "item": "trousers_m70", "present": false },
   { "item": "boots_combat_us", "present": false },

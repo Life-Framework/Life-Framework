@@ -1,0 +1,62 @@
+GenericEntity : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ ID "56A80A4051F8E6C2"
+ components {
+  MeshObject "{5872F0EB7FA40561}" {
+   Object "{583D24495FE15DD2}Assets/Props/Industrial/Workbench_01/Workbench_01.xob"
+  }
+  SCR_SoundDataComponent "{F8D0833CF351DA60}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{43DB52103170E677}" {
+     m_sSoundProject "{13F8D0DE67678118}Sounds/Items/_SharedData/PickUp/Items_PickUp_Map.acp"
+     m_sSoundEventName "SOUND_PICK_UP"
+    }
+   }
+  }
+  LF_RecyclerComponent "{043A3E38A4772DD7}" {
+   m_sBenchId "recycler"
+  }
+  ActionsManagerComponent "{D590C9B5E40C5EE7}" {
+   ActionContexts {
+    UserActionContext "{0703D61BD7D5322A}" {
+     ContextName "LF_Recycler"
+     Position PointInfo "{391B6C3A45505147}" {
+      Offset 0 1 0
+     }
+     Radius 2.5
+    }
+   }
+   additionalActions {
+    LF_RecyclerAction "{0DFBC89ED7FE8E29}" {
+     ParentContextList {
+      "LF_Recycler"
+     }
+     UIInfo UIInfo "{E69F9878D8296E11}" {
+      Name "#LF-Recycler_Load"
+     }
+     Duration 1
+     m_eMode LOAD
+    }
+    LF_RecyclerAction "{7B00E1F1AD0FCEF0}" {
+     ParentContextList {
+      "LF_Recycler"
+     }
+     UIInfo UIInfo "{E984C06D3862C5BF}" {
+      Name "#LF-Recycler_Work"
+     }
+     Duration 2
+     m_eMode WORK
+    }
+    LF_RecyclerAction "{678D36D9D852B03B}" {
+     ParentContextList {
+      "LF_Recycler"
+     }
+     UIInfo UIInfo "{5CEF85BF11211A73}" {
+      Name "#LF-Recycler_Collect"
+     }
+     Duration 1
+     m_eMode COLLECT
+    }
+   }
+  }
+ }
+}

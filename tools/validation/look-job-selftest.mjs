@@ -3,17 +3,19 @@
 // its own restart, a full machine queues, the floor holds), the mirror decision, the in-place viewer write on a
 // real temporary git repo (same file identity, git clean afterwards), the warm remote argv and --cold, a bad
 // target failing before the queue, the box's resident-server state line, and the pool's reap of it.
-// inputs: tools/commands/evidence.mjs, tools/lib/look-job.mjs, tools/lib/pool-ram.mjs, tools/lib/wb-gate.mjs, tools/visual/look.mjs, tools/visual/look-serve.mjs, tools/remote/pool.mjs, tools/validation/look-job-selftest.mjs
+// The SUMMARY line's lockWait/slotWait/work fields and `look stats` (median and p90 over fixture logs in two worktrees): #3188.
+// inputs: tools/commands/evidence.mjs, tools/lib/look-job.mjs, tools/lib/pool-ram.mjs, tools/lib/wb-gate.mjs, tools/visual/look.mjs, tools/visual/look-serve.mjs, tools/visual/look-stats.mjs, tools/remote/pool.mjs, tools/validation/look-job-selftest.mjs
 // red-proof: 2026-11-16, idleVerdict ignoring `starved` failed "a starved machine closes the resident Workbench
 // at once"; mirrorViewer using `git checkout` instead of an in-place write failed "the viewer file keeps its identity";
 // lookStartVerdict not adding the resident's working set failed "a restart gets the resident's memory back".
 // 2026-11-17: mirrorMode without the REOPEN_SAFE_EXT check failed "a modified addons/A/Prefabs/Shop.et restarts even
 // when listed for reopen"; renderProblem returning null always failed "another tree rendered: refused".
 
-import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { mkdirSync, statSync, writeFileSync, readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import { idleVerdict, lookStartVerdict, mirrorMode, phaseText, renderProblem, requestNeedsRam, samePairProblem, timeline, LOOK_IDLE_MIN } from "../lib/look-job.mjs";
+import { idleVerdict, lookStartVerdict, lookSummaryLine, lookTiming, mirrorMode, parseLookSummary, phaseText, renderProblem, requestNeedsRam, samePairProblem, timeline, LOOK_IDLE_MIN } from "../lib/look-job.mjs";
+import { lookStatsTable, readLookLogs } from "../visual/look-stats.mjs";
 import { parseWbState } from "../lib/wb-gate.mjs";
 import { parseArgs, remoteLookArgs, targetProblem } from "../visual/look.mjs";
 import { classifyChange, mirrorViewer, viewerAt } from "../visual/look-serve.mjs";
@@ -75,7 +77,7 @@ check("a script restarts even when .layer is proven", mirrorMode({ changes: [M("
 check("classifyChange delegates the same rule", classifyChange({ from: "a", to: "b", changes: [M("M", "addons/A/W.layer")], reopenExt: [".layer"] }).reload === "reopen" && classifyChange({ from: "a", to: "b", changes: [M("D", "addons/A/W.layer")], reopenExt: [".layer"] }).reload === "restart");
 
 // ---- the in-place viewer write, on a real repo
-const git = (cwd, ...a) => spawnSync("git", ["-C", cwd, "-c", "user.name=t", "-c", "user.email=t@t", ...a], { encoding: "utf8" });
+const git = (cwd, ...a) => gitSync(["-C", cwd, "-c", "user.name=t", "-c", "user.email=t@t", ...a], { encoding: "utf8" });
 const tmp = scratchDir("lf-look-job-");
 const repo = join(tmp, "repo");
 const viewer = join(tmp, "viewer");
@@ -126,9 +128,45 @@ check("a waiting job closes it at once", reapRemoteLookServer("r", { name: "b" }
 check("never while a request runs (no heartbeat)", reapRemoteLookServer("r", { name: "b" }, { now, read: rd(900, false), stop, waiting: true }) === null && stops.length === 2);
 check("no server, nothing to close", reapRemoteLookServer("r", { name: "b" }, { now, read: () => null, stop }) === null);
 
+// ---- the look SUMMARY line: lockWait, slotWait and work (#3188)
+const sumLine = lookSummaryLine({
+  ok: true, area: "bank", served: "fresh", shots: 4, at: "2026-11-17T10:00:00.000Z",
+  phases: { "lock-wait": 4, "slot-wait": 0, "wb-start": 30, request: 0, world: 20, shots: 10, collect: 2 },
+});
+check("the look SUMMARY is one line", !sumLine.includes("\n") && sumLine.startsWith("SUMMARY look ok "));
+check("the SUMMARY line carries lockWait, slotWait and work in seconds", /lockWait=4\.0s slotWait=0\.0s work=62\.0s/.test(sumLine));
+const back = parseLookSummary(sumLine);
+check("parseLookSummary reads the fields back", back?.ok === true && back.lockWait === 4 && back.slotWait === 0 && back.work === 62 && back.at === "2026-11-17T10:00:00.000Z");
+check("ram-wait and route-wait count as slot wait; sync is work", JSON.stringify(lookTiming({ "ram-wait": 5, "route-wait": 3, sync: 2 })) === JSON.stringify({ lockWait: 0, slotWait: 8, work: 2 }));
+check("a line that is not a look SUMMARY parses to null", parseLookSummary("SUMMARY ship ok x") === null);
+
+// ---- look stats over three fixture look logs in two worktrees, one outside the window (#3188)
+const statsRoot = scratchDir("lf-look-stats-");
+const NOW = Date.parse("2026-11-18T12:00:00.000Z");
+const fixtures = [
+  { wt: "wt-a", name: "look-1.log", at: "2026-11-18T10:00:00.000Z", lockWait: 0, slotWait: 0, work: 60 },
+  { wt: "wt-a", name: "look-2.log", at: "2026-11-18T11:00:00.000Z", lockWait: 4, slotWait: 0, work: 90 },
+  { wt: "wt-b", name: "look-3.log", at: "2026-11-18T11:30:00.000Z", lockWait: 10, slotWait: 30, work: 120 },
+  { wt: "wt-b", name: "look-old.log", at: "2026-11-15T10:00:00.000Z", lockWait: 999, slotWait: 999, work: 999 },
+];
+for (const f of fixtures) {
+  const dir = join(statsRoot, f.wt, "tmp", "logs");
+  mkdirSync(dir, { recursive: true });
+  const line = lookSummaryLine({ ok: true, area: "bank", served: "fresh", shots: 2, at: f.at, phases: { "lock-wait": f.lockWait, "slot-wait": f.slotWait, "wb-start": f.work } });
+  writeFileSync(join(dir, f.name), `${line}\nlook: phases: lock-wait ${f.lockWait} s\n`);
+}
+const rows = readLookLogs([join(statsRoot, "wt-a"), join(statsRoot, "wt-b")], { sinceMs: NOW - 24 * 3600000 });
+check("look stats reads the looks in the window across worktrees", rows.length === 3);
+const table = lookStatsTable(rows, { hours: 24 });
+check("the stats table: lockWait median 4.0 s, p90 8.8 s", /lockWait\s+median 4\.0 s\s+p90 8\.8 s/.test(table));
+check("the stats table: slotWait median 0.0 s, p90 24.0 s", /slotWait\s+median 0\.0 s\s+p90 24\.0 s/.test(table));
+check("the stats table: work median 90.0 s, p90 114.0 s", /work\s+median 90\.0 s\s+p90 114\.0 s/.test(table));
+check("the stats table counts the looks", /3 looks \(3 ok\)/.test(table));
+check("no looks says so", /no looks/.test(lookStatsTable([], { hours: 24 })));
+
 if (failures.length) {
   for (const x of failures) console.log(`look-job-selftest FAIL: ${x}`);
   process.exit(1);
 }
-console.log("look-job-selftest: OK (phases, idle and starved close, RAM on pool admission, mirror decision and in-place viewer write, warm argv and --cold, target check, resident-server state, pool reap)");
+console.log("look-job-selftest: OK (phases, idle and starved close, RAM on pool admission, mirror decision and in-place viewer write, warm argv and --cold, target check, resident-server state, pool reap, look SUMMARY wait fields, look stats median and p90)");
 void existsSync;

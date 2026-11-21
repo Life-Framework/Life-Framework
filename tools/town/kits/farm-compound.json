@@ -1,0 +1,365 @@
+{
+  "schema": 1,
+  "kit": "farm-compound",
+  "system": "sites",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Street_Hideout.layer",
+    "group": "*",
+    "origin": "Roadmap_Hideout",
+    "frame": "origin-entity",
+    "also": [
+      "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_slice_2685.layer",
+      "tools/town/kits/sources/farm-compound-centre.layer"
+    ]
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -10,
+        5
+      ],
+      "max": [
+        16,
+        24
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "An open farm yard: the barn is the host (its front doors at +z), the centre of the contested site stands 14 m in front of the front wall, the flag, strongbox and plate within 10 m of it, and a net-fence ring with a gate gap around the yard. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "site-centre",
+      "name": "FarmCompound_Centre",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0,
+        0,
+        14
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ContestedSiteComponent",
+          "set": {
+            "m_sHideoutId": "\"farm_compound\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barn-door",
+      "name": "FarmCompound_Door",
+      "prefab": "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0.15,
+        -0.024,
+        5.3
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_HideoutDoorComponent",
+          "set": {
+            "m_sHideoutId": "\"farm_compound\"",
+            "m_bOrganizationHideout": "1"
+          },
+          "blocks": []
+        },
+        {
+          "component": "LF_LockComponent",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "site-flag",
+      "prefab": "{DDE764E40C17C5DC}Prefabs/Sites/LF_SiteFlag.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        7,
+        0,
+        10
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SiteFlagComponent",
+          "set": {
+            "m_sHideoutId": "\"farm_compound\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "site-strongbox",
+      "prefab": "{28F82DEA95808829}Prefabs/Sites/LF_SiteStrongbox.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -4.5,
+        0,
+        7
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SiteStrongboxComponent",
+          "set": {
+            "m_sHideoutId": "\"farm_compound\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "site-plate",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -8.5,
+        0,
+        21.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"farm_compound\"",
+            "m_vRimColor": "0.1 0.1 0.1",
+            "m_vPaintColor": "0.95 0.78 0.1",
+            "m_vTextColor": "0.1 0.1 0.1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-front-1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10,
+        0,
+        24
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-front-2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -6,
+        0,
+        24
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-front-3",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2,
+        0,
+        24
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-front-4",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6,
+        0,
+        24
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-front-5",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10,
+        0,
+        24
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-front-6",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        14,
+        0,
+        24
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-w-7",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10,
+        0,
+        12
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-e-8",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        16,
+        0,
+        12
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-w-9",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10,
+        0,
+        16
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-e-10",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        16,
+        0,
+        16
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-w-11",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10,
+        0,
+        20
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "fence-e-12",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        16,
+        0,
+        20
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    }
+  ]
+}

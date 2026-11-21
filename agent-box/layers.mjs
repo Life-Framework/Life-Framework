@@ -41,7 +41,7 @@ function classify(line) {
     /^(?:\$grp\s+)?([A-Za-z_][A-Za-z0-9_]*)\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"/,
   );
   if (namedPrefab && !line.startsWith("$grp")) {
-    return { entity: true, name: namedPrefab[2], actionName: "", prefab: namedPrefab[3] };
+    return { entity: true, name: namedPrefab[2], actionName: "", prefab: namedPrefab[3], cls: namedPrefab[1] };
   }
 
   const groupPrefab = line.match(/^\$grp\s+[A-Za-z_][A-Za-z0-9_]*\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"/);
@@ -49,8 +49,8 @@ function classify(line) {
 
   // An unnamed placement (`SCR_SpawnPoint : "{GUID}path" {`). The town manifest
   // can match it by prefab; `stand` cannot address it.
-  const anonPrefab = line.match(/^[A-Za-z_][A-Za-z0-9_]*\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"\s*\{$/);
-  if (anonPrefab) return { entity: true, name: "", actionName: "", prefab: "", anonPrefab: anonPrefab[1] };
+  const anonPrefab = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*:\s*"\{[0-9A-Fa-f]{16}\}([^"]+)"\s*\{$/);
+  if (anonPrefab) return { entity: true, name: "", actionName: "", prefab: "", anonPrefab: anonPrefab[2], cls: anonPrefab[1] };
 
   const generic = line.match(/^GenericEntity\s+([A-Za-z_][A-Za-z0-9_]*)\s*\{/);
   if (generic) return { entity: true, name: generic[1], actionName: "", prefab: "" };
@@ -156,6 +156,10 @@ function walkLayer(text, layerFile, root) {
       stack[stack.length - 1].coords = [Number(coords[1]), Number(coords[2]), Number(coords[3])];
     }
 
+    // The row's own entity flags (`Flags 0x80403 0`): with its prefab chain they decide the frame of its y (tools/lib/height-frame.mjs).
+    const flagsLine = line.match(/^Flags\s+(\S+)/);
+    if (flagsLine && stack.length && stack[stack.length - 1].entity && Number.isFinite(Number(flagsLine[1]))) stack[stack.length - 1].flags = Number(flagsLine[1]);
+
     const angleY = line.match(/^angleY\s+(-?\d+(?:\.\d+)?)$/);
     if (angleY && stack.length) stack[stack.length - 1].yaw = Number(angleY[1]);
 
@@ -221,6 +225,11 @@ function walkLayer(text, layerFile, root) {
             prefab,
           };
           if (signId) record.signId = signId;
+          if (frame.cls) record.cls = frame.cls;
+          // The row's own Flags line, when it has one: with the prefab chain it says whether y counts from the terrain
+          // (tools/lib/height-frame.mjs frameOf). A row nested in another entity's block is in that entity's frame.
+          if (frame.flags !== undefined) record.flags = frame.flags;
+          if (stack.some((s) => s !== frame && s.entity)) record.nested = true;
           if (frame.mesh) record.mesh = frame.mesh;
           if (frame.yaw !== undefined) record.yaw = frame.yaw;
           if (frame.scale !== undefined) record.scale = frame.scale;

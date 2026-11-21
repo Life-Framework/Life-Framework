@@ -20,7 +20,10 @@
 // red-proof: with componentGuid reading addons only and no kit-source fallback this printed "FAIL a component the prefab lacks did not take its guid from the kit's source" and the vanilla-guid case (2026-11-17).
 // red-proof: before verifySteps existed (audit and look steps inline in main, the audit on no world, `look` on a bare x,z) this threw "fitMod.verifySteps is not a function" (2026-11-17).
 // red-proof: with claimOfBase() and isIntegrationBranch() not applied in planFit()/worktreeTownClaims() the stacked -suffix and integration-worktree cases printed "FAIL a -suffix branch was refused its base draft's own slot" and "FAIL an integration worktree's claim copy blocked a fit" (2026-11-18, #3101).
+// red-proof: with the source-name preference removed from sourceComponent() the prefab-less taxi pad took the drop pad's guid and this printed "FAIL a prefab-less row took the wrong source entity" (2026-11-18, #2318).
+// red-proof: before the sameAsMain filter, `town fit saint-philippe supermarket --refit` printed "town-fit fail ... 16 problem(s)" (REFUSE ... already claimed on worktree ...), one per sibling worktree holding main's own claim file (2026-11-19, #3516, observed on the real repo).
 // red-proof: with the kit rows' yaw ignored (anchor yaw 0) this printed "FAIL shop row fit-display is not where kit apply puts it" (2026-11-16).
+// red-proof: 2026-11-19 (#3666) with the hostless branch of planFit()/planFitSeated() and the map check left out this printed 7 FAILs: "a hostless plot slot did not plan: mapping: slot shop: a plot needs a prefab to place on it", "the hostless claim is undefined", "a hostless plot on a lake was not refused", "a hostless terrain row did not take the probed height".
 
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -191,6 +194,19 @@ for (const where of ["main", "pr"]) {
   check(/MeshObject "\{EEEEEEEEEEEEEE05\}"/.test(offline.layerText ?? ""), "with no game paks the kit's source guid was not used");
 }
 
+// ---- a prefab-less row takes the component of the source entity that carries its own name (#2318: the taxi pad got the drop pad's action)
+{
+  const src = scratchDir("lf-fit-src-");
+  try {
+    const ent = (n, guid) => ` ${n} {\n  components {\n   ActionsManagerComponent "{${guid}}" {\n    additionalActions {\n    }\n   }\n  }\n  coords 0 0 0\n }\n`;
+    writeFileSync(join(src, "Jobs.layer"), `$grp GenericEntity {\n${ent("Pad_A", "AAAAAAAAAAAAAAA1")}${ent("Pad_B", "BBBBBBBBBBBBBBB2")}}\n`);
+    const got = fitMod.sourceComponent({ source: { file: "Jobs.layer" } }, { name: "Pad_B", prefab: null }, { component: "ActionsManagerComponent", set: {}, blocks: ["additionalActions"] }, src);
+    check(got?.guid === "BBBBBBBBBBBBBBB2", `a prefab-less row took the wrong source entity: ${JSON.stringify(got)}`);
+  } finally {
+    rmSync(src, { recursive: true, force: true });
+  }
+}
+
 // ---- the verify steps: the audit is scoped to the slot's layer and its world; `look place:` replaces a bare x,z; nothing pins a machine
 {
   const steps = fitMod.verifySteps("sample-square", "shop", "Place_sample-square_shop.layer");
@@ -259,6 +275,68 @@ try {
   check(readdirSync(out).length === 0, "fit --dry wrote files");
 } finally {
   rmSync(out, { recursive: true, force: true });
+}
+
+// A stacked follow-up branch (ws/town-draft-<place>-<slot>-<word>) is not blocked by the draft it builds on, only by others.
+{
+  const { claimOfBase } = fitMod;
+  const claim = (where, slot = "cafe") => ({ place: "saint-philippe", slot, where });
+  const stacked = { branch: "ws/town-draft-saint-philippe-cafe-shop", place: "saint-philippe", slot: "cafe" };
+  check(claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)"), stacked), "the base draft's open PR claim blocked its stacked follow-up");
+  check(claimOfBase(claim("worktree Life-Framework-ws-town-draft-saint-philippe-cafe"), stacked), "the base draft's worktree claim blocked its stacked follow-up");
+  check(!claimOfBase(claim("open PR #3099 (ws/town-draft-saint-philippe-cafe-other)"), stacked), "an unrelated PR's claim on the slot was let through");
+  check(!claimOfBase(claim("origin/main"), stacked), "a claim on origin/main was let through (that is --refit's job)");
+  check(!claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)", "bank"), { ...stacked, slot: "bank" }), "a branch with no '-<word>' tail counted as stacked");
+  check(!claimOfBase(claim("open PR #3016 (ws/town-draft-saint-philippe-cafe)"), { ...stacked, branch: "ws/town-draft-saint-philippe-cafe" }), "the draft's own branch counted as stacked on itself");
+}
+
+// A sibling worktree's untouched copy of main's claim file is not a rival under --refit (#3516); an edited copy still is.
+{
+  const { claimBody } = fitMod;
+  const main = { place: "saint-philippe", slot: "supermarket", rows: 4, where: "origin/main", file: "tools/town/claims/saint-philippe-supermarket.json" };
+  const copy = { rows: 4, slot: "supermarket", place: "saint-philippe", where: "worktree Life-Framework-ws-other", file: "tools/town/claims/saint-philippe-supermarket.json" };
+  check(claimBody(main) === claimBody(copy), "a worktree's copy of main's claim, keys in another order, did not compare equal");
+  check(claimBody(main) !== claimBody({ ...copy, rows: 5 }), "a worktree's edited claim compared equal to main's");
+}
+
+// A worktree cut from an older main holds an older version of main's claim file: its blob is in main's history for that file (#3566).
+// red-proof: 2026-11-19, `town fit saint-philippe police --refit` printed "town-fit fail ... 96 problem(s)", one REFUSE per sibling worktree whose claim had 56 rows where main's has 57.
+{
+  const fakeExec = (cmd, args) => {
+    if (args[0] === "log") return { status: 0, stdout: "c2\nc1\n" };
+    if (args[0] === "rev-parse") return { status: 0, stdout: args[1].startsWith("c2") ? "blobNew\n" : "blobOld\n" };
+    return { status: 1, stdout: "" };
+  };
+  const blobs = fitMod.mainClaimBlobs(fakeExec, "tools/town/claims/x.json");
+  check(blobs.has("blobOld") && blobs.has("blobNew") && !blobs.has("blobEdited"), "main's claim-file history was not read as a set of blobs");
+  check(fitMod.mainClaimBlobs(() => ({ status: 1, stdout: "" }), "x").size === 0, "a failed git log did not give an empty set");
+}
+
+// ---- a hostless plot (#3666): a lake, a pond or a field has no building; the kit stands on a dossier plot's open ground
+{
+  const p1 = dossier.freePlots.plots.find((p) => p.id === "p1");
+  const hostless = { ...mapping, slots: { ...mapping.slots, shop: { plot: "p1", hostless: true, why: ["fixture"] } } };
+  const hp = fitMod.planFit({ ...base, mapping: hostless }, ctx());
+  check(hp.ok, `a hostless plot slot did not plan: ${(hp.errors || []).join("; ")}`);
+  check(hp.claim?.plot === "p1" && hp.claim.hostless === true && !hp.claim.building && hp.claim.destruction?.mode === "none", `the hostless claim is ${JSON.stringify(hp.claim)}`);
+  check(!/LF_FittedBuildingComponent|SCR_DestructionMultiPhaseComponent/.test(hp.layerText || ""), "a hostless slot wrote a building hook or a building");
+  check(hp.anchor?.x === p1.x && hp.anchor?.z === p1.z && hp.anchor?.yaw === 0, `the hostless anchor is ${JSON.stringify(hp.anchor)}: it must be the plot's own centre, unturned`);
+  check(/m_sKind "StoreCounter"/.test(hp.layerText || ""), "a hostless slot lost its place marker");
+  // On a lake: refused. Off it: planned.
+  const wetDossier = { ...dossier, water: { bodies: [{ id: "w1", name: "Lake_Fixture", outline: [[p1.x - 10, p1.z - 10], [p1.x + 10, p1.z - 10], [p1.x + 10, p1.z + 10], [p1.x - 10, p1.z + 10]] }] } };
+  const wet = fitMod.planFit({ ...base, dossier: wetDossier, mapping: hostless }, ctx());
+  check(!wet.ok && /lies on the water w1/.test((wet.errors || []).join(" ")), "a hostless plot on a lake was not refused");
+  // The same plot needs no prefab in the mapping check; an ordinary plot entry still does.
+  const mapMod = await import(pathToFileURL(join(ROOT, "tools", "town", "map.mjs")).href);
+  const probs = mapMod.checkMapping(hostless, dossier, template);
+  check(!probs.some((p) => /needs a prefab/.test(p)), `a hostless plot was asked for a prefab: ${probs.join("; ")}`);
+  const noPre = mapMod.checkMapping({ ...mapping, slots: { ...mapping.slots, shop: { plot: "p1", why: ["fixture"] } } }, dossier, template);
+  check(noPre.some((p) => /needs a prefab/.test(p)), "a plain plot entry with no prefab was accepted");
+  // An open-ground row rests on the probed terrain, with no host shell to seat on.
+  const tk = JSON.parse(JSON.stringify(kit));
+  tk.rows[0].mount = "terrain";
+  const seated = await fitMod.planFitSeated({ ...base, kits: { "fit-kit": tk }, mapping: hostless }, { ...ctx(), shell: { shell: async () => null }, terrain: { at: () => 77.5 } });
+  check(seated.ok && seated.terrainPoints.length === 1 && seated.rows[0].coords[1] === 77.5, `a hostless terrain row did not take the probed height (${JSON.stringify(seated.rows?.[0]?.coords)})`);
 }
 
 console.log(failed ? `SUMMARY town-fit-selftest fail ${failed}` : "SUMMARY town-fit-selftest ok");

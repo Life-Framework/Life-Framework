@@ -15,6 +15,7 @@
 //   checkout's" for each worktree and prune left the worktree path; with `git config --local --add include.path
 //   "$DRIVERS"` put back in the hook, hook printed "pre-commit adds an include.path itself".
 import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -30,7 +31,7 @@ const fail = (m) => failures.push(m);
 const fwd = (p) => p.split("\\").join("/");
 
 function git(dir, args) {
-  const r = spawnSync("git", args, { cwd: dir, encoding: "utf8", windowsHide: true });
+  const r = gitSync(args, { cwd: dir, encoding: "utf8", windowsHide: true });
   if (r.status !== 0) throw new Error(`git ${args.join(" ")} in ${dir}: ${r.stderr}`);
   return r.stdout.trim();
 }

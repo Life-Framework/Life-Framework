@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{96C3065EC97E9EE0}Assets/Items/Food/Baguette/Data/Baguette_BCR.edds"
+ NMOMap "{12C017F74A68347B}Assets/Items/Food/Baguette/Data/Baguette_NMO.edds"
+}

@@ -1,0 +1,116 @@
+// Source of the `barber` kit (tools/town/kits/barber.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). `town fit` reads the components the kit names from here; `town author --reopen barber` builds a bay again.
+// Grid cell c27r4 for author-barber: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_author_barber_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 71
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 71
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 71
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 71
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 71
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 75.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 79.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 84.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 88.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 93
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 88.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_barber_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 84.2
+ angleY 90
+}
+GenericEntity Grid_author_barber_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:author-barber"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 346.2 0.505 71.6
+ angleY -90
+}
+GenericEntity Grid_author_barber_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "author-barber"
+  }
+ }
+ coords 346.3 0 75.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_author_barber_Main : "{7B197693AE45574A}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_yellow.et" {
+ coords 357.94 0.05 82.013
+ angleY -90
+}
+GenericEntity Barber_mirror : "{34E90D599E5E3517}Prefabs/Props/Furniture/MirrorBathroom_02/MirrorBathroom_02.et" {
+ coords 361.69 1.3 81.263
+ angleY 180
+}
+GenericEntity Barber_chair_1 : "{4F2A9C61B7E03D85}Prefabs/Props/Roleplay/LF_BarberChair.et" {
+ coords 362.44 0.317 79.863
+}
+GenericEntity Barber_chair_2 : "{4F2A9C61B7E03D85}Prefabs/Props/Roleplay/LF_BarberChair.et" {
+ coords 360.94 0.317 79.863
+}
+GenericEntity Barber_basin : "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et" {
+ coords 359.89 0.26 81.263
+ angleY 180
+}
+GenericEntity Barber_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 362.39 0.309 78.013
+}
+GenericEntity Barber_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ coords 351.81 3.3 79.613
+ angleY -90
+}

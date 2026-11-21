@@ -1,0 +1,20 @@
+GenericEntity : "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et" {
+ ID "7A3C1D52B6E4F801"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "Hardwood log"
+     Description "A heavy log of oak-hard timber. The sawmill cuts it into boards or firewood"
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{4CCEDF1BAD52818C}Assets/Props/Forest/WoodPile_01/WoodLog_01_B.xob"
+  }
+  LF_ShoulderCarryComponent "{DC5E49C8EB166223}" {
+   m_sKind "hardwood"
+   m_fSpeedCap 0.5
+  }
+ }
+}

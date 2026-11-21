@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "anniversary",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b03"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b07"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b12"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b38"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b45"
+    }
+  ],
+  "kit": "anniversary",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_anniversary.layer",
+  "kinds": [],
+  "rows": 22,
+  "date": "2026-11-19"
+}

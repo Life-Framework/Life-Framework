@@ -1,0 +1,44 @@
+GenericEntity {
+ ID "A4D4181686D0A5FF"
+ components {
+  MeshObject "{A8B7F631BB2011BE}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{1DA8FA5B0120680D}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_ShopComponent "{981C1642CB4D61D5}" {
+   m_sShopName "#LF-Shop_Name_Furniture"
+   m_sShopDescription "#LF-Shop_Desc_Furniture"
+   m_sStockId "furniture"
+  }
+  ActionsManagerComponent "{8C3B4BBF017F7001}" {
+   ActionContexts {
+    UserActionContext "{9E77DE28FA2CC81B}" {
+     ContextName "default"
+     Position PointInfo "{679E4E3BAE103F9C}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{C25901DD40C92D5A}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8148ED2994FB720D}" {
+      Name "#LF-Shop_Open_Furniture"
+      Description "#LF-Shop_Desc_Furniture"
+     }
+    }
+   }
+  }
+  RplComponent "{6B6B8AA906AE17E7}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}

@@ -23,6 +23,16 @@ Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {
    additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RepairKitAction "{3332A1C0E5D70011}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_VehicleLockAction "{E8BD9E1428464528}" {
      ParentContextList {
       "door_l01"
@@ -49,6 +59,32 @@ Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_
      UIInfo UIInfo "{5EA2C40200000002}" {
       Name "#LF-Search_Vehicle_Action"
      }
+    }
+    LF_VehicleSearchFullAction "{5EA2C50200000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C50200000002}" {
+      Name "#LF-Search_Full_Action"
+     }
+    }
+    LF_JailPutInVehicleAction "{B2E1080B00000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{B2E1080B00000002}" {
+      Name "#EL-Escort_PutIn"
+     }
+     "Sort Priority" 7
+    }
+    LF_JailTakeOutOfVehicleAction "{3431A0E100000003}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{3431A0E100000004}" {
+      Name "#EL-Escort_TakeOut"
+     }
+     "Sort Priority" 8
     }
    }
   }

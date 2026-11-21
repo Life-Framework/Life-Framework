@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3C9E1B7D4A5F2860}Configs/Events/LF_Events_Everon1989/LF_Events_ShipmentDocks.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

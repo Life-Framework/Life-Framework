@@ -89,10 +89,15 @@ class LF_Test_EveronClerkWelcome : LF_Test
 		LF_DialogueNode greet = LF_DialogueFlow.FindNode(config, config.m_sStart);
 		LF_DialogueOption asNew = ReplyOf(greet, "SayNew");
 		LF_DialogueOption asKnown = ReplyOf(greet, "SayNext");
-		LF_DialogueOption asLost = ReplyOf(greet, "SayLost");
+		// The lost-card reply sits under "About my papers" beside the character switch (four replies a node).
+		LF_DialogueOption asPapers = ReplyOf(greet, "SayPapers");
+		ctx.NotNull(asPapers, "the greeting has the 'About my papers' reply");
+		LF_DialogueOption asLost;
+		if (asPapers)
+			asLost = ReplyOf(LF_DialogueFlow.FindNode(config, asPapers.m_sNext), "SayLost");
 		ctx.NotNull(asNew, "the greeting has the 'I am new' reply");
 		ctx.NotNull(asKnown, "the greeting still has 'What should I do now?'");
-		ctx.NotNull(asLost, "the greeting still has the lost-card reply");
+		ctx.NotNull(asLost, "the papers reply still holds the lost-card reply");
 		if (!asNew || !asKnown || !asLost)
 			return;
 

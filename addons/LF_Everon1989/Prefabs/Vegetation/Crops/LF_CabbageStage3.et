@@ -1,0 +1,41 @@
+GenericEntity {
+ ID "85CD512DD543782C"
+ components {
+  ActionsManagerComponent "{29830C8C014B5F70}" {
+   ActionContexts {
+    UserActionContext "{D197CF02E8CBCB56}" {
+     ContextName "LF_Plant"
+     Position PointInfo "{52A827106C576C87}" {
+      Offset 0 0.25 0
+     }
+     Radius 0.7
+    }
+   }
+   additionalActions {
+    LF_PlantAction "{458840E1F47E2665}" {
+     ParentContextList {
+      "LF_Plant"
+     }
+     UIInfo UIInfo "{A68855B1BDC1490F}" {
+      Name "#LF-Plant_Action_Harvest"
+     }
+     m_eMode HARVEST
+    }
+    LF_PlantAction "{A696249CA7A22E73}" {
+     ParentContextList {
+      "LF_Plant"
+     }
+     UIInfo UIInfo "{D9B2960937DA5E72}" {
+      Name "#LF-Plant_Action_Inspect"
+     }
+     m_eMode INSPECT
+    }
+   }
+  }
+ }
+ {
+  GenericEntity : "{B8FD99C47D856E7F}Prefabs/Vegetation/Crops/FarmPlot_CabbageVisual.et" {
+   ID "85CD512DD543782D"
+  }
+ }
+}

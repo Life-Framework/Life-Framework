@@ -55,12 +55,20 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Proof:** `events/scene-check` (LOGIC, marker lists in script, no world).
 
 
+## Quest-done condition (#3784)
+
+- **Player sees:** nothing directly; an event that follows a player's errand (a police report, then a raid some minutes later).
+- **Owner and side:** server. `LF_QuestTrackerComponent.TurnInQuest` notes the turn-in in `LF_QuestDoneLog` (world seconds); `LF_EventShell.Measure` copies it into `LF_EventContext.m_mQuestDoneAt`. Nothing replicates, nothing is saved.
+- **Data:** a condition module `.conf` of root `LF_EventPrecondition`: `m_eKind QUEST_DONE`, `m_sQuestId`, `m_fDelaySeconds` (wait after the turn-in), `m_fWindowSeconds` (how long it then holds; 0 until a restart).
+- **Rules:** it holds nothing until the quest was turned in this boot; the latest turn-in counts; an empty quest id holds nothing. A restart forgets the tip-off, so a raid never fires from an earlier session's report.
+- **Proof:** `events/quest-done-condition` (LOGIC), `events/quest-done-shell` (WORLD).
+
 ## Modules from config (#2137)
 
 - **Player sees:** what the modules do (a scene of walkers); the loader itself is invisible.
 - **Owner and side:** `LF_EventModuleLoader`, server, at game start from `LF_EventShell.StartIfServer`.
-- **Data:** `LF_EventsConfig.m_aModules` of `LF_EventModuleRef` (id + `.conf`), core and pack overlays merged by id. The `.conf` root class picks the kind: `LF_EventPrecondition` condition, `LF_EventAbort` abort, `LF_EventScene` scene operation (`LF_EventSceneOperation`).
-- **Rules:** a bad ref is logged and skipped, so its phase holds. A scene stages once per phase run and keeps its phase busy until its walkers have left out of sight.
+- **Data:** `LF_EventsConfig.m_aModules` of `LF_EventModuleRef` (id + `.conf`), core and pack overlays merged by id. The `.conf` root class picks the kind: `LF_EventPrecondition` condition, `LF_EventAbort` abort, `LF_EventScene` scene operation (`LF_EventSceneOperation`), `LF_EventDispatchSeize` a dispatch and seize operation (`LF_EventDispatchSeizeOperation`, #3785).
+- **Rules:** a bad ref is logged and skipped, so its phase holds. A scene stages once per phase run and keeps its phase busy until its walkers have left out of sight. Only one scene is on stage: a scene whose phase opens while another plays waits (phase held, idle clock restarted each cadence) and goes on the cadence after the other has left (#3780).
 - **Proof:** `events/module-loader` (WORLD), `everon/arrival-event` (pack leg).
 
 ## Scene from a fixture in a session (#2173)
@@ -76,3 +84,12 @@ entry (docs/decisions.md "In-world first"); no event menu. The shell slices add 
 - **Owner and side:** server; `LF_EventMapShare` listens to `LF_OnEventPhase` and puts or removes the `EVERYONE` row `event:<eventId>` in `LF_MapShares`; the row carries the radius and the `EVENT` style, and each client draws the circle in its own `LF_MapAreas` (`LF_MapShareAreas`). Nothing is saved.
 - **Data:** the place is the `LF_EventPlace` binding (scene id, radius) resolved to the `event_target` marker through `LF_Places`; label `#LF-EventMap_Place`.
 - **Proof:** `events/map-share` (WORLD).
+
+## Memorial rite (#3806)
+
+- **Player sees:** at a memorial the church bell tolls, the nearby radios fall quiet for a while, and each player standing there gets a toast and the speaker's line (a text toast titled with the speaker's name) and a standing award, once per phase run.
+- **Owner and side:** `LF_EventMemorialOperation` (server, an operation module; a pack .conf with root class `LF_EventMemorial` registers it through `LF_EventModuleLoader`). The bells are a one-shot RPC on the game mode (`LF_AnnounceMemorialBells`) that each rendering client plays on the nearest vanilla `SCR_BellSoundComponent` (`LF_MemorialBells`); nothing replicates but the existing `LF_AmbientSwitchComponent` of each radio.
+- **Data:** the scene id whose `event_target` marker is the memorial, the radius, the toast and line keys, the radio sound slots, ring and silence seconds, the bell strokes and search radius, the award row id. The core names no place, person or sound.
+- **Rules:** the first run of a phase run (its start time moved) opens the rite: bells, then the radios of the named slots within the ring go off and come back after the silence (only the ones this switched off). Every run serves the players within the radius not yet served in this phase run. A scene with no placed marker does nothing and logs once per run.
+- **Voice (#3827):** a rite may name a dialogue conf and one of its voiced lines (`m_sVoiceDialogue`, `m_sVoiceLine`). On the opening run the server sends one broadcast RPC (`LF_AnnounceMemorialVoice`, in the same run that serves the caption) and each rendering client plays the line's event in its audio project 3D at the marker plus `m_fVoiceHeight` (`LF_MemorialVoice`); the operation is `Busy()` for the line's length so the phase waits for the speech. Once per phase run; a bad dialogue or line logs an error and the caption stands alone.
+- **Proof:** `events/memorial` (WORLD); the pack's data is checked in `everon/anniversary-memorial`.

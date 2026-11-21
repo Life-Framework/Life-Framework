@@ -73,7 +73,13 @@ class LF_QuestGiverComponent : ScriptComponent
 	//! The prefab's quests followed by the quest giver table's row for this giver id (#3124).
 	array<ref LF_QuestDefinition> GetQuests()
 	{
-		return LF_QuestGiverTable.QuestsFor(m_sGiverId, m_aQuests);
+		array<ref LF_QuestDefinition> quests = LF_QuestGiverTable.QuestsFor(m_sGiverId, m_aQuests);
+		if (!quests)
+			quests = {};
+
+		// A giver that carries no quest of its own (the police desk) lives on the table's rows alone: it
+		// stands registered with nothing to offer where no pack adds a row (#3768).
+		return quests;
 	}
 
 	//------------------------------------------------------------------------------------------------

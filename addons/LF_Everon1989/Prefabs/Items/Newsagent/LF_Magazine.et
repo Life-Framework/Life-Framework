@@ -1,0 +1,27 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "494910CF99D0B71C"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_Magazine_Name"
+     Description "#LF-Item_Magazine_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.2
+     SizeSetupStrategy Volume
+     ItemVolume 200
+     RestingUP Up
+    }
+    CommonItemType "LF_ITEM"
+   }
+  }
+  MeshObject "{87ABDF39F9006D4B}" {
+   Object "{154DE19AF67DBDFF}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_Document_02.xob"
+  }
+  RigidBody "{3A8B836FEF2D89A6}" {
+   LayerPreset "ItemFireView"
+   ModelGeometry 1
+  }
+ }
+}

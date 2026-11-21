@@ -1,0 +1,16 @@
+{
+  "section": "buyerdemand",
+  "class": "LF_BuyerDemandSavePayload",
+  "version": 1,
+  "roots": "LF_BuyerPurseRow",
+  "records": {
+    "LF_BuyerPurseRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sKey",
+        "int m_iRemaining",
+        "int m_iStamp"
+      ]
+    }
+  }
+}

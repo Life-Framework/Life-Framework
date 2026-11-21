@@ -26,9 +26,10 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { BUDGET, countTree, makeResolver, parseEntities, verdict } from "../perf/building-count.mjs";
+import { attachDropDossiers, dropAsEntry, dropKeys } from "./outposts.mjs";
 import { topLevelCoords } from "../validation/validate-world-zones.mjs";
 import { checkSlotPois, loadPoiKinds } from "./lib/poi-check.mjs";
-import { loadTemplate } from "./map.mjs";
+import { loadOtherDossiers, loadTemplate } from "./map.mjs";
 
 export const help = "check <place> [--complete] [--json] [--no-perf]   one place: required slots mapped, per-slot layers and claims (--complete: every mapped slot fitted), kinds against m_aPlaces, footprints, perf budget; exit 1 on an error";
 
@@ -43,17 +44,17 @@ const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
 export const MARGIN = { building: 2, plot: 2, street: 12 };
 export const SLOT_MARGIN = { taxi: 8, board: 10 }; // a template slot's own `margin` beats these
 // Building-budget size per slot (docs/architecture/performance.md "The budget": a bank, the town hall and the police station are large).
-export const SLOT_SIZE = { arrival: "large", bank: "large", police: "large", board: "small", taxi: "small", parcel: "small", fence: "small" };
+export const SLOT_SIZE = { arrival: "large", bank: "large", police: "large", board: "small", taxi: "small", parcel: "small", "parcel-drops": "small", fence: "small" };
 // Per place: a slot set within this radius shares one view (docs/architecture/performance.md "Per place").
 export const PLACE_RADIUS = 60;
 // LF_Places kinds that only work with a real component on a placed entity, not the marker alone (#2937). The marker switches the
 // system on; the component is what it runs: the jail's cell, the shop a counter sells from. A kind absent here needs nothing but its
 // marker (a clerk or teller is a resident the pack's timetable spawns at the marker). Keep the value a class name.
-export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "LF_ShopComponent", ClothingCounter: "LF_ShopComponent", GunCounter: "LF_ShopComponent" };
+export const BACKED_KINDS = { JailCell: "LF_JailCellComponent", StoreCounter: "LF_ShopComponent", ClothingCounter: "LF_ShopComponent", GunCounter: "LF_ShopComponent", CafeTable: "LF_ShopComponent" };
 export const PLACE_LIMITS = { lights: 24, shadow: 12, entities: 1500 };
 // The market, chess and range slots (#3078): the trader's stall runs LF_TraderManagerComponent, the chess table LF_ChessTableComponent,
 // and a range lane is SCR_FiringRangeTarget, an entity class (BaseBuilding), not a component: `layerBacking` reads those heads too.
-Object.assign(BACKED_KINDS, { MarketTrader: "LF_TraderManagerComponent", ChessTable: "LF_ChessTableComponent", RangeLane: "SCR_FiringRangeTarget" });
+Object.assign(BACKED_KINDS, { MarketTrader: "LF_TraderManagerComponent", WholesaleCounter: "LF_TraderManagerComponent", ChessTable: "LF_ChessTableComponent", RangeLane: "SCR_FiringRangeTarget" });
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
 export const claimNameOf = (place, slot) => `${place}-${slot}.json`;
@@ -120,8 +121,11 @@ export function distToPolygon(px, pz, poly) {
 }
 
 // The ground a slot may use: the mapped building's footprint corners, or the mapped free plot's rectangle. null when unknown.
-export function slotGround(entry, dossier) {
+// An entry with `dossier` names a building of that other place's survey: `others` ({ <slug>: dossier json }) holds it.
+export const buildingKeyOf = (entry) => (entry?.dossier ? `${entry.dossier}/${entry.building}` : entry?.building);
+export function slotGround(entry, dossier, others = null) {
   if (entry?.building) {
+    if (entry.dossier) dossier = others?.[entry.dossier] ?? { buildings: [] };
     const b = (dossier.buildings ?? []).find((x) => x.id === entry.building);
     const f = b?.footprint;
     if (!b) return null;
@@ -180,33 +184,37 @@ export function checkClaimsAndFootprints(data, { complete = false } = {}) {
     const claimName = claimNameOf(place, id);
     const claim = claimsByName[claimName] ?? null;
     const text = layers[layerName];
+    if (Array.isArray(entry.drops)) {
+      checkOutpostsSlot({ id, entry, slot, claim, text, layerName, claimName, complete, place, dossier, mapping, others: data.others, errors, warnings, slots, unfitted });
+      continue;
+    }
     if (!claim && text === undefined && !complete) {
       unfitted.push(id);
       continue;
     }
-    const ground = slotGround(entry, dossier);
-    const row = { slot: id, entry, ground, claim, layer: text ?? null, layerName };
+    const ground = slotGround(entry, dossier, data.others);
+    const row ={ slot: id, entry, ground, claim, layer: text ?? null, layerName };
     slots.push(row);
     const why = complete ? " (--complete: every mapped slot is fitted)" : ` (a fitted slot has both; ${text === undefined ? "the claim has no layer" : "the layer has no claim"})`;
     if (!claim) errors.push(`slot ${id}: no claim ${CLAIMS_DIR}/${claimName}${why}`);
     if (text === undefined) errors.push(`slot ${id}: no layer ${LAYER_DIR}/${layerName}${why}`);
     if (claim) {
       if (claim.place !== place || claim.slot !== id) errors.push(`slot ${id}: ${claimName} names ${claim.place}.${claim.slot}`);
-      if ((entry.building && claim.building !== entry.building) || (entry.plot && claim.plot !== entry.plot)) {
-        errors.push(`slot ${id}: the claim names ${claim.building ?? claim.plot ?? "nothing"}, the mapping says ${entry.building ?? entry.plot}`);
+      if ((entry.building && claim.building !== buildingKeyOf(entry)) || (entry.plot && claim.plot !== entry.plot)) {
+        errors.push(`slot ${id}: the claim names ${claim.building ?? claim.plot ?? "nothing"}, the mapping says ${buildingKeyOf(entry) ?? entry.plot}`);
       }
       if (claim.layer && !String(claim.layer).endsWith(`/${layerName}`)) errors.push(`slot ${id}: the claim's layer is ${claim.layer}, expected ${layerName}`);
       if (claim.destruction?.mode === "needs-hook") {
         warnings.push(`slot ${id}: destruction is "needs-hook" (${claim.destruction.reason ?? "a vanilla building cannot be switched off by a layer"}); fine until the indestructible hook lands, then fit it again`);
       }
     }
-    const key = entry.building ? `building ${entry.building}` : `plot ${entry.plot}`;
+    const key = entry.building ? `building ${buildingKeyOf(entry)}` : `plot ${entry.plot}`;
     if (!entry.shared) {
       if (!holders.has(key)) holders.set(key, []);
       holders.get(key).push(id);
     }
     if (!ground) {
-      errors.push(`slot ${id}: ${key} is not in the dossier of ${place}`);
+      errors.push(`slot ${id}: ${key} is not in the dossier of ${entry.dossier ?? place}`);
       continue;
     }
     if (text !== undefined) {
@@ -229,6 +237,48 @@ export function checkClaimsAndFootprints(data, { complete = false } = {}) {
   }
   for (const [key, names] of byClaim) if (names.length > 1) errors.push(`${key} is named by claims ${names.join(", ")}`);
   return { errors: [...new Set(errors)], warnings, slots, unfitted };
+}
+
+// An outposts slot (`drops`: [{ place, building }], each a building of another place's survey, #2959): one claim and one layer for
+// the lot, each entity within the slot's margin of ONE of the drop buildings. The drops take no exclusive hold on a building (a
+// mailbox on a wall shares it with whatever stands inside, a harbour master in the same cabin). Same errors as a building slot.
+function checkOutpostsSlot(c) {
+  const { id, entry, slot, claim, text, layerName, claimName, complete, place, dossier, mapping, others, errors, warnings, slots, unfitted } = c;
+  const dossiers = { ...others, ...mapping.dropDossiers };
+  if (!claim && text === undefined && !complete) {
+    unfitted.push(id);
+    return;
+  }
+  const polys = [];
+  const missing = [];
+  for (const dr of entry.drops) {
+    const g = slotGround(dropAsEntry(dr), dossier, dossiers);
+    if (g) polys.push(g.poly);
+    else missing.push(`${dr?.place}/${dr?.building}`);
+  }
+  const ground = missing.length ? null : { polys, centre: polys[0].reduce((m, p) => [m[0] + p[0] / polys[0].length, m[1] + p[1] / polys[0].length], [0, 0]), what: `the ${polys.length} drop buildings` };
+  slots.push({ slot: id, entry, ground, claim, layer: text ?? null, layerName });
+  const why = complete ? " (--complete: every mapped slot is fitted)" : ` (a fitted slot has both; ${text === undefined ? "the claim has no layer" : "the layer has no claim"})`;
+  if (!claim) errors.push(`slot ${id}: no claim ${CLAIMS_DIR}/${claimName}${why}`);
+  if (text === undefined) errors.push(`slot ${id}: no layer ${LAYER_DIR}/${layerName}${why}`);
+  if (claim) {
+    if (claim.place !== place || claim.slot !== id) errors.push(`slot ${id}: ${claimName} names ${claim.place}.${claim.slot}`);
+    if (dropKeys(claim.drops).join(",") !== dropKeys(entry.drops).join(",")) {
+      errors.push(`slot ${id}: the claim's drops (${dropKeys(claim.drops).join(", ") || "none"}) differ from the mapping's (${dropKeys(entry.drops).join(", ")})`);
+    }
+    if (claim.layer && !String(claim.layer).endsWith(`/${layerName}`)) errors.push(`slot ${id}: the claim's layer is ${claim.layer}, expected ${layerName}`);
+  }
+  if (!ground) {
+    errors.push(`slot ${id}: ${missing.join(", ")} not in the dossiers of the drops (${dropKeys(entry.drops).join(", ")})`);
+    return;
+  }
+  if (text !== undefined) {
+    const margin = marginOf(slot, entry);
+    for (const c2 of topLevelCoords(text)) {
+      const d = Math.min(...polys.map((poly) => distToPolygon(c2.x, c2.z, poly)));
+      if (d > margin) errors.push(`${LAYER_DIR}/${layerName}: ${c2.name} stands ${r1(d)} m outside ${ground.what}, over the ${margin} m margin of slot ${id}`);
+    }
+  }
 }
 
 // ------------------------------------------------------------------ the full place check
@@ -277,7 +327,9 @@ export function checkPlace(data, opts = {}) {
       const markers = layerMarkers(row.layer);
       const have = new Set(markers.map((m) => m.kind));
       for (const kind of promised) if (!have.has(kind)) errors.push(`slot ${row.slot}: the layer registers no LF_PlaceComponent of kind ${kind}`);
-      for (const m of markers) if (promised.includes(m.kind) && m.id !== `${place}.${row.slot}`) errors.push(`slot ${row.slot}: ${m.kind} marker has id '${m.id}', expected '${place}.${row.slot}'`);
+      // A slot may carry extra circles of one kind (the hostel's second safe circle, #3350): `<place>.<slot>` or `<place>.<slot>-<suffix>`.
+      const slotId = `${place}.${row.slot}`;
+      for (const m of markers) if (promised.includes(m.kind) && m.id !== slotId && !m.id.startsWith(`${slotId}-`)) errors.push(`slot ${row.slot}: ${m.kind} marker has id '${m.id}', expected '${slotId}' or '${slotId}-<suffix>'`);
     }
     if (known) for (const kind of promised) if (!known.has(kind)) warnings.push(`slot ${row.slot}: kind ${kind} is in no system's m_aPlaces (LF_SystemCatalog.conf); the layer is right but nothing looks for it yet`);
   }
@@ -385,6 +437,7 @@ export function loadPlace(root, place, { poiKinds = undefined, templateFile = nu
   if (!existsSync(mFile)) throw new Error(`no mapping: ${mFile} does not exist (tools\\cli town map ${place})`);
   const dossier = readJson(dFile);
   const mapping = readJson(mFile);
+  attachDropDossiers(root, mapping);
   const template = templateFile ? readJson(templateFile) : loadTemplate(mapping.template, root);
   const claims = {};
   const cDir = join(root, claimsDir);
@@ -408,7 +461,7 @@ export function loadPlace(root, place, { poiKinds = undefined, templateFile = nu
       poi = null; // no POI conf under this root: the check notes it and skips
     }
   }
-  return { place, dossier, mapping, template, claims, layers, catalogKinds, poiKinds: poi };
+  return { place, dossier, mapping, template, claims, layers, catalogKinds, poiKinds: poi, others: loadOtherDossiers(root, mapping) };
 }
 
 // ------------------------------------------------------------------ CLI

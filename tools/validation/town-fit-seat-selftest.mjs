@@ -19,7 +19,14 @@
 //   seatRows floor branch skipped (no `l.y += top - bottom`)  -> FAIL floor offset: a row that sank stayed 0.301 m off the host floor
 //   wall snap returning null                                     -> FAIL wall offset: the box stayed 1.250 m off the wall at z -4
 //   cutWalls returning []                                        -> FAIL clip: a counter half through a wall was not refused (and the shallow one stayed in it)
-//   anchorFor ignoring sameShell                                 -> FAIL same shell: the kit was not anchored at the host's origin and yaw (yaw -90)
+//   the `standoff` term in the wall branch removed               -> FAIL standoff: a wall row with standoff 0.07 stands at z -3.745, not 0.07 m off the wall
+//   the `lift` line in seatRows removed                          -> FAIL lift: a floor row with lift -0.045 stands at y 0.200, not 0.155 (2026-11-19)
+//   (#3552, 2026-11-19, each broken once, FAIL seen, then restored)
+//   terrain branch using the centre height only                  -> FAIL terrain row: the row rests on the centre ground, so its high corner sinks into the slope
+//   the terrain branch removed (row left at the kit height)      -> FAIL terrain row: y ... is not the highest ground under its footprint
+//   `relative` mount removed from mountOf                        -> FAIL fence: held as floor, layer y ... (want relative, -0.1 over the ground)
+//   footprintPoints without the pole rule                        -> FAIL pole: 5 point(s), y ... is not the ground under its pivot
+//   anchorFor ignoring sameShell                                -> FAIL same shell: the kit was not anchored at the host's origin and yaw (yaw -90)
 
 import { readFileSync, readdirSync, rmSync, writeFileSync, mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -124,6 +131,24 @@ for (const [floorY, what] of [[0.5, "sank"], [0, "floated"]]) {
   check(near(local(rows[0].coords)[0], before[0]) && near(local(rows[0].coords)[2], before[2]), "a row in the host's furniture was moved instead of flagged");
 }
 
+// ---- a kit row's `lift` sinks a floor row below the model's top surface (the hall tiles of House_Town_E_2I02, #3236)
+{
+  const rows = [at("lifted", -3, 0.2, 2)];
+  const kitRows = [{ id: "lifted", verb: "on floor", role: "counter", prefab: STALL, lift: -0.045 }];
+  const res = await seat.seatRows(rows, kitRows, HOST, { reader: reader({ "Fixture/Host.et": room(0.2) }) });
+  check(near(local(rows[0].coords)[1], 0.2 - 0.045), `lift: a floor row with lift -0.045 stands at y ${local(rows[0].coords)[1].toFixed(3)}, not 0.155`);
+  check(res.rows[0].notes.some((n) => /lifted/.test(n)), "lift: the seat report does not say the row was lifted");
+}
+
+// ---- a kit row's `standoff` stands a wall row off the wall plane (a stepped facade under a long fascia, #3685)
+{
+  const rows = [at("plate", 0, 1.5, -2.5, 0)];
+  const kitRows = [{ id: "plate", verb: "against wall", role: "sign", on: "wall", prefab: STALL, standoff: 0.07 }];
+  const res = await seat.seatRows(rows, kitRows, HOST, { reader: reader({ "Fixture/Host.et": room(0.2) }) });
+  check(near(local(rows[0].coords)[2], -4 + 0.25 + seat.WALL_GAP + 0.07), `standoff: a wall row with standoff 0.07 stands at z ${local(rows[0].coords)[2].toFixed(3)}, not 0.07 m off the wall`);
+  check(res.rows[0].notes.some((n) => /off the wall/.test(n)), "standoff: the seat report does not say the row stands off");
+}
+
 // ---- a socket row is left out; a furniture set with no bounds stays where the kit puts it
 {
   const rows = [at("fascia", 0, 1.4, 0, 180), at("set", 0, 0, 0, 0, "{0000000000000000}Prefabs/Fixture/Furniture_Set.et")];
@@ -204,6 +229,73 @@ const ctx = { root: ROOT, run: noGit, shell: reader(shells) };
   check(/^SKIP +fit-sign/m.test(text), "fit --check did not mark the socket row SKIP");
   check(readdirSync(out).sort().join(",") === "Place_sample-square_shop.layer,kits" && readFileSync(layer, "utf8").includes(`${b03.y + 0.399}`), "fit --check wrote or changed files");
   rmSync(out, { recursive: true, force: true });
+}
+
+// ---- open ground (#3552): a terrain row rests on the probed ground, a terrain-relative class counts from the ground
+{
+  const terr = await import(pathToFileURL(join(ROOT, "tools", "town", "terrain.mjs")).href);
+  const FENCE = "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et";
+  const POLE = "{DDE764E40C17C5DC}Prefabs/Sites/LF_SiteFlag.et";
+  const infos = {
+    [FENCE]: { bounds: { min: [-2, 0.1, -0.05], max: [2, 1.9, 0.05] }, scale: 1 },
+    [POLE]: { bounds: { min: [-0.5, -0.8, -0.1], max: [0.5, 3, 0.1] }, scale: 1 },
+  };
+  const rd = { info: (p) => infos[p] ?? BOX, shell: async () => room(0) };
+  const slope = { at: (x, z) => 20 + 0.1 * (x - 100) + 0.05 * (z - 200) }; // a plane rising to +x and +z
+  const slopeKit = (id, extra = {}) => ({ id, verb: "on floor", role: "dressing", prefab: STALL, mount: "terrain", ...extra });
+
+  // a box 1 x 0.5 m on the slope: its bottom rests on the highest of the centre and the four corners
+  const rows = [at("t", 1.5, 0, 1)];
+  const res = await seat.seatRows(rows, [slopeKit("t")], HOST, { reader: rd, terrain: slope });
+  const heights = (res.rows[0].samples ?? []).map((p) => slope.at(p[0], p[1]));
+  check(res.rows[0].mount === "terrain" && heights.length === 5, `terrain row: held as ${res.rows[0].mount} with ${heights.length} footprint points (want terrain, 5)`);
+  check(near(rows[0].coords[1], Math.max(...heights)), `terrain row: y ${rows[0].coords[1]} is not the highest ground under its footprint ${Math.max(...heights)}`);
+  check(rows[0].coords[1] > heights[0] + 0.01, "terrain row: the row rests on the centre ground, so its high corner sinks into the slope");
+  check(res.terrainPoints.length === 5, `terrain row: seatRows named ${res.terrainPoints.length} probe point(s), not 5`);
+  {
+    const lr = [rows[0] && { ...rows[0], coords: [...rows[0].coords] }];
+    await seat.seatRows(lr, [slopeKit("t", { lift: -0.015 })], HOST, { reader: rd, terrain: slope });
+    check(near(lr[0].coords[1], Math.max(...heights) - 0.015), `terrain lift: a terrain row with lift -0.015 stands at y ${lr[0].coords[1]}, not 1.5 cm under the highest ground`);
+  }
+
+  // no probed height: kept at the kit height and reported as unseated
+  const kept = [at("t", 1.5, 3, 1)];
+  const r2 = await seat.seatRows(kept, [slopeKit("t")], HOST, { reader: rd });
+  check(near(kept[0].coords[1], HOST.y + 3) && r2.unseated.length === 1, `terrain row without a probe moved to y ${kept[0].coords[1]} or was not reported (unseated ${r2.unseated.length})`);
+  const half = [at("t", 1.5, 3, 1)];
+  let n = 0;
+  const r3b = await seat.seatRows(half, [slopeKit("t")], HOST, { reader: rd, terrain: { at: (x, z) => (n++ === 2 ? null : slope.at(x, z)) } });
+  check(near(half[0].coords[1], HOST.y + 3) && r3b.unseated.length === 1, "terrain row with one unprobed corner was moved instead of left");
+
+  // a pole (mesh below the pivot) stands by its pivot: one point, the pivot's ground
+  const pole = [at("p", 2, 0, 2, 0, POLE)];
+  const r4 = await seat.seatRows(pole, [slopeKit("p", { prefab: POLE })], HOST, { reader: rd, terrain: slope });
+  check(r4.rows[0].samples.length === 1 && near(pole[0].coords[1], slope.at(pole[0].coords[0], pole[0].coords[2])), `pole: ${r4.rows[0].samples.length} point(s), y ${pole[0].coords[1]} is not the ground under its pivot`);
+
+  // a "ground" row: its y is the height over the ground, the bottom of its bounds (here 0.1 up: -0.1); fit turns it into the prefab's frame
+  const fence = [at("f", -3, 3, 4, 0, FENCE)];
+  const r5 = await seat.seatRows(fence, [{ id: "f", verb: "on floor", role: "dressing", prefab: FENCE, mount: "ground" }], HOST, { reader: rd });
+  check(r5.rows[0].mount === "ground" && r5.rows[0].overGround && near(fence[0].coords[1], -0.1), `fence: held as ${r5.rows[0].mount}, layer y ${fence[0].coords[1]} (want ground, -0.1 over the ground)`);
+  // a ground row with a kit `lift` stands that much higher over the ground: a fence panel on a slope (#3968, the wheat field west fence)
+  // red-proof: 2026-11-21, with the ground branch's lift lines removed this printed "FAILED ground lift: ...".
+  const fenceL = [at("f", -3, 3, 4, 0, FENCE)];
+  await seat.seatRows(fenceL, [{ id: "f", verb: "on floor", role: "dressing", prefab: FENCE, mount: "ground", lift: 0.4 }], HOST, { reader: rd });
+  check(near(fenceL[0].coords[1], -0.1 + 0.4), `ground lift: a ground row with lift 0.4 stands at y ${fenceL[0].coords[1]}, not 0.3 over the ground`);
+  // the layer class token says nothing about the frame (the police street bins of #3566 sank 17 m under it): no ground mount from it
+  // red-proof: 2026-11-21, with mountOf still reading class SCR_DestructibleEntity this printed "FAILED a class token alone ...".
+  check(seat.mountOf({ verb: "on floor", class: "SCR_DestructibleEntity", prefab: FENCE }).mount === "floor", "a class token alone does not make a row a ground row");
+
+  // terrain.mjs: the answers are keyed by point; a missing ray is named, never guessed
+  const pts = [[1, 2], [3.0004, 4], [1, 2]];
+  const lines = terr.probeLines(pts, 100);
+  check(lines.length === 2 && lines[0] === "ray t0 1 160 2 1 40 2", `probeLines: ${JSON.stringify(lines)}`);
+  const pinned = terr.pinsFromRays(pts, new Map([["t0", { sy: 100.1234 }]]));
+  check(pinned.points["1,2"] === 100.123 && pinned.missing.length === 1 && pinned.missing[0] === "3,4", `pinsFromRays: ${JSON.stringify(pinned)}`);
+  const lookup = terr.terrainFromPins(pinned);
+  check(lookup.at(1, 2) === 100.123 && lookup.at(3, 4) === null && terr.terrainFromPins(null) === null, "terrainFromPins: a probed point answers, an unprobed one is null");
+  let asked = [];
+  const probed = await terr.probeTerrain([[6638.419, 5970.232]], { layerName: "Place_farmcompound_compound.layer", aroundY: 115, log: () => {}, measure: (records, o) => ((asked = o.extra), { outText: "ray t0 d=1 len=2 hit=none root=none p=1,1,1 sy=116.25" }) });
+  check(asked.length === 1 && /^ray t0 6638\.419 175 5970\.232 6638\.419 55 5970\.232$/.test(asked[0]) && probed.points["6638.419,5970.232"] === 116.25, `probeTerrain: asked ${JSON.stringify(asked)}, got ${JSON.stringify(probed)}`);
 }
 
 console.log(failed ? `SUMMARY town-fit-seat-selftest fail ${failed}` : "SUMMARY town-fit-seat-selftest ok");

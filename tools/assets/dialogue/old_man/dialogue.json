@@ -5,6 +5,7 @@
   "speaker_key": "#LF-Townsfolk_OldMan_Name",
   "voice": {
     "id": "nTMUXLFSfbWmdKKy7nDC",
+    "sex": "male",
     "name": "Alder - Warm, Raspy and Comforting",
     "public_owner_id": "20fba41d288ee835b5e24d946dd0a7ca1015cf9a951cbf710d8532529656ffaf",
     "why": "Gaspard Lenoir is old and weathered. Alder is a seasoned old-man voice with a gentle rasp and a slow-paced, comforting delivery, a long way from the other three speakers. Slowed to speed 0.85 for a man who only watches the square.",
@@ -16,28 +17,83 @@
       "speed": 0.85
     }
   },
-  "budget_chars": 1500,
+  "budget_chars": 1800,
   "hear_range_m": 10,
   "start": "greet",
   "nodes": [
     { "id": "greet_refuses", "line": "greet_refuses" },
     { "id": "greet_wary", "line": "greet_wary", "options": [{ "text": "bye", "next": "bye" }] },
-    { "id": "greet_friendly", "line": "greet_friendly", "options_from": "greet" },
-    { "id": "greet_regular", "line": "greet_regular", "options_from": "greet" },
+    {
+      "id": "greet_friendly",
+      "line": "greet_friendly",
+      "options": [
+        { "text": "zone", "next": "zone" },
+        { "text": "hand_in", "next": "anniversary_letter_thanks", "condition": "QuestItemsHeld", "action": "QuestConverse", "param": "anniversary_letter" },
+        { "text": "cove", "next": "cove", "condition": "CoveTip", "action": "CoveTip", "param": "fishermans-bay:3" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    {
+      "id": "greet_regular",
+      "line": "greet_regular",
+      "options": [
+        { "text": "zone", "next": "zone" },
+        { "text": "hand_in", "next": "anniversary_letter_thanks", "condition": "QuestItemsHeld", "action": "QuestConverse", "param": "anniversary_letter" },
+        { "text": "cove", "next": "cove", "condition": "CoveTip", "action": "CoveTip", "param": "fishermans-bay:3" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
     {
       "id": "greet",
       "line": "greet",
       "options": [
         { "text": "zone", "next": "zone" },
+        { "text": "hand_in", "next": "anniversary_letter_thanks", "condition": "QuestItemsHeld", "action": "QuestConverse", "param": "anniversary_letter" },
+        { "text": "start", "next": "start" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    {
+      "id": "zone",
+      "line": "zone",
+      "options": [
+        { "text": "secret", "next": "anniversary_letter_secret", "condition": "QuestTurnedIn", "param": "anniversary_letter" },
         { "text": "move", "next": "move" },
         { "text": "start", "next": "start" },
         { "text": "bye", "next": "bye" }
       ]
     },
-    { "id": "zone", "line": "zone", "options_from": "greet" },
-    { "id": "move", "line": "move", "options_from": "greet" },
-    { "id": "start", "line": "start", "options_from": "greet" },
-    { "id": "bye", "line": "bye" }
+    {
+      "id": "move",
+      "line": "move",
+      "options": [
+        { "text": "zone", "next": "zone" },
+        { "text": "secret", "next": "anniversary_letter_secret", "condition": "QuestTurnedIn", "param": "anniversary_letter" },
+        { "text": "start", "next": "start" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    {
+      "id": "start",
+      "line": "start",
+      "options": [
+        { "text": "zone", "next": "zone" },
+        { "text": "move", "next": "move" },
+        { "text": "secret", "next": "anniversary_letter_secret", "condition": "QuestTurnedIn", "param": "anniversary_letter" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "cove", "line": "cove", "options": [{ "text": "bye", "next": "bye" }] },
+    { "id": "bye", "line": "bye" },
+    {
+      "id": "anniversary_letter_thanks",
+      "line": "anniversary_letter_thanks",
+      "options": [
+        { "text": "secret", "next": "anniversary_letter_secret" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
+    { "id": "anniversary_letter_secret", "line": "anniversary_letter_secret", "options": [{ "text": "bye", "next": "bye" }] }
   ],
   "lines": {
     "greet_refuses": { "text": "I saw what you did. Keep walking." },
@@ -56,14 +112,26 @@
     "start": {
       "text": "Read the town board on the square. It shows where everything is. Then see the clerk, right beside it. He was kind to us, and he will be kind to you."
     },
+    "cove": {
+      "text": "You have the hands for it now. There is a cove below the lighthouse, Fisherman Bay. Go at dusk, when the bass come in close. I have marked it on your map."
+    },
     "bye": {
       "text": "Go well. Come and sit with me again some time."
+    },
+    "anniversary_letter_thanks": {
+      "text": "Dominique. Three years, and it comes to me out of a heap of flowers. Thank you for carrying it."
+    },
+    "anniversary_letter_secret": {
+      "text": "Dominique counted the drums before they emptied the Zone. He wrote the markings down for the mayor. I saw the same marks on the night boats, and I said nothing. Keep this to yourself until you know who is listening."
     }
   },
   "replies": {
     "zone": "Do you remember the zone?",
     "move": "What was the move like?",
     "start": "Where should I start here?",
-    "bye": "Goodbye."
+    "cove": "Know a good place to fish?",
+    "bye": "Goodbye.",
+    "hand_in": "I found a letter in the church flowers. It is addressed to you.",
+    "secret": "What did Dominique know?"
   }
 }

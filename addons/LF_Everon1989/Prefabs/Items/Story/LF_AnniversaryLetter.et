@@ -1,0 +1,28 @@
+GenericEntity : "{5CF603986376EAA9}Prefabs/Items/Misc/IntelligenceFolder_E_01/IntelligenceFolder_E_01_base.et" {
+ ID "3465C00000000001"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_AnniversaryLetter_Name"
+     Description "#LF-Item_AnniversaryLetter_Desc"
+    }
+   }
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions + {
+    LF_ReadNoteAction "{3793E00000000001}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3793E00000000002}" {
+      Name "#LF-Item_AnniversaryLetter_Read"
+     }
+     m_sTitleKey "#LF-Item_AnniversaryLetter_ReadTitle"
+     m_sTextKey "#LF-Item_AnniversaryLetter_ReadText"
+     m_fSeconds 30
+    }
+   }
+  }
+ }
+}

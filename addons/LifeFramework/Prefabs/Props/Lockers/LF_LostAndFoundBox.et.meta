@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6C0E8D3B1A5F9247}Prefabs/Props/Lockers/LF_LostAndFoundBox.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

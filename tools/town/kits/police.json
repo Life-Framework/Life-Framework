@@ -1,0 +1,596 @@
+{
+  "schema": 1,
+  "kit": "police",
+  "system": "",
+  "source": {
+    "file": "tools/town/kits/sources/police.layer",
+    "group": "PoliceKit_*",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et"
+  },
+  "anchoring": {
+    "floorY": -0.05,
+    "floors": [
+      {
+        "id": "f0",
+        "y": -0.05
+      },
+      {
+        "id": "f1",
+        "y": 2.95
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -3.3,
+        -3.66
+      ],
+      "max": [
+        5.9,
+        7.4
+      ]
+    },
+    "front": "+z",
+    "counters": [
+      {
+        "id": "police-kit-duty-desk",
+        "wall": "free",
+        "edgeGap": 2.1
+      },
+      {
+        "id": "police-kit-decor-23",
+        "wall": "-z",
+        "edgeGap": 0.68
+      }
+    ],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "police-kit-wanted-board",
+      "name": "PoliceKit_WantedBoard",
+      "prefab": "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et",
+      "role": "board",
+      "verb": "on floor",
+      "offset": [
+        3.25,
+        1.15,
+        -3.66
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-duty-desk",
+      "name": "PoliceKit_DutyDesk",
+      "prefab": "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        3.8,
+        0.036,
+        -0.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "police-kit-armory",
+      "name": "PoliceKit_Armory",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        5.55,
+        0.035,
+        -3.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {
+            "Object": "\"{138FB8A2D71B1603}Assets/Props/Furniture/CabinetMetal_01/CabinetMetal_01.xob\""
+          },
+          "blocks": [
+            "Materials"
+          ]
+        },
+        {
+          "component": "RigidBody",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "RplComponent",
+          "set": {
+            "Enabled": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-armory-store",
+      "name": "PoliceKit_ArmoryStore",
+      "prefab": "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        2.45,
+        0.036,
+        -3.3
+      ],
+      "yaw": 0,
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "police-kit-evidence-locker",
+      "name": "PoliceKit_EvidenceLocker",
+      "prefab": "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        1.5,
+        0.036,
+        -3.4
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_BreachTargetComponent",
+          "set": {
+            "m_sTargetId": "\"PoliceKit_Police_EvidenceLocker\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-dispatch-board",
+      "name": "PoliceKit_DispatchBoard",
+      "prefab": "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et",
+      "role": "board",
+      "verb": "against wall",
+      "offset": [
+        4.2,
+        1.25,
+        -3.66
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-case-board",
+      "name": "PoliceKit_CaseBoard",
+      "prefab": "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et",
+      "role": "board",
+      "verb": "against wall",
+      "offset": [
+        5.9,
+        1.5,
+        -0.6
+      ],
+      "yaw": 90,
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-handcuffs",
+      "name": "PoliceKit_Handcuffs",
+      "prefab": "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et",
+      "role": "dressing",
+      "verb": "on police-kit-duty-desk",
+      "offset": [
+        3,
+        0.96,
+        -0.1
+      ],
+      "yaw": 20,
+      "floor": "f0",
+      "attach": "counter:police-kit-duty-desk"
+    },
+    {
+      "id": "police-kit-duty-clock-hall",
+      "name": "PoliceKit_DutyClock_Hall",
+      "prefab": "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0.725,
+        0.508,
+        -1.64
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "SCR_SoundDataComponent",
+          "set": {},
+          "blocks": [
+            "m_aAudioSourceConfiguration"
+          ]
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "police-kit-duty-clock-room",
+      "name": "PoliceKit_DutyClock_Room",
+      "prefab": "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0.4,
+        0.508,
+        -2.6
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "SCR_SoundDataComponent",
+          "set": {},
+          "blocks": [
+            "m_aAudioSourceConfiguration"
+          ]
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "police-kit-decor-1",
+      "name": "PoliceKit_Decor_1",
+      "prefab": "{25B473F35DCBDA7A}Prefabs/Props/Civilian/ClockUniversal_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        5.9,
+        2.2,
+        2.4
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-decor-6",
+      "name": "PoliceKit_Decor_6",
+      "prefab": "{9BDAE42023AB3357}Prefabs/Comms/LF_DispatchPhone.et",
+      "role": "dressing",
+      "verb": "on police-kit-duty-desk",
+      "offset": [
+        3.55,
+        0.944,
+        -0.2
+      ],
+      "yaw": 160,
+      "floor": "f0",
+      "attach": "counter:police-kit-duty-desk"
+    },
+    {
+      "id": "police-kit-decor-12",
+      "name": "PoliceKit_Decor_12",
+      "prefab": "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -1.7,
+        3.846,
+        -0.1
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f1",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-decor-13",
+      "name": "PoliceKit_Decor_13",
+      "prefab": "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -1.7,
+        3.846,
+        -1.9
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f1",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-decor-15",
+      "name": "PoliceKit_Decor_15",
+      "prefab": "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et",
+      "role": "light",
+      "verb": "on police-kit-decor-12",
+      "offset": [
+        -1.9,
+        4.735,
+        -1.2
+      ],
+      "yaw": 60,
+      "floor": "f1",
+      "attach": "table:police-kit-decor-12"
+    },
+    {
+      "id": "police-kit-decor-19",
+      "name": "PoliceKit_Decor_19",
+      "prefab": "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et",
+      "role": "board",
+      "verb": "against wall",
+      "offset": [
+        5.9,
+        5,
+        1.2
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f1",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-decor-21",
+      "name": "PoliceKit_Decor_21",
+      "prefab": "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et",
+      "role": "light",
+      "verb": "against wall",
+      "offset": [
+        1.45,
+        2.55,
+        6.9
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {},
+          "blocks": [
+            "Materials"
+          ]
+        }
+      ],
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-decor-22",
+      "name": "PoliceKit_Decor_22",
+      "prefab": "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et",
+      "role": "light",
+      "verb": "against wall",
+      "offset": [
+        0.25,
+        2.45,
+        3.76
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {},
+          "blocks": [
+            "Materials"
+          ]
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-decor-30",
+      "name": "PoliceKit_Decor_30",
+      "prefab": "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        0.45,
+        0.035,
+        -3.3
+      ],
+      "yaw": 30,
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-decor-31",
+      "name": "PoliceKit_Decor_31",
+      "prefab": "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -1.75,
+        0.01,
+        -3.4
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-desk-officer",
+      "name": "PoliceKit_DeskOfficer",
+      "prefab": "{61CE39AA52347555}Prefabs/Characters/Npcs/Outfits/LF_Npc_Police_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        3.8,
+        0.036,
+        -1.3
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "police-kit-sign-front",
+      "name": "PoliceKit_Sign_Front",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -1.07,
+        2.9,
+        6.93
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"police_front\"",
+            "m_vRimColor": "0.85 0.85 0.88",
+            "m_vPaintColor": "0.08 0.16 0.38",
+            "m_vTextColor": "0.95 0.95 0.97"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f1",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-street-bench",
+      "name": "PoliceKit_StreetBench",
+      "prefab": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        3,
+        0,
+        7.3
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor",
+      "mount": "terrain",
+      "lift": 0.131
+    },
+    {
+      "id": "police-kit-street-bin",
+      "name": "PoliceKit_StreetBin",
+      "prefab": "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        1.45,
+        0,
+        7.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor",
+      "mount": "terrain"
+    },
+    {
+      "id": "police-kit-flowerpot-1",
+      "name": "PoliceKit_Flowerpot_1",
+      "prefab": "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        -3.3,
+        0,
+        7.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor",
+      "mount": "terrain",
+      "lift": 0.135
+    },
+    {
+      "id": "police-kit-flowerpot-2",
+      "name": "PoliceKit_Flowerpot_2",
+      "prefab": "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0.5,
+        0,
+        7.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor",
+      "mount": "terrain",
+      "lift": 0.114
+    }
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et",
+    "lanes": [
+      {
+        "from": "entrance",
+        "to": "police-kit-duty-desk",
+        "width": 1.2
+      }
+    ],
+    "clear": []
+  }
+}

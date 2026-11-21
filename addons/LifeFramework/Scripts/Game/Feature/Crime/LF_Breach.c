@@ -56,6 +56,8 @@ class LF_BreachTarget : Managed
 	//! The footprint card the arm planned. It lies when the charge detonates (Open), never before;
 	//! a cancelled, repaired or reset charge drops it.
 	ref LF_PendingFootprint m_Footprint;
+	//! Who armed the last charge; LF_OnBreachOpened carries it (#3411).
+	string m_sArmedBy;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -165,6 +167,7 @@ class LF_Breach
 	//! next stop and the armory store is refilled; neither is a player repair.
 	static void Reset(string targetId)
 	{
+		LF_EvidenceLockerFill.OnBreakIn(targetId);
 		LF_BreachTarget target = Targets().Get(targetId);
 		if (!target)
 			return;
@@ -291,6 +294,8 @@ class LF_Breach
 
 		target.m_bChargeArmed = true;
 		target.m_fElapsed = 0;
+		LF_PrisonBreak.OnArmed(targetId, playerUid, suspect);
+		target.m_sArmedBy = playerUid;
 
 		if (FuseElapsed(target.m_fFuseSeconds, 0))
 			Open(target);
@@ -328,6 +333,7 @@ class LF_Breach
 		if (!target || !target.m_bChargeArmed)
 			return;
 
+		LF_EvidenceLockerFill.OnBreakIn(targetId);
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
 		target.m_Footprint = null;
@@ -498,6 +504,9 @@ class LF_Breach
 		SyncTarget(target);
 		LF_Debug.Log("Breach", string.Format("lock opened: %1", target.m_sTargetId));
 		LeaveEvidence(target);
+		LF_PrisonBreak.OnOpened(target.m_sTargetId);
+		if (Replication.IsServer())
+			LF_EventBus.Publish(LF_OnBreachOpened.Create(target.m_sTargetId, target.m_sArmedBy));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -45,7 +45,7 @@ type RegAge 24
 click SignButton
 wait 8000
 
-step 1 Spawn on the south road and walk into the square
+step 1 Wake in the hostel safe circle and walk to the town hall
 expect cash =100
 expect bank =1000
 shot ui island_01_spawn
@@ -53,38 +53,42 @@ stand Fit_saint_philippe_arrival_Place
 wait 1500
 shot ui island_01_square
 
-step 2 The clerk greets you; read the rules pending #2932
-stand Fit_saint_philippe_arrival_Clerk
+step 2 The clerk greets you; read the rules
+stand Fit_saint_philippe_arrival_town_hall_clerk
 wait 1500
-use LF_DialogueTalkAction Fit_saint_philippe_arrival_Clerk
+use LF_QuestAction Fit_saint_philippe_arrival_town_hall_clerk
 wait 4000
 shot ui island_02_clerk_greets
 input MenuSelect
 wait 2000
 input MenuBack
 wait 1500
-stand Fit_saint_philippe_arrival_Sign_Rules
+stand Fit_saint_philippe_arrival_lf_sign_rules
 wait 1000
-use LF_SignReadAction Fit_saint_philippe_arrival_Sign_Rules
+use LF_SignReadAction Fit_saint_philippe_arrival_lf_sign_rules
 wait 1000
 shot ui island_02_rules
 input MenuBack
 wait 1000
 
-step 3 Sign up for courier work pending #2325
-stand Fit_saint_philippe_parcel_Roadmap_Job_Depot
+step 3 Sign up for courier work
+stand Fit_saint_philippe_parcel_job_depot
 wait 1500
-use LF_JobSignUpAction Fit_saint_philippe_parcel_Roadmap_Job_Depot
+use LF_JobSignUpAction Fit_saint_philippe_parcel_job_depot
 wait 1000
 expect job PARCEL
 shot ui island_03_signed_up
 
-step 4 Deliver one parcel and get paid pending #2325
-use LF_JobStartRunAction Fit_saint_philippe_parcel_Roadmap_Job_Depot
+# The drops stand 300 m or more from the depot (runMinDistance), so the run is also timed: it pays only after
+# distance / 10 m/s * 0.6 s on the clock (318 m = 19 s). The teleport is quick, so the flow waits the time out.
+# Drop points are Fit_<place>_parcel_drops_drop_<building> in Place_saint-philippe_parcel-drops.layer (the dock
+# metal shed b05 is 318 m from the depot).
+step 4 Deliver one parcel and get paid
+use LF_JobStartRunAction Fit_saint_philippe_parcel_job_depot
 wait 1000
-stand Fit_saint_philippe_parcel_Roadmap_Job_Drop
-wait 1500
-use LF_JobDropoffAction Fit_saint_philippe_parcel_Roadmap_Job_Drop
+stand Fit_saint_philippe_dock_parcel_drops_drop_b05
+wait 24000
+use LF_JobDropoffAction Fit_saint_philippe_dock_parcel_drops_drop_b05
 wait 1000
 shot ui island_04_paid
 expect cash up
@@ -99,8 +103,9 @@ click Key0Button
 click DepositButton
 wait 1500
 shot ui island_05_banked
-# The permit costs $250 and a newcomer carries about $100: take $200 out for step 6b.
-click Key2Button
+# The permit costs $250 and the driving licence $100, and a newcomer carries about $100: take $300
+# out for steps 6b and 6c. The car (step 6d) is paid from the bank.
+click Key3Button
 click Key0Button
 click Key0Button
 click WithdrawButton
@@ -108,13 +113,13 @@ wait 1500
 shot ui island_05_withdrawn
 click CloseButton
 wait 500
-expect cash +180
-expect bank -180
+expect cash +280
+expect bank -280
 
-step 6 Buy a shirt at the clothing shop pending #2315
-stand Fit_saint_philippe_clothing_Shop_Clothing
+step 6 Buy a shirt at the clothing shop
+stand Fit_saint_philippe_clothing_counter_shop_01
 wait 1500
-use LF_ShopAction Fit_saint_philippe_clothing_Shop_Clothing
+use LF_ShopAction Fit_saint_philippe_clothing_counter_shop_01
 wait 1200
 type Search Shirt
 wait 800
@@ -141,23 +146,35 @@ click CloseButton
 wait 500
 expect cash -250
 
-step 6c Buy the cheapest car at the lot pending #2933
+step 6c Buy the driving licence at the town hall desk
+# The flagship's car lot refuses a buyer without the driving licence (#3151): $100 in carried cash at
+# the licence desk in the town hall. The desk is an unnamed part of the town hall furniture about 10 m
+# from that prefab's origin (past the harness's 1.5 m part reach), and 1 to 2 m from the clerk: stand at
+# the clerk and use the nearest desk.
+stand Fit_saint_philippe_arrival_town_hall_clerk
+wait 1500
+use LF_LicenceDeskDrivingAction
+wait 1500
+shot ui island_06c_driving_licence
+expect cash -100
+
+step 6d Buy the cheapest car at the lot pending #2933
 stand Fit_saint_philippe_carlot_vehicle_lot
 wait 1500
 use LF_VehicleBuyAction Fit_saint_philippe_carlot_vehicle_lot
 wait 1500
-shot ui island_06c_lot
+shot ui island_06d_lot
 click Car0_Action
 wait 2000
-shot ui island_06c_bought
+shot ui island_06d_bought
 click LotClose
 wait 500
 expect money down
 
 step 7 Buy water at the general store pending #2314
-stand Fit_saint_philippe_general_store_Shop_GeneralStore
+stand Fit_saint_philippe_general_store_general_store_till
 wait 1500
-use LF_ShopAction Fit_saint_philippe_general_store_Shop_GeneralStore
+use LF_ShopAction Fit_saint_philippe_general_store_general_store_till
 wait 1200
 type Search Water
 wait 800

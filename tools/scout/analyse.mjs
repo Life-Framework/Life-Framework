@@ -482,8 +482,113 @@ export function terrain(grid, centre, radius) {
   if (t.tilt.fallsToward) t.notes.push(`overall the ground falls ${t.tilt.deg} degrees toward the ${t.tilt.fallsToward}`);
   else t.notes.push("the ground is level overall");
   if (t.steepest.deg >= 15) t.notes.push(`steepest ground ${t.steepest.deg} degrees at ${t.steepest.x}, ${t.steepest.z}`);
-  if (t.nearestWater) t.notes.push(`the sea is ${t.nearestWater.distance} m away to the ${t.nearestWater.direction}${t.waterShare > 0 ? ` (${Math.round(t.waterShare * 100)}% of the circle is water)` : ""}`);
+  if (t.nearestWater) t.notes.push(`open water (the sea or a lake) is ${t.nearestWater.distance} m away to the ${t.nearestWater.direction}${t.waterShare > 0 ? ` (${Math.round(t.waterShare * 100)}% of the circle is water)` : ""}`);
   return t;
+}
+
+// ------------------------------------------------------------------ lakes and ponds (#3666)
+
+// The engine's ocean probe (GW rows) sees the sea only: Black Lake read waterShare 0 and a plot lay on its middle. A lake is
+// the closed outline of a shape that owns a lake generator, which the plugin writes as a W row; a dump from before that holds
+// the same shape as a spline R row named after the lake (Lake_Durras), so a lake-named spline counts too.
+const LAKE_NAME = /(^|[_\s-])(lake|pond|reservoir|tarn)([_\s-]|$)/i;
+export const isLakeShape = (r) => !!r && r.points?.length >= 3 && (r.cls === "LakeGeneratorEntity" || LAKE_NAME.test(r.name ?? ""));
+
+// Pure: the water outlines of a dump -> [{ name, source: "outline"|"named-spline", points: [[x, z]], y }].
+export function lakeShapes(dump) {
+  const out = [];
+  for (const r of dump.waters ?? []) if (r.points?.length >= 3) out.push({ name: r.name, source: "outline", points: r.points.map((p) => [p[0], p[2]]), y: r.points.reduce((s, p) => s + p[1], 0) / r.points.length });
+  for (const r of dump.roads ?? []) if (isLakeShape(r)) out.push({ name: r.name, source: "named-spline", points: r.points.map((p) => [p[0], p[2]]), y: r.points.reduce((s, p) => s + p[1], 0) / r.points.length });
+  return out;
+}
+
+// Pure: is (x, z) inside the polygon (even-odd rule).
+export function inPolygon(poly, x, z) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const [xi, zi] = poly[i];
+    const [xj, zj] = poly[j];
+    if (zi > z !== zj > z && x < ((xj - xi) * (z - zi)) / (zj - zi) + xi) inside = !inside;
+  }
+  return inside;
+}
+
+// Pure: a polygon's area (shoelace) and centroid of its vertices' area.
+function polygonStats(poly) {
+  let a = 0;
+  let cx = 0;
+  let cz = 0;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const f = poly[j][0] * poly[i][1] - poly[i][0] * poly[j][1];
+    a += f;
+    cx += (poly[j][0] + poly[i][0]) * f;
+    cz += (poly[j][1] + poly[i][1]) * f;
+  }
+  if (Math.abs(a) < 1e-6) return { area: 0, cx: poly.reduce((s, p) => s + p[0], 0) / poly.length, cz: poly.reduce((s, p) => s + p[1], 0) / poly.length };
+  return { area: Math.abs(a / 2), cx: cx / (3 * a), cz: cz / (3 * a) };
+}
+
+// Pure: the grid with every cell inside a lake outline marked as water (the sea's flags kept). A new grid; the input is not changed.
+export function markLakes(grid, shapes) {
+  if (!grid || !shapes.length) return grid;
+  const water = Array.from({ length: grid.nz }, (_, j) => Array.from({ length: grid.nx }, (_, i) => !!grid.water?.[j]?.[i]));
+  for (const s of shapes) {
+    const xs = s.points.map((p) => p[0]);
+    const zs = s.points.map((p) => p[1]);
+    const i0 = Math.max(0, Math.floor((Math.min(...xs) - grid.x0) / grid.step));
+    const i1 = Math.min(grid.nx - 1, Math.ceil((Math.max(...xs) - grid.x0) / grid.step));
+    const j0 = Math.max(0, Math.floor((Math.min(...zs) - grid.z0) / grid.step));
+    const j1 = Math.min(grid.nz - 1, Math.ceil((Math.max(...zs) - grid.z0) / grid.step));
+    for (let j = j0; j <= j1; j++) for (let i = i0; i <= i1; i++) if (inPolygon(s.points, grid.x0 + i * grid.step, grid.z0 + j * grid.step)) water[j][i] = true;
+  }
+  return { ...grid, water };
+}
+
+// Pure: the lakes and ponds of a dump and the shore points a fishing spot can be seeded at.
+//   bodies: { id, name, kind (pond under 3000 m2, else lake), source, cx, cz, area, surfaceY, distance, outline: [[x, z]] }
+//   shore:  { water, x, z, y, facing, yaw, distance } dry ground `inset` m outside the outline, `yaw` turned toward the water (0 faces +z)
+export function waterBodies(shapes, { grid, centre, perBody = 6, inset = 2.5 } = {}) {
+  const bodies = [];
+  const shore = [];
+  shapes.forEach((s, k) => {
+    const st = polygonStats(s.points);
+    const id = `w${k + 1}`;
+    bodies.push({ id, name: s.name || id, kind: st.area < 3000 ? "pond" : "lake", source: s.source, cx: r1(st.cx), cz: r1(st.cz), area: Math.round(st.area), surfaceY: r1(s.y), distance: r1(dist2(st.cx, st.cz, centre.x, centre.z)), outline: s.points.map((p) => p.map(r1)) });
+    // Candidates: the midpoint of every outline edge, pushed out of the water along the line from the centroid.
+    const cand = [];
+    for (let i = 0; i < s.points.length; i++) {
+      const a = s.points[i];
+      const b = s.points[(i + 1) % s.points.length];
+      const mx = (a[0] + b[0]) / 2;
+      const mz = (a[1] + b[1]) / 2;
+      const len = Math.hypot(mx - st.cx, mz - st.cz) || 1;
+      const x = mx + ((mx - st.cx) / len) * inset;
+      const z = mz + ((mz - st.cz) / len) * inset;
+      if (inPolygon(s.points, x, z)) continue;
+      const y = grid ? heightAt(grid, x, z) : null;
+      if (grid && y === null) continue;
+      if (grid && isWater(grid, x, z)) continue;
+      const toward = [st.cx - x, st.cz - z];
+      const yaw = Math.round(((Math.atan2(toward[0], toward[1]) / D2R) % 360 + 360) % 360);
+      cand.push({ water: id, x: r1(x), z: r1(z), y: y === null ? null : r1(y), facing: compass(toward[0], toward[1]), yaw, distance: r1(dist2(x, z, centre.x, centre.z)) });
+    }
+    // Spread: nearest the centre first, each next one at least a tenth of the outline away from those taken.
+    cand.sort((p, q) => p.distance - q.distance);
+    const gap = Math.max(6, Math.sqrt(st.area) / 3);
+    const taken = [];
+    for (const c of cand) {
+      if (taken.length >= perBody) break;
+      if (taken.some((t) => dist2(t.x, t.z, c.x, c.z) < gap)) continue;
+      taken.push(c);
+    }
+    shore.push(...taken);
+  });
+  return { bodies, shore };
+}
+
+// Pure: is a point on a lake of `bodies` (a dossier's water.bodies)? Used by `town fit` for a hostless plot.
+export function onWater(bodies, x, z) {
+  return (bodies ?? []).find((b) => b.outline?.length >= 3 && inPolygon(b.outline, x, z)) ?? null;
 }
 
 // ------------------------------------------------------------------ free plots
@@ -594,11 +699,15 @@ function nearestBuilding(buildings, x, z) {
 // Pure: the analysis of one dump -> the sections of dossier.json (no pictures, no place header).
 export function analyse(dump, centre, radius, measured = {}, opts = {}) {
   const { buildings, props, counts, propCounts } = sortEntities(dump, centre, measured, opts.catalog ?? null);
-  const roads = roadsIn(dump.roads, centre, radius);
+  // A lake-named spline is water, not a road (Lake_Durras was a "road" and its plot sat on the lake): emptied, so the road ids keep their numbers.
+  const roads = roadsIn(dump.roads.map((r) => (isLakeShape(r) ? { ...r, points: [] } : r)), centre, radius);
   const jn = junctions(roads);
   const street = mainStreet(roads, buildings, centre);
-  const ground = terrain(dump.grid, centre, radius);
-  const plots = freePlots({ grid: dump.grid, centre, radius, buildings, props, roads, trees: dump.trees, ...(opts.plots ?? {}) });
+  const shapes = lakeShapes(dump);
+  const grid = markLakes(dump.grid, shapes);
+  const ground = terrain(grid, centre, radius);
+  const water = waterBodies(shapes, { grid, centre });
+  const plots = freePlots({ grid, centre, radius, buildings, props, roads, trees: dump.trees, ...(opts.plots ?? {}) });
   const byType = {};
   for (const b of buildings) byType[b.type] = (byType[b.type] ?? 0) + 1;
   const notes = [];
@@ -627,6 +736,7 @@ export function analyse(dump, centre, radius, measured = {}, opts = {}) {
       roads: roads.length,
       junctions: jn.length,
       freePlots: plots.plots.length,
+      waterBodies: water.bodies.length,
       walls: counts.walls,
       otherEntities: counts.other,
       portPieces: counts.infrastructure,
@@ -639,6 +749,7 @@ export function analyse(dump, centre, radius, measured = {}, opts = {}) {
     propCounts,
     freePlots: plots,
     terrain: ground,
+    water: { ...water, note: shapes.length ? `lakes and ponds are the closed outlines of the dump's water shapes (the sea probe cannot see them); the grid, the terrain share and the free plots count the cells inside them as water. Shore points are dry ground 2.5 m outside an outline, not checked against trees or props` : "no lake or pond outline in the dump (the sea is read from the ground grid)" },
     notes,
   };
 }

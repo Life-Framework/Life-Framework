@@ -274,7 +274,9 @@ export function buildLine(id, spec) {
     return `${id} click ${widget} ${index}`;
   }
   if (spec.verb === "type") {
-    return `${id} type ${token(spec.widget, "field")} ${token(spec.text, "text")}`;
+    // The typed text may carry dashes: an account number is a uid such as 00bbbddd-5e55-0000-0000-000000000002 (#3320).
+    if (!/^[A-Za-z0-9_-]+$/.test(spec.text)) throw new Error(`text must be letters, digits, underscore, or dash: ${spec.text}`);
+    return `${id} type ${token(spec.widget, "field")} ${spec.text}`;
   }
   if (spec.verb === "input") {
     if (!MENU_ACTIONS.has(spec.action)) {
@@ -823,6 +825,9 @@ export function runFlow(lines, name = "flow") {
     else if (verb === "open") result = sendCommand({ verb: "open", menu: rest[0], mode: rest[1] });
     else if (verb === "pausemenu") result = sendCommand({ verb: "pausemenu", mode: rest[0] });
     else if (verb === "kit") result = sendKit(rest);
+    else if (verb === "licence") result = sendCommand({ verb: "licence", name: rest[0] }, 10000);
+    // send <verb> [words]: a feature verb (a modded LF_AgentHarnessVerbs), its words passed as they are.
+    else if (verb === "send" && /^[a-z][a-z0-9]*$/.test(rest[0] ?? "")) result = sendCommand({ verb: rest[0], words: rest.slice(1) }, 10000);
     else if (verb === "layer") {
       const played = playLayer(rest[0], rest[1]);
       out.push(...played.lines);
@@ -1785,6 +1790,10 @@ function main(argv) {
     if (cmd === "shot" && rest[0] === "world") {
       const target = resolveWorldTarget(rest[1], rest[2], rest[3], rest[4]);
       return printResult(sendCommand(worldCapture(target, rest.slice(5, 8)), 25000));
+    }
+    if (cmd === "send" && /^[a-z][a-z0-9]*$/.test(rest[0] ?? "")) {
+      // send <verb> [words]: a feature verb (a modded LF_AgentHarnessVerbs), its words passed as they are.
+      return printResult(sendCommand({ verb: rest[0], words: rest.slice(1) }, 10000));
     }
     if (cmd === "flow") {
       const played = runFlow(readFlow(rest[0]), rest[0]);

@@ -1,0 +1,12 @@
+GenericEntity Fit_saint_philippe_dock_buyer_spots_drop_b22 : "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et" {
+ coords 4377.265 1.69 10999.595
+ angleY -32
+}
+GenericEntity Fit_saint_philippe_districts_buyer_spots_drop_b21 : "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et" {
+ coords 4677.994 20.779 10766.494
+ angleY 92
+}
+GenericEntity Fit_saint_philippe_districts_buyer_spots_drop_b64 : "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et" {
+ coords 4646.431 17.443 10556.252
+ angleY -156
+}

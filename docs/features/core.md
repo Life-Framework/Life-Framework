@@ -162,7 +162,7 @@
   (owner RPC). A server refusal sends the form back with the reason written on
   it. The form never picks a faction.
 - ✅ **Characters per account (#331, save version 24).** `Configs/Account/LF_Characters.conf`
-  (`LF_CharacterConfig.m_iMaxPerAccount`, 1 shipped) sets how many characters an
+  (`LF_CharacterConfig.m_iMaxPerAccount`, 1 in the core, 3 in the Everon pack) sets how many characters an
   account holds. With more than 1, a returning player without a living body and
   not on duty gets the registry sheet `LF_CharacterSelectSheet` (owner RPC
   `LF_ShowCharacterSelect`): one line per character and "register a new
@@ -182,6 +182,27 @@
   `persist/character-slots`, `e2e/pass*` (`e2e --legacy-save`). ⚠️ The "start a
   new life" form and retiring a character are not built yet; the incident log
   keeps character keys.
+- ✅ **Changing character at the clerk (merged, in-dev).** The Everon pack allows 3 characters per account
+  (pack overlay `LF_Characters_Everon1989.conf`; `LF_CharacterConfig.ApplyLayers` reads its fields over the core file,
+  which still ships 1). The town clerk's "About my papers" (condition `PapersOffered`) holds the lost-card reply and
+  "I need another of my files" (`CharacterSwitchOffered` / `CharacterSwitch`). The clerk checks
+  `LF_CharacterSwitch.Refuse` and grants a 30 s token; after the talk the client asks for the sheet
+  (`RpcAsk_LF_CharacterSwitch`, refused without the token) and `LF_CharacterSelectSheet` opens in switch mode: the
+  character being played marked "On file now", the others, "register a new resident" while a slot is free, and "Stay
+  as you are" (MenuBack too, `RpcAsk_LF_CancelCharacterSwitch`). The body stays in the world until the pick. The pick
+  counts only within 3 minutes of the sheet and 10 m of where it was sent (`LF_CharacterSwitch.OfferHolds`, test
+  `character/switch-offer`), so a client that skips the cancel cannot pick later elsewhere. The pick
+  (`ServerSwitchPick`) checks again, then `StoreAndRemoveBody` stores the character the way a disconnect does
+  (playtime, phone call, carried snapshot, unpaid store tags, last position, rejoin mark, dialogue and town-board
+  state), takes and deletes the body, reopens the arrival flow and spawns the pick or opens form R-89. Refused, logged
+  `[LFDebug:CharacterSwitch]` and toasted with the reason (`#LF-CharSwitch_*`) while dead, jailed, cuffed or escorted,
+  downed, wanted, on police or medic duty, within `m_iSwitchCombatSeconds` (120) of player-on-player damage, carrying
+  contraband or hauling a convoy, on a delivery job run, in a race or in a vehicle. Debt stays on its character. The
+  police whitelist and roster stay per account (an approved officer may clock in as any of their characters); a switch
+  is refused on duty, so only the character who clocked in carries the duty kit. A client forgets the names its
+  character learned when its body is taken away (`LF_KnownNames.ForgetAll`), and a name learned for a player id is not
+  shown over another character of that player. Tests `character/switch-rules`, `character/isolation`,
+  `everon/characters-per-account`.
 - ✅ **Arrival-only flow (#2413, merged, in-dev).** The server keeps a set of players whose arrival
   flow is open (`m_FlowOpen`: filled on connect, cleared in `SpawnPlayer`, forgotten on disconnect).
   `ContinueAfterQuiz` (the quiz's `RpcAsk_LF_QuizContinue`), `ServerCreateCharacter` (form R-89) and
@@ -190,6 +211,32 @@
   can no longer restart the flow to reach the character pick or an instant respawn. A refusal toasts
   `#LF-CharSel_Refused` and logs `[LFDebug:CharacterCreation] ... refused: not arriving`. Test
   `character/flow-gate` (LOGIC).
+
+- 🧪 **Barber's chair (#3234, merged, in-dev).** `Prefabs/Props/Roleplay/LF_BarberChair.et` is a seat
+  (`LF_SitAction`) with `LF_BarberAction` ("Ask for a haircut", shown only to the player sitting on that
+  chair; `m_iFee`, 40 shipped). It opens `LF_BarberSheet` (UI kit): previous and next look try each look on
+  the seated body as a local preview, pay sends `RpcAsk_LF_BarberCut` on the player's controller, and leaving
+  unpaid puts the old head back. The server re-checks the seat (`IsLoiteringOnEntity` on a chair with the
+  barber action), the look and the cash, takes the fee (`LF_MoneyUtils.RemoveCash`, reason `barber`, nothing
+  charged on a refusal), and sets the head with `VisualIdentity.SetHead` + `CommitChanges`, the base game's
+  camo-head path, which replicates to every client and late joiner. The engine bakes hair and beard into each
+  head mesh (no hair, beard or hair-colour part exists), so a look is one of ten vanilla civilian heads
+  (`LF_Barber.Looks`) and changes the face with the hair. The chosen head is kept per character record key in
+  the `barber` save section (`LF_BarberSavePayload`) and put back on every spawn (`LF_BarberSpawnSubscriber`),
+  so it survives death, respawn and restart. A listen host puts its preview back before paying, so its server does not refuse the look as already worn. `LF_WantedLook.Capture` records the head (`|h=HEADGUID`), so wanted posters and photo IDs show the paid look. Tests `barber/changes-hair`, `barber/persist`, `barber/host-and-portrait`. Placing the chair
+  in the Saint-Philippe barber (b43) is the shop card.
+
+- 🧪 **The Saint-Philippe barber slot (#3236, in-dev).** Town house b43 (`House_Town_E_2I02_yellow`, on the square row
+  beside the clinic) holds the `barber` slot: `LF_PlaceComponent` kind `BarberChair` (`saint-philippe.barber`; the map
+  POI comes from the template, #3518) plus the kit `tools/town/kits/barber.json`. The salon is the empty south end of the
+  tiled carriage hall (the flat's furnished rooms stay behind their doors): one wide wall mirror
+  (`MirrorBathroom_02`) on the east wall, two `LF_BarberChair` seats 1.4 m in front of it, a basin on the same wall, a
+  `CounterShop_01` against the west wall, and a barber-red `LF_Sign_Fascia` over the carriage doors reading COIFFEUR
+  (pack sign `barber`, `LF-Sign_Barber_*` strings). Floor rows carry a `lift` of -0.045 m (counter -0.055): the hall's
+  walkable floor lies below its model's top surface, so `look contact` reads 0 cm. The fascia stands 0.1 m off the
+  collider wall because the plaster is proud of it (text hidden behind it otherwise). `seat.mjs` now takes the root
+  transform off the host's furniture so a row standing in the flat's sofa is flagged. Layer
+  `Place_saint-philippe_barber.layer`, claim `saint-philippe-barber.json`.
 
 ### `LF_PlayerInteraction` — `Feature/Interaction/` (M1-12, 2026-11-08)
 - ✅ One list on another player's body (`Character_Roleplay.et`, context

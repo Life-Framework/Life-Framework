@@ -214,8 +214,17 @@ class LF_ResidentWalk
 		if (!spot)
 		{
 			spot = new LF_ResidentSpot();
-			if (!LF_ResidentAnchors.Resolve(slot.m_sKind, slot.m_sAnchor, nearestAt, spot))
+			if (!LF_ResidentAnchors.ResolveIn(slot.m_sKind, slot.m_sPlaceId, slot.m_sAnchor, nearestAt, spot))
 				return LF_EResidentMove.NONE;
+		}
+
+		// The walk ends on a free spot, not on the one somebody else stands on (#3831).
+		// and on the floor under it, as a spawned resident is (#3885): an anchor written at another height
+		// walked the body to a spot in the air or under the slab.
+		if (!spotOverride)
+		{
+			spot = LF_ResidentActivity.FreeSpot(spot, slot.m_sActivity, id, body.GetID());
+			spot = LF_ResidentSpawner.OnFloor(spot, id);
 		}
 
 		// 0 reads the config (the spawner passes its own despawn radius).
@@ -308,6 +317,15 @@ class LF_ResidentWalk
 		vector mat[4];
 		Math3D.AnglesToMatrix(Vector(spot.m_vAngles[0], 0, 0), mat);
 		mat[3] = spot.m_vOrigin;
+		// A character is moved by Teleport: SetWorldTransform leaves a resident where they stand (the walk's
+		// timeout and a placed resident never reached the cafe bench, #3707). A static body has no such call.
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(body);
+		if (character)
+		{
+			character.Teleport(mat);
+			return;
+		}
+
 		body.SetWorldTransform(mat);
 		body.Update();
 	}
@@ -411,6 +429,37 @@ class LF_ResidentWalk
 	static bool IsWalking(string id)
 	{
 		return s_mWalking && s_mWalking.Contains(id);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when `body` is a resident on a walk now. A walking resident opens the doors on its path, so a
+	//! building lock (LF_BuildingLocks) lets it through; it keeps players out, never the town's own residents.
+	static bool IsWalkingBody(IEntity body)
+	{
+		if (!body || !s_mWalking || s_mWalking.IsEmpty())
+			return false;
+
+		EntityID bodyId = body.GetID();
+		foreach (string id, LF_ResidentWalkState walk : s_mWalking)
+		{
+			if (walk.m_Entity == bodyId)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: records `body` as walking as `id` without an AI order.
+	static void MarkWalkingForTest(string id, notnull IEntity body)
+	{
+		LF_ResidentWalkState walk = new LF_ResidentWalkState();
+		walk.m_sId = id;
+		walk.m_Entity = body.GetID();
+		if (!s_mWalking)
+			s_mWalking = new map<string, ref LF_ResidentWalkState>();
+
+		s_mWalking.Set(id, walk);
 	}
 
 	//------------------------------------------------------------------------------------------------

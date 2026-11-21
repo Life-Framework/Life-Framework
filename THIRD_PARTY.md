@@ -21,6 +21,7 @@ section 5 of `docs/ecosystem.md`. Paths below are under
   - `Feature/Resources/LF_ResourceDefs.c` from `Scripts/Game/Data/OVT_ResourceDefs.c`
   - `Feature/Shop/LF_ShopRules.c` from `Scripts/Game/Data/OVT_ShopSellRules.c`
   - `Feature/Property/LF_HouseSpawnComponent.c` from `Scripts/Game/Components/OVT_SpawnPointComponent.c`
+  - `Feature/Fuel/LF_FuelStockRules.c` from `Scripts/Game/Data/OVT_FuelPricing.c` and `OVT_FuelChargeLedger.c` (shape only)
 
 A PR that copies more from Overthrow adds its files here.
 
@@ -49,3 +50,11 @@ fork and branch:
 - Jacob-Mango/EveronLife: parts of `Feature/Quantity/LF_QuantityComponent.c`
 
 `docs/everonlife-forks.md` surveys the forks.
+
+## Reforger Mapper (format only)
+
+- Source: https://github.com/benjibossk/mappingenfusiontest
+- Licence: MIT (2026 Benji). The notice is `tools/test/fixtures/mapper/LICENSE-Mapper.txt`.
+- Use: its project JSON ("mapgen.json", version 0) is read by `tools\cli mapper import`
+  (`tools/mapper/convert.mjs`, `tools/commands/mapper.mjs`), reimplemented from its published format docs. No code of
+  Mapper's is copied. `docs/architecture/reforger-mapper-import.md` describes the format and the mapping.

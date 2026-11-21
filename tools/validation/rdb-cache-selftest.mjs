@@ -6,12 +6,15 @@
 // misses, a stale entry is rejected and deleted, LF_RDB_CACHE=0 disables, the oldest entry is pruned,
 // until() ends a queued acquireWorkbenchSync and waitForLock without the lock, and a waiter re-reads
 // the Workbench limit while queued.
+// red-proof #3586: 2026-11-19, on the unmodified rdb-cache.mjs this threw "TypeError: cache.confirmRestored is not a function"
+// (no marker, no eviction); main-guard-selftest threw on the missing RECHECK_ENV.
 // red-proof: 2026-11-17, with take() stubbed to return false and wb-lock.mjs/lock-wait.mjs unmodified this printed
 // "FAIL same resource set is a hit", "FAIL hit leaves the rdb byte-identical", "FAIL stale cached file is deleted", then the
 // until() case threw "workbench: no free Workbench slot within 20 s" (no until(), no limit re-read) and exited 1.
 
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readdirSync, utimesSync, writeFileSync } from "node:fs";
+import { gitSync } from "../lib/git-retry.mjs";
+import { existsSync, mkdirSync, readdirSync, rmSync, utimesSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as cache from "../lib/rdb-cache.mjs";
 import { guidBytes } from "../lib/rdb-fresh.mjs";
@@ -29,7 +32,7 @@ const check = (name, ok) => {
 };
 
 const root = scratchDir("lf-rdb-cache-");
-spawnSync("git", ["init", "-q", root], { windowsHide: true });
+gitSync(["init", "-q", root], { windowsHide: true });
 const hub = wt.ensureHub(root);
 const addonDir = join(root, "addons", "Demo");
 mkdirSync(addonDir, { recursive: true });
@@ -68,6 +71,34 @@ mkdirSync(join(hub, "rdb-cache", "Demo"), { recursive: true });
 writeFileSync(c.file, rdbOf(paths));
 check("stale cached file is rejected", c.take() === false);
 check("stale cached file is deleted", !existsSync(c.file));
+// #3586: a restored entry whose boot ends with no SUMMARY is evicted, with the worktree's copy; a SUMMARY confirms it.
+{
+  const good = rdbOf(paths);
+  writeFileSync(rdbFile, good);
+  const s = cache.open({ hub, addonName: "Demo", addonDir, exe });
+  rmSync(c.file, { force: true });
+  addMeta(2, "Prefabs/C.et");
+  const full = rdbOf(["Prefabs/A.et", "Prefabs/B.et", "Prefabs/C.et"]);
+  mkdirSync(cache.cacheDir(hub, "Demo"), { recursive: true });
+  writeFileSync(c.file, full);
+  writeFileSync(rdbFile, "old");
+  check("restore from the cache", c.take() === true);
+  check("a SUMMARY confirms the restored entry", (cache.confirmRestored(root), cache.evictRestored(root, { log: () => {} }).length === 0) && existsSync(c.file));
+  writeFileSync(rdbFile, "old");
+  c.take();
+  const lines = [];
+  const ev = cache.evictRestored(root, { log: (l) => lines.push(l) });
+  check("a boot with no SUMMARY evicts the restored entry", ev.length === 1 && ev[0].addon === "Demo" && !existsSync(c.file));
+  check("the worktree's copy of the evicted rdb is deleted", !existsSync(rdbFile));
+  check("the eviction is said out loud", lines.length === 1 && /evicted/.test(lines[0]));
+  check("a second eviction finds nothing", cache.evictRestored(root, { log: () => {} }).length === 0);
+  check("no SUMMARY and no compile error evicts", cache.bootDiedWithoutVerdict({ hasSummary: false, text: "ResourceDB: loading cache" }) === true);
+  check("a SUMMARY never evicts", cache.bootDiedWithoutVerdict({ hasSummary: true, text: "" }) === false);
+  check("a compile error never evicts", cache.bootDiedWithoutVerdict({ hasSummary: false, text: "Can't compile \"Game\" script module!" }) === false);
+  writeFileSync(rdbFile, "x");
+  check("dropAllRdbs removes the worktree's rdbs", cache.dropAllRdbs(root).length === 1 && !existsSync(rdbFile));
+  void s;
+}
 // Kill switch.
 process.env.LF_RDB_CACHE = "0";
 check("LF_RDB_CACHE=0 disables", open() === null);

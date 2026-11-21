@@ -1,0 +1,76 @@
+{
+  "id": "shipment_go_between",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "c9ac2d5e50d4ff16",
+      "date": "2026-11-19",
+      "voice_id": "kiw9hkUW1gcPQwsQSs4e",
+      "voice_name": "Cyril - French-Accented Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Hugo Valmy. I help people who have more than they need meet people who need more than they have. Sit if you like, the coffee is honest, but I do not talk business with a face I do not know.",
+      "chars": 189,
+      "chars_total": 76,
+      "request_id": "shAXPyzNW3KAS1HU8Mtc",
+      "seconds": 11.85,
+      "mouth": "2399949999610244399976543320000036537981297148876687458999958757656656342000036731277148865577789946999975654554554432320000000000000134992553498999711172299327868997898530212768748899612993349966763265632279874323646677610664430000000000"
+    },
+    "sell": {
+      "hash": "6e4e99a98b42aa3a",
+      "date": "2026-11-19",
+      "voice_id": "kiw9hkUW1gcPQwsQSs4e",
+      "voice_name": "Cyril - French-Accented Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "So you opened the red crate. If you still have what was in it, I know a buyer: cash on the spot, no questions. He keeps to the lanes and the quay after dark. The gendarmerie will only thank you.",
+      "chars": 194,
+      "chars_total": 78,
+      "request_id": "0Wpi71K3x3O6L0wbBUKQ",
+      "seconds": 11.96,
+      "mouth": "129795695599796898202248754412124225530597669994663464788861211566678753499975543300000000034999643765522409985122100005897129743245443200000000004713883249598899877575550337763451253675541110000005759976987767997537841477763155531354432000"
+    },
+    "sold": {
+      "hash": "a9857489ec29a1b6",
+      "date": "2026-11-19",
+      "voice_id": "kiw9hkUW1gcPQwsQSs4e",
+      "voice_name": "Cyril - French-Accented Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Then we have never met, and you have never seen the red crate. A pleasure doing no business with you.",
+      "chars": 101,
+      "chars_total": 40,
+      "request_id": "TIj8D7WSruTod34QKtOm",
+      "seconds": 5.82,
+      "mouth": "399876642259889669996866654302103566987468997943376575772022554420210000000003721799946835776789973863553236235433000"
+    },
+    "threat": {
+      "hash": "6ce9ed0ad72f7481",
+      "date": "2026-11-19",
+      "voice_id": "kiw9hkUW1gcPQwsQSs4e",
+      "voice_name": "Cyril - French-Accented Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "You walked it to the desk. Fine. Mind the coast road at night, friend. It is long, and it is short of lamps.",
+      "chars": 108,
+      "chars_total": 43,
+      "request_id": "O94KDoWy6qwyCrEY3t0R",
+      "seconds": 7.54,
+      "mouth": "5995999226513739328532220100000012298543332000004679987759125972216999741157115686422217666651000000003525543789999765301455414344499857346653221222100"
+    },
+    "bye": {
+      "hash": "518581ffa213f203",
+      "date": "2026-11-19",
+      "voice_id": "kiw9hkUW1gcPQwsQSs4e",
+      "voice_name": "Cyril - French-Accented Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Mind how you go.",
+      "chars": 16,
+      "chars_total": 6,
+      "request_id": "xhglNVwExvmyQC5pF8E0",
+      "seconds": 1.33,
+      "mouth": "589987678787399876411211100"
+    }
+  },
+  "voice": {
+    "id": "kiw9hkUW1gcPQwsQSs4e",
+    "name": "Cyril - French-Accented Narrator",
+    "source": "voice library"
+  }
+}

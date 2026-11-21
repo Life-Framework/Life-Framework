@@ -1,0 +1,152 @@
+// Source of the `seed-feed` kit (tools/town/kits/seed-feed.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). `town fit` reads the components the kit names from here; `town author --reopen seed-feed` builds a bay again.
+// Grid cell c27r2 for author-seed-feed: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 47
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 47
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 47
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 47
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 47
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 51.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 55.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 60.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 64.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 69
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 64.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_seed_feed_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 60.2
+ angleY 90
+}
+GenericEntity Grid_author_seed_feed_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:author-seed-feed"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 346.2 0.505 47.6
+ angleY -90
+}
+GenericEntity Grid_author_seed_feed_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "author-seed-feed"
+  }
+ }
+ coords 346.3 0 51.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_author_seed_feed_Main : "{C363B659675041BA}Prefabs/Structures/Agriculture/Barn/Barn_E_03/Barn_E_03_closed.et" {
+ coords 358 0.05 58.219
+ angleY -90
+}
+GenericEntity Seed_feed_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 357.2 0.156 52.719
+ angleY -90
+}
+GenericEntity Seed_feed_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 357.2 0.171 54.219
+ angleY -90
+}
+GenericEntity Seed_feed_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{7C4D2E1A5B6F80B3}" {
+   m_sShopName "#LF-Shop_Name_SeedFeed"
+   m_sShopDescription "#LF-Shop_Desc_SeedFeed"
+   m_sStockId "seed_feed"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{7C4D2E1A5B6F80B4}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C4D2E1A5B6F80B5}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C4D2E1A5B6F80B6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C4D2E1A5B6F80B7}" {
+      Name "#LF-Shop_Open_SeedFeed"
+      Description "#LF-Shop_OpenDesc_SeedFeed"
+     }
+    }
+   }
+  }
+ }
+ coords 357.2 1.211 54.219
+ angleY -90
+}
+GenericEntity Seed_feed_sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 358.9 0.1 51.219
+}
+GenericEntity Seed_feed_sacks_2 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 356.4 0.1 51.219
+}
+GenericEntity Seed_feed_crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 357.7 0.159 55.119
+}
+GenericEntity Seed_feed_crate_2 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 357.05 0.159 55.119
+}
+GenericEntity Seed_feed_box_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 357.2 1.196 52.719
+ angleY -90
+}

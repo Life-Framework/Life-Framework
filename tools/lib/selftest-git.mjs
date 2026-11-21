@@ -8,7 +8,10 @@
 //      failing a check whose assertions already ran.
 //   3. A failed git call showed `stderr || stdout`, which is empty when git is ended without a word.
 //      `gitMust` and `describeRun` always say the exit code, the signal and what git printed.
-//   4. Still on the runner (PR #2587 `git commit -q`, PR #2563 `git checkout -b`: exit 1, no output, a rerun
+//   4. (#3616) The retry itself lives in tools/lib/git-retry.mjs (gitSync, execGit, spawnRetrying; the hook
+//      LF_GIT_FAIL_SILENTLY=<n> forces n silent failures per call for a red proof). Every selftest and the merge
+//      driver run git through it; runGit adds the trace evidence on top.
+//   5. Still on the runner (PR #2587 `git commit -q`, PR #2563 `git checkout -b`: exit 1, no output, a rerun
 //      passes), so git is now run through `runGit`: a failure that printed nothing is re-run at once with
 //      GIT_TRACE on, the lock files and the repo state are read, and the evidence goes to stderr (the CI log);
 //      a re-run that passes is accepted, since a failed git call changed nothing. A parent process's GIT_DIR,
@@ -19,7 +22,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { safeRemoveTree } from "../link-safety.mjs";
-import { describeRun } from "../wt.mjs";
+import { describeRun, expectedGitExits, nap, spawnRetrying } from "./git-retry.mjs";
 import { scratchDir } from "./scratch.mjs";
 
 export { describeRun };
@@ -80,9 +83,6 @@ export function useHermeticGit() {
   return env;
 }
 
-const nap = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
-const quiet = (r) => !String(r.stderr ?? "").trim() && !String(r.stdout ?? "").trim();
-
 // What a silent failure left behind: lock files, the repo state, and the trace of a re-run.
 function silentEvidence(cwd, label, first, second) {
   const probe = (a) => {
@@ -105,25 +105,26 @@ function silentEvidence(cwd, label, first, second) {
 }
 
 // Runs git and returns the spawnSync result. A failure that printed nothing (exit 1 and no message, seen on the
-// Windows runner under `-q`) is re-run up to twice with GIT_TRACE on, the evidence printed to stderr each time;
-// the first re-run that passes is returned, because a git call that failed changed nothing. A failure that did
-// print something is returned as it is. Callers decide whether a nonzero status is an error.
-export function runGit(cwd, args, { retries = 2, command = ["git"] } = {}) {
+// Windows runner under `-q`) is re-run up to `retries` times through the shared retry (tools/lib/git-retry.mjs)
+// with GIT_TRACE on, the evidence printed to stderr each time; the first re-run that passes is returned, because
+// a git call that failed changed nothing. A failure that did print something is returned as it is. Callers
+// decide whether a nonzero status is an error.
+export function runGit(cwd, args, { retries = 2, command = ["git"], expectExit } = {}) {
   const opts = { cwd, encoding: "utf8", windowsHide: true };
-  const exec = (o) => spawnSync(command[0], [...command.slice(1), ...args], o);
-  let result = exec(opts);
-  if (result.status === 0 || result.error || !quiet(result)) return result;
-  const first = result;
-  for (let i = 0; i < retries; i++) {
-    nap(300 * (i + 1));
-    const traceFile = join(tmpdir(), `lf-git-trace-${process.pid}-${i}.log`);
-    const traced = exec({ ...opts, env: { ...process.env, GIT_TRACE: traceFile, GIT_TRACE_SETUP: traceFile } });
-    traced.trace = existsSync(traceFile) ? readFileSync(traceFile, "utf8") : "";
-    console.error(silentEvidence(cwd, `git ${args.join(" ")} (retry ${i + 1})`, first, traced));
-    result = traced;
-    if (traced.status === 0 || !quiet(traced)) break;
-  }
-  if (result.status !== 0 && quiet(result)) result = { ...result, stderr: silentEvidence(cwd, `git ${args.join(" ")}`, first, null) };
+  const label = `git ${args.join(" ")}`;
+  const traceFile = (attempt) => join(tmpdir(), `lf-git-trace-${process.pid}-${attempt - 2}.log`);
+  let result = spawnRetrying(command[0], [...command.slice(1), ...args], opts, {
+    attempts: retries + 1,
+    label,
+    expectExit: expectExit ?? (command[0] === "git" ? expectedGitExits(args) : []), // a probe's "no" is an answer
+    optionsFor: (attempt, o) => ({ ...o, env: { ...process.env, GIT_TRACE: traceFile(attempt), GIT_TRACE_SETUP: traceFile(attempt) } }),
+    onAttempt: (attempt, traced, first) => {
+      const file = traceFile(attempt);
+      traced.trace = existsSync(file) ? readFileSync(file, "utf8") : "";
+      console.error(silentEvidence(cwd, `${label} (retry ${attempt - 1})`, first, traced));
+    },
+  });
+  if (result.silentFailure) result = { ...result, stderr: silentEvidence(cwd, label, result, null) };
   return result;
 }
 

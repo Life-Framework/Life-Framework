@@ -1,0 +1,197 @@
+{
+  "schema": 1,
+  "kit": "farm-supply",
+  "system": "store",
+  "source": {
+    "file": "tools/town/kits/sources/farm-supply.layer",
+    "origin": "FarmSupply_Origin",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -14.5,
+        -10.6
+      ],
+      "max": [
+        -4.2,
+        -6.2
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "Street kit for the farm barn b73 (Barn_E_02, front +z, the village road runs along the back, -z). On the open verge between the barn's back wall and the road, the kit faces the road (yaw 180): the farm supply counter (outlet farm_supply, sells the reaper, #3295) with its till and clerk, sacks beside the barn corner, a crate and a chalk sign, and the implement rack (LF_ImplementRack) further along, so a UAZ or Z7211 pulls up on the road shoulder in front of it. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "farm-supply-counter",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -8,
+        0,
+        -8
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-supply-till",
+      "name": "Source_FarmSupplyTill",
+      "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
+      "role": "till",
+      "verb": "on farm-supply-counter",
+      "offset": [
+        -8,
+        1.039,
+        -8
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sShopName": "\"#LF-Shop_Name_FarmSupply\"",
+            "m_sShopDescription": "\"#LF-Shop_Desc_FarmSupply\"",
+            "m_sOutletId": "\"farm_supply\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "floor": "f0"
+    },
+    {
+      "id": "farm-supply-clerk",
+      "name": "FarmSupply_Clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -8,
+        0,
+        -6.9
+      ],
+      "yaw": 180,
+      "class": "LF_NpcBaseEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-supply-sacks-1",
+      "prefab": "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -5.4,
+        0,
+        -7.6
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-supply-sacks-2",
+      "prefab": "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -5.4,
+        0,
+        -9.7
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-supply-crate",
+      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -9.6,
+        0,
+        -7.2
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "farm-supply-board",
+      "prefab": "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et",
+      "role": "board",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -10.5,
+        0,
+        -9.6
+      ],
+      "yaw": 180,
+      "class": "SCR_DestructibleEntity",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"farm_supply\"",
+            "m_sStyle": "\"\"",
+            "m_sSize": "\"\"",
+            "m_vFaceAngles": "0 -15 0",
+            "m_fFaceScale": "2.6"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "implement-rack",
+      "name": "FarmSupply_ImplementRack",
+      "prefab": "{21B9456F3B79410E}Prefabs/Harvest/LF_ImplementRack.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -14,
+        0,
+        -7.6
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{F5A2DC0597B53E19}Prefabs/Structures/Agriculture/Barn/Barn_E_02/Barn_E_02.et",
+    "lanes": [],
+    "clear": []
+  }
+}

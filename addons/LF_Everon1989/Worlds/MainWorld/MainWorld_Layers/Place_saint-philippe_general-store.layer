@@ -1,0 +1,112 @@
+GenericEntity Fit_saint_philippe_general_store_Place {
+ components {
+  LF_PlaceComponent "{32055E3C09F36A53}" {
+   m_sKind "StoreCounter"
+   m_sId "saint-philippe.general-store"
+  }
+  LF_FittedBuildingComponent "{DFE66634FC4AA29B}" {
+  }
+ }
+ coords 4515.3 15.5 10746.1
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_furniture_01 : "{5E0CC4C3522C8E2B}Prefabs/Buildings/GeneralStore/Furniture/GeneralStore_furniture_01.et" {
+ coords 4515.3 15.3 10746.1
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "FilmTill"
+   m_sId "street"
+  }
+  LF_ShopComponent "{6B3C1D2E4F5A7081}" {
+   m_sShopName "#LF-Shop_Name_General"
+   m_sShopDescription "#LF-Shop_Desc_General"
+   m_sStockId "general_store"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{5A4B0B84C86E4846}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{5A4B0B84C86E4847}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_StoreTillAction "{5A4B0B84C86E4848}" {
+     m_sStoreKey "general_store"
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5A4B0B84C86E4849}" {
+      Name "#LF-Store_Pay"
+     }
+    }
+    LF_ShopAction "{6B3C1D2E4F5A7082}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6B3C1D2E4F5A7083}" {
+      Name "#LF-Shop_Open_General"
+      Description "#LF-Shop_OpenDesc_General"
+     }
+    }
+   }
+  }
+ }
+ coords 4513.23 16.538 10746.079
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_miners_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{6B3C1D2E4F5A7091}" {
+   m_sShopName "#LF-Shop_Name_MinersSupply"
+   m_sShopDescription "#LF-Shop_Desc_MinersSupply"
+   m_sOutletId "miners_supply"
+  }
+  ActionsManagerComponent "{6B3C1D2E4F5A7092}" {
+   ActionContexts {
+    UserActionContext "{6B3C1D2E4F5A7093}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{6B3C1D2E4F5A7094}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{6B3C1D2E4F5A7095}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{6B3C1D2E4F5A7096}" {
+      Name "#LF-Shop_Open_MinersSupply"
+      Description "#LF-Shop_Desc_MinersSupply"
+     }
+    }
+   }
+  }
+ }
+ coords 4513.304 16.486 10745.612
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_radio : "{6E621E4B599F06FD}Prefabs/Atmosphere/LF_Radio_Store.et" {
+ coords 4514.162 16.486 10746.557
+ angleY 171
+}
+LF_NpcBaseEntity Fit_saint_philippe_general_store_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 4513.059 15.494 10747.015
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_general_store_general_store_alarm_box : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{6A1C3E57B0D24F81}" {
+   m_vOffset 0 0.167 0.065
+   m_fReach 10
+  }
+ }
+ coords 4517.171 17.9 10738.762
+ angleY 171
+}

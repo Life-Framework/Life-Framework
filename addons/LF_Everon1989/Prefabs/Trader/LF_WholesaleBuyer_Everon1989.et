@@ -1,0 +1,73 @@
+GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
+ ID "7C1E5A2D9B3F4609"
+ components {
+  LF_RestrictedInventoryStorageComponent "{59693C53BBA0FC9A}" {
+   m_TradablePrefabs {
+    "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et"
+    "{D2A8639FA0CA09EF}Prefabs/Resources/WoodCutting/HardwoodBoard.et"
+    "{7EB79C84E76D667D}Prefabs/Resources/WoodCutting/FencePost.et"
+    "{F96D821A8E47FBBA}Prefabs/Resources/WoodCutting/FirewoodBundle.et"
+    "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et"
+    "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
+    "{C2AE9B7E62F0369F}Prefabs/Resources/Mining/CoalLump.et"
+    "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
+    "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et"
+    "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
+    "{88F43FF542BB6767}Prefabs/Resources/Mining/Stone.et"
+    "{6ADCC5039A8EF571}Prefabs/Resources/Mining/Limestone.et"
+   }
+  }
+  LF_TraderManagerComponent "{59693C53B6A5EFC1}" {
+   m_aTradableItems {
+    LF_TraderItem "{59693C53B6A5E001}" {
+     m_ItemPrefab "{45D1B36F99DD2FC3}Prefabs/Resources/WoodCutting/WoodPlank.et"
+     m_ValuePerItem 6
+    }
+    LF_TraderItem "{59693C53B6A5E002}" {
+     m_ItemPrefab "{D2A8639FA0CA09EF}Prefabs/Resources/WoodCutting/HardwoodBoard.et"
+     m_ValuePerItem 7
+    }
+    LF_TraderItem "{59693C53B6A5E003}" {
+     m_ItemPrefab "{7EB79C84E76D667D}Prefabs/Resources/WoodCutting/FencePost.et"
+     m_ValuePerItem 5
+    }
+    LF_TraderItem "{59693C53B6A5E004}" {
+     m_ItemPrefab "{F96D821A8E47FBBA}Prefabs/Resources/WoodCutting/FirewoodBundle.et"
+     m_ValuePerItem 2
+    }
+    LF_TraderItem "{59693C53B6A5E005}" {
+     m_ItemPrefab "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et"
+     m_ValuePerItem 7
+    }
+    LF_TraderItem "{59693C53B6A5E006}" {
+     m_ItemPrefab "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
+     m_ValuePerItem 20
+    }
+    LF_TraderItem "{59693C53B6A5E007}" {
+     m_ItemPrefab "{C2AE9B7E62F0369F}Prefabs/Resources/Mining/CoalLump.et"
+     m_ValuePerItem 3
+    }
+    LF_TraderItem "{59693C53B6A5E008}" {
+     m_ItemPrefab "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et"
+     m_ValuePerItem 9
+    }
+    LF_TraderItem "{59693C53B6A5E009}" {
+     m_ItemPrefab "{C7FC93FD15F0574C}Prefabs/Resources/Mining/CopperOre.et"
+     m_ValuePerItem 8
+    }
+    LF_TraderItem "{59693C53B6A5E00A}" {
+     m_ItemPrefab "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
+     m_ValuePerItem 50
+    }
+    LF_TraderItem "{59693C53B6A5E00B}" {
+     m_ItemPrefab "{88F43FF542BB6767}Prefabs/Resources/Mining/Stone.et"
+     m_ValuePerItem 3
+    }
+    LF_TraderItem "{59693C53B6A5E00C}" {
+     m_ItemPrefab "{6ADCC5039A8EF571}Prefabs/Resources/Mining/Limestone.et"
+     m_ValuePerItem 4
+    }
+   }
+  }
+ }
+}

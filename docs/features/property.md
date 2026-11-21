@@ -28,6 +28,16 @@
   (`docs/config/override-model.md`). Tiers stay core-only. A pack plot whose key is a house id is refused like a
   core one (#2783). A path override (tests) reads that file alone. Proof: `property/pack-overlay`.
 
+### Saint-Philippe plot signs — `LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Plots_saint-philippe.layer` (2026-11-18, #2936)
+- 🟡 The four free plots of the scout dossier (p1 to p4) each carry an `LF_PlotSign.et` on the island, keys
+  `saint-philippe.p1` to `.p4`, priced by the pack overlay `Configs/Property/LF_Property_Everon1989.conf` (4500, 4000,
+  3500, 2800; tier `cottage`), which the header lists. The signs rest on the terrain (contact gap under 1 mm). Proof:
+  `everon/plot-prices` (pack leg), `look contact place:saint-philippe/plots`.
+- 🟡 (#2918) The merged catalogue (core plots plus the pack overlay) is checked as a whole: keys unique and no house id, every
+  plot names a core tier whose stages have work and item counts, prices above 0 and under ten times the priciest core plot.
+  Plot labels in period words and pack-set build stages are not possible yet: `LF_PropertyPlotDef` has no label field and tiers
+  are core-only (a core change, split off). Proof: `everon/plots` (pack leg).
+
 ### Plot purchase — `Feature/Property/LF_PlotComponent.c` (2026-11-18, #2649, spec #756)
 - 🟡 A for-sale plot sign (`Prefabs/Props/Property/LF_PlotSign.et`, an `LF_PlotComponent` naming a
   `LF_Property.conf` plot key) shows "Buy plot ($price)". The request carries the used sign's plot key: the server sells
@@ -55,6 +65,22 @@
   Everon 1989 board's "Plots for sale" card (it took the rules card's slot until #3077 made room for twelve cards and the rules card came back) names the nearest
   plot still for sale and "Set waypoint" marks it. Reading it records no single plot as heard of. Proof:
   `property/plot-for-sale-marks` (owned vs unowned map marks, the card's nearest plot, a cleared owner).
+
+### Buy a house at its "For sale" sign — `Feature/Property/LF_HouseSaleComponent.c` (2026-11-19, #3207, chapter #3201)
+- 🟡 `Prefabs/Props/Property/LF_HouseSaleSign.et` (face: core sign `house_for_sale`) names a house identifier. The house's
+  price and tier label are `LF_PropertyHouseDef` rows in the property config's `m_aHouses` (`LF_Property.conf`: `sale-house-a`,
+  `sale-house-b` as neutral examples); a pack prices its houses through its overlay, patching price and label by house id
+  like plots. A house id equal to a plot key is refused (`RefuseHouseCollisions` works both ways).
+- 🟡 "Buy house (tier, $price)" sends the used sign's house id; the server sells only when a sign of that id is within 5 m
+  of a free (not cuffed), conscious buyer who carries the price (rate-limited as a purchase). Exactly the price leaves carried
+  cash (ledger reason `property_buy_house`), the buyer becomes the owner (`LF_Properties.SetOwner` sets it on the live house,
+  saved in `houses`; the `properties` row records the purchase time), a `HouseKeyItem` bound to the identifier goes into their
+  inventory and a toast says so. Refused with nothing taken: an owned house, short cash, no sign in reach, a cuffed or downed
+  buyer, a house with no price. If the owner cannot be set the cash is refunded.
+- 🟡 The sign replicates one bool, `m_bOwned` (the #2780 plot-sign pattern), refreshed from `LF_Properties.SetOwner` / `ApplyAll`
+  and from every `LF_HouseManagerComponent.SetOwner`; the action reads only that flag: "Buy house" while for sale, "Sold"
+  (not usable) after. The owner key is never sent. Proof: `property/house-sale-buy`; the dedicated-client view of the Sold flip
+  is a manual step.
 
 ### Build site — `Feature/Property/LF_BuildSiteComponent.c` (2026-11-18, #2650, spec #756)
 - 🟡 The plot sign also carries an `LF_BuildSiteComponent` and two actions. "Need N more <item>" deposits
@@ -90,6 +116,10 @@
   owner who set it still owns the house; a sold house is never the buyer's spawn, in session or after a save. Any owner change
   (`LF_HouseManagerComponent.SetOwner`, whatever calls it) clears the flag, so buying the house back does not restore it.
 - 🟡 Applies at login only (the spawn flow reads `SpawnHouseOf`); deaths still wake at hospital. Proof: `property/set-home`.
+- 🟡 A dedicated client sees the offer too (#3375): the property book and `LF_Houses.Find` are server-only, so the client
+  compares its key with the house's replicated `GetOwnerKey()` and skips the `SpawnHouseOf` check (`LF_SetHomeAction.OfferSet`,
+  shared with the house sign, #3208). The server re-checks in `SetSpawnHouse`. Proof: `property/set-home-client-offer`
+  (host test of the client branch; dedicated-client session is a manual step).
 
 ### Spawn order at login — `Feature/Character/Spawning/LF_SpawnPriority.c`, `Feature/Property/LF_HouseSpawnComponent.c` (2026-11-18, #2652, spec #747)
 - 🟡 Login order: jail (the body is moved to the cell after it spawns), the hospital wake after a death, a rejoin
@@ -101,3 +131,47 @@
   random order and the first with room for a person (a box trace) wins; none clear gives the outside point;
   no outside point gives the role spawn. A house with no component takes the role spawn (an Info line). The core
   authors no points; the pack adds them (#812). Port of `OVT_SpawnPointComponent` (`THIRD_PARTY.md`). Proof: `spawn/house-point`.
+
+### Locked vanilla buildings — `Feature/Houses/LF_BuildingLocks.c` (2026-11-18, #3203, parent #3201)
+- 🟡 A map maker drops `Prefabs/Systems/Houses/LF_BuildingLock.et` inside a vanilla house and nobody opens
+  that building's doors. The marker (`LF_BuildingLockComponent`) finds its building the way `LF_FittedBuildings`
+  does (one bounded sphere query, the building whose bounds hold the marker) and registers the building's
+  `EntityID` with the marker's sign key on **every machine**; nothing replicates and nothing is saved (the markers
+  load again after a restart and for a late joiner). `LF_DoorUserAction` walks the door's parents to the building:
+  the prompt names the reason, and the server refuses a forged open. Closing an open door still works.
+- 🟡 Sign keys: `#LF-BuildingLock_Private`, `_StaffOnly`, `_ForSaleSoon`, `_OpeningSoon`, `_Closed` (neutral core text;
+  a pack rewords them by overriding the same Ids). An unmarked or unfound building stays open; no building within the
+  radius logs `LF_Debug.Error("BuildingLock", ...)`.
+- 🟡 Precedence: a building that also holds an open marker (a fitted place's `LF_FittedBuildingComponent`; a house
+  marker will call `LF_BuildingLocks.RegisterOpenAt`) ignores the private lock, so later cards never edit the lock
+  layer. Proof: `houses/building-lock-private`.
+- 🟡 Saint-Philippe lock layer (#3204): `node tools/town/locks.mjs saint-philippe` writes
+  `LF_Everon1989/.../MainWorld_Layers/Locks_saint-philippe.layer` from `purpose.json` (never hand-edited): one marker per
+  enterable building no fitted slot carries, at the footprint centre, with a pack sign key (`LF-Everon-Lock_*`: Propriété
+  privée for homes of residents, barns, lock-ups and outbuildings; Réservé au personnel; À vendre bientôt for the homes
+  for sale; Ouverture prochaine for planned shops; Zone militaire; École : vacances d'été; À louer bientôt; Fermé).
+  Left out: fitted or in-flight rows, the churches and chapels (D1), `sp:b49` (org registry) and side buildings of a
+  fitted business. `tools\cli town doors saint-philippe --planned` shows the carriers; a shop or home card that fits
+  its building needs no edit here (the open marker wins). Selftest: `node tools/town/locks.selftest.mjs`.
+
+### Homes for sale in the real town — `LF_HouseMarker.et`, `tools/town/homes.mjs` (2026-11-19, #3584, chapter #3201)
+- 🟡 `Prefabs/Systems/Houses/LF_HouseMarker.et` is the lock marker plus an `LF_HouseManagerComponent` (and an `RplComponent`): dropped inside a
+  vanilla building with a `m_sDebugIdentifier`, it makes that building a house. Its doors refuse a stranger; the owner (their character
+  key against the replicated owner key) and anyone holding a key bound to the house id pass, on the client prompt and on the server. An
+  unowned house shows the marker's `m_sSignKey`; once it has an owner a stranger sees `m_sOwnedSignKey`. A plain lock marker is unchanged.
+- 🟡 `tools\cli town homes saint-philippe` (from `ws/town-draft-saint-philippe-homes`) does it for every purpose row with purpose `a`, a
+  `houseId` and a tier: a house marker at the footprint centre, `LF_HouseSaleSign.et` with the same house id on the entrance wall (the
+  drop planner's wall seat; a building whose entrance wall takes no sign uses another side), one `m_aHouses` row per home in
+  `addons/LF_Everon1989/Configs/Property/LF_Property_Everon1989/LF_Property_Homes_SaintPhilippe.conf`, and `docs/everon/places/<place>/homes.json`,
+  which `town locks` reads to drop those homes' ForSaleSoon markers. Layer `Homes_saint-philippe.layer`; a generated file, rerun the script.
+- 🟡 A sale sign stands beside the door frame (#3886): `town homes` takes a wall spot only when the sign is out of every door leaf's swing
+  (1 m) and ground walk-up (3 m), by 0.2 m, using the door leaves in `tools/town/probes/doors-saint-philippe.json` (the audit's runtime
+  dump); the planner slides the sign along the wall and tries the other sides. Selftest cases: a fixture sign beside, in front of and
+  in the walk-up of a door, and every committed sign against the probe.
+- 🟡 Prices by tier (a courier earns about $600 an hour, `tools\cli economy`): cottage 4000, village house 6000, family house 8000,
+  town house 10000, farmhouse 13000, villa 20000. Selftest `node tools/town/homes.selftest.mjs`; in-game `houses/house-marker`.
+- 🟡 The cottage's door stage asks for a door kit (`Prefabs/Items/Resources/LF_DoorKit.et`, #3172), not the structure door
+  prefab (a building part nobody can pick up, so no house could be finished). The kit is a boxed item ($250 at the Everon
+  1989 hardware store, `hardware` stock and `LF_ShopPrices_GeneralStore.conf`). A save that holds a half-deposited door stage
+  loses that one count (deposits are counts by prefab). Proof: `property/build-door-kit` (every stage requirement loads and
+  fits a character's inventory, the kit counts at a build site) and `everon/door-kit-stock` (pack leg).

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "church",
+  "building": "b07",
+  "kit": "church",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_church.layer",
+  "kinds": [
+    "Church"
+  ],
+  "rows": 8,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_church_Place"
+  },
+  "date": "2026-11-21"
+}

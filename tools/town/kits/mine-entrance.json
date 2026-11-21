@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "kit": "mine-entrance",
+  "system": "mining",
+  "source": {
+    "file": "tools/town/kits/sources/mine-entrance.layer",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -9,
+        -1
+      ],
+      "max": [
+        9,
+        9
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "Open hillside mine mouth: the buried shaft end is the portal (set into the slope on the -z side, opening +z), log timbering posts and a lintel frame it, ore heaps and a rail cart wait on the apron, a lantern and a floodlight light it, a pole sign stands to one side. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "portal",
+      "name": "MineEntrance_Portal",
+      "prefab": "{02128ED43CA97BCF}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_end_buried.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "post-l",
+      "name": "MineEntrance_PostL",
+      "prefab": "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.5,
+        1.5,
+        5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "pitch": 90,
+      "scale": 0.5
+    },
+    {
+      "id": "post-r",
+      "name": "MineEntrance_PostR",
+      "prefab": "{32654927F2657E8A}Prefabs/Props/Forest/WoodPile/WoodLog_01_A.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.5,
+        1.5,
+        5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "pitch": 90,
+      "scale": 0.5
+    },
+    {
+      "id": "lintel",
+      "name": "MineEntrance_Lintel",
+      "prefab": "{5E317DC74EA1F1A4}Prefabs/Props/Forest/WoodPile/WoodLog_01_B.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        3.05,
+        5
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "scale": 0.5
+    },
+    {
+      "id": "heap-l",
+      "name": "MineEntrance_HeapL",
+      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.6,
+        0,
+        1.5
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "heap-r",
+      "name": "MineEntrance_HeapR",
+      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.6,
+        0,
+        1.5
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cart",
+      "name": "MineEntrance_Cart",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1,
+        0,
+        8.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "picks",
+      "name": "MineEntrance_Picks",
+      "prefab": "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.8,
+        0,
+        7.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lantern",
+      "name": "MineEntrance_Lantern",
+      "prefab": "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -2.4,
+        0,
+        6
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "flood",
+      "name": "MineEntrance_Flood",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        3.2,
+        0,
+        6
+      ],
+      "yaw": 200,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "sign",
+      "name": "MineEntrance_Sign",
+      "prefab": "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        -4.5,
+        0,
+        8
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+GenericEntity : "{3AC9CDFE7E068E5E}Prefabs/Props/Services/Post/Mailbox_02.et" {
+ ID "6B0D2C7E41A95F38"
+ components {
+  SCR_DestructionMultiPhaseComponent "{5624A88D86EFE8BA}" {
+   Enabled 0
+  }
+  ActionsManagerComponent "{6B0D2C7E41A95F40}" {
+   ActionContexts {
+    UserActionContext "{6B0D2C7E41A95F41}" {
+     ContextName "default"
+     Position PointInfo "{6B0D2C7E41A95F42}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_JobDropoffAction "{6B0D2C7E41A95F43}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_JobSiteComponent "{6B0D2C7E41A95F44}" {
+   m_eSite DROP
+  }
+ }
+}

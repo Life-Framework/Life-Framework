@@ -32,10 +32,11 @@ import { deflateSync, inflateSync } from "node:zlib";
 import { quietSpawn } from "../lib/quiet-launch.mjs";
 import * as tb from "../remote/testbox.mjs";
 import { townWorld } from "../lib/addons.mjs";
+import { scratchDir } from "../lib/scratch.mjs";
 import { inGrid, lookArea as zoneLookArea, readCells } from "../lib/world-zones.mjs";
 import { GRID_WORLD, ISLAND_WORLD, PACK_GRID_WORLD, gridLayerDirs, gridWorldFor, islandLayersDir } from "../lib/worlds.mjs";
 import { PLACE_RX, resolvePlace } from "./look-place.mjs";
-import { lookStartVerdict, phaseText, renderProblem, requestNeedsRam, timeline } from "../lib/look-job.mjs";
+import { lookStartVerdict, lookSummaryLine, phaseText, renderProblem, requestNeedsRam, timeline } from "../lib/look-job.mjs";
 import * as poolRam from "../lib/pool-ram.mjs";
 import { SEED_PEAKS_MB } from "../lib/pool-ram.mjs";
 
@@ -64,6 +65,13 @@ const ISLAND_SERVE_BUDGET_S = 270;
 export const worldFlag = (w) => (typeof w !== "string" ? null : /^island$/i.test(w) ? ISLAND_WORLD : w);
 // Seconds per phase of this process's look (slot wait, RAM wait, build lock, Workbench start, world, shots, collect); printed and kept in index.json.
 const TL = timeline();
+
+// The one SUMMARY line of a look (lockWait, slotWait, work: tools/lib/look-job.mjs). Printed here, it lands in the
+// look's own tmp/logs/look-<stamp>.log (the quiet wrapper keeps the whole output), which `look stats` reads
+// across the worktrees (tools/visual/look-stats.mjs). Written to no file of its own, so a look is counted once.
+function emitLookSummary({ area, served, shots, started, phases }) {
+  console.log(lookSummaryLine({ ok: true, area, served, shots, at: new Date(started).toISOString(), phases }));
+}
 
 export const DEFAULTS = { hour: 14, settle: 350, first: 3000, close: 12 };
 
@@ -960,6 +968,7 @@ async function run(args) {
   const startLabel = served === "fresh" ? "Workbench start" : "request to first step";
   TL.add("collect", (Date.now() - collectT0) / 1000);
   console.log(`look: phases: ${phaseText(TL.get())}`);
+  emitLookSummary({ area: args.pos.join("+"), served, shots: shots.length - missing, started, phases: TL.get() });
   console.log(`look: ${shots.length - missing}/${shots.length} shot(s) in ${r1(total)} s, served=${served} snapshot=${sha ? sha.slice(0, 10) : "?"} addons=${renderedTree ? renderedTree.slice(0, 10) : "?"} (${startLabel} ${r1(bootS)} s, world and play ${r1((status.readyMs ?? 0) / 1000)} s, shots ${r1((status.done?.ms ?? 0) / 1000 - (status.readyMs ?? 0) / 1000)} s${ram}); ${flagged} flagged, ${missing} missing`);
   for (const s of summaries) {
     console.log(`  ${s.area}: ${s.contact}`);
@@ -1062,6 +1071,22 @@ export async function selftest() {
       ok(board.front === 0, `a building with no known entrance faces its yaw (+z at yaw 0), got ${board.front}`);
       ok(worldOfAreas([arr]) === "Worlds/MainWorld/MainWorld.ent" && planText(shotsFor(arr, [], { close: 0 }), [arr]).startsWith("world Worlds/MainWorld/MainWorld.ent\n"), "a place: plan must open the pack's MainWorld");
       ok(/ - 2014 /.test(shotsFor(arr, [], { close: 0 })[0].line), "a place: wide must take its ground height from the terrain (ty -)");
+      // A slot whose kit lies outside its host's frame (the pond, 62 m from the barn it anchors on) is framed on its rows (#3666).
+      // red-proof: 2026-11-19 with frameRows() absent the arrival area stayed on the host and the far rows were never in a picture ("a far kit row must be in the frame").
+      {
+        const { frameRows, layerRows } = await import("./look-place.mjs");
+        const far = placeArea(placeData, "sample-square", "arrival", undefined, null, [[1012 + 70, 2014 + 4], [1012 + 83, 2014 + 4]]);
+        ok(Math.hypot(1012 + 83 - far.x, 2018 - far.z) <= far.radius - 4 && Math.hypot(1012 + 70 - far.x, 2018 - far.z) <= far.radius - 4 && far.x > 1012 + 60, `a far kit row must be in the frame: ${JSON.stringify(far)}`);
+        const near = placeArea(placeData, "sample-square", "arrival", undefined, null, [[1012 + 2, 2014 + 1]]);
+        ok(near.x === arr.x && near.z === arr.z && near.radius === arr.radius, "rows inside the host's frame must leave the host's own view");
+        ok(frameRows([], { x: 0, z: 0 }, 10) === null && frameRows([[500, 0], [1000, 0]], { x: 0, z: 0 }, 10).radius === 90, "no rows frame nothing, and the frame is capped at 90 m");
+        const dir = scratchDir("lf-lookrows-");
+        const layerDir = join(dir, "addons", "LF_Everon1989", "Worlds", "MainWorld", "MainWorld_Layers");
+        mkdirSync(layerDir, { recursive: true });
+        writeFileSync(join(layerDir, "Place_p_s.layer"), 'GenericEntity Fit_p_s_Place {\n coords 1 2 3\n}\nGenericEntity Fit_p_s_spot : "{E8C5BD1716B703E0}Prefabs/X.et" {\n components {\n }\n coords 40.5 12.5 90.25\n angleY -156\n}\n');
+        const rows = layerRows(dir, "p", "s");
+        ok(rows.length === 1 && rows[0][0] === 40.5 && rows[0][1] === 90.25 && layerRows(dir, "p", "none").length === 0, `layerRows read ${JSON.stringify(rows)}: the place marker is not a kit row`);
+      }
       const inside = resolveInterior(arr, "auto");
       ok(inside.interior && inside.y === 12.4 && inside.x === 1012 && inside.radius >= 4 && inside.radius <= 8, `--interior auto: ${JSON.stringify(inside)}`);
       let refused = 0;
@@ -1290,7 +1315,7 @@ export async function selftest() {
 
 // ------------------------------------------------------------------ main
 
-const USAGE = "usage: tools\\cli look <area | town:<area> | place:<place>/<slot> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--world <path|island>] [--edit] [--close N] [--radius m] [--interior x,y,z|auto] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look selftest";
+const USAGE = "usage: tools\\cli look <area | town:<area> | place:<place>/<slot> | grid:<slug|annex-gate> | grid:all | x,z | all> [more areas] [--world <path|island>] [--edit] [--close N] [--radius m] [--interior x,y,z|auto] [--hour h] [--measure] [--wait] [--force] [--serve|--fresh|--cold] [--local|--machine <name>] | look serve [--status|--stop [--remove]] | look item <prefab|slug> [more] [--states ground,inventory] [--at area|x,z] | look stats [--hours 24] | look selftest";
 
 export async function main(argv) {
   const args = parseArgs(argv);
@@ -1301,6 +1326,7 @@ export async function main(argv) {
     args.pos.shift();
   }
   if (args.pos[0] === "selftest") return selftest();
+  if (args.pos[0] === "stats") return (await import("./look-stats.mjs")).main({ root: ROOT, hours: args.flags.hours });
   const route = await import("../lib/wb-route.mjs");
   if (args.pos[0] === "serve") {
     // The look server is a long-lived Workbench on this PC: no remote form. --status and --stop start nothing.
@@ -1508,6 +1534,11 @@ async function remoteLook(m, args, argv, pool, { warm = !args.flags.cold && !arg
     }
   }
   console.log(`look: phases here: ${phaseText(TL.get())}${remotePhases ? `; on ${m.name}: ${phaseText(remotePhases)}` : ""}`);
+  // A routed look waited on the box's lock and slot: those waits come from the box's timing; its work is the copy here.
+  const waits = Object.fromEntries(Object.entries(remotePhases ?? {}).filter(([k]) => /-wait$/.test(k)));
+  const phases = { ...TL.get() };
+  for (const [k, v] of Object.entries(waits)) phases[k] = (phases[k] ?? 0) + v;
+  emitLookSummary({ area: args.pos.join("+"), served: "remote", shots: pulled.areas.length, started: t0, phases });
   for (const a of pulled.areas) console.log(`  ${a.name}: ${a.contact}`);
   if (pulled.overview) console.log(`  overview: ${pulled.overview}`);
   return r.code;

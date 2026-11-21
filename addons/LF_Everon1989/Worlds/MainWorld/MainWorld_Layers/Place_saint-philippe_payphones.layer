@@ -1,0 +1,20 @@
+GenericEntity Fit_saint_philippe_payphones_drop_b06 : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 4472.072 0.586 10749.289
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_payphones_drop_b97 : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 4613.597 0.623 10664.839
+ angleY 170
+}
+GenericEntity Fit_saint_philippe_payphones_drop_b39 : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 4433.244 0.588 10775.791
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_dock_payphones_drop_b14 : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 4473.643 0.44 11139.275
+ angleY 122
+}
+GenericEntity Fit_saint_philippe_districts_payphones_drop_b26 : "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et" {
+ coords 4588.776 0.603 10746.459
+ angleY 170
+}

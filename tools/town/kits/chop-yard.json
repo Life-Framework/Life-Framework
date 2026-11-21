@@ -1,0 +1,378 @@
+{
+  "schema": 1,
+  "kit": "chop-yard",
+  "system": "chop",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Street_ChopShop.layer",
+    "group": "*",
+    "origin": "Roadmap_ChopShop",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -7,
+        8
+      ],
+      "max": [
+        6,
+        18
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "An open farm yard: the barn is the host, the bench stands 14 m in front of its front wall with the drop area (10 m) clear of props on the -x side. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "chop-shop-welder",
+      "name": "ChopShop_Welder",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.8,
+        0.1,
+        11.4
+      ],
+      "yaw": -160,
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {
+            "Object": "\"{79EE1F126728BF6C}Assets/Props/Industrial/Repair/GasWelder_01/GasWelder_01.xob\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "RigidBody",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-shop-door-1",
+      "name": "ChopShop_Door_1",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -6.6,
+        0.1,
+        15
+      ],
+      "yaw": -100,
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {
+            "Object": "\"{F753CFA0BE5000FF}Assets/Props/VehicleParts/Door_M998/Door_M998_L1.xob\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "RigidBody",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-shop-door-2",
+      "name": "ChopShop_Door_2",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -6.8,
+        0.1,
+        12.5
+      ],
+      "yaw": -80,
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {
+            "Object": "\"{382314ED6EF301BF}Assets/Props/VehicleParts/Door_M998/Door_M998_R1.xob\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "RigidBody",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-shop-jack",
+      "name": "ChopShop_Jack",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.6,
+        0.1,
+        15
+      ],
+      "yaw": -150,
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {
+            "Object": "\"{A195F0214C0A0528}Assets/Props/Industrial/Repair/HydraulicCarJack_01/HydraulicCarJack_01.xob\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "RigidBody",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-shop-scrap",
+      "name": "ChopShop_Scrap",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.6,
+        0.1,
+        9.8
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "MeshObject",
+          "set": {
+            "Object": "\"{516F33579E693014}Assets/Props/Industrial/Repair/VehicleGarbage_01/VehicleGarbage_01_pile_medium.xob\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "RigidBody",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "tool-box-01-base",
+      "prefab": "{174E332EF84362B2}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_base.et",
+      "role": "dressing",
+      "verb": "on workbench-01",
+      "offset": [
+        5,
+        1.08,
+        13.6
+      ],
+      "yaw": -90,
+      "floor": "f0"
+    },
+    {
+      "id": "workbench-vice-01",
+      "prefab": "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et",
+      "role": "dressing",
+      "verb": "on workbench-01",
+      "offset": [
+        5.05,
+        1.22,
+        12
+      ],
+      "yaw": -90,
+      "floor": "f0"
+    },
+    {
+      "id": "tire-m151-a2-pile",
+      "prefab": "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.7,
+        0.1,
+        16.8
+      ],
+      "yaw": -160,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-metal-01-blue",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.8,
+        0.1,
+        8.5
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-metal-01-blue-2",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.9,
+        0.1,
+        9
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "workbench-01",
+      "prefab": "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.05,
+        0.1,
+        12.8
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "chop-shop",
+      "name": "Roadmap_ChopShop",
+      "prefab": "{9C2E4A7B1D5F8036}Prefabs/Crime/LF_ChopBench.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0.1,
+        14
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ChopShopComponent",
+          "set": {
+            "m_sShopId": "\"chopyard-yard\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "tire-m151-a2",
+      "prefab": "{A81F99C793D11875}Prefabs/Props/VehicleParts/Tires/Tire_M151A2.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.5,
+        0.1,
+        16.4
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "tire-m151-a2-2",
+      "prefab": "{A81F99C793D11875}Prefabs/Props/VehicleParts/Tires/Tire_M151A2.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.6,
+        0.1,
+        15.2
+      ],
+      "yaw": -140,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "crate-01-brown",
+      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.2,
+        0.1,
+        10.6
+      ],
+      "yaw": -170,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-metal-01-base",
+      "prefab": "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.8,
+        0.1,
+        9.4
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "m151-a2-wreck",
+      "prefab": "{EB084C400AABD1D3}Prefabs/Props/Wrecks/M151A2_wreck/M151A2_wreck.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.6,
+        0.1,
+        13.8
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

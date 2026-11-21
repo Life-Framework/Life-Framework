@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{4C1A9E7D30B58F26}Configs/Qualifications/LF_Qualifications.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

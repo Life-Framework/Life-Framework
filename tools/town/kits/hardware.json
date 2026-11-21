@@ -1,0 +1,269 @@
+{
+  "schema": 1,
+  "kit": "hardware",
+  "system": "",
+  "source": {
+    "file": "tools/town/kits/sources/hardware.layer",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{4DC0293EF161C898}Prefabs/Structures/Industrial/Houses/Workshop_02/Workshop_02.et"
+  },
+  "anchoring": {
+    "floorY": 0.496,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.496
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        2,
+        -2
+      ],
+      "max": [
+        3.45,
+        3.1
+      ]
+    },
+    "front": "-x",
+    "counters": [
+      {
+        "id": "hardware-shop-counter",
+        "wall": "-x",
+        "edgeGap": 0
+      },
+      {
+        "id": "hardware-miners-counter",
+        "wall": "-x",
+        "edgeGap": 0
+      },
+      {
+        "id": "hardware-shop-till",
+        "wall": "-x",
+        "edgeGap": 0
+      },
+      {
+        "id": "hardware-miners-till",
+        "wall": "-x",
+        "edgeGap": 0
+      }
+    ],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "hardware-shop-counter",
+      "name": "Hardware_shop_counter",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "against wall",
+      "offset": [
+        2,
+        0.458,
+        3.1
+      ],
+      "yaw": 0,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "hardware-miners-counter",
+      "name": "Hardware_miners_counter",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "against wall",
+      "offset": [
+        2,
+        0.458,
+        0.8
+      ],
+      "yaw": 180,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "hardware-shop-till",
+      "name": "Hardware_shop_till",
+      "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
+      "role": "till",
+      "verb": "on hardware-shop-counter",
+      "offset": [
+        2,
+        1.497,
+        2.9
+      ],
+      "yaw": 180,
+      "floor": "f0",
+      "attach": "counter:hardware-shop-counter",
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sShopName": "\"#LF-Shop_Name_Hardware\"",
+            "m_sShopDescription": "\"#LF-Shop_Desc_Hardware\"",
+            "m_sStockId": "\"hardware\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hardware-miners-till",
+      "name": "Hardware_miners_till",
+      "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
+      "role": "till",
+      "verb": "on hardware-miners-counter",
+      "offset": [
+        2,
+        1.497,
+        1
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "counter:hardware-miners-counter",
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sShopName": "\"#LF-Shop_Name_MinersSupply\"",
+            "m_sShopDescription": "\"#LF-Shop_Desc_MinersSupply\"",
+            "m_sOutletId": "\"miners_supply\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hardware-clerk",
+      "name": "Hardware_clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        2,
+        0.452,
+        1.7
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "hardware-shelf-1",
+      "name": "Hardware_shelf_1",
+      "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        3.285,
+        0.454,
+        -2
+      ],
+      "yaw": -90,
+      "wall": "-z",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "hardware-tool-rack-1",
+      "name": "Hardware_tool_rack_1",
+      "prefab": "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et",
+      "role": "dressing",
+      "verb": "on hardware-shelf-1",
+      "offset": [
+        3.45,
+        2.4,
+        -2
+      ],
+      "yaw": -90,
+      "floor": "f0",
+      "attach": "shelf:hardware-shelf-1"
+    },
+    {
+      "id": "hardware-lf-sign-fascia",
+      "name": "Hardware_lf_sign_fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -1.5,
+        3,
+        6.05
+      ],
+      "yaw": 0,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"hardware\"",
+            "m_vRimColor": "0.9 0.78 0.35",
+            "m_vPaintColor": "0.12 0.25 0.4",
+            "m_vTextColor": "0.96 0.93 0.82"
+          },
+          "blocks": []
+        }
+      ]
+    }
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{4DC0293EF161C898}Prefabs/Structures/Industrial/Houses/Workshop_02/Workshop_02.et",
+    "lanes": [
+      {
+        "from": "entrance",
+        "to": "hardware-shop-counter",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "hardware-miners-counter",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "hardware-shop-till",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "hardware-miners-till",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "hardware-shelf-1",
+        "width": 1.2
+      }
+    ],
+    "clear": []
+  }
+}

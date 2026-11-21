@@ -142,6 +142,14 @@ class LF_BuildSiteComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Where the house shell stands, in world space (the sign's transform plus m_vShellOffset). Server and
+	//! client; placement reads it to tell whether a spot is inside the built house (#3173).
+	vector GetShellOrigin()
+	{
+		return GetOwner().CoordToParent(m_vShellOffset);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the shell standing for the finished stage, null when none.
 	IEntity GetShell()
 	{

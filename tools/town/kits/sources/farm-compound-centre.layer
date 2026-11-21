@@ -1,0 +1,8 @@
+GenericEntity FarmCompound_Centre {
+ components {
+  LF_ContestedSiteComponent "{7A3C5E1B9D204F68}" {
+   m_sHideoutId "farm_compound"
+  }
+ }
+ coords 0 0 0
+}

@@ -5,9 +5,13 @@
 // #2151), #2462 (#2498), #1754 (mostly done), #2494 and #2418 (partly). Each agent found it in 1-6
 // minutes, but each cost a brief, a worktree, a lane and a lead check-in. `tools\cli issue-check
 // <N...>` asks GitHub and git first and prints one verdict per issue:
-//   LIKELY DONE  the issue carries a merged-work label, a merged PR or a main commit cites #N, a
-//                comment says it is fixed or a duplicate, or the skip list names it
-//   CHECK        merged PRs with the same title words, or sub-issues / issues it names that are done
+//   LIKELY DONE  the issue carries a merged-work label, a merged PR is FOR #N (its title ends in
+//                "(#N)" or its body has "Refs #N" / "Closes #N" / "Fixes #N" as its own line), a main
+//                commit subject ends in "(#N)", a comment says it is fixed or a duplicate, or the skip
+//                list names it
+//   CHECK        a PR or commit that merely mentions #N (a design note, a sibling card, "can reuse #N",
+//                "builds on #N": 2026-11-19 it called #3260, #3263, #3208, #3274 and #3287 LIKELY DONE
+//                for that), merged PRs with the same title words, or sub-issues it names that are done
 //   CLEAR        nothing found
 // The gathering is in tools/commands/issue-check.mjs; this file is pure so the selftest needs no gh.
 
@@ -37,6 +41,18 @@ export function keywords(title, max = 4) {
 }
 
 export const citesIssue = (text, n) => new RegExp(`#${n}(?![0-9])`).test(String(text || ""));
+
+// A PR or commit is FOR #N, not just about it: the title (subject) ends in "(#N)" (also "(#M, #N)"), or the
+// body has a closing keyword line: "Refs #N", "Closes #N", "Fixes #N" (also "Refs #M, #N").
+export function titleIsFor(title, n) {
+  return new RegExp(`\\((?:#[0-9]+,\\s*)*#${n}(?:,\\s*#[0-9]+)*\\)\\s*$`).test(String(title || "").trim());
+}
+export function bodyIsFor(body, n) {
+  const list = `(?:#[0-9]+\\s*(?:,|and|&)\\s*)*#${n}(?![0-9])(?:\\s*(?:,|and|&)\\s*#[0-9]+)*`;
+  const re = new RegExp(`^\\s*(?:refs?|closes?|fix(?:es)?|resolves?)\\s*:?\\s+${list}\\s*$`, "i");
+  return String(body || "").split("\n").some((l) => re.test(l.replace(/\r$/, "")));
+}
+export const prIsFor = (p, n) => titleIsFor(p.title, n) || bodyIsFor(p.body, n);
 
 // Issue numbers a body names (sub-issue lists, "after #X", "see #Y"), without the issue itself.
 export function namedIssues(body, self) {
@@ -77,9 +93,13 @@ export function verdict(facts) {
   for (const l of labels) if (DONE_LABELS.includes(l)) strong.push(`label ${l}: a merged PR already refs it`);
   for (const p of facts.prs || []) {
     if (!citesIssue(`${p.title}\n${p.body}`, n)) continue;
-    (PLANNING_PR.test(p.title) ? weak : strong).push(`merged PR #${p.number} cites #${n}: ${p.title}`);
+    if (prIsFor(p, n) && !PLANNING_PR.test(p.title)) strong.push(`merged PR #${p.number} is for #${n}: ${p.title}`);
+    else weak.push(`merged PR #${p.number} only mentions #${n} (read it: a design note or a sibling card?): ${p.title}`);
   }
-  for (const c of facts.commits || []) strong.push(`main commit ${c.sha.slice(0, 9)} cites #${n}: ${c.subject}`);
+  for (const c of facts.commits || []) {
+    if (titleIsFor(c.subject, n)) strong.push(`main commit ${c.sha.slice(0, 9)} is for #${n}: ${c.subject}`);
+    else weak.push(`main commit ${c.sha.slice(0, 9)} only mentions #${n}: ${c.subject}`);
+  }
   for (const c of facts.issue.comments || []) {
     const m = FIXED_WORDS.exec(c.body || "");
     if (m) strong.push(`a comment says "${m[0]}"`);

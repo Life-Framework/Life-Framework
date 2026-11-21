@@ -1,0 +1,13 @@
+GameEntity : "{097F88BDCA8B3D89}Prefabs/Structures/BuildingParts/Lights/LampIndustrial_01_on_exterior.et" {
+ ID "90738F3F8BF3BA7C"
+ {
+  LightEntity {
+   ID "65128E4DAD9A8FEE"
+   CastShadow 0
+  }
+  LightEntity {
+   ID "65128E4DAD9A8FC4"
+   CastShadow 0
+  }
+ }
+}

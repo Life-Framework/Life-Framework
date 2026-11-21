@@ -1,0 +1,63 @@
+GenericEntity Fit_saint_philippe_range_Place {
+ components {
+  LF_PlaceComponent "{8FC3EA1EACFEA974}" {
+   m_sKind "RangeLane"
+   m_sId "saint-philippe.range"
+  }
+  LF_FittedBuildingComponent "{55EFEA5E70A13790}" {
+  }
+ }
+ coords 4457.4 19.1 10574.4
+}
+SCR_DestructibleEntity Fit_saint_philippe_range_shooting_range_fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4451.132 0 10556.585
+ angleY -45
+}
+SCR_DestructibleEntity Fit_saint_philippe_range_shooting_range_fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4454.668 0 10560.12
+ angleY -45
+}
+SCR_DestructibleEntity Fit_saint_philippe_range_shooting_range_fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4458.203 0 10563.656
+ angleY -135
+}
+SCR_DestructibleEntity Fit_saint_philippe_range_shooting_range_fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4451.133 0 10570.727
+ angleY 135
+}
+SCR_DestructibleEntity Fit_saint_philippe_range_shooting_range_fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4447.597 0 10567.192
+ angleY 135
+}
+SCR_DestructibleEntity Fit_saint_philippe_range_shooting_range_fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4444.061 0 10563.656
+ angleY 45
+}
+SCR_DestructibleEntity Fit_saint_philippe_range_shooting_range_fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4447.597 0 10560.12
+ angleY 45
+}
+GenericEntity Fit_saint_philippe_range_shooting_range_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:shooting-range"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 4452.122 19.051 10570.869
+ angleY 45
+}
+SCR_FiringRangeTarget Fit_saint_philippe_range_shooting_range_r0_1 : "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et" {
+ coords 4451.493 19.94 10559.759
+ angleY 45
+}
+SCR_FiringRangeTarget Fit_saint_philippe_range_shooting_range_r0_2 : "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et" {
+ coords 4449.372 19.817 10561.881
+ angleY 45
+}
+SCR_FiringRangeTarget Fit_saint_philippe_range_shooting_range_r0_3 : "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et" {
+ coords 4447.25 19.684 10564.002
+ angleY 45
+}

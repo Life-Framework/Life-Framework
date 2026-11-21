@@ -1,0 +1,30 @@
+{
+  "section": "vehiclecache",
+  "class": "LF_VehicleCacheSavePayload",
+  "version": 1,
+  "roots": "LF_VehicleCacheRow",
+  "records": {
+    "LF_VehicleCacheRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sVehicleId",
+        "int m_iStickerExpiry",
+        "bool m_bCompartment",
+        "array<ref LF_VehicleCacheItemRow> m_aGoods"
+      ]
+    },
+    "LF_VehicleCacheItemRow": {
+      "fields": [
+        "string m_sPrefab",
+        "int m_iQuantity",
+        "int m_iParent",
+        "int m_iStorage",
+        "int m_iSlot",
+        "int m_iAmmo",
+        "string m_sSerial",
+        "bool m_bStolen",
+        "string m_sHouseKey"
+      ]
+    }
+  }
+}

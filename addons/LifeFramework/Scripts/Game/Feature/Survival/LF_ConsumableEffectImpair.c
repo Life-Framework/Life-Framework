@@ -5,7 +5,7 @@
 //! The engine takes one consumable effect per item, so this one also carries the drink's thirst
 //! restore (#2159); the amount stays in the drink prefab, not the impairment table.
 [BaseContainerProps()]
-class LF_ConsumableEffectImpair : SCR_ConsumableEffectBase
+class LF_ConsumableEffectImpair : LF_ConsumableEffectEat
 {
 	[Attribute(defvalue: "20", uiwidget: UIWidgets.Slider, desc: "Impairment points one use adds (0-100)", params: "0 100 1")]
 	protected float m_fStrength;
@@ -23,11 +23,8 @@ class LF_ConsumableEffectImpair : SCR_ConsumableEffectBase
 	protected float m_fThirstRestore;
 
 	//------------------------------------------------------------------------------------------------
-	override void ApplyEffect(notnull IEntity target, notnull IEntity user, IEntity item, ItemUseParameters animParams)
+	override protected void ApplyNeeds(notnull IEntity target, notnull IEntity user, IEntity item)
 	{
-		if (!Replication.IsServer())
-			return;
-
 		LF_CharacterSurvivalComponent survival = LF_CharacterSurvivalComponent.Cast(target.FindComponent(LF_CharacterSurvivalComponent));
 		if (!survival)
 		{

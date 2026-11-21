@@ -1,0 +1,79 @@
+GenericEntity Fit_saint_philippe_parcel_Place {
+ components {
+  LF_PlaceComponent "{70D7A4FBB3576EB7}" {
+   m_sKind "ParcelDepot"
+   m_sId "saint-philippe.parcel"
+  }
+  LF_FittedBuildingComponent "{7903CBF00FC2A9CE}" {
+  }
+ }
+ coords 4424.9 10.4 10753.7
+}
+GenericEntity Fit_saint_philippe_parcel_job_depot : "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et" {
+ components {
+  ActionsManagerComponent "{B0B5A00100000001}" {
+   ActionContexts {
+    UserActionContext "{B0B5A00100000002}" {
+     ContextName "default"
+     Radius 3
+     Position PointInfo "{B0B5A00100000003}" {
+      Offset 0 1 0
+     }
+    }
+   }
+   additionalActions {
+    LF_JobSignUpAction "{B0B5A00100000011}" {
+     m_eJob PARCEL
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_JobSignUpAction "{B0B5A00100000013}" {
+     m_eJob FUEL_DELIVERY
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_JobSignUpAction "{B0B5A00100000015}" {
+     m_eJob TAXI
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_JobStartRunAction "{B0B5A00100000017}" {
+     m_eJob PARCEL
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_JobAbandonAction "{B0B5A00100000019}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_CollectBenefitAction "{B0B5A0010000001D}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_JobSiteComponent "{B0B5A0010000001C}" {
+   m_eSite DEPOT
+  }
+ }
+ coords 4423.501 10.45 10754.404
+ angleY 100
+}
+GenericEntity Fit_saint_philippe_parcel_post_office_sign : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
+ components {
+  LF_SignComponent "{0F52A6E4DA40DB6F}" {
+   m_sSignId "post_office"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 4426.778 12.9 10752.455
+ angleY 100
+}

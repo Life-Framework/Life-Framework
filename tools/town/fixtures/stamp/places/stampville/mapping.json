@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "template": "stampville",
+  "place": "stampville",
+  "slots": {
+    "shop-a": { "building": "b1" },
+    "shop-b": { "building": "b2" }
+  }
+}

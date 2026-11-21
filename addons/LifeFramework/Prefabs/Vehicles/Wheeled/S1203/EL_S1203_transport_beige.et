@@ -5,8 +5,53 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
   }
   LF_VehicleStorageAccessControl "{E1A1203BE1A00004}" {
   }
+  LF_CargoBedComponent "{E1A1203BE1C01000}" {
+   m_iCapacity 6
+   m_vTailgate 0 0.8 -2.4
+   m_vBedCentre 0 0.9 -0.9
+   m_fBedWidth 1.2
+   m_iPerLayer 3
+  }
   ActionsManagerComponent "{C97BE5489221AE18}" {
+   ActionContexts + {
+    UserActionContext "{E1A1203BE1C02000}" {
+     ContextName "lf_cargo"
+     Position PointInfo "{E1A1203BE1C03000}" {
+      Offset 0 0.8 -2.4
+     }
+     Radius 2.2
+    }
+   }
    additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RepairKitAction "{3332A1C0E5D70011}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_CargoBedAction "{E1A1203BE1C04000}" {
+     ParentContextList {
+      "lf_cargo"
+     }
+     UIInfo UIInfo "{E1A1203BE1C05000}" {
+      Name "#LF-Cargo_Load"
+     }
+     "Sort Priority" 1
+    }
+    LF_CargoBedAction "{E1A1203BE1C06000}" {
+     m_eMode UNLOAD
+     ParentContextList {
+      "lf_cargo"
+     }
+     UIInfo UIInfo "{E1A1203BE1C07000}" {
+      Name "#LF-Cargo_Unload"
+     }
+     "Sort Priority" 2
+    }
     LF_VehicleLockAction "{E1A1203BE1A00006}" {
      ParentContextList {
       "door_l01"
@@ -32,6 +77,14 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
      }
      UIInfo UIInfo "{5EA2C40500000002}" {
       Name "#LF-Search_Vehicle_Action"
+     }
+    }
+    LF_VehicleSearchFullAction "{5EA2C50500000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C50500000002}" {
+      Name "#LF-Search_Full_Action"
      }
     }
    }

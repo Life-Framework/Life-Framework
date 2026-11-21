@@ -1,0 +1,28 @@
+GenericEntity : "{A4D0B331414901A5}Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_tankpistol.et" {
+ ID "3328A0000000F010"
+ components {
+  LF_FuelStationComponent "{3328A0000000F011}" {
+   m_sStationId "saint-philippe"
+  }
+  ActionsManagerComponent "{59F28EE6E3CC7031}" {
+   additionalActions {
+    LF_FuelBuyAction "{3328A0000000F012}" {
+     ParentContextList {
+      "nozzle_l_out"
+     }
+     UIInfo UIInfo "{3328A0000000F013}" {
+      Name "#LF-Fuel_Buy"
+     }
+    }
+    LF_FuelHaulPumpAction "{3330A0000000F016}" {
+     ParentContextList {
+      "nozzle_l_out"
+     }
+     UIInfo UIInfo "{3330A0000000F017}" {
+      Name "#LF-FuelHaul_PumpIn"
+     }
+    }
+   }
+  }
+ }
+}

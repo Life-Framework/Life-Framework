@@ -28,6 +28,7 @@ import { spawnSync } from "node:child_process";
 import { layerFile as townLayerFile, worldLayerDirs } from "../lib/addons.mjs";
 import { GRID_LAYERS, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
 import { layerEntityPrefabs } from "../lib/layer-prefabs.mjs";
+import { frameOf, gameVfsSync } from "../lib/height-frame.mjs";
 import { boundsOf, braceBlock, matchBlock, parentOf, readResource, resolveChain } from "../actions/place-action-contexts.mjs";
 import { meshOf, ownMesh, parseTree, prefabOf } from "../actions/prop-on-surface.mjs";
 import { LIMITS, analyse, auditRecords, doorZone, gridBar, insideFraction, isKind, measureTown, obbAabb, obbPenetration, parseDoor, parseKv, parseRoads, parseRow, polylineDistance, readJson } from "../../agent-box/place-audit.mjs";
@@ -1139,12 +1140,15 @@ function commit(ctx, plans, flags) {
         const [lx, lz] = unrot(par.yaw, p.x - par.x, p.z - par.z);
         coords = [lx, p.y - par.y, lz];
         yaw = p.yaw - par.yaw;
-      }
+      } else if (Number.isFinite(p.ty) && frameOf(ROOT, gameVfsSync(), it.prefab ?? it.ent?.prefab) === "terrain") coords = [p.x, r3(p.y - p.ty), p.z];
       edit(ctx.prefabFile ?? layerFile(ROOT, it.ent.file), (t) => setTransform(t, it.ent.name || it.ent, { coords, yaw, scale: it.setScale ?? null }));
       p.at = at(ctx.prefabFile ?? layerFile(ROOT, it.ent.file), coords);
     } else {
-      edit(layerFile(ROOT, it.layer), (t) => appendEntity(t, { cls: it.info.cls, name: it.name, guid: it.ref.guid, path: it.ref.path, coords: [p.x, p.y, p.z], yaw: p.yaw, scale: it.setScale }));
-      p.at = at(layerFile(ROOT, it.layer), [p.x, p.y, p.z]);
+      // The layer holds y in the prefab's own frame (tools/lib/height-frame.mjs): a RELATIVE_Y prefab counts from the terrain.
+      // The town and the grid stand on flat terrain at 0, where both frames agree; a probed ground height is used when there is one.
+      const ly = frameOf(ROOT, gameVfsSync(), it.prefab) === "terrain" && Number.isFinite(p.ty) ? r3(p.y - p.ty) : p.y;
+      edit(layerFile(ROOT, it.layer), (t) => appendEntity(t, { cls: it.info.cls, name: it.name, guid: it.ref.guid, path: it.ref.path, coords: [p.x, ly, p.z], yaw: p.yaw, scale: it.setScale }));
+      p.at = at(layerFile(ROOT, it.layer), [p.x, ly, p.z]);
     }
   }
   const files = [...originals.keys()].map((f) => f.slice(ROOT.length + 1).replace(/\\/g, "/"));
@@ -1338,6 +1342,17 @@ function groundYaw(flags, at) {
   return flags.yaw != null ? normYaw(Number(flags.yaw)) : 0;
 }
 
+// Where a footprint is probed for ground: its centre first (a mesh is not always centred on its pivot), then its corners
+// pulled 10% in. `at` is where the footprint centre goes; the pivot follows from the mesh. Shared with the island slot
+// writer of `mapper import` (tools/mapper/island.mjs), which probes the island's terrain through the same points.
+export function groundProbePoints(item, at, yaw) {
+  const fp = footprintRect(item.bounds, item.scale, yaw);
+  const mid = [(fp.min[0] + fp.max[0]) / 2, (fp.min[1] + fp.max[1]) / 2];
+  const pivot = [at[0] - mid[0], at[1] - mid[1]];
+  const pts = [at, ...footprintCorners(item.bounds, item.scale, yaw).map((p) => [pivot[0] + mid[0] + (p[0] - mid[0]) * 0.9, pivot[1] + mid[1] + (p[1] - mid[1]) * 0.9])];
+  return { pivot, pts };
+}
+
 // Ground placements: one probe boot for every footprint's heights, then the shared commit.
 function groundPlans(ctx, wants, flags) {
   if (ctx.prefabFile) throw new PlaceError("--in works on a prefab's children: use place on root");
@@ -1350,11 +1365,9 @@ function groundPlans(ctx, wants, flags) {
   const early = [];
   wants.forEach((w, i) => {
     // The centre of the footprint first (a mesh is not always centred on its pivot), then its corners pulled 10% in.
-    const fp = footprintRect(w.item.bounds, w.item.scale, w.yaw);
-    const mid = [(fp.min[0] + fp.max[0]) / 2, (fp.min[1] + fp.max[1]) / 2];
-    // --at is where the footprint centre goes; the pivot follows from the mesh.
-    w.pivot = [w.at[0] - mid[0], w.at[1] - mid[1]];
-    const pts = [w.at, ...footprintCorners(w.item.bounds, w.item.scale, w.yaw).map((p) => [w.pivot[0] + mid[0] + (p[0] - mid[0]) * 0.9, w.pivot[1] + mid[1] + (p[1] - mid[1]) * 0.9])];
+    const gp = groundProbePoints(w.item, w.at, w.yaw);
+    w.pivot = gp.pivot;
+    const pts = gp.pts;
     const y0 = hintOf(w.at);
     early.push({ x: w.pivot[0], y: isKind(w.item, "vegetation") ? y0 : y0 - w.item.bounds.min[1] * w.item.scale, z: w.pivot[1], yaw: w.yaw, item: w.item });
     pts.forEach((p, k) => lines.push(rayLine(`g${i}_${k}`, [p[0], y0 + 3, p[1]], [p[0], y0 - 8, p[1]], excludeOf(w.item))));
@@ -1377,7 +1390,8 @@ function groundPlans(ctx, wants, flags) {
     const under = samples[0].hit;
     const notes = [...res.notes];
     if (under !== "terrain" && under !== "none") notes.push(`standing on ${under}`);
-    return { x: w.pivot[0], y: res.y, z: w.pivot[1], yaw: w.yaw, notes, item: w.item };
+    // The terrain under the footprint centre: what a RELATIVE_Y prefab's layer y counts from (tools/lib/height-frame.mjs).
+    return { x: w.pivot[0], y: res.y, z: w.pivot[1], yaw: w.yaw, notes, item: w.item, ty: run.rays.get(`g${i}_0`)?.sy };
   });
   return commit(ctx, plans, flags);
 }
@@ -1389,6 +1403,35 @@ function cmdGround(args, flags) {
   const items = itemsOf(ctx, prefabs, flags);
   if (items.length !== 1) throw new PlaceError("place ground takes one prop; use place arrange row for several");
   return groundPlans(ctx, [{ item: items[0], at, yaw: groundYaw(flags, at) }], flags);
+}
+
+// `place ground-many <plan.json> --layer L.layer [--y-hint 0] [--no-verify]`: every prop of a plan in ONE command, so one probe
+// boot, one offline review and one write for the lot (the per-prop `ground` boots a test server each: 4 props took 3.5 min,
+// #3851). The plan is a JSON array of { "at": [x, z], "prefab": "{GUID}path.et", "yaw": deg, "name": "Entity_Name" }. All or
+// nothing: one prop the checks refuse (or ground that is not level) stops the batch with nothing written, and the caller
+// can fall back to `ground` per prop to name it.
+function cmdGroundMany(args, flags) {
+  const [file] = args;
+  if (!file) throw new PlaceError("usage: place ground-many <plan.json> --layer L.layer   (plan: [{ at: [x, z], prefab, yaw, name }])");
+  if (!existsSync(resolve(file))) throw new PlaceError(`no plan file ${file}`);
+  let rows;
+  try {
+    rows = JSON.parse(readFileSync(resolve(file), "utf8"));
+  } catch (e) {
+    throw new PlaceError(`${file} is not JSON (${e.message})`);
+  }
+  if (!Array.isArray(rows) || !rows.length) throw new PlaceError(`${file} holds no rows: expected a JSON array of { at, prefab, yaw, name }`);
+  const names = new Set();
+  for (const r of rows) {
+    if (!r || !Array.isArray(r.at) || r.at.length !== 2 || r.at.some((v) => !Number.isFinite(v)) || typeof r.prefab !== "string") throw new PlaceError("every plan row needs at: [x, z] (numbers) and a prefab string");
+    if (r.name) {
+      if (names.has(r.name)) throw new PlaceError(`the plan names ${r.name} twice`);
+      names.add(r.name);
+    }
+  }
+  const ctx = openWorld(flags);
+  const wants = rows.map((r) => ({ item: itemsOf(ctx, [r.prefab], { ...flags, name: r.name ?? "" })[0], at: r.at, yaw: normYaw(Number(r.yaw ?? 0)) }));
+  return groundPlans(ctx, wants, flags);
 }
 
 function cmdAgainst(args, flags) {
@@ -1614,6 +1657,7 @@ const USAGE = `usage: tools\\cli place <command>   (docs/placement-tool.md)
   on <surface> <prefab> --layer L.layer [--name N] [--at center|north|south-east|u,v] [--near x,z] [--yaw deg | --facing north|deg]
   against <target> <prefab> --layer L.layer (--near x,z | --face north [--along 0..1]) [--hang m] [--front +z|-z|+x|-x] [--allow-uneven]
   ground <x,z> <prefab> --layer L.layer [--yaw deg | --facing north|deg | --face-to x,z] [--allow-road]
+  ground-many <plan.json> --layer L.layer   every prop of a JSON plan ([{ at, prefab, yaw, name }]) in one probe boot and one write
   arrange on <surface> <prefab>... --layer L.layer [--count n] [--spacing m] [--at north]
   arrange row <x1,z1> <x2,z2> <prefab>... --layer L.layer [--yaw deg]
   bounds <prefab|entity> | probe <surface> | verify <entity>...
@@ -1629,6 +1673,7 @@ export async function main(argv) {
     if (cmd === "on") return cmdOn(args, flags);
     if (cmd === "against") return cmdAgainst(args, flags);
     if (cmd === "ground") return cmdGround(args, flags);
+    if (cmd === "ground-many") return cmdGroundMany(args, flags);
     if (cmd === "arrange") return cmdArrange(args, flags);
     if (cmd === "bounds") return cmdBounds(args, flags);
     if (cmd === "measure") return cmdMeasure();

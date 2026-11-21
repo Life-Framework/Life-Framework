@@ -30,6 +30,10 @@
   built-in defaults.
 
 ### `LF_CharacterSurvivalComponent` — `Feature/Survival/LF_CharacterSurvivalComponent.c`
+- ✅ (2026-11-18, #3359) **A corpse stops draining.** A respawned body shares the character's stats object with
+  its corpse; the corpse's tick kept running until cleanup (10+ min), so hunger and thirst fell twice as fast.
+  `Tick` now ends the body's own tick and drops its stats reference once the body is dead. Test
+  `survival/corpse-no-drain` (drives `TickAt(nowMs)` on both bodies).
 - ✅ (2026-11-08) Server-authoritative: stats tick on the server only, on a
   1 s call-queue timer. The delta is clamped to 5 s so a hitch does not drop a
   chunk. The owner gets whole-point hunger and thirst and the low-needs flag as
@@ -64,6 +68,22 @@
 ### `LF_ConsumableEffectSurvival` — `Feature/Survival/LF_ConsumableEffectSurvival.c`
 - ✅ Applies configured hunger/thirst/health restore on item use; only applies
   values `> 0`.
+
+### Eat, drink and throw — `LF_ConsumableEffectEat.c`, `LF_FoodThrow.c` (2026-11-19, play report: "no eating or drinking action or animation")
+- 🧪 `LF_ConsumableEffectEat` is the one shared base of `LF_ConsumableEffectSurvival` and `LF_ConsumableEffectImpair`; the
+  settings live on `ConsumeableItem_Base`, `Food_Base` and `Drink_Base`, so every food and drink gets them (an inventory
+  Use entry, Use when held, the use animation) and a new item sets only its numbers. The animation is the vanilla canteen's
+  (`Canteen_Soviet` item graph, `CMD_Item_Action`, hand to mouth) for food and drink alike.
+- 🧪 Hunger or thirst is restored on the server when the use animation completes, once per item (`LF_ConsumeRules.Claim`); a
+  stack of food gives up one unit. Refused while dead, downed or unconscious, cuffed, seated in a vehicle or swimming
+  (`LF_ConsumeRules.RefusalFor`, checked at the start on the client and again on the server), with a toast. The server log
+  line `consumed <prefab>: hunger a -> b, thirst c -> d` is the proof (`session.mjs food-proof`).
+- 🧪 The engine can clear the gadget's owner before it reports the use finished, which made vanilla drop the effect without a
+  word (the food was gone, nothing restored); the owner recorded at `ModeSwitch` is restored for these items.
+- 🧪 Throw: the `LF_ThrowHeld` input (G, gamepad right shoulder plus B) with food or a drink in the hands. The server takes the
+  item out of the inventory and launches the item's own rigid body; the launch goes to every machine through the item's own
+  RPC (a velocity set on the server alone left each client's copy lying at the thrower's feet). It lands as a plain world item,
+  no damage, and can be picked up again. Tests: `LF_Test_FoodConsume`.
 
 ### `LF_Impairment` and `LF_ConsumableEffectImpair` — `Feature/Survival/` (#1919)
 - ✅ Any consumable can carry `LF_ConsumableEffectImpair` (strength, duration,
@@ -168,6 +188,11 @@
   `LF_DeathScreen` (workspace widget), and its Respawn button runs
   `SCR_RespawnComponent.RpcAsk_LF_Respawn` → `LF_SpawnLogic.RespawnPlayer_S`
   (account-aware, re-applies the faction loadout).
+- ✅ **The death screen names the price** (#3152; test `ui/death-screen-cost`): above the Respawn button a
+  kit body line reads "You wake at the hospital. The bill is $150. What you carried stays with your body."
+  `LF_DeathScreen.CostText` builds it from `LF_RespawnConfig.m_iBillAmount` (the client already has the
+  config; a pack's bill shows), a bill of 0 drops the bill sentence, and the currency symbol is the
+  `{currency:sym}` term.
 - ⚠️ Body persistence until restart is default-engine behavior (no explicit
   corpse-cleanup control in this mod yet) — verify on a dedicated server.
 - ✅ **You wake up in hospital** (M1-26, #121; tests `respawn/bill-once`,
@@ -278,4 +303,4 @@
 
 ### Medic ranks read pack overlays; the 1989 ladder (#3047)
 - 🧪 `LF_MedicConfig.Get()` merges every pack overlay the mission header lists over `LF_Medic.conf`: `m_aRanks` is a list keyed by rank id (`LF_MedicRankList`, `LF_MedicRank` is now an `LF_ConfigRecord`), so a pack adds, patches, replaces or removes a rung (`docs/config/override-model.md`). The core file ships no rung, so the pack's rungs are the whole ladder and the built-in three stand only when none is given. A saved rank is the rung's index, so a remove is refused on every rung but the last; a rung with no title key or a pay below -1 is refused. No owner `config.json` section. Test `medic/pack-overlay` (LOGIC).
-- 🧪 The 1989 Everon pack (`LF_Everon1989/Configs/Medic/LF_Medic_Everon1989.conf`, listed in the header) sets a four-rung ladder: orderly (0.4 cash per on-duty second; dressing, tourniquet), EMT (0.5; saline bag), paramedic (0.6; morphine), doctor (0.7; surgical gauze). Promotion after 1, 2 and 4 hours of total duty; the top rung never promotes. Titles: pack rows `LF-MedicRank_Orderly` and `LF-MedicRank_Emt`, the core rows for paramedic and doctor. The core built-in paid 0.4 (jobs config rate), 0.5 and 0.6, so no rung pays less than before (lead decision on #3051). Test `everon/medic-ranks` (pack leg).
+- 🧪 The 1989 Everon pack (`LF_Everon1989/Configs/Medic/LF_Medic_Everon1989.conf`, listed in the header) sets a four-rung ladder: orderly (0.22 cash per on-duty second; dressing, tourniquet), EMT (0.26; saline bag), paramedic (0.30; morphine), doctor (0.34; surgical gauze). Promotion after 1, 2 and 4 hours of total duty; the top rung never promotes. Titles: pack rows `LF-MedicRank_Orderly` and `LF-MedicRank_Emt`, the core rows for paramedic and doctor. The core built-in paid 0.4 (jobs config rate), 0.5 and 0.6, so no rung paid less than before (lead decision on #3051). Maintainer decision 2026-11-18 narrowed the duty-versus-civilian pay gap: the ladder is now 0.22 / 0.26 / 0.30 / 0.34 (about 790 to 1220 an hour against 400 to 480 for a civilian run) and `server/flagship/config.json` sets `medicDutyPayPerSecond` 0.22; the core defaults are unchanged. Test `everon/medic-ranks` (pack leg).

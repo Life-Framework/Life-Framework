@@ -1,0 +1,20 @@
+{
+  "section": "bank_transfer",
+  "class": "LF_BankTransferSavePayload",
+  "version": 1,
+  "roots": "LF_BankTransferRow",
+  "records": {
+    "LF_BankTransferRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sId",
+        "string m_sFrom",
+        "string m_sTo",
+        "int m_iAmount",
+        "int m_iFee",
+        "int m_iTime",
+        "int m_iState"
+      ]
+    }
+  }
+}

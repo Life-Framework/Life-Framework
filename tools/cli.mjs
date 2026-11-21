@@ -660,6 +660,11 @@ function toolEnv() {
 // `validate --full`, `ci`, `wt gate`, and `wt ship`.
 const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
+// Checks that are healthy but slow when the PC is busy get a longer budget (seconds). world-sync-selftest runs
+// ~500 git processes; with ~20 agents validating at once it took 113-393 s green and then past 600 s on
+// 2026-11-18, which the main guard blamed on an unrelated merge (#3283).
+const SLOW_CHECK_S = new Map([["validate-scripts.ps1", 1200], ["world-sync-selftest.mjs", 1200], ["selftest-scratch-selftest.mjs", 1200]]);
+
 // Checks are independent read-only scripts, so they run concurrently (most of
 // their time is PowerShell start-up), fewer at once when free RAM is short (tools/lib/validate-concurrency.mjs).
 // Output is printed in file order.
@@ -779,7 +784,7 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
         const wb = FULL_ONLY.has(job.s) ? await wbRoute.acquireWorkbench(root, { purpose: job.s }) : null;
         try {
           // LF_WB_GUARDED: validate-scripts.ps1 refuses to start Workbench unless the CLI passed the cap check above.
-          dog.start(job.s, checkBudgetMs(process.env, FULL_ONLY.has(job.s) ? 1200 : null));
+          dog.start(job.s, checkBudgetMs(process.env, SLOW_CHECK_S.get(job.s) ?? null));
           job.res = await invokeScriptAsync(join(dir, job.s), { cwd: root, env: FULL_ONLY.has(job.s) ? { ...env, LF_WB_GUARDED: "1" } : env, onSpawn: (h) => handles.set(job.s, h) });
         } finally {
           wb?.release();
@@ -3148,7 +3153,7 @@ function cmdSessionWait(dir, flags) {
   }
 }
 
-// Playtest only: the host stop file closes the server gracefully (the engine
+// Playtest and island only (both inherit the flagship header's m_bLF_HostStopFile): the host stop file closes the server gracefully (the engine
 // writes its SHUTDOWN save), then the same client profiles rejoin, in the same
 // order, a server that loaded that save.
 function cmdSessionRestart(root, dir, flags) {
@@ -3160,8 +3165,8 @@ function cmdSessionRestart(root, dir, flags) {
     console.log("session: no running session to restart; 'node agent-box/session.mjs up --mission playtest' first");
     return 1;
   }
-  if (prev.mission !== "playtest") {
-    console.log("session: restart needs --mission playtest (the bare DebugWorld has no stop file, so no shutdown save)");
+  if (prev.mission !== "playtest" && prev.mission !== "island") {
+    console.log("session: restart needs --mission playtest or island (the bare DebugWorld has no stop file, so no shutdown save)");
     return 1;
   }
   const exe = serverExe();
@@ -3482,6 +3487,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
       const r = await testbox.runRemote(root, slot, { args, writeSyncState: pool.writeSyncState, files });
       code = r.code;
       if (r.summary) extra = { passed: r.summary.passed, total: r.summary.total };
+      judgeRestoredRdb(root, !!r.summary, "");
       if (r.sync) extra.syncS = Math.round(r.sync.ms / 100) / 10;
       recordTestTimes(root, r.localLog, tier, only, opts);
       if (!lastTry && pool.machineGone(root, slot, code)) {
@@ -3495,6 +3501,7 @@ async function testOnce(root, { purpose, tier, only, red, exact, opts, lastTry, 
     code = runLocalTest(root, tier, only, opts.world, opts.coreOnly, red);
     // test-e2e.ps1 stamps summaries.jsonl lazily (at the next boot), so read this run's printed SUMMARY.
     const sum = lastLocalSummary ?? newestStamp(root, before, opts.coreOnly);
+    judgeRestoredRdb(root, !!lastLocalSummary, lastLocalText);
     if (sum) extra = { passed: sum.passed, total: sum.total };
     if (sum) recordTestTimes(root, sum.consoleLog, tier, only, opts);
     // A stale rdb (refresh failed or timed out) never yields a silent pass (tools/lib/rdb-stale-verdict.mjs).
@@ -3727,10 +3734,21 @@ function runLocalTest(root, tier, only, world, coreOnly, red = false) {
     process.stdout.write(res.stdout + res.stderr);
     const m = /test-e2e: SUMMARY tier=(\w+) passed=(\d+) failed=(\d+) total=(\d+)/.exec(res.stdout);
     lastLocalSummary = m ? { tier: m[1], passed: +m[2], failed: +m[3], total: +m[4] } : null;
+    lastLocalText = res.stdout + res.stderr;
     return res.status;
   });
 }
 let lastLocalSummary = null;
+let lastLocalText = "";
+
+// An rdb that came from the shared cache (tools/lib/rdb-cache.mjs) is trusted only once a boot printed a SUMMARY with it.
+// A boot that died with none evicts the entry and this worktree's copy, so the next run refreshes (#3586).
+function judgeRestoredRdb(root, hasSummary, text) {
+  try {
+    if (hasSummary) rdbCache.confirmRestored(root);
+    else if (rdbCache.bootDiedWithoutVerdict({ hasSummary, text })) rdbCache.evictRestored(root);
+  } catch {}
+}
 
 async function cmdDev(tier = "all", root = ROOT, opts = {}) {
   // Fast dev loop: skip the headless Workbench build (the dedicated server
@@ -5096,9 +5114,28 @@ function runE2ePasses(root, profile, e, legacy, legacySave, oldBuild, mission, b
   }
   const pass2Defines = ["LF_E2E_LOAD_BOOT", legacySave ? "LF_E2E_LEGACY_SAVE" : "", oldBuild ? "LF_E2E_EXPECT_OLD_BUILD" : "", preMove ? "LF_E2E_PRE_MOVE" : ""].filter(Boolean).join(",");
   console.log(`e2e: pass 2/2 - reload boot (tier=persistence, KeepProfile, ${mission}, -loadSessionSave latest, ${pass2Defines})`);
-  const pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines, requireFreshRdb: preMove, only: only ? only.join(",") : undefined });
-  const log2 = e2eShutdown.newestTestConsole(e.path);
+  // Pass 2 keeps the profile, so pass 1's log folder is still there: only a folder pass 2's own boot made counts (#3569).
+  const before2 = e2eShutdown.testLogDirs(e.path);
+  let pass2 = runE2ePass(e.path, "persistence", { mission, keepProfile: true, loadLatestSave: true, extraDefine: pass2Defines, requireFreshRdb: preMove, only: only ? only.join(",") : undefined });
+  const log2 = e2eShutdown.newestTestConsole(e.path, before2);
   for (const line of e2eShutdown.loadLines(log2 ? readFileSync(log2, "utf8") : "")) console.log(`e2e: pass 2 ${line}`);
+  if (pass2 === 0) {
+    const boot = e2eShutdown.checkReloadBoot(log2 ? readFileSync(log2, "utf8") : null);
+    if (!boot.ok) {
+      console.log(`e2e: FAILED in pass 2 (reload boot): ${boot.reason}`);
+      console.log(`e2e: log ${log2 ?? "(none)"}`);
+      pass2 = 1;
+    }
+  }
+  // #3630: a restart proof whose pass-2 check skips quietly (no seed, no section) must not turn the leg green.
+  // An older save (--legacy-save, --pre-move) holds none of it, so those runs are not asked.
+  if (pass2 === 0 && !legacySave && !preMove) {
+    for (const p of e2eShutdown.missingRestartProofs(log2 ? readFileSync(log2, "utf8") : "", only)) {
+      console.log(`e2e: FAILED in pass 2 (restart proof): ${p.what} never reached its check (the reload boot's log has no "${p.text}" line: the seed or the section read was skipped)`);
+      console.log(`e2e: log ${log2 ?? "(none)"}`);
+      pass2 = 1;
+    }
+  }
   console.log(`e2e: profile ${profile}`);
   console.log(`e2e: pass1 exit=${pass1} pass2 exit=${pass2} ${pass1 === 0 && pass2 === 0 ? "OK" : "FAILED"}`);
   return pass1 === 0 && pass2 === 0 ? 0 : (pass1 === 0 ? pass2 : pass1);
@@ -5282,18 +5319,49 @@ async function wtSyncBaseCmd(args) {
 
 async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody }) {
   const draft = flags.includes("--draft"); // a draft PR, auto-merge never requested
-  const { shipDirect, shipMergeBase } = await import("./lib/ship-direct.mjs");
+  const { shipDirect, shipMergeBase, bothSidesTouched } = await import("./lib/ship-direct.mjs");
+  const { regenConfigSchema } = await import("./lib/config-schema-regen.mjs");
   const subjects = wt.commitSubjects(wtRoot, `origin/${base}..HEAD`);
   const body = refsBody(customBody ?? [`Automated ship from worktree \`${slug}\`.`, "", "## Commits", ...subjects.map((x) => `- ${x}`)].join("\n"), closes);
   const gh = (a) => wt.run(wt.ghBin(), a, { cwd: wtRoot });
   const r = await shipDirect({
     log: (l) => console.log(l),
     mergeTree: () => wt.git(wtRoot, ["merge-tree", "--write-tree", "--name-only", "HEAD", `origin/${base}`]),
+    driverOverlap: () => {
+      const lines = (a) => wt.git(wtRoot, a).stdout.split(/\r?\n/).filter(Boolean);
+      const mb = wt.git(wtRoot, ["merge-base", "HEAD", `origin/${base}`]);
+      if (mb.status !== 0) return [];
+      const sha = mb.stdout.trim();
+      const both = bothSidesTouched(lines(["diff", "--name-only", sha, "HEAD"]), lines(["diff", "--name-only", sha, `origin/${base}`]));
+      if (!both.length) return [];
+      // Only a file with a custom merge driver (a `merge=lf-...` attribute) is the case: a plain text conflict is merge-tree's to report.
+      const attr = wt.git(wtRoot, ["check-attr", "merge", "--", ...both]).stdout.split(/\r?\n/);
+      return both.filter((f) => attr.some((l) => l.startsWith(`${f}: merge: lf-`)));
+    },
     mergeBase: () => {
       wt.git(wtRoot, ["fetch", "origin", "--prune"]);
       shipMergeBase(wtRoot, base, healMergeSync, (l) => console.log(l));
     },
-    validate: () => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1,
+    regenSchema: () => {
+      return regenConfigSchema({
+        log: (l) => console.log(l),
+        changed: () => wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean),
+        write: () => spawnSync(process.execPath, [join(wtRoot, "tools", "config", "schema.mjs"), "--write"], { cwd: wtRoot, encoding: "utf8", windowsHide: true }),
+        dirty: () => wt.git(wtRoot, ["status", "--porcelain", "--", "docs/config"]).stdout.split(/\r?\n/).filter(Boolean),
+        commit: () => {
+          const a = wt.git(wtRoot, ["add", "--", "docs/config"]);
+          if (a.status !== 0) return a;
+          return wt.git(wtRoot, ["commit", "-q", "-m", "Regenerate docs/config schema (config classes or confs changed)", "--", "docs/config"]);
+        },
+      });
+    },
+    validate: async () => {
+      const v = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1;
+      if (v !== 0) return v;
+      // The island gate (#3888): an island layer, kit, generator, marker or spawner diff must add no new MainWorld finding.
+      const files = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
+      return (await import("./lib/placement-gate.mjs")).runIslandGate(files, (a) => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "audit", "placement", ...a], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1);
+    },
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
     findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
     createPr: (o) => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base, draft: o?.draft === true }),

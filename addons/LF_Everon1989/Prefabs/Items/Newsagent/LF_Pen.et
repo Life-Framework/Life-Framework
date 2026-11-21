@@ -1,0 +1,27 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "9D62129B70DF94BF"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_Pen_Name"
+     Description "#LF-Item_Pen_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.02
+     SizeSetupStrategy Volume
+     ItemVolume 15
+     RestingUP Up
+    }
+    CommonItemType "LF_ITEM"
+   }
+  }
+  MeshObject "{2C291763C1AF7209}" {
+   Object "{EF0853B90BA0680C}Assets/Props/Civilian/Pen_01/Pen_01.xob"
+  }
+  RigidBody "{35AD651F53083F93}" {
+   LayerPreset "ItemFireView"
+   ModelGeometry 1
+  }
+ }
+}

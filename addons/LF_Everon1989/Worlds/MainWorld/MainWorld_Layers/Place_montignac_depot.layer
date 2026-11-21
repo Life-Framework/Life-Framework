@@ -1,0 +1,120 @@
+GenericEntity Fit_montignac_depot_Place {
+ components {
+  LF_PlaceComponent "{F982C134858435B4}" {
+   m_sKind "FuelDepot"
+   m_sId "montignac.depot"
+  }
+  LF_FittedBuildingComponent "{5C01F87661491AAB}" {
+  }
+ }
+ coords 4612.9 158.4 7012.3
+}
+SCR_DestructibleBuildingEntity Fit_montignac_depot_tank_grey : "{389D6DF9941FF22D}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_01/FuelTank_01_grey.et" {
+ coords 4620.019 0 7000.657
+ angleY 177
+}
+SCR_DestructibleBuildingEntity Fit_montignac_depot_tank_rust : "{AD207D3DE43922D8}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_01/FuelTank_01_rust.et" {
+ coords 4620.255 0 6996.163
+ angleY 177
+}
+SCR_DestructibleBuildingEntity Fit_montignac_depot_pump_tank : "{2D4B0333F2858BDD}Prefabs/Structures/Industrial/Containers/FuelTanks/FuelTank_02/FuelTank_02_Pump_grey.et" {
+ coords 4615.026 0 7000.395
+ angleY 177
+}
+Vehicle Fit_montignac_depot_tanker : "{4A59DAEFE645E8A0}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_tanker_CIV_orange.et" {
+ coords 4607.536 157.821 7000.002
+ angleY -93
+}
+GenericEntity Fit_montignac_depot_drum_blue_1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4614.969 158.298 7003.396
+ angleY -163
+}
+GenericEntity Fit_montignac_depot_drum_blue_2 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4614.096 158.293 7002.85
+ angleY -103
+}
+GenericEntity Fit_montignac_depot_drum_base_1 : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ coords 4615.221 158.298 7002.408
+ angleY -43
+}
+GenericEntity Fit_montignac_depot_drum_base_2 : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
+ coords 4614.348 158.286 7001.861
+ angleY -173
+}
+GenericEntity Fit_montignac_depot_pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4603.753 158.252 7005.312
+ angleY 177
+}
+GenericEntity Fit_montignac_depot_pallet_box : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 4602.056 158.271 7005.223
+ angleY -175
+}
+SCR_DestructibleBuildingEntity Fit_montignac_depot_hut : "{B9F18808252E22C3}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_yellow.et" {
+ coords 4600.888 0 7002.658
+ angleY 87
+}
+GenericEntity Fit_montignac_depot_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "fuel_depot"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 4614.404 158.324 6993.152
+ angleY 177
+}
+GenericEntity Fit_montignac_depot_board : "{EE587A113AF85FC5}Prefabs/Props/Signs/LF_TownBoard.et" {
+ components {
+  LF_SignComponent "{CB0DD0E500C1A1EE}" {
+   m_sSignId "price_board"
+  }
+ }
+ coords 4604.686 157.504 6993.244
+ angleY 177
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4623.933 0 6992.851
+ angleY -93
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4619.938 0 6992.641
+ angleY -93
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4615.944 0 6992.432
+ angleY -93
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4603.96 0 6991.804
+ angleY -93
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4599.966 0 6991.595
+ angleY -93
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4623.305 0 7004.834
+ angleY 177
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4597.341 0 7003.474
+ angleY 177
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4623.514 0 7000.84
+ angleY 177
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4597.55 0 6999.479
+ angleY 177
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4623.724 0 6996.845
+ angleY 177
+}
+SCR_DestructibleEntity Fit_montignac_depot_fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 4597.759 0 6995.485
+ angleY 177
+}

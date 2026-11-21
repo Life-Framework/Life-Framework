@@ -212,6 +212,7 @@ the game profile). Hooks:
   The spot is snapped to the floor and checked clear of other characters and props;
   when the side is taken (a second player at the same target) or blocked, `stand` steps
   around the target, then out in wider rings, and logs `stand spot beside ... using ...`.
+- `Resident_<id>` as the entity name of `stand` and `use` addresses a spawned resident by their `LF_ResidentDef` id (`stand Resident_night_shift`, `use LF_DialogueTalkAction Resident_night_shift`): spawned residents have no layer name, and a bare `use` reaches the nearest one. Server side (`LF_ResidentHarness`); a client-local action such as the talk takes the nearest host of the action on the client (a client knows no resident ids), so `stand` beside the resident first; `entity_not_found` / `action_not_found` while the resident is not live (not due, or no player near their spot), so a proof retries after a wait.
 - `input` sets one allowlisted menu action (`MenuUp`, `MenuDown`, `MenuLeft`,
   `MenuRight`, `MenuSelect`, `MenuBack`, `LF_OpenDebugMenu`) for about 80ms.
   Movement actions are refused.

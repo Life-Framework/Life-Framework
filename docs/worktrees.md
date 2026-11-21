@@ -32,7 +32,7 @@ harmless to your editor because the worktree is a separate directory.
   the redirect off. A holder started by older code in the old file still blocks until it ends.
   The per-worktree `(gamePort, a2sPort)` pair from `wt list` is still passed
   and is what a2s uses.
-- **Shared rdb cache** — a refresh that leaves the rdb fresh stores it in `<hub>/rdb-cache/<addon>/<key>.rdb` (key = sha1 of addon, every `path`+GUID of its `.meta` files and the Workbench exe size:mtime; 40 entries per addon, `tools/lib/rdb-cache.mjs`). The next worktree with the identical resource set copies it in (~0.4 s, verified with `rdbFreshness`) and logs `reused shared rdb <key8> (no Workbench)`; a refresh already queued for the Workbench slot or the build lock polls the cache each wait and stops waiting when the entry appears. A stale entry is deleted. The refresh itself takes a per-worktree `rdb-<slug>` lock, not the hub-wide `build` lock, so refreshes of different worktrees overlap up to the Workbench slot limit. `LF_RDB_CACHE=0` turns the cache off. `rdb-cache-selftest` proves it.
+- **Shared rdb cache** — a refresh that leaves the rdb fresh stores it in `<hub>/rdb-cache/<addon>/<key>.rdb` (key = sha1 of addon, every `path`+GUID of its `.meta` files and the Workbench exe size:mtime; 40 entries per addon, `tools/lib/rdb-cache.mjs`). The next worktree with the identical resource set copies it in (~0.4 s, verified with `rdbFreshness`) and logs `reused shared rdb <key8> (no Workbench)` (a boot that then ends with no SUMMARY evicts that entry and the worktree's copy and prints `rdb cache: evicted ...`; the main guard's recheck and bisect probes run with `LF_RDB_CACHE=0` and no rdb, #3586); a refresh already queued for the Workbench slot or the build lock polls the cache each wait and stops waiting when the entry appears. A stale entry is deleted. The refresh itself takes a per-worktree `rdb-<slug>` lock, not the hub-wide `build` lock, so refreshes of different worktrees overlap up to the Workbench slot limit. `LF_RDB_CACHE=0` turns the cache off. `rdb-cache-selftest` proves it.
 - **A stale rdb never passes silently** — when a test run on this PC ends with an rdb still stale (the refresh failed or timed out in the Workbench queue), a whole-suite pass becomes `SUMMARY test fail rdb-stale=<addons>` and exits 1; a fast or `--only` run keeps its result and prints `SUMMARY test warn rdb-stale=...`. Neither goes into the pass cache. `LF_ALLOW_STALE_RDB=1` turns the failure into the warning (`tools/lib/rdb-stale-verdict.mjs`; on 2026-11-17, 8 of 36 runs started on a stale rdb reported green).
 - **Resource database** — `resourceDatabase.rdb` is gitignored and only Workbench
   writes it. `wt new`, `test`, `dev`, `serve`, `session up`, `host start`, and `wt e2e`
@@ -151,13 +151,24 @@ gate before a merge; the main guard (next section) checks `main` after it.
    no open finding in `tmp/review-<slug>.md`).
 2. Preflight, seconds: `git merge-tree` against `origin/<base>` (a conflict outside the driver-merged files stops it; a
    driver-only conflict merges main in here) and `validate` of the changed inputs. `--no-preflight` skips it.
+   `git merge-tree` runs the custom merge drivers and GitHub does not, so a file with a `lf-*` merge driver (a
+   `docs/features/*.md` row append) that both the branch and `origin/<base>` changed is called clean locally and
+   CONFLICTING on GitHub (#3735, #3736, and five crime-police PRs the night of 2026-11-19). Ship merges `origin/<base>` in
+   before the push in that case, even with `--no-preflight`, so the driver runs and the PR is born mergeable.
+   Before that validate, a branch that changes a config class (`Scripts/**/*.c`), a `.conf` under `Configs/` or
+   `Missions/`, or `tools/config/schema-overrides.json` gets `node tools/config/schema.mjs --write` run, and any change
+   in `docs/config/` is committed with it (`tools/lib/config-schema-regen.mjs`, #3717; main went red on a stale
+   schema in #3510, #3527 and #3716). It runs again after a behind-merge.
 3. Pushes, opens the PR (or reuses the open one) and runs `gh pr merge --auto --merge` at once. If GitHub refuses
    because the branch is behind ("Base branch was modified", not up to date) or reports it `BEHIND`, ship merges
    `origin/<base>` in, pushes again and retries.
 4. Prints `SUMMARY ship ok|fail`, then `PR <url>, head <sha>`. No queue, no pool lane, no wait.
 
+Town cards (worktrees `town-draft-<place>-<slot>`, see docs/starter-packs/town.md) ship the same way: plain `wt ship`,
+auto-merge, no maintainer approval (since 2026-11-18). The `town-draft-` name is only the zone guard's key.
+
 `--draft` runs the same body checks, preflight and push, then opens the PR with `gh pr create --draft` and never runs
-`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Town-draft and maintainer-review PRs use it; a human
+`gh pr merge --auto`; the summary reads `auto-merge off (draft)`. Maintainer-review PRs use it; a human
 marks the PR ready and merges it (`ship-direct.mjs` `draft`, `wt-ship-draft-selftest.mjs`). Re-running on an open PR
 reuses it and, because an earlier ship may have left it ready with auto-merge queued, runs `gh pr merge --disable-auto` and
 `gh pr ready --undo` on it; ship prints `draft: auto-merge off (REVIEW-NEEDED)` (#2940). `prs heal` re-queues auto-merge only on a PR
@@ -885,6 +896,23 @@ it, picks a lane and a budget, and prints one line per outcome.
   for an idle session's 3-5 min reap instead of starting beside it. Selftests: `tools/validation/pool-ram-selftest.mjs`
   (full machine queues, island refused, small test admitted, Workbench counted); `pool-selftest` pins its RAM with
   `LF_POOL_TEST_FREE_MB` so this PC's real load never decides it.
+- **Commit headroom (2026-11-19, `tools/lib/pool-commit.mjs`).** Free physical RAM is not what Windows refuses
+  allocations on: committed memory (every private page promised to a process, resident or not) against the commit limit
+  (RAM plus the fixed pagefile) is. lf-testbox sat at 70.2 of 71.2 GB committed with about 9 GB of RAM free, so the pool kept
+  starting clients (3.8-5.3 GB of commit each), Workbenches (2.7-5.7 GB) and servers (1-2.6 GB), and git (0xc000012d,
+  STATUS_COMMITMENT_LIMIT), gh ("out of memory allocating heap arena map"), bash fork and the Claude agents (0xC0000409)
+  crashed. Every start now also needs commit headroom: `limit - committed - fresh lane locks - what running processes still
+  grow into - the job's commit peak` must stay at or over **`minFreeCommitMb`** (default 6 GB, kept free for agents, git and
+  node; `pool.json` / `lf.local.json` "pool", env `LF_POOL_MIN_FREE_COMMIT_MB`), else the job queues with a reason that
+  names it (`commit 70.2/71.2 GB used (1.0 GB headroom) minus 5.5 GB commit peak for the session would be under 6.0 GB`).
+  Per-kind commit peaks: seeds client 5.5, Workbench 6, server 2.6, test 1.5 GB, then the p90 of the highest private bytes
+  each ended process held (`commit:<kind>` in `pool-peaks.json`, same samples rule as the RAM peaks). The commit is read
+  with the same PowerShell call that reads RAM (`Win32_OperatingSystem`: `TotalVirtualMemorySize - FreeVirtualMemory`
+  over `TotalVirtualMemorySize`), here, over ssh (`remoteState`) and in the slot holder's own gate (`commit-short`). A
+  machine under its commit floor ranks as having no room, and `pool status` prints `commit used/limit GB used (floor ...)`
+  beside the RAM figure and on the queue line of a job waiting on RAM; the peaks line adds the commit peaks. A working-set
+  trim frees physical RAM but no commit, so a commit refusal skips it: what frees commit is a session closing, which the
+  idle-session reaper does after 3 min while a job waits. Selftest: `tools/validation/pool-commit-selftest.mjs` (faked 70.2/71.2 GB with 9 GB of RAM free).
 - **What each process is, and whose peaks (2026-11-17, `docs/architecture/ram-budget.md`).** One PowerShell classifier
   (`Get-LfArmaRows` in `pool-ram.mjs`) serves the pool's scan and the box holder's gate. A server whose `-profile` is
   `<checkout>\server\profile\test` is a **test** (its peaks used to land under `server`, so `test:*` never left its seed);
@@ -1591,7 +1619,7 @@ fan-out on this PC at 1-3 GB free took validate itself down; docs/architecture/r
   checks skipped on a fresh worktree; before, each slice's first validate ran all of them, ~4-6 min under load).
   `always` and `ttl=` checks never use it. Delete the file to stop sharing.
 - Checks start longest first (from the recorded times) and every run ends with `slowest: ...`.
-- Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile. A check over it
+- Each check has a budget: 600 s (`LF_VALIDATE_CHECK_BUDGET_S`), 1200 s for the Workbench compile and `world-sync-selftest` and `selftest-scratch-selftest` (`SLOW_CHECK_S in `tools/cli.mjs`; it spawns ~500 git processes). A check over it
   prints `TIMEOUT validate/<check>`, is killed with its children and fails. Check times leave out any time the
   validate process itself was frozen (a synchronous call beside the checks, as `ci` runs validate beside the build);
   that freeze is printed once as `WARN  validate: this process was frozen N s`.
@@ -1634,7 +1662,13 @@ GitHub cannot list the merged PRs it prunes nothing.
 
 On 2026-11-17/18 three agents wrote a localization diff and several `LF_Test_*.c` files into the lead's main checkout instead of their worktree, and each one blocked `git pull --ff-only`. Most agents are launched with the main checkout as their cwd and `cd` into the worktree only for shell commands, so the cwd alone is not a signal. Two pieces, both cheap:
 
-- **PreToolUse hook** (`.claude/settings.json` runs `tools/hooks/main-write-guard.mjs`, rule in `tools/lib/main-write-guard.mjs`). Write, Edit, MultiEdit and NotebookEdit are denied on a file under the main checkout's `addons/`, `tools/`, `docs/`, `website/`, `agent-box/`, `.claude/`, `.githooks/` or `.github/` when the session is an agent: its cwd is a linked worktree, or `wt new` ran in this session (it writes `tmp/wt/session-claims/<session id>.json`; a claim ends when the worktree folder is gone or after 48 h). The deny names the worktree path to write instead. Never denied: the session's own worktree, main's `tmp/` and `lf.local.json`, a session with no claim and cwd in main (the lead, the maintainer's own editing), Read and Bash. `LF_ALLOW_MAIN_WRITE=1` turns it off. A broken hook allows the call. One call costs about 60 ms (`main-write-guard-selftest` prints the measure).
+- **PreToolUse hook** (`.claude/settings.json` runs `tools/hooks/main-write-guard.mjs`, rule in `tools/lib/main-write-guard.mjs`). Write, Edit, MultiEdit and NotebookEdit are denied on a file under the main checkout's `addons/`, `tools/`, `docs/`, `website/`, `agent-box/`, `.claude/`, `.githooks/` or `.github/` when the session is an agent: its cwd is a linked worktree, or `wt new` ran in this session (it writes `tmp/wt/session-claims/<session id>.json`; a claim ends when the worktree folder is gone or after 48 h). The deny names the worktree path to write instead. Never denied: the session's own worktree, main's `tmp/` and `lf.local.json`, a session with no claim and cwd in main (the lead, the maintainer's own editing), Read, and a shell command that only reads. `LF_ALLOW_MAIN_WRITE=1` turns it off. A broken hook allows the call. One call costs about 60 ms (`main-write-guard-selftest` prints the measure).
 - **`tools\cli lead stray [--dry-run]`**, also run by the lead view (`STRAY` line; `LF_LEAD_STRAY=0` turns it off): in the main checkout on branch `main`, untracked files under those folders older than 2 minutes are moved to `C:\LF\lead\stray\<timestamp>\<same relative path>` (`LF_LEAD_STRAY_DIR` overrides; `tmp/stray` when there is no `C:\LF\lead`). Tracked files an agent modified are listed with the `git diff` hint, never reverted.
 
-The hook cannot see a shell write (`echo > file`, a script); the stray pass is the net for those.
+**Shell writes (#3700).** The same hook now runs for Bash and PowerShell. `shellWriteTargets` reads the command line (quotes respected, `;` `&&` `|` split, `cd`/`Set-Location` followed) and denies a `>`/`>>` redirect, `tee`, `sed -i`/`perl -i`, `Set-Content`/`Add-Content`/`Out-File`/`New-Item`/`Remove-Item`/`Move-Item`, `rm`, `mv`, `touch` or a `cp` destination that lands in the guarded folders of the main checkout, from the same agent sessions and with the same exceptions (own worktree, main `tmp/`, `lf.local.json`, the lead, `LF_ALLOW_MAIN_WRITE=1`). Reads, a `cp` source and `/dev/null` are never denied. A script that writes by itself (`node x.mjs`) is still invisible to it; the stray pass and the stash below are the net.
+
+**A blocked fast-forward heals itself (#3700).** On 2026-11-19 a stray tracked edit (`docs/features/sites.md`, then `tools/town/drops.mjs`) stalled the main guard ~2 h and left the checkout 173 commits behind. The guard's `freshenMainCheckout` and `lead` (when `origin/main` is ahead and a tracked file is modified) call `healBlockedFastForward` (`tools/lib/main-ff-heal.mjs`): when `merge --ff-only origin/main` fails because of tracked edits, every modified file that is not under a `Worlds/` folder goes to `git stash push` with a label naming the files (`lf-main-ff-heal <time>: stray tracked edits ...`; never discarded, `git stash pop` in the main checkout restores it), the fast-forward is retried, and one alert line goes to `tmp/logs/main-guard.log` (`ALERT ...`) and to `<hub>/main-ff-alert.json`, which the lead view prints as a `MAINFF` line for 12 h. A `Worlds/` file is the maintainer's hand work (see "Maintainer world edits"): it is never stashed, and the alert names it. An untracked file in the way is left to `lead stray`. `main-ff-heal-selftest` proves it on throwaway repos.
+
+**Untracked collisions heal too (#3795).** The same day the checkout sat 2+ h behind again because agents left two untracked copies of files main later added (`LF_CrewRob.c`, `LF_Test_PrisonBreak.c`): git stops with "untracked working tree files would be overwritten by merge". `healBlockedFastForward` now reads `git status -uall`, keeps the untracked paths that `origin/main` tracks (`git ls-tree`), and stashes them with the tracked edits in one `git stash push -u -m "lf-main-ff-heal ...: stray edits and untracked copies of files main added ..." -- <files>` (the pathspec leaves every other untracked file where it is; `git stash pop` restores them), retries the fast-forward and writes one alert line. A colliding path under `Worlds/` is still the maintainer's and is never stashed. The earlier tracked-edit case did not heal because the running guard (started 2026-11-15) still held pre-#3700 code: the guard can only restart on new code after the checkout fast-forwards, and the checkout could not fast-forward without the heal, so the STALE state looped (main-guard.log 03:35 to 09:13 UTC); `lead` runs from the current worktree's code and heals a modified-file block on its own, and a guard restart after a merge to `tools/main-guard.mjs` or `tools/lib/main-ff-heal.mjs` picks it up.
+
+The hook cannot see every shell write (a script that writes by itself); the stray pass is the net for those.

@@ -1,0 +1,155 @@
+// Source of the `wheatfield` kit (tools/town/kits/wheatfield.json, #3302): one LF_WheatField (60 x 40 m, kind WheatField) on open pasture beside the
+// open barn b19 of the farmwest survey, with a wooden fence on the west and south sides (a gate opening mid-south), a hand cart with sacks, hay
+// the two vanilla implement wrecks as yard dressing and a weighbridge (WeightStation_01 plus the LF_GranaryUnloadAction prompt entity, #3302/#3294) south of the gate. Coordinates are in the barn's frame (origin = its footprint centre; the kit's front is
+// "-x", so the frame is the world turned by the barn's own yaw snapped to a quarter turn: x east, z north).
+LF_WheatField WheatField_Field : "{5FF806585DB556B3}Prefabs/Harvest/LF_WheatField.et" {
+ coords 47.87 0 -24.74
+ angleY 3
+}
+SCR_DestructibleEntity WheatField_FenceS_1 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 12.66 0 -46.93
+ angleY 3
+}
+SCR_DestructibleEntity WheatField_FenceS_9 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 20.65 0 -47.35
+ angleY 3
+}
+SCR_DestructibleEntity WheatField_FenceS_17 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 28.64 0 -47.76
+ angleY 3
+}
+SCR_DestructibleEntity WheatField_FenceS_25 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 36.63 0 -48.18
+ angleY 3
+}
+SCR_DestructibleEntity WheatField_FenceS_41 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 52.61 0 -49.02
+ angleY 3
+}
+SCR_DestructibleEntity WheatField_FenceS_49 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 60.6 0 -49.44
+ angleY 3
+}
+SCR_DestructibleEntity WheatField_FenceW_0 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 15.17 0 1.01
+ angleY 93
+}
+SCR_DestructibleEntity WheatField_FenceW_8 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 14.75 0 -6.98
+ angleY 93
+}
+SCR_DestructibleEntity WheatField_FenceW_16 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 14.34 0 -14.97
+ angleY 93
+}
+SCR_DestructibleEntity WheatField_FenceW_24 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 13.92 0 -22.96
+ angleY 93
+}
+SCR_DestructibleEntity WheatField_FenceW_32 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 13.5 0 -30.95
+ angleY 93
+}
+SCR_DestructibleEntity WheatField_FenceW_40 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 13.08 0 -38.94
+ angleY 93
+}
+GenericEntity WheatField_Cart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ coords 41.31 0 -54.44
+ angleY 23
+}
+GenericEntity WheatField_SackPile : "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et" {
+ coords 43.85 0 -55.57
+ angleY -27
+}
+GenericEntity WheatField_Sack_1 : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+ coords 38.73 0 -55.8
+ angleY 73
+}
+GenericEntity WheatField_Sack_2 : "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et" {
+ coords 37.67 0 -57.05
+ angleY 103
+}
+GenericEntity WheatField_Haystack_1 : "{520626A206926F47}Prefabs/Props/Agriculture/Farm/Haystack_01.et" {
+ coords 23.36 0 -53
+ angleY 3
+}
+GenericEntity WheatField_Haystack_2 : "{520626A206926F47}Prefabs/Props/Agriculture/Farm/Haystack_01.et" {
+ coords 7.35 0 -14.6
+ angleY 43
+}
+GenericEntity WheatField_Bale_1 : "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et" {
+ coords 9.21 0 -26.72
+ angleY 93
+}
+GenericEntity WheatField_Bale_2 : "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et" {
+ coords 9.45 0 -22.23
+ angleY 83
+}
+GenericEntity WheatField_PlowWreck : "{A98BA618430E9BAA}Prefabs/Props/Agriculture/PlowWreck_01.et" {
+ coords 29.17 0 -56.8
+ angleY 103
+}
+GenericEntity WheatField_CultivatorWreck : "{DE59CB05202006E8}Prefabs/Props/Agriculture/CultivatorWreck_01.et" {
+ coords 32.53 0 -59.48
+ angleY 163
+}
+SCR_DestructibleBuildingEntity WheatField_Weighbridge : "{B461AC17AE9B29EF}Prefabs/Structures/Agriculture/WeightStation/WeightStation_01/WeightStation_01.et" {
+ coords 40.68 0 -66.42
+ angleY 3
+}
+GenericEntity WheatField_Unload {
+ components {
+  ActionsManagerComponent "{3E9A1C0B7D5F4B01}" {
+   ActionContexts {
+    UserActionContext "{3E9A1C0B7D5F4B02}" {
+     ContextName "default"
+     Position PointInfo "{3E9A1C0B7D5F4B03}" {
+      Offset 0 1 0
+     }
+     Radius 7
+     Height 3
+    }
+   }
+   additionalActions {
+    LF_GranaryUnloadAction "{3E9A1C0B7D5F4B04}" {
+     ParentContextList {
+      "default"
+     }
+     m_eMode 0
+     m_vHalfExtents 5 3 7
+    }
+    LF_GranaryUnloadAction "{3E9A1C0B7D5F4B05}" {
+     ParentContextList {
+      "default"
+     }
+     m_eMode 1
+     m_vHalfExtents 5 3 7
+    }
+   }
+  }
+  RplComponent "{3E9A1C0B7D5F4B06}" {
+   Enabled 1
+  }
+ }
+ coords 43.55 0 -63.27
+ angleY 3
+}
+GenericEntity WheatField_Board : "{194CC74891AEC339}Prefabs/Harvest/LF_HarvestBoard.et" {
+ components {
+  LF_SignComponent "{44FC6FF960E3CDE5}" {
+   m_sSignId "harvest_board"
+  }
+ }
+ coords 51.5 0 -52
+ angleY 0
+}
+GenericEntity WheatField_Sign : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "harvest"
+  }
+ }
+ coords 38 0 -52
+ angleY 180
+}

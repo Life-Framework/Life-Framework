@@ -15,6 +15,9 @@ class LF_KnownNames
 	static const ResourceName LAYOUT = "{6C1E5A3F9B2D4E71}UI/Layouts/HUD/LF_KnownName.layout";
 
 	protected static ref map<int, string> s_mNames;
+	//! The character key the named player's body carried when the name was learned ("" when it had
+	//! not replicated yet). A player id that now plays another character shows nothing (#331 switch).
+	protected static ref map<int, string> s_mKeys;
 	protected static bool s_bTicking;
 	protected static Widget s_wRoot;
 	protected static TextWidget s_wName;
@@ -42,7 +45,11 @@ class LF_KnownNames
 		if (!s_mNames)
 			s_mNames = new map<int, string>();
 
+		if (!s_mKeys)
+			s_mKeys = new map<int, string>();
+
 		s_mNames.Set(playerId, name);
+		s_mKeys.Set(playerId, KeyOf(playerId));
 		LF_Debug.Info("Interaction", string.Format("this client knows player %1 (%2 known)", playerId, s_mNames.Count()));
 		StartTick();
 	}
@@ -62,7 +69,58 @@ class LF_KnownNames
 		if (!s_mNames)
 			return string.Empty;
 
+		if (!StillSamePerson(playerId, KeyOf(playerId)))
+			return string.Empty;
+
 		return s_mNames.Get(playerId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: a learned name still names the player when neither key is unknown and they match.
+	static bool SameKey(string learnedKey, string currentKey)
+	{
+		if (learnedKey.IsEmpty() || currentKey.IsEmpty())
+			return true;
+
+		return learnedKey == currentKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the name learned for this player id still names the character it plays now.
+	protected static bool StillSamePerson(int playerId, string currentKey)
+	{
+		if (!s_mKeys || !s_mKeys.Contains(playerId))
+			return true;
+
+		return SameKey(s_mKeys.Get(playerId), currentKey);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The character key replicated on this player's body, or "" (no body, or not replicated yet).
+	protected static string KeyOf(int playerId)
+	{
+		if (!GetGame() || !GetGame().GetPlayerManager())
+			return string.Empty;
+
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId));
+		if (!character)
+			return string.Empty;
+
+		return character.LF_GetCharacterKey();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The local player's body was taken away (a character switch, LF_CharacterSwitch): what that
+	//! character was told goes with it. The next spawn's SyncNames teaches the new character its own.
+	static void ForgetAll()
+	{
+		if (!s_mNames || s_mNames.IsEmpty())
+			return;
+
+		LF_Debug.Info("Interaction", string.Format("this client's body was put away: forgot %1 known name(s)", s_mNames.Count()));
+		s_mNames.Clear();
+		if (s_mKeys)
+			s_mKeys.Clear();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -80,6 +138,7 @@ class LF_KnownNames
 
 		s_bTicking = false;
 		s_mNames = null;
+		s_mKeys = null;
 		s_sShown = string.Empty;
 		if (s_wRoot)
 			s_wRoot.RemoveFromHierarchy();
@@ -115,6 +174,7 @@ class LF_KnownNames
 		if (!self || !LF_PlayerInteraction.IsAlive(self))
 			return string.Empty;
 
+
 		CameraManager cameras = GetGame().GetCameraManager();
 		if (!cameras)
 			return string.Empty;
@@ -135,6 +195,10 @@ class LF_KnownNames
 		{
 			IEntity other = players.GetPlayerControlledEntity(playerId);
 			if (!other || other == self)
+				continue;
+
+			SCR_ChimeraCharacter otherCharacter = SCR_ChimeraCharacter.Cast(other);
+			if (otherCharacter && !StillSamePerson(playerId, otherCharacter.LF_GetCharacterKey()))
 				continue;
 
 			vector toHead = other.GetOrigin() + Vector(0, HEAD_HEIGHT, 0) - eye;

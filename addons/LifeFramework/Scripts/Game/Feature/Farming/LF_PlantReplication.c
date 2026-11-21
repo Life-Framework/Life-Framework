@@ -183,6 +183,31 @@ class LF_PlantReplication
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What this machine shows, for the harness: `rows=N meshes=M <id>:<stage> ...`, sorted by id. A
+	//! dedicated client reads its mirror; the server (or a listen host) reads the table it sends.
+	static string DescribeLocal()
+	{
+		map<string, ref LF_PlantViewRow> rows = Mirror();
+		string side = "client";
+		if (Replication.IsServer())
+		{
+			rows = Table();
+			side = "server";
+		}
+
+		array<string> ids = new array<string>();
+		foreach (string id, LF_PlantViewRow row : rows)
+			ids.Insert(id);
+
+		ids.Sort();
+		string text = string.Format("side=%1 rows=%2 meshes=%3", side, ids.Count(), ClientVisuals().Count());
+		foreach (string id : ids)
+			text += string.Format(" %1:%2", id, rows.Get(id).m_iStage);	// lf-bounded: the proof plants one or two crops
+
+		return text;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void Write(notnull ScriptBitWriter writer, notnull array<ref LF_PlantViewRow> rows)
 	{
 		writer.WriteInt(FORMAT_VERSION);
@@ -266,6 +291,19 @@ class LF_PlantReplication
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client: the plant whose stage mesh is this entity, or empty (#3177, the stage prefab's actions).
+	static string ClientPlantOf(EntityID visual)
+	{
+		foreach (string id, EntityID drawn : ClientVisuals())
+		{
+			if (drawn == visual)
+				return id;
+		}
+
+		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: the whole table replaces the mirror (a join snapshot, or the server cleared).
 	//! \return how many plants were kept.
 	static int ClientApplyAll(array<ref LF_PlantViewRow> rows)
@@ -304,6 +342,7 @@ class LF_PlantReplication
 		if (shown && drawn && shown.m_iStage == copy.m_iStage && vector.Distance(shown.m_vPosition, copy.m_vPosition) < 0.01)
 			return;
 
+		LF_Debug.Info(FEATURE, string.Format("plant replication: this client shows %1 (%2) at stage %3", copy.m_sPlantId, copy.m_sCropId, copy.m_iStage));
 		DrawClient(copy, crop);
 	}
 
@@ -445,6 +484,7 @@ modded class LF_GameModeRoleplay
 	[RplRpc(RplChannel.Reliable, RplRcver.Broadcast)]
 	protected void RpcDo_LF_PlantClear()
 	{
+		LF_Debug.Info(LF_PlantReplication.FEATURE, string.Format("plant replication: the server cleared every plant; this client drops %1", LF_PlantReplication.ClientCount()));
 		LF_PlantReplication.ResetClient();
 	}
 
@@ -478,5 +518,117 @@ modded class LF_GameModeRoleplay
 		int applied = LF_PlantReplication.ClientApplyAll(rows);
 		LF_Debug.Info(LF_PlantReplication.FEATURE, string.Format("plant replication: join snapshot drew %1 of %2 plant(s)", applied, rows.Count()));
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Harness verbs for plant-late-proof (#3178):
+//!   plantsync state                 what this machine shows (DescribeLocal)
+//!   plantsync plant [cropId]        the server gives this character one seed and plants it 2 m ahead
+//!   plantsync grow                  the server's farming clock moves on one stage of that crop (default cabbage)
+//!   plantsync reset                 the server runs the whole world reset (#2820)
+//! A client asks the server through its character (the harness gate allows it on a dev build only).
+modded class LF_AgentHarnessVerbs
+{
+	override bool Handle(LF_AgentCommand cmd)
+	{
+		if (cmd.Verb != "plantsync")
+			return super.Handle(cmd);
+
+		if (cmd.Arg1 == "state")
+		{
+			LF_AgentHarness.Answer(cmd.Id, "ok", LF_PlantReplication.DescribeLocal());
+			return true;
+		}
+
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		if ((cmd.Arg1 != "plant" && cmd.Arg1 != "grow" && cmd.Arg1 != "reset") || !character)
+		{
+			LF_AgentHarness.Answer(cmd.Id, "error", "usage: plantsync state | plant [cropId] | grow | reset (plant, grow and reset need a character)");
+			return true;
+		}
+
+		character.LF_AskHarnessPlantSync(cmd.Id, cmd.Arg1, cmd.Arg2);
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+modded class SCR_ChimeraCharacter
+{
+	//------------------------------------------------------------------------------------------------
+	void LF_AskHarnessPlantSync(int commandId, string action, string cropId)
+	{
+		if (Replication.IsServer())
+		{
+			LF_HarnessPlantSyncDo(commandId, action, cropId);
+			return;
+		}
+
+		Rpc(RpcAsk_LF_HarnessPlantSync, commandId, action, cropId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_HarnessPlantSync(int commandId, string action, string cropId)
+	{
+		if (!LF_DevGate.CheckHarnessRequest(this, "plantsync"))
+		{
+			LF_HarnessReply(commandId, "error", LF_AgentHarness.REFUSED_DEV_GATE);
+			return;
+		}
+
+		LF_HarnessPlantSyncDo(commandId, action, cropId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void LF_HarnessPlantSyncDo(int commandId, string action, string cropId)
+	{
+		if (action == "reset")
+		{
+			LF_HarnessReply(commandId, "ok", LF_WorldReset.RunAll("harness plantsync") + " | " + LF_PlantReplication.DescribeLocal());
+			return;
+		}
+
+		if (cropId.IsEmpty())
+			cropId = "cabbage";
+
+		if (action == "grow")
+		{
+			LF_CropRow grown = LF_Plants.FindCrop(cropId);
+			if (!grown)
+			{
+				LF_HarnessReply(commandId, "error", "plantsync grow: no crop " + cropId + " in the loaded catalogue");
+				return;
+			}
+
+			int stages = LF_PlantRules.BuildStages(grown).Count();
+			float seconds = grown.m_iGrowthSeconds / (stages - 1) + 1;	// lf-float: one stage of farming-clock seconds
+			LF_Plants.AdvanceClock(seconds);
+			LF_HarnessReply(commandId, "ok", string.Format("advanced %1 s | %2", seconds, LF_PlantReplication.DescribeLocal()));
+			return;
+		}
+
+		LF_CropRow crop = LF_Plants.FindCrop(cropId);
+		if (!crop)
+		{
+			LF_HarnessReply(commandId, "error", "plantsync plant: no crop " + cropId + " in the loaded catalogue");
+			return;
+		}
+
+		LF_InventoryUtils.AddAmount(this, crop.m_SeedPrefab, 1, true);
+		vector mat[4];
+		GetTransform(mat);
+		vector spot = GetOrigin() + mat[2] * 2;
+		string plantId;
+		LF_EPlantPlace place;
+		LF_EPlantResult result = LF_Plants.Plant(this, crop.m_SeedPrefab, spot, plantId, place);
+		if (result != LF_EPlantResult.OK)
+		{
+			LF_HarnessReply(commandId, "error", string.Format("plantsync plant refused: %1 %2", typename.EnumToString(LF_EPlantResult, result), typename.EnumToString(LF_EPlantPlace, place)));
+			return;
+		}
+
+		LF_HarnessReply(commandId, "ok", string.Format("planted=%1 | %2", plantId, LF_PlantReplication.DescribeLocal()));
 	}
 }

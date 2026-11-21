@@ -1,3 +1,5 @@
+// red-proof (A-frame back face, #3547): RedProof() reports no back face, so "the A-frame prints the same face on its far slate too" fails.
+// red-proof (A-frame, #3305): RedProof() blanks the A-frame's style id, so "the A-frame names the chalk style" fails.
 // red-proof: expected 2 Read actions; `tools\cli test --no-build --tier all`
 // (2026-11-08) failed signs/prefabs with "sign carries one Read action:
 // ...LF_Sign_Board.et (expected 2, got 1)" for every sign prefab.
@@ -5,6 +7,8 @@
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_SignPrefabs : LF_Test
 {
+	static const ResourceName PUB_PREFAB = "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et";
+
 	override string GetName()
 	{
 		return "signs/prefabs";
@@ -35,6 +39,8 @@ class LF_Test_SignPrefabs : LF_Test
 			ExpectOneRead(ctx, path);
 		}
 
+		ExpectChalkPub(ctx);
+
 		Resource face = Resource.Load(LF_SignComponent.FacePrefab());
 		ctx.True(face && face.IsValid(), "the board face sheet prefab loads");
 		Resource faceLayout = Resource.Load(LF_SignComponent.FACE_LAYOUT);
@@ -53,6 +59,52 @@ class LF_Test_SignPrefabs : LF_Test
 
 			ctx.EqualStr(expected, LF_SignCatalog.ReadName(mining), "the mining sign reads Read: Mining area, or the neutral title without the pack");
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The A-frame pavement board prints in chalk on the portrait 5:8 quad (#3305, #3547): the prefab names a style and
+	//! a size, and both resolve in LF_SignStyles.conf.
+	protected void ExpectChalkPub(LF_TestContext ctx)
+	{
+		Resource resource = Resource.Load(PUB_PREFAB);
+		ctx.True(resource && resource.IsValid(), "LF_Sign_Pub loads under its original GUID");
+		if (!resource || !resource.IsValid())
+			return;
+
+		EntitySpawnParams params();
+		params.TransformMode = ETransformMode.LOCAL;
+		IEntity pub = GetGame().SpawnEntityPrefab(resource, GetGame().GetWorld(), params);
+		ctx.NotNull(pub, "the A-frame spawns");
+		if (!pub)
+			return;
+
+		LF_SignComponent sign = LF_Component<LF_SignComponent>.Find(pub);
+		ctx.NotNull(sign, "the A-frame carries LF_SignComponent");
+		if (sign)
+		{
+			string styleId = sign.GetStyleId();
+			if (RedProof())
+				styleId = "";
+
+			ctx.EqualStr("chalk", styleId, "the A-frame names the chalk style");
+			ctx.NotNull(LF_SignStyles.FindStyle(styleId), "the chalk style resolves");
+			LF_SignSizeDef size = LF_SignStyles.FindSize(sign.GetSizeId());
+			ctx.NotNull(size, "the A-frame's size resolves: " + sign.GetSizeId());
+			if (size)
+			{
+				ctx.True(!size.m_sCarrier.IsEmpty(), "and its size draws on a carrier quad");
+				// The slate is portrait (about 0.57 x 0.9 m), so a landscape quad shows the vanilla chalk around it (#3547).
+				ctx.True(size.m_vShown[1] > size.m_vShown[0], "the A-frame's carrier is portrait, so it covers the slate");
+			}
+
+			bool backFace = sign.HasBackFace();
+			if (RedProof())
+				backFace = false;
+
+			ctx.True(backFace, "the A-frame prints the same face on its far slate too");
+		}
+
+		SCR_EntityHelper.DeleteEntityAndChildren(pub);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F049C702E4FE8063}Prefabs/Characters/HeadGear/LF/HockeyMask.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

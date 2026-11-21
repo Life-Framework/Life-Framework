@@ -34,6 +34,19 @@ async function runSearchProof() {
   on(2, { verb: "stand", entityName: other });
   wait(2500);
   on(2, { verb: "look" });
+  // A search needs a target that has given up (#3399): down hands refuse, raised hands search.
+  const p1 = parseState(on(1, { verb: "state" }, 10000).detail).player;
+  const refusedBefore = count(/search refused: the target has not given up/g);
+  on(2, { verb: "use", className: "LF_ConfiscateAction", entityName: other }, 10000);
+  wait(1500);
+  const refused = count(/search refused: the target has not given up/g) - refusedBefore;
+  const raise = () => {
+    // Offer, then the target's own yes; both no-op while the hands are already up.
+    on(2, { verb: "handsup", words: ["offer", String(p1)] }, 10000);
+    on(1, { verb: "handsup", words: ["choose", "1"] }, 10000);
+    wait(500);
+  };
+  raise();
   const cleanBefore = count(/person search found nothing/g);
   on(2, { verb: "use", className: "LF_ConfiscateAction", entityName: other }, 10000);
   wait(1500);
@@ -45,6 +58,7 @@ async function runSearchProof() {
   for (let i = 0; i < 6 && !seized; i++) {
     // Each search starts the per-person cooldown; the proof is about the roll, so end it first.
     on(1, { verb: "resetcrime" }, 10000);
+    raise();
     on(2, { verb: "use", className: "LF_ConfiscateAction", entityName: other }, 10000);
     wait(1500);
     seized = count(/person search seized/g);
@@ -53,10 +67,12 @@ async function runSearchProof() {
   const reports = count(/Carrying contraband goods|Offence_ChainGoods/g);
   const againBefore = count(/person search found nothing/g);
   on(1, { verb: "resetcrime" }, 10000);
+  raise();
   on(2, { verb: "use", className: "LF_ConfiscateAction", entityName: other }, 10000);
   wait(1500);
   const again = count(/person search found nothing/g) - againBefore;
   if (clockIn.status !== "ok") fails.push(`clock in returned ${clockIn.status} ${clockIn.detail}`);
+  if (refused < 1) fails.push("a search of a target with their hands down was not refused");
   if (clean < 1) fails.push("the first search of a clean player did not log 'found nothing'");
   if (give.status !== "ok" || !give.detail.includes("added=1")) fails.push(`crate not given: ${give.status} ${give.detail}`);
   if (!seized) fails.push("six searches never seized the crate");

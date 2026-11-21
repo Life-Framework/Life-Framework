@@ -418,6 +418,20 @@ class LF_ChopShopComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether the worker stands at the bench (the fitting service, LF_ChopFit, asks the same as the job).
+	bool IsInReach(IEntity user)
+	{
+		return InReach(user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Metres from the bench a car must stand to count as in the drop area.
+	float GetDropRadius()
+	{
+		return m_fDropRadius;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The car in the drop area the bench takes: the nearest stolen one, else the nearest with a lock
 	//! component (LF_ChopShopRules.PickDropIndex).
 	protected IEntity FindDropVehicle()
@@ -462,8 +476,9 @@ class LF_ChopShopComponent : ScriptComponent
 		{
 			vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
 			vehicleId = vehicleLock.GetVehicleIdentifier();
-			stolen = vehicleLock.IsStolen();
-			isOwned = !LF_VehicleOwnership.GetOwner(vehicleId).IsEmpty();
+			// A company garbage truck waiting to be taken back is never a car to sell (#3325).
+			stolen = vehicleLock.IsStolen() && !LF_GarbageRound.IsPendingRemoval(vehicle);
+			isOwned =!LF_VehicleOwnership.GetOwner(vehicleId).IsEmpty();
 			hasKey = vehicleLock.UserHasValidKey(user);
 			occupied = LF_StolenVehicles.HasOccupant(vehicle);
 		}

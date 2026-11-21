@@ -57,8 +57,14 @@ class LF_EventScene
 	[Attribute("", UIWidgets.EditBox, "Optional parked vehicle: a prefab slot id (#964) or a {GUID}path prefab, as m_sRole takes an outfit. Empty means none")]
 	string m_sVehicleSlot;
 
+	[Attribute("0", UIWidgets.CheckBox, "Drive the parked vehicle (#3831): the crew rides it along the waypoints instead of walking them. Needs m_sVehicleSlot, and walker prefabs that are AI-capable vanilla civilians (an LF_Npc outfit has no AIControlComponent). Keep the waypoints short and on the lane: the AI follows the nearest road or open ground")]
+	bool m_bDriveVehicle;
+
 	[Attribute("", UIWidgets.ResourceNamePicker, "Optional walker prefabs, handed out in turn (walker 0 the first, walker 1 the second, round again). Set, they win over m_sRole (#2137)", "et")]
 	ref array<ResourceName> m_aPrefabs;
+
+	[Attribute("", UIWidgets.ResourceNamePicker, "Optional item left once on the scene's placed item spot (an `event_item` marker) when the scene starts. The copy the last run left, if nobody took it, is removed first, so one run leaves at most one", "et")]
+	ResourceName m_sDropPrefab;
 
 	//------------------------------------------------------------------------------------------------
 	//! The attribute defaults above, for a scene built in script (a field initializer would beat a config value of 0, #1077).
@@ -100,6 +106,9 @@ class LF_EventScenePlan
 	ref array<string> m_aWaypointIds = {};
 	ref array<ref LF_EventSceneNpc> m_aNpcs = {};
 	string m_sVehicleSlot;
+	//! The crew rides the vehicle along the route instead of walking it (#3831).
+	bool m_bDriveVehicle;
+	ResourceName m_sDropPrefab;
 	float m_fWalkTimeoutSeconds;
 	float m_fDespawnDelaySeconds;
 	float m_fForceDespawnSeconds;
@@ -144,6 +153,8 @@ class LF_EventScenePlanner
 					return "an empty walker prefab";
 			}
 		}
+		if (scene.m_bDriveVehicle && scene.m_sVehicleSlot == "")
+			return "drives a vehicle but names none";
 		if (scene.m_iNpcCount < 1)
 			return "no NPCs";
 		if (scene.m_fSpawnStaggerSeconds < 0 || scene.m_fWalkTimeoutSeconds <= 0 || scene.m_fDespawnDelaySeconds < 0 || scene.m_fForceDespawnSeconds <= 0)
@@ -204,6 +215,8 @@ class LF_EventScenePlanner
 			plan.m_aNpcs.Insert(LF_EventSceneNpc.Make(wears, dialogueId, i * scene.m_fSpawnStaggerSeconds));
 		}
 		plan.m_sVehicleSlot = scene.m_sVehicleSlot;
+		plan.m_bDriveVehicle = scene.m_bDriveVehicle;
+		plan.m_sDropPrefab = scene.m_sDropPrefab;
 		plan.m_fWalkTimeoutSeconds = scene.m_fWalkTimeoutSeconds;
 		plan.m_fDespawnDelaySeconds = scene.m_fDespawnDelaySeconds;
 		plan.m_fForceDespawnSeconds = scene.m_fForceDespawnSeconds;

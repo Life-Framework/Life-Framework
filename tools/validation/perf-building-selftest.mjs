@@ -6,6 +6,7 @@
 // insides, CastShadow 0 / 1 / unset are told apart (unset counts as a caster), a point light casting a
 // shadow is flagged, an unresolved vanilla reference is listed, and the budget verdict names each limit.
 // red-proof: with findBuilding comparing the slug to the folder name exactly (case only) this printed "FAIL fuel-station finds FuelStation: want 1, got undefined" (2026-11-17).
+// red-proof: with the old countTree (no merge by ID) this printed "FAIL an ID override counts the light once: want 1, got 2" (2026-11-19).
 // red-proof: with countTree counting a light as a caster only on an explicit "CastShadow 1" this printed
 // "FAIL shadow: want 3 (one explicit, two unset): want 3, got 1" (2026-11-17).
 
@@ -99,6 +100,77 @@ want("shadow: want 3 (one explicit, two unset)", t.shadow, 3);
 want("unset", t.unset, 2);
 want("point lights casting shadows", t.point, 1);
 want("unresolved vanilla refs listed", t.unresolved.size >= 3, true);
+
+// A prefab that inherits a vanilla child by its ID and writes one property is one entity, not two (the payphone's
+// lamp: the booth overrides the light prefab's light by ID, and LF_Payphone sets CastShadow 0 on it again).
+const bd = join(root, "addons", "LF_Pack", "Prefabs", "Booth");
+mkdirSync(bd, { recursive: true });
+const boothFiles = {
+  "Lamp.et": `GameEntity {
+ ID "L0"
+ {
+  LightEntity {
+   ID "L1"
+  }
+ }
+}
+`,
+  "Booth.et": `GenericEntity {
+ ID "B0"
+ {
+  GameEntity : "{0000000000000021}Prefabs/Booth/Lamp.et" {
+   ID "B1"
+   {
+    LightEntity {
+     ID "L1"
+    }
+   }
+  }
+ }
+}
+`,
+  "LF_Booth.et": `GenericEntity : "{0000000000000022}Prefabs/Booth/Booth.et" {
+ ID "B9"
+ {
+  GameEntity {
+   ID "B1"
+   {
+    LightEntity {
+     ID "L1"
+     CastShadow 0
+    }
+   }
+  }
+ }
+}
+`,
+  "Row.et": `GenericEntity {
+ ID "R0"
+ {
+  GenericEntity : "{0000000000000023}Prefabs/Booth/LF_Booth.et" {
+   ID "R1"
+  }
+  GenericEntity : "{0000000000000023}Prefabs/Booth/LF_Booth.et" {
+   ID "R2"
+  }
+ }
+}
+`,
+};
+for (const [name, text] of Object.entries(boothFiles)) writeFileSync(join(bd, name), text);
+const boothRef = (ref) => {
+  const m = /Booth\/([^/]+\.et)$/.exec(ref);
+  return m && boothFiles[m[1]] ? { text: boothFiles[m[1]] } : null;
+};
+const b = countTree(parseEntities(boothFiles["Booth.et"]), boothRef);
+want("an ID override counts the light once", b.lights, 1);
+want("an ID override counts the entity once", b.entities, 3);
+want("the light left unset is still unset", b.unset, 1);
+const lb = countTree(parseEntities(boothFiles["LF_Booth.et"]), boothRef);
+want("CastShadow 0 written by the child prefab reaches the light", lb.shadow + lb.unset, 0);
+want("the child prefab still has one light", lb.lights, 1);
+const row = countTree(parseEntities(boothFiles["Row.et"]), boothRef);
+want("two placements of one prefab are two lights", row.lights, 2);
 
 const over = verdict(t, "small");
 want("small budget is over on shadow casters", over.some((o) => o.startsWith("shadow casters 3 > 0")), true);

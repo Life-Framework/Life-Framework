@@ -1,0 +1,135 @@
+// Source of the `clinic` kit (tools/town/kits/clinic.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). `town fit` reads the components the kit names from here; `town author --reopen clinic` builds a bay again.
+// Grid cell c27r2 for author-clinic: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_author_clinic_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 47
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 47
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 47
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 47
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 47
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 51.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 55.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 60.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 64.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 69
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 64.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_clinic_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 60.2
+ angleY 90
+}
+GenericEntity Grid_author_clinic_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:author-clinic"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 346.2 0.505 47.6
+ angleY -90
+}
+GenericEntity Grid_author_clinic_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "author-clinic"
+  }
+ }
+ coords 346.3 0 51.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_author_clinic_Main : "{27CC3110521583D6}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_v2.et" {
+ coords 357.94 0.05 58.013
+ angleY -90
+}
+GenericEntity clinic_furniture_01 : "{8115988D2822C4FC}Prefabs/Buildings/Clinic/Furniture/Clinic_furniture_01.et" {
+ coords 357.94 0 58.013
+ angleY -90
+}
+GenericEntity lf_medic_duty_desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et" {
+ coords 356.94 0.307 65.913
+ angleY -90
+}
+GenericEntity lf_hospital_till : "{2D106F570E87D5D9}Prefabs/Props/Commercial/LF_HospitalTill.et" {
+ coords 356.59 0.339 63.463
+ angleY -90
+}
+GenericEntity lf_hospital_cabinet : "{E9A69A99981C062C}Prefabs/Props/Commercial/LF_HospitalCabinet.et" {
+ coords 355.14 0.307 49.413
+ angleY 0
+}
+GenericEntity lf_dispatch_board_medic : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
+ coords 354.04 1.41 66.753
+ angleY 180
+}
+GenericEntity lf_hospital_bed : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
+ coords 356.94 0.323 50.813
+ angleY -90
+}
+GenericEntity lf_hospital_bed_2 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
+ coords 356.94 0.307 54.613
+ angleY -90
+}
+GenericEntity electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ coords 352.14 3.05 61.513
+ angleY -90
+}
+GenericEntity lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ coords 352.12 3.1 55.613
+ angleY -90
+}
+LF_NpcBaseEntity clinic_doctor : "{C001B9088678C653}Prefabs/Characters/Npcs/Outfits/LF_Npc_Medic_1.et" {
+ coords 357.59 0.302 65.063
+ angleY -90
+}

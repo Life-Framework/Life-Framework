@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{16D1AC9E9DF60B54}Configs/Signs/LF_Signs_Everon1989/LF_Signs_FishermansBay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass PS5 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

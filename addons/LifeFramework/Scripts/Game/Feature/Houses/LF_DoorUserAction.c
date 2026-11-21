@@ -28,6 +28,17 @@ modded class SCR_DoorUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The sign key that keeps this door shut because its building is locked by a marker, or "" when
+	//! the door is free or already open (a closing is always allowed).
+	protected string BuildingReason(IEntity user = null)
+	{
+		if (LF_HouseDoorClose.IsOpen(m_pDoorEntity))
+			return "";
+
+		return LF_BuildingLocks.ReasonFor(m_pDoorEntity, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! What this hideout door is to this viewer: theirs, members only, or nobody's yet.
 	protected LF_EHideoutDoorView HideoutView(IEntity user)
 	{
@@ -64,6 +75,15 @@ modded class SCR_DoorUserAction
 	{
 		if (!super.CanBePerformedScript(user))
 			return false;
+
+		// A building a lock marker shuts (#3203): nobody opens it, the marker's sign key is the reason.
+		// Closing an open door still works. Static data on every machine, so client and server agree.
+		string buildingReason = BuildingReason(user);
+		if (!buildingReason.IsEmpty())
+		{
+			SetCannotPerformReason(buildingReason);
+			return false;
+		}
 
 		if (!m_pHouseLock || !m_pHouseLock.IsLocked())
 			return true;
@@ -119,6 +139,13 @@ modded class SCR_DoorUserAction
 	//! the house manager (LF_HouseManagerComponent.SetHouseLocked) changes a house's lock state.
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
+		// The server refuses a forged open of a locked building too (#3203).
+		if (Replication.IsServer() && !BuildingReason(pUserEntity).IsEmpty())
+		{
+			LF_Debug.Warn(LF_BuildingLocks.FEATURE, string.Format("door of a locked building refused on the server: %1", BuildingReason(pUserEntity)));
+			return;
+		}
+
 		if (m_pHideoutDoor && Replication.IsServer())
 		{
 			string characterId = LF_Hideout.CharacterIdOf(pUserEntity);

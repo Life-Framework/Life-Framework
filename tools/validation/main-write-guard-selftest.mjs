@@ -9,9 +9,12 @@
 //      takes well under half a second (measured, printed);
 //   5. `wt new` records the claim through recordClaim, and the lead's stray pass finds only untracked files in the
 //      guarded folders older than two minutes, leaves tracked edits alone (reports them), and moves with the relative path kept.
+//   6. (#3700) a Bash or PowerShell command that redirects, tees, edits in place (sed -i), Set-Content/Out-File/rm/cp-destination into the
+//      main checkout is denied from a worktree session (absolute, Git Bash and backslash paths, a cd into main, a relative path with the
+//      cwd in main); reads, a cp source, main tmp/, the worktree itself, /dev/null and the lead (no claim) are never denied.
 // inputs: tools/lib/main-write-guard.mjs, tools/hooks/main-write-guard.mjs, .claude/settings.json
 // red-proof: 2026-11-18, with decideWrite's claim lookup (liveClaim) returning null the "main-launched agent with a claim" check
-// failed; with the repo.linked branch removed the "cwd is a worktree" checks failed; with GUARDED emptied every deny check failed; restored.
+// failed; 2026-11-19, with the shell branch of decideWrite removed 14 shell checks failed; with the repo.linked branch removed the "cwd is a worktree" checks failed; with GUARDED emptied every deny check failed; restored.
 import { mkdirSync, writeFileSync, existsSync, readFileSync, utimesSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { spawnSync } from "node:child_process";
@@ -92,12 +95,66 @@ check(allowed.code === 0 && allowed.out === "", "the hook script prints nothing 
 check(runHook("{not json").code === 0 && runHook("").out === "", "a malformed payload is allowed, exit 0");
 const times = [blocked.ms, allowed.ms, ...Array.from({ length: 5 }, () => runHook(w(inMain("addons/x.c"))).ms)];
 const avg = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
-check(Math.max(...times) < 1500, `a hook call stays fast (max ${Math.max(...times)} ms)`);
+// A node start costs ~100 ms idle. On a PC running ~20 agents one call can take seconds (max 2647 ms on 2026-11-18, which the
+// main guard blamed on an unrelated merge, #3283), so the claim is the median, with a loose cap that only a real hang breaks.
+const median = [...times].sort((a, b) => a - b)[Math.floor(times.length / 2)];
+check(median < 1500 && Math.max(...times) < 20000, `a hook call stays fast (median ${median} ms, max ${Math.max(...times)} ms)`);
 
 // settings.json wires the hook for the write tools
 const settings = JSON.parse(readFileSync(fileURLToPath(new URL("../../.claude/settings.json", import.meta.url)), "utf8"));
 const pre = settings.hooks?.PreToolUse?.[0];
 check(pre && /Write/.test(pre.matcher) && /Edit/.test(pre.matcher) && /NotebookEdit/.test(pre.matcher) && pre.hooks?.[0]?.command?.includes("tools/hooks/main-write-guard.mjs"), ".claude/settings.json runs the hook for Write, Edit and NotebookEdit");
+
+// 6. #3700: a shell write into main (Bash and PowerShell). Twice on 2026-11-19 a sed/script edit that the Write/Edit
+// hook cannot see blocked the main checkout's fast-forward.
+const sh = (tool, command, over = {}) => ({ tool_name: tool, tool_input: { command }, cwd: wtDir, session_id: "sess-a", ...over });
+const M = norm(main); // C:/.../agents/Life-Framework
+const gitBash = `/${M[0].toLowerCase()}${M.slice(2)}`; // /c/.../agents/Life-Framework
+const denied = [
+  ["Bash", `sed -i 's/a/b/' ${M}/docs/features/sites.md`, "sed -i on a main file (absolute path)"],
+  ["Bash", `sed -i 's/a/b/' ${gitBash}/tools/town/drops.mjs`, "sed -i on a Git Bash style main path"],
+  ["Bash", `echo hi > ${M}/tools/x.mjs`, "a > redirect into main"],
+  ["Bash", `echo hi >> "${M}/docs/x.md"`, "a >> redirect into main, quoted"],
+  ["Bash", `cat a | tee ${M}/addons/x.st`, "tee into main"],
+  ["Bash", `cd ${M} && sed -i 's/a/b/' tools/town/drops.mjs`, "cd into main then a relative sed -i"],
+  ["Bash", `cp ./x ${M}/addons/LifeFramework/x.c`, "cp with a main destination"],
+  ["Bash", `node -e 1; rm ${M}/docs/old.md`, "rm of a main file after another command"],
+  ["PowerShell", `Set-Content -Path ${M.replace(/\//g, "\\")}\\docs\\a.md -Value x`, "Set-Content on a main file (backslashes)"],
+  ["PowerShell", `"x" | Out-File ${M}/tools/a.txt`, "Out-File into main"],
+  ["PowerShell", `(Get-Content ${M}/docs/a.md) -replace 'a','b' | Set-Content ${M}/docs/a.md`, "a read-modify-write of a main file"],
+  ["PowerShell", `Add-Content ${M}/tools/a.txt "x"`, "Add-Content to main"],
+];
+for (const [tool, command, what] of denied) {
+  const d = decideWrite(sh(tool, command), { env: ev });
+  check(d.block === true && d.reason.includes(norm(wtDir)), `${tool}: ${what} is denied and names the worktree`);
+}
+// launched in main with a claim: a relative-path write with no cd lands in main
+check(decideWrite(sh("Bash", "sed -i 's/a/b/' tools/town/drops.mjs", { cwd: main }), { env: ev }).block === true, "cwd main + claim: a relative sed -i with no cd is denied");
+check(decideWrite(sh("Bash", `cd ${wtDir.replace(/\\/g, "/")} && sed -i 's/a/b/' tools/town/drops.mjs`, { cwd: main }), { env: ev }).block === false, "cwd main + claim: a cd into the worktree first is allowed");
+const allowedShell = [
+  ["Bash", `cat ${M}/docs/a.md`, "reading a main file"],
+  ["Bash", `grep -rn foo ${M}/tools`, "grep in main"],
+  ["Bash", `git -C ${M} status --short`, "git status in main"],
+  ["Bash", `cp ${M}/docs/a.md ${wtDir.replace(/\\/g, "/")}/docs/a.md`, "copying FROM main into the worktree"],
+  ["Bash", `sed -i 's/a/b/' ${wtDir.replace(/\\/g, "/")}/tools/x.mjs`, "sed -i in the worktree"],
+  ["Bash", `echo hi > ${M}/tmp/pr-body.md`, "a redirect into main tmp/"],
+  ["Bash", `echo hi > ${M}/lf.local.json`, "a redirect into main lf.local.json"],
+  ["Bash", `echo hi > /dev/null 2>&1`, "a redirect to /dev/null"],
+  ["Bash", `echo "a > ${M}/tools/x" | wc -l`, "a main path inside a quoted string with no write verb outside it"],
+  ["PowerShell", `Get-Content ${M}/docs/a.md | Select-Object -First 3`, "PowerShell reading main"],
+  ["PowerShell", `Set-Content -Path ${wtDir}/docs/a.md -Value x`, "Set-Content in the worktree"],
+  ["Bash", "git status", "an unrelated command"],
+];
+for (const [tool, command, what] of allowedShell) {
+  check(decideWrite(sh(tool, command), { env: ev }).block === false, `${tool}: ${what} is allowed`);
+}
+check(decideWrite(sh("Bash", `sed -i 's/a/b/' ${M}/docs/a.md`), { env: { LF_ALLOW_MAIN_WRITE: "1" } }).block === false, "LF_ALLOW_MAIN_WRITE=1 opens the gate for shell writes too");
+check(decideWrite(sh("Bash", `sed -i 's/a/b/' ${M}/docs/a.md`, { session_id: "sess-b", cwd: main }), { env: ev }).block === false, "the lead or maintainer (no claim, cwd main) shell-edits main freely");
+check(decideWrite({ tool_name: "Bash", tool_input: {}, cwd: wtDir }, { env: ev }).block === false && decideWrite({ tool_name: "Bash", tool_input: { command: 5 }, cwd: wtDir }, { env: ev }).block === false, "a Bash payload with no command string is allowed");
+const shellHook = runHook(sh("Bash", `sed -i 's/a/b/' ${M}/docs/a.md`));
+check(JSON.parse(shellHook.out || "{}")?.hookSpecificOutput?.permissionDecision === "deny", "the hook script denies a blocked shell write");
+check(runHook(sh("Bash", "git status")).out === "", "the hook script allows an unrelated shell command");
+check(/Bash/.test(pre.matcher) && /PowerShell/.test(pre.matcher), ".claude/settings.json runs the hook for Bash and PowerShell too");
 
 // 5. the lead's stray pass
 const st = parseStatus(["?? addons/LifeFramework/Scripts/Game/Tests/LF_Test_Stray.c", "?? addons/LifeFramework/new.st", " M tools/cli.mjs", "?? tmp/x.md", "?? lf.local.json.bak", "M  docs/a.md", ""].join("\0"));

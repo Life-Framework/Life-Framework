@@ -47,6 +47,10 @@ class LF_PlacementZones
 	//! How far from a road's line a spot still counts as on the road (half a lane pair plus the verge).
 	static const float ROAD_HALF_WIDTH_M = 6; // lf-fixed: geometry, how wide a road is for "roads only"
 
+	//! How far from a built cottage's shell origin a spot is inside it (#3173). Not the prefab bounds:
+	//! one fixed radius keeps the check a sphere query and covers every shell tier shipped.
+	static const float PLOT_RADIUS_M = 8; // lf-fixed: geometry, how far from a build-site shell's origin counts as inside it
+
 	static const string TOAST_ROAD = "#LF-Placement_NeedRoad";
 	static const string TOAST_PROPERTY = "#LF-Placement_NeedProperty";
 	static const string TOAST_BASE = "#LF-Placement_NeedBase";
@@ -206,7 +210,97 @@ class LF_PlacementZones
 			ownerKeys.Insert(house.GetOwnerKey());
 		}
 
+		// A finished build-site cottage is a property too (#3173): a spot inside its shell belongs to the plot.
+		LF_PlacementWhoFacts plot = new LF_PlacementWhoFacts();
+		if (GatherPlot(spot, characterKey, heldKeys, plot))
+		{
+			facts.m_sHouseId = plot.m_sHouseId;
+			facts.m_bHouseOwner = plot.m_bHouseOwner;
+			facts.m_bKeyHolder = plot.m_bKeyHolder;
+			return;
+		}
+
 		FillHouseNearest(spot, ids, origins, ownerKeys, characterKey, heldKeys, facts);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The finished build-site plot whose shell stands within PLOT_RADIUS_M of `at` (flat distance to the
+	//! shell origin), filled into house facts keyed by the plot key. An unfinished plot is no property.
+	//! The server reads the owner from LF_Properties on every call, so a plot sold mid-session stops
+	//! accepting its old owner at once. A client has no owner key (only the replicated "owned" flag), so
+	//! it lets the prompt show over an owned cottage and the server's Confirm decides.
+	//! \return True when a finished plot covers `at` and the facts name it.
+	static bool GatherPlot(vector at, string characterKey, notnull array<string> heldKeys, notnull LF_PlacementWhoFacts facts)
+	{
+		LF_BuildSiteComponent site = FinishedPlotAt(at);
+		if (!site || HouseNearerThanPlot(at, site))
+			return false;
+
+		string plotKey = site.GetSiteKey();
+		if (Replication.IsServer())
+		{
+			LF_PlacementPolicy.FillHouse(plotKey, LF_Properties.GetOwnerKey(plotKey), characterKey, heldKeys, facts);
+			return true;
+		}
+
+		LF_PlacementPolicy.FillHouse(plotKey, "", characterKey, heldKeys, facts);
+		if (site.IsOwned())
+			facts.m_bHouseOwner = true;
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a live house's origin lies nearer `at` than the site's shell origin: the spot is in that
+	//! house, not the plot, so a cottage built beside a neighbour's house does not claim it. Houses pick the
+	//! nearest origin the same way (FillHouseNearest). The live table is filled on the server only, so a
+	//! client keeps the plot and the server's Confirm decides.
+	static bool HouseNearerThanPlot(vector at, notnull LF_BuildSiteComponent site)
+	{
+		vector shell = site.GetShellOrigin();
+		float plotDistance = vector.Distance(Vector(at[0], 0, at[2]), Vector(shell[0], 0, shell[2]));
+		map<string, LF_HouseManagerComponent> live = LF_HouseManagerComponent.Live();
+		foreach (string id, LF_HouseManagerComponent house : live)
+		{
+			if (!house || !house.GetOwner())
+				continue;
+
+			if (vector.Distance(at, house.GetOwner().GetOrigin()) < plotDistance)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The build site of a finished plot whose shell origin lies within PLOT_RADIUS_M of `at`; the nearest
+	//! when several do, null when none.
+	static LF_BuildSiteComponent FinishedPlotAt(vector at)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return null;
+
+		LF_PlacementPlotQuery query = new LF_PlacementPlotQuery(at, PLOT_RADIUS_M);
+		world.QueryEntitiesBySphere(at, LF_PlacementPolicy.HOUSE_RANGE, query.Collect, null, EQueryEntitiesFlags.ALL);
+		return query.m_Nearest;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether every stage of the site's plot is built. The server reads the record; a client the
+	//! replicated mirror.
+	static bool IsPlotFinished(notnull LF_BuildSiteComponent site)
+	{
+		if (!Replication.IsServer())
+			return site.IsComplete();
+
+		string tier = site.GetTierId();
+		int stages = LF_PropertyConfig.StageCount(tier);
+		LF_PropertyRecord record = LF_Properties.Get(site.GetSiteKey());
+		if (!record || stages <= 0)
+			return false;
+
+		return record.m_iBuildStage >= stages;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -235,5 +329,39 @@ class LF_PlacementZones
 
 		facts.m_bBaseKnown = true;
 		facts.m_fBaseDistance = vector.Distance(Vector(spot[0], 0, spot[2]), Vector(base[0], 0, base[2]));
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Sphere-query collector: the finished build site whose shell origin lies nearest the spot, within range.
+class LF_PlacementPlotQuery
+{
+	vector m_vAt;
+	float m_fNearest;
+	LF_BuildSiteComponent m_Nearest;
+
+	//------------------------------------------------------------------------------------------------
+	void LF_PlacementPlotQuery(vector at, float range)
+	{
+		m_vAt = at;
+		m_fNearest = range;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool Collect(IEntity entity)
+	{
+		LF_BuildSiteComponent site = LF_Component<LF_BuildSiteComponent>.Find(entity);
+		if (!site || site.GetSiteKey().IsEmpty() || !LF_PlacementZones.IsPlotFinished(site))
+			return true;
+
+		vector shell = site.GetShellOrigin();
+		float distance = vector.Distance(Vector(m_vAt[0], 0, m_vAt[2]), Vector(shell[0], 0, shell[2]));
+		if (distance <= m_fNearest)
+		{
+			m_Nearest = site;
+			m_fNearest = distance;
+		}
+
+		return true;
 	}
 }

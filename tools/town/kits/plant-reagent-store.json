@@ -1,0 +1,246 @@
+{
+  "schema": 1,
+  "kit": "plant-reagent-store",
+  "system": "mining",
+  "source": {
+    "file": "tools/town/kits/sources/plant-reagent-store.layer",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0,
+        0
+      ],
+      "max": [
+        7,
+        5
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "A reagent store inside a plant shed or hall: wide shelves line the -x and -z walls, drums and gas cylinders stand on the floor, crates on pallets wait at the door side, two work lamps hang on the -z wall. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "shelf-1",
+      "name": "PlantReagentStore_Shelf1",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        0.45,
+        0,
+        1.2
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "shelf-2",
+      "name": "PlantReagentStore_Shelf2",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        0.45,
+        0,
+        2.9
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "shelf-3",
+      "name": "PlantReagentStore_Shelf3",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        0.45,
+        0,
+        4.5
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "shelf-4",
+      "name": "PlantReagentStore_Shelf4",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        2.2,
+        0,
+        0.45
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "shelf-5",
+      "name": "PlantReagentStore_Shelf5",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        3.9,
+        0,
+        0.45
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "drum-1",
+      "name": "PlantReagentStore_Drum1",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.8,
+        0,
+        1.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "drum-2",
+      "name": "PlantReagentStore_Drum2",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.6,
+        0,
+        1.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "drum-3",
+      "name": "PlantReagentStore_Drum3",
+      "prefab": "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.2,
+        0,
+        2.1
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "tank-1",
+      "name": "PlantReagentStore_Tank1",
+      "prefab": "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.8,
+        0,
+        3.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "tank-2",
+      "name": "PlantReagentStore_Tank2",
+      "prefab": "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.6,
+        0,
+        3.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet",
+      "name": "PlantReagentStore_Pallet",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3,
+        0,
+        4.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "crate-1",
+      "name": "PlantReagentStore_Crate1",
+      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
+      "role": "dressing",
+      "verb": "on pallet",
+      "offset": [
+        3,
+        0.144,
+        4.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lamp-1",
+      "name": "PlantReagentStore_Lamp1",
+      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
+      "role": "light",
+      "verb": "against wall",
+      "offset": [
+        2.5,
+        2.8,
+        0.2
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0"
+    },
+    {
+      "id": "lamp-2",
+      "name": "PlantReagentStore_Lamp2",
+      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
+      "role": "light",
+      "verb": "against wall",
+      "offset": [
+        5.2,
+        2.8,
+        0.2
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "floor": "f0"
+    }
+  ]
+}

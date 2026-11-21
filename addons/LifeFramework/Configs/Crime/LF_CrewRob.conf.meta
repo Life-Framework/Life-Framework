@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7A41C9E02B58D63F}Configs/Crime/LF_CrewRob.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

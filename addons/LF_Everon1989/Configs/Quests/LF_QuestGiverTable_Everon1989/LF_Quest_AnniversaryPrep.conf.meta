@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{79A27A1CC6D437F3}Configs/Quests/LF_QuestGiverTable_Everon1989/LF_Quest_AnniversaryPrep.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

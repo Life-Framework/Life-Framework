@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "butcher",
+  "building": "b20",
+  "kit": "butcher",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_butcher.layer",
+  "kinds": [
+    "StoreCounter"
+  ],
+  "rows": 11,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_butcher_Place"
+  },
+  "date": "2026-11-21",
+  "stamp": {
+    "kit": "butcher",
+    "prefab": "{C50CF821412A2E0F}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01_orange.et",
+    "layer": "b183146aa8b7"
+  }
+}

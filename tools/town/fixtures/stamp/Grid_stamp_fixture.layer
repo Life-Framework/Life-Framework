@@ -1,0 +1,19 @@
+SCR_DestructibleEntity Grid_stamp_fixture_fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 990 0 1990
+}
+GenericEntity Grid_stamp_fixture_building : "{38A5F3E4578087AB}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et" {
+ coords 1000 0.5 2000
+ angleY 90
+}
+GenericEntity Shop_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 1003 0.7 1998
+ angleY 90
+}
+GenericEntity Shop_Shelf : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
+ coords 1001 0.7 2003
+ angleY 180
+}
+GenericEntity Shop_Shelf_Back : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 997 0.7 2001.5
+ angleY 0
+}

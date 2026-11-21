@@ -25,6 +25,8 @@ import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
 import { wtDirFor } from "./lib/local-config.mjs";
 import * as mg from "./lib/main-guard.mjs";
+import { healBlockedFastForward, noteAlert } from "./lib/main-ff-heal.mjs";
+import * as rdbCache from "./lib/rdb-cache.mjs";
 import * as pin from "./lib/guard-pin.mjs";
 import { hostname } from "node:os";
 
@@ -101,8 +103,12 @@ const codeDriftNow = (dir) => mg.codeDrift(LOADED_CODE, originCodeIds(dir));
 function freshenMainCheckout(root) {
   const mr = mainRoot(root);
   if (git(mr, ["symbolic-ref", "--short", "HEAD"]).stdout.trim() === "main") {
-    const ff = git(mr, ["merge", "--ff-only", "-q", "origin/main"]);
-    if (ff.status !== 0) log(root, `main checkout did not fast-forward: ${String(ff.stderr || ff.stdout).trim().split(/\r?\n/)[0]}`);
+    // A stray tracked edit an agent left there is stashed (never discarded) so the checkout can move; the maintainer's
+    // Worlds/ edits are left alone and alerted (#3700).
+    const heal = healBlockedFastForward(mr, (args) => git(mr, args));
+    if (heal.line) {
+      if (noteAlert(hub(root), heal.line)) log(root, `ALERT ${heal.line}`);
+    }
   }
   return mg.codeDrift(diskCodeIds(mr), originCodeIds(mr)).length === 0;
 }
@@ -161,7 +167,10 @@ function checkout(dir, sha) {
 }
 
 // One cli command in the run worktree, at high pool priority (LF_PRIORITY: `build` takes no --priority flag and read it as an addon), logged to its own file; resolves { code, text, log }.
-function runCli(root, dir, args, tag, extraEnv = {}) {
+// dropRdb: delete the run worktree's rdb first, so a recheck or a bisect probe never starts from the (possibly
+// corrupt) rdb the first run restored from the shared cache (#3586).
+function runCli(root, dir, args, tag, extraEnv = {}, dropRdb = false) {
+  if (dropRdb) rdbCache.dropAllRdbs(dir);
   const file = join(mainRoot(root), "tmp", "logs", `main-guard-${tag}-${Date.now()}.log`);
   mkdirSync(dirname(file), { recursive: true });
   return new Promise((res) => {
@@ -231,7 +240,7 @@ async function checkHead(root, dir, head) {
     }
     const what = failing.length ? failing.slice(0, 3).join(", ") : step.name;
     log(root, `${head.slice(0, 8)} ${step.name} RED (exit ${r.code}, ${what}); rechecking at the same head (log ${r.log})`);
-    const again = await runCli(root, dir, step.recheck(failing), `${head.slice(0, 8)}-recheck`);
+    const again = await runCli(root, dir, step.recheck(failing), `${head.slice(0, 8)}-recheck`, mg.RECHECK_ENV, true);
     const v2 = mg.classifyStep(step.name, again.code, again.text, step.name === "suite" ? mg.failingTests(again.text, testSources(dir)) : []);
     if (v2.verdict === "env" || v2.verdict === "infra") {
       log(root, `${head.slice(0, 8)} ${step.name} recheck: ${v2.verdict.toUpperCase()} (${v2.why}), not the commit; no revert, retried on a later tick`);
@@ -249,7 +258,7 @@ async function checkHead(root, dir, head) {
     let needsSkip = false;
     if (step.name === "pre-move e2e") {
       log(root, `${head.slice(0, 8)} pre-move e2e reproduced; running the plain e2e to tell a pre-move-only failure from a real one`);
-      const plain = await runCli(root, dir, mg.PLAIN_E2E, `${head.slice(0, 8)}-plain-e2e`);
+      const plain = await runCli(root, dir, mg.PLAIN_E2E, `${head.slice(0, 8)}-plain-e2e`, mg.RECHECK_ENV, true);
       const pv = mg.classifyStep("e2e", plain.code, plain.text);
       if (pv.verdict === "env" || pv.verdict === "infra") {
         log(root, `${head.slice(0, 8)} plain e2e: ${pv.verdict.toUpperCase()} (${pv.why}), not the commit; no revert, retried on a later tick`);
@@ -274,7 +283,7 @@ async function checkHead(root, dir, head) {
     } else if (step.name === "suite") {
       b = await mg.bisectBySet(list, failing, async (c) => {
         checkout(dir, c.sha);
-        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
+        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`, mg.RECHECK_ENV, true);
         const failed = mg.failingTests(x.text, testSources(dir));
         const xv = mg.classifyStep(step.name, x.code, x.text, failed);
         if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
@@ -285,7 +294,7 @@ async function checkHead(root, dir, head) {
     } else {
       b = await mg.bisect(list, async (c) => {
         checkout(dir, c.sha);
-        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`);
+        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`, mg.RECHECK_ENV, true);
         const xv = mg.classifyStep(step.name, x.code, x.text);
         if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
         log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);

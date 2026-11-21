@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{68C160E1436B539F}Configs/Dialogue/LF_DialogueIndex_OldMan/LF_DialogueIndex_AnniversaryMayor.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

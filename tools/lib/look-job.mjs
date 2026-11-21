@@ -134,3 +134,36 @@ export function samePairProblem(before, after) {
   if (!before || !after || before !== after) return null;
   return `before and after show the same addon files (tree ${after.slice(0, 10)}): a look shows the working tree, uncommitted edits included, so the "before" was shot after the edit, or the edit is not under addons/. Shoot "before" from a checkout without the change (git stash, or the base commit)`;
 }
+
+// ---------------------------------------------------------------- the SUMMARY line and where a look waited (#3188)
+
+// The phases a look waits in, by what it waited for. Every other phase is work.
+//   lockWait  the per-worktree look lock (lock-wait)
+//   slotWait  a Workbench slot or the RAM for one (slot-wait, ram-wait), and a routed look's queue for a machine (route-wait)
+const WAIT_KIND = { "lock-wait": "lockWait", "slot-wait": "slotWait", "ram-wait": "slotWait", "route-wait": "slotWait" };
+const tenth = (s) => Math.round(s * 10) / 10;
+
+// { lockWait, slotWait, work } in seconds, from a timeline's phases.
+export function lookTiming(phases = {}) {
+  const out = { lockWait: 0, slotWait: 0, work: 0 };
+  for (const [name, s] of Object.entries(phases ?? {})) {
+    if (!Number.isFinite(s)) continue;
+    out[WAIT_KIND[name] ?? "work"] += s;
+  }
+  return { lockWait: tenth(out.lockWait), slotWait: tenth(out.slotWait), work: tenth(out.work) };
+}
+
+// One line per look, printed (it lands in the look's tmp/logs file):
+// SUMMARY look ok|fail area=<a> served=<s> shots=<n> lockWait=<x>s slotWait=<y>s work=<z>s at=<ISO>
+export function lookSummaryLine({ ok, area, served, shots, at, phases }) {
+  const t = lookTiming(phases);
+  const name = String(area ?? "?").replace(/\s+/g, "_");
+  return `SUMMARY look ${ok ? "ok" : "fail"} area=${name} served=${served ?? "?"} shots=${shots ?? 0} lockWait=${t.lockWait.toFixed(1)}s slotWait=${t.slotWait.toFixed(1)}s work=${t.work.toFixed(1)}s at=${at}`;
+}
+
+// The fields of a look SUMMARY line, or null for any other line.
+export function parseLookSummary(line) {
+  const m = /^SUMMARY look (ok|fail) .*?lockWait=([\d.]+)s slotWait=([\d.]+)s work=([\d.]+)s at=(\S+)/.exec(line ?? "");
+  if (!m) return null;
+  return { ok: m[1] === "ok", lockWait: Number(m[2]), slotWait: Number(m[3]), work: Number(m[4]), at: m[5] };
+}

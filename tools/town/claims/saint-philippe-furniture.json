@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "furniture",
+  "building": "b23",
+  "kit": "furniture",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_furniture.layer",
+  "kinds": [
+    "StoreCounter"
+  ],
+  "rows": 19,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_furniture_Place"
+  },
+  "date": "2026-11-21",
+  "stamp": {
+    "kit": "furniture",
+    "prefab": "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et",
+    "layer": "6183f556732d"
+  }
+}

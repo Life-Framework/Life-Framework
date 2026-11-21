@@ -1,0 +1,167 @@
+{
+  "schema": 1,
+  "kit": "garage",
+  "system": "store",
+  "source": {
+    "file": "tools/town/kits/sources/garage.layer",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{CFF7F6F7042AFFEF}Prefabs/Structures/Industrial/Houses/Workshop_01/Workshop_01_Main.et"
+  },
+  "anchoring": {
+    "floorY": 0.2,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.2
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -5.9,
+        -3.7
+      ],
+      "max": [
+        5.9,
+        3.7
+      ]
+    },
+    "front": "+z",
+    "counters": [
+      {
+        "id": "shop-counter",
+        "wall": "free",
+        "edgeGap": 3
+      }
+    ],
+    "adapt": "The workshop Workshop_01_Main (12.2 x 7.6 m, origin at its centre, the shop door in the +z wall). The kit shows the same model as the host, so its offsets are in the building's own frame. The counter stands in the hall behind the door on the `mechanic` stock (car parts), the mechanic behind it, a shelf and a tool rack on the back wall; the workshop already brings its own tyre pile, mixer and boxes, which stay. The vehicle ramp and the side workshop stay as they are. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "shop-counter",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        -1.5,
+        0.157,
+        0.8
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "shop-till",
+      "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
+      "role": "till",
+      "verb": "on shop-counter",
+      "offset": [
+        -1.5,
+        1.196,
+        0.6
+      ],
+      "yaw": 180,
+      "name": "Mechanic_Till",
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sShopName": "\"#LF-Shop_Name_Mechanic\"",
+            "m_sShopDescription": "\"#LF-Shop_Desc_Mechanic\"",
+            "m_sStockId": "\"mechanic\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "floor": "f0"
+    },
+    {
+      "id": "mechanic",
+      "prefab": "{2C553E1AEE62231E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Mechanic_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -1.5,
+        0.157,
+        -0.6
+      ],
+      "yaw": 0,
+      "name": "Mechanic_Clerk",
+      "class": "LF_NpcBaseEntity",
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "shelf-1",
+      "prefab": "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -4.85,
+        0.229,
+        -3
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "mount": "wall",
+      "floor": "f0"
+    },
+    {
+      "id": "tool-rack-1",
+      "prefab": "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -1.75,
+        2.2,
+        -3
+      ],
+      "yaw": 0,
+      "wall": "-z",
+      "mount": "wall",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-sign-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -1.5,
+        3,
+        3.75
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"mechanic\"",
+            "m_vRimColor": "0.9 0.78 0.35",
+            "m_vPaintColor": "0.35 0.12 0.1",
+            "m_vTextColor": "0.96 0.93 0.82"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0"
+    }
+  ]
+}

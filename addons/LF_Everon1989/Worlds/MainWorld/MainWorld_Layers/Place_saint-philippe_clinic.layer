@@ -1,0 +1,123 @@
+GenericEntity Fit_saint_philippe_clinic_Place {
+ components {
+  LF_PlaceComponent "{352C3150E837DB5C}" {
+   m_sKind "HospitalSite"
+   m_sId "saint-philippe.clinic"
+  }
+  LF_FittedBuildingComponent "{2529630C37481375}" {
+  }
+ }
+ coords 4427.8 11 10781.8
+}
+GenericEntity Fit_saint_philippe_clinic_Place_MedicDesk {
+ components {
+  LF_PlaceComponent "{158A298B733312F8}" {
+   m_sKind "MedicDesk"
+   m_sId "saint-philippe.clinic"
+  }
+ }
+ coords 4427.8 11 10781.8
+}
+GenericEntity Fit_saint_philippe_clinic_clear {
+ components {
+  LF_BaseWorldClearComponent "{062CCAFE2896B125}" {
+   m_sBuilding "{27CC3110521583D6}Prefabs/Structures/Houses/Town/House_Town_E_2I02/House_Town_E_2I02_v2.et"
+   m_aPrefabs {
+    "{0164749D6EAA4518}Prefabs/Props/Furniture/Bed_01.et"
+    "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et"
+    "{027DFD4BB8D66F61}Prefabs/Props/Furniture/BenchWooden_03.et"
+    "{0A4218ED97A10411}Prefabs/Props/Furniture/ShelfBarracks_01.et"
+    "{1CA1A9D19D7C8445}Prefabs/Props/Furniture/Rack_01_Short.et"
+    "{2B0BD0720F8FB3A7}Prefabs/Props/Industrial/Workbench_Vice_01.et"
+    "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et"
+    "{2B6508FE121FCAC9}Prefabs/Props/Medical/InfusionStand_01/InfusionStand_01.et"
+    "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et"
+    "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et"
+    "{5216BDD8E91B9EF5}Prefabs/Props/Civilian/BasketWicker_01_wood.et"
+    "{85FC23A6E1F49BBE}Prefabs/Structures/BuildingParts/Eletrical/LightSwitch_02.et"
+    "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et"
+    "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et"
+    "{9ABAFFCBC76D824B}Prefabs/Props/Civilian/NoticeBoardCork_01.et"
+    "{9D9312AA9984A5CE}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_08.et"
+    "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et"
+    "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et"
+    "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et"
+    "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et"
+    "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et"
+    "{E7FB58DA735DB7A0}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_06.et"
+    "{EB66EE2298D16D18}Prefabs/Props/Civilian/SackTruck_01.et"
+    "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et"
+    "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et"
+    "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et"
+   }
+  }
+ }
+ coords 4427.8 10.7 10781.8
+}
+LF_NpcBaseEntity Fit_saint_philippe_clinic_clinic_doctor : "{C001B9088678C653}Prefabs/Characters/Npcs/Outfits/LF_Npc_Medic_1.et" {
+ coords 4424.183 10.941 10777.952
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_clinic_clinic_furniture_01 : "{8115988D2822C4FC}Prefabs/Buildings/Clinic/Furniture/Clinic_furniture_01.et" {
+ coords 4427.8 10.65 10781.8
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_clinic_electricity_box_small_01 : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
+ components {
+  LF_AlarmMountComponent "{9ACA0BDAD2FE2665}" {
+   m_vOffset 0 0.167 0.065
+   m_fReach 12
+  }
+ }
+ coords 4425.187 13.7 10779.26
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_clinic_lf_dispatch_board_medic : "{38D6A62C995DACCA}Prefabs/Comms/LF_DispatchBoard_Medic.et" {
+ coords 4421.914 12.06 10774.253
+ angleY 62
+}
+GenericEntity Fit_saint_philippe_clinic_lf_hospital_bed : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
+ coords 4435.328 10.946 10783.085
+ angleY 62
+}
+GenericEntity Fit_saint_philippe_clinic_lf_hospital_bed_2 : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
+ coords 4436.361 10.946 10781.142
+ angleY -118
+}
+GenericEntity Fit_saint_philippe_clinic_lf_hospital_cabinet : "{E9A69A99981C062C}Prefabs/Props/Commercial/LF_HospitalCabinet.et" {
+ components {
+  LF_BreachTargetComponent "{1CED7C398B3479F9}" {
+   m_sTargetId "SaintPhilippe_Clinic_Cabinet"
+  }
+  LF_HospitalCabinetComponent "{721529CA2232801E}" {
+   m_sTargetId "SaintPhilippe_Clinic_Cabinet"
+  }
+ }
+ coords 4435.021 10.957 10786.432
+ angleY -118
+}
+GenericEntity Fit_saint_philippe_clinic_lf_hospital_till : "{2D106F570E87D5D9}Prefabs/Props/Commercial/LF_HospitalTill.et" {
+ components {
+  LF_HospitalTillComponent "{E11FD1BB36043573}" {
+   m_sTargetId "SaintPhilippe_Clinic_Till"
+  }
+ }
+ coords 4423.327 10.946 10779.988
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_clinic_lf_medic_duty_desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_MedicDutyDesk.et" {
+ coords 4420.891 10.946 10779.032
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_clinic_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "hospital"
+   m_vRimColor 0.1 0.3 0.18
+   m_vPaintColor 0.94 0.94 0.9
+   m_vTextColor 0.08 0.4 0.2
+  }
+ }
+ coords 4432.651 13.75 10777.788
+ angleY 152
+}

@@ -111,14 +111,6 @@ GenericEntity FirstNightRoom_Bed_2 : "{15468371DAC524FC}Prefabs/Medic/LF_FirstSp
  }
  coords 135.88 3.4 92.444
 }
-GenericEntity FirstNightRoom_Bed_3 : "{15468371DAC524FC}Prefabs/Medic/LF_FirstSpawnBed.et" {
- components {
-  LF_FirstSpawnBedComponent "{FCB27F8C7C2E211B}" {
-   m_vStandOffset 0 0 -1.7
-  }
- }
- coords 115.92 3.4 101.244
-}
 GenericEntity FirstNightRoom_Nightstand_1 : "{EFCD232A50C15173}Prefabs/Props/Furniture/Nightstand_01.et" {
  coords 132.18 3.4 91.739
 }
@@ -127,8 +119,4 @@ GenericEntity FirstNightRoom_Nightstand_2 : "{EFCD232A50C15173}Prefabs/Props/Fur
 }
 GenericEntity FirstNightRoom_Locker : "{17F3181D0DAC27FC}Prefabs/Props/Furniture/CabinetMetal_01_grey_V1.et" {
  coords 138.73 3.4 91.417
-}
-GenericEntity FirstNightRoom_Suitcase_1 : "{8F05D427252644F8}Prefabs/Props/Civilian/Suitcase_01.et" {
- coords 115.106 3.401 100.939
- angleY 90
 }

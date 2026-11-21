@@ -1,0 +1,152 @@
+// Source of the `newsagent` kit (tools/town/kits/newsagent.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). `town fit` reads the components the kit names from here; `town author --reopen newsagent` builds a bay again.
+// Grid cell c27r4 for author-newsagent: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_author_newsagent_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 71
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 71
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 71
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 71
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 71
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 75.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 79.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 84.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 88.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 93
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 88.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_newsagent_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 84.2
+ angleY 90
+}
+GenericEntity Grid_author_newsagent_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:author-newsagent"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 346.2 0.505 71.6
+ angleY -90
+}
+GenericEntity Grid_author_newsagent_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "author-newsagent"
+  }
+ }
+ coords 346.3 0 75.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_author_newsagent_Main : "{B0C7B3A0C937328B}Prefabs/Structures/Commercial/Booth/NewspaperBooth_E_01/NewspaperBooth_E_01_redwhite.et" {
+ coords 357.859 0.05 86
+ angleY -90
+}
+GenericEntity Newsagent_counter : "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et" {
+ coords 359.359 0.101 85.55
+ angleY -90
+}
+GenericEntity Newsagent_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{7C4D2E1A5B6F8093}" {
+   m_sShopName "#LF-Shop_Name_Newsagent"
+   m_sShopDescription "#LF-Shop_Desc_Newsagent"
+   m_sStockId "newsagent"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{7C4D2E1A5B6F8094}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{7C4D2E1A5B6F8095}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{7C4D2E1A5B6F8096}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7C4D2E1A5B6F8097}" {
+      Name "#LF-Shop_Open_Newsagent"
+      Description "#LF-Shop_OpenDesc_Newsagent"
+     }
+    }
+   }
+  }
+ }
+ coords 359.359 1.306 85.55
+ angleY -90
+}
+GenericEntity Newsagent_papers : "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et" {
+ coords 359.459 0.101 87.45
+ angleY -90
+}
+GenericEntity Newsagent_postcard : "{81809E8473F4B8EA}Prefabs/Props/Commercial/LF_NewsDisplay_Postcard.et" {
+ coords 359.476 1.008 86.434
+ angleY -90
+}
+GenericEntity Newsagent_pen : "{65224FC6E3525CFA}Prefabs/Props/Commercial/LF_NewsDisplay_Pen.et" {
+ coords 359.458 1.015 86.056
+ angleY -90
+}
+GenericEntity Newsagent_magazine : "{CF65BDFA6DCBB555}Prefabs/Props/Commercial/LF_NewsDisplay_Magazine.et" {
+ coords 359.458 1.008 86.706
+ angleY -90
+}
+GenericEntity Newsagent_notebook : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+ coords 359.565 1.008 86.866
+ angleY -90
+}

@@ -1,0 +1,50 @@
+MetaFileClass {
+ Name "{55A5285C23AB92DE}Assets/Items/Store1989/CoffeeTin/CoffeeTin.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{71C393DDF3C913C9}" {
+     SourceMaterial "CoffeeTin"
+     AssignedMaterial "{88CC242ECB2F6AF4}Assets/Items/Store1989/CoffeeTin/Data/CoffeeTin.emat"
+    }
+   }
+   MeshParams {
+    MeshParam CoffeeTin {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_CoffeeTin {
+     LayerPreset "ItemFireView"
+     SurfaceProperties {
+      "{13581C35484F3000}Common/Materials/Game/fabric.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{B589E5766143B1D5}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{4519370F49B214CD}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{B4A31BA0BB414C7E}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{0B7C4124754CA089}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{16CC74EFA154E79F}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

@@ -1,0 +1,34 @@
+GenericEntity Fit_saint_philippe_jail_Place {
+ components {
+  LF_PlaceComponent "{CD3757DA70ED5B73}" {
+   m_sKind "JailCell"
+   m_sId "saint-philippe.jail"
+  }
+  LF_FittedBuildingComponent "{C500B4BA563B8E1F}" {
+  }
+ }
+ coords 4552.6 18.2 10748.3
+}
+GenericEntity Fit_saint_philippe_jail_cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.et" {
+ components {
+  LF_JailCellComponent "{540EBBB989D3A80A}" {
+   m_fZoneRadius 2
+   m_sDoorTargetId ""
+   m_vReleaseOffset 3 0 2.5
+  }
+ }
+ coords 4556.732 18.2 10750.979
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_jail_jail_laundry_tub : "{73912A59FDEEF731}Prefabs/Props/Jail/LF_JailLaundryTub.et" {
+ coords 4558.712 18.2 10751.9
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_jail_jail_kitchen_sink : "{AD8A93936711F255}Prefabs/Props/Jail/LF_JailKitchenSink.et" {
+ coords 4554.989 18.2 10751.412
+ angleY 81
+}
+GenericEntity Fit_saint_philippe_jail_jail_yard_broom : "{4DFF61251337EEF8}Prefabs/Props/Jail/LF_JailYardBroom.et" {
+ coords 4554.464 18.2 10752.19
+ angleY 171
+}

@@ -1,0 +1,259 @@
+{
+  "schema": 1,
+  "kit": "bakery",
+  "system": "",
+  "source": {
+    "file": "tools/town/kits/sources/bakery.layer",
+    "group": "Bakery_*",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{38A5F3E4578087AB}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et"
+  },
+  "anchoring": {
+    "floorY": 0.196,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.196
+      },
+      {
+        "id": "f1",
+        "y": 3.196
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -5.54,
+        0
+      ],
+      "max": [
+        -3.05,
+        3.15
+      ]
+    },
+    "front": "+z",
+    "counters": [
+      {
+        "id": "bakery-counter-1",
+        "wall": "+z",
+        "edgeGap": 0.15
+      },
+      {
+        "id": "bakery-counter-2",
+        "wall": "+x",
+        "edgeGap": 0
+      },
+      {
+        "id": "bakery-till",
+        "wall": "+x",
+        "edgeGap": 0
+      }
+    ],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "bakery-counter-1",
+      "name": "Bakery_counter_1",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "against wall",
+      "offset": [
+        -4.55,
+        0.201,
+        3
+      ],
+      "yaw": 0,
+      "wall": "+z",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "bakery-counter-2",
+      "name": "Bakery_counter_2",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "against wall",
+      "offset": [
+        -3.05,
+        0.201,
+        3
+      ],
+      "yaw": 0,
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "bakery-till",
+      "name": "Bakery_till",
+      "prefab": "{08F8B49C5124F437}Prefabs/Props/Commercial/LF_BakeryTill.et",
+      "role": "till",
+      "verb": "on bakery-counter-2",
+      "offset": [
+        -3.05,
+        1.241,
+        2.9
+      ],
+      "yaw": 180,
+      "floor": "f0",
+      "attach": "counter:bakery-counter-2"
+    },
+    {
+      "id": "bakery-rack-3",
+      "name": "Bakery_rack_3",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -5.54,
+        0.202,
+        0
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "bakery-rack-3-loaf-21",
+      "name": "Bakery_rack_3_loaf_21",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.33,
+        1.287,
+        1.1
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-22",
+      "name": "Bakery_rack_3_loaf_22",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.33,
+        1.287,
+        0.72
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-rack-3-loaf-23",
+      "name": "Bakery_rack_3_loaf_23",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-rack-3",
+      "offset": [
+        -5.33,
+        1.287,
+        0.34
+      ],
+      "yaw": 102,
+      "floor": "f0",
+      "attach": "shelf:bakery-rack-3"
+    },
+    {
+      "id": "bakery-counter-loaf-1",
+      "name": "Bakery_counter_loaf_1",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-counter-1",
+      "offset": [
+        -4.2,
+        1.244,
+        3.15
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "counter:bakery-counter-1"
+    },
+    {
+      "id": "bakery-counter-loaf-2",
+      "name": "Bakery_counter_loaf_2",
+      "prefab": "{633EF19AA18FF9AF}Prefabs/Props/Commercial/LF_BakeryLoafDisplay.et",
+      "role": "dressing",
+      "verb": "on bakery-counter-1",
+      "offset": [
+        -3.9,
+        1.244,
+        3.15
+      ],
+      "yaw": 20,
+      "floor": "f0",
+      "attach": "counter:bakery-counter-1"
+    },
+    {
+      "id": "bakery-fascia",
+      "name": "Bakery_fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -3.8,
+        3.25,
+        7.6
+      ],
+      "yaw": 0,
+      "wall": "+z",
+      "floor": "f1",
+      "attach": "wall"
+    },
+    {
+      "id": "bakery-clerk",
+      "name": "Bakery_clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -3.05,
+        0.196,
+        2.2
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "floor"
+    }
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{38A5F3E4578087AB}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01.et",
+    "lanes": [
+      {
+        "from": "entrance",
+        "to": "bakery-counter-1",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "bakery-counter-2",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "bakery-till",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "bakery-rack-3",
+        "width": 1.2
+      }
+    ],
+    "clear": []
+  }
+}

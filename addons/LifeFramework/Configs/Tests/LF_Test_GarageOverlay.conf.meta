@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{E2EB494D1E7BBE99}Configs/Tests/LF_Test_GarageOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

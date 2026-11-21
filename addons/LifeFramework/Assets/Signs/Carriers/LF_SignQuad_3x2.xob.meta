@@ -1,0 +1,40 @@
+MetaFileClass {
+ Name "{6CBF3F803CBA79A4}Assets/Signs/Carriers/LF_SignQuad_3x2.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{0A4695A4E286ECB5}" {
+     SourceMaterial "LF_SignFace"
+     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+    }
+   }
+   MeshParams {
+    MeshParam LF_SignQuad_3x2 {
+    }
+   }
+   Common TXOCommonClass "{41541CECB0551716}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{E506FEC203FD0DB4}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{B3D2CC20E0DDB1F2}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{F7FB95C96E397F8E}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{A9C6B899FC28C2B3}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

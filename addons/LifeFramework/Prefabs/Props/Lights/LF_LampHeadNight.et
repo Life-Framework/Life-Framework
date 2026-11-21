@@ -1,0 +1,25 @@
+GenericEntity {
+ ID "0F597074985E9C68"
+ components {
+  LF_NightLightComponent "{9EA0FADFE29DA81E}" {
+   m_fHourOn 18
+   m_fHourOff 6
+  }
+ }
+ {
+  LightEntity {
+   ID "73B1ED7C38B2827C"
+   coords 0 0 0
+   angles -90 0 0
+   Color 1 0.86 0.62 1
+   LV 8
+   ClipEV -10
+   CastShadow 0
+   Type Spot
+   Radius 16
+   NearPlane 0.31
+   SpotAngle 140
+   LensFlareType Disabled
+  }
+ }
+}

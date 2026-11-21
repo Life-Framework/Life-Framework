@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D0AEA2948CC64E76}Configs/Tests/LF_Test_CharactersOverlay.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

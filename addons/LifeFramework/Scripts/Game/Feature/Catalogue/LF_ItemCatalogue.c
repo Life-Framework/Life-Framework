@@ -30,7 +30,9 @@ enum LF_EOutletGate
 	NEEDS_LICENCE,
 	NEEDS_JOB,
 	NEEDS_RANK,
-	NEEDS_ORG_RIGHT
+	NEEDS_ORG_RIGHT,
+	WANTED,
+	UNFIT
 }
 
 class LF_ItemCatalogue
@@ -233,6 +235,11 @@ class LF_ItemCatalogue
 
 		if (!offer.m_sLicence.IsEmpty())
 		{
+			// A licensed line (a firearm, its magazines) goes over the counter only to a buyer who
+			// stands there able to take it, whatever the client asked from.
+			if (!buyer.CanTrade())
+				return LF_EOutletGate.UNFIT;
+
 			LF_ELicenseType licence;
 			if (!ParseLicence(offer.m_sLicence, licence))
 			{
@@ -240,6 +247,10 @@ class LF_ItemCatalogue
 				missing = offer.m_sLicence;
 				return LF_EOutletGate.NEEDS_LICENCE;
 			}
+
+			// A lawful counter will not serve a wanted buyer; the black market (a criminal licence) does.
+			if (buyer.WantedLevel() > 0 && !IsCriminalLicence(licence))
+				return LF_EOutletGate.WANTED;
 
 			if (!buyer.HasLicence(licence))
 			{
@@ -298,6 +309,10 @@ class LF_ItemCatalogue
 			return LF_EShopRefusal.NEEDS_RANK;
 		if (gate == LF_EOutletGate.NEEDS_ORG_RIGHT)
 			return LF_EShopRefusal.NEEDS_ORG_RIGHT;
+		if (gate == LF_EOutletGate.WANTED)
+			return LF_EShopRefusal.WANTED;
+		if (gate == LF_EOutletGate.UNFIT)
+			return LF_EShopRefusal.UNFIT;
 
 		return LF_EShopRefusal.NOT_SOLD_HERE;
 	}
@@ -345,6 +360,13 @@ class LF_ItemCatalogue
 			if (item.m_bConcealsBuild)
 				build = true;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether a licence is a criminal one (black market, illegal weapons): its outlets serve the wanted.
+	static bool IsCriminalLicence(LF_ELicenseType licence)
+	{
+		return licence >= LF_ELicenseType.CRIMINAL_WEED && licence <= LF_ELicenseType.CRIMINAL_CLOTHES;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1,0 +1,16 @@
+GenericEntity {
+ ID "C6CA8FC01BE13118"
+ components {
+  LF_ImplementComponent "{8586BDA5AAC202FF}" {
+   m_fWidth 3
+  }
+  MeshObject "{C5B7BAF3E19BB6CE}" {
+   Object "{8D656E956EBCBA7B}Assets/Harvest/Reaper/LF_Reaper_01.xob"
+  }
+  Hierarchy "{64E245F677B16503}" {
+  }
+  RplComponent "{9F9E0C6D338D047E}" {
+  }
+ }
+ coords 0 0 0
+}

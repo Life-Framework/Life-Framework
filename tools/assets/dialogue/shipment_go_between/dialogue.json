@@ -1,0 +1,50 @@
+{
+  "id": "shipment_go_between",
+  "name": "ShipmentGoBetween",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_ShipmentGoBetween_Name",
+  "voice": {
+    "id": "kiw9hkUW1gcPQwsQSs4e",
+    "sex": "male",
+    "name": "Cyril - French-Accented Narrator",
+    "public_owner_id": "cd5d69d8f50d13ba7e8de0bb17a5fa90f3fbdea89f02a381972d0e9e3f75479a",
+    "why": "Hugo Valmy is a go-between in a dark suit and a flat cap: smooth, wary and French. Cyril is a confident middle-aged French-accented voice, level and a little amused, a long way from Marcel's gravel, Gaspard's rasp and the night-shift worker's weariness.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 1200,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "reported", "next": "threat", "condition": "QuestTurnedIn", "param": "shipment_report" },
+      { "text": "sold", "next": "sold", "condition": "QuestTurnedIn", "param": "shipment_sold" },
+      { "text": "crate", "next": "sell", "condition": "QuestTurnedInOnly", "param": "shipment_count,shipment_report,shipment_sold" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "sell", "line": "sell", "options": [
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "sold", "line": "sold", "options": [
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "threat", "line": "threat", "options": [
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Hugo Valmy. I help people who have more than they need meet people who need more than they have. Sit if you like, the coffee is honest, but I do not talk business with a face I do not know." },
+    "sell": { "text": "So you opened the red crate. If you still have what was in it, I know a buyer: cash on the spot, no questions. He keeps to the lanes and the quay after dark. The gendarmerie will only thank you." },
+    "sold": { "text": "Then we have never met, and you have never seen the red crate. A pleasure doing no business with you." },
+    "threat": { "text": "You walked it to the desk. Fine. Mind the coast road at night, friend. It is long, and it is short of lamps." },
+    "bye": { "text": "Mind how you go." }
+  },
+  "replies": {
+    "reported": "I took what was in the crate to the police.",
+    "sold": "I found a buyer for what was in the crate.",
+    "crate": "I opened the red crate on the quay.",
+    "bye": "Goodbye."
+  }
+}

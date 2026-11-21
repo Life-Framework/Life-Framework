@@ -7,7 +7,7 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 
 | | Debug grid | Town |
 |---|---|---|
-| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..328, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
+| Where | **GridWorld** (`Worlds/GridWorld/GridWorld.ent`): the net-fenced annex, x 20..376, z 20..112 (`Annex.layer` holds the fence; the gate is the gap in the north fence at x 69..79). Until slice W6 deletes it, the legacy annex also stands south-west of the village in DebugWorld, frozen (see "The annex freeze") | Everything else the playtest mission loads: the DebugWorld village layers (`Street_*`, the chain layers, `Signs`, `Survival`, `Roadmap`, ...) and every layer of the pack world `LF_Everon1989/Worlds/Everon1989Town` |
 | Layers | `GridWorld_Layers/Grid_<slug>.layer`, one per feature (dashes in the slug become `_`), or `LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_<slug>.layer` for a cell that places pack content ("Pack cells" below), and `Annex`, which now holds only the perimeter fence (the stations moved one system to a cell, #2133) | Every other `.layer` in those two folders. `default`, `Gamemode` and `Factions` hold no props and belong to neither zone |
 | For | Testing a system: one feature per cell, easy to find, easy to film for a proof | Players and videos: a real 1989 village |
 | Look bar | Low. Debug-looking props, stand-ins and a test sign are fine. Things still stand on the ground and are reachable | Full polish bar (`.claude/skills/polish/SKILL.md`, `docs/style-guide.md`): NPCs dressed for their job and standing inside their building, furniture under a roof, boards on walls, nothing debug-looking |
@@ -15,11 +15,11 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 
 ## The grid
 
-The grid is a 25 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
-(south-west) to `c24r6` (north-east). It started 7 x 7 and grew east by four columns when the old square ran out of
+The grid is a 29 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
+(south-west) to `c28r6` (north-east). It started 7 x 7 and grew east by four columns when the old square ran out of
 free cells (2026-11-16): `c0r0` to `c6r6` keep their ids and coordinates, so every claim stands, and
 `GRID_CENTRE` stays at 66,66 so no old cell's gap flips. The east wall of `Annex.layer` moved from x 112 to
-x 160 and the north and south walls were extended. It grew east by four columns again (11 to 15, east wall x 208) when the first 24 m buildings (a town hall, a bank) found no free 2 x 2 or 3 x 2 block (2026-11-16); the new cells are `c11r0` to `c14r6`, and once more (15 to 25, east wall x 328, 2026-11-16) so that buildings of any size and the whole town pipeline find room for months: `c15r0` to `c24r6` are free, x 202..322, and the north gate and its track did not move. The margin is 2 m west and south of the lattice and 6 m east
+x 160 and the north and south walls were extended. It grew east by four columns again (11 to 15, east wall x 208) when the first 24 m buildings (a town hall, a bank) found no free 2 x 2 or 3 x 2 block (2026-11-16); the new cells are `c11r0` to `c14r6`, and once more (15 to 25, east wall x 328, 2026-11-16) so that buildings of any size and the whole town pipeline find room for months: `c15r0` to `c24r6` are free, x 202..322, and the north gate and its track did not move. It grew east by four columns a last time (25 to 29, east wall x 376, 2026-11-21) for the authoring bays ("Authoring bays" below): `c25r0` to `c28r6`, x 322..370; `c0r0` to `c24r6` keep their ids and coordinates and every legacy cell is untouched. The margin is 2 m west and south of the lattice and 6 m east
 and north (the gate and its track live in that margin). Terrain bounds: `GridTerrain` is 257 x 257 points at 2 m,
 512 m square, so the grid is far inside it; `world-zones-selftest` asserts the fence stays
 inside 0..512 (`TERRAIN_SIZE` in `tools/grid/lattice.mjs`). To grow again: raise `CELL.cols` or `CELL.rows`,
@@ -29,6 +29,11 @@ move the matching `Annex.layer` wall, run `node tools/grid/lattice.mjs write`. A
 - the ground the world tests spawn their fixtures on, x 60..90, z 60..91, and the spot 48,64
   (`docs/roadmap/m1-25-village.md` "Test annex");
 - the track in through the north gate, x 66..82, z 100..112.
+
+A test that spawns a prop on bare ground picks ground outside the grid, east of the annex fence (x above 376; the
+placement tests use 400 and 410, z 100), never a lattice cell: a cell claimed later puts a fence or a patch under
+the fixture (the wheat cell `slice-3290` broke `agent-harness/placement-audit` and `placement-probe` at 300..310, 100,
+2026-11-19).
 
 Each legacy station a town pass retires, or moves into a cell of its own, frees ground. After the
 2026-11-16 growth the east columns (`c7` to `c10`) are free of stations and reserved ground, so `grid list`
@@ -127,6 +132,7 @@ stand inside its own cell.
 
 `validate-world-zones` checks the claims on every validate. It fails when:
 
+- an `"authoring": true` claim is not exactly one authoring bay, or any other claim touches one ("Authoring bays");
 - two claims name one cell (the second slice runs `grid free` and `grid place` again). Two grid layers
   cannot share a cell: each layer's entities must stand inside its own claim's cell, and claims are unique;
 - a claim names a cell `origin/main` gives to another slug (read from git; CI fetches `origin/main`, a
@@ -137,6 +143,16 @@ stand inside its own cell.
 - a `Grid_*.layer` is in `DebugWorld_Layers/` (the grid lives in GridWorld).
 
 `validate-grid-world` adds one rule: every entity in a GridWorld legacy layer stands in a claimed cell. Police, Crimes, Jobs and NPCs (#1811) each moved into their own cell (`police`, `crimes`, `jobs`, `npcs`) with their entity names unchanged, and their free-standing layers are deleted. `PENDING` in that file is empty since #2133 moved the last stations out of `Annex.layer` (the annex fence runs are the grid wall and stay): 20 systems took cells `bank-heist` (with the breach and lockpick doors), `hideout`, `jail`, `chopshop`, `lockpick-cars`, `cash-van`, `police-desk`, `dispatch` (with the two test tills), `convoy`, `job-depot`, `zone-signs`, `apple-chain`, `org-desk`, `atm`, `furnace`, `gun-counter`, `hospital`, `chain-barrels`, `vehicle-lot` and `impound`, each shifted as one rigid group so its relative geometry is unchanged. The frame's gravel path stops at a claim spanning two rows, so a station may stand on the line between them.
+
+## Authoring bays: where `town author` builds
+
+`town author` (`docs/architecture/placement-system.md` "Author in the grid") puts a copy of a vanilla building in the grid so a shop can be built, looked at and audited there. That used to claim a normal cell for good, and the shop rebuilds filled the grid (the butcher found no free 2x2, 2026-11-21). Authoring now has its own region, and the kit is what lasts, not the cell.
+
+- **The region.** The east end of the lattice, `c25` to `c28`, rows `r0` to `r5`, is cut into six 2 x 2 bays (24 x 24 m, enough for a 12 x 17 m town house at yaw 0/180): `c25r0`, `c27r0`, `c25r2`, `c27r2`, `c25r4`, `c27r4` (`AUTHORING` and `authoringBays()` in `tools/grid/lattice.mjs`). Row `r6` of those columns is ordinary. A free bay reads `bay` on its frame plate and `+` on the `grid list` map.
+- **Who may claim one.** Only `grid place <slug> <prefab> --bay` (which `town author` runs, with `--pack`); the claim file carries `"authoring": true` and sits exactly on one bay. Every other claim keeps out: `allocate` never returns a block that touches a bay, `--cell` on a bay cell without `--bay` is refused, and `validate-world-zones` fails a normal claim on a bay and an authoring claim that is not one whole bay. A building bigger than 2 x 2 is refused with what it needs (use a normal cell).
+- **Release.** `town author extract` writes the kit, copies the cell's layer to `tools/town/kits/sources/<kit>.layer` (the kit's `source.file`; `town fit` reads the components a kit names from there) and frees the bay (`grid free`: claim and layer deleted). `--keep-bay` keeps it. `town author --reopen <kit>` claims a bay again and rebuilds the shop from the kit.
+- **Capacity.** Six bays, claimed by agents at the same time and clash-checked like any claim (this tree, `origin/main`, open PRs, sibling worktrees). With none free, `grid place --bay` says how many are claimed; the way out is an `extract` (it releases), not growing the grid.
+- **Legacy cells.** Not touched: no existing claim moved.
 
 ## Pack cells: a grid cell that places pack content
 

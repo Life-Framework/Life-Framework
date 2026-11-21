@@ -443,7 +443,7 @@ function checklist(id, slug) {
     add("Look before", "`tools\\cli look <area>`: read `contact.jpg`. This is the before picture and the scene the new thing must fit.", `\`tools\\cli evidence ${id.issue ?? id.kebab} before <area>\` keeps it for the PR.`);
     add("Place", "Pick the prop from `docs/style-guide.md` (period, material, where it belongs: boards on walls, desks indoors or under a roof).", "`tools\\cli place on|against|ground ...`; never typed coordinates.", "`tools\\cli audit placement --area <area> --strict` is clean.");
   }
-  add("Build", `Fill \`${id.cls}.c\`${id.kind === "ui" ? ` and \`${id.cls}Sheet.c\` (UI kit parts only)` : ""}; every refusal logs through \`LF_Debug\`.`, "Strings are keys in the string table (rows already appended; `tools\\cli regen-localization` after editing).", "`tools\\cli validate` after each step.");
+  add("Build", `Fill \`${id.cls}.c\`${id.kind === "ui" ? ` and \`${id.cls}Sheet.c\` (UI kit parts only)` : ""}; every refusal logs through \`LF_Debug\`.`, "Strings are keys in the string table (rows already appended; `tools\\cli regen-localization` after editing).", "`tools\\cli validate` after each step.", "A config class or a `.conf` under `Configs/` changed? `node tools/config/schema.mjs --write` and commit `docs/config/` (`wt ship` also does it for you).");
   add("Test (red first, observed)", `\`tools\\cli test --no-build --only LF_Test_${id.name}\` until green, then ONE \`tools\\cli test --no-build --red LF_Test_${id.name}[,...]\` for every new test of the change: the \`RedProof()\` hook (in the scaffold) must make each one FAIL. Copy the RED-OK line into \`// red-proof:\`. A bug fix needs no extra run: its fail-then-pass on the unfixed and fixed code is the proof.`, id.visible ? `Write \`LF_Test_${id.name}World\`; give it the same \`RedProof()\` hook and list it in the same \`--red\` run.` : "Add a WORLD test only if a prefab or the world is involved.", "`tools\\cli test --no-build --tier all` once, at the end.");
   if (id.visible) {
     add("Look after", "`tools\\cli look <area>` again; open the close-up of the new thing. Walk the polish checklist (`.claude/skills/polish/SKILL.md`).", `\`tools\\cli evidence ${id.issue ?? id.kebab} after <area>\`.`, id.kind === "ui" || id.kind === "item" ? "One `--profile full` session for what Workbench cannot show (the sheet, the held item, the inventory icon and preview): run the proof, keep its shots, `session down`." : "A session only if a second player, motion or UI is part of the claim.");
@@ -454,6 +454,15 @@ function checklist(id, slug) {
 }
 
 // ------------------------------------------------------------------ writing
+
+// Where new string rows go: just before the closing of the Items block (a "}" line then a "}" line at the end of the
+// file). `regen-localization` sorts the table and rewrites the last item's indentation, so no fixed marker line
+// survives it (#3833); the closing is found by shape, whatever the indentation or line endings.
+export function insertStRows(text, rows, what = "string table") {
+  const m = /\r?\n[ \t]*\}[ \t]*\r?\n[ \t]*\}[ \t]*\r?\n?$/.exec(text);
+  if (!m) throw new Error(`${what}: the closing braces of the table were not found`);
+  return text.slice(0, m.index) + `\n${rows}` + text.slice(m.index);
+}
 
 function insertBefore(text, marker, addition, what) {
   const at = text.lastIndexOf(marker);
@@ -494,7 +503,7 @@ export function plan(root, id) {
 
   const st = read(ST);
   if (st.includes(`"LF-${id.name}_Action"`)) throw new Error(`string table already has LF-${id.name}_Action`);
-  edit(ST, insertBefore(st, "\n  }\n }\n}", `\n${stRows(id)}`, ST));
+  edit(ST, insertStRows(st, stRows(id), ST));
 
   const areaDoc = featuresDoc(id);
   if (has(areaDoc)) edit(areaDoc, `${read(areaDoc).replace(/\n*$/, "\n")}${featuresRow(id)}`);

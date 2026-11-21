@@ -13,7 +13,8 @@
 // timer raced the ~1 s retry budget: under load the holder lived past it ("survives a reader ..., after 1230 ms").
 // The held-open checks run on Windows only (elsewhere a rename over an open file just works); the retry rules are pure.
 
-import { spawn, spawnSync } from "node:child_process";
+import { spawn } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import * as af from "../lib/atomic-file.mjs";
@@ -162,7 +163,7 @@ try {
     }
 
     // 3. update(): a bookkeeping write never throws, whatever the file does
-    spawnSync("git", ["init", "-q", dir], { windowsHide: true });
+    gitSync(["init", "-q", dir], { windowsHide: true });
     sq.writeQueue(hub, q0);
     {
       const logs = [];

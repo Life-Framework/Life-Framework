@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9C4E2301D74B31CC}Prefabs/Placeables/Furniture/Furniture_Bookcase_Placed.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

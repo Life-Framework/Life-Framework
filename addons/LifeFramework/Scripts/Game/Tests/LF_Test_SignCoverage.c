@@ -71,7 +71,10 @@ class LF_Test_SignCoverage : LF_Test
 	protected static bool IsPackPlaced(string id)
 	{
 		// plot_for_sale: the face of the LF_PlotSign prefab (#2780), placed one per plot by a pack or the grid; the core world has no plot.
-		return id == "mining" || id == "plot_for_sale";
+		// chalk_sample: the chalk style's sample board (docs/architecture/sign-system.md), placed in its GridWorld cell only.
+		// price_board: the trader price board (#3299, LF_PriceBoard), placed in its GridWorld cell until a town pass puts it on Saint-Philippe.
+		// house_for_sale: the face of the LF_HouseSaleSign prefab (#3207), placed one per house by a pack or the grid.
+		return id == "mining" || id == "plot_for_sale" || id == "house_for_sale" || id == "chalk_sample" || id == "price_board";
 	}
 
 	//------------------------------------------------------------------------------------------------

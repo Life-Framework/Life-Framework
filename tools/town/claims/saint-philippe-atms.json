@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "atms",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b79"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b97"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b08"
+    }
+  ],
+  "kit": "atms",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_atms.layer",
+  "kinds": [],
+  "rows": 3,
+  "date": "2026-11-19"
+}

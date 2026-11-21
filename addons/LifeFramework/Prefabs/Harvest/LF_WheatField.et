@@ -1,0 +1,12 @@
+LF_WheatField {
+ ID "D1C1BED3DE9D9972"
+ components {
+  Hierarchy "{103C80353DADC387}" {
+  }
+  RplComponent "{99FED069B4115326}" {
+  }
+ }
+ coords 0 0 0
+ m_fSizeX 60
+ m_fSizeZ 40
+}

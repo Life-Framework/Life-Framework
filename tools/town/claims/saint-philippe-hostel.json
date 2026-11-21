@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "hostel",
+  "building": "b14",
+  "kit": "hostel",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_hostel.layer",
+  "kinds": [
+    "HostelBed"
+  ],
+  "rows": 13,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_hostel_Place"
+  },
+  "date": "2026-11-19"
+}

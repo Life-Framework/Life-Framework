@@ -8,6 +8,8 @@
 // Writes addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_<place>_<slot>.layer   (pack content, never a core layer)
 //        tools/town/claims/<place>-<slot>.json
 // Then runs `audit placement --strict --world MainWorld --layer <file>` and takes the `look` pictures (--no-audit, --no-look skip).
+// Open-ground kit rows (`"mount": "terrain"`) rest on terrain heights kept in tools/town/terrain/<place>-<slot>.json;
+// `--terrain` probes them on the island's test server first (tools/town/terrain.mjs), a plain fit and `--check` read the file.
 //
 // No step types a coordinate: every number comes from the dossier (the building's centre, floor and entrance) and the kit's
 // building-local offsets (`kit apply`). A host that shows the kit's own building model (the .xob of the kit's
@@ -28,9 +30,12 @@ import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { onWater } from "../scout/analyse.mjs";
 import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
-import { sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
+import { mountOf, sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
+import { probeTerrain, readPins, terrainFromPins, writePins } from "./terrain.mjs";
+import { frameOf, gameVfsSync } from "../lib/height-frame.mjs";
 
 export const help = "fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-audit] [--no-look]   apply the slot's kit into its mapped building, rows seated on the host's floors and walls: Place_<place>_<slot>.layer (marker + kit rows) and a claim";
 
@@ -39,7 +44,7 @@ export const LAYER_DIR = "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers
 export const CLAIMS_DIR = "tools/town/claims";
 const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
 const REF_RE = /^\{([0-9A-Fa-f]{16})\}(.+)$/;
-const FLAGS = new Set(["dry", "check", "refit", "allow-clip", "no-fetch", "no-audit", "no-look", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
+const FLAGS = new Set(["dry", "check", "refit", "allow-clip", "no-fetch", "no-audit", "no-look", "terrain", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
 const WITH_VALUE = new Set(["building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir"]);
 const r3 = (n) => Math.round(n * 1000) / 1000;
 const norm = (d) => {
@@ -52,6 +57,24 @@ const FRONT = { "+x": [1, 0], "-x": [-1, 0], "+z": [0, 1], "-z": [0, -1] };
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
 export const claimFileOf = (place, slot) => `${CLAIMS_DIR}/${place}-${slot}.json`;
+// The vanilla props a kit hides inside its building (card #3882/#3924): kit.stamp.clear (what `town author` writes), or a top-level
+// kit.clear for a kit that is fitted rather than stamped. An entry is a resource name or { prefab }.
+export const clearListOf = (kit) => [...new Set([...(kit?.stamp?.clear ?? []), ...(kit?.clear ?? [])].map((c) => (typeof c === "string" ? c : c?.prefab)).filter(Boolean))].sort();
+
+// The base-world clear carrier of one stamped copy: a GenericEntity at the building's x and z with LF_BaseWorldClearComponent.
+// It names the building prefab and the clear list; the game finds the building by prefab within 3 m on x and z and takes the
+// height from it, so the row's height is only a placeholder (the building origin), never a measured value.
+export function clearCarrier({ place, slot, host, clear }) {
+  if (!clear.length || !host?.prefab) return null;
+  const list = ["{", ...clear.map((p) => `    "${p}"`), "   }"].join("\n");
+  return {
+    name: `Fit_${ident(place)}_${ident(slot)}_clear`,
+    comps: [{ cls: "LF_BaseWorldClearComponent", guid: guidOf(place, slot, "base-world-clear"), set: { m_sBuilding: `"${host.prefab}"`, m_aPrefabs: list } }],
+    coords: [host.x, host.y, host.z],
+    yaw: 0,
+  };
+}
+
 const guidOf = (...parts) => createHash("sha1").update(parts.join("|")).digest("hex").slice(0, 16).toUpperCase();
 
 // ------------------------------------------------------------------ geometry from the dossier
@@ -171,7 +194,9 @@ export function sourceComponent(kit, row, c, root, cache = new Map()) {
       const set = scalarSet(comp);
       const setOk = Object.entries(c.set ?? {}).every(([k, v]) => set[k] === v);
       const blocksOk = JSON.stringify(comp.kids.map(compClass)) === names;
-      cands.push({ comp, exact: setOk && blocksOk, score: (setOk ? 2 : 0) + (blocksOk ? 1 : 0) });
+      // A kit row has no prefab when its entities are bare ones, so every one of them matches; the row's own source entity wins.
+      const own = e.name && e.name === row.name ? 4 : 0;
+      cands.push({ comp, exact: setOk && blocksOk, score: own + (setOk ? 2 : 0) + (blocksOk ? 1 : 0) });
     }
   }
   cands.sort((x, y) => y.score - x.score);
@@ -192,6 +217,9 @@ const asClaim = (text, extra) => {
     return null;
   }
 };
+
+// A claim without where it was read from: what two copies of one claim file share.
+export const claimBody = (c) => JSON.stringify(Object.fromEntries(Object.entries(c).filter(([k]) => k !== "where" && k !== "file").sort(([a], [b]) => (a < b ? -1 : 1))));
 
 // Claim files origin/main holds.
 export function mainTownClaims(exec, { ref = "origin/main", fetch = true } = {}) {
@@ -249,6 +277,18 @@ export function claimOfBase(c, { branch, place, slot }) {
   return new RegExp(`^open PR #[0-9]+ \\(${base}\\)$`).test(c.where) || c.where === `worktree Life-Framework-ws-town-draft-${place}-${slot}`;
 }
 
+// The blob ids claim file `file` has had on `ref`: a sibling worktree whose copy is one of these is cut from some main, not a rival.
+export function mainClaimBlobs(exec, file, ref = "origin/main") {
+  const log = exec("git", ["log", ref, "--format=%H", "--", file]);
+  if (log.status !== 0) return new Set();
+  const blobs = new Set();
+  for (const sha of String(log.stdout).split(/\r?\n/).filter(Boolean)) {
+    const b = exec("git", ["rev-parse", `${sha}:${file}`]);
+    if (b.status === 0) blobs.add(String(b.stdout).trim());
+  }
+  return blobs;
+}
+
 // Uncommitted claim files in sibling local worktrees: no network, read from `git worktree list --porcelain`.
 export function worktreeTownClaims(exec, root) {
   const ls = exec("git", ["worktree", "list", "--porcelain"]);
@@ -262,7 +302,10 @@ export function worktreeTownClaims(exec, root) {
     if (!existsSync(dir)) continue;
     for (const f of readdirSync(dir).filter((n) => n.endsWith(".json"))) {
       const c = asClaim(readFileSync(join(dir, f), "utf8"), { file: `${CLAIMS_DIR}/${f}`, where: `worktree ${basename(path)}` });
-      if (c) claims.push(c);
+      if (!c) continue;
+      // Where that copy lives, to hash it later: a worktree cut from an older main holds an older main version (#3566).
+      Object.defineProperty(c, "path", { value: join(dir, f), enumerable: false });
+      claims.push(c);
     }
   }
   return { claims, note: "" };
@@ -327,10 +370,14 @@ export function planFit(opts, ctx = {}) {
 
   const slot = template.slots.find((s) => s.id === slotId);
   if (!slot) return (errors.push(`the ${template.kind} template has no slot '${slotId}'`), fail());
+  if (slot.host === "outposts") return (errors.push(`slot ${slotId} stands in other places' buildings (an outposts slot): run tools\\cli town drops ${place} ${slotId}`), fail());
   const entry = mapping.slots?.[slotId];
   if (!entry) return (errors.push(`slot ${slotId} is not in the mapping`), fail());
   if (entry.none) return (errors.push(`slot ${slotId} is mapped to none${entry.reason ? ` (${entry.reason})` : ""}: nothing to fit`), fail());
-  for (const p of checkMapping(mapping, dossier, template)) if (!/^slot /.test(p) || p.startsWith(`slot ${slotId}:`)) errors.push(`mapping: ${p}`);
+  // A slot whose building is in ANOTHER place's survey (`dossier` on its entry): `dossier` here is that survey, the place's own
+  // is `mappingDossier`, and the building is claimed under "<survey slug>/<id>" so it never meets this place's own b14.
+  const buildingKey = entry.dossier ? `${entry.dossier}/${entry.building}` : entry.building;
+  for (const p of checkMapping(mapping, opts.mappingDossier ?? dossier, template, entry.dossier ? { [entry.dossier]: dossier } : null)) if (!/^slot /.test(p) || p.startsWith(`slot ${slotId}:`)) errors.push(`mapping: ${p}`);
   if (errors.length) return fail();
 
   const kit = opts.kits?.[slot.kit];
@@ -354,15 +401,36 @@ export function planFit(opts, ctx = {}) {
   // `--refit`: this slot's own claim, already committed on origin/main (every worktree carries it), does not block its re-fit.
   // The same slot held by an open PR or a sibling worktree, and any other slot's claim on the building, still refuse.
   for (let i = taken.length - 1; i >= 0; i--) if (claimOfBase(taken[i], { branch: opts.branch, place, slot: slotId })) taken.splice(i, 1);
-  const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && c.where === "origin/main")) : taken;
-  errors.push(...conflicts(blocking, { place, slot: slotId, building: entry.building, plot: entry.plot, shared: entry.shared }));
+  // A sibling worktree that has not touched the claim holds byte-for-byte what main holds (every worktree is cut from main), so under
+  // `--refit` that copy is main's own claim and not a rival either (all sixteen worktrees blocked a re-fit of the supermarket, #3516).
+  const mainOwn = taken.find((c) => c.place === place && c.slot === slotId && c.where === "origin/main");
+  // A worktree cut from an older main carries an older version of the file (police: 56 rows on main's earlier head, 57 now): its blob is
+  // in main's history for that file, so it is main's too (#3566).
+  const historyBlobs = new Map();
+  const inMainHistory = (c) => {
+    if (!c.path || !/^worktree /.test(c.where)) return false;
+    const h = exec("git", ["hash-object", c.path]);
+    if (h.status !== 0) return false;
+    if (!historyBlobs.has(c.file)) historyBlobs.set(c.file, mainClaimBlobs(exec, c.file));
+    return historyBlobs.get(c.file).has(String(h.stdout).trim());
+  };
+  const sameAsMain = (c) => /^worktree /.test(c.where) && ((Boolean(mainOwn) && claimBody(c) === claimBody(mainOwn)) || inMainHistory(c));
+  const blocking = opts.refit ? taken.filter((c) => !(c.place === place && c.slot === slotId && (c.where === "origin/main" || sameAsMain(c)))) : taken;
+  errors.push(...conflicts(blocking, { place, slot: slotId, building: buildingKey, plot: entry.plot, shared: entry.shared }));
   if (errors.length) return { ...fail(), notes };
 
-  // The building: a mapped one stands where the dossier says; a plot gets the purpose-built building first (D9).
+  // The building: a mapped one stands where the dossier says; a plot gets the purpose-built building first (D9); a hostless
+  // plot (a lake, a pond, a field: `"hostless": true` on a plot entry, #3666) has no building at all, the kit stands on the open ground.
   let host;
   const out = [];
   let destruction;
-  if (building) {
+  if (entry.hostless) {
+    if (!plotE) return (errors.push(`slot ${slotId}: a hostless slot needs a plot of the dossier (${entry.plot ?? "none named"})`), { ...fail(), notes });
+    const wet = onWater(dossier.water?.bodies, plotE.x, plotE.z);
+    if (wet) return (errors.push(`slot ${slotId}: plot ${plotE.id} lies on the water ${wet.id} (${wet.name}); anchor it on a dry plot or a shore point`), { ...fail(), notes });
+    host = { x: plotE.x, y: plotE.ground ? r3((plotE.ground.min + plotE.ground.max) / 2) : plotE.y ?? 0, z: plotE.z, yaw: 0, entrances: [], footprint: null, prefab: null };
+    destruction = { mode: "none", reason: "hostless plot: no building stands in the slot" };
+  } else if (building) {
     host = building;
     destruction = null; // decided below: hooked through the place marker, or needs-hook without one
   } else {
@@ -398,6 +466,9 @@ export function planFit(opts, ctx = {}) {
     }
   }
 
+  const carrier = clearCarrier({ place, slot: slotId, host, clear: clearListOf(kit) });
+  if (carrier) out.push(carrier);
+
   const sourceCache = new Map();
   const srcRows = new Map(kit.rows.map((r) => [r.id, r]));
   const rowEnts = rows.map((r) => {
@@ -410,7 +481,7 @@ export function planFit(opts, ctx = {}) {
       // Nested blocks, and a component the prefabs do not have, come from the kit's source. An inherited GUID always wins:
       // the layer overrides that component, it never adds a second one.
       const fromSrc = sourceComponent(kit, src, c, root, sourceCache);
-      const guid = componentGuid(r.prefab, c.component, root, 6, ctx.readGame) ?? fromSrc?.guid ?? null;
+      const guid = componentGuid(r.prefab, c.component, root, 6, ctx.readGame) ?? (/^[0-9A-Fa-f]{16}$/.test(c.guid ?? "") ? c.guid.toUpperCase() : null) ?? fromSrc?.guid ?? null;
       if (!guid) {
         warnings.push(`row ${r.id}: no guid for ${c.component} in ${r.prefab}, its parents or the kit's source; its overrides were not written`);
         continue;
@@ -431,7 +502,7 @@ export function planFit(opts, ctx = {}) {
     schema: 1,
     place,
     slot: slotId,
-    ...(entry.building ? { building: entry.building } : { plot: entry.plot }),
+    ...(entry.building ? { building: buildingKey } : { plot: entry.plot, ...(entry.hostless ? { hostless: true } : {}) }),
     ...(entry.shared ? { shared: true } : {}),
     kit: slot.kit,
     layer: `${LAYER_DIR}/${layerName}`,
@@ -440,10 +511,49 @@ export function planFit(opts, ctx = {}) {
     destruction,
     date: (ctx.now ? ctx.now() : new Date()).toISOString().slice(0, 10),
   };
-  return { ok: true, errors, warnings, notes, layerName, layerText, claimFile: claimFileOf(place, slotId), claim, anchor, rows, host, kit, ents: { markers, out, rowEnts } };
+  const plan = { ok: true, errors, warnings, notes, layerName, layerText, claimFile: claimFileOf(place, slotId), claim, anchor, rows, host, kit, ents: { markers, out, rowEnts } };
+  renderFramed(plan, ctx);
+  return plan;
 }
 
 const renderLayer = ({ markers, out, rowEnts }) => `${[...markers, ...out, ...rowEnts].map(entityText).join("\n")}\n`;
+
+// The rows as the layer must hold them. Every row is planned in world heights (a host floor, the probed ground), or, for a
+// "ground" row (seat.mjs), as its height over the terrain. The engine reads a row's y in the frame its prefab's flags set
+// (tools/lib/height-frame.mjs: RELATIVE_Y means the height over the terrain, else a world height), so each row is turned
+// into that frame here, the one place the layer text is made. A conversion that needs the ground height under the row takes
+// it from the slot's probe pins (`--terrain`); without one the row is pending and the fit refuses.
+// Returns { rowEnts, pending: [id], points: [[x, z]], frames: { id: frame } }.
+export function framedRows(rowEnts, { root = ROOT, terrain = null, overGround = new Set(), frameOfRef = null } = {}) {
+  const fr = frameOfRef ?? ((ref) => frameOf(root, gameVfsSync(), ref));
+  const pending = [];
+  const points = [];
+  const frames = {};
+  const rows = rowEnts.map((e) => {
+    const frame = fr(e.ref);
+    frames[e.id] = frame;
+    const terrainFrame = frame === "terrain";
+    if (terrainFrame === overGround.has(e.id) || !e.coords) return e; // already in its frame
+    const [x, y, z] = e.coords;
+    points.push([x, z]);
+    const t = terrain?.at(x, z);
+    if (!Number.isFinite(t)) {
+      pending.push(e.id);
+      return e;
+    }
+    return { ...e, coords: [x, r3(terrainFrame ? y - t : y + t), z] };
+  });
+  return { rowEnts: rows, pending, points, frames };
+}
+
+// Render the plan's layer with every row in its prefab's frame; the pending rows and the ground points they need go on the plan.
+function renderFramed(plan, ctx, overGround = new Set()) {
+  const f = framedRows(plan.ents.rowEnts, { root: ctx.root ?? ROOT, terrain: ctx.terrain ?? null, overGround, frameOfRef: ctx.frameOf ?? null });
+  plan.framePending = f.pending;
+  plan.framePoints = f.points;
+  plan.frames = f.frames;
+  plan.layerText = renderLayer({ ...plan.ents, rowEnts: f.rowEnts });
+}
 
 // The host prefab the dossier (or the --building-prefab of a plot) gives, before planFit runs; null when the slot has none.
 function hostRefOf(opts) {
@@ -462,16 +572,38 @@ export async function planFitSeated(opts, ctx = {}) {
   const tmpl = opts.template?.slots?.find((s) => s.id === opts.slot);
   const kit = tmpl ? opts.kits?.[tmpl.kit] : null;
   const ref = hostRefOf(opts);
-  const same = kit && ref ? await sameShell(kit, ref, reader) : false;
+  // opts.sameShell (`town stamp`: the kit was authored around this very prefab) is taken as given; `town fit` asks the models.
+  const same = opts.sameShell != null ? Boolean(opts.sameShell) : kit && ref ? await sameShell(kit, ref, reader) : false;
   const plan = planFit({ ...opts, sameShell: same }, ctx);
   if (!plan.ok) return plan;
   plan.anchor.sameShell = same;
+  if (opts.mapping?.slots?.[opts.slot]?.hostless) {
+    // No host shell to seat on: an open-ground row rests on the ground the server probed under its point (`--terrain`), else it keeps the plot's height.
+    plan.terrainPoints = plan.rows.filter((r) => plan.kit.rows.find((q) => q.id === r.id)?.mount === "terrain").map((r) => [r.coords[0], r.coords[2]]);
+    for (const r of plan.rows) {
+      const src = plan.kit.rows.find((q) => q.id === r.id);
+      const h = src?.mount === "terrain" ? ctx.terrain?.at(r.coords[0], r.coords[2]) : null;
+      if (Number.isFinite(h)) r.coords[1] = r3(h);
+    }
+    for (const e of plan.ents.rowEnts) {
+      const r = plan.rows.find((q) => q.id === e.id);
+      if (r) e.coords = r.coords;
+    }
+    renderFramed(plan, ctx);
+    plan.terrainPoints = [...plan.terrainPoints, ...plan.framePoints];
+    return plan;
+  }
   if (!plan.host?.prefab) {
     plan.warnings.push("the host has no prefab in the dossier: rows were not seated on it");
     return plan;
   }
-  const seat = await seatRows(plan.rows, plan.kit.rows, plan.host, { reader, allowClip: Boolean(opts.allowClip) });
+  // opts.seatOnly (`town stamp`): seat just the rows held that way (["wall"]); the others stand where the grid proved them.
+  const only = Array.isArray(opts.seatOnly) ? new Set(opts.seatOnly) : null;
+  const srcOf = new Map(plan.kit.rows.map((q) => [q.id, q]));
+  const toSeat = only ? plan.rows.filter((r) => only.has(mountOf({ ...(srcOf.get(r.id) ?? {}), prefab: r.prefab }).mount)) : plan.rows;
+  const seat = await seatRows(toSeat, plan.kit.rows, plan.host, { reader, allowClip: Boolean(opts.allowClip), terrain: ctx.terrain ?? null, flatWalls: Boolean(opts.flatWalls) });
   plan.seat = seat;
+  plan.terrainPoints = seat.terrainPoints ?? [];
   if (!seat.host) {
     plan.warnings.push(seat.note);
     return plan;
@@ -483,7 +615,8 @@ export async function planFitSeated(opts, ctx = {}) {
   for (const r of seat.skipped) plan.warnings.push(`row ${r.id} ${r.skip}`);
   for (const r of seat.furniture) plan.warnings.push(`row ${r.id} ${r.furniture}`);
   plan.claim.rows = plan.ents.rowEnts.length;
-  plan.layerText = renderLayer(plan.ents);
+  renderFramed(plan, ctx, new Set(seat.rows.filter((r) => r.overGround).map((r) => r.id)));
+  plan.terrainPoints = [...plan.terrainPoints, ...plan.framePoints];
   for (const r of seat.unseated) plan.warnings.push(`row ${r.id}: ${r.notes.filter((n) => /^no /.test(n)).join("; ")}`);
   const hostPath = String(plan.host.prefab).replace(/^\{[0-9A-Fa-f]{16}\}/, "");
   for (const c of seat.clips) {
@@ -522,7 +655,7 @@ function parseArgs(args) {
   return { flags, pos, bad };
 }
 
-const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
+const USAGE = "usage: tools\\cli town fit <place> <slot> [--dry] [--check] [--refit] [--allow-clip] [--no-fetch] [--no-audit] [--no-look] [--terrain] [--building-prefab {GUID}path] [--destruction-guid {GUID}]";
 const readJson = (f, what) => {
   if (!existsSync(f)) throw new Error(`no ${what}: ${f} does not exist`);
   return JSON.parse(readFileSync(f, "utf8"));
@@ -553,7 +686,7 @@ export function verifySteps(place, slotId, layerName, flags = {}) {
 
 // `town fit --check`: per-row corrections, against the slot's layer on disk when there is one (a draft branch), else
 // against the kit's unseated positions. Writes nothing. Exit 1 on a clip or when the host cannot be read.
-function checkReport(plan, { root, place, slotId, layerFile }) {
+function checkReport(plan, { root, place, slotId, layerFile, terrain = null }) {
   const shown = relative(root, layerFile).replaceAll("\\", "/");
   if (!plan.seat?.host) {
     for (const e of plan.errors ?? []) console.log(`REFUSE  ${e}`);
@@ -563,7 +696,16 @@ function checkReport(plan, { root, place, slotId, layerFile }) {
   }
   const written = existsSync(layerFile) ? layerCoords(readFileSync(layerFile, "utf8"), place, slotId) : null;
   // the layer names a row by ident(id) (dashes become underscores); a row the layer lacks is judged against its unseated spot
-  const onDisk = written ? new Map(plan.seat.rows.map((r) => [r.id, written.get(ident(r.id)) ?? r.from])) : null;
+  // The disk holds each row in its prefab's frame (tools/lib/height-frame.mjs); the seat plans it in world heights, or over
+  // the ground for a "ground" row. Compared in the seat's frame when the pins know the ground under it.
+  const worldOf = (id, c) => {
+    const diskOver = plan.frames?.[id] === "terrain";
+    const seatOver = Boolean(plan.seat.rows.find((r) => r.id === id)?.overGround);
+    if (!c || diskOver === seatOver) return c;
+    const t = terrain?.at(c[0], c[2]);
+    return Number.isFinite(t) ? [c[0], diskOver ? c[1] + t : c[1] - t, c[2]] : c;
+  };
+  const onDisk = written ? new Map(plan.seat.rows.map((r) => [r.id, written.has(ident(r.id)) ? worldOf(r.id, written.get(ident(r.id))) : r.from])) : null;
   const a = plan.anchor;
   console.log(`anchor ${a.x} ${a.y} ${a.z} yaw ${a.yaw} (${a.note}); host model ${plan.seat.host.mesh}`);
   console.log(onDisk ? `corrections against ${shown}:` : "no layer on disk: corrections against the kit's unseated positions:");
@@ -606,10 +748,15 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
   }
 
   let plan;
+  let fitOpts0;
+  let fitCtx;
   try {
     const placeDir = join(root, "docs", "everon", "places", place);
-    const dossier = readJson(resolve(root, flags.dossier ?? join(placeDir, "dossier.json")), "dossier");
+    const mappingDossier = readJson(resolve(root, flags.dossier ?? join(placeDir, "dossier.json")), "dossier");
     const mapping = readJson(resolve(root, flags.mapping ?? join(placeDir, "mapping.json")), "mapping");
+    // A slot whose entry names another place's survey (`dossier`) fits against that dossier.
+    const survey = mapping.slots?.[slotId]?.dossier;
+    const dossier = survey && SLUG_RX.test(survey) ? readJson(join(root, "docs", "everon", "places", survey, "dossier.json"), "dossier") : mappingDossier;
     const template = flags["template-file"] ? readJson(resolve(root, flags["template-file"]), "template") : loadTemplate(mapping.template, root);
     const entry = template.slots.find((s) => s.id === slotId);
     const kits = {};
@@ -619,18 +766,27 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
       if (existsSync(kf)) kits[entry.kit] = readJson(kf, "kit");
     }
     const shell = ctxShell ?? shellReader(root);
-    const fitOpts = { place, slot: slotId, dossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
-    plan = await planFitSeated(fitOpts, { root, run, readGame: await gameReader(), shell });
+    const fitOpts = { place, slot: slotId, dossier, mappingDossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };
+    fitOpts0 = fitOpts;
+    fitCtx = { root, run, readGame: await gameReader(), shell, terrain: terrainFromPins(readPins(root, place, slotId)) };
+    plan = await planFitSeated(fitOpts, fitCtx);
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);
     return 1;
   }
-  if (flags.check) return checkReport(plan, { root, place, slotId, layerFile: join(resolve(root, flags["out-dir"] ?? LAYER_DIR), layerNameOf(place, slotId)) });
+  if (flags.check) return checkReport(plan, { root, place, slotId, terrain: fitCtx.terrain, layerFile: join(resolve(root, flags["out-dir"] ?? LAYER_DIR), layerNameOf(place, slotId)) });
   for (const n of plan.notes ?? []) console.log(`note  ${n}`);
   for (const w of plan.warnings ?? []) console.log(`warn  ${w}`);
   if (!plan.ok) {
     for (const e of plan.errors) console.log(`REFUSE  ${e}`);
     console.log(`SUMMARY town-fit fail ${place}.${slotId}: ${plan.errors.length} problem(s)`);
+    return 1;
+  }
+  // A row whose frame needs the ground height under it and has none would be written in the wrong frame: refuse, unless
+  // --terrain is about to probe it (the first write only gives the probe server the world to boot around).
+  if (plan.framePending?.length && !flags.terrain) {
+    console.log(`REFUSE  ${plan.framePending.length} row(s) need the ground height under them to be written in their prefab's frame (tools/lib/height-frame.mjs): ${plan.framePending.slice(0, 6).join(", ")}${plan.framePending.length > 6 ? ", ..." : ""}; run town fit ${place} ${slotId} --terrain`);
+    console.log(`SUMMARY town-fit fail ${place}.${slotId}: ${plan.framePending.length} row(s) without a probed ground height`);
     return 1;
   }
 
@@ -647,6 +803,31 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
   mkdirSync(dirname(claimFile), { recursive: true });
   writeFileSync(layerFile, plan.layerText);
   writeFileSync(claimFile, `${JSON.stringify(plan.claim, null, 2)}\n`);
+
+  // --terrain: the island server measures the ground under every open-ground row (the layer just written gives it the
+  // world to boot around), the answers are kept in tools/town/terrain/, and the layer is written again on them.
+  if (flags.terrain && plan.terrainPoints?.length) {
+    try {
+      const probed = await probeTerrain(plan.terrainPoints, { layerName: plan.layerName, aroundY: plan.anchor.y });
+      if (probed.missing.length) console.log(`warn  the server gave no ground height at ${probed.missing.length} point(s): ${probed.missing.join(" ")}`);
+      const pinFile = writePins(root, place, slotId, probed.points, (fitCtx.now ? fitCtx.now() : new Date()).toISOString().slice(0, 10));
+      console.log(`terrain  ${Object.keys(probed.points).length} point(s) probed -> ${shown(pinFile)}`);
+      fitCtx.terrain = terrainFromPins({ points: probed.points });
+      plan = await planFitSeated(fitOpts0, fitCtx);
+      for (const w of plan.warnings ?? []) console.log(`warn  ${w}`);
+      if (plan.framePending?.length) plan = { ...plan, ok: false, errors: [...plan.errors, `no ground height came back for ${plan.framePending.join(", ")}: they cannot be written in their prefab's frame`] };
+      if (!plan.ok) {
+        for (const e of plan.errors) console.log(`REFUSE  ${e}`);
+        console.log(`SUMMARY town-fit fail ${place}.${slotId}: ${plan.errors.length} problem(s) after the terrain probe`);
+        return 1;
+      }
+      writeFileSync(layerFile, plan.layerText);
+      writeFileSync(claimFile, `${JSON.stringify(plan.claim, null, 2)}\n`);
+    } catch (e) {
+      console.log(`REFUSE  terrain probe: ${e.message}`);
+      return 1;
+    }
+  } else if (flags.terrain) console.log("note  --terrain: the kit has no open-ground row, nothing to probe");
 
   // Verify: the placement audit on the new layer, then the pictures. Each runs on a pool machine with a Workbench.
   const steps = [];

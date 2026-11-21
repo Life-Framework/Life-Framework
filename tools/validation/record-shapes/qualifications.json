@@ -1,0 +1,15 @@
+{
+  "section": "qualifications",
+  "class": "LF_QualificationsSavePayload",
+  "version": 1,
+  "roots": "LF_QualificationRow",
+  "records": {
+    "LF_QualificationRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sKey",
+        "string m_sCourse"
+      ]
+    }
+  }
+}

@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{45CD5590BA3692A5}Assets/Items/Store1989/MilkBottle/Data/MilkBottle_BCR.edds"
+ NMOMap "{22092AB5A8565A3F}Assets/Items/Store1989/MilkBottle/Data/MilkBottle_NMO.edds"
+}

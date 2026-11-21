@@ -1,0 +1,57 @@
+GenericEntity : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ ID "BECBF3103387B2E8"
+ components {
+  LF_ShopComponent "{B70A6E0594CFE39A}" {
+   m_sShopName "#LF-Shop_Name_Supermarket"
+   m_sShopDescription "#LF-Shop_Desc_Supermarket"
+   m_sStockId "supermarket"
+  }
+  ActionsManagerComponent "{3D54CA65F9D45E77}" {
+   ActionContexts {
+    UserActionContext "{5EFAA104D2C1FFB7}" {
+     ContextName "default"
+     Position PointInfo "{F2838BAB06F4492A}" {
+      Offset 0 0.25 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{D71079770023B9A6}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8EF3A789BAB98069}" {
+      Name "#LF-Shop_Open_Supermarket"
+      Description "#LF-Shop_OpenDesc_Supermarket"
+     }
+    }
+    LF_StoreTillAction "{7B2E4C19A05D3F68}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{C41D8E7A92B05F36}" {
+      Name "#LF-Store_Pay"
+     }
+     m_sStoreKey "everon_sp_supermarket"
+    }
+    LF_RobAction "{129E734249490218}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{04C9F62998C6AD0F}" {
+      Name "#EL-Fuel_Till_Rob"
+      Description "#EL-Fuel_Till_Rob_Desc"
+     }
+     m_sAlarmKind "shopbell"
+     m_iMoneyAmount 150
+     m_iMinPayout 120
+     m_iMaxPayout 180
+     m_fCooldown 600
+     m_iMinPoliceOnDuty 0
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+}

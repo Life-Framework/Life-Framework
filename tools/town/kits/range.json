@@ -1,0 +1,235 @@
+{
+  "schema": 1,
+  "kit": "range",
+  "system": "range",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_shooting_range.layer",
+    "group": "*",
+    "origin": "Grid_shooting_range_Spawn",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -14.389,
+        -17.062
+      ],
+      "max": [
+        -0.324,
+        -2.96
+      ]
+    },
+    "front": "free",
+    "counters": [],
+    "adapt": "Ground lane, rotated in the kit so the targets face open ground (#3081): firing line 6 m SW of the origin (the shed it fires from), targets 8 m down-range, fenced pen. Fitted to b95 (yaw -7) the firing bearing is 225 (SW). Rows sit on the terrain (no host floor); shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "shooting-range-fence-1",
+      "name": "Grid_shooting_range_Fence_1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -8.096,
+        0,
+        -17.062
+      ],
+      "yaw": -39,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "shooting-range-fence-2",
+      "name": "Grid_shooting_range_Fence_2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.21,
+        0,
+        -13.916
+      ],
+      "yaw": -39,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "shooting-range-fence-3",
+      "name": "Grid_shooting_range_Fence_3",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.324,
+        0,
+        -10.769
+      ],
+      "yaw": -129,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "shooting-range-fence-4",
+      "name": "Grid_shooting_range_Fence_4",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -6.617,
+        0,
+        -2.998
+      ],
+      "yaw": 141,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "shooting-range-fence-5",
+      "name": "Grid_shooting_range_Fence_5",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10.503,
+        0,
+        -6.144
+      ],
+      "yaw": 141,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "shooting-range-fence-6",
+      "name": "Grid_shooting_range_Fence_6",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -14.389,
+        0,
+        -9.291
+      ],
+      "yaw": 51,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "shooting-range-fence-7",
+      "name": "Grid_shooting_range_Fence_7",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11.242,
+        0,
+        -13.177
+      ],
+      "yaw": 51,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "shooting-range-sign",
+      "name": "Grid_shooting_range_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -5.618,
+        0.505,
+        -2.96
+      ],
+      "yaw": 51,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"grid:shooting-range\"",
+            "m_vRimColor": "0.1 0.1 0.1",
+            "m_vPaintColor": "0.95 0.78 0.1",
+            "m_vTextColor": "0.1 0.1 0.1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "shooting-range-r0-1",
+      "name": "Grid_shooting_range_R0_1",
+      "prefab": "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -7.405,
+        0,
+        -13.943
+      ],
+      "yaw": 51,
+      "class": "SCR_FiringRangeTarget",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "shooting-range-r0-2",
+      "name": "Grid_shooting_range_R0_2",
+      "prefab": "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -9.293,
+        0,
+        -11.611
+      ],
+      "yaw": 51,
+      "class": "SCR_FiringRangeTarget",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "shooting-range-r0-3",
+      "name": "Grid_shooting_range_R0_3",
+      "prefab": "{4D1A82E96B30C7F5}Prefabs/Props/Range/LF_RangeTarget.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -11.181,
+        0,
+        -9.28
+      ],
+      "yaw": 51,
+      "class": "SCR_FiringRangeTarget",
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

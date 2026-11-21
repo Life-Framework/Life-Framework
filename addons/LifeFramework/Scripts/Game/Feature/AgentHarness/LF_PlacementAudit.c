@@ -275,17 +275,19 @@ class LF_PlacementAudit
 
 	//------------------------------------------------------------------------------------------------
 	//! Clips: a surface of another entity passes through this entity's own volume. A building's overall
-	//! bounds say nothing about where its walls are, so rays cross the bounds (shrunk 0.15 m) on all
-	//! three axes from both sides and keep hits that land inside. A single graze does not count.
-	static string Clips(vector mins, vector maxs, IEntity self)
+	//! bounds say nothing about where its walls are, so rays cross the box (shrunk 0.15 m) on all
+	//! three of ITS OWN axes from both sides and keep hits that land inside. A single graze does not count.
+	//! The box is the oriented one: a thin fascia plate on a wall turned 9 degrees off the world axes has a
+	//! thick world-axis box that always contains its own wall, and was flagged as clipping it (#3891).
+	static string Clips(LF_PlacementMeasure m, IEntity self)
 	{
 		s_sClipNames = "";
 		s_iClipCount = 0;
-		vector lo = mins + "0.15 0.15 0.15";
-		vector hi = maxs - "0.15 0.15 0.15";
-		if (hi[0] - lo[0] < 0.1 || hi[1] - lo[1] < 0.1 || hi[2] - lo[2] < 0.1)
+		vector half = m.m_vHalf - "0.15 0.15 0.15";
+		if (half[0] * 2 < 0.1 || half[1] * 2 < 0.1 || half[2] * 2 < 0.1)
 			return "none";
 
+		array<vector> axes = {m.m_vAxis0, m.m_vAxis1, m.m_vAxis2};
 		array<string> hitNames = {};
 		array<int> hitCounts = {};
 		for (int axis = 0; axis < 3; axis++)
@@ -301,20 +303,15 @@ class LF_PlacementAudit
 						if (s_iClipCount >= 3)
 							return s_sClipNames;
 
-						vector from = lo;
-						from[a1] = lo[a1] + (hi[a1] - lo[a1]) * (i + 0.5) / 3;
-						from[a2] = lo[a2] + (hi[a2] - lo[a2]) * (j + 0.5) / 3;
-						vector to = from;
-						if (side == 0)
-						{
-							from[axis] = mins[axis] - 0.4;
-							to[axis] = maxs[axis] + 0.4;
-						}
-						else
-						{
-							from[axis] = maxs[axis] + 0.4;
-							to[axis] = mins[axis] - 0.4;
-						}
+						float u = -half[a1] + half[a1] * 2 * (i + 0.5) / 3;
+						float v = -half[a2] + half[a2] * 2 * (j + 0.5) / 3;
+						float reach = m.m_vHalf[axis] + 0.4;
+						if (side == 1)
+							reach = -reach;
+
+						vector lane = m.m_vCenter + axes[a1] * u + axes[a2] * v;
+						vector from = lane - axes[axis] * reach;
+						vector to = lane + axes[axis] * reach;
 
 						IEntity hit;
 						float total = vector.Distance(from, to);
@@ -332,7 +329,8 @@ class LF_PlacementAudit
 							continue;
 
 						vector p = from + (to - from) * (d / total);
-						if (p[0] < lo[0] || p[1] < lo[1] || p[2] < lo[2] || p[0] > hi[0] || p[1] > hi[1] || p[2] > hi[2])
+						vector rel = p - m.m_vCenter;
+						if (Math.AbsFloat(vector.Dot(rel, axes[0])) > half[0] || Math.AbsFloat(vector.Dot(rel, axes[1])) > half[1] || Math.AbsFloat(vector.Dot(rel, axes[2])) > half[2])
 							continue;
 
 						string label = Label(hit);
@@ -542,7 +540,7 @@ class LF_PlacementAudit
 		{
 			Overhang(entity, m);
 			m.m_bBacked = Backed(entity, m);
-			m.m_sClips = Clips(m.m_vMins, m.m_vMaxs, entity);
+			m.m_sClips = Clips(m, entity);
 		}
 
 		if (withWalk)
@@ -552,7 +550,24 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The physical problems, comma separated ("" when none): floating, sunk, overhang, scaled, tilted.
+	//! True when a clip name (`Clips`, ";"-separated) is a building or a wall: a prop stands through one.
+	static bool ClipsWall(string clips)
+	{
+		if (clips.IsEmpty() || clips == "none")
+			return false;
+
+		array<string> words = {"Wall", "Building", "House", "Shop", "Office", "Barn", "Church", "Garage", "Shed", "Warehouse"};
+		foreach (string word : words)
+		{
+			if (clips.Contains(word))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The physical problems, comma separated ("" when none): floating, sunk, overhang, scaled, tilted, through-wall.
 	//! Context the Node side knows (a hung sign, a sack laid down on purpose) is applied there.
 	static string Flags(LF_PlacementMeasure m)
 	{
@@ -573,6 +588,8 @@ class LF_PlacementAudit
 			flags.Insert("scaled");
 		if (m.m_fTilt > TILT)
 			flags.Insert("tilted");
+		if (ClipsWall(m.m_sClips))
+			flags.Insert("through-wall");
 
 		string text;
 		foreach (int i, string flag : flags)
@@ -640,6 +657,8 @@ class LF_PlacementAudit
 			return true;
 		else if (!s_sFindPrefab.IsEmpty() && PrefabBase(entity) == s_sFindPrefab)
 			score = score - 100;
+		else if (!s_sFindPrefab.IsEmpty())
+			return true; // a row with a prefab is that prefab or nothing: a furniture prefab that never spawned is not the building, the marker or the door leaf standing at its origin
 
 		if (!s_FindBest || score < s_fFindScore)
 		{
@@ -650,9 +669,69 @@ class LF_PlacementAudit
 		return true;
 	}
 
+	protected static string s_sNearPrefab;
+	protected static vector s_vNearPos;
+	protected static IEntity s_NearBest;
+	protected static float s_fNearDist;
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool CollectNear(IEntity entity)
+	{
+		if (!entity || PrefabBase(entity) != s_sNearPrefab)
+			return true;
+
+		float d = vector.Distance(entity.GetOrigin(), s_vNearPos);
+		if (!s_NearBest || d < s_fNearDist)
+		{
+			s_NearBest = entity;
+			s_fNearDist = d;
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A `missing` row's tail: " near=<m> nearname=<label>" for the closest entity of prefab `prefabBase` within `radius` of
+	//! `pos` (the row was moved, not deleted), " near=-1" when none stands that close (never spawned).
+	static string NearestOfPrefab(string prefabBase, vector pos, float radius)
+	{
+		if (prefabBase.IsEmpty())
+			return " near=-1";
+
+		s_sNearPrefab = prefabBase;
+		s_vNearPos = pos;
+		s_NearBest = null;
+		s_fNearDist = 0;
+		GetGame().GetWorld().QueryEntitiesBySphere(pos, radius, CollectNear, null, EQueryEntitiesFlags.ALL);
+		IEntity best = s_NearBest;
+		float dist = s_fNearDist;
+		s_NearBest = null;
+		if (!best)
+			return " near=-1";
+
+		return string.Format(" near=%1 nearname=%2", F(dist), Label(best));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A `missing` row's tail when the entity the layer named exists but stands elsewhere: " at=x,y,z surfy=<terrain y at the
+	//! layer x,z>" (the engine put a lamp, fence or pump at terrain + the layer's y; a group prefab is flattened and has no entity
+	//! of its own, so it is never found here). Empty when no entity carries that name.
+	static string StandsAt(string name, vector layerPos)
+	{
+		if (name.IsEmpty())
+			return "";
+
+		IEntity named = GetGame().GetWorld().FindEntityByName(name);
+		if (!named)
+			return "";
+
+		vector at = named.GetOrigin();
+		return " at=" + F(at[0]) + "," + F(at[1]) + "," + F(at[2]) + " surfy=" + F(GetGame().GetWorld().GetSurfaceY(layerPos[0], layerPos[2]));
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! The world entity a layer placed at `pos`: the one named `name` within 1.5 m, else the nearest
-	//! within 1 m (one of prefab `prefabBase` first). Null when nothing is there.
+	//! within 1 m (one of prefab `prefabBase` first; with a prefab given, only that prefab). Null when nothing is there.
 	static IEntity FindPlaced(string name, string prefabBase, vector pos)
 	{
 		s_sFindName = name;
@@ -699,6 +778,202 @@ class LF_PlacementAudit
 		return true;
 	}
 
+	protected static ref array<EntityID> s_aRuntimeIds;
+
+	//! Clutter a script, a proof or a player can leave behind; one no layer row owns is an orphan (placement-system.md). Our own
+	//! prefabs (LF_) and cones and roadblocks: base-map pallets, barrels and crash barriers are the map's (3577 of them on Everon).
+	static const string LOOSE_WORDS = "LF_,Cone,Roadblock";
+
+	protected static bool CollectRuntime(IEntity entity)
+	{
+		if (!entity)
+			return true;
+
+		if (entity.FindComponent(LF_NightLightComponent) || entity.FindComponent(LF_ParkedCarMarkerComponent) || ChimeraCharacter.Cast(entity) || Vehicle.Cast(entity))
+		{
+			s_aRuntimeIds.Insert(entity.GetID());
+			return true;
+		}
+
+		if (!entity.GetParent() && IsLoose(entity))
+			s_aRuntimeIds.Insert(entity.GetID());
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the entity's prefab file names a kind of street clutter (LOOSE_WORDS).
+	static bool IsLoose(IEntity entity)
+	{
+		EntityPrefabData data = entity.GetPrefabData();
+		if (!data)
+			return false;
+
+		string file = FilePath.StripPath(data.GetPrefabName());
+		array<string> words = {};
+		LOOSE_WORDS.Split(",", words, true);
+		foreach (string word : words)
+		{
+			if (file.Contains(word))
+				return true;
+		}
+
+		return false;
+	}
+
+	protected static ref array<EntityID> s_aScanIds;
+
+	protected static bool CollectScan(IEntity entity)
+	{
+		if (entity)
+			s_aScanIds.Insert(entity.GetID());
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line per entity within `radius` of `center`: scan prefab=<resource path> name=<label> p=<x,y,z> top=<1 when it has no parent>.
+	//! Finds the base map's own clutter (crates, pallets, furniture) for a `stamp.clear` list.
+	static void ScanLines(vector center, float radius, notnull array<string> lines)
+	{
+		s_aScanIds = {};
+		BaseWorld world = GetGame().GetWorld();
+		world.QueryEntitiesBySphere(center, radius, CollectScan, null, EQueryEntitiesFlags.ALL);
+		foreach (EntityID id : s_aScanIds)
+		{
+			IEntity e = world.FindEntityByID(id);
+			if (!e)
+				continue;
+
+			string prefab = LF_BaseWorldClear.PrefabOf(e);
+			if (prefab.IsEmpty())
+				continue;
+
+			int top;
+			if (!e.GetParent())
+				top = 1;
+
+			lines.Insert(string.Format("scan prefab=%1 name=%2 p=%3 top=%4", prefab, Label(e), V(e.GetOrigin()), top));
+		}
+
+		s_aScanIds = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Distance from `from` to the nearest surface along up, down and 16 horizontal directions 22.5 degrees apart (up to `reach` m),
+	//! `self` traced through. Six axis rays alone read a window glow 0.33 m from a wall that runs 30 degrees off the axes as 0.66 m.
+	static float AttachDistance(vector from, IEntity self, float reach, out string to)
+	{
+		array<vector> dirs = {"0 1 0", "0 -1 0"};
+		for (int i = 0; i < 16; i++)
+		{
+			float a = i * 22.5 * Math.DEG2RAD;
+			dirs.Insert(Vector(Math.Sin(a), 0, Math.Cos(a)));
+		}
+
+		float best = reach;
+		to = "none";
+		foreach (vector dir : dirs)
+		{
+			IEntity hit;
+			float d = SurfaceTrace(from, from + dir * reach, self, hit);
+			if (hit && d < best)
+			{
+				best = d;
+				to = Label(hit);
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What scripts put in the world, which no layer row lists (#placement-system): one line per thing found within
+	//! `radius` of `center` after the world has run its spawners.
+	//!   car marker=<marker> <Format> found=<car>     a parked-car marker's car (or "car marker=<m> nocar=1")
+	//!   vehicle <Format> found=<label>               any other vehicle standing in the circle
+	//!   light name=<label> p=<x,y,z> att=<m> to=<label>   a night light and how far the nearest surface is
+	//!   char name=<label> p=<x,y,z> gap=<m> on=<label>    a character and its feet above the surface under it
+	//!   loose name=<label> prefab=<file> p=<x,y,z>        street clutter (LOOSE_WORDS) standing on its own
+	static void RuntimeLines(vector center, float radius, notnull array<string> lines)
+	{
+		s_aRuntimeIds = {};
+		BaseWorld world = GetGame().GetWorld();
+		world.QueryEntitiesBySphere(center, radius, CollectRuntime, null, EQueryEntitiesFlags.ALL);
+		array<EntityID> markerCars = {};
+		int cars;
+		int lights;
+		int chars;
+		int loose;
+		foreach (EntityID id : s_aRuntimeIds)
+		{
+			IEntity e = world.FindEntityByID(id);
+			if (!e)
+				continue;
+
+			LF_ParkedCarMarkerComponent marker = LF_ParkedCarMarkerComponent.Cast(e.FindComponent(LF_ParkedCarMarkerComponent));
+			if (!marker)
+				continue;
+
+			// The marker puts its first car out a second after world start; the audit runs it now, as StockRows fills the shelves.
+			IEntity car = marker.GetCar();
+			if (!car)
+				car = marker.SpawnCar("placement audit");
+			if (!car)
+			{
+				lines.Insert(string.Format("car marker=%1 nocar=1 p=%2", Label(e), V(e.GetOrigin())));
+				continue;
+			}
+
+			markerCars.Insert(car.GetID());
+			cars++;
+			lines.Insert(string.Format("car marker=%1 %2 found=%3", Label(e), Format(Measure(car, false)), Label(car)));
+		}
+
+		foreach (EntityID id : s_aRuntimeIds)
+		{
+			IEntity e = world.FindEntityByID(id);
+			if (!e || e.FindComponent(LF_ParkedCarMarkerComponent))
+				continue;
+
+			if (e.FindComponent(LF_NightLightComponent))
+			{
+				string to;
+				float att = AttachDistance(e.GetOrigin(), e, 1.5, to);
+				lines.Insert(string.Format("light name=%1 p=%2 att=%3 to=%4", Label(e), V(e.GetOrigin()), F(att), to));
+				lights++;
+				continue;
+			}
+
+			if (ChimeraCharacter.Cast(e))
+			{
+				vector feet = e.GetOrigin();
+				IEntity under;
+				float d = SurfaceTrace(feet + "0 0.5 0", feet - "0 3 0", e, under);
+				float gap = d - 0.5;
+				if (!under)
+					gap = feet[1] - world.GetSurfaceY(feet[0], feet[2]);
+				lines.Insert(string.Format("char name=%1 p=%2 gap=%3 on=%4", Label(e), V(feet), F(gap), Label(under)));
+				chars++;
+				continue;
+			}
+
+			if (Vehicle.Cast(e))
+			{
+				if (!markerCars.Contains(e.GetID()))
+					lines.Insert(string.Format("vehicle %1 found=%2", Format(Measure(e, false)), Label(e)));
+				continue;
+			}
+
+			string prefab = FilePath.StripPath(e.GetPrefabData().GetPrefabName());
+			lines.Insert(string.Format("loose name=%1 prefab=%2 p=%3", Label(e), prefab, V(e.GetOrigin())));
+			loose++;
+		}
+
+		LF_Debug.Info("PlaceAudit", string.Format("runtime sweep: %1 parked cars, %2 night lights, %3 characters, %4 loose props within %5 m", cars, lights, chars, loose, radius));
+		s_aRuntimeIds = null;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! One row per display copy a physical store puts on its shelf at load: "shelf <store>/<prefab>@<slot> <measure>".
 	//! They are spawned by script, not placed in a layer, so the layer list never names them; a slot
@@ -733,10 +1008,35 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One "child name=<l> root=<l> rp=<p> c= h= a0= a1= a2=" line per mesh child (not a door leaf) below `node`, boxed as a door line is.
+	protected static void ChildLines(IEntity root, IEntity node, int depth, notnull array<string> lines)
+	{
+		IEntity child = node.GetChildren();
+		int guard;
+		while (child && guard < 400)
+		{
+			guard++;
+			if (!child.FindComponent(DoorComponent) && child.GetVObject())
+			{
+				LF_PlacementMeasure m = new LF_PlacementMeasure();
+				OrientedBox(child, m);
+				if (m.m_vHalf[1] >= 0.1)
+					lines.Insert(string.Format("child name=%1 root=%2 rp=%3 c=%4 h=%5 a0=%6 a1=%7 a2=%8", Label(child), Label(root), V(root.GetOrigin()), V(m.m_vCenter), V(m.m_vHalf), V(m.m_vAxis0), V(m.m_vAxis1), V(m.m_vAxis2)));
+			}
+
+			if (depth < 4)
+				ChildLines(root, child, depth + 1, lines);
+
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One line per door leaf within `radius` of `center`: its oriented box and the building it belongs to.
 	static void DoorLines(vector center, float radius, notnull array<string> lines)
 	{
 		s_aDoorIds = {};
+		array<EntityID> doneRoots = {};
 		BaseWorld world = GetGame().GetWorld();
 		world.QueryEntitiesBySphere(center, radius, CollectDoor, null, EQueryEntitiesFlags.ALL);
 		foreach (EntityID id : s_aDoorIds)
@@ -751,6 +1051,16 @@ class LF_PlacementAudit
 			if (!root)
 				root = door;
 			lines.Insert(string.Format("door name=%1 root=%2 rp=%3 c=%4 h=%5 a0=%6 a1=%7 a2=%8", Label(door), Label(root), V(root.GetOrigin()), V(m.m_vCenter), V(m.m_vHalf), V(m.m_vAxis0), V(m.m_vAxis1), V(m.m_vAxis2)));
+			// Once per building: its world bounds (a base-map building is no layer row, so this is its room) and the furniture its prefab brings in its own children (place-lanes.mjs judges both).
+			if (doneRoots.Find(root.GetID()) < 0)
+			{
+				doneRoots.Insert(root.GetID());
+				vector rmin;
+				vector rmax;
+				root.GetWorldBounds(rmin, rmax);
+				lines.Insert(string.Format("root name=%1 rp=%2 rmin=%3 rmax=%4", Label(root), V(root.GetOrigin()), V(rmin), V(rmax)));
+				ChildLines(root, root, 0, lines);
+			}
 		}
 
 		s_aDoorIds = null;
@@ -839,6 +1149,7 @@ class LF_PlacementAudit
 	//!   ray <id> <x> <y> <z> <x2> <y2> <z2> [exclude name]  a probe ray (RayLine), not an entity row
 	//!   settle <id> <name|@prefab:x,y,z>                    rest that entity by its mesh bottom (SettleLine); the entity rows
 	//!                                                       follow the extra lines, so they measure it already settled
+	//! A row may end with "rel": its y counts from the terrain (a terrain-relative class), so it is looked for at terrain + y.
 	//! Output lines: "<index> missing=1", "<index> <Format> found=<label>", "door ...", "ray ...". Returns the
 	//! entity rows written, or -1 when a file cannot be opened. `missing` counts entities not found.
 	static int RunBatch(string inPath, string outPath, out int missing)
@@ -853,6 +1164,8 @@ class LF_PlacementAudit
 
 		array<string> rows = {};
 		int measured;
+		vector runtimeAt;
+		float runtimeRadius;
 		string line;
 		while (input.ReadLine(line) >= 0)
 		{
@@ -865,6 +1178,21 @@ class LF_PlacementAudit
 			if (parts.Count() == 4 && parts[0] == "town")
 			{
 				DoorLines(Vector(parts[1].ToFloat(), 0, parts[2].ToFloat()), parts[3].ToFloat(), rows);
+				continue;
+			}
+
+			// "scan <x> <z> <radius>": list every entity in that circle by prefab (base-map clutter a stamp must hide, #3895).
+			if (parts.Count() == 4 && parts[0] == "scan")
+			{
+				ScanLines(Vector(parts[1].ToFloat(), 0, parts[2].ToFloat()), parts[3].ToFloat(), rows);
+				continue;
+			}
+
+			// "runtime <x> <z> <radius>": also sweep that circle for what spawners put out (RuntimeLines); the island audit asks for it.
+			if (parts.Count() == 4 && parts[0] == "runtime")
+			{
+				runtimeAt = Vector(parts[1].ToFloat(), 0, parts[2].ToFloat());
+				runtimeRadius = parts[3].ToFloat();
 				continue;
 			}
 
@@ -897,20 +1225,38 @@ class LF_PlacementAudit
 			string prefab = parts[2];
 			if (prefab == "-")
 				prefab = "";
-			IEntity entity = FindPlaced(name, prefab, Vector(parts[3].ToFloat(), parts[4].ToFloat(), parts[5].ToFloat()));
+			vector layerPos = Vector(parts[3].ToFloat(), parts[4].ToFloat(), parts[5].ToFloat());
+			// "rel": a class whose layer y counts from the terrain under it (SCR_DestructibleEntity, #3566), so it stands at
+			// terrain + y, not at y.
+			vector absolutePos = layerPos;
+			bool relRow = parts.Count() >= 8 && parts[7] == "rel";
+			if (relRow)
+				layerPos[1] = layerPos[1] + GetGame().GetWorld().GetSurfaceY(layerPos[0], layerPos[2]);
+			IEntity entity = FindPlaced(name, prefab, layerPos);
+			// The layer class says "rel" but the prefab decides: a bench, bin or flowerpot of that class stands at the layer's y as it
+			// is (the island server, 2026-11-21), so look there too before calling the row missing.
+			string absoluteTag = "";
+			if (!entity && relRow)
+			{
+				entity = FindPlaced(name, prefab, absolutePos);
+				if (entity)
+					absoluteTag = " absolute=1";
+			}
 			measured++;
 			if (!entity)
 			{
 				missing++;
-				rows.Insert(parts[0] + " missing=1");
+				rows.Insert(parts[0] + " missing=1" + NearestOfPrefab(prefab, layerPos, 40) + StandsAt(name, layerPos));
 				continue;
 			}
 
-			rows.Insert(parts[0] + " " + Format(Measure(entity, parts[6] == "1")) + " found=" + Label(entity));
+			rows.Insert(parts[0] + " " + Format(Measure(entity, parts[6] == "1")) + " found=" + Label(entity) + absoluteTag);
 		}
 
 		input.Close();
 		StockRows(rows);
+		if (runtimeRadius > 0)
+			RuntimeLines(runtimeAt, runtimeRadius, rows);
 		FileHandle output = FileIO.OpenFile(outPath, FileMode.WRITE);
 		if (!output)
 		{

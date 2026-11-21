@@ -1,0 +1,432 @@
+{
+  "schema": 1,
+  "kit": "furniture",
+  "system": "store",
+  "source": {
+    "file": "tools/town/kits/sources/furniture.layer",
+    "group": "Furniture_*",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et"
+  },
+  "anchoring": {
+    "floorY": 0.001,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.001
+      },
+      {
+        "id": "f1",
+        "y": 3.001
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -7.08,
+        -3.64
+      ],
+      "max": [
+        5.2,
+        4.4
+      ]
+    },
+    "front": "+z",
+    "counters": [
+      {
+        "id": "furniture-counter",
+        "wall": "+z",
+        "edgeGap": 0.9
+      },
+      {
+        "id": "furniture-cashier",
+        "wall": "+z",
+        "edgeGap": 0.9
+      }
+    ],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "furniture-fridge",
+      "name": "Furniture_fridge",
+      "prefab": "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -6.67,
+        0.001,
+        1.14
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "furniture-stove",
+      "name": "Furniture_stove",
+      "prefab": "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -6.65,
+        0.001,
+        1.25
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "furniture-kitchen",
+      "name": "Furniture_kitchen",
+      "prefab": "{E1D3E7F0A1833454}Prefabs/Props/Furniture/Kitchen_02.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -6.68,
+        0.001,
+        2
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "furniture-table",
+      "name": "Furniture_table",
+      "prefab": "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.405,
+        0.001,
+        2.75
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-chair-north",
+      "name": "Furniture_chair_north",
+      "prefab": "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.4,
+        0.001,
+        1.51
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-chair-south",
+      "name": "Furniture_chair_south",
+      "prefab": "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.4,
+        0.001,
+        3.99
+      ],
+      "yaw": 180,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-wardrobe",
+      "name": "Furniture_wardrobe",
+      "prefab": "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        -6.68,
+        0.001,
+        -2.6
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
+      "id": "furniture-bed-double",
+      "name": "Furniture_bed_double",
+      "prefab": "{8A6DD31A4FF94E48}Prefabs/Props/Furniture/BedDouble_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.4,
+        0.001,
+        -2.6
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-rug",
+      "name": "Furniture_rug",
+      "prefab": "{2DD4D94957E1DC2B}Prefabs/Props/Furniture/Carpet_03_red.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.15,
+        0.001,
+        -2.245
+      ],
+      "yaw": 90,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-sofa",
+      "name": "Furniture_sofa",
+      "prefab": "{A0A76057A66049D0}Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.105,
+        0.021,
+        -2.35
+      ],
+      "yaw": -90,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-coffee-table",
+      "name": "Furniture_coffee_table",
+      "prefab": "{E3382F292BA2A27D}Prefabs/Props/Furniture/TableCoffee_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.05,
+        0.021,
+        -2.35
+      ],
+      "yaw": -90,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-armchair",
+      "name": "Furniture_armchair",
+      "prefab": "{EE22BB8259C1A594}Prefabs/Props/Furniture/Armchair_03.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.7,
+        0.021,
+        -3.52
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-lamp",
+      "name": "Furniture_lamp",
+      "prefab": "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        5.2,
+        0.001,
+        -0.955
+      ],
+      "yaw": 0,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-counter",
+      "name": "Furniture_counter",
+      "prefab": "{B0C1CC8AA15B21D2}Prefabs/Props/Commercial/LF_FurnitureCounter.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        3.6,
+        0.001,
+        3.1
+      ],
+      "yaw": 180,
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-cashier",
+      "name": "Furniture_cashier",
+      "prefab": "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et",
+      "role": "till",
+      "verb": "on furniture-counter",
+      "offset": [
+        3.6,
+        1.04,
+        3.1
+      ],
+      "yaw": 180,
+      "floor": "f0",
+      "attach": "counter:furniture-counter"
+    },
+    {
+      "id": "furniture-clerk",
+      "name": "Furniture_clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        3.6,
+        0.001,
+        4
+      ],
+      "yaw": 180,
+      "class": "LF_NpcBaseEntity",
+      "wall": "+z",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "furniture-fascia",
+      "name": "Furniture_fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        4.66,
+        2.95,
+        5.034
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "guid": "6E3FF3980D87CACE",
+          "set": {
+            "m_sSignId": "\"furniture_store\"",
+            "m_vRimColor": "0.92 0.86 0.7",
+            "m_vPaintColor": "0.33 0.2 0.12",
+            "m_vTextColor": "0.96 0.93 0.82"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f1",
+      "attach": "wall"
+    },
+    {
+      "id": "anchor-counter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        2.7,
+        0.001,
+        4
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-door",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0.4,
+        0.001,
+        3
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"door\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et",
+    "lanes": [
+      {
+        "from": "entrance",
+        "to": "furniture-counter",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "furniture-cashier",
+        "width": 1.2
+      }
+    ],
+    "clear": [
+      {
+        "prefab": "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et"
+      },
+      {
+        "prefab": "{96A3F39C918787E5}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big_bottom.et"
+      },
+      {
+        "prefab": "{E537DCDB9B3F2278}Prefabs/Props/Agriculture/Farm/HayPile_01.et"
+      },
+      {
+        "prefab": "{3AB2B7156B3A0F3D}Prefabs/Props/Agriculture/MilkCan_01.et"
+      },
+      {
+        "prefab": "{6929659CE9375CAF}Prefabs/Props/Garbage/Tires/TireTractor_01_single.et"
+      },
+      {
+        "prefab": "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et"
+      },
+      {
+        "prefab": "{B69B4902BAF5B1B9}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_02.et"
+      },
+      {
+        "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et"
+      },
+      {
+        "prefab": "{EECACC5F25A31B0F}Prefabs/Props/Civilian/LadderWooden_01_Long.et"
+      },
+      {
+        "prefab": "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et"
+      },
+      {
+        "prefab": "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et"
+      }
+    ]
+  }
+}

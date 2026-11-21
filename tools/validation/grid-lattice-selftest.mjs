@@ -5,11 +5,14 @@
 // (the pub cafe in c17r0 and the hostel had path in the building), while every lattice cell still has its marker and plate
 // (the in-game test grid/frame-labels wants one per cell; a span's inner cells are marked on their east edge, #2278) and a
 // one-cell claim keeps its path.
+// An authoring bay (a free one too) carries no path either (#3961): a building copy stands centred in it, and the path along the
+// row line through the bay middle ran under it and was flagged sunk.
+// red-proof (#3961, 2026-11-21): with bayRects() left out of framePlan this printed "FAIL a gravel path stands in an authoring bay: ...".
 // red-proof: with the path's inSpan test removed from framePlan this printed "FAIL a gravel path stands on or inside the span
 // claim: GridPath_r0_86, ..." and exited 1 (2026-11-17). A first version also skipped the markers inside span claims; it removed
 // 12 markers and the main guard's grid/frame-labels failed twice (#2379), so the markers stay.
 
-import { allCells, cellBounds, cellStates, framePlan, spanRects } from "../grid/lattice.mjs";
+import { allCells, bayRects, cellBounds, cellStates, framePlan, spanRects } from "../grid/lattice.mjs";
 
 let failed = 0;
 const ok = (cond, what) => {
@@ -46,6 +49,15 @@ ok(allCells().every((c) => names.has(`GridMarker_${c.id}`) && names.has(`GridPla
 ok(names.has("GridMapBoard"), "the map board is gone");
 // The path still runs past the span, east of its rectangle.
 ok(plan.some((e) => e.name.startsWith("GridPath_r0_") && e.x > rect.x1 + 1), "the path along row 0 does not continue past the span");
+
+// Authoring bays (#3961): no gravel path on or inside any bay, free or claimed, while the path still runs up to the bays.
+const bays = bayRects();
+ok(bays.length === 6, `six authoring bays expected, got ${bays.length}`);
+const inBay = paths.filter((e) => bays.some((r) => e.x >= r.x0 && e.x <= r.x1 && e.z >= r.z0 && e.z <= r.z1));
+ok(inBay.length === 0, `a gravel path stands in an authoring bay: ${inBay.slice(0, 4).map((e) => e.name).join(", ")}`);
+ok(paths.some((e) => e.name.startsWith("GridPath_r2_") && e.x < bays[0].x0), "the path along row 2 no longer runs up to the bays");
+const bayCells = ["c25r0", "c28r5"];
+for (const id of bayCells) ok(names.has(`GridMarker_${id}`) && names.has(`GridPlate_${id}`), `bay cell ${id} lost its marker or plate`);
 
 console.log(failed ? `grid-lattice-selftest: ${failed} failure(s)` : "grid-lattice-selftest: OK (no path in a span claim, a marker and plate in every cell)");
 process.exit(failed ? 1 : 0);

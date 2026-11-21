@@ -45,7 +45,8 @@ enum LF_ELicenseType
 	CRIMINAL_CLOTHES = 205,     // Comprar ropa del mercado negro
 
 	// Civilian permits (#988): a licence an outlet's gate asks for. Its own range so a family never shifts.
-	FIREARM_PERMIT = 300        // Carry and buy a handgun at a licensed gun counter
+	FIREARM_PERMIT = 300,       // Carry and buy a handgun at a licensed gun counter
+	DRIVING_LICENCE = 301       // #3128: sold at the licence desk; no car lot asks for it yet
 }
 
 //------------------------------------------------------------------------------------------------
@@ -185,7 +186,8 @@ class LF_LicenseBits
 				LF_ELicenseType.POLICE_ACCESS, LF_ELicenseType.POLICE_ARREST, LF_ELicenseType.POLICE_FINE, LF_ELicenseType.POLICE_SEARCH,
 				LF_ELicenseType.CRIMINAL_WEED, LF_ELicenseType.CRIMINAL_ROBBERY, LF_ELicenseType.CRIMINAL_BLACKMARKET, LF_ELicenseType.CRIMINAL_WEAPONS,
 				LF_ELicenseType.CRIMINAL_VEHICLES, LF_ELicenseType.CRIMINAL_CLOTHES,
-				LF_ELicenseType.FIREARM_PERMIT
+				LF_ELicenseType.FIREARM_PERMIT,
+				LF_ELicenseType.DRIVING_LICENCE
 			};
 			s_aOrder = order;
 		}
@@ -514,6 +516,13 @@ class LF_LicenseManagerComponent : ScriptComponent
 		firearmPermit.m_iMinLevelRequired = 1;
 		m_mLicenseConfigs.Set(LF_ELicenseType.FIREARM_PERMIT, firearmPermit);
 
+		LF_LicenseConfig drivingLicence = new LF_LicenseConfig();
+		drivingLicence.m_eLicenseType = LF_ELicenseType.DRIVING_LICENCE;
+		drivingLicence.m_sLicenseName = "#LF-License_Driving_Name";
+		drivingLicence.m_sDescription = "#LF-License_Driving_Desc";
+		drivingLicence.m_iMinLevelRequired = 1;
+		m_mLicenseConfigs.Set(LF_ELicenseType.DRIVING_LICENCE, drivingLicence);
+
 		// The owner's `licences` section (D8): initial and whitelist flags.
 		LF_LicencesConfig.ApplyTo(m_mLicenseConfigs);
 	}
@@ -540,11 +549,15 @@ class LF_LicenseManagerComponent : ScriptComponent
 		// Ya desbloqueada
 		if (HasLicense(licenseType))
 			return false;
-		
+
+		// A conviction's licence ban refuses it until the ban ends (#3430).
+		if (LF_LicenceBans.IsBanned(LF_Utils.GetPlayerUID(GetOwner()), licenseType))
+			return false;
+
 		LF_LicenseConfig config = m_mLicenseConfigs.Get(licenseType);
 		if (!config)
 			return false;
-		
+
 		// Verificar whitelist si es necesaria
 		if (config.m_bRequiresWhitelist)
 		{

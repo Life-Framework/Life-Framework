@@ -1,0 +1,28 @@
+GenericEntity : "{2F8BC4454FD8081B}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Forest_V1.et" {
+ ID "315DA60E410ABDEA"
+ components {
+  ActionsManagerComponent "{461346D0E5A5FA4E}" {
+   ActionContexts {
+    UserActionContext "{A9B6173301F2A70A}" {
+     ContextName "default"
+     Position PointInfo "{0903C0403D3CDABC}" {
+      Offset 0 0 0
+     }
+     Radius 1.4
+    }
+   }
+   additionalActions {
+    LF_PlacementPickupAction "{D5DD54DC34E70737}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  LF_PlacedOwnerComponent "{C813E694AF5486F9}" {
+  }
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+ }
+}

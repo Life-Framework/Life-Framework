@@ -1,0 +1,578 @@
+{
+  "schema": 1,
+  "kit": "wheatfield",
+  "system": "harvest",
+  "source": {
+    "file": "tools/town/kits/sources/wheatfield.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity",
+    "also": [
+      "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers/Village_Dressing.layer"
+    ]
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        7.35,
+        -66.42
+      ],
+      "max": [
+        60.6,
+        1.01
+      ]
+    },
+    "front": "-x",
+    "counters": [],
+    "adapt": "Open pasture beside an open barn: the barn is the host and only an anchor. The kit frame is the barn turned to a quarter turn from the world (x east, z north on the farmwest barn b19), the field box (60 x 40 m, centred 59 m from the barn, yaw ignored) stands 50 m east and 25 m south of the barn centre, a wooden fence runs along its west and south sides with a gate opening mid-south, the cart, sacks, hay and implement wrecks stand on the ground beside the opening and the west fence, and a weighbridge (vanilla WeightStation_01 plus an LF_GranaryUnloadAction prompt entity) stands 16 m south of the gate opening, and the farm contract board (LF_HarvestBoard, #3656) and the `harvest` chalkboard stand just outside the fence either side of the gate opening. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "wheat-field-field",
+      "name": "WheatField_Field",
+      "prefab": "{5FF806585DB556B3}Prefabs/Harvest/LF_WheatField.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        47.87,
+        0,
+        -24.74
+      ],
+      "yaw": 3,
+      "class": "LF_WheatField",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-fence-s-1",
+      "name": "WheatField_FenceS_1",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        12.66,
+        0,
+        -46.93
+      ],
+      "yaw": 3,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "wheat-field-fence-s-9",
+      "name": "WheatField_FenceS_9",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        20.65,
+        0,
+        -47.35
+      ],
+      "yaw": 3,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "wheat-field-fence-s-17",
+      "name": "WheatField_FenceS_17",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        28.64,
+        0,
+        -47.76
+      ],
+      "yaw": 3,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "wheat-field-fence-s-25",
+      "name": "WheatField_FenceS_25",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        36.63,
+        0,
+        -48.18
+      ],
+      "yaw": 3,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "wheat-field-fence-s-41",
+      "name": "WheatField_FenceS_41",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        52.61,
+        0,
+        -49.02
+      ],
+      "yaw": 3,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "wheat-field-fence-s-49",
+      "name": "WheatField_FenceS_49",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        60.6,
+        0,
+        -49.44
+      ],
+      "yaw": 3,
+      "class": "SCR_DestructibleEntity",
+      "wall": "+x",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "wheat-field-fence-w-0",
+      "name": "WheatField_FenceW_0",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        15.17,
+        0,
+        1.01
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "+z",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "wheat-field-fence-w-8",
+      "name": "WheatField_FenceW_8",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        14.75,
+        0,
+        -6.98
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground",
+      "lift": 0.406
+    },
+    {
+      "id": "wheat-field-fence-w-12",
+      "name": "WheatField_FenceW_12",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        14.54,
+        0,
+        -10.97
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground",
+      "lift": 0.375
+    },
+    {
+      "id": "wheat-field-fence-w-16",
+      "name": "WheatField_FenceW_16",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        14.34,
+        0,
+        -14.97
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground",
+      "lift": 0.328
+    },
+    {
+      "id": "wheat-field-fence-w-20",
+      "name": "WheatField_FenceW_20",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        14.13,
+        0,
+        -18.96
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground",
+      "lift": 0.328
+    },
+    {
+      "id": "wheat-field-fence-w-24",
+      "name": "WheatField_FenceW_24",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13.92,
+        0,
+        -22.96
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground",
+      "lift": 0.281
+    },
+    {
+      "id": "wheat-field-fence-w-28",
+      "name": "WheatField_FenceW_28",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13.71,
+        0,
+        -26.95
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground",
+      "lift": 0.265
+    },
+    {
+      "id": "wheat-field-fence-w-32",
+      "name": "WheatField_FenceW_32",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13.5,
+        0,
+        -30.95
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "wheat-field-fence-w-40",
+      "name": "WheatField_FenceW_40",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13.08,
+        0,
+        -38.94
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground"
+    },
+    {
+      "id": "wheat-field-cart",
+      "name": "WheatField_Cart",
+      "prefab": "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        41.31,
+        0,
+        -54.44
+      ],
+      "yaw": 23,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-sack-pile",
+      "name": "WheatField_SackPile",
+      "prefab": "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        43.85,
+        0,
+        -55.57
+      ],
+      "yaw": -27,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-sack-1",
+      "name": "WheatField_Sack_1",
+      "prefab": "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        38.73,
+        0,
+        -55.8
+      ],
+      "yaw": 73,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-sack-2",
+      "name": "WheatField_Sack_2",
+      "prefab": "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        37.67,
+        0,
+        -57.05
+      ],
+      "yaw": 103,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-haystack-1",
+      "name": "WheatField_Haystack_1",
+      "prefab": "{520626A206926F47}Prefabs/Props/Agriculture/Farm/Haystack_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        23.36,
+        0,
+        -53
+      ],
+      "yaw": 3,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-haystack-2",
+      "name": "WheatField_Haystack_2",
+      "prefab": "{520626A206926F47}Prefabs/Props/Agriculture/Farm/Haystack_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        7.35,
+        0,
+        -14.6
+      ],
+      "yaw": 43,
+      "wall": "-x",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-bale-1",
+      "name": "WheatField_Bale_1",
+      "prefab": "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        9.21,
+        0,
+        -26.72
+      ],
+      "yaw": 93,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-bale-2",
+      "name": "WheatField_Bale_2",
+      "prefab": "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        9.45,
+        0,
+        -22.23
+      ],
+      "yaw": 83,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-plow-wreck",
+      "name": "WheatField_PlowWreck",
+      "prefab": "{A98BA618430E9BAA}Prefabs/Props/Agriculture/PlowWreck_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        29.17,
+        0,
+        -56.8
+      ],
+      "yaw": 103,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-cultivator-wreck",
+      "name": "WheatField_CultivatorWreck",
+      "prefab": "{DE59CB05202006E8}Prefabs/Props/Agriculture/CultivatorWreck_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        32.53,
+        0,
+        -59.48
+      ],
+      "yaw": 163,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-weighbridge",
+      "name": "WheatField_Weighbridge",
+      "prefab": "{B461AC17AE9B29EF}Prefabs/Structures/Agriculture/WeightStation/WeightStation_01/WeightStation_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        40.68,
+        0,
+        -66.42
+      ],
+      "yaw": 3,
+      "class": "SCR_DestructibleBuildingEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-unload",
+      "name": "WheatField_Unload",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        43.55,
+        0,
+        -63.27
+      ],
+      "yaw": 3,
+      "config": [
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "RplComponent",
+          "set": {
+            "Enabled": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "wheat-field-board",
+      "name": "WheatField_Board",
+      "prefab": "{194CC74891AEC339}Prefabs/Harvest/LF_HarvestBoard.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        51.5,
+        0,
+        -52
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"harvest_board\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "wheat-field-sign",
+      "name": "WheatField_Sign",
+      "prefab": "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et",
+      "role": "sign",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        38,
+        0,
+        -52
+      ],
+      "yaw": 180,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"harvest\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

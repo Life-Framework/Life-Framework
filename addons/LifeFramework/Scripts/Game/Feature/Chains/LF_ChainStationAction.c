@@ -109,8 +109,13 @@ class LF_ChainStationAction : ScriptedUserAction
 		{
 			string key = LF_ChainStationComponent.RefusalKey(result);
 			LF_Debug.Info(LF_ChainSites.FEATURE, string.Format("station %1 refused %2 (%3)", m_Station.GetStationKey(), typename.EnumToString(LF_EChainMode, m_eMode), typename.EnumToString(LF_EChainStation, result)));
+			string where;
+			if (result == LF_EChainStation.LICENSE)
+				where = m_Station.LicenceWhere();
+			if (!where.IsEmpty())
+				key = "#LF-Chain_NeedLicenseWhere";
 			if (!key.IsEmpty())
-				LF_Utils.NotifyEntity(pUserEntity, key, "#LF-Chain_Title", 4.0);
+				LF_Utils.NotifyEntity(pUserEntity, key, "#LF-Chain_Title", 4.0, where);
 			return;
 		}
 

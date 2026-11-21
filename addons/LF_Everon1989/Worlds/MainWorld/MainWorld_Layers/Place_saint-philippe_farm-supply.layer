@@ -1,0 +1,81 @@
+GenericEntity Fit_saint_philippe_farm_supply_Place {
+ components {
+  LF_PlaceComponent "{6239D63E11A43170}" {
+   m_sKind "StoreCounter"
+   m_sId "saint-philippe.farm-supply"
+  }
+  LF_FittedBuildingComponent "{ED58003DB57A292F}" {
+  }
+ }
+ coords 4426.9 16.8 10609
+}
+SCR_DestructibleEntity Fit_saint_philippe_farm_supply_farm_supply_board : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ components {
+  LF_SignComponent "{DF6A14A1AD2B41F0}" {
+   m_sSignId "farm_supply"
+   m_sStyle ""
+   m_sSize ""
+   m_vFaceAngles 0 -15 0
+   m_fFaceScale 2.6
+  }
+ }
+ coords 4436.705 16.772 10619.309
+ angleY -4
+}
+LF_NpcBaseEntity Fit_saint_philippe_farm_supply_farm_supply_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 4434.399 16.877 10616.441
+ angleY -4
+}
+GenericEntity Fit_saint_philippe_farm_supply_farm_supply_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4434.322 16.825 10617.539
+ angleY -4
+}
+GenericEntity Fit_saint_philippe_farm_supply_farm_supply_crate : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 4435.974 16.947 10616.852
+ angleY -4
+}
+GenericEntity Fit_saint_philippe_farm_supply_farm_supply_sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 4431.757 16.766 10616.958
+ angleY -94
+}
+GenericEntity Fit_saint_philippe_farm_supply_farm_supply_sacks_2 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 4431.61 16.635 10619.053
+ angleY -94
+}
+GenericEntity Fit_saint_philippe_farm_supply_farm_supply_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
+ components {
+  LF_ShopComponent "{A4F8CB053836E968}" {
+   m_sShopName "#LF-Shop_Name_FarmSupply"
+   m_sShopDescription "#LF-Shop_Desc_FarmSupply"
+   m_sOutletId "farm_supply"
+  }
+  ActionsManagerComponent "{5A4B0B84C86E4845}" {
+   ActionContexts {
+    UserActionContext "{5302375DBA31C588}" {
+     ContextName "default"
+     Radius 1.6
+     Position PointInfo "{C230C2489F6ADA9F}" {
+      Offset 0 0.3 0.35
+     }
+    }
+   }
+   additionalActions {
+    LF_ShopAction "{6BB38C44379A9E0F}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{DE6285E6B01111EF}" {
+      Name "#LF-Shop_Open_FarmSupply"
+      Description "#LF-Shop_OpenDesc_FarmSupply"
+     }
+    }
+   }
+  }
+ }
+ coords 4434.322 17.839 10617.539
+ angleY -4
+}
+GenericEntity Fit_saint_philippe_farm_supply_implement_rack : "{21B9456F3B79410E}Prefabs/Harvest/LF_ImplementRack.et" {
+ coords 4440.336 17.067 10617.558
+ angleY -4
+}

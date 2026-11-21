@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{7F989E4B2D5B7E57}Assets/Items/Food/Saucisson/Data/Saucisson_BCR.edds"
+ NMOMap "{A269F32597E1CA4B}Assets/Items/Food/Saucisson/Data/Saucisson_NMO.edds"
+}

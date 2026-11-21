@@ -977,6 +977,7 @@ class LF_VehicleOwnership
 
 		GiveKey(buyer, key);
 		vehicleLock.SetLocked(true);
+		vehicleLock.SetOwnerUid(buyerUid); // replicated for the client's "Store in garage" row (#3366)
 
 		string plate = LF_LicensePlateRegistry.Issue(new LF_LicensePlateGeneratorGeneric(), id);
 		LF_LicensePlateManagerComponent plates = LF_Component<LF_LicensePlateManagerComponent>.Find(vehicle);
@@ -996,6 +997,8 @@ class LF_VehicleOwnership
 		session.m_Vehicle = vehicle.GetID();
 		session.m_Key = key.GetID();
 		Sessions().Set(id, session);
+		// The record restores the car; the engine's own save would put back an unowned copy (#3614).
+		LF_VehicleWorldSave.Hold(vehicle);
 
 		vehicleId = id;
 		cashCharged = cashDebit;
@@ -1314,6 +1317,8 @@ class LF_VehicleOwnership
 		if (vehicleId.IsEmpty() || !vehicle)
 			return false;
 
+		LF_CargoBedPersist.Capture(vehicleId, vehicle); // the truck bed load rides its own save section (#3266)
+		LF_VehicleCache.Capture(vehicleId, vehicle); // the hidden compartment rides the vehiclecache section (#3435)
 		LF_StorageSnapshotRecord cargo = LF_StorageSnapshot.Capture(vehicleId, SLOT_CARGO, vehicle);
 		if (!cargo)
 			return false;
@@ -1328,6 +1333,8 @@ class LF_VehicleOwnership
 	//! old snapshot never comes back next to items that already left.
 	protected static void ForgetCargo(string vehicleId, string why)
 	{
+		LF_CargoBedPersist.Forget(vehicleId, why);
+		LF_VehicleCache.Forget(vehicleId, why);
 		if (LF_StorageSnapshot.Clear(vehicleId, SLOT_CARGO))
 			LF_Debug.Info("Vehicle", string.Format("cargo of %1 dropped: %2", vehicleId, why));
 	}
@@ -1704,6 +1711,7 @@ class LF_VehicleOwnership
 		vehicleLock.SetVehicleIdentifier(record.m_sVehicleId);
 		vehicleLock.SetKeyId(record.m_sKeyId);
 		vehicleLock.SetLocked(record.m_bLocked);
+		vehicleLock.SetOwnerUid(record.m_sOwnerUid); // #3366
 
 		LF_VehicleSession session = Sessions().Get(record.m_sVehicleId);
 		if (!session)
@@ -1749,6 +1757,10 @@ class LF_VehicleOwnership
 		}
 
 		session.m_Vehicle = vehicle.GetID();
+		// The record restores the car; the engine's own save would put back an unowned copy (#3614).
+		LF_VehicleWorldSave.Hold(vehicle);
+		LF_CargoBedPersist.Apply(record.m_sVehicleId, vehicle); // the saved truck bed load (#3266)
+		LF_VehicleCache.ApplyLater(record.m_sVehicleId); // the saved hidden compartment (#3435)
 
 		// The saved cargo goes back in once the car's storages have registered (#2809).
 		if (LF_StorageSnapshot.Has(record.m_sVehicleId, SLOT_CARGO) && GetGame() && GetGame().GetCallqueue())
@@ -1790,6 +1802,7 @@ class LF_VehicleOwnership
 				vehicleLock.SetVehicleIdentifier(record.m_sVehicleId);
 				vehicleLock.SetKeyId(record.m_sKeyId);
 				vehicleLock.SetLocked(record.m_bLocked);
+				vehicleLock.SetOwnerUid(record.m_sOwnerUid); // #3366
 			}
 		}
 

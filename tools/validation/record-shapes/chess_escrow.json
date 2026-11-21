@@ -1,0 +1,16 @@
+{
+  "section": "chess_escrow",
+  "class": "LF_ChessStakeSavePayload",
+  "version": 1,
+  "roots": "LF_ChessEscrowRow",
+  "records": {
+    "LF_ChessEscrowRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sKey",
+        "string m_sToken",
+        "int m_iAmount"
+      ]
+    }
+  }
+}

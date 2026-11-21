@@ -1,0 +1,162 @@
+{
+  "schema": 1,
+  "kit": "church",
+  "system": "residents",
+  "source": {
+    "file": "tools/town/kits/sources/church.layer",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside"
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -4,
+        -13.5
+      ],
+      "max": [
+        4,
+        14.5
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "The church nave in the building's own frame: the door end is +z (the street side the scout's entrances face), the altar end -z, the nave about 20 m wide (x) by 34 m long (z). Three candle holders and two flower pots dress the altar end, one flower pot stands by the door, and the `bench` resident anchor sits in the nave beside the pews so a resident whose line says `sit` takes a free seat within 2.5 m of it. The slot's place marker is the `Church` kind and switches the building's destruction off (D15). The same kit shape serves the crypt b08 (it stands at the same spot). Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "candle-altar-1",
+      "prefab": "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2,
+        0,
+        -13
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "candle-altar-2",
+      "prefab": "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        -13
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "candle-altar-3",
+      "prefab": "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2,
+        0,
+        -13
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "flowers-altar-pink",
+      "prefab": "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4,
+        0,
+        -13.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "flowers-altar-red",
+      "prefab": "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4,
+        0,
+        -13.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "flowers-door",
+      "prefab": "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.5,
+        0,
+        14.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "letter-altar",
+      "prefab": "{3465A00000000003}Prefabs/Items/Story/LF_AnniversaryLetter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3,
+        0,
+        -13.2
+      ],
+      "yaw": 20,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "anchor-bench",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        4
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"bench\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

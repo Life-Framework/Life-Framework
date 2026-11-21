@@ -1,0 +1,85 @@
+GenericEntity Fit_saint_philippe_orchard_Place {
+ components {
+  LF_PlaceComponent "{81A5107C8EC9B6F5}" {
+   m_sKind "Orchard"
+   m_sId "saint-philippe.orchard"
+  }
+  LF_FittedBuildingComponent "{38E73169AFC95D23}" {
+  }
+ }
+ coords 4607.7 18.9 10779.5
+}
+Tree Fit_saint_philippe_orchard_orchard_apple_1 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 4615.861 0 10782.311
+ angleY 1
+}
+Tree Fit_saint_philippe_orchard_orchard_apple_2 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 4617.034 0 10774.904
+ angleY 121
+}
+Tree Fit_saint_philippe_orchard_orchard_apple_3 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 4621.347 0 10779.636
+ angleY -119
+}
+Tree Fit_saint_philippe_orchard_orchard_apple_4 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 4622.52 0 10772.229
+ angleY 61
+}
+Tree Fit_saint_philippe_orchard_orchard_plum_1 : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ coords 4618.207 0 10767.496
+ angleY -179
+}
+Tree Fit_saint_philippe_orchard_orchard_plum_2 : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ coords 4623.693 0 10764.821
+ angleY -59
+}
+Tree Fit_saint_philippe_orchard_orchard_plum_3 : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ coords 4620.173 0 10787.044
+ angleY 21
+}
+GenericEntity Fit_saint_philippe_orchard_orchard_stall : "{D8B83A318AE3611E}Prefabs/Props/Commercial/MarketStand_01.et" {
+ coords 4609.814 18.904 10772.545
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_orchard_orchard_juicer : "{1DD3BF6A1A249CDE}Prefabs/Processor/AppleJuicer.et" {
+ coords 4609.814 19.93 10772.545
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_orchard_orchard_desk : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
+ components {
+  LF_WorkplaceComponent "{BB227AA77D72A6F6}" {
+   m_sJob "FARMER"
+   m_sPlaceId "saint_philippe_orchard"
+  }
+ }
+ coords 4613.297 19.049 10772.287
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_orchard_orchard_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "saint_philippe_orchard"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.32 0.45 0.2
+   m_vTextColor 0.96 0.93 0.85
+  }
+ }
+ coords 4614.775 19.118 10769.99
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_orchard_orchard_crate_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 4607.778 18.706 10768.78
+ angleY 3
+}
+GenericEntity Fit_saint_philippe_orchard_orchard_crate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 4608.994 18.82 10768.77
+ angleY -19
+}
+GenericEntity Fit_saint_philippe_orchard_orchard_hay_bale : "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et" {
+ coords 4606.742 18.64 10770.844
+ angleY 71
+}
+GenericEntity Fit_saint_philippe_orchard_orchard_cart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ coords 4614.741 19.09 10775.958
+ angleY 86
+}

@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "place": "saint-philippe-dock",
+  "slot": "raid",
+  "building": "b06",
+  "shared": true,
+  "kit": "raid",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe-dock_raid.layer",
+  "kinds": [],
+  "rows": 5,
+  "date": "2026-11-19"
+}

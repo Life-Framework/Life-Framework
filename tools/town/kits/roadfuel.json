@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "kit": "roadfuel",
+  "system": "fuel",
+  "source": {
+    "file": "tools/town/kits/sources/roadfuel.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0.8,
+        -3.4
+      ],
+      "max": [
+        7.5,
+        -1.2
+      ]
+    },
+    "front": "+x",
+    "counters": [],
+    "adapt": "A roadside fuel station's small kiosk: the kiosk is the host and its road side is +x. The payphone stands on the forecourt in front of it (2.9 m out, away from the door), the fuel drop barrel by its back corner and the pole sign at the forecourt edge (7.5 m out). Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "payphone",
+      "name": "RoadFuel_Payphone",
+      "prefab": "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        2.9,
+        0,
+        -1.2
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "fuel-drop",
+      "name": "RoadFuel_FuelDrop",
+      "prefab": "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.8,
+        0,
+        -3.4
+      ],
+      "yaw": 40,
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    },
+    {
+      "id": "sign",
+      "name": "RoadFuel_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        7.5,
+        0,
+        -2
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"fuel_station\"",
+            "m_vRimColor": "1 1 1",
+            "m_vPaintColor": "0.75 0.1 0.08",
+            "m_vTextColor": "1 1 1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "free": true
+    }
+  ]
+}

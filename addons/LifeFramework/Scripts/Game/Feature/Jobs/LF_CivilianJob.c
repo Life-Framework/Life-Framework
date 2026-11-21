@@ -25,6 +25,70 @@ class LF_JobWorker : Managed
 	bool m_bRunTimed;
 	//! Cash held against the cargo of the active run: returned on delivery, kept on abandon.
 	int m_iDeposit;
+	//! The night-rate part of the last paid run (#3148), taken once by Dropoff for the pay toast.
+	int m_iLastNight;
+	//! The parts of the last drop-off's pay (#3148), taken once by the drop-off action for the toast.
+	ref LF_JobPayParts m_LastParts;
+}
+
+//------------------------------------------------------------------------------------------------
+//! What a paid run was made of (#3148): the run's base pay, the night rate's extra and the bonus
+//! (contract and standing tier), and the toast that names each part. Pure: nothing reads the world.
+class LF_JobPayParts : Managed
+{
+	//! Joins the numbers of a packed toast argument; the client splits it back (LF_NotificationManagerComponent).
+	static const string PACKED_MARK = "~";
+	static const string PACKED_SEP = "|";
+
+	int m_iTotal;
+	int m_iBase;
+	int m_iNight;
+	int m_iBonus;
+
+	//------------------------------------------------------------------------------------------------
+	//! \param[in] paid Everything the run paid.
+	//! \param[in] bonus The contract and standing bonus inside `paid`.
+	//! \param[in] night The night rate's extra inside `paid`.
+	static LF_JobPayParts Make(int paid, int bonus, int night)
+	{
+		LF_JobPayParts parts = new LF_JobPayParts();
+		parts.m_iTotal = paid;
+		parts.m_iBonus = LF_Utils.ClampInt(bonus, 0, paid);
+		parts.m_iNight = LF_Utils.ClampInt(night, 0, paid - parts.m_iBonus);
+		parts.m_iBase = paid - parts.m_iBonus - parts.m_iNight;
+		return parts;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The string key of the pay toast: the plain one when the run was all base, else the one that names the parts.
+	string ToastKey()
+	{
+		if (m_iNight > 0 && m_iBonus > 0)
+			return "#LF-Job_Paid_NightBonus";
+		if (m_iNight > 0)
+			return "#LF-Job_Paid_Night";
+		if (m_iBonus > 0)
+			return "#LF-Job_Paid_Bonus";
+
+		return "#EL-Job_Paid";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The toast argument: the plain total for a run with no extras, else "~total|base|part[|part]"
+	//! (the client fills %1.. of the key from it).
+	string ToastArg()
+	{
+		if (m_iNight <= 0 && m_iBonus <= 0)
+			return m_iTotal.ToString();
+
+		string arg = PACKED_MARK + m_iTotal.ToString() + PACKED_SEP + m_iBase.ToString();
+		if (m_iNight > 0)
+			arg = arg + PACKED_SEP + m_iNight.ToString();
+		if (m_iBonus > 0)
+			arg = arg + PACKED_SEP + m_iBonus.ToString();
+
+		return arg;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -34,7 +98,8 @@ enum LF_ERunStart
 	STARTED,
 	REFUSED,
 	NO_DEPOSIT,
-	NO_CARGO
+	NO_CARGO,
+	ALREADY_RUN
 }
 
 //------------------------------------------------------------------------------------------------
@@ -43,9 +108,13 @@ class LF_CivilianJob
 	//! The system id the Jobs switch answers to (#1074).
 	static const string SYSTEM = "Jobs";
 
-	static const int PAY_PARCEL = 40;
-	static const int PAY_FUEL = 60;
-	static const int PAY_TAXI = 80;
+	//! The ledger reason of the night rate's part of a run's pay (#3148).
+	static const string REASON_NIGHT = "night-rate";
+
+	//! Run pay when the jobs config has no usable row (#3147); the core LF_Jobs.conf `runPays` mirrors them.
+	static const int PAY_PARCEL = 40;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
+	static const int PAY_FUEL = 60;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
+	static const int PAY_TAXI = 80;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
 
 	//! The reason keys the drop-off refusal shows (Language/everonlife_localization.st).
 	static const string KEY_TOO_CLOSE = "#LF-Job_TooClose";
@@ -54,6 +123,10 @@ class LF_CivilianJob
 	static const string KEY_NOT_DROP = "#LF-Job_NotADrop";
 	static const string KEY_NO_RUN = "#EL-Job_NoActiveRun";
 	static const string KEY_NEED_DEPOSIT = "#LF-Job_NeedDeposit";
+	static const string KEY_NO_CARGO = "#LF-Job_NoCargo";
+	static const string KEY_ALREADY_RUN = "#LF-Job_AlreadyRun";
+	static const string KEY_START_REFUSED = "#LF-Job_StartRefused";
+	static const string KEY_NO_ROOM = "#LF-Job_NoRoom";
 
 	//! The ledger reasons of a deposit taken, given back and kept.
 	static const string REASON_DEPOSIT = "job-deposit";
@@ -72,6 +145,9 @@ class LF_CivilianJob
 	static const ResourceName DEPOT_PREFAB = "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et";
 
 	protected static ref map<string, ref LF_JobWorker> s_mWorkers;
+	protected static ref LF_CivilianJobDeathWatch s_DeathWatch;
+	//! The "no world clock" warning is logged once (#3148).
+	protected static bool s_bNoClockLogged;
 
 	//------------------------------------------------------------------------------------------------
 	protected static map<string, ref LF_JobWorker> Workers()
@@ -321,14 +397,105 @@ class LF_CivilianJob
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! What a finished run of `job` pays: the jobs config's run pay row (a pack or the owner sets it,
+	//! #3147), or the PAY_ constant when the config has no usable row.
 	static int PayFor(LF_EJobType job)
 	{
+		int shipped = PAY_PARCEL;
 		if (job == LF_EJobType.FUEL_DELIVERY)
-			return PAY_FUEL;
-		if (job == LF_EJobType.TAXI)
-			return PAY_TAXI;
+			shipped = PAY_FUEL;
+		else if (job == LF_EJobType.TAXI)
+			shipped = PAY_TAXI;
 
-		return PAY_PARCEL;
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return shipped;
+
+		return config.RunPayFor(typename.EnumToString(LF_EJobType, job), shipped);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether `hour` (0 to 24, the world clock) is inside the night window. The window may wrap
+	//! midnight (21 to 5); equal hours make no night.
+	static bool IsNightHour(float hour, int startHour, int endHour)
+	{
+		if (startHour == endHour)
+			return false;
+
+		if (startHour < endHour)
+			return hour >= startHour && hour < endHour;
+
+		return hour >= startHour || hour < endHour;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The extra a night rate adds to a base pay: round(base * (rate - 1)); nothing for a rate of 1 or less.
+	static int NightExtra(int basePay, float rate)
+	{
+		if (basePay <= 0 || rate <= 1)
+			return 0;
+
+		return Math.Round(basePay * (rate - 1));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The world clock's hour on the server, or -1 when the world has no TimeAndWeatherManager
+	//! (logged once: such a world pays the base).
+	static float ClockHour()
+	{
+		ChimeraWorld world;
+		if (GetGame())
+			world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+
+		TimeAndWeatherManagerEntity clock;
+		if (world)
+			clock = world.GetTimeAndWeatherManager();
+
+		if (!clock)
+		{
+			if (!s_bNoClockLogged)
+				LF_Debug.Warn("Jobs", "no world clock: runs pay no night rate");
+
+			s_bNoClockLogged = true;
+			return -1;
+		}
+
+		return clock.GetTimeOfTheDay();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The night rate's extra for a run of `job` paying `basePay` finished now (#3148): 0 by day,
+	//! with no night rate on the job's row, or in a world with no clock.
+	static int NightPay(LF_EJobType job, int basePay)
+	{
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		if (!config)
+			return 0;
+
+		float rate = config.NightRateFor(typename.EnumToString(LF_EJobType, job));
+		if (rate <= 1)
+			return 0;
+
+		float hour = ClockHour();
+		if (hour < 0)
+			return 0;
+
+		int startHour, endHour;
+		config.NightWindow(startHour, endHour);
+		if (!IsNightHour(hour, startHour, endHour))
+			return 0;
+
+		return NightExtra(basePay, rate);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The night part of the player's last paid run, and clears it.
+	static int TakeLastNight(string playerUid)
+	{
+		LF_JobWorker worker = Worker(playerUid);
+		int night = worker.m_iLastNight;
+		worker.m_iLastNight = 0;
+		return night;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -438,9 +605,10 @@ class LF_CivilianJob
 
 	//------------------------------------------------------------------------------------------------
 	//! Whether "Complete the run" and "Abandon" are offered. The server reads its run map. The
-	//! runs live on the server only, so a dedicated client decides from what it can see: the job
-	//! replicated on its LF_PlayerJobComponent and the cargo in its own inventory (ClientRunOpen).
-	//! Reading the server map on the client greyed both actions for every hosted player.
+	//! runs live on the server only, so a dedicated client decides from the job replicated on its
+	//! LF_PlayerJobComponent (ClientRunOpen). Reading the server map on the client greyed both
+	//! actions for every hosted player; reading the cargo in the player's inventory locked a courier
+	//! out once the parcel was dropped (#3356).
 	static bool RunOfferOpen(IEntity user)
 	{
 		if (!user)
@@ -457,29 +625,53 @@ class LF_CivilianJob
 		if (jobs)
 			bodyJob = jobs.GetJob();
 
-		bool carrying = false;
-		if (HasCargo(bodyJob))
-		{
-			InventoryStorageManagerComponent storage = InventoryStorageManagerComponent.Cast(user.FindComponent(InventoryStorageManagerComponent));
-			if (storage)
-				carrying = !LF_InventoryUtils.FindItemsByPrefab(storage, PrefabFor(bodyJob)).IsEmpty();
-		}
-
-		return ClientRunOpen(bodyJob, carrying);
+		return ClientRunOpen(bodyJob);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client rule for an active run: a delivery job on the body, and its cargo in hand when the
-	//! job has one (a taxi fare has none; the server refuses a fare that is not running).
-	static bool ClientRunOpen(LF_EJobType bodyJob, bool carryingCargo)
+	//! Client rule for an active run: a delivery job on the body. The cargo is not read: a downed
+	//! carrier drops the parcel, and a run that lost its cargo must still be abandonable (#3356). The
+	//! server decides on use (AbandonRun refuses with no run; Dropoff refuses with no cargo).
+	static bool ClientRunOpen(LF_EJobType bodyJob)
 	{
-		if (!IsDeliveryJob(bodyJob))
+		return IsDeliveryJob(bodyJob);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a player character died. Their run ends as a forfeit, the same as the counter's Abandon
+	//! (AbandonRun: no pay, the deposit and the contract stake stay kept, the map marks clear). Without
+	//! this the run outlived the dead carrier, whose parcel dropped, and blocked the next pick-up (#3356).
+	//! \param[in] victimUid The account uid of the dead player; an NPC's label or an unknown uid is ignored.
+	//! \return true when a run was ended.
+	static bool OnCarrierDied(string victimUid)
+	{
+		if (victimUid.IsEmpty() || !HasCareer(victimUid) || !HasActiveRun(victimUid))
 			return false;
 
-		if (!HasCargo(bodyJob))
-			return true;
+		LF_Debug.Info("Jobs", string.Format("%1 died on a run: the run ends as an abandon", victimUid));
+		return AbandonRun(victimUid);
+	}
 
-		return carryingCargo;
+	//------------------------------------------------------------------------------------------------
+	//! Subscribes the death watcher to the bus. Idempotent: the bus refuses a second subscription of the
+	//! same subscriber, which lives for the world's life. StartRun calls it, because the bus table is
+	//! cleared at world end and a run can only exist after it.
+	protected static void WatchDeaths()
+	{
+		if (!s_DeathWatch)
+			s_DeathWatch = new LF_CivilianJobDeathWatch();
+
+		LF_EventBus.Subscribe(LF_OnPlayerKilled, s_DeathWatch);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		if (s_DeathWatch)
+			LF_EventBus.Unsubscribe(LF_OnPlayerKilled, s_DeathWatch);
+
+		s_DeathWatch = null;
+		s_bNoClockLogged = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -550,6 +742,7 @@ class LF_CivilianJob
 		if (!PrefabLoads(job))
 			return false;
 
+		WatchDeaths();
 		worker.m_bActive = true;
 		worker.m_eActiveJob = job;
 		worker.m_bRunTimed = false;
@@ -893,6 +1086,12 @@ class LF_CivilianJob
 			return LF_ERunStart.REFUSED;
 		}
 
+		if (HasActiveRun(uid))
+		{
+			LF_Debug.Log("Jobs", string.Format("start rejected: %1 already has a run", uid));
+			return LF_ERunStart.ALREADY_RUN;
+		}
+
 		if (!StartRun(uid, job))
 			return LF_ERunStart.REFUSED;
 
@@ -977,7 +1176,12 @@ class LF_CivilianJob
 			return 0;
 
 		if (!TakeCargo(user, finished))
+		{
+			// The cargo is not on the player (dropped when downed, stashed): say so, the run stays open
+			// and Abandon at the counter still works (#3356).
+			refusal = KEY_NO_CARGO;
 			return 0;
+		}
 
 		int taxiFare = -1;
 		if (finished == LF_EJobType.TAXI)
@@ -989,10 +1193,23 @@ class LF_CivilianJob
 
 		GiveDepositBack(user, uid);
 		int bonus = LF_ReputationContracts.TakeLastBonus(uid) + LF_ReputationPay.TakeLastBonus(uid);
-		bonus = LF_Utils.ClampInt(bonus, 0, paid);
-		HandCash(user, paid - bonus);
-		HandCash(user, bonus, LF_ReputationContracts.REASON_BONUS);
+		int night = TakeLastNight(uid);
+		LF_JobPayParts parts = LF_JobPayParts.Make(paid, bonus, night);
+		Worker(uid).m_LastParts = parts;
+		HandCash(user, parts.m_iBase);
+		HandCash(user, parts.m_iNight, REASON_NIGHT);
+		HandCash(user, parts.m_iBonus, LF_ReputationContracts.REASON_BONUS);
 		return paid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return What the player's last drop-off paid, part by part, and clears it; null when there is none.
+	static LF_JobPayParts TakeLastParts(string playerUid)
+	{
+		LF_JobWorker worker = Worker(playerUid);
+		LF_JobPayParts parts = worker.m_LastParts;
+		worker.m_LastParts = null;
+		return parts;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1051,6 +1268,11 @@ class LF_CivilianJob
 		amount = LF_ReputationContracts.Settle(playerUid, basePay, LF_JobGuards.Now());
 		// The standing bonus is a percent of the base only, never of a contract's multiplier (#2703).
 		amount = amount + LF_ReputationPay.Bonus(playerUid, basePay);
+
+		// The night rate is its own part, a rate on the base only (#3148): the clock is read at the drop-off.
+		int night = NightPay(worker.m_eActiveJob, basePay);
+		amount = amount + night;
+		worker.m_iLastNight = night;
 
 		LF_EJobType finished = worker.m_eActiveJob;
 		worker.m_bActive = false;
@@ -1249,5 +1471,35 @@ class LF_CivilianJob
 		}
 
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Ends a dead carrier's run (LF_CivilianJob.OnCarrierDied). Subscribed by StartRun.
+class LF_CivilianJobDeathWatch : LF_EventSubscriber
+{
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnPlayerKilled killed = LF_OnPlayerKilled.Cast(busEvent);
+		if (!killed)
+			return false;
+
+		LF_CivilianJob.OnCarrierDied(killed.m_sVictimUid);
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! World-end reset of LF_CivilianJob's death watcher (found by reflection; Core/LF_StaticReset.c).
+class LF_CivilianJob_StaticResetHook : LF_StaticResetHook
+{
+	override string Owner()
+	{
+		return "LF_CivilianJob";
+	}
+
+	override void Apply()
+	{
+		LF_CivilianJob.ResetStatics();
 	}
 }

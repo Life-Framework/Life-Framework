@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "saint-philippe-dock",
+  "slot": "wholesale",
+  "building": "b24",
+  "kit": "wholesale",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe-dock_wholesale.layer",
+  "kinds": [
+    "WholesaleCounter"
+  ],
+  "rows": 20,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_dock_wholesale_Place"
+  },
+  "date": "2026-11-21"
+}

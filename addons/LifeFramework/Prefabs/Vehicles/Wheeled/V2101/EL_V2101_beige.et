@@ -7,6 +7,16 @@ Vehicle : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
   }
   ActionsManagerComponent "{C97BE5489221AE18}" {
    additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RepairKitAction "{3332A1C0E5D70011}" {
+     ParentContextList {
+      "default"
+     }
+    }
     LF_VehicleLockAction "{E1A2101BE1A00006}" {
      ParentContextList {
       "door_l01"
@@ -32,6 +42,14 @@ Vehicle : "{5E696DD4888CE406}Prefabs/Vehicles/Wheeled/V2101/V2101_beige.et" {
      }
      UIInfo UIInfo "{5EA2C40A000000D6}" {
       Name "#LF-Search_Vehicle_Action"
+     }
+    }
+    LF_VehicleSearchFullAction "{5EA2C509000000D6}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C50A000000D6}" {
+      Name "#LF-Search_Full_Action"
      }
     }
    }

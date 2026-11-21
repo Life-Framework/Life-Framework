@@ -215,3 +215,15 @@
   emptied-organisation release. An old save seeds the clock at the first load, and a saved clock already past
   the limit at load (the server was down) gets one more day. Test `persist/hideout-lease-idle` (PERSISTENCE).
 - 🧪 **The ledger lets a holder give the lease up** (#2572, part of #2533, merged, in-dev): a member whose rank holds `BUY_UPGRADE` sees **Give up the lease** on the hideout row while the yard is theirs (`LF_OrgLedger.HideoutAction`; the same button is **Take the lease** when it is free). The ask is `LF_AskOrganizationLeaseRelease` / `RpcAsk_LF_OrganizationLeaseRelease` (`LF_OrganizationCharacter.c`, desk-only, PURCHASE rate bucket); the server calls `LF_OrgHideoutLease.Release`, which checks the right and that the organisation holds the lease and then `LF_Hideout.Release(..., "given up")` (gate shut, held ground lost). A refusal (no right, not our lease, away from the desk) toasts the player and logs `[LFDebug:Organizations] lease release refused: ...` as a warning. Test `organization/lease-release` (WORLD).
+- 🧪 **Every organisation hideout door is a base site** (#3408, part of #3339, merged, in-dev): the desk lease
+  no longer looks up one fixed place. Each `LF_HideoutDoorComponent` with **organization hideout** set marks
+  itself through `LF_Hideout.MarkBaseDoor` (place kind `HideoutBaseDoor`, its own hideout id); the first is
+  still the `OrgHideout`/`primary` place contraband starts from. The desk offers an organisation
+  `LF_Hideout.BaseSiteFor`: the base it already leases, else the first free site (primary first, then by id).
+  The one-base-lease limit stays (#2816). Saves were already keyed by each door's own hideout id, so an old
+  save loads unchanged. Test `hideout/lease-per-site` (WORLD).
+- ✅ (2026-11-19, #3410) Saint-Philippe has a registry: the site cabin `b49` beside the workshop row holds a clerk's
+  desk (`LF_OrganizationDeskAction`), an office chair and the war board (`LF_OrgWarBoard.et`), with a "Registry"
+  plate on the outside wall (core sign `org_registry`). Fitted from the `org` kit by `town fit saint-philippe org`
+  into `Place_saint-philippe_org.layer` (place kind `OrgDesk`); a gang can now form on the island, not only in
+  DebugWorld and the grid.

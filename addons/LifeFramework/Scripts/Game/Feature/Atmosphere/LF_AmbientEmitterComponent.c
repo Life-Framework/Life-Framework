@@ -156,6 +156,21 @@ class LF_AmbientEmitterComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The sound slot this emitter's project comes from ("" when it names its project directly). A
+	//! feature that treats one kind of sound as a set (the memorial's radios, #3806) matches on it.
+	string GetSoundSlot()
+	{
+		return m_sSoundSlot;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests and tools: name the slot of an emitter that was spawned without one. Plays nothing.
+	void SetSoundSlot(string slot)
+	{
+		m_sSoundSlot = slot;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	bool IsPlaying()
 	{
 		return m_Audio != null;

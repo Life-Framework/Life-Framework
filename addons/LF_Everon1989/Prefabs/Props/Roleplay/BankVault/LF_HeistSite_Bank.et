@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "E5B92F6A1C4D7083"
+ components {
+  LF_HeistRunComponent "{E5B92F6A1C4D7084}" {
+   m_sSiteId "saint_philippe_bank"
+   m_sHeistId "bank"
+  }
+ }
+}

@@ -1,0 +1,276 @@
+{
+ "place": "saint-philippe",
+ "at": "2026-11-21",
+ "glows": {
+  "Glow_sp_b03_0": {
+   "x": 4460.61,
+   "y": 14.94,
+   "z": 10710.45,
+   "on": "PubVillage_E_2L01_V8_ProgresBar"
+  },
+  "Glow_sp_b03_1": {
+   "x": 4453.99,
+   "y": 18.11,
+   "z": 10709.45,
+   "on": "PubVillage_E_2L01_V8_ProgresBar"
+  },
+  "Glow_sp_b03_2": {
+   "x": 4450.34,
+   "y": 14.85,
+   "z": 10709.05,
+   "on": "PubVillage_E_2L01_V8_ProgresBar"
+  },
+  "Glow_sp_b07_0": {
+   "x": 4436.21,
+   "y": 14.53,
+   "z": 10724.15,
+   "on": "Church_01_red"
+  },
+  "Glow_sp_b07_1": null,
+  "Glow_sp_b09_0": {
+   "x": 4501.41,
+   "y": 16.4,
+   "z": 10736.55,
+   "on": "House_Town_E_2I01"
+  },
+  "Glow_sp_b09_1": {
+   "x": 4508.15,
+   "y": 20.11,
+   "z": 10737.25,
+   "on": "House_Town_E_2I01"
+  },
+  "Glow_sp_b12_0": {
+   "x": 4513.37,
+   "y": 17.1,
+   "z": 10736.95,
+   "on": "SCR_DestructibleEntity"
+  },
+  "Glow_sp_b12_1": {
+   "x": 4519.78,
+   "y": 20.56,
+   "z": 10739.05,
+   "on": "ShopHouse_E_2I01t_householdwares"
+  },
+  "Glow_sp_b14_0": {
+   "x": 4468.93,
+   "y": 14.17,
+   "z": 10770.34,
+   "on": "House_Town_E_2I02"
+  },
+  "Glow_sp_b14_1": {
+   "x": 4471.14,
+   "y": 17.69,
+   "z": 10758.24,
+   "on": "House_Town_E_2I02"
+  },
+  "Glow_sp_b15_0": {
+   "x": 4437.67,
+   "y": 14.23,
+   "z": 10675.75,
+   "on": "House_Town_E_2I03"
+  },
+  "Glow_sp_b15_1": {
+   "x": 4439.32,
+   "y": 17.74,
+   "z": 10663.65,
+   "on": "House_Town_E_2I03"
+  },
+  "Glow_sp_b17_0": {
+   "x": 4479.12,
+   "y": 17.51,
+   "z": 10651.46,
+   "on": "House_Village_E_1I02_Furniture"
+  },
+  "Glow_sp_b17_1": null,
+  "Glow_sp_b32_0": {
+   "x": 4549.03,
+   "y": 18.99,
+   "z": 10740.25,
+   "on": "Villa_E_2I01_Police"
+  },
+  "Glow_sp_b32_1": null,
+  "Glow_sp_b33_0": {
+   "x": 4539.81,
+   "y": 18.85,
+   "z": 10670.43,
+   "on": "Workshop_01_Main"
+  },
+  "Glow_sp_b36_0": {
+   "x": 4541.36,
+   "y": 18.68,
+   "z": 10663.93,
+   "on": "Workshop_01_Side"
+  },
+  "Glow_sp_b38_0": {
+   "x": 4441.96,
+   "y": 13.31,
+   "z": 10780.39,
+   "on": "ShopHouse_E_2I01t_clothesstore"
+  },
+  "Glow_sp_b38_1": {
+   "x": 4448.91,
+   "y": 16.72,
+   "z": 10783.79,
+   "on": "ShopHouse_E_2I01t_clothesstore"
+  },
+  "Glow_sp_b39_0": {
+   "x": 4424.9,
+   "y": 12.54,
+   "z": 10773.09,
+   "on": "House_Town_E_2I02_v2"
+  },
+  "Glow_sp_b39_1": {
+   "x": 4435.96,
+   "y": 16.13,
+   "z": 10779.29,
+   "on": "House_Town_E_2I02_v2"
+  },
+  "Glow_sp_b45_0": {
+   "x": 4425.54,
+   "y": 14.63,
+   "z": 10656.45,
+   "on": "SCR_DestructibleBuildingEntity"
+  },
+  "Glow_sp_b45_1": {
+   "x": 4419.06,
+   "y": 17.81,
+   "z": 10655.65,
+   "on": "SCR_DestructibleBuildingEntity"
+  },
+  "Glow_sp_b45_2": {
+   "x": 4410.05,
+   "y": 14.6,
+   "z": 10654.35,
+   "on": "SCR_DestructibleBuildingEntity"
+  },
+  "Glow_sp_b48_0": {
+   "x": 4556.18,
+   "y": 19.78,
+   "z": 10781.54,
+   "on": "House_Village_E_1I04t_red"
+  },
+  "Glow_sp_b48_1": {
+   "x": 4546.15,
+   "y": 22.32,
+   "z": 10779.34,
+   "on": "ShopHouse_E_2I01t_drugstore"
+  },
+  "Glow_sp_b50_0": {
+   "x": 4396.07,
+   "y": 12.32,
+   "z": 10743.01,
+   "on": "House_Village_E_1I08t"
+  },
+  "Glow_sp_b50_1": null,
+  "Glow_sp_b55_0": {
+   "x": 4397.66,
+   "y": 11.99,
+   "z": 10759.19,
+   "on": "House_Town_E_2I01"
+  },
+  "Glow_sp_b55_1": {
+   "x": 4404.28,
+   "y": 15.17,
+   "z": 10762.39,
+   "on": "House_Town_E_2I01"
+  },
+  "Glow_sp_b77_0": {
+   "x": 4388.85,
+   "y": 17.43,
+   "z": 10625.55,
+   "on": "Workshop_01_Main"
+  },
+  "Glow_sp_b79_0": {
+   "x": 4378.43,
+   "y": 14.07,
+   "z": 10653.04,
+   "on": "Office_E_01"
+  },
+  "Glow_sp_b79_1": {
+   "x": 4377.25,
+   "y": 17.22,
+   "z": 10662.44,
+   "on": "Office_E_01"
+  },
+  "Glow_sp_b107_0": null,
+  "Glow_sp_b117_0": {
+   "x": 4645.7,
+   "y": 24.29,
+   "z": 10733.25,
+   "on": "House_Village_E_1I02_Furniture"
+  },
+  "Glow_sp_b117_1": null,
+  "Glow_sp_b23_0": {
+   "x": 4499.38,
+   "y": 18.42,
+   "z": 10642.85,
+   "on": "Barn_E_01"
+  }
+ },
+ "lamps": {
+  "Lamp_1": {
+   "y": 16.05,
+   "on": "Eden",
+   "ty": 16.05
+  },
+  "Lamp_2": {
+   "y": 12.04,
+   "on": "AsphaltPavement_01_Narrow_4m_90",
+   "ty": 11.81
+  },
+  "Lamp_3": {
+   "y": 11.03,
+   "on": "Eden",
+   "ty": 11.03
+  },
+  "Lamp_4": {
+   "y": 11.93,
+   "on": "Eden",
+   "ty": 11.93
+  },
+  "Lamp_5": {
+   "y": 13.71,
+   "on": "AsphaltPavement_01_Narrow_4m_A",
+   "ty": 13.51
+  },
+  "Lamp_6": {
+   "y": 12.5,
+   "on": "Eden",
+   "ty": 12.5
+  },
+  "Lamp_7": {
+   "y": 12.15,
+   "on": "Eden",
+   "ty": 12.15
+  },
+  "Lamp_8": {
+   "y": 9.83,
+   "on": "Eden",
+   "ty": 9.83
+  },
+  "Lamp_9": {
+   "y": 12.46,
+   "on": "Eden",
+   "ty": 12.46
+  },
+  "Lamp_10": {
+   "y": 10,
+   "ty": 10,
+   "on": "Eden"
+  }
+ },
+ "rejected": [
+  [
+   4364.88,
+   10699.11
+  ],
+  [
+   4368.56,
+   10727.53
+  ],
+  [
+   4485.5,
+   10717.23
+  ]
+ ]
+}

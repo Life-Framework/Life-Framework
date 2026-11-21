@@ -16,6 +16,10 @@
 //! SAVE. The open application is an account flag "permit_due:<minutes>" in the progression store
 //! (LF_Progression.NoteFlag, save version 7), so no new payload; the issued permit is the licence
 //! list the store already saves. A revoke rewrites that list and drops any open application.
+//!
+//! DRIVING LICENCE (#3128). The same desk sells the driving licence at once for
+//! LF_LicencesConfig.DriverLicenceFee() in carried cash: no record check and no wait (BuyDrivingFor).
+//! It is saved in the same licence list. No car lot asks for it yet.
 //------------------------------------------------------------------------------------------------
 enum LF_ELicenceDesk
 {
@@ -29,7 +33,9 @@ enum LF_ELicenceDesk
 	NOT_ENOUGH_CASH,
 	NOT_ALLOWED,
 	NO_CLOCK,
-	FAILED
+	FAILED,
+	//! A conviction seized the licence and its ban has not ended (#3432, LF_LicenceBans).
+	BANNED
 }
 
 //------------------------------------------------------------------------------------------------
@@ -37,6 +43,7 @@ class LF_LicenceDesk
 {
 	static const string FEATURE = "License";
 	static const LF_ELicenseType PERMIT = LF_ELicenseType.FIREARM_PERMIT;
+	static const LF_ELicenseType DRIVING = LF_ELicenseType.DRIVING_LICENCE;
 	static const string DUE_FLAG = "permit_due:";
 	static const string LEDGER_REASON = "licence-fee";
 	static const int MINUTES_PER_DAY = 1440;	// lf-fixed: minutes in a calendar day
@@ -100,6 +107,23 @@ class LF_LicenceDesk
 
 		int days = DaysFromCivil(clock.GetYear(), clock.GetMonth(), clock.GetDay());
 		return days * MINUTES_PER_DAY + (int)(clock.GetTimeOfTheDay() * 60);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The game clock as "Y-M-D h (minute N)" for logs, or "no clock".
+	static string ClockText()
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		TimeAndWeatherManagerEntity clock;
+		if (world)
+			clock = world.GetTimeAndWeatherManager();
+
+		if (!clock)
+			return "no clock";
+
+		int days = DaysFromCivil(clock.GetYear(), clock.GetMonth(), clock.GetDay());
+		int minute = days * MINUTES_PER_DAY + (int)(clock.GetTimeOfTheDay() * 60);
+		return string.Format("%1-%2-%3 %4 h (minute %5)", clock.GetYear(), clock.GetMonth(), clock.GetDay(), clock.GetTimeOfTheDay(), minute);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -169,13 +193,128 @@ class LF_LicenceDesk
 	//! Whether the player holds the permit: the body's licences when there is one, else the store.
 	static bool Holds(IEntity player, string uid)
 	{
+		return HoldsLicence(player, uid, PERMIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the player holds licence: the body's licences when there is one, else the store.
+	static bool HoldsLicence(IEntity player, string uid, LF_ELicenseType licence)
+	{
 		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(player);
 		if (licences)
-			return licences.HasLicense(PERMIT);
+			return licences.HasLicense(licence);
 
 		array<LF_ELicenseType> stored = {};
 		LF_Progression.GetLicenses(uid, stored);
-		return stored.Contains(PERMIT);
+		return stored.Contains(licence);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: buy the driving licence, by the player's own account. See BuyDrivingFor.
+	static LF_ELicenceDesk BuyDriving(IEntity player)
+	{
+		return BuyDrivingFor(player, LF_Utils.GetPlayerUID(player), new LF_EntityCashWallet(player, LEDGER_REASON, string.Empty));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: sell the driving licence at once for the fee in carried cash (#3128). No record check,
+	//! no wait. Refused when already held, short of cash (nothing taken) or below the licence's gate.
+	//! The fee is taken first and given back if the grant fails, so a refusal never keeps cash. Each
+	//! call runs to the end on the server, so a second request in the same frame sees the licence held.
+	//! player may be null (tests, an account with no body): the store is used then.
+	static LF_ELicenceDesk BuyDrivingFor(IEntity player, string uid, notnull LF_CashWallet wallet)
+	{
+		if (!Replication.IsServer() || uid.IsEmpty())
+		{
+			LF_Debug.Warn(FEATURE, string.Format("driving licence refused: server %1, account '%2'", Replication.IsServer(), uid));
+			return LF_ELicenceDesk.FAILED;
+		}
+
+		if (!LF_Systems.IsEnabled(LF_LicenseGate.SYSTEM))
+		{
+			LF_Debug.Info(FEATURE, string.Format("driving licence refused for %1: the License system is off", uid));
+			return LF_ELicenceDesk.NOT_ALLOWED;
+		}
+
+		if (HoldsLicence(player, uid, DRIVING))
+		{
+			LF_Debug.Info(FEATURE, string.Format("driving licence refused: %1 already holds one", uid));
+			return LF_ELicenceDesk.ALREADY_HELD;
+		}
+
+		if (LF_LicenceSeizure.MinutesLeft(uid, DRIVING) > 0)
+		{
+			LF_Debug.Info(FEATURE, string.Format("driving licence refused for %1: banned for %2 more in-game day(s)", uid, LF_LicenceSeizure.DaysLeft(uid, DRIVING)));
+			return LF_ELicenceDesk.BANNED;
+		}
+
+		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(player);
+		if (licences && !licences.CanUnlockLicense(DRIVING))
+		{
+			LF_Debug.Info(FEATURE, string.Format("driving licence refused for %1: the licence's gate", uid));
+			return LF_ELicenceDesk.NOT_ALLOWED;
+		}
+
+		int fee = LF_LicencesConfig.DriverLicenceFee();
+		if (wallet.Carried() < fee)
+		{
+			LF_Debug.Info(FEATURE, string.Format("driving licence refused for %1: carries %2, the fee is %3", uid, wallet.Carried(), fee));
+			return LF_ELicenceDesk.NOT_ENOUGH_CASH;
+		}
+
+		if (fee > 0)
+		{
+			int taken = wallet.Take(fee);
+			if (taken != fee)
+			{
+				if (taken > 0)
+					wallet.Put(taken);
+
+				LF_Debug.Error(FEATURE, string.Format("driving licence: the fee of %1 could not be taken from %2 (took %3, given back)", fee, uid, taken));
+				return LF_ELicenceDesk.NOT_ENOUGH_CASH;
+			}
+		}
+
+		if (!GrantLicence(player, uid, DRIVING))
+		{
+			if (fee > 0)
+				wallet.Put(fee);
+
+			LF_Debug.Error(FEATURE, string.Format("driving licence: the grant failed for %1; the fee of %2 was given back", uid, fee));
+			return LF_ELicenceDesk.FAILED;
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("licence desk: driving licence issued to %1 for %2", uid, fee));
+		return LF_ELicenceDesk.ISSUED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The desk's answer to a driving licence request.
+	static string DrivingAnswerKey(LF_ELicenceDesk outcome)
+	{
+		switch (outcome)
+		{
+			case LF_ELicenceDesk.ISSUED: return "#LF-LicenceDesk_DrivingIssued";
+			case LF_ELicenceDesk.ALREADY_HELD: return "#LF-LicenceDesk_DrivingAlreadyHeld";
+			case LF_ELicenceDesk.NOT_ENOUGH_CASH: return "#LF-LicenceDesk_NoCash";
+			case LF_ELicenceDesk.NOT_ALLOWED: return "#LF-LicenceDesk_DrivingNotAllowed";
+			case LF_ELicenceDesk.BANNED: return "#LF-LicenceDesk_DrivingBanned";
+		}
+
+		return "#LF-LicenceDesk_Closed";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The %1 of a driving licence answer: the fee when short of cash; else empty.
+	static string DrivingAnswerArg(LF_ELicenceDesk outcome, string uid = string.Empty)
+	{
+		if (outcome == LF_ELicenceDesk.BANNED)
+			return LF_LicenceSeizure.DaysLeft(uid, DRIVING).ToString();
+
+		if (outcome == LF_ELicenceDesk.NOT_ENOUGH_CASH)
+			return LF_MoneyFormat.FormatMoney(LF_LicencesConfig.DriverLicenceFee());
+
+		return string.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -215,6 +354,13 @@ class LF_LicenceDesk
 		int now = NowMinutes();
 		if (now < 0)
 			return LF_ELicenceDesk.NO_CLOCK;
+
+		minutesLeft = LF_LicenceSeizure.MinutesLeft(uid, PERMIT);
+		if (minutesLeft > 0)
+		{
+			LF_Debug.Info(FEATURE, string.Format("licence desk refused %1: the firearm permit is seized for %2 more in-game minutes", uid, minutesLeft));
+			return LF_ELicenceDesk.BANNED;
+		}
 
 		LF_ELicenceDesk record = RecordRefusal(uid);
 		int due = DueMinutes(uid);
@@ -315,13 +461,20 @@ class LF_LicenceDesk
 	//! Server: put the permit on the body and in the saved list (the body may be absent).
 	protected static bool Grant(IEntity player, string uid)
 	{
+		return GrantLicence(player, uid, PERMIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: put licence on the body and in the saved list (the body may be absent).
+	protected static bool GrantLicence(IEntity player, string uid, LF_ELicenseType licence)
+	{
 		array<LF_ELicenseType> list = {};
 		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(player);
 		if (licences)
 		{
-			if (!licences.HasLicense(PERMIT) && !licences.UnlockLicense(PERMIT, true))
+			if (!licences.HasLicense(licence) && !licences.UnlockLicense(licence, true))
 			{
-				LF_Debug.Error(FEATURE, string.Format("licence desk: the licence manager refused the permit for %1", uid));
+				LF_Debug.Error(FEATURE, string.Format("licence desk: the licence manager refused %1 for %2", typename.EnumToString(LF_ELicenseType, licence), uid));
 				return false;
 			}
 
@@ -330,8 +483,8 @@ class LF_LicenceDesk
 		else
 		{
 			LF_Progression.GetLicenses(uid, list);
-			if (!list.Contains(PERMIT))
-				list.Insert(PERMIT);
+			if (!list.Contains(licence))
+				list.Insert(licence);
 		}
 
 		LF_Progression.NoteLicenses(uid, list);
@@ -421,6 +574,9 @@ class LF_LicenceDesk
 		if (licence == PERMIT)
 			return "#LF-License_FirearmPermit_Name";
 
+		if (licence == DRIVING)
+			return "#LF-License_Driving_Name";
+
 		return typename.EnumToString(LF_ELicenseType, licence);
 	}
 
@@ -458,6 +614,9 @@ class LF_LicenceDesk
 		if (outcome == LF_ELicenceDesk.APPLIED || outcome == LF_ELicenceDesk.WAITING)
 			return ((int)Math.Ceil(minutesLeft / 60.0)).ToString();
 
+		if (outcome == LF_ELicenceDesk.BANNED)
+			return ((int)Math.Ceil(minutesLeft / (float)MINUTES_PER_DAY)).ToString();
+
 		if (outcome == LF_ELicenceDesk.NOT_ENOUGH_CASH)
 			return LF_MoneyFormat.FormatMoney(LF_LicencesConfig.PermitFee());
 
@@ -479,6 +638,7 @@ class LF_LicenceDesk
 			case LF_ELicenceDesk.CONVICTED: return "#LF-LicenceDesk_Convicted";
 			case LF_ELicenceDesk.NOT_ENOUGH_CASH: return "#LF-LicenceDesk_NoCash";
 			case LF_ELicenceDesk.NOT_ALLOWED: return "#LF-LicenceDesk_NotAllowed";
+			case LF_ELicenceDesk.BANNED: return "#LF-LicenceDesk_Banned";
 		}
 
 		return "#LF-LicenceDesk_Closed";

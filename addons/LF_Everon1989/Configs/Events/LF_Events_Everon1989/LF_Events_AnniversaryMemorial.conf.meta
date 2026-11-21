@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{51041575931B0703}Configs/Events/LF_Events_Everon1989/LF_Events_AnniversaryMemorial.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5454F1559458CD23}Configs/Property/LF_Property_Everon1989/LF_Property_Homes_SaintPhilippe.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

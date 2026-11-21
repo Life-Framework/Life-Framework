@@ -1,0 +1,308 @@
+{
+  "schema": 1,
+  "kit": "mine-truck-bay",
+  "system": "mining",
+  "source": {
+    "file": "tools/town/kits/sources/mine-truck-bay.layer",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -9,
+        -6
+      ],
+      "max": [
+        9,
+        4
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "A truck bay at the foot of a mine: a Ural stands in a net-fenced bay open on the +z side, pallets and a loaded cart beside it, a heap to load from, cones at the gap, a floodlight and a pole sign. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "truck",
+      "name": "MineTruckBay_Truck",
+      "prefab": "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        -3.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-w1",
+      "name": "MineTruckBay_FenceW1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10,
+        0,
+        2
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-w2",
+      "name": "MineTruckBay_FenceW2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10,
+        0,
+        -3
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-e1",
+      "name": "MineTruckBay_FenceE1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10,
+        0,
+        2
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-e2",
+      "name": "MineTruckBay_FenceE2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10,
+        0,
+        -3
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-n1",
+      "name": "MineTruckBay_FenceN1",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10,
+        0,
+        -8
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-n2",
+      "name": "MineTruckBay_FenceN2",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5,
+        0,
+        -8
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-n3",
+      "name": "MineTruckBay_FenceN3",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        -8
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-n4",
+      "name": "MineTruckBay_FenceN4",
+      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5,
+        0,
+        -8
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-1",
+      "name": "MineTruckBay_Pallet1",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -7,
+        0,
+        -6.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pallet-2",
+      "name": "MineTruckBay_Pallet2",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -7,
+        0,
+        -4.2
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cart",
+      "name": "MineTruckBay_Cart",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        7,
+        0,
+        -6.5
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "heap",
+      "name": "MineTruckBay_Heap",
+      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.8,
+        0,
+        -1.2
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cone-1",
+      "name": "MineTruckBay_Cone1",
+      "prefab": "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3,
+        0,
+        4
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cone-2",
+      "name": "MineTruckBay_Cone2",
+      "prefab": "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3,
+        0,
+        4
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "flood",
+      "name": "MineTruckBay_Flood",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -8,
+        0,
+        1
+      ],
+      "yaw": 160,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "sign",
+      "name": "MineTruckBay_Sign",
+      "prefab": "{D8D55097BA6DB899}Prefabs/Props/Signs/EL_MiningSign.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        8,
+        0,
+        4
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

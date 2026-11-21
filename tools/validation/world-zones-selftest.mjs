@@ -20,6 +20,7 @@
 // "FAIL a slice that edits Street_Hospital.layer is refused" and exited 1 (2026-11-15); restored, it passes.
 
 import { spawnSync } from "node:child_process";
+import { gitSync } from "../lib/git-retry.mjs";
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
@@ -135,7 +136,7 @@ const natural = allocate("clash-probe");
 const mainClaim = (slug, c) => JSON.stringify({ slug, cell: c, layer: layerOfSlug(slug), rows: 0, created: "2026-11-15" });
 const root2 = scratchDir("lf-grid-main-");
 try {
-  const git = (...a) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...a], { cwd: root2, encoding: "utf8" });
+  const git = (...a) => gitSync(["-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...a], { cwd: root2, encoding: "utf8" });
   git("init", "-q");
   put(root2, `${CELLS_DIR}/earlier-slice.json`, mainClaim("earlier-slice", natural.id));
   put(root2, `${GRID_LAYERS}/Annex.layer`, "");
@@ -185,14 +186,14 @@ try {
 // ---- capacity (2026-11-16): the lattice grew east, and a claim may span several cells
 {
   const L = await import("../grid/lattice.mjs");
-  ok(L.CELL.cols === 25 && L.CELL.rows === 7 && allCells().length === 175, "the lattice is 25 x 7 cells");
+  ok(L.CELL.cols === 29 && L.CELL.rows === 7 && allCells().length === 203, "the lattice is 29 x 7 cells (25, plus four east columns of authoring bays)");
   ok(cellBounds(0, 0).x0 === 22 && cellBounds(6, 6).x1 === 106, "the old cells keep their coordinates (c0r0 at 22,22; c6r6 ends at 106)");
-  ok(L.GRID_FENCE.x1 === 328 && L.GRID_FENCE.z1 === 112 && L.GRID_FENCE.x0 === 20, "the outer fence is x 20..328, z 20..112");
+  ok(L.GRID_FENCE.x1 === 376 && L.GRID_FENCE.z1 === 112 && L.GRID_FENCE.x0 === 20, "the outer fence is x 20..376, z 20..112");
   ok(L.GRID_FENCE.x1 < L.TERRAIN_SIZE && L.GRID_FENCE.z1 < L.TERRAIN_SIZE, "the grid fits inside GridTerrain (512 m)");
-  ok(inGrid(150, 30) && inGrid(320, 30) && !inGrid(329, 30), "inGrid follows the wider fence");
+  ok(inGrid(150, 30) && inGrid(370, 30) && !inGrid(377, 30), "inGrid follows the wider fence");
   ok(allCells().find((c) => c.id === "c3r4") && cellBounds(7, 0).x0 === 106 && gapSide({ ...cellBounds(10, 3) }).side === "west", "the new east cells face the centre, so an old cell's gap never flips");
   ok(L.claimCellIds({ cell: "c2r1", span: [3, 2] }).join() === "c2r1,c3r1,c4r1,c2r2,c3r2,c4r2", "a 3 x 2 claim covers six cells");
-  ok(L.claimCellIds({ cell: "c23r6", span: [3, 1] }).length === 0 && L.claimCellIds({ cell: "c0r0", span: [0, 1] }).length === 0, "a span that leaves the lattice or is empty covers nothing");
+  ok(L.claimCellIds({ cell: "c27r6", span: [3, 1] }).length === 0 && L.claimCellIds({ cell: "c0r0", span: [0, 1] }).length === 0, "a span that leaves the lattice or is empty covers nothing");
   ok(L.claimCellIds({ cell: "c3r3" }).join() === "c3r3", "no span is one cell");
   const r = L.claimRect({ cell: "c7r0", span: [3, 2] });
   ok(r.x0 === 106 && r.x1 === 142 && r.z0 === 22 && r.z1 === 46, "a 3 x 2 claim from c7r0 is the 36 x 24 m rectangle (a 33 x 19 m hotel fits)");
@@ -337,7 +338,7 @@ try {
 // (ws/police-station-kit and ws/building-bank both took c3r1 for a 2x2, 2026-11-16). Real git worktrees.
 {
   const dir = scratchDir("lf-grid-wt-");
-  const git = (cwd, ...args) => spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, encoding: "utf8" });
+  const git = (cwd, ...args) => gitSync(["-c", "user.name=t", "-c", "user.email=t@t", ...args], { cwd, encoding: "utf8" });
   try {
     const mainTree = join(dir, "main");
     const sibTree = join(dir, "Life-Framework-ws-building-bank");

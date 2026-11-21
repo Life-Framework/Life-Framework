@@ -1,0 +1,180 @@
+{
+  "schema": 1,
+  "kit": "mine-coal-pile",
+  "system": "mining",
+  "source": {
+    "file": "tools/town/kits/sources/mine-coal-pile.layer",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -8,
+        -2
+      ],
+      "max": [
+        7,
+        7
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "A coal and spoil heap beside a seam: two big heaps and a small one, a barrow and bucket for the diggers, two loaded rail carts and a pick pile. No coal heap exists in the base game, so the pile reads as dark loose stone. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "heap-1",
+      "name": "MineCoalPile_Heap1",
+      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1,
+        0,
+        -0.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "heap-2",
+      "name": "MineCoalPile_Heap2",
+      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.8,
+        0,
+        -0.5
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "heap-3",
+      "name": "MineCoalPile_Heap3",
+      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -8.2,
+        0,
+        -0.5
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrow",
+      "name": "MineCoalPile_Barrow",
+      "prefab": "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3,
+        0,
+        5.5
+      ],
+      "yaw": 25,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bucket",
+      "name": "MineCoalPile_Bucket",
+      "prefab": "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.5,
+        0,
+        5.2
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cart-1",
+      "name": "MineCoalPile_Cart1",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -6,
+        0,
+        6
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cart-2",
+      "name": "MineCoalPile_Cart2",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -8.4,
+        0,
+        6
+      ],
+      "yaw": 90,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "picks",
+      "name": "MineCoalPile_Picks",
+      "prefab": "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.2,
+        0,
+        6
+      ],
+      "yaw": 70,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lantern",
+      "name": "MineCoalPile_Lantern",
+      "prefab": "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et",
+      "role": "light",
+      "verb": "on floor",
+      "offset": [
+        -3.5,
+        0,
+        5.5
+      ],
+      "yaw": 0,
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

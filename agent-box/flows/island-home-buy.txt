@@ -1,0 +1,45 @@
+# Island home buy, before a restart (#3603). The twin after the restart is island-home-owner.
+#
+#   (test-only: drop the pack price of saint-philippe.home.sp-b83 to 60 in the worktree, never commit it)
+#   node agent-box/session.mjs up --mission island --clients 1 --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-home-buy
+#   node agent-box/session.mjs restart            (stop file, SHUTDOWN save, -loadSessionSave, same client rejoins)
+#   node agent-box/harness.mjs --client 1 flow island-home-owner
+#   node agent-box/session.mjs join 2             (a late joiner) ; node agent-box/harness.mjs --client 2 flow island-home-sold
+#
+# A fresh client profile: the quiz and form R-89 come first (answers: addons/LF_Everon1989/Configs/Rules/LF_Quiz_Everon.conf).
+ui
+click QuizOption1Button
+wait 500
+click QuizOption0Button
+wait 500
+click QuizOption2Button
+wait 500
+click QuizOption1Button
+wait 500
+click QuizOption0Button
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Newcomer
+type RegAge 24
+click SignButton
+wait 8000
+
+step 1 Stand at the cottage sp:b83 sign and buy it
+expect cash =100
+stand HomeSign_saint_philippe_sp_b83
+wait 1500
+use LF_HouseSaleBuyAction HomeSign_saint_philippe_sp_b83
+wait 3000
+expect cash down
+expect item HouseKey
+
+step 2 The door opens for the owner (SCR_DoorUserAction; LF_DoorUserAction.c is its modded gate)
+use SCR_DoorUserAction
+wait 2000
+state
+# Close it again so the post-restart check starts from a closed door (a closing is always allowed, an opening is the gate).
+use SCR_DoorUserAction
+wait 1500

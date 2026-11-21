@@ -15,6 +15,13 @@ Every entry in a list has a stable id. A layer names entries by id and gives eac
 The merge is `LF_ConfigOverlay.Apply` (`Core/Config/LF_ConfigOverlay.c`). A section describes its
 list once (`LF_ConfigList`: how to find, make, patch and check a record) and has no merge code of its own.
 
+**A folder of overlays beside a listed one (#3555).** A listed overlay `Configs/Signs/LF_Signs_X.conf` also loads
+every `.conf` under `Configs/Signs/LF_Signs_X/` (the file name without `.conf`, as a folder), each right after its
+parent in path order and only if its root class matches the parent's section. A feature's PR adds its own file there
+(with its `.meta`) instead of appending to the shared overlay or to the header's list, so parallel PRs merge with no
+hand work. It works for every section that reads `LF_ConfigOverlay.LoadPackOverlays` (signs, shop stock, prices,
+catalogue); `pack check` and `pack explain` read the folder the same way (`tools/pack/layers.mjs`).
+
 ## Verbs
 
 | Verb | What it does | Id the list lacks | Id the list has |
@@ -107,6 +114,7 @@ LF_ItemCatalogueConfig {
 | `market` | `m_aGoods` | the good's prefab GUID (the 16 hex digits of `{GUID}path`). Pack overlays only (no owner section). A new or replaced good needs a usable curve (floor <= base <= ceiling, percents 0..100); a patch that would break a row is refused and the row keeps its values. The overlay root may also set `m_bEnabled` and `m_iMaxRecoveryHours` (#3018) |
 | `reputation` | `m_aFactions`, `m_aAwards`, `m_aGates`, `m_aPays` | faction id (`TOWN`), action id (`job_completed`), gate id (`job:TAXI`, `contract:<id>`), faction id. Pack overlays only (no owner section). A patch gives only the fields it sets (an array such as `m_aTierLabels` is replaced whole); a new faction needs `m_aTierThresholds`, a new award or gate a `m_sFaction` (#3044) |
 | `reputationContracts` | `m_aContracts` | contract id. Pack overlays only. The contract cooldown (`m_fCooldownSeconds`) stays core (#3044) |
+| `characters` | none (fields) | no list: the overlay root sets `m_iMaxPerAccount` (1 or more), `m_iMinAge`, `m_iMaxAge` and `m_iSwitchCombatSeconds` (0 or more) directly, and a later pack wins. Pack overlays only (no owner section). The core ships 1 character per account; the Everon pack allows 3 (`LF_Characters_Everon1989.conf`) |
 | `licences` | `rules` | licence name (`POLICE_ACCESS`). The ids are the catalog's: add of an existing one, a name the catalog lacks and every remove are refused; replace turns both flags off unless the layer gives them |
 | `systems` (catalog) | `LF_SystemDef` list | system id (`Pager`). Pack overlays only. A framework (`LOCKED`) system and one another system names as parent or requirement cannot be removed |
 | `jobs` | `tracks` | job id (`MINER`). A new or replaced track needs `levelThresholds` |

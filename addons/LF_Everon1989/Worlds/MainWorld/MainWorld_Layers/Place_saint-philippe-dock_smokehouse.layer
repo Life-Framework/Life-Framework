@@ -1,0 +1,59 @@
+GenericEntity Fit_saint_philippe_dock_smokehouse_Place {
+ components {
+  LF_PlaceComponent "{ED9DA5146C3061F9}" {
+   m_sKind "Smokehouse"
+   m_sId "saint-philippe-dock.smokehouse"
+  }
+  LF_FittedBuildingComponent "{6060033945A4BAF5}" {
+  }
+ }
+ coords 4453.5 2.5 11079.3
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_smoker : "{584A1875C182C9A4}Prefabs/Props/Fishing/LF_Smokehouse.et" {
+ coords 4451.727 3.523 11076.629
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_firewood_pile : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
+ coords 4457.426 2.547 11083.5
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_net_hanger_a : "{996DC070C5A96B7B}Prefabs/Props/Naval/NetHanger_01_short.et" {
+ coords 4454.021 2.55 11082.002
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_net_hanger_b : "{996DC070C5A96B7B}Prefabs/Props/Naval/NetHanger_01_short.et" {
+ coords 4453.328 2.55 11082.402
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_smoking_fire : "{34BA147AE88D0D24}Prefabs/Props/Fishing/LF_SmokehouseFire.et" {
+ coords 4447.854 1.594 11070.32
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_fish_crate_a : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
+ coords 4456.734 2.553 11086.901
+ angleY -48
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_fish_crate_b : "{F6D1E024E82511F9}Prefabs/Props/Crates/Crate_01_base.et" {
+ coords 4456.734 2.779 11086.901
+ angleY -68
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_brine_barrel : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4459.186 2.567 11085.948
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_kindling_by_fire : "{BA8BCF7C77F24A56}Prefabs/Props/Civilian/WoodKindling_01.et" {
+ coords 4447.401 1.604 11071.736
+ angleY -25
+}
+GenericEntity Fit_saint_philippe_dock_smokehouse_smokehouse_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "smokehouse"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 4455.862 1.952 11088.791
+ angleY -60
+}

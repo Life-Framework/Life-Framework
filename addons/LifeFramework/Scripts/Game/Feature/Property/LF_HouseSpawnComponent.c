@@ -81,6 +81,40 @@ class LF_HouseSpawnComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Every authored point in world space, inside points then the outside one, with a name each. The
+	//! spawn-point check (LF_SpawnPointAudit) measures all of them, not just the one a login picks.
+	void GetAllPoints(notnull array<vector> outPoints, notnull array<string> outNames)
+	{
+		IEntity owner = GetOwner();
+		if (!owner)
+			return;
+
+		if (m_aSpawnPoints)
+		{
+			foreach (int i, PointInfo point : m_aSpawnPoints)
+			{
+				if (!point)
+					continue;
+
+				vector mat[4];
+				point.Init(owner);
+				point.GetWorldTransform(mat);
+				outPoints.Insert(mat[3]);
+				outNames.Insert(string.Format("inside %1", i));
+			}
+		}
+
+		if (m_pOutsidePoint)
+		{
+			vector outsideMat[4];
+			m_pOutsidePoint.Init(owner);
+			m_pOutsidePoint.GetWorldTransform(outsideMat);
+			outPoints.Insert(outsideMat[3]);
+			outNames.Insert("outside");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: a spot and heading for a player waking in this house.
 	//! \return False when the house has no authored point or nothing is usable.
 	bool GetSpawnPoint(out vector position, out vector yawPitchRoll)

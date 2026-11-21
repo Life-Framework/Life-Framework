@@ -46,6 +46,9 @@ class LF_ProcessAction : ScriptedUserAction
 
 	protected LF_HideoutMachineComponent m_pHideoutMachine;
 
+	//! The chain row this action read its recipe from; null for a prefab-configured recipe.
+	protected LF_ResourceMachineDef m_Machine;
+
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
@@ -73,14 +76,63 @@ class LF_ProcessAction : ScriptedUserAction
 			return;
 		}
 
+		// The machine's job-level gate (#3226): the server decides, the player reads the job's words.
+		string levelRefusal = LevelRefusal(m_Machine, LevelFor(pUserEntity, m_Machine));
+		if (!levelRefusal.IsEmpty())
+		{
+			LF_Debug.Info("Processing", string.Format("refused process at %1: %2 level below %3", m_sMachineId, m_Machine.m_sLevelJob, m_Machine.m_iMinLevel));
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text(levelRefusal), "", 4.0);
+			return;
+		}
+
+		// A timed machine runs one job at a time (#3229); the second worker reads that it is busy.
+		if (m_Machine && m_Machine.m_iProcessSeconds > 0 && LF_ProcessRun.IsBusy(pOwnerEntity))
+		{
+			LF_Debug.Info("Processing", string.Format("refused process at %1: a run is under way", m_sMachineId));
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text("#LF-Process_Busy"), "", 4.0);
+			return;
+		}
+
 		InventoryStorageManagerComponent inventoryManager = LF_Component<InventoryStorageManagerComponent>.Find(pUserEntity);
 
+		// As many whole batches as the inventory covers, up to the machine's cap.
+		array<int> held = HeldAmounts(inventoryManager, m_aProcessingInputs);
+		int batches = BatchesFor(held, m_aProcessingInputs, MaxBatches(m_Machine));
+		if (batches < 1)
+		{
+			ResourceName missing;
+			int missingIndex = MissingInputIndex(held, m_aProcessingInputs);
+			if (missingIndex >= 0)
+				missing = m_aProcessingInputs[missingIndex].m_InputPrefab;
+
+			LF_Debug.Warn("Processing", string.Format("rejected process at %1: missing input %2", m_sMachineId, missing));
+			LF_Utils.NotifyEntity(pUserEntity, NeedsText(missing), "", 4.0);
+			return;
+		}
+
+		array<ref LF_ProcessingInput> inputs = ScaleInputs(m_aProcessingInputs, batches);
+		array<ref LF_ProcessingOutput> outputs = ScaleOutputs(m_aProcessingOutputs, batches);
+
 		// Every input is verified and removed together, or none is.
-		if (!TryConsumeInputs(inventoryManager, m_aProcessingInputs))
+		if (!TryConsumeInputs(inventoryManager, inputs))
 			return;
 
+		// A timed machine keeps the outputs back: they drop at the machine when the time is up (#3229).
+		if (m_Machine && m_Machine.m_iProcessSeconds > 0)
+		{
+			if (!LF_ProcessRun.Start(pOwnerEntity, pUserEntity, m_sMachineId, outputs, batches, m_Machine.m_iProcessSeconds, m_vDropOffset, m_vRotation))
+			{
+				RestoreInputs(inventoryManager, inputs);
+				LF_Debug.Error("Processing", string.Format("rejected process at %1: the timed run did not start, inputs given back", m_sMachineId));
+				return;
+			}
+
+			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text("#LF-Process_Started", m_Machine.m_iProcessSeconds.ToString()), "", 4.0);
+			return;
+		}
+
 		array<IEntity> spawnedOutputs = {};
-		foreach (LF_ProcessingOutput processingOutput : m_aProcessingOutputs)
+		foreach (LF_ProcessingOutput processingOutput : outputs)
 		{
 			if (m_bForceDropOutput)
 			{
@@ -95,7 +147,7 @@ class LF_ProcessAction : ScriptedUserAction
 
 					for (int outputIndex = 0; outputIndex < spawnedOutputs.Count(); outputIndex++)
 						SCR_EntityHelper.DeleteEntityAndChildren(spawnedOutputs[outputIndex]);
-					RestoreInputs(inventoryManager, m_aProcessingInputs);
+					RestoreInputs(inventoryManager, inputs);
 
 					LF_Debug.Error("Processing", "rejected process: output spawn failed");
 					return;
@@ -106,7 +158,7 @@ class LF_ProcessAction : ScriptedUserAction
 				int added = LF_InventoryUtils.AddAmount(inventoryManager, processingOutput.m_OutputPrefab, processingOutput.m_iOutputAmount, true);
 				if (added != processingOutput.m_iOutputAmount)
 				{
-					RestoreInputs(inventoryManager, m_aProcessingInputs);
+					RestoreInputs(inventoryManager, inputs);
 
 					LF_Debug.Error("Processing", string.Format("rejected process: output delivery failed (%1/%2)", added, processingOutput.m_iOutputAmount));
 					return;
@@ -117,11 +169,15 @@ class LF_ProcessAction : ScriptedUserAction
 			LF_JobManager jobManager = LF_JobManager.GetInstance();
 			if (jobManager)
 			{
-				jobManager.OnProcessCompleted(pUserEntity, processingOutput.m_OutputPrefab);
+				// Once per batch, so a five-batch run pays what five single runs pay.
+				for (int batch = 0; batch < batches; batch++)
+					jobManager.OnProcessCompleted(pUserEntity, processingOutput.m_OutputPrefab);
 			}
 
-			LF_Debug.Log("Processing", string.Format("processed %1 x%2", processingOutput.m_OutputPrefab, processingOutput.m_iOutputAmount));
+			LF_Debug.Log("Processing", string.Format("processed %1 x%2 (%3 batch(es))", processingOutput.m_OutputPrefab, processingOutput.m_iOutputAmount, batches));
 		}
+
+		LF_Utils.NotifyEntity(pUserEntity, ToastText(outputs), "", 4.0);
 
 		// The machine is heard running for a while (Feature/Atmosphere); no switch on the prefab, no sound.
 		LF_AmbientSwitchComponent.PulseOn(pOwnerEntity, m_fRunSoundSeconds);
@@ -149,14 +205,173 @@ class LF_ProcessAction : ScriptedUserAction
 		if (!IsRecipeConfigured(m_aProcessingInputs, m_aProcessingOutputs))
 			return false;
 
-		InventoryStorageManagerComponent inventoryManager = LF_Component<InventoryStorageManagerComponent>.Find(user);
-		foreach (LF_ProcessingInput processingInput : m_aProcessingInputs)
+		// Levels live on the server; a client is refused there, in the job's words.
+		if (Replication.IsServer())
 		{
-			int inputPrefabsInInv = LF_InventoryUtils.GetAmount(inventoryManager, processingInput.m_InputPrefab);
-			if (inputPrefabsInInv < processingInput.m_iInputAmount) return false;
+			string levelRefusal = LevelRefusal(m_Machine, LevelFor(user, m_Machine));
+			if (!levelRefusal.IsEmpty())
+			{
+				SetCannotPerformReason(levelRefusal);
+				return false;
+			}
+		}
+
+		InventoryStorageManagerComponent inventoryManager = LF_Component<InventoryStorageManagerComponent>.Find(user);
+		int missingIndex = MissingInputIndex(HeldAmounts(inventoryManager, m_aProcessingInputs), m_aProcessingInputs);
+		if (missingIndex >= 0)
+		{
+			// Names the reagent still needed ("Needs Coal"), not just "no items".
+			SetCannotPerformReason(NeedsText(m_aProcessingInputs[missingIndex].m_InputPrefab));
+			return false;
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The player's level in the machine's gate job; 0 when the machine has no gate.
+	protected static int LevelFor(IEntity user, LF_ResourceMachineDef machine)
+	{
+		if (LevelRefusal(machine, 0).IsEmpty())
+			return 0;
+
+		return LF_JobLevels.LevelOfBody(user, machine.m_sLevelJob);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The `#` key a player at \p level reads at this machine, or empty when the machine has
+	//! no gate or the level meets it. No job, or a minimum of 1 or less, is no gate (#3226).
+	static string LevelRefusal(LF_ResourceMachineDef machine, int level)
+	{
+		if (!machine || machine.m_sLevelJob.IsEmpty() || machine.m_iMinLevel <= 1)
+			return "";
+
+		return LF_JobLevelWords.Refusal(machine.m_sLevelJob, level, machine.m_iMinLevel);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The batch cap of a machine row: its m_iMaxBatches, at least 1; 1 with no row.
+	static int MaxBatches(LF_ResourceMachineDef machine)
+	{
+		if (!machine)
+			return 1;
+
+		return LF_Utils.MaxInt(1, machine.m_iMaxBatches);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return How much of each input the inventory holds, in the order of \p inputs.
+	static array<int> HeldAmounts(InventoryStorageManagerComponent inventoryManager, array<ref LF_ProcessingInput> inputs)
+	{
+		array<int> held = {};
+		if (!inputs)
+			return held;
+
+		foreach (LF_ProcessingInput input : inputs)
+		{
+			if (!input || !inventoryManager)
+			{
+				held.Insert(0);
+				continue;
+			}
+
+			held.Insert(LF_InventoryUtils.GetAmount(inventoryManager, input.m_InputPrefab));
+		}
+
+		return held;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The whole batches \p held covers, at most \p maxBatches (at least 1); 0 when any input
+	//! is short or the recipe is malformed. Pure, so a LOGIC test drives it.
+	static int BatchesFor(array<int> held, array<ref LF_ProcessingInput> inputs, int maxBatches)
+	{
+		if (!held || !inputs || inputs.IsEmpty() || held.Count() != inputs.Count())
+			return 0;
+
+		int batches = LF_Utils.MaxInt(1, maxBatches);
+		for (int i = 0; i < inputs.Count(); i++)
+		{
+			LF_ProcessingInput input = inputs[i];
+			if (!input || input.m_iInputAmount < 1)
+				return 0;
+
+			batches = LF_Utils.MinInt(batches, held[i] / input.m_iInputAmount);
+		}
+
+		return LF_Utils.MaxInt(0, batches);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The index of the first input \p held does not cover once, or -1 when all are covered.
+	static int MissingInputIndex(array<int> held, array<ref LF_ProcessingInput> inputs)
+	{
+		if (!inputs)
+			return -1;
+
+		for (int i = 0; i < inputs.Count(); i++)
+		{
+			LF_ProcessingInput input = inputs[i];
+			if (!input)
+				return i;
+
+			int have = 0;
+			if (held && i < held.Count())
+				have = held[i];
+			if (have < input.m_iInputAmount)
+				return i;
+		}
+
+		return -1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Fresh input rows for \p batches batches; the catalog rows are never changed.
+	static array<ref LF_ProcessingInput> ScaleInputs(array<ref LF_ProcessingInput> inputs, int batches)
+	{
+		array<ref LF_ProcessingInput> scaled = new array<ref LF_ProcessingInput>();
+		if (!inputs)
+			return scaled;
+
+		foreach (LF_ProcessingInput input : inputs)
+		{
+			LF_ProcessingInput row = new LF_ProcessingInput();
+			row.m_InputPrefab = input.m_InputPrefab;
+			row.m_iInputAmount = input.m_iInputAmount * batches;
+			scaled.Insert(row);
+		}
+
+		return scaled;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Fresh output rows for \p batches batches; the catalog rows are never changed.
+	static array<ref LF_ProcessingOutput> ScaleOutputs(array<ref LF_ProcessingOutput> outputs, int batches)
+	{
+		array<ref LF_ProcessingOutput> scaled = new array<ref LF_ProcessingOutput>();
+		if (!outputs)
+			return scaled;
+
+		foreach (LF_ProcessingOutput output : outputs)
+		{
+			LF_ProcessingOutput row = new LF_ProcessingOutput();
+			row.m_OutputPrefab = output.m_OutputPrefab;
+			row.m_iOutputAmount = output.m_iOutputAmount * batches;
+			scaled.Insert(row);
+		}
+
+		return scaled;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The refusal a player reads when an input is short: "Needs <item>"; the old "missing the
+	//! input materials" when the recipe gives no item to name.
+	static string NeedsText(ResourceName missing)
+	{
+		if (missing.IsEmpty())
+			return LF_Terms.Text("#LF-Process_NoItems");
+
+		return LF_Terms.Text("#LF-Process_Needs", LF_GatherAction.ItemName(missing));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -167,7 +382,10 @@ class LF_ProcessAction : ScriptedUserAction
 	protected bool ApplyMachineFromCatalog()
 	{
 		if (m_sMachineId.IsEmpty())
+		{
+			m_Machine = null;
 			return true;
+		}
 
 		LF_ResourceMachineDef machine = LF_ResourceChainCatalog.FindMachine(m_sMachineId);
 		if (!LF_ResourceChainCatalog.IsMachineUsable(machine))
@@ -175,12 +393,43 @@ class LF_ProcessAction : ScriptedUserAction
 			LF_Debug.Error("Processing", string.Format("rejected process: machine %1 recipe is empty or a prefab does not resolve", m_sMachineId));
 			m_aProcessingInputs = new array<ref LF_ProcessingInput>();
 			m_aProcessingOutputs = new array<ref LF_ProcessingOutput>();
+			m_Machine = null;
 			return false;
 		}
 
+		m_Machine = machine;
 		m_aProcessingInputs = machine.m_aInputs;
 		m_aProcessingOutputs = machine.m_aOutputs;
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The toast sentence for a finished process: what came out, and what a trader pays for the first
+	//! output a market row lists (left out when none does).
+	static string ToastText(array<ref LF_ProcessingOutput> outputs)
+	{
+		string made;
+		int price;
+		string soldAsName;
+		foreach (LF_ProcessingOutput output : outputs)
+		{
+			if (!output)
+				continue;
+
+			if (!made.IsEmpty())
+				made = made + ", ";
+			made = made + LF_Terms.Text("#LF-Gather_Toast", LF_GatherAction.ItemName(output.m_OutputPrefab), output.m_iOutputAmount.ToString());
+
+			if (price > 0)
+				continue;
+
+			ResourceName soldAs;
+			price = LF_GatherAction.TraderPrice(output.m_OutputPrefab, soldAs);
+			if (price > 0)
+				soldAsName = LF_GatherAction.ItemName(soldAs);
+		}
+
+		return made + LF_GatherAction.PriceSentence(price, soldAsName);
 	}
 
 	//------------------------------------------------------------------------------------------------

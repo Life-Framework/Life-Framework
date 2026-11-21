@@ -1905,6 +1905,71 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "Placa de lista de permissões"
      Comment "Whitelist sign interactive action name"
     }
+    CustomStringTableItem "{AA8EFD68EBC44F28}" {
+     Id "LF-ATMTransfer_Done"
+     Target_en_us "SENT %1 TO ...%2. BALANCE %3."
+     Comment "ATM transfer page status line after a transfer. %1 amount, %2 last four characters of the recipient's number, %3 the new balance."
+    }
+    CustomStringTableItem "{8359F0DA9137A580}" {
+     Id "LF-ATMTransfer_FieldTarget"
+     Target_en_us "SEND TO ACCOUNT NUMBER"
+     Comment "ATM transfer page: caption over the box where the recipient's account number is typed."
+    }
+    CustomStringTableItem "{B07FF790CDDE54BC}" {
+     Id "LF-ATMTransfer_Header"
+     Target_en_us "TRANSFER"
+     Comment "ATM transfer page title."
+    }
+    CustomStringTableItem "{6FDD215150BDD14B}" {
+     Id "LF-ATMTransfer_KeyMenu"
+     Target_en_us "MENU"
+     Comment "ATM transfer page: key back to the terminal's main screen."
+    }
+    CustomStringTableItem "{C08EF8EC1F48F181}" {
+     Id "LF-ATMTransfer_KeySend"
+     Target_en_us "SEND"
+     Comment "ATM transfer page: confirm key."
+    }
+    CustomStringTableItem "{6CAF1AF5B5009021}" {
+     Id "LF-ATMTransfer_LineAmount"
+     Target_en_us "AMOUNT > %1_"
+     Comment "ATM transfer page entry line with a cursor. %1 is the amount keyed in so far."
+    }
+    CustomStringTableItem "{7E5731E1EBAE9D1A}" {
+     Id "LF-ATMTransfer_LineFee"
+     Target_en_us "FEE %1  TOTAL %2"
+     Comment "ATM transfer page: the fee for the amount keyed in and what leaves the account. %1 fee, %2 total."
+    }
+    CustomStringTableItem "{FC75BE37C547EB67}" {
+     Id "LF-ATMTransfer_LineOwn"
+     Target_en_us "YOUR NUMBER: %1"
+     Comment "ATM transfer page: the player's own account number, to tell someone. %1 is the number."
+    }
+    CustomStringTableItem "{6005A6BA2670AB55}" {
+     Id "LF-ATMTransfer_Prompt"
+     Target_en_us "KEY IN THE NUMBER AND AMOUNT, THEN SEND."
+     Comment "ATM transfer page status line while idle."
+    }
+    CustomStringTableItem "{D2E85BF67E21E2DC}" {
+     Id "LF-ATMTransfer_RefuseFailed"
+     Target_en_us "THE TRANSFER DID NOT GO THROUGH. NO MONEY MOVED."
+     Comment "ATM transfer page refusal: the transfer id was used or the bank refused for a reason the player cannot fix."
+    }
+    CustomStringTableItem "{B77B1450A1912D0E}" {
+     Id "LF-ATMTransfer_RefuseRate"
+     Target_en_us "SLOW DOWN. TRY AGAIN IN A MOMENT."
+     Comment "ATM transfer page refusal: too many requests from this player in a few seconds."
+    }
+    CustomStringTableItem "{B49AD51FE0064222}" {
+     Id "LF-ATMTransfer_Sent"
+     Target_en_us "You sent %1 to the account ending %2."
+     Comment "Toast after a bank transfer. %1 is the amount, %2 the last four characters of the recipient's number."
+    }
+    CustomStringTableItem "{EA0C8B8F73FBDA3F}" {
+     Id "LF-ATMTransfer_ToastTitle"
+     Target_en_us "Bank transfer"
+     Comment "Toast title after a bank transfer went through."
+    }
     CustomStringTableItem "{4A64CBDDC70A3B14}" {
      Id "LF-ATM_Deposited"
      Target_en_us "DEPOSITED %1. THANK YOU."
@@ -1940,6 +2005,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "DEPOSIT"
      Comment "ATM terminal key: pay the keyed amount of carried cash into the account."
     }
+    CustomStringTableItem "{ACF0AF7CCD90F1B7}" {
+     Id "LF-ATM_KeyTransfer"
+     Target_en_us "TRANSFER"
+     Comment "ATM terminal key that opens the transfer page."
+    }
     CustomStringTableItem "{9BA4937AFAD95E3E}" {
      Id "LF-ATM_KeyWithdraw"
      Target_en_us "WITHDRAW"
@@ -1964,6 +2034,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ATM_LineEntry"
      Target_en_us "AMOUNT > %1_"
      Comment "ATM terminal entry line with a cursor. %1 is the amount keyed in so far."
+    }
+    CustomStringTableItem "{6B1D3E9A0C4F7285}" {
+     Id "LF-ATM_Manage"
+     Target_en_us "Manage bank account"
+     Comment "Action description on a placed ATM (LF_ATM.et)."
     }
     CustomStringTableItem "{7880A378781D2C8D}" {
      Id "LF-ATM_NoReply"
@@ -2015,6 +2090,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "PLEASE WAIT ..."
      Comment "ATM terminal status line while the server handles a request."
     }
+    CustomStringTableItem "{5E1B7A39C2D40F68}" {
+     Id "LF-Arrival_ClerkMark"
+     Target_en_us "The registry clerk"
+     Comment "Name on the waypoint and the map mark that guide a new player to the registry clerk (the arrival chain, first and last step). 32 characters at most."
+    }
     CustomStringTableItem "{EA5E950371F7CE44}" {
      Id "LF-Atmosphere_SwitchOff"
      Target_en_us "Switch off"
@@ -2065,6 +2145,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take bank robbery kit"
      Comment "Playtest kit stand beside the bank: hands out a drill, keycard and charge (#605). Debug game mode only."
     }
+    CustomStringTableItem "{45B885CB207E6AFA}" {
+     Id "LF-BankTransfer_RefuseAmount"
+     Target_en_us "Enter an amount above zero."
+     Comment "Bank transfer refusal: the amount is zero or negative."
+    }
+    CustomStringTableItem "{095535993A8D1611}" {
+     Id "LF-BankTransfer_RefuseBalance"
+     Target_en_us "Your balance doesn't cover the amount and the fee."
+     Comment "Bank transfer refusal: the balance is short of the amount plus the fee."
+    }
+    CustomStringTableItem "{EED4BC3488E3080F}" {
+     Id "LF-BankTransfer_RefuseLimit"
+     Target_en_us "That would pass today's transfer limit."
+     Comment "Bank transfer refusal: the amount would take the sender past the daily limit."
+    }
+    CustomStringTableItem "{65E7F78A397137B3}" {
+     Id "LF-BankTransfer_RefuseOwn"
+     Target_en_us "You can't transfer money to your own account."
+     Comment "Bank transfer refusal: the account number keyed in is the sender's own."
+    }
+    CustomStringTableItem "{2D4831EC50F493F3}" {
+     Id "LF-BankTransfer_RefuseUnknown"
+     Target_en_us "There is no account with that number."
+     Comment "Bank transfer refusal: no account holds the number keyed in."
+    }
     CustomStringTableItem "{A3AB2264A6CAAA6D}" {
      Id "LF-Bank_Drill"
      Target_en_us "Drill the vault door"
@@ -2109,6 +2214,86 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Bank_Teller_TalkDesc"
      Target_en_us "Deposit or withdraw cash at the counter"
      Comment "Description of the bank teller prompt."
+    }
+    CustomStringTableItem "{62D75ACB54C1AA09}" {
+     Id "LF-Barber_Action"
+     Target_en_us "Ask for a haircut"
+     Comment "Action while seated on a barber chair: open the barber sheet (#3234)."
+    }
+    CustomStringTableItem "{B9315E3528BAE1E3}" {
+     Id "LF-Barber_Asking"
+     Target_en_us "The barber gets to work..."
+     Comment "Barber sheet status while the server answers (#3234)."
+    }
+    CustomStringTableItem "{FE9688F31B4E6799}" {
+     Id "LF-Barber_Close"
+     Target_en_us "Leave the chair as you were"
+     Comment "Barber sheet close button; the old look comes back (#3234)."
+    }
+    CustomStringTableItem "{AFE2CDD8B76005A5}" {
+     Id "LF-Barber_Done"
+     Target_en_us "Paid. Enjoy the new look."
+     Comment "Barber sheet status after a paid haircut (#3234)."
+    }
+    CustomStringTableItem "{8DC241E8A6EA978A}" {
+     Id "LF-Barber_Intro"
+     Target_en_us "Pick a new hair and beard, then pay at the chair."
+     Comment "First line of the barber sheet (#3234)."
+    }
+    CustomStringTableItem "{BCEF22626AE37FE8}" {
+     Id "LF-Barber_Look"
+     Target_en_us "Look %1 of %2"
+     Comment "Barber sheet: which look is shown on the seated character. %1 the look, %2 how many (#3234)."
+    }
+    CustomStringTableItem "{6DAE9AB8265EE308}" {
+     Id "LF-Barber_Next"
+     Target_en_us "Next look"
+     Comment "Barber sheet button (#3234)."
+    }
+    CustomStringTableItem "{5CE95C8E08A13CA8}" {
+     Id "LF-Barber_Pay"
+     Target_en_us "Pay {currency:sym}%1 for this look"
+     Comment "Barber sheet button: pay the fee and keep the shown look. %1 the fee in cash (#3234)."
+    }
+    CustomStringTableItem "{7721BE3239E4E078}" {
+     Id "LF-Barber_Prev"
+     Target_en_us "Previous look"
+     Comment "Barber sheet button (#3234)."
+    }
+    CustomStringTableItem "{63094ABE99436B00}" {
+     Id "LF-Barber_RefuseNoCash"
+     Target_en_us "Not enough cash on you"
+     Comment "Barber refusal: the fee is more than the cash carried (#3234)."
+    }
+    CustomStringTableItem "{79887C4EA5818614}" {
+     Id "LF-Barber_RefuseNoCharacter"
+     Target_en_us "The barber cannot see you"
+     Comment "Barber refusal: no character or record key (#3234)."
+    }
+    CustomStringTableItem "{B5EA72B91B44A3F8}" {
+     Id "LF-Barber_RefuseNoLook"
+     Target_en_us "The barber does not know that look"
+     Comment "Barber refusal: look index out of range (#3234)."
+    }
+    CustomStringTableItem "{7E370923ED0BF27F}" {
+     Id "LF-Barber_RefuseNoSeat"
+     Target_en_us "Sit in the barber chair first"
+     Comment "Barber refusal: the player is not seated on a barber chair (#3234)."
+    }
+    CustomStringTableItem "{F7263FF14E397E25}" {
+     Id "LF-Barber_RefuseOff"
+     Target_en_us "The barber is closed"
+     Comment "Barber refusal: the feature is off (#3234)."
+    }
+    CustomStringTableItem "{CCD3BB259D0AFB7E}" {
+     Id "LF-Barber_RefuseSameLook"
+     Target_en_us "That is already your look"
+     Comment "Barber refusal: the chosen look is the one worn (#3234)."
+    }
+    CustomStringTableItem "{E6E5C23EA2F7B092}" {
+     Id "LF-Barber_Title"
+     Target_en_us "Barber"
+     Comment "Title of the barber sheet (#3234)."
     }
     CustomStringTableItem "{30B35DD36DE9AD2B}" {
      Id "LF-Bed_Action"
@@ -2190,6 +2375,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Treatment bill"
      Comment "Notification title for treatment bills."
     }
+    CustomStringTableItem "{3C8E1F5A7D2B9406}" {
+     Id "LF-Bin_Name"
+     Target_en_us "Bin"
+     Comment "Inventory name of a tagged bin: an open container that is emptied by the world reset."
+    }
+    CustomStringTableItem "{B7A20D6E94C31F58}" {
+     Id "LF-Bin_Open"
+     Target_en_us "Look in bin"
+     Comment "Action on a bin: opens it as normal storage."
+    }
+    CustomStringTableItem "{312172B24DB5B820}" {
+     Id "LF-BreakIn_Barely"
+     Target_en_us "Barely started"
+     Comment "Break-in progress word: under a third of the way."
+    }
+    CustomStringTableItem "{C4526971F8C1E519}" {
+     Id "LF-BreakIn_Halfway"
+     Target_en_us "Halfway"
+     Comment "Break-in progress word: about halfway."
+    }
+    CustomStringTableItem "{77D4B7DDEE0EFF43}" {
+     Id "LF-BreakIn_Nearly"
+     Target_en_us "Nearly through"
+     Comment "Break-in progress word: close to done."
+    }
+    CustomStringTableItem "{54827F9A7CED2A2C}" {
+     Id "LF-BreakIn_Through"
+     Target_en_us "Through"
+     Comment "Break-in progress word: the last stage is finished."
+    }
+    CustomStringTableItem "{F2A63B8D5C07E914}" {
+     Id "LF-BuildingLock_Closed"
+     Target_en_us "Closed"
+     Comment "Door prompt on a building a lock marker shuts: closed"
+    }
+    CustomStringTableItem "{B94F2C60E8A31D75}" {
+     Id "LF-BuildingLock_ForSaleSoon"
+     Target_en_us "Closed: for sale soon"
+     Comment "Door prompt on a building a lock marker shuts: for sale soon"
+    }
+    CustomStringTableItem "{0D58E7A3C1B6924F}" {
+     Id "LF-BuildingLock_OpeningSoon"
+     Target_en_us "Closed: opening soon"
+     Comment "Door prompt on a building a lock marker shuts: opening soon"
+    }
+    CustomStringTableItem "{3A7C91E05B2D4F18}" {
+     Id "LF-BuildingLock_Private"
+     Target_en_us "Private property"
+     Comment "Door prompt on a building a lock marker shuts: private"
+    }
+    CustomStringTableItem "{6E1B84D2A0C95F37}" {
+     Id "LF-BuildingLock_StaffOnly"
+     Target_en_us "Staff only"
+     Comment "Door prompt on a building a lock marker shuts: staff only"
+    }
     CustomStringTableItem "{7E1C40B2A93D5F06}" {
      Id "LF-BuyerSale_Action"
      Target_en_us "Sell the goods"
@@ -2229,6 +2469,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-CC_Wait_Identity"
      Target_en_us "Connecting to the online service. Your registration form opens in a moment."
      Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
+    }
+    CustomStringTableItem "{B27102B0C486F20E}" {
+     Id "LF-Cargo_Empty"
+     Target_en_us "The bed is empty."
+     Comment "Toast: unload pressed on an empty bed (#3265)."
+    }
+    CustomStringTableItem "{3B4A64303E9729FD}" {
+     Id "LF-Cargo_Full"
+     Target_en_us "The bed is full."
+     Comment "Toast and reason: no room for this load (#3265)."
+    }
+    CustomStringTableItem "{EE82A1CD38C1F4B8}" {
+     Id "LF-Cargo_HandsFull"
+     Target_en_us "Your hands are full."
+     Comment "Toast and reason: unload needs free hands (#3265)."
+    }
+    CustomStringTableItem "{26FEFFF494632DD3}" {
+     Id "LF-Cargo_Load"
+     Target_en_us "Load onto the truck"
+     Comment "F-key action name: put the carried load on the bed (#3265)."
+    }
+    CustomStringTableItem "{0854C8AB56AD9EFB}" {
+     Id "LF-Cargo_NoBed"
+     Target_en_us "This vehicle has no cargo bed."
+     Comment "Toast: a car cannot carry a load (#3265)."
+    }
+    CustomStringTableItem "{BF7D47302660AF18}" {
+     Id "LF-Cargo_NoLoad"
+     Target_en_us "You are not carrying anything."
+     Comment "Toast: load pressed with empty shoulders (#3265)."
+    }
+    CustomStringTableItem "{F17DC59B6A1E5566}" {
+     Id "LF-Cargo_NotAccepted"
+     Target_en_us "The bed does not take this."
+     Comment "Toast: a kind the bed refuses (#3265)."
+    }
+    CustomStringTableItem "{1DCA2E1743D81081}" {
+     Id "LF-Cargo_Title"
+     Target_en_us "Cargo"
+     Comment "Toast title for the truck bed (#3265)."
+    }
+    CustomStringTableItem "{B742E763B9E68070}" {
+     Id "LF-Cargo_Unload"
+     Target_en_us "Unload onto your shoulder"
+     Comment "F-key action name: take the top load off the bed (#3265)."
     }
     CustomStringTableItem "{7A30C5E1D49B6A08}" {
      Id "LF-Carry_Busy"
@@ -2405,6 +2690,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are not licensed for this work"
      Comment "Chain step refused: the worker lacks the licence the step names (#416)."
     }
+    CustomStringTableItem "{F7EF14B5A3B557CE}" {
+     Id "LF-Chain_NeedLicenseWhere"
+     Target_en_us "You are not licensed for this work. %1"
+     Comment "Chain step refused for a missing licence (#3150): %1 says where to get it and what it costs."
+    }
     CustomStringTableItem "{C4A100000000A0C4}" {
      Id "LF-Chain_SmellLead"
      Target_en_us "Smell of brewing"
@@ -2470,6 +2760,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Civil Registry, Residents on File"
      Comment "Character pick title on arrival, shown when an account may hold more than one character. A 1989 registry sheet."
     }
+    CustomStringTableItem "{EC96C639C81618E1}" {
+     Id "LF-CharSwitch_ClerkNo"
+     Target_en_us "I cannot change your papers right now."
+     Comment "Town clerk answer when a character switch is refused; a toast says why."
+    }
+    CustomStringTableItem "{D428313AD233AA61}" {
+     Id "LF-CharSwitch_ClerkYes"
+     Target_en_us "Of course. Which of your files shall I pull?"
+     Comment "Town clerk answer when a character switch is allowed; the switch sheet opens after the talk."
+    }
+    CustomStringTableItem "{9A4F3971C8398625}" {
+     Id "LF-CharSwitch_Combat"
+     Target_en_us "Not in the middle of a fight. Wait a couple of minutes."
+     Comment "Toast: character switch refused shortly after hitting or being hit by another player."
+    }
+    CustomStringTableItem "{2A1C08B1ACC157AC}" {
+     Id "LF-CharSwitch_Contraband"
+     Target_en_us "Not with contraband on you or a run under way."
+     Comment "Toast: character switch refused while carrying contraband or hauling a convoy run."
+    }
+    CustomStringTableItem "{2899AD20654A0D26}" {
+     Id "LF-CharSwitch_Cuffed"
+     Target_en_us "Not while you are cuffed or in custody."
+     Comment "Toast: character switch refused while cuffed, held or escorted."
+    }
+    CustomStringTableItem "{B6110ED9E8A0575C}" {
+     Id "LF-CharSwitch_Downed"
+     Target_en_us "Not while you are down."
+     Comment "Toast: character switch refused while downed."
+    }
+    CustomStringTableItem "{945D348B9613DEA5}" {
+     Id "LF-CharSwitch_Intro"
+     Target_en_us "Choose which of your residents goes on from here. The one you put away keeps their place, papers and pockets until you come back to them."
+     Comment "Character switch sheet instruction line. One button per other character follows."
+    }
+    CustomStringTableItem "{C61776D5D8142E8B}" {
+     Id "LF-CharSwitch_Jailed"
+     Target_en_us "Not while you are serving a sentence."
+     Comment "Toast: character switch refused while jailed."
+    }
+    CustomStringTableItem "{7C49AC7D4A60754B}" {
+     Id "LF-CharSwitch_JobRun"
+     Target_en_us "Finish or cancel your job run first."
+     Comment "Toast: character switch refused during an open delivery job run."
+    }
+    CustomStringTableItem "{083048FE55B906B8}" {
+     Id "LF-CharSwitch_Off"
+     Target_en_us "Only one file per person is kept here."
+     Comment "Toast: the server allows one character per account, so there is nothing to switch to."
+    }
+    CustomStringTableItem "{46083630BC792DED}" {
+     Id "LF-CharSwitch_OnDuty"
+     Target_en_us "Clock off duty first."
+     Comment "Toast: character switch refused while on police or medic duty."
+    }
+    CustomStringTableItem "{A4AD76E302FDB567}" {
+     Id "LF-CharSwitch_Playing"
+     Target_en_us "On file now"
+     Comment "Character switch sheet: status beside the character being played."
+    }
+    CustomStringTableItem "{C5632848E7273BA4}" {
+     Id "LF-CharSwitch_Racing"
+     Target_en_us "Not while you are entered in a race."
+     Comment "Toast: character switch refused while in a race."
+    }
+    CustomStringTableItem "{C5993D99EE2058E4}" {
+     Id "LF-CharSwitch_Stay"
+     Target_en_us "Stay as you are"
+     Comment "Character switch sheet: closes the sheet and keeps the current character."
+    }
+    CustomStringTableItem "{1566950A275C9033}" {
+     Id "LF-CharSwitch_Title"
+     Target_en_us "Civil Registry, Change of File"
+     Comment "Title of the character switch sheet and of its refusal toasts (#331). A 1989 registry office."
+    }
+    CustomStringTableItem "{C333F7EA551D3122}" {
+     Id "LF-CharSwitch_Vehicle"
+     Target_en_us "Step out of the vehicle first."
+     Comment "Toast: character switch refused while in a vehicle."
+    }
+    CustomStringTableItem "{1E2628AE7332248D}" {
+     Id "LF-CharSwitch_Wanted"
+     Target_en_us "Not while you are wanted. Settle your record first."
+     Comment "Toast: character switch refused while wanted."
+    }
     CustomStringTableItem "{D05A58380EB506C0}" {
      Id "LF-Char_Error_Full"
      Target_en_us "Every character slot on this account is taken."
@@ -2490,6 +2865,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Black wins"
      Comment "Chess board: the game ended."
     }
+    CustomStringTableItem "{1F68D2A4E70B93C5}" {
+     Id "LF-Chess_CannotAfford"
+     Target_en_us "Not enough cash for the stake"
+     Comment "Reason a staked chess action cannot be used: the player carries less than the stake."
+    }
     CustomStringTableItem "{8441B5995A901878}" {
      Id "LF-Chess_Draw"
      Target_en_us "Drawn game"
@@ -2504,6 +2884,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Chess_Play"
      Target_en_us "Play chess"
      Comment "Action on a chess table: sit and play, or watch when both seats are taken."
+    }
+    CustomStringTableItem "{4C0E9B7A21D358F6}" {
+     Id "LF-Chess_PlayFor"
+     Target_en_us "Play for {currency:sym}%1"
+     Comment "Action on a chess table: sit and play a game where each player puts the stake (%1, 20 or 50) in escrow and the winner takes the pot."
     }
     CustomStringTableItem "{EAB56E5EA3549E64}" {
      Id "LF-Chess_Selected"
@@ -2554,6 +2939,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Chess_YouWhite"
      Target_en_us "You play white"
      Comment "Chess board: your seat."
+    }
+    CustomStringTableItem "{53C4F6BAC7AAF841}" {
+     Id "LF-ChopFit_Action"
+     Target_en_us "Fit a hidden compartment"
+     Comment "Action: fit a hidden compartment to your car at the chop shop bench (#3776)."
+    }
+    CustomStringTableItem "{067E82FC427CEEAC}" {
+     Id "LF-ChopFit_AlreadyFitted"
+     Target_en_us "This car already has a compartment"
+     Comment "Toast: the car in the yard already has one (#3776)."
+    }
+    CustomStringTableItem "{1AD684CDD3AA9AF8}" {
+     Id "LF-ChopFit_Done"
+     Target_en_us "Compartment fitted for %1. Only you can open it."
+     Comment "Toast: fitted; %1 = the price paid (#3776)."
+    }
+    CustomStringTableItem "{733264AC2EA28EAA}" {
+     Id "LF-ChopFit_Failed"
+     Target_en_us "The yard could not fit it. You were not charged"
+     Comment "Toast: the compartment did not build and the price was handed back (#3776)."
+    }
+    CustomStringTableItem "{A8C83E644C7756E7}" {
+     Id "LF-ChopFit_NoVehicle"
+     Target_en_us "Park your car by the bench first"
+     Comment "Toast: no car in the drop area (#3776)."
+    }
+    CustomStringTableItem "{26A5C4DD24616668}" {
+     Id "LF-ChopFit_NotOwner"
+     Target_en_us "That is not your car"
+     Comment "Toast: the car in the yard is not owned by you (#3776)."
+    }
+    CustomStringTableItem "{1E8F5D0E98750F73}" {
+     Id "LF-ChopFit_ShortPurse"
+     Target_en_us "Fitting costs %1. You do not carry enough cash"
+     Comment "Toast: short of cash; %1 = the price (#3776)."
+    }
+    CustomStringTableItem "{A337DA90CA34D072}" {
+     Id "LF-ChopFit_TooFar"
+     Target_en_us "Step up to the bench"
+     Comment "Toast: too far from the bench (#3776)."
+    }
+    CustomStringTableItem "{8D7A5FEA2D016218}" {
+     Id "LF-ChopFit_Unsupported"
+     Target_en_us "The yard cannot fit a compartment in this car"
+     Comment "Toast: the car has no row in the compartment table (#3776)."
     }
     CustomStringTableItem "{87229FC4BD0FB108}" {
      Id "LF-Chop_Busy"
@@ -2664,6 +3094,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ClipStamp_Line"
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F907}" {
+     Id "LF-Consume_Keybind_Throw"
+     Target_en_us "Throw the food or drink in your hands"
+     Comment "Keybind menu entry for the throw action (default key G, with food or drink in the hands)."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F902}" {
+     Id "LF-Consume_Refused_Busy"
+     Target_en_us "You cannot do that right now."
+     Comment "Toast: eating, drinking or throwing refused, no better reason (not a character)."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F904}" {
+     Id "LF-Consume_Refused_Cuffed"
+     Target_en_us "You cannot eat or drink with your hands cuffed."
+     Comment "Toast: eating, drinking or throwing refused while restrained."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F903}" {
+     Id "LF-Consume_Refused_Down"
+     Target_en_us "You are in no state to eat or drink."
+     Comment "Toast: eating, drinking or throwing refused while dead, downed or knocked out."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F905}" {
+     Id "LF-Consume_Refused_Vehicle"
+     Target_en_us "Get out of the vehicle first."
+     Comment "Toast: eating, drinking or throwing refused while seated in a vehicle."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F906}" {
+     Id "LF-Consume_Refused_Water"
+     Target_en_us "You cannot eat or drink while swimming."
+     Comment "Toast: eating, drinking or throwing refused while swimming."
+    }
+    CustomStringTableItem "{4E1D7A30B6C2F901}" {
+     Id "LF-Consume_Title"
+     Target_en_us "Eating and drinking"
+     Comment "Toast title when eating, drinking or throwing food is refused."
     }
     CustomStringTableItem "{5C1E7A3B90D24F68}" {
      Id "LF-Contraband_Cooldown"
@@ -2787,42 +3252,42 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{17725D5EE1952883}" {
      Id "LF-Credits_100"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Models taken from the open libraries through 3d-asset-server (CC0, CC-BY) or bought by a human on CGTrader and similar markets (Royalty Free), then run through clean and import..."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{27F672D865E0C90E}" {
      Id "LF-Credits_101"
-     Target_en_us "Radio track \"Estrada dance\", an upbeat estrada dance number"
+     Target_en_us "GENERATED SOUND EFFECTS (ELEVENLABS)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{52A89444BDFCFD47}" {
      Id "LF-Credits_102"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Taser sounds: shot, dry fire, cartridge out and in, stun buzz"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B34B54B3270EA1AB}" {
      Id "LF-Credits_103"
-     Target_en_us "Radio track \"Accordion waltz\", a 3/4 accordion waltz"
+     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{08B073F287287452}" {
      Id "LF-Credits_104"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "GENERATED AUDIO"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{47D4FB9C4781CDA3}" {
      Id "LF-Credits_105"
-     Target_en_us "Radio track \"Accordion kolo\", a 2/4 Balkan kolo"
+     Target_en_us "Retail store alarm"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FBFB66BA23F58688}" {
      Id "LF-Credits_106"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Hospital robbery alarm"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{53B06789666BA9A0}" {
      Id "LF-Credits_107"
-     Target_en_us "Radio track \"Orchestral morning\", a light orchestral morning piece"
+     Target_en_us "Store radio and pub music"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{191CB88166129132}" {
@@ -2832,7 +3297,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A8D038048737972B}" {
      Id "LF-Credits_109"
-     Target_en_us "Radio track \"Orchestral serenade\", a Mediterranean serenade"
+     Target_en_us "Radio track \"Estrada ballad\", a slow 92 bpm estrada ballad"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{857E5E05902D8F44}" {
@@ -2847,47 +3312,47 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1E14413C1D94DD1F}" {
      Id "LF-Credits_111"
-     Target_en_us "Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle"
+     Target_en_us "Radio track \"Estrada dance\", an upbeat estrada dance number"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{96FE8BDEC46005B9}" {
      Id "LF-Credits_112"
-     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{863CCDCE20D8134D}" {
      Id "LF-Credits_113"
-     Target_en_us "GENERATED VOICES"
+     Target_en_us "Radio track \"Accordion waltz\", a 3/4 accordion waltz"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{90202C71BA2045BB}" {
      Id "LF-Credits_114"
-     Target_en_us "Town clerk's spoken lines: all thirteen, the old arrival lines and the newcomer's welcome"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BD650073C9503BC9}" {
      Id "LF-Credits_115"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Julien - Serious\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Radio track \"Accordion kolo\", a 2/4 Balkan kolo"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BF312B42B05FCAC5}" {
      Id "LF-Credits_116"
-     Target_en_us "Café owner's seven lines"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD8474D21ADA71ED}" {
      Id "LF-Credits_117"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Mariva Viva Muse - Warm and Energetic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Radio track \"Orchestral morning\", a light orchestral morning piece"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A20FA264480F9153}" {
      Id "LF-Credits_118"
-     Target_en_us "Night-shift worker's spoken lines"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8D2FBE7CB9BA1A19}" {
      Id "LF-Credits_119"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Radio track \"Orchestral serenade\", a Mediterranean serenade"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0A5B0A916F1F634A}" {
@@ -2897,52 +3362,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C06863243F369B82}" {
      Id "LF-Credits_120"
-     Target_en_us "Old man Gaspard Lenoir's five lines"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{034AB24F20B9C523}" {
      Id "LF-Credits_121"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6FE700B6BDC757ED}" {
      Id "LF-Credits_122"
-     Target_en_us "Harbour master Marcel Roux's ten spoken lines"
+     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2B6B443BB2E0DFB9}" {
      Id "LF-Credits_123"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "GENERATED VOICES"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0C744196304685EB}" {
      Id "LF-Credits_124"
-     Target_en_us "MUSIC"
+     Target_en_us "Town clerk's spoken lines: all thirteen, the old arrival lines and the newcomer's welcome"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9954645FD5FC4292}" {
      Id "LF-Credits_125"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"Julien - Serious\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C35B3ADBB9D89721}" {
      Id "LF-Credits_126"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "Café owner's seven lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9968FD984CF4FABF}" {
      Id "LF-Credits_127"
-     Target_en_us "\"Hitman\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"Mariva Viva Muse - Warm and Energetic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9604C54EE7C42A8F}" {
      Id "LF-Credits_128"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "Night-shift worker's spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2A31B23D96B99646}" {
      Id "LF-Credits_129"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4698D3AC325BC21D}" {
@@ -2952,37 +3417,102 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{EF83CE5E501404F6}" {
      Id "LF-Credits_130"
-     Target_en_us "Piper"
+     Target_en_us "Old man Gaspard Lenoir's six lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2E46C1E4691E2B33}" {
      Id "LF-Credits_131"
-     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A636049B1615FBC6}" {
      Id "LF-Credits_132"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Go-between Hugo Valmy's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{16186E0A5EB3A7AA}" {
      Id "LF-Credits_133"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FE189EB428AF142A}" {
      Id "LF-Credits_134"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Harbour master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4D04FB45B8DBCE90}" {
      Id "LF-Credits_135"
-     Target_en_us "Captions and cards use the system sans-serif (Segoe UI on Windows)."
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{282E8AC7953417F3}" {
+     Id "LF-Credits_136"
+     Target_en_us "MUSIC"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A096E2717EAFA002}" {
+     Id "LF-Credits_137"
+     Target_en_us "\"Carefree\""
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A8B2E6676A5FC762}" {
+     Id "LF-Credits_138"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4165A33B0CDDFEFA}" {
+     Id "LF-Credits_139"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CA6300164F63F92D}" {
      Id "LF-Credits_14"
      Target_en_us "Jacob-Mango/EveronLife: parts of the quantity component."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{ADFB88278344FB5B}" {
+     Id "LF-Credits_140"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{856667E0087DE2BB}" {
+     Id "LF-Credits_141"
+     Target_en_us "VOICE-OVER"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A8A3DCF36786BA71}" {
+     Id "LF-Credits_142"
+     Target_en_us "Piper"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{740D77BACEA78D9C}" {
+     Id "LF-Credits_143"
+     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{3CA96CAAEC9AB85D}" {
+     Id "LF-Credits_144"
+     Target_en_us "Voice en_US-ljspeech-high"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{66D2E150BBB2BBDF}" {
+     Id "LF-Credits_145"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{92C2B4F451409735}" {
+     Id "LF-Credits_146"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{E884C0110C5B632F}" {
+     Id "LF-Credits_147"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{427FC7360D73D3A9}" {
+     Id "LF-Credits_148"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E61840F28B6ADBC}" {
@@ -3152,27 +3682,27 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{086D86A2EDA2B8CF}" {
      Id "LF-Credits_45"
-     Target_en_us "Fishing rod, bait tin and trout models"
+     Target_en_us "Doll mask"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2979BA666C42667B}" {
      Id "LF-Credits_46"
-     Target_en_us "Modelled in Blender by tools/assets/fishing-rod/model.py, bait-tin/model.py, fish-trout/model.py (the small and large trout are the same script, scaled), textures baked from procedural nodes"
+     Target_en_us "Modelled in Blender by tools/assets/doll-mask/model.py on tools/assets/pipeline/blender/mask_shell.py: cut from the head of Bohemia's base body (Body_LOD0 in the Arma Reforger Samples, downloaded at..."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F035DFEB809CA450}" {
      Id "LF-Credits_47"
-     Target_en_us "Fishing float model"
+     Target_en_us "Hockey mask"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{067B4509CC39E039}" {
      Id "LF-Credits_48"
-     Target_en_us "Modelled in Blender by tools/assets/fishing-float/model.py (a red-and-white round bobber on a quill), texture baked from procedural nodes"
+     Target_en_us "Modelled in Blender by tools/assets/hockey-mask/model.py on the same mask_shell.py (cut from the Samples body head as above, with eye slits and an elastic strap); the faded paint, vent holes and..."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D3F401496BAE82D2}" {
      Id "LF-Credits_49"
-     Target_en_us "Evidence marker model"
+     Target_en_us "1989 general-store food and drink models"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{024DCF01977FDC8E}" {
@@ -3182,52 +3712,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F730C1A960A78829}" {
      Id "LF-Credits_50"
-     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Target_en_us "Modelled in Blender by tools/assets/canned-fish/model.py, canned-meat/model.py, coffee-tin/model.py, milk-bottle/model.py, chocolate-bar/model.py and pickle-jar/model.py (plain colour wrappers, no..."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F30094F417F14EDD}" {
      Id "LF-Credits_51"
-     Target_en_us "Pager model"
+     Target_en_us "Bakery and butcher foods"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BC78749D66D5773D}" {
      Id "LF-Credits_52"
-     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Target_en_us "Modelled in Blender by tools/assets/baguette/model.py, croissant/model.py and saucisson/model.py (plain colours baked from procedural nodes, no text or brands); the ham joint item uses the base game..."
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BD94432B1728051F}" {
      Id "LF-Credits_53"
-     Target_en_us "Money bag model"
+     Target_en_us "Fishing rod, bait tin and trout models"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AE4C658004027BAA}" {
      Id "LF-Credits_54"
-     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Target_en_us "Modelled in Blender by tools/assets/fishing-rod/model.py, bait-tin/model.py, fish-trout/model.py (the small and large trout are the same script, scaled), textures baked from procedural nodes"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{280AE9553E12DCF0}" {
      Id "LF-Credits_55"
-     Target_en_us "Apple juicer model"
+     Target_en_us "Fishing float model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{59A5E16ECC87C9D1}" {
      Id "LF-Credits_56"
-     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Target_en_us "Modelled in Blender by tools/assets/fishing-float/model.py (a red-and-white round bobber on a quill), texture baked from procedural nodes"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{127400A67F429364}" {
      Id "LF-Credits_57"
-     Target_en_us "Police scanner model"
+     Target_en_us "Fish models: mackerel, bass, tuna, perch, carp, each in three sizes"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{315390E10DFAFDB2}" {
      Id "LF-Credits_58"
-     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
+     Target_en_us "Meshy text-to-3D (preview, refine, remesh), generated with Meshy; no CC0 or CC-BY fish fit, so the library rungs came first and were skipped"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3A91C10B099318FB}" {
      Id "LF-Credits_59"
-     Target_en_us "Post parcel model"
+     Target_en_us "Evidence marker model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{45A798B997EBD08B}" {
@@ -3242,7 +3772,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{80D21A43FAC2B85A}" {
      Id "LF-Credits_61"
-     Target_en_us "Moonshine still model"
+     Target_en_us "Pager model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{708E4EC4AFBEC67D}" {
@@ -3252,7 +3782,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3AC68A94A8103570}" {
      Id "LF-Credits_63"
-     Target_en_us "Smelter furnace model"
+     Target_en_us "Money bag model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D08F14333F89DB8C}" {
@@ -3262,7 +3792,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3DC31C741325E00A}" {
      Id "LF-Credits_65"
-     Target_en_us "Dispatch console model"
+     Target_en_us "Apple juicer model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6973D488BECA5042}" {
@@ -3272,17 +3802,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3CAE93E3CE89F176}" {
      Id "LF-Credits_67"
-     Target_en_us "TEXTURES (CC0)"
+     Target_en_us "Police scanner model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{250D4D6A466ED5C6}" {
      Id "LF-Credits_68"
-     Target_en_us "Metal 046 B"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{115DDAA18230398D}" {
      Id "LF-Credits_69"
-     Target_en_us "ambientCG, CC0 1.0"
+     Target_en_us "Post parcel model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0A506CD8FC4C3064}" {
@@ -3292,47 +3822,47 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AF97E8FC2EF2C69E}" {
      Id "LF-Credits_70"
-     Target_en_us "Metal 047 B"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C96DB5CDAEB0CD3B}" {
      Id "LF-Credits_71"
-     Target_en_us "ambientCG, CC0 1.0"
+     Target_en_us "Moonshine still model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F31FEA189E5AF4EA}" {
      Id "LF-Credits_72"
-     Target_en_us "Metal 048 B"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{46595D86CD131263}" {
      Id "LF-Credits_73"
-     Target_en_us "ambientCG, CC0 1.0"
+     Target_en_us "Smelter furnace model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AFAD89EA248BB053}" {
      Id "LF-Credits_74"
-     Target_en_us "Metal 058 C"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FE16DFCBBA5532B4}" {
      Id "LF-Credits_75"
-     Target_en_us "ambientCG, CC0 1.0"
+     Target_en_us "Dispatch console model"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4BB050278AF6FC4B}" {
      Id "LF-Credits_76"
-     Target_en_us "Rust 009"
+     Target_en_us "Meshy image-to-3D from a Meshy text-to-image concept, generated with Meshy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C3252F897790C80D}" {
      Id "LF-Credits_77"
-     Target_en_us "ambientCG, CC0 1.0"
+     Target_en_us "TEXTURES (CC0)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{50AF76D0FD61586D}" {
      Id "LF-Credits_78"
-     Target_en_us "Rock 035"
+     Target_en_us "Metal 046 B"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F5CCE61786E1F741}" {
@@ -3347,7 +3877,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{450BEEBC033F072C}" {
      Id "LF-Credits_80"
-     Target_en_us "Rock 058"
+     Target_en_us "Metal 047 B"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F386EBE00044EE4B}" {
@@ -3357,7 +3887,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{CFAB4F5659DE4528}" {
      Id "LF-Credits_82"
-     Target_en_us "Metal 038"
+     Target_en_us "Metal 048 B"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{01785E5C9E42AE6E}" {
@@ -3367,7 +3897,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{50C157F2EB525B36}" {
      Id "LF-Credits_84"
-     Target_en_us "Leather 014"
+     Target_en_us "Metal 058 C"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{62B659557E7B6464}" {
@@ -3377,22 +3907,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BB3735C9B27F3750}" {
      Id "LF-Credits_86"
-     Target_en_us "POLY HAVEN MODELS (CC0)"
+     Target_en_us "Rust 009"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{135C13CA084B8504}" {
      Id "LF-Credits_87"
-     Target_en_us "Cement Bag"
+     Target_en_us "ambientCG, CC0 1.0"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{F7B8FCDCE0544A88}" {
      Id "LF-Credits_88"
-     Target_en_us "PierreB3D, CC0 1.0"
+     Target_en_us "Rock 035"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{7320D160EB0096E2}" {
      Id "LF-Credits_89"
-     Target_en_us "LIBRARY AND PURCHASED MODELS"
+     Target_en_us "ambientCG, CC0 1.0"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{99FF09A0FE490E2D}" {
@@ -3402,52 +3932,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AE8C2BFD5BDF0B32}" {
      Id "LF-Credits_90"
-     Target_en_us "Models taken from the open libraries through 3d-asset-server (CC0, CC-BY) or bought by a human on CGTrader and similar markets (Royalty Free), then run through clean and import..."
+     Target_en_us "Rock 058"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3D8F4A1805394D57}" {
      Id "LF-Credits_91"
-     Target_en_us "GENERATED SOUND EFFECTS (ELEVENLABS)"
+     Target_en_us "ambientCG, CC0 1.0"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8501F8EBAEAC730A}" {
      Id "LF-Credits_92"
-     Target_en_us "Taser sounds: shot, dry fire, cartridge out and in, stun buzz"
+     Target_en_us "Metal 038"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D633223051CC74DB}" {
      Id "LF-Credits_93"
-     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
+     Target_en_us "ambientCG, CC0 1.0"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{359938F793945EA0}" {
      Id "LF-Credits_94"
-     Target_en_us "GENERATED AUDIO"
+     Target_en_us "Leather 014"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9D89028E9844FF11}" {
      Id "LF-Credits_95"
-     Target_en_us "Retail store alarm"
+     Target_en_us "ambientCG, CC0 1.0"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D3080A6969C70816}" {
      Id "LF-Credits_96"
-     Target_en_us "Hospital robbery alarm"
+     Target_en_us "POLY HAVEN MODELS (CC0)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AA282A4B5F344509}" {
      Id "LF-Credits_97"
-     Target_en_us "Store radio and pub music"
+     Target_en_us "Cement Bag"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FA45D273D68AA84A}" {
      Id "LF-Credits_98"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "PierreB3D, CC0 1.0"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C38448870F6795CB}" {
      Id "LF-Credits_99"
-     Target_en_us "Radio track \"Estrada ballad\", a slow 92 bpm estrada ballad"
+     Target_en_us "LIBRARY AND PURCHASED MODELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B6C65DD4369872B}" {
@@ -3480,6 +4010,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "CREDITS"
      Comment "Heading of the in-game credits screen (#481)."
     }
+    CustomStringTableItem "{67770498C05C0FBE}" {
+     Id "LF-CrewRob_ActionHold"
+     Target_en_us "Hold the till"
+     Comment "Action name on a crew till: the holder keeps the spot while the take grows. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{8EB8592BEBD4AE2D}" {
+     Id "LF-CrewRob_ActionStart"
+     Target_en_us "Start the job"
+     Comment "Action name on a crew till: forms the crew and sounds the alarm. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{457F6AD0EAA7943A}" {
+     Id "LF-CrewRob_ActionTake"
+     Target_en_us "Take the money"
+     Comment "Action name on a crew till: the holder ends the job and the crew is paid. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{C322408C87718678}" {
+     Id "LF-CrewRob_Failed"
+     Target_en_us "The job fell through."
+     Comment "Toast to the crew when the holder went down, was cuffed or left. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{84917ADCBAB1B882}" {
+     Id "LF-CrewRob_Holding"
+     Target_en_us "You hold the till. Stay on the spot while the take grows."
+     Comment "Toast to the holder when they begin holding the till. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{D3D593ECA8A52107}" {
+     Id "LF-CrewRob_Paid"
+     Target_en_us "Your cut: %1"
+     Comment "Toast to a crew member paid a share. %1 = the amount. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{76F2D351B5B1A676}" {
+     Id "LF-CrewRob_PoliceNear"
+     Target_en_us "Lookout: an officer is coming!"
+     Comment "Toast to the lookouts when an on-duty officer comes within range of the till. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{46FA120726B4AAC4}" {
+     Id "LF-CrewRob_Refused_Busy"
+     Target_en_us "A job is already running at this till."
+     Comment "Toast: a crew job cannot start, one is running. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{23A32E84E4438425}" {
+     Id "LF-CrewRob_Refused_Crew"
+     Target_en_us "You need armed partners close by to start a job."
+     Comment "Toast: too few armed crew to start a crew job. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{3BA8E7838D3118D9}" {
+     Id "LF-CrewRob_Refused_Holding"
+     Target_en_us "You are already holding the till."
+     Comment "Toast: hold pressed twice. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{87D05614C8D3B0D4}" {
+     Id "LF-CrewRob_Refused_NoJob"
+     Target_en_us "No job is running here."
+     Comment "Toast: hold or take pressed with no job running. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{2AF6238C7A3DFF23}" {
+     Id "LF-CrewRob_Refused_NotHolder"
+     Target_en_us "Only the one who started the job can do that."
+     Comment "Toast: a lookout pressed the holder's action. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{F7C397C4E7B78F30}" {
+     Id "LF-CrewRob_Refused_Nothing"
+     Target_en_us "There is nothing to take yet. Hold the till first."
+     Comment "Toast: take pressed with an empty take. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{21B51EAAD8601D52}" {
+     Id "LF-CrewRob_Started"
+     Target_en_us "The job is on. The holder holds the till; stay close."
+     Comment "Toast to every crew member when a crew till robbery starts. (Feature/Crime/LF_CrewRobActions.c)"
+    }
+    CustomStringTableItem "{0E341FD4A5F997EA}" {
+     Id "LF-CrewRob_Title"
+     Target_en_us "Crew job"
+     Comment "Toast title of the crew till robbery. (Feature/Crime/LF_CrewRobActions.c)"
+    }
     CustomStringTableItem "{7E4AE1269E743655}" {
      Id "LF-Crime_RobCar_Desc"
      Target_en_us "Steal an armoured car"
@@ -3509,6 +4114,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Crime_RobSafe_Name"
      Target_en_us "Rob the safe"
      Comment "Annex safe robbery action name"
+    }
+    CustomStringTableItem "{3152A1C0B7D34E02}" {
+     Id "LF-Death_CostBill"
+     Target_en_us "The bill is {currency:sym}%1."
+     Comment "Death screen cost line: the hospital bill; %1 is the amount from the respawn config, left out when it is 0 (#3152)."
+    }
+    CustomStringTableItem "{3152A1C0B7D34E03}" {
+     Id "LF-Death_CostKeeps"
+     Target_en_us "What you carried stays with your body."
+     Comment "Death screen cost line: the dead body keeps the carried items (#3152)."
+    }
+    CustomStringTableItem "{3152A1C0B7D34E01}" {
+     Id "LF-Death_CostWake"
+     Target_en_us "You wake at the hospital."
+     Comment "Death screen cost line: where a dead player wakes (#3152)."
     }
     CustomStringTableItem "{EF124E70F7C349D7}" {
      Id "LF-DebugJailMe_Action"
@@ -3595,6 +4215,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "What should I do now?"
      Comment "Dialogue reply the player can pick when talking to the clerk NPC."
     }
+    CustomStringTableItem "{9B92A4F13AC0D017}" {
+     Id "LF-Dialogue_Clerk_SayPapers"
+     Target_en_us "About my papers."
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
+    CustomStringTableItem "{7F7E08FC92C27753}" {
+     Id "LF-Dialogue_Clerk_SaySwitch"
+     Target_en_us "I need another of my files. (Change character)"
+     Comment "Dialogue reply the player can pick when talking to the clerk NPC."
+    }
     CustomStringTableItem "{53AB451CE6742B73}" {
      Id "LF-Dialogue_Clerk_SayTown"
      Target_en_us "Tell me about this {town}."
@@ -3612,7 +4242,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D472603DD9705158}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
-     Target_en_us "This is the only fuel in town, friend. Petrol at the pumps, oil and maps in here."
+     Target_en_us "This is the only fuel in town, friend. Petrol at the pumps, maps and snacks in here."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
     CustomStringTableItem "{EB24FB16C4F34B2F}" {
@@ -3935,6 +4565,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Doctor's white coat"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
     }
+    CustomStringTableItem "{3D8A61F0B24C9E75}" {
+     Id "LF-DollMask_Description"
+     Target_en_us "A moulded white plastic doll mask with a painted smile and rosy cheeks, the kind from a toy shop. Anyone wearing it can't be recognised by their face."
+     Comment "Headgear item description (tools/assets/doll-mask)"
+    }
+    CustomStringTableItem "{9E4C27B1A0583DF6}" {
+     Id "LF-DollMask_Name"
+     Target_en_us "Smiling Doll Mask"
+     Comment "Headgear item name (tools/assets/doll-mask)"
+    }
     CustomStringTableItem "{B20154B0D085697C}" {
      Id "LF-Duty_AlreadyOn"
      Target_en_us "You are already on duty."
@@ -4009,6 +4649,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-EventMap_Place"
      Target_en_us "Event"
      Comment "Map mark and area label: where a story event is running, shown to everyone until it ends. A pack may override the Id with a place or event name."
+    }
+    CustomStringTableItem "{7D3E91A4C26B58F1}" {
+     Id "LF-EvidenceConvoy_Title"
+     Target_en_us "Evidence transfer"
+     Comment "Title of the dispatch toast the on-duty police get when the evidence convoy leaves."
+    }
+    CustomStringTableItem "{3B6A0F58E1D47C92}" {
+     Id "LF-EvidenceConvoy_Underway"
+     Target_en_us "Evidence transfer under way."
+     Comment "Dispatch toast to on-duty police: the evidence convoy has left the station with the seized goods."
     }
     CustomStringTableItem "{4587AF3655D18A21}" {
      Id "LF-Evidence_Bag_Action"
@@ -4190,6 +4840,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You need bait. Buy a tin at the chandler."
      Comment "Toast: a cast with no bait in the inventory (#2930)."
     }
+    CustomStringTableItem "{7D3E91A0C54B2F68}" {
+     Id "LF-Fishing_NoLicence"
+     Target_en_us "You need a fishing licence to cast. %1"
+     Comment "Toast: a cast when the fishing config names a licence the angler lacks (#3449); %1 says where to get it and the fee (#3150)."
+    }
     CustomStringTableItem "{10A11C7FDC837A35}" {
      Id "LF-Fishing_NoRod"
      Target_en_us "Take the fishing rod into your hands first."
@@ -4243,25 +4898,225 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the attendant"
      Comment "Action on the fuel station attendant: opens the conversation."
     }
+    CustomStringTableItem "{3330B0000000F004}" {
+     Id "LF-FuelHaul_Delivered"
+     Target_en_us "Delivered: %1."
+     Comment "Toast after a pump-in. %1 = litres that arrived and the cash paid, for example 300 L, $300."
+    }
+    CustomStringTableItem "{3330B0000000F001}" {
+     Id "LF-FuelHaul_Load"
+     Target_en_us "Load the tanker"
+     Comment "Action at the fuel depot: buys a tanker load at the wholesale price into the tanker parked beside it."
+    }
+    CustomStringTableItem "{3330B0000000F003}" {
+     Id "LF-FuelHaul_Loaded"
+     Target_en_us "Tanker loaded: %1."
+     Comment "Toast after a depot load. %1 = litres and the cash charged, for example 500 L, $300."
+    }
+    CustomStringTableItem "{3330B0000000F005}" {
+     Id "LF-FuelHaul_NoTanker"
+     Target_en_us "Park the tanker next to the point."
+     Comment "Toast: no vehicle with a cargo tank is within reach of the depot or the pump."
+    }
+    CustomStringTableItem "{3330B0000000F009}" {
+     Id "LF-FuelHaul_NotBought"
+     Target_en_us "That fuel was not bought at the depot."
+     Comment "Toast: the tanker holds fuel, but none of it is a load bought at the depot, so the station takes nothing and pays nothing."
+    }
+    CustomStringTableItem "{3330B0000000F002}" {
+     Id "LF-FuelHaul_PumpIn"
+     Target_en_us "Pump into the station tanks"
+     Comment "Action at a fuel pump: moves the tanker's load into the station stock and pays for the litres that arrived."
+    }
+    CustomStringTableItem "{3330B0000000F008}" {
+     Id "LF-FuelHaul_StationFull"
+     Target_en_us "The station tanks are full."
+     Comment "Toast: the station has no room, so nothing was pumped and nothing is paid."
+    }
+    CustomStringTableItem "{3330B0000000F007}" {
+     Id "LF-FuelHaul_TankerEmpty"
+     Target_en_us "The tanker is empty."
+     Comment "Toast: the tanker holds no fuel to pump into the station."
+    }
+    CustomStringTableItem "{3330B0000000F006}" {
+     Id "LF-FuelHaul_TankerFull"
+     Target_en_us "The tanker is already full."
+     Comment "Toast: the tanker has no room for a litre at the depot."
+    }
+    CustomStringTableItem "{3328B0000000F001}" {
+     Id "LF-Fuel_Buy"
+     Target_en_us "Fill the tank"
+     Comment "Action on a fuel pump that sells from stock: fills the nearest vehicle and charges cash."
+    }
+    CustomStringTableItem "{3328B0000000F004}" {
+     Id "LF-Fuel_Dry"
+     Target_en_us "The tanks are dry. The depot truck is due."
+     Comment "Toast: the station has no fuel to sell until a delivery arrives."
+    }
+    CustomStringTableItem "{3328B0000000F008}" {
+     Id "LF-Fuel_Failed"
+     Target_en_us "The pump jams. Try again."
+     Comment "Toast: the sale could not be completed (a logged fault)."
+    }
+    CustomStringTableItem "{3328B0000000F003}" {
+     Id "LF-Fuel_Filled"
+     Target_en_us "Tank filled: %1."
+     Comment "Toast after a fill. %1 = litres and the cash charged, for example 30 L, $60."
+    }
+    CustomStringTableItem "{3328B0000000F005}" {
+     Id "LF-Fuel_NoMoney"
+     Target_en_us "You do not have the cash for a litre."
+     Comment "Toast: the buyer cannot pay for one litre."
+    }
+    CustomStringTableItem "{3328B0000000F007}" {
+     Id "LF-Fuel_NoVehicle"
+     Target_en_us "Park a vehicle next to the pump."
+     Comment "Toast: no vehicle is within reach of the pump."
+    }
+    CustomStringTableItem "{3328B0000000F006}" {
+     Id "LF-Fuel_TankFull"
+     Target_en_us "This tank is already full."
+     Comment "Toast: the vehicle at the pump has no room for fuel."
+    }
+    CustomStringTableItem "{3328B0000000F002}" {
+     Id "LF-Fuel_Title"
+     Target_en_us "Fuel station"
+     Comment "Toast title for a pump sale or refusal."
+    }
+    CustomStringTableItem "{251C7BC1C7871641}" {
+     Id "LF-FurnitureStorage_Open"
+     Target_en_us "Open"
+     Comment "Action on a placed storage furniture (wardrobe, dresser, chest, fridge): opens its inventory for the player who placed it."
+    }
+    CustomStringTableItem "{C7FECEA5DD6D8719}" {
+     Id "LF-Furniture_Armchair_Name"
+     Target_en_us "Armchair"
+     Comment "Inventory name of the carried armchair a player places in their own house."
+    }
+    CustomStringTableItem "{FE312113D8FACB13}" {
+     Id "LF-Furniture_BedDouble_Name"
+     Target_en_us "Double bed"
+     Comment "Inventory name of the carried double bed a player places in their own house."
+    }
+    CustomStringTableItem "{B878C319D0B97054}" {
+     Id "LF-Furniture_Bed_Name"
+     Target_en_us "Bed"
+     Comment "Inventory name of the carried bed a player places in their own house."
+    }
+    CustomStringTableItem "{DC940571B98F90C6}" {
+     Id "LF-Furniture_Bookcase_Name"
+     Target_en_us "Bookcase"
+     Comment "Inventory name of the carried bookcase a player places in their own house."
+    }
     CustomStringTableItem "{E5E20ACD90437F84}" {
      Id "LF-Furniture_Chair_Name"
      Target_en_us "Chair"
      Comment "Inventory name of the carried chair a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{E66FFF580815DAF0}" {
+     Id "LF-Furniture_Chest_Name"
+     Target_en_us "Chest"
+     Comment "Inventory name of the carried chest a player places in their own house."
+    }
+    CustomStringTableItem "{1F2E04D27FF3273B}" {
+     Id "LF-Furniture_CoffeeTable_Name"
+     Target_en_us "Coffee table"
+     Comment "Inventory name of the carried coffee table a player places in their own house."
+    }
+    CustomStringTableItem "{3F8B1F03F147CD0D}" {
+     Id "LF-Furniture_Crate_Name"
+     Target_en_us "Crate"
+     Comment "Inventory name of the carried crate a player places in their own house."
+    }
+    CustomStringTableItem "{B9313FCEA8888FFE}" {
+     Id "LF-Furniture_Cupboard_Name"
+     Target_en_us "Cupboard"
+     Comment "Inventory name of the carried cupboard a player places in their own house."
+    }
+    CustomStringTableItem "{5AAEAA90F687545E}" {
+     Id "LF-Furniture_Dresser_Name"
+     Target_en_us "Dresser"
+     Comment "Inventory name of the carried dresser a player places in their own house."
+    }
+    CustomStringTableItem "{31482C09BA882977}" {
+     Id "LF-Furniture_Fridge_Name"
+     Target_en_us "Fridge"
+     Comment "Inventory name of the carried fridge a player places in their own house."
+    }
+    CustomStringTableItem "{E5CB7A6F0B0F99C5}" {
+     Id "LF-Furniture_KitchenUnit_Name"
+     Target_en_us "Kitchen unit"
+     Comment "Inventory name of the carried kitchen unit a player places in their own house."
     }
     CustomStringTableItem "{100E11EBB38DD2B9}" {
      Id "LF-Furniture_Lamp_Name"
      Target_en_us "Lamp"
      Comment "Inventory name of the carried lamp a player places in their own house (#2654)."
     }
+    CustomStringTableItem "{7221176D14502441}" {
+     Id "LF-Furniture_Mirror_Name"
+     Target_en_us "Mirror"
+     Comment "Inventory name of the carried mirror a player places in their own house."
+    }
+    CustomStringTableItem "{4A7D81902F5C51F8}" {
+     Id "LF-Furniture_Picture_Name"
+     Target_en_us "Picture"
+     Comment "Inventory name of the carried picture a player places in their own house."
+    }
+    CustomStringTableItem "{B6724122FB6A0AE3}" {
+     Id "LF-Furniture_Plant_Name"
+     Target_en_us "Potted plant"
+     Comment "Inventory name of the carried potted plant a player places in their own house."
+    }
+    CustomStringTableItem "{BE28916EA5BD4827}" {
+     Id "LF-Furniture_Radio_Name"
+     Target_en_us "Radio"
+     Comment "Inventory name of the carried radio a player places in their own house."
+    }
+    CustomStringTableItem "{9B0558B964B0A890}" {
+     Id "LF-Furniture_Rug_Name"
+     Target_en_us "Rug"
+     Comment "Inventory name of the carried rug a player places in their own house."
+    }
     CustomStringTableItem "{272F0629B6A6B098}" {
      Id "LF-Furniture_Shelf_Name"
      Target_en_us "Shelf"
      Comment "Inventory name of the carried shelf a player places in their own house (#2654)."
     }
+    CustomStringTableItem "{25B6D83F8F0B1FEA}" {
+     Id "LF-Furniture_Sofa_Name"
+     Target_en_us "Sofa"
+     Comment "Inventory name of the carried sofa a player places in their own house."
+    }
+    CustomStringTableItem "{D3D2D71766E3DB37}" {
+     Id "LF-Furniture_Stool_Name"
+     Target_en_us "Stool"
+     Comment "Inventory name of the carried stool a player places in their own house."
+    }
+    CustomStringTableItem "{82829910DC892680}" {
+     Id "LF-Furniture_Stove_Name"
+     Target_en_us "Stove"
+     Comment "Inventory name of the carried stove a player places in their own house."
+    }
     CustomStringTableItem "{CD0C9FCE1E77121B}" {
      Id "LF-Furniture_Table_Name"
      Target_en_us "Table"
      Comment "Inventory name of the carried table a player places in their own house (#2654)."
+    }
+    CustomStringTableItem "{319DEB246B36444C}" {
+     Id "LF-Furniture_Tv_Name"
+     Target_en_us "Television"
+     Comment "Inventory name of the carried television a player places in their own house."
+    }
+    CustomStringTableItem "{252218056270237E}" {
+     Id "LF-Furniture_Wardrobe_Name"
+     Target_en_us "Wardrobe"
+     Comment "Inventory name of the carried wardrobe a player places in their own house."
+    }
+    CustomStringTableItem "{2D489E9F3516FB40}" {
+     Id "LF-Furniture_Workbench_Name"
+     Target_en_us "Workbench"
+     Comment "Inventory name of the carried workbench a player places in their own house."
     }
     CustomStringTableItem "{3CEA2232FA244C93}" {
      Id "LF-Garage_Blue"
@@ -4453,6 +5308,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Bring the vehicle to the garage first"
      Comment "Garage store refused because the owned vehicle is not parked at the garage the player is using"
     }
+    CustomStringTableItem "{F91197344A75BE03}" {
+     Id "LF-Garbage_EmptyBin"
+     Target_en_us "Empty bin"
+     Comment "Action on a street bin during a garbage round."
+    }
+    CustomStringTableItem "{D036ADB55B9871A1}" {
+     Id "LF-Garbage_EmptyBinDesc"
+     Target_en_us "Bag the rubbish onto the truck."
+     Comment "Description of the empty-bin action."
+    }
+    CustomStringTableItem "{A9C0133F738C8E8F}" {
+     Id "LF-Garbage_NoBins"
+     Target_en_us "There are no bins to collect today."
+     Comment "Toast: the world has no bin to build a route from."
+    }
+    CustomStringTableItem "{0CF2638908349C68}" {
+     Id "LF-Garbage_NoRound"
+     Target_en_us "You are not on a garbage round. Take one at the depot."
+     Comment "Toast: a bin or dump action with no round open."
+    }
+    CustomStringTableItem "{2F0D378D85A3F2CB}" {
+     Id "LF-Garbage_NoTruck"
+     Target_en_us "The company truck is not available."
+     Comment "Toast: the truck did not spawn."
+    }
+    CustomStringTableItem "{D7C496F1D48B0E59}" {
+     Id "LF-Garbage_NotEnough"
+     Target_en_us "There are still bins to empty before you can tip."
+     Comment "Toast: tip asked before every bin is done."
+    }
+    CustomStringTableItem "{A93E6E6C5E0A44F8}" {
+     Id "LF-Garbage_NotOnRoute"
+     Target_en_us "That bin is not on your route."
+     Comment "Toast: a bin that is not one of the round bins."
+    }
+    CustomStringTableItem "{E1CB7F2381C5C2E1}" {
+     Id "LF-Garbage_OutOfOrder"
+     Target_en_us "Not that one yet: empty the bins in order."
+     Comment "Toast: a route bin emptied out of order."
+    }
+    CustomStringTableItem "{27AEAA0E0829E94D}" {
+     Id "LF-Garbage_Paid"
+     Target_en_us "Round done. You were paid {currency:sym}%1."
+     Comment "Toast: the garbage round paid. %1 = the cash."
+    }
+    CustomStringTableItem "{22366B508087A675}" {
+     Id "LF-Garbage_Start"
+     Target_en_us "Take the garbage round"
+     Comment "Action at the depot desk: start the round and take the company truck."
+    }
+    CustomStringTableItem "{AF715C965D4C2353}" {
+     Id "LF-Garbage_StartDesc"
+     Target_en_us "Empty the bins on your route, then tip at the dump."
+     Comment "Description of the depot action."
+    }
+    CustomStringTableItem "{00D9E7AED62B6134}" {
+     Id "LF-Garbage_Started"
+     Target_en_us "The truck is outside. Empty the bins nearest the depot in order, then tip the load at the dump."
+     Comment "Toast: the round began."
+    }
+    CustomStringTableItem "{CC20960FA42008DF}" {
+     Id "LF-Garbage_Tip"
+     Target_en_us "Tip the load"
+     Comment "Action at the dump: end the round and get paid."
+    }
+    CustomStringTableItem "{D3D5F43917D0BCAB}" {
+     Id "LF-Garbage_TipDesc"
+     Target_en_us "Tip the rubbish and collect your pay."
+     Comment "Description of the tip action."
+    }
+    CustomStringTableItem "{1240A91D844B207D}" {
+     Id "LF-Garbage_Title"
+     Target_en_us "Garbage round"
+     Comment "Toast title for every garbage-round message."
+    }
+    CustomStringTableItem "{4B7E1A90C3D5F268}" {
+     Id "LF-Garbage_TooFast"
+     Target_en_us "You are done too quickly. Take a breather, then tip the load."
+     Comment "Toast: tip asked before the round's minimum time has passed."
+    }
+    CustomStringTableItem "{4D1D1033459A6CDB}" {
+     Id "LF-Garbage_TruckFar"
+     Target_en_us "Bring the truck to the dump first."
+     Comment "Toast: tip asked with the truck away from the dump."
+    }
     CustomStringTableItem "{DDFD7A1F8207F359}" {
      Id "LF-Gather_Action"
      Target_en_us "Gather %1"
@@ -4487,6 +5427,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Gather_RequiresItemInHands"
      Target_en_us "Requires the right tool in hand"
      Comment "Gather refused: the required tool is not held"
+    }
+    CustomStringTableItem "{3156A1C07E5B2D91}" {
+     Id "LF-Gather_Toast"
+     Target_en_us "%1 x%2"
+     Comment "Toast after a gather or a process (#3156). %1 = item name, %2 = amount"
+    }
+    CustomStringTableItem "{3156C3E290A7D4B3}" {
+     Id "LF-Gather_ToastPrice"
+     Target_en_us "The trader pays {currency:sym}%1 for %2."
+     Comment "Second sentence of a gather or process toast when a trader buys the item or its product (#3156). %1 = price, %2 = item name"
+    }
+    CustomStringTableItem "{3156B2D18F6C3EA2}" {
+     Id "LF-Gather_ToastXp"
+     Target_en_us "%1 x%2 (+%3 XP)"
+     Comment "Toast after a gather that paid job XP (#3156). %1 = item name, %2 = amount, %3 = XP paid"
     }
     CustomStringTableItem "{2969D3779A79F0EA}" {
      Id "LF-Gather_Unknown"
@@ -4568,6 +5523,306 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "HANDBOOK"
      Comment "Printed heading of the handbook screen (#1773)."
     }
+    CustomStringTableItem "{7B4E0C91A2D63F71}" {
+     Id "LF-HandsUp_Hint"
+     Target_en_us "Press F7 to raise your hands. Ignore this and nothing changes."
+     Comment "HUD prompt: the key hint (default key F7)."
+    }
+    CustomStringTableItem "{7B4E0C91A2D63F72}" {
+     Id "LF-HandsUp_Keybind"
+     Target_en_us "Hands up (answer the prompt, or lower them)"
+     Comment "Keybind menu entry for the hands-up action."
+    }
+    CustomStringTableItem "{339D1913E2EBFE37}" {
+     Id "LF-HandsUp_NotGivenUp"
+     Target_en_us "They haven't given up."
+     Comment "Search or robbery of a player refused: the target has neither hands up nor cuffs on (#3399)."
+    }
+    CustomStringTableItem "{7B4E0C91A2D63F70}" {
+     Id "LF-HandsUp_Title"
+     Target_en_us "Put your hands up?"
+     Comment "HUD prompt to a player held up or aimed at: the title."
+    }
+    CustomStringTableItem "{57403D2F7D7CFD8A}" {
+     Id "LF-Handset_CallMedic"
+     Target_en_us "Radio for a doctor"
+     Comment "Radio set action: call a medic."
+    }
+    CustomStringTableItem "{544D193A3E8A461A}" {
+     Id "LF-Handset_CallPolice"
+     Target_en_us "Radio the {police}"
+     Comment "Radio set action: call the police."
+    }
+    CustomStringTableItem "{0350E5CBCEDFF757}" {
+     Id "LF-Handset_CallTaxi"
+     Target_en_us "Radio for a cab"
+     Comment "Radio set action: call a taxi."
+    }
+    CustomStringTableItem "{2F049E3EF139D9CE}" {
+     Id "LF-Handset_Connected"
+     Target_en_us "You got through on the radio."
+     Comment "Toast: the radio set call reached somebody on duty."
+    }
+    CustomStringTableItem "{6A9D4C7550B7168A}" {
+     Id "LF-Handset_NoCash"
+     Target_en_us "You need cash for the call fee."
+     Comment "Radio set call refused: not enough carried cash for the fee."
+    }
+    CustomStringTableItem "{C1AB8F125674BBDD}" {
+     Id "LF-Handset_NotCarried"
+     Target_en_us "Carry the radio set to call on it."
+     Comment "Radio set call refused: the radio is not in the caller inventory."
+    }
+    CustomStringTableItem "{6DD229FA5A46FBA5}" {
+     Id "LF-Handset_Summary_Call"
+     Target_en_us "Called in on a radio set"
+     Comment "Service board summary: the caller used a carried radio set."
+    }
+    CustomStringTableItem "{BE2EAACE7DF5E3EF}" {
+     Id "LF-Handset_Title"
+     Target_en_us "Radio set"
+     Comment "Toast title for calls placed on a carried radio set."
+    }
+    CustomStringTableItem "{3656A1B2C3D4000B}" {
+     Id "LF-Harvest_BoardAlreadyPosted"
+     Target_en_us "This field already has its contract"
+     Comment "Toast (#3656): one contract per field."
+    }
+    CustomStringTableItem "{3656A1B2C3D4000E}" {
+     Id "LF-Harvest_BoardKitFailed"
+     Target_en_us "The rental kit did not come out. Your deposit is back"
+     Comment "Toast (#3656): the vehicle did not spawn."
+    }
+    CustomStringTableItem "{3656A1B2C3D40008}" {
+     Id "LF-Harvest_BoardNoField"
+     Target_en_us "No wheat field belongs to this board"
+     Comment "Toast (#3656): no field near the board."
+    }
+    CustomStringTableItem "{3656A1B2C3D4000D}" {
+     Id "LF-Harvest_BoardNoKit"
+     Target_en_us "You have no rental kit to return"
+     Comment "Toast (#3656): no rental kit out."
+    }
+    CustomStringTableItem "{3656A1B2C3D40009}" {
+     Id "LF-Harvest_BoardNotPosted"
+     Target_en_us "Post the contract first"
+     Comment "Toast (#3656): take or return with no contract on the field."
+    }
+    CustomStringTableItem "{3656A1B2C3D4000A}" {
+     Id "LF-Harvest_BoardNotRipe"
+     Target_en_us "This field is already cut"
+     Comment "Toast (#3656): nothing left to harvest."
+    }
+    CustomStringTableItem "{3656A1B2C3D4000C}" {
+     Id "LF-Harvest_BoardNotTaker"
+     Target_en_us "Only whoever took the contract can return the kit"
+     Comment "Toast (#3656): a stranger tried to return the kit."
+    }
+    CustomStringTableItem "{3656A1B2C3D40001}" {
+     Id "LF-Harvest_BoardPost"
+     Target_en_us "Post contract"
+     Comment "Prompt (#3656): the farm board posts the field's contract."
+    }
+    CustomStringTableItem "{3656A1B2C3D40005}" {
+     Id "LF-Harvest_BoardPosted"
+     Target_en_us "Contract posted for this field"
+     Comment "Toast (#3656): the field now has its contract."
+    }
+    CustomStringTableItem "{3656A1B2C3D40004}" {
+     Id "LF-Harvest_BoardReturn"
+     Target_en_us "Return kit"
+     Comment "Prompt (#3656): bring the rental kit back for the deposit."
+    }
+    CustomStringTableItem "{3656A1B2C3D40002}" {
+     Id "LF-Harvest_BoardTakeOwn"
+     Target_en_us "Take with own reaper"
+     Comment "Prompt (#3656): take the contract with the reaper from the owned list."
+    }
+    CustomStringTableItem "{3656A1B2C3D40003}" {
+     Id "LF-Harvest_BoardTakeRental"
+     Target_en_us "Take with rental kit"
+     Comment "Prompt (#3656): take the contract with a rented tractor and reaper."
+    }
+    CustomStringTableItem "{3656A1B2C3D40006}" {
+     Id "LF-Harvest_BoardTakenOwn"
+     Target_en_us "Contract taken. Hitch your reaper at the rack and cut the field"
+     Comment "Toast (#3656): the own-reaper route started."
+    }
+    CustomStringTableItem "{3656A1B2C3D40007}" {
+     Id "LF-Harvest_BoardTakenRental"
+     Target_en_us "Contract taken. The rental kit stands by the board"
+     Comment "Toast (#3656): the rental kit spawned."
+    }
+    CustomStringTableItem "{3297A1B2C3D40008}" {
+     Id "LF-Harvest_ContractKitFar"
+     Target_en_us "Bring the kit back to the board first"
+     Comment "Toast (#3297): the rental kit is not at the board."
+    }
+    CustomStringTableItem "{3297A1B2C3D40004}" {
+     Id "LF-Harvest_ContractLapsed"
+     Target_en_us "The contract lapsed. The kit is taken away and the deposit is kept"
+     Comment "Toast (#3297): the timeout passed with the kit still out."
+    }
+    CustomStringTableItem "{3297A1B2C3D40007}" {
+     Id "LF-Harvest_ContractNoCash"
+     Target_en_us "The kit deposit is {currency:sym}300. You do not have it"
+     Comment "Toast (#3297): the rental deposit could not be paid."
+    }
+    CustomStringTableItem "{3297A1B2C3D40006}" {
+     Id "LF-Harvest_ContractNoReaper"
+     Target_en_us "You own no reaper. Rent a kit or buy one at the farm supply"
+     Comment "Toast (#3297): the own-reaper route without a reaper."
+    }
+    CustomStringTableItem "{3297A1B2C3D40002}" {
+     Id "LF-Harvest_ContractPaid"
+     Target_en_us "Contract done: {currency:sym}%1 bonus and farming experience"
+     Comment "Toast (#3297): the field is cut to the line. %1 = the bonus paid."
+    }
+    CustomStringTableItem "{3297A1B2C3D40003}" {
+     Id "LF-Harvest_ContractRefund"
+     Target_en_us "Kit returned, {currency:sym}%1 deposit back"
+     Comment "Toast (#3297): the rental kit is back at the board. %1 = the deposit refunded."
+    }
+    CustomStringTableItem "{3297A1B2C3D40005}" {
+     Id "LF-Harvest_ContractTaken"
+     Target_en_us "Someone already holds this contract"
+     Comment "Toast (#3297): one taker per field."
+    }
+    CustomStringTableItem "{3297A1B2C3D40001}" {
+     Id "LF-Harvest_ContractTitle"
+     Target_en_us "Harvest contract"
+     Comment "Toast title (#3297)."
+    }
+    CustomStringTableItem "{1C50A1F8B0E1940A}" {
+     Id "LF-Harvest_HopperFull"
+     Target_en_us "Hopper full, unload at the granary"
+     Comment "Hint when the reaper's hopper is at its cap and cutting stops (#3285)."
+    }
+    CustomStringTableItem "{BF338F251412CB57}" {
+     Id "LF-Harvest_RackAlreadyOut"
+     Target_en_us "Your reaper is already out"
+     Comment "Toast (#3295): take-out while the player's reaper is hitched somewhere."
+    }
+    CustomStringTableItem "{B22321ACD509B257}" {
+     Id "LF-Harvest_RackDumped"
+     Target_en_us "Reaper put back. The hopper was dumped: %1 kg of grain lost"
+     Comment "Warning toast (#3295): put back with grain in the hopper. %1 = kilograms dumped."
+    }
+    CustomStringTableItem "{3355FF558340E68F}" {
+     Id "LF-Harvest_RackFailed"
+     Target_en_us "The reaper would not hitch"
+     Comment "Toast (#3295): the hitch failed; the server log says why."
+    }
+    CustomStringTableItem "{DB422FE9426E93B2}" {
+     Id "LF-Harvest_RackNoVehicle"
+     Target_en_us "Park a UAZ469 or a Z7211 beside the rack first"
+     Comment "Toast (#3295): no free hitch-list vehicle within reach of the rack."
+    }
+    CustomStringTableItem "{76DD952E4AE4819E}" {
+     Id "LF-Harvest_RackNotOut"
+     Target_en_us "You have no reaper out"
+     Comment "Toast (#3295): put-back with nothing out."
+    }
+    CustomStringTableItem "{008EA7B9C6EDB74C}" {
+     Id "LF-Harvest_RackNotOwned"
+     Target_en_us "You do not own a reaper. The farm supply counter sells one"
+     Comment "Toast (#3295): take-out by a player with no reaper."
+    }
+    CustomStringTableItem "{DBBAC35BF4F45EDA}" {
+     Id "LF-Harvest_RackPutBack"
+     Target_en_us "Put back reaper"
+     Comment "Implement rack prompt (#3295): unhitch your reaper and return it to the rack. Also the toast title."
+    }
+    CustomStringTableItem "{8139653E1150737F}" {
+     Id "LF-Harvest_RackPutBackDone"
+     Target_en_us "Your reaper is back on the rack"
+     Comment "Toast (#3295): put back with an empty hopper."
+    }
+    CustomStringTableItem "{5693A725630DADEF}" {
+     Id "LF-Harvest_RackTakeOut"
+     Target_en_us "Take out reaper"
+     Comment "Implement rack prompt (#3295): hitch your reaper to a vehicle beside the rack. Also the toast title."
+    }
+    CustomStringTableItem "{DF31D8D79C5EF941}" {
+     Id "LF-Harvest_RackTakenOut"
+     Target_en_us "Your reaper is hitched on"
+     Comment "Toast (#3295): the reaper is now behind the vehicle."
+    }
+    CustomStringTableItem "{CED0297A3041F904}" {
+     Id "LF-Harvest_RackVehicleFar"
+     Target_en_us "Bring the vehicle that tows your reaper to the rack"
+     Comment "Toast (#3295): put-back with the towing vehicle out of reach."
+    }
+    CustomStringTableItem "{3E7A1E93CB13CBFC}" {
+     Id "LF-Harvest_TooFast"
+     Target_en_us "Too fast to cut, slow down"
+     Comment "Hint when the hitched reaper is driven above its cutting speed (#3285)."
+    }
+    CustomStringTableItem "{75ADFCA12F6308D2}" {
+     Id "LF-Harvest_UnloadBag"
+     Target_en_us "Bag grain"
+     Comment "Weighbridge prompt (#3294): fill grain sacks into the vehicle from the hopper. Also the toast title."
+    }
+    CustomStringTableItem "{43CAC0C011BC3F37}" {
+     Id "LF-Harvest_UnloadBagged"
+     Target_en_us "Bagged %1 kg of grain into the vehicle"
+     Comment "Toast (#3294): sacks went into the vehicle storage. %1 = kilograms bagged."
+    }
+    CustomStringTableItem "{C79F60A8AF8029DF}" {
+     Id "LF-Harvest_UnloadBelowLot"
+     Target_en_us "The granary buys whole lots of %1 kg. Cut more, or bag it"
+     Comment "Toast (#3294): the hopper holds less than one lot. %1 = kilograms in a lot."
+    }
+    CustomStringTableItem "{B7D75EE9BC51A3BA}" {
+     Id "LF-Harvest_UnloadEmpty"
+     Target_en_us "The hopper is empty"
+     Comment "Toast (#3294): nothing to unload."
+    }
+    CustomStringTableItem "{78F9B96C35EFB762}" {
+     Id "LF-Harvest_UnloadFailed"
+     Target_en_us "The sale did not go through, the grain stays in the hopper"
+     Comment "Toast (#3294): the payout failed and was rolled back."
+    }
+    CustomStringTableItem "{5E44FCFE9C91F4F6}" {
+     Id "LF-Harvest_UnloadNoPrice"
+     Target_en_us "The granary pays nothing for grain right now"
+     Comment "Toast (#3294): the market does not price grain."
+    }
+    CustomStringTableItem "{CF02DAF30144B9D7}" {
+     Id "LF-Harvest_UnloadNoReaper"
+     Target_en_us "Hitch a reaper to unload grain"
+     Comment "Toast (#3294): the vehicle tows no reaper."
+    }
+    CustomStringTableItem "{C435B184BB196816}" {
+     Id "LF-Harvest_UnloadNoRoom"
+     Target_en_us "No room in the vehicle for grain sacks"
+     Comment "Toast (#3294): the vehicle storage took no sack."
+    }
+    CustomStringTableItem "{2651785AF83988E5}" {
+     Id "LF-Harvest_UnloadNoVehicle"
+     Target_en_us "Drive your reaper onto the weighbridge"
+     Comment "Toast (#3294): the user is not in a vehicle."
+    }
+    CustomStringTableItem "{C831FED3CB2B1ABE}" {
+     Id "LF-Harvest_UnloadNotDriver"
+     Target_en_us "Only the driver can unload the reaper"
+     Comment "Toast (#3294): a passenger used the prompt."
+    }
+    CustomStringTableItem "{DC9F11F308A8512A}" {
+     Id "LF-Harvest_UnloadOutside"
+     Target_en_us "Drive onto the weighbridge to unload"
+     Comment "Toast (#3294): the vehicle is outside the unload box."
+    }
+    CustomStringTableItem "{916A8158813D3E43}" {
+     Id "LF-Harvest_UnloadSell"
+     Target_en_us "Sell grain"
+     Comment "Weighbridge prompt (#3294): sell the reaper's hopper at the wholesale price. Also the toast title."
+    }
+    CustomStringTableItem "{FF63B481C8E5AA1E}" {
+     Id "LF-Harvest_UnloadSold"
+     Target_en_us "Sold the grain for {currency:sym}%1"
+     Comment "Toast (#3294): the hopper was sold. %1 = cash paid."
+    }
     CustomStringTableItem "{9306F928F7A81EBC}" {
      Id "LF-Heist_Armory_Open"
      Target_en_us "Breach the armory store"
@@ -4577,6 +5832,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Heist_Empty"
      Target_en_us "Nothing left in there"
      Comment "Offer: the heist target is out of stock until it refills (#275)."
+    }
+    CustomStringTableItem "{C3E7A15B90D24F68}" {
+     Id "LF-Heist_NeedPolice"
+     Target_en_us "Not enough {police} on duty for this job"
+     Comment "Breach charge refused on a heist job's door because fewer police are on duty than the job needs"
     }
     CustomStringTableItem "{287FBFE0C09D4B2C}" {
      Id "LF-Heist_Van_Open"
@@ -4642,6 +5902,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Hideout_UnownedReason"
      Target_en_us "Nobody holds this yard. Found an organisation and take the lease at the registry desk."
      Comment "Refusal under the hideout door prompt when no organisation holds the yard (#934)."
+    }
+    CustomStringTableItem "{365677AB07466EB7}" {
+     Id "LF-Hive_Empty"
+     Target_en_us "The hive has no comb to take yet."
+     Comment "Toast: the beehive is empty (#3447)."
+    }
+    CustomStringTableItem "{5D9EA11919FB2F2E}" {
+     Id "LF-Hive_Take"
+     Target_en_us "Take honeycomb (%1)"
+     Comment "Action at a beehive with combs; %1 is how many combs it holds (#3447)."
+    }
+    CustomStringTableItem "{51B7F3A9C8D20E64}" {
+     Id "LF-HockeyMask_Description"
+     Target_en_us "A yellowed, cracked fibreglass hockey mask with eye slits and drilled vent holes. Anyone wearing it can't be recognised by their face."
+     Comment "Headgear item description (tools/assets/hockey-mask)"
+    }
+    CustomStringTableItem "{C60A94E7D1F3B825}" {
+     Id "LF-HockeyMask_Name"
+     Target_en_us "Cracked Hockey Mask"
+     Comment "Headgear item name (tools/assets/hockey-mask)"
     }
     CustomStringTableItem "{365AAC156EFDBFE8}" {
      Id "LF-HoldUp_Action"
@@ -5153,6 +6433,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Heard he is buying today. I marked it on your map; the spot will not hold past this shift."
      Comment "Informant answer (#2921): the fee was paid and the buyer's spot is on the map; also the toast."
     }
+    CustomStringTableItem "{B1A4C6D2E8F03955}" {
+     Id "LF-Inspection_CannotInspect"
+     Target_en_us "This car cannot be inspected right now."
+     Comment "Inspection toast (#3433): the car has no id or the world has no clock."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03952}" {
+     Id "LF-Inspection_Check"
+     Target_en_us "Check the sticker"
+     Comment "Action on the inspection desk (#3433): read the sticker of the car beside the desk."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03958}" {
+     Id "LF-Inspection_Expired"
+     Target_en_us "The sticker has expired."
+     Comment "Sticker check result (#3433): inspected, expiry day passed."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03951}" {
+     Id "LF-Inspection_Inspect"
+     Target_en_us "Inspect vehicle"
+     Comment "Action on the inspection desk (#3433): stamp the car beside the desk with a sticker."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03954}" {
+     Id "LF-Inspection_NoCar"
+     Target_en_us "No car beside the desk."
+     Comment "Inspection toast (#3433): no vehicle within reach."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03959}" {
+     Id "LF-Inspection_None"
+     Target_en_us "This car has no inspection sticker."
+     Comment "Sticker check result (#3433): never inspected."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03953}" {
+     Id "LF-Inspection_OnDutyOnly"
+     Target_en_us "Only an on-duty officer can do this."
+     Comment "Inspection action refused (#3433): the user is not on-duty police."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03956}" {
+     Id "LF-Inspection_Stamped"
+     Target_en_us "Inspection passed. The sticker is valid for %1 days."
+     Comment "Inspection toast (#3433). %1 = the sticker's validity in game days."
+    }
+    CustomStringTableItem "{B1A4C6D2E8F03957}" {
+     Id "LF-Inspection_Valid"
+     Target_en_us "The sticker is valid."
+     Comment "Sticker check result (#3433): inspected and not yet expired."
+    }
     CustomStringTableItem "{00B6F39DAD843E76}" {
      Id "LF-Interact_AlreadyKnown"
      Target_en_us "They already know your name."
@@ -5293,6 +6618,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Vehicle Key [%1]"
      Comment "Inventory name of a vehicle key bound to a vehicle. %1 is the vehicle identifier it opens (#2470)."
     }
+    CustomStringTableItem "{2DC6A819C67F6815}" {
+     Id "LF-Item_AcidCarboy_Description"
+     Target_en_us "A carboy of acid for the copper refinery. Heavy and not for drinking."
+     Comment "Item description of the acid carboy (mining chains, #3230)."
+    }
+    CustomStringTableItem "{CEA9A2F55DD1E2F5}" {
+     Id "LF-Item_AcidCarboy_Name"
+     Target_en_us "Acid carboy"
+     Comment "Item name of the acid carboy."
+    }
     CustomStringTableItem "{AC88D3331A83BBB1}" {
      Id "LF-Item_BaitTin_Description"
      Target_en_us "A green enamelled tin with a snap lid. Worms and dough balls, mostly."
@@ -5302,6 +6637,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_BaitTin_Name"
      Target_en_us "Bait tin"
      Comment "Item name: the bait tin (#2928)."
+    }
+    CustomStringTableItem "{5FAF17A9D2358E1C}" {
+     Id "LF-Item_BeehiveKit"
+     Target_en_us "Beehive"
+     Comment "Item name: a beehive kit that is placed outdoors to keep bees (#3448)."
+    }
+    CustomStringTableItem "{9BDC6A38FFE77DE8}" {
+     Id "LF-Item_BeehiveKitDesc"
+     Target_en_us "A beehive to set up outdoors. Bees work it by day in fair weather; take the honeycomb when it is full."
+     Comment "Item description: beehive kit (#3448)."
     }
     CustomStringTableItem "{39E8DFFDB0869E08}" {
      Id "LF-Item_CarParts_Description"
@@ -5323,6 +6668,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Breaching charge"
      Comment "Item name of the fence charge."
     }
+    CustomStringTableItem "{7AD691E65BE531F0}" {
+     Id "LF-Item_CoalLump_Description"
+     Target_en_us "A lump of coal. Smelters burn it to turn iron ore into bars."
+     Comment "Item description of the coal lump (#3230)."
+    }
+    CustomStringTableItem "{E90681E4967BF028}" {
+     Id "LF-Item_CoalLump_Name"
+     Target_en_us "Coal"
+     Comment "Item name of the coal lump."
+    }
     CustomStringTableItem "{DAB831471E8878CE}" {
      Id "LF-Item_Crackers"
      Target_en_us "Crackers"
@@ -5332,6 +6687,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_CrackersDesc"
      Target_en_us "A packet of dry crackers. Keeps for months."
      Comment "Item description: crackers (#1143)."
+    }
+    CustomStringTableItem "{B94E7A21D5C03F68}" {
+     Id "LF-Item_DoorKit_Description"
+     Target_en_us "A boxed house door with its hinges and lock. The last stage of a cottage asks for one."
+     Comment "Item description (#3172)."
+    }
+    CustomStringTableItem "{A17C60E9F3B2D845}" {
+     Id "LF-Item_DoorKit_Name"
+     Target_en_us "Door kit"
+     Comment "Item name: boxed door for the cottage's door stage (#3172)."
     }
     CustomStringTableItem "{8D5931803863C15C}" {
      Id "LF-Item_DriedMeat"
@@ -5553,6 +6918,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Handcuffs"
      Comment "Inventory name of the police handcuffs."
     }
+    CustomStringTableItem "{B343B39B5EC2F09D}" {
+     Id "LF-Item_HandsetRadio_Description"
+     Target_en_us "A handheld set. Calls a cab, a doctor or the {police} from wherever you stand, for a small fee."
+     Comment "Item description of the radio set."
+    }
+    CustomStringTableItem "{3A87AA0CD67A55F9}" {
+     Id "LF-Item_HandsetRadio_Name"
+     Target_en_us "Radio set"
+     Comment "Item name: a civilian handheld radio set that calls services."
+    }
+    CustomStringTableItem "{8927D8A09220929D}" {
+     Id "LF-Item_HoneyJar"
+     Target_en_us "Honey jar"
+     Comment "Item name: a jar of honey made from two honeycombs at a kitchen (#3448)."
+    }
+    CustomStringTableItem "{9A31E991372C98FD}" {
+     Id "LF-Item_HoneyJarDesc"
+     Target_en_us "A jar of local honey. Sells slowly but steadily."
+     Comment "Item description: honey jar (#3448)."
+    }
+    CustomStringTableItem "{3F0A5624D409C535}" {
+     Id "LF-Item_Honeycomb"
+     Target_en_us "Honeycomb"
+     Comment "Item name: a frame of honeycomb taken from a beehive (#3447)."
+    }
+    CustomStringTableItem "{29701E64E31CE659}" {
+     Id "LF-Item_HoneycombDesc"
+     Target_en_us "A frame of honeycomb, heavy with honey."
+     Comment "Item description: honeycomb (#3447)."
+    }
     CustomStringTableItem "{D905B60D78F7B540}" {
      Id "LF-Item_Keycard_Description"
      Target_en_us "A cloned access card. The serial is printed on the back."
@@ -5562,6 +6957,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Keycard_Name"
      Target_en_us "Keycard"
      Comment "Item name of the fence keycard."
+    }
+    CustomStringTableItem "{65C716E04B111614}" {
+     Id "LF-Item_Limestone_Description"
+     Target_en_us "A heavy block of limestone. A works turns it into cement."
+     Comment "Item description of the limestone block (#3230)."
+    }
+    CustomStringTableItem "{9FF73E1CEF233CFB}" {
+     Id "LF-Item_Limestone_Name"
+     Target_en_us "Limestone"
+     Comment "Item name of the limestone block."
     }
     CustomStringTableItem "{80906A73087767D7}" {
      Id "LF-Item_Lockpick_Description"
@@ -5617,6 +7022,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Parcel_Desc"
      Target_en_us "A taped cardboard parcel for the drop-off address."
      Comment "Courier parcel item description"
+    }
+    CustomStringTableItem "{9195B0483F2D0148}" {
+     Id "LF-Item_RepairKit_Description"
+     Target_en_us "A toolbox of wrenches and patches. Holds one repair on a damaged vehicle."
+     Comment "Item description (#3332)."
+    }
+    CustomStringTableItem "{1B57B817BF5340F0}" {
+     Id "LF-Item_RepairKit_Name"
+     Target_en_us "Repair kit"
+     Comment "Item name (#3332)."
     }
     CustomStringTableItem "{C387085823DBA47D}" {
      Id "LF-Item_Scanner_Description"
@@ -5683,10 +7098,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Job done. Time left: %1"
      Comment "Toast after a jail job. %1 is the remaining sentence as m:ss."
     }
+    CustomStringTableItem "{0B188B4AD2B2F068}" {
+     Id "LF-JailWork_Kitchen"
+     Target_en_us "Wash the dishes"
+     Comment "Action at the jail kitchen sink: wash dishes to shorten the sentence."
+    }
     CustomStringTableItem "{B2F316158144F2CB}" {
      Id "LF-JailWork_Laundry"
      Target_en_us "Sort the laundry"
      Comment "Action in the cell: sort laundry to shorten the sentence."
+    }
+    CustomStringTableItem "{9149AEEB14C38188}" {
+     Id "LF-JailWork_LaundryTub"
+     Target_en_us "Scrub the laundry"
+     Comment "Action at the jail laundry tub: scrub laundry to shorten the sentence."
     }
     CustomStringTableItem "{7AB47127A2E6C90C}" {
      Id "LF-JailWork_NotPrisoner"
@@ -5697,6 +7122,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-JailWork_Scrub"
      Target_en_us "Scrub the floor"
      Comment "Action in the cell: scrub the floor to shorten the sentence."
+    }
+    CustomStringTableItem "{D5FF62032D49E07F}" {
+     Id "LF-JailWork_Yard"
+     Target_en_us "Sweep the yard"
+     Comment "Action at the jail yard broom: sweep the yard to shorten the sentence."
     }
     CustomStringTableItem "{6C2C86A5611DFD9A}" {
      Id "LF-Jail_SlipHanded"
@@ -5723,6 +7153,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Access denied"
      Target_es_es "Acceso denegado"
      Comment "Hint title when a job cannot be taken"
+    }
+    CustomStringTableItem "{A3F1B7C2D94E6A01}" {
+     Id "LF-Job_AlreadyRun"
+     Target_en_us "You already have a delivery run. Abandon it at the counter first."
+     Comment "Toast: Pick up refused because the player still has an open run (#3356); the title is the job name."
     }
     CustomStringTableItem "{0DAF48DFDAAF2069}" {
      Id "LF-Job_Desc_Medic"
@@ -5838,10 +7273,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The clerk has more work for you now. Sign up at the depot counter."
      Comment "Toast when job experience opens a new delivery job; the title is the job name. No level is shown."
     }
+    CustomStringTableItem "{D604EAF50C719D34}" {
+     Id "LF-Job_NoCargo"
+     Target_en_us "You are not carrying the cargo. Pick it up again, or abandon the run at the counter."
+     Comment "Toast: a drop-off refused because the cargo is not in the player's inventory (#3356); the title is the job name."
+    }
     CustomStringTableItem "{12050BC151134136}" {
      Id "LF-Job_NoPassenger"
      Target_en_us "A fare needs a passenger seated in your car."
      Comment "Toast: a taxi fare is refused at the drop-off because no other player is seated in the driver vehicle; the title is the job name."
+    }
+    CustomStringTableItem "{C5F3D9E4FB608C23}" {
+     Id "LF-Job_NoRoom"
+     Target_en_us "You have no room to carry the cargo. Make space and ask again."
+     Comment "Toast: a run start refused because the cargo did not fit in the inventory (#3356); the title is the job name."
     }
     CustomStringTableItem "{3B4E65464D2780EE}" {
      Id "LF-Job_NotADrop"
@@ -5890,6 +7335,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "{Police} de servicio"
      Comment "Hint title when a police officer starts a shift"
     }
+    CustomStringTableItem "{3148B2D8F16CAE32}" {
+     Id "LF-Job_Paid_Bonus"
+     Target_en_us "Paid {currency:sym}%1: run {currency:sym}%2, bonus +{currency:sym}%3"
+     Comment "Toast: a delivery run with a contract or standing bonus (#3148). %1 = all of it, %2 = the run's pay, %3 = the bonus."
+    }
+    CustomStringTableItem "{3148A1C7E05B9D21}" {
+     Id "LF-Job_Paid_Night"
+     Target_en_us "Paid {currency:sym}%1: run {currency:sym}%2, night +{currency:sym}%3"
+     Comment "Toast: a delivery run finished at night (#3148). %1 = all of it, %2 = the run's pay, %3 = the night rate's extra."
+    }
+    CustomStringTableItem "{3148C3E90A27BF43}" {
+     Id "LF-Job_Paid_NightBonus"
+     Target_en_us "Paid {currency:sym}%1: run {currency:sym}%2, night +{currency:sym}%3, bonus +{currency:sym}%4"
+     Comment "Toast: a delivery run finished at night with a bonus (#3148). %1 = all of it, %2 = the run's pay, %3 = the night extra, %4 = the bonus."
+    }
     CustomStringTableItem "{4A1C9E27B05D3F19}" {
      Id "LF-Job_ParcelDest"
      Target_en_us "the porch past the brick-walled lock-up, east end of the street"
@@ -5937,6 +7397,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Job_SignedUp_Taxi"
      Target_en_us "You drive a taxi now. Start a fare at this counter."
      Comment "Toast after signing up for taxi work: the next step."
+    }
+    CustomStringTableItem "{B4E2C8D3EA5F7B12}" {
+     Id "LF-Job_StartRefused"
+     Target_en_us "The counter cannot start that run right now."
+     Comment "Toast: a run start refused for a reason with no better words (#3356); the title is the job name."
     }
     CustomStringTableItem "{4BBC06DC40BA877A}" {
      Id "LF-Job_TooClose"
@@ -6189,6 +7654,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this desk to collect it."
      Comment "Licence desk: the fee was paid and the application filed. %1 = in-game hours until collection."
     }
+    CustomStringTableItem "{95873A41DBCA4881}" {
+     Id "LF-LicenceDesk_Banned"
+     Target_en_us "Refused: your firearm permit was seized. Come back in %1 days."
+     Comment "Licence desk refusal: a conviction seized the permit and its ban has not ended (#3432). %1 = in-game days left."
+    }
     CustomStringTableItem "{F6A22E21A8F71D11}" {
      Id "LF-LicenceDesk_Closed"
      Target_en_us "The licence desk cannot help you right now."
@@ -6198,6 +7668,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LicenceDesk_Convicted"
      Target_en_us "Refused: you were convicted too recently."
      Comment "Licence desk refusal: the player has a conviction within the configured look-back (#1995)."
+    }
+    CustomStringTableItem "{04D482BE05C4CD10}" {
+     Id "LF-LicenceDesk_DrivingAction"
+     Target_en_us "Buy a driving licence"
+     Comment "Action on the licence desk: buy the driving licence at once for the fee in cash (#3128)."
+    }
+    CustomStringTableItem "{DB194A67205192B5}" {
+     Id "LF-LicenceDesk_DrivingAlreadyHeld"
+     Target_en_us "You already hold a driving licence."
+     Comment "Licence desk: the player already has the driving licence (#3128)."
+    }
+    CustomStringTableItem "{4A9DFB45430F1EEF}" {
+     Id "LF-LicenceDesk_DrivingBanned"
+     Target_en_us "Refused: your driving licence was seized. Come back in %1 days."
+     Comment "Licence desk refusal: a conviction seized the driving licence and its ban has not ended (#3432). %1 = in-game days left."
+    }
+    CustomStringTableItem "{34BBF90BAF789D18}" {
+     Id "LF-LicenceDesk_DrivingIssued"
+     Target_en_us "Here is your driving licence."
+     Comment "Licence desk: the driving licence is handed over (#3128)."
+    }
+    CustomStringTableItem "{BD0E7DC7F5624449}" {
+     Id "LF-LicenceDesk_DrivingNotAllowed"
+     Target_en_us "Refused: you do not meet the driving licence requirements."
+     Comment "Licence desk refusal for the driving licence: the licence gate (system off, whitelist or job level) (#3128)."
     }
     CustomStringTableItem "{A23456CB32ABE45B}" {
      Id "LF-LicenceDesk_Issued"
@@ -6246,8 +7741,53 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9BA33F2D2CD65A73}" {
      Id "LF-LicenceDesk_Wanted"
-     Target_en_us "Refused: you are wanted by the {police}."
+     Target_en_us "Refused: you're wanted by the {police}."
      Comment "Licence desk refusal: the player's wanted level is above zero."
+    }
+    CustomStringTableItem "{A642D5DB4145E7D9}" {
+     Id "LF-LicenceSeized_Driving"
+     Target_en_us "Your driving licence has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took the driving licence (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{D92AB6624E66E7E3}" {
+     Id "LF-LicenceSeized_Firearm"
+     Target_en_us "Your firearm permit has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took the firearm permit (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{B409C651C883E235}" {
+     Id "LF-LicenceSeized_Generic"
+     Target_en_us "A licence of yours has been seized for %1 days."
+     Comment "Toast to the arrested player: a conviction took a licence with no line of its own (#3432). %1 = ban in in-game days."
+    }
+    CustomStringTableItem "{190BA98B192ED320}" {
+     Id "LF-LicenceSeized_Plain"
+     Target_en_us "A licence of yours has been seized."
+     Comment "Toast to the arrested player: a conviction took a licence with no ban period (#3432)."
+    }
+    CustomStringTableItem "{AA51A5C85F69418F}" {
+     Id "LF-LicenceWhere_DRIVING_LICENCE"
+     Target_en_us "The licence desk"
+     Comment "Where the driving licence is sold, for a refusal (#3150). Neutral core text; a pack row with the same Id names the place."
+    }
+    CustomStringTableItem "{385688993BAD1A12}" {
+     Id "LF-LicenceWhere_Default"
+     Target_en_us "Ask at the licence desk."
+     Comment "Refusal tail for a licence with no where text of its own (#3150)."
+    }
+    CustomStringTableItem "{3B2EC279E93EE312}" {
+     Id "LF-LicenceWhere_FIREARM_PERMIT"
+     Target_en_us "The licence desk"
+     Comment "Where the firearm permit is sold, for a refusal (#3150). Neutral core text; the pack's row with the same Id names the place."
+    }
+    CustomStringTableItem "{4F0F698E82FCFE93}" {
+     Id "LF-LicenceWhere_Job"
+     Target_en_us "Earn it through %1 work."
+     Comment "Refusal tail for a job licence (#3150): %1 is the job's name; never a level."
+    }
+    CustomStringTableItem "{C31BB47A38A4999B}" {
+     Id "LF-LicenceWhere_Sold"
+     Target_en_us "%1 sells it for %2."
+     Comment "Refusal tail (#3150): %1 is the place (LF-LicenceWhere_<TYPE>), %2 the fee, e.g. 'The licence desk sells it for $250.'"
     }
     CustomStringTableItem "{C8CAEB5DF24A1E79}" {
      Id "LF-License_CriminalBlackmarket_Desc"
@@ -6320,6 +7860,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cannabis grower"
      Target_es_es "Cultivador de marihuana"
      Comment "Underground skill name: growing cannabis"
+    }
+    CustomStringTableItem "{AFC2B3AB51D2DEA7}" {
+     Id "LF-License_Driving_Desc"
+     Target_en_us "Lets you drive on public roads."
+     Comment "Licence description: the driving licence (#3128)."
+    }
+    CustomStringTableItem "{B45A8C5B2A8A570E}" {
+     Id "LF-License_Driving_Name"
+     Target_en_us "Driving licence"
+     Comment "Licence name: the driving licence sold at the licence desk (#3128)."
     }
     CustomStringTableItem "{C8B554017BA55A32}" {
      Id "LF-License_FarmerApple_Desc"
@@ -6767,6 +8317,71 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Logged out"
      Comment "World-space tag over a logged-out player's body (#1974)."
     }
+    CustomStringTableItem "{C2059960A9DF4550}" {
+     Id "LF-Loot_Cooldown"
+     Target_en_us "Nothing new here yet. Try again in about %1 min."
+     Comment "Toast: an emptied container has not refilled yet. %1 = minutes."
+    }
+    CustomStringTableItem "{0EFBD383AE6DFA08}" {
+     Id "LF-Loot_CrateName"
+     Target_en_us "Crate"
+     Comment "Name of a searchable loot crate in the inventory."
+    }
+    CustomStringTableItem "{9304B5DAB88FF982}" {
+     Id "LF-Loot_Found"
+     Target_en_us "You search the crate and find something."
+     Comment "Toast after a search filled the container."
+    }
+    CustomStringTableItem "{D21D64729C6E9008}" {
+     Id "LF-Loot_Open"
+     Target_en_us "Open crate"
+     Comment "Action on a loot container: opens it as normal storage."
+    }
+    CustomStringTableItem "{A9AB3A8A23789166}" {
+     Id "LF-Loot_Search"
+     Target_en_us "Search"
+     Comment "Action on a loot container: a short hold that fills it from its loot table (#3343)."
+    }
+    CustomStringTableItem "{292DEA0C67C02DD6}" {
+     Id "LF-Loot_StillStocked"
+     Target_en_us "There is still something in here."
+     Comment "Toast: a search added nothing because the container still holds items."
+    }
+    CustomStringTableItem "{F4126E9A5B38D07C}" {
+     Id "LF-LostAndFound_CannotAfford"
+     Target_en_us "You do not have the fee in cash."
+     Comment "Toast: the reclaim fee is not in hand; nothing was taken and nothing moved."
+    }
+    CustomStringTableItem "{0D58B6F3C7A1924E}" {
+     Id "LF-LostAndFound_Nothing"
+     Target_en_us "Nothing of yours is waiting here."
+     Comment "Toast: nothing waits at this site's lost-and-found for the player (a stranger, or already taken)."
+    }
+    CustomStringTableItem "{67B3D08E2C915FA4}" {
+     Id "LF-LostAndFound_OutOfReach"
+     Target_en_us "Step closer to the lost-and-found box."
+     Comment "Toast: no lost-and-found box within reach."
+    }
+    CustomStringTableItem "{3E71A5C08D294B6F}" {
+     Id "LF-LostAndFound_Reclaim"
+     Target_en_us "Reclaim your things (fee)"
+     Comment "Action on the lost-and-found box: pay the reclaim fee and take back what a lapsed locker held."
+    }
+    CustomStringTableItem "{A90C42E7165DB83F}" {
+     Id "LF-LostAndFound_Reclaimed"
+     Target_en_us "You paid the fee and took your things back."
+     Comment "Toast: the reclaim fee was taken and every waiting item moved to the player."
+    }
+    CustomStringTableItem "{C28E5A1F90D64B37}" {
+     Id "LF-LostAndFound_Refused"
+     Target_en_us "The lost-and-found could not hand your things over."
+     Comment "Toast: the reclaim was refused for another reason; see the log."
+    }
+    CustomStringTableItem "{19F7C4B6E3A85D02}" {
+     Id "LF-LostAndFound_Title"
+     Target_en_us "Lost and found"
+     Comment "Title of the lost-and-found box prompt and toast."
+    }
     CustomStringTableItem "{EBA0820132F44791}" {
      Id "LF-Lot_Browse"
      Target_en_us "Look at the cars"
@@ -6817,6 +8432,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "needs %1"
      Comment "Car lot row for a cheap car the reader cannot afford in cash. %1 is the price."
     }
+    CustomStringTableItem "{875D23933B55810A}" {
+     Id "LF-Lot_NeedsDrivingLicence"
+     Target_en_us "Not without a driving licence. The licence desk issues it for %1."
+     Comment "Car lot refusal when the server asks for a driving licence (#3151). %1 is the fee. Neutral core text; a pack row with the same Id names the place."
+    }
     CustomStringTableItem "{B58D71B1650E8EBB}" {
      Id "LF-Lot_Rule"
      Target_en_us "Cars up to %1 are paid in cash. Dearer cars are paid from your bank: deposit cash at the ATM first."
@@ -6826,6 +8446,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Lot_Title"
      Target_en_us "Car lot - price list"
      Comment "Car lot sheet title."
+    }
+    CustomStringTableItem "{D346F69E748E0356}" {
+     Id "LF-Lumber_AlreadyFelled"
+     Target_en_us "This tree is already down."
+     Comment "Toast: felling refused, the tree is felled and has not regrown (#3259)."
+    }
+    CustomStringTableItem "{C80E5A37B2F94D16}" {
+     Id "LF-Lumber_ClassHardwood"
+     Target_en_us "hardwood"
+     Comment "Wood class word in the fell prompt (#3260)."
+    }
+    CustomStringTableItem "{2D94B6F8C1A07E53}" {
+     Id "LF-Lumber_ClassSoftwood"
+     Target_en_us "softwood"
+     Comment "Wood class word in the fell prompt (#3260)."
+    }
+    CustomStringTableItem "{91B7D2E4A6F30C58}" {
+     Id "LF-Lumber_ClassTree"
+     Target_en_us "tree"
+     Comment "Wood class word in the fell prompt when the class is unknown (#3260)."
+    }
+    CustomStringTableItem "{5F2A8C41D7E36B90}" {
+     Id "LF-Lumber_Fell"
+     Target_en_us "Fell tree (%1, %2 s)"
+     Comment "Prompt of the axe hold action on a map tree (#3260). %1 = wood class, %2 = hold seconds."
+    }
+    CustomStringTableItem "{A7C3E19B50D84F26}" {
+     Id "LF-Lumber_Felled"
+     Target_en_us "Tree down. %1 log(s) on the ground."
+     Comment "Toast: a map tree was felled (#3260). %1 = logs dropped."
+    }
+    CustomStringTableItem "{994FBED5D9F12308}" {
+     Id "LF-Lumber_NearBuilding"
+     Target_en_us "Too close to a building."
+     Comment "Toast: felling refused, a building is too near; keeps gardens and avenues standing (#3259)."
+    }
+    CustomStringTableItem "{DE994BAA5959C133}" {
+     Id "LF-Lumber_NearRoad"
+     Target_en_us "Too close to the road: it would fall across it."
+     Comment "Toast: felling refused, a road or paved surface is too near (#3259)."
+    }
+    CustomStringTableItem "{61435D35A213695C}" {
+     Id "LF-Lumber_NoAxe"
+     Target_en_us "You need an axe in your hands."
+     Comment "Toast: felling refused, no axe held (#3259)."
+    }
+    CustomStringTableItem "{39ECA47F906B44F1}" {
+     Id "LF-Lumber_NotATree"
+     Target_en_us "That can't be felled."
+     Comment "Toast: felling refused, a stump, fallen trunk, orchard or other tree that is never felled (#3259)."
+    }
+    CustomStringTableItem "{483778CCE8D259AA}" {
+     Id "LF-Lumber_SafeZone"
+     Target_en_us "No felling here."
+     Comment "Toast: felling refused inside a safe zone (#3259)."
+    }
+    CustomStringTableItem "{BC5CB49CBB20C17E}" {
+     Id "LF-Lumber_Tired"
+     Target_en_us "You're too tired. Catch your breath first."
+     Comment "Toast: felling refused, stamina is below what the tree costs (#3259)."
+    }
+    CustomStringTableItem "{1BD92A70876B9267}" {
+     Id "LF-Lumber_TooFar"
+     Target_en_us "Get closer to the trunk."
+     Comment "Toast: felling refused, the player stands too far from the tree (#3259)."
+    }
+    CustomStringTableItem "{BB558DD7CB298EBF}" {
+     Id "LF-Lumber_TooSmall"
+     Target_en_us "Too young to fell. Let it grow."
+     Comment "Toast: felling refused, a sapling (#3259)."
     }
     CustomStringTableItem "{3651646B23FCD86B}" {
      Id "LF-Magazine_Taser_Description"
@@ -7017,10 +8707,40 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Safe zone"
      Comment "Map label of a safe zone at the closest zoom."
     }
+    CustomStringTableItem "{7C3A91D5E208B4F6}" {
+     Id "LF-Market_BelowLot"
+     Target_en_us "This buyer takes whole lots of %1. Bring at least one full lot."
+     Comment "Toast to the seller (#3622): the stack is smaller than one lot of a good priced per lot, so nothing was sold. %1 = the units in one lot."
+    }
+    CustomStringTableItem "{5E8B1D70A3C94F26}" {
+     Id "LF-Market_BoardNext"
+     Target_en_us "Sell your goods to the trader at the price on the board."
+     Comment "Sign catalog 'next' text of the trader price board face (never shown: the board's own Read action opens the prices card)."
+    }
     CustomStringTableItem "{E3A1B2C4D5F60718}" {
      Id "LF-Market_BoardTitle"
      Target_en_us "Prices today"
      Comment "Title of the trader chalk price board card."
+    }
+    CustomStringTableItem "{7B3D5A91C2E0F486}" {
+     Id "LF-Market_BoardWhat"
+     Target_en_us "What the trader pays today for each good, chalked on the board."
+     Comment "Sign catalog 'what' text of the trader price board face (never shown: the board's own Read action opens the prices card)."
+    }
+    CustomStringTableItem "{3B7C9A10E4D25F81}" {
+     Id "LF-Market_BuyerFull"
+     Target_en_us "They have enough for now. Try again in about %1 min."
+     Comment "Toast to the seller: a premium buyer's demand is spent. %1 = minutes until it takes one more unit (#3599). A pack row with the same Id adds where else to sell."
+    }
+    CustomStringTableItem "{3B7C9A10E4D25F83}" {
+     Id "LF-Market_BuyerFull_Title"
+     Target_en_us "Enough for now"
+     Comment "Title of the buyer-full toast (#3599)."
+    }
+    CustomStringTableItem "{3B7C9A10E4D25F82}" {
+     Id "LF-Market_BuyerNever"
+     Target_en_us "They have all they need of that."
+     Comment "Toast to the seller: a premium buyer's demand is spent and never refills (#3599)."
     }
     CustomStringTableItem "{E3A1B2C4D5F60719}" {
      Id "LF-Market_NoPrices"
@@ -7611,6 +9331,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Offence_ChopShop"
      Target_en_us "Chop shop dismantling"
      Comment "Offence on a wanted poster: a stolen car was chopped (#415)."
+    }
+    CustomStringTableItem "{6860E84495F88846}" {
+     Id "LF-Offence_DrunkDriving"
+     Target_en_us "Drunk driving"
+     Comment "Offence a licence seizure rule names (#3428): driving while impaired. Not in the crime catalog yet."
+    }
+    CustomStringTableItem "{3B7D5E1A94C2F608}" {
+     Id "LF-Offence_EscapedCustody"
+     Target_en_us "Escaped custody"
+     Comment "Offence on a wanted poster: a prisoner walked out of the jail in a break window (#3422)."
     }
     CustomStringTableItem "{6E4CC71CE2AF3D51}" {
      Id "LF-Offence_HospitalRobbery"
@@ -8787,6 +10517,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This property already holds as many placed things as it may. Pick one up first."
      Comment "Toast when a permanent placement is refused: the property reached its cap (#1032)."
     }
+    CustomStringTableItem "{4A63282A460A441D}" {
+     Id "LF-Placement_EmptyFirst"
+     Target_en_us "Empty it first"
+     Comment "Toast under Placing when the player picks up a storage furniture that still holds items."
+    }
     CustomStringTableItem "{7D3F102C9E5B6C43}" {
      Id "LF-Placement_KeyCancel"
      Target_en_us "Cancel placing"
@@ -9318,10 +11053,25 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Officer's trousers"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
     }
+    CustomStringTableItem "{3A7C91E05B2D4F68}" {
+     Id "LF-Process_Busy"
+     Target_en_us "Still running. Wait for it to finish."
+     Comment "Processing refused (#3229): a timed machine already has a run under way."
+    }
+    CustomStringTableItem "{4140D26F74D7F5F3}" {
+     Id "LF-Process_Needs"
+     Target_en_us "Needs %1"
+     Comment "Processing refused: the player lacks one input of the recipe (#3226). %1 = item name, e.g. Coal"
+    }
     CustomStringTableItem "{60B6DD582597F066}" {
      Id "LF-Process_NoItems"
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
+    }
+    CustomStringTableItem "{9D4E21B7C0A35F86}" {
+     Id "LF-Process_Started"
+     Target_en_us "Running. The parts come out here in %1 seconds."
+     Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
      Id "LF-Property_Bought"
@@ -9358,6 +11108,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Buy plot (%1)"
      Comment "Action on a for-sale plot sign (#2649). %1 = the formatted price (LF_MoneyFormat)."
     }
+    CustomStringTableItem "{4263DB02B36FDA37}" {
+     Id "LF-Property_HouseBought"
+     Target_en_us "You bought house %1. The key is in your inventory."
+     Comment "Toast: the house purchase went through (#3207). %1 = the house id."
+    }
+    CustomStringTableItem "{D44434DE82747CDF}" {
+     Id "LF-Property_HouseBuy"
+     Target_en_us "Buy house (%1, %2)"
+     Comment "Action on a house for-sale sign (#3207). %1 = the tier label, %2 = the formatted price (LF_MoneyFormat)."
+    }
+    CustomStringTableItem "{E8139375F9985FE0}" {
+     Id "LF-Property_HouseNoCash"
+     Target_en_us "You do not carry enough cash for this house."
+     Comment "Toast: house purchase refused, short of cash; nothing was taken (#3207)."
+    }
+    CustomStringTableItem "{32F7CFE0FED0514B}" {
+     Id "LF-Property_HouseNotHere"
+     Target_en_us "There is no house for sale here."
+     Comment "Toast: house purchase refused, no for-sale house sign in reach (#3207)."
+    }
+    CustomStringTableItem "{1DD4EE13D4F89E6A}" {
+     Id "LF-Property_HouseOwned"
+     Target_en_us "This house is already sold."
+     Comment "Toast: house purchase refused, somebody owns it (#3207)."
+    }
+    CustomStringTableItem "{913DC2A62580BE71}" {
+     Id "LF-Property_HouseSold"
+     Target_en_us "Sold"
+     Comment "Action label on a house sign once somebody owns the house (#3207); it cannot be used."
+    }
     CustomStringTableItem "{2E4ED8FC8172E6AA}" {
      Id "LF-Property_NoCash"
      Target_en_us "You do not carry enough cash for this plot."
@@ -9382,6 +11162,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Property_Title"
      Target_en_us "Property"
      Comment "Toast title for a plot purchase answer (#2649)."
+    }
+    CustomStringTableItem "{3427A1D0C9E84B17}" {
+     Id "LF-Qual_DetectiveWork"
+     Target_en_us "That's detective work. The training desk runs the course."
+     Comment "Toast to an officer without the detective qualification who tried the full vehicle search or to open a case on the case board (#3427)."
+    }
+    CustomStringTableItem "{2E48875B943A483E}" {
+     Id "LF-Qual_Held"
+     Target_en_us "You already hold this qualification."
+     Comment "Qualifications: the course is already held."
+    }
+    CustomStringTableItem "{8BF9C67BE39BDC9F}" {
+     Id "LF-Qual_RankTooLow"
+     Target_en_us "You need rank %1 to take this course."
+     Comment "Qualifications: %1 is the minimum rank."
+    }
+    CustomStringTableItem "{3F57A312C35253F9}" {
+     Id "LF-Qual_ShortPurse"
+     Target_en_us "You need %1 in cash to take this course."
+     Comment "Qualifications: %1 is the fee."
+    }
+    CustomStringTableItem "{4FC9952C71D9E1F0}" {
+     Id "LF-Qual_Unknown"
+     Target_en_us "There is no such course."
+     Comment "Qualifications: the course id is not in the table."
+    }
+    CustomStringTableItem "{EB5A73F654E37D13}" {
+     Id "LF-Qual_WrongFaction"
+     Target_en_us "This course is not open to your service."
+     Comment "Qualifications: the character is of the wrong faction."
     }
    CustomStringTableItem "{468EF5CBF215416A}" {
     Id "LF-Quest_Accept"
@@ -9420,6 +11230,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Quest_Action_Clerk"
      Target_en_us "Talk to the clerk"
      Comment "Interaction on the town clerk NPC."
+    }
+    CustomStringTableItem "{3768F00000000011}" {
+     Id "LF-Quest_Action_PoliceDesk"
+     Target_en_us "Speak to the desk"
+     Comment "Action on the duty desk: talk about a report or hand something in (#3768)."
     }
     CustomStringTableItem "{D85E266C2ACFBDC1}" {
      Id "LF-Quest_ArrivalBank_Desc"
@@ -9501,6 +11316,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Quest_Giver_Clerk"
      Target_en_us "Town clerk"
      Comment "Quest menu title for the town clerk on the square (arrival chain)."
+    }
+    CustomStringTableItem "{3768F00000000012}" {
+     Id "LF-Quest_Giver_PoliceDesk"
+     Target_en_us "Duty desk"
+     Comment "Name of the duty desk as a quest giver (#3768)."
     }
     CustomStringTableItem "{028FE3699291F64C}" {
      Id "LF-Quest_Giver_Start"
@@ -9678,6 +11498,11 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Missão ainda não concluída"
     Comment "Turn-in refused, quest not complete"
    }
+    CustomStringTableItem "{3768F00000000013}" {
+     Id "LF-Quest_PoliceDesk_Idle"
+     Target_en_us "Nothing for the desk right now."
+     Comment "The duty desk when there is nothing to hand in or report (#3768)."
+    }
    CustomStringTableItem "{C62FE3743E00B28C}" {
     Id "LF-Quest_Rejected"
     Target_en_us "Quest not available"
@@ -9946,6 +11771,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This race is not available."
      Comment "Toast: the sign's course is missing or broken (#1923)."
     }
+    CustomStringTableItem "{C5ADAB68CA19613F}" {
+     Id "LF-Range_Busy"
+     Target_en_us "A round is already running on this lane."
+     Comment "Toast refusing a second start while a round runs."
+    }
+    CustomStringTableItem "{2363ADEA13DC1C23}" {
+     Id "LF-Range_NoShooter"
+     Target_en_us "Your character is not ready for a round yet."
+     Comment "Toast when the shooter has no record key yet."
+    }
+    CustomStringTableItem "{E473247834E47101}" {
+     Id "LF-Range_NoTargets"
+     Target_en_us "This lane has no targets."
+     Comment "Toast when the lane has no live target."
+    }
+    CustomStringTableItem "{2B4E8D9FF1DEF7AD}" {
+     Id "LF-Range_Result"
+     Target_en_us "%1/%2 in %3 s, your best %4 s"
+     Comment "Toast when a round clears the lane. %1 hits, %2 targets, %3 seconds, %4 best seconds."
+    }
+    CustomStringTableItem "{1A71F0442F4EF714}" {
+     Id "LF-Range_StartRound"
+     Target_en_us "Start a round"
+     Comment "Action on a range target: starts the timed round on its lane."
+    }
+    CustomStringTableItem "{121111F8BA6810D0}" {
+     Id "LF-Range_Started"
+     Target_en_us "Round on: %1 targets, %2 s"
+     Comment "Toast when a round starts. %1 targets in the lane, %2 seconds."
+    }
+    CustomStringTableItem "{BB662DD733C9F321}" {
+     Id "LF-Range_TimeUp"
+     Target_en_us "Time up: %1/%2 in %3 s"
+     Comment "Toast when the 60 s run out. %1 hits, %2 targets, %3 seconds."
+    }
+    CustomStringTableItem "{9B59E79F970EA709}" {
+     Id "LF-Range_Title"
+     Target_en_us "Range"
+     Comment "Title of the range toasts (Feature/Range)."
+    }
     CustomStringTableItem "{5985DB962913E1DE}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"
@@ -9965,6 +11830,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-RateLimit_Title"
      Target_en_us "Slow down"
      Comment "Toast title when the server refuses a request sent too fast (#693b)."
+    }
+    CustomStringTableItem "{A0F831CF41BB55DC}" {
+     Id "LF-Recycler_Busy"
+     Target_en_us "The bench is busy."
+     Comment "Toast: an item is already on the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{55C12BD2712F8C61}" {
+     Id "LF-Recycler_Collect"
+     Target_en_us "Collect the parts"
+     Comment "Action: take the parts off the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{B238E182E0A35393}" {
+     Id "LF-Recycler_Collected"
+     Target_en_us "You take the parts."
+     Comment "Toast: the recycler parts were handed over (#3349)."
+    }
+    CustomStringTableItem "{C2F19F3AFF4BDE7A}" {
+     Id "LF-Recycler_Load"
+     Target_en_us "Load the recycler"
+     Comment "Action: put an item on the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{1EA41B7B70469311}" {
+     Id "LF-Recycler_NoItem"
+     Target_en_us "You do not have that item."
+     Comment "Toast: the item to recycle is not in the inventory (#3349)."
+    }
+    CustomStringTableItem "{ED78E758588DF841}" {
+     Id "LF-Recycler_NoRecipe"
+     Target_en_us "Nothing you carry can be broken down here."
+     Comment "Toast: no carried item has a recycle recipe (#3349)."
+    }
+    CustomStringTableItem "{E4540181784B2876}" {
+     Id "LF-Recycler_Title"
+     Target_en_us "Recycler"
+     Comment "Toast title for the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{55F29754BA4C5F7D}" {
+     Id "LF-Recycler_TooFar"
+     Target_en_us "Stand at the bench first."
+     Comment "Toast: the worker is out of reach of the recycler (#3349)."
+    }
+    CustomStringTableItem "{CAFDBC0B153EF566}" {
+     Id "LF-Recycler_Work"
+     Target_en_us "Break it down"
+     Comment "Action, held: work the recycler bench (#3349)."
+    }
+    CustomStringTableItem "{8810DCBD5B449AC8}" {
+     Id "LF-Recycler_WrongState"
+     Target_en_us "The bench has nothing to do right now."
+     Comment "Toast: the recycler bench has no job to work or collect (#3349)."
     }
     CustomStringTableItem "{A45A061D749A854A}" {
      Id "LF-Reg_Age"
@@ -10005,6 +11920,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{FC5B69E6943AB0F2}" {
+     Id "LF-RepairKit_Action"
+     Target_en_us "Repair with kit"
+     Comment "Action name on a damaged vehicle (#3332)."
+    }
+    CustomStringTableItem "{D8DBAE73FEF4E915}" {
+     Id "LF-RepairKit_Busy"
+     Target_en_us "Someone is already working on this vehicle."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{A5624E1FC287F5D3}" {
+     Id "LF-RepairKit_Cooldown"
+     Target_en_us "This vehicle was only just repaired. Give it a moment."
+     Comment "Refusal while the car cools down (#3332)."
+    }
+    CustomStringTableItem "{BA771C4080B358CC}" {
+     Id "LF-RepairKit_Done"
+     Target_en_us "Repaired. The kit is used up."
+     Comment "Toast when the repair applies (#3332)."
+    }
+    CustomStringTableItem "{E2EBFA0CCD41EE95}" {
+     Id "LF-RepairKit_Interrupted"
+     Target_en_us "You stopped before the repair was done. The kit is kept."
+     Comment "Toast when the job is dropped (#3332)."
+    }
+    CustomStringTableItem "{12A97ADFF80A9AB4}" {
+     Id "LF-RepairKit_NeedKit"
+     Target_en_us "You need a repair kit."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{B6A1FD9D408C30D7}" {
+     Id "LF-RepairKit_NotDamaged"
+     Target_en_us "This vehicle needs no repair."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{FBEC31E712CFA92E}" {
+     Id "LF-RepairKit_Started"
+     Target_en_us "You start working on the vehicle."
+     Comment "Toast when the repair starts (#3332)."
+    }
+    CustomStringTableItem "{45F52AF20227E07B}" {
+     Id "LF-RepairKit_Title"
+     Target_en_us "Repair kit"
+     Comment "Toast title (#3332)."
+    }
+    CustomStringTableItem "{87D8723475C6D323}" {
+     Id "LF-RepairKit_TooFar"
+     Target_en_us "Stand closer to the vehicle."
+     Comment "Refusal (#3332)."
+    }
+    CustomStringTableItem "{5CAA2E7A7672C8C9}" {
+     Id "LF-RepairKit_Wrecked"
+     Target_en_us "This vehicle is wrecked beyond a kit."
+     Comment "Refusal (#3332)."
     }
     CustomStringTableItem "{C80275F691522CBC}" {
      Id "LF-Reputation_Faction_Police"
@@ -10446,6 +12416,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Contraband found and seized"
      Comment "Officer search found chain goods (#419)."
     }
+    CustomStringTableItem "{3427B2E1D0F95C28}" {
+     Id "LF-Search_Full_Action"
+     Target_en_us "Full search"
+     Comment "Vehicle action: the detective's full search, hidden compartment included (#3427)."
+    }
     CustomStringTableItem "{2154A1C0B7D34E01}" {
      Id "LF-Search_SeizedCount"
      Target_en_us "%1x %2"
@@ -10553,6 +12528,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Handguns for permit holders."
      Comment "Shop description of the licensed gun counter outlet (#988)."
     }
+    CustomStringTableItem "{F2D0DCE7D7861628}" {
+     Id "LF-Shop_Desc_Supermarket"
+     Target_en_us "Groceries and drinks"
+     Comment "Shop description of a village supermarket till (#3219)."
+    }
     CustomStringTableItem "{B4FBE7394CA00159}" {
      Id "LF-Shop_Hint_General"
      Target_en_us "Looking for something stronger? Try the back room at the head of the cobbled alley, east of the square. Knock, and bring cash."
@@ -10625,6 +12605,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Gun counter"
      Comment "Shop name of the licensed gun counter outlet (#988)."
     }
+    CustomStringTableItem "{CB9900E42434661E}" {
+     Id "LF-Shop_Name_Supermarket"
+     Target_en_us "Supermarket"
+     Comment "Shop name of a village supermarket till (#3219)."
+    }
     CustomStringTableItem "{684633A0ED601DA3}" {
      Id "LF-Shop_NoReply"
      Target_en_us "The till did not answer. Try again."
@@ -10651,6 +12636,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Buy food and supplies"
      Target_es_es "Comprar comida y suministros"
      Comment "Interaction description on the general store counter"
+    }
+    CustomStringTableItem "{79EFB1B443677DA1}" {
+     Id "LF-Shop_OpenDesc_Supermarket"
+     Target_en_us "Buy groceries and drinks"
+     Comment "Interaction description on the supermarket till (#3219)."
     }
     CustomStringTableItem "{B50F85FC9F4CC91E}" {
      Id "LF-Shop_Open_BackRoom"
@@ -10684,6 +12674,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Buy a handgun"
      Comment "Action prompt at the gun counter (#988)."
     }
+    CustomStringTableItem "{227F1753641762B8}" {
+     Id "LF-Shop_Open_Supermarket"
+     Target_en_us "Browse the shelves"
+     Comment "Interaction name on the supermarket till (#3219)."
+    }
     CustomStringTableItem "{BE3CD5847E4642EA}" {
      Id "LF-Shop_Order"
      Target_en_us "Order"
@@ -10708,6 +12703,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Shop_PickFirst"
      Target_en_us "Pick a line from the list first."
      Comment "Shop refusal on the client: Pay or Sell with no item on the slip."
+    }
+    CustomStringTableItem "{7788EC6B8586AE96}" {
+     Id "LF-Shop_RefuseAlreadyOwned"
+     Target_en_us "You already own one of these"
+     Comment "Order slip line (#3295): an implement is bought once."
     }
     CustomStringTableItem "{601C97E84CB077AF}" {
      Id "LF-Shop_RefuseCash"
@@ -10789,10 +12789,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "One order at a time. Give the till a moment."
      Comment "Shop refusal: too many orders in a short time (#693b rate limit)."
     }
+    CustomStringTableItem "{9B4E445A7689D74C}" {
+     Id "LF-Shop_RefuseUnfit"
+     Target_en_us "The clerk won't hand that over to you in this state."
+     Comment "Order slip line: a licensed line is not sold to a dead, downed or cuffed buyer."
+    }
     CustomStringTableItem "{CD2FED1EA8EFF86B}" {
      Id "LF-Shop_RefuseUnpriced"
      Target_en_us "That item has no price here."
      Comment "Shop refusal: the item has no price."
+    }
+    CustomStringTableItem "{1CFEA3E02996B1FC}" {
+     Id "LF-Shop_RefuseWanted"
+     Target_en_us "You're wanted by the {police}. The counter won't sell you that."
+     Comment "Order slip line: a licensed line (a firearm) is not sold to a wanted buyer."
     }
     CustomStringTableItem "{F612D2192DFC33C8}" {
      Id "LF-Shop_SaleFailed_Title"
@@ -10855,6 +12865,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Talk to the shopkeeper"
      Comment "Action on a store's shopkeeper: opens the conversation (#1143)."
     }
+    CustomStringTableItem "{126190E6CA344F29}" {
+     Id "LF-ShoulderCarry_Action"
+     Target_en_us "Hoist onto shoulder"
+     Comment "F-key action name for shoulder carry (#3263)."
+    }
+    CustomStringTableItem "{4C9A65177C3AA068}" {
+     Id "LF-ShoulderCarry_Denied"
+     Target_en_us "Your hands are full."
+     Comment "Greyed-out reason and toast when shoulder carry is refused (#3263)."
+    }
+    CustomStringTableItem "{6511ED0DDAE0AF1B}" {
+     Id "LF-Sign_ChalkSample_Bait"
+     Target_en_us "Fishing bait"
+     Comment "Sample chalk board price row label."
+    }
+    CustomStringTableItem "{E4551DF35C444813}" {
+     Id "LF-Sign_ChalkSample_Bread"
+     Target_en_us "Bread"
+     Comment "Sample chalk board price row label."
+    }
+    CustomStringTableItem "{2E0E075D4360F789}" {
+     Id "LF-Sign_ChalkSample_Coffee"
+     Target_en_us "Coffee"
+     Comment "Sample chalk board price row label."
+    }
+    CustomStringTableItem "{AB08B102E0D6EDF8}" {
+     Id "LF-Sign_ChalkSample_Fuel"
+     Target_en_us "Jerry can of fuel"
+     Comment "Sample chalk board price row label."
+    }
+    CustomStringTableItem "{A2E6C14B7D9035F8}" {
+     Id "LF-Sign_ChalkSample_Next"
+     Target_en_us "Walk on to the next cell."
+     Comment "Next section of the sample chalk board's Read card (signs/next wants every sign to say what comes next)."
+    }
+    CustomStringTableItem "{F1E37CC41BF9295B}" {
+     Id "LF-Sign_ChalkSample_Title"
+     Target_en_us "Today's prices"
+     Comment "Sample chalk board title (sign styles, #sign-overhaul): a generic price board."
+    }
+    CustomStringTableItem "{74C99019C7953F31}" {
+     Id "LF-Sign_ChalkSample_What"
+     Target_en_us "A chalk board with a title and a short price list."
+     Comment "Read card of the sample chalk board."
+    }
     CustomStringTableItem "{62312EEA2BF57769}" {
      Id "LF-Sign_Close"
      Target_en_us "Put it back"
@@ -10865,6 +12920,21 @@ CustomStringTableItem "{44869271883D0402}" {
    Target_en_us "Notice"
    Comment "Title of a sign card whose own text is not available (its pack is not loaded). Shown in the prompt as Read: Notice."
   }
+    CustomStringTableItem "{116893FFB2C8AD3B}" {
+     Id "LF-Sign_HouseForSale_Next"
+     Target_en_us "Stand at the sign with the price in carried cash and choose Buy house."
+     Comment "Read card of the house sale sign: what to do next (#3207)."
+    }
+    CustomStringTableItem "{BAEE50039356D187}" {
+     Id "LF-Sign_HouseForSale_Title"
+     Target_en_us "For sale"
+     Comment "Core house sale sign face and Read title (#3207): a house nobody owns yet."
+    }
+    CustomStringTableItem "{8D334B4254D966D0}" {
+     Id "LF-Sign_HouseForSale_What"
+     Target_en_us "A house nobody owns yet. Use the sign to buy it with cash and get its key."
+     Comment "Read card of the house sale sign (#3207)."
+    }
     CustomStringTableItem "{6A32B827033280BE}" {
      Id "LF-Sign_How"
      Target_en_us "How"
@@ -12013,6 +14083,66 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "No sale"
      Comment "Title of the refused-sale toast."
     }
+    CustomStringTableItem "{B976D15E0E9B0B4B}" {
+     Id "LF-Training_Course_detective_course"
+     Target_en_us "Detective"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{78F252053EA90564}" {
+     Id "LF-Training_Course_first_aid_course"
+     Target_en_us "First Aid"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{B100F982AE5EF187}" {
+     Id "LF-Training_Course_paramedic_course"
+     Target_en_us "Paramedic"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{2616F2C90F266CD7}" {
+     Id "LF-Training_Course_traffic_course"
+     Target_en_us "Traffic"
+     Comment "Training desk: course display name."
+    }
+    CustomStringTableItem "{86202AB25CDA24C1}" {
+     Id "LF-Training_Desc"
+     Target_en_us "Hold to study. The fee is paid when you finish."
+     Comment "Training desk: action description."
+    }
+    CustomStringTableItem "{90AE055011CAE1B5}" {
+     Id "LF-Training_NotOnDuty"
+     Target_en_us "Clock in at the duty desk before you take a course."
+     Comment "Training desk: refused while off duty."
+    }
+    CustomStringTableItem "{7C378EF666F77691}" {
+     Id "LF-Training_Qualified"
+     Target_en_us "You've qualified: %1"
+     Comment "Training desk: %1 is the course name, e.g. Detective."
+    }
+    CustomStringTableItem "{45E04447DEFE233C}" {
+     Id "LF-Training_Take_detective_course"
+     Target_en_us "Take the Detective course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{F77B74BC9E316996}" {
+     Id "LF-Training_Take_first_aid_course"
+     Target_en_us "Take the First Aid course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{0AED5736C8FBD7FB}" {
+     Id "LF-Training_Take_paramedic_course"
+     Target_en_us "Take the Paramedic course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{735DD85BF3F2A589}" {
+     Id "LF-Training_Take_traffic_course"
+     Target_en_us "Take the Traffic course"
+     Comment "Training desk action."
+    }
+    CustomStringTableItem "{F3F6CF6F64F0E4DA}" {
+     Id "LF-Training_Title"
+     Target_en_us "Training desk"
+     Comment "Training desk: toast title."
+    }
     CustomStringTableItem "{D820B2BCD7FC410A}" {
      Id "LF-UIKit_Keep"
      Target_en_us "Keep %1"
@@ -12078,6 +14208,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Take %1"
      Comment "UI kit quantity face for the amount that leaves. %1 is the count."
     }
+    CustomStringTableItem "{3333A1C0E5D70001}" {
+     Id "LF-Unflip_Action"
+     Target_en_us "Push it back over"
+     Comment "Action name on an overturned empty vehicle (#3333)."
+    }
+    CustomStringTableItem "{3333A1C0E5D70003}" {
+     Id "LF-Unflip_Cooldown"
+     Target_en_us "It was only just pushed over. Give it a moment."
+     Comment "Unflip refusal toast (#3333): inside the cooldown."
+    }
+    CustomStringTableItem "{3333A1C0E5D70005}" {
+     Id "LF-Unflip_NotOverturned"
+     Target_en_us "It is already on its wheels."
+     Comment "Unflip refusal toast (#3333): the vehicle is not overturned."
+    }
+    CustomStringTableItem "{3333A1C0E5D70002}" {
+     Id "LF-Unflip_Occupied"
+     Target_en_us "Someone is still inside."
+     Comment "Unflip refusal toast (#3333): the vehicle has an occupant."
+    }
+    CustomStringTableItem "{3333A1C0E5D70004}" {
+     Id "LF-Unflip_TooFar"
+     Target_en_us "Get closer to push it over."
+     Comment "Unflip refusal toast (#3333): the player is out of reach."
+    }
+    CustomStringTableItem "{7B2D91E4A0C358F6}" {
+     Id "LF-VehicleCompartment_Open"
+     Target_en_us "Open the panel"
+     Comment "Action on a fitted car, shown to its owner only: opens the hidden compartment (#3434)."
+    }
+    CustomStringTableItem "{2E84C0B7D1596A3F}" {
+     Id "LF-VehicleCompartment_Title"
+     Target_en_us "Hidden compartment"
+     Comment "Title of a car's hidden compartment storage (#3434)."
+    }
     CustomStringTableItem "{C470CD4C9E58C70D}" {
      Id "LF-VehicleLock_NoTarget"
      Target_en_us "No vehicle of yours in reach"
@@ -12087,6 +14252,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Vehicle_BankShort"
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
      Comment "Vehicle purchase refused: the price is above the cash limit and the bank balance is short"
+    }
+    CustomStringTableItem "{3304D1C0A7E25B91}" {
+     Id "LF-Vehicle_NeedsRallyDlc"
+     Target_en_us "This tractor needs the Rally DLC."
+     Comment "Vehicle purchase refused: the lot does not sell the Rally tractor to a player without the DLC (#3304)"
     }
     CustomStringTableItem "{5E0B7D31C9A24F86}" {
      Id "LF-Wanted_BuildHidden"
@@ -12293,6 +14463,5 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They can't recall anything useful."
      Comment "Toast to the officer: the witness remembered nothing they could describe."
     }
-  }
  }
 }

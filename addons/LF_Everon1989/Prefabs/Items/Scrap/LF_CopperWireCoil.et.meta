@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{8092D345F08C5F22}Prefabs/Items/Scrap/LF_CopperWireCoil.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "range",
+  "building": "b95",
+  "kit": "range",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_range.layer",
+  "kinds": [
+    "RangeLane"
+  ],
+  "rows": 11,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_saint_philippe_range_Place"
+  },
+  "date": "2026-11-19"
+}

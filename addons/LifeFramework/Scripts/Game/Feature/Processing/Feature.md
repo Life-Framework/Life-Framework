@@ -42,3 +42,23 @@ visibly holding/expelling the product.
 
 - `Gathering` / `Resources` (raw inputs), `Quantity` (stack-aware consume),
   `Money` (product value via `Trader`), `Jobs` / `Level` (processing perks).
+
+## Recycle rules (#3347)
+
+- **Player sees:** nothing yet; this is the rule a later recycler uses (an item breaks into part of its inputs).
+- **Owner and side:** `LF_RecycleRules` (pure logic) decides on the server; `LF_RecycleConfig` loads the recipes.
+- **Data:** `Configs/Processing/LF_Recycle.conf`, empty in the core (a pack adds recipes). A recipe is an item id,
+  a return percent (1 to 99) and the parts it is made of; each part comes back at the percent, rounded down. At load a
+  recipe is refused (logged as `[LFDebug:Processing]` with the reason) when the percent is 100 or more, an item or part
+  is not in the catalogue, nothing would come back, or the parts that come back are worth as much as the item at catalogue
+  `m_iPrice` (no profit loop, same prices as #2848). An item with no recipe gives nothing. Nothing is persisted.
+- **Proof:** `processing/recycle-rules` (LOGIC).
+
+## Recycler bench (#3349)
+
+- **Player sees:** a workbench with Load, Break it down (held) and Collect; the bench shows its state in the action list.
+- **Owner and side:** `LF_RecyclerComponent` holds the job on the server; `LF_RecyclerAction` is the three actions. The rules
+  and recipes are `LF_RecycleRules` / `LF_RecycleConfig` (#3347).
+- **Data:** per-bench attributes `m_iWorkUnits` (default 4), `m_fReach`, `m_iMinTickMs`. Recipes come from the recycle config.
+- **Not saved:** a job in progress is lost at world end, like the chop shop; the item left the inventory at Load.
+- **Proof:** `processing/recycler` (WORLD).

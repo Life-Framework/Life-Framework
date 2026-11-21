@@ -1,0 +1,42 @@
+GenericEntity {
+ ID "7070D89FFB6DC880"
+ components {
+  MeshObject "{7070D89FFB6DC881}" {
+   Object "{598C51E096C9ADC0}Assets/Props/Money/ATM/ATMWall.xob"
+  }
+  RigidBody "{7070D89FFB6DC882}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{7070D89FFB6DC883}" {
+   ActionContexts {
+    UserActionContext "{7070D89FFB6DC884}" {
+     ContextName "default"
+     Position PointInfo "{7070D89FFB6DC885}" {
+      Offset 0 1.3 0.1
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ATMAction "{7070D89FFB6DC886}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{7070D89FFB6DC887}" {
+      Name "#EL-ATM_Title"
+      Description "#LF-ATM_Manage"
+     }
+    }
+   }
+  }
+  RplComponent "{7070D89FFB6DC888}" {
+   Enabled 1
+  }
+  LF_PlaceComponent "{7070D89FFB6DC889}" {
+   m_sKind "ATM"
+   m_sId "atm"
+  }
+ }
+}

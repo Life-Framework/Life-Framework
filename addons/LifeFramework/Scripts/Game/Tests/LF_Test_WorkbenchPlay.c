@@ -54,5 +54,11 @@ class LF_Test_WorkbenchPlay : LF_Test
 		array<int> noOverlays = {0, 0, 0};
 		ctx.Equal(-1, LF_WorkbenchPlay.PickFallbackHeader(worlds, noOverlays, "Worlds/TestDebug/TestDebug.ent"), "a header with no overlays is no stand-in");
 		ctx.Equal(-1, LF_WorkbenchPlay.PickFallbackHeader(worlds, overlays, ""), "no open world: none");
+
+		// The World Editor (not Play) names its world by absolute path; the sign faces it draws need the
+		// pack header too, or a pack-only sign reads "has no titled entry" (2026-11-19).
+		string editorWorld = "D:\\LF\\worktrees\\x\\addons\\LF_TestPack\\Worlds\\TestDebug\\TestDebug.ent";
+		ctx.True(LF_WorkbenchPlay.NormalizeWorld(editorWorld) == "worlds/testdebug/testdebug.ent", "an absolute editor path compares as its resource path");
+		ctx.Equal(0, LF_WorkbenchPlay.PickFallbackHeader(worlds, overlays, editorWorld), "the editor's open world finds its own header");
 	}
 }

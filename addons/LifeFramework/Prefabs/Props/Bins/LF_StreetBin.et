@@ -1,0 +1,51 @@
+SCR_DestructibleEntity : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
+ ID "7B0D5E3A91C4F268"
+ components {
+  LF_BinComponent "{399CAB6828051AC4}" {
+  }
+  LF_BinStorageManagerComponent "{063509BBB7A17A6D}" {
+  }
+  SCR_UniversalInventoryStorageComponent "{8DDE942F3430A3E5}" {
+   Attributes SCR_ItemAttributeCollection "{5E1B7A02C9D4F683}" {
+    ItemDisplayName SCR_InventoryUIInfo "{2F94C8A1B3E60D57}" {
+     Name "#LF-Bin_Name"
+     Description "#LF-Bin_Name"
+    }
+   }
+   UseCapacityCoefficient 0
+   MaxCumulativeVolume 60000
+   MaxItemSize 60 80 60
+   m_fMaxWeight 60
+  }
+  ActionsManagerComponent "{A509C013D3EC17DC}" {
+   ActionContexts {
+    UserActionContext "{D17A40E8F2B35C96}" {
+     ContextName "LF_Bin"
+     Position PointInfo "{48C0E7B5A91D2F34}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    SCR_OpenStorageAction "{91E5B3D7C06A8F42}" {
+     ParentContextList {
+      "LF_Bin"
+     }
+     UIInfo UIInfo "{6A3F1D8E52B7C940}" {
+      Name "#LF-Bin_Open"
+     }
+    }
+    LF_GarbageEmptyBinAction "{3E92C7A05D1B84F6}" {
+     ParentContextList {
+      "LF_Bin"
+     }
+     UIInfo UIInfo "{7A04D1E68B3C2F95}" {
+      Name "#LF-Garbage_EmptyBin"
+      Description "#LF-Garbage_EmptyBinDesc"
+     }
+    }
+   }
+  }
+ }
+}

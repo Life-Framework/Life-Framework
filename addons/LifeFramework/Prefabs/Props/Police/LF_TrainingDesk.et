@@ -1,0 +1,69 @@
+GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ ID "B0B894DD73CA8ED0"
+ components {
+  RplComponent "{CCD5EFE3ACE39350}" {
+   Enabled 1
+  }
+  ActionsManagerComponent "{76148E692E8126D1}" {
+   ActionContexts {
+    UserActionContext "{DF809BD074C42BD8}" {
+     ContextName "LF_TrainingDesk"
+     Position PointInfo "{C7479925BE5657CE}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+      LF_TrainingDeskAction "{ECAA694B0447E0AF}" {
+       ParentContextList {
+        "LF_TrainingDesk"
+       }
+       UIInfo UIInfo "{7D0456E94B66CED0}" {
+        Name "#LF-Training_Take_detective_course"
+        Description "#LF-Training_Desc"
+       }
+       "Sort Priority" 1
+       Duration 60
+       m_sCourseId "detective_course"
+      }
+      LF_TrainingDeskAction "{16D8E4DE6A15FF93}" {
+       ParentContextList {
+        "LF_TrainingDesk"
+       }
+       UIInfo UIInfo "{4605B388219DC17B}" {
+        Name "#LF-Training_Take_traffic_course"
+        Description "#LF-Training_Desc"
+       }
+       "Sort Priority" 2
+       Duration 30
+       m_sCourseId "traffic_course"
+      }
+      LF_TrainingDeskAction "{2B3C29D0AE71E00D}" {
+       ParentContextList {
+        "LF_TrainingDesk"
+       }
+       UIInfo UIInfo "{45A46E6202E79257}" {
+        Name "#LF-Training_Take_paramedic_course"
+        Description "#LF-Training_Desc"
+       }
+       "Sort Priority" 3
+       Duration 45
+       m_sCourseId "paramedic_course"
+      }
+      LF_TrainingDeskAction "{C5BC57541EC6A03A}" {
+       ParentContextList {
+        "LF_TrainingDesk"
+       }
+       UIInfo UIInfo "{33B6BA1EB7F640E8}" {
+        Name "#LF-Training_Take_first_aid_course"
+        Description "#LF-Training_Desc"
+       }
+       "Sort Priority" 4
+       Duration 15
+       m_sCourseId "first_aid_course"
+      }
+   }
+  }
+ }
+}

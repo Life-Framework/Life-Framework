@@ -21,6 +21,8 @@ export const HARD_CHECKS = [
   "validate-debugworld.ps1", // required layers exist and parse
   "validate-debugworld-layout.ps1",
   "validate-debugworld-layer-order.ps1",
+  "validate-quoted-vectors.mjs", // a quoted vector ("5 3 7") drops the entity at world origin (#3671)
+  "validate-dialogue-refs.mjs", // a sign id, dialogue id or #LF- key a layer names has no def or row: a broken reference
 ];
 
 export const LAYOUT_CHECKS = [
@@ -55,6 +57,7 @@ export const LAYER_READERS_KEPT_HARD = {
   "validate-sound-slots.mjs":"a sound slot id a layer asks for must exist: a broken reference",
   "validate-plot-house-ids.mjs": "a plot key equal to a house id sells the house at the plot price: a config collision, not a position",
   "validate-no-town-layout-asserts.mjs": "judges new test files, and already only warns when the town moved under an old literal",
+  "validate-layer-height-frame.mjs": "island layers only (never a town layer): a row in the wrong height frame stands metres in the air or under the ground",
 };
 
 export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;

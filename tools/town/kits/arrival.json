@@ -63,6 +63,207 @@
       "yaw": 0,
       "wall": "-x",
       "floor": "all"
+    },
+    {
+      "id": "town-hall-clerk",
+      "name": "TownHall_Clerk",
+      "prefab": "{446165FE77D592AC}Prefabs/Characters/Npcs/Outfits/LF_Npc_Clerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        8.35,
+        0.2,
+        3.1
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "from": "Grid_town_hall.layer",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "lf-sign-rules",
+      "name": "TownHall_Rules_Sign",
+      "prefab": "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -2,
+        1.6,
+        7.99
+      ],
+      "yaw": 0,
+      "from": "Grid_town_hall.layer",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"rules\"",
+            "m_vRimColor": "0.7 0.12 0.1",
+            "m_vPaintColor": "0.95 0.9 0.78",
+            "m_vTextColor": "0.7 0.12 0.1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0",
+      "scale": 1
+    },
+    {
+      "id": "relocated-spawn",
+      "name": "Relocated_Spawn_0",
+      "prefab": "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        69.55,
+        5.76,
+        -130.95
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_EventWaypointComponent",
+          "set": {
+            "m_sSceneId": "\"relocated_arrival\"",
+            "m_iOrder": "0"
+          },
+          "blocks": []
+        }
+      ],
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "relocated-wp0",
+      "name": "Relocated_Waypoint_0",
+      "prefab": "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        68.67,
+        4.06,
+        -25.1
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_EventWaypointComponent",
+          "set": {
+            "m_sSceneId": "\"relocated_arrival\"",
+            "m_iOrder": "0"
+          },
+          "blocks": []
+        }
+      ],
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "relocated-wp1",
+      "name": "Relocated_Waypoint_1",
+      "prefab": "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        61.03,
+        0.63,
+        64.94
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_EventWaypointComponent",
+          "set": {
+            "m_sSceneId": "\"relocated_arrival\"",
+            "m_iOrder": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "relocated-wp2",
+      "name": "Relocated_Waypoint_2",
+      "prefab": "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -4.56,
+        -2.1,
+        64.56
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_EventWaypointComponent",
+          "set": {
+            "m_sSceneId": "\"relocated_arrival\"",
+            "m_iOrder": "2"
+          },
+          "blocks": []
+        }
+      ],
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "relocated-wp3",
+      "name": "Relocated_Waypoint_3",
+      "prefab": "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -7.46,
+        -0.11,
+        15.19
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_EventWaypointComponent",
+          "set": {
+            "m_sSceneId": "\"relocated_arrival\"",
+            "m_iOrder": "3"
+          },
+          "blocks": []
+        }
+      ],
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "relocated-target",
+      "name": "Relocated_Target_0",
+      "prefab": "{F716FD32069F2BE8}Prefabs/Systems/Events/LF_EventMarker_Target.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        4.1,
+        -0.06,
+        14.07
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_EventWaypointComponent",
+          "set": {
+            "m_sSceneId": "\"relocated_arrival\""
+          },
+          "blocks": []
+        }
+      ],
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }

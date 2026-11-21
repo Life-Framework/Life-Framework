@@ -1,0 +1,672 @@
+GenericEntity Home_saint_philippe_sp_b01 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b01"
+  }
+ }
+ coords 4488.3 13.9 10702.3
+}
+GenericEntity HomeSign_saint_philippe_sp_b01 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b01"
+  }
+ }
+ coords 4498.375 13.93 10697.828
+ angleY 82
+}
+GenericEntity Home_saint_philippe_sp_b10 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b10"
+  }
+ }
+ coords 4519.06 14.8 10715.25
+}
+GenericEntity HomeSign_saint_philippe_sp_b10 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b10"
+  }
+ }
+ coords 4506.182 14.83 10718.492
+ angleY -98
+}
+GenericEntity Home_saint_philippe_sp_b16 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b16"
+  }
+ }
+ coords 4537.5 16.4 10715.3
+}
+GenericEntity HomeSign_saint_philippe_sp_b16 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b16"
+  }
+ }
+ coords 4536.43 16.43 10722.911
+ angleY -8
+}
+GenericEntity Home_saint_philippe_sp_b18 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b18"
+  }
+ }
+ coords 4530.5 16 10746.9
+}
+GenericEntity HomeSign_saint_philippe_sp_b18 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b18"
+  }
+ }
+ coords 4531.461 16.03 10740.835
+ angleY 171
+}
+GenericEntity Home_saint_philippe_sp_b40 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b40"
+  }
+ }
+ coords 4564.8 18.5 10709.7
+}
+GenericEntity HomeSign_saint_philippe_sp_b40 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b40"
+  }
+ }
+ coords 4563.213 18.53 10719.715
+ angleY -9
+}
+GenericEntity Home_saint_philippe_sp_b44 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b44"
+  }
+ }
+ coords 4391.5 10.4 10732.5
+}
+GenericEntity HomeSign_saint_philippe_sp_b44 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b44"
+  }
+ }
+ coords 4391.696 10.43 10721.304
+ angleY 179
+}
+GenericEntity Home_saint_philippe_sp_b47 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b47"
+  }
+ }
+ coords 4470.17 9.7 10804.45
+}
+GenericEntity HomeSign_saint_philippe_sp_b47 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b47"
+  }
+ }
+ coords 4466.337 9.73 10799.06
+ angleY 166
+}
+GenericEntity Home_saint_philippe_sp_b60 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b60"
+  }
+ }
+ coords 4470.2 17.7 10612.7
+}
+GenericEntity HomeSign_saint_philippe_sp_b60 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b60"
+  }
+ }
+ coords 4465.728 17.73 10602.625
+ angleY 172
+}
+GenericEntity Home_saint_philippe_sp_b63 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b63"
+  }
+ }
+ coords 4552.3 17.8 10790.15
+}
+GenericEntity HomeSign_saint_philippe_sp_b63 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b63"
+  }
+ }
+ coords 4556.256 17.83 10796.861
+ angleY 79
+}
+GenericEntity Home_saint_philippe_sp_b68 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b68"
+  }
+ }
+ coords 4586.9 18.2 10757.1
+}
+GenericEntity HomeSign_saint_philippe_sp_b68 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b68"
+  }
+ }
+ coords 4588.661 18.23 10747.114
+ angleY 170
+}
+GenericEntity Home_saint_philippe_sp_b72 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b72"
+  }
+ }
+ coords 4548.61 17.4 10809.75
+}
+GenericEntity HomeSign_saint_philippe_sp_b72 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b72"
+  }
+ }
+ coords 4552.687 17.43 10816.259
+ angleY 80
+}
+GenericEntity Home_saint_philippe_sp_b74 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b74"
+  }
+ }
+ coords 4583.3 18.1 10776.1
+}
+GenericEntity HomeSign_saint_philippe_sp_b74 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b74"
+  }
+ }
+ coords 4589.372 18.13 10767.57
+ angleY 170
+}
+GenericEntity Home_saint_philippe_sp_b75 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b75"
+  }
+ }
+ coords 4359.83 10.2 10716.9
+}
+GenericEntity HomeSign_saint_philippe_sp_b75 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b75"
+  }
+ }
+ coords 4356.747 10.23 10722.059
+ angleY -10
+}
+GenericEntity Home_saint_philippe_sp_b81 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b81"
+  }
+ }
+ coords 4580.27 17.6 10795.15
+}
+GenericEntity HomeSign_saint_philippe_sp_b81 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b81"
+  }
+ }
+ coords 4573.623 17.63 10804.336
+ angleY -10
+}
+GenericEntity Home_saint_philippe_sp_b83 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b83"
+  }
+ }
+ coords 4368.8 4.2 10782.3
+}
+GenericEntity HomeSign_saint_philippe_sp_b83 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b83"
+  }
+ }
+ coords 4375.452 4.23 10782.689
+ angleY 138
+}
+GenericEntity Home_saint_philippe_sp_b87 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b87"
+  }
+ }
+ coords 4457.08 9.2 10846.45
+}
+GenericEntity HomeSign_saint_philippe_sp_b87 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b87"
+  }
+ }
+ coords 4453.5 9.23 10839.651
+ angleY -104
+}
+GenericEntity Home_saint_philippe_sp_b92 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b92"
+  }
+ }
+ coords 4399.1 16.2 10599.3
+}
+GenericEntity HomeSign_saint_philippe_sp_b92 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b92"
+  }
+ }
+ coords 4389.057 16.23 10597.888
+ angleY -98
+}
+GenericEntity Home_saint_philippe_sp_b101 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b101"
+  }
+ }
+ coords 4617.6 19.3 10756
+}
+GenericEntity HomeSign_saint_philippe_sp_b101 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b101"
+  }
+ }
+ coords 4628.403 19.33 10751.794
+ angleY 86
+}
+GenericEntity Home_saint_philippe_sp_b106 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b106"
+  }
+ }
+ coords 4338.4 4.8 10756.5
+}
+GenericEntity HomeSign_saint_philippe_sp_b106 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b106"
+  }
+ }
+ coords 4346.923 4.83 10760.628
+ angleY 49
+}
+GenericEntity Home_saint_philippe_sp_b108 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b108"
+  }
+ }
+ coords 4535.9 15.7 10852
+}
+GenericEntity HomeSign_saint_philippe_sp_b108 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b108"
+  }
+ }
+ coords 4534.884 15.73 10842.585
+ angleY 171
+}
+GenericEntity Home_saint_philippe_sp_b110 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b110"
+  }
+ }
+ coords 4429.2 9.1 10859.6
+}
+GenericEntity HomeSign_saint_philippe_sp_b110 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b110"
+  }
+ }
+ coords 4430.838 9.13 10872.819
+ angleY -15
+}
+GenericEntity Home_saint_philippe_sp_b111 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b111"
+  }
+ }
+ coords 4328.2 6.7 10683.6
+}
+GenericEntity HomeSign_saint_philippe_sp_b111 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b111"
+  }
+ }
+ coords 4340.72 6.73 10685.583
+ angleY 81
+}
+GenericEntity Home_saint_philippe_sp_b112 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b112"
+  }
+ }
+ coords 4379.5 15.6 10595.7
+}
+GenericEntity HomeSign_saint_philippe_sp_b112 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b112"
+  }
+ }
+ coords 4368.172 15.63 10598.165
+ angleY -103
+}
+GenericEntity Home_saint_philippe_sp_b114 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b114"
+  }
+ }
+ coords 4451 9.2 10868.7
+}
+GenericEntity HomeSign_saint_philippe_sp_b114 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b114"
+  }
+ }
+ coords 4461.487 9.23 10865.308
+ angleY 76
+}
+GenericEntity Home_saint_philippe_sp_b119 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.sp-b119"
+  }
+ }
+ coords 4638 20 10756.3
+}
+GenericEntity HomeSign_saint_philippe_sp_b119 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.sp-b119"
+  }
+ }
+ coords 4648.304 20.03 10750.985
+ angleY 92
+}
+GenericEntity Home_saint_philippe_di_b05 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.di-b05"
+  }
+ }
+ coords 4680.8 22.4 10711.6
+}
+GenericEntity HomeSign_saint_philippe_di_b05 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.di-b05"
+  }
+ }
+ coords 4675.637 22.43 10701.862
+ angleY 176
+}
+GenericEntity Home_saint_philippe_di_b10 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.di-b10"
+  }
+ }
+ coords 4658.6 20.4 10755.9
+}
+GenericEntity HomeSign_saint_philippe_di_b10 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.di-b10"
+  }
+ }
+ coords 4668.735 20.43 10755.546
+ angleY 92
+}
+GenericEntity Home_saint_philippe_di_b34 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.di-b34"
+  }
+ }
+ coords 4746.79 23.8 10722
+}
+GenericEntity HomeSign_saint_philippe_di_b34 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.di-b34"
+  }
+ }
+ coords 4753.619 23.83 10717.124
+ angleY 84
+}
+GenericEntity Home_saint_philippe_di_b46 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.di-b46"
+  }
+ }
+ coords 4622.9 17.4 10581.3
+}
+GenericEntity HomeSign_saint_philippe_di_b46 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.di-b46"
+  }
+ }
+ coords 4626.817 17.43 10593.357
+ angleY 18
+}
+GenericEntity Home_saint_philippe_di_b48 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.di-b48"
+  }
+ }
+ coords 4665.18 17.9 10577.65
+}
+GenericEntity HomeSign_saint_philippe_di_b48 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.di-b48"
+  }
+ }
+ coords 4658.619 17.93 10578.991
+ angleY -64
+}
+GenericEntity Home_saint_philippe_di_b53 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.di-b53"
+  }
+ }
+ coords 4637.23 19.6 10829.6
+}
+GenericEntity HomeSign_saint_philippe_di_b53 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.di-b53"
+  }
+ }
+ coords 4633.662 19.63 10823.995
+ angleY 163
+}
+GenericEntity Home_saint_philippe_dk_b45 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
+ components {
+  LF_BuildingLockComponent "{A3F1C5D7092E4B68}" {
+   m_sSignKey "#LF-Everon-Lock_ForSale"
+   m_sOwnedSignKey "#LF-Everon-Lock_Private"
+  }
+  LF_HouseManagerComponent "{6E2F9A13B7D40C85}" {
+   m_sDebugIdentifier "saint-philippe.home.dk-b45"
+  }
+ }
+ coords 4470.03 9.6 10975.25
+}
+GenericEntity HomeSign_saint_philippe_dk_b45 : "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et" {
+ components {
+  LF_HouseSaleComponent "{59380F11830D8A96}" {
+   m_sHouseId "saint-philippe.home.dk-b45"
+  }
+ }
+ coords 4474.417 9.63 10971.134
+ angleY 154
+}

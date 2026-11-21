@@ -1,0 +1,43 @@
+GenericEntity Fit_saint_philippe_barber_Place {
+ components {
+  LF_PlaceComponent "{776A250A133490E9}" {
+   m_sKind "BarberChair"
+   m_sId "saint-philippe.barber"
+  }
+  LF_FittedBuildingComponent "{61A8D2B1868C111F}" {
+  }
+ }
+ coords 4411.6 10.3 10773.4
+}
+GenericEntity Fit_saint_philippe_barber_barber_basin : "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et" {
+ coords 4411.326 9.806 10775.463
+ angleY 62
+}
+GenericEntity Fit_saint_philippe_barber_barber_chair_1 : "{4F2A9C61B7E03D85}Prefabs/Props/Roleplay/LF_BarberChair.et" {
+ coords 4411.386 10.215 10778.383
+ angleY -118
+}
+GenericEntity Fit_saint_philippe_barber_barber_chair_2 : "{4F2A9C61B7E03D85}Prefabs/Props/Roleplay/LF_BarberChair.et" {
+ coords 4412.09 10.215 10777.058
+ angleY -118
+}
+GenericEntity Fit_saint_philippe_barber_barber_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 4413.324 10.215 10778.677
+ angleY -118
+}
+GenericEntity Fit_saint_philippe_barber_barber_mirror : "{34E90D599E5E3517}Prefabs/Props/Furniture/MirrorBathroom_02/MirrorBathroom_02.et" {
+ coords 4410.427 11.25 10777.023
+ angleY 62
+}
+GenericEntity Fit_saint_philippe_barber_barber_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "barber"
+   m_vRimColor 0.72 0.08 0.1
+   m_vPaintColor 0.96 0.95 0.9
+   m_vTextColor 0.72 0.08 0.1
+  }
+ }
+ coords 4414.873 13.25 10768.309
+ angleY 152
+}

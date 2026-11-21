@@ -1,0 +1,137 @@
+// Source of the `butcher` kit (tools/town/kits/butcher.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). `town fit` reads the components the kit names from here; `town author --reopen butcher` builds a bay again.
+// Grid cell c25r0 for author-butcher: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_author_butcher_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 23
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 327.4 0 23
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 331.8 0 23
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 336.2 0 23
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 340.6 0 23
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 27.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 31.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 36.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 40.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 340.6 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 336.2 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 331.8 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 327.4 0 45
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 45
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 40.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_butcher_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 36.2
+ angleY 90
+}
+GenericEntity Grid_author_butcher_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:author-butcher"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 322.2 0.505 23.6
+ angleY -90
+}
+GenericEntity Grid_author_butcher_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "author-butcher"
+  }
+ }
+ coords 322.3 0 27.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_author_butcher_Main : "{C50CF821412A2E0F}Prefabs/Structures/Houses/Town/House_Town_E_2I01/House_Town_E_2I01_orange.et" {
+ coords 333.675 0.05 33.964
+ angleY -90
+}
+GenericEntity Butcher_counter_1 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 330.675 0.251 29.414
+ angleY -90
+}
+GenericEntity Butcher_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+ coords 330.675 0.251 30.914
+ angleY -90
+}
+GenericEntity Butcher_till : "{7CA6A8139045323E}Prefabs/Props/Commercial/LF_ButcherTill.et" {
+ coords 330.775 1.291 30.914
+ angleY 90
+}
+GenericEntity Butcher_scale : "{B300963815A0AFAF}Prefabs/Props/Commercial/ScaleShop_01/ScaleShop_01_white.et" {
+ coords 330.675 1.288 29.264
+ angleY -90
+}
+GenericEntity Butcher_chiller_1 : "{613F68B39D0A4A64}Prefabs/Props/Commercial/CoolingBoxShop_01.et" {
+ coords 335.875 0.296 29.164
+}
+GenericEntity Butcher_freezer : "{9A0A7B399D8AEEA0}Prefabs/Props/Civilian/Freezer_01.et" {
+ coords 332.075 0.261 28.764
+}
+GenericEntity Butcher_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 330.575 1.299 29.764
+ angleY -90
+}
+GenericEntity Butcher_meat_3 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 330.575 1.299 30.364
+ angleY -20
+}
+GenericEntity Butcher_freezer_meat_1 : "{F1E319DF62725A34}Prefabs/Props/Commercial/LF_ButcherMeatDisplay.et" {
+ coords 332.225 1.111 28.764
+ angleY -90
+}
+GenericEntity Butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ coords 326.075 3.3 30.164
+ angleY -90
+}
+LF_NpcBaseEntity Butcher_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 331.475 0.246 30.264
+ angleY -90
+}

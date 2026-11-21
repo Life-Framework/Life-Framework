@@ -60,6 +60,13 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	[RplProp()]
 	protected string m_sKeyId;
 
+	//! The owner's record key (#3366). LF_VehicleOwnership's tables exist on the server only, so this
+	//! is what a client reads to offer the owner's own car its "Store in garage" row. Server-written
+	//! when the car is bought or comes out of the garage; empty on a car nobody owns. Display gate
+	//! only: the server still checks LF_VehicleOwnership before it stores anything.
+	[RplProp()]
+	protected string m_sOwnerUid;
+
 	//------------------------------------------------------------------------------------------------
 	//! A key matches when both identifiers are non-empty and equal. Two empty identifiers must not
 	//! match: an unbound key opens nothing.
@@ -231,6 +238,13 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 		if (!Replication.IsServer() || !user || !GetOwner())
 			return false;
 
+		// A company garbage truck waiting to be taken back is never lockable (#3325).
+		if (LF_GarbageRound.IsPendingRemoval(GetOwner()))
+		{
+			LF_Debug.Warn("VehicleLock", string.Format("toggle refused (%1): company truck waiting to be taken back", source));
+			return false;
+		}
+
 		float distance = vector.Distance(user.GetOrigin(), GetOwner().GetOrigin());
 		if (!MayToggle(UserHasValidKey(user), distance))
 		{
@@ -320,6 +334,34 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 		m_sVehicleIdentifier = identifier;
 		Replication.BumpMe();
 		LF_Debug.Log("VehicleLock", string.Format("identifier rebound: %1", identifier));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The replicated owner record key; empty when the car has no owner.
+	string GetOwnerUid()
+	{
+		return m_sOwnerUid;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the owner's record key, replicated so a client can tell its own car (#3366).
+	void SetOwnerUid(string ownerUid)
+	{
+		if (!Replication.IsServer() || m_sOwnerUid == ownerUid)
+			return;
+
+		m_sOwnerUid = ownerUid;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when both keys are set and equal. An unowned car matches nobody.
+	static bool OwnerMatches(string carOwnerUid, string userUid)
+	{
+		if (carOwnerUid.IsEmpty() || userUid.IsEmpty())
+			return false;
+
+		return carOwnerUid == userUid;
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -559,7 +559,7 @@ class LF_AgentCommand
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! type <PartName> <Text>: both tokens are letters, digits, or underscore.
+	//! type <PartName> <Text>: both tokens are letters, digits, or underscore (the text may also hold dashes).
 	protected static bool ParseType(array<string> parts, LF_AgentCommand cmd)
 	{
 		if (parts.Count() < 4)
@@ -570,7 +570,10 @@ class LF_AgentCommand
 
 		cmd.Arg1 = parts[2];
 		cmd.Arg2 = parts[3];
-		if (!IsClassToken(cmd.Arg1) || !IsClassToken(cmd.Arg2))
+		// The text may carry dashes: an account number is a uid such as 00bbbddd-5e55-0000-0000-000000000002 (#3320).
+		string dashless = cmd.Arg2;
+		dashless.Replace("-", "_");
+		if (!IsClassToken(cmd.Arg1) || !IsClassToken(dashless))
 		{
 			cmd.Error = "bad_field_or_text";
 			return false;
@@ -3340,13 +3343,19 @@ class LF_AgentHarness
 				localClass = localClass.Substring(0, localIndexAt);
 			}
 
-			IEntity target = FindTarget(character, localClass, cmd.Arg2);
+			// A Resident_<id> lives in the server's table only (#3650): a client takes the nearest host of the
+			// action, which is the resident the proof just stood beside; the server never sees this local use.
+			string localName = cmd.Arg2;
+			if (LF_ResidentHarness.IdOf(localName) != "")
+				localName = "";
+
+			IEntity target = FindTarget(character, localClass, localName);
 			// A replicated NPC has no layer name on a client: take the nearest host of the action.
-			if (!target && cmd.Arg2 != "")
+			if (!target && localName != "")
 			{
 				target = FindTarget(character, localClass, "");
 				// #2935: a named use that lands on a different named prop is a miss, not a pass.
-				string refusal = FallbackRefusal(cmd.Arg2, NameOfHit(target));
+				string refusal = FallbackRefusal(localName, NameOfHit(target));
 				if (refusal != "")
 				{
 					WriteResult(cmd.Id, "error", refusal);
@@ -4201,6 +4210,11 @@ class LF_AgentHarness
 		if (patient)
 			return patient;
 
+		// A spawned resident has no layer name: Resident_<id> (#3650).
+		IEntity resident = LF_ResidentHarness.Named(entityName);
+		if (resident)
+			return resident;
+
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
 			return null;
@@ -4286,7 +4300,11 @@ class LF_AgentHarness
 		s_sWantedName = entityName;
 		s_pFoundEntity = null;
 		s_fBestDist = 999999;
-		s_vOrigin = user.GetOrigin();
+		// A character in a seat is a child of the vehicle: GetOrigin is then the seat offset, not a place in
+		// the world, so the search would run around the world's origin (the grain prompts need a driver).
+		vector userTransform[4];
+		user.GetWorldTransform(userTransform);
+		s_vOrigin = userTransform[3];
 
 		// Another player is named Player<id>: their character, if it carries the action.
 		IEntity player = PlayerNamed(entityName);
@@ -4308,9 +4326,28 @@ class LF_AgentHarness
 			return null;
 		}
 
+		// A spawned resident by id (#3650): the server's live table; null on a client or when not live.
+		if (LF_ResidentHarness.IdOf(entityName) != "")
+		{
+			IEntity resident = LF_ResidentHarness.Named(entityName);
+			if (resident && FindOnEntity(resident, className))
+				return resident;
+
+			return null;
+		}
+
 		float radius = 5;
 		if (entityName != "")
 			radius = 80;
+
+		// A named entity with no mesh (the weighbridge's invisible prompt) is missed by the sphere query beyond a
+		// metre or two, and a driver sits metres from it: look the layer name up directly first.
+		if (entityName != "")
+		{
+			IEntity byName = world.FindEntityByName(entityName);
+			if (byName && vector.Distance(byName.GetOrigin(), s_vOrigin) <= radius && FindOnEntity(byName, className))
+				return byName;
+		}
 
 		world.QueryEntitiesBySphere(s_vOrigin, radius, CollectActionEntity, null, EQueryEntitiesFlags.ALL);
 		return s_pFoundEntity;

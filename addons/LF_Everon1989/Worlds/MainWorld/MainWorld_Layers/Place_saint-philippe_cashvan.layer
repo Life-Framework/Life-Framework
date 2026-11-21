@@ -1,0 +1,60 @@
+GenericEntity Fit_saint_philippe_cashvan_Stop0 {
+ components {
+  LF_PlaceComponent "{616C514E1D863522}" {
+   m_sKind "CashVanStop"
+   m_sId "saint-philippe.cashvan"
+   m_iOrder 0
+  }
+ }
+ coords 4353.5 11.811 10652
+ angleY 353
+}
+GenericEntity Fit_saint_philippe_cashvan_Stop1 {
+ components {
+  LF_PlaceComponent "{AC6E4FB19DE5EB82}" {
+   m_sKind "CashVanStop"
+   m_sId "saint-philippe.cashvan"
+   m_iOrder 1
+  }
+ }
+ coords 4601.056 18.113 10654.192
+ angleY -100
+}
+GenericEntity Fit_saint_philippe_cashvan_Stop2 {
+ components {
+  LF_PlaceComponent "{C15084536441A883}" {
+   m_sKind "CashVanStop"
+   m_sId "saint-philippe.cashvan"
+   m_iOrder 2
+  }
+ }
+ coords 4513.63 14.694 10769.889
+ angleY 80
+}
+GenericEntity Fit_saint_philippe_cashvan_Van : "{2A66E3B8B0C61D87}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_brown.et" {
+ components {
+  LF_AlarmMountComponent "{DF5CF0034A9827F2}" {
+   m_vOffset 0 1.885 -0.6
+  }
+  LF_PlaceComponent "{46326534C6391153}" {
+   m_sKind "CashVan"
+   m_sId "saint-philippe.cashvan"
+  }
+ }
+ coords 4353.5 11.811 10652
+ angleY 353
+}
+GenericEntity Fit_saint_philippe_cashvan_Box : "{8FABDE609C994BC2}Prefabs/Vehicles/LF_CashVanBox.et" {
+ components {
+  LF_AmbientEmitterComponent "{6500A030B509B54E}" {
+   m_sSoundSlot "atmo_van_idle"
+   m_fRadius 23
+   m_vOffset 0 1 0
+  }
+  LF_CashVanRouteComponent "{AD90CF30B9D9615D}" {
+   m_sRouteId "saint-philippe.cashvan"
+  }
+ }
+ coords 4355.011 11.811 10650.775
+ angleY 83
+}

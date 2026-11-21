@@ -1,0 +1,111 @@
+GenericEntity Fit_farmcompound_compound_Place {
+ components {
+  LF_PlaceComponent "{E1367E35A6004AEA}" {
+   m_sKind "FarmCompound"
+   m_sId "farmcompound.compound"
+  }
+  LF_FittedBuildingComponent "{B3B1EA838E45271B}" {
+  }
+ }
+ coords 6629.8 115.3 5959.2
+}
+GenericEntity Fit_farmcompound_compound_site_centre {
+ components {
+  LF_ContestedSiteComponent "{7A3C5E1B9D204F68}" {
+   m_sHideoutId "farm_compound"
+  }
+ }
+ coords 6638.419 116.249 5970.232
+ angleY 38
+}
+GenericEntity Fit_farmcompound_compound_barn_door : "{99D61E9EDBDF3CC8}Prefabs/Structures/BuildingParts/Doors/EL_Door_Base.et" {
+ components {
+  LF_HideoutDoorComponent "{205C142A05C4A6B3}" {
+   m_sHideoutId "farm_compound"
+   m_bOrganizationHideout 1
+  }
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 6633.181 115.276 5963.284
+ angleY 38
+}
+GenericEntity Fit_farmcompound_compound_site_flag : "{DDE764E40C17C5DC}Prefabs/Sites/LF_SiteFlag.et" {
+ components {
+  LF_SiteFlagComponent "{647283CFBB64650F}" {
+   m_sHideoutId "farm_compound"
+  }
+ }
+ coords 6641.473 115.907 5962.77
+ angleY 38
+}
+GenericEntity Fit_farmcompound_compound_site_strongbox : "{28F82DEA95808829}Prefabs/Sites/LF_SiteStrongbox.et" {
+ components {
+  LF_SiteStrongboxComponent "{6D3B7B6CE6AA2908}" {
+   m_sHideoutId "farm_compound"
+  }
+ }
+ coords 6630.564 115.261 5967.487
+ angleY 38
+}
+GenericEntity Fit_farmcompound_compound_site_plate : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "farm_compound"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 6636.154 116.623 5981.139
+ angleY 38
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_front_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6636.696 0 5984.269
+ angleY 128
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_front_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6639.848 0 5981.806
+ angleY 128
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_front_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6643 0 5979.344
+ angleY 128
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_front_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6649.304 0 5974.418
+ angleY 128
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_front_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6652.456 0 5971.956
+ angleY 128
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_front_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6655.608 0 5969.493
+ angleY 128
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_w_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6629.308 0 5974.813
+ angleY 38
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_e_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6649.796 0 5958.806
+ angleY 38
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_w_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6631.77 0 5977.965
+ angleY 38
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_e_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6652.259 0 5961.958
+ angleY 38
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_w_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6634.233 0 5981.117
+ angleY 38
+}
+SCR_DestructibleEntity Fit_farmcompound_compound_fence_e_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 6654.721 0 5965.11
+ angleY 38
+}

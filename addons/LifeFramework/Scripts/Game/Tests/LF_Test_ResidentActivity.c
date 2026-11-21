@@ -2,6 +2,9 @@
 //   (RedProof() on, `cli test --no-build --red LF_Test_ResidentActivity`) nobody sits, faces the anchor or
 //   warns, so `a resident on a bench anchor sits`, `a resident on a counter faces the anchor's facing` and
 //   `an unknown activity warns once` fail. The run that went red and then green is in the PR.
+// red-proof (#3707): 2026-11-19, with `sit` looking for the seat around the body (the old FindFreeSeat(entity)) the
+//   resident sent to a far anchor takes the chair beside their body, so `the chair at the far anchor is the one taken`
+//   fails; with the act skipped (RedProof()) `a resident sent to a far anchor sits` fails.
 //! residents/activity (#2907): a resident does what their timetable line says. On a bench anchor with a
 //! free seat beside it, `sit` seats them (the seat and pose a player's Sit uses); on a counter anchor
 //! `serve` turns them to the anchor's facing and they stay on their feet; an unknown activity idles with
@@ -130,6 +133,29 @@ class LF_Test_ResidentActivity : LF_Test
 		ctx.True(LF_ResidentActivity.IsSeated(npc), "a resident on a bench anchor with sit reports seated");
 		LF_ResidentActivity.Release(npc);
 		ctx.False(LF_ResidentActivity.IsSeated(npc), "releasing stands the resident up");
+
+		// A resident just teleported to an anchor (LF_ResidentWalk.Place) is still at the old spot for a
+		// frame: the seat is found around the anchor, not around the body (#3707). The anchor is 40 m off
+		// with its own chair; the free chair beside the body stays free.
+		vector farAt = npc.GetOrigin() + "40 0 0";
+		params.Transform[3] = farAt + "1.5 0 0";
+		IEntity farChair = GetGame().SpawnEntityPrefab(res, GetGame().GetWorld(), params);
+		ctx.NotNull(farChair, "the chair at the far anchor spawns");
+		if (farChair)
+		{
+			LF_ResidentSpot farSpot = new LF_ResidentSpot();
+			farSpot.m_vOrigin = farAt;
+			farSpot.m_vAngles = "0 0 0";
+			if (!RedProof())
+				LF_ResidentActivity.Apply(other, "sit", farSpot);
+
+			ctx.True(LF_ResidentActivity.IsSeated(other), "a resident sent to a far anchor sits");
+			ctx.True(LF_NpcLoiter.FindFreeSeatAt(farAt, 3) == null, "the chair at the far anchor is the one taken");
+			ctx.True(LF_NpcLoiter.FindFreeSeat(npc, 3) != null, "the chair beside the body stays free");
+			LF_ResidentActivity.Release(other);
+			SCR_EntityHelper.DeleteEntityAndChildren(farChair);
+		}
+
 		SCR_EntityHelper.DeleteEntityAndChildren(chair);
 	}
 

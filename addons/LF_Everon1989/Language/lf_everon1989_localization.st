@@ -19,6 +19,36 @@ StringTable {
      Target_en_us "FIRST BANK OF EVERON"
      Comment "ATM terminal screen header. Upper case: a 1989 green-screen terminal."
     }
+    CustomStringTableItem "{D260354EBA36FC1E}" {
+     Id "LF-Anniversary_Memorial_Title"
+     Target_en_us "The anniversary"
+     Comment "Anniversary memorial (#3806): the toast title shown to players at the memorial."
+    }
+    CustomStringTableItem "{4C0D76B1AE7F668D}" {
+     Id "LF-Anniversary_Memorial_Toast"
+     Target_en_us "The bells ring and the town falls quiet for those the Zone took."
+     Comment "Anniversary memorial (#3806): the toast text shown to players at the memorial when the bells ring."
+    }
+    CustomStringTableItem "{5858EDDD03770CE6}" {
+     Id "LF-Anniversary_Priest_Line"
+     Target_en_us "Three years ago they walked out of the night with what they could carry. We remember each of them. Stand with us a moment."
+     Comment "Anniversary memorial (#3806): the priest's line to players at the memorial (arc 4, docs/everon/world-bible-internal.md)."
+    }
+    CustomStringTableItem "{9DB0CED7E880920F}" {
+     Id "LF-Anniversary_Priest_Name"
+     Target_en_us "Father Étienne Morel"
+     Comment "Anniversary memorial (#3806): the priest's name over his line at the memorial."
+    }
+    CustomStringTableItem "{BE2579D48B439241}" {
+     Id "LF-BuyerSale_Closed"
+     Target_en_us "The man is not buying here, not tonight."
+     Comment "Toast (#2922, 1989 pack voice): the buyer is absent, away from the open spot, or the price list is missing."
+    }
+    CustomStringTableItem "{20C3F3155FCF7F4B}" {
+     Id "LF-BuyerSale_Nothing"
+     Target_en_us "You have nothing he drinks or smokes."
+     Comment "Toast (#2922, 1989 pack voice): no chain goods the buyer names."
+    }
     CustomStringTableItem "{6F65DE9EB00006ED}" {
      Id "LF-CharSel_Title"
      Target_en_us "Civil Registry of Everon, Residents on File"
@@ -28,6 +58,46 @@ StringTable {
      Id "LF-ContractTracker_Title_harbour_crates"
      Target_en_us "Harbour crates"
      Comment "Contract tracker title (#2709): the harbour master's early crates run (LF-ContractTracker_Title_<contractId>)."
+    }
+    CustomStringTableItem "{3794F00000000008}" {
+     Id "LF-Dialogue_AnniversaryMayor_Bye"
+     Target_en_us "Till the day, then."
+     Comment "The mayor says goodbye (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000004}" {
+     Id "LF-Dialogue_AnniversaryMayor_Day"
+     Target_en_us "Three years since the first families walked in from the dark. We lay trestles in the square, we light candles, we say thank you. Everyone remembers that night a little differently, and the town must hold all of it."
+     Comment "The mayor explains the anniversary, a thank-you in his telling (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000006}" {
+     Id "LF-Dialogue_AnniversaryMayor_Errand"
+     Target_en_us "Then take what the square still lacks, and come back when it is done. I will not forget it."
+     Comment "The mayor hands out an errand or thanks the player (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000002}" {
+     Id "LF-Dialogue_AnniversaryMayor_Greet"
+     Target_en_us "Ah, a face I do not know yet. Bastien Girard, mayor. Forgive the mess, the whole town is busy with the day."
+     Comment "The mayor's greeting at the town hall (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000003}" {
+     Id "LF-Dialogue_AnniversaryMayor_SayAskDay"
+     Target_en_us "What is the day for?"
+     Comment "Reply: ask the mayor about the anniversary (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000007}" {
+     Id "LF-Dialogue_AnniversaryMayor_SayBye"
+     Target_en_us "Another time."
+     Comment "Reply: leave the mayor (#3794)."
+    }
+    CustomStringTableItem "{3794F00000000005}" {
+     Id "LF-Dialogue_AnniversaryMayor_SayOffer"
+     Target_en_us "Can I help with the preparations?"
+     Comment "Reply: take the mayor's errand, or hand in what is done (#3794)."
+    }
+    CustomStringTableItem "{18255E21BCB0A61B}" {
+     Id "LF-Dialogue_AnniversaryPriest_Memorial"
+     Target_en_us "Three years ago they walked out of the night with what they could carry. We remember each of them. Stand with us a moment."
+     Comment "Dialogue caption, spoken by the anniversary_priest NPC (voiced; tools/assets/dialogue/anniversary_priest). Changing it needs: tools\\cli asset dialogue anniversary_priest"
     }
     CustomStringTableItem "{3E9F5343A58B4851}" {
      Id "LF-Dialogue_CafeOwner_Bye"
@@ -189,6 +259,11 @@ StringTable {
      Target_en_us "What should I do now?"
      Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
     }
+    CustomStringTableItem "{4F445F57EEA164E6}" {
+     Id "LF-Dialogue_ClerkEveron_SayPapers"
+     Target_en_us "About my papers."
+     Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
     CustomStringTableItem "{2267C33EA00A76DD}" {
      Id "LF-Dialogue_ClerkEveron_SayReady"
      Target_en_us "I understand. What now?"
@@ -214,10 +289,80 @@ StringTable {
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
      Comment "Pack patch of the clerk dialogue's line work_errand (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{7BDFAF37D3BDD834}" {
+     Id "LF-Dialogue_Dockworker_AboutCargo"
+     Target_en_us "Flour, diesel, machine parts. What is in the other crates is the harbour master's business, and he does not share."
+     Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
+    }
+    CustomStringTableItem "{4682C7C311BB4E55}" {
+     Id "LF-Dialogue_Dockworker_AboutWork"
+     Target_en_us "Ask the harbour master. He hires by the day when a boat comes in, and pays when the boat is empty."
+     Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
+    }
+    CustomStringTableItem "{9522D9D58323D43B}" {
+     Id "LF-Dialogue_Dockworker_Bye"
+     Target_en_us "Off you go, then."
+     Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
+    }
+    CustomStringTableItem "{08B2BF1FE8852698}" {
+     Id "LF-Dialogue_Dockworker_Greet"
+     Target_en_us "Mind your feet, the crane swings wide. You want something, or are you just watching us sweat?"
+     Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
+    }
+    CustomStringTableItem "{49995D617FA2989A}" {
+     Id "LF-Dialogue_Dockworker_Name"
+     Target_en_us "Dockworker"
+     Comment "Speaker name above the dialogue caption: a dockworker at the Saint-Philippe harbour during the shipment scene."
+    }
+    CustomStringTableItem "{5FC37E736C816BA5}" {
+     Id "LF-Dialogue_Dockworker_SayBye"
+     Target_en_us "I'll leave you to it."
+     Comment "Dialogue reply the player can pick when talking to the dockworker NPC."
+    }
+    CustomStringTableItem "{16C0FB05BC2B9B46}" {
+     Id "LF-Dialogue_Dockworker_SayCargo"
+     Target_en_us "What came in on the boat?"
+     Comment "Dialogue reply the player can pick when talking to the dockworker NPC."
+    }
+    CustomStringTableItem "{0E7A25E6B31313F7}" {
+     Id "LF-Dialogue_Dockworker_SayWork"
+     Target_en_us "Any work on the docks?"
+     Comment "Dialogue reply the player can pick when talking to the dockworker NPC."
+    }
     CustomStringTableItem "{4E29407E130F00C3}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
-     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, oil and maps in here. The square is just up the street."
+     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, maps and snacks in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
+    }
+    CustomStringTableItem "{632BADA7E940D7F6}" {
+     Id "LF-Dialogue_Gendarme_AboutWhat"
+     Target_en_us "A routine inspection of a shipment. If you saw anything on these docks tonight, the station on the square takes statements."
+     Comment "Dialogue caption, spoken by the gendarme NPC (text only; tools/assets/dialogue/gendarme). Changing it needs: tools\\cli asset dialogue gendarme"
+    }
+    CustomStringTableItem "{AB1C3152CF016882}" {
+     Id "LF-Dialogue_Gendarme_Bye"
+     Target_en_us "Move along now. Thank you."
+     Comment "Dialogue caption, spoken by the gendarme NPC (text only; tools/assets/dialogue/gendarme). Changing it needs: tools\\cli asset dialogue gendarme"
+    }
+    CustomStringTableItem "{BB548D11A912F53A}" {
+     Id "LF-Dialogue_Gendarme_Greet"
+     Target_en_us "Gendarmerie. Stand back from the warehouse, please. This is a police matter."
+     Comment "Dialogue caption, spoken by the gendarme NPC (text only; tools/assets/dialogue/gendarme). Changing it needs: tools\\cli asset dialogue gendarme"
+    }
+    CustomStringTableItem "{1851DF85B4179C76}" {
+     Id "LF-Dialogue_Gendarme_Name"
+     Target_en_us "Gendarme"
+     Comment "Speaker name above the dialogue caption: a gendarme guarding the dock warehouse during the shipment raid."
+    }
+    CustomStringTableItem "{BB5B2C7FA9F33B11}" {
+     Id "LF-Dialogue_Gendarme_SayBye"
+     Target_en_us "I am going."
+     Comment "Dialogue reply the player can pick when talking to the gendarme NPC."
+    }
+    CustomStringTableItem "{5E82226A90E19C18}" {
+     Id "LF-Dialogue_Gendarme_SayWhat"
+     Target_en_us "What is going on here?"
+     Comment "Dialogue reply the player can pick when talking to the gendarme NPC."
     }
     CustomStringTableItem "{A5BFE7A72F0C053D}" {
      Id "LF-Dialogue_HarbourMaster_Bye"
@@ -269,6 +414,11 @@ StringTable {
      Target_en_us "Harbour office. Mind the crane and mind the ropes. What can I do for you?"
      Comment "Harbour master caption (#2692): the greeting."
     }
+    CustomStringTableItem "{793B568C770FF5C5}" {
+     Id "LF-Dialogue_HarbourMaster_SayAskCrate"
+     Target_en_us "Anything odd on the quay today?"
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
     CustomStringTableItem "{31104EFBD559B194}" {
      Id "LF-Dialogue_HarbourMaster_SayAskCrates"
      Target_en_us "Have you got a bigger load?"
@@ -284,9 +434,24 @@ StringTable {
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
     }
+    CustomStringTableItem "{EF5EE2BB381B5506}" {
+     Id "LF-Dialogue_HarbourMaster_SayCount"
+     Target_en_us "I will count the crate for you."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
     CustomStringTableItem "{5644E7F72839DB8C}" {
      Id "LF-Dialogue_HarbourMaster_SayNotNow"
      Target_en_us "Not just now."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{3DA14485E225D599}" {
+     Id "LF-Dialogue_HarbourMaster_SayReported"
+     Target_en_us "I took what was in the crate to the police."
+     Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{7A5ECE2E6B6349A6}" {
+     Id "LF-Dialogue_HarbourMaster_SaySold"
+     Target_en_us "I found a buyer for what was in the crate."
      Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
     }
     CustomStringTableItem "{DF9EF80D315A7206}" {
@@ -298,6 +463,26 @@ StringTable {
      Id "LF-Dialogue_HarbourMaster_SayTakeJob"
      Target_en_us "I'll carry the crates."
      Comment "Dialogue reply the player can pick when talking to the harbour_master NPC."
+    }
+    CustomStringTableItem "{3736E0D6C96857B0}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentAsk"
+     Target_en_us "That red crate on the pallet weighs eleven kilos over the manifest. I signed for tinned fish. Would you count it for me?"
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{BC6917D6F28F88CF}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentCount"
+     Target_en_us "Open it, count what is in there and come back. If it is only fish, no harm done."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{126E2D08A174D4AD}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentThanksReport"
+     Target_en_us "You took it to the desk. Good. The town will sleep better, whatever the dockers say."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
+    }
+    CustomStringTableItem "{61996AD6C64B434C}" {
+     Id "LF-Dialogue_HarbourMaster_ShipmentThanksSell"
+     Target_en_us "I did not ask where it went. I will not ask. Keep your head down on the quay for a few days."
+     Comment "Dialogue caption, spoken by the harbour_master NPC (voiced; tools/assets/dialogue/harbour_master). Changing it needs: tools\\cli asset dialogue harbour_master"
     }
     CustomStringTableItem "{29B583DBF009AF66}" {
      Id "LF-Dialogue_NightShift_AboutMove"
@@ -354,6 +539,11 @@ StringTable {
      Target_en_us "How was the move?"
      Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
     }
+    CustomStringTableItem "{934605F1DC35249E}" {
+     Id "LF-Dialogue_NightShift_SayTip"
+     Target_en_us "Heard anyone's buying, quiet like?"
+     Comment "Night-shift worker reply (#2922): asks the informant where the buyer stands today; shown only to someone he would tell."
+    }
     CustomStringTableItem "{BCCC43C3AC789D1A}" {
      Id "LF-Dialogue_NightShift_SayWork"
      Target_en_us "Is there work for me?"
@@ -364,10 +554,25 @@ StringTable {
      Target_en_us "You worked near the Zone?"
      Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
     }
+    CustomStringTableItem "{E5E24AE2CCC8C2D2}" {
+     Id "LF-Dialogue_OldMan_AnniversaryLetterSecret"
+     Target_en_us "Dominique counted the drums before they emptied the Zone. He wrote the markings down for the mayor. I saw the same marks on the night boats, and I said nothing. Keep this to yourself until you know who is listening."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{B3AF520461B54CC4}" {
+     Id "LF-Dialogue_OldMan_AnniversaryLetterThanks"
+     Target_en_us "Dominique. Three years, and it comes to me out of a heap of flowers. Thank you for carrying it."
+     Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
     CustomStringTableItem "{AA83C29649EB0D96}" {
      Id "LF-Dialogue_OldMan_Bye"
      Target_en_us "Go well. Come and sit with me again some time."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{14C00C49DD440471}" {
+     Id "LF-Dialogue_OldMan_Cove"
+     Target_en_us "You have the hands for it now. There is a cove below the lighthouse, Fisherman Bay. Go at dusk, when the bass come in close. I have marked it on your map."
+     Comment "Gaspard tells a player who has landed three fish about the cove Fisherman Bay (#3451); text only, no recording yet."
     }
     CustomStringTableItem "{EE06F137A9E223A3}" {
      Id "LF-Dialogue_OldMan_Greet"
@@ -404,9 +609,24 @@ StringTable {
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the old_man NPC."
     }
+    CustomStringTableItem "{3747C32C2EB98228}" {
+     Id "LF-Dialogue_OldMan_SayCove"
+     Target_en_us "Know a good place to fish?"
+     Comment "Dialogue reply to Gaspard (the old man), offered once the player has landed three fish (#3451)."
+    }
+    CustomStringTableItem "{832F4B08E545D1A4}" {
+     Id "LF-Dialogue_OldMan_SayHandIn"
+     Target_en_us "I found a letter in the church flowers. It is addressed to you."
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
     CustomStringTableItem "{98D9AB69AB1E7F3A}" {
      Id "LF-Dialogue_OldMan_SayMove"
      Target_en_us "What was the move like?"
+     Comment "Dialogue reply the player can pick when talking to the old_man NPC."
+    }
+    CustomStringTableItem "{C5A97F774527E844}" {
+     Id "LF-Dialogue_OldMan_SaySecret"
+     Target_en_us "What did Dominique know?"
      Comment "Dialogue reply the player can pick when talking to the old_man NPC."
     }
     CustomStringTableItem "{2FA08445AB21D4F7}" {
@@ -428,6 +648,441 @@ StringTable {
      Id "LF-Dialogue_OldMan_Zone"
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
+    }
+    CustomStringTableItem "{BC1BAB3B06E2E1D5}" {
+     Id "LF-Dialogue_Passerby_AboutWhat"
+     Target_en_us "Nothing much, and that is the point. A drink, the band if they turn up, somebody's uncle telling the same story about the war."
+     Comment "Dialogue caption, spoken by the passerby NPC (text only; tools/assets/dialogue/passerby). Changing it needs: tools\\cli asset dialogue passerby"
+    }
+    CustomStringTableItem "{6CAD837815E806A0}" {
+     Id "LF-Dialogue_Passerby_AboutWhere"
+     Target_en_us "The cafe is on the square, the bank across from it. For anything official, the town hall clerk. For anything unofficial, nobody saw me say a word."
+     Comment "Dialogue caption, spoken by the passerby NPC (text only; tools/assets/dialogue/passerby). Changing it needs: tools\\cli asset dialogue passerby"
+    }
+    CustomStringTableItem "{8925AD9FFCA979D0}" {
+     Id "LF-Dialogue_Passerby_Bye"
+     Target_en_us "Enjoy the evening."
+     Comment "Dialogue caption, spoken by the passerby NPC (text only; tools/assets/dialogue/passerby). Changing it needs: tools\\cli asset dialogue passerby"
+    }
+    CustomStringTableItem "{73729ADBBDD98B05}" {
+     Id "LF-Dialogue_Passerby_Greet"
+     Target_en_us "Evening. Lovely night for it, isn't it? Half the town is out on the square."
+     Comment "Dialogue caption, spoken by the passerby NPC (text only; tools/assets/dialogue/passerby). Changing it needs: tools\\cli asset dialogue passerby"
+    }
+    CustomStringTableItem "{79C148CCB0DADFAD}" {
+     Id "LF-Dialogue_Passerby_Name"
+     Target_en_us "Townsperson"
+     Comment "Speaker name above the dialogue caption: a townsperson out on the square during an evening or anniversary scene."
+    }
+    CustomStringTableItem "{03E4899CF1C5E0A0}" {
+     Id "LF-Dialogue_Passerby_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the passerby NPC."
+    }
+    CustomStringTableItem "{B40024D0FFD27C3C}" {
+     Id "LF-Dialogue_Passerby_SayWhat"
+     Target_en_us "What is going on tonight?"
+     Comment "Dialogue reply the player can pick when talking to the passerby NPC."
+    }
+    CustomStringTableItem "{9EB3A27E46F9D774}" {
+     Id "LF-Dialogue_Passerby_SayWhere"
+     Target_en_us "Where can I find things around here?"
+     Comment "Dialogue reply the player can pick when talking to the passerby NPC."
+    }
+    CustomStringTableItem "{D706E5724264476D}" {
+     Id "LF-Dialogue_RelocatedWalker_AboutFrom"
+     Target_en_us "From near the Zone. They gave us one suitcase each and a paper with an address on it. That is all of it, here."
+     Comment "Dialogue caption, spoken by the relocated_walker NPC (text only; tools/assets/dialogue/relocated_walker). Changing it needs: tools\\cli asset dialogue relocated_walker"
+    }
+    CustomStringTableItem "{95C23064D57F8EF3}" {
+     Id "LF-Dialogue_RelocatedWalker_AboutHelp"
+     Target_en_us "Just point us at the town hall, if you would. The clerk is meant to have our names and a key."
+     Comment "Dialogue caption, spoken by the relocated_walker NPC (text only; tools/assets/dialogue/relocated_walker). Changing it needs: tools\\cli asset dialogue relocated_walker"
+    }
+    CustomStringTableItem "{B611154030D5A065}" {
+     Id "LF-Dialogue_RelocatedWalker_Bye"
+     Target_en_us "Thank you. Thank you, really."
+     Comment "Dialogue caption, spoken by the relocated_walker NPC (text only; tools/assets/dialogue/relocated_walker). Changing it needs: tools\\cli asset dialogue relocated_walker"
+    }
+    CustomStringTableItem "{0316F4A142D30329}" {
+     Id "LF-Dialogue_RelocatedWalker_Greet"
+     Target_en_us "Sorry, we have only just come off the bus. Is this Saint-Philippe? They said someone would meet us."
+     Comment "Dialogue caption, spoken by the relocated_walker NPC (text only; tools/assets/dialogue/relocated_walker). Changing it needs: tools\\cli asset dialogue relocated_walker"
+    }
+    CustomStringTableItem "{C26AD1BAC4237BDC}" {
+     Id "LF-Dialogue_RelocatedWalker_Name"
+     Target_en_us "New arrival"
+     Comment "Speaker name above the dialogue caption: a family member just off the relocation bus."
+    }
+    CustomStringTableItem "{57F56F43353F146D}" {
+     Id "LF-Dialogue_RelocatedWalker_SayBye"
+     Target_en_us "Welcome to town."
+     Comment "Dialogue reply the player can pick when talking to the relocated_walker NPC."
+    }
+    CustomStringTableItem "{98C1B7E8787D268B}" {
+     Id "LF-Dialogue_RelocatedWalker_SayFrom"
+     Target_en_us "Where have you come from?"
+     Comment "Dialogue reply the player can pick when talking to the relocated_walker NPC."
+    }
+    CustomStringTableItem "{317166EC520F5200}" {
+     Id "LF-Dialogue_RelocatedWalker_SayHelp"
+     Target_en_us "Can I help with anything?"
+     Comment "Dialogue reply the player can pick when talking to the relocated_walker NPC."
+    }
+    CustomStringTableItem "{CD365C03E5B40FA0}" {
+     Id "LF-Dialogue_ResidentAnselme_AboutFamily"
+     Target_en_us "Mireille is my wife. She spends her mornings at the cafe and knows everything before the newspaper does."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{04C501AFD83A49C8}" {
+     Id "LF-Dialogue_ResidentAnselme_AboutTown"
+     Target_en_us "We came over from the mainland long before all this. Now half the street are new faces from the Zone. Good people. Tired people."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{A5BA275D87A49B27}" {
+     Id "LF-Dialogue_ResidentAnselme_AboutWork"
+     Target_en_us "Letters, parcels, the odd crate of machine parts for the farms. If you want work, the depot pays by the drop. Ask at the counter."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{A4A16334CC080119}" {
+     Id "LF-Dialogue_ResidentAnselme_Bye"
+     Target_en_us "Take care now."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{A38CD21D1F928316}" {
+     Id "LF-Dialogue_ResidentAnselme_Greet"
+     Target_en_us "Anselme Caron. I sort the parcels at the depot, so if your post is late, blame the ferry, not me."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{86B0D34320EBCD31}" {
+     Id "LF-Dialogue_ResidentAnselme_GreetFriendly"
+     Target_en_us "Hello, hello. No parcel for you today, I am afraid."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{43D7938263666FDD}" {
+     Id "LF-Dialogue_ResidentAnselme_GreetRefuses"
+     Target_en_us "No. I have heard what you did. Leave me be."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{F5F45D4080B74718}" {
+     Id "LF-Dialogue_ResidentAnselme_GreetRegular"
+     Target_en_us "Ah, my friend! Mireille made too much soup again. Come by tonight."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{9FADC716B9FC0BBA}" {
+     Id "LF-Dialogue_ResidentAnselme_GreetWary"
+     Target_en_us "You. Keep your distance, please."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
+    CustomStringTableItem "{F880A69372803162}" {
+     Id "LF-Dialogue_ResidentAnselme_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{9C7587601E0525A8}" {
+     Id "LF-Dialogue_ResidentAnselme_SayFamily"
+     Target_en_us "Who is Mireille?"
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{56A57C39752E93D7}" {
+     Id "LF-Dialogue_ResidentAnselme_SayTown"
+     Target_en_us "Have you lived here long?"
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{89C193968FE10340}" {
+     Id "LF-Dialogue_ResidentAnselme_SayWork"
+     Target_en_us "What do you do at the depot?"
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{AA8C36A200C82511}" {
+     Id "LF-Dialogue_ResidentMireille_AboutAnniversary"
+     Target_en_us "The town anniversary is coming. The mayor has the whole square scrubbed. Bastien does love a speech."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{C9F228A9AA9EAB3C}" {
+     Id "LF-Dialogue_ResidentMireille_AboutCafe"
+     Target_en_us "Odile runs the cafe. She keeps the best table for the mayor and pretends she does not."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{54FD7200DA7DFF55}" {
+     Id "LF-Dialogue_ResidentMireille_AboutGossip"
+     Target_en_us "They say the harbour master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{D804C106D3DFEC19}" {
+     Id "LF-Dialogue_ResidentMireille_Bye"
+     Target_en_us "See you soon, dear."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{ECD55BE8D4B9C801}" {
+     Id "LF-Dialogue_ResidentMireille_Greet"
+     Target_en_us "Bonjour. Mireille. Forgive me, I only came out for a coffee and a little conversation."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{D608E1EFD91B9415}" {
+     Id "LF-Dialogue_ResidentMireille_GreetFriendly"
+     Target_en_us "Hello, dear. Sit. The coffee here is terrible, but it is hot."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{D91EFB7C83A367BD}" {
+     Id "LF-Dialogue_ResidentMireille_GreetRefuses"
+     Target_en_us "I know what you are. I do not speak to people like you."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{1E1D746AB72C4E67}" {
+     Id "LF-Dialogue_ResidentMireille_GreetRegular"
+     Target_en_us "There you are! I was just telling Odile about you."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{C7DD49231882FF53}" {
+     Id "LF-Dialogue_ResidentMireille_GreetWary"
+     Target_en_us "Oh. Hello. I would rather not chat today."
+     Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
+    }
+    CustomStringTableItem "{D8186454058B6919}" {
+     Id "LF-Dialogue_ResidentMireille_SayAnniversary"
+     Target_en_us "What is happening on the square?"
+     Comment "Dialogue reply the player can pick when talking to the resident_mireille NPC."
+    }
+    CustomStringTableItem "{8576FA43FF44D73F}" {
+     Id "LF-Dialogue_ResidentMireille_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the resident_mireille NPC."
+    }
+    CustomStringTableItem "{8A75A4051AC3E201}" {
+     Id "LF-Dialogue_ResidentMireille_SayCafe"
+     Target_en_us "Tell me about the cafe."
+     Comment "Dialogue reply the player can pick when talking to the resident_mireille NPC."
+    }
+    CustomStringTableItem "{4983C75825B7DC8D}" {
+     Id "LF-Dialogue_ResidentMireille_SayGossip"
+     Target_en_us "Heard any gossip?"
+     Comment "Dialogue reply the player can pick when talking to the resident_mireille NPC."
+    }
+    CustomStringTableItem "{8552D2F221FAA3D0}" {
+     Id "LF-Dialogue_ResidentStoreClerk_AboutFerry"
+     Target_en_us "Everything comes by the ferry. When the weather turns the shelves go bare, and everybody blames me."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{1B72F02DA19BE523}" {
+     Id "LF-Dialogue_ResidentStoreClerk_AboutTown"
+     Target_en_us "Quiet, mostly. Since the new families came there is more bread to bake and more faces to learn."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{17E4C7B8C8E760FF}" {
+     Id "LF-Dialogue_ResidentStoreClerk_AboutWork"
+     Target_en_us "Tins, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{B713054422C71238}" {
+     Id "LF-Dialogue_ResidentStoreClerk_Bye"
+     Target_en_us "Mind how you go."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{F55E5E74B09A1BB9}" {
+     Id "LF-Dialogue_ResidentStoreClerk_Greet"
+     Target_en_us "Pierre Vasseur, general store. If we do not have it, the ferry might bring it on Thursday."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{8E3DA3857FDC829F}" {
+     Id "LF-Dialogue_ResidentStoreClerk_GreetFriendly"
+     Target_en_us "Good to see you. The bread came in fresh this morning."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{080592BB654DEAE6}" {
+     Id "LF-Dialogue_ResidentStoreClerk_GreetRefuses"
+     Target_en_us "You are not welcome at my counter. Go on."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{86DEB827F5774B5E}" {
+     Id "LF-Dialogue_ResidentStoreClerk_GreetRegular"
+     Target_en_us "My best customer! I put a tin of the good coffee aside for you."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{B1ED0C5D5934330F}" {
+     Id "LF-Dialogue_ResidentStoreClerk_GreetWary"
+     Target_en_us "I have my eye on you. Pay for what you take."
+     Comment "Dialogue caption, spoken by the resident_store_clerk NPC (text only; tools/assets/dialogue/resident_store_clerk). Changing it needs: tools\\cli asset dialogue resident_store_clerk"
+    }
+    CustomStringTableItem "{64C9BFBCF919ABD4}" {
+     Id "LF-Dialogue_ResidentStoreClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the resident_store_clerk NPC."
+    }
+    CustomStringTableItem "{7AD51DB89AE01558}" {
+     Id "LF-Dialogue_ResidentStoreClerk_SayFerry"
+     Target_en_us "Where does your stock come from?"
+     Comment "Dialogue reply the player can pick when talking to the resident_store_clerk NPC."
+    }
+    CustomStringTableItem "{B85C72A57B228AF5}" {
+     Id "LF-Dialogue_ResidentStoreClerk_SayTown"
+     Target_en_us "How is the town these days?"
+     Comment "Dialogue reply the player can pick when talking to the resident_store_clerk NPC."
+    }
+    CustomStringTableItem "{74EC021358C25DE9}" {
+     Id "LF-Dialogue_ResidentStoreClerk_SayWork"
+     Target_en_us "What does the store sell?"
+     Comment "Dialogue reply the player can pick when talking to the resident_store_clerk NPC."
+    }
+    CustomStringTableItem "{491C02ED121C93FA}" {
+     Id "LF-Dialogue_ResidentTeller_AboutAdvice"
+     Target_en_us "Bank your pay the day you get it. What sits in your pocket can walk off. What sits with us stays yours."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{CFBCAA93DD23E07D}" {
+     Id "LF-Dialogue_ResidentTeller_AboutTown"
+     Target_en_us "Saint-Philippe gossips faster than the telephone. If you want to know a thing, sit at the cafe and wait."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{7ABFA0FA91264BC4}" {
+     Id "LF-Dialogue_ResidentTeller_AboutWork"
+     Target_en_us "I keep the counter at the First Bank of Everon. Deposits, withdrawals, and listening to the farmers argue about the price of feed."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{48A118DC6002BAED}" {
+     Id "LF-Dialogue_ResidentTeller_Bye"
+     Target_en_us "Good day to you."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{574C7DDD6C967AF5}" {
+     Id "LF-Dialogue_ResidentTeller_Greet"
+     Target_en_us "Good day. I am off the counter just now, but I don't bite. Helene, from the bank."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{61EEE4365FEB146C}" {
+     Id "LF-Dialogue_ResidentTeller_GreetFriendly"
+     Target_en_us "Ah, hello again. Your account is in better shape than most, you know."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{CCF9738AF8A9EC1D}" {
+     Id "LF-Dialogue_ResidentTeller_GreetRefuses"
+     Target_en_us "I count other people's money all day. I will not waste my words on you."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{C6E819E143305811}" {
+     Id "LF-Dialogue_ResidentTeller_GreetRegular"
+     Target_en_us "There you are! Sit down a minute. The bank can wait."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{589632E8B515A198}" {
+     Id "LF-Dialogue_ResidentTeller_GreetWary"
+     Target_en_us "Mm. I remember you. Mind your manners and we will get along."
+     Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
+    }
+    CustomStringTableItem "{5D46CBA6E324523D}" {
+     Id "LF-Dialogue_ResidentTeller_SayAdvice"
+     Target_en_us "Any advice about money?"
+     Comment "Dialogue reply the player can pick when talking to the resident_teller NPC."
+    }
+    CustomStringTableItem "{EEDCEA14BDC8BFF5}" {
+     Id "LF-Dialogue_ResidentTeller_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the resident_teller NPC."
+    }
+    CustomStringTableItem "{66C07B73B876D808}" {
+     Id "LF-Dialogue_ResidentTeller_SayTown"
+     Target_en_us "What is the town like?"
+     Comment "Dialogue reply the player can pick when talking to the resident_teller NPC."
+    }
+    CustomStringTableItem "{986E7E5916906E46}" {
+     Id "LF-Dialogue_ResidentTeller_SayWork"
+     Target_en_us "What do you do at the bank?"
+     Comment "Dialogue reply the player can pick when talking to the resident_teller NPC."
+    }
+    CustomStringTableItem "{3441F00000000001}" {
+     Id "LF-Dialogue_Rumour_SayAsk"
+     Target_en_us "Any talk in the café lately?"
+     Comment "Reply: ask the café owner what the town is saying about the shipment (#3441)."
+    }
+    CustomStringTableItem "{3804F10000000008}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Bye"
+     Target_en_us "Mind how you go."
+     Comment "Hugo Valmy's goodbye (#3804)."
+    }
+    CustomStringTableItem "{3804F10000000003}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Greet"
+     Target_en_us "Hugo Valmy. I help people who have more than they need meet people who need more than they have. Sit if you like, the coffee is honest, but I do not talk business with a face I do not know."
+     Comment "Hugo Valmy's greeting, which also says who he is (#3804). Captions only until the voices card (#3444) records him."
+    }
+    CustomStringTableItem "{3804F1000000000D}" {
+     Id "LF-Dialogue_ShipmentGoBetween_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Reply: end the talk with Hugo Valmy (#3804)."
+    }
+    CustomStringTableItem "{3804F1000000000A}" {
+     Id "LF-Dialogue_ShipmentGoBetween_SayCrate"
+     Target_en_us "I opened the red crate on the quay."
+     Comment "Reply: tell Hugo Valmy about the crate (#3804)."
+    }
+    CustomStringTableItem "{3804F1000000000B}" {
+     Id "LF-Dialogue_ShipmentGoBetween_SayReported"
+     Target_en_us "I took what was in the crate to the police."
+     Comment "Reply: tell Hugo Valmy the sample was reported (#3804)."
+    }
+    CustomStringTableItem "{3804F1000000000C}" {
+     Id "LF-Dialogue_ShipmentGoBetween_SaySold"
+     Target_en_us "I found a buyer for what was in the crate."
+     Comment "Reply: tell Hugo Valmy the sample was sold (#3804)."
+    }
+    CustomStringTableItem "{3804F10000000005}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Sell"
+     Target_en_us "So you opened the red crate. If you still have what was in it, I know a buyer: cash on the spot, no questions. He keeps to the lanes and the quay after dark. The gendarmerie will only thank you."
+     Comment "Hugo Valmy introduces the sell ending of the shipment; he never names the buyer's spot, the buyer rotates (#3804)."
+    }
+    CustomStringTableItem "{3804F10000000006}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Sold"
+     Target_en_us "Then we have never met, and you have never seen the red crate. A pleasure doing no business with you."
+     Comment "Hugo Valmy reacts to a player who sold the sample (#3804)."
+    }
+    CustomStringTableItem "{3804F10000000007}" {
+     Id "LF-Dialogue_ShipmentGoBetween_Threat"
+     Target_en_us "You walked it to the desk. Fine. Mind the coast road at night, friend. It is long, and it is short of lamps."
+     Comment "Hugo Valmy's one threat to a player who reported the sample (#3804)."
+    }
+    CustomStringTableItem "{F2B1DF023C756490}" {
+     Id "LF-Everon-Lock_Closed"
+     Target_en_us "Fermé"
+     Comment "Door prompt on the harbour company offices (#3204)."
+    }
+    CustomStringTableItem "{7D3A91C2E54B08F6}" {
+     Id "LF-Everon-Lock_ForSale"
+     Target_en_us "À vendre : voir le panneau"
+     Comment "Door prompt on a home for sale whose house marker is in the world and nobody owns yet (#3584); once bought it shows Lock_Private to everyone but the owner and key holders."
+    }
+    CustomStringTableItem "{04E0632F53FEF329}" {
+     Id "LF-Everon-Lock_ForSaleSoon"
+     Target_en_us "À vendre bientôt"
+     Comment "Door prompt on a home that no sale card has opened yet (#3204); the house marker wins once it does."
+    }
+    CustomStringTableItem "{FB53912C7C2A947B}" {
+     Id "LF-Everon-Lock_Military"
+     Target_en_us "Zone militaire"
+     Comment "Door prompt on the dock barracks and the port guard house (#3204)."
+    }
+    CustomStringTableItem "{C5E2CABAD9F4D25D}" {
+     Id "LF-Everon-Lock_OpeningSoon"
+     Target_en_us "Ouverture prochaine"
+     Comment "Door prompt on a planned shop whose slot has not been fitted yet (#3204); the fitted place wins once it is."
+    }
+    CustomStringTableItem "{43FE7E120EB47887}" {
+     Id "LF-Everon-Lock_Private"
+     Target_en_us "Propriété privée"
+     Comment "Door prompt on a locked home, barn, lock-up or outbuilding of Saint-Philippe (Locks_saint-philippe.layer, #3204)."
+    }
+    CustomStringTableItem "{39FDDD7A03DF9AE7}" {
+     Id "LF-Everon-Lock_School"
+     Target_en_us "École : vacances d'été"
+     Comment "Door prompt on the Saint-Philippe school, shut for the summer holidays (#3204)."
+    }
+    CustomStringTableItem "{B3C06B7358DCA8A8}" {
+     Id "LF-Everon-Lock_StaffOnly"
+     Target_en_us "Réservé au personnel"
+     Comment "Door prompt on a locked fire station, co-op or dock warehouse, or the garage behind the gun counter (#3204)."
+    }
+    CustomStringTableItem "{318D1CFF0247C655}" {
+     Id "LF-Everon-Lock_ToLetSoon"
+     Target_en_us "À louer bientôt"
+     Comment "Door prompt on a dock workshop kept for the fishing chapter (#3204)."
     }
     CustomStringTableItem "{10AEFC81EF1DE6FB}" {
      Id "LF-Everon_Tier_Police_0"
@@ -518,6 +1173,11 @@ StringTable {
      Id "LF-Everon_Tier_Underworld_Neg2"
      Target_en_us "Not trusted"
      Comment "Standing tier word (#2709): underworld tier -2. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
+    }
+    CustomStringTableItem "{57D5CF2EF598E9B9}" {
+     Id "LF-Garage_SlotsFull"
+     Target_en_us "No room left in your garage: %1 cars and that is the lot. Take one out before you put another in."
+     Comment "Garage store refused (#3458, 1989 pack voice): the owner's stored cars fill every slot. %1 is the cap. Overrides the core row."
     }
     CustomStringTableItem "{5AFB8F50443E2D63}" {
      Id "LF-Handbook_Everon_CrimeBody1"
@@ -649,6 +1309,326 @@ StringTable {
      Target_en_us "Republic of Everon, Identity Card"
      Comment "Title of the ID card view another player holds up."
     }
+    CustomStringTableItem "{AB301A21E6C4933D}" {
+     Id "LF-Informant_Already"
+     Target_en_us "I told you already. He is where I marked it."
+     Comment "Informant answer (#2922, 1989 pack voice): the player already holds this shift's mark; nothing was taken."
+    }
+    CustomStringTableItem "{F1374BA6D82ABEFA}" {
+     Id "LF-Informant_NeverHeard"
+     Target_en_us "Never heard of him. Go home."
+     Comment "Informant refusal (#2922, 1989 pack voice): police on duty, or too little standing; the same words either way."
+    }
+    CustomStringTableItem "{E4C147CBA15470AB}" {
+     Id "LF-Informant_NoCash"
+     Target_en_us "A tip costs {currency:sym}%1, friend. Come back when you have it."
+     Comment "Informant refusal toast (#2922, 1989 pack voice): not enough cash; %1 is the fee. Nothing was taken."
+    }
+    CustomStringTableItem "{B80B0DA1C60DDE2C}" {
+     Id "LF-Informant_NoSpot"
+     Target_en_us "Nobody is buying tonight. Nothing to tell you."
+     Comment "Informant answer (#2922, 1989 pack voice): no buyer spot is placed; nothing was taken."
+    }
+    CustomStringTableItem "{FF75CE36995683B2}" {
+     Id "LF-Informant_Told"
+     Target_en_us "He is buying tonight. I marked the spot on your map; it will not keep past this shift."
+     Comment "Informant answer (#2922, 1989 pack voice): the fee was paid and the buyer's spot is on the map."
+    }
+    CustomStringTableItem "{3465F00000000002}" {
+     Id "LF-Item_AnniversaryLetter_Desc"
+     Target_en_us "Yellowed paper in a careful hand. It is addressed to Gaspard Lenoir, the old fisherman, and signed D. Bouvier, three years ago. Bring it to him."
+     Comment "Inspect text of the anniversary letter: names the resident to bring it to (#3465)."
+    }
+    CustomStringTableItem "{3465F00000000001}" {
+     Id "LF-Item_AnniversaryLetter_Name"
+     Target_en_us "Old letter, sealed"
+     Comment "Item name: the letter from the memorial's flowers (#3465)."
+    }
+    CustomStringTableItem "{3793F00000000001}" {
+     Id "LF-Item_AnniversaryLetter_Read"
+     Target_en_us "Read the letter"
+     Comment "Action prompt on the anniversary letter lying in the world (#3793)."
+    }
+    CustomStringTableItem "{3793F00000000003}" {
+     Id "LF-Item_AnniversaryLetter_ReadText"
+     Target_en_us "Gaspard, if you read this I could not tell you myself. I counted the drums and wrote their marks down for the mayor. He kept it quiet. Tell them what the island will store. D."
+     Comment "Toast text: the anniversary letter itself, written by Dominique Bouvier (#3793, world bible beat 3)."
+    }
+    CustomStringTableItem "{3793F00000000002}" {
+     Id "LF-Item_AnniversaryLetter_ReadTitle"
+     Target_en_us "A letter from D. Bouvier"
+     Comment "Toast title when the anniversary letter is read (#3793)."
+    }
+    CustomStringTableItem "{10FBB25BFFCCF1A6}" {
+     Id "LF-Item_Baguette"
+     Target_en_us "Baguette"
+     Comment "Item name: baguette, sold at the Saint-Philippe bakery."
+    }
+    CustomStringTableItem "{98BD6D89F74A354F}" {
+     Id "LF-Item_BaguetteDesc"
+     Target_en_us "A long, crusty baguette still warm from the oven. Gone by tomorrow."
+     Comment "Item description: baguette."
+    }
+    CustomStringTableItem "{772ECF227821D478}" {
+     Id "LF-Item_Bread"
+     Target_en_us "Bread loaf"
+     Comment "Item name: bread loaf, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{4D8A35A3EEC37912}" {
+     Id "LF-Item_BreadDesc"
+     Target_en_us "A round loaf from the morning bake. Best eaten today."
+     Comment "Item description: bread loaf."
+    }
+    CustomStringTableItem "{77C624C0C6085686}" {
+     Id "LF-Item_CannedFish"
+     Target_en_us "Tinned sardines"
+     Comment "Item name: tinned sardines, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{043E558B24CB142C}" {
+     Id "LF-Item_CannedFishDesc"
+     Target_en_us "A flat tin of sardines in oil. Open it with the pull ring."
+     Comment "Item description: tinned sardines."
+    }
+    CustomStringTableItem "{1A7407C7026B2019}" {
+     Id "LF-Item_CannedMeat"
+     Target_en_us "Canned meat"
+     Comment "Item name: canned meat, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{66474EA9E1485746}" {
+     Id "LF-Item_CannedMeatDesc"
+     Target_en_us "A tin of corned beef. Heavy, salty, keeps for years."
+     Comment "Item description: canned meat."
+    }
+    CustomStringTableItem "{228B558274FE0193}" {
+     Id "LF-Item_ChocolateBar"
+     Target_en_us "Chocolate bar"
+     Comment "Item name: chocolate bar, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{37FB74AF4E706174}" {
+     Id "LF-Item_ChocolateBarDesc"
+     Target_en_us "A wrapped bar of milk chocolate. A little sugar, a little cheer."
+     Comment "Item description: chocolate bar."
+    }
+    CustomStringTableItem "{D744A9EB6693B307}" {
+     Id "LF-Item_CoffeeTin"
+     Target_en_us "Instant coffee"
+     Comment "Item name: instant coffee, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{20A0BA389D7B7779}" {
+     Id "LF-Item_CoffeeTinDesc"
+     Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
+     Comment "Item description: instant coffee."
+    }
+    CustomStringTableItem "{DD99AAF5FD3E4FC8}" {
+     Id "LF-Item_CopperWireCoil_Description"
+     Target_en_us "A coil of stripped copper wire. Scrapyards pay more for copper than for iron."
+     Comment "Item description: copper wire coil (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{2D29328690DD8A4F}" {
+     Id "LF-Item_CopperWireCoil_Name"
+     Target_en_us "Copper wire coil"
+     Comment "Item name: copper wire coil (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{8DAE041BDBAD8F4B}" {
+     Id "LF-Item_Croissant"
+     Target_en_us "Croissant"
+     Comment "Item name: croissant, sold at the Saint-Philippe bakery."
+    }
+    CustomStringTableItem "{6449170C10223C19}" {
+     Id "LF-Item_CroissantDesc"
+     Target_en_us "A butter croissant, flaky and still a little warm."
+     Comment "Item description: croissant."
+    }
+    CustomStringTableItem "{8347C13A7154E70A}" {
+     Id "LF-Item_Ham"
+     Target_en_us "Ham joint"
+     Comment "Item name: ham joint, sold at the Saint-Philippe butcher."
+    }
+    CustomStringTableItem "{DA8D2D8EEECB147E}" {
+     Id "LF-Item_HamDesc"
+     Target_en_us "A whole ham joint from the butcher's hook. Heavy, and good for a few meals."
+     Comment "Item description: ham joint."
+    }
+    CustomStringTableItem "{DDA503563C490FF0}" {
+     Id "LF-Item_Magazine_Description"
+     Target_en_us "A glossy weekly with a film star on the cover. Good for the waiting room."
+     Comment "Newsagent item (#3893): the magazine's inventory description."
+    }
+    CustomStringTableItem "{9A0B0BAFA137E0D5}" {
+     Id "LF-Item_Magazine_Name"
+     Target_en_us "Magazine"
+     Comment "Newsagent item (#3893): the magazine's name in the inventory."
+    }
+    CustomStringTableItem "{8A052A0C4B10AE83}" {
+     Id "LF-Item_MilkBottle"
+     Target_en_us "Bottle of milk"
+     Comment "Item name: bottle of milk, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{6C987134D4879842}" {
+     Id "LF-Item_MilkBottleDesc"
+     Target_en_us "Fresh milk in a glass bottle with a foil cap. Drink it soon."
+     Comment "Item description: bottle of milk."
+    }
+    CustomStringTableItem "{61562516020B74B1}" {
+     Id "LF-Item_Newspaper_Description"
+     Target_en_us "Today's paper: the island's news, the notices and the horoscope, folded to a quarter."
+     Comment "Newsagent item (#3893): the newspaper's inventory description."
+    }
+    CustomStringTableItem "{BAF2A8D5CBBE3A86}" {
+     Id "LF-Item_Newspaper_Name"
+     Target_en_us "Newspaper"
+     Comment "Newsagent item (#3893): the newspaper's name in the inventory."
+    }
+    CustomStringTableItem "{2645CB07E7939576}" {
+     Id "LF-Item_Notebook_Description"
+     Target_en_us "A stack of ruled notebooks from the stationery shelf."
+     Comment "Newsagent item (#3893): the notebook's inventory description."
+    }
+    CustomStringTableItem "{4E673DCEC319026B}" {
+     Id "LF-Item_Notebook_Name"
+     Target_en_us "Notebook"
+     Comment "Newsagent item (#3893): the notebook's name in the inventory."
+    }
+    CustomStringTableItem "{23D974D8CDFB5F7D}" {
+     Id "LF-Item_OldRadio_Description"
+     Target_en_us "A dead wireless set. The case is steel and the coils are copper wire."
+     Comment "Item description: old radio (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{7DBF12F89D8B1692}" {
+     Id "LF-Item_OldRadio_Name"
+     Target_en_us "Old radio"
+     Comment "Item name: old radio (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{484D5CB6B94CCEC3}" {
+     Id "LF-Item_Pen_Description"
+     Target_en_us "A ballpoint pen. Blue ink."
+     Comment "Newsagent item (#3893): the pen's inventory description."
+    }
+    CustomStringTableItem "{95D9C0A4161D57D8}" {
+     Id "LF-Item_Pen_Name"
+     Target_en_us "Pen"
+     Comment "Newsagent item (#3893): the pen's name in the inventory."
+    }
+    CustomStringTableItem "{60D2B9C1E45A6CC4}" {
+     Id "LF-Item_PickleJar"
+     Target_en_us "Jar of pickles"
+     Comment "Item name: jar of pickles, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{C3E7721CCADD1D45}" {
+     Id "LF-Item_PickleJarDesc"
+     Target_en_us "A jar of pickled gherkins in brine. Sharp, and still filling."
+     Comment "Item description: jar of pickles."
+    }
+    CustomStringTableItem "{3247DE698C248743}" {
+     Id "LF-Item_Postcard_Description"
+     Target_en_us "A view of the island's coast, with room on the back to write home."
+     Comment "Newsagent item (#3893): the postcard's inventory description."
+    }
+    CustomStringTableItem "{EC6BE48238401496}" {
+     Id "LF-Item_Postcard_Name"
+     Target_en_us "Postcard"
+     Comment "Newsagent item (#3893): the postcard's name in the inventory."
+    }
+    CustomStringTableItem "{6342C0C34CC2ED27}" {
+     Id "LF-Item_RubberScrap_Description"
+     Target_en_us "A worn-out tyre with its steel bead still in it. Not worth much, but the bead is."
+     Comment "Item description: rubber scrap (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{1FCB1E70B50BA956}" {
+     Id "LF-Item_RubberScrap_Name"
+     Target_en_us "Rubber scrap"
+     Comment "Item name: rubber scrap (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{E4B1EB83A0FA9C56}" {
+     Id "LF-Item_Saucisson"
+     Target_en_us "Dry sausage"
+     Comment "Item name: dry sausage, sold at the Saint-Philippe butcher."
+    }
+    CustomStringTableItem "{2A2A6CD5824FB9A5}" {
+     Id "LF-Item_SaucissonDesc"
+     Target_en_us "A dry-cured saucisson tied with twine. Slice it thin and it keeps you going for hours."
+     Comment "Item description: dry sausage."
+    }
+    CustomStringTableItem "{23FE92B459F50077}" {
+     Id "LF-Item_ScrapMetal_Description"
+     Target_en_us "Bent offcuts and broken castings. A scrapyard pays by the kilo."
+     Comment "Item description: scrap metal (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{F9EDBA4B9D9C3709}" {
+     Id "LF-Item_ScrapMetal_Name"
+     Target_en_us "Scrap metal"
+     Comment "Item name: scrap metal (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{1672D28C6515BA4F}" {
+     Id "LF-Item_SmokedBass_Description"
+     Target_en_us "A bass, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked bass."
+    }
+    CustomStringTableItem "{391C34F57F1E36EE}" {
+     Id "LF-Item_SmokedBass_Name"
+     Target_en_us "Smoked bass"
+     Comment "Smokehouse (#3450): the smoked bass the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{1632CDECB8C02552}" {
+     Id "LF-Item_SmokedCarp_Description"
+     Target_en_us "A carp, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked carp."
+    }
+    CustomStringTableItem "{220A91677BAE4E81}" {
+     Id "LF-Item_SmokedCarp_Name"
+     Target_en_us "Smoked carp"
+     Comment "Smokehouse (#3450): the smoked carp the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{ECB29290C5067FC1}" {
+     Id "LF-Item_SmokedMackerel_Description"
+     Target_en_us "A mackerel, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked mackerel."
+    }
+    CustomStringTableItem "{5A40576F15D0E793}" {
+     Id "LF-Item_SmokedMackerel_Name"
+     Target_en_us "Smoked mackerel"
+     Comment "Smokehouse (#3450): the smoked mackerel the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{CF0D12B6045FB3DF}" {
+     Id "LF-Item_SmokedPerch_Description"
+     Target_en_us "A perch, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked perch."
+    }
+    CustomStringTableItem "{7EE13F0BF6EAEB87}" {
+     Id "LF-Item_SmokedPerch_Name"
+     Target_en_us "Smoked perch"
+     Comment "Smokehouse (#3450): the smoked perch the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{D7B8D893DDB9D1EA}" {
+     Id "LF-Item_SmokedTrout_Description"
+     Target_en_us "A trout, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked trout."
+    }
+    CustomStringTableItem "{92CD9D16FE1BE131}" {
+     Id "LF-Item_SmokedTrout_Name"
+     Target_en_us "Smoked trout"
+     Comment "Smokehouse (#3450): the smoked trout the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{7F0E62887B92D9CA}" {
+     Id "LF-Item_SmokedTuna_Description"
+     Target_en_us "A tuna, cured over a slow wood fire. It keeps, and the fish counter pays more for it than for a fresh one."
+     Comment "Smokehouse (#3450): inventory description of the smoked tuna."
+    }
+    CustomStringTableItem "{799FA963B0584824}" {
+     Id "LF-Item_SmokedTuna_Name"
+     Target_en_us "Smoked tuna"
+     Comment "Smokehouse (#3450): the smoked tuna the smokehouse makes from a fresh one."
+    }
+    CustomStringTableItem "{96286076F1D0C747}" {
+     Id "LF-Item_SodaBottle"
+     Target_en_us "Soda water"
+     Comment "Item name: soda water, sold at the Saint-Philippe general store."
+    }
+    CustomStringTableItem "{B3C0B5E361200D87}" {
+     Id "LF-Item_SodaBottleDesc"
+     Target_en_us "A glass siphon of soda water. A squirt from the head and it fizzes."
+     Comment "Item description: soda water."
+    }
     CustomStringTableItem "{9F32BE4E1F1F7320}" {
      Id "LF-Item_TouristMap_Description"
      Target_en_us "A printed tourist and road map of the island. Studying it pencils every place a visitor might look for onto your own map."
@@ -658,6 +1638,31 @@ StringTable {
      Id "LF-Item_TouristMap_Name"
      Target_en_us "Tourist map of Everon"
      Comment "Tourist map (#2242): the item's name in the inventory."
+    }
+    CustomStringTableItem "{66654F6ED99E5F5B}" {
+     Id "LF-Item_WornHandTool_Description"
+     Target_en_us "A wrench worn smooth and loose in the jaw. Good for scrap and not much else."
+     Comment "Item description: worn hand tool (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{BC8CB99A2688023F}" {
+     Id "LF-Item_WornHandTool_Name"
+     Target_en_us "Worn hand tool"
+     Comment "Item name: worn hand tool (scrapyard, #3823)."
+    }
+    CustomStringTableItem "{E5D6ABA466DA481F}" {
+     Id "LF-Launder_Closed"
+     Target_en_us "Nobody is washing money tonight."
+     Comment "Toast (#2922, 1989 pack voice): the laundering rules config is missing or refused."
+    }
+    CustomStringTableItem "{9FA29FCFFE44A9BC}" {
+     Id "LF-Launder_DailyCap"
+     Target_en_us "That is all the washing the town can hide in a day. Come back tomorrow."
+     Comment "Toast (#2922, 1989 pack voice): the character reached the 24 h laundering cap."
+    }
+    CustomStringTableItem "{FADAC5CC77FBDC89}" {
+     Id "LF-Launder_Loaded"
+     Target_en_us "The notes are in the machine. Come back when they are clean, minus the house's share."
+     Comment "Toast (#2922, 1989 pack voice): marked notes loaded into the laundering station; the cut is the pack's."
     }
     CustomStringTableItem "{78E9902BB0209A7E}" {
      Id "LF-Level_Far_Farmer"
@@ -699,6 +1704,51 @@ StringTable {
      Target_en_us "Nearly there. A few more shifts at the quarry and the foreman will let you."
      Comment "Job-level gate refusal in the 1989 town's words (#2710); the pack row overrides the neutral core row of the same Id."
     }
+    CustomStringTableItem "{4698001E131BC577}" {
+     Id "LF-LicenceWhere_DRIVING_LICENCE"
+     Target_en_us "The town hall desk"
+     Comment "Overrides the core row: the driving licence is bought at the town hall licence desk (#3151)."
+    }
+    CustomStringTableItem "{597379C162802B06}" {
+     Id "LF-LicenceWhere_FIREARM_PERMIT"
+     Target_en_us "The gun store counter"
+     Comment "Overrides the core row: the firearm permit is bought at the gun store counter (#3150)."
+    }
+    CustomStringTableItem "{A3CFDDFF48ABE630}" {
+     Id "LF-Loot_KitchenCupboardName"
+     Target_en_us "Kitchen cupboard"
+     Comment "Name of the searchable kitchen cupboard loot prop in the inventory (#3345)."
+    }
+    CustomStringTableItem "{CD45D96E8C799492}" {
+     Id "LF-Loot_ScrapPileName"
+     Target_en_us "Scrap pile"
+     Comment "Name of the searchable dump scrap pile loot prop in the inventory (#3345)."
+    }
+    CustomStringTableItem "{580F76CE8E3C873E}" {
+     Id "LF-Loot_ToolChestName"
+     Target_en_us "Tool chest"
+     Comment "Name of the searchable tool chest loot prop in the inventory (#3345)."
+    }
+    CustomStringTableItem "{CA4B6B802EFD710E}" {
+     Id "LF-Lot_NeedsDrivingLicence"
+     Target_en_us "Not without a driving licence. The town hall desk issues it for %1."
+     Comment "Overrides the core row: the flagship's car lot refusal names the town hall licence desk (#3151). %1 is the fee."
+    }
+    CustomStringTableItem "{EFE3196881518A64}" {
+     Id "LF-MapPoi_Bakery"
+     Target_en_us "Bakery"
+     Comment "Map POI name (#3515): the bakery counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{AB58CDFCAE3CEAD2}" {
+     Id "LF-MapPoi_Barber"
+     Target_en_us "Barber"
+     Comment "Map POI name (#3515): the barber's chair; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{684C52D74CAE72C4}" {
+     Id "LF-MapPoi_Butcher"
+     Target_en_us "Butcher"
+     Comment "Map POI name (#3515): the butcher's counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0E}" {
      Id "LF-MapPoi_Cafe"
      Target_en_us "Cafe"
@@ -708,6 +1758,16 @@ StringTable {
      Id "LF-MapPoi_ClothingStore"
      Target_en_us "Clothing store"
      Comment "Map POI kind name (#2247): the clothing store counter."
+    }
+    CustomStringTableItem "{C9B0363AD1349FDD}" {
+     Id "LF-MapPoi_ContestedSite"
+     Target_en_us "Contested ground"
+     Comment "Map POI kind name (#3552): a contested site (LF_Places kind contested-site), held ground an organisation can take. Public story pin, so a newcomer finds the farm compound, the hilltop mast and the quarry."
+    }
+    CustomStringTableItem "{BFF48978815D4687}" {
+     Id "LF-MapPoi_FarmSupply"
+     Target_en_us "Farm supply"
+     Comment "Map POI name (#3631): the Saint-Philippe farm supply counter by the farm barn."
     }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
@@ -719,6 +1779,16 @@ StringTable {
      Target_en_us "Filling station"
      Comment "Map POI kind name (#2247): the fuel till."
     }
+    CustomStringTableItem "{E20FC1E39F2F3576}" {
+     Id "LF-MapPoi_FishingSpot"
+     Target_en_us "Fishing spot"
+     Comment "Map POI kind name (#3667): a fishing spot marker (LF_Places kind FishingSpot) at Black Lake or Spring Pond. Discovered by walking past, like the shops."
+    }
+    CustomStringTableItem "{3EF58CE81E5B58BA}" {
+     Id "LF-MapPoi_Furniture"
+     Target_en_us "Furniture store"
+     Comment "Map POI name (#3515): the furniture store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0B}" {
      Id "LF-MapPoi_GeneralStore"
      Target_en_us "General store"
@@ -729,10 +1799,25 @@ StringTable {
      Target_en_us "Gun store"
      Comment "Map POI kind name (#2247): the gun store counter."
     }
+    CustomStringTableItem "{521427D84861A261}" {
+     Id "LF-MapPoi_Hardware"
+     Target_en_us "Hardware store"
+     Comment "Map POI name (#3515): the hardware store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F13}" {
      Id "LF-MapPoi_Hostel"
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
+    }
+    CustomStringTableItem "{069AD0D1539E7BB7}" {
+     Id "LF-MapPoi_Mine"
+     Target_en_us "Mine"
+     Comment "Map POI kind name (#3241): a mine, where a miner digs ore or coal (LF_Places kind mine). The map adds the town."
+    }
+    CustomStringTableItem "{046B777F2F3B3DC1}" {
+     Id "LF-MapPoi_Newsagent"
+     Target_en_us "Newsagent"
+     Comment "Map POI name (#3515): the newsagent's counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
     }
     CustomStringTableItem "{5A7C1E04B93D6F11}" {
      Id "LF-MapPoi_NoticeBoard"
@@ -744,6 +1829,31 @@ StringTable {
      Target_en_us "Parcel depot"
      Comment "Map POI kind name (#2247): the parcel depot."
     }
+    CustomStringTableItem "{E880E2EC6AF04CEE}" {
+     Id "LF-MapPoi_Pharmacy"
+     Target_en_us "Pharmacy"
+     Comment "Map POI name (#3515): the pharmacy counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{6A6E592B5FF9A7FD}" {
+     Id "LF-MapPoi_Plant"
+     Target_en_us "Plant"
+     Comment "Map POI kind name (#3241): a processing plant, a smelter, refinery or cement works (LF_Places kind plant)."
+    }
+    CustomStringTableItem "{1FA54D4B3E7D5BC1}" {
+     Id "LF-MapPoi_SeedFeed"
+     Target_en_us "Seed and feed store"
+     Comment "Map POI name (#3515): the seed and feed store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{7A231C1ED753723E}" {
+     Id "LF-MapPoi_Smokehouse"
+     Target_en_us "Smokehouse"
+     Comment "Map POI kind name (#3453): the dock fish smoker (LF_Places kind Smokehouse). Discovered by walking past, like the shops."
+    }
+    CustomStringTableItem "{47A0ACEF429D7700}" {
+     Id "LF-MapPoi_Supermarket"
+     Target_en_us "Supermarket"
+     Comment "Map POI name (#3515): the supermarket till; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F10}" {
      Id "LF-MapPoi_TaxiRank"
      Target_en_us "Taxi rank"
@@ -753,6 +1863,21 @@ StringTable {
      Id "LF-MapPoi_TownHall"
      Target_en_us "Town hall"
      Comment "Map POI kind name (#2247): the town hall, where the clerk sits."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A06}" {
+     Id "LF-MapPoi_Wholesale"
+     Target_en_us "Wholesale warehouse"
+     Comment "Map POI name (#3273): the harbour wholesale warehouse counter."
+    }
+    CustomStringTableItem "{5E2A7C91B0D43F61}" {
+     Id "LF-Market_BuyerFull"
+     Target_en_us "They have enough - try the wholesale warehouse at the dock. More in about %1 min."
+     Comment "Pack override of the core toast (#3599): the timber counter is full, the dock wholesale warehouse still buys. %1 = minutes."
+    }
+    CustomStringTableItem "{5E2A7C91B0D43F62}" {
+     Id "LF-Market_BuyerNever"
+     Target_en_us "They have enough - try the wholesale warehouse at the dock."
+     Comment "Pack override of the core toast (#3599): a buyer that never refills."
     }
     CustomStringTableItem "{9C1E4A73D0B58F26}" {
      Id "LF-MedicRank_Emt"
@@ -889,6 +2014,41 @@ StringTable {
      Target_en_us "Application to the Everon {Police}"
      Comment "Police application form title."
     }
+    CustomStringTableItem "{B4A2D6F89C3E5071}" {
+     Id "LF-Quest_AnniversaryChairs_Desc"
+     Target_en_us "The anniversary is tomorrow and the square is short of seats. Bring four chairs for the trestles."
+     Comment "Quest description for anniversary_chairs (#3463)."
+    }
+    CustomStringTableItem "{A3F1C5E78B2D4960}" {
+     Id "LF-Quest_AnniversaryChairs_Title"
+     Target_en_us "Chairs for the square"
+     Comment "Quest title: the mayor needs chairs for the day before the anniversary (#3463)."
+    }
+    CustomStringTableItem "{D6C4F8BABE507293}" {
+     Id "LF-Quest_AnniversaryFlowers_Desc"
+     Target_en_us "The tables want flowers before dusk tomorrow. Bring three potted plants from the shops."
+     Comment "Quest description for anniversary_flowers (#3463)."
+    }
+    CustomStringTableItem "{C5B3E7A9AD4F6182}" {
+     Id "LF-Quest_AnniversaryFlowers_Title"
+     Target_en_us "Flowers for the square"
+     Comment "Quest title: the mayor wants flowers for the memorial tables (#3463)."
+    }
+    CustomStringTableItem "{3465F00000000004}" {
+     Id "LF-Quest_AnniversaryLetter_Desc"
+     Target_en_us "The letter in the memorial's flowers is addressed to Gaspard Lenoir. Bring it to him."
+     Comment "Quest description for anniversary_letter (#3465)."
+    }
+    CustomStringTableItem "{3465F00000000003}" {
+     Id "LF-Quest_AnniversaryLetter_Title"
+     Target_en_us "A letter from the past"
+     Comment "Quest title for anniversary_letter (#3465)."
+    }
+    CustomStringTableItem "{3465F00000000005}" {
+     Id "LF-Quest_AnniversaryLetter_TurnIn"
+     Target_en_us "Gaspard reads it twice without a word. Then he asks you to sit."
+     Comment "Giver line on turn-in of anniversary_letter (#3465)."
+    }
     CustomStringTableItem "{41BDF9AA8EA3352E}" {
      Id "LF-Quest_ArrivalBank_Desc"
      Target_en_us "Paid in cash. Cash in a pocket is lost if you die, money in the bank is not. Deposit some at the ATM on the bank wall, next to the post office."
@@ -926,7 +2086,7 @@ StringTable {
     }
     CustomStringTableItem "{07E23A077F643979}" {
      Id "LF-Quest_ArrivalRegister_Desc"
-     Target_en_us "You are new in town and carry no papers. The clerk on the square keeps the register: talk to him and he hands you your ID card."
+     Target_en_us "You are new in town and carry no papers. Walk south from the hostel to the town hall on the square: the clerk behind the desk keeps the register and hands you your ID card. A mark on your map and screen shows the way."
      Comment "Arrival chain step 1: talk to the clerk, receive the ID card."
     }
     CustomStringTableItem "{C15A1290314AA204}" {
@@ -948,6 +2108,121 @@ StringTable {
      Id "LF-Quest_ArrivalWork_Title"
      Target_en_us "First wages"
      Comment "Arrival chain step 3 title."
+    }
+    CustomStringTableItem "{A089683A227009CA}" {
+     Id "LF-Quest_SettleFish_Desc"
+     Target_en_us "Catch a fish and sell it at the fish counter."
+     Comment "Settling-in chain: sell a fish at the fish counter."
+    }
+    CustomStringTableItem "{34CC25BF3950DC70}" {
+     Id "LF-Quest_SettleFish_Title"
+     Target_en_us "Sell a catch"
+     Comment "Settling-in chain, one of three errands after the car. Title."
+    }
+    CustomStringTableItem "{4D8E21B7A09C35F6}" {
+     Id "LF-Quest_SettleFoundation_Desc"
+     Target_en_us "Lay the foundation of your cottage. The general store sells gravel and cement."
+     Comment "Settling-in chain: finish the foundation stage on a plot (#3195)."
+    }
+    CustomStringTableItem "{91C6F3A82E5B704D}" {
+     Id "LF-Quest_SettleFoundation_Title"
+     Target_en_us "Lay your foundation"
+     Comment "Settling-in chain, after the plot. Title (#3195)."
+    }
+    CustomStringTableItem "{6E07D3A5B533B63A}" {
+     Id "LF-Quest_SettleFuel_Desc"
+     Target_en_us "Fuel runs are open to you now. Take a jerrycan job from the dispatch board and deliver it."
+     Comment "Settling-in chain step 2: one paid fuel run."
+    }
+    CustomStringTableItem "{233D2662DE4FBD92}" {
+     Id "LF-Quest_SettleFuel_Title"
+     Target_en_us "Your first fuel run"
+     Comment "Settling-in chain step 2 title."
+    }
+    CustomStringTableItem "{066FD416F050DA24}" {
+     Id "LF-Quest_SettleParcels_Desc"
+     Target_en_us "Run five parcels for the post office. Five runs earns you the level for the fuel run, which comes next."
+     Comment "Settling-in chain step 1: five paid parcel runs."
+    }
+    CustomStringTableItem "{893130A1FA32D104}" {
+     Id "LF-Quest_SettleParcels_Title"
+     Target_en_us "Five parcel runs"
+     Comment "Settling-in chain step 1 title (#3125)."
+    }
+    CustomStringTableItem "{EC2F8F67C4ED1B67}" {
+     Id "LF-Quest_SettlePermit_Desc"
+     Target_en_us "Apply for a firearm permit at the gun store counter and collect it when it is ready."
+     Comment "Settling-in chain: collect the firearm permit."
+    }
+    CustomStringTableItem "{F789C21DFB0FD2E7}" {
+     Id "LF-Quest_SettlePermit_Title"
+     Target_en_us "A firearm permit"
+     Comment "Settling-in chain, one of three errands after the car. Title."
+    }
+    CustomStringTableItem "{87B321F40E5414E6}" {
+     Id "LF-Quest_SettlePlot_Desc"
+     Target_en_us "Find a plot for sale and read its sign. It says what the plot costs and how to buy it."
+     Comment "Settling-in chain: read a plot-for-sale sign."
+    }
+    CustomStringTableItem "{3C8729FB1CF04D6E}" {
+     Id "LF-Quest_SettlePlot_Title"
+     Target_en_us "A plot of your own"
+     Comment "Settling-in chain, one of three errands after the car. Title."
+    }
+    CustomStringTableItem "{32119D9F88CBF879}" {
+     Id "LF-Quest_SettlePlot_TurnIn"
+     Target_en_us "That is how land is bought here. Save up, and the plot is yours."
+     Comment "Settling-in chain: shown when the plot sign is read."
+    }
+    CustomStringTableItem "{8F2D02985CDF28BF}" {
+     Id "LF-Quest_SettleWheels_Desc"
+     Target_en_us "Buy any car at the car lot. The town board shows where it is."
+     Comment "Settling-in chain step 3: buy a car."
+    }
+    CustomStringTableItem "{A63268C6F419075E}" {
+     Id "LF-Quest_SettleWheels_DescLicence"
+     Target_en_us "Get your driving licence at the town hall desk first (00), then buy any car at the car lot. The town board shows where it is."
+     Comment "Settling-in chain step 3 (#3151): the flagship's car lot asks for the driving licence, so the step says to get it first."
+    }
+    CustomStringTableItem "{71D42A3909D03894}" {
+     Id "LF-Quest_SettleWheels_Title"
+     Target_en_us "Your own wheels"
+     Comment "Settling-in chain step 3 title."
+    }
+    CustomStringTableItem "{3440F00000000102}" {
+     Id "LF-Quest_ShipmentCount_Desc"
+     Target_en_us "Marcel Roux says the red crate on the quay weighs too much. Open it and count what is inside."
+     Comment "Quest description for shipment_count (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000101}" {
+     Id "LF-Quest_ShipmentCount_Title"
+     Target_en_us "Count the red crate"
+     Comment "Quest title: the harbour master asks a trusted player to count one crate (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000106}" {
+     Id "LF-Quest_ShipmentReport_Desc"
+     Target_en_us "What was under the tinned fish belongs with the police. Hand it in at the desk."
+     Comment "Quest description for shipment_report (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000105}" {
+     Id "LF-Quest_ShipmentReport_Title"
+     Target_en_us "Hand it in at the police desk"
+     Comment "Quest title: the report ending of the shipment (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000107}" {
+     Id "LF-Quest_ShipmentReport_TurnIn"
+     Target_en_us "The desk logs it and thanks you. The gendarmes will want a word with the quay."
+     Comment "Line the police desk says when the shipment sample is handed in (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000104}" {
+     Id "LF-Quest_ShipmentSold_Desc"
+     Target_en_us "What was under the tinned fish is worth money to the right person. Sell it to a buyer."
+     Comment "Quest description for shipment_sold (#3440)."
+    }
+    CustomStringTableItem "{3440F00000000103}" {
+     Id "LF-Quest_ShipmentSold_Title"
+     Target_en_us "A buyer who asks no questions"
+     Comment "Quest title: the sell ending of the shipment (#3440)."
     }
     CustomStringTableItem "{C2A7527A4FB2AAB1}" {
      Id "LF-QuizEveron_fear_A1"
@@ -1106,7 +2381,7 @@ StringTable {
     }
     CustomStringTableItem "{1357AE90EB122FE9}" {
      Id "LF-Resident_cafe_owner_Name"
-     Target_en_us "Odile Marchand"
+     Target_en_us "Odilon Marchand"
      Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
     }
     CustomStringTableItem "{C506DE77282216DB}" {
@@ -1129,6 +2404,11 @@ StringTable {
      Target_en_us "Gaspard Lenoir"
      Comment "Saint-Philippe resident old_man: display name (#2906)."
     }
+    CustomStringTableItem "{3804F10000000001}" {
+     Id "LF-Resident_shipment_go_between_Name"
+     Target_en_us "Hugo Valmy"
+     Comment "Saint-Philippe resident shipment_go_between: display name (#3804)."
+    }
     CustomStringTableItem "{9FE5B987FD8FD9D2}" {
      Id "LF-Resident_store_clerk_Name"
      Target_en_us "Pierre Vasseur"
@@ -1139,20 +2419,85 @@ StringTable {
      Target_en_us "Helene Roux"
      Comment "Saint-Philippe resident teller: display name (#2906)."
     }
+    CustomStringTableItem "{3441F00000000002}" {
+     Id "LF-Rumour_Shipment_CafeOwner_Reported"
+     Target_en_us "They say someone carried a crate off the quay straight to the gendarmes. The dockers have not touched a drink here all week. Whoever it was, keep your head down."
+     Comment "Café owner rumour for a player who reported the shipment (#3441); fades after 3 game days."
+    }
+    CustomStringTableItem "{3441F00000000003}" {
+     Id "LF-Rumour_Shipment_CafeOwner_Sold"
+     Target_en_us "They say a crate went missing off the quay and somebody in town is richer for it. Nobody asks who. The man at the corner table has stopped counting his change."
+     Comment "Café owner rumour for a player who sold the shipment (#3441); fades after 3 game days."
+    }
+    CustomStringTableItem "{08F8B49C5124F438}" {
+     Id "LF-Shop_Desc_Bakery"
+     Target_en_us "Bread and something sweet, still warm"
+     Comment "Shop description of the Saint-Philippe bakery till (#3227)."
+    }
+    CustomStringTableItem "{CE6BABB3EA7EE854}" {
+     Id "LF-Shop_Desc_Butcher"
+     Target_en_us "Cured meat, tins and the day's cuts"
+     Comment "Shop description of the Saint-Philippe butcher till (#3228)."
+    }
+    CustomStringTableItem "{D48C1FE2090106F1}" {
+     Id "LF-Shop_Desc_Cafe"
+     Target_en_us "A drink, a snack, a word with the owner"
+     Comment "Shop description of the Saint-Philippe café till (#3063)."
+    }
     CustomStringTableItem "{CA4D10F34DED233D}" {
      Id "LF-Shop_Desc_ClothesShop"
      Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{01FD5CE2F519BD5D}" {
+     Id "LF-Shop_Desc_FarmSupply"
+     Target_en_us "Farm machinery for hire-purchase on the spot: a reaper to hitch behind a tractor or a UAZ."
+     Comment "Shop description of the farm supply counter till (#3631): outlet farm_supply."
+    }
+    CustomStringTableItem "{816F70B82A3F716F}" {
+     Id "LF-Shop_Desc_FuelKiosk"
+     Target_en_us "Maps of Everon, bottled water, soda, chocolate and crackers."
+     Comment "Shop description of the Saint-Philippe fuel station kiosk till: stock fuel_kiosk."
+    }
+    CustomStringTableItem "{1B4CFC6B76803431}" {
+     Id "LF-Shop_Desc_Furniture"
+     Target_en_us "Beds, sofas, tables, wardrobes and lamps for the new home."
+     Comment "Shop description of the Saint-Philippe furniture store counter (#3256)."
     }
     CustomStringTableItem "{0238B801ABD1D07C}" {
      Id "LF-Shop_Desc_GunCounter"
      Target_en_us "Rifles, pistols and ammunition for permit holders; scopes, holsters and pouches for anyone."
      Comment "Pack override of the core gun counter description (price list subtitle) for the Everon 1989 gun store."
     }
+    CustomStringTableItem "{047B1301F9EC2FEA}" {
+     Id "LF-Shop_Desc_Hardware"
+     Target_en_us "Tools, building materials, lamps and radios for the plot owner and the working man."
+     Comment "Hardware store counter (#3220): the shop description."
+    }
+    CustomStringTableItem "{FBE651522FAB6C3B}" {
+     Id "LF-Shop_Desc_Mechanic"
+     Target_en_us "Spare parts for the village's cars, sold across the workshop counter."
+     Comment "Mechanic counter (#3224): the shop description."
+    }
     CustomStringTableItem "{CE06D40741D4A653}" {
      Id "LF-Shop_Desc_MedicStores"
      Target_en_us "Coats and a medical kit for the hospital staff."
      Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{3B9D4E10C1D6F1A1}" {
+     Id "LF-Shop_Desc_MinersSupply"
+     Target_en_us "Picks and shovels for working miners. A miner of rank 2 can buy the pickaxe."
+     Comment "General store counter (#3085): the miner's supply description."
+    }
+    CustomStringTableItem "{3E7A91C04B52D682}" {
+     Id "LF-Shop_Desc_Newsagent"
+     Target_en_us "Newspapers, magazines, bottled water and the tourist map of Everon."
+     Comment "Shop description of the Saint-Philippe newsagent kiosk till (#3222)."
+    }
+    CustomStringTableItem "{31C706B4255FC4FB}" {
+     Id "LF-Shop_Desc_Pharmacy"
+     Target_en_us "Aspirin, gauze and tourniquets off the shelf."
+     Comment "Shop description of the Saint-Philippe pharmacy till (#3893): stock pharmacy."
     }
     CustomStringTableItem "{88A40BFFEF7CB897}" {
      Id "LF-Shop_Desc_PharmacyCounter"
@@ -1164,6 +2509,11 @@ StringTable {
      Target_en_us "Uniform pieces, a radio and a flashlight for officers on duty."
      Comment "Everon 1989 outlet counter (#1770): police_stores."
     }
+    CustomStringTableItem "{3E7A91C04B52D691}" {
+     Id "LF-Shop_Desc_SeedFeed"
+     Target_en_us "Cabbage seeds, bait, fishing rods and bottled water for the farms and the harbour."
+     Comment "Shop description of the Saint-Philippe seed and feed store till (#3223)."
+    }
     CustomStringTableItem "{0BFE6BABD6975286}" {
      Id "LF-Shop_Desc_SurplusStall"
      Target_en_us "Older army jackets, boots, canteens, binoculars and packs."
@@ -1174,15 +2524,70 @@ StringTable {
      Target_en_us "Hard hats, work boots, gloves and a flashlight."
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
+    CustomStringTableItem "{DBCD0C2289FBA157}" {
+     Id "LF-Shop_Name_Bakery"
+     Target_en_us "Boulangerie"
+     Comment "Shop name of the Saint-Philippe bakery till (#3227): town house b06 on the square, stock bakery."
+    }
+    CustomStringTableItem "{086D9D3FDC39EA2C}" {
+     Id "LF-Shop_Name_Butcher"
+     Target_en_us "Boucherie-charcuterie"
+     Comment "Shop name of the Saint-Philippe butcher till (#3228): town house b20 by the clothes shop, stock butcher."
+    }
+    CustomStringTableItem "{0B134C85762A065A}" {
+     Id "LF-Shop_Name_Cafe"
+     Target_en_us "Café bar"
+     Comment "Shop name of the Saint-Philippe café till (#3063): the pub's bar counter, stock cafe."
+    }
     CustomStringTableItem "{3891D91F71F15DB1}" {
      Id "LF-Shop_Name_ClothesShop"
      Target_en_us "Clothes shop"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
+    CustomStringTableItem "{4E605F7F63F4AF47}" {
+     Id "LF-Shop_Name_FarmSupply"
+     Target_en_us "Farm Supply"
+     Comment "Shop name of the farm supply counter till (#3631): outlet farm_supply."
+    }
+    CustomStringTableItem "{2A524DAA3F49F9F9}" {
+     Id "LF-Shop_Name_FuelKiosk"
+     Target_en_us "Filling-station kiosk"
+     Comment "Shop name of the Saint-Philippe fuel station kiosk till: stock fuel_kiosk."
+    }
+    CustomStringTableItem "{5610D2FB07972A2F}" {
+     Id "LF-Shop_Name_Furniture"
+     Target_en_us "Meubles"
+     Comment "Shop name of the Saint-Philippe furniture store counter (#3256): stock furniture."
+    }
+    CustomStringTableItem "{6D1028DE2DB79D51}" {
+     Id "LF-Shop_Name_Hardware"
+     Target_en_us "Hardware store"
+     Comment "Hardware store counter (#3220): the shop name."
+    }
+    CustomStringTableItem "{CD9F8522A264158A}" {
+     Id "LF-Shop_Name_Mechanic"
+     Target_en_us "Garage"
+     Comment "Mechanic counter (#3224): the shop name."
+    }
     CustomStringTableItem "{D815E73D4340CE7D}" {
      Id "LF-Shop_Name_MedicStores"
      Target_en_us "Medic stores"
      Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{3B9D4E10A2C7F1A0}" {
+     Id "LF-Shop_Name_MinersSupply"
+     Target_en_us "Miner's supply"
+     Comment "General store counter (#3085): the miner's supply name."
+    }
+    CustomStringTableItem "{3E7A91C04B52D681}" {
+     Id "LF-Shop_Name_Newsagent"
+     Target_en_us "Tabac-presse"
+     Comment "Shop name of the Saint-Philippe newsagent kiosk till (#3222): stock newsagent."
+    }
+    CustomStringTableItem "{55D13F8D2C97E863}" {
+     Id "LF-Shop_Name_Pharmacy"
+     Target_en_us "Pharmacie"
+     Comment "Shop name of the Saint-Philippe pharmacy till (#3893): stock pharmacy."
     }
     CustomStringTableItem "{B1BC977506FDDA48}" {
      Id "LF-Shop_Name_PharmacyCounter"
@@ -1194,6 +2599,11 @@ StringTable {
      Target_en_us "Police stores"
      Comment "Everon 1989 outlet counter (#1770): police_stores."
     }
+    CustomStringTableItem "{3E7A91C04B52D692}" {
+     Id "LF-Shop_Name_SeedFeed"
+     Target_en_us "Seed & Feed"
+     Comment "Shop name of the Saint-Philippe seed and feed store till (#3223): stock seed_feed."
+    }
     CustomStringTableItem "{4D08F861A5C58B94}" {
      Id "LF-Shop_Name_SurplusStall"
      Target_en_us "Army surplus stall"
@@ -1204,20 +2614,110 @@ StringTable {
      Target_en_us "Workwear counter"
      Comment "Everon 1989 outlet counter (#1770): workwear_counter."
     }
+    CustomStringTableItem "{D0DAC06750DA2554}" {
+     Id "LF-Shop_OpenDesc_FarmSupply"
+     Target_en_us "Buy a reaper"
+     Comment "Action description on the farm supply counter till (#3631)."
+    }
+    CustomStringTableItem "{5160FD4B0C8E4B67}" {
+     Id "LF-Shop_OpenDesc_FuelKiosk"
+     Target_en_us "Buy a map of Everon or a snack"
+     Comment "Action description on the fuel station kiosk counter."
+    }
+    CustomStringTableItem "{BC9B8CB431998AA0}" {
+     Id "LF-Shop_OpenDesc_Hardware"
+     Target_en_us "Browse the tools and building supplies."
+     Comment "Hardware store counter (#3220): the shop action description."
+    }
+    CustomStringTableItem "{179870A0D78BDB64}" {
+     Id "LF-Shop_OpenDesc_Mechanic"
+     Target_en_us "Browse the car parts."
+     Comment "Mechanic counter (#3224): the shop action description."
+    }
+    CustomStringTableItem "{3E7A91C04B52D684}" {
+     Id "LF-Shop_OpenDesc_Newsagent"
+     Target_en_us "Buy the tourist map or a paper"
+     Comment "Action description on the newsagent kiosk till (#3222)."
+    }
+    CustomStringTableItem "{DAB81EC2A267CCDD}" {
+     Id "LF-Shop_OpenDesc_Pharmacy"
+     Target_en_us "Buy medicine off the shelf"
+     Comment "Action description on the pharmacy till (#3893)."
+    }
+    CustomStringTableItem "{3E7A91C04B52D694}" {
+     Id "LF-Shop_OpenDesc_SeedFeed"
+     Target_en_us "Buy seeds, bait or a fishing rod"
+     Comment "Action description on the seed and feed store till (#3223)."
+    }
+    CustomStringTableItem "{633EF19AA18FF9B0}" {
+     Id "LF-Shop_Open_Bakery"
+     Target_en_us "Buy bread and pastries"
+     Comment "Interaction name at the bakery till (#3227): opens the bakery price list."
+    }
+    CustomStringTableItem "{5E3D7D45BF074AD0}" {
+     Id "LF-Shop_Open_Butcher"
+     Target_en_us "Buy meat and charcuterie"
+     Comment "Interaction name at the butcher till (#3228): opens the butcher price list."
+    }
+    CustomStringTableItem "{0EC694A26B780C12}" {
+     Id "LF-Shop_Open_Cafe"
+     Target_en_us "Order food and drink"
+     Comment "Interaction name at the café till (#3063): opens the café price list."
+    }
     CustomStringTableItem "{AB6C9C6741E3729B}" {
      Id "LF-Shop_Open_ClothesShop"
      Target_en_us "Browse the clothes rack"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
+    }
+    CustomStringTableItem "{EF58B7CBF7ED945F}" {
+     Id "LF-Shop_Open_FarmSupply"
+     Target_en_us "Browse the farm machinery"
+     Comment "Action label on the farm supply counter till (#3631)."
+    }
+    CustomStringTableItem "{A5E2099F0CE9680A}" {
+     Id "LF-Shop_Open_FuelKiosk"
+     Target_en_us "Browse the kiosk"
+     Comment "Action label on the fuel station kiosk counter."
+    }
+    CustomStringTableItem "{0E816968A7BE847A}" {
+     Id "LF-Shop_Open_Furniture"
+     Target_en_us "Browse the furniture"
+     Comment "Interaction name at the furniture store counter (#3256): opens the furniture price list."
     }
     CustomStringTableItem "{53F9E5EEA5C98E4E}" {
      Id "LF-Shop_Open_GunCounter"
      Target_en_us "Buy guns and ammunition"
      Comment "Pack override of the core gun counter action: in the Everon 1989 gun store the counter sells rifles, pistols, magazines, scopes, holsters and pouches, not only a handgun."
     }
+    CustomStringTableItem "{2FC4CCC38833503C}" {
+     Id "LF-Shop_Open_Hardware"
+     Target_en_us "Hardware store"
+     Comment "Hardware store counter (#3220): the shop action label."
+    }
+    CustomStringTableItem "{C5A9EDCC211E5F78}" {
+     Id "LF-Shop_Open_Mechanic"
+     Target_en_us "Garage"
+     Comment "Mechanic counter (#3224): the shop action label."
+    }
     CustomStringTableItem "{8D1EB732FECFCC26}" {
      Id "LF-Shop_Open_MedicStores"
      Target_en_us "Open the medic stores"
      Comment "Everon 1989 outlet counter (#1770): medic_stores."
+    }
+    CustomStringTableItem "{3B9D4E10E0E5F1A2}" {
+     Id "LF-Shop_Open_MinersSupply"
+     Target_en_us "Miner's supply"
+     Comment "General store counter (#3085): the miner's supply action label."
+    }
+    CustomStringTableItem "{3E7A91C04B52D683}" {
+     Id "LF-Shop_Open_Newsagent"
+     Target_en_us "Browse the kiosk"
+     Comment "Action label on the newsagent kiosk till (#3222)."
+    }
+    CustomStringTableItem "{C488674D8A5A1FD0}" {
+     Id "LF-Shop_Open_Pharmacy"
+     Target_en_us "Browse the pharmacy"
+     Comment "Action label on the pharmacy till (#3893)."
     }
     CustomStringTableItem "{7729AC333C1E6567}" {
      Id "LF-Shop_Open_PharmacyCounter"
@@ -1228,6 +2728,11 @@ StringTable {
      Id "LF-Shop_Open_PoliceStores"
      Target_en_us "Open the police stores"
      Comment "Everon 1989 outlet counter (#1770): police_stores."
+    }
+    CustomStringTableItem "{3E7A91C04B52D693}" {
+     Id "LF-Shop_Open_SeedFeed"
+     Target_en_us "Browse the farm supplies"
+     Comment "Action label on the seed and feed store till (#3223)."
     }
     CustomStringTableItem "{E20C00A121F45328}" {
      Id "LF-Shop_Open_SurplusStall"
@@ -1269,6 +2774,21 @@ StringTable {
      Target_en_us "Your bank account. Jobs and sales pay cash; this is where cash goes in and out."
      Comment "Sign card for the ATM on the bank's front, What section."
     }
+    CustomStringTableItem "{C39E7024FB5D6183}" {
+     Id "LF-Sign_Bakery_How"
+     Target_en_us "Go to the counter, choose what you want and pay. Bread fills you up for a few dollars. The family live upstairs."
+     Comment "How line of the bakery sign (#3227): the upper floors are the baker's flat."
+    }
+    CustomStringTableItem "{A17C5E02D93B4F61}" {
+     Id "LF-Sign_Bakery_Title"
+     Target_en_us "Boulangerie"
+     Comment "Title painted on the bakery's fascia (#3227) and shown in the prompt as Read: Boulangerie."
+    }
+    CustomStringTableItem "{B28D6F13EA4C5072}" {
+     Id "LF-Sign_Bakery_What"
+     Target_en_us "The village bakery: fresh bread, biscuits and chocolate."
+     Comment "What line of the bakery sign (#3227)."
+    }
     CustomStringTableItem "{DAF800340D8F2049}" {
      Id "LF-Sign_Bank_How"
      Target_en_us "*Breach* the vault|Carry off the bag that comes out"
@@ -1299,6 +2819,31 @@ StringTable {
      Target_en_us "The vault door on the bank's east wall. Behind it, a bag of cash."
      Comment "Sign card for the bank vault door (a robbery site), What section."
     }
+    CustomStringTableItem "{A5CB85E823411AF3}" {
+     Id "LF-Sign_Barber_Title"
+     Target_en_us "Coiffeur"
+     Comment "Fascia of the Saint-Philippe barber shop (#3236): the board over the door and the prompt Read: Coiffeur."
+    }
+    CustomStringTableItem "{E17DC6149D683CEE}" {
+     Id "LF-Sign_Barber_What"
+     Target_en_us "The village coiffeur: sit in a chair and pick a new cut, colour or beard|Prices are 1989 prices, cash only"
+     Comment "Sign card for the Saint-Philippe barber shop, What section (#3236)."
+    }
+    CustomStringTableItem "{C27AF568161F7892}" {
+     Id "LF-Sign_BlackLake_How"
+     Target_en_us "Bring a rod and a bait tin, cast onto the water from the shore, and strike when the float dips"
+     Comment "Sign card for the Black Lake plate, How section."
+    }
+    CustomStringTableItem "{468950476749EE18}" {
+     Id "LF-Sign_BlackLake_Title"
+     Target_en_us "Black Lake"
+     Comment "Title of the pole plate on the Black Lake shore (Everon 1989 pack, #3667). Printed on the sign and shown in the prompt as Read: Black Lake."
+    }
+    CustomStringTableItem "{57D8B0D20620C8D3}" {
+     Id "LF-Sign_BlackLake_What"
+     Target_en_us "A quiet lake with a bench and a lantern on its north-west shore. Perch and carp bite here; carp are best at dawn and in the evening."
+     Comment "Sign card for the Black Lake plate, What section."
+    }
     CustomStringTableItem "{5065DFD658DCD5F6}" {
      Id "LF-Sign_BlackMarket_How"
      Target_en_us "Stand at the stall and knock (F). The price list opens: pick the handgun and pay."
@@ -1328,6 +2873,21 @@ StringTable {
      Id "LF-Sign_BlackMarket_What"
      Target_en_us "Equipment the general store does not sell."
      Comment "Sign card for the back room shop in the alley (no printed title), What section."
+    }
+    CustomStringTableItem "{B098F47FDF83358E}" {
+     Id "LF-Sign_Butcher_How"
+     Target_en_us "Go to the counter, choose what you want and pay. Dried meat keeps you going for hours. The shed behind is our store and stays locked."
+     Comment "How line of the butcher sign (#3228): the shed b19 behind the shop is the store room."
+    }
+    CustomStringTableItem "{37BDDA2AE961D87D}" {
+     Id "LF-Sign_Butcher_Title"
+     Target_en_us "Boucherie-charcuterie"
+     Comment "Title painted on the butcher's fascia (#3228) and shown in the prompt as Read: Boucherie-charcuterie."
+    }
+    CustomStringTableItem "{F3F99ACA2323BCB4}" {
+     Id "LF-Sign_Butcher_What"
+     Target_en_us "The village butcher: dried meat, tinned meat and cured cuts."
+     Comment "What line of the butcher sign (#3228)."
     }
     CustomStringTableItem "{155AD337C15BEB65}" {
      Id "LF-Sign_ConvoyDrop_How"
@@ -1544,6 +3104,61 @@ StringTable {
      Target_en_us "Calls waiting for this service, newest first."
      Comment "Dispatch board sign card: what it is."
     }
+    CustomStringTableItem "{F962FB99DD0ED9A6}" {
+     Id "LF-Sign_EveronSawmill_How"
+     Target_en_us "*Saw logs into planks* or *Saw hardwood into boards* at a saw in the hall"
+     Comment "Sign card for the Everon sawmill, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{2F1E48F6D38417AF}" {
+     Id "LF-Sign_EveronSawmill_Needs"
+     Target_en_us "Logs from the forest and a lumberjack licence."
+     Comment "Sign card for the Everon sawmill, You need section."
+    }
+    CustomStringTableItem "{91F819EF3267293A}" {
+     Id "LF-Sign_EveronSawmill_Next"
+     Target_en_us "Carry the boards to Saint-Philippe: builders and joiners pay for them."
+     Comment "Sign card for the Everon sawmill, Next section."
+    }
+    CustomStringTableItem "{AE02BB5B348530BB}" {
+     Id "LF-Sign_EveronSawmill_Title"
+     Target_en_us "Scierie"
+     Comment "Title of the sign at the Everon sawmill yard (Everon 1989 pack, #3271). Printed on the sign and shown in the prompt as Read: Scierie."
+    }
+    CustomStringTableItem "{52CBFEEB2D04FA91}" {
+     Id "LF-Sign_EveronSawmill_What"
+     Target_en_us "The island sawmill: saw hardwood and softwood logs into boards, posts and firewood."
+     Comment "Sign card for the Everon sawmill, What section."
+    }
+    CustomStringTableItem "{F868DCD01EFFA837}" {
+     Id "LF-Sign_EveronScrapyard_How"
+     Target_en_us "*Load the recycler*, then *Break it down*, then *Collect the parts*. Sell the parts at the cabin."
+     Comment "Sign card for the scrapyard, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{E941251646E022BE}" {
+     Id "LF-Sign_EveronScrapyard_Needs"
+     Target_en_us "Something to break down: a car door, an old radio, a worn tool. Search the dump piles at night."
+     Comment "Sign card for the scrapyard, You need section."
+    }
+    CustomStringTableItem "{4AF72E50CF5DB8D0}" {
+     Id "LF-Sign_EveronScrapyard_Next"
+     Target_en_us "Parts and scrap metal sell at the yard cabin. A flooded yard pays less."
+     Comment "Sign card for the scrapyard, Next section."
+    }
+    CustomStringTableItem "{F569F72B499FF384}" {
+     Id "LF-Sign_EveronScrapyard_Title"
+     Target_en_us "Casse"
+     Comment "Title of the sign at the scrapyard (Everon 1989 pack, #3357). Printed on the sign and shown in the prompt as Read: Casse."
+    }
+    CustomStringTableItem "{782813B1DA8109EA}" {
+     Id "LF-Sign_EveronScrapyard_What"
+     Target_en_us "The island scrapyard: wrecks to pick over, a recycler bench and a dealer in the cabin."
+     Comment "Sign card for the scrapyard, What section."
+    }
+    CustomStringTableItem "{4E7B1C9A2D8F5036}" {
+     Id "LF-Sign_FarmCompound_What"
+     Target_en_us "Abandoned farm. Whoever holds the yard longest holds the barn."
+     Comment "What line of the farm compound name plate (#3412)."
+    }
     CustomStringTableItem "{122025DCEE6F8713}" {
      Id "LF-Sign_FarmPlots_How"
      Target_en_us "Take Cabbage seeds from the crate. Plant Cabbage seeds in an empty plot. When the cabbages are ripe, Harvest Cabbage."
@@ -1569,6 +3184,26 @@ StringTable {
      Target_en_us "Grow your own cabbages in the dirt plots."
      Comment "Info board at the farm plots, What section."
     }
+    CustomStringTableItem "{E7F58ACC29F1A769}" {
+     Id "LF-Sign_FarmSupply_Next"
+     Target_en_us "Take it out at the implement rack beside the barn, hitch it to a UAZ or a Z7211 and drive to the field. Put it back at the rack when you are done."
+     Comment "Sign card for the farm supply counter, Next section (#3631)."
+    }
+    CustomStringTableItem "{093093E54CF70A83}" {
+     Id "LF-Sign_FarmSupply_Reaper"
+     Target_en_us "Reaper"
+     Comment "Chalk board row label at the farm supply counter (#3631)."
+    }
+    CustomStringTableItem "{4363B8E0446F2520}" {
+     Id "LF-Sign_FarmSupply_Title"
+     Target_en_us "Farm supply"
+     Comment "Title of the chalk board at the Saint-Philippe farm supply counter (#3631). Printed on the board and shown in the prompt as Read: Farm supply."
+    }
+    CustomStringTableItem "{E32383E42223461E}" {
+     Id "LF-Sign_FarmSupply_What"
+     Target_en_us "Farm machinery sold over the counter, one of each per customer. Price in dollars."
+     Comment "Sign card for the farm supply counter, What section (#3631)."
+    }
     CustomStringTableItem "{905E4015631C43F6}" {
      Id "LF-Sign_Farm_How"
      Target_en_us "Gather Apple or Gather Plum from the orchard trees. Plant Cabbage seeds in the dirt plots; the board beside them explains."
@@ -1593,6 +3228,46 @@ StringTable {
      Id "LF-Sign_Farm_What"
      Target_en_us "Dirt plots to grow cabbages, a greenhouse, and an orchard."
      Comment "Sign card for the farm north of the square, What section."
+    }
+    CustomStringTableItem "{32CEDBEDFA32663E}" {
+     Id "LF-Sign_FishermansBay_How"
+     Target_en_us "Bring a rod and a bait tin, cast onto the water from the beach, and strike when the float dips. Come at dusk for the bass."
+     Comment "Sign card for the Fisherman's Bay plate, How section."
+    }
+    CustomStringTableItem "{936E797B77A23A02}" {
+     Id "LF-Sign_FishermansBay_Title"
+     Target_en_us "Fisherman's Bay"
+     Comment "Title of the pole plate above the cove below the lighthouse (Everon 1989 pack, #3762). Printed on the sign and shown in the prompt as Read: Fisherman's Bay."
+    }
+    CustomStringTableItem "{93101FA5232EAD0F}" {
+     Id "LF-Sign_FishermansBay_What"
+     Target_en_us "A sheltered cove below the lighthouse, with a bench and a lantern on its shore. Bass come in close at dusk."
+     Comment "Sign card for the Fisherman's Bay plate, What section."
+    }
+    CustomStringTableItem "{D3B5326222E01DEA}" {
+     Id "LF-Sign_FuelDepot_How"
+     Target_en_us "Fill a tanker at the depot and drive it to a filling station."
+     Comment "Sign card for the Montignac fuel depot, How section."
+    }
+    CustomStringTableItem "{B36BFEC7627B930C}" {
+     Id "LF-Sign_FuelDepot_Needs"
+     Target_en_us "A tanker truck and a driving licence."
+     Comment "Sign card for the Montignac fuel depot, You need section."
+    }
+    CustomStringTableItem "{D7656097F74F86FF}" {
+     Id "LF-Sign_FuelDepot_Next"
+     Target_en_us "The stations pay for every litre that fits their tank."
+     Comment "Sign card for the Montignac fuel depot, Next section."
+    }
+    CustomStringTableItem "{0E902C79A08FF34E}" {
+     Id "LF-Sign_FuelDepot_Title"
+     Target_en_us "Collective-farm fuel depot"
+     Comment "Title of the sign at the Montignac fuel depot yard (Everon 1989 pack, #3336)."
+    }
+    CustomStringTableItem "{D448F9A388D58121}" {
+     Id "LF-Sign_FuelDepot_What"
+     Target_en_us "The collective farm fuel store: diesel for the island filling stations is loaded here."
+     Comment "Sign card for the Montignac fuel depot, What section."
     }
     CustomStringTableItem "{D47AD7112B2DF884}" {
      Id "LF-Sign_FuelStation_How"
@@ -1623,6 +3298,31 @@ StringTable {
      Id "LF-Sign_FuelStation_What"
      Target_en_us "Fuel cans for delivery work, and a till."
      Comment "Sign card for the fuel station till, What section."
+    }
+    CustomStringTableItem "{4ADF98012DC9F5EB}" {
+     Id "LF-Sign_FurnitureStore_How"
+     Target_en_us "Choose from the pieces on show: *Browse the furniture* at the counter and pay at the till|Carry it home and place it where you want it"
+     Comment "Sign card for the furniture store, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{06FFFAB5E0B31BBD}" {
+     Id "LF-Sign_FurnitureStore_Needs"
+     Target_en_us "A house of your own to put it in, and the money."
+     Comment "Sign card for the furniture store, You need section."
+    }
+    CustomStringTableItem "{6B5905F4476F4147}" {
+     Id "LF-Sign_FurnitureStore_Next"
+     Target_en_us "The pieces on the floor are for show: order from the counter."
+     Comment "Sign card for the furniture store, Next section."
+    }
+    CustomStringTableItem "{A6ED44BC014EDE30}" {
+     Id "LF-Sign_FurnitureStore_Title"
+     Target_en_us "Meubles"
+     Comment "Title of the fascia sign over the furniture store on the square row (Everon 1989 pack, #3256). Printed on the sign and shown in the prompt as Read: Meubles."
+    }
+    CustomStringTableItem "{BFEBD3886DC16F44}" {
+     Id "LF-Sign_FurnitureStore_What"
+     Target_en_us "Beds, sofas, tables, shelves and lamps for every room of the house, on show on the ground floor."
+     Comment "Sign card for the furniture store, What section."
     }
     CustomStringTableItem "{C253431484CC5293}" {
      Id "LF-Sign_Garage_How"
@@ -1669,6 +3369,21 @@ StringTable {
      Target_en_us "Sell what you gather at the market stalls next door, to the east|Cars are sold at the vehicle lot across the street"
      Comment "Sign card for the general store, Next section: where the player goes after this place."
     }
+    CustomStringTableItem "{98AD9902C05C38A0}" {
+     Id "LF-Sign_GeneralStore_Special1"
+     Target_en_us "Chocolate bar"
+     Comment "Store A-frame special 1: a chalk row on the general store pavement board (#3305, #3547). Price 3 matches LF_ShopStock_Everon1989. Bread is the bakery's, not the store's."
+    }
+    CustomStringTableItem "{0AA236A7C73670FE}" {
+     Id "LF-Sign_GeneralStore_Special2"
+     Target_en_us "Fresh milk"
+     Comment "Store A-frame special 2 (#3305). Price 4 matches LF_ShopStock_Everon1989."
+    }
+    CustomStringTableItem "{48226C495DB4B471}" {
+     Id "LF-Sign_GeneralStore_Special3"
+     Target_en_us "Tinned fish"
+     Comment "Store A-frame special 3 (#3305). Price 6 matches LF_ShopStock_Everon1989."
+    }
     CustomStringTableItem "{10B8F417BFC331B0}" {
      Id "LF-Sign_GeneralStore_Title"
      Target_en_us "General store"
@@ -1704,6 +3419,86 @@ StringTable {
      Target_en_us "Sporting rifles, pistols and ammunition for permit holders. Binoculars, compasses, maps and hunters' hats for anyone."
      Comment "Sign card for the gun store, What section."
     }
+    CustomStringTableItem "{248660AA4A4823F3}" {
+     Id "LF-Sign_HarbourOffice_How"
+     Target_en_us "Step inside and *Talk* to the harbour master"
+     Comment "Sign card for the harbour office plate, How section. The capitalized word is the action name the player sees."
+    }
+    CustomStringTableItem "{416AD19C737315ED}" {
+     Id "LF-Sign_HarbourOffice_Title"
+     Target_en_us "Harbour Office"
+     Comment "Title of the plate beside the door of the dock's site cabin (Everon 1989 pack, #3072). Printed on the sign and shown in the prompt as Read: Harbour Office."
+    }
+    CustomStringTableItem "{719C66DDD07B5E1A}" {
+     Id "LF-Sign_HarbourOffice_What"
+     Target_en_us "The harbour master's cabin on the quay road. Marcel Roux takes on crate runs for anyone the town knows."
+     Comment "Sign card for the harbour office plate, What section."
+    }
+    CustomStringTableItem "{2F58730647E93F81}" {
+     Id "LF-Sign_Hardware_How"
+     Target_en_us "*Hardware store* at the shop counter, one price per item|Miners: the miner's supply counter beside it"
+     Comment "Sign card for the hardware store, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{CD2EFFC7DA13FF3C}" {
+     Id "LF-Sign_Hardware_Needs"
+     Target_en_us "Money for the shop counter|Mining rank 2 for the pickaxe"
+     Comment "Sign card for the hardware store, Needs section."
+    }
+    CustomStringTableItem "{736186C3C3CF88AC}" {
+     Id "LF-Sign_Hardware_Next"
+     Target_en_us "Cement, bricks and planks go to a plot's build site."
+     Comment "Sign card for the hardware store, Next section."
+    }
+    CustomStringTableItem "{B434FABAE242A442}" {
+     Id "LF-Sign_Hardware_Title"
+     Target_en_us "Quincaillerie"
+     Comment "Title of the painted fascia over the hardware store door in the workshop yard (Everon 1989 pack, #3220). Printed on the sign and shown in the prompt as Read: Quincaillerie."
+    }
+    CustomStringTableItem "{30BA391BD9DECCAD}" {
+     Id "LF-Sign_Hardware_What"
+     Target_en_us "The village hardware store: shovels and axes, cement, bricks, planks and sandbags, flashlights and radios. Miners buy their pickaxe at the second counter."
+     Comment "Sign card for the hardware store, What section."
+    }
+    CustomStringTableItem "{3656B1B2C3D40008}" {
+     Id "LF-Sign_HarvestBoard_Next"
+     Target_en_us "Own a reaper? Take the field with it. Otherwise rent a tractor and reaper for a deposit."
+     Comment "Sign card for the farm contract board, Next section (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40006}" {
+     Id "LF-Sign_HarvestBoard_Title"
+     Target_en_us "Harvest contracts"
+     Comment "Poster title of the farm contract board at the wheat field gate (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40007}" {
+     Id "LF-Sign_HarvestBoard_What"
+     Target_en_us "One contract per field. Post it, take it with your own reaper or a rental kit, and bring the kit back here."
+     Comment "Sign card for the farm contract board, What section (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40005}" {
+     Id "LF-Sign_Harvest_Bonus"
+     Target_en_us "Bonus at 95 percent"
+     Comment "Chalk board row label at the wheat field (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40004}" {
+     Id "LF-Sign_Harvest_Deposit"
+     Target_en_us "Kit deposit"
+     Comment "Chalk board row label at the wheat field (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40003}" {
+     Id "LF-Sign_Harvest_Next"
+     Target_en_us "Cut 95 percent of the field for the bonus and farming experience. Bring a rental kit back to the board within half an hour to get the deposit back."
+     Comment "Sign card for the wheat field chalk board, Next section (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40001}" {
+     Id "LF-Sign_Harvest_Title"
+     Target_en_us "Harvest"
+     Comment "Title of the chalk board at the Saint-Philippe wheat field gate (#3656)."
+    }
+    CustomStringTableItem "{3656B1B2C3D40002}" {
+     Id "LF-Sign_Harvest_What"
+     Target_en_us "Cut the wheat with a reaper hitched behind a tractor. Contracts are posted on the board by the gate. Price in dollars."
+     Comment "Sign card for the wheat field chalk board, What section (#3656)."
+    }
     CustomStringTableItem "{1314EC1ABCC618D6}" {
      Id "LF-Sign_Hideout_How"
      Target_en_us "Members open the gate|Inside, *Process contraband* at the machine|Keep the crew's goods in the chest: *Open hideout stash*"
@@ -1733,6 +3528,31 @@ StringTable {
      Id "LF-Sign_Hideout_What"
      Target_en_us "A walled yard owned by one organization."
      Comment "Sign card for the organization hideout yard, What section."
+    }
+    CustomStringTableItem "{4259F2E50006FDFF}" {
+     Id "LF-Sign_Home_CafeOwner_Title"
+     Target_en_us "Mme O. Marchand"
+     Comment "Brass name plate beside the door of cafe_owner's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme O. Marchand."
+    }
+    CustomStringTableItem "{B1D02944F6C717F6}" {
+     Id "LF-Sign_Home_NightShift_Title"
+     Target_en_us "M. R. Duval"
+     Comment "Brass name plate beside the door of night_shift's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. R. Duval."
+    }
+    CustomStringTableItem "{0955F0CE2E0152B0}" {
+     Id "LF-Sign_Home_OldMan_Title"
+     Target_en_us "M. G. Lenoir"
+     Comment "Brass name plate beside the door of old_man's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. G. Lenoir."
+    }
+    CustomStringTableItem "{55231116164D7341}" {
+     Id "LF-Sign_Home_StoreClerk_Title"
+     Target_en_us "M. P. Roche"
+     Comment "Brass name plate beside the door of store_clerk's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. P. Roche."
+    }
+    CustomStringTableItem "{524960714D7C41A7}" {
+     Id "LF-Sign_Home_Teller_Title"
+     Target_en_us "Mme C. Girard"
+     Comment "Brass name plate beside the door of teller's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme C. Girard."
     }
     CustomStringTableItem "{DFFD828F05D29321}" {
      Id "LF-Sign_HospitalBay_How"
@@ -1793,6 +3613,21 @@ StringTable {
      Id "LF-Sign_Hospital_What"
      Target_en_us "The village hospital: a medic duty desk, three beds, a call board and the ambulance bay|Bills are 1989 prices, cash only|Playtest: a practice patient lies on the grass between the bay and the till"
      Comment "Sign card for the hospital (medicine cabinet and till), What section."
+    }
+    CustomStringTableItem "{1EB77C0BCC89F072}" {
+     Id "LF-Sign_Hostel_How"
+     Target_en_us "Go upstairs and take any free bunk in the dormitory. It is plain, but it is warm."
+     Comment "How line of the hostel sign: the first building a newcomer sees; matches the clerk welcome."
+    }
+    CustomStringTableItem "{B0EE34267D1F6795}" {
+     Id "LF-Sign_Hostel_Title"
+     Target_en_us "Hostel"
+     Comment "Title painted on the hostel fascia and shown in the prompt as Read: Hostel."
+    }
+    CustomStringTableItem "{56F590E37C51D1B1}" {
+     Id "LF-Sign_Hostel_What"
+     Target_en_us "The village hostel: a bed for anyone with nowhere to sleep."
+     Comment "What line of the hostel sign."
     }
     CustomStringTableItem "{F209D5D9A5D3E58D}" {
      Id "LF-Sign_Impound_How"
@@ -1884,6 +3719,56 @@ StringTable {
      Target_en_us "%1 %2"
      Comment "Price board title at the vehicle lot (#540): %1 is the car name, %2 the price read from the lot's price list in config."
     }
+    CustomStringTableItem "{832AC83992CD1389}" {
+     Id "LF-Sign_Mechanic_How"
+     Target_en_us "*Garage* at the workshop counter, one price per part"
+     Comment "Sign card for the village garage, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{6F2254812571B657}" {
+     Id "LF-Sign_Mechanic_Needs"
+     Target_en_us "Money for the counter"
+     Comment "Sign card for the village garage, Needs section."
+    }
+    CustomStringTableItem "{AF20BB3181AD8266}" {
+     Id "LF-Sign_Mechanic_Next"
+     Target_en_us "Car parts mend a damaged vehicle."
+     Comment "Sign card for the village garage, Next section."
+    }
+    CustomStringTableItem "{EA83B183BA657FA1}" {
+     Id "LF-Sign_Mechanic_Title"
+     Target_en_us "Garage"
+     Comment "Title of the painted fascia over the village garage door in the east workshop (Everon 1989 pack, #3224). Printed on the sign and shown in the prompt as Read: Garage."
+    }
+    CustomStringTableItem "{6C1557BEA197814A}" {
+     Id "LF-Sign_Mechanic_What"
+     Target_en_us "The village garage: car parts at the workshop counter. The ramp beside it is where the mechanic works."
+     Comment "Sign card for the village garage, What section."
+    }
+    CustomStringTableItem "{3B335C0E2FA32B9B}" {
+     Id "LF-Sign_MerchantTimber_Board"
+     Target_en_us "Hardwood board"
+     Comment "Chalk board row label at the timber counter."
+    }
+    CustomStringTableItem "{7DBA677D775C31B6}" {
+     Id "LF-Sign_MerchantTimber_Next"
+     Target_en_us "When we cannot take more, sell the rest to the wholesale warehouse at the dock."
+     Comment "Sign card for the timber counter, Next section."
+    }
+    CustomStringTableItem "{436E2ECC8C95C171}" {
+     Id "LF-Sign_MerchantTimber_Plank"
+     Target_en_us "Plank"
+     Comment "Chalk board row label at the timber counter."
+    }
+    CustomStringTableItem "{1986D36F54987E6D}" {
+     Id "LF-Sign_MerchantTimber_Title"
+     Target_en_us "We buy timber"
+     Comment "Title of the chalk board at the Saint-Philippe hardware store timber counter (#3274). Printed on the board and shown in the prompt as Read: We buy timber."
+    }
+    CustomStringTableItem "{F40B323DAAD33F77}" {
+     Id "LF-Sign_MerchantTimber_What"
+     Target_en_us "The hardware store buys planks and hardwood boards over the timber counter, a limited amount each hour. Price per piece in dollars."
+     Comment "Sign card for the timber counter, What section."
+    }
     CustomStringTableItem "{EACF0508930A1624}" {
      Id "LF-Sign_Mining_How"
      Target_en_us "Swing your pickaxe at the rock. Every few swings a nugget breaks off and drops at your feet; pick it up. At the furnace, use Smelt Iron Nuggets or Smelt Gold Nuggets."
@@ -1914,6 +3799,31 @@ StringTable {
      Target_en_us "Iron, copper, and gold ore in the rocks here. The furnace stands next to them."
      Comment "Mining sign card, What section."
     }
+    CustomStringTableItem "{2C369D85CBC200FE}" {
+     Id "LF-Sign_Orchard_How"
+     Target_en_us "*Gather Apple* or *Gather Plum* from a tree, then *Make 1 apple juice with 3 apples* at the juicer under the lean-to"
+     Comment "Sign card for the Saint-Philippe orchard, How section (#3388). Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{7830EE35680F0ABB}" {
+     Id "LF-Sign_Orchard_Needs"
+     Target_en_us "Nothing but your hands. Each tree gives ten fruit, then grows one back every three minutes."
+     Comment "Sign card for the Saint-Philippe orchard, You need section (#3388). Ten and three minutes are the gather stock of #2409."
+    }
+    CustomStringTableItem "{52B8F4AE092FEDC6}" {
+     Id "LF-Sign_Orchard_Next"
+     Target_en_us "Sell the juice and the fruit at the market, or keep the apples for cider."
+     Comment "Sign card for the Saint-Philippe orchard, Next section (#3388)."
+    }
+    CustomStringTableItem "{CC0A61DC5B26AE54}" {
+     Id "LF-Sign_Orchard_Title"
+     Target_en_us "Verger"
+     Comment "Title of the sign at the Saint-Philippe orchard (Everon 1989 pack, #3388). Printed on the sign and shown in the prompt as Read: Verger."
+    }
+    CustomStringTableItem "{A56C723327FC4794}" {
+     Id "LF-Sign_Orchard_What"
+     Target_en_us "The town orchard: apple and plum trees, and a juicer under a lean-to."
+     Comment "Sign card for the Saint-Philippe orchard, What section (#3388)."
+    }
     CustomStringTableItem "{DD5F159B6A7D8B1F}" {
      Id "LF-Sign_OrgRegistry_How"
      Target_en_us "Organization desk, then Found organization, Deposit cash, Withdraw cash, or Buy processing slot."
@@ -1943,6 +3853,31 @@ StringTable {
      Id "LF-Sign_OrgRegistry_What"
      Target_en_us "Register a crew, keep a shared fund, buy upgrades."
      Comment "Sign card for the organization registry desk, What section."
+    }
+    CustomStringTableItem "{1B1ADEBF61205537}" {
+     Id "LF-Sign_Pharmacy_How"
+     Target_en_us "*Ask the pharmacist* at the counter, one price per item"
+     Comment "Sign card for the pharmacy, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{019FD733B2103174}" {
+     Id "LF-Sign_Pharmacy_Needs"
+     Target_en_us "Money for the counter."
+     Comment "Sign card for the pharmacy, You need section."
+    }
+    CustomStringTableItem "{13F12E4679EB7B56}" {
+     Id "LF-Sign_Pharmacy_Next"
+     Target_en_us "The medicines are kept behind the counter: ask the pharmacist."
+     Comment "Sign card for the pharmacy, Next section."
+    }
+    CustomStringTableItem "{B9B325005BD70EE6}" {
+     Id "LF-Sign_Pharmacy_Title"
+     Target_en_us "Pharmacie"
+     Comment "Title of the fascia sign over the pharmacy door on Saint-Philippe (Everon 1989 pack, #3526). Printed on the sign and shown in the prompt as Read: Pharmacie."
+    }
+    CustomStringTableItem "{00C0910067CFAAD8}" {
+     Id "LF-Sign_Pharmacy_What"
+     Target_en_us "The village pharmacy: the medicines sold over the pharmacist's counter."
+     Comment "Sign card for the pharmacy, What section."
     }
     CustomStringTableItem "{F33E84A46C3A3659}" {
      Id "LF-Sign_PoliceCases_How"
@@ -2144,6 +4079,26 @@ StringTable {
      Target_en_us "The town clerk registers new arrivals and issues the identity card."
      Comment "Sign card for the registry office (the town clerk, arrival chain), What section."
     }
+    CustomStringTableItem "{6BB6BAED2EF2DAC0}" {
+     Id "LF-Sign_RoadFarm_How"
+     Target_en_us "Fuel drop: bring a full barrel to the tank by the machine shed on the fuel delivery job. The payphone at the gate calls the town."
+     Comment "Sign card for the roadside farm yard, How section (#3381)."
+    }
+    CustomStringTableItem "{34C32AFD1EDAADC4}" {
+     Id "LF-Sign_RoadFarm_Next"
+     Target_en_us "The farm sells nothing. Fill up in town, or take the delivery job and earn from the drop."
+     Comment "Sign card for the roadside farm yard, Next section (#3381)."
+    }
+    CustomStringTableItem "{756BB84E4D298624}" {
+     Id "LF-Sign_RoadFarm_Title"
+     Target_en_us "Ferme des Silos"
+     Comment "Title of the farm-name sign at the roadside farm yard gate (Everon 1989 pack, #3381). Printed on the sign and shown in the prompt as Read: Ferme des Silos."
+    }
+    CustomStringTableItem "{6151BE35A15D9BD7}" {
+     Id "LF-Sign_RoadFarm_What"
+     Target_en_us "A working farm off the main road: cow sheds, silos and a machine shed. The tank by the shed takes fuel for the delivery job."
+     Comment "Sign card for the roadside farm yard, What section (#3381)."
+    }
     CustomStringTableItem "{2AFCEED3736DE810}" {
      Id "LF-Sign_Rules_Next"
      Target_en_us "Take a complaint to staff after the scene, not during it. This is an alpha: the world can be wiped, with 24 hours' notice."
@@ -2214,6 +4169,61 @@ StringTable {
      Target_en_us "The town square is a safe zone. Within 30 metres of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
      Comment "Safe zone sign card, What section."
     }
+    CustomStringTableItem "{80DF0709304FBA51}" {
+     Id "LF-Sign_Smokehouse_How"
+     Target_en_us "Bring a fresh fish and a *Firewood* bundle, then use the smoker and pick the species"
+     Comment "Sign card for the dock smokehouse plate, How section."
+    }
+    CustomStringTableItem "{AA50F7AE23A6CDF4}" {
+     Id "LF-Sign_Smokehouse_Title"
+     Target_en_us "Smokehouse"
+     Comment "Title of the pole plate at the dock smokehouse (Everon 1989 pack, #3453). Printed on the sign and shown in the prompt as Read: Smokehouse."
+    }
+    CustomStringTableItem "{8656FA19EDAA382B}" {
+     Id "LF-Sign_Smokehouse_What"
+     Target_en_us "The dock smokehouse on the east apron. One fresh fish and one bundle of firewood come out as smoked fish, which sells for half as much again and can be eaten."
+     Comment "Sign card for the dock smokehouse plate, What section."
+    }
+    CustomStringTableItem "{5F88AA844B7BCA38}" {
+     Id "LF-Sign_SpringPond_How"
+     Target_en_us "Bring a rod and a bait tin, cast onto the water from the jetty or the bank, and strike when the float dips"
+     Comment "Sign card for the Spring Pond plate, How section."
+    }
+    CustomStringTableItem "{E3BA6C2EBFE96532}" {
+     Id "LF-Sign_SpringPond_Title"
+     Target_en_us "Spring Pond"
+     Comment "Title of the pole plate on the Spring Pond bank (Everon 1989 pack, #3667). Printed on the sign and shown in the prompt as Read: Spring Pond."
+    }
+    CustomStringTableItem "{BA377CAE82EDDA68}" {
+     Id "LF-Sign_SpringPond_What"
+     Target_en_us "A small pond south-east of the village with a wooden jetty and a bench. Trout, perch and carp bite here; carp are best at dawn and in the evening."
+     Comment "Sign card for the Spring Pond plate, What section."
+    }
+    CustomStringTableItem "{327C120B0ED84A6C}" {
+     Id "LF-Sign_Supermarket_How"
+     Target_en_us "Take what you want off the shelves and *Pay* at the till|Or browse the till's list for everything we stock"
+     Comment "Sign card for the supermarket, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{409FE5719F11DCE3}" {
+     Id "LF-Sign_Supermarket_Needs"
+     Target_en_us "Cash."
+     Comment "Sign card for the supermarket, Needs section."
+    }
+    CustomStringTableItem "{D76920D84DA109D0}" {
+     Id "LF-Sign_Supermarket_Next"
+     Target_en_us "The other village shops are along the main street"
+     Comment "Sign card for the supermarket, Next section: where the player goes after this place."
+    }
+    CustomStringTableItem "{6331B102EC3688DE}" {
+     Id "LF-Sign_Supermarket_Title"
+     Target_en_us "Supermarket"
+     Comment "Title of the fascia and sign at the village supermarket."
+    }
+    CustomStringTableItem "{01D9AC4455F43C50}" {
+     Id "LF-Sign_Supermarket_What"
+     Target_en_us "Groceries, drinks and the odd tin of dressings."
+     Comment "Sign card for the supermarket, What section."
+    }
     CustomStringTableItem "{DFA15542C4155B52}" {
      Id "LF-Sign_TestOrg_How"
      Target_en_us "Use Join test organisation. The first one in founds it and takes the hideout yard. Use Leave organisation to get out again."
@@ -2238,6 +4248,31 @@ StringTable {
      Id "LF-Sign_TestOrg_What"
      Target_en_us "Playtest only: a shared organisation for one tester."
      Comment "Sign card of the playtest organisation sign (#934)."
+    }
+    CustomStringTableItem "{119DA9523C0D03F4}" {
+     Id "LF-Sign_TimberYard_How"
+     Target_en_us "Carry logs in from the woodlot, then *Saw logs into planks* at the saw"
+     Comment "Sign card for the Saint-Philippe timber yard, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{193332E8CB7FD60B}" {
+     Id "LF-Sign_TimberYard_Needs"
+     Target_en_us "Logs cut at the woodlot, an axe, and a lumberjack licence."
+     Comment "Sign card for the Saint-Philippe timber yard, You need section."
+    }
+    CustomStringTableItem "{056E05DAE9CEB084}" {
+     Id "LF-Sign_TimberYard_Next"
+     Target_en_us "Sell the planks to the builders' merchant, or load a truck for the harbour."
+     Comment "Sign card for the Saint-Philippe timber yard, Next section."
+    }
+    CustomStringTableItem "{2885C8350729DA74}" {
+     Id "LF-Sign_TimberYard_Title"
+     Target_en_us "Scierie"
+     Comment "Title of the sign at the Saint-Philippe timber yard (#3175). Printed on the sign."
+    }
+    CustomStringTableItem "{BBA380EC32C5BE74}" {
+     Id "LF-Sign_TimberYard_What"
+     Target_en_us "The village timber yard: saw logs into planks, boards and posts at the saw in the hall."
+     Comment "Sign card for the Saint-Philippe timber yard, What section."
     }
     CustomStringTableItem "{E2E6939EC03F1D07}" {
      Id "LF-Sign_TownMap_How"
@@ -2289,6 +4324,21 @@ StringTable {
      Target_en_us "Paid in cash, a fixed price per item."
      Comment "Sign card for the market stalls that buy produce, Rules section."
     }
+    CustomStringTableItem "{FD941F33CF6FF710}" {
+     Id "LF-Sign_Traders_Special1"
+     Target_en_us "Apples"
+     Comment "Market A-frame line 1: what the traders buy, a chalk row (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{EAC2FC02DE625E9C}" {
+     Id "LF-Sign_Traders_Special2"
+     Target_en_us "Plums"
+     Comment "Market A-frame line 2 (#3305). Value is the base price in LF_Market_Everon1989."
+    }
+    CustomStringTableItem "{A85914EECAC56866}" {
+     Id "LF-Sign_Traders_Special3"
+     Target_en_us "Cabbages"
+     Comment "Market A-frame line 3 (#3305). Value is the base price in LF_Market_Everon1989."
+    }
     CustomStringTableItem "{83FF557EE9B09C57}" {
      Id "LF-Sign_Traders_Title"
      Target_en_us "Market"
@@ -2329,10 +4379,55 @@ StringTable {
      Target_en_us "Cars and trucks for sale. Each comes locked, with one key and its own plates."
      Comment "Sign card for the vehicle lot counter, What section."
     }
+    CustomStringTableItem "{7C1E5A2D9B3F4A03}" {
+     Id "LF-Sign_Wholesale_How"
+     Target_en_us "*Sell Items* at the counter: drop the goods into the crate and the clerk pays cash|Read the chalk board for today's prices"
+     Comment "Sign card for the wholesale warehouse, How section. Capitalized phrases are the action names the player sees."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A04}" {
+     Id "LF-Sign_Wholesale_Needs"
+     Target_en_us "Goods from the sawmill, the quarry or the mine"
+     Comment "Sign card for the wholesale warehouse, Needs section."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A05}" {
+     Id "LF-Sign_Wholesale_Next"
+     Target_en_us "Every lot you sell lowers the price a little; it climbs back while the counter is quiet. The hardware store pays more, but only for what it needs."
+     Comment "Sign card for the wholesale warehouse, Next section."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A01}" {
+     Id "LF-Sign_Wholesale_Title"
+     Target_en_us "Entrepôt de gros"
+     Comment "Title of the fascia sign over the harbour wholesale warehouse (Everon 1989 pack, #3273). Printed on the sign and shown in the prompt as Read: Entrepôt de gros."
+    }
+    CustomStringTableItem "{7C1E5A2D9B3F4A02}" {
+     Id "LF-Sign_Wholesale_What"
+     Target_en_us "The island's wholesale warehouse on the quay road. The clerk buys planks, boards, posts, firewood, cement, iron, coal, ore and stone in any quantity."
+     Comment "Sign card for the wholesale warehouse, What section."
+    }
     CustomStringTableItem "{C8A0D5FC27A2CA22}" {
      Id "LF-SiteFlag_Unclaimed"
      Target_en_us "No holder on record"
      Comment "Pack wording (#2687): painted board on a contested site's flag pole when no organisation holds the site."
+    }
+    CustomStringTableItem "{179A8ED2FA171BFA}" {
+     Id "LF-SiteName_farm_compound"
+     Target_en_us "Farm Compound"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is farm_compound."
+    }
+    CustomStringTableItem "{63EEEDDB7220E37C}" {
+     Id "LF-SiteName_hilltop_mast"
+     Target_en_us "Hilltop Mast"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is hilltop_mast."
+    }
+    CustomStringTableItem "{8391E4196D2A45D3}" {
+     Id "LF-SiteName_quarry_hideout"
+     Target_en_us "Quarry Hideout"
+     Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is quarry_hideout."
+    }
+    CustomStringTableItem "{A014D70CFB1F92A3}" {
+     Id "LF-Tow_Towed"
+     Target_en_us "Your car %1 was towed to the yard. Pay the fee at the impound desk to get it back."
+     Comment "Toast to the owner (#3458, 1989 pack voice): their abandoned car was towed. %1 is the plate. Overrides the core row."
     }
     CustomStringTableItem "{08E024031EF25E98}" {
      Id "LF-TownBoard_Title"
@@ -2536,18 +4631,23 @@ StringTable {
     }
     CustomStringTableItem "{3E81A47C5D0B92F6}" {
      Id "LF-Townsfolk_CafeOwner_Name"
-     Target_en_us "Odile Marchand"
+     Target_en_us "Odilon Marchand"
      Comment "Townsfolk (The relocated, #1961): the café owner's name, the speaker line of her dialogue."
     }
     CustomStringTableItem "{6784DBE972ED4ECD}" {
      Id "LF-Townsfolk_CafeOwner_Role"
      Target_en_us "Café owner"
-     Comment "Townsfolk (The relocated, #1960): what Odile Marchand does, the role line under the name."
+     Comment "Townsfolk (The relocated, #1960): what Odilon Marchand does, the role line under the name."
     }
     CustomStringTableItem "{D20E34A328504890}" {
      Id "LF-Townsfolk_HarbourMaster_Name"
      Target_en_us "Marcel Roux"
      Comment "Townsfolk (M6, #2692): the harbour master's name, the speaker line of his dialogue."
+    }
+    CustomStringTableItem "{3794F00000000001}" {
+     Id "LF-Townsfolk_Mayor_Name"
+     Target_en_us "Bastien Girard"
+     Comment "Townsfolk (#3794): the mayor's name over his dialogue and the quest menu."
     }
     CustomStringTableItem "{7C3E5A19D04B82F6}" {
      Id "LF-Townsfolk_NightShift_Name"
@@ -2568,6 +4668,11 @@ StringTable {
      Id "LF-Townsfolk_OldMan_Role"
      Target_en_us "Retired fisherman"
      Comment "Townsfolk (The relocated, #1960): what Gaspard Lenoir does, the role line under the name."
+    }
+    CustomStringTableItem "{3804F10000000002}" {
+     Id "LF-Townsfolk_ShipmentGoBetween_Name"
+     Target_en_us "Hugo Valmy"
+     Comment "Townsfolk (The shipment, #3804): the go-between's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{AEFD273B4E3FE2B7}" {
      Id "LF_Everon1989_AlphaNotice"

@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "montignac",
+  "slot": "depot",
+  "building": "b95",
+  "kit": "fuel-depot",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_montignac_depot.layer",
+  "kinds": [
+    "FuelDepot"
+  ],
+  "rows": 24,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_montignac_depot_Place"
+  },
+  "date": "2026-11-19"
+}

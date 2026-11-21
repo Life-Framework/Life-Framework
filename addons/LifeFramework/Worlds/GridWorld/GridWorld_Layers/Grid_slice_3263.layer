@@ -1,0 +1,52 @@
+// Grid cell c22r4 for slice-3263: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_slice_3263_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 287 0 71
+}
+SCR_DestructibleEntity Grid_slice_3263_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 292 0 71
+}
+SCR_DestructibleEntity Grid_slice_3263_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 297 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_3263_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 297 0 76
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_3263_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 297 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_3263_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 292 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_3263_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 287 0 81
+ angleY 90
+}
+GenericEntity Grid_slice_3263_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-3263"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 286.2 0.505 71.6
+ angleY -90
+}
+GenericEntity Grid_slice_3263_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "slice-3263"
+  }
+ }
+ coords 286.3 0 73.5
+ angleY 90
+}
+GenericEntity ShoulderCarry_Log : "{C418C6BBD8107C00}Prefabs/Items/Core/ShoulderCarryItem_Base.et" {
+ coords 292.582 0.004 77.875
+}

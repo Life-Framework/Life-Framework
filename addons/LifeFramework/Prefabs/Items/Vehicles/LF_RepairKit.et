@@ -1,0 +1,62 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "7C3E1A95D2B8F604"
+ components {
+  LF_SerialComponent "{4E2A91C6B03D7F56}" {
+  }
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 5
+  }
+  LF_RepairKitComponent "{2D7B4F90C1E85A36}" {
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{7A15C3D9E2B8461F}" {
+     Name "#LF-Item_RepairKit_Name"
+     Description "#LF-Item_RepairKit_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.9
+     SizeSetupStrategy Volume
+     ItemVolume 800
+     RestingUP Forward
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{6BD27321C1406B53}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{9BC36903877C246C}" {
+       AnimGraph "{82906ACD75DF8523}Assets/Items/Equipment/workspaces/Flashlight_MX991.agr"
+       AnimInstance "{903E4A0B96B34B8F}Assets/Items/Equipment/workspaces/MX991_player.asi"
+       BindingName "Gadget"
+      }
+     }
+     HandAdditiveRotation 90 -141.98 0
+     HandAdditiveTranslation 0 0.0758 0
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{51B4D3B0C1A27E32}" {
+      CameraOrbitAngles -60 -30 0
+      CameraDistanceToItem 2
+      FOV 20
+     }
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{DBEAA3CD4B3B08DF}Assets/Props/Industrial/ToolBox_01/ToolBox_01.xob"
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    LF_ReadSerialAction "{1F83A6D07C94E253}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9D40B7E1A5C32F87}" {
+      Name "#LF-Serial_Read_Action"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{9A7553FE5FE4D3D0}" {
+   m_eAnimVariable MX991
+  }
+ }
+}

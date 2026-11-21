@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{FF667F5D6DA11EB5}Sounds/Dialogue/anniversary_priest/Dialogue_anniversary_priest.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

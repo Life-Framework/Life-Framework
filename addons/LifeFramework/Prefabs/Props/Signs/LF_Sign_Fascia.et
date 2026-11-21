@@ -7,12 +7,18 @@ GenericEntity : "{7D7C2DB551E9C36E}Prefabs/Structures/BuildingParts/Signs/Commer
      SourceMaterial "SignCommercial_01"
      AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
     }
+    MaterialAssignClass "{03EA8D96066F67D7}" {
+     SourceMaterial "MLOD"
+     AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+    }
    }
   }
   SCR_DestructionMultiPhaseComponent "{58F896B4CD371A8B}" {
    Enabled 0
   }
   LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sStyle "fascia"
+   m_sSize "fascia"
    m_bFaceOnOwner 1
    m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
    m_vTitlePos 40 26 0

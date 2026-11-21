@@ -218,6 +218,22 @@ class LF_JobStartRunAction : ScriptedUserAction
 		return string.Empty;
 	}
 
+	//! The toast key for a start that did not begin a run; "" for STARTED. A refused start never
+	//! returns in silence (#3356: "Pick up parcel" did nothing while a dead run was still open).
+	static string StartRefusalKey(LF_ERunStart outcome)
+	{
+		if (outcome == LF_ERunStart.STARTED)
+			return string.Empty;
+		if (outcome == LF_ERunStart.NO_DEPOSIT)
+			return LF_CivilianJob.KEY_NEED_DEPOSIT;
+		if (outcome == LF_ERunStart.ALREADY_RUN)
+			return LF_CivilianJob.KEY_ALREADY_RUN;
+		if (outcome == LF_ERunStart.NO_CARGO)
+			return LF_CivilianJob.KEY_NO_ROOM;
+
+		return LF_CivilianJob.KEY_START_REFUSED;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
@@ -249,12 +265,15 @@ class LF_JobStartRunAction : ScriptedUserAction
 		LF_ERunStart started = LF_CivilianJob.BeginRun(pUserEntity, uid, m_eJob, LF_JobGuards.Now(), deposit);
 		if (started == LF_ERunStart.NO_DEPOSIT)
 		{
-			LF_Utils.NotifyEntity(pUserEntity, LF_CivilianJob.KEY_NEED_DEPOSIT, LF_CivilianJob.NameKey(m_eJob), 6.0, deposit.ToString());
+			LF_Utils.NotifyEntity(pUserEntity, StartRefusalKey(started), LF_CivilianJob.NameKey(m_eJob), 6.0, deposit.ToString());
 			return;
 		}
 
 		if (started != LF_ERunStart.STARTED)
+		{
+			LF_Utils.NotifyEntity(pUserEntity, StartRefusalKey(started), LF_CivilianJob.NameKey(m_eJob), 6.0);
 			return;
+		}
 
 		// The nearest drop goes on the map and the waypoint (LF_JobMapMarks; a taxi run gets none).
 		LF_JobMapMarks.OnRunStarted(uid, m_eJob, pUserEntity.GetOrigin());
@@ -331,7 +350,12 @@ class LF_JobDropoffAction : ScriptedUserAction
 		else
 			LF_Debug.Error("Jobs", "dropoff action: player has no LF_PlayerJobComponent");
 
-		LF_Utils.NotifyEntity(pUserEntity, "#EL-Job_Paid", LF_CivilianJob.NameKey(finished), 4.0, paid.ToString());
+		// The toast names each part of the pay (#3148): the run, the night rate, the bonus.
+		LF_JobPayParts parts = LF_CivilianJob.TakeLastParts(uid);
+		if (!parts)
+			parts = LF_JobPayParts.Make(paid, 0, 0);
+
+		LF_Utils.NotifyEntity(pUserEntity, parts.ToastKey(), LF_CivilianJob.NameKey(finished), 4.0, parts.ToastArg());
 
 		// Hidden progression: no level text. When the experience opens new work, the clerk says so.
 		LF_EJobType opened = LF_CivilianJob.NewlyOpened(levelBefore, LF_CivilianJob.GetLevel(uid));

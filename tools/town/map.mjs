@@ -15,6 +15,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { typeIndex, unknownTypes } from "../scout/types.mjs";
+import { attachDropDossiers, checkOutposts } from "./outposts.mjs";
 import { checkSlotPois, loadPoiKinds } from "./lib/poi-check.mjs";
 
 export const help = "map <slug> [--template town|village] [--dossier f] [--out f] [--force] | --check   propose a slot -> building/plot mapping from the scout dossier; --check refuses an incomplete one or a slot with no POI kind";
@@ -55,7 +56,7 @@ export function checkTemplate(t) {
     else ids.add(s.id);
     if (typeof s?.required !== "boolean") out.push(`${at}: required must be true or false`);
     if (typeof s?.kit !== "string" || !s.kit) out.push(`${at}: kit is missing`);
-    if (s?.host !== "building" && s?.host !== "street" && s?.host !== "plot") out.push(`${at}: host must be building, street or plot`);
+    if (!["building", "street", "plot", "outposts"].includes(s?.host)) out.push(`${at}: host must be building, street, plot or outposts`);
     if (!s?.needs || typeof s.needs !== "object") out.push(`${at}: needs is missing`);
     else if (!["required", "optional"].includes(s.needs.interior)) out.push(`${at}: needs.interior must be required or optional`);
     if (!Array.isArray(s?.places)) out.push(`${at}: places must be a list of LF_Places kinds`);
@@ -268,9 +269,20 @@ export function proposeMapping(dossierJson, template, opts = {}) {
     }
   }
 
+  // Outposts slots stand in other places' buildings: the proposal leaves them none; a person lists their drops in the mapping.
+  for (const slot of template.slots) {
+    if (slot.host === "outposts") slots[slot.id] = { none: true, reason: "an outposts slot lists its drops by hand (`drops`: place and building), then `tools\\cli town drops` seats them", why: ["outposts slot: its drops stand in other places' buildings and are listed by hand"] };
+  }
+
   // Street slots: a shared frontage, the nearest building to the centre inside the slot's reach, else the nearest plot.
   for (const slot of template.slots) {
     if (slot.host !== "street") continue;
+    // `with`: the slot rides in another slot's building (a jail cell in the police villa), not on the nearest frontage.
+    const partner = slot.with ? slots[slot.with] : null;
+    if (partner?.building) {
+      slots[slot.id] = { building: partner.building, shared: true, why: [`rides in the ${slot.with} slot's building (${partner.building})`] };
+      continue;
+    }
     const reach = slot.needs.maxDistance ?? Infinity;
     const b = live
       .filter((x) => x.distance <= reach)
@@ -312,7 +324,9 @@ function summarise(reasons) {
 // ------------------------------------------------------------------ check
 
 // Pure: the problems that keep a mapping from being approved, [] when it can be.
-export function checkMapping(mapping, dossierJson, template) {
+// `others` ({ <place slug>: dossier json }) is optional: an entry with `dossier` names a building of that other place's survey,
+// looked up there when given.
+export function checkMapping(mapping, dossierJson, template, others = null) {
   const out = [];
   if (!mapping || typeof mapping !== "object" || typeof mapping.slots !== "object" || !mapping.slots) return ["the mapping has no slots object"];
   if (mapping.schema !== MAPPING_SCHEMA) out.push(`mapping schema is ${mapping.schema}, expected ${MAPPING_SCHEMA}`);
@@ -335,12 +349,41 @@ export function checkMapping(mapping, dossierJson, template) {
       else if (!e.reason) out.push(`slot ${slot.id}: none needs a reason`);
       continue;
     }
+    if (slot.host === "outposts") {
+      // The drops' dossiers: the ones read with the mapping (attachDropDossiers), plus any the caller passed in `others`.
+      const dossiers = mapping.dropDossiers || others ? { ...others, ...mapping.dropDossiers } : null;
+      out.push(...checkOutposts(slot.id, e, dossiers, mapping.place));
+      continue;
+    }
+    if (e.drops) out.push(`slot ${slot.id}: only an outposts slot lists drops`);
     if (e.building && e.plot) out.push(`slot ${slot.id}: names both a building and a plot`);
     if (!e.building && !e.plot) {
       out.push(`slot ${slot.id}: names neither a building nor a plot`);
       continue;
     }
     if (e.shared && slot.host !== "street") out.push(`slot ${slot.id}: only a street slot may share a building`);
+    if (e.building && e.dossier) {
+      // A building of ANOTHER place's dossier (a harbour master's cabin at the dock, standing outside this place's survey).
+      if (typeof e.dossier !== "string" || !SLUG_RX.test(e.dossier) || e.dossier === mapping.place) {
+        out.push(`slot ${slot.id}: "dossier" must name another place's slug (a building of that place's survey)`);
+        continue;
+      }
+      if (e.shared) out.push(`slot ${slot.id}: only a street slot may share a building`);
+      if (others && !others[e.dossier]) {
+        out.push(`slot ${slot.id}: no dossier for place ${e.dossier}`);
+        continue;
+      }
+      const ob = others ? readDossier(others[e.dossier]).buildings.find((x) => x.id === e.building) : null;
+      if (others && !ob) out.push(`slot ${slot.id}: building ${e.building} is not in the dossier of ${e.dossier}`);
+      else if (ob && ob.ruin) out.push(`slot ${slot.id}: ${e.dossier}/${ob.id} is a ruin`);
+      else if (ob && slot.needs.interior === "required" && ob.interior.value === "no") out.push(`slot ${slot.id}: ${e.dossier}/${ob.id} has no interior and the slot needs one`);
+      if (!e.shared) {
+        const k = `${e.dossier}/${e.building}`;
+        if (claimed.has(k)) out.push(`slot ${slot.id}: building ${k} is already claimed by slot ${claimed.get(k)}`);
+        else claimed.set(k, slot.id);
+      }
+      continue;
+    }
     if (e.building) {
       const b = byBuilding.get(e.building);
       if (!b) {
@@ -359,7 +402,9 @@ export function checkMapping(mapping, dossierJson, template) {
       const p = byPlot.get(e.plot);
       if (!p) out.push(`slot ${slot.id}: plot ${e.plot} is not in the dossier`);
       else if (slot.plot && !plotFits(p, slot.plot)) out.push(`slot ${slot.id}: plot ${p.id} is ${p.width} x ${p.depth} m, under the ${slot.plot.minWidth} x ${slot.plot.minDepth} the slot needs`);
-      if (!e.shared && !(e.prefab && typeof e.prefab.stem === "string" && e.prefab.stem)) out.push(`slot ${slot.id}: a plot needs a prefab to place on it`);
+      // A hostless plot (a lake, a pond, a field: nothing is built on it, the kit stands on the open ground) needs no prefab (#3666).
+      if (e.hostless && !(e.plot && !e.building)) out.push(`slot ${slot.id}: "hostless" belongs on a plot entry`);
+      if (!e.shared && !e.hostless && !(e.prefab && typeof e.prefab.stem === "string" && e.prefab.stem)) out.push(`slot ${slot.id}: a plot needs a prefab to place on it`);
       if (!e.shared) {
         const k = `plot:${e.plot}`;
         if (claimed.has(k)) out.push(`slot ${slot.id}: plot ${e.plot} is already claimed by slot ${claimed.get(k)}`);
@@ -370,9 +415,20 @@ export function checkMapping(mapping, dossierJson, template) {
   return out;
 }
 
+// The dossiers of the other places a mapping's `dossier` entries name, by slug (a missing file is left out; checkMapping reports it).
+export function loadOtherDossiers(root, mapping) {
+  const out = {};
+  for (const e of Object.values(mapping?.slots ?? {})) {
+    if (typeof e?.dossier !== "string" || !SLUG_RX.test(e.dossier) || out[e.dossier]) continue;
+    const f = join(root, "docs", "everon", "places", e.dossier, "dossier.json");
+    if (existsSync(f)) out[e.dossier] = JSON.parse(readFileSync(f, "utf8"));
+  }
+  return out;
+}
+
 // ------------------------------------------------------------------ CLI
 
-const USAGE = "usage: tools\\cli town map <slug> [--template town|village] [--dossier file] [--out file] [--force] [--dry]\n       tools\\cli town map <slug> --check [--template kind] [--dossier file] [--out file]";
+const USAGE ="usage: tools\\cli town map <slug> [--template town|village] [--dossier file] [--out file] [--force] [--dry]\n       tools\\cli town map <slug> --check [--template kind] [--dossier file] [--out file]";
 
 function parseArgs(args) {
   const flags = {};
@@ -440,8 +496,9 @@ export async function main(args, { root }) {
     const template = loadTemplate(kind, root);
     if (flags.check) {
       const mapping = readJson(out, "mapping");
+      attachDropDossiers(root, mapping);
       // The template's POI naming (card M17): every slot names a front kind with a POI row, or "none". `town check` (T4) calls the same.
-      const probs = [...checkMapping(mapping, dossier, template), ...checkSlotPois(template, loadPoiKinds(root).kinds)];
+      const probs = [...checkMapping(mapping, dossier, template, loadOtherDossiers(root, mapping)), ...checkSlotPois(template, loadPoiKinds(root).kinds)];
       for (const p of probs) console.log(`FAIL  ${p}`);
       if (probs.length) {
         console.log(`SUMMARY town-map check fail ${slug}: ${probs.length} problem(s); ${relative(root, out)}`);

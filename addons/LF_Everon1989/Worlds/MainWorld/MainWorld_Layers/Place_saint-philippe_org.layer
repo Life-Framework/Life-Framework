@@ -1,0 +1,58 @@
+GenericEntity Fit_saint_philippe_org_Place {
+ components {
+  LF_PlaceComponent "{42C9A18459416A0F}" {
+   m_sKind "OrgDesk"
+   m_sId "saint-philippe.org"
+  }
+  LF_FittedBuildingComponent "{CB8AB040474ED83A}" {
+  }
+ }
+ coords 4501.5 16 10623.6
+}
+GenericEntity Fit_saint_philippe_org_registry_desk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ components {
+  ActionsManagerComponent "{84F263DF01236A06}" {
+   ActionContexts {
+    UserActionContext "{3F6AF5F26DCE3739}" {
+     ContextName "default"
+     Radius 3
+     Position PointInfo "{7B23E0D8F24C1C76}" {
+      Offset 0 1 0
+     }
+    }
+   }
+   additionalActions {
+    LF_OrganizationDeskAction "{A400B8708D3E8AFE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8CFE7804D25C87CE}" {
+      Name "#EL-Org_Open"
+     }
+    }
+   }
+  }
+ }
+ coords 4501.957 16.478 10624.425
+ angleY 177
+}
+GenericEntity Fit_saint_philippe_org_registry_chair : "{D19D5E8950BC4DD1}Prefabs/Props/Furniture/ChairOffice_01.et" {
+ coords 4501.994 16.478 10623.726
+ angleY -3
+}
+GenericEntity Fit_saint_philippe_org_war_board : "{C0DFDD43EA7E58CB}Prefabs/Organizations/LF_OrgWarBoard.et" {
+ coords 4501.416 16.478 10625.198
+ angleY 177
+}
+GenericEntity Fit_saint_philippe_org_registry_sign : "{884DF4029C8307DB}Prefabs/Props/Signs/LF_Sign_Plate.et" {
+ components {
+  LF_SignComponent "{0F52A6E4DA40DB6F}" {
+   m_sSignId "org_registry"
+   m_vRimColor 0.05 0.2 0.35
+   m_vPaintColor 0.93 0.93 0.9
+   m_vTextColor 0.05 0.2 0.35
+  }
+ }
+ coords 4503.489 17.8 10621.953
+ angleY 177
+}

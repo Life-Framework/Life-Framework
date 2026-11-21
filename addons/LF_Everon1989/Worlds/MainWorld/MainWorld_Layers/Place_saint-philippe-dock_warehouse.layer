@@ -1,0 +1,92 @@
+GenericEntity Fit_saint_philippe_dock_warehouse_Place {
+ components {
+  LF_PlaceComponent "{2B0971A080D19E87}" {
+   m_sKind "Warehouse"
+   m_sId "saint-philippe-dock.warehouse"
+  }
+  LF_FittedBuildingComponent "{90EBA658B73CA08A}" {
+  }
+ }
+ coords 4464.6 2.5 11080.2
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4461.005 2.5 11069.574
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_crate_1_a : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 4461.005 2.64 11069.574
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_pallet_2 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4457.195 2.5 11071.774
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_crate_2_a : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 4457.195 2.64 11071.774
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_pallet_3 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4461.889 2.096 11073.105
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_crate_3_a : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+ coords 4461.889 2.236 11073.105
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_pallet_4 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4461.811 2.5 11077.769
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_crate_4_a : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 4461.811 2.64 11077.769
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_pallet_5 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4468.005 2.5 11081.698
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_crate_5_a : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
+ coords 4468.005 2.64 11081.698
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_pallet_6 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4464.195 2.217 11083.898
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_crate_6_a : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
+ coords 4464.195 2.357 11083.898
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_palletbox_1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 4469.928 2.5 11084.629
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_palletbox_2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 4465.772 2.5 11087.029
+ angleY 30
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_boxes_1 : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
+ coords 4460.102 2.5 11067.209
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_boxes_2 : "{C76C3AF337109066}Prefabs/Props/Crates/CardboardBoxStack_01.et" {
+ coords 4455.598 2.5 11069.809
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_scene_pallet : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4457.1 2.5 11067.21
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_scene_crate : "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et" {
+ coords 4457.1 2.64 11067.21
+ angleY -60
+}
+GenericEntity Fit_saint_philippe_dock_warehouse_scene_sample : "{00DD12BB38DAD61B}Prefabs/Systems/Events/LF_EventMarker_Item.et" {
+ components {
+  LF_EventWaypointComponent "{6ECC42BB4549A820}" {
+   m_sSceneId "shipment_docks"
+  }
+ }
+ coords 4457.1 2.863 11067.21
+ angleY -60
+}
