@@ -261,7 +261,15 @@ class LF_Lockpick
 	//! \return True when the pick action should be listed on this target: a pick target that is locked.
 	static bool ShowsPick(IEntity target)
 	{
-		return target && LF_Component<LF_LockpickTargetComponent>.Find(target) != null && IsLockKnown(target) && IsLocked(target);
+		return target && LF_Component<LF_LockpickTargetComponent>.Find(target) != null && IsLockKnown(target) && IsLocked(target) && !IsServiceVehicle(target);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True for a police car on a marker (#3875): never a pick target, whatever its prefab carries.
+	protected static bool IsServiceVehicle(IEntity target)
+	{
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(target);
+		return vehicleLock && vehicleLock.IsServiceVehicle();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -289,7 +297,7 @@ class LF_Lockpick
 	{
 		LF_LockpickTargetComponent target = LF_Component<LF_LockpickTargetComponent>.Find(door);
 		bool known = IsLockKnown(door);
-		bool pickable = target && known && target.IsPickable();
+		bool pickable = target && known && target.IsPickable() && !IsServiceVehicle(door);
 		bool locked = known && IsLocked(door);
 		return LF_LockpickRules.Check(pickable, locked, HasPick(user), IsBusy(door));
 	}
