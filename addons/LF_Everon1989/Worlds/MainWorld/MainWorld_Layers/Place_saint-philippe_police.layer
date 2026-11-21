@@ -79,11 +79,11 @@ GenericEntity Fit_saint_philippe_police_police_kit_armory {
    Enabled 1
   }
  }
- coords 4546.618 18.2 10750.592
+ coords 4546.618 18.235 10750.592
  angleY 171
 }
 GenericEntity Fit_saint_philippe_police_police_kit_armory_store : "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et" {
- coords 4549.664 18.201 10751.176
+ coords 4549.664 18.236 10751.176
  angleY 171
 }
 GenericEntity Fit_saint_philippe_police_police_kit_case_board : "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et" {
@@ -242,7 +242,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_evidence_locker : "{5D8B2F46A
    m_sTargetId "PoliceKit_Police_EvidenceLocker"
   }
  }
- coords 4550.587 18.201 10751.423
+ coords 4550.587 18.236 10751.423
  angleY 171
 }
 GenericEntity Fit_saint_philippe_police_police_kit_handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {

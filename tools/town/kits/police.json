@@ -92,7 +92,7 @@
       "verb": "against wall",
       "offset": [
         5.55,
-        0,
+        0.035,
         -3.2
       ],
       "yaw": 0,
@@ -143,7 +143,7 @@
       "verb": "against wall",
       "offset": [
         2.45,
-        0.001,
+        0.036,
         -3.3
       ],
       "yaw": 0,
@@ -159,7 +159,7 @@
       "verb": "against wall",
       "offset": [
         1.5,
-        0.001,
+        0.036,
         -3.4
       ],
       "yaw": 0,
