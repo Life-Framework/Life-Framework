@@ -176,9 +176,9 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        10.5,
+        11,
         0,
-        8.5
+        16
       ],
       "yaw": 255,
       "config": [
@@ -243,5 +243,11 @@
       "wall": "free",
       "floor": "f0"
     }
-  ]
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{F5A2DC0597B53E19}Prefabs/Structures/Agriculture/Barn/Barn_E_02/Barn_E_02.et",
+    "lanes": [],
+    "clear": []
+  }
 }
