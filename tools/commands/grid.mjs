@@ -1,6 +1,7 @@
 // tools\cli grid: one debug-grid cell per feature in the GridWorld annex (docs/architecture/world-zones.md).
 //
 //   grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--pack] [--margin M] [--front +z] [--rows] [--centre] [--dry] [--no-verify] [--no-fetch]
+//   grid place <slug> <prefab> --bay [--pack]   an authoring bay (a 2 x 2 at the east end; `town author` uses it, nothing else may)
 //   grid list [--no-fetch]
 //   grid free <slug>
 //
@@ -39,7 +40,7 @@
 // slug adds the next row, three rows in all. `free` deletes the layer and the claim.
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { CELL, isFrameClaim } from "../grid/lattice.mjs";
+import { CELL, authoringBays, isAuthoringCell, isFrameClaim } from "../grid/lattice.mjs";
 import { loadWorld } from "../../agent-box/layers.mjs";
 import { withSpawn } from "../grid/cell-spawn.mjs";
 import { MARGIN, blockText, boundsWithChildren, chooseYaw, footprintOf, largestFree, noFitMessage, pivotAt, spanOptions } from "../grid/autosize.mjs";
@@ -115,10 +116,10 @@ export function yardLayer(slug, cell, { rot, yawForFacing, parseHeading }) {
 }
 
 export function registryText(entry) {
-  const { slug, cell, layer, rows, created, span, pack } = entry;
+  const { slug, cell, layer, rows, created, span, pack, authoring } = entry;
   const multi = Array.isArray(span) && (span[0] !== 1 || span[1] !== 1);
   const base = multi ? { slug, cell, span, layer, rows, created } : { slug, cell, layer, rows, created };
-  return `${JSON.stringify(pack === true ? { ...base, pack: true } : base, null, 2)}\n`;
+  return `${JSON.stringify({ ...base, ...(pack === true ? { pack: true } : {}), ...(authoring === true ? { authoring: true } : {}) }, null, 2)}\n`;
 }
 
 // A grid map: one character per cell, north at the top. `#` blocked, `.` free, a letter per claim.
@@ -129,7 +130,7 @@ export function mapText(allClaims, ents) {
   const cells = allCells();
   const maxRow = Math.max(...cells.map((c) => c.row));
   for (let row = maxRow; row >= 0; row--) {
-    const line = cells.filter((c) => c.row === row).map((c) => byCell.get(c.id) ?? (blockers(c, ents).length ? "#" : ".")).join("");
+    const line = cells.filter((c) => c.row === row).map((c) => byCell.get(c.id) ?? (blockers(c, ents).length ? "#" : isAuthoringCell(c.id) ? "+" : ".")).join("");
     rows.push(`  z ${String(cellBounds(0, row).z0).padStart(3)}  ${line}`);
   }
   return rows.join("\n");
@@ -184,8 +185,10 @@ function list(root, flags, ctx = {}) {
   const claims = [...local, ...extra, ...inFlight, ...inTrees].filter((c) => !isFrameClaim(c));
   const ents = gridEnts(root);
   const taken = new Set(claims.flatMap(claimCellIds));
-  const free = allCells().filter((c) => !taken.has(c.id) && !blockers(c, ents).length).length;
-  console.log(`grid: ${claims.length} cell(s) claimed (${extra.length} only on origin/main, ${inFlight.length} in open PRs, ${inTrees.length} in other worktrees), ${free} free (${CELLS_DIR}/)`);
+  const open = allCells().filter((c) => !taken.has(c.id) && !blockers(c, ents).length);
+  const free = open.filter((c) => !isAuthoringCell(c.id)).length;
+  const baysFree = authoringBays().filter((b) => b.cells.every((id) => !taken.has(id))).length;
+  console.log(`grid: ${claims.length} cell(s) claimed (${extra.length} only on origin/main, ${inFlight.length} in open PRs, ${inTrees.length} in other worktrees), ${free} free, ${baysFree} of ${authoringBays().length} authoring bays free (${CELLS_DIR}/)`);
   claims.forEach((c, i) => {
     const b = claimRect(c);
     const layer = join(root, gridLayersOfClaim(c), layerOfSlug(c.slug));
@@ -196,12 +199,12 @@ function list(root, flags, ctx = {}) {
     const tail = inFlight.includes(c)
       ? `claimed in open PR #${c.pr} (${c.branch}), not merged yet${clashText}`
       : inTrees.includes(c) ? `claimed in worktree ${c.worktree} (${c.branch || "detached"}), not pushed yet${clashText}`
-      : extra.includes(c) ? "claimed on origin/main, not merged here yet" : `${n} entities, ${c.rows ?? 0}/3 rows${c.pack ? ", pack cell" : ""}`;
+      : extra.includes(c) ? "claimed on origin/main, not merged here yet" : `${n} entities, ${c.rows ?? 0}/3 rows${c.pack ? ", pack cell" : ""}${c.authoring ? ", authoring bay" : ""}`;
     console.log(`  ${String.fromCharCode(97 + (i % 26))} ${c.slug.padEnd(28)} ${`${c.cell}${b && b.w * b.h > 1 ? `+${b.w}x${b.h}` : ""}`.padEnd(6)} ${b ? `x ${b.x0}..${b.x1} z ${b.z0}..${b.z1}` : "bad cell"}  ${tail}${c.error ? `  ERROR ${c.error}` : ""}`);
   });
   console.log(mapText(claims, ents));
   if (frame) console.log(`  frame: ${frame.layer} marks every cell (GridMarker_cXrY) and lists them on GridMapBoard at the gate; node tools/grid/lattice.mjs write refreshes the plates`);
-  console.log("  (# blocked by legacy stations or reserved ground, . free, letters as listed)");
+  console.log("  (# blocked by legacy stations or reserved ground, . free, + a free authoring bay cell, letters as listed)");
   return 0;
 }
 
@@ -309,12 +312,15 @@ async function place(root, args, flags, ctx = {}) {
     const takenInTrees = new Map(inTrees.flatMap((c) => claimCellIds(c).map((id) => [id, c])));
     const taken = new Set([...claims.flatMap(claimCellIds), ...takenOnMain.keys(), ...takenInPr.keys(), ...takenInTrees.keys()]);
     const cellOf = (id) => allCells().find((c) => c.id === id);
-    const blocked = (id, e) => blockers(cellOf(id), e).length > 0;
+    // The authoring bays are `town author`'s: a normal claim never takes one (lattice.mjs AUTHORING), and --bay takes only a bay.
+    const bay = Boolean(flags.bay);
+    const authoringWhy = (id) => (!bay && isAuthoringCell(id) ? ["an authoring bay (grid place --bay, which `town author` uses)"] : []);
+    const blocked = (id, e) => blockers(cellOf(id), e).length > 0 || (!bay && isAuthoringCell(id));
     const whyNot = (id) => {
       const owner = takenOnMain.get(id);
       const pr = takenInPr.get(id);
       const wt = takenInTrees.get(id);
-      return [...(owner ? [`claimed on origin/main by ${owner}`] : pr ? [`claimed by ${pr.slug} in open PR #${pr.pr}`] : wt ? [`claimed by ${wt.slug} in worktree ${wt.worktree} (${wt.branch || "detached"}), not pushed yet`] : taken.has(id) ? ["claimed"] : []), ...blockers(cellOf(id), ents)];
+      return [...(owner ? [`claimed on origin/main by ${owner}`] : pr ? [`claimed by ${pr.slug} in open PR #${pr.pr}`] : wt ? [`claimed by ${wt.slug} in worktree ${wt.worktree} (${wt.branch || "detached"}), not pushed yet`] : taken.has(id) ? ["claimed"] : []), ...authoringWhy(id), ...blockers(cellOf(id), ents)];
     };
     const sized = auto && flags.span == null; // no --span: the bounds say how big
     if (flags.span != null) {
@@ -323,14 +329,32 @@ async function place(root, args, flags, ctx = {}) {
       span = [Number(sp[1]), Number(sp[2])];
     }
     let cell;
+    if (bay) {
+      const bspan = authoringBays()[0].span;
+      if (flags.span != null && String(flags.span) !== bspan.join("x")) throw new Error(`--bay takes a ${bspan.join("x")} block, not --span ${flags.span}`);
+      span = bspan;
+      if (sized && !opts.some((o) => o.span[0] === bspan[0] && o.span[1] === bspan[1])) {
+        console.log(`grid: ${nameOf(auto.ref)} needs ${opts.map((o) => `${o.span[0]}x${o.span[1]}`).join(" or ")} cells, more than the ${bspan.join("x")} authoring bay; use a normal cell (grid place without --bay) or lower --margin`);
+        return 1;
+      }
+    }
     if (flags.cell) {
+      if (bay && !authoringBays().some((b) => b.id === flags.cell)) throw new Error(`--bay: ${flags.cell} is not an authoring bay (${authoringBays().map((b) => b.id).join(", ")})`);
       if (!parseCellId(flags.cell)) throw new Error(`--cell ${flags.cell} is not a cell (c0r0 to c${CELL.cols - 1}r${CELL.rows - 1})`);
-      if (sized) span = (opts.find((o) => claimRect({ cell: flags.cell, span: o.span })) ?? opts[0]).span;
+      if (sized && !bay) span = (opts.find((o) => claimRect({ cell: flags.cell, span: o.span })) ?? opts[0]).span;
       cell = claimRect({ cell: flags.cell, span });
       if (!cell) throw new Error(`--cell ${flags.cell} --span ${span.join("x")} leaves the lattice (${CELL.cols} x ${CELL.rows} cells)`);
       const why = claimCellIds({ cell: flags.cell, span }).flatMap((id) => whyNot(id).map((w) => `${id}: ${w}`));
       if (why.length) {
         console.log(`grid: cell ${cell.id} is not free: ${why.join("; ")}`);
+        return 1;
+      }
+    } else if (bay) {
+      cell = allocate(slug, { ents, taken, authoring: true });
+      if (!cell) {
+        const bays = authoringBays();
+        const used = bays.filter((b) => b.cells.some((id) => taken.has(id)));
+        console.log(`grid: no free authoring bay (${used.length} of ${bays.length} are claimed: ${used.map((b) => b.id).join(", ")}). A bay is released by town author extract (the kit is kept); free another with tools\\cli grid free <slug>, or wait for an agent to extract`);
         return 1;
       }
     } else if (sized) {
@@ -356,6 +380,7 @@ async function place(root, args, flags, ctx = {}) {
     entry = { slug, cell: cell.id, layer: layerName, rows: 0, created: new Date().toISOString().slice(0, 10) };
     if (span[0] !== 1 || span[1] !== 1) entry.span = span;
     if (route.pack) entry.pack = true;
+    if (bay) entry.authoring = true;
     fresh = true;
   }
   const cell = claimRect(entry);
@@ -435,7 +460,7 @@ const defaultAudit = (P) => async (verify) => {
 };
 
 function usage() {
-  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--pack] [--margin M] [--front +z] [--rows] [--centre] [--dry] [--no-verify] [--no-fetch]\n       tools\\cli grid list [--no-fetch]\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
+  console.log("usage: tools\\cli grid place <slug> [<prefab>...] [--name N] [--cell cXrY] [--span WxH] [--pack] [--margin M] [--front +z] [--rows] [--centre] [--dry] [--no-verify] [--no-fetch] [--bay]\n       tools\\cli grid list [--no-fetch]\n       tools\\cli grid free <slug>\n(docs/architecture/world-zones.md)");
   return 1;
 }
 

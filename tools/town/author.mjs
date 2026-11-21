@@ -3,21 +3,29 @@
 // "Author in the grid, stamp into the world"; docs/starter-packs/stamp.md).
 //
 //   town author <kit> [--from <place>/<slot>] [--slug s] [--dry]
-//       claims a pack grid cell (`grid place <slug> <building prefab> --pack`) holding the SAME vanilla building the island slot
-//       stands in (the dossier's prefab with --from, else the kit's stamp.prefab / building.vanilla), and seeds it with the kit's
-//       rows at the building's origin and yaw (`kit-grid.mjs put`) when the kit exists. Then look, walk and audit the cell.
-//   town author extract <Grid_<slug>.layer> <group> --kit <name> [--building <EntityName>] [--clear <glob,...>] [--system s] [--out f]
+//       claims an AUTHORING BAY (a 2 x 2 block at the east end of the lattice, `grid place <slug> <building prefab> --pack --bay`;
+//       tools/grid/lattice.mjs AUTHORING) holding the SAME vanilla building the island slot stands in (the dossier's prefab with
+//       --from, else the kit's stamp.prefab / building.vanilla), and seeds it with the kit's rows at the building's origin and
+//       yaw (`kit-grid.mjs put`) when the kit exists. Then look, walk and audit the cell. Only authoring takes a bay.
+//   town author --reopen <kit> [--slug s] [--dry]
+//       the kit is the source of truth, a bay is only scratch space: this builds the bay again from the extracted kit
+//       (the kit's building prefab, every row put back) when someone needs to edit the shop. Extract releases it again.
+//   town author extract <Grid_<slug>.layer> <group> --kit <name> [--building <EntityName>] [--clear <glob,...>] [--system s] [--out f] [--keep-bay]
 //       writes tools/town/kits/<name>.json in the building's own frame: offsets and yaw relative to the building entity of the
 //       grid layer (its height too: the same prefab has the same floors), each row's attach target, the kit's clear lanes and
-//       clear list, and a `stamp` block naming the building prefab. No world coordinate is in the result.
+//       clear list, and a `stamp` block naming the building prefab. No world coordinate is in the result. When the layer is an
+//       authoring bay's, the kit is saved in tools/town/kits/ and checks, the bay is RELEASED (`grid free`: layer and claim
+//       deleted) so the next shop can use it; `--keep-bay` keeps it.
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+import { basename, dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { isAuthoringClaim } from "../grid/lattice.mjs";
+import { layerOfSlug, readCells } from "../lib/world-zones.mjs";
 import { checkKit, entitiesOf, extractKit, KITS_DIR, parseBlocks } from "./kit.mjs";
 import { kitPrefab } from "./stamp.mjs";
 
-export const help = "author <kit> [--from <place>/<slot>] | author extract <Grid layer> <group> --kit k   build a shop in a pack grid cell around a copy of the island building, then lift it building-local for `town stamp`";
+export const help = "author <kit> [--from <place>/<slot>] | author --reopen <kit> | author extract <Grid layer> <group> --kit k   build a shop in an authoring bay (a 2x2 at the east end of the grid) around a copy of the island building, then lift it building-local for `town stamp` (extract frees the bay; --reopen rebuilds it from the kit)";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const r3 = (n) => Math.round(n * 1000) / 1000;
@@ -79,10 +87,31 @@ export function authorExtract(layerPath, group, { kit, building = null, clear = 
   return out;
 }
 
+// The authoring claim a grid layer belongs to (by its file name), or null: a layer of a normal cell, or no claim, is not a bay.
+export function bayClaimOfLayer(root, layerPath) {
+  const file = basename(layerPath);
+  return readCells(root).find((c) => !c.error && c.slug && isAuthoringClaim(c) && layerOfSlug(c.slug) === file) ?? null;
+}
+
+// Release the bay a layer sits in once its kit is saved. `free(slug)` is `grid free` (injected in the selftest). Returns the slug or null.
+export function releaseBay(root, layerPath, free) {
+  const claim = bayClaimOfLayer(root, layerPath);
+  if (!claim) return null;
+  return free(claim.slug) === 0 ? claim.slug : null;
+}
+
 // Where `town author` builds: the island building's prefab (--from) or the kit's own, and the cell slug.
-export function planAuthor(kitName, { from = null, placesDir, templatesDir, kitsDir = KITS_DIR, slug = null }) {
+// `reopen` rebuilds a bay from an extracted kit: the kit must exist and its prefab comes from the kit alone.
+export function planAuthor(kitName, { from = null, placesDir, templatesDir, kitsDir = KITS_DIR, slug = null, reopen = false }) {
   const kitFile = join(kitsDir, `${kitName}.json`);
   const kit = existsSync(kitFile) ? JSON.parse(readFileSync(kitFile, "utf8")) : null;
+  if (reopen) {
+    if (!kit) throw new Error(`--reopen ${kitName}: no kit tools/town/kits/${kitName}.json to rebuild from (a first build is town author ${kitName} --from <place>/<slot>)`);
+    if (from) throw new Error(`--reopen ${kitName}: the kit names its building; drop --from`);
+    const prefab = kitPrefab(kit);
+    if (!prefab) throw new Error(`--reopen ${kitName}: the kit has no building prefab (stamp.prefab / building.vanilla)`);
+    return { kit, kitFile, prefab, source: `kit ${kitName} (reopen)`, slug: slug ?? `author-${kitName}`, seed: true, reopen: true };
+  }
   let prefab = kit ? kitPrefab(kit) : null;
   let source = kit ? `kit ${kitName}` : null;
   if (from) {
@@ -106,6 +135,46 @@ export function planAuthor(kitName, { from = null, placesDir, templatesDir, kits
   return { kit, kitFile, prefab, source, slug: slug ?? `author-${kitName}`, seed: Boolean(kit) };
 }
 
+// `town author extract`: write the kit and, for a layer that sits in an authoring bay, archive the layer beside the kit
+// (tools/town/kits/sources/<kit>.layer: `town fit` reads the components the kit names but does not copy from its source) and
+// release the bay (`free(slug)` is `grid free`). The kit in tools/town/kits/ is the source of truth; `town author --reopen <kit>`
+// builds the bay again. A kit written elsewhere (--out) or --keep-bay leaves the bay and the source where they are.
+export function extractToKit(root, layerPath, group, a, { free }) {
+  const kitsDir = resolve(join(root, "tools", "town", "kits"));
+  const out = resolve(a.out ?? join(kitsDir, `${a.kit}.json`));
+  const claim = out.startsWith(kitsDir + sep) ? bayClaimOfLayer(root, layerPath) : null;
+  const release = Boolean(claim) && !a["keep-bay"];
+  const kit = authorExtract(layerPath, group, { kit: a.kit, building: a.building ?? null, clear: String(a.clear ?? "").split(",").filter(Boolean), system: a.system ?? "" });
+  const archive = join(kitsDir, "sources", `${kit.kit}.layer`);
+  const rel = (p) => relative(root, p).split(sep).join("/");
+  const had = existsSync(archive);
+  kit.source.file = rel(layerPath);
+  if (release) {
+    // the layer is kept beside the kit, and the kit names that copy as its source
+    mkdirSync(dirname(archive), { recursive: true });
+    writeFileSync(archive, `${ARCHIVE_HEAD(kit.kit)}${readFileSync(layerPath, "utf8")}`);
+    kit.source.file = rel(archive);
+  }
+  const errs = checkKit(kit, { root });
+  if (errs.length) {
+    if (release && !had) unlinkSync(archive);
+    console.log(errs.join("\n"));
+    return 1;
+  }
+  mkdirSync(dirname(out), { recursive: true });
+  writeFileSync(out, JSON.stringify(kit, null, 2) + "\n");
+  console.log(`kit ${kit.kit}: ${kit.rows.length} rows, building-local around ${kit.stamp.prefab} -> ${rel(out)}`);
+  if (claim && !release) console.log(`bay ${claim.cell} (${claim.slug}) kept (--keep-bay); release it with tools\\cli grid free ${claim.slug}`);
+  else if (release) {
+    const freed = releaseBay(root, layerPath, free);
+    console.log(freed ? `bay ${claim.cell} released (${freed}); its layer is kept as ${rel(archive)}; to edit this shop again: tools\\cli town author --reopen ${kit.kit}` : `bay ${claim.cell} (${claim.slug}) was NOT released; run tools\\cli grid free ${claim.slug}`);
+  }
+  console.log(`next: tools\\cli town stamp ${kit.kit} --dry`);
+  return 0;
+}
+
+const ARCHIVE_HEAD = (kit) => `// Source of the \`${kit}\` kit (tools/town/kits/${kit}.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). \`town fit\` reads the components the kit names from here; \`town author --reopen ${kit}\` builds a bay again.\n`;
+
 function cli(root, args) {
   const r = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), ...args], { cwd: root, encoding: "utf8", timeout: 600000, windowsHide: true });
   process.stdout.write(r.stdout ?? "");
@@ -114,7 +183,7 @@ function cli(root, args) {
 
 function parseArgs(args) {
   const o = { _: [] };
-  const valued = new Set(["from", "slug", "kit", "building", "clear", "system", "out", "places-dir", "templates-dir"]);
+  const valued = new Set(["from", "slug", "kit", "building", "clear", "system", "out", "places-dir", "templates-dir", "reopen"]);
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a.startsWith("--")) {
@@ -133,34 +202,31 @@ export async function main(args, { root = ROOT } = {}) {
       console.log("usage: town author extract <Grid_<slug>.layer> <group> --kit <name> [--building Name] [--clear globs] [--out f]");
       return 2;
     }
-    const kit = authorExtract(resolve(layer), group, { kit: a.kit, building: a.building ?? null, clear: String(a.clear ?? "").split(",").filter(Boolean), system: a.system ?? "" });
-    const errs = checkKit(kit, { root });
-    if (errs.length) {
-      console.log(errs.join("\n"));
-      return 1;
-    }
-    const out = resolve(a.out ?? join(root, "tools", "town", "kits", `${kit.kit}.json`));
-    mkdirSync(dirname(out), { recursive: true });
-    writeFileSync(out, JSON.stringify(kit, null, 2) + "\n");
-    console.log(`kit ${kit.kit}: ${kit.rows.length} rows, building-local around ${kit.stamp.prefab} -> ${relative(root, out)}\nnext: tools\\cli town stamp ${kit.kit} --dry`);
-    return 0;
+    return extractToKit(root, resolve(layer), group, a, { free: (slug) => cli(root, ["grid", "free", slug]) });
   }
-  if (!a._[0] || a.help) {
-    console.log("usage: tools\\cli town author <kit> [--from <place>/<slot>] [--slug s] [--dry] | town author extract ... (tools/town/author.mjs header)");
+  const kitName = a.reopen ? a.reopen : a._[0];
+  if (!kitName || a.help) {
+    console.log("usage: tools\\cli town author <kit> [--from <place>/<slot>] [--slug s] [--dry] | town author --reopen <kit> | town author extract ... (tools/town/author.mjs header)");
     return a.help ? 0 : 2;
   }
-  const plan = planAuthor(a._[0], { from: a.from ?? null, slug: a.slug ?? null, placesDir: resolve(root, a["places-dir"] ?? "docs/everon/places"), templatesDir: resolve(root, a["templates-dir"] ?? "tools/town/templates"), kitsDir: join(root, "tools", "town", "kits") });
-  console.log(`town author ${a._[0]}: grid cell ${plan.slug} around ${plan.prefab} (from ${plan.source})${plan.seed ? ", seeded with the kit's rows" : ""}`);
+  const plan = planAuthor(kitName, { reopen: Boolean(a.reopen), from: a.from ?? null, slug: a.slug ?? null, placesDir: resolve(root, a["places-dir"] ?? "docs/everon/places"), templatesDir: resolve(root, a["templates-dir"] ?? "tools/town/templates"), kitsDir: join(root, "tools", "town", "kits") });
+  console.log(`town author ${kitName}: authoring bay ${plan.slug} around ${plan.prefab} (from ${plan.source})${plan.seed ? ", seeded with the kit's rows" : ""}`);
+  const open = readCells(root).find((c) => c.slug === plan.slug);
+  if (open) {
+    console.log(`bay ${open.cell} is already open for ${plan.slug}: work there (tools\\cli look grid:${plan.slug}), or release it with tools\\cli grid free ${plan.slug} and run this again`);
+    return 1;
+  }
+  const placeArgs = ["grid", "place", plan.slug, plan.prefab, "--pack", "--bay", ...(a.dry ? ["--dry"] : [])];
+  if (cli(root, placeArgs)) return 1;
   if (a.dry) return 0;
-  if (cli(root, ["grid", "place", plan.slug, plan.prefab, "--pack"])) return 1;
   if (plan.seed) {
     const { layerFileOf } = await import("./kit-grid.mjs");
     const ents = entitiesOf(parseBlocks(readFileSync(layerFileOf(plan.slug), "utf8")));
     const b = findBuilding(ents);
-    const r = spawnSync(process.execPath, [join(root, "tools", "town", "kit-grid.mjs"), "put", a._[0], plan.slug, String(b.coords[0]), String(b.coords[2]), String(b.yaw)], { cwd: root, encoding: "utf8", windowsHide: true });
+    const r = spawnSync(process.execPath, [join(root, "tools", "town", "kit-grid.mjs"), "put", kitName, plan.slug, String(b.coords[0]), String(b.coords[2]), String(b.yaw)], { cwd: root, encoding: "utf8", windowsHide: true });
     process.stdout.write(r.stdout ?? "");
     if (r.status) return 1;
   }
-  console.log(`next: tools\\cli look grid:${plan.slug} --interior auto; tools\\cli audit placement --grid --strict; then town author extract <the cell's layer> '<group>' --kit ${a._[0]}`);
+  console.log(`next: tools\\cli look grid:${plan.slug} --interior auto; tools\\cli audit placement --grid --strict; then town author extract <the cell's layer> '<group>' --kit ${kitName} (it frees the bay)`);
   return 0;
 }
