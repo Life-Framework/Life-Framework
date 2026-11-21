@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "kit": "hardware",
-  "system": "store",
+  "system": "",
   "source": {
     "file": "tools/town/kits/sources/hardware.layer",
     "origin": "building",
@@ -91,7 +91,7 @@
     },
     {
       "id": "hardware-shop-till",
-      "name": "Hardware_Till",
+      "name": "Hardware_shop_till",
       "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
       "role": "till",
       "verb": "on hardware-shop-counter",
@@ -125,7 +125,7 @@
     },
     {
       "id": "hardware-miners-till",
-      "name": "Hardware_MinersTill",
+      "name": "Hardware_miners_till",
       "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
       "role": "till",
       "verb": "on hardware-miners-counter",
@@ -212,9 +212,9 @@
       "role": "sign",
       "verb": "against wall",
       "offset": [
-        -2,
+        -1.5,
         3,
-        6.35
+        6.05
       ],
       "yaw": 0,
       "wall": "-x",

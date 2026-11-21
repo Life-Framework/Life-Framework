@@ -1,3 +1,4 @@
+// red-proof: 2026-11-21 (#3891), with Clips on the world-axis box the run failed "a thin plate turned 9 degrees on a wall clips nothing (clip=BrickWall_01_4m;TableRecreation_01)"; with the oriented box the same run passed.
 // red-proof: 2026-11-21 (#3884), before the fix `--only LF_Test_PlacementAudit` failed "a table pushed 0.3 m into a wall is flagged through-wall (flags=none, clip=none)" while the table's bounds were stale (flags had no through-wall), and with Flags lacking the ClipsWall line the run with clip=BrickWall_01_4m failed the same assertion; the missing row printed "0 missing=1 near=2" and passed.
 // red-proof: 2026-11-11, LF_PlacementAudit.Flags with the floating test at GAP + 5: `--only LF_Test_PlacementAudit` failed "a crate 1 m above the ground is flagged floating (flags=)" while the log measured gap=0.999. Restored, green.
 //! The placement audit (LF_PlacementAudit, `tools\cli audit placement`) on fixtures spawned on open
@@ -9,6 +10,7 @@ class LF_Test_PlacementAudit : LF_Test
 {
 	protected static const ResourceName CRATE = "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et";
 	protected static const ResourceName WALL = "{419130031F0009C9}Prefabs/Structures/Walls/Brick/BrickWall_01/BrickWall_01_4m.et";
+	protected static const ResourceName FASCIA = "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et";
 	protected static const ResourceName TABLE = "{622F9989DDC4865B}PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et";
 
 	//------------------------------------------------------------------------------------------------
@@ -140,6 +142,18 @@ class LF_Test_PlacementAudit : LF_Test
 				LF_PlacementMeasure free = LF_PlacementAudit.Measure(clear, false);
 				string freeFlags = LF_PlacementAudit.Flags(free);
 				ctx.True(!freeFlags.Contains("through-wall"), "a table a metre clear of the wall is not through-wall (flags=" + freeFlags + ")");
+
+				// A thin fascia plate turned 9 degrees off the world axes (the b59 hardware shop's gable, #3891): its world-axis box is 0.7 m
+				// deep and always holds the wall behind it, so it used to read as clipping; its own box is a 5 cm plate and clips nothing.
+				IEntity plate = LF_Utils.SpawnEntityPrefab(FASCIA, Vector(wx, wy + 0.6, (wmin[2] + wmax[2]) * 0.5), "9 0 0");
+				spawned.Insert(plate);
+				ctx.NotNull(plate, "the turned fascia plate spawned");
+				if (plate)
+				{
+					LF_PlacementMeasure turned = LF_PlacementAudit.Measure(plate, false);
+					LF_Debug.Info("PlaceAudit", "fascia plate 9 deg on a wall " + LF_PlacementAudit.Format(turned));
+					ctx.True(turned.m_sClips == "none", "a thin plate turned 9 degrees on a wall clips nothing (clip=" + turned.m_sClips + ")");
+				}
 			}
 		}
 
