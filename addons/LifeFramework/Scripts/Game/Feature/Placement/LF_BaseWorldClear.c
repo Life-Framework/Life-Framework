@@ -59,6 +59,51 @@ class LF_BaseWorldClear
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Hides every entity of the list inside an oriented box that is not a building (outdoor clutter: crates and pallets
+	//! of the base map in a yard). mins and maxs are local to mat; the same hide and the same prefab match as a building.
+	//! eturn how many entities were hidden now.
+	static int HideInBox(notnull BaseWorld world, vector mins, vector maxs, vector mat[4], notnull array<string> prefabs, string label)
+	{
+		set<string> keys = new set<string>();
+		foreach (string prefab : prefabs)
+		{
+			if (!prefab.IsEmpty())
+				keys.Insert(PathKey(prefab));
+		}
+
+		if (keys.IsEmpty())
+			return 0;
+
+		LF_BaseWorldClearQuery query = new LF_BaseWorldClearQuery();
+		query.m_Keys = keys;
+		world.QueryEntitiesByOBB(mins, maxs, mat, query.Collect, null, EQueryEntitiesFlags.ALL);
+
+		int hidden = HideFound(query);
+		if (hidden == 0)
+			LF_Debug.Warn(FEATURE, string.Format("base-world clear: nothing left to hide (%1 prefabs listed) in the box %2 at %3", keys.Count(), label, mat[3]));
+		else
+			LF_Debug.Info(FEATURE, string.Format("base-world clear: hid %1 vanilla props in the box %2 at %3", hidden, label, mat[3]));
+
+		return hidden;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static int HideFound(notnull LF_BaseWorldClearQuery query)
+	{
+		int hidden = 0;
+		foreach (IEntity prop : query.m_aFound)
+		{
+			if (!LF_FelledTreesReplication.IsHidden(prop))
+			{
+				LF_FelledTreesReplication.HideTree(prop);
+				hidden++;
+			}
+		}
+
+		return hidden;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Building furniture is not parented to the building at run time (a prefab child with no Hierarchy component
 	//! spawns as its own world entity), so the hide matches by prefab inside the building's own box.
 	protected static int HideUnder(IEntity building, set<string> keys)
@@ -72,17 +117,7 @@ class LF_BaseWorldClear
 		query.m_Building = building;
 		building.GetWorld().QueryEntitiesByOBB(mins, maxs, mat, query.Collect, null, EQueryEntitiesFlags.ALL);
 
-		int hidden = 0;
-		foreach (IEntity prop : query.m_aFound)
-		{
-			if (!LF_FelledTreesReplication.IsHidden(prop))
-			{
-				LF_FelledTreesReplication.HideTree(prop);
-				hidden++;
-			}
-		}
-
-		return hidden;
+		return HideFound(query);
 	}
 }
 
@@ -122,6 +157,12 @@ class LF_BaseWorldClearComponent : ScriptComponent
 	[Attribute(desc: "Vanilla prop prefabs to hide inside that building", params: "et")]
 	protected ref array<ResourceName> m_aPrefabs;
 
+	[Attribute("0 0 0", desc: "Box mode (no building): half size on x and z in metres, centred on this entity and turned by its yaw. y is unused; the box stands on the ground under the carrier. Zero = building mode")]
+	protected vector m_vBoxHalfM;
+
+	[Attribute("4", desc: "Box mode: how tall the box is above the ground under the carrier, metres (it also reaches 1 m below)")]
+	protected float m_fBoxHeightM;
+
 	[Attribute("3", desc: "How far from this entity the building origin may be on x and z, metres")]
 	protected float m_fRadiusM;
 
@@ -160,9 +201,15 @@ class LF_BaseWorldClearComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected void Apply(IEntity owner)
 	{
-		if (!owner || m_sBuilding.IsEmpty() || !m_aPrefabs || m_aPrefabs.IsEmpty())
+		if (!owner || !m_aPrefabs || m_aPrefabs.IsEmpty())
 		{
-			LF_Debug.Error(LF_BaseWorldClear.FEATURE, "base-world clear: a carrier has no building or no clear list");
+			LF_Debug.Error(LF_BaseWorldClear.FEATURE, "base-world clear: a carrier has no clear list");
+			return;
+		}
+
+		if (m_sBuilding.IsEmpty())
+		{
+			ApplyBox(owner);
 			return;
 		}
 
@@ -182,5 +229,27 @@ class LF_BaseWorldClearComponent : ScriptComponent
 
 		LF_BaseWorldClear.HideInBuilding(m_Found, prefabs);
 		m_Found = null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No building: the box stands on the ground under the carrier, so the layer stores no height.
+	protected void ApplyBox(IEntity owner)
+	{
+		if (m_vBoxHalfM[0] <= 0 || m_vBoxHalfM[2] <= 0)
+		{
+			LF_Debug.Error(LF_BaseWorldClear.FEATURE, string.Format("base-world clear: a carrier at %1 has neither a building nor a box", owner.GetOrigin()));
+			return;
+		}
+
+		vector mat[4];
+		owner.GetWorldTransform(mat);
+		mat[3][1] = owner.GetWorld().GetSurfaceY(mat[3][0], mat[3][2]);
+		array<string> prefabs = {};
+		foreach (ResourceName prefab : m_aPrefabs)
+		{
+			prefabs.Insert(prefab);
+		}
+
+		LF_BaseWorldClear.HideInBox(owner.GetWorld(), Vector(-m_vBoxHalfM[0], -1, -m_vBoxHalfM[2]), Vector(m_vBoxHalfM[0], m_fBoxHeightM, m_vBoxHalfM[2]), mat, prefabs, owner.GetName());
 	}
 }
