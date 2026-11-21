@@ -65,7 +65,7 @@
       "verb": "against wall",
       "offset": [
         2,
-        0.501,
+        0.458,
         3.1
       ],
       "yaw": 0,
@@ -81,7 +81,7 @@
       "verb": "against wall",
       "offset": [
         2,
-        0.501,
+        0.458,
         0.8
       ],
       "yaw": 180,
@@ -97,7 +97,7 @@
       "verb": "on hardware-shop-counter",
       "offset": [
         2,
-        1.541,
+        1.497,
         2.9
       ],
       "yaw": 180,
@@ -131,7 +131,7 @@
       "verb": "on hardware-miners-counter",
       "offset": [
         2,
-        1.541,
+        1.497,
         1
       ],
       "yaw": 0,
@@ -182,7 +182,7 @@
       "verb": "against wall",
       "offset": [
         3.285,
-        0.497,
+        0.454,
         -2
       ],
       "yaw": -90,
