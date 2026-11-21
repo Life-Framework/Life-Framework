@@ -219,8 +219,13 @@ class LF_ResidentWalk
 		}
 
 		// The walk ends on a free spot, not on the one somebody else stands on (#3831).
+		// and on the floor under it, as a spawned resident is (#3885): an anchor written at another height
+		// walked the body to a spot in the air or under the slab.
 		if (!spotOverride)
+		{
 			spot = LF_ResidentActivity.FreeSpot(spot, slot.m_sActivity, id, body.GetID());
+			spot = LF_ResidentSpawner.OnFloor(spot, id);
+		}
 
 		// 0 reads the config (the spawner passes its own despawn radius).
 		LF_ResidentsConfig config = LF_ResidentsConfig.Get();

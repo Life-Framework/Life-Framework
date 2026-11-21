@@ -129,8 +129,17 @@ class LF_BedWakePose
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True when a standing body with its feet at `feet` touches nothing but the floor and the bed.
+	//! True when a standing body with its feet at the point touches nothing but the floor and the bed (null: no bed, a plain spawn point).
 	static bool BodyFits(vector feet, IEntity bed)
+	{
+		IEntity blocker;
+		return BodyFitsBy(feet, bed, blocker);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! BodyFits, and what is in the way when it does not fit (the entity the box found, null when the
+	//! engine reports none).
+	static bool BodyFitsBy(vector feet, IEntity bed, out IEntity blocker)
 	{
 		BaseWorld world = GetGame().GetWorld();
 		if (!world)
@@ -143,7 +152,9 @@ class LF_BedWakePose
 		box.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
 		box.LayerMask = EPhysicsLayerPresets.Projectile;
 		box.ExcludeArray = RoomExclusions(bed);
-		return world.TracePosition(box, null) >= 0;
+		float fraction = world.TracePosition(box, null);
+		blocker = box.TraceEnt;
+		return fraction >= 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -152,7 +163,10 @@ class LF_BedWakePose
 	//! pick's job.
 	protected static array<IEntity> RoomExclusions(IEntity bed)
 	{
-		array<IEntity> exclude = {bed};
+		array<IEntity> exclude = {};
+		if (bed)
+			exclude.Insert(bed);
+
 		IEntity local = LF_Utils.GetLocalCharacter();
 		if (local)
 			exclude.Insert(local);
@@ -174,13 +188,21 @@ class LF_BedWakePose
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A bed-space point beside the bed moved to the floor under it.
+	//! A bed-space point beside the bed moved to the floor under it. A point with no room for a standing
+	//! body (a stand offset only 0.27 m off the mattress overlapped the bed by 3 cm, and a nightstand beside
+	//! it did worse: #3912) gives way to the wake point, which the sit search already picked with room.
 	static vector StandOnFloor(IEntity bed, vector standOffset, IEntity ignore = null)
 	{
 		vector bedTransform[4];
 		bed.GetWorldTransform(bedTransform);
 		bool probed;
-		return OnFloor(bed, bedTransform[3] + standOffset.Multiply3(bedTransform), ignore, probed);
+		vector feet = OnFloor(bed, bedTransform[3] + standOffset.Multiply3(bedTransform), ignore, probed);
+		if (!probed || BodyFits(feet, bed))
+			return feet;
+
+		vector sit[4];
+		SitTransform(bed, standOffset, sit);
+		return sit[3];
 	}
 
 	//------------------------------------------------------------------------------------------------
