@@ -150,6 +150,18 @@
       "why": "maintainer town fix pending #2956: the contact audit (#2953) measures it resting wrong; `place settle` (#2954) writes the settled height. The ID card sits 8 cm into its support. (The grid copies in Grid_npcs and Grid_whitelist_chat are settled.)"
     },
     {
+      "match": "^Fit_blacklake_shore_(bench|spot|lantern) ",
+      "kind": "contact",
+      "layer": "Place_blacklake_shore.layer",
+      "why": "Open ground on the Black Lake shore: the slope falls 5 to 18 cm under each prop's footprint, so a bench (9.6 cm), the fishing spot (2.5 cm) and the lantern (1.2 cm) bury their uphill side in the hillside the way any prop on a bank does. Rows rest on the probed terrain (tools/town/terrain/blacklake-shore.json); a terrain-mount row takes no height offset."
+    },
+    {
+      "match": "^Fit_saint_philippe_residents_bench_[12] ",
+      "kind": "contact",
+      "layer": "Place_saint-philippe_residents.layer",
+      "why": "The two doorstep benches stand on a sloping pavement whose height varies 6 to 10 cm under each 1.6 m seat; each is seated on the highest probed point of the paving (terrain.mjs SURFACE_HIT), so the low foot shows a gap of 1.4 to 1.6 cm."
+    },
+    {
       "match": "LF_Wheat(Patch|Stubble)_01",
       "kind": "contact",
       "why": "A wheat or stubble patch is 3 m of alpha cards whose feet sit 4 cm under the pivot so no card edge shows; the field follows rolling ground, and the ground varies up to 15 cm across 3 m, so one side sinks into the earth as grass does (#3290)."
@@ -214,6 +226,18 @@
       "kind": "overhang",
       "layer": "Place_scrapyard_recycler.layer",
       "why": "The last scrap heap of the dump (7 m wide) sits between base-map tyre piles on one side and a birch and the blue container on the other; every shift of 0.7-2 m along the row only swapped which of them it touches (3 tries, 2026-11-21). A low heap among the dump clutter reads as intended."
+    },
+    {
+      "match": "^Fit_saint_philippe_wheatfield_wheat_field_unload ",
+      "kind": "action-off-mesh",
+      "layer": "Place_saint-philippe_wheatfield.layer",
+      "why": "A drop zone, not a prop: the entity is a mesh-less volume (7 m radius, 3 m high context; LF_GranaryUnloadAction half extents 5 x 3 x 7) that offers 'unload' to a hauler standing anywhere in the yard with the load, so there is no mesh to be near."
+    },
+    {
+      "match": "^Fit_saint_philippe_carlot_lot_display_uaz452 ",
+      "kind": "clips",
+      "layer": "Place_saint-philippe_carlot.layer",
+      "why": "The display van parks at the foot of a base-map doorstep on the car lot's hillside (3 m of fall across its 5 m box); the stairs touch 2 of 9 rays by 13 cm at the wheel arch. Moving it with the kit put it into the workshop wall (tried 2026-11-21), so it stays against the steps."
     }
   ]
 }
