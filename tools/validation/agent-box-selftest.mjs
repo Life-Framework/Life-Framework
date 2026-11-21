@@ -14,6 +14,7 @@ const runs = [
   ["session", ["agent-box/session.mjs", "selftest"]],
   ["journey", ["agent-box/journey.mjs", "selftest"]],
   ["place-audit", ["agent-box/place-audit.mjs", "selftest"]],
+  ["place-lanes", ["agent-box/place-lanes.selftest.mjs"]],
   ["look", ["tools/visual/look.mjs", "selftest"]],
 ];
 let failed = 0;

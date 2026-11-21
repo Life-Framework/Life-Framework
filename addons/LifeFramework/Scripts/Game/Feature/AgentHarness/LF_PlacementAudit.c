@@ -884,10 +884,35 @@ class LF_PlacementAudit
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! One "child name=<l> root=<l> rp=<p> c= h= a0= a1= a2=" line per mesh child (not a door leaf) below `node`, boxed as a door line is.
+	protected static void ChildLines(IEntity root, IEntity node, int depth, notnull array<string> lines)
+	{
+		IEntity child = node.GetChildren();
+		int guard;
+		while (child && guard < 400)
+		{
+			guard++;
+			if (!child.FindComponent(DoorComponent) && child.GetVObject())
+			{
+				LF_PlacementMeasure m = new LF_PlacementMeasure();
+				OrientedBox(child, m);
+				if (m.m_vHalf[1] >= 0.1)
+					lines.Insert(string.Format("child name=%1 root=%2 rp=%3 c=%4 h=%5 a0=%6 a1=%7 a2=%8", Label(child), Label(root), V(root.GetOrigin()), V(m.m_vCenter), V(m.m_vHalf), V(m.m_vAxis0), V(m.m_vAxis1), V(m.m_vAxis2)));
+			}
+
+			if (depth < 4)
+				ChildLines(root, child, depth + 1, lines);
+
+			child = child.GetSibling();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One line per door leaf within `radius` of `center`: its oriented box and the building it belongs to.
 	static void DoorLines(vector center, float radius, notnull array<string> lines)
 	{
 		s_aDoorIds = {};
+		array<EntityID> doneRoots = {};
 		BaseWorld world = GetGame().GetWorld();
 		world.QueryEntitiesBySphere(center, radius, CollectDoor, null, EQueryEntitiesFlags.ALL);
 		foreach (EntityID id : s_aDoorIds)
@@ -902,6 +927,16 @@ class LF_PlacementAudit
 			if (!root)
 				root = door;
 			lines.Insert(string.Format("door name=%1 root=%2 rp=%3 c=%4 h=%5 a0=%6 a1=%7 a2=%8", Label(door), Label(root), V(root.GetOrigin()), V(m.m_vCenter), V(m.m_vHalf), V(m.m_vAxis0), V(m.m_vAxis1), V(m.m_vAxis2)));
+			// Once per building: its world bounds (a base-map building is no layer row, so this is its room) and the furniture its prefab brings in its own children (place-lanes.mjs judges both).
+			if (doneRoots.Find(root.GetID()) < 0)
+			{
+				doneRoots.Insert(root.GetID());
+				vector rmin;
+				vector rmax;
+				root.GetWorldBounds(rmin, rmax);
+				lines.Insert(string.Format("root name=%1 rp=%2 rmin=%3 rmax=%4", Label(root), V(root.GetOrigin()), V(rmin), V(rmax)));
+				ChildLines(root, root, 0, lines);
+			}
 		}
 
 		s_aDoorIds = null;
