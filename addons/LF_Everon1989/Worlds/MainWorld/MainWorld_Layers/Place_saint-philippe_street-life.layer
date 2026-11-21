@@ -7,23 +7,19 @@ SCR_DestructibleEntity Fit_saint_philippe_street_life_bin_b10 : "{32CDE9FE3FB35D
  angleY -98
 }
 GenericEntity Fit_saint_philippe_street_life_bench_b17 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 4472.312 15.39 10648.006
+ coords 4477.459 15.512 10648.931
  angleY 170
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_bin_b17 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
- coords 4477.388 15.4 10649.334
+ coords 4472.241 15.4 10648.408
  angleY 170
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_bin_b09 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
  coords 4501.583 14.9 10736.473
  angleY 171
 }
-SCR_DestructibleEntity Fit_saint_philippe_street_life_flowers_b09 : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
- coords 4500.099 14.9 10735.935
- angleY 171
-}
 SCR_DestructibleEntity Fit_saint_philippe_street_life_flowers_b50 : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
- coords 4386.535 10.3 10758.717
+ coords 4392.559 10.136 10758.83
  angleY -1
 }
 GenericEntity Fit_saint_philippe_street_life_line_b50 : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
@@ -35,7 +31,7 @@ SCR_DestructibleEntity Fit_saint_philippe_street_life_bin_b47 : "{32CDE9FE3FB35D
  angleY 166
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_flowers_b47 : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
- coords 4476.278 9.7 10798.857
+ coords 4476.278 9.653 10798.857
  angleY 166
 }
 GenericEntity Fit_saint_philippe_street_life_line_b47 : "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et" {
@@ -47,6 +43,6 @@ GenericEntity Fit_saint_philippe_street_life_bench_b16 : "{BE839ACB6CB2726A}Pref
  angleY -8
 }
 SCR_DestructibleEntity Fit_saint_philippe_street_life_flowers_b16 : "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et" {
- coords 4541.913 16.4 10724.002
+ coords 4541.913 16.51 10724.002
  angleY -8
 }

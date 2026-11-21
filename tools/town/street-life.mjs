@@ -36,7 +36,7 @@ export const PROPS = {
   bench: { prefab: "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et", source: "addons/LifeFramework/Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et", wall: true, gap: 1.6, ground: true, optional: true },
   "bench-red": { prefab: "{24388E37E11BA18F}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et", source: "addons/LifeFramework/Prefabs/Props/Seats/LF_Seat_BenchStreet_01_red.et", wall: true, gap: 1.6, ground: true, optional: true },
   bin: { prefab: "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et", source: VANILLA_SOURCE, wall: true, gap: 0.9, cls: "SCR_DestructibleEntity" },
-  flowers: { prefab: "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et", source: VANILLA_SOURCE, wall: true, gap: 1.2, cls: "SCR_DestructibleEntity" },
+  flowers: { prefab: "{06ABA7878E8CC278}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et", source: VANILLA_SOURCE, wall: true, gap: 1.2, cls: "SCR_DestructibleEntity", ground: true, optional: true, half: 0.5 },
   line: { prefab: "{801E1CA69F368C44}Prefabs/Structures/Civilian/ClotheslineFrame_01.et", source: VANILLA_SOURCE, wall: false, gap: 2.5, rear: 3.2 },
 };
 
@@ -58,6 +58,10 @@ const DOOR_CLEAR = 1.4;
 // house floor (the stairs of the entrance), and the next sideways offset along the wall is tried.
 const BENCH_HALF = 0.8; // metres from the middle to each end of the seat
 const BENCH_DEPTH = 0.12; // metres from the middle to the front and back edge
+// What a prop must not stand on: the probe's ray lands on a pile, a log stack or a crate beside the house, not on the ground (#3880:
+// the b17 bench stood on WoodPile_02_B). The hit name of each probed point is kept in the pin file beside its height.
+export const HIT_BAD = /pile|log|stack|crate|pallet|barrel|firewood|timber|plank|cart|truck|car_|vehicle/i;
+export const hitBlocks = (hits) => hits.map((h) => String(h ?? "")).find((h) => HIT_BAD.test(h)) ?? null;
 const SLOPE_MAX = 0.13;
 const STEP_MAX = 0.2;
 const RAY_UP = 0.8;
@@ -66,12 +70,12 @@ const DOOR_NEAR = 6; // metres: the doors kept in the pin file around a probed p
 const DOOR_SWING = 1.8; // metres from a door leaf's middle: a bench point nearer than this stands in its arc
 
 // The five points of a bench's footprint, rounded as the pin file keys them. yaw: the row's angleY in degrees.
-export function benchPoints(x, z, yaw) {
+export function benchPoints(x, z, yaw, half = BENCH_HALF) {
   const a = (yaw * Math.PI) / 180;
   const f = [Math.sin(a), Math.cos(a)];
   const s = [Math.cos(a), -Math.sin(a)];
   const at = (u, v) => [r3(x + s[0] * u + f[0] * v), r3(z + s[1] * u + f[1] * v)];
-  return [at(0, 0), at(BENCH_HALF, 0), at(-BENCH_HALF, 0), at(0, BENCH_DEPTH), at(0, -BENCH_DEPTH)];
+  return [at(0, 0), at(half, 0), at(-half, 0), at(0, BENCH_DEPTH), at(0, -BENCH_DEPTH)];
 }
 
 // Pure: the ground heights under a bench. { y } when it can stand there, { why } when not.
@@ -155,12 +159,19 @@ async function planProp({ kind, building, dossier, root, shell, readGame, others
       const a = (e.yaw * Math.PI) / 180;
       e.coords = [r3(e.coords[0] + Math.sin(a) * 0.05), e.coords[1], r3(e.coords[2] + Math.cos(a) * 0.05)];
       if (prop.ground && need) {
-        const pts = benchPoints(e.coords[0], e.coords[2], e.yaw);
+        const pts = benchPoints(e.coords[0], e.coords[2], e.yaw, prop.half);
         const hs = pts.map((q) => pins?.points?.[pinKey(q[0], q[1])]);
-        if (hs.some((h) => !Number.isFinite(h))) {
+        // A point with a height but no recorded hit is probed again: the hit name is what tells a pile from the ground.
+        const unknown = pts.map((q, i) => !Number.isFinite(hs[i]) || pins?.hits?.[pinKey(q[0], q[1])] === undefined);
+        if (unknown.some(Boolean)) {
           pts.forEach((q, i) => {
-            if (!Number.isFinite(hs[i])) need.push([q[0], q[1], e.coords[1] + RAY_UP]);
+            if (unknown[i]) need.push([q[0], q[1], e.coords[1] + RAY_UP]);
           });
+          continue;
+        }
+        const bad = hitBlocks(pts.map((q) => pins.hits[pinKey(q[0], q[1])]));
+        if (bad) {
+          refusals["it would stand on " + bad] = 1;
           continue;
         }
         const door = (pins?.doors ?? []).find((d) => pts.some((q) => Math.hypot(q[0] - d[0], q[1] - d[1]) < DOOR_SWING));
@@ -195,7 +206,7 @@ export function withoutBenches(text) {
       else blocks.push([line]);
       return blocks;
     }, [])
-    .filter((b) => !/^\w+ Fit_\w+_bench\w*_b\d+ /.test(b[0]))
+    .filter((b) => !/^\w+ Fit_\w+_(bench|flowers)\w*_b\d+ /.test(b[0]))
     .map((b) => b.join("\n"))
     .join("\n");
 }
@@ -220,11 +231,16 @@ async function probeGround(root, place, need, layerName) {
   if (run.outText == null) throw new Error("the island's test server wrote no measurements (lines above)");
   const rays = parseRays(run.outText).rays;
   const points = {};
+  const hits = {};
   const missing = [];
   pts.forEach((q, i) => {
     const r = rays.get(`g${i}`);
     const y = Math.max(Number.isFinite(r?.p?.[1]) ? r.p[1] : -1e9, Number.isFinite(r?.sy) ? r.sy : -1e9);
-    if (y > -1e8) points[pinKey(q[0], q[1])] = r3(y);
+    if (y > -1e8) {
+      points[pinKey(q[0], q[1])] = r3(y);
+      // The ray's own hit counts as the ground only when it is the higher one: the terrain wins over a lower prop, so it has no name.
+      hits[pinKey(q[0], q[1])] = Number.isFinite(r?.p?.[1]) && r.p[1] >= (Number.isFinite(r?.sy) ? r.sy : -1e9) ? String(r.hit ?? "") : "terrain";
+    }
     else missing.push(pinKey(q[0], q[1]));
   });
   if (missing.length) throw new Error(`the server gave no ground height for ${missing.length} point(s): ${missing.slice(0, 3).join(" ")}`);
@@ -237,7 +253,7 @@ async function probeGround(root, place, need, layerName) {
     const [x, y, z] = [Number(m[1]), Number(m[2]), Number(m[3])];
     if (pts.some((q) => Math.hypot(q[0] - x, q[1] - z) < DOOR_NEAR && Math.abs(q[2] - RAY_UP - y) < 3)) doors.push([r3(x), r3(z)]);
   }
-  return { points, doors };
+  return { points, hits, doors };
 }
 
 const entityLine = (e, name, cls) => `${cls ?? e.cls ?? "GenericEntity"} ${name} : "${e.ref}" {
@@ -317,9 +333,10 @@ export async function main(args, { root = ROOT } = {}) {
       if (!flags.terrain) throw new Error(`the ground under ${new Set(need.map((n) => pinKey(n[0], n[1]))).size} bench point(s) is not in ${pinFileOf(place, SLOT)}: run again with --terrain`);
       const found = await probeGround(root, place, need, layerNameOf(place, SLOT));
       const doors = [...new Map([...(pins?.doors ?? []), ...found.doors].map((d) => [d.join(","), d])).values()];
-      pins = { points: { ...(pins?.points ?? {}), ...found.points }, doors };
+      pins = { points: { ...(pins?.points ?? {}), ...found.points }, hits: { ...(pins?.hits ?? {}), ...found.hits }, doors };
       const pinFile = writePins(root, place, SLOT, pins.points, new Date().toISOString().slice(0, 10));
-      writeFileSync(pinFile, `${JSON.stringify({ ...JSON.parse(readFileSync(pinFile, "utf8")), doors }, null, 2)}\n`);
+      const hitsSorted = Object.fromEntries(Object.entries(pins.hits).sort(([a], [b]) => a.localeCompare(b)));
+      writeFileSync(pinFile, `${JSON.stringify({ ...JSON.parse(readFileSync(pinFile, "utf8")), hits: hitsSorted, doors }, null, 2)}\n`);
       console.log(`terrain ${Object.keys(found.points).length} point(s) probed -> ${relative(root, pinFile).replaceAll("\\", "/")}`);
       need = [];
       results = await planAll(pins, need);
