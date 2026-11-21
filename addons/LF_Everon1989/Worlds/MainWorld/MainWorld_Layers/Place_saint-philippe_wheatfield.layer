@@ -94,7 +94,7 @@ GenericEntity Fit_saint_philippe_wheatfield_wheat_field_cultivator_wreck : "{DE5
  angleY 160
 }
 SCR_DestructibleBuildingEntity Fit_saint_philippe_wheatfield_wheat_field_weighbridge : "{B461AC17AE9B29EF}Prefabs/Structures/Agriculture/WeightStation/WeightStation_01/WeightStation_01.et" {
- coords 4430 23.219 10496
+ coords 4430 0 10496
 }
 GenericEntity Fit_saint_philippe_wheatfield_wheat_field_unload {
  components {
