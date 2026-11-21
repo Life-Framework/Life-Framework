@@ -12,6 +12,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildAll, frameRows, buildGlows, glowCount, GLOW, GLOW_COMPONENT, hourOff, layerPath, loadPlace, nearestRoad, occupied, renderLayer, seatsPath, streetWall, WALL_OFFSET } from "./nightlights.mjs";
+import { gameVfsSync } from "../lib/height-frame.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -75,7 +76,10 @@ const text = renderLayer("saint-philippe", all);
 check(text.includes(`: "${GLOW}" {`) && text.includes(`LF_NightLightComponent "${GLOW_COMPONENT}"`), "the layer overrides the glow component by GUID");
 check(!text.includes("CastShadow"), "a layer entity sets no shadow");
 const file = layerPath(ROOT, "saint-philippe");
-check(existsSync(file) && readFileSync(file, "utf8") === text, "Lights_saint-philippe.layer matches the script (rerun node tools/town/nightlights.mjs saint-philippe)");
+// The vanilla lamp's frame comes from the game paks (tools/lib/height-frame.mjs); without a game install (the GitHub runner)
+// the rows cannot be put in their frame, so the committed layer is compared where the paks are (every dev box, the main guard).
+if (gameVfsSync()) check(existsSync(file) && readFileSync(file, "utf8") === text, "Lights_saint-philippe.layer matches the script (rerun node tools/town/nightlights.mjs saint-philippe)");
+else console.log("note: no game install here: the committed Lights layer is not compared (its lamps' frame needs the paks)");
 
 if (failed) {
   console.log(`SUMMARY nightlights-selftest fail ${failed}`);
