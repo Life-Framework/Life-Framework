@@ -1,12 +1,12 @@
 {
   "schema": 1,
   "kit": "police",
-  "system": "police",
+  "system": "",
   "source": {
-    "file": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_police_station_kit.layer",
+    "file": "tools/town/kits/sources/police.layer",
     "group": "PoliceKit_*",
-    "origin": "PoliceKit_Villa",
-    "frame": "origin-entity"
+    "origin": "building",
+    "frame": "building-local"
   },
   "scope": "room",
   "building": {
@@ -14,21 +14,21 @@
     "vanilla": "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et"
   },
   "anchoring": {
-    "floorY": 0,
+    "floorY": -0.05,
     "floors": [
       {
         "id": "f0",
-        "y": 0
+        "y": -0.05
       },
       {
         "id": "f1",
-        "y": 3
+        "y": 2.95
       }
     ],
     "footprint": {
       "source": "rows",
       "min": [
-        -4.3,
+        -3.3,
         -3.66
       ],
       "max": [
@@ -42,11 +42,6 @@
         "id": "police-kit-duty-desk",
         "wall": "free",
         "edgeGap": 2.1
-      },
-      {
-        "id": "police-kit-decor-18",
-        "wall": "free",
-        "edgeGap": 2.85
       },
       {
         "id": "police-kit-decor-23",
@@ -64,13 +59,14 @@
       "role": "board",
       "verb": "on floor",
       "offset": [
-        0.72,
+        3.25,
         1.15,
-        1.9
+        -3.66
       ],
       "yaw": 90,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "police-kit-duty-desk",
@@ -80,23 +76,13 @@
       "verb": "on floor",
       "offset": [
         3.8,
-        0,
+        0.036,
         -0.4
       ],
       "yaw": 0,
-      "children": [
-        {
-          "prefab": null,
-          "offset": [
-            0,
-            0,
-            0
-          ],
-          "yaw": 0
-        }
-      ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "floor"
     },
     {
       "id": "police-kit-armory",
@@ -105,8 +91,8 @@
       "role": "interactable",
       "verb": "against wall",
       "offset": [
-        5.8,
-        0,
+        5.55,
+        0.035,
         -3.2
       ],
       "yaw": 0,
@@ -146,7 +132,8 @@
         }
       ],
       "wall": "+x",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "police-kit-armory-store",
@@ -155,13 +142,14 @@
       "role": "interactable",
       "verb": "against wall",
       "offset": [
-        5.85,
-        0,
-        1.6
+        2.45,
+        0.036,
+        -3.3
       ],
-      "yaw": -90,
+      "yaw": 0,
       "wall": "+x",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "floor"
     },
     {
       "id": "police-kit-evidence-locker",
@@ -171,7 +159,7 @@
       "verb": "against wall",
       "offset": [
         1.5,
-        0,
+        0.036,
         -3.4
       ],
       "yaw": 0,
@@ -185,7 +173,8 @@
         }
       ],
       "wall": "-z",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "police-kit-dispatch-board",
@@ -200,7 +189,8 @@
       ],
       "yaw": 0,
       "wall": "-z",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "police-kit-case-board",
@@ -215,7 +205,8 @@
       ],
       "yaw": 90,
       "wall": "+x",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "police-kit-handcuffs",
@@ -225,25 +216,12 @@
       "verb": "on police-kit-duty-desk",
       "offset": [
         3,
-        0.907,
+        0.96,
         -0.1
       ],
       "yaw": 20,
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-taser",
-      "name": "PoliceKit_Taser",
-      "prefab": "{6D583A40C5C5C150}Prefabs/Weapons/Handguns/Taser/Handgun_Taser.et",
-      "role": "dressing",
-      "verb": "on police-kit-duty-desk",
-      "offset": [
-        3.3,
-        0.907,
-        0.1
-      ],
-      "yaw": 0,
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "counter:police-kit-duty-desk"
     },
     {
       "id": "police-kit-duty-clock-hall",
@@ -275,7 +253,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "floor"
     },
     {
       "id": "police-kit-duty-clock-room",
@@ -307,225 +286,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-sign-front",
-      "name": "PoliceKit_Sign_Front",
-      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
-      "role": "sign",
-      "verb": "against wall",
-      "offset": [
-        -1.07,
-        2.95,
-        6.93
-      ],
-      "yaw": 0,
-      "config": [
-        {
-          "component": "LF_SignComponent",
-          "set": {
-            "m_sSignId": "\"police_front\"",
-            "m_vRimColor": "0.85 0.85 0.88",
-            "m_vPaintColor": "0.08 0.16 0.38",
-            "m_vTextColor": "0.95 0.95 0.97"
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "+z",
-      "floor": "f1"
-    },
-    {
-      "id": "police-kit-display-taser-1",
-      "name": "PoliceKit_Display_taser_1",
-      "prefab": null,
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        1.65,
-        0.926,
-        1.62
-      ],
-      "yaw": 10,
-      "roll": 90,
-      "config": [
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob\""
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-display-taser-2",
-      "name": "PoliceKit_Display_taser_2",
-      "prefab": null,
-      "role": "dressing",
-      "verb": "on police-kit-decor-18",
-      "offset": [
-        1.95,
-        0.926,
-        1.62
-      ],
-      "yaw": -8,
-      "roll": 90,
-      "config": [
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob\""
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-display-taser-3",
-      "name": "PoliceKit_Display_taser_3",
-      "prefab": null,
-      "role": "dressing",
-      "verb": "on police-kit-decor-18",
-      "offset": [
-        2.25,
-        0.926,
-        1.62
-      ],
-      "yaw": 6,
-      "roll": 90,
-      "config": [
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{6ABAE84C4278757F}Assets/Weapons/Handguns/Taser/Taser.xob\""
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-display-m9-4",
-      "name": "PoliceKit_Display_m9_4",
-      "prefab": null,
-      "role": "dressing",
-      "verb": "on police-kit-decor-18",
-      "offset": [
-        2.6,
-        0.924,
-        1.65
-      ],
-      "yaw": 90,
-      "roll": 90,
-      "config": [
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob\""
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-display-m9-5",
-      "name": "PoliceKit_Display_m9_5",
-      "prefab": null,
-      "role": "dressing",
-      "verb": "on police-kit-decor-18",
-      "offset": [
-        2.9,
-        0.924,
-        1.65
-      ],
-      "yaw": 80,
-      "roll": 90,
-      "config": [
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{1E38513800383D64}Assets/Weapons/Handguns/M9/M9_body.xob\""
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-display-cuffs-6",
-      "name": "PoliceKit_Display_cuffs_6",
-      "prefab": null,
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        1.7,
-        0.923,
-        1.95
-      ],
-      "yaw": 0,
-      "config": [
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob\""
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-display-cuffs-7",
-      "name": "PoliceKit_Display_cuffs_7",
-      "prefab": null,
-      "role": "dressing",
-      "verb": "on police-kit-decor-18",
-      "offset": [
-        2,
-        0.923,
-        1.95
-      ],
-      "yaw": 25,
-      "config": [
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob\""
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-display-cuffs-8",
-      "name": "PoliceKit_Display_cuffs_8",
-      "prefab": null,
-      "role": "dressing",
-      "verb": "on police-kit-decor-18",
-      "offset": [
-        2.3,
-        0.923,
-        1.95
-      ],
-      "yaw": -15,
-      "config": [
-        {
-          "component": "MeshObject",
-          "set": {
-            "Object": "\"{073577B8970A8B88}Assets/Items/Roleplay/Handcuffs/Handcuffs.xob\""
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "floor"
     },
     {
       "id": "police-kit-decor-1",
@@ -540,231 +302,23 @@
       ],
       "yaw": -90,
       "wall": "+x",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-2",
-      "name": "PoliceKit_Decor_2",
-      "prefab": "{20B9C968AAE98DCF}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et",
-      "role": "dressing",
-      "verb": "on police-kit-display-taser-1",
-      "offset": [
-        1,
-        1.5,
-        2
-      ],
-      "yaw": -90,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-3",
-      "name": "PoliceKit_Decor_3",
-      "prefab": "{FEA3152881423F97}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V4.et",
-      "role": "dressing",
-      "verb": "on police-kit-display-taser-1",
-      "offset": [
-        1,
-        1.5,
-        2.35
-      ],
-      "yaw": -90,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-4",
-      "name": "PoliceKit_Decor_4",
-      "prefab": "{944594496FA41CBD}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V6.et",
-      "role": "dressing",
-      "verb": "on police-kit-display-cuffs-6",
-      "offset": [
-        1,
-        1.5,
-        2.7
-      ],
-      "yaw": -90,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-5",
-      "name": "PoliceKit_Decor_5",
-      "prefab": "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et",
-      "role": "dressing",
-      "verb": "on police-kit-duty-desk",
-      "offset": [
-        3.2,
-        0.907,
-        0.2
-      ],
-      "yaw": -160,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "police-kit-decor-6",
       "name": "PoliceKit_Decor_6",
       "prefab": "{9BDAE42023AB3357}Prefabs/Comms/LF_DispatchPhone.et",
-      "role": "interactable",
+      "role": "dressing",
       "verb": "on police-kit-duty-desk",
       "offset": [
         3.55,
-        0.907,
+        0.944,
         -0.2
       ],
       "yaw": 160,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-7",
-      "name": "PoliceKit_Decor_7",
-      "prefab": "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et",
-      "role": "dressing",
-      "verb": "on police-kit-duty-desk",
-      "offset": [
-        2.9,
-        0.907,
-        0.1
-      ],
-      "yaw": 15,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-8",
-      "name": "PoliceKit_Decor_8",
-      "prefab": "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et",
-      "role": "dressing",
-      "verb": "on police-kit-duty-desk",
-      "offset": [
-        3.7,
-        0.907,
-        0.3
-      ],
-      "yaw": 0,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-9",
-      "name": "PoliceKit_Decor_9",
-      "prefab": "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        1.8,
-        0.907,
-        -1.7
-      ],
-      "yaw": 180,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-10",
-      "name": "PoliceKit_Decor_10",
-      "prefab": "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        2.5,
-        0.907,
-        -1.7
-      ],
-      "yaw": 0,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-11",
-      "name": "PoliceKit_Decor_11",
-      "prefab": "{A9DC69EC1CE466A0}Prefabs/Props/Civilian/Computer_E_01/Computer_E_01_on.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        4.45,
-        4.706,
-        4.75
-      ],
-      "yaw": -90,
-      "wall": "free",
-      "floor": "f1"
+      "floor": "f0",
+      "attach": "counter:police-kit-duty-desk"
     },
     {
       "id": "police-kit-decor-12",
@@ -774,40 +328,29 @@
       "verb": "against wall",
       "offset": [
         -1.7,
-        3.8,
+        3.846,
         -0.1
       ],
       "yaw": 180,
       "wall": "free",
-      "floor": "f1"
+      "floor": "f1",
+      "attach": "wall"
     },
     {
       "id": "police-kit-decor-13",
       "name": "PoliceKit_Decor_13",
       "prefab": "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
       "role": "dressing",
-      "verb": "on police-kit-decor-26",
+      "verb": "against wall",
       "offset": [
         -1.7,
-        3.8,
+        3.846,
         -1.9
       ],
       "yaw": 0,
-      "floor": "f1"
-    },
-    {
-      "id": "police-kit-decor-14",
-      "name": "PoliceKit_Decor_14",
-      "prefab": "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et",
-      "role": "dressing",
-      "verb": "on police-kit-decor-12",
-      "offset": [
-        -1.6,
-        4.699,
-        -1
-      ],
-      "yaw": 90,
-      "floor": "f1"
+      "wall": "free",
+      "floor": "f1",
+      "attach": "wall"
     },
     {
       "id": "police-kit-decor-15",
@@ -817,63 +360,12 @@
       "verb": "on police-kit-decor-12",
       "offset": [
         -1.9,
-        4.699,
+        4.735,
         -1.2
       ],
       "yaw": 60,
-      "floor": "f1"
-    },
-    {
-      "id": "police-kit-decor-16",
-      "name": "PoliceKit_Decor_16",
-      "prefab": "{0133284E3BDEAEC4}Prefabs/Props/Civilian/Ashtray_01_Full_yellow.et",
-      "role": "dressing",
-      "verb": "on police-kit-decor-12",
-      "offset": [
-        -1.7,
-        4.699,
-        -0.8
-      ],
-      "yaw": 0,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f1"
-    },
-    {
-      "id": "police-kit-decor-17",
-      "name": "PoliceKit_Decor_17",
-      "prefab": "{D5DCF3520C2A8C41}Prefabs/Props/Furniture/Flipchart_01/Flipchart_01.et",
-      "role": "dressing",
-      "verb": "on police-kit-display-taser-2",
-      "offset": [
-        2,
-        3.8,
-        2.8
-      ],
-      "yaw": 150,
-      "floor": "f1"
-    },
-    {
-      "id": "police-kit-decor-18",
-      "name": "PoliceKit_Decor_18",
-      "prefab": "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et",
-      "role": "counter",
-      "verb": "on floor",
-      "offset": [
-        3.05,
-        0,
-        1.4
-      ],
-      "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f1",
+      "attach": "table:police-kit-decor-12"
     },
     {
       "id": "police-kit-decor-19",
@@ -888,38 +380,15 @@
       ],
       "yaw": -90,
       "wall": "+x",
-      "floor": "f1"
-    },
-    {
-      "id": "police-kit-decor-20",
-      "name": "PoliceKit_Decor_20",
-      "prefab": "{260B7CE9F8CB21CB}Prefabs/Props/Commercial/Posters/Notice_A4_Horizontal_V2.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -3,
-        1.6,
-        -3.655
-      ],
-      "yaw": 0,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "-z",
-      "floor": "f0"
+      "floor": "f1",
+      "attach": "wall"
     },
     {
       "id": "police-kit-decor-21",
       "name": "PoliceKit_Decor_21",
       "prefab": "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et",
       "role": "light",
-      "verb": "on police-kit-decor-35",
+      "verb": "against wall",
       "offset": [
         1.45,
         2.55,
@@ -935,7 +404,8 @@
           ]
         }
       ],
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "police-kit-decor-22",
@@ -959,134 +429,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-23",
-      "name": "PoliceKit_Decor_23",
-      "prefab": "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et",
-      "role": "counter",
-      "verb": "against wall",
-      "offset": [
-        0.15,
-        0,
-        -2.98
-      ],
-      "yaw": 0,
-      "wall": "-z",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-24",
-      "name": "PoliceKit_Decor_24",
-      "prefab": "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -0.7,
-        0,
-        -3.35
-      ],
-      "yaw": 0,
-      "wall": "-z",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-25",
-      "name": "PoliceKit_Decor_25",
-      "prefab": "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et",
-      "role": "dressing",
-      "verb": "on police-kit-decor-23",
-      "offset": [
-        -0.15,
-        0.907,
-        -2.5
-      ],
-      "yaw": 170,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-26",
-      "name": "PoliceKit_Decor_26",
-      "prefab": "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et",
-      "role": "dressing",
-      "verb": "on police-kit-decor-23",
-      "offset": [
-        -0.75,
-        0.904,
-        -2.6
-      ],
-      "yaw": 180,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-27",
-      "name": "PoliceKit_Decor_27",
-      "prefab": "{03DE957D8161212B}Prefabs/Props/Civilian/Notebook_01_Open.et",
-      "role": "dressing",
-      "verb": "on police-kit-decor-24",
-      "offset": [
-        -1.2,
-        0.907,
-        -2.45
-      ],
-      "yaw": -160,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-28",
-      "name": "PoliceKit_Decor_28",
-      "prefab": "{876B096F32584485}Prefabs/Props/Civilian/FileOffice_01_Stack.et",
-      "role": "dressing",
-      "verb": "on police-kit-decor-24",
-      "offset": [
-        -1.35,
-        0.907,
-        -2.8
-      ],
-      "yaw": 90,
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-29",
-      "name": "PoliceKit_Decor_29",
-      "prefab": "{023137B960DC5A3D}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V3.et",
-      "role": "board",
-      "verb": "on police-kit-decor-23",
-      "offset": [
-        -0.7,
-        1.2,
-        -3.66
-      ],
-      "yaw": 0,
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "police-kit-decor-30",
@@ -1096,12 +440,13 @@
       "verb": "against wall",
       "offset": [
         0.45,
-        0,
+        0.035,
         -3.3
       ],
       "yaw": 30,
       "wall": "-z",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "police-kit-decor-31",
@@ -1111,127 +456,42 @@
       "verb": "against wall",
       "offset": [
         -1.75,
-        0,
+        0.01,
         -3.4
       ],
       "yaw": 0,
       "wall": "-z",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-32",
-      "name": "PoliceKit_Decor_32",
-      "prefab": "{20B9C968AAE98DCF}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -4.3,
-        1.55,
-        -3.655
-      ],
-      "yaw": 0,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "-x",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-33",
-      "name": "PoliceKit_Decor_33",
-      "prefab": "{944594496FA41CBD}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V6.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -3.95,
-        1.55,
-        -3.655
-      ],
-      "yaw": 0,
-      "config": [
-        {
-          "component": "RigidBody",
-          "set": {
-            "Static": "1"
-          },
-          "blocks": []
-        }
-      ],
-      "wall": "-z",
-      "floor": "f0"
-    },
-    {
-      "id": "police-kit-decor-34",
-      "name": "PoliceKit_Decor_34",
-      "prefab": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        3,
-        0,
-        7.3
-      ],
-      "yaw": 0,
-      "class": "SCR_DestructibleEntity",
-      "wall": "+z",
       "floor": "f0",
-      "mount": "ground"
+      "attach": "wall"
     },
     {
-      "id": "police-kit-decor-35",
-      "name": "PoliceKit_Decor_35",
-      "prefab": "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et",
-      "role": "dressing",
-      "verb": "on police-kit-decor-37",
+      "id": "police-kit-desk-officer",
+      "name": "PoliceKit_DeskOfficer",
+      "prefab": "{61CE39AA52347555}Prefabs/Characters/Npcs/Outfits/LF_Npc_Police_1.et",
+      "role": "npc",
+      "verb": "on floor",
       "offset": [
-        1.45,
-        0.502,
-        6.92
+        3.8,
+        0.036,
+        -1.3
       ],
       "yaw": 0,
-      "class": "SCR_DestructibleEntity",
+      "class": "LF_NpcBaseEntity",
+      "wall": "free",
       "floor": "f0",
-      "mount": "ground"
-    },
-    {
-      "id": "police-kit-decor-36",
-      "name": "PoliceKit_Decor_36",
-      "prefab": "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        -3.3,
-        0,
-        7.4
-      ],
-      "yaw": 0,
-      "class": "SCR_DestructibleEntity",
-      "wall": "+z",
-      "floor": "f0",
-      "mount": "ground"
-    },
-    {
-      "id": "police-kit-decor-37",
-      "name": "PoliceKit_Decor_37",
-      "prefab": "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "offset": [
-        1.05,
-        0,
-        7.4
-      ],
-      "yaw": 0,
-      "class": "SCR_DestructibleEntity",
-      "wall": "+z",
-      "floor": "f0",
-      "mount": "ground"
+      "attach": "floor"
     }
-  ]
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et",
+    "lanes": [
+      {
+        "from": "entrance",
+        "to": "police-kit-duty-desk",
+        "width": 1.2
+      }
+    ],
+    "clear": []
+  }
 }
