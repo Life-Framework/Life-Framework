@@ -61,7 +61,7 @@ class LF_BaseWorldClear
 	//------------------------------------------------------------------------------------------------
 	//! Hides every entity of the list inside an oriented box that is not a building (outdoor clutter: crates and pallets
 	//! of the base map in a yard). mins and maxs are local to mat; the same hide and the same prefab match as a building.
-	//! eturn how many entities were hidden now.
+	//! Returns how many entities were hidden now.
 	static int HideInBox(notnull BaseWorld world, vector mins, vector maxs, vector mat[4], notnull array<string> prefabs, string label)
 	{
 		set<string> keys = new set<string>();
