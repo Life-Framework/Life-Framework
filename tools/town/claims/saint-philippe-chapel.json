@@ -8,11 +8,16 @@
   "kinds": [
     "Church"
   ],
-  "rows": 5,
+  "rows": 8,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_saint_philippe_chapel_Place"
   },
-  "date": "2026-11-19"
+  "date": "2026-11-21",
+  "stamp": {
+    "kit": "chapel",
+    "prefab": "{0E9DBC9B70C345F3}Prefabs/Structures/Cultural/Chapels/Chapel_01/Chapel_01_base.et",
+    "layer": "3e935b6d5911"
+  }
 }

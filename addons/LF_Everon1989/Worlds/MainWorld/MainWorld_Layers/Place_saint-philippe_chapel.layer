@@ -9,28 +9,45 @@ GenericEntity Fit_saint_philippe_chapel_Place {
  }
  coords 4314.3 5.4 10710
 }
-GenericEntity Fit_saint_philippe_chapel_candle_1 : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
- coords 4315.558 5.379 10708.991
- angleY -81
-}
-GenericEntity Fit_saint_philippe_chapel_candle_2 : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
- coords 4315.808 5.379 10710.571
- angleY -81
-}
-GenericEntity Fit_saint_philippe_chapel_flowers_pink : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
- coords 4315.251 5.378 10708.331
- angleY -81
-}
-GenericEntity Fit_saint_philippe_chapel_flowers_red : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
- coords 4315.725 5.378 10711.328
- angleY -81
-}
 GenericEntity Fit_saint_philippe_chapel_anchor_bench {
  components {
   LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
    m_sAnchorId "bench"
   }
  }
- coords 4314.102 5.4 10710.031
+ coords 4313.898 5.38 10709.122
+ angleY 9
+}
+GenericEntity Fit_saint_philippe_chapel_anchor_priest {
+ components {
+  LF_ResidentAnchorComponent "{7A3D91E40B5C2F68}" {
+   m_sAnchorId "priest"
+  }
+ }
+ coords 4314.498 5.38 10709.969
+ angleY 99
+}
+GenericEntity Fit_saint_philippe_chapel_candle_1 : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+ coords 4315.314 5.411 10708.604
  angleY -81
+}
+GenericEntity Fit_saint_philippe_chapel_candle_2 : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+ coords 4315.696 5.411 10711.014
+ angleY -81
+}
+SCR_DestructibleEntity Fit_saint_philippe_chapel_flowers_pink : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
+ coords 4314.889 5.411 10709.502
+ angleY -81
+}
+SCR_DestructibleEntity Fit_saint_philippe_chapel_flowers_red : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
+ coords 4315.014 5.411 10710.292
+ angleY -81
+}
+GenericEntity Fit_saint_philippe_chapel_pew_east : "{8E2331A8736ABAF4}Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_short.et" {
+ coords 4314.189 5.411 10710.959
+ angleY -171
+}
+GenericEntity Fit_saint_philippe_chapel_pew_west : "{8E2331A8736ABAF4}Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_short.et" {
+ coords 4313.898 5.411 10709.122
+ angleY 9
 }
