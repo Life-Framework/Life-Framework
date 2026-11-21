@@ -64,18 +64,18 @@ GenericEntity Fit_everon_sawmill_yard_source_sawmill_sign : "{B7B489CA36A0E9F8}P
  angleY -41
 }
 GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 3068.258 0.058 5246.053
+ coords 3068.258 0 5246.053
  angleY 49
 }
 GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 3065.634 0.074 5249.072
+ coords 3065.634 0 5249.072
  angleY 49
 }
 GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 3063.01 0.191 5252.091
+ coords 3063.01 0 5252.091
  angleY 49
 }
 GenericEntity Fit_everon_sawmill_yard_source_sawmill_fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 3060.385 0.435 5255.11
+ coords 3060.385 0 5255.11
  angleY 49
 }
