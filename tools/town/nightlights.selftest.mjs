@@ -11,7 +11,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildAll, buildGlows, glowCount, GLOW, GLOW_COMPONENT, hourOff, layerPath, loadPlace, nearestRoad, occupied, renderLayer, seatsPath, streetWall, WALL_OFFSET } from "./nightlights.mjs";
+import { buildAll, frameRows, buildGlows, glowCount, GLOW, GLOW_COMPONENT, hourOff, layerPath, loadPlace, nearestRoad, occupied, renderLayer, seatsPath, streetWall, WALL_OFFSET } from "./nightlights.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 let failed = 0;
@@ -67,7 +67,7 @@ check(hourOff(row("sp:b09", "b", "exists", { use: "general store" }), "sp:b09") 
 const real = loadPlace(ROOT, "saint-philippe");
 // The committed layer is built on the island probe's seats (tools/town/probes), as `main` builds it.
 const seatsFile = seatsPath(ROOT, "saint-philippe");
-const all = buildAll(real, existsSync(seatsFile) ? JSON.parse(readFileSync(seatsFile, "utf8")) : null);
+const all = frameRows(buildAll(real, existsSync(seatsFile) ? JSON.parse(readFileSync(seatsFile, "utf8")) : null)); // each row in its prefab's frame, as main() writes it
 check(all.errors.length === 0, `Saint-Philippe lights build: ${all.errors.join("; ")}`);
 check(all.glows.length >= 25 && all.glows.length <= 40, `25 to 40 glows (${all.glows.length})`);
 check(all.lamps.length + all.heads.length >= 10 && all.lamps.length + all.heads.length <= 15, `10 to 15 lamp pieces (${all.lamps.length + all.heads.length})`);
