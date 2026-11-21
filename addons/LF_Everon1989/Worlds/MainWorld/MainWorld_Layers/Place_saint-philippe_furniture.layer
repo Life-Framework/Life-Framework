@@ -7,121 +7,80 @@ GenericEntity Fit_saint_philippe_furniture_Place {
   LF_FittedBuildingComponent "{D785DCDBDEA8D2A0}" {
   }
  }
- coords 4397.5 10.2 10767.8
+ coords 4501.3 16.4 10648.5
 }
-GenericEntity Fit_saint_philippe_furniture_furniture_wardrobe : "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et" {
- coords 4400.027 10.207 10775.373
- angleY -117
+GenericEntity Fit_saint_philippe_furniture_clear {
+ components {
+  LF_BaseWorldClearComponent "{5B15ADD4115D1F4F}" {
+   m_sBuilding "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et"
+   m_aPrefabs {
+    "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et"
+    "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et"
+    "{3AB2B7156B3A0F3D}Prefabs/Props/Agriculture/MilkCan_01.et"
+    "{6929659CE9375CAF}Prefabs/Props/Garbage/Tires/TireTractor_01_single.et"
+    "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et"
+    "{96A3F39C918787E5}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big_bottom.et"
+    "{B69B4902BAF5B1B9}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_02.et"
+    "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et"
+    "{E537DCDB9B3F2278}Prefabs/Props/Agriculture/Farm/HayPile_01.et"
+    "{EECACC5F25A31B0F}Prefabs/Props/Civilian/LadderWooden_01_Long.et"
+    "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et"
+   }
+  }
+ }
+ coords 4501.3 16.4 10648.5
 }
-GenericEntity Fit_saint_philippe_furniture_furniture_dresser : "{A319C11D446D88B3}Prefabs/Props/Furniture/Dresser_01.et" {
- coords 4400.754 10.207 10773.947
- angleY -117
+GenericEntity Fit_saint_philippe_furniture_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
+ coords 4503.417 16.401 10652.837
+ angleY 172
 }
-GenericEntity Fit_saint_philippe_furniture_furniture_bookcase : "{F77F7F847CC6455F}Prefabs/Props/Furniture/Bookshelf_01/Bookshelf_01.et" {
- coords 4401.435 10.207 10772.611
- angleY -117
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_cupboard : "{23EDC2B8CDEE124F}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_F.et" {
- coords 4402.479 10.207 10770.561
- angleY -117
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_fridge : "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et" {
- coords 4403.215 10.207 10769.096
- angleY -117
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_stove : "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et" {
- coords 4403.247 10.207 10768.989
- angleY -117
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_kitchen : "{E1D3E7F0A1833454}Prefabs/Props/Furniture/Kitchen_02.et" {
- coords 4403.614 10.207 10768.334
- angleY -117
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_chest : "{0BB4B21E4F560431}Prefabs/Props/Furniture/Chest_01.et" {
- coords 4404.857 10.207 10765.432
- angleY -117
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_bed_double : "{8A6DD31A4FF94E48}Prefabs/Props/Furniture/BedDouble_01.et" {
- coords 4397.739 10.207 10775.372
- angleY 153
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_bed : "{0164749D6EAA4518}Prefabs/Props/Furniture/Bed_01.et" {
- coords 4398.39 10.207 10772.574
- angleY 153
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_plant : "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et" {
- coords 4398.545 10.207 10776.773
- angleY 153
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_workbench : "{D349CAB0A6544C59}Prefabs/Props/Furniture/TableWorkshop_01_short.et" {
- coords 4400.635 10.207 10766.648
- angleY 63
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_crate : "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et" {
- coords 4401.207 10.207 10765.503
- angleY 153
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_rug : "{2DD4D94957E1DC2B}Prefabs/Props/Furniture/Carpet_03_red.et" {
- coords 4400.236 10.207 10770.03
- angleY -117
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_sofa : "{A0A76057A66049D0}Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et" {
- coords 4399.337 10.237 10769.69
- angleY 63
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_coffee_table : "{E3382F292BA2A27D}Prefabs/Props/Furniture/TableCoffee_01.et" {
- coords 4400.277 10.237 10770.169
- angleY 63
+GenericEntity Fit_saint_philippe_furniture_anchor_door {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4501.279 16.401 10651.526
+ angleY -8
 }
 GenericEntity Fit_saint_philippe_furniture_furniture_armchair : "{EE22BB8259C1A594}Prefabs/Props/Furniture/Armchair_03.et" {
- coords 4400.058 10.237 10771.37
- angleY 153
+ coords 4505.454 16.421 10645.529
+ angleY -8
 }
-GenericEntity Fit_saint_philippe_furniture_furniture_lamp : "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et" {
- coords 4399.886 10.207 10768.404
- angleY 153
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_table : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
- coords 4402.228 10.207 10767.123
- angleY 153
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_chair_north : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
- coords 4401.66 10.207 10768.225
- angleY 153
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_chair_south : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
- coords 4402.786 10.207 10766.015
- angleY -27
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_counter : "{B0C1CC8AA15B21D2}Prefabs/Props/Commercial/LF_FurnitureCounter.et" {
- coords 4402.405 10.207 10764.407
- angleY 63
-}
-GenericEntity Fit_saint_philippe_furniture_furniture_tv : "{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et" {
- coords 4400.546 11.207 10773
- angleY -117
+GenericEntity Fit_saint_philippe_furniture_furniture_bed_double : "{8A6DD31A4FF94E48}Prefabs/Props/Furniture/BedDouble_01.et" {
+ coords 4497.305 16.401 10645.313
+ angleY -8
 }
 GenericEntity Fit_saint_philippe_furniture_furniture_cashier : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
- coords 4402.357 11.247 10764.601
- angleY 63
+ coords 4504.434 17.44 10652.071
+ angleY 172
 }
-GenericEntity Fit_saint_philippe_furniture_furniture_mirror : "{2ED930A7BA4156F5}Prefabs/Props/Furniture/MirrorBathroom_01.et" {
- coords 4405.047 12.007 10765.528
- angleY -117
+GenericEntity Fit_saint_philippe_furniture_furniture_chair_north : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 4496.733 16.401 10649.383
+ angleY -8
 }
-GenericEntity Fit_saint_philippe_furniture_furniture_shelf : "{A84A73E9D9D4B20E}Prefabs/Props/Furniture/Shelf_01.et" {
- coords 4404.956 11.307 10765.522
- angleY -117
+GenericEntity Fit_saint_philippe_furniture_furniture_chair_south : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 4496.388 16.401 10651.839
+ angleY 172
 }
-GenericEntity Fit_saint_philippe_furniture_furniture_picture : "{2F8BC4454FD8081B}Prefabs/Props/Commercial/Posters/PosterSingle_A3_Forest_V1.et" {
- coords 4400.844 11.707 10765.295
- angleY 63
+LF_NpcBaseEntity Fit_saint_philippe_furniture_furniture_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 4504.308 16.401 10652.962
+ angleY 172
 }
-GenericEntity Fit_saint_philippe_furniture_furniture_radio : "{2F2BBFDA3A2C73D4}Prefabs/Props/Civilian/RadioSmall_01_black.et" {
- coords 4404.776 11.557 10765.391
- angleY -117
+GenericEntity Fit_saint_philippe_furniture_furniture_coffee_table : "{E3382F292BA2A27D}Prefabs/Props/Furniture/TableCoffee_01.et" {
+ coords 4505.638 16.421 10646.737
+ angleY -98
 }
-GenericEntity Fit_saint_philippe_furniture_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+GenericEntity Fit_saint_philippe_furniture_furniture_counter : "{B0C1CC8AA15B21D2}Prefabs/Props/Commercial/LF_FurnitureCounter.et" {
+ coords 4504.434 16.401 10652.071
+ angleY 172
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
  components {
   LF_SignComponent "{6E3FF3980D87CACE}" {
    m_sSignId "furniture_store"
@@ -130,6 +89,38 @@ GenericEntity Fit_saint_philippe_furniture_lf_sign_fascia : "{4697D9464B596C24}P
    m_vTextColor 0.96 0.93 0.82
   }
  }
- coords 4404.374 13.207 10762.788
- angleY 153
+ coords 4505.214 19.35 10654.134
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_fridge : "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et" {
+ coords 4494.536 16.401 10648.701
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_kitchen : "{E1D3E7F0A1833454}Prefabs/Props/Furniture/Kitchen_02.et" {
+ coords 4494.407 16.401 10649.551
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_lamp : "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et" {
+ coords 4506.582 16.401 10648.278
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_rug : "{2DD4D94957E1DC2B}Prefabs/Props/Furniture/Carpet_03_red.et" {
+ coords 4505.722 16.401 10646.854
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_sofa : "{A0A76057A66049D0}Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et" {
+ coords 4506.682 16.421 10646.883
+ angleY -98
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_stove : "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et" {
+ coords 4494.541 16.401 10648.812
+ angleY 82
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_table : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
+ coords 4496.555 16.401 10650.61
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_furniture_furniture_wardrobe : "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et" {
+ coords 4495.047 16.401 10644.996
+ angleY 82
 }

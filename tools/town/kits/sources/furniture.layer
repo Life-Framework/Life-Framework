@@ -1,0 +1,200 @@
+// Source of the `furniture` kit (tools/town/kits/furniture.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). `town fit` reads the components the kit names from here; `town author --reopen furniture` builds a bay again.
+// Grid cell c27r2 for author-furniture: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_author_furniture_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 47
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 47
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 47
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 47
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 47
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 51.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 55.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 60.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 64.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 69
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 64.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_furniture_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 60.2
+ angleY 90
+}
+GenericEntity Grid_author_furniture_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:author-furniture"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 346.2 0.505 47.6
+ angleY -90
+}
+GenericEntity Grid_author_furniture_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "author-furniture"
+  }
+ }
+ coords 346.3 0 51.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_author_furniture_Main : "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et" {
+ coords 357.954 0.05 58.003
+ angleY -90
+}
+GenericEntity Grid_author_furniture_clear {
+ components {
+  LF_BaseWorldClearComponent "{3C5A91E07D4B28F6}" {
+   m_sBuilding "{99F6E8E52B71B137}Prefabs/Structures/Agriculture/Barn/Barn_E_01/Barn_E_01.et"
+   m_aPrefabs {
+    "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et"
+    "{96A3F39C918787E5}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big_bottom.et"
+    "{E537DCDB9B3F2278}Prefabs/Props/Agriculture/Farm/HayPile_01.et"
+    "{3AB2B7156B3A0F3D}Prefabs/Props/Agriculture/MilkCan_01.et"
+    "{6929659CE9375CAF}Prefabs/Props/Garbage/Tires/TireTractor_01_single.et"
+    "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et"
+    "{B69B4902BAF5B1B9}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_02.et"
+    "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et"
+    "{EECACC5F25A31B0F}Prefabs/Props/Civilian/LadderWooden_01_Long.et"
+    "{F4CA533A99B20DAE}Prefabs/Props/Civilian/SackUniversal_01.et"
+    "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et"
+   }
+  }
+ }
+ coords 357.954 0.05 58.003
+}
+GenericEntity Furniture_fridge : "{FF8BD8E8A95DB3D2}Prefabs/Props/Furniture/Fridge_01.et" {
+ coords 356.514 0.051 50.933
+ angleY 0
+}
+GenericEntity Furniture_stove : "{9E6BB1D7AA5D0FEB}Prefabs/Props/Furniture/Stove_01.et" {
+ coords 356.404 0.051 50.953
+ angleY 0
+}
+GenericEntity Furniture_kitchen : "{E1D3E7F0A1833454}Prefabs/Props/Furniture/Kitchen_02.et" {
+ coords 355.654 0.051 50.923
+ angleY 0
+}
+GenericEntity Furniture_table : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
+ coords 355.204 0.051 53.598
+ angleY -90
+}
+GenericEntity Furniture_chair_north : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 356.444 0.051 53.603
+ angleY -90
+}
+GenericEntity Furniture_chair_south : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 353.964 0.051 53.603
+ angleY 90
+}
+GenericEntity Furniture_wardrobe : "{FD47FF9699A52E82}Prefabs/Props/Furniture/Wardrobe_01.et" {
+ coords 360.554 0.051 50.923
+ angleY 0
+}
+GenericEntity Furniture_bed_double : "{8A6DD31A4FF94E48}Prefabs/Props/Furniture/BedDouble_01.et" {
+ coords 361.594 0.051 53.083
+ angleY -90
+}
+GenericEntity Furniture_rug : "{2DD4D94957E1DC2B}Prefabs/Props/Furniture/Carpet_03_red.et" {
+ coords 360.199 0.051 62.153
+ angleY 0
+}
+GenericEntity Furniture_sofa : "{A0A76057A66049D0}Prefabs/Props/Furniture/Sofa_02/Sofa_02_orange.et" {
+ coords 360.304 0.081 63.108
+ angleY 180
+}
+GenericEntity Furniture_coffee_table : "{E3382F292BA2A27D}Prefabs/Props/Furniture/TableCoffee_01.et" {
+ coords 360.304 0.081 62.053
+ angleY 180
+}
+GenericEntity Furniture_armchair : "{EE22BB8259C1A594}Prefabs/Props/Furniture/Armchair_03.et" {
+ coords 361.474 0.081 61.703
+ angleY -90
+}
+GenericEntity Furniture_lamp : "{FA81E4DDBA1189AF}Prefabs/Props/Furniture/LampInterior_01.et" {
+ coords 358.909 0.051 63.203
+ angleY -90
+}
+GenericEntity Furniture_counter : "{B0C1CC8AA15B21D2}Prefabs/Props/Commercial/LF_FurnitureCounter.et" {
+ coords 354.454 0.051 61.603
+ angleY 90
+}
+GenericEntity Furniture_cashier : "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et" {
+ coords 354.454 1.09 61.603
+ angleY 90
+}
+LF_NpcBaseEntity Furniture_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 353.554 0.051 61.603
+ angleY 90
+}
+GenericEntity Furniture_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "furniture_store"
+   m_vRimColor 0.92 0.86 0.7
+   m_vPaintColor 0.33 0.2 0.12
+   m_vTextColor 0.96 0.93 0.82
+  }
+ }
+ coords 352.92 3 62.663
+ angleY -90
+}
+GenericEntity Source_ResidentAnchor {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 0 0 0
+}
