@@ -214,22 +214,6 @@ GenericEntity Glow_saint_philippe_sp_b50_0 : "{E24B79E78F3A5685}Prefabs/Props/Li
  }
  coords 4396.07 12.32 10743.01
 }
-GenericEntity Glow_saint_philippe_sp_b55_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
- components {
-  LF_NightLightComponent "{56B3030CD27BB27B}" {
-   m_fHourOff 23
-  }
- }
- coords 4397.66 11.99 10759.19
-}
-GenericEntity Glow_saint_philippe_sp_b55_1 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
- components {
-  LF_NightLightComponent "{56B3030CD27BB27B}" {
-   m_fHourOff 23
-  }
- }
- coords 4404.28 15.17 10762.39
-}
 GenericEntity Glow_saint_philippe_sp_b77_0 : "{E24B79E78F3A5685}Prefabs/Props/Lights/LF_WindowGlow.et" {
  components {
   LF_NightLightComponent "{56B3030CD27BB27B}" {
