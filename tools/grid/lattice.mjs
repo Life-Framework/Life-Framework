@@ -204,10 +204,14 @@ export function spanRects(states) {
     .map((cells) => ({ x0: Math.min(...cells.map((c) => c.x0)), z0: Math.min(...cells.map((c) => c.z0)), x1: Math.max(...cells.map((c) => c.x1)), z1: Math.max(...cells.map((c) => c.z1)) }));
 }
 
+// The rectangle of every authoring bay, free or claimed (card #3961): a building copy stands centred in its bay, so a gravel path
+// along the row line through the bay middle ran under it and the audit flagged the building as sunk.
+export const bayRects = () => authoringBays().map((b) => claimRect({ cell: b.id, span: b.span }));
+
 // Every entity of the frame: [{ name, x, z }] with `lines` of layer text. Pure.
 export function framePlan(states) {
   const out = [];
-  const spans = spanRects(states);
+  const spans = [...spanRects(states), ...bayRects()];
   // On or inside a span claim's rectangle: the edge counts, a path laid on it is half in the building.
   const inSpan = (x, z) => spans.some((r) => x >= r.x0 && x <= r.x1 && z >= r.z0 && z <= r.z1);
   const claimAt = new Map(states.filter((s) => s.state === "claimed").map((s) => [`${s.col}_${s.row}`, s.label]));

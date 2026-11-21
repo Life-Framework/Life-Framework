@@ -10,6 +10,10 @@
 //     centre steps (a lintel), it slides along the wall to the nearest flat run in every copy, turned by each building's yaw, and the
 //     floor rows stay where the grid proved them; with no flat run in reach it stays seated at its centre and warns;
 //   - a row's component GUID travels with its config: the stamped layer writes it though the prefab does not carry the component.
+//   - yard rows (kit mount terrain/ground) are seated on the ISLAND ground from the pins, within 2 cm, keeping their building-relative x, z and
+//     yaw; with no pin the stamp is refused naming `--terrain`; `--terrain` probes once per slot, keeps the pins, and --dry restores the files (#3961).
+// red-proof (#3961, 2026-11-21): with STAMP_SEAT back to ["wall"] (the grid height copied onto the island) the selftest failed: the unprobed yard
+//   stamped instead of being refused and the probe step threw ("first2.probes[0]" undefined); restored, OK.
 // red-proof (#3931, 2026-11-21): seatRows with the flatWalls branch off printed "FAIL the sign slid off the lintel ..."; planFit without the
 //   kit config guid fallback printed "FAIL the config guid reaches the stamped layer"; restored, OK.
 // red-proof: 2026-11-21, #3924: with the carrier push removed, "each stamped copy carries a Fit_<slot>_clear carrier" failed; restored, OK.
@@ -21,7 +25,8 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { scratchDir } from "../lib/scratch.mjs";
 import { authorExtract } from "./author.mjs";
 import { toLocal } from "./kit.mjs";
-import { applyStamp, planStamp, stampTargets, stampVerdict } from "./stamp.mjs";
+import { applyStamp, planStamp, probeAndReplan, stampTargets, stampVerdict } from "./stamp.mjs";
+import { readPins, terrainFromPins } from "./terrain.mjs";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(HERE, "..", "..");
@@ -161,6 +166,83 @@ guided.rows.find((r) => r.id === counterId).config = [{ component: "LF_StoreComp
 const withGuid = await planStamp(guided, targets, po);
 ok(withGuid.ok && /LF_StoreComponent "{ABCDEF0123456789}"/.test(withGuid.copies[0].layerText), "the config guid reaches the stamped layer");
 void hostPath;
+
+// ---- yard rows (#3961): open-ground rows are seated on the island ground, not on the flat grid's height
+// The island slopes 5 cm per metre east and 2 cm per metre north from 19 m at the origin of the fixture buildings; the grid is flat at 0.
+const slope = (x, z) => Math.round((19 + 0.05 * (x - 5000) + 0.02 * (z - 6000)) * 1000) / 1000;
+const plane = { at: (x, z) => slope(x, z) };
+const CRATE = "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et";
+const yardKit = JSON.parse(JSON.stringify(kit));
+yardKit.rows.push(
+  { id: "yard-crate-1", prefab: CRATE, role: "dressing", verb: "on floor", mount: "terrain", offset: [8, 0, -6], yaw: 30, wall: "free", floor: "f0" },
+  { id: "yard-crate-2", prefab: CRATE, role: "dressing", verb: "on floor", mount: "terrain", offset: [-7, 0, 9], yaw: 200, wall: "free", floor: "f0" },
+  { id: "yard-post", prefab: CRATE, role: "dressing", verb: "on floor", mount: "ground", offset: [4, 0, -9], yaw: 0, wall: "free", floor: "f0" },
+);
+// A crate has no bounds (its own point is the ground that counts); the building is the 10 x 8 m room of the wall fixture.
+const yardReader = { info: (p) => (String(p).includes("NetFence") ? null : PLATE), shell: async () => shellOf([]) };
+const worldFrame = () => "world";
+const yo = { ...po, shell: yardReader, frameOf: worldFrame };
+const stub = (rel) => ({ ...yo, terrainOf: rel });
+const crateWorld = (text, id) => coordsOf(text, id);
+
+// no probed ground: the stamp refuses, names the probe and writes nothing; it never copies the grid height
+const bare = await planStamp(yardKit, targets, { ...yo, terrainOf: () => null });
+ok(!bare.ok && bare.errors.some((e) => /yard-crate-1.*town stamp fixture-shop --terrain/.test(e)), `an unprobed yard is refused with the probe command (${bare.errors.join("; ")})`);
+ok(bare.copies.length === 0 && bare.probes.length === 2 && bare.probes.every((p) => p.points.length >= 3), "the refusal lists the points to probe, per slot");
+const bareFiles = (await planStamp(yardKit, targets, { ...yo, terrainOf: () => null, allowUnprobed: true })).copies;
+ok(bareFiles.length === 2, "the probe boot gets interim copies to boot around");
+// a stamp with no host model cannot seat a yard
+const noHost = await planStamp(yardKit, targets, { ...po, shell: null, terrainOf: () => plane, frameOf: worldFrame });
+ok(!noHost.ok && noHost.errors.some((e) => /open-ground row.s. cannot be seated/.test(e)), `a yard with no host model is refused (${noHost.errors.join("; ")})`);
+
+// with the ground: every yard row stands within 2 cm of it, in both copies, whatever the building's own height
+const yard = await planStamp(yardKit, targets, stub(() => plane));
+ok(yard.ok, `the yard kit stamps on a probed ground (${yard.errors.join("; ")})`);
+for (const [i, t] of targets.entries()) {
+  const text = yard.copies[i].layerText;
+  for (const id of ["yard-crate-1", "yard-crate-2", "yard-post"]) {
+    const w = crateWorld(text, id.replaceAll("-", "_"));
+    ok(w && Math.abs(w[1] - slope(w[0], w[2])) <= 0.02, `${id} in copy ${i} is within 2 cm of the island ground (got y ${w?.[1]}, ground ${w ? slope(w[0], w[2]) : "?"})`);
+  }
+  // building-relative x and z, and the yaw, stay as the grid proved them
+  const [lx, , lz] = localOf(text, "yard_crate_1", t);
+  ok(near(lx, 8) && near(lz, -6), `yard-crate-1 keeps its building-relative x and z in copy ${i} (got ${lx}, ${lz})`);
+  const yawOf = /_yard_crate_1 : "[^"]+" \{[\s\S]*?angleY ([-\d.]+)/.exec(text)?.[1];
+  ok(near(((Number(yawOf) % 360) + 360) % 360, i === 0 ? 30 : 210), `yard-crate-1 keeps its yaw in copy ${i} (got ${yawOf})`);
+  const was = coordsOf(first[i * 2], counterId);
+  const now2 = coordsOf(text, counterId);
+  ok(was && now2 && near(was[1], now2[1]), "a floor row inside the building keeps the grid's floor height");
+}
+const yardAgain = await planStamp(yardKit, targets, stub(() => plane));
+ok(yardAgain.copies.every((c, i) => c.layerText === yard.copies[i].layerText), "a yard stamp twice writes the same bytes");
+// a prefab that reads y over the terrain (RELATIVE_Y) writes the height over it: 0 for a post on the ground
+const terrainFrame = await planStamp(yardKit, targets, { ...stub(() => plane), frameOf: () => "terrain" });
+const rel = terrainFrame.ok && coordsOf(terrainFrame.copies[0].layerText, "yard_post");
+ok(rel && Math.abs(rel[1]) <= 0.02, `a terrain-frame post on the ground is written at 0 over the terrain (got ${rel?.[1]})`);
+
+// town stamp --terrain: probe, keep the pins, plan again; --dry puts the interim files back
+const root2 = scratchDir("lf-stamp-probe-");
+const probeOf = (n) => async (points) => ({ points: Object.fromEntries(points.map((p) => [`${Math.round(p[0] * 1000) / 1000},${Math.round(p[1] * 1000) / 1000}`, slope(p[0], p[1])])), missing: [], n });
+const po2 = { ...yo, root: ROOT, outRoot: root2, layerDir: "layers", claimsDir: "claims", skipClaims: true, terrainOf: (pl, sl) => terrainFromPins(readPins(root2, pl, sl)) };
+const first2 = await planStamp(yardKit, targets, po2);
+ok(!first2.ok && first2.probes.length === 2, "nothing probed yet: the plan asks for a probe");
+let probed = 0;
+const spy = async (points, o) => {
+  probed++;
+  ok(existsSync(join(root2, "layers", o.layerName)), "the layer the probe boots around is on disk");
+  return probeOf(0)(points);
+};
+const dry = await probeAndReplan(yardKit, targets, po2, first2, { root: root2, dry: true, probe: spy, log: quiet });
+ok(dry.ok && probed === 2, `the probe runs once per slot and the plan then passes (${dry.errors.join("; ")})`);
+ok(!existsSync(join(root2, "layers", first2.probes[0].layerName)), "a dry probe puts the interim layer back (it did not exist)");
+ok(existsSync(join(root2, "tools/town/terrain", `stampville-shop-a.json`)) && readPins(root2, "stampville", "shop-a")?.place === "stampville", "the pins are kept for the slot");
+const real = await probeAndReplan(yardKit, targets, po2, first2, { root: root2, dry: false, probe: spy, log: quiet });
+ok(real.ok && applyStamp(real, { root: root2, log: quiet }) === 0, "the stamp after a probe writes");
+ok(real.copies.every((c) => existsSync(join(root2, c.layerFile))), "the probed stamp is on disk");
+const missingProbe = async (points) => ({ points: {}, missing: points.map((p) => String(p)) });
+const none = await probeAndReplan(yardKit, targets, { ...po2, terrainOf: () => null }, first2, { root: root2, dry: true, probe: missingProbe, log: quiet });
+ok(!none.ok && none.errors.some((e) => /need the island ground height/.test(e)), "a probe that returns no height leaves the stamp refused");
+
 
 if (fails.length) {
   for (const f of fails) console.log(`FAIL ${f}`);
