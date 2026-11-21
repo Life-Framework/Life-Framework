@@ -154,6 +154,12 @@ export function roleOf(e) {
 
 const slug = (s) => String(s).replace(/([a-z0-9])([A-Z])/g, "$1-$2").replace(/[^A-Za-z0-9]+/g, "-").replace(/^-|-$/g, "").toLowerCase();
 
+// The entity name a kit row gets in an authoring bay (`kit-grid.mjs put`), and the clear carrier's (#3987). Extract reads the
+// row name back to find the kit row it stands for.
+export const bayIdent = (s) => String(s).replace(/[^A-Za-z0-9]+/g, "_").replace(/^_|_$/g, "");
+export const bayRowName = (kit, id) => `Kit_${bayIdent(kit)}_${bayIdent(id)}`;
+export const bayClearName = (kit) => `KitClear_${bayIdent(kit)}`;
+
 // ---------- extract ----------
 function readText(p) { return readFileSync(p, "utf8"); }
 function findOrigin(spec, defaultEntities, srcPath) {

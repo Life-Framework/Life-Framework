@@ -159,6 +159,22 @@
       "match": "LF_Wheat(Patch|Stubble)_01",
       "kind": "contact",
       "why": "A wheat or stubble patch is 3 m of alpha cards whose feet sit 4 cm under the pivot so no card edge shows; the field follows rolling ground, and the ground varies up to 15 cm across 3 m, so one side sinks into the earth as grass does (#3290)."
+    },
+    {
+      "match": "^ResidentPlate_",
+      "kind": "odd-scale",
+      "why": "The plate is the vanilla full-size door number plate shipped at scale 0.5 on purpose: about 45 x 22 cm beside a house door (PLATE_SCALE and PLATE_BOX in tools/town/residenthomes.mjs)."
+    },
+    {
+      "match": "^ConeTraffic_01_(red|stack) ",
+      "kind": "orphan",
+      "layer": "(runtime: loose props)",
+      "why": "Vanilla Everon road-works cones baked into the base map (roadside works on the island's roads, outside the fitted town streets); no layer row or script owns them and none can remove them. The sweep reads the whole island, so they appear as strays."
+    },
+    {
+      "match": "^GenericEntity baked into (BoatShed_01|Shed_02_big_V1|Warehouse_01):",
+      "kind": "blocks-door",
+      "why": "Furniture baked into the vanilla prefab's own children (boat sheds on the shore, a farm shed, a depot warehouse). No pack row or kit places it and a sub-layer cannot hide a prefab child (#3882)."
     }
   ]
 }
