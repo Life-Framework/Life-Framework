@@ -78,51 +78,51 @@ GenericEntity Fit_saint_philippe_woodlot_truck : "{A2E23CB8DDCFE82E}Prefabs/Vehi
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_w1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4325.306 13.677 10608.763
+ coords 4325.306 0 10608.763
  angleY 79
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_w2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4326.069 13.672 10604.837
+ coords 4326.069 0.001 10604.837
  angleY 79
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_w3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4326.832 13.731 10600.91
+ coords 4326.832 0.001 10600.91
  angleY 79
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_sw1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4329.272 13.856 10598.838
+ coords 4329.272 0 10598.838
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_sw2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4333.199 13.913 10599.601
+ coords 4333.199 0.001 10599.601
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_sw3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4337.125 13.987 10600.364
+ coords 4337.125 0.058 10600.364
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_se1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4356.758 14.276 10604.181
+ coords 4356.758 0 10604.181
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_se2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4360.684 14.252 10604.944
+ coords 4360.684 0 10604.944
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_fence_se3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4364.611 14.26 10605.707
+ coords 4364.611 0 10605.707
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_light_1 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4333.682 13.839 10612.837
+ coords 4333.682 0 10612.837
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_light_2 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4345.462 14.054 10615.126
+ coords 4345.462 0 10615.126
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_light_3 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4357.241 14.127 10617.416
+ coords 4357.241 0 10617.416
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

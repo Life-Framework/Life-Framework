@@ -821,6 +821,44 @@ class LF_PlacementAudit
 		return false;
 	}
 
+	protected static ref array<EntityID> s_aScanIds;
+
+	protected static bool CollectScan(IEntity entity)
+	{
+		if (entity)
+			s_aScanIds.Insert(entity.GetID());
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line per entity within `radius` of `center`: scan prefab=<resource path> name=<label> p=<x,y,z> top=<1 when it has no parent>.
+	//! Finds the base map's own clutter (crates, pallets, furniture) for a `stamp.clear` list.
+	static void ScanLines(vector center, float radius, notnull array<string> lines)
+	{
+		s_aScanIds = {};
+		BaseWorld world = GetGame().GetWorld();
+		world.QueryEntitiesBySphere(center, radius, CollectScan, null, EQueryEntitiesFlags.ALL);
+		foreach (EntityID id : s_aScanIds)
+		{
+			IEntity e = world.FindEntityByID(id);
+			if (!e)
+				continue;
+
+			string prefab = LF_BaseWorldClear.PrefabOf(e);
+			if (prefab.IsEmpty())
+				continue;
+
+			int top;
+			if (!e.GetParent())
+				top = 1;
+
+			lines.Insert(string.Format("scan prefab=%1 name=%2 p=%3 top=%4", prefab, Label(e), V(e.GetOrigin()), top));
+		}
+
+		s_aScanIds = null;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Distance from `from` to the nearest surface along the six axes (up to `reach` m), `self` traced through.
 	static float AttachDistance(vector from, IEntity self, float reach, out string to)
@@ -1133,6 +1171,13 @@ class LF_PlacementAudit
 			if (parts.Count() == 4 && parts[0] == "town")
 			{
 				DoorLines(Vector(parts[1].ToFloat(), 0, parts[2].ToFloat()), parts[3].ToFloat(), rows);
+				continue;
+			}
+
+			// "scan <x> <z> <radius>": list every entity in that circle by prefab (base-map clutter a stamp must hide, #3895).
+			if (parts.Count() == 4 && parts[0] == "scan")
+			{
+				ScanLines(Vector(parts[1].ToFloat(), 0, parts[2].ToFloat()), parts[3].ToFloat(), rows);
 				continue;
 			}
 

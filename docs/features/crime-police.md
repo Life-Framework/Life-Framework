@@ -887,3 +887,11 @@
   and the weapon and vehicle robberies rob a till, a weapon or a vehicle, so they are unchanged and a future player robbery calls
   `LF_HandsUpGate.Check`. Proof `search-proof` now raises the target's hands first and checks the down-hands refusal. Test
   `crime/hands-up-gate` (`LF_Test_HandsUpGate`, LOGIC). Logs `[LFDebug:HandsUp]`. No save change.
+- ✅ **Police station rebuilt through the grid (#3889, merged, in-dev).** The Saint-Philippe police slot (`Place_saint-philippe_police.layer`, kit
+  `tools/town/kits/police.json`) was authored in a grid authoring bay around a copy of the villa (`town author police`), walked and
+  audited there, extracted and stamped onto b32 (`town stamp police`). It is furnished lightly: the front duty desk with a desk officer
+  (`LF_Npc_Police_1`) behind it, the armory cabinet and the armory store, the evidence locker, wanted, dispatch and case boards, the two
+  duty clocks, a few seats, a plant and an interview table upstairs. The eight display pieces on the old display desk, the posters, the
+  back desk and the street bench, bin and flowerpots (their layer height was read as height above terrain, #3938) are gone. The front fascia
+  row is left out: no seat on the villa's front wall cleared the shell audit (follow-up). The audit of the layer reports no floating,
+  displaced, clipping, door-blocking or unreachable row. The kit's source layer is archived at `tools/town/kits/sources/police.layer`.

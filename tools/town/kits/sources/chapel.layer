@@ -1,19 +1,137 @@
-// Source of the `church` and `chapel` kits (tools/town/kits/church.json, chapel.json): the vanilla dressing props they place and the one
-// component their anchor row carries (a bare entity with LF_ResidentAnchorComponent, no mesh, no body). `town fit` reads the GUIDs from here.
-GenericEntity Source_Candle : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
- coords 0 0 0
+// Source of the `chapel` kit (tools/town/kits/chapel.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). `town fit` reads the components the kit names from here; `town author --reopen chapel` builds a bay again.
+// Grid cell c25r4 for author-chapel: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_author_chapel_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 71
 }
-GenericEntity Source_FlowersPink : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
- coords 1 0 0
+SCR_DestructibleEntity Grid_author_chapel_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 327.4 0 71
 }
-GenericEntity Source_FlowersRed : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
- coords 2 0 0
+SCR_DestructibleEntity Grid_author_chapel_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 331.8 0 71
 }
-GenericEntity Source_ResidentAnchor {
+SCR_DestructibleEntity Grid_author_chapel_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 336.2 0 71
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 340.6 0 71
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 75.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 79.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 84.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 88.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 345 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 340.6 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 336.2 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 331.8 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 327.4 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 93
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 88.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_chapel_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 84.2
+ angleY 90
+}
+GenericEntity Grid_author_chapel_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:author-chapel"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 322.2 0.505 71.6
+ angleY -90
+}
+GenericEntity Grid_author_chapel_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "author-chapel"
+  }
+ }
+ coords 322.3 0 75.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_author_chapel_Main : "{0E9DBC9B70C345F3}Prefabs/Structures/Cultural/Chapels/Chapel_01/Chapel_01_base.et" {
+ coords 333.93 0.05 81.99
+ angleY -90
+}
+GenericEntity Chapel_pew_west : "{8E2331A8736ABAF4}Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_short.et" {
+ coords 333.67 0.23 81.06
+ angleY 0
+}
+GenericEntity Chapel_pew_east : "{8E2331A8736ABAF4}Prefabs/Props/Furniture/BenchChurch_02/BenchChurch_02_short.et" {
+ coords 333.67 0.23 82.92
+ angleY -180
+}
+GenericEntity Chapel_candle_1 : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+ coords 335.15 0.23 80.77
+ angleY -90
+}
+GenericEntity Chapel_candle_2 : "{F5B5608E37C75332}Prefabs/Props/Civilian/CandleHolderDecorative_01/CandleHolderDecorative_01.et" {
+ coords 335.15 0.23 83.21
+ angleY -90
+}
+SCR_DestructibleEntity Chapel_flowers_pink : "{234AEC851DFF1B8C}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_pink.et" {
+ coords 334.59 0.23 81.59
+ angleY -90
+}
+SCR_DestructibleEntity Chapel_flowers_red : "{8393B4106B8D45A0}Prefabs/Props/Decorations/Flowerpots/FlowerpotFlowers_01/FlowerpotFlowers_01_begonia_red.et" {
+ coords 334.59 0.257 82.39
+ angleY -90
+}
+GenericEntity Chapel_anchor_priest {
+ components {
+  LF_ResidentAnchorComponent "{7A3D91E40B5C2F68}" {
+   m_sAnchorId "priest"
+  }
+ }
+ coords 334.13 0.23 81.99
+ angleY 90
+}
+GenericEntity Chapel_anchor_bench {
  components {
   LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
    m_sAnchorId "bench"
   }
  }
- coords 3 0 0
+ coords 333.67 0.23 81.06
+ angleY 0
 }

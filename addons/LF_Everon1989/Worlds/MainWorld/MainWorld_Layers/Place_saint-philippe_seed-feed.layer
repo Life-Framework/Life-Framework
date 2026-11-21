@@ -9,13 +9,21 @@ GenericEntity Fit_saint_philippe_seed_feed_Place {
  }
  coords 4522.5 16.1 10653.2
 }
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_box_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 4528.021 17.097 10652.86
+ angleY 171
+}
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4528.057 16.1 10653.27
+ coords 4528.021 16.057 10652.86
  angleY 171
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4526.576 16.1 10653.036
+ coords 4526.54 16.057 10652.625
  angleY 171
+}
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 4525.51 16.06 10653.373
+ angleY -99
 }
 GenericEntity Fit_saint_philippe_seed_feed_seed_feed_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
  components {
@@ -47,38 +55,6 @@ GenericEntity Fit_saint_philippe_seed_feed_seed_feed_till : "{4E4E1620C6B02E1F}P
    }
   }
  }
- coords 4526.576 17.139 10653.036
+ coords 4526.54 17.097 10652.625
  angleY 171
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 4529.273 16.123 10655.184
- angleY -99
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_sacks_2 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 4529.664 16.123 10652.715
- angleY -99
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_1 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 4525.609 16.1 10653.389
- angleY -99
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_2 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 4525.71 16.1 10652.747
- angleY -99
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_3 : "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et" {
- coords 4525.609 16.32 10653.389
- angleY -89
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_box_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 4528.057 17.139 10653.27
- angleY 171
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_4 : "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et" {
- coords 4525.796 16.1 10652.203
- angleY -99
-}
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_crate_5 : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 4525.883 16.1 10651.66
- angleY -99
 }

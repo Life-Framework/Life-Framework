@@ -35,6 +35,6 @@ SCR_DestructibleEntity Fit_saint_philippe_merchant_timber_timber_board : "{7B452
    m_fFaceScale 2.6
   }
  }
- coords 4524.525 0.006 10630.262
+ coords 4524.525 15.99 10630.262
  angleY -99
 }

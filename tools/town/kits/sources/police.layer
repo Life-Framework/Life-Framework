@@ -1,0 +1,353 @@
+// Source of the `police` kit (tools/town/kits/police.json): the grid layer it was authored in, kept when its authoring bay was released (town author extract). `town fit` reads the components the kit names from here; `town author --reopen police` builds a bay again.
+// Grid cell c27r2 for author-police: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_author_police_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 47
+}
+SCR_DestructibleEntity Grid_author_police_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 47
+}
+SCR_DestructibleEntity Grid_author_police_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 47
+}
+SCR_DestructibleEntity Grid_author_police_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 47
+}
+SCR_DestructibleEntity Grid_author_police_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 47
+}
+SCR_DestructibleEntity Grid_author_police_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 47
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_police_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 51.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_police_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 55.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_police_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 60.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_police_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 64.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_author_police_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_police_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_police_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_police_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_police_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_author_police_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 69
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_police_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 64.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_author_police_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 60.2
+ angleY 90
+}
+GenericEntity Grid_author_police_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:author-police"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 346.2 0.505 47.6
+ angleY -90
+}
+GenericEntity Grid_author_police_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "author-police"
+  }
+ }
+ coords 346.3 0 51.4
+ angleY 90
+}
+SCR_DestructibleBuildingEntity Grid_author_police_Main : "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et" {
+ coords 359.397 0.05 58.489
+ angleY -90
+}
+GenericEntity PoliceKit_WantedBoard : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
+ coords 357.497 1.15 59.209
+}
+GenericEntity PoliceKit_DutyDesk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
+ coords 359.797 0.051 62.289
+ angleY -90
+}
+GenericEntity PoliceKit_Armory {
+ components {
+  MeshObject "{A7C31A9B04D25011}" {
+   Object "{138FB8A2D71B1603}Assets/Props/Furniture/CabinetMetal_01/CabinetMetal_01.xob"
+   Materials {
+    MaterialAssignClass "{A7C31A9B04D25019}" {
+     SourceMaterial "CabinetMetal_01"
+     AssignedMaterial "{50729867FFC0AF7F}Assets/Props/Furniture/CabinetMetal_01/Data/CabinetMetal_01_V1.emat"
+    }
+   }
+  }
+  RigidBody "{A7C31A9B04D25012}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{A7C31A9B04D25013}" {
+   ActionContexts {
+    UserActionContext "{A7C31A9B04D25014}" {
+     ContextName "default"
+     Position PointInfo "{A7C31A9B04D25015}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_ArmoryDrawAction "{A7C31A9B04D25016}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RankPromoteAction "{A7C31A9B04D25017}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+  RplComponent "{A7C31A9B04D25018}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+ coords 362.597 0 64.289
+ angleY -90
+}
+GenericEntity PoliceKit_ArmoryStore : "{700A3E2CC5C68520}Prefabs/Police/LF_ArmoryStore.et" {
+ coords 357.797 0.051 64.339
+ angleY 180
+}
+GenericEntity PoliceKit_EvidenceLocker : "{5D8B2F46A9E1C073}Prefabs/Investigation/LF_EvidenceLocker.et" {
+ components {
+  LF_BreachTargetComponent "{3A7C5E91B4D20F79}" {
+   m_sTargetId "PoliceKit_Police_EvidenceLocker"
+  }
+ }
+ coords 362.797 0.051 59.989
+ angleY -90
+}
+GenericEntity PoliceKit_DispatchBoard : "{5BC90DB066B123D4}Prefabs/Comms/LF_DispatchBoard_Police.et" {
+ coords 363.057 1.25 62.689
+ angleY -90
+}
+GenericEntity PoliceKit_CaseBoard : "{C8B78C628082CA0D}Prefabs/Investigation/LF_CaseBoard.et" {
+ coords 359.997 1.5 64.389
+}
+GenericEntity PoliceKit_Handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
+ coords 359.497 0.975 61.489
+ angleY -70
+}
+GenericEntity PoliceKit_DutyClock_Hall : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {
+ components {
+  SCR_SoundDataComponent "{BC459247BBA4457F}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{B46B5DD6F8897BFD}" {
+     m_sSoundProject "{5A46144CB8BFC66B}Sounds/Structures/Military/Training/RangeCP/Structures_RangeCP.acp"
+     m_sSoundEventName "SOUND_RANGECP_STARTBUTTON"
+    }
+   }
+  }
+  ActionsManagerComponent "{775836274AF8BE66}" {
+   ActionContexts {
+    UserActionContext "{22A17EEEA2399F2D}" {
+     ContextName "LF_DutyClock"
+     Position PointInfo "{B046DE7E017B07C6}" {
+      Offset -0.0228 0.928 0.1792
+     }
+     Radius 1.58
+    }
+   }
+   additionalActions {
+    LF_DutyAction "{E0CCF06A3D9A2E06}" {
+     ParentContextList {
+      "LF_DutyClock"
+     }
+     UIInfo UIInfo "{857016BF95624B25}" {
+      Name "#LF-Duty_ClockIn"
+      Description "#LF-Duty_ClockDesc"
+     }
+     "Sort Priority" 1
+    }
+   }
+  }
+ }
+ coords 361.037 0.508 59.214
+ angleY 180
+}
+GenericEntity PoliceKit_DutyClock_Room : "{E7EA9EA108001D70}Prefabs/Props/Civilian/ClockPunch_01.et" {
+ components {
+  SCR_SoundDataComponent "{BC459247BBA4457F}" {
+   m_aAudioSourceConfiguration {
+    SCR_AudioSourceConfiguration "{B46B5DD6F8897BFD}" {
+     m_sSoundProject "{5A46144CB8BFC66B}Sounds/Structures/Military/Training/RangeCP/Structures_RangeCP.acp"
+     m_sSoundEventName "SOUND_RANGECP_STARTBUTTON"
+    }
+   }
+  }
+  ActionsManagerComponent "{775836274AF8BE66}" {
+   ActionContexts {
+    UserActionContext "{22A17EEEA2399F2D}" {
+     ContextName "LF_DutyClock"
+     Position PointInfo "{B046DE7E017B07C6}" {
+      Offset -0.0228 0.928 0.1792
+     }
+     Radius 1.58
+    }
+   }
+   additionalActions {
+    LF_DutyAction "{E0CCF06A3D9A2E06}" {
+     ParentContextList {
+      "LF_DutyClock"
+     }
+     UIInfo UIInfo "{857016BF95624B25}" {
+      Name "#LF-Duty_ClockIn"
+      Description "#LF-Duty_ClockDesc"
+     }
+     "Sort Priority" 1
+    }
+   }
+  }
+ }
+ coords 358.397 0.508 59.494
+}
+GenericEntity PoliceKit_Sign_Front : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "police_front"
+   m_vRimColor 0.85 0.85 0.88
+   m_vPaintColor 0.08 0.16 0.38
+   m_vTextColor 0.95 0.95 0.97
+  }
+ }
+ coords 352.467 2.95 57.419
+ angleY -90
+}
+GenericEntity PoliceKit_Decor_1 : "{25B473F35DCBDA7A}Prefabs/Props/Civilian/ClockUniversal_01.et" {
+ coords 356.997 2.2 64.389
+ angleY 180
+}
+GenericEntity PoliceKit_Decor_6 : "{9BDAE42023AB3357}Prefabs/Comms/LF_DispatchPhone.et" {
+ coords 359.597 0.959 62.039
+ angleY 70
+}
+GenericEntity PoliceKit_Decor_12 : "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et" {
+ coords 359.497 3.861 56.789
+ angleY 90
+}
+GenericEntity PoliceKit_Decor_13 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 361.297 3.861 56.789
+ angleY -90
+}
+GenericEntity PoliceKit_Decor_14 : "{F3E5F7F4BDA0DDF4}Prefabs/Props/Civilian/TapeRecorder_01/TapeRecorder_01.et" {
+ coords 360.397 4.75 56.889
+}
+GenericEntity PoliceKit_Decor_15 : "{D62A80FF7E61B2FA}Prefabs/Props/Furniture/LightTable_01.et" {
+ coords 360.597 4.75 56.589
+ angleY -30
+}
+GenericEntity PoliceKit_Decor_19 : "{E7AD7B406C39CD56}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V2.et" {
+ coords 358.197 5 64.389
+ angleY 180
+}
+GenericEntity PoliceKit_Decor_21 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+ components {
+  MeshObject "{5111E74D5E891458}" {
+   Materials {
+    MaterialAssignClass "{D0C0000000000015}" {
+     SourceMaterial "Glass"
+     AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
+    }
+   }
+  }
+ }
+ coords 352.497 2.55 59.939
+ angleY -90
+}
+GenericEntity PoliceKit_Decor_22 : "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et" {
+ components {
+  MeshObject "{5111E74D5E891458}" {
+   Materials {
+    MaterialAssignClass "{D0C0000000000016}" {
+     SourceMaterial "Glass"
+     AssignedMaterial "{0097A51162CDB55B}Assets/Structures/BuildingsParts/Lights/LampIndustrial_01/Data/Glass_on_orange.emat"
+    }
+   }
+  }
+ }
+ coords 355.637 2.45 58.739
+ angleY -90
+}
+GenericEntity PoliceKit_Decor_23 : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ coords 362.377 0.051 58.639
+ angleY -90
+}
+GenericEntity PoliceKit_Decor_24 : "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et" {
+ coords 362.747 0.061 57.789
+ angleY -90
+}
+GenericEntity PoliceKit_Decor_26 : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
+ coords 362.377 0.956 58.639
+ angleY 90
+}
+GenericEntity PoliceKit_Decor_29 : "{023137B960DC5A3D}Prefabs/Props/Civilian/NoticeBoardCork_01/Filled/NoticeBoardCork_USSR_01_filled_V3.et" {
+ coords 363.057 1.2 57.789
+ angleY -90
+}
+GenericEntity PoliceKit_Decor_30 : "{CC26426052C1D1E6}Prefabs/Props/Furniture/PlantRoom_02.et" {
+ coords 362.697 0.05 58.939
+ angleY -60
+}
+GenericEntity PoliceKit_Decor_31 : "{25ED9C1A5F68A573}Prefabs/Props/Garbage/Bins/BinInterior_01_green.et" {
+ coords 362.797 0.06 56.739
+ angleY -90
+}
+SCR_DestructibleEntity PoliceKit_Decor_34 : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
+ coords 352.097 0 61.489
+ angleY -90
+}
+SCR_DestructibleEntity PoliceKit_Decor_35 : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
+ coords 352.477 0.502 59.939
+ angleY -90
+}
+SCR_DestructibleEntity PoliceKit_Decor_36 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 351.997 0.003 55.189
+ angleY -90
+}
+LF_NpcBaseEntity PoliceKit_DeskOfficer : "{61CE39AA52347555}Prefabs/Characters/Npcs/Outfits/LF_Npc_Police_1.et" {
+ coords 360.697 0.051 62.289
+ angleY -90
+}

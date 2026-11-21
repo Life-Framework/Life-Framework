@@ -4,7 +4,8 @@
   "system": "store",
   "source": {
     "file": "tools/town/kits/sources/seed-feed.layer",
-    "origin": "prefab",
+    "group": "Seed_feed_*",
+    "origin": "building",
     "frame": "building-local"
   },
   "scope": "room",
@@ -13,75 +14,91 @@
     "vanilla": "{C363B659675041BA}Prefabs/Structures/Agriculture/Barn/Barn_E_03/Barn_E_03_closed.et"
   },
   "anchoring": {
-    "floorY": 0.1,
+    "floorY": 0.05,
     "floors": [
       {
         "id": "f0",
-        "y": 0.1
+        "y": 0.05
       }
     ],
     "footprint": {
       "source": "rows",
       "min": [
-        -8.4,
-        -3.2
+        -7,
+        -0.9
       ],
       "max": [
-        -2.6,
-        3.2
+        -3.1,
+        1.6
       ]
     },
-    "front": "+z",
+    "front": null,
     "counters": [
       {
         "id": "seed-feed-counter",
-        "wall": "free",
-        "edgeGap": 0.5
+        "wall": "+z",
+        "edgeGap": 0.8
+      },
+      {
+        "id": "seed-feed-counter-2",
+        "wall": "+z",
+        "edgeGap": 0.8
+      },
+      {
+        "id": "seed-feed-till",
+        "wall": "+z",
+        "edgeGap": 0.8
       }
     ],
-    "adapt": "The closed barn Barn_E_03: its ground floor is 16.3 x 6.3 m with two partition walls (x about -2.55 and 2.05) cutting three bays; three doors in the front wall (+z) and one in the back wall (-z) near x 4.7. The shop is the left bay (the one with the front door at x about -4.7): the counters stand free across the bay (the vanilla hay bales fill the back-left corner), sacks along the end wall, crates against the partition. The till sells the `seed_feed` stock (cabbage seeds, bait tin, fishing rod, water). Rows are rigid: shift, never stretch."
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
       "id": "seed-feed-counter",
+      "name": "Seed_feed_counter",
       "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
       "role": "counter",
-      "verb": "on floor",
+      "verb": "against wall",
       "offset": [
-        -5.5,
-        0.1,
-        0.8
+        -5.4,
+        0.057,
+        1.2
       ],
       "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
+      "wall": "+z",
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "seed-feed-counter-2",
+      "name": "Seed_feed_counter_2",
       "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
       "role": "counter",
-      "verb": "on floor",
+      "verb": "against wall",
       "offset": [
-        -4,
-        0.1,
-        0.8
+        -3.9,
+        0.057,
+        1.2
       ],
       "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
+      "wall": "+z",
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "seed-feed-till",
-      "name": "Source_SeedFeedTill",
+      "name": "Seed_feed_till",
       "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
       "role": "till",
       "verb": "on seed-feed-counter-2",
       "offset": [
-        -4,
-        1.139,
-        0.8
+        -3.9,
+        1.097,
+        1.2
       ],
       "yaw": 0,
+      "floor": "f0",
+      "attach": "counter:seed-feed-counter-2",
       "config": [
         {
           "component": "LF_ShopComponent",
@@ -100,120 +117,60 @@
             "additionalActions"
           ]
         }
-      ],
-      "floor": "f0"
-    },
-    {
-      "id": "seed-feed-sacks-1",
-      "prefab": "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -7,
-        0.1,
-        -0.9
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "seed-feed-sacks-2",
-      "prefab": "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -7,
-        0.1,
-        1.6
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
+      ]
     },
     {
       "id": "seed-feed-crate-1",
+      "name": "Seed_feed_crate_1",
       "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
       "role": "dressing",
-      "verb": "on floor",
+      "verb": "against wall",
       "offset": [
-        -3.1,
-        0.1,
+        -3,
+        0.06,
         0.3
       ],
       "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "seed-feed-crate-2",
-      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -3.1,
-        0.1,
-        0.95
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "seed-feed-crate-3",
-      "prefab": "{C8C36ADC9DFC5FBB}Prefabs/Props/Crates/Crate_01_red.et",
-      "role": "dressing",
-      "verb": "on seed-feed-crate-1",
-      "offset": [
-        -3.1,
-        0.32,
-        0.3
-      ],
-      "yaw": 100,
-      "wall": "free",
-      "floor": "f0"
+      "wall": "+x",
+      "floor": "f0",
+      "attach": "wall"
     },
     {
       "id": "seed-feed-box-1",
+      "name": "Seed_feed_box_1",
       "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
       "role": "dressing",
       "verb": "on seed-feed-counter",
       "offset": [
-        -5.5,
-        1.139,
-        0.8
+        -5.4,
+        1.097,
+        1.2
       ],
       "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "seed-feed-crate-4",
-      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -3.1,
-        0.1,
-        1.5
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "seed-feed-crate-5",
-      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -3.1,
-        0.1,
-        2.05
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "attach": "counter:seed-feed-counter"
     }
-  ]
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{C363B659675041BA}Prefabs/Structures/Agriculture/Barn/Barn_E_03/Barn_E_03_closed.et",
+    "lanes": [
+      {
+        "from": "entrance",
+        "to": "seed-feed-counter",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "seed-feed-counter-2",
+        "width": 1.2
+      },
+      {
+        "from": "entrance",
+        "to": "seed-feed-till",
+        "width": 1.2
+      }
+    ],
+    "clear": []
+  }
 }
