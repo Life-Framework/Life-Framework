@@ -13,6 +13,7 @@ class LF_EvidenceConfig
 	static const int DEFAULT_MAX_EVIDENCE = 40;
 	static const int DEFAULT_EXPIRY_SECONDS = 900;
 	static const int DEFAULT_CONVOY_THRESHOLD = 12;
+	static const int DEFAULT_CONVOY_REARM_SECONDS = 600;
 
 	[Attribute("300", UIWidgets.Auto, "A crime scene stays open this many seconds after the report")]
 	int m_iSceneSeconds;
@@ -34,6 +35,9 @@ class LF_EvidenceConfig
 
 	[Attribute("12", UIWidgets.Auto, "Seized rows in the evidence locker at which a convoy to the county store is ordered (LF_EvidenceLockerFill, #3378)")]
 	int m_iConvoyThreshold;
+
+	[Attribute("600", UIWidgets.Auto, "After a convoy was called off or refused to start (no route markers, no AI budget), the locker orders another after this many seconds if it still holds the threshold")]
+	int m_iConvoyRearmSeconds;
 
 	[Attribute("", UIWidgets.Auto, "Offences (crime catalog ids, the offence keys of LF_CrimeCatalog.conf) that leave a footprint card where a suspect on foot stood. Empty uses the robberies and break-ins")]
 	ref array<string> m_aFootprintOffences;
@@ -138,6 +142,16 @@ class LF_EvidenceConfig
 			return DEFAULT_CONVOY_THRESHOLD;
 
 		return config.m_iConvoyThreshold;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int ConvoyRearmSeconds()
+	{
+		LF_EvidenceConfig config = Get();
+		if (!config || config.m_iConvoyRearmSeconds < 1)
+			return DEFAULT_CONVOY_REARM_SECONDS;
+
+		return config.m_iConvoyRearmSeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
