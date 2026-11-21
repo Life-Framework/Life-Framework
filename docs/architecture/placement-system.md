@@ -240,6 +240,10 @@ Written by the pilot rebuild (#3890, bakery) for R1 and R3 to R8. What was hard,
   `LF_NpcBaseEntity`), one rack with three loaves on one board and two loaves on the counter: one item per spot.
 - **`--floating` reads the whole town.** The acceptance audit with `--floating` also lists runtime store stock of other
   shops (clothing trousers, supermarket dried meat); judge only the rows of your own layer, and leave the rest to their slot.
+- **The island floor is not the grid floor.** Rows settled to 0.1 cm in the grid came out 2.8 cm sunk on the island
+  (counters and clerk, the 1 cm contact sheet): the island b06 shell sits 2.8 cm higher relative to its origin than the grid
+  copy. Under the hard limits, but the stamp still copies the grid height; the plan's floor probe at stamp time would
+  close it.
 - **The interior look's camera stands in the hallway** of House_Town_E_2I01; only the fifth shot (the kit close-up) shows the
   shop room. Read that one.
 
