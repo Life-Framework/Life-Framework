@@ -38,13 +38,118 @@ class LF_ATMTransferService
 	//! Requests one player may make per window (a person at the keypad sends one every few seconds).
 	static const int RATE_WINDOW_MS = 5000; // lf-fixed: anti-spam floor, like LF_RateLimit's windows
 	static const int RATE_BURST = 3; // lf-fixed: see RATE_WINDOW_MS
+	//! A second request with the same number and amount from the same player this soon after a sent one is
+	//! the double SEND of a slow reply, not a second payment (PR #3860 review): refused, nothing moves.
+	static const int DUPLICATE_WINDOW_MS = 10000; // lf-fixed: anti-double-send floor, longer than a slow reply
+	//! The client holds a request until the server answers or this long has passed (past the server's own
+	//! duplicate window, so a held page never sends twice).
+	static const int PENDING_TIMEOUT_MS = 30000; // lf-fixed: a UI wait bound, not a gameplay knob
 
 	protected static ref LF_RateLimiter s_Limiter;
+	//! Server: the last sent transfer per player, "number|amount", and when.
+	protected static ref map<int, string> s_mLastSent;
+	protected static ref map<int, int> s_mLastSentMs;
+	//! Client: when the request in flight went out (0 = none), and the server's fee settings once known.
+	protected static int s_iPendingSinceMs;
+	protected static bool s_bFeeKnown;
+	protected static int s_iFeeFlat;
+	protected static int s_iFeePercent;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_Limiter = null;
+		s_mLastSent = null;
+		s_mLastSentMs = null;
+		s_iPendingSinceMs = 0;
+		s_bFeeKnown = false;
+		s_iFeeFlat = 0;
+		s_iFeePercent = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static string SentKey(string number, int amount)
+	{
+		return number + "|" + amount.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: whether this request repeats the player's last SENT transfer (same number, same amount)
+	//! within DUPLICATE_WINDOW_MS. Only a sent transfer is remembered, so a refused request can be retried.
+	static bool IsDuplicate(int playerKey, string number, int amount, int nowMs)
+	{
+		if (!s_mLastSent || !s_mLastSent.Contains(playerKey))
+			return false;
+
+		if (s_mLastSent.Get(playerKey) != SentKey(number, amount))
+			return false;
+
+		int age = nowMs - s_mLastSentMs.Get(playerKey);
+		return age >= 0 && age < DUPLICATE_WINDOW_MS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: remembers a transfer that went through, for IsDuplicate.
+	static void NoteSent(int playerKey, string number, int amount, int nowMs)
+	{
+		if (!s_mLastSent)
+		{
+			s_mLastSent = new map<int, string>();
+			s_mLastSentMs = new map<int, int>();
+		}
+
+		s_mLastSent.Set(playerKey, SentKey(number, amount));
+		s_mLastSentMs.Set(playerKey, nowMs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: a request is on its way; no second SEND until it is answered or PENDING_TIMEOUT_MS passes.
+	static void BeginPending(int nowMs)
+	{
+		s_iPendingSinceMs = LF_Utils.MaxInt(nowMs, 1); // 0 means none
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void EndPending()
+	{
+		s_iPendingSinceMs = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: whether a sent request is still unanswered and inside the timeout. Held across the page, so
+	//! closing and reopening it does not free a second SEND.
+	static bool IsPending(int nowMs)
+	{
+		if (s_iPendingSinceMs == 0)
+			return false;
+
+		int age = nowMs - s_iPendingSinceMs;
+		return age >= 0 && age < PENDING_TIMEOUT_MS;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the server's fee settings, as RPC'd when the page opens.
+	static void SetServerFee(int flat, int percent)
+	{
+		s_bFeeKnown = true;
+		s_iFeeFlat = flat;
+		s_iFeePercent = percent;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The fee on an amount for the page's fee line: the server's settings once received, the defaults
+	//! until then.
+	static int FeeFor(int amount)
+	{
+		LF_BankTransferConfig config = LF_BankTransferConfig.GetOrDefaults();
+		if (s_bFeeKnown)
+		{
+			config = LF_BankTransferConfig.CreateDefault();
+			config.m_iFee = s_iFeeFlat;
+			config.m_iFeePercent = s_iFeePercent;
+		}
+
+		return LF_BankTransferRules.Fee(config, amount);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -294,6 +399,15 @@ modded class LF_CharacterATMComponent
 			return;
 		}
 
+		string cleanNumber = LF_ATMTransferService.CleanNumber(accountNumber);
+		int nowMs = System.GetTickCount();
+		if (playerKey > 0 && LF_ATMTransferService.IsDuplicate(playerKey, cleanNumber, amount, nowMs))
+		{
+			LF_Debug.Warn(LF_ATMTransferService.FEATURE, string.Format("transfer refused: player %1 repeated a sent transfer within %2 ms (uid %3)", playerKey, LF_ATMTransferService.DUPLICATE_WINDOW_MS, playerUid));
+			ReplyTransfer(LF_EATMTransferReply.RATE_LIMITED, 0, 0, string.Empty, 0);
+			return;
+		}
+
 		int amountSent;
 		int fee;
 		LF_EATMTransferReply reply = LF_ATMTransferService.Serve(playerUid, accountNumber, amount, amountSent, fee);
@@ -304,7 +418,11 @@ modded class LF_CharacterATMComponent
 
 		string last4;
 		if (reply == LF_EATMTransferReply.SENT)
-			last4 = LF_ATMTransferService.LastFour(LF_ATMTransferService.CleanNumber(accountNumber));
+		{
+			last4 = LF_ATMTransferService.LastFour(cleanNumber);
+			if (playerKey > 0)
+				LF_ATMTransferService.NoteSent(playerKey, cleanNumber, amount, nowMs);
+		}
 
 		ReplyTransfer(reply, amountSent, fee, last4, balance);
 	}
@@ -320,6 +438,35 @@ modded class LF_CharacterATMComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client: asks the server for its transfer fee settings, so the page's fee line is the real fee.
+	void RequestTransferFee()
+	{
+		if (Replication.IsServer())
+			RpcAsk_TransferFee();
+		else
+			Rpc(RpcAsk_TransferFee);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_TransferFee()
+	{
+		LF_BankTransferConfig config = LF_BankTransferConfig.GetOrDefaults();
+		if (IsLocalPlayer())
+			RpcDo_TransferFee(config.m_iFee, config.m_iFeePercent);
+		else
+			Rpc(RpcDo_TransferFee, config.m_iFee, config.m_iFeePercent);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_TransferFee(int flat, int percent)
+	{
+		LF_ATMTransferService.SetServerFee(flat, percent);
+		LF_ATMTransferPage.OnFeeKnown();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_TransferResult(int reply, int amount, int fee, string last4, int balance)
 	{
@@ -332,8 +479,9 @@ modded class LF_CharacterATMComponent
 //! time, built on LF_UIScreen like the terminal.
 class LF_ATMTransferPage
 {
-	//! A request with no reply after this long tells the player instead of hanging.
-	static const int REPLY_TIMEOUT_MS = 5000; // lf-fixed: same bound as the terminal's reply wait, not a gameplay knob
+	//! A request with no reply after this long tells the player instead of hanging. Long, so the page never
+	//! frees a second SEND while a slow server may still be moving the first (PR #3860).
+	static const int REPLY_TIMEOUT_MS = LF_ATMTransferService.PENDING_TIMEOUT_MS; // lf-fixed: the service's UI wait bound
 	static const float TOAST_SECONDS = 6.0; // lf-fixed: how long the toast stays up, a UI timing
 
 	static const string TARGET = "Target";
@@ -396,6 +544,10 @@ class LF_ATMTransferPage
 		if (action)
 			LF_UISound.Play(action.GetOpenSound());
 
+		LF_CharacterATMComponent atm = LF_Component<LF_CharacterATMComponent>.Find(LF_Utils.GetLocalCharacter());
+		if (atm)
+			atm.RequestTransferFee();
+
 		LF_Debug.Info(LF_ATMTransferService.FEATURE, "transfer page open");
 		return page;
 	}
@@ -430,7 +582,7 @@ class LF_ATMTransferPage
 	//! The fee line for an amount: the fee and what leaves the account.
 	static string FeeText(int amount)
 	{
-		int fee = LF_BankTransferRules.Fee(LF_BankTransferConfig.GetOrDefaults(), amount);
+		int fee = LF_ATMTransferService.FeeFor(amount);
 		return WidgetManager.Translate("#LF-ATMTransfer_LineFee", LF_MoneyFormat.FormatMoney(fee), LF_MoneyFormat.FormatMoney(amount + fee));
 	}
 
@@ -537,7 +689,7 @@ class LF_ATMTransferPage
 	//! Sends the request. The number goes as typed; the server trims it and decides everything.
 	protected void Confirm()
 	{
-		if (m_bWaiting)
+		if (m_bWaiting || LF_ATMTransferService.IsPending(System.GetTickCount()))
 		{
 			LF_Debug.Info(LF_ATMTransferService.FEATURE, "request ignored: the machine is still working");
 			return;
@@ -566,6 +718,7 @@ class LF_ATMTransferPage
 		}
 
 		m_bWaiting = true;
+		LF_ATMTransferService.BeginPending(System.GetTickCount());
 		SetStatus("#LF-ATM_Working");
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().CallLater(ReplyTimedOut, REPLY_TIMEOUT_MS, false);
@@ -589,6 +742,7 @@ class LF_ATMTransferPage
 	//! Client: the server's answer. The toast shows even when the page was closed meanwhile.
 	static void OnResult(LF_EATMTransferReply reply, int amount, int fee, string last4, int balance)
 	{
+		LF_ATMTransferService.EndPending();
 		if (reply == LF_EATMTransferReply.SENT)
 			ShowToast(amount, last4);
 
@@ -599,6 +753,14 @@ class LF_ATMTransferPage
 		}
 
 		s_Current.ApplyResult(reply, amount, fee, last4, balance);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the server's fee settings arrived; redraw the fee line for the typed amount.
+	static void OnFeeKnown()
+	{
+		if (s_Current)
+			s_Current.SetAmount(s_Current.m_iAmount);
 	}
 
 	//------------------------------------------------------------------------------------------------
