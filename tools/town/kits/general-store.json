@@ -8,6 +8,7 @@
     "origin": "prefab",
     "frame": "building-local",
     "also": [
+      "tools/town/kits/sources/general-store.layer",
       "addons/LifeFramework/Worlds/DebugWorld/DebugWorld_Layers/Shops.layer"
     ]
   },
@@ -120,8 +121,8 @@
       "role": "till",
       "verb": "against wall",
       "offset": [
-        2.048,
-        1.238,
+        2.07,
+        1.186,
         -0.303
       ],
       "yaw": 0,
@@ -132,6 +133,49 @@
           "set": {
             "m_sKind": "\"FilmTill\"",
             "m_sId": "\"street\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sShopName": "\"#LF-Shop_Name_General\"",
+            "m_sShopDescription": "\"#LF-Shop_Desc_General\"",
+            "m_sStockId": "\"general_store\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "general-store-miners-till",
+      "name": "Shop_GeneralStore_MinersTill",
+      "prefab": "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et",
+      "role": "till",
+      "verb": "against wall",
+      "offset": [
+        1.2,
+        1.186,
+        -0.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ShopComponent",
+          "set": {
+            "m_sShopName": "\"#LF-Shop_Name_MinersSupply\"",
+            "m_sShopDescription": "\"#LF-Shop_Desc_MinersSupply\"",
+            "m_sOutletId": "\"miners_supply\""
           },
           "blocks": []
         },
@@ -154,9 +198,9 @@
       "role": "interactable",
       "verb": "against wall",
       "offset": [
-        1.053,
-        1.237,
-        -0.629
+        3,
+        1.152,
+        -0.4
       ],
       "yaw": 0,
       "from": "Shops.layer",
@@ -206,5 +250,8 @@
       "wall": "+z",
       "floor": "f0"
     }
+  ],
+  "clear": [
+    "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et"
   ]
 }

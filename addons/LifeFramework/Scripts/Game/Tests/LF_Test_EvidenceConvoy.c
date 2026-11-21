@@ -1,4 +1,4 @@
-// red-proof: 2026-11-19 `tools/cli test --no-build --red LF_Test_EvidenceConvoy`: RED PROOF OK (with `RedProof()` on the truck is never moved to its target, so `arrival delivered the rows`, the despawn checks and the second convoy fail); green without it.
+// red-proof: 2026-11-19 `tools/cli test --no-build --red LF_Test_EvidenceConvoy`: RED PROOF OK (with `RedProof()` on the truck is never moved to its target, so `arrival delivered the rows`, the despawn checks and the second convoy fail); green without it. Re-arm fix 2026-11-21: see LF_Test_EvidenceLockerFill (batched red run, both RED PROOF OK).
 //! investigation/evidence-convoy (#3382): the evidence convoy. Firing it spawns the truck, the escort
 //! car and the crate on the grid cell `scene-drive` (Grid_scene_drive.layer: a spawn, three waypoints
 //! and a target); the crate holds the locker's rows; the rows stay in the locker while the truck is on
@@ -62,6 +62,22 @@ class LF_Test_EvidenceConvoy : LF_Test
 		ctx.True(LF_EvidenceConvoy.Start(SCENE + "_nowhere", false, false) == null, "a scene with no markers starts no convoy");
 		LF_EvidenceLocker.ResetStatics();
 		ctx.True(LF_EvidenceConvoy.Start(SCENE, false, false) == null, "an empty locker starts no convoy");
+
+		// 0b. A full locker whose convoy is refused (no route markers placed for the real scene id) must not
+		// stay "due" for good: a cool-down is armed, and when it ends a still-full locker orders again.
+		LF_EvidenceLockerFill.ResetStatics();
+		FillLocker(LF_EvidenceLockerFill.Threshold());
+		ctx.True(LF_EvidenceLockerFill.IsDue(), "a full locker orders a convoy");
+		ctx.True(LF_EvidenceConvoy.Active() == null, "the refused start left no convoy");
+		if (RedProof())
+			LF_EvidenceLockerFill.ResetStatics();
+
+		ctx.True(LF_EvidenceLockerFill.IsRearmPending(), "a refused start arms the re-order cool-down");
+		LF_EvidenceLockerFill.RearmNow();
+		ctx.True(LF_EvidenceLockerFill.IsDue(), "after the cool-down the still-full locker orders again");
+		ctx.True(LF_EvidenceLockerFill.IsRearmPending(), "and, refused again, arms the next cool-down");
+		LF_EvidenceLocker.ResetStatics();
+		LF_EvidenceLockerFill.ResetStatics();
 
 		// 1. Firing it on the grid cell: truck, escort and crate spawn; the crate holds the locker's rows.
 		FillLocker(3);

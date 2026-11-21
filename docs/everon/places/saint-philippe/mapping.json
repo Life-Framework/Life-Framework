@@ -341,6 +341,15 @@
         "the 10 m margin lets a washing line cross a yard and a bench stand at the kerb"
       ]
     },
+    "police-cars": {
+      "marker": "police",
+      "drops": [
+        { "place": "saint-philippe", "building": "b32", "count": 3 }
+      ],
+      "why": [
+        "#3875 (maintainer, 2026-11-19): 'there should be some locked cop cars outside the police station': three locked police UAZ markers on the kerb in front of the police villa (b32), through the parked-car marker system with the police-car marker prefab; no civilian can pick, wire, key, chop or store them"
+      ]
+    },
     "parked-cars": {
       "drops": [
         { "place": "saint-philippe", "building": "b12" },

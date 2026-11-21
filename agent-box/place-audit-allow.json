@@ -150,6 +150,18 @@
       "why": "maintainer town fix pending #2956: the contact audit (#2953) measures it resting wrong; `place settle` (#2954) writes the settled height. The ID card sits 8 cm into its support. (The grid copies in Grid_npcs and Grid_whitelist_chat are settled.)"
     },
     {
+      "match": "^Fit_blacklake_shore_(bench|spot|lantern) ",
+      "kind": "contact",
+      "layer": "Place_blacklake_shore.layer",
+      "why": "Open ground on the Black Lake shore: the slope falls 5 to 18 cm under each prop's footprint, so a bench (9.6 cm), the fishing spot (2.5 cm) and the lantern (1.2 cm) bury their uphill side in the hillside the way any prop on a bank does. Rows rest on the probed terrain (tools/town/terrain/blacklake-shore.json); a terrain-mount row takes no height offset."
+    },
+    {
+      "match": "^Fit_saint_philippe_residents_bench_[12] ",
+      "kind": "contact",
+      "layer": "Place_saint-philippe_residents.layer",
+      "why": "The two doorstep benches stand on a sloping pavement whose height varies 6 to 10 cm under each 1.6 m seat; each is seated on the highest probed point of the paving (terrain.mjs SURFACE_HIT), so the low foot shows a gap of 1.4 to 1.6 cm."
+    },
+    {
       "match": "LF_Wheat(Patch|Stubble)_01",
       "kind": "contact",
       "why": "A wheat or stubble patch is 3 m of alpha cards whose feet sit 4 cm under the pivot so no card edge shows; the field follows rolling ground, and the ground varies up to 15 cm across 3 m, so one side sinks into the earth as grass does (#3290)."
@@ -159,6 +171,49 @@
       "kind": "action-off-mesh",
       "layer": "Place_montignac_depot.layer",
       "why": "LF_TownBoard has no static mesh: LF_SignComponent builds the cork panel at runtime and the card actions sit on that panel (0.12 m spheres at 1.5-1.8 m), so the audit reads the board as a point with no mesh near it. The panel renders (look place:montignac/depot, board close-up)."
+    },
+    {
+      "match": "^(Kit_mine_entrance_lintel|MineEntrance_Lintel) ",
+      "kind": "floating",
+      "why": "The timber lintel rests across the tops of the two upright log posts (MineEntrance_PostL/R, pitched 90, 3 m tall), 3 m above the terrain; the audit traces down to terrain only and does not read the pitched posts as support (contact sheet, #3857)."
+    },
+    {
+      "match": "^(Kit_plant_reagent_store_lamp_|PlantReagentStore_Lamp)",
+      "kind": "floating",
+      "why": "The two work lamps are wall lamps hung 2.8 m up on the -z wall of the plant shed (kit rows verb against wall, wall -z); a grid bay holds the kit without the shed shell, so the trace down reads open terrain (contact sheet, #3857). town fit seats them on the host wall."
+    },
+    {
+      "match": "^Fit_saint_philippe_general_store_general_store_till ",
+      "kind": "contact",
+      "why": "The till rests on the host counter (CounterShop_01, flat top 1.039 m, island height 16.486): a row of probe radios at the same height read a contact gap of 0 cm over the whole of that top (2026-11-21, #3888 baseline cleanup), while the 3x3 contact trace reads a support 7 to 11 cm higher only under this till, moving with its x and not with its z. The same till prefab on the miner counter beside it measures clean. A measurement artefact of the host furniture, not a sunk till."
+    },
+    {
+      "match": "^ResidentPlate_",
+      "kind": "odd-scale",
+      "why": "The plate is the vanilla full-size door number plate shipped at scale 0.5 on purpose: about 45 x 22 cm beside a house door (PLATE_SCALE and PLATE_BOX in tools/town/residenthomes.mjs)."
+    },
+    {
+      "match": "^ConeTraffic_01_(red|stack) ",
+      "kind": "orphan",
+      "layer": "(runtime: loose props)",
+      "why": "Vanilla Everon road-works cones baked into the base map (roadside works on the island's roads, outside the fitted town streets); no layer row or script owns them and none can remove them. The sweep reads the whole island, so they appear as strays."
+    },
+    {
+      "match": "^GenericEntity baked into (BoatShed_01|Shed_02_big_V1|Warehouse_01):",
+      "kind": "blocks-door",
+      "why": "Furniture baked into the vanilla prefab's own children (boat sheds on the shore, a farm shed, a depot warehouse). No pack row or kit places it and a sub-layer cannot hide a prefab child (#3882)."
+    },
+    {
+      "match": "^Fit_saint_philippe_wheatfield_wheat_field_unload ",
+      "kind": "action-off-mesh",
+      "layer": "Place_saint-philippe_wheatfield.layer",
+      "why": "A drop zone, not a prop: the entity is a mesh-less volume (7 m radius, 3 m high context; LF_GranaryUnloadAction half extents 5 x 3 x 7) that offers 'unload' to a hauler standing anywhere in the yard with the load, so there is no mesh to be near."
+    },
+    {
+      "match": "^Fit_saint_philippe_carlot_lot_display_uaz452 ",
+      "kind": "clips",
+      "layer": "Place_saint-philippe_carlot.layer",
+      "why": "The display van parks at the foot of a base-map doorstep on the car lot's hillside (3 m of fall across its 5 m box); the stairs touch 2 of 9 rays by 13 cm at the wheel arch. Moving it with the kit put it into the workshop wall (tried 2026-11-21), so it stays against the steps."
     }
   ]
 }

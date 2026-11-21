@@ -13,7 +13,7 @@ The click-by-click steps are in [`docs/playtest/workshop-publish.md`](../../play
 | Summary (1024 max) | [`summary.txt`](summary.txt) |
 | Description (5000 max) | [`description.bbcode`](description.bbcode) |
 | Change Notes | the core 0.1.0 block in [`changelog.md`](changelog.md) |
-| Version | `0.1.0` |
+| Version | `0.2.0` |
 | Tags | `Roleplay Life RPG Economy Jobs Police Crime Multiplayer Framework` |
 | Licence | Arma Public License (APL) |
 | Category | Game Mode |

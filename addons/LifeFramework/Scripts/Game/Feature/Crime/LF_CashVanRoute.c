@@ -77,6 +77,21 @@ class LF_CashVanRoute
 
 		return near;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the van at the next stop and stops it there. Update() moves its bounds too: without it a
+	//! vehicle query still found the van at the old stop (the island car lot's pads read as taken).
+	static void MoveVan(notnull IEntity van, vector transform[4])
+	{
+		van.SetTransform(transform);
+		van.Update();
+		Physics physics = van.GetPhysics();
+		if (physics)
+		{
+			physics.SetVelocity(vector.Zero);
+			physics.SetAngularVelocity(vector.Zero);
+		}
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -206,16 +221,10 @@ class LF_CashVanRouteComponent : ScriptComponent
 
 		vector transform[4];
 		stop.GetWorldTransform(transform);
-		van.SetTransform(transform);
+		LF_CashVanRoute.MoveVan(van, transform);
 		// The box goes with the van: set down at its kerb-side door from the van's new pose, on the surface there.
 		door.SetOrigin(LF_Dispatch.RestingSpot(van.CoordToParent(m_vBoxOffset) + "0 0.5 0", door));
 		door.SetAngles(van.GetAngles() + Vector(0, m_fBoxYaw, 0));
-		Physics physics = van.GetPhysics();
-		if (physics)
-		{
-			physics.SetVelocity(vector.Zero);
-			physics.SetAngularVelocity(vector.Zero);
-		}
 
 		m_iStop = next;
 		LF_BankVaultComponent vault = LF_Component<LF_BankVaultComponent>.Find(door);

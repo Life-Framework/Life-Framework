@@ -234,6 +234,11 @@
       "places": []
     },
     {
+      "id": "police-cars", "required": false, "kit": "parked-cars", "host": "outposts", "poi": "none", "margin": 14,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
       "id": "parked-cars", "required": false, "kit": "parked-cars", "host": "outposts", "poi": "none", "margin": 14,
       "needs": { "interior": "optional" },
       "places": []
