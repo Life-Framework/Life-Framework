@@ -333,7 +333,7 @@ async function place(root, args, flags, ctx = {}) {
       const bspan = authoringBays()[0].span;
       if (flags.span != null && String(flags.span) !== bspan.join("x")) throw new Error(`--bay takes a ${bspan.join("x")} block, not --span ${flags.span}`);
       span = bspan;
-      if (sized && !opts.some((o) => o.span[0] === bspan[0] && o.span[1] === bspan[1])) {
+      if (sized && !opts.some((o) => o.span[0] <= bspan[0] && o.span[1] <= bspan[1])) {
         console.log(`grid: ${nameOf(auto.ref)} needs ${opts.map((o) => `${o.span[0]}x${o.span[1]}`).join(" or ")} cells, more than the ${bspan.join("x")} authoring bay; use a normal cell (grid place without --bay) or lower --margin`);
         return 1;
       }

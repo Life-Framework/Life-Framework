@@ -1,0 +1,27 @@
+GenericEntity : "{C95E11C60810F432}Prefabs/Items/Core/Item_Base.et" {
+ ID "80F9F58FB4F1549B"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_Postcard_Name"
+     Description "#LF-Item_Postcard_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.01
+     SizeSetupStrategy Volume
+     ItemVolume 20
+     RestingUP Up
+    }
+    CommonItemType "LF_ITEM"
+   }
+  }
+  MeshObject "{9D6052351D41C551}" {
+   Object "{3DE3179E0ADAD34D}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_Postcard_1.xob"
+  }
+  RigidBody "{AA7253051689B64C}" {
+   LayerPreset "ItemFireView"
+   ModelGeometry 1
+  }
+ }
+}

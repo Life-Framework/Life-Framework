@@ -2,6 +2,7 @@
 // red-proof: observed 2026-11-19 (#3334): with the repair kit rows on the hardware and mechanic stocks and the old counts (10 and 1), `--only everon/village-stock` failed `the hardware stock lists 10 items` and `the mechanic stock lists 1 items` (main guard, PR #3835 reverted); the lists now name the kit and the counts are 11 and 2.
 // red-proof: observed 2026-11-19 (#3225): with the bakery and butcher stocks lacking baguette, croissant, saucisson and ham, `toolscli test --no-build --only LF_Test_EveronVillageStock` failed `the bakery stock lists 5 items`, `the butcher stock lists 4 items` and each new `is in the stock` line; `--red` fails on the `bakery_missing` and `butcher_missing` lookups.
 // red-proof (cafe and general store loop check): 2026-11-18 with the cafe and general store apple rows at $2, `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed 4 lines (cafe and general_store: `Apple.et sells for 2 and buys back for 4` and `sells for 2 and the market pays up to 5`); at $6 it passes.
+// red-proof: observed 2026-11-21 (#3893): with the five new newsagent items in the stock and no `LF_ShopPrices_Newsagent.conf`, `--only LF_Test_EveronVillageStock` failed `newsagent: ...LF_Newspaper.et sells for 1 and buys back for 25: no profit loop` (and the same for the magazine, postcard, notebook and pen); the price rules (sell 0 to 2) make it pass.
 // red-proof: observed 2026-11-18 (#3218): on main (no supermarket, hardware, seed_feed, newsagent or mechanic stock) `tools\cli test --no-build --only LF_Test_EveronVillageStock` failed on every `has a stock under the pack header` line.
 //! #3218: the new Saint-Philippe village shops each have a stock in the pack's shop stock overlay.
 //! Checked against the merged pack config (pack leg): each stock id loads with the items the card names,
@@ -41,6 +42,11 @@ class LF_Test_EveronVillageStock : LF_Test
 	protected static const ResourceName BAIT = "{53E0B27FA119A866}Prefabs/Items/Fishing/LF_BaitTin.et";
 	protected static const ResourceName ROD = "{0327968D17D249FD}Prefabs/Items/Fishing/LF_FishingRod.et";
 	protected static const ResourceName MAP = "{A5EDB92E7A42913E}Prefabs/Items/LF_TouristMap.et";
+	protected static const ResourceName NEWSPAPER = "{87592893752A28D6}Prefabs/Items/Newsagent/LF_Newspaper.et";
+	protected static const ResourceName MAGAZINE = "{9D70A14BB2B80C60}Prefabs/Items/Newsagent/LF_Magazine.et";
+	protected static const ResourceName POSTCARD = "{F4935CB74CA81B10}Prefabs/Items/Newsagent/LF_Postcard.et";
+	protected static const ResourceName NOTEBOOK = "{858F926E8089F6A1}Prefabs/Items/Newsagent/LF_Notebook.et";
+	protected static const ResourceName PEN = "{54D003FBA42CB033}Prefabs/Items/Newsagent/LF_Pen.et";
 	protected static const ResourceName PARTS = "{7A94C1E05D3B2F68}Prefabs/Items/Resources/LF_CarParts.et";
 	protected static const ResourceName REPAIR_KIT = "{3F5A9C1E7B2D4806}Prefabs/Items/Vehicles/LF_RepairKit.et";
 
@@ -61,7 +67,8 @@ class LF_Test_EveronVillageStock : LF_Test
 		CheckStock(ctx, manager, "supermarket", {WATER, JUICE, BEER, APPLE, CABBAGE, PLUM, CRACKERS, DRIED_MEAT});
 		CheckStock(ctx, manager, "hardware", {ETOOL, AXE, GRAVEL, CEMENT, BRICK, PLANK, DOOR_KIT, SANDBAG, FLASHLIGHT, RADIO, REPAIR_KIT});
 		CheckStock(ctx, manager, "seed_feed", {SEEDS, BAIT, ROD, WATER});
-		CheckStock(ctx, manager, "newsagent", {MAP, WATER});
+		//! #3893: the newsagent sells what its racks show: papers, magazines, postcards, the island map, stationery.
+		CheckStock(ctx, manager, "newsagent", {MAP, WATER, NEWSPAPER, MAGAZINE, POSTCARD, NOTEBOOK, PEN});
 		CheckStock(ctx, manager, "mechanic", {PARTS, REPAIR_KIT});
 		CheckStock(ctx, manager, "bakery", {BREAD, CRACKERS, CHOCOLATE, BAGUETTE, CROISSANT});
 		CheckStock(ctx, manager, "butcher", {DRIED_MEAT, CANNED_MEAT, SAUCISSON, HAM});
