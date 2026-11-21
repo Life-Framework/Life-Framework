@@ -112,7 +112,7 @@
       "yaw": 90,
       "wall": "free",
       "floor": "f0",
-      "free": true
+      "mount": "terrain"
     },
     {
       "id": "anchor-bench",
