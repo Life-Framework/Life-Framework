@@ -2494,6 +2494,11 @@ StringTable {
      Target_en_us "Newspapers, magazines, bottled water and the tourist map of Everon."
      Comment "Shop description of the Saint-Philippe newsagent kiosk till (#3222)."
     }
+    CustomStringTableItem "{31C706B4255FC4FB}" {
+     Id "LF-Shop_Desc_Pharmacy"
+     Target_en_us "Aspirin, gauze and tourniquets off the shelf."
+     Comment "Shop description of the Saint-Philippe pharmacy till (#3893): stock pharmacy."
+    }
     CustomStringTableItem "{88A40BFFEF7CB897}" {
      Id "LF-Shop_Desc_PharmacyCounter"
      Target_en_us "Morphine and saline, for licensed medics only."
@@ -2579,6 +2584,11 @@ StringTable {
      Target_en_us "Tabac-presse"
      Comment "Shop name of the Saint-Philippe newsagent kiosk till (#3222): stock newsagent."
     }
+    CustomStringTableItem "{55D13F8D2C97E863}" {
+     Id "LF-Shop_Name_Pharmacy"
+     Target_en_us "Pharmacie"
+     Comment "Shop name of the Saint-Philippe pharmacy till (#3893): stock pharmacy."
+    }
     CustomStringTableItem "{B1BC977506FDDA48}" {
      Id "LF-Shop_Name_PharmacyCounter"
      Target_en_us "Dispensary"
@@ -2628,6 +2638,11 @@ StringTable {
      Id "LF-Shop_OpenDesc_Newsagent"
      Target_en_us "Buy the tourist map or a paper"
      Comment "Action description on the newsagent kiosk till (#3222)."
+    }
+    CustomStringTableItem "{DAB81EC2A267CCDD}" {
+     Id "LF-Shop_OpenDesc_Pharmacy"
+     Target_en_us "Buy medicine off the shelf"
+     Comment "Action description on the pharmacy till (#3893)."
     }
     CustomStringTableItem "{3E7A91C04B52D694}" {
      Id "LF-Shop_OpenDesc_SeedFeed"
@@ -2698,6 +2713,11 @@ StringTable {
      Id "LF-Shop_Open_Newsagent"
      Target_en_us "Browse the kiosk"
      Comment "Action label on the newsagent kiosk till (#3222)."
+    }
+    CustomStringTableItem "{C488674D8A5A1FD0}" {
+     Id "LF-Shop_Open_Pharmacy"
+     Target_en_us "Browse the pharmacy"
+     Comment "Action label on the pharmacy till (#3893)."
     }
     CustomStringTableItem "{7729AC333C1E6567}" {
      Id "LF-Shop_Open_PharmacyCounter"

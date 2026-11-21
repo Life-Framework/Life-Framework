@@ -8,11 +8,16 @@
   "kinds": [
     "StoreCounter"
   ],
-  "rows": 5,
+  "rows": 7,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_saint_philippe_pharmacy_Place"
   },
-  "date": "2026-11-19"
+  "date": "2026-11-21",
+  "stamp": {
+    "kit": "pharmacy",
+    "prefab": "{FF48B5059EB0AC65}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_drugstore.et",
+    "layer": "bac9364317bd"
+  }
 }
