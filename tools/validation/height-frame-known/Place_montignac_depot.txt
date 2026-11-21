@@ -1,5 +1,0 @@
-# Rows of Place_montignac_depot.layer written in the wrong height frame when validate-layer-height-frame landed; the PR that corrects the layer deletes this file.
-Fit_montignac_depot_hut
-Fit_montignac_depot_pump_tank
-Fit_montignac_depot_tank_grey
-Fit_montignac_depot_tank_rust
