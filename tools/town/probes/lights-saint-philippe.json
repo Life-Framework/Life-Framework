@@ -1,6 +1,6 @@
 {
  "place": "saint-philippe",
- "at": "2026-11-19",
+ "at": "2026-11-21",
  "glows": {
   "Glow_sp_b03_0": {
    "x": 4460.61,
@@ -82,6 +82,12 @@
    "on": "House_Village_E_1I02_Furniture"
   },
   "Glow_sp_b17_1": null,
+  "Glow_sp_b23_0": {
+   "x": 4499.38,
+   "y": 18.42,
+   "z": 10642.85,
+   "on": "Barn_E_01"
+  },
   "Glow_sp_b32_0": {
    "x": 4549.03,
    "y": 18.99,
@@ -162,18 +168,6 @@
    "on": "House_Village_E_1I08t"
   },
   "Glow_sp_b50_1": null,
-  "Glow_sp_b55_0": {
-   "x": 4397.66,
-   "y": 11.99,
-   "z": 10759.19,
-   "on": "House_Town_E_2I01"
-  },
-  "Glow_sp_b55_1": {
-   "x": 4404.28,
-   "y": 15.17,
-   "z": 10762.39,
-   "on": "House_Town_E_2I01"
-  },
   "Glow_sp_b77_0": {
    "x": 4388.85,
    "y": 17.43,
@@ -204,42 +198,52 @@
  "lamps": {
   "Lamp_1": {
    "y": 16.05,
+   "ty": 16.05,
    "on": "Eden"
   },
   "Lamp_2": {
    "y": 12.04,
+   "ty": 11.81,
    "on": "AsphaltPavement_01_Narrow_4m_90"
   },
   "Lamp_3": {
    "y": 11.03,
+   "ty": 11.03,
    "on": "Eden"
   },
   "Lamp_4": {
    "y": 11.93,
+   "ty": 11.93,
    "on": "Eden"
   },
   "Lamp_5": {
    "y": 13.71,
+   "ty": 13.51,
    "on": "AsphaltPavement_01_Narrow_4m_A"
   },
   "Lamp_6": {
    "y": 12.5,
+   "ty": 12.5,
    "on": "Eden"
   },
   "Lamp_7": {
    "y": 12.15,
+   "ty": 12.15,
    "on": "Eden"
   },
   "Lamp_8": {
    "y": 9.83,
+   "ty": 9.83,
    "on": "Eden"
   },
   "Lamp_9": {
    "y": 12.46,
+   "ty": 12.46,
    "on": "Eden"
   },
   "Lamp_10": {
    "y": 9.28,
+   "ty": 9.28,
    "on": "Eden"
   }
  }
