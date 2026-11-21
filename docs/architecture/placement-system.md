@@ -270,6 +270,8 @@ Written by the pilot rebuild (#3890, bakery) for R1 and R3 to R8. What was hard,
 - **The interior look's camera stands in the hallway** of House_Town_E_2I01; only the fifth shot (the kit close-up) shows the
   shop room. Read that one.
 
+- **Pharmacy shelves (#3893 follow-up): clear the host's empty shelf, stand yours in its place.** `stamp.clear` hides a prefab by path across the whole building, so the kit's own shelf must be a different prefab from the one cleared (the pharmacy clears `ShelfShop_01` and stands `ShelfUniversal_01_wide`). The grid audit does not apply the clear carrier: in the bay the new shelf reads "sunk 0.43 m into GenericEntity" (the host gondola it replaces), and `place settle` rests on that gondola (+7 cm). Put the rows at the kit height by hand, add a `Grid_author_<kit>_clear` carrier row beside the rows for the picture, and let the island audit after `town stamp` judge. A `--reopen` bay carries no component blocks (the till lost its `LF_ShopComponent`): re-extract, then copy the old source layer's `components` blocks back, and restore the hand-tuned `anchoring`, `wall` and `role` of the old rows. Kit rows sit 3.5 cm above the bay's floor (the island lift): take 3.5 cm off every row before extracting and add it back after.
+
 ## Cleanup cards
 
 Filed 2026-11-19 under epic #3877, in dispatch order. Floating-object reseat first (F), then the stamp path (G) and the

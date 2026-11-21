@@ -9,6 +9,17 @@ GenericEntity Fit_saint_philippe_pharmacy_Place {
  }
  coords 4431.4 9.2 10841.5
 }
+GenericEntity Fit_saint_philippe_pharmacy_clear {
+ components {
+  LF_BaseWorldClearComponent "{B0FEEF22AE80208F}" {
+   m_sBuilding "{FF48B5059EB0AC65}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_drugstore.et"
+   m_aPrefabs {
+    "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et"
+   }
+  }
+ }
+ coords 4431.4 9 10841.5
+}
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_aspirin : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
  coords 4432.113 10.276 10838.019
  angleY 76
@@ -40,6 +51,38 @@ GenericEntity Fit_saint_philippe_pharmacy_pharmacy_gauze : "{1564801BABC5C304}Pr
 }
 LF_NpcBaseEntity Fit_saint_philippe_pharmacy_pharmacy_pharmacist : "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et" {
  coords 4430.937 9.231 10838.19
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_shelf_1 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 4436.345 9.231 10836.961
+ angleY -14
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_shelf_1_aspirin : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4435.954 10.312 10837.081
+ angleY -14
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_shelf_1_gauze : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4435.595 10.312 10836.991
+ angleY -14
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_shelf_1_tourniquet : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4435.227 10.312 10836.899
+ angleY -14
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_shelf_2 : "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et" {
+ coords 4434.734 9.231 10840.528
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_shelf_2_aspirin : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 4434.764 9.819 10841.277
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_shelf_2_gauze : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 4434.672 9.819 10841.646
+ angleY 76
+}
+GenericEntity Fit_saint_philippe_pharmacy_pharmacy_shelf_2_tourniquet : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 4434.853 9.819 10840.918
  angleY 76
 }
 GenericEntity Fit_saint_philippe_pharmacy_pharmacy_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
