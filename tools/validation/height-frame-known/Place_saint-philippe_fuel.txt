@@ -1,3 +1,0 @@
-# Rows of Place_saint-philippe_fuel.layer written in the wrong height frame when validate-layer-height-frame landed; the PR that corrects the layer deletes this file.
-Fit_saint_philippe_fuel_pump_a
-Fit_saint_philippe_fuel_pump_b
