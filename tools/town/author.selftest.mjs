@@ -39,7 +39,7 @@ ok(kit.rows.every((r) => !/fence|building/i.test(r.id)), "neither the fence nor 
 ok(kit.rows.every((r) => /^(floor|wall|(shelf|counter|table):[a-z0-9-]+)$/.test(r.attach)), "every row names an attach target");
 ok(kit.stamp?.prefab === HOUSE && kit.building?.vanilla === HOUSE && kit.source.frame === "building-local", "the stamp block names the building prefab");
 ok(kit.stamp.lanes.some((l) => l.to === "counter" && l.width === 1.2) && kit.stamp.lanes.some((l) => l.to === "shelf"), "lanes run from the entrance to the counter and each shelf");
-ok(kit.stamp.clear.length === 1 && kit.stamp.clear[0].until === "#3882", "the clear list keeps the vanilla clutter named");
+ok(kit.stamp.clear.length === 1 && kit.stamp.clear[0].prefab && !("until" in kit.stamp.clear[0]), "the clear list names the vanilla clutter the stamp hides (no \"until\" any more)");
 ok(!JSON.stringify(kit.rows).includes("1003"), "no grid coordinate in the rows");
 
 const dirs = { placesDir: join(FIX, "places"), templatesDir: join(FIX, "templates"), kitsDir: join(FIX, "no-kits") };

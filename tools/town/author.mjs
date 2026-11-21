@@ -109,8 +109,9 @@ export function authorExtract(layerPath, group, { kit, building = null, clear = 
     prefab: b.prefab,
     // Lanes the audit keeps free (card #3883 measures them): entrance to every till and every shelf face, 1.2 m wide.
     lanes: [...tills, ...faces].map((to) => ({ from: "entrance", to, width: LANE_WIDTH })),
-    // Vanilla clutter the building prefab brings that this shop does not want: kept as an obstacle until G2 (#3882) can hide it.
-    clear: clear.map((prefab) => ({ prefab, until: "#3882" })),
+    // Vanilla clutter the building prefab brings that this shop does not want: `town stamp` writes one clear carrier per copy
+    // (LF_BaseWorldClearComponent) that hides it at load (#3882, #3924).
+    clear: clear.map((prefab) => ({ prefab })),
   };
   // Not a kit field: what the carry did, for the command to print.
   const carry = prev ? carryConfig(out, prev) : { carried: [], bare: out.rows.filter((r) => !r.config?.length).map((r) => r.id) };

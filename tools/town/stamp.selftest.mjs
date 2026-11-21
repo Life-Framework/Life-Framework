@@ -12,7 +12,8 @@
 //   - a row's component GUID travels with its config: the stamped layer writes it though the prefab does not carry the component.
 // red-proof (#3931, 2026-11-21): seatRows with the flatWalls branch off printed "FAIL the sign slid off the lintel ..."; planFit without the
 //   kit config guid fallback printed "FAIL the config guid reaches the stamped layer"; restored, OK.
-// red-proof: 2026-11-21, planStamp with the prefab comparison removed printed "FAIL a stamp onto b3 (another prefab) is refused";
+// red-proof: 2026-11-21, #3924: with the carrier push removed, "each stamped copy carries a Fit_<slot>_clear carrier" failed; restored, OK.
+//   2026-11-21, planStamp with the prefab comparison removed printed "FAIL a stamp onto b3 (another prefab) is refused";
 //   applyStamp with the restore loop removed printed "FAIL a floating finding restores the previous layer"; restored, OK.
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
@@ -34,7 +35,8 @@ const now = () => new Date("2026-11-21T12:00:00Z");
 const quiet = () => {};
 
 if (process.argv[1] && pathToFileURL(resolve(process.argv[1])).href === import.meta.url) {
-const kit = authorExtract(join(FIX, "Grid_stamp_fixture.layer"), "Shop_*", { kit: "fixture-shop" });
+const CLEAR = ["{4D2E0B7F8A9C1E36}Prefabs/Props/Civilian/StepladderWooden_01.et", "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et"];
+const kit = authorExtract(join(FIX, "Grid_stamp_fixture.layer"), "Shop_*", { kit: "fixture-shop", clear: CLEAR });
 const opts = { placesDir: join(FIX, "places"), templatesDir: join(FIX, "templates") };
 const targets = stampTargets("fixture-shop", opts);
 ok(targets.length === 2 && targets.every((t) => t.building), `two mapped copies found (got ${targets.length})`);
@@ -64,6 +66,20 @@ const b1 = coordsOf(first[2], counterId);
 ok(a1 && near(a1[0], 5002) && near(a1[1], 20.2) && near(a1[2], 6003), `counter in b1 at 5002 20.2 6003 (got ${a1})`);
 ok(b1 && near(b1[0], 5098) && near(b1[1], 25.7) && near(b1[2], 6047), `counter in b2 at 5098 25.7 6047 (got ${b1})`);
 ok(!/coords 1003 /.test(first[0]), "no grid coordinate leaks into a stamped layer");
+
+// the clear list: one carrier per copy, at the building's x and z, naming the building prefab and the list (card #3924)
+const carrierOf = (text) => /GenericEntity Fit_stampville_shop_[ab]_clear \{[\s\S]*?\n\}/.exec(text)?.[0] ?? null;
+const c1 = carrierOf(first[0]);
+const c2 = carrierOf(first[2]);
+ok(c1 && c2, "each stamped copy carries a Fit_<slot>_clear carrier");
+ok(c1 && /LF_BaseWorldClearComponent/.test(c1) && /m_sBuilding "\{[0-9A-F]{16}\}/.test(c1), "the carrier names the building prefab");
+ok(c1 && CLEAR.every((p) => c1.includes(p)) && !/until/.test(c1), "the carrier lists every clear prefab");
+const cc1 = c1 && /coords ([-\d. ]+)/.exec(c1)?.[1].trim().split(" ").map(Number);
+const cc2 = c2 && /coords ([-\d. ]+)/.exec(c2)?.[1].trim().split(" ").map(Number);
+ok(cc1 && near(cc1[0], 5000) && near(cc1[2], 6000), `the carrier of b1 stands at the building's x and z (got ${cc1})`);
+ok(cc2 && near(cc2[0], 5100) && near(cc2[2], 6050), `the carrier of b2 stands at its building's x and z (got ${cc2})`);
+const noClear = await planStamp({ ...kit, stamp: { ...kit.stamp, clear: [] } }, targets, po);
+ok(noClear.ok && noClear.copies.every((c) => !/_clear /.test(c.layerText)), "a kit with an empty clear list writes no carrier");
 
 // a moved kit row moves in both copies
 const moved = JSON.parse(JSON.stringify(kit));
