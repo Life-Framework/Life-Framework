@@ -40,9 +40,9 @@
    "on": "House_Town_E_2I01"
   },
   "Glow_sp_b12_0": {
-   "x": 4513.69,
-   "y": 17.08,
-   "z": 10734.95,
+   "x": 4513.37,
+   "y": 17.1,
+   "z": 10736.95,
    "on": "SCR_DestructibleEntity"
   },
   "Glow_sp_b12_1": {
@@ -199,7 +199,13 @@
    "z": 10733.25,
    "on": "House_Village_E_1I02_Furniture"
   },
-  "Glow_sp_b117_1": null
+  "Glow_sp_b117_1": null,
+  "Glow_sp_b23_0": {
+   "x": 4499.38,
+   "y": 18.42,
+   "z": 10642.85,
+   "on": "Barn_E_01"
+  }
  },
  "lamps": {
   "Lamp_1": {
