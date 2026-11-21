@@ -96,6 +96,22 @@
       "attach": "wall"
     },
     {
+      "id": "barber-counter",
+      "name": "Barber_counter",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "furniture",
+      "verb": "against wall",
+      "offset": [
+        -4,
+        0.215,
+        -3.85
+      ],
+      "yaw": 90,
+      "wall": "-x",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
       "id": "barber-basin",
       "name": "Barber_basin",
       "prefab": "{49012FE1DEF653EE}Prefabs/Props/Furniture/Sink_01.et",
@@ -118,7 +134,7 @@
       "role": "sign",
       "verb": "against wall",
       "offset": [
-        -2.4,
+        -0.5,
         3.25,
         6.13
       ],
