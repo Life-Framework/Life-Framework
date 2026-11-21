@@ -1,0 +1,230 @@
+[
+ {
+  "name": "Shop_Crammed",
+  "prefab": "Prefabs/Structures/Commercial/Shop_01.et",
+  "layer": "Fixture.layer",
+  "x": 2.5,
+  "y": 0,
+  "z": 2,
+  "actions": []
+ },
+ {
+  "name": "Shelf_Crammed_A",
+  "prefab": "Prefabs/Props/Commercial/Shelf_01.et",
+  "layer": "Fixture.layer",
+  "x": 0.8,
+  "y": 0,
+  "z": 1.6,
+  "actions": []
+ },
+ {
+  "name": "Shelf_Crammed_B",
+  "prefab": "Prefabs/Props/Commercial/Shelf_01.et",
+  "layer": "Fixture.layer",
+  "x": 2.5,
+  "y": 0,
+  "z": 1.6,
+  "actions": []
+ },
+ {
+  "name": "Shelf_Crammed_C",
+  "prefab": "Prefabs/Props/Commercial/Shelf_01.et",
+  "layer": "Fixture.layer",
+  "x": 4.2,
+  "y": 0,
+  "z": 1.6,
+  "actions": []
+ },
+ {
+  "name": "Counter_Crammed",
+  "prefab": "Prefabs/Props/Commercial/CounterShop_01.et",
+  "layer": "Fixture.layer",
+  "x": 3.5,
+  "y": 0,
+  "z": 2.7,
+  "actions": []
+ },
+ {
+  "name": "Till_Crammed",
+  "prefab": "Prefabs/Props/Commercial/Till_01.et",
+  "layer": "Fixture.layer",
+  "x": 3.5,
+  "y": 0.85,
+  "z": 2.7,
+  "actions": [
+   "LF_StoreTillAction"
+  ]
+ },
+ {
+  "name": "Radio_Crammed",
+  "prefab": "Prefabs/Props/Furniture/Misc_01.et",
+  "layer": "Fixture.layer",
+  "x": 3.5,
+  "y": 0.9,
+  "z": 3.15,
+  "actions": [
+   "LF_RadioAction"
+  ]
+ },
+ {
+  "name": "Pay_Crammed",
+  "prefab": "Prefabs/Props/Furniture/Misc_01.et",
+  "layer": "Fixture.layer",
+  "x": 3.9,
+  "y": 0.9,
+  "z": 0.2,
+  "actions": [
+   "LF_StoreTillAction"
+  ]
+ },
+ {
+  "name": "Locker_Crammed_1",
+  "prefab": "Prefabs/Props/Furniture/Locker_01.et",
+  "layer": "Fixture.layer",
+  "x": 1,
+  "y": 0,
+  "z": 3.6,
+  "actions": []
+ },
+ {
+  "name": "Locker_Crammed_2",
+  "prefab": "Prefabs/Props/Furniture/Locker_01.et",
+  "layer": "Fixture.layer",
+  "x": 1.25,
+  "y": 0,
+  "z": 3.6,
+  "actions": []
+ },
+ {
+  "name": "Locker_Crammed_3",
+  "prefab": "Prefabs/Props/Furniture/Locker_01.et",
+  "layer": "Fixture.layer",
+  "x": 1.5,
+  "y": 0,
+  "z": 3.6,
+  "actions": []
+ },
+ {
+  "name": "Chair_Crammed",
+  "prefab": "Prefabs/Props/Furniture/Chair_01.et",
+  "layer": "Fixture.layer",
+  "x": 1.3,
+  "y": 0,
+  "z": 3.1,
+  "actions": []
+ },
+ {
+  "name": "Wardrobe_Crammed",
+  "prefab": "Prefabs/Props/Furniture/Wardrobe_01.et",
+  "layer": "Fixture.layer",
+  "x": 4.7,
+  "y": 0,
+  "z": 2.2,
+  "actions": []
+ },
+ {
+  "name": "Shop_Clear",
+  "prefab": "Prefabs/Structures/Commercial/Shop_01.et",
+  "layer": "Fixture.layer",
+  "x": 24,
+  "y": 0,
+  "z": 3,
+  "actions": []
+ },
+ {
+  "name": "Shelf_Clear_A",
+  "prefab": "Prefabs/Props/Commercial/Shelf_01.et",
+  "layer": "Fixture.layer",
+  "x": 21.6,
+  "y": 0,
+  "z": 5.5,
+  "actions": []
+ },
+ {
+  "name": "Shelf_Clear_B",
+  "prefab": "Prefabs/Props/Commercial/Shelf_01.et",
+  "layer": "Fixture.layer",
+  "x": 26.4,
+  "y": 0,
+  "z": 5.5,
+  "actions": []
+ },
+ {
+  "name": "Counter_Clear",
+  "prefab": "Prefabs/Props/Commercial/CounterShop_01.et",
+  "layer": "Fixture.layer",
+  "x": 24,
+  "y": 0,
+  "z": 3.6,
+  "actions": []
+ },
+ {
+  "name": "Till_Clear",
+  "prefab": "Prefabs/Props/Commercial/Till_01.et",
+  "layer": "Fixture.layer",
+  "x": 24,
+  "y": 0.85,
+  "z": 3.6,
+  "actions": [
+   "LF_StoreTillAction"
+  ]
+ },
+ {
+  "name": "Pay_Clear",
+  "prefab": "Prefabs/Props/Furniture/Misc_01.et",
+  "layer": "Fixture.layer",
+  "x": 24,
+  "y": 1,
+  "z": 3.3,
+  "actions": [
+   "LF_StoreTillAction"
+  ]
+ },
+ {
+  "name": "Shelf_Base_A",
+  "prefab": "Prefabs/Props/Commercial/Shelf_01.et",
+  "layer": "Fixture.layer",
+  "x": 41,
+  "y": 0,
+  "z": 1.5,
+  "actions": []
+ },
+ {
+  "name": "Shelf_Base_B",
+  "prefab": "Prefabs/Props/Commercial/Shelf_01.et",
+  "layer": "Fixture.layer",
+  "x": 43,
+  "y": 0,
+  "z": 1.5,
+  "actions": []
+ },
+ {
+  "name": "Shelf_Base_C",
+  "prefab": "Prefabs/Props/Commercial/Shelf_01.et",
+  "layer": "Fixture.layer",
+  "x": 45,
+  "y": 0,
+  "z": 1.5,
+  "actions": []
+ },
+ {
+  "name": "Counter_Base",
+  "prefab": "Prefabs/Props/Commercial/CounterShop_01.et",
+  "layer": "Fixture.layer",
+  "x": 43,
+  "y": 0,
+  "z": 3,
+  "actions": []
+ },
+ {
+  "name": "Till_Base",
+  "prefab": "Prefabs/Props/Commercial/Till_01.et",
+  "layer": "Fixture.layer",
+  "x": 43,
+  "y": 0.85,
+  "z": 3,
+  "actions": [
+   "LF_StoreTillAction"
+  ]
+ }
+]

@@ -29,6 +29,7 @@ import { isTerrainRelative, TERRAIN_RELATIVE_MAX_Y } from "../tools/lib/terrain-
 import { layerFile, townWorld, worldLayerDirs } from "../tools/lib/addons.mjs";
 import { gridLayerDirs, gridWorldFor, ISLAND_WORLD, islandLayersDir } from "../tools/lib/worlds.mjs";
 import { BUDGET, cellBudget, worldFindings } from "./place-budget.mjs";
+import { actionProblems, laneFindings, LANE_WEIGHT, selftest as laneSelftest } from "./place-lanes.mjs";
 import { floatingRows, runtimeKind, runtimeRows, selftest as runtimeSelftest, vehicleEntry } from "./place-runtime.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -240,7 +241,7 @@ const label = (e) => e.name || (e.prefab ? e.prefab.split("/").pop().replace(/\.
 // ----------------------------------------------------------------------------- checks
 
 // Severity points per problem kind; the rank sums them and weights interactables and named areas.
-export const WEIGHT = { floating: 10, contact: 8, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "door-path": 4, "in-road": 5, scaled: 6, "odd-scale": 2, size: 6, tilted: 2, unreachable: 6, "relative-y": 6 };
+export const WEIGHT = { floating: 10, contact: 8, sunk: 7, overhang: 6, clips: 6, overlaps: 5, "blocks-door": 7, "door-path": 4, "in-road": 5, scaled: 6, "odd-scale": 2, size: 6, tilted: 2, unreachable: 6, "relative-y": 6, ...LANE_WEIGHT };
 
 // Expected sizes (tools/place/expected-sizes.json): the first entry whose regex matches the prefab file name
 // (or, for a bare mesh entity, the mesh file name) gives the sane range for the largest side, in metres, in
@@ -483,7 +484,7 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
     if (m.found) e.found = m.found;
     list.push({ idx, e, m });
   }
-  const pairs = [overlapProblems(list), doorProblems(list, doors), roadProblems(list, roads)];
+  const pairs = [overlapProblems(list), doorProblems(list, doors), roadProblems(list, roads), actionProblems(list)];
   const rows = [];
   const missing = [];
   let covered = 0;
@@ -504,7 +505,9 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
     rows.push({ name: label(e), layer: e.layer, x: e.x, y: e.y, z: e.z, actions: e.actions, area: areaOf(areas, e), problems, allowed: suppressed.map((p) => p.kind) });
   }
   const runtime = runtimeRows(outText, records);
-  const ranked = [...rank(rows), ...runtime].sort((a, b) => b.score - a.score || a.layer.localeCompare(b.layer));
+  // Shop walk lanes, action reach, room crowding and furniture baked into a building prefab (place-lanes.mjs, card #3883).
+  const lanes = laneFindings(list, doors, outText, { allow });
+  const ranked = [...rank(rows), ...lanes, ...runtime].sort((a, b) => b.score - a.score || a.layer.localeCompare(b.layer));
   return { ranked, measured: list.length, sizeCovered: covered, missing, doors: doors.length, runtime: runtime.length };
 }
 
@@ -904,6 +907,7 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   if (!inputText([booth]).split(/\r?\n/).includes("0 Booth LF_Payphone 0 0.5 0 0 rel")) fail("a payphone row is sent with the rel flag");
   worldSelftest(fail);
   runtimeSelftest(fail);
+  laneSelftest(fail);
   contactSelftest(fail);
   gridSelftest(fail);
   islandSelftest(fail);

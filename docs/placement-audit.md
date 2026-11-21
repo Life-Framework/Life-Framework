@@ -74,6 +74,26 @@ overlap and clip checks by design. Look at the `look` close-up for those. A prop
 exempt for that kind: `Roadmap_Fuel_Counter` matched "Map" (a hung map) and was never checked for floating or sinking until
 #936's follow-up anchored `Map` to a word start; keep kind regexes anchored.
 
+### Shop lanes, action reach and prefab children (card #3883, `agent-box/place-lanes.mjs`)
+
+A room is a building with a ground-floor door leaf: a layer building, or a base-map one whose world bounds the game writes as a
+`root` line (LF_PlacementAudit.DoorLines, also one `child` line per mesh child of the building prefab, boxed like a door leaf).
+Its floor is where its own furniture stands; its obstacles are the floor-standing boxes inside it (a till on a counter is not one).
+A grid of 10 cm cells with the obstacles grown by the lane's half width answers every lane question from the door:
+
+| Kind | Rule |
+|---|---|
+| `lane` | a 1.2 m lane from an entrance to the till and to each shelf, rack or display (a free cell within 1.1 m of it) |
+| `reach` | every till or other interactable is reachable from an entrance through a 0.9 m lane to a standing cell within 1.5 m |
+| `crowded` | prop footprints over the room's footprint over 30%. The room is the building's bounds (all floors), so only a clearly stuffed shop trips it |
+| `action-off-mesh` | an action on a mesh-less entity more than 0.5 m from any mesh: the F key never offers it |
+| `action-crowds-till` | another action within 0.5 m of a till: the key picks it over the till |
+| `blocks-door` (prefab children) | furniture baked into a building prefab inside a door leaf's swing |
+
+`aimVerdict(reply, action, entity)` reads the harness `aim` reply after `stand` (what the F key acts on) for a proof.
+The fixture `agent-box/fixtures/place-lanes/` (`build.mjs` writes it) holds a crammed shop, a clear one and a base-map shop;
+`node agent-box/place-lanes.selftest.mjs` checks them. Rows are named `Room_<building>` in layer `(shop lanes)`.
+
 ## World checks
 
 Two checks read the layer entries alone (`agent-box/place-budget.mjs`, no measurement) and print under the
