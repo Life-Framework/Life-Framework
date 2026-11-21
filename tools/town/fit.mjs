@@ -56,6 +56,24 @@ const FRONT = { "+x": [1, 0], "-x": [-1, 0], "+z": [0, 1], "-z": [0, -1] };
 
 export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
 export const claimFileOf = (place, slot) => `${CLAIMS_DIR}/${place}-${slot}.json`;
+// The vanilla props a kit hides inside its building (card #3882/#3924): kit.stamp.clear (what `town author` writes), or a top-level
+// kit.clear for a kit that is fitted rather than stamped. An entry is a resource name or { prefab }.
+export const clearListOf = (kit) => [...new Set([...(kit?.stamp?.clear ?? []), ...(kit?.clear ?? [])].map((c) => (typeof c === "string" ? c : c?.prefab)).filter(Boolean))].sort();
+
+// The base-world clear carrier of one stamped copy: a GenericEntity at the building's x and z with LF_BaseWorldClearComponent.
+// It names the building prefab and the clear list; the game finds the building by prefab within 3 m on x and z and takes the
+// height from it, so the row's height is only a placeholder (the building origin), never a measured value.
+export function clearCarrier({ place, slot, host, clear }) {
+  if (!clear.length || !host?.prefab) return null;
+  const list = ["{", ...clear.map((p) => `    "${p}"`), "   }"].join("\n");
+  return {
+    name: `Fit_${ident(place)}_${ident(slot)}_clear`,
+    comps: [{ cls: "LF_BaseWorldClearComponent", guid: guidOf(place, slot, "base-world-clear"), set: { m_sBuilding: `"${host.prefab}"`, m_aPrefabs: list } }],
+    coords: [host.x, host.y, host.z],
+    yaw: 0,
+  };
+}
+
 const guidOf = (...parts) => createHash("sha1").update(parts.join("|")).digest("hex").slice(0, 16).toUpperCase();
 
 // ------------------------------------------------------------------ geometry from the dossier
@@ -446,6 +464,9 @@ export function planFit(opts, ctx = {}) {
       warnings.push(`slot ${slotId}: no place marker, so the vanilla building stays destructible (needs-hook)`);
     }
   }
+
+  const carrier = clearCarrier({ place, slot: slotId, host, clear: clearListOf(kit) });
+  if (carrier) out.push(carrier);
 
   const sourceCache = new Map();
   const srcRows = new Map(kit.rows.map((r) => [r.id, r]));

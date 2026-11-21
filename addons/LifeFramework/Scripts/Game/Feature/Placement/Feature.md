@@ -212,3 +212,5 @@ selected; aimed placement with rotate, place and cancel is #1028.
 untraceable, no collision), on each machine at load, with nothing replicated or saved. `LF_BaseWorldClearComponent` is
 the layer carrier a stamped kit uses. Write-up and test: `docs/architecture/base-world-clear.md`,
 `LF_Test_BaseWorldClear`.
+`town stamp` writes one carrier per stamped copy from the kit's clear list (#3924); a carrier with no building and a box
+(`m_vBoxHalfM`) hides outdoor clutter the same way (`LF_BaseWorldClear.HideInBox`, `LF_Test_BaseWorldClearBox`).
