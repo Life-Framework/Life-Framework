@@ -1,4 +1,4 @@
-// red-proof: Observed before LF_GarbageRound.c existed: `tools\cli test --no-build --only LF_Test_GarbageRound` failed to compile ("Unknown type 'LF_GarbageRound'"), so the test could not pass. Then green on the feature; `--red` records RedProof() skipping the tip. Review of #3862: the new truck-return and dead-worker checks failed on the unfixed code (truck left after the tip; a dead worker was paid 70) and pass on the fix. Occupied-truck exploit: before the fix an occupied truck was left in place for good (a free truck per round); `--red` skips the sweep after the seats empty and the "taken back once it is empty" check fails.
+// red-proof: Observed before LF_GarbageRound.c existed: `tools\cli test --no-build --only LF_Test_GarbageRound` failed to compile ("Unknown type 'LF_GarbageRound'"), so the test could not pass. Then green on the feature; `--red` records RedProof() skipping the tip. Review of #3862: the new truck-return and dead-worker checks failed on the unfixed code (truck left after the tip; a dead worker was paid 70) and pass on the fix. Occupied-truck exploit: before the fix an occupied truck was left in place for good (a free truck per round); `--red` skips the sweep after the seats empty and the "taken back once it is empty" check fails. Shared-bins fix 2026-11-21: `--red LF_Test_GarbageRound` RED PROOF OK (with the first round read as abandoned, "the second round does not share a bin the first holds" fails); `--only` passed=2 failed=0.
 //! jobs/garbage-round (#3325): a round of three bins emptied in order then tipped at the dump pays the
 //! configured amount once. A bin emptied out of order is refused (the refusal has a toast key) and
 //! changes nothing; tipping before the last bin, or with the truck away from the dump, pays nothing.
@@ -139,7 +139,49 @@ class LF_Test_GarbageRound : LF_Test
 		ctx.True(!GetGame().GetWorld().FindEntityByID(truckId), "the company truck is taken back at the tip");
 
 		CheckOccupiedTruck(ctx, depot, bins, dump, user);
+		CheckSharedBins(ctx, depot, bins, user);
 		CheckDeadWorker(ctx, depot, bins, dump, user);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Two rounds open at once (review of #3862): each has its own bins. The second round skips the bins
+	//! the first holds, cannot empty them, and gets them only once the first is closed or long abandoned.
+	protected void CheckSharedBins(LF_TestContext ctx, IEntity depot, array<IEntity> bins, IEntity user)
+	{
+		string first = UID + "-first";
+		string second = UID + "-second";
+		LF_GarbageRoundConfig.Get().m_iStops = 2;
+		ctx.True(LF_GarbageRound.Start(user, first, depot) == LF_EGarbageResult.OK, "the first of two rounds starts");
+		LF_GarbageRun a = LF_GarbageRound.GetRound(first);
+		// Red proof: the first round reads as abandoned, so it holds no bins (the unfixed behaviour).
+		if (RedProof() && a)
+			a.m_fStartedAt -= LF_GarbageRound.CLAIM_SECONDS + 10;
+
+		ctx.True(LF_GarbageRound.Start(user, second, depot) == LF_EGarbageResult.OK, "the second round starts while the first is open");
+		LF_GarbageRun b = LF_GarbageRound.GetRound(second);
+		if (a && b)
+		{
+			ctx.True(a.m_aBins.Contains(bins[0].GetID()) && a.m_aBins.Contains(bins[1].GetID()), "the first round holds the two nearest bins");
+			foreach (EntityID held : a.m_aBins)
+			{
+				ctx.False(b.m_aBins.Contains(held), "the second round does not share a bin the first holds");
+			}
+
+			ctx.True(b.m_aBins.Contains(bins[2].GetID()), "the second round takes the next free bin");
+			ctx.True(LF_GarbageRound.EmptyBin(user, second, bins[0]) == LF_EGarbageResult.NOT_ON_ROUTE, "the second round cannot empty the first's bin");
+
+			// An abandoned round (its owner left) holds nothing past the ceiling.
+			LF_GarbageRound.Close(second);
+			a.m_fStartedAt -= LF_GarbageRound.CLAIM_SECONDS + 10;
+			ctx.True(LF_GarbageRound.Start(user, second, depot) == LF_EGarbageResult.OK, "a round starts again past an abandoned one");
+			LF_GarbageRun again = LF_GarbageRound.GetRound(second);
+			if (again)
+				ctx.True(again.m_aBins.Contains(bins[0].GetID()), "an abandoned round's bins are free again");
+		}
+
+		LF_GarbageRound.Close(first);
+		LF_GarbageRound.Close(second);
+		LF_GarbageRoundConfig.Get().m_iStops = 3;
 	}
 
 	//------------------------------------------------------------------------------------------------

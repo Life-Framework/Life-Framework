@@ -14,11 +14,55 @@ class LF_EvidenceLockerFill
 
 	//! True from the moment the convoy was ordered until the locker drops below the threshold.
 	protected static bool s_bDue;
+	//! True while a cool-down timer will re-arm the order (see ScheduleRearm).
+	protected static bool s_bRearmPending;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_bDue = false;
+		s_bRearmPending = false;
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(RearmNow);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while a cool-down is running after a refused or called-off convoy.
+	static bool IsRearmPending()
+	{
+		return s_bRearmPending;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a convoy was ordered but did not go (the start was refused, or the convoy was called off
+	//! with its rows still in the locker). Without this the order stayed "due" until the locker dropped
+	//! below the threshold or the server restarted, so a locker that stayed full ordered nothing more.
+	//! The order is armed again after the configured cool-down; a still-full locker then orders another.
+	static void ScheduleRearm()
+	{
+		if (!Replication.IsServer() || !s_bDue)
+			return;
+
+		int seconds = LF_EvidenceConfig.ConvoyRearmSeconds();
+		s_bRearmPending = true;
+		if (GetGame() && GetGame().GetCallqueue())
+		{
+			GetGame().GetCallqueue().Remove(RearmNow);
+			GetGame().GetCallqueue().CallLater(RearmNow, seconds * 1000, false);
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("convoy not under way; the order re-arms in %1 s", seconds));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the cool-down is over. Arms the order again and checks the count, so a locker still at the
+	//! threshold orders another convoy (and a locker below it just stays armed).
+	static void RearmNow()
+	{
+		s_bRearmPending = false;
+		s_bDue = false;
+		LF_Debug.Info(FEATURE, "convoy order re-armed");
+		Check();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -46,6 +90,11 @@ class LF_EvidenceLockerFill
 		if (rows < Threshold())
 		{
 			s_bDue = false;
+			// A pending cool-down has nothing left to re-arm.
+			if (s_bRearmPending && GetGame() && GetGame().GetCallqueue())
+				GetGame().GetCallqueue().Remove(RearmNow);
+
+			s_bRearmPending = false;
 			return;
 		}
 
