@@ -276,6 +276,11 @@ const ctx = { root: ROOT, run: noGit, shell: reader(shells) };
   const fence = [at("f", -3, 3, 4, 0, FENCE)];
   const r5 = await seat.seatRows(fence, [{ id: "f", verb: "on floor", role: "dressing", prefab: FENCE, mount: "ground" }], HOST, { reader: rd });
   check(r5.rows[0].mount === "ground" && r5.rows[0].overGround && near(fence[0].coords[1], -0.1), `fence: held as ${r5.rows[0].mount}, layer y ${fence[0].coords[1]} (want ground, -0.1 over the ground)`);
+  // a ground row with a kit `lift` stands that much higher over the ground: a fence panel on a slope (#3968, the wheat field west fence)
+  // red-proof: 2026-11-21, with the ground branch's lift lines removed this printed "FAILED ground lift: ...".
+  const fenceL = [at("f", -3, 3, 4, 0, FENCE)];
+  await seat.seatRows(fenceL, [{ id: "f", verb: "on floor", role: "dressing", prefab: FENCE, mount: "ground", lift: 0.4 }], HOST, { reader: rd });
+  check(near(fenceL[0].coords[1], -0.1 + 0.4), `ground lift: a ground row with lift 0.4 stands at y ${fenceL[0].coords[1]}, not 0.3 over the ground`);
   // the layer class token says nothing about the frame (the police street bins of #3566 sank 17 m under it): no ground mount from it
   // red-proof: 2026-11-21, with mountOf still reading class SCR_DestructibleEntity this printed "FAILED a class token alone ...".
   check(seat.mountOf({ verb: "on floor", class: "SCR_DestructibleEntity", prefab: FENCE }).mount === "floor", "a class token alone does not make a row a ground row");

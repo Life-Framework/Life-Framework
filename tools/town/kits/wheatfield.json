@@ -6,7 +6,10 @@
     "file": "tools/town/kits/sources/wheatfield.layer",
     "group": "*",
     "origin": "0,0,0",
-    "frame": "origin-entity"
+    "frame": "origin-entity",
+    "also": [
+      "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers/Village_Dressing.layer"
+    ]
   },
   "scope": "room",
   "anchoring": {
@@ -172,7 +175,7 @@
     {
       "id": "wheat-field-fence-w-8",
       "name": "WheatField_FenceW_8",
-      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
@@ -184,12 +187,31 @@
       "class": "SCR_DestructibleEntity",
       "wall": "free",
       "floor": "f0",
-      "mount": "ground"
+      "mount": "ground",
+      "lift": 0.406
+    },
+    {
+      "id": "wheat-field-fence-w-12",
+      "name": "WheatField_FenceW_12",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        14.54,
+        0,
+        -10.97
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground",
+      "lift": 0.375
     },
     {
       "id": "wheat-field-fence-w-16",
       "name": "WheatField_FenceW_16",
-      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
@@ -201,12 +223,31 @@
       "class": "SCR_DestructibleEntity",
       "wall": "free",
       "floor": "f0",
-      "mount": "ground"
+      "mount": "ground",
+      "lift": 0.328
+    },
+    {
+      "id": "wheat-field-fence-w-20",
+      "name": "WheatField_FenceW_20",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        14.13,
+        0,
+        -18.96
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground",
+      "lift": 0.328
     },
     {
       "id": "wheat-field-fence-w-24",
       "name": "WheatField_FenceW_24",
-      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
@@ -218,7 +259,26 @@
       "class": "SCR_DestructibleEntity",
       "wall": "free",
       "floor": "f0",
-      "mount": "ground"
+      "mount": "ground",
+      "lift": 0.281
+    },
+    {
+      "id": "wheat-field-fence-w-28",
+      "name": "WheatField_FenceW_28",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        13.71,
+        0,
+        -26.95
+      ],
+      "yaw": 93,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "ground",
+      "lift": 0.265
     },
     {
       "id": "wheat-field-fence-w-32",
