@@ -263,9 +263,9 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        1.005,
+        0.4,
         0.508,
-        1
+        -2.6
       ],
       "yaw": 90,
       "config": [
@@ -480,6 +480,105 @@
       "wall": "free",
       "floor": "f0",
       "attach": "floor"
+    },
+    {
+      "id": "police-kit-sign-front",
+      "name": "PoliceKit_Sign_Front",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -1.07,
+        2.9,
+        6.93
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"police_front\"",
+            "m_vRimColor": "0.85 0.85 0.88",
+            "m_vPaintColor": "0.08 0.16 0.38",
+            "m_vTextColor": "0.95 0.95 0.97"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f1",
+      "attach": "wall"
+    },
+    {
+      "id": "police-kit-street-bench",
+      "name": "PoliceKit_StreetBench",
+      "prefab": "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        3,
+        0,
+        7.3
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor",
+      "mount": "terrain",
+      "lift": 0.131
+    },
+    {
+      "id": "police-kit-street-bin",
+      "name": "PoliceKit_StreetBin",
+      "prefab": "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        1.45,
+        0,
+        7.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor",
+      "mount": "terrain"
+    },
+    {
+      "id": "police-kit-flowerpot-1",
+      "name": "PoliceKit_Flowerpot_1",
+      "prefab": "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        -3.3,
+        0,
+        7.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor",
+      "mount": "terrain",
+      "lift": 0.135
+    },
+    {
+      "id": "police-kit-flowerpot-2",
+      "name": "PoliceKit_Flowerpot_2",
+      "prefab": "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0.5,
+        0,
+        7.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor",
+      "mount": "terrain",
+      "lift": 0.114
     }
   ],
   "stamp": {
