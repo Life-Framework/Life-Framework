@@ -229,7 +229,7 @@ GenericEntity Fit_saint_philippe_police_police_kit_duty_clock_room : "{E7EA9EA10
    }
   }
  }
- coords 4551.764 18.708 10747.155
+ coords 4551.811 18.708 10750.807
  angleY -99
 }
 GenericEntity Fit_saint_philippe_police_police_kit_duty_desk : "{034D1397A95787DB}Prefabs/Police/LF_PoliceDutyDesk.et" {
@@ -245,9 +245,37 @@ GenericEntity Fit_saint_philippe_police_police_kit_evidence_locker : "{5D8B2F46A
  coords 4550.587 18.236 10751.423
  angleY 171
 }
+GenericEntity Fit_saint_philippe_police_police_kit_flowerpot_1 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 4557.017 17.526 10741.507
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_police_police_kit_flowerpot_2 : "{FB5F6A6C2BC10787}Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_octa_begonia_red.et" {
+ coords 4553.264 17.324 10740.913
+ angleY 171
+}
 GenericEntity Fit_saint_philippe_police_police_kit_handcuffs : "{DE0B6FEBDCECC6FF}Prefabs/Items/Roleplay/Handcuffs.et" {
  coords 4549.621 19.16 10747.929
  angleY -169
+}
+GenericEntity Fit_saint_philippe_police_police_kit_sign_front : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "police_front"
+   m_vRimColor 0.85 0.85 0.88
+   m_vPaintColor 0.08 0.16 0.38
+   m_vTextColor 0.95 0.95 0.97
+  }
+ }
+ coords 4554.74 21.1 10741.631
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_police_police_kit_street_bench : "{33C0565C5FE1ED74}Prefabs/Props/Civilian/BenchStreet/BenchStreet_02.et" {
+ coords 4550.779 17.211 10740.621
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_police_police_kit_street_bin : "{32CDE9FE3FB35D51}Prefabs/Props/Garbage/Bins/BinStreet_01.et" {
+ coords 4552.325 17.102 10740.764
+ angleY 171
 }
 GenericEntity Fit_saint_philippe_police_police_kit_wanted_board : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
  coords 4548.817 19.35 10751.407

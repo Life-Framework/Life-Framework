@@ -11,7 +11,7 @@
     "PoliceDesk",
     "Armoury"
   ],
-  "rows": 21,
+  "rows": 26,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
@@ -21,6 +21,6 @@
   "stamp": {
     "kit": "police",
     "prefab": "{151CFDB2968ADB77}Prefabs/Structures/Houses/Villa/Villa_E_2I01/Villa_E_2I01_Police.et",
-    "layer": "e8d0cc68a89a"
+    "layer": "6df00424e851"
   }
 }
