@@ -2,14 +2,17 @@
 // building-local kit that `town stamp` writes onto every mapped copy (card #3881, docs/architecture/placement-system.md
 // "Author in the grid, stamp into the world"; docs/starter-packs/stamp.md).
 //
-//   town author <kit> [--from <place>/<slot>] [--slug s] [--dry]
-//       claims a pack grid cell (`grid place <slug> <building prefab> --pack`) holding the SAME vanilla building the island slot
+//   town author <kit> [--from <place>/<slot>] [--slug s] [--margin m] [--dry]
+//       claims a pack grid cell (`grid place <slug> <building prefab> --pack [--margin m]`; --margin is the walk-around yard in metres) holding the SAME vanilla building the island slot
 //       stands in (the dossier's prefab with --from, else the kit's stamp.prefab / building.vanilla), and seeds it with the kit's
 //       rows at the building's origin and yaw (`kit-grid.mjs put`) when the kit exists. Then look, walk and audit the cell.
-//   town author extract <Grid_<slug>.layer> <group> --kit <name> [--building <EntityName>] [--clear <glob,...>] [--system s] [--out f]
+//   town author extract <Grid_<slug>.layer> <group> --kit <name> [--building <EntityName>] [--clear <glob,...>] [--system s] [--out f] [--fresh]
 //       writes tools/town/kits/<name>.json in the building's own frame: offsets and yaw relative to the building entity of the
 //       grid layer (its height too: the same prefab has the same floors), each row's attach target, the kit's clear lanes and
-//       clear list, and a `stamp` block naming the building prefab. No world coordinate is in the result.
+//       clear list, and a `stamp` block naming the building prefab. No world coordinate is in the result. A row's component
+//       config (till stock id, sign def, clerk and host settings, with the component GUIDs) is read from the layer row; a row the
+//       grid holds as a bare prop takes the config of the same row in the kit already on disk (matched by id, a shared id suffix,
+//       or the one prefab), and that kit's source files stay the kit's `also` sources for the nested blocks. `--fresh` skips it.
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
@@ -17,7 +20,7 @@ import { fileURLToPath } from "node:url";
 import { checkKit, entitiesOf, extractKit, KITS_DIR, parseBlocks } from "./kit.mjs";
 import { kitPrefab } from "./stamp.mjs";
 
-export const help = "author <kit> [--from <place>/<slot>] | author extract <Grid layer> <group> --kit k   build a shop in a pack grid cell around a copy of the island building, then lift it building-local for `town stamp`";
+export const help = "author <kit> [--from <place>/<slot>] [--margin m] | author extract <Grid layer> <group> --kit k   build a shop in a pack grid cell around a copy of the island building, then lift it building-local for `town stamp`";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const r3 = (n) => Math.round(n * 1000) / 1000;
@@ -46,8 +49,42 @@ export function attachOf(row, rows) {
   return `${kind}:${row.verb.slice(3)}`;
 }
 
+// The previous kit row a re-extracted row stands for: the same id, else the one whose id the new id ends with (or the reverse),
+// else the only previous row of that prefab. Rows are matched once.
+export function previousRow(row, prev, used) {
+  const free = prev.rows.filter((p) => !used.has(p.id));
+  const exact = free.find((p) => p.id === row.id);
+  if (exact) return exact;
+  const suffix = free.filter((p) => row.id.endsWith(`-${p.id}`) || p.id.endsWith(`-${row.id}`));
+  if (suffix.length === 1) return suffix[0];
+  const same = free.filter((p) => p.prefab === row.prefab);
+  return same.length === 1 ? same[0] : null;
+}
+
+// Give every row the grid held as a bare prop the config of its previous kit row (config and component GUIDs), and keep the previous
+// kit's source files as `source.also` so a nested block (stock lines, shop items) is still found at stamp time.
+// Returns { carried: [{ id, from }], bare: [id] }: rows that took config, and rows that have none.
+export function carryConfig(out, prev) {
+  const used = new Set();
+  const carried = [];
+  for (const r of out.rows) {
+    if (r.config?.length) continue;
+    const p = previousRow(r, prev, used);
+    if (!p?.config?.length) continue;
+    used.add(p.id);
+    r.config = JSON.parse(JSON.stringify(p.config));
+    carried.push({ id: r.id, from: p.id });
+  }
+  if (carried.length) {
+    const also = [prev.source?.file, ...(prev.source?.also ?? [])].filter((f) => f && f !== out.source.file && !out.source.also?.includes(f));
+    if (also.length) out.source.also = [...(out.source.also ?? []), ...also];
+  }
+  return { carried, bare: out.rows.filter((r) => !r.config?.length).map((r) => r.id) };
+}
+
 // Pure but for the file reads: the grid layer -> a building-local kit with attach targets, clear lanes and the clear list.
-export function authorExtract(layerPath, group, { kit, building = null, clear = [], system = "" } = {}) {
+// prev: the kit already on disk (null for a first extract), whose config the bare rows take.
+export function authorExtract(layerPath, group, { kit, building = null, clear = [], system = "", prev = null } = {}) {
   const ents = entitiesOf(parseBlocks(readFileSync(layerPath, "utf8")));
   const b = findBuilding(ents, building);
   if (!b.name) throw new Error("the building entity has no name; name it in the grid layer");
@@ -75,7 +112,21 @@ export function authorExtract(layerPath, group, { kit, building = null, clear = 
     // Vanilla clutter the building prefab brings that this shop does not want: kept as an obstacle until G2 (#3882) can hide it.
     clear: clear.map((prefab) => ({ prefab, until: "#3882" })),
   };
+  // Not a kit field: what the carry did, for the command to print.
+  const carry = prev ? carryConfig(out, prev) : { carried: [], bare: out.rows.filter((r) => !r.config?.length).map((r) => r.id) };
+  Object.defineProperty(out, "carry", { value: carry, enumerable: false });
   return out;
+}
+
+// The `grid place` command line that claims the cell: the island building's prefab, in the pack grid, with the walk-around margin when given.
+export function gridPlaceArgs(plan, { margin = null } = {}) {
+  const args = ["grid", "place", plan.slug, plan.prefab, "--pack"];
+  if (margin !== null && margin !== undefined) {
+    const m = Number(margin);
+    if (!Number.isFinite(m) || m < 0) throw new Error(`--margin ${margin} is not a number of metres`);
+    args.push("--margin", String(m));
+  }
+  return args;
 }
 
 // Where `town author` builds: the island building's prefab (--from) or the kit's own, and the cell slug.
@@ -113,7 +164,7 @@ function cli(root, args) {
 
 function parseArgs(args) {
   const o = { _: [] };
-  const valued = new Set(["from", "slug", "kit", "building", "clear", "system", "out", "places-dir", "templates-dir"]);
+  const valued = new Set(["from", "slug", "kit", "building", "clear", "system", "out", "margin", "places-dir", "templates-dir"]);
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a.startsWith("--")) {
@@ -132,7 +183,11 @@ export async function main(args, { root = ROOT } = {}) {
       console.log("usage: town author extract <Grid_<slug>.layer> <group> --kit <name> [--building Name] [--clear globs] [--out f]");
       return 2;
     }
-    const kit = authorExtract(resolve(layer), group, { kit: a.kit, building: a.building ?? null, clear: String(a.clear ?? "").split(",").filter(Boolean), system: a.system ?? "" });
+    const prevFile = join(root, "tools", "town", "kits", `${a.kit}.json`);
+    const prev = !a.fresh && existsSync(prevFile) ? JSON.parse(readFileSync(prevFile, "utf8")) : null;
+    const kit = authorExtract(resolve(layer), group, { kit: a.kit, building: a.building ?? null, clear: String(a.clear ?? "").split(",").filter(Boolean), system: a.system ?? "", prev });
+    for (const c of kit.carry.carried) console.log(`  config carried: ${c.id} <- previous row ${c.from}`);
+    if (kit.carry.bare.length) console.log(`  no config on: ${kit.carry.bare.join(", ")} (plain props; give the grid row its component if one needs it)`);
     const errs = checkKit(kit, { root });
     if (errs.length) {
       console.log(errs.join("\n"));
@@ -151,7 +206,7 @@ export async function main(args, { root = ROOT } = {}) {
   const plan = planAuthor(a._[0], { from: a.from ?? null, slug: a.slug ?? null, placesDir: resolve(root, a["places-dir"] ?? "docs/everon/places"), templatesDir: resolve(root, a["templates-dir"] ?? "tools/town/templates"), kitsDir: join(root, "tools", "town", "kits") });
   console.log(`town author ${a._[0]}: grid cell ${plan.slug} around ${plan.prefab} (from ${plan.source})${plan.seed ? ", seeded with the kit's rows" : ""}`);
   if (a.dry) return 0;
-  if (cli(root, ["grid", "place", plan.slug, plan.prefab, "--pack"])) return 1;
+  if (cli(root, gridPlaceArgs(plan, { margin: a.margin ?? null }))) return 1;
   if (plan.seed) {
     const { layerFileOf } = await import("./kit-grid.mjs");
     const ents = entitiesOf(parseBlocks(readFileSync(layerFileOf(plan.slug), "utf8")));
