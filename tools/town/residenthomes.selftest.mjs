@@ -4,12 +4,16 @@
 //   - the committed layer holds, per resident home, a house marker with its own House place id, a name plate and a door anchor (b15 keeps the shared place: plate only);
 //   - the resident overlay names, for every resident of HOMES, a `m_sHomePlaceId` that a layer places (this one or the residents slot's);
 //   - no resident home keeps a Private lock marker, and `town locks --check` agrees with the committed layer;
+//   - every plate hangs on the street side: no shell wall within 10 m in front of it (a fixture room and every committed plate, #3887), and none in a probed door's swing or walk-up;
 //   - every plate title is a row of the pack string table, and each plate's sign id is a row of the sign overlay file.
+// red-proof (#3887): with the generator seating on the first wall a ray finds, the committed ResidentPlate_saint_philippe_sp_b09 hung 3.7 m inside its house and the "plate faces open air" case printed FAIL.
 // red-proof: with resident-homes.json moved away the "resident-homes.json is committed" and "town locks --check" cases printed FAIL (2026-11-19).
 import { existsSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { HOMES, LAYER_DIR, SIGN_DIR, ST_FILE, placeIdOf, signId, titleKey, withTitles } from "./residenthomes.mjs";
+import { HOMES, LAYER_DIR, SIGN_DIR, ST_FILE, placeIdOf, plateProblem, signId, titleKey, wallInFront, withTitles } from "./residenthomes.mjs";
+import { loadDoors } from "./homes.mjs";
+import { shellReader } from "./seat.mjs";
 import { main as locksMain } from "./locks.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -51,6 +55,41 @@ check(existsSync(join(ROOT, "docs/everon/places", place, "resident-homes.json"))
 check(locksMain([place, "--check"], { root: ROOT }) === 0, "`town locks --check` agrees with the committed layer");
 const locks = read(`${LAYER_DIR}/Locks_${place}.layer`);
 for (const row of ["sp_b09", "sp_b17", "sp_b50", "sp_b117"]) check(!locks.includes(`Lock_saint_philippe_${row}`), `${row} keeps no Private lock marker`);
+
+// A fixture room, 4 x 4 m and 3 m tall, centred on the origin: a plate on its outside face looks at open air, one on an inside face looks at the far wall.
+const quad = (a, b, c, d) => [{ p: [a, b, c] }, { p: [a, c, d] }];
+const room = [
+  ...quad([-2, 0, 2], [2, 0, 2], [2, 3, 2], [-2, 3, 2]),
+  ...quad([-2, 0, -2], [2, 0, -2], [2, 3, -2], [-2, 3, -2]),
+  ...quad([2, 0, -2], [2, 0, 2], [2, 3, 2], [2, 3, -2]),
+  ...quad([-2, 0, -2], [-2, 0, 2], [-2, 3, 2], [-2, 3, -2]),
+];
+const fx = { x: 0, y: 0, z: 0, yaw: 0 };
+check(wallInFront(room, fx, [0, 1.4, -2.03], 180) === null, "fixture: a plate on the outside of the south wall faces open air");
+check(wallInFront(room, fx, [0, 1.4, -1.97], 0) !== null, "fixture: a plate on the inside of the south wall faces the north wall");
+check(plateProblem({ walls: room, host: fx, coords: [0, 1.4, -1.97], yaw: 0 }) !== null, "fixture: plateProblem names the plate inside the room");
+check(plateProblem({ walls: room, host: fx, coords: [0, 1.4, -2.03], yaw: 180 }) === null, "fixture: plateProblem passes the plate on the street side");
+
+// The committed plates, against the real shells (needs the game's paks; skipped without them).
+const purpose = JSON.parse(read(`docs/everon/places/${place}/purpose.json`));
+const dossier = JSON.parse(read(`docs/everon/places/${place}/dossier.json`));
+const doors = loadDoors(ROOT, place);
+const reader = shellReader(ROOT);
+let judged = 0;
+for (const h of HOMES) {
+  const building = dossier.buildings.find((b) => b.id === purpose.buildings.find((r) => r.id === h.row)?.building);
+  const m = layer.match(new RegExp(String.raw`GenericEntity ResidentPlate_saint_philippe_${h.row.replace(":", "_")} [^\n]*\{[\s\S]*?coords (\S+) (\S+) (\S+)\s+angleY (\S+)`));
+  if (!m || !building) {
+    check(false, `${h.resident}: the plate and its building are found`);
+    continue;
+  }
+  const walls = (await reader.shell(building.prefab))?.walls ?? null;
+  if (!walls) continue;
+  judged++;
+  const why = plateProblem({ walls, host: building, doors, coords: [Number(m[1]), Number(m[2]), Number(m[3])], yaw: Number(m[4]) });
+  check(!why, `${h.resident}: the plate faces open air (${why ?? ""})`);
+}
+console.log(judged ? `residenthomes: ${judged} committed plate(s) judged against their shells` : "residenthomes: no game paks here, the committed plates were not judged against their shells");
 
 if (failed) {
   console.log(`residenthomes selftest: ${failed} failed`);

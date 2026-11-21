@@ -10,11 +10,11 @@ GenericEntity Fit_saint_philippe_residents_Place {
  coords 4444.3 12.7 10670.6
 }
 GenericEntity Fit_saint_philippe_residents_bench_1 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 4437.048 12.7 10671.903
+ coords 4437.048 12.335 10671.903
  angleY -98
 }
 GenericEntity Fit_saint_philippe_residents_bench_2 : "{BE839ACB6CB2726A}Prefabs/Props/Seats/LF_Seat_BenchStreet_01_green.et" {
- coords 4436.811 12.7 10673.587
+ coords 4436.811 12.265 10673.587
  angleY -98
 }
 GenericEntity Fit_saint_philippe_residents_anchor_door {
