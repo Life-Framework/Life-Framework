@@ -107,7 +107,7 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0",
-      "free": true
+      "mount": "terrain"
     },
     {
       "id": "crate-3-a",
@@ -194,7 +194,7 @@
       "yaw": 90,
       "wall": "free",
       "floor": "f0",
-      "free": true
+      "mount": "terrain"
     },
     {
       "id": "crate-6-a",
@@ -298,6 +298,30 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "scene-sample",
+      "prefab": "{00DD12BB38DAD61B}Prefabs/Systems/Events/LF_EventMarker_Item.et",
+      "role": "dressing",
+      "verb": "on scene-crate",
+      "offset": [
+        -15,
+        0.363,
+        0
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_EventWaypointComponent",
+          "set": {
+            "m_sSceneId": "\"shipment_docks\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "free": true
     }
   ]
 }
