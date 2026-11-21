@@ -22,8 +22,14 @@
     ],
     "footprint": {
       "source": "rows",
-      "min": [-12.8, -8],
-      "max": [12.8, 9.4]
+      "min": [
+        -12.8,
+        -8
+      ],
+      "max": [
+        12.8,
+        9.4
+      ]
     },
     "front": "+z",
     "counters": [
@@ -41,7 +47,11 @@
       "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
       "role": "counter",
       "verb": "on floor",
-      "offset": [0, 0.03, 4.5],
+      "offset": [
+        0,
+        0.049,
+        4.5
+      ],
       "yaw": 0,
       "free": true,
       "wall": "free",
@@ -53,7 +63,11 @@
       "prefab": "{7C1E5A2D9B3F4608}Prefabs/Trader/LF_WholesaleBuyer_Everon1989.et",
       "role": "interactable",
       "verb": "on wholesale-counter",
-      "offset": [0, 1.07, 4.5],
+      "offset": [
+        0,
+        1.089,
+        4.5
+      ],
       "yaw": 0,
       "wall": "free",
       "floor": "f0"
@@ -63,7 +77,11 @@
       "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
       "role": "npc",
       "verb": "on floor",
-      "offset": [0, 0.03, 3.1],
+      "offset": [
+        0,
+        0.03,
+        3.1
+      ],
       "yaw": 0,
       "name": "Wholesale_Clerk",
       "class": "LF_NpcBaseEntity",
@@ -77,7 +95,11 @@
       "prefab": "{B47D2C9E5A1F8036}Prefabs/Props/Market/LF_PriceBoard.et",
       "role": "board",
       "verb": "on floor",
-      "offset": [-3.2, 0, 5.2],
+      "offset": [
+        -4.2,
+        0,
+        4.6
+      ],
       "yaw": 0,
       "wall": "free",
       "floor": "f0"
@@ -87,19 +109,12 @@
       "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [-11.4, 0.03, -2],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "plank-pile-2",
-      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [-11.4, 0.03, 1.2],
-      "yaw": 90,
+      "offset": [
+        -11.9,
+        0.03,
+        1.2
+      ],
+      "yaw": 0,
       "free": true,
       "wall": "free",
       "floor": "f0"
@@ -109,18 +124,11 @@
       "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [-11.4, 0.03, 4.4],
-      "yaw": 90,
-      "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "wood-pile-2",
-      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [-11.4, 0.03, -5.4],
+      "offset": [
+        -4.5,
+        0.03,
+        -7
+      ],
       "yaw": 90,
       "free": true,
       "wall": "free",
@@ -131,7 +139,11 @@
       "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [-7, 0.03, -7.3],
+      "offset": [
+        -6,
+        0.07,
+        -3.2
+      ],
       "yaw": 0,
       "free": true,
       "wall": "free",
@@ -142,7 +154,11 @@
       "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [-4.2, 0.03, -7.3],
+      "offset": [
+        -4.4,
+        0.07,
+        -3.2
+      ],
       "yaw": 0,
       "free": true,
       "wall": "free",
@@ -153,7 +169,11 @@
       "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [-1.4, 0.03, -7.3],
+      "offset": [
+        -2.8,
+        0.07,
+        -3.2
+      ],
       "yaw": 0,
       "free": true,
       "wall": "free",
@@ -164,7 +184,11 @@
       "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [1.8, 0.03, -7.5],
+      "offset": [
+        -8.6,
+        0.065,
+        -3.2
+      ],
       "yaw": 0,
       "free": true,
       "wall": "free",
@@ -175,7 +199,11 @@
       "prefab": "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [2.8, 0.03, -7.5],
+      "offset": [
+        -9.5,
+        0.065,
+        -3.2
+      ],
       "yaw": 0,
       "free": true,
       "wall": "free",
@@ -186,7 +214,11 @@
       "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [6.5, 0.03, -5.5],
+      "offset": [
+        5,
+        0.051,
+        -2
+      ],
       "yaw": 0,
       "free": true,
       "wall": "free",
@@ -197,7 +229,11 @@
       "prefab": "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et",
       "role": "dressing",
       "verb": "on cement-pallet-1",
-      "offset": [6.3, 0.2, -5.5],
+      "offset": [
+        5,
+        0.282,
+        -2
+      ],
       "yaw": 0,
       "wall": "free",
       "floor": "f0"
@@ -206,9 +242,13 @@
       "id": "cement-bag-2",
       "prefab": "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et",
       "role": "dressing",
-      "verb": "on cement-pallet-1",
-      "offset": [6.8, 0.2, -5.5],
-      "yaw": 90,
+      "verb": "on cement-pallet-2",
+      "offset": [
+        5,
+        0.282,
+        -0.4
+      ],
+      "yaw": 0,
       "wall": "free",
       "floor": "f0"
     },
@@ -217,19 +257,13 @@
       "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [8.8, 0.03, -5.5],
+      "offset": [
+        5,
+        0.051,
+        -0.4
+      ],
       "yaw": 0,
       "free": true,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "cement-bag-3",
-      "prefab": "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et",
-      "role": "dressing",
-      "verb": "on cement-pallet-2",
-      "offset": [8.6, 0.2, -5.5],
-      "yaw": 0,
       "wall": "free",
       "floor": "f0"
     },
@@ -238,19 +272,12 @@
       "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
       "role": "dressing",
       "verb": "on floor",
-      "offset": [6.5, 0.03, 4],
+      "offset": [
+        7,
+        0.03,
+        1
+      ],
       "yaw": 20,
-      "lift": -0.017,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "crate-2",
-      "prefab": "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [7.9, 0.03, 4.4],
-      "yaw": -10,
       "lift": -0.017,
       "wall": "free",
       "floor": "f0"
@@ -261,7 +288,11 @@
       "role": "light",
       "verb": "against wall",
       "mount": "wall",
-      "offset": [-12.4, 3.2, 0.5],
+      "offset": [
+        -12.4,
+        3.2,
+        0.5
+      ],
       "yaw": 90,
       "wall": "free",
       "floor": "f0"
@@ -272,7 +303,11 @@
       "role": "light",
       "verb": "against wall",
       "mount": "wall",
-      "offset": [-3, 3.2, -7.6],
+      "offset": [
+        -3,
+        3.2,
+        -7.6
+      ],
       "yaw": 0,
       "wall": "free",
       "floor": "f0"
@@ -283,7 +318,11 @@
       "role": "light",
       "verb": "against wall",
       "mount": "wall",
-      "offset": [12.4, 3.2, -1],
+      "offset": [
+        12.4,
+        3.2,
+        -1
+      ],
       "yaw": -90,
       "wall": "free",
       "floor": "f0"
@@ -293,7 +332,11 @@
       "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
       "role": "sign",
       "verb": "against wall",
-      "offset": [0, 3.2, 9.3],
+      "offset": [
+        0,
+        5.3,
+        9.3
+      ],
       "yaw": 0,
       "config": [
         {
@@ -309,6 +352,89 @@
       ],
       "wall": "+z",
       "floor": "f0"
+    }
+  ],
+  "clear": [
+    {
+      "prefab": "{C67A378521482995}Prefabs/Props/Furniture/Rack_03.et"
+    },
+    {
+      "prefab": "{0712799E7E8A0D56}Prefabs/Props/Industrial/GasTank_02_rusty.et"
+    },
+    {
+      "prefab": "{CC8D07933AD0B07E}Prefabs/Props/Industrial/GasTank_01_red.et"
+    },
+    {
+      "prefab": "{1EDBE01AAD5EE137}Prefabs/Props/Industrial/GasTank_02_blue.et"
+    },
+    {
+      "prefab": "{10C5A45290A9EEED}Prefabs/Props/Industrial/GasTank_01_blue.et"
+    },
+    {
+      "prefab": "{5152F05C17652ADB}Prefabs/Props/Civilian/PaintCan_01.et"
+    },
+    {
+      "prefab": "{62B2ADC4243454F9}Prefabs/Props/Civilian/Jerrycan_01.et"
+    },
+    {
+      "prefab": "{B8185BFEEFD58533}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_stack.et"
+    },
+    {
+      "prefab": "{B3283803059E2750}Prefabs/Props/Crates/CrateWooden_01_plain.et"
+    },
+    {
+      "prefab": "{4BF528DF7A469909}Prefabs/Props/Construction/PalletJack_01.et"
+    },
+    {
+      "prefab": "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et"
+    },
+    {
+      "prefab": "{EB66EE2298D16D18}Prefabs/Props/Civilian/SackTruck_01.et"
+    },
+    {
+      "prefab": "{50A752B7D5E679A2}Prefabs/Props/Industrial/Repair/GasWelder_01.et"
+    },
+    {
+      "prefab": "{7BB30759D09C70B5}Prefabs/Props/Civilian/StepladderWooden_01.et"
+    },
+    {
+      "prefab": "{46A95C6081A28586}Prefabs/Props/Industrial/Pallets/MarsBox_01_white.et"
+    },
+    {
+      "prefab": "{88A1A9164B53E2E5}Prefabs/Props/Industrial/Pallets/MarsBox_01_green.et"
+    },
+    {
+      "prefab": "{90A74133C1DC6226}Prefabs/Props/Industrial/Repair/EngineCrane_01.et"
+    },
+    {
+      "prefab": "{B557358F8F64AE31}Prefabs/Props/Industrial/Repair/HydraulicCarJack_01.et"
+    },
+    {
+      "prefab": "{6DD0648BB7A52420}Prefabs/Props/Civilian/Wheelbarrow_01.et"
+    },
+    {
+      "prefab": "{AA3D2C0BB0D2B56B}Prefabs/Props/Crates/Crate_01_green.et"
+    },
+    {
+      "prefab": "{6FC9E85153AE41B1}Prefabs/Props/Civilian/WoodKindling_Crate_01.et"
+    },
+    {
+      "prefab": "{D27D94CE584C22E6}Prefabs/Props/Garbage/Cardboard/Cardboard_02.et"
+    },
+    {
+      "prefab": "{0AD5FD0F21C53CBA}Prefabs/Props/Garbage/Cardboard/Cardboard_04.et"
+    },
+    {
+      "prefab": "{EF49B1F62D20ABD1}Prefabs/Props/Garbage/Cardboard/Cardboard_05.et"
+    },
+    {
+      "prefab": "{6E3320C3C37CAFE5}Prefabs/Props/Garbage/Cardboard/Cardboard_Pile_04.et"
+    },
+    {
+      "prefab": "{A419F4547954DA05}Prefabs/Props/Construction/CableReel/CableReelWooden_01.et"
+    },
+    {
+      "prefab": "{FCBEDECB2A39B6BC}Prefabs/Props/Military/Generators/GeneratorPortable_USSR_01.et"
     }
   ]
 }
