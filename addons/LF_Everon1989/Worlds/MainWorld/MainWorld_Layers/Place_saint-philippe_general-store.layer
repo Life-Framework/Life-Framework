@@ -9,6 +9,17 @@ GenericEntity Fit_saint_philippe_general_store_Place {
  }
  coords 4515.3 15.5 10746.1
 }
+GenericEntity Fit_saint_philippe_general_store_clear {
+ components {
+  LF_BaseWorldClearComponent "{6810AE970A43D39D}" {
+   m_sBuilding "{F51B9B9BD15BBE64}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_householdwares.et"
+   m_aPrefabs {
+    "{51D31AB07AE3C1C7}Prefabs/Props/Commercial/CashierShop_01.et"
+   }
+  }
+ }
+ coords 4515.3 15.3 10746.1
+}
 GenericEntity Fit_saint_philippe_general_store_general_store_furniture_01 : "{5E0CC4C3522C8E2B}Prefabs/Buildings/GeneralStore/Furniture/GeneralStore_furniture_01.et" {
  coords 4515.3 15.3 10746.1
  angleY 171
@@ -56,7 +67,7 @@ GenericEntity Fit_saint_philippe_general_store_general_store_till : "{4E4E1620C6
    }
   }
  }
- coords 4513.23 16.538 10746.079
+ coords 4513.208 16.486 10746.075
  angleY 171
 }
 GenericEntity Fit_saint_philippe_general_store_general_store_miners_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
@@ -89,11 +100,11 @@ GenericEntity Fit_saint_philippe_general_store_general_store_miners_till : "{4E4
    }
   }
  }
- coords 4513.304 16.486 10745.612
+ coords 4514.083 16.486 10746.11
  angleY 171
 }
 GenericEntity Fit_saint_philippe_general_store_general_store_radio : "{6E621E4B599F06FD}Prefabs/Atmosphere/LF_Radio_Store.et" {
- coords 4514.162 16.486 10746.557
+ coords 4512.274 16.452 10746.026
  angleY 171
 }
 LF_NpcBaseEntity Fit_saint_philippe_general_store_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
