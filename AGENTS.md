@@ -306,6 +306,7 @@ Detail lives in `.claude/skills/enfusion-resource-authoring` and `enfusion-blast
 - Textures are verified visually only; the dedicated server has no renderer.
 - Place world props with `tools\cli place on|against|ground|arrange` (`docs/placement-tool.md`), never with typed coordinates: it reads real bounds, probes the surface or wall, checks, writes the layer entry and audits it.
 - World props must pass `tools\cli audit placement --strict`; `wt gate` runs it when a `.layer`, a `Prefabs` `.et` or spawn code changed. A placement meant to look odd goes in `agent-box/place-audit-allow.json` with a reason (`docs/placement-audit.md`).
+- Island placement is gated: `wt ship` (an island layer, kit, generator, marker or spawner diff) and the main guard run `audit placement --world MainWorld --baseline`; a finding not in `tools/place/island-baseline.json` fails, and the baseline only shrinks (`docs/placement-audit.md` "The island gate").
 - A new world interactable runs `node tools/actions/place-action-contexts.mjs`.
 - Moving or renaming a resource breaks every `{GUID}path` reference, saved worlds included.
 - Layouts: unique widget GUIDs per file, inherited-component GUIDs equal the base, a sibling `.layout.meta`.

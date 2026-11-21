@@ -149,6 +149,24 @@ largest side, in metres, per kind of prop:
 `{ "match": "<regex on name or prefab>", "kind": "<problem>", "layer": "<optional>", "why": "..." }`.
 Add an entry only with a reason a reviewer can check in a shot.
 
+## The island gate
+
+A finding on the island (the pack's MainWorld) blocks the branch that caused it (#3888,
+`docs/architecture/placement-system.md` "The gate"). The findings that existed when the gate went on are in
+`tools/place/island-baseline.json`, one key per `layer|name|problem kind` (no coordinates); a baseline row prints as
+`WARN`, any other finding as `FAIL`.
+
+- **Trigger** (`islandScope` in `tools/lib/placement-gate.mjs`): a `MainWorld_Layers/*.layer` audits that layer
+  (`audit placement --world MainWorld --baseline --layer <changed>`); a town kit (`tools/town/kits/`), a town generator
+  (`tools/town/*.mjs`), a `*Marker*.et` prefab or spawn code (`Spawn*.c`, `LF_Utils.c`) audits the whole island with
+  the runtime sweep, so floating cars, lights attached to nothing and characters count.
+- **Where it runs:** the `wt ship` preflight after `validate` (a few minutes on a test lane, only for those diffs), the
+  placement step of `ci` / `wt gate`, and the main guard's `island placement audit` step on every checked head, which
+  goes red and opens a fix card on a new finding (fixed forward, never reverted). GitHub's `validate` cannot boot the game.
+- **The baseline only shrinks.** After a cleanup, `tools\cli audit placement --world MainWorld --baseline-shrink` (whole
+  island) drops the rows it no longer finds; it never adds one. `placement-gate-selftest` fails a branch whose baseline
+  holds a row `origin/main` lacks. Fix a new finding, or allowlist it with a reason above; never add it to the baseline.
+
 ## Limits
 
 - Bounds are mesh bounds. A prop with an odd mesh (an open frame counter, a T-posed NPC) has a box
