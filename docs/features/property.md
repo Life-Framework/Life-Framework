@@ -164,6 +164,10 @@
   drop planner's wall seat; a building whose entrance wall takes no sign uses another side), one `m_aHouses` row per home in
   `addons/LF_Everon1989/Configs/Property/LF_Property_Everon1989/LF_Property_Homes_SaintPhilippe.conf`, and `docs/everon/places/<place>/homes.json`,
   which `town locks` reads to drop those homes' ForSaleSoon markers. Layer `Homes_saint-philippe.layer`; a generated file, rerun the script.
+- 🟡 A sale sign stands beside the door frame (#3886): `town homes` takes a wall spot only when the sign is out of every door leaf's swing
+  (1 m) and ground walk-up (3 m), by 0.2 m, using the door leaves in `tools/town/probes/doors-saint-philippe.json` (the audit's runtime
+  dump); the planner slides the sign along the wall and tries the other sides. Selftest cases: a fixture sign beside, in front of and
+  in the walk-up of a door, and every committed sign against the probe.
 - 🟡 Prices by tier (a courier earns about $600 an hour, `tools\cli economy`): cottage 4000, village house 6000, family house 8000,
   town house 10000, farmhouse 13000, villa 20000. Selftest `node tools/town/homes.selftest.mjs`; in-game `houses/house-marker`.
 - 🟡 The cottage's door stage asks for a door kit (`Prefabs/Items/Resources/LF_DoorKit.et`, #3172), not the structure door

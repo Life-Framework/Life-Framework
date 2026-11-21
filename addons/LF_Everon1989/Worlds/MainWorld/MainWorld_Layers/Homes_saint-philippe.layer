@@ -121,7 +121,7 @@ GenericEntity HomeSign_saint_philippe_sp_b44 : "{2F815241C89039BC}Prefabs/Props/
    m_sHouseId "saint-philippe.home.sp-b44"
   }
  }
- coords 4387.039 10.43 10727.551
+ coords 4391.696 10.43 10721.304
  angleY 179
 }
 GenericEntity Home_saint_philippe_sp_b47 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
@@ -457,7 +457,7 @@ GenericEntity HomeSign_saint_philippe_sp_b111 : "{2F815241C89039BC}Prefabs/Props
    m_sHouseId "saint-philippe.home.sp-b111"
   }
  }
- coords 4341.258 6.73 10682.184
+ coords 4340.72 6.73 10685.583
  angleY 81
 }
 GenericEntity Home_saint_philippe_sp_b112 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
@@ -604,7 +604,7 @@ GenericEntity HomeSign_saint_philippe_di_b46 : "{2F815241C89039BC}Prefabs/Props/
    m_sHouseId "saint-philippe.home.di-b46"
   }
  }
- coords 4630.092 17.43 10592.292
+ coords 4626.817 17.43 10593.357
  angleY 18
 }
 GenericEntity Home_saint_philippe_di_b48 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {
