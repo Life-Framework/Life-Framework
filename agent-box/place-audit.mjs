@@ -899,6 +899,9 @@ shelf shop/Water@0 ${row({ c: [70.1, 1.15, 0], h: [0.15, 0.15, 0.15], on: "Count
   if (singleProblems({ ...fenceHigh, cls: undefined, name: "Plain_High" }, fenceM).some((p) => p.kind === "relative-y")) fail("an absolute-height class is not flagged relative-y");
   const relLines = inputText([fenceHigh, fenceSeated, { name: "P", prefab: "a/B.et", x: 0, y: 0, z: 0 }]).split(/\r?\n/);
   if (!relLines.includes("0 Fence_High NetFence_01_4m 1 19.1 2 0 rel") || !relLines.includes("2 P B 0 0 0 0")) fail("only a terrain-relative row is sent with the rel flag");
+  // A payphone (a GenericEntity row of a prefab that stands terrain-relative) is sent with the rel flag too.
+  const booth = { name: "Booth", prefab: "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et", x: 0, y: 0.5, z: 0, cls: "TerrainRelativePrefab" };
+  if (!inputText([booth]).split(/\r?\n/).includes("0 Booth LF_Payphone 0 0.5 0 0 rel")) fail("a payphone row is sent with the rel flag");
   worldSelftest(fail);
   runtimeSelftest(fail);
   contactSelftest(fail);
