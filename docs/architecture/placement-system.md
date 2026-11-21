@@ -221,6 +221,28 @@ from `GetTerrainSurfaceY` at apply time and lets a bank prefab follow the slope.
 where and on what, the world answers how high. Mapper's apply plugin also reports what it built against what was sent;
 our equivalent is the audit's `missing` count, which the gate will judge. No Mapper code is copied in this change.
 
+### Rebuild notes
+
+Written by the pilot rebuild (#3890, bakery) for R1 and R3 to R8. What was hard, and what to do instead:
+
+- **Name the grid rows after the kit, not the seed.** `town author` seeds rows as `Kit_<kit>_<id>`; extracting them gives ids
+  like `kit-bakery-bakery-till` and island names `Fit_..._kit_bakery_bakery_till`. Rename the cell's rows to `<Shop>_<id>`
+  (`sed 's/ Kit_bakery_bakery_/ Bakery_/'`) and extract with the group `'<Shop>_*'`; the ids then stay `bakery-till`.
+- **Settle in two passes.** `place settle` the floor pieces (counters, racks, the clerk) first, then what stands on them
+  (till, goods). Every seeded row was 5 cm low on the grid copy's floor. A row `settle` cannot seat ("support varies 18 cm")
+  straddles a step or a prefab child: move it or drop it, never force it.
+- **The grid audit does not box the building shell; the island stamp does.** `audit placement --grid --strict` passed a rack
+  whose back was inside the west wall; `town stamp` refused it (`clips House_Town_E_2I01`). Keep wall-backed furniture
+  about 15 cm off the inner wall plane in the grid (the bakery rack moved from local x -5.69 to -5.54), or the stamp loop
+  costs an island boot per try.
+- **Furnish lightly.** The old bakery had three racks and 27 loaves; one rack clipped the wall and the loaves "hung off" each
+  other on the island. The rebuild is two counters, the till, a store clerk (`LF_Npc_StoreClerk_1`, class
+  `LF_NpcBaseEntity`), one rack with three loaves on one board and two loaves on the counter: one item per spot.
+- **`--floating` reads the whole town.** The acceptance audit with `--floating` also lists runtime store stock of other
+  shops (clothing trousers, supermarket dried meat); judge only the rows of your own layer, and leave the rest to their slot.
+- **The interior look's camera stands in the hallway** of House_Town_E_2I01; only the fifth shot (the kit close-up) shows the
+  shop room. Read that one.
+
 ## Cleanup cards
 
 Filed 2026-11-19 under epic #3877, in dispatch order. Floating-object reseat first (F), then the stamp path (G) and the
