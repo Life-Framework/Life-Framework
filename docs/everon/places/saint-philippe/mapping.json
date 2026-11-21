@@ -559,10 +559,12 @@
       ]
     },
     "furniture": {
-      "building": "b55",
+      "building": "b23",
+      "verify": ["interior"],
       "why": [
-        "House_Town_E_2I01 (townhouse), 208 m2, 3 floors, 13 doors, the town house on the square row beside the barber b43 and the clinic b39",
-        "D10 pick (#3217), allocation S9 #3256 (lead 2026-11-18): the furniture store, all house furniture on its own stock; furniture then leaves the general store"
+        "Barn_E_01 (farm), 163 m2, one open hall 15.1 x 10.8 m, 4 doors, 13 m north of the NW-SE road r02 and 70 m south of the scout centre; the stamp clears its hay (HayBale, HayPile, MilkCan)",
+        "D10 pick (#3217), allocation S9 #3256 (lead 2026-11-18): the furniture store, all house furniture on its own stock; furniture then leaves the general store",
+        "Rebuild #3891 (maintainer 2026-11-21: the b55 showroom was terrible): b55 (House_Town_E_2I01) has only a 3.9 x 15.5 m tiled hall with a step and a stair, no room for 2 m aisles and groups shown once each; the cleared barn does. b55 gets a purpose lock in its own slot PR"
       ]
     },
     "woodlot": {
