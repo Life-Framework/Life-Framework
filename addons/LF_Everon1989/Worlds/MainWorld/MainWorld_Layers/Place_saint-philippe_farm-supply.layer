@@ -72,7 +72,7 @@ SCR_DestructibleEntity Fit_saint_philippe_farm_supply_farm_supply_board : "{7B45
    m_fFaceScale 2.6
   }
  }
- coords 4436.705 0.006 10619.309
+ coords 4436.705 16.748 10619.309
  angleY -4
 }
 GenericEntity Fit_saint_philippe_farm_supply_implement_rack : "{21B9456F3B79410E}Prefabs/Harvest/LF_ImplementRack.et" {
