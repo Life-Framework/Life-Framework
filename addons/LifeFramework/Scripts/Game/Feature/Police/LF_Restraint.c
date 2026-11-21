@@ -216,10 +216,30 @@ class LF_Restraint
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the target was held up recently and holds no weapon (LF_HoldUp keeps the time).
+	//! Pure: the target complies when they hold no weapon and were held up recently or have their hands up
+	//! (LF_HandsUp, their own answer to an officer's aim). A window of 0 keeps cuffing to downed players only.
+	static bool Complies(int heldUpAt, int now, int windowSeconds, bool handsUp, bool armed)
+	{
+		if (armed || windowSeconds <= 0)
+			return false;
+
+		if (handsUp)
+			return true;
+
+		return IsCompliant(heldUpAt, now, windowSeconds, armed);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the target holds no weapon and was held up recently (LF_HoldUp keeps the time) or has
+	//! their hands up. A suspect who gave up to an officer's aim could be searched but not cuffed before.
 	static bool IsCompliantNow(IEntity target)
 	{
-		return IsCompliant(LF_HoldUp.HeldUpAt(LF_Utils.GetPlayerUID(target)), System.GetUnixTime(), LF_PoliceConfig.CompliantSeconds(), LF_HoldUp.IsArmed(target));
+		bool handsUp = false;
+		SCR_ChimeraCharacter character = SCR_ChimeraCharacter.Cast(target);
+		if (character)
+			handsUp = character.LF_IsHandsUp();
+
+		return Complies(LF_HoldUp.HeldUpAt(LF_Utils.GetPlayerUID(target)), System.GetUnixTime(), LF_PoliceConfig.CompliantSeconds(), handsUp, LF_HoldUp.IsArmed(target));
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -223,6 +223,15 @@ ok(post.length < 2000 && /more\.$/.test(post), "a long changelog is cut under Di
   const code = await runChapter(w.root, ["0.1.1", "--published"], w.deps);
   ok(code === 0 && !has(w.calls, "cli host remote 0grind restart") && has(w.calls, "git push origin refs/tags/v0.1.1"), "--published with players on: no restart, still announced and tagged");
 }
+// --only <fields>: step 4 pushes just those fields (a PC without secrets.json), and the version is not taken
+// from the --only value.
+{
+  const w = world({ pages: { core: "0.1.1", pack: "0.1.1" } });
+  const code = await runChapter(w.root, ["0.1.1", "--published", "--only", "scenarioId,owner"], w.deps);
+  ok(code === 0, `--published --only run passes (${summary(w.calls)})`);
+  ok(has(w.calls, "cli host remote 0grind config push --only scenarioId,owner --yes"), "--only reaches the config push");
+  ok(!w.calls.some((c) => c === "cli host remote 0grind config push --yes"), "--only: no full config push");
+}
 {
   const w = world({ pages: { core: "0.1.1", pack: "0.1.1" } });
   const code = await runChapter(w.root, ["0.1.1", "--published", "--dry-run"], w.deps);

@@ -164,7 +164,7 @@ function parseArgs(args) {
     const i = args.indexOf(f);
     return i >= 0 ? args[i + 1] : undefined;
   };
-  const valued = new Set(["--notes", "--at", "--since"]);
+  const valued = new Set(["--notes", "--at", "--since", "--only"]);
   const version = args.find((a, i) => !a.startsWith("--") && !valued.has(args[i - 1]));
   return {
     version,
@@ -176,10 +176,13 @@ function parseArgs(args) {
     verifyOnly: args.includes("--verify"),
     noStamp: args.includes("--no-gproj-stamp"),
     published: args.includes("--published"),
+    // --only <fields>: step 4 pushes just these (host remote 0grind config push --only) on a PC without the
+    // host secrets.json, where a full push would blank the server passwords.
+    only: val("--only"),
   };
 }
 
-export const USAGE = "usage: tools\\cli release chapter <x.y.z> [--notes <file>] [--dry-run] [--now] [--at <sha>] [--since <ref>] [--published] [--verify]";
+export const USAGE = "usage: tools\\cli release chapter <x.y.z> [--notes <file>] [--dry-run] [--now] [--at <sha>] [--since <ref>] [--published] [--only <fields>] [--verify]";
 
 export async function runChapter(root, args, deps) {
   const log = deps.log ?? ((s) => console.log(s));
@@ -339,7 +342,7 @@ export async function runChapter(root, args, deps) {
   // ---- 4. server
   step(4, "server");
   const hostCwd = build?.path ?? root;
-  const push = deps.cli(["host", "remote", "0grind", "config", "push", ...(o.dry ? [] : ["--yes"])], { cwd: hostCwd });
+  const push = deps.cli(["host", "remote", "0grind", "config", "push", ...(o.only ? ["--only", o.only] : []), ...(o.dry ? [] : ["--yes"])], { cwd: hostCwd });
   for (const l of push.out.split("\n").filter((x) => /~|\+|-|written|unchanged|dry run/.test(x)).slice(0, 12)) say(`  ${l.replace(/^\[LFDebug:Host0grind\]\s*/, "")}`);
   if (push.code !== 0) return fail("host remote 0grind config push failed (see above)");
   let players = null;

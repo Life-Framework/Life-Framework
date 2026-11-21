@@ -41,11 +41,11 @@ GenericEntity Fit_saint_philippe_clothing_electricity_box_small_01 : "{CDE4035B6
  angleY 153
 }
 GenericEntity Fit_saint_philippe_clothing_counter_shop_01 : "{37C56F70D97B0214}Prefabs/Props/Commercial/LF_ClothesShopCounter.et" {
- coords 4439.854 11.499 10788.375
+ coords 4439.854 11.511 10788.375
  angleY 153
 }
 GenericEntity Fit_saint_philippe_clothing_cashier_shop_01 : "{2B5B0D22672580AA}Prefabs/Props/Commercial/LF_ClothesTill.et" {
- coords 4440.219 12.538 10788.563
+ coords 4440.219 12.55 10788.563
  angleY -27
 }
 GenericEntity Fit_saint_philippe_clothing_shelf_shop_01 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
@@ -89,6 +89,6 @@ GenericEntity Fit_saint_philippe_clothing_clothing_stock : "{B7F7DA7E20CBDC08}Pr
  angleY 153
 }
 LF_NpcBaseEntity Fit_saint_philippe_clothing_village_clothing_store_clerk : "{50F89493E50AA61B}Prefabs/Characters/Npcs/LF_Npc_ClothingClerk.et" {
- coords 4439.608 11.499 10789.234
+ coords 4439.54 11.499 10789.367
  angleY 153
 }
