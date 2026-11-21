@@ -3,6 +3,32 @@
 Paste the block for the item and version you publish into Workbench's **Change Notes** field.
 Publish the core first, then the pack.
 
+## Life Framework (Core) 0.2.0
+
+```
+Alpha update. Needed by Life Framework: Everon 1989 0.2.0.
+- Resource chains: lumber, harvest (grain, mill, bakery) and mining, each with its own buyers and prices.
+- Homes for sale: buy at the sign, locked doors, ownership kept over a restart.
+- Fishing with a smokehouse, laundering with a rotating buyer, stall rents, barber and chess.
+- Parked cars return after being taken; a fix stops owned cars coming back as keyless copies.
+- Faster nights, lit lamps at dusk, and late joiners see the same clock.
+- Ten new save sections; saves from older versions load without them.
+```
+
+## Life Framework: Everon 1989 0.2.0
+
+```
+Alpha update: the pack moves to the real Everon island. Needs Life Framework (Core) 0.2.0 or later.
+- New characters arrive on the south road into Saint-Philippe; the old playtest village is gone.
+- Saint-Philippe is dressed: every building is a home for sale, a shop, a resident's house or a civic building.
+- Shops with working tills: supermarket, general store, café, clinic, gun store (firearm permit at the counter).
+- Jobs and chains on the island: timber yard, farms and granary, mines, Black Lake and Spring Pond fishing.
+- Dirty money: tips, an illicit buyer and the moonshine barn.
+- Flagship server: nights pass twice as fast, you rejoin where you logged out, new characters get 30 minutes of grace,
+  and police and medic pay sits closer to civilian jobs.
+- The alpha save was wiped for this release.
+```
+
 ## Life Framework (Core) 0.1.0 (first Workshop publish)
 
 ```
