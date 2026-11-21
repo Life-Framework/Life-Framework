@@ -196,6 +196,12 @@
       "match": "^GenericEntity baked into (BoatShed_01|Shed_02_big_V1|Warehouse_01):",
       "kind": "blocks-door",
       "why": "Furniture baked into the vanilla prefab's own children (boat sheds on the shore, a farm shed, a depot warehouse). No pack row or kit places it and a sub-layer cannot hide a prefab child (#3882)."
+    },
+    {
+      "match": "^Fit_saint_philippe_carlot_lot_display_uaz452 ",
+      "kind": "clips",
+      "layer": "Place_saint-philippe_carlot.layer",
+      "why": "The display van parks at the foot of a base-map doorstep on the car lot's hillside (3 m of fall across its 5 m box); the stairs touch 2 of 9 rays by 13 cm at the wheel arch. Moving it with the kit put it into the workshop wall (tried 2026-11-21), so it stays against the steps."
     }
   ]
 }
