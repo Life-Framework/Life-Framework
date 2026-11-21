@@ -15,7 +15,8 @@
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
-import { authorExtract, extractToKit, findBuilding, gridPlaceArgs, planAuthor } from "./author.mjs";
+import { authorExtract, clearArg, extractToKit, findBuilding, gridPlaceArgs, planAuthor } from "./author.mjs";
+import { clearCarrierBlock, clearPrefabsOf, entityBlocks, entityBodies, sourceBodies } from "./kit-grid.mjs";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { scratchDir } from "../lib/scratch.mjs";
 import { CELLS_DIR, PACK_GRID_LAYERS } from "../lib/world-zones.mjs";
@@ -145,6 +146,97 @@ ok(/not a number of metres/.test(badMargin), "a bad margin is refused");
   claim("author-elsewhere", { authoring: true });
   r = run("author-elsewhere", { out: join(root, "scratch-kit.json") });
   ok(r.code === 0 && r.freed.length === 0, "a kit written outside tools/town/kits (--out) does not release the bay");
+}
+
+// ---- a reopen + extract round trip of a kit with a till, a sign and hand-tuned values is byte-stable (#3987)
+{
+  const NL = String.fromCharCode(10);
+  const root = scratchDir("lf-author-roundtrip-");
+  const put = (rel, body) => {
+    mkdirSync(dirname(join(root, rel)), { recursive: true });
+    writeFileSync(join(root, rel), body);
+  };
+  const BROOM = "{AAAAAAAAAAAAAAAA}Prefabs/Props/Furniture/Broom_01.et";
+  const TILL = "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et";
+  const SIGN = "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et";
+  // the authored bay: the fixture shop, its counter made a till (shop component with a nested item block, an action block) and a sign
+  const authored = readFileSync(LAYER, "utf8").replace(
+    "GenericEntity Shop_Counter : " + `"${TILL}" {` + NL,
+    ["GenericEntity Shop_Counter : " + `"${TILL}" {`, " components {", '  LF_ShopComponent "{1111AAAA2222BBBB}" {', '   m_sOutletId "pharmacy"', "   m_aItems {", '    LF_ShopItem "{3333CCCC4444DDDD}" {', '     m_sItemId "aspirin"', "    }", "   }", "  }", '  ActionsManagerComponent "{5555EEEE6666FFFF}" {', "   ActionContexts {", '    UserActionContext "{7777AAAA8888BBBB}" {', '     Position 0 1 0', "    }", "   }", "  }", " }", ""].join(NL),
+  ) + ["GenericEntity Shop_Sign : " + `"${SIGN}" {`, " components {", '  LF_SignComponent "{026619B31213409D}" {', '   m_sSignId "grid:fixture"', "  }", " }", " coords 1001 1.4 1996.2", " angleY 180", "}", ""].join(NL);
+  const layerPath = join(root, PACK_GRID_LAYERS, "Grid_author_fixture.layer");
+  put(`${PACK_GRID_LAYERS}/Grid_author_fixture.layer`, authored);
+  put(`${CELLS_DIR}/author-fixture.json`, JSON.stringify({ slug: "author-fixture", cell: "c25r0", span: [2, 2], layer: "Grid_author_fixture.layer", rows: 0, created: "2026-11-21", pack: true, authoring: true }));
+  const extract = (a, group = "Kit_*,Shop_*") => {
+    const freed = [];
+    const quiet = console.log;
+    console.log = () => {};
+    try {
+      const code = extractToKit(root, layerPath, group, { kit: "fixture-shop", ...a }, { free: (s) => (freed.push(s), 0) });
+      return { code, freed };
+    } finally {
+      console.log = quiet;
+    }
+  };
+  const kitFile = join(root, "tools", "town", "kits", "fixture-shop.json");
+  const archiveFile = join(root, "tools", "town", "kits", "sources", "fixture-shop.layer");
+  const first = extract({ clear: BROOM }, "Shop_*");
+  ok(first.code === 0, "the first extract of the till and sign shop succeeds");
+  // hand-tune what extract computes: the till's role, a wall, the footprint, the front, a lane width
+  const hand = JSON.parse(readFileSync(kitFile, "utf8"));
+  const hr = (id) => hand.rows.find((r) => r.id === id);
+  hr("counter").role = "till";
+  hr("shelf").wall = "free";
+  hr("shelf-back").role = "interactable";
+  hr("sign").wall = "free";
+  hand.anchoring.footprint = { source: "store-boundary", min: [-5, -4], max: [5, 6] };
+  hand.anchoring.front = "+x";
+  hand.anchoring.counters = [{ id: "counter", wall: "free", edgeGap: 2.5 }];
+  hand.stamp.lanes = hand.stamp.lanes.map((l) => (l.to === "counter" ? { ...l, width: 1.5 } : l));
+  hand.system = "pharmacy";
+  writeFileSync(kitFile, JSON.stringify(hand, null, 2) + NL);
+  const handText = readFileSync(kitFile, "utf8");
+  const till = hr("counter");
+  ok(till?.config?.some((c) => c.component === "LF_ShopComponent" && c.blocks.includes("m_aItems")) && hr("sign")?.config?.[0]?.guid === "026619B31213409D", "the first extract read the till and sign config from the layer");
+  // reopen: the bay as `town author --reopen` builds it (kit rows with their blocks, the clear carrier), at another place and turn
+  const bay = (x, z, yaw, y) => {
+    const kit = JSON.parse(readFileSync(kitFile, "utf8"));
+    const fence = readFileSync(LAYER, "utf8").split(NL + "GenericEntity Shop_Counter")[0].replace("coords 1000 0.5 2000", `coords ${x} ${y} ${z}`).replace(" angleY 90", ` angleY ${yaw}`);
+    const blocks = entityBlocks(kit, x, z, yaw, [], sourceBodies(kit, root), y);
+    const carrier = clearCarrierBlock(kit.kit, kit.stamp.prefab, clearPrefabsOf(kit), x, z, y);
+    return { text: fence + NL + [...blocks, carrier].join(NL) + NL, blocks, carrier };
+  };
+  const reopened = bay(1000, 2000, 90, 0.5);
+  ok(reopened.blocks.some((b) => b.includes("m_aItems") && b.includes("LF_ShopComponent") && b.includes("ActionContexts")), "put writes the till's shop component, items and action block");
+  ok(reopened.blocks.some((b) => b.includes("LF_SignComponent")), "put writes the sign's component");
+  ok(reopened.carrier?.includes("LF_BaseWorldClearComponent") && reopened.carrier.includes(BROOM) && reopened.carrier.includes("m_sBuilding"), "put writes the kit's clear list as a carrier in the bay");
+  ok(!bay(1234.5, 2222.25, 37, 0.05).blocks.join(NL).includes("coords 1003 0.7"), "put writes the kit's rows at the bay building, not at the source layer's coords");
+  put(`${PACK_GRID_LAYERS}/Grid_author_fixture.layer`, reopened.text);
+  const second = extract({});
+  const secondText = readFileSync(kitFile, "utf8");
+  ok(second.code === 0, "the extract after a reopen succeeds");
+  ok(secondText === handText, `a reopen + extract round trip is byte-stable (differs at ${[...secondText].findIndex((c, i) => c !== handText[i])}): ${secondText === handText ? "" : JSON.stringify(JSON.parse(secondText).rows.map((r) => [r.id, r.role, r.verb, r.wall])).slice(0, 300)}`);
+  const archive = readFileSync(archiveFile, "utf8");
+  ok(archive.includes("LF_ShopComponent") && archive.includes("m_aItems") && archive.includes("ActionContexts") && archive.includes("LF_SignComponent"), "the archive keeps the till's blocks and the sign (extract no longer writes bare props over them)");
+  ok(!JSON.parse(secondText).rows.some((r) => /clear/i.test(r.id)), "the clear carrier is not a kit row");
+  ok(JSON.parse(secondText).stamp.clear.map((c) => c.prefab).join() === BROOM, "the clear list comes back from the bay's carrier");
+  // another place, turn and height: the same numbers come back
+  put(`${PACK_GRID_LAYERS}/Grid_author_fixture.layer`, bay(1234.5, 2222.25, 37, 0.05).text);
+  extract({});
+  ok(readFileSync(kitFile, "utf8") === handText, "the round trip is byte-stable at another bay place, turn and building height");
+  // an edit in the bay: a clear list edited in the carrier, a moved row, a new row
+  const edited = bay(1000, 2000, 90, 0.5).text
+    .replace(BROOM, "{AAAAAAAAAAAAAAAA}Prefabs/Props/Furniture/Lamp_01.et")
+    .replace(/(Kit_fixture_shop_shelf : [^{]*\{[\s\S]*?coords )[^\n]*/, (_m, head) => head + "1005 0.7 2003")
+    + NL + "GenericEntity Shop_Extra : " + `"{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {` + NL + " coords 1004.5 0.7 2003" + NL + "}" + NL;
+  put(`${PACK_GRID_LAYERS}/Grid_author_fixture.layer`, edited);
+  ok(extract({}).code === 0, "an edited bay extracts");
+  const after = JSON.parse(readFileSync(kitFile, "utf8"));
+  ok(after.stamp.clear.map((c) => c.prefab).join() === "{AAAAAAAAAAAAAAAA}Prefabs/Props/Furniture/Lamp_01.et", "a clear list edited in the carrier is what the kit takes");
+  ok(after.rows.find((r) => r.id === "counter")?.role === "till" && after.anchoring.front === "+x" && after.system === "pharmacy", "the edit leaves the other hand-tuned values alone");
+  ok(extract({ clear: "none" }).code === 0 && JSON.parse(readFileSync(kitFile, "utf8")).stamp.clear.length === 0, "an explicit empty clear list empties it");
+  ok(clearArg(undefined) === null && clearArg("none").length === 0 && clearArg("a,b").join() === "a,b", "--clear: absent reads the bay, none empties, a list names props");
+  ok(entityBodies([`GenericEntity A {`, " coords 1 2 3", " angleY 5", " components {", "  X \"{1}\" {", "  }", " }", "}"].join(NL)).get("A").join("|") === ' components {|  X "{1}" {|  }| }', "a body keeps its components and drops the place");
 }
 
 if (fails.length) {
