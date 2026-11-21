@@ -1784,6 +1784,11 @@ StringTable {
      Target_en_us "Fishing spot"
      Comment "Map POI kind name (#3667): a fishing spot marker (LF_Places kind FishingSpot) at Black Lake or Spring Pond. Discovered by walking past, like the shops."
     }
+    CustomStringTableItem "{99D03CD655D14FD0}" {
+     Id "LF-MapPoi_FuelDepot"
+     Target_en_us "Fuel depot"
+     Comment "Map POI kind name (#3336): the Montignac collective-farm fuel yard, where the tanker is loaded for the fuel haul (LF_Places kind FuelDepot). The map adds the town."
+    }
     CustomStringTableItem "{3EF58CE81E5B58BA}" {
      Id "LF-MapPoi_Furniture"
      Target_en_us "Furniture store"
