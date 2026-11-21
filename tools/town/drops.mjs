@@ -137,7 +137,7 @@ const entityLine = (e) => `GenericEntity ${e.name} : "${e.ref}" {${e.placeId ? `
 }`;
 
 // One drop's plan: the shared town-fit planner, with an in-memory mapping and template for the drop's own place.
-export async function planDrop({ drop, slotId, dossier, root, shell, readGame, kitName = "parcel-drops" }) {
+export async function planDrop({ drop, slotId, dossier, root, shell, readGame, kitName = "parcel-drops", accept = null }) {
   const building = dossier.buildings.find((b) => b.id === drop.building);
   if (!building) return { ok: false, errors: [`${drop.place}: building ${drop.building} is not in its dossier`], warnings: [] };
   const template = { schema: 1, kind: "drops", slots: [{ id: slotId, required: false, kit: kitName, host: "building", needs: { interior: "optional" }, places: [] }] };
@@ -145,13 +145,21 @@ export async function planDrop({ drop, slotId, dossier, root, shell, readGame, k
   // The wall in front of a doorway or window is no wall to sit on: try the door side, then the middle and both thirds of the wall.
   let plan = null;
   // A mapping entry's own `sideways` and `lift` (set after a look or the audit shows the default spot clips) skip the search.
-  const tries = drop.sideways !== undefined ? [drop.sideways] : [null, 0, 0.45, -0.45, 0.8, -0.8];
+  // `accept(entity)` (optional, #3886): a seat on the wall is only taken when it returns true, so a caller that knows the doors
+  // slides the prop along the wall to the next spot; a wall with no accepted spot is a refused plan.
+  const tries = drop.sideways !== undefined ? [drop.sideways] : accept ? [null, 0, 0.45, -0.45, 0.8, -0.8, 0.25, -0.25, 0.65, -0.65, 0.95, -0.95] : [null, 0, 0.45, -0.45, 0.8, -0.8];
+  let accepted = false;
   for (const sideways of tries) {
     const { id, kit } = dropKit(building, slotId, sideways, drop.lift ?? GROUND_LIFT, drop.turn ?? 0, kitName);
     const opts = { place: drop.place, slot: slotId, dossier, mapping, template, kits: { [kit.kit]: kit }, skipClaims: true, fetch: false };
     plan = { ...(await planFitSeated(opts, { root, readGame, shell })), rowId: id, building };
-    if (!plan.ok || plan.seat?.rows?.[0]?.wall) break;
+    if (!plan.ok) break;
+    if (plan.seat?.rows?.[0]?.wall && (!accept || accept(plan.ents.rowEnts[0]))) {
+      accepted = true;
+      break;
+    }
   }
+  if (accept && plan?.ok && !accepted) plan = { ...plan, ok: false, errors: [...(plan.errors ?? []), "no spot on this wall clears the doors"] };
   // Off the wall by WALL_AIR along the mailbox's facing (the wall it was seated on is behind it).
   const e = plan?.ok ? plan.ents.rowEnts[0] : null;
   const prop = DROP_KITS[kitName];
