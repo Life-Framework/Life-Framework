@@ -5355,7 +5355,13 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
         },
       });
     },
-    validate: () => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1,
+    validate: async () => {
+      const v = spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "validate"], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1;
+      if (v !== 0) return v;
+      // The island gate (#3888): an island layer, kit, generator, marker or spawner diff must add no new MainWorld finding.
+      const files = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean);
+      return (await import("./lib/placement-gate.mjs")).runIslandGate(files, (a) => spawnSync(process.execPath, [join(wtRoot, "tools", "cli.mjs"), "audit", "placement", ...a], { cwd: wtRoot, stdio: "inherit", windowsHide: true }).status ?? 1);
+    },
     push: () => wt.git(wtRoot, ["push", "-u", "origin", e.branch]),
     findPr: () => wt.findOpenPrGh(wtRoot, e.branch),
     createPr: (o) => wt.createPrGh(wtRoot, { head: e.branch, title: subjects[0] ?? e.branch, body, base, draft: o?.draft === true }),

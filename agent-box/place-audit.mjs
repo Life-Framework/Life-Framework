@@ -7,6 +7,7 @@
 //   audit placement [--top 40] [--area <name>] [--layer A.layer,B.layer] [--annex | --grid | --world MainWorld] [--from <out.txt>] [--out dir] [--strict]
 //     --world MainWorld: the island (the pack's MainWorld_Layers, where `town fit` writes Place_<place>_<slot>.layer), measured on MainWorld at the town bar;
 //     with --layer it audits only those layers, and an empty selection fails with the layer names instead of measuring something else.
+//     --baseline (with --world MainWorld): judge against tools/place/island-baseline.json, a new finding fails (#3888); --baseline-shrink drops fixed rows.
 //   audit selftest
 //
 // red-proof: 2026-11-19, with isTerrainRelative (now the frame from tools/lib/height-frame.mjs) returning false the selftest printed "FAILED a SCR_DestructibleEntity at layer y 19.1 is flagged relative-y"; restored, OK.
@@ -762,6 +763,25 @@ async function placement(argv) {
   // entity prints as WARN on every branch. What blocks is a flagged entity in a non-town layer the branch itself
   // adds or moves (--hard-layer A.layer,B.layer; without it every non-town layer, measured with --annex).
   // docs/architecture/world-zones.md, tools/lib/town-findings.mjs.
+  // --baseline (island gate, #3888): a finding in tools/place/island-baseline.json warns, a new one fails; --baseline-shrink
+  // (a whole-island run only) drops the rows it no longer finds and writes the first baseline when there is none.
+  if (island && (flags.baseline || flags["baseline-shrink"])) {
+    const g = await import("../tools/lib/placement-gate.mjs");
+    const file = join(ROOT, ...g.ISLAND_BASELINE.split("/"));
+    const base = g.readBaseline(existsSync(file) ? readFileSync(file, "utf8") : null);
+    console.log(`floating: ${floatingRows(res.ranked).length} row(s) hang in the air`);
+    if (flags["baseline-shrink"]) {
+      if (layerNames) { console.log("audit placement: --baseline-shrink needs the whole island (no --layer)"); return 1; }
+      const now = g.findingKeys(res.ranked, world).map((f) => f.key);
+      const rows = base === null ? now : g.shrinkBaseline(base, now);
+      writeFileSync(file, g.baselineText(rows));
+      console.log(`baseline: ${base === null ? "written" : `${base.length - rows.length} fixed row(s) dropped`}, ${rows.length} left in ${g.ISLAND_BASELINE}`);
+      return testFailed ? 1 : 0;
+    }
+    const verdict = g.judgeIsland(res.ranked, world, base ?? []);
+    for (const l of verdict.lines) console.log(l);
+    return testFailed || verdict.fail ? 1 : 0;
+  }
   // --floating: exit 1 when anything hangs in the air (a prop, a runtime car, a light attached to nothing, a character), in every zone.
   if (flags.floating) {
     const fl = floatingRows(res.ranked);

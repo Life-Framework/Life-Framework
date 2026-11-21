@@ -182,7 +182,7 @@ town circle (`runtime <x> <z> <r>` input line, `LF_PlacementAudit.RuntimeLines`,
 own rows. Still to build (cards below): the shop walk-lane and action-reach checks, the building-shell clip for props,
 judging `missing` rows, player spawn points.
 
-### The gate
+### The gate (on since #3888; `docs/placement-audit.md` "The island gate")
 
 - **Island findings block.** `town-findings.mjs` keeps the warning rule for the DebugWorld playtest town only; a finding
   on a MainWorld layer, or a runtime row, is hard for a branch that changed that layer, kit, marker, spawner or generator.
