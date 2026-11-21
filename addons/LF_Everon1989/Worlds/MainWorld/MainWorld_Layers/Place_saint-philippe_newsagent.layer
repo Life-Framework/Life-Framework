@@ -10,7 +10,27 @@ GenericEntity Fit_saint_philippe_newsagent_Place {
  coords 4437 11.9 10691.4
 }
 GenericEntity Fit_saint_philippe_newsagent_newsagent_counter : "{28F9F4DC40089B51}Prefabs/Props/Services/Post/CounterPostOffice_01.et" {
- coords 4436.682 11.95 10689.866
+ coords 4436.682 11.986 10689.866
+ angleY -5
+}
+GenericEntity Fit_saint_philippe_newsagent_newsagent_magazine : "{CF65BDFA6DCBB555}Prefabs/Props/Commercial/LF_NewsDisplay_Magazine.et" {
+ coords 4437.843 12.893 10689.869
+ angleY -5
+}
+GenericEntity Fit_saint_philippe_newsagent_newsagent_notebook : "{C2C1CEA73A4D8779}Prefabs/Props/Civilian/Notebook_01_Stack.et" {
+ coords 4438.011 12.893 10689.776
+ angleY -5
+}
+GenericEntity Fit_saint_philippe_newsagent_newsagent_papers : "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et" {
+ coords 4438.584 11.986 10689.932
+ angleY -5
+}
+GenericEntity Fit_saint_philippe_newsagent_newsagent_pen : "{65224FC6E3525CFA}Prefabs/Props/Commercial/LF_NewsDisplay_Pen.et" {
+ coords 4437.195 12.9 10689.812
+ angleY -5
+}
+GenericEntity Fit_saint_philippe_newsagent_newsagent_postcard : "{81809E8473F4B8EA}Prefabs/Props/Commercial/LF_NewsDisplay_Postcard.et" {
+ coords 4437.573 12.893 10689.827
  angleY -5
 }
 GenericEntity Fit_saint_philippe_newsagent_newsagent_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
@@ -43,10 +63,6 @@ GenericEntity Fit_saint_philippe_newsagent_newsagent_till : "{4E4E1620C6B02E1F}P
    }
   }
  }
- coords 4436.682 13.138 10689.866
- angleY -5
-}
-GenericEntity Fit_saint_philippe_newsagent_newsagent_papers : "{EA34FD3A068E550A}Prefabs/Props/Commercial/NewspaperStand_01.et" {
- coords 4438.036 11.95 10689.885
+ coords 4436.682 13.191 10689.866
  angleY -5
 }
