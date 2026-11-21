@@ -118,7 +118,9 @@ export function configOf(comps) {
       set[p.slice(0, i)] = p.slice(i + 1).trim();
     }
     const blocks = c.kids.map((x) => x.head.split(/\s+/)[0]);
-    if (Object.keys(set).length || blocks.length) out.push({ component: cls, set, blocks });
+    // The component GUID travels with its config (#3931): a layer override reuses it, and the kit then needs no source file for it.
+    const guid = /"{([0-9A-Fa-f]{16})}"/.exec(c.head)?.[1]?.toUpperCase();
+    if (Object.keys(set).length || blocks.length) out.push({ component: cls, ...(guid ? { guid } : {}), set, blocks });
   }
   return out;
 }
