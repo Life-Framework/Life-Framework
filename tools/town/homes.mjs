@@ -18,7 +18,9 @@ import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { LIMITS, doorZone, obbPenetration } from "../../agent-box/place-audit.mjs";
 import { planDrop } from "./drops.mjs";
+import { toWorld } from "./kit.mjs";
 import { main as locksMain } from "./locks.mjs";
 import { shellReader } from "./seat.mjs";
 
@@ -50,6 +52,45 @@ const r3 = (n) => Math.round(n * 1000) / 1000;
 const guid = (seed) => `{${createHash("sha1").update(seed).digest("hex").slice(0, 16).toUpperCase()}}`;
 const entityName = (prefix, place, id) => `${prefix}_${place.replace(/-/g, "_")}_${id.replace(":", "_")}`;
 const camel = (place) => place.split("-").map((w) => w[0].toUpperCase() + w.slice(1)).join("");
+
+// The sign prefab's bounds (LF_HouseSaleSign.et: a post 7.6 cm square, 2.9 m tall, origin 0.5 m under the ground line), so the door
+// test needs no game install.
+const SIGN_BOUNDS = { min: [-0.038, -0.505, -0.036], max: [0.038, 2.426, 0.04] };
+const DOOR_MARGIN = 0.2; // a sign stands this far clear of a door's swing and walk-up zones, tighter than the audit's 0.1 m push-through
+
+// Pure: the sign's oriented box in the audit's shape ({ c, h, a }) at `coords` (its origin) turned `yaw` degrees.
+export function signBox(coords, yaw) {
+  const b = SIGN_BOUNDS;
+  const k = (yaw * Math.PI) / 180;
+  const [ox, oz] = toWorld((b.min[0] + b.max[0]) / 2, (b.min[2] + b.max[2]) / 2, yaw);
+  return {
+    c: [coords[0] + ox, coords[1] + (b.min[1] + b.max[1]) / 2, coords[2] + oz],
+    h: [0, 1, 2].map((i) => (b.max[i] - b.min[i]) / 2),
+    a: [[Math.cos(k), 0, -Math.sin(k)], [0, 1, 0], [Math.sin(k), 0, Math.cos(k)]],
+  };
+}
+
+// Pure: the first door whose swing (the leaf pushed 1 m both ways) or ground-level walk-up (3 m) the box stands in, or null.
+// `doors` are the audit's door leaves: { root, rp (the building's origin), c, h, a }. Same zones as `audit placement` (doorZone).
+export function doorHit(box, doors) {
+  for (const d of doors) {
+    const leaf = { c: d.c, h: d.h, a: d.a };
+    if (Math.abs(leaf.c[0] - box.c[0]) > 15 || Math.abs(leaf.c[2] - box.c[2]) > 15) continue;
+    const swing = doorZone(leaf);
+    if (!swing) continue;
+    const depth = obbPenetration(swing, box);
+    if (depth > -DOOR_MARGIN) return { kind: "swing", root: d.root, depth, text: `in the swing of a door of ${d.root} (${r3(depth)} m in)` };
+    const ground = d.c[1] - d.h[1] - d.rp[1] < 1.2;
+    if (ground && obbPenetration(doorZone(leaf, LIMITS.doorWalk), box) > -DOOR_MARGIN) return { kind: "walk-up", root: d.root, depth, text: `in the walk-up to a door of ${d.root}` };
+  }
+  return null;
+}
+
+// The door leaves of a place's probe (tools/town/probes/doors-<place>.json), [] when it has none.
+export function loadDoors(root, place) {
+  const f = join(root, "tools", "town", "probes", `doors-${place}.json`);
+  return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")).doors ?? [] : [];
+}
 
 // Pure: the homes of a purpose file: a row with purpose "a", a houseId and a known tier.
 export function homeRows(purpose) {
@@ -172,6 +213,7 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
   const shell = ctxShell ?? shellReader(root);
   const readGame = await gameReader();
 
+  const doors = loadDoors(root, place);
   const done = [];
   const refused = [];
   let layerText = "";
@@ -188,8 +230,14 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
     // The entrance side first; a building whose entrance wall takes no sign (a porch, a doorway the whole width) tries its other sides.
     let plan = null;
     let e = null;
+    // A wall spot is taken only when the sign (its final spot, a hair off the wall) is out of every door's swing and walk-up (#3886).
+    const accept = (ent) => {
+      const k = (ent.yaw * Math.PI) / 180;
+      const at = [ent.coords[0] + Math.sin(k) * 0.1, ent.coords[1], ent.coords[2] + Math.cos(k) * 0.1];
+      return !doorHit(signBox(at, ent.yaw), doors);
+    };
     for (const turn of [0, 1, 3, 2]) {
-      plan = await planDrop({ drop: { place: dossier.place.slug, building: row.building, turn }, slotId: "homes", dossier, root, shell, readGame, kitName: "house-sale" });
+      plan = await planDrop({ drop: { place: dossier.place.slug, building: row.building, turn }, slotId: "homes", dossier, root, shell, readGame, kitName: "house-sale", accept });
       e = plan?.ok ? plan.ents?.rowEnts?.[0] : null;
       if (e && plan.seat?.rows?.[0]?.wall) break;
       e = null;
