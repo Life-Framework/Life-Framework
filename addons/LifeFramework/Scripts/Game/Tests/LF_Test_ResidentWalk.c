@@ -1,3 +1,4 @@
+// red-proof: 2026-11-21 (#3912): with the floor snap out of LF_ResidentWalk.Move the walk ended on the anchor 0.4 m up and the line "the walk ends on the floor" failed.
 // red-proof: 2026-11-18, before LF_ResidentWalk existed the test did not compile; with the act skipped
 //   (RedProof() on, `cli test --no-build --red LF_Test_ResidentWalk`) the timetable never moves the
 //   resident, so `a resident whose line moves with a player near walks` and the arrival checks fail.
@@ -17,6 +18,12 @@ class LF_Test_ResidentWalk : LF_Test
 	protected static const ResourceName ANCHOR_PREFAB = "{CCED18E36D627B1D}Prefabs/Systems/Residents/LF_ResidentAnchor.et";
 	protected static const int WORK_MINUTE = 450;	// 07:30
 	protected static const int HOME_MINUTE = 1100;	// 18:20
+	protected static const float HOVER_M = 0.4;
+	protected static const float FEET_TOLERANCE_M = 0.05;
+
+	//! The floor under the home anchor, measured before the anchor is lifted (#3912).
+	protected float m_fBenchFloor;
+	protected bool m_bBenchFloor;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -94,6 +101,14 @@ class LF_Test_ResidentWalk : LF_Test
 		IEntity bench = SpawnAnchor(ctx, "bench", benchAt);
 		ctx.EqualFloat(40, DistXZ(counterAt, benchAt), 1, "the two anchors are 40 m apart");
 
+		// The home anchor hovers HOVER_M over its floor: the walk must end on the floor (#3912).
+		float ground = GetGame().GetWorld().GetSurfaceY(benchAt[0], benchAt[2]);
+		if (bench)
+			bench.SetOrigin(Vector(benchAt[0], ground + HOVER_M, benchAt[2]));
+
+		m_bBenchFloor = LF_ResidentSpawner.FloorAt(Vector(benchAt[0], ground + HOVER_M, benchAt[2]), m_fBenchFloor);
+		ctx.True(m_bBenchFloor, "there is a floor under the home anchor");
+
 		LF_ResidentsConfig config = new LF_ResidentsConfig();
 		config.m_iSpawnRadiusM = 150;
 		config.m_iDespawnRadiusM = 200;
@@ -147,6 +162,9 @@ class LF_Test_ResidentWalk : LF_Test
 		ctx.True(LF_ResidentWalk.IsWalking("aaa_baker"), "a resident whose line moves with a player near walks");
 		ctx.Equal(1, mover.m_iBegun, "the resident got one move order");
 		ctx.EqualFloat(0, DistXZ(mover.m_vTo, benchAt), 1, "the move order points at the new anchor");
+		if (m_bBenchFloor)
+			ctx.True(Math.AbsFloat(mover.m_vTo[1] - m_fBenchFloor) <= FEET_TOLERANCE_M, string.Format("the walk ends on the floor, not on the anchor %1 m up (destination %2 m over the floor)", HOVER_M, mover.m_vTo[1] - m_fBenchFloor));
+
 		ctx.Equal(0, LF_ResidentSpawner.DespawnedTotal(), "a walking resident is not despawned");
 		ctx.Equal(1, LF_ResidentSpawner.LiveCount(), "the walker stays live");
 		ctx.EqualFloat(0, DistXZ(baker.GetOrigin(), counterAt), 1, "the walk starts where the resident stood");

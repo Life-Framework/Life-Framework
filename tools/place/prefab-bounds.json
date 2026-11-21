@@ -4,6 +4,7 @@
  "prefabs": {
   "PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et": {"cls":"GenericEntity","mesh":"Assets/Props/Civilian/SackUniversal_01/SackUniversal_01_Pile.xob","bounds":{"min":[-0.894,-0.03,-0.702],"max":[1.066,1.225,0.78]},"scale":1,"dynamic":false},
   "PrefabLibrary/Props/Civilian/Recreation/TableRecreation_01/TableRecreation_01.et": {"cls":"GenericEntity","mesh":"Assets/Props/Furniture/TableRecreation_01/TableRecreation_01.xob","bounds":{"min":[-0.603,0,-0.605],"max":[0.603,0.899,0.605]},"scale":1,"dynamic":false},
+  "Prefabs/Comms/LF_Payphone.et": {"cls":"SCR_DestructibleBuildingEntity","mesh":"Assets/Structures/Infrastructure/Landlines/PhoneBooth_E/PhoneBooth_E_01.xob","bounds":{"min":[-0.859,-0.55,-0.938],"max":[0.859,2.82,0.686]},"scale":0.8,"dynamic":false},
   "Prefabs/Items/Equipment/Backpacks/Backpack_ALICE_Medium.et": {"cls":"GenericEntity","mesh":"Assets/Items/Equipment/Backpacks/Backpack_ALICE_Medium/Backpack_ALICE_Medium.xob","bounds":{"min":[-0.236,1.089,-0.481],"max":[0.227,1.571,-0.125]},"scale":1,"dynamic":false},
   "Prefabs/Items/Fuel/Jerrycan_01/Jerrycan_01_item.et": {"cls":"GenericEntity","mesh":"Assets/Items/Fuel/Jerrycan_01/Jerrycan_01.xob","bounds":{"min":[-0.079,0,-0.189],"max":[0.083,0.517,0.185]},"scale":1,"dynamic":false},
   "Prefabs/Items/Medicine/FieldDressing_01/FieldDressing_US_01.et": {"cls":"GenericEntity","mesh":"Assets/Items/Medicine/FieldDressing_01/FieldDressing_US_01/FieldDressing_US_01.xob","bounds":{"min":[-0.034,-0.001,-0.04],"max":[0.031,0.023,0.042]},"scale":1,"dynamic":false},
