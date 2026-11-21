@@ -89,11 +89,11 @@ GenericEntity Fit_saint_philippe_general_store_general_store_miners_till : "{4E4
    }
   }
  }
- coords 4513.3 16.538 10745.58
+ coords 4513.304 16.486 10745.612
  angleY 171
 }
 GenericEntity Fit_saint_philippe_general_store_general_store_radio : "{6E621E4B599F06FD}Prefabs/Atmosphere/LF_Radio_Store.et" {
- coords 4514.162 16.537 10746.557
+ coords 4514.162 16.486 10746.557
  angleY 171
 }
 LF_NpcBaseEntity Fit_saint_philippe_general_store_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
