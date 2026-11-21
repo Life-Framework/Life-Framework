@@ -241,9 +241,9 @@
     },
     "buyer-spots": {
       "drops": [
-        { "place": "saint-philippe-dock", "building": "b22" },
-        { "place": "saint-philippe-districts", "building": "b21" },
-        { "place": "saint-philippe-districts", "building": "b64" }
+        { "place": "saint-philippe-dock", "building": "b22", "dy": -0.04 },
+        { "place": "saint-philippe-districts", "building": "b21", "dy": 0.149 },
+        { "place": "saint-philippe-districts", "building": "b64", "dy": -0.387 }
       ],
       "why": [
         "D10 pick (#3314), buyer card #3400 (also #3416): three spots out of sight, one per place of the rotation: behind the dock warehouses (dk:b22, Warehouse_01_V3, 793 m2), a districts back lane (di:b21, the concrete vehicle ramp, a doorless prop north of the east road) and a lay-by at the town edge (di:b64, Barn_E_02, 139 m south of the districts centre)",
