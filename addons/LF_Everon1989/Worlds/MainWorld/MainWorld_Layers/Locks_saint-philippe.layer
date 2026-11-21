@@ -142,6 +142,14 @@ GenericEntity Lock_saint_philippe_sp_b52 : "{9D4A2E6B1F83C570}Prefabs/Systems/Ho
  }
  coords 4527.8 15.7 10797.9
 }
+GenericEntity Lock_saint_philippe_sp_b55 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
+ components {
+  LF_BuildingLockComponent "{5C81D0A7E3F2B469}" {
+   m_sSignKey "#LF-Everon-Lock_Private"
+  }
+ }
+ coords 4397.5 10 10767.8
+}
 GenericEntity Lock_saint_philippe_sp_b56 : "{9D4A2E6B1F83C570}Prefabs/Systems/Houses/LF_BuildingLock.et" {
  components {
   LF_BuildingLockComponent "{5C81D0A7E3F2B469}" {

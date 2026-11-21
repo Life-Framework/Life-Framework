@@ -693,10 +693,11 @@
    "x": 4397.5,
    "z": 10767.8,
    "doors": 13,
-   "purpose": "b",
-   "use": "furniture store (Meubles): all house furniture, stock furniture",
-   "status": "flight",
-   "card": "FLIGHT"
+   "purpose": "e",
+   "use": "town house: Propriété privée (the old furniture hall; the furniture store moved to the barn b23, #3891)",
+   "status": "planned",
+   "card": "L0",
+   "issue": 3204
   },
   {
    "id": "sp:b56",
