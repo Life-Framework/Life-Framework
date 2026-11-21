@@ -9,9 +9,38 @@ GenericEntity Fit_saint_philippe_farm_supply_Place {
  }
  coords 4426.9 16.8 10609
 }
+SCR_DestructibleEntity Fit_saint_philippe_farm_supply_farm_supply_board : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ components {
+  LF_SignComponent "{DF6A14A1AD2B41F0}" {
+   m_sSignId "farm_supply"
+   m_sStyle ""
+   m_sSize ""
+   m_vFaceAngles 0 -15 0
+   m_fFaceScale 2.6
+  }
+ }
+ coords 4436.705 16.772 10619.309
+ angleY -4
+}
+LF_NpcBaseEntity Fit_saint_philippe_farm_supply_farm_supply_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 4434.399 16.877 10616.441
+ angleY -4
+}
 GenericEntity Fit_saint_philippe_farm_supply_farm_supply_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
  coords 4434.322 16.825 10617.539
  angleY -4
+}
+GenericEntity Fit_saint_philippe_farm_supply_farm_supply_crate : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
+ coords 4435.974 16.947 10616.852
+ angleY -4
+}
+GenericEntity Fit_saint_philippe_farm_supply_farm_supply_sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 4431.757 16.766 10616.958
+ angleY -94
+}
+GenericEntity Fit_saint_philippe_farm_supply_farm_supply_sacks_2 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
+ coords 4431.61 16.635 10619.053
+ angleY -94
 }
 GenericEntity Fit_saint_philippe_farm_supply_farm_supply_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
  components {
@@ -43,36 +72,7 @@ GenericEntity Fit_saint_philippe_farm_supply_farm_supply_till : "{4E4E1620C6B02E
    }
   }
  }
- coords 4434.322 17.864 10617.539
- angleY -4
-}
-LF_NpcBaseEntity Fit_saint_philippe_farm_supply_farm_supply_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
- coords 4434.399 16.877 10616.441
- angleY -4
-}
-GenericEntity Fit_saint_philippe_farm_supply_farm_supply_sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 4431.757 16.766 10616.958
- angleY -94
-}
-GenericEntity Fit_saint_philippe_farm_supply_farm_supply_sacks_2 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 4431.631 16.643 10618.754
- angleY -94
-}
-GenericEntity Fit_saint_philippe_farm_supply_farm_supply_crate : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 4435.974 16.947 10616.852
- angleY -4
-}
-SCR_DestructibleEntity Fit_saint_philippe_farm_supply_farm_supply_board : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
- components {
-  LF_SignComponent "{DF6A14A1AD2B41F0}" {
-   m_sSignId "farm_supply"
-   m_sStyle ""
-   m_sSize ""
-   m_vFaceAngles 0 -15 0
-   m_fFaceScale 2.6
-  }
- }
- coords 4436.705 16.748 10619.309
+ coords 4434.322 17.839 10617.539
  angleY -4
 }
 GenericEntity Fit_saint_philippe_farm_supply_implement_rack : "{21B9456F3B79410E}Prefabs/Harvest/LF_ImplementRack.et" {

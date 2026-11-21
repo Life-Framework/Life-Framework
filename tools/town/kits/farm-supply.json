@@ -121,7 +121,7 @@
       "offset": [
         -5.4,
         0,
-        -9.4
+        -9.7
       ],
       "yaw": 90,
       "wall": "free",
@@ -187,5 +187,11 @@
       "wall": "free",
       "floor": "f0"
     }
-  ]
+  ],
+  "stamp": {
+    "schema": 1,
+    "prefab": "{F5A2DC0597B53E19}Prefabs/Structures/Agriculture/Barn/Barn_E_02/Barn_E_02.et",
+    "lanes": [],
+    "clear": []
+  }
 }
