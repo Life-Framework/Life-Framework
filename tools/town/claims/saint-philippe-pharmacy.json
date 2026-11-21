@@ -8,7 +8,7 @@
   "kinds": [
     "StoreCounter"
   ],
-  "rows": 7,
+  "rows": 15,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
@@ -18,6 +18,6 @@
   "stamp": {
     "kit": "pharmacy",
     "prefab": "{FF48B5059EB0AC65}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_drugstore.et",
-    "layer": "bac9364317bd"
+    "layer": "0d47b79e8902"
   }
 }
