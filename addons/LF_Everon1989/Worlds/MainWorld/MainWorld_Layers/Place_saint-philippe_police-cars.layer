@@ -1,0 +1,12 @@
+GenericEntity Fit_saint_philippe_police_cars_car_b32_1 : "{5D2B8E41A7C3906F}Prefabs/Systems/Vehicles/LF_PoliceCarMarker.et" {
+ coords 4562.132 17.907 10739.945
+ angleY 81
+}
+GenericEntity Fit_saint_philippe_police_cars_car_b32_2 : "{5D2B8E41A7C3906F}Prefabs/Systems/Vehicles/LF_PoliceCarMarker.et" {
+ coords 4562.999 17.773 10747.253
+ angleY -11
+}
+GenericEntity Fit_saint_philippe_police_cars_car_b32_3 : "{5D2B8E41A7C3906F}Prefabs/Systems/Vehicles/LF_PoliceCarMarker.et" {
+ coords 4562.992 17.697 10753.685
+ angleY -11
+}

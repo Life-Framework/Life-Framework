@@ -19,11 +19,13 @@ import { fileURLToPath } from "node:url";
 import { LIMITS, doorZone, measureTown, obbPenetration, parseDoor } from "../../agent-box/place-audit.mjs";
 import { CLAIMS_DIR, LAYER_DIR, claimNameOf, layerNameOf } from "./check.mjs";
 
-export const help = "parked-cars <place> [--probe] [--dry] [--no-audit]   the parked-cars outposts slot: one parked-car marker beside each drop building, on the kerb, clear of roads, doors and stops; --probe sites each one on the island by ray; writes the layer and the claim";
+export const help = "parked-cars <place> [--slot <id>] [--probe] [--dry] [--no-audit]   a parked-cars outposts slot (default parked-cars; police-cars #3875): one marker (a drop's \"count\", default 1) beside each drop building, on the kerb, clear of roads, doors and stops; --probe sites each one on the island by ray; writes the layer and the claim";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const SLOT = "parked-cars";
 export const MARKER_PREFAB = "{C48202E5BB6761C0}Prefabs/Systems/Vehicles/LF_ParkedCarMarker.et";
+// A slot whose mapping entry says "marker": "police" puts out the locked police-car marker (#3875) instead of the civilian one.
+export const MARKERS = { police: "{5D2B8E41A7C3906F}Prefabs/Systems/Vehicles/LF_PoliceCarMarker.et" };
 export const CAR = { half: [2.3, 1.05] }; // half length and half width of the keep-clear box around the marker, metres
 export const ROAD_HALF = 3.6; // a carriageway's half width, metres
 export const CLEAR = { building: 0.6, door: 3.5, road: 0.4, prop: 2.5, layer: 2.5, taxi: 9, marker: 6 };
@@ -170,7 +172,7 @@ export function groundAt(x, z, dossier) {
   return best ? best.y : 0;
 }
 
-const entityText = (name, spot) => `GenericEntity ${name} : "${MARKER_PREFAB}" {
+const entityText = (name, spot, marker = MARKER_PREFAB) => `GenericEntity ${name} : "${marker}" {
  coords ${spot.x} ${spot.y} ${spot.z}
  angleY ${spot.yaw}
 }
@@ -227,35 +229,44 @@ export function plan({ mapping, dossiers, others, slot = SLOT, accept = null, tr
       problems.push(`${drop.place}/${drop.building}: not in its dossier`);
       continue;
     }
-    // A drop's own building is not a reason to refuse, so its polygon stays in `world.buildings` (clearance 0.6 m).
-    // With a probe the shortlist must not depend on what was placed before it (its keys are the candidate indices), so the other markers
-    // are checked below instead.
-    const { list, reasons } = candidates(b, accept ? { ...world, placed: [] } : world, entry.margin ?? 14, accept ? tries : 1);
-    let spot = null;
-    for (const c of list) {
-      if (world.placed.some(([px, pz]) => Math.hypot(c.x - px, c.z - pz) < CLEAR.marker)) {
-        reasons["next to another marker"] = (reasons["next to another marker"] ?? 0) + 1;
+    // A drop with "count": N puts N markers beside its building; the first claims the best spot, each next the best one a marker's
+    // clearance away from those placed before it.
+    const count = Math.max(1, Math.floor(drop.count ?? 1));
+    let anchor = null; // the first marker of the drop: the next ones stand in a row with it, not on another street
+    for (let n = 0; n < count; n++) {
+      // A drop's own building is not a reason to refuse, so its polygon stays in `world.buildings` (clearance 0.6 m).
+      // With a probe the shortlist must not depend on what was placed before it (its keys are the candidate indices), so the other markers
+      // are checked below instead.
+      const { list, reasons } = candidates(b, accept ? { ...world, placed: [] } : world, entry.margin ?? 14, accept ? tries : n > 0 ? 24 : 1);
+      if (anchor) list.sort((p, q) => Math.hypot(p.x - anchor.x, p.z - anchor.z) - Math.hypot(q.x - anchor.x, q.z - anchor.z));
+      let spot = null;
+      for (const c of list) {
+        if (world.placed.some(([px, pz]) => Math.hypot(c.x - px, c.z - pz) < CLEAR.marker)) {
+          reasons["next to another marker"] = (reasons["next to another marker"] ?? 0) + 1;
+          continue;
+        }
+        if (!accept) {
+          spot = { ...c, y: r3(groundAt(c.x, c.z, d) + LIFT) };
+          break;
+        }
+        const v = accept(drop, c);
+        if (v?.ok) {
+          spot = { ...c, y: v.y };
+          break;
+        }
+        const why = `probe: ${v?.why ?? "no answer"}`;
+        reasons[why] = (reasons[why] ?? 0) + 1;
+      }
+      if (n === 0) all.push({ drop, cands: list });
+      if (!spot) {
+        problems.push(`${drop.place}/${drop.building}: no spot (${Object.entries(reasons).map(([k, v]) => `${k} x${v}`).join(", ") || "none tried"})`);
         continue;
       }
-      if (!accept) {
-        spot = { ...c, y: r3(groundAt(c.x, c.z, d) + LIFT) };
-        break;
-      }
-      const v = accept(drop, c);
-      if (v?.ok) {
-        spot = { ...c, y: v.y };
-        break;
-      }
-      const why = `probe: ${v?.why ?? "no answer"}`;
-      reasons[why] = (reasons[why] ?? 0) + 1;
+      world.placed.push([spot.x, spot.z]);
+      anchor ??= spot;
+      const tail = count > 1 ? `_${n + 1}` : "";
+      out.push({ drop, building: b, spot, name: `Fit_${drop.place.replaceAll("-", "_")}_${slot.replaceAll("-", "_")}_car_${drop.building}${tail}` });
     }
-    all.push({ drop, cands: list });
-    if (!spot) {
-      problems.push(`${drop.place}/${drop.building}: no spot (${Object.entries(reasons).map(([k, v]) => `${k} x${v}`).join(", ") || "none tried"})`);
-      continue;
-    }
-    world.placed.push([spot.x, spot.z]);
-    out.push({ drop, building: b, spot, name: `Fit_${drop.place.replaceAll("-", "_")}_${slot.replaceAll("-", "_")}_car_${drop.building}` });
   }
   return { out, all, problems };
 }
@@ -264,10 +275,10 @@ export function plan({ mapping, dossiers, others, slot = SLOT, accept = null, tr
 //
 // The dossier knows buildings, entrances and surveyed props, not the base map's walls, fences, gates and kerbs: b15 stood against a
 // wooden wall and a gate's swing, b17 on a net fence. Two boots of MainWorld answer: (1) one ray down from each candidate's centre and
-// corners (the surface under the car), (2) rays along the box outline, its diagonals and its long axis at two car heights, pushed out
+// corners (the surface under the car), (2) rays along the box outline, its diagonals and its long axis at three car heights, pushed out
 // BODY_OUT metres, plus the door leaves of the circle, judged with the audit's own door zone.
 export const BODY_OUT = 0.5; // the outline rays run this far outside the car's keep-clear box
-export const HEIGHTS = [0.45, 1.1]; // ray heights over the surface, metres: bumper and window line
+export const HEIGHTS = [0.45, 0.75, 1.1]; // ray heights over the surface, metres: bumper, a guard rail (#3875: a CrashBarrier slipped between 0.45 and 1.1) and the window line
 export const FLAT = 0.8; // the surface under the box may differ by this much (a car tilts to the slope, the audit allows 12 degrees)
 const SKY = 2.5; // a down ray starts this far over the dossier height and ends DEEP under it
 const DEEP = 3;
@@ -393,10 +404,14 @@ export function probe(cands, { root = ROOT, log = console.log } = {}) {
 }
 
 export async function main(args, { root = ROOT } = {}) {
-  const flags = new Set(args.filter((a) => a.startsWith("--")));
-  const pos = args.filter((a) => !a.startsWith("--"));
-  if (pos.length !== 1 || !/^[a-z0-9][a-z0-9-]*$/.test(pos[0])) {
-    console.log("usage: tools\\cli town parked-cars <place> [--dry] [--no-audit]");
+  const at = args.indexOf("--slot");
+  const slot = at >= 0 ? args[at + 1] : SLOT;
+  const rest = args.filter((a, i) => !(at >= 0 && (i === at || i === at + 1)));
+  const flags = new Set(rest.filter((a) => a.startsWith("--")));
+  const pos = rest.filter((a) => !a.startsWith("--"));
+  const NAME = /^[a-z0-9][a-z0-9-]*$/;
+  if (pos.length !== 1 || !NAME.test(pos[0]) || !NAME.test(slot ?? "")) {
+    console.log("usage: tools\\cli town parked-cars <place> [--slot <id>] [--probe] [--dry] [--no-audit]");
     return 2;
   }
   const place = pos[0];
@@ -404,8 +419,8 @@ export async function main(args, { root = ROOT } = {}) {
     const r = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd: root, encoding: "utf8", windowsHide: true });
     return r.status === 0 ? String(r.stdout).trim() : null;
   })();
-  if (!flags.has("--dry") && !new RegExp(`^ws/town-draft-${place}-${SLOT}(-[a-z0-9-]+)?$`).test(branch ?? "")) {
-    console.log(`REFUSE  town parked-cars writes an island layer only from the worktree ws/town-draft-${place}-${SLOT} (a '-<tail>' follow-up is fine; this is ${branch ?? "unknown"}); or pass --dry`);
+  if (!flags.has("--dry") && !new RegExp(`^ws/town-draft-${place}-${slot}(-[a-z0-9-]+)?$`).test(branch ?? "")) {
+    console.log(`REFUSE  town parked-cars writes an island layer only from the worktree ws/town-draft-${place}-${slot} (a '-<tail>' follow-up is fine; this is ${branch ?? "unknown"}); or pass --dry`);
     return 1;
   }
   let planned;
@@ -415,19 +430,20 @@ export async function main(args, { root = ROOT } = {}) {
     const dossier = readJson(join(dir, "dossier.json"), "dossier");
     mapping = readJson(join(dir, "mapping.json"), "mapping");
     const dossiers = { [place]: dossier };
-    for (const dr of mapping.slots?.[SLOT]?.drops ?? []) {
+    for (const dr of mapping.slots?.[slot]?.drops ?? []) {
       if (!dossiers[dr.place]) dossiers[dr.place] = readJson(join(root, "docs", "everon", "places", dr.place, "dossier.json"), `dossier of ${dr.place}`);
     }
-    const others = otherLayerCoords(root, layerNameOf(place, SLOT));
-    planned = plan({ mapping, dossiers, others });
+    const others = otherLayerCoords(root, layerNameOf(place, slot));
+    planned = plan({ mapping, dossiers, others, slot });
     if (flags.has("--probe")) {
-      const tries = 16;
-      const short = plan({ mapping, dossiers, others, tries, accept: () => ({ ok: false, why: "shortlist" }) });
+      // 16 shortlist spots per marker a drop asks for (#3875: three police cars ran out of clean spots at 16 for the drop).
+      const tries = 16 * Math.max(1, ...mapping.slots[slot].drops.map((d) => Math.floor(d.count ?? 1)));
+      const short = plan({ mapping, dossiers, others, slot, tries, accept: () => ({ ok: false, why: "shortlist" }) });
       const cands = [];
       for (const o of short.all) for (const c of o.cands) cands.push({ drop: o.drop, c, y0: groundAt(c.x, c.z, dossiers[o.drop.place]) });
       console.log(`probe: ${cands.length} candidate spot(s) for ${short.all.length} drop(s), two island boots`);
       const answers = probe(cands, { root });
-      planned = plan({ mapping, dossiers, others, tries, accept: (drop, c) => answers[keyOf(drop, c)] });
+      planned = plan({ mapping, dossiers, others, slot, tries, accept: (drop, c) => answers[keyOf(drop, c)] });
     }
   } catch (e) {
     console.log(`REFUSE  ${e.message}`);
@@ -436,15 +452,15 @@ export async function main(args, { root = ROOT } = {}) {
   for (const p of planned.out) console.log(`car  ${p.drop.place}/${p.drop.building}: ${p.spot.x} ${p.spot.y} ${p.spot.z} yaw ${p.spot.yaw} (road ${p.spot.road} ${p.spot.roadDistance} m)`);
   for (const p of planned.problems) console.log(`REFUSE  ${p}`);
   if (planned.problems.length) {
-    console.log(`SUMMARY town-parked-cars fail ${place}: ${planned.problems.length} of ${mapping.slots[SLOT].drops.length} drop(s) refused`);
+    console.log(`SUMMARY town-parked-cars fail ${place}: ${planned.problems.length} of ${mapping.slots[slot].drops.length} drop(s) refused`);
     return 1;
   }
-  const layerName = layerNameOf(place, SLOT);
+  const layerName = layerNameOf(place, slot);
   const claim = {
     schema: 1,
     place,
-    slot: SLOT,
-    drops: mapping.slots[SLOT].drops.map((d) => ({ place: d.place, building: d.building })),
+    slot,
+    drops: mapping.slots[slot].drops.map((d) => ({ place: d.place, building: d.building })),
     kit: SLOT,
     size: "small",
     layer: `${LAYER_DIR}/${layerName}`,
@@ -452,14 +468,14 @@ export async function main(args, { root = ROOT } = {}) {
     rows: planned.out.length,
     date: new Date().toISOString().slice(0, 10),
   };
-  const text = planned.out.map((p) => entityText(p.name, p.spot)).join("");
+  const text = planned.out.map((p) => entityText(p.name, p.spot, MARKERS[mapping.slots[slot].marker] ?? MARKER_PREFAB)).join("");
   if (flags.has("--dry")) {
     console.log(text);
     console.log(`SUMMARY town-parked-cars dry ${place}: ${planned.out.length} marker(s)`);
     return 0;
   }
   const layerFile = join(root, LAYER_DIR, layerName);
-  const claimFile = join(root, CLAIMS_DIR, claimNameOf(place, SLOT));
+  const claimFile = join(root, CLAIMS_DIR, claimNameOf(place, slot));
   mkdirSync(dirname(layerFile), { recursive: true });
   mkdirSync(dirname(claimFile), { recursive: true });
   writeFileSync(layerFile, text);

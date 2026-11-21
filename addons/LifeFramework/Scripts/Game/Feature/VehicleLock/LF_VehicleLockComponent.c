@@ -60,6 +60,11 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	[RplProp()]
 	protected string m_sKeyId;
 
+	//! A service vehicle (#3875): a police car standing outside the station. No civilian lockpick, hotwire, key,
+	//! chop shop or garage touches it. Server-written by the parked-car marker that put it out; never saved.
+	[RplProp()]
+	protected bool m_bServiceVehicle;
+
 	//! The owner's record key (#3366). LF_VehicleOwnership's tables exist on the server only, so this
 	//! is what a client reads to offer the owner's own car its "Store in garage" row. Server-written
 	//! when the car is bought or comes out of the garage; empty on a car nobody owns. Display gate
@@ -161,6 +166,24 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return True for a service vehicle (a police car on a marker): civilians cannot pick, wire, key, chop or store it.
+	bool IsServiceVehicle()
+	{
+		return m_bServiceVehicle;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: marks or clears the service-vehicle flag.
+	void SetServiceVehicle(bool service)
+	{
+		if (!Replication.IsServer() || m_bServiceVehicle == service)
+			return;
+
+		m_bServiceVehicle = service;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the engine may start for this player without a key.
 	void SetHotwiredBy(int playerId)
 	{
@@ -237,6 +260,13 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 
 		if (!Replication.IsServer() || !user || !GetOwner())
 			return false;
+
+		// A police car is nobody's to lock or unlock with a key (#3875).
+		if (m_bServiceVehicle)
+		{
+			LF_Debug.Warn("VehicleLock", string.Format("toggle refused (%1): service vehicle", source));
+			return false;
+		}
 
 		// A company garbage truck waiting to be taken back is never lockable (#3325).
 		if (LF_GarbageRound.IsPendingRemoval(GetOwner()))
