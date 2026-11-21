@@ -173,6 +173,19 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A service vehicle opens and starts for an officer on duty and for nobody else, key or not. Reads the
+	//! replicated account state, so the client's offer and the server's check agree.
+	//! \param user The character asking.
+	//! \return True when this is a service vehicle and user is on duty as police.
+	bool IsServiceDriver(IEntity user)
+	{
+		if (!m_bServiceVehicle || !user)
+			return false;
+
+		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: marks or clears the service-vehicle flag.
 	void SetServiceVehicle(bool service)
 	{
@@ -261,10 +274,10 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 		if (!Replication.IsServer() || !user || !GetOwner())
 			return false;
 
-		// A police car is nobody's to lock or unlock with a key (#3875).
-		if (m_bServiceVehicle)
+		// A police car is nobody's to lock or unlock with a key (#3875); an officer on duty opens it.
+		if (m_bServiceVehicle && !IsServiceDriver(user))
 		{
-			LF_Debug.Warn("VehicleLock", string.Format("toggle refused (%1): service vehicle", source));
+			LF_Debug.Warn("VehicleLock", string.Format("toggle refused (%1): service vehicle, user not on duty as police", source));
 			return false;
 		}
 
@@ -447,6 +460,10 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	{
 		if (!user)
 			return false;
+
+		// A service vehicle takes no key: being on duty as police is the key (lock, U key, engine start).
+		if (m_bServiceVehicle)
+			return IsServiceDriver(user);
 
 		CharacterControllerComponent characterController = LF_Component<CharacterControllerComponent>.Find(user);
 		if (characterController && IsValidKey(characterController.GetAttachedGadgetAtLeftHandSlot()))
