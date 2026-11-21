@@ -1449,6 +1449,16 @@ StringTable {
      Target_en_us "A whole ham joint from the butcher's hook. Heavy, and good for a few meals."
      Comment "Item description: ham joint."
     }
+    CustomStringTableItem "{DDA503563C490FF0}" {
+     Id "LF-Item_Magazine_Description"
+     Target_en_us "A glossy weekly with a film star on the cover. Good for the waiting room."
+     Comment "Newsagent item (#3893): the magazine's inventory description."
+    }
+    CustomStringTableItem "{9A0B0BAFA137E0D5}" {
+     Id "LF-Item_Magazine_Name"
+     Target_en_us "Magazine"
+     Comment "Newsagent item (#3893): the magazine's name in the inventory."
+    }
     CustomStringTableItem "{8A052A0C4B10AE83}" {
      Id "LF-Item_MilkBottle"
      Target_en_us "Bottle of milk"
@@ -1458,6 +1468,26 @@ StringTable {
      Id "LF-Item_MilkBottleDesc"
      Target_en_us "Fresh milk in a glass bottle with a foil cap. Drink it soon."
      Comment "Item description: bottle of milk."
+    }
+    CustomStringTableItem "{61562516020B74B1}" {
+     Id "LF-Item_Newspaper_Description"
+     Target_en_us "Today's paper: the island's news, the notices and the horoscope, folded to a quarter."
+     Comment "Newsagent item (#3893): the newspaper's inventory description."
+    }
+    CustomStringTableItem "{BAF2A8D5CBBE3A86}" {
+     Id "LF-Item_Newspaper_Name"
+     Target_en_us "Newspaper"
+     Comment "Newsagent item (#3893): the newspaper's name in the inventory."
+    }
+    CustomStringTableItem "{2645CB07E7939576}" {
+     Id "LF-Item_Notebook_Description"
+     Target_en_us "A stack of ruled notebooks from the stationery shelf."
+     Comment "Newsagent item (#3893): the notebook's inventory description."
+    }
+    CustomStringTableItem "{4E673DCEC319026B}" {
+     Id "LF-Item_Notebook_Name"
+     Target_en_us "Notebook"
+     Comment "Newsagent item (#3893): the notebook's name in the inventory."
     }
     CustomStringTableItem "{23D974D8CDFB5F7D}" {
      Id "LF-Item_OldRadio_Description"
@@ -1469,6 +1499,16 @@ StringTable {
      Target_en_us "Old radio"
      Comment "Item name: old radio (scrapyard, #3823)."
     }
+    CustomStringTableItem "{484D5CB6B94CCEC3}" {
+     Id "LF-Item_Pen_Description"
+     Target_en_us "A ballpoint pen. Blue ink."
+     Comment "Newsagent item (#3893): the pen's inventory description."
+    }
+    CustomStringTableItem "{95D9C0A4161D57D8}" {
+     Id "LF-Item_Pen_Name"
+     Target_en_us "Pen"
+     Comment "Newsagent item (#3893): the pen's name in the inventory."
+    }
     CustomStringTableItem "{60D2B9C1E45A6CC4}" {
      Id "LF-Item_PickleJar"
      Target_en_us "Jar of pickles"
@@ -1478,6 +1518,16 @@ StringTable {
      Id "LF-Item_PickleJarDesc"
      Target_en_us "A jar of pickled gherkins in brine. Sharp, and still filling."
      Comment "Item description: jar of pickles."
+    }
+    CustomStringTableItem "{3247DE698C248743}" {
+     Id "LF-Item_Postcard_Description"
+     Target_en_us "A view of the island's coast, with room on the back to write home."
+     Comment "Newsagent item (#3893): the postcard's inventory description."
+    }
+    CustomStringTableItem "{EC6BE48238401496}" {
+     Id "LF-Item_Postcard_Name"
+     Target_en_us "Postcard"
+     Comment "Newsagent item (#3893): the postcard's name in the inventory."
     }
     CustomStringTableItem "{6342C0C34CC2ED27}" {
      Id "LF-Item_RubberScrap_Description"

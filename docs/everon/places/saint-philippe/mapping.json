@@ -196,7 +196,7 @@
     "parcel-drops": {
       "drops": [
         { "place": "saint-philippe-districts", "building": "b34" },
-        { "place": "saint-philippe-dock", "building": "b05", "turn": 3 },
+        { "place": "saint-philippe-dock", "building": "b05", "turn": 2, "sideways": 0, "dy": 0.111 },
         { "place": "saint-philippe-dock", "building": "b14" },
         { "place": "saint-philippe-dock", "building": "b24" },
         { "place": "saint-philippe-dock", "building": "b35" }

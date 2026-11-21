@@ -165,6 +165,9 @@ export async function planDrop({ drop, slotId, dossier, root, shell, readGame, k
   const prop = DROP_KITS[kitName];
   if (e && prop?.placeId) Object.assign(e, { placeId: prop.placeId(drop), placeComp: prop.placeComp });
   const onWall = !!plan?.seat?.rows?.[0]?.wall;
+  // A mapping entry's `dy` (metres, after the wall seat): the ground at the seated spot is higher or lower than the dossier's
+  // floor height of the host, as the contact sheet (`look contact`) reads it. Unlike `lift` it never moves the wall seat (#3880).
+  if (e && Number.isFinite(drop.dy)) e.coords = [e.coords[0], r3(e.coords[1] + drop.dy), e.coords[2]];
   if (e && onWall) {
     const a = (e.yaw * Math.PI) / 180;
     e.coords = [r3(e.coords[0] + Math.sin(a) * WALL_AIR), e.coords[1], r3(e.coords[2] + Math.cos(a) * WALL_AIR)];
@@ -211,8 +214,8 @@ export async function main(args, { root = ROOT, shell: ctxShell = null } = {}) {
     const r = spawnSync("git", ["rev-parse", "--abbrev-ref", "HEAD"], { cwd: root, encoding: "utf8", windowsHide: true });
     return r.status === 0 ? String(r.stdout).trim() : null;
   })();
-  if (!flags.dry && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}$`).test(branch ?? "")) {
-    console.log(`REFUSE  town drops writes an island layer only from the worktree ws/town-draft-${place}-${slotId} (this is ${branch ?? "unknown"}); or pass --dry`);
+  if (!flags.dry && !flags["out-dir"] && !new RegExp(`^ws/town-draft-${place}-${slotId}(-[a-z0-9-]+)?$`).test(branch ?? "")) {
+    console.log(`REFUSE  town drops writes an island layer only from the worktree ws/town-draft-${place}-${slotId}[-word] (this is ${branch ?? "unknown"}); or pass --dry`);
     return 1;
   }
 

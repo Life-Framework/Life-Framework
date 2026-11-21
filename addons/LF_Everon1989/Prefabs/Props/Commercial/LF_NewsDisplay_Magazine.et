@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "B4BF15E55A5B61B0"
+ components {
+  MeshObject "{D74F230C993FD58E}" {
+   Object "{154DE19AF67DBDFF}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_Document_02.xob"
+  }
+ }
+ coords 0 0 0
+}

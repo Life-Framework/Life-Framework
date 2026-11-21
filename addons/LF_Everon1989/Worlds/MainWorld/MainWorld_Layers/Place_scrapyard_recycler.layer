@@ -101,11 +101,15 @@ GenericEntity Fit_scrapyard_recycler_dump_cultivator : "{DE59CB05202006E8}Prefab
  coords 5069.999 28.364 10886.005
 }
 GenericEntity Fit_scrapyard_recycler_dump_container_1 : "{1B79BB823DC46F9D}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_20ft_green.et" {
- coords 5032.002 29.439 10899.999
+ coords 5032.002 29.196 10899.999
+ angleX 2.67
  angleY 8
+ angleZ 3.28
 }
 GenericEntity Fit_scrapyard_recycler_dump_container_2 : "{35E211705F8FED68}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_40ft_blue.et" {
- coords 5080.002 28.212 10889.004
+ coords 5080.002 27.958 10889.004
+ angleX 2.2
+ angleZ 0.35
 }
 GenericEntity Fit_scrapyard_recycler_dump_tyres_1 : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
  coords 5040.004 28.531 10892.002
@@ -153,9 +157,9 @@ GenericEntity Fit_scrapyard_recycler_dump_drum_2 : "{7D52C517720EF2F5}Prefabs/Pr
  angleY 60
 }
 GenericEntity Fit_scrapyard_recycler_dump_lamp_1 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
- coords 5032.002 31.819 10899.999
+ coords 5032.002 31.576 10899.999
  angleY 8
 }
 GenericEntity Fit_scrapyard_recycler_dump_lamp_2 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
- coords 5080.002 30.6 10889.004
+ coords 5080.002 30.346 10889.004
 }
