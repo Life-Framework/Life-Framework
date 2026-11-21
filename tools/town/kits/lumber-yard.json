@@ -5,7 +5,8 @@
   "source": {
     "file": "tools/town/kits/sources/lumber-yard.layer",
     "origin": "0,0,0",
-    "frame": "origin-entity"
+    "frame": "origin-entity",
+    "also": ["tools/town/nightlights.mjs"]
   },
   "scope": "room",
   "anchoring": {
@@ -368,47 +369,50 @@
     {
       "id": "light-1",
       "name": "TimberYard_Light_1",
-      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
       "role": "light",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         -12,
-        2.8,
+        0,
         -9.6
       ],
       "yaw": 0,
-      "wall": "-z",
-      "floor": "f0"
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     },
     {
       "id": "light-2",
       "name": "TimberYard_Light_2",
-      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
       "role": "light",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         0,
-        2.8,
+        0,
         -9.6
       ],
       "yaw": 0,
-      "wall": "-z",
-      "floor": "f0"
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     },
     {
       "id": "light-3",
       "name": "TimberYard_Light_3",
-      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
+      "prefab": "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et",
       "role": "light",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
         12,
-        2.8,
+        0,
         -9.6
       ],
       "yaw": 0,
-      "wall": "-z",
-      "floor": "f0"
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     },
     {
       "id": "sign",
