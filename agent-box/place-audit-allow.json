@@ -153,6 +153,16 @@
       "match": "LF_Wheat(Patch|Stubble)_01",
       "kind": "contact",
       "why": "A wheat or stubble patch is 3 m of alpha cards whose feet sit 4 cm under the pivot so no card edge shows; the field follows rolling ground, and the ground varies up to 15 cm across 3 m, so one side sinks into the earth as grass does (#3290)."
+    },
+    {
+      "match": "^(Kit_mine_entrance_lintel|MineEntrance_Lintel) ",
+      "kind": "floating",
+      "why": "The timber lintel rests across the tops of the two upright log posts (MineEntrance_PostL/R, pitched 90, 3 m tall), 3 m above the terrain; the audit traces down to terrain only and does not read the pitched posts as support (contact sheet, #3857)."
+    },
+    {
+      "match": "^(Kit_plant_reagent_store_lamp_|PlantReagentStore_Lamp)",
+      "kind": "floating",
+      "why": "The two work lamps are wall lamps hung 2.8 m up on the -z wall of the plant shed (kit rows verb against wall, wall -z); a grid bay holds the kit without the shed shell, so the trace down reads open terrain (contact sheet, #3857). town fit seats them on the host wall."
     }
   ]
 }
