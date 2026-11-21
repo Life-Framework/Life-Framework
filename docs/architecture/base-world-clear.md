@@ -1,0 +1,60 @@
+# Clearing base-map clutter in a stamped building
+
+Card #3882 (spike G2 of the placement epic #3877, `docs/architecture/placement-system.md`). The question: how does the
+pack take vanilla clutter out of an island building it furnishes (the clothing store's own Broom, Bucket, Chair,
+Stepladder and CoatRack next to the kit's set), without editing the base map?
+
+## Answer: a local runtime hide by prefab inside the building's box
+
+`LF_BaseWorldClear.HideInBuilding(building, prefabs)` (`Feature/Placement/LF_BaseWorldClear.c`) queries the building's
+own oriented box (`GetBounds` plus `GetWorldTransform`, `BaseWorld.QueryEntitiesByOBB`) and hides every entity in it
+whose prefab is on the clear list. The hide is the one felled trees use (`LF_FelledTreesReplication.HideTree`): not
+drawn, not traced, simulation state `NONE`, so no collision.
+
+Why it needs no network and survives a restart: base-map entities are loaded by every machine from the same map
+data, so the server, each client and a late joiner each hide their own copy at load. Nothing is replicated and nothing
+is saved; the clear list is data in the island layer, applied again on every load. The carrier is
+`LF_BaseWorldClearComponent` (building prefab, clear list, search radius): at `OnPostInit` it waits one frame, finds the
+nearest copy of its building prefab within the radius and calls the hide.
+
+Proof: `LF_Test_BaseWorldClear` (`placement/base-world-clear`, WORLD) spawns two clothing stores
+(`{92E8F78BCF17D93D}ShopHouse_E_2I01t_clothesstore.et`), clears StepladderWooden_01 and CoatRack_01 from one, and checks
+both are hidden with no collision while the building, its other furniture (Table_01) and the second store's
+stepladder stay. A second apply hides nothing more. Red proof: `--red` with the hide skipped fails.
+
+Log line: `[LFDebug:Placement] base-world clear: hid 2 vanilla props in {92E8F78BCF17D93D}...clothesstore.et at <x,y,z>`.
+
+## What the prototype found
+
+- **Building furniture is not parented.** The furniture child (`{74A94121A3F00C4F}..._furniture_clothesstore_01.et`)
+  and its props have no `Hierarchy` component, so each spawns as its own world entity: `building.GetChildren()` finds
+  none of them. Matching must be spatial (the building's box), not by hierarchy.
+- **Inline prefab children have no prefab name.** `GetPrefabData().GetPrefabName()` is empty for a prop that is an
+  inline child of the furniture prefab. `SCR_BaseContainerTools.GetPrefabResourceName(data.GetPrefab())` walks the
+  container ancestry to the real prop (`Prefabs/Props/Civilian/StepladderWooden_01.et`). `LF_BaseWorldClear.PrefabOf`
+  wraps it; the stamp's audit sweep needs the same call to name a building's own furniture.
+- **Prefab paths are matched without the GUID, lower case** (`PathKey`), so a clear list may name `{GUID}path` or a
+  bare path.
+
+## The two rejected options
+
+| Option | Why not |
+|---|---|
+| Pack override of the furniture child by GUID (the Overthrow way) | Changes every copy of the building type: Everon has three clothing stores (Saint Philippe, Morton, Saint Pierre; `docs/everon/catalog-buildings.json`). A server that loads Overthrow beside us gets two addons overriding the same GUID, and the last loaded wins. Fine only when every copy is the same shop; kept as the optional path in placement-system.md. |
+| A sub-scene layer that deletes a base-map entity | No such API (placement-system.md "How other projects place shop interiors"). |
+
+## Limits
+
+- It hides, never deletes: a script that queries by prefab still finds the entity. Hidden props are untraceable, so
+  the F key and physics ignore them.
+- The box is the building's model bounds. Clutter outside a building (dock yard crates) needs its own box: the same
+  query with a kit-local box instead of the building's.
+- A hidden prop with its own `RplComponent` (a destructible vanilla prop) is hidden only locally on each machine, which
+  is what we want; its replicated state is untouched.
+
+## Next (split from this card)
+
+`town stamp` writes one `Fit_<slot>_clear` carrier per stamped copy from the kit's `stamp.clear` list (today
+`town author` records it as `{ prefab, until: "#3882" }`): a `GenericEntity` at the building origin with
+`LF_BaseWorldClearComponent`, the building prefab and the list. The carrier's height comes from the building at apply
+(radius search on x and z), so the layout stores no height.

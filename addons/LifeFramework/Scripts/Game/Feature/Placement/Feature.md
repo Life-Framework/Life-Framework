@@ -205,3 +205,10 @@ selected; aimed placement with rotate, place and cancel is #1028.
 - **Client offer (#3361):** on a client the house rule reads the house managers within 30 m and their replicated
   identifier and owner key (`LF_PlacementPolicy.GatherHouseClient`), never the server-only `Live()` table. It only
   decides whether the prompt shows; `Confirm` re-checks on the server.
+
+## Base-world clear (#3882)
+
+`LF_BaseWorldClear.HideInBuilding` hides the vanilla props on a clear list inside one building's box (invisible,
+untraceable, no collision), on each machine at load, with nothing replicated or saved. `LF_BaseWorldClearComponent` is
+the layer carrier a stamped kit uses. Write-up and test: `docs/architecture/base-world-clear.md`,
+`LF_Test_BaseWorldClear`.
