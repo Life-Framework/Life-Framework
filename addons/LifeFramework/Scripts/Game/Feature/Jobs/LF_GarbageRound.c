@@ -170,6 +170,9 @@ class LF_GarbageRound
 	static const string PLACE_DEPOT = "garbage_depot";
 	static const string PLACE_DUMP = "garbage_dump";
 
+	//! A round's bins stay its own this long (seconds); past it the owner is taken to have left, and the bins are free.
+	static const float CLAIM_SECONDS = 3600; // lf-fixed: a ceiling for an abandoned round, far above any real one
+
 	//! How often (ms) the sweep checks the trucks marked for removal; it runs only while one is marked.
 	protected static const int TRUCK_SWEEP_MS = 2000; // lf-fixed: an internal poll interval, not a game number
 
@@ -202,6 +205,29 @@ class LF_GarbageRound
 			return null;
 
 		return run;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: whether a round of another player holds this bin. A round whose truck is gone, or that has
+	//! run longer than CLAIM_SECONDS (its owner left without tipping), holds nothing, so an abandoned round
+	//! never keeps bins from everyone else for good.
+	static bool IsClaimedByOther(EntityID bin, string uid)
+	{
+		foreach (string owner, LF_GarbageRun run : Runs())
+		{
+			if (owner == uid || !run || !run.m_aBins.Contains(bin))
+				continue;
+
+			if (LF_JobGuards.Now() - run.m_fStartedAt > CLAIM_SECONDS)
+				continue;
+
+			if (!GetGame().GetWorld().FindEntityByID(run.m_Truck))
+				continue;
+
+			return true;
+		}
+
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -248,9 +274,18 @@ class LF_GarbageRound
 		LF_GarbageRoundConfig config = LF_GarbageRoundConfig.Get();
 		array<IEntity> bins = {};
 		LF_BinComponent.FindAllBins(bins);
+		int worldBins = bins.Count();
+		// Each open round has its own bins: one another player's live round holds is not on this route, so two
+		// rounds at once never share a bin (PR #3862 review: one bin counted for both).
+		for (int b = bins.Count() - 1; b >= 0; b--)
+		{
+			if (IsClaimedByOther(bins[b].GetID(), uid))
+				bins.Remove(b);
+		}
+
 		if (bins.IsEmpty())
 		{
-			LF_Debug.Warn(FEATURE, "garbage round start refused: the world has no bin");
+			LF_Debug.Warn(FEATURE, string.Format("garbage round start refused: no free bin (%1 in the world, the rest are on other rounds)", worldBins));
 			return LF_EGarbageResult.NO_BINS;
 		}
 
