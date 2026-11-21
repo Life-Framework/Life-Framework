@@ -27,11 +27,11 @@ LF_NpcBaseEntity Fit_saint_philippe_farm_supply_farm_supply_clerk : "{8CCD224BC5
  angleY -4
 }
 GenericEntity Fit_saint_philippe_farm_supply_farm_supply_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4434.322 16.825 10617.539
+ coords 4434.322 16.785 10617.539
  angleY -4
 }
 GenericEntity Fit_saint_philippe_farm_supply_farm_supply_crate : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 4435.974 16.947 10616.852
+ coords 4435.974 16.926 10616.852
  angleY -4
 }
 GenericEntity Fit_saint_philippe_farm_supply_farm_supply_sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
@@ -72,10 +72,10 @@ GenericEntity Fit_saint_philippe_farm_supply_farm_supply_till : "{4E4E1620C6B02E
    }
   }
  }
- coords 4434.322 17.839 10617.539
+ coords 4434.322 17.824 10617.539
  angleY -4
 }
 GenericEntity Fit_saint_philippe_farm_supply_implement_rack : "{21B9456F3B79410E}Prefabs/Harvest/LF_ImplementRack.et" {
- coords 4440.336 17.067 10617.558
+ coords 4439.681 16.913 10618.314
  angleY -4
 }

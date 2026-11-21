@@ -22,7 +22,11 @@ tools\cli release chapter <x.y.z> [--notes <file>]   the release
 tools\cli release chapter <x.y.z> --now              restart the server even with players on
 tools\cli release chapter <x.y.z> --verify           step 5 alone, after a scheduled restart
 tools\cli release chapter <x.y.z> --published        both items already published by hand: skip build and publish
+tools\cli release chapter <x.y.z> --only <fields>    step 4 pushes only these (config push --only), e.g. scenarioId,owner
 ```
+
+`--only` is for a PC without the host `secrets.json`: a full config push there blanks the join and admin
+passwords. `owner` is the mod's `config.json` (economy, jobs, day cycle); it keeps the box's staff webhook.
 
 `--published` is for a release the maintainer publishes through the Workbench GUI, where Visibility can be set to
 Public (the headless `-publishAddon` run keeps the item's last visibility). Publish core, then pack, at version

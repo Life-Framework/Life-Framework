@@ -60,6 +60,11 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	[RplProp()]
 	protected string m_sKeyId;
 
+	//! A service vehicle (#3875): a police car standing outside the station. No civilian lockpick, hotwire, key,
+	//! chop shop or garage touches it. Server-written by the parked-car marker that put it out; never saved.
+	[RplProp()]
+	protected bool m_bServiceVehicle;
+
 	//! The owner's record key (#3366). LF_VehicleOwnership's tables exist on the server only, so this
 	//! is what a client reads to offer the owner's own car its "Store in garage" row. Server-written
 	//! when the car is bought or comes out of the garage; empty on a car nobody owns. Display gate
@@ -161,6 +166,37 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return True for a service vehicle (a police car on a marker): civilians cannot pick, wire, key, chop or store it.
+	bool IsServiceVehicle()
+	{
+		return m_bServiceVehicle;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A service vehicle opens and starts for an officer on duty and for nobody else, key or not. Reads the
+	//! replicated account state, so the client's offer and the server's check agree.
+	//! \param user The character asking.
+	//! \return True when this is a service vehicle and user is on duty as police.
+	bool IsServiceDriver(IEntity user)
+	{
+		if (!m_bServiceVehicle || !user)
+			return false;
+
+		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: marks or clears the service-vehicle flag.
+	void SetServiceVehicle(bool service)
+	{
+		if (!Replication.IsServer() || m_bServiceVehicle == service)
+			return;
+
+		m_bServiceVehicle = service;
+		Replication.BumpMe();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the engine may start for this player without a key.
 	void SetHotwiredBy(int playerId)
 	{
@@ -237,6 +273,13 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 
 		if (!Replication.IsServer() || !user || !GetOwner())
 			return false;
+
+		// A police car is nobody's to lock or unlock with a key (#3875); an officer on duty opens it.
+		if (m_bServiceVehicle && !IsServiceDriver(user))
+		{
+			LF_Debug.Warn("VehicleLock", string.Format("toggle refused (%1): service vehicle, user not on duty as police", source));
+			return false;
+		}
 
 		// A company garbage truck waiting to be taken back is never lockable (#3325).
 		if (LF_GarbageRound.IsPendingRemoval(GetOwner()))
@@ -417,6 +460,10 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	{
 		if (!user)
 			return false;
+
+		// A service vehicle takes no key: being on duty as police is the key (lock, U key, engine start).
+		if (m_bServiceVehicle)
+			return IsServiceDriver(user);
 
 		CharacterControllerComponent characterController = LF_Component<CharacterControllerComponent>.Find(user);
 		if (characterController && IsValidKey(characterController.GetAttachedGadgetAtLeftHandSlot()))

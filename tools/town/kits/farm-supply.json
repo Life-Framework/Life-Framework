@@ -45,7 +45,8 @@
       ],
       "yaw": 180,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.04
     },
     {
       "id": "farm-supply-till",
@@ -55,7 +56,7 @@
       "verb": "on farm-supply-counter",
       "offset": [
         -8,
-        1.039,
+        1.024,
         -8
       ],
       "yaw": 180,
@@ -140,7 +141,8 @@
       ],
       "yaw": 180,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.021
     },
     {
       "id": "farm-supply-board",
@@ -179,9 +181,9 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -14,
+        -13.4,
         0,
-        -7.6
+        -8.4
       ],
       "yaw": 180,
       "wall": "free",

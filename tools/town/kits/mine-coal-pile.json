@@ -35,12 +35,12 @@
     {
       "id": "heap-1",
       "name": "MineCoalPile_Heap1",
-      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         -1,
-        0,
+        0.082,
         -0.5
       ],
       "yaw": 0,
@@ -51,12 +51,12 @@
     {
       "id": "heap-2",
       "name": "MineCoalPile_Heap2",
-      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        6.8,
-        0,
+        7.5,
+        0.082,
         -0.5
       ],
       "yaw": 90,
@@ -67,12 +67,12 @@
     {
       "id": "heap-3",
       "name": "MineCoalPile_Heap3",
-      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         -8.2,
-        0,
+        0.082,
         -0.5
       ],
       "yaw": 90,
@@ -120,7 +120,7 @@
       "verb": "on floor",
       "offset": [
         -6,
-        0,
+        -0.329,
         6
       ],
       "yaw": 90,
@@ -136,7 +136,7 @@
       "verb": "on floor",
       "offset": [
         -8.4,
-        0,
+        -0.329,
         6
       ],
       "yaw": 90,
