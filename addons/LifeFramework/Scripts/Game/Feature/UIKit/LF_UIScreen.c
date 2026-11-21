@@ -1082,7 +1082,11 @@ class LF_UIScreen
 		}
 
 		box.SetIsColorInherited(false);
-		box.SetColor(GetSkin().m_Ink);
+		Color fieldInk = GetSkin().m_FieldInk;
+		if (!fieldInk)
+			fieldInk = GetSkin().m_Ink;
+
+		box.SetColor(fieldInk);
 		// The caption above the blank names it. The vanilla placeholder draws light grey, which
 		// does not read on paper.
 		box.SetPlaceholderText("");
