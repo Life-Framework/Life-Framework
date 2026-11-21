@@ -115,7 +115,7 @@
       "verb": "on floor",
       "offset": [
         5.8,
-        0,
+        0.017,
         1.2
       ],
       "yaw": 0,
@@ -130,7 +130,7 @@
       "verb": "on floor",
       "offset": [
         6.6,
-        0,
+        0.017,
         1.2
       ],
       "yaw": 0,
@@ -145,7 +145,7 @@
       "verb": "on floor",
       "offset": [
         6.2,
-        0,
+        0.017,
         2.1
       ],
       "yaw": 0,
@@ -219,7 +219,7 @@
       "role": "light",
       "verb": "against wall",
       "offset": [
-        2.5,
+        4.4,
         2.8,
         0.2
       ],
@@ -234,7 +234,7 @@
       "role": "light",
       "verb": "against wall",
       "offset": [
-        5.2,
+        6,
         2.8,
         0.2
       ],

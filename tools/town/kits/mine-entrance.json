@@ -55,9 +55,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -1.5,
-        1.5,
-        5
+        -1.4,
+        1.472,
+        5.2
       ],
       "yaw": 0,
       "mount": "terrain",
@@ -73,9 +73,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        1.5,
-        1.5,
-        5
+        1.4,
+        1.472,
+        5.2
       ],
       "yaw": 0,
       "mount": "terrain",
@@ -92,8 +92,8 @@
       "verb": "on floor",
       "offset": [
         0,
-        3.05,
-        5
+        3.011,
+        5.2
       ],
       "yaw": 90,
       "mount": "terrain",
@@ -104,12 +104,12 @@
     {
       "id": "heap-l",
       "name": "MineEntrance_HeapL",
-      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         -5.6,
-        0,
+        0.082,
         1.5
       ],
       "yaw": 90,
@@ -120,12 +120,12 @@
     {
       "id": "heap-r",
       "name": "MineEntrance_HeapR",
-      "prefab": "{086E85DB687EA38F}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_medium.et",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
         5.6,
-        0,
+        0.082,
         1.5
       ],
       "yaw": 90,
@@ -141,7 +141,7 @@
       "verb": "on floor",
       "offset": [
         -1,
-        0,
+        -0.329,
         8.5
       ],
       "yaw": 0,
