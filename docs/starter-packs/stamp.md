@@ -15,6 +15,7 @@ tools\cli town author extract <the cell's Grid_*.layer> '<group>' --kit <kit> [-
 tools\cli town author --reopen <kit>                       # edit it again: a bay is rebuilt from the kit
 tools\cli town stamp <kit> --dry                          # every mapped island copy, writes nothing
 tools\cli town stamp <kit>                                # writes Place_<place>_<slot>.layer + claim, then the island audit
+tools\cli town stamp <kit> --terrain                      # a kit with yard rows: probe the island ground first (one test-server boot per slot)
 ```
 
 The bay is scratch space (six 2x2 bays, `docs/architecture/world-zones.md` "Authoring bays"): extract saves the kit, archives the layer as `tools/town/kits/sources/<kit>.layer` and frees the bay so the next shop can use it; `--keep-bay` keeps it. No free bay means another author has not extracted yet.
@@ -45,6 +46,12 @@ The bay is scratch space (six 2x2 bays, `docs/architecture/world-zones.md` "Auth
   steps (a door recess, a lintel) slides the row along the wall in 10 cm steps to the nearest flat run that cuts nothing, at
   most 3 m each way (`slide: <m>` on the kit row changes the reach). No flat run in reach: it stays seated at its centre and the
   stamp warns; the island audit decides. Floor rows are never moved by the stamp.
+- Yard rows (`mount: terrain` or `ground`, props on open ground round the building) are seated on the ISLAND ground, never on the flat grid
+  height (#3961): the row keeps its building-relative x, z and yaw, and its y comes from `tools/town/terrain/<place>-<slot>.json` (the
+  pins `town fit --terrain` keeps too), written in the frame its prefab reads (`tools/lib/height-frame.mjs`). A stamp that needs a point
+  with no pin is refused with `run town stamp <kit> --terrain`; that boots the island once per slot, keeps the pins, and plans again.
+  A prop on a slope rests on the highest of its five footprint points, so its high side never sinks. A kit that stamps without a
+  readable host model and has yard rows is refused.
 - Island layer branches are `ws/town-draft-<place>-<slot>-...` (`validate-island-zones`).
 
 ## Traps
