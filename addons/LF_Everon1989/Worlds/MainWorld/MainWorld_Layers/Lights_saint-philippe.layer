@@ -256,42 +256,42 @@ GenericEntity LampHead_saint_philippe_3 : "{E8943F7063E1262D}Prefabs/Props/Light
  coords 4521.9 17.15 10840.3
 }
 GenericEntity Lamp_saint_philippe_1 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4522.26 16.05 10631.99
+ coords 4522.26 0 10631.99
  angleY -9.05
 }
 GenericEntity Lamp_saint_philippe_2 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4425.2 12.04 10688.38
+ coords 4425.2 0.23 10688.38
  angleY 83.02
 }
 GenericEntity Lamp_saint_philippe_3 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4409.3 11.03 10700.46
+ coords 4409.3 0 10700.46
  angleY -96.62
 }
 GenericEntity Lamp_saint_philippe_4 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4412.48 11.93 10676.59
+ coords 4412.48 0 10676.59
  angleY -98.19
 }
 GenericEntity Lamp_saint_philippe_5 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4469.92 13.71 10696.33
+ coords 4469.92 0.2 10696.33
  angleY 80.11
 }
 GenericEntity Lamp_saint_philippe_6 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4403.59 12.5 10654.35
+ coords 4403.59 0 10654.35
  angleY -7.66
 }
 GenericEntity Lamp_saint_philippe_7 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4427.39 12.15 10670.51
+ coords 4427.39 0 10670.51
  angleY 83.02
 }
 GenericEntity Lamp_saint_philippe_8 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4383.36 9.83 10702
+ coords 4383.36 0 10702
  angleY -9.16
 }
 GenericEntity Lamp_saint_philippe_9 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4459.65 12.46 10748.54
+ coords 4459.65 0 10748.54
  angleY 79.07
 }
 GenericEntity Lamp_saint_philippe_10 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {
- coords 4364.88 9.28 10699.11
+ coords 4364.88 0 10699.11
  angleY -8.61
 }

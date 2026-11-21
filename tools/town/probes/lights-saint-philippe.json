@@ -204,43 +204,53 @@
  "lamps": {
   "Lamp_1": {
    "y": 16.05,
-   "on": "Eden"
+   "on": "Eden",
+   "ty": 16.05
   },
   "Lamp_2": {
    "y": 12.04,
-   "on": "AsphaltPavement_01_Narrow_4m_90"
+   "on": "AsphaltPavement_01_Narrow_4m_90",
+   "ty": 11.81
   },
   "Lamp_3": {
    "y": 11.03,
-   "on": "Eden"
+   "on": "Eden",
+   "ty": 11.03
   },
   "Lamp_4": {
    "y": 11.93,
-   "on": "Eden"
+   "on": "Eden",
+   "ty": 11.93
   },
   "Lamp_5": {
    "y": 13.71,
-   "on": "AsphaltPavement_01_Narrow_4m_A"
+   "on": "AsphaltPavement_01_Narrow_4m_A",
+   "ty": 13.51
   },
   "Lamp_6": {
    "y": 12.5,
-   "on": "Eden"
+   "on": "Eden",
+   "ty": 12.5
   },
   "Lamp_7": {
    "y": 12.15,
-   "on": "Eden"
+   "on": "Eden",
+   "ty": 12.15
   },
   "Lamp_8": {
    "y": 9.83,
-   "on": "Eden"
+   "on": "Eden",
+   "ty": 9.83
   },
   "Lamp_9": {
    "y": 12.46,
-   "on": "Eden"
+   "on": "Eden",
+   "ty": 12.46
   },
   "Lamp_10": {
    "y": 9.28,
-   "on": "Eden"
+   "on": "Eden",
+   "ty": 9.28
   }
  }
 }
