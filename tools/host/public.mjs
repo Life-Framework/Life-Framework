@@ -20,6 +20,7 @@
 // pre-flight refuses a public boot until that confirmation matches the live server.json.
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { ISLAND_MISSION } from "../lib/worlds.mjs";
 
 const HEX16 = /^[0-9A-F]{16}$/;
 const SEMVER = /^\d+\.\d+\.\d+$/;
@@ -110,7 +111,8 @@ export function publicPreflight({ serverJson, confirm, drift = [], scenario }) {
     else if (JSON.stringify(live) !== JSON.stringify(confirmed)) refusals.push(`the confirmed Workshop IDs (${confirmed.join(",")}) are not server.json game.mods (${live.join(",")}): run \`tools\\cli host config apply --mods <core-id>,<pack-id>\` again`);
   }
   if (typeof g.password !== "string" || !g.password.trim()) refusals.push("server.json game.password is empty: anyone could join the alpha. Set game.password in the host's secrets.json and run `tools\\cli host config apply`");
-  if (g.scenarioId !== scenario) refusals.push(`server.json game.scenarioId is ${JSON.stringify(g.scenarioId ?? null)}, not the flagship ${scenario}`);
+  // #2212: the weekend cutover boots the hidden island header; the flagship header (rollback) stays accepted.
+  if (g.scenarioId !== scenario && g.scenarioId !== ISLAND_MISSION) refusals.push(`server.json game.scenarioId is ${JSON.stringify(g.scenarioId ?? null)}, not the flagship ${scenario}`);
   if (g.visible === false) refusals.push("server.json game.visible is false: the server would not show in the server browser");
   if (drift.length) refusals.push(`the host config drifted from server/flagship (${drift.map((c) => `${c.file} ${c.field ?? c.note}`).slice(0, 4).join("; ")}): run \`tools\\cli host config apply\` (\`tools\\cli host drift\` lists it)`);
   if (!Array.isArray(g.admins) || !g.admins.length) warnings.push("server.json game.admins is empty: nobody has admin powers. Join once, read your id with `tools\\cli host attendance`, put it in server/flagship/staff.txt and apply again");
