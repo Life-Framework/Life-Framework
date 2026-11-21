@@ -9,6 +9,23 @@ GenericEntity Fit_saint_philippe_clothing_Place {
  }
  coords 4441.4 11.5 10788.8
 }
+GenericEntity Fit_saint_philippe_clothing_clear {
+ components {
+  LF_BaseWorldClearComponent "{E7400E19F85E1BC2}" {
+   m_sBuilding "{92E8F78BCF17D93D}Prefabs/Structures/Commercial/Shops/ShopHouse_E_2l01/ShopHouse_E_2I01t_clothesstore.et"
+   m_aPrefabs {
+    "{1AB7A2C69A30391D}Prefabs/Props/Furniture/CoatRack_01.et"
+    "{4107C4893DF2D0D7}Prefabs/Props/Furniture/Chair_02/Chair_02_red.et"
+    "{4A6CAB11852FD31C}Prefabs/Props/Furniture/Chair_01/Chair_01_yellow.et"
+    "{76E3962626F4B633}Prefabs/Props/Furniture/CoatRack_02.et"
+    "{7BB30759D09C70B5}Prefabs/Props/Civilian/StepladderWooden_01.et"
+    "{9C231B6AC1BD0A26}Prefabs/Props/Civilian/Broom_01.et"
+    "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et"
+   }
+  }
+ }
+ coords 4441.4 11.3 10788.8
+}
 GenericEntity Fit_saint_philippe_clothing_shop_house_e_2_i01t_furniture_clothesstore_lf_01 : "{75EAFBE6D0099EB8}Prefabs/Buildings/ClothingStore/Furniture/ShopHouse_E_2I01t_furniture_clothesstore_lf_01.et" {
  coords 4441.4 11.3 10788.8
  angleY 153
