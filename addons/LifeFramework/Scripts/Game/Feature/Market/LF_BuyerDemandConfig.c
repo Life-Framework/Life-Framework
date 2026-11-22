@@ -255,11 +255,13 @@ class LF_BuyerDemandList : LF_ConfigList
 	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
 	{
 		LF_BuyerDemandRow row = LF_BuyerDemandRow.Cast(record);
-		LF_BuyerDemandRow before = LF_BuyerDemandRow.Make(row.m_sBuyer, row.m_sGood, row.m_iCap, row.m_iRefillPerHour, row.m_iPrice, row.m_sCurveGood, row.m_iLotSize);
+		LF_BuyerDemandRow before = LF_BuyerDemandRow.Make(row.m_sBuyer, row.m_sGood, row.m_iCap, row.m_iRefillPerHour, row.m_iPrice, row.m_sCurveGood, row.m_iLotSize, row.m_iPeriodHours);
 		int changed;
 		if (container.IsVariableSetDirectly("m_iCap") && container.Get("m_iCap", row.m_iCap))
 			changed++;
 		if (container.IsVariableSetDirectly("m_iRefillPerHour") && container.Get("m_iRefillPerHour", row.m_iRefillPerHour))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iPeriodHours") && container.Get("m_iPeriodHours", row.m_iPeriodHours))
 			changed++;
 		if (container.IsVariableSetDirectly("m_iPrice") && container.Get("m_iPrice", row.m_iPrice))
 			changed++;
@@ -274,6 +276,7 @@ class LF_BuyerDemandList : LF_ConfigList
 			LF_Debug.Error(LF_BuyerDemandConfig.FEATURE, string.Format("buyerDemand.rows %1: pack patch refused, keeping the shipped row: %2", row.Label(), problem));
 			row.m_iCap = before.m_iCap;
 			row.m_iRefillPerHour = before.m_iRefillPerHour;
+			row.m_iPeriodHours = before.m_iPeriodHours;
 			row.m_iPrice = before.m_iPrice;
 			row.m_sCurveGood = before.m_sCurveGood;
 			row.m_iLotSize = before.m_iLotSize;

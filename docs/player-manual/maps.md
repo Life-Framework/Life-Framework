@@ -18,7 +18,7 @@ Closer in, the centre of town:
 | # | Place (in-game name) | Kind | What you do here |
 |---|---|---|---|
 | 1 | Hostel | Services | Where a new character wakes. Safe zone around it. |
-| 2 | Registry clerk: ID cards | Services | Town hall: ID card, driving licence, the arrival quest. |
+| 2 | Town clerk: ID cards | Services | Town hall: ID card, driving licence, the arrival quest. |
 | 3 | Notice board | Services | The town board: every place in town, with a waypoint button. |
 | 4 | Parcel depot (post office) | Services | Sign up for courier work, take parcels. |
 | 5 | Bank | Services | Teller for deposits and withdrawals. |

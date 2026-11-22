@@ -92,6 +92,11 @@ game loads. The pack test leg closes that gap:
   runs the pack leg as one more job beside the shards (`runPasses`, #2789), so it costs no wall-clock of its own when a second lane is free
   and a gate that shards runs the pack tests at all; a shard child never plans a pack leg itself. `planE2eLegs` gives PERSISTENCE pack tests a save and reload pair
   on the same header. `pack-test-leg-selftest` proves the plan, the boundary and the header.
+- **The town header (TP-6a, #4264).** `LF_PlaytestTown.conf` lists every overlay the flagship header lists except eight
+  island-only ones (map areas, sites, fishing x3, race courses, events, residents: island coordinates, places or water).
+  `validate-pack-missions` holds it (`TOWN_EXCLUDED_OVERLAYS` names each exception and why). `--town` boots bare
+  DebugWorld with no header, so to prove the town resolves the pack's tables boot its header:
+  `tools\cli test --no-build --only LF_Test_EveronTownOverlays --world "{1054CC8646357708}Missions/LF_PlaytestTown.conf"`.
 - **The first one.** `everon/drinks-impair` (`LF_Test_EveronDrinksImpair`, #2003) asserts that the moonshine
   and beer rows apply over the neutral core table under the pack header. It replaced
   `pack-drinks-impair-selftest.mjs`. The townsfolk test of #1960 waits for a pack-side grid layer: its

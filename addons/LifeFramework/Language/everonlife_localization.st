@@ -2855,6 +2855,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Connecting to the online service. Your registration form opens in a moment."
      Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
     }
+    CustomStringTableItem "{AEB31D9E1738B09F}" {
+     Id "LF-CallOutcome_NoCall"
+     Target_en_us "That call is not open."
+     Comment "Toast to the officer: the call is closed, unknown or no outcome was chosen (#4203)."
+    }
+    CustomStringTableItem "{0FC408BF75CB2693}" {
+     Id "LF-CallOutcome_NoOneFound"
+     Target_en_us "Call closed: no one found."
+     Comment "Toast to the officer: the call closed with the outcome no one found (#4203)."
+    }
+    CustomStringTableItem "{0B1CFA4FF5F9A337}" {
+     Id "LF-CallOutcome_NoScene"
+     Target_en_us "Dispatch cannot place this call on the map. Close it with a fine at the scene."
+     Comment "Toast to the officer: the call has no position to check presence against (#4203)."
+    }
+    CustomStringTableItem "{E371BE1A6F20F92F}" {
+     Id "LF-CallOutcome_NotHeld"
+     Target_en_us "That call is not yours."
+     Comment "Toast to the officer: another officer holds the call (#4203)."
+    }
+    CustomStringTableItem "{B6C9B26C8B13D5D5}" {
+     Id "LF-CallOutcome_Resolved"
+     Target_en_us "Call closed: resolved."
+     Comment "Toast to the officer: the call closed as resolved (#4203)."
+    }
+    CustomStringTableItem "{BF2441E69414044F}" {
+     Id "LF-CallOutcome_TooFar"
+     Target_en_us "You are too far from the scene to close this call. Get within %1 m."
+     Comment "Toast to the officer: a close from outside the scene radius; %1 is the radius in meters (#4203)."
+    }
+    CustomStringTableItem "{020D9D70E1490659}" {
+     Id "LF-CallOutcome_Unfounded"
+     Target_en_us "Call closed: unfounded."
+     Comment "Toast to the officer: the call closed as unfounded (#4203)."
+    }
     CustomStringTableItem "{B27102B0C486F20E}" {
      Id "LF-Cargo_Empty"
      Target_en_us "The bed is empty."
@@ -8218,6 +8253,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Fare"
      Comment "Map mark and waypoint label: the destination of an accepted taxi fare (driver and passenger)."
     }
+    CustomStringTableItem "{6B2C5C7E28A957E6}" {
+     Id "LF-JobMap_PostLoad"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run starts at (the pack names it)."
+    }
+    CustomStringTableItem "{74032FC49746CAB7}" {
+     Id "LF-JobMap_PostReturn"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run returns the van to (the pack names it)."
+    }
+    CustomStringTableItem "{78DC7678389C4C63}" {
+     Id "LF-JobMap_PostUnload"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run delivers to (the pack names it)."
+    }
     CustomStringTableItem "{8C41F6B2A09D3E75}" {
      Id "LF-JobMap_Stop"
      Target_en_us "Delivery stop"
@@ -10167,6 +10217,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You wear a New Life wristband. Stay away from where you died for %1 minutes."
      Comment "Toast on waking in hospital after a real death. %1 is the minutes."
     }
+    CustomStringTableItem "{60ED2D502AEE4A5F}" {
+     Id "LF-Newspaper_BoardsBody"
+     Target_en_us "The notice boards carry the latest notices, job offers and prices. Read them before you head out."
+     Comment "Placeholder story text."
+    }
+    CustomStringTableItem "{A66899FB35600F3C}" {
+     Id "LF-Newspaper_BoardsHeadline"
+     Target_en_us "Notices on the boards"
+     Comment "Placeholder story headline: pointer to the town boards."
+    }
+    CustomStringTableItem "{A8404CF269808C13}" {
+     Id "LF-Newspaper_Dateline"
+     Target_en_us "This week's edition"
+     Comment "Newspaper dateline under the masthead, until the edition builder prints one."
+    }
+    CustomStringTableItem "{969E4E2B63561263}" {
+     Id "LF-Newspaper_ItemDesc"
+     Target_en_us "This week's edition, folded to a quarter. Read it for the news."
+     Comment "Item description: the weekly newspaper (WO-W2.1)."
+    }
+    CustomStringTableItem "{46E2290C5213FC5C}" {
+     Id "LF-Newspaper_ItemName"
+     Target_en_us "Newspaper"
+     Comment "Item name: the weekly newspaper (WO-W2.1)."
+    }
+    CustomStringTableItem "{4E0E41414B63DFEF}" {
+     Id "LF-Newspaper_Masthead"
+     Target_en_us "The Courier"
+     Comment "Newspaper masthead. Neutral core text; a pack overrides it with the island name."
+    }
+    CustomStringTableItem "{BBC844EEF191940C}" {
+     Id "LF-Newspaper_QuietBody"
+     Target_en_us "Nothing worth printing has happened yet. The next edition will tell you what people did this week."
+     Comment "Placeholder story text."
+    }
+    CustomStringTableItem "{236EB90A4E23A5EB}" {
+     Id "LF-Newspaper_QuietHeadline"
+     Target_en_us "A quiet week"
+     Comment "Placeholder story headline printed before the first edition exists."
+    }
+    CustomStringTableItem "{0CF5983D9127E9D1}" {
+     Id "LF-Newspaper_Read"
+     Target_en_us "Read the newspaper"
+     Comment "Item action: open the newspaper page (WO-W2.1)."
+    }
     CustomStringTableItem "{CA9A4B5596B7F647}" {
      Id "LF-Notify_TitleEms"
      Target_en_us "[EMS] EMERGENCY"
@@ -10942,6 +11037,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Close the ledger"
      Comment "Ledger close button."
     }
+    CustomStringTableItem "{D2628F8C9104150A}" {
+     Id "LF-Org_Decline"
+     Target_en_us "Decline %1"
+     Comment "Interaction entry: turn down the offer of the person faced. %1 is the organization."
+    }
+    CustomStringTableItem "{1686AD303E7B2F40}" {
+     Id "LF-Org_DeclineGeneric"
+     Target_en_us "Decline"
+     Comment "Fallback name of the decline entry; the handler names the organization."
+    }
+    CustomStringTableItem "{E7F11EA621C1BA74}" {
+     Id "LF-Org_Declined"
+     Target_en_us "You turned down %1."
+     Comment "Toast to the invitee after Decline. %1 is the organization."
+    }
     CustomStringTableItem "{BA50E8C027423E0C}" {
      Id "LF-Org_DemoteGeneric"
      Target_en_us "Demote"
@@ -11142,6 +11252,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not owned"
      Comment "Ledger row status: upgrade not owned."
     }
+    CustomStringTableItem "{6361E95B1AFC26BD}" {
+     Id "LF-Org_OfferDeclined"
+     Target_en_us "Your offer was turned down."
+     Comment "Toast to the inviter: the invitee chose Decline."
+    }
     CustomStringTableItem "{3E111C0C61E4B594}" {
      Id "LF-Org_OfferMade"
      Target_en_us "Offer made. They join by facing you and choosing Join."
@@ -11261,6 +11376,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_YourRank"
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
+    }
+    CustomStringTableItem "{6D41A0F3C8B2957E}" {
+     Id "LF-Outpost_TraderRefusesOfficer"
+     Target_en_us "We don't deal with the law here. Take the badge off and come back."
+     Comment "Toast to an on-duty officer: a trader inside a rebel outpost refuses to serve them (#4217)."
+    }
+    CustomStringTableItem "{A3F59E1B7C402D86}" {
+     Id "LF-Outpost_TraderRefusesOfficer_Title"
+     Target_en_us "Not serving you"
+     Comment "Title of the outpost trader's refusal toast to an on-duty officer (#4217)."
     }
     CustomStringTableItem "{4EF600B18D7A2C1B}" {
      Id "LF-Pager_None"
@@ -12710,12 +12835,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3C66967567AE5B29}" {
      Id "LF-Postal_StartDesc"
-     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back."
+     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back. A run handed in too fast pays nothing."
      Comment "Description of the action that starts the postal van run."
     }
     CustomStringTableItem "{5B2665B387B8B998}" {
      Id "LF-Postal_Started"
-     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here."
+     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here. Hand the run in after at least %1 minutes, or nothing is paid."
      Comment "Toast of the postal van run: the run began."
     }
     CustomStringTableItem "{108D5BC1F68C84DF}" {
@@ -12725,7 +12850,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1A0210D5BCC4C762}" {
      Id "LF-Postal_TooFast"
-     Target_en_us "That was too fast to be honest work. Nothing is paid yet."
+     Target_en_us "Too fast: a postal run pays only after %1 minutes on the road. Nothing is paid yet. Hand it in again later."
      Comment "Toast of the postal van run: handed in faster than the run's least time."
     }
     CustomStringTableItem "{EA1D8BDBDABE7D01}" {
@@ -12737,6 +12862,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Postal_VanFar"
      Target_en_us "Bring the van closer to the office first."
      Comment "Toast of the postal van run: the van is not at the office."
+    }
+    CustomStringTableItem "{CBCD8E065CD8DCBC}" {
+     Id "LF-Postal_Warn"
+     Target_en_us "Get back to the post van within %1 seconds or the run is called off and nothing is paid."
+     Comment "Toast to a postal driver who has walked away from the van, before the run is called off."
     }
     CustomStringTableItem "{3243A56EDB316D6E}" {
      Id "LF-Postal_WrongOffice"
@@ -13301,6 +13431,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You answered %1 of %2 correctly. %3 are needed. Read the rules below and try again."
      Comment "Rules quiz fail page; %1 = right, %2 = questions, %3 = needed (#915)."
     }
+    CustomStringTableItem "{2F605F4A96D729D6}" {
+     Id "LF-Quiz_Next"
+     Target_en_us "Next question"
+     Comment "Button on the rules quiz feedback page."
+    }
     CustomStringTableItem "{0D01FDAE07097973}" {
      Id "LF-Quiz_NoAttempts"
      Target_en_us "That was your last attempt. Read the server rules and join again."
@@ -13321,15 +13456,30 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Try again"
      Comment "Button on the rules quiz fail page (#915)."
     }
+    CustomStringTableItem "{34A7F3239AB0E500}" {
+     Id "LF-Quiz_Right"
+     Target_en_us "Right."
+     Comment "Heading on the rules quiz feedback page after a correct answer."
+    }
     CustomStringTableItem "{17745EEB536A35A9}" {
      Id "LF-Quiz_Rules"
      Target_en_us "THE RULES YOU MISSED"
      Comment "Heading over the explanations on the rules quiz fail page (#915)."
     }
+    CustomStringTableItem "{3599C8D083954456}" {
+     Id "LF-Quiz_SeeResult"
+     Target_en_us "See my result"
+     Comment "Button on the rules quiz feedback page after the last question."
+    }
     CustomStringTableItem "{1682AE4AD3653A8D}" {
      Id "LF-Quiz_Title"
      Target_en_us "RULES ORIENTATION"
      Comment "Printed heading of the rules quiz sheet (#915)."
+    }
+    CustomStringTableItem "{5CD3CA45AE1C3A5D}" {
+     Id "LF-Quiz_Wrong"
+     Target_en_us "Not quite. This is the rule:"
+     Comment "Heading on the rules quiz feedback page after a wrong answer; the rule line follows."
     }
     CustomStringTableItem "{6DCFAEB06DBB55B8}" {
      Id "LF-RaceBoard_None"
@@ -13601,6 +13751,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sign the form before you go into town."
      Comment "Written on the registration form when the player put it away unsigned and it came back."
     }
+    CustomStringTableItem "{DDF698E219828CF0}" {
+     Id "LF-Reg_Outfit"
+     Target_en_us "Your clothes are your own to change: visit a clothing store once you have the money."
+     Comment "Registration form hint: the look is chosen at a clothing store, not on this form."
+    }
     CustomStringTableItem "{DE4D23E044F55A7E}" {
      Id "LF-Reg_Sign"
      Target_en_us "Sign the form"
@@ -13610,6 +13765,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{A422076F6E2911FE}" {
+     Id "LF-Reg_Welcome"
+     Target_en_us "Welcome. You are about to start a new life here: get a job, earn a living and keep to the rules you just read."
+     Comment "Registration form welcome line, above the instruction. Core text is neutral; the pack overrides it."
     }
     CustomStringTableItem "{FC5B69E6943AB0F2}" {
      Id "LF-RepairKit_Action"
@@ -15095,6 +15255,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "a trader"
      Comment "Holder label on a rented stall whose holder has no name (#2925)."
     }
+    CustomStringTableItem "{044EF7358D99C82D}" {
+     Id "LF-StashContainer_Closed"
+     Target_en_us "The container won't open"
+     Comment "Refusal on the short container: misconfigured or no player (#4195)."
+    }
+    CustomStringTableItem "{DC4609ADE4E93025}" {
+     Id "LF-StashContainer_Empty"
+     Target_en_us "Empty. Come back later"
+     Comment "Refusal on the short container: already taken, the refill timer is running (#4195)."
+    }
+    CustomStringTableItem "{DA310007BD3F516C}" {
+     Id "LF-StashContainer_NeedKey"
+     Target_en_us "Locked. You need the clerk's key"
+     Comment "Refusal on the short container: the player carries no key from the tally clerk (#4195)."
+    }
+    CustomStringTableItem "{BA110B9CEFF14792}" {
+     Id "LF-StashContainer_Open"
+     Target_en_us "Open the container"
+     Comment "Action: open the short container with the tally clerk's key and take the stock (#4195)."
+    }
     CustomStringTableItem "{C6CD1F2F0A61F3B5}" {
      Id "LF-Stolen_Already"
      Target_en_us "The {police} already have this one"
@@ -15678,6 +15858,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
     }
+    CustomStringTableItem "{3723AB61E29CDCE1}" {
+     Id "LF-ToolCondition_Good"
+     Target_en_us "%1 is in good shape"
+     Comment "Action text: tool condition at or above the good threshold (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{2E6DE213CABD02C9}" {
+     Id "LF-ToolCondition_Poor"
+     Target_en_us "%1 is badly worn and slow"
+     Comment "Action text: tool condition in the poor band, working slower (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{C23C3D6D9E4BDB06}" {
+     Id "LF-ToolCondition_Worn"
+     Target_en_us "%1 is getting worn"
+     Comment "Action text: tool condition in the worn band (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{DE472F7EE6D1E8FD}" {
+     Id "LF-ToolCondition_WornOut"
+     Target_en_us "%1 is worn out but still works, slowly"
+     Comment "Action text: tool at zero condition; it still works at half speed (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{75960D0103B97E17}" {
+     Id "LF-ToolTier_Fine"
+     Target_en_us "Fine"
+     Comment "Tool tier name (#4182)"
+    }
+    CustomStringTableItem "{72AC08B33DD29667}" {
+     Id "LF-ToolTier_Standard"
+     Target_en_us "Standard"
+     Comment "Tool tier name (#4182)"
+    }
+    CustomStringTableItem "{10F79179EEA9F6E8}" {
+     Id "LF-ToolTier_Worn"
+     Target_en_us "Worn"
+     Comment "Tool tier name (#4182)"
+    }
     CustomStringTableItem "{7038FBC3DB7D537B}" {
      Id "LF-TouristMap_Marked"
      Target_en_us "You pencil %1 new places onto your map."
@@ -15937,6 +16152,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Unflip_TooFar"
      Target_en_us "Get closer to push it over."
      Comment "Unflip refusal toast (#3333): the player is out of reach."
+    }
+    CustomStringTableItem "{64FAA43ACB2D5BCD}" {
+     Id "LF-UnitStatus_ActionAvailable"
+     Target_en_us "Radio: available"
+     Comment "Police car action row: tell dispatch this unit is free for calls."
+    }
+    CustomStringTableItem "{8F7C7A324959094B}" {
+     Id "LF-UnitStatus_ActionBusy"
+     Target_en_us "Radio: busy"
+     Comment "Police car action row: tell dispatch this unit is tied up."
+    }
+    CustomStringTableItem "{6735AE870F08B8D7}" {
+     Id "LF-UnitStatus_Available"
+     Target_en_us "available"
+     Comment "Unit status word on the dispatch board."
+    }
+    CustomStringTableItem "{E4EDC2B539CB3C85}" {
+     Id "LF-UnitStatus_BoardHeading"
+     Target_en_us "UNITS ON THE RADIO"
+     Comment "Wanted board, police view: heading above the unit status rows."
+    }
+    CustomStringTableItem "{82942B511449462F}" {
+     Id "LF-UnitStatus_BoardLine"
+     Target_en_us "Unit %1: %2"
+     Comment "Dispatch board unit row. %1 = officer name, %2 = available or busy."
+    }
+    CustomStringTableItem "{A403887D50552271}" {
+     Id "LF-UnitStatus_Busy"
+     Target_en_us "busy"
+     Comment "Unit status word on the dispatch board."
+    }
+    CustomStringTableItem "{0877B5083A43C81C}" {
+     Id "LF-UnitStatus_NoName"
+     Target_en_us "unnamed officer"
+     Comment "Dispatch board unit row when the officer has no name."
+    }
+    CustomStringTableItem "{C5AB110336544DB4}" {
+     Id "LF-UnitStatus_SetAvailable"
+     Target_en_us "Dispatch has you as available."
+     Comment "Toast after the officer radios available."
+    }
+    CustomStringTableItem "{0A69E149174D2D14}" {
+     Id "LF-UnitStatus_SetBusy"
+     Target_en_us "Dispatch has you as busy."
+     Comment "Toast after the officer radios busy."
+    }
+    CustomStringTableItem "{296F37B4C207EAD9}" {
+     Id "LF-UnitStatus_Title"
+     Target_en_us "Radio"
+     Comment "Toast title for unit status radio messages."
     }
     CustomStringTableItem "{7B2D91E4A0C358F6}" {
      Id "LF-VehicleCompartment_Open"
