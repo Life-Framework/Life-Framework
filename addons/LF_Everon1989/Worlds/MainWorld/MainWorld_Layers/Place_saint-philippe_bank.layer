@@ -27,6 +27,20 @@ GenericEntity Fit_saint_philippe_bank_Place_BankCounter {
  }
  coords 4368.8 13.1 10655.9
 }
+GenericEntity Fit_saint_philippe_bank_clear_box1 {
+ components {
+  LF_BaseWorldClearComponent "{78524A7DB190A021}" {
+   m_vBoxHalfM 0.9 0 0.5
+   m_fBoxHeightM 4
+   m_aPrefabs {
+    "{3001595FE0D14B45}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_R_INT_COV_B.et"
+    "{E2C75A974A146D9F}Prefabs/Structures/BuildingParts/Doors/Door_Village_E_A_RIGHT_INT_COV_B.et"
+   }
+  }
+ }
+ coords 4364.738 13.1 10656.902
+ angleY 173
+}
 GenericEntity Fit_saint_philippe_bank_bank_furniture_01 : "{054FFEA0FE082CAE}Prefabs/Buildings/Bank/Furniture/Bank_furniture_01.et" {
  coords 4368.8 12 10655.9
  angleY 173

@@ -345,5 +345,35 @@
       "wall": "free",
       "floor": "f0"
     }
+  ],
+  "clear": [
+    {
+      "prefab": "{3001595FE0D14B45}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_R_INT_COV_B.et",
+      "box": {
+        "offset": [
+          3.91,
+          -1.49
+        ],
+        "half": [
+          0.9,
+          0.5
+        ],
+        "height": 4
+      }
+    },
+    {
+      "prefab": "{E2C75A974A146D9F}Prefabs/Structures/BuildingParts/Doors/Door_Village_E_A_RIGHT_INT_COV_B.et",
+      "box": {
+        "offset": [
+          3.91,
+          -1.49
+        ],
+        "half": [
+          0.9,
+          0.5
+        ],
+        "height": 4
+      }
+    }
   ]
 }

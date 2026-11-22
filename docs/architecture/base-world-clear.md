@@ -68,3 +68,7 @@ with `m_sBuilding` empty and `m_vBoxHalfM` set (half size on x and z, `m_fBoxHei
 a box centred on the carrier, turned by its yaw, standing on the terrain under it (`GetSurfaceY`, 1 m below to
 `m_fBoxHeightM` above), so this row stores no height either. `LF_BaseWorldClear.HideInBox` is the same query and the same
 hide. Test: `LF_Test_BaseWorldClearBox` (`placement/base-world-clear-box`).
+
+## One door of a prefab the building repeats: a boxed kit entry (2026-11-22)
+
+A kit's `clear` entry with a `box` (`offset`, `half`, `height`, in the kit's frame) makes `town fit` write a box-mode carrier at that spot (`clearBoxCarriers` in `tools/town/fit.mjs`): the same hide, limited to a small box, with no building. The bank's `Office_E_01` uses the interior door set in several rooms, so the building mode would have hidden all of them; the box takes only the one behind the vault door. Hiding is not recursive (`HideTree` clears the flags of that entity only), so the door set (frame) and its leaf are two entries. `agent-box/proofs/island-bank-door-clear-proof.mjs` checks the hide log on the server and both clients, a trace through the doorway, the neighbouring doors and the vault drill.

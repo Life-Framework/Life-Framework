@@ -31,7 +31,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 
 import { basename, dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { onWater } from "../scout/analyse.mjs";
-import { applyKit, checkKit, entitiesOf, parseBlocks } from "./kit.mjs";
+import { applyKit, checkKit, entitiesOf, parseBlocks, toWorld } from "./kit.mjs";
 import { checkMapping, loadTemplate } from "./map.mjs";
 import { mountOf, sameShell, seatReport, seatRows, shellReader } from "./seat.mjs";
 import { probeTerrain, readPins, terrainFromPins, writePins } from "./terrain.mjs";
@@ -59,7 +59,40 @@ export const layerNameOf = (place, slot) => `Place_${place}_${slot}.layer`;
 export const claimFileOf = (place, slot) => `${CLAIMS_DIR}/${place}-${slot}.json`;
 // The vanilla props a kit hides inside its building (card #3882/#3924): kit.stamp.clear (what `town author` writes), or a top-level
 // kit.clear for a kit that is fitted rather than stamped. An entry is a resource name or { prefab }.
-export const clearListOf = (kit) => [...new Set([...(kit?.stamp?.clear ?? []), ...(kit?.clear ?? [])].map((c) => (typeof c === "string" ? c : c?.prefab)).filter(Boolean))].sort();
+// An entry with a `box` hides that prefab only inside a small box in the kit's frame (clearBoxesOf), never across the whole building.
+const clearEntries = (kit) => [...(kit?.stamp?.clear ?? []), ...(kit?.clear ?? [])];
+export const clearListOf = (kit) => [...new Set(clearEntries(kit).filter((c) => !c?.box).map((c) => (typeof c === "string" ? c : c?.prefab)).filter(Boolean))].sort();
+
+// The boxed entries: { prefab, box: { offset: [x, z], half: [hx, hz], height? } }, grouped by box, offset in the kit's frame like a row's x and z. One
+// vanilla door of a prefab the building uses many times (the bank's interior door behind the vault door) is hidden this way.
+export const clearBoxesOf = (kit) => {
+  const groups = new Map();
+  for (const c of clearEntries(kit)) {
+    if (!c?.box || !c.prefab) continue;
+    const offset = [Number(c.box.offset?.[0]) || 0, Number(c.box.offset?.[1]) || 0];
+    const half = [Number(c.box.half?.[0]) || 0, Number(c.box.half?.[1]) || 0];
+    const height = Number(c.box.height) || 4;
+    const key = [...offset, ...half, height].join("|");
+    if (!groups.has(key)) groups.set(key, { prefabs: [], offset, half, height });
+    if (!groups.get(key).prefabs.includes(c.prefab)) groups.get(key).prefabs.push(c.prefab);
+  }
+  return [...groups.values()].map((g) => ({ ...g, prefabs: g.prefabs.sort() })).sort((p, q) => `${p.offset}|${p.half}|${p.height}`.localeCompare(`${q.offset}|${q.half}|${q.height}`));
+};
+
+// One box-mode carrier per distinct box (the entries that share one box list their prefabs together): no building, a box (half size on x and z) centred on the carrier and turned by its yaw, standing
+// on the terrain under it. The centre is the entry's kit-frame offset moved to the world by the anchor, the yaw the anchor's.
+export function clearBoxCarriers({ place, slot, anchor, boxes }) {
+  return boxes.map((bx, i) => {
+    const [wx, wz] = toWorld(bx.offset[0], bx.offset[1], anchor.yaw);
+    const list = ["{", ...bx.prefabs.map((p) => `    "${p}"`), "   }"].join("\n");
+    return {
+      name: `Fit_${ident(place)}_${ident(slot)}_clear_box${i + 1}`,
+      comps: [{ cls: "LF_BaseWorldClearComponent", guid: guidOf(place, slot, "base-world-clear-box", i + 1), set: { m_vBoxHalfM: `${bx.half[0]} 0 ${bx.half[1]}`, m_fBoxHeightM: String(bx.height), m_aPrefabs: list } }],
+      coords: [r3(anchor.x + wx), anchor.y, r3(anchor.z + wz)],
+      yaw: anchor.yaw,
+    };
+  });
+}
 
 // The base-world clear carrier of one stamped copy: a GenericEntity at the building's x and z with LF_BaseWorldClearComponent.
 // It names the building prefab and the clear list; the game finds the building by prefab within 3 m on x and z and takes the
@@ -470,6 +503,7 @@ export function planFit(opts, ctx = {}) {
 
   const carrier = clearCarrier({ place, slot: slotId, host, clear: clearListOf(kit) });
   if (carrier) out.push(carrier);
+  out.push(...clearBoxCarriers({ place, slot: slotId, anchor, boxes: clearBoxesOf(kit) }));
 
   const sourceCache = new Map();
   const srcRows = new Map(kit.rows.map((r) => [r.id, r]));

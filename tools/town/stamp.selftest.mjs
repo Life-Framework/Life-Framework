@@ -24,6 +24,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { scratchDir } from "../lib/scratch.mjs";
 import { authorExtract } from "./author.mjs";
+import { clearBoxCarriers, clearBoxesOf, clearListOf } from "./fit.mjs";
 import { toLocal } from "./kit.mjs";
 import { applyStamp, planStamp, probeAndReplan, stampTargets, stampVerdict } from "./stamp.mjs";
 import { readPins, terrainFromPins } from "./terrain.mjs";
@@ -85,6 +86,21 @@ ok(cc1 && near(cc1[0], 5000) && near(cc1[2], 6000), `the carrier of b1 stands at
 ok(cc2 && near(cc2[0], 5100) && near(cc2[2], 6050), `the carrier of b2 stands at its building's x and z (got ${cc2})`);
 const noClear = await planStamp({ ...kit, stamp: { ...kit.stamp, clear: [] } }, targets, po);
 ok(noClear.ok && noClear.copies.every((c) => !/_clear /.test(c.layerText)), "a kit with an empty clear list writes no carrier");
+
+// a boxed clear entry (one door of a prefab the building uses many times): a box carrier of its own at the kit offset turned by the
+// anchor's yaw, and the prefab is not on the building carrier's list
+const DOOR = "{66A908B66DC3277A}Prefabs/Structures/BuildingParts/Doors/DoorSet_Village_E_01_L_INT_COV_B.et";
+const LEAF = "{E2C75A974A146D9F}Prefabs/Structures/BuildingParts/Doors/Door_Village_E_A_RIGHT_INT_COV_B.et";
+const BOX = { offset: [3, -1], half: [0.7, 0.8], height: 4 };
+const boxed = { clear: [{ prefab: CLEAR[0] }, { prefab: DOOR, box: BOX }, { prefab: LEAF, box: { ...BOX } }] };
+ok(clearListOf(boxed).join() === CLEAR[0], "a boxed entry is not on the building-wide list");
+const boxes = clearBoxesOf(boxed);
+ok(boxes.length === 1 && boxes[0].prefabs.length === 2 && boxes[0].half.join() === "0.7,0.8", "two entries with one box share one carrier, read back with the half size");
+const boxCarrier = clearBoxCarriers({ place: "stampville", slot: "shop-a", anchor: { x: 5000, y: 25, z: 6000, yaw: 90 }, boxes })[0];
+ok(boxCarrier.name === "Fit_stampville_shop_a_clear_box1" && boxCarrier.yaw === 90, "the box carrier is named per box and turned by the anchor");
+ok(near(boxCarrier.coords[0], 5000 - 1) && near(boxCarrier.coords[2], 6000 - 3), `a yaw-90 anchor turns the kit offset 3, -1 to world (got ${boxCarrier.coords})`);
+const boxSet = boxCarrier.comps[0].set;
+ok(boxSet.m_vBoxHalfM === "0.7 0 0.8" && boxSet.m_fBoxHeightM === "4" && boxSet.m_aPrefabs.includes(DOOR) && boxSet.m_aPrefabs.includes(LEAF) && !("m_sBuilding" in boxSet), "the box carrier sets the half size, the height and the door, and no building");
 
 // a moved kit row moves in both copies
 const moved = JSON.parse(JSON.stringify(kit));
