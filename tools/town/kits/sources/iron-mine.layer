@@ -121,3 +121,13 @@ GenericEntity Mine_Rock9 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boul
  coords 9.8 0.4 14.4
  angleY 10
 }
+GenericEntity Mine_BusStop : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.coalmans-brow.mine"
+   m_sLabel "#LF-BusStop_Everon_Mine"
+  }
+ }
+ coords -10 0 -10
+ angleY -90
+}

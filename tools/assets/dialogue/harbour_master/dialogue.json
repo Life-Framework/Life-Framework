@@ -54,7 +54,7 @@
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
-    "greet": { "text": "Harbour office. Mind the crane and mind the ropes. What can I do for you?" },
+    "greet": { "text": "Harbor office. Mind the crane and mind the ropes. What can I do for you?" },
     "first_job": { "text": "Crates, mostly. The coaster unloads onto the quay and somebody has to carry them across to the sheds. It pays by the crate, on the spot." },
     "go": { "text": "Good. Take a crate from the pile by the crane and carry it where the tag says. Then come back for the next one." },
     "crates_offer": { "text": "You, I know. I have a load that must be across before the tide turns. Fast work, better money, and I will want it done on time. Do you want it?" },

@@ -3,17 +3,17 @@
   "service": "ElevenLabs text-to-speech",
   "lines": {
     "greet": {
-      "hash": "3788090d9e14e542",
-      "date": "2026-11-18",
+      "hash": "4422b3f65bbaf8d7",
+      "date": "2026-11-22",
       "voice_id": "LifjXiNLcYfyYJD8PCDT",
       "voice_name": "LaRauque - Hoarse, Deep, and Dramatic",
       "model": "eleven_multilingual_v2",
-      "text": "Harbour office. Mind the crane and mind the ropes. What can I do for you?",
-      "chars": 73,
-      "chars_total": 29,
-      "request_id": "oCJ1DYSXaReLj4YUS2CC",
-      "seconds": 8.39,
-      "mouth": "378899699189984557706665420011000001010000122469998857820175669998654221110000000000355776799978667777769741155421100000001000100000256951416897788762775554899999742100"
+      "text": "Harbor office. Mind the crane and mind the ropes. What can I do for you?",
+      "chars": 72,
+      "chars_total": 58,
+      "request_id": "Hq4iva3JwmyqZ6UkUZYR",
+      "seconds": 8.93,
+      "mouth": "35999949921999945489988987641000000010000000100123688998764561045689987642111010000001000000445777999877747987999971144532110000000000000000000257981415567678841578544698877652100"
     },
     "first_job": {
       "hash": "8599312297992072",

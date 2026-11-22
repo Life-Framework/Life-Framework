@@ -34,6 +34,7 @@
     "LF_LootConfig",
     "LF_MapAreaConfig",
     "LF_MapPoiConfig",
+    "LF_MapRunConfig",
     "LF_MarketConfig",
     "LF_MedicConfig",
     "LF_MissionHeader",

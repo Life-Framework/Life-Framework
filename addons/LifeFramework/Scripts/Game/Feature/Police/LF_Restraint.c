@@ -374,6 +374,7 @@ class LF_Restraint
 		LF_PlayerInteraction.PlayHandoverSound(target, LF_PlayerInteraction.SOUND_HANDOVER);
 		LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-Restrain_Title", "#LF-Restrain_Cuffed", 3.0, LF_ENotificationType.POLICE_ALERT);
 		LF_NotificationManagerComponent.NotifyPlayer(LF_PlayerInteraction.PlayerIdOf(target), "#LF-Restrain_Title", "#LF-Restrain_YouAreCuffed", 4.0, LF_ENotificationType.WARNING);
+		LF_JailBooking.OnCuffed(officer, target);
 		return LF_ERestrain.OK;
 	}
 

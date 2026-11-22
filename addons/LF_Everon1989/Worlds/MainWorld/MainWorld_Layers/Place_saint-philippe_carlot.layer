@@ -66,7 +66,7 @@ GenericEntity Fit_saint_philippe_carlot_vehicle_lot {
    m_vOffset 1 0 11.8
   }
   MeshObject "{E1B0E70100000001}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
   }
   RigidBody "{E1B0E70100000002}" {
    Mass 10
@@ -123,7 +123,7 @@ GenericEntity Fit_saint_philippe_carlot_garage {
    m_vAngles 0 0 0
   }
   MeshObject "{A1C1080A0000000A}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
   }
   RigidBody "{A1C1080A0000000B}" {
    Mass 10
@@ -199,7 +199,7 @@ GenericEntity Fit_saint_philippe_carlot_impound_desk {
    m_vAngles 0 0 0
   }
   MeshObject "{DE98802C17B46422}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
   }
   RigidBody "{5F5D1789B1447AD1}" {
    Mass 10

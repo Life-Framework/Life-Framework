@@ -30,12 +30,17 @@ Station cars are not owned: they are back at the station after a restart.
 
 ## Stop, cuff, search, arrest
 
+An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the station, **book into jail** at the cell.
+
 * **Search:** face a player within 2 m, press **F** to open the player menu and pick **Search**. Every item they carry is checked. Anything illegal for them is **seized and filed as an offence**.
   A pistol with a firearm permit is left alone. You see "Seized from <name>: ..." when something is taken.
 * **Cuff:** hold the **handcuffs** in your left hand and pick **Cuff** (a 2 second hold) on a player who is **downed, stunned, held up, or has their hands up and no weapon**.
   A cuffed player can walk but cannot hold anything. **Uncuff** frees them; you get the cuffs back.
-* **Arrest:** an officer within 5 m picks **Arrest** on a player with a **wanted level**. A suspect who is not wanted cannot be arrested.
-* **Escort by car:** pick **Put in vehicle** to seat the suspect in a police car, drive to the station, and take them out at the cell. The sentence starts when they arrive.
+  Cuffing a **wanted** player puts a **"Jail booking" waypoint** on your screen: that is where you book them.
+* **Escort:** pick **Escort** on a cuffed suspect to walk them along. An uncuffed suspect cannot be escorted.
+* **Put in vehicle:** at a police car pick **Put in vehicle** to seat your suspect, then drive to the station. At the station pick **Take out of vehicle**; they step out beside the car, still yours.
+* **Book into jail:** walk the cuffed suspect to the **cell door** (the waypoint). Their action list then shows **Book into jail: full sentence** and
+  **Book into jail: reduced (cooperated)** (half, at least 30 seconds). Pick one: they go into the cell, the cuffs come back to you. Booking is only offered at the jail.
 * **Tickets:** pick **Write ticket** to hand a paper fine. The pad lists the offences your rank may fine: speeding $200, disturbance $150, reckless driving $500, brandishing a weapon $800,
   causing a crash $1,500. Up to three unpaid tickets per person.
 * **Spike strips and roadblocks** are in the kit.
@@ -44,7 +49,7 @@ Station cars are not owned: they are back at the station after a restart.
 ## Jail, fines and the wanted board
 
 * The **cell** is inside the station. A sentence is **60 seconds per wanted level**, at most **5 minutes**. When it ends the wanted level drops by one.
-  Time **in jail counts online time**: it pauses when you log out and survives a restart.
+  Time **in jail counts online time**: it pauses when you log out and survives a restart. A prisoner sees **"Jail: m:ss left"** at the top of their screen, and the cell door opens when it reaches zero.
 * A prisoner can **work off time**: the **laundry tub**, the **kitchen sink** and the **yard broom** each take 8 to 10 seconds off after a short job, with a 30 second wait between repeats of the same chore.
 * **Bail:** a prisoner can use the **bail phone** in the cell to pay bail from their **bank** and walk out at once. Bail is **$150 per minute** left, at least **$500**. Not enough in the bank, no bail; cash does not count.
 * A **ticket** is paid at the **punch clock of the station duty desk**, in **cash**, oldest first. After **30 minutes** unpaid it doubles. After another 30 minutes the person gets **+1 wanted** and a poster on the wanted board.
