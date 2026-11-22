@@ -292,6 +292,7 @@ class LF_Breach
 
 		offence = LF_JailBreak.OffenceFor(targetId, offence);
 		target.m_bLoud = LF_JailBreak.IsLoud(targetId, target.m_bLoud);
+		SetAlarmKind(targetId, LF_JailBreak.AlarmKindFor(targetId, target.m_sAlarmKind));
 		target.m_fFuseSeconds = LF_JailBreak.FuseFor(targetId, target.m_fFuseSeconds);
 
 		LF_CrimeCatalog.ApplyWanted(account, playerUid, offence);

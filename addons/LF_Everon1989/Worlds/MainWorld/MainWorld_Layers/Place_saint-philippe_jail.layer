@@ -9,12 +9,26 @@ GenericEntity Fit_saint_philippe_jail_Place {
  }
  coords 4552.6 18.2 10748.3
 }
+GenericEntity Fit_saint_philippe_jail_clear_box1 {
+ components {
+  LF_BaseWorldClearComponent "{8190E1AA521DDE8F}" {
+   m_vBoxHalfM 0.5 0 0.9
+   m_fBoxHeightM 4
+   m_aPrefabs {
+    "{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et"
+   }
+  }
+ }
+ coords 4554.332 18.2 10750.599
+ angleY 171
+}
 GenericEntity Fit_saint_philippe_jail_cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.et" {
  components {
   LF_JailCellComponent "{540EBBB989D3A80A}" {
    m_fZoneRadius 2
-   m_sDoorTargetId ""
-   m_vReleaseOffset 3 0 2.5
+   m_sDoorTargetId "saint_philippe_jail_cell"
+   m_vReleaseOffset 3.9 0 3.2
+   m_sOuterDoorTargetId "saint_philippe_jail_outer"
   }
  }
  coords 4556.732 18.2 10750.979
@@ -31,4 +45,96 @@ GenericEntity Fit_saint_philippe_jail_jail_kitchen_sink : "{AD8A93936711F255}Pre
 GenericEntity Fit_saint_philippe_jail_jail_yard_broom : "{4DFF61251337EEF8}Prefabs/Props/Jail/LF_JailYardBroom.et" {
  coords 4554.464 18.2 10752.19
  angleY 171
+}
+GenericEntity Fit_saint_philippe_jail_jail_cell_door : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_BreachTargetComponent "{D2FC9663261624B6}" {
+   m_sTargetId "saint_philippe_jail_cell"
+  }
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   ActionContexts {
+    UserActionContext "{50888D37F529F720}" {
+     Radius 0.653
+     Height 2.41
+     Position PointInfo "{50888D37F0EB77E0}" {
+      Offset 1.1594 1.205 0.0196
+     }
+    }
+   }
+   additionalActions {
+    LF_BreachArmAction "{30DA080036F318AA}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{C82C7E9C610EFB5D}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+ }
+ coords 4554.486 18.236 10749.753
+ angleY -99
+}
+GenericEntity Fit_saint_philippe_jail_jail_outer_door : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_BreachTargetComponent "{D2FC9663261624B6}" {
+   m_sTargetId "saint_philippe_jail_outer"
+  }
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   ActionContexts {
+    UserActionContext "{50888D37F529F720}" {
+     Radius 0.653
+     Height 2.41
+     Position PointInfo "{50888D37F0EB77E0}" {
+      Offset 1.1594 1.205 0.0196
+     }
+    }
+   }
+   additionalActions {
+    LF_BreachArmAction "{30DA080036F318AA}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{C82C7E9C610EFB5D}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+ }
+ coords 4552.975 18.236 10749.19
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_jail_jail_outer_wing : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 4554.477 18.236 10749.427
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_jail_jail_outer_wing_2 : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 4554.258 18.236 10749.211
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_jail_jail_bail_phone : "{0BC3EE6F94D8C8A6}Prefabs/Police/LF_JailBailPhone.et" {
+ coords 4556.131 18.237 10749.661
+ angleY -9
 }
