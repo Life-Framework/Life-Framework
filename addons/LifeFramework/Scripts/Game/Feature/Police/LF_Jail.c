@@ -397,9 +397,10 @@ class LF_Jail
 	//------------------------------------------------------------------------------------------------
 	//! Starts a sentence for a wanted prisoner and moves standIn (or their connected
 	//! body) to the placed cell. A zero-length config releases in the same call.
+	//! `percent` is the booking option (LF_JailBooking.Scaled): 100 the full sentence, less a reduced one.
 	//! \return False when the officer is not on duty, the prisoner is clean, the cell
 	//! is missing, or the prisoner is already serving.
-	static bool Arrest(string officerUid, string prisonerUid, IEntity standIn)
+	static bool Arrest(string officerUid, string prisonerUid, IEntity standIn, int percent = 100)
 	{
 		if (officerUid.IsEmpty() || prisonerUid.IsEmpty())
 		{
@@ -474,7 +475,8 @@ class LF_Jail
 			return true;
 		}
 
-		if (!Imprison(prisonerUid, LF_CrimeCatalog.SentenceFor(prisonerUid, SentenceSeconds(prisoner.GetWantedLevel())), prisoner.GetWantedLevel(), standIn))
+		int fullSeconds = LF_CrimeCatalog.SentenceFor(prisonerUid, SentenceSeconds(prisoner.GetWantedLevel()));
+		if (!Imprison(prisonerUid, LF_JailBooking.Scaled(fullSeconds, percent), prisoner.GetWantedLevel(), standIn))
 			return false;
 
 		// The cuffs come off in the cell and go back to the arresting officer.
@@ -1141,6 +1143,7 @@ class LF_Jail
 		if (character)
 			name = character.GetFirstName() + " " + character.GetLastName();
 
+		LF_JailClock.Sync(body, GetRemaining(playerUid));
 		if (!LF_JailSlip.Grant(body, playerUid, name, account.GetWantedLevel(), GetRemaining(playerUid)))
 			return;
 
@@ -1159,6 +1162,7 @@ class LF_Jail
 		if (!body)
 			return;
 
+		LF_JailClock.Sync(body, GetRemaining(playerUid));
 		LF_JailSlipComponent slip = LF_JailSlip.FindFor(body, playerUid);
 		if (slip && slip.GetHolderUid() == playerUid)
 			slip.Refresh(GetRemaining(playerUid));
@@ -1178,6 +1182,7 @@ class LF_Jail
 		IEntity body = FindBody(playerUid);
 		if (body)
 		{
+			LF_JailClock.Sync(body, 0);
 			MoveBody(body, GroundedReleasePoint());
 			LF_JailSlipComponent slip = LF_JailSlip.FindFor(body, playerUid);
 			if (slip && slip.GetHolderUid() == playerUid)

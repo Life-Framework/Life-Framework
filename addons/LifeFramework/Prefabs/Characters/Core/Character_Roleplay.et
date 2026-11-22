@@ -103,15 +103,24 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
       "LF_ID"
      }
      UIInfo UIInfo "{56C5730E07320FFE}" {
-      Name "#EL-Jail_Arrest"
+      Name "#LF-JailBook_Full"
      }
+    }
+    LF_JailArrestAction "{4B0A6C2E8D1F3A57}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{9E2D4F6A1C3B5E78}" {
+      Name "#LF-JailBook_Reduced"
+     }
+     m_iPercent 50
     }
     LF_JailEscortArrestAction "{3431A0E100000011}" {
      ParentContextList {
       "LF_ID"
      }
      UIInfo UIInfo "{3431A0E100000012}" {
-      Name "#EL-Escort_Arrest"
+      Name "#LF-Escort_Action"
      }
     }
     LF_RestrainAction "{3751D3B9F77802F3}" {

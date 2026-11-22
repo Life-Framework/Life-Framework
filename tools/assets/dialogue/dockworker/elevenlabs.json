@@ -16,30 +16,30 @@
       "mouth": "7798968933357732321472568789566356889976899989869741000037899935984797368416998678746854156943556655664396112311111000"
     },
     "about_cargo": {
-      "hash": "ce9b343385479402",
+      "hash": "9f4de8052f938608",
       "date": "2026-11-22",
       "voice_id": "BOoKlbsve2J6x9UnqHOS",
       "voice_name": "Delgado Stephane",
       "model": "eleven_multilingual_v2",
-      "text": "Flour, diesel, machine parts. What is in the other crates is the harbour master's business, and he does not share.",
-      "chars": 114,
-      "chars_total": 46,
-      "request_id": "BRndBOl4ONLj25xtjN0Z",
-      "seconds": 9.51,
-      "mouth": "33799899999996311111110246568888778998887530000000057854443677743998985214653111111101000004986878997999888257998426652102477679489959777754586337766875653110000001577659757744568766311111000"
+      "text": "Flour, diesel, machine parts. What is in the other crates is the harbor master's business, and he does not share.",
+      "chars": 113,
+      "chars_total": 91,
+      "request_id": "k9XRyg5qOYi9YP3EYTP6",
+      "seconds": 8.48,
+      "mouth": "33999888875211111111115879997769764111111111111799865999718976512695111111111100000589888789869998793579953567698489969977775368754787576555211278875985874254965411111000"
     },
     "about_work": {
-      "hash": "87498267faf32644",
+      "hash": "dd4c7f30404f3e14",
       "date": "2026-11-22",
       "voice_id": "BOoKlbsve2J6x9UnqHOS",
       "voice_name": "Delgado Stephane",
       "model": "eleven_multilingual_v2",
-      "text": "Ask the harbour master. He hires by the day when a boat comes in, and pays when the boat is empty.",
-      "chars": 98,
-      "chars_total": 39,
-      "request_id": "VsZdCo2SmSh5U2i0tzho",
-      "seconds": 6.23,
-      "mouth": "99959999979888774486211111111111478599886518966647665777537621366666855301111000000015735986565400367664763265565324430000000"
+      "text": "Ask the harbor master. He hires by the day when a boat comes in, and pays when the boat is empty.",
+      "chars": 97,
+      "chars_total": 78,
+      "request_id": "t8TUxtyy1wOh1Ccwdzs8",
+      "seconds": 6.03,
+      "mouth": "9993999975988986628741111111111114899896626996976997578776589716678877866211111111146515876456765459723655674157611111100"
     },
     "bye": {
       "hash": "bd69153f1457db5b",

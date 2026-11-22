@@ -16,17 +16,17 @@
       "mouth": "199999987630010769952321458666758941245588745876416387422379863310069648896798227876531000100"
     },
     "about_where": {
-      "hash": "ab85a92a4f9e2c4d",
-      "date": "2026-11-19",
+      "hash": "5aa6e6e17fd97b8e",
+      "date": "2026-11-22",
       "voice_id": "tda49Y4Ze5mq81eJdplu",
       "voice_name": "Richard Makovec",
       "model": "eleven_v3",
-      "text": "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, maps and snacks in here. The square is just up the street.",
-      "chars": 165,
-      "chars_total": 131,
-      "request_id": "bTqSJrUXBsz3acr1g2eJ",
-      "seconds": 10.66,
-      "mouth": "7975894129947876643228777630000000000269986689999576876561399953111027794454578997884138999875288875321000000000003792269895072679974432100010578632366443997323677488976300000000000175632997675329832940554399652000"
+      "text": "This is Everon, friend. One road around the coast, and this is the only fuel in town. Gas at the pumps, maps and snacks in here. The square is just up the street.",
+      "chars": 162,
+      "chars_total": 196,
+      "request_id": "8s0PmIOk0K3z5RTdMnX1",
+      "seconds": 13.43,
+      "mouth": "49988759995644442236554441100000000003599765899984896976571598643221110000000577739888763310000673264199887862359999778725775443321000000000000025998368363089997643210014689895343766427899703420079962576444200000000000000012755139998864100157422799543971277423643012200"
     },
     "chat_quiet": {
       "hash": "d91df09f745ac9c6",

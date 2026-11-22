@@ -111,8 +111,12 @@ class LF_CharacterATMComponent : ScriptComponent
 			return;
 		}
 
-		LF_EATMRefusal reason;
-		if (!IsAtATM(character.GetOrigin()))
+		LF_EATMRefusal reason = ActorRefusal(character);
+		if (reason != LF_EATMRefusal.NONE)
+		{
+			LF_Debug.Warn("ATM", string.Format("%1 refused: dead, downed or cuffed (amount=%2 uid %3)", request, amount, playerUid));
+		}
+		else if (!IsAtATM(character.GetOrigin()))
 		{
 			LF_Debug.Warn("ATM", string.Format("%1 refused: not at an ATM (amount=%2 uid %3)", request, amount, playerUid));
 			reason = LF_EATMRefusal.TOO_FAR;
@@ -130,6 +134,18 @@ class LF_CharacterATMComponent : ScriptComponent
 			PlayCashSound(character);
 
 		ReplyResult(deposit, reason, amount, account.GetBalance(), LF_MoneyUtils.GetCash(character), LF_TreatmentBills.TotalDebt(playerUid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: dead, downed or cuffed characters cannot work the machine (a forged RPC included).
+	static LF_EATMRefusal ActorRefusal(IEntity character)
+	{
+		bool dead = false;
+		ChimeraCharacter chimera = ChimeraCharacter.Cast(character);
+		if (chimera && chimera.GetCharacterController())
+			dead = chimera.GetCharacterController().GetLifeState() == ECharacterLifeState.DEAD;
+
+		return LF_ATMQuick.ActorRefusal(dead, LF_Downed.IsDowned(character), LF_Restraint.IsRestrained(character));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -291,7 +307,11 @@ class LF_CharacterATMComponent : ScriptComponent
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_Result(bool deposit, int reason, int amount, int balance, int cash, int debt)
 	{
-		LF_ATMTerminal.OnResult(deposit, LF_ATMRefusal.FromWire(reason), amount, balance, cash, debt);
+		// The keypad terminal answers its own requests; the in-world lines answer through LF_ATMLive.
+		if (LF_ATMTerminal.Current())
+			LF_ATMTerminal.OnResult(deposit, LF_ATMRefusal.FromWire(reason), amount, balance, cash, debt);
+
+		LF_ATMLive.OnResult(deposit, LF_ATMRefusal.FromWire(reason), amount, balance, cash);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -299,5 +319,6 @@ class LF_CharacterATMComponent : ScriptComponent
 	protected void RpcDo_Balance(int balance, int cash, int debt)
 	{
 		LF_ATMTerminal.OnBalance(balance, cash, debt);
+		LF_ATMLive.OnFigures(balance, cash);
 	}
 };

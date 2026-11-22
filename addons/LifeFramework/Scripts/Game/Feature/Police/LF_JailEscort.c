@@ -354,6 +354,14 @@ class LF_JailEscort
 			return false;
 		}
 
+		// The cuff (hands up, unarmed, or downed) comes first; a held suspect may be grabbed again.
+		if (!LF_Restraint.IsRestrained(prisoner) && GetHolder(prisonerUid) != officerUid)
+		{
+			LF_Debug.Info("Jail", string.Format("escort grab refused: %1 -> %2 (not cuffed)", officerUid, prisonerUid));
+			Tell(officer, "#LF-JailBook_CuffFirst");
+			return false;
+		}
+
 		return Escort(officerUid, prisonerUid);
 	}
 

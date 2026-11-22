@@ -116,9 +116,9 @@ class LF_JailEscortCar
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the officer takes the seated suspect out of this car. At the placed cell the
-	//! sentence starts (LF_JailEscort.Arrive moves them in); anywhere else they step out beside
-	//! the car and stay held on foot. \return True when something changed.
+	//! Server: the officer takes the seated suspect out of this car. They step out beside the car and
+	//! stay held on foot; at the station the officer then books them with one of the booking actions
+	//! (LF_JailBooking) instead of the take-out choosing the sentence. \return True when something changed.
 	static bool TakeOut(IEntity officer, IEntity vehicle)
 	{
 		if (!Replication.IsServer() || !officer || !vehicle)
@@ -133,10 +133,6 @@ class LF_JailEscortCar
 			return false;
 		}
 
-		vector position = vehicle.GetOrigin();
-		if (LF_JailEscort.IsAtCell(position))
-			return LF_JailEscort.Arrive(officerUid, prisonerUid, position);
-
 		LF_PlayerAccount account;
 		IEntity prisoner = LF_PoliceUtils.FindPlayerEntityByUid(prisonerUid, account);
 		if (!LF_JailEscort.TakeOut(officerUid, prisonerUid))
@@ -146,6 +142,8 @@ class LF_JailEscortCar
 			LF_Jail.DismountPrisoner(prisoner, vehicle.CoordToParent(Vector(STEP_OUT_SIDE, 0, 0)));
 
 		LF_Debug.Info(FEATURE, string.Format("%1 took %2 out of the escort car", officerUid, prisonerUid));
+		if (LF_JailBooking.IsAtBooking(vehicle.GetOrigin()))
+			LF_Utils.NotifyEntity(officer, "#LF-JailBook_AtStation", "", 6.0);
 		return true;
 	}
 }

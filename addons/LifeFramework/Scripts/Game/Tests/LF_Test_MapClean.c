@@ -141,9 +141,11 @@ class LF_Test_MapClean : LF_Test
 		if (!RedProof())
 			count = LF_MapLegend.KeyLines(pois, lines);
 
-		ctx.Equal(7, count, "three group headers and four type rows (the second payphone adds none)");
-		if (lines.Count() == 7)
+		ctx.Equal(9, count, "three group headers, four type rows (the second payphone adds none) and the two sign lines");
+		if (lines.Count() == 9)
 		{
+			ctx.EqualStr("#LF-MapKey_Alarm", lines[7].m_sNote, "the alarm ring has its key line");
+			ctx.EqualStr("#LF-MapKey_Run", lines[8].m_sNote, "and so does the job-run chain");
 			ctx.True(lines[0].m_bHeader && lines[0].m_sCategory == "civic", "civic leads, under its header");
 			ctx.EqualStr("civic", lines[1].m_sCategory, "the payphone row sits under it");
 			ctx.True(lines[2].m_bHeader && lines[2].m_sCategory == "shop", "then the shops' header");

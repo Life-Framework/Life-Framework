@@ -50,7 +50,8 @@ async function runPoliceArrestProof() {
   const look = on(2, { verb: "look" }, 10000);
   wait(1500);
   console.log(`officer menu on the suspect: ${look.detail}`);
-  for (const label of ["LF_ConfiscateAction", "LF_JailArrestAction"]) {
+  // Booking (LF_JailArrestAction) is offered only at the jail since 2026-11-22: arrest-flow-proof walks it.
+  for (const label of ["LF_ConfiscateAction"]) {
     if (!look.detail.includes(label)) fails.push(`the interaction menu does not offer ${label}`);
   }
   on(2, { verb: "capture", mode: "ui", name: `${prefix}_menu` }, 25000);
@@ -91,22 +92,8 @@ async function runPoliceArrestProof() {
     wait(3000);
   }
 
-  let arrest;
-  for (let i = 0; i < 4; i++) {
-    on(2, { verb: "look" });
-    arrest = on(2, { verb: "use", className: "LF_JailArrestAction", entityName: "Player1" }, 10000);
-    if (arrest.status === "ok") break;
-    wait(2000);
-  }
-  must(arrest, "arrest");
-  wait(4000);
-  const jailed = parseState(on(1, { verb: "state" }, 10000).detail);
-  if (!(Number(jailed.jail) > 0)) fails.push(`client 1 jail=${jailed.jail} after the arrest`);
-  on(1, { verb: "capture", mode: "ui", name: `${prefix}_cell_client1` }, 25000);
-  on(2, { verb: "capture", mode: "ui", name: `${prefix}_arrested_client2` }, 25000);
-
   for (const f of fails) console.log(`FAIL  ${f}`);
-  console.log(fails.length ? "police arrest proof: FAIL" : "police arrest proof: PASS (menu offered Search and Arrest, search ran, the suspect is serving a sentence in the cell)");
+  console.log(fails.length ? "police arrest proof: FAIL" : "police arrest proof: PASS (menu offered Search, search ran; booking is arrest-flow-proof)");
   return fails.length ? 1 : 0;
 }
 

@@ -63,6 +63,13 @@ class LF_JailEscortArrestAction : ScriptedUserAction
 			return false;
 		}
 
+		// Cuff first (hands up and unarmed, or downed): the escort follows the cuff, never replaces it.
+		if (!LF_Restraint.IsRestrained(GetOwner()))
+		{
+			SetCannotPerformReason("#LF-JailBook_CuffFirst");
+			return false;
+		}
+
 		return true;
 	}
 
@@ -85,7 +92,7 @@ class LF_JailEscortArrestAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		outName = "#EL-Escort_Arrest";
+		outName = "#LF-Escort_Action";
 		return true;
 	}
 }

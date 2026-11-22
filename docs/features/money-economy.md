@@ -55,11 +55,22 @@
   inline `ATM.layer` entity in DebugWorld stays as it is.
 - ✅ (2026-11-22) **The ATM is a free-standing 1989 cash kiosk**: `ATMWall.xob` (same GUID, so every placed `LF_ATM.et`
   changed with it) is now a 1.9 m kiosk that stands against a wall on a black plinth, after the maintainer's reference picture: a
-  grey-beige brushed-steel body, a lit header sign (BANQUE REGIONALE, DISTRIBUTEUR DE BILLETS 24H; an emissive `ATM_Glow` material,
-  the kit's new `emissive` map support), a camera, a recessed dark fascia with green trim, a green CRT menu in francs between four side
+  grey-beige brushed-steel body, a lit header sign (REGIONAL BANK, 24 HOUR TELLER since 2026-11-22, when all its baked text went to US English; an emissive `ATM_Glow` material,
+  the kit's new `emissive` map support), a camera, a recessed dark fascia with green trim, a green CRT menu in dollars between four side
   keys each side, a sloped shelf with raised keypad keys and a card reader, receipt and cash slots and a branch sticker. No place name
-  is on it (core asset). The use point is on the keypad (`-0.134 1.13 0.17`, radius 1.5). The bank-wall and fuel-kiosk machines
+  is on it (core asset). The use point was on the keypad (radius 1.5); it is now three small contexts, see below. The bank-wall and fuel-kiosk machines
   moved along their walls (`sideways` in the `atms` mapping) so the deeper kiosk clears the bank's planter and the kiosk door.
+- ✅ (2026-11-22) **The ATM works by looking at its parts, with no window** (`LF_ATMQuickAction`, `LF_ATMQuick`, `LF_ATMLive`):
+  `LF_ATM.et` has three action contexts. The cash slot (`cash`, CASH) lists Withdraw $20 / $50 / $100 / $500 / all; the new
+  envelope drawer under it (`deposit`, DEPOSIT, added to `build.py` and `kit.json` `deposit`) lists Deposit all cash / $50 / $100 / $500;
+  the screen and keypad (`default`) list Check balance and Bank transfer (`LF_ATMAction` with `m_bTransferOnly`, the one job that
+  needs typing). The vanilla scroll picks a line. Each line shows its amount, and a line the player cannot afford is greyed with
+  the reason, judged from the last figures the server sent. While the player stands at a machine, `LF_ATMLive` draws their balance
+  and cash in green over the CRT (HUD layout `LF_ATMScreen.layout`, projected onto the glass, local to that player), refreshes it
+  every 4 s and after each answer, and toasts "Withdrew $100. Bank $1,900". Money still moves only through the existing
+  `RpcAsk_Deposit`/`RpcAsk_Withdraw`: the server checks range, amount and funds, and now refuses a dead, downed or cuffed
+  character (`LF_EATMRefusal.CANNOT_ACT`). One request at a time per client. The DebugWorld and grid ATMs keep the full terminal.
+  Tests `atm/quick-lines`, `money/atm-prefab`.
 - ✅ (2026-11-19, #3355) **Three ATMs stand in Saint-Philippe**: the `atms` outposts slot (`town drops saint-philippe atms`,
   layer `Place_saint-philippe_atms.layer`) puts an `LF_ATM.et` on the outer wall of the bank's street front (b79, under the
   bank's ATM sign), the fuel station kiosk (b97) and the harbour offices on the dock road (dock b08). Each overrides

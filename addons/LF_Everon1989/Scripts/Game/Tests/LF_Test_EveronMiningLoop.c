@@ -241,7 +241,7 @@ class LF_Test_EveronMiningLoop : LF_Test
 		ctx.NotNull(slotRow, "the mine's workplace has its own map row");
 		if (slotRow)
 		{
-			ctx.EqualStr("poi_Quarry", slotRow.m_sIcon, "the mine draws the quarry pictogram");
+			ctx.EqualStr("poi_Mine", slotRow.m_sIcon, "the mine draws the mine pictogram");
 			string caption = WidgetManager.Translate(slotRow.m_sLabel);
 			ctx.True(caption != slotRow.m_sLabel && !caption.IsEmpty(), "the mine's map name is in the string table");
 		}
