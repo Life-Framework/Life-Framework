@@ -11637,6 +11637,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Bank account"
      Comment "Personal file row: bank balance."
     }
+    CustomStringTableItem "{11942C989F3F511F}" {
+     Id "LF-PlayerMenu_CapClose"
+     Target_en_us "Esc"
+     Comment "Personal file footer: the key-cap printed before Close (the keyboard key that closes the file)."
+    }
+    CustomStringTableItem "{25A301633A5E7DD6}" {
+     Id "LF-PlayerMenu_CapGuide"
+     Target_en_us "F3"
+     Comment "Personal file footer: the key-cap printed before Welcome guide (the guide key)."
+    }
     CustomStringTableItem "{4F95A449245E1929}" {
      Id "LF-PlayerMenu_Cash"
      Target_en_us "Cash in hand"
@@ -11646,6 +11656,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-PlayerMenu_Close"
      Target_en_us "Close"
      Comment "Personal file close button."
+    }
+    CustomStringTableItem "{A7295323E17AA4ED}" {
+     Id "LF-PlayerMenu_Days"
+     Target_en_us "Island day"
+     Comment "Personal file row: which day on the island the character is on (playtime counted in island days)."
+    }
+    CustomStringTableItem "{6F0562734D35720E}" {
+     Id "LF-PlayerMenu_ErrandsDone"
+     Target_en_us "Errands done"
+     Comment "Personal file row label over the errand list. Value: done / on file."
     }
     CustomStringTableItem "{C42AE3E161B80F72}" {
      Id "LF-PlayerMenu_Garage"
@@ -11677,6 +11697,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Welcome guide"
      Comment "Personal file footer button: opens the welcome guide."
     }
+    CustomStringTableItem "{471B72A1D2FADFF6}" {
+     Id "LF-PlayerMenu_HeadErrand"
+     Target_en_us "THE ERRAND"
+     Comment "Personal file card heading: the picked errand, read in full."
+    }
+    CustomStringTableItem "{F54BF1FEAB472DD9}" {
+     Id "LF-PlayerMenu_HeadErrands"
+     Target_en_us "ERRANDS"
+     Comment "Personal file card heading: the list of errands."
+    }
+    CustomStringTableItem "{CF4EAC3232E8D545}" {
+     Id "LF-PlayerMenu_HeadIdentity"
+     Target_en_us "PERSON"
+     Comment "Personal file card heading over the character preview, trade and standing."
+    }
+    CustomStringTableItem "{3CF77D0FEE9B529D}" {
+     Id "LF-PlayerMenu_HeadLicences"
+     Target_en_us "Licenses and permits"
+     Comment "Personal file row label: the licences and permits held."
+    }
     CustomStringTableItem "{41E30B4EE0E7DEE6}" {
      Id "LF-PlayerMenu_HeadMoney"
      Target_en_us "FINANCES"
@@ -11702,6 +11742,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 · %2"
      Comment "Personal file identity line. %1 = character name, %2 = role (Civilian, Police officer, on duty, ...)."
     }
+    CustomStringTableItem "{134ECD8AD294067B}" {
+     Id "LF-PlayerMenu_Job"
+     Target_en_us "Profession"
+     Comment "Personal file row: the current job of the character."
+    }
+    CustomStringTableItem "{5D2600F1785F6C69}" {
+     Id "LF-PlayerMenu_JobNone"
+     Target_en_us "No trade yet"
+     Comment "Personal file row value: the character has not taken a job."
+    }
     CustomStringTableItem "{82C56C8427A68BE7}" {
      Id "LF-PlayerMenu_Key"
      Target_en_us "Personal file"
@@ -11712,10 +11762,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 ........ %2"
      Comment "Personal file ledger line, printed matter. %1 = what (Cash in hand, Houses owned), %2 = the figure."
     }
+    CustomStringTableItem "{D2B263A13534625E}" {
+     Id "LF-PlayerMenu_LicenceItem"
+     Target_en_us "· %1"
+     Comment "Personal file: one licence under the licences row. %1 = licence name."
+    }
     CustomStringTableItem "{7CE8B3A156C169C1}" {
      Id "LF-PlayerMenu_Licences"
      Target_en_us "Licences and permits: %1"
      Comment "Personal file line. %1 = the licence names, comma separated."
+    }
+    CustomStringTableItem "{D74A7FE19FEC6AD6}" {
+     Id "LF-PlayerMenu_LicencesHeld"
+     Target_en_us "%1 held"
+     Comment "Personal file row value: how many licences and permits the character holds. %1 = count."
     }
     CustomStringTableItem "{88EE192FCE8AC4CC}" {
      Id "LF-PlayerMenu_LicencesNone"
@@ -11779,12 +11839,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DC5E7B83D1F8D08A}" {
      Id "LF-PlayerMenu_RoleMedic"
-     Target_en_us "{medic}"
+     Target_en_us "{Medic}"
      Comment "Personal file role."
     }
     CustomStringTableItem "{78EEA7E96D6E202A}" {
      Id "LF-PlayerMenu_RolePolice"
-     Target_en_us "{police} officer"
+     Target_en_us "{Police} officer"
      Comment "Personal file role."
     }
     CustomStringTableItem "{E65F9D1445B42A9C}" {
@@ -11847,6 +11907,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Level %1"
      Comment "Personal file skill row status. %1 = level."
     }
+    CustomStringTableItem "{CDCA9B71CC6A413D}" {
+     Id "LF-PlayerMenu_SkillNext"
+     Target_en_us "Next level opens: %1"
+     Comment "Personal file skill record: what the next level of this job unlocks. %1 = names of the work it opens, comma separated."
+    }
     CustomStringTableItem "{F52EBB28BA797478}" {
      Id "LF-PlayerMenu_SkillTop"
      Target_en_us "Level %1 · %2 XP, the top of the ladder"
@@ -11884,7 +11949,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B18415A4FB204825}" {
      Id "LF-PlayerMenu_Skill_MEDIC"
-     Target_en_us "{medic}"
+     Target_en_us "{Medic}"
      Comment "Skill name of the MEDIC job track."
     }
     CustomStringTableItem "{AA52CF5828EE256B}" {
@@ -11894,7 +11959,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{17460BB5F62B70AB}" {
      Id "LF-PlayerMenu_Skill_POLICE"
-     Target_en_us "{police}"
+     Target_en_us "{Police}"
      Comment "Skill name of the POLICE job track."
     }
     CustomStringTableItem "{D9EFF6F38B9466F2}" {
@@ -11912,10 +11977,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "LATER"
      Comment "Personal file errand badge."
     }
+    CustomStringTableItem "{2C76F51CE39A8441}" {
+     Id "LF-PlayerMenu_Subtitle"
+     Target_en_us "Day %1 on the island · %2 played"
+     Comment "Personal file header, right of the name. %1 = island day number, %2 = time played (3 h 20 min)."
+    }
     CustomStringTableItem "{72DBFE782ACC8113}" {
      Id "LF-PlayerMenu_Summary"
      Target_en_us "Errands on file: %1 of %2 done"
      Comment "Personal file Progress tab summary. %1 = done, %2 = listed."
+    }
+    CustomStringTableItem "{564984191E6AC0B6}" {
+     Id "LF-PlayerMenu_TabNext"
+     Target_en_us "What to do next"
+     Comment "Personal file tab: suggested next steps. Shown only when there is something to suggest."
     }
     CustomStringTableItem "{8D2E6B1F4A7C9035}" {
      Id "LF-PlayerMenu_TabOpen"

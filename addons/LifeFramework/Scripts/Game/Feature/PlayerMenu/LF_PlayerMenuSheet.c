@@ -1,11 +1,14 @@
 // LF_PlayerMenuSheet.c: the personal file, the F2 key's sheet (gamepad: hold RB + Y). Client only.
 // Built from UI kit parts (LF_UIScreen), so it takes the 1989 paper theme: no new screen .layout,
-// no colours or fonts here (docs/style-guide.md "Screens"). Two tabs, each a page of the same file:
-// PERSON (name and role, money, houses, garage, playtime, wanted, licences, the job skills with an XP
-// bar for the one picked) and PROGRESS (the first errands in chain order, then any other errand
-// taken, each marked DONE, CURRENT or LATER, with "Set waypoint" for the current errand). Everything
-// printed comes from the server's answer (LF_PlayerMenuController, LF_PlayerMenuData); the sheet
-// changes nothing. The welcome guide and the game settings open from its footer.
+// no colours or fonts here (docs/style-guide.md "Screens"). A wide sheet (80% of the screen) with a
+// header line (name, role badge, time on the island) and two tabs, each a page of the same file:
+// PERSON in three columns (identity and licences; finances and status as ledger lines; every job
+// skill with its level and XP bar, the picked one's record under the list) and PROGRESS in two (the
+// first errands in chain order, then any other errand taken, each marked DONE, CURRENT or LATER; the
+// picked errand's record and "Set waypoint" for the current errand). Everything printed comes from
+// the server's answer (LF_PlayerMenuController, LF_PlayerMenuData); the sheet changes nothing. The
+// footer's key-cap chips close it and open the welcome guide and the game settings. The vanilla
+// hint card (the arrival note) is put away while the file is open and comes back when it closes.
 
 class LF_PlayerMenuSheet
 {
@@ -13,11 +16,44 @@ class LF_PlayerMenuSheet
 	static const string PART_TABS = "PlayerMenuTabs";
 	static const string PART_TAB_PERSON = "PlayerMenuPersonButton";
 	static const string PART_TAB_PROGRESS = "PlayerMenuProgressButton";
+	static const string PART_HEADER = "PlayerMenuHeader";
 	static const string PART_IDENTITY = "PlayerMenuIdentity";
-	static const string PART_MONEY = "PlayerMenuMoney";
-	static const string PART_STATUS = "PlayerMenuStatus";
-	//! The list's height: three rows show, the rest scroll, so the picked row's record stays on screen.
-	static const float LIST_HEIGHT = 240;
+	static const string PART_COLUMNS = "PlayerMenuColumns";
+	static const string PART_NAME = "PlayerMenuName";
+	static const string PART_ROLE = "PlayerMenuRole";
+	static const string PART_LICENCE = "PlayerMenuLicence_";
+	static const string PART_CASH = "PlayerMenuCash";
+	static const string PART_BANK = "PlayerMenuBank";
+	static const string PART_HOUSES = "PlayerMenuHouses";
+	static const string PART_GARAGE = "PlayerMenuGarage";
+	static const string PART_WANTED = "PlayerMenuWanted";
+	static const string PART_TAB_NEXT = "PlayerMenuNextButton";
+	static const string PART_PORTRAIT = "PlayerMenuPortrait";
+	static const string PART_JOB = "PlayerMenuJob";
+	static const string PART_STANDING = "PlayerMenuStanding_";
+	static const string PART_PLAYTIME = "PlayerMenuPlaytime";
+	static const string PART_DAYS = "PlayerMenuDays";
+	static const string PART_LICENCES = "PlayerMenuLicences";
+	static const string PART_UNLOCK = "PlayerMenuDetailUnlock";
+	//! Inner card columns, one per card.
+	static const string CARD_ID = "PlayerMenuCardId";
+	static const string CARD_MONEY = "PlayerMenuCardMoney";
+	static const string CARD_STATUS = "PlayerMenuCardStatus";
+	static const string CARD_SKILLS = "PlayerMenuCardSkills";
+	static const string CARD_ERRANDS = "PlayerMenuCardErrands";
+	static const string CARD_ERRAND = "PlayerMenuCardErrand";
+	//! The character preview's window (reference pixels): the whole figure, standing.
+	static const float PORTRAIT_W = 230;
+	static const float PORTRAIT_H = 300;
+	//! How often a hint that pops up while the file is open is put away again.
+	static const int HINT_CHECK_MS = 400;	// lf-fixed: a UI poll that keeps a hint put away, not a gameplay tunable
+	//! The sheet's share of the screen's width, and its narrowest (reference pixels).
+	static const float SHEET_SHARE = 0.8;
+	static const float SHEET_MIN_WIDTH = 1100;
+	//! Every skill row shows up to this many; more scroll.
+	static const int SKILL_ROWS_SHOWN = 10;
+	//! Errand rows (group headings included) shown before the list scrolls.
+	static const int QUEST_ROWS_SHOWN = 12;
 	static const string PART_LIST = "PlayerMenuList";
 	static const string PART_SUMMARY = "PlayerMenuSummary";
 	static const string PART_DETAIL_NAME = "PlayerMenuDetailName";
@@ -32,12 +68,17 @@ class LF_PlayerMenuSheet
 	static const string ROW_SKILL = "PlayerMenuSkill_";
 	static const string ROW_QUEST = "PlayerMenuQuest_";
 	static const string ROW_GROUP = "PlayerMenuGroup_";
-	static const float SHEET_WIDTH = 680;
 
 	static const int TAB_PERSON = 0;
 	static const int TAB_PROGRESS = 1;
+	//! "What to do next": shown only when LF_PlayerMenuNextTab has something to say.
+	static const int TAB_NEXT = 2;
 
 	protected static ref LF_UIScreen s_Screen;
+	//! The character drawn in the preview (a dummy in the preview world), cleared when the file closes.
+	protected static ref LF_WantedPortrait s_Portrait;
+	//! The HUD was showing when the file opened: it comes back when the file closes.
+	protected static bool s_bHudHeld;
 	protected static ref LF_PlayerMenuSheet s_Sheet;
 	//! The last answer, so a reopen prints at once while the fresh ask is on its way.
 	protected static ref LF_PlayerMenuData s_Data;
@@ -45,6 +86,10 @@ class LF_PlayerMenuSheet
 	protected static int s_iTab;
 	protected static int s_iSkill = -1;
 	protected static int s_iQuest = -1;
+	//! The hint card was showing when the file opened: it is put back when the file closes.
+	protected static bool s_bHintHeld;
+	//! A tab change closes the old sheet; that close does not put the hint back.
+	protected static bool s_bSwapping;
 
 	protected LF_UIScreen m_Subscribed;
 
@@ -126,8 +171,8 @@ class LF_PlayerMenuSheet
 	{
 		Hide();
 		s_iTab = TAB_PERSON;
-		if (tab == TAB_PROGRESS)
-			s_iTab = TAB_PROGRESS;
+		if (tab == TAB_PROGRESS || tab == TAB_NEXT)
+			s_iTab = tab;
 
 		s_Sheet = new LF_PlayerMenuSheet();
 		LF_UIScreen screen = s_Sheet.Show();
@@ -163,12 +208,109 @@ class LF_PlayerMenuSheet
 	static void Hide()
 	{
 		s_Sheet = null;
-		if (!s_Screen)
+		if (s_Screen)
+		{
+			LF_UIScreen screen = s_Screen;
+			s_Screen = null;
+			screen.Close();
+		}
+
+		ReleaseHint();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the HUD and the vanilla hint card (the arrival note) away while the file is open.
+	protected static void HoldHint()
+	{
+		SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+		if (!s_bHudHeld && hud && hud.IsVisible())
+		{
+			s_bHudHeld = true;
+			hud.SetVisible(false);
+		}
+
+		// The notification toasts (the cards top right) wait hidden until the file closes.
+		LF_NotificationHold.Hold(true);
+
+		// A hint shown while the file is open (the arrival note comes back on its own) is put away too.
+		if (GetGame().GetCallqueue())
+		{
+			GetGame().GetCallqueue().Remove(KeepHintDown);
+			GetGame().GetCallqueue().CallLater(KeepHintDown, HINT_CHECK_MS, true);
+		}
+
+		KeepHintDown();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void KeepHintDown()
+	{
+		if (!IsOpen())
 			return;
 
-		LF_UIScreen screen = s_Screen;
-		s_Screen = null;
-		screen.Close();
+		SCR_HintManagerComponent hints = SCR_HintManagerComponent.GetInstance();
+		if (!hints || !hints.IsShown())
+			return;
+
+		s_bHintHeld = true;
+		hints.Hide();
+		LF_Debug.Info(LF_PlayerMenuServer.FEATURE, "hint card put away while the file is open");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Brings the HUD and the hint card (silently) back, and lets the preview figure go, when the file closes.
+	protected static void ReleaseHint()
+	{
+		if (GetGame() && GetGame().GetCallqueue())
+			GetGame().GetCallqueue().Remove(KeepHintDown);
+
+		LF_NotificationHold.Hold(false);
+
+		if (s_Portrait)
+			s_Portrait.Clear();
+
+		s_Portrait = null;
+		if (s_bHudHeld)
+		{
+			s_bHudHeld = false;
+			SCR_HUDManagerComponent hud = SCR_HUDManagerComponent.GetHUDManager();
+			if (hud)
+				hud.SetVisible(true);
+		}
+
+		if (!s_bHintHeld)
+			return;
+
+		s_bHintHeld = false;
+		SCR_HintManagerComponent.RepeatHint(true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The sheet went away by itself (Esc, death): the HUD and the hint card come back.
+	protected void OnClosed()
+	{
+		if (s_bSwapping)
+			return;
+
+		ReleaseHint();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Draws the local character, as dressed now, in the PERSON tab's preview window.
+	protected static void DrawPortrait(notnull LF_UIScreen screen)
+	{
+		ItemPreviewWidget photo = screen.GetPortrait(PART_PORTRAIT);
+		if (!photo)
+			return;
+
+		if (s_Portrait)
+			s_Portrait.Clear();
+
+		s_Portrait = new LF_WantedPortrait();
+		string look = LF_WantedLook.Capture(LF_Utils.GetLocalCharacter());
+		int dressed = s_Portrait.Show(photo, look);
+		if (dressed < 0)
+			LF_Debug.Warn(LF_PlayerMenuServer.FEATURE, "character preview not drawn: no look of the local character");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -176,15 +318,22 @@ class LF_PlayerMenuSheet
 	{
 		if (s_Screen)
 		{
+			s_bSwapping = true;
 			s_Screen.Close();
+			s_bSwapping = false;
 			s_Screen = null;
 		}
 
-		LF_UISkin skin = LF_UISkin.Paper();
-		skin.m_fWidth = SHEET_WIDTH;
+		// A tab with nothing to show (the next-steps tab before its feature lands) falls back to PERSON.
+		if (s_iTab == TAB_NEXT && !LF_PlayerMenuNextTab.HasContent(s_Data))
+			s_iTab = TAB_PERSON;
+
+		LF_UISkin skin = LF_UISkin.Dashboard(SHEET_SHARE, SHEET_MIN_WIDTH);
 		array<ref LF_UIPart> parts;
 		if (s_iTab == TAB_PROGRESS)
 			parts = BuildProgress(s_Data);
+		else if (s_iTab == TAB_NEXT)
+			parts = BuildNext(s_Data);
 		else
 			parts = BuildPerson(s_Data);
 
@@ -197,16 +346,32 @@ class LF_PlayerMenuSheet
 
 		s_Screen = screen;
 		if (m_Subscribed)
+		{
 			m_Subscribed.GetOnButton().Remove(OnButton);
+			m_Subscribed.GetOnClosed().Remove(OnClosed);
+		}
 
 		m_Subscribed = screen;
 		screen.GetOnButton().Insert(OnButton);
+		screen.GetOnClosed().Insert(OnClosed);
 		screen.CloseOnDeath();
 		screen.CloseWhenUncontrolled();
-		if (s_Data)
-			screen.SetListHeight(PART_LIST, LIST_HEIGHT);
+		HoldHint();
+		if (s_Data && s_iTab != TAB_NEXT)
+			screen.SetListHeight(PART_LIST, ListHeight(s_Data, s_iTab));
+
+		if (s_Data && s_iTab == TAB_PERSON)
+			DrawPortrait(screen);
 
 		FillList(screen, s_Data);
+		// Focus starts on the open tab's key, so a pad user sees where they are.
+		string openTab = PART_TAB_PERSON;
+		if (s_iTab == TAB_PROGRESS)
+			openTab = PART_TAB_PROGRESS;
+		else if (s_iTab == TAB_NEXT)
+			openTab = PART_TAB_NEXT;
+
+		screen.FocusPart(openTab);
 		LF_Debug.Info(LF_PlayerMenuServer.FEATURE, "file open on tab " + s_iTab.ToString());
 		return screen;
 	}
@@ -219,44 +384,120 @@ class LF_PlayerMenuSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static array<ref LF_UIPart> Header(int tab)
+	//! The header bar (the big name, the role badge, the days and the time on the island) and the tabs.
+	protected static array<ref LF_UIPart> Header(int tab, LF_PlayerMenuData data)
 	{
 		array<ref LF_UIPart> parts = {};
-		string title = "#LF-PlayerMenu_TitlePerson";
-		if (tab == TAB_PROGRESS)
-			title = "#LF-PlayerMenu_TitleProgress";
-
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, PART_TITLE, title));
-		array<string> names = {PART_TAB_PERSON, PART_TAB_PROGRESS};
-		// The open tab is printed between dots; the title names it too.
-		string person = LF_Terms.Text("#LF-PlayerMenu_TabPerson");
-		string progress = LF_Terms.Text("#LF-PlayerMenu_TabProgress");
-		if (tab == TAB_PROGRESS)
-			progress = LF_Terms.Text("#LF-PlayerMenu_TabOpen", progress);
+		if (data)
+		{
+			string subtitle = LF_Terms.Text("#LF-PlayerMenu_Subtitle", DaysOnIsland(data.m_iPlaytimeSeconds, DayMinutes()).ToString(), PlaytimeText(data.m_iPlaytimeSeconds));
+			LF_UIPart header = LF_UIPart.CreatePair(PART_HEADER, NameText(data), subtitle, RoleText(data));
+			parts.Insert(header.Compact().Tone(RoleTone(data)).WithIcon(RoleIcon(data)));
+		}
 		else
-			person = LF_Terms.Text("#LF-PlayerMenu_TabOpen", person);
+		{
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, PART_TITLE, "#LF-PlayerMenu_Key"));
+		}
 
-		array<string> texts = {person, progress};
+		// The open tab is printed between dots. The next-steps tab shows only when it has something to say.
+		array<string> names = {PART_TAB_PERSON, PART_TAB_PROGRESS};
+		array<string> keys = {"#LF-PlayerMenu_TabPerson", "#LF-PlayerMenu_TabProgress"};
+		if (LF_PlayerMenuNextTab.HasContent(data))
+		{
+			names.Insert(PART_TAB_NEXT);
+			keys.Insert("#LF-PlayerMenu_TabNext");
+		}
+
+		array<string> texts = {};
+		foreach (int i, string key : keys)
+		{
+			string text = LF_Terms.Text(key);
+			if (i == tab)
+				text = LF_Terms.Text("#LF-PlayerMenu_TabOpen", text);
+
+			texts.Insert(text);
+		}
+
 		parts.Insert(LF_UIPart.CreateKeys(PART_TABS, names, texts));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RULE, "PlayerMenuRuleTop", string.Empty));
 		return parts;
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The "What to do next" page: LF_PlayerMenuNextTab fills it between the header and the footer.
+	static array<ref LF_UIPart> BuildNext(LF_PlayerMenuData data)
+	{
+		array<ref LF_UIPart> parts = Header(TAB_NEXT, data);
+		LF_PlayerMenuNextTab.Build(parts, data);
+		Footer(parts);
+		return parts;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The footer bar: each key with its key-cap chip (Esc closes, F3 is the welcome guide's key).
 	protected static void Footer(notnull array<ref LF_UIPart> parts)
 	{
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RULE, "PlayerMenuRuleBottom", string.Empty));
-		array<string> names = {PART_GUIDE, PART_SETTINGS};
-		array<string> texts = {"#LF-PlayerMenu_Guide", "#LF-PlayerMenu_Settings"};
-		parts.Insert(LF_UIPart.CreateKeys(PART_FOOTER, names, texts));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, PART_CLOSE, "#LF-PlayerMenu_Close"));
+		array<string> names = {PART_CLOSE, PART_GUIDE, PART_SETTINGS};
+		array<string> texts = {"#LF-PlayerMenu_Close", "#LF-PlayerMenu_Guide", "#LF-PlayerMenu_Settings"};
+		array<string> caps = {LF_Terms.Text("#LF-PlayerMenu_CapClose"), LF_Terms.Text("#LF-PlayerMenu_CapGuide"), string.Empty};
+		parts.Insert(LF_UIPart.CreateKeys(PART_FOOTER, names, texts).WithCaps(caps));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A part in column `index` of the file's columns.
+	protected static LF_UIPart In(int index, LF_UIPart part)
+	{
+		return part.InColumn(PART_COLUMNS, index);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A card in column `index`: its parts go in with Card(name, part).
+	protected static LF_UIPart CardIn(int index, string name)
+	{
+		return In(index, LF_UIPart.CreateColumns(name, Weights(1)).Cards());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_UIPart Card(string card, LF_UIPart part)
+	{
+		return part.InColumn(card, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_UIPart Heading(string card, string name, string key)
+	{
+		return Card(card, LF_UIPart.Create(LF_EUIPartKind.HEADING, name, key));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How tall the open tab's list draws: every row up to the shown count, then it scrolls.
+	static float ListHeight(notnull LF_PlayerMenuData data, int tab)
+	{
+		if (tab == TAB_PROGRESS)
+		{
+			int rows = data.m_aQuests.Count();
+			int doneArrival;
+			int doneOther;
+			if (data.CountGroup(LF_EPlayerMenuQuestGroup.ARRIVAL, doneArrival) > 0)
+				rows++;
+
+			if (data.CountGroup(LF_EPlayerMenuQuestGroup.ERRANDS, doneOther) > 0)
+				rows++;
+
+			rows = LF_Utils.ClampInt(rows, 1, QUEST_ROWS_SHOWN);
+			return rows * LF_UIScreen.COMPACT_ROW_PITCH + 8;
+		}
+
+		int skills = LF_Utils.ClampInt(data.m_aSkills.Count(), 1, SKILL_ROWS_SHOWN);
+		return skills * (LF_UIScreen.COMPACT_ROW_PITCH + LF_UIScreen.COMPACT_BAR_PITCH) + 8;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! The PERSON page. Null data prints the waiting line in place of the figures.
 	static array<ref LF_UIPart> BuildPerson(LF_PlayerMenuData data)
 	{
-		array<ref LF_UIPart> parts = Header(TAB_PERSON);
+		array<ref LF_UIPart> parts = Header(TAB_PERSON, data);
 		if (!data)
 		{
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_IDENTITY, "#LF-PlayerMenu_Waiting"));
@@ -264,26 +505,60 @@ class LF_PlayerMenuSheet
 			return parts;
 		}
 
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_IDENTITY, IdentityLine(data)));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.HEADING, "PlayerMenuHeadMoney", "#LF-PlayerMenu_HeadMoney"));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RICH, PART_MONEY, MoneyLedger(data)));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.HEADING, "PlayerMenuHeadStatus", "#LF-PlayerMenu_HeadStatus"));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RICH, PART_STATUS, StatusLedger(data)));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.HEADING, "PlayerMenuHeadSkills", "#LF-PlayerMenu_HeadSkills"));
-		parts.Insert(LF_UIPart.CreateList(PART_LIST));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_NAME, "#LF-PlayerMenu_SkillHint"));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_TEXT, string.Empty));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BAR, PART_DETAIL_BAR, string.Empty));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_NUMBERS, string.Empty));
+		parts.Insert(LF_UIPart.CreateColumns(PART_COLUMNS, Weights(1, 1, 1.3)));
+
+		// 1: the character as they stand, their trade and how the island sees them.
+		parts.Insert(CardIn(0, CARD_ID));
+		parts.Insert(Heading(CARD_ID, "PlayerMenuHeadIdentity", "#LF-PlayerMenu_HeadIdentity"));
+		parts.Insert(Card(CARD_ID, LF_UIPart.CreatePortrait(PART_PORTRAIT, string.Empty, string.Empty, new array<string>(), new array<string>()).Sized(PORTRAIT_W, PORTRAIT_H)));
+		parts.Insert(Card(CARD_ID, LF_UIPart.CreatePair(PART_JOB, "#LF-PlayerMenu_Job", JobText()).WithIcon("job")));
+		parts.Insert(Card(CARD_ID, LF_UIPart.CreatePair(PART_WANTED, "#LF-PlayerMenu_Wanted", WantedText(data.m_iWanted)).WithIcon("wanted")));
+		array<string> labels = {};
+		array<string> words = {};
+		StandingRows(labels, words);
+		foreach (int s, string label : labels)
+		{
+			parts.Insert(Card(CARD_ID, LF_UIPart.CreatePair(PART_STANDING + s.ToString(), label, words[s]).WithIcon("standing")));
+		}
+
+		// 2: the money, then the standing on paper: property, papers and time served on the island.
+		parts.Insert(In(1, LF_UIPart.CreateColumns(CARD_MONEY, Weights(1)).Cards()));
+		parts.Insert(Heading(CARD_MONEY, "PlayerMenuHeadMoney", "#LF-PlayerMenu_HeadMoney"));
+		parts.Insert(Card(CARD_MONEY, LF_UIPart.CreatePair(PART_CASH, "#LF-PlayerMenu_Cash", LF_MoneyFormat.FormatMoney(data.m_iCash)).WithIcon("cash")));
+		parts.Insert(Card(CARD_MONEY, LF_UIPart.CreatePair(PART_BANK, "#LF-PlayerMenu_Bank", LF_MoneyFormat.FormatMoney(data.m_iBank)).WithIcon("bank")));
+		parts.Insert(In(1, LF_UIPart.CreateColumns(CARD_STATUS, Weights(1)).Cards()));
+		parts.Insert(Heading(CARD_STATUS, "PlayerMenuHeadStatus", "#LF-PlayerMenu_HeadStatus"));
+		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_HOUSES, "#LF-PlayerMenu_Houses", data.m_iHouses.ToString()).WithIcon("house")));
+		string garage = LF_Terms.Text("#LF-PlayerMenu_GarageValue", data.m_iGarageUsed.ToString(), data.m_iGarageCap.ToString());
+		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_GARAGE, "#LF-PlayerMenu_Garage", garage).WithIcon("garage")));
+		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_DAYS, "#LF-PlayerMenu_Days", DaysOnIsland(data.m_iPlaytimeSeconds, DayMinutes()).ToString()).WithIcon("calendar")));
+		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_PLAYTIME, "#LF-PlayerMenu_Playtime", PlaytimeText(data.m_iPlaytimeSeconds)).WithIcon("clock")));
+		string held = LF_Terms.Text("#LF-PlayerMenu_LicencesHeld", data.m_aLicenceKeys.Count().ToString());
+		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_LICENCES, "#LF-PlayerMenu_HeadLicences", held).WithIcon("licence")));
+		foreach (int i, string licence : data.m_aLicenceKeys)
+		{
+			parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_LICENCE + i.ToString(), LF_Terms.Text("#LF-PlayerMenu_LicenceItem", Printed(licence)), string.Empty)));
+		}
+
+		// 3: every job skill with its level chip and XP bar; the picked one's record under the list.
+		parts.Insert(CardIn(2, CARD_SKILLS));
+		parts.Insert(Heading(CARD_SKILLS, "PlayerMenuHeadSkills", "#LF-PlayerMenu_HeadSkills"));
+		parts.Insert(Card(CARD_SKILLS, LF_UIPart.CreateList(PART_LIST).Compact()));
+		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.RULE, "PlayerMenuRuleDetail", string.Empty)));
+		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_NAME, "#LF-PlayerMenu_SkillHint")));
+		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_TEXT, string.Empty)));
+		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.BAR, PART_DETAIL_BAR, string.Empty)));
+		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_NUMBERS, string.Empty)));
+		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_UNLOCK, string.Empty)));
 		Footer(parts);
 		return parts;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The PROGRESS page.
+	//! The PROGRESS page: the errand list on the left, the picked errand's record on the right.
 	static array<ref LF_UIPart> BuildProgress(LF_PlayerMenuData data)
 	{
-		array<ref LF_UIPart> parts = Header(TAB_PROGRESS);
+		array<ref LF_UIPart> parts = Header(TAB_PROGRESS, data);
 		if (!data)
 		{
 			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_SUMMARY, "#LF-PlayerMenu_Waiting"));
@@ -291,17 +566,24 @@ class LF_PlayerMenuSheet
 			return parts;
 		}
 
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_SUMMARY, SummaryLine(data)));
-		parts.Insert(LF_UIPart.CreateList(PART_LIST));
+		parts.Insert(LF_UIPart.CreateColumns(PART_COLUMNS, Weights(1.1, 1)));
+		parts.Insert(CardIn(0, CARD_ERRANDS));
+		parts.Insert(Heading(CARD_ERRANDS, "PlayerMenuHeadErrands", "#LF-PlayerMenu_HeadErrands"));
+		parts.Insert(Card(CARD_ERRANDS, LF_UIPart.CreatePair(PART_SUMMARY, "#LF-PlayerMenu_ErrandsDone", SummaryCount(data)).WithIcon("errand")));
+		parts.Insert(Card(CARD_ERRANDS, LF_UIPart.CreateList(PART_LIST).Compact()));
+
 		string hint = "#LF-PlayerMenu_QuestHint";
 		if (data.m_aQuests.IsEmpty())
 			hint = "#LF-PlayerMenu_NoQuests";
 
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_NAME, hint));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_TEXT, string.Empty));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_NUMBERS, string.Empty));
+		parts.Insert(CardIn(1, CARD_ERRAND));
+		parts.Insert(Heading(CARD_ERRAND, "PlayerMenuHeadErrand", "#LF-PlayerMenu_HeadErrand"));
+		parts.Insert(Card(CARD_ERRAND, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_NAME, hint)));
+		parts.Insert(Card(CARD_ERRAND, LF_UIPart.Create(LF_EUIPartKind.RULE, "PlayerMenuRuleErrand", string.Empty)));
+		parts.Insert(Card(CARD_ERRAND, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_TEXT, string.Empty)));
+		parts.Insert(Card(CARD_ERRAND, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_NUMBERS, string.Empty)));
 		if (CurrentArrival(data) >= 0)
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_WAYPOINT, "#LF-PlayerMenu_Waypoint"));
+			parts.Insert(Card(CARD_ERRAND, LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_WAYPOINT, "#LF-PlayerMenu_Waypoint")));
 
 		Footer(parts);
 		return parts;
@@ -318,7 +600,8 @@ class LF_PlayerMenuSheet
 		{
 			foreach (int i, LF_PlayerMenuSkill skill : data.m_aSkills)
 			{
-				screen.AddListRow(PART_LIST, ROW_SKILL + i.ToString(), SkillName(skill.m_sJob), LF_Terms.Text("#LF-PlayerMenu_SkillLevel", skill.m_iLevel.ToString()), "#LF-PlayerMenu_Read");
+				float share = LF_PlayerMenuXp.Fraction(skill.m_iXp, skill.m_iFloor, skill.m_iNext);
+				screen.AddListBarRow(PART_LIST, ROW_SKILL + i.ToString(), SkillName(skill.m_sJob), LF_Terms.Text("#LF-PlayerMenu_SkillLevel", skill.m_iLevel.ToString()), "#LF-PlayerMenu_Read", share);
 			}
 
 			if (s_iSkill >= 0 && s_iSkill < data.m_aSkills.Count())
@@ -329,8 +612,13 @@ class LF_PlayerMenuSheet
 
 		AddGroup(screen, data, LF_EPlayerMenuQuestGroup.ARRIVAL, "#LF-PlayerMenu_GroupArrival");
 		AddGroup(screen, data, LF_EPlayerMenuQuestGroup.ERRANDS, "#LF-PlayerMenu_GroupErrands");
-		if (s_iQuest >= 0 && s_iQuest < data.m_aQuests.Count())
-			ShowQuest(screen, data, s_iQuest);
+		// Nothing picked yet: the record shows the current errand, so the right column is never blank.
+		int quest = s_iQuest;
+		if (quest < 0 || quest >= data.m_aQuests.Count())
+			quest = CurrentArrival(data);
+
+		if (quest >= 0)
+			ShowQuest(screen, data, quest);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -352,11 +640,19 @@ class LF_PlayerMenuSheet
 	//------------------------------------------------------------------------------------------------
 	protected void OnButton(string name)
 	{
-		if (name == PART_TAB_PERSON || name == PART_TAB_PROGRESS)
+		if (name == PART_CLOSE)
+		{
+			GetGame().GetCallqueue().CallLater(Hide, 0, false);
+			return;
+		}
+
+		if (name == PART_TAB_PERSON || name == PART_TAB_PROGRESS || name == PART_TAB_NEXT)
 		{
 			int tab = TAB_PERSON;
 			if (name == PART_TAB_PROGRESS)
 				tab = TAB_PROGRESS;
+			else if (name == PART_TAB_NEXT)
+				tab = TAB_NEXT;
 
 			if (tab == s_iTab)
 				return;
@@ -447,6 +743,11 @@ class LF_PlayerMenuSheet
 		screen.SetLine(PART_DETAIL_TEXT, SkillDescription(skill.m_sJob));
 		screen.SetBar(PART_DETAIL_BAR, LF_PlayerMenuXp.Fraction(skill.m_iXp, skill.m_iFloor, skill.m_iNext));
 		screen.SetLine(PART_DETAIL_NUMBERS, SkillNumbers(skill));
+		string unlock;
+		if (skill.m_iNext >= 0)
+			unlock = NextUnlock(skill.m_sJob, skill.m_iLevel + 1);
+
+		screen.SetLine(PART_UNLOCK, unlock);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -483,51 +784,175 @@ class LF_PlayerMenuSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
-	static string IdentityLine(notnull LF_PlayerMenuData data)
+	//------------------------------------------------------------------------------------------------
+	//! Column weights as an array (two or three columns; a negative weight is left out).
+	protected static array<float> Weights(float a, float b = -1, float c = -1)
 	{
-		string name = data.m_sName;
-		if (name.IsEmpty())
-			name = LF_Terms.Text("#LF-PlayerMenu_NoName");
+		array<float> weights = {a};
+		if (b > 0)
+			weights.Insert(b);
 
+		if (c > 0)
+			weights.Insert(c);
+
+		return weights;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string NameText(notnull LF_PlayerMenuData data)
+	{
+		if (data.m_sName.IsEmpty())
+			return LF_Terms.Text("#LF-PlayerMenu_NoName");
+
+		return data.m_sName;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The role badge: Civilian, or the service and whether they are on duty.
+	static string RoleText(notnull LF_PlayerMenuData data)
+	{
 		string role = LF_Terms.Text(RoleKey(data.m_eFaction));
-		if (data.m_eFaction != LF_Faction.CIVILIAN)
-		{
-			string duty = "#LF-PlayerMenu_OffDuty";
-			if (data.m_bOnDuty)
-				duty = "#LF-PlayerMenu_OnDuty";
+		if (data.m_eFaction == LF_Faction.CIVILIAN)
+			return role;
 
-			role = LF_Terms.Text("#LF-PlayerMenu_RoleDuty", role, LF_Terms.Text(duty));
+		string duty = "#LF-PlayerMenu_OffDuty";
+		if (data.m_bOnDuty)
+			duty = "#LF-PlayerMenu_OnDuty";
+
+		return LF_Terms.Text("#LF-PlayerMenu_RoleDuty", role, LF_Terms.Text(duty));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The badge's colour: police blue, medic red, a civilian's plain strip.
+	static LF_EUIBadgeTone RoleTone(notnull LF_PlayerMenuData data)
+	{
+		if (data.m_eFaction == LF_Faction.POLICE)
+			return LF_EUIBadgeTone.BLUE;
+
+		if (data.m_eFaction == LF_Faction.MEDIC)
+			return LF_EUIBadgeTone.RED;
+
+		return LF_EUIBadgeTone.PLAIN;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string RoleIcon(notnull LF_PlayerMenuData data)
+	{
+		if (data.m_eFaction == LF_Faction.POLICE)
+			return "police";
+
+		if (data.m_eFaction == LF_Faction.MEDIC)
+			return "medic";
+
+		return "licence";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The local character's current job, read from their own replicated job component.
+	static string JobText()
+	{
+		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
+		LF_PlayerJobComponent job;
+		if (character)
+			job = LF_PlayerJobComponent.Cast(character.FindComponent(LF_PlayerJobComponent));
+
+		if (!job || job.GetJobName().IsEmpty())
+			return LF_Terms.Text("#LF-PlayerMenu_JobNone");
+
+		return Printed(job.GetJobName());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The island's word on the character, one row per faction, from the tiers the server synced to
+	//! this client (the same words the ID card prints). Nothing yet: no rows.
+	static void StandingRows(notnull array<string> labels, notnull array<string> words)
+	{
+		int town;
+		int police;
+		int underworld;
+		if (!LF_ReputationSync.ClientTier(LF_Reputation.FACTION_TOWN, town))
+			return;
+
+		LF_ReputationSync.ClientTier(LF_Reputation.FACTION_POLICE, police);
+		LF_ReputationSync.ClientTier(LF_Reputation.FACTION_UNDERWORLD, underworld);
+		array<string> labelKeys = {};
+		array<string> wordKeys = {};
+		LF_ReputationWords.Pairs(LF_ReputationConfig.Get(), town, police, underworld, labelKeys, wordKeys);
+		for (int i = 0; i < labelKeys.Count(); i++)
+		{
+			labels.Insert(Printed(labelKeys[i]));
+			words.Insert(Printed(wordKeys[i]));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Real minutes one island day lasts on this server (the day cycle config), 24 h when unset.
+	static int DayMinutes()
+	{
+		LF_DayCycleConfig config = LF_DayCycleConfig.Get();
+		if (!config || config.m_iDayLengthMinutes < 1)
+			return 1440;
+
+		return config.m_iDayLengthMinutes;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The island day the character is on: day 1 on arrival, one more for each island day played.
+	static int DaysOnIsland(int playtimeSeconds, int dayMinutes)
+	{
+		if (dayMinutes < 1)
+			dayMinutes = 1440;
+
+		return 1 + LF_Utils.MaxInt(playtimeSeconds, 0) / (dayMinutes * 60);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the next level of `job` opens: the chains with a step gated at exactly that level.
+	//! \return "Next level opens: Cider, Moonshine", or empty when nothing is gated there.
+	static string NextUnlock(string job, int nextLevel)
+	{
+		array<LF_ChainDef> chains = {};
+		LF_ChainCatalog.GetEnabled(chains);
+		array<string> names = {};
+		foreach (LF_ChainDef chain : chains)
+		{
+			if (!chain || !chain.m_aSteps)
+				continue;
+
+			foreach (LF_ChainStepDef step : chain.m_aSteps)
+			{
+				if (step.m_iMinLevel != nextLevel || step.m_sLevelJob != job)
+					continue;
+
+				string name = Printed(chain.m_sNameKey);
+				if (names.Find(name) < 0)
+					names.Insert(name);
+			}
 		}
 
-		return LF_Terms.Text("#LF-PlayerMenu_Identity", name, role);
+		if (names.IsEmpty())
+			return string.Empty;
+
+		string list = string.Empty;
+		foreach (string n : names)
+		{
+			if (!list.IsEmpty())
+				list += ", ";
+
+			list += n;
+		}
+
+		return LF_Terms.Text("#LF-PlayerMenu_SkillNext", list);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One printed ledger line, "Cash in hand .... $20".
-	static string Ledger(string labelKey, string value)
+	static string SummaryCount(notnull LF_PlayerMenuData data)
 	{
-		return LF_Terms.Text("#LF-PlayerMenu_Ledger", LF_Terms.Text(labelKey), value);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The FINANCES block: cash and bank, one ledger line each (RICH markup: <br/> breaks).
-	static string MoneyLedger(notnull LF_PlayerMenuData data)
-	{
-		string text = Ledger("#LF-PlayerMenu_Cash", LF_MoneyFormat.FormatMoney(data.m_iCash));
-		text += "<br/>" + Ledger("#LF-PlayerMenu_Bank", LF_MoneyFormat.FormatMoney(data.m_iBank));
-		return text;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The STATUS block: houses, garage, playtime, wanted, licences.
-	static string StatusLedger(notnull LF_PlayerMenuData data)
-	{
-		string text = Ledger("#LF-PlayerMenu_Houses", data.m_iHouses.ToString());
-		text += "<br/>" + Ledger("#LF-PlayerMenu_Garage", LF_Terms.Text("#LF-PlayerMenu_GarageValue", data.m_iGarageUsed.ToString(), data.m_iGarageCap.ToString()));
-		text += "<br/>" + Ledger("#LF-PlayerMenu_Playtime", PlaytimeText(data.m_iPlaytimeSeconds));
-		text += "<br/>" + Ledger("#LF-PlayerMenu_Wanted", WantedText(data.m_iWanted));
-		text += "<br/>" + LicencesLine(data);
-		return text;
+		int done;
+		int total = data.CountGroup(LF_EPlayerMenuQuestGroup.ARRIVAL, done);
+		int otherDone;
+		int others = data.CountGroup(LF_EPlayerMenuQuestGroup.ERRANDS, otherDone);
+		return LF_Terms.Text("#LF-PlayerMenu_GroupCount", (done + otherDone).ToString(), (total + others).ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -746,6 +1171,10 @@ class LF_PlayerMenuSheet
 		s_iTab = TAB_PERSON;
 		s_iSkill = -1;
 		s_iQuest = -1;
+		s_bHintHeld = false;
+		s_bHudHeld = false;
+		s_bSwapping = false;
+		s_Portrait = null;
 	}
 }
 
