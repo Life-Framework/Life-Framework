@@ -1,78 +1,70 @@
 import { arrive, clientBox, parseState, sessionDir } from "../session.mjs";
 
-// The ATM's in-world lines on a running `up --mission grid --profile full` session: no window opens. Client 1 stands
-// in front of the grid ATM (Grid_slice_3352_R0), looks down at the CASH slot, scrolls the list and presses the use key;
-// the bank falls and the cash rises by the same listed amount. It looks lower at the DEPOSIT drawer and deposits;
-// the cash falls and the bank rises by the same amount. The live figures on the machine's screen and the action list are
-// captured before and after for the PR.
-//   node agent-box/session.mjs atm-quick [side] [cashPitch] [depositPitch]
+// The island ATM's in-world lines (#4098), one client on `up --mission island --profile full`: no window opens.
+// The client stands at the Saint-Philippe ATM and performs each row of the machine's action list by its index
+// (`use LF_ATMQuickAction__<n>`, the same rows the interact key scrolls: withdraw $20, $50, $100, $500, all, then
+// deposit all). Pass: the $20 row moves exactly 20 from the bank to cash and the HUD toast reads
+// "Withdrew $20. Bank ..." (a notification toast: read it in the picture, `seen` does not report it), then the deposit
+// row moves all cash into the bank and the machine screen reads DEPOSITED. Pictures of the machine and the action list are captured before, after the withdraw and
+// after the deposit.
+//   node agent-box/session.mjs atm-quick [EntityName]
 async function runAtmQuickProof(args) {
-  const side = args[0] || "w";
-  const cashPitch = args[1] || "-34"; // third person, from the stand: reaches the CASH slot (calibrated 2026-11-22)
-  const depositPitch = args[2] || "-4"; // further down to the DEPOSIT drawer: not yet calibrated
+  const atm = args[0] || "Fit_saint_philippe_atms_drop_b79";
   const h = await import("../harness.mjs");
   const dir = sessionDir();
   const on = (spec, timeout) => {
     h.setBoxes([clientBox(dir, 1)]);
     const r = h.sendCommand(spec, timeout);
-    console.log(`client 1: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${r.detail}`);
+    console.log(`client 1: ${r.line.replace(/^\d+ /, "")} -> ${r.status} ${String(r.detail).slice(0, 260)}`);
     return r;
   };
   const wait = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
   const money = () => {
-    const s = parseState(on({ verb: "state" }, 10000).detail);
-    return { bank: Number(s.bank), cash: Number(s.cash) };
+    for (let i = 0; i < 5; i++) {
+      const r = on({ verb: "state" }, 10000);
+      if (r.status === "ok") { const s = parseState(r.detail); return { bank: Number(s.bank), cash: Number(s.cash) }; }
+      wait(1500); // the state read can answer no_session for a moment right after a deposit
+    }
+    return { bank: NaN, cash: NaN };
   };
   const shot = (name) => on({ verb: "capture", mode: "ui", name }, 25000);
   const fails = [];
 
   arrive((n, spec, t) => on(spec, t), 1, wait);
-  wait(6000);
-  // The welcome guide opens over a new character; close it like a player would.
-  for (let i = 0; i < 10 && !on({ verb: "ui" }).detail.includes("WelcomeGuideCloseButton"); i++) wait(1500);
-  on({ verb: "click", widget: "WelcomeGuideCloseButton" });
+  wait(4000);
+  // The welcome guide opens over a new character; dismiss it like a player would.
+  for (let i = 0; i < 10 && !String(on({ verb: "ui" }).detail).includes("WelcomeGuideDismissButton"); i++) wait(1500);
+  on({ verb: "click", widget: "WelcomeGuideDismissButton" });
   wait(1000);
-  // Stand until the server has really moved the character beside the machine.
-  for (let i = 0; i < 6; i++) {
-    on({ verb: "stand", entityName: "Grid_slice_3352_R0", side });
+  // The side the machine faces differs per ATM: take the first side whose look offers the rows.
+  let faced = false;
+  for (const side of ["e", "w", "n", "s"]) {
+    on({ verb: "stand", entityName: atm, side });
     wait(2500);
-    const pos = (parseState(on({ verb: "state" }, 10000).detail).pos || "").split(",").map(Number);
-    if (Math.abs(pos[0] - 258.5) < 3 && Math.abs(pos[2] - 52) < 3) break;
+    if (String(on({ verb: "look" }).detail).includes("LF_ATMQuickAction")) { faced = true; break; }
   }
-  on({ verb: "input", action: "CharacterTurnUp", value: cashPitch });
-  wait(1500);
-  on({ verb: "look" });
-  shot("atm_quick_cash_list");
+  if (!faced) fails.push("no side of the machine offers the ATM rows");
+  shot("atm_island_list");
 
   const before = money();
-  // The cash slot lists $20, $50, $100, $500, all: two steps down is $100.
-  on({ verb: "interact", step: "prev" });
-  on({ verb: "interact", step: "prev" });
-  wait(500);
-  shot("atm_quick_cash_100");
-  on({ verb: "interact", step: "confirm" });
-  wait(2500);
-  shot("atm_quick_after_withdraw");
-  const afterWithdraw = money();
-  console.log(`withdraw: bank ${before.bank} -> ${afterWithdraw.bank}, cash ${before.cash} -> ${afterWithdraw.cash}`);
-  const took = before.bank - afterWithdraw.bank;
-  if (![20, 50, 100, 500].includes(took)) fails.push(`the bank fell by ${took}, not a listed amount`);
-  if (afterWithdraw.cash - before.cash !== took) fails.push(`the cash rose by ${afterWithdraw.cash - before.cash}, not the ${took} the bank paid`);
-
-  on({ verb: "input", action: "CharacterTurnUp", value: depositPitch });
+  const w = on({ verb: "use", className: "LF_ATMQuickAction" }, 10000);
   wait(1500);
-  shot("atm_quick_deposit_list");
-  // The deposit drawer lists all cash, $50, $100, $500: one step down is $50.
-  on({ verb: "interact", step: "prev" });
-  wait(500);
-  on({ verb: "interact", step: "confirm" });
-  wait(2500);
-  shot("atm_quick_after_deposit");
+  const afterWithdraw = money();
+  shot("atm_island_after_withdraw20");
+  console.log(`withdraw $20: bank ${before.bank} -> ${afterWithdraw.bank}, cash ${before.cash} -> ${afterWithdraw.cash}`);
+  if (w.status !== "ok") fails.push(`the $20 row was refused: ${w.detail}`);
+  if (before.bank - afterWithdraw.bank !== 20) fails.push(`the bank fell by ${before.bank - afterWithdraw.bank}, not 20`);
+  if (afterWithdraw.cash - before.cash !== 20) fails.push(`the cash rose by ${afterWithdraw.cash - before.cash}, not 20`);
+
+  // The deposit drawer: the row after "withdraw all" deposits all the cash on you.
+  const d = on({ verb: "use", className: "LF_ATMQuickAction__5" }, 10000);
+  wait(1500);
   const afterDeposit = money();
-  console.log(`deposit: bank ${afterWithdraw.bank} -> ${afterDeposit.bank}, cash ${afterWithdraw.cash} -> ${afterDeposit.cash}`);
-  const put = afterDeposit.bank - afterWithdraw.bank;
-  if (put <= 0) fails.push(`the bank rose by ${put}, nothing was deposited`);
-  if (afterWithdraw.cash - afterDeposit.cash !== put) fails.push(`the cash fell by ${afterWithdraw.cash - afterDeposit.cash}, not the ${put} the bank took`);
+  shot("atm_island_after_deposit");
+  console.log(`deposit all: bank ${afterWithdraw.bank} -> ${afterDeposit.bank}, cash ${afterWithdraw.cash} -> ${afterDeposit.cash}`);
+  if (d.status !== "ok") fails.push(`the deposit row was refused: ${d.detail}`);
+  if (afterDeposit.cash !== 0) fails.push(`cash left after depositing all: ${afterDeposit.cash}`);
+  if (afterDeposit.bank - afterWithdraw.bank !== afterWithdraw.cash) fails.push(`the bank rose by ${afterDeposit.bank - afterWithdraw.bank}, not the ${afterWithdraw.cash} carried`);
 
   for (const f of fails) console.log(`FAIL  ${f}`);
   console.log(fails.length ? "atm quick proof: FAIL" : "atm quick proof: PASS");
@@ -81,6 +73,6 @@ async function runAtmQuickProof(args) {
 
 export default {
   name: "atm-quick",
-  usage: "atm-quick [side] [cashPitch] [depositPitch]",
+  usage: "atm-quick [EntityName]",
   run: (ctx) => runAtmQuickProof(ctx?.args ?? []),
 };
