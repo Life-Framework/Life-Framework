@@ -783,6 +783,9 @@ export function passQuiz(on, n, wait) {
   if (ui.status !== "ok" || !ui.detail.includes("QuizOption0Button")) return false;
   for (const answer of quizAnswers()) {
     on(n, { verb: "click", widget: `QuizOption${answer}Button` });
+    wait(1200);
+    // Each answer is judged first (right or wrong plus the rule); Next moves on.
+    on(n, { verb: "click", widget: "QuizNextButton" });
     wait(500);
   }
   wait(2500);
