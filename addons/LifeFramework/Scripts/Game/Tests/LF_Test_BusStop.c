@@ -1,6 +1,7 @@
-// red-proof: 2026-11-22 `node tools/cli.mjs test --no-build --red LF_Test_BusStop,LF_Test_BusStopWorld`: RED-OK travel/bus-stop (fails with the hook on, 48 assertions)
+// red-proof: 2026-11-22 `node tools/cli.mjs test --no-build --red LF_Test_BusStop,LF_Test_BusStopWorld,LF_Test_BusStopActions`: RED-OK travel/bus-stop (fails with the hook on, 65 assertions)
 //! Bus stops, the rules with no world: the fare and the wait grow with distance between a base and a
-//! cap, every body state that may not ride is refused (dead, downed, cuffed or jailed, in a vehicle,
+//! cap; the destination actions grey with the right reason (a ticket waiting, the cooldown, the police,
+//! the cash) in that order; every body state that may not ride is refused (dead, downed, cuffed or jailed, in a vehicle,
 //! in a fight, wanted with an officer close), the two cooldowns hold, a waiting trip cancels when the
 //! passenger walks off, is hit or hurt, and leaves on time, and the arrival search starts at the
 //! wanted spot and widens round it.
@@ -125,6 +126,36 @@ class LF_Test_BusStop : LF_Test
 		LF_CharacterSwitchState downed = Fine();
 		downed.m_bDowned = true;
 		ctx.True(LF_BusStop.Step(trip, config, 110, here, downed, -1, 100) == LF_EBusStep.CANCEL_STATE, "going down while waiting cancels it");
+
+		// The destination actions: greyed with the reason this machine already knows, in this order: a
+		// ticket waiting, the cooldowns, the police, the cash. The act is skipped under --red.
+		LF_EBusRefusal waitingWhy = LF_EBusRefusal.NO_CHARACTER;
+		LF_EBusRefusal soonWhy = LF_EBusRefusal.NO_CHARACTER;
+		LF_EBusRefusal policeWhy = LF_EBusRefusal.NO_CHARACTER;
+		LF_EBusRefusal cashWhy = LF_EBusRefusal.NO_CHARACTER;
+		LF_EBusRefusal freeWhy = LF_EBusRefusal.NO_CHARACTER;
+		LF_EBusRefusal wantedAloneWhy = LF_EBusRefusal.NO_CHARACTER;
+		if (!RedProof())
+		{
+			waitingWhy = LF_BusTicket.ActionRefusal(config, true, 99, 70, 100, 2, true, 0, 18);
+			soonWhy = LF_BusTicket.ActionRefusal(config, false, -1, 70, 100, 2, true, 0, 18);
+			policeWhy = LF_BusTicket.ActionRefusal(config, false, -1, -1, 100, 2, true, 0, 18);
+			cashWhy = LF_BusTicket.ActionRefusal(config, false, -1, -1, 100, 0, true, 17, 18);
+			freeWhy = LF_BusTicket.ActionRefusal(config, false, 90, 30, 100, 0, false, 18, 18);
+			wantedAloneWhy = LF_BusTicket.ActionRefusal(config, false, -1, -1, 100, 3, false, 50, 18);
+		}
+
+		ctx.True(waitingWhy == LF_EBusRefusal.BUSY, "with a ticket waiting every destination is greyed as bought, before any other reason");
+		ctx.True(soonWhy == LF_EBusRefusal.TOO_SOON, "30 s after an arrival the destinations are greyed as not due");
+		ctx.True(policeWhy == LF_EBusRefusal.PURSUIT, "wanted with an officer in sight greys the destinations");
+		ctx.True(cashWhy == LF_EBusRefusal.NO_CASH, "a fare above the cash carried is greyed for cash");
+		ctx.True(freeWhy == LF_EBusRefusal.NONE, "the exact fare in hand, past both cooldowns, may buy");
+		ctx.True(wantedAloneWhy == LF_EBusRefusal.NONE, "wanted with no officer in sight may still buy");
+		ctx.EqualStr("#LF-BusStop_WhyNoCash", LF_BusTicket.ReasonKey(LF_EBusRefusal.NO_CASH), "a greyed fare says not enough cash");
+		ctx.EqualStr("#LF-BusStop_WhyPursuit", LF_BusTicket.ReasonKey(LF_EBusRefusal.PURSUIT), "a greyed fare says the police are near");
+		ctx.EqualStr("#LF-BusStop_WhyTooSoon", LF_BusTicket.ReasonKey(LF_EBusRefusal.TOO_SOON), "a greyed fare says the bus is not due");
+		ctx.EqualStr("#LF-BusStop_WhyBusy", LF_BusTicket.ReasonKey(LF_EBusRefusal.BUSY), "a greyed fare says a ticket is bought");
+		ctx.EqualStr("#LF-BusStop_CancelAsked", LF_BusStop.CancelKey(LF_EBusStep.CANCEL_ASKED), "a cancelled trip has its text");
 
 		// Every refusal and cancel has its own text.
 		ctx.EqualStr("#LF-BusStop_NoCash", LF_BusStop.RefusalKey(LF_EBusRefusal.NO_CASH), "no cash has its text");

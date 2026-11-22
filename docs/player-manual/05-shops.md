@@ -38,5 +38,5 @@ The numbers in the first column are the numbers on the [Saint-Philippe map](maps
 
 ## What the clothing store and the gun store carry
 
-* **Clothing store:** 26 items. Shirts $25 to $30, trousers $35 to $170, hats $15 to $20, jackets $45 to $250, a raincoat $60.
+* **Clothing store:** 65 items, with a rack and a workwear counter. Shirts $25 to $30, trousers $35 to $170, jackets $38 to $250, three raincoat colours $60, 26 hats and caps $15 to $38 (flat caps, knitted hats, trucker caps, berets, ushanka, hard hats), work boots $48, gloves $15 to $20, watches $35 and $45, and rucksacks priced by size: canvas sack $28, Swiss M70 $30, Kolobok $60, ALICE $80, field pack $110. No military uniforms; the Rally gear belongs to a game DLC the shop cannot sell.
 * **Gun store:** Pistol PM $350, Pistol M9 $500, Rifle M21 $1,500, rifle VZ-58 $1,800 (a permit is needed); magazines $15 to $40; scopes $300 and $450; holsters $25 to $30.

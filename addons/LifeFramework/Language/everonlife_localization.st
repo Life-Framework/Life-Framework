@@ -2433,22 +2433,42 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{950C69C056C83985}" {
      Id "LF-BusStop_Action"
      Target_en_us "Take the bus"
-     Comment "Bus stop sign action: open the timetable."
+     Comment "Bus stop action fallback name (a slot with no stop is hidden)."
+    }
+    CustomStringTableItem "{B29A8D0906A937C3}" {
+     Id "LF-BusStop_ActionTo"
+     Target_en_us "Bus to %1: {currency:sym}%2, %3 s"
+     Comment "Bus stop action, one per destination. %1 the stop name, %2 the fare in cash, %3 seconds of wait."
     }
     CustomStringTableItem "{FBFD6EFAC0C8BAE5}" {
      Id "LF-BusStop_Arrived"
      Target_en_us "You get off at %1."
      Comment "Bus toast on arrival. %1 the stop's name."
     }
-    CustomStringTableItem "{A79746CE33D32688}" {
-     Id "LF-BusStop_Asking"
-     Target_en_us "Buying your ticket..."
-     Comment "Bus timetable: waiting for the server's answer."
+    CustomStringTableItem "{8205388EAC928159}" {
+     Id "LF-BusStop_BoardFare"
+     Target_en_us "{currency:sym}%1"
+     Comment "Timetable board: the fare to one stop. %1 the fare in cash."
     }
-    CustomStringTableItem "{0DFD68CD0EAF9F03}" {
-     Id "LF-BusStop_Board"
-     Target_en_us "Buy ticket"
-     Comment "Bus timetable row button: pay the fare to that stop."
+    CustomStringTableItem "{7D1971DA5E0F73C4}" {
+     Id "LF-BusStop_BoardHere"
+     Target_en_us "You are here"
+     Comment "Timetable board: the mark on the reader's own stop."
+    }
+    CustomStringTableItem "{C60B8ECDA5501469}" {
+     Id "LF-BusStop_BoardNext"
+     Target_en_us "Pick your stop in the sign's action list, pay the fare in cash and wait at the stop."
+     Comment "Timetable sign card: what to do next."
+    }
+    CustomStringTableItem "{60F8C241BEAFD60D}" {
+     Id "LF-BusStop_BoardTitle"
+     Target_en_us "Bus timetable"
+     Comment "Printed heading of the timetable board on a bus stop pole. A pack names its line."
+    }
+    CustomStringTableItem "{37586E8F50271ECB}" {
+     Id "LF-BusStop_BoardWhat"
+     Target_en_us "Every stop on this line and the cash fare to it from here."
+     Comment "Timetable sign card: what the board shows."
     }
     CustomStringTableItem "{877447BCF40EC4B5}" {
      Id "LF-BusStop_Boarded"
@@ -2459,6 +2479,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BusStop_Busy"
      Target_en_us "You already have a ticket. Wait for the bus."
      Comment "Bus refusal: a trip is already waiting."
+    }
+    CustomStringTableItem "{D451B9D7F357DBB4}" {
+     Id "LF-BusStop_CancelAction"
+     Target_en_us "Cancel trip (refund {currency:sym}%1): bus in %2 s"
+     Comment "Bus stop action while a ticket waits. %1 the fare refunded, %2 seconds until the bus leaves."
+    }
+    CustomStringTableItem "{4414BA244BADCE0C}" {
+     Id "LF-BusStop_CancelAsked"
+     Target_en_us "Trip cancelled. Fare refunded."
+     Comment "Bus toast: the player cancelled the waiting ticket."
     }
     CustomStringTableItem "{157F9BBFC17C40C2}" {
      Id "LF-BusStop_CancelHurt"
@@ -2480,10 +2510,10 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The bus could not take you. Fare refunded."
      Comment "Bus toast: the wait was cancelled (downed, cuffed, in a vehicle or gone)."
     }
-    CustomStringTableItem "{939B9C701E2737AF}" {
-     Id "LF-BusStop_Close"
-     Target_en_us "Close"
-     Comment "Bus timetable close button."
+    CustomStringTableItem "{BB22261A6CC4006C}" {
+     Id "LF-BusStop_CancelTitle"
+     Target_en_us "Cancel trip"
+     Comment "Bus stop action name in the prefab (the script fills in the fare and the countdown)."
     }
     CustomStringTableItem "{4B1037495C5FD284}" {
      Id "LF-BusStop_Combat"
@@ -2510,11 +2540,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Get out of the vehicle first."
      Comment "Bus refusal: the player is in a vehicle."
     }
-    CustomStringTableItem "{65E44F0E76D7D99E}" {
-     Id "LF-BusStop_From"
-     Target_en_us "Timetable at %1"
-     Comment "Bus timetable: which stop this is. %1 the stop's name."
-    }
     CustomStringTableItem "{34BE773FFD417AE1}" {
      Id "LF-BusStop_GridNorth"
      Target_en_us "Test yard, north stop"
@@ -2525,11 +2550,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Test yard, south stop"
      Comment "Debug grid bus stop name."
     }
-    CustomStringTableItem "{2468ADE988941CE2}" {
-     Id "LF-BusStop_Intro"
-     Target_en_us "Pay the driver in cash, then wait here. Walk off, get hurt or start a fight and your fare is refunded."
-     Comment "Bus timetable: how a trip works."
-    }
     CustomStringTableItem "{917B6AE39DA8392B}" {
      Id "LF-BusStop_NoCash"
      Target_en_us "You do not have the fare in cash."
@@ -2539,11 +2559,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BusStop_NoCharacter"
      Target_en_us "You cannot travel right now."
      Comment "Bus refusal: no character or no body."
-    }
-    CustomStringTableItem "{1279B16F553A754A}" {
-     Id "LF-BusStop_NoRoutes"
-     Target_en_us "No other stops on this line."
-     Comment "Bus timetable: the map has no other stop."
     }
     CustomStringTableItem "{E831F4748B626430}" {
      Id "LF-BusStop_NoStop"
@@ -2560,11 +2575,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The driver will not stop with {police} on your tail."
      Comment "Bus refusal: wanted with an on-duty officer close."
     }
-    CustomStringTableItem "{74EA4E2EDAE4F80C}" {
-     Id "LF-BusStop_Row"
-     Target_en_us "{currency:sym}%1, %2 s"
-     Comment "Bus timetable row: the fare and the wait to one stop. %1 the fare in cash, %2 seconds."
-    }
     CustomStringTableItem "{BCB996F6837C3299}" {
      Id "LF-BusStop_SameStop"
      Target_en_us "You are already at that stop."
@@ -2579,6 +2589,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BusStop_TooSoon"
      Target_en_us "The next bus is not due yet. Try again shortly."
      Comment "Bus refusal: the request or trip cooldown."
+    }
+    CustomStringTableItem "{2192680E4E040B4E}" {
+     Id "LF-BusStop_WhyBusy"
+     Target_en_us "Ticket already bought"
+     Comment "Greyed bus action reason: a ticket is already waiting."
+    }
+    CustomStringTableItem "{D3E1EB179C2F1379}" {
+     Id "LF-BusStop_WhyNoCash"
+     Target_en_us "Not enough cash"
+     Comment "Greyed bus action reason: the fare is more than the cash carried."
+    }
+    CustomStringTableItem "{CC7F4F43A1B2B050}" {
+     Id "LF-BusStop_WhyPursuit"
+     Target_en_us "{police} nearby"
+     Comment "Greyed bus action reason: wanted with an on-duty officer close."
+    }
+    CustomStringTableItem "{54D8814DF61E3B22}" {
+     Id "LF-BusStop_WhyTooSoon"
+     Target_en_us "Next bus not due yet"
+     Comment "Greyed bus action reason: the ask or trip cooldown."
     }
     CustomStringTableItem "{7E1C40B2A93D5F06}" {
      Id "LF-BuyerSale_Action"
@@ -13964,6 +13994,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_Rules"
      Target_en_us "Rules"
      Comment "Sign card section heading: cooldowns, wanted level, other rules."
+    }
+    CustomStringTableItem "{B71E5C09A4D23F68}" {
+     Id "LF-Sign_TaxiStand_Next"
+     Target_en_us "Take taxi work here, then drive each fare where it wants to go."
+     Comment "Sign catalog 'next' text of the taxi stand's Read card (sign id taxi_stand): what to do after reading it."
     }
     CustomStringTableItem "{6EAD44E4FC5E58E9}" {
      Id "LF-Sign_TaxiStand_Title"

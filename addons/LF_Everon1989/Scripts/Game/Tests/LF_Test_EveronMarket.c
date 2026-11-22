@@ -159,7 +159,7 @@ class LF_Test_EveronMarket : LF_Test
 		if (!rows || !coreRows)
 			return;
 
-		ctx.Equal(16, rows.Count(), "the pack trader lists 16 goods, each once");
+		ctx.Equal(17, rows.Count(), "the pack trader lists 17 goods, each once (apple juice for the arrival route)");
 		ctx.Equal(TraderPrice(rows, WOOD_PLANK), 6, "the pack trader buys planks at 6");
 		ctx.Equal(TraderPrice(rows, CABBAGE), 4, "the pack trader buys cabbages at 4");
 		ctx.Equal(-1, TraderPrice(coreRows, WOOD_PLANK), "the core trader list is untouched: no planks");
