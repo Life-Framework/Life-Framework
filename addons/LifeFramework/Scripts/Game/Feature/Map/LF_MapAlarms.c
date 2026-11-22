@@ -395,10 +395,27 @@ class LF_MapAlarms
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A late joiner whose snapshot arrived before anything listened (or a statics reset) reads the
+	//! carrier once, so the first map it opens is right without waiting for the next change.
+	protected static void EnsureClient()
+	{
+		if (s_aClient || !GetGame())
+			return;
+
+		LF_GameModeRoleplay gameMode = LF_GameModeRoleplay.Cast(GetGame().GetGameMode());
+		if (!gameMode)
+			return;
+
+		s_aClient = {};
+		LF_MapAlarmRules.Decode(gameMode.LF_GetMapAlarms(), s_aClient);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Any machine: the alarm state of a map place and when it went off.
 	static LF_EMapAlarmState StateOf(string kind, string id, out int raised)
 	{
 		raised = 0;
+		EnsureClient();
 		if (!s_aClient)
 			return LF_EMapAlarmState.NONE;
 
@@ -419,6 +436,7 @@ class LF_MapAlarms
 	//! Any machine: how many places ring now (harness and tests).
 	static int ClientCount()
 	{
+		EnsureClient();
 		if (!s_aClient)
 			return 0;
 

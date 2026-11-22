@@ -574,6 +574,7 @@
 - ✅ **Dispatch log on the wanted board**: the newest `m_iDispatchLogLines` (5)
   calls, "HH:MM <offence> at <place>: N on duty, radioed" or "nobody on duty,
   loud alarm". Session-local (the posters are the persisted record).
+- 🔧 **The alarm shows on everyone's map** (merged, in-dev): a robbery report at a till, vault, clinic cabinet or armoury rings that place's map badge (red pulsing ring while in progress, grey "robbed recently" after); see `docs/features/map.md` "Robbery alarm on the place badges". Read from the dispatch's police call; no new robbery logic.
 - Harness: `state` adds `dispatch=<n> lastdispatch=<offence@place> alarm=none|normal|loud`;
   `node agent-box/session.mjs dispatch-proof` drives the two-client run.
 - Manual: listening check (the siren loop and the radio chirp) and the light at
