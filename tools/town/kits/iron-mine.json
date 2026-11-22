@@ -95,7 +95,8 @@
       ],
       "yaw": 90,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.299
     },
     {
       "id": "mine-picks",

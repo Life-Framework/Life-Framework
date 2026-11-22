@@ -29,7 +29,7 @@ GenericEntity Fit_coalmans_brow_mine_mine_heap_r : "{D93A7286584E122C}Prefabs/Pr
  angleY 180
 }
 GenericEntity Fit_coalmans_brow_mine_mine_cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
- coords 4327.5 34.961 10406.5
+ coords 4327.5 34.662 10406.5
  angleY 90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_picks : "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et" {
