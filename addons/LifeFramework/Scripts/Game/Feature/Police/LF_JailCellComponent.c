@@ -47,6 +47,9 @@ class LF_JailCellComponent : ScriptComponent
 	[Attribute("", UIWidgets.EditBox, desc: "Breach target id of the jail door (its LF_BreachTargetComponent id). Confinement pauses while that door is open. Empty: no door gates the sentence.")]
 	protected string m_sDoorTargetId;
 
+	[Attribute("", UIWidgets.EditBox, desc: "Breach target id of the jail's outer door (LF_JailBreak layer 1). Set, the cell door can be charged only once this door is open, and blowing the cells frees the prisoners inside. Empty: the cell door alone.")]
+	protected string m_sOuterDoorTargetId;
+
 	[Attribute("0 0 -5", UIWidgets.EditBox, desc: "Where a released prisoner stands, in this entity's local frame (outside the cell door).")]
 	protected vector m_vReleaseOffset;
 
@@ -87,6 +90,8 @@ class LF_JailCellComponent : ScriptComponent
 		if (!m_sDoorTargetId.IsEmpty())
 			LF_Jail.SetDoorTarget(m_sDoorTargetId);
 
+		LF_Jail.SetOuterDoorTarget(m_sOuterDoorTargetId);
+
 		LF_Jail.SetCellOrigin(owner.GetOrigin());
 	}
 
@@ -109,6 +114,8 @@ class LF_JailCellComponent : ScriptComponent
 	{
 		super.OnPostInit(owner);
 
+		// Every machine: the client offer of the cell charge reads the outer door's replicated state.
+		LF_JailBreak.NoteOfferDoors(m_sDoorTargetId, m_sOuterDoorTargetId);
 		if (!Replication.IsServer())
 			return;
 

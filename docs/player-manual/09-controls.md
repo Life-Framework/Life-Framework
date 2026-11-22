@@ -15,6 +15,7 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 | **Emote menu** | **F1** | |
 | **Give up** while downed (hold, after 30 seconds) | hold **X** | hold **Y** |
 | Mark a moment for a **clip** | **F8** | **right bumper + View** |
+| Open the **welcome guide** again | **F3** | **right bumper + Y** |
 
 ## Vehicles
 
