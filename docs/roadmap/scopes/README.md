@@ -38,3 +38,4 @@ Prefab and script names for each scope are in [sources.md](../sources.md). The h
 | [work/](work/resources.md) | Legal resources and civilian jobs |
 | [ownership/](ownership/organizations.md) | Groups, hideouts, vehicles |
 | [later/](later/housing.md) | Scopes for M4, M5, or parked |
+| [gangs/](gangs/experience-scope.md) | Gangs and turf: flags, radio, recruiting, the gang map, hideouts, rebel outposts, turf, the prison break (M7) |
