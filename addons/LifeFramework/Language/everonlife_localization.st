@@ -11397,6 +11397,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
     }
+    CustomStringTableItem "{6D41A0F3C8B2957E}" {
+     Id "LF-Outpost_TraderRefusesOfficer"
+     Target_en_us "We don't deal with the law here. Take the badge off and come back."
+     Comment "Toast to an on-duty officer: a trader inside a rebel outpost refuses to serve them (#4217)."
+    }
+    CustomStringTableItem "{A3F59E1B7C402D86}" {
+     Id "LF-Outpost_TraderRefusesOfficer_Title"
+     Target_en_us "Not serving you"
+     Comment "Title of the outpost trader's refusal toast to an on-duty officer (#4217)."
+    }
     CustomStringTableItem "{4EF600B18D7A2C1B}" {
      Id "LF-Pager_None"
      Target_en_us "No calls paged."
@@ -16162,6 +16172,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Unflip_TooFar"
      Target_en_us "Get closer to push it over."
      Comment "Unflip refusal toast (#3333): the player is out of reach."
+    }
+    CustomStringTableItem "{64FAA43ACB2D5BCD}" {
+     Id "LF-UnitStatus_ActionAvailable"
+     Target_en_us "Radio: available"
+     Comment "Police car action row: tell dispatch this unit is free for calls."
+    }
+    CustomStringTableItem "{8F7C7A324959094B}" {
+     Id "LF-UnitStatus_ActionBusy"
+     Target_en_us "Radio: busy"
+     Comment "Police car action row: tell dispatch this unit is tied up."
+    }
+    CustomStringTableItem "{6735AE870F08B8D7}" {
+     Id "LF-UnitStatus_Available"
+     Target_en_us "available"
+     Comment "Unit status word on the dispatch board."
+    }
+    CustomStringTableItem "{E4EDC2B539CB3C85}" {
+     Id "LF-UnitStatus_BoardHeading"
+     Target_en_us "UNITS ON THE RADIO"
+     Comment "Wanted board, police view: heading above the unit status rows."
+    }
+    CustomStringTableItem "{82942B511449462F}" {
+     Id "LF-UnitStatus_BoardLine"
+     Target_en_us "Unit %1: %2"
+     Comment "Dispatch board unit row. %1 = officer name, %2 = available or busy."
+    }
+    CustomStringTableItem "{A403887D50552271}" {
+     Id "LF-UnitStatus_Busy"
+     Target_en_us "busy"
+     Comment "Unit status word on the dispatch board."
+    }
+    CustomStringTableItem "{0877B5083A43C81C}" {
+     Id "LF-UnitStatus_NoName"
+     Target_en_us "unnamed officer"
+     Comment "Dispatch board unit row when the officer has no name."
+    }
+    CustomStringTableItem "{C5AB110336544DB4}" {
+     Id "LF-UnitStatus_SetAvailable"
+     Target_en_us "Dispatch has you as available."
+     Comment "Toast after the officer radios available."
+    }
+    CustomStringTableItem "{0A69E149174D2D14}" {
+     Id "LF-UnitStatus_SetBusy"
+     Target_en_us "Dispatch has you as busy."
+     Comment "Toast after the officer radios busy."
+    }
+    CustomStringTableItem "{296F37B4C207EAD9}" {
+     Id "LF-UnitStatus_Title"
+     Target_en_us "Radio"
+     Comment "Toast title for unit status radio messages."
     }
     CustomStringTableItem "{7B2D91E4A0C358F6}" {
      Id "LF-VehicleCompartment_Open"
