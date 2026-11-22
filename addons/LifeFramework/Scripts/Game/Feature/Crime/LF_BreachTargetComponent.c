@@ -362,6 +362,16 @@ class LF_BreachTargetComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Open as an offer reads it: the server asks LF_Breach, a client reads the replicated flag.
+	bool IsOpenForOffer()
+	{
+		if (Replication.IsServer())
+			return LF_Breach.IsOpen(GetTargetId());
+
+		return m_bRplOpen;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Offer check for the repair action. The server asks LF_Breach. A client shows it to police on duty
 	//! (replicated account state) and, on an organization door, to anyone: organization
 	//! membership is server-only, so LF_Breach.Repair decides and logs the refusal.

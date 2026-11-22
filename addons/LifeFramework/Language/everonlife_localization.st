@@ -7133,6 +7133,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Police scanner"
      Comment "Item name of the fence police scanner (#253)."
     }
+    CustomStringTableItem "{8E63383FBBBFBE83}" {
+     Id "LF-JailBail_Action"
+     Target_en_us "Pay bail"
+     Comment "Action on the jail bail phone."
+    }
+    CustomStringTableItem "{0D1924F8D487CAE9}" {
+     Id "LF-JailBail_Desc"
+     Target_en_us "Pay your bail from the bank and walk out"
+     Comment "Action description on the jail bail phone."
+    }
+    CustomStringTableItem "{5E7B829175406CAC}" {
+     Id "LF-JailBail_NoAccount"
+     Target_en_us "There is no bank account to pay bail from."
+     Comment "Toast: the prisoner has no bank account."
+    }
+    CustomStringTableItem "{83D41EBE07474BB4}" {
+     Id "LF-JailBail_NotServing"
+     Target_en_us "You are not serving a sentence."
+     Comment "Toast: someone not in custody used the bail phone."
+    }
+    CustomStringTableItem "{C9FBAB97BE1A14A2}" {
+     Id "LF-JailBail_Off"
+     Target_en_us "Bail is not offered here."
+     Comment "Toast and offer reason: the owner switched bail off."
+    }
+    CustomStringTableItem "{4C2DDD8EF971F0BA}" {
+     Id "LF-JailBail_Paid"
+     Target_en_us "Bail of %1 paid from your bank. You are free to go."
+     Comment "Toast: bail paid. %1 = the bail."
+    }
+    CustomStringTableItem "{65A1EF059B6C37A4}" {
+     Id "LF-JailBail_TooPoor"
+     Target_en_us "Bail is %1. Your bank cannot cover it."
+     Comment "Toast: the bank holds less than the bail. %1 = the bail."
+    }
+    CustomStringTableItem "{7DAABAD2EC8E0E3D}" {
+     Id "LF-JailBreak_Cooldown"
+     Target_en_us "The jail was broken open not long ago. Wait before you try again."
+     Comment "Toast: the jail doors are inside the cooldown after a break."
+    }
+    CustomStringTableItem "{0AE487F4A2029D85}" {
+     Id "LF-JailBreak_FromInside"
+     Target_en_us "You can't set a charge from inside the cell."
+     Comment "Toast: a serving prisoner tried to charge a jail door."
+    }
+    CustomStringTableItem "{A5E0EB1EBEB9C3DF}" {
+     Id "LF-JailBreak_OuterFirst"
+     Target_en_us "Blow the outer door first."
+     Comment "Toast and offer reason: the cell door waits until the jail's outer door is open."
+    }
     CustomStringTableItem "{B248F0FEF12E26A8}" {
      Id "LF-JailSlip_Blank"
      Target_en_us "A blank sentence slip."
@@ -9461,6 +9511,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Offence_Murder"
      Target_en_us "Murder"
      Comment "Offence on a wanted poster: the suspect killed a person (M1-27)."
+    }
+    CustomStringTableItem "{E95567BA027671E4}" {
+     Id "LF-Offence_PrisonBreach"
+     Target_en_us "Breaking prisoners out"
+     Comment "Offence: blew the jail cells open to free the prisoners (two-layer jailbreak)."
     }
     CustomStringTableItem "{467D009B1D72E627}" {
      Id "LF-Offence_RestrictedItem"

@@ -94,6 +94,15 @@ Needs **at least 2 police on duty**. You have **12 minutes**.
 
 The **cash van** is easier and smaller. It parks at three stops in town for 5 minutes at a time (it moves if nobody is within 40 m). Open its **cash box** with a drill or a charge; money bags spill beside it. It counts as +1 wanted and sets off the van alarm.
 
+## Jailbreak
+
+Breaking someone out takes **two breaching charges**.
+
+1. **Outer door.** Charge the jail's outer door. The fuse is **20 seconds**. The alarm rings and dispatch hears where.
+2. **Cells.** With the outer door open, charge the cell door (**15 seconds**). The cells cannot be charged while the outer door is still shut.
+
+When the cells blow, **every prisoner in the cell is free**: their sentence ends, and they are wanted for escaping custody. Whoever set the cell charge gets **+4 wanted** for the jailbreak. A prisoner cannot set a charge from inside. The doors seal themselves again after **10 minutes** (police can repair them sooner), and the jail cannot be charged again for **an hour** after a break.
+
 ## Hideouts
 
 Two **contested sites** (a hideout on the hilltop mast and the farm compound) are fought over by organizations. Organizations are run from the **organization office** in town; the **war board** there lists the fights.
