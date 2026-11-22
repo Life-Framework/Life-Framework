@@ -198,6 +198,9 @@ class LF_ActivityRules
 
 			case LF_EActivityCheck.XP:
 				return facts.Xp(step.m_sCheckParam) - xpAtStart >= LF_Utils.MaxInt(step.m_iCheckCount, 1);
+
+			case LF_EActivityCheck.LICENCE:
+				return facts.HasLicence(step.m_sCheckParam);
 		}
 
 		return false;
