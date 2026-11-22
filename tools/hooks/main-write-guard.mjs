@@ -4,6 +4,9 @@
 import { decideWrite } from "../lib/main-write-guard.mjs";
 
 let raw = "";
+// A caller that dies before closing stdin left this hook waiting for "end" forever (one ran 68 h on lf-testbox,
+// 2026-11-22). After 10 s it allows and exits: the stdin listener keeps the process alive, so the timer fires.
+setTimeout(() => process.exit(0), 10000).unref();
 process.stdin.setEncoding("utf8");
 process.stdin.on("data", (c) => { raw += c; });
 process.stdin.on("end", () => {

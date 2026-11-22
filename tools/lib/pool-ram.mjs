@@ -111,6 +111,7 @@ export function jobReserveMb(settings, peaks, { kind, clients = 1, profile = "fu
 //   ws    working set MB; priv: committed (private) MB, which a working-set trim does not shrink
 //   prof  client: full | lowspec (-maxFPS 15, agent-box/session-profile.mjs); workbench: look (the look
 //         viewer: LF_VisualShotsPlugin or a visual-serve profile) | tool (rdb, compile, pack); else -
+//   age   seconds since the process started (-1 unknown); past GROWTH_WINDOW_S a game process has loaded
 // Before 2026-11-17 a test server counted as a session server, an island client as a small one and a client's
 // profile was the one of the job being admitted, so test peaks were never recorded and island clients were
 // counted 1.2 GB low.
@@ -127,7 +128,8 @@ function Get-LfArmaRows($all) {
     if (-not $k) { continue }
     $i = 0; if ($c -match 'CoreOnEveron') { $i = 1 }
     if ($k -eq 'client' -and $c -match '-profile\s+"?([^"]+?)\Wclient\d+"?(\s|$)') { if ($isl[$matches[1].ToLower()]) { $i = 1 } }
-    [pscustomobject]@{ k = $k; id = $p.ProcessId; ws = [int]($p.WorkingSetSize / 1MB); isl = $i; priv = [int]($p.PrivatePageCount / 1MB); prof = $prof }
+    $age = -1; try { if ($p.CreationDate) { $age = [int]((Get-Date) - [datetime]$p.CreationDate).TotalSeconds } } catch {}
+    [pscustomobject]@{ k = $k; id = $p.ProcessId; ws = [int]($p.WorkingSetSize / 1MB); isl = $i; priv = [int]($p.PrivatePageCount / 1MB); prof = $prof; age = $age }
   }
 }
 `;
@@ -135,7 +137,7 @@ function Get-LfArmaRows($all) {
 // PowerShell that prints one "lf-pool: proc <kind> <pid> <workingSetMb> <island 0|1> <privateMb> <profile>" line
 // per ArmaReforger process (Get-LfArmaRows). Run here or over ssh; same output.
 export const PS_PROC_SCAN = PS_PROC_ROWS + String.raw`
-Get-LfArmaRows | ForEach-Object { Write-Host ("lf-pool: proc " + $_.k + " " + $_.id + " " + $_.ws + " " + $_.isl + " " + $_.priv + " " + $_.prof) }
+Get-LfArmaRows | ForEach-Object { Write-Host ("lf-pool: proc " + $_.k + " " + $_.id + " " + $_.ws + " " + $_.isl + " " + $_.priv + " " + $_.prof + " " + $_.age) }
 `;
 
 // [{ kind, pid, wsMb, world, privMb?, profile? }] from PS_PROC_SCAN output (an older scan sends no private
@@ -143,11 +145,12 @@ Get-LfArmaRows | ForEach-Object { Write-Host ("lf-pool: proc " + $_.k + " " + $_
 export function parseScan(text) {
   const out = [];
   for (const l of String(text ?? "").split(/\r?\n/)) {
-    const m = /^lf-pool: proc (workbench|server|client|test) (\d+) (\d+) ([01])(?: (\d+))?(?: (\S+))?$/.exec(l.trim());
+    const m = /^lf-pool: proc (workbench|server|client|test) (\d+) (\d+) ([01])(?: (\d+))?(?: (\S+))?(?: (-?\d+))?$/.exec(l.trim());
     if (!m) continue;
     const p = { kind: m[1], pid: Number(m[2]), wsMb: Number(m[3]), world: m[4] === "1" ? ISLAND : SMALL };
     if (m[5] !== undefined) p.privMb = Number(m[5]);
     if (m[6] && m[6] !== "-") p.profile = m[6];
+    if (m[7] !== undefined && Number(m[7]) >= 0) p.ageS = Number(m[7]);
     out.push(p);
   }
   return out;
@@ -166,9 +169,18 @@ function procProfile(p, profile) {
 // loaded; Windows only paged it out, which free RAM already counts as free). A Workbench that
 // is still loading, an island server still streaming, a guard run's servers all count here, started by
 // the pool or not. profile is the profile client peaks are read for.
-export function unrealisedMb(procs, peaks, profile = "full") {
+//
+// Only a process still loading grows: a server, test server or client older than GROWTH_WINDOW_S has reached
+// what it takes (a small-world session server settles near 1 GB, under the 2.2 GB p90 the town and island
+// boots set). Before 2026-11-22 every live process counted up to its peak for as long as it ran, and the RAM
+// trim of waiting jobs (trimLiveSessions) cut working sets to tens of MB, so the gate read 38 GB of growth on
+// a 47 GB box with 19 GB free and tests waited on lf-testbox with every lane free. A Workbench is exempt: a
+// look viewer loads a new world on each request.
+export const GROWTH_WINDOW_S = 300;
+export function unrealisedMb(procs, peaks, profile = "full", { windowS = GROWTH_WINDOW_S } = {}) {
   let mb = 0;
   for (const p of procs ?? []) {
+    if (p.kind !== "workbench" && Number.isFinite(p.ageS) && p.ageS > windowS) continue;
     const peak = peakMb(peaks, p.kind, p.world, procProfile(p, profile));
     if (Number(p.privMb) >= peak) continue;
     mb += Math.max(0, peak - Math.max(Number(p.wsMb) || 0, Number(p.maxMb) || 0));
@@ -200,11 +212,23 @@ export function islandCount(procs) {
 //   pendingMb    memory of lane-lock jobs in their first seconds, before they have processes (lockGapMb)
 //   growthMb     unrealisedMb of the running processes
 //   island       the job is island-sized; islandRunning how many island processes already run there
-// Returns { ok, needMb, reason }. needMb is the free RAM that would admit it.
-export function admit({ freeMb, minFreeMb, reserveMb = 0, pendingMb = 0, growthMb = 0, island = false, islandRunning = 0, what = "the job" }) {
+//   totalMb      the machine's physical RAM (optional): an ask is capped at totalMb less the floor, the most it
+//                could ever free; a job whose own peak is over that is neverFits
+//   idle         no pool job holds a lane there: a neverFits job then runs alone instead of waiting forever
+// Returns { ok, needMb, reason, neverFits?, alone? }. needMb is the free RAM that would admit it.
+export function admit({ freeMb, minFreeMb, reserveMb = 0, pendingMb = 0, growthMb = 0, island = false, islandRunning = 0, what = "the job", totalMb, idle = false }) {
   const gb = (x) => (x / 1024).toFixed(1);
   const committed = (Number(pendingMb) || 0) + (Number(growthMb) || 0);
-  const needMb = minFreeMb + reserveMb + committed;
+  const capMb = Number.isFinite(totalMb) && totalMb - minFreeMb > 0 ? totalMb - minFreeMb : Infinity;
+  // The ask shown and used for holding is capped; admission itself never is (a capped ask would let a job
+  // start under the floor).
+  const rawMb = minFreeMb + reserveMb + committed;
+  const needMb = Math.min(rawMb, capMb);
+  if (rawMb > capMb) {
+    if (idle) return { ok: true, needMb, neverFits: true, alone: true };
+    const own = minFreeMb + reserveMb > capMb ? `${gb(reserveMb)} GB peak for ${what}` : `${gb(reserveMb)} GB peak for ${what} plus ${gb(committed)} GB the running jobs still grow into`;
+    return { ok: false, needMb, neverFits: true, reason: `${own} is more than this machine can ever free (${gb(totalMb)} GB RAM less the ${gb(minFreeMb)} GB floor); it runs alone once no other lane job runs here` };
+  }
   if (!Number.isFinite(freeMb)) return { ok: true, needMb };
   if (freeMb < needMb) {
     const why = [`free RAM ${gb(freeMb)} GB`, `${gb(reserveMb)} GB peak for ${what}`];
