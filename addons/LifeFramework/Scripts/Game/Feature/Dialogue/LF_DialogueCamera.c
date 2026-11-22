@@ -9,12 +9,16 @@ class LF_DialogueCamera
 {
 	static const ResourceName CAMERA_PREFAB = "{D6DE32D1C0FCC1C7}Prefabs/Editor/Camera/ManualCameraBase.et";
 	static const float EASE_SECONDS = 0.8; // lf-fixed: camera feel, the same for every NPC
-	//! The one framing of the whole conversation: the camera stands this far behind, aside of and above
-	//! the player's head, looks at the NPC's head, and uses this field of view.
+	//! The one framing of the whole conversation: the camera stands to the side of the two heads, looks
+	//! at the middle between them, and uses this field of view.
 	static const float FOV = 42;
-	static const float SHOT_BEHIND = 0.75;
-	static const float SHOT_ASIDE = 0.5;
-	static const float SHOT_UP = 0.22;
+	//! The two-shot stands (head separation + margin) / span metres to the side, within min..max, so a
+	//! 42 degree lens holds both heads and a little room round them.
+	static const float TWO_SHOT_MARGIN = 0.8; // lf-fixed: camera feel, the same for every NPC
+	static const float TWO_SHOT_SPAN = 1.25; // lf-fixed: camera feel, the same for every NPC
+	static const float TWO_SHOT_MIN = 1.3; // lf-fixed: camera feel, the same for every NPC
+	static const float TWO_SHOT_MAX = 2.6; // lf-fixed: camera feel, the same for every NPC
+	static const float SHOT_UP = 0.1;
 	//! The camera keeps this far off anything between it and its subject.
 	static const float COLLISION_MARGIN = 0.85;
 
@@ -62,20 +66,36 @@ class LF_DialogueCamera
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pure: where the camera stands and looks, from the two heads: behind and beside the player's
-	//! head, looking past it at the NPC. The only shot of the conversation.
+	//! Pure: where the camera stands and looks, from the two heads: to the player's right of the line
+	//! between them, at its middle, so both faces are in profile and in frame (the old shot over the
+	//! player's shoulder showed the back of the player's cap). The only shot of the conversation.
 	static void Frame(vector npcHead, vector playerHead, out vector position, out vector lookAt, out float fov)
 	{
 		vector toPlayer = playerHead - npcHead;
+		float separation = toPlayer.Length();
 		toPlayer[1] = 0;
 		if (toPlayer.LengthSq() < 0.01)
 			toPlayer = "0 0 1";
 
 		toPlayer.Normalize();
 		vector right = Vector(toPlayer[2], 0, -toPlayer[0]);
-		position = playerHead + toPlayer * SHOT_BEHIND + right * SHOT_ASIDE + Vector(0, SHOT_UP, 0);
-		lookAt = npcHead;
+		vector middle = (npcHead + playerHead) * 0.5;
+		float distance = Math.Clamp((separation + TWO_SHOT_MARGIN) / TWO_SHOT_SPAN, TWO_SHOT_MIN, TWO_SHOT_MAX);
+		position = middle + right * distance + Vector(0, SHOT_UP, 0);
+		lookAt = middle;
 		fov = FOV;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the yaw in degrees (Enfusion: 0 looks along +Z) that turns a body at `from` to look at `to`.
+	static float FaceYaw(vector from, vector to)
+	{
+		vector direction = to - from;
+		direction[1] = 0;
+		if (direction.LengthSq() < 0.0001)
+			return 0;
+
+		return Math.Atan2(direction[0], direction[2]) * Math.RAD2DEG;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -165,7 +185,7 @@ class LF_DialogueCamera
 			return true;
 		}
 
-		position = Unblocked(playerHead, position, player);
+		position = Unblocked(lookAt, position, player);
 		return true;
 	}
 
