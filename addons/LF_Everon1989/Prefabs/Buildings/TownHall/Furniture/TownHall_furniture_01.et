@@ -532,11 +532,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    coords 5.55 1.106 3.7
    angleY 200
   }
-  GenericEntity : "{CBADF2BB9A4BD3DD}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V9.et" {
-   ID "DC1FDA1B24E096F0"
-   coords 10.8 2.1 5.7
-   angleY -90
-  }
   GenericEntity : "{20B9C968AAE98DCF}Prefabs/Props/Commercial/Posters/Notice_A4_Vertical_V3.et" {
    ID "DC1F4E7C3B27107B"
    coords 10.8 1.5 4.7
@@ -558,8 +553,8 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
   }
   GenericEntity : "{DD918C2BCC564E9D}Prefabs/Props/Decorations/Paintings/PaintingBig_01_V4.et" {
    ID "DC1FC49A28A8AAD2"
-   coords 2.6 2.1 7.2
-   angleY -90
+   coords 4.15 2.1 7.3
+   angleY 180
   }
   GenericEntity : "{AE4BFFE75F7DA86F}Prefabs/Props/Furniture/CoatRack_04.et" {
    ID "DC1F4EEF27EAB641"
@@ -616,12 +611,6 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "DC1F63A359E6D3EC"
    scale 0.9
    coords 10.8 1.5 6.3
-   angleY -90
-  }
-  GenericEntity : "{A08D6C886BE1B004}Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V3.et" {
-   ID "DC1F13ED3498D18E"
-   scale 0.9
-   coords 3 1.9 7.2
    angleY -90
   }
   GenericEntity : "{3FD3598CF08D3EE0}Prefabs/Props/Furniture/LampInterior_02/LampInterior_02_Orange.et" {
