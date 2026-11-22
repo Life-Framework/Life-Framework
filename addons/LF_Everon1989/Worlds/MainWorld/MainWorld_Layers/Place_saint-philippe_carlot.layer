@@ -243,10 +243,20 @@ GenericEntity Fit_saint_philippe_carlot_impound_desk {
  angleY -9
 }
 Vehicle Fit_saint_philippe_carlot_lot_display_uaz469 : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
  coords 4382.246 13.75 10639.144
  angleY 11
 }
 Vehicle Fit_saint_philippe_carlot_lot_display_uaz452 : "{988A61BA68420AFE}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_base.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
  coords 4384.863 14.7 10635.408
  angleY 151
 }

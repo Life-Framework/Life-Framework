@@ -200,7 +200,7 @@ SCR_DestructibleBuildingEntity : "{5B1494161ABF8F6D}Prefabs/Buildings/ClothingSt
    }
    coords 4.9 2.6 8.08
   }
-  GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+  GenericEntity : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
    ID "20F19231ADDA46D5"
    coords 1.57 0.199 -0.323
   }
@@ -224,11 +224,11 @@ SCR_DestructibleBuildingEntity : "{5B1494161ABF8F6D}Prefabs/Buildings/ClothingSt
    coords 5.75 0.199 4.6
    angleY -90
   }
-  GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+  GenericEntity : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
    ID "A124B062696D6DA9"
    coords 2.2 0.199 2.6
   }
-  GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+  GenericEntity : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
    ID "6F6B1D7A2D221D8D"
    coords 2.2 0.199 4.9
   }

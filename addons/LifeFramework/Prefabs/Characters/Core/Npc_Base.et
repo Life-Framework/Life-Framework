@@ -133,7 +133,7 @@ LF_NpcBaseEntity {
      Position PointInfo "{1585E9E07C8730D9}" {
       PivotID "Spine5"
      }
-     Radius 2.25
+     Radius 2.4
     }
    }
    additionalActions {
