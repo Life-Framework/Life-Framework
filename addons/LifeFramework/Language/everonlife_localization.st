@@ -13970,6 +13970,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Rules"
      Comment "Sign card section heading: cooldowns, wanted level, other rules."
     }
+    CustomStringTableItem "{B71E5C09A4D23F68}" {
+     Id "LF-Sign_TaxiStand_Next"
+     Target_en_us "Take taxi work here, then drive each fare where it wants to go."
+     Comment "Sign catalog 'next' text of the taxi stand's Read card (sign id taxi_stand): what to do after reading it."
+    }
     CustomStringTableItem "{6EAD44E4FC5E58E9}" {
      Id "LF-Sign_TaxiStand_Title"
      Target_en_us "Taxi stand"
