@@ -8218,6 +8218,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Fare"
      Comment "Map mark and waypoint label: the destination of an accepted taxi fare (driver and passenger)."
     }
+    CustomStringTableItem "{6B2C5C7E28A957E6}" {
+     Id "LF-JobMap_PostLoad"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run starts at (the pack names it)."
+    }
+    CustomStringTableItem "{74032FC49746CAB7}" {
+     Id "LF-JobMap_PostReturn"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run returns the van to (the pack names it)."
+    }
+    CustomStringTableItem "{78DC7678389C4C63}" {
+     Id "LF-JobMap_PostUnload"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run delivers to (the pack names it)."
+    }
     CustomStringTableItem "{8C41F6B2A09D3E75}" {
      Id "LF-JobMap_Stop"
      Target_en_us "Delivery stop"
@@ -12710,12 +12725,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3C66967567AE5B29}" {
      Id "LF-Postal_StartDesc"
-     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back."
+     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back. A run handed in too fast pays nothing."
      Comment "Description of the action that starts the postal van run."
     }
     CustomStringTableItem "{5B2665B387B8B998}" {
      Id "LF-Postal_Started"
-     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here."
+     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here. Hand the run in after at least %1 minutes, or nothing is paid."
      Comment "Toast of the postal van run: the run began."
     }
     CustomStringTableItem "{108D5BC1F68C84DF}" {
@@ -12725,7 +12740,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1A0210D5BCC4C762}" {
      Id "LF-Postal_TooFast"
-     Target_en_us "That was too fast to be honest work. Nothing is paid yet."
+     Target_en_us "Too fast: a postal run pays only after %1 minutes on the road. Nothing is paid yet. Hand it in again later."
      Comment "Toast of the postal van run: handed in faster than the run's least time."
     }
     CustomStringTableItem "{EA1D8BDBDABE7D01}" {
@@ -12737,6 +12752,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Postal_VanFar"
      Target_en_us "Bring the van closer to the office first."
      Comment "Toast of the postal van run: the van is not at the office."
+    }
+    CustomStringTableItem "{CBCD8E065CD8DCBC}" {
+     Id "LF-Postal_Warn"
+     Target_en_us "Get back to the post van within %1 seconds or the run is called off and nothing is paid."
+     Comment "Toast to a postal driver who has walked away from the van, before the run is called off."
     }
     CustomStringTableItem "{3243A56EDB316D6E}" {
      Id "LF-Postal_WrongOffice"
