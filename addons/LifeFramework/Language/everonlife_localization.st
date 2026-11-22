@@ -15748,6 +15748,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
     }
+    CustomStringTableItem "{3723AB61E29CDCE1}" {
+     Id "LF-ToolCondition_Good"
+     Target_en_us "%1 is in good shape"
+     Comment "Action text: tool condition at or above the good threshold (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{2E6DE213CABD02C9}" {
+     Id "LF-ToolCondition_Poor"
+     Target_en_us "%1 is badly worn and slow"
+     Comment "Action text: tool condition in the poor band, working slower (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{C23C3D6D9E4BDB06}" {
+     Id "LF-ToolCondition_Worn"
+     Target_en_us "%1 is getting worn"
+     Comment "Action text: tool condition in the worn band (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{DE472F7EE6D1E8FD}" {
+     Id "LF-ToolCondition_WornOut"
+     Target_en_us "%1 is worn out but still works, slowly"
+     Comment "Action text: tool at zero condition; it still works at half speed (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{75960D0103B97E17}" {
+     Id "LF-ToolTier_Fine"
+     Target_en_us "Fine"
+     Comment "Tool tier name (#4182)"
+    }
+    CustomStringTableItem "{72AC08B33DD29667}" {
+     Id "LF-ToolTier_Standard"
+     Target_en_us "Standard"
+     Comment "Tool tier name (#4182)"
+    }
+    CustomStringTableItem "{10F79179EEA9F6E8}" {
+     Id "LF-ToolTier_Worn"
+     Target_en_us "Worn"
+     Comment "Tool tier name (#4182)"
+    }
     CustomStringTableItem "{7038FBC3DB7D537B}" {
      Id "LF-TouristMap_Marked"
      Target_en_us "You pencil %1 new places onto your map."
