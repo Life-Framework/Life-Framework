@@ -54,17 +54,19 @@ async function runNextActivitiesProof() {
   if (!state().detail.includes("mining:2")) fails.push("the mining run did not start");
   must(on(1, { verb: "playermenu", words: ["close"] }), "close the file");
   wait(1500);
-  on(1, { verb: "capture", mode: "world", name: "mining_step1_waypoint" }, 25000);
+  on(1, { verb: "capture", mode: "ui", name: "mining_step1_waypoint" }, 25000);
 
   // Step one: take the miner job at the desk; the waypoint moves to the hardware store.
   must(on(1, { verb: "stand", entityName: DESK }), "stand at the miner desk");
   wait(2500);
+  on(1, { verb: "guide", words: ["close"] });
+  wait(800);
   const look = on(1, { verb: "look" });
-  const action = (look.detail.match(/LF_[A-Za-z]*(Job|SignUp|Workplace|Hire)[A-Za-z]*/) || [])[0];
-  if (!action) fails.push(`no job action offered at the desk: ${look.detail.slice(0, 300)}`);
-  else must(on(1, { verb: "use", className: action, entityName: DESK }, 10000), "take the miner job");
+  if (!look.detail.includes("LF_WorkplaceJobAction")) fails.push(`no job action offered at the desk: ${look.detail.slice(0, 300)}`);
+  on(1, { verb: "capture", mode: "ui", name: "job_desk_prompt" }, 25000);
+  must(on(1, { verb: "use", className: "LF_WorkplaceJobAction", entityName: DESK }, 10000), "take the miner job");
   wait(4500);
-  on(1, { verb: "capture", mode: "world", name: "mining_step2_waypoint" }, 25000);
+  on(1, { verb: "capture", mode: "ui", name: "mining_step2_waypoint" }, 25000);
 
   if (fails.length) {
     console.log("next-activities-proof: FAIL");
