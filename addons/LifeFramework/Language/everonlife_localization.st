@@ -9332,6 +9332,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
     }
+    CustomStringTableItem "{69DF48978FFA6832}" {
+     Id "LF-Mannequin_Bought"
+     Target_en_us "Bought for %1."
+     Comment "Toast after buying a piece off a mannequin. %1 price paid."
+    }
+    CustomStringTableItem "{D88719E262E2BBFE}" {
+     Id "LF-Mannequin_BoughtDropped"
+     Target_en_us "Bought for %1. Your pockets are full, so it is at your feet."
+     Comment "Toast: bought a piece, no room in the inventory, it was dropped at the buyer. %1 price paid."
+    }
+    CustomStringTableItem "{E3C98F280138BB07}" {
+     Id "LF-Mannequin_BoughtOutfit"
+     Target_en_us "Bought the whole outfit for %1."
+     Comment "Toast after buying a whole mannequin outfit. %1 price paid."
+    }
+    CustomStringTableItem "{E9FC2C3F7CA0EF0D}" {
+     Id "LF-Mannequin_BoughtOutfitDropped"
+     Target_en_us "Bought the whole outfit for %1. What did not fit is at your feet."
+     Comment "Toast: bought the outfit, some pieces were dropped at the buyer. %1 price paid."
+    }
+    CustomStringTableItem "{023966184146C94F}" {
+     Id "LF-Mannequin_BoughtPart"
+     Target_en_us "Bought part of the outfit for %1; the rest was refused."
+     Comment "Toast: the outfit sale stopped part way (a gate refused one piece). %1 price paid."
+    }
+    CustomStringTableItem "{1525CDCF4C868B0B}" {
+     Id "LF-Mannequin_BuyOutfit"
+     Target_en_us "Buy whole outfit: %1"
+     Comment "Mannequin action: buy every worn piece. %1 total price."
+    }
+    CustomStringTableItem "{749A44898F468261}" {
+     Id "LF-Mannequin_BuyPiece"
+     Target_en_us "Buy %1: %2"
+     Comment "Mannequin action: buy one worn piece. %1 item name, %2 price."
+    }
+    CustomStringTableItem "{097B35901C0BFF32}" {
+     Id "LF-Mannequin_NoCash"
+     Target_en_us "Not enough cash"
+     Comment "Mannequin action greyed: the player carries less cash than the price."
+    }
+    CustomStringTableItem "{F224EE96F400AC18}" {
+     Id "LF-Mannequin_OutfitSoldOut"
+     Target_en_us "A piece is sold out"
+     Comment "Mannequin outfit action greyed: one worn piece is sold out."
+    }
+    CustomStringTableItem "{CFF4E53D12DE196D}" {
+     Id "LF-Mannequin_SoldOut"
+     Target_en_us "Sold out"
+     Comment "Mannequin action greyed: the store has none of this piece left."
+    }
+    CustomStringTableItem "{95C19D11A4510149}" {
+     Id "LF-Mannequin_Title"
+     Target_en_us "Mannequin"
+     Comment "Toast title for a purchase off a dressed mannequin."
+    }
     CustomStringTableItem "{D920AB80A60A3625}" {
      Id "LF-MapKnown_ArrivalMarked"
      Target_en_us "The clerk pencils %1 places on the square onto your map."
@@ -12092,6 +12147,131 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Police_Trousers_Name"
      Target_en_us "Officer's trousers"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
+    }
+    CustomStringTableItem "{84084E0D0740DE17}" {
+     Id "LF-Postal_AllDone"
+     Target_en_us "Every sack here is already moved."
+     Comment "Toast of the postal van run: nothing left to move here."
+    }
+    CustomStringTableItem "{6B1DF13F6E2D277F}" {
+     Id "LF-Postal_Already"
+     Target_en_us "You already have a postal run. Finish it or give it up first."
+     Comment "Toast of the postal van run: one van per player."
+    }
+    CustomStringTableItem "{F06A8F159B8AD102}" {
+     Id "LF-Postal_Cooldown"
+     Target_en_us "The office has no van ready yet. Try again in a minute."
+     Comment "Toast of the postal van run: a run ended a moment ago."
+    }
+    CustomStringTableItem "{F5F34AAAE6DA71E3}" {
+     Id "LF-Postal_GiveUp"
+     Target_en_us "Give up the postal run"
+     Comment "Action at a post office stand: give the postal van run up, no pay."
+    }
+    CustomStringTableItem "{523DDFCCCF73873D}" {
+     Id "LF-Postal_GivenUp"
+     Target_en_us "Run given up. The van goes back to the office and nothing is paid."
+     Comment "Toast of the postal van run: the player gave the run up."
+    }
+    CustomStringTableItem "{4B1E14F4EE7DFF88}" {
+     Id "LF-Postal_HandIn"
+     Target_en_us "Hand in the postal run"
+     Comment "Action at the home post office: finish the postal van run and get paid."
+    }
+    CustomStringTableItem "{55F3AA4CDF15942D}" {
+     Id "LF-Postal_Loaded"
+     Target_en_us "Sack loaded (%1). When all are in, drive to the post office marked on your map."
+     Comment "Toast of the postal van run: one sack loaded. %1 = sacks loaded/needed."
+    }
+    CustomStringTableItem "{018A555EA19D0BE2}" {
+     Id "LF-Postal_Lost_abandoned"
+     Target_en_us "You left the post van too long. The run is off and nothing is paid."
+     Comment "Toast of the postal van run: the run ended because the driver abandoned the van."
+    }
+    CustomStringTableItem "{0573B052DDDC99B2}" {
+     Id "LF-Postal_Lost_late"
+     Target_en_us "The postal run took too long. The van went back and nothing is paid."
+     Comment "Toast of the postal van run: the run ended past its time limit."
+    }
+    CustomStringTableItem "{D3E4B1F64D940F43}" {
+     Id "LF-Postal_Lost_van"
+     Target_en_us "The post van was wrecked or lost. The run is off and nothing is paid."
+     Comment "Toast of the postal van run: the run ended because the van was destroyed."
+    }
+    CustomStringTableItem "{61FA7D09A2DDB08F}" {
+     Id "LF-Postal_NoLicence"
+     Target_en_us "You need a driving licence to drive the post van."
+     Comment "Toast of the postal van run: refused, no driving licence."
+    }
+    CustomStringTableItem "{77EAF4A73900DC15}" {
+     Id "LF-Postal_NoOffice"
+     Target_en_us "There is no other post office far enough away to send mail to."
+     Comment "Toast of the postal van run: the map has no destination office."
+    }
+    CustomStringTableItem "{1913FC9C39B45520}" {
+     Id "LF-Postal_NoRun"
+     Target_en_us "You have no postal run open."
+     Comment "Toast of the postal van run: a step with no run."
+    }
+    CustomStringTableItem "{BE0D61A0250B0B0D}" {
+     Id "LF-Postal_NoSpot"
+     Target_en_us "There is no clear space to bring the van round. Try again shortly."
+     Comment "Toast of the postal van run: no clear spot for the van."
+    }
+    CustomStringTableItem "{82D1E71BB544C4CC}" {
+     Id "LF-Postal_NotLoaded"
+     Target_en_us "Some mail sacks are still to move."
+     Comment "Toast of the postal van run: a sack is still to load or unload."
+    }
+    CustomStringTableItem "{238A53B626C53408}" {
+     Id "LF-Postal_Paid"
+     Target_en_us "Postal run done. You were paid {currency:sym}%1."
+     Comment "Toast of the postal van run: the run paid. %1 = the cash."
+    }
+    CustomStringTableItem "{837C9153DC3D1FAA}" {
+     Id "LF-Postal_Sack"
+     Target_en_us "Load or unload a mail sack"
+     Comment "Action at a post office stand: move one mail sack into or out of the post van."
+    }
+    CustomStringTableItem "{96B1622BBCAD89C3}" {
+     Id "LF-Postal_Start"
+     Target_en_us "Take the postal van run"
+     Comment "Action at a post office stand: start the postal van run."
+    }
+    CustomStringTableItem "{3C66967567AE5B29}" {
+     Id "LF-Postal_StartDesc"
+     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back."
+     Comment "Description of the action that starts the postal van run."
+    }
+    CustomStringTableItem "{5B2665B387B8B998}" {
+     Id "LF-Postal_Started"
+     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here."
+     Comment "Toast of the postal van run: the run began."
+    }
+    CustomStringTableItem "{108D5BC1F68C84DF}" {
+     Id "LF-Postal_Title"
+     Target_en_us "Postal run"
+     Comment "Title of the postal van run's toasts."
+    }
+    CustomStringTableItem "{1A0210D5BCC4C762}" {
+     Id "LF-Postal_TooFast"
+     Target_en_us "That was too fast to be honest work. Nothing is paid yet."
+     Comment "Toast of the postal van run: handed in faster than the run's least time."
+    }
+    CustomStringTableItem "{EA1D8BDBDABE7D01}" {
+     Id "LF-Postal_Unloaded"
+     Target_en_us "Sack unloaded (%1). When all are out, drive the van back and hand in the run."
+     Comment "Toast of the postal van run: one sack unloaded. %1 = sacks unloaded/needed."
+    }
+    CustomStringTableItem "{D73DA4B641DC454E}" {
+     Id "LF-Postal_VanFar"
+     Target_en_us "Bring the van closer to the office first."
+     Comment "Toast of the postal van run: the van is not at the office."
+    }
+    CustomStringTableItem "{3243A56EDB316D6E}" {
+     Id "LF-Postal_WrongOffice"
+     Target_en_us "This is not where this run's mail goes."
+     Comment "Toast of the postal van run: wrong office for this step."
     }
     CustomStringTableItem "{3A7C91E05B2D4F68}" {
      Id "LF-Process_Busy"
