@@ -231,7 +231,13 @@ class LF_TestManager
 			test.Run(ctx);
 			test.SetRedProof(false);
 			if (!red)
+			{
+				// A crime test reports at its fixture, so LF_Dispatch leaves a site alarm (a 21 cm hazard beacon)
+				// at the gate; later tests measured the gate spawn point as blocked (spawn/point-floor). Alarms are
+				// props, not characters, so stopping them between tests is safe (#2792 is about characters).
+				LF_Dispatch.StopAllAlarms();
 				NoteLeftovers(name);
+			}
 
 			if (red)
 			{

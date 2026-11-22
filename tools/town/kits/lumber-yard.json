@@ -173,7 +173,17 @@
       "yaw": 0,
       "mount": "terrain",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "light-1",

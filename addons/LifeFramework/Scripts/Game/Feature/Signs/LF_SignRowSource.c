@@ -30,6 +30,31 @@ class LF_SignRowSource
 		array<ref LF_SignRow> rows = {};
 		return rows;
 	}
+
+	//! True when the client works the rows out itself from what it already holds (places, config):
+	//! the sign never asks the server and repaints when LocalRows changes (a bus timetable).
+	bool IsLocal()
+	{
+		return false;
+	}
+
+	//! A local source's rows for one sign, from the sign's own entity. Only called when IsLocal.
+	void LocalRows(notnull IEntity sign, notnull array<ref LF_SignRow> rows)
+	{
+	}
+
+	//! One string per row set, so a sign can tell whether its local rows changed.
+	static string Signature(notnull array<ref LF_SignRow> rows)
+	{
+		string signature;
+		foreach (LF_SignRow row : rows)
+		{
+			if (row)
+				signature += row.m_sLabel + "=" + row.m_sValue + ";";
+		}
+
+		return signature;
+	}
 }
 
 //------------------------------------------------------------------------------------------------

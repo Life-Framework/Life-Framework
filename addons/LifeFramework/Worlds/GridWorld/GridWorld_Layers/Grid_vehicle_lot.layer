@@ -70,7 +70,7 @@ GenericEntity Grid_vehicle_lot_Spawn {
 GenericEntity Annex_Vehicle_Lot {
  components {
   MeshObject "{E1B0E70100000001}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
   }
   RigidBody "{E1B0E70100000002}" {
    Mass 10
@@ -170,7 +170,7 @@ GenericEntity Annex_Vehicle_Lot {
 GenericEntity Annex_Garage {
  components {
   MeshObject "{A1C1080A0000000A}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
   }
   RigidBody "{A1C1080A0000000B}" {
    Mass 10

@@ -57,6 +57,26 @@
     },
     "welcome_town": {
       "text": "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost."
+    },
+    "welcome_pack": {
+      "text": "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with.",
+      "for_key": "#LF-Quest_EveronWelcomePack_TurnIn"
+    },
+    "starter_car": {
+      "text": "Your new car waits at the garage counter of the car lot, next to the town hall: take it out there.",
+      "for_key": "#LF-Quest_EveronGarage_Desc"
+    },
+    "apples": {
+      "text": "Drive to the orchard east of the town and pick six apples from the trees.",
+      "for_key": "#LF-Quest_EveronApples_Desc"
+    },
+    "juice": {
+      "text": "Press your apples into juice at the juice press on the orchard stall.",
+      "for_key": "#LF-Quest_EveronJuice_Desc"
+    },
+    "market": {
+      "text": "Drive back to the market in the town centre and sell your apple juice to the trader.",
+      "for_key": "#LF-Quest_EveronMarket_Desc"
     }
   },
   "nodes": [
