@@ -79,13 +79,13 @@ class LF_Test_EveronTradeTables : LF_Test
 	protected void CheckTierWords(LF_TestContext ctx)
 	{
 		array<string> expected = {"Apprentice", "Hand", "Journeyman", "Foreman", "Master"};
-		string prefix = "#LF-Everon_TradeTier_";
-		if (RedProof())
-			prefix = "#LF-Everon_NoTradeTier_";
-
+		array<string> keys = {"#LF-Everon_TradeTier_1", "#LF-Everon_TradeTier_2", "#LF-Everon_TradeTier_3", "#LF-Everon_TradeTier_4", "#LF-Everon_TradeTier_5"};
 		for (int tier = 1; tier <= TIER_COUNT; tier++)
 		{
-			string key = prefix + tier.ToString();
+			string key = keys[tier - 1];
+			if (RedProof())
+				key = key + "_missing";
+
 			ctx.EqualStr(expected[tier - 1], WidgetManager.Translate(key), string.Format("tier %1 has the word %2 (%3)", tier, expected[tier - 1], key));
 		}
 	}

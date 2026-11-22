@@ -42,6 +42,20 @@ class LF_BusTicket
 	//! this stop's id, is left out.
 	static void Offers(notnull IEntity from, notnull array<IEntity> stops, LF_BusStopConfig config, notnull array<ref LF_BusOffer> into)
 	{
+		float minimum;
+		if (config)
+			minimum = config.m_fMinRideMetres;
+
+		FillOffers(from, stops, config, minimum, into);
+		// A stop with nothing far enough keeps every destination rather than an empty list.
+		if (into.IsEmpty() && minimum > 0)
+			FillOffers(from, stops, config, 0, into);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the offers for stops at least `minimum` metres away, nearest first.
+	protected static void FillOffers(notnull IEntity from, notnull array<IEntity> stops, LF_BusStopConfig config, float minimum, notnull array<ref LF_BusOffer> into)
+	{
 		LF_BusStopComponent here = LF_BusStopComponent.Of(from);
 		string fromId;
 		if (here)
@@ -59,6 +73,9 @@ class LF_BusTicket
 				continue;
 
 			float metres = vector.Distance(origin, stop.GetOrigin());
+			if (metres < minimum)
+				continue;
+
 			LF_BusOffer offer = new LF_BusOffer();
 			offer.m_sToId = component.GetStopId();
 			offer.m_sLabel = component.GetLabel();

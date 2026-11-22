@@ -10,3 +10,6 @@
 - ✅ The bed follows the vehicle lock: a locked truck can be neither loaded nor unloaded (same rule as the trunk, `LF_VehicleStorageAccessControl`).
 - ✅ Both log prefabs are shoulder loads; the inventory screen can no longer put one in a pack (`LF_CargoHaulingGate`).
 - ✅ A parked truck keeps its bed load across a restart (#3266, save section `cargobed`). ⏳ Van bed positions are estimates; the two-player and late-joiner pictures need a placed truck in the debug grid.
+
+### `LF_CapacityConfig` — `Feature/Vehicles/LF_Capacity.c`, `Configs/Vehicles/LF_Capacity.conf` (#4189, 2026-11-22)
+- ✅ One table for what the body (1 sack), packs (3), car (4), pickup (6), van (8) and truck (14) carry: native sacks plus cargo bed units, so a van is 2 native + its 6-unit bed. Each chain's best loop names the vehicle it needs (coal 5 needs a pickup, iron 8 a van, lumber 12 a truck), one rung above what the smaller class holds. The crime scope reads the same table. Tests: `vehicles/capacity-table` (WORLD) checks the ladder, each vehicle row's bed units against its prefab's `LF_CargoBedComponent` and the native storage; `validate-capacity-ladder` (selftest `capacity-ladder-selftest`) checks the file text. ⏳ Nothing in play reads the table yet; the work and crime cards do.

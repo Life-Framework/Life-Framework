@@ -41,7 +41,7 @@
       "text": "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office."
     },
     "about_work": {
-      "text": "The post office always needs couriers. For anything else, read the town board. It lists who is hiring."
+      "text": "Looking for work? Start with the orchard east of town: pick apples, press the juice, sell it at the market. Then open your player menu with F2 and read What to do next. The town board lists the rest."
     },
     "about_town": {
       "text": "Everon is a small island. People here know each other, and they remember faces. Stay honest and you will do well."
@@ -71,12 +71,15 @@
       "for_key": "#LF-Quest_EveronApples_Desc"
     },
     "juice": {
-      "text": "Press your apples into juice at the juice press on the orchard stall.",
+      "text": "Press your six apples into two bottles of juice at the juice press on the orchard stall.",
       "for_key": "#LF-Quest_EveronJuice_Desc"
     },
     "market": {
       "text": "Drive back to the market in the town center and sell your apple juice to the trader.",
       "for_key": "#LF-Quest_EveronMarket_Desc"
+    },
+    "papers": {
+      "text": "Your papers. Tell me what you need."
     }
   },
   "nodes": [
@@ -106,6 +109,10 @@
           "next": "bye"
         }
       ]
+    },
+    {
+      "id": "papers",
+      "line": "papers"
     },
     {
       "id": "welcome_papers",
