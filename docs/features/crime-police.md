@@ -611,8 +611,8 @@
   wanted list. DebugWorld places `Roadmap_Police_Armory` at `241.2 0 244.2`
   (police station forecourt) on `Street_Police.layer`.
 - 🔨 The flagship ladder (#1769, merged, in-dev; `LF_Police_Everon1989.conf`): five ranks, Cadet, Patrol,
-  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.25, 0.28, 0.30, 0.33, 0.35
-  per on-duty second (900 to 1260 an hour; was 0.3 to 1 until 2026-11-18, the duty-versus-civilian pay gap); duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
+  Senior Patrol, Sergeant, Lieutenant. Fine caps 500, 1000, 2500, 4000, 5000; pay 0.0972, 0.1042, 0.1111, 0.1181, 0.125
+  per on-duty second ($350 to $450 an hour since 2026-11-22, #4178: the 0.3.0 pay ladder makes police the lowest steady pay; 0.25 to 0.35 from 2026-11-18, 0.3 to 1 before); duty to next 1h, 2h, 4h, 8h. A saved rank is the rung's index and a shipped rung cannot move, so
   the pack patches the core's `patrol` (index 0) into Cadet and `senior` (index 1) into Patrol and appends the other three.
   Titles are the pack's `LF-Rank_*` rows. A saved rank above the ladder clamps to the top on load.
 - 🔨 Only an officer above the new rank promotes (#2095, in-dev). `LF_PoliceRanks.Promote` (server) refuses
