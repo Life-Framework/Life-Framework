@@ -1,0 +1,27 @@
+GenericEntity Onboarding_Market_Stall : "{5E2A7D9C4B1F8306}Prefabs/Props/Stalls/LF_MarketStall.et" {
+ coords 199.859 -0.003 225.067
+}
+GenericEntity Onboarding_Market_PriceBoard : "{B47D2C9E5A1F8036}Prefabs/Props/Market/LF_PriceBoard.et" {
+ coords 203.199 0.001 225.485
+}
+GenericEntity Onboarding_Orchard_Place {
+ components {
+  LF_PlaceComponent "{81A5107C8EC9B6F5}" {
+   m_sKind "Orchard"
+   m_sId "saint-philippe.orchard"
+  }
+ }
+ coords 212 0 217
+}
+GenericEntity Onboarding_Market_Place {
+ components {
+  LF_PlaceComponent "{3C0FE5BA30574AAD}" {
+   m_sKind "MarketTrader"
+   m_sId "saint-philippe.market"
+  }
+ }
+ coords 199.859 0 225.067
+}
+GenericEntity Onboarding_Market_Trader : "{3A9F6E21C47D8B71}Prefabs/Trader/LF_UniversalTrader_Everon1989.et" {
+ coords 199.859 1.027 225.067
+}
