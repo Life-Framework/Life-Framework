@@ -11277,6 +11277,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
     }
+    CustomStringTableItem "{6D41A0F3C8B2957E}" {
+     Id "LF-Outpost_TraderRefusesOfficer"
+     Target_en_us "We don't deal with the law here. Take the badge off and come back."
+     Comment "Toast to an on-duty officer: a trader inside a rebel outpost refuses to serve them (#4217)."
+    }
+    CustomStringTableItem "{A3F59E1B7C402D86}" {
+     Id "LF-Outpost_TraderRefusesOfficer_Title"
+     Target_en_us "Not serving you"
+     Comment "Title of the outpost trader's refusal toast to an on-duty officer (#4217)."
+    }
     CustomStringTableItem "{4EF600B18D7A2C1B}" {
      Id "LF-Pager_None"
      Target_en_us "No calls paged."
