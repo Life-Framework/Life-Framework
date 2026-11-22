@@ -36,11 +36,11 @@ expect(milled.grainSteady === 9400, `9,400 kg grain steady (got ${milled.grainSt
 const grain = simulateWheat(10400, curve, null, a);
 expect(grain.flourSteady === 0 && grain.steady > 0, "the grain-only loop sells no flour");
 expect(milled.steady > grain.steady, "milling pays more than raw grain");
-const duty = { police: 900, medic: 792 };
+const duty = { police: 350, medic: 480 };
 const loops = computeWheatLoops({ assumptions: a, curve, flour, duty });
-expect(loops.length === 2 && loops.every((l) => !l.flagged), `both loops are inside the band (got ${loops.map((l) => `${l.id} $${l.steady}`).join(", ")})`);
+expect(loops.length === 2 && loops.every((l) => !l.flagged), `both loops pay at least the $350 Cadet shift (got ${loops.map((l) => `${l.id} $${l.steady}`).join(", ")})`);
 const cheap = computeWheatLoops({ assumptions: a, curve: { ...curve, base: 3, floor: 3, ceiling: 3 }, flour: null, duty });
-expect(cheap[0].flagged && wheatFlags({ loops: cheap }).length === 1, "a curve at $3 a lot is out of the band and flagged");
+expect(cheap[0].flagged && wheatFlags({ loops: cheap }).length === 1, "a curve at $3 a lot is below the rung and flagged");
 
 // 3. The market-floor loop check compares the per-unit ceiling (ceiling / lot) to the shop price.
 const root = scratchDir("lf-wheat-");
