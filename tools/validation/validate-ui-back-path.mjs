@@ -41,6 +41,7 @@ export const CLOSE_EXEMPT = {
   "/Feature/CharacterCreation/LF_CharacterSelectSheet.c": "cannot be put away: Back brings the sheet back until a character is picked",
   "/Feature/Rules/LF_QuizSheet.c": "cannot be put away: Back brings the same page back until the quiz is done",
   "/Feature/Identity/LF_IdCheck.c": "Refuse is its close: Back, and the lapse, answer Refuse",
+  "/Feature/PlayerMenu/LF_PlayerMenuSheet.c": "its visible Close is the first key of the footer bar (Esc Close chip); Back closes it too",
 };
 export const OWNERS = ["/Feature/UIKit/LF_UIScreen.c", "/Feature/Dialogue/LF_DialogueScene.c"];
 

@@ -1,0 +1,97 @@
+SizeLayoutWidgetClass "{13CF4B9DE8E80BD2}" {
+ Name "CompactRow"
+ Slot LayoutSlot "{0A26A416E6E49246}" {
+  Padding 4 3 4 0
+ }
+ AllowHeightOverride 1
+ HeightOverride 36
+ {
+  OverlayWidgetClass "{D6EE039103F1DF65}" {
+   Slot AlignableSlot "{00923A4423B225A0}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    ImageWidgetClass "{5FA3C666633015D5}" {
+     Name "RowPlate"
+     Slot OverlayWidgetSlot "{A69516F73789F58A}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.729 0.667 0.549 1
+    }
+    HorizontalLayoutWidgetClass "{3F2D8E24FBABE75A}" {
+     Slot OverlayWidgetSlot "{E22DAC57A7D4AC56}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      Padding 12 3 4 3
+     }
+     {
+      TextWidgetClass "{4CB817F566B8485A}" {
+       Name "RowLabel"
+       Slot LayoutSlot "{A39BDC3B908CFC83}" {
+        VerticalAlign 1
+        SizeMode Fill
+        FillWeight 2
+       }
+       Color 0.110 0.102 0.086 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 18
+       FontProperties FontProperties "{9EA4C8C7198C98EF}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+       }
+      }
+      OverlayWidgetClass "{97E23B911C16590D}" {
+       Name "RowBadge"
+       Slot LayoutSlot "{88C94688F5EBACBE}" {
+        VerticalAlign 1
+        Padding 4 0 8 0
+       }
+       {
+        ImageWidgetClass "{DA7D1E03D71D8B9B}" {
+         Name "BadgePlate"
+         Slot OverlayWidgetSlot "{A0CBDD6BD61E7388}" {
+          HorizontalAlign 3
+          VerticalAlign 3
+         }
+         Color 0.933 0.902 0.839 1
+        }
+        TextWidgetClass "{BACF02D0C218798A}" {
+         Name "RowStatus"
+         Slot OverlayWidgetSlot "{2ED3DF3EF7639B2B}" {
+          HorizontalAlign 1
+          VerticalAlign 1
+          Padding 10 2 10 2
+         }
+         Color 0.110 0.102 0.086 1
+         Text ""
+         "Font Size" 15
+         "Min Font Size" 15
+         FontProperties FontProperties "{17929F4731A109BD}" {
+          Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+         }
+        }
+       }
+      }
+      ButtonWidgetClass "{8D5C563D5F1D886D}" : "{9ECCD201BCF07E95}UI/layouts/Menus/PauseMenu/PauseMenuButton.layout" {
+       Name "ActionButton"
+       Slot LayoutSlot "{A49BCFCE60FB3967}" {
+        VerticalAlign 3
+        SizeMode Fill
+        FillWeight 1
+       }
+       components {
+        SCR_ButtonTextComponent "{8519622018F7446E}" {
+         m_sText ""
+        }
+        LF_UIButtonRelay "{5A22B3C9C3D9A3B5}" {
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ }
+}

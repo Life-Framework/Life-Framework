@@ -1,0 +1,32 @@
+OverlayWidgetClass "{69222DF7DBDB8F5E}" {
+ Name "KeyCap"
+ Slot LayoutSlot "{871730745A491DB6}" {
+  VerticalAlign 1
+  Padding 10 0 4 0
+ }
+ {
+  ImageWidgetClass "{1272DE52DA3C3A57}" {
+   Name "CapPlate"
+   Slot OverlayWidgetSlot "{0ACC0F1B023EFA03}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.863 0.816 0.714 1
+  }
+  TextWidgetClass "{9DF56ABD39F1721F}" {
+   Name "CapText"
+   Slot OverlayWidgetSlot "{84C8016285F0CF23}" {
+    HorizontalAlign 1
+    VerticalAlign 1
+    Padding 9 3 9 3
+   }
+   Color 0.110 0.102 0.086 1
+   Text ""
+   "Font Size" 15
+   "Min Font Size" 15
+   FontProperties FontProperties "{E3EE20C0DC877C36}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+ }
+}

@@ -36,6 +36,15 @@ class LF_UITheme
 	static const string KEYS_LAYOUT = "{B1C08A9DC82E6FEC}UI/Layouts/UIKit/LF_UIKeyRow.layout";
 	static const string HEADING_LAYOUT = "{2EA91E6A335D2FCE}UI/Layouts/UIKit/LF_UIHeading.layout";
 	static const string RULE_LAYOUT = "{C200C3E91BC38F87}UI/Layouts/UIKit/LF_UIRule.layout";
+	static const string COLUMNS_LAYOUT = "{F071D40633414DF6}UI/Layouts/UIKit/LF_UIColumns.layout";
+	static const string COLUMN_LAYOUT = "{AB2D303BF6722D10}UI/Layouts/UIKit/LF_UIColumn.layout";
+	static const string PAIR_LAYOUT = "{2E310455167B3A07}UI/Layouts/UIKit/LF_UIPair.layout";
+	static const string COMPACT_ROW_LAYOUT = "{030D37881601B5D5}UI/Layouts/UIKit/LF_UICompactRow.layout";
+	static const string KEY_CAP_LAYOUT = "{B3A145997F9A7AEB}UI/Layouts/UIKit/LF_UIKeyCap.layout";
+	static const string CARD_LAYOUT = "{37F207EF836838D0}UI/Layouts/UIKit/LF_UICard.layout";
+	//! The kit's small icons, white glyphs the screen tints with the ink (tools/ui-icons/build-ui-icons.mjs):
+	//! cash, bank, house, garage, licence, clock, calendar, job, standing, wanted, skill, errand, police, medic.
+	static const ResourceName ICONS_IMAGESET = "{5486CB13369B49FF}UI/Imagesets/LF_UIIcons.imageset";
 	static const string RICH_LAYOUT = "{7AA3823D51F36803}UI/Layouts/UIKit/LF_UIRich.layout";
 	static const string IMAGE_LAYOUT = "{E958415CA199CA4F}UI/Layouts/UIKit/LF_UIImage.layout";
 	static const string PORTRAIT_LAYOUT = "{16D71EF292B6A54C}UI/Layouts/UIKit/LF_UIPortrait.layout";
