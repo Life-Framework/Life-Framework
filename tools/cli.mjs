@@ -38,7 +38,7 @@
 //
 //   [name] is one of: enfusion-mcp, enfusion-workbench. Omitted = all.
 
-import { areaConcurrency } from "./lib/validate-concurrency.mjs";
+import { areaConcurrency, registerValidate, shareConcurrency } from "./lib/validate-concurrency.mjs";
 import "./lib/quiet-gate.mjs";
 import { spawn, spawnSync } from "node:child_process";
 import { appendFileSync, closeSync, copyFileSync, cpSync, existsSync, fstatSync, lstatSync, mkdirSync, openSync, readdirSync, readFileSync, readSync, rmdirSync, rmSync, statSync, writeFileSync } from "node:fs";
@@ -795,7 +795,9 @@ async function cmdRunArea(area, root = ROOT, opts = {}) {
       job.frozen = own ? own.frozenMs / 1000 : 0;
     }
   };
-  await Promise.all(Array.from({ length: AREA_CONCURRENCY }, worker));
+  // Shared with the other validates running on this PC (tools/lib/validate-concurrency.mjs shareConcurrency).
+  const workers = shareConcurrency(AREA_CONCURRENCY, registerValidate(join(wt.hubDirOf(ROOT), "validate-runs")));
+  await Promise.all(Array.from({ length: workers }, worker));
   dog.stop();
   let failed = 0;
   let skippedIncr = 0;
@@ -4195,7 +4197,42 @@ async function placementAudit(root, a, opts = {}) {
 
 // Tool runs live on the private LF-Agents desktop (tools/lib/quiet-launch.mjs),
 // so nobody can see or close them by hand. This lists them; --close ends them.
+// --orphans [--hours N]: instead, our node/bash/sh/PowerShell helpers whose parent is gone and that have run
+// N hours (default 6), lane-lock holders excepted (tools/lib/tool-orphans.mjs); --close stops them.
+async function cmdHiddenOrphans(flags) {
+  const to = await import("./lib/tool-orphans.mjs");
+  const hi = flags.indexOf("--hours");
+  const minAgeH = hi >= 0 && Number(flags[hi + 1]) > 0 ? Number(flags[hi + 1]) : to.DEFAULT_MIN_AGE_H;
+  const procs = to.scanProcesses();
+  if (!procs) {
+    console.log("FAIL  hidden: could not list processes");
+    return 1;
+  }
+  const keep = new Set();
+  try {
+    const dir = join(wt.hubDirOf(ROOT), "locks");
+    for (const f of readdirSync(dir)) {
+      let pid = 0;
+      try {
+        pid = Number(JSON.parse(readFileSync(join(dir, f), "utf8"))?.pid);
+      } catch {}
+      if (pid > 0) keep.add(pid);
+    }
+  } catch {}
+  const plan = to.planToolOrphans(procs, { minAgeH, keep });
+  console.log(`hidden: ${procs.length} processes; ${plan.length} orphaned tool process(es) older than ${minAgeH} h`);
+  for (const o of plan) console.log(`  pid ${o.pid}  ${o.name}  ${o.why}  ${o.cmd}`);
+  if (!plan.length || !flags.includes("--close")) {
+    if (plan.length) console.log("stop them with: tools\\cli hidden --orphans --close");
+    return 0;
+  }
+  const done = new Set(to.stopOrphans(plan));
+  for (const o of plan) console.log(`${done.has(o.pid) ? "stopped" : "FAIL  could not stop"} pid ${o.pid} ${o.name}`);
+  return 0;
+}
+
 function cmdHidden(flags) {
+  if (flags.includes("--orphans")) return cmdHiddenOrphans(flags);
   const procs = listHidden();
   if (procs.length === 0) {
     console.log("hidden: no windows on the LF-Agents desktop");
@@ -4367,6 +4404,7 @@ the world-editor copy. Create a worktree first: tools\\cli wt new <feature>.
                                 discord selftest checks its event filter (docs/community/onboarding.md)
   call <tool> '<json>'|@file    call an MCP tool directly (see tools/mcp-call.mjs)
   hidden [--close]              list (or close) tool processes on the private LF-Agents desktop
+  hidden --orphans [--hours N] [--close]  our node/bash/PowerShell helpers whose parent died N h ago (default 6)
                                 (Workbench/server runs started there never show a window)
   validate [--full|--all]       run the checks in tools/validation/ whose declared inputs changed since their last green
                                 run in this worktree (it names how many it skipped); --all runs every check; --full also adds the
@@ -5725,7 +5763,7 @@ const cmds = {
   "suite-valid": (flags) => cmdSuiteValid(flags),
   scope: (flags) => runScopeCli(flags),
   call: () => cmdMcpCall(rest),
-  hidden: (flags) => cmdHidden(flags ?? []),
+  hidden: () => cmdHidden(rest),
   rdb: () => cmdRdb(ROOT, rest),
   "ui-image": () => cmdUiImage(rest),
   help: () => cmdHelp(),

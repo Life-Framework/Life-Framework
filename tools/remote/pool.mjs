@@ -84,6 +84,8 @@ export function poolSettings(root) {
     sessionIdleMaxMin: pick("sessionIdleMaxMin", "LF_POOL_SESSION_IDLE_MAX_MIN"),
     promoteMin: pick("promoteMin", "LF_POOL_PROMOTE_MIN"),
     starveMin: pick("starveMin", "LF_POOL_STARVE_MIN"),
+    sessionStarveMin: pick("sessionStarveMin", "LF_POOL_SESSION_STARVE_MIN"),
+    waitWarnMin: pick("waitWarnMin", "LF_POOL_WAIT_WARN_MIN"),
     minFreeMb: pick("minFreeMb", "LF_POOL_MIN_FREE_MB"),
     minFreeCommitMb: pick("minFreeCommitMb", "LF_POOL_MIN_FREE_COMMIT_MB"),
     roomyMb: pick("roomyMb", "LF_POOL_ROOMY_MB"),
@@ -532,19 +534,33 @@ let lastTrimAt = 0;
 // The RAM gate is about to refuse: trim the working sets of every live session's processes (recorded
 // pids only). A session waiting for its next harness command holds about 1.8 GB resident and needs
 // ~0.13 GB of it (docs/worktrees.md "Session profiles"); the pages go to the standby list, which
-// counts as free to the gate, and fault back when the session works again. At most once per 20 s.
+// counts as free to the gate, and fault back when the session works again. At most once per 20 s on
+// this PC (a stamp file, not per process: on 2026-11-22 every waiting test trimmed every 20 s, so sessions
+// sat at 30 MB resident and booted slowly), and never a session still booting (its lock under 3 min old).
 // Returns how many processes were trimmed.
+export const TRIM_EVERY_MS = 20000;
+export const TRIM_BOOT_MS = 180000;
 export function trimLiveSessions(root, m, opts = {}) {
-  if (Date.now() - lastTrimAt < 20000) return 0;
+  const now = opts.now ?? Date.now();
+  if (now - lastTrimAt < TRIM_EVERY_MS) return 0;
+  const stamp = join(poolDir(root), "last-trim");
+  try {
+    if (now - statSync(stamp).mtimeMs < TRIM_EVERY_MS) return 0;
+  } catch {}
   const pids = [];
   for (const l of lanesFor(m, "session")) {
     const info = readJson(localLockFile(root, l.lock), null);
     if (!info || !pidAlive(info.pid) || info.purpose !== "session") continue;
+    if (now - Date.parse(info.at) < TRIM_BOOT_MS) continue;
     const dir = sessionDirOf(info.root ?? root, { LOCALAPPDATA: process.env.LOCALAPPDATA, USERPROFILE: process.env.USERPROFILE });
     pids.push(...sessionPids(readJson(join(dir, "session.json"), null)));
   }
   if (!pids.length) return 0;
-  lastTrimAt = Date.now();
+  lastTrimAt = now;
+  try {
+    mkdirSync(poolDir(root), { recursive: true });
+    writeFileSync(stamp, String(now));
+  } catch {}
   (opts.trim ?? trimProcs)(pids);
   console.log(`pool: RAM is short; trimmed the working sets of ${pids.length} session process(es) (their pages stay cached, free to the gate)`);
   Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 2500);
@@ -681,8 +697,12 @@ export function localAdmission(root, m, except, meta, settings, opts = {}) {
     island: spec.kind === "session" && spec.world === pr.ISLAND,
     islandRunning: procs ? pr.islandCount(procs) : 0,
     what: spec.kind === "session" ? "the session" : "the test",
+    // Capped at what this PC can ever free; with no other lane job here the job waits on nothing it could drain.
+    totalMb: opts.totalMb ?? (opts.freeMb !== undefined || seam ? undefined : Math.round(totalmem() / 1048576)),
+    idle: !infos.length && !(Number(opts.aheadMb) > 0),
   });
   if (!ram.ok) return ram;
+  if (ram.alone) console.log(`pool: ${spec.kind} needs more RAM than this PC can ever free; it runs alone now that no other lane job runs here`);
   // Commit headroom (tools/lib/pool-commit.mjs): physical RAM can be free while the commit limit is not.
   // A free-RAM seam (opts.freeMb) reads no commit unless opts.commit is given: a selftest never depends on this PC.
   const commit = opts.commit !== undefined ? opts.commit : opts.freeMb !== undefined ? null : pc.readLocalCommit();
@@ -764,6 +784,7 @@ export function tryLocal(root, m, lane, meta, opts = {}) {
       opts.blocked.ram = ram.reason;
       opts.blocked.needMb = ram.commit ? undefined : ram.needMb;
       if (ram.commit) opts.blocked.commit = true;
+      if (ram.neverFits) opts.blocked.neverFits = true;
     }
     return null;
   }
@@ -892,12 +913,21 @@ ${pr.PS_PROC_ROWS}
       if ($lfRow.k -eq 'workbench' -and $lfRow.prof -eq 'tool') { $key = 'workbench:small:tool' } elseif ($lfRow.k -eq 'client' -and $w -eq 'small' -and $lfRow.prof -eq 'lowspec') { $key = 'client:small:lowspec' }
       $pk = 0; try { $pk = [int]$cfg.ram.peaks.$key } catch {}
       if (-not $pk) { try { $pk = [int]$cfg.ram.peaks.($lfRow.k + ':' + $w) } catch {} }
+      # A game process past the growth window has loaded (pool-ram GROWTH_WINDOW_S); a Workbench may load a new world.
+      if ($lfRow.k -ne 'workbench' -and $lfRow.age -gt ${pr.GROWTH_WINDOW_S}) { continue }
       if ($pk -gt $lfRow.ws -and $lfRow.priv -lt $pk) { $growth += ($pk - $lfRow.ws) }
       if ($cm) { $cpk = 0; try { $cpk = [int]$cm.peaks.($lfRow.k) } catch {}; if ($cpk -gt $lfRow.priv) { $cgrowth += ($cpk - $lfRow.priv) } }
     }
   }
   $need = $cfg.ram.reserveMb + $pending + $growth + $cfg.ram.floorMb + [int]$cfg.ram.aheadMb
   if ($cfg.ram.island -and $islands -gt 0) { $need += $cfg.ram.reserveMb }
+  # pool-ram admit(): an ask is capped at what the box can ever free; a job whose own peak is over that runs
+  # alone once no pool job runs there.
+  $cap = [int]($os.TotalVisibleMemorySize / 1024) - $cfg.ram.floorMb
+  if ($cap -gt 0) {
+    if ($cfg.ram.reserveMb + $cfg.ram.floorMb -gt $cap) { if ($running -eq 0) { $need = 0 } else { $need = $cap } }
+    elseif ($need -gt $cap) { $need = $cap }
+  }
   # Only a lane that is free (or stale) makes RAM the reason; all lanes taken is plain busy.
   $anyFree = $false
   foreach ($s in $slots) { $h = $null; try { $h = [IO.File]::ReadAllText((Join-Path $ld ($s.lock + '.lock'))) | ConvertFrom-Json } catch {}; if (-not $h -or -not (Test-Alive $h.pid)) { $anyFree = $true } }
@@ -1826,7 +1856,8 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
   // stuck: "ram" | "lane" once a try failed for that reason (others may then backfill); needMb: free RAM it needs.
   let stuck = "";
   let needMb;
-  const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name], clients: meta.clients ?? 1, profile: meta.profile ?? "full", ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}) });
+  let neverFits = false;
+  const body = () => ({ pid: process.pid, at: new Date(since).toISOString(), slug, purpose: "session", root, pinned: true, lane: "session", priority: prio, waitingOn, machines: [m.name], clients: meta.clients ?? 1, profile: meta.profile ?? "full", ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(stuck === "ram" && neverFits ? { neverFits: true } : {}) });
   const ticket = writeTicket(root, body(), since);
   collapseRetries(root, ticket, slug);
   let lastReap = 0;
@@ -1876,10 +1907,12 @@ function acquireSessionLane(root, { waitMs = 0, meta = {}, priority, callerPids 
       }
       const want = blocked.ram ? [...laneList.map((l) => l.lock), "ram"] : laneList.map((l) => l.lock);
       const wantStuck = blockers.length >= laneList.length ? "" : blocked.ram ? "ram" : "lane";
-      if (want.join() !== waitingOn.join() || wantStuck !== stuck) {
+      const needMoved = Number.isFinite(blocked.needMb) !== Number.isFinite(needMb) || (Number.isFinite(blocked.needMb) && Math.abs(blocked.needMb - needMb) >= 512);
+      if (want.join() !== waitingOn.join() || wantStuck !== stuck || needMoved || !!blocked.neverFits !== neverFits) {
         waitingOn = want;
         stuck = wantStuck;
         needMb = blocked.needMb;
+        neverFits = !!blocked.neverFits;
         rewriteTicket(root, ticket, body());
       }
       Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, pollMs());
@@ -1923,9 +1956,10 @@ function localLockInfos(root, m) {
 // The blocking context of one machine for q.blocks: its free RAM and what the pool's jobs hold there.
 export function machineCtx(root, m, settings, remote = null) {
   const starveMs = settings.starveMin * 60000;
-  if (m.via === "local") return { starveMs, freeMb: Math.round(freemem() / 1048576), heldMb: heldMbOf(settings, localLockInfos(root, m)) };
-  if (!remote) return { starveMs };
-  return { starveMs, freeMb: remote.freeMb ?? undefined, heldMb: heldMbOf(settings, Object.values(remote.locks ?? {}).filter((i) => i?.alive)) };
+  const sessionStarveMs = (settings.sessionStarveMin ?? q.DEFAULTS.sessionStarveMin) * 60000;
+  if (m.via === "local") return { starveMs, sessionStarveMs, freeMb: Math.round(freemem() / 1048576), heldMb: heldMbOf(settings, localLockInfos(root, m)), capacityMb: Math.round(totalmem() / 1048576) - settings.minFreeMb };
+  if (!remote) return { starveMs, sessionStarveMs };
+  return { starveMs, sessionStarveMs, freeMb: remote.freeMb ?? undefined, heldMb: heldMbOf(settings, Object.values(remote.locks ?? {}).filter((i) => i?.alive)), ...(Number.isFinite(remote.totalMb) ? { capacityMb: remote.totalMb - settings.minFreeMb } : {}) };
 }
 
 // avoid: names of machines whose own `up` just refused this request (LANE_BUSY); they are not picked again while
@@ -2174,7 +2208,20 @@ export async function acquireSlot(root, opts = {}) {
   const mode = opts.mode ?? "any";
   const started = Date.now();
   // opts.queuedAt (a test seam): the age the ticket carries, to prove promotion without waiting for it.
-  const queuedAt = Number(opts.queuedAt) || started;
+  // A rerun of the same run from the same worktree within QUEUED_KEEP_MS keeps the age of the request it
+  // replaces (an agent's 10-minute tool timeout killed the wait and the rerun went to the back, 2026-11-22).
+  const ageKey = `${purpose}:${slugFor(root)}`;
+  // Only a request whose predecessor is gone inherits: a live sibling (a shard, a second run) keeps its own age.
+  const inherit = () => {
+    try {
+      return liveTickets(root).some((t) => t.slug === slugFor(root) && t.purpose === purpose) ? started : queuedSince(root, ageKey, started);
+    } catch {
+      return started;
+    }
+  };
+  const queuedAt = Number(opts.queuedAt) || (process.env[SLOT_ENV] ? started : inherit());
+  let lastNoted = 0;
+  let lastPosAt = 0;
   if (process.env[SLOT_ENV]) {
     const s = heldSlotFromEnv(root);
     s.waitedMs = 0;
@@ -2267,8 +2314,9 @@ export async function acquireSlot(root, opts = {}) {
   let waitingOn = [];
   let stuck = "";
   let needMb;
+  let neverFits = false;
   let grantedOn = null;
-  const ticketBody = () => ({ pid: process.pid, at: new Date(queuedAt).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(opts.world ? { world: opts.world } : {}), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(grantedOn ? { granted: grantedOn } : {}) });
+  const ticketBody = () => ({ pid: process.pid, at: new Date(queuedAt).toISOString(), slug, purpose, root, pinned, lane: kind, priority, waitingOn, machines: machines.map((m) => m.name), ...(opts.world ? { world: opts.world } : {}), ...(stuck ? { stuck } : {}), ...(needMb ? { needMb } : {}), ...(stuck === "ram" && neverFits ? { neverFits: true } : {}), ...(grantedOn ? { granted: grantedOn } : {}) });
   const ticket = writeTicket(root, ticketBody(), queuedAt);
   let lastReap = 0;
   const lastTry = new Map();
@@ -2390,7 +2438,7 @@ export async function acquireSlot(root, opts = {}) {
             const mine = tickets.findIndex((t) => t.file === ticket);
             blockers = mine < 0 ? [] : tickets.slice(0, mine).filter((t) => (t.machines ?? []).includes(m.name));
           } else if (me) {
-            const ctx = m.via === "local" ? machineCtx(root, m, poolSettings(root)) : { starveMs: poolSettings(root).starveMin * 60000 };
+            const ctx = m.via === "local" ? machineCtx(root, m, poolSettings(root)) : { starveMs: poolSettings(root).starveMin * 60000, sessionStarveMs: poolSettings(root).sessionStarveMin * 60000 };
             blockers = tickets.filter((t) => t.file !== ticket && q.blocks(t, me, m, nowMs, promoteMs, ctx));
           }
         } catch (e) {
@@ -2500,17 +2548,32 @@ export async function acquireSlot(root, opts = {}) {
       }
       const ahead = aheadCounts.length ? Math.min(...aheadCounts) : 0;
       const wantStuck = !triedLocal && !triedRemote ? "" : ramBlocked ? "ram" : "lane";
-      if (waits.size !== waitingOn.length || [...waits].some((w) => !waitingOn.includes(w)) || wantStuck !== stuck) {
+      // The ask moves as jobs start and end: a ticket kept the first one it saw, so `pool status` showed a 41.6 GB
+      // ask long after the gate wanted less. Rewritten when it moves by half a GB or more.
+      const wantNeed = ramBlocked?.needMb;
+      const needMoved = Number.isFinite(wantNeed) !== Number.isFinite(needMb) || (Number.isFinite(wantNeed) && Math.abs(wantNeed - needMb) >= 512);
+      const wantNever = !!ramBlocked?.neverFits;
+      if (waits.size !== waitingOn.length || [...waits].some((w) => !waitingOn.includes(w)) || wantStuck !== stuck || needMoved || wantNever !== neverFits) {
         waitingOn = [...waits];
         stuck = wantStuck;
-        needMb = ramBlocked?.needMb;
+        needMb = wantNeed;
+        neverFits = wantNever;
         rewriteTicket(root, ticket, ticketBody());
+      }
+      if (Date.now() - lastNoted > 30000) {
+        lastNoted = Date.now();
+        noteQueued(root, ageKey, queuedAt);
       }
       if (!announced) {
         announced = true;
-        console.log(`pool: ${kind} slots busy; queued as ${priority} (${ahead} ahead), it starts by itself when one frees`);
+        lastPosAt = Date.now();
+        console.log(`pool: ${kind} slots busy; queued as ${priority} (${ahead} ahead), it starts by itself when one frees${queuedAt < started ? `; kept the place of the earlier request (queued ${Math.round((started - queuedAt) / 60000)} min ago)` : ""}`);
+      } else if (Date.now() - lastPosAt > 60000) {
+        // One line a minute: an agent reading the output sees a busy pool, not a hang.
+        lastPosAt = Date.now();
+        console.log(`pool: still queued (${ahead} ahead${stuck === "ram" && ramBlocked?.ram ? `; ${ramBlocked.ram}` : ""}), waited ${Math.round((Date.now() - queuedAt) / 60000)} min; the pool is busy, not broken. A rerun of the same command within 15 min keeps this place`);
       }
-      if (Date.now() - started > waitMs) throw new Error(`pool: no slot within ${Math.round(waitMs / 60000)} min`);
+      if (Date.now() - started > waitMs) throw new Error(`pool: no slot within ${Math.round(waitMs / 60000)} min (${ahead} ahead): the pool is busy, not an environment failure; rerun the same command within 15 min and it keeps its place in the queue`);
       await sleep(pollMs());
     }
   } finally {
@@ -2520,6 +2583,7 @@ export async function acquireSlot(root, opts = {}) {
   // waited = time in the queue; the ssh connect and run-folder prep of the
   // winning attempt count as setup, not waiting.
   function finish(s, attemptAt = Date.now()) {
+    if (lastNoted) forgetQueued(root, ageKey);
     s.waitedMs = attemptAt - started;
     s.setupMs = Date.now() - attemptAt;
     s.startedAt = attemptAt;
@@ -2969,7 +3033,8 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     for (const r of shown) console.log(r);
     const freeMb = m.via === "local" ? Math.round(freemem() / 1048576) : st?.freeMb;
     const commit = m.via === "local" ? pc.readLocalCommit() : st?.commit;
-    seen.set(m.name, { m, infos, capMin, freeMb, commitText: commit ? pc.commitText(commit.usedMb, commit.limitMb) : "" });
+    const totalMb = m.via === "local" ? Math.round(totalmem() / 1048576) : st?.totalMb;
+    seen.set(m.name, { m, infos, capMin, freeMb, capacityMb: Number.isFinite(totalMb) ? totalMb - settings.minFreeMb : undefined, commitText: commit ? pc.commitText(commit.usedMb, commit.limitMb) : "" });
   }
   const diskGb = gc.freeDiskGb(sessionBase());
   console.log(statusLine(root)); // the Workbench limit of this PC (tools/lib/wb-lock.mjs)
@@ -2983,6 +3048,12 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
   const dupFiles = q.duplicateSessionTickets(tickets);
   const freeMbOf = (name) => seen.get(name)?.freeMb;
   const commitOf = (name) => seen.get(name)?.commitText;
+  const capacityMbOf = (name) => seen.get(name)?.capacityMb;
+  const heldOf = (name) => {
+    const s = seen.get(name);
+    if (!s) return undefined;
+    return heldMbOf(settings, Object.values(s.infos ?? {}).filter((i) => i && i.alive !== false && (s.m.via !== "local" || pidAlive(i.pid))));
+  };
   for (const t of ordered) {
     const lane = t.lane ?? "session";
     if (!verbose && (perLane.get(lane) ?? 0) >= 4) {
@@ -3009,6 +3080,9 @@ export function cmdPoolStatus(root, verbose = process.env.LF_OUTPUT === "full") 
     const etaText = eta === null ? "  est. start unknown (no machine of it answers)" : eta <= now + 30000 ? "  est. start now" : `  est. start ~${clock(eta)} (in ${mins(eta - now)})`;
     console.log(`  ${lane} #${pos}  ${prio.padEnd(11)} ${String(t.slug ?? "?").padEnd(20).slice(0, 24)} ${String(t.purpose ?? "").padEnd(11)} waited ${mins(now - Date.parse(t.at)).padStart(4)}  on ${(t.machines ?? []).join("|")}${t.clients ? ` (${t.clients}-client ${t.profile ?? "full"})` : ""}${t.pinned ? " (pinned)" : ""}`);
     console.log(`        waits: ${why || (t.waitingOn ?? []).join(",") || "its turn"};${etaText}${dupFiles.has(t.file) ? "  DUPLICATE (same worktree already queued)" : ""}`);
+    const stuckWhy = q.stuckReason(t, { capacityMbOf, freeMbOf, heldMbOf: heldOf });
+    if (stuckWhy) console.log(`        STUCK: ${stuckWhy}`);
+    else if (now - Date.parse(t.at) > settings.waitWarnMin * 60000) console.log(`        WAITING LONG: over ${settings.waitWarnMin} min${t.stuck === "ram" ? " on RAM" : ""}`);
   }
   try {
     const all = runs.filter(isTestRun);

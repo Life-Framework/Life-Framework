@@ -12,6 +12,11 @@ export const DEFAULTS = {
   sessionIdleMin: 3,
   sessionIdleMaxMin: 5,
   promoteMin: 20, starveMin: 20,
+  // A session waiting on RAM this long holds its machine: tests stop starting there until it fits (sessions
+  // waited 35-65 min behind a stream of tests on 2026-11-22). Tests keep starveMin.
+  sessionStarveMin: 10,
+  // `pool status` and `lead` flag a ticket waiting longer than this.
+  waitWarnMin: 10,
   minFreeMb: 1500,
   // Commit (physical RAM plus pagefile, promised to processes) kept free after a start, for agents, git and node: the
   // pool queues a job that would cross it (tools/lib/pool-commit.mjs; 2026-11-19 git and the agents died at 70.2 of 71.2 GB).
@@ -219,15 +224,37 @@ export function blocks(other, mine, m, now, promoteMs, ctx = {}) {
   return !canBackfill(other, now, ctx);
 }
 
-function starved(t, now, { starveMs = DEFAULTS.starveMin * 60000 } = {}) {
-  return starveMs > 0 && now - Date.parse(t.at) > starveMs;
+// A session ticket (lane "session", or none: an older CLI) starves after sessionStarveMs, a test after starveMs.
+export function starved(t, now, { starveMs = DEFAULTS.starveMin * 60000, sessionStarveMs = DEFAULTS.sessionStarveMin * 60000 } = {}) {
+  const ms = (t.lane ?? "session") === "session" ? Math.min(starveMs, sessionStarveMs) : starveMs;
+  return ms > 0 && now - Date.parse(t.at) > ms;
 }
 
 // Whether holding everyone else back can ever let t start: its need fits in free RAM plus what
-// the pool's own running jobs on the machine hold. Unknown numbers count as "it can".
-function drainHelps(t, { freeMb, heldMb } = {}) {
+// the pool's own running jobs on the machine hold, and in what the machine can free at all
+// (capacityMb: its RAM less the floor). A neverFits ticket (its own peak is over that) never holds the
+// machine: it starts alone when the machine goes idle. Unknown numbers count as "it can".
+function drainHelps(t, { freeMb, heldMb, capacityMb } = {}) {
+  if (t.neverFits) return false;
+  if (Number.isFinite(t.needMb) && Number.isFinite(capacityMb) && t.needMb >= capacityMb) return false;
   if (!Number.isFinite(t.needMb) || !Number.isFinite(freeMb)) return true;
   return t.needMb <= freeMb + (Number.isFinite(heldMb) ? heldMb : Infinity);
+}
+
+// Why a ticket can never start as things stand, for the STUCK line of `pool status` and `lead` (null when
+// it can). ctx per machine name: capacityMbOf(name), freeMbOf(name), heldMbOf(name).
+export function stuckReason(t, { capacityMbOf = () => undefined, freeMbOf = () => undefined, heldMbOf = () => undefined } = {}) {
+  if (t.stuck !== "ram" || t.granted) return null;
+  const gb = (x) => (x / 1024).toFixed(1);
+  if (t.neverFits) return `its own peak is more than ${(t.machines ?? []).join("|")} can ever free; it starts only when no other lane job runs there`;
+  if (!Number.isFinite(t.needMb)) return null;
+  const rows = (t.machines ?? []).map((n) => ({ n, cap: capacityMbOf(n), free: freeMbOf(n), held: heldMbOf(n) }));
+  if (!rows.length) return null;
+  const never = rows.filter((r) => Number.isFinite(r.cap) && t.needMb >= r.cap);
+  if (never.length === rows.length) return `asks ${gb(t.needMb)} GB free, more than ${never.map((r) => `${r.n} (${gb(r.cap)} GB usable)`).join(", ")} can ever free`;
+  const noDrain = rows.filter((r) => Number.isFinite(r.free) && Number.isFinite(r.held) && t.needMb > r.free + r.held);
+  if (noDrain.length === rows.length) return `asks ${gb(t.needMb)} GB free; ${noDrain.map((r) => `${r.n} has ${gb(r.free)} free and its lane jobs hold ${gb(r.held)}`).join(", ")}: closing every lane job would not free enough (the rest is held outside the pool)`;
+  return null;
 }
 
 // True when a ticket that is served first is stuck (RAM or lane) and may be passed: it has not
