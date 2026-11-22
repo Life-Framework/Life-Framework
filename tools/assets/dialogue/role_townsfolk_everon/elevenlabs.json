@@ -1,0 +1,76 @@
+{
+  "id": "role_townsfolk_everon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "e2e53c5d5143dd5f",
+      "date": "2026-11-22",
+      "voice_id": "rqBDkieYYBoHyv690zPl",
+      "voice_name": "Eliot - Relaxed & Casual",
+      "model": "eleven_multilingual_v2",
+      "text": "Hello. New in Saint-Philippe?",
+      "chars": 29,
+      "chars_total": 12,
+      "request_id": "R1QA1Pb3g9h2zy5NzfJG",
+      "seconds": 1.25,
+      "mouth": "8899762689984885678920000"
+    },
+    "what": {
+      "hash": "8caf40ea90b15737",
+      "date": "2026-11-22",
+      "voice_id": "rqBDkieYYBoHyv690zPl",
+      "voice_name": "Eliot - Relaxed & Casual",
+      "model": "eleven_multilingual_v2",
+      "text": "I live here. I get by, as everyone does. The work is simple and the people are decent.",
+      "chars": 86,
+      "chars_total": 34,
+      "request_id": "OtSzPgbgP6p4f45JCiCM",
+      "seconds": 4.34,
+      "mouth": "999965973100004475177653101349786657962100000000029899768228953776777237169636512541000"
+    },
+    "where": {
+      "hash": "681ec588ad80908d",
+      "date": "2026-11-22",
+      "voice_id": "rqBDkieYYBoHyv690zPl",
+      "voice_name": "Eliot - Relaxed & Casual",
+      "model": "eleven_multilingual_v2",
+      "text": "The town board on the square shows everything. The post office hires couriers, and the bank is beside it.",
+      "chars": 105,
+      "chars_total": 42,
+      "request_id": "l1XYwMdfeojXPHUXL1A8",
+      "seconds": 5.18,
+      "mouth": "75269989998862139983278569475266653100000000066219973198446315897311178766431114565397525335325553421000"
+    },
+    "rumour": {
+      "hash": "7e19b460ba03abe8",
+      "date": "2026-11-22",
+      "voice_id": "rqBDkieYYBoHyv690zPl",
+      "voice_name": "Eliot - Relaxed & Casual",
+      "model": "eleven_multilingual_v2",
+      "text": "People say the police are watching the main street. Burglars are about. Keep your doors locked.",
+      "chars": 95,
+      "chars_total": 38,
+      "request_id": "trXPqLfzbqwgZOBMWSlS",
+      "seconds": 4.48,
+      "mouth": "194972997942579834974982256757776213885310029966745785677731100000000166278459962586311000"
+    },
+    "bye": {
+      "hash": "52792f189d1ece6c",
+      "date": "2026-11-22",
+      "voice_id": "rqBDkieYYBoHyv690zPl",
+      "voice_name": "Eliot - Relaxed & Casual",
+      "model": "eleven_multilingual_v2",
+      "text": "Take care.",
+      "chars": 10,
+      "chars_total": 4,
+      "request_id": "9FjLcesr1yiB6FWe2F3N",
+      "seconds": 0.69,
+      "mouth": "59523998632000"
+    }
+  },
+  "voice": {
+    "id": "rqBDkieYYBoHyv690zPl",
+    "name": "Eliot - Relaxed & Casual",
+    "source": "voice library"
+  }
+}

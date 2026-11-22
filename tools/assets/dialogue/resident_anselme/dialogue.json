@@ -3,44 +3,127 @@
   "name": "ResidentAnselme",
   "addon": "LF_Everon1989",
   "speaker_key": "#LF-Resident_neighbour_anselme_Name",
-  "text_only": true,
+  "voice": {
+    "id": "LFL24vHvKCbsOiCIYwvv",
+    "sex": "male",
+    "name": "Bacbuc - Audiobooks",
+    "public_owner_id": "6f9bbb4b1e141f540a701b04e3beb4b864169b6aea389702ce1854c90ec7d4de",
+    "why": "A warm middle-aged French narrator voice: the depot's parcel sorter, friendly and a little dry.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.15,
+      "speed": 1
+    }
+  },
+  "budget_chars": 1400,
   "hear_range_m": 8,
   "start": "greet",
   "nodes": [
-    { "id": "greet_refuses", "line": "greet_refuses" },
-    { "id": "greet_wary", "line": "greet_wary", "options": [{ "text": "bye", "next": "bye" }] },
-    { "id": "greet_neutral", "line": "greet", "options_from": "greet" },
-    { "id": "greet_friendly", "line": "greet_friendly", "options_from": "greet" },
-    { "id": "greet_regular", "line": "greet_regular", "options_from": "greet" },
+    {
+      "id": "greet_refuses",
+      "line": "greet_refuses"
+    },
+    {
+      "id": "greet_wary",
+      "line": "greet_wary",
+      "options": [
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "greet_neutral",
+      "line": "greet",
+      "options_from": "greet"
+    },
+    {
+      "id": "greet_friendly",
+      "line": "greet_friendly",
+      "options_from": "greet"
+    },
+    {
+      "id": "greet_regular",
+      "line": "greet_regular",
+      "options_from": "greet"
+    },
     {
       "id": "greet",
       "line": "greet",
       "options": [
-        { "text": "work", "next": "work" },
-        { "text": "family", "next": "family" },
-        { "text": "town", "next": "town" },
-        { "text": "bye", "next": "bye" }
+        {
+          "text": "work",
+          "next": "work"
+        },
+        {
+          "text": "family",
+          "next": "family"
+        },
+        {
+          "text": "town",
+          "next": "town"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
       ]
     },
-    { "id": "work", "line": "about_work", "options_from": "greet" },
-    { "id": "family", "line": "about_family", "options_from": "greet" },
-    { "id": "town", "line": "about_town", "options_from": "greet" },
-    { "id": "bye", "line": "bye" }
+    {
+      "id": "work",
+      "line": "about_work",
+      "options_from": "greet"
+    },
+    {
+      "id": "family",
+      "line": "about_family",
+      "options_from": "greet"
+    },
+    {
+      "id": "town",
+      "line": "about_town",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
   ],
   "lines": {
-    "greet_refuses": { "text": "No. I have heard what you did. Leave me be." },
-    "greet_wary": { "text": "You. Keep your distance, please." },
-    "greet": { "text": "Anselme Caron. I sort the parcels at the depot, so if your post is late, blame the ferry, not me." },
-    "greet_friendly": { "text": "Hello, hello. No parcel for you today, I am afraid." },
-    "greet_regular": { "text": "Ah, my friend! Mireille made too much soup again. Come by tonight." },
-    "about_work": { "text": "Letters, parcels, the odd crate of machine parts for the farms. If you want work, the depot pays by the drop. Ask at the counter." },
-    "about_family": { "text": "Mireille is my wife. She spends her mornings at the cafe and knows everything before the newspaper does." },
-    "about_town": { "text": "We came over from the mainland long before all this. Now half the street are new faces from the Zone. Good people. Tired people." },
-    "bye": { "text": "Take care now." }
+    "greet_refuses": {
+      "text": "No. I have heard what you did. Leave me be."
+    },
+    "greet_wary": {
+      "text": "You. Keep your distance, please."
+    },
+    "greet": {
+      "text": "Anselme Caron. I sort the parcels at the depot, so if your post is late, blame the ferry, not me."
+    },
+    "greet_friendly": {
+      "text": "Hello, hello. No parcel for you today, I am afraid."
+    },
+    "greet_regular": {
+      "text": "Ah, my friend! Marius made too much soup again. Come by tonight."
+    },
+    "about_work": {
+      "text": "Letters, parcels, the odd crate of machine parts for the farms. If you want work, the depot pays by the drop. Ask at the counter."
+    },
+    "about_family": {
+      "text": "Marius is my brother. He spends his mornings at the cafe and knows everything before the newspaper does."
+    },
+    "about_town": {
+      "text": "We came over from the mainland long before all this. Now half the street are new faces from the Zone. Good people. Tired people."
+    },
+    "bye": {
+      "text": "Take care now."
+    }
   },
   "replies": {
     "work": "What do you do at the depot?",
-    "family": "Who is Mireille?",
+    "family": "Who is Marius?",
     "town": "Have you lived here long?",
     "bye": "Goodbye."
   }

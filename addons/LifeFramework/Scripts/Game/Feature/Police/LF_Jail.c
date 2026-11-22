@@ -127,6 +127,8 @@ class LF_Jail
 	static const int RELEASE_TOAST_DELAY_MS = 1500;
 	static const int DISMOUNT_RETRY_MS = 250;
 	static const int DISMOUNT_MAX_TRIES = 20;
+	//! Metres past the cell zone a body still counts as in the cell when the cells are blown.
+	static const float FREE_MARGIN_M = 2.0; // lf-fixed: the blast reaches a prisoner at the bars
 
 	protected static ref map<string, ref LF_JailSentence> s_mSentences;
 	protected static bool s_bCellPlaced;
@@ -134,6 +136,8 @@ class LF_Jail
 	protected static vector s_vReleaseOffset;
 	protected static int s_iDoorOpenings;
 	protected static string s_sDoorId;
+	//! The jail's outer door (LF_JailBreak layer 1), "" when the jail has only the cell door.
+	protected static string s_sOuterDoorId;
 	protected static int s_iSecondsPerWanted;
 	protected static int s_iMaxSeconds;
 	protected static int s_iWantedReduction;
@@ -206,6 +210,111 @@ class LF_Jail
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The release point moved onto the floor under it (a building floor or the terrain, characters
+	//! seen through). With no world or no floor found the point is returned unchanged.
+	static vector GroundedReleasePoint()
+	{
+		vector point = GetReleasePoint();
+		if (!GetGame() || !GetGame().GetWorld())
+			return point;
+
+		BaseWorld world = GetGame().GetWorld();
+		float top = point[1] + 1.5;
+		float bottom = point[1] - 3;
+		array<IEntity> exclude = {};
+		for (int i = 0; i < 4; i++)
+		{
+			TraceParam trace = new TraceParam();
+			trace.Start = Vector(point[0], top, point[2]);
+			trace.End = Vector(point[0], bottom, point[2]);
+			trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+			trace.LayerMask = EPhysicsLayerPresets.Projectile;
+			trace.ExcludeArray = exclude;
+			float fraction = world.TraceMove(trace, null);
+			if (fraction >= 1)
+				break;
+
+			IEntity hit = trace.TraceEnt;
+			if (!ChimeraCharacter.Cast(hit))
+				return Vector(point[0], top - fraction * (top - bottom), point[2]);
+
+			exclude.Insert(hit);
+		}
+
+		LF_Debug.Warn("Jail", string.Format("no floor under the release point %1; it is used as placed", point));
+		return point;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The jail's outer door (the first jailbreak layer). Empty clears it: the cell door alone.
+	static void SetOuterDoorTarget(string doorId)
+	{
+		s_sOuterDoorId = doorId;
+		if (!doorId.IsEmpty())
+			LF_Debug.Log("Jail", string.Format("outer door target %1", doorId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string OuterDoorTargetId()
+	{
+		return s_sOuterDoorId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static bool IsOuterDoorTarget(string targetId)
+	{
+		return !targetId.IsEmpty() && targetId == s_sOuterDoorId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The cells were blown (LF_JailBreak): every prisoner in custody whose body stands in the cell
+	//! (the zone plus FREE_MARGIN_M) is freed where they stand. The sentence ends with no release
+	//! move, no door motion and no wanted reduction; the slip is stamped. An offline prisoner (no
+	//! body) is not in the cell and serves on.
+	//! \param[out] outUids Uids freed. \param[out] outBodies Their bodies, same order.
+	static void FreeInside(notnull array<string> outUids, notnull array<IEntity> outBodies)
+	{
+		array<string> ids = {};
+		foreach (string uid, LF_JailSentence sentence : Sentences())
+		{
+			if (IsInCustody(uid))
+				ids.Insert(uid);
+		}
+
+		foreach (string uid : ids)
+		{
+			IEntity body = FindBody(uid);
+			if (!body || vector.Distance(body.GetOrigin(), s_vCellOrigin) > s_fZoneRadius + FREE_MARGIN_M)
+				continue;
+
+			LF_JailSentence freed = Sentences().Get(uid);
+			freed.m_bServing = false;
+			freed.m_fRemaining = 0;
+			freed.m_bEscaped = false;
+			LF_JailSlipComponent slip = LF_JailSlip.FindFor(body, uid);
+			if (slip && slip.GetHolderUid() == uid)
+				slip.Stamp();
+
+			outUids.Insert(uid);
+			outBodies.Insert(body);
+			LF_Debug.Warn("Jail", string.Format("%1 freed by a jailbreak: sentence ended in the cell", uid));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Bail is paid (LF_JailBail): the sentence ends the way a served one does (release at the exit
+	//! spot, wanted reduced). \return False when the prisoner is not serving.
+	static bool EndOnBail(string playerUid)
+	{
+		if (!IsServing(playerUid))
+			return false;
+
+		LF_Debug.Info("Jail", string.Format("%1 released on bail remaining=%2", playerUid, GetRemaining(playerUid)));
+		Complete(playerUid);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void SetDoorTarget(string doorId)
 	{
 		if (doorId.IsEmpty())
@@ -251,6 +360,7 @@ class LF_Jail
 		s_vReleaseOffset = "0 0 0";
 		s_iDoorOpenings = 0;
 		s_sDoorId = "";
+		s_sOuterDoorId = "";
 		s_iSecondsPerWanted = 0;
 		s_iMaxSeconds = 0;
 		s_iWantedReduction = 0;
@@ -1068,7 +1178,7 @@ class LF_Jail
 		IEntity body = FindBody(playerUid);
 		if (body)
 		{
-			MoveBody(body, GetReleasePoint());
+			MoveBody(body, GroundedReleasePoint());
 			LF_JailSlipComponent slip = LF_JailSlip.FindFor(body, playerUid);
 			if (slip && slip.GetHolderUid() == playerUid)
 				slip.Stamp();

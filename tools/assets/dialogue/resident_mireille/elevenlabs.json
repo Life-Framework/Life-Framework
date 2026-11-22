@@ -1,0 +1,128 @@
+{
+  "id": "resident_mireille",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet_refuses": {
+      "hash": "230f2c3e9c7f021e",
+      "date": "2026-11-22",
+      "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
+      "voice_name": "Alex - Warm, Empathetic, Confident",
+      "model": "eleven_multilingual_v2",
+      "text": "I know what you are. I do not speak to people like you.",
+      "chars": 55,
+      "chars_total": 22,
+      "request_id": "YCr1EUOB1nusDkQj7FmS",
+      "seconds": 3.02,
+      "mouth": "3998899976334332211000011000008964899472293451221223532221100"
+    },
+    "greet_wary": {
+      "hash": "75ba9d50b9e5f09d",
+      "date": "2026-11-22",
+      "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
+      "voice_name": "Alex - Warm, Empathetic, Confident",
+      "model": "eleven_multilingual_v2",
+      "text": "Oh. Hello. I would rather not chat today.",
+      "chars": 41,
+      "chars_total": 16,
+      "request_id": "V7GrzJmLDdZAFyeor9K5",
+      "seconds": 2.14,
+      "mouth": "9983218797521000587569898985296531321111000"
+    },
+    "greet": {
+      "hash": "b28b63f42770fdbd",
+      "date": "2026-11-22",
+      "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
+      "voice_name": "Alex - Warm, Empathetic, Confident",
+      "model": "eleven_multilingual_v2",
+      "text": "Bonjour. Marius. Forgive me, I only came out for a coffee and a little conversation.",
+      "chars": 84,
+      "chars_total": 68,
+      "request_id": "Kt2rr6ucCMF8JxJe5R6e",
+      "seconds": 4.28,
+      "mouth": "79989976311289975575110014549789942100000489877469996226621885257655533213311233211000"
+    },
+    "greet_friendly": {
+      "hash": "b8ce118abf3198b6",
+      "date": "2026-11-22",
+      "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
+      "voice_name": "Alex - Warm, Empathetic, Confident",
+      "model": "eleven_multilingual_v2",
+      "text": "Hello, dear. Sit. The coffee here is terrible, but it is hot.",
+      "chars": 61,
+      "chars_total": 24,
+      "request_id": "6J4mOvP64Lq7XeIJik6o",
+      "seconds": 3.53,
+      "mouth": "68998686431000149995241000010087439899999259997445425857533361123102000"
+    },
+    "greet_regular": {
+      "hash": "6bda5807015cc81d",
+      "date": "2026-11-22",
+      "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
+      "voice_name": "Alex - Warm, Empathetic, Confident",
+      "model": "eleven_multilingual_v2",
+      "text": "There you are! I was just telling Odilon about you.",
+      "chars": 51,
+      "chars_total": 40,
+      "request_id": "MLyUMRWqQcDAlRpYvMBe",
+      "seconds": 2.82,
+      "mouth": "199988985321000000000003764268727888428967976546421111000"
+    },
+    "about_cafe": {
+      "hash": "d296be75f0fc716f",
+      "date": "2026-11-22",
+      "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
+      "voice_name": "Alex - Warm, Empathetic, Confident",
+      "model": "eleven_multilingual_v2",
+      "text": "Odilon runs the cafe. He keeps the best table for the mayor and pretends he does not.",
+      "chars": 85,
+      "chars_total": 68,
+      "request_id": "UhIaP9y2CAjt2GuRsHus",
+      "seconds": 4.48,
+      "mouth": "996999999997464286212110000000000011212294998439757425465657777423311212863421112111101100"
+    },
+    "about_gossip": {
+      "hash": "258a823ef2fa179e",
+      "date": "2026-11-22",
+      "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
+      "voice_name": "Alex - Warm, Empathetic, Confident",
+      "model": "eleven_multilingual_v2",
+      "text": "They say the harbour master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like.",
+      "chars": 147,
+      "chars_total": 59,
+      "request_id": "EhH5qxGSE2uezPQbVIrE",
+      "seconds": 7.81,
+      "mouth": "4798999937998699965482254119656545149525113986355523111120195310000000000111396587998359645544322111129864577733445233100000000011179639376249824899642121000"
+    },
+    "about_anniversary": {
+      "hash": "66eb968367365fba",
+      "date": "2026-11-22",
+      "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
+      "voice_name": "Alex - Warm, Empathetic, Confident",
+      "model": "eleven_multilingual_v2",
+      "text": "The town anniversary is coming. The mayor has the whole square scrubbed. Bastien does love a speech.",
+      "chars": 100,
+      "chars_total": 40,
+      "request_id": "8wgBxh5fj5tt58r1e6Wg",
+      "seconds": 5.7,
+      "mouth": "1029989998999766978227532211000000000275999999972942787631554521553211000000000422135865431000385535622311110111000"
+    },
+    "bye": {
+      "hash": "f33719f526072fc4",
+      "date": "2026-11-22",
+      "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
+      "voice_name": "Alex - Warm, Empathetic, Confident",
+      "model": "eleven_multilingual_v2",
+      "text": "See you soon, dear.",
+      "chars": 19,
+      "chars_total": 8,
+      "request_id": "ReJSrMQAEewKmfcpnpRU",
+      "seconds": 1,
+      "mouth": "121339774799646321000"
+    }
+  },
+  "voice": {
+    "id": "9oROzDqQCuiJ6qYnKIbQ",
+    "name": "Alex - Warm, Empathetic, Confident",
+    "source": "voice library"
+  }
+}

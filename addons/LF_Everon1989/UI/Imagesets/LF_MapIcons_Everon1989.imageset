@@ -1,5 +1,5 @@
 ImageSetClass {
- RefSize 512 512
+ RefSize 1024 1024
  Textures {
   ImageSetTextureClass {
    mpix 1
@@ -57,235 +57,379 @@ ImageSetClass {
   }
   ImageSetDefClass poi_Bank {
    Name "poi_Bank"
-   Pos 0 64
+   Pos 512 0
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_PoliceStation {
    Name "poi_PoliceStation"
-   Pos 64 64
+   Pos 576 0
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_PoliceArmoury {
    Name "poi_PoliceArmoury"
-   Pos 128 64
+   Pos 640 0
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_HospitalSite {
    Name "poi_HospitalSite"
-   Pos 192 64
+   Pos 704 0
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Workplace {
    Name "poi_Workplace"
-   Pos 256 64
+   Pos 768 0
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Fence {
    Name "poi_Fence"
-   Pos 320 64
+   Pos 832 0
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Fuel {
    Name "poi_Fuel"
-   Pos 384 64
+   Pos 896 0
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Payphone {
    Name "poi_Payphone"
-   Pos 448 64
+   Pos 960 0
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Quarry {
    Name "poi_Quarry"
-   Pos 0 128
+   Pos 0 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Fish {
    Name "poi_Fish"
-   Pos 64 128
+   Pos 64 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Story {
    Name "poi_Story"
-   Pos 128 128
+   Pos 128 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Taxi {
    Name "poi_Taxi"
-   Pos 192 128
+   Pos 192 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Harbour {
    Name "poi_Harbour"
-   Pos 256 128
+   Pos 256 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Farm {
    Name "poi_Farm"
-   Pos 320 128
+   Pos 320 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Shop {
    Name "poi_Shop"
-   Pos 384 128
+   Pos 384 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_TownHall {
    Name "poi_TownHall"
-   Pos 448 128
+   Pos 448 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Church {
    Name "poi_Church"
-   Pos 0 192
+   Pos 512 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Pub {
    Name "poi_Pub"
-   Pos 64 192
+   Pos 576 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Fire {
    Name "poi_Fire"
-   Pos 128 192
+   Pos 640 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Depot {
    Name "poi_Depot"
-   Pos 192 192
+   Pos 704 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_IdCard {
    Name "poi_IdCard"
-   Pos 256 192
+   Pos 768 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Atm {
    Name "poi_Atm"
-   Pos 320 192
+   Pos 832 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Garage {
    Name "poi_Garage"
-   Pos 384 192
+   Pos 896 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Bed {
    Name "poi_Bed"
-   Pos 448 192
+   Pos 960 64
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Sawmill {
    Name "poi_Sawmill"
-   Pos 0 256
+   Pos 0 128
    Size 64 64
    Flags 0
   }
   ImageSetDefClass poi_Scrap {
    Name "poi_Scrap"
-   Pos 64 256
+   Pos 64 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Grocer {
+   Name "poi_Grocer"
+   Pos 128 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Bakery {
+   Name "poi_Bakery"
+   Pos 192 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Butcher {
+   Name "poi_Butcher"
+   Pos 256 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Cafe {
+   Name "poi_Cafe"
+   Pos 320 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Market {
+   Name "poi_Market"
+   Pos 384 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_News {
+   Name "poi_News"
+   Pos 448 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Clothing {
+   Name "poi_Clothing"
+   Pos 512 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Hardware {
+   Name "poi_Hardware"
+   Pos 576 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Guns {
+   Name "poi_Guns"
+   Pos 640 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Pharmacy {
+   Name "poi_Pharmacy"
+   Pos 704 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Barber {
+   Name "poi_Barber"
+   Pos 768 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Furniture {
+   Name "poi_Furniture"
+   Pos 832 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_FarmSupply {
+   Name "poi_FarmSupply"
+   Pos 896 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Wholesale {
+   Name "poi_Wholesale"
+   Pos 960 128
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Orchard {
+   Name "poi_Orchard"
+   Pos 0 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Wheat {
+   Name "poi_Wheat"
+   Pos 64 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Woodlot {
+   Name "poi_Woodlot"
+   Pos 128 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Mine {
+   Name "poi_Mine"
+   Pos 192 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Plant {
+   Name "poi_Plant"
+   Pos 256 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Smokehouse {
+   Name "poi_Smokehouse"
+   Pos 320 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Board {
+   Name "poi_Board"
+   Pos 384 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_PlotForSale {
+   Name "poi_PlotForSale"
+   Pos 448 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_CarLot {
+   Name "poi_CarLot"
+   Pos 512 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass poi_Range {
+   Name "poi_Range"
+   Pos 576 192
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pencil_cross {
    Name "pencil_cross"
-   Pos 128 256
+   Pos 640 192
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pencil_circle {
    Name "pencil_circle"
-   Pos 192 256
+   Pos 704 192
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pencil_arrow {
    Name "pencil_arrow"
-   Pos 256 256
+   Pos 768 192
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pencil_note {
    Name "pencil_note"
-   Pos 320 256
+   Pos 832 192
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pencil_question {
    Name "pencil_question"
-   Pos 384 256
+   Pos 896 192
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pin_police {
    Name "pin_police"
-   Pos 448 256
+   Pos 960 192
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pin_org {
    Name "pin_org"
-   Pos 0 320
+   Pos 0 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pin_taxi {
    Name "pin_taxi"
-   Pos 64 320
+   Pos 64 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pin_waypoint {
    Name "pin_waypoint"
-   Pos 128 320
+   Pos 128 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass stamp_town {
    Name "stamp_town"
-   Pos 192 320
+   Pos 192 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass stamp_nopolice {
    Name "stamp_nopolice"
-   Pos 256 320
+   Pos 256 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass stamp_restricted {
    Name "stamp_restricted"
-   Pos 320 320
+   Pos 320 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass stamp_you {
    Name "stamp_you"
-   Pos 384 320
+   Pos 384 256
    Size 64 64
    Flags 0
   }

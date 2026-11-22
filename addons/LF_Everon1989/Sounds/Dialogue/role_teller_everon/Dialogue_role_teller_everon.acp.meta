@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{FC4C3B5B71B070B4}Sounds/Dialogue/role_teller_everon/Dialogue_role_teller_everon.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

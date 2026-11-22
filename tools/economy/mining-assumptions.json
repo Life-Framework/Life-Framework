@@ -12,6 +12,14 @@
   "sackUnits": { "iron-ore": 10, "copper-ore": 10, "limestone": 5, "coal": 10 },
   "chains": [
     {
+      "id": "iron-brow-foot", "label": "iron at Coalman's Brow on foot", "recipe": "furnace-iron-mine", "vehicle": "foot",
+      "gather": { "item": "iron-ore", "units": 20, "perMinute": 4 },
+      "reagents": [],
+      "buyer": "coalmans_brow_mine", "premiumGood": "BCD1E8CD7F975074", "wholesaleGood": "BCD1E8CD7F975074",
+      "km": { "mineToPlant": 0.02, "plantToBuyer": 0.01, "returnToMine": 0.02 }, "overheadMinutes": 1.5, "fuelPerHour": 0,
+      "note": "the starter loop: six iron rocks, the furnace and the iron buyer all on the brow, 10 to 20 m apart; the 4 minute furnace run (5 bars) and the buyer's purse (40, +24 an hour) hold it in band, the dock wholesale (0.75 km) takes any more"
+    },
+    {
       "id": "iron-pickup", "label": "iron by pickup", "recipe": "smelter-iron", "vehicle": "pickup",
       "gather": { "item": "iron-ore", "units": 20, "perMinute": 4 },
       "reagents": [{ "item": "coal", "guidName": "CoalLump", "unitCost": 5, "source": "bought from coal feeders at about $5" }],

@@ -14,7 +14,7 @@ hours vary with how far you walk, drive and wait.
 | [Scrap and recycling](#scrap-and-recycling) | ✅ yes, sold at the garage | about **$100 to $200** (a side income) | nothing |
 | [Garbage round](#garbage-round) | ❌ not on the island | about $400 planned | |
 | [Fuel haul](#fuel-haul) | ❌ no depot on the island | about $450 planned | |
-| [Mining](#mining) | ❌ no mine placed | about $385 to $515 planned | |
+| [Mining](#mining) | ✅ iron at Coalman's Brow | about **$500** | a pickaxe ($150) |
 | [Police](06-police.md) | ✅ yes | **$900 to $1,260** | sign up at the station |
 | [Medic](08-medic.md) | ✅ yes | **$792 to $1,224** | none |
 
@@ -140,7 +140,7 @@ The drops are on the east side (a house near the district road) and four along t
   (about 5.7 km); see the island map.
 * **How to start:** take the **lumberjack job** at the desk. Buy an **axe** ($120) at the hardware store.
 * **What you do:**
-  1. **Fell a tree** with the axe in your hands (not in a safe zone, not within 4 m of a road or 12 m of a building). Logs drop around the stump.
+  1. **Fell a tree** with the axe in your hands (not in a safe zone, not within 4 m of a road or 12 m of a building). The tree falls **away from you**, so stand on the side you want it to miss. When it lands, the trunk turns into the logs (one per log the tree gives) lying along the line it fell, with a few branches round the crown. A softwood tree (pine, spruce, larch) gives softwood logs; a hardwood tree (hornbeam, linden, alder, birch, poplar) gives the heavier hardwood logs. Collect them soon: logs nobody picks up are gone after about 30 minutes, and the branches clear in a few.
   2. Carry the logs to the **saw** and pick a cut: a **softwood** log makes **4 planks and kindling**, or **2 posts**, or **4 firewood**; a **hardwood** log makes **2 boards** or **5 firewood**.
   3. Sell **planks ($8)** and **hardwood boards ($12)** at the **timber counter**. If its purse is full it tells you to
      "try the wholesale warehouse at the dock". The dock pays a lower, falling price for planks, boards, posts and firewood.
@@ -253,7 +253,20 @@ the pump says "The tanks are dry. The depot truck is due."
 
 ## Mining
 
-**Status:** ❌ **not on the island yet.** The mine and plant kits are built but no mine is placed. The **pickaxe** ($150) is listed at the miner's tills in the general store
-and the hardware store, for players with a mining level.
+**Status:** ✅ live. One iron mine is open on **Coalman's Brow**, the hill just south of the village. Copper, coal and stone come later.
 
-The plan: iron, copper, coal and stone chains between the hills and the smelters, **$385 to $515 an hour** net.
+* **Where:** the **iron mine** (sign *Coalman's Brow mine*, map label **Iron mine**) on the wooded north side of the brow, about 350 m south-west of the square past the farms; the track off the road to the west leads up to it.
+  It has the **miner's desk**, six rust-veined **iron rocks**, a **furnace** and an **iron buyer**'s counter. The **pickaxe** is sold at the
+  **miners' supply** till in the **hardware store** on the south-east road (and in the general store).
+* **How to start:** take the **miner job** at the desk by the mine. Then buy a **pickaxe** ($150) at the miners' supply till in the
+  hardware store. Any new miner can buy it.
+* **What you do:**
+  1. Hold the pickaxe and **swing at an iron rock**. Every few swings a piece of **iron ore** breaks off and drops at your feet; pick it up.
+     A rock gives 5 pieces, shrinks as you work it, then crumbles and grows back after about 5 minutes. Each piece is miner XP.
+  2. Take the ore to the **furnace** and choose **Smelt iron ore**: **3 ore make 1 iron bar**. One run smelts up to 5 bars in 4 minutes;
+     keep mining while it works, the bars drop at the furnace when it is done.
+  3. Sell the bars at the **iron buyer**'s counter beside the furnace (**$20 a bar**; it buys 40, then about 24 more an hour). If it says
+     it is full, the **wholesale warehouse** at the dock buys more (from $20 a bar, falling as you sell).
+* **Pay:** about **$500 an hour**, with nothing to drive. Two players share the six rocks and the furnace comfortably.
+* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal, copper and smelter work as those sites arrive.
+

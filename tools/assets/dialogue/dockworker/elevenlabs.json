@@ -1,0 +1,63 @@
+{
+  "id": "dockworker",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "7e76eeb5d294b7c1",
+      "date": "2026-11-22",
+      "voice_id": "BOoKlbsve2J6x9UnqHOS",
+      "voice_name": "Delgado Stephane",
+      "model": "eleven_multilingual_v2",
+      "text": "Mind your feet, the crane swings wide. You want something, or are you just watching us sweat?",
+      "chars": 93,
+      "chars_total": 37,
+      "request_id": "74GMAnPufmFWCUlGv2Xl",
+      "seconds": 5.88,
+      "mouth": "7798968933357732321472568789566356889976899989869741000037899935984797368416998678746854156943556655664396112311111000"
+    },
+    "about_cargo": {
+      "hash": "ce9b343385479402",
+      "date": "2026-11-22",
+      "voice_id": "BOoKlbsve2J6x9UnqHOS",
+      "voice_name": "Delgado Stephane",
+      "model": "eleven_multilingual_v2",
+      "text": "Flour, diesel, machine parts. What is in the other crates is the harbour master's business, and he does not share.",
+      "chars": 114,
+      "chars_total": 46,
+      "request_id": "BRndBOl4ONLj25xtjN0Z",
+      "seconds": 9.51,
+      "mouth": "33799899999996311111110246568888778998887530000000057854443677743998985214653111111101000004986878997999888257998426652102477679489959777754586337766875653110000001577659757744568766311111000"
+    },
+    "about_work": {
+      "hash": "87498267faf32644",
+      "date": "2026-11-22",
+      "voice_id": "BOoKlbsve2J6x9UnqHOS",
+      "voice_name": "Delgado Stephane",
+      "model": "eleven_multilingual_v2",
+      "text": "Ask the harbour master. He hires by the day when a boat comes in, and pays when the boat is empty.",
+      "chars": 98,
+      "chars_total": 39,
+      "request_id": "VsZdCo2SmSh5U2i0tzho",
+      "seconds": 6.23,
+      "mouth": "99959999979888774486211111111111478599886518966647665777537621366666855301111000000015735986565400367664763265565324430000000"
+    },
+    "bye": {
+      "hash": "bd69153f1457db5b",
+      "date": "2026-11-22",
+      "voice_id": "BOoKlbsve2J6x9UnqHOS",
+      "voice_name": "Delgado Stephane",
+      "model": "eleven_multilingual_v2",
+      "text": "Off you go, then.",
+      "chars": 17,
+      "chars_total": 7,
+      "request_id": "Vy6DKU2VYoC8aenouVsR",
+      "seconds": 1.16,
+      "mouth": "996386498846555400000000"
+    }
+  },
+  "voice": {
+    "id": "BOoKlbsve2J6x9UnqHOS",
+    "name": "Delgado Stephane",
+    "source": "voice library"
+  }
+}

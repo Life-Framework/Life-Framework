@@ -24,6 +24,7 @@
     "LF_RecycleConfig",
     "LF_IncidentConfig",
     "LF_ItemCatalogueConfig",
+    "LF_JailBreakConfig",
     "LF_JobsConfig",
     "LF_LaunderConfig",
     "LF_LedgerConfig",

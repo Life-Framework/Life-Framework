@@ -2,8 +2,9 @@
 //! The conversation on the talker's screen: the camera on the NPC, the NPC's line as a caption
 //! at the bottom, and the replies as a numbered list. Local to one machine; the world goes on
 //! around it. The scene shows what the server sent (LF_Dialogue) and sends back a reply index.
-//!   keys   : 1 to 4 pick a reply; up/down and confirm pick one too (keyboard or pad);
-//!            confirm skips a line that is playing; back leaves.
+//!   keys   : 1 to 4 pick a reply, 0 (the last row, always "Goodbye") leaves; up/down and confirm
+//!            pick one too (keyboard, or left stick and A on a pad); confirm skips a line that is
+//!            playing; back (Escape, B) leaves at any time. The numbers come from LF_DialogueKeys.
 //! While it is open the character cannot move, look or use a weapon, and the HUD is hidden.
 class LF_DialogueScene
 {
@@ -25,6 +26,9 @@ class LF_DialogueScene
 	protected static ref array<string> s_aQueue;
 	//! Option index behind each shown row.
 	protected static ref array<int> s_aRows;
+	//! The option of this node that is the NPC's own farewell (reply "bye"), or -1. It gets no row of
+	//! its own: Goodbye (0) picks it, so the NPC says its goodbye and no menu shows two.
+	protected static int s_iFarewell = -1;
 	protected static int s_iFocus;
 	//! MenuUp or MenuDown was down last tick: a held key (the harness holds one 300 ms) steps once.
 	protected static bool s_bStepHeld;
@@ -48,6 +52,7 @@ class LF_DialogueScene
 		s_sLastCaption = string.Empty;
 		s_aQueue = null;
 		s_aRows = null;
+		s_iFarewell = -1;
 		s_bChoosing = false;
 		s_bWaiting = false;
 		s_bStepHeld = false;
@@ -124,6 +129,9 @@ class LF_DialogueScene
 
 		if (verb == "pick")
 			return "picked=" + PickRow(value.ToInt());
+
+		if (verb == "bye")
+			return "bye=" + Goodbye();
 
 		if (verb == "shown")
 			return "shown=" + s_sLastCaption;
@@ -331,16 +339,22 @@ class LF_DialogueScene
 		}
 
 		LF_DialogueNode node = LF_DialogueFlow.FindNode(s_Config, s_sNode);
+		s_iFarewell = -1;
 		if (node && node.m_aOptions)
 		{
 			for (int i = 0; i < node.m_aOptions.Count(); i++)
 			{
-				if (LF_DialogueFlow.IsOffered(s_iMask, i))
+				if (!LF_DialogueFlow.IsOffered(s_iMask, i))
+					continue;
+
+				if (s_iFarewell < 0 && LF_DialogueKeys.IsFarewell(node.m_aOptions[i]))
+					s_iFarewell = i;
+				else
 					s_aRows.Insert(i);
 			}
 		}
 
-		if (s_aRows.IsEmpty())
+		if (s_aRows.IsEmpty() && s_iFarewell < 0)
 		{
 			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("node '%1/%2' offers replies this machine cannot show; leaving", s_Config.m_sId, s_sNode));
 			Close("no reply to show", true);
@@ -395,12 +409,32 @@ class LF_DialogueScene
 			if (!used)
 				continue;
 
-			target.SetTextFormat("%1.  %2", (row + 1).ToString(), Display(LF_DialogueOverrides.Text(node.m_aOptions[s_aRows[row]].m_sTextKey)));
-			if (row == s_iFocus)
-				target.SetColor(Color.FromRGBA(240, 205, 130, 255));
-			else
-				target.SetColor(Color.FromRGBA(209, 204, 189, 255));
+			target.SetTextFormat("%1.  %2", LF_DialogueKeys.DigitOfRow(row, s_aRows.Count()).ToString(), Display(LF_DialogueOverrides.Text(node.m_aOptions[s_aRows[row]].m_sTextKey)));
+			Focus(target, row == s_iFocus);
 		}
+
+		// The last row is always Goodbye, "0.", the widget after the reply rows.
+		TextWidget bye = TextWidget.Cast(s_wRoot.FindAnyWidget("Option" + LF_DialogueFlow.MAX_OPTIONS));
+		if (!bye)
+			return;
+
+		bool showBye = s_bChoosing && s_aRows;
+		bye.SetVisible(showBye);
+		if (!showBye)
+			return;
+
+		bye.SetTextFormat("%1.  %2", LF_DialogueKeys.GOODBYE_DIGIT.ToString(), Display("#LF-Dialogue_Goodbye"));
+		Focus(bye, s_iFocus == s_aRows.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The focused row is brass, the others plain.
+	protected static void Focus(TextWidget row, bool focused)
+	{
+		if (focused)
+			row.SetColor(Color.FromRGBA(240, 205, 130, 255));
+		else
+			row.SetColor(Color.FromRGBA(209, 204, 189, 255));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -427,11 +461,17 @@ class LF_DialogueScene
 		if (!IsOpen() || !s_bChoosing || !s_aRows || row < 0 || row >= s_aRows.Count())
 			return false;
 
+		return PickIndex(s_aRows[row]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: send the reply with this option index (an index the server offered at this node).
+	protected static bool PickIndex(int index)
+	{
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (!controller)
 			return false;
 
-		int index = s_aRows[row];
 		s_sAfterHook = string.Empty;
 		s_sAfterParam = string.Empty;
 		LF_DialogueOption picked = LF_DialogueFlow.Pick(LF_DialogueFlow.FindNode(s_Config, s_sNode), s_iMask, index);
@@ -526,6 +566,13 @@ class LF_DialogueScene
 			return;
 		}
 
+		// 0 leaves at any moment, like Back.
+		if (input.GetActionTriggered("LF_Keypad" + LF_DialogueKeys.GOODBYE_DIGIT))
+		{
+			Goodbye();
+			return;
+		}
+
 		if (!s_bChoosing)
 		{
 			if (!s_bWaiting && input.GetActionTriggered("MenuSelect"))
@@ -534,11 +581,12 @@ class LF_DialogueScene
 			return;
 		}
 
-		for (int row = 0; row < s_aRows.Count(); row++)
+		int replies = s_aRows.Count();
+		for (int digit = 1; digit <= replies; digit++)
 		{
-			if (input.GetActionTriggered("LF_Keypad" + (row + 1)))
+			if (input.GetActionTriggered("LF_Keypad" + digit))
 			{
-				PickRow(row);
+				PickRow(LF_DialogueKeys.RowOfDigit(digit, replies));
 				return;
 			}
 		}
@@ -550,13 +598,38 @@ class LF_DialogueScene
 
 		if (step != 0)
 		{
-			s_iFocus = (s_iFocus + step + s_aRows.Count()) % s_aRows.Count();
+			s_iFocus = LF_DialogueKeys.Step(s_iFocus, step, replies);
 			ShowRows();
 			return;
 		}
 
-		if (input.GetActionTriggered("MenuSelect"))
+		if (!input.GetActionTriggered("MenuSelect"))
+			return;
+
+		if (LF_DialogueKeys.IsGoodbye(s_iFocus, replies))
+			Goodbye();
+		else
 			PickRow(s_iFocus);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the player chose Goodbye (the "0" row, key 0, or confirm on it). Leaves the talk the
+	//! way Back does: the controls, camera and HUD come back and the server frees the NPC.
+	//! \return true when this call left the conversation.
+	static bool Goodbye()
+	{
+		if (!IsOpen())
+			return false;
+
+		// The NPC has its own farewell here: pick it, so it says goodbye (voiced) and ends the talk.
+		if (s_bChoosing && s_iFarewell >= 0 && PickIndex(s_iFarewell))
+		{
+			LF_Debug.Info(LF_Dialogue.FEATURE, "the player said goodbye; the NPC answers with its farewell");
+			return true;
+		}
+
+		Close("the player said goodbye", true);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
