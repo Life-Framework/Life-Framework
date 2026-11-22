@@ -3251,13 +3251,13 @@ StringTable {
     }
     CustomStringTableItem "{54968BCB66E488A0}" {
      Id "LF-Sign_CoalmansBrowBuyer_Iron"
-     Target_en_us "Iron bought here"
+     Target_en_us "Iron bar"
      Comment "Chalk board row label at the Coalman's Brow iron buyer: the price per iron bar."
     }
     CustomStringTableItem "{215C8A1EF60E0C32}" {
      Id "LF-Sign_CoalmansBrowBuyer_Title"
-     Target_en_us "Achat fer"
-     Comment "Title of the chalk board at the iron buyer's table at the Coalman's Brow mine (Everon 1989 pack). Printed on the board and shown in the prompt as Read: Achat fer."
+     Target_en_us "Iron bought here"
+     Comment "Title of the chalk board at the iron buyer's table at the Coalman's Brow mine (Everon 1989 pack). Printed on the board and shown in the prompt as Read: Iron bought here."
     }
     CustomStringTableItem "{72E01F61545E6893}" {
      Id "LF-Sign_CoalmansBrowBuyer_What"
