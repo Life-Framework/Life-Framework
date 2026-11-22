@@ -59,7 +59,7 @@
     "rejoinMaxAgeHours": 12
   },
   "grace": {
-    "minutes": 30
+    "minutes": 5
   },
   "restarts": {
     "times": [
