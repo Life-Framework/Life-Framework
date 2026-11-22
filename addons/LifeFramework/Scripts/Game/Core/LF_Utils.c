@@ -109,6 +109,22 @@ class LF_Utils : Managed
 	//------------------------------------------------------------------------------------------------
 	static void Notify(string message, string title = "", float duration = 3.0)
 	{
+		NoteToast(message, title, duration);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A note on this machine in the cream note style (first-2-hours review C11: the vanilla hint was a dark
+	//! panel with an orange heading beside the cream quest notes). Falls back to the vanilla hint when the
+	//! game mode has no notification manager (a world without it).
+	static void NoteToast(string message, string title = "", float duration = 3.0, LF_ENotificationType type = LF_ENotificationType.INFO)
+	{
+		LF_NotificationManagerComponent manager = LF_NotificationManagerComponent.GetInstance();
+		if (manager)
+		{
+			manager.ShowNotificationToast(title, message, duration, type);
+			return;
+		}
+
 		SCR_HintManagerComponent.ShowCustomHint(message, title, duration);
 	}
 

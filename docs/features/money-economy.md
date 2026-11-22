@@ -63,7 +63,7 @@
 - ✅ (2026-11-22) **The ATM works by looking at its parts, with no window** (`LF_ATMQuickAction`, `LF_ATMQuick`, `LF_ATMLive`):
   `LF_ATM.et` has three action contexts. The cash slot (`cash`, CASH) lists Withdraw $20 / $50 / $100 / $500 / all; the new
   envelope drawer under it (`deposit`, DEPOSIT, added to `build.py` and `kit.json` `deposit`) lists Deposit all cash / $50 / $100 / $500;
-  the screen and keypad (`default`) list Check balance and Bank transfer (`LF_ATMAction` with `m_bTransferOnly`, the one job that
+  the screen and keypad (`default`, its prompt anchored under the glass, y 1.12, so it no longer covers the screen text) list Withdraw $20 / $50 / $100 and Deposit all (the same lines as the slots, listed in more than one context), then Check balance and Bank transfer (`LF_ATMAction` with `m_bTransferOnly`, the one job that
   needs typing). The vanilla scroll picks a line. Each line shows its amount, and a line the player cannot afford is greyed with
   the reason, judged from the last figures the server sent. While the player stands at a machine, `LF_ATMLive` draws their balance
   and cash in green over the CRT (HUD layout `LF_ATMScreen.layout`, projected onto the glass, local to that player), refreshes it

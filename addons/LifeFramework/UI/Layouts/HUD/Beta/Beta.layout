@@ -39,6 +39,23 @@ FrameWidgetClass {
     }
    }
   }
+  ImageWidgetClass "{3C71A5E0D49B8F12}" {
+   Name "m_moneyPlate"
+   Slot FrameWidgetSlot "{9A0E24B7C5D13E68}" {
+    Anchor 1 0 1 0
+    PositionX -14
+    OffsetLeft -14
+    PositionY 12
+    OffsetTop 12
+    SizeX 210
+    OffsetRight -196
+    SizeY 70
+    OffsetBottom -82
+    Alignment 1 0
+   }
+   Opacity 0.95
+   Color 0.06 0.055 0.05 0.5
+  }
   VerticalLayoutWidgetClass "{8B28E556DDB0AD0F}" {
    Name "m_moneyBlock"
    Slot FrameWidgetSlot "{4DD0C14EF887F75F}" {
@@ -101,14 +118,14 @@ FrameWidgetClass {
       HorizontalAlign 2
       Padding 0 0 0 0
      }
-     Color 0.86 0.84 0.78 0.85
+     Color 0.96 0.94 0.88 1
      Text ""
-     "Font Size" 15
+     "Font Size" 16
      "Min Font Size" 12
      "Horizontal Alignment" Right
      FontProperties FontProperties "{0AC1EA28E6DAAFCD}" {
-      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-      ShadowSize 1
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+      ShadowSize 2
       ShadowOffset 1 1
      }
     }
@@ -218,22 +235,16 @@ FrameWidgetClass {
    }
    Opacity 0
    {
-    TextWidgetClass "{AE8DD7C24315E87D}" {
-     Name "m_foodLabel"
+    ImageWidgetClass "{AE8DD7C24315E87D}" {
+     Name "m_foodIcon"
      Slot LayoutSlot "{BB3160F3E39C9ACC}" {
       VerticalAlign 1
-      Padding 0 0 5 0
+      Padding 0 0 6 0
      }
-     Color 0.86 0.84 0.78 0.8
-     Text "#LF-Hud_Food"
-     "Font Size" 13
-     "Min Font Size" 11
-     "Vertical Alignment" Center
-     FontProperties FontProperties "{01E7B434D9AB8092}" {
-      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-      ShadowSize 1
-      ShadowOffset 1 1
-     }
+     Color 0.96 0.95 0.92 1
+     Texture "{5486CB13369B49FF}UI/Imagesets/LF_UIIcons.imageset"
+     Image "food"
+     Size 24 24
     }
     TextWidgetClass "{46F432D589AC8880}" {
      Name "m_foodValue"
@@ -251,22 +262,16 @@ FrameWidgetClass {
       ShadowOffset 1 1
      }
     }
-    TextWidgetClass "{FA30B079A28B963F}" {
-     Name "m_drinkLabel"
+    ImageWidgetClass "{FA30B079A28B963F}" {
+     Name "m_drinkIcon"
      Slot LayoutSlot "{12151802FFA802EF}" {
       VerticalAlign 1
-      Padding 22 0 5 0
+      Padding 22 0 6 0
      }
-     Color 0.86 0.84 0.78 0.8
-     Text "#LF-Hud_Drink"
-     "Font Size" 13
-     "Min Font Size" 11
-     "Vertical Alignment" Center
-     FontProperties FontProperties "{CCF4FD49ABEC3010}" {
-      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-      ShadowSize 1
-      ShadowOffset 1 1
-     }
+     Color 0.96 0.95 0.92 1
+     Texture "{5486CB13369B49FF}UI/Imagesets/LF_UIIcons.imageset"
+     Image "drink"
+     Size 24 24
     }
     TextWidgetClass "{F83CB834372806F7}" {
      Name "m_drinkValue"
