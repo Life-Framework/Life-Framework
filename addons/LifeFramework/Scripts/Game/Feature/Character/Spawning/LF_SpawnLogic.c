@@ -527,6 +527,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	{
 		LF_Debug.Info("Spawn", "player " + playerId + " spawned " + characterPersistenceId + " for the first time");
 		LF_FirstSpawnBeds.OnFirstSpawn(playerId, character);
+		LF_WelcomeGuide.OnFirstSpawn(playerId, characterPersistenceId);
 	}
 
 	//------------------------------------------------------------------------------------------------
