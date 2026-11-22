@@ -36,6 +36,7 @@ The bay is scratch space (six 2x2 bays, `docs/architecture/world-zones.md` "Auth
 - `stamp.prefab`: the vanilla building it was authored around. A stamp onto any other prefab is refused.
 - `stamp.lanes`: entrance to every till, counter and shelf face, 1.2 m (measured by the audit card #3883).
 - `stamp.clear`: vanilla clutter the building brings that the shop does not want; `town stamp` writes one `Fit_<slot>_clear` carrier per copy (`LF_BaseWorldClearComponent`) that hides it at load, on the
+  An entry `{ "prefab": ..., "box": { "offset": [x, z], "half": [hx, hz], "height": 4 } }` hides that prefab only inside a box in the kit's frame (offset like a row's x and z, half size, height above the ground under it) and `town fit` writes it as a `Fit_<slot>_clear_box<N>` carrier (entries with the same box share one). Use it for one vanilla door or prop of a prefab the building uses many times. A hide is not recursive: list a door set and its leaf prefab both. `town author extract` does not carry box entries (the bank is a fitted kit).
   server and every client, nothing saved (`docs/architecture/base-world-clear.md`). A fitted (not stamped) kit may carry a top-level `clear`.
 
 ## Rules the stamp enforces
