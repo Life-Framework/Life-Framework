@@ -417,6 +417,25 @@ export async function configPush(client, { dir, repoDir, adminsPending = false, 
 
 // The --only token that pushes the mod's staff.txt (not a server.json game field).
 export const ONLY_STAFF = "staff";
+// The --only token that pushes the mod's owner config.json (server/flagship/config.json: economy, jobs, day
+// cycle). Without a local secrets.json the staged file has no staff.webhookUrl, so the box's own is kept.
+export const ONLY_OWNER = "owner";
+
+// Our owner config bytes with the box's staff.webhookUrl kept when ours has none. Returns { bytes, kept }.
+export function ownerKeepingWebhook(ours, theirs) {
+  let o;
+  let t;
+  try {
+    o = JSON.parse(ours.toString("utf8"));
+    t = theirs ? JSON.parse(theirs.toString("utf8")) : null;
+  } catch {
+    return { bytes: ours, kept: false };
+  }
+  const boxHook = t?.staff?.webhookUrl;
+  if (!boxHook || o?.staff?.webhookUrl) return { bytes: ours, kept: false };
+  o.staff = { ...(o.staff ?? {}), webhookUrl: boxHook };
+  return { bytes: Buffer.from(`${JSON.stringify(o, null, 2)}\n`, "utf8"), kept: true, hook: boxHook };
+}
 
 async function configPushOnly(client, { dir, repoDir, adminsPending, yes, only }) {
   // The roster's admins matter only when admins is one of the pushed fields; a pending administrator uid
@@ -425,7 +444,8 @@ async function configPushOnly(client, { dir, repoDir, adminsPending, yes, only }
   if (!staged.ok) return { ok: false, reason: staged.reason, lines: [], warnings: [] };
   const ours = staged.server;
   const withStaff = only.includes(ONLY_STAFF);
-  const fields = only.filter((f) => f !== ONLY_STAFF);
+  const withOwner = only.includes(ONLY_OWNER);
+  const fields = only.filter((f) => f !== ONLY_STAFF && f !== ONLY_OWNER);
   const sel = fields.length ? onlySettings(toServerSettings(ours), fields) : { wanted: {} };
   if (sel.error) return { ok: false, reason: sel.error, lines: [], warnings: [] };
   let current = {};
@@ -434,7 +454,16 @@ async function configPushOnly(client, { dir, repoDir, adminsPending, yes, only }
     if (!cur.ok) return { ok: false, reason: cur.reason, status: cur.status, lines: [], warnings: [] };
     current = cur.data?.settings ?? {};
   }
-  const allSecrets = makeRedactor([...secretValues(ours), ...secretValues(current)]);
+  const hidden = [...secretValues(ours), ...secretValues(current)];
+  let owner = null;
+  if (withOwner) {
+    const g = await client.get(OWNER_CONFIG_PATH);
+    if (!g.ok && g.status !== 404) return { ok: false, reason: makeRedactor(hidden)(g.reason), status: g.status, lines: [], warnings: [] };
+    const box = g.ok ? g.bytes : null;
+    owner = { box, ...ownerKeepingWebhook(staged.owner, box) };
+    if (owner.hook) hidden.push(owner.hook);
+  }
+  const allSecrets = makeRedactor(hidden);
   const { changes, lines: settingLines } = diffSettings(current, sel.wanted);
   const lines = [];
   if (fields.length) lines.push(settingLines.length ? `server_settings (only ${fields.join(", ")}): ${settingLines.length} to change` : `server_settings (only ${fields.join(", ")}): unchanged`, ...settingLines);
@@ -451,6 +480,20 @@ async function configPushOnly(client, { dir, repoDir, adminsPending, yes, only }
       extra.push({ path: STAFF_PATH, bytes });
       lines.push(`${STAFF_PATH}: differs, to upload (${g.bytes.length} -> ${bytes.length} bytes)`);
     } else lines.push(`${STAFF_PATH}: unchanged`);
+  }
+  if (owner) {
+    const keptNote = owner.kept ? " (the box's staff.webhookUrl kept)" : "";
+    if (owner.box && owner.box.equals(owner.bytes)) lines.push(`${OWNER_CONFIG_PATH}: unchanged`);
+    else {
+      extra.push({ path: OWNER_CONFIG_PATH, bytes: owner.bytes });
+      let diff = [];
+      try {
+        diff = diffObjects(owner.box ? JSON.parse(owner.box.toString("utf8")) : {}, JSON.parse(owner.bytes.toString("utf8")));
+      } catch {
+        diff = ["  (the box's file is not valid JSON; it is replaced)"];
+      }
+      lines.push(owner.box ? `${OWNER_CONFIG_PATH}: ${diff.length} to change${keptNote}` : `${OWNER_CONFIG_PATH}: absent on the box, to upload${keptNote}`, ...diff);
+    }
   }
   if (!yes) {
     lines.push("dry run: nothing written; add --yes to write (the change applies on the next restart)");

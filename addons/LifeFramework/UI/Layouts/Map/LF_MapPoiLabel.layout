@@ -1,0 +1,25 @@
+TextWidgetClass "{4D2B9E6A1C73F805}" {
+ Name "PoiLabel"
+ Slot FrameWidgetSlot "{4D2B9E6A1C73F806}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 280
+  OffsetRight -280
+  SizeY 28
+  OffsetBottom -28
+ }
+ Color 0.110 0.102 0.086 1
+ Text ""
+ "Font Size" 22
+ "Min Font Size" 14
+ "Horizontal Alignment" Left
+ "Vertical Alignment" Center
+ FontProperties FontProperties "{4D2B9E6A1C73F807}" {
+  Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+  ShadowSize 1
+  ShadowOffset 1 1
+ }
+}
