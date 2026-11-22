@@ -2753,6 +2753,20 @@ class LF_AgentHarness
 			return;
 		}
 
+		if (cmd.Arg1 == "none")
+		{
+			// `hold none`: put the weapon in hand away, as the vanilla holster does (the island cop proof unarms a robber).
+			if (!character || !character.GetCharacterController())
+			{
+				WriteResult(cmd.Id, "error", "no_character");
+				return;
+			}
+
+			character.GetCharacterController().SelectWeapon(null);
+			WriteResult(cmd.Id, "ok", "holstered");
+			return;
+		}
+
 		SCR_GadgetManagerComponent gadgets = SCR_GadgetManagerComponent.GetGadgetManager(character);
 		InventoryStorageManagerComponent inventory;
 		if (character)
