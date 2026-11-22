@@ -4,7 +4,7 @@
 //   node docs/player-manual/build.mjs --maps     also re-renders every map PNG (offline; reads the cached terrain)
 //
 // Neither mode starts the game, Workbench or a session.
-import { readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
 import { basename, join } from "node:path";
 import { parseConf, findBlocks, str, num } from "../../tools/map/lib/conf.mjs";
 import { loadStrings } from "../../tools/map/lib/overlay.mjs";
@@ -251,4 +251,8 @@ ${sections}
 </main></body></html>
 `;
 writeFileSync(join(DIR, "manual.html"), html);
+// The same file is the public page life-framework.org/manual/ (website/public is served as is).
+const SITE_DIR = join(ROOT, "website/public/manual");
+mkdirSync(SITE_DIR, { recursive: true });
+writeFileSync(join(SITE_DIR, "index.html"), html);
 console.log(`manual ok: ${PAGES.length} pages, manual.html ${Math.round(html.length / 1024)} KB`);
