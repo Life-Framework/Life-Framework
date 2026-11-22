@@ -36,7 +36,7 @@
   ],
   "lines": {
     "greet": { "text": "Hugo Valmy. I help people who have more than they need meet people who need more than they have. Sit if you like, the coffee is honest, but I do not talk business with a face I do not know." },
-    "sell": { "text": "So you opened the red crate. If you still have what was in it, I know a buyer: cash on the spot, no questions. He keeps to the lanes and the quay after dark. The gendarmerie will only thank you." },
+    "sell": { "text": "So you opened the red crate. If you still have what was in it, I know a buyer: cash on the spot, no questions. He keeps to the lanes and the quay after dark. The police will only thank you." },
     "sold": { "text": "Then we have never met, and you have never seen the red crate. A pleasure doing no business with you." },
     "threat": { "text": "You walked it to the desk. Fine. Mind the coast road at night, friend. It is long, and it is short of lamps." },
     "bye": { "text": "Mind how you go." }

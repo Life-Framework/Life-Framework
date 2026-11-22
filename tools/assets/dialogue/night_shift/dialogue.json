@@ -56,7 +56,7 @@
     "greet_friendly": { "text": "Ah, good evening. Good to see you. Sit if you like." },
     "greet_regular": { "text": "My friend! The night is long and your company shortens it. What do you want to know?" },
     "greet": { "text": "Evening. Or morning, I lose track on nights. You are one of the new families, yes? Sit if you like." },
-    "about_zone": { "text": "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key." },
+    "about_zone": { "text": "I worked near the Zone before they moved us. Twelve kilometers from the reactor. They told us three days. That was three years ago. I still keep my house key." },
     "about_move": { "text": "They gave us one bus and one suitcase each. The island is quiet, and the quiet is hard at first. But nobody asks you to leave in the middle of dinner." },
     "about_work": { "text": "If you need wages, read the town board on the square. It lists who is hiring. And the clerk's office has a bed upstairs, for the first nights. Ask the clerk." },
     "bye": { "text": "Good night. Walk safe." }

@@ -16,17 +16,17 @@
       "mouth": "9996765439997999999767866669764114588403126776666642002321049999887868985676787521377777655444455568854365445658700355116766555520031100"
     },
     "about_zone": {
-      "hash": "ee5d5d0e3b1909bc",
-      "date": "2026-11-16",
+      "hash": "fbe11ef7d8bd2440",
+      "date": "2026-11-22",
       "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
       "voice_name": "Raspy - Convincing and Weary Narrator",
       "model": "eleven_multilingual_v2",
-      "text": "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key.",
+      "text": "I worked near the Zone before they moved us. Twelve kilometers from the reactor. They told us three days. That was three years ago. I still keep my house key.",
       "chars": 158,
-      "chars_total": 63,
-      "request_id": "acAIm1I1dDNl3gnQt656",
-      "seconds": 11.18,
-      "mouth": "39999997108998666665667999762115775656667855455442332210399989951056877767987775327976555555565020266554310299604388728975113678996567654443320579978864115788976667765543456654442139976105886013791048865338863431378654443100"
+      "chars_total": 126,
+      "request_id": "KBj0eCbswq9SfeLkthDc",
+      "seconds": 10.29,
+      "mouth": "69997899424998748977668999975622278687777744546642343116357786212778878885664269976666567511147663199354873578413878988647888766655965875248899997788877657776652557872367622599259985348984662438987765229200"
     },
     "about_move": {
       "hash": "f11c1ec004a655a9",
