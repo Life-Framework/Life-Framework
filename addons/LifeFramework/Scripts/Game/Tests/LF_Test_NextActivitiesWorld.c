@@ -1,4 +1,4 @@
-// red-proof: 2026-11-22 `tools/cli.mjs test --no-build --red LF_Test_NextActivities,LF_Test_NextActivitiesWorld,LF_Test_EveronActivities`: RED-OK activities/next-activities-world (fails with the hook on: RedProof() skips Start, 34 assertions run).
+// red-proof: 2026-11-22 `tools/cli.mjs test --no-build --red LF_Test_NextActivities,LF_Test_NextActivitiesWorld (with the pack test)`: RED-OK activities/next-activities-world (fails with the hook on: RedProof() skips Start, 34 assertions run).
 //! Records the waypoints LF_ActivityGuide sends: "mark:<uid>:<id>:<label>" and "clear:<uid>:<id>".
 class LF_ActivityTestWaypoints : LF_JobWaypointSink
 {

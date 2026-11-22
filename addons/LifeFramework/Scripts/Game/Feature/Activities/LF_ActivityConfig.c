@@ -569,7 +569,7 @@ class LF_ActivityTable
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: registers the activity quests unless the quest manager already knows them (a world
-	//! start, or the quest manager was reset since). eturn Whether the quests are known now.
+	//! start, or the quest manager was reset since). \return Whether the quests are known now.
 	static bool EnsureRegistered()
 	{
 		LF_ActivityConfig config = Get();

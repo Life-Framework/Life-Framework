@@ -1,4 +1,4 @@
-// red-proof: 2026-11-22 `tools/cli.mjs test --no-build --red LF_Test_NextActivities,LF_Test_NextActivitiesWorld,LF_Test_EveronActivities`: RED-OK activities/next-activities (fails with the hook on: RedProof() skips the filtering, 55 assertions run).
+// red-proof: 2026-11-22 `tools/cli.mjs test --no-build --red LF_Test_NextActivities,LF_Test_NextActivitiesWorld (with the pack test)`: RED-OK activities/next-activities (fails with the hook on: RedProof() skips the filtering, 55 assertions run).
 //! Hand-filled facts for the activity rules.
 class LF_TestActivityFacts : LF_ActivityFacts
 {
