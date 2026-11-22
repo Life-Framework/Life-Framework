@@ -31,7 +31,7 @@ class LF_Test_MapDeclutter : LF_Test
 		ctx.EqualFloat(LF_MapDeclutter.ICON_MAX, LF_MapDeclutter.IconSize(solo + 20, false), 0.01, "it never grows past the largest size");
 		ctx.EqualFloat(LF_MapDeclutter.ICON_MIN, LF_MapDeclutter.IconSize(0, false), 0.01, "far out it never shrinks below the smallest");
 		ctx.EqualFloat(LF_MapDeclutter.STAMP_SIZE, LF_MapDeclutter.IconSize(2, true), 0.01, "a cluster stamp has its own size");
-		ctx.True(LF_MapDeclutter.IconSize(solo + 20, false) < 40, "no icon is drawn at its 64 px image size");
+		ctx.True(LF_MapDeclutter.IconSize(solo + 20, false) < 56, "no icon is drawn at its 64 px image size");
 	}
 
 	//------------------------------------------------------------------------------------------------

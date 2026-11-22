@@ -9494,13 +9494,13 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{615D96CD9F0A9E15}" {
      Id "LF-MapWaypoint_HintActive"
-     Target_en_us "Waypoint: %1, %2. Backspace clears it."
-     Comment "Map hint strip, second line, mouse and keyboard. %1 = waypoint name, %2 = distance ("340 m")."
+     Target_en_us "Waypoint: %1. Backspace clears it."
+     Comment "Map hint strip, second line, mouse and keyboard. %1 = the distance for an unnamed waypoint ("340 m"), or the place and the distance ("Cafe, 340 m")."
     }
     CustomStringTableItem "{4BA6F91B8342E649}" {
      Id "LF-MapWaypoint_HintActivePad"
-     Target_en_us "Waypoint: %1, %2. Double-tap Y clears it."
-     Comment "Map hint strip, second line, gamepad. %1 = waypoint name, %2 = distance ("340 m")."
+     Target_en_us "Waypoint: %1. Double-tap Y clears it."
+     Comment "Map hint strip, second line, gamepad. %1 = the distance for an unnamed waypoint ("340 m"), or the place and the distance ("Cafe, 340 m")."
     }
     CustomStringTableItem "{7D841E6E53E0E07B}" {
      Id "LF-MapWaypoint_HintNone"

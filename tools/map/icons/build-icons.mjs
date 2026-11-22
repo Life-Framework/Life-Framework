@@ -26,7 +26,7 @@ const sharp = createRequire(join(process.env.LF_SHARP_FROM || join(ROOT, "websit
 // ---- the 1989 inks -----------------------------------------------------------------------
 export const INK = {
   black: "#1d1a17", red: "#b3261e", blue: "#1f4e8c", green: "#2f6b34", brown: "#6b4423",
-  graphite: "#46464e", grey: "#555555", core: "#3d3d3d", paper: "#efe6d0",
+  graphite: "#46464e", grey: "#555555", core: "#3d3d3d", paper: "#efe6d0", badge: "#fffaf0",
 };
 
 // ---- shapes (64x64 viewBox) ----------------------------------------------------------------
@@ -94,11 +94,11 @@ const SHAPES = {
 // ---- the badge: every pack pictogram is the same disc, rim and line weight; the group says the colour -----
 // (map rework 2026-11-22, "clean nice designed icons for each type of place"). Muted print inks, no neon.
 const GROUP_FILL = {
-  civic: "#3e4a59", money: "#86651c", shop: "#2f6b34", food: "#a4561f", law: "#1f3a6e", health: "#b3261e",
-  travel: "#4a6a86", work: "#6b4423", home: "#5d4a73", story: "#8c2a1e", underworld: "#2e2e33",
+  civic: "#1f9d9a", money: "#e0a00c", shop: "#2fa04a", food: "#ec7a1f", law: "#2d4fd0", health: "#e0352f",
+  travel: "#3a9bd9", work: "#b87a34", home: "#8a5fd0", story: "#d0388c", underworld: "#6b5b8a",
 };
-const BADGE_STROKE = 1.55;
-const BADGE_SCALE = 0.6;
+const BADGE_STROKE = 1.4;
+const BADGE_SCALE = 0.72;
 // Kind -> [glyph, group]. Kinds sharing a glyph differ by group colour (a farm supply shop and a wheat field).
 const KIND_BADGE = {
   Bank: ["coin", "money"], Atm: ["atm", "money"], PoliceStation: ["star", "law"], PoliceArmoury: ["shield", "law"], Range: ["target", "law"],
@@ -116,10 +116,12 @@ const KIND_BADGE = {
 };
 function badge(glyph, group) {
   STROKE = BADGE_STROKE;
-  const inner = SHAPES[glyph](INK.paper);
+  const inner = SHAPES[glyph](INK.badge);
   STROKE = 1;
-  return `<circle cx="32" cy="32" r="29" fill="${GROUP_FILL[group]}" stroke="${INK.black}" stroke-width="2.6"/>`
-    + `<circle cx="32" cy="32" r="25.4" fill="none" stroke="${INK.paper}" stroke-width="1.1" opacity="0.5"/>`
+  // A light halo outside a dark rim: the disc pops on the grey map and on the yellow roads (2026-11-22, "near-black dots").
+  return `<circle cx="32" cy="32" r="31" fill="#fffaf0"/>`
+    + `<circle cx="32" cy="32" r="28.6" fill="${INK.black}"/>`
+    + `<circle cx="32" cy="32" r="26.4" fill="${GROUP_FILL[group]}"/>`
     + `<g transform="translate(32 32) scale(${BADGE_SCALE}) translate(-32 -32)">${inner}</g>`;
 }
 
@@ -267,7 +269,7 @@ async function contact(side, a) {
   const out = join(ROOT, "tmp", "map", `icons-${side}.png`);
   mkdirSync(dirname(out), { recursive: true });
   const art = await sharp(a.data, { raw: { width: a.size, height: a.size, channels: 4 } }).png().toBuffer();
-  const flat = await sharp({ create: { width: a.size, height: a.size, channels: 4, background: INK.paper } }).composite([{ input: art }]).png().toBuffer();
+  const flat = await sharp({ create: { width: a.size, height: a.size, channels: 4, background: "#9a9a9a" } }).composite([{ input: art }]).png().toBuffer();
   await sharp(flat).resize(a.size * 2, a.size * 2, { kernel: "nearest" }).png().toFile(out);
   return out;
 }
