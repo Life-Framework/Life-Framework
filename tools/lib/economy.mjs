@@ -5,7 +5,7 @@
 // merge `pack check` and `pack explain` use (tools/pack/layers.mjs); nothing here parses a .conf itself.
 //
 // A few numbers live in script, not in a config, and are read from the script text: the opening bank
-// (LF_SpawnLogic.m_iStartingBank), the parcel and fuel run pay (LF_CivilianJob.PAY_PARCEL / PAY_FUEL), the driving
+// (LF_SpawnLogic.m_iStartingBank, or a pack's LF_CharacterConfig.m_iStartingBank over it), the parcel and fuel run pay (LF_CivilianJob.PAY_PARCEL / PAY_FUEL), the driving
 // licence fee (LF_LicencesConfig.DEFAULT_DRIVER_LICENCE_FEE) and the built-in medic rungs. The taxi is paid its fare
 // (LF_TaxiFares.conf and the owner's taxiFares, through the LF_TaxiFare.PriceFor rule) for an assumed trip length.
 // A run's length is not in any file either, so the hourly figure uses RUN_MINUTES, an assumption the report prints.
@@ -115,7 +115,9 @@ export function buildReport(root, opts = {}) {
   const spawnText = read(join(addonsDir, "LifeFramework", "Scripts", "Game", "Feature", "Character", "Spawning", "LF_SpawnLogic.c"));
   const medicText = read(join(addonsDir, "LifeFramework", "Scripts", "Game", "Feature", "Medic", "LF_MedicRanks.c"));
   const jobText = read(join(addonsDir, "LifeFramework", "Scripts", "Game", "Feature", "Jobs", "LF_CivilianJob.c"));
-  const startBank = attributeDefault(spawnText, "m_iStartingBank");
+  // The opening bank: a pack's LF_CharacterConfig.m_iStartingBank (the Everon overlay) over the game mode's script default.
+  const packBank = scalars(core("Account", "LF_Characters.conf"), null, loaded.overlays, "LF_CharacterConfig").m_iStartingBank?.value;
+  const startBank = typeof packBank === "number" && packBank >= 0 ? packBank : attributeDefault(spawnText, "m_iStartingBank");
   const jobs = scalars(core("Jobs", "LF_Jobs.conf"), owner?.json?.jobs, loaded.overlays, "LF_JobsConfig", {
     m_fPoliceDutyPayPerSecond: "policeDutyPayPerSecond", m_fMedicDutyPayPerSecond: "medicDutyPayPerSecond", m_iBenefitAmount: "benefitAmount", m_fBenefitCooldownSeconds: "benefitCooldownSeconds",
   });
