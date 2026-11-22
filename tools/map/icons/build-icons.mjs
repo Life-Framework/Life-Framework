@@ -33,6 +33,7 @@ const KIND_INK = {
   Bank: "black", PoliceStation: "red", PoliceArmoury: "red", HospitalSite: "red", Workplace: "green", Fence: "graphite",
   Fuel: "black", Payphone: "black", Quarry: "brown", Fish: "blue", Story: "red", Taxi: "blue", Harbour: "blue",
   Farm: "green", Shop: "black", TownHall: "black", Church: "black", Pub: "black", Fire: "red", Depot: "brown",
+  IdCard: "black", Atm: "black", Garage: "blue", Bed: "black", Sawmill: "green", Scrap: "brown",
 };
 
 // ---- shapes (64x64 viewBox) ----------------------------------------------------------------
@@ -62,6 +63,12 @@ const SHAPES = {
   church: (k) => `<path d="M12 56V32L32 22L52 32V56Z" ${S(k)}/><path d="M32 4V24M24 11H40" ${S(k)}/>`,
   mug: (k) => `<path d="M14 14H44V50Q44 56 38 56H20Q14 56 14 50Z" ${S(k)}/><path d="M44 22H52Q56 22 56 28V34Q56 40 50 40H44" ${S(k)}/><path d="M22 24V46M30 24V46" ${S(k, 3)}/>`,
   flame: (k) => `<path d="M32 4Q42 20 48 30Q54 42 44 54Q38 60 32 60Q22 60 16 52Q10 42 20 30Q22 38 28 38Q24 22 32 4Z" fill="${k}"/>`,
+  idcard: (k) => `<rect x="6" y="14" width="52" height="36" rx="4" ${S(k)}/><circle cx="21" cy="27" r="5" ${S(k, 3)}/><path d="M13 42Q21 33 29 42" ${S(k, 3)}/><path d="M37 25H52M37 33H52M37 41H47" ${S(k, 3)}/>`,
+  atm: (k) => `<rect x="10" y="8" width="44" height="30" rx="3" ${S(k)}/><rect x="16" y="14" width="32" height="12" fill="${k}"/><path d="M8 46H56" ${S(k, 5)}/><path d="M26 38V56H38V38" ${S(k, 3)}/>`,
+  garage: (k) => `<path d="M8 54V24L32 8L56 24V54" ${S(k)}/><path d="M18 54V32H46V54M18 40H46M18 47H46" ${S(k, 3)}/>`,
+  bed: (k) => `<path d="M8 18V54M8 44H56V54M8 34H56V44" ${S(k)}/><rect x="14" y="25" width="14" height="9" fill="${k}"/>`,
+  sawmill: (k) => `<path d="M8 22L13 12L18 22L23 12L28 22L33 12L38 22L43 12L48 22L53 12L56 22" ${S(k, 3)}/><path d="M8 42Q8 30 20 30H46Q56 30 56 42Q56 54 46 54H20Q8 54 8 42Z" ${S(k)}/><circle cx="46" cy="42" r="6" ${S(k, 3)}/>`,
+  scrap: (k) => `<path d="M12 22H52L48 56H16Z" ${S(k)}/><path d="M8 22H56M26 22V12H38V22M24 32V48M32 32V48M40 32V48" ${S(k, 3)}/>`,
   crate: (k) => `<rect x="10" y="14" width="44" height="40" ${S(k)}/><path d="M10 14L54 54M54 14L10 54" ${S(k, 3)}/>`,
 };
 const CAT_SHAPE = { civic: "hall", shop: "bag", work: "hammerpick", law: "star", health: "clinic", travel: "taxi", story: "flag", underworld: "diamond" };
@@ -69,6 +76,7 @@ const KIND_SHAPE = {
   Bank: "coin", PoliceStation: "star", PoliceArmoury: "shield", HospitalSite: "clinic", Workplace: "hammerpick", Fence: "diamond",
   Fuel: "pump", Payphone: "handset", Quarry: "hammerpick", Fish: "fish", Story: "flag", Taxi: "taxi", Harbour: "anchor",
   Farm: "barn", Shop: "bag", TownHall: "hall", Church: "church", Pub: "mug", Fire: "flame", Depot: "crate",
+  IdCard: "idcard", Atm: "atm", Garage: "garage", Bed: "bed", Sawmill: "sawmill", Scrap: "scrap",
 };
 
 // Hand marks: graphite wobble, no fill. Pins: a coloured teardrop with an ink outline.

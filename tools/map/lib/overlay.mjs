@@ -33,9 +33,18 @@ const fixtureAreaOf = (b) => {
   return a;
 };
 
+// A listed overlay LF_MapPois_X.conf owns the folder LF_MapPois_X/ beside it (LF_ConfigOverlay.LoadFolderOverlays): its files
+// load right after it, in path order.
 const confFiles = (root, dir, prefix) => {
   const d = join(root, dir);
-  return existsSync(d) ? readdirSync(d).filter((n) => n.startsWith(prefix) && n.endsWith(".conf")).sort().map((n) => join(d, n)) : [];
+  if (!existsSync(d)) return [];
+  const out = [];
+  for (const n of readdirSync(d).filter((x) => x.startsWith(prefix) && x.endsWith(".conf")).sort()) {
+    out.push(join(d, n));
+    const folder = join(d, n.slice(0, -5));
+    if (existsSync(folder)) out.push(...readdirSync(folder).filter((x) => x.endsWith(".conf")).sort().map((x) => join(folder, x)));
+  }
+  return out;
 };
 
 // One row of LF_MapAreas.conf (class LF_MapAreaRow, members as the game reads them) as the renderer draws it. Points

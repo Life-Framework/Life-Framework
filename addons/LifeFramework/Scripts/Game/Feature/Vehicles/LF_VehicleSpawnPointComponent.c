@@ -36,6 +36,9 @@ class LF_VehicleSpawnPointComponent : ScriptComponent
 	[Attribute("0 0 0", UIWidgets.Auto, desc: "Angles (yaw pitch roll, degrees) of a vehicle placed on these pads.")]
 	protected vector m_vAngles;
 
+	//! Metres from a vehicle's origin to the far end of its body (half an M923 truck, rounded up).
+	static const float PAD_VEHICLE_REACH = 5;
+
 	protected static ref array<LF_VehicleSpawnPointComponent> s_aAll = {};
 	protected bool m_bRegistered;
 
@@ -132,6 +135,16 @@ class LF_VehicleSpawnPointComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A vehicle the sphere query returns takes the pad only when its origin is close enough for its
+	//! body to reach the pad. The query tests bounds, and a vehicle teleported while asleep (the cash
+	//! van between its stops) keeps bounds spanning its whole route: 36 m and 211 m away, it filled
+	//! the island lot's pads and no second car could be bought.
+	static bool IsNearPad(vector vehicleOrigin, vector slot, float radius)
+	{
+		return vector.Distance(vehicleOrigin, slot) <= radius + PAD_VEHICLE_REACH;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool TryNextOrigin(out vector origin)
 	{
 		origin = "0 0 0";
@@ -147,14 +160,28 @@ class LF_VehicleSpawnPointComponent : ScriptComponent
 		{
 			float steps = i;
 			vector slot = base + m_vSlotStep * steps;
-			array<IEntity> nearby = LF_Utils.GetNearbyVehicles(slot, LF_GarageConfig.PadOccupiedRadius());
-			if (!nearby || nearby.Count() == 0)
+			float radius = LF_GarageConfig.PadOccupiedRadius();
+			array<IEntity> nearby = LF_Utils.GetNearbyVehicles(slot, radius);
+			IEntity blocker;
+			if (nearby)
+			{
+				foreach (IEntity vehicle : nearby)
+				{
+					if (vehicle && IsNearPad(vehicle.GetOrigin(), slot, radius))
+					{
+						blocker = vehicle;
+						break;
+					}
+				}
+			}
+
+			if (!blocker)
 			{
 				origin = slot;
 				return true;
 			}
 
-			LF_Debug.Log("Vehicle", string.Format("pad %1 slot %2 at %3 is taken by %4 at %5", m_sShopId, i, slot, LF_Utils.GetPrefabName(nearby.Get(0)), nearby.Get(0).GetOrigin()));
+			LF_Debug.Log("Vehicle", string.Format("pad %1 slot %2 at %3 is taken by %4 at %5", m_sShopId, i, slot, LF_Utils.GetPrefabName(blocker), blocker.GetOrigin()));
 		}
 
 		return false;

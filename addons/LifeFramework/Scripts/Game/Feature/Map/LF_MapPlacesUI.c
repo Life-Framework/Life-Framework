@@ -244,17 +244,22 @@ class LF_MapPlaceCard
 }
 
 //------------------------------------------------------------------------------------------------
-//! Which icon quad a POI draws. The pack's imageset (override PackImageSet in a modded copy) is tried
+//! Which icon quad a POI draws. The pack's imageset (m_IconSet of its POI overlay) is tried
 //! first, the core placeholders second.
 class LF_MapPlaceIcons
 {
 	static const ResourceName CORE_IMAGESET = "{E8ABC6949B537023}UI/Imagesets/LF_MapIcons.imageset";
 
 	//------------------------------------------------------------------------------------------------
-	//! The pack's icon set, or empty. A pack mods this to return its own imageset.
+	//! The pack's icon set (the POI table's m_IconSet, set by a pack overlay), or empty: the neutral category
+	//! glyphs only. Without it no 1989 pictogram ever drew and every place was a generic glyph.
 	static ResourceName PackImageSet()
 	{
-		return "";
+		LF_MapPoiConfig config = LF_MapPoiConfig.Get();
+		if (!config)
+			return "";
+
+		return config.m_IconSet;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -346,6 +351,9 @@ class LF_MapIconState : Managed
 	//! built once and never edited, so the same object in the same state needs no restyle at all.
 	LF_MapPoi m_Poi;
 	LF_EMapPoiState m_ePoiState;
+	//! The name written beside the icon (empty: none), and whether one was ever written.
+	string m_sLabel;
+	bool m_bLabelSet;
 
 	//------------------------------------------------------------------------------------------------
 	//! True when the icon already shows `poi` in `state`.
@@ -371,6 +379,13 @@ class LF_MapIconState : Managed
 	bool CountChanged(int count)
 	{
 		return count != m_iCount;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the label text must be written. The first style always writes (the layout starts visible and empty).
+	bool LabelChanged(string text)
+	{
+		return text != m_sLabel || !m_bLabelSet;
 	}
 }
 
@@ -432,11 +447,17 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 {
 	static const string FEATURE = "MapPlaces";
 	static const ResourceName POI_LAYOUT = "{CB59D49AE5564BCD}UI/Layouts/Map/LF_MapPoi.layout";
+	static const ResourceName LABEL_LAYOUT = "{4D2B9E6A1C73F808}UI/Layouts/Map/LF_MapPoiLabel.layout";
 	static const ResourceName CARD_LAYOUT = "{CC650B4F4E7A5A77}UI/Layouts/Map/LF_MapPoiCard.layout";
 	protected static const float CULL_MARGIN = 40;	// lf-fixed: reference units off screen before an icon is hidden
 	protected static const float CARD_GAP = 16;	// lf-fixed: the card sits this far from its icon
 	protected static const int HIDE_DELAY_MS = 200;	// lf-fixed: the pointer may cross from the icon to the card
 	protected static const float FADED_ALPHA = 0.45;	// lf-fixed: heard of, not visited
+	//! A place's name is written beside its icon from this zoom on (a view about 400 m wide): closer in, the names
+	//! fit between the icons; further out, the stamps and bare icons keep the map readable.
+	protected static const float LABEL_ZOOM = 5;	// lf-fixed: map readability, not a server tunable
+	protected static const float LABEL_GAP = 46;	// lf-fixed: reference units from the icon centre to the start of its name (the icon is drawn 64 wide)
+	protected static const float LABEL_DROP = 4;	// lf-fixed: reference units the name sits below the icon centre, level with the glyph
 	protected static const string PROBE_PARAM = "lfMapPlacesProbe";
 
 	protected Widget m_wLayer;
@@ -448,6 +469,8 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	protected ref array<bool> m_aShown = {};
 	protected ref array<ImageWidget> m_aIcons = {};	// the "Icon" and "Count" widgets of each group widget, found once (#2397)
 	protected ref array<TextWidget> m_aCounts = {};
+	protected ref array<TextWidget> m_aLabels = {};	// one name widget per group widget, beside its icon (a sibling in the layer, not a child: a child took the icon's width)
+	protected ref array<bool> m_aLabelOn = {};	// whether the name has text to show (it also follows the icon off screen)
 	protected ref array<ref LF_MapIconState> m_aStates = {};	// what each icon shows now
 	protected ref map<string, ref LF_MapIconPick> m_mPicks = new map<string, ref LF_MapIconPick>();	// candidate list to the quad it resolved to
 	protected ref LF_MapPoiHandler m_CardHandler;
@@ -574,6 +597,8 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		m_aShown.Clear();
 		m_aIcons.Clear();
 		m_aCounts.Clear();
+		m_aLabels.Clear();
+		m_aLabelOn.Clear();
 		m_aStates.Clear();
 		m_mPicks.Clear();
 		m_CardHandler = null;
@@ -642,6 +667,15 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			m_aShown.Insert(true);
 			m_aIcons.Insert(ImageWidget.Cast(created.FindAnyWidget("Icon")));
 			m_aCounts.Insert(TextWidget.Cast(created.FindAnyWidget("Count")));
+			TextWidget label = TextWidget.Cast(workspace.CreateWidgets(LABEL_LAYOUT, m_wLayer));
+			if (label)
+			{
+				FrameSlot.SetAlignment(label, 0, 0.5);
+				label.SetVisible(false);
+			}
+
+			m_aLabels.Insert(label);
+			m_aLabelOn.Insert(false);
 			m_aStates.Insert(new LF_MapIconState());
 		}
 
@@ -671,6 +705,9 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		LF_MapPoi place;
 		if (group.IsSingle())
 			place = m_aPois[group.m_aMembers[0]];
+
+		// The name depends on the zoom as well as the place, so it is settled before the same-place early out.
+		StyleLabel(i, group, state);
 
 		// The solo zooms rebuild the same single places over and over: nothing to write.
 		if (state.SamePlace(place, group.m_eState))
@@ -721,6 +758,29 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The name of a single place beside its icon, from LABEL_ZOOM on. A stamp, a pencil mark (a hidden place the
+	//! player only suspects) and a far view carry none. Written only when it changes.
+	protected void StyleLabel(int i, notnull LF_MapClusterGroup group, notnull LF_MapIconState state)
+	{
+		TextWidget label = m_aLabels[i];
+		if (!label)
+			return;
+
+		string text;
+		if (group.IsSingle() && group.m_eState != LF_EMapPoiState.PENCIL && m_fZoom >= LABEL_ZOOM)
+			text = LF_Terms.Expand(WidgetManager.Translate(m_aPois[group.m_aMembers[0]].m_sLabel));
+
+		if (!state.LabelChanged(text))
+			return;
+
+		label.SetText(text);
+		m_aLabelOn[i] = !text.IsEmpty();
+		label.SetVisible(m_aLabelOn[i] && m_aShown[i]);
+		state.m_sLabel = text;
+		state.m_bLabelSet = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The quads group i tries, in order: the kind's own, the row's icon, the category's; a pencil cross for a
 	//! place only suspected; a stamp for a cluster. A modded layer (the heard-of "?") overrides this, not Style.
 	protected void IconCandidates(notnull LF_MapClusterGroup group, notnull array<string> candidates)
@@ -767,6 +827,8 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 
 		m_aShown[i] = shown;
 		m_aWidgets[i].SetVisible(shown);
+		if (m_aLabels[i])
+			m_aLabels[i].SetVisible(shown && m_aLabelOn[i]);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -791,7 +853,11 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			bool onScreen = x > -CULL_MARGIN && y > -CULL_MARGIN && x < width + CULL_MARGIN && y < height + CULL_MARGIN;
 			SetShown(i, onScreen);
 			if (onScreen)
+			{
 				FrameSlot.SetPos(m_aWidgets[i], x, y);
+				if (m_aLabels[i])
+					FrameSlot.SetPos(m_aLabels[i], x + LABEL_GAP, y + LABEL_DROP);
+			}
 		}
 
 		if (m_iCardGroup >= 0)
@@ -840,7 +906,7 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			return WidgetManager.Translate("#LF-MapPlaces_ClusterTitle", group.m_aMembers.Count().ToString());
 
 		LF_MapPoi poi = m_aPois[group.m_aMembers[0]];
-		return LF_MapPlaceCard.Title(WidgetManager.Translate(poi.m_sLabel), poi.m_sTown);
+		return LF_MapPlaceCard.Title(LF_Terms.Expand(WidgetManager.Translate(poi.m_sLabel)), poi.m_sTown);
 	}
 
 	//------------------------------------------------------------------------------------------------

@@ -1734,6 +1734,11 @@ StringTable {
      Target_en_us "Not without a driving licence. The town hall desk issues it for %1."
      Comment "Overrides the core row: the flagship's car lot refusal names the town hall licence desk (#3151). %1 is the fee."
     }
+    CustomStringTableItem "{38CCD9128665A6C3}" {
+     Id "LF-MapPoi_Atm"
+     Target_en_us "ATM"
+     Comment "Map POI name (rc-map-places): a cash machine."
+    }
     CustomStringTableItem "{EFE3196881518A64}" {
      Id "LF-MapPoi_Bakery"
      Target_en_us "Bakery"
@@ -1754,6 +1759,21 @@ StringTable {
      Target_en_us "Cafe"
      Comment "Map POI kind name (#2247): the cafe."
     }
+    CustomStringTableItem "{D14A7DCB325A760B}" {
+     Id "LF-MapPoi_CarLot"
+     Target_en_us "Car lot"
+     Comment "Map POI name (rc-map-places): the vehicle lot."
+    }
+    CustomStringTableItem "{8F93CAEF82413C6C}" {
+     Id "LF-MapPoi_Church"
+     Target_en_us "Church"
+     Comment "Map POI name (rc-map-places): a church or chapel."
+    }
+    CustomStringTableItem "{4F2A7F2FF80947EE}" {
+     Id "LF-MapPoi_Clerk"
+     Target_en_us "Registry clerk: ID cards"
+     Comment "Map POI name (rc-map-places): the town hall clerk who issues ID cards and licences; the arrival errand sends a new player here."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0C}" {
      Id "LF-MapPoi_ClothingStore"
      Target_en_us "Clothing store"
@@ -1764,10 +1784,20 @@ StringTable {
      Target_en_us "Contested ground"
      Comment "Map POI kind name (#3552): a contested site (LF_Places kind contested-site), held ground an organisation can take. Public story pin, so a newcomer finds the farm compound, the hilltop mast and the quarry."
     }
+    CustomStringTableItem "{E8E670724A0D9DCD}" {
+     Id "LF-MapPoi_Farm"
+     Target_en_us "Farm"
+     Comment "Map POI name (rc-map-places): the working farm compound."
+    }
     CustomStringTableItem "{BFF48978815D4687}" {
      Id "LF-MapPoi_FarmSupply"
      Target_en_us "Farm supply"
      Comment "Map POI name (#3631): the Saint-Philippe farm supply counter by the farm barn."
+    }
+    CustomStringTableItem "{68E6910C4435942E}" {
+     Id "LF-MapPoi_FarmYard"
+     Target_en_us "Farm yard"
+     Comment "Map POI name (rc-map-places): the state farm yard on the Montignac road."
     }
     CustomStringTableItem "{CD045ABAD59FC6B4}" {
      Id "LF-MapPoi_Fence"
@@ -1794,6 +1824,11 @@ StringTable {
      Target_en_us "Furniture store"
      Comment "Map POI name (#3515): the furniture store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
     }
+    CustomStringTableItem "{92ECFCCAD137E0E6}" {
+     Id "LF-MapPoi_Garage"
+     Target_en_us "Garage"
+     Comment "Map POI name (rc-map-places): the vehicle garage."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0B}" {
      Id "LF-MapPoi_GeneralStore"
      Target_en_us "General store"
@@ -1804,6 +1839,11 @@ StringTable {
      Target_en_us "Gun store"
      Comment "Map POI kind name (#2247): the gun store counter."
     }
+    CustomStringTableItem "{6771D9733D533675}" {
+     Id "LF-MapPoi_Harbour"
+     Target_en_us "Harbour"
+     Comment "Map POI name (rc-map-places): the harbour master."
+    }
     CustomStringTableItem "{521427D84861A261}" {
      Id "LF-MapPoi_Hardware"
      Target_en_us "Hardware store"
@@ -1813,6 +1853,16 @@ StringTable {
      Id "LF-MapPoi_Hostel"
      Target_en_us "Hostel"
      Comment "Map POI kind name (#2247): the hostel."
+    }
+    CustomStringTableItem "{0C04F4D20CD6B427}" {
+     Id "LF-MapPoi_LoggingYard"
+     Target_en_us "Logging yard"
+     Comment "Map POI name (rc-map-places): the chop yard where felled trees are cut."
+    }
+    CustomStringTableItem "{30CE8FBF45D8F1D6}" {
+     Id "LF-MapPoi_Market"
+     Target_en_us "Market"
+     Comment "Map POI name (rc-map-places): the market stalls."
     }
     CustomStringTableItem "{069AD0D1539E7BB7}" {
      Id "LF-MapPoi_Mine"
@@ -1829,10 +1879,20 @@ StringTable {
      Target_en_us "Notice board"
      Comment "Map POI kind name (#2247): the town board."
     }
+    CustomStringTableItem "{E2DC8CAD0638769B}" {
+     Id "LF-MapPoi_Orchard"
+     Target_en_us "Orchard"
+     Comment "Map POI name (rc-map-places): the orchard to pick fruit."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F12}" {
      Id "LF-MapPoi_ParcelDepot"
      Target_en_us "Parcel depot"
      Comment "Map POI kind name (#2247): the parcel depot."
+    }
+    CustomStringTableItem "{33F4AE5E5358DA93}" {
+     Id "LF-MapPoi_Payphone"
+     Target_en_us "Payphone"
+     Comment "Map POI name (rc-map-places): a payphone booth."
     }
     CustomStringTableItem "{E880E2EC6AF04CEE}" {
      Id "LF-MapPoi_Pharmacy"
@@ -1843,6 +1903,21 @@ StringTable {
      Id "LF-MapPoi_Plant"
      Target_en_us "Plant"
      Comment "Map POI kind name (#3241): a processing plant, a smelter, refinery or cement works (LF_Places kind plant)."
+    }
+    CustomStringTableItem "{D1EC93AD7C6358F0}" {
+     Id "LF-MapPoi_Range"
+     Target_en_us "Shooting range"
+     Comment "Map POI name (rc-map-places): the shooting range lane."
+    }
+    CustomStringTableItem "{B3DDFC88BE56B87F}" {
+     Id "LF-MapPoi_Sawmill"
+     Target_en_us "Sawmill"
+     Comment "Map POI name (rc-map-places): the Everon sawmill job site, a slot row of Workplace."
+    }
+    CustomStringTableItem "{01A45EEE36CDB111}" {
+     Id "LF-MapPoi_Scrapyard"
+     Target_en_us "Scrapyard"
+     Comment "Map POI name (rc-map-places): the scrap recycler."
     }
     CustomStringTableItem "{1FA54D4B3E7D5BC1}" {
      Id "LF-MapPoi_SeedFeed"
@@ -1864,15 +1939,35 @@ StringTable {
      Target_en_us "Taxi rank"
      Comment "Map POI kind name (#2247): the taxi rank."
     }
+    CustomStringTableItem "{C6BCDC83E709CDBF}" {
+     Id "LF-MapPoi_TimberMerchant"
+     Target_en_us "Timber merchant"
+     Comment "Map POI name (rc-map-places): the timber counter that buys lumber."
+    }
+    CustomStringTableItem "{D0AE079FE150A09D}" {
+     Id "LF-MapPoi_TimberYard"
+     Target_en_us "Timber yard"
+     Comment "Map POI name (rc-map-places): the Saint-Philippe timber yard job site, a slot row of Workplace."
+    }
     CustomStringTableItem "{5A7C1E04B93D6F0A}" {
      Id "LF-MapPoi_TownHall"
      Target_en_us "Town hall"
      Comment "Map POI kind name (#2247): the town hall, where the clerk sits."
     }
+    CustomStringTableItem "{F6A138480E019E89}" {
+     Id "LF-MapPoi_WheatField"
+     Target_en_us "Wheat field"
+     Comment "Map POI name (rc-map-places): the wheat field to harvest."
+    }
     CustomStringTableItem "{7C1E5A2D9B3F4A06}" {
      Id "LF-MapPoi_Wholesale"
      Target_en_us "Wholesale warehouse"
      Comment "Map POI name (#3273): the harbour wholesale warehouse counter."
+    }
+    CustomStringTableItem "{46629B6186992B7D}" {
+     Id "LF-MapPoi_Workplace"
+     Target_en_us "Job site"
+     Comment "Pack override of the core POI name (rc-map-places): a job site reads as a place to work, not a generic workplace."
     }
     CustomStringTableItem "{5E2A7C91B0D43F61}" {
      Id "LF-Market_BuyerFull"
