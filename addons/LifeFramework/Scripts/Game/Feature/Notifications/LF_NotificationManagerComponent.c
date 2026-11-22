@@ -25,6 +25,8 @@ class LF_NotificationConfig
 	string m_sIconPath;
 	Color m_Color;
 	bool m_bShowSound;
+	//! A toast with a slot replaces the one still showing in that slot; empty stacks as usual.
+	string m_sSlot;
 	
 	//------------------------------------------------------------------------------------------------
 	void LF_NotificationConfig(string title, string message, float duration = 5.0, LF_ENotificationType type = LF_ENotificationType.INFO)
@@ -91,6 +93,13 @@ class LF_NotificationManagerComponentClass : ScriptComponentClass
 class LF_NotificationManagerComponent : ScriptComponent
 {
 	protected static LF_NotificationManagerComponent s_Instance;
+
+	//! The slot of the note for the step a player is on (an activity or quest step). A new step's note
+	//! replaces the last one, so only the current step shows (first-2h review B4).
+	static const string SLOT_STEP = "step";
+
+	//! Client: slot -> the toast showing in it.
+	protected ref map<string, Widget> m_mSlotToasts = new map<string, Widget>();
 	
 	//------------------------------------------------------------------------------------------------
 	static LF_NotificationManagerComponent GetInstance()
@@ -162,7 +171,7 @@ class LF_NotificationManagerComponent : ScriptComponent
 		// Owner RPC on the target's own controller: only that client receives the payload.
 		// The old Broadcast-and-filter sent every player's private toast to every client.
 		LF_Debug.Log("Notify", string.Format("notify player %1: %2", playerId, config.m_sMessage));
-		controller.LF_DeliverNotification(config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sMessageArg);
+		controller.LF_DeliverNotification(config.m_sTitle, config.m_sMessage, config.m_fDuration, config.m_eType, config.m_sMessageArg, config.m_sSlot);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -267,7 +276,7 @@ class LF_NotificationManagerComponent : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	//! Send notification to specific player (static)
-	static void NotifyPlayer(int playerId, string title, string message, float duration = 5.0, LF_ENotificationType type = LF_ENotificationType.INFO, string messageArg = "")
+	static void NotifyPlayer(int playerId, string title, string message, float duration = 5.0, LF_ENotificationType type = LF_ENotificationType.INFO, string messageArg = "", string slot = "")
 	{
 		LF_NotificationManagerComponent manager = GetInstance();
 		if (!manager)
@@ -279,6 +288,7 @@ class LF_NotificationManagerComponent : ScriptComponent
 		
 		LF_NotificationConfig config = new LF_NotificationConfig(title, message, duration, type);
 		config.m_sMessageArg = messageArg;
+		config.m_sSlot = slot;
 		manager.SendToPlayer(playerId, config);
 	}
 	
@@ -354,8 +364,20 @@ class LF_NotificationManagerComponent : ScriptComponent
 	
 	//------------------------------------------------------------------------------------------------
 	//! Show notification toast on this machine. Called by the owner-RPC on the local controller.
-	void ShowNotificationToast(string title, string message, float duration, LF_ENotificationType type, string messageArg = "")
+	void ShowNotificationToast(string title, string message, float duration, LF_ENotificationType type, string messageArg = "", string slot = "")
 	{
+		// A slotted toast takes the place of the one still showing in its slot (before it is created,
+		// so it stacks where the old one stood).
+		if (!slot.IsEmpty())
+		{
+			Widget previous = m_mSlotToasts.Get(slot);
+			if (previous && previous.GetParent())
+			{
+				previous.RemoveFromHierarchy();
+				LF_Debug.Log("Notify", "toast in slot " + slot + " replaced");
+			}
+		}
+
 		// A toast with no title gets the one for its type, as a localization key translated below.
 		string displayTitle = title;
 		if (title.IsEmpty())
@@ -461,6 +483,8 @@ class LF_NotificationManagerComponent : ScriptComponent
 
 		// A full-screen sheet (the personal file) holds toasts: this one waits hidden until it closes.
 		LF_NotificationHold.Track(toastWidget);
+		if (!slot.IsEmpty())
+			m_mSlotToasts.Set(slot, toastWidget);
 
 		
 		// Get handler and show

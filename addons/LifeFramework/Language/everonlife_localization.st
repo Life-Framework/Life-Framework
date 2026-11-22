@@ -12798,9 +12798,14 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
     }
+    CustomStringTableItem "{0A0EEB9828847F4A}" {
+     Id "LF-Process_RunningLeft"
+     Target_en_us "%1: %2 left"
+     Comment "Action row on a timed machine while it runs (first-2h review B10). %1 = the machine action (Smelt iron ore), %2 = time left as m:ss."
+    }
     CustomStringTableItem "{9D4E21B7C0A35F86}" {
      Id "LF-Process_Started"
-     Target_en_us "Running. The parts come out here in %1 seconds."
+     Target_en_us "Running. The parts come out here in %1 seconds; the time left shows on the machine, so get on with something else meanwhile."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
@@ -15848,6 +15853,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1, right here"
      Comment "Where a town board card's place is when it stands beside the board. %1 place name."
     }
+    CustomStringTableItem "{527C8125A5DCF53B}" {
+     Id "LF-Trader_NotBuyingNow"
+     Target_en_us "Not buying a single one right now"
+     Comment "Why a Sell 1 row is greyed: the buyer is full, or sells only by the lot (Sell all still works)."
+    }
+    CustomStringTableItem "{308E50CB824EB64C}" {
+     Id "LF-Trader_NothingToSell"
+     Target_en_us "You carry nothing this buyer takes"
+     Comment "Why the sell-all row is greyed: no carried good is on this buyer's list."
+    }
     CustomStringTableItem "{3C7E19B2D54A806F}" {
      Id "LF-Trader_SaleRefused"
      Target_en_us "The trader won't take that."
@@ -15857,6 +15872,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Trader_SaleRefused_Title"
      Target_en_us "No sale"
      Comment "Title of the refused-sale toast."
+    }
+    CustomStringTableItem "{683D10EE9EDCCDF2}" {
+     Id "LF-Trader_SellAll"
+     Target_en_us "Sell all goods (%1): {currency:sym}%2"
+     Comment "Trader row that sells everything the buyer takes. %1 = units, %2 = the total price."
+    }
+    CustomStringTableItem "{73CDC5E30D79E666}" {
+     Id "LF-Trader_SellAllAsk"
+     Target_en_us "Sell all goods (%1)"
+     Comment "Sell-all row before the prices arrived. %1 = units."
+    }
+    CustomStringTableItem "{544BAF6FFDCEE018}" {
+     Id "LF-Trader_SellNothing"
+     Target_en_us "Sell goods"
+     Comment "Sell-all row when the player carries nothing this buyer takes (greyed)."
+    }
+    CustomStringTableItem "{114E334DB022DD7C}" {
+     Id "LF-Trader_SellOne"
+     Target_en_us "Sell 1 %1: {currency:sym}%2"
+     Comment "Trader sell row for one item. %1 = the good, %2 = the price the buyer pays now."
+    }
+    CustomStringTableItem "{C5D743750A8BBD92}" {
+     Id "LF-Trader_SellOneAsk"
+     Target_en_us "Sell 1 %1"
+     Comment "Trader sell row for one item before the price arrived. %1 = the good."
+    }
+    CustomStringTableItem "{0C4F96543148B6FF}" {
+     Id "LF-Trader_SellRowName"
+     Target_en_us "Sell"
+     Comment "Fallback name of a trader sell row; the row shows its own good and price."
     }
     CustomStringTableItem "{B976D15E0E9B0B4B}" {
      Id "LF-Training_Course_detective_course"

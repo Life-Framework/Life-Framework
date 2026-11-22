@@ -38,6 +38,23 @@ class LF_BuyerDemandBook
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: what `buyer` would pay for `units` of `good` at `nowUnix`, without booking anything (the
+	//! trader's sell rows show it). Works on a copy of the purse. \return 0 with no row or no room.
+	static int QuoteAt(string buyer, ResourceName good, int units, int nowUnix)
+	{
+		LF_BuyerDemandRow row = FindRow(buyer, good);
+		if (!row)
+			return 0;
+
+		LF_BuyerPurse purse = Snapshot(buyer, good);
+		if (!purse)
+			purse = LF_BuyerPurse.Full(row, nowUnix);
+
+		LF_BuyerDemandSale sale = LF_BuyerDemand.Sell(row, purse, units, nowUnix, LF_BuyerDemandConfig.CurveFor(row));
+		return sale.m_iPayout;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return The lot size of the buyer's row for `good` (#3622), 1 with no row.
 	static int LotOf(string buyer, ResourceName good)
 	{

@@ -30,6 +30,8 @@ GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
     }
    }
   }
+  LF_ProcessRunFxComponent "{AEF721F2A1AB6EFC}" {
+  }
   LF_AmbientEmitterComponent "{F804031051EBA4F5}" {
    m_sSoundSlot "atmo_furnace"
    m_fRadius 35
