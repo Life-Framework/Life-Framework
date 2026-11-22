@@ -20,6 +20,7 @@
 // "FAIL  LF_PlaytestTown.conf: listed header does not close dev tools (m_bLF_DevToolsOff 1)".
 // red-proof: 2026-11-14 (#374), unhide the pack LF_PlaytestTown.conf; observed
 // "FAIL  LF_PlaytestTown.conf: lists the same World as LF_Everon1989.conf (one scenario entry per world)".
+// red-proof: 2026-11-22 (TP-6a), drop one overlay line from the pack LF_PlaytestTown.conf; observed "FAIL  LF_PlaytestTown.conf: does not list the island overlay ...".
 // red-proof: 2026-11-15, set m_bLF_PlaytestHelpersOff 0 in the pack LF_Everon1989.conf; observed
 // "FAIL  LF_Everon1989.conf: listed header leaves the playtest helpers on (m_bLF_PlaytestHelpersOff 1)".
 // Also: the built-in fixture run below plants each fault and asserts it is reported; it
@@ -106,6 +107,42 @@ export function checkWorldOnce(name, text, seen) {
   return [];
 }
 
+// The playtest town loads every island overlay except the ones that name the island's own coordinates, places or
+// water (TP-6a, #4259). Each exception is a pack file name with the reason; a new island overlay is in the town too.
+export const TOWN_EXCLUDED_OVERLAYS = {
+  "LF_MapAreas_Everon1989.conf": "town line and safe square are island coordinates",
+  "LF_Sites.conf": "quarry, farm compound and hilltop mast hideouts are island places",
+  "LF_Coves_Everon1989.conf": "fishing: the town has no water",
+  "LF_Smokehouse_Everon1989.conf": "fishing chain",
+  "LF_SmokehouseCatalogue_Everon1989.conf": "fishing chain",
+  "LF_RaceCourses_Everon1989.conf": "checkpoints are island entities",
+  "LF_Events_Everon1989.conf": "arrival and square-evening scenes walk island waypoints",
+  "LF_Residents_Everon1989.conf": "timetables name the island's saint-philippe.residents place",
+};
+
+const overlaysOf = (text) => {
+  const m = /m_aLF_ConfigOverlays\s*\{([\s\S]*?)\n\s*\}/.exec(text);
+  return m ? [...m[1].matchAll(/"\{([0-9A-Fa-f]{16})\}([^"]+)"/g)].map((x) => ({ guid: x[1].toUpperCase(), path: x[2] })) : [];
+};
+
+// Town header text vs flagship header text -> errors: an island overlay missing from the town (and not excluded),
+// an excluded one the town lists anyway, an exclusion that names no island overlay.
+export function checkTownOverlays(townText, islandText) {
+  const errors = [];
+  const town = new Set(overlaysOf(townText).map((o) => o.guid));
+  const island = overlaysOf(islandText);
+  const seen = new Set();
+  for (const o of island) {
+    const file = o.path.split("/").pop();
+    if (file in TOWN_EXCLUDED_OVERLAYS) {
+      seen.add(file);
+      if (town.has(o.guid)) errors.push(`LF_PlaytestTown.conf: lists ${file}, which is island-only (${TOWN_EXCLUDED_OVERLAYS[file]})`);
+    } else if (!town.has(o.guid)) errors.push(`LF_PlaytestTown.conf: does not list the island overlay ${o.path} (add it, or name it in TOWN_EXCLUDED_OVERLAYS with a reason)`);
+  }
+  for (const file of Object.keys(TOWN_EXCLUDED_OVERLAYS)) if (!seen.has(file)) errors.push(`TOWN_EXCLUDED_OVERLAYS names ${file}, which no island overlay is`);
+  return errors;
+}
+
 export function checkPackMissions(root) {
   const missions = join(root, "addons", "LF_Everon1989", "Missions");
   if (!existsSync(missions)) return { errors: [], count: 0 };
@@ -123,6 +160,8 @@ export function checkPackMissions(root) {
     errors.push(...checkHeader(n, text, guids, ids));
     if (field(text, "m_bShowInScenarioMenu") !== "0") errors.push(...checkWorldOnce(n, text, listedWorld));
   }
+  const town = join(missions, "LF_PlaytestTown.conf");
+  if (existsSync(flagship) && existsSync(town)) errors.push(...checkTownOverlays(readFileSync(town, "utf8"), readFileSync(flagship, "utf8")));
   return { errors, count };
 }
 
@@ -155,6 +194,21 @@ function selftest() {
   if (!checkWorldOnce("b.conf", good, seen).length) fails.push("planted fault not reported: two listed headers on one world");
   const hidden = good.replace("m_bLF_DevToolsOff 1", "m_bLF_DevToolsOff 0").replace("}\n", " m_bShowInScenarioMenu 0\n}\n");
   if (checkHeader("hidden", hidden, g).length) fails.push("a hidden header was held to the listed rules");
+  const isl = `LF_MissionHeader {
+ m_aLF_ConfigOverlays {
+  "{AAAAAAAAAAAAAAA1}Configs/A/LF_A.conf"
+  "{AAAAAAAAAAAAAAA2}Configs/Fishing/LF_Coves_Everon1989.conf"
+ }
+}
+`;
+  const COVES = '  "{AAAAAAAAAAAAAAA2}Configs/Fishing/LF_Coves_Everon1989.conf"\n';
+  const FIRST = '  "{AAAAAAAAAAAAAAA1}Configs/A/LF_A.conf"\n';
+  const townGood = isl.replace(COVES, "");
+  if (Object.keys(TOWN_EXCLUDED_OVERLAYS).length !== 8) fails.push("the exclusion list changed: update this selftest");
+  const tOnly = checkTownOverlays(townGood, isl).filter((e) => !/names LF_/.test(e));
+  if (tOnly.length) fails.push(`a town with every non-excluded overlay was reported: ${tOnly.join("; ")}`);
+  if (!checkTownOverlays(townGood.replace(FIRST, ""), isl).some((e) => /does not list the island overlay/.test(e))) fails.push("planted fault not reported: town missing an island overlay");
+  if (!checkTownOverlays(isl, isl).some((e) => /island-only/.test(e))) fails.push("planted fault not reported: town lists an island-only overlay");
   return fails;
 }
 
