@@ -188,6 +188,25 @@ tools\cli host announce --at 2026-11-20T19:00 --build 0.1.0 --channel <announcem
 Only the maintainer runs `--send`. The [session runbook](../ops/session-runbook.md) covers each session
 after this one.
 
+## Admin commands
+
+Staff run these in the game chat after `#login <passwordAdmin>` (or as an id listed in `game.admins`). A player who is not an
+administrator gets a refusal and nothing moves.
+
+| Command | Does |
+|---|---|
+| `#lfmoney <player id or name> <amount>` | Gives that much cash to a connected player. A negative amount takes cash. `#players` lists the ids |
+| `#lfmoney <player id or name> <amount> bank` | The same on the bank balance (the target does not need room in the pockets) |
+
+- At most 1,000,000 per call, whole numbers only, and 0 is refused. A name with a space works as typed
+  (`#lfmoney Jean Luc 500`); two players with one name are refused, so use the id.
+- Taking never goes below what the account holds, and the answer says what actually moved.
+- It goes through the normal money path: the ledger records reason `admin-grant`, the next save keeps it, the server log has a
+  `[LFDebug:Admin] #lfmoney caller=... target=... moved=...` line and the staff relay posts the action.
+- RCON: the command declares an RCON handler with the admin permission, like `#kick`, so
+  `tools\cli host remote 0grind rcon "#lfmoney 3 500" --yes` should work and logs the caller as `rcon`. That route is written but
+  not yet run against the live server; if the console answers `unknown command`, use the in-game chat.
+
 ## Problems
 
 | You see | Do this |

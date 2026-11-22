@@ -6,7 +6,15 @@
   framing for the whole talk (over the player's shoulder, the NPC from about the chest up: no zoom on a
   line, no cut); the line is a caption at the bottom with
   a recorded voice; replies are a numbered list (1 to 4, or up, down and confirm; Back leaves;
-  confirm skips a line). Movement, view and weapon controls are held and the HUD is hidden
+  confirm skips a line). The last row is always **"0. Goodbye"** (2026-11-22: the maintainer
+  asked for numbers on everything including the way out): key 0 leaves at any moment, up/down also walks onto it
+  and confirm picks it, Back (Escape, B) leaves too. The numbers, the digit-to-row map and the focus wrap are
+  `LF_DialogueKeys` (test `dialogue/numbers`); Goodbye is a client-only row (`LF_DialogueScene.Goodbye`, the
+  same `Close` as Back: controls, camera and HUD come back, the server frees the NPC). A node still holds at
+  most four replies, so the screen is never past five rows. Pad: left stick up/down and A, B leaves (the menu
+  actions; the d-pad is never bound). A node's own farewell reply (any reply with next `bye` and no action,
+  `LF_DialogueKeys.IsFarewell`, 104 of them) gets no row: "0. Goodbye" picks it, so the NPC still says its voiced goodbye and
+  no menu shows two (a node left with only that reply shows just Goodbye). A reply that goes to `bye` with an action stays a row. Open: the scene has no mouse cursor, so a click does not pick a row. Movement, view and weapon controls are held and the HUD is hidden
   for the length of it. Only the talker's client changes.
 - The server owns the conversation (`LF_Dialogue`): the client sends an NPC, then a reply
   index; the server checks reach (4 m), that it offered that reply, and its condition again, runs
@@ -123,3 +131,9 @@
 - In a session: harness verb `talkaudit [radius]` counts, on the client, keys that show raw in every loaded
   dialogue and role conversation, and NPCs nearby with no conversation or a one-reply greeting
   (`[LFDebug:Dialogue] audit ...` lines, summary `text= notalk= thin=`).
+
+### Every island dialogue is voiced — `validate-dialogue-voices`, `LF_Test_EveronDialogueVoices` (2026-11-22)
+- 🧪 **Every conversation an Everon NPC can hold has a recording, made with that NPC's own voice.** Before this change 82 of 168 island lines had a clip (49%); now 142 of 177 do. The eight text-only dialogues the pack owned (dockworkers, the gendarme, passers-by, the relocated walkers, the four named residents) are voiced from their `dialogue.json` (`voice` and `budget_chars`, the stage `tools\cli asset dialogue <npc>`), and the supermarket, gun counter, pharmacy and clothing shopkeepers speak through a voiced pack patch of the core shopkeeper (`shopkeeper_everon`, like `clerk_everon`). The café owner's two shipment-rumour lines (a hand-written overlay, `LF_Rumours_Shipment_CafeOwner.conf`) were silent too: they are recorded in the café owner's audio project and the overlay carries their events. Each NPC has its own French-accented male voice (the game has male bodies only, `validate-voice-sex`); `voice.why` in each spec says what was wanted.
+- Checks: `tools/validation/validate-dialogue-voices.mjs` resolves each character prefab the pack owns or places (`LF_Everon1989` layers and configs) through its prefab chain to its dialogue, role conversation or nothing, and fails a line with no clip, a clip made with another voice than the dialogue's, a stale clip (text changed), one voice for two NPCs, an overlay line with no event, or a shop, ATM, sale or quest NPC with nothing to say. `--report` prints voiced / total per conversation. A shrink-only baseline (`dialogue-voices-baseline.json`) holds what may stay unvoiced. Red proof: `dialogue-voices-selftest.mjs`. Pack test `everon/dialogue-voices` (WORLD, pack leg) loads each island dialogue through the registry with the pack's patches and asserts the audio project and, on every line, an event, a length and a mouth envelope.
+- The fence (`LF_Fence`, "Vince the Fence") had a shop and no conversation: it now carries the `fence` role, so talking to him opens the role conversation.
+- ⚠️ Still text only, listed in the baseline: the **role conversations** (store clerks, the clinic doctor, the station desk officer, the bank teller, mechanics, the fence, town civilians; five lines per role, built at runtime from `LF-NpcRole_<role>_*` by `LF_Roles.BuildDialogue`, 35 lines). Voicing them needs each role authored as a core dialogue spec a pack patches, and `LF_Roles` to play that; the validator then shrinks the baseline. Core-only dialogues (`resident`, the neutral `clerk`/`shopkeeper`) stay text only in the core by design; the pack voices the ones the island uses. The female-named residents (Mireille, Helene) stand on male bodies and speak in male voices until a female body ships.

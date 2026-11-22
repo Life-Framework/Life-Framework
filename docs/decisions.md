@@ -450,6 +450,16 @@ stalled at the car lot with $650 in the bank; a first car should be a choice on
 day one, not a grind. Framework: config (`EL_SpawnLogic.m_iStartingBank`, paid
 once at registration). Flagship: the cheapest car on the lot.
 
+**2026-11-22 — The Everon pack opens a new character with $1,250.** The 0.2.0 playtest
+wanted a start that buys a car, the driving licence and basic hardware: T601 $560
++ licence $100 + pickaxe $150 + axe $120 + entrenching tool $45 = $975, $275 over
+for fuel and food. Set in the pack (`LF_Characters_Everon1989.conf`,
+`LF_CharacterConfig.m_iStartingBank`), not the core, which keeps $1,000.
+
+**2026-11-22 — Raised the same day to $2,000.** The maintainer wanted a new player
+to survive a few deaths too: the $975 starter list plus three $150 respawn bills
+(`LF_Respawn.conf` `m_iBillAmount`) is $1,425, leaving about $575 for fuel and food.
+
 ## Delivery
 
 **2026-11-07 — Milestone 1 is a signposted DebugWorld playtest town.** Every

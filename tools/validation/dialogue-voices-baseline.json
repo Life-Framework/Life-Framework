@@ -1,0 +1,12 @@
+{
+  "_doc": "Island conversations allowed to stay without clips (validate-dialogue-voices). The list only shrinks: an entry that is voiced or gone fails until it is deleted. Role conversations are built at runtime from `LF-NpcRole_<role>_*` strings (LF_Roles.BuildDialogue) and cannot carry an event yet: voicing them means authoring each role as a core dialogue spec a pack patches (the fuel clerk and shopkeeper pattern) and making LF_Roles play it.",
+  "unvoiced": {
+    "role:fence": "Vince at the fence yard: role conversation, text only",
+    "role:mechanic": "garage and car lot mechanics: role conversation, text only",
+    "role:medic": "clinic doctor: role conversation, text only",
+    "role:police": "station desk officer: role conversation, text only",
+    "role:store_clerk": "general store, bakery, butcher, hardware, farm supply, timber and gun counter clerks: role conversation, text only",
+    "role:teller": "bank teller: role conversation, text only",
+    "role:townsfolk": "town civilians: role conversation, text only"
+  }
+}
