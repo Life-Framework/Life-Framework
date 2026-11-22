@@ -319,9 +319,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        2.3,
+        3.1,
         0,
-        -7.5
+        -7.4
       ],
       "yaw": 30,
       "wall": "free",

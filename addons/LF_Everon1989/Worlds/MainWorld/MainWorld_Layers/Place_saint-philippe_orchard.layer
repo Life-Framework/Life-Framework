@@ -93,6 +93,6 @@ GenericEntity Fit_saint_philippe_orchard_orchard_cart : "{A208248B503EF831}Prefa
  angleY 86
 }
 GenericEntity Fit_saint_philippe_orchard_orchard_bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
- coords 4611.145 18.933 10772.452
+ coords 4611.919 18.966 10772.676
  angleY 21
 }
