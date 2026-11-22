@@ -14,20 +14,135 @@ GenericEntity {
     UserActionContext "{7070D89FFB6DC884}" {
      ContextName "default"
      Position PointInfo "{7070D89FFB6DC885}" {
-      Offset -0.134 1.13 0.17
+      Offset 0 1.22 0.13
      }
-     Radius 1.5
+     Radius 0.17
+    }
+    UserActionContext "{5B5395F78E147914}" {
+     ContextName "cash"
+     Position PointInfo "{E466A58E4CFFA047}" {
+      Offset 0 0.9 0.13
+     }
+     Radius 0.11
+    }
+    UserActionContext "{E658B2066FFA3FDC}" {
+     ContextName "deposit"
+     Position PointInfo "{1F262B1E0E9B7E87}" {
+      Offset 0.12 0.69 0.14
+     }
+     Radius 0.13
     }
    }
    additionalActions {
+    LF_ATMQuickAction "{AEB7CCE83D719F05}" {
+     ParentContextList {
+      "cash"
+     }
+     UIInfo UIInfo "{9460940D3D6280AD}" {
+      Name "#LF-ATM_QuickWithdrawAllPlain"
+     }
+     m_eKind 0
+     m_iPreset 20
+    }
+    LF_ATMQuickAction "{41C36511C866E9EA}" {
+     ParentContextList {
+      "cash"
+     }
+     UIInfo UIInfo "{01908C10E9076D9F}" {
+      Name "#LF-ATM_QuickWithdrawAllPlain"
+     }
+     m_eKind 0
+     m_iPreset 50
+    }
+    LF_ATMQuickAction "{CB0C5E7D575E7870}" {
+     ParentContextList {
+      "cash"
+     }
+     UIInfo UIInfo "{8254CBD8A413D687}" {
+      Name "#LF-ATM_QuickWithdrawAllPlain"
+     }
+     m_eKind 0
+     m_iPreset 100
+    }
+    LF_ATMQuickAction "{D756727191C6877D}" {
+     ParentContextList {
+      "cash"
+     }
+     UIInfo UIInfo "{2A8952A5A9CF8A6C}" {
+      Name "#LF-ATM_QuickWithdrawAllPlain"
+     }
+     m_eKind 0
+     m_iPreset 500
+    }
+    LF_ATMQuickAction "{8200DCB95F4A41C3}" {
+     ParentContextList {
+      "cash"
+     }
+     UIInfo UIInfo "{543999AE4C83FC26}" {
+      Name "#LF-ATM_QuickWithdrawAllPlain"
+     }
+     m_eKind 0
+     m_iPreset -1
+    }
+    LF_ATMQuickAction "{A27F8AD1278E40D5}" {
+     ParentContextList {
+      "deposit"
+     }
+     UIInfo UIInfo "{039DECCEC2AE4690}" {
+      Name "#LF-ATM_QuickDepositAllPlain"
+     }
+     m_eKind 1
+     m_iPreset -1
+    }
+    LF_ATMQuickAction "{9B34F1A1A3371A2A}" {
+     ParentContextList {
+      "deposit"
+     }
+     UIInfo UIInfo "{9749980FCE5BA888}" {
+      Name "#LF-ATM_QuickDepositAllPlain"
+     }
+     m_eKind 1
+     m_iPreset 50
+    }
+    LF_ATMQuickAction "{68EB02FD4E08B2DB}" {
+     ParentContextList {
+      "deposit"
+     }
+     UIInfo UIInfo "{50DE5E66C5D7EC8E}" {
+      Name "#LF-ATM_QuickDepositAllPlain"
+     }
+     m_eKind 1
+     m_iPreset 100
+    }
+    LF_ATMQuickAction "{65971EAAEE14AB12}" {
+     ParentContextList {
+      "deposit"
+     }
+     UIInfo UIInfo "{5988B02093756E51}" {
+      Name "#LF-ATM_QuickDepositAllPlain"
+     }
+     m_eKind 1
+     m_iPreset 500
+    }
+    LF_ATMQuickAction "{54BB73945E4F45DE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{2AEBB180A82B1AF7}" {
+      Name "#LF-ATM_QuickBalance"
+     }
+     m_eKind 2
+     m_iPreset 0
+    }
     LF_ATMAction "{7070D89FFB6DC886}" {
      ParentContextList {
       "default"
      }
      UIInfo UIInfo "{7070D89FFB6DC887}" {
-      Name "#EL-ATM_Title"
+      Name "#LF-ATM_QuickTransfer"
       Description "#LF-ATM_Manage"
      }
+     m_bTransferOnly 1
     }
    }
   }

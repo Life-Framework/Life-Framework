@@ -56,7 +56,7 @@
       "text": "You sleep at the hostel tonight. The dormitory is upstairs, and any free bunk is yours. It is plain, but it is warm."
     },
     "welcome_town": {
-      "text": "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost."
+      "text": "The town expects honest work and quiet nights. Greet your neighbors, pay what you owe, and ask the police if you are ever lost."
     },
     "welcome_pack": {
       "text": "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with.",
@@ -75,7 +75,7 @@
       "for_key": "#LF-Quest_EveronJuice_Desc"
     },
     "market": {
-      "text": "Drive back to the market in the town centre and sell your apple juice to the trader.",
+      "text": "Drive back to the market in the town center and sell your apple juice to the trader.",
       "for_key": "#LF-Quest_EveronMarket_Desc"
     }
   },

@@ -18,6 +18,11 @@ class LF_ATMAction : ScriptedUserAction
 	[Attribute("SOUND_HUD_GADGET_SELECT", desc: "UI sound event when the screen wakes")]
 	protected string m_sOpenSound;
 
+	//! The kiosk takes cash in and out through its in-world lines (LF_ATMQuickAction); this keypad
+	//! line then only opens the transfer page, the one job that needs typing (a name and an amount).
+	[Attribute("0", desc: "Open the transfer page directly instead of the full keypad terminal")]
+	protected bool m_bTransferOnly;
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -49,6 +54,12 @@ class LF_ATMAction : ScriptedUserAction
 		if (!LF_CounterAccess.IsLocalActor(pUserEntity, LF_Utils.GetLocalCharacter()))
 		{
 			LF_Debug.Info("ATM", "terminal not opened: another player used the machine");
+			return;
+		}
+
+		if (m_bTransferOnly)
+		{
+			LF_ATMTransferPage.Open(pOwnerEntity, this);
 			return;
 		}
 

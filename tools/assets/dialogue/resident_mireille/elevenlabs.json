@@ -29,17 +29,17 @@
       "mouth": "9983218797521000587569898985296531321111000"
     },
     "greet": {
-      "hash": "b28b63f42770fdbd",
+      "hash": "72f9b45260e3e88b",
       "date": "2026-11-22",
       "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
       "voice_name": "Alex - Warm, Empathetic, Confident",
       "model": "eleven_multilingual_v2",
-      "text": "Bonjour. Marius. Forgive me, I only came out for a coffee and a little conversation.",
-      "chars": 84,
-      "chars_total": 68,
-      "request_id": "Kt2rr6ucCMF8JxJe5R6e",
-      "seconds": 4.28,
-      "mouth": "79989976311289975575110014549789942100000489877469996226621885257655533213311233211000"
+      "text": "Good morning. Marius. Forgive me, I only came out for a coffee and a little conversation.",
+      "chars": 89,
+      "chars_total": 104,
+      "request_id": "KdloO9jiQuqx8rdCsoE4",
+      "seconds": 5.49,
+      "mouth": "57699999411100000000000169976499992110000054973694211000000000038889349868722641277312444434431133112111111000"
     },
     "greet_friendly": {
       "hash": "b8ce118abf3198b6",
@@ -81,17 +81,17 @@
       "mouth": "996999999997464286212110000000000011212294998439757425465657777423311212863421112111101100"
     },
     "about_gossip": {
-      "hash": "258a823ef2fa179e",
+      "hash": "d0dc40114d6d55b8",
       "date": "2026-11-22",
       "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
       "voice_name": "Alex - Warm, Empathetic, Confident",
       "model": "eleven_multilingual_v2",
-      "text": "They say the harbour master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like.",
-      "chars": 147,
-      "chars_total": 59,
-      "request_id": "EhH5qxGSE2uezPQbVIrE",
-      "seconds": 7.81,
-      "mouth": "4798999937998699965482254119656545149525113986355523111120195310000000000111396587998359645544322111129864577733445233100000000011179639376249824899642121000"
+      "text": "They say the harbor master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like.",
+      "chars": 146,
+      "chars_total": 117,
+      "request_id": "WUMfvM0CZy3v2SInEWhL",
+      "seconds": 7.26,
+      "mouth": "17589969649958999988346117866537119845532399757933211210153211000000000000117997879689945864676644322986257442364526411016957969324733332631110000"
     },
     "about_anniversary": {
       "hash": "66eb968367365fba",

@@ -9,7 +9,7 @@ GenericEntity Fit_saint_philippe_districts_garage_Place {
  }
  coords 4696.6 20.8 10755.1
 }
-GenericEntity Fit_saint_philippe_districts_garage_shop_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Fit_saint_philippe_districts_garage_shop_counter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4697.556 20.757 10758.054
  angleY 93
 }

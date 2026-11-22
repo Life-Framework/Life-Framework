@@ -148,25 +148,15 @@ fold("foldTurtleBlue", 4.35, F + 0.223, 6.35, 12);
 put(P.basket, 4.72, F, 6.95, 0, 0.55);
 wear("knitRed", 4.72, F + 0.2, 6.95, 20);
 wear("knitBlue", 4.78, F + 0.18, 6.9, -30);
-put(P.coatTree, 0.45, F, 6.0);
-wear("capGrey", 0.45, F + 0.05, 6.0, 0);
-wear("capBlue", 0.6, F - 0.2, 6.05, 40);
-wear("knitBrown", 0.32, F - 0.2, 5.95, -40);
 
 // ---- Walls ----
-// x 5.75 wall (faces -x): coat boards with a coat each, the long mirror by the window, paintings over the shelves
-put(P.coatBoard, 5.745, F, -0.55, -90);
-wear("raincoatYellow", 5.53, F + 0.1, -0.55, -90);
-put(P.coatBoard, 5.745, F, 0.3, -90);
-wear("suitJacketGrey", 5.53, F + 0.1, 0.3, -90);
+// x 5.75 wall (faces -x): the long mirror by the window, paintings over the shelves. The coat boards gave way to the
+// suit and backpack mannequins (kit rows, 2026-11-22: the mannequins sell what they wear)
 put(P.paintingBig9, 5.765, 2.45, 4.6, -90);
 put(P.paintingSmall3, 5.765, 2.4, 2, -90);
 put(P.mirrorFull, 5.745, F + 1.3, 6.35, -90, 1, "0 -90 90"); // full length: the 2.1 m wide mirror stood on its side
-// x -1.54 wall (faces +x): one coat board beside the hall door (the door leaf spans z 0.64..1.96; a board 0.87 m wide at 2.65
-// stands 0.26 m clear of it and 0.1 m short of the shelf), a painting over the shelf, the poster by the window.
-// Two boards at z 1.9 and 2.8 stood half in the doorway (0.49 m into the door's clearance, 2026-11-19).
-put(P.coatBoard, -1.535, F, 2.65, 90);
-wear("denimJacket", -1.32, F + 0.1, 2.65, 90);
+// x -1.54 wall (faces +x): a painting over the shelf, the poster by the window (the coat board left with the rack
+// clutter, 2026-11-22).
 put(P.paintingBig4, -1.535, 2.35, 4.4, 90);
 put(P.radioPoster, -1.535, 1.6, 6.4, 90);
 // back wall z -3.0 (faces +z): clock, notices, and the hat rack

@@ -48,15 +48,15 @@ def field(x0, x1, y, label, h=9.5):
 
 # Fields.
 y = 138
-field(12, 72, y, "DATE OF OFFENCE")
+field(12, 72, y, "DATE OF OFFENSE")
 field(76, 136, y, "TIME")
 y = 126
-field(12, 136, y, "PLACE OF OFFENCE")
+field(12, 136, y, "PLACE OF OFFENSE")
 y = 114
 field(12, 72, y, "VEHICLE REGISTRATION")
 field(76, 136, y, "DRIVING PERMIT NO.")
 y = 90
-field(12, 136, y, "NATURE OF OFFENCE", h=21.5)
+field(12, 136, y, "NATURE OF OFFENSE", h=21.5)
 for k in range(1, 4):
     c.hline(14, 134, y + 21.5 - 3.1 - 5.2 * k - 0.6, PALE, 0.12)
 y = 78

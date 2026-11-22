@@ -243,57 +243,76 @@
       "id": "lf-mannequin-denim",
       "prefab": "{F55D2611E095EBAB}Prefabs/Props/Clothing/LF_Mannequin_Denim.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
-        1.8,
+        1.5,
         0.199,
-        7
+        6.3
       ],
-      "yaw": 0,
-      "wall": "+z",
-      "floor": "f0"
+      "yaw": -120,
+      "wall": "free",
+      "floor": "f0",
+      "why": "window, faces the street door and the room"
     },
     {
       "id": "lf-mannequin-raincoat",
       "prefab": "{918EEED162D663F2}Prefabs/Props/Clothing/LF_Mannequin_Raincoat.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
-        3.7,
+        3.8,
         0.199,
-        7
+        6.5
       ],
-      "yaw": 0,
-      "wall": "+z",
-      "floor": "f0"
+      "yaw": -120,
+      "wall": "free",
+      "floor": "f0",
+      "why": "window right, faces the street door and the room"
     },
     {
       "id": "lf-mannequin-knit",
       "prefab": "{4DC523B95D7DFD0F}Prefabs/Props/Clothing/LF_Mannequin_Knit.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
-        2.75,
+        2.6,
         0.199,
-        6.55
+        6.3
       ],
-      "yaw": 0,
-      "wall": "+z",
-      "floor": "f0"
+      "yaw": -120,
+      "wall": "free",
+      "floor": "f0",
+      "why": "window middle, faces the street door and the room"
     },
     {
       "id": "lf-mannequin-suit",
       "prefab": "{88F59F323FF25661}Prefabs/Props/Clothing/LF_Mannequin_Suit.et",
       "role": "dressing",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
-        -0.6,
+        5.25,
         0.199,
-        6.6
+        0
       ],
-      "yaw": 0,
-      "wall": "+z",
-      "floor": "f0"
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "why": "east wall where the coat boards hung, faces into the room; out of the street doorway"
+    },
+    {
+      "id": "lf-mannequin-backpack",
+      "prefab": "{F0BD498E7E7D7C6D}Prefabs/Props/Clothing/LF_Mannequin_Backpack.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.85,
+        0.199,
+        2.58
+      ],
+      "yaw": 30,
+      "wall": "free",
+      "floor": "f0",
+      "why": "backpack display on the west wall where the coat board hung, faces the street door and the room"
     },
     {
       "id": "clothing-stock",
