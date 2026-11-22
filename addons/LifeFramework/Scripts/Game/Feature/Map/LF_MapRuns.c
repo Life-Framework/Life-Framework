@@ -315,8 +315,15 @@ class LF_MapRunRules
 		float keep = Math.Sqrt(nearest) + NEAREST_SLACK;
 		foreach (int run, int s : step)
 		{
-			if (best.Get(run) <= keep * keep)
-				into.Insert(LF_MapRunMatch.Make(run, s));
+			if (best.Get(run) > keep * keep)
+				continue;
+
+			// In table order, so the card names the same run every time (the pack lists mining first).
+			int at = 0;
+			while (at < into.Count() && into[at].m_iRun < run)
+				at++;
+
+			into.InsertAt(LF_MapRunMatch.Make(run, s), at);
 		}
 
 		return into.Count();

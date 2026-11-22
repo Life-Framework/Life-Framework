@@ -6,7 +6,7 @@ modded class LF_MapPlacesUI
 {
 	protected static const int RUN_LINE_COLOR = 0xE01C1A16; // lf-fixed: graphite ink, slightly see-through
 	protected static const int RUN_DISC_COLOR = 0xFF1C1A16; // lf-fixed: graphite disc under a step number
-	protected static const float RUN_DISC_RADIUS = 9; // lf-fixed: reference units
+	protected static const float RUN_DISC_RADIUS = 11; // lf-fixed: reference units
 	protected static const float RUN_DISC_OFFSET = 13; // lf-fixed: reference units up and left of the badge centre
 	protected static const int RUN_MAX_LABELS = 12; // lf-fixed: step numbers drawn at once
 
@@ -46,7 +46,7 @@ modded class LF_MapPlacesUI
 				break;
 
 			label.SetFlags(WidgetFlags.IGNORE_CURSOR);
-			label.SetExactFontSize(13);
+			label.SetExactFontSize(16);
 			label.SetColor(Color.FromInt(Color.WHITE));
 			FrameSlot.SetSize(label, RUN_DISC_RADIUS * 2, RUN_DISC_RADIUS * 2);
 			FrameSlot.SetAlignment(label, 0.5, 0.5);

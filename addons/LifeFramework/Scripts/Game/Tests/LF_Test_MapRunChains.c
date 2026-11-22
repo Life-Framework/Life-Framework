@@ -51,6 +51,8 @@ class LF_Test_MapRunChains : LF_Test
 		}
 
 		ctx.Equal(2, LF_MapRunRules.Match("3000 0 505", points, matches), "the dock buyer is the end of both runs");
+		if (matches.Count() == 2)
+			ctx.True(matches[0].m_iRun == 0 && matches[1].m_iRun == 1, "in table order, so the card always names the first run");
 		ctx.Equal(0, LF_MapRunRules.Match("5000 0 5000", points, matches), "hovering the unknown pond draws nothing");
 		ctx.Equal(0, LF_MapRunRules.Match("8000 0 8000", points, matches), "a badge on no run draws nothing");
 
