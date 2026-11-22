@@ -295,6 +295,16 @@ export function contactJudged(e, m) {
   return !["vehicle", "vegetation", "mounted", "laidDown", "building", "surface", "chain", "roadFurniture"].some((k) => isKind(e, k));
 }
 
+// A contact-judged prop whose LF_PlaceSnap contact reads level and complete: every point of the 3x3 footprint hit one surface
+// (chits n/n, spread under 2 cm) within the 1 cm contact bar. The four-corner trace cannot overrule that: a gondola's solid
+// volume swallows a trace that starts inside it, and a goods copy over a same-sized copy on the board below then reads
+// "hang off the edge of LF_DriedMeat (drop 0.44 m)" for twelve copies that all rest on their boards (#3888 baseline).
+export function restsOnLevelSupport(e, m) {
+  if (!contactJudged(e, m) || Math.abs(m.cgap) > LIMITS.contact || !(m.cspread <= 0.02)) return false;
+  const hits = /^(\d+)\/(\d+)$/.exec(m.chits ?? "");
+  return !!hits && Number(hits[1]) === Number(hits[2]) && Number(hits[2]) > 0;
+}
+
 // Problems for one measured entity, before pairs (overlaps, doors, roads) are added.
 export function singleProblems(e, m) {
   const out = [];
@@ -319,7 +329,7 @@ export function singleProblems(e, m) {
     const sunk = -Math.max(m.gap, m.pgap); // both the bounds bottom and the pivot under the floor (LF_PlacementAudit.Flags)
     if (!mounted && !vehicle && sunk > (building ? 0.5 : LIMITS.gap)) out.push({ kind: "sunk", amount: sunk, text: `sunk ${r2(sunk)} m into ${m.on}` });
   }
-  if (!mounted && m.over > 0 && (m.gap <= LIMITS.gap || contactJudged(e, m)) && m.on !== "terrain") out.push({ kind: "overhang", amount: m.over / 4, text: `${m.over}/4 corners hang off the edge of ${m.on} (drop ${r2(m.drop)} m)` });
+  if (!mounted && m.over > 0 && (m.gap <= LIMITS.gap || contactJudged(e, m)) && m.on !== "terrain" && !restsOnLevelSupport(e, m)) out.push({ kind: "overhang", amount: m.over / 4, text: `${m.over}/4 corners hang off the edge of ${m.on} (drop ${r2(m.drop)} m)` });
   if (m.tilt > LIMITS.tilt && !isKind(e, "laidDown") && !veg) out.push({ kind: "tilted", amount: m.tilt / 45, text: `tilted ${Math.round(m.tilt)} deg` });
   if (m.scale < LIMITS.scaleMin || m.scale > LIMITS.scaleMax) out.push({ kind: "scaled", amount: 1, text: `scale ${r2(m.scale)}` });
   else if (!/^Sign_/.test(e.name || "") && (m.scale < LIMITS.oddLow || m.scale > LIMITS.oddHigh)) out.push({ kind: "odd-scale", amount: 1, text: `scale ${r2(m.scale)}` });
@@ -910,7 +920,7 @@ function selftest() {
   const row = (o) => {
     const c = o.c ?? [0, 0.3, 0];
     const h = o.h ?? [0.3, 0.3, 0.3];
-    return `bmin=${c[0] - h[0]},${c[1] - h[1]},${c[2] - h[2]} bmax=${c[0] + h[0]},${c[1] + h[1]},${c[2] + h[2]} gap=${o.gap ?? 0} tilt=${o.tilt ?? 0} walk=${o.walk ?? -1} pgap=${o.pgap ?? 0} clip=${o.clip ?? "none"} scale=${o.scale ?? 1} on=${o.on ?? "terrain"} over=${o.over ?? 0} drop=0 backed=${o.backed ?? 0} c=${c.join(",")} h=${h.join(",")} a0=1,0,0 a1=0,1,0 a2=0,0,1 flags=none found=${o.found ?? "x"}`;
+    return `bmin=${c[0] - h[0]},${c[1] - h[1]},${c[2] - h[2]} bmax=${c[0] + h[0]},${c[1] + h[1]},${c[2] + h[2]} gap=${o.gap ?? 0} tilt=${o.tilt ?? 0} walk=${o.walk ?? -1} pgap=${o.pgap ?? 0} clip=${o.clip ?? "none"} scale=${o.scale ?? 1} on=${o.on ?? "terrain"} over=${o.over ?? 0} drop=0 backed=${o.backed ?? 0} c=${c.join(",")} h=${h.join(",")} a0=1,0,0 a1=0,1,0 a2=0,0,1 flags=none found=${o.found ?? "x"}${o.cgap === undefined ? "" : ` cgap=${o.cgap} cspread=${o.cspread ?? 0} chits=${o.chits ?? "9/9"}`}`;
   };
   const recs = [
     { name: "FloatCrate", layer: "T.layer", x: 0, y: 1, z: 0, prefab: "Prefabs/Props/Crates/BoxWooden_01.et" },
@@ -930,6 +940,8 @@ function selftest() {
     { name: "CupB", layer: "T.layer", x: 70.26, y: 1, z: 0, prefab: "Prefabs/Props/Cup_01.et" },
     { name: "CupC", layer: "T.layer", x: 70.6, y: 1, z: 5, prefab: "Prefabs/Props/Cup_01.et" },
     { name: "CupD", layer: "T.layer", x: 70.86, y: 1, z: 5, prefab: "Prefabs/Props/Cup_01.et" },
+    { name: "ShelfCopy", layer: "T.layer", x: 80, y: 1, z: 0, prefab: "Prefabs/Items/Food/LF_DriedMeat.et" },
+    { name: "HalfOnShelf", layer: "T.layer", x: 84, y: 1, z: 0, prefab: "Prefabs/Items/Food/LF_DriedMeat.et" },
   ];
   const out = [
     `0 ${row({ c: [0, 1.3, 0], gap: 1, pgap: 1 })}`,
@@ -951,6 +963,10 @@ function selftest() {
     // The same overlap on two different surfaces is a coincidence of two props, kept at the 0.08 m limit.
     `15 ${row({ c: [70.6, 1.15, 5], h: [0.15, 0.15, 0.15], on: "Counter_01" })}`,
     `16 ${row({ c: [70.86, 1.15, 5], h: [0.15, 0.15, 0.15], on: "Shelf_01" })}`,
+    // A goods copy on a gondola board: the corner trace lands on the copy below (drop 0.44) but the contact probe hit the board at 9/9 points.
+    `17 ${row({ c: [80, 1.3, 0], h: [0.13, 0.025, 0.15], on: "LF_DriedMeat", over: 4, cgap: 0.001 })}`,
+    // The same corners with a contact probe that found the board under 5 of 9 points: a real overhang, still reported.
+    `18 ${row({ c: [84, 1.3, 0], h: [0.13, 0.025, 0.15], on: "LF_DriedMeat", over: 2, cgap: 0.001, cspread: 0.3, chits: "5/9" })}`,
     "door name=Door_01 root=House_01 rp=30,0,-5 c=30,1,0 h=0.5,1,0.03 a0=1,0,0 a1=0,1,0 a2=0,0,1",
   ].join("\n");
   const res = analyse(recs, out, { roads: [{ name: "Lane", pts: [[0, 20], [30, 20]], width: 4 }] });
@@ -958,6 +974,8 @@ function selftest() {
   if (!kinds("FloatCrate").includes("floating")) fail(`floating crate: ${kinds("FloatCrate")}`);
   if (kinds("GroundCrate").length) fail(`grounded crate flagged: ${kinds("GroundCrate")}`);
   if (!kinds("EdgeCrate").includes("overhang") || kinds("EdgeCrate").includes("floating")) fail(`edge crate: ${kinds("EdgeCrate")}`);
+  if (kinds("ShelfCopy").includes("overhang")) fail(`a copy resting 9/9 on its board flagged overhang: ${kinds("ShelfCopy")}`);
+  if (!kinds("HalfOnShelf").includes("overhang")) fail(`a copy with 5/9 contact hits lost its overhang: ${kinds("HalfOnShelf")}`);
   if (!kinds("CrateA").includes("overlaps") || !kinds("CrateB").includes("overlaps")) fail("crates inside each other");
   if (!kinds("CupA").includes("overlaps") || !kinds("CupB").includes("overlaps")) fail(`cups on one counter: ${kinds("CupA")}`);
   if (kinds("CupC").includes("overlaps") || kinds("CupD").includes("overlaps")) fail("cups on two surfaces held to the 0.08 m limit");
