@@ -209,6 +209,11 @@ StringTable {
      Target_en_us "The post office always needs couriers. For anything else, read the town board. It lists who is hiring."
      Comment "Pack patch of the clerk dialogue's line about_work (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{5A8EF27F20337853}" {
+     Id "LF-Dialogue_ClerkEveron_Apples"
+     Target_en_us "Drive out to the orchard east of the town and pick nine apples from the trees."
+     Comment "Pack patch of the clerk dialogue's line apples (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
     CustomStringTableItem "{A44A60B6429DD48D}" {
      Id "LF-Dialogue_ClerkEveron_Bank"
      Target_en_us "You were paid in cash. Cash in a pocket is lost if you die. Money in the bank is not. Deposit some at the cash machine on the bank wall, next to the post office."
@@ -238,6 +243,16 @@ StringTable {
      Id "LF-Dialogue_ClerkEveron_Idle"
      Target_en_us "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office."
      Comment "Pack patch of the clerk dialogue's line idle (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{9045EF2226240420}" {
+     Id "LF-Dialogue_ClerkEveron_Juice"
+     Target_en_us "The juice press stands on the orchard stall. Three apples make one bottle of apple juice. Press at least one bottle."
+     Comment "Pack patch of the clerk dialogue's line juice (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{B3E611FAB38249E9}" {
+     Id "LF-Dialogue_ClerkEveron_Market"
+     Target_en_us "Take your apple juice to the market trader in the town and sell it."
+     Comment "Pack patch of the clerk dialogue's line market (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{ACA40575917539FA}" {
      Id "LF-Dialogue_ClerkEveron_Register"
@@ -278,6 +293,16 @@ StringTable {
      Id "LF-Dialogue_ClerkEveron_SayReady"
      Target_en_us "I understand. What now?"
      Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{66D17BEFEC6D7B97}" {
+     Id "LF-Dialogue_ClerkEveron_StarterCar"
+     Target_en_us "The town gives every newcomer a small car. It waits in your garage at the car lot, a short walk west of the town hall. Take it out at the garage counter."
+     Comment "Pack patch of the clerk dialogue's line starter_car (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{B696FB0623B2D98D}" {
+     Id "LF-Dialogue_ClerkEveron_WelcomePack"
+     Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with."
+     Comment "Pack patch of the clerk dialogue's line welcome_pack (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{ACD9BE6C92AE3B95}" {
      Id "LF-Dialogue_ClerkEveron_WelcomePapers"
@@ -2243,6 +2268,76 @@ StringTable {
      Id "LF-Quest_ArrivalWork_Title"
      Target_en_us "First wages"
      Comment "Arrival chain step 3 title."
+    }
+    CustomStringTableItem "{59970B5258F82A10}" {
+     Id "LF-Quest_EveronApples_Desc"
+     Target_en_us "Drive out to the orchard east of the town and pick nine apples from the trees."
+     Comment "Everon arrival step 3 errand: pick apples at the orchard."
+    }
+    CustomStringTableItem "{335A06642173129F}" {
+     Id "LF-Quest_EveronApples_Mark"
+     Target_en_us "Orchard"
+     Comment "Waypoint label for the orchard (arrival_apples)."
+    }
+    CustomStringTableItem "{A687F2D8D5A456FB}" {
+     Id "LF-Quest_EveronApples_Title"
+     Target_en_us "Apple picking"
+     Comment "Everon arrival step 3 title (arrival_apples)."
+    }
+    CustomStringTableItem "{EE315E5048005931}" {
+     Id "LF-Quest_EveronGarage_Desc"
+     Target_en_us "The town gives every newcomer a small car. It waits in your garage at the car lot, a short walk west of the town hall. Take it out at the garage counter."
+     Comment "Everon arrival step 2 errand: take the starter car out of the garage."
+    }
+    CustomStringTableItem "{36215FC317EF53A5}" {
+     Id "LF-Quest_EveronGarage_Mark"
+     Target_en_us "Garage"
+     Comment "Waypoint label for the garage counter (arrival_garage)."
+    }
+    CustomStringTableItem "{061067EFD544B307}" {
+     Id "LF-Quest_EveronGarage_Title"
+     Target_en_us "Your first car"
+     Comment "Everon arrival step 2 title (arrival_garage)."
+    }
+    CustomStringTableItem "{3ADBB6CA4E4F53BA}" {
+     Id "LF-Quest_EveronJuice_Desc"
+     Target_en_us "The juice press stands on the orchard stall. Three apples make one bottle of apple juice. Press at least one bottle."
+     Comment "Everon arrival step 4 errand: press apple juice."
+    }
+    CustomStringTableItem "{FAE9332E9FD2730E}" {
+     Id "LF-Quest_EveronJuice_Mark"
+     Target_en_us "Juice press"
+     Comment "Waypoint label for the juice press (arrival_juice)."
+    }
+    CustomStringTableItem "{584290C2E1AFB7B6}" {
+     Id "LF-Quest_EveronJuice_Title"
+     Target_en_us "Fresh juice"
+     Comment "Everon arrival step 4 title (arrival_juice)."
+    }
+    CustomStringTableItem "{169160A3F43F94EA}" {
+     Id "LF-Quest_EveronMarket_Desc"
+     Target_en_us "Take your apple juice to the market trader in the town and sell it."
+     Comment "Everon arrival step 5 errand: sell the juice at the market."
+    }
+    CustomStringTableItem "{E821B19281DF6F39}" {
+     Id "LF-Quest_EveronMarket_Mark"
+     Target_en_us "Market"
+     Comment "Waypoint label for the market trader (arrival_done)."
+    }
+    CustomStringTableItem "{78C9F1FB26B9EE9A}" {
+     Id "LF-Quest_EveronMarket_Title"
+     Target_en_us "Market day"
+     Comment "Everon arrival step 5 title (arrival_done, the market)."
+    }
+    CustomStringTableItem "{9B59BF96F8F32C1A}" {
+     Id "LF-Quest_EveronMarket_TurnIn"
+     Target_en_us "You are on your way. For steady pay, take a job: the town board lists who is hiring, and the clerk has more errands for you. Your errands and jobs are in your player menu."
+     Comment "Everon arrival closing line, shown when the juice is sold (arrival_done turn-in)."
+    }
+    CustomStringTableItem "{576D65C266994CCB}" {
+     Id "LF-Quest_EveronWelcomePack_TurnIn"
+     Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with."
+     Comment "Everon arrival: the clerk hands over the ID card and the welcome pack (arrival_register turn-in)."
     }
     CustomStringTableItem "{A089683A227009CA}" {
      Id "LF-Quest_SettleFish_Desc"

@@ -29,14 +29,18 @@ back when you rejoin. Other players do not see yours.
 
 | Step | What you do | Where |
 |---|---|---|
-| **New in town** | Walk south from the hostel to the town hall. Talk to the **registry clerk** ("Registry clerk: ID cards"). He files form R-89 and hands you your **ID card**. | Town hall on the square |
-| **The town board** | Read the **notice board**. It lists every shop and service with a *Set waypoint* button. | Notice board |
-| **First wages** | At the **post office** counter pick *Take courier work*, then *Pick up parcel*. Carry it to the drop (a mailbox on a house wall at least 300 m away) and pick *Complete the run*. | Parcel depot |
-| **Bank it** | Put some of your pay into the bank at an **ATM**. Cash in your pocket is lost if you die; money in the bank is not. | ATM by the bank |
-| **Settled in** | Go back to the clerk for a welcome gift: a **folded paper map**, a packet of crackers and a bottle of apple juice. | Town hall |
+| **New in town** | Walk south from the hostel to the town hall. Talk to the **registry clerk** ("Registry clerk: ID cards"). He files form R-89 and hands you your **ID card** and a **welcome pack**: a baguette, a saucisson, a bottle of water and **$100 in cash**. | Town hall on the square |
+| **Your first car** | The clerk also puts a small **Sputnik T601** in your garage. It is yours, and it takes one of your garage slots. Walk to the **garage counter** at the car lot and pick *Retrieve vehicle*; the car stands on the garage pad and your key is already in your pocket. | Car lot, west of the town hall |
+| **Apple picking** | Drive to the **orchard** east of town and pick **nine apples** from the apple trees. | Orchard |
+| **Fresh juice** | Use the **juice press** on the orchard stall: three apples make one bottle of apple juice. | Orchard stall |
+| **Market day** | Sell your apple juice to the **market trader** in town. A note then reads *You are on your way*: take a job from the town board, ask the clerk for more errands, and find your errands and jobs in your player menu. | Market |
 
-Courier work asks for a small **refundable cash deposit** for the parcel. You get it back when you deliver. If you are
-short of cash, take some out of an ATM first.
+You get the welcome pack and the car once per character, never again after a respawn, a rejoin or a server restart.
+A character who already owns a car gets no starter car: take your own car out of the garage for that step. A character
+who registered before this route existed is guided through the steps they have not done yet.
+
+Your bank account also starts with money in it: use an **ATM** to take some out or put your cash away. Cash in your
+pocket is lost if you die; money in the bank is not.
 
 ## The town hall also sells licences
 

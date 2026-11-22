@@ -170,6 +170,71 @@
       "request_id": "vfDh6BCqBhMQVBy8G1bo",
       "seconds": 10.23,
       "mouth": "5817938999877411016135319823331029999743577631211001373338998835643313332100000000000000002998259988773776333310000010008999989343858787641100000000015741129884329259756533331153228741129858765534343211100"
+    },
+    "welcome_pack": {
+      "hash": "a1ea48bcd5dae7e0",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with.",
+      "chars": 209,
+      "chars_total": 84,
+      "request_id": "TcN9cZqJBgccN7xhi6mE",
+      "seconds": 19.56,
+      "mouth": "59997311100000000000000000002699999999511110178899887864544244121000000000000002467786447558866537983453413364433110000000000000429329987765432100000000010010022677234999821114963298999837955976641110361457998776311110001338965421102599589999933664341110000000000000004999967422110000000001188555899945397344210010000001355199989874379898887211010000023675338643369847456411035565388411534000"
+    },
+    "starter_car": {
+      "hash": "1ee6b46cba45fc6a",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "The town gives every newcomer a small car. It waits in your garage at the car lot, a short walk west of the town hall. Take it out at the garage counter.",
+      "chars": 153,
+      "chars_total": 61,
+      "request_id": "P3v8vzbJuSrij6tiFaft",
+      "seconds": 14.19,
+      "mouth": "59924549997665411000002295431001899767999999234865542113355399886135655421100000000000000001793468999423435887733888998888843127714623349998864222110000000000001567765999457998621210011110012998444274363334877632765341100000000000000000100000497812989872111103741652989987643336533400"
+    },
+    "apples": {
+      "hash": "1c5a52ead5668dc5",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "Drive out to the orchard east of the town and pick nine apples from the trees.",
+      "chars": 78,
+      "chars_total": 31,
+      "request_id": "RP7TqI9N83jPUyqItV7B",
+      "seconds": 6.3,
+      "mouth": "4799999541798751145957112998347543100087552784561433655542110000000000048711996223236899998895126871165445325666533264332222000"
+    },
+    "juice": {
+      "hash": "99fb0a943aceee7f",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "The juice press stands on the orchard stall. Three apples make one bottle of apple juice. Press at least one bottle.",
+      "chars": 116,
+      "chars_total": 46,
+      "request_id": "F2yxvsZeqoNC3jM92EwG",
+      "seconds": 9.22,
+      "mouth": "59954699874199875433210100122039999973311368766411289825552541785444210000000000000149798622599921743443112787124998749878642779834633553442100000001100006999442249656864228886786644000"
+    },
+    "market": {
+      "hash": "f92710cba0e63aa9",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "Take your apple juice to the market trader in the town and sell it.",
+      "chars": 67,
+      "chars_total": 27,
+      "request_id": "Ymj7Hx1K3IlW5qIqJ6Xp",
+      "seconds": 4.13,
+      "mouth": "89943983299929623775442136788898625224476453112799853226656752100026644366441111100"
     }
   },
   "voice": {

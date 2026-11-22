@@ -354,6 +354,116 @@ AudioClass {
    outState 35851
    outStatePort 79879
   }
+  SoundClass {
+   id 115721
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_PACK"
+   version 5
+   tl 680 3640
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 218130
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 116745
+   name "SOUND_DLG_CLERK_EVERON_STARTER_CAR"
+   version 5
+   tl 680 3920
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 219154
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 117769
+   name "SOUND_DLG_CLERK_EVERON_APPLES"
+   version 5
+   tl 680 4200
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 220178
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 118793
+   name "SOUND_DLG_CLERK_EVERON_JUICE"
+   version 5
+   tl 680 4480
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 221202
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 119817
+   name "SOUND_DLG_CLERK_EVERON_MARKET"
+   version 5
+   tl 680 4760
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 222226
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
  }
  mixers {
   MixerClass {
@@ -416,6 +526,26 @@ AudioClass {
       }
       ConnectionClass connection {
        id 114697
+       port 65
+      }
+      ConnectionClass connection {
+       id 115721
+       port 65
+      }
+      ConnectionClass connection {
+       id 116745
+       port 65
+      }
+      ConnectionClass connection {
+       id 117769
+       port 65
+      }
+      ConnectionClass connection {
+       id 118793
+       port 65
+      }
+      ConnectionClass connection {
+       id 119817
        port 65
       }
      }
@@ -1069,6 +1199,241 @@ AudioClass {
     23 0
    }
   }
+  ShaderClass {
+   id 218130
+   name "SOUND_DLG_CLERK_EVERON_WELCOME_PACK"
+   version 5
+   tl 432 3640
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 320516
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 219154
+   name "SOUND_DLG_CLERK_EVERON_STARTER_CAR"
+   version 5
+   tl 432 3920
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 321540
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 220178
+   name "SOUND_DLG_CLERK_EVERON_APPLES"
+   version 5
+   tl 432 4200
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 322564
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 221202
+   name "SOUND_DLG_CLERK_EVERON_JUICE"
+   version 5
+   tl 432 4480
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 323588
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 222226
+   name "SOUND_DLG_CLERK_EVERON_MARKET"
+   version 5
+   tl 432 4760
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 324612
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
  }
  amplitudes {
   AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
@@ -1257,6 +1622,66 @@ AudioClass {
     }
    }
   }
+  BankLocalClass {
+   id 320516
+   name "DLG_CLERK_EVERON_WELCOME_PACK"
+   version 7
+   tl 150 3640
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{433A7FB578856C3D}Sounds/Dialogue/clerk_everon/clerk_everon_welcome_pack.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 321540
+   name "DLG_CLERK_EVERON_STARTER_CAR"
+   version 7
+   tl 150 3920
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{E756D795D3886AF6}Sounds/Dialogue/clerk_everon/clerk_everon_starter_car.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 322564
+   name "DLG_CLERK_EVERON_APPLES"
+   version 7
+   tl 150 4200
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{7AC3677159315B50}Sounds/Dialogue/clerk_everon/clerk_everon_apples.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 323588
+   name "DLG_CLERK_EVERON_JUICE"
+   version 7
+   tl 150 4480
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{E634F02F0CD5FAD8}Sounds/Dialogue/clerk_everon/clerk_everon_juice.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 324612
+   name "DLG_CLERK_EVERON_MARKET"
+   version 7
+   tl 150 4760
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{0644E0B2274E5BC0}Sounds/Dialogue/clerk_everon/clerk_everon_market.wav"
+    }
+   }
+  }
  }
  spatialities {
   SpatialityClass : "{68C6E66C2A370788}Sounds/_SharedData/Configs/Spatiality/Spatiality_Signal_Update.conf" {
@@ -1343,6 +1768,26 @@ AudioClass {
       }
       ConnectionClass connection {
        id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
+      ConnectionClass connection {
+       id 116745
+       port 5
+      }
+      ConnectionClass connection {
+       id 117769
+       port 5
+      }
+      ConnectionClass connection {
+       id 118793
+       port 5
+      }
+      ConnectionClass connection {
+       id 119817
        port 5
       }
      }
@@ -1432,6 +1877,26 @@ AudioClass {
        id 114697
        port 5
       }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
+      ConnectionClass connection {
+       id 116745
+       port 5
+      }
+      ConnectionClass connection {
+       id 117769
+       port 5
+      }
+      ConnectionClass connection {
+       id 118793
+       port 5
+      }
+      ConnectionClass connection {
+       id 119817
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -1517,6 +1982,26 @@ AudioClass {
       }
       ConnectionClass connection {
        id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
+      ConnectionClass connection {
+       id 116745
+       port 5
+      }
+      ConnectionClass connection {
+       id 117769
+       port 5
+      }
+      ConnectionClass connection {
+       id 118793
+       port 5
+      }
+      ConnectionClass connection {
+       id 119817
        port 5
       }
      }
