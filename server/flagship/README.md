@@ -33,6 +33,10 @@ Delete them and run `tools\cli host config apply` to go back to the shipped pace
 Pay is untouched: police duty $900/h and medic $792/h stay 1.5 to 2.5x the civilian runs (`tools\cli economy`).
 `validate-flagship-job-gates` still refuses `jobs.testUnlockAll`; the alpha switch opens only the police application.
 
+Turning it off leaves what it already gave: officers approved under `police.alphaInstantApproval` have no trial and
+stay on the police roster (`$profile:LifeFramework/whitelist.txt`) until a wipe or an administrator removes them, and
+permits already issued stay valid. The switch grants police membership only, never admin rights.
+
 ## Host-only values (never in this folder)
 
 | Value | Where it lives instead |
