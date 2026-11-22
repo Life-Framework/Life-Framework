@@ -1,4 +1,4 @@
-// Harness verb `playermenu open [person|progress]|pick <row>|close|state` (the personal file, client
+// Harness verb `playermenu open [person|progress|next]|pick <row>|close|state` (the personal file, client
 // side). `open` shows the file on a tab the way the F2 key does and asks the server; `pick <n>` reads
 // the n-th skill (person tab) or quest (progress tab) as its Read button does; `state` answers
 // `open=<0|1> tab=<n> data=<0|1> skills=<n> quests=<n> licences=<n>` so a proof waits for the answer.
@@ -16,6 +16,8 @@ modded class LF_AgentHarnessVerbs
 			int tab = LF_PlayerMenuSheet.TAB_PERSON;
 			if (cmd.Arg2 == "progress")
 				tab = LF_PlayerMenuSheet.TAB_PROGRESS;
+			else if (cmd.Arg2 == "next")
+				tab = LF_PlayerMenuSheet.TAB_NEXT;
 
 			if (!LF_PlayerMenuSheet.Open(tab))
 			{
@@ -76,7 +78,7 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
-		LF_AgentHarness.Answer(cmd.Id, "error", "usage: playermenu open [person|progress]|pick <n>|close|state");
+		LF_AgentHarness.Answer(cmd.Id, "error", "usage: playermenu open [person|progress|next]|pick <n>|close|state");
 		return true;
 	}
 }

@@ -13,3 +13,4 @@
 - ✅ Tests: `LF_Test_PlayerMenuXp`, `LF_Test_PlayerMenuData` (LOGIC). Proof: `player-menu-proof` session verb.
 - ⬜ A portrait of the character (the ID card's `PORTRAIT` part needs the look from the server).
 - ⬜ Quest chapters: quests carry no chapter field yet, so the list groups the guided chain and the rest.
+- ✅ **Next tab** (2026-11-22): what the player can start now, with pitch, pay an hour, distance and state; **Start** / **Guide me** run a guided starter (`docs/features/activities.md`). Harness `playermenu open next`, `activities state|pick <n>|go`.

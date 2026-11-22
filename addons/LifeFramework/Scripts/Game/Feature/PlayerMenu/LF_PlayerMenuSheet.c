@@ -13,6 +13,7 @@ class LF_PlayerMenuSheet
 	static const string PART_TABS = "PlayerMenuTabs";
 	static const string PART_TAB_PERSON = "PlayerMenuPersonButton";
 	static const string PART_TAB_PROGRESS = "PlayerMenuProgressButton";
+	static const string PART_TAB_NEXT = "PlayerMenuNextButton";
 	static const string PART_IDENTITY = "PlayerMenuIdentity";
 	static const string PART_MONEY = "PlayerMenuMoney";
 	static const string PART_STATUS = "PlayerMenuStatus";
@@ -36,6 +37,8 @@ class LF_PlayerMenuSheet
 
 	static const int TAB_PERSON = 0;
 	static const int TAB_PROGRESS = 1;
+	//! What to do next: the activities the player can start (LF_ActivityPage).
+	static const int TAB_NEXT = 2;
 
 	protected static ref LF_UIScreen s_Screen;
 	protected static ref LF_PlayerMenuSheet s_Sheet;
@@ -126,8 +129,8 @@ class LF_PlayerMenuSheet
 	{
 		Hide();
 		s_iTab = TAB_PERSON;
-		if (tab == TAB_PROGRESS)
-			s_iTab = TAB_PROGRESS;
+		if (tab == TAB_PROGRESS || tab == TAB_NEXT)
+			s_iTab = tab;
 
 		s_Sheet = new LF_PlayerMenuSheet();
 		LF_UIScreen screen = s_Sheet.Show();
@@ -136,6 +139,9 @@ class LF_PlayerMenuSheet
 			controller.LF_AskPlayerMenu();
 		else
 			LF_Debug.Warn(LF_PlayerMenuServer.FEATURE, "file not asked: no player controller");
+
+		if (s_iTab == TAB_NEXT)
+			LF_ActivityPage.Ask();
 
 		return screen;
 	}
@@ -185,6 +191,8 @@ class LF_PlayerMenuSheet
 		array<ref LF_UIPart> parts;
 		if (s_iTab == TAB_PROGRESS)
 			parts = BuildProgress(s_Data);
+		else if (s_iTab == TAB_NEXT)
+			parts = BuildNext();
 		else
 			parts = BuildPerson(s_Data);
 
@@ -203,10 +211,18 @@ class LF_PlayerMenuSheet
 		screen.GetOnButton().Insert(OnButton);
 		screen.CloseOnDeath();
 		screen.CloseWhenUncontrolled();
-		if (s_Data)
-			screen.SetListHeight(PART_LIST, LIST_HEIGHT);
+		if (s_iTab == TAB_NEXT)
+		{
+			LF_ActivityPage.Fill(screen);
+		}
+		else
+		{
+			if (s_Data)
+				screen.SetListHeight(PART_LIST, LIST_HEIGHT);
 
-		FillList(screen, s_Data);
+			FillList(screen, s_Data);
+		}
+
 		LF_Debug.Info(LF_PlayerMenuServer.FEATURE, "file open on tab " + s_iTab.ToString());
 		return screen;
 	}
@@ -225,18 +241,23 @@ class LF_PlayerMenuSheet
 		string title = "#LF-PlayerMenu_TitlePerson";
 		if (tab == TAB_PROGRESS)
 			title = "#LF-PlayerMenu_TitleProgress";
+		else if (tab == TAB_NEXT)
+			title = "#LF-Activity_Title";
 
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, PART_TITLE, title));
-		array<string> names = {PART_TAB_PERSON, PART_TAB_PROGRESS};
+		array<string> names = {PART_TAB_PERSON, PART_TAB_PROGRESS, PART_TAB_NEXT};
 		// The open tab is printed between dots; the title names it too.
 		string person = LF_Terms.Text("#LF-PlayerMenu_TabPerson");
 		string progress = LF_Terms.Text("#LF-PlayerMenu_TabProgress");
+		string next = LF_Terms.Text("#LF-Activity_Tab");
 		if (tab == TAB_PROGRESS)
 			progress = LF_Terms.Text("#LF-PlayerMenu_TabOpen", progress);
+		else if (tab == TAB_NEXT)
+			next = LF_Terms.Text("#LF-PlayerMenu_TabOpen", next);
 		else
 			person = LF_Terms.Text("#LF-PlayerMenu_TabOpen", person);
 
-		array<string> texts = {person, progress};
+		array<string> texts = {person, progress, next};
 		parts.Insert(LF_UIPart.CreateKeys(PART_TABS, names, texts));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RULE, "PlayerMenuRuleTop", string.Empty));
 		return parts;
@@ -308,6 +329,24 @@ class LF_PlayerMenuSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The WHAT TO DO NEXT page (LF_ActivityPage): its own answer, asked when the tab opens.
+	static array<ref LF_UIPart> BuildNext()
+	{
+		array<ref LF_UIPart> parts = Header(TAB_NEXT);
+		LF_ActivityPage.AddParts(parts);
+		Footer(parts);
+		return parts;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The activities answer arrived: print the tab again when it is the one open.
+	static void OnActivities(bool changed)
+	{
+		if (changed && IsOpen() && s_Sheet && s_iTab == TAB_NEXT)
+			GetGame().GetCallqueue().CallLater(s_Sheet.ShowLater, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The list rows of the open tab: one per skill, or the quests under their group rows.
 	protected static void FillList(notnull LF_UIScreen screen, LF_PlayerMenuData data)
 	{
@@ -352,20 +391,28 @@ class LF_PlayerMenuSheet
 	//------------------------------------------------------------------------------------------------
 	protected void OnButton(string name)
 	{
-		if (name == PART_TAB_PERSON || name == PART_TAB_PROGRESS)
+		if (name == PART_TAB_PERSON || name == PART_TAB_PROGRESS || name == PART_TAB_NEXT)
 		{
 			int tab = TAB_PERSON;
 			if (name == PART_TAB_PROGRESS)
 				tab = TAB_PROGRESS;
+			else if (name == PART_TAB_NEXT)
+				tab = TAB_NEXT;
 
 			if (tab == s_iTab)
 				return;
 
 			s_iTab = tab;
+			if (tab == TAB_NEXT)
+				LF_ActivityPage.Ask();
+
 			// The press runs inside the old sheet; build the next one after it has finished.
 			GetGame().GetCallqueue().CallLater(ShowLater, 0, false);
 			return;
 		}
+
+		if (s_iTab == TAB_NEXT && LF_ActivityPage.OnButton(s_Screen, name))
+			return;
 
 		if (name.StartsWith(ROW_SKILL))
 		{

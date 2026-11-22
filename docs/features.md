@@ -23,6 +23,7 @@
 ## Areas
 
 - [Account & Persistence](features/account-persistence.md)
+- [Activities](features/activities.md)
 - [Agent box](features/agent-box.md)
 - [Atmosphere (music and background sound)](features/atmosphere.md)
 - [Carry](features/carry.md)

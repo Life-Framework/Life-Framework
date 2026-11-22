@@ -2090,6 +2090,106 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "PLEASE WAIT ..."
      Comment "ATM terminal status line while the server handles a request."
     }
+    CustomStringTableItem "{6AFAA16B46ED882D}" {
+     Id "LF-Activity_FactsDone"
+     Target_en_us "You know the way now. Keep at it to level up."
+     Comment "Next tab line for a done activity."
+    }
+    CustomStringTableItem "{414E495D4669B3BB}" {
+     Id "LF-Activity_FactsStep"
+     Target_en_us "Step %1 of %2: %3"
+     Comment "Next tab line for a running activity. %1 step number, %2 step count, %3 the step's title."
+    }
+    CustomStringTableItem "{C70A4369B3A513B9}" {
+     Id "LF-Activity_FactsSteps"
+     Target_en_us "%1 short steps, each with a waypoint."
+     Comment "Next tab line for an activity not started. %1 is the number of steps."
+    }
+    CustomStringTableItem "{6E9D97E2C0EE30C6}" {
+     Id "LF-Activity_Guide"
+     Target_en_us "Guide me"
+     Comment "Next tab button on a running activity: put the waypoint back on its current step."
+    }
+    CustomStringTableItem "{917EF52F3C24A83B}" {
+     Id "LF-Activity_Guided"
+     Target_en_us "The waypoint is back on your current step."
+     Comment "Next tab line after Guide me."
+    }
+    CustomStringTableItem "{366A7B92337FE227}" {
+     Id "LF-Activity_Kilometres"
+     Target_en_us "%1 km away"
+     Comment "Next tab distance. %1 is kilometres with one decimal."
+    }
+    CustomStringTableItem "{3C9143AD27977EBB}" {
+     Id "LF-Activity_Metres"
+     Target_en_us "%1 m away"
+     Comment "Next tab distance under a kilometre. %1 is metres."
+    }
+    CustomStringTableItem "{3471AB6ECF42E732}" {
+     Id "LF-Activity_None"
+     Target_en_us "Nothing new to start right now. Check back after your next level."
+     Comment "Next tab line when no activity is open to the player."
+    }
+    CustomStringTableItem "{D0DAF9C307AB6A0D}" {
+     Id "LF-Activity_PayDistance"
+     Target_en_us "%1 · %2"
+     Comment "Next tab row status. %1 is the pay an hour, %2 the distance."
+    }
+    CustomStringTableItem "{16B4C404FE5B8ED1}" {
+     Id "LF-Activity_PayHour"
+     Target_en_us "about %1 an hour"
+     Comment "Next tab row status. %1 is money, e.g. $470."
+    }
+    CustomStringTableItem "{4835914B88D22934}" {
+     Id "LF-Activity_PayUnknown"
+     Target_en_us "pay varies"
+     Comment "Next tab row status when the pay an hour is not known."
+    }
+    CustomStringTableItem "{BC67C95738DDED4A}" {
+     Id "LF-Activity_Refused"
+     Target_en_us "That cannot start right now."
+     Comment "Next tab line when the server refused Start."
+    }
+    CustomStringTableItem "{AF249A8804DAF7AF}" {
+     Id "LF-Activity_RowStarted"
+     Target_en_us "%1 · started"
+     Comment "Next tab row status of a running activity. %1 is pay and distance."
+    }
+    CustomStringTableItem "{5B14E9465D155E95}" {
+     Id "LF-Activity_Start"
+     Target_en_us "Start"
+     Comment "Next tab button: begin the picked activity's guided first steps."
+    }
+    CustomStringTableItem "{9A24A1CE4D148E68}" {
+     Id "LF-Activity_Started"
+     Target_en_us "Started. Follow the waypoint on your screen and map."
+     Comment "Next tab line after Start was accepted."
+    }
+    CustomStringTableItem "{B94F998107F25B04}" {
+     Id "LF-Activity_StateDone"
+     Target_en_us "Done"
+     Comment "Next tab: the activity's guided steps are all done."
+    }
+    CustomStringTableItem "{58A349D528905815}" {
+     Id "LF-Activity_Summary"
+     Target_en_us "Ways to earn a living. Pick one and press Start: each step puts a waypoint on your map."
+     Comment "Next tab line above the activity list."
+    }
+    CustomStringTableItem "{51D3548DA687534E}" {
+     Id "LF-Activity_Tab"
+     Target_en_us "Next"
+     Comment "Player menu tab label: what to do next (the activities the player can start)."
+    }
+    CustomStringTableItem "{E073897869DE9A6D}" {
+     Id "LF-Activity_Title"
+     Target_en_us "PERSONAL FILE · WHAT TO DO NEXT"
+     Comment "Player menu title on the next tab."
+    }
+    CustomStringTableItem "{E4BA7BB0A0BF3887}" {
+     Id "LF-Activity_Waiting"
+     Target_en_us "Looking up what you can do..."
+     Comment "Next tab line while the server's answer is on its way."
+    }
     CustomStringTableItem "{5E1B7A39C2D40F68}" {
      Id "LF-Arrival_ClerkMark"
      Target_en_us "The registry clerk"

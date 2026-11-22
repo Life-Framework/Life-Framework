@@ -50,6 +50,7 @@
     "LF_PrefabSlotsConfig",
     "LF_QualificationConfig",
     "LF_QuestGiverConfig",
+    "LF_ActivityConfig",
     "LF_QuizBank",
     "LF_QuizConfig",
     "LF_QuizQuestion",
