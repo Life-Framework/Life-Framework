@@ -1,0 +1,90 @@
+GenericEntity Fit_saint_philippe_bus_stops_drop_b45 : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b45"
+   m_sLabel "#LF-BusStop_Everon_Square"
+  }
+ }
+ coords 4423.186 12.53 10655.964
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_bus_stops_drop_b12 : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b12"
+   m_sLabel "#LF-BusStop_Everon_ShopStreet"
+  }
+ }
+ coords 4511.597 15.33 10737.802
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_dock_bus_stops_drop_b03 : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe-dock.b03"
+   m_sLabel "#LF-BusStop_Everon_Dock"
+  }
+ }
+ coords 4414.727 1.73 11048.875
+ angleY -150
+}
+GenericEntity Fit_saint_philippe_bus_stops_drop_b107 : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b107"
+   m_sLabel "#LF-BusStop_Everon_Fuel"
+  }
+ }
+ coords 4616.495 18.83 10660.192
+ angleY -10
+}
+GenericEntity Fit_saint_philippe_bus_stops_drop_b32 : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b32"
+   m_sLabel "#LF-BusStop_Everon_Police"
+  }
+ }
+ coords 4550.259 17.75 10752.131
+ angleY -9
+}
+GenericEntity Fit_saint_philippe_bus_stops_drop_b39 : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b39"
+   m_sLabel "#LF-BusStop_Everon_Clinic"
+  }
+ }
+ coords 4430.655 10.73 10776.429
+ angleY 152
+}
+GenericEntity Fit_saint_philippe_bus_stops_drop_b77 : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b77"
+   m_sLabel "#LF-BusStop_Everon_CarLot"
+  }
+ }
+ coords 4395.014 15.63 10634.268
+ angleY -9
+}
+GenericEntity Fit_saint_philippe_bus_stops_drop_b121 : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b121"
+   m_sLabel "#LF-BusStop_Everon_Woodlot"
+  }
+ }
+ coords 4351.676 13.67 10631.835
+ angleY -11
+}
+GenericEntity Fit_saint_philippe_bus_stops_drop_b73 : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b73"
+   m_sLabel "#LF-BusStop_Everon_Farm"
+  }
+ }
+ coords 4423.392 16.83 10604.711
+ angleY 176
+}

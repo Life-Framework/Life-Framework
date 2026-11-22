@@ -53,6 +53,7 @@
 - [NPC dialogue scenes (spike, 2026-11-13)](features/npc-dialogue-scenes.md)
 - [Ownership](features/ownership.md)
 - [Payphone (#247)](features/payphone.md)
+- [Player menu (personal file)](features/player-menu.md)
 - [Processing](features/processing.md)
 - [Property](features/property.md)
 - [Qualifications](features/qualifications.md)

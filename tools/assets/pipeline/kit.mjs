@@ -47,7 +47,10 @@ function writeMetas(root, kit, report) {
   const emats = {};
   for (const mat of Object.keys(report.materials)) {
     const tex = {};
-    for (const [suffix, conf] of [["BCR", "TextureColorMap.conf"], ["NMO", "TextureNType.conf"]]) {
+    const glow = (kit.emissive || {})[mat]; // an _EM map too: a light box, a screen (atm-wall)
+    const maps = [["BCR", "TextureColorMap.conf"], ["NMO", "TextureNType.conf"]];
+    if (glow) maps.push(["EM", "TextureColorMap.conf"]);
+    for (const [suffix, conf] of maps) {
       const res = `${data}/${mat}_${suffix}.edds`;
       const guid = guidFor(res);
       if (!existsSync(join(addon, res + ".meta"))) put(res + ".meta", textureMeta(res, conf, guid));
@@ -55,7 +58,7 @@ function writeMetas(root, kit, report) {
     }
     const res = `${data}/${mat}.emat`;
     const guid = guidFor(res);
-    if (!existsSync(join(addon, res))) put(res, ematText(tex));
+    if (!existsSync(join(addon, res))) put(res, ematText(tex, glow));
     if (!existsSync(join(addon, res + ".meta"))) put(res + ".meta", ematMeta(res, guid));
     emats[mat] = `{${guid}}${res}`;
   }
@@ -97,7 +100,7 @@ function importKit(root, kit, out, report, { workbench }) {
   mkdirSync(join(abs, "Data"), { recursive: true });
   const sources = [];
   for (const mat of Object.keys(report.materials)) {
-    for (const s of ["BCR", "NMO"]) {
+    for (const s of (kit.emissive || {})[mat] ? ["BCR", "NMO", "EM"] : ["BCR", "NMO"]) {
       const dst = join(abs, "Data", `${mat}_${s}.tif`);
       copyFileSync(join(out, "tex", `${mat}_${s}.tif`), dst);
       sources.push(dst);

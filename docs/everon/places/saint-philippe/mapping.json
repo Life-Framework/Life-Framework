@@ -305,8 +305,8 @@
     },
     "atms": {
       "drops": [
-        { "place": "saint-philippe", "building": "b79" },
-        { "place": "saint-philippe", "building": "b97" },
+        { "place": "saint-philippe", "building": "b79", "sideways": -0.8 },
+        { "place": "saint-philippe", "building": "b97", "sideways": 0.8 },
         { "place": "saint-philippe-dock", "building": "b08", "lift": -0.27 }
       ],
       "why": [
@@ -325,6 +325,22 @@
       "why": [
         "D10 pick (#3346), card X6 #3358: five booths for the M6 beat 'a taxi from a payphone on the square': the square (b06, the town house row on the square, a kerb the market, chess table and board do not hold; the vanilla booth at 4406, 10653 stays alone), the fuel station (b97), the clinic (b39), the dock (dk:b14, the harbour master's cabin) and the districts junction (di:b26, the house at the five-road crossroads at 4577, 10737)",
         "the 6 m margin lets a booth stand at the kerb beside its building"
+      ]
+    },
+    "bus-stops": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b45", "label": "#LF-BusStop_Everon_Square" },
+        { "place": "saint-philippe", "building": "b12", "label": "#LF-BusStop_Everon_ShopStreet" },
+        { "place": "saint-philippe-dock", "building": "b03", "label": "#LF-BusStop_Everon_Dock" },
+        { "place": "saint-philippe", "building": "b107", "label": "#LF-BusStop_Everon_Fuel" },
+        { "place": "saint-philippe", "building": "b32", "label": "#LF-BusStop_Everon_Police", "dy": -0.48 },
+        { "place": "saint-philippe", "building": "b39", "label": "#LF-BusStop_Everon_Clinic" },
+        { "place": "saint-philippe", "building": "b77", "label": "#LF-BusStop_Everon_CarLot" },
+        { "place": "saint-philippe", "building": "b121", "label": "#LF-BusStop_Everon_Woodlot", "dy": -0.46 },
+        { "place": "saint-philippe", "building": "b73", "label": "#LF-BusStop_Everon_Farm", "sideways": 0.8 }
+      ],
+      "why": [
+        "bus stops (maintainer 2026-11-22: pay cash, wait at the stop, get off at another): the town hall square, the shop street, the dock, the fuel station, the police station, the clinic, the car lot and the two job areas in reach, the timber yard and the farm plots barn (b73; the open wheat barn farmwest b19 seated the sign on an inner post). A sign at the kerb beside each building, placed like a payphone (back to the wall). The Coalman's Brow mine is a hostless plot with no building to seat a sign on: its stop is a follow-up (a ground-mounted stop)"
       ]
     },
     "street-life": {
