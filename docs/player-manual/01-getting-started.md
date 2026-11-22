@@ -9,6 +9,18 @@ nobody can shoot you there.
 You start with **$1,000 in the bank** and very little cash, a work jacket, boots, and a **folded paper map** in your pack.
 After you die or rejoin you do not wake in the hostel again; see [Money](02-money.md) and [Medic](08-medic.md).
 
+## The welcome guide
+
+A few seconds after you get out of bed a short **welcome guide** opens: five paper pages on what to do first, money,
+the map, police and medic duty, and where to read more. Turn the pages with **Next** and **Previous**.
+
+* **Set waypoint to the clerk** (page 1) puts a waypoint on the registry clerk, the first errand. If you are further
+  along, it points at your current errand instead.
+* **Close** puts it away; it opens again the next time you join.
+* **Don't show again** stops it opening by itself.
+* Press **F3** (gamepad: **right bumper + Y**) to open it again at any time. You can change the key in
+  **Settings, Controls, Life Framework**.
+
 ## The arrival quest
 
 A quest panel on screen tells you what to do next. Each step puts a **waypoint with a distance** on your screen and a
