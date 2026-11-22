@@ -40,6 +40,9 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	[Attribute("0", desc: "Lock the vehicle when the world starts (a placed car, like LF_LockComponent.m_bDebugLocked on a door).")]
 	protected bool m_bDebugLocked;
 
+	[Attribute("0", desc: "A placed job car (the taxi rank's cab): a job started beside it hands it to that job's driver (HandNearestJobVehicle). Off: no job hands it out.")]
+	protected bool m_bJobCar;
+
 	[RplProp()]
 	protected bool m_bELIsLocked;
 
@@ -71,6 +74,12 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	//! only: the server still checks LF_VehicleOwnership before it stores anything.
 	[RplProp()]
 	protected string m_sOwnerUid;
+
+	//! A job vehicle (no free cars): the player id of the one driver the job gave it to (the garbage round's truck, the
+	//! depot tanker after a load is bought); -1 none. While set, only that player gets in, whatever the locked
+	//! flag says. Server-written by the job; session state like the job itself, never saved.
+	[RplProp()]
+	protected int m_iJobDriverPlayerId = -1;
 
 	//------------------------------------------------------------------------------------------------
 	//! A key matches when both identifiers are non-empty and equal. Two empty identifiers must not
@@ -122,11 +131,132 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	//! \return True when the vehicle is locked.
 	override bool IsLocked(IEntity user, BaseCompartmentSlot compartmentSlot)
 	{
-		// VehicleLock off (#1076): a locked flag still saved on the vehicle does not shut the doors.
-		if (m_bELIsLocked && LF_Systems.IsEnabled("VehicleLock"))
+		// No slot named: the strict answer, as for the driver's seat.
+		bool pilot = !compartmentSlot || PilotCompartmentSlot.Cast(compartmentSlot) != null;
+		if (!MayEnter(user, pilot))
 			return true;
 
 		return super.IsLocked(user, compartmentSlot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The one entry rule ("no free cars"), pure. A service car opens for an officer on duty only, locked or not.
+	//! A job vehicle's wheel is its job driver's only, locked or not; its other seats (a taxi fare, a mate on the
+	//! round) follow the locked flag like any car. Any other car opens when it is unlocked.
+	//! \param systemOn LF_Systems "VehicleLock" is on; off (#1076) a saved locked flag shuts no door.
+	//! \param jobDriverId The job vehicle's driver player id; -1 when the car is no job vehicle.
+	//! \param userPlayerId The asking character's player id; 0 or -1 for no player.
+	//! \param pilot The seat asked for is the driver's.
+	static bool EntryRule(bool systemOn, bool locked, bool service, bool onDutyPolice, int jobDriverId, int userPlayerId, bool pilot)
+	{
+		if (!systemOn)
+			return true;
+
+		if (service)
+			return onDutyPolice;
+
+		if (jobDriverId > 0 && pilot)
+			return userPlayerId == jobDriverId;
+
+		return !locked;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when `user` may get into this vehicle now. Reads replicated state only, so the client's
+	//! get-in offer and the server's entry guard (LF_VehicleEntryGuard) agree.
+	//! \param pilot The seat asked for is the driver's.
+	bool MayEnter(IEntity user, bool pilot = true)
+	{
+		return EntryRule(LF_Systems.IsEnabled("VehicleLock"), m_bELIsLocked, m_bServiceVehicle, IsServiceDriver(user), m_iJobDriverPlayerId, LF_PlayerInteraction.PlayerIdOf(user), pilot);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True for a placed job car (m_bJobCar): only a job hands it out.
+	bool IsJobCar()
+	{
+		return m_bJobCar;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return The job driver's player id; -1 when this is no job vehicle.
+	int GetJobDriverPlayerId()
+	{
+		return m_iJobDriverPlayerId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return True when a job driver is set and that player is still on the server.
+	bool IsHeldByOnlinePlayer()
+	{
+		if (m_iJobDriverPlayerId <= 0 || !GetGame() || !GetGame().GetPlayerManager())
+			return false;
+
+		return GetGame().GetPlayerManager().GetPlayerControlledEntity(m_iJobDriverPlayerId) != null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: hands the nearest locked job car within `radius` of `point` (the taxi rank's cab) to `driver`.
+	//! A car whose holder stands within `radius` of it is skipped. \return The car's lock, or null (logged) when none is free.
+	static LF_VehicleLockComponent HandNearestJobVehicle(IEntity point, float radius, IEntity driver)
+	{
+		if (!Replication.IsServer() || !point || !driver)
+			return null;
+
+		int playerId = LF_PlayerInteraction.PlayerIdOf(driver);
+		LF_VehicleLockComponent best;
+		float bestDistance = radius;
+		array<IEntity> vehicles = LF_Utils.GetNearbyVehicles(point.GetOrigin(), radius);
+		foreach (IEntity vehicle : vehicles)
+		{
+			LF_VehicleLockComponent candidate = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
+			if (!candidate || !candidate.IsJobCar())
+				continue;
+
+			// A cab whose holder is still beside it (or in it) is theirs; one left at the rank goes to the next driver.
+			int holder = candidate.GetJobDriverPlayerId();
+			if (holder > 0 && holder != playerId && candidate.IsHeldByOnlinePlayer())
+			{
+				IEntity holderBody = GetGame().GetPlayerManager().GetPlayerControlledEntity(holder);
+				if (vector.Distance(holderBody.GetOrigin(), vehicle.GetOrigin()) <= radius)
+					continue;
+			}
+
+			float distance = vector.Distance(point.GetOrigin(), vehicle.GetOrigin());
+			if (distance <= bestDistance)
+			{
+				bestDistance = distance;
+				best = candidate;
+			}
+		}
+
+		if (!best)
+		{
+			LF_Debug.Warn("VehicleLock", string.Format("no free job car within %1 m of %2 for player %3", radius, point.GetOrigin(), playerId));
+			return null;
+		}
+
+		best.SetJobDriver(playerId);
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: gives the vehicle to one job driver (only they take the wheel; the doors unlock so riders board),
+	//! or -1 to end that: the car locks again.
+	void SetJobDriver(int playerId)
+	{
+		if (!Replication.IsServer())
+			return;
+
+		if (playerId <= 0)
+			playerId = -1;
+
+		if (m_iJobDriverPlayerId == playerId)
+			return;
+
+		m_iJobDriverPlayerId = playerId;
+		SetLocked(playerId < 0);
+		Replication.BumpMe();
+		LF_Debug.Info("VehicleLock", string.Format("job driver of %1 -> player %2", m_sVehicleIdentifier, playerId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -224,7 +354,7 @@ class LF_VehicleLockComponent : SCR_BaseLockComponent
 	//! \return A localized reason when locked, else the base spawn-protection text.
 	override LocalizedString GetCannotPerformReason(IEntity user)
 	{
-		if (m_bELIsLocked)
+		if (!MayEnter(user, false))
 			return "#EL-VehicleLock_Reason";
 
 		return super.GetCannotPerformReason(user);

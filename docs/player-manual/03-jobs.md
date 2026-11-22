@@ -240,14 +240,14 @@ The drops are on the east side (a house near the district road) and four along t
 
 **Status:** ❌ **not on the island yet.** The route job is built and tested in the test grid only. No depot desk, truck or dump is placed.
 
-The plan: take the garbage round at a depot desk, drive the company truck to the 5 nearest bins in order, **Empty bin** at each, and **Tip the load** at the dump.
+The plan: take the garbage round at a depot desk, drive the company truck to the 5 nearest bins in order, **Empty bin** at each, and **Tip the load** at the dump. The truck opens only for you.
 It pays **$15 a bin plus a $25 bonus, $100 a round** (about $400 an hour, no buy-in).
 
 ## Fuel haul
 
 **Status:** ❌ **not on the island yet.** The code and a fuel depot yard at Montignac exist, but no fuel pickup or depot desk is placed, so the run cannot start.
 
-The plan: buy a **1,000-litre load** at the Montignac depot at $0.90 a litre, pump it into a station tank and earn **$1.35 a litre**
+The plan: buy a **1,000-litre load** at the Montignac depot at $0.90 a litre (the locked depot tanker then opens for you alone), pump it into a station tank and earn **$1.35 a litre**
 (a $450 margin per haul, about $450 an hour). The **filling station** pumps in town sell from a 3,000-litre tank (**$2 a litre**). If the tank runs dry
 the pump says "The tanks are dry. The depot truck is due."
 
