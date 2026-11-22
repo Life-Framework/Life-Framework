@@ -31,17 +31,17 @@ GenericEntity Fit_saint_philippe_bank_bank_furniture_01 : "{054FFEA0FE082CAE}Pre
  coords 4368.8 12 10655.9
  angleY 173
 }
-GenericEntity Fit_saint_philippe_bank_lf_bank_vault : "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et" {
+GenericEntity Fit_saint_philippe_bank_lf_bank_vault : "{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et" {
  components {
-  LF_BankVaultComponent "{3B1F6C0A7D2E4858}" {
+  LF_BreachTargetComponent "{A7D41E0C3B985208}" {
+   m_sTargetId "bank_vault"
+   m_fSwingYaw 55
+  }
+  LF_BankVaultComponent "{A7D41E0C3B985209}" {
    m_sVaultId "bank_vault"
   }
  }
- coords 4359.46 12.792 10650.32
- angleY 173
-}
-GenericEntity Fit_saint_philippe_bank_lf_bank_vault_small_roof : "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et" {
- coords 4359.518 15.475 10650.674
+ coords 4364.919 13.097 10656.451
  angleY 173
 }
 GenericEntity Fit_saint_philippe_bank_lf_money_bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
@@ -51,7 +51,7 @@ GenericEntity Fit_saint_philippe_bank_lf_money_bag : "{65DE48DCC1D4DD01}Prefabs/
    m_sId "bank_vault"
   }
  }
- coords 4359.218 13.263 10652.295
+ coords 4363.182 13.097 10658.988
  angleY 173
 }
 GenericEntity Fit_saint_philippe_bank_lf_locker_bank : "{271A5DA917F4DF47}Prefabs/Props/Lockers/LF_LockerBank.et" {
@@ -102,7 +102,7 @@ GenericEntity Fit_saint_philippe_bank_lf_sign_atm : "{884DF4029C8307DB}Prefabs/P
  angleY 173
 }
 GenericEntity Fit_saint_philippe_bank_bank_staff_door : "{D31F7A5C92B84E06}Prefabs/Props/Roleplay/BankVault/LF_BankStaffDoor.et" {
- coords 4360.821 13.1 10654.417
+ coords 4366.316 13.1 10652.975
  angleY -97
 }
 GenericEntity Fit_saint_philippe_bank_bank_heist_site : "{A82E4D7B1F6C3590}Prefabs/Props/Roleplay/BankVault/LF_HeistSite_Bank.et" {

@@ -166,7 +166,8 @@
       "yaw": 180,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": -0.034
     },
     {
       "id": "orchard-juicer",
@@ -176,7 +177,7 @@
       "verb": "on floor",
       "offset": [
         1,
-        1.03,
+        0.996,
         -7.2
       ],
       "yaw": 180,
@@ -269,7 +270,8 @@
       "yaw": -10,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": -0.011
     },
     {
       "id": "orchard-hay-bale",
@@ -301,7 +303,8 @@
       "yaw": 95,
       "wall": "free",
       "floor": "f0",
-      "mount": "terrain"
+      "mount": "terrain",
+      "lift": -0.014
     }
   ]
 }

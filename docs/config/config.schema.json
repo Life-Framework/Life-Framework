@@ -426,6 +426,13 @@
           "default": 20,
           "minimum": 0,
           "maximum": 600
+        },
+        "salePercent": {
+          "type": "integer",
+          "description": "Percent of the listed price a house or a plot sells for at its For sale sign. Below 100 is a pacing discount (the alpha sets it), 100 is the shipped price",
+          "default": 100,
+          "minimum": 10,
+          "maximum": 100
         }
       },
       "additionalProperties": false,
@@ -1328,6 +1335,11 @@
           "type": "boolean",
           "description": "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder",
           "default": true
+        },
+        "alphaInstantApproval": {
+          "type": "boolean",
+          "description": "ALPHA ONLY: a police application filed at the station desk is approved at once, with no playtime gate, cooldown or trial, so testers can clock in without an administrator. Off on a live server",
+          "default": false
         },
         "searchCooldownSeconds": {
           "type": "integer",

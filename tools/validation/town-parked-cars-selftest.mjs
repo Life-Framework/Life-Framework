@@ -2,6 +2,7 @@
 // other markers, heads along the road, and the committed Saint-Philippe plan is deterministic and refuses nothing.
 // inputs: tools/town/parked-cars.mjs, docs/everon/places/saint-philippe/mapping.json, docs/everon/places/saint-philippe/dossier.json, docs/everon/places/saint-philippe-dock/dossier.json
 // red-proof: 2026-11-19, with the road test in refuse() removed the "on the carriageway" case below printed FAIL (a car 1 m off a road centre line was accepted); restored, it passes.
+// red-proof: 2026-11-21 (#3875), with the guard-rail height 0.75 removed from HEIGHTS the "CrashBarrier_01_4m_V2" case below printed FAIL (the barrier a police car clipped slipped between the two rays); restored, it passes.
 // red-proof: 2026-11-21 (#3879), with the level-ray test in bodyWhy removed the "WoodenWall_01_2m" case printed FAIL (b15 stood against it); restored, it passes.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -44,17 +45,23 @@ check(surfaceOf("c", down([5, 5, 5.1, 5.2, 5])).g === 5, "a flat street gives th
 check(/varies/.test(surfaceOf("c", down([5, 5, 5, 6.2, 5])).why), "a box over a step is refused");
 check(/not the street/.test(surfaceOf("c", parseRays([ray("c_g0", { hit: "Garage", root: "Garage", d: 3, p: "0,7.5,0", sy: 5 }), ...[1, 2, 3, 4].map((i) => ray(`c_g${i}`, {}))].join("\n"))).why), "a roof or canopy over the centre is not the street");
 const spot = { x: 0, z: 0, yaw: 0, idx: 0 };
-check(groundRays([{ id: "c", c: spot, y0: 5 }]).length === 5 && bodyRays([{ id: "c", c: spot, g: 5 }]).length === 14, "5 down rays and 7 level rays at 2 heights per candidate");
-const clear = parseRays(Array.from({ length: 14 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, {})).join("\n"));
+check(groundRays([{ id: "c", c: spot, y0: 5 }]).length === 5 && bodyRays([{ id: "c", c: spot, g: 5 }]).length === 21, "5 down rays and 7 level rays at 3 heights per candidate");
+const clear = parseRays(Array.from({ length: 21 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, {})).join("\n"));
 check(bodyWhy("c", spot, 5, clear, []) === null, "clear rays and no door: clean");
-const wall = parseRays(Array.from({ length: 14 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, i === 9 ? { hit: "WoodenWall_01_2m", root: "WoodenWall_01_2m", d: 1 } : {})).join("\n"));
+const wall = parseRays(Array.from({ length: 21 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, i === 9 ? { hit: "WoodenWall_01_2m", root: "WoodenWall_01_2m", d: 1 } : {})).join("\n"));
 check(/WoodenWall_01_2m at car height/.test(bodyWhy("c", spot, 5, wall, []) ?? ""), "a wall on an outline ray refuses the spot");
+const rail = parseRays(Array.from({ length: 21 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, i === 10 ? { hit: "CrashBarrier_01_4m_V2", root: "CrashBarrier_01_4m_V2", d: 1 } : {})).join("\n"));
+check(/CrashBarrier_01_4m_V2 at car height/.test(bodyWhy("c", spot, 5, rail, []) ?? ""), "a guard rail only the 0.75 m ray meets refuses the spot");
 const leaf = { root: "DoorSet_MetalGate_01_Short", box: { c: [1.6, 6, 0], h: [1.2, 1.1, 0.05], a: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } };
 check(/swing of a door of DoorSet_MetalGate_01_Short/.test(bodyWhy("c", spot, 5, clear, [leaf]) ?? ""), "a gate leaf whose swing reaches the car refuses the spot");
 check(bodyWhy("c", spot, 5, clear, [{ ...leaf, box: { ...leaf.box, c: [30, 6, 0] } }]) === null, "a gate far away is no reason");
 const shortlist = plan({ mapping: { slots: { "parked-cars": { drops: [{ place: "t", building: "b1" }] } } }, dossiers: { t: { place: { slug: "t" }, buildings: [house], roads: [road], props: [] } }, others: { all: [], taxi: [] }, tries: 4, accept: (_d, c) => (c.idx === 2 ? { ok: true, y: 7 } : { ok: false, why: "no" }) });
 check(shortlist.out.length === 1 && shortlist.out[0].spot.idx === 2 && shortlist.out[0].spot.y === 7, "the probe's answer picks the first accepted candidate and its height");
 
+// A drop with "count" puts that many markers beside its building (#3875): distinct names, a marker's clearance apart, all passing the same checks.
+const row = plan({ mapping: { slots: { "police-cars": { drops: [{ place: "t", building: "b1", count: 3 }] } } }, dossiers: { t: { place: { slug: "t" }, buildings: [house], roads: [road], props: [] } }, others: { all: [], taxi: [] }, slot: "police-cars" });
+check(row.out.length === 3 && new Set(row.out.map((o) => o.name)).size === 3 && row.out.every((o) => /_car_b1_[123]$/.test(o.name)), `count 3 gives three uniquely named markers, got ${row.out.map((o) => o.name)}`);
+check(row.out.every((o, i) => row.out.slice(0, i).every((k) => Math.hypot(k.spot.x - o.spot.x, k.spot.z - o.spot.z) >= 6)), "the markers of one drop stand at least 6 m apart");
 // The committed plan: the real mapping and dossiers, every drop placed, deterministic.
 const read = (...p) => JSON.parse(readFileSync(join(ROOT, ...p), "utf8"));
 const mapping = read("docs", "everon", "places", "saint-philippe", "mapping.json");

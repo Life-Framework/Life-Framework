@@ -133,6 +133,7 @@ largest side, in metres, per kind of prop:
 - An entity no entry matches is not checked. The summary line says how many were: `sizes: 570 covered by expected-sizes.json`.
 - A flag reads `size 1.4 m outside 0.3-0.8 m for money-bag (why)`. Either the entity is wrong (fix the
   layer or its scale) or the range is: widen it only with a reason in `why` a reviewer can check.
+- Entries are first-match, so a real outlier gets its own entry ahead of the general one: `fence-8m` (7-9 m, the 8 m wooden and net fence modules; the 3-6 m `fence` entry is the 4 m modules) and `grain-sack` (0.6-1.5 m: `SackUniversal_01` is a tall burlap sack, 0.79 x 1.36 x 0.54 m, not a cement bag). Both came from the wheat field baseline pass, 2026-11-21 (12 `size` rows).
 - Seed or check a range with `toolscli place bounds <prefab>`, which prints the mesh size at the prefab's scale.
 - The mesh box can include parts you do not see (a booth's roof, a pot's flowers), so check a surprising
   flag in a shot before widening.
@@ -183,6 +184,11 @@ A finding on the island (the pack's MainWorld) blocks the branch that caused it 
   from the terrain stands at terrain + the layer's y (the two Saint-Philippe fuel pumps at y 37.5 over a terrain of 18.7). A row
   of a `rel` class that stands at its layer y as written (bench, bin, flowerpot, sign) is measured there. `missing` now means
   nothing of that name exists, which is a prefab that failed to load.
+- **A goods copy on a gondola board is not an `overhang` when its contact reads level and complete** (`restsOnLevelSupport` in
+  `agent-box/place-audit.mjs`): contact gap within 1 cm, spread under 2 cm and every point of the 3x3 footprint hit (`chits n/n`).
+  A shelf unit's solid volume swallows the four-corner trace that starts inside it, so a copy over a same-sized copy on the
+  board below read "hang off the edge of LF_DriedMeat (drop 0.44 m)" for all twelve supermarket dried-meat copies, which rest
+  on their boards. A copy with a partial contact (a crate half on a table) is still reported.
 - It measures where the layer puts each entity. A dynamic rigid body (a pickup with `RigidBody Active Active`,
   such as `WoodLog_01_Small`) is simulated on clients and can tip off a table that the audit passed: on
   2026-11-11 the logging stand's logs, laid along a 1.2 m table, fell upright in the after shot. Lay such

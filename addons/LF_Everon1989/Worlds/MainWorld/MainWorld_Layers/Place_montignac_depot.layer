@@ -25,6 +25,10 @@ Vehicle Fit_montignac_depot_tanker : "{4A59DAEFE645E8A0}Prefabs/Vehicles/Wheeled
  coords 4607.536 157.821 7000.002
  angleY -93
 }
+GenericEntity Fit_montignac_depot_depot_load : "{3330A0000000F001}Prefabs/Props/Fuel/LF_FuelDepot.et" {
+ coords 4610.901 158.25 7002.682
+ angleY 177
+}
 GenericEntity Fit_montignac_depot_drum_blue_1 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
  coords 4614.969 158.298 7003.396
  angleY -163
@@ -38,7 +42,7 @@ GenericEntity Fit_montignac_depot_drum_base_1 : "{B6B2AD00E71AD0B5}Prefabs/Props
  angleY -43
 }
 GenericEntity Fit_montignac_depot_drum_base_2 : "{B6B2AD00E71AD0B5}Prefabs/Props/Industrial/BarrelMetal_01_Base.et" {
- coords 4614.348 158.286 7001.861
+ coords 4614.348 158.298 7001.861
  angleY -173
 }
 GenericEntity Fit_montignac_depot_pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
@@ -46,7 +50,7 @@ GenericEntity Fit_montignac_depot_pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/In
  angleY 177
 }
 GenericEntity Fit_montignac_depot_pallet_box : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 4602.056 158.271 7005.223
+ coords 4605.351 158.271 7005.395
  angleY -175
 }
 SCR_DestructibleBuildingEntity Fit_montignac_depot_hut : "{B9F18808252E22C3}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_yellow.et" {

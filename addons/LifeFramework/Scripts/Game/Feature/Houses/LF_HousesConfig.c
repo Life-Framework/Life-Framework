@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! The houses owner-config section (#2505): Configs/Houses/LF_Houses.conf with the owner's `houses`
-//! section layered over it. Read on the server only (the door timer runs there).
+//! section layered over it. The door timer reads it on the server; `salePercent` reaches clients through the config
+//! stream so the "Buy house" and "Buy plot" labels show the price the server charges.
 //!
 //! Owner JSON:
 //!   "houses": { "doorCloseDelaySeconds": 20 }
@@ -20,6 +21,12 @@ class LF_HousesConfig
 
 	[Attribute("20", UIWidgets.Auto, "Seconds a locked house's open door stays open before it closes itself. 0 turns the auto-close off", params: "0 600")]
 	float m_fDoorCloseDelaySeconds;
+
+	static const int SALE_PERCENT_MIN = 10;	// lf-fixed: the schema limit, mirrors the attribute params
+	static const int SALE_PERCENT_MAX = 100;	// lf-fixed: the schema limit, mirrors the attribute params
+
+	[Attribute("100", UIWidgets.Auto, "Percent of the listed price a house or a plot sells for at its For sale sign. Below 100 is a pacing discount (the alpha sets it), 100 is the shipped price", params: "10 100")]
+	int m_iSalePercent;
 
 	protected static ref LF_HousesConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -61,11 +68,27 @@ class LF_HousesConfig
 	void ApplyLayers()
 	{
 		LF_ConfigReader reader = LF_ConfigService.OpenOwnerSection(SECTION);
-		if (!reader)
-			return;
 
-		ApplyOwner(reader);
-		LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("houses: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+		if (reader)
+		{
+			ApplyOwner(reader);
+			LF_Debug.Info(LF_ConfigService.FEATURE, string.Format("houses: owner config read %1 fields, rejected %2", reader.GetAppliedCount(), reader.GetRejectedCount()));
+		}
+
+		// Client: the server's sale percent replaces the result, so the sign labels show what the server charges.
+		LF_ConfigReader streamed = LF_ConfigStream.OpenReceivedSection(SECTION);
+		if (streamed)
+		{
+			streamed.ReadInt("salePercent", m_iSalePercent, SALE_PERCENT_MIN, SALE_PERCENT_MAX);
+			LF_Debug.Info(LF_ConfigService.FEATURE, "houses: using the server's sale percent");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the client-relevant field for the config stream.
+	void WriteStream(notnull SCR_JsonSaveContext ctx)
+	{
+		ctx.WriteValue("salePercent", m_iSalePercent);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -74,8 +97,9 @@ class LF_HousesConfig
 	//! a negative or non-numeric delay is refused by the reader and keeps the shipped value.
 	void ApplyOwner(notnull LF_ConfigReader reader)
 	{
-		array<string> ownerKeys = {"doorCloseDelaySeconds"};
+		array<string> ownerKeys = {"doorCloseDelaySeconds", "salePercent"};
 		reader.WarnUnknownKeys(ownerKeys);
+		reader.ReadInt("salePercent", m_iSalePercent, SALE_PERCENT_MIN, SALE_PERCENT_MAX);
 
 		reader.ReadFloat("doorCloseDelaySeconds", m_fDoorCloseDelaySeconds, DOOR_CLOSE_MIN, DOOR_CLOSE_MAX);
 
@@ -87,6 +111,28 @@ class LF_HousesConfig
 			LF_Debug.Warn("Houses", string.Format("houses.doorCloseDelaySeconds %1 is above the maximum %2, using %2", raw, DOOR_CLOSE_MAX));
 			m_fDoorCloseDelaySeconds = DOOR_CLOSE_MAX;
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: a listed price at a sale percent, in whole cash, rounded down. Int math: prices stay exact.
+	static int PriceAt(int listed, int percent)
+	{
+		if (listed <= 0)
+			return 0;
+
+		int pct = LF_Utils.ClampInt(percent, SALE_PERCENT_MIN, SALE_PERCENT_MAX);
+		return listed / 100 * pct + (listed % 100) * pct / 100;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The price a house or plot sells for: the listed price at the owner's salePercent (100 when no config).
+	static int SalePrice(int listed)
+	{
+		LF_HousesConfig config = Get();
+		if (!config)
+			return LF_Utils.MaxInt(0, listed);
+
+		return PriceAt(listed, config.m_iSalePercent);
 	}
 
 	//------------------------------------------------------------------------------------------------

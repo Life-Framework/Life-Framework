@@ -4607,7 +4607,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{F8D832E3CE9C3E7A}" {
      Id "LF-Duty_NotOnRoster"
-     Target_en_us "Only officers on the {police} roster can clock in. Ask an admin to join the {police}."
+     Target_en_us "Only officers on the {police} roster can clock in. Use Apply at this desk to join the {police}."
      Comment "Duty desk refusal: the player is not whitelisted for police."
     }
     CustomStringTableItem "{342841806FB0631D}" {
@@ -8636,6 +8636,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-MapLegend_Title"
      Target_en_us "Map key"
      Comment "Map legend sheet (#2244): the sheet title."
+    }
+    CustomStringTableItem "{3B7E5C19A2D40F68}" {
+     Id "LF-MapMarkWaypoint_Label"
+     Target_en_us "Map marker"
+     Comment "Map: name under the HUD marker of the waypoint a player's own map marker sets, when the marker has no text of its own."
     }
     CustomStringTableItem "{DE2AC99F6166AB0D}" {
      Id "LF-MapPlaces_ClusterNote"

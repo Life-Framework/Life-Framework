@@ -13,10 +13,39 @@
     "medicDutyPayPerSecond": 0.22,
     "benefitAmount": 50,
     "benefitBalanceThreshold": 250,
-    "benefitCooldownSeconds": 1200
+    "benefitCooldownSeconds": 1200,
+    "xpAwards": {
+      "delivery_run": {
+        "xp": 250
+      },
+      "fruit_pick": {
+        "xp": 10
+      },
+      "gather": {
+        "xp": 4
+      },
+      "gather_mining": {
+        "xp": 20
+      },
+      "gather_logging": {
+        "xp": 20
+      },
+      "fell_hardwood": {
+        "xp": 40
+      },
+      "fish_catch": {
+        "xp": 20
+      },
+      "medic_revive": {
+        "xp": 50
+      },
+      "medic_delivery": {
+        "xp": 50
+      }
+    }
   },
   "vehicles": {
-    "buyPercent": 100,
+    "buyPercent": 80,
     "sellBackPercent": 50,
     "impoundPercent": 10
   },
@@ -30,7 +59,7 @@
     "rejoinMaxAgeHours": 12
   },
   "grace": {
-    "minutes": 30
+    "minutes": 5
   },
   "restarts": {
     "times": [
@@ -42,5 +71,14 @@
       5,
       1
     ]
+  },
+  "licences": {
+    "permitWaitDays": 0
+  },
+  "police": {
+    "alphaInstantApproval": true
+  },
+  "houses": {
+    "salePercent": 50
   }
 }

@@ -18,6 +18,27 @@ The two files the Life Framework | Everon 1989 (Alpha) server runs on, kept in g
 
 `scenarioId` and `game.mods` equal `server/example/server.json`; change them there first.
 
+## Alpha pacing (alpha only, remove for a live server)
+
+These keys in `config.json` speed up the first hours so testers can try every path in one evening (0.2.0, 2026-11-21).
+Delete them and run `tools\cli host config apply` to go back to the shipped pace.
+
+| Key | Alpha | Shipped | Effect |
+|---|---|---|---|
+| `jobs.xpAwards` | every award x2, `delivery_run` 250 | `delivery_run` 100, others half | fuel runs open after 2 parcel runs (5 shipped), taxi after 6 (15) |
+| `licences.permitWaitDays` | 0 | 1 (2 real hours) | the firearm permit is issued at the counter at once |
+| `vehicles.buyPercent` | 80 | 100 | the cheapest car is $560 (shipped $700); sell-back 50% and chop 30% stay below it |
+| `police.alphaInstantApproval` | true | false | a police application at the station desk is approved on submit: no playtime gate, cooldown, trial or admin |
+| `houses.salePercent` | 50 | 100 | homes and plots sell at half price: cottage $2000, cheapest plot $1400; there is no house sell-back to flip |
+| `grace.minutes` | 5 | 30 (core default 0) | a new character can be held up, arrested or rob after 5 minutes of playtime, so two testers can try the cop flow early |
+
+Pay is untouched: police duty $900/h and medic $792/h stay 1.5 to 2.5x the civilian runs (`tools\cli economy`).
+`validate-flagship-job-gates` still refuses `jobs.testUnlockAll`; the alpha switch opens only the police application.
+
+Turning it off leaves what it already gave: officers approved under `police.alphaInstantApproval` have no trial and
+stay on the police roster (`$profile:LifeFramework/whitelist.txt`) until a wipe or an administrator removes them, and
+permits already issued stay valid. The switch grants police membership only, never admin rights.
+
 ## Host-only values (never in this folder)
 
 | Value | Where it lives instead |

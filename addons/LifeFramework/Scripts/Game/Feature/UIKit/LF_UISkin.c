@@ -13,6 +13,8 @@ class LF_UISkin
 	ref Color m_Metal;
 	ref Color m_Paper;
 	ref Color m_Ink;
+	//! Text colour inside an edit box (a FIELD part), whose well is paper. Null: the ink.
+	ref Color m_FieldInk;
 	ref Color m_Rule;
 	ref Color m_Blur;
 	ref Color m_Row;
@@ -127,6 +129,9 @@ class LF_UISkin
 	{
 		LF_UISkin skin = FromTheme("terminal");
 		skin.m_fWidth = 640;
+		// The edit box's well is cream paper (LF_UIEditBox.layout), not the tube: green phosphor on it
+		// was hard to read, so typed text takes the paper theme's dark ink.
+		skin.m_FieldInk = LF_UITheme.Ink();
 		return skin;
 	}
 

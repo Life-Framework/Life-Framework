@@ -11,7 +11,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { benchGround, benchPoints, hitBlocks, withoutBenches } from "./street-life.mjs";
+import { benchGround, benchPoints, hitBlocks, nearFootprint, withoutBenches } from "./street-life.mjs";
 import { pinKey } from "./terrain.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
@@ -36,6 +36,11 @@ check(Math.abs(pts[1][1] - 199.2) < 0.01, "an end of the seat lies 0.8 m along t
 check(hitBlocks(["terrain", "WoodPile_02_B", "terrain"]) === "WoodPile_02_B", "a point whose ground is a wood pile is refused");
 check(hitBlocks(["terrain", "AsphaltPavement_01_Wide_4m_A", "ConcreteStairs_02_Wide"]) === null, "pavement, stairs and terrain are ground");
 check(benchPoints(100, 200, 90, 0.5)[1][1] > 199.45 && benchPoints(100, 200, 90, 0.5)[1][1] < 199.55, "a flower box is probed along 0.5 m each way");
+
+// A washing line never stands inside a neighbouring house: b50's first line stood in b44 (#3888).
+const b44 = [[4401.43, 10742.32], [4381.23, 10741.97], [4381.57, 10722.68], [4401.77, 10723.03]];
+check(nearFootprint(4394.74, 10735.6, b44, 0.5), "a point inside a footprint is refused");
+check(nearFootprint(4394, 10742.5, b44, 0.5) && !nearFootprint(4394, 10744, b44, 0.5), "a point within 0.5 m of an edge is refused, 1.7 m off is clear");
 
 const layer = "GenericEntity Fit_x_street_life_bench_b10 : \"{A}p.et\" {\n coords 1 2 3\n}\nSCR_DestructibleEntity Fit_x_street_life_bin_b10 : \"{B}q.et\" {\n coords 4 5 6\n}\nGenericEntity Fit_x_street_life_bench_red_b09 : \"{C}r.et\" {\n coords 7 8 9\n}\n";
 const kept = withoutBenches(layer + "SCR_DestructibleEntity Fit_x_street_life_flowers_b09 : \"{D}s.et\" {\n coords 1 1 1\n}\n");

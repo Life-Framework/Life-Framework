@@ -191,7 +191,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.067
     },
     {
       "id": "farm-hive-2",
@@ -216,7 +217,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.067
     },
     {
       "id": "farm-hive-3",
@@ -241,7 +243,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.067
     }
   ],
   "stamp": {

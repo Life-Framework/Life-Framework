@@ -23,6 +23,8 @@ export const PLACE_SOURCES = {
   LF_HospitalTillComponent: { kind: "HospitalSite", idAttr: "m_sTargetId" },
   LF_HospitalCabinetComponent: { kind: "HospitalSite", idAttr: "m_sTargetId" },
   LF_PlotComponent: { kind: "PlotForSale", idAttr: "m_sPlotKey" },
+  // A payphone (a phone with no dispatch service) registers itself as a "Payphone" place (LF_PhoneComponent.OnPostInit).
+  LF_PhoneComponent: { kind: "Payphone", skipAttr: "m_sDispatchService" },
 };
 
 // --world names. main: the pack's island. town: what the playtest mission loads around the village (the
@@ -74,6 +76,7 @@ export function loadPlaces(root, opts = {}) {
     for (const [cls, src] of Object.entries(PLACE_SOURCES)) {
       const p = e.comps[cls];
       if (!p) continue;
+      if (src.skipAttr && p[src.skipAttr]) continue;
       const kind = src.kind || p[src.kindAttr] || "";
       let id = p[src.idAttr] || e.name;
       const order = src.orderAttr ? Number(p[src.orderAttr] ?? -1) : -1;

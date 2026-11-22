@@ -231,7 +231,7 @@ the game profile). Hooks:
   handcuffs flag (#664).
 - `hold <name>` (runs on the client) takes a carried gadget whose prefab name contains `<name>`
   into the left hand, as a quick-slot key does; a prefab whose file name is exactly `<name>` wins
-  over one that only contains it. Replies `held <name>` or `not_carried`.
+  over one that only contains it. Replies `held <name>` or `not_carried`. `hold weapon` draws the first slotted weapon; `hold none` puts the weapon in hand away (vanilla `SelectWeapon(null)`), replying `holstered`.
 - `itemon <{GUID}path>` / `itemoff <{GUID}path>` (server, dev gate) switch the item's use state (`LF_AssetAnimComponent.SetActive`: the
   handcuffs' strands swing open), looking in the inventory first, then for one lying within 3 m.
 - `itemgive <{GUID}path>` and `itemdrop <{GUID}path>` (server, dev gate) put one item of a prefab in
@@ -635,6 +635,7 @@ node agent-box/harness.mjs --client 1 ui      # any harness verb, aimed at one c
 node agent-box/session.mjs state 2            # faction, duty, wanted, rank, cash, bank, job, org, last toast
 node agent-box/session.mjs proof              # client 1 robs Roadmap_Test_Till, client 2 (police) gets the alert
 node agent-box/session.mjs police-proof       # client 2 clocks in at the desk, client 1 robs the till, both read the wanted board
+node agent-box/session.mjs island-cop-proof  # island (up --mission island --clients 2 --profile full): A signs up (alpha approve-on-submit), clocks in, unlocks a police UAZ; B robs the fuel till through the attendant; hands up, cuff, search, arrest, jail; A paid at clock-out
 node agent-box/session.mjs murder-proof       # client 1 kills client 2 at the fuel station (wanted 3), then shoots on the square (refused); needs m_bDownedEnabled 0 in LF_Medic.conf for the run
 node agent-box/session.mjs downed-proof       # M2 #255: client 1 downs client 2 (alive, INCAPACITATED, no murder); client 1 and a late-joining client 3 (`session.mjs join 3`) read it downed; the downed player's death is the murder, then the hospital respawn
 node agent-box/session.mjs down               # closes every process the session started

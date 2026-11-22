@@ -66,6 +66,9 @@
   plot still for sale and "Set waypoint" marks it. Reading it records no single plot as heard of. Proof:
   `property/plot-for-sale-marks` (owned vs unowned map marks, the card's nearest plot, a cleared owner).
 
+### Sale percent (alpha pacing) — `Feature/Houses/LF_HousesConfig.c` (rc 0.2.0)
+- 🧪 Owner key `houses.salePercent` (10 to 100, default 100) sells every house and plot at that percent of its listed price: `LF_PropertyConfig.HousePrice` and `PlotPrice` return `LF_HousesConfig.SalePrice` (int math, rounded down). The config stream carries it (`LF_ConfigStream.BuildPayload` houses section), so the client's "Buy house ($price)" and "Buy plot" labels show what the server charges. The flagship alpha sets 50: the cheapest Saint-Philippe cottage is $2000 (listed 4000) and plot p4 $1400 (listed 2800). No sell-back exists, so no loop. LOGIC `property/house-sale-percent`.
+
 ### Buy a house at its "For sale" sign — `Feature/Property/LF_HouseSaleComponent.c` (2026-11-19, #3207, chapter #3201)
 - 🟡 `Prefabs/Props/Property/LF_HouseSaleSign.et` (face: core sign `house_for_sale`) names a house identifier. The house's
   price and tier label are `LF_PropertyHouseDef` rows in the property config's `m_aHouses` (`LF_Property.conf`: `sale-house-a`,
