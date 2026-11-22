@@ -95,6 +95,9 @@ class LF_BusStopConfig
 	[Attribute("1", UIWidgets.Auto, "Seconds of fade to black before the move and back after it", params: "0 10")]
 	float m_fFadeSeconds;
 
+	[Attribute("0", UIWidgets.Auto, "Bus stop action list: a stop closer than this (metres) is not offered as a destination, so the top row is never a ride you could walk. A stop with nothing farther keeps its list", params: "0 100000")]
+	float m_fMinRideMetres;
+
 	protected static ref LF_BusStopConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -115,6 +118,7 @@ class LF_BusStopConfig
 		config.m_fTripCooldown = DEFAULT_TRIP_COOLDOWN;
 		config.m_fPursuitRadius = DEFAULT_PURSUIT_RADIUS;
 		config.m_fFadeSeconds = DEFAULT_FADE_SECONDS;
+		config.m_fMinRideMetres = 0;
 		return config;
 	}
 
@@ -210,6 +214,8 @@ class LF_BusStopConfig
 		if (ReadFloat(container, "m_fPursuitRadius", m_fPursuitRadius))
 			changed++;
 		if (ReadFloat(container, "m_fFadeSeconds", m_fFadeSeconds))
+			changed++;
+		if (ReadFloat(container, "m_fMinRideMetres", m_fMinRideMetres))
 			changed++;
 
 		return changed;

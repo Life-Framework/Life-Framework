@@ -81,3 +81,10 @@ Each owned vehicle record carries a tow state (`LF_EVehicleTowState`), towed-at 
 - **Data:** the numbers are `LF_RepairKitComponent` attributes on the kit prefab (`m_fRestoreScaled` 0.4, `m_fWorkSeconds` 8, `m_iCooldownSeconds` 90), so a pack's kit child retunes them. Strings `LF-RepairKit_*`, `LF-Item_RepairKit_*`. No parts system: the share applies to every hit zone alike.
 - **Wiring:** the action is on every LF car prefab beside "Push it back over". The kit is not yet sold or spawned anywhere; a shop row is a pack card.
 - **Proof:** `vehicles/repair-kit` (WORLD): a car at 40 % and two kits. The held key and the two-client view are manual.
+
+## Capacity ladder (#4189)
+
+`Configs/Vehicles/LF_Capacity.conf` (`LF_CapacityConfig`, `LF_Capacity.c`) is the one table for what the body, packs, car,
+pickup, van and truck carry, in sacks (native storage plus cargo bed units), and the vehicle each chain's best loop needs.
+Each rung carries more than the one below; a vehicle row's bed units equal its prefab's `LF_CargoBedComponent` capacity.
+`validate-capacity-ladder` and `vehicles/capacity-table` enforce it. Change a number here, never in a loop's own file.

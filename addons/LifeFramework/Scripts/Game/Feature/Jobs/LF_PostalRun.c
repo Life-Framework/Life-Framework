@@ -132,6 +132,8 @@ class LF_PostalRunState
 	//! Whether the driver is away from the van, and since when (LF_JobGuards.Now).
 	bool m_bAway;
 	float m_fAwaySince;
+	//! The driver has been told the run is about to be called off.
+	bool m_bWarned;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -275,6 +277,13 @@ class LF_PostalRun
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The least minutes a run takes before a hand-in pays, rounded up (for the stand and the refusal).
+	static int MinMinutes()
+	{
+		return (LF_PostalRunConfig.Get().m_iMinRunSeconds + 59) / 60;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Pure: the destination for a run from `origin`: the nearest of `offices` at least `minDistance`
 	//! away on the ground plane. \return Its index, -1 when none is far enough.
 	static int PickDestination(vector origin, notnull array<vector> offices, float minDistance)
@@ -364,7 +373,7 @@ class LF_PostalRun
 		Runs().Set(uid, run);
 		WatchOn();
 
-		LF_JobMapMarks.OnStop(uid, "postal-load", office.GetOrigin());
+		LF_JobMapMarks.OnStop(uid, "postal-load", office.GetOrigin(), "#LF-JobMap_PostLoad");
 		LF_Debug.Info(FEATURE, string.Format("postal run started by %1: van %2 at %3, destination %4 m away", uid, vanPrefab, spot, Math.Round(vector.DistanceXZ(office.GetOrigin(), destination.GetOrigin()))));
 		return LF_EPostalResult.OK;
 	}
@@ -553,6 +562,14 @@ class LF_PostalRun
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pure: whether the driver, away for `awayFor` seconds of the `abandonAfter` allowed, is told now:
+	//! once two thirds of the time are gone.
+	static bool WarnDue(float awayFor, int abandonAfter)
+	{
+		return awayFor >= abandonAfter * 2 / 3;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! One run's verdict: "" while it is fine, else why it ends ("van", "abandoned", "late").
 	//! Updates the run's away clock.
 	static string Judge(notnull LF_PostalRunState run, notnull LF_PostalRunConfig config, float now)
@@ -569,6 +586,7 @@ class LF_PostalRun
 		if (!away)
 		{
 			run.m_bAway = false;
+			run.m_bWarned = false;
 			return string.Empty;
 		}
 
@@ -581,6 +599,15 @@ class LF_PostalRun
 
 		if (now - run.m_fAwaySince >= config.m_iAbandonSeconds)
 			return "abandoned";
+
+		// A warning first, while there is still time to walk back: a fading toast at the end is too late.
+		if (!run.m_bWarned && driver && WarnDue(now - run.m_fAwaySince, config.m_iAbandonSeconds))
+		{
+			run.m_bWarned = true;
+			int left = Math.Round(config.m_iAbandonSeconds - (now - run.m_fAwaySince));
+			LF_Utils.NotifyEntity(driver, "#LF-Postal_Warn", TITLE_KEY, 8.0, left.ToString());
+			LF_Debug.Info(FEATURE, string.Format("postal run of %1: driver warned, %2 s left", run.m_sUid, left));
+		}
 
 		return string.Empty;
 	}
@@ -620,15 +647,17 @@ class LF_PostalRun
 	{
 		EntityID next = run.m_Destination;
 		string stop = "postal-unload";
+		string label = "#LF-JobMap_PostUnload";
 		if (run.m_iUnloaded >= LF_PostalRunConfig.Get().m_iSacks)
 		{
 			next = run.m_Origin;
 			stop = "postal-return";
+			label = "#LF-JobMap_PostReturn";
 		}
 
 		IEntity office = GetGame().GetWorld().FindEntityByID(next);
 		if (office)
-			LF_JobMapMarks.OnStop(run.m_sUid, stop, office.GetOrigin());
+			LF_JobMapMarks.OnStop(run.m_sUid, stop, office.GetOrigin(), label);
 	}
 
 	//------------------------------------------------------------------------------------------------

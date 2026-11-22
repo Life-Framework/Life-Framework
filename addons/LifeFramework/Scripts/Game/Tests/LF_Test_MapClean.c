@@ -1,4 +1,4 @@
-// red-proof: 2026-11-22, cli test --no-build --red LF_Test_MapClean: RED PROOF OK (RedProof() skips the descriptor rules, the help lines, the key lines and the toast pause, so those checks fail). Green without it.
+// red-proof: 2026-11-22, cli test --no-build --red LF_Test_MapClean: RED PROOF OK (RedProof() skips the descriptor rules, the help lines, the key lines, the key collapse and the toast pause, so those checks fail). Green without it.
 
 //------------------------------------------------------------------------------------------------
 //! map/clean (map clean-up 2026-11-22, "make sure the map is super clean and easy to use, with instructions"):
@@ -174,6 +174,23 @@ class LF_Test_MapClean : LF_Test
 			ctx.True(cols[2] == 1 && rows[2] == 0, "the shops' header moves to the top of the next column");
 			ctx.True(cols[3] == 1 && rows[3] == 1, "with its row under it");
 		}
+
+		// Groups start collapsed (first-2-hours review C3): a header alone each, the sign lines stay; a group the
+		// player opens shows its rows.
+		array<string> open = {};
+		int collapsed;
+		if (!RedProof())
+			collapsed = LF_MapKeyLine.Collapse(lines, open);
+		else
+			collapsed = lines.Count();
+
+		ctx.Equal(5, collapsed, "three headers and the two sign lines are left when every group is shut");
+		open.Clear();
+		lines.Clear();
+		LF_MapLegend.KeyLines(pois, lines);
+		ctx.True(LF_MapKeyLine.ToggleOpen(open, "shop"), "a click on the shops' header opens it");
+		ctx.Equal(7, LF_MapKeyLine.Collapse(lines, open), "the shops' two rows join the five lines");
+		ctx.False(LF_MapKeyLine.ToggleOpen(open, "shop"), "a second click shuts it again");
 
 		string bakery = LF_MapLegend.TypeKey(pois[0]);
 		LF_MapLegend.ToggleSolo(bakery);
