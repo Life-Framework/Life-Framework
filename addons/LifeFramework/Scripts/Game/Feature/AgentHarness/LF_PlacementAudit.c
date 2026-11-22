@@ -836,6 +836,73 @@ class LF_PlacementAudit
 		return true;
 	}
 
+	//! Street clutter a player trips over: road-works kit, crates, sacks, bins, tyres, debris. Base-map or ours, judged by
+	//! place-runtime.mjs on what it stands on (one on a road surface, ours or the map's, is "road-clutter").
+	static const string CLUTTER_WORDS = "Cone,Barrier,Roadblock,Pallet,Crate,BoxWooden,CardboardBox,Barrel,Sack,Tyre,Tire,Plank,BrickPile,Debris,Rubble,Wheelbarrow,Jerrycan,PaintCan,Bucket,Garbage,Trash,Junk,Scrap,Construction,CableReel,CableDrum,Spool,Concrete_Block,ConcreteBlock,Sandbag,Bag_,WoodPile,LogPile";
+
+	protected static ref array<EntityID> s_aClutterIds;
+
+	protected static bool CollectClutter(IEntity entity)
+	{
+		if (entity && !entity.GetParent())
+			s_aClutterIds.Insert(entity.GetID());
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the prefab path's file part holds one of CLUTTER_WORDS.
+	static bool IsClutterPrefab(string prefab)
+	{
+		string file = FilePath.StripPath(prefab);
+		array<string> words = {};
+		CLUTTER_WORDS.Split(",", words, true);
+		foreach (string word : words)
+		{
+			if (file.Contains(word))
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One line per visible top-level clutter entity (CLUTTER_WORDS) within `radius` of `center`:
+	//!   clutter prefab=<resource path> name=<label> p=<x,y,z> on=<surface under it> roofed=<1 when something is overhead within 12 m>
+	//! A hidden entity (LF_BaseWorldClear, a felled tree) is skipped: a player never sees it.
+	static void ClutterLines(vector center, float radius, notnull array<string> lines)
+	{
+		s_aClutterIds = {};
+		BaseWorld world = GetGame().GetWorld();
+		world.QueryEntitiesBySphere(center, radius, CollectClutter, null, EQueryEntitiesFlags.ALL);
+		int count;
+		foreach (EntityID id : s_aClutterIds)
+		{
+			IEntity e = world.FindEntityByID(id);
+			if (!e || !(e.GetFlags() & EntityFlags.VISIBLE))
+				continue;
+
+			string prefab = LF_BaseWorldClear.PrefabOf(e);
+			if (prefab.IsEmpty() || !IsClutterPrefab(prefab))
+				continue;
+
+			vector p = e.GetOrigin();
+			IEntity under;
+			SurfaceTrace(p + "0 0.6 0", p - "0 2 0", e, under);
+			IEntity over;
+			SurfaceTrace(p + "0 0.6 0", p + "0 12 0", e, over);
+			int roofed;
+			if (over)
+				roofed = 1;
+
+			lines.Insert(string.Format("clutter prefab=%1 name=%2 p=%3 on=%4 roofed=%5", prefab, Label(e), V(p), Label(under), roofed));
+			count++;
+		}
+
+		LF_Debug.Info("PlaceAudit", string.Format("clutter sweep: %1 props within %2 m of %3", count, radius, center));
+		s_aClutterIds = null;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! One line per entity within `radius` of `center`: scan prefab=<resource path> name=<label> p=<x,y,z> top=<1 when it has no parent>.
 	//! Finds the base map's own clutter (crates, pallets, furniture) for a `stamp.clear` list.
@@ -1152,6 +1219,7 @@ class LF_PlacementAudit
 	//!   town <x> <z> <radius>                               also list the door leaves in that circle
 	//!   <index> <name|-> <prefab base|-> <x> <y> <z> <walk 0|1>
 	//!   ray <id> <x> <y> <z> <x2> <y2> <z2> [exclude name]  a probe ray (RayLine), not an entity row
+	//!   clutter <x> <z> <radius>                            street clutter in that circle (ClutterLines)
 	//!   settle <id> <name|@prefab:x,y,z>                    rest that entity by its mesh bottom (SettleLine); the entity rows
 	//!                                                       follow the extra lines, so they measure it already settled
 	//! A row may end with "rel": its y counts from the terrain (a terrain-relative class), so it is looked for at terrain + y.
@@ -1190,6 +1258,13 @@ class LF_PlacementAudit
 			if (parts.Count() == 4 && parts[0] == "scan")
 			{
 				ScanLines(Vector(parts[1].ToFloat(), 0, parts[2].ToFloat()), parts[3].ToFloat(), rows);
+				continue;
+			}
+
+			// "clutter <x> <z> <radius>": street clutter in that circle and what it stands on (ClutterLines); one per town.
+			if (parts.Count() == 4 && parts[0] == "clutter")
+			{
+				ClutterLines(Vector(parts[1].ToFloat(), 0, parts[2].ToFloat()), parts[3].ToFloat(), rows);
 				continue;
 			}
 

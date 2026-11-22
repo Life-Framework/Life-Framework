@@ -1,6 +1,10 @@
 GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
  ID "598F21A86EB5B48E"
  components {
+  LF_PlaceComponent "{1A9AFF2DE1C4908F}" {
+   m_sKind "JuicePress"
+   m_sId "juicer"
+  }
   MeshObject "{598F21A867C4015C}" {
    Object "{6E28E7E1DA3E80E3}Assets/Props/Roleplay/AppleJuicer/AppleJuicer.xob"
   }

@@ -18,15 +18,15 @@ import { buildWheat, renderWheat, wheatFlags } from "./economy-wheat.mjs";
 import { buildMining, miningFlags, renderMining } from "./economy-mining.mjs";
 import { SECTIONS, loadOwner, loadPackOverlays, mergeList, metaIndex, sectionLayers } from "../pack/layers.mjs";
 
-/** Minutes a courier, fuel or taxi run takes on the real map (an assumption; `--run-minutes` overrides). */
-export const RUN_MINUTES = { parcel: 6, fuel: 8, taxi: 10 };
+/** Minutes a courier, fuel, taxi or postal van run (Saint-Philippe to Meaux and back, sacks both ends) takes on the real map (an assumption; `--run-minutes` overrides). */
+export const RUN_MINUTES = { parcel: 6, fuel: 8, taxi: 10, postal: 10 };
 /** Metres of a taxi trip the report assumes (an assumption; `--taxi-metres` overrides). */
 export const TAXI_METRES = 2000;
 /** The job level each run type needs (LF_CivilianJob.LevelFor): parcel 1, fuel 2, taxi 3. */
-const RUN_LEVEL = { parcel: 1, fuel: 2, taxi: 3 };
-const PAY_CONST = { parcel: "PAY_PARCEL", fuel: "PAY_FUEL" };
+const RUN_LEVEL = { parcel: 1, fuel: 2, taxi: 3, postal: 1 };
+const PAY_CONST = { parcel: "PAY_PARCEL", fuel: "PAY_FUEL", postal: "PAY_POSTAL" };
 /** The jobs.runPays row key of each run type (the LF_EJobType name). */
-const RUN_JOB = { parcel: "PARCEL", fuel: "FUEL_DELIVERY", taxi: "TAXI" };
+const RUN_JOB = { parcel: "PARCEL", fuel: "FUEL_DELIVERY", taxi: "TAXI", postal: "POSTAL" };
 export const HOURS = [1, 2, 4, 6];
 
 const read = (p) => (existsSync(p) ? readFileSync(p, "utf8") : "");
@@ -147,7 +147,7 @@ export function buildReport(root, opts = {}) {
     const unlock = runsToLevel(RUN_LEVEL[type], thresholds, xpPerRun);
     const minutes = runMinutes[type];
     return { job: type, pay: pay ?? 0, payKnown: pay !== null, unlockRuns: unlock, minutes, perHour: Math.round((pay ?? 0) * 60 / minutes) };
-  });
+  }).filter((r) => r.job !== "postal" || r.pay > 0); // a server with no POSTAL row and no PAY_POSTAL has no postal van run
   for (const r of runs) if (r.pay <= 0) flags.push({ kind: "zero-pay", id: r.job.toUpperCase(), text: `the ${r.job.toUpperCase()} run pays ${r.pay}${r.payKnown ? "" : " (no pay constant or fare table found)"}` });
 
   // Standing-gated contracts (LF_ReputationContracts): a run at a multiple of the plain run's pay. They need

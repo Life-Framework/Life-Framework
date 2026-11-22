@@ -27,6 +27,9 @@ class LF_QuestAction : ScriptedUserAction
 		if (!owner)
 			return false;
 
+		if (!LF_DialogueTalkAction.OnSameLevel(user, owner))
+			return false;
+
 		if (vector.Distance(user.GetOrigin(), owner.GetOrigin()) > 3.0)
 			return false;
 

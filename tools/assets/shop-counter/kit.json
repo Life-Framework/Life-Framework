@@ -1,0 +1,25 @@
+{
+  "slug": "shop-counter",
+  "about": "The 1989 village shop counter that replaces the vanilla yellow market cart CounterShop_01 behind every till: a dark-stained oak carcass with varnished tongue-and-groove (lambris) panels on the customer front and sides, a black kick plinth, a brown laminate worktop with an aluminium edge, open shelves on the staff side with kraft paper bags and a wrapping-paper roll. ShopCounterTill adds an early-electronic cash register (cream plastic, sloped keyboard and cash drawer toward the clerk, a green figure display on a post toward the customer, a receipt roll) and a rubber change mat on the customer half. Built by build.py in headless Blender from boxes and procedural textures: no base-game mesh reads as a shop counter with a till, and Meshy is reserved for fish and masks. Core asset: no text, no brand, no place name.",
+  "asset_dir": "Assets/Props/Commercial/ShopCounter",
+  "prefab_dir": "Prefabs/Props/Commercial",
+  "script": "build.py",
+  "layout_m": {
+    "about": "Enfusion metres, x right, y up, z forward. The footprint is the vanilla CounterShop_01 it replaces (x -0.75..0.75, y 0..1.039, z -0.525..0.597, same origin), so every placed counter keeps its seat and everything standing on it keeps its height. The customer front is +z; the clerk stands on the -z side (Saint-Philippe bakery clerk 0.98 m behind the origin).",
+    "half_width": 0.75,
+    "back_z": -0.525,
+    "front_z": 0.597,
+    "top_y": 1.039,
+    "top_thick": 0.035,
+    "till": {"x": 0.38, "z": -0.22}
+  },
+  "texture_px": {"tile": 512, "till": [1024, 512]},
+  "colliders": {
+    "ShopCounter": {"layerPreset": "PropFireView", "gamemat": "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"},
+    "ShopCounterTill": {"layerPreset": "PropFireView", "gamemat": "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"}
+  },
+  "emissive": {
+    "about": "The till's figure display glows faintly green.",
+    "SC_Till": {"lv": 0.6}
+  }
+}
