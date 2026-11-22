@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{DA30B7327CF1AFAF}Assets/Items/Seeds/SeedPacket/Data/SP_Print_BCR.edds"
+ NMOMap "{4ED25657AF96BF39}Assets/Items/Seeds/SeedPacket/Data/SP_Print_NMO.edds"
+}

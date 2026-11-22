@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{0CB8E122377BBD47}Assets/Items/Food/Cabbage/Data/CB_Leaf_BCR.edds"
+ NMOMap "{34358511FE9D9B61}Assets/Items/Food/Cabbage/Data/CB_Leaf_NMO.edds"
+}

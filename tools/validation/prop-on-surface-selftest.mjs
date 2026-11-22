@@ -21,6 +21,7 @@ eq(checkEntities([counter, till(179, 0, 244.9)]).length, 1, "till at the long en
 eq(checkEntities([{ ...counter, yaw: 90 }, till(179, 0, 244.9)]).length, 0, "the same till fits when the counter is rotated 90");
 eq(footprint(till(0, 90)).length, 4, "footprint has four corners");
 eq(overhang(counter, till(179)).over, 0, "no overhang when inside");
-eq(prefabScale(ROOT, "Prefabs/Items/Food/Cabbage.et"), 0.5, "a prefab's own root scale is read when the layer has none (#924)");
+// Cabbage.et lost its root scale when it became a modelled item (seed-packet-asset); Linen.et carries scale 0.3.
+eq(prefabScale(ROOT, "Prefabs/Crafting/Linen.et"), 0.3, "a prefab's own root scale is read when the layer has none (#924)");
 eq(prefabScale(ROOT, "Prefabs/Props/Commercial/LF_Sign_Nope.et"), 1, "a prefab that cannot be read counts as scale 1");
 console.log("prop-on-surface-selftest: OK");

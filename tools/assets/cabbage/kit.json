@@ -1,0 +1,17 @@
+{
+  "slug": "cabbage",
+  "about": "A harvested cabbage head for Items/Food/Cabbage.et: a dense pale-green head about 18 cm across wrapped in a few darker, loosely cupped outer leaves with pale veins, a cut stalk underneath. Built by build.py in headless Blender (kitlib) with a procedural leaf texture. The vanilla CabbageCrop_01 is an 0.84 m field plant with no collider, so it cannot be a carried item; Meshy is reserved for fish and masks.",
+  "asset_dir": "Assets/Items/Food/Cabbage",
+  "prefab_dir": "Prefabs/Items/Food",
+  "script": "build.py",
+  "layout_m": {
+    "about": "Enfusion metres; origin at the bottom of the head (it rests on the stalk end), y up.",
+    "head_r": 0.085,
+    "head_squash": 0.88,
+    "leaf_r": 0.105
+  },
+  "texture_px": {"tile": 256},
+  "colliders": {
+    "Cabbage": {"layerPreset": "ItemFireView", "gamemat": "{13581C35484F3000}Common/Materials/Game/fabric.gamemat"}
+  }
+}
