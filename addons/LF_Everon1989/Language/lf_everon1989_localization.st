@@ -4534,6 +4534,16 @@ StringTable {
      Target_en_us "Delivery work for cash. Everyone starts as a courier."
      Comment "Sign card for the post office (delivery jobs), What section."
     }
+    CustomStringTableItem "{84A76DBAA3B2CD39}" {
+     Id "LF-Sign_PostalVanRear_Title"
+     Target_en_us "MAIL"
+     Comment "Livery lettering on the rear doors of the yellow post van (postal van run)."
+    }
+    CustomStringTableItem "{188C47848012FD84}" {
+     Id "LF-Sign_PostalVanSide_Title"
+     Target_en_us "POSTAL SERVICE"
+     Comment "Livery lettering on both side panels of the yellow post van (postal van run)."
+    }
     CustomStringTableItem "{A1B2C3D4E5F60733}" {
      Id "LF-Sign_QuarryInfo_How"
      Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
