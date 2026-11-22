@@ -2574,6 +2574,111 @@ StringTable {
      Target_en_us "Job site"
      Comment "Pack override of the core POI name (rc-map-places): a job site reads as a place to work, not a generic workplace."
     }
+    CustomStringTableItem "{68778C2BA079B7DC}" {
+     Id "LF-MapRunStop_FishBuyer"
+     Target_en_us "dock wholesale (fish)"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{37D2A03E5962B1DB}" {
+     Id "LF-MapRunStop_FishSpot"
+     Target_en_us "fishing pond"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{6CF3DE9A0FD912DD}" {
+     Id "LF-MapRunStop_Furnace"
+     Target_en_us "furnace"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{3B6DA4977E6A1193}" {
+     Id "LF-MapRunStop_IronBuyer"
+     Target_en_us "dock wholesale (iron)"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{2790A6C242345EAB}" {
+     Id "LF-MapRunStop_Market"
+     Target_en_us "market"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{A404B37A3D5D24E0}" {
+     Id "LF-MapRunStop_MineOffice"
+     Target_en_us "mine office"
+     Comment "Job run stop, lower case, after next:."
+    }
+    CustomStringTableItem "{859C3CE171328606}" {
+     Id "LF-MapRunStop_Orchard"
+     Target_en_us "orchard"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{89454575892A7FDA}" {
+     Id "LF-MapRunStop_Ore"
+     Target_en_us "ore rocks"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{57482B3DAC09588C}" {
+     Id "LF-MapRunStop_Pickaxe"
+     Target_en_us "hardware store (pickaxe)"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{F880F64007B2CF6F}" {
+     Id "LF-MapRunStop_PostMeaux"
+     Target_en_us "Meaux post stand"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{9F15AF91D32D52EA}" {
+     Id "LF-MapRunStop_PostSaintPhilippe"
+     Target_en_us "Saint-Philippe post stand"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{31032B83FF3A8B57}" {
+     Id "LF-MapRunStop_Press"
+     Target_en_us "juice press"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{5B681526378EA0BC}" {
+     Id "LF-MapRunStop_Sawmill"
+     Target_en_us "sawmill"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{A3AE4142C9F19480}" {
+     Id "LF-MapRunStop_Smokehouse"
+     Target_en_us "smokehouse"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{EA5666D778068438}" {
+     Id "LF-MapRunStop_TimberBuyer"
+     Target_en_us "timber merchant"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{8AC1236622B0181F}" {
+     Id "LF-MapRunStop_Woodlot"
+     Target_en_us "woodlot"
+     Comment "Job run stop."
+    }
+    CustomStringTableItem "{330BC9BABCE5F04B}" {
+     Id "LF-MapRun_Apples"
+     Target_en_us "Apple run"
+     Comment "Job run name on the map card."
+    }
+    CustomStringTableItem "{1102A58B59DA0CA6}" {
+     Id "LF-MapRun_Fishing"
+     Target_en_us "Fishing run"
+     Comment "Job run name on the map card."
+    }
+    CustomStringTableItem "{1590F6C184641522}" {
+     Id "LF-MapRun_Lumber"
+     Target_en_us "Lumber run"
+     Comment "Job run name on the map card."
+    }
+    CustomStringTableItem "{293CEA3EBFBBAE7A}" {
+     Id "LF-MapRun_Mining"
+     Target_en_us "Mining run"
+     Comment "Job run name on the map card."
+    }
+    CustomStringTableItem "{28A068D472DAA121}" {
+     Id "LF-MapRun_Postal"
+     Target_en_us "Postal van run"
+     Comment "Job run name on the map card."
+    }
     CustomStringTableItem "{5E2A7C91B0D43F61}" {
      Id "LF-Market_BuyerFull"
      Target_en_us "They have enough - try the wholesale warehouse at the dock. More in about %1 min."
