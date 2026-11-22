@@ -16433,5 +16433,10 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "They can't recall anything useful."
      Comment "Toast to the officer: the witness remembered nothing they could describe."
     }
+    CustomStringTableItem "{F0FD6E2EE0E11D73}" {
+     Id "LF-Mining_NotOre"
+     Target_en_us "That is plain rock. Ore rocks are streaked rust red: swing at those."
+     Comment "Toast (first-2h review B8): a pickaxe hit a plain rock, not an ore rock."
+    }
  }
 }
