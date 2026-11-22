@@ -7,11 +7,11 @@ class LF_MapKeyLine
 {
 	//! The player's fold choice for the column, kept in their profile like the help card's.
 	static const string PREF_PATH = "$profile:LifeFramework/map-key.txt";
-	static const float COLUMN_WIDTH = 170;	// lf-fixed: a badge and a short type name in small type
-	static const float ROW_HEIGHT = 18;	// lf-fixed: compact rows
-	static const float FONT_SIZE = 13;	// lf-fixed: small type, under the help card's 14
+	static const float COLUMN_WIDTH = 210;	// lf-fixed: a badge and a type name at the readable size
+	static const float ROW_HEIGHT = 23;	// lf-fixed: compact rows that still read at 1080p
+	static const float FONT_SIZE = 17;	// lf-fixed: 13 was too small to read at 1080p (lead, 2026-11-22)
 	//! A column holds this many lines; more flow into a second column to its left.
-	static const int MAX_PER_COLUMN = 42;	// lf-fixed: from under the tab to above the scale bar at 1080 reference
+	static const int MAX_PER_COLUMN = 34;	// lf-fixed: from under the tab to above the scale bar at 1080 reference
 
 	bool m_bHeader;
 	string m_sCategory;

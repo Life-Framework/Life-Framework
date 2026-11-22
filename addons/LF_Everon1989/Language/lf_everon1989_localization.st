@@ -2166,7 +2166,7 @@ StringTable {
     }
     CustomStringTableItem "{4242821AC9CE0804}" {
      Id "LF-MapPoi_Mine"
-     Target_en_us "Iron mine"
+     Target_en_us "Mine"
      Comment "Map label of the iron mine on Coalman's Brow (the Workplace/mine slot row, Everon 1989 pack)."
     }
     CustomStringTableItem "{046B777F2F3B3DC1}" {
