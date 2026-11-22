@@ -69,7 +69,7 @@ class LF_ChargeSheetRules
 	static const string FEATURE = "Law";
 
 	//! The longest stay in the cell a sheet can give, however many codes stack.
-	static const int MAX_SENTENCE_SECONDS = 3600;
+	static const int MAX_SENTENCE_SECONDS = 3600;	// lf-fixed: the law book's 60-minute rule (M7 plan); a config field belongs to the police config, not this card
 
 	//! A repeat offence counts this many times its code's fine and time.
 	static const int REPEAT_FACTOR = 2;
@@ -79,7 +79,7 @@ class LF_ChargeSheetRules
 	static const string OVERRIDE_RANK_ID = "sergeant";
 
 	//! The largest fine an int sum is allowed to reach before the cap (the ticket schema limit).
-	protected static const int FINE_LIMIT = 10000000;
+	protected static const int FINE_LIMIT = 10000000;	// lf-fixed: the schema limit, mirrors police fineCap
 
 	//------------------------------------------------------------------------------------------------
 	//! The lowest rank index that may switch a sheet to jail only: the `sergeant` row of the
