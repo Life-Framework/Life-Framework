@@ -46,7 +46,7 @@ GenericEntity Fit_coalmans_brow_mine_mine_ore_1 : "{2C571D6F7C05E095}Prefabs/Res
    m_fBaseScale 1.6
   }
  }
- coords 4328.2 35.142 10411.7
+ coords 4327.6 35.136 10411.7
  angleY 110
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_2 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
@@ -55,7 +55,7 @@ GenericEntity Fit_coalmans_brow_mine_mine_ore_2 : "{2C571D6F7C05E095}Prefabs/Res
    m_fBaseScale 1.6
   }
  }
- coords 4330.4 35.131 10412.6
+ coords 4330.3 35.134 10412.6
  angleY -130
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_3 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
@@ -64,7 +64,7 @@ GenericEntity Fit_coalmans_brow_mine_mine_ore_3 : "{2C571D6F7C05E095}Prefabs/Res
    m_fBaseScale 1.6
   }
  }
- coords 4332.6 35.02 10411.7
+ coords 4333.3 34.988 10411.7
  angleY 165
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_4 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
@@ -73,7 +73,7 @@ GenericEntity Fit_coalmans_brow_mine_mine_ore_4 : "{2C571D6F7C05E095}Prefabs/Res
    m_fBaseScale 1.6
   }
  }
- coords 4334.8 34.938 10412.6
+ coords 4336 34.863 10412.6
  angleY -20
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_5 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
@@ -82,7 +82,7 @@ GenericEntity Fit_coalmans_brow_mine_mine_ore_5 : "{2C571D6F7C05E095}Prefabs/Res
    m_fBaseScale 1.6
   }
  }
- coords 4337 34.731 10411.7
+ coords 4338.7 34.561 10411.7
  angleY 40
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_6 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
@@ -91,7 +91,7 @@ GenericEntity Fit_coalmans_brow_mine_mine_ore_6 : "{2C571D6F7C05E095}Prefabs/Res
    m_fBaseScale 1.6
   }
  }
- coords 4339.2 34.516 10412.6
+ coords 4341.4 34.163 10412.6
  angleY -70
 }
 GenericEntity Fit_coalmans_brow_mine_mine_furnace : "{CF27D083C01F1C36}Prefabs/Processor/LF_MineFurnace.et" {
@@ -113,11 +113,11 @@ GenericEntity Fit_coalmans_brow_mine_mine_desk : "{F2DA01057E99744B}Prefabs/Jobs
  angleY -90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_supply_counter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
- coords 4340 34.009 10407.4
+ coords 4340 34.119 10407.4
  angleY -90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_supply_till : "{E3FCCFB7C6EA8356}Prefabs/Props/Commercial/LF_MinersSupplyTill_Mine.et" {
- coords 4340 35.048 10407.4
+ coords 4340 35.158 10407.4
  angleY -90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

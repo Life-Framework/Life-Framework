@@ -30,7 +30,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The buried shaft end is the portal on the uphill side, two spoil heaps flank it, a cart, a pick pile and a lantern wait at its mouth; a granite rock face of nine boulders in two tiers closes the north side of the apron and the six iron ore rocks lie at its foot, 1.6 times the stone's size and streaked rust red so they stand apart from the grey granite, which stands 1.5 m further back (first-2h review B8), 2.6 m apart in a staggered row so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk, the miner's supply counter (the pickaxe, so a new miner buys it where they take the job, first-2h review B3) and the sign on the other, all on the side the track comes in from. The iron buyer is not here: bars are sold at the dock wholesale warehouse. Rows are rigid: shift, never stretch."
+    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The buried shaft end is the portal on the uphill side, two spoil heaps flank it, a cart, a pick pile and a lantern wait at its mouth; a granite rock face of nine boulders in two tiers closes the north side of the apron and the six iron ore rocks lie at its foot, 1.6 times the stone's size and streaked rust red so they stand apart from the grey granite, which stands 1.5 m further back (first-2h review B8), 2.7 m apart in a staggered row so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk, the miner's supply counter (the pickaxe, so a new miner buys it where they take the job, first-2h review B3) and the sign on the other, all on the side the track comes in from. The iron buyer is not here: bars are sold at the dock wholesale warehouse. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -138,7 +138,7 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -1.8,
+        -2.4,
         0,
         7.7
       ],
@@ -163,7 +163,7 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        0.4,
+        0.3,
         0,
         8.6
       ],
@@ -188,7 +188,7 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        2.6,
+        3.3,
         0,
         7.7
       ],
@@ -213,7 +213,7 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        4.8,
+        6,
         0,
         8.6
       ],
@@ -238,7 +238,7 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        7,
+        8.7,
         0,
         7.7
       ],
@@ -263,7 +263,7 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        9.2,
+        11.4,
         0,
         8.6
       ],
@@ -352,7 +352,8 @@
       ],
       "yaw": -90,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.11
     },
     {
       "id": "mine-supply-till",
@@ -369,7 +370,7 @@
       "yaw": -90,
       "wall": "free",
       "floor": "f0",
-      "lift": 1.039
+      "lift": 1.149
     },
     {
       "id": "mine-sign",
