@@ -1,4 +1,4 @@
-GenericEntity Roadmap_Test_Till_Counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Roadmap_Test_Till_Counter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 244.5 0 230.5
  angleY 0
 }

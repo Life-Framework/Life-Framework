@@ -42,75 +42,32 @@ GenericEntity Fit_saint_philippe_woodlot_desk : "{F2DA01057E99744B}Prefabs/Jobs/
  angleY 79
 }
 GenericEntity Fit_saint_philippe_woodlot_deck_1 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
- coords 4329.423 13.82 10608.545
+ coords 4335.069 13.135 10637.148
  angleY 79
-}
-GenericEntity Fit_saint_philippe_woodlot_deck_2 : "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et" {
- coords 4330.377 13.842 10603.637
- angleY 79
-}
-GenericEntity Fit_saint_philippe_woodlot_planks_1 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
- coords 4359.758 14.244 10614.951
- angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_planks_2 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
- coords 4363.194 14.275 10615.619
+ coords 4328.007 13.182 10636.794
  angleY -11
 }
-GenericEntity Fit_saint_philippe_woodlot_planks_3 : "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et" {
- coords 4362.484 14.275 10611.406
- angleY 79
-}
 GenericEntity Fit_saint_philippe_woodlot_saw_bench : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
- coords 4340.125 13.959 10611.135
+ coords 4339.582 13.096 10637.516
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
- coords 4343.561 14.031 10611.803
+ coords 4342.527 13.011 10638.088
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_pallet_2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 4346.015 14.095 10612.28
+ coords 4344.49 12.955 10638.47
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_truck : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et" {
- coords 4351.782 13.743 10608.816
- angleY -11
-}
-GenericEntity Fit_saint_philippe_woodlot_fence_w1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4325.306 0 10608.763
- angleY 79
-}
-GenericEntity Fit_saint_philippe_woodlot_fence_w2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4326.069 0.001 10604.837
- angleY 79
-}
-GenericEntity Fit_saint_philippe_woodlot_fence_w3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4326.832 0.001 10600.91
- angleY 79
-}
-GenericEntity Fit_saint_philippe_woodlot_fence_sw1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4329.272 0 10598.838
- angleY -11
-}
-GenericEntity Fit_saint_philippe_woodlot_fence_sw2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4333.199 0.001 10599.601
- angleY -11
-}
-GenericEntity Fit_saint_philippe_woodlot_fence_sw3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4337.125 0.058 10600.364
- angleY -11
-}
-GenericEntity Fit_saint_philippe_woodlot_fence_se1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4356.758 0 10604.181
- angleY -11
-}
-GenericEntity Fit_saint_philippe_woodlot_fence_se2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4360.684 0 10604.944
- angleY -11
-}
-GenericEntity Fit_saint_philippe_woodlot_fence_se3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 4364.611 0 10605.707
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 4359.037 11.897 10644.863
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_light_1 : "{E021E2FFF02ADF0C}Prefabs/Structures/Infrastructure/Lamps/LampStreet_E_01/LampStreet_E_01_4m.et" {

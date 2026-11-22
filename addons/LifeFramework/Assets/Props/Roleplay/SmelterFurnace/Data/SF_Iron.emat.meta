@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{1E2320A11E390DB7}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Iron.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

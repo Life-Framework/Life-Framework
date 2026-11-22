@@ -39,6 +39,11 @@ StringTable {
      Target_en_us "Father Étienne Morel"
      Comment "Anniversary memorial (#3806): the priest's name over his line at the memorial."
     }
+    CustomStringTableItem "{77A005A685815162}" {
+     Id "LF-BusStop_BoardTitle"
+     Target_en_us "Saint-Philippe bus line"
+     Comment "Timetable board heading on the island bus stops: the line's name (overrides the core row)."
+    }
     CustomStringTableItem "{7173CDE7A6CBFCA6}" {
      Id "LF-BusStop_Everon_CarLot"
      Target_en_us "Car lot"
@@ -51,7 +56,7 @@ StringTable {
     }
     CustomStringTableItem "{69DE048A8BC3C392}" {
      Id "LF-BusStop_Everon_Dock"
-     Target_en_us "Harbour"
+     Target_en_us "Harbor"
      Comment "Bus timetable: the name of a Saint-Philippe stop."
     }
     CustomStringTableItem "{00E9AB36C23DF5F5}" {
@@ -63,6 +68,11 @@ StringTable {
      Id "LF-BusStop_Everon_Fuel"
      Target_en_us "Fuel station"
      Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{E7E0CA6A8A39960C}" {
+     Id "LF-BusStop_Everon_Mine"
+     Target_en_us "Coalman's Brow mine"
+     Comment "Bus timetable: the stop at the Coalman's Brow iron mine."
     }
     CustomStringTableItem "{52D391877BFBF0FC}" {
      Id "LF-BusStop_Everon_Police"
@@ -254,6 +264,11 @@ StringTable {
      Target_en_us "The post office always needs couriers. For anything else, read the town board. It lists who is hiring."
      Comment "Pack patch of the clerk dialogue's line about_work (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{5A8EF27F20337853}" {
+     Id "LF-Dialogue_ClerkEveron_Apples"
+     Target_en_us "Drive to the orchard east of the town and pick six apples from the trees."
+     Comment "Pack patch of the clerk dialogue's line apples (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
     CustomStringTableItem "{A44A60B6429DD48D}" {
      Id "LF-Dialogue_ClerkEveron_Bank"
      Target_en_us "You were paid in cash. Cash in a pocket is lost if you die. Money in the bank is not. Deposit some at the cash machine on the bank wall, next to the post office."
@@ -283,6 +298,16 @@ StringTable {
      Id "LF-Dialogue_ClerkEveron_Idle"
      Target_en_us "You are settled in. The town board on the square shows the rest: the shops, the car lot, the police station and the organization office."
      Comment "Pack patch of the clerk dialogue's line idle (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{9045EF2226240420}" {
+     Id "LF-Dialogue_ClerkEveron_Juice"
+     Target_en_us "Press your apples into juice at the juice press on the orchard stall."
+     Comment "Pack patch of the clerk dialogue's line juice (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{B3E611FAB38249E9}" {
+     Id "LF-Dialogue_ClerkEveron_Market"
+     Target_en_us "Drive back to the market in the town centre and sell your apple juice to the trader."
+     Comment "Pack patch of the clerk dialogue's line market (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{ACA40575917539FA}" {
      Id "LF-Dialogue_ClerkEveron_Register"
@@ -323,6 +348,16 @@ StringTable {
      Id "LF-Dialogue_ClerkEveron_SayReady"
      Target_en_us "I understand. What now?"
      Comment "Pack patch reply for the clerk dialogue (tools/assets/dialogue/clerk_everon)."
+    }
+    CustomStringTableItem "{66D17BEFEC6D7B97}" {
+     Id "LF-Dialogue_ClerkEveron_StarterCar"
+     Target_en_us "Your new car waits at the garage counter of the car lot, next to the town hall: take it out there."
+     Comment "Pack patch of the clerk dialogue's line starter_car (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{B696FB0623B2D98D}" {
+     Id "LF-Dialogue_ClerkEveron_WelcomePack"
+     Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with."
+     Comment "Pack patch of the clerk dialogue's line welcome_pack (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{ACD9BE6C92AE3B95}" {
      Id "LF-Dialogue_ClerkEveron_WelcomePapers"
@@ -794,6 +829,11 @@ StringTable {
      Target_en_us "We came over from the mainland long before all this. Now half the street are new faces from the Zone. Good people. Tired people."
      Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
     }
+    CustomStringTableItem "{8E4218733758EA08}" {
+     Id "LF-Dialogue_ResidentAnselme_AboutVan"
+     Target_en_us "The van run? Take the yellow van from the post stand, load four mail sacks, drive them to the post office in Meaux and bring my van back. Back in one piece, mind. A wrecked van pays nobody."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (voiced; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
     CustomStringTableItem "{A5BA275D87A49B27}" {
      Id "LF-Dialogue_ResidentAnselme_AboutWork"
      Target_en_us "Letters, parcels, the odd crate of machine parts for the farms. If you want work, the depot pays by the drop. Ask at the counter."
@@ -842,6 +882,11 @@ StringTable {
     CustomStringTableItem "{56A57C39752E93D7}" {
      Id "LF-Dialogue_ResidentAnselme_SayTown"
      Target_en_us "Have you lived here long?"
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{2B4A32963B1B0AD7}" {
+     Id "LF-Dialogue_ResidentAnselme_SayVan"
+     Target_en_us "Tell me about the van run."
      Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
     }
     CustomStringTableItem "{89C193968FE10340}" {
@@ -2096,7 +2141,7 @@ StringTable {
     }
     CustomStringTableItem "{6771D9733D533675}" {
      Id "LF-MapPoi_Harbour"
-     Target_en_us "Harbour"
+     Target_en_us "Harbor"
      Comment "Map POI name (rc-map-places): the harbour master."
     }
     CustomStringTableItem "{521427D84861A261}" {
@@ -2158,6 +2203,11 @@ StringTable {
      Id "LF-MapPoi_Plant"
      Target_en_us "Plant"
      Comment "Map POI kind name (#3241): a processing plant, a smelter, refinery or cement works (LF_Places kind plant)."
+    }
+    CustomStringTableItem "{5A0AFC223683774C}" {
+     Id "LF-MapPoi_PostOffice"
+     Target_en_us "Post office (van run)"
+     Comment "Map badge label: a post office stand where the postal van run starts and ends."
     }
     CustomStringTableItem "{D1EC93AD7C6358F0}" {
      Id "LF-MapPoi_Range"
@@ -2446,7 +2496,7 @@ StringTable {
     }
     CustomStringTableItem "{07E23A077F643979}" {
      Id "LF-Quest_ArrivalRegister_Desc"
-     Target_en_us "You are new in town and carry no papers. Walk south from the hostel to the town hall on the square: the clerk behind the desk keeps the register and hands you your ID card. A mark on your map and screen shows the way."
+     Target_en_us "Walk south from the hostel to the town hall and talk to the clerk at the desk for your papers."
      Comment "Arrival chain step 1: talk to the clerk, receive the ID card."
     }
     CustomStringTableItem "{C15A1290314AA204}" {
@@ -2468,6 +2518,76 @@ StringTable {
      Id "LF-Quest_ArrivalWork_Title"
      Target_en_us "First wages"
      Comment "Arrival chain step 3 title."
+    }
+    CustomStringTableItem "{59970B5258F82A10}" {
+     Id "LF-Quest_EveronApples_Desc"
+     Target_en_us "Drive to the orchard east of the town and pick six apples from the trees."
+     Comment "Everon arrival step 3 errand: pick apples at the orchard."
+    }
+    CustomStringTableItem "{335A06642173129F}" {
+     Id "LF-Quest_EveronApples_Mark"
+     Target_en_us "Orchard"
+     Comment "Waypoint label for the orchard (arrival_apples)."
+    }
+    CustomStringTableItem "{A687F2D8D5A456FB}" {
+     Id "LF-Quest_EveronApples_Title"
+     Target_en_us "Apple picking"
+     Comment "Everon arrival step 3 title (arrival_apples)."
+    }
+    CustomStringTableItem "{EE315E5048005931}" {
+     Id "LF-Quest_EveronGarage_Desc"
+     Target_en_us "Your new car waits at the garage counter of the car lot, next to the town hall: take it out there."
+     Comment "Everon arrival step 2 errand: take the starter car out of the garage."
+    }
+    CustomStringTableItem "{36215FC317EF53A5}" {
+     Id "LF-Quest_EveronGarage_Mark"
+     Target_en_us "Garage"
+     Comment "Waypoint label for the garage counter (arrival_garage)."
+    }
+    CustomStringTableItem "{061067EFD544B307}" {
+     Id "LF-Quest_EveronGarage_Title"
+     Target_en_us "Your first car"
+     Comment "Everon arrival step 2 title (arrival_garage)."
+    }
+    CustomStringTableItem "{3ADBB6CA4E4F53BA}" {
+     Id "LF-Quest_EveronJuice_Desc"
+     Target_en_us "Press your apples into juice at the juice press on the orchard stall."
+     Comment "Everon arrival step 4 errand: press apple juice."
+    }
+    CustomStringTableItem "{FAE9332E9FD2730E}" {
+     Id "LF-Quest_EveronJuice_Mark"
+     Target_en_us "Juice press"
+     Comment "Waypoint label for the juice press (arrival_juice)."
+    }
+    CustomStringTableItem "{584290C2E1AFB7B6}" {
+     Id "LF-Quest_EveronJuice_Title"
+     Target_en_us "Fresh juice"
+     Comment "Everon arrival step 4 title (arrival_juice)."
+    }
+    CustomStringTableItem "{169160A3F43F94EA}" {
+     Id "LF-Quest_EveronMarket_Desc"
+     Target_en_us "Drive back to the market in the town centre and sell your apple juice to the trader."
+     Comment "Everon arrival step 5 errand: sell the juice at the market."
+    }
+    CustomStringTableItem "{E821B19281DF6F39}" {
+     Id "LF-Quest_EveronMarket_Mark"
+     Target_en_us "Market"
+     Comment "Waypoint label for the market trader (arrival_done)."
+    }
+    CustomStringTableItem "{78C9F1FB26B9EE9A}" {
+     Id "LF-Quest_EveronMarket_Title"
+     Target_en_us "Market day"
+     Comment "Everon arrival step 5 title (arrival_done, the market)."
+    }
+    CustomStringTableItem "{9B59BF96F8F32C1A}" {
+     Id "LF-Quest_EveronMarket_TurnIn"
+     Target_en_us "You are on your way. For steady pay, take a job: the town board lists who is hiring, and the clerk has more errands for you. Your errands and jobs are in your player menu."
+     Comment "Everon arrival closing line, shown when the juice is sold (arrival_done turn-in)."
+    }
+    CustomStringTableItem "{576D65C266994CCB}" {
+     Id "LF-Quest_EveronWelcomePack_TurnIn"
+     Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with."
+     Comment "Everon arrival: the clerk hands over the ID card and the welcome pack (arrival_register turn-in)."
     }
     CustomStringTableItem "{A089683A227009CA}" {
      Id "LF-Quest_SettleFish_Desc"
@@ -3248,6 +3368,21 @@ StringTable {
      Id "LF-Sign_Butcher_What"
      Target_en_us "The village butcher: dried meat, tinned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
+    }
+    CustomStringTableItem "{54968BCB66E488A0}" {
+     Id "LF-Sign_CoalmansBrowBuyer_Iron"
+     Target_en_us "Iron bought here"
+     Comment "Chalk board row label at the Coalman's Brow iron buyer: the price per iron bar."
+    }
+    CustomStringTableItem "{215C8A1EF60E0C32}" {
+     Id "LF-Sign_CoalmansBrowBuyer_Title"
+     Target_en_us "Achat fer"
+     Comment "Title of the chalk board at the iron buyer's table at the Coalman's Brow mine (Everon 1989 pack). Printed on the board and shown in the prompt as Read: Achat fer."
+    }
+    CustomStringTableItem "{72E01F61545E6893}" {
+     Id "LF-Sign_CoalmansBrowBuyer_What"
+     Target_en_us "The mine's iron buyer weighs iron bars at the yard table and pays a set price per bar, a limited amount each hour. Price per bar in dollars."
+     Comment "Sign card for the Coalman's Brow iron buyer board, What section."
     }
     CustomStringTableItem "{1DF3BFB27FDA81CC}" {
      Id "LF-Sign_CoalmansBrowMine_How"
@@ -4409,6 +4544,16 @@ StringTable {
      Target_en_us "Delivery work for cash. Everyone starts as a courier."
      Comment "Sign card for the post office (delivery jobs), What section."
     }
+    CustomStringTableItem "{84A76DBAA3B2CD39}" {
+     Id "LF-Sign_PostalVanRear_Title"
+     Target_en_us "MAIL"
+     Comment "Livery lettering on the rear doors of the yellow post van (postal van run)."
+    }
+    CustomStringTableItem "{188C47848012FD84}" {
+     Id "LF-Sign_PostalVanSide_Title"
+     Target_en_us "POSTAL SERVICE"
+     Comment "Livery lettering on both side panels of the yellow post van (postal van run)."
+    }
     CustomStringTableItem "{A1B2C3D4E5F60733}" {
      Id "LF-Sign_QuarryInfo_How"
      Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
@@ -5074,6 +5219,5 @@ StringTable {
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
      Comment "Join notice toast at a player's first spawn of the session (#1448); the joinNotice.key of the flagship."
     }
-  }
  }
 }

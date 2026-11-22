@@ -1,0 +1,129 @@
+Vehicle : "{E3AD3E9E60F2E061}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_yellow.et" {
+ ID "30D8DBFD5312FFA8"
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIgnitionLocked 1
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_VehicleLockAction "{EEC9A4A971E96977}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{76D7787C1B34A834}" {
+      Name "#EL-VehicleLock_Action"
+     }
+     "Sort Priority" 5
+    }
+   }
+  }
+ }
+ {
+  GenericEntity {
+   ID "49881FFB0EDA79F4"
+   components {
+    Hierarchy "{652B1FF58586DFBC}" {
+    }
+    MeshObject "{014588627885F517}" {
+     Object "{C223627C8AA4D53C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_115x67.xob"
+     Materials {
+      MaterialAssignClass "{326F0E55234181FD}" {
+       SourceMaterial "SignWall_01_115x67"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{A0CB1A50FCDDFAC0}" {
+       SourceMaterial "SignWall_01_115x67_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{58FDAAF8DFAFEE49}" {
+     m_sSignId "postal_van_side"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 70 70 0
+     m_vTitleSize 884 456 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 596 0
+     m_fRimWidth 28
+     m_vRimColor 0.1 0.2 0.55
+     m_vPaintColor 0.95 0.78 0.1
+     m_vTextColor 0.1 0.2 0.55
+    }
+   }
+   coords 0.98 1.35 -0.9
+   angles 0 90 0
+  }
+  GenericEntity {
+   ID "12C0262A59F12A1F"
+   components {
+    Hierarchy "{7652F38D3397071E}" {
+    }
+    MeshObject "{68832F1B3213A3AB}" {
+     Object "{C223627C8AA4D53C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_115x67.xob"
+     Materials {
+      MaterialAssignClass "{B153604787BA866F}" {
+       SourceMaterial "SignWall_01_115x67"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{17502F9F630D3638}" {
+       SourceMaterial "SignWall_01_115x67_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{700BA911EDFC13FE}" {
+     m_sSignId "postal_van_side"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 70 70 0
+     m_vTitleSize 884 456 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 596 0
+     m_fRimWidth 28
+     m_vRimColor 0.1 0.2 0.55
+     m_vPaintColor 0.95 0.78 0.1
+     m_vTextColor 0.1 0.2 0.55
+    }
+   }
+   coords -0.98 1.35 -0.9
+   angles 0 -90 0
+  }
+  GenericEntity {
+   ID "0F37501A982E2A3A"
+   components {
+    Hierarchy "{D5C27271EE6CE049}" {
+    }
+    MeshObject "{F31BE7C4B4A1A98A}" {
+     Object "{C223627C8AA4D53C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_115x67.xob"
+     Materials {
+      MaterialAssignClass "{73D60917F54FD5C6}" {
+       SourceMaterial "SignWall_01_115x67"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{C89C2028792D21A9}" {
+       SourceMaterial "SignWall_01_115x67_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{083019DDE619A264}" {
+     m_sSignId "postal_van_rear"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 70 70 0
+     m_vTitleSize 884 456 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 596 0
+     m_fRimWidth 28
+     m_vRimColor 0.1 0.2 0.55
+     m_vPaintColor 0.95 0.78 0.1
+     m_vTextColor 0.1 0.2 0.55
+    }
+   }
+   coords 0 1.3 -2.36
+   angles 0 180 0
+  }
+ }
+}

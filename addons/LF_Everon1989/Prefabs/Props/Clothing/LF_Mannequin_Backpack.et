@@ -1,0 +1,53 @@
+GenericEntity : "{451F65968BA97575}Prefabs/Props/Commercial/LF_MannequinDisplay.et" {
+ ID "31235915337AE40A"
+ components {
+  LF_ShopComponent "{B9707321705D85F1}" {
+   m_sOutletId "clothing_rack"
+  }
+  LF_MannequinOutfitComponent "{DF845760343DB74B}" {
+   m_aItemIds {
+    "backpack_m70_swiss"
+    "shirt_turtleneck_beige"
+    "trousers_dark_grey"
+   }
+  }
+ }
+ {
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "ABBF168E9A94327E"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{565D08338A418986}Assets/Characters/Uniforms/Shirt_Turtleneck_01/Shirt_Turtleneck_01.xob"
+     Materials {
+      MaterialAssignClass "{C5A03449C4B96AC0}" {
+       SourceMaterial "Shirt_Turtleneck_01"
+       AssignedMaterial "{7B6444CBD461B22D}Assets/Characters/Uniforms/Shirt_Turtleneck_01/Data/Shirt_Turtleneck_01_Beige.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "0893EA106CEB7C4C"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{31E885287C626DFD}Assets/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01.xob"
+     Materials {
+      MaterialAssignClass "{37586247E3D7C3BF}" {
+       SourceMaterial "Pants_Trousers_01"
+       AssignedMaterial "{C5B6564B9002F293}Assets/Characters/Uniforms/Pants_Trousers_01/Data/Pants_Trousers_01_DarkGrey.emat"
+      }
+     }
+    }
+   }
+  }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "99F8F45E04375B2F"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{9F4C321E6A52E8B7}Assets/Items/Equipment/Backpacks/Backpack_M70_Swiss/Backpack_M70_Swiss.xob"
+    }
+   }
+  }
+ }
+}

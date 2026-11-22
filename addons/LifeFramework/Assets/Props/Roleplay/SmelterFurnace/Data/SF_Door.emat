@@ -1,0 +1,8 @@
+MatPBRBasic {
+ BCRMap "{A2BB809ACC8EEA7E}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Door_BCR.edds"
+ NMOMap "{90C9898D21DD5F4F}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Door_NMO.edds"
+ Emissive 1 1 1 1
+ EmissiveLV 2
+ EmissiveAbsoluteLV 0
+ EmissiveMap "{5080273E8393CF98}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Door_EM.edds"
+}

@@ -52,6 +52,11 @@ A **lockpick** opens a house or shop door (+1 break-in, and a witness can call i
 
 ## Chop shop
 
+No car on the island is free. Every car you do not own is locked: the cars parked around town, the display cars at the car
+lot, the cab at the taxi rank, the woodlot truck, the cash van and the depot tanker. Trying the door says "Vehicle is
+locked". Police cars open only for an officer on duty. A company truck or the depot tanker opens only for the player
+doing that job. A parked **Skoda 105** takes a lockpick and then a hotwire, and that is a crime.
+
 Steal a car, drive it to a **chop bench**, and take it apart: hold **Work** for 6 units. You get **30 percent of its value, up to $3,000**, plus car parts (2). A chop bench has a
 **5 minute cooldown**. A stolen **UAZ469** is worth $750; the **M923A1** truck $2,400; a **T601** $210.
 

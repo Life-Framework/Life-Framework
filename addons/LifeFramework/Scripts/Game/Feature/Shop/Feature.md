@@ -147,3 +147,11 @@ type; no per-map scripting. See `docs/design.md` §4.
   goods it buys and whether it takes anything flagged by `LF_StolenGoods`, at `m_fFraction` (0..1) of the price
   table's buy price. The server reads all of it per trade.
 - **Stall:** `Prefabs/Props/Commercial/LF_FenceStall.et`, a workbench with props and one Browse goods action.
+- **Mannequin:** `Prefabs/Props/Commercial/LF_MannequinDisplay.et` (core) is a dressed mannequin that sells what it
+  wears: an `LF_ShopComponent` with an outlet, an `LF_MannequinOutfitComponent` listing catalogue ids (at most 8)
+  and seven `LF_MannequinBuyAction` lines (slots 0 to 5, -1 the whole outfit). Scrolling shows "Buy <piece>: $<price>"
+  per piece and "Buy whole outfit: $<sum>"; an id the outlet does not sell hides its line. The server sells through
+  `LF_ShopComponent.BuyDropOverflow` (the till's checks; a piece with no room in the pockets is dropped at the
+  buyer's feet, paid). A sold-out piece greys with "Sold out" from a replicated bit mask the server refreshes every
+  20 s and after each sale; short cash greys with "Not enough cash". Rules: `LF_MannequinOutfit` (test
+  `shop/mannequin-outfit`); pack prefabs `LF_Mannequin_{Denim,Suit,Knit,Raincoat,Backpack}` (test `everon/mannequins`).

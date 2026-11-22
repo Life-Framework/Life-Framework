@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{B86851019E8FE48E}Assets/Props/Commercial/ShopCounter/Data/SC_Till.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}
