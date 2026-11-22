@@ -181,7 +181,7 @@ GenericEntity : "{28411B0C79460DF8}Prefabs/Structures/Core/BuildingFurniture_bas
    ID "5B18BE720DF26DDA"
    coords 3.049 0.1 -0.553
   }
-  GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+  GenericEntity : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
    ID "5B18BE720DF26C26"
    coords -4.679 0.1 -0.645
    angleY 1.016

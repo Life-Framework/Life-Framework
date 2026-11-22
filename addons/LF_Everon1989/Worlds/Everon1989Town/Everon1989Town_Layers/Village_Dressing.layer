@@ -1006,7 +1006,7 @@ Vehicle "6ADEF2BE6C614ADD" : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/
  coords 354 0 244.8
  angles 0 270 0
 }
-GenericEntity SquareRegistryCounter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity SquareRegistryCounter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 136.167 0 241.315
  angles 0 114.8 0
 }

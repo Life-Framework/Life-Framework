@@ -233,6 +233,17 @@ class LF_FuelHaul
 		if (refused)
 			return refused;
 
+		// Another hauler's tanker (they bought its load and hold its wheel) is not yours to load.
+		LF_VehicleLockComponent heldLock = LF_Component<LF_VehicleLockComponent>.Find(tanker);
+		int heldBy = -1;
+		if (heldLock)
+			heldBy = heldLock.GetJobDriverPlayerId();
+		// A holder who left the server holds nothing.
+		if (heldBy > 0 && !GetGame().GetPlayerManager().GetPlayerControlledEntity(heldBy))
+			heldBy = -1;
+		if (heldBy > 0 && heldBy != LF_PlayerInteraction.PlayerIdOf(hauler))
+			return Refuse(LF_EFuelHaul.NO_TANKER, string.Format("the tanker is held by player %1's haul", heldBy));
+
 		int room = CargoRoom(tanker);
 		if (room < 1)
 		{
@@ -292,6 +303,10 @@ class LF_FuelHaul
 
 		s_BuyLedger.Commit(key, plan);
 		AddBought(tanker, added);
+		// No free cars: a bought load gives the (locked) depot tanker to this hauler; nobody else gets in.
+		LF_VehicleLockComponent tankerLock = LF_Component<LF_VehicleLockComponent>.Find(tanker);
+		if (tankerLock)
+			tankerLock.SetJobDriver(LF_PlayerInteraction.PlayerIdOf(hauler));
 		LF_FuelHaulResult result = new LF_FuelHaulResult();
 		result.m_eResult = LF_EFuelHaul.OK;
 		result.m_iLitres = added;
