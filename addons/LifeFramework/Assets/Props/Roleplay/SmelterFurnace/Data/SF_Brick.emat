@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{C58F791EF9AA84B1}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Brick_BCR.edds"
+ NMOMap "{695224FA6E4221CD}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Brick_NMO.edds"
+}

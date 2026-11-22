@@ -50,7 +50,7 @@ GenericEntity Grid_impound_Spawn {
 GenericEntity Annex_Impound_Desk {
  components {
   MeshObject "{DE98802C17B46422}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
   }
   RigidBody "{5F5D1789B1447AD1}" {
    Mass 10

@@ -1,6 +1,7 @@
-// red-proof: 2026-11-22 `node tools/cli.mjs test --no-build --red LF_Test_BusStop,LF_Test_BusStopWorld`: RED-OK travel/bus-stop-world (fails with the hook on, 23 assertions)
+// red-proof: 2026-11-22 `node tools/cli.mjs test --no-build --red LF_Test_BusStop,LF_Test_BusStopWorld,LF_Test_BusStopActions`: RED-OK travel/bus-stop-world (fails with the hook on, 32 assertions)
 //! Bus stops in the world: a real character at a stop buys a ticket with cash, walks off and gets
-//! the fare back; one with too little cash is refused and keeps it; a second ticket rides and the
+//! the fare back; cancels a ticket ("Cancel trip") and gets it back; one with too little cash is
+//! refused and keeps it; a second ticket rides and the
 //! character is set down at the far stop with its feet on the ground (within 5 cm), not on the road
 //! and not inside a prop. Stand-in stops are taxi stand signs registered under the BusStop kind.
 [LF_TestInfo(LF_TestTier.WORLD)]
@@ -69,6 +70,18 @@ class LF_Test_BusStopWorld : LF_Test
 
 		ctx.Equal(0, LF_BusStop.CountTrips(), "walking off the stop cancels the wait");
 		ctx.Equal(before, LF_MoneyUtils.GetCash(character), "a cancelled wait refunds the fare");
+
+		// Paid, then "Cancel trip": the fare comes back and the stop is free again.
+		character.SetOrigin(origin);
+		ctx.True(LF_BusStop.Board(0, character, KEY, FROM_ID, TO_ID) == LF_EBusRefusal.NONE, "the passenger buys a ticket to cancel");
+		bool cancelled = false;
+		if (!RedProof())
+			cancelled = LF_BusStop.CancelAsked(0, KEY);
+
+		ctx.True(cancelled, "a waiting ticket can be cancelled");
+		ctx.Equal(0, LF_BusStop.CountTrips(), "a cancelled ticket no longer waits");
+		ctx.Equal(before, LF_MoneyUtils.GetCash(character), "cancelling the trip refunds the fare");
+		ctx.False(LF_BusStop.CancelAsked(0, KEY), "with no ticket waiting there is nothing to cancel");
 
 		// Paid and waited: set down at the far stop on the ground.
 		character.SetOrigin(origin);
