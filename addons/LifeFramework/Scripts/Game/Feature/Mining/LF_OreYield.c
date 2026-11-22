@@ -87,17 +87,6 @@ class LF_OreYield
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Where an ore piece rests: the traced ground height plus a small clearance. A trace
-	//! that found nothing (`groundY` below the world floor) keeps the fallback height.
-	static float RestHeight(float groundY, float fallbackY, float clearance)
-	{
-		if (groundY < -1000)
-			return fallbackY;
-
-		return groundY + clearance;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The rock grows back whole.
 	static void Refill(LF_OreYieldState state)
 	{
