@@ -9427,6 +9427,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Mannequin"
      Comment "Toast title for a purchase off a dressed mannequin."
     }
+    CustomStringTableItem "{8E30B6C33C6FD605}" {
+     Id "LF-MapAlarm_InProgress"
+     Target_en_us "Robbery in progress (alarm raised %1 min ago)"
+     Comment "Map place card: this place is being robbed now. %1 = whole minutes since its alarm went off."
+    }
+    CustomStringTableItem "{DB6032E5F040F5BA}" {
+     Id "LF-MapAlarm_InProgressNow"
+     Target_en_us "Robbery in progress (alarm just raised)"
+     Comment "Map place card: this place is being robbed now; the alarm went off under a minute ago."
+    }
+    CustomStringTableItem "{C2A51B918A2C343E}" {
+     Id "LF-MapAlarm_Key"
+     Target_en_us "Alarm: a red ring is a robbery in progress, a grey badge was robbed recently"
+     Comment "Map key entry explaining the alarm ring on place badges."
+    }
+    CustomStringTableItem "{E45E29B5B3493411}" {
+     Id "LF-MapAlarm_Recent"
+     Target_en_us "Robbed recently"
+     Comment "Map place card: this place was robbed a few minutes ago and its alarm has stopped."
+    }
     CustomStringTableItem "{D920AB80A60A3625}" {
      Id "LF-MapKnown_ArrivalMarked"
      Target_en_us "The clerk pencils %1 places on the square onto your map."
