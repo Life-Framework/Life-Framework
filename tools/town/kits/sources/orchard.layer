@@ -70,9 +70,13 @@ GenericEntity Orchard_Crate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWoode
  coords -0.4 0 -10.8
  angleY 350
 }
-GenericEntity Orchard_HayBale : "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et" {
- coords -2.3 0 -8.4
- angleY 80
+GenericEntity Orchard_HayBale : "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et" {
+ coords -2.6 0 -8.4
+ angleY 100
+}
+GenericEntity Orchard_Bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 2.3 0 -7.5
+ angleY 30
 }
 GenericEntity Orchard_Cart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
  coords 6.4 0 -4.6
