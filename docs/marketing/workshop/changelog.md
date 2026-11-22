@@ -12,6 +12,13 @@ Alpha update. Needed by Life Framework: Everon 1989 0.2.0.
 - Fishing with a smokehouse, laundering with a rotating buyer, stall rents, barber and chess.
 - Parked cars return after being taken; a fix stops owned cars coming back as keyless copies.
 - Faster nights, lit lamps at dusk, and late joiners see the same clock.
+- Police can play: on-duty officers get handcuffs, unlock and start the station cars, and a suspect with hands up
+  and no weapon complies with a cuff. A refused duty-desk press now says why.
+- The map shows every island place with its 1989 icon and name, and a marker you place appears in the world as a
+  waypoint with the distance.
+- Car lot pads no longer stay blocked by a car parked beside them.
+- Alpha pacing switches (off unless a server sets them): homes and plots at half price, an instant firearm permit and
+  police approval, and cheaper first cars.
 - Ten new save sections; saves from older versions load without them.
 ```
 
@@ -24,8 +31,10 @@ Alpha update: the pack moves to the real Everon island. Needs Life Framework (Co
 - Shops with working tills: supermarket, general store, café, clinic, gun store (firearm permit at the counter).
 - Jobs and chains on the island: timber yard, farms and granary, mines, Black Lake and Spring Pond fishing.
 - Dirty money: tips, an illicit buyer and the moonshine barn.
-- Flagship server: nights pass twice as fast, you rejoin where you logged out, new characters get 30 minutes of grace,
-  and police and medic pay sits closer to civilian jobs.
+- Everon map: every place has its 1989 icon and name, and your own marker shows as a waypoint in the world.
+- Flagship server (alpha pace): nights pass twice as fast, you rejoin where you logged out, new characters get
+  5 minutes of grace, homes cost half, the firearm permit is instant, police approve applications at once and can play
+  with their kit, and police and medic pay sits closer to civilian jobs.
 - The alpha save was wiped for this release.
 ```
 
