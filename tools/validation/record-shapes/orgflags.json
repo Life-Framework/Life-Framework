@@ -1,0 +1,15 @@
+{
+  "section": "orgflags",
+  "class": "LF_OrgFlagSavePayload",
+  "version": 1,
+  "roots": "LF_OrgFlagRow",
+  "records": {
+    "LF_OrgFlagRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sOrgId",
+        "int m_iFlag"
+      ]
+    }
+  }
+}
