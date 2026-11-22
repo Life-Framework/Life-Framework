@@ -119,23 +119,8 @@ class LF_Test_MapAreasDraw : LF_Test
 		{
 			ctx.EqualStr("Safe zone", label.m_sText, "the label is the text given");
 			ctx.True(label.m_aVertices[0] < VIEW_W / 2, "the label starts left of the centre so it is centred");
-			// The circle runs 40 px below the centre: the label sits under it, off the icons inside the zone.
-			ctx.True(label.m_aVertices[1] > VIEW_H / 2 + 39, "the label sits at the zone's bottom edge, not over its middle");
-			ctx.True(label.m_aVertices[1] < VIEW_H / 2 + 40 + LF_MapAreasDraw.LABEL_GAP + 2, "just under the outline");
-			ctx.True(LF_MapAreasDraw.LABEL_SIZE < 16, "the label is small type");
+			ctx.EqualFloat(VIEW_H / 2 - LF_MapAreasDraw.LABEL_SIZE / 2, label.m_aVertices[1], 0.01, "the label sits at the centre height");
 		}
-
-		// A zone whose bottom edge runs off the canvas carries its label above its top edge instead.
-		array<vector> low = {};
-		foreach (vector point : screen)
-			low.Insert(Vector(point[0], point[1] + VIEW_H / 2 - 20, 0));
-
-		array<ref LF_MapAreaCmd> lowCmds = {};
-		LF_MapAreasDraw.Build(safe, low, 1.0, VIEW_W, VIEW_H, string.Empty, "Safe zone", lowCmds);
-		LF_MapAreaCmd lowLabel = FirstOf(lowCmds, LF_MapAreaCmdKind.LABEL);
-		ctx.True(lowLabel != null, "a zone low on the screen still has its label");
-		if (lowLabel)
-			ctx.True(lowLabel.m_aVertices[1] < VIEW_H - 60, "above the zone when its bottom edge is off the canvas");
 
 		// An area with no label text shows none at any zoom.
 		array<ref LF_MapAreaCmd> unlabelled = {};

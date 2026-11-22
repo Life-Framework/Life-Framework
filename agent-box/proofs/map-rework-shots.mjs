@@ -3,8 +3,8 @@
 //   node agent-box/session.mjs up --mission island --profile full
 //   node agent-box/session.mjs map-rework-shots [--out <dir>]
 //   node agent-box/session.mjs down
-// Writes town.png (zoom 4.3), wide.png (zoom 3), square.png (zoom 6), hover.png (a place's card pinned), key_hover.png (a key
-// row lifting its badges), folded.png (the help card and the key column folded), waypoint_map.png (the ring, its tag and the hint strip) and waypoint_hud.png (the map closed: the
+// Writes town.png (zoom 4.3), wide.png (zoom 3), square.png (zoom 6), hover.png (a place's card pinned), legend.png (the Legend
+// panel), waypoint_map.png (the ring, its tag and the hint strip) and waypoint_hud.png (the map closed: the
 // HUD marker and distance), default tmp/map-rework-shots. Fails (exit 1) when the map never opens or a
 // picture is missing.
 import { mkdirSync } from "node:fs";
@@ -69,11 +69,7 @@ async function run(args) {
   wait(6000);
   if (!openMap()) return fail("the map did not open");
 
-  // Unfolded help card and key column for the main pictures, whatever an earlier run left saved.
-  on({ verb: "map", words: ["help", "open"] });
-  on({ verb: "maplegend", words: ["icons", "open"] });
   pan(TOWN, 4.3);
-  on({ verb: "map", words: ["descriptors"] });
   if (!shoot("town")) return fail("capture town");
   pan(TOWN, 3);
   if (!shoot("wide")) return fail("capture wide");
@@ -81,16 +77,9 @@ async function run(args) {
   if (!shoot("square")) return fail("capture square");
   on({ verb: "map", words: ["hover", String(SQUARE.x), String(SQUARE.z)] });
   if (!shoot("hover")) return fail("capture hover");
-  pan(TOWN, 4.3);
-  // The key row under the pointer lifts its badges: line 1 is the first type under the first group.
-  on({ verb: "maplegend", words: ["hover", "1"] });
-  if (!shoot("key_hover")) return fail("capture key hover");
-  on({ verb: "maplegend", words: ["hover", "-1"] });
-  on({ verb: "maplegend", words: ["icons", "folded"] });
-  on({ verb: "map", words: ["help", "closed"] });
-  if (!shoot("folded")) return fail("capture folded");
-  on({ verb: "map", words: ["help", "open"] });
-  on({ verb: "maplegend", words: ["icons", "open"] });
+  on({ verb: "maplegend", words: ["icons"] });
+  if (!shoot("legend")) return fail("capture legend");
+  on({ verb: "maplegend", words: ["close"] });
   on({ verb: "map", words: ["waypoint", String(SQUARE.x + 60), String(SQUARE.z - 30)] });
   pan(SQUARE, 5.5);
   if (!shoot("waypoint_map")) return fail("capture waypoint on the map");

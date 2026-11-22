@@ -84,6 +84,11 @@ class LF_Test_MapWaypointClick : LF_Test
 	//------------------------------------------------------------------------------------------------
 	protected void RunWords(LF_TestContext ctx)
 	{
+		ctx.EqualStr("#LF-MapWaypoint_HintSet", LF_MapWaypoint.HintKey(false), "the hint names Shift + Left click on a mouse");
+		ctx.EqualStr("#LF-MapWaypoint_HintSetPad", LF_MapWaypoint.HintKey(true), "and the gamepad buttons on a gamepad");
+		ctx.EqualStr("#LF-MapWaypoint_HintNone", LF_MapWaypoint.StatusKey(false, false), "no waypoint: the other way to set one");
+		ctx.EqualStr("#LF-MapWaypoint_HintActive", LF_MapWaypoint.StatusKey(true, false), "a waypoint: its name, distance and the clear key");
+		ctx.EqualStr("#LF-MapWaypoint_HintActivePad", LF_MapWaypoint.StatusKey(true, true), "the gamepad clear");
 		ctx.EqualStr("#LF-MapPlaces_CardSet", LF_MapPlaceCard.NoteKey(false, false), "the card says a click sets it");
 		ctx.EqualStr("#LF-MapPlaces_CardClearPad", LF_MapPlaceCard.NoteKey(true, true), "on the waypoint's place, the card says how to clear it");
 		ctx.Equal(340, LF_MapWaypoint.DistanceMeters("0 0 0", "300 50 160"), "the distance is flat metres, as the HUD prints it");

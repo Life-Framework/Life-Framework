@@ -390,15 +390,6 @@ modded class LF_AgentHarnessVerbs
 			else
 				ok = LF_MapHarness.Mark(cmd.Arg2.ToFloat(), cmd.Arg3.ToFloat(), cmd.Arg4.ToInt(), detail);
 		}
-		else if (cmd.Arg1 == "descriptors")
-		{
-			detail = LF_MapDescriptors.Census(SCR_MapEntity.GetMapInstance());
-			ok = detail != "map_not_open";
-		}
-		else if (cmd.Arg1 == "help")
-		{
-			ok = LF_MapWaypointUI.HarnessHelp(cmd.Arg2, detail);
-		}
 		else if (cmd.Arg1 == "status")
 		{
 			ok = true;
@@ -406,7 +397,7 @@ modded class LF_AgentHarnessVerbs
 		}
 		else
 		{
-			detail = "usage: map open|close|pan <x> <z> <zoom> [s]|waypoint <x> <z>|hover <x> <z>|mark <x> <z> [n]|descriptors|help [open|closed]|probe|demo|status";
+			detail = "usage: map open|close|pan <x> <z> <zoom> [s]|waypoint <x> <z>|hover <x> <z>|mark <x> <z> [n]|probe|demo|status";
 		}
 
 		if (ok)

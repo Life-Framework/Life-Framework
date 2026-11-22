@@ -31,96 +31,6 @@ class LF_MapLegend
 	static void ResetStatics()
 	{
 		s_aHidden.Clear();
-		s_sSolo = "";
-	}
-
-	//! The one place type the key column shows alone (a click on its row), "" for all. Per viewer, never sent.
-	protected static string s_sSolo;
-
-	//------------------------------------------------------------------------------------------------
-	static string Solo()
-	{
-		return s_sSolo;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A click on a key row: show only that type; the same row again shows every type. \return the solo type now.
-	static string ToggleSolo(string typeKey)
-	{
-		if (s_sSolo == typeKey)
-			s_sSolo = "";
-		else
-			s_sSolo = typeKey;
-
-		return s_sSolo;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! One key row per icon and type name: "poi_Bakery|shop|Bakery". Two kinds that draw the same icon under
-	//! the same name share a row (and a highlight, and a solo filter).
-	static string TypeKey(notnull LF_MapPoi poi)
-	{
-		string icon = poi.m_sIcon;
-		if (icon.IsEmpty())
-			icon = "poi_" + poi.m_sKind;
-
-		return icon + "|" + poi.m_sCategory + "|" + TypeName(poi);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The key column's lines: a header for each category in legend order, then one row per type in it.
-	//! `pois` are the places the map knows (before any filter). \return how many lines.
-	static int KeyLines(notnull array<ref LF_MapPoi> pois, notnull array<ref LF_MapKeyLine> into)
-	{
-		into.Clear();
-		array<int> rows = {};
-		IconRows(pois, rows);
-		string category = "\n";
-		foreach (int index : rows)
-		{
-			LF_MapPoi poi = pois[index];
-			if (poi.m_sCategory != category)
-			{
-				category = poi.m_sCategory;
-				into.Insert(LF_MapKeyLine.Header(category));
-			}
-
-			into.Insert(LF_MapKeyLine.Row(category, TypeKey(poi), index));
-		}
-
-		return into.Count();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A category header's swatch: the badge disc colour of that group (tools/map/icons/build-icons.mjs
-	//! GROUP_FILL), so the header matches the badges under it.
-	static int CategoryColor(string category)
-	{
-		if (category == "civic")
-			return 0xFF1F9D9A;
-
-		if (category == "shop")
-			return 0xFF2FA04A;
-
-		if (category == "work")
-			return 0xFFB87A34;
-
-		if (category == "law")
-			return 0xFF2D4FD0;
-
-		if (category == "health")
-			return 0xFFE0352F;
-
-		if (category == "travel")
-			return 0xFF3A9BD9;
-
-		if (category == "story")
-			return 0xFFD0388C;
-
-		if (category == "underworld")
-			return 0xFF6B5B8A;
-
-		return 0xFF4F5D6B;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -179,9 +89,6 @@ class LF_MapLegend
 			if (IsHidden(hidden, poi.m_sCategory))
 				continue;
 
-			if (!s_sSolo.IsEmpty() && TypeKey(poi) != s_sSolo)
-				continue;
-
 			into.Insert(poi);
 			added++;
 		}
@@ -217,7 +124,11 @@ class LF_MapLegend
 			if (poi.m_eState == LF_EMapPoiState.PENCIL)
 				continue;
 
-			string key = TypeKey(poi);
+			string icon = poi.m_sIcon;
+			if (icon.IsEmpty())
+				icon = "poi_" + poi.m_sKind;
+
+			string key = icon + "|" + poi.m_sCategory + "|" + TypeName(poi);
 			if (seen.Find(key) != -1)
 				continue;
 
@@ -387,7 +298,7 @@ modded class LF_MapPlacesUI
 			m_aAllPois.Insert(poi);
 		}
 
-		if (LF_MapLegend.Hidden().Count() > 0 || !LF_MapLegend.Solo().IsEmpty())
+		if (LF_MapLegend.Hidden().Count() > 0)
 			ApplyLegendFilter();
 	}
 
@@ -503,29 +414,18 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	protected static const float TAB_LEFT = 8;	// lf-fixed: the tab sits at the left edge of the map
 	protected static const float TAB_TOP = 260;	// lf-fixed: under the vanilla tool strip
 	protected static const float LIST_HEIGHT = 190;	// lf-fixed: eight rows scroll inside the sheet
-	protected static const float KEY_RIGHT = 10;	// lf-fixed: the key column's margin from the right edge
-	protected static const float KEY_TOP = 70;	// lf-fixed: under the vanilla top bar
-	protected static const float KEY_TAB_GAP = 32;	// lf-fixed: the column starts under its tab
-	protected static const float KEY_PAD = 6;	// lf-fixed
-	protected static const int KEY_PAPER = 0xC8EEE6D6;	// lf-fixed: the paper theme at about 78 % so the map shows through
-	protected static const float KEY_OFF_ALPHA = 0.4;	// lf-fixed: a hidden group or filtered-out type in the key
+	protected static const float ICON_TAB_GAP = 44;	// lf-fixed: the Legend tab sits under the Map key tab
+	protected static const float PANEL_LEFT = 120;	// lf-fixed: right of the tabs
+	protected static const float PANEL_PAD = 12;	// lf-fixed
+	protected static const float PANEL_HEAD = 34;	// lf-fixed: room for the title
+	protected static const float ROW_HEIGHT = 30;	// lf-fixed
+	protected static const float ROW_ICON = 26;	// lf-fixed: near the solo-zoom icon size
+	protected static const float COLUMN_WIDTH = 210;	// lf-fixed
+	protected static const int ROWS_PER_COLUMN = 16;	// lf-fixed: fits under the tool strip at 1080p reference height
 
 	protected Widget m_wTab;
-	protected Widget m_wKeyTab;
-	protected TextWidget m_wKeyTabText;
-	protected ref LF_MapKeyTabHandler m_KeyTabHandler;
-	protected static const float KEY_TAB_WIDTH = 110;	// lf-fixed: "Key: hide" in the tab type
-	protected static const float KEY_TAB_HEIGHT = 28;	// lf-fixed
-	protected static const int KEY_CHIP = 0xFFEEE6D6;	// lf-fixed: the paper theme, opaque so the tab reads on any map colour
-	protected static const int KEY_RIM = 0xFF3E403A;	// lf-fixed: the card rim (LF_MapPoiCard's Metal)
-	protected Widget m_wKey;
-	protected bool m_bKeyFolded;
-	protected int m_iKeyBuiltFor = -1;
-	protected ref array<ref LF_MapKeyRowHandler> m_aKeyHandlers = {};
-	protected static float s_fKeyX;
-	protected static float s_fKeyY;
-	protected static float s_fKeyW;
-	protected static float s_fKeyH;
+	protected Widget m_wIconTab;
+	protected Widget m_wPanel;
 	protected ref LF_UIScreen m_Sheet;
 	protected ref array<ref LF_MapPoi> m_aResults = {};
 
@@ -565,368 +465,145 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 			LF_Debug.Error(LF_MapLegend.FEATURE, "the map key tab has no button component");
 		}
 
-		BuildKey(workspace);
+		BuildIconTab(workspace);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The key column on the right edge of the map (map clean-up 2026-11-22, the maintainer: "a key that shows
-	//! what the different things are on the right side without it being too obtrusive"). One header per group
-	//! with its badge colour, then the badge and short name of each type this map shows. Hovering a row lifts
-	//! those badges on the map and dims the rest; a click on a row shows only that type (again: all), a click
-	//! on a header hides or shows the group. The Key tab folds it to a thin tab, remembered per player. It
-	//! replaces the Legend slip that opened under Map key: one list of icons.
-	protected void BuildKey(notnull WorkspaceWidget workspace)
+	//! The Legend tab under the Map key tab: it opens the icon legend.
+	protected void BuildIconTab(notnull WorkspaceWidget workspace)
 	{
-		m_bKeyFolded = LF_MapHelp.LoadFolded(LF_MapKeyLine.PREF_PATH);
-		// The tab: a paper chip with dark ink (the kit button drew near-white on the grey map, 2026-11-22).
-		m_wKeyTab = workspace.CreateWidget(WidgetType.FrameWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.NOFOCUS, Color.FromInt(Color.WHITE), 0, m_RootWidget);
-		if (!m_wKeyTab)
+		m_wIconTab = workspace.CreateWidgets(LF_UITheme.BUTTON_LAYOUT, m_RootWidget);
+		if (!m_wIconTab)
 		{
-			LF_Debug.Error(LF_MapLegend.FEATURE, "the key tab was not created; the map shows no key");
+			LF_Debug.Error(LF_MapLegend.FEATURE, "the legend tab was not created");
 			return;
 		}
 
-		FrameSlot.SetAnchorMin(m_wKeyTab, 1, 0);
-		FrameSlot.SetAnchorMax(m_wKeyTab, 1, 0);
-		FrameSlot.SetAlignment(m_wKeyTab, 1, 0);
-		FrameSlot.SetPos(m_wKeyTab, -KEY_RIGHT, KEY_TOP);
-		FrameSlot.SetSize(m_wKeyTab, KEY_TAB_WIDTH, KEY_TAB_HEIGHT);
-		Widget rim = workspace.CreateWidget(WidgetType.ImageWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.IGNORE_CURSOR | WidgetFlags.NOFOCUS, Color.FromInt(KEY_RIM), 0, m_wKeyTab);
-		if (rim)
+		FrameSlot.SetAnchorMin(m_wIconTab, 0, 0);
+		FrameSlot.SetAnchorMax(m_wIconTab, 0, 0);
+		FrameSlot.SetPos(m_wIconTab, TAB_LEFT, TAB_TOP + ICON_TAB_GAP);
+		FrameSlot.SetSizeToContent(m_wIconTab, true);
+		SCR_ButtonTextComponent tab = SCR_ButtonTextComponent.Cast(m_wIconTab.FindHandler(SCR_ButtonTextComponent));
+		if (!tab)
 		{
-			FrameSlot.SetAnchorMin(rim, 0, 0);
-			FrameSlot.SetAnchorMax(rim, 1, 1);
-			FrameSlot.SetOffsets(rim, 0, 0, 0, 0);
-		}
-
-		Widget chip = workspace.CreateWidget(WidgetType.ImageWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.IGNORE_CURSOR | WidgetFlags.NOFOCUS, Color.FromInt(KEY_CHIP), 0, m_wKeyTab);
-		if (chip)
-		{
-			FrameSlot.SetAnchorMin(chip, 0, 0);
-			FrameSlot.SetAnchorMax(chip, 1, 1);
-			FrameSlot.SetOffsets(chip, 2, 2, 2, 2);
-		}
-
-		m_wKeyTabText = TextWidget.Cast(workspace.CreateWidgets(LF_MapPlacesUI.TYPE_LAYOUT, m_wKeyTab));
-		if (m_wKeyTabText)
-		{
-			m_wKeyTabText.SetFlags(WidgetFlags.IGNORE_CURSOR);
-			m_wKeyTabText.SetExactFontSize(LF_MapKeyLine.FONT_SIZE + 2);
-			FrameSlot.SetPos(m_wKeyTabText, 10, 4);
-			FrameSlot.SetSize(m_wKeyTabText, KEY_TAB_WIDTH - 14, KEY_TAB_HEIGHT - 6);
-		}
-
-		LF_MapKeyTabHandler handler = new LF_MapKeyTabHandler();
-		handler.m_Owner = this;
-		m_wKeyTab.AddHandler(handler);
-		m_KeyTabHandler = handler;
-		RebuildKey();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void OnKeyTabClicked()
-	{
-		SetKeyFolded(!m_bKeyFolded);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void SetKeyFolded(bool folded)
-	{
-		m_bKeyFolded = folded;
-		LF_MapHelp.SaveFolded(folded, LF_MapKeyLine.PREF_PATH);
-		LF_Debug.Info(LF_MapLegend.FEATURE, string.Format("key column folded=%1", folded));
-		HighlightRow(null);
-		RebuildKey();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Builds the column from the places the map knows now: a soft paper backing, then the lines top down,
-	//! flowing into a second column (to the left) when one is full.
-	protected void RebuildKey()
-	{
-		ClearKey();
-		if (!m_wKeyTab)
+			LF_Debug.Error(LF_MapLegend.FEATURE, "the legend tab has no button component");
 			return;
-
-		if (m_wKeyTabText)
-		{
-			if (m_bKeyFolded)
-				m_wKeyTabText.SetText(WidgetManager.Translate("#LF-MapKey_TabFolded"));
-			else
-				m_wKeyTabText.SetText(WidgetManager.Translate("#LF-MapKey_Tab"));
 		}
 
+		tab.SetText(LF_Terms.Shown("#LF-MapLegend_IconsTab"));
+		LF_UISkin.Paper().RecolorButton(m_wIconTab);
+		tab.m_OnClicked.Insert(OnIconTabClicked);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnIconTabClicked()
+	{
+		if (m_wPanel)
+			ClosePanel();
+		else
+			OpenPanel();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The icon legend: a paper slip (the place card's) with one icon and type per line, in columns.
+	protected void OpenPanel()
+	{
+		ClosePanel();
 		LF_MapPlacesUI places = Places();
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!places || !places.GetAllPois() || !workspace)
+		{
+			LF_Debug.Error(LF_MapLegend.FEATURE, "the places layer is not up; the icon legend has nothing to list");
 			return;
+		}
 
-		m_iKeyBuiltFor = places.GetAllPois().Count();
-		if (m_bKeyFolded)
-			return;
-
-		array<ref LF_MapKeyLine> lines = {};
-		int count = LF_MapLegend.KeyLines(places.GetAllPois(), lines);
-		if (count == 0)
-			return;
-
-		array<int> cols = {};
 		array<int> rows = {};
-		int perColumn = LF_MapKeyLine.PerColumn(count);
-		int columns = LF_MapKeyLine.Place(lines, perColumn, cols, rows);
-		float width = columns * LF_MapKeyLine.COLUMN_WIDTH + KEY_PAD * 2;
-		float height = perColumn * LF_MapKeyLine.ROW_HEIGHT + KEY_PAD * 2;
-		m_wKey = workspace.CreateWidget(WidgetType.FrameWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.NOFOCUS, Color.FromInt(Color.WHITE), 0, m_RootWidget);
-		if (!m_wKey)
+		int count = LF_MapLegend.IconRows(places.GetAllPois(), rows);
+		m_wPanel = workspace.CreateWidgets(LF_MapPlacesUI.CARD_LAYOUT, m_RootWidget);
+		if (!m_wPanel)
 		{
-			LF_Debug.Error(LF_MapLegend.FEATURE, "the key column was not created");
+			LF_Debug.Error(LF_MapLegend.FEATURE, "the icon legend was not created");
 			return;
 		}
 
-		FrameSlot.SetAnchorMin(m_wKey, 1, 0);
-		FrameSlot.SetAnchorMax(m_wKey, 1, 0);
-		FrameSlot.SetAlignment(m_wKey, 1, 0);
-		FrameSlot.SetPos(m_wKey, -KEY_RIGHT, KEY_TOP + KEY_TAB_GAP);
-		FrameSlot.SetSize(m_wKey, width, height);
-		Widget backing = workspace.CreateWidget(WidgetType.ImageWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.IGNORE_CURSOR | WidgetFlags.NOFOCUS, Color.FromInt(KEY_PAPER), 0, m_wKey);
-		if (backing)
+		int columns = LF_Utils.MaxInt(1, (count + ROWS_PER_COLUMN - 1) / ROWS_PER_COLUMN);
+		int perColumn = LF_Utils.MinInt(LF_Utils.MaxInt(count, 1), ROWS_PER_COLUMN);
+		FrameSlot.SetAnchorMin(m_wPanel, 0, 0);
+		FrameSlot.SetAnchorMax(m_wPanel, 0, 0);
+		FrameSlot.SetPos(m_wPanel, PANEL_LEFT, TAB_TOP);
+		FrameSlot.SetSize(m_wPanel, PANEL_PAD * 2 + columns * COLUMN_WIDTH, PANEL_HEAD + perColumn * ROW_HEIGHT + PANEL_PAD);
+		TextWidget title = TextWidget.Cast(m_wPanel.FindAnyWidget("Title"));
+		if (title)
+			title.SetText(WidgetManager.Translate("#LF-MapLegend_IconsTitle"));
+
+		TextWidget note = TextWidget.Cast(m_wPanel.FindAnyWidget("Note"));
+		if (note)
+			note.SetText("");
+
+		foreach (int line, int index : rows)
 		{
-			FrameSlot.SetAnchorMin(backing, 0, 0);
-			FrameSlot.SetAnchorMax(backing, 1, 1);
-			FrameSlot.SetOffsets(backing, 0, 0, 0, 0);
+			AddPanelRow(workspace, places.GetAllPois()[index], line / ROWS_PER_COLUMN, line % ROWS_PER_COLUMN);
 		}
 
-		foreach (int i, LF_MapKeyLine line : lines)
-		{
-			float x = KEY_PAD + cols[i] * LF_MapKeyLine.COLUMN_WIDTH;
-			float y = KEY_PAD + rows[i] * LF_MapKeyLine.ROW_HEIGHT;
-			AddKeyLine(workspace, line, places.GetAllPois(), x, y);
-		}
-
-		RefreshKeyDim();
-		LF_Debug.Info(LF_MapLegend.FEATURE, string.Format("key column: %1 line(s) in %2 column(s)", count, columns));
+		LF_Debug.Info(LF_MapLegend.FEATURE, string.Format("icon legend open: %1 types", count));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! One line: a header (colour swatch and group name) or a row (badge and type name), each a frame that
-	//! takes the pointer through LF_MapKeyRowHandler.
-	protected void AddKeyLine(notnull WorkspaceWidget workspace, notnull LF_MapKeyLine line, notnull array<ref LF_MapPoi> pois, float x, float y)
+	protected void AddPanelRow(notnull WorkspaceWidget workspace, notnull LF_MapPoi poi, int column, int row)
 	{
-		Widget row = workspace.CreateWidget(WidgetType.FrameWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.NOFOCUS, Color.FromInt(Color.WHITE), 0, m_wKey);
-		if (!row)
-			return;
-
-		FrameSlot.SetPos(row, x, y);
-		FrameSlot.SetSize(row, LF_MapKeyLine.COLUMN_WIDTH - 4, LF_MapKeyLine.ROW_HEIGHT);
-		float iconSize = LF_MapKeyLine.ROW_HEIGHT - 3;
-		string text;
-		if (line.m_bHeader)
+		float x = PANEL_PAD + column * COLUMN_WIDTH;
+		float y = PANEL_HEAD + row * ROW_HEIGHT;
+		Widget icon = workspace.CreateWidgets(LF_MapPlacesUI.POI_LAYOUT, m_wPanel);
+		if (icon)
 		{
-			Widget swatch = workspace.CreateWidget(WidgetType.ImageWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.IGNORE_CURSOR | WidgetFlags.NOFOCUS, Color.FromInt(LF_MapLegend.CategoryColor(line.m_sCategory)), 0, row);
-			if (swatch)
+			FrameSlot.SetPos(icon, x, y);
+			FrameSlot.SetSize(icon, ROW_ICON, ROW_ICON);
+			ImageWidget image = ImageWidget.Cast(icon.FindAnyWidget("Icon"));
+			array<string> candidates = {};
+			LF_MapPlaceIcons.Candidates(poi.m_sKind, poi.m_sIcon, poi.m_sCategory, candidates);
+			if (image)
 			{
-				FrameSlot.SetPos(swatch, 2, 4);
-				FrameSlot.SetSize(swatch, iconSize - 4, iconSize - 6);
+				LF_MapPlaceCard.FillParent(image);
+				LF_MapPlaceIcons.Resolve(image, candidates);
 			}
 
-			text = WidgetManager.Translate(LF_MapLegend.CategoryKey(line.m_sCategory));
-			text.ToUpper();
-		}
-		else
-		{
-			LF_MapPoi poi = pois[line.m_iPoi];
-			Widget icon = workspace.CreateWidgets(LF_MapPlacesUI.POI_LAYOUT, row);
-			if (icon)
-			{
-				icon.SetFlags(WidgetFlags.IGNORE_CURSOR);
-				FrameSlot.SetPos(icon, 0, 1);
-				FrameSlot.SetSize(icon, iconSize, iconSize);
-				ImageWidget image = ImageWidget.Cast(icon.FindAnyWidget("Icon"));
-				array<string> candidates = {};
-				LF_MapPlaceIcons.Candidates(poi.m_sKind, poi.m_sIcon, poi.m_sCategory, candidates);
-				if (image)
-				{
-					LF_MapPlaceCard.FillParent(image);
-					LF_MapPlaceIcons.Resolve(image, candidates);
-				}
-
-				Widget count = icon.FindAnyWidget("Count");
-				if (count)
-					count.SetVisible(false);
-			}
-
-			text = LF_MapLegend.TypeName(poi);
+			Widget count = icon.FindAnyWidget("Count");
+			if (count)
+				count.SetVisible(false);
 		}
 
-		TextWidget name = TextWidget.Cast(workspace.CreateWidgets(LF_MapPlacesUI.TYPE_LAYOUT, row));
-		if (name)
-		{
-			name.SetFlags(WidgetFlags.IGNORE_CURSOR);
-			name.SetText(text);
-			name.SetExactFontSize(LF_MapKeyLine.FONT_SIZE);
-			FrameSlot.SetPos(name, iconSize + 5, 2);
-			FrameSlot.SetSize(name, LF_MapKeyLine.COLUMN_WIDTH - iconSize - 10, LF_MapKeyLine.ROW_HEIGHT - 2);
-		}
-
-		LF_MapKeyRowHandler handler = new LF_MapKeyRowHandler();
-		handler.m_Owner = this;
-		handler.m_Line = line;
-		handler.m_wRow = row;
-		row.AddHandler(handler);
-		m_aKeyHandlers.Insert(handler);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A row of a hidden group, or of a type the solo filter leaves out, is faded in the key.
-	protected void RefreshKeyDim()
-	{
-		foreach (LF_MapKeyRowHandler handler : m_aKeyHandlers)
-		{
-			if (!handler.m_wRow)
-				continue;
-
-			bool off = LF_MapLegend.IsHidden(LF_MapLegend.Hidden(), handler.m_Line.m_sCategory);
-			string solo = LF_MapLegend.Solo();
-			if (!handler.m_Line.m_bHeader && !solo.IsEmpty() && handler.m_Line.m_sType != solo)
-				off = true;
-
-			if (off)
-				handler.m_wRow.SetOpacity(KEY_OFF_ALPHA);
-			else
-				handler.m_wRow.SetOpacity(1);
-		}
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The pointer is on a key line (null: it left). A type row lifts its badges on the map.
-	void HighlightRow(LF_MapKeyLine line)
-	{
-		LF_MapPlacesUI places = Places();
-		if (!places)
+		TextWidget name = TextWidget.Cast(workspace.CreateWidgets(LF_MapPlacesUI.TYPE_LAYOUT, m_wPanel));
+		if (!name)
 			return;
 
-		if (line && !line.m_bHeader)
-			places.HighlightType(line.m_sType);
-		else
-			places.HighlightType("");
+		string text = LF_MapLegend.TypeName(poi);
+		name.SetText(text);
+		FrameSlot.SetPos(name, x + ROW_ICON + 6, y);
+		FrameSlot.SetSize(name, COLUMN_WIDTH - ROW_ICON - 8, ROW_ICON);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A click on a key line: a row shows only its type (again: every type), a header hides or shows its group.
-	void ClickRow(notnull LF_MapKeyLine line)
+	protected void ClosePanel()
 	{
-		if (line.m_bHeader)
-		{
-			bool hidden = LF_MapLegend.Toggle(LF_MapLegend.Hidden(), line.m_sCategory);
-			LF_Debug.Info(LF_MapLegend.FEATURE, string.Format("key: group %1 hidden=%2", line.m_sCategory, hidden));
-		}
-		else
-		{
-			string solo = LF_MapLegend.ToggleSolo(line.m_sType);
-			LF_Debug.Info(LF_MapLegend.FEATURE, string.Format("key: only '%1'", solo));
-		}
+		if (m_wPanel)
+			m_wPanel.RemoveFromHierarchy();
 
-		LF_MapPlacesUI places = Places();
-		if (places)
-			places.ApplyLegendFilter();
-
-		RefreshKeyDim();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! True when the map cursor (reference units, SCR_MapCursorInfo) is over the key column or its tab, so a
-	//! click there never also lands on a badge or the map under it.
-	static bool CursorOverKey(float x, float y)
-	{
-		return s_fKeyW > 0 && x >= s_fKeyX && x <= s_fKeyX + s_fKeyW && y >= s_fKeyY && y <= s_fKeyY + s_fKeyH;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Keeps the column's screen box for CursorOverKey (reference units), tab included.
-	protected void StoreKeyBox()
-	{
-		s_fKeyW = 0;
-		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		if (!workspace || !m_wKeyTab)
-			return;
-
-		float x0 = 1e9;
-		float y0 = 1e9;
-		float x1 = -1e9;
-		float y1 = -1e9;
-		array<Widget> parts = {m_wKeyTab, m_wKey};
-		foreach (Widget part : parts)
-		{
-			if (!part)
-				continue;
-
-			float px;
-			float py;
-			float pw;
-			float ph;
-			part.GetScreenPos(px, py);
-			part.GetScreenSize(pw, ph);
-			x0 = Math.Min(x0, workspace.DPIUnscale(px));
-			y0 = Math.Min(y0, workspace.DPIUnscale(py));
-			x1 = Math.Max(x1, workspace.DPIUnscale(px + pw));
-			y1 = Math.Max(y1, workspace.DPIUnscale(py + ph));
-		}
-
-		if (x1 <= x0)
-			return;
-
-		s_fKeyX = x0;
-		s_fKeyY = y0;
-		s_fKeyW = x1 - x0;
-		s_fKeyH = y1 - y0;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected void ClearKey()
-	{
-		HighlightRow(null);
-		m_aKeyHandlers.Clear();
-		if (m_wKey)
-			m_wKey.RemoveFromHierarchy();
-
-		m_wKey = null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Places learned after the map opened (the server's private ones) join the key; the pointer box and
-	//! the pulse of the lifted badges follow every frame.
-	override void Update(float timeSlice)
-	{
-		super.Update(timeSlice);
-		if (!m_wKeyTab)
-			return;
-
-		LF_MapPlacesUI places = Places();
-		if (places && places.GetAllPois() && places.GetAllPois().Count() != m_iKeyBuiltFor)
-			RebuildKey();
-
-		StoreKeyBox();
-		if (places)
-			places.PulseHighlight(timeSlice);
+		m_wPanel = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnMapClose(MapConfiguration config)
 	{
 		CloseSheet();
-		ClearKey();
+		ClosePanel();
 		if (m_wTab)
 			m_wTab.RemoveFromHierarchy();
 
-		if (m_wKeyTab)
-			m_wKeyTab.RemoveFromHierarchy();
+		if (m_wIconTab)
+			m_wIconTab.RemoveFromHierarchy();
 
 		m_wTab = null;
-		m_wKeyTab = null;
-		m_wKeyTabText = null;
-		m_KeyTabHandler = null;
-		m_iKeyBuiltFor = -1;
-		s_fKeyW = 0;
+		m_wIconTab = null;
 		super.OnMapClose(config);
 	}
 
@@ -1071,32 +748,13 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	void HarnessClose()
 	{
 		CloseSheet();
+		ClosePanel();
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! `maplegend icons [open|folded]`: unfold or fold the key column (default: unfold).
-	void HarnessIcons(string word = "")
+	void HarnessIcons()
 	{
-		SetKeyFolded(word == "folded");
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! `maplegend hover <n>`: the pointer on key line n (as the mouse does), -1 to leave it.
-	string HarnessKeyLine(int index, bool click)
-	{
-		if (index < 0 || index >= m_aKeyHandlers.Count())
-		{
-			HighlightRow(null);
-			return string.Format("lines=%1", m_aKeyHandlers.Count());
-		}
-
-		LF_MapKeyLine line = m_aKeyHandlers[index].m_Line;
-		if (click)
-			ClickRow(line);
-		else
-			HighlightRow(line);
-
-		return string.Format("line=%1 header=%2 type=%3", index, line.m_bHeader, line.m_sType);
+		OpenPanel();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1153,7 +811,7 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 			hidden += category + ",";
 		}
 
-		return string.Format("sheet=%1 hidden=%2 known=%3 results=%4 mean_x=%5 mean_z=%6 key_folded=%7 key_lines=%8 solo=%9", m_Sheet != null, hidden, known, m_aResults.Count(), meanX, meanZ, m_bKeyFolded, m_aKeyHandlers.Count(), LF_MapLegend.Solo());
+		return string.Format("sheet=%1 hidden=%2 known=%3 results=%4 mean_x=%5 mean_z=%6", m_Sheet != null, hidden, known, m_aResults.Count(), meanX, meanZ);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1230,17 +888,12 @@ class LF_MapLegendHarness
 		else if (action == "toggle")
 			legend.HarnessToggle(argument);
 		else if (action == "icons")
-			legend.HarnessIcons(argument);
-		else if (action == "hover" || action == "solo")
-		{
-			detail = legend.HarnessKeyLine(argument.ToInt(), action == "solo");
-			return true;
-		}
+			legend.HarnessIcons();
 		else if (action == "demo")
 			legend.HarnessDemo(Vector(argument.ToFloat(), 0, argument2.ToFloat()));
 		else if (action != "status")
 		{
-			detail = "usage: maplegend open|close|search <word>|toggle <category>|icons [folded]|hover <line>|solo <line>|demo <x> <z>|status";
+			detail = "usage: maplegend open|close|search <word>|toggle <category>|icons|demo <x> <z>|status";
 			return false;
 		}
 

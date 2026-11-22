@@ -560,8 +560,6 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		FrameSlot.SetAnchorMin(m_wLayer, 0, 0);
 		FrameSlot.SetAnchorMax(m_wLayer, 1, 1);
 		FrameSlot.SetOffsets(m_wLayer, 0, 0, 0, 0);
-		// The vanilla black symbols a badge repeats, and the town name over the badges (LF_MapDescriptors).
-		LF_MapDescriptors.Apply(m_MapEntity);
 
 		// Under the map root like the legend slip and the hint strip: inside the code-made layer frame its paper
 		// drew smaller than its rim (the session pictures, 2026-11-22).
@@ -972,10 +970,6 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	//! The drawn mark at (x, y) in reference units, or -1.
 	int MarkAt(float x, float y)
 	{
-		// The key column is not the map: no mark is under the cursor while it is over the column.
-		if (LF_MapLegendUI.CursorOverKey(x, y))
-			return -1;
-
 		int groups = m_aGroups.Count();
 		if (m_aScreenX.Count() != groups || m_aShown.Count() < groups)
 			return -1;
