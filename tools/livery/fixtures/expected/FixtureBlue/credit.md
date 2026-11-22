@@ -1,0 +1,1 @@
+| LF_UAZ469_FixtureBlue | Derived from Bohemia Interactive `UAZ469_Body_CIV_GLOBAL_MASK.edds` (Arma Public License, base-game asset) | Fixture lettering mask | `addons/LF_Everon1989/Assets/Liveries/UAZ469/` |

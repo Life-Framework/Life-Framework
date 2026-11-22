@@ -1,0 +1,9 @@
+MatPBRMulti : "{D1F1DD9AE3DC919D}Assets/Vehicles/Wheeled/UAZ469/Data/UAZ469_Body_CIV_BLUE.emat" {
+ MaskMap "{7219E19EFF150FC8}Assets/Liveries/UAZ469/LF_UAZ469_FixtureBlue_MASK.edds"
+ Enabled_2 1
+ Mask_2 ""
+ MaskOffset_2 0.95
+ MaskSharpness_2 10
+ Color_2 0.012 0.03 0.09 1
+ Color_1 0.62 0.62 0.6 1
+}
