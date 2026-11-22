@@ -146,11 +146,13 @@ class LF_HudPrefs : Managed
 	static const string PART_MONEY = "money";
 	static const string PART_WANTED = "wanted";
 	static const string PART_NEEDS = "needs";
+	static const string PART_OBJECTIVE = "objective";
 
 	protected bool m_bBrand = true;
 	protected bool m_bMoney = true;
 	protected bool m_bWanted = true;
 	protected bool m_bNeeds = true;
+	protected bool m_bObjective = true;
 
 	protected static ref LF_HudPrefs s_Instance;
 
@@ -196,7 +198,7 @@ class LF_HudPrefs : Managed
 	//------------------------------------------------------------------------------------------------
 	static array<string> Parts()
 	{
-		return {PART_BRAND, PART_MONEY, PART_WANTED, PART_NEEDS};
+		return {PART_BRAND, PART_MONEY, PART_WANTED, PART_NEEDS, PART_OBJECTIVE};
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -208,6 +210,7 @@ class LF_HudPrefs : Managed
 			case PART_MONEY: return m_bMoney;
 			case PART_WANTED: return m_bWanted;
 			case PART_NEEDS: return m_bNeeds;
+			case PART_OBJECTIVE: return m_bObjective;
 		}
 
 		return false;
@@ -223,6 +226,7 @@ class LF_HudPrefs : Managed
 			case PART_MONEY: m_bMoney = on; return true;
 			case PART_WANTED: m_bWanted = on; return true;
 			case PART_NEEDS: m_bNeeds = on; return true;
+			case PART_OBJECTIVE: m_bObjective = on; return true;
 		}
 
 		return false;
