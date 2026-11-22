@@ -16,7 +16,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { randomBytes } from "node:crypto";
 import {
-  ATLAS, CELL, CATEGORIES, CORE_HATCH, PACK_HATCH, FILES, PACK_KINDS, SHARED,
+  ATLAS_SIZE, CELL, CATEGORIES, CORE_HATCH, PACK_HATCH, FILES, PACK_KINDS, SHARED,
   catQuad, coreQuadNames, packQuadNames, poiQuad, layout,
 } from "../lib/icons.mjs";
 
@@ -28,13 +28,6 @@ export const INK = {
   black: "#1d1a17", red: "#b3261e", blue: "#1f4e8c", green: "#2f6b34", brown: "#6b4423",
   graphite: "#46464e", grey: "#555555", core: "#3d3d3d", paper: "#efe6d0",
 };
-const CAT_INK = { civic: "black", shop: "black", work: "green", law: "red", health: "red", travel: "blue", story: "red", underworld: "graphite" };
-const KIND_INK = {
-  Bank: "black", PoliceStation: "red", PoliceArmoury: "red", HospitalSite: "red", Workplace: "green", Fence: "graphite",
-  Fuel: "black", Payphone: "black", Quarry: "brown", Fish: "blue", Story: "red", Taxi: "blue", Harbour: "blue",
-  Farm: "green", Shop: "black", TownHall: "black", Church: "black", Pub: "black", Fire: "red", Depot: "brown",
-  IdCard: "black", Atm: "black", Garage: "blue", Bed: "black", Sawmill: "green", Scrap: "brown",
-};
 
 // ---- shapes (64x64 viewBox) ----------------------------------------------------------------
 const star = (cx, cy, R, r) => Array.from({ length: 10 }, (_, i) => {
@@ -42,7 +35,10 @@ const star = (cx, cy, R, r) => Array.from({ length: 10 }, (_, i) => {
   const d = i % 2 ? r : R;
   return `${(cx + d * Math.cos(a)).toFixed(1)},${(cy + d * Math.sin(a)).toFixed(1)}`;
 }).join(" ");
-const S = (ink, w = 4) => `stroke="${ink}" stroke-width="${w}" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
+// Stroke weight factor: 1 for the core glyphs and the hand marks, BADGE_STROKE inside a pack badge, where the
+// glyph is drawn smaller and needs a heavier line to read at 22 px.
+let STROKE = 1;
+const S = (ink, w = 4) => `stroke="${ink}" stroke-width="${(w * STROKE).toFixed(2)}" fill="none" stroke-linecap="round" stroke-linejoin="round"`;
 
 const SHAPES = {
   coin: (k) => `<circle cx="32" cy="32" r="24" ${S(k)}/><circle cx="32" cy="32" r="15" ${S(k, 3)}/><path d="M32 23v18" ${S(k, 3)}/>`,
@@ -69,15 +65,65 @@ const SHAPES = {
   bed: (k) => `<path d="M8 18V54M8 44H56V54M8 34H56V44" ${S(k)}/><rect x="14" y="25" width="14" height="9" fill="${k}"/>`,
   sawmill: (k) => `<path d="M8 22L13 12L18 22L23 12L28 22L33 12L38 22L43 12L48 22L53 12L56 22" ${S(k, 3)}/><path d="M8 42Q8 30 20 30H46Q56 30 56 42Q56 54 46 54H20Q8 54 8 42Z" ${S(k)}/><circle cx="46" cy="42" r="6" ${S(k, 3)}/>`,
   scrap: (k) => `<path d="M12 22H52L48 56H16Z" ${S(k)}/><path d="M8 22H56M26 22V12H38V22M24 32V48M32 32V48M40 32V48" ${S(k, 3)}/>`,
+  // One glyph per place type (2026-11-22), drawn inside the pack badge.
+  basket: (k) => `<path d="M8 28H56L50 54H14Z" ${S(k)}/><path d="M20 28L28 12M44 28L36 12" ${S(k)}/><path d="M24 36V46M32 36V46M40 36V46" ${S(k, 3)}/>`,
+  bread: (k) => `<path d="M8 46V38Q8 20 32 20Q56 20 56 38V46Z" ${S(k)}/><path d="M22 28L26 38M32 27V38M42 28L38 38" ${S(k, 3)}/>`,
+  cleaver: (k) => `<path d="M6 14H40V44H6Z" fill="${k}"/><path d="M40 22H58" ${S(k, 8)}/>`,
+  cup: (k) => `<path d="M10 24H46V38Q46 52 28 52Q10 52 10 38Z" ${S(k)}/><path d="M46 28H51Q57 28 57 34Q57 41 50 41H45" ${S(k)}/><path d="M20 8Q25 13 20 18M32 8Q37 13 32 18" ${S(k, 3)}/><path d="M8 58H48" ${S(k)}/>`,
+  stall: (k) => `<path d="M6 24L12 10H52L58 24Z" fill="${k}"/><path d="M12 28V56M52 28V56M6 56H58M16 42H48" ${S(k)}/>`,
+  paper: (k) => `<rect x="12" y="8" width="40" height="48" rx="2" ${S(k)}/><path d="M19 18H45" ${S(k, 6)}/><path d="M19 30H29M19 38H29M19 46H29" ${S(k, 3)}/><rect x="35" y="29" width="10" height="18" fill="${k}"/>`,
+  shirt: (k) => `<path d="M22 8L8 16L4 30L15 33L16 28V56H48V28L49 33L60 30L56 16L42 8Q32 18 22 8Z" ${S(k)}/>`,
+  hammer: (k) => `<path d="M12 10H38L48 18V26H12Z" fill="${k}"/><path d="M28 26V58" ${S(k, 8)}/>`,
+  rifle: (k) => `<path d="M4 30H40L46 26H60V34L50 38H34L28 52H18L22 38H4Z" fill="${k}"/>`,
+  target: (k) => `<circle cx="32" cy="32" r="25" ${S(k)}/><circle cx="32" cy="32" r="15" ${S(k)}/><circle cx="32" cy="32" r="5.5" fill="${k}"/>`,
+  capsule: (k) => `<g transform="rotate(-45 32 32)"><rect x="8" y="21" width="48" height="22" rx="11" ${S(k)}/><path d="M12 32Q12 25 19 25H32V39H19Q12 39 12 32Z" fill="${k}"/></g>`,
+  scissors: (k) => `<circle cx="18" cy="47" r="8" ${S(k)}/><circle cx="46" cy="47" r="8" ${S(k)}/><path d="M23 41L50 6M41 41L14 6" ${S(k)}/>`,
+  chair: (k) => `<path d="M18 6V58M18 34H46V58M18 22H34" ${S(k)}/>`,
+  wheat: (k) => `<path d="M32 60V8" ${S(k)}/><ellipse cx="24" cy="14" rx="4.5" ry="8" transform="rotate(-35 24 14)" fill="${k}"/><ellipse cx="40" cy="14" rx="4.5" ry="8" transform="rotate(35 40 14)" fill="${k}"/><ellipse cx="24" cy="26" rx="4.5" ry="8" transform="rotate(-35 24 26)" fill="${k}"/><ellipse cx="40" cy="26" rx="4.5" ry="8" transform="rotate(35 40 26)" fill="${k}"/><ellipse cx="24" cy="38" rx="4.5" ry="8" transform="rotate(-35 24 38)" fill="${k}"/><ellipse cx="40" cy="38" rx="4.5" ry="8" transform="rotate(35 40 38)" fill="${k}"/>`,
+  boxes: (k) => `<rect x="6" y="34" width="24" height="22" ${S(k)}/><rect x="34" y="34" width="24" height="22" ${S(k)}/><rect x="20" y="10" width="24" height="22" ${S(k)}/>`,
+  appletree: (k) => `<path d="M32 18Q20 10 12 22Q4 38 18 54Q26 60 32 54Q38 60 46 54Q60 38 52 22Q44 10 32 18Z" fill="${k}"/><path d="M32 18Q31 10 36 5" ${S(k, 4)}/><path d="M36 12Q46 4 52 10Q44 16 36 12Z" fill="${k}"/>`,
+  pine: (k) => `<path d="M32 4L50 30H41L56 50H8L23 30H14Z" fill="${k}"/><path d="M32 50V61" ${S(k, 7)}/>`,
+  pickaxe: (k) => `<g transform="rotate(-35 32 32)"><path d="M6 22Q32 6 58 22" ${S(k, 7)}/><path d="M32 14V62" ${S(k, 6)}/></g>`,
+  factory: (k) => `<path d="M6 58V30L20 38V30L34 38V30L46 38V8H56V58Z" ${S(k)}/><path d="M14 48H20M28 48H34M42 48H48" ${S(k)}/>`,
+  smoked: (k) => `<path d="M8 44Q30 30 48 44Q30 58 8 44Z" fill="${k}"/><path d="M48 44L58 37V51Z" fill="${k}"/><path d="M20 28Q15 22 20 16M32 26Q27 19 32 10M44 28Q39 22 44 16" ${S(k, 3)}/>`,
+  board: (k) => `<rect x="6" y="8" width="52" height="36" rx="2" ${S(k)}/><path d="M16 44V60M48 44V60" ${S(k)}/><path d="M14 18H36M14 26H44M14 34H30" ${S(k, 3)}/>`,
+  house: (k) => `<path d="M6 30L32 8L58 30" ${S(k)}/><path d="M14 25V56H50V25" ${S(k)}/><rect x="25" y="36" width="14" height="20" fill="${k}"/>`,
+  car: (k) => `<path d="M6 42V34L16 22H44L56 34H58V42Z" fill="${k}"/><circle cx="18" cy="46" r="7" fill="${k}"/><circle cx="46" cy="46" r="7" fill="${k}"/>`,
   crate: (k) => `<rect x="10" y="14" width="44" height="40" ${S(k)}/><path d="M10 14L54 54M54 14L10 54" ${S(k, 3)}/>`,
 };
-const CAT_SHAPE = { civic: "hall", shop: "bag", work: "hammerpick", law: "star", health: "clinic", travel: "taxi", story: "flag", underworld: "diamond" };
-const KIND_SHAPE = {
-  Bank: "coin", PoliceStation: "star", PoliceArmoury: "shield", HospitalSite: "clinic", Workplace: "hammerpick", Fence: "diamond",
-  Fuel: "pump", Payphone: "handset", Quarry: "hammerpick", Fish: "fish", Story: "flag", Taxi: "taxi", Harbour: "anchor",
-  Farm: "barn", Shop: "bag", TownHall: "hall", Church: "church", Pub: "mug", Fire: "flame", Depot: "crate",
-  IdCard: "idcard", Atm: "atm", Garage: "garage", Bed: "bed", Sawmill: "sawmill", Scrap: "scrap",
+// ---- the badge: every pack pictogram is the same disc, rim and line weight; the group says the colour -----
+// (map rework 2026-11-22, "clean nice designed icons for each type of place"). Muted print inks, no neon.
+const GROUP_FILL = {
+  civic: "#3e4a59", money: "#86651c", shop: "#2f6b34", food: "#a4561f", law: "#1f3a6e", health: "#b3261e",
+  travel: "#4a6a86", work: "#6b4423", home: "#5d4a73", story: "#8c2a1e", underworld: "#2e2e33",
 };
+const BADGE_STROKE = 1.55;
+const BADGE_SCALE = 0.6;
+// Kind -> [glyph, group]. Kinds sharing a glyph differ by group colour (a farm supply shop and a wheat field).
+const KIND_BADGE = {
+  Bank: ["coin", "money"], Atm: ["atm", "money"], PoliceStation: ["star", "law"], PoliceArmoury: ["shield", "law"], Range: ["target", "law"],
+  HospitalSite: ["clinic", "health"], Pharmacy: ["capsule", "health"], Fire: ["flame", "health"],
+  TownHall: ["hall", "civic"], IdCard: ["idcard", "civic"], Church: ["church", "civic"], Payphone: ["handset", "civic"],
+  Depot: ["crate", "civic"], Board: ["board", "civic"],
+  Shop: ["bag", "shop"], News: ["paper", "shop"], Clothing: ["shirt", "shop"], Hardware: ["hammer", "shop"], Guns: ["rifle", "shop"],
+  Barber: ["scissors", "shop"], Furniture: ["chair", "shop"], FarmSupply: ["wheat", "shop"], Wholesale: ["boxes", "shop"],
+  Grocer: ["basket", "food"], Bakery: ["bread", "food"], Butcher: ["cleaver", "food"], Cafe: ["cup", "food"], Pub: ["mug", "food"], Market: ["stall", "food"],
+  Fuel: ["pump", "travel"], Garage: ["garage", "travel"], CarLot: ["car", "travel"], Taxi: ["taxi", "travel"], Harbour: ["anchor", "travel"], Bed: ["bed", "travel"],
+  Workplace: ["hammerpick", "work"], Quarry: ["pickaxe", "work"], Mine: ["pickaxe", "work"], Plant: ["factory", "work"], Farm: ["barn", "work"],
+  Orchard: ["appletree", "work"], Wheat: ["wheat", "work"], Woodlot: ["pine", "work"], Sawmill: ["sawmill", "work"], Scrap: ["scrap", "work"],
+  Fish: ["fish", "work"], Smokehouse: ["smoked", "work"],
+  PlotForSale: ["house", "home"], Story: ["flag", "story"], Fence: ["diamond", "underworld"],
+};
+function badge(glyph, group) {
+  STROKE = BADGE_STROKE;
+  const inner = SHAPES[glyph](INK.paper);
+  STROKE = 1;
+  return `<circle cx="32" cy="32" r="29" fill="${GROUP_FILL[group]}" stroke="${INK.black}" stroke-width="2.6"/>`
+    + `<circle cx="32" cy="32" r="25.4" fill="none" stroke="${INK.paper}" stroke-width="1.1" opacity="0.5"/>`
+    + `<g transform="translate(32 32) scale(${BADGE_SCALE}) translate(-32 -32)">${inner}</g>`;
+}
+
+const CAT_SHAPE = { civic: "hall", shop: "bag", work: "hammerpick", law: "star", health: "clinic", travel: "taxi", story: "flag", underworld: "diamond" };
 
 // Hand marks: graphite wobble, no fill. Pins: a coloured teardrop with an ink outline.
 const pencil = (d, extra = "") => `<g ${S(INK.graphite, 3.6)}>${d}${extra}</g>`;
@@ -106,12 +152,14 @@ function svgFor(side, name) {
   else {
     const cat = CATEGORIES.find((c) => catQuad(c) === name);
     const kind = PACK_KINDS.find((k) => poiQuad(k) === name);
-    const shape = SHAPES[cat ? CAT_SHAPE[cat] : KIND_SHAPE[kind]];
-    if (!shape) throw new Error(`no shape for ${name}`);
-    const inkName = side === "core" ? "core" : cat ? CAT_INK[cat] : KIND_INK[kind];
-    body = shape(INK[inkName]);
-    // Cheap offset print: the red plate sits a pixel off its black neighbour.
-    if (side === "pack" && inkName === "red") body = `<g transform="translate(1.6 1.3)" opacity="0.3">${shape(INK.red)}</g>${body}`;
+    if (side === "pack") {
+      const spec = cat ? [CAT_SHAPE[cat], cat] : KIND_BADGE[kind];
+      if (!spec || !SHAPES[spec[0]] || !GROUP_FILL[spec[1]]) throw new Error(`no badge for ${name}`);
+      body = badge(spec[0], spec[1]);
+    } else {
+      if (!cat) throw new Error(`no core shape for ${name}`);
+      body = SHAPES[CAT_SHAPE[cat]](INK.core);
+    }
   }
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${CELL}" height="${CELL}" viewBox="0 0 64 64">${body}</svg>`;
 }
@@ -144,17 +192,19 @@ async function tif(file, buf, w, h) {
 
 async function atlas(side) {
   const names = side === "core" ? coreQuadNames() : packQuadNames();
-  const pos = layout(names);
+  const size = ATLAS_SIZE[side];
+  const pos = layout(names, size);
   const layers = [];
   for (const n of names) {
     const input = await sharp(Buffer.from(svgFor(side, n)), { density: 144 }).resize(CELL, CELL).png().toBuffer();
     const p = pos.get(n);
     layers.push({ input, left: p.x, top: p.y });
   }
-  const base = sharp({ create: { width: ATLAS, height: ATLAS, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } });
+  const base = sharp({ create: { width: size, height: size, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } });
   const { data } = await base.composite(layers).raw().toBuffer({ resolveWithObject: true });
-  stamp(data, ATLAS, ATLAS, side === "core" ? 1 : 2);
-  return { names, pos, data };
+  // The core placeholders keep their stamped print edge; the pack badges stay clean.
+  if (side === "core") stamp(data, size, size, 1);
+  return { names, pos, data, size };
 }
 
 // White-ink tiles the draw command tints (core), inked tiles (pack). 64x64, seamless: the period divides 64.
@@ -205,20 +255,20 @@ function imagesetMeta(addon, imageset) {
   writeFileSync(file, `MetaFileClass {\n Name "{${guid()}}${rel}"\n Configurations {\n  ImageSetResourceClass PC {\n  }\n  ImageSetResourceClass XBOX_ONE : PC {\n  }\n  ImageSetResourceClass XBOX_SERIES : PC {\n  }\n  ImageSetResourceClass PS4 : PC {\n  }\n  ImageSetResourceClass HEADLESS : PC {\n  }\n }\n}\n`);
 }
 
-function imagesetText(tex, names, pos) {
+function imagesetText(tex, names, pos, size) {
   const defs = names.map((n) => {
     const p = pos.get(n);
     return `  ImageSetDefClass ${n} {\n   Name "${n}"\n   Pos ${p.x} ${p.y}\n   Size ${p.w} ${p.h}\n   Flags 0\n  }\n`;
   }).join("");
-  return `ImageSetClass {\n RefSize ${ATLAS} ${ATLAS}\n Textures {\n  ImageSetTextureClass {\n   mpix 1\n   path "{${tex.guid}}${tex.rel}"\n  }\n }\n Images {\n${defs} }\n}`;
+  return `ImageSetClass {\n RefSize ${size} ${size}\n Textures {\n  ImageSetTextureClass {\n   mpix 1\n   path "{${tex.guid}}${tex.rel}"\n  }\n }\n Images {\n${defs} }\n}`;
 }
 
 async function contact(side, a) {
   const out = join(ROOT, "tmp", "map", `icons-${side}.png`);
   mkdirSync(dirname(out), { recursive: true });
-  const art = await sharp(a.data, { raw: { width: ATLAS, height: ATLAS, channels: 4 } }).png().toBuffer();
-  const flat = await sharp({ create: { width: ATLAS, height: ATLAS, channels: 4, background: INK.paper } }).composite([{ input: art }]).png().toBuffer();
-  await sharp(flat).resize(ATLAS * 2, ATLAS * 2, { kernel: "nearest" }).png().toFile(out);
+  const art = await sharp(a.data, { raw: { width: a.size, height: a.size, channels: 4 } }).png().toBuffer();
+  const flat = await sharp({ create: { width: a.size, height: a.size, channels: 4, background: INK.paper } }).composite([{ input: art }]).png().toBuffer();
+  await sharp(flat).resize(a.size * 2, a.size * 2, { kernel: "nearest" }).png().toFile(out);
   return out;
 }
 
@@ -231,9 +281,9 @@ async function main() {
     const png = await contact(side, a);
     console.log(`${side}: ${a.names.length} quads, contact sheet ${png}`);
     if (previewOnly) continue;
-    await tif(join(ROOT, f.atlas.replace(/\.edds$/, ".tif")), a.data, ATLAS, ATLAS);
+    await tif(join(ROOT, f.atlas.replace(/\.edds$/, ".tif")), a.data, a.size, a.size);
     const tex = textureMeta(f.addon, f.atlas);
-    writeFileSync(join(ROOT, f.imageset), imagesetText(tex, a.names, a.pos));
+    writeFileSync(join(ROOT, f.imageset), imagesetText(tex, a.names, a.pos, a.size));
     imagesetMeta(f.addon, f.imageset);
     batch.push(f.atlas.replace(/\.edds$/, ".tif"));
     const kinds = side === "core" ? CORE_HATCH : PACK_HATCH;
