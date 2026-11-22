@@ -16,20 +16,20 @@ MetaFileClass {
      AssignedMaterial "{523004CEE7944076}Assets/Props/Commercial/ShopCounter/Data/SC_WoodDark.emat"
     }
     MaterialAssignClass "{98DF1922096B8547}" {
-     SourceMaterial "SC_Dark"
-     AssignedMaterial "{8246BFFC28CE0FD0}Assets/Props/Commercial/ShopCounter/Data/SC_Dark.emat"
-    }
-    MaterialAssignClass "{094B4EE851D8719C}" {
      SourceMaterial "SC_Lambris"
      AssignedMaterial "{C807DE29F003DB22}Assets/Props/Commercial/ShopCounter/Data/SC_Lambris.emat"
     }
-    MaterialAssignClass "{30ECAF928641BAC8}" {
-     SourceMaterial "SC_Till"
-     AssignedMaterial "{B86851019E8FE48E}Assets/Props/Commercial/ShopCounter/Data/SC_Till.emat"
+    MaterialAssignClass "{094B4EE851D8719C}" {
+     SourceMaterial "SC_Dark"
+     AssignedMaterial "{8246BFFC28CE0FD0}Assets/Props/Commercial/ShopCounter/Data/SC_Dark.emat"
     }
-    MaterialAssignClass "{A80DCE9E12C502AD}" {
+    MaterialAssignClass "{30ECAF928641BAC8}" {
      SourceMaterial "SC_Kraft"
      AssignedMaterial "{746D114175B04C43}Assets/Props/Commercial/ShopCounter/Data/SC_Kraft.emat"
+    }
+    MaterialAssignClass "{A80DCE9E12C502AD}" {
+     SourceMaterial "SC_Till"
+     AssignedMaterial "{B86851019E8FE48E}Assets/Props/Commercial/ShopCounter/Data/SC_Till.emat"
     }
     MaterialAssignClass "{95C4785858C16B25}" {
      SourceMaterial "SC_Plastic"
