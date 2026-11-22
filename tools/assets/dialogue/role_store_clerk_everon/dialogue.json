@@ -1,0 +1,39 @@
+{
+  "id": "role_store_clerk_everon",
+  "name": "RoleStoreClerkEveron",
+  "patches": "role_store_clerk",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "K8nDX2f6wjv6bCh5UeZi",
+    "sex": "male",
+    "name": "Jamie - French Accent & Charismatic",
+    "public_owner_id": "e0b730cdf914e6d32ba2344235d302782c648d3cefa4a6f6b77e1bdf2cf93910",
+    "why": "A charming middle-aged Frenchman for the shop counters: every store clerk role NPC (general store, bakery, butcher, hardware, farm supply, timber, gun counter) speaks through this one role conversation, so they share one friendly shop voice. The game has male bodies only; the voice is male.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1
+    }
+  },
+  "budget_chars": 900,
+  "lines": {
+    "greet": {
+      "text": "Morning. Looking for something in particular?"
+    },
+    "what": {
+      "text": "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in Saint-Philippe does."
+    },
+    "where": {
+      "text": "The market square is south of the main street if you want fruit and vegetables. Cars are sold at the lot on the east side."
+    },
+    "rumour": {
+      "text": "Somebody has been asking whether I keep a safe under the counter. I do not, and I do not keep much cash either."
+    },
+    "bye": {
+      "text": "Take care out there."
+    }
+  },
+  "replies": {}
+}

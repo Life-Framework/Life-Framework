@@ -1,0 +1,76 @@
+{
+  "id": "role_mechanic_everon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "0fd945730cd461bb",
+      "date": "2026-11-22",
+      "voice_id": "1dtFMJq6XJK9hgZhZCQz",
+      "voice_name": "Loic",
+      "model": "eleven_multilingual_v2",
+      "text": "Mind the oil. What is wrong with it?",
+      "chars": 36,
+      "chars_total": 14,
+      "request_id": "63IF0MngJQoCVXmM1DCG",
+      "seconds": 2.08,
+      "mouth": "247887579989976446796679855965521111111100"
+    },
+    "what": {
+      "hash": "2517a37101c1f2c3",
+      "date": "2026-11-22",
+      "voice_id": "1dtFMJq6XJK9hgZhZCQz",
+      "voice_name": "Loic",
+      "model": "eleven_multilingual_v2",
+      "text": "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery.",
+      "chars": 105,
+      "chars_total": 42,
+      "request_id": "iC1uJ4J98LRyBW6Mo0Xc",
+      "seconds": 6.5,
+      "mouth": "14538432299865211155896999899975579925973278611156888332999852556216864321111111111113899236997488765423676229964576555542111111000"
+    },
+    "where": {
+      "hash": "48201b3e95eac057",
+      "date": "2026-11-22",
+      "voice_id": "1dtFMJq6XJK9hgZhZCQz",
+      "voice_name": "Loic",
+      "model": "eleven_multilingual_v2",
+      "text": "The car lot is on the east side, and the fuel station is down the road. Fill up before you go far.",
+      "chars": 98,
+      "chars_total": 39,
+      "request_id": "0823PfWAMQkNKcyzKbW3",
+      "seconds": 5.24,
+      "mouth": "126259999968678777257321776321135652288732697447664487556776531111111111399984683589899585257643211111100"
+    },
+    "rumour": {
+      "hash": "a027ce3adb7c5414",
+      "date": "2026-11-22",
+      "voice_id": "1dtFMJq6XJK9hgZhZCQz",
+      "voice_name": "Loic",
+      "model": "eleven_multilingual_v2",
+      "text": "Somebody keeps asking me how to start a car without the key. I tell them to buy the key.",
+      "chars": 88,
+      "chars_total": 35,
+      "request_id": "0yXUzKTIGAaf7hmeQeFc",
+      "seconds": 4.49,
+      "mouth": "129659979526626972145555425862421697613699976684843532674100000026429966852638965432742100"
+    },
+    "bye": {
+      "hash": "5c19d0f5c1690b2a",
+      "date": "2026-11-22",
+      "voice_id": "1dtFMJq6XJK9hgZhZCQz",
+      "voice_name": "Loic",
+      "model": "eleven_multilingual_v2",
+      "text": "Drive safe.",
+      "chars": 11,
+      "chars_total": 4,
+      "request_id": "An0TOXw3mGHS69y6yYVJ",
+      "seconds": 0.78,
+      "mouth": "2999422654211000"
+    }
+  },
+  "voice": {
+    "id": "1dtFMJq6XJK9hgZhZCQz",
+    "name": "Loic",
+    "source": "voice library"
+  }
+}

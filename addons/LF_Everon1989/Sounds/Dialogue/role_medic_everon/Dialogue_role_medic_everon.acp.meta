@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{6B4BCF4F8636EFEB}Sounds/Dialogue/role_medic_everon/Dialogue_role_medic_everon.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,5 +1,5 @@
 // tools/validation/validate-voice-sex.mjs - a voiced NPC's voice matches its body (#3831).
-// inputs: tools/assets/dialogue/*/dialogue.json, addons/**/*.et, tools/lib/voice-sex.mjs
+// inputs: tools/assets/dialogue/*/dialogue.json, tools/assets/outfits/roles.json, addons/**/*.et, addons/**/Language/*.st, tools/lib/voice-sex.mjs
 //
 // "A woman's voice comes from a man" (the cafe, 2026-11-19): the owner's lines were a female voice on a male body.
 // The base game has male character bodies only, so every voiced NPC that has a body needs a male voice, and each
@@ -7,7 +7,9 @@
 // NPC, its voice, its sex and the prefabs that speak it, and exits 0.
 // red-proof: 2026-11-19, with the cafe owner's spec on Mariva (voice.sex "female") this printed
 // "FAIL cafe_owner: female voice "Mariva Viva Muse ..." on a male body (...LF_Npc_Townsfolk_CafeOwner.et)" and exited 1;
-// tools/validation/voice-sex-selftest.mjs holds the fixture.
+// tools/validation/voice-sex-selftest.mjs holds the fixture. Names: 2026-11-22, with the residents still "Mireille Caron" and
+// "Helene Roux" this printed "FAIL resident_mireille: the speaker "Mireille Caron" has a woman's name (mireille) on a male body"
+// and the same for resident_teller, and exited 1.
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { faults, voicedNpcs } from "../lib/voice-sex.mjs";
@@ -24,7 +26,7 @@ if (process.argv.includes("--report")) {
 const bad = faults(npcs);
 if (bad.length) {
   for (const b of bad) console.log(`FAIL ${b}`);
-  console.log(`validate-voice-sex: ${bad.length} voiced NPC(s) whose voice is not their body's sex.`);
+  console.log(`validate-voice-sex: ${bad.length} voiced NPC(s) whose voice or name does not fit their body.`);
   process.exit(1);
 }
 console.log(`validate-voice-sex: OK (${npcs.length} voiced NPC(s))`);
