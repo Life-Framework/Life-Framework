@@ -13,7 +13,7 @@
 // into the premium purse, the rest on the wholesale curve (linear drop per lot, held at the floor). The FIRST hour sells
 // from a full purse, the STEADY hour (the loop run for hours on end) from the refill only. Without --wholesale-carry
 // every hour opens at the curve's base price (the lumber and wheat convention).
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseConf, guidOf } from "../economy/profit-loops.mjs";
 import { SECTIONS, mergeList, sectionLayers } from "../pack/layers.mjs";
@@ -117,6 +117,26 @@ function listOf(addonsDir, name, packLayers, owner) {
   return [...merged.entries.values()].filter((e) => e.present).map((e) => ({ id: e.id, f: (n) => e.fields.get(n)?.value }));
 }
 
+/** Every pack's chain overlay (a .conf under addons/<pack>/Configs whose root is LF_ResourceChainConfig), parsed, in path order. */
+function packChains(addonsDir) {
+  const out = [];
+  const walk = (dir) => {
+    for (const e of readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      const p = join(dir, e.name);
+      if (e.isDirectory()) walk(p);
+      else if (e.name.endsWith(".conf")) {
+        const text = read(p);
+        if (/^\s*LF_ResourceChainConfig\b/.test(text)) out.push(parseConf(text));
+      }
+    }
+  };
+  for (const a of existsSync(addonsDir) ? readdirSync(addonsDir, { withFileTypes: true }) : []) {
+    const cfg = join(addonsDir, a.name, "Configs");
+    if (a.isDirectory() && a.name !== "LifeFramework" && existsSync(cfg)) walk(cfg);
+  }
+  return out;
+}
+
 const nameOfRes = (res) => String(res ?? "").replace(/^\{[0-9A-Fa-f]+\}/, "").replace(/^.*\//, "").replace(/\.et$/, "");
 
 /** A machine's recipe by id from the parsed chains config: the gathered input, the reagents, the output. */
@@ -157,7 +177,9 @@ export function buildMining({ root, addonsDir, packLayers, owner, duty, opts = {
     let recipe = null;
     if (c.recipe) {
       recipe = recipeOf(chains, c.recipe, c);
-      if (!recipe) { problems.push(`${c.id}: no machine '${c.recipe}' with its inputs and an output in Configs/Resources/ResourceChains.conf: chain skipped`); continue; }
+      // A pack adds machines (never rewrites one) in its own LF_ResourceChainConfig overlays (#3450).
+      for (const pack of recipe ? [] : packChains(addonsDir)) if (!recipe) recipe = recipeOf(pack, c.recipe, c);
+      if (!recipe) { problems.push(`${c.id}: no machine '${c.recipe}' with its inputs and an output in Configs/Resources/ResourceChains.conf or a pack chain overlay: chain skipped`); continue; }
     }
     const goodRow = goods.find((r) => r.id === c.wholesaleGood);
     if (!goodRow) { problems.push(`${c.id}: no market curve for ${c.wholesaleGood} in market.goods: chain skipped`); continue; }
