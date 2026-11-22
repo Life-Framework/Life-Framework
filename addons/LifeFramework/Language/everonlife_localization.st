@@ -8354,6 +8354,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Trabajo"
      Comment "Hint title for work results"
     }
+    CustomStringTableItem "{35AF0FE5D6C58F4F}" {
+     Id "LF-Keybind_MapHelpToggle"
+     Target_en_us "Map: show or hide the help card"
+     Comment "Key binding menu entry for folding the map help card."
+    }
     CustomStringTableItem "{59804671C301B6FE}" {
      Id "LF-Keybind_MapWaypointClear"
      Target_en_us "Map: clear waypoint"
@@ -9547,6 +9552,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Robbed recently"
      Comment "Map place card: this place was robbed a few minutes ago and its alarm has stopped."
     }
+    CustomStringTableItem "{CA6AAA75BD284BC8}" {
+     Id "LF-MapHelp_Clear"
+     Target_en_us "Shift + Left click on the waypoint, or Backspace: clear it"
+     Comment "Map help card line, mouse and keyboard."
+    }
+    CustomStringTableItem "{E2D39593E3B44FE8}" {
+     Id "LF-MapHelp_ClearPad"
+     Target_en_us "Hold Y + A on the waypoint, or double-tap Y: clear it"
+     Comment "Map help card line, gamepad."
+    }
+    CustomStringTableItem "{E01B227758134106}" {
+     Id "LF-MapHelp_Folded"
+     Target_en_us "Map help: press F1"
+     Comment "Map help card folded to one line, mouse and keyboard."
+    }
+    CustomStringTableItem "{9BC7965FB084E408}" {
+     Id "LF-MapHelp_FoldedPad"
+     Target_en_us "Map help: click the left stick"
+     Comment "Map help card folded to one line, gamepad."
+    }
+    CustomStringTableItem "{005BC80EFBA87F74}" {
+     Id "LF-MapHelp_Hover"
+     Target_en_us "Hover an icon: see its name"
+     Comment "Map help card line, mouse and keyboard."
+    }
+    CustomStringTableItem "{3BBBDEAB72CC5988}" {
+     Id "LF-MapHelp_HoverPad"
+     Target_en_us "Move the cursor onto an icon: see its name"
+     Comment "Map help card line, gamepad (the right stick moves the map cursor)."
+    }
+    CustomStringTableItem "{7338A2A8E11FC065}" {
+     Id "LF-MapHelp_Legend"
+     Target_en_us "Key (right edge): what each icon is; hover a row to find them"
+     Comment "Map help card line: the Legend tab under Map key on the left edge."
+    }
+    CustomStringTableItem "{3B4BC9DDE46EB600}" {
+     Id "LF-MapHelp_NoWaypoint"
+     Target_en_us "No waypoint set"
+     Comment "Map help card, waypoint row when none is set."
+    }
+    CustomStringTableItem "{168BC3FE7884D09D}" {
+     Id "LF-MapHelp_Place"
+     Target_en_us "Click a place: set a waypoint there"
+     Comment "Map help card line, mouse and keyboard."
+    }
+    CustomStringTableItem "{E482C52EEABBD3E9}" {
+     Id "LF-MapHelp_PlacePad"
+     Target_en_us "A on a place: set a waypoint there"
+     Comment "Map help card line, gamepad."
+    }
+    CustomStringTableItem "{C34246D97B2CFB82}" {
+     Id "LF-MapHelp_Set"
+     Target_en_us "Shift + Left click: set a waypoint"
+     Comment "Map help card line, mouse and keyboard."
+    }
+    CustomStringTableItem "{1D544AF20A9433FB}" {
+     Id "LF-MapHelp_SetPad"
+     Target_en_us "Hold Y + A: set a waypoint"
+     Comment "Map help card line, gamepad."
+    }
+    CustomStringTableItem "{C517F4FC333CBD2E}" {
+     Id "LF-MapHelp_Title"
+     Target_en_us "How to use the map (F1 hides this)"
+     Comment "Map help card title, mouse and keyboard."
+    }
+    CustomStringTableItem "{A79B20C2E5C018E5}" {
+     Id "LF-MapHelp_TitlePad"
+     Target_en_us "How to use the map (left stick click hides this)"
+     Comment "Map help card title, gamepad."
+    }
+    CustomStringTableItem "{1AA71BD54941ADF6}" {
+     Id "LF-MapHelp_Waypoint"
+     Target_en_us "Waypoint: %1"
+     Comment "Map help card, waypoint row. %1 = the distance (340 m) or the place and the distance (Cafe, 340 m)."
+    }
+    CustomStringTableItem "{4FDA78D6942096A2}" {
+     Id "LF-MapKey_Tab"
+     Target_en_us "Key: hide"
+     Comment "Map key column tab while the column is open: a click folds it."
+    }
+    CustomStringTableItem "{2D2A708C6C0BDC7C}" {
+     Id "LF-MapKey_TabFolded"
+     Target_en_us "Key"
+     Comment "Map key column tab while folded: a click opens the column of icons."
+    }
     CustomStringTableItem "{D920AB80A60A3625}" {
      Id "LF-MapKnown_ArrivalMarked"
      Target_en_us "The clerk pencils %1 places on the square onto your map."
@@ -9622,16 +9712,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hide"
      Comment "Map legend (#2244): button that takes a category off the map."
     }
-    CustomStringTableItem "{8B6B429B0B8DB6CF}" {
-     Id "LF-MapLegend_IconsTab"
-     Target_en_us "Legend"
-     Comment "Map: the tab under Map key that opens the icon legend."
-    }
-    CustomStringTableItem "{90D47ED8630EFB47}" {
-     Id "LF-MapLegend_IconsTitle"
-     Target_en_us "LEGEND"
-     Comment "Map icon legend panel title: one icon and its place type per line."
-    }
     CustomStringTableItem "{13D7B2C3585F2511}" {
      Id "LF-MapLegend_NoMatch"
      Target_en_us "No place you know of by that name"
@@ -9659,7 +9739,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{EC872DF7663D8669}" {
      Id "LF-MapLegend_Tab"
-     Target_en_us "Map key"
+     Target_en_us "Find a place"
      Comment "Map legend (#2244): the tab on the map edge that opens the key."
     }
     CustomStringTableItem "{9188A58C330DB074}" {
@@ -9751,31 +9831,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-MapPoi_Workplace"
      Target_en_us "Workplace"
      Comment "Map POI kind name (#2230): a job site."
-    }
-    CustomStringTableItem "{615D96CD9F0A9E15}" {
-     Id "LF-MapWaypoint_HintActive"
-     Target_en_us "Waypoint: %1. Backspace clears it."
-     Comment "Map hint strip, second line, mouse and keyboard. %1 = the distance for an unnamed waypoint ("340 m"), or the place and the distance ("Cafe, 340 m")."
-    }
-    CustomStringTableItem "{4BA6F91B8342E649}" {
-     Id "LF-MapWaypoint_HintActivePad"
-     Target_en_us "Waypoint: %1. Double-tap Y clears it."
-     Comment "Map hint strip, second line, gamepad. %1 = the distance for an unnamed waypoint ("340 m"), or the place and the distance ("Cafe, 340 m")."
-    }
-    CustomStringTableItem "{7D841E6E53E0E07B}" {
-     Id "LF-MapWaypoint_HintNone"
-     Target_en_us "Or click a place. The same again on your waypoint clears it."
-     Comment "Map hint strip, second line, no waypoint set."
-    }
-    CustomStringTableItem "{CF6499DC3087F5FB}" {
-     Id "LF-MapWaypoint_HintSet"
-     Target_en_us "Shift + Left click: set waypoint"
-     Comment "Map hint strip, first line, mouse and keyboard."
-    }
-    CustomStringTableItem "{7A6CB89B59485829}" {
-     Id "LF-MapWaypoint_HintSetPad"
-     Target_en_us "Hold Y + A: set waypoint"
-     Comment "Map hint strip, first line, gamepad."
     }
     CustomStringTableItem "{DC7EEF1A69D6A983}" {
      Id "LF-MapWaypoint_Label"

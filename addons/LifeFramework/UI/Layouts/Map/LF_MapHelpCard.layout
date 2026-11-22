@@ -1,0 +1,85 @@
+FrameWidgetClass "{71D90B3009031983}" {
+ Name "HelpRoot"
+ Slot FrameWidgetSlot "{C548AC50B69C7AC3}" {
+  Anchor 0 0 0 0
+  PositionX 0
+  OffsetLeft 0
+  PositionY 0
+  OffsetTop 0
+  SizeX 380
+  OffsetRight -380
+  SizeY 170
+  OffsetBottom -170
+ }
+ {
+  ImageWidgetClass "{C99460ACAFADE54C}" {
+   Name "Metal"
+   Slot FrameWidgetSlot "{D545FA52B891FC0C}" {
+    Anchor 0 0 1 1
+   }
+   Color 0.243 0.251 0.227 1
+  }
+  ImageWidgetClass "{38CBC6778A97FB20}" {
+   Name "Paper"
+   Slot FrameWidgetSlot "{6A3FBE5F9244AF82}" {
+    Anchor 0 0 1 1
+    OffsetLeft 3
+    OffsetTop 3
+    OffsetRight 3
+    OffsetBottom 3
+   }
+   Color 0.933 0.902 0.839 0.94
+  }
+  TextWidgetClass "{1BD5226D677B7489}" {
+   Name "Title"
+   Slot FrameWidgetSlot "{AFE08E2FA2A0DBFA}" {
+    Anchor 0 0 1 0
+    OffsetLeft 12
+    OffsetTop 8
+    OffsetRight 12
+    OffsetBottom -28
+   }
+   Color 0.110 0.102 0.086 1
+   Text ""
+   "Font Size" 16
+   "Min Font Size" 11
+   FontProperties FontProperties "{92FD95E1CDD4BBAA}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  TextWidgetClass "{4C78D7D4EB8937E4}" {
+   Name "Body"
+   Slot FrameWidgetSlot "{57C1C346AFBBEBDA}" {
+    Anchor 0 0 1 1
+    OffsetLeft 12
+    OffsetTop 32
+    OffsetRight 12
+    OffsetBottom 32
+   }
+   Color 0.18 0.14 0.07 1
+   Text ""
+   "Font Size" 14
+   "Min Font Size" 10
+   FontProperties FontProperties "{A9E9272AEC836162}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{183EA3E949C27583}" {
+   Name "Status"
+   Slot FrameWidgetSlot "{2F6B1D8E4C3A5907}" {
+    Anchor 0 1 1 1
+    OffsetLeft 12
+    OffsetTop -28
+    OffsetRight 12
+    OffsetBottom 8
+   }
+   Color 0.110 0.102 0.086 1
+   Text ""
+   "Font Size" 14
+   "Min Font Size" 10
+   FontProperties FontProperties "{5D0C7E2A9B4F1863}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+ }
+}

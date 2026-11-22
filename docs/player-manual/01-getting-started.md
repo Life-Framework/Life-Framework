@@ -84,14 +84,20 @@ bought at the gun store counter, and in the alpha it is instant.
 ## The map and waypoints
 
 * **Open the map:** press **M**. If nothing opens, take the **folded paper map** out of your pack and hold it; every new character carries one.
-* **Every island place has its own icon**, a round badge coloured by kind (green shops, orange food, blue travel, brown work,
-  dark blue police, red health). Point at an icon to read its name; the **Legend** tab on the left lists every icon.
-  Icons that share one spot show the most important one and a count; click it to zoom in.
-  Places you have not seen yet may show as "heard of" until you walk past.
+* **Every kind of place has its own icon**, a round badge coloured by group (green shops, orange food, blue travel, brown
+  work, dark blue police, red health). No two kinds share an icon. Point at an icon to read its name.
+* **The key** on the right edge of the map lists every icon on your map, grouped, with its name. Point at a row and those
+  places grow and pulse on the map while the rest fade. Click a row to show only that kind (click again for all); click a
+  group's heading to hide or show the whole group. The **Key** tab at the top folds it away, and the map remembers that.
+* Icons that share one spot show the most important one and a count; click it to zoom in. Zoomed far out, a slate badge
+  with three dots stands for a group of places. Places you have not seen yet may show as "heard of" until you walk past.
 * **Set your own waypoint:** **Shift + Left click** on the map (gamepad: hold **Y**, press **A**), or just click a place.
-  It shows on the map as a pencil circle with its name and distance, and in the world as a marker with the distance.
+  It shows on the map as a bold red ring with its name and distance, and in the world as a marker with the distance.
   There is one waypoint at a time; a new click moves it. The same click on the waypoint, or **Backspace** (gamepad:
-  double-tap **Y**), clears it. The strip at the bottom of the map reminds you.
+  double-tap **Y**), clears it.
+* **How to use the map:** the card in the bottom-left corner lists these controls for your mouse or gamepad, and the
+  waypoint set now. **F1** (gamepad: click the left stick) folds it to one line; the map remembers that too.
+* **Safe zones** are a soft green tint with a small label under their edge. **Find a place** on the left searches by name.
 * **The notice board** and the **Taxi** and **courier** jobs set waypoints for you.
 * **Scale:** Saint-Philippe is about 450 m across. The whole island is about 12 km. See the [maps](maps.md).
 
