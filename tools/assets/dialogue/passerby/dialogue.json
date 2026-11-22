@@ -3,7 +3,21 @@
   "name": "Passerby",
   "addon": "LF_Everon1989",
   "speaker_key": "#LF-Dialogue_Passerby_Name",
-  "text_only": true,
+  "voice": {
+    "id": "ZYDBhr3ScOor68YC3XYn",
+    "sex": "male",
+    "name": "Sylvain - International english",
+    "public_owner_id": "8247255c3a0de450d9294a8bd1c3c39e3d2e25be086791f0afd4f2ec57cd9819",
+    "why": "A relaxed middle-aged Frenchman speaking English: an evening stroller on the square.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1
+    }
+  },
+  "budget_chars": 800,
   "hear_range_m": 6,
   "start": "greet",
   "nodes": [
@@ -11,20 +25,48 @@
       "id": "greet",
       "line": "greet",
       "options": [
-        { "text": "what", "next": "what" },
-        { "text": "where", "next": "where" },
-        { "text": "bye", "next": "bye" }
+        {
+          "text": "what",
+          "next": "what"
+        },
+        {
+          "text": "where",
+          "next": "where"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
       ]
     },
-    { "id": "what", "line": "about_what", "options_from": "greet" },
-    { "id": "where", "line": "about_where", "options_from": "greet" },
-    { "id": "bye", "line": "bye" }
+    {
+      "id": "what",
+      "line": "about_what",
+      "options_from": "greet"
+    },
+    {
+      "id": "where",
+      "line": "about_where",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
   ],
   "lines": {
-    "greet": { "text": "Evening. Lovely night for it, isn't it? Half the town is out on the square." },
-    "about_what": { "text": "Nothing much, and that is the point. A drink, the band if they turn up, somebody's uncle telling the same story about the war." },
-    "about_where": { "text": "The cafe is on the square, the bank across from it. For anything official, the town hall clerk. For anything unofficial, nobody saw me say a word." },
-    "bye": { "text": "Enjoy the evening." }
+    "greet": {
+      "text": "Evening. Lovely night for it, isn't it? Half the town is out on the square."
+    },
+    "about_what": {
+      "text": "Nothing much, and that is the point. A drink, the band if they turn up, somebody's uncle telling the same story about the war."
+    },
+    "about_where": {
+      "text": "The cafe is on the square, the bank across from it. For anything official, the town hall clerk. For anything unofficial, nobody saw me say a word."
+    },
+    "bye": {
+      "text": "Enjoy the evening."
+    }
   },
   "replies": {
     "what": "What is going on tonight?",
