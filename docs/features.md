@@ -67,6 +67,7 @@
 - [Service calls (#248)](features/service-calls.md)
 - [Sites](features/sites.md)
 - [Telephone calls (#147)](features/telephone-calls.md)
+- [# Tool tiers](features/tool-tiers.md)
 - [Toys](features/toys.md)
 - [Travel](features/travel.md)
 - [UI / Layouts / Localization](features/ui-layouts-localization.md)
