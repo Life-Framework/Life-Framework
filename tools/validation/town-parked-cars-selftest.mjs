@@ -3,11 +3,12 @@
 // inputs: tools/town/parked-cars.mjs, docs/everon/places/saint-philippe/mapping.json, docs/everon/places/saint-philippe/dossier.json, docs/everon/places/saint-philippe-dock/dossier.json
 // red-proof: 2026-11-19, with the road test in refuse() removed the "on the carriageway" case below printed FAIL (a car 1 m off a road centre line was accepted); restored, it passes.
 // red-proof: 2026-11-21 (#3875), with the guard-rail height 0.75 removed from HEIGHTS the "CrashBarrier_01_4m_V2" case below printed FAIL (the barrier a police car clipped slipped between the two rays); restored, it passes.
+// red-proof: 2026-11-22 (#3888), with BODY_LINES back to 7 and the lowest height 0.25 removed the "PipeRailing_02_End" case printed FAIL (b03 clipped a rail end between the old rays); restored, it passes.
 // red-proof: 2026-11-21 (#3879), with the level-ray test in bodyWhy removed the "WoodenWall_01_2m" case printed FAIL (b15 stood against it); restored, it passes.
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { SPREAD, bodyRays, bodyWhy, candidates, carBox, distToLine, distToPoly, groundRays, nearestRoad, parseRays, plan, planCar, refuse, surfaceOf } from "../town/parked-cars.mjs";
+import { BODY_LINES, HEIGHTS, SPREAD, bodyRays, bodyWhy, candidates, carBox, distToLine, distToPoly, groundRays, nearestRoad, parseRays, plan, planCar, refuse, surfaceOf } from "../town/parked-cars.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const fails = [];
@@ -45,12 +46,15 @@ check(surfaceOf("c", down([5, 5, 5.1, 5.2, 5])).g === 5, "a flat street gives th
 check(/varies/.test(surfaceOf("c", down([5, 5, 5, 6.2, 5])).why), "a box over a step is refused");
 check(/not the street/.test(surfaceOf("c", parseRays([ray("c_g0", { hit: "Garage", root: "Garage", d: 3, p: "0,7.5,0", sy: 5 }), ...[1, 2, 3, 4].map((i) => ray(`c_g${i}`, {}))].join("\n"))).why), "a roof or canopy over the centre is not the street");
 const spot = { x: 0, z: 0, yaw: 0, idx: 0 };
-check(groundRays([{ id: "c", c: spot, y0: 5 }]).length === 5 && bodyRays([{ id: "c", c: spot, g: 5 }]).length === 21, "5 down rays and 7 level rays at 3 heights per candidate");
-const clear = parseRays(Array.from({ length: 21 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, {})).join("\n"));
+check(groundRays([{ id: "c", c: spot, y0: 5 }]).length === 5 && bodyRays([{ id: "c", c: spot, g: 5 }]).length === BODY_LINES * HEIGHTS.length, "5 down rays and BODY_LINES level rays at every height per candidate");
+const clear = parseRays(Array.from({ length: BODY_LINES * HEIGHTS.length }, (_, i) => ray(`c_b${Math.floor(i / BODY_LINES)}${i % BODY_LINES}`, {})).join("\n"));
 check(bodyWhy("c", spot, 5, clear, []) === null, "clear rays and no door: clean");
-const wall = parseRays(Array.from({ length: 21 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, i === 9 ? { hit: "WoodenWall_01_2m", root: "WoodenWall_01_2m", d: 1 } : {})).join("\n"));
+const wall = parseRays(Array.from({ length: BODY_LINES * HEIGHTS.length }, (_, i) => ray(`c_b${Math.floor(i / BODY_LINES)}${i % BODY_LINES}`, i === BODY_LINES + 2 ? { hit: "WoodenWall_01_2m", root: "WoodenWall_01_2m", d: 1 } : {})).join("\n"));
 check(/WoodenWall_01_2m at car height/.test(bodyWhy("c", spot, 5, wall, []) ?? ""), "a wall on an outline ray refuses the spot");
-const rail = parseRays(Array.from({ length: 21 }, (_, i) => ray(`c_b${Math.floor(i / 7)}${i % 7}`, i === 10 ? { hit: "CrashBarrier_01_4m_V2", root: "CrashBarrier_01_4m_V2", d: 1 } : {})).join("\n"));
+const rail = parseRays(Array.from({ length: BODY_LINES * HEIGHTS.length }, (_, i) => ray(`c_b${Math.floor(i / BODY_LINES)}${i % BODY_LINES}`, i === HEIGHTS.indexOf(0.75) * BODY_LINES + 3 ? { hit: "CrashBarrier_01_4m_V2", root: "CrashBarrier_01_4m_V2", d: 1 } : {})).join("\n"));
+const inner = parseRays(Array.from({ length: BODY_LINES * HEIGHTS.length }, (_, i) => ray(`c_b${Math.floor(i / BODY_LINES)}${i % BODY_LINES}`, i === 0 * BODY_LINES + BODY_LINES - 1 ? { hit: "PipeRailing_02_End", root: "PipeRailing_02_End", d: 1 } : {})).join("
+"));
+check(/PipeRailing_02_End at car height/.test(bodyWhy("c", spot, 5, inner, []) ?? ""), "a rail end only the last cross line at the lowest height meets refuses the spot (b03, #3888)");
 check(/CrashBarrier_01_4m_V2 at car height/.test(bodyWhy("c", spot, 5, rail, []) ?? ""), "a guard rail only the 0.75 m ray meets refuses the spot");
 const leaf = { root: "DoorSet_MetalGate_01_Short", box: { c: [1.6, 6, 0], h: [1.2, 1.1, 0.05], a: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } };
 check(/swing of a door of DoorSet_MetalGate_01_Short/.test(bodyWhy("c", spot, 5, clear, [leaf]) ?? ""), "a gate leaf whose swing reaches the car refuses the spot");
