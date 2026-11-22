@@ -88,6 +88,13 @@ class LF_MapLegend
 			into.Insert(LF_MapKeyLine.Row(category, TypeKey(poi), index));
 		}
 
+		// The marks drawn over the badges: the robbery alarm ring and a job run's dashed chain.
+		if (!into.IsEmpty())
+		{
+			into.Insert(LF_MapKeyLine.Note("#LF-MapKey_Alarm", 0xFFD8231E, false));
+			into.Insert(LF_MapKeyLine.Note("#LF-MapKey_Run", 0xFF1C1A16, true));
+		}
+
 		return into.Count();
 	}
 
@@ -720,7 +727,23 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 		FrameSlot.SetSize(row, LF_MapKeyLine.COLUMN_WIDTH - 4, LF_MapKeyLine.ROW_HEIGHT);
 		float iconSize = LF_MapKeyLine.ROW_HEIGHT - 3;
 		string text;
-		if (line.m_bHeader)
+		if (!line.m_sNote.IsEmpty())
+		{
+			Widget mark = workspace.CreateWidget(WidgetType.ImageWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.IGNORE_CURSOR | WidgetFlags.NOFOCUS, Color.FromInt(line.m_iSwatch), 0, row);
+			if (mark && line.m_bThinSwatch)
+			{
+				FrameSlot.SetPos(mark, 1, iconSize * 0.5);
+				FrameSlot.SetSize(mark, iconSize - 2, 2);
+			}
+			else if (mark)
+			{
+				FrameSlot.SetPos(mark, 4, 4);
+				FrameSlot.SetSize(mark, iconSize - 8, iconSize - 8);
+			}
+
+			text = WidgetManager.Translate(line.m_sNote);
+		}
+		else if (line.m_bHeader)
 		{
 			Widget swatch = workspace.CreateWidget(WidgetType.ImageWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.IGNORE_CURSOR | WidgetFlags.NOFOCUS, Color.FromInt(LF_MapLegend.CategoryColor(line.m_sCategory)), 0, row);
 			if (swatch)
@@ -805,7 +828,7 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 		if (!places)
 			return;
 
-		if (line && !line.m_bHeader)
+		if (line && !line.m_bHeader && line.m_sNote.IsEmpty())
 			places.HighlightType(line.m_sType);
 		else
 			places.HighlightType("");
@@ -815,6 +838,9 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	//! A click on a key line: a row shows only its type (again: every type), a header hides or shows its group.
 	void ClickRow(notnull LF_MapKeyLine line)
 	{
+		if (!line.m_sNote.IsEmpty())
+			return;
+
 		if (line.m_bHeader)
 		{
 			bool hidden = LF_MapLegend.Toggle(LF_MapLegend.Hidden(), line.m_sCategory);

@@ -9627,6 +9627,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Waypoint: %1"
      Comment "Map help card, waypoint row. %1 = the distance (340 m) or the place and the distance (Cafe, 340 m)."
     }
+    CustomStringTableItem "{441F95A67FA9CF85}" {
+     Id "LF-MapKey_Alarm"
+     Target_en_us "Alarm: robbery"
+     Comment "Map key line: a red ring on a badge means a robbery is in progress there (grey badge: robbed recently)."
+    }
+    CustomStringTableItem "{203B7958738CC593}" {
+     Id "LF-MapKey_Run"
+     Target_en_us "Job run: hover a stop"
+     Comment "Map key line: hovering a badge on a job run draws its stops joined by a dashed line, numbered in order."
+    }
     CustomStringTableItem "{4FDA78D6942096A2}" {
      Id "LF-MapKey_Tab"
      Target_en_us "Key: hide"
@@ -9831,6 +9841,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-MapPoi_Workplace"
      Target_en_us "Workplace"
      Comment "Map POI kind name (#2230): a job site."
+    }
+    CustomStringTableItem "{74C9103828270975}" {
+     Id "LF-MapRun_Card"
+     Target_en_us "%1: step %2 of %3, next: %4"
+     Comment "Map place card on a stop of a job run. %1 = run name (Mining run), %2 = this step, %3 = steps in the run, %4 = the next stop (furnace)."
+    }
+    CustomStringTableItem "{8E0453D4FDB992D1}" {
+     Id "LF-MapRun_CardLast"
+     Target_en_us "%1: step %2 of %3, last stop"
+     Comment "Map place card on the last stop of a job run. %1 = run name, %2 = this step, %3 = steps in the run."
     }
     CustomStringTableItem "{DC7EEF1A69D6A983}" {
      Id "LF-MapWaypoint_Label"
