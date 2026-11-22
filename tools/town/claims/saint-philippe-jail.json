@@ -9,7 +9,7 @@
   "kinds": [
     "JailCell"
   ],
-  "rows": 4,
+  "rows": 8,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
