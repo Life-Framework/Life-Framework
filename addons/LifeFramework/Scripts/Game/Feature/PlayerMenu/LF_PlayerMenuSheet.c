@@ -46,7 +46,7 @@ class LF_PlayerMenuSheet
 	static const float PORTRAIT_W = 230;
 	static const float PORTRAIT_H = 300;
 	//! How often a hint that pops up while the file is open is put away again.
-	static const int HINT_CHECK_MS = 400;
+	static const int HINT_CHECK_MS = 400;	// lf-fixed: a UI poll that keeps a hint put away, not a gameplay tunable
 	//! The sheet's share of the screen's width, and its narrowest (reference pixels).
 	static const float SHEET_SHARE = 0.8;
 	static const float SHEET_MIN_WIDTH = 1100;
@@ -229,6 +229,9 @@ class LF_PlayerMenuSheet
 			hud.SetVisible(false);
 		}
 
+		// The notification toasts (the cards top right) wait hidden until the file closes.
+		LF_NotificationHold.Hold(true);
+
 		// A hint shown while the file is open (the arrival note comes back on its own) is put away too.
 		if (GetGame().GetCallqueue())
 		{
@@ -260,6 +263,8 @@ class LF_PlayerMenuSheet
 	{
 		if (GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(KeepHintDown);
+
+		LF_NotificationHold.Hold(false);
 
 		if (s_Portrait)
 			s_Portrait.Clear();

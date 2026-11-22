@@ -47,5 +47,10 @@ class LF_Test_PlayerMenuLayout : LF_Test
 		ctx.Equal(3, LF_PlayerMenuSheet.DaysOnIsland(5 * 3600, 120), "five hours on a two-hour day is day 3");
 		ctx.Equal(1, LF_PlayerMenuSheet.DaysOnIsland(5 * 3600, 0), "an unset day length counts real days");
 		ctx.False(LF_PlayerMenuNextTab.HasContent(data), "the next-steps tab stays hidden until its feature fills it");
+
+		LF_NotificationHold.Hold(true);
+		ctx.True(LF_NotificationHold.IsHeld(), "an open file holds the notification toasts");
+		LF_NotificationHold.Hold(false);
+		ctx.False(LF_NotificationHold.IsHeld(), "closing it lets them show again");
 	}
 }
