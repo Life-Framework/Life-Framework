@@ -25,6 +25,7 @@ export const SHARED = [...PENCIL, ...PINS, ...STAMPS];
 export const PACK_KINDS = [
   "Bank", "PoliceStation", "PoliceArmoury", "HospitalSite", "Workplace", "Fence", "Fuel", "Payphone",
   "Quarry", "Fish", "Story", "Taxi", "Harbour", "Farm", "Shop", "TownHall", "Church", "Pub", "Fire", "Depot",
+  "IdCard", "Atm", "Garage", "Bed", "Sawmill", "Scrap",
 ];
 
 // Tileable hatch textures (PolygonDrawCommand.m_pTexture): not imageset quads.
