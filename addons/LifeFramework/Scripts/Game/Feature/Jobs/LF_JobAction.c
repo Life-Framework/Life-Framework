@@ -159,6 +159,9 @@ class LF_JobStartRunAction : ScriptedUserAction
 	[Attribute("5", UIWidgets.ComboBox, "Job", "", ParamEnumArray.FromEnum(LF_EJobType))]
 	protected LF_EJobType m_eJob;
 
+	//! How far from the rank's pad the cab may stand, in metres.
+	static const float TAXI_CAB_REACH_M = 15; // lf-fixed: a kerb's reach from the rank sign, not a gameplay knob
+
 	//------------------------------------------------------------------------------------------------
 	LF_EJobType GetJob()
 	{
@@ -274,6 +277,10 @@ class LF_JobStartRunAction : ScriptedUserAction
 			LF_Utils.NotifyEntity(pUserEntity, StartRefusalKey(started), LF_CivilianJob.NameKey(m_eJob), 6.0);
 			return;
 		}
+
+		// No free cars: the rank's locked cab opens for the driver who started the fare, nobody else.
+		if (m_eJob == LF_EJobType.TAXI)
+			LF_VehicleLockComponent.HandNearestJobVehicle(pOwnerEntity, TAXI_CAB_REACH_M, pUserEntity);
 
 		// The nearest drop goes on the map and the waypoint (LF_JobMapMarks; a taxi run gets none).
 		LF_JobMapMarks.OnRunStarted(uid, m_eJob, pUserEntity.GetOrigin());
