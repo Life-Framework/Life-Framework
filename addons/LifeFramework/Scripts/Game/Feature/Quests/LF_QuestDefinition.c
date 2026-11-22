@@ -56,6 +56,9 @@ class LF_QuestDefinition
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Localization key the giver says on turn-in (empty = the generic turned-in hint)")]
 	string m_sTurnInKey;
 
+	[Attribute(defvalue: "", UIWidgets.EditBox, "Localization key of a toast after the turn-in that lists what was handed over (%1 = the reward money). Shown even inside a conversation, where the turn-in line is spoken. Empty = none")]
+	string m_sReceivedKey;
+
 	[Attribute(defvalue: "", UIWidgets.EditBox, "Resident id (LF_ResidentDef.m_sId) who remembers the help when this quest is turned in (#3465). Empty = none. A resident who asked for the quest through m_sNeedQuest needs no value here")]
 	string m_sMemoryResident;
 

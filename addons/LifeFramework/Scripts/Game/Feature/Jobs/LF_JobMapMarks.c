@@ -25,6 +25,8 @@ class LF_JobWaypointSink : Managed
 {
 	void Mark(string uid, string id, string label, int x, int z) {}
 	void Clear(string uid, string id) {}
+	//! The pinned objective line under the money (LF_Objective): a step title, empty to clear it.
+	void Objective(string uid, string id, string titleKey) {}
 }
 
 //------------------------------------------------------------------------------------------------

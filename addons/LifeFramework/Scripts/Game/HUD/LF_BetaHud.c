@@ -39,6 +39,15 @@ class LF_BetaHud : SCR_InfoDisplay
 	protected Widget m_wNeeds;
 	protected TextWidget m_wFoodValue;
 	protected TextWidget m_wDrinkValue;
+	//! The pinned objective line under the money (LF_Objective, review A14).
+	protected TextWidget m_wObjective;
+	protected int m_iObjectiveChanges = -1;
+	protected float m_fObjectiveFlash = -1;
+	//! The cash figure on screen; the poll re-reads the pockets so a missed change still lands (review B13).
+	protected int m_iCashShown = -1;
+	protected int m_iCashPolls;
+	static const int CASH_POLL_EVERY = 4;
+	static const float OBJECTIVE_FLASH_SECONDS = 2.5;	// lf-float: UI seconds
 
 	protected SCR_ChimeraCharacter m_Character;
 	protected SCR_CharacterControllerComponent m_PlayerController;
@@ -145,6 +154,7 @@ class LF_BetaHud : SCR_InfoDisplay
 			return;
 
 		m_wCash.SetText(LF_MoneyFormat.FormatMoney(newAmount));
+		m_iCashShown = newAmount;
 		string delta = LF_HudLogic.DeltaText(oldAmount, newAmount);
 		if (delta.IsEmpty() || !m_wCashDelta)
 			return;
@@ -214,6 +224,8 @@ class LF_BetaHud : SCR_InfoDisplay
 		m_wNeeds = m_wRoot.FindAnyWidget("m_needs");
 		m_wFoodValue = TextWidget.Cast(m_wRoot.FindAnyWidget("m_foodValue"));
 		m_wDrinkValue = TextWidget.Cast(m_wRoot.FindAnyWidget("m_drinkValue"));
+		m_wObjective = TextWidget.Cast(m_wRoot.FindAnyWidget("m_objective"));
+		m_iObjectiveChanges = -1;
 
 		m_aWantedPips.Clear();
 		for (int i = 1; i <= LF_HudLogic.WANTED_PIPS; i++)
@@ -325,6 +337,9 @@ class LF_BetaHud : SCR_InfoDisplay
 		if (m_fNeedRiseAge >= 0)
 			m_fNeedRiseAge += timeSlice;
 
+		if (m_fObjectiveFlash >= 0)
+			TickObjectiveFlash(timeSlice);
+
 		m_fPollAccumulator += timeSlice;
 		if (m_fPollAccumulator < POLL_SECONDS)
 			return;
@@ -355,6 +370,8 @@ class LF_BetaHud : SCR_InfoDisplay
 
 		ApplyPrefs();
 		m_bMoneyForced = inventoryOpen || mapOpen;
+		PollCash();
+		PollObjective();
 		PollBank();
 		PollWanted();
 		PollNeeds();
@@ -374,6 +391,61 @@ class LF_BetaHud : SCR_InfoDisplay
 		if (m_wMoneyBlock) m_wMoneyBlock.SetVisible(prefs.IsOn(LF_HudPrefs.PART_MONEY));
 		if (m_wWanted) m_wWanted.SetVisible(prefs.IsOn(LF_HudPrefs.PART_WANTED));
 		if (m_wNeeds) m_wNeeds.SetVisible(prefs.IsOn(LF_HudPrefs.PART_NEEDS));
+		if (m_wObjective) m_wObjective.SetVisible(prefs.IsOn(LF_HudPrefs.PART_OBJECTIVE));
+	}
+
+	//---------------------------------------------------------------------
+	//! Every CASH_POLL_EVERY polls: the pockets again. A desk that took cash on the server changed the
+	//! inventory without the amount invoker firing on this client, and the HUD kept the old figure.
+	protected void PollCash()
+	{
+		m_iCashPolls++;
+		if (m_iCashPolls < CASH_POLL_EVERY || !m_wCash)
+			return;
+
+		m_iCashPolls = 0;
+		int cash = LF_Utils.MaxInt(LF_MoneyUtils.GetCash(m_Character), 0);
+		if (cash != m_iCashShown)
+			OnMoneyChange(LF_MoneyUtils.CashPrefab(), cash, m_iCashShown);
+	}
+
+	//---------------------------------------------------------------------
+	//! The objective line follows LF_Objective; a new line flashes in gold, then settles.
+	protected void PollObjective()
+	{
+		if (!m_wObjective)
+			return;
+
+		int changes = LF_Objective.Changes();
+		if (changes == m_iObjectiveChanges)
+			return;
+
+		m_iObjectiveChanges = changes;
+		string key = LF_Objective.TitleKey();
+		if (key.IsEmpty())
+		{
+			m_fObjectiveFlash = -1;
+			AnimateWidget.Opacity(m_wObjective, 0, UIConstants.FADE_RATE_FAST);
+			return;
+		}
+
+		m_wObjective.SetText(WidgetManager.Translate("#LF-Hud_Objective", WidgetManager.Translate(key)));
+		m_wObjective.SetColor(Color.FromRGBA(240, 196, 90, 255));
+		m_wObjective.SetOpacity(0);
+		AnimateWidget.Opacity(m_wObjective, 1, UIConstants.FADE_RATE_FAST);
+		m_fObjectiveFlash = 0;
+	}
+
+	//---------------------------------------------------------------------
+	protected void TickObjectiveFlash(float timeSlice)
+	{
+		m_fObjectiveFlash += timeSlice;
+		if (m_fObjectiveFlash < OBJECTIVE_FLASH_SECONDS || !m_wObjective)
+			return;
+
+		m_fObjectiveFlash = -1;
+		m_wObjective.SetColor(Color.FromRGBA(245, 242, 235, 255));
+		AnimateWidget.Opacity(m_wObjective, 0.9, UIConstants.FADE_RATE_SLOW);
 	}
 
 	//---------------------------------------------------------------------

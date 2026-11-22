@@ -13,7 +13,8 @@ class LF_ActivityPage
 	static const string PART_GO = "PlayerMenuNextGo";
 	static const string PART_SUMMARY = "PlayerMenuNextSummary";
 	static const string ROW = "PlayerMenuNext_";
-	static const float LIST_HEIGHT = 240;
+	//! Five rows without scrolling (review B1).
+	static const float LIST_HEIGHT = 285;
 
 	protected static ref LF_ActivityData s_Data;
 	protected static string s_sWire;
@@ -59,13 +60,17 @@ class LF_ActivityPage
 
 		if (s_Data.m_aRows.IsEmpty())
 		{
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_SUMMARY, "#LF-Activity_None"));
+			string empty = "#LF-Activity_None";
+			if (s_Data.m_bNeedsPapers)
+				empty = "#LF-Activity_NeedPapers";
+
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_SUMMARY, empty));
 			return;
 		}
 
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_SUMMARY, "#LF-Activity_Summary"));
-		parts.Insert(LF_UIPart.CreateList(PART_LIST));
-		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_NAME, string.Empty));
+		parts.Insert(LF_UIPart.CreateList(PART_LIST).Compact());
+		// The picked row names the run; the detail starts at its pitch (room for five rows).
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_PITCH, string.Empty));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_FACTS, string.Empty));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_GO, "#LF-Activity_Start"));
@@ -81,7 +86,8 @@ class LF_ActivityPage
 		screen.SetListHeight(PART_LIST, LIST_HEIGHT);
 		foreach (int i, LF_ActivityRow row : s_Data.m_aRows)
 		{
-			screen.AddListRow(PART_LIST, ROW + i.ToString(), LF_Terms.Text(row.m_sNameKey), RowStatus(row), ActionKey(row));
+			// One button: the detail's Start or Resume. A row is picked by clicking it.
+			screen.AddListRow(PART_LIST, ROW + i.ToString(), LF_Terms.Text(row.m_sNameKey), RowStatus(row), string.Empty);
 		}
 
 		if (s_iPicked < 0 || s_iPicked >= s_Data.m_aRows.Count())
@@ -170,8 +176,7 @@ class LF_ActivityPage
 		if (!row)
 			return;
 
-		screen.SetLine(PART_NAME, LF_Terms.Text(row.m_sNameKey));
-		screen.SetLine(PART_PITCH, LF_Terms.Text(row.m_sPitchKey));
+		screen.SetLine(PART_PITCH, LF_Terms.Text("#LF-Activity_PickedPitch", LF_Terms.Text(row.m_sNameKey), LF_Terms.Text(row.m_sPitchKey)));
 		string facts = FactsLine(row);
 		if (!s_sOutcomeKey.IsEmpty())
 			facts = LF_Terms.Text(s_sOutcomeKey);

@@ -64,6 +64,13 @@ class LF_ActivityFacts
 		return 0;
 	}
 
+	//! Whether the player has their papers (the arrival clerk's ID card). True in a world whose quests
+	//! hand out no card.
+	bool Registered()
+	{
+		return true;
+	}
+
 	//! The quest's status for this player; AVAILABLE when they never took it.
 	LF_EQuestStatus Status(string questId)
 	{
@@ -78,6 +85,10 @@ class LF_ActivityRules
 	//! Why the player may not see the activity yet ("level", "licence", "faction"), or empty.
 	static string Gate(notnull LF_ActivityDef def, notnull LF_ActivityFacts facts)
 	{
+		// The clerk comes first: no run starts before the newcomer has their papers (review B13).
+		if (!facts.Registered())
+			return "papers";
+
 		if (def.m_iMinLevel > 0 && facts.Level(def.JobOrCivilian()) < def.m_iMinLevel)
 			return "level";
 

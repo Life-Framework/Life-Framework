@@ -114,6 +114,30 @@ FrameWidgetClass {
     }
    }
   }
+  TextWidgetClass "{7C3E58A1D2F04B96}" {
+   Name "m_objective"
+   Slot FrameWidgetSlot "{B1E4F06A93C25D87}" {
+    Anchor 1 0 1 0
+    PositionX -26
+    OffsetLeft -26
+    PositionY 108
+    OffsetTop 108
+    SizeToContent 1
+    Alignment 1 0
+   }
+   Opacity 0
+   Color 0.96 0.95 0.92 1
+   Text ""
+   "Font Size" 17
+   "Min Font Size" 13
+   "Horizontal Alignment" Right
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{4A9D2C7E15B3F608}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+    ShadowSize 2
+    ShadowOffset 1 1
+   }
+  }
   HorizontalLayoutWidgetClass "{38C705B579E5DF5C}" {
    Name "m_wanted"
    Slot FrameWidgetSlot "{C7A5EABF79DD05C6}" {
