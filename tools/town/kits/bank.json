@@ -40,7 +40,7 @@
         0
       ],
       "max": [
-        9.95,
+        8.1,
         4.4
       ]
     },
@@ -130,16 +130,24 @@
     },
     {
       "id": "lf-bank-vault",
-      "prefab": "{6177818988438527}Prefabs/Props/Roleplay/BankVault/LF_BankVault.et",
+      "prefab": "{B17A72DCB10A840C}Prefabs/Props/Roleplay/BankVault/LF_BankVault_RoomDoor.et",
       "role": "interactable",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
-        9.95,
-        0.792,
-        4.4
+        3.785,
+        1.053,
+        -1.02
       ],
       "yaw": 0,
       "config": [
+        {
+          "component": "LF_BreachTargetComponent",
+          "set": {
+            "m_sTargetId": "\"bank_vault\"",
+            "m_fSwingYaw": "55"
+          },
+          "blocks": []
+        },
         {
           "component": "LF_BankVaultComponent",
           "set": {
@@ -148,33 +156,18 @@
           "blocks": []
         }
       ],
-      "wall": "+x",
+      "wall": "free",
       "floor": "f0"
-    },
-    {
-      "id": "lf-bank-vault-small-roof",
-      "prefab": "{7A3C5E9D1B4F6082}Prefabs/Props/Roleplay/BankVault/LF_BankVault_SmallRoof.et",
-      "role": "interactable",
-      "verb": "against wall",
-      "offset": [
-        9.85,
-        3.475,
-        4.056
-      ],
-      "yaw": 0,
-      "scale": 1.2,
-      "wall": "+x",
-      "floor": "f1"
     },
     {
       "id": "lf-money-bag",
       "prefab": "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et",
       "role": "interactable",
-      "verb": "against wall",
+      "verb": "on floor",
       "offset": [
-        9.95,
-        1.263,
-        2.41
+        5.2,
+        1.053,
+        -3.75
       ],
       "yaw": 0,
       "config": [
@@ -198,7 +191,7 @@
           "yaw": 0
         }
       ],
-      "wall": "+x",
+      "wall": "free",
       "floor": "f0"
     },
     {
@@ -330,7 +323,7 @@
       "offset": [
         8.1,
         1.1,
-        0.5
+        2.6
       ],
       "yaw": 90,
       "wall": "+x",
