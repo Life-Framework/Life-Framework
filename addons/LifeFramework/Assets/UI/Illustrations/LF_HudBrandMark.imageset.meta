@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{E55E3BCA2A73E777}Assets/UI/Illustrations/LF_HudBrandMark.imageset"
+ Configurations {
+  ImageSetResourceClass PC {
+  }
+  ImageSetResourceClass XBOX_ONE : PC {
+  }
+  ImageSetResourceClass XBOX_SERIES : PC {
+  }
+  ImageSetResourceClass PS4 : PC {
+  }
+  ImageSetResourceClass HEADLESS : PC {
+  }
+ }
+}

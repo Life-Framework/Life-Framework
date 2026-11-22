@@ -157,6 +157,8 @@ The label on the map is the home's code and its alpha price in thousands. Prices
 | 11 | Buyer spot (north-west) | Same, west side. |
 <!-- /map -->
 
+**Alarms on the in-game map.** When a till, the bank vault, the clinic cabinet or the armoury is robbed, its alarm shows on **everyone's** map: the place's badge gets a **pulsing red ring with a "!"** while the robbery is on (about three minutes from the alarm), then turns **grey** for fifteen minutes ("Robbed recently"). Hover the badge to read when the alarm went off.
+
 ## Job areas, closer in
 
 ### Fields, timber yard and the range

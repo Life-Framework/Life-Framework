@@ -8,7 +8,9 @@
 //   light name=<l> p=x,y,z att=<m> to=<label>    a night light and the distance to the nearest surface on six axes
 //   char name=<l> p=x,y,z gap=<m> on=<label>     a character and its feet above the surface under it
 //   loose name=<l> prefab=<file> p=x,y,z         street clutter standing on its own
-// This file turns the light, char and loose lines (and nocar) into ranked rows; the car and vehicle lines go through place-audit's
+//   clutter prefab=<path> name=<l> p=x,y,z on=<surface> roofed=0|1   street clutter, or any prop standing on a road (one
+//                                                  `clutter <x> <z> <r>` input line per place dossier, LF_PlacementAudit.ClutterLines)
+// This file turns the light, char, loose and clutter lines (and nocar) into ranked rows; the car and vehicle lines go through place-audit's
 // own measured-prop path. Pure; `selftest()` runs in `tools\cli audit selftest`.
 
 export const RUNTIME_LIMITS = {
@@ -19,7 +21,13 @@ export const RUNTIME_LIMITS = {
   looseOwned: 1.5, // a loose prop within this of a layer row of the same prefab is that row's
 };
 
-export const RUNTIME_WEIGHT = { "unattached-light": 9, "no-car": 6, "char-floating": 10, "char-sunk": 7, "char-overlap": 8, orphan: 6 };
+export const RUNTIME_WEIGHT = { "unattached-light": 9, "no-car": 6, "char-floating": 10, "char-sunk": 7, "char-overlap": 8, orphan: 6, "road-clutter": 8 };
+
+// What may stand on a road's surface: the road's own furniture. Anything else there (a pallet, a plank pile, a cone set no
+// roadblock put out) is "road-clutter", whoever owns it: a kit row on the carriageway is as wrong as a stray (maintainer,
+// 2026-11-22: "no random traffic cones and things like that just randomly spread around the road").
+export const ROAD_FURNITURE = /Crashbarrier|CrashBarrier|Lamp|Sign|Bollard|Manhole|Drain|Decal|Marking|Crossing|Puddle|Powerline|Pole|Kerb|Curb|Pavement|Bridge|Road|LF_Roadblock|Roadblock_/i;
+
 
 export const RUNTIME_LAYER = {
   car: "(runtime: parked cars)",
@@ -27,6 +35,7 @@ export const RUNTIME_LAYER = {
   light: "(runtime: night lights)",
   char: "(runtime: characters)",
   loose: "(runtime: loose props)",
+  clutter: "(runtime: road clutter)",
 };
 
 const kv = (rest) => {
@@ -43,7 +52,7 @@ const base = (p) => String(p || "").split("/").pop().replace(/\.et$/, "");
 
 // The kind of a runtime line, or null for any other out.txt line.
 export function runtimeKind(line) {
-  const m = /^(car|vehicle|light|char|loose) /.exec(line);
+  const m = /^(car|vehicle|light|char|loose|clutter) /.exec(line);
   return m ? m[1] : null;
 }
 
@@ -54,6 +63,7 @@ export function runtimeRows(outText, records = []) {
   const chars = [];
   // A store's display copies (`shelf` lines, LF_PlacementAudit.StockRows) are owned by their store.
   const stock = [];
+  const seenClutter = new Set();
   for (const raw of outText.split(/\r?\n/)) if (raw.startsWith("shelf ")) stock.push(xyz(kv(raw).c));
   for (const raw of outText.split(/\r?\n/)) {
     const line = raw.trim();
@@ -73,6 +83,13 @@ export function runtimeRows(outText, records = []) {
       if (gap > RUNTIME_LIMITS.charFloat) c.problems.push({ kind: "char-floating", amount: gap, text: `stands ${r2(gap)} m in the air over ${v.on}` });
       if (gap < -RUNTIME_LIMITS.charSunk) c.problems.push({ kind: "char-sunk", amount: -gap, text: `feet ${r2(-gap)} m inside ${v.on}` });
       chars.push(c);
+    } else if (kind === "clutter") {
+      // Overlapping place circles report a prop twice.
+      const key = `${v.prefab}@${p.map((n) => Math.round(n * 10)).join(",")}`;
+      if (seenClutter.has(key)) continue;
+      seenClutter.add(key);
+      if (v.roofed === "1" || !/^RoadEntity/.test(v.on ?? "") || ROAD_FURNITURE.test(base(v.prefab))) continue;
+      row(v.name === "GenericEntity" ? base(v.prefab) : v.name, RUNTIME_LAYER.clutter, [{ kind: "road-clutter", amount: 1, text: `${base(v.prefab)} stands on the road (${v.on}); move it off the carriageway or hide it with a boxed base-world clear entry` }]);
     } else if (kind === "loose") {
       const owned = stock.some((c) => Math.hypot(c[0] - p[0], c[2] - p[2]) <= 0.5) || records.some((e) => e.name === v.name || (base(e.prefab) === v.prefab && Math.hypot(e.x - p[0], e.z - p[2]) <= RUNTIME_LIMITS.looseOwned));
       if (!owned) row(v.name, RUNTIME_LAYER.loose, [{ kind: "orphan", amount: 1, text: `${v.prefab} stands here and no layer row or kit slot owns it (left by a script, a proof or the base map)` }]);
@@ -106,6 +123,7 @@ export function vehicleEntry(line, records = []) {
   return { rest, e: { name, prefab: `Prefabs/Vehicles/${v.found}`, layer: RUNTIME_LAYER[kind], actions: [] } };
 }
 
+// red-proof: 2026-11-22 with the clutter branch removed `audit selftest` printed "FAILED a plank pile on a road (a layer row's, too) was not flagged road-clutter"; restored, OK.
 // red-proof: 2026-11-19 with the unattached-light and orphan rows switched off `audit selftest` printed "FAILED expected 6 runtime rows, got 4"; restored, OK.
 export function selftest(fail) {
   const out = [
@@ -120,6 +138,11 @@ export function selftest(fail) {
     "shelf shop/LF_Crackers@0 gap=0 c=70.1,1.15,0 found=LF_Crackers",
     "loose name=LF_Crackers prefab=LF_Crackers p=70,1.1,0",
     "car marker=M1 nocar=1 p=50,0,0",
+    "clutter prefab={AA}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et name=Fit_x_planks p=60,0,0 on=RoadEntity roofed=0",
+    "clutter prefab={AA}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et name=Fit_x_planks p=60,0,0 on=RoadEntity roofed=0",
+    "clutter prefab={AB}Prefabs/Structures/Walls/Crashbarrier/CrashBarrier_01/CrashBarrier_01_4m_V1.et name=CrashBarrier_01_4m_V1 p=61,0,0 on=RoadEntity roofed=0",
+    "clutter prefab={AC}Prefabs/Industrial/Pallets/Pallet_01_Pile.et name=Pallet_doorstep p=62,0,0 on=Doorstep_01_5m roofed=0",
+    "clutter prefab={AD}Prefabs/Props/Crates/Crate_01_red.et name=Crate_under_roof p=63,0,0 on=RoadEntity roofed=1",
     "1 gap=0 found=x",
   ].join("\n");
   const rows = runtimeRows(out, [{ prefab: "Prefabs/Props/Roleplay/Roadblock/Roadblock_Cone.et", x: 30.5, z: 0 }, { name: "Fit_x_bench", prefab: "Other.et", x: 0, z: 0 }]);
@@ -131,7 +154,9 @@ export function selftest(fail) {
   if (by("Cone_A")) fail("a cone a layer row owns was flagged orphan");
   if (!by("Cone_B")?.problems.some((p) => p.kind === "orphan")) fail("a cone no row owns was not flagged orphan");
   if (!by("Car_M1")?.problems.some((p) => p.kind === "no-car")) fail("a marker with no car was not flagged");
-  if (rows.length !== 6) fail(`expected 6 runtime rows, got ${rows.length}`);
+  if (!by("Fit_x_planks")?.problems.some((p) => p.kind === "road-clutter")) fail("a plank pile on a road (a layer row's, too) was not flagged road-clutter");
+  if (by("CrashBarrier_01_4m_V1") || by("Pallet_doorstep") || by("Crate_under_roof")) fail("road furniture, a doorstep pallet or a roofed crate was flagged road-clutter");
+  if (rows.length !== 7) fail(`expected 7 runtime rows, got ${rows.length}`);
   const v = vehicleEntry("car marker=M2 gap=1.2 c=1,2,3 found=S1203_Taxi");
   if (!v || v.e.layer !== RUNTIME_LAYER.car || !/^Prefabs\/Vehicles\//.test(v.e.prefab) || !v.rest.startsWith("marker=M2")) fail(`a car line is not a measured vehicle entry: ${JSON.stringify(v)}`);
   const fl = floatingRows([...rows, { name: "Bench", problems: [{ kind: "contact", amount: 0.25, text: "hovers 25 cm" }] }, { name: "Cup", problems: [{ kind: "contact", amount: 0.02, text: "hovers 2 cm" }] }, { name: "Plate", problems: [{ kind: "clips", amount: 1, text: "clips Wall" }] }]).map((r) => r.name);

@@ -81,6 +81,20 @@ class LF_UIScreen
 	//! Input actions polled while the sheet is open (no field focused); each reports a name.
 	protected ref array<string> m_aHotkeyActions = {};
 	protected ref array<string> m_aHotkeyNames = {};
+	//! COLUMNS: the width of each column ("<columns>_Col<i>"), and the row width of a list in one.
+	protected ref map<string, float> m_mColumnWidth = new map<string, float>();
+	protected ref map<string, float> m_mListRowWidth = new map<string, float>();
+
+	//! Frame Content inset, left plus right (LF_UIFrame.layout Content OffsetLeft 20 + OffsetRight 20).
+	static const float CONTENT_INSET = 40;	// lf-fixed: LF_UIFrame Content offsets
+	//! A compact row's width is its column less the list padding (2 x 28), the scrollbar and its own padding.
+	static const float COMPACT_ROW_INSET = 92;
+	//! A compact list's row pitch: the row (36 + 3 above), and the XP bar under it (5 + 2 above + 6 below).
+	static const float COMPACT_ROW_PITCH = 39;	// lf-fixed: LF_UICompactRow.layout height and padding
+	static const float COMPACT_BAR_PITCH = 13;
+	static const float COMPACT_BAR_HEIGHT = 5;
+	//! A card's padding, left plus right (LF_UICard.layout 8 + 8).
+	static const float CARD_INSET = 16;	// lf-fixed: LF_UICard.layout Padding
 
 	//------------------------------------------------------------------------------------------------
 	//! Fires with the part name when a BUTTON, a STATUS action, or a list row action is pressed.
@@ -176,6 +190,9 @@ class LF_UIScreen
 			Widget parent = content;
 			if (part.IsInBody())
 				parent = BodyColumn(workspace, content);
+
+			if (!part.GetColumns().IsEmpty())
+				parent = ColumnOf(part, parent);
 
 			AddPart(workspace, parent, part);
 		}
@@ -450,6 +467,22 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Moves focus to a button or a key by name (the open tab of a tabbed sheet), in place of the first entry.
+	bool FocusPart(string name)
+	{
+		Widget widget = WidgetNamed(name);
+		int index = m_aFocus.Find(widget);
+		if (!widget || index < 0 || !GetGame())
+		{
+			LF_Debug.Error("UIKit", "cannot focus " + name + ": not a focusable part");
+			return false;
+		}
+
+		FocusIndex(GetGame().GetWorkspace(), index);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Rewrites the label of a BUTTON part or a key.
 	bool SetButtonText(string name, string text)
 	{
@@ -481,6 +514,7 @@ class LF_UIScreen
 			return;
 		}
 
+		array<string> caps = part.GetKeyCaps();
 		for (int i = 0; i < names.Count(); i++)
 		{
 			string keyName = names.Get(i);
@@ -490,6 +524,9 @@ class LF_UIScreen
 				LF_Debug.Error("UIKit", "skipped duplicate key " + keyName);
 				continue;
 			}
+
+			if (i < caps.Count() && !caps[i].IsEmpty())
+				AddKeyCap(workspace, widget, caps[i]);
 
 			Widget key = workspace.CreateWidgets(LF_UITheme.BUTTON_LAYOUT, widget);
 			if (!key)
@@ -508,6 +545,21 @@ class LF_UIScreen
 			// Keys keep their row order inside the row's focus span.
 			WireButton(key, keyName, texts.Get(i), false, m_iCurrentOrder + i);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A printed key-cap ("Esc") before a key: a small plate in the row colour, the key name in ink.
+	protected void AddKeyCap(WorkspaceWidget workspace, Widget row, string cap)
+	{
+		Widget chip = workspace.CreateWidgets(LF_UITheme.KEY_CAP_LAYOUT, row);
+		if (!chip)
+		{
+			LF_Debug.Error("UIKit", "failed to create key cap " + cap);
+			return;
+		}
+
+		PaintNamed(chip, "CapPlate", GetSkin().m_Row);
+		ApplyInk(TextWidget.Cast(chip.FindAnyWidget("CapText")), LF_UITheme.HeadingSize(), cap);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -846,6 +898,19 @@ class LF_UIScreen
 			blur.SetVisible(GetSkin().m_bBlur);
 
 		Widget sheet = m_wRoot.FindAnyWidget("Sheet");
+		WorkspaceWidget workspace;
+		if (GetGame())
+			workspace = GetGame().GetWorkspace();
+
+		// A wide sheet takes a share of the screen, centred; its m_fWidth is then the floor.
+		if (sheet && workspace && GetSkin().m_fWidthShare > 0)
+		{
+			float screenWidth = workspace.DPIUnscale(workspace.GetWidth());
+			float wide = LF_UISheetFit.SheetWidth(screenWidth, GetSkin().m_fWidthShare, GetSkin().m_fWidth);
+			GetSkin().m_fWidth = wide;
+			FrameSlot.SetPosX(sheet, (screenWidth - wide) * 0.5);
+		}
+
 		if (sheet && GetSkin().m_fWidth > 0)
 			FrameSlot.SetSizeX(sheet, GetSkin().m_fWidth);
 
@@ -923,8 +988,30 @@ class LF_UIScreen
 		m_iCurrentOrder = m_iPartSeq * ORDER_SPAN;
 		m_iPartSeq++;
 
+		if (part.GetKind() == LF_EUIPartKind.COLUMNS)
+		{
+			AddColumns(workspace, widget, part);
+			return;
+		}
+
+		if (part.GetKind() == LF_EUIPartKind.PAIR)
+		{
+			AddPair(widget, part);
+			return;
+		}
+
 		if (part.GetKind() == LF_EUIPartKind.LIST)
 		{
+			float columnWidth;
+			if (!part.GetColumns().IsEmpty() && m_mColumnWidth.Find(ColumnKey(part.GetColumns(), part.GetColumn()), columnWidth))
+			{
+				float inset = COMPACT_ROW_INSET;
+				if (!part.IsCompact())
+					inset = LIST_ROW_INSET - CONTENT_INSET;
+
+				m_mListRowWidth.Set(part.GetName(), columnWidth - inset);
+			}
+
 			m_mListOrder.Set(part.GetName(), m_iCurrentOrder);
 			if (!widget.FindAnyWidget("ListContent"))
 				LF_Debug.Error("UIKit", "list " + part.GetName() + " is missing ListContent");
@@ -1051,11 +1138,185 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The key a column is remembered under: "<columns>_Col<index>".
+	protected static string ColumnKey(string columns, int index)
+	{
+		return columns + "_Col" + index.ToString();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! COLUMNS: one vertical column per weight, side by side, sharing the content's width.
+	protected void AddColumns(WorkspaceWidget workspace, Widget widget, LF_UIPart part)
+	{
+		AlignableSlot.SetPadding(widget, 0, 0, 0, 0);
+		array<float> weights = part.GetWeights();
+		// Columns inside a column share that column's width.
+		float contentWidth = GetSkin().m_fWidth - CONTENT_INSET;
+		float parentWidth;
+		if (!part.GetColumns().IsEmpty() && m_mColumnWidth.Find(ColumnKey(part.GetColumns(), part.GetColumn()), parentWidth))
+			contentWidth = parentWidth;
+
+		string layout = LF_UITheme.COLUMN_LAYOUT;
+		float inset = 0;
+		if (part.HasCards())
+		{
+			layout = LF_UITheme.CARD_LAYOUT;
+			inset = CARD_INSET;
+		}
+
+		for (int i = 0; i < weights.Count(); i++)
+		{
+			Widget column = workspace.CreateWidgets(layout, widget);
+			if (!column)
+			{
+				LF_Debug.Error("UIKit", "failed to create column " + i + " of " + part.GetName());
+				continue;
+			}
+
+			LayoutSlot.SetSizeMode(column, LayoutSizeMode.Fill);
+			LayoutSlot.SetFillWeight(column, weights[i]);
+			// A card holds its parts on a plate; they go in its content column.
+			Widget parent = column;
+			if (part.HasCards())
+			{
+				PaintNamed(column, "CardPlate", CardPlate());
+				parent = column.FindAnyWidget("CardContent");
+				if (!parent)
+				{
+					LF_Debug.Error("UIKit", "card layout is missing CardContent");
+					parent = column;
+				}
+			}
+
+			string key = ColumnKey(part.GetName(), i);
+			parent.SetName(key);
+			Remember(key, parent);
+			m_mColumnWidth.Set(key, LF_UISheetFit.ColumnWidth(contentWidth, weights, i) - inset);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A card's plate: the row strip's colour, half see-through so the sheet's paper shows in it.
+	protected Color CardPlate()
+	{
+		Color row = GetSkin().m_Row;
+		return new Color(row.R(), row.G(), row.B(), 0.55);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A badge's plate colour, and its text colour, for a tone (both from the theme).
+	protected void ToneColors(LF_EUIBadgeTone tone, out Color plate, out Color text)
+	{
+		plate = GetSkin().m_Row;
+		text = GetSkin().m_Ink;
+		if (tone == LF_EUIBadgeTone.PLAIN)
+			return;
+
+		text = GetSkin().m_Paper;
+		if (tone == LF_EUIBadgeTone.RED)
+		{
+			plate = GetSkin().m_ButtonFocus;
+			return;
+		}
+
+		LF_UIThemeRecord card = LF_UITheme.Get("id-card");
+		LF_UIThemeRecord builtIn = LF_UITheme.BuiltIn("id-card");
+		plate = LF_UITheme.Token(card.m_sAccent, builtIn.m_sAccent);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The column a part asked for, or the fallback when there is no such column.
+	protected Widget ColumnOf(LF_UIPart part, Widget fallback)
+	{
+		Widget column = WidgetNamed(ColumnKey(part.GetColumns(), part.GetColumn()));
+		if (column)
+			return column;
+
+		LF_Debug.Error("UIKit", "part " + part.GetName() + " asked for missing column " + ColumnKey(part.GetColumns(), part.GetColumn()));
+		return fallback;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! PAIR: the label, the value flush right, the badge between them when there is one.
+	protected void AddPair(Widget widget, LF_UIPart part)
+	{
+		float labelSize = LF_UITheme.BodySize();
+		if (part.IsCompact())
+			labelSize = LF_UITheme.TitleSize();
+
+		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("PairLabel")), labelSize, part.GetText());
+		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("PairValue")), LF_UITheme.BodySize(), part.GetStatus());
+		Color plate;
+		Color ink;
+		ToneColors(part.GetTone(), plate, ink);
+		SetBadge(widget, "PairBadge", "BadgeText", plate, part.GetAction());
+		TextWidget badgeText = TextWidget.Cast(widget.FindAnyWidget("BadgeText"));
+		if (badgeText)
+			badgeText.SetColor(ink);
+
+		ImageWidget icon = ImageWidget.Cast(widget.FindAnyWidget("PairIcon"));
+		if (!icon)
+			return;
+
+		bool drawn = !part.GetIcon().IsEmpty() && icon.LoadImageFromSet(0, LF_UITheme.ICONS_IMAGESET, part.GetIcon());
+		icon.SetVisible(drawn);
+		if (!drawn && !part.GetIcon().IsEmpty())
+			LF_Debug.Error("UIKit", "icon " + part.GetIcon() + " of " + part.GetName() + " did not load");
+
+		if (!drawn)
+			return;
+
+		float side = LF_UITheme.BodySize() + 6;
+		if (part.IsCompact())
+			side = LF_UITheme.TitleSize() + 4;
+
+		icon.SetSize(side, side);
+		icon.SetIsColorInherited(false);
+		icon.SetColor(Accent());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Rewrites a PAIR's value after the screen is open.
+	bool SetPairValue(string name, string value)
+	{
+		LF_UIPart part = FindPart(name);
+		Widget widget = WidgetNamed(name);
+		if (!part || part.GetKind() != LF_EUIPartKind.PAIR || !widget)
+		{
+			LF_Debug.Error("UIKit", name + " is not a pair");
+			return false;
+		}
+
+		part.SetStatus(value);
+		TextWidget text = TextWidget.Cast(widget.FindAnyWidget("PairValue"));
+		if (text)
+			text.SetText(LF_Terms.Shown(value));
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A small chip: its plate in `plate`, its text in ink; hidden when the text is empty.
+	protected void SetBadge(Widget root, string badgeName, string textName, Color plate, string text)
+	{
+		Widget badge = root.FindAnyWidget(badgeName);
+		if (!badge)
+			return;
+
+		badge.SetVisible(!text.IsEmpty());
+		PaintNamed(badge, "BadgePlate", plate);
+		ApplyInk(TextWidget.Cast(badge.FindAnyWidget(textName)), LF_UITheme.HeadingSize(), text);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void AddStatus(Widget widget, LF_UIPart part)
 	{
 		PaintNamed(widget, "RowPlate", GetSkin().m_Row);
 		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowLabel")), LF_UITheme.BodySize(), part.GetText());
 		ApplyInk(TextWidget.Cast(widget.FindAnyWidget("RowStatus")), LF_UITheme.BodySize(), part.GetStatus());
+		// A compact row prints its status in a paper chip.
+		if (widget.FindAnyWidget("RowBadge"))
+			SetBadge(widget, "RowBadge", "RowStatus", GetSkin().m_Paper, part.GetStatus());
 
 		Widget button = widget.FindAnyWidget("ActionButton");
 		if (!button)
@@ -1223,13 +1484,33 @@ class LF_UIScreen
 	//! the framing of the wanted poster (LF_WantedPosterBoard).
 	protected void AddPortrait(Widget widget, LF_UIPart part)
 	{
-		PlaceIn(widget.FindAnyWidget("PhotoBack"), 0, 0, PORTRAIT_WIDTH, PORTRAIT_HEIGHT);
+		// A sized portrait is a character preview: the whole figure in a window of that size.
+		float width = PORTRAIT_WIDTH;
+		float height = PORTRAIT_HEIGHT;
+		bool figure = part.GetBoxWidth() > 0 && part.GetBoxHeight() > 0;
+		if (figure)
+		{
+			width = part.GetBoxWidth();
+			height = part.GetBoxHeight();
+			SizeLayoutWidget box = SizeLayoutWidget.Cast(widget.FindAnyWidget("PortraitBox"));
+			if (box)
+			{
+				box.SetWidthOverride(width);
+				box.SetHeightOverride(height);
+			}
+		}
+
+		PlaceIn(widget.FindAnyWidget("PhotoBack"), 0, 0, width, height);
 		Widget clip = widget.FindAnyWidget("PhotoClip");
-		PlaceIn(clip, 0, 0, PORTRAIT_WIDTH, PORTRAIT_HEIGHT);
+		PlaceIn(clip, 0, 0, width, height);
 		if (clip)
 			clip.SetFlags(WidgetFlags.CLIPCHILDREN);
 
-		PlaceIn(widget.FindAnyWidget("Photo"), -PORTRAIT_WIDTH, -PORTRAIT_WIDTH * 0.075, PORTRAIT_WIDTH * 3, PORTRAIT_WIDTH * 3.19);
+		if (figure)
+			PlaceIn(widget.FindAnyWidget("Photo"), 0, 0, width, height);
+		else
+			PlaceIn(widget.FindAnyWidget("Photo"), -PORTRAIT_WIDTH, -PORTRAIT_WIDTH * 0.075, PORTRAIT_WIDTH * 3, PORTRAIT_WIDTH * 3.19);
+
 		PaintNamed(widget, "PhotoBack", GetSkin().m_Row);
 
 		ImageWidget stamp = ImageWidget.Cast(widget.FindAnyWidget("Stamp"));
@@ -1442,7 +1723,11 @@ class LF_UIScreen
 			return false;
 		}
 
-		Widget row = workspace.CreateWidgets(LF_UITheme.STATUS_LAYOUT, content);
+		string rowLayout = LF_UITheme.STATUS_LAYOUT;
+		if (list.IsCompact())
+			rowLayout = LF_UITheme.COMPACT_ROW_LAYOUT;
+
+		Widget row = workspace.CreateWidgets(rowLayout, content);
 		if (!row)
 		{
 			LF_Debug.Error("UIKit", "failed to create list row " + rowName);
@@ -1451,12 +1736,17 @@ class LF_UIScreen
 
 		// A list row sizes to its text and sits centred in the scroll, so on a wide sheet (the
 		// 900 price list) "needs $2,500" was cut to "needs $2,". Rows span the sheet instead:
-		// the sheet less the list and row padding (28 each side, each) and the scrollbar.
+		// the sheet less the list and row padding (28 each side, each) and the scrollbar. A list in
+		// a column spans its column.
 		SizeLayoutWidget rowSize = SizeLayoutWidget.Cast(row);
-		if (rowSize && GetSkin().m_fWidth > 0)
+		float rowWidth;
+		if (!m_mListRowWidth.Find(listName, rowWidth) && GetSkin().m_fWidth > 0)
+			rowWidth = GetSkin().m_fWidth - LIST_ROW_INSET;
+
+		if (rowSize && rowWidth > 0)
 		{
 			rowSize.EnableWidthOverride(true);
-			rowSize.SetWidthOverride(GetSkin().m_fWidth - LIST_ROW_INSET);
+			rowSize.SetWidthOverride(rowWidth);
 		}
 
 		LF_UIPart part = LF_UIPart.CreateStatus(rowName, label, status, action);
@@ -1471,6 +1761,50 @@ class LF_UIScreen
 		list.GetRows().Insert(rowName);
 
 		AddStatus(row, part);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Adds a list row with a thin bar under it, `fraction` full (0 to 1): a skill and its XP.
+	bool AddListBarRow(string listName, string rowName, string label, string status, string action, float fraction)
+	{
+		if (!AddListRow(listName, rowName, label, status, action))
+			return false;
+
+		Widget row = WidgetNamed(rowName);
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		Widget content = row.GetParent();
+		Widget bar;
+		if (workspace && content)
+			bar = workspace.CreateWidgets(LF_UITheme.BAR_LAYOUT, content);
+
+		if (!bar)
+		{
+			LF_Debug.Error("UIKit", "failed to create the bar under list row " + rowName);
+			return true;
+		}
+
+		string barName = rowName + "_Bar";
+		bar.SetName(barName);
+		Remember(barName, bar);
+		PaintNamed(bar, "BarFill", Accent());
+		PaintNamed(bar, "BarRest", GetSkin().m_Paper);
+		AlignableSlot.SetPadding(bar, 16, 2, 16, 6);
+		SizeLayoutWidget barSize = SizeLayoutWidget.Cast(bar);
+		SizeLayoutWidget rowSize = SizeLayoutWidget.Cast(row);
+		if (barSize)
+		{
+			barSize.SetHeightOverride(COMPACT_BAR_HEIGHT);
+			if (rowSize && rowSize.IsWidthOverride())
+			{
+				barSize.EnableWidthOverride(true);
+				barSize.SetWidthOverride(rowSize.GetWidthOverride() - 24);
+			}
+		}
+
+		float share = Math.Clamp(fraction, 0, 1); // lf-float: a share of the bar, not a large int
+		LayoutSlot.SetFillWeight(bar.FindAnyWidget("BarFill"), share);
+		LayoutSlot.SetFillWeight(bar.FindAnyWidget("BarRest"), 1 - share);
 		return true;
 	}
 
@@ -1496,6 +1830,11 @@ class LF_UIScreen
 				row.RemoveFromHierarchy();
 
 			Forget(rowName);
+			Widget bar = WidgetNamed(rowName + "_Bar");
+			if (bar)
+				bar.RemoveFromHierarchy();
+
+			Forget(rowName + "_Bar");
 			LF_UIPart rowPart = FindPart(rowName);
 			if (rowPart)
 				m_aParts.RemoveItem(rowPart);

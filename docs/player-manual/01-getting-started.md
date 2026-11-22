@@ -23,13 +23,34 @@ the map, police and medic duty, and where to read more. Turn the pages with **Ne
 
 ## Your personal file
 
-Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It has two tabs:
+Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It has three tabs:
 
 * **Person**: your name and role (civilian, police or medic, on or off duty), cash in hand and in the bank,
   houses owned, garage slots used, time on the island, whether you are wanted, the licences and permits you hold, and
   your level in each job. **Read** on a job shows what it is and how far you are to the next level.
 * **Progress**: your first errands in order, each marked **DONE**, **CURRENT** or **LATER**, then any other errand you
   took. **Read** shows the errand and its progress; **Set waypoint to the current errand** puts it on your map.
+* **Next**: what you could do now to earn a living, with a line on each, roughly what it pays an hour and how far away
+  it is. Only what you can already do is listed (police and medic duty show once you wear the badge). Pick one and press
+  **Start**: a few short steps follow, each with a waypoint on your screen, a mark on your map and a one-line note. A
+  step you have already done is skipped (you hold the job, you carry the tool). **Guide me** on a started one puts the
+  waypoint back on its step; finished ones read **Done**.
+
+### The mining run, step by step
+
+| Step | What you do |
+|---|---|
+| Take the miner job | The desk by the mine on Coalman's Brow, south-west of the square |
+| Buy a pickaxe | The miners' supply till in the hardware store ($150); skipped if you carry one |
+| Take your car out | Your garage; any car will do. Skipped if a car is already out or you own none |
+| Go to the mine | Back up to Coalman's Brow |
+| Mine 3 iron ore | Swing at the rust-veined rocks and pick up the pieces. Every piece levels **Mining**; level 2 opens the coal licence |
+| Smelt a bar | The mine furnace: 3 ore make a bar, about 4 minutes |
+| Sell your bars | The counter beside the furnace, $20 a bar |
+
+The other starters are shorter: the parcel run (the post office, then one delivery), lumber (the lumberjack job, an
+axe, a felled tree), fishing (a rod, the nearest water, a fish), the apple harvest (the orchard, 5 apples, a bottle of
+juice), and police or medic duty (the duty desk, clock in).
 
 The file only shows what the records office holds; nothing in it can be changed from there. **Esc** or **Close** puts
 it away.
@@ -125,6 +146,24 @@ Closer in, the centre of town:
 | 40 | Wholesale warehouse | Work sites | Buys bulk goods at a falling price. |
 | 41 | Fishing spot (Spring Pond) | Work sites | Fish from the jetty. |
 <!-- /map -->
+
+## What the screen shows
+
+The screen stays almost empty. A few small figures sit at the edges and fade when nothing changes:
+
+* **Top right: money.** The cash you carry in large figures, your **bank** balance under it. When cash changes the
+  difference slides in beside it (**+$100** in green, **-$18** in red) and fades. After a few seconds the block dims;
+  it comes back to full brightness on any change and while the inventory or the map is open.
+* **Under the money: wanted badges.** Up to five small badges fill with your wanted level. They flash red and read
+  **Wanted** for a moment when the level goes up, and disappear when you are clear.
+* **Bottom centre: food and drink.** Hidden while both are above half. They appear when one drops below half, for a
+  few seconds after you eat or drink, and the number turns red below 25.
+* **Bottom right: health and stamina**, shown while they change.
+* **Top left:** a small Life Framework mark.
+
+The HUD hides behind full-screen menus and during a conversation. Type **/hud** in chat to switch a part off or on:
+`/hud money off`, `/hud wanted on`, `/hud needs off`, `/hud brand off`, or `/hud all on`. The choice is kept on
+your PC.
 
 ## Eating and drinking
 

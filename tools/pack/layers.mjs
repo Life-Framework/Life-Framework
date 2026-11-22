@@ -60,6 +60,7 @@ Object.assign(SECTIONS, {
   "organizations.rankDefaults": row("organizations", "rankDefaults", "LF_OrgConfig", "Configs/Organizations/LF_Org.conf", "m_aRankDefaults", "m_sRank", byField("m_sRank"), (k) => (["founder", "officer", "member"].includes(k) ? k : "")),
   "police.ranks": row("police", "ranks", "LF_PoliceConfig", "Configs/Police/LF_Police.conf", "m_aRanks", "m_sId", byField("m_sId"), same),
   "welcomeGift.gifts": row("welcomeGift", "gifts", "LF_WelcomeGiftConfig", "Configs/Quests/LF_WelcomeGift.conf", "m_aGifts", "m_sQuestId", byField("m_sQuestId")),
+  "activities.activities": row("activities", "activities", "LF_ActivityConfig", "Configs/Activities/LF_Activities.conf", "m_aActivities", "m_sId", byField("m_sId")),
   "questGivers.givers": row("questGivers", "givers", "LF_QuestGiverConfig", "Configs/Quests/LF_QuestGiverTable.conf", "m_aGivers", "m_sGiverId", byField("m_sGiverId")),
   // The core ships no course (LF_RaceCourseBook starts empty), so the core layer is empty: a pack adds.
   "racing.courses": row("racing", "courses", "LF_RaceCoursesConfig", null, "m_aCourses", "m_sId", byField("m_sId"), same),

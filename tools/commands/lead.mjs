@@ -336,7 +336,8 @@ async function poolSection(root) {
     fallback: (m) => timeoutHealth(pool.lastHealth(root, m.name), Date.now(), pool.RECENT_OK_MS),
   });
   poolSnaps = g.snaps;
-  return poolLines({ snaps: g.snaps, queue: pool.liveTickets(root).length, exceeded: g.exceeded, budgetMs, elapsedMs: g.elapsedMs });
+  const tickets = pool.liveTickets(root);
+  return poolLines({ snaps: g.snaps, queue: tickets.length, tickets, warnMin: pool.poolSettings(root).waitWarnMin, exceeded: g.exceeded, budgetMs, elapsedMs: g.elapsedMs });
 }
 
 async function poolWorker(root, name) {

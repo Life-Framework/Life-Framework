@@ -35,6 +35,12 @@ class LF_UISkin
 	string m_sName = "paper";
 	//! Sheet width in reference pixels (LF_UIFrame.layout is 560).
 	float m_fWidth = 560;
+	//! Above 0: the sheet takes this share of the screen's width, centred (a wide file with columns);
+	//! m_fWidth is then its narrowest.
+	float m_fWidthShare;
+	//! How much darker a dashboard's backdrop is than a form's (multiplies the blur tint).
+	static const float DASHBOARD_DIM = 0.45;
+	static const float DASHBOARD_MIN_HEIGHT = 480;
 	//! Sheet height in reference pixels (LF_UIFrame.layout is 900). 0 keeps the layout's.
 	float m_fHeight;
 	//! Multiplies every font size on the sheet (1 is LF_UITheme). A shop list is read at arm's length.
@@ -76,6 +82,21 @@ class LF_UISkin
 	static LF_UISkin Paper()
 	{
 		return FromTheme(LF_UIThemeConfig.BASE_ID);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A full-screen file (the personal file): the paper sheet across `share` of the screen, centred,
+	//! with the world behind it dimmed further than a form's (the theme's blur tint at DASHBOARD_DIM).
+	static LF_UISkin Dashboard(float share, float minWidth)
+	{
+		LF_UISkin skin = Paper();
+		skin.m_sName = "dashboard";
+		skin.m_fWidthShare = share;
+		skin.m_fWidth = minWidth;
+		// No tall blank sheet under a short page: the sheet grows from here to fit its content.
+		skin.m_fHeight = DASHBOARD_MIN_HEIGHT;
+		skin.m_Blur = new Color(skin.m_Blur.R() * DASHBOARD_DIM, skin.m_Blur.G() * DASHBOARD_DIM, skin.m_Blur.B() * DASHBOARD_DIM, skin.m_Blur.A());
+		return skin;
 	}
 
 	//------------------------------------------------------------------------------------------------

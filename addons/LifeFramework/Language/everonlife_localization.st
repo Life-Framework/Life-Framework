@@ -1,7 +1,7 @@
 StringTable {
  ItemClassName "CustomStringTableItem"
  Items {
-  CustomStringTableItem "{1CB6BD5316FBA315}" {
+    CustomStringTableItem "{1CB6BD5316FBA315}" {
    Id "EL-ATM_Amount"
    Target_en_us "Amount:"
    Target_es_es "Cantidad:"
@@ -22,7 +22,7 @@ StringTable {
      Target_pt_br "Digite o valor"
      Comment "ATM deposit/withdraw amount field placeholder"
     }
-  CustomStringTableItem "{E687B439A5205BE9}" {
+    CustomStringTableItem "{E687B439A5205BE9}" {
    Id "EL-ATM_Balance"
    Target_en_us "Balance: $"
    Target_es_es "Saldo: $"
@@ -37,7 +37,7 @@ StringTable {
      Target_en_us "Close"
      Comment "Button that closes the ATM screen"
     }
-  CustomStringTableItem "{0379A5BDF0064A16}" {
+    CustomStringTableItem "{0379A5BDF0064A16}" {
    Id "EL-ATM_Deposit"
    Target_en_us "Deposit"
    Target_es_es "Depositar"
@@ -52,7 +52,7 @@ StringTable {
      Target_en_us "The teller refused the deposit: you do not carry that much cash"
      Comment "ATM deposit refused by the server"
     }
-  CustomStringTableItem "{E9F2EDAF4646211E}" {
+    CustomStringTableItem "{E9F2EDAF4646211E}" {
    Id "EL-ATM_InsufficientFunds"
    Target_en_us "Insufficient funds"
    Target_es_es "Fondos insuficientes"
@@ -67,7 +67,7 @@ StringTable {
      Target_en_us "Enter an amount greater than zero"
      Comment "ATM deposit/withdraw refused on the client because the typed amount is empty, zero or negative"
     }
-  CustomStringTableItem "{B3BF4076847C9C6E}" {
+    CustomStringTableItem "{B3BF4076847C9C6E}" {
    Id "EL-ATM_Title"
    Target_en_us "ATM"
    Target_es_es "Cajero Automático"
@@ -82,7 +82,7 @@ StringTable {
      Target_en_us "Stand at an ATM to do that"
      Comment "ATM deposit or withdraw refused because the player walked away from the ATM"
     }
-  CustomStringTableItem "{C726A3F43803900E}" {
+    CustomStringTableItem "{C726A3F43803900E}" {
    Id "EL-ATM_Withdraw"
    Target_en_us "Withdraw"
    Target_es_es "Retirar"
@@ -272,7 +272,7 @@ StringTable {
      Target_pt_br "Digite seu sobrenome..."
      Comment "Character creation last name field placeholder"
     }
-  CustomStringTableItem "{BB9797D7BF69E9F2}" {
+    CustomStringTableItem "{BB9797D7BF69E9F2}" {
    Id "EL-CharacterCreation_Age"
    Target_en_us "Age:"
    Target_es_es "Edad:"
@@ -282,7 +282,7 @@ StringTable {
    Target_pt_pt "Idade:"
    Target_pt_br "Idade:"
   }
-CustomStringTableItem "{54AF4AE58A1DBCF7}" {
+    CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Id "EL-CharacterCreation_Create"
     Target_en_us "Create Character"
     Target_es_es "Crear Personaje"
@@ -292,7 +292,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_pt "Criar personagem"
     Target_pt_br "Criar personagem"
    }
-  CustomStringTableItem "{52C0B4BC0FA1B26D}" {
+    CustomStringTableItem "{52C0B4BC0FA1B26D}" {
    Id "EL-CharacterCreation_FirstName"
    Target_en_us "First Name:"
    Target_es_es "Nombre:"
@@ -302,7 +302,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_pt_pt "Nome próprio:"
    Target_pt_br "Primeiro nome:"
   }
-  CustomStringTableItem "{32AE1891B7DEDCF6}" {
+    CustomStringTableItem "{32AE1891B7DEDCF6}" {
    Id "EL-CharacterCreation_LastName"
    Target_en_us "Last Name:"
    Target_es_es "Apellido:"
@@ -312,7 +312,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_pt_pt "Apelido:"
    Target_pt_br "Sobrenome:"
   }
-  CustomStringTableItem "{89423F406555DECA}" {
+    CustomStringTableItem "{89423F406555DECA}" {
    Id "EL-CharacterCreation_Title"
    Target_en_us "Create Your Character"
    Target_es_es "Crea tu Personaje"
@@ -322,7 +322,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_pt_pt "Cria o teu personagem"
    Target_pt_br "Crie seu personagem"
   }
-  CustomStringTableItem "{528E67C0E6D6C58D}" {
+    CustomStringTableItem "{528E67C0E6D6C58D}" {
    Id "EL-Confiscate_DisplayName"
    Target_en_us "Confiscate Weapons"
    Target_es_es "Confiscar Armas"
@@ -367,7 +367,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
      Target_en_us "Start convoy"
      Comment "Convoy start action name"
     }
-   CustomStringTableItem "{D5A0873EE40176C2}" {
+    CustomStringTableItem "{D5A0873EE40176C2}" {
     Id "EL-Death_Respawn"
     Target_en_us "Respawn"
     Target_de_de "Neu starten"
@@ -378,7 +378,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
      Target_pt_br "Reaparecer"
      Comment "Death screen respawn button"
    }
-   CustomStringTableItem "{4CADF51C9441EA8A}" {
+    CustomStringTableItem "{4CADF51C9441EA8A}" {
     Id "EL-Death_Title"
     Target_en_us "You are dead"
     Target_de_de "Du bist gestorben"
@@ -389,7 +389,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Você morreu"
     Comment "Death screen title"
    }
-   CustomStringTableItem "{6A52D1D87E9A31C4}" {
+    CustomStringTableItem "{6A52D1D87E9A31C4}" {
     Id "EL-DebugMenu_Close"
     Target_en_us "Close"
     Target_de_de "Schließen"
@@ -400,7 +400,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Fechar"
     Comment "Debug menu close hint"
    }
-   CustomStringTableItem "{BBED3D35CECA0BEE}" {
+    CustomStringTableItem "{BBED3D35CECA0BEE}" {
     Id "EL-DebugMenu_FactionCivilian"
     Target_en_us "Civilian Faction"
     Target_de_de "Zivilisten-Fraktion"
@@ -411,7 +411,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Facção civil"
     Comment "Debug menu: set civilian faction"
    }
-   CustomStringTableItem "{C72E71FF41583BB3}" {
+    CustomStringTableItem "{C72E71FF41583BB3}" {
     Id "EL-DebugMenu_FactionPolice"
     Target_en_us "Police Faction"
     Target_de_de "Polizei-Fraktion"
@@ -422,7 +422,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Facção policial"
     Comment "Debug menu: set police faction"
    }
-   CustomStringTableItem "{B314C31C663DB665}" {
+    CustomStringTableItem "{B314C31C663DB665}" {
     Id "EL-DebugMenu_GiveCash"
     Target_en_us "Give Cash +1000"
     Target_de_de "Geld geben +1000"
@@ -433,7 +433,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Dar dinheiro +1000"
     Comment "Debug menu: add cash button"
    }
-   CustomStringTableItem "{84BD5C1286CDFFBF}" {
+    CustomStringTableItem "{84BD5C1286CDFFBF}" {
     Id "EL-DebugMenu_GrantSp"
     Target_en_us "Grant SP +5"
     Target_de_de "SP geben +5"
@@ -444,7 +444,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Dar SP +5"
     Comment "Debug menu: add skill points"
    }
-   CustomStringTableItem "{33D04535861495AB}" {
+    CustomStringTableItem "{33D04535861495AB}" {
     Id "EL-DebugMenu_GrantXp"
     Target_en_us "Grant XP +500"
     Target_de_de "XP geben +500"
@@ -455,7 +455,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Dar XP +500"
     Comment "Debug menu: add experience"
    }
-   CustomStringTableItem "{5F3EB174B8DF0FBB}" {
+    CustomStringTableItem "{5F3EB174B8DF0FBB}" {
     Id "EL-DebugMenu_JobFarmer"
     Target_en_us "Job: Farmer"
     Target_de_de "Job: Bauer"
@@ -466,7 +466,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Trabalho: agricultor"
     Comment "Debug menu: set farmer job"
    }
-   CustomStringTableItem "{5D41B256D421B6E8}" {
+    CustomStringTableItem "{5D41B256D421B6E8}" {
     Id "EL-DebugMenu_JobUnemployed"
     Target_en_us "Job: Unemployed"
     Target_de_de "Job: Arbeitslos"
@@ -477,7 +477,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Trabalho: desempregado"
     Comment "Debug menu: set unemployed job"
    }
-   CustomStringTableItem "{63A127949F852CC4}" {
+    CustomStringTableItem "{63A127949F852CC4}" {
     Id "EL-DebugMenu_SurvivalEmpty"
     Target_en_us "Survival Empty"
     Target_de_de "Überleben leer"
@@ -488,7 +488,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Sobrevivência vazia"
     Comment "Debug menu: zero hunger/thirst/health"
    }
-   CustomStringTableItem "{836DE3CEE3A9A308}" {
+    CustomStringTableItem "{836DE3CEE3A9A308}" {
     Id "EL-DebugMenu_SurvivalFull"
     Target_en_us "Survival Full"
     Target_de_de "Überleben voll"
@@ -499,7 +499,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Sobrevivência cheia"
     Comment "Debug menu: max hunger/thirst/health"
    }
-   CustomStringTableItem "{58B6B04D77AF1CCC}" {
+    CustomStringTableItem "{58B6B04D77AF1CCC}" {
     Id "EL-DebugMenu_TakeCash"
     Target_en_us "Take Cash -1000"
     Target_de_de "Geld nehmen -1000"
@@ -521,7 +521,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Menu de depuração"
     Comment "Debug menu title"
    }
-   CustomStringTableItem "{2DBD1E711A1FE9C9}" {
+    CustomStringTableItem "{2DBD1E711A1FE9C9}" {
     Id "EL-DebugMenu_Wanted0"
     Target_en_us "Wanted 0"
     Target_de_de "Gesucht 0"
@@ -532,7 +532,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Procurado 0"
     Comment "Debug menu: clear wanted level"
    }
-   CustomStringTableItem "{EB6A833DCB4086E3}" {
+    CustomStringTableItem "{EB6A833DCB4086E3}" {
     Id "EL-DebugMenu_Wanted5"
     Target_en_us "Wanted 5"
     Target_de_de "Gesucht 5"
@@ -543,7 +543,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_br "Procurado 5"
     Comment "Debug menu: max wanted level"
    }
-   CustomStringTableItem "{B8AE8B1EC379425C}" {
+    CustomStringTableItem "{B8AE8B1EC379425C}" {
     Id "EL-DeleteAction_DisplayName"
     Target_en_us "Destroy"
     Target_de_de "Zerstören"
@@ -576,7 +576,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
      Target_en_us "Only police can change duty"
      Comment "Duty toggle refused because the player is not in the police faction"
     }
-  CustomStringTableItem "{E9C8FC3D37EA4FF9}" {
+    CustomStringTableItem "{E9C8FC3D37EA4FF9}" {
    Id "EL-Duty_Status"
    Target_en_us "Duty Status"
    Target_es_es "Estado de Servicio"
@@ -586,7 +586,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_pt_pt "Estado de Serviço"
    Target_pt_br "Estado de Serviço"
   }
-  CustomStringTableItem "{E707FDC68C849C38}" {
+    CustomStringTableItem "{E707FDC68C849C38}" {
    Id "EL-Duty_Status_Change"
    Target_en_us "You are now %1"
    Target_es_es "Ahora eres %1"
@@ -621,7 +621,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
      Target_en_us "Take out of vehicle"
      Comment "Officer removes the prisoner from the vehicle. The sentence starts only at the cell."
     }
-   CustomStringTableItem "{A8730ED008B83986}" {
+    CustomStringTableItem "{A8730ED008B83986}" {
     Id "EL-Faction_Civilian"
     Target_en_us "Civilian"
     Target_es_es "Civil"
@@ -631,7 +631,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_pt "Civil"
     Target_pt_br "Civil"
    }
-   CustomStringTableItem "{8D4E3C7BBC67A1B5}" {
+    CustomStringTableItem "{8D4E3C7BBC67A1B5}" {
     Id "EL-Faction_Police"
     Target_en_us "Police"
     Target_es_es "Policía"
@@ -641,7 +641,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_pt "Polícia"
     Target_pt_br "Polícia"
    }
-   CustomStringTableItem "{71BBA650CD61B241}" {
+    CustomStringTableItem "{71BBA650CD61B241}" {
     Id "EL-Faction_Title"
     Target_en_us "Select Faction"
     Target_es_es "Seleccionar facción"
@@ -651,7 +651,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Target_pt_pt "Selecionar facção"
     Target_pt_br "Selecionar facção"
    }
-  CustomStringTableItem "{3786BE1BEAA9D0BE}" {
+    CustomStringTableItem "{3786BE1BEAA9D0BE}" {
    Id "EL-Fine_Failed"
    Target_en_us "Player doesn't have enough money!"
    Target_es_es "El jugador no tiene suficiente dinero!"
@@ -677,7 +677,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
      Target_en_us "A fine must be at least 1000 to lower the wanted level"
      Comment "Police fine refused because the amount is below one wanted level (1000 cash per level)"
     }
-  CustomStringTableItem "{5B715E486235B275}" {
+    CustomStringTableItem "{5B715E486235B275}" {
    Id "EL-Fined"
    Target_en_us "Fined"
    Target_es_es "Multado"
@@ -753,7 +753,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
      Target_pt_br "A casa está trancada"
      Comment "Door action cannot-perform reason on a locked house"
     }
-  CustomStringTableItem "{04BE9409328F0209}" {
+    CustomStringTableItem "{04BE9409328F0209}" {
    Id "EL-ID_Information"
    Target_en_us "ID Information"
    Target_es_es "Información de ID"
@@ -763,7 +763,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
    Target_pt_pt "Informação de ID"
    Target_pt_br "Informação de ID"
   }
-  CustomStringTableItem "{4CC21547F7D0E8C0}" {
+    CustomStringTableItem "{4CC21547F7D0E8C0}" {
    Id "EL-Inventory_Full"
    Target_en_us "Inventory full!"
    Target_es_es "Inventario lleno!"
@@ -795,7 +795,7 @@ CustomStringTableItem "{54AF4AE58A1DBCF7}" {
      Target_pt_br "Chave de casa"
      Comment "House key item name"
     }
-CustomStringTableItem "{AA76A797BE84093A}" {
+    CustomStringTableItem "{AA76A797BE84093A}" {
     Id "EL-Item_Bought"
     Target_en_us "Bought %1 x%2!"
     Target_es_es "Compró %1 x%2!"
@@ -805,7 +805,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_pt_pt "Comprou %1 x%2!"
     Target_pt_br "Comprou %1 x%2!"
    }
-   CustomStringTableItem "{281B36AB823C412B}" {
+    CustomStringTableItem "{281B36AB823C412B}" {
     Id "EL-Item_Pickaxe_Description"
     Target_en_us "Tool for mining ore"
     Target_de_de "Werkzeug zum Erzabbau"
@@ -819,7 +819,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-   CustomStringTableItem "{3A70AF4FE08F42F5}" {
+    CustomStringTableItem "{3A70AF4FE08F42F5}" {
     Id "EL-Item_Pickaxe_Name"
     Target_en_us "Pickaxe"
     Target_de_de "Spitzhacke"
@@ -833,7 +833,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-  CustomStringTableItem "{FDB3A4352A9457A4}" {
+    CustomStringTableItem "{FDB3A4352A9457A4}" {
    Id "EL-Item_Sold"
    Target_en_us "Sold item for {currency:sym}%1!"
    Target_es_es "Item vendido por {currency:sym}%1!"
@@ -888,7 +888,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "Complete the run"
      Comment "Drop marker action that pays a delivery run"
     }
-  CustomStringTableItem "{C60F134F56CDE9BE}" {
+    CustomStringTableItem "{C60F134F56CDE9BE}" {
    Id "EL-Job_Earned"
    Target_en_us "Earned {currency:sym}%1 for work!"
    Target_es_es "Ganó {currency:sym}%1 por trabajo!"
@@ -943,7 +943,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "Pick up parcel"
      Comment "Depot action that starts a parcel run"
     }
-  CustomStringTableItem "{8F253E3EE2D8A786}" {
+    CustomStringTableItem "{8F253E3EE2D8A786}" {
    Id "EL-Job_Reward"
    Target_en_us "Job Reward"
    Target_es_es "Recompensa de Trabajo"
@@ -973,7 +973,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "Start fare"
      Comment "Taxi rank action that starts a marker fare"
     }
-  CustomStringTableItem "{5A60AE2B8D435CE9}" {
+    CustomStringTableItem "{5A60AE2B8D435CE9}" {
    Id "EL-Keybinds_Inventory_MoveQuantity"
    Target_en_us "Move stack"
    Target_de_de "Stapel verschieben"
@@ -986,7 +986,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{5A5EA70E9C33566A}" {
+    CustomStringTableItem "{5A5EA70E9C33566A}" {
    Id "EL-Keybinds_Inventory_PickUpQuantity"
    Target_en_us "Pick up stack"
    Target_de_de "Stapel aufsammeln"
@@ -999,7 +999,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{5A628A92C80C8905}" {
+    CustomStringTableItem "{5A628A92C80C8905}" {
    Id "EL-Keybinds_Inventory_QuickSplitQuantity"
    Target_en_us "Half stack"
    Target_de_de "Stapel halbieren"
@@ -1012,7 +1012,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{5A628A92CC3D121C}" {
+    CustomStringTableItem "{5A628A92CC3D121C}" {
    Id "EL-Keybinds_Inventory_SplitQuantity"
    Target_en_us "Split stack"
    Target_de_de "Stapel aufteilen"
@@ -1025,7 +1025,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-   CustomStringTableItem "{47776A7324DF510E}" {
+    CustomStringTableItem "{47776A7324DF510E}" {
     Id "EL-Keybinds_OpenDebugMenu"
     Target_en_us "Open debug menu"
     Target_de_de "Debug-Menü öffnen"
@@ -1036,14 +1036,14 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_pt_br "Abrir menu de depuração"
     Comment "Keybind: open the debug menu"
    }
-  CustomStringTableItem "{5A5EA70D1ADCCA9E}" {
+    CustomStringTableItem "{5A5EA70D1ADCCA9E}" {
    Id "EL-Keybinds_Title"
    Target_en_us "Life Framework"
    Modified 1516153387
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{5AA164EA498BDCE0}" {
+    CustomStringTableItem "{5AA164EA498BDCE0}" {
    Id "EL-Not_Enough_Money"
    Target_en_us "Not enough money!"
    Target_es_es "Dinero insuficiente!"
@@ -1128,7 +1128,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "Withdraw cash"
      Comment "Organization fund withdraw button"
     }
-  CustomStringTableItem "{8A914631969AA29B}" {
+    CustomStringTableItem "{8A914631969AA29B}" {
    Id "EL-Player_Arrested"
    Target_en_us "Player arrested!"
    Target_es_es "Jugador arrestado!"
@@ -1149,7 +1149,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_pt_br "Alerta policial"
      Comment "Notification title for crime alerts to police"
     }
-  CustomStringTableItem "{D805FA4B449DCBDB}" {
+    CustomStringTableItem "{D805FA4B449DCBDB}" {
    Id "EL-Police_Action"
    Target_en_us "Weapons confiscated!"
    Target_es_es "Armas confiscadas!"
@@ -1169,7 +1169,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "Crime Alert: Hospital till robbed"
      Comment "Police notification when the hospital till is robbed"
     }
-  CustomStringTableItem "{29AE645903F2735C}" {
+    CustomStringTableItem "{29AE645903F2735C}" {
    Id "EL-Police_Alert_Robbery"
    Target_en_us "Crime Alert: Robbery in progress!"
    Target_es_es "Alerta de Crimen: Robo en progreso!"
@@ -1179,7 +1179,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Target_pt_pt "Alerta de Crime: Roubo em andamento!"
    Target_pt_br "Alerta de Crime: Roubo em andamento!"
   }
-  CustomStringTableItem "{94F7D789515A802D}" {
+    CustomStringTableItem "{94F7D789515A802D}" {
    Id "EL-Police_Alert_Vehicle"
    Target_en_us "Crime Alert: Vehicle theft!"
    Target_es_es "Alerta de Crimen: Robo de vehículo!"
@@ -1189,7 +1189,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Target_pt_pt "Alerta de Crime: Roubo de veículo!"
    Target_pt_br "Alerta de Crime: Roubo de veículo!"
   }
-  CustomStringTableItem "{DA10C8D24DAFB028}" {
+    CustomStringTableItem "{DA10C8D24DAFB028}" {
    Id "EL-Police_Alert_Weapon"
    Target_en_us "Crime Alert: Weapon theft!"
    Target_es_es "Alerta de Crimen: Robo de arma!"
@@ -1355,7 +1355,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_en_us "Not enough {police} on duty"
      Comment "Cash robbery refused because too few police are on duty"
     }
-  CustomStringTableItem "{0970D80CAA70B53F}" {
+    CustomStringTableItem "{0970D80CAA70B53F}" {
    Id "EL-Robbery_Failed"
    Target_en_us "Robbery Failed"
    Target_es_es "Robo Fallido"
@@ -1365,7 +1365,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
    Target_pt_pt "Roubo Falhado"
    Target_pt_br "Roubo Falhado"
   }
-  CustomStringTableItem "{9B142C6279966BB8}" {
+    CustomStringTableItem "{9B142C6279966BB8}" {
    Id "EL-Robbery_Successful"
    Target_en_us "Robbery Successful"
    Target_es_es "Robo Exitoso"
@@ -1408,7 +1408,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
      Target_pt_br "Esta loja não compra este item"
      Comment "Shop sell blocked: shop does not buy this item"
     }
-   CustomStringTableItem "{57624FF39CA0C9FB}" {
+    CustomStringTableItem "{57624FF39CA0C9FB}" {
     Id "EL-Shop_Buy"
     Target_en_us "Buy"
     Target_de_de "Kaufen"
@@ -1419,7 +1419,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_pt_br "Comprar"
     Comment "Shop buy button"
    }
-   CustomStringTableItem "{B1312D9A925343A1}" {
+    CustomStringTableItem "{B1312D9A925343A1}" {
     Id "EL-Shop_Cash"
     Target_en_us "Cash"
     Target_de_de "Bargeld"
@@ -1430,7 +1430,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_pt_br "Dinheiro"
     Comment "Shop menu cash label"
    }
-   CustomStringTableItem "{12501435C4030C81}" {
+    CustomStringTableItem "{12501435C4030C81}" {
     Id "EL-Shop_PurchaseFailed"
     Target_en_us "Purchase failed"
     Target_de_de "Kauf fehlgeschlagen"
@@ -1441,7 +1441,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_pt_br "Compra falhou"
     Comment "Shop purchase failure notification title"
    }
-   CustomStringTableItem "{C5063E87653539D2}" {
+    CustomStringTableItem "{C5063E87653539D2}" {
     Id "EL-Shop_PurchaseSuccessful"
     Target_en_us "Purchase"
     Target_de_de "Kauf"
@@ -1452,7 +1452,7 @@ CustomStringTableItem "{AA76A797BE84093A}" {
     Target_pt_br "Compra"
     Comment "Shop purchase notification title"
    }
-CustomStringTableItem "{44869271883D0402}" {
+    CustomStringTableItem "{44869271883D0402}" {
     Id "EL-Shop_Results"
     Target_en_us "Showing %1 of %2 items"
     Target_de_de "%1 von %2 Artikeln angezeigt"
@@ -1463,7 +1463,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Mostrando %1 de %2 artigos"
     Comment "Shop result-count hint"
    }
-   CustomStringTableItem "{313F933C75272034}" {
+    CustomStringTableItem "{313F933C75272034}" {
     Id "EL-Shop_Search"
     Target_en_us "Search items"
     Target_de_de "Artikel suchen"
@@ -1474,7 +1474,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Pesquisar artigos"
     Comment "Shop search box placeholder"
    }
-   CustomStringTableItem "{811696D359309A3D}" {
+    CustomStringTableItem "{811696D359309A3D}" {
     Id "EL-Shop_Sell"
     Target_en_us "Sell"
     Target_de_de "Verkaufen"
@@ -1485,7 +1485,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Vender"
     Comment "Shop sell button"
    }
-   CustomStringTableItem "{1901F5D02C8E7AF1}" {
+    CustomStringTableItem "{1901F5D02C8E7AF1}" {
     Id "EL-Shop_SellFailed"
     Target_en_us "Nothing to sell"
     Target_de_de "Nichts zu verkaufen"
@@ -1496,7 +1496,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Nada para vender"
     Comment "Shop sell failure notification body"
    }
-  CustomStringTableItem "{4517233F8276C3B2}" {
+    CustomStringTableItem "{4517233F8276C3B2}" {
     Id "EL-Shop_Title"
     Target_en_us "Shop"
     Target_de_de "Laden"
@@ -1507,7 +1507,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Loja"
     Comment "Shop menu title"
    }
-  CustomStringTableItem "{4C73EC932CF638D8}" {
+    CustomStringTableItem "{4C73EC932CF638D8}" {
    Id "EL-ShowID_DisplayName"
    Target_en_us "Show ID"
    Target_es_es "Mostrar ID"
@@ -1517,7 +1517,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Target_pt_pt "Mostrar ID"
    Target_pt_br "Mostrar ID"
   }
-   CustomStringTableItem "{41489243B750D903}" {
+    CustomStringTableItem "{41489243B750D903}" {
     Id "EL-SpawnLoc_Mine"
     Target_en_us "Mining Camp"
     Target_es_es "Campamento minero"
@@ -1527,7 +1527,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_pt "Campo mineiro"
     Target_pt_br "Acampamento de mineração"
    }
-   CustomStringTableItem "{41489243B750D905}" {
+    CustomStringTableItem "{41489243B750D905}" {
     Id "EL-SpawnLoc_Outpost"
     Target_en_us "East Outpost"
     Target_es_es "Puesto del este"
@@ -1537,7 +1537,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_pt "Posto avançado este"
     Target_pt_br "Posto avançado leste"
    }
-   CustomStringTableItem "{41489243B750D904}" {
+    CustomStringTableItem "{41489243B750D904}" {
     Id "EL-SpawnLoc_Station"
     Target_en_us "Police Station"
     Target_es_es "Comisaría"
@@ -1547,7 +1547,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_pt "Esquadra de polícia"
     Target_pt_br "Delegacia de polícia"
    }
-   CustomStringTableItem "{41489243B750D901}" {
+    CustomStringTableItem "{41489243B750D901}" {
     Id "EL-SpawnLoc_Title"
     Target_en_us "Select Spawn Location"
     Target_es_es "Seleccionar punto de aparición"
@@ -1557,7 +1557,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_pt "Selecionar ponto de aparição"
     Target_pt_br "Selecionar ponto de surgimento"
    }
-   CustomStringTableItem "{41489243B750D902}" {
+    CustomStringTableItem "{41489243B750D902}" {
     Id "EL-SpawnLoc_Town"
     Target_en_us "Town Square"
     Target_es_es "Plaza del pueblo"
@@ -1567,7 +1567,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_pt "Praça da vila"
     Target_pt_br "Praça da vila"
    }
-  CustomStringTableItem "{BA65E2A7D9A6EB16}" {
+    CustomStringTableItem "{BA65E2A7D9A6EB16}" {
    Id "EL-Spawn_Failed"
    Target_en_us "Failed to spawn vehicle!"
    Target_es_es "Fallo al spawnear vehículo!"
@@ -1577,7 +1577,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Target_pt_pt "Falha ao spawnar veículo!"
    Target_pt_br "Falha ao spawnar veículo!"
   }
-  CustomStringTableItem "{5A7AC3DBDBC982B7}" {
+    CustomStringTableItem "{5A7AC3DBDBC982B7}" {
    Id "EL-SplitQuantityDialog_Input_Amount"
    Target_en_us "Amount"
    Target_de_de "Anzahl"
@@ -1590,7 +1590,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{5A7AC3DBD6ADFB48}" {
+    CustomStringTableItem "{5A7AC3DBD6ADFB48}" {
    Id "EL-SplitQuantityDialog_Input_Keep"
    Target_en_us "Keep"
    Target_de_de "Behalten"
@@ -1603,7 +1603,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{5A7AC3DBD51D98EF}" {
+    CustomStringTableItem "{5A7AC3DBD51D98EF}" {
    Id "EL-SplitQuantityDialog_Input_SplitOff"
    Target_en_us "Split off"
    Target_de_de "Abteilen"
@@ -1616,7 +1616,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{5A7AC3DBDC021AB3}" {
+    CustomStringTableItem "{5A7AC3DBDC021AB3}" {
    Id "EL-SplitQuantityDialog_Message"
    Target_en_us "Choose the stack size you want to split off"
    Target_de_de "Wähle die Größe des Stapels der abgespalten werden soll"
@@ -1629,7 +1629,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{5A7AC3DBA1DFD8FD}" {
+    CustomStringTableItem "{5A7AC3DBA1DFD8FD}" {
    Id "EL-SplitQuantityDialog_Name"
    Target_en_us "Split Stack"
    Target_de_de "Stapel aufteilen"
@@ -1642,7 +1642,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-  CustomStringTableItem "{51406463B7ACAB53}" {
+    CustomStringTableItem "{51406463B7ACAB53}" {
    Id "EL-Stole_Money"
    Target_en_us "Stole {currency:sym}%1!"
    Target_es_es "Robó {currency:sym}%1!"
@@ -1685,7 +1685,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "Sede:"
      Comment "Survival HUD thirst label"
     }
-  CustomStringTableItem "{589A396025738903}" {
+    CustomStringTableItem "{589A396025738903}" {
    Id "EL-Trade_Successful"
    Target_en_us "Trade Successful"
    Target_es_es "Intercambio Exitoso"
@@ -1695,7 +1695,7 @@ CustomStringTableItem "{44869271883D0402}" {
    Target_pt_pt "Troca Bem-Sucedida"
    Target_pt_br "Troca Bem-Sucedida"
   }
-   CustomStringTableItem "{497094A09ECC498E}" {
+    CustomStringTableItem "{497094A09ECC498E}" {
     Id "EL-VehicleLock_Action"
     Target_en_us "Lock/Unlock Vehicle"
     Target_de_de "Fahrzeug ver-/entriegeln"
@@ -1718,7 +1718,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Unlock vehicle"
      Comment "Action label when the vehicle is locked (#412)."
     }
-   CustomStringTableItem "{3183B68A7D10419E}" {
+    CustomStringTableItem "{3183B68A7D10419E}" {
     Id "EL-VehicleLock_MissingKey"
     Target_en_us "You need the key for this vehicle"
     Target_de_de "Sie benötigen den Schlüssel für dieses Fahrzeug"
@@ -1731,7 +1731,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-   CustomStringTableItem "{AEBA171181D64DD6}" {
+    CustomStringTableItem "{AEBA171181D64DD6}" {
     Id "EL-VehicleLock_Reason"
     Target_en_us "Vehicle is locked"
     Target_de_de "Fahrzeug ist abgeschlossen"
@@ -1744,7 +1744,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-   CustomStringTableItem "{863E7B439E7E4BDF}" {
+    CustomStringTableItem "{863E7B439E7E4BDF}" {
     Id "EL-VehicleLock_Title"
     Target_en_us "Vehicle Lock"
     Target_de_de "Fahrzeugschloss"
@@ -1757,7 +1757,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-   CustomStringTableItem "{AB000BA2CB254D71}" {
+    CustomStringTableItem "{AB000BA2CB254D71}" {
     Id "EL-VehicleLocked"
     Target_en_us "Your vehicle is now locked."
     Target_de_de "Ihr Fahrzeug ist jetzt abgeschlossen."
@@ -1770,7 +1770,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-   CustomStringTableItem "{A20CA0D7DF1C4CED}" {
+    CustomStringTableItem "{A20CA0D7DF1C4CED}" {
     Id "EL-VehicleUnlocked"
     Target_en_us "Your vehicle is now unlocked."
     Target_de_de "Ihr Fahrzeug ist jetzt aufgeschlossen."
@@ -1848,7 +1848,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sputnik T601"
      Comment "Lot catalog row for the beige Sputnik T601 (vanilla T601, free in 1.9)"
     }
-  CustomStringTableItem "{769912DD3060E56A}" {
+    CustomStringTableItem "{769912DD3060E56A}" {
    Id "EL-Vehicle_Stolen"
    Target_en_us "Vehicle stolen!"
    Target_es_es "Vehículo robado!"
@@ -1873,7 +1873,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "UAZ"
      Comment "Lot catalog row for the covered civilian UAZ"
     }
-  CustomStringTableItem "{D8E4F8A5027A13A8}" {
+    CustomStringTableItem "{D8E4F8A5027A13A8}" {
    Id "EL-Weapon_Stolen"
    Target_en_us "Weapon stolen!"
    Target_es_es "Arma robada!"
@@ -2089,6 +2089,106 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ATM_Working"
      Target_en_us "PLEASE WAIT ..."
      Comment "ATM terminal status line while the server handles a request."
+    }
+    CustomStringTableItem "{6AFAA16B46ED882D}" {
+     Id "LF-Activity_FactsDone"
+     Target_en_us "You know the way now. Keep at it to level up."
+     Comment "Next tab line for a done activity."
+    }
+    CustomStringTableItem "{414E495D4669B3BB}" {
+     Id "LF-Activity_FactsStep"
+     Target_en_us "Step %1 of %2: %3"
+     Comment "Next tab line for a running activity. %1 step number, %2 step count, %3 the step's title."
+    }
+    CustomStringTableItem "{C70A4369B3A513B9}" {
+     Id "LF-Activity_FactsSteps"
+     Target_en_us "%1 short steps, each with a waypoint."
+     Comment "Next tab line for an activity not started. %1 is the number of steps."
+    }
+    CustomStringTableItem "{6E9D97E2C0EE30C6}" {
+     Id "LF-Activity_Guide"
+     Target_en_us "Guide me"
+     Comment "Next tab button on a running activity: put the waypoint back on its current step."
+    }
+    CustomStringTableItem "{917EF52F3C24A83B}" {
+     Id "LF-Activity_Guided"
+     Target_en_us "The waypoint is back on your current step."
+     Comment "Next tab line after Guide me."
+    }
+    CustomStringTableItem "{366A7B92337FE227}" {
+     Id "LF-Activity_Kilometres"
+     Target_en_us "%1 km"
+     Comment "Next tab distance. %1 is kilometres with one decimal."
+    }
+    CustomStringTableItem "{3C9143AD27977EBB}" {
+     Id "LF-Activity_Metres"
+     Target_en_us "%1 m"
+     Comment "Next tab distance under a kilometre. %1 is metres."
+    }
+    CustomStringTableItem "{3471AB6ECF42E732}" {
+     Id "LF-Activity_None"
+     Target_en_us "Nothing new to start right now. Check back after your next level."
+     Comment "Next tab line when no activity is open to the player."
+    }
+    CustomStringTableItem "{D0DAF9C307AB6A0D}" {
+     Id "LF-Activity_PayDistance"
+     Target_en_us "%1 · %2"
+     Comment "Next tab row status. %1 is the pay an hour, %2 the distance."
+    }
+    CustomStringTableItem "{16B4C404FE5B8ED1}" {
+     Id "LF-Activity_PayHour"
+     Target_en_us "%1/h"
+     Comment "Next tab row status. %1 is money, e.g. $470."
+    }
+    CustomStringTableItem "{4835914B88D22934}" {
+     Id "LF-Activity_PayUnknown"
+     Target_en_us "pay varies"
+     Comment "Next tab row status when the pay an hour is not known."
+    }
+    CustomStringTableItem "{BC67C95738DDED4A}" {
+     Id "LF-Activity_Refused"
+     Target_en_us "That cannot start right now."
+     Comment "Next tab line when the server refused Start."
+    }
+    CustomStringTableItem "{AF249A8804DAF7AF}" {
+     Id "LF-Activity_RowStarted"
+     Target_en_us "%1 · on"
+     Comment "Next tab row status of a running activity. %1 is pay and distance."
+    }
+    CustomStringTableItem "{5B14E9465D155E95}" {
+     Id "LF-Activity_Start"
+     Target_en_us "Start"
+     Comment "Next tab button: begin the picked activity's guided first steps."
+    }
+    CustomStringTableItem "{9A24A1CE4D148E68}" {
+     Id "LF-Activity_Started"
+     Target_en_us "Started. Follow the waypoint on your screen and map."
+     Comment "Next tab line after Start was accepted."
+    }
+    CustomStringTableItem "{B94F998107F25B04}" {
+     Id "LF-Activity_StateDone"
+     Target_en_us "Done"
+     Comment "Next tab: the activity's guided steps are all done."
+    }
+    CustomStringTableItem "{58A349D528905815}" {
+     Id "LF-Activity_Summary"
+     Target_en_us "Ways to earn a living. Pick one and press Start: each step puts a waypoint on your map."
+     Comment "Next tab line above the activity list."
+    }
+    CustomStringTableItem "{51D3548DA687534E}" {
+     Id "LF-Activity_Tab"
+     Target_en_us "Next"
+     Comment "Player menu tab label: what to do next (the activities the player can start)."
+    }
+    CustomStringTableItem "{E073897869DE9A6D}" {
+     Id "LF-Activity_Title"
+     Target_en_us "PERSONAL FILE · WHAT TO DO NEXT"
+     Comment "Player menu title on the next tab."
+    }
+    CustomStringTableItem "{E4BA7BB0A0BF3887}" {
+     Id "LF-Activity_Waiting"
+     Target_en_us "Looking up what you can do..."
+     Comment "Next tab line while the server's answer is on its way."
     }
     CustomStringTableItem "{5E1B7A39C2D40F68}" {
      Id "LF-Arrival_ClerkMark"
@@ -3462,22 +3562,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{FBFB66BA23F58688}" {
      Id "LF-Credits_106"
-     Target_en_us "Store radio and pub music"
+     Target_en_us "Jailbreak siren"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{53B06789666BA9A0}" {
      Id "LF-Credits_107"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Store radio and pub music"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{191CB88166129132}" {
      Id "LF-Credits_108"
-     Target_en_us "Radio track \"Estrada ballad\", a slow 92 bpm estrada ballad"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8D038048737972B}" {
      Id "LF-Credits_109"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Radio track \"Estrada ballad\", a slow 92 bpm estrada ballad"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{857E5E05902D8F44}" {
@@ -3487,52 +3587,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C0DF6FBEA91CB184}" {
      Id "LF-Credits_110"
-     Target_en_us "Radio track \"Estrada dance\", an upbeat estrada dance number"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E14413C1D94DD1F}" {
      Id "LF-Credits_111"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Radio track \"Estrada dance\", an upbeat estrada dance number"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{96FE8BDEC46005B9}" {
      Id "LF-Credits_112"
-     Target_en_us "Radio track \"Accordion waltz\", a 3/4 accordion waltz"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{863CCDCE20D8134D}" {
      Id "LF-Credits_113"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Radio track \"Accordion waltz\", a 3/4 accordion waltz"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{90202C71BA2045BB}" {
      Id "LF-Credits_114"
-     Target_en_us "Radio track \"Accordion kolo\", a 2/4 Balkan kolo"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BD650073C9503BC9}" {
      Id "LF-Credits_115"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Radio track \"Accordion kolo\", a 2/4 Balkan kolo"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BF312B42B05FCAC5}" {
      Id "LF-Credits_116"
-     Target_en_us "Radio track \"Orchestral morning\", a light orchestral morning piece"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD8474D21ADA71ED}" {
      Id "LF-Credits_117"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Radio track \"Orchestral morning\", a light orchestral morning piece"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A20FA264480F9153}" {
      Id "LF-Credits_118"
-     Target_en_us "Radio track \"Orchestral serenade\", a Mediterranean serenade"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8D2FBE7CB9BA1A19}" {
      Id "LF-Credits_119"
-     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
+     Target_en_us "Radio track \"Orchestral serenade\", a Mediterranean serenade"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0A5B0A916F1F634A}" {
@@ -3542,52 +3642,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C06863243F369B82}" {
      Id "LF-Credits_120"
-     Target_en_us "Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle"
+     Target_en_us "Music generated with ElevenLabs (ElevenLabs Music, music_v1, instrumental)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{034AB24F20B9C523}" {
      Id "LF-Credits_121"
-     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
+     Target_en_us "Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6FE700B6BDC757ED}" {
      Id "LF-Credits_122"
-     Target_en_us "GENERATED VOICES"
+     Target_en_us "ElevenLabs text-to-sound-effects, generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2B6B443BB2E0DFB9}" {
      Id "LF-Credits_123"
-     Target_en_us "Town clerk's spoken lines: all thirteen, the old arrival lines and the newcomer's welcome"
+     Target_en_us "GENERATED VOICES"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0C744196304685EB}" {
      Id "LF-Credits_124"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Julien - Serious\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Town clerk's spoken lines: all thirteen, the old arrival lines and the newcomer's welcome"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9954645FD5FC4292}" {
      Id "LF-Credits_125"
-     Target_en_us "Cafe owner's seven lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Julien - Serious\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C35B3ADBB9D89721}" {
      Id "LF-Credits_126"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Mariva Viva Muse - Warm and Energetic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Cafe owner's seven lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9968FD984CF4FABF}" {
      Id "LF-Credits_127"
-     Target_en_us "Gendarme's three lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Mariva Viva Muse - Warm and Energetic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9604C54EE7C42A8F}" {
      Id "LF-Credits_128"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Cedric - Calm\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Gendarme's three lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2A31B23D96B99646}" {
      Id "LF-Credits_129"
-     Target_en_us "Dockworkers' four lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cedric - Calm\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4698D3AC325BC21D}" {
@@ -3597,52 +3697,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{EF83CE5E501404F6}" {
      Id "LF-Credits_130"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Delgado Stephane\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Dockworkers' four lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2E46C1E4691E2B33}" {
      Id "LF-Credits_131"
-     Target_en_us "Passers-by's four lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Delgado Stephane\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A636049B1615FBC6}" {
      Id "LF-Credits_132"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Sylvain - International english\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Passers-by's four lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{16186E0A5EB3A7AA}" {
      Id "LF-Credits_133"
-     Target_en_us "Relocated walkers' four lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Sylvain - International english\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FE189EB428AF142A}" {
      Id "LF-Credits_134"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Real Jeremy - Conversational\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Relocated walkers' four lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4D04FB45B8DBCE90}" {
      Id "LF-Credits_135"
-     Target_en_us "Anselme's nine lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Real Jeremy - Conversational\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{282E8AC7953417F3}" {
      Id "LF-Credits_136"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Bacbuc - Audiobooks\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Anselme's nine lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A096E2717EAFA002}" {
      Id "LF-Credits_137"
-     Target_en_us "Marius Caron's nine lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Bacbuc - Audiobooks\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8B2E6676A5FC762}" {
      Id "LF-Credits_138"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alex - Warm, Empathetic, Confident\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Marius Caron's nine lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4165A33B0CDDFEFA}" {
      Id "LF-Credits_139"
-     Target_en_us "Pierre Vasseur's"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alex - Warm, Empathetic, Confident\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CA6300164F63F92D}" {
@@ -3652,52 +3752,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{ADFB88278344FB5B}" {
      Id "LF-Credits_140"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Kevin Nitcheu\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Pierre Vasseur's"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{856667E0087DE2BB}" {
      Id "LF-Credits_141"
-     Target_en_us "Lucien Roux's"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Kevin Nitcheu\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8A3DCF36786BA71}" {
      Id "LF-Credits_142"
-     Target_en_us "ElevenLabs text-to-speech, voice \"JP - Social media\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Lucien Roux's"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{740D77BACEA78D9C}" {
      Id "LF-Credits_143"
-     Target_en_us "Shopkeepers' five lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"JP - Social media\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3CA96CAAEC9AB85D}" {
      Id "LF-Credits_144"
-     Target_en_us "ElevenLabs text-to-speech, voice \"James - French Podcast\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Shopkeepers' five lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{66D2E150BBB2BBDF}" {
      Id "LF-Credits_145"
-     Target_en_us "Store clerks' five role lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"James - French Podcast\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{92C2B4F451409735}" {
      Id "LF-Credits_146"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Jamie - French Accent & Charismatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Store clerks' five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E884C0110C5B632F}" {
      Id "LF-Credits_147"
-     Target_en_us "Bank teller's five role lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Jamie - French Accent & Charismatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{427FC7360D73D3A9}" {
      Id "LF-Credits_148"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Nicolas - French English Male\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Bank teller's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CBA36637CDF4AE7F}" {
      Id "LF-Credits_149"
-     Target_en_us "Desk officer's five role lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Nicolas - French English Male\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E61840F28B6ADBC}" {
@@ -3707,52 +3807,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D71B88C351B4EA69}" {
      Id "LF-Credits_150"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Benjamin - Deep and Calm\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Desk officer's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CDA2F516388DB3A1}" {
      Id "LF-Credits_151"
-     Target_en_us "Clinic doctor's five role lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Benjamin - Deep and Calm\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A4F5C98AFC7B32E9}" {
      Id "LF-Credits_152"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Antoine - Articulate, Calm and Bright\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Clinic doctor's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6D1FD16D6C772E09}" {
      Id "LF-Credits_153"
-     Target_en_us "Mechanics' five role lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Antoine - Articulate, Calm and Bright\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1519D7ABE5844759}" {
      Id "LF-Credits_154"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Loic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Mechanics' five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{312C6E9E98AFEA2C}" {
      Id "LF-Credits_155"
-     Target_en_us "The fence's five role lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Loic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B4E1994EB6122A72}" {
      Id "LF-Credits_156"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Lucas - Deep, Raspy and Natural\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "The fence's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E9299E95D9B8F174}" {
      Id "LF-Credits_157"
-     Target_en_us "Town civilians' five role lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Lucas - Deep, Raspy and Natural\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4444E26E9DCF449C}" {
      Id "LF-Credits_158"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Eliot - Relaxed & Casual\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Town civilians' five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AC305FCEA4FFD18B}" {
      Id "LF-Credits_159"
-     Target_en_us "Night-shift worker's spoken lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Eliot - Relaxed & Casual\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{59CAD5C15A66EDA7}" {
@@ -3762,52 +3862,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{0625D39270A113DC}" {
      Id "LF-Credits_160"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Night-shift worker's spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6A3DD60E0145C890}" {
      Id "LF-Credits_161"
-     Target_en_us "Old man Gaspard Lenoir's six lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09BDBEC3C3443456}" {
      Id "LF-Credits_162"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Old man Gaspard Lenoir's six lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0AB81D75DD0A7FCC}" {
      Id "LF-Credits_163"
-     Target_en_us "Go-between Hugo Valmy's five spoken lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C489B5F7558670CF}" {
      Id "LF-Credits_164"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Go-between Hugo Valmy's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2FA0C88C63E929C7}" {
      Id "LF-Credits_165"
-     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D24D05840A3D9820}" {
      Id "LF-Credits_166"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{473EC6052D855BB0}" {
      Id "LF-Credits_167"
-     Target_en_us "MUSIC"
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4ED77DE7DEE2573C}" {
      Id "LF-Credits_168"
-     Target_en_us "\"Carefree\""
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0774CCE82D802254}" {
      Id "LF-Credits_169"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD56C627EA2AD519}" {
@@ -3817,57 +3917,62 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6FDBFD431F29A691}" {
      Id "LF-Credits_170"
-     Target_en_us "\"Hitman\""
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{24B6F60FC64E50FE}" {
      Id "LF-Credits_171"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B3125F791403A21}" {
      Id "LF-Credits_172"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6DEF465ED9803D1A}" {
      Id "LF-Credits_173"
-     Target_en_us "Piper"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{331934ECDCED4E47}" {
      Id "LF-Credits_174"
-     Target_en_us "Michael Hansen / Rhasspy"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B9BF5DC2926087D1}" {
      Id "LF-Credits_175"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Michael Hansen / Rhasspy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CC2101DE9FC8F7B8}" {
      Id "LF-Credits_176"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C9C86A5A1ED40DCE}" {
      Id "LF-Credits_177"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8A4563FF1C5E590F}" {
      Id "LF-Credits_178"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "FONTS AND LOGO"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FC189AF5F7BE2CC}" {
      Id "LF-Credits_179"
-     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3A24A564BBC40F8F}" {
      Id "LF-Credits_18"
      Target_en_us "The build published on the Arma Reforger Workshop is licensed under the Arma Public License (APL), because the Workshop Terms of Use require an APL-family license for uploaded content."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BDA999D625B19F3D}" {
+     Id "LF-Credits_180"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9B225E9F684B34BE}" {
@@ -6838,6 +6943,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Unlock house"
      Comment "House door action: the owner or a key holder unlocks the house"
     }
+    CustomStringTableItem "{532DF3B04DBAC43C}" {
+     Id "LF-Hud_Bank"
+     Target_en_us "Bank %1"
+     Comment "HUD: the bank balance under the cash. %1 = amount, e.g. $18,900."
+    }
+    CustomStringTableItem "{D1557FBF0A771ACC}" {
+     Id "LF-Hud_BrandWord"
+     Target_en_us "LIFE FRAMEWORK"
+     Comment "HUD: the small brand mark top-left. Kept short, upper case."
+    }
+    CustomStringTableItem "{ADC58C75A825A803}" {
+     Id "LF-Hud_CommandDone"
+     Target_en_us "HUD: %1"
+     Comment "Chat reply after /hud. %1 = current parts, e.g. brand off, money on."
+    }
+    CustomStringTableItem "{9945A1F5FD9F4B3C}" {
+     Id "LF-Hud_CommandUsage"
+     Target_en_us "Usage: /hud <brand|money|wanted|needs|all> <on|off>. Now: %1"
+     Comment "Chat reply to a wrong /hud command. %1 = current parts, e.g. brand on, money on."
+    }
+    CustomStringTableItem "{4D79E915332DE722}" {
+     Id "LF-Hud_Drink"
+     Target_en_us "Drink"
+     Comment "HUD: label before the drink number at the bottom of the screen."
+    }
+    CustomStringTableItem "{E2C3D891635ADE21}" {
+     Id "LF-Hud_Food"
+     Target_en_us "Food"
+     Comment "HUD: label before the food number at the bottom of the screen."
+    }
+    CustomStringTableItem "{3F5C4F04B95FDD98}" {
+     Id "LF-Hud_WantedCaption"
+     Target_en_us "Wanted"
+     Comment "HUD: brief caption beside the wanted badges when the level rises."
+    }
     CustomStringTableItem "{57AECD3805F0082C}" {
      Id "LF-ID_CardAge"
      Target_en_us "Age: %1"
@@ -7945,6 +8085,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sworn police officer. Requires an approved appointment."
      Target_es_es "Oficial de policía. Requiere un nombramiento aprobado."
      Comment "Description of the police job (appointment = whitelist)"
+    }
+    CustomStringTableItem "{4AD1BED424C85624}" {
+     Id "LF-Job_DeskQuit"
+     Target_en_us "Quit the job: %1"
+     Comment "Workplace desk action when the player already holds the job. %1 is the job name."
+    }
+    CustomStringTableItem "{0253B3296037A056}" {
+     Id "LF-Job_DeskTake"
+     Target_en_us "Take the job: %1"
+     Comment "Workplace desk action. %1 is the job name (Miner, Lumberjack, Farmer)."
+    }
+    CustomStringTableItem "{CD5B6F2CE37D13FD}" {
+     Id "LF-Job_DeskTakeName"
+     Target_en_us "Take the job"
+     Comment "Workplace desk action name in the prefab (the script prints the job name)."
     }
     CustomStringTableItem "{2FFBFD36EA8DB8AE}" {
      Id "LF-Job_FruitHarvest"
@@ -9311,6 +9466,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Magazine_Taser_Name"
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
+    }
+    CustomStringTableItem "{69DF48978FFA6832}" {
+     Id "LF-Mannequin_Bought"
+     Target_en_us "Bought for %1."
+     Comment "Toast after buying a piece off a mannequin. %1 price paid."
+    }
+    CustomStringTableItem "{D88719E262E2BBFE}" {
+     Id "LF-Mannequin_BoughtDropped"
+     Target_en_us "Bought for %1. Your pockets are full, so it is at your feet."
+     Comment "Toast: bought a piece, no room in the inventory, it was dropped at the buyer. %1 price paid."
+    }
+    CustomStringTableItem "{E3C98F280138BB07}" {
+     Id "LF-Mannequin_BoughtOutfit"
+     Target_en_us "Bought the whole outfit for %1."
+     Comment "Toast after buying a whole mannequin outfit. %1 price paid."
+    }
+    CustomStringTableItem "{E9FC2C3F7CA0EF0D}" {
+     Id "LF-Mannequin_BoughtOutfitDropped"
+     Target_en_us "Bought the whole outfit for %1. What did not fit is at your feet."
+     Comment "Toast: bought the outfit, some pieces were dropped at the buyer. %1 price paid."
+    }
+    CustomStringTableItem "{023966184146C94F}" {
+     Id "LF-Mannequin_BoughtPart"
+     Target_en_us "Bought part of the outfit for %1; the rest was refused."
+     Comment "Toast: the outfit sale stopped part way (a gate refused one piece). %1 price paid."
+    }
+    CustomStringTableItem "{1525CDCF4C868B0B}" {
+     Id "LF-Mannequin_BuyOutfit"
+     Target_en_us "Buy whole outfit: %1"
+     Comment "Mannequin action: buy every worn piece. %1 total price."
+    }
+    CustomStringTableItem "{749A44898F468261}" {
+     Id "LF-Mannequin_BuyPiece"
+     Target_en_us "Buy %1: %2"
+     Comment "Mannequin action: buy one worn piece. %1 item name, %2 price."
+    }
+    CustomStringTableItem "{097B35901C0BFF32}" {
+     Id "LF-Mannequin_NoCash"
+     Target_en_us "Not enough cash"
+     Comment "Mannequin action greyed: the player carries less cash than the price."
+    }
+    CustomStringTableItem "{F224EE96F400AC18}" {
+     Id "LF-Mannequin_OutfitSoldOut"
+     Target_en_us "A piece is sold out"
+     Comment "Mannequin outfit action greyed: one worn piece is sold out."
+    }
+    CustomStringTableItem "{CFF4E53D12DE196D}" {
+     Id "LF-Mannequin_SoldOut"
+     Target_en_us "Sold out"
+     Comment "Mannequin action greyed: the store has none of this piece left."
+    }
+    CustomStringTableItem "{95C19D11A4510149}" {
+     Id "LF-Mannequin_Title"
+     Target_en_us "Mannequin"
+     Comment "Toast title for a purchase off a dressed mannequin."
+    }
+    CustomStringTableItem "{8E30B6C33C6FD605}" {
+     Id "LF-MapAlarm_InProgress"
+     Target_en_us "Robbery in progress (alarm raised %1 min ago)"
+     Comment "Map place card: this place is being robbed now. %1 = whole minutes since its alarm went off."
+    }
+    CustomStringTableItem "{DB6032E5F040F5BA}" {
+     Id "LF-MapAlarm_InProgressNow"
+     Target_en_us "Robbery in progress (alarm just raised)"
+     Comment "Map place card: this place is being robbed now; the alarm went off under a minute ago."
+    }
+    CustomStringTableItem "{C2A51B918A2C343E}" {
+     Id "LF-MapAlarm_Key"
+     Target_en_us "Alarm: a red ring is a robbery in progress, a grey badge was robbed recently"
+     Comment "Map key entry explaining the alarm ring on place badges."
+    }
+    CustomStringTableItem "{E45E29B5B3493411}" {
+     Id "LF-MapAlarm_Recent"
+     Target_en_us "Robbed recently"
+     Comment "Map place card: this place was robbed a few minutes ago and its alarm has stopped."
     }
     CustomStringTableItem "{D920AB80A60A3625}" {
      Id "LF-MapKnown_ArrivalMarked"
@@ -11447,6 +11677,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Bank account"
      Comment "Personal file row: bank balance."
     }
+    CustomStringTableItem "{11942C989F3F511F}" {
+     Id "LF-PlayerMenu_CapClose"
+     Target_en_us "Esc"
+     Comment "Personal file footer: the key-cap printed before Close (the keyboard key that closes the file)."
+    }
+    CustomStringTableItem "{25A301633A5E7DD6}" {
+     Id "LF-PlayerMenu_CapGuide"
+     Target_en_us "F3"
+     Comment "Personal file footer: the key-cap printed before Welcome guide (the guide key)."
+    }
     CustomStringTableItem "{4F95A449245E1929}" {
      Id "LF-PlayerMenu_Cash"
      Target_en_us "Cash in hand"
@@ -11456,6 +11696,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-PlayerMenu_Close"
      Target_en_us "Close"
      Comment "Personal file close button."
+    }
+    CustomStringTableItem "{A7295323E17AA4ED}" {
+     Id "LF-PlayerMenu_Days"
+     Target_en_us "Island day"
+     Comment "Personal file row: which day on the island the character is on (playtime counted in island days)."
+    }
+    CustomStringTableItem "{6F0562734D35720E}" {
+     Id "LF-PlayerMenu_ErrandsDone"
+     Target_en_us "Errands done"
+     Comment "Personal file row label over the errand list. Value: done / on file."
     }
     CustomStringTableItem "{C42AE3E161B80F72}" {
      Id "LF-PlayerMenu_Garage"
@@ -11487,6 +11737,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Welcome guide"
      Comment "Personal file footer button: opens the welcome guide."
     }
+    CustomStringTableItem "{471B72A1D2FADFF6}" {
+     Id "LF-PlayerMenu_HeadErrand"
+     Target_en_us "THE ERRAND"
+     Comment "Personal file card heading: the picked errand, read in full."
+    }
+    CustomStringTableItem "{F54BF1FEAB472DD9}" {
+     Id "LF-PlayerMenu_HeadErrands"
+     Target_en_us "ERRANDS"
+     Comment "Personal file card heading: the list of errands."
+    }
+    CustomStringTableItem "{CF4EAC3232E8D545}" {
+     Id "LF-PlayerMenu_HeadIdentity"
+     Target_en_us "PERSON"
+     Comment "Personal file card heading over the character preview, trade and standing."
+    }
+    CustomStringTableItem "{3CF77D0FEE9B529D}" {
+     Id "LF-PlayerMenu_HeadLicences"
+     Target_en_us "Licenses and permits"
+     Comment "Personal file row label: the licences and permits held."
+    }
     CustomStringTableItem "{41E30B4EE0E7DEE6}" {
      Id "LF-PlayerMenu_HeadMoney"
      Target_en_us "FINANCES"
@@ -11512,6 +11782,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 · %2"
      Comment "Personal file identity line. %1 = character name, %2 = role (Civilian, Police officer, on duty, ...)."
     }
+    CustomStringTableItem "{134ECD8AD294067B}" {
+     Id "LF-PlayerMenu_Job"
+     Target_en_us "Profession"
+     Comment "Personal file row: the current job of the character."
+    }
+    CustomStringTableItem "{5D2600F1785F6C69}" {
+     Id "LF-PlayerMenu_JobNone"
+     Target_en_us "No trade yet"
+     Comment "Personal file row value: the character has not taken a job."
+    }
     CustomStringTableItem "{82C56C8427A68BE7}" {
      Id "LF-PlayerMenu_Key"
      Target_en_us "Personal file"
@@ -11522,10 +11802,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 ........ %2"
      Comment "Personal file ledger line, printed matter. %1 = what (Cash in hand, Houses owned), %2 = the figure."
     }
+    CustomStringTableItem "{D2B263A13534625E}" {
+     Id "LF-PlayerMenu_LicenceItem"
+     Target_en_us "· %1"
+     Comment "Personal file: one licence under the licences row. %1 = licence name."
+    }
     CustomStringTableItem "{7CE8B3A156C169C1}" {
      Id "LF-PlayerMenu_Licences"
      Target_en_us "Licenses and permits: %1"
      Comment "Personal file line. %1 = the licence names, comma separated."
+    }
+    CustomStringTableItem "{D74A7FE19FEC6AD6}" {
+     Id "LF-PlayerMenu_LicencesHeld"
+     Target_en_us "%1 held"
+     Comment "Personal file row value: how many licences and permits the character holds. %1 = count."
     }
     CustomStringTableItem "{88EE192FCE8AC4CC}" {
      Id "LF-PlayerMenu_LicencesNone"
@@ -11589,12 +11879,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DC5E7B83D1F8D08A}" {
      Id "LF-PlayerMenu_RoleMedic"
-     Target_en_us "{medic}"
+     Target_en_us "{Medic}"
      Comment "Personal file role."
     }
     CustomStringTableItem "{78EEA7E96D6E202A}" {
      Id "LF-PlayerMenu_RolePolice"
-     Target_en_us "{police} officer"
+     Target_en_us "{Police} officer"
      Comment "Personal file role."
     }
     CustomStringTableItem "{E65F9D1445B42A9C}" {
@@ -11657,6 +11947,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Level %1"
      Comment "Personal file skill row status. %1 = level."
     }
+    CustomStringTableItem "{CDCA9B71CC6A413D}" {
+     Id "LF-PlayerMenu_SkillNext"
+     Target_en_us "Next level opens: %1"
+     Comment "Personal file skill record: what the next level of this job unlocks. %1 = names of the work it opens, comma separated."
+    }
     CustomStringTableItem "{F52EBB28BA797478}" {
      Id "LF-PlayerMenu_SkillTop"
      Target_en_us "Level %1 · %2 XP, the top of the ladder"
@@ -11694,7 +11989,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B18415A4FB204825}" {
      Id "LF-PlayerMenu_Skill_MEDIC"
-     Target_en_us "{medic}"
+     Target_en_us "{Medic}"
      Comment "Skill name of the MEDIC job track."
     }
     CustomStringTableItem "{AA52CF5828EE256B}" {
@@ -11704,7 +11999,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{17460BB5F62B70AB}" {
      Id "LF-PlayerMenu_Skill_POLICE"
-     Target_en_us "{police}"
+     Target_en_us "{Police}"
      Comment "Skill name of the POLICE job track."
     }
     CustomStringTableItem "{D9EFF6F38B9466F2}" {
@@ -11722,10 +12017,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "LATER"
      Comment "Personal file errand badge."
     }
+    CustomStringTableItem "{2C76F51CE39A8441}" {
+     Id "LF-PlayerMenu_Subtitle"
+     Target_en_us "Day %1 on the island · %2 played"
+     Comment "Personal file header, right of the name. %1 = island day number, %2 = time played (3 h 20 min)."
+    }
     CustomStringTableItem "{72DBFE782ACC8113}" {
      Id "LF-PlayerMenu_Summary"
      Target_en_us "Errands on file: %1 of %2 done"
      Comment "Personal file Progress tab summary. %1 = done, %2 = listed."
+    }
+    CustomStringTableItem "{564984191E6AC0B6}" {
+     Id "LF-PlayerMenu_TabNext"
+     Target_en_us "What to do next"
+     Comment "Personal file tab: suggested next steps. Shown only when there is something to suggest."
     }
     CustomStringTableItem "{8D2E6B1F4A7C9035}" {
      Id "LF-PlayerMenu_TabOpen"
@@ -12073,6 +12378,131 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Officer's pants"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
     }
+    CustomStringTableItem "{84084E0D0740DE17}" {
+     Id "LF-Postal_AllDone"
+     Target_en_us "Every sack here is already moved."
+     Comment "Toast of the postal van run: nothing left to move here."
+    }
+    CustomStringTableItem "{6B1DF13F6E2D277F}" {
+     Id "LF-Postal_Already"
+     Target_en_us "You already have a postal run. Finish it or give it up first."
+     Comment "Toast of the postal van run: one van per player."
+    }
+    CustomStringTableItem "{F06A8F159B8AD102}" {
+     Id "LF-Postal_Cooldown"
+     Target_en_us "The office has no van ready yet. Try again in a minute."
+     Comment "Toast of the postal van run: a run ended a moment ago."
+    }
+    CustomStringTableItem "{F5F34AAAE6DA71E3}" {
+     Id "LF-Postal_GiveUp"
+     Target_en_us "Give up the postal run"
+     Comment "Action at a post office stand: give the postal van run up, no pay."
+    }
+    CustomStringTableItem "{523DDFCCCF73873D}" {
+     Id "LF-Postal_GivenUp"
+     Target_en_us "Run given up. The van goes back to the office and nothing is paid."
+     Comment "Toast of the postal van run: the player gave the run up."
+    }
+    CustomStringTableItem "{4B1E14F4EE7DFF88}" {
+     Id "LF-Postal_HandIn"
+     Target_en_us "Hand in the postal run"
+     Comment "Action at the home post office: finish the postal van run and get paid."
+    }
+    CustomStringTableItem "{55F3AA4CDF15942D}" {
+     Id "LF-Postal_Loaded"
+     Target_en_us "Sack loaded (%1). When all are in, drive to the post office marked on your map."
+     Comment "Toast of the postal van run: one sack loaded. %1 = sacks loaded/needed."
+    }
+    CustomStringTableItem "{018A555EA19D0BE2}" {
+     Id "LF-Postal_Lost_abandoned"
+     Target_en_us "You left the post van too long. The run is off and nothing is paid."
+     Comment "Toast of the postal van run: the run ended because the driver abandoned the van."
+    }
+    CustomStringTableItem "{0573B052DDDC99B2}" {
+     Id "LF-Postal_Lost_late"
+     Target_en_us "The postal run took too long. The van went back and nothing is paid."
+     Comment "Toast of the postal van run: the run ended past its time limit."
+    }
+    CustomStringTableItem "{D3E4B1F64D940F43}" {
+     Id "LF-Postal_Lost_van"
+     Target_en_us "The post van was wrecked or lost. The run is off and nothing is paid."
+     Comment "Toast of the postal van run: the run ended because the van was destroyed."
+    }
+    CustomStringTableItem "{61FA7D09A2DDB08F}" {
+     Id "LF-Postal_NoLicence"
+     Target_en_us "You need a driving licence to drive the post van."
+     Comment "Toast of the postal van run: refused, no driving licence."
+    }
+    CustomStringTableItem "{77EAF4A73900DC15}" {
+     Id "LF-Postal_NoOffice"
+     Target_en_us "There is no other post office far enough away to send mail to."
+     Comment "Toast of the postal van run: the map has no destination office."
+    }
+    CustomStringTableItem "{1913FC9C39B45520}" {
+     Id "LF-Postal_NoRun"
+     Target_en_us "You have no postal run open."
+     Comment "Toast of the postal van run: a step with no run."
+    }
+    CustomStringTableItem "{BE0D61A0250B0B0D}" {
+     Id "LF-Postal_NoSpot"
+     Target_en_us "There is no clear space to bring the van round. Try again shortly."
+     Comment "Toast of the postal van run: no clear spot for the van."
+    }
+    CustomStringTableItem "{82D1E71BB544C4CC}" {
+     Id "LF-Postal_NotLoaded"
+     Target_en_us "Some mail sacks are still to move."
+     Comment "Toast of the postal van run: a sack is still to load or unload."
+    }
+    CustomStringTableItem "{238A53B626C53408}" {
+     Id "LF-Postal_Paid"
+     Target_en_us "Postal run done. You were paid {currency:sym}%1."
+     Comment "Toast of the postal van run: the run paid. %1 = the cash."
+    }
+    CustomStringTableItem "{837C9153DC3D1FAA}" {
+     Id "LF-Postal_Sack"
+     Target_en_us "Load or unload a mail sack"
+     Comment "Action at a post office stand: move one mail sack into or out of the post van."
+    }
+    CustomStringTableItem "{96B1622BBCAD89C3}" {
+     Id "LF-Postal_Start"
+     Target_en_us "Take the postal van run"
+     Comment "Action at a post office stand: start the postal van run."
+    }
+    CustomStringTableItem "{3C66967567AE5B29}" {
+     Id "LF-Postal_StartDesc"
+     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back."
+     Comment "Description of the action that starts the postal van run."
+    }
+    CustomStringTableItem "{5B2665B387B8B998}" {
+     Id "LF-Postal_Started"
+     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here."
+     Comment "Toast of the postal van run: the run began."
+    }
+    CustomStringTableItem "{108D5BC1F68C84DF}" {
+     Id "LF-Postal_Title"
+     Target_en_us "Postal run"
+     Comment "Title of the postal van run's toasts."
+    }
+    CustomStringTableItem "{1A0210D5BCC4C762}" {
+     Id "LF-Postal_TooFast"
+     Target_en_us "That was too fast to be honest work. Nothing is paid yet."
+     Comment "Toast of the postal van run: handed in faster than the run's least time."
+    }
+    CustomStringTableItem "{EA1D8BDBDABE7D01}" {
+     Id "LF-Postal_Unloaded"
+     Target_en_us "Sack unloaded (%1). When all are out, drive the van back and hand in the run."
+     Comment "Toast of the postal van run: one sack unloaded. %1 = sacks unloaded/needed."
+    }
+    CustomStringTableItem "{D73DA4B641DC454E}" {
+     Id "LF-Postal_VanFar"
+     Target_en_us "Bring the van closer to the office first."
+     Comment "Toast of the postal van run: the van is not at the office."
+    }
+    CustomStringTableItem "{3243A56EDB316D6E}" {
+     Id "LF-Postal_WrongOffice"
+     Target_en_us "This is not where this run's mail goes."
+     Comment "Toast of the postal van run: wrong office for this step."
+    }
     CustomStringTableItem "{3A7C91E05B2D4F68}" {
      Id "LF-Process_Busy"
      Target_en_us "Still running. Wait for it to finish."
@@ -12213,7 +12643,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "This course is not open to your service."
      Comment "Qualifications: the character is of the wrong faction."
     }
-   CustomStringTableItem "{468EF5CBF215416A}" {
+    CustomStringTableItem "{468EF5CBF215416A}" {
     Id "LF-Quest_Accept"
     Target_en_us "Accept"
     Target_de_de "Annehmen"
@@ -12224,7 +12654,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Aceitar"
     Comment "Quest accept button label"
    }
-   CustomStringTableItem "{C12D7EFE7EE35379}" {
+    CustomStringTableItem "{C12D7EFE7EE35379}" {
     Id "LF-Quest_Accepted"
     Target_en_us "Quest accepted"
     Target_de_de "Auftrag angenommen"
@@ -12235,7 +12665,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Missão aceita"
     Comment "Quest accepted notification"
    }
-   CustomStringTableItem "{E2E355A0237019E3}" {
+    CustomStringTableItem "{E2E355A0237019E3}" {
     Id "LF-Quest_Action"
     Target_en_us "Talk to Quest Giver"
     Target_de_de "Mit Questgeber sprechen"
@@ -12321,7 +12751,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You are settled in. The town board on the square shows the rest: shops, the car lot, the police station, the organization office."
      Comment "The town clerk after the arrival chain, when there is nothing left to hand out."
     }
-   CustomStringTableItem "{DA61010D2314BF43}" {
+    CustomStringTableItem "{DA61010D2314BF43}" {
     Id "LF-Quest_Expired"
     Target_en_us "Quest expired"
     Target_de_de "Auftrag abgelaufen"
@@ -12353,7 +12783,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Test quest board"
      Comment "Quest menu title for the test quest giver in the test annex."
     }
-   CustomStringTableItem "{6BA7F1501B064DDB}" {
+    CustomStringTableItem "{6BA7F1501B064DDB}" {
     Id "LF-Quest_InProgress"
     Target_en_us "In progress"
     Target_de_de "In Arbeit"
@@ -12364,7 +12794,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Em andamento"
     Comment "Active quest button placeholder"
    }
-   CustomStringTableItem "{2E57F8F9E638EE91}" {
+    CustomStringTableItem "{2E57F8F9E638EE91}" {
     Id "LF-Quest_IntroArea_Desc"
     Target_en_us "Visit the marked area near the start point."
     Target_de_de "Besuche das markierte Gebiet nahe dem Startpunkt."
@@ -12375,7 +12805,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Visite a área marcada perto do ponto de partida."
     Comment "Area quest description"
    }
-   CustomStringTableItem "{C77DB039F02C2043}" {
+    CustomStringTableItem "{C77DB039F02C2043}" {
     Id "LF-Quest_IntroArea_Title"
     Target_en_us "Know the Area"
     Target_de_de "Die Gegend kennenlernen"
@@ -12386,7 +12816,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Conheça a área"
     Comment "Area quest title"
    }
-   CustomStringTableItem "{EE99865B91651AE5}" {
+    CustomStringTableItem "{EE99865B91651AE5}" {
     Id "LF-Quest_IntroCollect_Desc"
     Target_en_us "Bring a water bottle to the quest giver."
     Target_de_de "Bring eine Wasserflasche zum Questgeber."
@@ -12397,7 +12827,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Leve uma garrafa de água ao doador de missões."
     Comment "Collect quest description"
    }
-   CustomStringTableItem "{C9634CE0587CFA70}" {
+    CustomStringTableItem "{C9634CE0587CFA70}" {
     Id "LF-Quest_IntroCollect_Title"
     Target_en_us "Drinks on Me"
     Target_de_de "Getränke gefällig"
@@ -12408,7 +12838,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Uma rodada de bebidas"
     Comment "Collect quest title"
    }
-   CustomStringTableItem "{A38C998BD1D37CDD}" {
+    CustomStringTableItem "{A38C998BD1D37CDD}" {
     Id "LF-Quest_IntroGather_Desc"
     Target_en_us "Gather 3 items in the world."
     Target_de_de "Sammle 3 Gegenstände in der Welt."
@@ -12419,7 +12849,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Colete 3 itens no mundo."
     Comment "Gather quest description"
    }
-   CustomStringTableItem "{CEE0F1CF5CC3AD51}" {
+    CustomStringTableItem "{CEE0F1CF5CC3AD51}" {
     Id "LF-Quest_IntroGather_Title"
     Target_en_us "Gatherer's Start"
     Target_de_de "Sammler-Einstieg"
@@ -12430,7 +12860,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Início do coletor"
     Comment "Gather quest title"
    }
-   CustomStringTableItem "{64A90BC62007EB6E}" {
+    CustomStringTableItem "{64A90BC62007EB6E}" {
     Id "LF-Quest_IntroKill_Desc"
     Target_en_us "Eliminate 2 enemy players."
     Target_de_de "Schalte 2 feindliche Spieler aus."
@@ -12441,7 +12871,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Elimine 2 jogadores inimigos."
     Comment "Kill quest description"
    }
-   CustomStringTableItem "{ECACEA89B00C7695}" {
+    CustomStringTableItem "{ECACEA89B00C7695}" {
     Id "LF-Quest_IntroKill_Title"
     Target_en_us "Show of Force"
     Target_de_de "Zeichen der Stärke"
@@ -12452,7 +12882,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Demonstração de força"
     Comment "Kill quest title"
    }
-   CustomStringTableItem "{D40D1DC625C5FAA9}" {
+    CustomStringTableItem "{D40D1DC625C5FAA9}" {
     Id "LF-Quest_IntroTalk_Desc"
     Target_en_us "Talk to the quest giver to learn how quests work."
     Target_de_de "Sprich mit dem Questgeber, um zu lernen, wie Aufträge funktionieren."
@@ -12463,7 +12893,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Fale com o doador de missões para aprender como funcionam."
     Comment "Onboarding quest description"
    }
-   CustomStringTableItem "{8E5F1CF2509E3CC0}" {
+    CustomStringTableItem "{8E5F1CF2509E3CC0}" {
     Id "LF-Quest_IntroTalk_Title"
     Target_en_us "First Steps"
     Target_de_de "Erste Schritte"
@@ -12485,7 +12915,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_pt_br "Entregue 2 garrafas de água em 2 minutos."
      Comment "Timed quest description"
     }
-   CustomStringTableItem "{C39AC0E1DD9064FD}" {
+    CustomStringTableItem "{C39AC0E1DD9064FD}" {
     Id "LF-Quest_IntroTimed_Title"
     Target_en_us "Quick Delivery"
     Target_de_de "Schnelle Lieferung"
@@ -12496,7 +12926,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Entrega rápida"
     Comment "Timed quest title"
    }
-   CustomStringTableItem "{9A063765A5B8123E}" {
+    CustomStringTableItem "{9A063765A5B8123E}" {
     Id "LF-Quest_MissingItems"
     Target_en_us "You no longer hold the required items"
     Target_de_de "Du hast die benötigten Gegenstände nicht mehr"
@@ -12507,7 +12937,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Você não tem mais os itens necessários"
     Comment "Turn-in refused after collect recount"
    }
-   CustomStringTableItem "{F6AB60C375531892}" {
+    CustomStringTableItem "{F6AB60C375531892}" {
     Id "LF-Quest_NotComplete"
     Target_en_us "Quest not complete yet"
     Target_de_de "Auftrag noch nicht abgeschlossen"
@@ -12523,7 +12953,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Nothing for the desk right now."
      Comment "The duty desk when there is nothing to hand in or report (#3768)."
     }
-   CustomStringTableItem "{C62FE3743E00B28C}" {
+    CustomStringTableItem "{C62FE3743E00B28C}" {
     Id "LF-Quest_Rejected"
     Target_en_us "Quest not available"
     Target_de_de "Auftrag nicht verfügbar"
@@ -12534,7 +12964,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Missão não disponível"
     Comment "Quest accept rejected notification"
    }
-   CustomStringTableItem "{58FE2B1ECE005A69}" {
+    CustomStringTableItem "{58FE2B1ECE005A69}" {
     Id "LF-Quest_Status_Available"
     Target_en_us "Available"
     Target_de_de "Verfügbar"
@@ -12545,7 +12975,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Disponível"
     Comment "Quest status: available"
    }
-   CustomStringTableItem "{C07FEC9957C93531}" {
+    CustomStringTableItem "{C07FEC9957C93531}" {
     Id "LF-Quest_Status_Complete"
     Target_en_us "Complete"
     Target_de_de "Abgeschlossen"
@@ -12556,7 +12986,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Concluída"
     Comment "Quest status: complete, ready to turn in"
    }
-   CustomStringTableItem "{943A6AA99E7319EE}" {
+    CustomStringTableItem "{943A6AA99E7319EE}" {
     Id "LF-Quest_Status_Failed"
     Target_en_us "Failed"
     Target_de_de "Fehlgeschlagen"
@@ -12567,7 +12997,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Falhada"
     Comment "Quest status: timed out"
    }
-   CustomStringTableItem "{CCB84CC4FAA1DA07}" {
+    CustomStringTableItem "{CCB84CC4FAA1DA07}" {
     Id "LF-Quest_Status_TurnedIn"
     Target_en_us "Turned in"
     Target_de_de "Abgegeben"
@@ -12578,7 +13008,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Entregue"
     Comment "Quest status: reward claimed"
    }
-   CustomStringTableItem "{8433759EB8ED5E85}" {
+    CustomStringTableItem "{8433759EB8ED5E85}" {
     Id "LF-Quest_Title"
     Target_en_us "Quests"
     Target_de_de "Aufträge"
@@ -12589,7 +13019,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Missões"
     Comment "Quest menu title"
    }
-   CustomStringTableItem "{4D6C52F92E7C8237}" {
+    CustomStringTableItem "{4D6C52F92E7C8237}" {
     Id "LF-Quest_TurnIn"
     Target_en_us "Turn In"
     Target_de_de "Abgeben"
@@ -12600,7 +13030,7 @@ CustomStringTableItem "{44869271883D0402}" {
     Target_pt_br "Entregar"
     Comment "Quest turn-in button label"
    }
-   CustomStringTableItem "{D70E71F61CD5B47F}" {
+    CustomStringTableItem "{D70E71F61CD5B47F}" {
     Id "LF-Quest_TurnedIn"
     Target_en_us "Quest completed - reward granted"
     Target_de_de "Auftrag abgeschlossen - Belohnung erhalten"
@@ -13231,27 +13661,27 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Too far away to revive them."
      Comment "Revive refusal: out of range."
     }
-  CustomStringTableItem "{BABA49E2440A6362}" {
+    CustomStringTableItem "{BABA49E2440A6362}" {
    Id "LF-Roadblock_Deploy"
    Target_en_us "Deploy roadblock"
    Comment "Action on the folded roadblock kit: lays the barrier and cones across the road in front of the officer (#1941)."
   }
-  CustomStringTableItem "{3655F9540576258C}" {
+    CustomStringTableItem "{3655F9540576258C}" {
    Id "LF-Roadblock_Description"
    Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty {police} only."
    Comment "Inventory description of the police roadblock kit."
   }
-  CustomStringTableItem "{986CA09EB5046245}" {
+    CustomStringTableItem "{986CA09EB5046245}" {
    Id "LF-Roadblock_Name"
    Target_en_us "Roadblock kit"
    Comment "Inventory name of the police roadblock kit (#1941)."
   }
-  CustomStringTableItem "{333125FDBDB896DE}" {
+    CustomStringTableItem "{333125FDBDB896DE}" {
    Id "LF-Roadblock_PickUp"
    Target_en_us "Pick up roadblock"
    Comment "Action on a piece of a deployed roadblock: folds the whole set back into the officer inventory."
   }
-  CustomStringTableItem "{440F14D84078D338}" {
+    CustomStringTableItem "{440F14D84078D338}" {
    Id "LF-Roadblock_PoliceOnly"
    Target_en_us "Only an on-duty officer can handle the roadblock kit."
    Comment "Toast and greyed-out reason when someone who is not on-duty police tries the roadblock kit."
@@ -13935,7 +14365,7 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Put it back"
      Comment "Button that closes the sign card. The player is done reading the notice."
     }
-  CustomStringTableItem "{FCEA5FDC41E5650D}" {
+    CustomStringTableItem "{FCEA5FDC41E5650D}" {
    Id "LF-Sign_Generic_Title"
    Target_en_us "Notice"
    Comment "Title of a sign card whose own text is not available (its pack is not loaded). Shown in the prompt as Read: Notice."
@@ -14004,6 +14434,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_TaxiStand_Title"
      Target_en_us "Taxi stand"
      Comment "Title printed on the taxi stand's pole plate (LF_TaxiStand prefab, sign id taxi_stand); the Read card shows it."
+    }
+    CustomStringTableItem "{C893332322755556}" {
+     Id "LF-Sign_TaxiStand_What"
+     Target_en_us "The taxi stand: sign on for taxi work and pick up fares who need a ride."
+     Comment "Sign catalog 'what' text of the taxi stand's Read card (sign id taxi_stand)."
     }
     CustomStringTableItem "{84F64B2018E1B414}" {
      Id "LF-Sign_What"

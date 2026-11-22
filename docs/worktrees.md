@@ -930,7 +930,28 @@ it, picks a lane and a budget, and prints one line per outcome.
   a RAM-stuck one drains its machine (no new job of either lane kind starts there, since tests eat
   the same RAM) until it fits, as long as draining can help it (its need fits in free RAM plus what
   the pool's running jobs there hold). A job that could not fit even on an empty machine never
-  blocks anyone.
+  blocks anyone. A **session** waiting on RAM holds its place after `sessionStarveMin` (10) minutes, so
+  a stream of tests cannot keep it out (sessions waited 35-65 min on 2026-11-22).
+- **No ticket waits forever (2026-11-22, `pool-unstick-selftest`).** An ask is capped at the machine's
+  RAM less the floor; a job whose own peak is over that is `neverFits`: it never holds the machine and
+  starts alone once no other lane job runs there. Only a game process in its first `GROWTH_WINDOW_S`
+  (300 s) counts toward "what the running jobs still grow into" (a Workbench always may); before,
+  every live process counted up to its p90 peak for its whole life and the RAM trim cut working sets
+  to tens of MB, so lf-testbox read 38 GB of growth with 19 GB free and tests waited on 23-42 GB asks
+  with every lane free. The trim runs at most once per 20 s for the whole PC (`<hub>/pool/last-trim`)
+  and never on a session under 3 min old. A ticket's ask is rewritten when it moves by 0.5 GB.
+  `pool status` prints `STUCK: <why>` under a ticket that cannot start as things stand and
+  `WAITING LONG` past `waitWarnMin` (10); `tools\cli lead` lists those tickets in its POOL block.
+- **Waits survive an agent's tool timeout.** A `test` rerun from the same worktree for the same purpose
+  within 15 min keeps the queue age of the request it replaces (when that one is gone), as `session up`
+  already did. A waiting run prints its position once a minute and, if its own wait budget runs out,
+  says the pool is busy, not broken: rerun the same command.
+- **Process load.** Concurrent `validate` runs share one fan-out (`<hub>/validate-runs`, `shareConcurrency`):
+  eight at once had started 96 checks with their git and PowerShell children, and Git Bash ran out of
+  processes at about 520. `tools\cli hidden --orphans [--hours N] [--close]` lists (stops) our node, bash,
+  sh, PowerShell and timeout helpers whose parent died over N hours ago (default 6; lane-lock holders and
+  daemons such as the main-guard worker excepted). The write-guard hook exits after 10 s when its caller
+  never closes stdin (one ran 68 h).
 - **Where the RAM goes, and orphans (2026-11-17, `tools/lib/ram.mjs`).** `tools\cli ram [--machine <name>]` prints,
   per pool machine, free RAM and commit, working set and private bytes by role (claude agents, MCP children per claude,
   tools/cli node, test and session servers, clients, Workbench, main guard, T3, git, shells, Defender, Search, NVIDIA,

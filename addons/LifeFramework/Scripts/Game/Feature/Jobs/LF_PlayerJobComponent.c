@@ -125,8 +125,10 @@ class LF_PlayerJobComponent : ScriptComponent
 	}
 	
 	//------------------------------------------------------------------------------------------------
-	//! Set player's job
-	bool SetJob(LF_EJobType jobType)
+	//! Set player's job.
+	//! param giveEquipment False for a sign-up whose tools are sold (the gathering-job desks: the pickaxe and the
+	//! axe are bought at the tills); true keeps the old free job kit for the other callers.
+	bool SetJob(LF_EJobType jobType, bool giveEquipment = true)
 	{
 		if (m_eCurrentJob == jobType)
 			return true;
@@ -266,7 +268,8 @@ class LF_PlayerJobComponent : ScriptComponent
 		SCR_HintManagerComponent.ShowCustomHint(message, title, 4.0);
 		
 		// Give job equipment
-		GiveJobEquipment();
+		if (giveEquipment)
+			GiveJobEquipment();
 
 		if (LF_CivilianJob.IsDeliveryJob(jobType))
 			PullCareer();
