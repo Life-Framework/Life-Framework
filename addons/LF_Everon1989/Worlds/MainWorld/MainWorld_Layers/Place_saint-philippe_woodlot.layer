@@ -74,6 +74,11 @@ GenericEntity Fit_saint_philippe_woodlot_pallet_2 : "{51B08BDA20AF8FF7}Prefabs/P
  angleY -11
 }
 GenericEntity Fit_saint_philippe_woodlot_truck : "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
  coords 4351.782 13.743 10608.816
  angleY -11
 }

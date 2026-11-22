@@ -2,7 +2,7 @@ GenericEntity {
  ID "A4D4181686D0A5FF"
  components {
   MeshObject "{A8B7F631BB2011BE}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   Object "{CA80291A34584BC9}Assets/Props/Commercial/ShopCounter/ShopCounter.xob"
   }
   RigidBody "{1DA8FA5B0120680D}" {
    Mass 10

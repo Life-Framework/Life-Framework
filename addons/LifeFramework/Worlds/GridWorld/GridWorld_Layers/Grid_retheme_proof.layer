@@ -82,7 +82,7 @@ GenericEntity Retheme_Till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_Fuel
 GenericEntity Retheme_Shop {
  components {
   MeshObject "{6C5B1A94D7E20F31}" {
-   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+   Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
   }
   RigidBody "{6C5B1A94D7E20F32}" {
    Mass 10

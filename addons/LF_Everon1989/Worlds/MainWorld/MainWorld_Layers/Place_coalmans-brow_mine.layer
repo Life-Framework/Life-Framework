@@ -94,11 +94,42 @@ GenericEntity Fit_coalmans_brow_mine_mine_sign : "{B7B489CA36A0E9F8}Prefabs/Prop
  coords 4343 33.797 10413
  angleY -90
 }
-GenericEntity Fit_coalmans_brow_mine_mine_buyer_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4342.5 32.891 10402.5
+GenericEntity Fit_coalmans_brow_mine_mine_buyer_table : "{7FFE600A194D73B1}Prefabs/Props/Furniture/TableOld_01/TableOld_01_Base.et" {
+ coords 4341.2 33.119 10402.5
  angleY -90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_buyer : "{CDE1C29873CECBC0}Prefabs/Trader/LF_IronBuyer_Everon1989.et" {
- coords 4342.5 33.931 10402.5
+ coords 4341.2 34.02 10402.5
+ angleY -90
+}
+LF_NpcBaseEntity Fit_coalmans_brow_mine_mine_buyer_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 4342.5 32.891 10402.5
+ angleY -90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_buyer_scale : "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et" {
+ coords 4341.2 32.994 10400.2
+ angleY 90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_buyer_crate_1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 4343 32.672 10400
+}
+GenericEntity Fit_coalmans_brow_mine_mine_buyer_box : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 4343 33.661 10400
+ angleY 20
+}
+GenericEntity Fit_coalmans_brow_mine_mine_buyer_crate_2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 4343 33.156 10405
+}
+SCR_DestructibleEntity Fit_coalmans_brow_mine_mine_buyer_board : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ components {
+  LF_SignComponent "{DF6A14A1AD2B41F0}" {
+   m_sSignId "coalmans-brow-buyer"
+   m_sStyle ""
+   m_sSize ""
+   m_vFaceAngles 0 -15 0
+   m_fFaceScale 2.6
+  }
+ }
+ coords 4340.1 33.227 10400.9
  angleY -90
 }

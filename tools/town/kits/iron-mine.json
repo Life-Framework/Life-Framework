@@ -30,7 +30,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The buried shaft end is the portal on the uphill side, two spoil heaps flank it, a cart, a pick pile and a lantern wait at its mouth; six iron ore rocks lie on the apron in front, 3 to 4 m apart so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk and the sign on the other, the iron buyer's counter between them, all on the side the track comes in from. Rows are rigid: shift, never stretch."
+    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The buried shaft end is the portal on the uphill side, two spoil heaps flank it, a cart, a pick pile and a lantern wait at its mouth; six iron ore rocks lie on the apron in front, 3 to 4 m apart so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk and the sign on the other, the iron buyer's yard between them (an old wooden table with the cash box on it, a platform scale beside it, the clerk standing behind it among ore crates, a chalk board in front), all on the side the track comes in from. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -313,37 +313,149 @@
       "floor": "f0"
     },
     {
-      "id": "mine-buyer-counter",
-      "name": "Mine_BuyerCounter",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "id": "mine-buyer-table",
+      "name": "Mine_BuyerTable",
+      "prefab": "{7FFE600A194D73B1}Prefabs/Props/Furniture/TableOld_01/TableOld_01_Base.et",
       "role": "counter",
-      "verb": "against wall",
+      "verb": "on floor",
       "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
       "offset": [
-        12.5,
+        11.2,
         0,
         -1.5
       ],
-      "yaw": -90,
-      "wall": "free",
-      "floor": "f0"
+      "yaw": -90
     },
     {
       "id": "mine-buyer",
       "name": "Mine_Buyer",
       "prefab": "{CDE1C29873CECBC0}Prefabs/Trader/LF_IronBuyer_Everon1989.et",
       "role": "till",
-      "verb": "on mine-buyer-counter",
+      "verb": "on mine-buyer-table",
       "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        11.2,
+        0,
+        -1.5
+      ],
+      "yaw": -90,
+      "lift": 0.901
+    },
+    {
+      "id": "mine-buyer-clerk",
+      "name": "Mine_BuyerClerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
       "offset": [
         12.5,
         0,
         -1.5
       ],
       "yaw": -90,
+      "class": "LF_NpcBaseEntity"
+    },
+    {
+      "id": "mine-buyer-scale",
+      "name": "Mine_BuyerScale",
+      "prefab": "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
       "wall": "free",
       "floor": "f0",
-      "lift": 1.04
+      "offset": [
+        11.2,
+        0,
+        -3.8
+      ],
+      "yaw": 90
+    },
+    {
+      "id": "mine-buyer-crate-1",
+      "name": "Mine_BuyerCrate1",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        13,
+        0,
+        -4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "mine-buyer-box",
+      "name": "Mine_BuyerBox",
+      "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
+      "role": "dressing",
+      "verb": "on mine-buyer-crate-1",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        13,
+        0,
+        -4
+      ],
+      "yaw": 20,
+      "lift": 0.989
+    },
+    {
+      "id": "mine-buyer-crate-2",
+      "name": "Mine_BuyerCrate2",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        13,
+        0,
+        1
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "mine-buyer-board",
+      "name": "Mine_BuyerBoard",
+      "prefab": "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et",
+      "role": "board",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        10.1,
+        0,
+        -3.1
+      ],
+      "yaw": -90,
+      "class": "SCR_DestructibleEntity",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"coalmans-brow-buyer\"",
+            "m_sStyle": "\"\"",
+            "m_sSize": "\"\"",
+            "m_vFaceAngles": "0 -15 0",
+            "m_fFaceScale": "2.6"
+          },
+          "blocks": []
+        }
+      ]
     }
   ]
 }
