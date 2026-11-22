@@ -11,7 +11,7 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
      Position PointInfo "{47352EF509239819}" {
       PivotID "Spine5"
      }
-     Radius 0.6
+     Radius 2.4
     }
    }
    additionalActions + {

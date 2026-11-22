@@ -74,7 +74,9 @@ class LF_Test_SignCoverage : LF_Test
 		// chalk_sample: the chalk style's sample board (docs/architecture/sign-system.md), placed in its GridWorld cell only.
 		// price_board: the trader price board (#3299, LF_PriceBoard), placed in its GridWorld cell until a town pass puts it on Saint-Philippe.
 		// house_for_sale: the face of the LF_HouseSaleSign prefab (#3207), placed one per house by a pack or the grid.
-		return id == "mining" || id == "plot_for_sale" || id == "house_for_sale" || id == "chalk_sample" || id == "price_board";
+		// taxi_stand: the plate on the LF_TaxiStand prefab, placed in its GridWorld cell (Grid_taxi_stand.layer) only.
+		// bus_timetable: the board on the LF_BusStop prefab, placed with each stop (GridWorld cell bus-stops, the pack island).
+		return id == "mining" || id == "plot_for_sale" || id == "house_for_sale" || id == "chalk_sample" || id == "price_board" || id == "bus_timetable" || id == "taxi_stand";
 	}
 
 	//------------------------------------------------------------------------------------------------

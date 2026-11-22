@@ -1597,7 +1597,70 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void GiveKey(IEntity buyer, IEntity key)
+	//! \return Whether this owner has any vehicle record: stored, on the street, towed or impounded.
+	static bool OwnsAny(string ownerUid)
+	{
+		if (ownerUid.IsEmpty())
+			return false;
+
+		foreach (string knownId : Order())
+		{
+			LF_VehicleRecord known = Records().Get(knownId);
+			if (known && known.m_sOwnerUid == ownerUid)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A starter car (LF_StarterVehicle): one lot offer becomes the owner's, stored in the garage, its
+	//! key in the holder's pocket. Nothing spawns in the world; the garage hands it out. Only for an
+	//! owner with no vehicle at all, so a second call, a respawn or a restart grants nothing.
+	//! \param[out] vehicleId The new vehicle's id, empty when nothing was granted.
+	//! \return True when the car was granted.
+	static bool GrantStoredCar(string ownerUid, IEntity holder, LF_VehicleOffer offer, string shopId, out string vehicleId)
+	{
+		vehicleId = string.Empty;
+		if (LF_Systems.Refuses("Vehicles", "starter car grant"))
+			return false;
+
+		if (ownerUid.IsEmpty() || !holder || !offer)
+		{
+			LF_Debug.Error("Vehicle", "starter car not granted: no owner, no body for the key or no lot offer");
+			return false;
+		}
+
+		if (OwnsAny(ownerUid))
+			return false;
+
+		string id = PersistenceIdUtils.Generate();
+		IEntity key = SpawnKey(id, holder.GetOrigin());
+		if (!key)
+		{
+			LF_Debug.Error("Vehicle", string.Format("starter car not granted to %1: the key did not spawn", ownerUid));
+			return false;
+		}
+
+		string plate = LF_LicensePlateRegistry.Issue(new LF_LicensePlateGeneratorGeneric(), id);
+		if (!Register(id, ownerUid, id, offer.GetPrefab(), offer.GetSpawnPrefab(), shopId, plate, offer.GetNameKey(), true))
+		{
+			SCR_EntityHelper.DeleteEntityAndChildren(key);
+			return false;
+		}
+
+		GiveKey(holder, key);
+		LF_VehicleSession session = new LF_VehicleSession();
+		session.m_Key = key.GetID();
+		Sessions().Set(id, session);
+		Records().Get(id).m_bStored = true;
+		vehicleId = id;
+		LF_Debug.Info("Vehicle", string.Format("starter car %1 plate=%2 for %3: stored in the garage", offer.GetNameKey(), plate, ownerUid));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void GiveKey(IEntity buyer, IEntity key)
 	{
 		if (!buyer || !key)
 			return;
@@ -1623,7 +1686,7 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static IEntity SpawnKey(string vehicleId, vector origin)
+	static IEntity SpawnKey(string vehicleId, vector origin)
 	{
 		IEntity key = LF_Utils.SpawnEntityPrefab(LF_VehicleCatalog.KEY, origin + Vector(1, 0.2, 0));
 		if (!key)

@@ -3,6 +3,15 @@ GenericEntity : "{7FCD4E7C25D886A8}Prefabs/Structures/Signs/Traffic/SignBusStop_
  components {
   LF_BusStopComponent "{9900D66B63362F47}" {
   }
+  LF_SignComponent "{442929BAB87ECF0D}" {
+   m_sSignId "bus_timetable"
+   m_sStyle "timetable"
+   m_sSize "quad4x3"
+   m_sRowSource "bus_timetable"
+   m_vFaceOffset 0 1.45 0.05
+   m_vFaceAngles -90 0 0
+   m_fFaceScale 0.5
+  }
   ActionsManagerComponent "{609F49B67AA34844}" {
    ActionContexts {
     UserActionContext "{0B5C4681E7CCDE86}" {
@@ -20,7 +29,114 @@ GenericEntity : "{7FCD4E7C25D886A8}Prefabs/Structures/Signs/Traffic/SignBusStop_
      }
      UIInfo UIInfo "{9A92F546324C9223}" {
       Name "#LF-BusStop_Action"
-      Description "#LF-BusStop_Title"
+     }
+     m_iSlot 0
+    }
+    LF_BusStopAction "{206FC08D92EF608E}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{20CB75F7BD7DAB6C}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 1
+    }
+    LF_BusStopAction "{6B1D1985F57D654D}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{D974AEF43938B3EC}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 2
+    }
+    LF_BusStopAction "{169B788F9FE8B647}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{8161315FB0ADFEEF}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 3
+    }
+    LF_BusStopAction "{C4E8FE1B914894C9}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{0403E81FDDEF98E9}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 4
+    }
+    LF_BusStopAction "{97C970D73A065828}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{B0A2506C54D28883}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 5
+    }
+    LF_BusStopAction "{EAEFB1C9E4B97F46}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{4CD762438FE4F385}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 6
+    }
+    LF_BusStopAction "{2B60B82B0C412B52}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{D0151CB8DDEFF5C2}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 7
+    }
+    LF_BusStopAction "{5D629D472E45B8A4}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{FF97ABB560EAB871}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 8
+    }
+    LF_BusStopAction "{427F23DA354793BB}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{A68C684FFAD8334E}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 9
+    }
+    LF_BusStopAction "{38836E9DF24EDD6F}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{430FAE61125260BC}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 10
+    }
+    LF_BusStopAction "{CF78F332950D7BA6}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{94512E63BB1A362E}" {
+      Name "#LF-BusStop_Action"
+     }
+     m_iSlot 11
+    }
+    LF_BusCancelAction "{819C2170EB09BDCD}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{4310001B432A0BF2}" {
+      Name "#LF-BusStop_CancelTitle"
      }
     }
    }

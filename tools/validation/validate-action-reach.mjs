@@ -9,12 +9,17 @@
 // (docs/action-anchors.md).
 
 import { checkContexts } from "../actions/action-anchor.mjs";
+import { checkCounterNpcs, checkCounterStaffPrefabs } from "../actions/counter-npc.mjs";
 
 const { warnings, errors, checked, skipped } = checkContexts();
+// A clerk behind a counter must be talkable from the customer side (docs/action-anchors.md "Counter NPCs").
+const counter = checkCounterNpcs();
+const staff = checkCounterStaffPrefabs();
+errors.push(...counter.errors, ...staff.errors);
 for (const w of warnings) console.log(`WARN ${w}`);
 for (const e of errors) console.log(`ERROR ${e}`);
 if (errors.length) {
   console.log(`validate-action-reach: FAILED (${errors.length} gross error(s), ${warnings.length} warning(s), ${checked} checked)`);
   process.exit(1);
 }
-console.log(`validate-action-reach: OK (${warnings.length} warning(s), ${checked} interactable(s) checked, ${skipped} without bounds)`);
+console.log(`validate-action-reach: OK (${warnings.length} warning(s), ${checked} interactable(s) checked, ${counter.checked} counter NPC(s) and ${staff.checked} staff prefab(s) checked, ${skipped} without bounds)`);

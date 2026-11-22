@@ -2433,22 +2433,42 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{950C69C056C83985}" {
      Id "LF-BusStop_Action"
      Target_en_us "Take the bus"
-     Comment "Bus stop sign action: open the timetable."
+     Comment "Bus stop action fallback name (a slot with no stop is hidden)."
+    }
+    CustomStringTableItem "{B29A8D0906A937C3}" {
+     Id "LF-BusStop_ActionTo"
+     Target_en_us "Bus to %1: {currency:sym}%2, %3 s"
+     Comment "Bus stop action, one per destination. %1 the stop name, %2 the fare in cash, %3 seconds of wait."
     }
     CustomStringTableItem "{FBFD6EFAC0C8BAE5}" {
      Id "LF-BusStop_Arrived"
      Target_en_us "You get off at %1."
      Comment "Bus toast on arrival. %1 the stop's name."
     }
-    CustomStringTableItem "{A79746CE33D32688}" {
-     Id "LF-BusStop_Asking"
-     Target_en_us "Buying your ticket..."
-     Comment "Bus timetable: waiting for the server's answer."
+    CustomStringTableItem "{8205388EAC928159}" {
+     Id "LF-BusStop_BoardFare"
+     Target_en_us "{currency:sym}%1"
+     Comment "Timetable board: the fare to one stop. %1 the fare in cash."
     }
-    CustomStringTableItem "{0DFD68CD0EAF9F03}" {
-     Id "LF-BusStop_Board"
-     Target_en_us "Buy ticket"
-     Comment "Bus timetable row button: pay the fare to that stop."
+    CustomStringTableItem "{7D1971DA5E0F73C4}" {
+     Id "LF-BusStop_BoardHere"
+     Target_en_us "You are here"
+     Comment "Timetable board: the mark on the reader's own stop."
+    }
+    CustomStringTableItem "{C60B8ECDA5501469}" {
+     Id "LF-BusStop_BoardNext"
+     Target_en_us "Pick your stop in the sign's action list, pay the fare in cash and wait at the stop."
+     Comment "Timetable sign card: what to do next."
+    }
+    CustomStringTableItem "{60F8C241BEAFD60D}" {
+     Id "LF-BusStop_BoardTitle"
+     Target_en_us "Bus timetable"
+     Comment "Printed heading of the timetable board on a bus stop pole. A pack names its line."
+    }
+    CustomStringTableItem "{37586E8F50271ECB}" {
+     Id "LF-BusStop_BoardWhat"
+     Target_en_us "Every stop on this line and the cash fare to it from here."
+     Comment "Timetable sign card: what the board shows."
     }
     CustomStringTableItem "{877447BCF40EC4B5}" {
      Id "LF-BusStop_Boarded"
@@ -2459,6 +2479,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BusStop_Busy"
      Target_en_us "You already have a ticket. Wait for the bus."
      Comment "Bus refusal: a trip is already waiting."
+    }
+    CustomStringTableItem "{D451B9D7F357DBB4}" {
+     Id "LF-BusStop_CancelAction"
+     Target_en_us "Cancel trip (refund {currency:sym}%1): bus in %2 s"
+     Comment "Bus stop action while a ticket waits. %1 the fare refunded, %2 seconds until the bus leaves."
+    }
+    CustomStringTableItem "{4414BA244BADCE0C}" {
+     Id "LF-BusStop_CancelAsked"
+     Target_en_us "Trip cancelled. Fare refunded."
+     Comment "Bus toast: the player cancelled the waiting ticket."
     }
     CustomStringTableItem "{157F9BBFC17C40C2}" {
      Id "LF-BusStop_CancelHurt"
@@ -2480,10 +2510,10 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The bus could not take you. Fare refunded."
      Comment "Bus toast: the wait was cancelled (downed, cuffed, in a vehicle or gone)."
     }
-    CustomStringTableItem "{939B9C701E2737AF}" {
-     Id "LF-BusStop_Close"
-     Target_en_us "Close"
-     Comment "Bus timetable close button."
+    CustomStringTableItem "{BB22261A6CC4006C}" {
+     Id "LF-BusStop_CancelTitle"
+     Target_en_us "Cancel trip"
+     Comment "Bus stop action name in the prefab (the script fills in the fare and the countdown)."
     }
     CustomStringTableItem "{4B1037495C5FD284}" {
      Id "LF-BusStop_Combat"
@@ -2510,11 +2540,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Get out of the vehicle first."
      Comment "Bus refusal: the player is in a vehicle."
     }
-    CustomStringTableItem "{65E44F0E76D7D99E}" {
-     Id "LF-BusStop_From"
-     Target_en_us "Timetable at %1"
-     Comment "Bus timetable: which stop this is. %1 the stop's name."
-    }
     CustomStringTableItem "{34BE773FFD417AE1}" {
      Id "LF-BusStop_GridNorth"
      Target_en_us "Test yard, north stop"
@@ -2525,11 +2550,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Test yard, south stop"
      Comment "Debug grid bus stop name."
     }
-    CustomStringTableItem "{2468ADE988941CE2}" {
-     Id "LF-BusStop_Intro"
-     Target_en_us "Pay the driver in cash, then wait here. Walk off, get hurt or start a fight and your fare is refunded."
-     Comment "Bus timetable: how a trip works."
-    }
     CustomStringTableItem "{917B6AE39DA8392B}" {
      Id "LF-BusStop_NoCash"
      Target_en_us "You do not have the fare in cash."
@@ -2539,11 +2559,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BusStop_NoCharacter"
      Target_en_us "You cannot travel right now."
      Comment "Bus refusal: no character or no body."
-    }
-    CustomStringTableItem "{1279B16F553A754A}" {
-     Id "LF-BusStop_NoRoutes"
-     Target_en_us "No other stops on this line."
-     Comment "Bus timetable: the map has no other stop."
     }
     CustomStringTableItem "{E831F4748B626430}" {
      Id "LF-BusStop_NoStop"
@@ -2560,11 +2575,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The driver will not stop with {police} on your tail."
      Comment "Bus refusal: wanted with an on-duty officer close."
     }
-    CustomStringTableItem "{74EA4E2EDAE4F80C}" {
-     Id "LF-BusStop_Row"
-     Target_en_us "{currency:sym}%1, %2 s"
-     Comment "Bus timetable row: the fare and the wait to one stop. %1 the fare in cash, %2 seconds."
-    }
     CustomStringTableItem "{BCB996F6837C3299}" {
      Id "LF-BusStop_SameStop"
      Target_en_us "You are already at that stop."
@@ -2579,6 +2589,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BusStop_TooSoon"
      Target_en_us "The next bus is not due yet. Try again shortly."
      Comment "Bus refusal: the request or trip cooldown."
+    }
+    CustomStringTableItem "{2192680E4E040B4E}" {
+     Id "LF-BusStop_WhyBusy"
+     Target_en_us "Ticket already bought"
+     Comment "Greyed bus action reason: a ticket is already waiting."
+    }
+    CustomStringTableItem "{D3E1EB179C2F1379}" {
+     Id "LF-BusStop_WhyNoCash"
+     Target_en_us "Not enough cash"
+     Comment "Greyed bus action reason: the fare is more than the cash carried."
+    }
+    CustomStringTableItem "{CC7F4F43A1B2B050}" {
+     Id "LF-BusStop_WhyPursuit"
+     Target_en_us "{police} nearby"
+     Comment "Greyed bus action reason: wanted with an on-duty officer close."
+    }
+    CustomStringTableItem "{54D8814DF61E3B22}" {
+     Id "LF-BusStop_WhyTooSoon"
+     Target_en_us "Next bus not due yet"
+     Comment "Greyed bus action reason: the ask or trip cooldown."
     }
     CustomStringTableItem "{7E1C40B2A93D5F06}" {
      Id "LF-BuyerSale_Action"
@@ -7956,6 +7986,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Oficial de policía. Requiere un nombramiento aprobado."
      Comment "Description of the police job (appointment = whitelist)"
     }
+    CustomStringTableItem "{4AD1BED424C85624}" {
+     Id "LF-Job_DeskQuit"
+     Target_en_us "Quit the job: %1"
+     Comment "Workplace desk action when the player already holds the job. %1 is the job name."
+    }
+    CustomStringTableItem "{0253B3296037A056}" {
+     Id "LF-Job_DeskTake"
+     Target_en_us "Take the job: %1"
+     Comment "Workplace desk action. %1 is the job name (Miner, Lumberjack, Farmer)."
+    }
+    CustomStringTableItem "{CD5B6F2CE37D13FD}" {
+     Id "LF-Job_DeskTakeName"
+     Target_en_us "Take the job"
+     Comment "Workplace desk action name in the prefab (the script prints the job name)."
+    }
     CustomStringTableItem "{2FFBFD36EA8DB8AE}" {
      Id "LF-Job_FruitHarvest"
      Target_en_us "You picked %1 %2."
@@ -9321,6 +9366,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Magazine_Taser_Name"
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
+    }
+    CustomStringTableItem "{69DF48978FFA6832}" {
+     Id "LF-Mannequin_Bought"
+     Target_en_us "Bought for %1."
+     Comment "Toast after buying a piece off a mannequin. %1 price paid."
+    }
+    CustomStringTableItem "{D88719E262E2BBFE}" {
+     Id "LF-Mannequin_BoughtDropped"
+     Target_en_us "Bought for %1. Your pockets are full, so it is at your feet."
+     Comment "Toast: bought a piece, no room in the inventory, it was dropped at the buyer. %1 price paid."
+    }
+    CustomStringTableItem "{E3C98F280138BB07}" {
+     Id "LF-Mannequin_BoughtOutfit"
+     Target_en_us "Bought the whole outfit for %1."
+     Comment "Toast after buying a whole mannequin outfit. %1 price paid."
+    }
+    CustomStringTableItem "{E9FC2C3F7CA0EF0D}" {
+     Id "LF-Mannequin_BoughtOutfitDropped"
+     Target_en_us "Bought the whole outfit for %1. What did not fit is at your feet."
+     Comment "Toast: bought the outfit, some pieces were dropped at the buyer. %1 price paid."
+    }
+    CustomStringTableItem "{023966184146C94F}" {
+     Id "LF-Mannequin_BoughtPart"
+     Target_en_us "Bought part of the outfit for %1; the rest was refused."
+     Comment "Toast: the outfit sale stopped part way (a gate refused one piece). %1 price paid."
+    }
+    CustomStringTableItem "{1525CDCF4C868B0B}" {
+     Id "LF-Mannequin_BuyOutfit"
+     Target_en_us "Buy whole outfit: %1"
+     Comment "Mannequin action: buy every worn piece. %1 total price."
+    }
+    CustomStringTableItem "{749A44898F468261}" {
+     Id "LF-Mannequin_BuyPiece"
+     Target_en_us "Buy %1: %2"
+     Comment "Mannequin action: buy one worn piece. %1 item name, %2 price."
+    }
+    CustomStringTableItem "{097B35901C0BFF32}" {
+     Id "LF-Mannequin_NoCash"
+     Target_en_us "Not enough cash"
+     Comment "Mannequin action greyed: the player carries less cash than the price."
+    }
+    CustomStringTableItem "{F224EE96F400AC18}" {
+     Id "LF-Mannequin_OutfitSoldOut"
+     Target_en_us "A piece is sold out"
+     Comment "Mannequin outfit action greyed: one worn piece is sold out."
+    }
+    CustomStringTableItem "{CFF4E53D12DE196D}" {
+     Id "LF-Mannequin_SoldOut"
+     Target_en_us "Sold out"
+     Comment "Mannequin action greyed: the store has none of this piece left."
+    }
+    CustomStringTableItem "{95C19D11A4510149}" {
+     Id "LF-Mannequin_Title"
+     Target_en_us "Mannequin"
+     Comment "Toast title for a purchase off a dressed mannequin."
     }
     CustomStringTableItem "{D920AB80A60A3625}" {
      Id "LF-MapKnown_ArrivalMarked"
@@ -12083,6 +12183,131 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Officer's trousers"
      Comment "Role uniform item name (tools/assets/police-*, doctor-coat)"
     }
+    CustomStringTableItem "{84084E0D0740DE17}" {
+     Id "LF-Postal_AllDone"
+     Target_en_us "Every sack here is already moved."
+     Comment "Toast of the postal van run: nothing left to move here."
+    }
+    CustomStringTableItem "{6B1DF13F6E2D277F}" {
+     Id "LF-Postal_Already"
+     Target_en_us "You already have a postal run. Finish it or give it up first."
+     Comment "Toast of the postal van run: one van per player."
+    }
+    CustomStringTableItem "{F06A8F159B8AD102}" {
+     Id "LF-Postal_Cooldown"
+     Target_en_us "The office has no van ready yet. Try again in a minute."
+     Comment "Toast of the postal van run: a run ended a moment ago."
+    }
+    CustomStringTableItem "{F5F34AAAE6DA71E3}" {
+     Id "LF-Postal_GiveUp"
+     Target_en_us "Give up the postal run"
+     Comment "Action at a post office stand: give the postal van run up, no pay."
+    }
+    CustomStringTableItem "{523DDFCCCF73873D}" {
+     Id "LF-Postal_GivenUp"
+     Target_en_us "Run given up. The van goes back to the office and nothing is paid."
+     Comment "Toast of the postal van run: the player gave the run up."
+    }
+    CustomStringTableItem "{4B1E14F4EE7DFF88}" {
+     Id "LF-Postal_HandIn"
+     Target_en_us "Hand in the postal run"
+     Comment "Action at the home post office: finish the postal van run and get paid."
+    }
+    CustomStringTableItem "{55F3AA4CDF15942D}" {
+     Id "LF-Postal_Loaded"
+     Target_en_us "Sack loaded (%1). When all are in, drive to the post office marked on your map."
+     Comment "Toast of the postal van run: one sack loaded. %1 = sacks loaded/needed."
+    }
+    CustomStringTableItem "{018A555EA19D0BE2}" {
+     Id "LF-Postal_Lost_abandoned"
+     Target_en_us "You left the post van too long. The run is off and nothing is paid."
+     Comment "Toast of the postal van run: the run ended because the driver abandoned the van."
+    }
+    CustomStringTableItem "{0573B052DDDC99B2}" {
+     Id "LF-Postal_Lost_late"
+     Target_en_us "The postal run took too long. The van went back and nothing is paid."
+     Comment "Toast of the postal van run: the run ended past its time limit."
+    }
+    CustomStringTableItem "{D3E4B1F64D940F43}" {
+     Id "LF-Postal_Lost_van"
+     Target_en_us "The post van was wrecked or lost. The run is off and nothing is paid."
+     Comment "Toast of the postal van run: the run ended because the van was destroyed."
+    }
+    CustomStringTableItem "{61FA7D09A2DDB08F}" {
+     Id "LF-Postal_NoLicence"
+     Target_en_us "You need a driving licence to drive the post van."
+     Comment "Toast of the postal van run: refused, no driving licence."
+    }
+    CustomStringTableItem "{77EAF4A73900DC15}" {
+     Id "LF-Postal_NoOffice"
+     Target_en_us "There is no other post office far enough away to send mail to."
+     Comment "Toast of the postal van run: the map has no destination office."
+    }
+    CustomStringTableItem "{1913FC9C39B45520}" {
+     Id "LF-Postal_NoRun"
+     Target_en_us "You have no postal run open."
+     Comment "Toast of the postal van run: a step with no run."
+    }
+    CustomStringTableItem "{BE0D61A0250B0B0D}" {
+     Id "LF-Postal_NoSpot"
+     Target_en_us "There is no clear space to bring the van round. Try again shortly."
+     Comment "Toast of the postal van run: no clear spot for the van."
+    }
+    CustomStringTableItem "{82D1E71BB544C4CC}" {
+     Id "LF-Postal_NotLoaded"
+     Target_en_us "Some mail sacks are still to move."
+     Comment "Toast of the postal van run: a sack is still to load or unload."
+    }
+    CustomStringTableItem "{238A53B626C53408}" {
+     Id "LF-Postal_Paid"
+     Target_en_us "Postal run done. You were paid {currency:sym}%1."
+     Comment "Toast of the postal van run: the run paid. %1 = the cash."
+    }
+    CustomStringTableItem "{837C9153DC3D1FAA}" {
+     Id "LF-Postal_Sack"
+     Target_en_us "Load or unload a mail sack"
+     Comment "Action at a post office stand: move one mail sack into or out of the post van."
+    }
+    CustomStringTableItem "{96B1622BBCAD89C3}" {
+     Id "LF-Postal_Start"
+     Target_en_us "Take the postal van run"
+     Comment "Action at a post office stand: start the postal van run."
+    }
+    CustomStringTableItem "{3C66967567AE5B29}" {
+     Id "LF-Postal_StartDesc"
+     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back."
+     Comment "Description of the action that starts the postal van run."
+    }
+    CustomStringTableItem "{5B2665B387B8B998}" {
+     Id "LF-Postal_Started"
+     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here."
+     Comment "Toast of the postal van run: the run began."
+    }
+    CustomStringTableItem "{108D5BC1F68C84DF}" {
+     Id "LF-Postal_Title"
+     Target_en_us "Postal run"
+     Comment "Title of the postal van run's toasts."
+    }
+    CustomStringTableItem "{1A0210D5BCC4C762}" {
+     Id "LF-Postal_TooFast"
+     Target_en_us "That was too fast to be honest work. Nothing is paid yet."
+     Comment "Toast of the postal van run: handed in faster than the run's least time."
+    }
+    CustomStringTableItem "{EA1D8BDBDABE7D01}" {
+     Id "LF-Postal_Unloaded"
+     Target_en_us "Sack unloaded (%1). When all are out, drive the van back and hand in the run."
+     Comment "Toast of the postal van run: one sack unloaded. %1 = sacks unloaded/needed."
+    }
+    CustomStringTableItem "{D73DA4B641DC454E}" {
+     Id "LF-Postal_VanFar"
+     Target_en_us "Bring the van closer to the office first."
+     Comment "Toast of the postal van run: the van is not at the office."
+    }
+    CustomStringTableItem "{3243A56EDB316D6E}" {
+     Id "LF-Postal_WrongOffice"
+     Target_en_us "This is not where this run's mail goes."
+     Comment "Toast of the postal van run: wrong office for this step."
+    }
     CustomStringTableItem "{3A7C91E05B2D4F68}" {
      Id "LF-Process_Busy"
      Target_en_us "Still running. Wait for it to finish."
@@ -14005,10 +14230,20 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Rules"
      Comment "Sign card section heading: cooldowns, wanted level, other rules."
     }
+    CustomStringTableItem "{B71E5C09A4D23F68}" {
+     Id "LF-Sign_TaxiStand_Next"
+     Target_en_us "Take taxi work here, then drive each fare where it wants to go."
+     Comment "Sign catalog 'next' text of the taxi stand's Read card (sign id taxi_stand): what to do after reading it."
+    }
     CustomStringTableItem "{6EAD44E4FC5E58E9}" {
      Id "LF-Sign_TaxiStand_Title"
      Target_en_us "Taxi stand"
      Comment "Title printed on the taxi stand's pole plate (LF_TaxiStand prefab, sign id taxi_stand); the Read card shows it."
+    }
+    CustomStringTableItem "{C893332322755556}" {
+     Id "LF-Sign_TaxiStand_What"
+     Target_en_us "The taxi stand: sign on for taxi work and pick up fares who need a ride."
+     Comment "Sign catalog 'what' text of the taxi stand's Read card (sign id taxi_stand)."
     }
     CustomStringTableItem "{84F64B2018E1B414}" {
      Id "LF-Sign_What"

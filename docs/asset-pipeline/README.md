@@ -290,6 +290,7 @@ needs it is generated, through the usual `concept` and `generate` stages of its 
   material from `kit.json`), rebuilds each source in a hidden Workbench and checks every `.xob` for
   its materials, colliders and bones.
 - Prefabs and placement are written by hand, as after the `prefab` stage.
+- A box-and-cylinder kit script imports `tools/assets/pipeline/blender/kitlib.py` (`sys.path.insert(0, job["blender_lib"])`): procedural wood, plain and atlas materials, `Part` (box, prism, cylinder, atlas quad), `export_model` (LODs and `UBX_` colliders) and the review renders. First user: `tools/assets/shop-counter`.
 
 The first kit is the bank vault (`tools/assets/bank-vault/`): the round door #1 generated with Meshy
 image-to-3D (`tools/assets/vault-front`) and split from its frame by radius and depth, on a `door`
