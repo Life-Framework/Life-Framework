@@ -204,7 +204,7 @@ tpx = kit["texture_px"]["tile"]
 AW, AH = kit["texture_px"]["atlas"]
 
 
-PAINT = np.array([0.70, 0.66, 0.56])  # beige brushed steel, sRGB
+PAINT = np.array([0.66, 0.64, 0.58])  # grey-beige brushed steel, sRGB
 STEEL = 0.56
 PLASTIC = np.array([0.075, 0.078, 0.08])
 
@@ -220,11 +220,11 @@ for _ in range(35):
 base = base * (1 - scr[:, :, None] * 0.25) + scr[:, :, None] * 0.04
 # weathering: faint rain streaks (tall thin noise) and a few paint chips down to grey primer
 rain = np.clip(noise(tpx, tpx, 1.5, 70), 0, None)
-base *= (1 - rain * 0.05)[:, :, None]
+base *= (1 - rain * 0.02)[:, :, None]
 chip = (noise(tpx, tpx, 5) > 2.6).astype(float)
 chip = np.clip(blur(chip, 0.8) * 1.6, 0, 1)
 base = base * (1 - chip[:, :, None]) + chip[:, :, None] * np.array([0.42, 0.42, 0.40])
-save_material("ATM_Paint", np.clip(base, 0, 1), np.full((tpx, tpx), 0.45) - scr * 0.1 + rain * 0.04, np.full((tpx, tpx), 0.35) + scr * 0.3 + chip * 0.4,
+save_material("ATM_Paint", np.clip(base, 0, 1), np.full((tpx, tpx), 0.45) - scr * 0.1 + rain * 0.04, np.full((tpx, tpx), 0.5) + scr * 0.3 + chip * 0.4,
               normal_from_height(noise(tpx, tpx, 3) * 0.2 - scr - chip * 0.6, 0.7), 1.0)
 
 # ---------------------------------------------------------------- tiling: brushed steel (the base, the plate, the housing)
@@ -269,7 +269,7 @@ x0, y0, fw, fh = R_FASCIA
 cv.base[y0:y0 + fh, x0:x0 + fw] *= (1 + noise(fh, fw, 50) * 0.04 + noise(fh, fw, 3) * 0.015)[:, :, None]
 cv.rect(x0, y0, x0 + fw, y0 + 78, (0.13, 0.125, 0.115), rough=0.45)          # the top band
 cv.text("BANQUE", x0 + 24, y0 + 24, 4, (0.86, 0.84, 0.76))
-cv.text("ST-PHILIPPE", x0 + 168, y0 + 34, 2, GREEN * 1.6)
+cv.text("REGIONALE", x0 + 168, y0 + 34, 2, GREEN * 1.6)
 cv.text("DAB", 0, y0 + 34, 2, (0.6, 0.6, 0.56), centre_in=(x0 + fw - 80, x0 + fw - 20))
 cv.rect(x0, y0 + 78, x0 + fw, y0 + 82, GREEN, height=0.5)
 # the screen bezel and the two steel rails beside it
@@ -292,10 +292,10 @@ cv.text("BILLETS", x0 + 92, y0 + 535, 2, (0.62, 0.62, 0.58))
 st = (x0 + 30, y0 + 720, x0 + 200, y0 + 778)
 cv.rect(*st, (0.84, 0.82, 0.72), rough=0.7, height=0.3)
 cv.rect(st[0], st[1], st[0] + 4, st[3], GREEN)
-for i, line in enumerate(("BANQUE DE ST-PHILIPPE", "AGENCE 01 - EVERON", "ASSISTANCE 24H/24")):
+for i, line in enumerate(("BANQUE REGIONALE", "AGENCE 01", "ASSISTANCE 24H/24")):
     cv.text(line, st[0] + 10, st[1] + 8 + i * 16, 1, (0.12, 0.12, 0.12))
 cv.base[st[3] - 10:st[3], st[2] - 12:st[2]] *= 0.8
-cv.text("SAINT-PHILIPPE - OUVERT 24H/24", 0, y0 + 1030, 2, (0.42, 0.41, 0.38), centre_in=(x0, x0 + fw))
+cv.text("OUVERT 24H/24 - 7 JOURS SUR 7", 0, y0 + 1030, 2, (0.42, 0.41, 0.38), centre_in=(x0, x0 + fw))
 # the green trim round the recess
 for a in ((0, 0, fw, 5), (0, fh - 5, fw, fh), (0, 0, 5, fh), (fw - 5, 0, fw, fh)):
     cv.rect(x0 + a[0], y0 + a[1], x0 + a[2], y0 + a[3], GREEN, rough=0.45, height=1.0)
@@ -387,11 +387,11 @@ sg.base *= (1 + noise(200, 580, 30) * 0.015)[:, :, None]
 sg.rect(10, 10, 570, 13, GREEN)
 sg.rect(10, 187, 570, 190, GREEN)
 sg.text("BANQUE", 0, 26, 9, GREEN, centre_in=(0, 580))
-sg.text("DE SAINT-PHILIPPE", 0, 100, 3, GREEN, centre_in=(0, 580))
+sg.text("REGIONALE", 0, 100, 3, GREEN, centre_in=(0, 580))
 sg.rect(110, 132, 470, 134, GREEN * 0.8)
 sg.text("DISTRIBUTEUR DE BILLETS 24H", 0, 146, 2, (0.30, 0.30, 0.28), centre_in=(0, 580))
 gb[0:200, 0:580] = sg.base
-em[0:200, 0:580] = sg.base * 0.85
+em[0:200, 0:580] = sg.base * 0.3
 # the screen: green phosphor on black, a menu that lines up with the side keys
 sw, sh = G_SCREEN[2], G_SCREEN[3]
 glow = np.zeros((sh, sw))
@@ -404,7 +404,7 @@ def put(s, x, y, sc, right=False):
     glow[y:y + th, x:x + tw][m] = 1.0
 
 
-put("BANQUE DE ST-PHILIPPE", (sw - 21 * 6) // 2, 4, 1)
+put("BANQUE REGIONALE", (sw - 16 * 6) // 2, 4, 1)
 for i, (l, r) in enumerate((("<RETRAIT", "100 F>"), ("<SOLDE", "200 F>"), ("<RELEVE", "500 F>"), ("<AUTRE", "1000 F>"))):
     y = SIDE_ROWS[i] - 130 - 7  # fascia row of the key, less the screen's top row, less half a glyph
     put(l, 6, y, 2)
@@ -415,7 +415,7 @@ scr_rgb = np.zeros((sh, sw, 3)) + np.array([0.012, 0.03, 0.016]) + lum[:, :, Non
 yy, xx = np.mgrid[0:sh, 0:sw]
 scr_rgb *= ((1 - 0.5 * (((xx - sw / 2) / (sw / 2)) ** 4 + ((yy - sh / 2) / (sh / 2)) ** 4)) * (1 - 0.18 * ((yy % 3) == 0)))[:, :, None]
 gb[220:220 + sh, 0:sw] = np.clip(scr_rgb, 0, 1)
-em[220:220 + sh, 0:sw] = np.clip(scr_rgb, 0, 1)
+em[220:220 + sh, 0:sw] = np.clip(scr_rgb, 0, 1) * 0.6
 g_rough = np.full((GH, GW), 0.25)
 g_rough[0:200, 0:580] = 0.4
 save_material("ATM_Glow", np.clip(gb, 0, 1), g_rough, np.zeros((GH, GW)),
