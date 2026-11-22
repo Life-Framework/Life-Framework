@@ -32,27 +32,27 @@ GenericEntity Mine_Lantern : "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/Mi
  angleY 90
 }
 GenericEntity Mine_Ore_1 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 1 0 6.5
+ coords -1.8 0 7.7
  angleY 110
 }
 GenericEntity Mine_Ore_2 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 3.5 0 3
+ coords 0.4 0 8.6
  angleY 230
 }
 GenericEntity Mine_Ore_3 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 1 0 -0.5
+ coords 2.6 0 7.7
  angleY 165
 }
 GenericEntity Mine_Ore_4 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 4 0 -3.8
+ coords 4.8 0 8.6
  angleY 340
 }
 GenericEntity Mine_Ore_5 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 1 0 -6.8
+ coords 7 0 7.7
  angleY 40
 }
 GenericEntity Mine_Ore_6 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 6.5 0 0.5
+ coords 9.2 0 8.6
  angleY 290
 }
 GenericEntity Mine_Furnace : "{CF27D083C01F1C36}Prefabs/Processor/LF_MineFurnace.et" {
@@ -85,44 +85,39 @@ GenericEntity Mine_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePla
  coords 13 0 9
  angleY 270
 }
-GenericEntity Mine_BuyerTable : "{7FFE600A194D73B1}Prefabs/Props/Furniture/TableOld_01/TableOld_01_Base.et" {
- coords 11.2 0 -1.5
- angleY 270
-}
-GenericEntity Mine_Buyer : "{CDE1C29873CECBC0}Prefabs/Trader/LF_IronBuyer_Everon1989.et" {
- coords 11.2 0.901 -1.5
- angleY 270
-}
-LF_NpcBaseEntity Mine_BuyerClerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
- coords 12.5 0 -1.5
- angleY 270
-}
-GenericEntity Mine_BuyerScale : "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et" {
- coords 11.2 0 -3.8
- angleY 90
-}
-GenericEntity Mine_BuyerCrate1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 13 0 -4
- angleY 0
-}
-GenericEntity Mine_BuyerBox : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
- coords 13 0.989 -4
+GenericEntity Mine_Rock1 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords -2.2 0.6 11.4
  angleY 20
 }
-GenericEntity Mine_BuyerCrate2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 13 0 1
- angleY 0
+GenericEntity Mine_Rock2 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 1.2 1.5 11.8
+ angleY 150
 }
-SCR_DestructibleEntity Mine_BuyerBoard : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
- components {
-  LF_SignComponent "{026619B31213409E}" {
-   m_sSignId "coalmans-brow-buyer"
-   m_sStyle ""
-   m_sSize ""
-   m_vFaceAngles 0 -15 0
-   m_fFaceScale 2.6
-  }
- }
- coords 10.1 0 -3.1
- angleY 270
+GenericEntity Mine_Rock3 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 4.4 0.6 11.3
+ angleY 80
+}
+GenericEntity Mine_Rock4 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 7.6 1.5 11.7
+ angleY 200
+}
+GenericEntity Mine_Rock5 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 10.6 0.6 11.4
+ angleY 310
+}
+GenericEntity Mine_Rock6 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords -0.8 1.3 14.2
+ angleY 40
+}
+GenericEntity Mine_Rock7 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 2.9 0.4 14.5
+ angleY 260
+}
+GenericEntity Mine_Rock8 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
+ coords 6.4 1.3 14.1
+ angleY 120
+}
+GenericEntity Mine_Rock9 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
+ coords 9.8 0.4 14.4
+ angleY 10
 }

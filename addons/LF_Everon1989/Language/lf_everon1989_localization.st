@@ -3386,7 +3386,7 @@ StringTable {
     }
     CustomStringTableItem "{1DF3BFB27FDA81CC}" {
      Id "LF-Sign_CoalmansBrowMine_How"
-     Target_en_us "Take the miner job at the desk, buy a pickaxe at the miners' supply till in the hardware store, swing at the rust-veined rocks and pick up the ore. Three pieces make one bar at the furnace; sell the bars at the counter beside it."
+     Target_en_us "Take the miner job at the desk, buy a pickaxe at the miners' supply till in the hardware store, swing at the rust-veined rocks and pick up the ore. Three pieces make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Coalman's Brow mine plate, How section."
     }
     CustomStringTableItem "{B30D7B3198E25E1E}" {
@@ -3396,7 +3396,7 @@ StringTable {
     }
     CustomStringTableItem "{938AC44BCAEB5DA8}" {
      Id "LF-Sign_CoalmansBrowMine_What"
-     Target_en_us "Iron ore in the hillside, a furnace to smelt it, the miners' desk and a buyer for iron bars."
+     Target_en_us "Iron ore in the hillside, a furnace to smelt it and the miners' desk. Sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Coalman's Brow mine plate, What section."
     }
     CustomStringTableItem "{155AD337C15BEB65}" {
@@ -5219,6 +5219,5 @@ StringTable {
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
      Comment "Join notice toast at a player's first spawn of the session (#1448); the joinNotice.key of the flagship."
     }
-  }
  }
 }
