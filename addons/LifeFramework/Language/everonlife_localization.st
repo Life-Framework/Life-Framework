@@ -10217,6 +10217,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You wear a New Life wristband. Stay away from where you died for %1 minutes."
      Comment "Toast on waking in hospital after a real death. %1 is the minutes."
     }
+    CustomStringTableItem "{60ED2D502AEE4A5F}" {
+     Id "LF-Newspaper_BoardsBody"
+     Target_en_us "The notice boards carry the latest notices, job offers and prices. Read them before you head out."
+     Comment "Placeholder story text."
+    }
+    CustomStringTableItem "{A66899FB35600F3C}" {
+     Id "LF-Newspaper_BoardsHeadline"
+     Target_en_us "Notices on the boards"
+     Comment "Placeholder story headline: pointer to the town boards."
+    }
+    CustomStringTableItem "{A8404CF269808C13}" {
+     Id "LF-Newspaper_Dateline"
+     Target_en_us "This week's edition"
+     Comment "Newspaper dateline under the masthead, until the edition builder prints one."
+    }
+    CustomStringTableItem "{969E4E2B63561263}" {
+     Id "LF-Newspaper_ItemDesc"
+     Target_en_us "This week's edition, folded to a quarter. Read it for the news."
+     Comment "Item description: the weekly newspaper (WO-W2.1)."
+    }
+    CustomStringTableItem "{46E2290C5213FC5C}" {
+     Id "LF-Newspaper_ItemName"
+     Target_en_us "Newspaper"
+     Comment "Item name: the weekly newspaper (WO-W2.1)."
+    }
+    CustomStringTableItem "{4E0E41414B63DFEF}" {
+     Id "LF-Newspaper_Masthead"
+     Target_en_us "The Courier"
+     Comment "Newspaper masthead. Neutral core text; a pack overrides it with the island name."
+    }
+    CustomStringTableItem "{BBC844EEF191940C}" {
+     Id "LF-Newspaper_QuietBody"
+     Target_en_us "Nothing worth printing has happened yet. The next edition will tell you what people did this week."
+     Comment "Placeholder story text."
+    }
+    CustomStringTableItem "{236EB90A4E23A5EB}" {
+     Id "LF-Newspaper_QuietHeadline"
+     Target_en_us "A quiet week"
+     Comment "Placeholder story headline printed before the first edition exists."
+    }
+    CustomStringTableItem "{0CF5983D9127E9D1}" {
+     Id "LF-Newspaper_Read"
+     Target_en_us "Read the newspaper"
+     Comment "Item action: open the newspaper page (WO-W2.1)."
+    }
     CustomStringTableItem "{CA9A4B5596B7F647}" {
      Id "LF-Notify_TitleEms"
      Target_en_us "[EMS] EMERGENCY"
@@ -15762,6 +15807,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Ticket_Written"
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
+    }
+    CustomStringTableItem "{3723AB61E29CDCE1}" {
+     Id "LF-ToolCondition_Good"
+     Target_en_us "%1 is in good shape"
+     Comment "Action text: tool condition at or above the good threshold (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{2E6DE213CABD02C9}" {
+     Id "LF-ToolCondition_Poor"
+     Target_en_us "%1 is badly worn and slow"
+     Comment "Action text: tool condition in the poor band, working slower (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{C23C3D6D9E4BDB06}" {
+     Id "LF-ToolCondition_Worn"
+     Target_en_us "%1 is getting worn"
+     Comment "Action text: tool condition in the worn band (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{DE472F7EE6D1E8FD}" {
+     Id "LF-ToolCondition_WornOut"
+     Target_en_us "%1 is worn out but still works, slowly"
+     Comment "Action text: tool at zero condition; it still works at half speed (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{75960D0103B97E17}" {
+     Id "LF-ToolTier_Fine"
+     Target_en_us "Fine"
+     Comment "Tool tier name (#4182)"
+    }
+    CustomStringTableItem "{72AC08B33DD29667}" {
+     Id "LF-ToolTier_Standard"
+     Target_en_us "Standard"
+     Comment "Tool tier name (#4182)"
+    }
+    CustomStringTableItem "{10F79179EEA9F6E8}" {
+     Id "LF-ToolTier_Worn"
+     Target_en_us "Worn"
+     Comment "Tool tier name (#4182)"
     }
     CustomStringTableItem "{7038FBC3DB7D537B}" {
      Id "LF-TouristMap_Marked"
