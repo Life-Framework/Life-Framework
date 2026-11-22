@@ -45,6 +45,8 @@ async function runIslandJailBreachProof() {
   const TILL = "Fit_saint_philippe_fuel_till";
   const CLERK = "Fit_saint_philippe_fuel_clerk";
   for (const n of [1, 2]) arrive(on, n, wait);
+  // The welcome guide opens over a new character and covers every UI picture: dismiss it like a player would.
+  for (const n of [1, 2]) { wait(3000); on(n, { verb: "click", widget: "WelcomeGuideDismissButton" }, 10000); }
   wait(8000);
   on(1, { verb: "configreload" }, 10000);
   wait(3500);
