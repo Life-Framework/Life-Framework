@@ -95,6 +95,7 @@ export function checkReloadBoot(text) {
 // gated to the save boot and nothing noticed when the reload boot stopped finding it).
 export const RESTART_PROOFS = [
   { cls: "LF_Test_CargoBedPersist", what: "cargo bed truck keeps its logs (#3266)", text: "[LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with N unit(s) on its bed", line: /\[LFDebug:Cargo\] e2e restart: e2e-cargo-bed-truck collected with [1-9]\d* unit\(s\) on its bed/ },
+  { cls: "LF_Test_ParkedCarRestart", what: "one locked parked car per marker after a restart (#4122)", text: "[LFDebug:ParkedCar] e2e restart: 1 car(s) at spot A, 1 at spot B", line: /\[LFDebug:ParkedCar\] e2e restart: 1 car\(s\) at spot A, 1 at spot B/ },
 ];
 
 // Pass 2's console.log text and the leg's class list (null: the whole tier) -> the proofs that never printed.
@@ -145,8 +146,13 @@ export function selftestE2eShutdown() {
   const cargoLine = "SCRIPT       : [LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with 4 unit(s) on its bed";
   if (missingRestartProofs(`${cargoLine}\n`, ["LF_Test_CargoBedPersist"]).length) failures.push("a pass 2 that ran the cargo restart check is reported missing");
   if (missingRestartProofs("[LFTEST] SUMMARY tier=only passed=1 failed=0 total=1\n", ["LF_Test_CargoBedPersist", "LF_Test_X"]).length !== 1) failures.push("a pass 2 that skipped the cargo restart check passes");
-  if (missingRestartProofs("x\n", null).length !== 1) failures.push("a whole-tier pass 2 without the cargo restart line passes");
+  const cargoMissing = (text) => missingRestartProofs(text, null).filter((p) => p.cls === "LF_Test_CargoBedPersist").length;
+  if (cargoMissing("x\n") !== 1) failures.push("a whole-tier pass 2 without the cargo restart line passes");
   if (missingRestartProofs("x\n", ["LF_Test_X"]).length) failures.push("a leg without the cargo test is asked for its line");
-  if (missingRestartProofs("[LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with 0 unit(s) on its bed\n", null).length !== 1) failures.push("an empty bed counts as a restored load");
+  if (cargoMissing("[LFDebug:Cargo] e2e restart: e2e-cargo-bed-truck collected with 0 unit(s) on its bed\n") !== 1) failures.push("an empty bed counts as a restored load");
+  // #4122: one locked car per marker after the restart; two cars at a spot is the bug, not a proof.
+  const parked = ["LF_Test_ParkedCarRestart"];
+  if (missingRestartProofs("SCRIPT       : [LFDebug:ParkedCar] e2e restart: 1 car(s) at spot A, 1 at spot B\n", parked).length) failures.push("a pass 2 that ran the parked-car restart check is reported missing");
+  if (missingRestartProofs("[LFDebug:ParkedCar] e2e restart: 2 car(s) at spot A, 1 at spot B\n", parked).length !== 1) failures.push("two parked cars on one marker count as a restart proof");
   return failures;
 }

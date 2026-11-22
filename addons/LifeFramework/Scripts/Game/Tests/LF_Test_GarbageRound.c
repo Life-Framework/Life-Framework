@@ -110,6 +110,8 @@ class LF_Test_GarbageRound : LF_Test
 		// The truck must stand at the dump.
 		IEntity truck = GetGame().GetWorld().FindEntityByID(run.m_Truck);
 		ctx.NotNull(truck, "the company truck stands by the depot");
+		LF_VehicleWorldSave.HoldAgain();
+		ctx.False(LF_VehicleWorldSave.IsSaved(truck), "the company truck is out of the world save, so a restart puts no free copy back (#4122)");
 		if (!truck)
 			return;
 

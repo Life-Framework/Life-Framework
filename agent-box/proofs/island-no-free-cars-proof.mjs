@@ -46,6 +46,13 @@ async function runProof() {
     // A far car streams in to this client late: wait until its own copy of the world shows a vehicle within 8 m.
     for (let tries = 0; tries < 12; tries++) { wait(2500); if (tries % 3 === 2) on(2, { verb: "stand", entityName: name, side: "w" }); // the first stand after the spawn does not always carry the client
       if (!/veh=none/.test(String(on(2, { verb: "seen", radius: 8 }).detail))) break; }
+    if (label === "a parked car") {
+      // #4122: a restart put a second, unlocked copy on the marker. Exactly one car stands there, and it is locked.
+      const near = String(on(2, { verb: "seen", radius: 4 }).detail).match(/veh=(\S*)/);
+      const cars = near && near[1] !== "none" ? near[1].split("|") : [];
+      const locked = cars.filter((c) => /:lock=1/.test(c)).length;
+      step(`${phase}: exactly one locked car stands on the parked-car marker`, cars.length === 1 && locked === 1, `${cars.length} car(s) within 4 m, ${locked} locked: ${cars.join(" | ")}`);
+    }
     on(2, { verb: "look" });
     const getIn = on(2, { verb: "use", className: "SCR_GetInUserAction" }, 10000);
     wait(1500);
