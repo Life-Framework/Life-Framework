@@ -2433,22 +2433,42 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{950C69C056C83985}" {
      Id "LF-BusStop_Action"
      Target_en_us "Take the bus"
-     Comment "Bus stop sign action: open the timetable."
+     Comment "Bus stop action fallback name (a slot with no stop is hidden)."
+    }
+    CustomStringTableItem "{B29A8D0906A937C3}" {
+     Id "LF-BusStop_ActionTo"
+     Target_en_us "Bus to %1: {currency:sym}%2, %3 s"
+     Comment "Bus stop action, one per destination. %1 the stop name, %2 the fare in cash, %3 seconds of wait."
     }
     CustomStringTableItem "{FBFD6EFAC0C8BAE5}" {
      Id "LF-BusStop_Arrived"
      Target_en_us "You get off at %1."
      Comment "Bus toast on arrival. %1 the stop's name."
     }
-    CustomStringTableItem "{A79746CE33D32688}" {
-     Id "LF-BusStop_Asking"
-     Target_en_us "Buying your ticket..."
-     Comment "Bus timetable: waiting for the server's answer."
+    CustomStringTableItem "{8205388EAC928159}" {
+     Id "LF-BusStop_BoardFare"
+     Target_en_us "{currency:sym}%1"
+     Comment "Timetable board: the fare to one stop. %1 the fare in cash."
     }
-    CustomStringTableItem "{0DFD68CD0EAF9F03}" {
-     Id "LF-BusStop_Board"
-     Target_en_us "Buy ticket"
-     Comment "Bus timetable row button: pay the fare to that stop."
+    CustomStringTableItem "{7D1971DA5E0F73C4}" {
+     Id "LF-BusStop_BoardHere"
+     Target_en_us "You are here"
+     Comment "Timetable board: the mark on the reader's own stop."
+    }
+    CustomStringTableItem "{C60B8ECDA5501469}" {
+     Id "LF-BusStop_BoardNext"
+     Target_en_us "Pick your stop in the sign's action list, pay the fare in cash and wait at the stop."
+     Comment "Timetable sign card: what to do next."
+    }
+    CustomStringTableItem "{60F8C241BEAFD60D}" {
+     Id "LF-BusStop_BoardTitle"
+     Target_en_us "Bus timetable"
+     Comment "Printed heading of the timetable board on a bus stop pole. A pack names its line."
+    }
+    CustomStringTableItem "{37586E8F50271ECB}" {
+     Id "LF-BusStop_BoardWhat"
+     Target_en_us "Every stop on this line and the cash fare to it from here."
+     Comment "Timetable sign card: what the board shows."
     }
     CustomStringTableItem "{877447BCF40EC4B5}" {
      Id "LF-BusStop_Boarded"
@@ -2459,6 +2479,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BusStop_Busy"
      Target_en_us "You already have a ticket. Wait for the bus."
      Comment "Bus refusal: a trip is already waiting."
+    }
+    CustomStringTableItem "{D451B9D7F357DBB4}" {
+     Id "LF-BusStop_CancelAction"
+     Target_en_us "Cancel trip (refund {currency:sym}%1): bus in %2 s"
+     Comment "Bus stop action while a ticket waits. %1 the fare refunded, %2 seconds until the bus leaves."
+    }
+    CustomStringTableItem "{4414BA244BADCE0C}" {
+     Id "LF-BusStop_CancelAsked"
+     Target_en_us "Trip cancelled. Fare refunded."
+     Comment "Bus toast: the player cancelled the waiting ticket."
     }
     CustomStringTableItem "{157F9BBFC17C40C2}" {
      Id "LF-BusStop_CancelHurt"
@@ -2480,10 +2510,10 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The bus could not take you. Fare refunded."
      Comment "Bus toast: the wait was cancelled (downed, cuffed, in a vehicle or gone)."
     }
-    CustomStringTableItem "{939B9C701E2737AF}" {
-     Id "LF-BusStop_Close"
-     Target_en_us "Close"
-     Comment "Bus timetable close button."
+    CustomStringTableItem "{BB22261A6CC4006C}" {
+     Id "LF-BusStop_CancelTitle"
+     Target_en_us "Cancel trip"
+     Comment "Bus stop action name in the prefab (the script fills in the fare and the countdown)."
     }
     CustomStringTableItem "{4B1037495C5FD284}" {
      Id "LF-BusStop_Combat"
@@ -2510,11 +2540,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Get out of the vehicle first."
      Comment "Bus refusal: the player is in a vehicle."
     }
-    CustomStringTableItem "{65E44F0E76D7D99E}" {
-     Id "LF-BusStop_From"
-     Target_en_us "Timetable at %1"
-     Comment "Bus timetable: which stop this is. %1 the stop's name."
-    }
     CustomStringTableItem "{34BE773FFD417AE1}" {
      Id "LF-BusStop_GridNorth"
      Target_en_us "Test yard, north stop"
@@ -2525,11 +2550,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Test yard, south stop"
      Comment "Debug grid bus stop name."
     }
-    CustomStringTableItem "{2468ADE988941CE2}" {
-     Id "LF-BusStop_Intro"
-     Target_en_us "Pay the driver in cash, then wait here. Walk off, get hurt or start a fight and your fare is refunded."
-     Comment "Bus timetable: how a trip works."
-    }
     CustomStringTableItem "{917B6AE39DA8392B}" {
      Id "LF-BusStop_NoCash"
      Target_en_us "You do not have the fare in cash."
@@ -2539,11 +2559,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BusStop_NoCharacter"
      Target_en_us "You cannot travel right now."
      Comment "Bus refusal: no character or no body."
-    }
-    CustomStringTableItem "{1279B16F553A754A}" {
-     Id "LF-BusStop_NoRoutes"
-     Target_en_us "No other stops on this line."
-     Comment "Bus timetable: the map has no other stop."
     }
     CustomStringTableItem "{E831F4748B626430}" {
      Id "LF-BusStop_NoStop"
@@ -2560,11 +2575,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The driver will not stop with {police} on your tail."
      Comment "Bus refusal: wanted with an on-duty officer close."
     }
-    CustomStringTableItem "{74EA4E2EDAE4F80C}" {
-     Id "LF-BusStop_Row"
-     Target_en_us "{currency:sym}%1, %2 s"
-     Comment "Bus timetable row: the fare and the wait to one stop. %1 the fare in cash, %2 seconds."
-    }
     CustomStringTableItem "{BCB996F6837C3299}" {
      Id "LF-BusStop_SameStop"
      Target_en_us "You are already at that stop."
@@ -2579,6 +2589,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-BusStop_TooSoon"
      Target_en_us "The next bus is not due yet. Try again shortly."
      Comment "Bus refusal: the request or trip cooldown."
+    }
+    CustomStringTableItem "{2192680E4E040B4E}" {
+     Id "LF-BusStop_WhyBusy"
+     Target_en_us "Ticket already bought"
+     Comment "Greyed bus action reason: a ticket is already waiting."
+    }
+    CustomStringTableItem "{D3E1EB179C2F1379}" {
+     Id "LF-BusStop_WhyNoCash"
+     Target_en_us "Not enough cash"
+     Comment "Greyed bus action reason: the fare is more than the cash carried."
+    }
+    CustomStringTableItem "{CC7F4F43A1B2B050}" {
+     Id "LF-BusStop_WhyPursuit"
+     Target_en_us "{police} nearby"
+     Comment "Greyed bus action reason: wanted with an on-duty officer close."
+    }
+    CustomStringTableItem "{54D8814DF61E3B22}" {
+     Id "LF-BusStop_WhyTooSoon"
+     Target_en_us "Next bus not due yet"
+     Comment "Greyed bus action reason: the ask or trip cooldown."
     }
     CustomStringTableItem "{7E1C40B2A93D5F06}" {
      Id "LF-BuyerSale_Action"
@@ -11472,6 +11502,341 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The soil is dry. It needs water."
      Comment "Inspect toast: the plant can be watered now (#2664)."
     }
+    CustomStringTableItem "{A839CFC87CD97E94}" {
+     Id "LF-PlayerMenu_Bank"
+     Target_en_us "Bank account"
+     Comment "Personal file row: bank balance."
+    }
+    CustomStringTableItem "{4F95A449245E1929}" {
+     Id "LF-PlayerMenu_Cash"
+     Target_en_us "Cash in hand"
+     Comment "Personal file row: cash the character carries."
+    }
+    CustomStringTableItem "{247837F8339492C7}" {
+     Id "LF-PlayerMenu_Close"
+     Target_en_us "Close"
+     Comment "Personal file close button."
+    }
+    CustomStringTableItem "{C42AE3E161B80F72}" {
+     Id "LF-PlayerMenu_Garage"
+     Target_en_us "Garage slots"
+     Comment "Personal file row: vehicles stored over slots held."
+    }
+    CustomStringTableItem "{6FC41C4D1BFFDA61}" {
+     Id "LF-PlayerMenu_GarageValue"
+     Target_en_us "%1 of %2 used"
+     Comment "Personal file garage value. %1 = vehicles stored, %2 = slots held."
+    }
+    CustomStringTableItem "{ED18878B54F73D5D}" {
+     Id "LF-PlayerMenu_GroupArrival"
+     Target_en_us "FIRST ERRANDS"
+     Comment "Personal file Progress list group: the guided arrival chain."
+    }
+    CustomStringTableItem "{40343406B6555732}" {
+     Id "LF-PlayerMenu_GroupCount"
+     Target_en_us "%1 / %2"
+     Comment "Personal file group row count. %1 = done, %2 = total."
+    }
+    CustomStringTableItem "{6966BAA81E2F635C}" {
+     Id "LF-PlayerMenu_GroupErrands"
+     Target_en_us "OTHER ERRANDS"
+     Comment "Personal file Progress list group: every other errand taken."
+    }
+    CustomStringTableItem "{0F90061B8CB63527}" {
+     Id "LF-PlayerMenu_Guide"
+     Target_en_us "Welcome guide"
+     Comment "Personal file footer button: opens the welcome guide."
+    }
+    CustomStringTableItem "{41E30B4EE0E7DEE6}" {
+     Id "LF-PlayerMenu_HeadMoney"
+     Target_en_us "FINANCES"
+     Comment "Personal file section heading."
+    }
+    CustomStringTableItem "{5EDB5A057FBC4AA3}" {
+     Id "LF-PlayerMenu_HeadSkills"
+     Target_en_us "SKILLS"
+     Comment "Personal file section heading: one row per job skill."
+    }
+    CustomStringTableItem "{BA6834643BAE7C6D}" {
+     Id "LF-PlayerMenu_HeadStatus"
+     Target_en_us "STATUS"
+     Comment "Personal file section heading."
+    }
+    CustomStringTableItem "{660D6443F35395AD}" {
+     Id "LF-PlayerMenu_Houses"
+     Target_en_us "Houses owned"
+     Comment "Personal file row."
+    }
+    CustomStringTableItem "{16B38ECB1917D1B4}" {
+     Id "LF-PlayerMenu_Identity"
+     Target_en_us "%1 · %2"
+     Comment "Personal file identity line. %1 = character name, %2 = role (Civilian, Police officer, on duty, ...)."
+    }
+    CustomStringTableItem "{82C56C8427A68BE7}" {
+     Id "LF-PlayerMenu_Key"
+     Target_en_us "Personal file"
+     Comment "Settings > Controls: the key that opens the personal file (J)."
+    }
+    CustomStringTableItem "{3F1C9A7E2B5D8064}" {
+     Id "LF-PlayerMenu_Ledger"
+     Target_en_us "%1 ........ %2"
+     Comment "Personal file ledger line, printed matter. %1 = what (Cash in hand, Houses owned), %2 = the figure."
+    }
+    CustomStringTableItem "{7CE8B3A156C169C1}" {
+     Id "LF-PlayerMenu_Licences"
+     Target_en_us "Licences and permits: %1"
+     Comment "Personal file line. %1 = the licence names, comma separated."
+    }
+    CustomStringTableItem "{88EE192FCE8AC4CC}" {
+     Id "LF-PlayerMenu_LicencesNone"
+     Target_en_us "Licences and permits: none held"
+     Comment "Personal file line when no licence is held."
+    }
+    CustomStringTableItem "{48A10D9CC6860A9F}" {
+     Id "LF-PlayerMenu_NoName"
+     Target_en_us "Name not on file"
+     Comment "Personal file: the character has no registered name yet."
+    }
+    CustomStringTableItem "{CFF02279F95EF05A}" {
+     Id "LF-PlayerMenu_NoQuests"
+     Target_en_us "No errands on file yet."
+     Comment "Personal file Progress tab with no errand listed."
+    }
+    CustomStringTableItem "{7377D423F2E9B5D3}" {
+     Id "LF-PlayerMenu_OffDuty"
+     Target_en_us "off duty"
+     Comment "Personal file duty state."
+    }
+    CustomStringTableItem "{B6671A27755B9697}" {
+     Id "LF-PlayerMenu_OnDuty"
+     Target_en_us "on duty"
+     Comment "Personal file duty state."
+    }
+    CustomStringTableItem "{4D5F797963FE8D97}" {
+     Id "LF-PlayerMenu_Playtime"
+     Target_en_us "Time on the island"
+     Comment "Personal file row: total playtime of the account."
+    }
+    CustomStringTableItem "{8FB8F9587FA93741}" {
+     Id "LF-PlayerMenu_PlaytimeValue"
+     Target_en_us "%1 h %2 min"
+     Comment "Personal file playtime value. %1 = hours, %2 = minutes."
+    }
+    CustomStringTableItem "{114E0805DE8D52D3}" {
+     Id "LF-PlayerMenu_QuestHint"
+     Target_en_us "Pick an errand to read it."
+     Comment "Personal file: shown under the errands list before one is picked."
+    }
+    CustomStringTableItem "{08BD4D6C3BFA68E9}" {
+     Id "LF-PlayerMenu_QuestProgress"
+     Target_en_us "%1 · progress %2 / %3"
+     Comment "Personal file errand numbers. %1 = badge (DONE, CURRENT, LATER), %2 = done, %3 = needed."
+    }
+    CustomStringTableItem "{E9FC44CB85111207}" {
+     Id "LF-PlayerMenu_Read"
+     Target_en_us "Read"
+     Comment "Personal file list row button: show this skill or errand below the list."
+    }
+    CustomStringTableItem "{388649A98D7CA096}" {
+     Id "LF-PlayerMenu_RoleCivilian"
+     Target_en_us "Civilian"
+     Comment "Personal file role."
+    }
+    CustomStringTableItem "{11AE87042B721A46}" {
+     Id "LF-PlayerMenu_RoleDuty"
+     Target_en_us "%1, %2"
+     Comment "Personal file role with duty. %1 = role, %2 = on duty / off duty."
+    }
+    CustomStringTableItem "{DC5E7B83D1F8D08A}" {
+     Id "LF-PlayerMenu_RoleMedic"
+     Target_en_us "{medic}"
+     Comment "Personal file role."
+    }
+    CustomStringTableItem "{78EEA7E96D6E202A}" {
+     Id "LF-PlayerMenu_RolePolice"
+     Target_en_us "{police} officer"
+     Comment "Personal file role."
+    }
+    CustomStringTableItem "{E65F9D1445B42A9C}" {
+     Id "LF-PlayerMenu_Settings"
+     Target_en_us "Settings"
+     Comment "Personal file footer button: opens the game settings."
+    }
+    CustomStringTableItem "{643BE60ED6996276}" {
+     Id "LF-PlayerMenu_SkillDescOther"
+     Target_en_us "Work on the island that earns experience as you do it."
+     Comment "Skill description for a job the table has no row for."
+    }
+    CustomStringTableItem "{C852478B4B20E8CC}" {
+     Id "LF-PlayerMenu_SkillDesc_CIVILIAN"
+     Target_en_us "Odd jobs and errands for the locals. Some tools, a lockpick among them, want a steady hand first."
+     Comment "Skill description, CIVILIAN."
+    }
+    CustomStringTableItem "{6108599220E495F4}" {
+     Id "LF-PlayerMenu_SkillDesc_DELIVERY"
+     Target_en_us "Parcel rounds, fuel runs and taxi fares. More runs open the better-paid routes."
+     Comment "Skill description, DELIVERY."
+    }
+    CustomStringTableItem "{DDE9E42AD35085BB}" {
+     Id "LF-PlayerMenu_SkillDesc_FARMER"
+     Target_en_us "Picking fruit and drawing water in the fields. Experience opens the orchards and the faster harvest."
+     Comment "Skill description, FARMER."
+    }
+    CustomStringTableItem "{16237A864952C049}" {
+     Id "LF-PlayerMenu_SkillDesc_FISHER"
+     Target_en_us "Rod and line off the jetty and the shore. Patience brings the bigger catch."
+     Comment "Skill description, FISHER."
+    }
+    CustomStringTableItem "{69D82ADBBCD2826F}" {
+     Id "LF-PlayerMenu_SkillDesc_LUMBERJACK"
+     Target_en_us "Felling trees and working logs into planks at the mill."
+     Comment "Skill description, LUMBERJACK."
+    }
+    CustomStringTableItem "{3BC0577878C0CAC0}" {
+     Id "LF-PlayerMenu_SkillDesc_MEDIC"
+     Target_en_us "Treating the hurt and bringing the fallen back, on duty as a {medic}."
+     Comment "Skill description, MEDIC."
+    }
+    CustomStringTableItem "{DF98D27817C11D9F}" {
+     Id "LF-PlayerMenu_SkillDesc_MINER"
+     Target_en_us "Coal, copper, iron and gold from the pits. The richer ores want more experience first."
+     Comment "Skill description, MINER."
+    }
+    CustomStringTableItem "{5C7860BF6542679D}" {
+     Id "LF-PlayerMenu_SkillDesc_POLICE"
+     Target_en_us "Patrols, stops, fines and arrests on duty with the {police}."
+     Comment "Skill description, POLICE."
+    }
+    CustomStringTableItem "{58F153B6D5B351ED}" {
+     Id "LF-PlayerMenu_SkillHint"
+     Target_en_us "Pick a skill to read its record."
+     Comment "Personal file: shown under the skills list before one is picked."
+    }
+    CustomStringTableItem "{DE03E6E8DDB00C73}" {
+     Id "LF-PlayerMenu_SkillLevel"
+     Target_en_us "Level %1"
+     Comment "Personal file skill row status. %1 = level."
+    }
+    CustomStringTableItem "{F52EBB28BA797478}" {
+     Id "LF-PlayerMenu_SkillTop"
+     Target_en_us "Level %1 · %2 XP, the top of the ladder"
+     Comment "Personal file skill numbers at the highest level. %1 = level, %2 = total XP."
+    }
+    CustomStringTableItem "{48BCC2D5ADF101A4}" {
+     Id "LF-PlayerMenu_SkillXp"
+     Target_en_us "Level %1 · %2 / %3 XP"
+     Comment "Personal file skill numbers. %1 = level, %2 = total XP, %3 = total XP of the next level."
+    }
+    CustomStringTableItem "{4DF107179334698F}" {
+     Id "LF-PlayerMenu_Skill_CIVILIAN"
+     Target_en_us "General work"
+     Comment "Skill name of the CIVILIAN job track."
+    }
+    CustomStringTableItem "{44BD63FF4A688896}" {
+     Id "LF-PlayerMenu_Skill_DELIVERY"
+     Target_en_us "Delivery"
+     Comment "Skill name of the DELIVERY job track (parcels, fuel, taxi)."
+    }
+    CustomStringTableItem "{CEB3C601BA6C13EC}" {
+     Id "LF-PlayerMenu_Skill_FARMER"
+     Target_en_us "Farming"
+     Comment "Skill name of the FARMER job track."
+    }
+    CustomStringTableItem "{70C89C58806C0943}" {
+     Id "LF-PlayerMenu_Skill_FISHER"
+     Target_en_us "Fishing"
+     Comment "Skill name of the FISHER job track."
+    }
+    CustomStringTableItem "{F79EF93C19B94D30}" {
+     Id "LF-PlayerMenu_Skill_LUMBERJACK"
+     Target_en_us "Lumber"
+     Comment "Skill name of the LUMBERJACK job track."
+    }
+    CustomStringTableItem "{B18415A4FB204825}" {
+     Id "LF-PlayerMenu_Skill_MEDIC"
+     Target_en_us "{medic}"
+     Comment "Skill name of the MEDIC job track."
+    }
+    CustomStringTableItem "{AA52CF5828EE256B}" {
+     Id "LF-PlayerMenu_Skill_MINER"
+     Target_en_us "Mining"
+     Comment "Skill name of the MINER job track."
+    }
+    CustomStringTableItem "{17460BB5F62B70AB}" {
+     Id "LF-PlayerMenu_Skill_POLICE"
+     Target_en_us "{police}"
+     Comment "Skill name of the POLICE job track."
+    }
+    CustomStringTableItem "{D9EFF6F38B9466F2}" {
+     Id "LF-PlayerMenu_StateCurrent"
+     Target_en_us "CURRENT"
+     Comment "Personal file errand badge."
+    }
+    CustomStringTableItem "{921FF4306C06E7BA}" {
+     Id "LF-PlayerMenu_StateDone"
+     Target_en_us "DONE"
+     Comment "Personal file errand badge."
+    }
+    CustomStringTableItem "{6BE78DD852AA5B2B}" {
+     Id "LF-PlayerMenu_StateLater"
+     Target_en_us "LATER"
+     Comment "Personal file errand badge."
+    }
+    CustomStringTableItem "{72DBFE782ACC8113}" {
+     Id "LF-PlayerMenu_Summary"
+     Target_en_us "Errands on file: %1 of %2 done"
+     Comment "Personal file Progress tab summary. %1 = done, %2 = listed."
+    }
+    CustomStringTableItem "{8D2E6B1F4A7C9035}" {
+     Id "LF-PlayerMenu_TabOpen"
+     Target_en_us "· %1 ·"
+     Comment "Personal file: the open tab's button text. %1 = the tab name."
+    }
+    CustomStringTableItem "{8168FBFAAC62E4EB}" {
+     Id "LF-PlayerMenu_TabPerson"
+     Target_en_us "Person"
+     Comment "Personal file tab button: name, money, status, skills."
+    }
+    CustomStringTableItem "{E46FF8E8480EFC07}" {
+     Id "LF-PlayerMenu_TabProgress"
+     Target_en_us "Progress"
+     Comment "Personal file tab button: errands done, current and later."
+    }
+    CustomStringTableItem "{7ECEC4376AD1B4E5}" {
+     Id "LF-PlayerMenu_TitlePerson"
+     Target_en_us "PERSONAL FILE · PERSON"
+     Comment "Personal file sheet title on the Person tab."
+    }
+    CustomStringTableItem "{815D3A532245CE9D}" {
+     Id "LF-PlayerMenu_TitleProgress"
+     Target_en_us "PERSONAL FILE · PROGRESS"
+     Comment "Personal file sheet title on the Progress tab."
+    }
+    CustomStringTableItem "{D0846B46055E22FE}" {
+     Id "LF-PlayerMenu_Waiting"
+     Target_en_us "Fetching the file from the records office..."
+     Comment "Personal file: shown until the server's answer arrives."
+    }
+    CustomStringTableItem "{E10944E60E19C2E2}" {
+     Id "LF-PlayerMenu_Wanted"
+     Target_en_us "Wanted"
+     Comment "Personal file row: the police wanted state."
+    }
+    CustomStringTableItem "{0EBAA8CE0E18B34C}" {
+     Id "LF-PlayerMenu_WantedLevel"
+     Target_en_us "Level %1"
+     Comment "Personal file wanted value. %1 = wanted level."
+    }
+    CustomStringTableItem "{402E66AC2C233712}" {
+     Id "LF-PlayerMenu_WantedNo"
+     Target_en_us "No"
+     Comment "Personal file wanted value: not wanted."
+    }
+    CustomStringTableItem "{38FCAD58BB2A2C60}" {
+     Id "LF-PlayerMenu_Waypoint"
+     Target_en_us "Set waypoint to the current errand"
+     Comment "Personal file button: puts the current first errand on the map and screen."
+    }
     CustomStringTableItem "{F875CB040C3C2526}" {
      Id "LF-PoliceAppGm_Approve"
      Target_en_us "Approve"
@@ -13689,6 +14054,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_Rules"
      Target_en_us "Rules"
      Comment "Sign card section heading: cooldowns, wanted level, other rules."
+    }
+    CustomStringTableItem "{B71E5C09A4D23F68}" {
+     Id "LF-Sign_TaxiStand_Next"
+     Target_en_us "Take taxi work here, then drive each fare where it wants to go."
+     Comment "Sign catalog 'next' text of the taxi stand's Read card (sign id taxi_stand): what to do after reading it."
+    }
+    CustomStringTableItem "{6EAD44E4FC5E58E9}" {
+     Id "LF-Sign_TaxiStand_Title"
+     Target_en_us "Taxi stand"
+     Comment "Title printed on the taxi stand's pole plate (LF_TaxiStand prefab, sign id taxi_stand); the Read card shows it."
     }
     CustomStringTableItem "{84F64B2018E1B414}" {
      Id "LF-Sign_What"

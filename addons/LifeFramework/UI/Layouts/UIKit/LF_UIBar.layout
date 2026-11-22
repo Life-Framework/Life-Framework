@@ -1,0 +1,39 @@
+SizeLayoutWidgetClass "{C9B08D6C1628E797}" {
+ Name "Bar"
+ Slot LayoutSlot "{1E9028FEF7B8888D}" {
+  Padding 28 4 28 8
+ }
+ AllowHeightOverride 1
+ HeightOverride 12
+ {
+  HorizontalLayoutWidgetClass "{C159915832087801}" {
+   Name "BarTrack"
+   Slot AlignableSlot "{E94244F95BCBCD63}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   {
+    ImageWidgetClass "{DEE4F74926C7E9DE}" {
+     Name "BarFill"
+     Slot LayoutSlot "{26F5045E638C010C}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      SizeMode Fill
+      FillWeight 0
+     }
+     Color 0.478 0.4 0.251 1
+    }
+    ImageWidgetClass "{D70513AE2B233279}" {
+     Name "BarRest"
+     Slot LayoutSlot "{AAAC51436ED443CB}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+      SizeMode Fill
+      FillWeight 1
+     }
+     Color 0.863 0.816 0.714 1
+    }
+   }
+  }
+ }
+}

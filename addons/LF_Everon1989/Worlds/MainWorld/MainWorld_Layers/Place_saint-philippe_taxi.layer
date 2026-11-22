@@ -41,6 +41,12 @@ GenericEntity Fit_saint_philippe_taxi_job_taxi_pad {
  angleY 152
 }
 GenericEntity Fit_saint_philippe_taxi_taxi_cab : "{54C3CC22DEBD57BE}Prefabs/Vehicles/Wheeled/S105/S105_beige.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+   m_bJobCar 1
+  }
+ }
  coords 4430.371 10.364 10768.444
  angleY -118
 }

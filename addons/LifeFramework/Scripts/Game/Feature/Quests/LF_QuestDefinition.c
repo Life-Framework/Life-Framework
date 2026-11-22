@@ -62,6 +62,12 @@ class LF_QuestDefinition
 	[Attribute(defvalue: "0", UIWidgets.CheckBox, "Hand over the holder's registered ID card on turn-in (the town clerk). A player who turned this in gets the card back on every spawn.")]
 	bool m_bRewardIdCard;
 
+	//! A vehicle the step puts in the player's garage when it starts (LF_StarterVehicle): a lot offer's
+	//! vehicle prefab, stored and owned, its key in the pocket. Once per character: never to anyone who
+	//! already owns a vehicle, so a respawn, a restart or a second accept gives nothing.
+	[Attribute(defvalue: "", UIWidgets.ResourceNamePicker, "Vehicle (a lot offer's prefab) put in the player's garage when this step starts, once per character; empty: none", "et")]
+	ResourceName m_sStartVehiclePrefab;
+
 	//! Where the player is guided while this step is the one they are on (LF_ArrivalGuide): a waypoint on
 	//! the screen and a mark on their map. The kind is an LF_Places kind ("Sign", "ATM") or "giver" for
 	//! the quest giver named by the id; the id picks one place of that kind, empty means the nearest.

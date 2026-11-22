@@ -59,10 +59,11 @@ class LF_SignFacePlan
 		float innerH = height - 2 * margin;
 
 		int count = labels.Count();
-		if (count > MAX_ROWS)
+		int most = MaxRowsOf(style);
+		if (count > most)
 		{
-			plan.m_iDropped = count - MAX_ROWS;
-			count = MAX_ROWS;
+			plan.m_iDropped = count - most;
+			count = most;
 		}
 
 		plan.m_sTitle = title;
@@ -139,6 +140,16 @@ class LF_SignFacePlan
 		}
 
 		return plan;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The most rows a style prints: its own m_iMaxRows, else MAX_ROWS.
+	static int MaxRowsOf(notnull LF_SignStyleDef style)
+	{
+		if (style.m_iMaxRows > 0)
+			return style.m_iMaxRows;
+
+		return MAX_ROWS;
 	}
 
 	//------------------------------------------------------------------------------------------------

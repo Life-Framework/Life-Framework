@@ -35,7 +35,7 @@ class LF_Test_EveronStartingMap : LF_Test
 
 		// The clerk's welcome gift adds food and a drink, never a second map.
 		array<ResourceName> gift = {};
-		LF_WelcomeGiftTable.ItemsOf("arrival_done", gift);
+		LF_WelcomeGiftTable.ItemsOf("arrival_register", gift);
 		ctx.True(gift.Find(MAP) == -1, "the welcome gift holds no paper map");
 
 		LF_TestCharacterFixture.Delete(newcomer);

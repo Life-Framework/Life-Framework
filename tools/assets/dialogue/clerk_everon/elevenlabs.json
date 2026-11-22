@@ -170,6 +170,71 @@
       "request_id": "vfDh6BCqBhMQVBy8G1bo",
       "seconds": 10.23,
       "mouth": "5817938999877411016135319823331029999743577631211001373338998835643313332100000000000000002998259988773776333310000010008999989343858787641100000000015741129884329259756533331153228741129858765534343211100"
+    },
+    "welcome_pack": {
+      "hash": "a1ea48bcd5dae7e0",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with.",
+      "chars": 209,
+      "chars_total": 84,
+      "request_id": "TcN9cZqJBgccN7xhi6mE",
+      "seconds": 19.56,
+      "mouth": "59997311100000000000000000002699999999511110178899887864544244121000000000000002467786447558866537983453413364433110000000000000429329987765432100000000010010022677234999821114963298999837955976641110361457998776311110001338965421102599589999933664341110000000000000004999967422110000000001188555899945397344210010000001355199989874379898887211010000023675338643369847456411035565388411534000"
+    },
+    "starter_car": {
+      "hash": "9c3af61b0e555f3a",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "Your new car waits at the garage counter of the car lot, next to the town hall: take it out there.",
+      "chars": 98,
+      "chars_total": 100,
+      "request_id": "GUXXqlxqbc2fYNsbr7Ow",
+      "seconds": 7.16,
+      "mouth": "499999974469997676211001469993336532748899988754232665356641155471333999654111110000000000069963514845146666465443110000000000158427664126331000"
+    },
+    "apples": {
+      "hash": "43b245ad7b3c0fcc",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "Drive to the orchard east of the town and pick six apples from the trees.",
+      "chars": 73,
+      "chars_total": 60,
+      "request_id": "x8wA94p1utwEWCkrK1Mg",
+      "seconds": 5.4,
+      "mouth": "6999999323947412999246954111100002997439448154436653110000000027618843345796343211398148864389774458653331000"
+    },
+    "juice": {
+      "hash": "41adf8dbec2a6474",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "Press your apples into juice at the juice press on the orchard stall.",
+      "chars": 69,
+      "chars_total": 74,
+      "request_id": "0RSiBbcBv1ItJAsxKn9d",
+      "seconds": 5.09,
+      "mouth": "998455999862676431166235224499745431111110000006982394234955316886343311466344112999443832532664423100"
+    },
+    "market": {
+      "hash": "919694c2b3dea47a",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "Drive back to the market in the town centre and sell your apple juice to the trader.",
+      "chars": 84,
+      "chars_total": 61,
+      "request_id": "2ZPu5O8Ywxmejnx5tG0U",
+      "seconds": 5.25,
+      "mouth": "3699999963498732376779982361115777145776454863455210000000000026455499997651898258445765522477452775523000"
     }
   },
   "voice": {

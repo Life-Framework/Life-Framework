@@ -4,7 +4,7 @@ GenericEntity Fit_saint_philippe_atms_drop_b79 : "{7070D89FFB6DC880}Prefabs/Prop
    m_sId "atm.saint-philippe.b79"
   }
  }
- coords 4375.568 12.03 10649.741
+ coords 4376.717 12.03 10649.882
  angleY 173
 }
 GenericEntity Fit_saint_philippe_atms_drop_b97 : "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et" {
@@ -13,7 +13,7 @@ GenericEntity Fit_saint_philippe_atms_drop_b97 : "{7070D89FFB6DC880}Prefabs/Prop
    m_sId "atm.saint-philippe.b97"
   }
  }
- coords 4615.019 18.83 10666.783
+ coords 4614.793 18.83 10666.743
  angleY 170
 }
 GenericEntity Fit_saint_philippe_dock_atms_drop_b08 : "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et" {
@@ -22,6 +22,6 @@ GenericEntity Fit_saint_philippe_dock_atms_drop_b08 : "{7070D89FFB6DC880}Prefabs
    m_sId "atm.saint-philippe-dock.b08"
   }
  }
- coords 4421.267 1.73 11022.522
+ coords 4421.264 1.73 11022.524
  angleY -60
 }

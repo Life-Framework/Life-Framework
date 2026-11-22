@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{03B59B0CD932C22D}Assets/Props/Commercial/ShopCounter/Data/SC_Lambris_BCR.edds"
+ NMOMap "{2DF51BB5E0A7C361}Assets/Props/Commercial/ShopCounter/Data/SC_Lambris_NMO.edds"
+}

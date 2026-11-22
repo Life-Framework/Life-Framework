@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "bus-stops",
+  "drops": [
+    {
+      "place": "saint-philippe",
+      "building": "b45"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b12"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b03"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b107"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b32"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b39"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b77"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b121"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b73"
+    }
+  ],
+  "kit": "bus-stops",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_bus-stops.layer",
+  "kinds": [],
+  "rows": 9,
+  "date": "2026-11-22"
+}

@@ -72,7 +72,7 @@ class LF_SignStyledFace
 		ResolveRows(sign, labels, values);
 		LF_SignFacePlan plan = LF_SignFacePlan.Compose(size.m_vShown, style, LF_SignCatalog.ResolveTitle(sign.m_sTitle), labels, values);
 		if (plan.m_iDropped > 0)
-			LF_Debug.Warn("Signs", string.Format("sign %1: %2 rows over the %3 a face holds are left off", sign.m_sId, plan.m_iDropped, LF_SignFacePlan.MAX_ROWS));
+			LF_Debug.Warn("Signs", string.Format("sign %1: %2 rows over the %3 a face holds are left off", sign.m_sId, plan.m_iDropped, LF_SignFacePlan.MaxRowsOf(style)));
 
 		vector groundColor;
 		vector inkColor;
