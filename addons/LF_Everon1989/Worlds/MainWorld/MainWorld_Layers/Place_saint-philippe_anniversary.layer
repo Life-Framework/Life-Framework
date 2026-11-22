@@ -27,7 +27,7 @@ GenericEntity Fit_saint_philippe_anniversary_prepare_spawn2 : "{341786FB63CF0CC7
    m_iOrder 2
   }
  }
- coords 4451 7.091 10817
+ coords 4451 9.441 10817
 }
 GenericEntity Fit_saint_philippe_anniversary_prepare_wp0 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
  components {
