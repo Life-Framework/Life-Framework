@@ -397,81 +397,87 @@ ImageSetClass {
    Size 64 64
    Flags 0
   }
+  ImageSetDefClass poi_PostOffice {
+   Name "poi_PostOffice"
+   Pos 64 256
+   Size 64 64
+   Flags 0
+  }
   ImageSetDefClass pencil_cross {
    Name "pencil_cross"
-   Pos 64 256
+   Pos 128 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pencil_circle {
    Name "pencil_circle"
-   Pos 128 256
+   Pos 192 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pencil_arrow {
    Name "pencil_arrow"
-   Pos 192 256
+   Pos 256 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pencil_note {
    Name "pencil_note"
-   Pos 256 256
+   Pos 320 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pencil_question {
    Name "pencil_question"
-   Pos 320 256
+   Pos 384 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pin_police {
    Name "pin_police"
-   Pos 384 256
+   Pos 448 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pin_org {
    Name "pin_org"
-   Pos 448 256
+   Pos 512 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pin_taxi {
    Name "pin_taxi"
-   Pos 512 256
+   Pos 576 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass pin_waypoint {
    Name "pin_waypoint"
-   Pos 576 256
+   Pos 640 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass stamp_town {
    Name "stamp_town"
-   Pos 640 256
+   Pos 704 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass stamp_nopolice {
    Name "stamp_nopolice"
-   Pos 704 256
+   Pos 768 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass stamp_restricted {
    Name "stamp_restricted"
-   Pos 768 256
+   Pos 832 256
    Size 64 64
    Flags 0
   }
   ImageSetDefClass stamp_you {
    Name "stamp_you"
-   Pos 832 256
+   Pos 896 256
    Size 64 64
    Flags 0
   }
