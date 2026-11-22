@@ -121,6 +121,9 @@ function inline(s) {
     if (/^\.\.\//.test(href) || href === "manual.html") return label;
     const m = href.match(/^(\d\d-[\w-]+|README)\.md$/);
     if (m) return `<a href="#${pageId(m[0])}">${label}</a>`;
+    // A section on another page: the manual is one HTML file, so the heading's own id is the target.
+    const sec = href.match(/^(?:\d\d-[\w-]+|README|maps)\.md#([\w-]+)$/);
+    if (sec) return `<a href="#${sec[1]}">${label}</a>`;
     return `<a href="${href}">${label}</a>`;
   });
   s = s.replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>").replace(/(^|[^*\w])\*([^*\s][^*]*)\*/g, "$1<em>$2</em>");
@@ -250,6 +253,18 @@ ${toc}
 ${sections}
 </main></body></html>
 `;
+// Every link must work inside the one page: an in-page #anchor with a matching id, or an absolute URL.
+// A leftover relative link (`03-jobs.md#fishing`) fails the website's route check after deploy, so stop here.
+const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((x) => x[1]));
+const broken = [];
+for (const [, href] of html.matchAll(/<a href="([^"]*)"/g)) {
+  if (href.startsWith("#")) { if (!ids.has(href.slice(1))) broken.push(`${href} (no heading or block has this id)`); }
+  else if (!/^(https?:|mailto:)/.test(href)) broken.push(`${href} (relative link; the manual is one page)`);
+}
+if (broken.length) {
+  console.error(`manual FAIL: ${broken.length} broken link(s):\n  ${[...new Set(broken)].join("\n  ")}`);
+  process.exit(1);
+}
 writeFileSync(join(DIR, "manual.html"), html);
 // The same file is the public page life-framework.org/manual/ (website/public is served as is).
 const SITE_DIR = join(ROOT, "website/public/manual");

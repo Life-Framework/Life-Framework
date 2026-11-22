@@ -81,8 +81,14 @@ class LF_Test_RolesWorld : LF_Test
 					{
 						foreach (LF_DialogueNode node : config.m_aNodes)
 						{
-							if (!node.m_sLine.IsEmpty())
-								ctx.True(WidgetManager.Translate(node.m_sLine) != node.m_sLine, node.m_sLine + " is in the string table");
+							// A voiced conversation names a line id (#4061); the caption key is on that line.
+							string lineKey = node.m_sLine;
+							LF_DialogueLine voiced = LF_DialogueFlow.FindLine(config, node.m_sLine);
+							if (voiced)
+								lineKey = voiced.m_sTextKey;
+
+							if (!lineKey.IsEmpty())
+								ctx.True(WidgetManager.Translate(lineKey) != lineKey, lineKey + " is in the string table");
 
 							foreach (LF_DialogueOption option : node.m_aOptions)
 								ctx.True(WidgetManager.Translate(option.m_sTextKey) != option.m_sTextKey, option.m_sTextKey + " is in the string table");
