@@ -205,7 +205,7 @@ GenericEntity HomeSign_saint_philippe_sp_b68 : "{2F815241C89039BC}Prefabs/Props/
    m_sHouseId "saint-philippe.home.sp-b68"
   }
  }
- coords 4588.661 18.23 10747.114
+ coords 4594.336 18.23 10748.114
  angleY 170
 }
 GenericEntity Home_saint_philippe_sp_b72 : "{4D1B7E92A6C03F58}Prefabs/Systems/Houses/LF_HouseMarker.et" {

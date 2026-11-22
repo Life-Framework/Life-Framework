@@ -125,6 +125,14 @@ class LF_PoliceApplicationRules
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Whether the station desk approves an application the moment it is filed: a playtest mission header
+	//! (m_bLF_InstantPoliceApproval) or the alpha owner switch (police.alphaInstantApproval).
+	static bool ApprovesOnSubmit(bool headerInstant, bool alphaInstant)
+	{
+		return headerInstant || alphaInstant;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Removes the characters the file format uses so a field cannot forge a record.
 	static string Clean(string text)
 	{
