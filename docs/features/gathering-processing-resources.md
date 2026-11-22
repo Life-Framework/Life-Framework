@@ -195,6 +195,7 @@
 
 ### Saint-Philippe edge timber yard (#3175) — `Place_saint-philippe_woodlot.layer`, kit `lumber-yard`
 - 🧪 **A dressed timber yard on the Warehouse_01 hall `b121`** at the village edge (slot `woodlot`, purpose row `timber yard`): the sawmill and a lumberjack workplace desk (map POI `Workplace`) stand on the hall floor; log decks, plank stacks, a saw bench, pallets, a parked truck for the loading bay, net fence with a gate gap, three wall work lights and the `Scierie` sign (`saint_philippe_timber_yard`, pack strings `LF-Sign_TimberYard_*`) stand on the apron. Built with `town fit saint-philippe woodlot`; the template slot now names kit `lumber-yard` and places `Workplace` beside `LogPile` and `Processor`.
+- 🧪 **The yard stands off the road (2026-11-22).** Road r02 runs along the hall's south wall, so the first fit put the log decks, plank stacks, pallets and truck on the carriageway (the `road-clutter` audit rule found five rows there). The dressing now stands on the paved lot north of the hall (one log deck, one plank stack beside it, the saw bench and two pallets, the truck); the net fence that enclosed the road strip is gone. The sign and the wall lights stay on the road side.
 - ⚠️ The woodlot sign and map point at the forest edge 100 to 200 m away are not built: the slot's 14 m margin cannot hold them (follow-up card).
 
 ### Mining chain rows (#3232) — `ResourceChains.conf`

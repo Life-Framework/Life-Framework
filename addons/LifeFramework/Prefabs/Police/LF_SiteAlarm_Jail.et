@@ -1,0 +1,16 @@
+GenericEntity : "{3C7A51E2D94B08F6}Prefabs/Police/LF_SiteAlarm.et" {
+ ID "4E77C43F781CC5D2"
+ components {
+  LF_SiteAlarmComponent "{7615F1642D373349}" {
+   m_bLoud 0
+   m_sSoundProject "{93A254AA45F9EE3A}Sounds/Alarm/Jail/Alarm_Jail.acp"
+   m_sSoundEvent "SOUND_LF_ALARM_JAILBREAK_LP"
+   m_sSignalName ""
+   m_fHearRange 90
+   m_vLightColor 1 0.4 0.05
+   m_fLightRadius 3
+   m_fLightLV 8
+   m_iFlashMs 300
+  }
+ }
+}

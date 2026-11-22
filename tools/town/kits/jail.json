@@ -58,8 +58,9 @@
           "component": "LF_JailCellComponent",
           "set": {
             "m_fZoneRadius": "2",
-            "m_sDoorTargetId": "\"\"",
-            "m_vReleaseOffset": "3 0 2.5"
+            "m_sDoorTargetId": "\"saint_philippe_jail_cell\"",
+            "m_vReleaseOffset": "3.9 0 3.2",
+            "m_sOuterDoorTargetId": "\"saint_philippe_jail_outer\""
           },
           "blocks": []
         }
@@ -112,6 +113,164 @@
       "yaw": 0,
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "jail-cell-door",
+      "name": "JailKit_CellDoor",
+      "prefab": "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -2.09,
+        0.036,
+        -1.14
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_BreachTargetComponent",
+          "set": {
+            "m_sTargetId": "\"saint_philippe_jail_cell\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "LF_LockComponent",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "floor": "f0",
+      "mount": "free"
+    },
+    {
+      "id": "jail-outer-door",
+      "name": "JailKit_OuterDoor",
+      "prefab": "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -0.51,
+        0.036,
+        -0.82
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_BreachTargetComponent",
+          "set": {
+            "m_sTargetId": "\"saint_philippe_jail_outer\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "LF_LockComponent",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        }
+      ],
+      "floor": "f0",
+      "mount": "free"
+    },
+    {
+      "id": "jail-outer-wing",
+      "name": "JailKit_OuterWing",
+      "prefab": "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -2.03,
+        0.036,
+        -0.82
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_LockComponent",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "floor": "f0",
+      "mount": "free"
+    },
+    {
+      "id": "jail-outer-wing-2",
+      "name": "JailKit_OuterWing2",
+      "prefab": "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -1.78,
+        0.036,
+        -0.64
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_LockComponent",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "floor": "f0",
+      "mount": "free"
+    },
+    {
+      "id": "jail-bail-phone",
+      "name": "JailKit_BailPhone",
+      "prefab": "{0BC3EE6F94D8C8A6}Prefabs/Police/LF_JailBailPhone.et",
+      "role": "interactable",
+      "verb": "against wall",
+      "offset": [
+        -3.7,
+        0.036,
+        -1.15
+      ],
+      "yaw": 180,
+      "wall": "+z",
+      "floor": "f0",
+      "lift": 0.036
+    }
+  ],
+  "clear": [
+    {
+      "prefab": "{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et",
+      "box": {
+        "offset": [
+          -2.07,
+          -2
+        ],
+        "half": [
+          0.5,
+          0.9
+        ],
+        "height": 4
+      }
     }
   ]
 }
