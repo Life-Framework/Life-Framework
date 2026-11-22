@@ -242,6 +242,9 @@ class LF_MapRunRules
 {
 	//! A badge belongs to a stop whose entity stands within this many metres of the place.
 	static const float MATCH_RADIUS = 45; // lf-fixed: a stop entity to its place's badge
+	//! Only the runs whose stop is the badge's nearest, give or take this much: a shop next door (the timber
+	//! merchant beside the hardware store) is not this badge's stop. A stop two runs share is equally near.
+	static const float NEAREST_SLACK = 10; // lf-fixed: metres
 	//! A stop shows only near a place the player's map already holds (no undiscovered place leaks).
 	static const float SHOW_RADIUS = 80; // lf-fixed: a stop to a known place
 	//! Dash and gap of a connector line in screen pixels.
@@ -274,9 +277,18 @@ class LF_MapRunRules
 			step.Set(point.m_iRun, point.m_iStep);
 		}
 
+		float nearest = reach;
+		foreach (int run, float d : best)
+		{
+			if (d < nearest)
+				nearest = d;
+		}
+
+		float keep = Math.Sqrt(nearest) + NEAREST_SLACK;
 		foreach (int run, int s : step)
 		{
-			into.Insert(LF_MapRunMatch.Make(run, s));
+			if (best.Get(run) <= keep * keep)
+				into.Insert(LF_MapRunMatch.Make(run, s));
 		}
 
 		return into.Count();

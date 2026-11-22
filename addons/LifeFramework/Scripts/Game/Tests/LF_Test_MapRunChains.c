@@ -1,4 +1,4 @@
-// red-proof: 2026-11-22, cli test --no-build --red LF_Test_MapRunChains,LF_Test_EveronMapRuns: RED-OK (RedProof() skips MarkShown, so no stop shows and no badge matches a run).
+// red-proof: 2026-11-22, cli test --no-build --red LF_Test_MapRunChains,LF_Test_EveronMapRuns: RED-OK (RedProof() skips MarkShown, so no stop shows and no badge matches a run). The shop-next-door case was red on the first matcher in the session (hardware badge matched the lumber run too) and green with NEAREST_SLACK.
 //------------------------------------------------------------------------------------------------
 //! map/run-chains: a badge belongs to the run whose stop stands at it, at that step; a stop two runs share
 //! belongs to both; a stop no known place is near stays off the map (an undiscovered mine never leaks
@@ -53,6 +53,14 @@ class LF_Test_MapRunChains : LF_Test
 		ctx.Equal(2, LF_MapRunRules.Match("3000 0 505", points, matches), "the dock buyer is the end of both runs");
 		ctx.Equal(0, LF_MapRunRules.Match("5000 0 5000", points, matches), "hovering the unknown pond draws nothing");
 		ctx.Equal(0, LF_MapRunRules.Match("8000 0 8000", points, matches), "a badge on no run draws nothing");
+
+		// The hardware store (mining step 2) has the timber merchant (lumber's last stop) 30 m along the street.
+		array<ref LF_MapRunPoint> street = {};
+		street.Insert(Point(0, 1, 1000, 0));
+		street.Insert(Point(2, 2, 1030, 0));
+		array<vector> shops = {"1000 0 2", "1030 0 2"};
+		LF_MapRunRules.MarkShown(street, shops);
+		ctx.Equal(1, LF_MapRunRules.Match("1000 0 2", street, matches), "the hardware badge is the mining stop only, not the shop next door");
 
 		string stepText;
 		string countText;

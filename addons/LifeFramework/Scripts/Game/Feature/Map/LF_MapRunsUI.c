@@ -163,10 +163,9 @@ modded class LF_MapPlacesUI
 			if (match.m_iStep + 1 < run.StopCount())
 				next = WidgetManager.Translate(run.m_aStops[match.m_iStep + 1].m_sLabel);
 
-			if (!text.IsEmpty())
-				text += "\n";
-
-			text += WidgetManager.Translate(key, WidgetManager.Translate(run.m_sLabel), stepText, countText, next);
+			// One line: the card holds two (its title and this). A stop two runs share names the first.
+			text = WidgetManager.Translate(key, WidgetManager.Translate(run.m_sLabel), stepText, countText, next);
+			break;
 		}
 
 		return text;
