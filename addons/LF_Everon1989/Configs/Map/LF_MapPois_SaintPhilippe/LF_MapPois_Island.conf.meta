@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{996A2B2A386D50ED}Configs/Map/LF_MapPois_SaintPhilippe/LF_MapPois_Island.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

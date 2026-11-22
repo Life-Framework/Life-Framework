@@ -52,6 +52,9 @@ class LF_MapPoiConfig
 	[Attribute("", UIWidgets.Object, "One row per place kind the map draws")]
 	ref array<ref LF_MapPoiKind> m_aKinds;
 
+	[Attribute("", UIWidgets.ResourceNamePicker, "The pack's map icon imageset: the pictograms its rows name (poi_Bank, ...). Empty: the neutral category glyphs only", "imageset")]
+	ResourceName m_IconSet;
+
 	protected static ref LF_MapPoiConfig s_Config;
 	protected static bool s_bLoadAttempted;
 
@@ -103,6 +106,11 @@ class LF_MapPoiConfig
 		{
 			int changed = LF_ConfigOverlay.ApplyContainerList(list, resource.GetResource().ToBaseContainer(), "m_aKinds", names[i], claims);
 			LF_Debug.Info(FEATURE, string.Format("pack overlay %1 changed %2 POI rows", names[i], changed));
+			// The pack's own icon set: the last overlay that names one wins.
+			BaseContainer container = resource.GetResource().ToBaseContainer();
+			ResourceName iconSet;
+			if (container && container.IsVariableSetDirectly("m_IconSet") && container.Get("m_IconSet", iconSet) && !iconSet.IsEmpty())
+				m_IconSet = iconSet;
 		}
 	}
 

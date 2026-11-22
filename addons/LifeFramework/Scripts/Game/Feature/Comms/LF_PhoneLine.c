@@ -16,6 +16,8 @@ class LF_PhoneComponentClass : ScriptComponentClass
 class LF_PhoneComponent : ScriptComponent
 {
 	static const ResourceName LINE_PREFAB = "{F5BCA5ED11FDC89D}Prefabs/Comms/LF_PhoneLine.et";
+	//! A payphone is a place of this kind, so the map can name it (a pack row in the POI table decides).
+	static const string PLACE_KIND = "Payphone";
 
 	[Attribute("", UIWidgets.EditBox, "Service key (Configs/Comms/LF_ServiceCalls.conf) this station telephone answers, e.g. police. Empty on a payphone")]
 	protected string m_sDispatchService;
@@ -162,6 +164,9 @@ class LF_PhoneComponent : ScriptComponent
 	override void OnPostInit(IEntity owner)
 	{
 		Phones().Insert(this);
+		// A station telephone sits inside its building; only a public payphone is a place of its own.
+		if (!IsDispatchPhone())
+			LF_Places.Register(PLACE_KIND, string.Format("payphone_%1", owner.GetID()), owner);
 	}
 
 	//------------------------------------------------------------------------------------------------

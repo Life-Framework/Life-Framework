@@ -30,7 +30,7 @@ const by = Object.fromEntries(o.pois.map((p) => [p.id, p]));
 expect(by.Fix_Hospital?.x === 100 && by.Fix_Hospital?.z === 100, "a place's position comes from its layer entry");
 expect(by.Fix_Hospital?.name === "Clinic", `the label is the localised kind name (got ${by.Fix_Hospital?.name})`);
 expect(by.Fix_Fence?.visibility === "HIDDEN", "the pack's Fence row joins (a pack kind)");
-expect(by.Fix_PoliceDesk?.name === "Workplace (POLICE)" && by.Fix_PoliceDesk?.source === "LF_WorkplaceComponent", "a place whose component comes from its prefab's ancestry is found (the duty desk)");
+expect(by.Fix_PoliceDesk?.name === "Job site (POLICE)" && by.Fix_PoliceDesk?.source === "LF_WorkplaceComponent", "a place whose component comes from its prefab's ancestry is found (the duty desk)");
 expect(by.Fix_GroupDesk_A && by.Fix_GroupDesk_B && by.Fix_GroupDesk_A.z === 180 && by.Fix_GroupDesk_B.z === 220, "a $grp group gives each member its own place");
 expect(Math.abs(by.Fix_Nested?.x - 310) < 1e-6 && Math.abs(by.Fix_Nested?.z - 300) < 1e-6, `a nested child is placed from its parent, turned by its yaw (got ${by.Fix_Nested?.x},${by.Fix_Nested?.z})`);
 expect(by.Fix_Clinic_State2?.live === false && by.Fix_Clinic_State1?.live === true, "live state: 2 is dark and 1 is live under [1]");
@@ -39,10 +39,11 @@ expect(by.Fix_Clinic_State2?.live === false && by.Fix_Clinic_State1?.live === tr
 const publicIds = ["Fix_Hospital", "Fix_Clinic_State1", "Fix_Nested"];
 const workplaceIds = ["Fix_Desk", "Fix_PoliceDesk", "Fix_GroupDesk_A", "Fix_GroupDesk_B"];
 const full = (ids) => Object.fromEntries(ids.map((i) => [i, "full"]));
-same(seen(o, "new"), full(publicIds), "new player: public places only (discover, role and hidden kinds stay off)");
-same(seen(o, "known"), { ...full(publicIds), ...full(workplaceIds), Fix_Fence: "pencil" }, "known player: discover places in ink, the fence as a pencil mark, no police armoury");
+// The pack makes the job sites public (rc-map-places), so a new player sees them; role and hidden kinds stay off.
+same(seen(o, "new"), { ...full(publicIds), ...full(workplaceIds) }, "new player: public places only (role and hidden kinds stay off)");
+same(seen(o, "known"), { ...full(publicIds), ...full(workplaceIds), Fix_Fence: "pencil" }, "known player: the fence as a pencil mark, no police armoury");
 same(seen(o, "police"), { ...full(publicIds), ...full(workplaceIds), Fix_Armoury: "full", Fix_Fence: "pencil" }, "police: also the armoury (role row)");
-same(seen(o, "org:crew"), { ...full(publicIds), ...Object.fromEntries(workplaceIds.map((i) => [i, "faded"])), Fix_Fence: "pencil" }, "org member: discover places heard of (faded)");
+same(seen(o, "org:crew"), { ...full(publicIds), ...full(workplaceIds), Fix_Fence: "pencil" }, "org member: same as a known player");
 
 // 3. Every state live when the header lists none: the dark place shows again.
 const all = loadOverlay(ROOT, { world: FIX, liveStates: [] });
@@ -82,7 +83,7 @@ expect(places.places.length >= town.pois.length && places.files.length > 10, "to
 const r = {};
 for (const as of ["new", "known", "police"]) r[as] = await renderMap({ root: ROOT, world: "fixture", files: [FIX], liveStates: [1], as, size: [600, 600], extract: false });
 expect(r.new.layer === "plain" && r.new.stats.overlay.startsWith("places:"), "a world that is not main draws on the plain grid from its places");
-expect(r.new.stats.pois === 3 && r.known.stats.pois === 8 && r.police.stats.pois === 9, `drawn POIs new/known/police = 3/8/9 (got ${r.new.stats.pois}/${r.known.stats.pois}/${r.police.stats.pois})`);
+expect(r.new.stats.pois === 7 && r.known.stats.pois === 8 && r.police.stats.pois === 9, `drawn POIs new/known/police = 7/8/9 (got ${r.new.stats.pois}/${r.known.stats.pois}/${r.police.stats.pois})`);
 
 if (fails.length) { for (const f of fails) console.error(`FAIL ${f}`); console.error(`SUMMARY map-places selftest fail ${fails.length}`); process.exit(1); }
 console.log("SUMMARY map-places selftest ok");

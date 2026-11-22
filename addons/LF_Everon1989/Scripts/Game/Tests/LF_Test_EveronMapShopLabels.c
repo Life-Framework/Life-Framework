@@ -1,8 +1,8 @@
 // red-proof: 2026-11-18, cli test --no-build --red LF_Test_EveronMapShopLabels: RED-OK (RedProof() reads the table without the pack overlay's slot rows, so no shop has a row and every shop-specific label check fails). Green without it under the pack header.
 //! everon/map-shop-labels (#3515): under the Everon 1989 header (the pack leg), each shop slot of
 //! Saint-Philippe has its own POI slot row, so the map names the bakery, the hardware store and the rest
-//! instead of calling every StoreCounter a general store. Visibility stays the base kind's: a shop
-//! shows once the player heard of it or visited it, as the other shops do (#2247).
+//! instead of calling every StoreCounter a general store. A shop is on every player's map from the first
+//! look (rc-map-places: a new player could not find a shop that stayed hidden until heard of).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronMapShopLabels : LF_Test
 {
@@ -30,12 +30,7 @@ class LF_Test_EveronMapShopLabels : LF_Test
 		LF_MapPoiAudience stranger = new LF_MapPoiAudience();
 		array<ref LF_MapPoi> pois = {};
 		LF_MapPois.Collect(config, stranger, places, pois);
-		ctx.Equal(0, pois.Count(), slot + " is hidden from a player who never heard of it");
-
-		LF_MapPoiAudience heard = new LF_MapPoiAudience();
-		heard.SetKnown(placeId, LF_EMapPoiKnown.HEARD);
-		LF_MapPois.Collect(config, heard, places, pois);
-		ctx.Equal(1, pois.Count(), slot + " shows once heard of");
+		ctx.Equal(1, pois.Count(), slot + " shows to a player who never heard of it");
 		if (pois.Count() == 1)
 			ctx.EqualStr(label, pois[0].m_sLabel, slot + " draws under its own name");
 	}
@@ -77,7 +72,7 @@ class LF_Test_EveronMapShopLabels : LF_Test
 		if (barber)
 		{
 			ctx.EqualStr("#LF-MapPoi_Barber", barber.m_sLabel, "the barber's chair is named Barber");
-			ctx.True(barber.m_eVisibility == LF_EMapPoiVisibility.DISCOVER, "the barber shows once heard of, like the other shops");
+			ctx.True(barber.m_eVisibility == LF_EMapPoiVisibility.PUBLIC, "the barber is on every player's map, like the other shops");
 		}
 	}
 }

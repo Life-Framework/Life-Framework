@@ -8637,6 +8637,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Map key"
      Comment "Map legend sheet (#2244): the sheet title."
     }
+    CustomStringTableItem "{3B7E5C19A2D40F68}" {
+     Id "LF-MapMarkWaypoint_Label"
+     Target_en_us "Map marker"
+     Comment "Map: name under the HUD marker of the waypoint a player's own map marker sets, when the marker has no text of its own."
+    }
     CustomStringTableItem "{DE2AC99F6166AB0D}" {
      Id "LF-MapPlaces_ClusterNote"
      Target_en_us "Zoom in for each"
