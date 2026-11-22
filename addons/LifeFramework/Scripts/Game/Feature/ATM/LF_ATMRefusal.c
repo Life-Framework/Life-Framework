@@ -10,7 +10,9 @@ enum LF_EATMRefusal
 	POCKETS_FULL,
 	TOO_FAR,
 	NO_ACCOUNT,
-	SYSTEM_OFF
+	SYSTEM_OFF,
+	//! Dead, downed or cuffed: no hands for the machine.
+	CANNOT_ACT
 }
 
 class LF_ATMRefusal
@@ -40,6 +42,9 @@ class LF_ATMRefusal
 		if (reason == LF_EATMRefusal.SYSTEM_OFF)
 			return "#LF-Systems_Off";
 
+		if (reason == LF_EATMRefusal.CANNOT_ACT)
+			return "#LF-ATM_RefuseCannotAct";
+
 		return string.Empty;
 	}
 
@@ -47,7 +52,7 @@ class LF_ATMRefusal
 	//! A reason that arrives over the wire as an int; anything unknown reads as no account.
 	static LF_EATMRefusal FromWire(int reason)
 	{
-		if (reason < LF_EATMRefusal.NONE || reason > LF_EATMRefusal.SYSTEM_OFF)
+		if (reason < LF_EATMRefusal.NONE || reason > LF_EATMRefusal.CANNOT_ACT)
 			return LF_EATMRefusal.NO_ACCOUNT;
 
 		return reason;

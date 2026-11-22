@@ -7,7 +7,7 @@
 #   report.json            models, materials, colliders, triangles, bounds
 #
 # The machine is plain geometry: boxes and a few wedges. Everything with text or a drawn control (the
-# bank sign, the screen, the keypad, the side keys, the card and ticket slots, the cash slot) is one
+# bank sign, the screen, the keypad, the side keys, the card and ticket slots, the cash slot, the deposit drawer) is one
 # atlas, ATM_Face, painted here with a 5x7 pixel font; the beige paint, brushed steel and black plastic
 # are tiling materials. Space: build in Blender axes (X right, Y forward, Z up); B(x, y, z) takes
 # Enfusion axes (x right, y up, z forward). The FBX export lands Blender (X, Y, Z) on Enfusion (-x, z, y).
@@ -27,7 +27,7 @@ BACK = L["back_z"]
 
 def B(x, y, z):
     # x is negated: the engine import shows the model mirrored left to right (the first build read
-    # BANQUE backwards in the world), and (-x, z, y) is a rotation of Enfusion space, not a reflection.
+    # BANK backwards in the world), and (-x, z, y) is a rotation of Enfusion space, not a reflection.
     return Vector((-x, z, y))
 
 
@@ -144,7 +144,7 @@ FONT = {
     "-": "00000 00000 00000 11111 00000 00000 00000", ".": "00000 00000 00000 00000 00000 01100 01100",
     "*": "00000 00100 10101 01110 10101 00100 00000", " ": "00000 00000 00000 00000 00000 00000 00000",
     "/": "00001 00010 00010 00100 01000 01000 10000", "<": "00010 00100 01000 10000 01000 00100 00010",
-    ">": "01000 00100 00010 00001 00010 00100 01000",
+    ">": "01000 00100 00010 00001 00010 00100 01000", "$": "00100 01111 10100 01110 00101 11110 00100",
 }
 GLYPH = {k: np.array([[int(c) for c in row] for row in v.split()], bool) for k, v in FONT.items()}
 
@@ -256,6 +256,7 @@ R_SHELF = (0, 1100, SHELF_W, SHELF_LEN)
 R_CARD = (0, 1260, 100, 54)
 R_CAM = (120, 1260, 60, 30)
 R_CASH = (0, 1330, 320, 80)
+R_DEP = (0, 1420, 220, 80)
 R_GREEN = (200, 1260, 20, 20)
 GREEN = np.array([0.10, 0.36, 0.20])     # the painted trim green
 FASCIA_RGB = np.array([0.20, 0.19, 0.17])  # dark warm grey enamel inside the recess
@@ -268,9 +269,9 @@ cv.rough[:] = 0.5
 x0, y0, fw, fh = R_FASCIA
 cv.base[y0:y0 + fh, x0:x0 + fw] *= (1 + noise(fh, fw, 50) * 0.04 + noise(fh, fw, 3) * 0.015)[:, :, None]
 cv.rect(x0, y0, x0 + fw, y0 + 78, (0.13, 0.125, 0.115), rough=0.45)          # the top band
-cv.text("BANQUE", x0 + 24, y0 + 24, 4, (0.86, 0.84, 0.76))
-cv.text("REGIONALE", x0 + 168, y0 + 34, 2, GREEN * 1.6)
-cv.text("DAB", 0, y0 + 34, 2, (0.6, 0.6, 0.56), centre_in=(x0 + fw - 80, x0 + fw - 20))
+cv.text("REGIONAL", x0 + 24, y0 + 24, 4, (0.86, 0.84, 0.76))
+cv.text("BANK", x0 + 232, y0 + 34, 2, GREEN * 1.6)
+cv.text("ATM", 0, y0 + 34, 2, (0.6, 0.6, 0.56), centre_in=(x0 + fw - 80, x0 + fw - 20))
 cv.rect(x0, y0 + 78, x0 + fw, y0 + 82, GREEN, height=0.5)
 # the screen bezel and the two steel rails beside it
 cv.rect(x0 + 108, y0 + 116, x0 + fw - 108, y0 + 344, (0.05, 0.05, 0.05), rough=0.6, height=1.5)
@@ -283,19 +284,23 @@ for sx in (62, fw - 62):
         cv.rect(x0 + sx - 20, y0 + r - 13, x0 + sx + 20, y0 + r + 13, (0.30, 0.30, 0.31), rough=0.4, metal=0.6, height=2.5)
         cv.rect(x0 + sx - 20, y0 + r - 13, x0 + sx + 20, y0 + r - 10, (0.55, 0.55, 0.56), height=2.5)
 # the receipt slot (right, under the shelf) and the cash slot label
-cv.text("RECU", 0, y0 + 458, 2, (0.62, 0.62, 0.58), centre_in=(x0 + 300, x0 + 420))
+cv.text("RECEIPT", 0, y0 + 458, 2, (0.62, 0.62, 0.58), centre_in=(x0 + 300, x0 + 420))
 cv.rect(x0 + 300, y0 + 478, x0 + 420, y0 + 500, (0.40, 0.40, 0.41), rough=0.35, metal=0.8, height=1.0)
 cv.rect(x0 + 308, y0 + 486, x0 + 412, y0 + 492, (0.01, 0.01, 0.01), rough=0.9, height=-2.0)
 cv.rect(x0 + 300, y0 + 500, x0 + 420, y0 + 503, GREEN)
-cv.text("BILLETS", x0 + 92, y0 + 535, 2, (0.62, 0.62, 0.58))
+cv.text("CASH", x0 + 92, y0 + 535, 2, (0.62, 0.62, 0.58))
+# the envelope deposit drawer, lower right, under its own label (a deposit goes in here, cash comes out above)
+dp = L["deposit"]
+cv.text("DEPOSIT", 0, y0 + dp["row0"] - 30, 2, (0.62, 0.62, 0.58), centre_in=(x0 + dp["col0"], x0 + dp["col1"]))
+cv.rect(x0 + dp["col0"], y0 + dp["row0"] - 8, x0 + dp["col1"], y0 + dp["row0"] - 5, GREEN)
 # the branch sticker, lower left: small, slightly yellowed, a corner lifting
 st = (x0 + 30, y0 + 720, x0 + 200, y0 + 778)
 cv.rect(*st, (0.84, 0.82, 0.72), rough=0.7, height=0.3)
 cv.rect(st[0], st[1], st[0] + 4, st[3], GREEN)
-for i, line in enumerate(("BANQUE REGIONALE", "AGENCE 01", "ASSISTANCE 24H/24")):
+for i, line in enumerate(("REGIONAL BANK", "BRANCH 01", "HELP LINE 24 HR")):
     cv.text(line, st[0] + 10, st[1] + 8 + i * 16, 1, (0.12, 0.12, 0.12))
 cv.base[st[3] - 10:st[3], st[2] - 12:st[2]] *= 0.8
-cv.text("OUVERT 24H/24 - 7 JOURS SUR 7", 0, y0 + 1030, 2, (0.42, 0.41, 0.38), centre_in=(x0, x0 + fw))
+cv.text("OPEN 24 HOURS - 7 DAYS A WEEK", 0, y0 + 1030, 2, (0.42, 0.41, 0.38), centre_in=(x0, x0 + fw))
 # the green trim round the recess
 for a in ((0, 0, fw, 5), (0, fh - 5, fw, fh), (0, 0, 5, fh), (fw - 5, 0, fw, fh)):
     cv.rect(x0 + a[0], y0 + a[1], x0 + a[2], y0 + a[3], GREEN, rough=0.45, height=1.0)
@@ -353,7 +358,7 @@ cv.rect(x0 + 12, y0 + 22, x0 + w_ - 12, y0 + 30, (0.01, 0.01, 0.01), rough=0.9, 
 cv.rect(x0 + 12, y0 + 30, x0 + w_ - 12, y0 + 33, GREEN * 1.5)
 for k in range(5):
     cv.rect(x0 + 40 + k * 2, y0 + 6 + k * 2, x0 + 60 - k * 2, y0 + 8 + k * 2, (0.3, 0.8, 0.4))
-cv.text("CARTE", 0, y0 + 40, 1, (0.7, 0.7, 0.7), centre_in=(x0, x0 + w_))
+cv.text("INSERT CARD", 0, y0 + 40, 1, (0.7, 0.7, 0.7), centre_in=(x0, x0 + w_))
 
 # D: the camera: a grey housing with a dark lens
 x0, y0, w_, h_ = R_CAM
@@ -370,6 +375,19 @@ cv.rough[y0:y0 + h_, x0:x0 + w_] = 0.4
 cv.metal[y0:y0 + h_, x0:x0 + w_] = 0.85
 cv.rect(x0 + 14, y0 + 22, x0 + w_ - 14, y0 + 52, (0.008, 0.008, 0.008), rough=0.9, metal=0.0, height=-4.0)
 cv.rect(x0 + 14, y0 + 52, x0 + w_ - 14, y0 + 56, GREEN)
+# F: the deposit drawer housing: steel, a hinged flap over a dark envelope mouth, a green lip, a small arrow in
+x0, y0, w_, h_ = R_DEP
+streak4 = noise(h_, w_, 70, 0.8)
+cv.base[y0:y0 + h_, x0:x0 + w_] = (0.50 + streak4 * 0.03)[:, :, None]
+cv.rough[y0:y0 + h_, x0:x0 + w_] = 0.4
+cv.metal[y0:y0 + h_, x0:x0 + w_] = 0.85
+cv.rect(x0 + 16, y0 + 14, x0 + w_ - 16, y0 + 38, (0.64, 0.64, 0.62), rough=0.3, metal=0.9, height=2.0)
+cv.rect(x0 + 16, y0 + 36, x0 + w_ - 16, y0 + 39, (0.28, 0.28, 0.28), height=2.0)
+cv.rect(x0 + 20, y0 + 40, x0 + w_ - 20, y0 + 52, (0.008, 0.008, 0.008), rough=0.9, metal=0.0, height=-4.0)
+cv.rect(x0 + 16, y0 + 52, x0 + w_ - 16, y0 + 56, GREEN)
+cv.text("ENVELOPES", 0, y0 + 62, 1, (0.18, 0.18, 0.17), centre_in=(x0, x0 + w_))
+for i in range(6):
+    cv.rect(x0 + w_ // 2 - 7 + i, y0 + 20 + i, x0 + w_ // 2 + 7 - i, y0 + 21 + i, GREEN * 1.6)
 cv.rect(*np.add(R_GREEN, (0, 0, R_GREEN[0], R_GREEN[1])), GREEN, rough=0.45)
 
 atlas_n = normal_from_height(blur(cv.height, 0.7) + noise(AH, AW, 2) * 0.06, 1.2)
@@ -386,10 +404,10 @@ sg = Canvas(580, 200, CREAM)
 sg.base *= (1 + noise(200, 580, 30) * 0.015)[:, :, None]
 sg.rect(10, 10, 570, 13, GREEN)
 sg.rect(10, 187, 570, 190, GREEN)
-sg.text("BANQUE", 0, 26, 9, GREEN, centre_in=(0, 580))
-sg.text("REGIONALE", 0, 100, 3, GREEN, centre_in=(0, 580))
+sg.text("REGIONAL BANK", 0, 30, 6, GREEN, centre_in=(0, 580))
+sg.text("24 HOUR TELLER", 0, 92, 4, GREEN, centre_in=(0, 580))
 sg.rect(110, 132, 470, 134, GREEN * 0.8)
-sg.text("DISTRIBUTEUR DE BILLETS 24H", 0, 146, 2, (0.30, 0.30, 0.28), centre_in=(0, 580))
+sg.text("CASH  DEPOSITS  BALANCE", 0, 146, 2, (0.30, 0.30, 0.28), centre_in=(0, 580))
 gb[0:200, 0:580] = sg.base
 em[0:200, 0:580] = sg.base * 0.3
 # the screen: green phosphor on black, a menu that lines up with the side keys
@@ -404,12 +422,12 @@ def put(s, x, y, sc, right=False):
     glow[y:y + th, x:x + tw][m] = 1.0
 
 
-put("BANQUE REGIONALE", (sw - 16 * 6) // 2, 4, 1)
-for i, (l, r) in enumerate((("<RETRAIT", "100 F>"), ("<SOLDE", "200 F>"), ("<RELEVE", "500 F>"), ("<AUTRE", "1000 F>"))):
+put("REGIONAL BANK", (sw - 13 * 6) // 2, 4, 1)
+for i, (l, r) in enumerate((("<WITHDRAW", "$20>"), ("<BALANCE", "$50>"), ("<DEPOSIT", "$100>"), ("<OTHER", "$500>"))):
     y = SIDE_ROWS[i] - 130 - 7  # fascia row of the key, less the screen's top row, less half a glyph
     put(l, 6, y, 2)
     put(r, 6, y, 2, right=True)
-put("CHOISISSEZ VOTRE OPERATION", (sw - 26 * 6) // 2, 186, 1)
+put("SELECT A TRANSACTION", (sw - 20 * 6) // 2, 186, 1)
 lum = np.clip(blur(glow, 0.8) * 1.15 + blur(glow, 4.0) * 1.3, 0, 1.2)
 scr_rgb = np.zeros((sh, sw, 3)) + np.array([0.012, 0.03, 0.016]) + lum[:, :, None] * np.array([0.10, 0.92, 0.22])
 yy, xx = np.mgrid[0:sh, 0:sw]
@@ -667,6 +685,11 @@ def make(level):
         corners = [(fpx(cs["col0"]), fpy(cs["row1"]), FZ), (fpx(cs["col1"]), fpy(cs["row1"]), FZ),
                    (fpx(cs["col1"]), fpy(cs["row0"]), FZ), (fpx(cs["col0"]), fpy(cs["row0"]), FZ)]
         p.slab(corners, (0, 0, 1), cs["depth"], "ATM_Face", "ATM_Steel", region=R_CASH)
+        # the envelope deposit drawer, proud of the fascia below the cash slot
+        dp = L["deposit"]
+        corners = [(fpx(dp["col0"]), fpy(dp["row1"]), FZ), (fpx(dp["col1"]), fpy(dp["row1"]), FZ),
+                   (fpx(dp["col1"]), fpy(dp["row0"]), FZ), (fpx(dp["col0"]), fpy(dp["row0"]), FZ)]
+        p.slab(corners, (0, 0, 1), dp["depth"], "ATM_Face", "ATM_Steel", region=R_DEP)
     if level == 0:
         # the security camera on the top rail, under the header
         cm = L["camera"]
@@ -753,6 +776,7 @@ shot(os.path.join(rv, "three_quarter_left.png"), (0, 0.95, -0.1), (-0.7, 0.2, 1)
 shot(os.path.join(rv, "side.png"), (0, 0.95, -0.15), (1, 0, 0), 6, ortho=2.0)
 shot(os.path.join(rv, "face_close.png"), (0, 1.3, 0), (0.1, 0.08, 1), 1.6, res=(1200, 1000))
 shot(os.path.join(rv, "head_close.png"), (0, 1.75, 0.1), (0.15, 0.1, 1), 1.4, res=(1200, 700))
+shot(os.path.join(rv, "slots_close.png"), (0.04, 0.82, 0.1), (0.15, 0.25, 1), 0.9, res=(1200, 900))
 shot(os.path.join(rv, "keypad_close.png"), (0, 1.0, 0.1), (0.3, 0.7, 1), 1.0, res=(1200, 900))
 shot(os.path.join(rv, "street.png"), (0, 1.0, 0.1), (0.25, 0.12, 1), 3.2, res=(1000, 1100))
 for i in range(1, len(lod_objs)):

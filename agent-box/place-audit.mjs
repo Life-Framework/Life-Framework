@@ -638,6 +638,21 @@ export function islandCircle(records) {
   return { x: Math.round(x), z: Math.round(z), r: Math.ceil(r) };
 }
 
+// One `clutter <x> <z> <r>` input line per place dossier (docs/everon/places/<slug>/dossier.json): the road-clutter sweep
+// (LF_PlacementAudit.ClutterLines, place-runtime.mjs) covers every town and site the pack furnishes, not the whole island.
+export function placeClutterLines(root = ROOT) {
+  const dir = join(root, "docs", "everon", "places");
+  if (!existsSync(dir)) return [];
+  const lines = [];
+  for (const slug of readdirSync(dir).sort()) {
+    const d = readJson(join(dir, slug, "dossier.json"), null);
+    const at = d?.place;
+    if (!at || !Number.isFinite(at.x) || !Number.isFinite(at.z) || !Number.isFinite(d.radius)) continue;
+    lines.push(`clutter ${Math.round(at.x)} ${Math.round(at.z)} ${Math.round(d.radius)}`);
+  }
+  return lines;
+}
+
 export function auditTestArgs({ local = false, grid = false, island = false, preferLocal = false } = {}) {
   return ["test", "--no-build", "--only", "LF_Test_PlacementAuditTown", "--world", island ? ISLAND_WORLD : grid ? gridWorldFor(ROOT) : townWorld(), ...(local ? ["--local"] : preferLocal ? ["--prefer-local"] : []), "--verbose"];
 }
@@ -676,7 +691,7 @@ export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit")
   rmSync(outFile, { force: true });
   const circle = island ? islandCircle(records) : grid ? GRID_CIRCLE : TOWN;
   // runtime: also sweep the circle for what spawners put out (LF_PlacementAudit.RuntimeLines, place-runtime.mjs).
-  writeFileSync(inFile, inputText(records, runtime ? [`runtime ${circle.x} ${circle.z} ${circle.r}`, ...extra] : extra, circle));
+  writeFileSync(inFile, inputText(records, runtime ? [`runtime ${circle.x} ${circle.z} ${circle.r}`, ...(island ? placeClutterLines() : []), ...extra] : extra, circle));
   writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
   const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...auditTestArgs({ local, grid, island, preferLocal })], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
   const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;

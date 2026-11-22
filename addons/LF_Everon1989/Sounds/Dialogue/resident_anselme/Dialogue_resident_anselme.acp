@@ -266,6 +266,28 @@ AudioClass {
    outState 35851
    outStatePort 79879
   }
+  SoundClass {
+   id 111625
+   name "SOUND_DLG_RESIDENT_ANSELME_ABOUT_VAN"
+   version 5
+   tl 680 2520
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 214034
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
  }
  mixers {
   MixerClass {
@@ -312,6 +334,10 @@ AudioClass {
       }
       ConnectionClass connection {
        id 110601
+       port 65
+      }
+      ConnectionClass connection {
+       id 111625
        port 65
       }
      }
@@ -777,6 +803,53 @@ AudioClass {
     23 0
    }
   }
+  ShaderClass {
+   id 214034
+   name "SOUND_DLG_RESIDENT_ANSELME_ABOUT_VAN"
+   version 5
+   tl 432 2520
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 316420
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
  }
  amplitudes {
   AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
@@ -917,6 +990,18 @@ AudioClass {
     }
    }
   }
+  BankLocalClass {
+   id 316420
+   name "DLG_RESIDENT_ANSELME_ABOUT_VAN"
+   version 7
+   tl 150 2520
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{9DB5FAEC27D63F34}Sounds/Dialogue/resident_anselme/resident_anselme_about_van.wav"
+    }
+   }
+  }
  }
  spatialities {
   SpatialityClass : "{68C6E66C2A370788}Sounds/_SharedData/Configs/Spatiality/Spatiality_Signal_Update.conf" {
@@ -987,6 +1072,10 @@ AudioClass {
       }
       ConnectionClass connection {
        id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
        port 5
       }
      }
@@ -1060,6 +1149,10 @@ AudioClass {
        id 110601
        port 5
       }
+      ConnectionClass connection {
+       id 111625
+       port 5
+      }
      }
     }
     ConnectionsClass connections {
@@ -1129,6 +1222,10 @@ AudioClass {
       }
       ConnectionClass connection {
        id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
        port 5
       }
      }
