@@ -39,6 +39,7 @@ class LF_UITheme
 	static const string RICH_LAYOUT = "{7AA3823D51F36803}UI/Layouts/UIKit/LF_UIRich.layout";
 	static const string IMAGE_LAYOUT = "{E958415CA199CA4F}UI/Layouts/UIKit/LF_UIImage.layout";
 	static const string PORTRAIT_LAYOUT = "{16D71EF292B6A54C}UI/Layouts/UIKit/LF_UIPortrait.layout";
+	static const string BAR_LAYOUT = "{DDA1CDCFCD3CFA9C}UI/Layouts/UIKit/LF_UIBar.layout";
 
 	//! The regular face a notice's body is set in, so the bold section labels stand out.
 	static const ResourceName FONT_REGULAR = "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt";
