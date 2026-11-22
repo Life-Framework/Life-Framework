@@ -278,7 +278,7 @@ export function plan({ mapping, dossiers, others, slot = SLOT, accept = null, tr
 // corners (the surface under the car), (2) rays along the box outline, its diagonals and its long axis at three car heights, pushed out
 // BODY_OUT metres, plus the door leaves of the circle, judged with the audit's own door zone.
 export const BODY_OUT = 0.5; // the outline rays run this far outside the car's keep-clear box
-export const HEIGHTS = [0.45, 0.75, 1.1]; // ray heights over the surface, metres: bumper, a guard rail (#3875: a CrashBarrier slipped between 0.45 and 1.1) and the window line
+export const HEIGHTS = [0.25, 0.45, 0.75, 1.1]; // ray heights over the surface, metres: bumper, a guard rail (#3875: a CrashBarrier slipped between 0.45 and 1.1) and the window line
 export const FLAT = 0.8; // the surface under the box may differ by this much (a car tilts to the slope, the audit allows 12 degrees)
 const SKY = 2.5; // a down ray starts this far over the dossier height and ends DEEP under it
 const DEEP = 3;
@@ -304,7 +304,10 @@ export function groundRays(items) {
   return rays;
 }
 
-// The level rays of the second round, over the surface `g` the first round measured for each item { id, c, g }: 7 per height.
+// The level rays of the second round, over the surface `g` the first round measured for each item { id, c, g }: BODY_LINES per height.
+// Besides the outline, the diagonals and the long axis, four more long lines and four cross lines weave the box: a pipe railing's end
+// and an apple trunk stood inside the old 7-line net and the car clipped them (b03 and b12, #3888).
+export const BODY_LINES = 15;
 export function bodyRays(items) {
   const rays = [];
   for (const { id, c, g } of items) {
@@ -313,6 +316,11 @@ export function bodyRays(items) {
     const reach = CAR.half[0] + BODY_OUT;
     const lines = box.map((p, i) => [p, box[(i + 1) % 4]]);
     lines.push([box[0], box[2]], [box[1], box[3]], [[c.x + Math.sin(a) * reach, c.z + Math.cos(a) * reach], [c.x - Math.sin(a) * reach, c.z - Math.cos(a) * reach]]);
+    const fwd = [Math.sin(a), Math.cos(a)];
+    const side = [Math.cos(a), -Math.sin(a)];
+    const wide = CAR.half[1] + BODY_OUT;
+    for (const o of [-0.7, -0.35, 0.35, 0.7]) lines.push([[c.x + side[0] * o + fwd[0] * reach, c.z + side[1] * o + fwd[1] * reach], [c.x + side[0] * o - fwd[0] * reach, c.z + side[1] * o - fwd[1] * reach]]);
+    for (const o of [-1.4, -0.7, 0.7, 1.4]) lines.push([[c.x + fwd[0] * o + side[0] * wide, c.z + fwd[1] * o + side[1] * wide], [c.x + fwd[0] * o - side[0] * wide, c.z + fwd[1] * o - side[1] * wide]]);
     HEIGHTS.forEach((h, k) => lines.forEach(([p, q], i) => rays.push(`ray ${id}_b${k}${i} ${r3(p[0])} ${r3(g + h)} ${r3(p[1])} ${r3(q[0])} ${r3(g + h)} ${r3(q[1])}`)));
   }
   return rays;
@@ -355,7 +363,7 @@ export function surfaceOf(id, rays) {
 // Pure: why the level rays and the door leaves refuse a candidate (null: clean). `doors`: parseDoor rows.
 export function bodyWhy(id, c, g, rays, doors) {
   for (let k = 0; k < HEIGHTS.length; k++) {
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < BODY_LINES; i++) {
       const r = rays.get(`${id}_b${k}${i}`);
       if (struck(r)) return `${r.root} at car height (${r3(r.d)} m along an outline ray)`;
     }
@@ -437,7 +445,7 @@ export async function main(args, { root = ROOT } = {}) {
     planned = plan({ mapping, dossiers, others, slot });
     if (flags.has("--probe")) {
       // 16 shortlist spots per marker a drop asks for (#3875: three police cars ran out of clean spots at 16 for the drop).
-      const tries = 16 * Math.max(1, ...mapping.slots[slot].drops.map((d) => Math.floor(d.count ?? 1)));
+      const tries = 64 * Math.max(1, ...mapping.slots[slot].drops.map((d) => Math.floor(d.count ?? 1)));
       const short = plan({ mapping, dossiers, others, slot, tries, accept: () => ({ ok: false, why: "shortlist" }) });
       const cands = [];
       for (const o of short.all) for (const c of o.cands) cands.push({ drop: o.drop, c, y0: groundAt(c.x, c.z, dossiers[o.drop.place]) });
