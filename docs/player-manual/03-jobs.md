@@ -126,7 +126,7 @@ The drops are on the east side (a house near the district road) and four along t
   (about 5.7 km); see the island map.
 * **How to start:** take the **lumberjack job** at the desk. Buy an **axe** ($120) at the hardware store.
 * **What you do:**
-  1. **Fell a tree** with the axe in your hands (not in a safe zone, not within 4 m of a road or 12 m of a building). Logs drop around the stump.
+  1. **Fell a tree** with the axe in your hands (not in a safe zone, not within 4 m of a road or 12 m of a building). The tree falls **away from you**, so stand on the side you want it to miss. When it lands, the trunk turns into the logs (one per log the tree gives) lying along the line it fell, with a few branches round the crown. A softwood tree (pine, spruce, larch) gives softwood logs; a hardwood tree (hornbeam, linden, alder, birch, poplar) gives the heavier hardwood logs. Collect them soon: logs nobody picks up are gone after about 30 minutes, and the branches clear in a few.
   2. Carry the logs to the **saw** and pick a cut: a **softwood** log makes **4 planks and kindling**, or **2 posts**, or **4 firewood**; a **hardwood** log makes **2 boards** or **5 firewood**.
   3. Sell **planks ($8)** and **hardwood boards ($12)** at the **timber counter**. If its purse is full it tells you to
      "try the wholesale warehouse at the dock". The dock pays a lower, falling price for planks, boards, posts and firewood.

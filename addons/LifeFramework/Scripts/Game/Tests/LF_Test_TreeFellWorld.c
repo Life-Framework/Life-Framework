@@ -1,6 +1,6 @@
-// red-proof: 2026-11-19, `--only LF_Test_TreeFellWorld` before the change: LF_FellAction, LF_FelledTrees and LF_OnTreeFelled did not exist, so the test could not compile. `--red LF_Test_TreeFellWorld` skips the first fell, so the hidden, ledger, logs, XP and already-felled checks fail.
+// red-proof: 2026-11-19, `--only LF_Test_TreeFellWorld` before the change: LF_FellAction, LF_FelledTrees and LF_OnTreeFelled did not exist, so the test could not compile. `--red LF_Test_TreeFellWorld` skips the first fell, so the hidden, ledger, logs, XP and already-felled checks fail. 2026-11-22: the far-side log check fails on the old ring drop (half its logs lay on the feller side), passes with LF_TreeFall.
 //! lumber/tree-fell-world (#3260): a character with an axe fells a real vanilla tree. The tree is hidden
-//! and in the ledger, its logs lie on the ground within 3 m, the LUMBERJACK XP rose, a second fell is
+//! and in the ledger, its logs lie on the ground along the line it fell, away from the feller, the LUMBERJACK XP rose, a second fell is
 //! refused ALREADY_FELLED, and a fell without the axe is refused NO_AXE with nothing changed.
 class LF_TestTreeFellRecorder : LF_EventSubscriber
 {
@@ -89,6 +89,8 @@ class LF_Test_TreeFellWorld : LF_Test
 			LF_TestCharacterFixture.Delete(log);
 		}
 
+		LF_TreeFall.ClearLocal();
+		LF_TreeFall.ResetStatics();
 		LF_TestCharacterFixture.Delete(tree);
 		LF_TestCharacterFixture.Delete(bystander);
 		LF_TestCharacterFixture.Delete(character);
@@ -133,15 +135,21 @@ class LF_Test_TreeFellWorld : LF_Test
 
 		// The fell.
 		if (!RedProof())
-			ctx.Equal(LF_FellRefusal.OK, LF_FellAction.TryFell(character, tree, true, logs), "the fell is accepted");
+			ctx.Equal(LF_FellRefusal.OK, LF_FellAction.TryFell(character, tree, true, logs, 0), "the fell is accepted");
 
 		ctx.True(LF_FelledTrees.IsHidden(tree), "the felled tree is hidden");
 		ctx.True(LF_FelledTrees.IsFelled(key), "the felled tree is in the ledger");
 		ctx.Equal(1, LF_FelledTrees.Count(), "one tree is down");
 		ctx.Equal(2, logs.Count(), "a size 2 pine drops 2 logs");
+		// The tree fell away from the character (standing at +x): every log lies on the far side, along the line, on the ground.
+		float height = LF_TreeFall.HeightOf(tree);
+		vector stump = tree.GetOrigin();
 		foreach (IEntity log : logs)
 		{
-			ctx.True(vector.Distance(log.GetOrigin(), tree.GetOrigin()) <= 3, "a log lies within 3 m of the trunk");
+			vector at = log.GetOrigin();
+			ctx.True(at[0] < stump[0], "a log lies on the far side of the stump from the feller");
+			ctx.True(vector.DistanceXZ(at, stump) <= height + 1, "a log lies within the tree's height of the stump");
+			ctx.InRange(at[1] - LF_TreeFall.GroundY(at), -0.6, 0.8, "a log rests on the ground, neither floating nor sunk");
 		}
 
 		ctx.True(LF_JobLevels.XpOf(UID, "LUMBERJACK") > xpBefore, "the fell paid LUMBERJACK XP");
