@@ -263,7 +263,7 @@ class LF_CrimeList : LF_ConfigList
 	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
 	{
 		LF_CrimeEntry entry = LF_CrimeEntry.Cast(record);
-		array<string> recordKeys = {"op", "wantedAdd", "fine", "sentenceSeconds", "repeatThreshold", "repeatWantedAdd", "section", "stackGroup", "jailOnly"};
+		array<string> recordKeys = {"op", "wantedAdd", "fine", "sentenceSeconds", "repeatThreshold", "repeatWantedAdd", "lawSection", "stackGroup", "jailOnly"};
 		reader.WarnUnknownKeys(recordKeys);
 		reader.ReadInt("wantedAdd", entry.m_iWantedAdd, LF_CrimeCatalogConfig.WANTED_MIN, LF_CrimeCatalogConfig.WANTED_MAX);
 		reader.ReadInt("fine", entry.m_iFine, LF_CrimeCatalogConfig.FINE_MIN, LF_CrimeCatalogConfig.FINE_MAX);
@@ -274,12 +274,12 @@ class LF_CrimeList : LF_ConfigList
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The law-book fields of an owner record (#4202): `section` is "criminal", "road", "narcotics" or
+	//! The law-book fields of an owner record (#4202): `lawSection` is "criminal", "road", "narcotics" or
 	//! "weapons" (anything else is refused and logged), `stackGroup` a short name, `jailOnly` true or false.
 	protected void ReadLawFields(notnull LF_CrimeEntry entry, notnull LF_ConfigReader reader)
 	{
 		string sectionKey;
-		if (reader.ReadString("section", sectionKey))
+		if (reader.ReadString("lawSection", sectionKey))
 		{
 			LF_LawSection section = entry.m_eLawSection;
 			if (LF_LawCode.ParseSection(sectionKey, section))

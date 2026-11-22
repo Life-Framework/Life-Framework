@@ -24,7 +24,7 @@ Rules live in `Law/LF_LawCodeRules.c` (pure functions over entries: `Counted`,
 `TotalFine`, `TotalSentenceSeconds`). Names and lookups (`SectionKey`,
 `ParseSection`, `CollectSection`, `Resolve`) are in `Law/LF_LawCode.c`.
 
-Owner config: the `crime` section's record takes `"section"` (`criminal`, `road`,
+Owner config: the `crime` section's record takes `"lawSection"` (`criminal`, `road`,
 `narcotics`, `weapons`), `"stackGroup"` and `"jailOnly"`. A bad section is refused
 and logged (`[LFDebug:Law]`); the shipped value stays.
 

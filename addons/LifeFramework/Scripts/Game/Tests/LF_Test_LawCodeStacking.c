@@ -104,7 +104,7 @@ class LF_Test_LawCodeStacking : LF_Test
 		ctx.Equal(0, LF_LawCodeRules.TotalFine(empty), "an empty sheet totals nothing");
 
 		// The owner's section sets the three fields; a bad section is refused and the shipped one stays.
-		LF_CrimeCatalogConfig config = Merge("{\"crimes\":{\"test-code-a\":{\"section\":\"road\",\"stackGroup\":\"speed\",\"jailOnly\":true}}}");
+		LF_CrimeCatalogConfig config = Merge("{\"crimes\":{\"test-code-a\":{\"lawSection\":\"road\",\"stackGroup\":\"speed\",\"jailOnly\":true}}}");
 		LF_CrimeEntry ownerCode = config.Find("test-code-a");
 		ctx.NotNull(ownerCode, "the owner's record finds the code");
 		if (ownerCode)
@@ -115,7 +115,7 @@ class LF_Test_LawCodeStacking : LF_Test
 			ctx.Equal(100, ownerCode.m_iFine, "a field the owner left out keeps the shipped value");
 		}
 
-		config = Merge("{\"crimes\":{\"test-code-a\":{\"section\":\"tax\",\"stackGroup\":\"x\"}}}");
+		config = Merge("{\"crimes\":{\"test-code-a\":{\"lawSection\":\"tax\",\"stackGroup\":\"x\"}}}");
 		ownerCode = config.Find("test-code-a");
 		if (ownerCode)
 		{
