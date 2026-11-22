@@ -250,6 +250,12 @@
       "kind": "clips",
       "layer": "Place_saint-philippe_carlot.layer",
       "why": "The display van parks at the foot of a base-map doorstep on the car lot's hillside (3 m of fall across its 5 m box); the stairs touch 2 of 9 rays by 13 cm at the wheel arch. Moving it with the kit put it into the workshop wall (tried 2026-11-21), so it stays against the steps."
+    },
+    {
+      "match": "^Fit_saint_philippe_bank_lf_bank_vault ",
+      "kind": "action-off-mesh",
+      "layer": "Place_saint-philippe_bank.layer",
+      "why": "LF_BankVault_RoomDoor is a mesh-less root: its one mesh is the VaultDoor child leaf (1.27 m right of the root, hinged in the vault-room doorway), which the audit does not read as a mesh. The action context (radius 1.5 m at the front's centre, 0.45 m out) overlaps the leaf; the same prefab opens in the grid bank proof (#2384)."
     }
   ]
 }
