@@ -210,7 +210,19 @@
       "yaw": 0,
       "wall": "+z",
       "floor": "f1",
-      "attach": "wall"
+      "attach": "wall",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"butcher\"",
+            "m_vRimColor": "0.55 0.08 0.1",
+            "m_vPaintColor": "0.96 0.94 0.9",
+            "m_vTextColor": "0.55 0.08 0.1"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "butcher-clerk",

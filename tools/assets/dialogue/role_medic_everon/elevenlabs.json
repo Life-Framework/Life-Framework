@@ -1,0 +1,76 @@
+{
+  "id": "role_medic_everon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "6a7055342c874a68",
+      "date": "2026-11-22",
+      "voice_id": "xTZlmU8dKXdyk4XGYGFg",
+      "voice_name": "Antoine - Articulate, Calm and Bright",
+      "model": "eleven_multilingual_v2",
+      "text": "Come in. Are you hurt?",
+      "chars": 22,
+      "chars_total": 9,
+      "request_id": "F4439cS130Jks9mxi3SS",
+      "seconds": 1.43,
+      "mouth": "05999743100001576865996141000"
+    },
+    "what": {
+      "hash": "5fcdc8dda1517ab1",
+      "date": "2026-11-22",
+      "voice_id": "xTZlmU8dKXdyk4XGYGFg",
+      "voice_name": "Antoine - Articulate, Calm and Bright",
+      "model": "eleven_multilingual_v2",
+      "text": "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse.",
+      "chars": 93,
+      "chars_total": 37,
+      "request_id": "iDDrn5mw9beExzIr87ZW",
+      "seconds": 8.28,
+      "mouth": "4971998392645498863032221000000000004559999787613663125539815426998587652110000000000000000799963698779987433211100000589956899947843498636613475264276542222100000000"
+    },
+    "where": {
+      "hash": "efe46851b432e05a",
+      "date": "2026-11-22",
+      "voice_id": "xTZlmU8dKXdyk4XGYGFg",
+      "voice_name": "Antoine - Articulate, Calm and Bright",
+      "model": "eleven_multilingual_v2",
+      "text": "If you need a bandage and I am not here, the general store keeps dressings by the counter.",
+      "chars": 90,
+      "chars_total": 36,
+      "request_id": "SQVF0UaiqyiQy477xvVt",
+      "seconds": 6.85,
+      "mouth": "423899998919999767751122221037865555311000016986678432258765410000000000000015449999996432999422743332695435655421377452457752232100000000"
+    },
+    "rumour": {
+      "hash": "74ab73c854e7cf6a",
+      "date": "2026-11-22",
+      "voice_id": "xTZlmU8dKXdyk4XGYGFg",
+      "voice_name": "Antoine - Articulate, Calm and Bright",
+      "model": "eleven_multilingual_v2",
+      "text": "A lot of cuts from the sawmill this month. The men will not wear gloves.",
+      "chars": 72,
+      "chars_total": 29,
+      "request_id": "pX1CZWs3j1NuL0mp4x4F",
+      "seconds": 6.15,
+      "mouth": "8999978441999216753113498656786986776662114668267521410000000000000000004789999765787799631151015986654321001767641243211000"
+    },
+    "bye": {
+      "hash": "a329ec1357946ef1",
+      "date": "2026-11-22",
+      "voice_id": "xTZlmU8dKXdyk4XGYGFg",
+      "voice_name": "Antoine - Articulate, Calm and Bright",
+      "model": "eleven_multilingual_v2",
+      "text": "Look after yourself.",
+      "chars": 20,
+      "chars_total": 8,
+      "request_id": "eoMZFeBtUnkEXhY9yWRy",
+      "seconds": 1.26,
+      "mouth": "19989974678766859752211000"
+    }
+  },
+  "voice": {
+    "id": "xTZlmU8dKXdyk4XGYGFg",
+    "name": "Antoine - Articulate, Calm and Bright",
+    "source": "voice library"
+  }
+}

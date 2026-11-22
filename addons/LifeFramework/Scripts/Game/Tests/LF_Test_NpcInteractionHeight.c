@@ -46,10 +46,13 @@ class LF_Test_NpcInteractionHeight : LF_Test
 					float height = mat[3][1];
 					string label = prefab + " context " + context.GetContextName() + " at " + height + " m, radius " + context.GetRadius();
 					ctx.True(height > 1.1 && height < 1.7, "the interaction sits at chest height: " + label);
-					// RoleTalk is the role conversation's comfortable reach (about 2.25 m); only
+					// RoleTalk is the role conversation's comfortable reach (about 2.4 m); only
 					// an NPC with a role offers it. Every other context stays on the body.
 					float maxRadius = 1.0;
 					if (context.GetContextName() == "RoleTalk")
+						maxRadius = 2.5;
+					// The town clerk stands behind a counter: its sphere reaches the customer (LF_Test_CounterNpcTalkReach).
+					if (prefab.IndexOf("QuestGiver_Clerk") != -1)
 						maxRadius = 2.5;
 					ctx.True(context.GetRadius() <= maxRadius, "the interaction radius stays on the body: " + label);
 				}

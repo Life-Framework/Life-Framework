@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "place": "coalmans-brow",
+  "slot": "mine",
+  "plot": "p2",
+  "hostless": true,
+  "kit": "iron-mine",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_coalmans-brow_mine.layer",
+  "kinds": [
+    "Workplace",
+    "Processor"
+  ],
+  "rows": 24,
+  "destruction": {
+    "mode": "none",
+    "reason": "hostless plot: no building stands in the slot"
+  },
+  "date": "2026-11-22"
+}

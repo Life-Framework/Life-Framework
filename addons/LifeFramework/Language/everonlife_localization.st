@@ -2430,6 +2430,186 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Staff only"
      Comment "Door prompt on a building a lock marker shuts: staff only"
     }
+    CustomStringTableItem "{950C69C056C83985}" {
+     Id "LF-BusStop_Action"
+     Target_en_us "Take the bus"
+     Comment "Bus stop action fallback name (a slot with no stop is hidden)."
+    }
+    CustomStringTableItem "{B29A8D0906A937C3}" {
+     Id "LF-BusStop_ActionTo"
+     Target_en_us "Bus to %1: {currency:sym}%2, %3 s"
+     Comment "Bus stop action, one per destination. %1 the stop name, %2 the fare in cash, %3 seconds of wait."
+    }
+    CustomStringTableItem "{FBFD6EFAC0C8BAE5}" {
+     Id "LF-BusStop_Arrived"
+     Target_en_us "You get off at %1."
+     Comment "Bus toast on arrival. %1 the stop's name."
+    }
+    CustomStringTableItem "{8205388EAC928159}" {
+     Id "LF-BusStop_BoardFare"
+     Target_en_us "{currency:sym}%1"
+     Comment "Timetable board: the fare to one stop. %1 the fare in cash."
+    }
+    CustomStringTableItem "{7D1971DA5E0F73C4}" {
+     Id "LF-BusStop_BoardHere"
+     Target_en_us "You are here"
+     Comment "Timetable board: the mark on the reader's own stop."
+    }
+    CustomStringTableItem "{C60B8ECDA5501469}" {
+     Id "LF-BusStop_BoardNext"
+     Target_en_us "Pick your stop in the sign's action list, pay the fare in cash and wait at the stop."
+     Comment "Timetable sign card: what to do next."
+    }
+    CustomStringTableItem "{60F8C241BEAFD60D}" {
+     Id "LF-BusStop_BoardTitle"
+     Target_en_us "Bus timetable"
+     Comment "Printed heading of the timetable board on a bus stop pole. A pack names its line."
+    }
+    CustomStringTableItem "{37586E8F50271ECB}" {
+     Id "LF-BusStop_BoardWhat"
+     Target_en_us "Every stop on this line and the cash fare to it from here."
+     Comment "Timetable sign card: what the board shows."
+    }
+    CustomStringTableItem "{877447BCF40EC4B5}" {
+     Id "LF-BusStop_Boarded"
+     Target_en_us "Ticket paid ({currency:sym}%1). The bus comes in %2 s: wait at the stop."
+     Comment "Bus ticket bought. %1 the fare, %2 seconds until it leaves."
+    }
+    CustomStringTableItem "{5AA92EECCAE01BD7}" {
+     Id "LF-BusStop_Busy"
+     Target_en_us "You already have a ticket. Wait for the bus."
+     Comment "Bus refusal: a trip is already waiting."
+    }
+    CustomStringTableItem "{D451B9D7F357DBB4}" {
+     Id "LF-BusStop_CancelAction"
+     Target_en_us "Cancel trip (refund {currency:sym}%1): bus in %2 s"
+     Comment "Bus stop action while a ticket waits. %1 the fare refunded, %2 seconds until the bus leaves."
+    }
+    CustomStringTableItem "{4414BA244BADCE0C}" {
+     Id "LF-BusStop_CancelAsked"
+     Target_en_us "Trip cancelled. Fare refunded."
+     Comment "Bus toast: the player cancelled the waiting ticket."
+    }
+    CustomStringTableItem "{157F9BBFC17C40C2}" {
+     Id "LF-BusStop_CancelHurt"
+     Target_en_us "Trouble at the stop. Fare refunded."
+     Comment "Bus toast: the wait was cancelled by damage or a fight."
+    }
+    CustomStringTableItem "{F384123F6B414805}" {
+     Id "LF-BusStop_CancelMoved"
+     Target_en_us "You left the stop. Fare refunded."
+     Comment "Bus toast: the wait was cancelled because the player walked away."
+    }
+    CustomStringTableItem "{A75E225C4DBB2344}" {
+     Id "LF-BusStop_CancelNoArrival"
+     Target_en_us "The far stop is blocked. Fare refunded."
+     Comment "Bus toast: no clear ground at the destination stop."
+    }
+    CustomStringTableItem "{C9F34037FCA484C5}" {
+     Id "LF-BusStop_CancelState"
+     Target_en_us "The bus could not take you. Fare refunded."
+     Comment "Bus toast: the wait was cancelled (downed, cuffed, in a vehicle or gone)."
+    }
+    CustomStringTableItem "{BB22261A6CC4006C}" {
+     Id "LF-BusStop_CancelTitle"
+     Target_en_us "Cancel trip"
+     Comment "Bus stop action name in the prefab (the script fills in the fare and the countdown)."
+    }
+    CustomStringTableItem "{4B1037495C5FD284}" {
+     Id "LF-BusStop_Combat"
+     Target_en_us "Not in the middle of a fight."
+     Comment "Bus refusal: player-on-player damage just now."
+    }
+    CustomStringTableItem "{90CF3A002F678C51}" {
+     Id "LF-BusStop_Cuffed"
+     Target_en_us "Not while restrained."
+     Comment "Bus refusal: cuffed, escorted or jailed."
+    }
+    CustomStringTableItem "{85574F3C6DA7EC77}" {
+     Id "LF-BusStop_Dead"
+     Target_en_us "You cannot travel like this."
+     Comment "Bus refusal: the character is dead."
+    }
+    CustomStringTableItem "{6579493E43551662}" {
+     Id "LF-BusStop_Downed"
+     Target_en_us "You are hurt too badly to travel."
+     Comment "Bus refusal: the character is downed."
+    }
+    CustomStringTableItem "{066B1C6D5DABA0CC}" {
+     Id "LF-BusStop_Driving"
+     Target_en_us "Get out of the vehicle first."
+     Comment "Bus refusal: the player is in a vehicle."
+    }
+    CustomStringTableItem "{34BE773FFD417AE1}" {
+     Id "LF-BusStop_GridNorth"
+     Target_en_us "Test yard, north stop"
+     Comment "Debug grid bus stop name."
+    }
+    CustomStringTableItem "{3A30D291DD7F9391}" {
+     Id "LF-BusStop_GridSouth"
+     Target_en_us "Test yard, south stop"
+     Comment "Debug grid bus stop name."
+    }
+    CustomStringTableItem "{917B6AE39DA8392B}" {
+     Id "LF-BusStop_NoCash"
+     Target_en_us "You do not have the fare in cash."
+     Comment "Bus refusal: not enough cash on the character."
+    }
+    CustomStringTableItem "{94226B8949AC68DF}" {
+     Id "LF-BusStop_NoCharacter"
+     Target_en_us "You cannot travel right now."
+     Comment "Bus refusal: no character or no body."
+    }
+    CustomStringTableItem "{E831F4748B626430}" {
+     Id "LF-BusStop_NoStop"
+     Target_en_us "That stop is not in service."
+     Comment "Bus refusal: a stop id does not resolve."
+    }
+    CustomStringTableItem "{ECEE3370AC404CF1}" {
+     Id "LF-BusStop_NotAtStop"
+     Target_en_us "Stand at the stop to buy a ticket."
+     Comment "Bus refusal: the player is too far from the sign."
+    }
+    CustomStringTableItem "{51E5F33D3681F447}" {
+     Id "LF-BusStop_Pursuit"
+     Target_en_us "The driver will not stop with {police} on your tail."
+     Comment "Bus refusal: wanted with an on-duty officer close."
+    }
+    CustomStringTableItem "{BCB996F6837C3299}" {
+     Id "LF-BusStop_SameStop"
+     Target_en_us "You are already at that stop."
+     Comment "Bus refusal: the destination is this stop."
+    }
+    CustomStringTableItem "{333EA45031FB3696}" {
+     Id "LF-BusStop_Title"
+     Target_en_us "BUS STOP"
+     Comment "Printed heading of the bus timetable and the bus toasts."
+    }
+    CustomStringTableItem "{6F547920FFED03C6}" {
+     Id "LF-BusStop_TooSoon"
+     Target_en_us "The next bus is not due yet. Try again shortly."
+     Comment "Bus refusal: the request or trip cooldown."
+    }
+    CustomStringTableItem "{2192680E4E040B4E}" {
+     Id "LF-BusStop_WhyBusy"
+     Target_en_us "Ticket already bought"
+     Comment "Greyed bus action reason: a ticket is already waiting."
+    }
+    CustomStringTableItem "{D3E1EB179C2F1379}" {
+     Id "LF-BusStop_WhyNoCash"
+     Target_en_us "Not enough cash"
+     Comment "Greyed bus action reason: the fare is more than the cash carried."
+    }
+    CustomStringTableItem "{CC7F4F43A1B2B050}" {
+     Id "LF-BusStop_WhyPursuit"
+     Target_en_us "{police} nearby"
+     Comment "Greyed bus action reason: wanted with an on-duty officer close."
+    }
+    CustomStringTableItem "{54D8814DF61E3B22}" {
+     Id "LF-BusStop_WhyTooSoon"
+     Target_en_us "Next bus not due yet"
+     Comment "Greyed bus action reason: the ask or trip cooldown."
+    }
     CustomStringTableItem "{7E1C40B2A93D5F06}" {
      Id "LF-BuyerSale_Action"
      Target_en_us "Sell the goods"
@@ -3457,7 +3637,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A8B2E6676A5FC762}" {
      Id "LF-Credits_138"
-     Target_en_us "Mireille's nine lines"
+     Target_en_us "Marius Caron's nine lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4165A33B0CDDFEFA}" {
@@ -3482,7 +3662,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A8A3DCF36786BA71}" {
      Id "LF-Credits_142"
-     Target_en_us "Helene's"
+     Target_en_us "Lucien Roux's"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{740D77BACEA78D9C}" {
@@ -3502,22 +3682,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{92C2B4F451409735}" {
      Id "LF-Credits_146"
-     Target_en_us "Night-shift worker's spoken lines"
+     Target_en_us "Store clerks' five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E884C0110C5B632F}" {
      Id "LF-Credits_147"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Jamie - French Accent & Charismatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{427FC7360D73D3A9}" {
      Id "LF-Credits_148"
-     Target_en_us "Old man Gaspard Lenoir's six lines"
+     Target_en_us "Bank teller's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CBA36637CDF4AE7F}" {
      Id "LF-Credits_149"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Nicolas - French English Male\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E61840F28B6ADBC}" {
@@ -3527,52 +3707,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D71B88C351B4EA69}" {
      Id "LF-Credits_150"
-     Target_en_us "Go-between Hugo Valmy's five spoken lines"
+     Target_en_us "Desk officer's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CDA2F516388DB3A1}" {
      Id "LF-Credits_151"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Benjamin - Deep and Calm\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A4F5C98AFC7B32E9}" {
      Id "LF-Credits_152"
-     Target_en_us "Harbour master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Clinic doctor's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6D1FD16D6C772E09}" {
      Id "LF-Credits_153"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Antoine - Articulate, Calm and Bright\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1519D7ABE5844759}" {
      Id "LF-Credits_154"
-     Target_en_us "MUSIC"
+     Target_en_us "Mechanics' five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{312C6E9E98AFEA2C}" {
      Id "LF-Credits_155"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"Loic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B4E1994EB6122A72}" {
      Id "LF-Credits_156"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "The fence's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E9299E95D9B8F174}" {
      Id "LF-Credits_157"
-     Target_en_us "\"Hitman\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"Lucas - Deep, Raspy and Natural\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4444E26E9DCF449C}" {
      Id "LF-Credits_158"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "Town civilians' five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AC305FCEA4FFD18B}" {
      Id "LF-Credits_159"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Eliot - Relaxed & Casual\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{59CAD5C15A66EDA7}" {
@@ -3582,37 +3762,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{0625D39270A113DC}" {
      Id "LF-Credits_160"
-     Target_en_us "Piper"
+     Target_en_us "Night-shift worker's spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6A3DD60E0145C890}" {
      Id "LF-Credits_161"
-     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09BDBEC3C3443456}" {
      Id "LF-Credits_162"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Old man Gaspard Lenoir's six lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0AB81D75DD0A7FCC}" {
      Id "LF-Credits_163"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C489B5F7558670CF}" {
      Id "LF-Credits_164"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Go-between Hugo Valmy's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2FA0C88C63E929C7}" {
      Id "LF-Credits_165"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D24D05840A3D9820}" {
      Id "LF-Credits_166"
-     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Target_en_us "Harbour master Marcel Roux's fourteen spoken lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{473EC6052D855BB0}" {
+     Id "LF-Credits_167"
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4ED77DE7DEE2573C}" {
+     Id "LF-Credits_168"
+     Target_en_us "MUSIC"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{0774CCE82D802254}" {
+     Id "LF-Credits_169"
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD56C627EA2AD519}" {
@@ -3620,9 +3815,64 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "LICENCES"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+    CustomStringTableItem "{6FDBFD431F29A691}" {
+     Id "LF-Credits_170"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{24B6F60FC64E50FE}" {
+     Id "LF-Credits_171"
+     Target_en_us "\"Hitman\""
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{8B3125F791403A21}" {
+     Id "LF-Credits_172"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{6DEF465ED9803D1A}" {
+     Id "LF-Credits_173"
+     Target_en_us "VOICE-OVER"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{331934ECDCED4E47}" {
+     Id "LF-Credits_174"
+     Target_en_us "Piper"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B9BF5DC2926087D1}" {
+     Id "LF-Credits_175"
+     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{CC2101DE9FC8F7B8}" {
+     Id "LF-Credits_176"
+     Target_en_us "Voice en_US-ljspeech-high"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{C9C86A5A1ED40DCE}" {
+     Id "LF-Credits_177"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{8A4563FF1C5E590F}" {
+     Id "LF-Credits_178"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{1FC189AF5F7BE2CC}" {
+     Id "LF-Credits_179"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
     CustomStringTableItem "{3A24A564BBC40F8F}" {
      Id "LF-Credits_18"
      Target_en_us "The source in this repository is MIT (LICENSE). Contributions are licensed under MIT (CONTRIBUTING.md)."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{BDA999D625B19F3D}" {
+     Id "LF-Credits_180"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9B225E9F684B34BE}" {
@@ -4435,14 +4685,19 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{D7641543B9FD8567}" {
+     Id "LF-Dialogue_Goodbye"
+     Target_en_us "Goodbye"
+     Comment "Conversation scene: the last numbered row, always 0, that ends the talk with any NPC."
+    }
     CustomStringTableItem "{857383630EAB1A5D}" {
      Id "LF-Dialogue_HintChoose"
-     Target_en_us "1 to 4, or Up, Down and Confirm: answer    Back: leave"
+     Target_en_us "Press the number, or Up, Down and Confirm: answer    0 or Back: goodbye"
      Comment "Conversation scene, small hint under the numbered replies."
     }
     CustomStringTableItem "{B3D8A9678B34F5A7}" {
      Id "LF-Dialogue_HintLine"
-     Target_en_us "Confirm: skip    Back: leave"
+     Target_en_us "Confirm: skip    0 or Back: goodbye"
      Comment "Conversation scene, small hint under the caption while the NPC speaks. Confirm and Back are the menu confirm and back keys."
     }
     CustomStringTableItem "{6456C75F481973C0}" {
@@ -4484,6 +4739,391 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Dialogue_Resident_SayBye"
      Target_en_us "Goodbye."
      Comment "Dialogue reply: end the talk with a resident (#2908)."
+    }
+    CustomStringTableItem "{72B8972E2A4208C1}" {
+     Id "LF-Dialogue_RoleFence_Bye"
+     Target_en_us "We never spoke."
+     Comment "Dialogue caption, spoken by the role_fence NPC (text only; tools/assets/dialogue/role_fence). Changing it needs: tools\\cli asset dialogue role_fence"
+    }
+    CustomStringTableItem "{9CAB529816DBD464}" {
+     Id "LF-Dialogue_RoleFence_Greet"
+     Target_en_us "You did not see me. Now, what are you after?"
+     Comment "Dialogue caption, spoken by the role_fence NPC (text only; tools/assets/dialogue/role_fence). Changing it needs: tools\\cli asset dialogue role_fence"
+    }
+    CustomStringTableItem "{489F6B2B5E785654}" {
+     Id "LF-Dialogue_RoleFence_Rumour"
+     Target_en_us "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the {police}."
+     Comment "Dialogue caption, spoken by the role_fence NPC (text only; tools/assets/dialogue/role_fence). Changing it needs: tools\\cli asset dialogue role_fence"
+    }
+    CustomStringTableItem "{C2E59637D5CBE2A6}" {
+     Id "LF-Dialogue_RoleFence_SayBrowse"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply the player can pick when talking to the role_fence NPC."
+    }
+    CustomStringTableItem "{2F97D1CEAEE77234}" {
+     Id "LF-Dialogue_RoleFence_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the role_fence NPC."
+    }
+    CustomStringTableItem "{15418E634F494DAD}" {
+     Id "LF-Dialogue_RoleFence_SayMore"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the role_fence NPC."
+    }
+    CustomStringTableItem "{69B6DDE0717502FE}" {
+     Id "LF-Dialogue_RoleFence_SayRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "Dialogue reply the player can pick when talking to the role_fence NPC."
+    }
+    CustomStringTableItem "{CB888F1B27B62BC7}" {
+     Id "LF-Dialogue_RoleFence_SayWhat"
+     Target_en_us "What do you do here?"
+     Comment "Dialogue reply the player can pick when talking to the role_fence NPC."
+    }
+    CustomStringTableItem "{24ED4897A132D126}" {
+     Id "LF-Dialogue_RoleFence_SayWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "Dialogue reply the player can pick when talking to the role_fence NPC."
+    }
+    CustomStringTableItem "{2DCEA52CDB49F614}" {
+     Id "LF-Dialogue_RoleFence_What"
+     Target_en_us "I sell tools to people who do not ask what they are for. Locks are hard and the {police} are harder. Choose the right tool."
+     Comment "Dialogue caption, spoken by the role_fence NPC (text only; tools/assets/dialogue/role_fence). Changing it needs: tools\\cli asset dialogue role_fence"
+    }
+    CustomStringTableItem "{1714310B44EC7DEA}" {
+     Id "LF-Dialogue_RoleFence_Where"
+     Target_en_us "Ask nobody about me. Keep to the back streets."
+     Comment "Dialogue caption, spoken by the role_fence NPC (text only; tools/assets/dialogue/role_fence). Changing it needs: tools\\cli asset dialogue role_fence"
+    }
+    CustomStringTableItem "{ED9DC30135F01105}" {
+     Id "LF-Dialogue_RoleMechanic_Bye"
+     Target_en_us "Drive safe."
+     Comment "Dialogue caption, spoken by the role_mechanic NPC (text only; tools/assets/dialogue/role_mechanic). Changing it needs: tools\\cli asset dialogue role_mechanic"
+    }
+    CustomStringTableItem "{8A5E80DD173EF8C2}" {
+     Id "LF-Dialogue_RoleMechanic_Greet"
+     Target_en_us "Mind the oil. What is wrong with it?"
+     Comment "Dialogue caption, spoken by the role_mechanic NPC (text only; tools/assets/dialogue/role_mechanic). Changing it needs: tools\\cli asset dialogue role_mechanic"
+    }
+    CustomStringTableItem "{4834C033B5A5A764}" {
+     Id "LF-Dialogue_RoleMechanic_Rumour"
+     Target_en_us "Somebody keeps asking me how to start a car without the key. I tell them to buy the key."
+     Comment "Dialogue caption, spoken by the role_mechanic NPC (text only; tools/assets/dialogue/role_mechanic). Changing it needs: tools\\cli asset dialogue role_mechanic"
+    }
+    CustomStringTableItem "{F6C964C69F6B8F1C}" {
+     Id "LF-Dialogue_RoleMechanic_SayBrowse"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply the player can pick when talking to the role_mechanic NPC."
+    }
+    CustomStringTableItem "{642F8B4067F562BA}" {
+     Id "LF-Dialogue_RoleMechanic_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the role_mechanic NPC."
+    }
+    CustomStringTableItem "{C74F909F4819B632}" {
+     Id "LF-Dialogue_RoleMechanic_SayMore"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the role_mechanic NPC."
+    }
+    CustomStringTableItem "{06ED0CB591544621}" {
+     Id "LF-Dialogue_RoleMechanic_SayRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "Dialogue reply the player can pick when talking to the role_mechanic NPC."
+    }
+    CustomStringTableItem "{A5850A643C048613}" {
+     Id "LF-Dialogue_RoleMechanic_SayWhat"
+     Target_en_us "What do you do here?"
+     Comment "Dialogue reply the player can pick when talking to the role_mechanic NPC."
+    }
+    CustomStringTableItem "{48F37B5201E8BA51}" {
+     Id "LF-Dialogue_RoleMechanic_SayWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "Dialogue reply the player can pick when talking to the role_mechanic NPC."
+    }
+    CustomStringTableItem "{00D50CF213CD743C}" {
+     Id "LF-Dialogue_RoleMechanic_What"
+     Target_en_us "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery."
+     Comment "Dialogue caption, spoken by the role_mechanic NPC (text only; tools/assets/dialogue/role_mechanic). Changing it needs: tools\\cli asset dialogue role_mechanic"
+    }
+    CustomStringTableItem "{41AD34A13B8CAFD3}" {
+     Id "LF-Dialogue_RoleMechanic_Where"
+     Target_en_us "The car lot is on the east side, and the fuel station is down the road. Fill up before you go far."
+     Comment "Dialogue caption, spoken by the role_mechanic NPC (text only; tools/assets/dialogue/role_mechanic). Changing it needs: tools\\cli asset dialogue role_mechanic"
+    }
+    CustomStringTableItem "{A47534F3909B3682}" {
+     Id "LF-Dialogue_RoleMedic_Bye"
+     Target_en_us "Look after yourself."
+     Comment "Dialogue caption, spoken by the role_medic NPC (text only; tools/assets/dialogue/role_medic). Changing it needs: tools\\cli asset dialogue role_medic"
+    }
+    CustomStringTableItem "{C0790ABB8E8A1045}" {
+     Id "LF-Dialogue_RoleMedic_Greet"
+     Target_en_us "Come in. Are you hurt?"
+     Comment "Dialogue caption, spoken by the role_medic NPC (text only; tools/assets/dialogue/role_medic). Changing it needs: tools\\cli asset dialogue role_medic"
+    }
+    CustomStringTableItem "{78303B3C326DD13D}" {
+     Id "LF-Dialogue_RoleMedic_Rumour"
+     Target_en_us "A lot of cuts from the sawmill this month. The men will not wear gloves."
+     Comment "Dialogue caption, spoken by the role_medic NPC (text only; tools/assets/dialogue/role_medic). Changing it needs: tools\\cli asset dialogue role_medic"
+    }
+    CustomStringTableItem "{BEB9F935BABDA793}" {
+     Id "LF-Dialogue_RoleMedic_SayBrowse"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply the player can pick when talking to the role_medic NPC."
+    }
+    CustomStringTableItem "{76E46E710BAAC893}" {
+     Id "LF-Dialogue_RoleMedic_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the role_medic NPC."
+    }
+    CustomStringTableItem "{5A6656089219089F}" {
+     Id "LF-Dialogue_RoleMedic_SayMore"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the role_medic NPC."
+    }
+    CustomStringTableItem "{4EDC252C93C5CD44}" {
+     Id "LF-Dialogue_RoleMedic_SayRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "Dialogue reply the player can pick when talking to the role_medic NPC."
+    }
+    CustomStringTableItem "{D630BB2820B82FFF}" {
+     Id "LF-Dialogue_RoleMedic_SayWhat"
+     Target_en_us "What do you do here?"
+     Comment "Dialogue reply the player can pick when talking to the role_medic NPC."
+    }
+    CustomStringTableItem "{A9D81D6A9C42641C}" {
+     Id "LF-Dialogue_RoleMedic_SayWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "Dialogue reply the player can pick when talking to the role_medic NPC."
+    }
+    CustomStringTableItem "{52D0C205FD1FC027}" {
+     Id "LF-Dialogue_RoleMedic_What"
+     Target_en_us "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse."
+     Comment "Dialogue caption, spoken by the role_medic NPC (text only; tools/assets/dialogue/role_medic). Changing it needs: tools\\cli asset dialogue role_medic"
+    }
+    CustomStringTableItem "{4827D5A1883880E8}" {
+     Id "LF-Dialogue_RoleMedic_Where"
+     Target_en_us "If you need a bandage and I am not here, the general store keeps dressings by the counter."
+     Comment "Dialogue caption, spoken by the role_medic NPC (text only; tools/assets/dialogue/role_medic). Changing it needs: tools\\cli asset dialogue role_medic"
+    }
+    CustomStringTableItem "{4B94B75B08F3D7A1}" {
+     Id "LF-Dialogue_RolePolice_Bye"
+     Target_en_us "Stay out of trouble."
+     Comment "Dialogue caption, spoken by the role_police NPC (text only; tools/assets/dialogue/role_police). Changing it needs: tools\\cli asset dialogue role_police"
+    }
+    CustomStringTableItem "{070510F9A973D44C}" {
+     Id "LF-Dialogue_RolePolice_Greet"
+     Target_en_us "Officer on duty. Keep your hands where I can see them, and we will get along."
+     Comment "Dialogue caption, spoken by the role_police NPC (text only; tools/assets/dialogue/role_police). Changing it needs: tools\\cli asset dialogue role_police"
+    }
+    CustomStringTableItem "{03A36F9FF760B4AC}" {
+     Id "LF-Dialogue_RolePolice_Rumour"
+     Target_en_us "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces."
+     Comment "Dialogue caption, spoken by the role_police NPC (text only; tools/assets/dialogue/role_police). Changing it needs: tools\\cli asset dialogue role_police"
+    }
+    CustomStringTableItem "{B8F1FFC241757861}" {
+     Id "LF-Dialogue_RolePolice_SayBrowse"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply the player can pick when talking to the role_police NPC."
+    }
+    CustomStringTableItem "{96391F67DB4EFF26}" {
+     Id "LF-Dialogue_RolePolice_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the role_police NPC."
+    }
+    CustomStringTableItem "{8036AA8BA603F9C1}" {
+     Id "LF-Dialogue_RolePolice_SayMore"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the role_police NPC."
+    }
+    CustomStringTableItem "{FD1045C855D454AF}" {
+     Id "LF-Dialogue_RolePolice_SayRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "Dialogue reply the player can pick when talking to the role_police NPC."
+    }
+    CustomStringTableItem "{E82C872BB54A7C13}" {
+     Id "LF-Dialogue_RolePolice_SayWhat"
+     Target_en_us "What do you do here?"
+     Comment "Dialogue reply the player can pick when talking to the role_police NPC."
+    }
+    CustomStringTableItem "{DBC662504B4C29F3}" {
+     Id "LF-Dialogue_RolePolice_SayWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "Dialogue reply the player can pick when talking to the role_police NPC."
+    }
+    CustomStringTableItem "{B829883E7B6C2CD6}" {
+     Id "LF-Dialogue_RolePolice_What"
+     Target_en_us "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again."
+     Comment "Dialogue caption, spoken by the role_police NPC (text only; tools/assets/dialogue/role_police). Changing it needs: tools\\cli asset dialogue role_police"
+    }
+    CustomStringTableItem "{B8DF7D1CC370A494}" {
+     Id "LF-Dialogue_RolePolice_Where"
+     Target_en_us "The station is the building behind me. The {town} board on the square lists everything else."
+     Comment "Dialogue caption, spoken by the role_police NPC (text only; tools/assets/dialogue/role_police). Changing it needs: tools\\cli asset dialogue role_police"
+    }
+    CustomStringTableItem "{215C350813A39835}" {
+     Id "LF-Dialogue_RoleStoreClerk_Bye"
+     Target_en_us "Take care out there."
+     Comment "Dialogue caption, spoken by the role_store_clerk NPC (text only; tools/assets/dialogue/role_store_clerk). Changing it needs: tools\\cli asset dialogue role_store_clerk"
+    }
+    CustomStringTableItem "{837320B83A023DC6}" {
+     Id "LF-Dialogue_RoleStoreClerk_Greet"
+     Target_en_us "Morning. Looking for something in particular?"
+     Comment "Dialogue caption, spoken by the role_store_clerk NPC (text only; tools/assets/dialogue/role_store_clerk). Changing it needs: tools\\cli asset dialogue role_store_clerk"
+    }
+    CustomStringTableItem "{0583E2202A9B88AD}" {
+     Id "LF-Dialogue_RoleStoreClerk_Rumour"
+     Target_en_us "Somebody has been asking whether I keep a safe under the counter. I do not, and I do not keep much cash either."
+     Comment "Dialogue caption, spoken by the role_store_clerk NPC (text only; tools/assets/dialogue/role_store_clerk). Changing it needs: tools\\cli asset dialogue role_store_clerk"
+    }
+    CustomStringTableItem "{D02DE736B1C189F6}" {
+     Id "LF-Dialogue_RoleStoreClerk_SayBrowse"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply the player can pick when talking to the role_store_clerk NPC."
+    }
+    CustomStringTableItem "{E295C8499B5DC28E}" {
+     Id "LF-Dialogue_RoleStoreClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the role_store_clerk NPC."
+    }
+    CustomStringTableItem "{71126CF29DBAF863}" {
+     Id "LF-Dialogue_RoleStoreClerk_SayMore"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the role_store_clerk NPC."
+    }
+    CustomStringTableItem "{B557DE56CC98BF98}" {
+     Id "LF-Dialogue_RoleStoreClerk_SayRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "Dialogue reply the player can pick when talking to the role_store_clerk NPC."
+    }
+    CustomStringTableItem "{DCCDC991624EA96E}" {
+     Id "LF-Dialogue_RoleStoreClerk_SayWhat"
+     Target_en_us "What do you do here?"
+     Comment "Dialogue reply the player can pick when talking to the role_store_clerk NPC."
+    }
+    CustomStringTableItem "{901913ED0AD3E834}" {
+     Id "LF-Dialogue_RoleStoreClerk_SayWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "Dialogue reply the player can pick when talking to the role_store_clerk NPC."
+    }
+    CustomStringTableItem "{C663B941AD0AF51E}" {
+     Id "LF-Dialogue_RoleStoreClerk_What"
+     Target_en_us "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in {town} does."
+     Comment "Dialogue caption, spoken by the role_store_clerk NPC (text only; tools/assets/dialogue/role_store_clerk). Changing it needs: tools\\cli asset dialogue role_store_clerk"
+    }
+    CustomStringTableItem "{52B9BF00FA3A31A1}" {
+     Id "LF-Dialogue_RoleStoreClerk_Where"
+     Target_en_us "The market square is south of the main street if you want fruit and vegetables. Cars are sold at the lot on the east side."
+     Comment "Dialogue caption, spoken by the role_store_clerk NPC (text only; tools/assets/dialogue/role_store_clerk). Changing it needs: tools\\cli asset dialogue role_store_clerk"
+    }
+    CustomStringTableItem "{254171EDBB61901B}" {
+     Id "LF-Dialogue_RoleTeller_Bye"
+     Target_en_us "Good day. Mind your money."
+     Comment "Dialogue caption, spoken by the role_teller NPC (text only; tools/assets/dialogue/role_teller). Changing it needs: tools\\cli asset dialogue role_teller"
+    }
+    CustomStringTableItem "{1E386EA66A79D064}" {
+     Id "LF-Dialogue_RoleTeller_Greet"
+     Target_en_us "Good day. Welcome to the bank. How can I help?"
+     Comment "Dialogue caption, spoken by the role_teller NPC (text only; tools/assets/dialogue/role_teller). Changing it needs: tools\\cli asset dialogue role_teller"
+    }
+    CustomStringTableItem "{D6055E830E7F5903}" {
+     Id "LF-Dialogue_RoleTeller_Rumour"
+     Target_en_us "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business."
+     Comment "Dialogue caption, spoken by the role_teller NPC (text only; tools/assets/dialogue/role_teller). Changing it needs: tools\\cli asset dialogue role_teller"
+    }
+    CustomStringTableItem "{C669101DB3ED75DA}" {
+     Id "LF-Dialogue_RoleTeller_SayBrowse"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply the player can pick when talking to the role_teller NPC."
+    }
+    CustomStringTableItem "{FD8A53E8E314BAB2}" {
+     Id "LF-Dialogue_RoleTeller_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the role_teller NPC."
+    }
+    CustomStringTableItem "{F7729E35FD22B45E}" {
+     Id "LF-Dialogue_RoleTeller_SayMore"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the role_teller NPC."
+    }
+    CustomStringTableItem "{6229E07D0BE61F10}" {
+     Id "LF-Dialogue_RoleTeller_SayRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "Dialogue reply the player can pick when talking to the role_teller NPC."
+    }
+    CustomStringTableItem "{466EC34322788915}" {
+     Id "LF-Dialogue_RoleTeller_SayWhat"
+     Target_en_us "What do you do here?"
+     Comment "Dialogue reply the player can pick when talking to the role_teller NPC."
+    }
+    CustomStringTableItem "{F49C6DECCD91201D}" {
+     Id "LF-Dialogue_RoleTeller_SayWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "Dialogue reply the player can pick when talking to the role_teller NPC."
+    }
+    CustomStringTableItem "{9BDCA80D237262AF}" {
+     Id "LF-Dialogue_RoleTeller_What"
+     Target_en_us "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals."
+     Comment "Dialogue caption, spoken by the role_teller NPC (text only; tools/assets/dialogue/role_teller). Changing it needs: tools\\cli asset dialogue role_teller"
+    }
+    CustomStringTableItem "{1344BEA384FEF57D}" {
+     Id "LF-Dialogue_RoleTeller_Where"
+     Target_en_us "The post office is right beside us. The {town} board on the square lists the rest, and the {police} station is a short walk up the street."
+     Comment "Dialogue caption, spoken by the role_teller NPC (text only; tools/assets/dialogue/role_teller). Changing it needs: tools\\cli asset dialogue role_teller"
+    }
+    CustomStringTableItem "{760EF9A0B053C005}" {
+     Id "LF-Dialogue_RoleTownsfolk_Bye"
+     Target_en_us "Take care."
+     Comment "Dialogue caption, spoken by the role_townsfolk NPC (text only; tools/assets/dialogue/role_townsfolk). Changing it needs: tools\\cli asset dialogue role_townsfolk"
+    }
+    CustomStringTableItem "{9D6D3E297FD1E80A}" {
+     Id "LF-Dialogue_RoleTownsfolk_Greet"
+     Target_en_us "Hello. New in {town}?"
+     Comment "Dialogue caption, spoken by the role_townsfolk NPC (text only; tools/assets/dialogue/role_townsfolk). Changing it needs: tools\\cli asset dialogue role_townsfolk"
+    }
+    CustomStringTableItem "{6996FE7EEA1A16B1}" {
+     Id "LF-Dialogue_RoleTownsfolk_Rumour"
+     Target_en_us "People say the {police} are watching the main street. Burglars are about. Keep your doors locked."
+     Comment "Dialogue caption, spoken by the role_townsfolk NPC (text only; tools/assets/dialogue/role_townsfolk). Changing it needs: tools\\cli asset dialogue role_townsfolk"
+    }
+    CustomStringTableItem "{EF1E1D862F9B7CD6}" {
+     Id "LF-Dialogue_RoleTownsfolk_SayBrowse"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply the player can pick when talking to the role_townsfolk NPC."
+    }
+    CustomStringTableItem "{A8908318C66BA656}" {
+     Id "LF-Dialogue_RoleTownsfolk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the role_townsfolk NPC."
+    }
+    CustomStringTableItem "{ECE3B0D4E9E9C443}" {
+     Id "LF-Dialogue_RoleTownsfolk_SayMore"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the role_townsfolk NPC."
+    }
+    CustomStringTableItem "{8A9193841DC4B4C7}" {
+     Id "LF-Dialogue_RoleTownsfolk_SayRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "Dialogue reply the player can pick when talking to the role_townsfolk NPC."
+    }
+    CustomStringTableItem "{A837FF22CF4C203D}" {
+     Id "LF-Dialogue_RoleTownsfolk_SayWhat"
+     Target_en_us "What do you do here?"
+     Comment "Dialogue reply the player can pick when talking to the role_townsfolk NPC."
+    }
+    CustomStringTableItem "{024D9A2F77FD5231}" {
+     Id "LF-Dialogue_RoleTownsfolk_SayWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "Dialogue reply the player can pick when talking to the role_townsfolk NPC."
+    }
+    CustomStringTableItem "{79E7D7034D374C37}" {
+     Id "LF-Dialogue_RoleTownsfolk_What"
+     Target_en_us "I live here. I get by, as everyone does. The work is simple and the people are decent."
+     Comment "Dialogue caption, spoken by the role_townsfolk NPC (text only; tools/assets/dialogue/role_townsfolk). Changing it needs: tools\\cli asset dialogue role_townsfolk"
+    }
+    CustomStringTableItem "{2D6C68B37351635D}" {
+     Id "LF-Dialogue_RoleTownsfolk_Where"
+     Target_en_us "The {town} board on the square shows everything. The post office hires couriers, and the bank is beside it."
+     Comment "Dialogue caption, spoken by the role_townsfolk NPC (text only; tools/assets/dialogue/role_townsfolk). Changing it needs: tools\\cli asset dialogue role_townsfolk"
     }
     CustomStringTableItem "{BC6FD589CFCCD2F2}" {
      Id "LF-Dialogue_Shopkeeper_Bye"
@@ -7311,6 +7951,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Oficial de policía. Requiere un nombramiento aprobado."
      Comment "Description of the police job (appointment = whitelist)"
     }
+    CustomStringTableItem "{4AD1BED424C85624}" {
+     Id "LF-Job_DeskQuit"
+     Target_en_us "Quit the job: %1"
+     Comment "Workplace desk action when the player already holds the job. %1 is the job name."
+    }
+    CustomStringTableItem "{0253B3296037A056}" {
+     Id "LF-Job_DeskTake"
+     Target_en_us "Take the job: %1"
+     Comment "Workplace desk action. %1 is the job name (Miner, Lumberjack, Farmer)."
+    }
+    CustomStringTableItem "{CD5B6F2CE37D13FD}" {
+     Id "LF-Job_DeskTakeName"
+     Target_en_us "Take the job"
+     Comment "Workplace desk action name in the prefab (the script prints the job name)."
+    }
     CustomStringTableItem "{2FFBFD36EA8DB8AE}" {
      Id "LF-Job_FruitHarvest"
      Target_en_us "You picked %1 %2."
@@ -7558,6 +8213,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Work"
      Target_es_es "Trabajo"
      Comment "Hint title for work results"
+    }
+    CustomStringTableItem "{59804671C301B6FE}" {
+     Id "LF-Keybind_MapWaypointClear"
+     Target_en_us "Map: clear waypoint"
+     Comment "Keybinding menu: clears the personal waypoint while the map is open (Backspace, gamepad Y twice)."
+    }
+    CustomStringTableItem "{76177DC570F67928}" {
+     Id "LF-Keybind_MapWaypointModifier"
+     Target_en_us "Map: set waypoint (hold, then left click)"
+     Comment "Keybinding menu: the modifier held with a map click to set the waypoint (keyboard Shift, gamepad Y)."
     }
     CustomStringTableItem "{280FC8E5DDE60C95}" {
      Id "LF-Keybind_OpenEmote"
@@ -8742,6 +9407,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hide"
      Comment "Map legend (#2244): button that takes a category off the map."
     }
+    CustomStringTableItem "{8B6B429B0B8DB6CF}" {
+     Id "LF-MapLegend_IconsTab"
+     Target_en_us "Legend"
+     Comment "Map: the tab under Map key that opens the icon legend."
+    }
+    CustomStringTableItem "{90D47ED8630EFB47}" {
+     Id "LF-MapLegend_IconsTitle"
+     Target_en_us "LEGEND"
+     Comment "Map icon legend panel title: one icon and its place type per line."
+    }
     CustomStringTableItem "{13D7B2C3585F2511}" {
      Id "LF-MapLegend_NoMatch"
      Target_en_us "No place you know of by that name"
@@ -8782,6 +9457,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Map marker"
      Comment "Map: name under the HUD marker of the waypoint a player's own map marker sets, when the marker has no text of its own."
     }
+    CustomStringTableItem "{A903D8336DDE33B0}" {
+     Id "LF-MapPlaces_CardClear"
+     Target_en_us "Your waypoint. Click again to clear."
+     Comment "Map place card, mouse: the waypoint is on this place."
+    }
+    CustomStringTableItem "{A4B75C962C2E3FDD}" {
+     Id "LF-MapPlaces_CardClearPad"
+     Target_en_us "Your waypoint. A again to clear."
+     Comment "Map place card, gamepad: the waypoint is on this place."
+    }
+    CustomStringTableItem "{26B1FA3CD62AF095}" {
+     Id "LF-MapPlaces_CardCrowded"
+     Target_en_us "Also here: %1. Click to zoom in."
+     Comment "Map place card for places that share one spot on the map. %1 = the other places, comma separated."
+    }
+    CustomStringTableItem "{BA2C603B8BA2DEAA}" {
+     Id "LF-MapPlaces_CardSet"
+     Target_en_us "Click: set waypoint"
+     Comment "Map place card under the cursor, mouse: what a click on the place does."
+    }
+    CustomStringTableItem "{A752450458ACD025}" {
+     Id "LF-MapPlaces_CardSetPad"
+     Target_en_us "A: set waypoint"
+     Comment "Map place card under the cursor, gamepad: what A on the place does."
+    }
     CustomStringTableItem "{DE2AC99F6166AB0D}" {
      Id "LF-MapPlaces_ClusterNote"
      Target_en_us "Zoom in for each"
@@ -8807,6 +9507,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Bank"
      Comment "Map POI kind name (#2230): the bank."
     }
+    CustomStringTableItem "{963CABB6216B6480}" {
+     Id "LF-MapPoi_BusStop"
+     Target_en_us "Bus stop"
+     Comment "Map place name: a bus stop."
+    }
     CustomStringTableItem "{9FA312C17AB06C17}" {
      Id "LF-MapPoi_Hospital"
      Target_en_us "Clinic"
@@ -8831,6 +9536,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-MapPoi_Workplace"
      Target_en_us "Workplace"
      Comment "Map POI kind name (#2230): a job site."
+    }
+    CustomStringTableItem "{615D96CD9F0A9E15}" {
+     Id "LF-MapWaypoint_HintActive"
+     Target_en_us "Waypoint: %1. Backspace clears it."
+     Comment "Map hint strip, second line, mouse and keyboard. %1 = the distance for an unnamed waypoint ("340 m"), or the place and the distance ("Cafe, 340 m")."
+    }
+    CustomStringTableItem "{4BA6F91B8342E649}" {
+     Id "LF-MapWaypoint_HintActivePad"
+     Target_en_us "Waypoint: %1. Double-tap Y clears it."
+     Comment "Map hint strip, second line, gamepad. %1 = the distance for an unnamed waypoint ("340 m"), or the place and the distance ("Cafe, 340 m")."
+    }
+    CustomStringTableItem "{7D841E6E53E0E07B}" {
+     Id "LF-MapWaypoint_HintNone"
+     Target_en_us "Or click a place. The same again on your waypoint clears it."
+     Comment "Map hint strip, second line, no waypoint set."
+    }
+    CustomStringTableItem "{CF6499DC3087F5FB}" {
+     Id "LF-MapWaypoint_HintSet"
+     Target_en_us "Shift + Left click: set waypoint"
+     Comment "Map hint strip, first line, mouse and keyboard."
+    }
+    CustomStringTableItem "{7A6CB89B59485829}" {
+     Id "LF-MapWaypoint_HintSetPad"
+     Target_en_us "Hold Y + A: set waypoint"
+     Comment "Map hint strip, first line, gamepad."
     }
     CustomStringTableItem "{DC7EEF1A69D6A983}" {
      Id "LF-MapWaypoint_Label"
@@ -9057,34 +9787,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The market square is down the main street. The traders there pay fair for a good cabbage."
      Comment "NPC role talk (farmer), from tools/assets/outfits/roles.json."
     }
-    CustomStringTableItem "{37198FB9F87D5EA3}" {
-     Id "LF-NpcRole_fence_Bye"
-     Target_en_us "We never spoke."
-     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{0B506A4143FB4C98}" {
-     Id "LF-NpcRole_fence_Greet"
-     Target_en_us "You did not see me. Now, what are you after?"
-     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
-    }
     CustomStringTableItem "{7DDE7D6CEDCBC982}" {
      Id "LF-NpcRole_fence_Name"
      Target_en_us "Fence"
-     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{B9DD707B081D614A}" {
-     Id "LF-NpcRole_fence_Rumour"
-     Target_en_us "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the {police}."
-     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{BD9E1AD26E9C116D}" {
-     Id "LF-NpcRole_fence_What"
-     Target_en_us "I sell tools to people who do not ask what they are for. Locks are hard and the {police} are harder. Choose the right tool."
-     Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{083AD49A99ED768C}" {
-     Id "LF-NpcRole_fence_Where"
-     Target_en_us "Ask nobody about me. Keep to the back streets."
      Comment "NPC role talk (fence), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{3AEC9098FBC89EDC}" {
@@ -9117,64 +9822,14 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The sawmill is where the road meets the woods. Follow the sound of the saws."
      Comment "NPC role talk (logger), from tools/assets/outfits/roles.json."
     }
-    CustomStringTableItem "{33B9466C347C4FE8}" {
-     Id "LF-NpcRole_mechanic_Bye"
-     Target_en_us "Drive safe."
-     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{4FC1E66A54CD5A66}" {
-     Id "LF-NpcRole_mechanic_Greet"
-     Target_en_us "Mind the oil. What is wrong with it?"
-     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
-    }
     CustomStringTableItem "{53BFD39FAA73A5B0}" {
      Id "LF-NpcRole_mechanic_Name"
      Target_en_us "Mechanic"
      Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
     }
-    CustomStringTableItem "{3D7008D6A13D7B0D}" {
-     Id "LF-NpcRole_mechanic_Rumour"
-     Target_en_us "Somebody keeps asking me how to start a car without the key. I tell them to buy the key."
-     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{4E54D980F3E779E4}" {
-     Id "LF-NpcRole_mechanic_What"
-     Target_en_us "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery."
-     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{19D46DA161EE5EB6}" {
-     Id "LF-NpcRole_mechanic_Where"
-     Target_en_us "The car lot is on the east side, and the fuel station is down the road. Fill up before you go far."
-     Comment "NPC role talk (mechanic), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{A64A2A62793D9F93}" {
-     Id "LF-NpcRole_medic_Bye"
-     Target_en_us "Look after yourself."
-     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{B7490A2D5A53DF2D}" {
-     Id "LF-NpcRole_medic_Greet"
-     Target_en_us "Come in. Are you hurt?"
-     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
-    }
     CustomStringTableItem "{BD15D2974F55B43B}" {
      Id "LF-NpcRole_medic_Name"
      Target_en_us "Doctor"
-     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{30E2FD4036299CEF}" {
-     Id "LF-NpcRole_medic_Rumour"
-     Target_en_us "A lot of cuts from the sawmill this month. The men will not wear gloves."
-     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{887D2F527EDAA1C9}" {
-     Id "LF-NpcRole_medic_What"
-     Target_en_us "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse."
-     Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{E27C1F1314F8CDF5}" {
-     Id "LF-NpcRole_medic_Where"
-     Target_en_us "If you need a bandage and I am not here, the general store keeps dressings by the counter."
      Comment "NPC role talk (medic), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{3D5F374C14CE715C}" {
@@ -9237,34 +9892,9 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The {town} board on the square lists every office and who is hiring. The post office is next to the bank."
      Comment "NPC role talk (office), from tools/assets/outfits/roles.json."
     }
-    CustomStringTableItem "{83E5CC4E5D51B782}" {
-     Id "LF-NpcRole_police_Bye"
-     Target_en_us "Stay out of trouble."
-     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{A046683357332A30}" {
-     Id "LF-NpcRole_police_Greet"
-     Target_en_us "Officer on duty. Keep your hands where I can see them, and we will get along."
-     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
-    }
     CustomStringTableItem "{01F9E92E5799351C}" {
      Id "LF-NpcRole_police_Name"
      Target_en_us "{Police} officer"
-     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{49A24B144B6B7371}" {
-     Id "LF-NpcRole_police_Rumour"
-     Target_en_us "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces."
-     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{07A956FA5D2485F7}" {
-     Id "LF-NpcRole_police_What"
-     Target_en_us "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again."
-     Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{62757641F715D6E6}" {
-     Id "LF-NpcRole_police_Where"
-     Target_en_us "The station is the building behind me. The {town} board on the square lists everything else."
      Comment "NPC role talk (police), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{168CC753E6805BE1}" {
@@ -9297,94 +9927,19 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Walk the road, not the woods, until you know them. The coast is east and the farms are north."
      Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
     }
-    CustomStringTableItem "{7FB5E557B32CDAA8}" {
-     Id "LF-NpcRole_store_clerk_Bye"
-     Target_en_us "Take care out there."
-     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{E166A5A4DF548C9A}" {
-     Id "LF-NpcRole_store_clerk_Greet"
-     Target_en_us "Morning. Looking for something in particular?"
-     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
-    }
     CustomStringTableItem "{85F76A512682F9A4}" {
      Id "LF-NpcRole_store_clerk_Name"
      Target_en_us "Store clerk"
      Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{9B5EE0182A575409}" {
-     Id "LF-NpcRole_store_clerk_Rumour"
-     Target_en_us "Somebody has been asking whether I keep a safe under the counter. I do not, and I do not keep much cash either."
-     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{CC45BA0D974D99A0}" {
-     Id "LF-NpcRole_store_clerk_What"
-     Target_en_us "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in {town} does."
-     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{F504491DC9865F5A}" {
-     Id "LF-NpcRole_store_clerk_Where"
-     Target_en_us "The market square is south of the main street if you want fruit and vegetables. Cars are sold at the lot on the east side."
-     Comment "NPC role talk (store_clerk), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{B177445AD966E34E}" {
-     Id "LF-NpcRole_teller_Bye"
-     Target_en_us "Good day. Mind your money."
-     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{1428CD8599FA8A99}" {
-     Id "LF-NpcRole_teller_Greet"
-     Target_en_us "Good day. Welcome to the bank. How can I help?"
-     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{F3F6D2AFCE92D2D0}" {
      Id "LF-NpcRole_teller_Name"
      Target_en_us "Bank teller"
      Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
     }
-    CustomStringTableItem "{00471DBB1C9CD1F1}" {
-     Id "LF-NpcRole_teller_Rumour"
-     Target_en_us "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business."
-     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{9455B6D150E0DCFF}" {
-     Id "LF-NpcRole_teller_What"
-     Target_en_us "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals."
-     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{F73D61D21FC86CE9}" {
-     Id "LF-NpcRole_teller_Where"
-     Target_en_us "The post office is right beside us. The {town} board on the square lists the rest, and the {police} station is a short walk up the street."
-     Comment "NPC role talk (teller), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{8A817B1EEF80D979}" {
-     Id "LF-NpcRole_townsfolk_Bye"
-     Target_en_us "Take care."
-     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{71D2F38275FD0E1F}" {
-     Id "LF-NpcRole_townsfolk_Greet"
-     Target_en_us "Hello. New in {town}?"
-     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
-    }
     CustomStringTableItem "{0093D099EE56193C}" {
      Id "LF-NpcRole_townsfolk_Name"
      Target_en_us "Resident"
-     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{3A755020504E7116}" {
-     Id "LF-NpcRole_townsfolk_Rumour"
-     Target_en_us "People say the {police} are watching the main street. Burglars are about. Keep your doors locked."
-     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{9E04F675DD356F60}" {
-     Id "LF-NpcRole_townsfolk_What"
-     Target_en_us "I live here. I get by, as everyone does. The work is simple and the people are decent."
-     Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
-    }
-    CustomStringTableItem "{276C699503CB062D}" {
-     Id "LF-NpcRole_townsfolk_Where"
-     Target_en_us "The {town} board on the square shows everything. The post office hires couriers, and the bank is beside it."
      Comment "NPC role talk (townsfolk), from tools/assets/outfits/roles.json."
     }
     CustomStringTableItem "{0956000C64F43D0E}" {
@@ -10906,6 +11461,341 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Plant_Water_Thirsty"
      Target_en_us "The soil is dry. It needs water."
      Comment "Inspect toast: the plant can be watered now (#2664)."
+    }
+    CustomStringTableItem "{A839CFC87CD97E94}" {
+     Id "LF-PlayerMenu_Bank"
+     Target_en_us "Bank account"
+     Comment "Personal file row: bank balance."
+    }
+    CustomStringTableItem "{4F95A449245E1929}" {
+     Id "LF-PlayerMenu_Cash"
+     Target_en_us "Cash in hand"
+     Comment "Personal file row: cash the character carries."
+    }
+    CustomStringTableItem "{247837F8339492C7}" {
+     Id "LF-PlayerMenu_Close"
+     Target_en_us "Close"
+     Comment "Personal file close button."
+    }
+    CustomStringTableItem "{C42AE3E161B80F72}" {
+     Id "LF-PlayerMenu_Garage"
+     Target_en_us "Garage slots"
+     Comment "Personal file row: vehicles stored over slots held."
+    }
+    CustomStringTableItem "{6FC41C4D1BFFDA61}" {
+     Id "LF-PlayerMenu_GarageValue"
+     Target_en_us "%1 of %2 used"
+     Comment "Personal file garage value. %1 = vehicles stored, %2 = slots held."
+    }
+    CustomStringTableItem "{ED18878B54F73D5D}" {
+     Id "LF-PlayerMenu_GroupArrival"
+     Target_en_us "FIRST ERRANDS"
+     Comment "Personal file Progress list group: the guided arrival chain."
+    }
+    CustomStringTableItem "{40343406B6555732}" {
+     Id "LF-PlayerMenu_GroupCount"
+     Target_en_us "%1 / %2"
+     Comment "Personal file group row count. %1 = done, %2 = total."
+    }
+    CustomStringTableItem "{6966BAA81E2F635C}" {
+     Id "LF-PlayerMenu_GroupErrands"
+     Target_en_us "OTHER ERRANDS"
+     Comment "Personal file Progress list group: every other errand taken."
+    }
+    CustomStringTableItem "{0F90061B8CB63527}" {
+     Id "LF-PlayerMenu_Guide"
+     Target_en_us "Welcome guide"
+     Comment "Personal file footer button: opens the welcome guide."
+    }
+    CustomStringTableItem "{41E30B4EE0E7DEE6}" {
+     Id "LF-PlayerMenu_HeadMoney"
+     Target_en_us "FINANCES"
+     Comment "Personal file section heading."
+    }
+    CustomStringTableItem "{5EDB5A057FBC4AA3}" {
+     Id "LF-PlayerMenu_HeadSkills"
+     Target_en_us "SKILLS"
+     Comment "Personal file section heading: one row per job skill."
+    }
+    CustomStringTableItem "{BA6834643BAE7C6D}" {
+     Id "LF-PlayerMenu_HeadStatus"
+     Target_en_us "STATUS"
+     Comment "Personal file section heading."
+    }
+    CustomStringTableItem "{660D6443F35395AD}" {
+     Id "LF-PlayerMenu_Houses"
+     Target_en_us "Houses owned"
+     Comment "Personal file row."
+    }
+    CustomStringTableItem "{16B38ECB1917D1B4}" {
+     Id "LF-PlayerMenu_Identity"
+     Target_en_us "%1 · %2"
+     Comment "Personal file identity line. %1 = character name, %2 = role (Civilian, Police officer, on duty, ...)."
+    }
+    CustomStringTableItem "{82C56C8427A68BE7}" {
+     Id "LF-PlayerMenu_Key"
+     Target_en_us "Personal file"
+     Comment "Settings > Controls: the key that opens the personal file (J)."
+    }
+    CustomStringTableItem "{3F1C9A7E2B5D8064}" {
+     Id "LF-PlayerMenu_Ledger"
+     Target_en_us "%1 ........ %2"
+     Comment "Personal file ledger line, printed matter. %1 = what (Cash in hand, Houses owned), %2 = the figure."
+    }
+    CustomStringTableItem "{7CE8B3A156C169C1}" {
+     Id "LF-PlayerMenu_Licences"
+     Target_en_us "Licences and permits: %1"
+     Comment "Personal file line. %1 = the licence names, comma separated."
+    }
+    CustomStringTableItem "{88EE192FCE8AC4CC}" {
+     Id "LF-PlayerMenu_LicencesNone"
+     Target_en_us "Licences and permits: none held"
+     Comment "Personal file line when no licence is held."
+    }
+    CustomStringTableItem "{48A10D9CC6860A9F}" {
+     Id "LF-PlayerMenu_NoName"
+     Target_en_us "Name not on file"
+     Comment "Personal file: the character has no registered name yet."
+    }
+    CustomStringTableItem "{CFF02279F95EF05A}" {
+     Id "LF-PlayerMenu_NoQuests"
+     Target_en_us "No errands on file yet."
+     Comment "Personal file Progress tab with no errand listed."
+    }
+    CustomStringTableItem "{7377D423F2E9B5D3}" {
+     Id "LF-PlayerMenu_OffDuty"
+     Target_en_us "off duty"
+     Comment "Personal file duty state."
+    }
+    CustomStringTableItem "{B6671A27755B9697}" {
+     Id "LF-PlayerMenu_OnDuty"
+     Target_en_us "on duty"
+     Comment "Personal file duty state."
+    }
+    CustomStringTableItem "{4D5F797963FE8D97}" {
+     Id "LF-PlayerMenu_Playtime"
+     Target_en_us "Time on the island"
+     Comment "Personal file row: total playtime of the account."
+    }
+    CustomStringTableItem "{8FB8F9587FA93741}" {
+     Id "LF-PlayerMenu_PlaytimeValue"
+     Target_en_us "%1 h %2 min"
+     Comment "Personal file playtime value. %1 = hours, %2 = minutes."
+    }
+    CustomStringTableItem "{114E0805DE8D52D3}" {
+     Id "LF-PlayerMenu_QuestHint"
+     Target_en_us "Pick an errand to read it."
+     Comment "Personal file: shown under the errands list before one is picked."
+    }
+    CustomStringTableItem "{08BD4D6C3BFA68E9}" {
+     Id "LF-PlayerMenu_QuestProgress"
+     Target_en_us "%1 · progress %2 / %3"
+     Comment "Personal file errand numbers. %1 = badge (DONE, CURRENT, LATER), %2 = done, %3 = needed."
+    }
+    CustomStringTableItem "{E9FC44CB85111207}" {
+     Id "LF-PlayerMenu_Read"
+     Target_en_us "Read"
+     Comment "Personal file list row button: show this skill or errand below the list."
+    }
+    CustomStringTableItem "{388649A98D7CA096}" {
+     Id "LF-PlayerMenu_RoleCivilian"
+     Target_en_us "Civilian"
+     Comment "Personal file role."
+    }
+    CustomStringTableItem "{11AE87042B721A46}" {
+     Id "LF-PlayerMenu_RoleDuty"
+     Target_en_us "%1, %2"
+     Comment "Personal file role with duty. %1 = role, %2 = on duty / off duty."
+    }
+    CustomStringTableItem "{DC5E7B83D1F8D08A}" {
+     Id "LF-PlayerMenu_RoleMedic"
+     Target_en_us "{medic}"
+     Comment "Personal file role."
+    }
+    CustomStringTableItem "{78EEA7E96D6E202A}" {
+     Id "LF-PlayerMenu_RolePolice"
+     Target_en_us "{police} officer"
+     Comment "Personal file role."
+    }
+    CustomStringTableItem "{E65F9D1445B42A9C}" {
+     Id "LF-PlayerMenu_Settings"
+     Target_en_us "Settings"
+     Comment "Personal file footer button: opens the game settings."
+    }
+    CustomStringTableItem "{643BE60ED6996276}" {
+     Id "LF-PlayerMenu_SkillDescOther"
+     Target_en_us "Work on the island that earns experience as you do it."
+     Comment "Skill description for a job the table has no row for."
+    }
+    CustomStringTableItem "{C852478B4B20E8CC}" {
+     Id "LF-PlayerMenu_SkillDesc_CIVILIAN"
+     Target_en_us "Odd jobs and errands for the locals. Some tools, a lockpick among them, want a steady hand first."
+     Comment "Skill description, CIVILIAN."
+    }
+    CustomStringTableItem "{6108599220E495F4}" {
+     Id "LF-PlayerMenu_SkillDesc_DELIVERY"
+     Target_en_us "Parcel rounds, fuel runs and taxi fares. More runs open the better-paid routes."
+     Comment "Skill description, DELIVERY."
+    }
+    CustomStringTableItem "{DDE9E42AD35085BB}" {
+     Id "LF-PlayerMenu_SkillDesc_FARMER"
+     Target_en_us "Picking fruit and drawing water in the fields. Experience opens the orchards and the faster harvest."
+     Comment "Skill description, FARMER."
+    }
+    CustomStringTableItem "{16237A864952C049}" {
+     Id "LF-PlayerMenu_SkillDesc_FISHER"
+     Target_en_us "Rod and line off the jetty and the shore. Patience brings the bigger catch."
+     Comment "Skill description, FISHER."
+    }
+    CustomStringTableItem "{69D82ADBBCD2826F}" {
+     Id "LF-PlayerMenu_SkillDesc_LUMBERJACK"
+     Target_en_us "Felling trees and working logs into planks at the mill."
+     Comment "Skill description, LUMBERJACK."
+    }
+    CustomStringTableItem "{3BC0577878C0CAC0}" {
+     Id "LF-PlayerMenu_SkillDesc_MEDIC"
+     Target_en_us "Treating the hurt and bringing the fallen back, on duty as a {medic}."
+     Comment "Skill description, MEDIC."
+    }
+    CustomStringTableItem "{DF98D27817C11D9F}" {
+     Id "LF-PlayerMenu_SkillDesc_MINER"
+     Target_en_us "Coal, copper, iron and gold from the pits. The richer ores want more experience first."
+     Comment "Skill description, MINER."
+    }
+    CustomStringTableItem "{5C7860BF6542679D}" {
+     Id "LF-PlayerMenu_SkillDesc_POLICE"
+     Target_en_us "Patrols, stops, fines and arrests on duty with the {police}."
+     Comment "Skill description, POLICE."
+    }
+    CustomStringTableItem "{58F153B6D5B351ED}" {
+     Id "LF-PlayerMenu_SkillHint"
+     Target_en_us "Pick a skill to read its record."
+     Comment "Personal file: shown under the skills list before one is picked."
+    }
+    CustomStringTableItem "{DE03E6E8DDB00C73}" {
+     Id "LF-PlayerMenu_SkillLevel"
+     Target_en_us "Level %1"
+     Comment "Personal file skill row status. %1 = level."
+    }
+    CustomStringTableItem "{F52EBB28BA797478}" {
+     Id "LF-PlayerMenu_SkillTop"
+     Target_en_us "Level %1 · %2 XP, the top of the ladder"
+     Comment "Personal file skill numbers at the highest level. %1 = level, %2 = total XP."
+    }
+    CustomStringTableItem "{48BCC2D5ADF101A4}" {
+     Id "LF-PlayerMenu_SkillXp"
+     Target_en_us "Level %1 · %2 / %3 XP"
+     Comment "Personal file skill numbers. %1 = level, %2 = total XP, %3 = total XP of the next level."
+    }
+    CustomStringTableItem "{4DF107179334698F}" {
+     Id "LF-PlayerMenu_Skill_CIVILIAN"
+     Target_en_us "General work"
+     Comment "Skill name of the CIVILIAN job track."
+    }
+    CustomStringTableItem "{44BD63FF4A688896}" {
+     Id "LF-PlayerMenu_Skill_DELIVERY"
+     Target_en_us "Delivery"
+     Comment "Skill name of the DELIVERY job track (parcels, fuel, taxi)."
+    }
+    CustomStringTableItem "{CEB3C601BA6C13EC}" {
+     Id "LF-PlayerMenu_Skill_FARMER"
+     Target_en_us "Farming"
+     Comment "Skill name of the FARMER job track."
+    }
+    CustomStringTableItem "{70C89C58806C0943}" {
+     Id "LF-PlayerMenu_Skill_FISHER"
+     Target_en_us "Fishing"
+     Comment "Skill name of the FISHER job track."
+    }
+    CustomStringTableItem "{F79EF93C19B94D30}" {
+     Id "LF-PlayerMenu_Skill_LUMBERJACK"
+     Target_en_us "Lumber"
+     Comment "Skill name of the LUMBERJACK job track."
+    }
+    CustomStringTableItem "{B18415A4FB204825}" {
+     Id "LF-PlayerMenu_Skill_MEDIC"
+     Target_en_us "{medic}"
+     Comment "Skill name of the MEDIC job track."
+    }
+    CustomStringTableItem "{AA52CF5828EE256B}" {
+     Id "LF-PlayerMenu_Skill_MINER"
+     Target_en_us "Mining"
+     Comment "Skill name of the MINER job track."
+    }
+    CustomStringTableItem "{17460BB5F62B70AB}" {
+     Id "LF-PlayerMenu_Skill_POLICE"
+     Target_en_us "{police}"
+     Comment "Skill name of the POLICE job track."
+    }
+    CustomStringTableItem "{D9EFF6F38B9466F2}" {
+     Id "LF-PlayerMenu_StateCurrent"
+     Target_en_us "CURRENT"
+     Comment "Personal file errand badge."
+    }
+    CustomStringTableItem "{921FF4306C06E7BA}" {
+     Id "LF-PlayerMenu_StateDone"
+     Target_en_us "DONE"
+     Comment "Personal file errand badge."
+    }
+    CustomStringTableItem "{6BE78DD852AA5B2B}" {
+     Id "LF-PlayerMenu_StateLater"
+     Target_en_us "LATER"
+     Comment "Personal file errand badge."
+    }
+    CustomStringTableItem "{72DBFE782ACC8113}" {
+     Id "LF-PlayerMenu_Summary"
+     Target_en_us "Errands on file: %1 of %2 done"
+     Comment "Personal file Progress tab summary. %1 = done, %2 = listed."
+    }
+    CustomStringTableItem "{8D2E6B1F4A7C9035}" {
+     Id "LF-PlayerMenu_TabOpen"
+     Target_en_us "· %1 ·"
+     Comment "Personal file: the open tab's button text. %1 = the tab name."
+    }
+    CustomStringTableItem "{8168FBFAAC62E4EB}" {
+     Id "LF-PlayerMenu_TabPerson"
+     Target_en_us "Person"
+     Comment "Personal file tab button: name, money, status, skills."
+    }
+    CustomStringTableItem "{E46FF8E8480EFC07}" {
+     Id "LF-PlayerMenu_TabProgress"
+     Target_en_us "Progress"
+     Comment "Personal file tab button: errands done, current and later."
+    }
+    CustomStringTableItem "{7ECEC4376AD1B4E5}" {
+     Id "LF-PlayerMenu_TitlePerson"
+     Target_en_us "PERSONAL FILE · PERSON"
+     Comment "Personal file sheet title on the Person tab."
+    }
+    CustomStringTableItem "{815D3A532245CE9D}" {
+     Id "LF-PlayerMenu_TitleProgress"
+     Target_en_us "PERSONAL FILE · PROGRESS"
+     Comment "Personal file sheet title on the Progress tab."
+    }
+    CustomStringTableItem "{D0846B46055E22FE}" {
+     Id "LF-PlayerMenu_Waiting"
+     Target_en_us "Fetching the file from the records office..."
+     Comment "Personal file: shown until the server's answer arrives."
+    }
+    CustomStringTableItem "{E10944E60E19C2E2}" {
+     Id "LF-PlayerMenu_Wanted"
+     Target_en_us "Wanted"
+     Comment "Personal file row: the police wanted state."
+    }
+    CustomStringTableItem "{0EBAA8CE0E18B34C}" {
+     Id "LF-PlayerMenu_WantedLevel"
+     Target_en_us "Level %1"
+     Comment "Personal file wanted value. %1 = wanted level."
+    }
+    CustomStringTableItem "{402E66AC2C233712}" {
+     Id "LF-PlayerMenu_WantedNo"
+     Target_en_us "No"
+     Comment "Personal file wanted value: not wanted."
+    }
+    CustomStringTableItem "{38FCAD58BB2A2C60}" {
+     Id "LF-PlayerMenu_Waypoint"
+     Target_en_us "Set waypoint to the current errand"
+     Comment "Personal file button: puts the current first errand on the map and screen."
     }
     CustomStringTableItem "{F875CB040C3C2526}" {
      Id "LF-PoliceAppGm_Approve"
@@ -13124,6 +14014,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_Rules"
      Target_en_us "Rules"
      Comment "Sign card section heading: cooldowns, wanted level, other rules."
+    }
+    CustomStringTableItem "{B71E5C09A4D23F68}" {
+     Id "LF-Sign_TaxiStand_Next"
+     Target_en_us "Take taxi work here, then drive each fare where it wants to go."
+     Comment "Sign catalog 'next' text of the taxi stand's Read card (sign id taxi_stand): what to do after reading it."
+    }
+    CustomStringTableItem "{6EAD44E4FC5E58E9}" {
+     Id "LF-Sign_TaxiStand_Title"
+     Target_en_us "Taxi stand"
+     Comment "Title printed on the taxi stand's pole plate (LF_TaxiStand prefab, sign id taxi_stand); the Read card shows it."
     }
     CustomStringTableItem "{84F64B2018E1B414}" {
      Id "LF-Sign_What"

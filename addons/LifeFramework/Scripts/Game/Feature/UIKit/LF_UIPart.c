@@ -24,7 +24,10 @@ enum LF_EUIPartKind
 	//! A photo of a person (head and shoulders, drawn by the feature into LF_UIScreen.GetPortrait)
 	//! with an optional stamp over its corner and up to LF_UIScreen.PORTRAIT_LINES label and value
 	//! lines beside it: the face of an identity card. text = stamp imageset, status = its image name.
-	PORTRAIT
+	PORTRAIT,
+	//! A thin progress bar (an XP bar): the filled share in the skin's accent, the rest in its row colour.
+	//! LF_UIScreen.SetBar sets how full it is; it starts empty.
+	BAR
 }
 
 class LF_UIPart
@@ -302,6 +305,9 @@ class LF_UIPart
 
 		if (kind == LF_EUIPartKind.PORTRAIT)
 			return LF_UITheme.PORTRAIT_LAYOUT;
+
+		if (kind == LF_EUIPartKind.BAR)
+			return LF_UITheme.BAR_LAYOUT;
 
 		return string.Empty;
 	}

@@ -14,6 +14,7 @@ class LF_ArrivalGuide
 {
 	static const string FEATURE = "ArrivalGuide";
 	static const string KIND_GIVER = "giver";
+	static const string KIND_GARAGE = "garage";
 	static const string WAYPOINT_ID = "arrival";
 	static const string KEY_PREFIX = "arrival:";
 	// A vanilla marker config index and colour, like the job stops (LF_JobMapMarks).
@@ -80,6 +81,26 @@ class LF_ArrivalGuide
 
 			position = giver.GetOwner().GetOrigin();
 			return true;
+		}
+
+		// The nearest vehicle garage, where a stored car is taken out (the starter car's step).
+		if (step.m_sTargetKind == KIND_GARAGE)
+		{
+			float bestGarage = -1;
+			foreach (LF_VehicleGarageComponent garage : LF_VehicleGarageComponent.GetAll())
+			{
+				if (!garage || !garage.GetOwner())
+					continue;
+
+				float garageDistance = vector.DistanceSqXZ(garage.GetOwner().GetOrigin(), from);
+				if (bestGarage < 0 || garageDistance < bestGarage)
+				{
+					bestGarage = garageDistance;
+					position = garage.GetOwner().GetOrigin();
+				}
+			}
+
+			return bestGarage >= 0;
 		}
 
 		if (!step.m_sTargetId.IsEmpty())

@@ -231,6 +231,38 @@ class LF_UIScreen
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Sets how full a BAR part is, 0 to 1 (clamped).
+	bool SetBar(string name, float fraction)
+	{
+		LF_UIPart part = FindPart(name);
+		if (!part || part.GetKind() != LF_EUIPartKind.BAR)
+		{
+			LF_Debug.Error("UIKit", name + " is not a bar");
+			return false;
+		}
+
+		Widget widget = WidgetNamed(name);
+		Widget fill;
+		Widget rest;
+		if (widget)
+		{
+			fill = widget.FindAnyWidget("BarFill");
+			rest = widget.FindAnyWidget("BarRest");
+		}
+
+		if (!fill || !rest)
+		{
+			LF_Debug.Error("UIKit", "bar " + name + " is missing BarFill or BarRest");
+			return false;
+		}
+
+		float share = Math.Clamp(fraction, 0, 1); // lf-float: a share of the bar, not a large int
+		LayoutSlot.SetFillWeight(fill, share);
+		LayoutSlot.SetFillWeight(rest, 1 - share);
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Rewrites a status row. An empty action hides its button.
 	bool SetStatusRow(string name, string label, string status, string action)
 	{
@@ -918,6 +950,14 @@ class LF_UIScreen
 		if (part.GetKind() == LF_EUIPartKind.PORTRAIT)
 		{
 			AddPortrait(widget, part);
+			return;
+		}
+
+		if (part.GetKind() == LF_EUIPartKind.BAR)
+		{
+			PaintNamed(widget, "BarFill", Accent());
+			PaintNamed(widget, "BarRest", GetSkin().m_Row);
+			AlignableSlot.SetPadding(widget, LF_UITheme.PAD_LEFT, 4, LF_UITheme.PAD_RIGHT, 8);
 			return;
 		}
 

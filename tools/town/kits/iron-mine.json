@@ -1,0 +1,461 @@
+{
+  "schema": 1,
+  "kit": "iron-mine",
+  "system": "mining",
+  "source": {
+    "file": "tools/town/kits/sources/iron-mine.layer",
+    "group": "*",
+    "origin": "0,0,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -8,
+        -8
+      ],
+      "max": [
+        13,
+        9
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The buried shaft end is the portal on the uphill side, two spoil heaps flank it, a cart, a pick pile and a lantern wait at its mouth; six iron ore rocks lie on the apron in front, 3 to 4 m apart so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk and the sign on the other, the iron buyer's yard between them (an old wooden table with the cash box on it, a platform scale beside it, the clerk standing behind it among ore crates, a chalk board in front), all on the side the track comes in from. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "mine-portal",
+      "name": "Mine_Portal",
+      "prefab": "{02128ED43CA97BCF}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_end_buried.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "mount": "terrain",
+      "offset": [
+        -8,
+        0,
+        0
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-heap-l",
+      "name": "Mine_HeapL",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -6,
+        0,
+        6
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-heap-r",
+      "name": "Mine_HeapR",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -6,
+        0,
+        -6
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-cart",
+      "name": "Mine_Cart",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -2.5,
+        0,
+        2.5
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "lift": -0.299
+    },
+    {
+      "id": "mine-picks",
+      "name": "Mine_Picks",
+      "prefab": "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -2.8,
+        0,
+        -2.6
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-lantern",
+      "name": "Mine_Lantern",
+      "prefab": "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et",
+      "role": "light",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -4,
+        0,
+        1.6
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-ore-1",
+      "name": "Mine_Ore_1",
+      "prefab": "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        1,
+        0,
+        6.5
+      ],
+      "yaw": 110,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-ore-2",
+      "name": "Mine_Ore_2",
+      "prefab": "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        3.5,
+        0,
+        3
+      ],
+      "yaw": -130,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-ore-3",
+      "name": "Mine_Ore_3",
+      "prefab": "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        1,
+        0,
+        -0.5
+      ],
+      "yaw": 165,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-ore-4",
+      "name": "Mine_Ore_4",
+      "prefab": "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        4,
+        0,
+        -3.8
+      ],
+      "yaw": -20,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-ore-5",
+      "name": "Mine_Ore_5",
+      "prefab": "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        1,
+        0,
+        -6.8
+      ],
+      "yaw": 40,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-ore-6",
+      "name": "Mine_Ore_6",
+      "prefab": "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        6.5,
+        0,
+        0.5
+      ],
+      "yaw": -70,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-furnace",
+      "name": "Mine_Furnace",
+      "prefab": "{CF27D083C01F1C36}Prefabs/Processor/LF_MineFurnace.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10,
+        0,
+        -6
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-flood",
+      "name": "Mine_Flood",
+      "prefab": "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et",
+      "role": "light",
+      "verb": "against wall",
+      "mount": "terrain",
+      "offset": [
+        9,
+        0,
+        -8
+      ],
+      "yaw": -70,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-desk",
+      "name": "Mine_Desk",
+      "prefab": "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10,
+        0,
+        6
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "LF_WorkplaceComponent",
+          "set": {
+            "m_sJob": "\"MINER\"",
+            "m_sPlaceId": "\"coalmans_brow_mine\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-sign",
+      "name": "Mine_Sign",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "against wall",
+      "mount": "terrain",
+      "offset": [
+        13,
+        0,
+        9
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"coalmans-brow-mine\"",
+            "m_vRimColor": "0.12 0.1 0.08",
+            "m_vPaintColor": "0.9 0.86 0.74",
+            "m_vTextColor": "0.12 0.1 0.08"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-buyer-table",
+      "name": "Mine_BuyerTable",
+      "prefab": "{7FFE600A194D73B1}Prefabs/Props/Furniture/TableOld_01/TableOld_01_Base.et",
+      "role": "counter",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        11.2,
+        0,
+        -1.5
+      ],
+      "yaw": -90
+    },
+    {
+      "id": "mine-buyer",
+      "name": "Mine_Buyer",
+      "prefab": "{CDE1C29873CECBC0}Prefabs/Trader/LF_IronBuyer_Everon1989.et",
+      "role": "till",
+      "verb": "on mine-buyer-table",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        11.2,
+        0,
+        -1.5
+      ],
+      "yaw": -90,
+      "lift": 0.901
+    },
+    {
+      "id": "mine-buyer-clerk",
+      "name": "Mine_BuyerClerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        12.5,
+        0,
+        -1.5
+      ],
+      "yaw": -90,
+      "class": "LF_NpcBaseEntity"
+    },
+    {
+      "id": "mine-buyer-scale",
+      "name": "Mine_BuyerScale",
+      "prefab": "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        11.2,
+        0,
+        -3.8
+      ],
+      "yaw": 90
+    },
+    {
+      "id": "mine-buyer-crate-1",
+      "name": "Mine_BuyerCrate1",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        13,
+        0,
+        -4
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "mine-buyer-box",
+      "name": "Mine_BuyerBox",
+      "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
+      "role": "dressing",
+      "verb": "on mine-buyer-crate-1",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        13,
+        0,
+        -4
+      ],
+      "yaw": 20,
+      "lift": 0.989
+    },
+    {
+      "id": "mine-buyer-crate-2",
+      "name": "Mine_BuyerCrate2",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        13,
+        0,
+        1
+      ],
+      "yaw": 0
+    },
+    {
+      "id": "mine-buyer-board",
+      "name": "Mine_BuyerBoard",
+      "prefab": "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et",
+      "role": "board",
+      "verb": "on floor",
+      "mount": "terrain",
+      "wall": "free",
+      "floor": "f0",
+      "offset": [
+        10.1,
+        0,
+        -3.1
+      ],
+      "yaw": -90,
+      "class": "SCR_DestructibleEntity",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"coalmans-brow-buyer\"",
+            "m_sStyle": "\"\"",
+            "m_sSize": "\"\"",
+            "m_vFaceAngles": "0 -15 0",
+            "m_fFaceScale": "2.6"
+          },
+          "blocks": []
+        }
+      ]
+    }
+  ]
+}

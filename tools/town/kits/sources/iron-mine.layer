@@ -1,0 +1,128 @@
+// Source of the `iron-mine` kit (tools/town/kits/iron-mine.json): the iron mine on Coalman's Brow, the one mining loop a new
+// player can run (pickaxe from MINER level 1 at the miners' supply till, iron rocks, the furnace, iron bars sold at the hardware
+// store). `town fit` reads each row's prefab and component GUIDs from here. Coordinates are offsets from the centre of the
+// hostless plot the slot anchors on (frame: the plot, unturned, x east, z north; the portal is on the -x side because Coalman's Brow rises to the west). The ore rocks are the core IronOre.et (node
+// `iron`: pickaxe, 5 pieces, 5 minutes to grow back), the furnace is the pack LF_MineFurnace.et (`furnace-iron-mine`, 3 nuggets to 1 bar, no
+// level), the desk is the MINER workplace, the sign def `coalmans-brow-mine` is in the pack's
+// Configs/Signs/LF_Signs_Everon1989/LF_Signs_Mine.conf, the iron buyer at the yard table is the pack LF_IronBuyer_Everon1989.et (pays the
+// `hardware` iron row of the buyer demand table; the dock wholesale takes the rest). Portal, heaps, cart, picks and lamps are the
+// `mine-entrance` kit's props.
+GenericEntity Mine_Portal : "{02128ED43CA97BCF}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_end_buried.et" {
+ coords -8 0 0
+ angleY 90
+}
+GenericEntity Mine_HeapL : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords -6 0 6
+ angleY 180
+}
+GenericEntity Mine_HeapR : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
+ coords -6 0 -6
+ angleY 180
+}
+GenericEntity Mine_Cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
+ coords -2.5 0 2.5
+ angleY 90
+}
+GenericEntity Mine_Picks : "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et" {
+ coords -2.8 0 -2.6
+ angleY 90
+}
+GenericEntity Mine_Lantern : "{53B76331BB3E6024}Prefabs/Props/Industrial/Mine/MiningLantern_01/MiningLantern_01.et" {
+ coords -4 0 1.6
+ angleY 90
+}
+GenericEntity Mine_Ore_1 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 1 0 6.5
+ angleY 110
+}
+GenericEntity Mine_Ore_2 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 3.5 0 3
+ angleY 230
+}
+GenericEntity Mine_Ore_3 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 1 0 -0.5
+ angleY 165
+}
+GenericEntity Mine_Ore_4 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 4 0 -3.8
+ angleY 340
+}
+GenericEntity Mine_Ore_5 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 1 0 -6.8
+ angleY 40
+}
+GenericEntity Mine_Ore_6 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 6.5 0 0.5
+ angleY 290
+}
+GenericEntity Mine_Furnace : "{CF27D083C01F1C36}Prefabs/Processor/LF_MineFurnace.et" {
+ coords 10 0 -6
+ angleY 270
+}
+GenericEntity Mine_Flood : "{2CB0AA2A87842C18}Prefabs/Props/Civilian/LampKerosene_01/LampKerosene_01_military_USSR.et" {
+ coords 9 0 -8
+ angleY 290
+}
+GenericEntity Mine_Desk : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
+ components {
+  LF_WorkplaceComponent "{BB227AA77D72A6F6}" {
+   m_sJob "MINER"
+   m_sPlaceId "coalmans_brow_mine"
+  }
+ }
+ coords 10 0 6
+ angleY 270
+}
+GenericEntity Mine_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "coalmans-brow-mine"
+   m_vRimColor 0.12 0.1 0.08
+   m_vPaintColor 0.9 0.86 0.74
+   m_vTextColor 0.12 0.1 0.08
+  }
+ }
+ coords 13 0 9
+ angleY 270
+}
+GenericEntity Mine_BuyerTable : "{7FFE600A194D73B1}Prefabs/Props/Furniture/TableOld_01/TableOld_01_Base.et" {
+ coords 11.2 0 -1.5
+ angleY 270
+}
+GenericEntity Mine_Buyer : "{CDE1C29873CECBC0}Prefabs/Trader/LF_IronBuyer_Everon1989.et" {
+ coords 11.2 0.901 -1.5
+ angleY 270
+}
+LF_NpcBaseEntity Mine_BuyerClerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 12.5 0 -1.5
+ angleY 270
+}
+GenericEntity Mine_BuyerScale : "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et" {
+ coords 11.2 0 -3.8
+ angleY 90
+}
+GenericEntity Mine_BuyerCrate1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 13 0 -4
+ angleY 0
+}
+GenericEntity Mine_BuyerBox : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 13 0.989 -4
+ angleY 20
+}
+GenericEntity Mine_BuyerCrate2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 13 0 1
+ angleY 0
+}
+SCR_DestructibleEntity Mine_BuyerBoard : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ components {
+  LF_SignComponent "{026619B31213409E}" {
+   m_sSignId "coalmans-brow-buyer"
+   m_sStyle ""
+   m_sSize ""
+   m_vFaceAngles 0 -15 0
+   m_fFaceScale 2.6
+  }
+ }
+ coords 10.1 0 -3.1
+ angleY 270
+}

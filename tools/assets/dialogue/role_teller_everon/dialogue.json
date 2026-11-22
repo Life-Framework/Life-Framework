@@ -1,0 +1,39 @@
+{
+  "id": "role_teller_everon",
+  "name": "RoleTellerEveron",
+  "patches": "role_teller",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "1a6onbE6zC5AwIN3pEp0",
+    "sex": "male",
+    "name": "Nicolas - French English Male",
+    "public_owner_id": "c326d815ae4911b66f363ae55e5d23a94cc287812473b423cb84b177caf3bda7",
+    "why": "A clear, professional middle-aged French voice for the bank counter. The game has male bodies only; the voice is male.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1
+    }
+  },
+  "budget_chars": 1000,
+  "lines": {
+    "greet": {
+      "text": "Good day. Welcome to the bank. How can I help?"
+    },
+    "what": {
+      "text": "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals."
+    },
+    "where": {
+      "text": "The post office is right beside us. The town board on the square lists the rest, and the police station is a short walk up the street."
+    },
+    "rumour": {
+      "text": "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business."
+    },
+    "bye": {
+      "text": "Good day. Mind your money."
+    }
+  },
+  "replies": {}
+}

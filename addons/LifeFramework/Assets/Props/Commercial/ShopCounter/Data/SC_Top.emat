@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{C25662BF7F38D44D}Assets/Props/Commercial/ShopCounter/Data/SC_Top_BCR.edds"
+ NMOMap "{C261E5D7A8011127}Assets/Props/Commercial/ShopCounter/Data/SC_Top_NMO.edds"
+}

@@ -1,0 +1,14 @@
+GenericEntity {
+ ID "A6A45B6647FF3C05"
+ components {
+  MeshObject "{6410391480D0C9F6}" {
+   Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
+  }
+  RigidBody "{9ABEC05807143E68}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 0 0 0
+}

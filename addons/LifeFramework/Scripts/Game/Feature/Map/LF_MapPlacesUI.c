@@ -4,8 +4,9 @@
 // One small widget per drawn POI or cluster stamp in a frame over the map, placed with
 // SCR_MapEntity.WorldToScreen. The clusters are rebuilt when a zoom ends (they depend on the zoom only: the
 // buckets are in world space), the positions on pan and zoom events only; nothing runs while the map is
-// closed. A hover or a click shows a paper card with the place's name and Set waypoint. A cluster stamp
-// zooms in on a click. The rules are LF_MapClusterRules, one case table with the node twin
+// closed. LF_MapDeclutter sizes the icons by zoom and folds icons that would overlap into one mark. No name is
+// written on the map: the card under the map cursor (mouse or gamepad) names the place. A click on a place
+// sets the waypoint (again: clears it), a click on a stamp or a crowded mark zooms in. The rules are LF_MapClusterRules, one case table with the node twin
 // tools/map/rules/cluster.mjs.
 
 //------------------------------------------------------------------------------------------------
@@ -17,11 +18,21 @@ class LF_MapClusterGroup
 	float m_fX;
 	float m_fZ;
 	LF_EMapPoiState m_eState = LF_EMapPoiState.FULL;
+	//! The place whose icon and name the group draws (an index into the POI list), or -1 for a cluster
+	//! stamp. A group of several places that only crowd one spot on the screen (LF_MapDeclutter) keeps
+	//! its most important place as the lead.
+	int m_iLead = -1;
 
 	//------------------------------------------------------------------------------------------------
 	bool IsSingle()
 	{
 		return m_aMembers.Count() == 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasLead()
+	{
+		return m_iLead >= 0;
 	}
 }
 
@@ -131,6 +142,9 @@ class LF_MapClusterRules
 		for (int g = first; g < into.Count(); g++)
 		{
 			LF_MapClusterGroup group = into[g];
+			if (group.IsSingle())
+				group.m_iLead = group.m_aMembers[0];
+
 			group.m_eState = pois[group.m_aMembers[0]].m_eState;
 			foreach (int member : group.m_aMembers)
 			{
@@ -212,6 +226,9 @@ class LF_MapClusterRules
 //! The hover card's words and its one action. Pure, so a LOGIC test covers them.
 class LF_MapPlaceCard
 {
+	//! A crowded mark's card names this many of the other places.
+	static const int MAX_NAMED = 3;	// lf-fixed: one line on the card
+
 	//------------------------------------------------------------------------------------------------
 	//! "Bank, Saint-Philippe": the kind's name and its town. No kind name: no card.
 	static string Title(string label, string town)
@@ -222,7 +239,21 @@ class LF_MapPlaceCard
 		if (town.IsEmpty())
 			return label;
 
-		return label + ", " + town;
+		// The town is the nearest named place: a vanilla string key ("#AR-MapLocation_...") on the island.
+		return label + ", " + WidgetManager.Translate(town);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Makes an icon image fill its parent frame. The layout's slot alone left it at another size (an icon drew
+	//! as a wide ellipse, and at its 64 px image size before that), so the slot is set here.
+	static void FillParent(Widget image)
+	{
+		if (!image)
+			return;
+
+		FrameSlot.SetAnchorMin(image, 0, 0);
+		FrameSlot.SetAnchorMax(image, 1, 1);
+		FrameSlot.SetOffsets(image, 0, 0, 0, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -240,6 +271,68 @@ class LF_MapPlaceCard
 			LF_Waypoint.Clear("moved from a map card");
 
 		return LF_Waypoint.Mark(LF_MapWaypoint.ID, title, position);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the waypoint, whoever set it, stands on this place.
+	static bool IsWaypoint(vector position)
+	{
+		return LF_Waypoint.IsActive() && vector.DistanceXZ(LF_Waypoint.GetTarget(), position) < LF_MapWaypoint.SAME_PLACE_M;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A click on a place: the waypoint goes there, or, when it already stands there, it is cleared (click it
+	//! again to clear). \return "set", "cleared" or "refused" (no name).
+	static string ClickPlace(string title, vector position)
+	{
+		if (IsWaypoint(position))
+		{
+			LF_Waypoint.Clear("clicked again on the map");
+			return "cleared";
+		}
+
+		if (SetWaypoint(title, position))
+			return "set";
+
+		return "refused";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The card's line for a place: what a click does there, on a mouse or a gamepad.
+	static string NoteKey(bool isWaypoint, bool pad)
+	{
+		if (isWaypoint)
+		{
+			if (pad)
+				return "#LF-MapPlaces_CardClearPad";
+
+			return "#LF-MapPlaces_CardClear";
+		}
+
+		if (pad)
+			return "#LF-MapPlaces_CardSetPad";
+
+		return "#LF-MapPlaces_CardSet";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! "ATM, Cafe and 2 more": the other places of a crowded mark, at most MAX_NAMED by name.
+	static string JoinNames(notnull array<string> names)
+	{
+		string text;
+		int named = LF_Utils.MinInt(names.Count(), MAX_NAMED);
+		for (int i = 0; i < named; i++)
+		{
+			if (i > 0)
+				text += ", ";
+
+			text += names[i];
+		}
+
+		if (names.Count() > named)
+			text += " +" + (names.Count() - named).ToString();
+
+		return text;
 	}
 }
 
@@ -351,9 +444,8 @@ class LF_MapIconState : Managed
 	//! built once and never edited, so the same object in the same state needs no restyle at all.
 	LF_MapPoi m_Poi;
 	LF_EMapPoiState m_ePoiState;
-	//! The name written beside the icon (empty: none), and whether one was ever written.
-	string m_sLabel;
-	bool m_bLabelSet;
+	//! The size the icon was given (0 before the first style).
+	float m_fSize;
 
 	//------------------------------------------------------------------------------------------------
 	//! True when the icon already shows `poi` in `state`.
@@ -382,82 +474,34 @@ class LF_MapIconState : Managed
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! True when the label text must be written. The first style always writes (the layout starts visible and empty).
-	bool LabelChanged(string text)
+	bool SizeChanged(float size)
 	{
-		return text != m_sLabel || !m_bLabelSet;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! The hover, click and card events of one drawn icon, forwarded to the layer by index.
-class LF_MapPoiHandler : ScriptedWidgetComponent
-{
-	protected LF_MapPlacesUI m_Layer;
-	protected int m_iIndex;
-	protected bool m_bCard;
-
-	//------------------------------------------------------------------------------------------------
-	void Init(LF_MapPlacesUI layer, int index, bool card)
-	{
-		m_Layer = layer;
-		m_iIndex = index;
-		m_bCard = card;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void SetIndex(int index)
-	{
-		m_iIndex = index;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool OnMouseEnter(Widget w, int x, int y)
-	{
-		if (m_Layer)
-			m_Layer.OnPointerEnter(m_iIndex, m_bCard);
-
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool OnMouseLeave(Widget w, Widget enterW, int x, int y)
-	{
-		if (m_Layer)
-			m_Layer.OnPointerLeave(m_iIndex, m_bCard);
-
-		return false;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	override bool OnClick(Widget w, int x, int y, int button)
-	{
-		if (button != 0 || !m_Layer)
-			return false;
-
-		m_Layer.OnPointerClick(m_iIndex, m_bCard);
-		return true;
+		return Math.AbsFloat(size - m_fSize) > 0.01;
 	}
 }
 
 //------------------------------------------------------------------------------------------------
 //! The POI layer. Listed in Configs/Map/LF_MapFullscreen.conf like vanilla's map UI components, so it
 //! exists only while the map is open.
+//! The icons ignore the pointer (a drag that starts over one still pans the map); the layer finds the
+//! mark under the map cursor itself (LF_MapDeclutter.Hit), which a gamepad cursor drives as well as a mouse.
 class LF_MapPlacesUI : SCR_MapUIBaseComponent
 {
 	static const string FEATURE = "MapPlaces";
 	static const ResourceName POI_LAYOUT = "{CB59D49AE5564BCD}UI/Layouts/Map/LF_MapPoi.layout";
-	static const ResourceName LABEL_LAYOUT = "{4D2B9E6A1C73F808}UI/Layouts/Map/LF_MapPoiLabel.layout";
 	static const ResourceName CARD_LAYOUT = "{CC650B4F4E7A5A77}UI/Layouts/Map/LF_MapPoiCard.layout";
+	//! Paper-outlined map type: the waypoint's tag and the legend's type names.
+	static const ResourceName TYPE_LAYOUT = "{4D2B9E6A1C73F808}UI/Layouts/Map/LF_MapPoiLabel.layout";
+	protected static const string SELECT_ACTION = "MapSelect";	// vanilla: left click, gamepad A
 	protected static const float CULL_MARGIN = 40;	// lf-fixed: reference units off screen before an icon is hidden
 	protected static const float CARD_GAP = 16;	// lf-fixed: the card sits this far from its icon
-	protected static const int HIDE_DELAY_MS = 200;	// lf-fixed: the pointer may cross from the icon to the card
+	protected static const float CARD_WIDTH = 260;	// lf-fixed: a place name, its town and one line of help
+	protected static const float CARD_HEIGHT = 58;	// lf-fixed: two lines
 	protected static const float FADED_ALPHA = 0.45;	// lf-fixed: heard of, not visited
-	//! A place's name is written beside its icon from this zoom on (a view about 400 m wide): closer in, the names
-	//! fit between the icons; further out, the stamps and bare icons keep the map readable.
-	protected static const float LABEL_ZOOM = 5;	// lf-fixed: map readability, not a server tunable
-	protected static const float LABEL_GAP = 46;	// lf-fixed: reference units from the icon centre to the start of its name (the icon is drawn 64 wide)
-	protected static const float LABEL_DROP = 4;	// lf-fixed: reference units the name sits below the icon centre, level with the glyph
+	//! A click on a crowded mark zooms in this many levels, up to MERGED_MAX_ZOOM; at that zoom a click sets
+	//! the waypoint on the mark's lead place instead.
+	protected static const float MERGED_ZOOM_STEP = 1.5;	// lf-fixed
+	protected static const float MERGED_MAX_ZOOM = 8;	// lf-fixed: a view 50 m wide, closer than any two places on the island
 	protected static const string PROBE_PARAM = "lfMapPlacesProbe";
 
 	protected Widget m_wLayer;
@@ -465,20 +509,19 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	protected ref array<ref LF_MapPoi> m_aPois = {};
 	protected ref array<ref LF_MapClusterGroup> m_aGroups = {};
 	protected ref array<Widget> m_aWidgets = {};
-	protected ref array<ref LF_MapPoiHandler> m_aHandlers = {};
 	protected ref array<bool> m_aShown = {};
 	protected ref array<ImageWidget> m_aIcons = {};	// the "Icon" and "Count" widgets of each group widget, found once (#2397)
 	protected ref array<TextWidget> m_aCounts = {};
-	protected ref array<TextWidget> m_aLabels = {};	// one name widget per group widget, beside its icon (a sibling in the layer, not a child: a child took the icon's width)
-	protected ref array<bool> m_aLabelOn = {};	// whether the name has text to show (it also follows the icon off screen)
 	protected ref array<ref LF_MapIconState> m_aStates = {};	// what each icon shows now
 	protected ref map<string, ref LF_MapIconPick> m_mPicks = new map<string, ref LF_MapIconPick>();	// candidate list to the quad it resolved to
-	protected ref LF_MapPoiHandler m_CardHandler;
-	protected ref LF_MapPoiHandler m_ButtonHandler;
+	// Per group: its icon size, set at a zoom end (LF_MapDeclutter works in screen units, which a pan only
+	// shifts), and where it is on the screen now, set on every reposition.
+	protected ref array<float> m_aSizes = {};
+	protected ref array<float> m_aScreenX = {};
+	protected ref array<float> m_aScreenY = {};
 	protected int m_iHovered = -1;
 	protected int m_iPinned = -1;
 	protected int m_iCardGroup = -1;
-	protected bool m_bOverCard;
 	protected float m_fZoom;
 	protected float m_fFrameSeconds;	// frame time summed since the map opened (the harness `map probe` reads it)
 	protected int m_iFrames;
@@ -518,20 +561,14 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		FrameSlot.SetAnchorMax(m_wLayer, 1, 1);
 		FrameSlot.SetOffsets(m_wLayer, 0, 0, 0, 0);
 
-		m_wCard = workspace.CreateWidgets(CARD_LAYOUT, m_wLayer);
+		// Under the map root like the legend slip and the hint strip: inside the code-made layer frame its paper
+		// drew smaller than its rim (the session pictures, 2026-11-22).
+		m_wCard = workspace.CreateWidgets(CARD_LAYOUT, m_RootWidget);
 		if (m_wCard)
 		{
+			FrameSlot.SetSize(m_wCard, CARD_WIDTH, CARD_HEIGHT);
+			m_wCard.SetFlags(WidgetFlags.IGNORE_CURSOR);
 			m_wCard.SetVisible(false);
-			m_CardHandler = new LF_MapPoiHandler();
-			m_CardHandler.Init(this, -1, true);
-			m_wCard.AddHandler(m_CardHandler);
-			Widget button = m_wCard.FindAnyWidget("SetWaypoint");
-			if (button)
-			{
-				m_ButtonHandler = new LF_MapPoiHandler();
-				m_ButtonHandler.Init(this, -1, true);
-				button.AddHandler(m_ButtonHandler);
-			}
 		}
 
 		LF_MapPoiAudience audience = LF_MapPoiAudience.Local();
@@ -540,6 +577,7 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		m_MapEntity.GetOnMapPan().Insert(OnMapPan);
 		m_MapEntity.GetOnMapZoom().Insert(OnMapZoom);
 		m_MapEntity.GetOnMapZoomEnd().Insert(OnMapZoomEnd);
+		GetGame().GetInputManager().AddActionListener(SELECT_ACTION, EActionTrigger.DOWN, OnSelect);
 		LF_Debug.Info(FEATURE, string.Format("map opened: %1 places for this player", m_aPois.Count()));
 
 		m_fFrameSeconds = 0;
@@ -550,10 +588,25 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The card follows the map cursor: the mark under it, else a pinned one (a search pick).
 	override void Update(float timeSlice)
 	{
 		m_fFrameSeconds += timeSlice;
 		m_iFrames++;
+		if (!m_wLayer)
+			return;
+
+		int hovered = MarkAt(SCR_MapCursorInfo.x, SCR_MapCursorInfo.y);
+		if (hovered == m_iHovered)
+			return;
+
+		m_iHovered = hovered;
+		if (hovered >= 0)
+			ShowCard(hovered);
+		else if (m_iPinned >= 0)
+			ShowCard(m_iPinned);
+		else
+			HideCard();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -577,6 +630,7 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnMapClose(MapConfiguration config)
 	{
+		GetGame().GetInputManager().RemoveActionListener(SELECT_ACTION, EActionTrigger.DOWN, OnSelect);
 		if (m_MapEntity)
 		{
 			m_MapEntity.GetOnMapPan().Remove(OnMapPan);
@@ -584,29 +638,28 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			m_MapEntity.GetOnMapZoomEnd().Remove(OnMapZoomEnd);
 		}
 
-		GetGame().GetCallqueue().Remove(HideIfIdle);
 		if (m_wLayer)
 			m_wLayer.RemoveFromHierarchy();
+
+		if (m_wCard)
+			m_wCard.RemoveFromHierarchy();
 
 		m_wLayer = null;
 		m_wCard = null;
 		m_aPois.Clear();
 		m_aGroups.Clear();
 		m_aWidgets.Clear();
-		m_aHandlers.Clear();
 		m_aShown.Clear();
 		m_aIcons.Clear();
 		m_aCounts.Clear();
-		m_aLabels.Clear();
-		m_aLabelOn.Clear();
 		m_aStates.Clear();
 		m_mPicks.Clear();
-		m_CardHandler = null;
-		m_ButtonHandler = null;
+		m_aSizes.Clear();
+		m_aScreenX.Clear();
+		m_aScreenY.Clear();
 		m_iHovered = -1;
 		m_iPinned = -1;
 		m_iCardGroup = -1;
-		m_bOverCard = false;
 		super.OnMapClose(config);
 	}
 
@@ -644,9 +697,11 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			return;
 
 		m_fZoom = zoom;
-		m_aGroups.Clear();
-		LF_MapClusterRules.BuildFromPois(m_aPois, m_fZoom, m_aGroups);
+		array<ref LF_MapClusterGroup> raw = {};
+		LF_MapClusterRules.BuildFromPois(m_aPois, m_fZoom, raw);
+		Declutter(raw);
 		HideCard();
+		m_iHovered = -1;
 
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		while (m_aWidgets.Count() < m_aGroups.Count())
@@ -658,24 +713,14 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 				break;
 			}
 
+			created.SetFlags(WidgetFlags.IGNORE_CURSOR);
 			FrameSlot.SetAlignment(created, 0.5, 0.5);
-			LF_MapPoiHandler handler = new LF_MapPoiHandler();
-			handler.Init(this, m_aWidgets.Count(), false);
-			created.AddHandler(handler);
-			m_aHandlers.Insert(handler);
 			m_aWidgets.Insert(created);
 			m_aShown.Insert(true);
-			m_aIcons.Insert(ImageWidget.Cast(created.FindAnyWidget("Icon")));
+			ImageWidget iconImage = ImageWidget.Cast(created.FindAnyWidget("Icon"));
+			LF_MapPlaceCard.FillParent(iconImage);
+			m_aIcons.Insert(iconImage);
 			m_aCounts.Insert(TextWidget.Cast(created.FindAnyWidget("Count")));
-			TextWidget label = TextWidget.Cast(workspace.CreateWidgets(LABEL_LAYOUT, m_wLayer));
-			if (label)
-			{
-				FrameSlot.SetAlignment(label, 0, 0.5);
-				label.SetVisible(false);
-			}
-
-			m_aLabels.Insert(label);
-			m_aLabelOn.Insert(false);
 			m_aStates.Insert(new LF_MapIconState());
 		}
 
@@ -694,23 +739,110 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Icon, count and tint for group i.
+	//! Turns the zoom's buckets into what is drawn (LF_MapDeclutter): marks whose icons would overlap on the
+	//! screen join the most important one. The result is m_aGroups, most important first, with each size.
+	protected void Declutter(notnull array<ref LF_MapClusterGroup> raw)
+	{
+		m_aGroups.Clear();
+		m_aSizes.Clear();
+
+		array<float> xs = {};
+		array<float> ys = {};
+		array<float> sizes = {};
+		array<int> priorities = {};
+		foreach (LF_MapClusterGroup group : raw)
+		{
+			float x;
+			float y;
+			ScreenOf(group, x, y);
+			xs.Insert(x);
+			ys.Insert(y);
+			sizes.Insert(LF_MapDeclutter.IconSize(m_fZoom, !group.HasLead()));
+			if (group.HasLead())
+				priorities.Insert(LF_MapDeclutter.Priority(m_aPois[group.m_iLead].m_sCategory, group.m_eState, false));
+			else
+				priorities.Insert(LF_MapDeclutter.Priority("", group.m_eState, true));
+		}
+
+		array<int> order = {};
+		LF_MapDeclutter.Order(priorities, order);
+		array<int> leadOf = {};
+		LF_MapDeclutter.Merge(xs, ys, sizes, order, leadOf);
+
+		map<int, int> drawnAt = new map<int, int>();	// raw index of a mark to its index in m_aGroups
+		foreach (int i : order)
+		{
+			LF_MapClusterGroup source = raw[i];
+			if (leadOf[i] == i)
+			{
+				drawnAt.Set(i, m_aGroups.Count());
+				m_aGroups.Insert(source);
+				m_aSizes.Insert(sizes[i]);
+				continue;
+			}
+
+			LF_MapClusterGroup mark = m_aGroups[drawnAt.Get(leadOf[i])];
+			foreach (int member : source.m_aMembers)
+			{
+				mark.m_aMembers.Insert(member);
+			}
+
+			if (!source.HasLead())
+			{
+				// A stamp swallowed a place: the mark is a stamp now.
+				mark.m_iLead = -1;
+				m_aSizes[drawnAt.Get(leadOf[i])] = LF_MapDeclutter.IconSize(m_fZoom, true);
+			}
+
+			if (source.m_eState == LF_EMapPoiState.FULL || (source.m_eState == LF_EMapPoiState.FADED && mark.m_eState == LF_EMapPoiState.PENCIL))
+				mark.m_eState = source.m_eState;
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a group is on the screen now, in reference units.
+	protected void ScreenOf(notnull LF_MapClusterGroup group, out float x, out float y)
+	{
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		int screenX;
+		int screenY;
+		m_MapEntity.WorldToScreen(group.m_fX, group.m_fZ, screenX, screenY, true);
+		x = workspace.DPIUnscale(screenX);
+		y = workspace.DPIUnscale(screenY);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected string PlaceName(int poiIndex)
+	{
+		return LF_Terms.Expand(WidgetManager.Translate(m_aPois[poiIndex].m_sLabel));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Icon, size, count and tint for group i.
 	//! Only what differs from what the widget shows is written (#2397): the quad lookup is remembered per
-	//! candidate list, and the image, opacity and count text are touched only when they change.
+	//! candidate list, and the image, size, opacity and count text are touched only when they change.
 	protected void Style(int i)
 	{
 		LF_MapClusterGroup group = m_aGroups[i];
 		LF_MapIconState state = m_aStates[i];
-		m_aHandlers[i].SetIndex(i);
 		LF_MapPoi place;
-		if (group.IsSingle())
-			place = m_aPois[group.m_aMembers[0]];
+		if (group.HasLead())
+			place = m_aPois[group.m_iLead];
 
-		// The name depends on the zoom as well as the place, so it is settled before the same-place early out.
-		StyleLabel(i, group, state);
+		// The size depends on the zoom as well as the place, so it is settled before the same-place early out.
+		if (state.SizeChanged(m_aSizes[i]))
+		{
+			FrameSlot.SetSize(m_aWidgets[i], m_aSizes[i], m_aSizes[i]);
+
+			state.m_fSize = m_aSizes[i];
+		}
+
+		int members = 0;
+		if (!group.IsSingle())
+			members = group.m_aMembers.Count();
 
 		// The solo zooms rebuild the same single places over and over: nothing to write.
-		if (state.SamePlace(place, group.m_eState))
+		if (state.SamePlace(place, group.m_eState) && !state.CountChanged(members))
 			return;
 
 		state.m_Poi = place;
@@ -740,59 +872,30 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			}
 		}
 
-		if (count)
+		if (count && state.CountChanged(members))
 		{
-			int members = 0;
-			if (!group.IsSingle())
-				members = group.m_aMembers.Count();
+			count.SetVisible(members > 0);
+			if (members > 0)
+				count.SetText(members.ToString());
 
-			if (state.CountChanged(members))
-			{
-				count.SetVisible(members > 0);
-				if (members > 0)
-					count.SetText(members.ToString());
-
-				state.m_iCount = members;
-			}
+			state.m_iCount = members;
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The name of a single place beside its icon, from LABEL_ZOOM on. A stamp, a pencil mark (a hidden place the
-	//! player only suspects) and a far view carry none. Written only when it changes.
-	protected void StyleLabel(int i, notnull LF_MapClusterGroup group, notnull LF_MapIconState state)
-	{
-		TextWidget label = m_aLabels[i];
-		if (!label)
-			return;
-
-		string text;
-		if (group.IsSingle() && group.m_eState != LF_EMapPoiState.PENCIL && m_fZoom >= LABEL_ZOOM)
-			text = LF_Terms.Expand(WidgetManager.Translate(m_aPois[group.m_aMembers[0]].m_sLabel));
-
-		if (!state.LabelChanged(text))
-			return;
-
-		label.SetText(text);
-		m_aLabelOn[i] = !text.IsEmpty();
-		label.SetVisible(m_aLabelOn[i] && m_aShown[i]);
-		state.m_sLabel = text;
-		state.m_bLabelSet = true;
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! The quads group i tries, in order: the kind's own, the row's icon, the category's; a pencil cross for a
-	//! place only suspected; a stamp for a cluster. A modded layer (the heard-of "?") overrides this, not Style.
+	//! place only suspected; a stamp for a cluster. A crowded mark draws its lead place's icon. A modded
+	//! layer (the heard-of "?") overrides this, not Style.
 	protected void IconCandidates(notnull LF_MapClusterGroup group, notnull array<string> candidates)
 	{
-		if (!group.IsSingle())
+		if (!group.HasLead())
 		{
 			candidates.Insert("stamp_town");
 			candidates.Insert("cat_civic");
 			return;
 		}
 
-		LF_MapPoi poi = m_aPois[group.m_aMembers[0]];
+		LF_MapPoi poi = m_aPois[group.m_iLead];
 		if (group.m_eState == LF_EMapPoiState.PENCIL)
 			candidates.Insert("pencil_cross");
 		else
@@ -827,12 +930,11 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 
 		m_aShown[i] = shown;
 		m_aWidgets[i].SetVisible(shown);
-		if (m_aLabels[i])
-			m_aLabels[i].SetVisible(shown && m_aLabelOn[i]);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Moves every icon to its place on the screen; an icon off the screen is hidden. The pan and zoom path.
+	//! It also keeps the screen positions the pointer is tested against.
 	protected void Reposition()
 	{
 		if (!m_wLayer)
@@ -842,22 +944,22 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		float width = workspace.DPIUnscale(workspace.GetWidth());
 		float height = workspace.DPIUnscale(workspace.GetHeight());
 		int groups = m_aGroups.Count();
+		m_aScreenX.Clear();
+		m_aScreenY.Clear();
 		for (int i = 0; i < groups; i++)
 		{
-			LF_MapClusterGroup group = m_aGroups[i];
-			int screenX;
-			int screenY;
-			m_MapEntity.WorldToScreen(group.m_fX, group.m_fZ, screenX, screenY, true);
-			float x = workspace.DPIUnscale(screenX);
-			float y = workspace.DPIUnscale(screenY);
+			float x;
+			float y;
+			ScreenOf(m_aGroups[i], x, y);
+			m_aScreenX.Insert(x);
+			m_aScreenY.Insert(y);
+			if (i >= m_aWidgets.Count())
+				continue;
+
 			bool onScreen = x > -CULL_MARGIN && y > -CULL_MARGIN && x < width + CULL_MARGIN && y < height + CULL_MARGIN;
 			SetShown(i, onScreen);
 			if (onScreen)
-			{
 				FrameSlot.SetPos(m_aWidgets[i], x, y);
-				if (m_aLabels[i])
-					FrameSlot.SetPos(m_aLabels[i], x + LABEL_GAP, y + LABEL_DROP);
-			}
 		}
 
 		if (m_iCardGroup >= 0)
@@ -865,19 +967,114 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The drawn mark at (x, y) in reference units, or -1.
+	int MarkAt(float x, float y)
+	{
+		int groups = m_aGroups.Count();
+		if (m_aScreenX.Count() != groups || m_aShown.Count() < groups)
+			return -1;
+
+		return LF_MapDeclutter.Hit(x, y, m_aScreenX, m_aScreenY, m_aSizes, m_aShown);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place under the map cursor that a waypoint can go to: a single place, or a crowded mark's lead.
+	//! \return false over a stamp or nothing.
+	bool PlaceAtCursor(out string title, out vector position)
+	{
+		int i = MarkAt(SCR_MapCursorInfo.x, SCR_MapCursorInfo.y);
+		if (i < 0 || !m_aGroups[i].HasLead())
+			return false;
+
+		title = PlaceTitle(m_aGroups[i].m_iLead);
+		position = m_aPois[m_aGroups[i].m_iLead].m_vPos;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! HARNESS ONLY (`map hover <x> <z>`): pins the card of the mark nearest world (x, z), the card a pointer
+	//! over that mark shows. \return the card's title, or empty with no mark.
+	string HarnessHover(float x, float z)
+	{
+		int best = -1;
+		float bestM = 0;
+		foreach (int i, LF_MapClusterGroup group : m_aGroups)
+		{
+			float d = vector.DistanceXZ(Vector(group.m_fX, 0, group.m_fZ), Vector(x, 0, z));
+			if (best == -1 || d < bestM)
+			{
+				best = i;
+				bestM = d;
+			}
+		}
+
+		if (best == -1)
+			return "";
+
+		m_iPinned = best;
+		ShowCard(best);
+		return GroupTitle(best);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A plain click (left click, gamepad A): on a place it sets the waypoint there, or clears it when the
+	//! waypoint is already on it; on a stamp, or a crowded mark not yet at the closest zoom, it zooms in.
+	//! With the waypoint modifier held (Shift, gamepad Y) LF_MapWaypointUI takes the click instead.
+	protected void OnSelect(float value, EActionTrigger reason)
+	{
+		if (!m_wLayer || LF_MapWaypoint.ModifierHeld() || !LF_MapWaypoint.MapTakesClicks(m_MapEntity))
+			return;
+
+		int index = MarkAt(SCR_MapCursorInfo.x, SCR_MapCursorInfo.y);
+		if (index < 0)
+		{
+			if (m_iPinned >= 0)
+			{
+				m_iPinned = -1;
+				HideCard();
+			}
+
+			return;
+		}
+
+		LF_MapClusterGroup group = m_aGroups[index];
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!group.HasLead())
+		{
+			float soloWidth = LF_MapClusterRules.WORLD_M / Math.Pow(2, LF_MapClusterRules.SOLO_ZOOM);
+			m_MapEntity.ZoomPanSmooth(workspace.GetWidth() / soloWidth, group.m_fX, group.m_fZ);
+			HideCard();
+			return;
+		}
+
+		if (!group.IsSingle() && m_fZoom < MERGED_MAX_ZOOM - 0.01)
+		{
+			float closer = m_fZoom + MERGED_ZOOM_STEP;
+			if (closer > MERGED_MAX_ZOOM)
+				closer = MERGED_MAX_ZOOM;
+
+			float viewWidth = LF_MapClusterRules.WORLD_M / Math.Pow(2, closer);
+			m_MapEntity.ZoomPanSmooth(workspace.GetWidth() / viewWidth, group.m_fX, group.m_fZ);
+			HideCard();
+			return;
+		}
+
+		LF_MapPoi lead = m_aPois[group.m_iLead];
+		string outcome = LF_MapPlaceCard.ClickPlace(PlaceTitle(group.m_iLead), lead.m_vPos);
+		LF_Debug.Info(FEATURE, string.Format("click on %1: waypoint %2", lead.m_sId, outcome));
+		ShowCard(index);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Moves the visible card beside its icon, kept inside the screen.
 	protected void PlaceCard()
 	{
-		if (!m_wCard || m_iCardGroup < 0 || m_iCardGroup >= m_aGroups.Count())
+		if (!m_wCard || m_iCardGroup < 0 || m_iCardGroup >= m_aScreenX.Count())
 			return;
 
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		LF_MapClusterGroup group = m_aGroups[m_iCardGroup];
-		int screenX;
-		int screenY;
-		m_MapEntity.WorldToScreen(group.m_fX, group.m_fZ, screenX, screenY, true);
-		float x = workspace.DPIUnscale(screenX) + CARD_GAP;
-		float y = workspace.DPIUnscale(screenY) - CARD_GAP;
+		float x = m_aScreenX[m_iCardGroup] + CARD_GAP;
+		float y = m_aScreenY[m_iCardGroup] - CARD_GAP;
 		float cardW;
 		float cardH;
 		m_wCard.GetScreenSize(cardW, cardH);
@@ -898,15 +1095,50 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The title of group i: a place's name with its town, or the count of a cluster.
+	//! "Bank, Saint-Philippe": a place's name and its town.
+	protected string PlaceTitle(int poiIndex)
+	{
+		return LF_MapPlaceCard.Title(PlaceName(poiIndex), m_aPois[poiIndex].m_sTown);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The title of group i: its lead place's name with its town, or the count of a cluster.
 	protected string GroupTitle(int i)
 	{
 		LF_MapClusterGroup group = m_aGroups[i];
-		if (!group.IsSingle())
+		if (!group.HasLead())
 			return WidgetManager.Translate("#LF-MapPlaces_ClusterTitle", group.m_aMembers.Count().ToString());
 
-		LF_MapPoi poi = m_aPois[group.m_aMembers[0]];
-		return LF_MapPlaceCard.Title(LF_Terms.Expand(WidgetManager.Translate(poi.m_sLabel)), poi.m_sTown);
+		return PlaceTitle(group.m_iLead);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The card's second line: what a click does here, for the device in use.
+	protected string GroupNote(int i)
+	{
+		LF_MapClusterGroup group = m_aGroups[i];
+		if (!group.HasLead())
+			return WidgetManager.Translate("#LF-MapPlaces_ClusterNote");
+
+		bool pad = !GetGame().GetInputManager().IsUsingMouseAndKeyboard();
+		if (!group.IsSingle() && m_fZoom < MERGED_MAX_ZOOM - 0.01)
+		{
+			array<string> others = {};
+			foreach (int member : group.m_aMembers)
+			{
+				if (member != group.m_iLead)
+					others.Insert(PlaceName(member));
+			}
+
+			return WidgetManager.Translate("#LF-MapPlaces_CardCrowded", LF_MapPlaceCard.JoinNames(others));
+		}
+
+		LF_MapPoi lead = m_aPois[group.m_iLead];
+		string note = WidgetManager.Translate(LF_MapPlaceCard.NoteKey(LF_MapPlaceCard.IsWaypoint(lead.m_vPos), pad));
+		if (group.m_eState == LF_EMapPoiState.FADED)
+			note = WidgetManager.Translate("#LF-MapPlaces_HeardOf") + " " + note;
+
+		return note;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -915,25 +1147,14 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		if (!m_wCard || i < 0 || i >= m_aGroups.Count())
 			return;
 
-		LF_MapClusterGroup group = m_aGroups[i];
 		m_iCardGroup = i;
 		TextWidget title = TextWidget.Cast(m_wCard.FindAnyWidget("Title"));
 		TextWidget note = TextWidget.Cast(m_wCard.FindAnyWidget("Note"));
-		Widget button = m_wCard.FindAnyWidget("SetWaypoint");
 		if (title)
 			title.SetText(GroupTitle(i));
 
-		string noteText;
-		if (!group.IsSingle())
-			noteText = WidgetManager.Translate("#LF-MapPlaces_ClusterNote");
-		else if (group.m_eState == LF_EMapPoiState.FADED)
-			noteText = WidgetManager.Translate("#LF-MapPlaces_HeardOf");
-
 		if (note)
-			note.SetText(noteText);
-
-		if (button)
-			button.SetVisible(group.IsSingle());
+			note.SetText(GroupNote(i));
 
 		m_wCard.SetVisible(true);
 		PlaceCard();
@@ -946,77 +1167,6 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		m_iPinned = -1;
 		if (m_wCard)
 			m_wCard.SetVisible(false);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The pointer left an icon or the card a moment ago: hide the card when it is over neither.
-	protected void HideIfIdle()
-	{
-		if (m_iHovered == -1 && !m_bOverCard && m_iPinned == -1)
-			HideCard();
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void OnPointerEnter(int index, bool card)
-	{
-		if (card)
-		{
-			m_bOverCard = true;
-			return;
-		}
-
-		m_iHovered = index;
-		ShowCard(index);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	void OnPointerLeave(int index, bool card)
-	{
-		if (card)
-			m_bOverCard = false;
-		else if (m_iHovered == index)
-			m_iHovered = -1;
-
-		GetGame().GetCallqueue().Remove(HideIfIdle);
-		GetGame().GetCallqueue().CallLater(HideIfIdle, HIDE_DELAY_MS, false);
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A click: on a cluster stamp it zooms in to the solo zoom there; on a single icon it pins the card;
-	//! on the card's button (index -1) it sets the waypoint.
-	void OnPointerClick(int index, bool card)
-	{
-		if (card)
-		{
-			if (m_iCardGroup < 0 || m_iCardGroup >= m_aGroups.Count())
-				return;
-
-			LF_MapClusterGroup shown = m_aGroups[m_iCardGroup];
-			if (shown.IsSingle())
-			{
-				LF_MapPoi poi = m_aPois[shown.m_aMembers[0]];
-				LF_MapPlaceCard.SetWaypoint(GroupTitle(m_iCardGroup), poi.m_vPos);
-			}
-
-			HideCard();
-			return;
-		}
-
-		if (index < 0 || index >= m_aGroups.Count())
-			return;
-
-		LF_MapClusterGroup group = m_aGroups[index];
-		if (group.IsSingle())
-		{
-			m_iPinned = index;
-			ShowCard(index);
-			return;
-		}
-
-		WorkspaceWidget workspace = GetGame().GetWorkspace();
-		float soloWidth = LF_MapClusterRules.WORLD_M / Math.Pow(2, LF_MapClusterRules.SOLO_ZOOM);
-		m_MapEntity.ZoomPanSmooth(workspace.GetWidth() / soloWidth, group.m_fX, group.m_fZ);
-		HideCard();
 	}
 
 	//------------------------------------------------------------------------------------------------

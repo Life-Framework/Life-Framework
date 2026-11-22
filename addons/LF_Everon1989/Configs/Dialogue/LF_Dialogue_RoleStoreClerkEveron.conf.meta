@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{AE8449E99134F189}Configs/Dialogue/LF_Dialogue_RoleStoreClerkEveron.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

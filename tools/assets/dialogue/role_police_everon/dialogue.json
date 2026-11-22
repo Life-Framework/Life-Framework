@@ -1,0 +1,39 @@
+{
+  "id": "role_police_everon",
+  "name": "RolePoliceEveron",
+  "patches": "role_police",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "o86w79lw8Y208S2HjL2M",
+    "sex": "male",
+    "name": "Benjamin - Deep and Calm",
+    "public_owner_id": "3fd65005df9ce076583a5fbbf7a8b28ceb58b4dae84b37b7509a03c01aa20f0e",
+    "why": "A deep, calm middle-aged French voice for the station desk officer: firm without shouting. The game has male bodies only; the voice is male.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1
+    }
+  },
+  "budget_chars": 800,
+  "lines": {
+    "greet": {
+      "text": "Officer on duty. Keep your hands where I can see them, and we will get along."
+    },
+    "what": {
+      "text": "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again."
+    },
+    "where": {
+      "text": "The station is the building behind me. The town board on the square lists everything else."
+    },
+    "rumour": {
+      "text": "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces."
+    },
+    "bye": {
+      "text": "Stay out of trouble."
+    }
+  },
+  "replies": {}
+}

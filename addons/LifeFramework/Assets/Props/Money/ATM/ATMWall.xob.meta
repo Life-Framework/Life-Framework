@@ -4,20 +4,24 @@ MetaFileClass {
   FBXResourceClass PC {
    MaterialAssigns {
     MaterialAssignClass "{6DCF2FE5E3C8A1F2}" {
-     SourceMaterial "ATM_Steel"
-     AssignedMaterial "{FE3BA55EADA8FC6B}Assets/Props/Money/ATM/Data/ATM_Steel.emat"
-    }
-    MaterialAssignClass "{9BB8E1EC45343005}" {
      SourceMaterial "ATM_Dark"
      AssignedMaterial "{0367EF3D7368C97D}Assets/Props/Money/ATM/Data/ATM_Dark.emat"
     }
-    MaterialAssignClass "{4F570A8927B952CE}" {
+    MaterialAssignClass "{9BB8E1EC45343005}" {
      SourceMaterial "ATM_Paint"
      AssignedMaterial "{DF1A5DA5929E3AEC}Assets/Props/Money/ATM/Data/ATM_Paint.emat"
     }
-    MaterialAssignClass "{BF0A3D959A50615D}" {
+    MaterialAssignClass "{4F570A8927B952CE}" {
      SourceMaterial "ATM_Face"
      AssignedMaterial "{D5D4CBA5B47A12A2}Assets/Props/Money/ATM/Data/ATM_Face.emat"
+    }
+    MaterialAssignClass "{BF0A3D959A50615D}" {
+     SourceMaterial "ATM_Glow"
+     AssignedMaterial "{CC62666D3CE6E51C}Assets/Props/Money/ATM/Data/ATM_Glow.emat"
+    }
+    MaterialAssignClass "{E1A7D65DA56518E9}" {
+     SourceMaterial "ATM_Steel"
+     AssignedMaterial "{FE3BA55EADA8FC6B}Assets/Props/Money/ATM/Data/ATM_Steel.emat"
     }
    }
    MeshParams {

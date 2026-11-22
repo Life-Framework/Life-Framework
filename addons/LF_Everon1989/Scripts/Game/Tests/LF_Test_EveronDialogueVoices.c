@@ -1,9 +1,12 @@
+// red-proof: role conversations, observed 2026-11-22 with `tools\cli test --no-build --red LF_Test_RoleDialogues,LF_Test_EveronDialogueVoices`: RedProof() also skips LF_Roles.DialogueFor, so `role <id>: has a playable dialogue` failed for all seven roles, `RED-OK everon/dialogue-voices (fails with the hook on, 66 assertions)`.
 // red-proof: observed 2026-11-22 with `tools\cli test --no-build --red LF_Test_EveronDialogueVoices`: RedProof() skips loading the dialogue, so each `has a playable dialogue` assertion fails, RED PROOF OK. Before the fix the first run failed on the cafe owner rumour lines (no sound event, length or mouth envelope); green after.
 //! 2026-11-22 ("can we ensure all dialogs are voiced"): under the Everon 1989 header (the pack leg of `tools\cli test`)
 //! every dialogue an island NPC talks through resolves, with the pack's patches over it, to a conversation whose every
 //! line carries a sound: the config names an audio project and each line an event, a length and a mouth envelope. The
 //! offline twin is `validate-dialogue-voices` (clip on disk, voice, hash); this one reads what the game loads.
-//! Role conversations (built at runtime from strings, no event) are listed in that validator's baseline, not here.
+//! Role NPCs (no dialogue component) talk through LF_Roles.DialogueFor: each island role's conversation is its
+//! registered role_<id> dialogue with the pack's voiced patch, so it is checked the same way and no node may speak a
+//! bare caption key (a raw line has no clip).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronDialogueVoices : LF_Test
 {
@@ -26,6 +29,32 @@ class LF_Test_EveronDialogueVoices : LF_Test
 		if (!RedProof())
 			config = LF_DialogueConfig.Layered(path);
 
+		CheckConfig(ctx, id, config);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A role NPC's conversation, the way LF_DialogueComponent.ConfigOf gets it for an NPC with no dialogue component.
+	protected void CheckRole(LF_TestContext ctx, string roleId)
+	{
+		LF_DialogueConfig config;
+		if (!RedProof())
+			config = LF_Roles.DialogueFor(roleId);
+
+		string id = "role " + roleId;
+		CheckConfig(ctx, id, config);
+		if (!config || !config.m_aNodes)
+			return;
+
+		foreach (LF_DialogueNode node : config.m_aNodes)
+		{
+			if (node && !node.m_sLine.IsEmpty())
+				ctx.False(LF_DialogueFlow.IsRaw(node.m_sLine), id + "/" + node.m_sId + ": speaks a recorded line, not a bare caption key");
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void CheckConfig(LF_TestContext ctx, string id, LF_DialogueConfig config)
+	{
 		ctx.NotNull(config, id + ": has a playable dialogue");
 		if (!config)
 			return;
@@ -70,5 +99,13 @@ class LF_Test_EveronDialogueVoices : LF_Test
 		};
 		foreach (string id : ids)
 			CheckDialogue(ctx, id);
+
+		// The roles the island's role NPCs carry (validate-dialogue-voices lists them: role_<id> rows).
+		LF_Roles.ResetStatics();
+		array<string> roles = { "fence", "mechanic", "medic", "police", "store_clerk", "teller", "townsfolk" };
+		foreach (string roleId : roles)
+			CheckRole(ctx, roleId);
+
+		LF_Roles.ResetStatics();
 	}
 }

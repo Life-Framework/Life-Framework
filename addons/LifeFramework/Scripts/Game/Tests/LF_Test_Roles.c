@@ -28,6 +28,15 @@ class LF_Test_Roles : LF_Test
 				continue;
 			}
 
+			// A role with a registered dialogue (role_<id>, voiced by a pack) is not built from strings;
+			// LF_Test_RoleDialogues loads it.
+			if (!role.m_sDialogueId.IsEmpty())
+			{
+				ctx.True(config == null, role.m_sId + " plays its registered dialogue, not a built one");
+				ctx.EqualStr("role_" + role.m_sId, role.m_sDialogueId, role.m_sId + " names its own role dialogue");
+				continue;
+			}
+
 			ctx.True(config != null, role.m_sId + " has a conversation");
 			if (!config)
 				continue;
