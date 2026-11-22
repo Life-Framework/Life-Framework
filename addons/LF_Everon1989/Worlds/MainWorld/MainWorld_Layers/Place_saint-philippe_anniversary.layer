@@ -27,7 +27,7 @@ GenericEntity Fit_saint_philippe_anniversary_prepare_spawn2 : "{341786FB63CF0CC7
    m_iOrder 2
   }
  }
- coords 4451 4.781 10817
+ coords 4451 9.441 10817
 }
 GenericEntity Fit_saint_philippe_anniversary_prepare_wp0 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
  components {
@@ -62,7 +62,7 @@ GenericEntity Fit_saint_philippe_anniversary_prepare_target : "{F716FD32069F2BE8
    m_sSceneId "anniversary_prepare"
   }
  }
- coords 4504 14.266 10722.5
+ coords 4504 14.333 10722.5
 }
 GenericEntity Fit_saint_philippe_anniversary_memorial_spawn0 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
  components {
@@ -124,7 +124,7 @@ GenericEntity Fit_saint_philippe_anniversary_memorial_target : "{F716FD32069F2BE
    m_sSceneId "anniversary_memorial"
   }
  }
- coords 4416 11.25 10722
+ coords 4416 11.283 10722
 }
 GenericEntity Fit_saint_philippe_anniversary_gather_spawn0 : "{341786FB63CF0CC7}Prefabs/Systems/Events/LF_EventMarker_Spawn.et" {
  components {
@@ -169,7 +169,7 @@ GenericEntity Fit_saint_philippe_anniversary_gather_wp1 : "{06E93733B0BBD01C}Pre
    m_iOrder 1
   }
  }
- coords 4437 12.281 10709
+ coords 4437 12.431 10709
 }
 GenericEntity Fit_saint_philippe_anniversary_gather_wp2 : "{06E93733B0BBD01C}Prefabs/Systems/Events/LF_EventMarker_Waypoint.et" {
  components {

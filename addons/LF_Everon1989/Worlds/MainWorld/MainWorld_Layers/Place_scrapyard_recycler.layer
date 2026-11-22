@@ -17,18 +17,18 @@ GenericEntity Fit_scrapyard_recycler_recycler_drum_1 : "{7D52C517720EF2F5}Prefab
  angleY 20
 }
 GenericEntity Fit_scrapyard_recycler_recycler_drum_2 : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 5037.504 28.088 10857.402
+ coords 5037.504 28.077 10857.402
  angleY 75
 }
 GenericEntity Fit_scrapyard_recycler_recycler_drum_3 : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
  coords 5031.204 28.219 10854.605
 }
 GenericEntity Fit_scrapyard_recycler_recycler_pallets : "{1112756E8A13445B}Prefabs/Props/Industrial/Pallets/Pallet_01_Pile.et" {
- coords 5032.196 28.218 10863.196
+ coords 5033.093 28.218 10863.133
  angleY 12
 }
 GenericEntity Fit_scrapyard_recycler_recycler_palletbox : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 5038.596 28.089 10862.398
+ coords 5038.596 28.078 10862.398
  angleY -15
 }
 GenericEntity Fit_scrapyard_recycler_recycler_crate_1 : "{0174739265ED5155}Prefabs/Props/Crates/Crate_01_orange.et" {
@@ -40,7 +40,7 @@ GenericEntity Fit_scrapyard_recycler_recycler_tyres : "{CEA239D9E1899899}Prefabs
  angleY 40
 }
 GenericEntity Fit_scrapyard_recycler_dealer_lamp : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
- coords 5007.195 31.79 10867.501
+ coords 5007.195 31.752 10867.501
  angleY 94
 }
 GenericEntity Fit_scrapyard_recycler_dealer_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -63,14 +63,14 @@ GenericEntity Fit_scrapyard_recycler_dealer_crate_2 : "{2B1D0128ED660BE9}Prefabs
  angleY -6
 }
 GenericEntity Fit_scrapyard_recycler_dealer_drum : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 5004.2 28.824 10873.404
+ coords 5004.2 28.802 10873.404
 }
 GenericEntity Fit_scrapyard_recycler_dealer_tyres : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
  coords 5010.605 28.831 10875.402
  angleY 22
 }
 GenericEntity Fit_scrapyard_recycler_dealer_scrap : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5016.203 28.909 10877.196
+ coords 5016.128 28.958 10876.119
  angleY 30
 }
 GenericEntity Fit_scrapyard_recycler_dump_wreck_469 : "{3386EAA823BE462E}Prefabs/Props/Wrecks/UAZ469_wreck/UAZ469_wreck_static.et" {
@@ -86,7 +86,7 @@ GenericEntity Fit_scrapyard_recycler_dump_wreck_452 : "{56FFF0C990358ED2}Prefabs
  angleY -20
 }
 GenericEntity Fit_scrapyard_recycler_dump_wreck_151 : "{EB084C400AABD1D3}Prefabs/Props/Wrecks/M151A2_wreck/M151A2_wreck.et" {
- coords 5073.995 28.218 10898.998
+ coords 5074.079 28.206 10900.195
  angleY 160
 }
 GenericEntity Fit_scrapyard_recycler_dump_wreck_s105 : "{1A1CE09F7BCA6650}Prefabs/Props/Wrecks/S105_wreck/S105_wreck_static.et" {
@@ -119,7 +119,7 @@ GenericEntity Fit_scrapyard_recycler_dump_tyres_2 : "{5CA44F8D9F7491ED}Prefabs/P
  angleY 50
 }
 GenericEntity Fit_scrapyard_recycler_dump_tyres_3 : "{CEA239D9E1899899}Prefabs/Props/Garbage/Tires/TirePile_01_small.et" {
- coords 5066.999 28.547 10897.001
+ coords 5067.181 28.588 10899.615
  angleY 130
 }
 GenericEntity Fit_scrapyard_recycler_dump_tyres_4 : "{5CA44F8D9F7491ED}Prefabs/Props/VehicleParts/Tires/Tire_M151A2_pile.et" {
@@ -127,11 +127,11 @@ GenericEntity Fit_scrapyard_recycler_dump_tyres_4 : "{5CA44F8D9F7491ED}Prefabs/P
  angleY 10
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_1 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5038.601 28.881 10896.601
+ coords 5038.601 28.993 10896.601
  angleY 20
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_2 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5047.004 28.795 10900.504
+ coords 5047.004 28.81 10900.504
  angleY 150
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_3 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
@@ -139,15 +139,15 @@ GenericEntity Fit_scrapyard_recycler_dump_pile_3 : "{A42103AE580868E6}Prefabs/Pr
  angleY 70
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_4 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5061.5 28.631 10899.501
+ coords 5061.5 28.612 10899.501
  angleY -160
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_5 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5069.495 28.561 10892.997
+ coords 5068.498 28.578 10893.067
  angleY 100
 }
 GenericEntity Fit_scrapyard_recycler_dump_pile_6 : "{A42103AE580868E6}Prefabs/Props/Loot/LF_LootScrapPile.et" {
- coords 5075.997 28.366 10893.505
+ coords 5075.22 28.432 10892.436
 }
 GenericEntity Fit_scrapyard_recycler_dump_drum_1 : "{6FD54E69CFDD6B07}Prefabs/Props/Industrial/BarrelFuel_01_closed_old.et" {
  coords 5052.202 28.434 10891.399
@@ -157,9 +157,9 @@ GenericEntity Fit_scrapyard_recycler_dump_drum_2 : "{7D52C517720EF2F5}Prefabs/Pr
  angleY 60
 }
 GenericEntity Fit_scrapyard_recycler_dump_lamp_1 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
- coords 5032.002 31.576 10899.999
+ coords 5032.002 32.189 10899.999
  angleY 8
 }
 GenericEntity Fit_scrapyard_recycler_dump_lamp_2 : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
- coords 5080.002 30.346 10889.004
+ coords 5080.002 30.934 10889.004
 }

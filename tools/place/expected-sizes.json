@@ -23,8 +23,15 @@
    "why": "A heap of sacks stays under a 1.1 m drum; real stacks are 1 m high at most"
   },
   {
+   "id": "grain-sack",
+   "match": "SackUniversal_01$",
+   "min": 0.6,
+   "max": 1.5,
+   "why": "The vanilla universal sack is a tall burlap grain sack: place bounds 0.79 x 1.36 x 0.54 m (the mesh, checked in the wheat field look 2026-11-21)"
+  },
+  {
    "id": "bag",
-   "match": "CementBag|GravelBag|Sandbag|SackUniversal_01$",
+   "match": "CementBag|GravelBag|Sandbag",
    "min": 0.3,
    "max": 0.95,
    "why": "A 25 kg cement or sand bag is 0.5 x 0.8 m"
@@ -184,6 +191,13 @@
    "why": "A hand cart is 1.2-2 m"
   },
   {
+   "id": "tire-pile",
+   "match": "TirePile",
+   "min": 1.2,
+   "max": 3,
+   "why": "A vanilla TirePile prefab is a heap of tyres, not one tyre: TirePile_01_small measures 2.27 m across by place bounds"
+  },
+  {
    "id": "tyre",
    "match": "Tire|Tyre",
    "min": 0.6,
@@ -322,6 +336,13 @@
    "min": 0.8,
    "max": 3.5,
    "why": "A small square bale is 1 m, a big one 1.2-3 m"
+  },
+  {
+   "id": "fence-8m",
+   "match": "(WoodenFence|NetFence|BrickWall)[A-Za-z0-9_]*_8m",
+   "min": 7,
+   "max": 9,
+   "why": "The 8 m fence modules (WoodenFence_01_8m measures 8.04 m by place bounds); the 2-5 m range below is for the 4 m modules"
   },
   {
    "id": "fence",

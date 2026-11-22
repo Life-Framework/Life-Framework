@@ -79,7 +79,8 @@
       ],
       "yaw": -19,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.011
     },
     {
       "id": "recycler-drum-3",
@@ -107,11 +108,12 @@
       "offset": [
         -5.23,
         0,
-        16.07
+        16.97
       ],
       "yaw": -82,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0
     },
     {
       "id": "recycler-palletbox",
@@ -127,7 +129,8 @@
       ],
       "yaw": -109,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.011
     },
     {
       "id": "recycler-crate-1",
@@ -174,7 +177,7 @@
         -9.17
       ],
       "yaw": 0,
-      "lift": 3.5,
+      "lift": 3.462,
       "wall": "free",
       "floor": "f0"
     },
@@ -252,7 +255,8 @@
       ],
       "yaw": -94,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.022
     },
     {
       "id": "dealer-tyres",
@@ -278,12 +282,12 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -18.08,
+        -17,
         0,
         -0.86
       ],
       "yaw": -64,
-      "lift": 0.1,
+      "lift": 0.2,
       "wall": "free",
       "floor": "f0"
     },
@@ -343,13 +347,14 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -43.86,
+        -45.06,
         0,
         55.27
       ],
       "yaw": 66,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.028
     },
     {
       "id": "dump-wreck-s105",
@@ -413,7 +418,10 @@
       ],
       "yaw": -86,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "pitch": 2.67,
+      "roll": 3.28,
+      "lift": -0.243
     },
     {
       "id": "dump-container-2",
@@ -429,7 +437,10 @@
       ],
       "yaw": -94,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "pitch": 2.2,
+      "roll": 0.35,
+      "lift": -0.254
     },
     {
       "id": "dump-tyres-1",
@@ -471,7 +482,7 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -41.38,
+        -44,
         0,
         48.43
       ],
@@ -508,7 +519,7 @@
         20.13
       ],
       "yaw": -74,
-      "lift": 0.1,
+      "lift": 0.212,
       "wall": "free",
       "floor": "f0"
     },
@@ -525,7 +536,7 @@
         28.24
       ],
       "yaw": 56,
-      "lift": 0.1,
+      "lift": 0.115,
       "wall": "free",
       "floor": "f0"
     },
@@ -559,7 +570,7 @@
         42.77
       ],
       "yaw": 106,
-      "lift": 0.1,
+      "lift": 0.081,
       "wall": "free",
       "floor": "f0"
     },
@@ -573,7 +584,7 @@
       "offset": [
         -37.56,
         0,
-        51.2
+        50.2
       ],
       "yaw": 6,
       "lift": 0.1,
@@ -588,12 +599,12 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -38.52,
+        -37.4,
         0,
-        57.65
+        56.95
       ],
       "yaw": -94,
-      "lift": 0.1,
+      "lift": 0.175,
       "wall": "free",
       "floor": "f0"
     },
@@ -642,7 +653,7 @@
         13.31
       ],
       "yaw": -86,
-      "lift": 2.6,
+      "lift": 2.97,
       "wall": "free",
       "floor": "f0"
     },
@@ -659,7 +670,7 @@
         61.96
       ],
       "yaw": -94,
-      "lift": 2.6,
+      "lift": 2.934,
       "wall": "free",
       "floor": "f0"
     }

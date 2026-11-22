@@ -291,6 +291,8 @@ const ctx = { root: ROOT, run: noGit, shell: reader(shells) };
   check(lines.length === 2 && lines[0] === "ray t0 1 160 2 1 40 2", `probeLines: ${JSON.stringify(lines)}`);
   const pinned = terr.pinsFromRays(pts, new Map([["t0", { sy: 100.1234 }]]));
   check(pinned.points["1,2"] === 100.123 && pinned.missing.length === 1 && pinned.missing[0] === "3,4", `pinsFromRays: ${JSON.stringify(pinned)}`);
+  const paved = terr.pinsFromRays([[1, 2], [3, 4]], new Map([["t0", { sy: 12.2, hit: "AsphaltPavement_01_Narrow_4m_A", p: [1, 12.31, 2] }], ["t1", { sy: 12.2, hit: "BoxWooden_01", p: [3, 12.9, 4] }]]));
+  check(paved.points["1,2"] === 12.31 && paved.points["3,4"] === 12.2, `pinsFromRays: paving counts as the ground, a crate does not: ${JSON.stringify(paved)}`);
   const lookup = terr.terrainFromPins(pinned);
   check(lookup.at(1, 2) === 100.123 && lookup.at(3, 4) === null && terr.terrainFromPins(null) === null, "terrainFromPins: a probed point answers, an unprobed one is null");
   let asked = [];
