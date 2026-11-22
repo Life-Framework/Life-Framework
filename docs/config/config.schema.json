@@ -426,6 +426,13 @@
           "default": 20,
           "minimum": 0,
           "maximum": 600
+        },
+        "salePercent": {
+          "type": "integer",
+          "description": "Percent of the listed price a house or a plot sells for at its For sale sign. Below 100 is a pacing discount (the alpha sets it), 100 is the shipped price",
+          "default": 100,
+          "minimum": 10,
+          "maximum": 100
         }
       },
       "additionalProperties": false,

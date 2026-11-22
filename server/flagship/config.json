@@ -77,5 +77,8 @@
   },
   "police": {
     "alphaInstantApproval": true
+  },
+  "houses": {
+    "salePercent": 50
   }
 }

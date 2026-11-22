@@ -55,7 +55,8 @@
     "minutes": 0
   },
   "houses": {
-    "doorCloseDelaySeconds": 20
+    "doorCloseDelaySeconds": 20,
+    "salePercent": 100
   },
   "idCard": {
     "replacementFee": 50,

@@ -29,6 +29,7 @@ Delete them and run `tools\cli host config apply` to go back to the shipped pace
 | `licences.permitWaitDays` | 0 | 1 (2 real hours) | the firearm permit is issued at the counter at once |
 | `vehicles.buyPercent` | 80 | 100 | the cheapest car is $560 (shipped $700); sell-back 50% and chop 30% stay below it |
 | `police.alphaInstantApproval` | true | false | a police application at the station desk is approved on submit: no playtime gate, cooldown, trial or admin |
+| `houses.salePercent` | 50 | 100 | homes and plots sell at half price: cottage $2000, cheapest plot $1400; there is no house sell-back to flip |
 
 Pay is untouched: police duty $900/h and medic $792/h stay 1.5 to 2.5x the civilian runs (`tools\cli economy`).
 `validate-flagship-job-gates` still refuses `jobs.testUnlockAll`; the alpha switch opens only the police application.
