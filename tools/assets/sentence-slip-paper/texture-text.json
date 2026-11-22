@@ -1,0 +1,32 @@
+{
+  "about": "Every piece of text this slug's build script paints onto its texture; checked by tools/validation/validate-us-english.mjs. Regenerate: node tools/validation/validate-us-english.mjs --update",
+  "scripts": {
+    "model.py": [
+      "paper-print",
+      "DISTRICT COURT OF EVERON",
+      "CRIMINAL DIVISION",
+      "SENTENCE SLIP",
+      "Form C-27  -  to be handed to the clerk of the prison",
+      "No.",
+      "CASE NUMBER",
+      "DATE OF HEARING",
+      "DEFENDANT",
+      "CHARGE",
+      "THE COURT ORDERS",
+      "CUSTODY",
+      "FINE",
+      "COMMUNITY SERVICE",
+      "MONTHS",
+      "UNITS",
+      "HOURS",
+      "Presiding judge",
+      "Clerk of the court",
+      "C-27 / 1989 / EVC PRINTING OFFICE",
+      "EVERON",
+      "DISTRICT COURT",
+      "SERVED",
+      "SentenceSlipSheet",
+      "LF_ASSET_MODEL ok"
+    ]
+  }
+}

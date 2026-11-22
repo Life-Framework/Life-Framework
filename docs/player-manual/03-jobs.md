@@ -34,12 +34,12 @@ Saint-Philippe holds most of them; the sawmill, the fishing coves, the lake and 
 | 4 | Lamentin | 5.7 km | Western town. Scenery only. |
 | 5 | Morton | 6.7 km | Northern town. Scenery only. |
 | 6 | Saint Pierre | 10.5 km | Far north-east town. Scenery only. |
-| 7 | Sawmill (Scierie) | 5.6 km | The island sawmill: lumberjack desk, two saws, boards. |
+| 7 | Sawmill | 5.6 km | The island sawmill: lumberjack desk, two saws, boards. |
 | 8 | Fishing spot (Fisherman's Bay) | 0.4 km | Sheltered cove with a bench and lantern. Gaspard tells you about it. |
 | 9 | Fishing spot (Black Lake) | 9.2 km | A lake shore far to the north-east. |
-| 10 | Scrapyard (Casse) | 0.6 km | Scrap piles and the recycler bench. |
+| 10 | Scrapyard | 0.6 km | Scrap piles and the recycler bench. |
 | 11 | Fuel depot | 3.7 km | Collective-farm fuel depot. Closed to players for now. |
-| 12 | Ferme des Silos | 3.8 km | Roadside farm with a payphone. |
+| 12 | Silo Farm | 3.8 km | Roadside farm with a payphone. |
 | 13 | Fuel station (roadside) | 1.2 km | Roadside fuel stop with a payphone. |
 | 14 | Barn compound | 1.2 km | Chop yard and the moonshine still barn. |
 | 15 | Contested ground | 10.1 km | Hilltop mast: a hideout organizations fight over. |
@@ -148,7 +148,7 @@ The drops are on the east side (a house near the district road) and four along t
 | 31 | Farm supply | The reaper and beehive kit. |
 | 35 | Wheat field | Harvest contracts and the weighbridge. |
 | 36 | Farm | Vegetable plots, beehives, honey kitchen. |
-| 38 | Timber yard (Scierie) | Lumberjack job desk and sawmill. |
+| 38 | Timber yard | Lumberjack job desk and sawmill. |
 | 68 | Wheat field (cutting area) | The ripe wheat you cut with the reaper. |
 | 69 | Weighbridge | Unload the reaper hopper here: Sell grain or Bag grain. |
 | 70 | Harvest contracts board | Post, take and return harvest contracts. |
@@ -158,7 +158,7 @@ The drops are on the east side (a house near the district road) and four along t
 
 **Status:** ✅ live. The timber yard at the village edge and the island sawmill both work.
 
-* **Where:** the **timber yard** (sign *Scierie*) on the western edge of town, with a **lumberjack desk** and a saw. The **timber counter**
+* **Where:** the **timber yard** (sign *Sawmill*) on the western edge of town, with a **lumberjack desk** and a saw. The **timber counter**
   (*We buy timber*) is on the kerb of the **hardware store** on the south-east road. The **island sawmill** is far to the west
   (about 5.7 km); see the island map.
 * **How to start:** take the **lumberjack job** at the desk. Buy an **axe** ($120) at the hardware store.
@@ -175,7 +175,7 @@ The drops are on the east side (a house near the district road) and four along t
 
 | # | Place | What |
 |---|---|---|
-| 60 | Sawmill (Scierie) | Lumberjack desk and two saws inside the hall. |
+| 60 | Sawmill | Lumberjack desk and two saws inside the hall. |
 | 61 | Lumberjack desk | Sign on as a lumberjack. |
 <!-- /map -->
 
@@ -232,7 +232,7 @@ The drops are on the east side (a house near the district road) and four along t
 | # | Place | What |
 |---|---|---|
 | 8 | ATM (harbour) | Cash machine on the dock. |
-| 18 | Harbour Office | The harbour master. |
+| 18 | Harbor Office | The harbour master. |
 | 39 | Smokehouse | Smoke your fish. |
 | 40 | Wholesale warehouse | Buys bulk goods at a falling price. |
 <!-- /map -->
@@ -241,7 +241,7 @@ The drops are on the east side (a house near the district road) and four along t
 
 **Status:** ✅ live. The yard works and the **garage mechanic in Saint-Philippe buys scrap metal, copper wire and rubber scrap**. Iron bars sell at the dock wholesale yard.
 
-* **Where:** the **scrapyard** (sign *Casse*) east of town, about 450 m east-north-east of the filling station.
+* **Where:** the **scrapyard** (sign *Scrapyard*) east of town, about 450 m east-north-east of the filling station.
 * **How to start:** walk in. No sign-up.
 * **What you do:** **search the scrap piles** for scrap metal, rubber, copper wire coils, worn hand tools and old radios. At the **recycler bench**
   pick **Load** with an item, **hold Work** (each worker adds one unit, so two people finish twice as fast) and **Collect** the parts.
@@ -251,11 +251,11 @@ The drops are on the east side (a house near the district road) and four along t
 * **Needs:** nothing.
 
 <!-- map:inset:scrapyard -->
-![Scrapyard (Casse)](../../website/public/docs-images/player-manual/scrapyard.png)
+![Scrapyard](../../website/public/docs-images/player-manual/scrapyard.png)
 
 | # | Place | What |
 |---|---|---|
-| 60 | Scrapyard (Casse) | Search the scrap piles; the recycler bench is in the yard. |
+| 60 | Scrapyard | Search the scrap piles; the recycler bench is in the yard. |
 | 61 | Recycler bench | Break car parts and scrap into metal. |
 <!-- /map -->
 
