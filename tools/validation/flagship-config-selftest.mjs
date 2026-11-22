@@ -1,5 +1,5 @@
 // Proves the flagship's two live files (#1321): server/flagship/config.json passes the owner-config check and
-// carries the decided values (2-hour in-game day, restarts at 06:00 and 18:00 with 15/5/1 minute warnings, rejoin at the saved spot, 30 minutes of new-character grace);
+// carries the decided values (2-hour in-game day, restarts at 06:00 and 18:00 with 15/5/1 minute warnings, rejoin at the saved spot, 30 minutes of new-character grace, or 5 with the README Alpha pacing row);
 // server/flagship/server.json has the listing name and the same scenario and mods as server/example; neither
 // file holds a secret (passwords, admin uids, a webhook URL). Secrets live only in the host's secrets.json.
 // red-proof: adding game.password, a webhook URL or a changed name to a fixture copy below prints a FAIL line.
@@ -43,7 +43,10 @@ export function flagshipProblems(root = ".") {
     if (JSON.stringify(c.restarts?.warningMinutes) !== JSON.stringify([15, 5, 1])) out.push("config.json restarts.warningMinutes must be [15, 5, 1]");
     // #1779 / #2075: returning players rejoin at the saved spot; a new character has 30 minutes of grace.
     if (c.respawn?.rejoinAtLastPosition !== true) out.push("config.json respawn.rejoinAtLastPosition must be true (rejoin at the saved spot, #1779)");
-    if (c.grace?.minutes !== 30) out.push("config.json grace.minutes must be 30 (the new-character grace, #2075)");
+    // The alpha pacing overlay may shorten it to 5 minutes, only with its row in the README "Alpha pacing" table.
+    const readmePath = join(dir, "README.md");
+    const alphaGrace = existsSync(readmePath) && /^\| `grace\.minutes` \| 5 \|/m.test(readFileSync(readmePath, "utf8"));
+    if (c.grace?.minutes !== 30 && !(alphaGrace && c.grace?.minutes === 5)) out.push("config.json grace.minutes must be 30 (the new-character grace, #2075), or 5 with the README Alpha pacing row");
     scan(c, "$", "config.json");
   }
   if (srv) {
@@ -92,6 +95,19 @@ if (import.meta.url === `file:///${process.argv[1].replace(/\\/g, "/")}` || proc
   mutate("config.json", json((o) => { delete o.restarts; }), /restarts\.times/);
   mutate("config.json", json((o) => { o.respawn.rejoinAtLastPosition = false; }), /rejoinAtLastPosition must be true/);
   mutate("config.json", json((o) => { delete o.grace; }), /grace\.minutes must be 30/);
+  mutate("config.json", json((o) => { o.grace = { minutes: 1 }; }), /grace\.minutes must be 30/);
+  {
+    // 5 minutes without the README Alpha pacing row is refused.
+    const root = copy();
+    const cfgPath = join(root, "server", "flagship", "config.json");
+    const readme = join(root, "server", "flagship", "README.md");
+    const o = JSON.parse(readFileSync(cfgPath, "utf8"));
+    o.grace = { minutes: 5 };
+    writeFileSync(cfgPath, JSON.stringify(o, null, 2) + "\n");
+    if (existsSync(readme)) writeFileSync(readme, readFileSync(readme, "utf8").replace(/^\| `grace\.minutes` .*\n/m, ""));
+    const got = flagshipProblems(root).join(" | ");
+    expect(/grace\.minutes must be 30/.test(got), `grace 5 without the README row: expected a grace refusal, got "${got}"`);
+  }
   mutate("config.json", json((o) => { o.shops.defaultBuyPrice = "cheap"; }), /config\.json \d+:\d+/);
   mutate("server.json", () => "{", /is not JSON/);
 
