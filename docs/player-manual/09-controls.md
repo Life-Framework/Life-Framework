@@ -16,6 +16,7 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 | **Give up** while downed (hold, after 30 seconds) | hold **X** | hold **Y** |
 | Mark a moment for a **clip** | **F8** | **right bumper + View** |
 | Open the **welcome guide** again | **F3** | **right bumper + Y** |
+| Open your **personal file** (money, papers, skills, errands) | **F2** | hold **right bumper + Y** |
 
 ## Vehicles
 

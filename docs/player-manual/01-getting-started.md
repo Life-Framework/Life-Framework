@@ -21,6 +21,19 @@ the map, police and medic duty, and where to read more. Turn the pages with **Ne
 * Press **F3** (gamepad: **right bumper + Y**) to open it again at any time. You can change the key in
   **Settings, Controls, Life Framework**.
 
+## Your personal file
+
+Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It has two tabs:
+
+* **Person**: your name and role (civilian, police or medic, on or off duty), cash in hand and in the bank,
+  houses owned, garage slots used, time on the island, whether you are wanted, the licences and permits you hold, and
+  your level in each job. **Read** on a job shows what it is and how far you are to the next level.
+* **Progress**: your first errands in order, each marked **DONE**, **CURRENT** or **LATER**, then any other errand you
+  took. **Read** shows the errand and its progress; **Set waypoint to the current errand** puts it on your map.
+
+The file only shows what the records office holds; nothing in it can be changed from there. **Esc** or **Close** puts
+it away.
+
 ## The arrival quest
 
 A quest panel on screen tells you what to do next. Each step puts a **waypoint with a distance** on your screen and a
