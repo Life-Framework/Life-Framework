@@ -37,6 +37,7 @@
 - [Events](features/events.md)
 - [Fishing](features/fishing.md)
 - [Fuel](features/fuel.md)
+- [Gang radio (#4215)](features/gang-radio.md)
 - [Gathering / Processing / Resources](features/gathering-processing-resources.md)
 - [Harvest](features/harvest.md)
 - [Hidden crime record (#270)](features/hidden-crime-record.md)

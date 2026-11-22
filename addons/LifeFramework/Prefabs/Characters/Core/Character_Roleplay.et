@@ -159,6 +159,15 @@ LF_PlayerJobComponent "{A68F47E449868508}" {
      }
      m_sSlot "org_invite"
     }
+    LF_PlayerRoleAction "{47400C1FE838FF99}" {
+     ParentContextList {
+      "LF_ID"
+     }
+     UIInfo UIInfo "{8E567AE0D92D0A51}" {
+      Name "#LF-Interact_RoleSlot"
+     }
+     m_sSlot "org_decline"
+    }
     LF_PlayerRoleAction "{BD73B5C7D7AA3BFF}" {
      ParentContextList {
       "LF_ID"
