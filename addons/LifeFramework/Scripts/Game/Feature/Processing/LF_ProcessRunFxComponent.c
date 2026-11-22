@@ -6,8 +6,9 @@ class LF_ProcessRunFxComponentClass : ScriptComponentClass
 //------------------------------------------------------------------------------------------------
 //! A timed machine (#3229) that shows a run is under way (first-2h review B10): while LF_ProcessRun
 //! holds a run at this machine, every rendering peer sees a fire glow and smoke, and the machine's
-//! process row reads the time left ("Smelting: 3:12 left"). The server writes the run's end as unix
-//! seconds, so a late joiner counts down from the same end. Nothing is saved: a run is session-only.
+//! process row reads the time left ("Smelting: 3:12 left"). The server writes the run's end in seconds
+//! of the replicated server clock (ChimeraWorld.GetServerTimestamp, the same on every peer), so a player
+//! whose own clock is off, or a late joiner, counts down from the same end. Nothing is saved.
 class LF_ProcessRunFxComponent : ScriptComponent
 {
 	static const string FEATURE = "Processing";
@@ -30,22 +31,37 @@ class LF_ProcessRunFxComponent : ScriptComponent
 	[Attribute("4", UIWidgets.Auto, "Fire glow radius (metres); 0 for no glow", category: "Running")]
 	protected float m_fGlowRadius;
 
-	//! Unix seconds the run ends at; 0 when no run is under way. Server writes, every peer reads.
+	//! Server-clock seconds (ServerNow) the run ends at; 0 when no run is under way. Server writes, every peer reads.
 	[RplProp(onRplName: "OnRunChanged")]
-	protected int m_iEndsUnix;
+	protected int m_iEnds;
 
 	protected EntityID m_SmokeId = EntityID.INVALID;
 	protected LightEntity m_Glow;
 	protected bool m_bShown;
 
 	//------------------------------------------------------------------------------------------------
-	//! Pure: seconds left of a run ending at \p endsUnix, at \p nowUnix; 0 when it is over or none runs.
-	static int SecondsLeft(int endsUnix, int nowUnix)
+	//! Pure: seconds left of a run ending at \p ends, at \p now (both server-clock seconds); 0 when it is over or none runs.
+	static int SecondsLeft(int ends, int now)
 	{
-		if (endsUnix <= 0)
+		if (ends <= 0)
 			return 0;
 
-		return LF_Utils.MaxInt(endsUnix - nowUnix, 0);
+		return LF_Utils.MaxInt(ends - now, 0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whole seconds on the replicated server clock since the world started: the same number on the
+	//! server and on every client, whatever their own wall clocks say (with System.GetUnixTime a client
+	//! 45 s off read 4:41 left for a 240 s run). At least 1, so an end is never 0 (0 is "no run").
+	static int ServerNow()
+	{
+		ChimeraWorld world = ChimeraWorld.CastFrom(GetGame().GetWorld());
+		if (!world)
+			return 1;
+
+		WorldTimestamp start;
+		float seconds = world.GetServerTimestamp().DiffSeconds(start);
+		return LF_Utils.MaxInt(seconds, 1);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -66,7 +82,7 @@ class LF_ProcessRunFxComponent : ScriptComponent
 	//! Seconds left of the run at this machine on this peer; 0 when none runs.
 	int GetSecondsLeft()
 	{
-		return SecondsLeft(m_iEndsUnix, System.GetUnixTime());
+		return SecondsLeft(m_iEnds, ServerNow());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -81,7 +97,7 @@ class LF_ProcessRunFxComponent : ScriptComponent
 	{
 		LF_ProcessRunFxComponent fx = LF_Component<LF_ProcessRunFxComponent>.Find(machine);
 		if (fx)
-			fx.SetEnds(System.GetUnixTime() + Math.Ceil(seconds));
+			fx.SetEnds(ServerNow() + Math.Ceil(seconds));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -94,12 +110,12 @@ class LF_ProcessRunFxComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void SetEnds(int endsUnix)
+	protected void SetEnds(int ends)
 	{
-		if (!Replication.IsServer() || m_iEndsUnix == endsUnix)
+		if (!Replication.IsServer() || m_iEnds == ends)
 			return;
 
-		m_iEndsUnix = endsUnix;
+		m_iEnds = ends;
 		Replication.BumpMe();
 		LF_Debug.Info(FEATURE, string.Format("%1 shows a run: %2 s left", LF_Utils.GetPrefabName(GetOwner()), GetSecondsLeft()));
 		// A listen host renders too, and an RplProp change never calls back on the server.
@@ -119,7 +135,7 @@ class LF_ProcessRunFxComponent : ScriptComponent
 		if (System.IsConsoleApp() || RplSession.Mode() == RplMode.Dedicated)
 			return;
 
-		bool show = m_iEndsUnix > 0;
+		bool show = m_iEnds > 0;
 		if (show == m_bShown)
 			return;
 

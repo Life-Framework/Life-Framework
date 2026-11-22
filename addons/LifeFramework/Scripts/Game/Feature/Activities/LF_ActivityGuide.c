@@ -456,7 +456,7 @@ class LF_ActivityGuide
 			return false;
 
 		LF_Debug.Info(LF_ActivityTable.FEATURE, string.Format("%1 is reminded of %2 step %3", uid, def.m_sId, step.m_sStepId));
-		LF_Utils.NotifyEntity(body, step.m_sNoteKey, step.m_sTitleKey, NOTE_SECONDS);
+		LF_Utils.NotifyEntity(body, step.m_sNoteKey, step.m_sTitleKey, NOTE_SECONDS, "", LF_NotificationManagerComponent.SLOT_STEP);
 		return true;
 	}
 

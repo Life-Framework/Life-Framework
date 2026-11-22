@@ -1,6 +1,6 @@
 // red-proof: 2026-11-22 `node tools/cli.mjs test --no-build --red LF_Test_OreStackCount,LF_Test_TillSellKey,LF_Test_ProcessRunClock`: RED PROOF OK (all 3 fail with the hook on). RedProof() ends the run as it starts.
 //! processing/run-clock (first-2h review B10): a timed machine's row reads the time left of its run as
-//! m:ss, counted from the run's end in unix seconds, so a late joiner reads the same time.
+//! m:ss, counted from the run's end on the replicated server clock, so every player and a late joiner read the same time.
 [LF_TestInfo(LF_TestTier.LOGIC)]
 class LF_Test_ProcessRunClock : LF_Test
 {
@@ -25,5 +25,10 @@ class LF_Test_ProcessRunClock : LF_Test
 		ctx.EqualStr("3:12", LF_ProcessRunFxComponent.Clock(192), "192 s reads 3:12");
 		ctx.EqualStr("0:05", LF_ProcessRunFxComponent.Clock(5), "seconds under ten keep their leading zero");
 		ctx.EqualStr("0:00", LF_ProcessRunFxComponent.Clock(-3), "a negative count reads 0:00");
+
+		// The count runs on the server's replicated clock: never 0 (0 means no run), never backwards.
+		int first = LF_ProcessRunFxComponent.ServerNow();
+		ctx.True(first >= 1, "the server clock reads at least 1 s");
+		ctx.True(LF_ProcessRunFxComponent.ServerNow() >= first, "the server clock does not run backwards");
 	}
 }
