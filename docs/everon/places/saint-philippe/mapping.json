@@ -390,7 +390,7 @@
     },
     "postal-drops": {
       "drops": [
-        { "place": "saint-philippe", "building": "b21", "sideways": 1.1 },
+        { "place": "saint-philippe", "building": "b21", "sideways": 1.1, "dy": 0.28 },
         { "place": "meaux", "building": "b01", "turn": 1 }
       ],
       "why": [
