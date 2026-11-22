@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "CB4A0CF045B88C2F"
+ components {
+  MeshObject "{1A2F7C128ED46859}" {
+   Object "{D0566D3CAE967F4D}Assets/Items/Food/Apple/Apple.xob"
+  }
+ }
+ coords 0 0 0
+}

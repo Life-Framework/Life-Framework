@@ -1574,6 +1574,31 @@ StringTable {
      Target_en_us "The town board on the square shows everything. The post office hires couriers, and the bank is beside it."
      Comment "Pack patch of the role_townsfolk dialogue's line where (voiced; tools/assets/dialogue/role_townsfolk_everon). Changing it needs: tools\\cli asset dialogue role_townsfolk_everon"
     }
+    CustomStringTableItem "{8432BA1ABC5AC426}" {
+     Id "LF-Dialogue_RoleTraderEveron_Bye"
+     Target_en_us "Come back when you have more."
+     Comment "Pack patch of the role_trader dialogue's line bye (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
+    CustomStringTableItem "{43E8EB3C7D06C10F}" {
+     Id "LF-Dialogue_RoleTraderEveron_Greet"
+     Target_en_us "Fresh today. Have a look."
+     Comment "Pack patch of the role_trader dialogue's line greet (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
+    CustomStringTableItem "{8577C74CD73BC044}" {
+     Id "LF-Dialogue_RoleTraderEveron_Rumour"
+     Target_en_us "The price of apples went up this week. Somebody is hoarding them, I think."
+     Comment "Pack patch of the role_trader dialogue's line rumour (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
+    CustomStringTableItem "{3FE540CB43FD7BCB}" {
+     Id "LF-Dialogue_RoleTraderEveron_What"
+     Target_en_us "I buy at this stall. Bring me apple juice, fruit, cabbage or honey and I pay cash, the price on the board."
+     Comment "Pack patch of the role_trader dialogue's line what (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
+    CustomStringTableItem "{0393B47B3185EE62}" {
+     Id "LF-Dialogue_RoleTraderEveron_Where"
+     Target_en_us "The orchard is a short drive out of Saint-Philippe. Pick the apples, press them into juice. Juice pays best here."
+     Comment "Pack patch of the role_trader dialogue's line where (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
     CustomStringTableItem "{3441F00000000001}" {
      Id "LF-Dialogue_Rumour_SayAsk"
      Target_en_us "Any talk in the cafe lately?"

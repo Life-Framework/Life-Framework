@@ -14,6 +14,8 @@ class LF_PriceBoard
 	static const string READ_ACTION = "LF_PriceBoardReadAction";
 	static const int NUMBERS_PER_GOOD = 2;	// lf-fixed: wire stride (price, below-base flag), not a tunable
 	static const string ARROW_DOWN = "v";
+	//! How far from the reader a stall's trader is looked for.
+	static const float TRADER_RANGE = 8.0; // lf-fixed: one stall's reach; the next stall stands further off
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: the answer for one read, in config order. Empty when the market is off.
@@ -48,9 +50,79 @@ class LF_PriceBoard
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the prefabs of the posted rows a trader buys (value above 0), in list order.
+	static array<ResourceName> PostedGoods(array<ref LF_TraderItem> list)
+	{
+		array<ResourceName> goods = {};
+		if (!list)
+			return goods;
+
+		foreach (LF_TraderItem row : list)
+		{
+			if (row && row.m_bPosted && row.m_ValuePerItem > 0 && !row.m_ItemPrefab.IsEmpty())
+				goods.Insert(row.m_ItemPrefab);
+		}
+
+		return goods;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the board of a stall (first-two-hours review A20): the trader's posted goods with what one
+	//! unit sells for there right now (LF_TraderSale.QuoteUnits, the price its "Sell 1" row shows), and
+	//! the down arrow for a curved good below its base. A good that sells only by the lot is left off.
+	//! \return null when the trader posts nothing (the caller shows the market's goods instead).
+	static LF_BoardAnswer BuildTraderAnswerAt(LF_TraderManagerComponent trader, int nowUnix)
+	{
+		if (!trader)
+			return null;
+
+		array<ResourceName> goods = PostedGoods(trader.m_aTradableItems);
+		if (goods.IsEmpty())
+			return null;
+
+		LF_BoardAnswer answer = new LF_BoardAnswer();
+		foreach (ResourceName good : goods)
+		{
+			int price = LF_TraderSale.QuoteUnits(trader, good, 1, nowUnix);
+			if (price <= 0)
+				continue;
+
+			answer.m_aTexts.Insert(LF_ShopManagerComponent.ResolveDisplayName(good));
+			answer.m_aNumbers.Insert(price);
+			LF_MarketGoodDef def = LF_MarketBook.Curved(good);
+			if (def && price < def.m_iBase)
+				answer.m_aNumbers.Insert(1);
+			else
+				answer.m_aNumbers.Insert(0);
+		}
+
+		return answer;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the trader whose stall the reader stands at, or null. A reader is always at the board
+	//! (LF_ActionSite), so the trader within TRADER_RANGE of the reader is the board's own.
+	static LF_TraderManagerComponent TraderNear(int playerId)
+	{
+		IEntity reader = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (!reader)
+			return null;
+
+		IEntity owner = LF_ActionSite.FindNear(reader.GetOrigin(), TRADER_RANGE, "LF_TraderSellAction");
+		if (!owner)
+			return null;
+
+		return LF_Component<LF_TraderManagerComponent>.Find(owner);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static LF_BoardAnswer BuildAnswer(int playerId)
 	{
-		LF_BoardAnswer answer = BuildAnswerAt(System.GetUnixTime());
+		int nowUnix = System.GetUnixTime();
+		LF_BoardAnswer answer = BuildTraderAnswerAt(TraderNear(playerId), nowUnix);
+		if (!answer)
+			answer = BuildAnswerAt(nowUnix);
 		LF_Debug.Info(FEATURE, string.Format("price board read by player %1: goods=%2", playerId, answer.m_aTexts.Count()));
 		return answer;
 	}

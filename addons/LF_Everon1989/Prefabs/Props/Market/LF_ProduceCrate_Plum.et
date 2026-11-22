@@ -1,0 +1,431 @@
+GenericEntity {
+ ID "1322732A5EC96103"
+ components {
+  MeshObject "{B3D716A69BF4B230}" {
+   Object "{CEC8A3DF893B9C96}Assets/Props/Crates/BoxWooden_01.xob"
+  }
+  RigidBody "{034AD1B0AEC92934}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "CCA2A695FF90DA00"
+   coords -0.198 0.201 -0.14
+   angles 12.297 103.723 -7.429
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "0D44DB5FDC0FE7C3"
+   coords -0.198 0.201 -0.083
+   angles -13.659 186.825 7.619
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "D5D7D278EF022164"
+   coords -0.198 0.201 -0.028
+   angles 13.121 241.789 6.131
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "7277F8F1CCAB6519"
+   coords -0.198 0.2 0.027
+   angles 1.836 122.118 -17.513
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "626B2C7D778F27D0"
+   coords -0.203 0.199 0.084
+   angles -2.375 45.619 6.104
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "AC56732483770EB9"
+   coords -0.198 0.201 0.139
+   angles -5.714 127.169 1.904
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "99EF3E4937EF9F0E"
+   coords -0.142 0.199 -0.137
+   angles 11.223 280.495 -18.841
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "A9FBCC83EA37A866"
+   coords -0.146 0.199 -0.081
+   angles 7.485 64.144 12.621
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "DE23366D7A36DC63"
+   coords -0.141 0.2 -0.025
+   angles -0.18 251.919 -17.682
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "1F9538AE1DF09620"
+   coords -0.14 0.199 0.028
+   angles -14.488 154.485 -0.608
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "42457058EA294E84"
+   coords -0.144 0.2 0.083
+   angles -4.884 117.689 18.133
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "5AAB1372D16D13B5"
+   coords -0.143 0.202 0.142
+   angles -1.695 302.977 18.19
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "099C46FC3C060823"
+   coords -0.084 0.202 -0.143
+   angles 19.053 59.136 -9.778
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "234A26025F47124B"
+   coords -0.083 0.201 -0.083
+   angles -0.729 251.839 -18.432
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "DE53ADD80CA4420E"
+   coords -0.083 0.201 -0.028
+   angles -6.673 325.339 2.554
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "7153F3F3CBDBC924"
+   coords -0.083 0.198 0.03
+   angles 3.6 28.558 9.194
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "0E882851EA81C043"
+   coords -0.083 0.199 0.083
+   angles -2.918 338.027 19.425
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "2B3A52C3214619AB"
+   coords -0.088 0.201 0.137
+   angles -14.004 165.811 -11.79
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "14E136F99F4E5C1B"
+   coords -0.026 0.2 -0.138
+   angles -6.681 77.693 -8.506
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "EBDDEE514004AEAC"
+   coords -0.031 0.199 -0.084
+   angles -13.356 152.772 12.925
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "27B54B7CB0507A8A"
+   coords -0.032 0.201 -0.03
+   angles 19.666 247.995 -3.582
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "8CCE7E1E3E6B2A75"
+   coords -0.028 0.2 0.026
+   angles -5.897 53.859 -2.226
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "4DC02B3BC17B6A0F"
+   coords -0.027 0.201 0.086
+   angles -13.488 107.712 -5.722
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "D50490000C73B416"
+   coords -0.031 0.199 0.143
+   angles 15.376 59.62 1.755
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "21DC65BECEAD2B67"
+   coords 0.029 0.201 -0.137
+   angles -3.898 199.275 17.298
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "D90A0C85ED55C3D6"
+   coords 0.028 0.199 -0.083
+   angles -4.279 159.086 -5.243
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "25557DBCCEA705B3"
+   coords 0.03 0.199 -0.029
+   angles -18.07 311.144 5.304
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "9BAC20CD1329F8D9"
+   coords 0.026 0.199 0.03
+   angles -11.164 84.353 -6.551
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "52CA17B37860773A"
+   coords 0.029 0.2 0.087
+   angles -4.566 358.26 3.166
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "3B55AABE59087F17"
+   coords 0.032 0.199 0.143
+   angles 10.691 180.231 10.487
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "A82C78697490BD80"
+   coords 0.088 0.201 -0.142
+   angles -0.675 102.646 5.068
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "56AE465B4E6F4AC4"
+   coords 0.086 0.199 -0.087
+   angles -2.007 44.368 8.309
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "934FA5B721CA4D56"
+   coords 0.087 0.2 -0.027
+   angles -7.932 255.066 17.938
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "ADAFFA27580F8FEA"
+   coords 0.084 0.201 0.031
+   angles -10.058 249.252 -8.546
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "46AE8F3321E7A428"
+   coords 0.083 0.199 0.086
+   angles 2.856 43.303 -4.818
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "4B883B857162F8D2"
+   coords 0.087 0.2 0.141
+   angles -0.16 142.45 2.018
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "611E0EA6D8BF421B"
+   coords 0.144 0.201 -0.138
+   angles 18.508 117.834 -11.887
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "B4CEC0751F58F582"
+   coords 0.143 0.199 -0.087
+   angles -8.081 285.47 -5.093
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "3734BDAE95245291"
+   coords 0.141 0.201 -0.028
+   angles -6.293 324.7 -1.86
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "9ECBDED6BC74C702"
+   coords 0.146 0.199 0.031
+   angles 7.299 320.616 -17.785
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "5993F4895704A320"
+   coords 0.141 0.2 0.086
+   angles -15.444 219.238 -14.968
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "A3C7468A734C33C1"
+   coords 0.14 0.199 0.14
+   angles 15.279 242.747 3.975
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "53321F6B2C04D39D"
+   coords 0.2 0.2 -0.139
+   angles -14.23 220.924 -16.2
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "8AF627E42B99EAD2"
+   coords 0.202 0.199 -0.084
+   angles 14.031 63.411 18.074
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "C759D943891EAD95"
+   coords 0.2 0.201 -0.03
+   angles 2.231 328.369 -11.603
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "4AC090998B3F092A"
+   coords 0.2 0.2 0.031
+   angles 3.46 250.18 -16.391
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "14D7A443C6331AB0"
+   coords 0.199 0.201 0.081
+   angles 5.528 7.294 2.131
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "745AC4E285E16B76"
+   coords 0.203 0.199 0.143
+   angles 5.154 13.173 -3.104
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "1D290454F411CCD8"
+   coords -0.198 0.236 -0.138
+   angles 5.097 255.83 -12.984
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "DC2ADF380928CA9B"
+   coords -0.199 0.235 -0.067
+   angles -19.354 307.873 3.842
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "CCE4C1686CE77E97"
+   coords -0.203 0.235 0.002
+   angles -19.95 194.823 -6.299
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "9A4A1EFA55D74A33"
+   coords -0.199 0.234 0.07
+   angles -12.406 113.82 -19.38
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "D7DA56E1BC0F7223"
+   coords -0.201 0.236 0.141
+   angles -17.702 41.293 -19.275
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "C549877CCE34F7A8"
+   coords -0.132 0.234 -0.138
+   angles -13.233 134.166 7.606
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "1AB04755F1D82791"
+   coords -0.134 0.235 -0.07
+   angles 17.935 115.542 13.868
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "1112F82879FBE5D8"
+   coords -0.134 0.233 -0.001
+   angles -4.885 22.348 13.521
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "A9C483C4B93DA871"
+   coords -0.133 0.234 0.072
+   angles 6.847 83.242 -17.265
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "0ACFAED21E7EAB8A"
+   coords -0.133 0.235 0.137
+   angles 16.932 126.189 7.769
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "606DCF6C4D1B490C"
+   coords -0.068 0.235 -0.14
+   angles -10.457 39.888 2.207
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "383FDE1FE89E0E03"
+   coords -0.07 0.233 -0.067
+   angles 10.927 167.301 -8.048
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "72CA89C7D62FA037"
+   coords -0.064 0.236 0.001
+   angles 9.276 275.93 14.571
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "2AC76EE2CFCC4854"
+   coords -0.066 0.236 0.068
+   angles -7.028 121.597 -2.028
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "A86B6C6C11D748EE"
+   coords -0.066 0.234 0.14
+   angles -17.129 11.123 -4.3
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "1729968E1FBAFFB9"
+   coords -0.001 0.235 -0.138
+   angles -8.621 28.111 -3.251
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "8AA7EE2649D94144"
+   coords 0.001 0.235 -0.07
+   angles 8.803 31.663 -15.278
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "0F5D0E6AA4D0CA54"
+   coords -0.003 0.234 0.001
+   angles 10.72 337.002 -13.6
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "CCD224488CEF3714"
+   coords 0.003 0.234 0.07
+   angles -1.195 230.98 -6.051
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "8B43CFE2BD323B47"
+   coords 0.002 0.234 0.142
+   angles -11.339 339.975 16.257
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "DFE61B3616AEE312"
+   coords 0.068 0.234 -0.142
+   angles 8.209 16.112 13.812
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "CC014696C1411D0C"
+   coords 0.065 0.234 -0.069
+   angles -19.261 6.059 3.653
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "3C97885A7FB542E1"
+   coords 0.065 0.236 -0.001
+   angles -4.924 186.675 0.613
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "AFDE57F53404B4D2"
+   coords 0.063 0.235 0.069
+   angles 5.078 183.268 -10.676
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "7B9A3C5E66FDFB4E"
+   coords 0.07 0.236 0.138
+   angles 5.751 158.523 14.96
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "35D8FD4D8E7FA63F"
+   coords 0.135 0.236 -0.138
+   angles -13.736 141.205 12.463
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "6E7CA8CAC41A37B8"
+   coords 0.132 0.234 -0.073
+   angles 12.428 141.223 -2.978
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "4EB9D51FA3F09F67"
+   coords 0.131 0.236 0.002
+   angles -15.554 8.938 -7.434
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "E6F2B19F8892C070"
+   coords 0.13 0.237 0.072
+   angles -2.972 170.567 15.825
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "90945CBED39EAE5F"
+   coords 0.131 0.235 0.142
+   angles 7.44 150.888 10.096
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "6C23AB83C686E1E6"
+   coords 0.199 0.236 -0.138
+   angles 1.56 28.812 13.708
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "EC6482EFD35AB6E2"
+   coords 0.198 0.237 -0.067
+   angles -16.722 270.966 -16.094
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "A2B7112241E9522E"
+   coords 0.198 0.236 -0.003
+   angles 11.009 25.767 -18.531
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "0BF79DD7661AF0AF"
+   coords 0.198 0.235 0.067
+   angles -9.303 333.131 2.339
+  }
+  GenericEntity : "{10246C977AD90CB9}Prefabs/Props/Market/LF_ProduceFruit_Plum.et" {
+   ID "210338B62771D7A2"
+   coords 0.199 0.236 0.137
+   angles -6.685 45.85 0.055
+  }
+ }
+}

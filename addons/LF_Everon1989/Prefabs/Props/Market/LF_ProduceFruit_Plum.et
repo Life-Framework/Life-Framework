@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "4D5AB4D09548BB89"
+ components {
+  MeshObject "{D8FE51B7B5BCAECC}" {
+   Object "{3EB653D9ECE9E4E9}Assets/Items/Food/Plum/Plum.xob"
+  }
+ }
+ coords 0 0 0
+}
