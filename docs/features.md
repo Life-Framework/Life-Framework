@@ -45,6 +45,7 @@
 - [Inventory / Quantity](features/inventory-quantity.md)
 - [Jobs / Level / Licenses / Whitelist](features/jobs-level-licenses-whitelist.md)
 - [Laundering](features/laundering.md)
+- [Law book](features/law.md)
 - [Lockers](features/lockers.md)
 - [Loot](features/loot.md)
 - [Map emulator](features/map-emulator.md)

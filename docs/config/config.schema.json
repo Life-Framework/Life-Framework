@@ -283,6 +283,21 @@
                 "default": 0,
                 "minimum": 0,
                 "maximum": 5
+              },
+              "lawSection": {
+                "type": "integer",
+                "description": "Law-book section this code is read under: criminal, road, narcotics or weapons (#4202)",
+                "default": 0
+              },
+              "stackGroup": {
+                "type": "string",
+                "description": "Stacking group (#4202). Codes of one group on a charge sheet do not add: the higher counts. Empty stacks with nothing, so the code always adds",
+                "default": ""
+              },
+              "jailOnly": {
+                "type": "boolean",
+                "description": "Jail only (#4202). The code refuses a fine: the officer cannot offer to pay it, and it adds nothing to the fine total",
+                "default": false
               }
             },
             "additionalProperties": false

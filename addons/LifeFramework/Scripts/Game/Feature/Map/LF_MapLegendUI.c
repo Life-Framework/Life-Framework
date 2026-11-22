@@ -511,8 +511,8 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	protected static const float TAB_TOP = 260;	// lf-fixed: under the vanilla tool strip
 	protected static const float LIST_HEIGHT = 190;	// lf-fixed: eight rows scroll inside the sheet
 	protected static const float KEY_RIGHT = 10;	// lf-fixed: the key column's margin from the right edge
-	protected static const float KEY_TOP = 70;	// lf-fixed: under the vanilla top bar
-	protected static const float KEY_TAB_GAP = 32;	// lf-fixed: the column starts under its tab
+	protected static const float KEY_TOP = 118;	// lf-fixed: under the vanilla top bar and the HUD money block (cash, bank, wanted), which stays on top of the map
+	protected static const float KEY_TAB_GAP = 36;	// lf-fixed: the column starts under its tab
 	protected static const float KEY_PAD = 6;	// lf-fixed
 	protected static const int KEY_PAPER = 0xC8EEE6D6;	// lf-fixed: the paper theme at about 78 % so the map shows through
 	protected static const float KEY_OFF_ALPHA = 0.4;	// lf-fixed: a hidden group or filtered-out type in the key
@@ -521,14 +521,17 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	protected Widget m_wKeyTab;
 	protected TextWidget m_wKeyTabText;
 	protected ref LF_MapKeyTabHandler m_KeyTabHandler;
-	protected static const float KEY_TAB_WIDTH = 110;	// lf-fixed: "Key: hide" in the tab type
-	protected static const float KEY_TAB_HEIGHT = 28;	// lf-fixed
+	protected static const float KEY_TAB_WIDTH = 136;	// lf-fixed: "Key: hide" in the tab type
+	protected static const float KEY_TAB_HEIGHT = 32;	// lf-fixed
 	protected static const int KEY_CHIP = 0xFFEEE6D6;	// lf-fixed: the paper theme, opaque so the tab reads on any map colour
 	protected static const int KEY_RIM = 0xFF3E403A;	// lf-fixed: the card rim (LF_MapPoiCard's Metal)
 	protected Widget m_wKey;
 	protected bool m_bKeyFolded;
 	protected int m_iKeyBuiltFor = -1;
 	protected ref array<ref LF_MapKeyRowHandler> m_aKeyHandlers = {};
+	//! The groups whose rows are open (the rest show only their header); empty on every map open.
+	protected ref array<string> m_aKeyOpen = {};
+	protected bool m_bKeyDirty;
 	protected static float s_fKeyX;
 	protected static float s_fKeyY;
 	protected static float s_fKeyW;
@@ -584,6 +587,8 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	//! replaces the Legend slip that opened under Map key: one list of icons.
 	protected void BuildKey(notnull WorkspaceWidget workspace)
 	{
+		m_aKeyOpen.Clear();
+		m_bKeyDirty = false;
 		m_bKeyFolded = LF_MapHelp.LoadFolded(LF_MapKeyLine.PREF_PATH);
 		// The tab: a paper chip with dark ink (the kit button drew near-white on the grey map, 2026-11-22).
 		m_wKeyTab = workspace.CreateWidget(WidgetType.FrameWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.NOFOCUS, Color.FromInt(Color.WHITE), 0, m_RootWidget);
@@ -673,7 +678,10 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 			return;
 
 		array<ref LF_MapKeyLine> lines = {};
-		int count = LF_MapLegend.KeyLines(places.GetAllPois(), lines);
+		LF_MapLegend.KeyLines(places.GetAllPois(), lines);
+		// Groups start collapsed to one header each (first-2-hours review 2026-11-22: 59 rows were a wall); a click on
+		// a header opens its rows. The sign lines (alarm ring, job run) always show.
+		int count = LF_MapKeyLine.Collapse(lines, m_aKeyOpen);
 		if (count == 0)
 			return;
 
@@ -754,6 +762,11 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 
 			text = WidgetManager.Translate(LF_MapLegend.CategoryKey(line.m_sCategory));
 			text.ToUpper();
+			// A plus on a shut group, a minus on an open one: the click opens or shuts its rows.
+			if (m_aKeyOpen.Find(line.m_sCategory) >= 0)
+				text += "  -";
+			else
+				text += "  +";
 		}
 		else
 		{
@@ -835,7 +848,7 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A click on a key line: a row shows only its type (again: every type), a header hides or shows its group.
+	//! A click on a key line: a row shows only its type (again: every type), a header opens or shuts its group.
 	void ClickRow(notnull LF_MapKeyLine line)
 	{
 		if (!line.m_sNote.IsEmpty())
@@ -843,8 +856,12 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 
 		if (line.m_bHeader)
 		{
-			bool hidden = LF_MapLegend.Toggle(LF_MapLegend.Hidden(), line.m_sCategory);
-			LF_Debug.Info(LF_MapLegend.FEATURE, string.Format("key: group %1 hidden=%2", line.m_sCategory, hidden));
+			// Open or shut the group. The rebuild waits for the next Update: this click comes from a row that
+			// the rebuild would delete.
+			bool open = LF_MapKeyLine.ToggleOpen(m_aKeyOpen, line.m_sCategory);
+			m_bKeyDirty = true;
+			LF_Debug.Info(LF_MapLegend.FEATURE, string.Format("key: group %1 open=%2", line.m_sCategory, open));
+			return;
 		}
 		else
 		{
@@ -928,8 +945,11 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 			return;
 
 		LF_MapPlacesUI places = Places();
-		if (places && places.GetAllPois() && places.GetAllPois().Count() != m_iKeyBuiltFor)
+		if (m_bKeyDirty || (places && places.GetAllPois() && places.GetAllPois().Count() != m_iKeyBuiltFor))
+		{
+			m_bKeyDirty = false;
 			RebuildKey();
+		}
 
 		StoreKeyBox();
 		if (places)
