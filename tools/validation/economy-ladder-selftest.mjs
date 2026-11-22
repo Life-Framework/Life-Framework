@@ -3,7 +3,7 @@
 // ($480 to $560, at most $600 with the bonus cap), and the report flags a police rank above the entry rung or over the
 // $520 mid-tier floor with its bonus, a medic rank off the mid-tier rung or over $600 with its bonus, and a civilian loop
 // below the Cadet shift. On the shipped configs only stone on foot is flagged ("you'll want a truck").
-// inputs: tools/lib/economy-lumber.mjs, tools/lib/economy-mining.mjs, tools/lib/economy-wheat.mjs, tools/lib/economy.mjs, tools/commands/economy.mjs, addons/LF_Everon1989/Configs/Police/LF_Police_Everon1989.conf, addons/LF_Everon1989/Configs/Medic/LF_Medic_Everon1989.conf, tools/validation/economy-ladder-selftest.mjs
+// inputs: tools/lib/economy-lumber.mjs, tools/lib/economy-mining.mjs, tools/lib/economy-wheat.mjs, tools/lib/economy.mjs, tools/commands/economy.mjs, addons/LF_Everon1989/Configs/Police/LF_Police_Everon1989.conf, addons/LF_Everon1989/Configs/Medic/LF_Medic_Everon1989.conf, tools/validation/economy-ladder-selftest.mjs, server/flagship/config.json
 // red-proof: written first against the 1.5 to 2.5x band configs (police 0.25 to 0.35/s, medic 0.22 to 0.34/s); it
 // printed "FAIL police shifts" ($900 to $1260), "FAIL medic shifts" and "FAIL the ladder exports" (no LADDER,
 // dutyLadder, renderDutyLadder); with the retuned rows and the rung checks it prints "economy-ladder-selftest: OK".
@@ -25,6 +25,13 @@ const pr = rates("addons/LF_Everon1989/Configs/Police/LF_Police_Everon1989.conf"
 const mr = rates("addons/LF_Everon1989/Configs/Medic/LF_Medic_Everon1989.conf");
 expect(same(pr, ["0.0972", "0.1042", "0.1111", "0.1181", "0.125"]), `police m_fPayPerSecond rows (got ${pr.join(", ")})`);
 expect(same(mr, ["0.1333", "0.1389", "0.1472", "0.1556"]), `medic m_fPayPerSecond rows (got ${mr.join(", ")})`);
+
+// 1b. The flagship's core fallback fields (#4272 review): a rank row that defers (negative, or dropped by a bad pack
+// overlay) pays jobs.policeDutyPayPerSecond / medicDutyPayPerSecond, so they sit on the entry rung of each ladder and
+// a fallback never pays the old $900/$792 band. red-proof: at 0.25 / 0.22 this printed both "FAIL flagship" lines.
+const flag = JSON.parse(readFileSync(join(root, "server/flagship/config.json"), "utf8")).jobs ?? {};
+expect(flag.policeDutyPayPerSecond === Number(pr[0]), `flagship policeDutyPayPerSecond is the Cadet rate ${pr[0]} (got ${flag.policeDutyPayPerSecond})`);
+expect(flag.medicDutyPayPerSecond === Number(mr[0]), `flagship medicDutyPayPerSecond is the Orderly rate ${mr[0]} (got ${flag.medicDutyPayPerSecond})`);
 
 // 2. The merged report: the shift per rank, in rank order.
 const rep = buildReport(root, {});

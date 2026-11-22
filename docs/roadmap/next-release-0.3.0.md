@@ -108,7 +108,7 @@ its scope file.
 | 1 | Visible levels: M6 decision 7 says none; work K1 shows numbers; crime wants none | Legal trades show their level in F2, on the level-up card and on the shift boards. Gates still refuse in words. Crime and standing never show a number (decision N1) |
 | 2 | All five scopes, the M6 and M7 outlines and today's configs keep duty at 1.5 to 2.5x civilian pay, and the work scope caps a master at 40% over a novice to stay under it | **Superseded by the maintainer (2026-11-22): "Civilians on the high tier jobs should get more than cops, cops should be the lowest paid."** The band is gone. Police and medic duty pay the least steady money, about entry civilian level. Civilian trades climb above duty with skill and tier, and the 40% master cap is dropped. Crime stays high-swing on top. The ladder is in "The economy table" below; card X-8 retunes the live configs and the `economy` check |
 | 3 | Police outcome bonus caps ($150 to $350) were sized against the old band | Caps are sized so shift plus bonus never passes a mid-tier civilian loop ($520) |
-| 4 | Medic pay sat beside police in the old band | Medics are paid like police, rank for rank |
+| 4 | Medic pay sat beside police in the old band | Medics are paid a bit more than police: the mid-tier civilian rung, $480 to $560 a shift and at most $600 with the bonus (maintainer, 2026-11-22), still below the high-tier trades |
 | 5 | Police per robbery rung: police scope 0/1/2/3/4; M7 ladder 1/1/2/2/3/5 | One table below. The till needs nobody (its alarm still calls), so the first crime is never locked |
 | 6 | Jail cap: the law book allows 60 min, police wants 30 min in a prison, today's cap is 5 min | 0.3.0 has no prison. Sentences top out at **15 online minutes in the Saint-Philippe holding cell**, with work stations scaled to match (PO-X1). The prison's 30 min with a 10 min split comes with 0.4 |
 | 7 | Recapture bonus $300 (gangs) or $150 (police); recaptured escapees get 20 min or 1 h | Prison break is 0.4. Recorded for then: $50 per escapee per officer, inside the hourly bonus cap of the new duty pay, 20 min and a 24 h bar (decision N41) |
@@ -149,7 +149,7 @@ After them `economy` flags any row that leaves its rung.
 
 | Rung | Who | Target | Rule `economy` enforces |
 |---|---|---|---|
-| Duty | Police and medic, every rank, bonus included | $350 to $520 | Shift pay at or under the entry civilian rung; shift plus the bonus cap at or under the mid-tier floor ($520) |
+| Duty | Police, every rank, bonus included; medics one rung up | Police $350 to $520; medic $480 to $600 | Police: shift at or under the entry civilian rung, shift plus the bonus cap at or under the mid-tier floor ($520). Medic: shift on the mid-tier rung, shift plus the bonus cap at or under $600 |
 | Entry civilian | Levels 1 to 5, on foot or a starter car | $400 to $480 | At or above the Cadet shift |
 | Mid-tier civilian | Levels 5 to 12, car or van | $480 to $600 | Above every duty rank's shift |
 | High-tier civilian | Levels 12 to 20, van or truck, export orders | $600 to $800 | Above every duty rank with its full bonus |
@@ -188,10 +188,10 @@ With the 40% master cap gone, the perks rise too (decision N2): double yield up 
 | Police Senior Patrol | $1,080 | $400 | 0.1111 | $100 | $500 | $450 |
 | Police Sergeant | $1,188 | $425 | 0.1181 | $95 | $520 | $473 |
 | Police Lieutenant | $1,260 | $450 | 0.1250 | $70 | $520 | $485 |
-| Medic Orderly | $792 | $350 | 0.0972 | $100 | $450 | $400 |
-| Medic EMT | $936 | $380 | 0.1056 | $100 | $480 | $430 |
-| Medic Paramedic | $1,080 | $410 | 0.1139 | $100 | $510 | $460 |
-| Medic Doctor | $1,224 | $450 | 0.1250 | $70 | $520 | $485 |
+| Medic Orderly | $792 | $480 | 0.1333 | $40 | $520 | $500 |
+| Medic EMT | $936 | $500 | 0.1389 | $50 | $550 | $525 |
+| Medic Paramedic | $1,080 | $530 | 0.1472 | $50 | $580 | $555 |
+| Medic Doctor | $1,224 | $560 | 0.1556 | $40 | $600 | $580 |
 
 Bonuses: a call resolved $15, a booking $10, a stolen car recovered $20; a revive $10 and a delivered patient
 $15. All are paid with the shift at clock-out and count against the cap. Fines and bail go to the town
