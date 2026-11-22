@@ -1,4 +1,4 @@
-// red-proof: pending (tools\cli test --no-build --red LF_Test_EveronMannequins)
+// red-proof: observed 2026-11-22, `tools/cli test --no-build --red LF_Test_EveronMannequins` RED-OK: `LF_Mannequin_Denim.et sells no_such_piece at clothing_rack` (each of the five mannequins).
 //! everon/mannequins: every dressed mannequin in the pack sells what it wears. Each prefab carries an
 //! outlet shop and an outfit list; every id on the list is a priced catalogue row that outlet sells,
 //! and each mannequin offers the whole-outfit line. Reads the prefabs' sources, spawns nothing.

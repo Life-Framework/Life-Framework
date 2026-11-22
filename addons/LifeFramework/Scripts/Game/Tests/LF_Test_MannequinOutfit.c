@@ -1,4 +1,4 @@
-// red-proof: pending (tools\cli test --no-build --red LF_Test_MannequinOutfit)
+// red-proof: observed 2026-11-22, `tools/cli test --no-build --red LF_Test_MannequinOutfit` RED-OK: `the last hat sold marks slot 2 sold out (expected 4, got 0)`, `a sold-out piece greys the whole outfit`.
 //! shop/mannequin-outfit: a dressed mannequin's action list. Each worn piece sells as its catalogue
 //! row at the mannequin's outlet (id, prefab, price); an id the outlet does not sell is no piece; the
 //! whole outfit costs the sum of the pieces; a sold-out piece (outlet stock) greys that piece and the
