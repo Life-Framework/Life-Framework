@@ -29,17 +29,17 @@
       "mouth": "9983218797521000587569898985296531321111000"
     },
     "greet": {
-      "hash": "dc4f4709ed99c790",
+      "hash": "b28b63f42770fdbd",
       "date": "2026-11-22",
       "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
       "voice_name": "Alex - Warm, Empathetic, Confident",
       "model": "eleven_multilingual_v2",
-      "text": "Bonjour. Mireille. Forgive me, I only came out for a coffee and a little conversation.",
-      "chars": 86,
-      "chars_total": 34,
-      "request_id": "oJnqxLEJypSXs40fXjtt",
-      "seconds": 5.04,
-      "mouth": "99989985311000000018978753110000000000000473995798411000188995397983259612972378788835316423311111000"
+      "text": "Bonjour. Marius. Forgive me, I only came out for a coffee and a little conversation.",
+      "chars": 84,
+      "chars_total": 68,
+      "request_id": "Kt2rr6ucCMF8JxJe5R6e",
+      "seconds": 4.28,
+      "mouth": "79989976311289975575110014549789942100000489877469996226621885257655533213311233211000"
     },
     "greet_friendly": {
       "hash": "b8ce118abf3198b6",
@@ -55,30 +55,30 @@
       "mouth": "68998686431000149995241000010087439899999259997445425857533361123102000"
     },
     "greet_regular": {
-      "hash": "3220ef2b932d6e7d",
+      "hash": "6bda5807015cc81d",
       "date": "2026-11-22",
       "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
       "voice_name": "Alex - Warm, Empathetic, Confident",
       "model": "eleven_multilingual_v2",
-      "text": "There you are! I was just telling Odile about you.",
-      "chars": 50,
-      "chars_total": 20,
-      "request_id": "MHU9MUmhiChK0eG2FdCO",
-      "seconds": 2.69,
-      "mouth": "899888754311000000000027775899748989998579965531211000"
+      "text": "There you are! I was just telling Odilon about you.",
+      "chars": 51,
+      "chars_total": 40,
+      "request_id": "MLyUMRWqQcDAlRpYvMBe",
+      "seconds": 2.82,
+      "mouth": "199988985321000000000003764268727888428967976546421111000"
     },
     "about_cafe": {
-      "hash": "32dadbba99492256",
+      "hash": "d296be75f0fc716f",
       "date": "2026-11-22",
       "voice_id": "9oROzDqQCuiJ6qYnKIbQ",
       "voice_name": "Alex - Warm, Empathetic, Confident",
       "model": "eleven_multilingual_v2",
-      "text": "Odile runs the cafe. She keeps the best table for the mayor and pretends she does not.",
-      "chars": 86,
-      "chars_total": 34,
-      "request_id": "yOl0a4YzmH1XaUxwile4",
-      "seconds": 4.15,
-      "mouth": "996999999738449622211100000021119534949883884652656547757775312127434321433111011000"
+      "text": "Odilon runs the cafe. He keeps the best table for the mayor and pretends he does not.",
+      "chars": 85,
+      "chars_total": 68,
+      "request_id": "UhIaP9y2CAjt2GuRsHus",
+      "seconds": 4.48,
+      "mouth": "996999999997464286212110000000000011212294998439757425465657777423311212863421112111101100"
     },
     "about_gossip": {
       "hash": "258a823ef2fa179e",

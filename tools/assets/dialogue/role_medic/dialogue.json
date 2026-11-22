@@ -1,0 +1,112 @@
+{
+  "id": "role_medic",
+  "name": "RoleMedic",
+  "speaker_key": "#LF-NpcRole_medic_Name",
+  "text_only": true,
+  "hear_range_m": 12,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "what",
+          "next": "what"
+        },
+        {
+          "text": "where",
+          "next": "where"
+        },
+        {
+          "text": "rumour",
+          "next": "rumour"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "menu",
+      "options_from": "greet"
+    },
+    {
+      "id": "what",
+      "line": "what",
+      "options": [
+        {
+          "text": "browse",
+          "condition": "OpenShop",
+          "action": "OpenShop"
+        },
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "where",
+      "line": "where",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "rumour",
+      "line": "rumour",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Come in. Are you hurt?"
+    },
+    "what": {
+      "text": "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse."
+    },
+    "where": {
+      "text": "If you need a bandage and I am not here, the general store keeps dressings by the counter."
+    },
+    "rumour": {
+      "text": "A lot of cuts from the sawmill this month. The men will not wear gloves."
+    },
+    "bye": {
+      "text": "Look after yourself."
+    }
+  },
+  "replies": {
+    "what": "What do you do here?",
+    "where": "Can you point me somewhere?",
+    "rumour": "Heard anything lately?",
+    "more": "One more thing.",
+    "bye": "Goodbye.",
+    "browse": "Show me what you've got."
+  }
+}

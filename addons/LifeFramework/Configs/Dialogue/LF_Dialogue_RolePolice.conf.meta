@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5D1EF9CD951C4A6F}Configs/Dialogue/LF_Dialogue_RolePolice.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

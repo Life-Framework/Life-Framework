@@ -29,17 +29,17 @@
       "mouth": "199987311111111111139999996656552111499968996655443111498697566536443441111111100"
     },
     "greet": {
-      "hash": "a49e28f964f9d969",
+      "hash": "4c50d603f0eb007d",
       "date": "2026-11-22",
       "voice_id": "eBAnahjDCcJXJUL16cEY",
       "voice_name": "JP - Social media",
       "model": "eleven_multilingual_v2",
-      "text": "Good day. I am off the counter just now, but I don't bite. Helene, from the bank.",
+      "text": "Good day. I am off the counter just now, but I don't bite. Lucien, from the bank.",
       "chars": 81,
-      "chars_total": 32,
-      "request_id": "b2lUyGbq8kckWydoj8y0",
-      "seconds": 6.35,
-      "mouth": "1396796621111111111111118998785287598757884786476655211111132858858775766254111111111111112999997774111121165999959744211112100"
+      "chars_total": 64,
+      "request_id": "eDuGkce1uj7LZipEDdQV",
+      "seconds": 5.9,
+      "mouth": "1199999622222222228998983383898489468957651111111111111493686775355423111111111111112879788663111239888597432111112100"
     },
     "greet_friendly": {
       "hash": "6d95a0e2afa76b45",

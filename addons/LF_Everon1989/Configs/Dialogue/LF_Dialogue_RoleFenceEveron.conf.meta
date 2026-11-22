@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{FDC5FE3C4797412E}Configs/Dialogue/LF_Dialogue_RoleFenceEveron.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

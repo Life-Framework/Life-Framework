@@ -1,0 +1,76 @@
+{
+  "id": "role_store_clerk_everon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "567a96536c31fbbc",
+      "date": "2026-11-22",
+      "voice_id": "K8nDX2f6wjv6bCh5UeZi",
+      "voice_name": "Jamie - French Accent & Charismatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Morning. Looking for something in particular?",
+      "chars": 45,
+      "chars_total": 18,
+      "request_id": "6aVQ09FFxgf7rtjZXMkJ",
+      "seconds": 2.96,
+      "mouth": "489999652100000005942675249943387525566525622431679986311000"
+    },
+    "what": {
+      "hash": "5ea39f3200765f87",
+      "date": "2026-11-22",
+      "voice_id": "K8nDX2f6wjv6bCh5UeZi",
+      "voice_name": "Jamie - French Accent & Charismatic",
+      "model": "eleven_multilingual_v2",
+      "text": "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in Saint-Philippe does.",
+      "chars": 127,
+      "chars_total": 51,
+      "request_id": "XGI7gi3ADa1emq3cJI1D",
+      "seconds": 9.54,
+      "mouth": "79997542378526741372243339962443101114543210000000002269999622100000159993446666411000018722799973344320022387333322332100000000165228766993227957733331259949944552654337852166752269753333100"
+    },
+    "where": {
+      "hash": "9723f0738fc63c37",
+      "date": "2026-11-22",
+      "voice_id": "K8nDX2f6wjv6bCh5UeZi",
+      "voice_name": "Jamie - French Accent & Charismatic",
+      "model": "eleven_multilingual_v2",
+      "text": "The market square is south of the main street if you want fruit and vegetables. Cars are sold at the lot on the east side.",
+      "chars": 122,
+      "chars_total": 49,
+      "request_id": "Mh0srx0v46kXaSDFfAyi",
+      "seconds": 7.08,
+      "mouth": "6799942943516999753369952267365697754321267332125222546996322268531476398323424422321011110026999747533689511842877998335656256332644311000100"
+    },
+    "rumour": {
+      "hash": "758f7e8fe2047776",
+      "date": "2026-11-22",
+      "voice_id": "K8nDX2f6wjv6bCh5UeZi",
+      "voice_name": "Jamie - French Accent & Charismatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Somebody has been asking whether I keep a safe under the counter. I do not, and I do not keep much cash either.",
+      "chars": 111,
+      "chars_total": 44,
+      "request_id": "NEswjAqe4sjcwGBIFBJV",
+      "seconds": 7.19,
+      "mouth": "229976946889843772388442555884994752351423367421764736334742599721110000007995466994232100000008999652599465992135621147824326964332156356321100"
+    },
+    "bye": {
+      "hash": "0328e328b4a43c76",
+      "date": "2026-11-22",
+      "voice_id": "K8nDX2f6wjv6bCh5UeZi",
+      "voice_name": "Jamie - French Accent & Charismatic",
+      "model": "eleven_multilingual_v2",
+      "text": "Take care out there.",
+      "chars": 20,
+      "chars_total": 8,
+      "request_id": "Md1NnvqzpEYbE9aiKd9i",
+      "seconds": 1.21,
+      "mouth": "0362239988842599752121000"
+    }
+  },
+  "voice": {
+    "id": "K8nDX2f6wjv6bCh5UeZi",
+    "name": "Jamie - French Accent & Charismatic",
+    "source": "voice library"
+  }
+}

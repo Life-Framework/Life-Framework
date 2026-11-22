@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{903DFE63FD87F115}Configs/Dialogue/LF_Dialogue_RoleTeller.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -183,10 +183,35 @@ class LF_MapHarness
 		if (baseWorld)
 			world[1] = baseWorld.GetSurfaceY(x, z);
 
-		bool ok = LF_MapWaypoint.SetFromMap(world);
-		LF_Debug.Info(FEATURE, string.Format("harness map waypoint %1 %2: %3", x, z, ok));
+		// What Shift + left click at that spot does (no place under it, no clear reach).
+		string outcome = LF_MapWaypoint.ModifiedClick(world, 0, false, "", world);
+		bool ok = outcome == "point";
+		LF_Debug.Info(FEATURE, string.Format("harness map waypoint %1 %2: %3", x, z, outcome));
 		detail = string.Format("waypoint x=%1 z=%2 set=%3", x, z, ok);
 		return ok;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pins the card of the mark nearest world (x, z): the hover state, for pictures.
+	static bool Hover(float x, float z, out string detail)
+	{
+		SCR_MapEntity mapEntity = SCR_MapEntity.GetMapInstance();
+		if (!mapEntity || !mapEntity.IsOpen())
+		{
+			detail = "map_not_open";
+			return false;
+		}
+
+		LF_MapPlacesUI places = LF_MapPlacesUI.Cast(mapEntity.GetMapUIComponent(LF_MapPlacesUI));
+		if (!places)
+		{
+			detail = "no_places_layer";
+			return false;
+		}
+
+		string title = places.HarnessHover(x, z);
+		detail = "hover=" + title;
+		return !title.IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -351,6 +376,13 @@ modded class LF_AgentHarnessVerbs
 			else
 				ok = LF_MapHarness.Waypoint(cmd.Arg2.ToFloat(), cmd.Arg3.ToFloat(), detail);
 		}
+		else if (cmd.Arg1 == "hover")
+		{
+			if (cmd.Arg2.IsEmpty() || cmd.Arg3.IsEmpty())
+				detail = "usage: map hover <x> <z>";
+			else
+				ok = LF_MapHarness.Hover(cmd.Arg2.ToFloat(), cmd.Arg3.ToFloat(), detail);
+		}
 		else if (cmd.Arg1 == "mark")
 		{
 			if (cmd.Arg2.IsEmpty() || cmd.Arg3.IsEmpty())
@@ -365,7 +397,7 @@ modded class LF_AgentHarnessVerbs
 		}
 		else
 		{
-			detail = "usage: map open|close|pan <x> <z> <zoom> [s]|waypoint <x> <z>|mark <x> <z> [n]|probe|demo|status";
+			detail = "usage: map open|close|pan <x> <z> <zoom> [s]|waypoint <x> <z>|hover <x> <z>|mark <x> <z> [n]|probe|demo|status";
 		}
 
 		if (ok)

@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "kind": "quarry",
+  "about": "An open-air mine on a hillside away from any town: ore rocks a miner breaks with a pickaxe, the furnace that smelts the ore, the miner's job desk and a sign. No building stands there, so the slot is hostless: its kit rests on the probed ground of one free plot. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
+  "slots": [
+    {
+      "id": "mine", "required": true, "kit": "iron-mine", "host": "plot", "poi": "Workplace",
+      "needs": { "interior": "optional", "prefer": "near" },
+      "plot": { "minWidth": 16, "minDepth": 16, "prefabs": [] },
+      "places": ["Workplace", "Processor"]
+    }
+  ]
+}
