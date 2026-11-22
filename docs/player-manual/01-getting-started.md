@@ -23,13 +23,34 @@ the map, police and medic duty, and where to read more. Turn the pages with **Ne
 
 ## Your personal file
 
-Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It has two tabs:
+Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It has three tabs:
 
 * **Person**: your name and role (civilian, police or medic, on or off duty), cash in hand and in the bank,
   houses owned, garage slots used, time on the island, whether you are wanted, the licences and permits you hold, and
   your level in each job. **Read** on a job shows what it is and how far you are to the next level.
 * **Progress**: your first errands in order, each marked **DONE**, **CURRENT** or **LATER**, then any other errand you
   took. **Read** shows the errand and its progress; **Set waypoint to the current errand** puts it on your map.
+* **Next**: what you could do now to earn a living, with a line on each, roughly what it pays an hour and how far away
+  it is. Only what you can already do is listed (police and medic duty show once you wear the badge). Pick one and press
+  **Start**: a few short steps follow, each with a waypoint on your screen, a mark on your map and a one-line note. A
+  step you have already done is skipped (you hold the job, you carry the tool). **Guide me** on a started one puts the
+  waypoint back on its step; finished ones read **Done**.
+
+### The mining run, step by step
+
+| Step | What you do |
+|---|---|
+| Take the miner job | The desk by the mine on Coalman's Brow, south-west of the square |
+| Buy a pickaxe | The miners' supply till in the hardware store ($150); skipped if you carry one |
+| Take your car out | Your garage; any car will do (the buyer is down at the dock). Skipped if a car is already out or you own none |
+| Go to the mine | Back up to Coalman's Brow |
+| Mine 3 iron ore | Swing at the rust-veined rocks and pick up the pieces. Every piece levels **Mining**; level 2 opens the coal licence |
+| Smelt a bar | The mine furnace: 3 ore make a bar, about 4 minutes |
+| Sell your bars | The iron counter in the dock wholesale warehouse, $20 a bar |
+
+The other starters are shorter: the postal van run (a driving licence, the post stand at the parcel kiosk, one run to Meaux and back), lumber (the lumberjack job, an
+axe, a felled tree), fishing (a rod, the nearest water, a fish), the apple harvest (the orchard, 5 apples, a bottle of
+juice), and police or medic duty (the duty desk, clock in).
 
 The file only shows what the records office holds; nothing in it can be changed from there. **Esc** or **Close** puts
 it away.
@@ -63,14 +84,20 @@ bought at the gun store counter, and in the alpha it is instant.
 ## The map and waypoints
 
 * **Open the map:** press **M**. If nothing opens, take the **folded paper map** out of your pack and hold it; every new character carries one.
-* **Every island place has its own icon**, a round badge coloured by kind (green shops, orange food, blue travel, brown work,
-  dark blue police, red health). Point at an icon to read its name; the **Legend** tab on the left lists every icon.
-  Icons that share one spot show the most important one and a count; click it to zoom in.
-  Places you have not seen yet may show as "heard of" until you walk past.
+* **Every kind of place has its own icon**, a round badge coloured by group (green shops, orange food, blue travel, brown
+  work, dark blue police, red health). No two kinds share an icon. Point at an icon to read its name.
+* **The key** on the right edge of the map lists every icon on your map, grouped, with its name. Point at a row and those
+  places grow and pulse on the map while the rest fade. Click a row to show only that kind (click again for all); click a
+  group's heading to hide or show the whole group. The **Key** tab at the top folds it away, and the map remembers that.
+* Icons that share one spot show the most important one and a count; click it to zoom in. Zoomed far out, a slate badge
+  with three dots stands for a group of places. Places you have not seen yet may show as "heard of" until you walk past.
 * **Set your own waypoint:** **Shift + Left click** on the map (gamepad: hold **Y**, press **A**), or just click a place.
-  It shows on the map as a pencil circle with its name and distance, and in the world as a marker with the distance.
+  It shows on the map as a bold red ring with its name and distance, and in the world as a marker with the distance.
   There is one waypoint at a time; a new click moves it. The same click on the waypoint, or **Backspace** (gamepad:
-  double-tap **Y**), clears it. The strip at the bottom of the map reminds you.
+  double-tap **Y**), clears it.
+* **How to use the map:** the card in the bottom-left corner lists these controls for your mouse or gamepad, and the
+  waypoint set now. **F1** (gamepad: click the left stick) folds it to one line; the map remembers that too.
+* **Safe zones** are a soft green tint with a small label under their edge. **Find a place** on the left searches by name.
 * **The notice board** and the **Taxi** and **courier** jobs set waypoints for you.
 * **Scale:** Saint-Philippe is about 450 m across. The whole island is about 12 km. See the [maps](maps.md).
 
@@ -92,22 +119,22 @@ Closer in, the centre of town:
 | 7 | ATM (east side) | Services | Cash machine near the filling station. |
 | 8 | ATM (harbour) | Services | Cash machine on the dock. |
 | 9 | Clinic (hospital) | Services | Medic duty desk, hospital till, where you wake after dying. |
-| 10 | Taxi rank | Services | Start a taxi run. |
+| 10 | Taxi stand | Services | Start a taxi run. |
 | 11 | Car lot | Services | Buy a car. Impound desk beside it. |
-| 12 | Filling station | Services | Pumps and the fuel kiosk. |
+| 12 | Gas station | Services | Pumps and the fuel kiosk. |
 | 13 | Garage | Services | Mechanic: car parts and repair kits. |
 | 14 | Church | Services | The village church. |
 | 15 | Organization office | Services | Register or join an organization. |
 | 16 | Shooting range | Services | Three target lanes. |
 | 17 | Market | Services | Market stall trader. |
-| 18 | Harbour Office | Services | The harbour master. |
+| 18 | Harbor Office | Services | The harbour master. |
 | 19 | Police station | Police and jail | Duty desk, armoury, wanted board, jail cell. |
 | 20 | Supermarket | Shops | Food and drink. |
 | 21 | General store | Shops | Tinned food, seeds, drinks, miner's till. |
 | 22 | Bakery | Shops | Bread, baguettes, croissants. |
 | 23 | Butcher | Shops | Ham, saucisson, canned and dried meat. |
 | 24 | Cafe | Shops | Drinks and snacks. Chess table next door. |
-| 25 | Newsagent | Shops | Tourist map, newspaper, postcards. |
+| 25 | Newsstand | Shops | Tourist map, newspaper, postcards. |
 | 26 | Pharmacy | Shops | Aspirin, gauze, tourniquets. |
 | 27 | Clothing store | Shops | Clothes, hats, jackets. |
 | 28 | Hardware store | Shops | Axe, shovel, planks, cement, radio, repair kit. |
@@ -120,7 +147,7 @@ Closer in, the centre of town:
 | 35 | Wheat field | Work sites | Harvest contracts and the weighbridge. |
 | 36 | Farm | Work sites | Vegetable plots, beehives, honey kitchen. |
 | 37 | Orchard | Work sites | Farmer job desk and apple trees. |
-| 38 | Timber yard (Scierie) | Work sites | Lumberjack job desk and sawmill. |
+| 38 | Timber yard | Work sites | Lumberjack job desk and sawmill. |
 | 39 | Smokehouse | Work sites | Smoke your fish. |
 | 40 | Wholesale warehouse | Work sites | Buys bulk goods at a falling price. |
 | 41 | Fishing spot (Spring Pond) | Work sites | Fish from the jetty. |

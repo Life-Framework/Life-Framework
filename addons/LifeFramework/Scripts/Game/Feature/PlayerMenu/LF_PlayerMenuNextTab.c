@@ -1,22 +1,21 @@
-// LF_PlayerMenuNextTab.c: the personal file's third tab, "What to do next" (LF_PlayerMenuSheet). The slot
-// is wired (tab key, page, focus, the harness's `playermenu open next`) but empty: the tab key shows only
-// when HasContent says there is something to say, so until the next-steps feature fills this file the
-// file has two tabs. The feature that fills it edits only this file: HasContent reads the answer it
-// needs, Build appends kit parts between the file's header and its footer (columns and cards as the
-// other tabs build them: LF_UIPart.CreateColumns(...).Cards(), parts InColumn(card, 0)).
+// LF_PlayerMenuNextTab.c: the personal file's third tab, "What to do next" (LF_PlayerMenuSheet). Filled by the
+// activities feature (Feature/Activities, LF_ActivityPage): the list of activities the player can start, asked
+// from the server when the tab opens, with START / GUIDE ME. The tab always shows: before the answer arrives
+// the page prints a waiting line, and with nothing to start it says so.
 
 class LF_PlayerMenuNextTab
 {
 	//------------------------------------------------------------------------------------------------
-	//! \return True when the tab has something to show for this answer. Empty slot: never.
+	//! \return True: the tab shows for everyone (the activity list has its own waiting and empty lines).
 	static bool HasContent(LF_PlayerMenuData data)
 	{
-		return false;
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Appends the tab's parts. Called only when HasContent is true.
+	//! Appends the tab's parts between the file's header and footer.
 	static void Build(notnull array<ref LF_UIPart> parts, LF_PlayerMenuData data)
 	{
+		LF_ActivityPage.AddParts(parts);
 	}
 }

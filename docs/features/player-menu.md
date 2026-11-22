@@ -27,3 +27,4 @@
 - ✅ Tests: `LF_Test_PlayerMenuXp`, `LF_Test_PlayerMenuData`, `LF_Test_PlayerMenuLayout` (LOGIC). Proof: `player-menu-proof`
   session verb; harness `playermenu seed` (dev gate) grants XP, cash, savings and a free house for pictures.
 - ⬜ Quest chapters: quests carry no chapter field yet, so the list groups the guided chain and the rest.
+- ✅ **Next tab** (2026-11-22): what the player can start now, with pitch, pay an hour, distance and state; **Start** / **Guide me** run a guided starter (`docs/features/activities.md`). Harness `playermenu open next`, `activities state|pick <n>|go`.

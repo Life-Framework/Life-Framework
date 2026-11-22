@@ -13,11 +13,11 @@ GenericEntity Fit_saint_philippe_seed_feed_seed_feed_box_1 : "{2B1D0128ED660BE9}
  coords 4528.021 17.097 10652.86
  angleY 171
 }
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_counter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4528.021 16.057 10652.86
  angleY 171
 }
-GenericEntity Fit_saint_philippe_seed_feed_seed_feed_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Fit_saint_philippe_seed_feed_seed_feed_counter_2 : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4526.54 16.057 10652.625
  angleY 171
 }

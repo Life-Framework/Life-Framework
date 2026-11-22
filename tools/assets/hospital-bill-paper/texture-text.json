@@ -1,0 +1,34 @@
+{
+  "about": "Every piece of text this slug's build script paints onto its texture; checked by tools/validation/validate-us-english.mjs. Regenerate: node tools/validation/validate-us-english.mjs --update",
+  "scripts": {
+    "model.py": [
+      "paper-print",
+      "EVERON REGIONAL",
+      "HOSPITAL",
+      "Billing and Accounts Office",
+      "14 Infirmary Road",
+      "Port Gorse, Everon",
+      "Tel. 41 22 07",
+      "INVOICE",
+      "Invoice no.",
+      "PATIENT",
+      "DATE OF TREATMENT",
+      "WARD / DEPARTMENT",
+      "ATTENDING PHYSICIAN",
+      "DESCRIPTION OF SERVICE",
+      "QTY",
+      "AMOUNT",
+      "TOTAL DUE",
+      "Payable at the cashier's office,",
+      "ground floor, within thirty days.",
+      "Accounts clerk",
+      "Date",
+      "Checks are not accepted. Please quote the invoice number when paying.",
+      "EVERON REGIONAL HOSPITAL  -  FORM B-3  -  1989",
+      "ACCOUNTS",
+      "OFFICE",
+      "HospitalBillSheet",
+      "LF_ASSET_MODEL ok"
+    ]
+  }
+}

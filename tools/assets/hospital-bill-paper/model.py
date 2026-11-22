@@ -67,7 +67,7 @@ c.hline(10, 62, 32, BLUE, 0.2)
 c.text(10, 28.6, "Accounts clerk", 2.5, PALE)
 c.hline(76, W - 10, 32, BLUE, 0.2)
 c.text(76, 28.6, "Date", 2.5, PALE)
-c.text(W / 2, 17.6, "Cheques are not accepted. Please quote the invoice number when paying.", 2.5, PALE, align="CENTER")
+c.text(W / 2, 17.6, "Checks are not accepted. Please quote the invoice number when paying.", 2.5, PALE, align="CENTER")
 c.text(W / 2, 13.6, "EVERON REGIONAL HOSPITAL  -  FORM B-3  -  1989", 2.3, PALE, align="CENTER", spacing=1.1)
 
 c.layer("stamp")

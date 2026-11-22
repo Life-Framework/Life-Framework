@@ -26,7 +26,7 @@ LF_NpcBaseEntity Fit_saint_philippe_farm_supply_farm_supply_clerk : "{8CCD224BC5
  coords 4434.399 16.877 10616.441
  angleY -4
 }
-GenericEntity Fit_saint_philippe_farm_supply_farm_supply_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Fit_saint_philippe_farm_supply_farm_supply_counter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4434.322 16.785 10617.539
  angleY -4
 }
