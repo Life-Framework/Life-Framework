@@ -11,10 +11,10 @@ After you die or rejoin you do not wake in the hostel again; see [Money](02-mone
 
 ## The welcome guide
 
-A few seconds after you get out of bed a short **welcome guide** opens: five paper pages on what to do first, money,
-the map, police and medic duty, and where to read more. Turn the pages with **Next** and **Previous**.
+A few seconds after you get out of bed a short **welcome guide** opens: five paper pages on what to do first (the town clerk, your starter car, then apples, juice and the market), money and
+the F2 "What to do next" page, the map, police and medic duty, and where to read more. Turn the pages with **Next** and **Previous**.
 
-* **Set waypoint to the clerk** (page 1) puts a waypoint on the registry clerk, the first errand. If you are further
+* **Set waypoint to the clerk** (page 1) puts a waypoint on the town clerk, the first errand. If you are further
   along, it points at your current errand instead.
 * **Close** puts it away; it opens again the next time you join.
 * **Don't show again** stops it opening by itself.
@@ -63,7 +63,7 @@ back when you rejoin. Other players do not see yours.
 
 | Step | What you do | Where |
 |---|---|---|
-| **New in town** | Walk south from the hostel to the town hall. Talk to the **registry clerk** ("Registry clerk: ID cards"). He files form R-89 and hands you your **ID card** and a **welcome pack**: a baguette, a saucisson, a bottle of water and **$100 in cash**. | Town hall on the square |
+| **New in town** | Walk south from the hostel to the town hall. Talk to the **town clerk** ("Town clerk: ID cards"). He files form R-89 and hands you your **ID card** and a **welcome pack**: a baguette, a saucisson, a bottle of water and **$100 in cash**. | Town hall on the square |
 | **Your first car** | The clerk also puts a small **Sputnik T601** in your garage. It is yours, and it takes one of your garage slots. Walk to the **garage counter** at the car lot and pick *Retrieve vehicle*; the car stands on the garage pad and your key is already in your pocket. | Car lot, west of the town hall |
 | **Apple picking** | Drive to the **orchard** east of town and pick **six apples** from the apple trees. | Orchard |
 | **Fresh juice** | Use the **juice press** on the orchard stall: three apples make one bottle of apple juice. | Orchard stall |
@@ -111,7 +111,7 @@ Closer in, the centre of town:
 | # | Place (in-game name) | Kind | What you do here |
 |---|---|---|---|
 | 1 | Hostel | Services | Where a new character wakes. Safe zone around it. |
-| 2 | Registry clerk: ID cards | Services | Town hall: ID card, driving licence, the arrival quest. |
+| 2 | Town clerk: ID cards | Services | Town hall: ID card, driving licence, the arrival quest. |
 | 3 | Notice board | Services | The town board: every place in town, with a waypoint button. |
 | 4 | Parcel depot (post office) | Services | Sign up for courier work, take parcels. |
 | 5 | Bank | Services | Teller for deposits and withdrawals. |

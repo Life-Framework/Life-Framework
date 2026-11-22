@@ -179,8 +179,11 @@ class LF_Test_EveronArrivalRoute : LF_Test
 
 		// 4. The juice press.
 		ctx.True(Status(tracker, "arrival_juice") == LF_EQuestStatus.ACTIVE, "step 4 (juice) starts on its own");
+		// Six apples at three a bottle are two bottles (A18): the press and the quest agree.
 		manager.ReportProcess(player, JUICE);
-		ctx.True(Status(tracker, "arrival_juice") == LF_EQuestStatus.TURNED_IN, "a pressed bottle finishes step 4");
+		ctx.True(Status(tracker, "arrival_juice") == LF_EQuestStatus.ACTIVE, "one bottle is not yet step 4: six apples make two");
+		manager.ReportProcess(player, JUICE);
+		ctx.True(Status(tracker, "arrival_juice") == LF_EQuestStatus.TURNED_IN, "the second pressed bottle finishes step 4");
 
 		// 5. The market: a real sale of a bottle to the island trader.
 		ctx.True(Status(tracker, "arrival_done") == LF_EQuestStatus.ACTIVE, "step 5 (the market) starts on its own");

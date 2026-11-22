@@ -238,6 +238,13 @@ class LF_WaypointHud
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pure: the world marker stays off while a conversation scene or its camera is up.
+	static bool HiddenFor(bool dialogueOpen, bool dialogueCamera)
+	{
+		return dialogueOpen || dialogueCamera;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected static void Tick()
 	{
 		if (!LF_Waypoint.IsActive() || !s_wRoot)
@@ -253,6 +260,12 @@ class LF_WaypointHud
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		BaseWorld world = GetGame().GetWorld();
 		if (!workspace || !world || !s_wMarker)
+			return;
+
+		// A conversation owns the screen: the marker would draw over the reply hint (A11).
+		bool hidden = HiddenFor(LF_DialogueScene.IsOpen(), LF_DialogueCamera.IsActive());
+		s_wRoot.SetVisible(!hidden);
+		if (hidden)
 			return;
 
 		vector target = LF_Waypoint.GetTarget() + Vector(0, LIFT_METERS, 0);

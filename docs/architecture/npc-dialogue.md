@@ -65,11 +65,13 @@ built the missing parts.
   player's view before the old camera is restored and ours deleted.
 - **One shot.** The first version had two (a face close-up while the NPC spoke, over the shoulder
   while the player chose), and the cut between them zoomed hard into the face; the maintainer found it
-  janky (#896, 2026-11-13). Now the whole talk uses the over-the-shoulder medium shot: behind the
-  player's head (0.75 m back, 0.5 aside, 0.22 up), looking at the NPC's head, 42 degrees, so the NPC
-  shows from about the chest up with the player's shoulder at the frame edge. It never changes while
+  janky (#896, 2026-11-13). Now the whole talk uses one side-on two-shot (2026-11-22, first-2-hours review A8: the
+  over-the-shoulder shot showed the back of the player's cap): the camera stands to the player's right of the line
+  between the two heads, at its middle, 1.3 to 2.6 m out (`TWO_SHOT_*`), looking at the middle, 42 degrees, so both
+  faces are in profile and in frame. A still counter NPC turns to the player for the talk (`LF_DialogueFacing`, local
+  to the talker's machine, put back when the scene closes). It never changes while
   the NPC speaks. There is one ease in from the player's view and one ease out (`LF_DialogueCamera.Frame`,
-  `FOV`, `SHOT_*`), with no drift. The shot depends on the two heads only, so a line cannot move it.
+  `FOV`, `TWO_SHOT_*`), with no drift. The shot depends on the two heads only, so a line cannot move it.
   `dialogue closeup 1` is a proof-only harness close-up (scene widgets hidden) for filming the mouth.
 - The ease is a straight line, which used to cut through the player's own head. Every eased position,
   in and out, is kept out of a sphere around the player's head bone (`HEAD_KEEP_OUT`, 0.85 m): a path

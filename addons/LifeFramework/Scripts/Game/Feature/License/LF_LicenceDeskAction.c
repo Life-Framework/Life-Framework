@@ -51,17 +51,18 @@ class LF_LicenceDeskAction : ScriptedUserAction
 //------------------------------------------------------------------------------------------------
 //! The licence desk's second action (#3128): buy the driving licence at once for the fee in carried
 //! cash (LF_LicenceDesk.BuyDriving). Shown whenever the License system is on, also where the permit
-//! is sold at a shop counter; hidden from a player whose body already holds the licence.
+//! is sold at a shop counter; hidden from a player whose body already holds the licence and from one with no ID card yet
+//! (the town clerk comes first, LF_LicenceDesk.DrivingRowShown).
 class LF_LicenceDeskDrivingAction : ScriptedUserAction
 {
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
-		if (!LF_Systems.IsEnabled(LF_LicenseGate.SYSTEM))
-			return false;
-
 		LF_LicenseManagerComponent licences = LF_Component<LF_LicenseManagerComponent>.Find(user);
-		return !licences || !licences.HasLicense(LF_LicenceDesk.DRIVING);
+		bool holds = licences && licences.HasLicense(LF_LicenceDesk.DRIVING);
+		array<LF_IdCardComponent> cards = {};
+		LF_IdCard.FindCarried(user, cards);
+		return LF_LicenceDesk.DrivingRowShown(LF_Systems.IsEnabled(LF_LicenseGate.SYSTEM), holds, cards.Count());
 	}
 
 	//------------------------------------------------------------------------------------------------
