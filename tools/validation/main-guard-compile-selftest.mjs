@@ -89,7 +89,7 @@ check(mg.compileVerdict(1, "validate-scripts: FAILED - Enforce Script does not c
   check(loop.indexOf("compileHead(") > 0 && loop.indexOf("compileHead(") < loop.indexOf("checkHead(root, dir, s.lastCompiled)"), "worker: compile before stage 2");
   check(/shouldRun\(s, s\.lastCompiled/.test(loop), "worker: stage 2 only on a compiled-ok head");
   check(loop.indexOf("readState(root).request") > 0 && loop.indexOf("readState(root).request") < loop.indexOf("compileHead("), "worker: a requested check (main-guard check <sha>) runs before the head's compile");
-  check(loop.includes("checkHead(root, dir, req)"), "worker: the requested commit gets stage 2 on exactly that sha");
+  check(loop.includes("checkHead(root, dir, req, { pinned: true })"), "worker: the requested commit gets stage 2 on exactly that sha");
   check(/revertRefusal\(b\.culprit, readState\(root\), \{ step: step\.name, needsSkip \}\)/.test(w), "worker: stage 2 refusal knows the step");
 }
 

@@ -5,6 +5,8 @@
 // red-proof 2026-11-16: before tools/lib/guard-pin.mjs existed this printed "FAIL cannot load"; with syncWorktree
 // ignoring `target` it printed "FAIL world sync stops at the compiled-ok commit".
 
+// red-proof 2026-11-22 (lease contexts): with writeLeaseChecked's cap fallback removed this printed "FAIL a full context moves on to -2";
+//   with isLeaseCtx reading only the legacy context "FAIL leaseFromStatuses: newest lease context wins".
 import { gitSync } from "../lib/git-retry.mjs";
 import { readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -43,6 +45,42 @@ try {
   check(L({ ...fresh, at: new Date(Date.now() - pin.LEASE_TTL_MS - 1000).toISOString() }, "LAPTOP").ok, "lease: a stale lease can be taken");
   check(L({ state: "released", host: "LEAD-PC" }, "LAPTOP").ok && L(null, "LAPTOP").ok, "lease: released or none is free");
   check(pin.parseLease({ description: "held LAPTOP 123 2026-11-16T00:00:00.000Z" })?.pid === 123, "lease description parses");
+}
+
+// 1b. The lease lives in a context of the day (2026-11-22: GitHub allows 1000 statuses per commit and context; the one
+// `main-guard/lease` context filled on 2026-11-20, every renewal after it failed in silence and the lease sat 65 h old
+// under a live worker).
+{
+  const T = Date.parse("2026-11-22T10:00:00Z");
+  check(pin.leaseContextFor(T) === "main-guard/lease/20261122" && pin.leaseContextFor(T, 2) === "main-guard/lease/20261122-2", `leaseContextFor: ${pin.leaseContextFor(T)}`);
+  check(pin.isLeaseCtx("main-guard/lease") && pin.isLeaseCtx("main-guard/lease/20261122") && !pin.isLeaseCtx("main-guard/leaseholder") && !pin.isLeaseCtx("main-guard/suite"), "isLeaseCtx: the legacy context and the ones under it only");
+  // A reader takes the newest status of any lease context: the dated one beats the full legacy one.
+  const list = [
+    { context: "main-guard/lease/20261122", description: "held PC1 111 2026-11-22T09:55:00.000Z", created_at: "2026-11-22T09:55:00Z" },
+    { context: "main-guard/lease", description: "held PC1 99 2026-11-20T00:47:19.334Z", created_at: "2026-11-20T00:47:19Z" },
+    { context: "lf-probe-test", description: "probe", created_at: "2026-11-22T09:59:00Z" },
+  ];
+  const got = pin.leaseFromStatuses(list);
+  check(got?.pid === 111 && got.at === "2026-11-22T09:55:00.000Z", `leaseFromStatuses: newest lease context wins, got ${JSON.stringify(got)}`);
+  check(pin.leaseFromStatuses([list[1]])?.pid === 99, "leaseFromStatuses: a legacy-only list still reads");
+  check(pin.leaseFromStatuses([list[2]]) === null && pin.leaseFromStatuses([]) === null, "leaseFromStatuses: no lease status is null");
+  // writeLeaseChecked: lands in the dated context; a full context moves on to `-2`; another failure is returned, not swallowed.
+  const posts = [];
+  const mk = (rule) => (dir, root, ctx, state, description) => { posts.push({ ctx, state, description }); return rule(ctx); };
+  const ok = pin.writeLeaseChecked("d", "held", "PC1", 7, { now: T, root: "r", post: mk(() => ({ status: 0 })) });
+  check(ok.ok && ok.ctx === "main-guard/lease/20261122" && posts.length === 1 && posts[0].state === "held" && /^held PC1 7 2026-11-22T10:00:00/.test(posts[0].description), `writeLeaseChecked ok: ${JSON.stringify(ok)}`);
+  posts.length = 0;
+  const cap = { status: 1, stderr: "gh: Validation failed: This SHA and context has reached the maximum number of statuses. (Validation Failed)" };
+  const moved = pin.writeLeaseChecked("d", "held", "PC1", 7, { now: T, root: "r", post: mk((ctx) => (ctx.endsWith("20261122") ? cap : { status: 0 })) });
+  check(moved.ok && moved.ctx === "main-guard/lease/20261122-2" && posts.length === 2, `a full context moves on to -2: ${JSON.stringify(moved)}`);
+  posts.length = 0;
+  const bad = pin.writeLeaseChecked("d", "held", "PC1", 7, { now: T, root: "r", post: mk(() => ({ status: 1, stderr: "gh: HTTP 401 Bad credentials" })) });
+  check(!bad.ok && /401/.test(bad.why) && posts.length === 1, `another failure is returned with its reason and not retried: ${JSON.stringify(bad)}`);
+  const full = pin.writeLeaseChecked("d", "held", "PC1", 7, { now: T, root: "r", post: mk(() => cap) });
+  check(!full.ok && /maximum number of statuses/.test(full.why), "every context full: a failure with GitHub's words");
+  check(!pin.writeLeaseChecked("d", "held", "PC1", 7, { now: T, root: null, post: mk(() => ({ status: 0 })) }).ok, "no root commit: not ok");
+  const rel = pin.writeLeaseChecked("d", "released", "PC1", 7, { now: T, root: "r", post: mk(() => ({ status: 0 })) });
+  check(rel.ok && posts.at(-1).state === "released" && posts.at(-1).description === "released PC1", "released is posted as released");
 }
 
 const tmp = scratchDir("lf-guard-pin-");

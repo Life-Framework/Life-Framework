@@ -370,12 +370,13 @@ async function guardSection(root) {
     let lease;
     if (rootSha) {
       const r = await sh("gh", ["api", `repos/{owner}/{repo}/commits/${rootSha}/statuses?per_page=100`], { cwd: root, timeout: 15000 });
-      if (r.code === 0) { try { lease = pin.parseLease(JSON.parse(r.out).filter((x) => x.context === pin.LEASE_CTX).sort((x, y) => String(y.created_at).localeCompare(String(x.created_at)))[0]) ?? null; } catch {} }
+      if (r.code === 0) { try { lease = pin.leaseFromStatuses(JSON.parse(r.out)); } catch {} }
     }
     let behind = null;
     const last = g.readState(root).lastCompiled;
     if (last) { const r = await sh("git", ["-C", root, "rev-list", "--count", `${last}..origin/main`], { cwd: root, timeout: 5000 }); if (r.code === 0 && /^\d+$/.test(r.out.trim())) behind = Number(r.out.trim()); }
-    const a = guardAlert(lease, { behind, alive: g.workerAlive(root) });
+    const ls = g.readState(root);
+    const a = guardAlert(lease, { behind, alive: g.workerAlive(root), local: { beatAt: ls.beatAt, activityAt: ls.activityAt } });
     if (a) lines.push(`!! MAIN GUARD DOWN: ${a}`);
   }
   return lines;
