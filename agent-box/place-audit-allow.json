@@ -279,6 +279,12 @@
       "kind": "blocks-door",
       "layer": "Place_saint-philippe_jail.layer",
       "why": "EL_JailDoor stands where the villa's own barred cell leaf (Door_PrisonCell_E_A_Left_INT_ST_B, a child of the DoorSet) hangs; the audit reads that leaf as a door. The kit's boxed clear (Fit_saint_philippe_jail_clear_box1) hides the vanilla leaf at runtime (server log 'hid 1 vanilla props in the box'), so only the placed door remains (island-jail-breach-proof)."
+    },
+    {
+      "match": "^Fit_saint_philippe_jail_jail_outer_wing(_2)? ",
+      "kind": "blocks-door",
+      "layer": "Place_saint-philippe_jail.layer",
+      "why": "The two wing leaves of the jail gate are fixed and locked (LF_LockComponent, no breach target, no open action), overlapping by 0.5 m on purpose so the 2.7 m corridor mouth has no gap; neither swings, so each reads the other as a door in its swing (gate close-up in the PR)."
     }
   ]
 }
