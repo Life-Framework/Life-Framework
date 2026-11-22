@@ -118,6 +118,19 @@
       "request_id": "vvsz6xxui6dSa975paTE",
       "seconds": 0.83,
       "mouth": "39622998776443100"
+    },
+    "about_van": {
+      "hash": "fe376e0e6426530f",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "The van run? Take the yellow van from the post stand, load four mail sacks, drive them to the post office in Meaux and bring my van back. Back in one piece, mind. A wrecked van pays nobody.",
+      "chars": 189,
+      "chars_total": 76,
+      "request_id": "6efhGlgn21yVpwJfdCb4",
+      "seconds": 16.12,
+      "mouth": "23257999999999887410000000000001984478899999954899888446663129863332145543333110110110014589998422227999967688999743445988412221010000001224689994565467416874247624435666679976787511110000013576337877666664566666523432111100000000000010004651666677751899954367778886399975211000144348721122366543332111546653244455332211000"
     }
   },
   "voice": {

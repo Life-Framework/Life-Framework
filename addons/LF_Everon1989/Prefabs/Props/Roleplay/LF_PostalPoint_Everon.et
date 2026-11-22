@@ -1,0 +1,8 @@
+SCR_DestructibleEntity : "{881437787564A1A9}Prefabs/Jobs/LF_PostalPoint.et" {
+ ID "097313098A577CAD"
+ components {
+  LF_PostalPointComponent "{9A4EE1FFAC39F749}" {
+   m_Van "{8EBCB0ECCCADA177}Prefabs/Vehicles/LF_PostalVan.et"
+  }
+ }
+}
