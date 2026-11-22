@@ -15,9 +15,9 @@ reading a rule and picking an answer needs text; it asks nothing a world object 
 
 ## Quiz (#915)
 
-- **Player sees:** the orientation sheet, one question per page with one button per answer. After the
+- **Player sees:** the orientation sheet, one question per page with one button per answer. After each answer a feedback page says right or wrong with the rule line and a Next button (the server judges the one pick through `LF_QuizFlow.ServerCheck`; it scores nothing, the attempt is still the whole list). After the
   last answer a result page: the score, the rule behind each wrong answer and Try again, or Continue
-  to registration. Failing the last allowed attempt shows the rules, then removes the player after six
+  to registration. With an attempt limit set (shipped: none), failing the last allowed attempt shows the rules, then removes the player after six
   seconds (a kick, so they can rejoin and start over).
 - **Owner and side:** `LF_Quiz` decides on the server (who is asked, scoring, attempt count, the pass).
   `LF_QuizFlow` (`LF_QuizController.c`) moves the player between the sheet and the flow. `LF_QuizSheet`
@@ -26,7 +26,7 @@ reading a rule and picking an answer needs text; it asks nothing a world object 
   `LF_Quiz.Required` again on register and on character pick, so a client that skips the sheet is
   sent the questions again.
 - **Data:** `LF_QuizConfig` (`Configs/Rules/LF_Quiz.conf`, owner section `rulesQuiz`): `enabled`,
-  `repeatOnConnect` (ask on every connect instead of once), `passPercent` (80), `maxAttempts` (3,
+  `repeatOnConnect` (ask on every connect instead of once), `passPercent` (80), `maxAttempts` (0 = unlimited, shipped since the first-2h review: no kick; an owner may set 1 to 20,
   0 = unlimited). `LF_QuizBank` (`Configs/Rules/LF_QuizBank.conf`) holds the questions and ships none:
   the core mechanism is neutral, the flagship's five questions are the pack overlay
   `LF_Everon1989/Configs/Rules/LF_Quiz_Everon.conf` (listed in the mission header), text in the pack's

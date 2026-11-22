@@ -917,6 +917,15 @@ class LF_UIScreen
 		if (sheet && GetSkin().m_fHeight > 0)
 			FrameSlot.SetSizeY(sheet, GetSkin().m_fHeight);
 
+		// A centred card (the arrival forms): the middle of the screen, not the layout's left third.
+		if (sheet && workspace && GetSkin().m_bCentered)
+		{
+			float centreWidth = workspace.DPIUnscale(workspace.GetWidth());
+			float centreHeight = workspace.DPIUnscale(workspace.GetHeight());
+			FrameSlot.SetPosX(sheet, Math.Max(0, (centreWidth - FrameSlot.GetSizeX(sheet)) * 0.5));
+			FrameSlot.SetPosY(sheet, Math.Max(SHEET_EDGE_MARGIN, (centreHeight - FrameSlot.GetSizeY(sheet)) * 0.5));
+		}
+
 		if (sheet)
 		{
 			m_fSkinHeight = FrameSlot.GetSizeY(sheet);

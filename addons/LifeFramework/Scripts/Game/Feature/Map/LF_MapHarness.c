@@ -168,6 +168,10 @@ class LF_MapHarness
 		if (seconds < PAN_SECONDS)
 			seconds = PAN_SECONDS;
 
+		LF_MapPlacesUI places = LF_MapPlacesUI.Cast(mapEntity.GetMapUIComponent(LF_MapPlacesUI));
+		if (places)
+			places.CancelOpenView();	// the proof owns the view now: the open view must not undo it
+
 		mapEntity.ZoomPanSmooth(pixelsPerUnit, x, z, seconds);
 		LF_Debug.Info(FEATURE, string.Format("harness map pan %1 %2 zoom %3 (%4 px/m)", x, z, zoom, pixelsPerUnit));
 		detail = string.Format("panning x=%1 z=%2 zoom=%3 ppu=%4", x, z, zoom, pixelsPerUnit);
