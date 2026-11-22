@@ -14207,7 +14207,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C893332322755556}" {
      Id "LF-Sign_TaxiStand_What"
-     Target_en_us "The taxi stand: sign on for taxi work and pick up fares who need a ride across town."
+     Target_en_us "The taxi stand: sign on for taxi work and pick up fares who need a ride."
      Comment "Sign catalog 'what' text of the taxi stand's Read card (sign id taxi_stand)."
     }
     CustomStringTableItem "{84F64B2018E1B414}" {
