@@ -182,6 +182,9 @@ class LF_PlayerMenuSheet
 		else
 			LF_Debug.Warn(LF_PlayerMenuServer.FEATURE, "file not asked: no player controller");
 
+		if (s_iTab == TAB_NEXT)
+			LF_ActivityPage.Ask();
+
 		return screen;
 	}
 
@@ -363,7 +366,11 @@ class LF_PlayerMenuSheet
 		if (s_Data && s_iTab == TAB_PERSON)
 			DrawPortrait(screen);
 
-		FillList(screen, s_Data);
+		if (s_iTab == TAB_NEXT)
+			LF_ActivityPage.Fill(screen);
+		else
+			FillList(screen, s_Data);
+
 		// Focus starts on the open tab's key, so a pad user sees where they are.
 		string openTab = PART_TAB_PERSON;
 		if (s_iTab == TAB_PROGRESS)
@@ -421,6 +428,14 @@ class LF_PlayerMenuSheet
 		parts.Insert(LF_UIPart.CreateKeys(PART_TABS, names, texts));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RULE, "PlayerMenuRuleTop", string.Empty));
 		return parts;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The activities answer arrived (LF_ActivityPage): print the tab again when it is the one open.
+	static void OnActivities(bool changed)
+	{
+		if (changed && IsOpen() && s_Sheet && s_iTab == TAB_NEXT)
+			GetGame().GetCallqueue().CallLater(s_Sheet.ShowLater, 0, false);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -658,10 +673,16 @@ class LF_PlayerMenuSheet
 				return;
 
 			s_iTab = tab;
+			if (tab == TAB_NEXT)
+				LF_ActivityPage.Ask();
+
 			// The press runs inside the old sheet; build the next one after it has finished.
 			GetGame().GetCallqueue().CallLater(ShowLater, 0, false);
 			return;
 		}
+
+		if (s_iTab == TAB_NEXT && LF_ActivityPage.OnButton(s_Screen, name))
+			return;
 
 		if (name.StartsWith(ROW_SKILL))
 		{

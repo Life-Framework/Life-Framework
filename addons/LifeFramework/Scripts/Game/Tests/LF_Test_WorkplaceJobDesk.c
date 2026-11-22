@@ -1,4 +1,4 @@
-// red-proof: 2026-11-22 `tools/cli.mjs test --no-build --red LF_Test_WorkplaceJobDesk`: RED PROOF OK (RedProof() skips taking the job, so the body holds none and the take assertions fail).
+// red-proof: 2026-11-22 `tools/cli.mjs test --no-build --red LF_Test_WorkplaceJobDesk`: RED PROOF OK (RedProof() skips taking the job, so the body holds none and the take assertions fail). No-free-pickaxe assertion: 2026-11-22 island session (next-activities-proof) logged `passed mining step pickaxe (ITEM)` the moment a fresh miner took the job (SetJob gave the old free kit); with SetJob(job, false) it passes.
 //! jobs/workplace-job-desk: a gathering-job desk (miner, lumberjack, farmer) offers "Take the job" and the server puts
 //! the job on the player, and takes it off again on "Quit the job". Before 2026-11-22 nothing in play signed a player up
 //! for MINER, LUMBERJACK or FARMER, so the pickaxe and axe tills never sold. Duty desks and delivery counters keep their
@@ -8,6 +8,7 @@ class LF_Test_WorkplaceJobDesk : LF_Test
 {
 	static const ResourceName WORKPLACE = "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et";
 	static const string WORKPLACE_FILE = "$LifeFramework:Prefabs/Jobs/LF_Workplace.et";
+	static const ResourceName PICKAXE = "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et";
 	static const string UID = "workplace-job-desk-uid";
 
 	override string GetName()
@@ -45,6 +46,7 @@ class LF_Test_WorkplaceJobDesk : LF_Test
 
 			ctx.Equal(LF_EJobType.MINER, taken, "the desk signs the player up as a miner");
 			ctx.Equal(LF_EJobType.MINER, jobs.GetJob(), "the body holds the miner job");
+			ctx.False(LF_TestCharacterFixture.HasItem(body, PICKAXE), "the desk hands out no free pickaxe: it is bought at the miners' till");
 			ctx.Equal(LF_EJobType.UNEMPLOYED, LF_WorkplaceJob.Toggle(body, LF_EJobType.MINER), "the same desk lets the miner quit");
 			ctx.Equal(LF_EJobType.UNEMPLOYED, jobs.GetJob(), "the body holds no job after quitting");
 			ctx.Equal(-1, LF_WorkplaceJob.Toggle(body, LF_EJobType.UNEMPLOYED), "a desk with no gathering job does nothing");

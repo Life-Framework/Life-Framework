@@ -19,6 +19,296 @@ StringTable {
      Target_en_us "FIRST BANK OF EVERON"
      Comment "ATM terminal screen header. Upper case: a 1989 green-screen terminal."
     }
+    CustomStringTableItem "{23D113C907BA15AE}" {
+     Id "LF-Activity_Apples_Name"
+     Target_en_us "Apple harvest"
+     Comment "Activity name: apples and apple juice."
+    }
+    CustomStringTableItem "{773BFF223EC09694}" {
+     Id "LF-Activity_Apples_Orchard_Note"
+     Target_en_us "Walk to the orchard at the edge of town."
+     Comment "Apples step note, one sentence."
+    }
+    CustomStringTableItem "{B8CB34FCDC345501}" {
+     Id "LF-Activity_Apples_Orchard_Title"
+     Target_en_us "Go to the orchard"
+     Comment "Apples step title."
+    }
+    CustomStringTableItem "{F0636C599B93D427}" {
+     Id "LF-Activity_Apples_Pick_Note"
+     Target_en_us "Pick 5 apples from the trees."
+     Comment "Apples step note, one sentence."
+    }
+    CustomStringTableItem "{109065B3A458ACAD}" {
+     Id "LF-Activity_Apples_Pick_Title"
+     Target_en_us "Pick 5 apples"
+     Comment "Apples step title."
+    }
+    CustomStringTableItem "{F971CF01984EBC0C}" {
+     Id "LF-Activity_Apples_Pitch"
+     Target_en_us "Pick apples in the orchard and press them into juice."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{7194A9FEAA762DE4}" {
+     Id "LF-Activity_Apples_Press_Note"
+     Target_en_us "Press your apples into a bottle of juice at the juicer by the stall."
+     Comment "Apples step note, one sentence."
+    }
+    CustomStringTableItem "{D24C5A2BECEAFE11}" {
+     Id "LF-Activity_Apples_Press_Title"
+     Target_en_us "Press apple juice"
+     Comment "Apples step title."
+    }
+    CustomStringTableItem "{23E7D9090F843068}" {
+     Id "LF-Activity_Fishing_Catch_Note"
+     Target_en_us "Cast your line and land a fish; the dock buyer pays for every one."
+     Comment "Fishing step note, one sentence."
+    }
+    CustomStringTableItem "{1EE47B176C897B4D}" {
+     Id "LF-Activity_Fishing_Catch_Title"
+     Target_en_us "Catch a fish"
+     Comment "Fishing step title."
+    }
+    CustomStringTableItem "{09B69A863DAE3647}" {
+     Id "LF-Activity_Fishing_Name"
+     Target_en_us "Fishing"
+     Comment "Activity name."
+    }
+    CustomStringTableItem "{933A5825FAA5208F}" {
+     Id "LF-Activity_Fishing_Pitch"
+     Target_en_us "Cast a line at the pond or the cove and sell the catch at the dock."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{2A339D63A97098B6}" {
+     Id "LF-Activity_Fishing_Rod_Note"
+     Target_en_us "Buy a fishing rod at the general store."
+     Comment "Fishing step note, one sentence."
+    }
+    CustomStringTableItem "{547D45C328DE826A}" {
+     Id "LF-Activity_Fishing_Rod_Title"
+     Target_en_us "Buy a fishing rod"
+     Comment "Fishing step title."
+    }
+    CustomStringTableItem "{8C566F966FC4E5D9}" {
+     Id "LF-Activity_Fishing_Spot_Note"
+     Target_en_us "Walk to the nearest fishing spot."
+     Comment "Fishing step note, one sentence."
+    }
+    CustomStringTableItem "{9BDA23CC4D8992A0}" {
+     Id "LF-Activity_Fishing_Spot_Title"
+     Target_en_us "Go to the water"
+     Comment "Fishing step title."
+    }
+    CustomStringTableItem "{6DD6F53CECE3FDBC}" {
+     Id "LF-Activity_Lumber_Axe_Note"
+     Target_en_us "Buy an axe at the general store."
+     Comment "Lumber step note, one sentence."
+    }
+    CustomStringTableItem "{E465F8E7BDD765C3}" {
+     Id "LF-Activity_Lumber_Axe_Title"
+     Target_en_us "Buy an axe"
+     Comment "Lumber step title."
+    }
+    CustomStringTableItem "{0D663963787061DA}" {
+     Id "LF-Activity_Lumber_Fell_Note"
+     Target_en_us "Go back to the woodlot and fell a tree; every log levels Lumberjack."
+     Comment "Lumber step note, one sentence."
+    }
+    CustomStringTableItem "{A56ECC086BAAB917}" {
+     Id "LF-Activity_Lumber_Fell_Title"
+     Target_en_us "Fell a tree"
+     Comment "Lumber step title."
+    }
+    CustomStringTableItem "{1A838978EFC499AA}" {
+     Id "LF-Activity_Lumber_Job_Note"
+     Target_en_us "Take the lumberjack job at the woodlot desk."
+     Comment "Lumber step note, one sentence."
+    }
+    CustomStringTableItem "{DF2AC0C4F68AAD21}" {
+     Id "LF-Activity_Lumber_Job_Title"
+     Target_en_us "Take the lumberjack job"
+     Comment "Lumber step title."
+    }
+    CustomStringTableItem "{516B18074FEADA99}" {
+     Id "LF-Activity_Lumber_Name"
+     Target_en_us "Lumber"
+     Comment "Activity name: felling trees."
+    }
+    CustomStringTableItem "{E1C1FB079C470646}" {
+     Id "LF-Activity_Lumber_Pitch"
+     Target_en_us "Fell trees at the woodlot and sell the timber in town."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{567BDB34977B8016}" {
+     Id "LF-Activity_Medic_Clockin_Note"
+     Target_en_us "Clock in at the desk; duty pay comes while you are on shift."
+     Comment "Medic step note, one sentence."
+    }
+    CustomStringTableItem "{DD9EA2CB2C9C3154}" {
+     Id "LF-Activity_Medic_Clockin_Title"
+     Target_en_us "Clock in"
+     Comment "Medic step title."
+    }
+    CustomStringTableItem "{AF308FD9D65DB8EA}" {
+     Id "LF-Activity_Medic_Desk_Note"
+     Target_en_us "Walk to the duty desk at the clinic."
+     Comment "Medic step note, one sentence."
+    }
+    CustomStringTableItem "{8B7CB12B4167D686}" {
+     Id "LF-Activity_Medic_Desk_Title"
+     Target_en_us "Go to the clinic desk"
+     Comment "Medic step title."
+    }
+    CustomStringTableItem "{93C2081A4DB760A3}" {
+     Id "LF-Activity_Medic_Name"
+     Target_en_us "Medic duty"
+     Comment "Activity name."
+    }
+    CustomStringTableItem "{44D5E71018655F61}" {
+     Id "LF-Activity_Medic_Pitch"
+     Target_en_us "Clock in at the clinic and answer calls for a wage."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{A1503228206CA07A}" {
+     Id "LF-Activity_Mining_Car_Note"
+     Target_en_us "Take a car out of your garage; any car will do, since the rocks, the furnace and the buyer all sit on the brow."
+     Comment "Mining step note, one sentence. Skipped when a car is already out or none is owned."
+    }
+    CustomStringTableItem "{842F70CE54DD26A6}" {
+     Id "LF-Activity_Mining_Car_Title"
+     Target_en_us "Take your car out"
+     Comment "Mining step title."
+    }
+    CustomStringTableItem "{674F8388C202FEAB}" {
+     Id "LF-Activity_Mining_Drive_Note"
+     Target_en_us "Drive up to the mine on Coalman's Brow."
+     Comment "Mining step note, one sentence."
+    }
+    CustomStringTableItem "{16C98E20F3F4164F}" {
+     Id "LF-Activity_Mining_Drive_Title"
+     Target_en_us "Go to the mine"
+     Comment "Mining step title."
+    }
+    CustomStringTableItem "{683FE8FD548F55E2}" {
+     Id "LF-Activity_Mining_Job_Note"
+     Target_en_us "Take the miner job at the desk by the mine on Coalman's Brow, south-west of the square."
+     Comment "Mining step note, one sentence."
+    }
+    CustomStringTableItem "{09C26E8CEC7AD797}" {
+     Id "LF-Activity_Mining_Job_Title"
+     Target_en_us "Take the miner job"
+     Comment "Mining step title."
+    }
+    CustomStringTableItem "{43C922662CFBB2E4}" {
+     Id "LF-Activity_Mining_Name"
+     Target_en_us "Mining run"
+     Comment "Activity name: iron mining at Coalman's Brow."
+    }
+    CustomStringTableItem "{2FC28DBE70BC949C}" {
+     Id "LF-Activity_Mining_Ore_Note"
+     Target_en_us "Swing at the rust-veined rocks and pick up 3 pieces of ore; every piece levels Mining, and level 2 opens the coal licence."
+     Comment "Mining step note, one sentence, with the levelling hint."
+    }
+    CustomStringTableItem "{BBF0328175038D91}" {
+     Id "LF-Activity_Mining_Ore_Title"
+     Target_en_us "Mine 3 iron ore"
+     Comment "Mining step title."
+    }
+    CustomStringTableItem "{7AADE23D2DEEDDF3}" {
+     Id "LF-Activity_Mining_Pickaxe_Note"
+     Target_en_us "Buy a pickaxe ($150) at the miners' supply till in the hardware store."
+     Comment "Mining step note, one sentence."
+    }
+    CustomStringTableItem "{11C01B3BCF77FA16}" {
+     Id "LF-Activity_Mining_Pickaxe_Title"
+     Target_en_us "Buy a pickaxe"
+     Comment "Mining step title."
+    }
+    CustomStringTableItem "{59BB5E3FDEEBA658}" {
+     Id "LF-Activity_Mining_Pitch"
+     Target_en_us "Swing a pickaxe on Coalman's Brow, smelt the ore and sell the bars at the furnace."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{2777AEB12A56E04F}" {
+     Id "LF-Activity_Mining_Sell_Note"
+     Target_en_us "Sell the bars at the counter beside the furnace for $20 each."
+     Comment "Mining step note, one sentence."
+    }
+    CustomStringTableItem "{122ADCC1D2DD3D46}" {
+     Id "LF-Activity_Mining_Sell_Title"
+     Target_en_us "Sell your bars"
+     Comment "Mining step title."
+    }
+    CustomStringTableItem "{43FB216022439923}" {
+     Id "LF-Activity_Mining_Smelt_Note"
+     Target_en_us "Smelt the ore in the mine furnace: 3 ore make a bar, and a run takes about 4 minutes."
+     Comment "Mining step note, one sentence."
+    }
+    CustomStringTableItem "{6F8D145FBA72E000}" {
+     Id "LF-Activity_Mining_Smelt_Title"
+     Target_en_us "Smelt a bar"
+     Comment "Mining step title."
+    }
+    CustomStringTableItem "{B40DAE6878EFB15A}" {
+     Id "LF-Activity_Parcel_Depot_Note"
+     Target_en_us "Walk to the parcel counter at the post office."
+     Comment "Parcel step note, one sentence."
+    }
+    CustomStringTableItem "{7FD2C7929791AAD0}" {
+     Id "LF-Activity_Parcel_Depot_Title"
+     Target_en_us "Go to the post office"
+     Comment "Parcel step title."
+    }
+    CustomStringTableItem "{9F67BE22C4D5858D}" {
+     Id "LF-Activity_Parcel_Name"
+     Target_en_us "Parcel run"
+     Comment "Activity name: the courier's parcel round."
+    }
+    CustomStringTableItem "{577CD395B8D0F3CD}" {
+     Id "LF-Activity_Parcel_Pitch"
+     Target_en_us "Pick up a parcel at the post office and drop it at the address on the label."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{25C2D495AA6AF75C}" {
+     Id "LF-Activity_Parcel_Run_Note"
+     Target_en_us "Sign up as a courier, take a parcel and drop it at the house marked on your map."
+     Comment "Parcel step note, one sentence."
+    }
+    CustomStringTableItem "{03B1F72609E4002F}" {
+     Id "LF-Activity_Parcel_Run_Title"
+     Target_en_us "Deliver a parcel"
+     Comment "Parcel step title."
+    }
+    CustomStringTableItem "{35FC580FEECB6912}" {
+     Id "LF-Activity_Police_Clockin_Note"
+     Target_en_us "Clock in at the desk; duty pay comes while you are on shift."
+     Comment "Police step note, one sentence."
+    }
+    CustomStringTableItem "{0DFAB3037343AF60}" {
+     Id "LF-Activity_Police_Clockin_Title"
+     Target_en_us "Clock in"
+     Comment "Police step title."
+    }
+    CustomStringTableItem "{60A0477F55DE951E}" {
+     Id "LF-Activity_Police_Desk_Note"
+     Target_en_us "Walk to the duty desk at the police station."
+     Comment "Police step note, one sentence."
+    }
+    CustomStringTableItem "{BDCF159680A86463}" {
+     Id "LF-Activity_Police_Desk_Title"
+     Target_en_us "Go to the police desk"
+     Comment "Police step title."
+    }
+    CustomStringTableItem "{21CE6EAF6B3C6FF7}" {
+     Id "LF-Activity_Police_Name"
+     Target_en_us "Police duty"
+     Comment "Activity name."
+    }
+    CustomStringTableItem "{830F61711C05EB97}" {
+     Id "LF-Activity_Police_Pitch"
+     Target_en_us "Clock in at the police station and patrol for a wage."
+     Comment "Activity pitch, one line."
+    }
     CustomStringTableItem "{D260354EBA36FC1E}" {
      Id "LF-Anniversary_Memorial_Title"
      Target_en_us "The anniversary"
@@ -5219,5 +5509,6 @@ StringTable {
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
      Comment "Join notice toast at a player's first spawn of the session (#1448); the joinNotice.key of the flagship."
     }
+  }
  }
 }
