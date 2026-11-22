@@ -192,6 +192,30 @@ class LF_ActivityLiveFacts : LF_ActivityFacts
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Papers in hand: a quest that hands out the ID card is turned in, or no quest hands one out.
+	override bool Registered()
+	{
+		LF_QuestManager manager = LF_QuestManager.GetInstance();
+		if (!manager)
+			return true;
+
+		bool cardQuest = false;
+		foreach (string questId, LF_QuestDefinition def : manager.GetDefinitions())
+		{
+			if (def && def.m_bRewardIdCard)
+			{
+				cardQuest = true;
+				break;
+			}
+		}
+
+		if (!cardQuest)
+			return true;
+
+		return manager.HasEarnedIdCard(m_sUid);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override int Xp(string job)
 	{
 		return LF_JobLevels.XpOf(m_sUid, job);
@@ -338,7 +362,7 @@ class LF_ActivityGuide
 
 		LF_Debug.Info(LF_ActivityTable.FEATURE, string.Format("%1 is on %2 step %3/%4 (%5)", uid, def.m_sId, index + 1, def.StepCount(), step.m_sStepId));
 		if (startedByPlayer && !step.m_sNoteKey.IsEmpty())
-			LF_Utils.NotifyEntity(body, step.m_sNoteKey, step.m_sTitleKey, NOTE_SECONDS);
+			LF_Utils.NotifyEntity(body, step.m_sNoteKey, step.m_sTitleKey, NOTE_SECONDS, "", LF_NotificationManagerComponent.SLOT_STEP);
 
 		Mark(body, uid, def, index);
 		EnsureTicking();
@@ -364,6 +388,12 @@ class LF_ActivityGuide
 		string focus = s_mFocus.Get(uid);
 		LF_EQuestStatus status = facts.Status(focus);
 		bool focusRuns = status == LF_EQuestStatus.ACTIVE || status == LF_EQuestStatus.COMPLETED;
+		// Between two steps (the focused step was just turned in, the chain starts the next one right
+		// after): the marks stay where they are. Clearing here let the arrival guide's mark flash up
+		// before the next step's mark replaced it (review B12).
+		if (!focusRuns && BetweenSteps(focus, facts))
+			return focus;
+
 		if (!focusRuns || !LF_ActivityTable.StepOf(focus, def, index))
 		{
 			focus = AnyRunning(facts, def, index);
@@ -379,6 +409,55 @@ class LF_ActivityGuide
 		Mark(body, uid, def, index);
 		EnsureTicking();
 		return focus;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether `questId` is a turned-in activity step whose next step has not started yet: the moment
+	//! between a turn-in and the chain accepting the next step.
+	static bool BetweenSteps(string questId, notnull LF_ActivityFacts facts)
+	{
+		LF_ActivityDef def;
+		int index;
+		if (questId.IsEmpty() || !LF_ActivityTable.StepOf(questId, def, index))
+			return false;
+
+		if (facts.Status(questId) != LF_EQuestStatus.TURNED_IN || index + 1 >= def.StepCount())
+			return false;
+
+		string next = LF_ActivityTable.QuestIdOf(def.m_sId, def.m_aSteps[index + 1].m_sStepId);
+		return facts.Status(next) == LF_EQuestStatus.AVAILABLE;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the note of the step the waypoint follows, again (a rejoin or a respawn mid-run: the
+	//! player reads where they were). \return false when no activity step runs or it has no note.
+	static bool Remind(IEntity body)
+	{
+		if (!body || !Replication.IsServer())
+			return false;
+
+		LF_ActivityLiveFacts facts = new LF_ActivityLiveFacts(body);
+		string uid = facts.Uid();
+		if (uid.IsEmpty())
+			return false;
+
+		LF_ActivityDef def;
+		int index;
+		string focus = s_mFocus.Get(uid);
+		LF_EQuestStatus status = facts.Status(focus);
+		if (status != LF_EQuestStatus.ACTIVE && status != LF_EQuestStatus.COMPLETED)
+			focus = AnyRunning(facts, def, index);
+
+		if (focus.IsEmpty() || !LF_ActivityTable.StepOf(focus, def, index))
+			return false;
+
+		LF_ActivityStep step = def.m_aSteps[index];
+		if (step.m_sNoteKey.IsEmpty())
+			return false;
+
+		LF_Debug.Info(LF_ActivityTable.FEATURE, string.Format("%1 is reminded of %2 step %3", uid, def.m_sId, step.m_sStepId));
+		LF_Utils.NotifyEntity(body, step.m_sNoteKey, step.m_sTitleKey, NOTE_SECONDS, "", LF_NotificationManagerComponent.SLOT_STEP);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -430,6 +509,7 @@ class LF_ActivityGuide
 			LF_Debug.Warn(LF_ActivityTable.FEATURE, "the map mark for " + uid + " was refused; the waypoint still goes");
 
 		Sink().Mark(uid, WAYPOINT_ID, label, x, z);
+		Sink().Objective(uid, WAYPOINT_ID, step.m_sTitleKey);
 		LF_Debug.Info(LF_ActivityTable.FEATURE, string.Format("%1 is guided to %2 step %3: waypoint at %4 %5", uid, def.m_sId, step.m_sStepId, x, z));
 	}
 
@@ -442,6 +522,7 @@ class LF_ActivityGuide
 		s_mFocus.Remove(uid);
 		bool removed = LF_MapShares.Remove(KEY_PREFIX + uid);
 		Sink().Clear(uid, WAYPOINT_ID);
+		Sink().Objective(uid, WAYPOINT_ID, string.Empty);
 		if (removed)
 			LF_Debug.Info(LF_ActivityTable.FEATURE, uid + " has no activity step left: the waypoint and the map mark are cleared");
 	}

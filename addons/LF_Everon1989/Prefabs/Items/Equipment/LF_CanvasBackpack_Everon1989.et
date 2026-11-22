@@ -1,0 +1,13 @@
+GenericEntity : "{3DE0155EC9767B98}Prefabs/Items/Equipment/Backpacks/Backpack_Veshmeshok.et" {
+ ID "E55574219B1C27C0"
+ components {
+  SCR_UniversalInventoryStorageComponent "{5222CB03A40528FA}" {
+   Attributes SCR_ItemAttributeCollection "{5222CB039E9715D1}" {
+    ItemDisplayName UIInfo "{5222CB03904B414C}" {
+     Name "#LF-Everon_CanvasBackpack_Name"
+     Description "#LF-Everon_CanvasBackpack_Description"
+    }
+   }
+  }
+ }
+}

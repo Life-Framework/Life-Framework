@@ -28,3 +28,4 @@
   session verb; harness `playermenu seed` (dev gate) grants XP, cash, savings and a free house for pictures.
 - ⬜ Quest chapters: quests carry no chapter field yet, so the list groups the guided chain and the rest.
 - ✅ **Next tab** (2026-11-22): what the player can start now, with pitch, pay an hour, distance and state; **Start** / **Guide me** run a guided starter (`docs/features/activities.md`). Harness `playermenu open next`, `activities state|pick <n>|go`.
+- 🧪 **Licences row names what is held (2026-11-22, review B2).** The Person tab's "Licenses and permits" row shows "None", the names of one or two licences ("Field hand"), or "N held" with one row per licence from three up (`LF_PlayerMenuSheet.LicencesValue`); the orphan "· Field hand" line under the count is gone. The HUD cash figure re-reads the pockets every second (`LF_BetaHud.PollCash`), so a desk purchase that took cash on the server always lands on screen.

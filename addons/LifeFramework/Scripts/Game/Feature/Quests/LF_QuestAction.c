@@ -1,6 +1,9 @@
 [BaseContainerProps(configRoot: true)]
 class LF_QuestAction : ScriptedUserAction
 {
+	[Attribute("0", UIWidgets.CheckBox, "A counter clerk: the prompt shows only on the customer side, in front of the clerk, never from behind the counter")]
+	protected bool m_bCustomerSideOnly;
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
@@ -28,6 +31,9 @@ class LF_QuestAction : ScriptedUserAction
 			return false;
 
 		if (!LF_DialogueTalkAction.OnSameLevel(user, owner))
+			return false;
+
+		if (m_bCustomerSideOnly && !LF_CounterAccess.OnCustomerSide(user, owner))
 			return false;
 
 		if (vector.Distance(user.GetOrigin(), owner.GetOrigin()) > 3.0)

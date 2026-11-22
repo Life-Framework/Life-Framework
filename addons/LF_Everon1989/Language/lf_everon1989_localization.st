@@ -1694,6 +1694,26 @@ StringTable {
      Target_en_us "For rent soon"
      Comment "Door prompt on a dock workshop kept for the fishing chapter (#3204)."
     }
+    CustomStringTableItem "{2AEDD5A943FA58E7}" {
+     Id "LF-Everon_CanvasBackpackBlack_Description"
+     Target_en_us "A plain black canvas rucksack. Holds your first goods."
+     Comment "Description of the welcome-pack backpack."
+    }
+    CustomStringTableItem "{C4C007D76A4C3716}" {
+     Id "LF-Everon_CanvasBackpackBlack_Name"
+     Target_en_us "Canvas Backpack"
+     Comment "Display name of the black canvas backpack in the welcome pack (replaces the vanilla Russian name)."
+    }
+    CustomStringTableItem "{69054CE8BFE556AA}" {
+     Id "LF-Everon_CanvasBackpack_Description"
+     Target_en_us "A simple canvas rucksack with a drawstring top."
+     Comment "Description of the olive canvas backpack."
+    }
+    CustomStringTableItem "{F95638E60D3FE1B4}" {
+     Id "LF-Everon_CanvasBackpack_Name"
+     Target_en_us "Canvas Backpack"
+     Comment "Display name of the olive canvas backpack sold at the clothing store (replaces the vanilla Russian name)."
+    }
     CustomStringTableItem "{10AEFC81EF1DE6FB}" {
      Id "LF-Everon_Tier_Police_0"
      Target_en_us "No record"
@@ -3023,6 +3043,11 @@ StringTable {
      Id "LF-Quest_EveronMarket_TurnIn"
      Target_en_us "You are on your way. For steady pay, take a job: the town board lists who is hiring, and the clerk has more errands for you. Your errands and jobs are in your player menu."
      Comment "Everon arrival closing line, shown when the juice is sold (arrival_done turn-in)."
+    }
+    CustomStringTableItem "{F8112ED9A5186CE2}" {
+     Id "LF-Quest_EveronWelcomePack_Received"
+     Target_en_us "Welcome pack: your ID card, %1 in cash, bread, a sausage and a bottle of water. Your car waits in the garage at the car lot."
+     Comment "Everon arrival: toast after the clerk step listing what the welcome pack held. %1 = the cash, formatted."
     }
     CustomStringTableItem "{576D65C266994CCB}" {
      Id "LF-Quest_EveronWelcomePack_TurnIn"
@@ -5271,7 +5296,7 @@ StringTable {
     }
     CustomStringTableItem "{4DC16C48957F13C8}" {
      Id "LF-Sign_Traders_How"
-     Target_en_us "Sell Items at a stall, then move your goods into its storage. Each stall buys its own goods."
+     Target_en_us "Look at the stall and scroll: each good you carry has its own Sell row with today's price, or pick Sell all goods. Each stall buys its own goods."
      Comment "Sign card for the market stalls that buy produce, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{09F089CE1EB6773B}" {
@@ -5346,7 +5371,7 @@ StringTable {
     }
     CustomStringTableItem "{7C1E5A2D9B3F4A03}" {
      Id "LF-Sign_Wholesale_How"
-     Target_en_us "*Sell Items* at the counter: drop the goods into the crate and the clerk pays cash|Read the chalk board for today's prices"
+     Target_en_us "Look at the counter and scroll: *Sell 1* of a good or *Sell all goods*, priced on the row; the clerk pays cash|Read the chalk board for today's prices"
      Comment "Sign card for the wholesale warehouse, How section. Capitalized phrases are the action names the player sees."
     }
     CustomStringTableItem "{7C1E5A2D9B3F4A04}" {

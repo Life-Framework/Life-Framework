@@ -16,6 +16,7 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
    }
    additionalActions + {
     LF_DialogueTalkAction "{D081164C592336A8}" {
+     m_bCustomerSideOnly 1
      ParentContextList {
       "Talk"
      }

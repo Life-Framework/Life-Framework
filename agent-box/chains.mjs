@@ -60,7 +60,7 @@ export const PROBES = [
   { layer: "Survival.layer", name: "SurvivalPoint_Food", action: "LF_GatherAction" },
   { layer: "Survival.layer", name: "SurvivalPoint_Water", action: "LF_GatherAction" },
   { layer: "HousesKeys.layer", name: "House_Door_Locked", action: "SCR_DoorUserAction" },
-  { layer: "TraderChain.layer", name: "TraderChainCounter", action: "LF_OpenTraderAction" },
+  { layer: "TraderChain.layer", name: "TraderChainCounter", action: "LF_TraderSellAction" },
 ];
 
 // Crimes.layer holds the rob points. CrimeChain.layer does not.

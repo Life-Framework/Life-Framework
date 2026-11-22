@@ -2212,8 +2212,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6E9D97E2C0EE30C6}" {
      Id "LF-Activity_Guide"
-     Target_en_us "Guide me"
-     Comment "Next tab button on a running activity: put the waypoint back on its current step."
+     Target_en_us "Resume"
+     Comment "Next tab button on a running activity: put the waypoint and the step note back on its current step."
     }
     CustomStringTableItem "{917EF52F3C24A83B}" {
      Id "LF-Activity_Guided"
@@ -2229,6 +2229,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Activity_Metres"
      Target_en_us "%1 m"
      Comment "Next tab distance under a kilometre. %1 is metres."
+    }
+    CustomStringTableItem "{2AAF598BE0DFACAE}" {
+     Id "LF-Activity_NeedPapers"
+     Target_en_us "First get your papers from the clerk: the waypoint shows the way. Work opens up after that."
+     Comment "Next tab line for a newcomer who has not been registered by the clerk yet: no run can start."
     }
     CustomStringTableItem "{3471AB6ECF42E732}" {
      Id "LF-Activity_None"
@@ -2250,6 +2255,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "pay varies"
      Comment "Next tab row status when the pay an hour is not known."
     }
+    CustomStringTableItem "{2A700326525E7C6D}" {
+     Id "LF-Activity_PickedPitch"
+     Target_en_us "%1: %2"
+     Comment "Next tab detail line: the picked run and its pitch. %1 = run name, %2 = pitch."
+    }
     CustomStringTableItem "{BC67C95738DDED4A}" {
      Id "LF-Activity_Refused"
      Target_en_us "That cannot start right now."
@@ -2257,7 +2267,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AF249A8804DAF7AF}" {
      Id "LF-Activity_RowStarted"
-     Target_en_us "%1 · on"
+     Target_en_us "%1 · in progress"
      Comment "Next tab row status of a running activity. %1 is pay and distance."
     }
     CustomStringTableItem "{5B14E9465D155E95}" {
@@ -7083,6 +7093,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Food"
      Comment "HUD: label before the food number at the bottom of the screen."
     }
+    CustomStringTableItem "{6B84F81BC7DE9FB2}" {
+     Id "LF-Hud_Objective"
+     Target_en_us "Next: %1"
+     Comment "HUD objective line under the money: the step the waypoint follows. %1 = the step title."
+    }
     CustomStringTableItem "{3F5C4F04B95FDD98}" {
      Id "LF-Hud_WantedCaption"
      Target_en_us "Wanted"
@@ -8826,8 +8841,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{CA534EEB7372271B}" {
      Id "LF-LicenceDesk_NoCash"
-     Target_en_us "Refused: the fee is %1 in cash."
-     Comment "Licence desk refusal: not enough carried cash. %1 = the fee, formatted."
+     Target_en_us "Refused: the fee is %1, and your bank account and pockets hold less."
+     Comment "Licence desk refusal: the bank account plus carried cash is short of the fee. %1 = the fee, formatted."
     }
     CustomStringTableItem "{4CCA58108F1D9635}" {
      Id "LF-LicenceDesk_NotAllowed"
@@ -12077,6 +12092,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Licenses and permits: none held"
      Comment "Personal file line when no licence is held."
     }
+    CustomStringTableItem "{CC5DA475963D07AD}" {
+     Id "LF-PlayerMenu_LicencesNoneShort"
+     Target_en_us "None"
+     Comment "Personal file licences row value when the character holds none."
+    }
     CustomStringTableItem "{48A10D9CC6860A9F}" {
      Id "LF-PlayerMenu_NoName"
      Target_en_us "Name not on file"
@@ -12778,9 +12798,14 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
     }
+    CustomStringTableItem "{0A0EEB9828847F4A}" {
+     Id "LF-Process_RunningLeft"
+     Target_en_us "%1: %2 left"
+     Comment "Action row on a timed machine while it runs (first-2h review B10). %1 = the machine action (Smelt iron ore), %2 = time left as m:ss."
+    }
     CustomStringTableItem "{9D4E21B7C0A35F86}" {
      Id "LF-Process_Started"
-     Target_en_us "Running. The parts come out here in %1 seconds."
+     Target_en_us "Running. The parts come out here in %1 seconds; the time left shows on the machine, so get on with something else meanwhile."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
@@ -15828,6 +15853,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1, right here"
      Comment "Where a town board card's place is when it stands beside the board. %1 place name."
     }
+    CustomStringTableItem "{527C8125A5DCF53B}" {
+     Id "LF-Trader_NotBuyingNow"
+     Target_en_us "Not buying a single one right now"
+     Comment "Why a Sell 1 row is greyed: the buyer is full, or sells only by the lot (Sell all still works)."
+    }
+    CustomStringTableItem "{308E50CB824EB64C}" {
+     Id "LF-Trader_NothingToSell"
+     Target_en_us "You carry nothing this buyer takes"
+     Comment "Why the sell-all row is greyed: no carried good is on this buyer's list."
+    }
     CustomStringTableItem "{3C7E19B2D54A806F}" {
      Id "LF-Trader_SaleRefused"
      Target_en_us "The trader won't take that."
@@ -15837,6 +15872,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Trader_SaleRefused_Title"
      Target_en_us "No sale"
      Comment "Title of the refused-sale toast."
+    }
+    CustomStringTableItem "{683D10EE9EDCCDF2}" {
+     Id "LF-Trader_SellAll"
+     Target_en_us "Sell all goods (%1): {currency:sym}%2"
+     Comment "Trader row that sells everything the buyer takes. %1 = units, %2 = the total price."
+    }
+    CustomStringTableItem "{73CDC5E30D79E666}" {
+     Id "LF-Trader_SellAllAsk"
+     Target_en_us "Sell all goods (%1)"
+     Comment "Sell-all row before the prices arrived. %1 = units."
+    }
+    CustomStringTableItem "{544BAF6FFDCEE018}" {
+     Id "LF-Trader_SellNothing"
+     Target_en_us "Sell goods"
+     Comment "Sell-all row when the player carries nothing this buyer takes (greyed)."
+    }
+    CustomStringTableItem "{114E334DB022DD7C}" {
+     Id "LF-Trader_SellOne"
+     Target_en_us "Sell 1 %1: {currency:sym}%2"
+     Comment "Trader sell row for one item. %1 = the good, %2 = the price the buyer pays now."
+    }
+    CustomStringTableItem "{C5D743750A8BBD92}" {
+     Id "LF-Trader_SellOneAsk"
+     Target_en_us "Sell 1 %1"
+     Comment "Trader sell row for one item before the price arrived. %1 = the good."
+    }
+    CustomStringTableItem "{0C4F96543148B6FF}" {
+     Id "LF-Trader_SellRowName"
+     Target_en_us "Sell"
+     Comment "Fallback name of a trader sell row; the row shows its own good and price."
     }
     CustomStringTableItem "{B976D15E0E9B0B4B}" {
      Id "LF-Training_Course_detective_course"
@@ -16012,6 +16077,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Vehicle_NeedsRallyDlc"
      Target_en_us "This tractor needs the Rally DLC."
      Comment "Vehicle purchase refused: the lot does not sell the Rally tractor to a player without the DLC (#3304)"
+    }
+    CustomStringTableItem "{A13F2CC58EFA7C05}" {
+     Id "LF-Vehicle_OutOnLot"
+     Target_en_us "Your car, plate %1, is out on the lot. Its hazard lights are blinking and a marker sits over it for 30 seconds."
+     Comment "Toast when the garage hands a car out. %1 = the plate."
+    }
+    CustomStringTableItem "{D453CA5B325AB1E5}" {
+     Id "LF-Vehicle_OutOnLotNoPlate"
+     Target_en_us "Your car is out on the lot. Its hazard lights are blinking and a marker sits over it for 30 seconds."
+     Comment "Toast when the garage hands out a car that has no plate."
+    }
+    CustomStringTableItem "{FB09B2B3594C991F}" {
+     Id "LF-Vehicle_OutOnLotTitle"
+     Target_en_us "Your car"
+     Comment "Toast title when the garage hands a car out to its owner."
+    }
+    CustomStringTableItem "{5527F4187C4874BD}" {
+     Id "LF-Vehicle_YourCarMark"
+     Target_en_us "Your car"
+     Comment "Waypoint label over the car the garage just handed out."
     }
     CustomStringTableItem "{5E0B7D31C9A24F86}" {
      Id "LF-Wanted_BuildHidden"
