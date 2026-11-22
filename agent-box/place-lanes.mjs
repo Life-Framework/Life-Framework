@@ -270,6 +270,7 @@ const targetsOf = (room, list) => {
 export function laneRows(list, doors, kids = [], { allow = [], bounds = {} } = {}) {
   const rows = [];
   for (const room of roomsOf(list, doors, bounds)) {
+    if (room.max[0] - room.min[0] < 2 || room.max[1] - room.min[1] < 2) continue; // a payphone booth or a gate is no room (#3888)
     room.floorY = refineFloor(room, list, kids);
     const obst = obstaclesOf(room, list, kids);
     const targets = targetsOf(room, list);
@@ -479,6 +480,11 @@ export function selftest(fail = (m) => {
   }
   const stepRows = laneRows(stepList, stepDoors, [], { bounds: stepBounds });
   if (!stepRows.some((r) => r.problems.some((p) => p.kind === "crowded"))) fail("stepped shop: not crowded");
+  // A booth (a payphone, a gate) is no room (#3888): a 1.2 m square with a crate in it is "crowded" and has "no lane" by arithmetic only.
+  // red-proof: 2026-11-22, without the size skip in laneRows the selftest printed "FAILED booth: a room row for a 1.2 m booth"; restored, OK.
+  const boothList = [mk("Crate_Booth", ob([100.6, 10.5, 100.6], [0.5, 0.5, 0.5]))];
+  const boothDoors = [{ name: "Door", root: "Booth_1", rp: [100, 10, 100], box: ob([100.6, 11, 100], [0.4, 1.0, 0.05]), clip: [] }];
+  if (laneRows(boothList, boothDoors, [], { bounds: { "Booth_1@100,100": { min: [100, 100], max: [101.2, 101.2] } } }).length) fail("booth: a room row for a 1.2 m booth");
   const wallRows = [
     { name: "Wardrobe_1", layer: "t.layer", x: 108, y: 11, z: 108, problems: [{ kind: "through-wall", amount: 1, text: "stands through Office" }] },
     { name: "Bed_1", layer: "t.layer", x: 109, y: 11, z: 109, problems: [{ kind: "overlaps", amount: 1, text: "overlaps Wardrobe_1 by 0.3 m" }] },
