@@ -81,6 +81,20 @@ The drops are on the east side (a house near the district road) and four along t
 * **Pay:** between **$90 and $150** a fare by distance; a 2 km trip pays about $100. About **$600 an hour** with a steady stream of fares.
 * **Needs:** work level 3 and a real passenger seated in the cab when you drop them off.
 
+## Getting around by bus
+
+**Status:** ✅ live. Not a job: the cheap way to reach work before you own a car.
+
+* **Where:** the **bus stop** signs (a round blue bus plate on a yellow pole) at the kerb, shown on the map as **Bus stop**.
+* **How:** press **F** at the sign for **Take the bus**. The timetable lists every other stop, nearest first, with its fare
+  and the wait. Press **Buy ticket**: the fare comes out of your **cash** (not the bank).
+* **The wait:** **20 to 30 seconds** at the stop. The screen fades, and you stand beside the sign at the stop you picked.
+* **Fare:** **$15** plus about **$6 a kilometre**, never more than **$45**.
+* **Cancelled and refunded:** walk more than a few metres from the sign, get hurt or start a fight, go down, get cuffed or
+  climb into a vehicle while you wait. You get the fare back.
+* **Refused:** no ticket while dead, downed, cuffed or jailed, in a vehicle, in a fight, or wanted with the police close by.
+  After a ride, the next bus is a minute away.
+
 ## Harvest and farm
 
 **Status:** ✅ wheat harvest, vegetable plots, beehives and orchard are live. There is **no mill or bakery flour** yet.

@@ -2430,6 +2430,156 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Staff only"
      Comment "Door prompt on a building a lock marker shuts: staff only"
     }
+    CustomStringTableItem "{950C69C056C83985}" {
+     Id "LF-BusStop_Action"
+     Target_en_us "Take the bus"
+     Comment "Bus stop sign action: open the timetable."
+    }
+    CustomStringTableItem "{FBFD6EFAC0C8BAE5}" {
+     Id "LF-BusStop_Arrived"
+     Target_en_us "You get off at %1."
+     Comment "Bus toast on arrival. %1 the stop's name."
+    }
+    CustomStringTableItem "{A79746CE33D32688}" {
+     Id "LF-BusStop_Asking"
+     Target_en_us "Buying your ticket..."
+     Comment "Bus timetable: waiting for the server's answer."
+    }
+    CustomStringTableItem "{0DFD68CD0EAF9F03}" {
+     Id "LF-BusStop_Board"
+     Target_en_us "Buy ticket"
+     Comment "Bus timetable row button: pay the fare to that stop."
+    }
+    CustomStringTableItem "{877447BCF40EC4B5}" {
+     Id "LF-BusStop_Boarded"
+     Target_en_us "Ticket paid ({currency:sym}%1). The bus comes in %2 s: wait at the stop."
+     Comment "Bus ticket bought. %1 the fare, %2 seconds until it leaves."
+    }
+    CustomStringTableItem "{5AA92EECCAE01BD7}" {
+     Id "LF-BusStop_Busy"
+     Target_en_us "You already have a ticket. Wait for the bus."
+     Comment "Bus refusal: a trip is already waiting."
+    }
+    CustomStringTableItem "{157F9BBFC17C40C2}" {
+     Id "LF-BusStop_CancelHurt"
+     Target_en_us "Trouble at the stop. Fare refunded."
+     Comment "Bus toast: the wait was cancelled by damage or a fight."
+    }
+    CustomStringTableItem "{F384123F6B414805}" {
+     Id "LF-BusStop_CancelMoved"
+     Target_en_us "You left the stop. Fare refunded."
+     Comment "Bus toast: the wait was cancelled because the player walked away."
+    }
+    CustomStringTableItem "{A75E225C4DBB2344}" {
+     Id "LF-BusStop_CancelNoArrival"
+     Target_en_us "The far stop is blocked. Fare refunded."
+     Comment "Bus toast: no clear ground at the destination stop."
+    }
+    CustomStringTableItem "{C9F34037FCA484C5}" {
+     Id "LF-BusStop_CancelState"
+     Target_en_us "The bus could not take you. Fare refunded."
+     Comment "Bus toast: the wait was cancelled (downed, cuffed, in a vehicle or gone)."
+    }
+    CustomStringTableItem "{939B9C701E2737AF}" {
+     Id "LF-BusStop_Close"
+     Target_en_us "Close"
+     Comment "Bus timetable close button."
+    }
+    CustomStringTableItem "{4B1037495C5FD284}" {
+     Id "LF-BusStop_Combat"
+     Target_en_us "Not in the middle of a fight."
+     Comment "Bus refusal: player-on-player damage just now."
+    }
+    CustomStringTableItem "{90CF3A002F678C51}" {
+     Id "LF-BusStop_Cuffed"
+     Target_en_us "Not while restrained."
+     Comment "Bus refusal: cuffed, escorted or jailed."
+    }
+    CustomStringTableItem "{85574F3C6DA7EC77}" {
+     Id "LF-BusStop_Dead"
+     Target_en_us "You cannot travel like this."
+     Comment "Bus refusal: the character is dead."
+    }
+    CustomStringTableItem "{6579493E43551662}" {
+     Id "LF-BusStop_Downed"
+     Target_en_us "You are hurt too badly to travel."
+     Comment "Bus refusal: the character is downed."
+    }
+    CustomStringTableItem "{066B1C6D5DABA0CC}" {
+     Id "LF-BusStop_Driving"
+     Target_en_us "Get out of the vehicle first."
+     Comment "Bus refusal: the player is in a vehicle."
+    }
+    CustomStringTableItem "{65E44F0E76D7D99E}" {
+     Id "LF-BusStop_From"
+     Target_en_us "Timetable at %1"
+     Comment "Bus timetable: which stop this is. %1 the stop's name."
+    }
+    CustomStringTableItem "{34BE773FFD417AE1}" {
+     Id "LF-BusStop_GridNorth"
+     Target_en_us "Test yard, north stop"
+     Comment "Debug grid bus stop name."
+    }
+    CustomStringTableItem "{3A30D291DD7F9391}" {
+     Id "LF-BusStop_GridSouth"
+     Target_en_us "Test yard, south stop"
+     Comment "Debug grid bus stop name."
+    }
+    CustomStringTableItem "{2468ADE988941CE2}" {
+     Id "LF-BusStop_Intro"
+     Target_en_us "Pay the driver in cash, then wait here. Walk off, get hurt or start a fight and your fare is refunded."
+     Comment "Bus timetable: how a trip works."
+    }
+    CustomStringTableItem "{917B6AE39DA8392B}" {
+     Id "LF-BusStop_NoCash"
+     Target_en_us "You do not have the fare in cash."
+     Comment "Bus refusal: not enough cash on the character."
+    }
+    CustomStringTableItem "{94226B8949AC68DF}" {
+     Id "LF-BusStop_NoCharacter"
+     Target_en_us "You cannot travel right now."
+     Comment "Bus refusal: no character or no body."
+    }
+    CustomStringTableItem "{1279B16F553A754A}" {
+     Id "LF-BusStop_NoRoutes"
+     Target_en_us "No other stops on this line."
+     Comment "Bus timetable: the map has no other stop."
+    }
+    CustomStringTableItem "{E831F4748B626430}" {
+     Id "LF-BusStop_NoStop"
+     Target_en_us "That stop is not in service."
+     Comment "Bus refusal: a stop id does not resolve."
+    }
+    CustomStringTableItem "{ECEE3370AC404CF1}" {
+     Id "LF-BusStop_NotAtStop"
+     Target_en_us "Stand at the stop to buy a ticket."
+     Comment "Bus refusal: the player is too far from the sign."
+    }
+    CustomStringTableItem "{51E5F33D3681F447}" {
+     Id "LF-BusStop_Pursuit"
+     Target_en_us "The driver will not stop with {police} on your tail."
+     Comment "Bus refusal: wanted with an on-duty officer close."
+    }
+    CustomStringTableItem "{74EA4E2EDAE4F80C}" {
+     Id "LF-BusStop_Row"
+     Target_en_us "{currency:sym}%1, %2 s"
+     Comment "Bus timetable row: the fare and the wait to one stop. %1 the fare in cash, %2 seconds."
+    }
+    CustomStringTableItem "{BCB996F6837C3299}" {
+     Id "LF-BusStop_SameStop"
+     Target_en_us "You are already at that stop."
+     Comment "Bus refusal: the destination is this stop."
+    }
+    CustomStringTableItem "{333EA45031FB3696}" {
+     Id "LF-BusStop_Title"
+     Target_en_us "BUS STOP"
+     Comment "Printed heading of the bus timetable and the bus toasts."
+    }
+    CustomStringTableItem "{6F547920FFED03C6}" {
+     Id "LF-BusStop_TooSoon"
+     Target_en_us "The next bus is not due yet. Try again shortly."
+     Comment "Bus refusal: the request or trip cooldown."
+    }
     CustomStringTableItem "{7E1C40B2A93D5F06}" {
      Id "LF-BuyerSale_Action"
      Target_en_us "Sell the goods"
@@ -8666,6 +8816,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-MapPoi_Bank"
      Target_en_us "Bank"
      Comment "Map POI kind name (#2230): the bank."
+    }
+    CustomStringTableItem "{963CABB6216B6480}" {
+     Id "LF-MapPoi_BusStop"
+     Target_en_us "Bus stop"
+     Comment "Map place name: a bus stop."
     }
     CustomStringTableItem "{9FA312C17AB06C17}" {
      Id "LF-MapPoi_Hospital"

@@ -79,7 +79,8 @@
     "LF_WantedPostersConfig",
     "LF_WelcomeGiftConfig",
     "LF_WitnessConfig",
-    "LF_ZoneConfig"
+    "LF_ZoneConfig",
+    "LF_BusStopConfig"
   ],
   "deprecated": []
 }
