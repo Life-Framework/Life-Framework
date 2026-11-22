@@ -1,5 +1,5 @@
 // red-proof: RED-OK everon/starting-bank, observed 2026-11-22 with `tools\cli test --no-build --red LF_Test_EveronStartingBank` (pack leg): with the hook reading the core file without its pack layers the opening bank is the game mode's $1,000 and `Everon: a new character opens with $1,250` fails (expected 1250, got 1000); green without it (pack leg).
-//! A new Everon 1989 character opens with $1,250 in the bank (maintainer, 0.2.0 playtest): the cheapest
+//! A new Everon 1989 character opens with $2,000 in the bank (maintainer, 0.2.0 playtest: the starter kit plus three respawn bills): the cheapest
 //! lot car ($700 base, $560 at the flagship's buyPercent 80) + the driving licence ($100) + a pickaxe
 //! ($150), an axe ($120) and an entrenching tool ($45) cost $975, which leaves $275 for fuel and food.
 //! The figure is the pack overlay's LF_CharacterConfig.m_iStartingBank (LF_Characters_Everon1989.conf);
@@ -7,7 +7,7 @@
 [LF_TestInfo(LF_TestTier.LOGIC, pack: true)]
 class LF_Test_EveronStartingBank : LF_Test
 {
-	static const int EXPECTED_BANK = 1250;
+	static const int EXPECTED_BANK = 2000;
 	static const int GAME_MODE_DEFAULT = 1000;
 	static const ResourceName T601 = "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et";
 	//! The pack's basic hardware list: pickaxe, axe, entrenching tool.
@@ -40,7 +40,7 @@ class LF_Test_EveronStartingBank : LF_Test
 			}
 		}
 
-		ctx.Equal(EXPECTED_BANK, opening, "Everon: a new character opens with $1,250");
+		ctx.Equal(EXPECTED_BANK, opening, "Everon: a new character opens with $2,000");
 
 		// The shopping list it was sized for fits with something left over.
 		LF_VehiclePricesConfig.Reload();

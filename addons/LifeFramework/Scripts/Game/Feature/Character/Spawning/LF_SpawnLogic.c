@@ -23,7 +23,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	protected bool m_bReplacedBody;
 
 	//------------------------------------------------------------------------------------------------
-	//! A pack's LF_CharacterConfig.m_iStartingBank (Everon: $1,250) wins over m_iStartingBank when it sets one.
+	//! A pack's LF_CharacterConfig.m_iStartingBank (Everon: $2,000) wins over m_iStartingBank when it sets one.
 	int GetStartingBank()
 	{
 		return LF_DebugMoneyTopUp.StartingBank(IsDebugMoneyTopUp(), Math.Max(0, LF_CharacterConfig.StartingBank(m_iStartingBank)), m_iTopUpBankTarget);
