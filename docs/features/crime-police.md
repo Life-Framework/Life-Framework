@@ -453,6 +453,7 @@
   each connected officer's clock before expiring, so seconds that earn the promotion end the trial first. An officer
   who was offline, or on the spawn screen with no body, is left alone until a sweep finds them with a body; an admin
   who puts them back on the roster keeps them on duty. Log `[LFDebug:Police] trial of <uid> ended on duty`. Tests `police/trial-expiry-duty`, `police/trial-expiry-clock-out`.
+- 🧪 **A duty press off the roster is refused by the server, logged and toasted** (rc 0.2.0, LOGIC `police/duty-desk-roster-refusal`): `LF_DutyAction.ClientRefusal` greys only a missing account and the wrong desk; a player off the police roster now reaches `LF_DutyLocker.ClockIn`, which logs `clock-in refused for <uid>: #LF-Duty_NotOnRoster` and the desk toasts "Only officers on the police roster can clock in. Use Apply at this desk to join". Before, the client greyed it and nothing reached the server or the player.
 - ✅ Toggling keeps the account resident: `SaveAndReleaseAccount` re-caches
   the account instead of evicting it, so the officer can reopen the police
   menu and re-toggle at once.

@@ -41,27 +41,27 @@ class LF_DutyAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
 	{
-		int state = LF_AccountReplication.GetState(user);
+		string reason = ClientRefusal(LF_AccountReplication.GetState(user), GetRole());
+		if (reason.IsEmpty())
+			return true;
+
+		SetCannotPerformReason(reason);
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: why the client greys the desk, or "" to send the press to the server. A player off the police roster
+	//! is NOT greyed here (rc 0.2.0): the press reaches the server, which refuses it with a log line and a toast that
+	//! names the Apply entry at the same desk. Greying it on the client failed silently: no log, no toast.
+	static string ClientRefusal(int state, LF_Faction role)
+	{
 		if (!LF_AccountStateBits.HasAccount(state))
-		{
-			SetCannotPerformReason("#LF-Duty_NoAccount");
-			return false;
-		}
+			return "#LF-Duty_NoAccount";
 
-		if (LF_AccountStateBits.IsOnDuty(state) && LF_AccountStateBits.GetFaction(state) != GetRole())
-		{
-			SetCannotPerformReason("#LF-Duty_WrongDesk");
-			return false;
-		}
+		if (LF_AccountStateBits.IsOnDuty(state) && LF_AccountStateBits.GetFaction(state) != role)
+			return "#LF-Duty_WrongDesk";
 
-		// Only the police role has a roster; the medic desk is open to any registered player.
-		if (GetRole() == LF_Faction.POLICE && !LF_AccountStateBits.IsOnDuty(state) && !LF_AccountStateBits.IsOnRoster(state))
-		{
-			SetCannotPerformReason(LF_Terms.Text("#LF-Duty_NotOnRoster"));
-			return false;
-		}
-
-		return true;
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
