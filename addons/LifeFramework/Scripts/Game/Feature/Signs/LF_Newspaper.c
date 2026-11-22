@@ -45,9 +45,9 @@ class LF_Newspaper
 	static const string KEY_CLOSE = "#LF-Sign_Close";
 
 	//! The page fits the sheet at about this many stories; more are left off.
-	static const int MAX_STORIES = 5;
+	static const int MAX_STORIES = 5; // lf-fixed: the sheet height fits five stories
 	//! The page closes when the reader walks this far from the paper (or it is deleted).
-	static const float CLOSE_DISTANCE = 4;
+	static const float CLOSE_DISTANCE = 4; // lf-fixed: same reach as a sign card
 
 	protected static ref LF_NewspaperIssue s_Current;
 	protected static ref LF_UIScreen s_Screen;

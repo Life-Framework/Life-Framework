@@ -10184,7 +10184,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{60ED2D502AEE4A5F}" {
      Id "LF-Newspaper_BoardsBody"
-     Target_en_us "The boards in town carry the latest notices, job offers and prices. Read them before you head out."
+     Target_en_us "The notice boards carry the latest notices, job offers and prices. Read them before you head out."
      Comment "Placeholder story text."
     }
     CustomStringTableItem "{A66899FB35600F3C}" {
