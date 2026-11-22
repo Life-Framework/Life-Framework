@@ -13301,6 +13301,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You answered %1 of %2 correctly. %3 are needed. Read the rules below and try again."
      Comment "Rules quiz fail page; %1 = right, %2 = questions, %3 = needed (#915)."
     }
+    CustomStringTableItem "{2F605F4A96D729D6}" {
+     Id "LF-Quiz_Next"
+     Target_en_us "Next question"
+     Comment "Button on the rules quiz feedback page."
+    }
     CustomStringTableItem "{0D01FDAE07097973}" {
      Id "LF-Quiz_NoAttempts"
      Target_en_us "That was your last attempt. Read the server rules and join again."
@@ -13321,15 +13326,30 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Try again"
      Comment "Button on the rules quiz fail page (#915)."
     }
+    CustomStringTableItem "{34A7F3239AB0E500}" {
+     Id "LF-Quiz_Right"
+     Target_en_us "Right."
+     Comment "Heading on the rules quiz feedback page after a correct answer."
+    }
     CustomStringTableItem "{17745EEB536A35A9}" {
      Id "LF-Quiz_Rules"
      Target_en_us "THE RULES YOU MISSED"
      Comment "Heading over the explanations on the rules quiz fail page (#915)."
     }
+    CustomStringTableItem "{3599C8D083954456}" {
+     Id "LF-Quiz_SeeResult"
+     Target_en_us "See my result"
+     Comment "Button on the rules quiz feedback page after the last question."
+    }
     CustomStringTableItem "{1682AE4AD3653A8D}" {
      Id "LF-Quiz_Title"
      Target_en_us "RULES ORIENTATION"
      Comment "Printed heading of the rules quiz sheet (#915)."
+    }
+    CustomStringTableItem "{5CD3CA45AE1C3A5D}" {
+     Id "LF-Quiz_Wrong"
+     Target_en_us "Not quite. This is the rule:"
+     Comment "Heading on the rules quiz feedback page after a wrong answer; the rule line follows."
     }
     CustomStringTableItem "{6DCFAEB06DBB55B8}" {
      Id "LF-RaceBoard_None"
@@ -13601,6 +13621,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sign the form before you go into town."
      Comment "Written on the registration form when the player put it away unsigned and it came back."
     }
+    CustomStringTableItem "{DDF698E219828CF0}" {
+     Id "LF-Reg_Outfit"
+     Target_en_us "Your clothes are your own to change: visit a clothing store once you have the money."
+     Comment "Registration form hint: the look is chosen at a clothing store, not on this form."
+    }
     CustomStringTableItem "{DE4D23E044F55A7E}" {
      Id "LF-Reg_Sign"
      Target_en_us "Sign the form"
@@ -13610,6 +13635,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{A422076F6E2911FE}" {
+     Id "LF-Reg_Welcome"
+     Target_en_us "Welcome. You are about to start a new life here: get a job, earn a living and keep to the rules you just read."
+     Comment "Registration form welcome line, above the instruction. Core text is neutral; the pack overrides it."
     }
     CustomStringTableItem "{FC5B69E6943AB0F2}" {
      Id "LF-RepairKit_Action"

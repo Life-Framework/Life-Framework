@@ -102,7 +102,11 @@ try {
       // after each answer), which answered the later questions with the first answer: drop the file.
       rmSync(join(profile, "profile", "agent-box", "command.txt"), { force: true });
       console.log(stamp(), "click", `QuizOption${answer}Button`, r.status, r.detail);
-      await sleep(2500);
+      await sleep(1500);
+      // Each answer is judged first (right or wrong plus the rule); Next moves on.
+      sendCommand({ verb: "click", widget: "QuizNextButton" }, 15000);
+      rmSync(join(profile, "profile", "agent-box", "command.txt"), { force: true });
+      await sleep(1500);
     }
     await sleep(2500);
     sendCommand({ verb: "click", widget: "QuizContinueButton" }, 15000);

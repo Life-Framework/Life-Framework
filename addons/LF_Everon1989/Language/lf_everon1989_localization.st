@@ -3264,6 +3264,11 @@ StringTable {
      Target_en_us "Civil Registry of Everon, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
     }
+    CustomStringTableItem "{7F4E17D32E3F866C}" {
+     Id "LF-Reg_Welcome"
+     Target_en_us "Welcome to Everon, 1989. Sign the register and start your new life on the island: find work, earn a living and keep to the rules you just read."
+     Comment "Registration form welcome line (pack override of the neutral core row)."
+    }
     CustomStringTableItem "{1357AE90EB122FE9}" {
      Id "LF-Resident_cafe_owner_Name"
      Target_en_us "Odilon Marchand"

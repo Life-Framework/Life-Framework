@@ -47,6 +47,22 @@ class LF_UISkin
 	float m_fTypeScale = 1;
 	//! Dim and soften the world behind the sheet (the full-screen blur in LF_UIFrame.layout).
 	bool m_bBlur = true;
+	//! Put the sheet in the middle of the screen instead of the layout's left third.
+	bool m_bCentered;
+
+	//------------------------------------------------------------------------------------------------
+	//! The paper form in the middle of the screen: the arrival screens (rules quiz, registration form),
+	//! the first thing a new player sees, so the card is not pushed against the left edge.
+	//! \param height The card's resting height in reference pixels; it grows to fit its content.
+	static LF_UISkin Arrival(float height)
+	{
+		LF_UISkin skin = Paper();
+		skin.m_sName = "arrival";
+		skin.m_bCentered = true;
+		skin.m_fWidth = 600;
+		skin.m_fHeight = height;
+		return skin;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A skin made from the theme with this id (LF_UITheme.Get: empty fields inherit the paper theme).
