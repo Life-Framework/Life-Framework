@@ -1,8 +1,6 @@
 {
   "note": "Island placement findings that existed when the gate went on (#3888). May only shrink: `toolscli audit placement --world MainWorld --baseline-shrink` drops fixed rows; placement-gate-selftest fails a branch that adds one.",
   "rows": [
-    "(runtime: parked cars)|Car_Fit_saint_philippe_parked_cars_car_b03|clips",
-    "(runtime: parked cars)|Car_Fit_saint_philippe_parked_cars_car_b12|clips",
     "(shop lanes)|Room_Barn_E_03_open|crowded",
     "(shop lanes)|Room_FuelStation_E_01_building_small|lane",
     "(shop lanes)|Room_PortableCabin_E_01_white|lane",

@@ -252,6 +252,11 @@
       "why": "The display van parks at the foot of a base-map doorstep on the car lot's hillside (3 m of fall across its 5 m box); the stairs touch 2 of 9 rays by 13 cm at the wheel arch. Moving it with the kit put it into the workshop wall (tried 2026-11-21), so it stays against the steps."
     },
     {
+      "match": "^Car_Fit_saint_philippe_parked_cars_car_b12",
+      "kind": "clips",
+      "why": "The car parks under an apple tree (t_malus_domestica_2s) beside the b12 yard; the audit box is the whole tree with its crown. The slope here is steep and fenced: the island probe (town parked-cars --probe, 15 lines at 4 heights) refused all 13 other spots (net fence, 1.5 to 3 m of fall, a container, Eden walls), so the old spot stays (2026-11-22)."
+    },
+    {
       "match": "^Fit_saint_philippe_bank_lf_bank_vault ",
       "kind": "action-off-mesh",
       "layer": "Place_saint-philippe_bank.layer",
