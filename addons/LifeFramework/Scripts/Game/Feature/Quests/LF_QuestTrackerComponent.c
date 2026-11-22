@@ -282,13 +282,14 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: puts this character's current guided step on their screen and map (LF_ArrivalGuide), or
-	//! clears the marks when none is left. A spawn, a rejoin mid-quest and every turn-in call it.
-	void RefreshGuide()
+	//! clears the marks when none is left. A spawn, a rejoin mid-quest, every turn-in and the welcome
+	//! guide's "Set waypoint" button call it. Returns the quest id guided to, "" when no mark stands.
+	string RefreshGuide()
 	{
 		if (!Replication.IsServer() || !GetOwner())
-			return;
+			return string.Empty;
 
-		LF_ArrivalGuide.Refresh(OwnerUid(), GetOwner().GetOrigin(), GetTurnedInQuestIds());
+		return LF_ArrivalGuide.Refresh(OwnerUid(), GetOwner().GetOrigin(), GetTurnedInQuestIds());
 	}
 
 	//------------------------------------------------------------------------------------------------

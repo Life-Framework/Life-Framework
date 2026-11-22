@@ -3402,12 +3402,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9604C54EE7C42A8F}" {
      Id "LF-Credits_128"
-     Target_en_us "Night-shift worker's spoken lines"
+     Target_en_us "Gendarme's three lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2A31B23D96B99646}" {
      Id "LF-Credits_129"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cedric - Calm\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4698D3AC325BC21D}" {
@@ -3417,52 +3417,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{EF83CE5E501404F6}" {
      Id "LF-Credits_130"
-     Target_en_us "Old man Gaspard Lenoir's six lines"
+     Target_en_us "Dockworkers' four lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2E46C1E4691E2B33}" {
      Id "LF-Credits_131"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Delgado Stephane\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A636049B1615FBC6}" {
      Id "LF-Credits_132"
-     Target_en_us "Go-between Hugo Valmy's five spoken lines"
+     Target_en_us "Passers-by's four lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{16186E0A5EB3A7AA}" {
      Id "LF-Credits_133"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Sylvain - International english\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FE189EB428AF142A}" {
      Id "LF-Credits_134"
-     Target_en_us "Harbour master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Relocated walkers' four lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4D04FB45B8DBCE90}" {
      Id "LF-Credits_135"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Real Jeremy - Conversational\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{282E8AC7953417F3}" {
      Id "LF-Credits_136"
-     Target_en_us "MUSIC"
+     Target_en_us "Anselme's nine lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A096E2717EAFA002}" {
      Id "LF-Credits_137"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"Bacbuc - Audiobooks\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8B2E6676A5FC762}" {
      Id "LF-Credits_138"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "Mireille's nine lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4165A33B0CDDFEFA}" {
      Id "LF-Credits_139"
-     Target_en_us "\"Hitman\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alex - Warm, Empathetic, Confident\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CA6300164F63F92D}" {
@@ -3472,47 +3472,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{ADFB88278344FB5B}" {
      Id "LF-Credits_140"
-     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Target_en_us "Pierre Vasseur's"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{856667E0087DE2BB}" {
      Id "LF-Credits_141"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Kevin Nitcheu\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8A3DCF36786BA71}" {
      Id "LF-Credits_142"
-     Target_en_us "Piper"
+     Target_en_us "Helene's"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{740D77BACEA78D9C}" {
      Id "LF-Credits_143"
-     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Target_en_us "ElevenLabs text-to-speech, voice \"JP - Social media\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3CA96CAAEC9AB85D}" {
      Id "LF-Credits_144"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Shopkeepers' five lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{66D2E150BBB2BBDF}" {
      Id "LF-Credits_145"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Target_en_us "ElevenLabs text-to-speech, voice \"James - French Podcast\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{92C2B4F451409735}" {
      Id "LF-Credits_146"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Night-shift worker's spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E884C0110C5B632F}" {
      Id "LF-Credits_147"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{427FC7360D73D3A9}" {
      Id "LF-Credits_148"
-     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Target_en_us "Old man Gaspard Lenoir's six lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{CBA36637CDF4AE7F}" {
+     Id "LF-Credits_149"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E61840F28B6ADBC}" {
@@ -3520,9 +3525,94 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "CONTRIBUTORS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+    CustomStringTableItem "{D71B88C351B4EA69}" {
+     Id "LF-Credits_150"
+     Target_en_us "Go-between Hugo Valmy's five spoken lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{CDA2F516388DB3A1}" {
+     Id "LF-Credits_151"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A4F5C98AFC7B32E9}" {
+     Id "LF-Credits_152"
+     Target_en_us "Harbour master Marcel Roux's fourteen spoken lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{6D1FD16D6C772E09}" {
+     Id "LF-Credits_153"
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{1519D7ABE5844759}" {
+     Id "LF-Credits_154"
+     Target_en_us "MUSIC"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{312C6E9E98AFEA2C}" {
+     Id "LF-Credits_155"
+     Target_en_us "\"Carefree\""
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B4E1994EB6122A72}" {
+     Id "LF-Credits_156"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{E9299E95D9B8F174}" {
+     Id "LF-Credits_157"
+     Target_en_us "\"Hitman\""
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4444E26E9DCF449C}" {
+     Id "LF-Credits_158"
+     Target_en_us "Kevin MacLeod (incompetech.com), Creative Commons Attribution 4.0 (https://creativecommons.org/licenses/by/4.0/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AC305FCEA4FFD18B}" {
+     Id "LF-Credits_159"
+     Target_en_us "VOICE-OVER"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
     CustomStringTableItem "{59CAD5C15A66EDA7}" {
      Id "LF-Credits_16"
      Target_en_us "Everyone who has committed to the repository is on the GitHub contributors list, counted from the commit history."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{0625D39270A113DC}" {
+     Id "LF-Credits_160"
+     Target_en_us "Piper"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{6A3DD60E0145C890}" {
+     Id "LF-Credits_161"
+     Target_en_us "Michael Hansen / Rhasspy, MIT"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{09BDBEC3C3443456}" {
+     Id "LF-Credits_162"
+     Target_en_us "Voice en_US-ljspeech-high"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{0AB81D75DD0A7FCC}" {
+     Id "LF-Credits_163"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito), Public domain (dataset https://keithito.com/LJ-Speech-Dataset/)"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{C489B5F7558670CF}" {
+     Id "LF-Credits_164"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{2FA0C88C63E929C7}" {
+     Id "LF-Credits_165"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D24D05840A3D9820}" {
+     Id "LF-Credits_166"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD56C627EA2AD519}" {
@@ -11278,7 +11368,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8D29DF46F50BC183}" {
      Id "LF-Quest_ArrivalRegister_Desc"
-     Target_en_us "You are new in town and carry no papers. The registry clerk keeps the register: talk to them and they hand you your ID card."
+     Target_en_us "You are new in {town} and carry no papers. The registry clerk keeps the register: talk to them and they hand you your ID card."
      Comment "Arrival chain step 1: talk to the clerk, receive the ID card."
     }
     CustomStringTableItem "{002662BFCD8D20B3}" {
@@ -14377,6 +14467,141 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Weapon_Taser_Name"
      Target_en_us "Taser"
      Comment "Inventory name of the police stun pistol."
+    }
+    CustomStringTableItem "{092A6842A1A3E19E}" {
+     Id "LF-WelcomeGuide_Body1a"
+     Target_en_us "You are new in {town} and carry no papers. Your first stop is the registry clerk: he files your papers, hands you your ID card and gives you your first errands."
+     Comment "Welcome guide page 1, first paragraph: get the ID card at the clerk. Core text, no place names (the pack overrides it)."
+    }
+    CustomStringTableItem "{0C5F82D29C7B928C}" {
+     Id "LF-WelcomeGuide_Body1b"
+     Target_en_us "The quest panel says what to do next, and a waypoint with the distance shows the way to each errand. For your first minutes nobody can rob you."
+     Comment "Welcome guide page 1, second paragraph: the arrival quest marks and the grace period."
+    }
+    CustomStringTableItem "{74258C62AD985DC2}" {
+     Id "LF-WelcomeGuide_Body2a"
+     Target_en_us "Cash in your pocket is lost when you die; money in the bank is not. Put cash in or take it out at any ATM or at the bank teller."
+     Comment "Welcome guide page 2, first paragraph: cash and the bank."
+    }
+    CustomStringTableItem "{6C722FC34D331592}" {
+     Id "LF-WelcomeGuide_Body2b"
+     Target_en_us "Starter jobs pay at once. A courier run from the post office pays for every parcel you deliver, and the notice board lists every place in {town} that hires, each with a waypoint button."
+     Comment "Welcome guide page 2, second paragraph: starter jobs. Core text, no place names (the pack overrides it)."
+    }
+    CustomStringTableItem "{96A07E407C8D2B73}" {
+     Id "LF-WelcomeGuide_Body3a"
+     Target_en_us "Press M to open the map. If nothing opens, take the folded paper map out of your pack and hold it."
+     Comment "Welcome guide page 3, first paragraph: opening the map."
+    }
+    CustomStringTableItem "{B73B6D99D63DC09B}" {
+     Id "LF-WelcomeGuide_Body3b"
+     Target_en_us "Shift + Left click on the map (gamepad: hold Y, press A) sets your own waypoint; it stands in the world with the distance to it. There is one at a time. Backspace (gamepad: double-tap Y) clears it."
+     Comment "Welcome guide page 3, second paragraph: setting a waypoint on the map."
+    }
+    CustomStringTableItem "{F5C02DE4953A73B3}" {
+     Id "LF-WelcomeGuide_Body4a"
+     Target_en_us "{Police} officers and {medic:plural} are players. Anyone can sign on: press F at the duty desk in the {police} station or the clinic and clock in. Pay is handed over in cash when you clock out."
+     Comment "Welcome guide page 4, first paragraph: going on duty. Core text, no place names (the pack overrides it)."
+    }
+    CustomStringTableItem "{1C067E60B6FF0E64}" {
+     Id "LF-WelcomeGuide_Body4b"
+     Target_en_us "If you are shot you go down, not dead. A {medic} on duty can revive you; otherwise you wake in the hospital with a bill to pay at its till."
+     Comment "Welcome guide page 4, second paragraph: downed, revive, hospital bill."
+    }
+    CustomStringTableItem "{DE7156D698BB43DD}" {
+     Id "LF-WelcomeGuide_Body5a"
+     Target_en_us "The player manual explains jobs, homes, shops, the {police} and the {medic:plural} in full: life-framework.org/manual/. The server rules are in the Handbook in the pause menu (Escape)."
+     Comment "Welcome guide page 5, first paragraph: the manual link and the handbook."
+    }
+    CustomStringTableItem "{A2958ED54A2031BF}" {
+     Id "LF-WelcomeGuide_Body5b"
+     Target_en_us "Press F3 (gamepad: right bumper and Y) to open this guide again at any time. You can change the key in Settings, Controls."
+     Comment "Welcome guide page 5, second paragraph: the reopen key (LF_WelcomeGuide, chimeraInputCommon.conf)."
+    }
+    CustomStringTableItem "{B6132A753F1BF8B9}" {
+     Id "LF-WelcomeGuide_Close"
+     Target_en_us "Close"
+     Comment "Welcome guide: close button; the guide opens by itself again at the next join until Don't show again."
+    }
+    CustomStringTableItem "{AABF7919DBA9BDBB}" {
+     Id "LF-WelcomeGuide_Dismiss"
+     Target_en_us "Don't show again"
+     Comment "Welcome guide: button that stops the guide opening by itself at join; the key still opens it."
+    }
+    CustomStringTableItem "{31AE6F2A1A2047DC}" {
+     Id "LF-WelcomeGuide_Dismissed"
+     Target_en_us "The guide will not open by itself again. Press F3 to read it."
+     Comment "Toast after Don't show again."
+    }
+    CustomStringTableItem "{08C7D7374201626B}" {
+     Id "LF-WelcomeGuide_Head1"
+     Target_en_us "FIRST STEPS"
+     Comment "Welcome guide page 1 heading."
+    }
+    CustomStringTableItem "{67E6BE787D1A987F}" {
+     Id "LF-WelcomeGuide_Head2"
+     Target_en_us "MONEY"
+     Comment "Welcome guide page 2 heading."
+    }
+    CustomStringTableItem "{8CBEE5B95BE40EC0}" {
+     Id "LF-WelcomeGuide_Head3"
+     Target_en_us "THE MAP"
+     Comment "Welcome guide page 3 heading."
+    }
+    CustomStringTableItem "{17589246A8C8CBDB}" {
+     Id "LF-WelcomeGuide_Head4"
+     Target_en_us "ON DUTY"
+     Comment "Welcome guide page 4 heading."
+    }
+    CustomStringTableItem "{B533A055F306522E}" {
+     Id "LF-WelcomeGuide_Head5"
+     Target_en_us "MORE HELP"
+     Comment "Welcome guide page 5 heading."
+    }
+    CustomStringTableItem "{B591033A5B47E1C2}" {
+     Id "LF-WelcomeGuide_Key"
+     Target_en_us "Open the welcome guide"
+     Comment "Key binding name in Settings, Controls (LF_WelcomeGuide)."
+    }
+    CustomStringTableItem "{BE1FAB450ACD3FB1}" {
+     Id "LF-WelcomeGuide_Next"
+     Target_en_us "NEXT"
+     Comment "Welcome guide: button to the next page."
+    }
+    CustomStringTableItem "{D6F6871887DCCEC0}" {
+     Id "LF-WelcomeGuide_Page"
+     Target_en_us "Page %1 of %2"
+     Comment "Welcome guide: page counter under the title; %1 is this page, %2 the number of pages."
+    }
+    CustomStringTableItem "{5393776CBA6F0043}" {
+     Id "LF-WelcomeGuide_Prev"
+     Target_en_us "PREVIOUS"
+     Comment "Welcome guide: button to the page before."
+    }
+    CustomStringTableItem "{F15FD8A39C7470A1}" {
+     Id "LF-WelcomeGuide_Title"
+     Target_en_us "WELCOME"
+     Comment "Welcome guide (new players): printed title of the sheet and the title of its toasts."
+    }
+    CustomStringTableItem "{5729CB5D596F7564}" {
+     Id "LF-WelcomeGuide_Waypoint"
+     Target_en_us "Set waypoint to the clerk"
+     Comment "Welcome guide page 1 button: puts the current arrival errand (the clerk, for a new character) on the map and screen."
+    }
+    CustomStringTableItem "{B63C6D3F62307294}" {
+     Id "LF-WelcomeGuide_WaypointNoStep"
+     Target_en_us "Your arrival errands are done. Open the map (M) to set your own waypoint."
+     Comment "Toast after Set waypoint when the arrival chain is finished."
+    }
+    CustomStringTableItem "{554234D75E7B1A34}" {
+     Id "LF-WelcomeGuide_WaypointRefused"
+     Target_en_us "No waypoint now. Try again in a moment."
+     Comment "Toast after Set waypoint when the server could not set it (no body, rate limit)."
+    }
+    CustomStringTableItem "{773A3E90266AFD18}" {
+     Id "LF-WelcomeGuide_WaypointSet"
+     Target_en_us "Waypoint set: %1."
+     Comment "Toast after Set waypoint; %1 is the name of the errand's place (the clerk, for a new character)."
     }
     CustomStringTableItem "{C37C0A98B9E81B46}" {
      Id "LF-Witness_AlreadyGiven"

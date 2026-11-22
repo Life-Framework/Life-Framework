@@ -1,0 +1,76 @@
+{
+  "id": "shopkeeper_everon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "fa2b7520fee23f5f",
+      "date": "2026-11-22",
+      "voice_id": "SF4mnzAUghHAXQCNqFsU",
+      "voice_name": "James - French Podcast",
+      "model": "eleven_multilingual_v2",
+      "text": "Good day. Take what you need from the shelves and pay at the till.",
+      "chars": 66,
+      "chars_total": 26,
+      "request_id": "kiMmuqJh2biU0tRs9wrD",
+      "seconds": 3.04,
+      "mouth": "9938999932027615834857631575773499973314652577634403323542100"
+    },
+    "how_to_pay": {
+      "hash": "6cf6297332d3b005",
+      "date": "2026-11-22",
+      "voice_id": "SF4mnzAUghHAXQCNqFsU",
+      "voice_name": "James - French Podcast",
+      "model": "eleven_multilingual_v2",
+      "text": "Pick the goods up yourself, then pay at any till before you leave. You get a receipt. Walk out without paying and the alarm goes off.",
+      "chars": 133,
+      "chars_total": 53,
+      "request_id": "Mvetl0YYWMx5rLK59Qg2",
+      "seconds": 6.79,
+      "mouth": "6711432799517932594489962111001553699951597645996373278667764211000004679987955431210000379269934555313798753125667756555465442111000000"
+    },
+    "stock": {
+      "hash": "ab54f9d1c7c38983",
+      "date": "2026-11-22",
+      "voice_id": "SF4mnzAUghHAXQCNqFsU",
+      "voice_name": "James - French Podcast",
+      "model": "eleven_multilingual_v2",
+      "text": "Food and household goods on the shelves, drinks in the chilled counter. What runs out comes back from the stockroom every few minutes.",
+      "chars": 134,
+      "chars_total": 54,
+      "request_id": "7BxHlJ8aC4mRsTZHYlQo",
+      "seconds": 6.64,
+      "mouth": "3999941033221279944995499954245654499884301101469873324545244784257656510003992496658982156437731444432741255530044225213656543113100"
+    },
+    "thief": {
+      "hash": "6f4208b34f1532ea",
+      "date": "2026-11-22",
+      "voice_id": "SF4mnzAUghHAXQCNqFsU",
+      "voice_name": "James - French Podcast",
+      "model": "eleven_multilingual_v2",
+      "text": "Stop! You did not pay for that! Come back here!",
+      "chars": 47,
+      "chars_total": 19,
+      "request_id": "GKnnmSxSF9yD0BPp0fA6",
+      "seconds": 2.48,
+      "mouth": "13339995100003549946530583143665127748851387752000"
+    },
+    "bye": {
+      "hash": "db885938284a0cf1",
+      "date": "2026-11-22",
+      "voice_id": "SF4mnzAUghHAXQCNqFsU",
+      "voice_name": "James - French Podcast",
+      "model": "eleven_multilingual_v2",
+      "text": "Good day to you.",
+      "chars": 16,
+      "chars_total": 6,
+      "request_id": "9h6NlVnGVL1WdPvEVHYr",
+      "seconds": 0.92,
+      "mouth": "1673799534557865000"
+    }
+  },
+  "voice": {
+    "id": "SF4mnzAUghHAXQCNqFsU",
+    "name": "James - French Podcast",
+    "source": "voice library"
+  }
+}

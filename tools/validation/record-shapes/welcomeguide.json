@@ -1,0 +1,13 @@
+{
+  "section": "welcomeguide",
+  "class": "LF_WelcomeGuideSavePayload",
+  "version": 1,
+  "roots": "LF_WelcomeGuideRow",
+  "records": {
+    "LF_WelcomeGuideRow": {
+      "fields": [
+        "string m_sCharacterId"
+      ]
+    }
+  }
+}
