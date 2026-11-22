@@ -60,3 +60,9 @@ for the vehicle's `m_eService` (police or medic); anyone else is refused and log
 
 - **Cause:** the `driver` context is the vanilla get-in / switch-seat point at the seat (radius 25 cm), so a seated driver still had to aim at a point to see the rows; #1861 never reached the seat in a session.
 - **Now:** the two ambulance rows carry no `ParentContextList`, like the vanilla headlight toggle that always shows to the seated driver; `LF_SirenModeAction.SeatAllows` (pilot seat only) keeps them off everyone else's menu. `VisibilityRange` 2.5 m from the vehicle origin.
+
+## Fix: police siren silent in multiplayer (0.2.0 live report)
+
+- **Cause:** the police knob's rows (`m_bDutyOnly` off) called `SetModeStr`, which set the mode on the machine that ran the action and nothing else: no duty rule, no `BumpMe`, so the replicated mode never moved. On a dedicated server that machine is the server, which has no listener; the menu showed and nobody heard the siren or saw the bar. The harness `siren` verb and the proofs went through `RequestBy`, so they never hit this path.
+- **Now:** every `LF_SirenModeAction` asks the server (`RequestModeStr`: duty rule, throttle, `BumpMe`), `CanBroadcastScript` is off so clients never run a row locally, and every client (driver, passenger, bystander, late joiner via the snapshot) applies the change in `OnModeReplicated`. An off-duty driver sees the knob rows greyed with `LF-Siren_NeedPolice`. A destroyed vehicle's siren goes off for everyone (`OnVehicleDamageState`). `SetModeStr` is gone.
+- **Proof:** `sirenlights/police-knob` (WORLD).

@@ -58,6 +58,10 @@ class LF_SirenManagerComponent : ScriptComponent
 			ev.RegisterScriptHandler("OnCompartmentLeft", this, OnCompartmentLeft);
 		}
 
+		SCR_DamageManagerComponent damage = SCR_DamageManagerComponent.Cast(owner.FindComponent(SCR_DamageManagerComponent));
+		if (damage)
+			damage.GetOnDamageStateChanged().Insert(OnVehicleDamageState);
+
 		m_SoundComp = SoundComponent.Cast(owner.FindComponent(SoundComponent));
 		m_SigComp = SignalsManagerComponent.Cast(owner.FindComponent(SignalsManagerComponent));
 		if (m_Modes)
@@ -256,6 +260,26 @@ class LF_SirenManagerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a destroyed vehicle's siren goes off for everyone (no throttle, no duty rule: nobody asked).
+	void OnVehicleDamageState(EDamageState state)
+	{
+		if (state != EDamageState.DESTROYED || !Replication.IsServer() || !m_Modes)
+			return;
+
+		int off = m_Modes.Find("default");
+		if (off < 0 || off == m_CurrentModeIndex)
+			return;
+
+		m_CurrentModeIndex = off;
+		m_iLastChangeMs = GetGame().GetWorld().GetWorldTime();
+		m_bHasChanged = true;
+		m_iBroadcasts++;
+		SetMode();
+		Replication.BumpMe();
+		LF_Debug.Info("Siren", string.Format("vehicle destroyed: siren off broadcast (change #%1)", m_iBroadcasts));
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Mode changes this vehicle has broadcast since it spawned (server).
 	int GetBroadcastCount()
 	{
@@ -412,8 +436,9 @@ class LF_SirenManagerComponent : ScriptComponent
 			if (m_SoundComp && !ownSiren && mode.GetName() != "default")
 			{
 				SetSignal("animSelector", 1);
-				m_SoundComp.SoundEventBone("SOUND_VEHICLE_HORN", "Scene_Root");
+				AudioHandle horn = m_SoundComp.SoundEventBone("SOUND_VEHICLE_HORN", "Scene_Root");
 				SetSignal("animSelector", 0);
+				LF_Debug.Info("Siren", string.Format("siren sound SOUND_VEHICLE_HORN %1 for %2", m_SoundComp.IsHandleValid(horn), mode.GetSirenActive()));
 			}
 		}
 
@@ -426,20 +451,6 @@ class LF_SirenManagerComponent : ScriptComponent
 
 		UpdateLoop(modeName);
 		LF_Debug.Info("Siren", string.Format("mode -> %1 (index %2)", modeName, m_CurrentModeIndex));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	/**
-	\brief Sets mode by name. See SetMode()
-	\param name - name of the mode
-	**/
-	void SetModeStr(string name)
-	{
-		if (!m_Modes) return;
-		int nextModeIndex = m_Modes.Find(name);
-		if (nextModeIndex == m_CurrentModeIndex) return;
-		m_CurrentModeIndex = nextModeIndex;
-		SetMode();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -524,6 +535,10 @@ class LF_SirenManagerComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	override void OnDelete(IEntity owner)
 	{
+		SCR_DamageManagerComponent damage = SCR_DamageManagerComponent.Cast(owner.FindComponent(SCR_DamageManagerComponent));
+		if (damage)
+			damage.GetOnDamageStateChanged().Remove(OnVehicleDamageState);
+
 		if (m_bLoopOn)
 			GetGame().GetCallqueue().Remove(RetryLoop);
 
