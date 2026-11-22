@@ -315,6 +315,12 @@ audit checks (A), then shop rebuilds through the grid (R) and the gate (C1) once
 - **Wall lamps in a grid bay with no shell read floating** (plant store lamps, allowed with the reason). They also sat 17 cm into the 2.59 m shelves below them; they now hang over the free stretch of the -z wall.
 - **The Ural's contact box is 43 cm over the pivot, the tyres stand on the grass.** The 1 cm sheet flags it `[OFF]` and the audit passes it: a hint, not a floating truck. The tippler mesh reaches 8 m under the pivot (the shaft), so it reads `NO SUPPORT` from below.
 
+### Jail rebuild notes (#3888)
+
+- **Seat tool (`town fit`):** a floor row stays at its kit height with `"keepY": true` on the kit row. The island jail floor is 8.6 cm over the model's top surface; `lift` shifts after the snap, `keepY` skips it (`town stamp` already leaves every floor row at its grid height). The tub's kit `offset y` is 0.086 with `keepY`.
+- **A wall row keeps a move along its wall.** The seat only re-seats its depth (`town-fit-seat-selftest` "wall sideways"). The sink faces -x, so the earlier try of x -3.6 to -4.1 moved it along its facing and the wall seat undid it; a move in z (-2.7 to -3.05) is kept and cleared the door swing (-3.3 hit the yard broom). Mind which axis the row faces.
+- The jail slot is `with: police` on a street host, so it stays a `town fit` kit; the rows are four and none of the findings needed the grid.
+
 ### Hostel rebuild notes (#3888)
 
 - **A `town fit` kit needs a `stamp` block before `town author` accepts it.** The hostel kit was authored around `House_Town_E_2I02_Base.et`, the island stands the plain `House_Town_E_2I02.et`, and `town author --from` refused the mismatch. Put the island's prefab in `building.vanilla` and `stamp.prefab`, then author, extract and stamp. Renaming the bay rows (`Kit_<kit>_` to `<Shop>_`) breaks extract's pairing with the old kit rows, so the beds came back as `dressing` on an `against wall` verb: put role, verb, wall and attach back by hand before stamping.

@@ -31,8 +31,6 @@
     "Place_saint-philippe_board.layer|Fit_saint_philippe_board_sign_town_map|action-off-mesh",
     "Place_saint-philippe_cafe.layer|Fit_saint_philippe_cafe_cafe_till|action-off-mesh",
     "Place_saint-philippe_fuel.layer|Fit_saint_philippe_fuel_kiosk_shop|action-off-mesh",
-    "Place_saint-philippe_jail.layer|Fit_saint_philippe_jail_jail_kitchen_sink|blocks-door",
-    "Place_saint-philippe_jail.layer|Fit_saint_philippe_jail_jail_laundry_tub|contact",
     "Place_saint-philippe_newsagent.layer|Fit_saint_philippe_newsagent_newsagent_till|overhang",
     "Place_saint-philippe_org.layer|Fit_saint_philippe_org_registry_desk|blocks-door",
     "Place_saint-philippe_parcel-drops.layer|Fit_saint_philippe_dock_parcel_drops_drop_b05|unreachable",

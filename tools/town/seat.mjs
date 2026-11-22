@@ -485,7 +485,12 @@ export async function seatRows(rows, kitRows, host, { reader, allowClip = false,
         const tops = topsUnder(shell.surfaces, lcx, lcz).filter((y) => Math.abs(y - bottom) <= FLOOR_BAND);
         if (tops.length) {
           const top = tops.sort((a, b2) => Math.abs(a - bottom) - Math.abs(b2 - bottom))[0];
-          if (Math.abs(top - bottom) > TOL) l.y += top - bottom;
+          // `keepY` (kit row): the row's own offset y IS the island height. A floor that differs from the model's top surface
+          // (the island jail floor lies 8.6 cm above it, #3888) cannot be written as a snap, so the author states the height
+          // and the seat leaves it, the way `town stamp` leaves every floor row at its grid height.
+          if (s.keepY === true) {
+            if (Math.abs(top - bottom) > TOL) res.notes.push(`kept at the kit height (keepY): ${r3(top - bottom)} m off the model's top surface`);
+          } else if (Math.abs(top - bottom) > TOL) l.y += top - bottom;
         } else res.notes.push(`no host floor within ${FLOOR_BAND} m of its kit height under it`);
         // A host whose walkable floor lies below its model's top surface (the House_Town_E_2I02 hall tiles: 4.5 cm, measured by
         // `look contact`, #3236): the kit row says how far, as `lift` in metres (negative sinks it), applied after the snap.
