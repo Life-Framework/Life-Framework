@@ -34,6 +34,8 @@ The level is capped at 5. An arrest sentence ends with one level **removed**.
 * **Crew tills.** Where a till needs a crew, **Start the job** gathers every armed civilian within 15 m.
 * **Hospital till.** Robbing it adds +1 and rings the hospital alarm.
 
+**Everyone sees the alarm on the map.** While a till, the bank vault, the clinic cabinet or the armoury is being robbed, its badge on the map (**M**) has a **pulsing red ring with a "!"** for about three minutes after the alarm; then it turns **grey** for fifteen minutes ("Robbed recently"). Hover the badge to see when the alarm went off. Police still get their own radio call.
+
 ## Lockpicks, drills and the fence
 
 The **fence** (map name *Fence*, off the public map, in a yard just east of the square) sells crime tools **only to people with a record**:
