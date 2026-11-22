@@ -14,7 +14,7 @@ GenericEntity {
     UserActionContext "{7070D89FFB6DC884}" {
      ContextName "default"
      Position PointInfo "{7070D89FFB6DC885}" {
-      Offset 0 1.22 0.13
+      Offset 0 1.12 0.13
      }
      Radius 0.17
     }
@@ -37,6 +37,7 @@ GenericEntity {
     LF_ATMQuickAction "{AEB7CCE83D719F05}" {
      ParentContextList {
       "cash"
+      "default"
      }
      UIInfo UIInfo "{9460940D3D6280AD}" {
       Name "#LF-ATM_QuickWithdrawAllPlain"
@@ -47,6 +48,7 @@ GenericEntity {
     LF_ATMQuickAction "{41C36511C866E9EA}" {
      ParentContextList {
       "cash"
+      "default"
      }
      UIInfo UIInfo "{01908C10E9076D9F}" {
       Name "#LF-ATM_QuickWithdrawAllPlain"
@@ -57,6 +59,7 @@ GenericEntity {
     LF_ATMQuickAction "{CB0C5E7D575E7870}" {
      ParentContextList {
       "cash"
+      "default"
      }
      UIInfo UIInfo "{8254CBD8A413D687}" {
       Name "#LF-ATM_QuickWithdrawAllPlain"
@@ -87,6 +90,7 @@ GenericEntity {
     LF_ATMQuickAction "{A27F8AD1278E40D5}" {
      ParentContextList {
       "deposit"
+      "default"
      }
      UIInfo UIInfo "{039DECCEC2AE4690}" {
       Name "#LF-ATM_QuickDepositAllPlain"

@@ -139,7 +139,7 @@ class LF_PlayerJobComponent : ScriptComponent
 			LF_LicenseManagerComponent licenseManager = LF_Component<LF_LicenseManagerComponent>.Find(GetOwner());
 			if (!licenseManager || !licenseManager.HasLicense(LF_ELicenseType.POLICE_ACCESS))
 			{
-				SCR_HintManagerComponent.ShowCustomHint(
+				LF_Utils.NoteToast(
 					LF_Terms.Text("#LF-Job_NeedPoliceBadge"),
 					WidgetManager.Translate("#LF-Job_AccessDenied"),
 					5.0
@@ -154,7 +154,7 @@ class LF_PlayerJobComponent : ScriptComponent
 			LF_LicenseManagerComponent licenseManager = LF_Component<LF_LicenseManagerComponent>.Find(GetOwner());
 			if (!licenseManager || !licenseManager.HasLicense(LF_ELicenseType.MEDIC_ACCESS))
 			{
-				SCR_HintManagerComponent.ShowCustomHint(
+				LF_Utils.NoteToast(
 					WidgetManager.Translate("#LF-Job_NeedMedicCard"),
 					WidgetManager.Translate("#LF-Job_AccessDenied"),
 					5.0
@@ -198,7 +198,7 @@ class LF_PlayerJobComponent : ScriptComponent
 			string accountUid = LF_Utils.GetAccountUID(owner);
 			if (!LF_WhitelistManager.IsWhitelistedForJob(accountUid, jobType))
 			{
-				SCR_HintManagerComponent.ShowCustomHint(
+				LF_Utils.NoteToast(
 					WidgetManager.Translate("#LF-Job_NotWhitelisted"),
 					WidgetManager.Translate("#LF-Job_AccessDenied")
 				);
@@ -265,7 +265,7 @@ class LF_PlayerJobComponent : ScriptComponent
 			title = WidgetManager.Translate("#LF-Job_Hired_Title");
 		}
 		
-		SCR_HintManagerComponent.ShowCustomHint(message, title, 4.0);
+		LF_Utils.NoteToast(message, title, 4.0);
 		
 		// Give job equipment
 		if (giveEquipment)

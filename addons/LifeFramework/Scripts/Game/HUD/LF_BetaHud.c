@@ -30,6 +30,7 @@ class LF_BetaHud : SCR_InfoDisplay
 
 	protected Widget m_wBrand;
 	protected Widget m_wMoneyBlock;
+	protected Widget m_wMoneyPlate;
 	protected TextWidget m_wCash;
 	protected TextWidget m_wCashDelta;
 	protected TextWidget m_wBank;
@@ -37,6 +38,8 @@ class LF_BetaHud : SCR_InfoDisplay
 	protected TextWidget m_wWantedCaption;
 	protected ref array<Widget> m_aWantedPips = {};
 	protected Widget m_wNeeds;
+	protected ImageWidget m_wFoodIcon;
+	protected ImageWidget m_wDrinkIcon;
 	protected TextWidget m_wFoodValue;
 	protected TextWidget m_wDrinkValue;
 
@@ -206,12 +209,15 @@ class LF_BetaHud : SCR_InfoDisplay
 
 		m_wBrand = m_wRoot.FindAnyWidget("m_brand");
 		m_wMoneyBlock = m_wRoot.FindAnyWidget("m_moneyBlock");
+		m_wMoneyPlate = m_wRoot.FindAnyWidget("m_moneyPlate");
 		m_wCash = TextWidget.Cast(m_wRoot.FindAnyWidget("m_cash"));
 		m_wCashDelta = TextWidget.Cast(m_wRoot.FindAnyWidget("m_cashDelta"));
 		m_wBank = TextWidget.Cast(m_wRoot.FindAnyWidget("m_bank"));
 		m_wWanted = m_wRoot.FindAnyWidget("m_wanted");
 		m_wWantedCaption = TextWidget.Cast(m_wRoot.FindAnyWidget("m_wantedCaption"));
 		m_wNeeds = m_wRoot.FindAnyWidget("m_needs");
+		m_wFoodIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("m_foodIcon"));
+		m_wDrinkIcon = ImageWidget.Cast(m_wRoot.FindAnyWidget("m_drinkIcon"));
 		m_wFoodValue = TextWidget.Cast(m_wRoot.FindAnyWidget("m_foodValue"));
 		m_wDrinkValue = TextWidget.Cast(m_wRoot.FindAnyWidget("m_drinkValue"));
 
@@ -354,6 +360,14 @@ class LF_BetaHud : SCR_InfoDisplay
 		}
 
 		ApplyPrefs();
+		// The brand mark sat on the map's grid numbers (first-2-hours review C6): off while the map is open.
+		if (m_wBrand)
+		{
+			bool brandOn = LF_HudLogic.BrandVisible(LF_HudPrefs.Get().IsOn(LF_HudPrefs.PART_BRAND), mapOpen);
+			if (brandOn != m_wBrand.IsVisible())
+				m_wBrand.SetVisible(brandOn);
+		}
+
 		m_bMoneyForced = inventoryOpen || mapOpen;
 		PollBank();
 		PollWanted();
@@ -372,6 +386,7 @@ class LF_BetaHud : SCR_InfoDisplay
 		m_sPrefsLine = line;
 		if (m_wBrand) m_wBrand.SetVisible(prefs.IsOn(LF_HudPrefs.PART_BRAND));
 		if (m_wMoneyBlock) m_wMoneyBlock.SetVisible(prefs.IsOn(LF_HudPrefs.PART_MONEY));
+		if (m_wMoneyPlate) m_wMoneyPlate.SetVisible(prefs.IsOn(LF_HudPrefs.PART_MONEY));
 		if (m_wWanted) m_wWanted.SetVisible(prefs.IsOn(LF_HudPrefs.PART_WANTED));
 		if (m_wNeeds) m_wNeeds.SetVisible(prefs.IsOn(LF_HudPrefs.PART_NEEDS));
 	}
@@ -454,8 +469,8 @@ class LF_BetaHud : SCR_InfoDisplay
 
 			m_iHunger = hunger;
 			m_iThirst = thirst;
-			SetNeed(m_wFoodValue, hunger);
-			SetNeed(m_wDrinkValue, thirst);
+			SetNeed(m_wFoodValue, m_wFoodIcon, hunger);
+			SetNeed(m_wDrinkValue, m_wDrinkIcon, thirst);
 		}
 
 		bool show = LF_HudLogic.NeedsVisible(m_iHunger, m_iThirst, m_fNeedRiseAge);
@@ -470,16 +485,26 @@ class LF_BetaHud : SCR_InfoDisplay
 	}
 
 	//---------------------------------------------------------------------
-	protected void SetNeed(TextWidget value, int points)
+	//! One need: its figure and icon. Under NEED_SHOW_BELOW the pair reads full strength (red once low); a need
+	//! still above it fades back, so the icon that matters is the one the eye finds (first-2-hours review C15).
+	protected void SetNeed(TextWidget value, ImageWidget icon, int points)
 	{
 		if (!value)
 			return;
 
 		value.SetText(LF_HudLogic.NeedText(points));
+		Color tint = Color.FromRGBA(245, 242, 235, 255);
 		if (LF_HudLogic.NeedLow(points))
-			value.SetColor(Color.FromRGBA(235, 95, 85, 255));
-		else
-			value.SetColor(Color.FromRGBA(245, 242, 235, 255));
+			tint = Color.FromRGBA(235, 95, 85, 255);
+
+		value.SetColor(tint);
+		float opacity = LF_HudLogic.NeedOpacity(points);
+		value.SetOpacity(opacity);
+		if (icon)
+		{
+			icon.SetColor(tint);
+			icon.SetOpacity(opacity);
+		}
 	}
 
 	//---------------------------------------------------------------------
@@ -501,6 +526,9 @@ class LF_BetaHud : SCR_InfoDisplay
 
 		m_fMoneyOpacity = target;
 		AnimateWidget.Opacity(m_wMoneyBlock, target, UIConstants.FADE_RATE_SLOW);
+		if (m_wMoneyPlate)
+			AnimateWidget.Opacity(m_wMoneyPlate, target, UIConstants.FADE_RATE_SLOW);
+
 		if (m_wWanted && m_iWanted > 0)
 			AnimateWidget.Opacity(m_wWanted, Math.Max(target, 0.7), UIConstants.FADE_RATE_SLOW);
 	}
