@@ -233,7 +233,8 @@ class LF_QuestTrackerComponent : ScriptComponent
 		else if (chained)
 		{
 			LF_Debug.Log("Quests", string.Format("accepted quest=%1 (chain step)", questId));
-			Notify(def.m_sDescriptionKey, def.m_sTitleKey, STORY_SECONDS);
+			// The next step's errand replaces the last step's note (only the current step shows).
+			Notify(def.m_sDescriptionKey, def.m_sTitleKey, STORY_SECONDS, LF_NotificationManagerComponent.SLOT_STEP);
 		}
 		else
 		{
@@ -1083,7 +1084,7 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: a toast for the owning player (EL notification toast, the same path as job pay).
-	protected void Notify(string message, string title, float duration = 4.0)
+	protected void Notify(string message, string title, float duration = 4.0, string slot = "")
 	{
 		if (!Replication.IsServer())
 			return;
@@ -1095,6 +1096,6 @@ class LF_QuestTrackerComponent : ScriptComponent
 			return;
 		}
 
-		LF_Utils.NotifyEntity(GetOwner(), message, title, duration);
+		LF_Utils.NotifyEntity(GetOwner(), message, title, duration, "", slot);
 	}
 }

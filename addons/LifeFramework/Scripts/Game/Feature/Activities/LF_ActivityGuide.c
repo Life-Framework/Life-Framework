@@ -338,7 +338,7 @@ class LF_ActivityGuide
 
 		LF_Debug.Info(LF_ActivityTable.FEATURE, string.Format("%1 is on %2 step %3/%4 (%5)", uid, def.m_sId, index + 1, def.StepCount(), step.m_sStepId));
 		if (startedByPlayer && !step.m_sNoteKey.IsEmpty())
-			LF_Utils.NotifyEntity(body, step.m_sNoteKey, step.m_sTitleKey, NOTE_SECONDS);
+			LF_Utils.NotifyEntity(body, step.m_sNoteKey, step.m_sTitleKey, NOTE_SECONDS, "", LF_NotificationManagerComponent.SLOT_STEP);
 
 		Mark(body, uid, def, index);
 		EnsureTicking();

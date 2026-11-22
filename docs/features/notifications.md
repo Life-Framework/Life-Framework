@@ -43,3 +43,4 @@
 
 - ✅ `LF_NotificationHold.Hold(true|false)`: a full-screen sheet (the personal file) puts every toast away while it is
   open; toasts made meanwhile wait hidden and show on release with their own remaining time.
+- 🧪 (2026-11-22, first-2h review B4) **Step notes replace each other.** A toast can carry a slot (`LF_Utils.NotifyEntity(..., slot)`, through `NotifyPlayer`, `LF_DeliverNotification` and the owner RPC). A new toast in a slot removes the one still showing there before it is created, so it stacks where the old one stood. The quest system's chain-step errand and the activity guide's step note use `LF_NotificationManagerComponent.SLOT_STEP`, so only the current step's note shows ("Take your car out" no longer sits under "Go to the mine" when the car step passes at once).
