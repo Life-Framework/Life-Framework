@@ -1,6 +1,6 @@
 //------------------------------------------------------------------------------------------------
 //! The licence desk (#1766, #1069): a player applies for the firearm permit in person, pays the fee
-//! in carried cash, and collects the permit at the same desk once one in-game day has passed. Police
+//! from the bank account, then carried cash, and collects the permit at the same desk once one in-game day has passed. Police
 //! on duty revoke it face to face (LF_LicenceRevokeRole).
 //!
 //! RULES (maintainer, 2026-11-16). The fee is LF_LicencesConfig.PermitFee(). The record must be
@@ -18,7 +18,7 @@
 //! list the store already saves. A revoke rewrites that list and drops any open application.
 //!
 //! DRIVING LICENCE (#3128). The same desk sells the driving licence at once for
-//! LF_LicencesConfig.DriverLicenceFee() in carried cash: no record check and no wait (BuyDrivingFor).
+//! LF_LicencesConfig.DriverLicenceFee() from the bank account, then carried cash: no record check and no wait (BuyDrivingFor).
 //! It is saved in the same licence list. No car lot asks for it yet.
 //------------------------------------------------------------------------------------------------
 enum LF_ELicenceDesk
@@ -41,6 +41,15 @@ enum LF_ELicenceDesk
 //------------------------------------------------------------------------------------------------
 class LF_LicenceDesk
 {
+	//------------------------------------------------------------------------------------------------
+	//! Pure: whether the "Buy a driving license" row shows. A newcomer with no ID card gets no row
+	//! (no papers, no licence): at the town hall the clerk's Talk row is then the first and only one,
+	//! so nobody buys a licence by accident before the clerk (first-2-hours review A7).
+	static bool DrivingRowShown(bool systemOn, bool holdsLicence, int cardsCarried)
+	{
+		return systemOn && !holdsLicence && cardsCarried > 0;
+	}
+
 	static const string FEATURE = "License";
 	static const LF_ELicenseType PERMIT = LF_ELicenseType.FIREARM_PERMIT;
 	static const LF_ELicenseType DRIVING = LF_ELicenseType.DRIVING_LICENCE;
@@ -213,11 +222,11 @@ class LF_LicenceDesk
 	//! Server: buy the driving licence, by the player's own account. See BuyDrivingFor.
 	static LF_ELicenceDesk BuyDriving(IEntity player)
 	{
-		return BuyDrivingFor(player, LF_Utils.GetPlayerUID(player), new LF_EntityCashWallet(player, LEDGER_REASON, string.Empty));
+		return BuyDrivingFor(player, LF_Utils.GetPlayerUID(player), new LF_LicenceFeeWallet(player, LF_Utils.GetPlayerUID(player), LEDGER_REASON));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: sell the driving licence at once for the fee in carried cash (#3128). No record check,
+	//! Server: sell the driving licence at once for the fee (the bank account first, then carried cash) (#3128). No record check,
 	//! no wait. Refused when already held, short of cash (nothing taken) or below the licence's gate.
 	//! The fee is taken first and given back if the grant fails, so a refusal never keeps cash. Each
 	//! call runs to the end on the server, so a second request in the same frame sees the licence held.
@@ -321,7 +330,7 @@ class LF_LicenceDesk
 	//! Server: one visit to the desk, by the player's own account. See VisitFor.
 	static LF_ELicenceDesk Visit(IEntity player, out int minutesLeft)
 	{
-		return VisitFor(player, LF_Utils.GetPlayerUID(player), new LF_EntityCashWallet(player, LEDGER_REASON, string.Empty), minutesLeft);
+		return VisitFor(player, LF_Utils.GetPlayerUID(player), new LF_LicenceFeeWallet(player, LF_Utils.GetPlayerUID(player), LEDGER_REASON), minutesLeft);
 	}
 
 	//------------------------------------------------------------------------------------------------

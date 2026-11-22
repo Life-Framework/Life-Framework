@@ -9,7 +9,7 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 // feature tag) for the juice and no `SCRIPT (E)`.
 const SQUARE = { x: 205, y: 0.3, z: 236.5 };
 const STALLS = [
-  { stall: "veg", x: 197.4, z: 233.5, checks: [["TraderChainCounter", "LF_OpenTraderAction"]] },
+  { stall: "veg", x: 197.4, z: 233.5, checks: [["TraderChainCounter", "LF_TraderSellAction"]] },
   { stall: "fruit", x: 206.4, z: 233.5, checks: [["AppleTradeContainer", "LF_OpenTraderAction"], ["PlumTradeContainer", "LF_OpenTraderAction"]] },
   { stall: "juice", x: 215.4, z: 233.5, checks: [["AppleProcessor", "LF_ProcessAction"], ["AppleTradeContainer3", "LF_OpenTraderAction"]] },
 ];

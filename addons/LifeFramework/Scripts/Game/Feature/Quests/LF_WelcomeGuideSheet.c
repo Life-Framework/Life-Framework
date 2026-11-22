@@ -27,6 +27,9 @@ class LF_WelcomeGuideSheet
 	static const int AUTO_MAX_TRIES = 60; // lf-fixed: UI give-up; the next join tries again
 	static const float TOAST_SECONDS = 6; // lf-fixed: toast length like the other sheets
 
+	//! The paragraph that names the starting balance (%1 is filled from the config, A4).
+	static const string KEY_MONEY = "#LF-WelcomeGuide_Body2a";
+
 	//! Pages; PageKeys holds each one's heading and paragraph keys.
 	static const int PAGES = 5;
 
@@ -84,6 +87,28 @@ class LF_WelcomeGuideSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The opening bank a new character gets, read from the live config: the game mode's figure, which a
+	//! pack's LF_CharacterConfig overlay replaces (Everon: $2,000). The guide never states a number of its own.
+	static int StartingBank()
+	{
+		LF_SpawnLogic logic = LF_SpawnLogic.GetInstance();
+		if (logic)
+			return logic.GetStartingBank();
+
+		return Math.Max(0, LF_CharacterConfig.StartingBank(0));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One paragraph's text: the money paragraph (page 2) carries the starting bank as %1, formatted like the HUD ($2,000).
+	static string BodyText(string key)
+	{
+		if (key == KEY_MONEY)
+			return LF_Terms.Text(key, LF_MoneyFormat.FormatMoney(StartingBank()));
+
+		return LF_Terms.Text(key);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The parts of one page. Page 0 carries "Set waypoint"; the nav row drops Previous on the first
 	//! page and Next on the last.
 	static array<ref LF_UIPart> BuildParts(int page)
@@ -101,7 +126,7 @@ class LF_WelcomeGuideSheet
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.HEADING, PART_HEADING, LF_Terms.Text(keys[0])));
 		for (int i = 1; i < keys.Count(); i++)
 		{
-			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RICH, PART_BODY + i.ToString(), LF_Terms.Text(keys[i])).InBody());
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RICH, PART_BODY + i.ToString(), BodyText(keys[i])).InBody());
 		}
 
 		if (page == 0)

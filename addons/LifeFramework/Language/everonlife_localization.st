@@ -2212,8 +2212,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6E9D97E2C0EE30C6}" {
      Id "LF-Activity_Guide"
-     Target_en_us "Guide me"
-     Comment "Next tab button on a running activity: put the waypoint back on its current step."
+     Target_en_us "Resume"
+     Comment "Next tab button on a running activity: put the waypoint and the step note back on its current step."
     }
     CustomStringTableItem "{917EF52F3C24A83B}" {
      Id "LF-Activity_Guided"
@@ -2229,6 +2229,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Activity_Metres"
      Target_en_us "%1 m"
      Comment "Next tab distance under a kilometre. %1 is metres."
+    }
+    CustomStringTableItem "{2AAF598BE0DFACAE}" {
+     Id "LF-Activity_NeedPapers"
+     Target_en_us "First get your papers from the clerk: the waypoint shows the way. Work opens up after that."
+     Comment "Next tab line for a newcomer who has not been registered by the clerk yet: no run can start."
     }
     CustomStringTableItem "{3471AB6ECF42E732}" {
      Id "LF-Activity_None"
@@ -2250,6 +2255,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "pay varies"
      Comment "Next tab row status when the pay an hour is not known."
     }
+    CustomStringTableItem "{2A700326525E7C6D}" {
+     Id "LF-Activity_PickedPitch"
+     Target_en_us "%1: %2"
+     Comment "Next tab detail line: the picked run and its pitch. %1 = run name, %2 = pitch."
+    }
     CustomStringTableItem "{BC67C95738DDED4A}" {
      Id "LF-Activity_Refused"
      Target_en_us "That cannot start right now."
@@ -2257,7 +2267,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AF249A8804DAF7AF}" {
      Id "LF-Activity_RowStarted"
-     Target_en_us "%1 · on"
+     Target_en_us "%1 · in progress"
      Comment "Next tab row status of a running activity. %1 is pay and distance."
     }
     CustomStringTableItem "{5B14E9465D155E95}" {
@@ -7083,6 +7093,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Food"
      Comment "HUD: label before the food number at the bottom of the screen."
     }
+    CustomStringTableItem "{6B84F81BC7DE9FB2}" {
+     Id "LF-Hud_Objective"
+     Target_en_us "Next: %1"
+     Comment "HUD objective line under the money: the step the waypoint follows. %1 = the step title."
+    }
     CustomStringTableItem "{3F5C4F04B95FDD98}" {
      Id "LF-Hud_WantedCaption"
      Target_en_us "Wanted"
@@ -8218,6 +8233,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Fare"
      Comment "Map mark and waypoint label: the destination of an accepted taxi fare (driver and passenger)."
     }
+    CustomStringTableItem "{6B2C5C7E28A957E6}" {
+     Id "LF-JobMap_PostLoad"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run starts at (the pack names it)."
+    }
+    CustomStringTableItem "{74032FC49746CAB7}" {
+     Id "LF-JobMap_PostReturn"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run returns the van to (the pack names it)."
+    }
+    CustomStringTableItem "{78DC7678389C4C63}" {
+     Id "LF-JobMap_PostUnload"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run delivers to (the pack names it)."
+    }
     CustomStringTableItem "{8C41F6B2A09D3E75}" {
      Id "LF-JobMap_Stop"
      Target_en_us "Delivery stop"
@@ -8811,8 +8841,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{CA534EEB7372271B}" {
      Id "LF-LicenceDesk_NoCash"
-     Target_en_us "Refused: the fee is %1 in cash."
-     Comment "Licence desk refusal: not enough carried cash. %1 = the fee, formatted."
+     Target_en_us "Refused: the fee is %1, and your bank account and pockets hold less."
+     Comment "Licence desk refusal: the bank account plus carried cash is short of the fee. %1 = the fee, formatted."
     }
     CustomStringTableItem "{4CCA58108F1D9635}" {
      Id "LF-LicenceDesk_NotAllowed"
@@ -12062,6 +12092,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Licenses and permits: none held"
      Comment "Personal file line when no licence is held."
     }
+    CustomStringTableItem "{CC5DA475963D07AD}" {
+     Id "LF-PlayerMenu_LicencesNoneShort"
+     Target_en_us "None"
+     Comment "Personal file licences row value when the character holds none."
+    }
     CustomStringTableItem "{48A10D9CC6860A9F}" {
      Id "LF-PlayerMenu_NoName"
      Target_en_us "Name not on file"
@@ -12710,12 +12745,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3C66967567AE5B29}" {
      Id "LF-Postal_StartDesc"
-     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back."
+     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back. A run handed in too fast pays nothing."
      Comment "Description of the action that starts the postal van run."
     }
     CustomStringTableItem "{5B2665B387B8B998}" {
      Id "LF-Postal_Started"
-     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here."
+     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here. Hand the run in after at least %1 minutes, or nothing is paid."
      Comment "Toast of the postal van run: the run began."
     }
     CustomStringTableItem "{108D5BC1F68C84DF}" {
@@ -12725,7 +12760,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1A0210D5BCC4C762}" {
      Id "LF-Postal_TooFast"
-     Target_en_us "That was too fast to be honest work. Nothing is paid yet."
+     Target_en_us "Too fast: a postal run pays only after %1 minutes on the road. Nothing is paid yet. Hand it in again later."
      Comment "Toast of the postal van run: handed in faster than the run's least time."
     }
     CustomStringTableItem "{EA1D8BDBDABE7D01}" {
@@ -12737,6 +12772,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Postal_VanFar"
      Target_en_us "Bring the van closer to the office first."
      Comment "Toast of the postal van run: the van is not at the office."
+    }
+    CustomStringTableItem "{CBCD8E065CD8DCBC}" {
+     Id "LF-Postal_Warn"
+     Target_en_us "Get back to the post van within %1 seconds or the run is called off and nothing is paid."
+     Comment "Toast to a postal driver who has walked away from the van, before the run is called off."
     }
     CustomStringTableItem "{3243A56EDB316D6E}" {
      Id "LF-Postal_WrongOffice"
@@ -13301,6 +13341,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You answered %1 of %2 correctly. %3 are needed. Read the rules below and try again."
      Comment "Rules quiz fail page; %1 = right, %2 = questions, %3 = needed (#915)."
     }
+    CustomStringTableItem "{2F605F4A96D729D6}" {
+     Id "LF-Quiz_Next"
+     Target_en_us "Next question"
+     Comment "Button on the rules quiz feedback page."
+    }
     CustomStringTableItem "{0D01FDAE07097973}" {
      Id "LF-Quiz_NoAttempts"
      Target_en_us "That was your last attempt. Read the server rules and join again."
@@ -13321,15 +13366,30 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Try again"
      Comment "Button on the rules quiz fail page (#915)."
     }
+    CustomStringTableItem "{34A7F3239AB0E500}" {
+     Id "LF-Quiz_Right"
+     Target_en_us "Right."
+     Comment "Heading on the rules quiz feedback page after a correct answer."
+    }
     CustomStringTableItem "{17745EEB536A35A9}" {
      Id "LF-Quiz_Rules"
      Target_en_us "THE RULES YOU MISSED"
      Comment "Heading over the explanations on the rules quiz fail page (#915)."
     }
+    CustomStringTableItem "{3599C8D083954456}" {
+     Id "LF-Quiz_SeeResult"
+     Target_en_us "See my result"
+     Comment "Button on the rules quiz feedback page after the last question."
+    }
     CustomStringTableItem "{1682AE4AD3653A8D}" {
      Id "LF-Quiz_Title"
      Target_en_us "RULES ORIENTATION"
      Comment "Printed heading of the rules quiz sheet (#915)."
+    }
+    CustomStringTableItem "{5CD3CA45AE1C3A5D}" {
+     Id "LF-Quiz_Wrong"
+     Target_en_us "Not quite. This is the rule:"
+     Comment "Heading on the rules quiz feedback page after a wrong answer; the rule line follows."
     }
     CustomStringTableItem "{6DCFAEB06DBB55B8}" {
      Id "LF-RaceBoard_None"
@@ -13601,6 +13661,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sign the form before you go into town."
      Comment "Written on the registration form when the player put it away unsigned and it came back."
     }
+    CustomStringTableItem "{DDF698E219828CF0}" {
+     Id "LF-Reg_Outfit"
+     Target_en_us "Your clothes are your own to change: visit a clothing store once you have the money."
+     Comment "Registration form hint: the look is chosen at a clothing store, not on this form."
+    }
     CustomStringTableItem "{DE4D23E044F55A7E}" {
      Id "LF-Reg_Sign"
      Target_en_us "Sign the form"
@@ -13610,6 +13675,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{A422076F6E2911FE}" {
+     Id "LF-Reg_Welcome"
+     Target_en_us "Welcome. You are about to start a new life here: get a job, earn a living and keep to the rules you just read."
+     Comment "Registration form welcome line, above the instruction. Core text is neutral; the pack overrides it."
     }
     CustomStringTableItem "{FC5B69E6943AB0F2}" {
      Id "LF-RepairKit_Action"
@@ -15778,6 +15848,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1, right here"
      Comment "Where a town board card's place is when it stands beside the board. %1 place name."
     }
+    CustomStringTableItem "{527C8125A5DCF53B}" {
+     Id "LF-Trader_NotBuyingNow"
+     Target_en_us "Not buying a single one right now"
+     Comment "Why a Sell 1 row is greyed: the buyer is full, or sells only by the lot (Sell all still works)."
+    }
+    CustomStringTableItem "{308E50CB824EB64C}" {
+     Id "LF-Trader_NothingToSell"
+     Target_en_us "You carry nothing this buyer takes"
+     Comment "Why the sell-all row is greyed: no carried good is on this buyer's list."
+    }
     CustomStringTableItem "{3C7E19B2D54A806F}" {
      Id "LF-Trader_SaleRefused"
      Target_en_us "The trader won't take that."
@@ -15787,6 +15867,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Trader_SaleRefused_Title"
      Target_en_us "No sale"
      Comment "Title of the refused-sale toast."
+    }
+    CustomStringTableItem "{683D10EE9EDCCDF2}" {
+     Id "LF-Trader_SellAll"
+     Target_en_us "Sell all goods (%1): {currency:sym}%2"
+     Comment "Trader row that sells everything the buyer takes. %1 = units, %2 = the total price."
+    }
+    CustomStringTableItem "{73CDC5E30D79E666}" {
+     Id "LF-Trader_SellAllAsk"
+     Target_en_us "Sell all goods (%1)"
+     Comment "Sell-all row before the prices arrived. %1 = units."
+    }
+    CustomStringTableItem "{544BAF6FFDCEE018}" {
+     Id "LF-Trader_SellNothing"
+     Target_en_us "Sell goods"
+     Comment "Sell-all row when the player carries nothing this buyer takes (greyed)."
+    }
+    CustomStringTableItem "{114E334DB022DD7C}" {
+     Id "LF-Trader_SellOne"
+     Target_en_us "Sell 1 %1: {currency:sym}%2"
+     Comment "Trader sell row for one item. %1 = the good, %2 = the price the buyer pays now."
+    }
+    CustomStringTableItem "{C5D743750A8BBD92}" {
+     Id "LF-Trader_SellOneAsk"
+     Target_en_us "Sell 1 %1"
+     Comment "Trader sell row for one item before the price arrived. %1 = the good."
+    }
+    CustomStringTableItem "{0C4F96543148B6FF}" {
+     Id "LF-Trader_SellRowName"
+     Target_en_us "Sell"
+     Comment "Fallback name of a trader sell row; the row shows its own good and price."
     }
     CustomStringTableItem "{B976D15E0E9B0B4B}" {
      Id "LF-Training_Course_detective_course"
@@ -15962,6 +16072,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Vehicle_NeedsRallyDlc"
      Target_en_us "This tractor needs the Rally DLC."
      Comment "Vehicle purchase refused: the lot does not sell the Rally tractor to a player without the DLC (#3304)"
+    }
+    CustomStringTableItem "{A13F2CC58EFA7C05}" {
+     Id "LF-Vehicle_OutOnLot"
+     Target_en_us "Your car, plate %1, is out on the lot. Its hazard lights are blinking and a marker sits over it for 30 seconds."
+     Comment "Toast when the garage hands a car out. %1 = the plate."
+    }
+    CustomStringTableItem "{D453CA5B325AB1E5}" {
+     Id "LF-Vehicle_OutOnLotNoPlate"
+     Target_en_us "Your car is out on the lot. Its hazard lights are blinking and a marker sits over it for 30 seconds."
+     Comment "Toast when the garage hands out a car that has no plate."
+    }
+    CustomStringTableItem "{FB09B2B3594C991F}" {
+     Id "LF-Vehicle_OutOnLotTitle"
+     Target_en_us "Your car"
+     Comment "Toast title when the garage hands a car out to its owner."
+    }
+    CustomStringTableItem "{5527F4187C4874BD}" {
+     Id "LF-Vehicle_YourCarMark"
+     Target_en_us "Your car"
+     Comment "Waypoint label over the car the garage just handed out."
     }
     CustomStringTableItem "{5E0B7D31C9A24F86}" {
      Id "LF-Wanted_BuildHidden"

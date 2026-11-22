@@ -1103,7 +1103,7 @@ function selftest() {
   // Ore rocks are mined by a pickaxe swing, so they carry no action and are not pads.
   if (ore && ore.actions.includes("LF_GatherAction")) throw new Error("IronOre_Debug still has an F-key gather; it is mined by hitting it");
   const counter = findPad(list, "TraderChainCounter");
-  if (!counter || !counter.actions.includes("LF_OpenTraderAction")) throw new Error("TraderChainCounter missing");
+  if (!counter || !counter.actions.includes("LF_TraderSellAction")) throw new Error("TraderChainCounter missing");
   const saw = findPad(list, "Sawmill_Debug");
   if (!saw || !saw.actions.includes("LF_ProcessAction")) throw new Error("Sawmill_Debug process missing");
   let rejected = false;

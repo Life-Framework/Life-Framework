@@ -11,12 +11,12 @@ After you die or rejoin you do not wake in the hostel again; see [Money](02-mone
 
 ## The welcome guide
 
-A few seconds after you get out of bed a short **welcome guide** opens: five paper pages on what to do first, money,
-the map, police and medic duty, and where to read more. Turn the pages with **Next** and **Previous**.
+A few seconds after you get out of bed a short **welcome guide** opens: five paper pages on what to do first (the town clerk, your starter car, then apples, juice and the market), money and
+the F2 "What to do next" page, the map, police and medic duty, and where to read more. Turn the pages with **Next** and **Previous**.
 
-* **Set waypoint to the clerk** (page 1) puts a waypoint on the registry clerk, the first errand. If you are further
+* **Set waypoint to the clerk** (page 1) puts a waypoint on the town clerk, the first errand. If you are further
   along, it points at your current errand instead.
-* **Close** puts it away; it opens again the next time you join.
+* **Close** puts it away; it opens again the next time you join, until the clerk has given you your papers.
 * **Don't show again** stops it opening by itself.
 * Press **F3** (gamepad: **right bumper + Y**) to open it again at any time. You can change the key in
   **Settings, Controls, Life Framework**.
@@ -31,10 +31,23 @@ Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It
 * **Progress**: your first errands in order, each marked **DONE**, **CURRENT** or **LATER**, then any other errand you
   took. **Read** shows the errand and its progress; **Set waypoint to the current errand** puts it on your map.
 * **Next**: what you could do now to earn a living, with a line on each, roughly what it pays an hour and how far away
-  it is. Only what you can already do is listed (police and medic duty show once you wear the badge). Pick one and press
-  **Start**: a few short steps follow, each with a waypoint on your screen, a mark on your map and a one-line note. A
-  step you have already done is skipped (you hold the job, you carry the tool). **Guide me** on a started one puts the
-  waypoint back on its step; finished ones read **Done**.
+  it is. Only what you can already do is listed (police and medic duty show once you wear the badge), and nothing until
+  the clerk has registered you. The run you are on is listed first and reads **in progress**; finished ones sink to the
+  end and read **Done**. Pick one and press **Start**: a few short steps follow, each with a waypoint on your screen, a
+  mark on your map and a one-line note. A step you have already done is skipped (you hold the job, you carry the tool).
+  **Resume** on a started one puts the waypoint and the note back on its step.
+
+## Your current objective
+
+The step you are on stays written under your money at the top right ("Next: Mine 3 iron ore"). It flashes gold when it
+changes and stays until the step is done, even after the note fades. After a rejoin the waypoint, the line and the
+step's note come back by themselves. Type `/hud objective off` in chat to hide the line.
+
+## Your welcome pack and car
+
+The clerk gives you your **ID card**, some cash and a meal; a note lists everything you got. A small car waits in the
+garage at the car lot next to the town hall. When you take it out, a note gives its plate, its hazard lights blink and a
+marker sits over it for 30 seconds, so you can tell it from the other cars on the lot.
 
 ### The mining run, step by step
 
@@ -63,11 +76,11 @@ back when you rejoin. Other players do not see yours.
 
 | Step | What you do | Where |
 |---|---|---|
-| **New in town** | Walk south from the hostel to the town hall. Talk to the **registry clerk** ("Registry clerk: ID cards"). He files form R-89 and hands you your **ID card** and a **welcome pack**: a baguette, a saucisson, a bottle of water and **$100 in cash**. | Town hall on the square |
+| **New in town** | Walk south from the hostel to the town hall. Talk to the **town clerk** ("Town clerk: ID cards"). He files form R-89 and hands you your **ID card** and a **welcome pack**: a baguette, a saucisson, a bottle of water and **$100 in cash**. | Town hall on the square |
 | **Your first car** | The clerk also puts a small **Sputnik T601** in your garage. It is yours, and it takes one of your garage slots. Walk to the **garage counter** at the car lot and pick *Retrieve vehicle*; the car stands on the garage pad and your key is already in your pocket. | Car lot, west of the town hall |
 | **Apple picking** | Drive to the **orchard** east of town and pick **six apples** from the apple trees. | Orchard |
 | **Fresh juice** | Use the **juice press** on the orchard stall: three apples make one bottle of apple juice. | Orchard stall |
-| **Market day** | Sell your apple juice to the **market trader** in town. A note then reads *You are on your way*: take a job from the town board, ask the clerk for more errands, and find your errands and jobs in your player menu. | Market |
+| **Market day** | Sell your apple juice to the **market trader** in town: look at the stall, scroll to **Sell 1 Apple Juice** (the row shows the price) and press F, or pick **Sell all goods**. A note then reads *You are on your way*: take a job from the town board, ask the clerk for more errands, and find your errands and jobs in your player menu. | Market |
 
 You get the welcome pack and the car once per character, never again after a respawn, a rejoin or a server restart.
 A character who already owns a car gets no starter car: take your own car out of the garage for that step. A character
@@ -78,17 +91,18 @@ pocket is lost if you die; money in the bank is not.
 
 ## The town hall also sells licences
 
-The same clerk's desk issues the **driving licence** ($100). You need it to buy a car. The **firearm permit** ($250) is
+The same clerk's desk issues the **driving licence** ($100, taken from your bank account first, then from your pockets). You need it to buy a car. The **firearm permit** ($250) is
 bought at the gun store counter, and in the alpha it is instant.
 
 ## The map and waypoints
 
 * **Open the map:** press **M**. If nothing opens, take the **folded paper map** out of your pack and hold it; every new character carries one.
+  The map opens centred on you at town zoom, and closing it puts the paper map back in your pack.
 * **Every kind of place has its own icon**, a round badge coloured by group (green shops, orange food, blue travel, brown
   work, dark blue police, red health). No two kinds share an icon. Point at an icon to read its name.
 * **The key** on the right edge of the map lists every icon on your map, grouped, with its name. Point at a row and those
   places grow and pulse on the map while the rest fade. Click a row to show only that kind (click again for all); click a
-  group's heading to hide or show the whole group. The **Key** tab at the top folds it away, and the map remembers that.
+  group's heading to open or shut its rows (every group starts shut). The **Key** tab under your cash folds it away, and the map remembers that.
 * Icons that share one spot show the most important one and a count; click it to zoom in. Zoomed far out, a slate badge
   with three dots stands for a group of places. Places you have not seen yet may show as "heard of" until you walk past.
 * **Set your own waypoint:** **Shift + Left click** on the map (gamepad: hold **Y**, press **A**), or just click a place.
@@ -111,7 +125,7 @@ Closer in, the centre of town:
 | # | Place (in-game name) | Kind | What you do here |
 |---|---|---|---|
 | 1 | Hostel | Services | Where a new character wakes. Safe zone around it. |
-| 2 | Registry clerk: ID cards | Services | Town hall: ID card, driving licence, the arrival quest. |
+| 2 | Town clerk: ID cards | Services | Town hall: ID card, driving licence, the arrival quest. |
 | 3 | Notice board | Services | The town board: every place in town, with a waypoint button. |
 | 4 | Parcel depot (post office) | Services | Sign up for courier work, take parcels. |
 | 5 | Bank | Services | Teller for deposits and withdrawals. |

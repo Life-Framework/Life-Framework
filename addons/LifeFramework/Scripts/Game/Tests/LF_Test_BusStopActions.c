@@ -85,6 +85,26 @@ class LF_Test_BusStopActions : LF_Test
 			ctx.False(rows[1].m_sValue.IsEmpty(), "every other stop has its fare on the board");
 		}
 
+		// A minimum ride hides the stop you could walk to (first-2h review C10); a stop with nothing
+		// farther keeps its list.
+		LF_BusStopConfig farOnly = LF_BusStopConfig.CreateDefault();
+		farOnly.m_fMinRideMetres = 50;
+		array<ref LF_BusOffer> farOffers = {};
+		LF_BusStopConfig nothingFar = LF_BusStopConfig.CreateDefault();
+		nothingFar.m_fMinRideMetres = 5000;
+		array<ref LF_BusOffer> fallback = {};
+		if (!RedProof())
+		{
+			LF_BusTicket.Offers(here, stops, farOnly, farOffers);
+			LF_BusTicket.Offers(here, stops, nothingFar, fallback);
+		}
+
+		ctx.Equal(1, farOffers.Count(), "a stop under the minimum ride is not offered");
+		if (farOffers.Count() == 1 && farStop)
+			ctx.EqualStr(farStop.GetStopId(), farOffers[0].m_sToId, "only the far stop is offered");
+
+		ctx.Equal(2, fallback.Count(), "with nothing far enough the list is kept, not emptied");
+
 		Cleanup(character, spawned);
 	}
 

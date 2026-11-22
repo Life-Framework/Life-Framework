@@ -690,7 +690,7 @@ class LF_LicenseManagerComponent : ScriptComponent
 		{
 			string message = WidgetManager.Translate("#LF-License_Granted", 
 				WidgetManager.Translate(config.m_sLicenseName), WidgetManager.Translate(config.m_sDescription));
-			SCR_HintManagerComponent.ShowCustomHint(message, WidgetManager.Translate("#LF-License_Granted_Title"), 5.0);
+			LF_Utils.NoteToast(message, WidgetManager.Translate("#LF-License_Granted_Title"), 5.0);
 		}
 		
 		Replication.BumpMe();
