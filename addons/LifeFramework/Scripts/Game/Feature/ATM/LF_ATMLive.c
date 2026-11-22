@@ -16,6 +16,7 @@ class LF_ATMLive
 	static const vector SCREEN_CENTRE = "0 1.27 0.094";
 	static const float SCREEN_HALF_W = 0.13;
 	static const float SCREEN_HALF_H = 0.1;
+	static const float PANEL_COVER = 1.08;	// lf-fixed: the lit panel overlaps the glass edge so the printed menu cannot show round it
 
 	protected static int s_iBalance = LF_ATMQuick.UNKNOWN;
 	protected static int s_iCash = LF_ATMQuick.UNKNOWN;
@@ -358,8 +359,12 @@ class LF_ATMLive
 		float w = Math.AbsFloat(right[0] - left[0]);
 		float h = Math.AbsFloat(bottom[1] - top[1]);
 		s_wPanel.SetVisible(true);
-		FrameSlot.SetPos(s_wPanel, mid[0] - w * 0.5, mid[1] - h * 0.5);
-		FrameSlot.SetSize(s_wPanel, w, h);
+		// A little larger than the glass and fully opaque: the machine's printed menu (WITHDRAW, BALANCE, $20...)
+		// no longer ghosts through behind the live figures (first-2-hours review C8).
+		float cover = w * PANEL_COVER;
+		float coverH = h * PANEL_COVER;
+		FrameSlot.SetPos(s_wPanel, mid[0] - cover * 0.5, mid[1] - coverH * 0.5);
+		FrameSlot.SetSize(s_wPanel, cover, coverH);
 		int font = Math.Round(h * 0.15);
 		if (font < 6)
 			font = 6;

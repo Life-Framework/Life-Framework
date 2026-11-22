@@ -16,7 +16,7 @@ the F2 "What to do next" page, the map, police and medic duty, and where to read
 
 * **Set waypoint to the clerk** (page 1) puts a waypoint on the town clerk, the first errand. If you are further
   along, it points at your current errand instead.
-* **Close** puts it away; it opens again the next time you join.
+* **Close** puts it away; it opens again the next time you join, until the clerk has given you your papers.
 * **Don't show again** stops it opening by itself.
 * Press **F3** (gamepad: **right bumper + Y**) to open it again at any time. You can change the key in
   **Settings, Controls, Life Framework**.
@@ -31,10 +31,23 @@ Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It
 * **Progress**: your first errands in order, each marked **DONE**, **CURRENT** or **LATER**, then any other errand you
   took. **Read** shows the errand and its progress; **Set waypoint to the current errand** puts it on your map.
 * **Next**: what you could do now to earn a living, with a line on each, roughly what it pays an hour and how far away
-  it is. Only what you can already do is listed (police and medic duty show once you wear the badge). Pick one and press
-  **Start**: a few short steps follow, each with a waypoint on your screen, a mark on your map and a one-line note. A
-  step you have already done is skipped (you hold the job, you carry the tool). **Guide me** on a started one puts the
-  waypoint back on its step; finished ones read **Done**.
+  it is. Only what you can already do is listed (police and medic duty show once you wear the badge), and nothing until
+  the clerk has registered you. The run you are on is listed first and reads **in progress**; finished ones sink to the
+  end and read **Done**. Pick one and press **Start**: a few short steps follow, each with a waypoint on your screen, a
+  mark on your map and a one-line note. A step you have already done is skipped (you hold the job, you carry the tool).
+  **Resume** on a started one puts the waypoint and the note back on its step.
+
+## Your current objective
+
+The step you are on stays written under your money at the top right ("Next: Mine 3 iron ore"). It flashes gold when it
+changes and stays until the step is done, even after the note fades. After a rejoin the waypoint, the line and the
+step's note come back by themselves. Type `/hud objective off` in chat to hide the line.
+
+## Your welcome pack and car
+
+The clerk gives you your **ID card**, some cash and a meal; a note lists everything you got. A small car waits in the
+garage at the car lot next to the town hall. When you take it out, a note gives its plate, its hazard lights blink and a
+marker sits over it for 30 seconds, so you can tell it from the other cars on the lot.
 
 ### The mining run, step by step
 
@@ -78,7 +91,7 @@ pocket is lost if you die; money in the bank is not.
 
 ## The town hall also sells licences
 
-The same clerk's desk issues the **driving licence** ($100). You need it to buy a car. The **firearm permit** ($250) is
+The same clerk's desk issues the **driving licence** ($100, taken from your bank account first, then from your pockets). You need it to buy a car. The **firearm permit** ($250) is
 bought at the gun store counter, and in the alpha it is instant.
 
 ## The map and waypoints

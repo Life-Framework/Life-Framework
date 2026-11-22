@@ -109,6 +109,7 @@ LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et"
    }
    additionalActions + {
     LF_QuestAction "{76B98B5462015C42}" {
+     m_bCustomerSideOnly 1
      ParentContextList {
       "Quest"
      }

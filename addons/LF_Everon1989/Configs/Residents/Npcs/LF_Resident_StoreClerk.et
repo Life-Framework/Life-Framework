@@ -16,6 +16,7 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
    }
    additionalActions + {
     LF_DialogueTalkAction "{5BE74503D5AB6B38}" {
+     m_bCustomerSideOnly 1
      ParentContextList {
       "Talk"
      }

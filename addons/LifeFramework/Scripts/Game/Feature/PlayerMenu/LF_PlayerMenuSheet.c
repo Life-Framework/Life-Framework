@@ -34,6 +34,8 @@ class LF_PlayerMenuSheet
 	static const string PART_PLAYTIME = "PlayerMenuPlaytime";
 	static const string PART_DAYS = "PlayerMenuDays";
 	static const string PART_LICENCES = "PlayerMenuLicences";
+	//! Up to this many licences are named in the row's value.
+	static const int LICENCES_INLINE = 2;
 	static const string PART_UNLOCK = "PlayerMenuDetailUnlock";
 	//! Inner card columns, one per card.
 	static const string CARD_ID = "PlayerMenuCardId";
@@ -548,11 +550,14 @@ class LF_PlayerMenuSheet
 		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_GARAGE, "#LF-PlayerMenu_Garage", garage).WithIcon("garage")));
 		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_DAYS, "#LF-PlayerMenu_Days", DaysOnIsland(data.m_iPlaytimeSeconds, DayMinutes()).ToString()).WithIcon("calendar")));
 		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_PLAYTIME, "#LF-PlayerMenu_Playtime", PlaytimeText(data.m_iPlaytimeSeconds)).WithIcon("clock")));
-		string held = LF_Terms.Text("#LF-PlayerMenu_LicencesHeld", data.m_aLicenceKeys.Count().ToString());
-		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_LICENCES, "#LF-PlayerMenu_HeadLicences", held).WithIcon("licence")));
-		foreach (int i, string licence : data.m_aLicenceKeys)
+		parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_LICENCES, "#LF-PlayerMenu_HeadLicences", LicencesValue(data)).WithIcon("licence")));
+		// Three or more do not fit the value: each gets its own row, named on the left (review B2).
+		if (data.m_aLicenceKeys.Count() > LICENCES_INLINE)
 		{
-			parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_LICENCE + i.ToString(), LF_Terms.Text("#LF-PlayerMenu_LicenceItem", Printed(licence)), string.Empty)));
+			foreach (int i, string licence : data.m_aLicenceKeys)
+			{
+				parts.Insert(Card(CARD_STATUS, LF_UIPart.CreatePair(PART_LICENCE + i.ToString(), LF_Terms.Text("#LF-PlayerMenu_LicenceItem", Printed(licence)), string.Empty)));
+			}
 		}
 
 		// 3: every job skill with its level chip and XP bar; the picked one's record under the list.
@@ -1004,6 +1009,29 @@ class LF_PlayerMenuSheet
 			return LF_Terms.Text("#LF-PlayerMenu_WantedNo");
 
 		return LF_Terms.Text("#LF-PlayerMenu_WantedLevel", level.ToString());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The licences row's value: "None", the names of one or two ("Field hand"), else how many.
+	static string LicencesValue(notnull LF_PlayerMenuData data)
+	{
+		int count = data.m_aLicenceKeys.Count();
+		if (count == 0)
+			return LF_Terms.Text("#LF-PlayerMenu_LicencesNoneShort");
+
+		if (count > LICENCES_INLINE)
+			return LF_Terms.Text("#LF-PlayerMenu_LicencesHeld", count.ToString());
+
+		string names = string.Empty;
+		foreach (string key : data.m_aLicenceKeys)
+		{
+			if (!names.IsEmpty())
+				names += ", ";
+
+			names += Printed(key);
+		}
+
+		return names;
 	}
 
 	//------------------------------------------------------------------------------------------------

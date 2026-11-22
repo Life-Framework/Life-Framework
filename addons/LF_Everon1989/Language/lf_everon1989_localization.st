@@ -3024,6 +3024,11 @@ StringTable {
      Target_en_us "You are on your way. For steady pay, take a job: the town board lists who is hiring, and the clerk has more errands for you. Your errands and jobs are in your player menu."
      Comment "Everon arrival closing line, shown when the juice is sold (arrival_done turn-in)."
     }
+    CustomStringTableItem "{F8112ED9A5186CE2}" {
+     Id "LF-Quest_EveronWelcomePack_Received"
+     Target_en_us "Welcome pack: your ID card, %1 in cash, bread, a sausage and a bottle of water. Your car waits in the garage at the car lot."
+     Comment "Everon arrival: toast after the clerk step listing what the welcome pack held. %1 = the cash, formatted."
+    }
     CustomStringTableItem "{576D65C266994CCB}" {
      Id "LF-Quest_EveronWelcomePack_TurnIn"
      Target_en_us "There. Your name is in the register, and this is your identity card. Keep it on you. And here is the welcome pack the town gives every newcomer: bread, a sausage, a bottle of water and some cash to start with."

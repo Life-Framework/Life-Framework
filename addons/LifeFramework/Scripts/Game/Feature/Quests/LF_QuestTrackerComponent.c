@@ -33,6 +33,8 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 	//! How long a chain step's errand or the giver's turn-in line stays up: long enough to read.
 	static const float STORY_SECONDS = 12.0;
+	//! The "you received" slip: under STORY_SECONDS so a conversation never swallows it.
+	static const float RECEIVED_SECONDS = 10.0; // lf-fixed: reading time of one slip, under STORY_SECONDS
 	static const int GREET_DELAY_MS = 5000;
 
 	//! How close (meters) a reader must stand to a sign for its read to count. The Read action
@@ -413,6 +415,10 @@ class LF_QuestTrackerComponent : ScriptComponent
 		// A chain step turned in on its own stays quiet; the next step's errand is the news.
 		if (!def.m_sTurnInKey.IsEmpty())
 			Notify(def.m_sTurnInKey, def.m_sTitleKey, STORY_SECONDS);
+
+		// What was handed over, as a slip the player can read after the talk (review A13).
+		if (!def.m_sReceivedKey.IsEmpty())
+			LF_Utils.NotifyEntity(GetOwner(), def.m_sReceivedKey, def.m_sTitleKey, RECEIVED_SECONDS, LF_MoneyFormat.FormatMoney(def.m_iRewardMoney));
 		else if (!def.m_bAutoTurnIn)
 			Notify("#LF-Quest_TurnedIn", "#LF-Quest_Title");
 
