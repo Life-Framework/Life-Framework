@@ -21,10 +21,14 @@ everything on a falling curve.
 - `LF_FellAction` (#3260): the hold action and `TryFell`, the server fell. It re-checks every rule from
   facts it measures (axe in the hands, distance, safe zone, road and building clearance via
   `LF_FelledTrees`, stamina), hides the tree by flags, records the key in the server ledger
-  (`LF_FelledTrees`), drops one `WoodLog_01_Small` per log beside the trunk, takes the stamina, pays XP
+  (`LF_FelledTrees`), broadcasts the fall and drops the logs along the fallen line when it lands (`LF_TreeFall`), takes the stamina, pays XP
   (`gather_logging` through `LF_OnGathered` family LOGGING for softwood; `fell_hardwood` directly for
   hardwood), calls `LF_FelledTreesReplication.Publish` so every client hides the tree, and publishes
   `LF_OnTreeFelled` (`LF_LumberEvents.c`). The ledger grows here and shrinks in `LF_TreeRegrow`.
+- `LF_TreeFall` and `LF_TreeFallPlan`: the tree tips over away from the feller on every rendering peer (a local
+  copy of its mesh), then the server drops one real log item per log along the fallen line, ground-probed
+  (hardwood trees drop `WoodLog_Hardwood`). Local vanilla branch props lie where the crown landed for 3 min.
+  A loose-log book deletes logs nobody took after 30 min.
 - `LF_TreeRegrow` and `LF_LumberSavePayload` (#3262): a 10 s server tick stands the trees whose time
   has come (`LF_FelledTrees.Show`, then `LF_FelledTreesReplication.Retract`); the ledger is the save
   section `lumber` (key and seconds left), and a load hides the trees again, so a restart does not
