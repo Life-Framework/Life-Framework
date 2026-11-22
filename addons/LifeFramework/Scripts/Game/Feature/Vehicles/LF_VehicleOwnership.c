@@ -1660,7 +1660,7 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static void GiveKey(IEntity buyer, IEntity key)
+	static void GiveKey(IEntity buyer, IEntity key)
 	{
 		if (!buyer || !key)
 			return;
@@ -1686,7 +1686,7 @@ class LF_VehicleOwnership
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected static IEntity SpawnKey(string vehicleId, vector origin)
+	static IEntity SpawnKey(string vehicleId, vector origin)
 	{
 		IEntity key = LF_Utils.SpawnEntityPrefab(LF_VehicleCatalog.KEY, origin + Vector(1, 0.2, 0));
 		if (!key)

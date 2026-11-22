@@ -55,6 +55,7 @@ that activity is what pays (gathering/processing already feed this funnel).
 - `LF_JobDialogue.c` — `LF_DialogueHook_JobSignUp` (#2740): a dialogue reply signs the player up for the
   delivery job its param names (career level and standing gates, then `SetJob`), as the counter does.
 
+- `LF_PostalRun` + `LF_PostalRunActions.c` — the postal van run (beginner DELIVERY work): a post stand lends a keyed van, sacks load at home and unload at the nearest office 800 m away, the hand-in pays the `POSTAL` run pay row once. Lost, wrecked or abandoned van: no pay, van taken back (`docs/features/jobs-level-licenses-whitelist.md`).
 - `LF_WorkplaceComponent` + `Prefabs/Jobs/LF_Workplace.et` (#1111) — the generic
   workplace: job id, `LF_Places` registration (kind `Workplace`), punch-clock clock-in action and
   an optional NPC slot. The police and medic duty desks inherit it.

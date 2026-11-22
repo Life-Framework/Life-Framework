@@ -75,7 +75,24 @@
     {
       "id": "work",
       "line": "about_work",
-      "options_from": "greet"
+      "options": [
+        {
+          "text": "van",
+          "next": "van"
+        },
+        {
+          "text": "family",
+          "next": "family"
+        },
+        {
+          "text": "town",
+          "next": "town"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
     },
     {
       "id": "family",
@@ -85,6 +102,11 @@
     {
       "id": "town",
       "line": "about_town",
+      "options_from": "greet"
+    },
+    {
+      "id": "van",
+      "line": "about_van",
       "options_from": "greet"
     },
     {
@@ -119,12 +141,16 @@
     },
     "bye": {
       "text": "Take care now."
+    },
+    "about_van": {
+      "text": "The van run? Take the yellow van from the post stand, load four mail sacks, drive them to the post office in Meaux and bring my van back. Back in one piece, mind. A wrecked van pays nobody."
     }
   },
   "replies": {
     "work": "What do you do at the depot?",
     "family": "Who is Marius?",
     "town": "Have you lived here long?",
-    "bye": "Goodbye."
+    "bye": "Goodbye.",
+    "van": "Tell me about the van run."
   }
 }
