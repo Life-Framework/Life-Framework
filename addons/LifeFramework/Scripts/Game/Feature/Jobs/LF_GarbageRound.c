@@ -28,7 +28,7 @@ class LF_GarbageRoundConfig
 	[Attribute("900", UIWidgets.Auto, "Garbage round: the least seconds a round takes, start to tip. Keeps a round of bins by the depot from paying faster than the job's hourly band", params: "0 36000")]
 	int m_iMinRoundSeconds;
 
-	[Attribute("{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et", UIWidgets.ResourcePickerThumbnail, "Garbage round: the company truck handed out at the depot", "et")]
+	[Attribute("{2B402516452EC797}Prefabs/Vehicles/Wheeled/Ural4320/LF_Ural4320_transport_CIV.et", UIWidgets.ResourcePickerThumbnail, "Garbage round: the company truck handed out at the depot", "et")]
 	ResourceName m_Truck;
 
 	protected static ref LF_GarbageRoundConfig s_Config;
@@ -44,7 +44,7 @@ class LF_GarbageRoundConfig
 		config.m_iRoundBonus = DEFAULT_BONUS;
 		config.m_fTipRadius = DEFAULT_TIP_RADIUS;
 		config.m_iMinRoundSeconds = DEFAULT_MIN_SECONDS;
-		config.m_Truck = "{A2E23CB8DDCFE82E}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_base.et";
+		config.m_Truck = "{2B402516452EC797}Prefabs/Vehicles/Wheeled/Ural4320/LF_Ural4320_transport_CIV.et";
 		return config;
 	}
 
@@ -312,6 +312,13 @@ class LF_GarbageRound
 			LF_Debug.Error(FEATURE, string.Format("garbage round: the company truck did not spawn: %1", config.m_Truck));
 			return LF_EGarbageResult.NO_TRUCK;
 		}
+
+		// No free cars: the company truck opens for the player on the round and nobody else.
+		LF_VehicleLockComponent truckLock = LF_Component<LF_VehicleLockComponent>.Find(truck);
+		if (truckLock)
+			truckLock.SetJobDriver(LF_PlayerInteraction.PlayerIdOf(user));
+		else
+			LF_Debug.Warn(FEATURE, string.Format("garbage round: %1 has no LF_VehicleLockComponent: anyone can drive the company truck", config.m_Truck));
 
 		run.m_Truck = truck.GetID();
 		run.m_fStartedAt = LF_JobGuards.Now();

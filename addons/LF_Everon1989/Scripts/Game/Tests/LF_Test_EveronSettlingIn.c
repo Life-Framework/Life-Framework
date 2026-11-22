@@ -12,6 +12,27 @@ class LF_Test_EveronSettlingIn : LF_Test
 	static const string GIVER = "clerk";
 	static const string CHAIN_START = "arrival_done";
 	static const int STEPS = 7;
+	static const int ARRIVAL_STEPS = 5;
+
+	//------------------------------------------------------------------------------------------------
+	//! A settling-in quest; the row also carries the island's arrival route in place of the prefab's.
+	static bool IsSettle(LF_QuestDefinition quest)
+	{
+		return quest && quest.m_sQuestId.StartsWith("settle_");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static int SettleCount(LF_QuestGiverRow row)
+	{
+		int count;
+		foreach (LF_QuestDefinition quest : row.m_aQuests)
+		{
+			if (IsSettle(quest))
+				count++;
+		}
+
+		return count;
+	}
 	static const int MAX_STEP_CASH = 100; // lf-fixed: the planner's cap per step (#3125; the foundation step pays 100, #3195)
 	static const int MAX_CHAIN_CASH = 250; // lf-fixed: the planner's cap for the chain (#3125, #3195)
 
@@ -74,7 +95,8 @@ class LF_Test_EveronSettlingIn : LF_Test
 			return;
 
 		ctx.EqualStr(string.Empty, LF_QuestGiverConfig.Problem(row), "the clerk's row is complete");
-		ctx.Equal(STEPS, row.m_aQuests.Count(), "the row holds the seven settling-in quests");
+		ctx.Equal(STEPS, SettleCount(row), "the row holds the seven settling-in quests");
+		ctx.Equal(STEPS + ARRIVAL_STEPS, row.m_aQuests.Count(), "the row also holds the island's five arrival steps (LF_Test_EveronArrivalRoute)");
 
 		CheckChain(ctx, row);
 		CheckObjectives(ctx, row);
@@ -85,7 +107,7 @@ class LF_Test_EveronSettlingIn : LF_Test
 		LF_QuestGiverTable.ResetStatics();
 		array<ref LF_QuestDefinition> prefabOwn = {};
 		array<ref LF_QuestDefinition> live = LF_QuestGiverTable.QuestsFor(GIVER, prefabOwn);
-		ctx.Equal(STEPS, live.Count(), "LF_QuestGiverTable hands the clerk the seven quests");
+		ctx.Equal(STEPS + ARRIVAL_STEPS, live.Count(), "LF_QuestGiverTable hands the clerk the arrival steps and the seven quests");
 		ctx.Equal(0, LF_QuestGiverTable.RefusedCount(), "no settling-in quest id clashes with the clerk's prefab quests");
 		LF_QuestGiverTable.ResetStatics();
 	}
@@ -158,6 +180,9 @@ class LF_Test_EveronSettlingIn : LF_Test
 		int total;
 		foreach (LF_QuestDefinition quest : row.m_aQuests)
 		{
+			if (!IsSettle(quest))
+				continue;
+
 			ctx.True(quest.m_iRewardMoney <= MAX_STEP_CASH, quest.m_sQuestId + " pays at most 100 cash");
 			ctx.True(quest.m_iRewardMoney >= 0, quest.m_sQuestId + " pays no negative cash");
 			ctx.False(quest.m_bRewardIdCard, quest.m_sQuestId + " hands no ID card");
@@ -174,6 +199,9 @@ class LF_Test_EveronSettlingIn : LF_Test
 	{
 		foreach (LF_QuestDefinition quest : row.m_aQuests)
 		{
+			if (!IsSettle(quest))
+				continue;
+
 			array<string> keys = {quest.m_sTitleKey, quest.m_sDescriptionKey};
 			if (!quest.m_sTurnInKey.IsEmpty())
 				keys.Insert(quest.m_sTurnInKey);

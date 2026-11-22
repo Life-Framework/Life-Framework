@@ -1,0 +1,74 @@
+MetaFileClass {
+ Name "{CA80291A34584BC9}Assets/Props/Commercial/ShopCounter/ShopCounter.xob"
+ Configurations {
+  FBXResourceClass PC {
+   MaterialAssigns {
+    MaterialAssignClass "{01397A7680CDD9A9}" {
+     SourceMaterial "SC_Trim"
+     AssignedMaterial "{310F56292FB2C846}Assets/Props/Commercial/ShopCounter/Data/SC_Trim.emat"
+    }
+    MaterialAssignClass "{F6F871EEB14D652A}" {
+     SourceMaterial "SC_Top"
+     AssignedMaterial "{91FA6039B21B4937}Assets/Props/Commercial/ShopCounter/Data/SC_Top.emat"
+    }
+    MaterialAssignClass "{EBF73827851B0190}" {
+     SourceMaterial "SC_WoodDark"
+     AssignedMaterial "{523004CEE7944076}Assets/Props/Commercial/ShopCounter/Data/SC_WoodDark.emat"
+    }
+    MaterialAssignClass "{0DA91B35A8291E82}" {
+     SourceMaterial "SC_Dark"
+     AssignedMaterial "{8246BFFC28CE0FD0}Assets/Props/Commercial/ShopCounter/Data/SC_Dark.emat"
+    }
+    MaterialAssignClass "{90E62EE25488F69A}" {
+     SourceMaterial "SC_Lambris"
+     AssignedMaterial "{C807DE29F003DB22}Assets/Props/Commercial/ShopCounter/Data/SC_Lambris.emat"
+    }
+    MaterialAssignClass "{DE4AADB4165F071D}" {
+     SourceMaterial "SC_Till"
+     AssignedMaterial "{B86851019E8FE48E}Assets/Props/Commercial/ShopCounter/Data/SC_Till.emat"
+    }
+    MaterialAssignClass "{45011E0D359A47EE}" {
+     SourceMaterial "SC_Kraft"
+     AssignedMaterial "{746D114175B04C43}Assets/Props/Commercial/ShopCounter/Data/SC_Kraft.emat"
+    }
+   }
+   MeshParams {
+    MeshParam ShopCounter {
+    }
+   }
+   GeometryParams {
+    GeometryParam UBX_ShopCounter_01 {
+     LayerPreset "PropFireView"
+     SurfaceProperties {
+      "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+   }
+   Common TXOCommonClass "{4D7B2F9360278AB6}" : "{0877E7C4BB2B2C9A}Configs/System/ResourceTypes/PC/MeshObjectCommon.conf" {
+   }
+   ApplicationVendor "Blender Foundation"
+   ApplicationName "Blender (stable FBX IO)"
+   ApplicationVersion "4.5.9 LTS"
+  }
+  FBXResourceClass XBOX_ONE : PC {
+   Common TXOCommonClass "{1FEC29423142643D}" : "{9D5B6207F7628CE2}Configs/System/ResourceTypes/XBOX_ONE/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass XBOX_SERIES : PC {
+   Common TXOCommonClass "{02B734A3C96D05F8}" : "{DD9F02115C764647}Configs/System/ResourceTypes/XBOX_SERIES/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS4 : PC {
+   Common TXOCommonClass "{C7F97C08DD20726D}" : "{53EC476BC921D99A}Configs/System/ResourceTypes/PS4/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass HEADLESS : PC {
+   Common TXOCommonClass "{DF752887A50AFB9A}" : "{3A5B3356978039E8}Configs/System/ResourceTypes/HEADLESS/MeshObjectCommon.conf" {
+   }
+  }
+  FBXResourceClass PS5 : PC {
+  }
+ }
+}

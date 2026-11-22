@@ -41,7 +41,7 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
      Position PointInfo "{5D1CD9BC8239101E}" {
       PivotID "Spine5"
      }
-     Radius 0.6
+     Radius 2.4
     }
    }
    additionalActions + {
