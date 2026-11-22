@@ -26,7 +26,7 @@ import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain, yardLayer } from "../commands/grid.mjs";
 import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, claimCellIds as claimCellIdsOf, gapSide, inGrid, layerOfSlug, lookArea, mainClaims as mainClaimsOf, openPrClaims, rowLine, worktreeClaims, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
-import { checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
+import { baseRefFor, checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
@@ -440,6 +440,13 @@ ok(freeze(annexEnt + townEnt, townEnt).errors.length === 0, "deleting an annex e
 ok(freeze(annexEnt + townEnt, annexEnt + ent("Street_Lamp", 270, 255)).errors.length === 0, "a changed town entity outside the annex is not the freeze's business");
 ok(freeze(annexEnt, annexEnt + ent("Edge", 114, 114)).errors.length === 1 && freeze(annexEnt, annexEnt + ent("Edge", 115, 114)).errors.length === 0, "the rectangle is x 18..114, z 18..114");
 ok(checkFreeze({ files: [`${GRID_LAYERS}/Annex.layer`, "tools/x.mjs"], baseText: () => null, nowText: () => annexEnt }).errors.length === 0, "edits in GridWorld are not frozen");
+
+// The change set is measured against the PR's base, not always main (#4256: a release-0.2.1 PR that merged its
+// base read the release's town-layer edits as its own). red-proof: with baseRefFor returning "origin/main" always,
+// the first two checks failed.
+ok(baseRefFor({ GITHUB_BASE_REF: "release-0.2.1" }, "") === "origin/release-0.2.1", "CI measures a release PR against its base");
+ok(baseRefFor({}, "release-0.2.1") === "origin/release-0.2.1", "a worktree cut with --base measures against that base");
+ok(baseRefFor({}, "") === "origin/main", "no recorded base: main");
 
 if (failed) {
   console.log(`world-zones-selftest: ${failed} FAILED`);
