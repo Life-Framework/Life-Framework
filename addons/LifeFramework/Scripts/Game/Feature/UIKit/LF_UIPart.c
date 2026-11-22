@@ -27,7 +27,22 @@ enum LF_EUIPartKind
 	PORTRAIT,
 	//! A thin progress bar (an XP bar): the filled share in the skin's accent, the rest in its row colour.
 	//! LF_UIScreen.SetBar sets how full it is; it starts empty.
-	BAR
+	BAR,
+	//! Side-by-side columns (a wide sheet). Parts flagged InColumn(name, i) stack inside column i;
+	//! the columns share the sheet's width by their weights.
+	COLUMNS,
+	//! A label on the left and its value set flush right, with an optional small badge between them
+	//! (a ledger line: "Cash in hand ... $20"). text = label, status = value, action = badge.
+	PAIR
+}
+
+//! A badge's colour. The kit takes each from the theme: PLAIN the row strip, BLUE the id-card
+//! theme's state blue, RED the sheet's focus red; a toned badge prints its text in the paper colour.
+enum LF_EUIBadgeTone
+{
+	PLAIN,
+	BLUE,
+	RED
 }
 
 class LF_UIPart
@@ -50,6 +65,25 @@ class LF_UIPart
 	//! PORTRAIT: the printed lines beside the photo, a small label over each value.
 	protected ref array<string> m_aLabels = {};
 	protected ref array<string> m_aValues = {};
+	//! KEYS: the key-cap printed before each key ("Esc"), empty for none.
+	protected ref array<string> m_aKeyCaps = {};
+	//! COLUMNS: the share of the width each column takes.
+	protected ref array<float> m_aWeights = {};
+	//! The COLUMNS part this part sits in, and the column index; empty for the sheet itself.
+	protected string m_sColumns;
+	protected int m_iColumn;
+	//! LIST: short rows with the status in a badge (LF_UICompactRow.layout), for a list in a column.
+	//! PAIR: the label is printed large (a header line).
+	protected bool m_bCompact;
+	//! PAIR: an icon of the kit set (LF_UITheme.ICONS_IMAGESET) before the label; empty for none.
+	protected string m_sIcon;
+	//! PAIR: the badge's colour (LF_EUIBadgeTone).
+	protected LF_EUIBadgeTone m_eTone;
+	//! COLUMNS: each column is a card on a plate.
+	protected bool m_bCards;
+	//! PORTRAIT: a sized photo window showing the whole figure; 0 keeps the head-and-shoulders card.
+	protected float m_fBoxWidth;
+	protected float m_fBoxHeight;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_UIPart Create(LF_EUIPartKind kind, string name, string text)
@@ -139,6 +173,156 @@ class LF_UIPart
 		part.m_aKeyNames.Copy(keyNames);
 		part.m_aKeyTexts.Copy(keyTexts);
 		return part;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Prints a key-cap chip ("Esc", "F3") before each key of a KEYS row; an empty cap prints none.
+	LF_UIPart WithCaps(array<string> caps)
+	{
+		if (!caps || caps.Count() != m_aKeyNames.Count())
+		{
+			LF_Debug.Error("UIKit", "keys " + m_sName + " need one cap per key");
+			return this;
+		}
+
+		m_aKeyCaps.Copy(caps);
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<string> GetKeyCaps()
+	{
+		return m_aKeyCaps;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Columns side by side, one per weight; parts go in with InColumn(name, index).
+	static LF_UIPart CreateColumns(string name, array<float> weights)
+	{
+		LF_UIPart part = Create(LF_EUIPartKind.COLUMNS, name, string.Empty);
+		if (!weights || weights.IsEmpty())
+		{
+			LF_Debug.Error("UIKit", "columns " + name + " need at least one weight");
+			part.m_aWeights.Insert(1);
+			return part;
+		}
+
+		part.m_aWeights.Copy(weights);
+		return part;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	array<float> GetWeights()
+	{
+		return m_aWeights;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A label and its value flush right; a non-empty badge prints as a small chip between them.
+	static LF_UIPart CreatePair(string name, string label, string value, string badge = "")
+	{
+		LF_UIPart part = Create(LF_EUIPartKind.PAIR, name, label);
+		part.m_sStatus = value;
+		part.m_sAction = badge;
+		return part;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Puts the part in column `index` of the COLUMNS part `columns` (added earlier on the same sheet).
+	LF_UIPart InColumn(string columns, int index)
+	{
+		m_sColumns = columns;
+		m_iColumn = index;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetColumns()
+	{
+		return m_sColumns;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	int GetColumn()
+	{
+		return m_iColumn;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! PAIR: prints the kit icon `icon` (a quad of LF_UITheme.ICONS_IMAGESET) before the label.
+	LF_UIPart WithIcon(string icon)
+	{
+		m_sIcon = icon;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetIcon()
+	{
+		return m_sIcon;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! PAIR: the badge's colour.
+	LF_UIPart Tone(LF_EUIBadgeTone tone)
+	{
+		m_eTone = tone;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	LF_EUIBadgeTone GetTone()
+	{
+		return m_eTone;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! COLUMNS: each column is a card, its parts on a plate a step darker than the sheet.
+	LF_UIPart Cards()
+	{
+		m_bCards = true;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HasCards()
+	{
+		return m_bCards;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! PORTRAIT: a photo window of this size showing the whole figure (a character preview).
+	LF_UIPart Sized(float width, float height)
+	{
+		m_fBoxWidth = width;
+		m_fBoxHeight = height;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float GetBoxWidth()
+	{
+		return m_fBoxWidth;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float GetBoxHeight()
+	{
+		return m_fBoxHeight;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! LIST: short rows with the status in a badge. PAIR: a large label (a header line).
+	LF_UIPart Compact()
+	{
+		m_bCompact = true;
+		return this;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool IsCompact()
+	{
+		return m_bCompact;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -308,6 +492,12 @@ class LF_UIPart
 
 		if (kind == LF_EUIPartKind.BAR)
 			return LF_UITheme.BAR_LAYOUT;
+
+		if (kind == LF_EUIPartKind.COLUMNS)
+			return LF_UITheme.COLUMNS_LAYOUT;
+
+		if (kind == LF_EUIPartKind.PAIR)
+			return LF_UITheme.PAIR_LAYOUT;
 
 		return string.Empty;
 	}

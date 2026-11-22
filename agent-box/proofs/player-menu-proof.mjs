@@ -31,6 +31,9 @@ async function runPlayerMenuProof() {
   wait(6000);
   on(1, { verb: "guide", words: ["close"] });
   wait(500);
+  // A file worth reading: XP in a few jobs, cash, savings and a house (dev-gated server grant).
+  must(on(1, { verb: "playermenu", words: ["seed"] }), "seed the file");
+  wait(2500);
 
   must(on(1, { verb: "playermenu", words: ["open", "person"] }), "open the file on PERSON");
   let answered = false;

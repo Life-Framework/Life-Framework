@@ -11,6 +11,8 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 | Open the **map** | **M** | the usual Reforger map button |
 | **Set a waypoint** (map open) | **Shift + Left click** on the map, or click a place | hold **Y**, press **A** (or **A** on a place) |
 | **Clear the waypoint** (map open) | **Backspace**, or Shift + Left click on it | double-tap **Y** |
+| Fold the **how to use the map** card (map open) | tap **F1** | click the **left stick** |
+| Fold the **key** of icons (map open) | click the **Key** tab, top right | |
 | **Throw** the item in your hand (a tin, a bottle) | **G** | hold **right bumper**, press **B** |
 | **Hands up** (to a police officer) | **F7** | **right bumper + X** |
 | **Emote menu** | **F1** | |
@@ -18,6 +20,7 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 | Mark a moment for a **clip** | **F8** | **right bumper + View** |
 | Open the **welcome guide** again | **F3** | **right bumper + Y** |
 | Open your **personal file** (money, papers, skills, errands) | **F2** | hold **right bumper + Y** |
+| Switch a **HUD part** off or on (money, wanted, needs, brand, all) | type **/hud money off** in chat | |
 
 ## Vehicles
 

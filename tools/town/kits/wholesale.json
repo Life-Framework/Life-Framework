@@ -39,12 +39,12 @@
         "edgeGap": 4.5
       }
     ],
-    "adapt": "The harbour wholesale warehouse (Garage_E_02, 28 x 19 m, one big ground-floor hall with truck bays all round, a mezzanine over the east end that stays). The kit shows the same model as the host, so its offsets are in the building's own frame, front +z. The buyer's counter stands mid-hall facing the front bays, the clerk behind it and the chalk price board beside it; planks and logs stack along the west wall, ore bins and a barrel row along the back wall, cement and iron on pallets on the east side; work lights hang over the bays. Rows are rigid: shift, never stretch."
+    "adapt": "The harbour wholesale warehouse (Garage_E_02, 28 x 19 m, one big ground-floor hall with truck bays all round, a mezzanine over the east end that stays). The kit shows the same model as the host, so its offsets are in the building's own frame, front +z. Both buying counters are plank workbenches (the buyers' cash boxes are wooden boxes). The buyer's counter stands mid-hall facing the front bays, the clerk behind it and the chalk price board beside it; the Coalman's Brow iron buyer has its own counter, clerk, platform scale and chalk board east of the wholesale counter (the mine has no till of its own); planks and logs stack along the west wall, ore bins and a barrel row along the back wall, cement and iron on pallets on the east side; work lights hang over the bays. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
       "id": "wholesale-counter",
-      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "prefab": "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et",
       "role": "counter",
       "verb": "on floor",
       "offset": [
@@ -65,7 +65,7 @@
       "verb": "on wholesale-counter",
       "offset": [
         0,
-        1.089,
+        1.01,
         4.5
       ],
       "yaw": 0,
@@ -101,6 +101,99 @@
         4.6
       ],
       "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "iron-counter",
+      "name": "Iron_Counter",
+      "prefab": "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        7,
+        0.049,
+        5.4
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "iron-buyer",
+      "name": "Iron_Buyer",
+      "prefab": "{CDE1C29873CECBC0}Prefabs/Trader/LF_IronBuyer_Everon1989.et",
+      "role": "interactable",
+      "verb": "on iron-counter",
+      "offset": [
+        7,
+        1.01,
+        5.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "iron-clerk",
+      "name": "Iron_Clerk",
+      "prefab": "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        7,
+        0.03,
+        4
+      ],
+      "yaw": 0,
+      "class": "LF_NpcBaseEntity",
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "iron-scale",
+      "name": "Iron_Scale",
+      "prefab": "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10.2,
+        0.05,
+        4.2
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "iron-board",
+      "name": "Iron_Board",
+      "prefab": "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et",
+      "role": "board",
+      "verb": "on floor",
+      "offset": [
+        9.4,
+        0.03,
+        6.6
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"coalmans-brow-buyer\"",
+            "m_sStyle": "\"\"",
+            "m_sSize": "\"\"",
+            "m_vFaceAngles": "0 -15 0",
+            "m_fFaceScale": "2.6"
+          },
+          "blocks": []
+        }
+      ],
       "wall": "free",
       "floor": "f0"
     },
@@ -351,6 +444,449 @@
         }
       ],
       "wall": "+z",
+      "floor": "f0"
+    },
+    {
+      "id": "bench-east",
+      "name": "Wholesale_BenchEast",
+      "prefab": "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        12.3,
+        0.03,
+        -3.4
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0",
+      "lift": -0.017
+    },
+    {
+      "id": "bench-anvil",
+      "name": "Wholesale_Anvil",
+      "prefab": "{300FD56E74AB0C49}Prefabs/Props/Furniture/Anvil_01/Anvil_01_base.et",
+      "role": "dressing",
+      "verb": "on bench-east",
+      "offset": [
+        12.3,
+        1.045,
+        -4.2
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "bench-toolbox",
+      "name": "Wholesale_Toolbox",
+      "prefab": "{174E332EF84362B2}Prefabs/Props/Industrial/ToolBox_01/ToolBox_01_base.et",
+      "role": "dressing",
+      "verb": "on bench-east",
+      "offset": [
+        12.3,
+        1.044,
+        -2.5
+      ],
+      "yaw": -80,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "ore-cart",
+      "name": "Wholesale_OreCart",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.5,
+        -0.281,
+        -4.6
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pick-pile",
+      "name": "Wholesale_PickPile",
+      "prefab": "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        1.9,
+        0.055,
+        -4.4
+      ],
+      "yaw": 30,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "sack-pile",
+      "name": "Wholesale_SackPile",
+      "prefab": "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10.6,
+        0.03,
+        -5.2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "sack-truck",
+      "name": "Wholesale_SackTruck",
+      "prefab": "{EB66EE2298D16D18}Prefabs/Props/Civilian/SackTruck_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.4,
+        0.03,
+        3.4
+      ],
+      "yaw": 25,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-3",
+      "name": "Wholesale_Barrel3",
+      "prefab": "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        11.4,
+        0.065,
+        6.9
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-4",
+      "name": "Wholesale_Barrel4",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        12.2,
+        0.065,
+        6.9
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "work-light-4",
+      "name": "Wholesale_Light4",
+      "prefab": "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et",
+      "role": "light",
+      "verb": "against wall",
+      "mount": "wall",
+      "offset": [
+        7.2,
+        3.2,
+        -7.7
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "work-light-5",
+      "name": "Wholesale_Light5",
+      "prefab": "{8F17372BAB5A9CF8}Prefabs/Structures/BuildingParts/Lights/LightIndustrial_02.et",
+      "role": "light",
+      "verb": "against wall",
+      "mount": "wall",
+      "offset": [
+        12.4,
+        3.2,
+        -3.4
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "ore-bin-4",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -7.9,
+        0.07,
+        -4.95
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_OreBin4"
+    },
+    {
+      "id": "ore-bin-5",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -6.3,
+        0.07,
+        -4.95
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_OreBin5"
+    },
+    {
+      "id": "sack-pile-2",
+      "name": "Wholesale_SackPile2",
+      "prefab": "{0879933F4FDD2C2B}Prefabs/Props/Civilian/SackUniversal_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -9.4,
+        0.03,
+        7.2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "cement-pallet-3",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        7,
+        0.051,
+        -2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_CementPallet3"
+    },
+    {
+      "id": "cement-bag-3",
+      "prefab": "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et",
+      "role": "dressing",
+      "verb": "on cement-pallet-3",
+      "offset": [
+        7,
+        0.282,
+        -2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_CementBag3"
+    },
+    {
+      "id": "cement-pallet-4",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        7,
+        0.051,
+        -0.4
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_CementPallet4"
+    },
+    {
+      "id": "cement-bag-4",
+      "prefab": "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et",
+      "role": "dressing",
+      "verb": "on cement-pallet-4",
+      "offset": [
+        7,
+        0.282,
+        -0.4
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_CementBag4"
+    },
+    {
+      "id": "cement-pallet-5",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5,
+        0.051,
+        1.2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_CementPallet5"
+    },
+    {
+      "id": "cement-bag-5",
+      "prefab": "{D58674633332DC86}Prefabs/Items/Resources/CementBag.et",
+      "role": "dressing",
+      "verb": "on cement-pallet-5",
+      "offset": [
+        5,
+        0.282,
+        1.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_CementBag5"
+    },
+    {
+      "id": "crate-2",
+      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        9.2,
+        0.03,
+        2.2
+      ],
+      "yaw": -15,
+      "lift": -0.017,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_Crate2"
+    },
+    {
+      "id": "crate-3",
+      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10.4,
+        0.03,
+        2.4
+      ],
+      "yaw": 8,
+      "lift": -0.017,
+      "wall": "free",
+      "floor": "f0",
+      "name": "Wholesale_Crate3"
+    },
+    {
+      "id": "box-pile-1",
+      "name": "Wholesale_BoxPile1",
+      "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        8.4,
+        0.013,
+        -0.6
+      ],
+      "yaw": 10,
+      "wall": "free",
+      "floor": "f0",
+      "lift": -0.017
+    },
+    {
+      "id": "box-pile-2",
+      "name": "Wholesale_BoxPile2",
+      "prefab": "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        9,
+        0.013,
+        -0.5
+      ],
+      "yaw": -12,
+      "wall": "free",
+      "floor": "f0",
+      "lift": -0.017
+    },
+    {
+      "id": "ore-cart-2",
+      "name": "Wholesale_OreCart2",
+      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.6,
+        -0.281,
+        -5.6
+      ],
+      "yaw": 90,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pick-pile-2",
+      "name": "Wholesale_PickPile2",
+      "prefab": "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.3,
+        0.055,
+        -4.2
+      ],
+      "yaw": -40,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-5",
+      "name": "Wholesale_Barrel5",
+      "prefab": "{7D52C517720EF2F6}Prefabs/Props/Industrial/BarrelMetal_01_grey.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        10.6,
+        0.065,
+        7.8
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "barrel-6",
+      "name": "Wholesale_Barrel6",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        11.8,
+        0.065,
+        8.2
+      ],
+      "yaw": 0,
+      "free": true,
+      "wall": "free",
       "floor": "f0"
     }
   ],

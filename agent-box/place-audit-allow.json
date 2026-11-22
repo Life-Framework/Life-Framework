@@ -156,10 +156,10 @@
       "why": "The b16 bench stands on a pavement edge that falls 9 cm under its 1.6 m seat; it is seated on the highest of five probed points (street-life.mjs benchGround), so the low side shows a 1.4 cm gap at one foot."
     },
     {
-      "match": "^Fit_coalmans_brow_mine_mine_(furnace|desk|buyer_table|buyer_scale|buyer_crate_[12]|picks|flood) ",
+      "match": "^Fit_coalmans_brow_mine_mine_(furnace|desk|picks|flood) ",
       "kind": "contact",
       "layer": "Place_coalmans-brow_mine.layer",
-      "why": "Open hillside on Coalman's Brow: the ground falls 2 to 21 cm under each footprint (west to east), so the furnace (6 cm), the desk (2.8 cm), the buyer's yard table (8.6 cm), the platform scale beside it (13.1 cm), its two pallet boxes of ore bars (9.8 and 11.5 cm), the pick pile (3.2 cm) and the work lamp (1.3 cm) bury their uphill side in the slope the way any prop on a bank does; the grass hides the uphill edge in the buyer close-up. Rows rest on the probed terrain (tools/town/terrain/coalmans-brow-mine.json), as on the Black Lake shore."
+      "why": "Open hillside on Coalman's Brow: the ground falls 2 to 21 cm under each footprint (west to east), so the furnace (6 cm), the desk (2.8 cm), the pick pile (3.2 cm) and the work lamp (1.3 cm) bury their uphill side in the slope the way any prop on a bank does. Rows rest on the probed terrain (tools/town/terrain/coalmans-brow-mine.json), as on the Black Lake shore."
     },
     {
       "match": "^Fit_coalmans_brow_mine_mine_heap_[lr] ",
@@ -273,6 +273,18 @@
       "kind": "action-off-mesh",
       "layer": "Place_saint-philippe_bank.layer",
       "why": "LF_BankVault_RoomDoor is a mesh-less root: its one mesh is the VaultDoor child leaf (1.27 m right of the root, hinged in the vault-room doorway), which the audit does not read as a mesh. The action context (radius 1.5 m at the front's centre, 0.45 m out) overlaps the leaf; the same prefab opens in the grid bank proof (#2384)."
+    },
+    {
+      "match": "^Fit_saint_philippe_jail_jail_cell_door ",
+      "kind": "blocks-door",
+      "layer": "Place_saint-philippe_jail.layer",
+      "why": "EL_JailDoor stands where the villa's own barred cell leaf (Door_PrisonCell_E_A_Left_INT_ST_B, a child of the DoorSet) hangs; the audit reads that leaf as a door. The kit's boxed clear (Fit_saint_philippe_jail_clear_box1) hides the vanilla leaf at runtime (server log 'hid 1 vanilla props in the box'), so only the placed door remains (island-jail-breach-proof)."
+    },
+    {
+      "match": "^Fit_saint_philippe_jail_jail_outer_wing(_2)? ",
+      "kind": "blocks-door",
+      "layer": "Place_saint-philippe_jail.layer",
+      "why": "The two wing leaves of the jail gate are fixed and locked (LF_LockComponent, no breach target, no open action), overlapping by 0.5 m on purpose so the 2.7 m corridor mouth has no gap; neither swings, so each reads the other as a door in its swing (gate close-up in the PR)."
     }
   ]
 }

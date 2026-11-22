@@ -115,6 +115,7 @@ class LF_CivilianJob
 	static const int PAY_PARCEL = 40;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
 	static const int PAY_FUEL = 60;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
 	static const int PAY_TAXI = 80;	// lf-fixed: fallback only, mirrors LF_Jobs.conf
+	static const int PAY_POSTAL = 80;	// lf-fixed: fallback only, mirrors LF_Jobs.conf (the postal van run, LF_PostalRun)
 
 	//! The reason keys the drop-off refusal shows (Language/everonlife_localization.st).
 	static const string KEY_TOO_CLOSE = "#LF-Job_TooClose";

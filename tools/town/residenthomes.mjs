@@ -40,11 +40,11 @@ export const KEY_PRIVATE = "#LF-Everon-Lock_Private";
 // A home: the purpose row it stands on, the resident who lives there (LF_Residents_Everon1989.conf) and the plate's wording. The teller's and
 // the clerk's names are this card's invention (the pack names neither yet).
 export const HOMES = [
-  { row: "sp:b15", resident: "cafe_owner", key: "CafeOwner", plate: "Mme O. Marchand", existing: "{place}.residents" },
-  { row: "sp:b17", resident: "old_man", key: "OldMan", plate: "M. G. Lenoir" },
-  { row: "sp:b117", resident: "night_shift", key: "NightShift", plate: "M. R. Duval" },
-  { row: "sp:b50", resident: "teller", key: "Teller", plate: "Mme C. Girard" },
-  { row: "sp:b09", resident: "store_clerk", key: "StoreClerk", plate: "M. P. Roche" },
+  { row: "sp:b15", resident: "cafe_owner", key: "CafeOwner", plate: "Mr. O. Marchand", existing: "{place}.residents" },
+  { row: "sp:b17", resident: "old_man", key: "OldMan", plate: "Mr. G. Lenoir" },
+  { row: "sp:b117", resident: "night_shift", key: "NightShift", plate: "Mr. R. Duval" },
+  { row: "sp:b50", resident: "teller", key: "Teller", plate: "Mrs. C. Girard" },
+  { row: "sp:b09", resident: "store_clerk", key: "StoreClerk", plate: "Mr. P. Roche" },
 ];
 const PLATE_LIFT = 1.4; // metres over the ground: a name plate sits at about door-handle height
 const PLATE_SCALE = 0.5; // the vanilla 90 x 45 cm plate, halved

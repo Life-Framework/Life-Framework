@@ -32,6 +32,8 @@ export const DROP_SOURCE = "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_Parce
 // The slot's kit picks the prop: the parcel run's mailbox, the fuel run's drum (LF_FuelDrop, #3370) or the illicit buyer's spot marker (core LF_BuyerSpot, #3416).
 export const DROP_KITS = {
   "parcel-drops": { prefab: DROP_PREFAB, source: DROP_SOURCE },
+  // The postal van run (LF_PostalRun): a post office stand where the run starts, unloads and hands in, one per office.
+  "postal-drops": { prefab: "{BEEEAB7F4544E89C}Prefabs/Props/Roleplay/LF_PostalPoint_Everon.et", source: "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_PostalPoint_Everon.et" },
   "fuel-drops": { prefab: "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et", source: "addons/LF_Everon1989/Prefabs/Props/Roleplay/LF_FuelDrop.et" },
   "buyer-spots": { prefab: "{208688EDE535B6A4}Prefabs/Systems/Laundering/LF_BuyerSpot.et", source: "addons/LifeFramework/Prefabs/Systems/Laundering/LF_BuyerSpot.et" },
   // The placeable ATM (#3352, #3355): each machine overrides the prefab's place id (`placeComp` is the prefab's own LF_PlaceComponent GUID) so the ATMs are told apart in LF_Places.
