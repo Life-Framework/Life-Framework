@@ -191,6 +191,7 @@
     "ticketSecondDeadline": 1800,
     "ticketLateMultiplier": 2,
     "officerKillOfWantedExempt": true,
+    "alphaInstantApproval": false,
     "searchCooldownSeconds": 120,
     "ticketMaxOpen": 5,
     "ticketKeepPaid": 3,
