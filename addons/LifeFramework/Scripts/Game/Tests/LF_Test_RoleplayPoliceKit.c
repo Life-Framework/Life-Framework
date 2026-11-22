@@ -1,4 +1,4 @@
-// red-proof: 2026-11-22 `toolsi test --no-build --red LF_Test_RoleplayPoliceKit`: `RED-OK spawn/roleplay-duty-kits (fails with the hook on, 6 assertions)` (RedProof reads the CIVILIAN row, which the base has none of, as the unfixed base had no POLICE row).
+// red-proof: 2026-11-22 `tools\cli test --no-build --red LF_Test_RoleplayPoliceKit`: `RED-OK spawn/roleplay-duty-kits (fails with the hook on, 6 assertions)`; RedProof reads the CIVILIAN row, which the base lacks as the unfixed base lacked POLICE.
 
 //! rc 0.2.0 (overnight island smoke): the live game mode GameMode_Roleplay.et (the island and every server built on the
 //! core) had no POLICE or MEDIC kit, only the debug child did, so an officer clocking in on the island got the generic
