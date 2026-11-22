@@ -389,6 +389,7 @@ class LF_MapAlarms
 	{
 		s_aClient = {};
 		LF_MapAlarmRules.Decode(text, s_aClient);
+		LF_Debug.Info(FEATURE, string.Format("map alarm rows received: %1", s_aClient.Count()));
 		if (s_OnChanged)
 			s_OnChanged.Invoke();
 	}
