@@ -228,8 +228,22 @@ export function lowRam(snaps) {
   return snaps.filter((m) => Number.isFinite(m.freeGb) && Number.isFinite(m.floorGb) && m.freeGb < m.floorGb);
 }
 
-export function poolLines({ snaps, queue, exceeded = false, budgetMs = 0, elapsedMs = 0 }) {
+// The queue tickets waiting longer than warnMin, oldest first: "  WAIT 23m session map-robbery-alarm (ram: needs 4.1 GB)".
+export function longWaitLines(tickets, { now = Date.now(), warnMin = 10 } = {}) {
+  const gb = (x) => (x / 1024).toFixed(1);
+  return (tickets ?? [])
+    .filter((t) => !t.granted && Number.isFinite(Date.parse(t.at)) && now - Date.parse(t.at) > warnMin * 60000)
+    .sort((a, b) => Date.parse(a.at) - Date.parse(b.at))
+    .map((t) => {
+      const why = t.neverFits ? "ram: STUCK, over what the machine can free" : t.stuck === "ram" ? `ram${Number.isFinite(t.needMb) ? `: needs ${gb(t.needMb)} GB free` : ""}` : t.stuck || "behind others";
+      return `  WAIT ${Math.round((now - Date.parse(t.at)) / 60000)}m ${t.lane ?? "session"} ${t.slug ?? "?"} ${t.purpose ?? ""} on ${(t.machines ?? []).join("|")} (${why})`;
+    });
+}
+
+export function poolLines({ snaps, queue, exceeded = false, budgetMs = 0, elapsedMs = 0, tickets, now = Date.now(), warnMin = 10 }) {
   const lines = [`POOL queue ${queue ?? "?"} waiting`, ...snaps.map((m) => `  ${poolLine(m)}`)];
+  const long = longWaitLines(tickets, { now, warnMin });
+  if (long.length) lines.push(`  ${long.length} ticket(s) waiting over ${warnMin} min (tools\\cli pool status --verbose says why):`, ...long);
   for (const m of lowRam(snaps)) lines.push(`  WARN RAM: ${m.name} has ${m.freeGb} GB free, under its ${m.floorGb} GB floor (it takes no new job until RAM frees)`);
   if (exceeded) {
     const cut = snaps.filter((m) => m.cut === "budget").map((m) => `${m.name} (${m.health})`);

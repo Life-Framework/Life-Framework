@@ -50,10 +50,12 @@ export function jobCommitMb(peaks, { kind, clients = 1 } = {}) {
 
 // Commit the running processes will still take: for each, its kind's peak less the private bytes it holds
 // (the larger of now and the highest seen, maxPrivMb). A scan without private bytes counts nothing for it.
-export function unrealisedCommitMb(procs, peaks) {
+// A game process past the growth window (pool-ram GROWTH_WINDOW_S, its scan age ageS) has loaded and counts nothing.
+export function unrealisedCommitMb(procs, peaks, { windowS = 300 } = {}) {
   let mb = 0;
   for (const p of procs ?? []) {
     if (!Number.isFinite(Number(p.privMb))) continue;
+    if (p.kind !== "workbench" && Number.isFinite(p.ageS) && p.ageS > windowS) continue;
     mb += Math.max(0, commitPeakMb(peaks, p.kind) - Math.max(Number(p.privMb) || 0, Number(p.maxPrivMb) || 0));
   }
   return Math.round(mb);
