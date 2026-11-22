@@ -38,6 +38,13 @@ export const DROP_KITS = {
   atms: { prefab: "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et", source: "addons/LifeFramework/Prefabs/Props/Money/LF_ATM.et", placeComp: "{7070D89FFB6DC889}", placeId: (dr) => `atm.${dr.place}.${dr.building}` },
   // A payphone booth at a kerb beside a building (#3358): back to the wall, front to the street, like a mailbox.
   payphones: { prefab: "{8F2C6E1D4B7A5093}Prefabs/Comms/LF_Payphone.et", source: "addons/LifeFramework/Prefabs/Comms/LF_Payphone.et" },
+  // A bus stop sign at a kerb beside a building, like a payphone: each overrides its LF_BusStopComponent stop id, and its
+  // name when the mapping entry gives a `label` (a pack string key), so the timetable tells the stops apart.
+  "bus-stops": {
+    prefab: "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et", source: "addons/LifeFramework/Prefabs/Travel/LF_BusStop.et",
+    placeComp: "{9900D66B63362F47}", placeClass: "LF_BusStopComponent", placeIdField: "m_sStopId",
+    placeId: (dr) => `bus.${dr.place}.${dr.building}`, placeFields: (dr) => (dr.label ? { m_sLabel: dr.label } : {}),
+  },
   // A home's "For sale" sign (#3584, `town homes`): placed with the same entrance-wall seat as a drop.
   // A resident home's brass name plate (#3233, `town residenthomes`): the small vanilla wall plate, seated like a drop.
   "resident-plate": { prefab: "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et", source: "addons/LifeFramework/Prefabs/Props/Signs/LF_Sign_PlateSmall.et" },
@@ -128,8 +135,9 @@ async function gameReader() {
 
 const entityLine = (e) => `GenericEntity ${e.name} : "${e.ref}" {${e.placeId ? `
  components {
-  LF_PlaceComponent "${e.placeComp}" {
-   m_sId "${e.placeId}"
+  ${e.placeClass ?? "LF_PlaceComponent"} "${e.placeComp}" {
+   ${e.placeIdField ?? "m_sId"} "${e.placeId}"${Object.entries(e.placeFields ?? {}).map(([k, v]) => `
+   ${k} "${v}"`).join("")}
   }
  }` : ""}
  coords ${e.coords.join(" ")}
@@ -163,7 +171,7 @@ export async function planDrop({ drop, slotId, dossier, root, shell, readGame, k
   // Off the wall by WALL_AIR along the mailbox's facing (the wall it was seated on is behind it).
   const e = plan?.ok ? plan.ents.rowEnts[0] : null;
   const prop = DROP_KITS[kitName];
-  if (e && prop?.placeId) Object.assign(e, { placeId: prop.placeId(drop), placeComp: prop.placeComp });
+  if (e && prop?.placeId) Object.assign(e, { placeId: prop.placeId(drop), placeComp: prop.placeComp, placeClass: prop.placeClass, placeIdField: prop.placeIdField, placeFields: prop.placeFields?.(drop) });
   const onWall = !!plan?.seat?.rows?.[0]?.wall;
   // A mapping entry's `dy` (metres, after the wall seat): the ground at the seated spot is higher or lower than the dossier's
   // floor height of the host, as the contact sheet (`look contact`) reads it. Unlike `lift` it never moves the wall seat (#3880).

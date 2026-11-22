@@ -1,0 +1,510 @@
+{
+ "schema": 1,
+ "place": {
+  "name": "xz-4337-10349",
+  "key": null,
+  "kind": null,
+  "source": "coordinates",
+  "slug": "coalmans-brow",
+  "x": 4337,
+  "y": 37.4,
+  "z": 10349
+ },
+ "radius": 80,
+ "generated": {
+  "at": "2026-11-22",
+  "tool": "tools\\cli scout",
+  "command": "tools\\cli scout 4337,10349 --radius 80",
+  "view": 60,
+  "gameBuild": "Arma Reforger build 26266485 (installed 2026-11-08)",
+  "world": "Worlds/CoreOnEveron/CoreOnEveron.ent"
+ },
+ "nearbyPlaces": [
+  {
+   "name": "power plant",
+   "kind": "other",
+   "distance": 252,
+   "direction": "S"
+  },
+  {
+   "name": "factory",
+   "kind": "urban",
+   "distance": 291,
+   "direction": "NE"
+  },
+  {
+   "name": "Spring Pond",
+   "kind": "aquatic",
+   "distance": 368,
+   "direction": "NE"
+  },
+  {
+   "name": "Saint-Philippe",
+   "kind": "other",
+   "distance": 376,
+   "direction": "N"
+  },
+  {
+   "name": "Saint-Philippe",
+   "kind": "urban",
+   "distance": 454,
+   "direction": "N"
+  },
+  {
+   "name": "GALLOW'S HILL",
+   "kind": "natural",
+   "distance": 590,
+   "direction": "E"
+  },
+  {
+   "name": "Lighthouse",
+   "kind": "other",
+   "distance": 592,
+   "direction": "NW"
+  },
+  {
+   "name": "Charlet Bay",
+   "kind": "aquatic",
+   "distance": 657,
+   "direction": "NW"
+  }
+ ],
+ "summary": {
+  "buildings": 0,
+  "byType": {},
+  "civic": 0,
+  "homes": 0,
+  "ruins": 0,
+  "enterable": 0,
+  "entrances": 0,
+  "doors": 0,
+  "props": 0,
+  "trees": 18,
+  "roads": 1,
+  "junctions": 0,
+  "freePlots": 8,
+  "waterBodies": 1,
+  "walls": 13,
+  "otherEntities": 12,
+  "portPieces": 0
+ },
+ "terrain": {
+  "min": 25.3,
+  "max": 55.3,
+  "mean": 37.9,
+  "range": 30.1,
+  "flatShare": 0.04,
+  "gentleShare": 0.22,
+  "steepShare": 0.27,
+  "steepest": {
+   "deg": 39.8,
+   "x": 4307,
+   "z": 10284
+  },
+  "tilt": {
+   "deg": 9.3,
+   "fallsToward": "NE"
+  },
+  "waterShare": 0,
+  "nearestWater": null,
+  "notes": [
+   "ground 25.3 to 55.3 m (30.1 m of relief) within 80 m; mean 37.9 m",
+   "4% of the ground is under 3 degrees, 22% 3 to 8, 27% over 15",
+   "overall the ground falls 9.3 degrees toward the NE",
+   "steepest ground 39.8 degrees at 4307, 10284"
+  ]
+ },
+ "water": {
+  "bodies": [
+   {
+    "id": "w1",
+    "name": "Lake_NorthWest",
+    "kind": "pond",
+    "source": "named-spline",
+    "cx": 4253.2,
+    "cz": 10301.1,
+    "area": 934,
+    "surfaceY": 40.1,
+    "distance": 96.5,
+    "outline": [
+     [
+      4241.6,
+      10317.7
+     ],
+     [
+      4237.5,
+      10306.9
+     ],
+     [
+      4239.4,
+      10295
+     ],
+     [
+      4245.1,
+      10287.7
+     ],
+     [
+      4253.2,
+      10282
+     ],
+     [
+      4264.5,
+      10280.8
+     ],
+     [
+      4269.4,
+      10287.2
+     ],
+     [
+      4265.6,
+      10303.6
+     ],
+     [
+      4259.7,
+      10318.8
+     ],
+     [
+      4250.1,
+      10323.3
+     ]
+    ]
+   }
+  ],
+  "shore": [
+   {
+    "water": "w1",
+    "x": 4264.3,
+    "z": 10313,
+    "y": 42.5,
+    "facing": "SW",
+    "yaw": 223,
+    "distance": 81.1
+   },
+   {
+    "water": "w1",
+    "x": 4269.8,
+    "z": 10294.5,
+    "y": 42.1,
+    "facing": "W",
+    "yaw": 292,
+    "distance": 86.5
+   },
+   {
+    "water": "w1",
+    "x": 4268.5,
+    "z": 10282.1,
+    "y": 40.6,
+    "facing": "NW",
+    "yaw": 321,
+    "distance": 95.8
+   }
+  ],
+  "note": "lakes and ponds are the closed outlines of the dump's water shapes (the sea probe cannot see them); the grid, the terrain share and the free plots count the cells inside them as water. Shore points are dry ground 2.5 m outside an outline, not checked against trees or props"
+ },
+ "mainStreet": {
+  "road": "NW-SE road r01",
+  "roadId": "r01",
+  "buildingsAlong": 0,
+  "at": [
+   4321.9,
+   10339
+  ],
+  "runs": "NW-SE"
+ },
+ "roads": [
+  {
+   "id": "r01",
+   "name": "NW-SE road r01",
+   "cls": "RoadEntity",
+   "runs": "NW-SE",
+   "points": [
+    [
+     4284.3,
+     10423.6
+    ],
+    [
+     4287.9,
+     10411.5
+    ],
+    [
+     4291.7,
+     10401.8
+    ],
+    [
+     4293.9,
+     10392.1
+    ],
+    [
+     4293.7,
+     10387.7
+    ],
+    [
+     4295.8,
+     10382.4
+    ],
+    [
+     4300.6,
+     10375.3
+    ],
+    [
+     4303.9,
+     10368.7
+    ],
+    [
+     4306.7,
+     10365.3
+    ],
+    [
+     4310.3,
+     10358.8
+    ],
+    [
+     4312.1,
+     10353.8
+    ],
+    [
+     4314.2,
+     10350
+    ],
+    [
+     4318.3,
+     10344.4
+    ],
+    [
+     4324.7,
+     10334.7
+    ],
+    [
+     4327.8,
+     10326.2
+    ],
+    [
+     4329.1,
+     10315.8
+    ],
+    [
+     4329.2,
+     10309.9
+    ],
+    [
+     4331.7,
+     10305.8
+    ],
+    [
+     4343.1,
+     10301.8
+    ],
+    [
+     4349.2,
+     10296.3
+    ],
+    [
+     4351.9,
+     10285.7
+    ],
+    [
+     4355,
+     10273.4
+    ],
+    [
+     4352,
+     10265.3
+    ]
+   ],
+   "length": 181.9
+  }
+ ],
+ "junctions": [],
+ "buildings": [],
+ "props": [],
+ "propCounts": {},
+ "freePlots": {
+  "plots": [
+   {
+    "id": "p1",
+    "x": 4397,
+    "z": 10346,
+    "width": 32,
+    "depth": 50,
+    "area": 1600,
+    "ground": {
+     "min": 28.1,
+     "max": 31.9
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 69
+    },
+    "nearestBuilding": null,
+    "distance": 60.1
+   },
+   {
+    "id": "p2",
+    "x": 4330,
+    "z": 10404,
+    "width": 30,
+    "depth": 46,
+    "area": 1380,
+    "ground": {
+     "min": 32.4,
+     "max": 37.6
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 37.8
+    },
+    "nearestBuilding": null,
+    "distance": 55.4
+   },
+   {
+    "id": "p3",
+    "x": 4278,
+    "z": 10363,
+    "width": 34,
+    "depth": 28,
+    "area": 952,
+    "ground": {
+     "min": 43.4,
+     "max": 46.3
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 25.6
+    },
+    "nearestBuilding": null,
+    "distance": 60.6
+   },
+   {
+    "id": "p4",
+    "x": 4362,
+    "z": 10359,
+    "width": 34,
+    "depth": 16,
+    "area": 544,
+    "ground": {
+     "min": 31.4,
+     "max": 37.2
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 44.5
+    },
+    "nearestBuilding": null,
+    "distance": 26.9
+   },
+   {
+    "id": "p5",
+    "x": 4370,
+    "z": 10405,
+    "width": 22,
+    "depth": 24,
+    "area": 528,
+    "ground": {
+     "min": 27.6,
+     "max": 30.5
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 74.7
+    },
+    "nearestBuilding": null,
+    "distance": 65
+   },
+   {
+    "id": "p6",
+    "x": 4394,
+    "z": 10386,
+    "width": 14,
+    "depth": 26,
+    "area": 364,
+    "ground": {
+     "min": 26.5,
+     "max": 28.9
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 86.1
+    },
+    "nearestBuilding": null,
+    "distance": 68
+   },
+   {
+    "id": "p7",
+    "x": 4342,
+    "z": 10331,
+    "width": 14,
+    "depth": 20,
+    "area": 280,
+    "ground": {
+     "min": 38.9,
+     "max": 41.6
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 15
+    },
+    "nearestBuilding": null,
+    "distance": 18.7
+   },
+   {
+    "id": "p8",
+    "x": 4304,
+    "z": 10341,
+    "width": 10,
+    "depth": 20,
+    "area": 200,
+    "ground": {
+     "min": 45.7,
+     "max": 48.7
+    },
+    "nearestRoad": {
+     "name": "NW-SE road r01",
+     "distance": 13.5
+    },
+    "nearestBuilding": null,
+    "distance": 34
+   }
+  ],
+  "note": "plots are open rectangles at least 10 m on the short side, kept 2.5 m off buildings, 4.5 m off a road's centre line, 2 m off a tree, on ground under 12 degrees; axis aligned, not the best use of the land"
+ },
+ "pictures": [
+  {
+   "role": "overview",
+   "file": "img/overview-top.jpg",
+   "caption": "from above, north up"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-wide.jpg",
+   "caption": "wide, from the south"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob270.jpg",
+   "caption": "from the west"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob000.jpg",
+   "caption": "from the north"
+  },
+  {
+   "role": "overview",
+   "file": "img/overview-ob090.jpg",
+   "caption": "from the east"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-wide.jpg",
+   "caption": "NW-SE road r01 (NW-SE), looking along it"
+  },
+  {
+   "role": "main-street",
+   "file": "img/main-street-ob090.jpg",
+   "caption": "from the east"
+  }
+ ],
+ "notes": [
+  "buildings (types, footprints, floors, interiors) are read from the Everon catalog, docs/everon/catalog-buildings.json; 0 of 0 matched an entity of the engine dump, which adds the door positions"
+ ]
+}

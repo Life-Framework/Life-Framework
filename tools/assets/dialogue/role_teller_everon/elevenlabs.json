@@ -1,0 +1,76 @@
+{
+  "id": "role_teller_everon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "082592aa281f11fa",
+      "date": "2026-11-22",
+      "voice_id": "1a6onbE6zC5AwIN3pEp0",
+      "voice_name": "Nicolas - French English Male",
+      "model": "eleven_multilingual_v2",
+      "text": "Good day. Welcome to the bank. How can I help?",
+      "chars": 46,
+      "chars_total": 18,
+      "request_id": "RMFsXMPebDO3qCxvBf9r",
+      "seconds": 2.74,
+      "mouth": "5932989731111101299924663343417753224972767763444311100"
+    },
+    "what": {
+      "hash": "5b9a49085de23ce6",
+      "date": "2026-11-22",
+      "voice_id": "1a6onbE6zC5AwIN3pEp0",
+      "voice_name": "Nicolas - French English Male",
+      "model": "eleven_multilingual_v2",
+      "text": "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals.",
+      "chars": 164,
+      "chars_total": 66,
+      "request_id": "ZeexvuyvQ66KeHzOFT9U",
+      "seconds": 10.26,
+      "mouth": "52269536324879944745343454613765322321000000000289954343741499425212118988445433218986431000000000035899878845289972321799722210000000000024159964156343653432543799993269983372498954412433378521797765311000"
+    },
+    "where": {
+      "hash": "a5f226a653c9cc32",
+      "date": "2026-11-22",
+      "voice_id": "1a6onbE6zC5AwIN3pEp0",
+      "voice_name": "Nicolas - French English Male",
+      "model": "eleven_multilingual_v2",
+      "text": "The post office is right beside us. The town board on the square lists the rest, and the police station is a short walk up the street.",
+      "chars": 134,
+      "chars_total": 54,
+      "request_id": "XpsgBD7nhBs4qoKPSnCw",
+      "seconds": 8.52,
+      "mouth": "251599649942652222117899324337899643233210000000000000004313899766999993522233129998554569742116537743232011000000014352178978431697334233232335982126683241123312364212000"
+    },
+    "rumour": {
+      "hash": "a4443649bceaf9e5",
+      "date": "2026-11-22",
+      "voice_id": "1a6onbE6zC5AwIN3pEp0",
+      "voice_name": "Nicolas - French English Male",
+      "model": "eleven_multilingual_v2",
+      "text": "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business.",
+      "chars": 112,
+      "chars_total": 45,
+      "request_id": "Kbxl08a659VV73OK0PXL",
+      "seconds": 6.42,
+      "mouth": "324889853313899744654313323312599994332206876632474213542343141299861210000000000451399958643731999722213787751433267423322222000"
+    },
+    "bye": {
+      "hash": "6f0a90b97bc6f5ce",
+      "date": "2026-11-22",
+      "voice_id": "1a6onbE6zC5AwIN3pEp0",
+      "voice_name": "Nicolas - French English Male",
+      "model": "eleven_multilingual_v2",
+      "text": "Good day. Mind your money.",
+      "chars": 26,
+      "chars_total": 10,
+      "request_id": "JZtYTQX9CirnW9u0JkCy",
+      "seconds": 1.2,
+      "mouth": "4327963125796577898641000"
+    }
+  },
+  "voice": {
+    "id": "1a6onbE6zC5AwIN3pEp0",
+    "name": "Nicolas - French English Male",
+    "source": "voice library"
+  }
+}

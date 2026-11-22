@@ -619,7 +619,8 @@ export async function planFitSeated(opts, ctx = {}) {
     for (const r of plan.rows) {
       const src = plan.kit.rows.find((q) => q.id === r.id);
       const h = src?.mount === "terrain" ? ctx.terrain?.at(r.coords[0], r.coords[2]) : null;
-      if (Number.isFinite(h)) r.coords[1] = r3(h);
+      // A kit row's `lift` raises it over the probed ground, as on a host's floor (#3685): a trader on its counter top.
+      if (Number.isFinite(h)) r.coords[1] = r3(h + (Number.isFinite(src?.lift) ? src.lift : 0));
     }
     for (const e of plan.ents.rowEnts) {
       const r = plan.rows.find((q) => q.id === e.id);

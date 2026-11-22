@@ -66,6 +66,7 @@
 - [Sites](features/sites.md)
 - [Telephone calls (#147)](features/telephone-calls.md)
 - [Toys](features/toys.md)
+- [Travel](features/travel.md)
 - [UI / Layouts / Localization](features/ui-layouts-localization.md)
 - [Vehicles & License Plates](features/vehicles-license-plates.md)
 - [Workbench play (wb-fast-play, 2026-11-16)](features/workbench-play.md)

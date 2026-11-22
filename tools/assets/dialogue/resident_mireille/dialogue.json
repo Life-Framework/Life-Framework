@@ -8,7 +8,7 @@
     "sex": "male",
     "name": "Alex - Warm, Empathetic, Confident",
     "public_owner_id": "8247255c3a0de450d9294a8bd1c3c39e3d2e25be086791f0afd4f2ec57cd9819",
-    "why": "A warm empathetic middle-aged French voice for the chatty neighbour (the game has male bodies only; the voice is male).",
+    "why": "A warm empathetic middle-aged French voice for Marius Caron, the chatty neighbour (renamed from Mireille on 2026-11-22: the game has male bodies only, so a woman's name on a male body heard a man's voice; the voice is male).",
     "model": "eleven_multilingual_v2",
     "settings": {
       "stability": 0.45,
@@ -100,16 +100,16 @@
       "text": "Oh. Hello. I would rather not chat today."
     },
     "greet": {
-      "text": "Bonjour. Mireille. Forgive me, I only came out for a coffee and a little conversation."
+      "text": "Bonjour. Marius. Forgive me, I only came out for a coffee and a little conversation."
     },
     "greet_friendly": {
       "text": "Hello, dear. Sit. The coffee here is terrible, but it is hot."
     },
     "greet_regular": {
-      "text": "There you are! I was just telling Odile about you."
+      "text": "There you are! I was just telling Odilon about you."
     },
     "about_cafe": {
-      "text": "Odile runs the cafe. She keeps the best table for the mayor and pretends she does not."
+      "text": "Odilon runs the cafe. He keeps the best table for the mayor and pretends he does not."
     },
     "about_gossip": {
       "text": "They say the harbour master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like."

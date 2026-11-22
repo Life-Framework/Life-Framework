@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D50B5FD789A20A5D}Sounds/Dialogue/role_townsfolk_everon/Dialogue_role_townsfolk_everon.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{AE22E5ED5DB656A7}Configs/Dialogue/LF_Dialogue_RoleMechanic.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

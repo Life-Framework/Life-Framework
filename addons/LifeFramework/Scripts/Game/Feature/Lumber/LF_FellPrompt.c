@@ -52,7 +52,7 @@ class LF_FellPrompt
 		if (!tree || !config || !Tree.Cast(tree))
 			return false;
 
-		ResourceName prefab = LF_FellAction.PrefabOf(tree);
+		ResourceName prefab = LF_FellAction.TreePrefabOf(tree);
 		if (prefab.IsEmpty())
 			return false;
 
