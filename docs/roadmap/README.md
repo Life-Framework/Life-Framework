@@ -1,5 +1,11 @@
 # Roadmap
 
+> **Now: first 2 hours polish, then 0.2.1.** The maintainer's focus since 2026-11-22 is the first two hours on
+> Everon (hostel bed, clerk and welcome pack, starter car, apples, juice, market, the F2 starter quests):
+> polished and easy to learn, every step marked, every screen simple. After the 0.2.1 wave lands, a full
+> first-two-hours review with two fresh characters; its fixes come before any new system. The wishlist below
+> waits for that.
+
 The gameplay and release plan. Milestones are the one plan: each ends with a
 public build, and they run in the order below ([direction](../direction.md)). The next
 milestone starts once the one before it is code-complete and only playtest and
@@ -39,14 +45,69 @@ Listed in the order they run (restructured 2026-11-14; status as of 2026-11-16).
 | M2.5 | Showcase and Outreach | **Running alongside M4 and M5** now that there is a build to point at: weekly playtests, recruiting posts, contributor docs ([m2-5-outline.md](m2-5-outline.md)) | The showcase #566 |
 | M4 | Flagship Live | **Finishing.** The alpha server is up behind a password; the first alpha session is Saturday 2026-11-21, 19:00 UK, then every Saturday ([m4-outline.md](m4-outline.md)) | Opening day #1006 |
 | M5 | Settling in | **In development** since 2026-11-15, released chapter by chapter. First weeks after launch: every player is new ([m5-outline.md](m5-outline.md)) | Armed and dressed · Evenings in the village · On patrol · Arrival · story: The relocated |
-| M6 | Making a living | **Outline in review** ([m6-outline.md](m6-outline.md)): map state 2, the working island. Players with jobs and money want more from them | The working island · Getting better at the job (with standing) · The market moves (with the supermarket) · Gone fishing · Working the routes · Scrap and salvage · The bank · story: The state factory |
-| M7 | Power and turf | Organisations form and crime escalates | Gang war · The convoy job · The big heist · Dirty money · Behind bars · Making detective · story: The shipment |
+| M6 | Making a living | **Outline in review** ([m6-outline.md](m6-outline.md)): map state 2, the working island. Players with jobs and money want more from them | The working island · Getting better at the job (with standing and professions) · The market moves (with the supermarket) · Gone fishing · Working the routes · Bigger wheels (new) · Scrap and salvage · The bank · story: The state factory |
+| M7 | Power and turf | **Outline in review** ([m7-outline.md](m7-outline.md)): organisations form into gangs and crime escalates | Running a crew (new) · Gang war · The outposts (new) · Dirty money · The convoy job · The big heist · By the book (new) · Behind bars · Making detective · story: The shipment |
 | M8 | Roots | Long-term players want something of their own | A place of your own · Working the land · Garages and lockers · Neighbours (pull forward if launch is quiet) · story: The anniversary |
 | Backlog | Unscheduled | Filed, not next. An item moves into a chapter when it is picked | Catch the bus #1793 · GitHub milestone "Backlog" |
 
 Beside them runs **Development** (tooling and pipelines), which is not a release.
 The asset pipelines (#339 to #343) and the ArchBuilder harness (#995) are
 foundation epics in M5.
+
+## After 0.2.1: the maintainer's wishlist (2026-11-22)
+
+Seventeen items the maintainer listed (item 16 is two heists) for after the 0.2.1 cut and the first-two-hours review. Each has an
+outline section (goal, what a player sees, what it builds on, open questions, size) and one epic issue, or a
+link to the issue that already covers it. No slices are cut until the maintainer approves the outlines.
+
+| # | Item | Milestone | Section | Issue |
+| --- | --- | --- | --- | --- |
+| 1 | Truck dealer | M6 | [m6-outline.md "Truck dealer"](m6-outline.md#truck-dealer) | #4141 |
+| 2 | Civilian helicopter dealer | M6 | [m6-outline.md "Civilian helicopter dealer"](m6-outline.md#civilian-helicopter-dealer) | #4142 |
+| 3 | Rebel outposts | M7 | [m7-outline.md "Rebel outposts"](m7-outline.md#rebel-outposts) | #4145 |
+| 4 | Bug: the vault drill and the playtest robbery kit | Bug (post-review fix list) | [below](#bug-the-vault-drill-and-the-playtest-robbery-kit) | #4156 |
+| 5 | Vehicle and inventory progression | M6 | [m6-outline.md "Vehicle and inventory progression"](m6-outline.md#vehicle-and-inventory-progression) | #4144 |
+| 6 | Gang hideouts across Everon | M7 | [m7-outline.md "Gang hideouts across Everon"](m7-outline.md#gang-hideouts-across-everon) | #4146 |
+| 7 | Gang flags | M7 | [m7-outline.md "Gang flags"](m7-outline.md#gang-flags) | #4147 |
+| 8 | Gang radio | M7 | [m7-outline.md "Gang radio"](m7-outline.md#gang-radio) | #4148 |
+| 9 | Scroll to recruit | M7 | [m7-outline.md "Scroll to recruit"](m7-outline.md#scroll-to-recruit) | #4149 |
+| 10 | Gang members on the map | M7 | [m7-outline.md "Gang members on the map"](m7-outline.md#gang-members-on-the-map) | #4150 |
+| 11 | Truck and pilot licences | M6 | [m6-outline.md "Truck and pilot licences"](m6-outline.md#truck-and-pilot-licences) | #4143 |
+| 12 | Prison break as a gang event | M7 | [m7-outline.md "The prison break as a gang event"](m7-outline.md#the-prison-break-as-a-gang-event) | #798 (filed; chapter #1027) |
+| 13 | The law book and the charge sheet | M7 | [m7-outline.md "The law book and the charge sheet"](m7-outline.md#the-law-book-and-the-charge-sheet) | #4151 |
+| 14 | Vehicle livery pipeline (spike) | Development | [below](#development-the-vehicle-livery-pipeline-spike) | #4155 |
+| 15 | The 1989 drug chains | M7 | [m7-outline.md "The 1989 drug chains"](m7-outline.md#the-1989-drug-chains) | #4152 |
+| 16a | The reserve heist (top of the robbery ladder) | M7 | [m7-outline.md "The reserve heist"](m7-outline.md#the-reserve-heist), [ladder](m7-outline.md#the-robbery-ladder) | #4153 (building #2283) |
+| 16b | The hospital robbery | M7 | [m7-outline.md "The hospital robbery"](m7-outline.md#the-hospital-robbery) | #4154 |
+| 17 | Professions and skills | M6 | [m6-outline.md "Professions and skills that feel worth it"](m6-outline.md#professions-and-skills-that-feel-worth-it) | #4140 |
+
+### Development: the vehicle livery pipeline (spike)
+
+Epic: #4155.
+
+- **Goal.** Make it easy to repaint existing vanilla cars, trucks and helicopters as Police, Ambulance, Civilian
+  and Rebel. One-off liveries exist (the postal van's "POSTAL SERVICE" from #4088, the police cars); the spike
+  finds a repeatable pipeline.
+- **What it delivers.** A livery is a material override per variant (or a decal or texture layer, if Enfusion
+  supports one on that vehicle), a template per vehicle UV, and a CLI step that builds the variant prefab with US
+  English lettering. Then it is proven on two vehicles, a car and a helicopter, before any rollout.
+- **Builds on.** The vehicle pipeline (#342), car colours (#1826, a colour prefab per variant), the postal van and
+  police car liveries, the texture tools in `tools/` and `wb_preview` / `look item` for the pictures.
+- **Open questions.** S1. Which mechanism: material swap, decal slots or texture layering? **Recommend research
+  first** (`api class`, the vanilla variants' prefabs) and pick the one that survives game updates. S2. Mastery
+  liveries (M6 professions) and civilian helicopter paint (M6) use it: **recommend the spike lands before either**.
+- **Size.** S to M.
+- **Acceptance.** `tools\cli` builds a Police and a Civilian variant of one car and one helicopter from a template;
+  `look item` pictures of all four; the text reads in US English; no GUID reuse.
+
+### Bug: the vault drill and the playtest robbery kit
+
+Epic: #4156.
+
+The maintainer reports (2026-11-22) that the vault drill cannot be picked up or does not work, and the robbery
+kit in the playtest town does not work. Related open review findings are in #2418 (vault offers dead on a
+dedicated client, the fuse path, `IsDrillingBy` read on the client). Reproduce on a dedicated server first. It
+can go into the post-review fix list if the first-two-hours review touches crime.
 
 Foundation designs that span milestones: [building-foundation.md](building-foundation.md), placing
 items and props with a preview (epic #927).
@@ -64,7 +125,8 @@ Each milestone is planned in full when the one before it is code-complete.
   system, in the core) and a Flagship issue (the content, in `LF_Everon1989`).
 - **Base-game assets.** Doors, vehicles, weapons, medical supplies, fuel cans,
   and buildings come from Arma Reforger. A scope configures those prefabs. It
-  does not add a weapon pack, a vehicle pack, or aircraft.
+  does not add a weapon pack, a vehicle pack, or new aircraft assets; the base game's
+  helicopters are base-game vehicles (the M6 helicopter dealer).
 - **Money stays physical.** Cash is the MoneyStack. The ATM is the only
   cash-to-account boundary. Stolen money leaves as cash.
 - **In the world.** The place is the interface: a bank vault, a jail door, a
