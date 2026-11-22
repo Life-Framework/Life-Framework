@@ -14,6 +14,9 @@ class LF_QuizSheet
 	static const string PART_STATUS = "QuizStatus";
 	static const string PART_RETRY = "QuizRetryButton";
 	static const string PART_CONTINUE = "QuizContinueButton";
+	static const string PART_NEXT = "QuizNextButton";
+	static const int FEEDBACK_TIMEOUT_MS = 4000;	// lf-fixed: a silent server must not stall the quiz
+	static const float QUIZ_HEIGHT = 480;	// lf-fixed: resting card height; it grows to fit the page
 	static const string OPTION_PREFIX = "QuizOption";
 	static const string OPTION_SUFFIX = "Button";
 
@@ -26,6 +29,8 @@ class LF_QuizSheet
 	protected int m_iAttemptsLeft = -1;
 	protected bool m_bDone;
 	protected bool m_bSwitching;
+	//! An answer was sent for judging and its verdict has not come back yet.
+	protected bool m_bAwaiting;
 	//! Parts of the page on screen, so MenuBack puts the same page back.
 	protected ref array<ref LF_UIPart> m_aPage;
 
@@ -191,7 +196,7 @@ class LF_QuizSheet
 
 		m_bSwitching = false;
 		m_aPage = parts;
-		m_Screen = LF_UIScreen.Open(parts);
+		m_Screen = LF_UIScreen.Open(parts, LF_UISkin.Arrival(QUIZ_HEIGHT));
 		if (!m_Screen)
 		{
 			LF_Debug.Error(LF_Quiz.FEATURE, "quiz sheet failed to open");
@@ -218,6 +223,12 @@ class LF_QuizSheet
 			return;
 		}
 
+		if (name == PART_NEXT)
+		{
+			Advance();
+			return;
+		}
+
 		if (name == PART_RETRY)
 		{
 			if (m_Controller)
@@ -229,9 +240,73 @@ class LF_QuizSheet
 		if (!name.StartsWith(OPTION_PREFIX) || !name.EndsWith(OPTION_SUFFIX))
 			return;
 
+		if (m_bAwaiting)
+			return;
+
 		int prefixLength = OPTION_PREFIX.Length();
 		string number = name.Substring(prefixLength, name.Length() - prefixLength - OPTION_SUFFIX.Length());
 		m_aAnswers.Insert(number.ToInt());
+		// The server says right or wrong and why before the next question; a silent server must not
+		// stall the quiz, so the next page comes anyway after a moment.
+		m_bAwaiting = true;
+		if (m_Controller)
+			m_Controller.LF_AskQuizCheck(m_aAnswers.Count() - 1, number.ToInt());
+
+		GetGame().GetCallqueue().CallLater(FeedbackTimeout, FEEDBACK_TIMEOUT_MS, false, m_aAnswers.Count());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The pick for question `index` was judged: show the verdict and the rule, then Next.
+	static void ShowFeedback(int index, bool correct, string note)
+	{
+		LF_QuizSheet sheet = s_Sheet;
+		if (!sheet || sheet.m_bDone || !sheet.m_bAwaiting || index != sheet.m_aAnswers.Count() - 1)
+			return;
+
+		sheet.m_bAwaiting = false;
+		bool last = sheet.m_aAnswers.Count() >= sheet.m_aRows.Count();
+		sheet.Swap(BuildFeedbackParts(index, sheet.m_aRows.Count(), correct, note, last));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One feedback page: right or wrong, the rule underneath and the button that moves on.
+	static array<ref LF_UIPart> BuildFeedbackParts(int index, int total, bool correct, string note, bool last)
+	{
+		ref array<ref LF_UIPart> parts = {};
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, PART_TITLE, "#LF-Quiz_Title"));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.HEADING, PART_PROGRESS, LF_Terms.Text("#LF-Quiz_Progress", (index + 1).ToString(), total.ToString())));
+		if (correct)
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_STATUS, "#LF-Quiz_Right"));
+		else
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_STATUS, "#LF-Quiz_Wrong"));
+
+		if (!note.IsEmpty())
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.RICH, PART_BODY, note));
+
+		if (last)
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_NEXT, "#LF-Quiz_SeeResult"));
+		else
+			parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_NEXT, "#LF-Quiz_Next"));
+
+		return parts;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! No verdict came for the pick `count` answers deep: go on without one.
+	protected void FeedbackTimeout(int count)
+	{
+		if (s_Sheet != this || m_bDone || !m_bAwaiting || count != m_aAnswers.Count())
+			return;
+
+		LF_Debug.Warn(LF_Quiz.FEATURE, "quiz feedback never came, going on to the next page");
+		m_bAwaiting = false;
+		Advance();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The next question, or the whole list to the server after the last one.
+	protected void Advance()
+	{
 		if (m_aAnswers.Count() < m_aRows.Count())
 		{
 			ShowQuestion();

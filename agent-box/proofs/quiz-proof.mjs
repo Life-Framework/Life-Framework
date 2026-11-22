@@ -31,9 +31,15 @@ async function runQuizProof() {
   expect(!ui.detail.includes("SignButton"), "the registration form is open before the quiz is passed");
   shot("1_question");
 
+  let shotFeedback = false;
   // Every question wrong: the fail page explains each rule and offers another go.
   for (const answer of answers) {
     on(1, { verb: "click", widget: `QuizOption${(answer + 1) % 3}Button` });
+    wait(1200);
+    ui = on(1, { verb: "ui" });
+    expect(ui.detail.includes("QuizNextButton"), "a wrong answer shows no feedback page with a Next button");
+    if (!shotFeedback) { shotFeedback = true; shot("1b_feedback_wrong"); }
+    on(1, { verb: "click", widget: "QuizNextButton" });
     wait(500);
   }
   wait(2500);
@@ -46,6 +52,8 @@ async function runQuizProof() {
   wait(2000);
   for (const answer of answers) {
     on(1, { verb: "click", widget: `QuizOption${answer}Button` });
+    wait(1200);
+    on(1, { verb: "click", widget: "QuizNextButton" });
     wait(500);
   }
   wait(2500);
@@ -57,6 +65,7 @@ async function runQuizProof() {
   wait(3000);
   ui = on(1, { verb: "ui" });
   expect(ui.detail.includes("SignButton"), "Continue did not open the registration form");
+  shot("4_registration");
 
   if (fails.length) {
     console.log("quiz-proof: FAIL");
