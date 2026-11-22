@@ -11037,6 +11037,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Close the ledger"
      Comment "Ledger close button."
     }
+    CustomStringTableItem "{D2628F8C9104150A}" {
+     Id "LF-Org_Decline"
+     Target_en_us "Decline %1"
+     Comment "Interaction entry: turn down the offer of the person faced. %1 is the organization."
+    }
+    CustomStringTableItem "{1686AD303E7B2F40}" {
+     Id "LF-Org_DeclineGeneric"
+     Target_en_us "Decline"
+     Comment "Fallback name of the decline entry; the handler names the organization."
+    }
+    CustomStringTableItem "{E7F11EA621C1BA74}" {
+     Id "LF-Org_Declined"
+     Target_en_us "You turned down %1."
+     Comment "Toast to the invitee after Decline. %1 is the organization."
+    }
     CustomStringTableItem "{BA50E8C027423E0C}" {
      Id "LF-Org_DemoteGeneric"
      Target_en_us "Demote"
@@ -11236,6 +11251,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_NotOwned"
      Target_en_us "Not owned"
      Comment "Ledger row status: upgrade not owned."
+    }
+    CustomStringTableItem "{6361E95B1AFC26BD}" {
+     Id "LF-Org_OfferDeclined"
+     Target_en_us "Your offer was turned down."
+     Comment "Toast to the inviter: the invitee chose Decline."
     }
     CustomStringTableItem "{3E111C0C61E4B594}" {
      Id "LF-Org_OfferMade"
