@@ -1,0 +1,24 @@
+{
+  "slug": "smelter-furnace",
+  "about": "The ore furnace of the mine yards (Processor/Furnace.et and the pack's LF_MineFurnace.et, both through SmelterFurnace.xob): a small red-brick furnace on a brick hearth, bound with iron corner angles and straps, a cast-iron firebox door with a glowing peep slot and an ash pit below it, an iron cap plate with a rusted sheet-steel ore hopper on top, and a round iron chimney with a rain cap at the back. Built by build.py in headless Blender from boxes, frustums and cylinders with procedural textures; it replaces the 2026-11-12 Meshy stand-in (spec.json and meshy.json in this folder are that stand-in's record). The base game has no furnace; Meshy is reserved for fish and masks. Core asset: no text, no brand.",
+  "asset_dir": "Assets/Props/Roleplay/SmelterFurnace",
+  "prefab_dir": "Prefabs/Processor",
+  "script": "build.py",
+  "layout_m": {
+    "about": "Enfusion metres, x right, y up, z forward; the fire door faces +z. The body keeps the stand-in's footprint (about 1 x 1 m, front plane z +0.5) so the use point (0 0.70 0.5055) stays on the door and the drop offset (0 0 1.6) lands in front of it; the hearth adds 5 cm a side, the hopper and chimney stand on top.",
+    "half": 0.5,
+    "hearth": {"half": 0.55, "height": 0.22},
+    "body_top": 1.25,
+    "door": {"half_width": 0.2, "y0": 0.36, "y1": 0.72},
+    "hopper": {"z": 0.12, "bottom_half": 0.16, "top_half": 0.3, "y0": 1.3, "y1": 1.66},
+    "chimney": {"z": -0.27, "r": 0.11, "top": 2.75}
+  },
+  "texture_px": {"tile": 512, "door": [512, 512]},
+  "colliders": {
+    "SmelterFurnace": {"layerPreset": "PropFireView", "gamemat": "{B393F062AAE9EB74}Common/Materials/Game/brick.gamemat"}
+  },
+  "emissive": {
+    "about": "The door atlas: the peep slot and the ash pit glow orange.",
+    "SF_Door": {"lv": 2}
+  }
+}

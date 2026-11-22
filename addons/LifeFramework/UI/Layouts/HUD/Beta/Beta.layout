@@ -1,41 +1,303 @@
 FrameWidgetClass {
  Name "rootFrame"
- Opacity 0.9
  {
-  TextWidgetClass "{596565CFBE414D61}" {
-   Name "URL"
-   Slot FrameWidgetSlot "{596565CFBE414D45}" {
-    Anchor 0.487 1 0.487 1
-    PositionX -116.1
-    OffsetLeft -116.1
-    PositionY -71
-    OffsetTop -71
-    SizeX 0
-    OffsetRight 116.1
-    SizeY 0
-    OffsetBottom 71
+  HorizontalLayoutWidgetClass "{CAB958814BB12A1D}" {
+   Name "m_brand"
+   Slot FrameWidgetSlot "{66899D63A0739C95}" {
+    PositionX 18
+    OffsetLeft 18
+    PositionY 14
+    OffsetTop 14
     SizeToContent 1
    }
-   Color 0.429 0.429 0.429 1
-   Pivot 0 0
-   Text "https://life-framework.org/"
-   "Font Size" 36
-   "Min Font Size" 36
-   "Horizontal Alignment" Center
-   "Vertical Alignment" Center
+   Opacity 0.32
+   {
+    ImageWidgetClass "{A9CD9B5488EEE55D}" {
+     Name "m_brandMark"
+     Slot LayoutSlot "{8AF28796764AD1A2}" {
+      VerticalAlign 1
+      Padding 0 0 6 0
+     }
+     Texture "{E55E3BCA2A73E777}Assets/UI/Illustrations/LF_HudBrandMark.imageset"
+     Image "full"
+     Size 16 16
+    }
+    TextWidgetClass "{26614ED1B572E5F7}" {
+     Name "m_brandWord"
+     Slot LayoutSlot "{687447B841BC4D4D}" {
+      VerticalAlign 1
+     }
+     Text "#LF-Hud_BrandWord"
+     "Font Size" 13
+     "Min Font Size" 11
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{7FB12EA67350F30E}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+      ShadowSize 1
+      ShadowOffset 1 1
+     }
+    }
+   }
+  }
+  VerticalLayoutWidgetClass "{8B28E556DDB0AD0F}" {
+   Name "m_moneyBlock"
+   Slot FrameWidgetSlot "{4DD0C14EF887F75F}" {
+    Anchor 1 0 1 0
+    PositionX -26
+    OffsetLeft -26
+    PositionY 22
+    OffsetTop 22
+    SizeToContent 1
+    Alignment 1 0
+   }
+   Opacity 0.95
+   {
+    HorizontalLayoutWidgetClass "{CA9FC90270EDEA70}" {
+     Name "m_cashRow"
+     Slot LayoutSlot "{AC8529F4CDCDB960}" {
+      HorizontalAlign 2
+     }
+     {
+      TextWidgetClass "{C0F65AA0B006F7BA}" {
+       Name "m_cashDelta"
+       Slot LayoutSlot "{95ACC5099FE92E7D}" {
+        VerticalAlign 1
+        Padding 0 0 10 0
+       }
+       Opacity 0
+       Color 0.55 0.86 0.55 1
+       Text ""
+       "Font Size" 18
+       "Min Font Size" 14
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{97DE4B440AADED68}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+        ShadowSize 1
+        ShadowOffset 1 1
+       }
+      }
+      TextWidgetClass "{998E801FBA7BC66C}" {
+       Name "m_cash"
+       Slot LayoutSlot "{F4B3713A034FD356}" {
+        VerticalAlign 1
+       }
+       Color 0.96 0.95 0.92 1
+       Text "$0"
+       "Font Size" 26
+       "Min Font Size" 18
+       "Horizontal Alignment" Right
+       "Vertical Alignment" Center
+       FontProperties FontProperties "{5E5D9B27382315F0}" {
+        Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+        ShadowSize 2
+        ShadowOffset 1 1
+       }
+      }
+     }
+    }
+    TextWidgetClass "{8AFD8423DC143810}" {
+     Name "m_bank"
+     Slot LayoutSlot "{6E86151816ECFD7B}" {
+      HorizontalAlign 2
+      Padding 0 0 0 0
+     }
+     Color 0.86 0.84 0.78 0.85
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 12
+     "Horizontal Alignment" Right
+     FontProperties FontProperties "{0AC1EA28E6DAAFCD}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+      ShadowSize 1
+      ShadowOffset 1 1
+     }
+    }
+   }
+  }
+  HorizontalLayoutWidgetClass "{38C705B579E5DF5C}" {
+   Name "m_wanted"
+   Slot FrameWidgetSlot "{C7A5EABF79DD05C6}" {
+    Anchor 1 0 1 0
+    PositionX -26
+    OffsetLeft -26
+    PositionY 82
+    OffsetTop 82
+    SizeToContent 1
+    Alignment 1 0
+   }
+   Opacity 0
+   {
+    TextWidgetClass "{B102672DD09A5D82}" {
+     Name "m_wantedCaption"
+     Slot LayoutSlot "{17EC3C1BB7882C77}" {
+      VerticalAlign 1
+      Padding 0 0 8 0
+     }
+     Opacity 0
+     Color 0.93 0.42 0.38 1
+     Text "#LF-Hud_WantedCaption"
+     "Font Size" 14
+     "Min Font Size" 12
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{FF80AA3E999C2FC4}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+      ShadowSize 1
+      ShadowOffset 1 1
+     }
+    }
+    ImageWidgetClass "{ED376FFDD08BFDB1}" {
+     Name "m_wantedPip1"
+     Slot LayoutSlot "{5B29F390E535D877}" {
+      VerticalAlign 1
+      Padding 2 0 2 0
+     }
+     Opacity 0.2
+     Color 0.96 0.95 0.92 1
+     Texture "{9F7907E6A3E866C6}Assets/UI/Illustrations/LF_HudWantedBadge.imageset"
+     Image "full"
+     Size 15 15
+    }
+    ImageWidgetClass "{DF94BE4192CAB13A}" {
+     Name "m_wantedPip2"
+     Slot LayoutSlot "{456A1004DAFEDE05}" {
+      VerticalAlign 1
+      Padding 2 0 2 0
+     }
+     Opacity 0.2
+     Color 0.96 0.95 0.92 1
+     Texture "{9F7907E6A3E866C6}Assets/UI/Illustrations/LF_HudWantedBadge.imageset"
+     Image "full"
+     Size 15 15
+    }
+    ImageWidgetClass "{E1A10F66649E870C}" {
+     Name "m_wantedPip3"
+     Slot LayoutSlot "{064EB36507EAF294}" {
+      VerticalAlign 1
+      Padding 2 0 2 0
+     }
+     Opacity 0.2
+     Color 0.96 0.95 0.92 1
+     Texture "{9F7907E6A3E866C6}Assets/UI/Illustrations/LF_HudWantedBadge.imageset"
+     Image "full"
+     Size 15 15
+    }
+    ImageWidgetClass "{9DEC2BCE0E16D8B4}" {
+     Name "m_wantedPip4"
+     Slot LayoutSlot "{5DF0421F627123C7}" {
+      VerticalAlign 1
+      Padding 2 0 2 0
+     }
+     Opacity 0.2
+     Color 0.96 0.95 0.92 1
+     Texture "{9F7907E6A3E866C6}Assets/UI/Illustrations/LF_HudWantedBadge.imageset"
+     Image "full"
+     Size 15 15
+    }
+    ImageWidgetClass "{268F1E5C40342197}" {
+     Name "m_wantedPip5"
+     Slot LayoutSlot "{6E718C204A0E241C}" {
+      VerticalAlign 1
+      Padding 2 0 2 0
+     }
+     Opacity 0.2
+     Color 0.96 0.95 0.92 1
+     Texture "{9F7907E6A3E866C6}Assets/UI/Illustrations/LF_HudWantedBadge.imageset"
+     Image "full"
+     Size 15 15
+    }
+   }
+  }
+  HorizontalLayoutWidgetClass "{F13B683ABBBABE01}" {
+   Name "m_needs"
+   Slot FrameWidgetSlot "{D8002DB6D4AECC68}" {
+    Anchor 0.5 1 0.5 1
+    PositionY -18
+    OffsetTop -18
+    SizeToContent 1
+    Alignment 0.5 1
+   }
+   Opacity 0
+   {
+    TextWidgetClass "{AE8DD7C24315E87D}" {
+     Name "m_foodLabel"
+     Slot LayoutSlot "{BB3160F3E39C9ACC}" {
+      VerticalAlign 1
+      Padding 0 0 5 0
+     }
+     Color 0.86 0.84 0.78 0.8
+     Text "#LF-Hud_Food"
+     "Font Size" 13
+     "Min Font Size" 11
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{01E7B434D9AB8092}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+      ShadowSize 1
+      ShadowOffset 1 1
+     }
+    }
+    TextWidgetClass "{46F432D589AC8880}" {
+     Name "m_foodValue"
+     Slot LayoutSlot "{63A91177D77F3E06}" {
+      VerticalAlign 1
+     }
+     Color 0.96 0.95 0.92 1
+     Text "100"
+     "Font Size" 17
+     "Min Font Size" 13
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{E6E58ACCCA56579E}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+      ShadowSize 1
+      ShadowOffset 1 1
+     }
+    }
+    TextWidgetClass "{FA30B079A28B963F}" {
+     Name "m_drinkLabel"
+     Slot LayoutSlot "{12151802FFA802EF}" {
+      VerticalAlign 1
+      Padding 22 0 5 0
+     }
+     Color 0.86 0.84 0.78 0.8
+     Text "#LF-Hud_Drink"
+     "Font Size" 13
+     "Min Font Size" 11
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{CCF4FD49ABEC3010}" {
+      Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+      ShadowSize 1
+      ShadowOffset 1 1
+     }
+    }
+    TextWidgetClass "{F83CB834372806F7}" {
+     Name "m_drinkValue"
+     Slot LayoutSlot "{495E3B632D63D1AE}" {
+      VerticalAlign 1
+     }
+     Color 0.96 0.95 0.92 1
+     Text "100"
+     "Font Size" 17
+     "Min Font Size" 13
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{FD371F6E4437BD07}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+      ShadowSize 1
+      ShadowOffset 1 1
+     }
+    }
+   }
   }
   HorizontalLayoutWidgetClass "{599ADB14E240A0B6}" {
    Name "m_playerStatsHUD"
    Slot FrameWidgetSlot "{599ADB14E0296AE8}" {
     Anchor 1 1 1 1
-    PositionX -801.491
-    OffsetLeft -801.491
-    PositionY -105.325
-    OffsetTop -105.325
-    SizeX 626.912
-    OffsetRight 174.579
-    SizeY 106.839
-    OffsetBottom -1.514
+    PositionX -250
+    OffsetLeft -250
+    PositionY -92
+    OffsetTop -92
+    SizeX 226
+    OffsetRight 24
+    SizeY 76
+    OffsetBottom 16
    }
    "Fill Origin" Right
    {
@@ -103,79 +365,6 @@ FrameWidgetClass {
        Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
       }
      }
-    }
-    OverlayWidgetClass "{599ADB1440D6120D}" {
-     Name "m_hungerIndicator"
-     Slot LayoutSlot "{599ADB1440D61213}" {
-      Padding 10 0 10 0
-     }
-     Opacity 0.75
-     {
-      ImageWidgetClass "{599ADB170EB78E70}" {
-       Name "m_hungerOutline"
-       Slot OverlayWidgetSlot "{599ADB14CDDB52CA}" {
-       }
-       Opacity 0.75
-       Texture "{ABAB6447C4767279}Assets/UI/EL_StatsOutlines.imageset"
-       Image "Hunger"
-       Size 45 60
-       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
-       "Transition width" 0
-       Range 0.005
-      }
-      ImageWidgetClass "{599ADB1CA7BCA351}" {
-       Name "m_hungerProgress"
-       Slot OverlayWidgetSlot "{599ADB1466E2052D}" {
-       }
-       Opacity 0.75
-       Texture "{4762CA1C4E5BCCBA}Assets/UI/EL_StatsBars.imageset"
-       Image "Hunger"
-       Size 45 60
-       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
-      }
-     }
-    }
-    OverlayWidgetClass "{599ADB1449235ED0}" {
-     Name "m_thirstIndicator"
-     Slot LayoutSlot "{599ADB1449235EBB}" {
-      Padding 10 0 10 0
-     }
-     Opacity 0.75
-     {
-      ImageWidgetClass "{599ADB17878342FB}" {
-       Name "m_thirstOutline"
-       Slot OverlayWidgetSlot "{599ADB14CDDB52CA}" {
-       }
-       Opacity 0.75
-       Texture "{ABAB6447C4767279}Assets/UI/EL_StatsOutlines.imageset"
-       Image "Thirst"
-       Size 45 60
-       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
-       "Transition width" 0
-       Range 0.005
-      }
-      ImageWidgetClass "{597F65E5F0519E98}" {
-       Name "m_thirstProgress"
-       Slot OverlayWidgetSlot "{599ADB1464200127}" {
-       }
-       Opacity 0.75
-       Texture "{4762CA1C4E5BCCBA}Assets/UI/EL_StatsBars.imageset"
-       Image "Thirst"
-       Size 45 60
-       Mask "{5E761E5C31171F1B}Assets/UI/fade.edds"
-      }
-     }
-    }
-    TextWidgetClass "{599175DBA38071FC}" {
-     Name "m_moneyIndicator"
-     Slot LayoutSlot "{599ADB14359CFF51}" {
-      VerticalAlign 1
-      Padding 0 0 30 0
-     }
-     Opacity 0.75
-     Text "$ -"
-     "Horizontal Alignment" Center
-     "Vertical Alignment" Center
     }
    }
   }

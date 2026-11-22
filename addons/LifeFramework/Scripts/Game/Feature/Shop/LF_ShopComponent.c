@@ -589,6 +589,26 @@ class LF_ShopComponent : ScriptComponent
 		return LF_EShopRefusal.NONE;
 	}
 
+	//! While BuyDropOverflow runs: what does not fit in the buyer's pockets is dropped at their feet.
+	protected bool m_bDropOverflow;
+	//! Units the last BuyDropOverflow left at the buyer's feet.
+	protected int m_iLastDropped;
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: \see Buy, except that goods with no room in the pockets are dropped at the buyer's feet
+	//! (and paid for) instead of refused and refunded. A mannequin sale uses it (LF_MannequinOutfitComponent).
+	//! \param[out] dropped Units left at the buyer's feet.
+	LF_EShopRefusal BuyDropOverflow(ResourceName prefab, int quantity, IEntity buyer, out int charged, out string missing, out int dropped)
+	{
+		m_bDropOverflow = true;
+		m_iLastDropped = 0;
+		LF_EShopRefusal result = Buy(prefab, quantity, buyer, charged, missing);
+		m_bDropOverflow = false;
+		dropped = m_iLastDropped;
+		m_iLastDropped = 0;
+		return result;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Server: charge the buyer the config buy price and deliver the items. Only what was delivered
 	//! is charged; a partial delivery refunds the difference. The till slip shows the outcome, so
@@ -679,7 +699,18 @@ class LF_ShopComponent : ScriptComponent
 			return LF_EShopRefusal.OUT_OF_STOCK;
 		}
 
-		int added = LF_InventoryUtils.AddAmount(buyer, prefab, units);
+		int carriedBefore;
+		if (m_bDropOverflow)
+			carriedBefore = LF_InventoryUtils.GetAmount(buyer, prefab);
+		int added = LF_InventoryUtils.AddAmount(buyer, prefab, units, m_bDropOverflow);
+		if (m_bDropOverflow)
+		{
+			m_iLastDropped = added - (LF_InventoryUtils.GetAmount(buyer, prefab) - carriedBefore);
+			if (m_iLastDropped < 0)
+				m_iLastDropped = 0;
+			if (m_iLastDropped > 0)
+				LF_Debug.Info("Shop", string.Format("pockets full: dropped %1 of %2 at the buyer's feet", m_iLastDropped, prefab));
+		}
 		LF_CatalogueStock.Take(stockOffer, added, nowMs);
 		if (added == units)
 		{

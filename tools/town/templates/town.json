@@ -254,6 +254,11 @@
       "places": ["FuelPickup"]
     },
     {
+      "id": "postal-drops", "required": false, "kit": "postal-drops", "host": "outposts", "poi": "none", "margin": 12,
+      "needs": { "interior": "optional" },
+      "places": ["PostalPoint"]
+    },
+    {
       "id": "fuel-drops", "required": false, "kit": "fuel-drops", "host": "outposts", "poi": "none", "margin": 12,
       "needs": { "interior": "optional" },
       "places": []

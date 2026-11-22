@@ -829,6 +829,11 @@ StringTable {
      Target_en_us "We came over from the mainland long before all this. Now half the street are new faces from the Zone. Good people. Tired people."
      Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
     }
+    CustomStringTableItem "{8E4218733758EA08}" {
+     Id "LF-Dialogue_ResidentAnselme_AboutVan"
+     Target_en_us "The van run? Take the yellow van from the post stand, load four mail sacks, drive them to the post office in Meaux and bring my van back. Back in one piece, mind. A wrecked van pays nobody."
+     Comment "Dialogue caption, spoken by the resident_anselme NPC (voiced; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
+    }
     CustomStringTableItem "{A5BA275D87A49B27}" {
      Id "LF-Dialogue_ResidentAnselme_AboutWork"
      Target_en_us "Letters, parcels, the odd crate of machine parts for the farms. If you want work, the depot pays by the drop. Ask at the counter."
@@ -877,6 +882,11 @@ StringTable {
     CustomStringTableItem "{56A57C39752E93D7}" {
      Id "LF-Dialogue_ResidentAnselme_SayTown"
      Target_en_us "Have you lived here long?"
+     Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
+    }
+    CustomStringTableItem "{2B4A32963B1B0AD7}" {
+     Id "LF-Dialogue_ResidentAnselme_SayVan"
+     Target_en_us "Tell me about the van run."
      Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
     }
     CustomStringTableItem "{89C193968FE10340}" {
@@ -2194,6 +2204,11 @@ StringTable {
      Target_en_us "Plant"
      Comment "Map POI kind name (#3241): a processing plant, a smelter, refinery or cement works (LF_Places kind plant)."
     }
+    CustomStringTableItem "{5A0AFC223683774C}" {
+     Id "LF-MapPoi_PostOffice"
+     Target_en_us "Post office (van run)"
+     Comment "Map badge label: a post office stand where the postal van run starts and ends."
+    }
     CustomStringTableItem "{D1EC93AD7C6358F0}" {
      Id "LF-MapPoi_Range"
      Target_en_us "Shooting range"
@@ -3356,13 +3371,13 @@ StringTable {
     }
     CustomStringTableItem "{54968BCB66E488A0}" {
      Id "LF-Sign_CoalmansBrowBuyer_Iron"
-     Target_en_us "Iron bought here"
+     Target_en_us "Iron bar"
      Comment "Chalk board row label at the Coalman's Brow iron buyer: the price per iron bar."
     }
     CustomStringTableItem "{215C8A1EF60E0C32}" {
      Id "LF-Sign_CoalmansBrowBuyer_Title"
-     Target_en_us "Achat fer"
-     Comment "Title of the chalk board at the iron buyer's table at the Coalman's Brow mine (Everon 1989 pack). Printed on the board and shown in the prompt as Read: Achat fer."
+     Target_en_us "Iron bought here"
+     Comment "Title of the chalk board at the iron buyer's table at the Coalman's Brow mine (Everon 1989 pack). Printed on the board and shown in the prompt as Read: Iron bought here."
     }
     CustomStringTableItem "{72E01F61545E6893}" {
      Id "LF-Sign_CoalmansBrowBuyer_What"
@@ -4529,6 +4544,16 @@ StringTable {
      Target_en_us "Delivery work for cash. Everyone starts as a courier."
      Comment "Sign card for the post office (delivery jobs), What section."
     }
+    CustomStringTableItem "{84A76DBAA3B2CD39}" {
+     Id "LF-Sign_PostalVanRear_Title"
+     Target_en_us "MAIL"
+     Comment "Livery lettering on the rear doors of the yellow post van (postal van run)."
+    }
+    CustomStringTableItem "{188C47848012FD84}" {
+     Id "LF-Sign_PostalVanSide_Title"
+     Target_en_us "POSTAL SERVICE"
+     Comment "Livery lettering on both side panels of the yellow post van (postal van run)."
+    }
     CustomStringTableItem "{A1B2C3D4E5F60733}" {
      Id "LF-Sign_QuarryInfo_How"
      Target_en_us "Swing a pickaxe at the rocks and smelt the nuggets at the furnace. Buy or gather cement, gravel and sand from the three stands. Fell a pine and carry the log to the sawmill."
@@ -5194,5 +5219,6 @@ StringTable {
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
      Comment "Join notice toast at a player's first spawn of the session (#1448); the joinNotice.key of the flagship."
     }
+  }
  }
 }

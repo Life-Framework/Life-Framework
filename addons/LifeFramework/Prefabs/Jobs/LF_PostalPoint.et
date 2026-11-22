@@ -1,0 +1,63 @@
+SCR_DestructibleEntity : "{B16FF595DD1EE501}Prefabs/Props/Services/Post/PostOfficeBox_01_Stand.et" {
+ ID "ABDDF4DE74CE8335"
+ components {
+  RplComponent "{5624A88DC2D9928D}" {
+   Enabled 1
+  }
+  LF_PostalPointComponent "{9A4EE1FFAC39F749}" {
+  }
+  ActionsManagerComponent "{6D8DA2B02069DA1E}" {
+   ActionContexts {
+    UserActionContext "{0D83BF8D8F1DDC1D}" {
+     ContextName "LF_PostalPoint"
+     Position PointInfo "{A730FEAF0429BAC3}" {
+      Offset 0 1 0.3
+     }
+     Radius 2.5
+    }
+   }
+   additionalActions {
+    LF_PostalAction "{605CE8C3A17F26CF}" {
+     ParentContextList {
+      "LF_PostalPoint"
+     }
+     UIInfo UIInfo "{A03EBBACB015B7FB}" {
+      Name "#LF-Postal_Start"
+      Description "#LF-Postal_StartDesc"
+     }
+     "Sort Priority" 1
+    }
+    LF_PostalAction "{6F60AC167D780597}" {
+     ParentContextList {
+      "LF_PostalPoint"
+     }
+     UIInfo UIInfo "{AACE208BBB51B263}" {
+      Name "#LF-Postal_Sack"
+     }
+     "Sort Priority" 2
+     m_eStep SACK
+    }
+    LF_PostalAction "{38082D712DAAF17A}" {
+     ParentContextList {
+      "LF_PostalPoint"
+     }
+     UIInfo UIInfo "{E1089BBB0D07D561}" {
+      Name "#LF-Postal_HandIn"
+     }
+     "Sort Priority" 3
+     m_eStep HAND_IN
+    }
+    LF_PostalAction "{1785DEDF9190AB42}" {
+     ParentContextList {
+      "LF_PostalPoint"
+     }
+     UIInfo UIInfo "{B2FB28D8D8FA3D7F}" {
+      Name "#LF-Postal_GiveUp"
+     }
+     "Sort Priority" 4
+     m_eStep GIVE_UP
+    }
+   }
+  }
+ }
+}

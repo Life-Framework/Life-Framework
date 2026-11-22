@@ -388,6 +388,16 @@
         "D10 pick (#3346), card X13 #3376: one fuel pickup (kind FuelPickup) on the forecourt kerb beside the pumps and out of the lane; street furniture, so it shares b107 with the fuel kit and the fuel slot's claim stays untouched"
       ]
     },
+    "postal-drops": {
+      "drops": [
+        { "place": "saint-philippe", "building": "b21", "turn": 1 },
+        { "place": "meaux", "building": "b01", "turn": 1 }
+      ],
+      "why": [
+        "The postal van run (maintainer, 2026-11-22): a post office stand at each end. sp:b21 is the parcel depot kiosk, the home office where the van is lent and the run is handed in; meaux:b01 is the newspaper kiosk on the Meaux square, 7.6 m from its centre and the same booth family as the depot, about 1.3 km south: the far office.",
+        "Each stand goes on a side wall of its kiosk (turn 1): on the entrance side the wall seat slid it through the open booth front onto the back wall, into the depot's counter. town drops saint-philippe postal-drops seats them; LF_PostalPointComponent registers each as an LF_Places PostalPoint and a run picks the nearest office 800 m or more away."
+      ]
+    },
     "fuel-drops": {
       "drops": [
         { "place": "saint-philippe", "building": "b120" },
