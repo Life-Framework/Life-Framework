@@ -412,7 +412,9 @@ class LF_SignComponent : ScriptComponent
 		if (!m_sSignId.IsEmpty())
 			LF_Places.Claim(PLACE_KIND, m_sSignId, owner);
 
-		if (!m_bShowFace || m_sSignId.IsEmpty())
+		// An empty id still reaches EOnInit: BuildFace prints a blank painted face for it (BuildBlankFace),
+		// so a mesh that samples $rendertarget never stays black.
+		if (!m_bShowFace)
 			return;
 
 		SetEventMask(owner, EntityEvent.INIT);
@@ -440,13 +442,16 @@ class LF_SignComponent : ScriptComponent
 		if (!owner || owner.IsDeleted() || m_wFaceRoot || m_StyledFace)
 			return;
 
-		LF_SignDef sign = GetSign();
-		if (!sign)
-			return;
-
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
 		if (!workspace)
 			return;
+
+		LF_SignDef sign = GetSign();
+		if (!sign)
+		{
+			BuildBlankFace(owner, workspace);
+			return;
+		}
 
 		if (BuildStyledFace(owner, sign))
 			return;
@@ -492,6 +497,26 @@ class LF_SignComponent : ScriptComponent
 		}
 
 		PrintOn(m_Face, workspace, sign);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A sign whose id is empty or has no titled entry (GetSign logged it) still prints its painted
+	//! board, with no text. A prefab whose own mesh (the owner or its plate child) samples $rendertarget
+	//! draws solid black until something paints that target, so the unprinted sign was a black slab
+	//! (the bakery and butcher fascias and the taxi plate had no id, 2026-11-22).
+	protected void BuildBlankFace(IEntity owner, WorkspaceWidget workspace)
+	{
+		if (m_bFaceOnChild)
+		{
+			IEntity plate = owner.GetChildren();
+			if (plate)
+				PrintOn(plate, workspace, null);
+
+			return;
+		}
+
+		if (m_bFaceOnOwner)
+			PrintOn(owner, workspace, null);
 	}
 
 	//------------------------------------------------------------------------------------------------

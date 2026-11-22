@@ -12980,6 +12980,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Rules"
      Comment "Sign card section heading: cooldowns, wanted level, other rules."
     }
+    CustomStringTableItem "{6EAD44E4FC5E58E9}" {
+     Id "LF-Sign_TaxiStand_Title"
+     Target_en_us "Taxi stand"
+     Comment "Title printed on the taxi stand's pole plate (LF_TaxiStand prefab, sign id taxi_stand); the Read card shows it."
+    }
     CustomStringTableItem "{84F64B2018E1B414}" {
      Id "LF-Sign_What"
      Target_en_us "What it is"
