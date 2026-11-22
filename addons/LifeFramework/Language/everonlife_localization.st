@@ -2050,6 +2050,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "KEY IN AN AMOUNT, THEN DEPOSIT OR WITHDRAW"
      Comment "ATM terminal status line when idle."
     }
+    CustomStringTableItem "{8EB7067ED400B203}" {
+     Id "LF-ATM_QuickBalance"
+     Target_en_us "Check balance"
+     Comment "ATM screen and keypad line: show the balance."
+    }
+    CustomStringTableItem "{55BAFAE9BB29A9AB}" {
+     Id "LF-ATM_QuickCannotAct"
+     Target_en_us "Your hands are not free"
+     Comment "Why ATM lines are greyed: dead, downed or cuffed."
+    }
+    CustomStringTableItem "{3DFE09BD44E660F8}" {
+     Id "LF-ATM_QuickDeposit"
+     Target_en_us "Deposit %1"
+     Comment "ATM deposit drawer line. %1 = the amount."
+    }
+    CustomStringTableItem "{A067E84B7AE4FD1F}" {
+     Id "LF-ATM_QuickDepositAll"
+     Target_en_us "Deposit all cash (%1)"
+     Comment "ATM deposit drawer line: every note carried. %1 = that amount."
+    }
+    CustomStringTableItem "{DED7547D25B8045D}" {
+     Id "LF-ATM_QuickDepositAllPlain"
+     Target_en_us "Deposit all cash"
+     Comment "ATM deposit drawer line before the cash is known."
+    }
+    CustomStringTableItem "{8E750AA3EE40D7B3}" {
+     Id "LF-ATM_QuickNoBalance"
+     Target_en_us "Not enough in the bank"
+     Comment "Why an ATM withdraw line is greyed."
+    }
+    CustomStringTableItem "{7DBB5D014D923E13}" {
+     Id "LF-ATM_QuickNoCash"
+     Target_en_us "Not enough cash on you"
+     Comment "Why an ATM deposit line is greyed."
+    }
+    CustomStringTableItem "{11964E8003A3B483}" {
+     Id "LF-ATM_QuickOverLimit"
+     Target_en_us "Over the machine limit"
+     Comment "Why an ATM line is greyed: above the single-transaction limit."
+    }
+    CustomStringTableItem "{1F77DAC6D39BBF60}" {
+     Id "LF-ATM_QuickReading"
+     Target_en_us "Reading your balance"
+     Comment "Why an ATM 'all' line is greyed for a moment on arrival."
+    }
+    CustomStringTableItem "{95DB60E5BBB58114}" {
+     Id "LF-ATM_QuickTransfer"
+     Target_en_us "Bank transfer"
+     Comment "ATM keypad line: open the transfer page."
+    }
+    CustomStringTableItem "{EFCE03C5109AA40C}" {
+     Id "LF-ATM_QuickWithdraw"
+     Target_en_us "Withdraw %1"
+     Comment "ATM cash slot line. %1 = the amount."
+    }
+    CustomStringTableItem "{23550C5C06BBA898}" {
+     Id "LF-ATM_QuickWithdrawAll"
+     Target_en_us "Withdraw all (%1)"
+     Comment "ATM cash slot line: the whole balance. %1 = that amount."
+    }
+    CustomStringTableItem "{C3F4D1C5361502B7}" {
+     Id "LF-ATM_QuickWithdrawAllPlain"
+     Target_en_us "Withdraw all"
+     Comment "ATM cash slot line before the balance is known."
+    }
+    CustomStringTableItem "{74042C8BB24E2579}" {
+     Id "LF-ATM_QuickWorking"
+     Target_en_us "Machine working"
+     Comment "Why ATM lines are greyed while a request is on its way."
+    }
     CustomStringTableItem "{234C990779F19F26}" {
      Id "LF-ATM_RefuseAccount"
      Target_en_us "REFUSED: ACCOUNT UNAVAILABLE"
@@ -2065,6 +2135,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "REFUSED: INSUFFICIENT FUNDS IN ACCOUNT"
      Comment "ATM refusal: a withdrawal larger than the account balance."
     }
+    CustomStringTableItem "{B166036CBE991244}" {
+     Id "LF-ATM_RefuseCannotAct"
+     Target_en_us "REFUSED: YOUR HANDS ARE NOT FREE"
+     Comment "ATM refusal: the player is dead, downed or cuffed."
+    }
     CustomStringTableItem "{4FE6F21A50365940}" {
      Id "LF-ATM_RefuseCash"
      Target_en_us "REFUSED: YOU DO NOT CARRY THAT MUCH CASH"
@@ -2079,6 +2154,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ATM_RefusePockets"
      Target_en_us "REFUSED: NO ROOM IN YOUR POCKETS FOR THE CASH"
      Comment "ATM refusal: the withdrawn cash does not fit in the inventory; the balance is restored."
+    }
+    CustomStringTableItem "{2B2DD7DA486A3225}" {
+     Id "LF-ATM_ScreenBank"
+     Target_en_us "BANK  %1"
+     Comment "ATM screen line drawn on the machine for the player at it. %1 = bank balance."
+    }
+    CustomStringTableItem "{A52D49E2D7C6ACAC}" {
+     Id "LF-ATM_ScreenCash"
+     Target_en_us "CASH  %1"
+     Comment "ATM screen line drawn on the machine for the player at it. %1 = cash carried."
+    }
+    CustomStringTableItem "{2C48CC14A874751E}" {
+     Id "LF-ATM_ScreenHello"
+     Target_en_us "LOOK AT A SLOT"
+     Comment "ATM screen status line when the player walks up: look at the cash slot or deposit drawer."
+    }
+    CustomStringTableItem "{091A87E9815898A1}" {
+     Id "LF-ATM_ToastBalance"
+     Target_en_us "Bank %1. Cash %2"
+     Comment "Toast for the ATM's Check balance. %1 = balance, %2 = cash carried."
+    }
+    CustomStringTableItem "{9AD68281491E7D15}" {
+     Id "LF-ATM_ToastDeposited"
+     Target_en_us "Deposited %1. Bank %2"
+     Comment "Toast after an ATM deposit. %1 = amount, %2 = new balance."
+    }
+    CustomStringTableItem "{C15EE5CA1CDE1A4F}" {
+     Id "LF-ATM_ToastWithdrew"
+     Target_en_us "Withdrew %1. Bank %2"
+     Comment "Toast after an ATM withdrawal. %1 = amount, %2 = new balance."
     }
     CustomStringTableItem "{E54FB6AD91A6A823}" {
      Id "LF-ATM_Unknown"

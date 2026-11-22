@@ -10,8 +10,14 @@
 
 ## ATMs and the teller
 
-Three ATMs stand in Saint-Philippe. Press **F** on one, type an amount on the keypad (keys **0 to 9**, **Backspace** deletes a digit,
-**Delete** clears) and pick **Deposit** or **Withdraw**. Leave by picking **Exit**, pressing **Esc**, or walking more than 3.5 m away.
+Three ATMs stand in Saint-Philippe. Walk up to one and look at the part you want; no window opens.
+
+* **Take cash out:** look at the wide **CASH** slot. Scroll the mouse wheel to pick *Withdraw $20*, *$50*, *$100*, *$500* or *Withdraw all*, then press **F**.
+* **Put cash in:** look at the **DEPOSIT** drawer below it. Pick *Deposit all cash*, *$50*, *$100* or *$500*, then press **F**.
+* **See your balance:** the machine's green screen shows your bank balance and the cash you carry while you stand at it, and it updates after every transaction. Only you see your figures. *Check balance* on the screen also shows them in a short message.
+
+A line you cannot afford is greyed out and says why (*Not enough in the bank*, *Not enough cash on you*). On a gamepad, cycle the lines the same way as on any other object with several actions.
+To send money to another player's account, look at the keypad and pick *Bank transfer*.
 You can also **talk to the teller** at the bank counter; it does the same thing.
 
 The three ATMs are on the bank wall, on the east side near the filling station, and on the dock; they are marked **ATM** on the [Saint-Philippe map](maps.md).
