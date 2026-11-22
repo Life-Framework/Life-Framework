@@ -1,0 +1,50 @@
+{
+  "id": "gendarme",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "a796cb511c97c57e",
+      "date": "2026-11-22",
+      "voice_id": "1YYTlNs7nGf3sEaTb78E",
+      "voice_name": "Cedric - Calm",
+      "model": "eleven_multilingual_v2",
+      "text": "Gendarmerie. Stand back from the warehouse, please. This is a police matter.",
+      "chars": 76,
+      "chars_total": 30,
+      "request_id": "bBdcTfBpnZOuhmgAOoMN",
+      "seconds": 8.3,
+      "mouth": "6689995999999644322200000000000000000159922999995399723377648657775454223433100000525533322220000000320033259977720025777673003565119475444566466544554153322110000000"
+    },
+    "about_what": {
+      "hash": "7dc2864d80fba939",
+      "date": "2026-11-22",
+      "voice_id": "1YYTlNs7nGf3sEaTb78E",
+      "voice_name": "Cedric - Calm",
+      "model": "eleven_multilingual_v2",
+      "text": "A routine inspection of a shipment. If you saw anything on these docks tonight, the station on the square takes statements.",
+      "chars": 123,
+      "chars_total": 49,
+      "request_id": "AsXjsxyZcwdDtwLyECxr",
+      "seconds": 10.99,
+      "mouth": "9997897111639999987610027696107956759877510000000000049577889314433203210000000000000000001000000799558977659999931269998248777767523898153455444441021000011101387871029986587358766733686655210005862687116422332213553000"
+    },
+    "bye": {
+      "hash": "c37ca153ba1e07a6",
+      "date": "2026-11-22",
+      "voice_id": "1YYTlNs7nGf3sEaTb78E",
+      "voice_name": "Cedric - Calm",
+      "model": "eleven_multilingual_v2",
+      "text": "Move along now. Thank you.",
+      "chars": 26,
+      "chars_total": 10,
+      "request_id": "DH812PyavrAKqqgxEPAE",
+      "seconds": 2.32,
+      "mouth": "69958999965566554210000000000000003543223432000"
+    }
+  },
+  "voice": {
+    "id": "1YYTlNs7nGf3sEaTb78E",
+    "name": "Cedric - Calm",
+    "source": "voice library"
+  }
+}

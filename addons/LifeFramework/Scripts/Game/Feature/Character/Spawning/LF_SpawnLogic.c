@@ -23,9 +23,10 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	protected bool m_bReplacedBody;
 
 	//------------------------------------------------------------------------------------------------
+	//! A pack's LF_CharacterConfig.m_iStartingBank (Everon: $1,250) wins over m_iStartingBank when it sets one.
 	int GetStartingBank()
 	{
-		return LF_DebugMoneyTopUp.StartingBank(IsDebugMoneyTopUp(), Math.Max(0, m_iStartingBank), m_iTopUpBankTarget);
+		return LF_DebugMoneyTopUp.StartingBank(IsDebugMoneyTopUp(), Math.Max(0, LF_CharacterConfig.StartingBank(m_iStartingBank)), m_iTopUpBankTarget);
 	}
 
 	//! Playtest only: nobody runs out of money. On spawn and every 60 s a bank under the low mark is
@@ -526,6 +527,7 @@ class LF_SpawnLogic : SCR_SpawnLogic
 	{
 		LF_Debug.Info("Spawn", "player " + playerId + " spawned " + characterPersistenceId + " for the first time");
 		LF_FirstSpawnBeds.OnFirstSpawn(playerId, character);
+		LF_WelcomeGuide.OnFirstSpawn(playerId, characterPersistenceId);
 	}
 
 	//------------------------------------------------------------------------------------------------

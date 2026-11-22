@@ -1,6 +1,9 @@
 LF_NpcBaseEntity : "{850859F356F5058E}Prefabs/Characters/Npcs/Npc_Default_01.et" {
  ID "1A200C2AA44B74FD"
  components {
+  LF_NpcRoleComponent "{7A31C05E94D2B861}" {
+   m_sRole "fence"
+  }
   CharacterIdentityComponent "{5A4B0B84AEEDE9BA}" {
    Identity Identity "{5A4B0B84AF44A913}" {
     Name "Vince"
