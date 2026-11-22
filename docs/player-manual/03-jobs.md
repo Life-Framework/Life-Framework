@@ -55,6 +55,8 @@ A game day is 2 real hours and nights are short, so that is about 40 minutes in 
 
 ---
 
+**Runs on the map.** Hover a job's badge on the map (**M**) and the whole run is drawn: dashed lines join its stops in order with numbers 1, 2, 3... and the card says where you are, e.g. *Mining run: step 2 of 5, next: ore rocks*. Runs: mining, apples, postal van, lumber and fishing. A stop you have not found yet stays off the map.
+
 ## Parcel runs (courier)
 
 **Status:** ✅ live.
