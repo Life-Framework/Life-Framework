@@ -17,11 +17,11 @@ LF_NpcBaseEntity Fit_saint_philippe_butcher_butcher_clerk : "{8CCD224BC53CABE7}P
  coords 4472.976 12.039 10776.474
  angleY -100
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_counter_1 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Fit_saint_philippe_butcher_butcher_counter_1 : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4472.336 12.044 10775.498
  angleY -100
 }
-GenericEntity Fit_saint_philippe_butcher_butcher_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Fit_saint_philippe_butcher_butcher_counter_2 : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4472.075 12.044 10776.975
  angleY -100
 }
