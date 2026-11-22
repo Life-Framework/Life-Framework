@@ -229,6 +229,11 @@
       "places": []
     },
     {
+      "id": "bus-stops", "required": false, "kit": "bus-stops", "host": "outposts", "poi": "none", "margin": 6,
+      "needs": { "interior": "optional" },
+      "places": []
+    },
+    {
       "id": "street-life", "required": false, "kit": "street-life", "host": "outposts", "poi": "none", "margin": 10,
       "needs": { "interior": "optional" },
       "places": []
