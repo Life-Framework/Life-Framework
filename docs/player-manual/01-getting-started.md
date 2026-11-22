@@ -84,11 +84,12 @@ bought at the gun store counter, and in the alpha it is instant.
 ## The map and waypoints
 
 * **Open the map:** press **M**. If nothing opens, take the **folded paper map** out of your pack and hold it; every new character carries one.
+  The map opens centred on you at town zoom, and closing it puts the paper map back in your pack.
 * **Every kind of place has its own icon**, a round badge coloured by group (green shops, orange food, blue travel, brown
   work, dark blue police, red health). No two kinds share an icon. Point at an icon to read its name.
 * **The key** on the right edge of the map lists every icon on your map, grouped, with its name. Point at a row and those
   places grow and pulse on the map while the rest fade. Click a row to show only that kind (click again for all); click a
-  group's heading to hide or show the whole group. The **Key** tab at the top folds it away, and the map remembers that.
+  group's heading to open or shut its rows (every group starts shut). The **Key** tab under your cash folds it away, and the map remembers that.
 * Icons that share one spot show the most important one and a count; click it to zoom in. Zoomed far out, a slate badge
   with three dots stands for a group of places. Places you have not seen yet may show as "heard of" until you walk past.
 * **Set your own waypoint:** **Shift + Left click** on the map (gamepad: hold **Y**, press **A**), or just click a place.
