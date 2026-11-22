@@ -184,6 +184,11 @@ A finding on the island (the pack's MainWorld) blocks the branch that caused it 
   from the terrain stands at terrain + the layer's y (the two Saint-Philippe fuel pumps at y 37.5 over a terrain of 18.7). A row
   of a `rel` class that stands at its layer y as written (bench, bin, flowerpot, sign) is measured there. `missing` now means
   nothing of that name exists, which is a prefab that failed to load.
+- **A goods copy on a gondola board is not an `overhang` when its contact reads level and complete** (`restsOnLevelSupport` in
+  `agent-box/place-audit.mjs`): contact gap within 1 cm, spread under 2 cm and every point of the 3x3 footprint hit (`chits n/n`).
+  A shelf unit's solid volume swallows the four-corner trace that starts inside it, so a copy over a same-sized copy on the
+  board below read "hang off the edge of LF_DriedMeat (drop 0.44 m)" for all twelve supermarket dried-meat copies, which rest
+  on their boards. A copy with a partial contact (a crate half on a table) is still reported.
 - It measures where the layer puts each entity. A dynamic rigid body (a pickup with `RigidBody Active Active`,
   such as `WoodLog_01_Small`) is simulated on clients and can tip off a table that the audit passed: on
   2026-11-11 the logging stand's logs, laid along a 1.2 m table, fell upright in the after shot. Lay such

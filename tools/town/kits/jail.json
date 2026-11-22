@@ -75,12 +75,13 @@
       "verb": "on floor",
       "offset": [
         -6.6,
-        0,
+        0.086,
         -2.6
       ],
       "yaw": 90,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "keepY": true
     },
     {
       "id": "jail-kitchen-sink",
@@ -91,7 +92,7 @@
       "offset": [
         -3.6,
         0.036,
-        -2.7
+        -3.05
       ],
       "yaw": 270,
       "wall": "free",
