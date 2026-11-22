@@ -2704,6 +2704,16 @@ StringTable {
      Target_en_us "Everon, 1989. Pick this scenario and host a local game to play alone, or host it for friends. Your first spawn opens form R-89 at the registry; sign it to start. Then take a job, bank your pay, buy at a shop and see how the police answer a crime. Police duty needs an approved application. A local game is a preview: how saving behaves on a dedicated server is not promised there. Report problems on the Life Framework Discord or GitHub."
      Comment "Detailed scenario text shown with the Everon 1989 scenario: first-run guide and the local-game preview note (#374)."
     }
+    CustomStringTableItem "{9C4F4D0E49E4F4DB}" {
+     Id "LF-Newspaper_ItemName"
+     Target_en_us "Everon Courier"
+     Comment "Pack override of the core newspaper item name (WO-W2.1)."
+    }
+    CustomStringTableItem "{E530232CE946297A}" {
+     Id "LF-Newspaper_Masthead"
+     Target_en_us "The Everon Courier"
+     Comment "Pack override of the core newspaper masthead (WO-W2.1)."
+    }
     CustomStringTableItem "{FBE2A53D441A63D5}" {
      Id "LF-NpcRole_ranger_What"
      Target_en_us "I teach people to survive outside town. Water, food, a fire, a shelter. The weather turns fast on Everon."
