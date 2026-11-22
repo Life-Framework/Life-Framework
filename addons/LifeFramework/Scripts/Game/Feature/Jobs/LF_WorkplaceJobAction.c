@@ -4,7 +4,7 @@
 //! anywhere put such a job on a player, so the pickaxe and axe tills, which need the job, could never
 //! sell (2026-11-22). Police and medic desks keep the punch clock (LF_DutyAction); delivery jobs keep
 //! their counters (LF_JobSignUpAction). Server decides: the same standing gate as the counter and the
-//! job dialogue (LF_JobStandingGate), then LF_PlayerJobComponent.SetJob, every outcome logged.
+//! job dialogue (LF_JobStandingGate), then LF_PlayerJobComponent.SetJob with no free job kit (the tools are bought at the tills), every outcome logged.
 //! The job lives on the body (LF_PlayerJobComponent), as the delivery counter's does for the body: a
 //! respawn starts unemployed in these jobs, and the desk takes the player back on.
 class LF_WorkplaceJob
@@ -82,7 +82,7 @@ class LF_WorkplaceJob
 			return -1;
 		}
 
-		if (!jobs.SetJob(deskJob))
+		if (!jobs.SetJob(deskJob, false))
 		{
 			LF_Debug.Warn(FEATURE, string.Format("%1 could not take %2: the job component refused", uid, jobName));
 			return -1;
