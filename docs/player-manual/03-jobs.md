@@ -10,8 +10,8 @@ hours vary with how far you walk, drive and wait.
 | [Taxi](#taxi) | ✅ yes | about **$600**, with a passenger | work level 3, a second player |
 | [Harvest and farm](#harvest-and-farm) | ✅ wheat, garden, orchard | about **$420 to $480** for wheat | reaper and a tow vehicle |
 | [Lumber](#lumber) | ✅ yes | about **$400** | an axe |
-| [Fishing](#fishing) | ⚠️ you can fish, nobody buys the fish yet | $0 until a buyer is placed | rod and bait |
-| [Scrap and recycling](#scrap-and-recycling) | ⚠️ the yard works, nobody buys scrap yet | little | nothing |
+| [Fishing](#fishing) | ✅ yes, sold at the dock wholesale | about **$250 to $430** (the wholesale pays 65 percent of a fish counter's rate) | rod and bait |
+| [Scrap and recycling](#scrap-and-recycling) | ✅ yes, sold at the garage | about **$100 to $200** (a side income) | nothing |
 | [Garbage round](#garbage-round) | ❌ not on the island | about $400 planned | |
 | [Fuel haul](#fuel-haul) | ❌ no depot on the island | about $450 planned | |
 | [Mining](#mining) | ❌ no mine placed | about $385 to $515 planned | |
@@ -144,7 +144,7 @@ The drops are on the east side (a house near the district road) and four along t
 
 ## Fishing
 
-**Status:** ⚠️ you can catch and smoke fish. **No fish buyer is placed on the island yet**, so for now fishing pays nothing in cash.
+**Status:** ✅ live. You can catch, smoke and **sell** fish: the **wholesale warehouse** on the dock buys every fish and every smoked fish at a fixed price.
 
 * **Where:** three spots. **Spring Pond** has a jetty in town, south-east of the square. **Fisherman's Bay** is a sheltered cove on the west coast
   (Gaspard, the old man on the bench in town, tells you about it once you land three fish). **Black Lake** is far to the north-east.
@@ -154,7 +154,18 @@ The drops are on the east side (a house near the district road) and four along t
   **Fire again within 2 seconds** to land it. You can cast about 6 times a minute. Bait makes bites faster. A spot holds about 14 fish and refills one fish every 90 seconds.
   The pond gives **perch, carp and trout**; the bay and open sea give **mackerel, bass and tuna**; the fish depend on the time of day.
 * **Smokehouse:** put a fresh medium fish and **one firewood bundle** in the smoker; 30 seconds later you have a **smoked fish**.
-* **Pay:** a fish counter is designed but not placed, so nothing pays for fish or smoked fish yet.
+* **Selling:** walk into the **wholesale warehouse** on the dock (the same counter that buys planks, iron bars and cement), press **F** on the clerk's counter and sell the fish. It pays **65 percent of a fish counter's rate**, the same every time (no falling price), and takes a whole stack in one go:
+
+  | Fish | Small | Medium | Large | Smoked |
+  |---|---|---|---|---|
+  | Trout | $4 | $8 | $16 | $18 |
+  | Perch | $3 | $7 | $13 | $16 |
+  | Mackerel | $3 | $7 | $13 | $16 |
+  | Carp | $5 | $9 | $18 | $21 |
+  | Bass | $5 | $10 | $21 | $23 |
+  | Tuna | $10 | $20 | $39 | $43 |
+
+* **Pay:** a spot gives about **40 fish an hour** (14 in the first hour), so the cove at Fisherman's Bay (mostly bass, $10.8 a fish on average) is about **$430 an hour**, the harbour water about **$290** and the Spring Pond about **$245**, rod and bait included. Smoking a medium fish (plus a firewood bundle) turns $7 to $20 into $16 to $43, so the smokehouse is worth the walk when you have fish to spare.
 * **Needs:** rod and bait.
 
 <!-- map:inset:pond -->
@@ -191,14 +202,15 @@ The drops are on the east side (a house near the district road) and four along t
 
 ## Scrap and recycling
 
-**Status:** ⚠️ the yard works, but **nobody buys scrap metal, wire or rubber yet**. Iron bars sell at the dock wholesale yard.
+**Status:** ✅ live. The yard works and the **garage mechanic in Saint-Philippe buys scrap metal, copper wire and rubber scrap**. Iron bars sell at the dock wholesale yard.
 
 * **Where:** the **scrapyard** (sign *Casse*) east of town, about 450 m east-north-east of the filling station.
 * **How to start:** walk in. No sign-up.
 * **What you do:** **search the scrap piles** for scrap metal, rubber, copper wire coils, worn hand tools and old radios. At the **recycler bench**
   pick **Load** with an item, **hold Work** (each worker adds one unit, so two people finish twice as fast) and **Collect** the parts.
   A worn tool gives scrap metal, an old radio gives metal and wire, **car parts give 3 iron bars**.
-* **Pay:** iron bars sell for about $20 each at the dock wholesale yard and fall as you sell. Car parts cost $200 at the garage, so buying them to recycle loses money; the yard is for parts you find or chop.
+* **Selling scrap:** take it to the **garage** (map name *Garage*, the mechanic's counter in the districts; see the [Saint-Philippe map](maps.md)), press **F** at the till and sell. The mechanic pays **half the catalogue price**, a fixed price with no stock limit and no questions about where it came from: **scrap metal $4, copper wire coil $12, rubber scrap $5**. He does not buy stolen goods or the worn tools and old radios (break those down at the bench first).
+* **Pay:** a bench load (a worn tool is $12 of metal, an old radio is $20 of metal and wire) and the loose finds come to about **$100 to $200 an hour** at one search every four minutes, a side income and not a main job. Iron bars sell for about $20 each at the dock wholesale yard and fall as you sell. Car parts cost $200 at the garage, so buying them to recycle loses money; the yard is for parts you find or chop.
 * **Needs:** nothing.
 
 <!-- map:inset:scrapyard -->

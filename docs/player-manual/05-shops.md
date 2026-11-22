@@ -28,12 +28,12 @@ The numbers in the first column are the numbers on the [Saint-Philippe map](maps
 | **Town hall** (registry clerk) | Driving licence **$100** |
 | **Gun store** | Firearm permit **$250** (instant in the alpha). Weapons need the permit |
 | **Car lot** | Seven cars, $560 to $6,400 at the alpha price. Paid from the bank. A driving licence is needed |
-| **Garage** | Car parts **$200**, repair kit **$80** |
+| **Garage** | Car parts **$200**, repair kit **$80**. Buys scrap metal **$4**, copper wire **$12**, rubber scrap **$5** |
 | **Filling station** pumps | **$2 per litre**. Pick *Fill the tank* with your car at the pump |
 | **Barber** | A haircut |
 | **Cafe** | Drinks and snacks; chess table beside it |
 | **Market stall** | Sells your cabbage, honey and planks at a posted price |
-| **Dock wholesale yard** | Buys planks, boards, posts, firewood, cement, coal and metal bars in bulk; price falls as you sell and recovers hourly |
+| **Dock wholesale yard** | Buys planks, boards, posts, firewood, cement, coal and metal bars in bulk; price falls as you sell and recovers hourly. Also buys every fish and smoked fish at a fixed price (a trout is $8, a smoked tuna $43; see [Jobs](03-jobs.md#fishing)) |
 | **Timber counter** | Buys planks **$8** and hardwood boards **$12** (a purse that refills through the hour) |
 
 ## What the clothing store and the gun store carry

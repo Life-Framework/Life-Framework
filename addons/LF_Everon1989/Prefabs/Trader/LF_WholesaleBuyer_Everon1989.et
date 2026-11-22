@@ -15,6 +15,30 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     "{577A665F1662E7AD}Prefabs/Resources/Mining/CopperBar.et"
     "{88F43FF542BB6767}Prefabs/Resources/Mining/Stone.et"
     "{6ADCC5039A8EF571}Prefabs/Resources/Mining/Limestone.et"
+    "{FAEF245300848A2C}Prefabs/Items/Fishing/LF_FishTroutSmall.et"
+    "{ACCC8B6FEB32034C}Prefabs/Items/Fishing/LF_FishTrout.et"
+    "{368CD7CE4669CC29}Prefabs/Items/Fishing/LF_FishTroutLarge.et"
+    "{B893DF5794082223}Prefabs/Items/Fishing/LF_FishMackerelSmall.et"
+    "{9412431FCE67E0FA}Prefabs/Items/Fishing/LF_FishMackerel.et"
+    "{217073951C202A42}Prefabs/Items/Fishing/LF_FishMackerelLarge.et"
+    "{8C1D4CA863C09490}Prefabs/Items/Fishing/LF_FishBassSmall.et"
+    "{C240073B498C7A71}Prefabs/Items/Fishing/LF_FishBass.et"
+    "{C7329D1CEF57DDDF}Prefabs/Items/Fishing/LF_FishBassLarge.et"
+    "{AFE220A402DB58C2}Prefabs/Items/Fishing/LF_FishTunaSmall.et"
+    "{DD8C24A0E8CC6095}Prefabs/Items/Fishing/LF_FishTuna.et"
+    "{FA92E4CBA1DB5751}Prefabs/Items/Fishing/LF_FishTunaLarge.et"
+    "{B68F7B8D52248F97}Prefabs/Items/Fishing/LF_FishPerchSmall.et"
+    "{10AC1C974EEB714B}Prefabs/Items/Fishing/LF_FishPerch.et"
+    "{CFE6CAD82A45830C}Prefabs/Items/Fishing/LF_FishPerchLarge.et"
+    "{E29A8872F6CA0CB3}Prefabs/Items/Fishing/LF_FishCarpSmall.et"
+    "{978A71CB3CBE87F7}Prefabs/Items/Fishing/LF_FishCarp.et"
+    "{E2CBEFBA321D8574}Prefabs/Items/Fishing/LF_FishCarpLarge.et"
+    "{164E31A9B6CD9249}Prefabs/Items/Fishing/LF_SmokedMackerel.et"
+    "{0F603CCADE2D811E}Prefabs/Items/Fishing/LF_SmokedBass.et"
+    "{7778188CA2BDEAB7}Prefabs/Items/Fishing/LF_SmokedTuna.et"
+    "{30AA2A6062E95ADF}Prefabs/Items/Fishing/LF_SmokedPerch.et"
+    "{ED8FC7862B597BE2}Prefabs/Items/Fishing/LF_SmokedCarp.et"
+    "{320AF694AB999DF5}Prefabs/Items/Fishing/LF_SmokedTrout.et"
    }
   }
   LF_TraderManagerComponent "{59693C53B6A5EFC1}" {
@@ -66,6 +90,102 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     LF_TraderItem "{59693C53B6A5E00C}" {
      m_ItemPrefab "{6ADCC5039A8EF571}Prefabs/Resources/Mining/Limestone.et"
      m_ValuePerItem 4
+    }
+    LF_TraderItem "{59693C53B6A5E100}" {
+     m_ItemPrefab "{FAEF245300848A2C}Prefabs/Items/Fishing/LF_FishTroutSmall.et"
+     m_ValuePerItem 4
+    }
+    LF_TraderItem "{59693C53B6A5E101}" {
+     m_ItemPrefab "{ACCC8B6FEB32034C}Prefabs/Items/Fishing/LF_FishTrout.et"
+     m_ValuePerItem 8
+    }
+    LF_TraderItem "{59693C53B6A5E102}" {
+     m_ItemPrefab "{368CD7CE4669CC29}Prefabs/Items/Fishing/LF_FishTroutLarge.et"
+     m_ValuePerItem 16
+    }
+    LF_TraderItem "{59693C53B6A5E103}" {
+     m_ItemPrefab "{B893DF5794082223}Prefabs/Items/Fishing/LF_FishMackerelSmall.et"
+     m_ValuePerItem 3
+    }
+    LF_TraderItem "{59693C53B6A5E104}" {
+     m_ItemPrefab "{9412431FCE67E0FA}Prefabs/Items/Fishing/LF_FishMackerel.et"
+     m_ValuePerItem 7
+    }
+    LF_TraderItem "{59693C53B6A5E105}" {
+     m_ItemPrefab "{217073951C202A42}Prefabs/Items/Fishing/LF_FishMackerelLarge.et"
+     m_ValuePerItem 13
+    }
+    LF_TraderItem "{59693C53B6A5E106}" {
+     m_ItemPrefab "{8C1D4CA863C09490}Prefabs/Items/Fishing/LF_FishBassSmall.et"
+     m_ValuePerItem 5
+    }
+    LF_TraderItem "{59693C53B6A5E107}" {
+     m_ItemPrefab "{C240073B498C7A71}Prefabs/Items/Fishing/LF_FishBass.et"
+     m_ValuePerItem 10
+    }
+    LF_TraderItem "{59693C53B6A5E108}" {
+     m_ItemPrefab "{C7329D1CEF57DDDF}Prefabs/Items/Fishing/LF_FishBassLarge.et"
+     m_ValuePerItem 21
+    }
+    LF_TraderItem "{59693C53B6A5E109}" {
+     m_ItemPrefab "{AFE220A402DB58C2}Prefabs/Items/Fishing/LF_FishTunaSmall.et"
+     m_ValuePerItem 10
+    }
+    LF_TraderItem "{59693C53B6A5E10A}" {
+     m_ItemPrefab "{DD8C24A0E8CC6095}Prefabs/Items/Fishing/LF_FishTuna.et"
+     m_ValuePerItem 20
+    }
+    LF_TraderItem "{59693C53B6A5E10B}" {
+     m_ItemPrefab "{FA92E4CBA1DB5751}Prefabs/Items/Fishing/LF_FishTunaLarge.et"
+     m_ValuePerItem 39
+    }
+    LF_TraderItem "{59693C53B6A5E10C}" {
+     m_ItemPrefab "{B68F7B8D52248F97}Prefabs/Items/Fishing/LF_FishPerchSmall.et"
+     m_ValuePerItem 3
+    }
+    LF_TraderItem "{59693C53B6A5E10D}" {
+     m_ItemPrefab "{10AC1C974EEB714B}Prefabs/Items/Fishing/LF_FishPerch.et"
+     m_ValuePerItem 7
+    }
+    LF_TraderItem "{59693C53B6A5E10E}" {
+     m_ItemPrefab "{CFE6CAD82A45830C}Prefabs/Items/Fishing/LF_FishPerchLarge.et"
+     m_ValuePerItem 13
+    }
+    LF_TraderItem "{59693C53B6A5E10F}" {
+     m_ItemPrefab "{E29A8872F6CA0CB3}Prefabs/Items/Fishing/LF_FishCarpSmall.et"
+     m_ValuePerItem 5
+    }
+    LF_TraderItem "{59693C53B6A5E110}" {
+     m_ItemPrefab "{978A71CB3CBE87F7}Prefabs/Items/Fishing/LF_FishCarp.et"
+     m_ValuePerItem 9
+    }
+    LF_TraderItem "{59693C53B6A5E111}" {
+     m_ItemPrefab "{E2CBEFBA321D8574}Prefabs/Items/Fishing/LF_FishCarpLarge.et"
+     m_ValuePerItem 18
+    }
+    LF_TraderItem "{59693C53B6A5E112}" {
+     m_ItemPrefab "{164E31A9B6CD9249}Prefabs/Items/Fishing/LF_SmokedMackerel.et"
+     m_ValuePerItem 16
+    }
+    LF_TraderItem "{59693C53B6A5E113}" {
+     m_ItemPrefab "{0F603CCADE2D811E}Prefabs/Items/Fishing/LF_SmokedBass.et"
+     m_ValuePerItem 23
+    }
+    LF_TraderItem "{59693C53B6A5E114}" {
+     m_ItemPrefab "{7778188CA2BDEAB7}Prefabs/Items/Fishing/LF_SmokedTuna.et"
+     m_ValuePerItem 43
+    }
+    LF_TraderItem "{59693C53B6A5E115}" {
+     m_ItemPrefab "{30AA2A6062E95ADF}Prefabs/Items/Fishing/LF_SmokedPerch.et"
+     m_ValuePerItem 16
+    }
+    LF_TraderItem "{59693C53B6A5E116}" {
+     m_ItemPrefab "{ED8FC7862B597BE2}Prefabs/Items/Fishing/LF_SmokedCarp.et"
+     m_ValuePerItem 21
+    }
+    LF_TraderItem "{59693C53B6A5E117}" {
+     m_ItemPrefab "{320AF694AB999DF5}Prefabs/Items/Fishing/LF_SmokedTrout.et"
+     m_ValuePerItem 18
     }
    }
   }
