@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{531009456B22BC6F}Sounds/Dialogue/resident_mireille/Dialogue_resident_mireille.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
