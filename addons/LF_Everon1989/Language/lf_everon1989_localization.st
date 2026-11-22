@@ -339,6 +339,11 @@ StringTable {
      Target_en_us "Father Étienne Morel"
      Comment "Anniversary memorial (#3806): the priest's name over his line at the memorial."
     }
+    CustomStringTableItem "{0EB019215DA32CC0}" {
+     Id "LF-Arrival_ClerkMark"
+     Target_en_us "The town clerk"
+     Comment "Everon pack override: the arrival waypoint's label, one name for the clerk everywhere (first-2-hours review A9)."
+    }
     CustomStringTableItem "{77A005A685815162}" {
      Id "LF-BusStop_BoardTitle"
      Target_en_us "Saint-Philippe bus line"
@@ -561,7 +566,7 @@ StringTable {
     }
     CustomStringTableItem "{BAEB5C5137C78001}" {
      Id "LF-Dialogue_ClerkEveron_AboutWork"
-     Target_en_us "The post office always needs couriers. For anything else, read the town board. It lists who is hiring."
+     Target_en_us "Looking for work? Start with the orchard east of town: pick apples, press the juice, sell it at the market. Then open your player menu with F2 and read What to do next. The town board lists the rest."
      Comment "Pack patch of the clerk dialogue's line about_work (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{5A8EF27F20337853}" {
@@ -601,13 +606,18 @@ StringTable {
     }
     CustomStringTableItem "{9045EF2226240420}" {
      Id "LF-Dialogue_ClerkEveron_Juice"
-     Target_en_us "Press your apples into juice at the juice press on the orchard stall."
+     Target_en_us "Press your six apples into two bottles of juice at the juice press on the orchard stall."
      Comment "Pack patch of the clerk dialogue's line juice (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{B3E611FAB38249E9}" {
      Id "LF-Dialogue_ClerkEveron_Market"
      Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader."
      Comment "Pack patch of the clerk dialogue's line market (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
+    }
+    CustomStringTableItem "{9F23A94BE325937D}" {
+     Id "LF-Dialogue_ClerkEveron_Papers"
+     Target_en_us "Your papers. Tell me what you need."
+     Comment "Pack patch of the clerk dialogue's line papers (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{ACA40575917539FA}" {
      Id "LF-Dialogue_ClerkEveron_Register"
@@ -2249,6 +2259,21 @@ StringTable {
      Target_en_us "Worn hand tool"
      Comment "Item name: worn hand tool (scrapyard, #3823)."
     }
+    CustomStringTableItem "{F3657E616B45CD7B}" {
+     Id "LF-JobMap_PostLoad"
+     Target_en_us "Saint-Philippe post office"
+     Comment "Map mark and waypoint label: where the postal van run starts."
+    }
+    CustomStringTableItem "{2D805DAE8C95747C}" {
+     Id "LF-JobMap_PostReturn"
+     Target_en_us "Saint-Philippe post office"
+     Comment "Map mark and waypoint label: where the postal van run returns the van."
+    }
+    CustomStringTableItem "{700F14984EF9057D}" {
+     Id "LF-JobMap_PostUnload"
+     Target_en_us "Meaux post office"
+     Comment "Map mark and waypoint label: where the postal van run delivers (Meaux)."
+    }
     CustomStringTableItem "{E5D6ABA466DA481F}" {
      Id "LF-Launder_Closed"
      Target_en_us "Nobody is washing money tonight."
@@ -2371,7 +2396,7 @@ StringTable {
     }
     CustomStringTableItem "{4F2A7F2FF80947EE}" {
      Id "LF-MapPoi_Clerk"
-     Target_en_us "Registry clerk: ID cards"
+     Target_en_us "Town clerk: ID cards"
      Comment "Map POI name (rc-map-places): the town hall clerk who issues ID cards and licences; the arrival errand sends a new player here."
     }
     CustomStringTableItem "{5A7C1E04B93D6F0C}" {
@@ -2824,10 +2849,20 @@ StringTable {
      Target_en_us "Application to the Everon {Police}"
      Comment "Police application form title."
     }
+    CustomStringTableItem "{980F2E9B2C46E028}" {
+     Id "LF-Postal_Loaded"
+     Target_en_us "Sack loaded (%1). When all are in, drive to the Meaux post office, marked on your map."
+     Comment "Toast after a sack is loaded: names the destination office (pack override of the core row)."
+    }
     CustomStringTableItem "{7955F10958310917}" {
      Id "LF-Process_SmeltIronOre"
      Target_en_us "Smelt iron ore (3 make a bar)"
      Comment "Action on the Coalman's Brow mine furnace (LF_MineFurnace.et, machine furnace-iron-mine, Everon 1989 pack)."
+    }
+    CustomStringTableItem "{83F5D3CDBFBE942D}" {
+     Id "LF-Quest_Action_Clerk"
+     Target_en_us "Talk to the town clerk"
+     Comment "Everon pack override: the clerk's Talk row, one name for the clerk everywhere (first-2-hours review A9)."
     }
     CustomStringTableItem "{B4A2D6F89C3E5071}" {
      Id "LF-Quest_AnniversaryChairs_Desc"
@@ -2956,7 +2991,7 @@ StringTable {
     }
     CustomStringTableItem "{3ADBB6CA4E4F53BA}" {
      Id "LF-Quest_EveronJuice_Desc"
-     Target_en_us "Press your apples into juice at the juice press on the orchard stall."
+     Target_en_us "Press your six apples into two bottles of juice at the juice press on the orchard stall."
      Comment "Everon arrival step 4 errand: press apple juice."
     }
     CustomStringTableItem "{FAE9332E9FD2730E}" {
@@ -3268,6 +3303,11 @@ StringTable {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry of Everon, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{7F4E17D32E3F866C}" {
+     Id "LF-Reg_Welcome"
+     Target_en_us "Welcome to Everon, 1989. Sign the register and start your new life on the island: find work, earn a living and keep to the rules you just read."
+     Comment "Registration form welcome line (pack override of the neutral core row)."
     }
     CustomStringTableItem "{1357AE90EB122FE9}" {
      Id "LF-Resident_cafe_owner_Name"
@@ -5606,17 +5646,22 @@ StringTable {
     }
     CustomStringTableItem "{7D258D65CE0FBAB7}" {
      Id "LF-WelcomeGuide_Body1a"
-     Target_en_us "You are new on Everon and carry no papers. Walk south from the hostel to the town hall on the square in Saint-Philippe: the registry clerk files your papers, hands you your ID card and gives you your first errands."
+     Target_en_us "You are new on Everon and carry no papers. Walk south from the hostel to the town hall on the square in Saint-Philippe and talk to the town clerk: he files your papers, hands you your ID card and a welcome pack, and tells you where your starter car waits."
      Comment "Everon pack override of the welcome guide page 1 paragraph: where the clerk is."
+    }
+    CustomStringTableItem "{00525C5563FD0152}" {
+     Id "LF-WelcomeGuide_Body1b"
+     Target_en_us "Then the route is: take your car out at the garage counter beside the town hall, drive to the orchard east of town and pick six apples, press them into juice at the stall, and sell the juice at the market. A waypoint with the distance shows the way to each step. For your first minutes nobody can rob you."
+     Comment "Everon pack override of the welcome guide page 1 second paragraph: the arrival route clerk, car, orchard, press, market (first-2-hours review A5)."
     }
     CustomStringTableItem "{90AC4E70357D8828}" {
      Id "LF-WelcomeGuide_Body2a"
-     Target_en_us "You start with $1,000 in the bank. Cash in your pocket is lost when you die; money in the bank is not. Put cash in or take it out at an ATM (by the bank, on the east side, on the harbor) or at the bank teller."
+     Target_en_us "You start with %1 in the bank. Cash in your pocket is lost when you die; money in the bank is not. Put cash in or take it out at an ATM (by the bank, on the east side, on the harbor) or at the bank teller."
      Comment "Everon pack override of the welcome guide page 2 paragraph: the starting balance and the Saint-Philippe ATMs."
     }
     CustomStringTableItem "{D9FCAED1B0FE1333}" {
      Id "LF-WelcomeGuide_Body2b"
-     Target_en_us "Starter jobs pay at once: a courier run from the post office pays $40 a parcel, a taxi fare about $100, a bin round $100. The notice board on the square lists every shop and service in Saint-Philippe, each with a waypoint button."
+     Target_en_us "Once the market sale is done, press F2 and open What to do next: it lists the starter runs, each with a Start button, and shows the one you are on. The notice board on the square lists every shop and service in Saint-Philippe, each with a waypoint button."
      Comment "Everon pack override of the welcome guide page 2 paragraph: the starter jobs and the town board."
     }
     CustomStringTableItem "{F17D37DC02E7BD4B}" {

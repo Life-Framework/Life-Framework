@@ -41,6 +41,15 @@ enum LF_ELicenceDesk
 //------------------------------------------------------------------------------------------------
 class LF_LicenceDesk
 {
+	//------------------------------------------------------------------------------------------------
+	//! Pure: whether the "Buy a driving license" row shows. A newcomer with no ID card gets no row
+	//! (no papers, no licence): at the town hall the clerk's Talk row is then the first and only one,
+	//! so nobody buys a licence by accident before the clerk (first-2-hours review A7).
+	static bool DrivingRowShown(bool systemOn, bool holdsLicence, int cardsCarried)
+	{
+		return systemOn && !holdsLicence && cardsCarried > 0;
+	}
+
 	static const string FEATURE = "License";
 	static const LF_ELicenseType PERMIT = LF_ELicenseType.FIREARM_PERMIT;
 	static const LF_ELicenseType DRIVING = LF_ELicenseType.DRIVING_LICENCE;

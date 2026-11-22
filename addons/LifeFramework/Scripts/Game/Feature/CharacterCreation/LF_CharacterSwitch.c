@@ -44,6 +44,20 @@ class LF_CharacterSwitchState
 class LF_CharacterSwitch
 {
 	static const string FEATURE = "CharacterSwitch";
+	//! The clerk's first errand: the character is registered once it is handed in.
+	static const string ARRIVAL_QUEST = "arrival_register";
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: whether the clerk offers "I need another of my files". The server must allow more than one
+	//! character, and the player must have a second file already or be settled in (registered): a brand
+	//! new arrival is not offered a character change as their first move (first-2-hours review A10).
+	static bool SwitchOffered(int maxPerAccount, bool hasActiveCharacter, int fileCount, bool registered)
+	{
+		if (maxPerAccount <= 1 || !hasActiveCharacter)
+			return false;
+
+		return fileCount > 1 || registered;
+	}
 	//! How long the clerk's yes stays good for the sheet the player's screen asks for.
 	// lf-fixed: a network round trip after the talk closes, not a server choice
 	static const float GRANT_SECONDS = 30;
@@ -391,11 +405,16 @@ class LF_DialogueHook_CharacterSwitchOffered : LF_DialogueHook
 	//------------------------------------------------------------------------------------------------
 	override bool Allows(IEntity player, IEntity npc, string param)
 	{
-		if (LF_CharacterConfig.MaxPerAccount() <= 1)
+		LF_PlayerAccount account = LF_PoliceUtils.GetAccountForEntity(player);
+		if (!account)
 			return false;
 
-		LF_PlayerAccount account = LF_PoliceUtils.GetAccountForEntity(player);
-		return account && account.GetActiveCharacter();
+		bool settled;
+		LF_QuestTrackerComponent tracker = LF_Component<LF_QuestTrackerComponent>.Find(player);
+		if (tracker)
+			settled = tracker.HasTurnedIn(LF_CharacterSwitch.ARRIVAL_QUEST);
+
+		return LF_CharacterSwitch.SwitchOffered(LF_CharacterConfig.MaxPerAccount(), account.GetActiveCharacter() != null, account.GetCharacterCount(), settled);
 	}
 }
 

@@ -1,8 +1,9 @@
 //------------------------------------------------------------------------------------------------
 //! Client <-> server bridge of the rules quiz (#915), hosted on the PlayerController like the
 //! registration form: it exists before any character does.
-//!   server -> owner : LF_ShowQuiz (the questions, never the answers), LF_ShowQuizResult
-//!   owner -> server : LF_AskQuizAnswers, LF_AskQuizRetry, LF_AskQuizContinue
+//!   server -> owner : LF_ShowQuiz (the questions, never the answers), LF_ShowQuizFeedback (right or
+//!                     wrong plus the rule, for the one question just answered), LF_ShowQuizResult
+//!   owner -> server : LF_AskQuizCheck, LF_AskQuizAnswers, LF_AskQuizRetry, LF_AskQuizContinue
 //! The server identifies the player by this controller's id and scores every answer itself
 //! (LF_Quiz.Submit); a retry or a continue is honoured only while the account still has to pass or
 //! has passed, which LF_CharacterCreationManager checks again before it opens the next screen.
@@ -19,6 +20,16 @@ modded class SCR_PlayerController
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: tell the player whether the option just picked was right, with the rule behind it.
+	void LF_ShowQuizFeedback(int index, bool correct, string note)
+	{
+		if (LF_IsLocalController())
+			RpcDo_LF_ShowQuizFeedback(index, correct, note);
+		else
+			Rpc(RpcDo_LF_ShowQuizFeedback, index, correct, note);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: show the player how an attempt went.
 	void LF_ShowQuizResult(bool passed, int correct, int total, int needed, int attemptsLeft, string notes)
 	{
@@ -26,6 +37,16 @@ modded class SCR_PlayerController
 			RpcDo_LF_ShowQuizResult(passed, correct, total, needed, attemptsLeft, notes);
 		else
 			Rpc(RpcDo_LF_ShowQuizResult, passed, correct, total, needed, attemptsLeft, notes);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: ask whether the option picked for one question is the right one.
+	void LF_AskQuizCheck(int index, int option)
+	{
+		if (Replication.IsServer())
+			RpcAsk_LF_QuizCheck(index, option);
+		else
+			Rpc(RpcAsk_LF_QuizCheck, index, option);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -75,6 +96,16 @@ modded class SCR_PlayerController
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_LF_ShowQuizFeedback(int index, bool correct, string note)
+	{
+		if (!GetGame().GetWorkspace())
+			return;
+
+		LF_QuizSheet.ShowFeedback(index, correct, note);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
 	protected void RpcDo_LF_ShowQuizResult(bool passed, int correct, int total, int needed, int attemptsLeft, string notes)
 	{
 		if (!GetGame().GetWorkspace())
@@ -82,6 +113,13 @@ modded class SCR_PlayerController
 
 		if (!LF_QuizSheet.ShowResult(this, passed, correct, total, needed, attemptsLeft, notes))
 			LF_Debug.Error(LF_Quiz.FEATURE, "failed to open the quiz result");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_QuizCheck(int index, int option)
+	{
+		LF_QuizFlow.ServerCheck(GetPlayerId(), index, option);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -141,6 +179,22 @@ class LF_QuizFlow
 		string uid = LF_Utils.GetAccountUID(playerId);
 		LF_Debug.Info(LF_Quiz.FEATURE, string.Format("quiz sent to player %1 (%2), %3 attempt(s) left", playerId, uid, LF_Quiz.AttemptsLeft(uid)));
 		controller.LF_ShowQuiz(LF_Quiz.BuildPayload(), LF_Quiz.AttemptsLeft(uid));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One question answered: tell the player at once whether it was right and why. Scores nothing.
+	static void ServerCheck(int playerId, int index, int option)
+	{
+		SCR_PlayerController controller = Find(playerId);
+		if (!controller || !CanUseQuiz(playerId))
+		{
+			LF_Debug.Warn(LF_Quiz.FEATURE, string.Format("quiz check from player %1 dropped: nothing to answer", playerId));
+			return;
+		}
+
+		string note;
+		bool correct = LF_Quiz.CheckOne(index, option, note);
+		controller.LF_ShowQuizFeedback(index, correct, note);
 	}
 
 	//------------------------------------------------------------------------------------------------
