@@ -52,10 +52,21 @@
   penalty.
 - ⚠️ Not yet felt in game: set survival to 10 in the DebugMenu and sprint.
 
-### `LF_BetaHud` survival gauges — `HUD/LF_BetaHud.c`
-- ✅ (2026-11-08) Hunger and thirst gauges read the replicated whole points.
-  The HUD stays second to the body cue. The health gauge already reads the
-  damage manager, so the needs cap now shows there too.
+### `LF_BetaHud` subtle HUD — `HUD/LF_BetaHud.c`, `HUD/LF_HudLogic.c`, `HUD/LF_HudBankMirror.c`
+- ✅ (2026-11-22) The bottom-centre site URL is gone. Small brand mark top-left (`LF_HudBrandMark.imageset`, 32 %
+  opacity); cash and bank stacked top-right with a sliding "+$100"/"-$18" delta, dimmed to 40 % after 5 s idle and full
+  while the inventory or map is open; up to five wanted badges (`LF_HudWantedBadge.imageset`, our own shield glyph)
+  under the money, red flash and a "Wanted" caption on a rise, faded out at 0; food and drink as label + number at the
+  bottom centre, hidden while both are at 50 or more, shown below 50 or for 4 s after a rise, red below 25. Health and
+  stamina keep their bottom-right gauges.
+- Reads only values already replicated to the owner: cash from the inventory invoker, wanted from the packed account
+  state, hunger and thirst from the survival RplProps, and the bank from `LF_HudBankMirror`: an owner-only RplProp on
+  `SCR_ChimeraCharacter` the server writes on spawn and on every bank `LF_OnMoneyMoved` (display only, nothing trusts it).
+- Replicated values are polled every 0.25 s; widgets change only when a value or a target does. Hidden behind
+  full-screen menus and during dialogue (`LF_DialogueScene`, `LF_DialogueCamera`).
+- `/hud <brand|money|wanted|needs|all> <on|off>` toggles a part; kept per client in `$profile:LF_HudPrefs.txt`.
+- Test `hud/subtle-rules` (LOGIC): show and low thresholds, dimming, delta and bank text, pip clamp and rise, /hud
+  parsing and the saved line.
 
 ### `LF_LawlessHud` lawless area cue (#591) - `HUD/LF_LawlessHud.c`
 - Client side, no RPC: the zone entities exist in every client's world, so the HUD asks

@@ -6813,6 +6813,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Unlock house"
      Comment "House door action: the owner or a key holder unlocks the house"
     }
+    CustomStringTableItem "{532DF3B04DBAC43C}" {
+     Id "LF-Hud_Bank"
+     Target_en_us "Bank %1"
+     Comment "HUD: the bank balance under the cash. %1 = amount, e.g. $18,900."
+    }
+    CustomStringTableItem "{D1557FBF0A771ACC}" {
+     Id "LF-Hud_BrandWord"
+     Target_en_us "LIFE FRAMEWORK"
+     Comment "HUD: the small brand mark top-left. Kept short, upper case."
+    }
+    CustomStringTableItem "{ADC58C75A825A803}" {
+     Id "LF-Hud_CommandDone"
+     Target_en_us "HUD: %1"
+     Comment "Chat reply after /hud. %1 = current parts, e.g. brand off, money on."
+    }
+    CustomStringTableItem "{9945A1F5FD9F4B3C}" {
+     Id "LF-Hud_CommandUsage"
+     Target_en_us "Usage: /hud <brand|money|wanted|needs|all> <on|off>. Now: %1"
+     Comment "Chat reply to a wrong /hud command. %1 = current parts, e.g. brand on, money on."
+    }
+    CustomStringTableItem "{4D79E915332DE722}" {
+     Id "LF-Hud_Drink"
+     Target_en_us "Drink"
+     Comment "HUD: label before the drink number at the bottom of the screen."
+    }
+    CustomStringTableItem "{E2C3D891635ADE21}" {
+     Id "LF-Hud_Food"
+     Target_en_us "Food"
+     Comment "HUD: label before the food number at the bottom of the screen."
+    }
+    CustomStringTableItem "{3F5C4F04B95FDD98}" {
+     Id "LF-Hud_WantedCaption"
+     Target_en_us "Wanted"
+     Comment "HUD: brief caption beside the wanted badges when the level rises."
+    }
     CustomStringTableItem "{57AECD3805F0082C}" {
      Id "LF-ID_CardAge"
      Target_en_us "Age: %1"

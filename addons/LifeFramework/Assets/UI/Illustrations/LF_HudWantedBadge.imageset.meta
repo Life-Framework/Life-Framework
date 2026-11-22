@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9F7907E6A3E866C6}Assets/UI/Illustrations/LF_HudWantedBadge.imageset"
+ Configurations {
+  ImageSetResourceClass PC {
+  }
+  ImageSetResourceClass XBOX_ONE : PC {
+  }
+  ImageSetResourceClass XBOX_SERIES : PC {
+  }
+  ImageSetResourceClass PS4 : PC {
+  }
+  ImageSetResourceClass HEADLESS : PC {
+  }
+ }
+}

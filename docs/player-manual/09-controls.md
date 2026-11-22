@@ -18,6 +18,7 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 | Mark a moment for a **clip** | **F8** | **right bumper + View** |
 | Open the **welcome guide** again | **F3** | **right bumper + Y** |
 | Open your **personal file** (money, papers, skills, errands) | **F2** | hold **right bumper + Y** |
+| Switch a **HUD part** off or on (money, wanted, needs, brand, all) | type **/hud money off** in chat | |
 
 ## Vehicles
 
