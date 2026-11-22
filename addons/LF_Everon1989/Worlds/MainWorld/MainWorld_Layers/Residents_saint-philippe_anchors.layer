@@ -22,8 +22,8 @@ GenericEntity Anchor_saint_philippe_residents_anchor_door2 {
    m_sAnchorId "door2"
   }
  }
- coords 4436.365 12.7 10668.947
- angleY -98
+ coords 4436.6 12.7 10665.4
+ angleY -140
 }
 GenericEntity Anchor_saint_philippe_residents_anchor_door3 {
  components {
@@ -31,8 +31,8 @@ GenericEntity Anchor_saint_philippe_residents_anchor_door3 {
    m_sAnchorId "door3"
   }
  }
- coords 4437.565 12.7 10667.447
- angleY -98
+ coords 4437.8 12.7 10663.5
+ angleY -20
 }
 GenericEntity Anchor_saint_philippe_residents_anchor_door4 {
  components {
@@ -40,6 +40,6 @@ GenericEntity Anchor_saint_philippe_residents_anchor_door4 {
    m_sAnchorId "door4"
   }
  }
- coords 4436.365 12.7 10667.447
- angleY -98
+ coords 4435.9 12.7 10667.3
+ angleY 40
 }
