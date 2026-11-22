@@ -1,0 +1,233 @@
+# 3. Jobs
+
+Every card says **where**, **how to start**, **what you do**, **pay per hour** and **what you need**. Pay per hour is
+a paper figure from the server's own economy numbers (`tools\cli economy`), assuming you do not waste time. Real
+hours vary with how far you walk, drive and wait.
+
+| Job | On the island now? | Pay per hour | Needs |
+|---|---|---|---|
+| [Parcel runs (courier)](#parcel-runs-courier) | ✅ yes | about **$400** (+25 percent at night) | nothing |
+| [Taxi](#taxi) | ✅ yes | about **$600**, with a passenger | work level 3, a second player |
+| [Harvest and farm](#harvest-and-farm) | ✅ wheat, garden, orchard | about **$420 to $480** for wheat | reaper and a tow vehicle |
+| [Lumber](#lumber) | ✅ yes | about **$400** | an axe |
+| [Fishing](#fishing) | ⚠️ you can fish, nobody buys the fish yet | $0 until a buyer is placed | rod and bait |
+| [Scrap and recycling](#scrap-and-recycling) | ⚠️ the yard works, nobody buys scrap yet | little | nothing |
+| [Garbage round](#garbage-round) | ❌ not on the island | about $400 planned | |
+| [Fuel haul](#fuel-haul) | ❌ no depot on the island | about $450 planned | |
+| [Mining](#mining) | ❌ no mine placed | about $385 to $515 planned | |
+| [Police](06-police.md) | ✅ yes | **$900 to $1,260** | sign up at the station |
+| [Medic](08-medic.md) | ✅ yes | **$792 to $1,224** | none |
+
+## Where the job sites are
+
+Saint-Philippe holds most of them; the sawmill, the fishing coves, the lake and the barn compound are out on the island.
+
+<!-- map:island -->
+![Everon island](../../website/public/docs-images/player-manual/island.png)
+
+| # | Place (in-game name) | Distance from Saint-Philippe | What is there |
+|---|---|---|---|
+| 1 | Saint-Philippe | - | Spawn, shops, police, clinic, bank, homes. Everything starts here. |
+| 2 | Meaux | 1.2 km | Village on the road south. Nothing built for players yet. |
+| 3 | Montignac | 3.6 km | Town with a notice board at the fuel depot. No shops yet. |
+| 4 | Lamentin | 5.7 km | Western town. Scenery only. |
+| 5 | Morton | 6.7 km | Northern town. Scenery only. |
+| 6 | Saint Pierre | 10.5 km | Far north-east town. Scenery only. |
+| 7 | Sawmill (Scierie) | 5.6 km | The island sawmill: lumberjack desk, two saws, boards. |
+| 8 | Fishing spot (Fisherman's Bay) | 0.4 km | Sheltered cove with a bench and lantern. Gaspard tells you about it. |
+| 9 | Fishing spot (Black Lake) | 9.2 km | A lake shore far to the north-east. |
+| 10 | Scrapyard (Casse) | 0.6 km | Scrap piles and the recycler bench. |
+| 11 | Fuel depot | 3.7 km | Collective-farm fuel depot. Closed to players for now. |
+| 12 | Ferme des Silos | 3.8 km | Roadside farm with a payphone. |
+| 13 | Fuel station (roadside) | 1.2 km | Roadside fuel stop with a payphone. |
+| 14 | Barn compound | 1.2 km | Chop yard and the moonshine still barn. |
+| 15 | Contested ground | 10.1 km | Hilltop mast: a hideout organizations fight over. |
+| 16 | Contested ground (farm) | 5.2 km | Farm compound: a second hideout. |
+<!-- /map -->
+
+**Levels.** Every paid run, felled tree, fish and revive earns job experience. Higher levels unlock the next job
+(fuel delivery at work level 2, taxi at level 3) and licences (felling, sawing, tools). A refusal message says what is
+missing and where to get it.
+
+**Night pay.** Parcel, fuel and taxi runs finished between **21:00 and 05:00 game time** pay **25 percent more**.
+A game day is 2 real hours and nights are short, so that is about 40 minutes in every 2 hours at the faster night speed.
+
+---
+
+## Parcel runs (courier)
+
+**Status:** ✅ live.
+
+* **Where:** the **post office counter** (map name *Parcel depot*) on the main street, west of the hostel. The drops are
+  **mailboxes on house walls** in the east districts and along the dock.
+* **How to start:** press **F** at the counter, pick **Take courier work** (once), then **Pick up parcel**. The pickup asks for a small
+  **refundable cash deposit** for the cargo.
+* **What you do:** carry the parcel to a mailbox **at least 300 m** from the counter. A waypoint marks the stop. At the box pick
+  **Complete the run**. You cannot deliver instantly: a drop that is too close, or reached too fast, pays nothing and keeps your run.
+  **Abandon the run** at the counter if you give up; you get no pay and lose the deposit.
+* **Pay:** **$40 a run** ($50 at night). About 6 minutes a run is **$400 an hour**. A harbour contract run pays more
+  once you have standing with the harbour master.
+* **Needs:** nothing, and no licence. Every paid run counts toward the next job.
+
+The drops are on the east side (a house near the district road) and four along the dock; the post office is on the [Saint-Philippe map](maps.md).
+
+## Taxi
+
+**Status:** ✅ live. Needs **work level 3** (about 6 paid runs) and **another player in your car**.
+
+* **Where:** the **taxi rank** at the clinic corner. A beige cab waits at the kerb. Sign up at the post office counter
+  (**Take taxi work**), then press **F** at the rank for **Start fare**.
+* **What you do:** pick the passenger up, drive to the stop on your waypoint, and complete the run with the passenger still seated.
+* **Pay:** between **$90 and $150** a fare by distance; a 2 km trip pays about $100. About **$600 an hour** with a steady stream of fares.
+* **Needs:** work level 3 and a real passenger seated in the cab when you drop them off.
+
+## Harvest and farm
+
+**Status:** ✅ wheat harvest, vegetable plots, beehives and orchard are live. There is **no mill or bakery flour** yet.
+
+* **Where:** the **wheat field** at the south-west edge of town: a contract board at the gate and a weighbridge south of it.
+  The **farm supply** counter and the implement rack are in town beside the farm.
+* **How to start (wheat):** buy the **reaper** at the farm supply counter (**$1,200**, you keep it for good), or take a **rental kit**
+  from the contract board (a **$300 deposit** that comes back when you return it; it comes with a vehicle). At the rack, use **Take out reaper**
+  to hitch it behind a **UAZ469** or **Z7211**.
+* **What you do:** at the board pick **Post contract** (once per ripe field), then **Take with own reaper** or **Take with rental kit**.
+  Drive slowly over the wheat (the reaper cuts a 3 m bar between **2 and 20 km/h**; faster or slower cuts nothing). The hopper fills at 10 kg a
+  3 m square and holds **600 kg**. Drive to the **weighbridge**, stay on the scale and pick **Sell grain** (the market price, falling a little per lot and recovering through the hour)
+  or **Bag grain**. **Return kit** at the board when you are done.
+* **Pay:** about **$416 an hour** selling grain, rising a little with a good price. The field grows back, so you can go round again.
+* **Needs:** the reaper and a vehicle to tow it. Buying a car needs the driving licence.
+* **Smaller jobs:** a **vegetable plot** at the farm (plant cabbage seeds, water, harvest; sell cabbage at the market stall for about $4), the **beehives** (honey sells at the market stall from about $8 falling to $4; a hive kit is $120),
+  and the **orchard** (take the farmer job at the desk and gather apples and plums; wholesale pays about $5 and $4 and falls as you sell). These are pocket money next to the wheat.
+
+<!-- map:inset:farm-timber -->
+![Fields, timber yard and the range](../../website/public/docs-images/player-manual/farm-timber.png)
+
+| # | Place | What |
+|---|---|---|
+| 16 | Shooting range | Three target lanes. |
+| 28 | Hardware store | Axe, shovel, planks, cement, radio, repair kit. |
+| 29 | Timber merchant | Sells your planks and hardwood boards. |
+| 30 | Seed and feed store | Fishing rod, bait, seeds. |
+| 31 | Farm supply | The reaper and beehive kit. |
+| 35 | Wheat field | Harvest contracts and the weighbridge. |
+| 36 | Farm | Vegetable plots, beehives, honey kitchen. |
+| 38 | Timber yard (Scierie) | Lumberjack job desk and sawmill. |
+| 68 | Wheat field (cutting area) | The ripe wheat you cut with the reaper. |
+| 69 | Weighbridge | Unload the reaper hopper here: Sell grain or Bag grain. |
+| 70 | Harvest contracts board | Post, take and return harvest contracts. |
+<!-- /map -->
+
+## Lumber
+
+**Status:** ✅ live. The timber yard at the village edge and the island sawmill both work.
+
+* **Where:** the **timber yard** (sign *Scierie*) on the western edge of town, with a **lumberjack desk** and a saw. The **timber counter**
+  (*We buy timber*) is on the kerb of the **hardware store** on the south-east road. The **island sawmill** is far to the west
+  (about 5.7 km); see the island map.
+* **How to start:** take the **lumberjack job** at the desk. Buy an **axe** ($120) at the hardware store.
+* **What you do:**
+  1. **Fell a tree** with the axe in your hands (not in a safe zone, not within 4 m of a road or 12 m of a building). Logs drop around the stump.
+  2. Carry the logs to the **saw** and pick a cut: a **softwood** log makes **4 planks and kindling**, or **2 posts**, or **4 firewood**; a **hardwood** log makes **2 boards** or **5 firewood**.
+  3. Sell **planks ($8)** and **hardwood boards ($12)** at the **timber counter**. If its purse is full it tells you to
+     "try the wholesale warehouse at the dock". The dock pays a lower, falling price for planks, boards, posts and firewood.
+* **Pay:** about **$400 an hour** carrying softwood by hand. A truck and hardwood boards pay a little more.
+* **Needs:** an axe. Job levels unlock sawing and faster felling (a refusal says what is missing).
+
+<!-- map:inset:sawmill -->
+![Everon sawmill](../../website/public/docs-images/player-manual/sawmill.png)
+
+| # | Place | What |
+|---|---|---|
+| 60 | Sawmill (Scierie) | Lumberjack desk and two saws inside the hall. |
+| 61 | Lumberjack desk | Sign on as a lumberjack. |
+<!-- /map -->
+
+## Fishing
+
+**Status:** ⚠️ you can catch and smoke fish. **No fish buyer is placed on the island yet**, so for now fishing pays nothing in cash.
+
+* **Where:** three spots. **Spring Pond** has a jetty in town, south-east of the square. **Fisherman's Bay** is a sheltered cove on the west coast
+  (Gaspard, the old man on the bench in town, tells you about it once you land three fish). **Black Lake** is far to the north-east.
+  The **smokehouse** is on the dock.
+* **How to start:** buy a **fishing rod ($60)** and a **bait tin ($30)** at the **seed and feed** store.
+* **What you do:** hold the rod, aim at the water within casting range and **fire** to cast. Wait **15 to 60 seconds** for a bite: the float is pulled under.
+  **Fire again within 2 seconds** to land it. You can cast about 6 times a minute. Bait makes bites faster. A spot holds about 14 fish and refills one fish every 90 seconds.
+  The pond gives **perch, carp and trout**; the bay and open sea give **mackerel, bass and tuna**; the fish depend on the time of day.
+* **Smokehouse:** put a fresh medium fish and **one firewood bundle** in the smoker; 30 seconds later you have a **smoked fish**.
+* **Pay:** a fish counter is designed but not placed, so nothing pays for fish or smoked fish yet.
+* **Needs:** rod and bait.
+
+<!-- map:inset:pond -->
+![Spring Pond](../../website/public/docs-images/player-manual/pond.png)
+
+| # | Place | What |
+|---|---|---|
+| 41 | Fishing spot (Spring Pond) | Fish from the jetty. |
+<!-- /map -->
+<!-- map:inset:bay -->
+![Fisherman's Bay](../../website/public/docs-images/player-manual/bay.png)
+
+| # | Place | What |
+|---|---|---|
+| 60 | Fishing spot (Fisherman's Bay) | Sheltered cove: mackerel, bass and more. |
+<!-- /map -->
+<!-- map:inset:lake -->
+![Black Lake](../../website/public/docs-images/player-manual/lake.png)
+
+| # | Place | What |
+|---|---|---|
+| 60 | Fishing spot (Black Lake) | Quiet lake shore with a bench and a lantern. |
+<!-- /map -->
+<!-- map:inset:harbour -->
+![Harbour and dock](../../website/public/docs-images/player-manual/harbour.png)
+
+| # | Place | What |
+|---|---|---|
+| 8 | ATM (harbour) | Cash machine on the dock. |
+| 18 | Harbour Office | The harbour master. |
+| 39 | Smokehouse | Smoke your fish. |
+| 40 | Wholesale warehouse | Buys bulk goods at a falling price. |
+<!-- /map -->
+
+## Scrap and recycling
+
+**Status:** ⚠️ the yard works, but **nobody buys scrap metal, wire or rubber yet**. Iron bars sell at the dock wholesale yard.
+
+* **Where:** the **scrapyard** (sign *Casse*) east of town, about 450 m east-north-east of the filling station.
+* **How to start:** walk in. No sign-up.
+* **What you do:** **search the scrap piles** for scrap metal, rubber, copper wire coils, worn hand tools and old radios. At the **recycler bench**
+  pick **Load** with an item, **hold Work** (each worker adds one unit, so two people finish twice as fast) and **Collect** the parts.
+  A worn tool gives scrap metal, an old radio gives metal and wire, **car parts give 3 iron bars**.
+* **Pay:** iron bars sell for about $20 each at the dock wholesale yard and fall as you sell. Car parts cost $200 at the garage, so buying them to recycle loses money; the yard is for parts you find or chop.
+* **Needs:** nothing.
+
+<!-- map:inset:scrapyard -->
+![Scrapyard (Casse)](../../website/public/docs-images/player-manual/scrapyard.png)
+
+| # | Place | What |
+|---|---|---|
+| 60 | Scrapyard (Casse) | Search the scrap piles; the recycler bench is in the yard. |
+| 61 | Recycler bench | Break car parts and scrap into metal. |
+<!-- /map -->
+
+## Garbage round
+
+**Status:** ❌ **not on the island yet.** The route job is built and tested in the test grid only. No depot desk, truck or dump is placed.
+
+The plan: take the garbage round at a depot desk, drive the company truck to the 5 nearest bins in order, **Empty bin** at each, and **Tip the load** at the dump.
+It pays **$15 a bin plus a $25 bonus, $100 a round** (about $400 an hour, no buy-in).
+
+## Fuel haul
+
+**Status:** ❌ **not on the island yet.** The code and a fuel depot yard at Montignac exist, but no fuel pickup or depot desk is placed, so the run cannot start.
+
+The plan: buy a **1,000-litre load** at the Montignac depot at $0.90 a litre, pump it into a station tank and earn **$1.35 a litre**
+(a $450 margin per haul, about $450 an hour). The **filling station** pumps in town sell from a 3,000-litre tank (**$2 a litre**). If the tank runs dry
+the pump says "The tanks are dry. The depot truck is due."
+
+## Mining
+
+**Status:** ❌ **not on the island yet.** The mine and plant kits are built but no mine is placed. The **pickaxe** ($150) is listed at the miner's tills in the general store
+and the hardware store, for players with a mining level.
+
+The plan: iron, copper, coal and stone chains between the hills and the smelters, **$385 to $515 an hour** net.
