@@ -58,8 +58,6 @@ class LF_Test_OreYield : LF_Test
 		ctx.EqualFloat(0.67, LF_OreYield.ScaleFor(3, 5, 0.45), 0.001, "three of five pieces shrink it three steps");
 		ctx.EqualFloat(0.45, LF_OreYield.ScaleFor(5, 5, 0.45), 0.001, "the last piece takes it to the minimum scale");
 		ctx.EqualFloat(1, LF_OreYield.ScaleFor(4, 0, 0.45), 0.001, "a row with no piece limit never shrinks");
-		ctx.EqualFloat(10.05, LF_OreYield.RestHeight(10, 12, 0.05), 0.001, "a piece rests just above the traced ground");
-		ctx.EqualFloat(12, LF_OreYield.RestHeight(-5000, 12, 0.05), 0.001, "no ground found keeps the fallback height");
 
 		ctx.EqualFloat(240000, LF_OreYield.RespawnDelayMs(240000, 30), 0.1, "the row's cooldown sets the grow-back time");
 		ctx.EqualFloat(30000, LF_OreYield.RespawnDelayMs(0, 30), 0.1, "a row with no cooldown uses the rock's seconds");

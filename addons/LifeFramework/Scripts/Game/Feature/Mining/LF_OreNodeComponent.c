@@ -45,6 +45,10 @@ class LF_OreNodeComponent : ScriptComponent
 	//! The system a server switches ore rocks off with (#1075).
 	static const string SYSTEM = "Mining";
 
+	//! Drop probe: starts this far over the higher of the terrain and the rock, reaches this far down (metres).
+	protected static const float PROBE_ABOVE = 1.0;	// lf-fixed: probe geometry for the ground under a piece, not a gameplay tunable
+	protected static const float PROBE_REACH = 2.5;	// lf-fixed: probe geometry for the ground under a piece, not a gameplay tunable
+
 	[Attribute("iron", UIWidgets.EditBox, "Node id in Configs/Resources/ResourceChains.conf: ore item, items per piece, pieces before the rock is spent, grow-back cooldown", category: "Ore")]
 	protected string m_sNodeId;
 
@@ -75,6 +79,8 @@ class LF_OreNodeComponent : ScriptComponent
 
 	protected ref LF_OreYieldState m_State = new LF_OreYieldState();
 	protected int m_iDropped;
+	//! Next fan slot (LF_OreDrop) for a dropped piece; back to 0 when the rock grows back.
+	protected int m_iDropSlot;
 	protected vector m_vRestOrigin;
 	protected bool m_bRestOriginKnown;
 
@@ -219,6 +225,7 @@ class LF_OreNodeComponent : ScriptComponent
 		}
 
 		LF_OreYield.Refill(m_State);
+		m_iDropSlot = 0;
 		if (!m_bDepleted)
 			return;
 
@@ -231,31 +238,49 @@ class LF_OreNodeComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Spawns one ore item just outside the rock face, toward the miner, and lets
-	//! it fall. A dynamic body gets a small pop; a static one is set on the ground.
+	//! Spawns one ore item on the ground beside the rock, outside its footprint, in a fan around the miner's
+	//! side (LF_OreDrop.Spot), and rests its measured bottom on the surface under it with the shared runtime
+	//! probe (LF_PlaceSnap.Settle). Nothing is thrown: the piece lies where it was put, so it is never in the
+	//! rock, floating, sunk or stacked on another piece.
 	protected bool DropPiece(ResourceName prefab, vector hitPos, vector hitDir)
 	{
-		vector away = -hitDir;
-		away[1] = 0;
-		if (away.LengthSq() < 0.0001)
-			away = vector.Forward;
-		away.Normalize();
+		IEntity owner = GetOwner();
+		vector centre;
+		float halfX;
+		float halfZ;
+		LF_OreDrop.Footprint(owner, centre, halfX, halfZ);
+		vector spot = centre + LF_OreDrop.Spot(halfX, halfZ, -hitDir, m_iDropSlot);
+		m_iDropSlot = (m_iDropSlot + 1) % LF_OreDrop.SLOTS;
 
-		vector side = away * vector.Up;
-		vector pos = hitPos + away * Math.RandomFloatInclusive(0.35, 0.6) + side * Math.RandomFloatInclusive(-0.3, 0.3);
-		float ground = FindGroundY(pos, GetOwner());
-		pos[1] = LF_OreYield.RestHeight(ground, hitPos[1], 0.05);
-
-		IEntity piece = LF_Utils.SpawnEntityPrefab(prefab, pos, Vector(Math.RandomFloat(0, 360), 0, 0));
+		// Probe from 1 m over the higher of the terrain and the rock's own height, so a rock on a slab or a slope still finds its floor.
+		float terrain = GetGame().GetWorld().GetSurfaceY(spot[0], spot[2]);
+		float fromY = Math.Max(terrain, owner.GetOrigin()[1]) + PROBE_ABOVE;
+		IEntity piece = LF_Utils.SpawnEntityPrefab(prefab, Vector(spot[0], fromY - 0.3, spot[2]), Vector(Math.RandomFloat(0, 360), 0, 0));
 		if (!piece)
 			return false;
 
+		LF_PlaceSnap.CentreOn(piece, spot[0], spot[2]);
+		LF_PlaceSnapResult seat = LF_PlaceSnap.Settle(piece, LF_PlaceSnap.LIFT, PROBE_REACH, fromY);
+		if (seat)
+		{
+			LF_Debug.Info(FEATURE, string.Format("%1 piece rests on %2 (gap %3 m before, %4 m after), %5 m from the rock centre", m_sNodeId, seat.m_sOn, seat.m_fGapBefore, seat.m_fGap, vector.Distance(spot, centre)));
+		}
+		else
+		{
+			// Nothing under the footprint within reach: the terrain under the spot still holds the piece (never lost).
+			LF_Debug.Warn(FEATURE, string.Format("%1 piece found no surface under %2; set on the terrain", m_sNodeId, spot));
+			vector origin = piece.GetOrigin();
+			origin[1] = terrain;
+			piece.SetOrigin(origin);
+		}
+
+		// A dynamic body keeps the spot it was given: no velocity, awake so it settles on its collider.
 		Physics physics = piece.GetPhysics();
 		if (physics && physics.IsDynamic())
 		{
-			vector velocity = away * Math.RandomFloatInclusive(0.3, 0.8) + vector.Up * Math.RandomFloatInclusive(0.3, 0.8) + side * Math.RandomFloatInclusive(-0.3, 0.3);
-			physics.SetVelocity(velocity);
-			physics.SetAngularVelocity(Vector(Math.RandomFloat(-6, 6), Math.RandomFloat(-6, 6), Math.RandomFloat(-6, 6)));
+			physics.SetVelocity(vector.Zero);
+			physics.SetAngularVelocity(vector.Zero);
+			physics.SetActive(ActiveState.ACTIVE);
 		}
 
 		return true;
@@ -263,8 +288,8 @@ class LF_OreNodeComponent : ScriptComponent
 
 	//------------------------------------------------------------------------------------------------
 	//! Height of the ground under `point`: a trace straight down from 1 m above it hits the
-	//! terrain or any solid, ignoring `ignore` (the rock). Falls back to the terrain height.
-	//! The point is the spawn point; an item put there with a clearance rests on the ground.
+	//! terrain or any solid, ignoring `ignore`. Falls back to the terrain height.
+	//! Used by the parcel ground check (LF_ParcelComponent); ore drops use LF_PlaceSnap.
 	static float FindGroundY(vector point, IEntity ignore)
 	{
 		BaseWorld world = GetGame().GetWorld();
