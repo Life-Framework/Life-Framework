@@ -1814,11 +1814,6 @@ StringTable {
      Target_en_us "Fishing spot"
      Comment "Map POI kind name (#3667): a fishing spot marker (LF_Places kind FishingSpot) at Black Lake or Spring Pond. Discovered by walking past, like the shops."
     }
-    CustomStringTableItem "{6FD1DFB967899D22}" {
-     Id "LF-MapPoi_FuelDepot"
-     Target_en_us "Fuel depot"
-     Comment "Map POI name (rc-map-places): the bulk fuel depot where a tanker loads."
-    }
     CustomStringTableItem "{3EF58CE81E5B58BA}" {
      Id "LF-MapPoi_Furniture"
      Target_en_us "Furniture store"
