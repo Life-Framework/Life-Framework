@@ -86,6 +86,15 @@ const SHAPES = {
   pickaxe: (k) => `<g transform="rotate(-35 32 32)"><path d="M6 22Q32 6 58 22" ${S(k, 7)}/><path d="M32 14V62" ${S(k, 6)}/></g>`,
   factory: (k) => `<path d="M6 58V30L20 38V30L34 38V30L46 38V8H56V58Z" ${S(k)}/><path d="M14 48H20M28 48H34M42 48H48" ${S(k)}/>`,
   smoked: (k) => `<path d="M8 44Q30 30 48 44Q30 58 8 44Z" fill="${k}"/><path d="M48 44L58 37V51Z" fill="${k}"/><path d="M20 28Q15 22 20 16M32 26Q27 19 32 10M44 28Q39 22 44 16" ${S(k, 3)}/>`,
+  tractor: (k) => `<circle cx="20" cy="44" r="12" ${S(k)}/><circle cx="20" cy="44" r="3" fill="${k}"/><circle cx="50" cy="50" r="6" ${S(k)}/><path d="M12 30V12H30L34 30H56V44H40" ${S(k)}/><path d="M46 30V20" ${S(k, 5)}/>`,
+  sack: (k) => `<path d="M18 18Q12 36 14 48Q16 58 32 58Q48 58 50 48Q52 36 46 18Z" ${S(k)}/><path d="M18 18Q32 10 46 18" ${S(k)}/><path d="M25 8L32 15L39 8" ${S(k, 3)}/><path d="M22 38H42M24 46H40" ${S(k, 3)}/>`,
+  fork: (k) => `<path d="M32 60V28" ${S(k, 5)}/><path d="M16 6V20Q16 28 32 28Q48 28 48 20V6M32 6V28" ${S(k)}/>`,
+  drum: (k) => `<path d="M16 12Q16 8 32 8Q48 8 48 12V52Q48 56 32 56Q16 56 16 52Z" ${S(k)}/><path d="M16 24Q32 28 48 24M16 40Q32 44 48 40" ${S(k, 3)}/><circle cx="40" cy="14" r="2.6" fill="${k}"/>`,
+  trolley: (k) => `<path d="M4 12H14L20 42H50L57 20H16" ${S(k)}/><path d="M24 26V36M34 26V36M44 26V36" ${S(k, 3)}/><circle cx="24" cy="53" r="5" fill="${k}"/><circle cx="46" cy="53" r="5" fill="${k}"/>`,
+  planks: (k) => `<rect x="6" y="12" width="52" height="11" rx="2" ${S(k, 3.4)}/><rect x="6" y="27" width="52" height="11" rx="2" ${S(k, 3.4)}/><rect x="6" y="42" width="52" height="11" rx="2" ${S(k, 3.4)}/><circle cx="12" cy="17.5" r="2" fill="${k}"/><circle cx="12" cy="32.5" r="2" fill="${k}"/><circle cx="12" cy="47.5" r="2" fill="${k}"/>`,
+  axe: (k) => `<rect x="6" y="44" width="40" height="12" rx="6" ${S(k, 3.4)}/><path d="M24 40L50 10" ${S(k, 5)}/><path d="M42 6L58 4Q60 18 52 24L44 16Z" fill="${k}"/>`,
+  bus: (k) => `<rect x="8" y="10" width="48" height="38" rx="6" ${S(k)}/><path d="M8 30H56M22 10V30M42 10V30" ${S(k, 3)}/><circle cx="20" cy="54" r="5" fill="${k}"/><circle cx="44" cy="54" r="5" fill="${k}"/>`,
+  rocks: (k) => `<path d="M4 56L16 34L28 42L40 18L60 56Z" ${S(k)}/><path d="M16 34L22 56M40 18L36 56" ${S(k, 3)}/>`,
   board: (k) => `<rect x="6" y="8" width="52" height="36" rx="2" ${S(k)}/><path d="M16 44V60M48 44V60" ${S(k)}/><path d="M14 18H36M14 26H44M14 34H30" ${S(k, 3)}/>`,
   house: (k) => `<path d="M6 30L32 8L58 30" ${S(k)}/><path d="M14 25V56H50V25" ${S(k)}/><rect x="25" y="36" width="14" height="20" fill="${k}"/>`,
   car: (k) => `<path d="M6 42V34L16 22H44L56 34H58V42Z" fill="${k}"/><circle cx="18" cy="46" r="7" fill="${k}"/><circle cx="46" cy="46" r="7" fill="${k}"/>`,
@@ -99,17 +108,22 @@ const GROUP_FILL = {
 };
 const BADGE_STROKE = 1.4;
 const BADGE_SCALE = 0.72;
-// Kind -> [glyph, group]. Kinds sharing a glyph differ by group colour (a farm supply shop and a wheat field).
+// Kind -> [glyph, group]. Every kind has its own glyph (2026-11-22: "each thing needs a different icon");
+// validate-map-icon-unique fails a glyph two kinds share or a public type without its own badge.
 const KIND_BADGE = {
   Bank: ["coin", "money"], Atm: ["atm", "money"], PoliceStation: ["star", "law"], PoliceArmoury: ["shield", "law"], Range: ["target", "law"],
   HospitalSite: ["clinic", "health"], Pharmacy: ["capsule", "health"], Fire: ["flame", "health"],
   TownHall: ["hall", "civic"], IdCard: ["idcard", "civic"], Church: ["church", "civic"], Payphone: ["handset", "civic"],
   Depot: ["crate", "civic"], Board: ["board", "civic"],
   Shop: ["bag", "shop"], News: ["paper", "shop"], Clothing: ["shirt", "shop"], Hardware: ["hammer", "shop"], Guns: ["rifle", "shop"],
-  Barber: ["scissors", "shop"], Furniture: ["chair", "shop"], FarmSupply: ["wheat", "shop"], Wholesale: ["boxes", "shop"],
+  Barber: ["scissors", "shop"], Furniture: ["chair", "shop"], FarmSupply: ["fork", "shop"], Wholesale: ["boxes", "shop"],
+  SeedFeed: ["sack", "shop"], TimberMerchant: ["planks", "shop"],
   Grocer: ["basket", "food"], Bakery: ["bread", "food"], Butcher: ["cleaver", "food"], Cafe: ["cup", "food"], Pub: ["mug", "food"], Market: ["stall", "food"],
+  Supermarket: ["trolley", "food"],
   Fuel: ["pump", "travel"], Garage: ["garage", "travel"], CarLot: ["car", "travel"], Taxi: ["taxi", "travel"], Harbour: ["anchor", "travel"], Bed: ["bed", "travel"],
-  Workplace: ["hammerpick", "work"], Quarry: ["pickaxe", "work"], Mine: ["pickaxe", "work"], Plant: ["factory", "work"], Farm: ["barn", "work"],
+  FuelDepot: ["drum", "travel"], BusStop: ["bus", "travel"],
+  Workplace: ["hammerpick", "work"], Quarry: ["rocks", "work"], Mine: ["pickaxe", "work"], Plant: ["factory", "work"], Farm: ["barn", "work"],
+  FarmYard: ["tractor", "work"], LoggingYard: ["axe", "work"],
   Orchard: ["appletree", "work"], Wheat: ["wheat", "work"], Woodlot: ["pine", "work"], Sawmill: ["sawmill", "work"], Scrap: ["scrap", "work"],
   Fish: ["fish", "work"], Smokehouse: ["smoked", "work"],
   PlotForSale: ["house", "home"], Story: ["flag", "story"], Fence: ["diamond", "underworld"],
@@ -148,9 +162,20 @@ const STAMP_SHAPES = {
 };
 const FIXED = { ...PENCIL_SHAPES, ...PIN_SHAPES, ...STAMP_SHAPES };
 
+// The pack's cluster stamp is a badge too (map clean-up 2026-11-22: "at wide zoom the clusters are still black-ring
+// stamps"): the same halo and rim, a slate disc, three paper discs for "several places here"; the layer writes the count.
+function clusterBadge() {
+  const dot = (cx, cy) => `<circle cx="${cx}" cy="${cy}" r="7.2" fill="${INK.badge}" stroke="#3b4550" stroke-width="2"/>`;
+  return `<circle cx="32" cy="32" r="31" fill="#fffaf0"/>`
+    + `<circle cx="32" cy="32" r="28.6" fill="${INK.black}"/>`
+    + `<circle cx="32" cy="32" r="26.4" fill="#4f5d6b"/>`
+    + dot(32, 22) + dot(22, 38) + dot(42, 38);
+}
+
 function svgFor(side, name) {
   let body;
-  if (FIXED[name]) body = FIXED[name]();
+  if (side === "pack" && name === "stamp_town") body = clusterBadge();
+  else if (FIXED[name]) body = FIXED[name]();
   else {
     const cat = CATEGORIES.find((c) => catQuad(c) === name);
     const kind = PACK_KINDS.find((k) => poiQuad(k) === name);
