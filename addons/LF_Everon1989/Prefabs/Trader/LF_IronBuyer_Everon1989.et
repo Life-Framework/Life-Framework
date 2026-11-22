@@ -1,0 +1,52 @@
+GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
+ ID "99BE565ABF6A2ACC"
+ components {
+  LF_RestrictedInventoryStorageComponent "{59693C53BBA0FC9A}" {
+   m_TradablePrefabs {
+    "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
+   }
+  }
+  LF_TraderManagerComponent "{59693C53B6A5EFC1}" {
+   m_aTradableItems {
+    LF_TraderItem "{59693C53B6A5E001}" {
+     m_ItemPrefab "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
+     m_ValuePerItem 20
+    }
+    LF_TraderItem "{59693C53B6A5E002}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E003}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E004}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E005}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E006}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E007}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E008}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E009}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E00A}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E00B}" {
+     m_ValuePerItem 0
+    }
+    LF_TraderItem "{59693C53B6A5E00C}" {
+     m_ValuePerItem 0
+    }
+   }
+   m_sBuyerId "coalmans_brow_mine"
+  }
+ }
+}

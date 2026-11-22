@@ -1,0 +1,76 @@
+{
+  "id": "role_police_everon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "c9ab3728700e6263",
+      "date": "2026-11-22",
+      "voice_id": "o86w79lw8Y208S2HjL2M",
+      "voice_name": "Benjamin - Deep and Calm",
+      "model": "eleven_multilingual_v2",
+      "text": "Officer on duty. Keep your hands where I can see them, and we will get along.",
+      "chars": 77,
+      "chars_total": 70,
+      "request_id": "Wa6OeQMUXztTtpGRsm7g",
+      "seconds": 5.37,
+      "mouth": "999558768966765477236654211111000002395159857865441399657528845657828964320000000299658994863297268787522000"
+    },
+    "what": {
+      "hash": "a0f79105512ebdba",
+      "date": "2026-11-22",
+      "voice_id": "o86w79lw8Y208S2HjL2M",
+      "voice_name": "Benjamin - Deep and Calm",
+      "model": "eleven_multilingual_v2",
+      "text": "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again.",
+      "chars": 99,
+      "chars_total": 90,
+      "request_id": "g1kDQE8vnYCuzQ4H5kd3",
+      "seconds": 7,
+      "mouth": "998513797359926996752009964179933596681188210442000000000000000002999923764369843388611279857993155853466443200067567466555675444642675321000"
+    },
+    "where": {
+      "hash": "8a74b80d049688ae",
+      "date": "2026-11-22",
+      "voice_id": "o86w79lw8Y208S2HjL2M",
+      "voice_name": "Benjamin - Deep and Calm",
+      "model": "eleven_multilingual_v2",
+      "text": "The station is the building behind me. The town board on the square lists everything else.",
+      "chars": 90,
+      "chars_total": 81,
+      "request_id": "Cufv7pSddfPZD1bNwFjI",
+      "seconds": 6.88,
+      "mouth": "389893899766995455668359873266532487534786543333321000000000000025982499964499886236656674179863210000067775741550000799457555546753243100"
+    },
+    "rumour": {
+      "hash": "4a383e6617bbb07b",
+      "date": "2026-11-22",
+      "voice_id": "o86w79lw8Y208S2HjL2M",
+      "voice_name": "Benjamin - Deep and Calm",
+      "model": "eleven_multilingual_v2",
+      "text": "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces.",
+      "chars": 103,
+      "chars_total": 92,
+      "request_id": "ZD3JKY72HWdYcQ36RGes",
+      "seconds": 9.48,
+      "mouth": "7999994679973269953899855555331467653355456544733266412100000000000000005983378555899357744456864310000001899797444200000000000000695179866997776210000001347754565436853110001227745433222100"
+    },
+    "bye": {
+      "hash": "c6e2d512e6287c90",
+      "date": "2026-11-22",
+      "voice_id": "o86w79lw8Y208S2HjL2M",
+      "voice_name": "Benjamin - Deep and Calm",
+      "model": "eleven_multilingual_v2",
+      "text": "Stay out of trouble.",
+      "chars": 20,
+      "chars_total": 18,
+      "request_id": "f1pe5lTGsdfefWXG1301",
+      "seconds": 1.23,
+      "mouth": "3319989942752137648753100"
+    }
+  },
+  "voice": {
+    "id": "o86w79lw8Y208S2HjL2M",
+    "name": "Benjamin - Deep and Calm",
+    "source": "voice library"
+  }
+}

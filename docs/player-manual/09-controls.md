@@ -9,13 +9,15 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 |---|---|---|
 | **Use** a counter, sign, door, ATM, bed or any prompt, then pick the row | **F** | the usual Reforger interact button |
 | Open the **map** | **M** | the usual Reforger map button |
-| **Set a waypoint** (map open) | right-click on the map | **X** |
+| **Set a waypoint** (map open) | **Shift + Left click** on the map, or click a place | hold **Y**, press **A** (or **A** on a place) |
+| **Clear the waypoint** (map open) | **Backspace**, or Shift + Left click on it | double-tap **Y** |
 | **Throw** the item in your hand (a tin, a bottle) | **G** | hold **right bumper**, press **B** |
 | **Hands up** (to a police officer) | **F7** | **right bumper + X** |
 | **Emote menu** | **F1** | |
 | **Give up** while downed (hold, after 30 seconds) | hold **X** | hold **Y** |
 | Mark a moment for a **clip** | **F8** | **right bumper + View** |
 | Open the **welcome guide** again | **F3** | **right bumper + Y** |
+| Open your **personal file** (money, papers, skills, errands) | **F2** | hold **right bumper + Y** |
 
 ## Vehicles
 
@@ -32,6 +34,14 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 | **Split** a stack | right mouse button | **Menu** |
 | **Quick split** | hold the right mouse button | hold **Menu** |
 | **Move a quantity** | hold **Left Alt** | hold **X** |
+
+## Talking to people
+
+| Action | Keyboard | Gamepad |
+|---|---|---|
+| Pick an answer | the number shown beside it (**1** to **4**) | left stick up or down, then **A** |
+| Say **goodbye** and end the talk | **0** (the last row is always "0. Goodbye"), or **Esc** | **B** |
+| Skip what they are saying | **Enter** | **A** |
 
 ## Keypads (ATM)
 

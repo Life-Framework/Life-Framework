@@ -1,0 +1,112 @@
+{
+  "id": "role_mechanic",
+  "name": "RoleMechanic",
+  "speaker_key": "#LF-NpcRole_mechanic_Name",
+  "text_only": true,
+  "hear_range_m": 12,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "what",
+          "next": "what"
+        },
+        {
+          "text": "where",
+          "next": "where"
+        },
+        {
+          "text": "rumour",
+          "next": "rumour"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "menu",
+      "options_from": "greet"
+    },
+    {
+      "id": "what",
+      "line": "what",
+      "options": [
+        {
+          "text": "browse",
+          "condition": "OpenShop",
+          "action": "OpenShop"
+        },
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "where",
+      "line": "where",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "rumour",
+      "line": "rumour",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Mind the oil. What is wrong with it?"
+    },
+    "what": {
+      "text": "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery."
+    },
+    "where": {
+      "text": "The car lot is on the east side, and the fuel station is down the road. Fill up before you go far."
+    },
+    "rumour": {
+      "text": "Somebody keeps asking me how to start a car without the key. I tell them to buy the key."
+    },
+    "bye": {
+      "text": "Drive safe."
+    }
+  },
+  "replies": {
+    "what": "What do you do here?",
+    "where": "Can you point me somewhere?",
+    "rumour": "Heard anything lately?",
+    "more": "One more thing.",
+    "bye": "Goodbye.",
+    "browse": "Show me what you've got."
+  }
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D1DBBB7636C8123B}Sounds/Dialogue/role_police_everon/Dialogue_role_police_everon.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

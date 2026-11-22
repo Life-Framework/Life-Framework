@@ -8,7 +8,7 @@
     "sex": "male",
     "name": "JP - Social media",
     "public_owner_id": "6d515e93f392895edae9c02daa4f46e7e906f7b74ad8e96a72b997d0de4dd042",
-    "why": "A clear middle-aged French voice for the bank clerk off the counter (male body, male voice).",
+    "why": "A clear middle-aged French voice for Lucien Roux, the bank clerk off the counter (renamed from Helene on 2026-11-22; male body, male voice).",
     "model": "eleven_multilingual_v2",
     "settings": {
       "stability": 0.55,
@@ -100,7 +100,7 @@
       "text": "Mm. I remember you. Mind your manners and we will get along."
     },
     "greet": {
-      "text": "Good day. I am off the counter just now, but I don't bite. Helene, from the bank."
+      "text": "Good day. I am off the counter just now, but I don't bite. Lucien, from the bank."
     },
     "greet_friendly": {
       "text": "Ah, hello again. Your account is in better shape than most, you know."

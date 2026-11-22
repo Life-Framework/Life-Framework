@@ -194,12 +194,14 @@ class LF_Test_ItemCatalogue : LF_Test
 }
 
 //------------------------------------------------------------------------------------------------
-//! A buyer with no world: the licences, police rank and organisation rights the test sets.
+//! A buyer with no world: the licences, police rank, job levels and organisation rights the test sets.
 class LF_Test_CatalogueBuyer : LF_BuyerFacts
 {
 	ref array<LF_ELicenseType> m_aLicences = {};
 	int m_iPoliceRank = -1;
 	int m_iOrgRights;
+	//! Job id (an LF_EJobType name) to the level in it; a job not listed is one the buyer is not in.
+	ref map<string, int> m_mJobLevels = new map<string, int>();
 
 	//------------------------------------------------------------------------------------------------
 	override bool HasLicence(LF_ELicenseType licence)
@@ -212,6 +214,10 @@ class LF_Test_CatalogueBuyer : LF_BuyerFacts
 	{
 		if (job == LF_EntityBuyerFacts.JOB_POLICE)
 			return m_iPoliceRank;
+
+		int level;
+		if (m_mJobLevels.Find(job, level))
+			return level;
 
 		return -1;
 	}

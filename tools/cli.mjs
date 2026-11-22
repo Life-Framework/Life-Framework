@@ -1723,6 +1723,14 @@ async function cmdUiImageBatch(flags) {
     // rest of a RebuildResourceFiles list is dropped until they are registered), so boot again for
     // what is still missing; each boot is ~12 s. Stops when a boot builds nothing.
     const eddsOf = (t) => t.replace(/\.tif$/i, ".edds");
+    // A .edds older than its .tif is stale (the generator rewrote the source): drop it so the loop below
+    // rebuilds it. Before this a regenerated atlas was skipped and still reported as built (2026-11-22).
+    for (const t of tifs) {
+      if (existsSync(eddsOf(t)) && statSync(eddsOf(t)).mtimeMs < statSync(t).mtimeMs) {
+        rmSync(eddsOf(t));
+        console.log(`ui-image: ${eddsOf(t).replace(root, "")} is older than its .tif; rebuilding it`);
+      }
+    }
     let boots = 0;
     for (let pending = tifs.filter((t) => !existsSync(eddsOf(t))); pending.length && boots <= tifs.length; pending = tifs.filter((t) => !existsSync(eddsOf(t)))) {
       const before = pending.length;

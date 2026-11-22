@@ -1,22 +1,100 @@
 {
   "slug": "atm-wall",
-  "about": "The 1989 wall cash dispenser (distributeur automatique de billets) for LF_ATM.et: a beige-painted steel fascia in a steel mounting plate on a brushed-steel base, a green-on-black CRT screen with a small hood, side keys, a metal keypad, a card slot, a ticket slot, a cash slot and a blue bank sign plate that reads only BANQUE. Built by build.py in headless Blender from simple geometry and procedural textures: no library model fit (the base game has no cash machine, the CC0 libraries only a cash register) and no Meshy credits. Core asset: the machine is a capability of the game, its text is neutral, and no bank brand is on it.",
+  "about": "The 1989 cash machine (distributeur automatique de billets) for LF_ATM.et: a free-standing kiosk about 1.9 m tall that stands against a wall on a black plinth. A beige brushed-steel body, a lit header box with a cream sign panel (BANQUE REGIONALE, DISTRIBUTEUR DE BILLETS 24H), a small security camera, a recessed dark fascia with green trim, a green-on-black CRT menu in francs between four side keys each side, a sloped steel shelf with a raised metal keypad (green, yellow and red function keys) and a card reader, a receipt slot, a wide cash slot and a small branch sticker. Built by build.py in headless Blender from simple geometry and procedural textures: no base-game mesh reads as a cash machine (the vanilla Safe_01 it replaced did not) and the CC0 libraries have only a cash register; Meshy is reserved for fish and masks. Core asset: its faces carry period French wording with no place name (map independence, AGENTS.md rule 9), no real bank and no brand. Form after the maintainer's reference picture, 2026-11-22.",
   "asset_dir": "Assets/Props/Money/ATM",
   "prefab_dir": "Prefabs/Props/Money",
   "script": "build.py",
   "layout_m": {
-    "about": "Enfusion metres: x right, y up, z forward; the front faces +z. The ORIGIN is on the ground and the BACK of the mounting plate is the plane z -0.30: the vanilla Safe_01 this replaces had its back at z -0.300 too, so every placed ATM (they were seated flush to a wall by that back plane, #3355) stays flush without a move.",
+    "about": "Enfusion metres: x right, y up, z forward; the front faces +z. The ORIGIN is on the ground and the BACK of the kiosk is the plane z -0.30 (as the earlier wall unit and the vanilla Safe_01 before it), so every ATM placed flush to a wall by that plane stays flush.",
     "back_z": -0.3,
-    "plate": { "half_width": 0.38, "y0": 0.78, "y1": 1.86, "depth": 0.02 },
-    "plinth": { "half_width": 0.33, "height": 0.1, "front_z": -0.12 },
-    "cabinet": { "half_width": 0.31, "y0": 0.1, "y1": 0.8, "front_z": -0.14 },
-    "fascia": { "half_width": 0.31, "y0": 0.8, "y1": 1.66, "front_z": -0.06 },
-    "header": { "half_width": 0.33, "y0": 1.66, "y1": 1.82, "front_z": -0.02 },
-    "screen": { "half_width": 0.13, "y0": 1.27, "y1": 1.47 }
+    "plinth": {
+      "half_width": 0.34,
+      "height": 0.12,
+      "front_z": 0.15
+    },
+    "body": {
+      "half_width": 0.32,
+      "front_z": 0.12
+    },
+    "opening": {
+      "half_width": 0.25,
+      "y0": 0.42,
+      "y1": 1.5,
+      "recess": 0.03
+    },
+    "header": {
+      "half_width": 0.345,
+      "y0": 1.62,
+      "y1": 1.9,
+      "front_z": 0.15
+    },
+    "sign": {
+      "half_width": 0.29,
+      "y0": 1.65,
+      "y1": 1.85
+    },
+    "screen": {
+      "half_width": 0.13,
+      "y0": 1.17,
+      "y1": 1.37
+    },
+    "shelf": {
+      "half_width": 0.22,
+      "back_z": 0.09,
+      "front_z": 0.23,
+      "back_bottom": 1.06,
+      "front_bottom": 1.075,
+      "front_top": 1.1,
+      "back_top": 1.13
+    },
+    "card_reader": {
+      "x0": 0.08,
+      "x1": 0.18,
+      "y0": 1.1,
+      "y1": 1.154,
+      "z0": 0.12,
+      "z1": 0.19
+    },
+    "cash": {
+      "col0": 90,
+      "col1": 410,
+      "row0": 560,
+      "row1": 640,
+      "depth": 0.025
+    },
+    "camera": {
+      "x0": -0.16,
+      "x1": -0.1,
+      "y0": 1.54,
+      "y1": 1.57,
+      "depth": 0.02
+    }
   },
-  "lod_ratios": [0.5, 0.2],
-  "texture_px": { "tile": 512, "atlas": [2048, 1024] },
+  "lod_ratios": [
+    0.5,
+    0.2
+  ],
+  "texture_px": {
+    "tile": 512,
+    "atlas": [
+      512,
+      2048
+    ],
+    "glow": [
+      1024,
+      512
+    ]
+  },
   "colliders": {
-    "ATMWall": { "layerPreset": "PropFireView", "gamemat": "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat" }
+    "ATMWall": {
+      "layerPreset": "PropFireView",
+      "gamemat": "{CE9253778DD8FBDE}Common/Materials/Game/metal.gamemat"
+    }
+  },
+  "emissive": {
+    "about": "Materials that also get an _EM map: the sign light box and the screen phosphor.",
+    "ATM_Glow": {
+      "lv": 1
+    }
   }
 }

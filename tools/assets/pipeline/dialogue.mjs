@@ -54,6 +54,9 @@ export const voicedText = (line) => (line.say || line.text || "").trim();
 // `say` with its [audio tags] removed: what must read the same as the caption.
 export const untagged = (say) => say.replace(/\[[a-z][a-z ,'-]*\]/g, " ").replace(/\s+/g, " ").trim();
 
+// A term placeholder in caption text: {police}, {Town}, {currency:sym} (tools/lib/terms.mjs).
+export const TERM_PLACEHOLDER = /\{[A-Za-z][A-Za-z0-9]*(?::[a-z0-9]+)?\}/g;
+
 // The voice a line is made with: its own (a Piper line in an ElevenLabs dialogue, #1959) else the spec's.
 export const lineVoice = (spec, line) => line?.voice || spec.voice;
 
@@ -141,7 +144,10 @@ export function specProblems(spec, strings = new Map()) {
     if (!/^[a-z][a-z0-9_]*$/.test(id)) out.push(`line id '${id}' must be lowercase letters, digits and underscores`);
     const text = (line.text || "").trim();
     if (text.length < 2 || text.length > 320) out.push(`line ${id}: text must be 2 to 320 characters (a longer speech is two lines)`);
-    if (/[<>{}\[\]%]|#[A-Z]/.test(text)) out.push(`line ${id}: text has markup or a placeholder; the voice would read it aloud`);
+    // A text-only line is never spoken, so it may name a term ({police}, {town}, {currency:sym}); the dialogue
+    // scene expands it (LF_Terms). A pack's voiced patch of it writes the words the voice says.
+    const markup = spec.text_only ? text.replace(TERM_PLACEHOLDER, "") : text;
+    if (/[<>{}\[\]%]|#[A-Z]/.test(markup)) out.push(`line ${id}: text has markup or a placeholder; the voice would read it aloud`);
     if (line.say !== undefined && spec.text_only) out.push(`line ${id}: a text_only dialogue has no voice to say it`);
     else out.push(...sayProblems(id, line));
     if (line.for_key) {
@@ -212,10 +218,12 @@ export function upsertStrings(stText, entries, guid = () => freshGuid(new Set([.
     }
   }
   if (!add.length) return text;
-  let tail = text.lastIndexOf("  }\n }\n}");
-  // `pack new` writes an empty table (` Items {\n }\n}`); the first rows go in before its closing braces.
-  if (tail < 0 && /\n Items \{\n \}\n\}\n?$/.test(text)) tail = text.lastIndexOf(" }\n}");
+  // New rows go in just before the line that closes the Items block (` }` then `}`), after the last item's own
+  // closing brace. Matching "  }\n }\n}" instead also hit inside a last item closed by "    }", and cut its brace off.
+  // An empty table (` Items {\n }\n}`, from `pack new`) has the same closing line.
+  let tail = text.lastIndexOf("\n }\n}");
   if (tail < 0) throw new Error("string table does not end with the Items block");
+  tail += 1;
   return text.slice(0, tail) + add.join("") + text.slice(tail);
 }
 

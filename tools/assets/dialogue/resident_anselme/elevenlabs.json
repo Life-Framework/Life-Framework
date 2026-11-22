@@ -55,17 +55,17 @@
       "mouth": "5779998999855762178853351344634679666554215554210000100"
     },
     "greet_regular": {
-      "hash": "7cfb48f1dc6f4781",
+      "hash": "c92758a95cc34e9f",
       "date": "2026-11-22",
       "voice_id": "LFL24vHvKCbsOiCIYwvv",
       "voice_name": "Bacbuc - Audiobooks",
       "model": "eleven_multilingual_v2",
-      "text": "Ah, my friend! Mireille made too much soup again. Come by tonight.",
-      "chars": 66,
-      "chars_total": 26,
-      "request_id": "zliL0SMNVmncld05dDun",
-      "seconds": 3.27,
-      "mouth": "899995359888468879888876642128775423437424344331479699726665431000"
+      "text": "Ah, my friend! Marius made too much soup again. Come by tonight.",
+      "chars": 64,
+      "chars_total": 52,
+      "request_id": "eecPq7x2XFQeaPTfSJ4v",
+      "seconds": 3.62,
+      "mouth": "9999999932227776553114667764235531566323364143444313778982554431111111000"
     },
     "about_work": {
       "hash": "f390dec686651a72",
@@ -81,17 +81,17 @@
       "mouth": "699239865333211111111123899955567776443112323311136941799862449982857854478784248751314565227899987643111111748989952499931287477238721687321653543488511111111178733235132214443231000"
     },
     "about_family": {
-      "hash": "199340d6c8d6b005",
+      "hash": "c0c9525c90dcf38b",
       "date": "2026-11-22",
       "voice_id": "LFL24vHvKCbsOiCIYwvv",
       "voice_name": "Bacbuc - Audiobooks",
       "model": "eleven_multilingual_v2",
-      "text": "Mireille is my wife. She spends her mornings at the cafe and knows everything before the newspaper does.",
+      "text": "Marius is my brother. He spends his mornings at the cafe and knows everything before the newspaper does.",
       "chars": 104,
-      "chars_total": 42,
-      "request_id": "l2Eeeh2kvhXb6mzdg1Dy",
-      "seconds": 7.64,
-      "mouth": "899999999961100111485578878542111110011111101110124943197753786776555547514424531147768996111111114889899996599657621445453277577862214411321211111111100"
+      "chars_total": 84,
+      "request_id": "5CiUehMPsrbUR80Ahkys",
+      "seconds": 6.32,
+      "mouth": "6899999963486477883599633211111111110016331689956867899998646324257414787677677973115974676215555421454577732134213222211111000"
     },
     "about_town": {
       "hash": "b9bcbc963ec87f0c",

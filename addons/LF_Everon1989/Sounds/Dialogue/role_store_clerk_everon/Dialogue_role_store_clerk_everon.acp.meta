@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A96B0A351A9B6BC9}Sounds/Dialogue/role_store_clerk_everon/Dialogue_role_store_clerk_everon.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

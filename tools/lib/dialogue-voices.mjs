@@ -4,8 +4,10 @@
 // talk to is resolved through its prefab chain to the conversation it plays:
 //   dialogue  m_sDialogueId: the authored dialogue (tools/assets/dialogue/<id>/dialogue.json) plus the pack's voiced
 //             patch of it (`patches`); each line needs a recording, made with the spec's voice, from the current text;
-//   role      no dialogue but an LF_NpcRoleComponent role: the runtime-built role conversation (LF_Roles.BuildDialogue;
-//             five text-only lines per role: Greet What Where Rumour Bye);
+//   role      no dialogue but an LF_NpcRoleComponent role: the role's registered dialogue (roles.json `dialogue`,
+//             role_<id>: a core text-only spec the pack's voiced patch covers, played by LF_Roles), judged as a
+//             dialogue; a role without one is the runtime-built caption tree (LF_Roles.BuildDialogue), which has
+//             no clips and fails;
 //   silent    a shop, ATM, sale or quest action and neither of the above: the NPC has nothing to say.
 // Voiced means: spec not text_only (or a voiced patch covering the line), a wav in the pack, a provenance row recorded
 // with the spec's own voice id and the current text hash. `voice.sex` against the body is validate-voice-sex.
@@ -74,6 +76,13 @@ export function resolvePrefab(info, file) {
   return out;
 }
 
+// role id -> the registered dialogue its conversation plays (tools/assets/outfits/roles.json `dialogue`).
+export function roleDialogues(root) {
+  const file = join(root, "tools", "assets", "outfits", "roles.json");
+  if (!existsSync(file)) return new Map();
+  return new Map((JSON.parse(readFileSync(file, "utf8")).roles || []).filter((r) => r.dialogue).map((r) => [r.id, r.dialogue]));
+}
+
 export function loadSpecs(root) {
   const base = join(root, "tools", "assets", "dialogue");
   const specs = new Map();
@@ -104,6 +113,7 @@ function lineIssues(root, spec, id, line, prov) {
 export function scan(root) {
   const { info, placedFiles, packDir } = readPrefabs(root);
   const specs = loadSpecs(root);
+  const roleDlg = roleDialogues(root);
   const patches = new Map();
   for (const s of specs.values()) if (s.patches && s.addon === PACK) patches.set(s.patches, s);
   const rows = new Map();
@@ -115,6 +125,7 @@ export function scan(root) {
     let key = null;
     let kind = null;
     if (r.dlg) { key = r.dlg; kind = "dialogue"; }
+    else if (r.role && roleDlg.has(r.role)) { key = roleDlg.get(r.role); kind = "dialogue"; }
     else if (r.role) { key = `role:${r.role}`; kind = "role"; }
     else if (r.acts.size) { key = `silent:${/([^/\\]+)\.et$/.exec(f)[1]}`; kind = "silent"; }
     else continue;
@@ -171,19 +182,12 @@ export function scan(root) {
   return [...rows.values()].sort((a, b) => a.key.localeCompare(b.key));
 }
 
-// The fails of a scan against the baseline (a shrink-only list of what is allowed to stay unvoiced).
-export function judge(rows, baseline) {
+// The fails of a scan: every island line is voiced, so any gap or wrong clip fails (no baseline since 2026-11-22).
+export function judge(rows) {
   const fails = [];
-  const allowed = new Map(Object.entries(baseline || {}));
   for (const row of rows) {
-    const gaps = row.missing.length;
     if (row.issues.length) for (const i of row.issues) fails.push(`${row.key}: ${i} (${row.who[0]})`);
-    if (gaps && !allowed.has(row.key)) fails.push(`${row.key}: ${row.missing.length} line(s) with no voice clip (${row.who.join(", ")})${row.missing[0] ? `, first: ${row.missing[0]}` : ""}`);
-  }
-  const byKey = new Map(rows.map((r) => [r.key, r]));
-  for (const key of allowed.keys()) {
-    const row = byKey.get(key);
-    if (!row || !row.missing.length) fails.push(`baseline: ${key} is voiced or gone; delete it from tools/validation/dialogue-voices-baseline.json (the list only shrinks)`);
+    if (row.missing.length) fails.push(`${row.key}: ${row.missing.length} line(s) with no voice clip (${row.who.join(", ")})${row.missing[0] ? `, first: ${row.missing[0]}` : ""}`);
   }
   return fails;
 }

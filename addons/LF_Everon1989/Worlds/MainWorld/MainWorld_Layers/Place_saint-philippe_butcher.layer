@@ -26,6 +26,14 @@ GenericEntity Fit_saint_philippe_butcher_butcher_counter_2 : "{E214337C6E1931C5}
  angleY -100
 }
 GenericEntity Fit_saint_philippe_butcher_butcher_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "butcher"
+   m_vRimColor 0.55 0.08 0.1
+   m_vPaintColor 0.96 0.94 0.9
+   m_vTextColor 0.55 0.08 0.1
+  }
+ }
  coords 4467.689 15.05 10775.44
  angleY -100
 }

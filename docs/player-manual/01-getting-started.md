@@ -21,6 +21,19 @@ the map, police and medic duty, and where to read more. Turn the pages with **Ne
 * Press **F3** (gamepad: **right bumper + Y**) to open it again at any time. You can change the key in
   **Settings, Controls, Life Framework**.
 
+## Your personal file
+
+Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It has two tabs:
+
+* **Person**: your name and role (civilian, police or medic, on or off duty), cash in hand and in the bank,
+  houses owned, garage slots used, time on the island, whether you are wanted, the licences and permits you hold, and
+  your level in each job. **Read** on a job shows what it is and how far you are to the next level.
+* **Progress**: your first errands in order, each marked **DONE**, **CURRENT** or **LATER**, then any other errand you
+  took. **Read** shows the errand and its progress; **Set waypoint to the current errand** puts it on your map.
+
+The file only shows what the records office holds; nothing in it can be changed from there. **Esc** or **Close** puts
+it away.
+
 ## The arrival quest
 
 A quest panel on screen tells you what to do next. Each step puts a **waypoint with a distance** on your screen and a
@@ -50,9 +63,14 @@ bought at the gun store counter, and in the alpha it is instant.
 ## The map and waypoints
 
 * **Open the map:** press **M**. If nothing opens, take the **folded paper map** out of your pack and hold it; every new character carries one.
-* **Every island place has a name and an icon** on it. Places you have not seen yet may show as "heard of" until you walk past.
-* **Set your own waypoint:** right-click on the map (gamepad: **X**). It appears in the world as a marker with the distance.
-  There is one waypoint at a time; a new click moves it.
+* **Every island place has its own icon**, a round badge coloured by kind (green shops, orange food, blue travel, brown work,
+  dark blue police, red health). Point at an icon to read its name; the **Legend** tab on the left lists every icon.
+  Icons that share one spot show the most important one and a count; click it to zoom in.
+  Places you have not seen yet may show as "heard of" until you walk past.
+* **Set your own waypoint:** **Shift + Left click** on the map (gamepad: hold **Y**, press **A**), or just click a place.
+  It shows on the map as a pencil circle with its name and distance, and in the world as a marker with the distance.
+  There is one waypoint at a time; a new click moves it. The same click on the waypoint, or **Backspace** (gamepad:
+  double-tap **Y**), clears it. The strip at the bottom of the map reminds you.
 * **The notice board** and the **Taxi** and **courier** jobs set waypoints for you.
 * **Scale:** Saint-Philippe is about 450 m across. The whole island is about 12 km. See the [maps](maps.md).
 
