@@ -23,6 +23,9 @@ class LF_JailBreak
 	//! The crime catalogue row the cell charge reports (Configs/Crime/LF_CrimeCatalog.conf).
 	static const string OFFENCE_PRISON_BREACH = "#LF-Offence_PrisonBreach";
 
+	//! The LF_AlarmKind id of the jailbreak siren (Configs/Police/LF_Police.conf).
+	static const string ALARM_KIND = "jail";
+
 	static const string REFUSE_FROM_INSIDE = "#LF-JailBreak_FromInside";
 	static const string REFUSE_OUTER_FIRST = "#LF-JailBreak_OuterFirst";
 	static const string REFUSE_COOLDOWN = "#LF-JailBreak_Cooldown";
@@ -109,6 +112,17 @@ class LF_JailBreak
 	{
 		if (IsCell(targetId))
 			return OFFENCE_PRISON_BREACH;
+
+		return fallback;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The alarm kind both jail layers sound: the jailbreak siren (LF_Police.conf kind "jail"), a prison klaxon no
+	//! robbery kind shares. Any other target keeps `fallback`.
+	static string AlarmKindFor(string targetId, string fallback)
+	{
+		if (IsOuter(targetId) || IsCell(targetId))
+			return ALARM_KIND;
 
 		return fallback;
 	}

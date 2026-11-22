@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{119C9C6C858BEB2E}Prefabs/Police/LF_SiteAlarm_Jail.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
