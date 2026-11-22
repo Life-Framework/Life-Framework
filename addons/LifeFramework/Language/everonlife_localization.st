@@ -12430,7 +12430,7 @@ StringTable {
     }
     CustomStringTableItem "{61FA7D09A2DDB08F}" {
      Id "LF-Postal_NoLicence"
-     Target_en_us "You need a driving licence to drive the post van."
+     Target_en_us "You need a driving license to drive the post van."
      Comment "Toast of the postal van run: refused, no driving licence."
     }
     CustomStringTableItem "{77EAF4A73900DC15}" {

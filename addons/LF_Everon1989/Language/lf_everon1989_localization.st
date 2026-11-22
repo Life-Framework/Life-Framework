@@ -206,7 +206,7 @@ StringTable {
     }
     CustomStringTableItem "{2FC28DBE70BC949C}" {
      Id "LF-Activity_Mining_Ore_Note"
-     Target_en_us "Swing at the rust-veined rocks and pick up 3 pieces of ore; every piece levels Mining, and level 2 opens the coal licence."
+     Target_en_us "Swing at the rust-veined rocks and pick up 3 pieces of ore; every piece levels Mining, and level 2 opens the coal license."
      Comment "Mining step note, one sentence, with the levelling hint."
     }
     CustomStringTableItem "{BBF0328175038D91}" {
