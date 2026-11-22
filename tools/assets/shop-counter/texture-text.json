@@ -1,0 +1,22 @@
+{
+  "about": "Every piece of text this slug's build script paints onto its texture; checked by tools/validation/validate-us-english.mjs. Regenerate: node tools/validation/validate-us-english.mjs --update",
+  "scripts": {
+    "build.py": [
+      "SC_Lambris",
+      "SC_WoodDark",
+      "SC_Top",
+      "SC_Trim",
+      "SC_Dark",
+      "ST",
+      "TOTAL",
+      "SC_Till",
+      "SC_Plastic",
+      "SC_Kraft",
+      "ShopCounter",
+      "ShopCounterTill",
+      "_LOD0",
+      "%s_LOD%d",
+      "shop-counter"
+    ]
+  }
+}

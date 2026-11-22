@@ -4,7 +4,7 @@
 // `town fit` reads each row's prefab and component GUIDs and nested blocks from here. Coordinates are in the machine shed's own frame
 // (origin = the shed's centre, +x = its door side, z to the left of the door side); the shed itself is the vanilla building of the place.
 // The payphone is the core prefab (dial, answer and report-crime actions); the drop is the pack's LF_FuelDrop (a closed old fuel barrel
-// with the job drop-off action); the sign is the pole plate carrying the pack's `roadfarm` sign (Ferme des Silos).
+// with the job drop-off action); the sign is the pole plate carrying the pack's `roadfarm` sign (Silo Farm).
 GenericEntity Source_RoadFarm_FuelDrop : "{3E8B5A27C94D61F0}Prefabs/Props/Roleplay/LF_FuelDrop.et" {
  coords 5.6 0 5.4
  angleY 30

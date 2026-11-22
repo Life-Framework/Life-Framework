@@ -1,0 +1,8 @@
+VerticalLayoutWidgetClass "{7B36F8840D849D5E}" {
+ Name "Column"
+ Slot LayoutSlot "{407C50A94F72DAAE}" {
+  VerticalAlign 0
+  SizeMode Fill
+  FillWeight 1
+ }
+}

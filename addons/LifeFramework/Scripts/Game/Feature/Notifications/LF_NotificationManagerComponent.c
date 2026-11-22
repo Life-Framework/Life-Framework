@@ -458,7 +458,10 @@ class LF_NotificationManagerComponent : ScriptComponent
 			LF_Debug.Error("Notify", "toast dropped: failed to create the notification widget");
 			return;
 		}
-		
+
+		// A full-screen sheet (the personal file) holds toasts: this one waits hidden until it closes.
+		LF_NotificationHold.Track(toastWidget);
+
 		
 		// Get handler and show
 		LF_NotificationToastUI handler = LF_NotificationToastUI.Cast(toastWidget.FindHandler(LF_NotificationToastUI));

@@ -42,7 +42,7 @@ line("MARKET SQUARE No. 4", S, "CENTER", 3.8)
 line("PORT GORSE", S, "CENTER", 5.4)
 c.dots(L, R, y + 2, INK, 1.4, 0.16)
 y -= 2.0
-line("TILL 02        CLERK 07")
+line("REG 02         CLERK 07")
 line("DATE   --/--/1989   --:--", step=5.2)
 c.dots(L, R, y + 2.4, INK, 1.4, 0.16)
 y -= 2.2

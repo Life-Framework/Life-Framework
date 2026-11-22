@@ -409,7 +409,7 @@ class LF_GarbageRound
 	//! Server: takes the company truck back (deleted). An occupied truck is not deleted yet (deleting a
 	//! vehicle with its children would delete the people in its seats): it is marked for removal and the
 	//! sweep deletes it once it is empty, so sitting in it at the tip never keeps a free truck.
-	protected static void ReturnTruck(IEntity truck)
+	static void ReturnTruck(IEntity truck)
 	{
 		if (!truck)
 			return;

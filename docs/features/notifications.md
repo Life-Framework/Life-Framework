@@ -41,3 +41,5 @@
   `if (!Replication.IsServer()) return;` guard.
 - ⚠️ Hard-coded Spanish prefixes, emoji in logs, `m_Color` never transmitted.
 
+- ✅ `LF_NotificationHold.Hold(true|false)`: a full-screen sheet (the personal file) puts every toast away while it is
+  open; toasts made meanwhile wait hidden and show on release with their own remaining time.

@@ -1,5 +1,17 @@
-GenericEntity : "{DAEBE5DD34859027}Prefabs/Props/Commercial/LF_Mannequin.et" {
+GenericEntity : "{451F65968BA97575}Prefabs/Props/Commercial/LF_MannequinDisplay.et" {
  ID "57B2B15E31C126F0"
+ components {
+  LF_ShopComponent "{B9707321705D85F1}" {
+   m_sOutletId "clothing_rack"
+  }
+  LF_MannequinOutfitComponent "{DF845760343DB74B}" {
+   m_aItemIds {
+    "shirt_turtleneck_beige"
+    "trousers_dark_grey"
+    "hat_knitted_red"
+   }
+  }
+ }
  {
   GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
    ID "4BB52B0556416BDD"

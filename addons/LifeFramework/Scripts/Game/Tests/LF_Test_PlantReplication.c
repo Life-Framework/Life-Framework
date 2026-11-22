@@ -120,10 +120,37 @@ class LF_Test_PlantReplication : LF_Test
 
 		// Harvest: the row leaves the table, and the client deletes its mesh.
 		ctx.Equal(LF_EPlantResult.OK, LF_Plants.Harvest(gardener, plantId), "the ripe crop is harvested");
+		// A yield that does not fit the pockets lands at the gardener's feet, at the gate: delete it, or a
+		// cabbage stands on the gate spawn point and spawn/point-floor finds no room there.
+		DeleteLoose(gardener.GetOrigin());
 		ctx.Equal(0, LF_PlantReplication.Collect().Count(), "the harvested plant leaves the table");
 		LF_PlantReplication.ClientRemove(plantId);
 		ctx.Equal(0, LF_PlantReplication.ClientCount(), "the client mirror drops it");
 		ctx.Equal(0, LF_PlantReplication.ClientVisualCount(), "the client deletes the mesh");
 		LF_PlantReplication.ResetClient();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected ref array<IEntity> m_aLoose = {};
+
+	//------------------------------------------------------------------------------------------------
+	//! Deletes the cabbages lying loose within 3 m of position (the harvest's overflow).
+	protected void DeleteLoose(vector position)
+	{
+		m_aLoose.Clear();
+		GetGame().GetWorld().QueryEntitiesBySphere(position, 3, AddLoose, null, EQueryEntitiesFlags.ALL);
+		foreach (IEntity loose : m_aLoose)
+			SCR_EntityHelper.DeleteEntityAndChildren(loose);
+
+		m_aLoose.Clear();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool AddLoose(IEntity entity)
+	{
+		if (entity && !entity.GetParent() && LF_Utils.SamePrefab(LF_Utils.GetPrefabName(entity), CABBAGE))
+			m_aLoose.Insert(entity);
+
+		return true;
 	}
 }

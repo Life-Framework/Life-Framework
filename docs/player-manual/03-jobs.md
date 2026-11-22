@@ -7,6 +7,7 @@ hours vary with how far you walk, drive and wait.
 | Job | On the island now? | Pay per hour | Needs |
 |---|---|---|---|
 | [Parcel runs (courier)](#parcel-runs-courier) | ✅ yes | about **$400** (+25 percent at night) | nothing |
+| [Postal van run](#postal-van-run) | ✅ yes | about **$480** (+25 percent at night) | a driving licence |
 | [Taxi](#taxi) | ✅ yes | about **$600**, with a passenger | work level 3, a second player |
 | [Harvest and farm](#harvest-and-farm) | ✅ wheat, garden, orchard | about **$420 to $480** for wheat | reaper and a tow vehicle |
 | [Lumber](#lumber) | ✅ yes | about **$400** | an axe |
@@ -33,12 +34,12 @@ Saint-Philippe holds most of them; the sawmill, the fishing coves, the lake and 
 | 4 | Lamentin | 5.7 km | Western town. Scenery only. |
 | 5 | Morton | 6.7 km | Northern town. Scenery only. |
 | 6 | Saint Pierre | 10.5 km | Far north-east town. Scenery only. |
-| 7 | Sawmill (Scierie) | 5.6 km | The island sawmill: lumberjack desk, two saws, boards. |
+| 7 | Sawmill | 5.6 km | The island sawmill: lumberjack desk, two saws, boards. |
 | 8 | Fishing spot (Fisherman's Bay) | 0.4 km | Sheltered cove with a bench and lantern. Gaspard tells you about it. |
 | 9 | Fishing spot (Black Lake) | 9.2 km | A lake shore far to the north-east. |
-| 10 | Scrapyard (Casse) | 0.6 km | Scrap piles and the recycler bench. |
+| 10 | Scrapyard | 0.6 km | Scrap piles and the recycler bench. |
 | 11 | Fuel depot | 3.7 km | Collective-farm fuel depot. Closed to players for now. |
-| 12 | Ferme des Silos | 3.8 km | Roadside farm with a payphone. |
+| 12 | Silo Farm | 3.8 km | Roadside farm with a payphone. |
 | 13 | Fuel station (roadside) | 1.2 km | Roadside fuel stop with a payphone. |
 | 14 | Barn compound | 1.2 km | Chop yard and the moonshine still barn. |
 | 15 | Contested ground | 10.1 km | Hilltop mast: a hideout organizations fight over. |
@@ -70,6 +71,23 @@ A game day is 2 real hours and nights are short, so that is about 40 minutes in 
 * **Needs:** nothing, and no licence. Every paid run counts toward the next job.
 
 The drops are on the east side (a house near the district road) and four along the dock; the post office is on the [Saint-Philippe map](maps.md).
+
+## Postal van run
+
+**Status:** ✅ live. A beginner job: no work level needed.
+
+* **Where:** the **post stand** on the side wall of the post office kiosk in Saint-Philippe (map badge *Post office (van run)*).
+  The far office is the stand beside the newspaper kiosk on the **Meaux** square, about 1.3 km south down the coast road.
+* **How to start:** press **F** at the stand and pick **Take the postal van run**. A yellow post van is parked beside the office,
+  locked, and its **key is in your pocket**: only you can drive it. One van at a time.
+* **What you do:** pick **Load or unload a mail sack** four times at the home stand with the van beside it. Drive to Meaux (the
+  waypoint shows the way), park by the stand there and unload the four sacks the same way. Drive back, park by the home stand
+  and pick **Hand in the postal run**.
+* **Pay:** **$80 a run** ($100 at night), plus delivery work experience. About 10 minutes a run is **$480 an hour**. A run handed
+  in faster than 7 minutes pays nothing yet.
+* **Lose the run:** wreck the van, or leave it and stay more than 350 m away for 3 minutes, and the run ends with no pay; the van
+  goes back to the office. **Give up the postal run** at a stand does the same at once. A new van is ready a minute later.
+* **Needs:** a **driving licence** ($100 at the licence desk). The van is lent, never yours: it is not saved and cannot be garaged.
 
 ## Taxi
 
@@ -130,7 +148,7 @@ The drops are on the east side (a house near the district road) and four along t
 | 31 | Farm supply | The reaper and beehive kit. |
 | 35 | Wheat field | Harvest contracts and the weighbridge. |
 | 36 | Farm | Vegetable plots, beehives, honey kitchen. |
-| 38 | Timber yard (Scierie) | Lumberjack job desk and sawmill. |
+| 38 | Timber yard | Lumberjack job desk and sawmill. |
 | 68 | Wheat field (cutting area) | The ripe wheat you cut with the reaper. |
 | 69 | Weighbridge | Unload the reaper hopper here: Sell grain or Bag grain. |
 | 70 | Harvest contracts board | Post, take and return harvest contracts. |
@@ -140,7 +158,7 @@ The drops are on the east side (a house near the district road) and four along t
 
 **Status:** ✅ live. The timber yard at the village edge and the island sawmill both work.
 
-* **Where:** the **timber yard** (sign *Scierie*) on the western edge of town, with a **lumberjack desk** and a saw. The **timber counter**
+* **Where:** the **timber yard** (sign *Sawmill*) on the western edge of town, with a **lumberjack desk** and a saw. The **timber counter**
   (*We buy timber*) is on the kerb of the **hardware store** on the south-east road. The **island sawmill** is far to the west
   (about 5.7 km); see the island map.
 * **How to start:** take the **lumberjack job** at the desk. Buy an **axe** ($120) at the hardware store.
@@ -157,7 +175,7 @@ The drops are on the east side (a house near the district road) and four along t
 
 | # | Place | What |
 |---|---|---|
-| 60 | Sawmill (Scierie) | Lumberjack desk and two saws inside the hall. |
+| 60 | Sawmill | Lumberjack desk and two saws inside the hall. |
 | 61 | Lumberjack desk | Sign on as a lumberjack. |
 <!-- /map -->
 
@@ -214,7 +232,7 @@ The drops are on the east side (a house near the district road) and four along t
 | # | Place | What |
 |---|---|---|
 | 8 | ATM (harbour) | Cash machine on the dock. |
-| 18 | Harbour Office | The harbour master. |
+| 18 | Harbor Office | The harbour master. |
 | 39 | Smokehouse | Smoke your fish. |
 | 40 | Wholesale warehouse | Buys bulk goods at a falling price. |
 <!-- /map -->
@@ -223,7 +241,7 @@ The drops are on the east side (a house near the district road) and four along t
 
 **Status:** ✅ live. The yard works and the **garage mechanic in Saint-Philippe buys scrap metal, copper wire and rubber scrap**. Iron bars sell at the dock wholesale yard.
 
-* **Where:** the **scrapyard** (sign *Casse*) east of town, about 450 m east-north-east of the filling station.
+* **Where:** the **scrapyard** (sign *Scrapyard*) east of town, about 450 m east-north-east of the filling station.
 * **How to start:** walk in. No sign-up.
 * **What you do:** **search the scrap piles** for scrap metal, rubber, copper wire coils, worn hand tools and old radios. At the **recycler bench**
   pick **Load** with an item, **hold Work** (each worker adds one unit, so two people finish twice as fast) and **Collect** the parts.
@@ -233,11 +251,11 @@ The drops are on the east side (a house near the district road) and four along t
 * **Needs:** nothing.
 
 <!-- map:inset:scrapyard -->
-![Scrapyard (Casse)](../../website/public/docs-images/player-manual/scrapyard.png)
+![Scrapyard](../../website/public/docs-images/player-manual/scrapyard.png)
 
 | # | Place | What |
 |---|---|---|
-| 60 | Scrapyard (Casse) | Search the scrap piles; the recycler bench is in the yard. |
+| 60 | Scrapyard | Search the scrap piles; the recycler bench is in the yard. |
 | 61 | Recycler bench | Break car parts and scrap into metal. |
 <!-- /map -->
 
@@ -261,17 +279,17 @@ the pump says "The tanks are dry. The depot truck is due."
 **Status:** ✅ live. One iron mine is open on **Coalman's Brow**, the hill just south of the village. Copper, coal and stone come later.
 
 * **Where:** the **iron mine** (sign *Coalman's Brow mine*, map label **Iron mine**) on the wooded north side of the brow, about 350 m south-west of the square past the farms; the track off the road to the west leads up to it.
-  It has the **miner's desk**, six rust-veined **iron rocks**, a **furnace** and an **iron buyer**'s counter. The **pickaxe** is sold at the
+  It has the **miner's desk**, six rust-veined **iron rocks** at the foot of a granite rock face, and a **furnace**. The **pickaxe** is sold at the
   **miners' supply** till in the **hardware store** on the south-east road (and in the general store).
-* **How to start:** take the **miner job** at the desk by the mine. Then buy a **pickaxe** ($150) at the miners' supply till in the
+* **How to start:** take the **miner job** at the desk by the mine (**Take the job: Miner** on its clock; after a respawn take it again). Then buy a **pickaxe** ($150) at the miners' supply till in the
   hardware store. Any new miner can buy it.
 * **What you do:**
   1. Hold the pickaxe and **swing at an iron rock**. Every few swings a piece of **iron ore** breaks off and drops at your feet; pick it up.
      A rock gives 5 pieces, shrinks as you work it, then crumbles and grows back after about 5 minutes. Each piece is miner XP.
   2. Take the ore to the **furnace** and choose **Smelt iron ore**: **3 ore make 1 iron bar**. One run smelts up to 5 bars in 4 minutes;
      keep mining while it works, the bars drop at the furnace when it is done.
-  3. Sell the bars at the **iron buyer**'s counter beside the furnace (**$20 a bar**; it buys 40, then about 24 more an hour). If it says
-     it is full, the **wholesale warehouse** at the dock buys more (from $20 a bar, falling as you sell).
+  3. Sell the bars at the **iron counter** in the **wholesale warehouse** at the dock, east of the main counter (**$20 a bar**; it buys 40, then about 24 more an hour). If it says
+     it is full, the main wholesale counter buys more (from $20 a bar, falling as you sell).
 * **Pay:** about **$500 an hour**, with nothing to drive. Two players share the six rocks and the furnace comfortably.
 * **Needs:** the miner job and a pickaxe. Higher miner levels open the coal, copper and smelter work as those sites arrive.
 
