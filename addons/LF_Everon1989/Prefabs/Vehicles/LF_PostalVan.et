@@ -1,0 +1,68 @@
+Vehicle : "{E3AD3E9E60F2E061}Prefabs/Vehicles/Wheeled/S1203/S1203_cargo_yellow.et" {
+ ID "30D8DBFD5312FFA8"
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bIgnitionLocked 1
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_VehicleLockAction "{EEC9A4A971E96977}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{76D7787C1B34A834}" {
+      Name "#EL-VehicleLock_Action"
+     }
+     "Sort Priority" 5
+    }
+   }
+  }
+ }
+ {
+  GenericEntity {
+   ID "49881FFB0EDA79F4"
+   components {
+    Hierarchy "{652B1FF58586DFBC}" {
+    }
+    MeshObject "{014588627885F517}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{C9AC4136C5D4A3FB}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{07A2975CB263FDF4}Assets/Structures/BuildingsParts/Signs/SignWall_01/Data/SignWall_01_90X45_PostOffice.emat"
+      }
+      MaterialAssignClass "{588364F9E2739C0D}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{2C85099B19DED262}Assets/Structures/BuildingsParts/Signs/SignWall_01/Data/SignWall_01_90X45_PostOffice_MLOD.emat"
+      }
+     }
+    }
+   }
+   coords 0.98 1.45 -0.9
+   angles 0 90 0
+  }
+  GenericEntity {
+   ID "12C0262A59F12A1F"
+   components {
+    Hierarchy "{7652F38D3397071E}" {
+    }
+    MeshObject "{68832F1B3213A3AB}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{EDE0B0FD440BE179}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{07A2975CB263FDF4}Assets/Structures/BuildingsParts/Signs/SignWall_01/Data/SignWall_01_90X45_PostOffice.emat"
+      }
+      MaterialAssignClass "{C96A9E27056DF1E5}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{2C85099B19DED262}Assets/Structures/BuildingsParts/Signs/SignWall_01/Data/SignWall_01_90X45_PostOffice_MLOD.emat"
+      }
+     }
+    }
+   }
+   coords -0.98 1.45 -0.9
+   angles 0 -90 0
+  }
+ }
+}
