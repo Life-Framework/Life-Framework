@@ -8,11 +8,11 @@
   "kinds": [
     "WholesaleCounter"
   ],
-  "rows": 20,
+  "rows": 53,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_saint_philippe_dock_wholesale_Place"
   },
-  "date": "2026-11-21"
+  "date": "2026-11-22"
 }
