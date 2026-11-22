@@ -52,8 +52,7 @@ check(bodyWhy("c", spot, 5, clear, []) === null, "clear rays and no door: clean"
 const wall = parseRays(Array.from({ length: BODY_LINES * HEIGHTS.length }, (_, i) => ray(`c_b${Math.floor(i / BODY_LINES)}${i % BODY_LINES}`, i === BODY_LINES + 2 ? { hit: "WoodenWall_01_2m", root: "WoodenWall_01_2m", d: 1 } : {})).join("\n"));
 check(/WoodenWall_01_2m at car height/.test(bodyWhy("c", spot, 5, wall, []) ?? ""), "a wall on an outline ray refuses the spot");
 const rail = parseRays(Array.from({ length: BODY_LINES * HEIGHTS.length }, (_, i) => ray(`c_b${Math.floor(i / BODY_LINES)}${i % BODY_LINES}`, i === HEIGHTS.indexOf(0.75) * BODY_LINES + 3 ? { hit: "CrashBarrier_01_4m_V2", root: "CrashBarrier_01_4m_V2", d: 1 } : {})).join("\n"));
-const inner = parseRays(Array.from({ length: BODY_LINES * HEIGHTS.length }, (_, i) => ray(`c_b${Math.floor(i / BODY_LINES)}${i % BODY_LINES}`, i === 0 * BODY_LINES + BODY_LINES - 1 ? { hit: "PipeRailing_02_End", root: "PipeRailing_02_End", d: 1 } : {})).join("
-"));
+const inner = parseRays(Array.from({ length: BODY_LINES * HEIGHTS.length }, (_, i) => ray(`c_b${Math.floor(i / BODY_LINES)}${i % BODY_LINES}`, i === 0 * BODY_LINES + BODY_LINES - 1 ? { hit: "PipeRailing_02_End", root: "PipeRailing_02_End", d: 1 } : {})).join("\n"));
 check(/PipeRailing_02_End at car height/.test(bodyWhy("c", spot, 5, inner, []) ?? ""), "a rail end only the last cross line at the lowest height meets refuses the spot (b03, #3888)");
 check(/CrashBarrier_01_4m_V2 at car height/.test(bodyWhy("c", spot, 5, rail, []) ?? ""), "a guard rail only the 0.75 m ray meets refuses the spot");
 const leaf = { root: "DoorSet_MetalGate_01_Short", box: { c: [1.6, 6, 0], h: [1.2, 1.1, 0.05], a: [[1, 0, 0], [0, 1, 0], [0, 0, 1]] } };
