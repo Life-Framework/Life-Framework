@@ -1,0 +1,17 @@
+{
+  "slug": "seed-packet",
+  "about": "The cabbage seed packet (Items/Seeds/CabbageSeeds.et): a small printed paper envelope, 9 x 14 cm, with a painted savoy cabbage on a cream ground, CABBAGE / SEEDS lettering, a green band and a folded, glued flap on the back with planting notes. US English, no brand, no place name. Built by build.py in headless Blender (kitlib) with a procedural print atlas; replaces the vanilla Papers_Personal folded papers stand-in. Meshy is reserved for fish and masks.",
+  "asset_dir": "Assets/Items/Seeds/SeedPacket",
+  "prefab_dir": "Prefabs/Items/Seeds",
+  "script": "build.py",
+  "layout_m": {
+    "about": "Enfusion metres. The packet stands in the x-y plane, front toward +z, origin at its centre: the prefab rests it with RestingUP Forward, so the front faces up on the ground.",
+    "half_width": 0.045,
+    "half_height": 0.07,
+    "half_thick": 0.003
+  },
+  "texture_px": {"atlas": [512, 512]},
+  "colliders": {
+    "SeedPacket": {"layerPreset": "ItemFireView", "gamemat": "{13581C35484F3000}Common/Materials/Game/fabric.gamemat"}
+  }
+}
