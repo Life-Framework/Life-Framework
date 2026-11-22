@@ -42,6 +42,14 @@ class LF_BreachArmAction : ScriptedUserAction
 			return false;
 		}
 
+		// The cells of a two-layer jail wait for the outer door (replicated flag; the server decides in Arm).
+		string jailRefusal = LF_JailBreak.OfferRefusal(target.GetTargetId());
+		if (!jailRefusal.IsEmpty())
+		{
+			SetCannotPerformReason(jailRefusal);
+			return false;
+		}
+
 		return true;
 	}
 
