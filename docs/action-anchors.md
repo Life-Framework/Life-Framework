@@ -53,3 +53,15 @@ outside the bounds. Tune with `--tolerance` and `--fail-gap`. Character meshes
 
 Bounds say where the mesh is, not which side faces the street. Choose `--front`
 by looking at the entity in the world, or use `center`.
+
+## Counter NPCs
+
+A clerk, teller or desk officer stands behind a counter; the customer stands in front. The talk context on an NPC is a sphere on its `Spine5` bone, so its `Radius` is how far across the counter the prompt shows. The old 0.6 m put the prompt behind the counter ("you couldn't really talk to the clerk across the counter", live play 2026-11-22). Counter staff now use **2.4 m** (the `RoleTalk` context on `Npc_Base.et` too): a customer 1.5 to 2.2 m away across a counter has the prompt without walking round. `LF_DialogueTalkAction` and `LF_QuestAction` still show only within 3 m of the NPC and only on the same level (a storey is about 2.8 m), so the larger sphere does not show through a ceiling.
+
+`validate-action-reach` fails when it is wrong (`tools/actions/counter-npc.mjs`):
+
+- every layer NPC (a prefab with a Talk, Quest or RoleTalk context) with a counter prop in front of it (name or prefab matching counter, till, desk, stall, kiosk, window or teller, bounds from the `.xob`, turned by its yaw): the customer stands 0.35 m past the counter's far face, and the NPC's radius must reach that spot;
+- every `LF_ResidentAnchorComponent` `counter` anchor, against the smallest talk radius of a resident whose work kind is a counter, till or desk (`LF_Residents_*.conf`);
+- the counter-staff prefabs themselves (`LF_Shopkeeper`, `LF_FuelClerk`, `QuestGiver_Clerk` and every resident prefab at a counter work kind): a talk radius of at least 2.0 m.
+
+A new counter NPC prefab sets its `Talk` (or `Quest`) context `Radius` to 2.4; `LF_Test_CounterNpcTalkReach` (core) and `LF_Test_EveronCounterTalkReach` (pack) cover the shipped ones.

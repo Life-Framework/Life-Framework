@@ -161,6 +161,7 @@ class LF_TraderSale
 		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, totalValue.ToString());
 		if (curved && newPrice != oldPrice)
 			LF_MarketSaleNotice.OnSale(seller, itemPrefab, oldPrice, newPrice);
+		LF_QuestArrivalSignals.ReportTraderSale(seller, itemPrefab);
 		return LF_ETraderSale.SOLD;
 	}
 
@@ -222,6 +223,7 @@ class LF_TraderSale
 
 		LF_Debug.Info("Trader", string.Format("sold %1 x%2 of %3 to %4 for %5 (refused %6, untrusted=%7)", itemPrefab, sale.m_iAccepted, outputUnits, buyer, sale.m_iPayout, sale.m_iRefused, untrusted));
 		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, sale.m_iPayout.ToString());
+		LF_QuestArrivalSignals.ReportTraderSale(seller, itemPrefab);
 		// Only what the purse could not hold says "enough"; a part lot just stays with the seller.
 		if (sale.m_iRefused > sale.m_iUnderLot)
 			NotifyBuyerFull(seller, sale.m_iSecondsToNext);
