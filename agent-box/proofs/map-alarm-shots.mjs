@@ -1,7 +1,7 @@
 import { arrive, clientBox, sessionDir } from "../session.mjs";
 import { armAndDraw } from "./fuel-robbery-proof.mjs";
 
-// Map robbery alarm, two clients on the Everon world (`up --mission everon --profile full --clients 2`):
+// Map robbery alarm, two clients on the Everon world (`up --mission island --profile full --clients 2`):
 // client 1 robs the Saint-Philippe fuel till through the attendant; client 2, on the other side of the
 // square, opens the map on the fuel station and photographs the badge with its pulsing red ring and "!",
 // then hovers it for the card ("Robbery in progress (alarm just raised)"). Client 1's map shows the same.
@@ -89,6 +89,6 @@ async function runMapAlarmShots() {
 
 export default {
   name: "map-alarm-shots",
-  usage: "map-alarm-shots [--name <prefix>]   (up --mission everon --profile full --clients 2)",
+  usage: "map-alarm-shots [--name <prefix>]   (up --mission island --profile full --clients 2)",
   run: () => runMapAlarmShots(),
 };
