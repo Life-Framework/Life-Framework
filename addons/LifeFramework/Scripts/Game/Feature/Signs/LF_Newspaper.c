@@ -193,7 +193,7 @@ class LF_Newspaper
 	static LF_UIScreen Open(EntityID anchor)
 	{
 		Hide();
-		LF_UISkin skin = LF_SignCatalog.CardSkin(false, vector.Zero, vector.Zero, vector.Zero);
+		LF_UISkin skin = LF_NewspaperEditionStyle.Newsprint();
 		array<ref LF_UIPart> parts = BuildParts(Current(), skin);
 		skin.m_fTypeScale = LF_SignCatalog.FitScale(parts, skin.m_fWidth);
 		s_Screen = LF_UIScreen.Open(parts, skin);
