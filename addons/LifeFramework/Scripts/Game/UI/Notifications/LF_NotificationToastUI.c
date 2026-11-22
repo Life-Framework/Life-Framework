@@ -23,6 +23,8 @@ class LF_NotificationToastUI : ScriptedWidgetComponent
 	protected int m_iShownAtMs;
 	protected bool m_bFadingOut;
 	protected bool m_bTicking;
+	//! When the open map hid the slip (real clock), -1 while it shows.
+	protected int m_iHiddenSinceMs = -1;
 
 	//------------------------------------------------------------------------------------------------
 	override void HandlerAttached(Widget w)
@@ -141,6 +143,25 @@ class LF_NotificationToastUI : ScriptedWidgetComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pure pause rule shared with the test: the show time moved on by the time the slip was hidden, so the
+	//! slip keeps the display time it had left when the map opened.
+	static int ResumedShownAt(int shownAtMs, int hiddenSinceMs, int nowMs)
+	{
+		if (hiddenSinceMs < 0 || nowMs < hiddenSinceMs)
+			return shownAtMs;
+
+		return shownAtMs + (nowMs - hiddenSinceMs);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True while the full-screen map is open on this machine.
+	protected static bool IsMapOpen()
+	{
+		SCR_MapEntity mapEntity = SCR_MapEntity.GetMapInstance();
+		return mapEntity && mapEntity.IsOpen();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void StartTicking()
 	{
 		if (m_bTicking || !GetGame() || !GetGame().GetCallqueue())
@@ -163,6 +184,30 @@ class LF_NotificationToastUI : ScriptedWidgetComponent
 	{
 		if (!m_bTicking || !m_wRoot)
 			return;
+
+		// The open map hides the slip (the arrival note covered the map's top right, 2026-11-22) and its clock
+		// stops: the note shows its remaining time once the map closes, so nothing is lost behind the map.
+		int now = System.GetTickCount();
+		bool mapOpen = IsMapOpen();
+		if (mapOpen && m_iHiddenSinceMs < 0)
+		{
+			m_iHiddenSinceMs = now;
+			m_wRoot.SetVisible(false);
+		}
+		else if (!mapOpen && m_iHiddenSinceMs >= 0)
+		{
+			m_iShownAtMs = ResumedShownAt(m_iShownAtMs, m_iHiddenSinceMs, now);
+			m_iHiddenSinceMs = -1;
+			m_wRoot.SetVisible(true);
+		}
+
+		if (mapOpen)
+		{
+			if (GetGame() && GetGame().GetCallqueue())
+				GetGame().GetCallqueue().CallLater(Tick, TICK_MS, false);
+
+			return;
+		}
 
 		float elapsed = GetElapsedSeconds();
 		int phase = Phase(elapsed, m_fDisplayTime);

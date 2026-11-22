@@ -486,11 +486,56 @@ class LF_MapAreas
 				continue;
 			}
 
+			// A drawn-only safe or lawless row that overlaps a real zone of the same style is a stale stand-in:
+			// the zone the game enforces is the one drawn (two circles overlapped on the square, 2026-11-22).
+			LF_MapArea real = OverlappingZone(area, into);
+			if (real)
+			{
+				LF_Debug.Info(FEATURE, string.Format("area row %1 overlaps zone %2; the zone is drawn", row.m_sId, real.m_sName));
+				continue;
+			}
+
 			into.Insert(area);
 			added++;
 		}
 
 		return added;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The zone-backed area in `have` of the same safe or lawless style whose outline overlaps `area`'s
+	//! (each taken as the circle round its centroid through its farthest point), or null.
+	static LF_MapArea OverlappingZone(notnull LF_MapArea area, notnull array<ref LF_MapArea> have)
+	{
+		if (area.m_eStyle != LF_MapAreaStyle.SAFE && area.m_eStyle != LF_MapAreaStyle.LAWLESS)
+			return null;
+
+		float reach = Reach(area);
+		foreach (LF_MapArea zone : have)
+		{
+			if (!zone.m_bFromZone || zone.m_eStyle != area.m_eStyle)
+				continue;
+
+			if (vector.DistanceXZ(zone.m_vCentroid, area.m_vCentroid) < reach + Reach(zone))
+				return zone;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The farthest outline point from the area's centroid, flat metres.
+	static float Reach(notnull LF_MapArea area)
+	{
+		float reach;
+		foreach (vector point : area.m_aOutline)
+		{
+			float d = vector.DistanceXZ(point, area.m_vCentroid);
+			if (d > reach)
+				reach = d;
+		}
+
+		return reach;
 	}
 }
 
