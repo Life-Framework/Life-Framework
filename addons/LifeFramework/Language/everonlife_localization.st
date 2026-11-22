@@ -2855,6 +2855,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Connecting to the online service. Your registration form opens in a moment."
      Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
     }
+    CustomStringTableItem "{AEB31D9E1738B09F}" {
+     Id "LF-CallOutcome_NoCall"
+     Target_en_us "That call is not open."
+     Comment "Toast to the officer: the call is closed, unknown or no outcome was chosen (#4203)."
+    }
+    CustomStringTableItem "{0FC408BF75CB2693}" {
+     Id "LF-CallOutcome_NoOneFound"
+     Target_en_us "Call closed: no one found."
+     Comment "Toast to the officer: the call closed with the outcome no one found (#4203)."
+    }
+    CustomStringTableItem "{0B1CFA4FF5F9A337}" {
+     Id "LF-CallOutcome_NoScene"
+     Target_en_us "Dispatch cannot place this call on the map. Close it with a fine at the scene."
+     Comment "Toast to the officer: the call has no position to check presence against (#4203)."
+    }
+    CustomStringTableItem "{E371BE1A6F20F92F}" {
+     Id "LF-CallOutcome_NotHeld"
+     Target_en_us "That call is not yours."
+     Comment "Toast to the officer: another officer holds the call (#4203)."
+    }
+    CustomStringTableItem "{B6C9B26C8B13D5D5}" {
+     Id "LF-CallOutcome_Resolved"
+     Target_en_us "Call closed: resolved."
+     Comment "Toast to the officer: the call closed as resolved (#4203)."
+    }
+    CustomStringTableItem "{BF2441E69414044F}" {
+     Id "LF-CallOutcome_TooFar"
+     Target_en_us "You are too far from the scene to close this call. Get within %1 m."
+     Comment "Toast to the officer: a close from outside the scene radius; %1 is the radius in meters (#4203)."
+    }
+    CustomStringTableItem "{020D9D70E1490659}" {
+     Id "LF-CallOutcome_Unfounded"
+     Target_en_us "Call closed: unfounded."
+     Comment "Toast to the officer: the call closed as unfounded (#4203)."
+    }
     CustomStringTableItem "{B27102B0C486F20E}" {
      Id "LF-Cargo_Empty"
      Target_en_us "The bed is empty."
