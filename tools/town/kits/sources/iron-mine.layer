@@ -4,7 +4,7 @@
 // hostless plot the slot anchors on (frame: the plot, unturned, x east, z north; the portal is on the -x side because Coalman's Brow rises to the west). The ore rocks are the core IronOre.et (node
 // `iron`: pickaxe, 5 pieces, 5 minutes to grow back), the furnace is the pack LF_MineFurnace.et (`furnace-iron-mine`, 3 nuggets to 1 bar, no
 // level), the desk is the MINER workplace, the sign def `coalmans-brow-mine` is in the pack's
-// Configs/Signs/LF_Signs_Everon1989/LF_Signs_Mine.conf, the iron buyer on its counter is the pack LF_IronBuyer_Everon1989.et (pays the
+// Configs/Signs/LF_Signs_Everon1989/LF_Signs_Mine.conf, the iron buyer at the yard table is the pack LF_IronBuyer_Everon1989.et (pays the
 // `hardware` iron row of the buyer demand table; the dock wholesale takes the rest). Portal, heaps, cart, picks and lamps are the
 // `mine-entrance` kit's props.
 GenericEntity Mine_Portal : "{02128ED43CA97BCF}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_end_buried.et" {
@@ -85,11 +85,44 @@ GenericEntity Mine_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePla
  coords 13 0 9
  angleY 270
 }
-GenericEntity Mine_BuyerCounter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 12.5 0 -1.5
+GenericEntity Mine_BuyerTable : "{7FFE600A194D73B1}Prefabs/Props/Furniture/TableOld_01/TableOld_01_Base.et" {
+ coords 11.2 0 -1.5
  angleY 270
 }
 GenericEntity Mine_Buyer : "{CDE1C29873CECBC0}Prefabs/Trader/LF_IronBuyer_Everon1989.et" {
- coords 12.5 1.04 -1.5
+ coords 11.2 0.901 -1.5
+ angleY 270
+}
+LF_NpcBaseEntity Mine_BuyerClerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 12.5 0 -1.5
+ angleY 270
+}
+GenericEntity Mine_BuyerScale : "{AC76F47F96377547}Prefabs/Props/Agriculture/WeighingScale_01_base.et" {
+ coords 11.2 0 -3.8
+ angleY 90
+}
+GenericEntity Mine_BuyerCrate1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 13 0 -4
+ angleY 0
+}
+GenericEntity Mine_BuyerBox : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 13 0.989 -4
+ angleY 20
+}
+GenericEntity Mine_BuyerCrate2 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 13 0 1
+ angleY 0
+}
+SCR_DestructibleEntity Mine_BuyerBoard : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ components {
+  LF_SignComponent "{026619B31213409E}" {
+   m_sSignId "coalmans-brow-buyer"
+   m_sStyle ""
+   m_sSize ""
+   m_vFaceAngles 0 -15 0
+   m_fFaceScale 2.6
+  }
+ }
+ coords 10.1 0 -3.1
  angleY 270
 }

@@ -3249,6 +3249,21 @@ StringTable {
      Target_en_us "The village butcher: dried meat, tinned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
     }
+    CustomStringTableItem "{54968BCB66E488A0}" {
+     Id "LF-Sign_CoalmansBrowBuyer_Iron"
+     Target_en_us "Iron bought here"
+     Comment "Chalk board row label at the Coalman's Brow iron buyer: the price per iron bar."
+    }
+    CustomStringTableItem "{215C8A1EF60E0C32}" {
+     Id "LF-Sign_CoalmansBrowBuyer_Title"
+     Target_en_us "Achat fer"
+     Comment "Title of the chalk board at the iron buyer's table at the Coalman's Brow mine (Everon 1989 pack). Printed on the board and shown in the prompt as Read: Achat fer."
+    }
+    CustomStringTableItem "{72E01F61545E6893}" {
+     Id "LF-Sign_CoalmansBrowBuyer_What"
+     Target_en_us "The mine's iron buyer weighs iron bars at the yard table and pays a set price per bar, a limited amount each hour. Price per bar in dollars."
+     Comment "Sign card for the Coalman's Brow iron buyer board, What section."
+    }
     CustomStringTableItem "{1DF3BFB27FDA81CC}" {
      Id "LF-Sign_CoalmansBrowMine_How"
      Target_en_us "Take the miner job at the desk, buy a pickaxe at the miners' supply till in the hardware store, swing at the rust-veined rocks and pick up the ore. Three pieces make one bar at the furnace; sell the bars at the counter beside it."
