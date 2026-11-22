@@ -94,6 +94,16 @@ GenericEntity Fit_coalmans_brow_mine_mine_sign : "{B7B489CA36A0E9F8}Prefabs/Prop
  coords 4343 33.797 10413
  angleY -90
 }
+GenericEntity Fit_coalmans_brow_mine_mine_bus_stop : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.coalmans-brow.mine"
+   m_sLabel "#LF-BusStop_Everon_Mine"
+  }
+ }
+ coords 4320 36.438 10394
+ angleY -90
+}
 GenericEntity Fit_coalmans_brow_mine_mine_rock_1 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
  coords 4327.8 0 10415.4
  angleY 20

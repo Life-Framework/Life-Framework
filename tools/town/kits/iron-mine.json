@@ -313,6 +313,32 @@
       "floor": "f0"
     },
     {
+      "id": "mine-bus-stop",
+      "name": "Mine_BusStop",
+      "prefab": "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -10,
+        0,
+        -10
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "LF_BusStopComponent",
+          "set": {
+            "m_sStopId": "\"bus.coalmans-brow.mine\"",
+            "m_sLabel": "\"#LF-BusStop_Everon_Mine\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
       "id": "mine-rock-1",
       "name": "Mine_Rock1",
       "prefab": "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et",

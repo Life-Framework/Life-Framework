@@ -1,0 +1,35 @@
+{
+  "about": "Every piece of text this slug's build script paints onto its texture; checked by tools/validation/validate-us-english.mjs. Regenerate: node tools/validation/validate-us-english.mjs --update",
+  "scripts": {
+    "model.py": [
+      "paper-print",
+      "EVERON CONSTABULARY",
+      "Traffic and Public Order Division",
+      "FORM P-14",
+      "NOTICE OF PENALTY",
+      "Issued under the Road and Public Order Act  -  retain this notice",
+      "No.",
+      "DATE OF OFFENSE",
+      "TIME",
+      "PLACE OF OFFENSE",
+      "VEHICLE REGISTRATION",
+      "DRIVING PERMIT NO.",
+      "NATURE OF OFFENSE",
+      "OFFICER NUMBER",
+      "STATION",
+      "PENALTY",
+      "Pay within fourteen days at any post office",
+      "TEAR HERE",
+      "PAYMENT STUB",
+      "Return this stub with the amount shown above",
+      "RECEIVED BY",
+      "DATE PAID",
+      "P-14  /  1989  /  EVC PRINTING OFFICE",
+      "EVERON",
+      "CONSTABULARY",
+      "TRAFFIC DIVISION",
+      "FineTicketSheet",
+      "LF_ASSET_MODEL ok"
+    ]
+  }
+}

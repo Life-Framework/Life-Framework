@@ -159,17 +159,17 @@
       "mouth": "7767559953922964985336334554411110000000000025736999973367664211555633522765443211000000000026531199998634487339974211488646987665331100000000000295743119369997655411100000007775774267999865554200"
     },
     "welcome_town": {
-      "hash": "4998926c939ad54e",
-      "date": "2026-11-16",
+      "hash": "6596d79e95dc8b5f",
+      "date": "2026-11-22",
       "voice_id": "NxYVRLlKssuLUMfbtwGR",
       "voice_name": "Julien - Serious",
       "model": "eleven_multilingual_v2",
-      "text": "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost.",
-      "chars": 128,
-      "chars_total": 51,
-      "request_id": "vfDh6BCqBhMQVBy8G1bo",
-      "seconds": 10.23,
-      "mouth": "5817938999877411016135319823331029999743577631211001373338998835643313332100000000000000002998259988773776333310000010008999989343858787641100000000015741129884329259756533331153228741129858765534343211100"
+      "text": "The town expects honest work and quiet nights. Greet your neighbors, pay what you owe, and ask the police if you are ever lost.",
+      "chars": 127,
+      "chars_total": 102,
+      "request_id": "4nvS8mEEQwQAqzzjYSru",
+      "seconds": 9.78,
+      "mouth": "4815959999976114714414962331100799999648677412110000255432948876236542123210000000000000001359935498877555542100000000010099799897236678776411000000002688965118369666533325222765754656664434402100"
     },
     "welcome_pack": {
       "hash": "a1ea48bcd5dae7e0",
@@ -224,17 +224,17 @@
       "mouth": "998455999862676431166235224499745431111110000006982394234955316886343311466344112999443832532664423100"
     },
     "market": {
-      "hash": "919694c2b3dea47a",
+      "hash": "5e672e84737b044d",
       "date": "2026-11-22",
       "voice_id": "NxYVRLlKssuLUMfbtwGR",
       "voice_name": "Julien - Serious",
       "model": "eleven_multilingual_v2",
-      "text": "Drive back to the market in the town centre and sell your apple juice to the trader.",
+      "text": "Drive back to the market in the town center and sell your apple juice to the trader.",
       "chars": 84,
-      "chars_total": 61,
-      "request_id": "2ZPu5O8Ywxmejnx5tG0U",
-      "seconds": 5.25,
-      "mouth": "3699999963498732376779982361115777145776454863455210000000000026455499997651898258445765522477452775523000"
+      "chars_total": 95,
+      "request_id": "6rIbyodYHxzpCOdoXIKU",
+      "seconds": 5.64,
+      "mouth": "36999998632249975123556677743431146541545899844665254311000000275455799439631136521029962973356544353643354342100"
     }
   },
   "voice": {

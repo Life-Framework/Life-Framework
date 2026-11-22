@@ -21,7 +21,7 @@ GenericEntity Fit_saint_philippe_barber_barber_chair_2 : "{4F2A9C61B7E03D85}Pref
  coords 4412.09 10.215 10777.058
  angleY -118
 }
-GenericEntity Fit_saint_philippe_barber_barber_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Fit_saint_philippe_barber_barber_counter : "{2F68C06AF2843E84}Prefabs/Props/Commercial/LF_ShopCounterTill.et" {
  coords 4413.324 10.215 10778.677
  angleY -118
 }

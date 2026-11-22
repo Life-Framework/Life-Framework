@@ -340,7 +340,7 @@
         { "place": "saint-philippe", "building": "b73", "label": "#LF-BusStop_Everon_Farm", "sideways": 0.8 }
       ],
       "why": [
-        "bus stops (maintainer 2026-11-22: pay cash, wait at the stop, get off at another): the town hall square, the shop street, the dock, the fuel station, the police station, the clinic, the car lot and the two job areas in reach, the timber yard and the farm plots barn (b73; the open wheat barn farmwest b19 seated the sign on an inner post). A sign at the kerb beside each building, placed like a payphone (back to the wall). The Coalman's Brow mine is a hostless plot with no building to seat a sign on: its stop is a follow-up (a ground-mounted stop)"
+        "bus stops (maintainer 2026-11-22: pay cash, wait at the stop, get off at another): the town hall square, the shop street, the dock, the fuel station, the police station, the clinic, the car lot and the two job areas in reach, the timber yard and the farm plots barn (b73; the open wheat barn farmwest b19 seated the sign on an inner post). A sign at the kerb beside each building, placed like a payphone (back to the wall). The Coalman's Brow mine stop stands on the ground in that slot's own kit (iron-mine row mine-bus-stop, 2026-11-22)"
       ]
     },
     "street-life": {
