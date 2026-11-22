@@ -20,12 +20,16 @@
 // SOFTWARE.
 //
 //------------------------------------------------------------------------------------------------
-//! On-duty officer action on the suspect, in the world. Sentence length comes
-//! from the jail config and the suspect's wanted level. The server re-checks
-//! every request inside LF_Jail.Arrest.
+//! Booking at the jail (LF_JailBooking): an on-duty officer at the cell books a cuffed suspect. The
+//! prefab carries it twice, the full sentence (m_iPercent 100) and a reduced one for a suspect who
+//! cooperated, so the officer picks the length from the scroll list. The full length comes from the
+//! jail config and the wanted level; the server re-checks every request in LF_JailBooking.Book.
 //------------------------------------------------------------------------------------------------
 class LF_JailArrestAction : ScriptedUserAction
 {
+	[Attribute("100", UIWidgets.EditBox, desc: "Percent of the full sentence this booking option gives (100 full, 50 reduced)", params: "1 100")]
+	protected int m_iPercent;
+
 	//------------------------------------------------------------------------------------------------
 	override bool CanBeShownScript(IEntity user)
 	{
@@ -45,7 +49,11 @@ class LF_JailArrestAction : ScriptedUserAction
 		if (!LF_PlayerInteraction.CanOffer(user, GetOwner()))
 			return false;
 
-		return LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user));
+		if (!LF_AccountStateBits.IsOnDutyPolice(LF_AccountReplication.GetState(user)))
+			return false;
+
+		// Booked at the station, once cuffed: in the field the officer sees Cuff and Escort instead.
+		return LF_Restraint.IsRestrained(GetOwner()) && LF_JailBooking.IsAtBooking(user.GetOrigin());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -122,7 +130,7 @@ class LF_JailArrestAction : ScriptedUserAction
 			return;
 		}
 
-		LF_Jail.Arrest(officerUid, prisonerUid, pOwnerEntity);
+		LF_JailBooking.Book(pUserEntity, pOwnerEntity, m_iPercent);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,7 +143,11 @@ class LF_JailArrestAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override bool GetActionNameScript(out string outName)
 	{
-		outName = "#EL-Jail_Arrest";
+		if (m_iPercent >= LF_JailBooking.FULL_PERCENT)
+			outName = "#LF-JailBook_Full";
+		else
+			outName = "#LF-JailBook_Reduced";
+
 		return true;
 	}
 }

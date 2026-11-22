@@ -304,6 +304,23 @@
   The DebugWorld cell now sentences 60 s per wanted level, max 300 s (it was zero-length).
 - ✅ **Jailbreak** (#235, LOGIC `roadmap/jailbreak`, WORLD `e2e/roadmap-jailbreak`, `session.mjs jailbreak-proof`). A serving prisoner who is outside the cell volume while `Roadmap_Jail_Door` is open has escaped: `LF_Jail.NoteEscape` (called each cell tick) reports it once through `LF_Dispatch.Report` as `#LF-Offence_JailBreak` (so `LF_OnCrimeCommitted` is on the bus, the board and pager carry it) and leaves the sentence and wanted level alone; going back inside re-arms it. The door reuses `LF_Breach` (arm, stay open until police repair). **Fixed:** `m_bDebugLocked` was never applied (the component asked for no init event), so the placed jail door started unlocked; `LF_LockComponent` now sets the INIT mask and applies it, and the per-component `m_bStartLocked` workarounds (jail, breach, lockpick) are gone. Harness verb `charge` hands the player a breach charge (dev gate). No save change.
 
+- 🔨 **Booking at the jail (arrest flow review, 2026-11-22, merged, in-dev).** `LF_JailBooking` (`Feature/Police/LF_JailBooking.c`).
+  The suspect's `LF_JailArrestAction` was "Send to jail" from anywhere within 5 m of any wanted player, no cuffs; it is now
+  two booking options on `Character_Roleplay.et`, **Book into jail: full sentence** (`m_iPercent 100`) and **Book into jail:
+  reduced (cooperated)** (`50`, at least 30 s, never above the full one; `LF_Jail.Arrest(..., percent)`), offered only when the suspect
+  is cuffed and the officer stands within 15 m (`BOOKING_METERS`) of the placed cell. The cell notes its origin on every machine
+  (`LF_JailBooking.NoteCell` in `LF_JailCellComponent.OnPostInit`) so the client offers it there; `LF_JailBooking.Book` (server)
+  re-checks place and cuffs (or the officer's escort hold) and toasts the refusal (`#LF-JailBook_NotHere`, `#LF-JailBook_CuffFirst`).
+  **Escort needs the cuff:** "Detain for escort" is now **Escort** and refuses an uncuffed suspect (client reason and `LF_JailEscort.Grab`),
+  so the hands-up / downed rules of the cuff gate the whole chain. **Take out of vehicle** no longer books silently at the cell: the
+  suspect steps out beside the car and the officer books with a chosen option (`#LF-JailBook_AtStation` toast at the station).
+  **Waypoint:** cuffing a wanted suspect puts a "Jail booking" waypoint on the officer's client through the existing job waypoint RPC
+  (`LF_MapShareComponent.ServerJobWaypoint`, no new RPC); booking takes it off. The officer's first cuff in a session shows the how-to
+  note (`#LF-JailBook_FirstArrest`). **Prisoner clock:** `m_iLF_JailSecondsLeft` (RplProp on the character, written from
+  `HandSlip`/`RefreshSlip`/`Release`, bumped only every 15 s or on a jump) drives a one-line HUD strip, "Jail: m:ss left"
+  (`UI/Layouts/HUD/LF_JailClock.layout`), counted down locally between writes; harness `seen` prints `jailclock=`. Nothing new is saved.
+  Test `jail/booking` (WORLD: refusals, reduced length, held in the cell, HUD seconds, release); session proof
+  `session.mjs arrest-flow-proof` (clock in, wanted, cuff, waypoint, escort, car, booking at the cell, HUD clock; `--wait <s>` the release).
 
 ### `Feature/Police/LF_PoliceMenu.c` (arrest RPC and `LF_PoliceUtils`)
 - ✅ The duty NPC has no menu (#2535). The `LF_PoliceMenu` menu class, its layout,

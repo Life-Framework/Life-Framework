@@ -5340,6 +5340,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not while restrained"
      Comment "Greyed-out reason on an emote or on Sit while the body is cuffed or stunned (#982)."
     }
+    CustomStringTableItem "{43F735E577FB3E9D}" {
+     Id "LF-Escort_Action"
+     Target_en_us "Escort"
+     Comment "Officer action on a cuffed suspect: walk them along."
+    }
     CustomStringTableItem "{2AB2FE3B951F79E3}" {
      Id "LF-Escort_HeldByOther"
      Target_en_us "Another officer already has them."
@@ -7778,6 +7783,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Bail is %1. Your bank cannot cover it."
      Comment "Toast: the bank holds less than the bail. %1 = the bail."
     }
+    CustomStringTableItem "{B0C471156E9A5AB6}" {
+     Id "LF-JailBook_AtStation"
+     Target_en_us "At the jail. Walk the suspect to the cell and book them from the action list."
+     Comment "Toast to an officer who took a suspect out of the car at the jail."
+    }
+    CustomStringTableItem "{7B1CB5C7C37EE4F4}" {
+     Id "LF-JailBook_Booked"
+     Target_en_us "Booked. The prisoner is in the cell and can see their time."
+     Comment "Toast to the officer after a booking."
+    }
+    CustomStringTableItem "{4EA07E3FC70C2632}" {
+     Id "LF-JailBook_CuffFirst"
+     Target_en_us "Cuff the suspect first: hands up and unarmed, or downed."
+     Comment "Toast or reason: escort and booking need the suspect cuffed."
+    }
+    CustomStringTableItem "{D3DE7C61E0707EFF}" {
+     Id "LF-JailBook_Failed"
+     Target_en_us "The booking did not go through. The suspect may not be wanted any more."
+     Comment "Toast to the officer when the jail refused the booking."
+    }
+    CustomStringTableItem "{5EEAFA2D61673F01}" {
+     Id "LF-JailBook_FirstArrest"
+     Target_en_us "Bring the suspect to the station booking desk at the jail (waypoint set). Escort them, put them in your car, then book them at the cell: full sentence, or reduced if they cooperated."
+     Comment "First-arrest note to an officer, once per session."
+    }
+    CustomStringTableItem "{570E5C4A7E0D9CF9}" {
+     Id "LF-JailBook_Full"
+     Target_en_us "Book into jail: full sentence"
+     Comment "Officer action on a cuffed suspect at the jail cell."
+    }
+    CustomStringTableItem "{A8913ACFC05D09B8}" {
+     Id "LF-JailBook_NotHere"
+     Target_en_us "Book the suspect at the jail. Follow the waypoint."
+     Comment "Toast to an officer who tried to book away from the cell."
+    }
+    CustomStringTableItem "{93DF63C0D0C1819E}" {
+     Id "LF-JailBook_Reduced"
+     Target_en_us "Book into jail: reduced (cooperated)"
+     Comment "Officer action on a cuffed suspect at the jail cell: half the sentence."
+    }
+    CustomStringTableItem "{C3E13CE15439D1F5}" {
+     Id "LF-JailBook_Waypoint"
+     Target_en_us "Suspect cuffed. Waypoint set to the jail."
+     Comment "Toast to the officer after a cuff of a wanted suspect."
+    }
+    CustomStringTableItem "{D75A5C9E7EA2F993}" {
+     Id "LF-JailBook_WaypointLabel"
+     Target_en_us "Jail booking"
+     Comment "Waypoint label for the jail booking point."
+    }
     CustomStringTableItem "{7DAABAD2EC8E0E3D}" {
      Id "LF-JailBreak_Cooldown"
      Target_en_us "The jail was broken open not long ago. Wait before you try again."
@@ -7792,6 +7847,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-JailBreak_OuterFirst"
      Target_en_us "Blow the outer door first."
      Comment "Toast and offer reason: the cell door waits until the jail's outer door is open."
+    }
+    CustomStringTableItem "{E723DD95A9CA332C}" {
+     Id "LF-JailClock_Line"
+     Target_en_us "Jail: %1 left"
+     Comment "Prisoner HUD line; %1 is m:ss."
     }
     CustomStringTableItem "{B248F0FEF12E26A8}" {
      Id "LF-JailSlip_Blank"

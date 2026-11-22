@@ -116,6 +116,10 @@ class LF_JailCellComponent : ScriptComponent
 
 		// Every machine: the client offer of the cell charge reads the outer door's replicated state.
 		LF_JailBreak.NoteOfferDoors(m_sDoorTargetId, m_sOuterDoorTargetId);
+		// Every machine: the booking actions are offered only at the cell (LF_JailBooking).
+		if (owner)
+			LF_JailBooking.NoteCell(owner.GetOrigin());
+
 		if (!Replication.IsServer())
 			return;
 
