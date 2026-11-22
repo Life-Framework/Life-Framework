@@ -1,6 +1,9 @@
 GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
  ID "99BE565ABF6A2ACC"
  components {
+  MeshObject "{59670CE9C98E5BB0}" {
+   Object "{CEC8A3DF893B9C96}Assets/Props/Crates/BoxWooden_01.xob"
+  }
   LF_RestrictedInventoryStorageComponent "{59693C53BBA0FC9A}" {
    m_TradablePrefabs {
     "{BCD1E8CD7F975074}Prefabs/Resources/Mining/IronBar.et"
