@@ -4,7 +4,8 @@
 > Everon (hostel bed, clerk and welcome pack, starter car, apples, juice, market, the F2 starter quests):
 > polished and easy to learn, every step marked, every screen simple. After the 0.2.1 wave lands, a full
 > first-two-hours review with two fresh characters; its fixes come before any new system. The wishlist below
-> waits for that.
+> waits for that. The next major release on `main` is planned in [next-release-0.3.0.md](next-release-0.3.0.md)
+> (the 10-hour arc, the cut and the week plan), waiting for the maintainer's approval.
 
 The gameplay and release plan. Milestones are the one plan: each ends with a
 public build, and they run in the order below ([direction](../direction.md)). The next
