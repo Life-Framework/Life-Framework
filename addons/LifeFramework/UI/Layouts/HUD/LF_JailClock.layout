@@ -1,0 +1,28 @@
+FrameWidgetClass "{2D8F4B6C1E3A5970}" {
+ Name "JailClockRoot"
+ Slot FrameWidgetSlot "{5A1C3E7B9F2D4806}" {
+  Anchor 0 0 1 1
+ }
+ {
+  TextWidgetClass "{8E4B2D6F0A1C3957}" {
+   Name "Line"
+   Slot FrameWidgetSlot "{3F6A8C1E5B7D2094}" {
+    Anchor 0.5 0 0.5 0
+    PositionY 52
+    OffsetTop 52
+    SizeToContent 1
+   }
+   "Is Visible" 1
+   Pivot 0.5 0
+   Color 0.92 0.88 0.78 0.85
+   Text ""
+   "Font Size" 16
+   "Min Font Size" 16
+   "Horizontal Alignment" Center
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{6C2E9A4B8D1F3075}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+ }
+}
