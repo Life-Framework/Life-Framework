@@ -4435,14 +4435,19 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{D7641543B9FD8567}" {
+     Id "LF-Dialogue_Goodbye"
+     Target_en_us "Goodbye"
+     Comment "Conversation scene: the last numbered row, always 0, that ends the talk with any NPC."
+    }
     CustomStringTableItem "{857383630EAB1A5D}" {
      Id "LF-Dialogue_HintChoose"
-     Target_en_us "1 to 4, or Up, Down and Confirm: answer    Back: leave"
+     Target_en_us "Press the number, or Up, Down and Confirm: answer    0 or Back: goodbye"
      Comment "Conversation scene, small hint under the numbered replies."
     }
     CustomStringTableItem "{B3D8A9678B34F5A7}" {
      Id "LF-Dialogue_HintLine"
-     Target_en_us "Confirm: skip    Back: leave"
+     Target_en_us "Confirm: skip    0 or Back: goodbye"
      Comment "Conversation scene, small hint under the caption while the NPC speaks. Confirm and Back are the menu confirm and back keys."
     }
     CustomStringTableItem "{6456C75F481973C0}" {

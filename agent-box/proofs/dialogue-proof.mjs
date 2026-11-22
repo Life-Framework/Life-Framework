@@ -44,8 +44,9 @@ async function runDialogueProof() {
   shot(1, "2_greeting_face");
   wait(4500);
   const replies = scene(1);
-  // "I am new in town." and "Goodbye."; "I have lost my identity card." waits until a card was issued (#902).
-  expect(/phase=choosing replies=2/.test(replies), `a newcomer is offered two replies after the greeting (got: ${replies})`);
+  // "I am new in town."; the clerk's own "Goodbye." reply has no row, the always-present "0. Goodbye" row picks it;
+  // "I have lost my identity card." waits until a card was issued (#902).
+  expect(/phase=choosing replies=1/.test(replies), `a newcomer is offered one reply and the Goodbye row after the greeting (got: ${replies})`);
   shot(1, "3_replies_shoulder");
 
   // The mouth: a held pose in the face shot, shut then open, so the two shots can be compared.
@@ -84,14 +85,20 @@ async function runDialogueProof() {
   on(1, { verb: "input", action: "MenuSelect" });
   wait(8000);
   const hub = scene(1);
-  expect(/open node=menu phase=choosing replies=4/.test(hub), `after the answer the hub offers four replies (got: ${hub})`);
+  expect(/open node=menu phase=choosing replies=3/.test(hub), `after the answer the hub offers three replies and the Goodbye row (got: ${hub})`);
   shot(1, "9_hub_replies");
-  on(1, { verb: "input", action: "MenuBack" });
-  wait(300);
+  // Up from the first reply wraps onto "0. Goodbye"; confirm then picks it (the harness sends menu actions only) and the clerk says her farewell.
+  on(1, { verb: "input", action: "MenuUp" });
+  wait(500);
+  shot(1, "9b_focus_on_goodbye");
+  on(1, { verb: "input", action: "MenuSelect" });
+  wait(600);
+  const farewell = scene(1);
+  expect(/open node=bye phase=line/.test(farewell), `Confirm on the Goodbye row picks the farewell and the clerk answers (got: ${farewell})`);
   shot(1, "10_easing_out");
-  wait(1500);
+  wait(6000);
   const closed = scene(1);
-  expect(closed.startsWith("closed"), `Back closes the scene (got: ${closed})`);
+  expect(closed.startsWith("closed"), `the farewell ends the scene and gives the camera back (got: ${closed})`);
   expect(/mouthframes=[1-9]/.test(closed), `the jaw was driven while lines played (got: ${closed})`);
   shot(1, "11_back_in_the_world");
 
