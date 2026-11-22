@@ -67,7 +67,7 @@ back when you rejoin. Other players do not see yours.
 | **Your first car** | The clerk also puts a small **Sputnik T601** in your garage. It is yours, and it takes one of your garage slots. Walk to the **garage counter** at the car lot and pick *Retrieve vehicle*; the car stands on the garage pad and your key is already in your pocket. | Car lot, west of the town hall |
 | **Apple picking** | Drive to the **orchard** east of town and pick **six apples** from the apple trees. | Orchard |
 | **Fresh juice** | Use the **juice press** on the orchard stall: three apples make one bottle of apple juice. | Orchard stall |
-| **Market day** | Sell your apple juice to the **market trader** in town. A note then reads *You are on your way*: take a job from the town board, ask the clerk for more errands, and find your errands and jobs in your player menu. | Market |
+| **Market day** | Sell your apple juice to the **market trader** in town: look at the stall, scroll to **Sell 1 Apple Juice** (the row shows the price) and press F, or pick **Sell all goods**. A note then reads *You are on your way*: take a job from the town board, ask the clerk for more errands, and find your errands and jobs in your player menu. | Market |
 
 You get the welcome pack and the car once per character, never again after a respawn, a rejoin or a server restart.
 A character who already owns a car gets no starter car: take your own car out of the garage for that step. A character

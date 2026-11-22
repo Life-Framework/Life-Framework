@@ -106,14 +106,59 @@ GenericEntity {
     }
    }
    additionalActions {
-    LF_OpenTraderAction "{59670CE9FBF3C74A}" {
+    LF_TraderSellAction "{780BF93450B80288}" {
      ParentContextList {
       "default"
      }
-     UIInfo UIInfo "{59670CE9F9F9794E}" {
-      Name "Sell Items"
-      Description "Trade resources, food, and mining materials"
+     UIInfo UIInfo "{AE84B55C545630E7}" {
+      Name "#LF-Trader_SellRowName"
      }
+     m_iRow 0
+    }
+    LF_TraderSellAction "{DC32D82D1AB398DC}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{FEA16F15F35F0C38}" {
+      Name "#LF-Trader_SellRowName"
+     }
+     m_iRow 1
+    }
+    LF_TraderSellAction "{759C09CE0FC2E541}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{9A628C938B450B8D}" {
+      Name "#LF-Trader_SellRowName"
+     }
+     m_iRow 2
+    }
+    LF_TraderSellAction "{888A5C4D6BE89BF7}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5004B8B339568471}" {
+      Name "#LF-Trader_SellRowName"
+     }
+     m_iRow 3
+    }
+    LF_TraderSellAction "{6E8934CB4DD26F07}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{8DB41BF6F7E8EC45}" {
+      Name "#LF-Trader_SellRowName"
+     }
+     m_iRow 4
+    }
+    LF_TraderSellAction "{00FB42C07EF83517}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{5225C46F3C0871A5}" {
+      Name "#LF-Trader_SellRowName"
+     }
+     m_iRow -1
     }
    }
   }
