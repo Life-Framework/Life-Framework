@@ -23,6 +23,8 @@ class LF_FellAction : ScriptedUserAction
 
 	//! The Duration the helper prefab declares, in seconds; the longest hardwood row (60 s).
 	static const float HELPER_DURATION_S = 60; // lf-fixed: mirrors the Duration in LF_FellHelper.et, not a tunable
+	//! Most ancestors read when a tree is not placed from a species prefab (a PrefabLibrary tree is one hop away).
+	static const int MAX_ANCESTRY = 12; // lf-fixed: a loop guard, not a tunable
 
 	protected IEntity m_Tree;
 
@@ -79,8 +81,8 @@ class LF_FellAction : ScriptedUserAction
 			return true;
 		}
 
-		LF_TreeYieldRow yield = LF_TreeFelling.YieldFor(PrefabOf(m_Tree), config);
-		LF_TreeKind kind = LF_TreeFelling.KindOf(PrefabOf(m_Tree), config);
+		LF_TreeYieldRow yield = LF_TreeFelling.YieldFor(TreePrefabOf(m_Tree), config);
+		LF_TreeKind kind = LF_TreeFelling.KindOf(TreePrefabOf(m_Tree), config);
 		string className = ClassName(kind.m_eClass);
 		string seconds = "";
 		if (yield)
@@ -115,7 +117,7 @@ class LF_FellAction : ScriptedUserAction
 		LF_TreeFellingConfig config = LF_TreeFellingConfig.Get();
 		if (m_Tree && config)
 		{
-			LF_TreeYieldRow yield = LF_TreeFelling.YieldFor(PrefabOf(m_Tree), config);
+			LF_TreeYieldRow yield = LF_TreeFelling.YieldFor(TreePrefabOf(m_Tree), config);
 			if (yield && yield.m_iChopSeconds > 0)
 				timeSlice = timeSlice * HELPER_DURATION_S / yield.m_iChopSeconds;
 		}
@@ -138,7 +140,7 @@ class LF_FellAction : ScriptedUserAction
 			return Refuse(LF_FellRefusal.NOT_A_TREE, "no user or no tree");
 
 		LF_TreeFellingConfig config = LF_TreeFellingConfig.Get();
-		ResourceName prefab = PrefabOf(tree);
+		ResourceName prefab = TreePrefabOf(tree);
 		string key = KeyOfTree(tree);
 		if (!Tree.Cast(tree) || prefab.IsEmpty())
 			return Refuse(LF_FellRefusal.NOT_A_TREE, "not a map tree");
@@ -271,6 +273,40 @@ class LF_FellAction : ScriptedUserAction
 			return ResourceName.Empty;
 
 		return data.GetPrefabName();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The prefab the felling rules read: the placed prefab, or for a tree placed from the editor's
+	//! PrefabLibrary the species prefab it inherits (LF_TreeFelling.RulesPrefabOf). The key and the
+	//! replicated ledger keep using PrefabOf, the placed prefab, so existing keys do not move.
+	static ResourceName TreePrefabOf(IEntity tree)
+	{
+		if (!tree)
+			return ResourceName.Empty;
+
+		EntityPrefabData data = tree.GetPrefabData();
+		if (!data)
+			return ResourceName.Empty;
+
+		ResourceName own = data.GetPrefabName();
+		if (LF_TreeFelling.IsSpeciesPath(own))
+			return own;
+
+		array<string> chain = {};
+		chain.Insert(own);
+		BaseContainer prefab = data.GetPrefab();
+		int depth = 0;
+		while (prefab && depth < MAX_ANCESTRY)
+		{
+			string name = prefab.GetResourceName();
+			if (!name.IsEmpty())
+				chain.Insert(name);
+
+			prefab = prefab.GetAncestor();
+			depth++;
+		}
+
+		return LF_TreeFelling.RulesPrefabOf(chain);
 	}
 
 	//------------------------------------------------------------------------------------------------

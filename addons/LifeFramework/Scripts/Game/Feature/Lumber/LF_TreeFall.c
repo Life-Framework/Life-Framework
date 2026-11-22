@@ -176,7 +176,7 @@ class LF_TreeFall
 
 			LF_FellFacts facts = new LF_FellFacts();
 			facts.m_bHasAxe = true;
-			facts.m_sPrefab = LF_FellAction.PrefabOf(entity);
+			facts.m_sPrefab = LF_FellAction.TreePrefabOf(entity);
 			if (facts.m_sPrefab.IsEmpty())
 				continue;
 
@@ -492,7 +492,7 @@ class LF_TreeFall
 		anim.m_fHeight = HeightOf(tree);
 		anim.m_fStartMs = world.GetWorldTime();
 		anim.m_iSeed = key.Hash();
-		LF_TreeKind kind = LF_TreeFelling.KindOf(LF_FellAction.PrefabOf(tree), LF_TreeFellingConfig.Get());
+		LF_TreeKind kind = LF_TreeFelling.KindOf(LF_FellAction.TreePrefabOf(tree), LF_TreeFellingConfig.Get());
 		anim.m_bHardwood = kind.m_eClass == LF_TreeWoodClass.HARDWOOD;
 		anim.m_iSize = kind.m_iSize;
 
@@ -711,6 +711,8 @@ modded class LF_GameModeRoleplay
 //!                           LF_FellAction.TryFell as if the axe were in hand; the reply names the key and refusal
 //!   treefall find [radius]  the nearest standing tree that passes every felling rule but the axe and reach: `key=<key> pos=<x> <y> <z>`
 //!   treefall state          this peer's falling copies and branch props: `anims=<n> debris=<n>`
+//!   treefall census         counts every map tree of the world by prefab family and how many an axe can fell
+//!                           by placed path and by ancestry; the result is `tree census` lines in the log (LF_TreeCensus)
 modded class LF_AgentHarnessVerbs
 {
 	override bool Handle(LF_AgentCommand cmd)
@@ -721,6 +723,16 @@ modded class LF_AgentHarnessVerbs
 		if (cmd.Arg1 == "state")
 		{
 			LF_AgentHarness.Answer(cmd.Id, "ok", string.Format("anims=%1 debris=%2", LF_TreeFall.AnimCount(), LF_TreeFall.DebrisCount()));
+			return true;
+		}
+
+		if (cmd.Arg1 == "census")
+		{
+			if (LF_TreeCensus.Start())
+				LF_AgentHarness.Answer(cmd.Id, "ok", "census started; read `tree census` lines in the log");
+			else
+				LF_AgentHarness.Answer(cmd.Id, "error", "census not started (no world, or one is running)");
+
 			return true;
 		}
 
