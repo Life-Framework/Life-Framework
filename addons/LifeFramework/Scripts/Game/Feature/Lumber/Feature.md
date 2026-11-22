@@ -39,6 +39,10 @@ everything on a falling curve.
   on the owner (`LF_SpendFellStamina`, an Owner RPC).
 - `LF_FelledTreesReplication` (#3261): the server table of felled keys, a broadcast RPC per change, the
   join snapshot in the game mode `RplSave`/`RplLoad`, and the client that hides or shows the map tree a key names.
+- `LF_FellAction.TreePrefabOf` and `LF_TreeFelling.RulesPrefabOf`: the rules read the species prefab a tree inherits, so a
+  tree placed from the editor's `PrefabLibrary/.../Vegetation/Trees/` is felled like the species prefab behind it. The ledger key
+  keeps the placed prefab. `LF_TreeCensus` (`treefall census`, a dev harness verb) counts a world's map trees by prefab family and
+  how many an axe can fell, by placed path and by ancestry, into `tree census` log lines.
 
 ## Dependencies
 
