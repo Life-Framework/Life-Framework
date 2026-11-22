@@ -126,6 +126,24 @@ Closer in, the centre of town:
 | 41 | Fishing spot (Spring Pond) | Work sites | Fish from the jetty. |
 <!-- /map -->
 
+## What the screen shows
+
+The screen stays almost empty. A few small figures sit at the edges and fade when nothing changes:
+
+* **Top right: money.** The cash you carry in large figures, your **bank** balance under it. When cash changes the
+  difference slides in beside it (**+$100** in green, **-$18** in red) and fades. After a few seconds the block dims;
+  it comes back to full brightness on any change and while the inventory or the map is open.
+* **Under the money: wanted badges.** Up to five small badges fill with your wanted level. They flash red and read
+  **Wanted** for a moment when the level goes up, and disappear when you are clear.
+* **Bottom centre: food and drink.** Hidden while both are above half. They appear when one drops below half, for a
+  few seconds after you eat or drink, and the number turns red below 25.
+* **Bottom right: health and stamina**, shown while they change.
+* **Top left:** a small Life Framework mark.
+
+The HUD hides behind full-screen menus and during a conversation. Type **/hud** in chat to switch a part off or on:
+`/hud money off`, `/hud wanted on`, `/hud needs off`, `/hud brand off`, or `/hud all on`. The choice is kept on
+your PC.
+
 ## Eating and drinking
 
 You get **hungry and thirsty** over real time: from full, hunger runs out in about **2 hours 45 minutes** and thirst in
