@@ -191,8 +191,33 @@ class LF_ProcessAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! While a timed run is under way the row reads the time left ("Smelt iron ore: 3:12 left").
+	override bool GetActionNameScript(out string outName)
+	{
+		LF_ProcessRunFxComponent fx = LF_Component<LF_ProcessRunFxComponent>.Find(GetOwner());
+		if (!fx || !fx.IsRunning())
+			return false;
+
+		UIInfo info = GetUIInfo();
+		string name;
+		if (info)
+			name = info.GetName();
+
+		outName = WidgetManager.Translate("#LF-Process_RunningLeft", WidgetManager.Translate(name), LF_ProcessRunFxComponent.Clock(fx.GetSecondsLeft()));
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override bool CanBePerformedScript(IEntity user)
   	{
+		// A run under way: the row shows the time left and takes no second load (the server refuses it too).
+		LF_ProcessRunFxComponent runFx = LF_Component<LF_ProcessRunFxComponent>.Find(GetOwner());
+		if (runFx && runFx.IsRunning())
+		{
+			SetCannotPerformReason("#LF-Process_Busy");
+			return false;
+		}
+
 		if (m_pHideoutMachine && Replication.IsServer() && !LF_Hideout.CanProcessUser(user, m_pHideoutMachine.GetHideoutId()))
 		{
 			SetCannotPerformReason("#EL-Hideout_NoUpgrade");

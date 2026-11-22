@@ -10172,6 +10172,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Close"
      Comment "Generic button that closes a menu"
     }
+    CustomStringTableItem "{F0FD6E2EE0E11D73}" {
+     Id "LF-Mining_NotOre"
+     Target_en_us "That is plain rock. Ore rocks are streaked rust red: swing at those."
+     Comment "Toast (first-2h review B8): a pickaxe hit a plain rock, not an ore rock."
+    }
     CustomStringTableItem "{93B24FC92EC107AF}" {
      Id "LF-Mission_PlaytestTown_Details"
      Target_en_us "This is a playtest build. Your cash and bank top up when they run low, and every new character owns two test cars, one in the garage and one at the impound. Your first spawn opens form R-89; fill it in to start. The first player on a server with no police is added to the police roster, so you can clock in at the station desk. Progress is saved and carries over a restart. Report problems on the Life Framework Discord or GitHub."
@@ -12798,9 +12803,14 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
     }
+    CustomStringTableItem "{0A0EEB9828847F4A}" {
+     Id "LF-Process_RunningLeft"
+     Target_en_us "%1: %2 left"
+     Comment "Action row on a timed machine while it runs (first-2h review B10). %1 = the machine action (Smelt iron ore), %2 = time left as m:ss."
+    }
     CustomStringTableItem "{9D4E21B7C0A35F86}" {
      Id "LF-Process_Started"
-     Target_en_us "Running. The parts come out here in %1 seconds."
+     Target_en_us "Running. The parts come out here in %1 seconds; the time left shows on the machine, so get on with something else meanwhile."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
@@ -16432,11 +16442,6 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Witness_Vague"
      Target_en_us "They can't recall anything useful."
      Comment "Toast to the officer: the witness remembered nothing they could describe."
-    }
-    CustomStringTableItem "{F0FD6E2EE0E11D73}" {
-     Id "LF-Mining_NotOre"
-     Target_en_us "That is plain rock. Ore rocks are streaked rust red: swing at those."
-     Comment "Toast (first-2h review B8): a pickaxe hit a plain rock, not an ore rock."
     }
  }
 }
