@@ -3864,6 +3864,31 @@ StringTable {
      Target_en_us "The village butcher: dried meat, canned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
     }
+    CustomStringTableItem "{7C4173595794A1E9}" {
+     Id "LF-Sign_ClothingStore_How"
+     Target_en_us "*Ask the clerk* at the counter, or look at a mannequin in the window and the shop floor"
+     Comment "Sign card for the clothing store, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{5615264136156D30}" {
+     Id "LF-Sign_ClothingStore_Needs"
+     Target_en_us "Money for the counter."
+     Comment "Sign card for the clothing store, You need section."
+    }
+    CustomStringTableItem "{93A6EC78CB83FB66}" {
+     Id "LF-Sign_ClothingStore_Next"
+     Target_en_us "Wear what you buy: open your inventory and pick the item."
+     Comment "Sign card for the clothing store, Next section."
+    }
+    CustomStringTableItem "{52F906C945FC7916}" {
+     Id "LF-Sign_ClothingStore_Title"
+     Target_en_us "Clothing"
+     Comment "Title of the fascia sign over the clothing store door on Saint-Philippe (Everon 1989 pack, first-2h review C17). Printed on the sign in capitals and shown in the prompt as Read: Clothing."
+    }
+    CustomStringTableItem "{CEB8C8C3972E0402}" {
+     Id "LF-Sign_ClothingStore_What"
+     Target_en_us "The village clothing store: jackets, trousers, caps and boots, and a backpack."
+     Comment "Sign card for the clothing store, What section."
+    }
     CustomStringTableItem "{54968BCB66E488A0}" {
      Id "LF-Sign_CoalmansBrowBuyer_Iron"
      Target_en_us "Iron bar"

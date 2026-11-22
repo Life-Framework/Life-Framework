@@ -345,6 +345,34 @@
       "from": "Village_Buildings.layer",
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "clothing-fascia",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        2.85,
+        3.03,
+        8.1
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"clothing_store\"",
+            "m_vRimColor": "0.9 0.88 0.82",
+            "m_vPaintColor": "0.1 0.2 0.42",
+            "m_vTextColor": "0.96 0.94 0.88"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "+z",
+      "floor": "f0",
+      "attach": "wall",
+      "standoff": 0.04
     }
   ]
 }

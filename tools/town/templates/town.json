@@ -271,7 +271,7 @@
     {
       "id": "orchard", "required": false, "kit": "orchard", "host": "building", "poi": "none", "margin": 25,
       "needs": { "interior": "optional", "minArea": 60, "prefer": "far", "types": ["farm"] },
-      "places": ["Orchard"]
+      "places": ["Orchard", "OrchardTrees"]
     },
     {
       "id": "wheatfield", "required": false, "kit": "wheatfield", "host": "building", "poi": "none", "margin": 85,

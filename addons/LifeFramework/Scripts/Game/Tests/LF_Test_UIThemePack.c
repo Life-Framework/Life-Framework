@@ -116,7 +116,7 @@ class LF_Test_UIThemePack : LF_Test
 
 		// A theme that inherits the paper theme follows it.
 		ctx.Equal(paper.m_Paper.PackToInt(), LF_UISkin.PriceList().m_Paper.PackToInt(), "the price list inherits the pack's paper");
-		ctx.EqualStr(LF_UITheme.FONT_MONO, LF_UISkin.PriceList().m_Font, "the price list keeps its own mono face");
+		ctx.EqualStr(paper.m_Font, LF_UISkin.PriceList().m_Font, "the price list is set in the paper face, not the mono one (first-2h review B5)");
 
 		// A theme the pack patches keeps what the pack leaves out.
 		LF_UISkin terminal = LF_UISkin.Terminal();

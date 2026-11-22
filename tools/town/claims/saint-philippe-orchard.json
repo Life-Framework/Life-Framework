@@ -6,13 +6,14 @@
   "kit": "orchard",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_orchard.layer",
   "kinds": [
-    "Orchard"
+    "Orchard",
+    "OrchardTrees"
   ],
-  "rows": 15,
+  "rows": 16,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
     "marker": "Fit_saint_philippe_orchard_Place"
   },
-  "date": "2026-11-21"
+  "date": "2026-11-22"
 }

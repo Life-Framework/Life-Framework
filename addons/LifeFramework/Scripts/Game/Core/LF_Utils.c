@@ -134,7 +134,8 @@ class LF_Utils : Managed
 	//! hint on the machine that calls it, which on a dedicated server is nobody.
 	//! A client call is a no-op: the server copy of the same action sends the toast.
 	//! \param messageArg Fills %1 in a #key message on the receiving client.
-	static void NotifyEntity(IEntity player, string message, string title = "", float duration = 3.0, string messageArg = "")
+	//! \param slot A toast with a slot replaces the one still showing in that slot (LF_NotificationManagerComponent.SLOT_STEP).
+	static void NotifyEntity(IEntity player, string message, string title = "", float duration = 3.0, string messageArg = "", string slot = "")
 	{
 		if (!Replication.IsServer() || !player)
 			return;
@@ -150,7 +151,7 @@ class LF_Utils : Managed
 			return;
 		}
 
-		LF_NotificationManagerComponent.NotifyPlayer(playerId, title, message, duration, LF_ENotificationType.INFO, messageArg);
+		LF_NotificationManagerComponent.NotifyPlayer(playerId, title, message, duration, LF_ENotificationType.INFO, messageArg, slot);
 	}
 
 	//------------------------------------------------------------------------------------------------
