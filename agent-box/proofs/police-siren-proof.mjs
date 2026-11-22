@@ -10,8 +10,8 @@ import { arrive, clientBox, sessionDir } from "../session.mjs";
 //   node agent-box/session.mjs down
 // Client 1 clocks in as police, takes the jeep's driver seat, picks Patrol then Off Duty on the knob.
 // Each client's own log must show the replicated mode and the siren sound event on, then off.
-const CAR = "Roadmap_Police_Car";
-const DESK = "Roadmap_Police_Desk";
+const CAR = "Roadmap_Police_Car"; // town-layout-ok: a session walk target for the harness; nothing asserts where it stands
+const DESK = "Roadmap_Police_Desk"; // town-layout-ok: a session walk target for the harness; nothing asserts where it stands
 const KNOB_PATROL = "LF_SirenModeAction__1"; // knob rows: default, Mode1 (patrol), Mode2, Mode3
 const KNOB_OFF = "LF_SirenModeAction";
 // Client 2 registers as the debug world's seeded officer (police-proof.mjs); client 1 is the bystander.
