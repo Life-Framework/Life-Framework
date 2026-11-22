@@ -281,12 +281,12 @@ StringTable {
     }
     CustomStringTableItem "{8AA24D7948EBB5BF}" {
      Id "LF-Activity_Postal_Licence_Note"
-     Target_en_us "The van needs a driving licence: get one at the licence desk for $100."
+     Target_en_us "The van needs a driving license: get one at the license desk for $100."
      Comment "Postal step note, one sentence. Skipped when held."
     }
     CustomStringTableItem "{DEC2262628F576DE}" {
      Id "LF-Activity_Postal_Licence_Title"
-     Target_en_us "Get a driving licence"
+     Target_en_us "Get a driving license"
      Comment "Postal step title."
     }
     CustomStringTableItem "{1E5B2469908D677D}" {
