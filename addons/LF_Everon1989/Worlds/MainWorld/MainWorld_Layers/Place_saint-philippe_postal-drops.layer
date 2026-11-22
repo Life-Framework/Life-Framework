@@ -1,6 +1,6 @@
 GenericEntity Fit_saint_philippe_postal_drops_drop_b21 : "{BEEEAB7F4544E89C}Prefabs/Props/Roleplay/LF_PostalPoint_Everon.et" {
- coords 4423.489 10.43 10752.189
- angleY -170
+ coords 4427.959 10.43 10750.875
+ angleY 100
 }
 GenericEntity Fit_meaux_postal_drops_drop_b01 : "{BEEEAB7F4544E89C}Prefabs/Props/Roleplay/LF_PostalPoint_Everon.et" {
  coords 4514.653 14.13 9466.403
