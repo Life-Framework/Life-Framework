@@ -210,10 +210,10 @@ class LF_MapHelp
 	static const string PREF_OPEN = "open";
 	static const string PREF_FOLDED = "folded";
 	//! Card layout in reference units: the title row, one body row per line, the waypoint row.
-	static const float CARD_WIDTH = 380;	// lf-fixed: the longest line at 14 px
-	static const float TITLE_ROW = 32;	// lf-fixed: the layout's title slot
-	static const float LINE_ROW = 19;	// lf-fixed: 14 px type and its leading
-	static const float STATUS_ROW = 34;	// lf-fixed: the layout's status slot and the bottom margin
+	static const float CARD_WIDTH = 570;	// lf-fixed: the longest line at 18 px
+	static const float TITLE_ROW = 42;	// lf-fixed: the layout's title slot
+	static const float LINE_ROW = 25;	// lf-fixed: 18 px type and its leading
+	static const float STATUS_ROW = 46;	// lf-fixed: the layout's status slot and the bottom margin
 
 	//------------------------------------------------------------------------------------------------
 	//! The title: what the card is, and how to fold or unfold it with the device in use.

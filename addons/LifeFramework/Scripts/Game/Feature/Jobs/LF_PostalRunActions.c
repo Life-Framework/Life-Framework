@@ -66,7 +66,7 @@ class LF_PostalAction : ScriptedUserAction
 			if (!LF_RateLimit.AllowCharacter(pUserEntity, LF_ERequestKind.SPAWN, "postal van"))
 				return;
 
-			Toast(pUserEntity, LF_PostalRun.Start(pUserEntity, uid, pOwnerEntity), "#LF-Postal_Started", string.Empty);
+			Toast(pUserEntity, LF_PostalRun.Start(pUserEntity, uid, pOwnerEntity), "#LF-Postal_Started", LF_PostalRun.MinMinutes().ToString());
 			return;
 		}
 
@@ -114,7 +114,14 @@ class LF_PostalAction : ScriptedUserAction
 		}
 
 		string key = LF_PostalRun.RefusalKey(result);
-		if (!key.IsEmpty())
-			LF_Utils.NotifyEntity(user, key, LF_PostalRun.TITLE_KEY, 5.0);
+		if (key.IsEmpty())
+			return;
+
+		// The hand-in refusal names the least time (minutes) so a $0 never looks like a bug.
+		string minutes;
+		if (result == LF_EPostalResult.TOO_FAST)
+			minutes = LF_PostalRun.MinMinutes().ToString();
+
+		LF_Utils.NotifyEntity(user, key, LF_PostalRun.TITLE_KEY, 8.0, minutes);
 	}
 }
