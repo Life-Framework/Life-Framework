@@ -263,7 +263,7 @@ the pump says "The tanks are dry. The depot truck is due."
 * **Where:** the **iron mine** (sign *Coalman's Brow mine*, map label **Iron mine**) on the wooded north side of the brow, about 350 m south-west of the square past the farms; the track off the road to the west leads up to it.
   It has the **miner's desk**, six rust-veined **iron rocks**, a **furnace** and an **iron buyer**'s counter. The **pickaxe** is sold at the
   **miners' supply** till in the **hardware store** on the south-east road (and in the general store).
-* **How to start:** take the **miner job** at the desk by the mine. Then buy a **pickaxe** ($150) at the miners' supply till in the
+* **How to start:** take the **miner job** at the desk by the mine (**Take the job: Miner** on its clock; after a respawn take it again). Then buy a **pickaxe** ($150) at the miners' supply till in the
   hardware store. Any new miner can buy it.
 * **What you do:**
   1. Hold the pickaxe and **swing at an iron rock**. Every few swings a piece of **iron ore** breaks off and drops at your feet; pick it up.

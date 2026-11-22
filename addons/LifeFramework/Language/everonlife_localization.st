@@ -7951,6 +7951,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Oficial de policía. Requiere un nombramiento aprobado."
      Comment "Description of the police job (appointment = whitelist)"
     }
+    CustomStringTableItem "{4AD1BED424C85624}" {
+     Id "LF-Job_DeskQuit"
+     Target_en_us "Quit the job: %1"
+     Comment "Workplace desk action when the player already holds the job. %1 is the job name."
+    }
+    CustomStringTableItem "{0253B3296037A056}" {
+     Id "LF-Job_DeskTake"
+     Target_en_us "Take the job: %1"
+     Comment "Workplace desk action. %1 is the job name (Miner, Lumberjack, Farmer)."
+    }
+    CustomStringTableItem "{CD5B6F2CE37D13FD}" {
+     Id "LF-Job_DeskTakeName"
+     Target_en_us "Take the job"
+     Comment "Workplace desk action name in the prefab (the script prints the job name)."
+    }
     CustomStringTableItem "{2FFBFD36EA8DB8AE}" {
      Id "LF-Job_FruitHarvest"
      Target_en_us "You picked %1 %2."
