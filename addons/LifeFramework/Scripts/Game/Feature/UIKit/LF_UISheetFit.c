@@ -42,4 +42,39 @@ class LF_UISheetFit
 
 		return height;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A wide sheet's width: `share` of the screen, never narrower than `floor`, never wider than the
+	//! screen less a margin each side.
+	static float SheetWidth(float screenWidth, float share, float floor)
+	{
+		float width = screenWidth * share;
+		if (width < floor)
+			width = floor;
+
+		float most = screenWidth - 2 * LF_UIScreen.SHEET_EDGE_MARGIN;
+		if (most > 0 && width > most)
+			width = most;
+
+		return width;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Column `index`'s width when columns with these weights share `contentWidth`; 0 for a bad index.
+	static float ColumnWidth(float contentWidth, notnull array<float> weights, int index)
+	{
+		if (index < 0 || index >= weights.Count())
+			return 0;
+
+		float total;
+		foreach (float weight : weights)
+		{
+			total += weight;
+		}
+
+		if (total <= 0)
+			return 0;
+
+		return contentWidth * weights[index] / total;
+	}
 }

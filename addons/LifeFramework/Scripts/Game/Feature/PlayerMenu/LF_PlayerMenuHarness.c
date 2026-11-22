@@ -1,4 +1,4 @@
-// Harness verb `playermenu open [person|progress|next]|pick <row>|close|state` (the personal file, client
+// Harness verb `playermenu open [person|progress]|pick <row>|close|state` (the personal file, client
 // side). `open` shows the file on a tab the way the F2 key does and asks the server; `pick <n>` reads
 // the n-th skill (person tab) or quest (progress tab) as its Read button does; `state` answers
 // `open=<0|1> tab=<n> data=<0|1> skills=<n> quests=<n> licences=<n>` so a proof waits for the answer.
@@ -48,6 +48,20 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
+		if (cmd.Arg1 == "seed")
+		{
+			SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+			if (!controller)
+			{
+				LF_AgentHarness.Answer(cmd.Id, "error", "no player controller");
+				return true;
+			}
+
+			controller.LF_AskPlayerMenuSeed();
+			LF_AgentHarness.Answer(cmd.Id, "ok", "asked the server to seed the file");
+			return true;
+		}
+
 		if (cmd.Arg1 == "close")
 		{
 			LF_PlayerMenuSheet.Hide();
@@ -78,7 +92,71 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
-		LF_AgentHarness.Answer(cmd.Id, "error", "usage: playermenu open [person|progress|next]|pick <n>|close|state");
+		LF_AgentHarness.Answer(cmd.Id, "error", "usage: playermenu open [person|progress|next]|pick <n>|seed|close|state");
 		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! `playermenu seed`: a file worth reading for a session proof's pictures. The server grants the
+//! caller XP in a few jobs, cash and savings, and the first unowned house. Same gate as `repgrant`
+//! and /licence: development worlds and harness builds, or an administrator.
+modded class SCR_PlayerController
+{
+	static const int LF_SEED_CASH = 2350;
+	static const int LF_SEED_BANK = 18400;
+
+	//------------------------------------------------------------------------------------------------
+	void LF_AskPlayerMenuSeed()
+	{
+		if (Replication.IsServer())
+			RpcAsk_LF_PlayerMenuSeed();
+		else
+			Rpc(RpcAsk_LF_PlayerMenuSeed);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_PlayerMenuSeed()
+	{
+		int playerId = GetPlayerId();
+		bool allowed = LF_DevGate.HarnessBuild() || LF_DevGate.CheckPlayerRequest(playerId, LF_PlayerMenuServer.FEATURE, "harness file seed");
+		if (!allowed)
+			return;
+
+		string uid = LF_Utils.GetPlayerUID(playerId);
+		IEntity body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		if (uid.IsEmpty() || !body)
+		{
+			LF_Debug.Error(LF_PlayerMenuServer.FEATURE, string.Format("harness seed refused: player %1 has no id or body", playerId));
+			return;
+		}
+
+		LF_JobLevels.AddXp(uid, "MINER", 260, "harness_seed");
+		LF_JobLevels.AddXp(uid, "DELIVERY", 140, "harness_seed");
+		LF_JobLevels.AddXp(uid, "FARMER", 70, "harness_seed");
+		LF_JobLevels.AddXp(uid, "FISHER", 35, "harness_seed");
+		LF_MoneyUtils.AddCash(body, LF_SEED_CASH, "harness_seed");
+		LF_ATMManager atm = LF_ATMManager.GetInstance();
+		if (atm)
+			LF_ATMManager.GetOrCreate(uid).Deposit(LF_SEED_BANK, "harness_seed");
+
+		int houses = LF_PlayerMenuServer.HousesOf(uid);
+		int live = LF_HouseManagerComponent.Live().Count();
+		int free;
+		foreach (string id, LF_HouseManagerComponent house : LF_HouseManagerComponent.Live())
+		{
+			if (!house || !house.GetOwnerKey().IsEmpty())
+				continue;
+
+			free++;
+			if (houses > 0)
+				continue;
+
+			house.SetOwner(uid);
+			houses = LF_PlayerMenuServer.HousesOf(uid);
+		}
+
+		LF_Debug.Info(LF_PlayerMenuServer.FEATURE, string.Format("harness seed for player %1 (%2): xp, $%3 cash, $%4 bank; %5 live house(s), %6 unowned; owns %7 now", playerId, uid, LF_SEED_CASH, LF_SEED_BANK, live, free, houses));
 	}
 }

@@ -53,7 +53,9 @@ for (const item of newItems) {
       // Only a string whose placeholders changed (words rewritten to a term) is the migration this
       // proves; a plain copy edit (new words, the same placeholders or none) is listed and does not
       // fail validate.
-      const marks = (t) => (t || "").match(new RegExp(PLACEHOLDER.source, "g")) || [];
+      // Case is copy, not a migration: {medic} -> {Medic} only capitalises the same term (the medic
+      // skill name, 2026-11-22), so placeholders compare without case.
+      const marks = (t) => ((t || "").match(new RegExp(PLACEHOLDER.source, "g")) || []).map((m) => m.toLowerCase());
       const migrated = marks(text).join("|") !== marks(before.texts[lang]).join("|");
       if (migrated) differing++;
       else edits++;

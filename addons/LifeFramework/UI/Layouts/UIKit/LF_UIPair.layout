@@ -1,0 +1,80 @@
+HorizontalLayoutWidgetClass "{CC38EB09A65A34CA}" {
+ Name "Pair"
+ Slot LayoutSlot "{264FBFF1924A84B8}" {
+  Padding 28 3 28 3
+ }
+ {
+  ImageWidgetClass "{97B6F02C17A4B249}" {
+   Name "PairIcon"
+   Slot LayoutSlot "{C09C132D42B46A77}" {
+    VerticalAlign 1
+    Padding 0 0 10 0
+   }
+   Size 24 24
+   Color 0.110 0.102 0.086 1
+  }
+  TextWidgetClass "{1E7906DA7BB4064A}" {
+   Name "PairLabel"
+   Slot LayoutSlot "{0B4704DA440A6215}" {
+    VerticalAlign 1
+    SizeMode Fill
+    FillWeight 1
+   }
+   Color 0.110 0.102 0.086 1
+   Text ""
+   "Font Size" 18
+   "Min Font Size" 18
+   FontProperties FontProperties "{DD23F8F15AB48532}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+  OverlayWidgetClass "{524A08C4927E9AD0}" {
+   Name "PairBadge"
+   Slot LayoutSlot "{43E48A8576FAD525}" {
+    VerticalAlign 1
+    Padding 8 0 8 0
+   }
+   {
+    ImageWidgetClass "{D6D286B245DF6B88}" {
+     Name "BadgePlate"
+     Slot OverlayWidgetSlot "{49A1974167FB22A0}" {
+      HorizontalAlign 3
+      VerticalAlign 3
+     }
+     Color 0.863 0.816 0.714 1
+    }
+    TextWidgetClass "{8D9A33F9DCE75113}" {
+     Name "BadgeText"
+     Slot OverlayWidgetSlot "{FF809F1EDEAB89A1}" {
+      HorizontalAlign 1
+      VerticalAlign 1
+      Padding 10 3 10 3
+     }
+     Color 0.110 0.102 0.086 1
+     Text ""
+     "Font Size" 15
+     "Min Font Size" 15
+     FontProperties FontProperties "{92D2C655EEC184B3}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+  TextWidgetClass "{EA7CB0FEE4ECEEC6}" {
+   Name "PairValue"
+   Slot LayoutSlot "{6679A58906860211}" {
+    VerticalAlign 1
+    SizeMode Fill
+    FillWeight 1
+   }
+   Color 0.110 0.102 0.086 1
+   Text ""
+   "Font Size" 18
+   "Min Font Size" 18
+   "Horizontal Alignment" Right
+   FontProperties FontProperties "{4A57C0DA267338A1}" {
+    Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+   }
+  }
+ }
+}

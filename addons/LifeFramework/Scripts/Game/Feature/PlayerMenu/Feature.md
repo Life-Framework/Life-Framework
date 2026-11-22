@@ -9,19 +9,27 @@ everything it prints already lives in another feature.
 ## Interaction pattern
 
 Rung 1 screen on a key: **F2** (gamepad: hold **RB + Y**; a tap of RB + Y stays the welcome guide), listed in
-Settings > Controls. It is a kit sheet (`LF_PlayerMenuSheet`, paper skin) with two tab keys:
+Settings > Controls. It is a kit sheet (`LF_PlayerMenuSheet`, the `LF_UISkin.Dashboard` skin: 80% of the
+screen, centred, the world dimmed) built from kit columns and cards. A header bar (the name large, a toned
+role badge, "Day N on the island · playtime") sits over the tab keys:
 
-- **PERSON**: name and role (civilian, police or medic, on or off duty); a FINANCES ledger (cash in hand,
-  bank); a STATUS ledger (houses owned, garage slots used of held, account playtime, wanted level, licences
-  and permits held); SKILLS, one list row per job track of the `jobs` config with its level. **Read** on a
-  row prints the job's name, what it is, an XP bar (the kit's `BAR` part) and "Level N · X / Y XP".
-- **PROGRESS**: the guided arrival chain (quests with `m_sTargetKind`) in chain order with DONE / CURRENT /
-  LATER badges and a done count, then any other quest the character took. **Read** prints the title, the
-  description and the objective progress. **Set waypoint to the current errand** sends the welcome guide's
-  ask (`LF_AskWelcomeGuideWaypoint`), so the arrival guide marks the current step on the map and screen.
+- **PERSON**, three columns: a PERSON card (a live preview of the local character, `LF_WantedLook.Capture`
+  drawn by `LF_WantedPortrait`; profession from the replicated job component; wanted; the locals' and the
+  law's word from `LF_ReputationSync` client tiers); FINANCES and STATUS cards of icon rows, values flush
+  right (cash, bank; houses, garage used of held, island day, playtime, licenses and permits with each one
+  listed); a SKILLS card with every job track as a compact row (level chip, **Read**, XP bar under it) and
+  the picked one's record: what it is, the bar, "Level N · X / Y XP" and "Next level opens: ..." (chains
+  with a step gated at exactly that level, `LF_ChainCatalog`).
+- **PROGRESS**, two cards: the guided arrival chain (quests with `m_sTargetKind`) in chain order with DONE /
+  CURRENT / LATER chips and a done count, then any other quest taken; beside it the picked errand (the
+  current one by default): title, description, objective progress and **Set waypoint to the current
+  errand** (`LF_AskWelcomeGuideWaypoint`).
+- **WHAT TO DO NEXT**: a slot, `LF_PlayerMenuNextTab`. Its key shows only when `HasContent` says so; the
+  next-steps feature fills that one file.
 
-Footer: **Welcome guide** (`LF_WelcomeGuideSheet.Open`), **Settings** (the game's settings menu), **Close**.
-Esc, death and losing the body close it. The key does nothing over another sheet or menu, or while down.
+Footer: key-cap chips **Esc Close**, **F3 Welcome guide** (`LF_WelcomeGuideSheet.Open`), **Settings**.
+While the file is open the HUD, the vanilla hint card and the notification toasts (`LF_NotificationHold`)
+are put away; they come back when it closes. Esc, death and losing the body close it. The key does nothing over another sheet or menu, or while down.
 
 ## Data path
 
