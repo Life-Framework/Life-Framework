@@ -35,6 +35,24 @@ modded class LF_QuestTrackerComponent
 }
 
 //------------------------------------------------------------------------------------------------
+//! "postal.run_complete" when the postal van run is handed in and paid (#4088), so the postal starter's last
+//! step finishes. The postal files keep their own path.
+modded class LF_PostalRun
+{
+	static const string SIGNAL_DONE = "postal.run_complete";
+
+	//------------------------------------------------------------------------------------------------
+	override static LF_EPostalResult HandIn(IEntity user, string uid, IEntity office, out int paid)
+	{
+		LF_EPostalResult result = super.HandIn(user, uid, office, paid);
+		if (result == LF_EPostalResult.OK && user && Replication.IsServer() && LF_QuestManager.GetInstance())
+			LF_QuestManager.GetInstance().ReportSignal(user, SIGNAL_DONE);
+
+		return result;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 modded class LF_GameModeRoleplay
 {
 	//------------------------------------------------------------------------------------------------

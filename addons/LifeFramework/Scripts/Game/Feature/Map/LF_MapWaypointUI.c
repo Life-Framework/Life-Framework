@@ -9,8 +9,9 @@
 //   the LF_MapWaypointModifier action held, so one click never runs two paths.
 // - A plain click on a place sets it too (LF_MapPlacesUI); right click is vanilla's menu only.
 // - Backspace (gamepad: double-tap Y) clears it.
-// It is drawn as a pencil circle with a cross, in graphite, the same hand as the personal marks, with its name
-// and distance beside it, and a strip at the bottom of the map says how to set and clear it. The HUD marker
+// It is drawn as a bold stamp-red ring with a cross on a light halo and a pale disc (the one red mark on the map), with its name
+// and distance beside it, and the "How to use the map" card (bottom left, LF_MapHelp) says how to set and clear
+// it. The HUD marker
 // over the target (LF_WaypointHud) is the only GPS-like aid (D-M9): no route line and no bearing line is drawn.
 
 //------------------------------------------------------------------------------------------------
@@ -140,29 +141,6 @@ class LF_MapWaypoint
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The hint strip's first line, for the device in use.
-	static string HintKey(bool pad)
-	{
-		if (pad)
-			return "#LF-MapWaypoint_HintSetPad";
-
-		return "#LF-MapWaypoint_HintSet";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The hint strip's second line: how to set one another way with no waypoint, how to clear it with one.
-	static string StatusKey(bool active, bool pad)
-	{
-		if (!active)
-			return "#LF-MapWaypoint_HintNone";
-
-		if (pad)
-			return "#LF-MapWaypoint_HintActivePad";
-
-		return "#LF-MapWaypoint_HintActive";
-	}
-
-	//------------------------------------------------------------------------------------------------
 	//! True when the modifier (Shift, gamepad Y) is held now.
 	static bool ModifierHeld()
 	{
@@ -180,6 +158,10 @@ class LF_MapWaypoint
 
 		SCR_MapCursorModule cursor = SCR_MapCursorModule.Cast(mapEntity.GetMapModule(SCR_MapCursorModule));
 		if (cursor && (cursor.GetCursorState() & (SCR_MapCursorModule.STATE_POPUP_RESTRICTED | EMapCursorState.CS_CONTEXTUAL_MENU)) != 0)
+			return false;
+
+		// A click on the key column (right edge) is the key's, not the map's under it.
+		if (LF_MapLegendUI.CursorOverKey(SCR_MapCursorInfo.x, SCR_MapCursorInfo.y))
 			return false;
 
 		WorkspaceWidget workspace = GetGame().GetWorkspace();
@@ -214,35 +196,181 @@ class LF_MapWaypoint
 }
 
 //------------------------------------------------------------------------------------------------
+//! The "How to use the map" card in the bottom-left corner (map clean-up, 2026-11-22: "instructions on how to set
+//! waypoints on it"): one line per thing the map does, in the words of the device in use, and the waypoint set
+//! now. F1 (gamepad: click the left stick) folds it to one line; the choice is kept in the player's own profile
+//! (`$profile:LifeFramework/map-help.txt`), so it stays folded on the next open and the next session.
+//! The rules have no widgets, so a LOGIC test covers them (LF_Test_MapHelp).
+class LF_MapHelp
+{
+	//! Folds or unfolds the card while the map is open: F1, gamepad left stick click.
+	static const string TOGGLE_ACTION = "LF_MapHelpToggle";
+	static const string PREF_DIR = "$profile:LifeFramework";
+	static const string PREF_PATH = "$profile:LifeFramework/map-help.txt";
+	static const string PREF_OPEN = "open";
+	static const string PREF_FOLDED = "folded";
+	//! Card layout in reference units: the title row, one body row per line, the waypoint row.
+	static const float CARD_WIDTH = 380;	// lf-fixed: the longest line at 14 px
+	static const float TITLE_ROW = 32;	// lf-fixed: the layout's title slot
+	static const float LINE_ROW = 19;	// lf-fixed: 14 px type and its leading
+	static const float STATUS_ROW = 34;	// lf-fixed: the layout's status slot and the bottom margin
+
+	//------------------------------------------------------------------------------------------------
+	//! The title: what the card is, and how to fold or unfold it with the device in use.
+	static string TitleKey(bool pad, bool folded)
+	{
+		if (folded)
+		{
+			if (pad)
+				return "#LF-MapHelp_FoldedPad";
+
+			return "#LF-MapHelp_Folded";
+		}
+
+		if (pad)
+			return "#LF-MapHelp_TitlePad";
+
+		return "#LF-MapHelp_Title";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The body lines, in order: set, clear, click a place, hover, legend. None when folded.
+	static int LineKeys(bool pad, bool folded, notnull array<string> into)
+	{
+		into.Clear();
+		if (folded)
+			return 0;
+
+		if (pad)
+		{
+			into.Insert("#LF-MapHelp_SetPad");
+			into.Insert("#LF-MapHelp_ClearPad");
+			into.Insert("#LF-MapHelp_PlacePad");
+			into.Insert("#LF-MapHelp_HoverPad");
+		}
+		else
+		{
+			into.Insert("#LF-MapHelp_Set");
+			into.Insert("#LF-MapHelp_Clear");
+			into.Insert("#LF-MapHelp_Place");
+			into.Insert("#LF-MapHelp_Hover");
+		}
+
+		into.Insert("#LF-MapHelp_Legend");
+		return into.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The waypoint row: "Waypoint: Cafe, 95 m" with one set, "No waypoint set" without.
+	static string WaypointKey(bool active)
+	{
+		if (active)
+			return "#LF-MapHelp_Waypoint";
+
+		return "#LF-MapHelp_NoWaypoint";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The card's height for `lines` body lines.
+	static float CardHeight(int lines)
+	{
+		return TITLE_ROW + lines * LINE_ROW + STATUS_ROW;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The saved choice: folded only when the file says so; a missing or unreadable file shows the card open,
+	//! so a new player sees the instructions.
+	static bool ParseFolded(string text)
+	{
+		string word = text.Trim();
+		word.ToLower();
+		return word == PREF_FOLDED;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static string PrefText(bool folded)
+	{
+		if (folded)
+			return PREF_FOLDED;
+
+		return PREF_OPEN;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Reads the player's choice from their profile. \return true when the card should open folded.
+	static bool LoadFolded(string path = PREF_PATH)
+	{
+		if (!FileIO.FileExists(path))
+			return false;
+
+		FileHandle handle = FileIO.OpenFile(path, FileMode.READ);
+		if (!handle)
+		{
+			LF_Debug.Warn(LF_Waypoint.FEATURE, "map help: cannot read " + path + "; it opens unfolded");
+			return false;
+		}
+
+		string line;
+		handle.ReadLine(line);
+		handle.Close();
+		return ParseFolded(line);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Keeps the player's choice in their profile. \return false when the file cannot be written.
+	static bool SaveFolded(bool folded, string path = PREF_PATH)
+	{
+		FileIO.MakeDirectory(PREF_DIR);
+		FileHandle handle = FileIO.OpenFile(path, FileMode.WRITE);
+		if (!handle)
+		{
+			LF_Debug.Warn(LF_Waypoint.FEATURE, "map help: cannot write " + path + "; the choice lasts until the game closes");
+			return false;
+		}
+
+		handle.WriteLine(PrefText(folded));
+		handle.Close();
+		return true;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
 //! The map UI component: takes the waypoint clicks and the clear key, keeps one canvas over the map with the
-//! mark, its name and distance beside it, and the hint strip. Listed in `Configs/Map/LF_MapFullscreen.conf`.
-//! Client only (the map is).
+//! mark, its name and distance beside it, and the "How to use the map" card. Listed in
+//! `Configs/Map/LF_MapFullscreen.conf`. Client only (the map is).
 class LF_MapWaypointUI : SCR_MapUIBaseComponent
 {
 	protected static const string SELECT_ACTION = "MapSelect";	// vanilla: left click, gamepad A
 	protected static const ResourceName TAG_LAYOUT = "{4D2B9E6A1C73F808}UI/Layouts/Map/LF_MapPoiLabel.layout";	// the place names' paper-outlined type
-	protected static const ResourceName HINT_LAYOUT = "{CC650B4F4E7A5A77}UI/Layouts/Map/LF_MapPoiCard.layout";	// the place card's paper slip
-	protected static const float MARK_RADIUS = 14;	// lf-fixed: reference units, the same at every zoom like a pencil mark
-	protected static const float MARK_WIDTH = 2.5;	// lf-fixed: a pencil stroke
-	protected static const int MARK_COLOR = 0xFF2B2B2B;	// lf-fixed: graphite, the personal-mark ink
+	protected static const ResourceName HELP_LAYOUT = "{8E41C7A23B9D5F06}UI/Layouts/Map/LF_MapHelpCard.layout";	// the paper slip with a title, the lines and the waypoint row
+	protected static const float MARK_RADIUS = 20;	// lf-fixed: reference units, the same at every zoom; larger than a badge
+	protected static const float MARK_WIDTH = 4;	// lf-fixed: a bold stroke that reads over badges and roads
+	protected static const int MARK_COLOR = 0xFFC62828;	// lf-fixed: stamp red, the one red mark on the map (2026-11-22: "more obvious")
+	protected static const float HALO_WIDTH = 9;	// lf-fixed: a light rim round every stroke so the red reads on grey and yellow
+	protected static const int HALO_COLOR = 0xF0FFFAF0;	// lf-fixed: the badges' halo paper
+	protected static const int DISC_COLOR = 0x66FFFAF0;	// lf-fixed: a pale disc inside the ring lifts it off the map
 	//! A Shift + click this close to the ring's centre (a share of its radius) clears the waypoint.
 	protected static const float CLEAR_REACH = 1.6;	// lf-fixed: on the ring or just outside it
 	protected static const float TAG_GAP = 6;	// lf-fixed: reference units between the ring and its name
 	protected static const float TAG_WIDTH = 320;	// lf-fixed: room for a long place name and its distance
-	protected static const float HINT_WIDTH = 440;	// lf-fixed
-	protected static const float HINT_HEIGHT = 58;	// lf-fixed: two lines
-	protected static const float HINT_BOTTOM = 100;	// lf-fixed: above the vanilla scale bar and the server's link line
+	protected static const float HELP_LEFT = 16;	// lf-fixed: the map's left margin
+	protected static const float HELP_BOTTOM = 140;	// lf-fixed: above the vanilla zoom keys and the scale bar
 	protected static const int REFRESH_MS = 250;	// lf-fixed: the distance and the device's words follow at this pace
 
 	protected CanvasWidget m_wCanvas;
 	protected TextWidget m_wTag;
-	protected Widget m_wHint;
-	protected TextWidget m_wHintTitle;
-	protected TextWidget m_wHintNote;
+	protected Widget m_wHelp;
+	protected TextWidget m_wHelpTitle;
+	protected TextWidget m_wHelpBody;
+	protected TextWidget m_wHelpStatus;
 	protected ref array<ref CanvasWidgetCommand> m_aCommands = {};
+	protected ref array<string> m_aHelpKeys = {};
 	protected bool m_bDrawn;
 	protected vector m_vDrawn;
 	protected float m_fSinceRefresh;
+	protected bool m_bFolded;
+	protected bool m_bHelpPad;
+	protected int m_iHelpLines = -1;
 
 	//------------------------------------------------------------------------------------------------
 	//! Shift + left click (gamepad: Y held + A): set, move or clear the waypoint at the cursor.
@@ -283,6 +411,57 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 
 		if (LF_MapWaypoint.ClearFromMap())
 			Redraw();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! F1 (gamepad: left stick click): fold or unfold the help card, and keep the choice.
+	protected void OnHelpToggle(float value, EActionTrigger reason)
+	{
+		if (!m_wHelp || IsToolMenuFocused())
+			return;
+
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (workspace && workspace.GetFocusedWidget())
+			return;	// typing in the marker dialog or the map key search
+
+		SetFolded(!m_bFolded);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void SetFolded(bool folded)
+	{
+		m_bFolded = folded;
+		LF_MapHelp.SaveFolded(folded);
+		LF_Debug.Info(LF_Waypoint.FEATURE, string.Format("map help card folded=%1", folded));
+		m_iHelpLines = -1;
+		RefreshText();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! For the harness: fold ("closed") or unfold ("open") the help card on the open map, or read its state.
+	static bool HarnessHelp(string word, out string detail)
+	{
+		SCR_MapEntity mapEntity = SCR_MapEntity.GetMapInstance();
+		if (!mapEntity || !mapEntity.IsOpen())
+		{
+			detail = "map_not_open";
+			return false;
+		}
+
+		LF_MapWaypointUI ui = LF_MapWaypointUI.Cast(mapEntity.GetMapUIComponent(LF_MapWaypointUI));
+		if (!ui || !ui.m_wHelp)
+		{
+			detail = "no_help_card";
+			return false;
+		}
+
+		if (word == "open")
+			ui.SetFolded(false);
+		else if (word == "closed")
+			ui.SetFolded(true);
+
+		detail = string.Format("help folded=%1 lines=%2", ui.m_bFolded, ui.m_iHelpLines);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -330,19 +509,22 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 			array<float> segments = {};
 			// Canvas commands take screen pixels as WorldToScreen gives them (unscaling put the mark 1.5 times
 			// too far from the corner at 720p, the map proof pass); the radius is reference units, so scale it.
-			LF_MapWaypoint.BuildMark(screenX, screenY, workspace.DPIScale(MARK_RADIUS), segments);
-			for (int i = 0; i + 3 < segments.Count(); i += 4)
+			float radius = workspace.DPIScale(MARK_RADIUS);
+			LF_MapWaypoint.BuildMark(screenX, screenY, radius, segments);
+			// The pale disc: the ring's own points as one polygon.
+			PolygonDrawCommand disc = new PolygonDrawCommand();
+			disc.m_iColor = DISC_COLOR;
+			disc.m_Vertices = new array<float>();
+			for (int d = 0; d + 3 < LF_MapWaypoint.CIRCLE_SEGMENTS * 4; d += 4)
 			{
-				LineDrawCommand line = new LineDrawCommand();
-				line.m_Vertices = new array<float>();
-				line.m_Vertices.Insert(segments[i]);
-				line.m_Vertices.Insert(segments[i + 1]);
-				line.m_Vertices.Insert(segments[i + 2]);
-				line.m_Vertices.Insert(segments[i + 3]);
-				line.m_fWidth = MARK_WIDTH;
-				line.m_iColor = MARK_COLOR;
-				m_aCommands.Insert(line);
+				disc.m_Vertices.Insert(segments[d]);
+				disc.m_Vertices.Insert(segments[d + 1]);
 			}
+
+			m_aCommands.Insert(disc);
+			// Every stroke twice: the light halo under it, then the red.
+			AddStrokes(segments, workspace.DPIScale(HALO_WIDTH), HALO_COLOR);
+			AddStrokes(segments, workspace.DPIScale(MARK_WIDTH), MARK_COLOR);
 
 			if (m_wTag)
 				FrameSlot.SetPos(m_wTag, workspace.DPIUnscale(screenX) + MARK_RADIUS + TAG_GAP, workspace.DPIUnscale(screenY) - LF_MapDeclutter.LABEL_HEIGHT * 0.5);
@@ -353,7 +535,25 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The tag's name and distance, and the hint strip's two lines.
+	//! One line command per segment (x0 y0 x1 y1 each) at the given width and colour.
+	protected void AddStrokes(notnull array<float> segments, float width, int color)
+	{
+		for (int i = 0; i + 3 < segments.Count(); i += 4)
+		{
+			LineDrawCommand line = new LineDrawCommand();
+			line.m_Vertices = new array<float>();
+			line.m_Vertices.Insert(segments[i]);
+			line.m_Vertices.Insert(segments[i + 1]);
+			line.m_Vertices.Insert(segments[i + 2]);
+			line.m_Vertices.Insert(segments[i + 3]);
+			line.m_fWidth = width;
+			line.m_iColor = color;
+			m_aCommands.Insert(line);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tag's name and distance, and the help card's waypoint row.
 	protected void RefreshText()
 	{
 		bool pad = !GetGame().GetInputManager().IsUsingMouseAndKeyboard();
@@ -378,11 +578,44 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 			}
 		}
 
-		if (m_wHintTitle)
-			m_wHintTitle.SetText(WidgetManager.Translate(LF_MapWaypoint.HintKey(pad)));
+		RefreshHelp(pad, LF_MapWaypoint.Detail(name, genericName, distance));
+	}
 
-		if (m_wHintNote)
-			m_wHintNote.SetText(WidgetManager.Translate(LF_MapWaypoint.StatusKey(m_bDrawn, pad), LF_MapWaypoint.Detail(name, genericName, distance)));
+	//------------------------------------------------------------------------------------------------
+	//! The help card's title, lines and waypoint row. The lines are rebuilt only when the device or the fold
+	//! changes; the waypoint row follows every refresh.
+	protected void RefreshHelp(bool pad, string waypointDetail)
+	{
+		if (!m_wHelp)
+			return;
+
+		if (m_iHelpLines < 0 || pad != m_bHelpPad)
+		{
+			m_bHelpPad = pad;
+			m_iHelpLines = LF_MapHelp.LineKeys(pad, m_bFolded, m_aHelpKeys);
+			string body;
+			foreach (int i, string key : m_aHelpKeys)
+			{
+				if (i > 0)
+					body += "\n";
+
+				body += WidgetManager.Translate(key);
+			}
+
+			if (m_wHelpTitle)
+				m_wHelpTitle.SetText(WidgetManager.Translate(LF_MapHelp.TitleKey(pad, m_bFolded)));
+
+			if (m_wHelpBody)
+			{
+				m_wHelpBody.SetText(body);
+				m_wHelpBody.SetVisible(m_iHelpLines > 0);
+			}
+
+			FrameSlot.SetSize(m_wHelp, LF_MapHelp.CARD_WIDTH, LF_MapHelp.CardHeight(m_iHelpLines));
+		}
+
+		if (m_wHelpStatus)
+			m_wHelpStatus.SetText(WidgetManager.Translate(LF_MapHelp.WaypointKey(m_bDrawn), waypointDetail));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -408,13 +641,14 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 		FrameSlot.SetAnchorMax(m_wCanvas, 1, 1);
 		FrameSlot.SetOffsets(m_wCanvas, 0, 0, 0, 0);
 		BuildTag(workspace);
-		BuildHint(workspace);
+		BuildHelp(workspace);
 
 		m_MapEntity.GetOnMapPan().Insert(OnMapPan);
 		m_MapEntity.GetOnMapZoom().Insert(OnMapZoom);
 		InputManager input = GetGame().GetInputManager();
 		input.AddActionListener(SELECT_ACTION, EActionTrigger.DOWN, OnSelect);
 		input.AddActionListener(LF_MapWaypoint.CLEAR_ACTION, EActionTrigger.DOWN, OnClear);
+		input.AddActionListener(LF_MapHelp.TOGGLE_ACTION, EActionTrigger.DOWN, OnHelpToggle);
 		m_fSinceRefresh = 0;
 		Redraw();
 	}
@@ -436,24 +670,26 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The paper slip at the bottom of the map: how to set a waypoint, and the one set now with how to clear it.
-	protected void BuildHint(notnull WorkspaceWidget workspace)
+	//! The "How to use the map" card in the bottom-left corner, folded or not as the player left it.
+	protected void BuildHelp(notnull WorkspaceWidget workspace)
 	{
-		m_wHint = workspace.CreateWidgets(HINT_LAYOUT, m_RootWidget);
-		if (!m_wHint)
+		m_wHelp = workspace.CreateWidgets(HELP_LAYOUT, m_RootWidget);
+		if (!m_wHelp)
 		{
-			LF_Debug.Error(LF_Waypoint.FEATURE, "the waypoint hint was not created; the map shows no waypoint keys");
+			LF_Debug.Error(LF_Waypoint.FEATURE, "the map help card was not created; the map shows no instructions");
 			return;
 		}
 
-		m_wHint.SetFlags(WidgetFlags.IGNORE_CURSOR);
-		FrameSlot.SetAnchorMin(m_wHint, 0.5, 1);
-		FrameSlot.SetAnchorMax(m_wHint, 0.5, 1);
-		FrameSlot.SetAlignment(m_wHint, 0.5, 1);
-		FrameSlot.SetSize(m_wHint, HINT_WIDTH, HINT_HEIGHT);
-		FrameSlot.SetPos(m_wHint, 0, -HINT_BOTTOM);
-		m_wHintTitle = TextWidget.Cast(m_wHint.FindAnyWidget("Title"));
-		m_wHintNote = TextWidget.Cast(m_wHint.FindAnyWidget("Note"));
+		m_wHelp.SetFlags(WidgetFlags.IGNORE_CURSOR);
+		FrameSlot.SetAnchorMin(m_wHelp, 0, 1);
+		FrameSlot.SetAnchorMax(m_wHelp, 0, 1);
+		FrameSlot.SetAlignment(m_wHelp, 0, 1);
+		FrameSlot.SetPos(m_wHelp, HELP_LEFT, -HELP_BOTTOM);
+		m_wHelpTitle = TextWidget.Cast(m_wHelp.FindAnyWidget("Title"));
+		m_wHelpBody = TextWidget.Cast(m_wHelp.FindAnyWidget("Body"));
+		m_wHelpStatus = TextWidget.Cast(m_wHelp.FindAnyWidget("Status"));
+		m_bFolded = LF_MapHelp.LoadFolded();
+		m_iHelpLines = -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -462,6 +698,7 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 		InputManager input = GetGame().GetInputManager();
 		input.RemoveActionListener(SELECT_ACTION, EActionTrigger.DOWN, OnSelect);
 		input.RemoveActionListener(LF_MapWaypoint.CLEAR_ACTION, EActionTrigger.DOWN, OnClear);
+		input.RemoveActionListener(LF_MapHelp.TOGGLE_ACTION, EActionTrigger.DOWN, OnHelpToggle);
 		if (m_MapEntity)
 		{
 			m_MapEntity.GetOnMapPan().Remove(OnMapPan);
@@ -474,14 +711,16 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 		if (m_wTag)
 			m_wTag.RemoveFromHierarchy();
 
-		if (m_wHint)
-			m_wHint.RemoveFromHierarchy();
+		if (m_wHelp)
+			m_wHelp.RemoveFromHierarchy();
 
 		m_wCanvas = null;
 		m_wTag = null;
-		m_wHint = null;
-		m_wHintTitle = null;
-		m_wHintNote = null;
+		m_wHelp = null;
+		m_wHelpTitle = null;
+		m_wHelpBody = null;
+		m_wHelpStatus = null;
+		m_iHelpLines = -1;
 		m_aCommands.Clear();
 		m_bDrawn = false;
 		super.OnMapClose(config);

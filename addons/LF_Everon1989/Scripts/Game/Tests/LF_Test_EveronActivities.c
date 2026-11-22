@@ -50,7 +50,7 @@ class LF_Test_EveronActivities : LF_Test
 			}
 		}
 
-		ctx.EqualStr("mining,parcel,lumber,fishing,apples,police,medic", ids, "the pack lists its seven activities in order");
+		ctx.EqualStr("mining,postal,lumber,fishing,apples,police,medic", ids, "the pack lists its seven activities in order");
 
 		LF_ActivityDef mining = config.Find("mining");
 		ctx.NotNull(mining, "mining is listed");
