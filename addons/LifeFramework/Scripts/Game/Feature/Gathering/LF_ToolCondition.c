@@ -7,7 +7,7 @@ class LF_ToolCondition
 {
 	static const int TIER_WORN = 0;
 	static const int TIER_STANDARD = 1;
-	static const int TIER_FINE = 2;
+	static const int TIER_FINE = 2; // lf-fixed: an enum value, not a fine amount
 
 	static const int STATE_GOOD = 0;
 	static const int STATE_WORN = 1;
