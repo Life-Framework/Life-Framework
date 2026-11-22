@@ -7,6 +7,7 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     "{9FEBBF75B1D525EE}Prefabs/Items/Food/Cabbage.et"
     "{0CBDB38CA152E98C}Prefabs/Items/Farming/LF_HoneyJar.et"
     "{9DC40F97DF4CCFC4}Prefabs/Items/Food/LF_Honeycomb.et"
+    "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
    }
   }
   LF_TraderManagerComponent "{59693C53B6A5EFC1}" {
@@ -29,6 +30,10 @@ GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
     LF_TraderItem "{1D2A87A7E8AD93D3}" {
      m_ItemPrefab "{9DC40F97DF4CCFC4}Prefabs/Items/Food/LF_Honeycomb.et"
      m_ValuePerItem 3
+    }
+    LF_TraderItem "{CA80A1FC78F039A1}" {
+     m_ItemPrefab "{1DBD99E6347DE1AD}Prefabs/Items/Drinks/AppleJuice.et"
+     m_ValuePerItem 18
     }
    }
   }
