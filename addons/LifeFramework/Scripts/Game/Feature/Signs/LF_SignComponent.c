@@ -19,6 +19,8 @@ class LF_SignComponent : ScriptComponent
 	static const string PLACE_KIND = "Sign";
 	//! How often a face with live rows checks for a new reply or for a viewer in reach.
 	static const int ROW_POLL_MS = 2000;	// lf-fixed: a printed face, not an animation
+	//! A local row source checks its rows only while the viewer is this close (metres).
+	static const float LOCAL_ROWS_RANGE = 60;	// lf-fixed: beyond this the rows cannot be read anyway
 
 	//! The prefab (slot "sign_face"), or empty when no usable prefab resolves (logged).
 	static ResourceName FacePrefab()
@@ -137,6 +139,8 @@ class LF_SignComponent : ScriptComponent
 	protected ref LF_SignStyledFace m_BackFace;
 	protected int m_iRowVersion;
 	protected int m_iRowAskMs;
+	//! A local row source: the rows last printed, so the poll repaints only when they change.
+	protected string m_sLocalRows;
 	protected IEntity m_Face;
 	protected IEntity m_FaceTarget;
 	protected Widget m_wFaceRoot;
@@ -325,6 +329,17 @@ class LF_SignComponent : ScriptComponent
 		if (m_sRowSource.IsEmpty())
 			return sign;
 
+		LF_SignRowSource source = LF_SignRowSources.Find(m_sRowSource);
+		if (source && source.IsLocal())
+		{
+			array<ref LF_SignRow> local = {};
+			source.LocalRows(GetOwner(), local);
+			m_sLocalRows = LF_SignRowSource.Signature(local);
+			LF_SignDef printed = LF_SignCatalog.WithTitle(sign, sign.m_sTitle);
+			printed.m_aRows = local;
+			return printed;
+		}
+
 		m_iRowVersion = LF_SignRowSources.VersionFor(m_sRowSource);
 		array<ref LF_SignRow> rows = LF_SignRowSources.RowsFor(m_sRowSource);
 		if (!rows)
@@ -364,6 +379,12 @@ class LF_SignComponent : ScriptComponent
 		if (!source)
 			return;
 
+		if (source.IsLocal())
+		{
+			PollLocalRows(owner, source);
+			return;
+		}
+
 		if (LF_SignRowSources.VersionFor(m_sRowSource) != m_iRowVersion)
 		{
 			Repaint(owner);
@@ -384,6 +405,21 @@ class LF_SignComponent : ScriptComponent
 
 		m_iRowAskMs = now;
 		controller.LF_AskBoard(source.GetBoardKind(), true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A local source: within sight, work the rows out again and repaint when they changed (a stop that
+	//! registered after this face was printed). Nothing is sent.
+	protected void PollLocalRows(IEntity owner, LF_SignRowSource source)
+	{
+		IEntity viewer = LF_Utils.GetLocalCharacter();
+		if (!viewer || vector.Distance(viewer.GetOrigin(), owner.GetOrigin()) > LOCAL_ROWS_RANGE)
+			return;
+
+		array<ref LF_SignRow> rows = {};
+		source.LocalRows(owner, rows);
+		if (LF_SignRowSource.Signature(rows) != m_sLocalRows)
+			Repaint(owner);
 	}
 
 	//------------------------------------------------------------------------------------------------

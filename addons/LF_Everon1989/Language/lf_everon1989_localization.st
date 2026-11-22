@@ -39,6 +39,11 @@ StringTable {
      Target_en_us "Father Étienne Morel"
      Comment "Anniversary memorial (#3806): the priest's name over his line at the memorial."
     }
+    CustomStringTableItem "{77A005A685815162}" {
+     Id "LF-BusStop_BoardTitle"
+     Target_en_us "Saint-Philippe bus line"
+     Comment "Timetable board heading on the island bus stops: the line's name (overrides the core row)."
+    }
     CustomStringTableItem "{7173CDE7A6CBFCA6}" {
      Id "LF-BusStop_Everon_CarLot"
      Target_en_us "Car lot"
@@ -51,7 +56,7 @@ StringTable {
     }
     CustomStringTableItem "{69DE048A8BC3C392}" {
      Id "LF-BusStop_Everon_Dock"
-     Target_en_us "Harbour"
+     Target_en_us "Harbor"
      Comment "Bus timetable: the name of a Saint-Philippe stop."
     }
     CustomStringTableItem "{00E9AB36C23DF5F5}" {
@@ -63,6 +68,11 @@ StringTable {
      Id "LF-BusStop_Everon_Fuel"
      Target_en_us "Fuel station"
      Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{E7E0CA6A8A39960C}" {
+     Id "LF-BusStop_Everon_Mine"
+     Target_en_us "Coalman's Brow mine"
+     Comment "Bus timetable: the stop at the Coalman's Brow iron mine."
     }
     CustomStringTableItem "{52D391877BFBF0FC}" {
      Id "LF-BusStop_Everon_Police"
@@ -2096,7 +2106,7 @@ StringTable {
     }
     CustomStringTableItem "{6771D9733D533675}" {
      Id "LF-MapPoi_Harbour"
-     Target_en_us "Harbour"
+     Target_en_us "Harbor"
      Comment "Map POI name (rc-map-places): the harbour master."
     }
     CustomStringTableItem "{521427D84861A261}" {
@@ -5074,6 +5084,5 @@ StringTable {
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"
      Comment "Join notice toast at a player's first spawn of the session (#1448); the joinNotice.key of the flagship."
     }
-  }
  }
 }

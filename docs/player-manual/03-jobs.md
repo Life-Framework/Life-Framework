@@ -85,10 +85,15 @@ The drops are on the east side (a house near the district road) and four along t
 
 **Status:** ✅ live. Not a job: the cheap way to reach work before you own a car.
 
-* **Where:** the **bus stop** signs (a round blue bus plate on a yellow pole) at the kerb, shown on the map as **Bus stop**.
-* **How:** press **F** at the sign for **Take the bus**. The timetable lists every other stop, nearest first, with its fare
-  and the wait. Press **Buy ticket**: the fare comes out of your **cash** (not the bank).
-* **The wait:** **20 to 30 seconds** at the stop. The screen fades, and you stand beside the sign at the stop you picked.
+* **Where:** the **bus stop** signs (a round blue bus plate on a yellow pole) at the curb, shown on the map as **Bus stop**.
+  Every stop has a printed **timetable board** on its pole: the line's name, this stop marked **You are here**, then every
+  other stop, nearest first, with its fare. Walk up to it and read it.
+* **How:** look at the sign and scroll the action list: one line per stop, nearest first, such as
+  **Bus to Harbor: $18, 20 s**. Press **F** on the one you want: the fare comes out of your **cash** (not the bank).
+  There is no window. A greyed line tells you why: **Not enough cash**, **Police nearby** (when you are wanted),
+  **Next bus not due yet** or **Ticket already bought**.
+* **The wait:** **20 to 30 seconds** at the stop; a hint counts it down. The screen fades, and you stand beside the sign at
+  the stop you picked. Changed your mind? **Cancel trip (refund)** is on the same sign while you wait.
 * **Fare:** **$15** plus about **$6 a kilometre**, never more than **$45**.
 * **Cancelled and refunded:** walk more than a few metres from the sign, get hurt or start a fight, go down, get cuffed or
   climb into a vehicle while you wait. You get the fare back.
