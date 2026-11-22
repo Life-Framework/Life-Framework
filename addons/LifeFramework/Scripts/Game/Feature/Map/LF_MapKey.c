@@ -19,6 +19,10 @@ class LF_MapKeyLine
 	string m_sType;
 	//! The row's place in the list KeyLines read; -1 on a header.
 	int m_iPoi = -1;
+	//! A sign line (the alarm ring, a job run): a swatch and a text key, no badge, no filter. Empty otherwise.
+	string m_sNote;
+	int m_iSwatch;
+	bool m_bThinSwatch;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_MapKeyLine Header(string category)
@@ -36,6 +40,17 @@ class LF_MapKeyLine
 		line.m_sCategory = category;
 		line.m_sType = typeKey;
 		line.m_iPoi = poi;
+		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A sign line: what a mark drawn over the badges means. `thin` draws the swatch as a line.
+	static LF_MapKeyLine Note(string textKey, int color, bool thin)
+	{
+		LF_MapKeyLine line = new LF_MapKeyLine();
+		line.m_sNote = textKey;
+		line.m_iSwatch = color;
+		line.m_bThinSwatch = thin;
 		return line;
 	}
 

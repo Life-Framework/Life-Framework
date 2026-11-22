@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7B3E91C2A45D60F8}Configs/Map/LF_MapRuns.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

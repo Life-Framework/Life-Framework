@@ -56,6 +56,7 @@ Object.assign(SECTIONS, {
   "jobs.runPays": row("jobs", "runPays", "LF_JobsConfig", "Configs/Jobs/LF_Jobs.conf", "m_aRunPays", "m_sJob", byField("m_sJob"), same),
   "mapAreas.areas": row("mapAreas", "areas", "LF_MapAreaConfig", "Configs/Map/LF_MapAreas.conf", "m_aAreas", "m_sId", byField("m_sId")),
   "mapPois.kinds": row("mapPois", "kinds", "LF_MapPoiConfig", "Configs/Map/LF_MapPois.conf", "m_aKinds", "m_sKind", byField("m_sKind")),
+  "mapRuns.runs": row("mapRuns", "runs", "LF_MapRunConfig", "Configs/Map/LF_MapRuns.conf", "m_aRuns", "m_sId", byField("m_sId")),
   "zones.ruleSets": row("zones", "ruleSets", "LF_ZoneConfig", "Configs/Moderation/LF_Zones.conf", "m_aRuleSets", "m_eRule", zoneRule, (k) => (ZONE_RULES.includes(k) ? k : "")),
   "organizations.rankDefaults": row("organizations", "rankDefaults", "LF_OrgConfig", "Configs/Organizations/LF_Org.conf", "m_aRankDefaults", "m_sRank", byField("m_sRank"), (k) => (["founder", "officer", "member"].includes(k) ? k : "")),
   "police.ranks": row("police", "ranks", "LF_PoliceConfig", "Configs/Police/LF_Police.conf", "m_aRanks", "m_sId", byField("m_sId"), same),
