@@ -91,5 +91,17 @@ ImageSetClass {
    Size 64 64
    Flags 0
   }
+  ImageSetDefClass food {
+   Name "food"
+   Pos 128 192
+   Size 64 64
+   Flags 0
+  }
+  ImageSetDefClass drink {
+   Name "drink"
+   Pos 192 192
+   Size 64 64
+   Flags 0
+  }
  }
 }

@@ -43,3 +43,4 @@
 
 - ✅ `LF_NotificationHold.Hold(true|false)`: a full-screen sheet (the personal file) puts every toast away while it is
   open; toasts made meanwhile wait hidden and show on release with their own remaining time.
+- 🔧 **Notes in one style (fix-hud-atm, 0.2.1, in-dev):** `LF_Utils.Notify` and the new `LF_Utils.NoteToast` show the cream note toast instead of the vanilla dark hint panel with an orange heading; the bus ticket, job-access, hire and licence messages use it too (the vanilla hint stays only as the fallback when the game mode has no notification manager). Review row C11.

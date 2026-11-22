@@ -6,6 +6,9 @@
 [BaseContainerProps(configRoot: true)]
 class LF_DialogueTalkAction : ScriptedUserAction
 {
+	[Attribute("0", UIWidgets.CheckBox, "A counter clerk: the prompt shows only on the customer side, in front of the clerk, never from behind the counter")]
+	protected bool m_bCustomerSideOnly;
+
 	//! The action shows within this distance; the server allows LF_Dialogue.REACH.
 	static const float SHOW_RANGE = 3.0; // lf-fixed: follows LF_Dialogue.REACH, not a balance value
 	//! The talk sphere on a counter clerk reaches across the counter (about 2.4 m), so a prompt must
@@ -29,6 +32,9 @@ class LF_DialogueTalkAction : ScriptedUserAction
 			return false;
 
 		if (!OnSameLevel(user, owner))
+			return false;
+
+		if (m_bCustomerSideOnly && !LF_CounterAccess.OnCustomerSide(user, owner))
 			return false;
 
 		return vector.Distance(user.GetOrigin(), owner.GetOrigin()) <= SHOW_RANGE;

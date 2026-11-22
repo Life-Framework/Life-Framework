@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-22 `tools\cli test --no-build --red LF_Test_HudLogic` printed `RED-OK hud/subtle-rules` (RedProof() skips `/hud money off`, so "/hud money off hides the money" and "the saved line keeps money off" fail); `--only` then passed=1 failed=0. The needs, money, delta, bank and wanted rules are pure and pinned in the same run.
+// red-proof: 2026-11-22 (needs icons, brand over the map added): `--red` fails the brand-on-map check too; earlier observed 2026-11-22 `tools\cli test --no-build --red LF_Test_HudLogic` printed `RED-OK hud/subtle-rules` (RedProof() skips `/hud money off`, so "/hud money off hides the money" and "the saved line keeps money off" fail); `--only` then passed=1 failed=0. The needs, money, delta, bank and wanted rules are pure and pinned in the same run.
 //! The subtle HUD's rules (LF_HudLogic, LF_HudPrefs): needs hide while both are high and show when
 //! one drops or after eating, low reads red, the money block dims after idle unless forced, the
 //! delta and bank text, wanted pips clamp to 5 and pulse only on a rise, and the /hud command.
@@ -21,6 +21,23 @@ class LF_Test_HudLogic : LF_Test
 		ctx.True(LF_HudLogic.NeedLow(10), "10 is low");
 		ctx.False(LF_HudLogic.NeedLow(60), "60 is not low");
 		ctx.EqualStr("100", LF_HudLogic.NeedText(130), "a need prints clamped to 100");
+
+		// Needs icons (first-2-hours review C15) and the brand mark over the map (C6).
+		float lowOpacity = 1;
+		float calmOpacity = 1;
+		bool brandOnMap = true;
+		if (!RedProof())
+		{
+			lowOpacity = LF_HudLogic.NeedOpacity(30);
+			calmOpacity = LF_HudLogic.NeedOpacity(80);
+			brandOnMap = LF_HudLogic.BrandVisible(true, true);
+		}
+
+		ctx.True(lowOpacity > 0.99, "a need under half draws at full strength");
+		ctx.True(calmOpacity < 0.5, "a need still above half fades back beside the one that dropped");
+		ctx.False(brandOnMap, "the brand mark is off while the map is open");
+		ctx.True(LF_HudLogic.BrandVisible(true, false), "and on the rest of the time");
+		ctx.False(LF_HudLogic.BrandVisible(false, false), "unless the player turned it off");
 
 		// Money block: full while fresh or forced, dim after idle.
 		ctx.True(LF_HudLogic.MoneyOpacity(1, false) > 0.9, "fresh change: full brightness");
