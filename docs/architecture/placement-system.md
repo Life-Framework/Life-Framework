@@ -179,6 +179,8 @@ town circle (`runtime <x> <z> <r>` input line, `LF_PlacementAudit.RuntimeLines`,
 | `(runtime: loose props)` | street clutter (`LOOSE_WORDS`: cones, barriers, pallets, barrels, crates, tyres) standing alone | `orphan`: no layer row of that prefab within 1.5 m |
 | `(runtime: road clutter)` | every visible top-level clutter prop (`CLUTTER_WORDS`: cones, barriers, pallets, crates, sacks, barrels, tyres, plank and log piles, bins, debris) in each place dossier's circle (`clutter <x> <z> <r>`, `LF_PlacementAudit.ClutterLines`), with the surface under it and whether anything is overhead | `road-clutter`: it stands on a `RoadEntity` in the open, whoever owns it (a kit row on the carriageway counts); road furniture (`ROAD_FURNITURE`: crash barriers, lamps, signs, bollards, police roadblocks) is exempt. Fix: move the row, or hide vanilla clutter with a boxed base-world clear entry |
 
+A running game is checked with `session.mjs clutter-scan` (the `clutterscan` harness verb, the same sweep on client 1). On 2026-11-22 the island (2 clients, 9 min, 450 m round Saint-Philippe) showed 0 road clutter in three scans. The playtest town showed 11: four hospital bay cones (`Street_Hospital.layer`), the market's boxes and sacks and a bin (`Village_Dressing.layer`). Those are maintainer layers, so they are listed for the maintainer, not moved.
+
 `--layer` runs (what `town fit` does for its slot) skip the sweep unless `--runtime` is passed, so a slot is judged on its
 own rows. Still to build (cards below): the shop walk-lane and action-reach checks, the building-shell clip for props,
 judging `missing` rows, player spawn points.
