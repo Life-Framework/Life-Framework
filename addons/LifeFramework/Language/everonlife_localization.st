@@ -8218,6 +8218,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Fare"
      Comment "Map mark and waypoint label: the destination of an accepted taxi fare (driver and passenger)."
     }
+    CustomStringTableItem "{6B2C5C7E28A957E6}" {
+     Id "LF-JobMap_PostLoad"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run starts at (the pack names it)."
+    }
+    CustomStringTableItem "{74032FC49746CAB7}" {
+     Id "LF-JobMap_PostReturn"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run returns the van to (the pack names it)."
+    }
+    CustomStringTableItem "{78DC7678389C4C63}" {
+     Id "LF-JobMap_PostUnload"
+     Target_en_us "Post office"
+     Comment "Map mark and waypoint label: the office a postal run delivers to (the pack names it)."
+    }
     CustomStringTableItem "{8C41F6B2A09D3E75}" {
      Id "LF-JobMap_Stop"
      Target_en_us "Delivery stop"
@@ -12755,12 +12770,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{3C66967567AE5B29}" {
      Id "LF-Postal_StartDesc"
-     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back."
+     Target_en_us "Borrow the post van, carry the mail sacks to the next post office and bring the van back. A run handed in too fast pays nothing."
      Comment "Description of the action that starts the postal van run."
     }
     CustomStringTableItem "{5B2665B387B8B998}" {
      Id "LF-Postal_Started"
-     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here."
+     Target_en_us "The post van is parked by the office and its key is in your pocket. Load the mail sacks into it here. Hand the run in after at least %1 minutes, or nothing is paid."
      Comment "Toast of the postal van run: the run began."
     }
     CustomStringTableItem "{108D5BC1F68C84DF}" {
@@ -12770,7 +12785,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1A0210D5BCC4C762}" {
      Id "LF-Postal_TooFast"
-     Target_en_us "That was too fast to be honest work. Nothing is paid yet."
+     Target_en_us "Too fast: a postal run pays only after %1 minutes on the road. Nothing is paid yet. Hand it in again later."
      Comment "Toast of the postal van run: handed in faster than the run's least time."
     }
     CustomStringTableItem "{EA1D8BDBDABE7D01}" {
@@ -12782,6 +12797,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Postal_VanFar"
      Target_en_us "Bring the van closer to the office first."
      Comment "Toast of the postal van run: the van is not at the office."
+    }
+    CustomStringTableItem "{CBCD8E065CD8DCBC}" {
+     Id "LF-Postal_Warn"
+     Target_en_us "Get back to the post van within %1 seconds or the run is called off and nothing is paid."
+     Comment "Toast to a postal driver who has walked away from the van, before the run is called off."
     }
     CustomStringTableItem "{3243A56EDB316D6E}" {
      Id "LF-Postal_WrongOffice"
@@ -13346,6 +13366,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You answered %1 of %2 correctly. %3 are needed. Read the rules below and try again."
      Comment "Rules quiz fail page; %1 = right, %2 = questions, %3 = needed (#915)."
     }
+    CustomStringTableItem "{2F605F4A96D729D6}" {
+     Id "LF-Quiz_Next"
+     Target_en_us "Next question"
+     Comment "Button on the rules quiz feedback page."
+    }
     CustomStringTableItem "{0D01FDAE07097973}" {
      Id "LF-Quiz_NoAttempts"
      Target_en_us "That was your last attempt. Read the server rules and join again."
@@ -13366,15 +13391,30 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Try again"
      Comment "Button on the rules quiz fail page (#915)."
     }
+    CustomStringTableItem "{34A7F3239AB0E500}" {
+     Id "LF-Quiz_Right"
+     Target_en_us "Right."
+     Comment "Heading on the rules quiz feedback page after a correct answer."
+    }
     CustomStringTableItem "{17745EEB536A35A9}" {
      Id "LF-Quiz_Rules"
      Target_en_us "THE RULES YOU MISSED"
      Comment "Heading over the explanations on the rules quiz fail page (#915)."
     }
+    CustomStringTableItem "{3599C8D083954456}" {
+     Id "LF-Quiz_SeeResult"
+     Target_en_us "See my result"
+     Comment "Button on the rules quiz feedback page after the last question."
+    }
     CustomStringTableItem "{1682AE4AD3653A8D}" {
      Id "LF-Quiz_Title"
      Target_en_us "RULES ORIENTATION"
      Comment "Printed heading of the rules quiz sheet (#915)."
+    }
+    CustomStringTableItem "{5CD3CA45AE1C3A5D}" {
+     Id "LF-Quiz_Wrong"
+     Target_en_us "Not quite. This is the rule:"
+     Comment "Heading on the rules quiz feedback page after a wrong answer; the rule line follows."
     }
     CustomStringTableItem "{6DCFAEB06DBB55B8}" {
      Id "LF-RaceBoard_None"
@@ -13646,6 +13686,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Sign the form before you go into town."
      Comment "Written on the registration form when the player put it away unsigned and it came back."
     }
+    CustomStringTableItem "{DDF698E219828CF0}" {
+     Id "LF-Reg_Outfit"
+     Target_en_us "Your clothes are your own to change: visit a clothing store once you have the money."
+     Comment "Registration form hint: the look is chosen at a clothing store, not on this form."
+    }
     CustomStringTableItem "{DE4D23E044F55A7E}" {
      Id "LF-Reg_Sign"
      Target_en_us "Sign the form"
@@ -13655,6 +13700,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{A422076F6E2911FE}" {
+     Id "LF-Reg_Welcome"
+     Target_en_us "Welcome. You are about to start a new life here: get a job, earn a living and keep to the rules you just read."
+     Comment "Registration form welcome line, above the instruction. Core text is neutral; the pack overrides it."
     }
     CustomStringTableItem "{FC5B69E6943AB0F2}" {
      Id "LF-RepairKit_Action"
@@ -15722,6 +15772,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Ticket_Written"
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
+    }
+    CustomStringTableItem "{3723AB61E29CDCE1}" {
+     Id "LF-ToolCondition_Good"
+     Target_en_us "%1 is in good shape"
+     Comment "Action text: tool condition at or above the good threshold (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{2E6DE213CABD02C9}" {
+     Id "LF-ToolCondition_Poor"
+     Target_en_us "%1 is badly worn and slow"
+     Comment "Action text: tool condition in the poor band, working slower (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{C23C3D6D9E4BDB06}" {
+     Id "LF-ToolCondition_Worn"
+     Target_en_us "%1 is getting worn"
+     Comment "Action text: tool condition in the worn band (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{DE472F7EE6D1E8FD}" {
+     Id "LF-ToolCondition_WornOut"
+     Target_en_us "%1 is worn out but still works, slowly"
+     Comment "Action text: tool at zero condition; it still works at half speed (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{75960D0103B97E17}" {
+     Id "LF-ToolTier_Fine"
+     Target_en_us "Fine"
+     Comment "Tool tier name (#4182)"
+    }
+    CustomStringTableItem "{72AC08B33DD29667}" {
+     Id "LF-ToolTier_Standard"
+     Target_en_us "Standard"
+     Comment "Tool tier name (#4182)"
+    }
+    CustomStringTableItem "{10F79179EEA9F6E8}" {
+     Id "LF-ToolTier_Worn"
+     Target_en_us "Worn"
+     Comment "Tool tier name (#4182)"
     }
     CustomStringTableItem "{7038FBC3DB7D537B}" {
      Id "LF-TouristMap_Marked"

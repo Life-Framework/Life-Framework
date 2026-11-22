@@ -13,17 +13,36 @@ it and answers (or accepts the defaults of) the decisions in section 5. Then one
 chapter below into a plan file and runs `tools\cli slice new` ([pipeline](../process/roadmap-pipeline.md),
 [card format](../process/slice-card.md)).
 
-**In numbers.** Six release chapters. 152 must-have cards: 132 of the 238 scope cards, 4 mining slices
-already filed under #3206, 8 suggested additions and 8 integration cards. There is also an ordered stretch
-queue of 48 cards and a backlog for 0.4. Two playthroughs of the 10-hour arc (mid-week and end of week),
-one release candidate on Saturday, the release on Sunday 2026-11-29. 49 decisions, each with a default. Pay follows the
-maintainer's rule of 2026-11-22: police and medics are the lowest paid, and high-tier civilian trades out-earn
-them (section 2).
+**In numbers.** Seven release chapters. 162 must-have cards: 133 of the 238 scope cards, 4 mining slices
+already filed under #3206, 8 suggested additions, 9 playtest-town parity cards and 8 integration cards. There is
+also an ordered stretch queue of 47 cards and a backlog for 0.4. An agent playtest round at the end of every
+day, with full runs of the 10-hour arc mid-week and on Saturday, one release candidate on Saturday, the release on
+Sunday 2026-11-29. 49 decisions, each with a default. Pay follows the maintainer's rule of 2026-11-22: police
+are the lowest paid, medics a little more (mid-tier civilian), and high-tier civilian trades out-earn both
+(section 2).
+
+**Changes after the plan merged (maintainer, 2026-11-22 late).**
+- **Liveries are full repaints** (N30 changed): whole vehicle bodies are retextured for Police, Ambulance,
+  Rebel and the company colours, and vanilla work clothes may be tinted. Each derived texture gets a credit
+  row (`docs/credits.md`). Lettering overlays stay as a second layer where the spike shows they hold. WO-L7
+  (rebel) moves from stretch to must-have.
+- **Medics earn a bit more than police**: medic shift pay sits on the mid-tier civilian rung, about $480 to
+  $600 an hour with the bonus, still below the high-tier trades. Police stay at $350 to $450 (X-8).
+- **Chapter 7, Playtest town parity**: the playtest town (the DebugWorld village and `Everon1989Town`) gets
+  everything built for the island. The maintainer asked for it, so these cards edit his town layers with his
+  explicit approval.
+- **A daily agent playtest round** (X-9) replaces the two one-off playthroughs; X-5 and X-6 stay as the
+  mid-week and Saturday full runs.
+
+**Milestones for the cut issues.** One release issue holds seven chapter epics. Chapters 1, 2, 6 and 7 and the
+integration cards file under M6 Making a living; chapters 3, 4 and 5 under M7 Power and turf. Existing issues
+keep their milestones.
 
 Card keys carry their scope: `WK-` work, `CR-` crime, `GA-` gangs, `PO-` police, `WO-` world, and `X-` for
-the integration cards this plan adds. `WK-W4` is card W4 of the work scope.
+the integration cards this plan adds, `TP-` for the playtest-town parity cards. `WK-W4` is card W4 of the work scope.
+CR-A4 (the cash van route) is already merged as #3398 (`needs-playtest`): the X-9 rounds check it, and it gets no new card.
 
-## The six release chapters
+## The seven release chapters
 
 | # | Chapter | What a player gets | Scope chapters it takes |
 |---|---|---|---|
@@ -32,7 +51,8 @@ the integration cards this plan adds. `WK-W4` is card W4 of the work scope.
 | 3 | By the book | The law book, the booking desk and the charge sheet; dispatch calls with outcomes and capped bonuses; rank cars, the radar gun, the stolen-car hotlist; the police and medic skills | Police 1, 2, 3 (part), 6 (part) |
 | 4 | Smoke and bottles | The robbery ladder works on the island (till, store safe, cash van, bank, all under one big-job lock); the cigarette and vodka run to village bars; stop searches; the pharmacy robbery and the clinic shortage | Crime K0, K1, K3 (part), K5 (goods class) |
 | 5 | Running a crew | Found a gang, pick one of 20 flags, recruit by scroll, talk on a gang radio, see each other on the map; the north rebel outpost with its quartermaster, chalk board and contraband buyer | Gangs: Running a crew, the outposts (north) |
-| 6 | The island talks | The square comes alive; the weekly *Everon Courier*; rumors that fill the map; foremen and shopkeepers at work; bells and the ship's horn; police, ambulance and company liveries and the respray bay | World W1, W2, W3 (liveries), W4 (part), W5, W6 (part) |
+| 6 | The island talks | The square comes alive; the weekly *Everon Courier*; rumors that fill the map; foremen and shopkeepers at work; bells and the ship's horn; police, ambulance, company and rebel repaints and the respray bay | World W1, W2, W3 (liveries), W4 (part), W5, W6 (part) |
+| 7 | Playtest town parity | The playtest town has what the island has: ATM kiosks, bus stops and boards, the onboarding route (clerk pack, starter car, orchard, press, market), mining (desk, rocks, furnace, buyer), the postal run, clothing mannequins and counters, map POIs and run chains, the welcome guide and HUD, the jail doors and the bail phone | New (maintainer ask, 2026-11-22) |
 
 What waits for 0.4 (Power and turf): the prison and the prison break, hideouts and turf, the drug chains,
 night landings, the reserve heist, and the helicopter and pilot licence. Section 3 gives the reasons.
@@ -92,7 +112,7 @@ its scope file.
 | Law book and charge sheet | Police (PO-L1 to L10) | Crime only tags goods (CR-F1, classes A ≤ 2, B ≤ 10, C > 10 units) and counts them. Gangs add no charges. The work scope's "overloading" and "flying without a licence" charges go in as code rows (L2), not new systems |
 | Robbery police minimums | Pack config, one table (below) | All scopes read the same rows |
 | Big-job lock | Crime (CR-A6) | Rungs 4 to 6 and, in 0.4, the prison break share one server-wide lock |
-| Liveries | World (WO-L1 to L6, L9, L10) | **Police R2 folds into WO-L4** (police S105, UAZ469 and the S1203 transport van). **Police S2 folds into WO-L5** (ambulance on the vanilla UAZ452 ambulance and the S1203; the M997 is dropped as a US military body). Overlay lettering only in 0.3.0 (decision N30) |
+| Liveries | World (WO-L1 to L6, L9, L10) | **Police R2 folds into WO-L4** (police S105, UAZ469 and the S1203 transport van). **Police S2 folds into WO-L5** (ambulance on the vanilla UAZ452 ambulance and the S1203; the M997 is dropped as a US military body). Full repaints of the body in 0.3.0, lettering overlays on top where they hold, a credit row per derived texture (decision N30, changed 2026-11-22) |
 | Newspaper and rumors | World (WO-W2, W5) | The crime scope's "newspaper crime column" is the *Courier*. Crime places never go on the public map: one rumor pool with a crime flag, given only by bar staff and the existing informant to players the town knows (`friendly` or better). It prints only public facts: no open case, no hidden record |
 | NPC cast | World (WO-W4) for behaviour, outfits and voices | One NPC per role. Bruno and the other foremen are WO-W4.4 (the work scope names them). The driving examiner is WK-W21, and the police licence retake (PO-S3) reuses him. The desk sergeant's stand-in behaviour is WO-W4.8; his booking lines are PO-L9. The fishmonger and the harbour master are WO-W4.2 |
 | Places | The town pipeline, one card per place | New places in 0.3.0: the truck yard (north-east compound, 0.6 km), the labour office counter (town hall), the container yard on the dock, the Chotain and Levie bars, the power plant coal buyer, the north outpost. Everything else uses places already fitted in `Place_*.layer` |
@@ -108,7 +128,7 @@ its scope file.
 | 1 | Visible levels: M6 decision 7 says none; work K1 shows numbers; crime wants none | Legal trades show their level in F2, on the level-up card and on the shift boards. Gates still refuse in words. Crime and standing never show a number (decision N1) |
 | 2 | All five scopes, the M6 and M7 outlines and today's configs keep duty at 1.5 to 2.5x civilian pay, and the work scope caps a master at 40% over a novice to stay under it | **Superseded by the maintainer (2026-11-22): "Civilians on the high tier jobs should get more than cops, cops should be the lowest paid."** The band is gone. Police and medic duty pay the least steady money, about entry civilian level. Civilian trades climb above duty with skill and tier, and the 40% master cap is dropped. Crime stays high-swing on top. The ladder is in "The economy table" below; card X-8 retunes the live configs and the `economy` check |
 | 3 | Police outcome bonus caps ($150 to $350) were sized against the old band | Caps are sized so shift plus bonus never passes a mid-tier civilian loop ($520) |
-| 4 | Medic pay sat beside police in the old band | Medics are paid like police, rank for rank |
+| 4 | Medic pay sat beside police in the old band | **Changed by the maintainer (2026-11-22 late):** medics earn a bit more than police, on the mid-tier civilian rung ($480 to $600 with the bonus), still below the high-tier trades |
 | 5 | Police per robbery rung: police scope 0/1/2/3/4; M7 ladder 1/1/2/2/3/5 | One table below. The till needs nobody (its alarm still calls), so the first crime is never locked |
 | 6 | Jail cap: the law book allows 60 min, police wants 30 min in a prison, today's cap is 5 min | 0.3.0 has no prison. Sentences top out at **15 online minutes in the Saint-Philippe holding cell**, with work stations scaled to match (PO-X1). The prison's 30 min with a 10 min split comes with 0.4 |
 | 7 | Recapture bonus $300 (gangs) or $150 (police); recaptured escapees get 20 min or 1 h | Prison break is 0.4. Recorded for then: $50 per escapee per officer, inside the hourly bonus cap of the new duty pay, 20 min and a 24 h bar (decision N41) |
@@ -133,11 +153,13 @@ its scope file.
 
 ### The economy table
 
-**The ladder (maintainer rule, 2026-11-22).** Police and medic duty are the lowest steady pay, about entry
-civilian level. Outcome bonuses never lift duty above a mid-tier civilian loop. Civilian trades climb above
+**The ladder (maintainer rule, 2026-11-22).** Police duty is the lowest steady pay, about entry civilian level.
+Medic duty sits a little higher, on the mid-tier civilian rung. Outcome bonuses never lift police above the
+mid-tier floor or medics above the high-tier floor. Civilian trades climb above
 duty with skill, tools and vehicle tier: a high-tier or master loop (haulage by truck, export orders, gold)
 clearly out-earns an officer. Crime sits on top with the most swing. Duty is still worth doing for the uniform,
-the car, the powers, the kit, the police and medic skills and the play itself, not for the money.
+the car, the powers, the kit, the police and medic skills and the play itself, not for the money. Medics earn a
+little more than police (maintainer, 2026-11-22 late) because their shift is mostly waiting for a call.
 
 Reference run: `tools\cli economy` on 2026-11-22 (mission `LF_Everon1989`, 135 overlays), re-run after the
 rule change. The run still prints the old band check: duty at $900 to $1,260 and every loop flagged "in band
@@ -149,10 +171,11 @@ After them `economy` flags any row that leaves its rung.
 
 | Rung | Who | Target | Rule `economy` enforces |
 |---|---|---|---|
-| Duty | Police and medic, every rank, bonus included | $350 to $520 | Shift pay at or under the entry civilian rung; shift plus the bonus cap at or under the mid-tier floor ($520) |
+| Police duty | Police, every rank, bonus included | $350 to $520 | Shift pay at or under the entry civilian rung ($350 to $450); shift plus the bonus cap at or under the mid-tier floor ($520) |
+| Medic duty | Medic, every rank, bonus included | $480 to $600 | Shift pay on the mid-tier rung ($480 to $560); shift plus the bonus cap at or under the high-tier floor ($600) |
 | Entry civilian | Levels 1 to 5, on foot or a starter car | $400 to $480 | At or above the Cadet shift |
-| Mid-tier civilian | Levels 5 to 12, car or van | $480 to $600 | Above every duty rank's shift |
-| High-tier civilian | Levels 12 to 20, van or truck, export orders | $600 to $800 | Above every duty rank with its full bonus |
+| Mid-tier civilian | Levels 5 to 12, car or van | $480 to $600 | Above every police rank's shift |
+| High-tier civilian | Levels 12 to 20, van or truck, export orders | $600 to $800 | At or above every duty rank with its full bonus |
 | Master civilian | Levels 20 to 30 with perks: gold, the truck haulage runs, the big export orders | $800 to $1,000 | About twice the novice loop in the same trade |
 | Crime | Above the civilian rung at the same stage, high swing | see below | Expected clean value at or above the matching civilian rung |
 
@@ -188,10 +211,10 @@ With the 40% master cap gone, the perks rise too (decision N2): double yield up 
 | Police Senior Patrol | $1,080 | $400 | 0.1111 | $100 | $500 | $450 |
 | Police Sergeant | $1,188 | $425 | 0.1181 | $95 | $520 | $473 |
 | Police Lieutenant | $1,260 | $450 | 0.1250 | $70 | $520 | $485 |
-| Medic Orderly | $792 | $350 | 0.0972 | $100 | $450 | $400 |
-| Medic EMT | $936 | $380 | 0.1056 | $100 | $480 | $430 |
-| Medic Paramedic | $1,080 | $410 | 0.1139 | $100 | $510 | $460 |
-| Medic Doctor | $1,224 | $450 | 0.1250 | $70 | $520 | $485 |
+| Medic Orderly | $792 | $480 | 0.1333 | $40 | $520 | $500 |
+| Medic EMT | $936 | $500 | 0.1389 | $50 | $550 | $525 |
+| Medic Paramedic | $1,080 | $530 | 0.1472 | $50 | $580 | $555 |
+| Medic Doctor | $1,224 | $560 | 0.1556 | $40 | $600 | $580 |
 
 Bonuses: a call resolved $15, a booking $10, a stolen car recovered $20; a revive $10 and a delivered patient
 $15. All are paid with the shift at clock-out and count against the cap. Fines and bail go to the town
@@ -225,9 +248,9 @@ minute left, with a $500 minimum.
 **The rule.** A card is must-have when the 10-hour arc needs it, or when the arc has a visible hole without
 it (no sound, no sign, a menu where the world should answer). Everything a player meets after hour 10, or that
 needs a new walled site, a new save-heavy system or a policy check, waits for 0.4. Quality first: about a
-fifth of the week's capacity is kept for fix cards from the two playthroughs.
+fifth of the week's capacity is kept for fix cards from the daily playtest rounds.
 
-### Must-have (152)
+### Must-have (162)
 
 **1. A trade of your own and 2. Bigger wheels: 32**
 
@@ -273,34 +296,56 @@ fifth of the week's capacity is kept for fix cards from the two playthroughs.
 | GA-O1 to O7, O9, O11, O12, O13 | The north outpost: safe zone, the quartermaster's crate by tier, the chalk board, "known here", the contraband buyer, stock tables, scout, dressing, NPCs, ambience, placement | 1 to 5 |
 | GA-A2 (suggested) | Prospect rank: no fund or stash rights for 48 h | 3 |
 
-**6. The island talks: 37**
+**6. The island talks: 38**
 
 | Cards | What | Day |
 |---|---|---|
 | WO-W1.1 to W1.6 | Ambience beds, birds, the square cast and voices, the US English sign check, the placement | 1 to 4 |
 | WO-W2.1 to W2.7 | The *Courier* item, the weekly edition builder and its save section, the newsagent and the road map, opening-hours plates, slips, the placement | 1 to 5 |
-| WO-L1 to L6, L9, L10 | Livery spike, the `livery build` step, livery sign styles, police (with the old police R2), ambulance (with the old police S2), company liveries, the respray bay, liveries kept across a restart | 1 to 5 |
+| WO-L1 to L7, L9, L10 | Livery spike (full repaint, tinted clothing and overlays), the `livery build` step that writes repainted variants with their credit rows, livery sign styles, police (with the old police R2), ambulance (with the old police S2), company and rebel repaints, the respray bay, liveries kept across a restart | 1 to 5 |
 | WO-W4.1, W4.2, W4.4, W4.5, W4.7, W4.8, W4.9 | The work loop, the dock cast, foremen with "what's next", the shop cast, their voices, front-desk stand-ins, the placement | 1 to 5 |
 | WO-W5.1 to W5.4 | The rumor pool, "Heard anything?", "Sit and listen", the 1989 rumor rows | 1 to 4 |
 | WO-W6.1, W6.2, W6.5 | The island calendar, bells and the ship's horn, the placement (W6.5 now depends on W6.2 only) | 2 to 5 |
 | WO-roadsigns (2 cards, suggested) | US English road and town-entry signs with distances: rows, then placement | 4, 5 |
 
-**Integration: 7 more (X-1 is counted under police)**
+**7. Playtest town parity: 9 (new, maintainer ask 2026-11-22)**
+
+The playtest town is the DebugWorld village layers plus the pack world `Everon1989Town`. The maintainer built it
+and normally edits it by hand ([world zones](../architecture/world-zones.md)); for this chapter he asked agents
+to bring it up to date, so each card edits his layers **with his explicit approval** (each card says so). Each card
+runs in a `town-<N>` worktree, places with `tools\cli place` and the town kit tools, and passes
+`audit placement --strict` with `look` pictures before and after. Systems come over as they are on the island: no
+new features here.
+
+| Card | What | Day |
+|---|---|---|
+| TP-0 | The gap list: every island system the playtest town lacks, by site group, with the island source layer or kit and the town spot (`docs/roadmap/playtest-town-parity.md`). It may split or merge the groups below | 1 |
+| TP-1 | ATM kiosks, bus stops and their boards | 2 |
+| TP-2 | The onboarding route: the clerk's welcome pack, the starter car, orchard, press and market | 2 |
+| TP-3 | Mining: the desk, the rocks, the furnace and the buyer | 2 |
+| TP-4 | The postal run | 2 |
+| TP-5 | Clothing mannequins and the shop counters | 2 |
+| TP-6 | Map POIs, run chains, the welcome guide and HUD rows for the town | 2 |
+| TP-7 | Jail doors and the bail phone | 2 |
+| TP-8 | Parity check: the X-9 round walks hours 0 to 2 in the playtest town and the gap list is empty or filed | 3 |
+
+**Integration: 8 more (X-1 is counted under police)**
 
 | Card | What | Day |
 |---|---|---|
 | X-2 | `tools\cli economy` prints the crime and gang lines of the table above | 5 |
 | X-3 | F3 guide pages: "Law and order", "The underworld", "Crews" | 5 |
 | X-4 | F2 "What to do next" starters: police and medic duty, the first rumor of crime (only after a record), founding a crew | 5 |
-| X-5 | Mid-week playthrough, hours 0 to 6 (Day 4) | 4 |
-| X-6 | End-of-week playthrough, hours 0 to 10+ (Day 6) | 6 |
+| X-9 | **Daily agent playtest round** (recurring, one card a day, Days 1 to 5): at the end of the day, two fresh clients on a dedicated server on `main` play the 10-hour arc as far as it is built, timed against section 1, and write a rough-edge report with pictures in the shape of the first-two-hours review (graded rows, top ten, counts). Each failed or rough row becomes a fix card for the next morning | 1 to 5 |
+| X-5 | Mid-week full run, hours 0 to 6 (Day 4; that day's X-9 round) | 4 |
+| X-6 | End-of-week full run, hours 0 to 10+ (Day 6) | 6 |
 | X-7 | Release notes, manual, version bump, release checklist | 6, 7 |
-| X-8 | **Retune live pay to the new ladder** (data, T1, opus, risk money, interrogate). Police and medic `m_fPayPerSecond` in `LF_Police_Everon1989.conf` and `LF_Medic_Everon1989.conf` to the "Shift in 0.3.0" column; the bonus caps handed to PO-D4 as config rows; `tools/lib/economy-{mining,lumber,wheat}.mjs` and `tools/commands/economy.mjs` replace the 1.5 to 2.5 band with the rung checks; `server/flagship/README.md` and any doc that states the old band. Acceptance: `tools\cli economy` prints duty at $350 to $450 and flags a duty rank above the entry rung or a civilian loop below its rung; the economy selftests pass | 1 |
+| X-8 | **Retune live pay to the new ladder** (data, T1, opus, risk money, interrogate). Police and medic `m_fPayPerSecond` in `LF_Police_Everon1989.conf` and `LF_Medic_Everon1989.conf` to the "Shift in 0.3.0" column (medics on the mid-tier rung, 2026-11-22 late); the bonus caps handed to PO-D4 as config rows; `tools/lib/economy-{mining,lumber,wheat}.mjs` and `tools/commands/economy.mjs` replace the 1.5 to 2.5 band with the rung checks; `server/flagship/README.md` and any doc that states the old band. Acceptance: `tools\cli economy` prints police duty at $350 to $450 and medic duty at $480 to $560, and flags a police rank above the entry rung, a medic rank off the mid-tier rung or over $600 with its bonus, or a civilian loop below its rung; the economy selftests pass | 1 |
 
 Each chapter's town card is in the lists above (WK-W13, WK-W19, PO-L10, PO-R10, CR-A3, CR-B9, GA-C15, GA-O13,
-WO-W1.6, WO-W2.7, WO-W4.9, WO-W6.5, WK-A1 place).
+WO-W1.6, WO-W2.7, WO-W4.9, WO-W6.5, WK-A1 place). Chapter 7's TP cards are town cards for the playtest town.
 
-### Stretch (48, pulled in this order when ready falls below twice the running count)
+### Stretch (47, pulled in this order when ready falls below twice the running count)
 
 1. GA-O8, O10 and a south placement card: the south outpost (3)
 2. WK-W14: active abilities with the HUD chip (1)
@@ -310,8 +355,8 @@ WO-W1.6, WO-W2.7, WO-W4.9, WO-W6.5, WK-A1 place).
 6. PO-R3: rank patches (1)
 7. CR-F2: the buyer as informant (1)
 8. WO-W6.3, W6.4: market day and the Friday dance, tied to the real Saturday session (2)
-9. WO-W4.3, W4.6: the Montignac cast; tinted aprons and work jackets (2)
-10. WO-L7: rebel liveries and the outpost mechanic's paint job (1)
+9. WO-W4.3, W4.6: the Montignac cast; tinted aprons and work jackets, by the repaint method the spike proves (2)
+10. The outpost mechanic's paint job (WO-L7 itself is must-have since 2026-11-22) (0)
 11. WO-W7.1, W7.2 (two places): the style bible and look passes (3)
 12. WK-W15: titles (1)
 13. The copper and stone chains from #3206: #3247, #3248, #3253, #3250, #3251, #3254, #3235 (7)
@@ -365,12 +410,12 @@ WO-W1.6, WO-W2.7, WO-W4.9, WO-W6.5, WK-A1 place).
 
 | Day | Date | Headline | Starts (must-have) | Gates and proofs | Merged by night |
 |---|---|---|---|---|---|
-| 1 | Mon 11-23 | **Foundations**: the planner cuts all six chapters by 09:00; every card with no dependency starts | 32: WK-W1, W7, W16, W18, W23, #3242, #3243; PO-L1, D1, D3, R1, R9, X1; CR-A1 (R), A4, A6 (R), B1 (R), B3 (R), B7 (R); GA-C2 (R), C5 (R), C7 (R), C10 (R), O1, O7; WO-L1 (spike), W1.1, W1.3, W2.1, W4.1, W5.1; X-8 (R) | Livery spike verdict by night (go or the fallback, below). Two-player session proofs: GA-C5, C10 | about 25 |
-| 2 | Tue 11-24 | **Second layer**: the systems the content hangs on | 32: WK-W2, W4, W8 (R), W9 (R), W10, W17 (R), #3244; PO-L2, L3 (R), D4 (R), R4, hotlist-1; CR-A2, B2, B4, B5 (R), F1; GA-C1, C3, C8, C11, O2 (R), O4 (R), O5 (R); WO-W1.2, W1.5, W2.2 (R), W2.5, W4.4, W5.2, W6.1, L2 | Interrogate on W8, W17, L3, B1, B3, B5, C2, C7, O2, O4, O5. Two-player: GA-C8 | about 30 |
-| 3 | Wed 11-25 | **Content on the systems**: levels feel right, the law book binds, the first places fill | 32: WK-W3, W5, W11, W20, W24 (R), #3245, A1 rows; PO-L5 (R), D2, D5, D6, R8, hotlist-2; CR-A3 (town), B6, D1 (R), D2, D3; GA-C4, C6, C9, C12, O3, O6, O11, A2; WO-W1.4, W2.3 (R), W2.6, W4.2, W5.3, L3 | Interrogate on L5 (money and replication), D4, W24, D1, W2.3. `wt e2e` on W8, C2, O4, W2.3. Level-up card session picture | about 30 |
-| 4 | Thu 11-26 | **Into the world, and the mid-week playthrough** | 31: WK-W6, W12, W19 (town), W8b (R), A10; PO-L4, L6 (R), L7, L8, L9, S1 (R), S5, R5; CR-A5 (two players), B8, B9 (town), D8; GA-C13, C14, O9, O12; WO-W1.6 (town), W2.4, W4.5, W5.4, W6.2, L4, L5, L6, L9 (R), roadsigns rows | **X-5 mid-week playthrough** from 14:00: two clients, hours 0 to 6 of the arc on `main` from checkpoint saves; each failed beat becomes a fix card at once. Charge sheet session picture (PO-L4), livery pictures (full profile) | about 30, plus the first fix cards |
-| 5 | Fri 11-27 | **Close the chapters**: town passes, guides, the economy pass, fixes | 22 plus fix cards: WK-W13 (town), W21, W22, W35, W36, A1 place; PO-L10 (town), R10 (town, after L10), S3 (R), P10; GA-C15 (town), O13 (town); WO-W2.7 (town), W4.7, W4.8, W4.9 (town), W6.5 (town), L10 (R), roadsigns place; X-2, X-3, X-4 | `tools\cli economy` shows no flag except stone on foot (the X-8 ladder: duty lowest, every civilian loop on its rung). `audit placement --strict` clean for every place touched. **Must-have merge cutoff 22:00**; stretch runs only while fix cards are clear | all must-have |
-| 6 | Sat 11-28 | **Release candidate** | Fix cards only | **X-6 end-of-week playthrough** 08:00 to 13:00 (all ten hours from checkpoint saves, two clients, a dedicated server, one restart in the middle). Cut `release-0.3.0` from the newest `green` main-guard head at 15:00. The lead may put the RC on the 0grind alpha (wipe allowed) for the **19:00 UK community session**, which is the real playtest of hours 0 to 4 | RC on the alpha |
+| 1 | Mon 11-23 | **Foundations**: the planner cuts all seven chapters by 09:00; every card with no dependency starts | 33: WK-W1, W7, W16, W18, W23, #3242, #3243; PO-L1, D1, D3, R1, R9, X1; CR-A1 (R), A4, A6 (R), B1 (R), B3 (R), B7 (R); GA-C2 (R), C5 (R), C7 (R), C10 (R), O1, O7; WO-L1 (spike), W1.1, W1.3, W2.1, W4.1, W5.1; X-8 (R); TP-0 | Livery spike verdict by night (go or the fallback, below). Two-player session proofs: GA-C5, C10. **X-9 round 1** (hours 0 to 2 on the island) | about 25 |
+| 2 | Tue 11-24 | **Second layer**: the systems the content hangs on | 39: WK-W2, W4, W8 (R), W9 (R), W10, W17 (R), #3244; PO-L2, L3 (R), D4 (R), R4, hotlist-1; CR-A2, B2, B4, B5 (R), F1; GA-C1, C3, C8, C11, O2 (R), O4 (R), O5 (R); WO-W1.2, W1.5, W2.2 (R), W2.5, W4.4, W5.2, W6.1, L2; TP-1 to TP-7 (town, at most three at once on the Workbench lanes) | Interrogate on W8, W17, L3, B1, B3, B5, C2, C7, O2, O4, O5. Two-player: GA-C8. **X-9 round 2**, round 1's fix cards first | about 30 |
+| 3 | Wed 11-25 | **Content on the systems**: levels feel right, the law book binds, the first places fill | 33: WK-W3, W5, W11, W20, W24 (R), #3245, A1 rows; PO-L5 (R), D2, D5, D6, R8, hotlist-2; CR-A3 (town), B6, D1 (R), D2, D3; GA-C4, C6, C9, C12, O3, O6, O11, A2; WO-W1.4, W2.3 (R), W2.6, W4.2, W5.3, L3; TP-8 | Interrogate on L5 (money and replication), D4, W24, D1, W2.3. `wt e2e` on W8, C2, O4, W2.3. Level-up card session picture. **X-9 round 3** (hours 0 to 4, and 0 to 2 in the playtest town) | about 30 |
+| 4 | Thu 11-26 | **Into the world, and the mid-week full run** | 32: WK-W6, W12, W19 (town), W8b (R), A10; PO-L4, L6 (R), L7, L8, L9, S1 (R), S5, R5; CR-A5 (two players), B8, B9 (town), D8; GA-C13, C14, O9, O12; WO-W1.6 (town), W2.4, W4.5, W5.4, W6.2, L4, L5, L6, L7, L9 (R), roadsigns rows | **X-5 mid-week full run** (Day 4's X-9 round) from 14:00: two clients, hours 0 to 6 of the arc on `main` from checkpoint saves; each failed beat becomes a fix card at once. Charge sheet session picture (PO-L4), livery pictures (full profile) | about 30, plus the first fix cards |
+| 5 | Fri 11-27 | **Close the chapters**: town passes, guides, the economy pass, fixes | 22 plus fix cards: WK-W13 (town), W21, W22, W35, W36, A1 place; PO-L10 (town), R10 (town, after L10), S3 (R), P10; GA-C15 (town), O13 (town); WO-W2.7 (town), W4.7, W4.8, W4.9 (town), W6.5 (town), L10 (R), roadsigns place; X-2, X-3, X-4 | **X-9 round 5** (hours 0 to 10 as built) at 18:00, its fix cards before the cutoff. `tools\cli economy` shows no flag except stone on foot (the X-8 ladder: duty lowest, every civilian loop on its rung). `audit placement --strict` clean for every place touched. **Must-have merge cutoff 22:00**; stretch runs only while fix cards are clear | all must-have |
+| 6 | Sat 11-28 | **Release candidate** | Fix cards only | **X-6 end-of-week full run** 08:00 to 13:00 (all ten hours from checkpoint saves, two clients, a dedicated server, one restart in the middle). Cut `release-0.3.0` from the newest `green` main-guard head at 15:00. The lead may put the RC on the 0grind alpha (wipe allowed) for the **19:00 UK community session**, which is the real playtest of hours 0 to 4 | RC on the alpha |
 | 7 | Sun 11-29 | **Release** | Fixes from the session, built with `--base release-0.3.0`, then `wt sync-base main --source release-0.3.0` | The release checklist below. The maintainer publishes from `release-0.3.0` (or the lead, under its sign-off authority) | 0.3.0 public |
 
 ### The critical paths
@@ -380,7 +425,7 @@ Four chains each run five days. Their first cards start at 06:00 on Day 1 and go
 
 | Chain | Cards | Risk and fallback |
 |---|---|---|
-| Liveries | WO-L1 → L2 → L3 → L4, L5, L6 → PO-R10, WO-L10 | The spike may show that overlays don't hold on a moving vehicle. Fallback the same night: vanilla colour variants plus the light bars for police and ambulance, the lettering in 0.3.1. R10 and the rank cars do not wait for it |
+| Liveries | WO-L1 → L2 → L3 → L4, L5, L6, L7 → PO-R10, WO-L10 | The spike must show a full body repaint that renders (not white) on a moving vehicle in a full-profile session, and a tinted vanilla garment. Fallback the same night: vanilla colour variants plus the light bars for police and ambulance, the repaints in 0.3.1. R10 and the rank cars do not wait for it |
 | Law book | PO-L1 → L3 → L5 → L6, L7 → S3, P10, L10 | L5 is Opus with an independent reviewer. If interrogate finds a money hole, L6 waits and the booking ships "to the cell" only |
 | The *Courier* | WO-W2.1 → W2.2 → W2.3 → W2.4 → W2.7 | If the save section slips, the *Courier* prints the current week from live records, and its back issues are lost on a restart |
 | Crew | GA-C2 → C3 → C4 → C14 → C15 | If the flag wall slips, founding takes the first free flag, and choosing one waits |
@@ -394,18 +439,21 @@ Four chains each run five days. Their first cards start at 06:00 on Day 1 and go
 | Interrogate (`lf-hard` reviews the diff, findings in `tmp/review-<slug>.md`) | The 30 risk cards (money, RPC, persistence, inventory): X-8; WK-W8, W8b, W9, W17, W24; PO-L3, L5, L6, D4, S1, S3; CR-A1, A6, B1, B3, B5, B7, D1; GA-C2, C5, C7, C10, O2, O4, O5; WO-W2.2, W2.3, L9, L10 | Before merge |
 | `wt e2e` two-boot proof | WK-W8, CR-A6, GA-C2, GA-O4, WO-W2.3, WO-L10 | Before merge |
 | `look` before and after, the polish checklist, the pair in the PR | Every visible card; town cards at the full polish bar | Ship |
-| Session proof (full profile) | HUD and UI (WK-W3, W6, PO-L4, P10, GA-C13), render-target lettering (WO-L4 to L6, W2.1), two players (GA-C5, C8, C10, CR-A5), audio (PO-D5, WO-W1.1, W6.2) | Ship |
+| Session proof (full profile) | HUD and UI (WK-W3, W6, PO-L4, P10, GA-C13), repaints and render-target lettering (WO-L4 to L7, W2.1), two players (GA-C5, C8, C10, CR-A5), audio (PO-D5, WO-W1.1, W6.2) | Ship |
 | `audit placement --strict` | Every town card; the island gate on `wt ship` | Ship |
 | US English | Every sign, livery and voice card; WO-W1.5 makes it a check | Ship |
 | No pop-ups | Every world interaction is an action on the object; the only new full screens are the charge sheet and the *Courier* (paper) and the F2 tabs | Review of each brief |
 | Pay ladder | X-8 (Day 1), WK-W11, W36, PO-D6, X-2 | Day 5 |
-| Playthroughs | X-5 (hours 0 to 6, Thursday), X-6 (hours 0 to 10+, Saturday), the community session (Saturday 19:00) | Each failed beat is a fix card the same hour |
+| Playtest rounds | X-9 every evening, Days 1 to 5 (the arc as far as it is built, timed, a graded rough-edge report with pictures); X-5 (hours 0 to 6, Thursday) and X-6 (hours 0 to 10+, Saturday) as the full runs; the community session (Saturday 19:00) | Each failed or rough row is a fix card for the next morning; fix cards take a lane before new cards |
 
-**How a playthrough runs.** Two clients on a dedicated server on `main`, following section 1's table. Each
+**How a playtest round runs.** Two fresh clients on a dedicated server on `main`, following section 1's table.
+The daily X-9 round covers the hours built so far and writes `docs/playtest/rounds/<date>.md` in the shape of the
+first-two-hours review: setup, method limits, a summary table with session and estimated real-player times, the
+top ten issues, graded rows (blocker, major, minor, polish) with pictures, and counts. Each
 hour starts from a checkpoint save that grants that hour's money, levels and standing, so ten hours of play
 take about five hours of agent time. Each beat is pass or fail, with a picture or a log line. A beat fails if
 the player is lost (no marker, no person to ask), sees a French word, meets a pop-up where an object should
-answer, waits more than 15 minutes for a reward, or hits a bug. One integration agent runs each playthrough
+answer, waits more than 15 minutes for a reward, or hits a bug. One integration agent runs each round
 and files the failures as cards. It fixes nothing itself.
 
 ### Release checklist (Day 7)
@@ -414,7 +462,8 @@ and files the failures as cards. It fixes nothing itself.
 - [ ] Main guard `green` on the `release-0.3.0` head: compile, build, full suite, placement audit, e2e
 - [ ] `tools\cli economy`: no flag except stone on foot; duty, civilian and crime lines on their rungs (duty lowest, master trades and crime on top)
 - [ ] `audit placement --world MainWorld --baseline` clean
-- [ ] X-6 playthrough: every hour passes; open failures are fixed or listed as known issues
+- [ ] X-6 full run: every hour passes; open failures are fixed or listed as known issues
+- [ ] Playtest town parity: TP-8 passed, hours 0 to 2 play in the playtest town as on the island
 - [ ] Community session findings triaged: blockers fixed on `release-0.3.0`, the rest filed
 - [ ] A save from 0.2.1 loads on 0.3.0 (new sections take their `OnAbsent` path), or the wipe is announced
 - [ ] US English check green; no `EL_` identifiers; no other server's text or name anywhere
@@ -432,8 +481,8 @@ Every open question from the five scopes, the M6 and M7 outlines that the scopes
 duplicates merged. "Accept all" takes every recommendation. With no answer, the default holds, and in every
 row but N41 the default is the recommendation.
 
-**Decided, not asked.** The pay ladder (maintainer, 2026-11-22): police and medics are the lowest paid; high-tier
-civilian trades out-earn them; crime is high-swing on top. The old band questions (the reference wage, the
+**Decided, not asked.** The pay ladder (maintainer, 2026-11-22): police are the lowest paid, medics a little more
+(mid-tier civilian); high-tier civilian trades out-earn both; crime is high-swing on top. The old band questions (the reference wage, the
 Orderly raise, the crime band) are dropped.
 
 ### Before Day 1 (they change what gets built)
@@ -474,7 +523,7 @@ Orderly raise, the crime band) are dropped.
 | N27 | Outpost standing | One underworld track plus a "known here" flag per outpost | As recommended | #4145 O1 | Day 2 |
 | N28 | Police at outposts | They may enter; the traders don't serve them; the safe zone holds | As recommended | #4145 O2, gangs Q5 | Day 1 |
 | N29 | Outpost site and stock | The scout picks a site at least 4 km from Saint-Philippe, off the main roads. Stock: every vanilla small arm the gun store doesn't sell, no launchers; pistol $400 to $600 (tier 1), rifle $1,500 to $2,500 (tier 2). North in 0.3.0, south as stretch | As recommended | #4145 O3, O4 | Day 1 |
-| N30 | Livery method | Overlay lettering on vanilla colours for 0.3.0; decide full repaints after the spike | As recommended | world Q1, #4155 S1 | Day 1 |
+| N30 | Livery method | **Changed by the maintainer (2026-11-22 late):** full repaints of whole vehicle bodies (Police, Ambulance, Rebel, company colours) and tinted vanilla work clothes, each with a credit row; lettering overlays on top where they hold | Full repaints | world Q1, #4155 S1 | Day 1 |
 | N31 | Newspaper names | Character names for public facts only (arrests, rewards, openings); never an open case or a hidden record | As recommended | world Q3 | Day 2 |
 | N32 | Rumors about crime | From bar staff and the informant only, to players the town counts as `friendly` or better | As recommended | world Q5 | Day 2 |
 | N33 | Dogs | Sound only, at kennels | As recommended | world Q6 | Day 3 |

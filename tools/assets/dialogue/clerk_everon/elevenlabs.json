@@ -94,17 +94,17 @@
       "mouth": "3899885549877899997411100000000000000000000000014961998999767649999557765551399984555875356553543212100000000000566759983166442100000002513449999985222100000000056199777352587556751110000001576651119995898657654364442323333000"
     },
     "about_work": {
-      "hash": "11fe9c59c0aa6c6c",
-      "date": "2026-11-16",
+      "hash": "37f777269aa8b1f1",
+      "date": "2026-11-22",
       "voice_id": "NxYVRLlKssuLUMfbtwGR",
       "voice_name": "Julien - Serious",
       "model": "eleven_multilingual_v2",
-      "text": "The post office always needs couriers. For anything else, read the town board. It lists who is hiring.",
-      "chars": 102,
-      "chars_total": 82,
-      "request_id": "kRP9bARKr1wXgceDEsmC",
-      "seconds": 8.76,
-      "mouth": "39149987727953564441100000006999896478755327966544442100000000000000122771118999625764898655431100000158993953479996776442110000000000003863799564376422111001699653399875543000"
+      "text": "Looking for work? Start with the orchard east of town: pick apples, press the juice, sell it at the market. Then open your player menu with F2 and read What to do next. The town board lists the rest.",
+      "chars": 199,
+      "chars_total": 162,
+      "request_id": "wGRBI5zr2ftgAhzACBep",
+      "seconds": 17.9,
+      "mouth": "19938933879994231110000000000000000003515997338427411299925673114864275234755564110000000001009932776189654431100000000498743273379745542110001100024469998671277675234121100000000000000039986541110000029994288776169999987766654457431167332159942111000000001277776998855211369941464576654311233301000000000000027435399999949877753310036896341132575754334211000"
     },
     "about_town": {
       "hash": "20a8c59e117188eb",
@@ -211,17 +211,17 @@
       "mouth": "6999999323947412999246954111100002997439448154436653110000000027618843345796343211398148864389774458653331000"
     },
     "juice": {
-      "hash": "41adf8dbec2a6474",
+      "hash": "adf75c6a275ad7ef",
       "date": "2026-11-22",
       "voice_id": "NxYVRLlKssuLUMfbtwGR",
       "voice_name": "Julien - Serious",
       "model": "eleven_multilingual_v2",
-      "text": "Press your apples into juice at the juice press on the orchard stall.",
-      "chars": 69,
-      "chars_total": 74,
-      "request_id": "0RSiBbcBv1ItJAsxKn9d",
-      "seconds": 5.09,
-      "mouth": "998455999862676431166235224499745431111110000006982394234955316886343311466344112999443832532664423100"
+      "text": "Press your six apples into two bottles of juice at the juice press on the orchard stall.",
+      "chars": 88,
+      "chars_total": 109,
+      "request_id": "pe37j1H4FrW4EUHSMZee",
+      "seconds": 7.05,
+      "mouth": "9996658755589243986145433100486345110548998742111100079997864732359944553111011110000496267234896531598644321167766611119993447335438544321000"
     },
     "market": {
       "hash": "5e672e84737b044d",
@@ -235,6 +235,19 @@
       "request_id": "6rIbyodYHxzpCOdoXIKU",
       "seconds": 5.64,
       "mouth": "36999998632249975123556677743431146541545899844665254311000000275455799439631136521029962973356544353643354342100"
+    },
+    "papers": {
+      "hash": "cb6505ef2016a398",
+      "date": "2026-11-22",
+      "voice_id": "NxYVRLlKssuLUMfbtwGR",
+      "voice_name": "Julien - Serious",
+      "model": "eleven_multilingual_v2",
+      "text": "Your papers. Tell me what you need.",
+      "chars": 35,
+      "chars_total": 14,
+      "request_id": "slX1xBAUJHG0YLoNMFOy",
+      "seconds": 2.56,
+      "mouth": "4832999447652211000000000000015599899775355554321000"
     }
   },
   "voice": {

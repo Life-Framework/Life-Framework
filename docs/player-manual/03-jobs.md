@@ -86,8 +86,8 @@ The drops are on the east side (a house near the district road) and four along t
   waypoint shows the way), park by the stand there and unload the four sacks the same way. Drive back, park by the home stand
   and pick **Hand in the postal run**.
 * **Pay:** **$80 a run** ($100 at night), plus delivery work experience. About 10 minutes a run is **$480 an hour**. A run handed
-  in faster than 7 minutes pays nothing yet.
-* **Lose the run:** wreck the van, or leave it and stay more than 350 m away for 3 minutes, and the run ends with no pay; the van
+  in faster than 7 minutes pays nothing: the start toast and the hand-in say so, and the run stays open so you can hand it in later.
+* **Lose the run:** wreck the van, or leave it and stay more than 350 m away for 3 minutes, and the run ends with no pay (after 2 minutes away a toast warns you how many seconds are left); the van
   goes back to the office. **Give up the postal run** at a stand does the same at once. A new van is ready a minute later.
 * **Needs:** a **driving licence** ($100 at the licence desk). The van is lent, never yours: it is not saved and cannot be garaged.
 
