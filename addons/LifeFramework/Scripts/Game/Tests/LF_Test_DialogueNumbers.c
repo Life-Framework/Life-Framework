@@ -1,4 +1,4 @@
-// red-proof: Written while the licence was in use, so the boot was deferred to the lead: `tools\cli test --no-build --red LF_Test_DialogueNumbers` makes the RedProof() hook turn the Goodbye row into -1, which fails the `0 picks the Goodbye row` check; the green run expects every assertion to pass.
+// red-proof: RED-OK 2026-11-22 `node tools/cli.mjs test --no-build --red LF_Test_DialogueNumbers`: with the hook on `0 picks the Goodbye row` fails (expected 3, got -1) and so do `the row after the replies is Goodbye` and `a reply that leads to the bye node is the NPC's farewell`; the green run passes every assertion.
 //! The numbers of the NPC conversation menu: replies 1..n, then Goodbye as 0, always last. A digit,
 //! the printed number and the focus step all come from LF_DialogueKeys, and closed scenes have
 //! nothing to leave.
@@ -53,6 +53,23 @@ class LF_Test_DialogueNumbers : LF_Test
 		ctx.Equal(0, LF_DialogueKeys.Step(3, 1, 3), "down from Goodbye wraps to the first reply");
 		ctx.Equal(3, LF_DialogueKeys.Step(0, -1, 3), "up from the first reply wraps to Goodbye");
 		ctx.Equal(0, LF_DialogueKeys.Step(0, 0, 3), "no step keeps the focus");
+
+		// A reply that only says goodbye gets no row of its own: Goodbye (0) picks it, so no menu shows two.
+		LF_DialogueOption farewell = new LF_DialogueOption();
+		farewell.m_sNext = "bye";
+		bool dropped = LF_DialogueKeys.IsFarewell(farewell);
+		if (RedProof())
+			dropped = false;
+
+		ctx.True(dropped, "a reply that leads to the bye node is the NPC's farewell");
+		LF_DialogueOption work = new LF_DialogueOption();
+		work.m_sNext = "work";
+		ctx.False(LF_DialogueKeys.IsFarewell(work), "a reply to another node is a normal row");
+		LF_DialogueOption sellAndGo = new LF_DialogueOption();
+		sellAndGo.m_sNext = "bye";
+		sellAndGo.m_sAction = "OpenShop";
+		ctx.False(LF_DialogueKeys.IsFarewell(sellAndGo), "a reply that runs an action is never swallowed");
+		ctx.False(LF_DialogueKeys.IsFarewell(null), "no reply is no farewell");
 
 		// Close path: a scene that is not open has nothing to leave, and does not break.
 		ctx.False(LF_DialogueScene.IsOpen(), "no conversation is open in the suite");

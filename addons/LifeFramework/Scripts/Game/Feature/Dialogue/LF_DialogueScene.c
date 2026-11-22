@@ -26,6 +26,9 @@ class LF_DialogueScene
 	protected static ref array<string> s_aQueue;
 	//! Option index behind each shown row.
 	protected static ref array<int> s_aRows;
+	//! The option of this node that is the NPC's own farewell (reply "bye"), or -1. It gets no row of
+	//! its own: Goodbye (0) picks it, so the NPC says its goodbye and no menu shows two.
+	protected static int s_iFarewell = -1;
 	protected static int s_iFocus;
 	//! MenuUp or MenuDown was down last tick: a held key (the harness holds one 300 ms) steps once.
 	protected static bool s_bStepHeld;
@@ -49,6 +52,7 @@ class LF_DialogueScene
 		s_sLastCaption = string.Empty;
 		s_aQueue = null;
 		s_aRows = null;
+		s_iFarewell = -1;
 		s_bChoosing = false;
 		s_bWaiting = false;
 		s_bStepHeld = false;
@@ -335,16 +339,22 @@ class LF_DialogueScene
 		}
 
 		LF_DialogueNode node = LF_DialogueFlow.FindNode(s_Config, s_sNode);
+		s_iFarewell = -1;
 		if (node && node.m_aOptions)
 		{
 			for (int i = 0; i < node.m_aOptions.Count(); i++)
 			{
-				if (LF_DialogueFlow.IsOffered(s_iMask, i))
+				if (!LF_DialogueFlow.IsOffered(s_iMask, i))
+					continue;
+
+				if (s_iFarewell < 0 && LF_DialogueKeys.IsFarewell(node.m_aOptions[i]))
+					s_iFarewell = i;
+				else
 					s_aRows.Insert(i);
 			}
 		}
 
-		if (s_aRows.IsEmpty())
+		if (s_aRows.IsEmpty() && s_iFarewell < 0)
 		{
 			LF_Debug.Error(LF_Dialogue.FEATURE, string.Format("node '%1/%2' offers replies this machine cannot show; leaving", s_Config.m_sId, s_sNode));
 			Close("no reply to show", true);
@@ -451,11 +461,17 @@ class LF_DialogueScene
 		if (!IsOpen() || !s_bChoosing || !s_aRows || row < 0 || row >= s_aRows.Count())
 			return false;
 
+		return PickIndex(s_aRows[row]);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: send the reply with this option index (an index the server offered at this node).
+	protected static bool PickIndex(int index)
+	{
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
 		if (!controller)
 			return false;
 
-		int index = s_aRows[row];
 		s_sAfterHook = string.Empty;
 		s_sAfterParam = string.Empty;
 		LF_DialogueOption picked = LF_DialogueFlow.Pick(LF_DialogueFlow.FindNode(s_Config, s_sNode), s_iMask, index);
@@ -604,6 +620,13 @@ class LF_DialogueScene
 	{
 		if (!IsOpen())
 			return false;
+
+		// The NPC has its own farewell here: pick it, so it says goodbye (voiced) and ends the talk.
+		if (s_bChoosing && s_iFarewell >= 0 && PickIndex(s_iFarewell))
+		{
+			LF_Debug.Info(LF_Dialogue.FEATURE, "the player said goodbye; the NPC answers with its farewell");
+			return true;
+		}
 
 		Close("the player said goodbye", true);
 		return true;

@@ -8,6 +8,17 @@ class LF_DialogueKeys
 	//! The digit that leaves the conversation.
 	static const int GOODBYE_DIGIT = 0; // lf-fixed: the Goodbye row is always "0"
 
+	//! The node every dialogue file ends a farewell on (a reply "bye" leads to it).
+	static const string FAREWELL_NODE = "bye"; // lf-fixed: the dialogue.json convention, 104 replies
+
+	//------------------------------------------------------------------------------------------------
+	//! True for a reply that only says goodbye: it leads to the farewell node and runs no action. The
+	//! scene gives it no row; the Goodbye row (0) picks it instead, so no menu shows two.
+	static bool IsFarewell(LF_DialogueOption option)
+	{
+		return option && option.m_sNext == FAREWELL_NODE && option.m_sAction.IsEmpty();
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Rows on screen for `replies` offered replies: the replies and the Goodbye row.
 	static int RowCount(int replies)
