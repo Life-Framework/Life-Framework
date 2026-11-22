@@ -1,0 +1,28 @@
+OverlayWidgetClass "{1AF88BFA7FB87EC6}" {
+ Name "Card"
+ Slot LayoutSlot "{438A448EAB271294}" {
+  HorizontalAlign 3
+  VerticalAlign 3
+  SizeMode Fill
+  FillWeight 1
+  Padding 8 6 8 6
+ }
+ {
+  ImageWidgetClass "{2D456FB7113597DB}" {
+   Name "CardPlate"
+   Slot OverlayWidgetSlot "{2B95A01CF39B50E5}" {
+    HorizontalAlign 3
+    VerticalAlign 3
+   }
+   Color 0.863 0.816 0.714 1
+  }
+  VerticalLayoutWidgetClass "{992B5EEA016DF147}" {
+   Name "CardContent"
+   Slot OverlayWidgetSlot "{B8A835A6CFEFCAF7}" {
+    HorizontalAlign 3
+    VerticalAlign 0
+    Padding 0 2 0 14
+   }
+  }
+ }
+}

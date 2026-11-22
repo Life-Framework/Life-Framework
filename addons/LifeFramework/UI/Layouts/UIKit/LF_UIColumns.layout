@@ -1,0 +1,6 @@
+HorizontalLayoutWidgetClass "{A5B037F55E560D78}" {
+ Name "Columns"
+ Slot LayoutSlot "{BF49CD1E4DAF621C}" {
+  Padding 0 0 0 0
+ }
+}
