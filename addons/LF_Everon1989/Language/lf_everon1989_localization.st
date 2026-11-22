@@ -211,7 +211,7 @@ StringTable {
     }
     CustomStringTableItem "{5A8EF27F20337853}" {
      Id "LF-Dialogue_ClerkEveron_Apples"
-     Target_en_us "Drive out to the orchard east of the town and pick nine apples from the trees."
+     Target_en_us "Drive to the orchard east of the town and pick six apples from the trees."
      Comment "Pack patch of the clerk dialogue's line apples (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{A44A60B6429DD48D}" {
@@ -246,12 +246,12 @@ StringTable {
     }
     CustomStringTableItem "{9045EF2226240420}" {
      Id "LF-Dialogue_ClerkEveron_Juice"
-     Target_en_us "The juice press stands on the orchard stall. Three apples make one bottle of apple juice. Press at least one bottle."
+     Target_en_us "Press your apples into juice at the juice press on the orchard stall."
      Comment "Pack patch of the clerk dialogue's line juice (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{B3E611FAB38249E9}" {
      Id "LF-Dialogue_ClerkEveron_Market"
-     Target_en_us "Take your apple juice to the market trader in the town and sell it."
+     Target_en_us "Drive back to the market in the town centre and sell your apple juice to the trader."
      Comment "Pack patch of the clerk dialogue's line market (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{ACA40575917539FA}" {
@@ -296,7 +296,7 @@ StringTable {
     }
     CustomStringTableItem "{66D17BEFEC6D7B97}" {
      Id "LF-Dialogue_ClerkEveron_StarterCar"
-     Target_en_us "The town gives every newcomer a small car. It waits in your garage at the car lot, a short walk west of the town hall. Take it out at the garage counter."
+     Target_en_us "Your new car waits at the garage counter of the car lot, next to the town hall: take it out there."
      Comment "Pack patch of the clerk dialogue's line starter_car (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{B696FB0623B2D98D}" {
@@ -2246,7 +2246,7 @@ StringTable {
     }
     CustomStringTableItem "{07E23A077F643979}" {
      Id "LF-Quest_ArrivalRegister_Desc"
-     Target_en_us "You are new in town and carry no papers. Walk south from the hostel to the town hall on the square: the clerk behind the desk keeps the register and hands you your ID card. A mark on your map and screen shows the way."
+     Target_en_us "Walk south from the hostel to the town hall and talk to the clerk at the desk for your papers."
      Comment "Arrival chain step 1: talk to the clerk, receive the ID card."
     }
     CustomStringTableItem "{C15A1290314AA204}" {
@@ -2271,7 +2271,7 @@ StringTable {
     }
     CustomStringTableItem "{59970B5258F82A10}" {
      Id "LF-Quest_EveronApples_Desc"
-     Target_en_us "Drive out to the orchard east of the town and pick nine apples from the trees."
+     Target_en_us "Drive to the orchard east of the town and pick six apples from the trees."
      Comment "Everon arrival step 3 errand: pick apples at the orchard."
     }
     CustomStringTableItem "{335A06642173129F}" {
@@ -2286,7 +2286,7 @@ StringTable {
     }
     CustomStringTableItem "{EE315E5048005931}" {
      Id "LF-Quest_EveronGarage_Desc"
-     Target_en_us "The town gives every newcomer a small car. It waits in your garage at the car lot, a short walk west of the town hall. Take it out at the garage counter."
+     Target_en_us "Your new car waits at the garage counter of the car lot, next to the town hall: take it out there."
      Comment "Everon arrival step 2 errand: take the starter car out of the garage."
     }
     CustomStringTableItem "{36215FC317EF53A5}" {
@@ -2301,7 +2301,7 @@ StringTable {
     }
     CustomStringTableItem "{3ADBB6CA4E4F53BA}" {
      Id "LF-Quest_EveronJuice_Desc"
-     Target_en_us "The juice press stands on the orchard stall. Three apples make one bottle of apple juice. Press at least one bottle."
+     Target_en_us "Press your apples into juice at the juice press on the orchard stall."
      Comment "Everon arrival step 4 errand: press apple juice."
     }
     CustomStringTableItem "{FAE9332E9FD2730E}" {
@@ -2316,7 +2316,7 @@ StringTable {
     }
     CustomStringTableItem "{169160A3F43F94EA}" {
      Id "LF-Quest_EveronMarket_Desc"
-     Target_en_us "Take your apple juice to the market trader in the town and sell it."
+     Target_en_us "Drive back to the market in the town centre and sell your apple juice to the trader."
      Comment "Everon arrival step 5 errand: sell the juice at the market."
     }
     CustomStringTableItem "{E821B19281DF6F39}" {

@@ -1,9 +1,22 @@
 # Island arrival route (2026-11-22): a fresh player on Everon registers at the clerk (ID card,
-# welcome pack, $100, a starter car in the garage), takes the car out at the garage counter, picks
-# nine apples at the orchard and presses juice; each step's waypoint shows on the HUD.
+# welcome pack, $100, a starter car in the garage) and is pointed at the garage; the HUD waypoint and
+# the clerk's line show. `stand`/`use` find the island entities in game; `layer` would read the
+# playtest world's files. Needs a fresh client profile (the rules quiz, then form R-89).
 # Session: node agent-box/session.mjs up --profile full --mission island
 #          node agent-box/harness.mjs --client 1 flow arrival-island
 ui
+click QuizOption1Button
+wait 500
+click QuizOption0Button
+wait 500
+click QuizOption2Button
+wait 500
+click QuizOption1Button
+wait 500
+click QuizOption0Button
+wait 2500
+click QuizContinueButton
+wait 2500
 type RegFirstName Ada
 type RegLastName Lovelace
 type RegAge 36
@@ -14,7 +27,7 @@ wait 1000
 stand Fit_saint_philippe_arrival_town_hall_clerk
 wait 1500
 shot ui island_0_clerk_waypoint
-layer Fit_saint_philippe_arrival_town_hall_clerk LF_QuestAction
+use LF_QuestAction Fit_saint_philippe_arrival_town_hall_clerk
 wait 5000
 shot ui island_1_greet
 input MenuSelect
@@ -34,34 +47,7 @@ state
 stand Fit_saint_philippe_carlot_garage
 wait 1500
 shot ui island_4_garage_waypoint
-layer Fit_saint_philippe_carlot_garage LF_VehicleRetrieveAction
+use LF_VehicleRetrieveAction Fit_saint_philippe_carlot_garage
 wait 4000
 shot ui island_5_car_out
-shot world Fit_saint_philippe_carlot_garage
-stand Fit_saint_philippe_orchard_orchard_apple_1
-wait 1500
-shot ui island_6_orchard_waypoint
-layer Fit_saint_philippe_orchard_orchard_apple_1 LF_GatherAction
-wait 1500
-layer Fit_saint_philippe_orchard_orchard_apple_1 LF_GatherAction
-wait 1500
-layer Fit_saint_philippe_orchard_orchard_apple_1 LF_GatherAction
-wait 1500
-layer Fit_saint_philippe_orchard_orchard_apple_1 LF_GatherAction
-wait 1500
-layer Fit_saint_philippe_orchard_orchard_apple_1 LF_GatherAction
-wait 1500
-layer Fit_saint_philippe_orchard_orchard_apple_2 LF_GatherAction
-wait 1500
-layer Fit_saint_philippe_orchard_orchard_apple_2 LF_GatherAction
-wait 1500
-layer Fit_saint_philippe_orchard_orchard_apple_2 LF_GatherAction
-wait 1500
-layer Fit_saint_philippe_orchard_orchard_apple_2 LF_GatherAction
-wait 2500
-shot ui island_7_juice_waypoint
-stand Fit_saint_philippe_orchard_orchard_juicer
-layer Fit_saint_philippe_orchard_orchard_juicer LF_ProcessAction
-wait 3000
-shot ui island_8_market_waypoint
 state

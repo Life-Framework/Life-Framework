@@ -63,19 +63,19 @@
       "for_key": "#LF-Quest_EveronWelcomePack_TurnIn"
     },
     "starter_car": {
-      "text": "The town gives every newcomer a small car. It waits in your garage at the car lot, a short walk west of the town hall. Take it out at the garage counter.",
+      "text": "Your new car waits at the garage counter of the car lot, next to the town hall: take it out there.",
       "for_key": "#LF-Quest_EveronGarage_Desc"
     },
     "apples": {
-      "text": "Drive out to the orchard east of the town and pick nine apples from the trees.",
+      "text": "Drive to the orchard east of the town and pick six apples from the trees.",
       "for_key": "#LF-Quest_EveronApples_Desc"
     },
     "juice": {
-      "text": "The juice press stands on the orchard stall. Three apples make one bottle of apple juice. Press at least one bottle.",
+      "text": "Press your apples into juice at the juice press on the orchard stall.",
       "for_key": "#LF-Quest_EveronJuice_Desc"
     },
     "market": {
-      "text": "Take your apple juice to the market trader in the town and sell it.",
+      "text": "Drive back to the market in the town centre and sell your apple juice to the trader.",
       "for_key": "#LF-Quest_EveronMarket_Desc"
     }
   },

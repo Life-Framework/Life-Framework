@@ -1,7 +1,7 @@
 // red-proof: 2026-11-22, `tools\cli test --no-build --red LF_Test_EveronArrivalRoute` (RedProof skips the talk with the clerk): RED PROOF OK, failed "talking to the clerk registers the newcomer", "the pack holds $100 in cash", "the starter car stands on the garage pad"; green without the hook (pack leg worlds=LF_Everon1989_Test, with settling-in, welcome-gift, starting-map, market and clerk-welcome).
 //! The island's arrival route (maintainer, 2026-11-22): under the Everon 1989 header (the pack leg of `tools\cli
 //! test`) the clerk's row takes the prefab's five steps out and gives its own: register (the ID card, the welcome
-//! pack and $100), take the starter car out of the garage, pick nine apples, press juice, sell it at the market.
+//! pack and $100), take the starter car out of the garage, pick six apples, press juice, sell it at the market.
 //! A fixture newcomer walks it through the public quest paths: the pack and the car come once (a second talk and a
 //! respawn that starts the garage step again give nothing), each errand waits for the one before, the garage
 //! counter's own take-out action and a real sale to the island trader close their steps.
@@ -17,7 +17,7 @@ class LF_Test_EveronArrivalRoute : LF_Test
 	static const ResourceName WATER = "{A231A5F8D479B5DC}Prefabs/Items/Drinks/WaterBottle.et";
 	static const ResourceName T601 = "{6303FEB76E4B719A}Prefabs/Vehicles/Wheeled/T601/T601_beige.et";
 	static const int PACK_CASH = 100;
-	static const int APPLES = 9;
+	static const int APPLES = 6;
 
 	//------------------------------------------------------------------------------------------------
 	override string GetName()
@@ -165,17 +165,17 @@ class LF_Test_EveronArrivalRoute : LF_Test
 		ctx.True(Status(tracker, "arrival_garage") == LF_EQuestStatus.TURNED_IN, "taking the car out finishes step 2");
 		ctx.True(Status(tracker, "arrival_apples") == LF_EQuestStatus.ACTIVE, "step 3 (apples) starts on its own");
 
-		// 3. Apples: nine picks.
+		// 3. Apples: six picks.
 		for (int i = 0; i < APPLES - 1; i++)
 		{
 			manager.ReportGather(player, APPLE);
 		}
 
-		ctx.True(Status(tracker, "arrival_apples") == LF_EQuestStatus.ACTIVE, "eight apples are not yet nine");
+		ctx.True(Status(tracker, "arrival_apples") == LF_EQuestStatus.ACTIVE, "five apples are not yet six");
 		manager.ReportProcess(player, JUICE);
-		ctx.True(Status(tracker, "arrival_juice") == LF_EQuestStatus.AVAILABLE, "juice before the ninth apple does not count");
+		ctx.True(Status(tracker, "arrival_juice") == LF_EQuestStatus.AVAILABLE, "juice before the sixth apple does not count");
 		manager.ReportGather(player, APPLE);
-		ctx.True(Status(tracker, "arrival_apples") == LF_EQuestStatus.TURNED_IN, "the ninth apple finishes step 3");
+		ctx.True(Status(tracker, "arrival_apples") == LF_EQuestStatus.TURNED_IN, "the sixth apple finishes step 3");
 
 		// 4. The juice press.
 		ctx.True(Status(tracker, "arrival_juice") == LF_EQuestStatus.ACTIVE, "step 4 (juice) starts on its own");

@@ -31,7 +31,7 @@ back when you rejoin. Other players do not see yours.
 |---|---|---|
 | **New in town** | Walk south from the hostel to the town hall. Talk to the **registry clerk** ("Registry clerk: ID cards"). He files form R-89 and hands you your **ID card** and a **welcome pack**: a baguette, a saucisson, a bottle of water and **$100 in cash**. | Town hall on the square |
 | **Your first car** | The clerk also puts a small **Sputnik T601** in your garage. It is yours, and it takes one of your garage slots. Walk to the **garage counter** at the car lot and pick *Retrieve vehicle*; the car stands on the garage pad and your key is already in your pocket. | Car lot, west of the town hall |
-| **Apple picking** | Drive to the **orchard** east of town and pick **nine apples** from the apple trees. | Orchard |
+| **Apple picking** | Drive to the **orchard** east of town and pick **six apples** from the apple trees. | Orchard |
 | **Fresh juice** | Use the **juice press** on the orchard stall: three apples make one bottle of apple juice. | Orchard stall |
 | **Market day** | Sell your apple juice to the **market trader** in town. A note then reads *You are on your way*: take a job from the town board, ask the clerk for more errands, and find your errands and jobs in your player menu. | Market |
 
