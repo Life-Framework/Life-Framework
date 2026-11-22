@@ -29,6 +29,12 @@
       ]
     },
     "front": "+z",
+    "markerOffsets": {
+      "OrchardTrees": [
+        8.5,
+        1.5
+      ]
+    },
     "counters": [],
     "adapt": "Open ground beside a farm barn used as an anchor only: the kit frame is the barn turned to a quarter turn from the world (x east, z north on b100 of the Saint-Philippe survey). Four apple and three plum gather trees stand in two columns 8.5 and 13.5 m east of the barn centre on the open grass; the stall (a lean-to for the juicer) stands 2 m south of the barn's back wall facing away from it, the juicer on its counter, the tally desk, the sign, two fruit crates, a hay bale and a hand cart beside it. Rows are rigid: shift, never stretch."
   },
@@ -276,15 +282,15 @@
     {
       "id": "orchard-hay-bale",
       "name": "Orchard_HayBale",
-      "prefab": "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et",
+      "prefab": "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et",
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -2.3,
+        -2.6,
         0,
         -8.4
       ],
-      "yaw": 80,
+      "yaw": 100,
       "floor": "f0",
       "mount": "terrain",
       "wall": "free"
@@ -305,6 +311,22 @@
       "floor": "f0",
       "mount": "terrain",
       "lift": -0.014
+    },
+    {
+      "id": "orchard-bucket",
+      "name": "Orchard_Bucket",
+      "prefab": "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.1,
+        0,
+        -7.4
+      ],
+      "yaw": 30,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     }
   ]
 }

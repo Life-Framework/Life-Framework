@@ -139,6 +139,16 @@ export function anchorFor(building, kit, { sameShell = false } = {}) {
   return { x, y, z, yaw: r3(norm(yaw)), base: r3(y - (kit.anchoring?.floorY ?? 0)), marker: [x, y, z], note };
 }
 
+// A further marker kind may stand away from the building: `anchoring.markerOffsets["<Kind>"] = [dx, dz]` in the kit frame
+// (the orchard's waypoint kind stands on its first apple tree, not on the barn). The first kind never moves: it carries
+// LF_FittedBuildingComponent, which needs the marker inside the building.
+export function markerCoords(kit, kind, index, anchor) {
+  const off = index > 0 ? kit.anchoring?.markerOffsets?.[kind] : null;
+  if (!Array.isArray(off) || off.length !== 2) return anchor.marker;
+  const [wx, wz] = toWorld(off[0], off[1], anchor.yaw);
+  return [r3(anchor.marker[0] + wx), anchor.marker[1], r3(anchor.marker[2] + wz)];
+}
+
 // ------------------------------------------------------------------ prefab component guids (config overrides)
 
 function prefabFile(ref, root) {
@@ -485,7 +495,7 @@ export function planFit(opts, ctx = {}) {
   const markers = kinds.map((kind, i) => ({
     name: `Fit_${ident(place)}_${ident(slotId)}_Place${i ? `_${ident(kind)}` : ""}`,
     comps: [{ cls: "LF_PlaceComponent", guid: guidOf(place, slotId, kind), set: { m_sKind: `"${kind}"`, m_sId: `"${place}.${slotId}"` } }],
-    coords: anchor.marker,
+    coords: markerCoords(kit, kind, i, anchor),
     yaw: 0,
   }));
   if (!markers.length) warnings.push(`slot ${slotId} lists no LF_Places kind: the layer carries no place marker`);
