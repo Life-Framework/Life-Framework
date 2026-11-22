@@ -40,7 +40,7 @@ $grp GenericEntity {
  Grid_shops_till_Store {
   components {
    MeshObject "{7D3A5C10A4E64B01}" {
-    Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+    Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
    }
    RigidBody "{7D3A5C10A4E64B02}" {
     Mass 10

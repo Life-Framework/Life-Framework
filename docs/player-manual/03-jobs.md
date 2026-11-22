@@ -85,10 +85,15 @@ The drops are on the east side (a house near the district road) and four along t
 
 **Status:** ✅ live. Not a job: the cheap way to reach work before you own a car.
 
-* **Where:** the **bus stop** signs (a round blue bus plate on a yellow pole) at the kerb, shown on the map as **Bus stop**.
-* **How:** press **F** at the sign for **Take the bus**. The timetable lists every other stop, nearest first, with its fare
-  and the wait. Press **Buy ticket**: the fare comes out of your **cash** (not the bank).
-* **The wait:** **20 to 30 seconds** at the stop. The screen fades, and you stand beside the sign at the stop you picked.
+* **Where:** the **bus stop** signs (a round blue bus plate on a yellow pole) at the curb, shown on the map as **Bus stop**.
+  Every stop has a printed **timetable board** on its pole: the line's name, this stop marked **You are here**, then every
+  other stop, nearest first, with its fare. Walk up to it and read it.
+* **How:** look at the sign and scroll the action list: one line per stop, nearest first, such as
+  **Bus to Harbor: $18, 20 s**. Press **F** on the one you want: the fare comes out of your **cash** (not the bank).
+  There is no window. A greyed line tells you why: **Not enough cash**, **Police nearby** (when you are wanted),
+  **Next bus not due yet** or **Ticket already bought**.
+* **The wait:** **20 to 30 seconds** at the stop; a hint counts it down. The screen fades, and you stand beside the sign at
+  the stop you picked. Changed your mind? **Cancel trip (refund)** is on the same sign while you wait.
 * **Fare:** **$15** plus about **$6 a kilometre**, never more than **$45**.
 * **Cancelled and refunded:** walk more than a few metres from the sign, get hurt or start a fight, go down, get cuffed or
   climb into a vehicle while you wait. You get the fare back.
@@ -240,14 +245,14 @@ The drops are on the east side (a house near the district road) and four along t
 
 **Status:** ❌ **not on the island yet.** The route job is built and tested in the test grid only. No depot desk, truck or dump is placed.
 
-The plan: take the garbage round at a depot desk, drive the company truck to the 5 nearest bins in order, **Empty bin** at each, and **Tip the load** at the dump.
+The plan: take the garbage round at a depot desk, drive the company truck to the 5 nearest bins in order, **Empty bin** at each, and **Tip the load** at the dump. The truck opens only for you.
 It pays **$15 a bin plus a $25 bonus, $100 a round** (about $400 an hour, no buy-in).
 
 ## Fuel haul
 
 **Status:** ❌ **not on the island yet.** The code and a fuel depot yard at Montignac exist, but no fuel pickup or depot desk is placed, so the run cannot start.
 
-The plan: buy a **1,000-litre load** at the Montignac depot at $0.90 a litre, pump it into a station tank and earn **$1.35 a litre**
+The plan: buy a **1,000-litre load** at the Montignac depot at $0.90 a litre (the locked depot tanker then opens for you alone), pump it into a station tank and earn **$1.35 a litre**
 (a $450 margin per haul, about $450 an hour). The **filling station** pumps in town sell from a 3,000-litre tank (**$2 a litre**). If the tank runs dry
 the pump says "The tanks are dry. The depot truck is due."
 
@@ -258,7 +263,7 @@ the pump says "The tanks are dry. The depot truck is due."
 * **Where:** the **iron mine** (sign *Coalman's Brow mine*, map label **Iron mine**) on the wooded north side of the brow, about 350 m south-west of the square past the farms; the track off the road to the west leads up to it.
   It has the **miner's desk**, six rust-veined **iron rocks**, a **furnace** and an **iron buyer**'s counter. The **pickaxe** is sold at the
   **miners' supply** till in the **hardware store** on the south-east road (and in the general store).
-* **How to start:** take the **miner job** at the desk by the mine. Then buy a **pickaxe** ($150) at the miners' supply till in the
+* **How to start:** take the **miner job** at the desk by the mine (**Take the job: Miner** on its clock; after a respawn take it again). Then buy a **pickaxe** ($150) at the miners' supply till in the
   hardware store. Any new miner can buy it.
 * **What you do:**
   1. Hold the pickaxe and **swing at an iron rock**. Every few swings a piece of **iron ore** breaks off and drops at your feet; pick it up.
