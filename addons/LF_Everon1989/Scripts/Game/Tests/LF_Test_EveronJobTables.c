@@ -61,7 +61,13 @@ class LF_Test_EveronJobTables : LF_Test
 				}
 			}
 
-			ctx.Equal(topLevel - 1, unlockedAt.Count(), string.Format("%1 has one unlock per level above the first (levels 2 to %2)", job, topLevel));
+			// The tables run to level 30 (#4181); the unlock rows for levels 6 to 30 are W4's. Until they land the
+			// gates cover the first levels: at most one per level, none past the table, and levels 2 to 4 (every
+			// pack job has them) keep their one unlock each.
+			int gatedTop = 4;
+			if (topLevel < gatedTop)
+				gatedTop = topLevel;
+
 			for (int level = 2; level <= topLevel; level++)
 			{
 				int onThisLevel = 0;
@@ -71,7 +77,15 @@ class LF_Test_EveronJobTables : LF_Test
 						onThisLevel++;
 				}
 
-				ctx.Equal(1, onThisLevel, string.Format("%1 level %2 unlocks exactly one thing", job, level));
+				if (level <= gatedTop)
+					ctx.Equal(1, onThisLevel, string.Format("%1 level %2 unlocks exactly one thing", job, level));
+				else
+					ctx.True(onThisLevel <= 1, string.Format("%1 level %2 unlocks at most one thing", job, level));
+			}
+
+			foreach (int gateLevel : unlockedAt)
+			{
+				ctx.True(gateLevel >= 2 && gateLevel <= topLevel, string.Format("%1 has a gate on level %2, inside its table", job, gateLevel));
 			}
 		}
 	}

@@ -32,5 +32,5 @@ and logged (`[LFDebug:Law]`); the shipped value stays.
 
 - The Everon amounts, groups and jail-only flags per code: L2 (pack law book).
   Core rows ship with the defaults until then.
-- The charge sheet total, rank cap and repeat doubling: L3
-  (`LF_ChargeSheetRules`), which calls these rules.
+- The charge sheet total, rank cap, repeat doubling and the Sergeant override are
+  `Law/LF_ChargeSheetRules.c` (L3, #4209); the booking desk that uses them is L5.
