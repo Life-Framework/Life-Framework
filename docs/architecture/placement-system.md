@@ -314,3 +314,9 @@ audit checks (A), then shop rebuilds through the grid (R) and the gate (C1) once
 - **`look contact` and the audit cannot measure a pitched prop.** The upright timbering posts (`WoodLog_01_A`, pitch 90, scale 0.5, 3.0 m, y 1.472) read `NO SUPPORT`; judge them from `look grid: --interior` at eye level. The lintel on top of them reads floating 3 m and is in `agent-box/place-audit-allow.json` for that reason. A lintel at the portal's front plane clipped the buried-shaft mesh by 14 cm, so the frame stands 20 cm in front of it (z 5.2) and the lintel is cut to the 2.8 m post span.
 - **Wall lamps in a grid bay with no shell read floating** (plant store lamps, allowed with the reason). They also sat 17 cm into the 2.59 m shelves below them; they now hang over the free stretch of the -z wall.
 - **The Ural's contact box is 43 cm over the pivot, the tyres stand on the grass.** The 1 cm sheet flags it `[OFF]` and the audit passes it: a hint, not a floating truck. The tippler mesh reaches 8 m under the pivot (the shaft), so it reads `NO SUPPORT` from below.
+
+### Jail rebuild notes (#3888)
+
+- **Seat tool (`town fit`):** a floor row stays at its kit height with `"keepY": true` on the kit row. The island jail floor is 8.6 cm over the model's top surface; `lift` shifts after the snap, `keepY` skips it (`town stamp` already leaves every floor row at its grid height). The tub's kit `offset y` is 0.086 with `keepY`.
+- **A wall row keeps a move along its wall.** The seat only re-seats its depth (`town-fit-seat-selftest` "wall sideways"). The sink faces -x, so the earlier try of x -3.6 to -4.1 moved it along its facing and the wall seat undid it; a move in z (-2.7 to -3.05) is kept and cleared the door swing (-3.3 hit the yard broom). Mind which axis the row faces.
+- The jail slot is `with: police` on a street host, so it stays a `town fit` kit; the rows are four and none of the findings needed the grid.
