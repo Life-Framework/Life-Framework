@@ -320,6 +320,8 @@ class LF_GarbageRound
 		else
 			LF_Debug.Warn(FEATURE, string.Format("garbage round: %1 has no LF_VehicleLockComponent: anyone can drive the company truck", config.m_Truck));
 
+		// The round is session state, so the truck is too (#4122): saved, it came back at a restart unlocked and driverless.
+		LF_VehicleWorldSave.Hold(truck);
 		run.m_Truck = truck.GetID();
 		run.m_fStartedAt = LF_JobGuards.Now();
 		Runs().Set(uid, run);

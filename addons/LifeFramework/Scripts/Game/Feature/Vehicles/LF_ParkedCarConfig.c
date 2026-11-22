@@ -132,6 +132,13 @@ class LF_ParkedCarConfig
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return True when the list holds this car prefab (by GUID).
+	bool Lists(ResourceName prefab)
+	{
+		return m_aCars && FirstIndexOf(prefab) >= 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected int FirstIndexOf(ResourceName prefab)
 	{
 		for (int i = 0; i < m_aCars.Count(); i++)

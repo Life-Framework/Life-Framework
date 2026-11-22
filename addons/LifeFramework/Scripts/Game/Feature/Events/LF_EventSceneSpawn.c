@@ -319,6 +319,8 @@ class LF_EventSceneSpawn
 			return;
 		}
 
+		// A scene is session state (#4122): its vehicle stays out of the world save, or a restart puts it back as a free car.
+		LF_VehicleWorldSave.Hold(vehicle);
 		crew.m_VehicleId = vehicle.GetID();
 		LF_Debug.Info(FEATURE, string.Format("scene %1 parked vehicle %2", crew.m_sSceneId, prefab));
 	}

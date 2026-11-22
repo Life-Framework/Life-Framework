@@ -74,9 +74,15 @@ class LF_ParkedCarMarkerComponent : ScriptComponent
 	static const float SETTLE_LIFT = 1.2;
 	static const float SETTLE_REACH = 2.5; // lf-fixed: a geometry bound of the seat trace, not a tunable
 
+	//! World start waits at most this many seconds for a continued save to finish loading (#4122).
+	static const int LOAD_WAIT_TRIES = 60; // lf-fixed: a boot-time bound, not a tunable
+	//! The engine's "still loading" window after the load completes, in ms.
+	static const float LOAD_SETTLE_MS = 2000; // lf-fixed: covers the restore's first frames
+
 	protected EntityID m_CarId = EntityID.INVALID;
 	protected int m_iGoneSince;
 	protected int m_iSpawned;
+	protected int m_iLoadWaits;
 
 	//------------------------------------------------------------------------------------------------
 	override void OnPostInit(IEntity owner)
@@ -102,10 +108,94 @@ class LF_ParkedCarMarkerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! World start. On a continued save the engine restores its saved vehicles first; the marker waits for that
+	//! load (up to LOAD_WAIT_TRIES seconds) so a copy an older build saved is adopted instead of doubled (#4122).
 	protected void FirstSpawn()
 	{
-		if (!GetCar())
-			SpawnCar("world start");
+		if (SCR_PersistenceSystem.IsLoadInProgress(LOAD_SETTLE_MS) && m_iLoadWaits < LOAD_WAIT_TRIES)
+		{
+			m_iLoadWaits++;
+			GetGame().GetCallqueue().CallLater(FirstSpawn, 1000);
+			return;
+		}
+
+		PutOut("world start");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The marker's car, put out once: the current car, else a car the save restored at the marker (adopted
+	//! and locked), else a fresh one. Idempotent: a second call returns the same car.
+	//! \return The car, or null when none could be put out (logged).
+	IEntity PutOut(string why)
+	{
+		IEntity car = GetCar();
+		if (car)
+			return car;
+
+		car = AdoptRestored();
+		if (car)
+			return car;
+
+		return SpawnCar(why);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A save written before #4122 holds the marker's car as a world vehicle; the engine restores it unlocked.
+	//! The nearest such car within m_fHomeMetres becomes this marker's car: locked, and out of the save again.
+	//! Only after a save was loaded, and only a car of this marker's own list (the parked car list, or the police
+	//! marker's service prefab): a layer car beside the marker (the taxi, a placed car) is never taken. Owned cars and
+	//! job cars are never taken either.
+	//! \return The adopted car, or null when the save put none back here.
+	IEntity AdoptRestored()
+	{
+		IEntity owner = GetOwner();
+		if (!owner || !Replication.IsServer() || !GetGame() || !GetGame().GetWorld() || !LF_ParkedCars.SaveLoaded())
+			return null;
+
+		LF_ParkedCarConfig config = LF_ParkedCarConfig.Get();
+
+		IEntity best;
+		float bestDistance = m_fHomeMetres + 1;
+		array<IEntity> nearby = LF_Utils.GetNearbyVehicles(owner.GetOrigin(), m_fHomeMetres);
+		foreach (IEntity vehicle : nearby)
+		{
+			if (!vehicle || !LF_VehicleWorldSave.IsSaved(vehicle))
+				continue;
+
+			LF_VehicleLockComponent candidateLock = LF_Component<LF_VehicleLockComponent>.Find(vehicle);
+			if (!candidateLock || !candidateLock.GetOwnerUid().IsEmpty() || candidateLock.GetJobDriverPlayerId() >= 0 || candidateLock.IsJobCar())
+				continue;
+
+			ResourceName prefab = LF_Utils.GetPrefabName(vehicle);
+			if (!m_sServiceCar.IsEmpty())
+			{
+				if (!LF_Utils.SamePrefab(prefab, m_sServiceCar))
+					continue;
+			}
+			else if (!config || !config.Lists(prefab))
+			{
+				continue;
+			}
+
+			float distance = vector.Distance(vehicle.GetOrigin(), owner.GetOrigin());
+			if (distance < bestDistance)
+			{
+				best = vehicle;
+				bestDistance = distance;
+			}
+		}
+
+		if (!best)
+			return null;
+
+		LF_VehicleLockComponent vehicleLock = LF_Component<LF_VehicleLockComponent>.Find(best);
+		vehicleLock.SetLocked(true);
+		vehicleLock.SetServiceVehicle(!m_sServiceCar.IsEmpty());
+		LF_VehicleWorldSave.Hold(best);
+		m_CarId = best.GetID();
+		m_iGoneSince = 0;
+		LF_Debug.Info(LF_ParkedCarConfig.FEATURE, string.Format("parked car adopted from the save and locked: %1 at %2", LF_Utils.GetPrefabName(best), best.GetOrigin()));
+		return best;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -181,6 +271,10 @@ class LF_ParkedCarMarkerComponent : ScriptComponent
 		else
 			LF_Debug.Warn(LF_ParkedCarConfig.FEATURE, string.Format("%1 has no LF_VehicleLockComponent: the parked car stands unlocked", prefab));
 
+		// Nothing is saved (#4122): the engine would write the car and a restart would put back an unlocked copy
+		// beside the one this marker puts out again. A taken car is gone at a restart, like the marker's clock.
+		LF_VehicleWorldSave.Hold(car);
+
 		// The marker's height came from the place's survey, not from the street under it (placement-system.md): rest the car's
 		// wheels on the surface under its footprint (pavement, kerb, forecourt), traced from SETTLE_LIFT above its bottom.
 		LF_PlaceSnapResult seat = LF_PlaceSnap.Settle(car, SETTLE_LIFT, SETTLE_REACH);
@@ -247,6 +341,8 @@ class LF_ParkedCars
 	//! Car ids (LF_ParkedCarList.CarId) whose prefab did not spawn this session; never tried again.
 	protected static ref array<string> s_aFailedCars;
 	protected static bool s_bNoCarReported;
+	//! Test seam: adoption runs as if a save had been loaded.
+	protected static bool s_bAssumeSaveLoaded;
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The cars that failed to spawn this session (never null).
@@ -356,6 +452,27 @@ class LF_ParkedCars
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! \return True when this boot continued a save, so the engine may have restored marker cars (#4122).
+	static bool SaveLoaded()
+	{
+		if (s_bAssumeSaveLoaded)
+			return true;
+
+		PersistenceSystem system = PersistenceSystem.GetInstance();
+		if (!system)
+			return false;
+
+		return system.WasDataLoaded();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Tests: adoption runs as if a save had been loaded, until ResetStatics.
+	static void AssumeSaveLoaded()
+	{
+		s_bAssumeSaveLoaded = true;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Tests: a position that counts as a player until ResetStatics.
 	static void AddStandIn(vector position)
 	{
@@ -392,6 +509,7 @@ class LF_ParkedCars
 		s_aStandIns = null;
 		s_aFailedCars = null;
 		s_bNoCarReported = false;
+		s_bAssumeSaveLoaded = false;
 	}
 }
 

@@ -61,6 +61,8 @@ class LF_Test_EventSceneVehicle : LF_Test
 		if (car)
 		{
 			ctx.True(Vehicle.Cast(car) != null, "the vehicle is a vehicle");
+			LF_VehicleWorldSave.HoldAgain();
+			ctx.False(LF_VehicleWorldSave.IsSaved(car), "the scene vehicle is out of the world save, so a restart puts no free copy back (#4122)");
 			string prefabName = car.GetPrefabData().GetPrefabName();
 			ctx.True(prefabName.EndsWith("S105_beige.et"), "the vehicle is the asked prefab (" + prefabName + ")");
 			float off = vector.DistanceXZ(car.GetOrigin(), spawns[0].GetOrigin());
