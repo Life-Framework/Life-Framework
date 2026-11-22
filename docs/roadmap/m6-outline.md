@@ -43,12 +43,13 @@ Chapters marked **new** have no GitHub issue yet.
 | Order | Chapter | Framework (core) | Flagship (1989 pack) |
 | --- | --- | --- | --- |
 | 1 | The working island (**new**) | Taxi fares by distance between places (**new**), taxi stands as an `LF_Places` kind (**new**), map cards M8 onwards of #2223 (marks, shared marks for fares and job stops, discovery) | State 2a places through the town pipeline: the Saint-Philippe dock and districts, the road to Meaux and Meaux; a taxi stand per town; the harbour master (voiced); island data for the dispatch board's named places |
-| 2 | Getting better at the job #1018 | **Standing** (**new**, [design](../architecture/reputation.md)), contract jobs with a standing stake (**new**), skill gates on job levels #764, pickaxe and shovel #650, medic ranks #652 | Tier words and awards (**new**), the first contracts (**new**), skill gates #765, tools #651, medic ranks #653 |
+| 2 | Getting better at the job #1018 | **Professions and skills** (2026-11-22, see "Additions"), **Standing** (**new**, [design](../architecture/reputation.md)), contract jobs with a standing stake (**new**), skill gates on job levels #764, pickaxe and shovel #650, medic ranks #652 | Tier words and awards (**new**), the first contracts (**new**), skill gates #765, tools #651, medic ranks #653 |
 | 3 | The market moves #1016 | Market price state #748, price curve and board #762, stall board market #786, cash escrow #759, market stall placement #1034 | Market goods and the chalk board #763, market-day stalls #787, the supermarket on the square ([card](scopes/later/supermarket.md)) |
 | 4 | Gone fishing (**new**) | **Fishing** (**new**, [design](../architecture/fishing.md)): rod, cast and strike, spots and stock, the FISHER track, the `FISHING` licence, the fish counter and chandler outlets | Species, prices and tables (**new**); rod, bait and fish through the 3D pipeline (**new**); the quay, Black Lake and two coves; the smokehouse; Gaspard's and the harbour master's lines and the inland delivery contract |
 | 5 | Working the routes #1019 | Garbage rounds #205, fuel stock refilled by delivery #788, repair kit and unflip #648 | Collective-farm fuel depot #789, repair kit #649 |
 | 6 | Scrap and salvage #1020 | Recycler #784, container loot #916 | Scrapyard recycler #785, 1989 loot tables #917, the scrapyard place |
 | 7 | The bank #1010 | Bank transfer by account number #638; typed safes (#2288, landing from M5) | Bank interior #931 on the Everon bank building (merged, in-dev), transfers #639, store box safes in the shops #2282 |
+| 7b | Bigger wheels (**new**, 2026-11-22) | The truck and helicopter dealers, truck and pilot licences, the vehicle and inventory capacity table and "feed from the truck" (see "Additions") | The truck yard and the airfield hangar; civilian liveries; prices and fees |
 | 8 | Story: The state factory #1021 | Uses existing systems: dialogue, quests, the event shell #757, standing gates; workplace tasks ([card](scopes/later/tasks.md)) | Montignac and the factory (state 2c); the factory director (voiced); quotas, shifts and the arc's beats; town standing earned on the line |
 
 **Why this order.**
@@ -167,6 +168,141 @@ Plumbing that ships with M6 and has no video of its own:
 - **Taxi fares by distance** and taxi stands per town.
 - **The state 2 bake**: town-draft cards per slot, sub-state readiness, island data files for the
   dispatch board, the town board and racing.
+
+## Additions (maintainer wishlist, 2026-11-22)
+
+The maintainer's list of 2026-11-22 adds five items to M6. **None starts before the 0.2.1 cut and the
+first-two-hours review** ([README](README.md) "Now"). Where they go:
+
+- **Professions and skills** is the backbone the M6 jobs hang on, so it joins chapter 2, Getting better at the
+  job #1018, beside standing.
+- **The truck dealer, the civilian helicopter dealer, truck and pilot licences, and vehicle and inventory
+  progression** form a new chapter, **Bigger wheels (new)**, after Working the routes: the routes and chains
+  are what a bigger vehicle is for.
+
+Each section: goal, what a player sees, what it builds on, open questions (each with a recommendation) and a
+rough size (S under a week of slices, M one chapter's worth, L more than one). The epic issue carries the same
+text and the acceptance criteria. Rules for all five: world interactions are action lists on the object and
+information sits on physical things (a price board, a sign), never a pop-up window where the world can do the
+job; every readable word is US English, liveries included; numbers come from `tools\cli economy` (2026-11-22: a
+new civilian earns about $400 to $600 an hour, police duty $900 to $1,260).
+
+### Professions and skills that feel worth it
+
+Epic: #4140.
+
+- **Goal.** A progression a player wants to keep climbing, in the spirit of long crafting-profession curves and
+  skill-perk mods: every job skill (mining, lumber, fishing, farming, delivery, smelting, police, medic and more)
+  gets a long level curve with rewards a player feels along it. Design it as one system first.
+- **What a player sees.**
+  - **Unlocks:** new tools, nodes and recipes (richer ores, hardwoods, rare fish, better recipes).
+  - **Passive perks:** a chance of double yield, faster work, less tool wear, better prices at that skill's
+    buyers, more carry or cargo room.
+  - **Milestone abilities:** an active skill on a cooldown at a key level (a miner's timed "second wind" that
+    doubles the swing rate for 60 s, every 20 minutes).
+  - **Mastery:** titles, clothing and vehicle liveries at the top of a skill (the livery pipeline in
+    Development).
+  - **Synergies:** one skill pays into another (smelting raises what a miner's ore fetches).
+  - **Moments:** a level-up sound, toast and a "what you unlocked" card; a perk choice at key levels (pick one of
+    two); a daily first-run bonus; a per-skill leaderboard on a board in the town hall and in the F2 menu.
+- **Builds on.** `LF_JobLevels` (one XP track per job, thresholds in `jobs.tracks`, awards in `jobs.xpAwards`,
+  daily caps, `LF_OnJobLevelChanged`; #749), skill gates #764 and #765, the gate words (#2700), the F2 player
+  menu's skills column and its detail card ("what the next level unlocks"), standing (chapter 2), the market
+  price curve (chapter 3, for buyer-price perks).
+- **Open questions.**
+  - K1. This revises decision 7 ("no visible levels"); the F2 menu already shows a level chip per skill. **Recommend
+    levels are shown in F2, the card and the leaderboard**, while gates keep refusing in words.
+  - K2. Curve length. **Recommend 30 levels per skill**, the first five within the first two hours, level 30
+    after about 60 hours in that skill.
+  - K3. Perk size against the duty gap. **Recommend caps:** double yield at most 10 %, buyer prices at most +10 %,
+    so a maxed civilian loop stays at or under police duty pay (the 1.5 to 2.5 band in `tools\cli economy`, which
+    should print a "full perks" line per loop).
+  - K4. Police and medic. **Recommend their skill rewards are kit, titles and liveries, never pay**, since rank
+    sets duty pay.
+  - K5. Saved data. A perk choice is new save data: **a section payload** (`LF_SavePayload`), never a bump of the
+    `joblevels` payload.
+- **Size.** L (the system, then rows per skill).
+- **Acceptance.** One skill (mining) has the full set on GridWorld: a level-up moment, an unlock, a passive perk,
+  an active ability on its cooldown, a perk choice that survives a restart, the daily bonus once a day, and a
+  leaderboard row; `tools\cli economy` shows the full-perk loop inside the band.
+
+### Truck dealer
+
+Epic: #4141.
+
+- **Goal.** A dealer that sells working trucks, so a hauler can grow from a car to a van to a truck.
+- **What a player sees.** A yard on the industrial edge of a town with trucks parked in a row, a price board and
+  a salesman; "Buy" on each truck (one action per colour). A truck licence is asked for.
+- **Builds on.** The vehicle lot (`LF_VehicleLotComponent`, colours #1826, lot licence check #3151), the vanilla
+  Ural and M923 (the car lot sells the M923 today), the cargo bed (truck 12 units, van 6), garage slots.
+- **Open questions.**
+  - T1. Move trucks off the car lot? **Recommend yes:** the car lot keeps cars and vans, trucks sell only at the
+    dealer.
+  - T2. Where. **Recommend Montignac** (the work town, state 2c) or the dock, through the town pipeline.
+- **Size.** S.
+- **Acceptance.** The dealer sells two truck models in two colours each; a buyer without the truck licence is
+  refused in words; the truck spawns at the dealer's pad and keeps its bed load across a restart.
+
+### Civilian helicopter dealer
+
+Epic: #4142.
+
+- **Goal.** A civilian helicopter shop: the top of vehicle progression.
+- **What a player sees.** At the airfield, a hangar with one helicopter in civilian paint, a price board, and a
+  dealer; "Buy" needs a pilot licence. The helicopter is stored at the hangar's pad, not in a town garage.
+- **Builds on.** The vehicle lot and garage, vanilla helicopters in a civilian livery (the livery spike in
+  Development), fuel stations, the town pipeline for the airfield.
+- **Open questions.**
+  - A1. The README rule says a scope adds no aircraft. **Recommend reading it as no new aircraft assets:** the base
+    game's helicopters are base-game vehicles (the rule text is updated in this PR).
+  - A2. Price. **Recommend $12,000 to $20,000**, about 24 to 40 hours of civilian work, banked (above the lot cash
+    ceiling).
+  - A3. Landing. **Recommend no landing inside a town's safe zone** except marked pads, and a crash wrecks it
+    (tow to the hangar at a fee).
+- **Size.** M (the airfield place, the hangar pad, the livery).
+- **Acceptance.** A pilot buys a helicopter at the hangar, flies it, stores it at the hangar pad and finds it
+  there after a restart; a buyer without the licence is refused in words.
+
+### Truck and pilot licences
+
+Epic: #4143.
+
+- **Goal.** Two licences that go with the new dealers.
+- **What a player sees.** The truck licence at the licence desk after a short driving check on a marked course
+  in a lent truck. The pilot licence at a flight school at the airfield: a paper test on a board, then a check
+  flight (lift, hover, land on two marked pads). An officer can seize either (the law book in M7).
+- **Builds on.** `LF_LicenceDesk` (#1766), `LF_ELicenseType.DRIVING_LICENCE`, the qualifications payload and
+  training desk (#860), licence seizure (#861), job-level gates on licences (`LF_LicenseGate`).
+- **Open questions.**
+  - L1. Exam or fee only? **Recommend a short practical check** for both: it teaches the controls, and the first
+    flight is the hard part.
+  - L2. Fees. **Recommend $300 truck, $1,500 pilot.**
+- **Size.** S (truck), M (pilot with the check flight).
+- **Acceptance.** Each licence is bought only after its check; it survives a restart; the dealers read it.
+
+### Vehicle and inventory progression
+
+Epic: #4144.
+
+- **Goal.** Player, car, van and truck capacity that make sense and give a natural climb, and cargo loaded into
+  a vehicle that the chains use up, ideally with the game's own inventory.
+- **What a player sees.** A starter car holds a few sacks; a van holds a pallet's worth; a truck carries a
+  furnace's day of ore. Load reagent sacks, fuel cans or seed into the truck with the normal inventory; at a
+  station, "Feed from the truck" (an action on the station when the truck is backed up within reach) takes the
+  inputs from its storage.
+- **Builds on.** Vehicle storage and car cargo kept across restarts (#2809), the cargo bed (carry.md), backpacks
+  from the clothing store, chain stations' `Load`, `tools\cli economy` loops (add a capacity column per loop),
+  M8 Garages and lockers for storage at home.
+- **Open questions.**
+  - V1. Capacity table. **Recommend one config table** (body, backpack tiers, car, van, truck) checked by a
+    validator so a car never out-carries a van.
+  - V2. Native or ours. **Recommend native vehicle storage first** and the cargo bed for bulky loads (logs,
+    crates).
+  - V3. Balance. **Recommend each chain's best loop needs the next vehicle up** to stay in the band, so the
+    vehicle is the progression.
+- **Size.** M.
+- **Acceptance.** The capacity table loads and validates; a truck feeds a station from its storage on GridWorld;
+  `tools\cli economy` prints each loop by vehicle tier, all inside the band.
 
 ## Risks
 
