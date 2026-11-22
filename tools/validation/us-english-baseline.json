@@ -1,0 +1,125 @@
+{
+  "about": "Known non-US-English text that validate-us-english lets pass. Only shrinks: fix the text and drop the row.",
+  "entries": [
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_CafeOwner_GreetRegular",
+      "word": "favourite",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_CafeOwner_Move",
+      "word": "neighbour",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_ClerkEveron_WelcomeTown",
+      "word": "neighbours",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_Dockworker_AboutCargo",
+      "word": "harbour",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_Dockworker_AboutWork",
+      "word": "harbour",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_FuelClerk_AboutWhere",
+      "word": "Petrol",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_Gendarme_Greet",
+      "word": "Gendarmerie",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_HarbourMaster_Greet",
+      "word": "Harbour",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_NightShift_AboutZone",
+      "word": "kilometres",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_OldMan_GreetRegular",
+      "word": "harbour",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_ResidentMireille_AboutGossip",
+      "word": "harbour",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_ResidentMireille_Greet",
+      "word": "Bonjour",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_Rumour_SayAsk",
+      "word": "café",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_ShipmentGoBetween_Sell",
+      "word": "gendarmerie",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "addons/LifeFramework/Language/everonlife_localization.st",
+      "where": "LF-Dialogue_FuelClerk_AboutWhere",
+      "word": "Petrol",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    },
+    {
+      "file": "tools/assets/atm-wall/build.py",
+      "where": "texture text",
+      "word": "BANQUE",
+      "why": "ATM kiosk texture: another branch is re-authoring it in English (2026-11-22)"
+    },
+    {
+      "file": "tools/assets/atm-wall/build.py",
+      "where": "texture text",
+      "word": "BILLETS",
+      "why": "ATM kiosk texture: another branch is re-authoring it in English (2026-11-22)"
+    },
+    {
+      "file": "tools/assets/atm-wall/build.py",
+      "where": "texture text",
+      "word": "OUVERT",
+      "why": "ATM kiosk texture: another branch is re-authoring it in English (2026-11-22)"
+    },
+    {
+      "file": "tools/assets/atm-wall/build.py",
+      "where": "texture text",
+      "word": "DISTRIBUTEUR",
+      "why": "ATM kiosk texture: another branch is re-authoring it in English (2026-11-22)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_ClerkEveron_Market",
+      "word": "centre",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
+    }
+  ]
+}

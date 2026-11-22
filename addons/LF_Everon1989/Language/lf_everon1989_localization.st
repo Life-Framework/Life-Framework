@@ -206,7 +206,7 @@ StringTable {
     }
     CustomStringTableItem "{2FC28DBE70BC949C}" {
      Id "LF-Activity_Mining_Ore_Note"
-     Target_en_us "Swing at the rust-veined rocks and pick up 3 pieces of ore; every piece levels Mining, and level 2 opens the coal licence."
+     Target_en_us "Swing at the rust-veined rocks and pick up 3 pieces of ore; every piece levels Mining, and level 2 opens the coal license."
      Comment "Mining step note, one sentence, with the levelling hint."
     }
     CustomStringTableItem "{BBF0328175038D91}" {
@@ -281,12 +281,12 @@ StringTable {
     }
     CustomStringTableItem "{8AA24D7948EBB5BF}" {
      Id "LF-Activity_Postal_Licence_Note"
-     Target_en_us "The van needs a driving licence: get one at the licence desk for $100."
+     Target_en_us "The van needs a driving license: get one at the license desk for $100."
      Comment "Postal step note, one sentence. Skipped when held."
     }
     CustomStringTableItem "{DEC2262628F576DE}" {
      Id "LF-Activity_Postal_Licence_Title"
-     Target_en_us "Get a driving licence"
+     Target_en_us "Get a driving license"
      Comment "Postal step title."
     }
     CustomStringTableItem "{1E5B2469908D677D}" {
@@ -411,7 +411,7 @@ StringTable {
     }
     CustomStringTableItem "{0384C0944FFE565E}" {
      Id "LF-ContractTracker_Title_harbour_crates"
-     Target_en_us "Harbour crates"
+     Target_en_us "Harbor crates"
      Comment "Contract tracker title (#2709): the harbour master's early crates run (LF-ContractTracker_Title_<contractId>)."
     }
     CustomStringTableItem "{3794F00000000008}" {
@@ -1641,47 +1641,47 @@ StringTable {
     }
     CustomStringTableItem "{F2B1DF023C756490}" {
      Id "LF-Everon-Lock_Closed"
-     Target_en_us "Fermé"
+     Target_en_us "Closed"
      Comment "Door prompt on the harbour company offices (#3204)."
     }
     CustomStringTableItem "{7D3A91C2E54B08F6}" {
      Id "LF-Everon-Lock_ForSale"
-     Target_en_us "À vendre : voir le panneau"
+     Target_en_us "For sale: see the sign"
      Comment "Door prompt on a home for sale whose house marker is in the world and nobody owns yet (#3584); once bought it shows Lock_Private to everyone but the owner and key holders."
     }
     CustomStringTableItem "{04E0632F53FEF329}" {
      Id "LF-Everon-Lock_ForSaleSoon"
-     Target_en_us "À vendre bientôt"
+     Target_en_us "For sale soon"
      Comment "Door prompt on a home that no sale card has opened yet (#3204); the house marker wins once it does."
     }
     CustomStringTableItem "{FB53912C7C2A947B}" {
      Id "LF-Everon-Lock_Military"
-     Target_en_us "Zone militaire"
+     Target_en_us "Military zone"
      Comment "Door prompt on the dock barracks and the port guard house (#3204)."
     }
     CustomStringTableItem "{C5E2CABAD9F4D25D}" {
      Id "LF-Everon-Lock_OpeningSoon"
-     Target_en_us "Ouverture prochaine"
+     Target_en_us "Opening soon"
      Comment "Door prompt on a planned shop whose slot has not been fitted yet (#3204); the fitted place wins once it is."
     }
     CustomStringTableItem "{43FE7E120EB47887}" {
      Id "LF-Everon-Lock_Private"
-     Target_en_us "Propriété privée"
+     Target_en_us "Private property"
      Comment "Door prompt on a locked home, barn, lock-up or outbuilding of Saint-Philippe (Locks_saint-philippe.layer, #3204)."
     }
     CustomStringTableItem "{39FDDD7A03DF9AE7}" {
      Id "LF-Everon-Lock_School"
-     Target_en_us "École : vacances d'été"
+     Target_en_us "School: closed for summer"
      Comment "Door prompt on the Saint-Philippe school, shut for the summer holidays (#3204)."
     }
     CustomStringTableItem "{B3C06B7358DCA8A8}" {
      Id "LF-Everon-Lock_StaffOnly"
-     Target_en_us "Réservé au personnel"
+     Target_en_us "Staff only"
      Comment "Door prompt on a locked fire station, co-op or dock warehouse, or the garage behind the gun counter (#3204)."
     }
     CustomStringTableItem "{318D1CFF0247C655}" {
      Id "LF-Everon-Lock_ToLetSoon"
-     Target_en_us "À louer bientôt"
+     Target_en_us "For rent soon"
      Comment "Door prompt on a dock workshop kept for the fishing chapter (#3204)."
     }
     CustomStringTableItem "{10AEFC81EF1DE6FB}" {
@@ -1821,7 +1821,7 @@ StringTable {
     }
     CustomStringTableItem "{9F56752F9C3CF3D7}" {
      Id "LF-Handbook_Everon_LawBody1"
-     Target_en_us "Guns need a firearm permit. Apply at the licence desk. The permit takes some hours to be made ready, so come back to the desk to collect it. You are refused if the police want you, and the police can take a permit away."
+     Target_en_us "Guns need a firearm permit. Apply at the license desk. The permit takes some hours to be made ready, so come back to the desk to collect it. You are refused if the police want you, and the police can take a permit away."
      Comment "Everon handbook page find-the-rules, paragraph 1 (#1776)."
     }
     CustomStringTableItem "{1784EE3B13AB3D8B}" {
@@ -1981,7 +1981,7 @@ StringTable {
     }
     CustomStringTableItem "{77C624C0C6085686}" {
      Id "LF-Item_CannedFish"
-     Target_en_us "Tinned sardines"
+     Target_en_us "Canned sardines"
      Comment "Item name: tinned sardines, sold at the Saint-Philippe general store."
     }
     CustomStringTableItem "{043E558B24CB142C}" {
@@ -2131,7 +2131,7 @@ StringTable {
     }
     CustomStringTableItem "{6342C0C34CC2ED27}" {
      Id "LF-Item_RubberScrap_Description"
-     Target_en_us "A worn-out tyre with its steel bead still in it. Not worth much, but the bead is."
+     Target_en_us "A worn-out tire with its steel bead still in it. Not worth much, but the bead is."
      Comment "Item description: rubber scrap (scrapyard, #3823)."
     }
     CustomStringTableItem "{1FCB1E70B50BA956}" {
@@ -2331,7 +2331,7 @@ StringTable {
     }
     CustomStringTableItem "{CA4B6B802EFD710E}" {
      Id "LF-Lot_NeedsDrivingLicence"
-     Target_en_us "Not without a driving licence. The town hall desk issues it for %1."
+     Target_en_us "Not without a driving license. The town hall desk issues it for %1."
      Comment "Overrides the core row: the flagship's car lot refusal names the town hall licence desk (#3151). %1 is the fee."
     }
     CustomStringTableItem "{38CCD9128665A6C3}" {
@@ -2406,7 +2406,7 @@ StringTable {
     }
     CustomStringTableItem "{5A7C1E04B93D6F0F}" {
      Id "LF-MapPoi_FillingStation"
-     Target_en_us "Filling station"
+     Target_en_us "Gas station"
      Comment "Map POI kind name (#2247): the fuel till."
     }
     CustomStringTableItem "{E20FC1E39F2F3576}" {
@@ -2471,7 +2471,7 @@ StringTable {
     }
     CustomStringTableItem "{046B777F2F3B3DC1}" {
      Id "LF-MapPoi_Newsagent"
-     Target_en_us "Newsagent"
+     Target_en_us "Newsstand"
      Comment "Map POI name (#3515): the newsagent's counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
     }
     CustomStringTableItem "{5A7C1E04B93D6F11}" {
@@ -2541,7 +2541,7 @@ StringTable {
     }
     CustomStringTableItem "{5A7C1E04B93D6F10}" {
      Id "LF-MapPoi_TaxiRank"
-     Target_en_us "Taxi rank"
+     Target_en_us "Taxi stand"
      Comment "Map POI kind name (#2247): the taxi rank."
     }
     CustomStringTableItem "{C6BCDC83E709CDBF}" {
@@ -2866,7 +2866,7 @@ StringTable {
     }
     CustomStringTableItem "{169160A3F43F94EA}" {
      Id "LF-Quest_EveronMarket_Desc"
-     Target_en_us "Drive back to the market in the town centre and sell your apple juice to the trader."
+     Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader."
      Comment "Everon arrival step 5 errand: sell the juice at the market."
     }
     CustomStringTableItem "{E821B19281DF6F39}" {
@@ -2961,7 +2961,7 @@ StringTable {
     }
     CustomStringTableItem "{A63268C6F419075E}" {
      Id "LF-Quest_SettleWheels_DescLicence"
-     Target_en_us "Get your driving licence at the town hall desk first (00), then buy any car at the car lot. The town board shows where it is."
+     Target_en_us "Get your driving license at the town hall desk first (00), then buy any car at the car lot. The town board shows where it is."
      Comment "Settling-in chain step 3 (#3151): the flagship's car lot asks for the driving licence, so the step says to get it first."
     }
     CustomStringTableItem "{71D42A3909D03894}" {
@@ -2981,7 +2981,7 @@ StringTable {
     }
     CustomStringTableItem "{3440F00000000106}" {
      Id "LF-Quest_ShipmentReport_Desc"
-     Target_en_us "What was under the tinned fish belongs with the police. Hand it in at the desk."
+     Target_en_us "What was under the canned fish belongs with the police. Hand it in at the desk."
      Comment "Quest description for shipment_report (#3440)."
     }
     CustomStringTableItem "{3440F00000000105}" {
@@ -2996,7 +2996,7 @@ StringTable {
     }
     CustomStringTableItem "{3440F00000000104}" {
      Id "LF-Quest_ShipmentSold_Desc"
-     Target_en_us "What was under the tinned fish is worth money to the right person. Sell it to a buyer."
+     Target_en_us "What was under the canned fish is worth money to the right person. Sell it to a buyer."
      Comment "Quest description for shipment_sold (#3440)."
     }
     CustomStringTableItem "{3440F00000000103}" {
@@ -3226,7 +3226,7 @@ StringTable {
     }
     CustomStringTableItem "{CA4D10F34DED233D}" {
      Id "LF-Shop_Desc_ClothesShop"
-     Target_en_us "Jackets, shirts, trousers and hats in this year's colours."
+     Target_en_us "Jackets, shirts, pants and hats in this year's colors."
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
     CustomStringTableItem "{01FD5CE2F519BD5D}" {
@@ -3291,7 +3291,7 @@ StringTable {
     }
     CustomStringTableItem "{3E7A91C04B52D691}" {
      Id "LF-Shop_Desc_SeedFeed"
-     Target_en_us "Cabbage seeds, bait, fishing rods and bottled water for the farms and the harbour."
+     Target_en_us "Cabbage seeds, bait, fishing rods and bottled water for the farms and the harbor."
      Comment "Shop description of the Saint-Philippe seed and feed store till (#3223)."
     }
     CustomStringTableItem "{0BFE6BABD6975286}" {
@@ -3306,22 +3306,22 @@ StringTable {
     }
     CustomStringTableItem "{DBCD0C2289FBA157}" {
      Id "LF-Shop_Name_Bakery"
-     Target_en_us "Boulangerie"
+     Target_en_us "Bakery"
      Comment "Shop name of the Saint-Philippe bakery till (#3227): town house b06 on the square, stock bakery."
     }
     CustomStringTableItem "{086D9D3FDC39EA2C}" {
      Id "LF-Shop_Name_Butcher"
-     Target_en_us "Boucherie-charcuterie"
+     Target_en_us "Butcher"
      Comment "Shop name of the Saint-Philippe butcher till (#3228): town house b20 by the clothes shop, stock butcher."
     }
     CustomStringTableItem "{0B134C85762A065A}" {
      Id "LF-Shop_Name_Cafe"
-     Target_en_us "Café bar"
+     Target_en_us "Cafe"
      Comment "Shop name of the Saint-Philippe café till (#3063): the pub's bar counter, stock cafe."
     }
     CustomStringTableItem "{3891D91F71F15DB1}" {
      Id "LF-Shop_Name_ClothesShop"
-     Target_en_us "Clothes shop"
+     Target_en_us "Clothing store"
      Comment "Everon 1989 outlet counter (#1770): clothing_rack."
     }
     CustomStringTableItem "{4E605F7F63F4AF47}" {
@@ -3331,12 +3331,12 @@ StringTable {
     }
     CustomStringTableItem "{2A524DAA3F49F9F9}" {
      Id "LF-Shop_Name_FuelKiosk"
-     Target_en_us "Filling-station kiosk"
+     Target_en_us "Gas station store"
      Comment "Shop name of the Saint-Philippe fuel station kiosk till: stock fuel_kiosk."
     }
     CustomStringTableItem "{5610D2FB07972A2F}" {
      Id "LF-Shop_Name_Furniture"
-     Target_en_us "Meubles"
+     Target_en_us "Furniture"
      Comment "Shop name of the Saint-Philippe furniture store counter (#3256): stock furniture."
     }
     CustomStringTableItem "{6D1028DE2DB79D51}" {
@@ -3361,12 +3361,12 @@ StringTable {
     }
     CustomStringTableItem "{3E7A91C04B52D681}" {
      Id "LF-Shop_Name_Newsagent"
-     Target_en_us "Tabac-presse"
+     Target_en_us "Tobacco & Newsstand"
      Comment "Shop name of the Saint-Philippe newsagent kiosk till (#3222): stock newsagent."
     }
     CustomStringTableItem "{55D13F8D2C97E863}" {
      Id "LF-Shop_Name_Pharmacy"
-     Target_en_us "Pharmacie"
+     Target_en_us "Pharmacy"
      Comment "Shop name of the Saint-Philippe pharmacy till (#3893): stock pharmacy."
     }
     CustomStringTableItem "{B1BC977506FDDA48}" {
@@ -3436,7 +3436,7 @@ StringTable {
     }
     CustomStringTableItem "{5E3D7D45BF074AD0}" {
      Id "LF-Shop_Open_Butcher"
-     Target_en_us "Buy meat and charcuterie"
+     Target_en_us "Buy meat and cold cuts"
      Comment "Interaction name at the butcher till (#3228): opens the butcher price list."
     }
     CustomStringTableItem "{0EC694A26B780C12}" {
@@ -3561,7 +3561,7 @@ StringTable {
     }
     CustomStringTableItem "{A17C5E02D93B4F61}" {
      Id "LF-Sign_Bakery_Title"
-     Target_en_us "Boulangerie"
+     Target_en_us "Bakery"
      Comment "Title painted on the bakery's fascia (#3227) and shown in the prompt as Read: Boulangerie."
     }
     CustomStringTableItem "{B28D6F13EA4C5072}" {
@@ -3601,12 +3601,12 @@ StringTable {
     }
     CustomStringTableItem "{A5CB85E823411AF3}" {
      Id "LF-Sign_Barber_Title"
-     Target_en_us "Coiffeur"
+     Target_en_us "Barber"
      Comment "Fascia of the Saint-Philippe barber shop (#3236): the board over the door and the prompt Read: Coiffeur."
     }
     CustomStringTableItem "{E17DC6149D683CEE}" {
      Id "LF-Sign_Barber_What"
-     Target_en_us "The village coiffeur: sit in a chair and pick a new cut, colour or beard|Prices are 1989 prices, cash only"
+     Target_en_us "The village barber: sit in a chair and pick a new cut, color or beard|Prices are 1989 prices, cash only"
      Comment "Sign card for the Saint-Philippe barber shop, What section (#3236)."
     }
     CustomStringTableItem "{C27AF568161F7892}" {
@@ -3631,7 +3631,7 @@ StringTable {
     }
     CustomStringTableItem "{62B0D34EDFA21A7A}" {
      Id "LF-Sign_BlackMarket_Needs"
-     Target_en_us "Cash: the handgun costs 500. No licence and no contact needed, at any hour."
+     Target_en_us "Cash: the handgun costs 500. No license and no contact needed, at any hour."
      Comment "Sign card for the back room shop in the alley (no printed title), Needs section."
     }
     CustomStringTableItem "{DC9FB128B95A14B4}" {
@@ -3661,12 +3661,12 @@ StringTable {
     }
     CustomStringTableItem "{37BDDA2AE961D87D}" {
      Id "LF-Sign_Butcher_Title"
-     Target_en_us "Boucherie-charcuterie"
+     Target_en_us "Butcher"
      Comment "Title painted on the butcher's fascia (#3228) and shown in the prompt as Read: Boucherie-charcuterie."
     }
     CustomStringTableItem "{F3F99ACA2323BCB4}" {
      Id "LF-Sign_Butcher_What"
-     Target_en_us "The village butcher: dried meat, tinned meat and cured cuts."
+     Target_en_us "The village butcher: dried meat, canned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
     }
     CustomStringTableItem "{54968BCB66E488A0}" {
@@ -3761,7 +3761,7 @@ StringTable {
     }
     CustomStringTableItem "{04CA2A9741FCE1E2}" {
      Id "LF-Sign_CrimeCar_How"
-     Target_en_us "Stand at the pile and use Steal the vehicle to get an armoured car. It rests for 10 minutes."
+     Target_en_us "Stand at the pile and use Steal the vehicle to get an armored car. It rests for 10 minutes."
      Comment "Annex crime site sign crime_car, How section."
     }
     CustomStringTableItem "{7708887CAD318B12}" {
@@ -3786,7 +3786,7 @@ StringTable {
     }
     CustomStringTableItem "{D08CA63D553D021D}" {
      Id "LF-Sign_CrimeCar_What"
-     Target_en_us "A pile of tyres that stands in for a car theft."
+     Target_en_us "A pile of tires that stands in for a car theft."
      Comment "Annex crime site sign crime_car, What section."
     }
     CustomStringTableItem "{62D77C89BF0EB242}" {
@@ -3826,7 +3826,7 @@ StringTable {
     }
     CustomStringTableItem "{8E1591EC5D9282B2}" {
      Id "LF-Sign_CrimeRack_Next"
-     Target_en_us "Steal the vehicle at the tyre pile next."
+     Target_en_us "Steal the vehicle at the tire pile next."
      Comment "Annex crime site sign crime_rack, Next section."
     }
     CustomStringTableItem "{FA1D9347B8CE6395}" {
@@ -3921,7 +3921,7 @@ StringTable {
     }
     CustomStringTableItem "{2F1E48F6D38417AF}" {
      Id "LF-Sign_EveronSawmill_Needs"
-     Target_en_us "Logs from the forest and a lumberjack licence."
+     Target_en_us "Logs from the forest and a lumberjack license."
      Comment "Sign card for the Everon sawmill, You need section."
     }
     CustomStringTableItem "{91F819EF3267293A}" {
@@ -3931,7 +3931,7 @@ StringTable {
     }
     CustomStringTableItem "{AE02BB5B348530BB}" {
      Id "LF-Sign_EveronSawmill_Title"
-     Target_en_us "Scierie"
+     Target_en_us "Sawmill"
      Comment "Title of the sign at the Everon sawmill yard (Everon 1989 pack, #3271). Printed on the sign and shown in the prompt as Read: Scierie."
     }
     CustomStringTableItem "{52CBFEEB2D04FA91}" {
@@ -3956,7 +3956,7 @@ StringTable {
     }
     CustomStringTableItem "{F569F72B499FF384}" {
      Id "LF-Sign_EveronScrapyard_Title"
-     Target_en_us "Casse"
+     Target_en_us "Scrapyard"
      Comment "Title of the sign at the scrapyard (Everon 1989 pack, #3357). Printed on the sign and shown in the prompt as Read: Casse."
     }
     CustomStringTableItem "{782813B1DA8109EA}" {
@@ -4056,17 +4056,17 @@ StringTable {
     }
     CustomStringTableItem "{D3B5326222E01DEA}" {
      Id "LF-Sign_FuelDepot_How"
-     Target_en_us "Fill a tanker at the depot and drive it to a filling station."
+     Target_en_us "Fill a tanker at the depot and drive it to a gas station."
      Comment "Sign card for the Montignac fuel depot, How section."
     }
     CustomStringTableItem "{B36BFEC7627B930C}" {
      Id "LF-Sign_FuelDepot_Needs"
-     Target_en_us "A tanker truck and a driving licence."
+     Target_en_us "A tanker truck and a driving license."
      Comment "Sign card for the Montignac fuel depot, You need section."
     }
     CustomStringTableItem "{D7656097F74F86FF}" {
      Id "LF-Sign_FuelDepot_Next"
-     Target_en_us "The stations pay for every litre that fits their tank."
+     Target_en_us "The stations pay for every liter that fits their tank."
      Comment "Sign card for the Montignac fuel depot, Next section."
     }
     CustomStringTableItem "{0E902C79A08FF34E}" {
@@ -4126,7 +4126,7 @@ StringTable {
     }
     CustomStringTableItem "{A6ED44BC014EDE30}" {
      Id "LF-Sign_FurnitureStore_Title"
-     Target_en_us "Meubles"
+     Target_en_us "Furniture"
      Comment "Title of the fascia sign over the furniture store on the square row (Everon 1989 pack, #3256). Printed on the sign and shown in the prompt as Read: Meubles."
     }
     CustomStringTableItem "{BFEBD3886DC16F44}" {
@@ -4136,7 +4136,7 @@ StringTable {
     }
     CustomStringTableItem "{C253431484CC5293}" {
      Id "LF-Sign_Garage_How"
-     Target_en_us "Park by the doors and get out. Store vehicle is on the counter beside the doors and on the car itself (Store in garage). Retrieve vehicle puts it on the kerb in front. Read the garage ledger to see where each of your cars is."
+     Target_en_us "Park by the doors and get out. Store vehicle is on the counter beside the doors and on the car itself (Store in garage). Retrieve vehicle puts it on the curb in front. Read the garage ledger to see where each of your cars is."
      Comment "Sign card for the garage where owners park vehicles, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{4666CFF92E358BA1}" {
@@ -4191,7 +4191,7 @@ StringTable {
     }
     CustomStringTableItem "{48226C495DB4B471}" {
      Id "LF-Sign_GeneralStore_Special3"
-     Target_en_us "Tinned fish"
+     Target_en_us "Canned fish"
      Comment "Store A-frame special 3 (#3305). Price 6 matches LF_ShopStock_Everon1989."
     }
     CustomStringTableItem "{10B8F417BFC331B0}" {
@@ -4231,17 +4231,17 @@ StringTable {
     }
     CustomStringTableItem "{248660AA4A4823F3}" {
      Id "LF-Sign_HarbourOffice_How"
-     Target_en_us "Step inside and *Talk* to the harbour master"
+     Target_en_us "Step inside and *Talk* to the harbor master"
      Comment "Sign card for the harbour office plate, How section. The capitalized word is the action name the player sees."
     }
     CustomStringTableItem "{416AD19C737315ED}" {
      Id "LF-Sign_HarbourOffice_Title"
-     Target_en_us "Harbour Office"
+     Target_en_us "Harbor Office"
      Comment "Title of the plate beside the door of the dock's site cabin (Everon 1989 pack, #3072). Printed on the sign and shown in the prompt as Read: Harbour Office."
     }
     CustomStringTableItem "{719C66DDD07B5E1A}" {
      Id "LF-Sign_HarbourOffice_What"
-     Target_en_us "The harbour master's cabin on the quay road. Marcel Roux takes on crate runs for anyone the town knows."
+     Target_en_us "The harbor master's cabin on the quay road. Marcel Roux takes on crate runs for anyone the town knows."
      Comment "Sign card for the harbour office plate, What section."
     }
     CustomStringTableItem "{2F58730647E93F81}" {
@@ -4261,7 +4261,7 @@ StringTable {
     }
     CustomStringTableItem "{B434FABAE242A442}" {
      Id "LF-Sign_Hardware_Title"
-     Target_en_us "Quincaillerie"
+     Target_en_us "Hardware"
      Comment "Title of the painted fascia over the hardware store door in the workshop yard (Everon 1989 pack, #3220). Printed on the sign and shown in the prompt as Read: Quincaillerie."
     }
     CustomStringTableItem "{30BA391BD9DECCAD}" {
@@ -4341,27 +4341,27 @@ StringTable {
     }
     CustomStringTableItem "{4259F2E50006FDFF}" {
      Id "LF-Sign_Home_CafeOwner_Title"
-     Target_en_us "Mme O. Marchand"
+     Target_en_us "Mr. O. Marchand"
      Comment "Brass name plate beside the door of cafe_owner's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme O. Marchand."
     }
     CustomStringTableItem "{B1D02944F6C717F6}" {
      Id "LF-Sign_Home_NightShift_Title"
-     Target_en_us "M. R. Duval"
+     Target_en_us "Mr. R. Duval"
      Comment "Brass name plate beside the door of night_shift's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. R. Duval."
     }
     CustomStringTableItem "{0955F0CE2E0152B0}" {
      Id "LF-Sign_Home_OldMan_Title"
-     Target_en_us "M. G. Lenoir"
+     Target_en_us "Mr. G. Lenoir"
      Comment "Brass name plate beside the door of old_man's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. G. Lenoir."
     }
     CustomStringTableItem "{55231116164D7341}" {
      Id "LF-Sign_Home_StoreClerk_Title"
-     Target_en_us "M. P. Roche"
+     Target_en_us "Mr. P. Roche"
      Comment "Brass name plate beside the door of store_clerk's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: M. P. Roche."
     }
     CustomStringTableItem "{524960714D7C41A7}" {
      Id "LF-Sign_Home_Teller_Title"
-     Target_en_us "Mme C. Girard"
+     Target_en_us "Mrs. C. Girard"
      Comment "Brass name plate beside the door of teller's home on Saint-Philippe (Everon 1989 pack, #3233). Printed on the plate and shown in the prompt as Read: Mme C. Girard."
     }
     CustomStringTableItem "{DFFD828F05D29321}" {
@@ -4626,7 +4626,7 @@ StringTable {
     }
     CustomStringTableItem "{CC0A61DC5B26AE54}" {
      Id "LF-Sign_Orchard_Title"
-     Target_en_us "Verger"
+     Target_en_us "Orchard"
      Comment "Title of the sign at the Saint-Philippe orchard (Everon 1989 pack, #3388). Printed on the sign and shown in the prompt as Read: Verger."
     }
     CustomStringTableItem "{A56C723327FC4794}" {
@@ -4681,7 +4681,7 @@ StringTable {
     }
     CustomStringTableItem "{B9B325005BD70EE6}" {
      Id "LF-Sign_Pharmacy_Title"
-     Target_en_us "Pharmacie"
+     Target_en_us "Pharmacy"
      Comment "Title of the fascia sign over the pharmacy door on Saint-Philippe (Everon 1989 pack, #3526). Printed on the sign and shown in the prompt as Read: Pharmacie."
     }
     CustomStringTableItem "{00C0910067CFAAD8}" {
@@ -4716,12 +4716,12 @@ StringTable {
     }
     CustomStringTableItem "{B36E6F94CE8AA8A7}" {
      Id "LF-Sign_PoliceFront_How"
-     Target_en_us "Licences and permits: the desk in the porch|Enquiries: the front counter in the hall|Wanted notices: the board on the hall wall|Officers: the duty room, through the door between the hall benches"
+     Target_en_us "Licenses and permits: the desk in the porch|Inquiries: the front counter in the hall|Wanted notices: the board on the hall wall|Officers: the duty room, through the door between the hall benches"
      Comment "Police station fascia sign card, How section (Everon 1989 pack). Items separated by |."
     }
     CustomStringTableItem "{BB9BA6C4A8677A06}" {
      Id "LF-Sign_PoliceFront_Needs"
-     Target_en_us "Cash for a licence or permit fee"
+     Target_en_us "Cash for a license or permit fee"
      Comment "Police station fascia sign card, Needs section (Everon 1989 pack)."
     }
     CustomStringTableItem "{3D32D85B2CC2A704}" {
@@ -4731,12 +4731,12 @@ StringTable {
     }
     CustomStringTableItem "{DE2A7A265D6907E9}" {
      Id "LF-Sign_PoliceFront_Title"
-     Target_en_us "Gendarmerie"
+     Target_en_us "Police"
      Comment "Title of the fascia sign over the police station's front door (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Gendarmerie."
     }
     CustomStringTableItem "{2EEE13F78C153D7D}" {
      Id "LF-Sign_PoliceFront_What"
-     Target_en_us "The police post of Everon. Licences and permits at the porch desk, enquiries at the front counter, the wanted board in the hall."
+     Target_en_us "The police post of Everon. Licenses and permits at the porch desk, inquiries at the front counter, the wanted board in the hall."
      Comment "Police station fascia sign card, What section (Everon 1989 pack)."
     }
     CustomStringTableItem "{1A20ADB3E49DD4E0}" {
@@ -4911,7 +4911,7 @@ StringTable {
     }
     CustomStringTableItem "{756BB84E4D298624}" {
      Id "LF-Sign_RoadFarm_Title"
-     Target_en_us "Ferme des Silos"
+     Target_en_us "Silo Farm"
      Comment "Title of the farm-name sign at the roadside farm yard gate (Everon 1989 pack, #3381). Printed on the sign and shown in the prompt as Read: Ferme des Silos."
     }
     CustomStringTableItem "{6151BE35A15D9BD7}" {
@@ -4986,7 +4986,7 @@ StringTable {
     }
     CustomStringTableItem "{17CC4B91C722E270}" {
      Id "LF-Sign_SafeZone_What"
-     Target_en_us "The town square is a safe zone. Within 30 metres of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
+     Target_en_us "The town square is a safe zone. Within 30 meters of the fountain nobody can hurt anyone: a shot fired on, into, or out of the square does no harm."
      Comment "Safe zone sign card, What section."
     }
     CustomStringTableItem "{80DF0709304FBA51}" {
@@ -5046,7 +5046,7 @@ StringTable {
     }
     CustomStringTableItem "{DFA15542C4155B52}" {
      Id "LF-Sign_TestOrg_How"
-     Target_en_us "Use Join test organisation. The first one in founds it and takes the hideout yard. Use Leave organisation to get out again."
+     Target_en_us "Use Join test organization. The first one in founds it and takes the hideout yard. Use Leave organization to get out again."
      Comment "Sign card of the playtest organisation sign (#934)."
     }
     CustomStringTableItem "{C4E999C65CA365AF}" {
@@ -5061,12 +5061,12 @@ StringTable {
     }
     CustomStringTableItem "{EE39881CFABC1E92}" {
      Id "LF-Sign_TestOrg_Title"
-     Target_en_us "Test organisation"
+     Target_en_us "Test organization"
      Comment "Title of the playtest organisation sign (#934)."
     }
     CustomStringTableItem "{0D48BB18722E316D}" {
      Id "LF-Sign_TestOrg_What"
-     Target_en_us "Playtest only: a shared organisation for one tester."
+     Target_en_us "Playtest only: a shared organization for one tester."
      Comment "Sign card of the playtest organisation sign (#934)."
     }
     CustomStringTableItem "{119DA9523C0D03F4}" {
@@ -5076,17 +5076,17 @@ StringTable {
     }
     CustomStringTableItem "{193332E8CB7FD60B}" {
      Id "LF-Sign_TimberYard_Needs"
-     Target_en_us "Logs cut at the woodlot, an axe, and a lumberjack licence."
+     Target_en_us "Logs cut at the woodlot, an axe, and a lumberjack license."
      Comment "Sign card for the Saint-Philippe timber yard, You need section."
     }
     CustomStringTableItem "{056E05DAE9CEB084}" {
      Id "LF-Sign_TimberYard_Next"
-     Target_en_us "Sell the planks to the builders' merchant, or load a truck for the harbour."
+     Target_en_us "Sell the planks to the lumberyard, or load a truck for the harbor."
      Comment "Sign card for the Saint-Philippe timber yard, Next section."
     }
     CustomStringTableItem "{2885C8350729DA74}" {
      Id "LF-Sign_TimberYard_Title"
-     Target_en_us "Scierie"
+     Target_en_us "Sawmill"
      Comment "Title of the sign at the Saint-Philippe timber yard (#3175). Printed on the sign."
     }
     CustomStringTableItem "{BBA380EC32C5BE74}" {
@@ -5216,7 +5216,7 @@ StringTable {
     }
     CustomStringTableItem "{7C1E5A2D9B3F4A01}" {
      Id "LF-Sign_Wholesale_Title"
-     Target_en_us "Entrepôt de gros"
+     Target_en_us "Wholesale warehouse"
      Comment "Title of the fascia sign over the harbour wholesale warehouse (Everon 1989 pack, #3273). Printed on the sign and shown in the prompt as Read: Entrepôt de gros."
     }
     CustomStringTableItem "{7C1E5A2D9B3F4A02}" {
@@ -5456,7 +5456,7 @@ StringTable {
     }
     CustomStringTableItem "{6784DBE972ED4ECD}" {
      Id "LF-Townsfolk_CafeOwner_Role"
-     Target_en_us "Café owner"
+     Target_en_us "Cafe owner"
      Comment "Townsfolk (The relocated, #1960): what Odilon Marchand does, the role line under the name."
     }
     CustomStringTableItem "{D20E34A328504890}" {
@@ -5501,7 +5501,7 @@ StringTable {
     }
     CustomStringTableItem "{90AC4E70357D8828}" {
      Id "LF-WelcomeGuide_Body2a"
-     Target_en_us "You start with $1,000 in the bank. Cash in your pocket is lost when you die; money in the bank is not. Put cash in or take it out at an ATM (by the bank, on the east side, on the harbour) or at the bank teller."
+     Target_en_us "You start with $1,000 in the bank. Cash in your pocket is lost when you die; money in the bank is not. Put cash in or take it out at an ATM (by the bank, on the east side, on the harbor) or at the bank teller."
      Comment "Everon pack override of the welcome guide page 2 paragraph: the starting balance and the Saint-Philippe ATMs."
     }
     CustomStringTableItem "{D9FCAED1B0FE1333}" {
@@ -5511,7 +5511,7 @@ StringTable {
     }
     CustomStringTableItem "{F17D37DC02E7BD4B}" {
      Id "LF-WelcomeGuide_Body4a"
-     Target_en_us "Police officers and medics are players. Anyone can sign on: press F at the duty desk in the police station on the main street, or in the clinic beside the taxi rank, and clock in. Pay is handed over in cash when you clock out."
+     Target_en_us "Police officers and medics are players. Anyone can sign on: press F at the duty desk in the police station on the main street, or in the clinic beside the taxi stand, and clock in. Pay is handed over in cash when you clock out."
      Comment "Everon pack override of the welcome guide page 4 paragraph: where the duty desks are."
     }
     CustomStringTableItem "{AEFD273B4E3FE2B7}" {

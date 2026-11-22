@@ -103,7 +103,7 @@ export async function buildMaps({ log = () => {}, render = true } = {}) {
     g("Harvest contracts board", "Post, take and return harvest contracts.", E("saint_philippe_wheatfield_wheat_field_board")),
   ]);
   await inset("sawmill", "Everon sawmill", [2960, 5140, 3220, 5340], 2.4, [
-    g(T("LF-MapPoi_Sawmill") + " (Scierie)", "Lumberjack desk and two saws inside the hall.", P("Workplace", "everon-sawmill.yard")),
+    g(T("LF-MapPoi_Sawmill"), "Lumberjack desk and two saws inside the hall.", P("Workplace", "everon-sawmill.yard")),
     g("Lumberjack desk", "Sign on as a lumberjack.", E("everon_sawmill_yard_source_sawmill_desk")),
   ], { key: false });
   await inset("pond", "Spring Pond", [4580, 10460, 4740, 10600], 4, [
@@ -118,8 +118,8 @@ export async function buildMaps({ log = () => {}, render = true } = {}) {
   await inset("harbour", "Harbour and dock", [4370, 11000, 4570, 11250], 3.5, [
     ...pick([T("LF-MapPoi_Smokehouse"), T("LF-MapPoi_Wholesale"), T("LF-Sign_HarbourOffice_Title"), T("LF-MapPoi_Atm") + " (harbour)"]),
   ]);
-  await inset("scrapyard", "Scrapyard (Casse)", [4930, 10790, 5110, 10930], 4, [
-    g(T("LF-MapPoi_Scrapyard") + " (Casse)", "Search the scrap piles; the recycler bench is in the yard.", P("ScrapRecycler", "scrapyard.recycler")),
+  await inset("scrapyard", "Scrapyard", [4930, 10790, 5110, 10930], 4, [
+    g(T("LF-MapPoi_Scrapyard"), "Search the scrap piles; the recycler bench is in the yard.", P("ScrapRecycler", "scrapyard.recycler")),
     g("Recycler bench", "Break car parts and scrap into metal.", E("scrapyard_recycler_recycler_bench")),
   ]);
   await inset("barn", "Barn compound", [5290, 9830, 5440, 9970], 4.5, [
