@@ -193,7 +193,7 @@ try {
   const patch = writes().find((c) => c.method === "PATCH");
   const sent = patch ? JSON.parse(patch.body.toString("utf8")) : {};
   if (sent.password !== PASSWORD || sent.admin_password !== ADMIN_PW) fail("config push did not send the password and admin password from secrets.json");
-  if (sent.server_name !== "Life Framework | Everon 1989 (Alpha)" || sent.scenario_id !== "{C638C03B775C31BB}Missions/LF_Everon1989.conf") fail("config push did not map the name and scenario");
+  if (sent.server_name !== "Life Framework | Everon 1989 (Alpha)" || sent.scenario_id !== JSON.parse(readFileSync(join(ROOT, "server", "flagship", "server.json"), "utf8")).game.scenarioId) fail("config push did not map the name and scenario");
   if (Object.keys(sent).some((k) => k.startsWith("rcon"))) fail("config push changed an rcon_* setting");
   const pushed = JSON.parse(state.files.get("/ServerConfig.json").toString("utf8"));
   if (pushed.bindPort !== 2023 || pushed.publicPort !== 2023 || pushed.a2s?.port !== 3023 || pushed.bindAddress !== "0.0.0.0") fail(`config push replaced the box's ports or bind address (${JSON.stringify({ b: pushed.bindPort, p: pushed.publicPort, a: pushed.a2s })})`);

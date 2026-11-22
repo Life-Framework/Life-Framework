@@ -6,7 +6,7 @@ The two files the Life Framework | Everon 1989 (Alpha) server runs on, kept in g
 | File | What it is |
 |---|---|
 | `config.json` | The owner config: the shipped economy plus the flagship's `dayCycle` and `restarts` |
-| `server.json` | The base game's dedicated-server config: listing name, scenario `LF_Everon1989.conf`, mod list |
+| `server.json` | The base game's dedicated-server config: listing name, scenario `LF_EveronIsland.conf` (the hidden island header, weekend cutover #2212; rollback: push `LF_Everon1989.conf` back), mod list |
 | `staff.txt` | The staff roster (the maintainer is the only staff); the game reads it from `<profile>/LifeFramework/staff.txt` |
 
 ## Decided values
