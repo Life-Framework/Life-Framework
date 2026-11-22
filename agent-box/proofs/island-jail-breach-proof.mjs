@@ -154,6 +154,8 @@ async function runIslandJailBreachProof() {
   wait(19000);
   const after = serverLog();
   step("the cells blow and B is freed from custody", cells.status === "ok" && /cells saint_philippe_jail_cell blown by/.test(after) && /freed by a jailbreak/.test(after), `use=${cells.status}; blown=${/cells saint_philippe_jail_cell blown by/.test(after)} freed=${/freed by a jailbreak/.test(after)}`);
+  const sirens = after.split(String.fromCharCode(10)).filter((l) => /alarm sounding at/.test(l) && /kind 'jail'/.test(l) && /Jail/.test(l)).length;
+  step("both jail layers sounded the jailbreak siren (kind 'jail')", sirens >= 2, `siren lines=${sirens}; no-site lines=${after.split(String.fromCharCode(10)).filter((l) => /no alarm site/.test(l)).length}`);
   step("B's sentence is over", (Number(state(2).jail) || 0) === 0, `jail=${state(2).jail}`);
 
   // 3. Bail: B is wanted again after the break (escaped custody); A arrests B once more and B pays at the phone in the cell.

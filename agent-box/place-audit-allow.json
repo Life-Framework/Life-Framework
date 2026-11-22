@@ -261,6 +261,12 @@
       "kind": "action-off-mesh",
       "layer": "Place_saint-philippe_bank.layer",
       "why": "LF_BankVault_RoomDoor is a mesh-less root: its one mesh is the VaultDoor child leaf (1.27 m right of the root, hinged in the vault-room doorway), which the audit does not read as a mesh. The action context (radius 1.5 m at the front's centre, 0.45 m out) overlaps the leaf; the same prefab opens in the grid bank proof (#2384)."
+    },
+    {
+      "match": "^Fit_saint_philippe_jail_jail_cell_door ",
+      "kind": "blocks-door",
+      "layer": "Place_saint-philippe_jail.layer",
+      "why": "EL_JailDoor stands where the villa's own barred cell leaf (Door_PrisonCell_E_A_Left_INT_ST_B, a child of the DoorSet) hangs; the audit reads that leaf as a door. The kit's boxed clear (Fit_saint_philippe_jail_clear_box1) hides the vanilla leaf at runtime (server log 'hid 1 vanilla props in the box'), so only the placed door remains (island-jail-breach-proof)."
     }
   ]
 }

@@ -113,7 +113,7 @@ GenericEntity Fit_saint_philippe_jail_jail_outer_door : "{787617D5B683FE41}Prefa
    }
   }
  }
- coords 4553.469 18.236 10749.268
+ coords 4552.975 18.236 10749.19
  angleY 171
 }
 GenericEntity Fit_saint_philippe_jail_jail_outer_wing : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
@@ -122,10 +122,19 @@ GenericEntity Fit_saint_philippe_jail_jail_outer_wing : "{787617D5B683FE41}Prefa
    m_bDebugLocked 1
   }
  }
- coords 4554.852 18.236 10749.487
+ coords 4554.477 18.236 10749.427
+ angleY 171
+}
+GenericEntity Fit_saint_philippe_jail_jail_outer_wing_2 : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 4554.258 18.236 10749.211
  angleY 171
 }
 GenericEntity Fit_saint_philippe_jail_jail_bail_phone : "{0BC3EE6F94D8C8A6}Prefabs/Police/LF_JailBailPhone.et" {
- coords 4556.131 18.201 10749.661
+ coords 4556.131 18.237 10749.661
  angleY -9
 }

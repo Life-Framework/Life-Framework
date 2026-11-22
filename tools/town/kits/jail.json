@@ -160,7 +160,7 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        -1.01,
+        -0.51,
         0.036,
         -0.82
       ],
@@ -199,9 +199,33 @@
       "role": "interactable",
       "verb": "on floor",
       "offset": [
-        -2.41,
+        -2.03,
         0.036,
         -0.82
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_LockComponent",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "floor": "f0",
+      "mount": "free"
+    },
+    {
+      "id": "jail-outer-wing-2",
+      "name": "JailKit_OuterWing2",
+      "prefab": "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -1.78,
+        0.036,
+        -0.64
       ],
       "yaw": 0,
       "config": [
@@ -229,7 +253,8 @@
       ],
       "yaw": 180,
       "wall": "+z",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.036
     }
   ],
   "clear": [
