@@ -24,6 +24,15 @@ class LF_CrimeEntry : LF_ConfigRecord
 	[Attribute("0", UIWidgets.Auto, "Extra wanted levels a repeat adds on top of the normal amount", params: "0 5")]
 	int m_iRepeatWantedAdd;
 
+	[Attribute("0", UIWidgets.ComboBox, "Law-book section this code is read under: criminal, road, narcotics or weapons (#4202)", enums: ParamEnumArray.FromEnum(LF_LawSection))]
+	LF_LawSection m_eLawSection;
+
+	[Attribute("", UIWidgets.EditBox, "Stacking group (#4202). Codes of one group on a charge sheet do not add: the higher counts. Empty stacks with nothing, so the code always adds")]
+	string m_sStackGroup;
+
+	[Attribute("0", UIWidgets.CheckBox, "Jail only (#4202). The code refuses a fine: the officer cannot offer to pay it, and it adds nothing to the fine total")]
+	bool m_bJailOnly;
+
 	//------------------------------------------------------------------------------------------------
 	static LF_CrimeEntry Make(string crimeId, int wantedAdd, int fine)
 	{
@@ -231,19 +240,56 @@ class LF_CrimeList : LF_ConfigList
 			changed++;
 		if (container.IsVariableSetDirectly("m_iRepeatWantedAdd") && container.Get("m_iRepeatWantedAdd", entry.m_iRepeatWantedAdd))
 			changed++;
+		int section;
+		if (container.IsVariableSetDirectly("m_eLawSection") && container.Get("m_eLawSection", section))
+		{
+			if (LF_LawCode.IsSection(section))
+			{
+				entry.m_eLawSection = section;
+				changed++;
+			}
+			else
+			{
+				LF_Debug.Warn(LF_LawCode.FEATURE, string.Format("crime '%1': law section %2 is not 0 to 3, the shipped section stays", entry.m_sCrimeId, section));
+			}
+		}
+		if (container.IsVariableSetDirectly("m_sStackGroup") && container.Get("m_sStackGroup", entry.m_sStackGroup))
+			changed++;
+		if (container.IsVariableSetDirectly("m_bJailOnly") && container.Get("m_bJailOnly", entry.m_bJailOnly))
+			changed++;
 		return changed;
 	}
 
 	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
 	{
 		LF_CrimeEntry entry = LF_CrimeEntry.Cast(record);
-		array<string> recordKeys = {"op", "wantedAdd", "fine", "sentenceSeconds", "repeatThreshold", "repeatWantedAdd"};
+		array<string> recordKeys = {"op", "wantedAdd", "fine", "sentenceSeconds", "repeatThreshold", "repeatWantedAdd", "section", "stackGroup", "jailOnly"};
 		reader.WarnUnknownKeys(recordKeys);
 		reader.ReadInt("wantedAdd", entry.m_iWantedAdd, LF_CrimeCatalogConfig.WANTED_MIN, LF_CrimeCatalogConfig.WANTED_MAX);
 		reader.ReadInt("fine", entry.m_iFine, LF_CrimeCatalogConfig.FINE_MIN, LF_CrimeCatalogConfig.FINE_MAX);
 		reader.ReadInt("sentenceSeconds", entry.m_iSentenceSeconds, LF_CrimeCatalogConfig.SENTENCE_MIN, LF_CrimeCatalogConfig.SENTENCE_MAX);
 		reader.ReadInt("repeatThreshold", entry.m_iRepeatThreshold, LF_CrimeCatalogConfig.THRESHOLD_MIN, LF_CrimeCatalogConfig.THRESHOLD_MAX);
 		reader.ReadInt("repeatWantedAdd", entry.m_iRepeatWantedAdd, LF_CrimeCatalogConfig.WANTED_MIN, LF_CrimeCatalogConfig.WANTED_MAX);
+		ReadLawFields(entry, reader);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The law-book fields of an owner record (#4202): `section` is "criminal", "road", "narcotics" or
+	//! "weapons" (anything else is refused and logged), `stackGroup` a short name, `jailOnly` true or false.
+	protected void ReadLawFields(notnull LF_CrimeEntry entry, notnull LF_ConfigReader reader)
+	{
+		string sectionKey;
+		if (reader.ReadString("section", sectionKey))
+		{
+			LF_LawSection section = entry.m_eLawSection;
+			if (LF_LawCode.ParseSection(sectionKey, section))
+				entry.m_eLawSection = section;
+			else
+				LF_Debug.Warn(LF_LawCode.FEATURE, string.Format("crime '%1': law section '%2' is not criminal, road, narcotics or weapons, the shipped section stays", entry.m_sCrimeId, sectionKey));
+		}
+
+		reader.ReadString("stackGroup", entry.m_sStackGroup);
+		reader.ReadBool("jailOnly", entry.m_bJailOnly);
 	}
 }
 
