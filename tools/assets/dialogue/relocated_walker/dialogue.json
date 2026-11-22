@@ -3,7 +3,21 @@
   "name": "RelocatedWalker",
   "addon": "LF_Everon1989",
   "speaker_key": "#LF-Dialogue_RelocatedWalker_Name",
-  "text_only": true,
+  "voice": {
+    "id": "V2aW90aP6L5wBvSqWbDm",
+    "sex": "male",
+    "name": "Real Jeremy - Conversational",
+    "public_owner_id": "d76f600aa14b2e2be089870af87a2ff48c4bf8334297c03803974867eaadb49c",
+    "why": "A conversational French-accented voice, slightly uncertain and grateful: a newcomer just off the bus.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.4,
+      "similarity_boost": 0.75,
+      "style": 0.25,
+      "speed": 0.98
+    }
+  },
+  "budget_chars": 700,
   "hear_range_m": 6,
   "start": "greet",
   "nodes": [
@@ -11,20 +25,48 @@
       "id": "greet",
       "line": "greet",
       "options": [
-        { "text": "from", "next": "from" },
-        { "text": "help", "next": "help" },
-        { "text": "bye", "next": "bye" }
+        {
+          "text": "from",
+          "next": "from"
+        },
+        {
+          "text": "help",
+          "next": "help"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
       ]
     },
-    { "id": "from", "line": "about_from", "options_from": "greet" },
-    { "id": "help", "line": "about_help", "options_from": "greet" },
-    { "id": "bye", "line": "bye" }
+    {
+      "id": "from",
+      "line": "about_from",
+      "options_from": "greet"
+    },
+    {
+      "id": "help",
+      "line": "about_help",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
   ],
   "lines": {
-    "greet": { "text": "Sorry, we have only just come off the bus. Is this Saint-Philippe? They said someone would meet us." },
-    "about_from": { "text": "From near the Zone. They gave us one suitcase each and a paper with an address on it. That is all of it, here." },
-    "about_help": { "text": "Just point us at the town hall, if you would. The clerk is meant to have our names and a key." },
-    "bye": { "text": "Thank you. Thank you, really." }
+    "greet": {
+      "text": "Sorry, we have only just come off the bus. Is this Saint-Philippe? They said someone would meet us."
+    },
+    "about_from": {
+      "text": "From near the Zone. They gave us one suitcase each and a paper with an address on it. That is all of it, here."
+    },
+    "about_help": {
+      "text": "Just point us at the town hall, if you would. The clerk is meant to have our names and a key."
+    },
+    "bye": {
+      "text": "Thank you. Thank you, really."
+    }
   },
   "replies": {
     "from": "Where have you come from?",

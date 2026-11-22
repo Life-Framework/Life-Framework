@@ -3,40 +3,123 @@
   "name": "ResidentMireille",
   "addon": "LF_Everon1989",
   "speaker_key": "#LF-Resident_neighbour_mireille_Name",
-  "text_only": true,
+  "voice": {
+    "id": "9oROzDqQCuiJ6qYnKIbQ",
+    "sex": "male",
+    "name": "Alex - Warm, Empathetic, Confident",
+    "public_owner_id": "8247255c3a0de450d9294a8bd1c3c39e3d2e25be086791f0afd4f2ec57cd9819",
+    "why": "A warm empathetic middle-aged French voice for the chatty neighbour (the game has male bodies only; the voice is male).",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.45,
+      "similarity_boost": 0.75,
+      "style": 0.3,
+      "speed": 1
+    }
+  },
+  "budget_chars": 1300,
   "hear_range_m": 8,
   "start": "greet",
   "nodes": [
-    { "id": "greet_refuses", "line": "greet_refuses" },
-    { "id": "greet_wary", "line": "greet_wary", "options": [{ "text": "bye", "next": "bye" }] },
-    { "id": "greet_neutral", "line": "greet", "options_from": "greet" },
-    { "id": "greet_friendly", "line": "greet_friendly", "options_from": "greet" },
-    { "id": "greet_regular", "line": "greet_regular", "options_from": "greet" },
+    {
+      "id": "greet_refuses",
+      "line": "greet_refuses"
+    },
+    {
+      "id": "greet_wary",
+      "line": "greet_wary",
+      "options": [
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "greet_neutral",
+      "line": "greet",
+      "options_from": "greet"
+    },
+    {
+      "id": "greet_friendly",
+      "line": "greet_friendly",
+      "options_from": "greet"
+    },
+    {
+      "id": "greet_regular",
+      "line": "greet_regular",
+      "options_from": "greet"
+    },
     {
       "id": "greet",
       "line": "greet",
       "options": [
-        { "text": "cafe", "next": "cafe" },
-        { "text": "gossip", "next": "gossip" },
-        { "text": "anniversary", "next": "anniversary" },
-        { "text": "bye", "next": "bye" }
+        {
+          "text": "cafe",
+          "next": "cafe"
+        },
+        {
+          "text": "gossip",
+          "next": "gossip"
+        },
+        {
+          "text": "anniversary",
+          "next": "anniversary"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
       ]
     },
-    { "id": "cafe", "line": "about_cafe", "options_from": "greet" },
-    { "id": "gossip", "line": "about_gossip", "options_from": "greet" },
-    { "id": "anniversary", "line": "about_anniversary", "options_from": "greet" },
-    { "id": "bye", "line": "bye" }
+    {
+      "id": "cafe",
+      "line": "about_cafe",
+      "options_from": "greet"
+    },
+    {
+      "id": "gossip",
+      "line": "about_gossip",
+      "options_from": "greet"
+    },
+    {
+      "id": "anniversary",
+      "line": "about_anniversary",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
   ],
   "lines": {
-    "greet_refuses": { "text": "I know what you are. I do not speak to people like you." },
-    "greet_wary": { "text": "Oh. Hello. I would rather not chat today." },
-    "greet": { "text": "Bonjour. Mireille. Forgive me, I only came out for a coffee and a little conversation." },
-    "greet_friendly": { "text": "Hello, dear. Sit. The coffee here is terrible, but it is hot." },
-    "greet_regular": { "text": "There you are! I was just telling Odile about you." },
-    "about_cafe": { "text": "Odile runs the cafe. She keeps the best table for the mayor and pretends she does not." },
-    "about_gossip": { "text": "They say the harbour master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like." },
-    "about_anniversary": { "text": "The town anniversary is coming. The mayor has the whole square scrubbed. Bastien does love a speech." },
-    "bye": { "text": "See you soon, dear." }
+    "greet_refuses": {
+      "text": "I know what you are. I do not speak to people like you."
+    },
+    "greet_wary": {
+      "text": "Oh. Hello. I would rather not chat today."
+    },
+    "greet": {
+      "text": "Bonjour. Mireille. Forgive me, I only came out for a coffee and a little conversation."
+    },
+    "greet_friendly": {
+      "text": "Hello, dear. Sit. The coffee here is terrible, but it is hot."
+    },
+    "greet_regular": {
+      "text": "There you are! I was just telling Odile about you."
+    },
+    "about_cafe": {
+      "text": "Odile runs the cafe. She keeps the best table for the mayor and pretends she does not."
+    },
+    "about_gossip": {
+      "text": "They say the harbour master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like."
+    },
+    "about_anniversary": {
+      "text": "The town anniversary is coming. The mayor has the whole square scrubbed. Bastien does love a speech."
+    },
+    "bye": {
+      "text": "See you soon, dear."
+    }
   },
   "replies": {
     "cafe": "Tell me about the cafe.",

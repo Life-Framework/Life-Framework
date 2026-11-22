@@ -62,3 +62,14 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 | Fell a tree | axe in hand, use the prompt on the tree |
 
 The **F10** key opens a developer menu that works only on a server that turns it on. You will not use it.
+
+## Admin commands (server staff only)
+
+An administrator types these in the chat after `#login <admin password>`. Anyone else is refused.
+
+| Command | What it does |
+|---|---|
+| `#lfmoney <player id or name> <amount>` | Give cash to a player who is online; a negative amount takes cash back. Up to $1,000,000 a call |
+| `#lfmoney <player id or name> <amount> bank` | The same, on the bank balance |
+
+The amount is saved like any other change to a balance. `#players` shows the player ids.

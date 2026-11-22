@@ -858,13 +858,22 @@ class LF_CharacterCreationManager : Managed
 			return;
 		}
 
-		int amount = spawnLogic.GetStartingBank();
+		PayStartingBank(playerUid, spawnLogic.GetStartingBank());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pays `amount` into the account's bank once: only an empty account gets it, so a returning
+	//! character keeps its balance. Public for the pack test that proves a fresh account's figure.
+	//! \return The amount paid, 0 when nothing was.
+	static int PayStartingBank(string playerUid, int amount)
+	{
 		LF_BankAccount bank = LF_ATMManager.GetOrCreate(playerUid);
 		if (amount <= 0 || !bank || bank.GetBalance() > 0)
-			return;
+			return 0;
 
 		bank.Deposit(amount, "starting-bank");
 		LF_Debug.Info("CharacterCreation", string.Format("starting bank %1 paid to %2", amount, playerUid));
+		return amount;
 	}
 
 	//------------------------------------------------------------------------------------------------

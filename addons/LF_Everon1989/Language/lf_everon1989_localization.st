@@ -144,6 +144,16 @@ StringTable {
      Target_en_us "When they brought us here, the town did not know what to say. So a neighbour brought bread, and nobody asked a single question. I still use the cups. Every day. Someone has to."
      Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
     }
+    CustomStringTableItem "{02DD35A9A42C5905}" {
+     Id "LF-Dialogue_CafeOwner_RumourReported"
+     Target_en_us "They say someone carried a crate off the quay straight to the gendarmes. The dockers have not touched a drink here all week. Whoever it was, keep your head down."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
+    CustomStringTableItem "{2198FBE19CD656FD}" {
+     Id "LF-Dialogue_CafeOwner_RumourSold"
+     Target_en_us "They say a crate went missing off the quay and somebody in town is richer for it. Nobody asks who. The man at the corner table has stopped counting his change."
+     Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
+    }
     CustomStringTableItem "{29B0A09C06BED190}" {
      Id "LF-Dialogue_CafeOwner_SayAskClerk"
      Target_en_us "Who should I see first?"
@@ -1038,6 +1048,31 @@ StringTable {
      Id "LF-Dialogue_ShipmentGoBetween_Threat"
      Target_en_us "You walked it to the desk. Fine. Mind the coast road at night, friend. It is long, and it is short of lamps."
      Comment "Hugo Valmy's one threat to a player who reported the sample (#3804)."
+    }
+    CustomStringTableItem "{C11DD24E98D1CC8F}" {
+     Id "LF-Dialogue_ShopkeeperEveron_Bye"
+     Target_en_us "Good day to you."
+     Comment "Pack patch of the shopkeeper dialogue's line bye (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
+    }
+    CustomStringTableItem "{1D0D875C11AF5BC7}" {
+     Id "LF-Dialogue_ShopkeeperEveron_Greet"
+     Target_en_us "Good day. Take what you need from the shelves and pay at the till."
+     Comment "Pack patch of the shopkeeper dialogue's line greet (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
+    }
+    CustomStringTableItem "{F2961FC39BBF511A}" {
+     Id "LF-Dialogue_ShopkeeperEveron_HowToPay"
+     Target_en_us "Pick the goods up yourself, then pay at any till before you leave. You get a receipt. Walk out without paying and the alarm goes off."
+     Comment "Pack patch of the shopkeeper dialogue's line how_to_pay (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
+    }
+    CustomStringTableItem "{48A3FBB00A316BF1}" {
+     Id "LF-Dialogue_ShopkeeperEveron_Stock"
+     Target_en_us "Food and household goods on the shelves, drinks in the chilled counter. What runs out comes back from the stockroom every few minutes."
+     Comment "Pack patch of the shopkeeper dialogue's line stock (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
+    }
+    CustomStringTableItem "{18E74673B9BA1239}" {
+     Id "LF-Dialogue_ShopkeeperEveron_Thief"
+     Target_en_us "Stop! You did not pay for that! Come back here!"
+     Comment "Pack patch of the shopkeeper dialogue's line thief (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
     }
     CustomStringTableItem "{F2B1DF023C756490}" {
      Id "LF-Everon-Lock_Closed"
