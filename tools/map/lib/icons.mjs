@@ -11,6 +11,8 @@ import { join } from "node:path";
 
 export const CELL = 64;
 export const ATLAS = 512;
+// The pack's badges outgrew 64 quads (2026-11-22, one pictogram per place type): its atlas is 1024.
+export const ATLAS_SIZE = { core: 512, pack: 1024 };
 
 export const CATEGORIES = ["civic", "shop", "work", "law", "health", "travel", "story", "underworld"];
 
@@ -26,6 +28,11 @@ export const PACK_KINDS = [
   "Bank", "PoliceStation", "PoliceArmoury", "HospitalSite", "Workplace", "Fence", "Fuel", "Payphone",
   "Quarry", "Fish", "Story", "Taxi", "Harbour", "Farm", "Shop", "TownHall", "Church", "Pub", "Fire", "Depot",
   "IdCard", "Atm", "Garage", "Bed", "Sawmill", "Scrap",
+  // One pictogram per place type (map rework after the 0.2.0 playtest): the shops, food, work sites and
+  // services that all drew the same bag, barn or category glyph before.
+  "Grocer", "Bakery", "Butcher", "Cafe", "Market", "News", "Clothing", "Hardware", "Guns", "Pharmacy", "Barber",
+  "Furniture", "FarmSupply", "Wholesale", "Orchard", "Wheat", "Woodlot", "Mine", "Plant", "Smokehouse", "Board",
+  "PlotForSale", "CarLot", "Range",
 ];
 
 // Tileable hatch textures (PolygonDrawCommand.m_pTexture): not imageset quads.
@@ -57,9 +64,9 @@ export function packQuadNames() {
   return [...CATEGORIES.map(catQuad), ...PACK_KINDS.map(poiQuad), ...SHARED];
 }
 
-// Quad name -> { x, y, w, h } on the 512 atlas, row-major in manifest order.
-export function layout(names) {
-  const per = ATLAS / CELL;
+// Quad name -> { x, y, w, h } on the atlas (512 unless given), row-major in manifest order.
+export function layout(names, size = ATLAS) {
+  const per = size / CELL;
   if (names.length > per * per) throw new Error(`${names.length} quads do not fit a ${per}x${per} atlas`);
   const out = new Map();
   names.forEach((n, i) => out.set(n, { x: (i % per) * CELL, y: Math.floor(i / per) * CELL, w: CELL, h: CELL }));

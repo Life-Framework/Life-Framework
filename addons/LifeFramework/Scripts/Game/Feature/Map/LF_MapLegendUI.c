@@ -104,6 +104,46 @@ class LF_MapLegend
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A place's type as the legend prints it: its kind's name, no town ("Bakery").
+	static string TypeName(notnull LF_MapPoi poi)
+	{
+		return LF_Terms.Expand(WidgetManager.Translate(poi.m_sLabel));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The icon legend's lines: one POI per icon and type name the list holds (the many payphones are one
+	//! line), in the legend's category order, then first seen. A pencil mark (a place only suspected) has no
+	//! line: its type is not known. \return how many lines.
+	static int IconRows(notnull array<ref LF_MapPoi> pois, notnull array<int> into)
+	{
+		array<string> seen = {};
+		array<int> priorities = {};
+		array<int> found = {};
+		foreach (int i, LF_MapPoi poi : pois)
+		{
+			if (poi.m_eState == LF_EMapPoiState.PENCIL)
+				continue;
+
+			string key = poi.m_sKind + "|" + poi.m_sIcon + "|" + poi.m_sCategory + "|" + TypeName(poi);
+			if (seen.Find(key) != -1)
+				continue;
+
+			seen.Insert(key);
+			found.Insert(i);
+			priorities.Insert(LF_MapDeclutter.Priority(poi.m_sCategory, LF_EMapPoiState.FULL, false));
+		}
+
+		array<int> order = {};
+		LF_MapDeclutter.Order(priorities, order);
+		foreach (int at : order)
+		{
+			into.Insert(found[at]);
+		}
+
+		return order.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! A lower-case copy, so search ignores case.
 	static string Fold(string text)
 	{
@@ -337,13 +377,21 @@ modded class LF_MapPlacesUI
 		if (m_sFlashId.IsEmpty())
 			return;
 
+		// The place may share a crowded mark with others: pin the mark that holds it.
 		foreach (int i, LF_MapClusterGroup group : m_aGroups)
 		{
-			if (group.IsSingle() && m_aPois[group.m_aMembers[0]].m_sId == m_sFlashId)
+			if (!group.HasLead())
+				continue;
+
+			foreach (int member : group.m_aMembers)
 			{
+				if (m_aPois[member].m_sId != m_sFlashId)
+					continue;
+
 				m_iPinned = i;
 				ShowCard(i);
-				break;
+				m_sFlashId = "";
+				return;
 			}
 		}
 
@@ -362,8 +410,18 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	protected static const float TAB_LEFT = 8;	// lf-fixed: the tab sits at the left edge of the map
 	protected static const float TAB_TOP = 260;	// lf-fixed: under the vanilla tool strip
 	protected static const float LIST_HEIGHT = 190;	// lf-fixed: eight rows scroll inside the sheet
+	protected static const float ICON_TAB_GAP = 44;	// lf-fixed: the Legend tab sits under the Map key tab
+	protected static const float PANEL_LEFT = 120;	// lf-fixed: right of the tabs
+	protected static const float PANEL_PAD = 12;	// lf-fixed
+	protected static const float PANEL_HEAD = 34;	// lf-fixed: room for the title
+	protected static const float ROW_HEIGHT = 26;	// lf-fixed
+	protected static const float ROW_ICON = 22;	// lf-fixed: the solo-zoom icon size
+	protected static const float COLUMN_WIDTH = 210;	// lf-fixed
+	protected static const int ROWS_PER_COLUMN = 18;	// lf-fixed: fits under the tool strip at 1080p reference height
 
 	protected Widget m_wTab;
+	protected Widget m_wIconTab;
+	protected Widget m_wPanel;
 	protected ref LF_UIScreen m_Sheet;
 	protected ref array<ref LF_MapPoi> m_aResults = {};
 
@@ -402,16 +460,147 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 		{
 			LF_Debug.Error(LF_MapLegend.FEATURE, "the map key tab has no button component");
 		}
+
+		BuildIconTab(workspace);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Legend tab under the Map key tab: it opens the icon legend.
+	protected void BuildIconTab(notnull WorkspaceWidget workspace)
+	{
+		m_wIconTab = workspace.CreateWidgets(LF_UITheme.BUTTON_LAYOUT, m_RootWidget);
+		if (!m_wIconTab)
+		{
+			LF_Debug.Error(LF_MapLegend.FEATURE, "the legend tab was not created");
+			return;
+		}
+
+		FrameSlot.SetAnchorMin(m_wIconTab, 0, 0);
+		FrameSlot.SetAnchorMax(m_wIconTab, 0, 0);
+		FrameSlot.SetPos(m_wIconTab, TAB_LEFT, TAB_TOP + ICON_TAB_GAP);
+		FrameSlot.SetSizeToContent(m_wIconTab, true);
+		SCR_ButtonTextComponent tab = SCR_ButtonTextComponent.Cast(m_wIconTab.FindHandler(SCR_ButtonTextComponent));
+		if (!tab)
+		{
+			LF_Debug.Error(LF_MapLegend.FEATURE, "the legend tab has no button component");
+			return;
+		}
+
+		tab.SetText(LF_Terms.Shown("#LF-MapLegend_IconsTab"));
+		LF_UISkin.Paper().RecolorButton(m_wIconTab);
+		tab.m_OnClicked.Insert(OnIconTabClicked);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void OnIconTabClicked()
+	{
+		if (m_wPanel)
+			ClosePanel();
+		else
+			OpenPanel();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The icon legend: a paper slip (the place card's) with one icon and type per line, in columns.
+	protected void OpenPanel()
+	{
+		ClosePanel();
+		LF_MapPlacesUI places = Places();
+		WorkspaceWidget workspace = GetGame().GetWorkspace();
+		if (!places || !places.GetAllPois() || !workspace)
+		{
+			LF_Debug.Error(LF_MapLegend.FEATURE, "the places layer is not up; the icon legend has nothing to list");
+			return;
+		}
+
+		array<int> rows = {};
+		int count = LF_MapLegend.IconRows(places.GetAllPois(), rows);
+		m_wPanel = workspace.CreateWidgets(LF_MapPlacesUI.CARD_LAYOUT, m_RootWidget);
+		if (!m_wPanel)
+		{
+			LF_Debug.Error(LF_MapLegend.FEATURE, "the icon legend was not created");
+			return;
+		}
+
+		int columns = LF_Utils.MaxInt(1, (count + ROWS_PER_COLUMN - 1) / ROWS_PER_COLUMN);
+		int perColumn = LF_Utils.MinInt(LF_Utils.MaxInt(count, 1), ROWS_PER_COLUMN);
+		FrameSlot.SetAnchorMin(m_wPanel, 0, 0);
+		FrameSlot.SetAnchorMax(m_wPanel, 0, 0);
+		FrameSlot.SetPos(m_wPanel, PANEL_LEFT, TAB_TOP);
+		FrameSlot.SetSize(m_wPanel, PANEL_PAD * 2 + columns * COLUMN_WIDTH, PANEL_HEAD + perColumn * ROW_HEIGHT + PANEL_PAD);
+		TextWidget title = TextWidget.Cast(m_wPanel.FindAnyWidget("Title"));
+		if (title)
+			title.SetText(WidgetManager.Translate("#LF-MapLegend_IconsTitle"));
+
+		TextWidget note = TextWidget.Cast(m_wPanel.FindAnyWidget("Note"));
+		if (note)
+			note.SetText("");
+
+		foreach (int line, int index : rows)
+		{
+			AddPanelRow(workspace, places.GetAllPois()[index], line / ROWS_PER_COLUMN, line % ROWS_PER_COLUMN);
+		}
+
+		LF_Debug.Info(LF_MapLegend.FEATURE, string.Format("icon legend open: %1 types", count));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void AddPanelRow(notnull WorkspaceWidget workspace, notnull LF_MapPoi poi, int column, int row)
+	{
+		float x = PANEL_PAD + column * COLUMN_WIDTH;
+		float y = PANEL_HEAD + row * ROW_HEIGHT;
+		Widget icon = workspace.CreateWidgets(LF_MapPlacesUI.POI_LAYOUT, m_wPanel);
+		if (icon)
+		{
+			FrameSlot.SetPos(icon, x, y);
+			FrameSlot.SetSize(icon, ROW_ICON, ROW_ICON);
+			ImageWidget image = ImageWidget.Cast(icon.FindAnyWidget("Icon"));
+			array<string> candidates = {};
+			LF_MapPlaceIcons.Candidates(poi.m_sKind, poi.m_sIcon, poi.m_sCategory, candidates);
+			if (image)
+			{
+				image.SetSize(ROW_ICON, ROW_ICON);
+				LF_MapPlaceIcons.Resolve(image, candidates);
+			}
+
+			Widget count = icon.FindAnyWidget("Count");
+			if (count)
+				count.SetVisible(false);
+		}
+
+		TextWidget name = TextWidget.Cast(workspace.CreateWidgets(LF_MapPlacesUI.TYPE_LAYOUT, m_wPanel));
+		if (!name)
+			return;
+
+		string text = LF_MapLegend.TypeName(poi);
+		name.SetText(text);
+		float width = Math.Min(LF_MapDeclutter.LabelWidth(text), COLUMN_WIDTH - ROW_ICON - 8);
+		FrameSlot.SetPos(name, x + ROW_ICON + 6, y);
+		FrameSlot.SetSize(name, width, ROW_ICON);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void ClosePanel()
+	{
+		if (m_wPanel)
+			m_wPanel.RemoveFromHierarchy();
+
+		m_wPanel = null;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	override void OnMapClose(MapConfiguration config)
 	{
 		CloseSheet();
+		ClosePanel();
 		if (m_wTab)
 			m_wTab.RemoveFromHierarchy();
 
+		if (m_wIconTab)
+			m_wIconTab.RemoveFromHierarchy();
+
 		m_wTab = null;
+		m_wIconTab = null;
 		super.OnMapClose(config);
 	}
 
@@ -556,6 +745,13 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	void HarnessClose()
 	{
 		CloseSheet();
+		ClosePanel();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void HarnessIcons()
+	{
+		OpenPanel();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -688,11 +884,13 @@ class LF_MapLegendHarness
 			legend.HarnessSearch(argument);
 		else if (action == "toggle")
 			legend.HarnessToggle(argument);
+		else if (action == "icons")
+			legend.HarnessIcons();
 		else if (action == "demo")
 			legend.HarnessDemo(Vector(argument.ToFloat(), 0, argument2.ToFloat()));
 		else if (action != "status")
 		{
-			detail = "usage: maplegend open|close|search <word>|toggle <category>|demo <x> <z>|status";
+			detail = "usage: maplegend open|close|search <word>|toggle <category>|icons|demo <x> <z>|status";
 			return false;
 		}
 

@@ -6,10 +6,10 @@ FrameWidgetClass "{55C98E70E6C6354A}" {
   OffsetLeft 0
   PositionY 0
   OffsetTop 0
-  SizeX 220
-  OffsetRight -220
-  SizeY 92
-  OffsetBottom -92
+  SizeX 260
+  OffsetRight -260
+  SizeY 58
+  OffsetBottom -58
  }
  {
   ImageWidgetClass "{6A6C1B8528246406}" {
@@ -62,40 +62,6 @@ FrameWidgetClass "{55C98E70E6C6354A}" {
    "Min Font Size" 10
    FontProperties FontProperties "{0D3803DA9FDAF621}" {
     Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
-   }
-  }
-  ButtonWidgetClass "{E17A0C34B52D8F61}" {
-   Name "SetWaypoint"
-   Slot FrameWidgetSlot "{0C6F3D8A91B4E257}" {
-    Anchor 0 1 1 1
-    OffsetLeft 10
-    OffsetTop -38
-    OffsetRight 10
-    OffsetBottom 8
-   }
-   {
-    ImageWidgetClass "{B3F81D5C27A90E46}" {
-     Name "ButtonBack"
-     Slot FrameWidgetSlot "{7D2E94A0C1385B6F}" {
-      Anchor 0 0 1 1
-     }
-     Color 0.243 0.251 0.227 1
-    }
-    TextWidgetClass "{4A9C6E21D8F3B057}" {
-     Name "ButtonText"
-     Slot FrameWidgetSlot "{91E5B7C3A02D4F68}" {
-      Anchor 0 0 1 1
-     }
-     Color 0.933 0.902 0.839 1
-     Text "#LF-MapPlaces_SetWaypoint"
-     "Font Size" 16
-     "Min Font Size" 10
-     "Horizontal Alignment" Center
-     "Vertical Alignment" Center
-     FontProperties FontProperties "{2F60A8B5C94E1D73}" {
-      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-     }
-    }
    }
   }
  }

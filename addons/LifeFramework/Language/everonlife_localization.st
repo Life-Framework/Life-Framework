@@ -7419,6 +7419,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Trabajo"
      Comment "Hint title for work results"
     }
+    CustomStringTableItem "{59804671C301B6FE}" {
+     Id "LF-Keybind_MapWaypointClear"
+     Target_en_us "Map: clear waypoint"
+     Comment "Keybinding menu: clears the personal waypoint while the map is open (Backspace, gamepad Y twice)."
+    }
+    CustomStringTableItem "{76177DC570F67928}" {
+     Id "LF-Keybind_MapWaypointModifier"
+     Target_en_us "Map: set waypoint (hold, then left click)"
+     Comment "Keybinding menu: the modifier held with a map click to set the waypoint (keyboard Shift, gamepad Y)."
+    }
     CustomStringTableItem "{280FC8E5DDE60C95}" {
      Id "LF-Keybind_OpenEmote"
      Target_en_us "Open emote menu"
@@ -8602,6 +8612,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hide"
      Comment "Map legend (#2244): button that takes a category off the map."
     }
+    CustomStringTableItem "{8B6B429B0B8DB6CF}" {
+     Id "LF-MapLegend_IconsTab"
+     Target_en_us "Legend"
+     Comment "Map: the tab under Map key that opens the icon legend."
+    }
+    CustomStringTableItem "{90D47ED8630EFB47}" {
+     Id "LF-MapLegend_IconsTitle"
+     Target_en_us "LEGEND"
+     Comment "Map icon legend panel title: one icon and its place type per line."
+    }
     CustomStringTableItem "{13D7B2C3585F2511}" {
      Id "LF-MapLegend_NoMatch"
      Target_en_us "No place you know of by that name"
@@ -8641,6 +8661,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-MapMarkWaypoint_Label"
      Target_en_us "Map marker"
      Comment "Map: name under the HUD marker of the waypoint a player's own map marker sets, when the marker has no text of its own."
+    }
+    CustomStringTableItem "{A903D8336DDE33B0}" {
+     Id "LF-MapPlaces_CardClear"
+     Target_en_us "Your waypoint. Click again to clear."
+     Comment "Map place card, mouse: the waypoint is on this place."
+    }
+    CustomStringTableItem "{A4B75C962C2E3FDD}" {
+     Id "LF-MapPlaces_CardClearPad"
+     Target_en_us "Your waypoint. A again to clear."
+     Comment "Map place card, gamepad: the waypoint is on this place."
+    }
+    CustomStringTableItem "{26B1FA3CD62AF095}" {
+     Id "LF-MapPlaces_CardCrowded"
+     Target_en_us "Also here: %1. Click to zoom in."
+     Comment "Map place card for places that share one spot on the map. %1 = the other places, comma separated."
+    }
+    CustomStringTableItem "{BA2C603B8BA2DEAA}" {
+     Id "LF-MapPlaces_CardSet"
+     Target_en_us "Click: set waypoint"
+     Comment "Map place card under the cursor, mouse: what a click on the place does."
+    }
+    CustomStringTableItem "{A752450458ACD025}" {
+     Id "LF-MapPlaces_CardSetPad"
+     Target_en_us "A: set waypoint"
+     Comment "Map place card under the cursor, gamepad: what A on the place does."
     }
     CustomStringTableItem "{DE2AC99F6166AB0D}" {
      Id "LF-MapPlaces_ClusterNote"
@@ -8691,6 +8736,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-MapPoi_Workplace"
      Target_en_us "Workplace"
      Comment "Map POI kind name (#2230): a job site."
+    }
+    CustomStringTableItem "{615D96CD9F0A9E15}" {
+     Id "LF-MapWaypoint_HintActive"
+     Target_en_us "Waypoint: %1, %2. Backspace clears it."
+     Comment "Map hint strip, second line, mouse and keyboard. %1 = waypoint name, %2 = distance ("340 m")."
+    }
+    CustomStringTableItem "{4BA6F91B8342E649}" {
+     Id "LF-MapWaypoint_HintActivePad"
+     Target_en_us "Waypoint: %1, %2. Double-tap Y clears it."
+     Comment "Map hint strip, second line, gamepad. %1 = waypoint name, %2 = distance ("340 m")."
+    }
+    CustomStringTableItem "{7D841E6E53E0E07B}" {
+     Id "LF-MapWaypoint_HintNone"
+     Target_en_us "Or click a place. The same again on your waypoint clears it."
+     Comment "Map hint strip, second line, no waypoint set."
+    }
+    CustomStringTableItem "{CF6499DC3087F5FB}" {
+     Id "LF-MapWaypoint_HintSet"
+     Target_en_us "Shift + Left click: set waypoint"
+     Comment "Map hint strip, first line, mouse and keyboard."
+    }
+    CustomStringTableItem "{7A6CB89B59485829}" {
+     Id "LF-MapWaypoint_HintSetPad"
+     Target_en_us "Hold Y + A: set waypoint"
+     Comment "Map hint strip, first line, gamepad."
     }
     CustomStringTableItem "{DC7EEF1A69D6A983}" {
      Id "LF-MapWaypoint_Label"
