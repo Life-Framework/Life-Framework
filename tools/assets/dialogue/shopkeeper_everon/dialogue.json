@@ -1,0 +1,24 @@
+{
+  "id": "shopkeeper_everon",
+  "name": "ShopkeeperEveron",
+  "patches": "shopkeeper",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "SF4mnzAUghHAXQCNqFsU",
+    "sex": "male",
+    "name": "James - French Podcast",
+    "public_owner_id": "f15bfb0b090be169b25d64645d178067b8539032dbcf37b5cb3d9d0687fd68df",
+    "why": "A friendly middle-aged Frenchman speaking English: the island's shopkeepers (supermarket, gun counter, pharmacy, clothing) all speak through the core shopkeeper dialogue, so they share one brisk shopkeeper voice.",
+    "model": "eleven_multilingual_v2",
+    "settings": { "stability": 0.5, "similarity_boost": 0.75, "style": 0.2, "speed": 1.0 }
+  },
+  "budget_chars": 1000,
+  "lines": {
+    "greet": { "text": "Good day. Take what you need from the shelves and pay at the till." },
+    "how_to_pay": { "text": "Pick the goods up yourself, then pay at any till before you leave. You get a receipt. Walk out without paying and the alarm goes off." },
+    "stock": { "text": "Food and household goods on the shelves, drinks in the chilled counter. What runs out comes back from the stockroom every few minutes." },
+    "thief": { "text": "Stop! You did not pay for that! Come back here!" },
+    "bye": { "text": "Good day to you." }
+  },
+  "replies": {}
+}

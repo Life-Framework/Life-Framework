@@ -1,0 +1,128 @@
+{
+  "id": "resident_store_clerk",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet_refuses": {
+      "hash": "b728bc4a11eb478a",
+      "date": "2026-11-22",
+      "voice_id": "WUsdxD2jzqOBENDBdPBm",
+      "voice_name": "Kevin Nitcheu",
+      "model": "eleven_multilingual_v2",
+      "text": "You are not welcome at my counter. Go on.",
+      "chars": 41,
+      "chars_total": 16,
+      "request_id": "avYJKSew9dF3ueCoDGSB",
+      "seconds": 2.13,
+      "mouth": "6999997489927874455235544300000015765433100"
+    },
+    "greet_wary": {
+      "hash": "b980c66c656d8a01",
+      "date": "2026-11-22",
+      "voice_id": "WUsdxD2jzqOBENDBdPBm",
+      "voice_name": "Kevin Nitcheu",
+      "model": "eleven_multilingual_v2",
+      "text": "I have my eye on you. Pay for what you take.",
+      "chars": 44,
+      "chars_total": 18,
+      "request_id": "jDabiTGmlkKM1VNEnsmd",
+      "seconds": 2.56,
+      "mouth": "6999689867876545452000000028992978722513543100111000"
+    },
+    "greet": {
+      "hash": "073344e0d45cf48a",
+      "date": "2026-11-22",
+      "voice_id": "WUsdxD2jzqOBENDBdPBm",
+      "voice_name": "Kevin Nitcheu",
+      "model": "eleven_multilingual_v2",
+      "text": "Pierre Vasseur, general store. If we do not have it, the ferry might bring it on Thursday.",
+      "chars": 90,
+      "chars_total": 36,
+      "request_id": "o1A8zDKCq195rClaIw7e",
+      "seconds": 4.95,
+      "mouth": "3999988984355431023788888521554421110002625977999998757611001154218788756643466456212541155312222000"
+    },
+    "greet_friendly": {
+      "hash": "b27f7502822e5822",
+      "date": "2026-11-22",
+      "voice_id": "WUsdxD2jzqOBENDBdPBm",
+      "voice_name": "Kevin Nitcheu",
+      "model": "eleven_multilingual_v2",
+      "text": "Good to see you. The bread came in fresh this morning.",
+      "chars": 54,
+      "chars_total": 22,
+      "request_id": "1OkDQaB9p8KjjcPnV4AA",
+      "seconds": 2.38,
+      "mouth": "588943575552110018749996269885248724624655444100"
+    },
+    "greet_regular": {
+      "hash": "8a9e4ea8375a608f",
+      "date": "2026-11-22",
+      "voice_id": "WUsdxD2jzqOBENDBdPBm",
+      "voice_name": "Kevin Nitcheu",
+      "model": "eleven_multilingual_v2",
+      "text": "My best customer! I put a tin of the good coffee aside for you.",
+      "chars": 63,
+      "chars_total": 25,
+      "request_id": "IgdHodRqpsphjIfvtMtv",
+      "seconds": 3.5,
+      "mouth": "5764994259537655411111110178199835998596497228726753565135444211111100"
+    },
+    "about_work": {
+      "hash": "c5636c9296199545",
+      "date": "2026-11-22",
+      "voice_id": "WUsdxD2jzqOBENDBdPBm",
+      "voice_name": "Kevin Nitcheu",
+      "model": "eleven_multilingual_v2",
+      "text": "Tins, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass.",
+      "chars": 131,
+      "chars_total": 52,
+      "request_id": "UPEmXhGIiaz2B7SObLfh",
+      "seconds": 8.18,
+      "mouth": "29998643211468998111110447889865653210000003395775442343210000000001499318669999741486432866664677464126545544411111101029995174249997256577755786754524334432101000"
+    },
+    "about_ferry": {
+      "hash": "d8fa97883d07e3be",
+      "date": "2026-11-22",
+      "voice_id": "WUsdxD2jzqOBENDBdPBm",
+      "voice_name": "Kevin Nitcheu",
+      "model": "eleven_multilingual_v2",
+      "text": "Everything comes by the ferry. When the weather turns the shelves go bare, and everybody blames me.",
+      "chars": 99,
+      "chars_total": 40,
+      "request_id": "dTeIb2viZTO8NAsovbTP",
+      "seconds": 5.12,
+      "mouth": "1799987993289963877423665431100000003788968999535996265437886417536678611543669566662556421432111111000"
+    },
+    "about_town": {
+      "hash": "ee268154479e5d93",
+      "date": "2026-11-22",
+      "voice_id": "WUsdxD2jzqOBENDBdPBm",
+      "voice_name": "Kevin Nitcheu",
+      "model": "eleven_multilingual_v2",
+      "text": "Quiet, mostly. Since the new families came there is more bread to bake and more faces to learn.",
+      "chars": 95,
+      "chars_total": 38,
+      "request_id": "SBQ8UnCTub3bCSrGCIhW",
+      "seconds": 5.58,
+      "mouth": "1699972167873234421111100137995289996299999972279986876675566775367842753779413366656662157424412554333211111000"
+    },
+    "bye": {
+      "hash": "c0f4b152a420cc9d",
+      "date": "2026-11-22",
+      "voice_id": "WUsdxD2jzqOBENDBdPBm",
+      "voice_name": "Kevin Nitcheu",
+      "model": "eleven_multilingual_v2",
+      "text": "Mind how you go.",
+      "chars": 16,
+      "chars_total": 6,
+      "request_id": "7SvZr7pccnY20IESKX3S",
+      "seconds": 0.86,
+      "mouth": "479988997735553000"
+    }
+  },
+  "voice": {
+    "id": "WUsdxD2jzqOBENDBdPBm",
+    "name": "Kevin Nitcheu",
+    "source": "voice library"
+  }
+}

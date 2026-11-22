@@ -57,6 +57,37 @@ class LF_TreeFelling
 	static const string TREE_ROOT = "prefabs/vegetation/tree/";
 
 	//------------------------------------------------------------------------------------------------
+	//! True when a prefab path is one of the base game's species prefabs (Prefabs/Vegetation/Tree/<species>/...).
+	static bool IsSpeciesPath(string prefab)
+	{
+		string path = prefab;
+		path.ToLower();
+		path.Replace("\\", "/");
+		return path.Contains(TREE_ROOT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The prefab the rules read for a tree, given its prefab chain: [0] is the placed prefab, then each
+	//! ancestor it inherits from. The world also places trees from the editor's PrefabLibrary
+	//! (PrefabLibrary/DefaultLibrary/Vegetation/Trees/t_betula_pendula_2s.et, a flat folder of thin prefabs that
+	//! inherit the species prefab), whose own path names no species folder; the species prefab is the first
+	//! ancestor under Prefabs/Vegetation/Tree/. A chain with none returns the placed prefab, which KindOf
+	//! then reads as no tree.
+	static ResourceName RulesPrefabOf(notnull array<string> chain)
+	{
+		foreach (string name : chain)
+		{
+			if (IsSpeciesPath(name))
+				return name;
+		}
+
+		if (chain.IsEmpty())
+			return ResourceName.Empty;
+
+		return chain[0];
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Reads class, size and exclusion from a prefab path (with or without its {GUID}).
 	static LF_TreeKind KindOf(ResourceName prefab, LF_TreeFellingConfig config)
 	{

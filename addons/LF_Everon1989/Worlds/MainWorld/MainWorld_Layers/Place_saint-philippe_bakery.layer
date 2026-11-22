@@ -30,6 +30,14 @@ GenericEntity Fit_saint_philippe_bakery_bakery_counter_loaf_2 : "{633EF19AA18FF9
  angleY -80
 }
 GenericEntity Fit_saint_philippe_bakery_bakery_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "bakery"
+   m_vRimColor 0.5 0.28 0.1
+   m_vPaintColor 0.97 0.9 0.72
+   m_vTextColor 0.5 0.28 0.1
+  }
+ }
  coords 4473.489 15.75 10745.64
  angleY -100
 }

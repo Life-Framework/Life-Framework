@@ -456,6 +456,10 @@ wanted a start that buys a car, the driving licence and basic hardware: T601 $56
 for fuel and food. Set in the pack (`LF_Characters_Everon1989.conf`,
 `LF_CharacterConfig.m_iStartingBank`), not the core, which keeps $1,000.
 
+**2026-11-22 — Raised the same day to $2,000.** The maintainer wanted a new player
+to survive a few deaths too: the $975 starter list plus three $150 respawn bills
+(`LF_Respawn.conf` `m_iBillAmount`) is $1,425, leaving about $575 for fuel and food.
+
 ## Delivery
 
 **2026-11-07 — Milestone 1 is a signposted DebugWorld playtest town.** Every

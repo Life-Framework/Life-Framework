@@ -14,14 +14,14 @@ FrameWidgetClass "{47253323036FE400}" {
   ImageWidgetClass "{C604710D02CF17DF}" {
    Name "BarBottom"
    Slot FrameWidgetSlot "{42C9A179DF6EFA92}" {
-    Anchor 0 0.7 1 1
+    Anchor 0 0.66 1 1
    }
    Color 0.035 0.033 0.03 0.88
   }
   ImageWidgetClass "{85FA053FF626060D}" {
    Name "Rule"
    Slot FrameWidgetSlot "{DE3A4E2F1F357FD6}" {
-    Anchor 0 0.7 1 0.7
+    Anchor 0 0.66 1 0.66
     PositionY 0
     OffsetTop 0
     SizeY 2
@@ -32,7 +32,7 @@ FrameWidgetClass "{47253323036FE400}" {
   VerticalLayoutWidgetClass "{D563A6749013E2EC}" {
    Name "Lines"
    Slot FrameWidgetSlot "{A9B6755B57FC49C4}" {
-    Anchor 0.2 0.725 0.8 0.99
+    Anchor 0.2 0.685 0.8 0.99
    }
    {
      TextWidgetClass "{2F151B53C765E90C}" {
@@ -112,6 +112,20 @@ FrameWidgetClass "{47253323036FE400}" {
       "Font Size" 22
       "Min Font Size" 22
       FontProperties FontProperties "{98BD709D3BCE26BF}" {
+       Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+      }
+     }
+     TextWidgetClass "{B1B41EEC432EA5D6}" {
+      Name "Option4"
+      Slot LayoutSlot "{EF6DAC9FA78FBE6D}" {
+       Padding 0 3 0 3
+      }
+      "Is Visible" 0
+      Color 0.82 0.8 0.74 1
+      Text ""
+      "Font Size" 22
+      "Min Font Size" 22
+      FontProperties FontProperties "{C76836D4DA50A7A8}" {
        Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
       }
      }

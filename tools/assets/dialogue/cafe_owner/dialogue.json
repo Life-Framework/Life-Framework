@@ -17,40 +17,138 @@
       "speed": 0.95
     }
   },
-  "budget_chars": 2000,
+  "budget_chars": 2600,
   "hear_range_m": 8,
   "start": "greet",
   "nodes": [
-    { "id": "greet_refuses", "line": "greet_refuses" },
-    { "id": "greet_wary", "line": "greet_wary", "options": [{ "text": "bye", "next": "bye" }] },
-    { "id": "greet_friendly", "line": "greet_friendly", "options_from": "greet" },
-    { "id": "greet_regular", "line": "greet_regular", "options_from": "greet" },
-    { "id": "greet", "line": "greet", "options": [
-      { "text": "ask_zone", "next": "zone" },
-      { "text": "ask_help", "next": "help" },
-      { "text": "bye", "next": "bye" } ] },
-    { "id": "zone", "line": "zone", "options": [
-      { "text": "ask_move", "next": "move" },
-      { "text": "ask_help", "next": "help" },
-      { "text": "bye", "next": "bye" } ] },
-    { "id": "move", "line": "move", "options": [
-      { "text": "ask_help", "next": "help" },
-      { "text": "bye", "next": "bye" } ] },
-    { "id": "help", "options": [
-      { "text": "ask_work", "next": "work" },
-      { "text": "ask_clerk", "next": "clerk" },
-      { "text": "ask_handbook", "next": "handbook" },
-      { "text": "bye", "next": "bye" } ] },
-    { "id": "work", "line": "work", "options_from": "help" },
-    { "id": "clerk", "line": "clerk", "options_from": "help" },
-    { "id": "handbook", "line": "handbook", "options_from": "help" },
-    { "id": "bye", "line": "bye" }
+    {
+      "id": "greet_refuses",
+      "line": "greet_refuses"
+    },
+    {
+      "id": "greet_wary",
+      "line": "greet_wary",
+      "options": [
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "greet_friendly",
+      "line": "greet_friendly",
+      "options_from": "greet"
+    },
+    {
+      "id": "greet_regular",
+      "line": "greet_regular",
+      "options_from": "greet"
+    },
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "ask_zone",
+          "next": "zone"
+        },
+        {
+          "text": "ask_help",
+          "next": "help"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "zone",
+      "line": "zone",
+      "options": [
+        {
+          "text": "ask_move",
+          "next": "move"
+        },
+        {
+          "text": "ask_help",
+          "next": "help"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "move",
+      "line": "move",
+      "options": [
+        {
+          "text": "ask_help",
+          "next": "help"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "help",
+      "options": [
+        {
+          "text": "ask_work",
+          "next": "work"
+        },
+        {
+          "text": "ask_clerk",
+          "next": "clerk"
+        },
+        {
+          "text": "ask_handbook",
+          "next": "handbook"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "work",
+      "line": "work",
+      "options_from": "help"
+    },
+    {
+      "id": "clerk",
+      "line": "clerk",
+      "options_from": "help"
+    },
+    {
+      "id": "handbook",
+      "line": "handbook",
+      "options_from": "help"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
   ],
   "lines": {
-    "greet_refuses": { "text": "I have nothing to say to you. Please leave my cafe." },
-    "greet_wary": { "text": "Oh. It is you. What do you need?" },
-    "greet_friendly": { "text": "Welcome back! You always bring a smile in with you. What can I do for you?" },
-    "greet_regular": { "text": "There is my favourite customer! Sit, sit. Ask me anything." },
+    "greet_refuses": {
+      "text": "I have nothing to say to you. Please leave my cafe."
+    },
+    "greet_wary": {
+      "text": "Oh. It is you. What do you need?"
+    },
+    "greet_friendly": {
+      "text": "Welcome back! You always bring a smile in with you. What can I do for you?"
+    },
+    "greet_regular": {
+      "text": "There is my favourite customer! Sit, sit. Ask me anything."
+    },
     "greet": {
       "text": "Come in, come in. The coffee is hot. You are new here, I can tell. Nobody walks that slowly who has lived here long."
     },
@@ -71,6 +169,14 @@
     },
     "bye": {
       "text": "Come back when you are hungry. Or lonely. It is the same to me."
+    },
+    "rumour_reported": {
+      "for_key": "#LF-Rumour_Shipment_CafeOwner_Reported",
+      "text": "They say someone carried a crate off the quay straight to the gendarmes. The dockers have not touched a drink here all week. Whoever it was, keep your head down."
+    },
+    "rumour_sold": {
+      "for_key": "#LF-Rumour_Shipment_CafeOwner_Sold",
+      "text": "They say a crate went missing off the quay and somebody in town is richer for it. Nobody asks who. The man at the corner table has stopped counting his change."
     }
   },
   "replies": {

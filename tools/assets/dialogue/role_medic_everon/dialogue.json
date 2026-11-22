@@ -1,0 +1,39 @@
+{
+  "id": "role_medic_everon",
+  "name": "RoleMedicEveron",
+  "patches": "role_medic",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "xTZlmU8dKXdyk4XGYGFg",
+    "sex": "male",
+    "name": "Antoine - Articulate, Calm and Bright",
+    "public_owner_id": "3825f0632c101f7e84c156d5342327a438505f05dbc337f47ba5f3a02efe0aa9",
+    "why": "A calm, articulate middle-aged French voice for the clinic doctor. The game has male bodies only; the voice is male.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1
+    }
+  },
+  "budget_chars": 600,
+  "lines": {
+    "greet": {
+      "text": "Come in. Are you hurt?"
+    },
+    "what": {
+      "text": "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse."
+    },
+    "where": {
+      "text": "If you need a bandage and I am not here, the general store keeps dressings by the counter."
+    },
+    "rumour": {
+      "text": "A lot of cuts from the sawmill this month. The men will not wear gloves."
+    },
+    "bye": {
+      "text": "Look after yourself."
+    }
+  },
+  "replies": {}
+}

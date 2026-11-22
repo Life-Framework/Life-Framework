@@ -1,0 +1,40 @@
+GenericEntity : "{8594DC1E8A135607}Prefabs/Processor/ItemProcessor_Base.et" {
+ ID "6ADA2703553B8DD8"
+ components {
+  MeshObject "{598F21A867C4015C}" {
+   Object "{08080CFD71F775CC}Assets/Props/Roleplay/SmelterFurnace/SmelterFurnace.xob"
+  }
+  ActionsManagerComponent "{598F21A8710B89C1}" {
+   ActionContexts {
+    UserActionContext "{598F21A871DA7304}" {
+     ContextName "default"
+     Position PointInfo "{598F21A875320722}" {
+      Offset 0 0.7011 0.5055
+     }
+     Radius 1
+    }
+   }
+   additionalActions {
+    LF_ProcessAction "{598F21A877BE6DEE}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{B09F92F97CEFACC9}" {
+      Name "#LF-Process_SmeltIronOre"
+     }
+     m_sMachineId "furnace-iron-mine"
+     Duration 6
+     m_bForceDropOutput 1
+     m_vDropOffset 0 0 1.6
+     m_vRotation 0 0 0
+    }
+   }
+  }
+  LF_AmbientEmitterComponent "{F804031051EBA4F5}" {
+   m_sSoundSlot "atmo_furnace"
+   m_fRadius 35
+   m_iPriority 1
+   m_vOffset 0 1 0
+  }
+ }
+}

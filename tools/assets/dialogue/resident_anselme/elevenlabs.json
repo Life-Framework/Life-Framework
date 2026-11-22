@@ -1,0 +1,128 @@
+{
+  "id": "resident_anselme",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet_refuses": {
+      "hash": "2568d35440bd5da5",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "No. I have heard what you did. Leave me be.",
+      "chars": 43,
+      "chars_total": 17,
+      "request_id": "M8MPpmKUFsut1pmNbjq0",
+      "seconds": 2.17,
+      "mouth": "56755779579956622543665234799567765488642000"
+    },
+    "greet_wary": {
+      "hash": "f5e20868e48a4ebf",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "You. Keep your distance, please.",
+      "chars": 32,
+      "chars_total": 13,
+      "request_id": "eONwyaa44o29mw6wTgNd",
+      "seconds": 1.98,
+      "mouth": "6999841010037529779314411158631100001100"
+    },
+    "greet": {
+      "hash": "11614a7db001d1df",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "Anselme Caron. I sort the parcels at the depot, so if your post is late, blame the ferry, not me.",
+      "chars": 97,
+      "chars_total": 39,
+      "request_id": "HRiY6AmWjmQ2wW8yypuT",
+      "seconds": 6.42,
+      "mouth": "689745799987522664433201102111011026856997556269995476573465685149974346752562199963364366776123555655545565444454123321001112000"
+    },
+    "greet_friendly": {
+      "hash": "f41fa6652ec8a98e",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "Hello, hello. No parcel for you today, I am afraid.",
+      "chars": 51,
+      "chars_total": 20,
+      "request_id": "qVcpS0RRYQqIbo9co7x1",
+      "seconds": 2.73,
+      "mouth": "5779998999855762178853351344634679666554215554210000100"
+    },
+    "greet_regular": {
+      "hash": "c92758a95cc34e9f",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "Ah, my friend! Marius made too much soup again. Come by tonight.",
+      "chars": 64,
+      "chars_total": 52,
+      "request_id": "eecPq7x2XFQeaPTfSJ4v",
+      "seconds": 3.62,
+      "mouth": "9999999932227776553114667764235531566323364143444313778982554431111111000"
+    },
+    "about_work": {
+      "hash": "f390dec686651a72",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "Letters, parcels, the odd crate of machine parts for the farms. If you want work, the depot pays by the drop. Ask at the counter.",
+      "chars": 129,
+      "chars_total": 52,
+      "request_id": "QAss9S0ArsF8QwJG8zFE",
+      "seconds": 9.12,
+      "mouth": "699239865333211111111123899955567776443112323311136941799862449982857854478784248751314565227899987643111111748989952499931287477238721687321653543488511111111178733235132214443231000"
+    },
+    "about_family": {
+      "hash": "c0c9525c90dcf38b",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "Marius is my brother. He spends his mornings at the cafe and knows everything before the newspaper does.",
+      "chars": 104,
+      "chars_total": 84,
+      "request_id": "5CiUehMPsrbUR80Ahkys",
+      "seconds": 6.32,
+      "mouth": "6899999963486477883599633211111111110016331689956867899998646324257414787677677973115974676215555421454577732134213222211111000"
+    },
+    "about_town": {
+      "hash": "b9bcbc963ec87f0c",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "We came over from the mainland long before all this. Now half the street are new faces from the Zone. Good people. Tired people.",
+      "chars": 128,
+      "chars_total": 51,
+      "request_id": "ixQ7xfUbi0OcteI4RK2Z",
+      "seconds": 8.49,
+      "mouth": "49547998897962799899999887565699996822898898975532211111111146788589831455415864246656778994227983354214656547887765111111111111348841167413211123488876311452122110011100"
+    },
+    "bye": {
+      "hash": "5755bee7b8f0a8f5",
+      "date": "2026-11-22",
+      "voice_id": "LFL24vHvKCbsOiCIYwvv",
+      "voice_name": "Bacbuc - Audiobooks",
+      "model": "eleven_multilingual_v2",
+      "text": "Take care now.",
+      "chars": 14,
+      "chars_total": 6,
+      "request_id": "vvsz6xxui6dSa975paTE",
+      "seconds": 0.83,
+      "mouth": "39622998776443100"
+    }
+  },
+  "voice": {
+    "id": "LFL24vHvKCbsOiCIYwvv",
+    "name": "Bacbuc - Audiobooks",
+    "source": "voice library"
+  }
+}

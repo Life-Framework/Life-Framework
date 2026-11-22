@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F89E77ED33B9855D}Sounds/Dialogue/role_fence_everon/Dialogue_role_fence_everon.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
