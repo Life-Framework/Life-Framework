@@ -9337,6 +9337,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Taser cartridge"
      Comment "Inventory name of the taser's single-shot cartridge."
     }
+    CustomStringTableItem "{69DF48978FFA6832}" {
+     Id "LF-Mannequin_Bought"
+     Target_en_us "Bought for %1."
+     Comment "Toast after buying a piece off a mannequin. %1 price paid."
+    }
+    CustomStringTableItem "{D88719E262E2BBFE}" {
+     Id "LF-Mannequin_BoughtDropped"
+     Target_en_us "Bought for %1. Your pockets are full, so it is at your feet."
+     Comment "Toast: bought a piece, no room in the inventory, it was dropped at the buyer. %1 price paid."
+    }
+    CustomStringTableItem "{E3C98F280138BB07}" {
+     Id "LF-Mannequin_BoughtOutfit"
+     Target_en_us "Bought the whole outfit for %1."
+     Comment "Toast after buying a whole mannequin outfit. %1 price paid."
+    }
+    CustomStringTableItem "{E9FC2C3F7CA0EF0D}" {
+     Id "LF-Mannequin_BoughtOutfitDropped"
+     Target_en_us "Bought the whole outfit for %1. What did not fit is at your feet."
+     Comment "Toast: bought the outfit, some pieces were dropped at the buyer. %1 price paid."
+    }
+    CustomStringTableItem "{023966184146C94F}" {
+     Id "LF-Mannequin_BoughtPart"
+     Target_en_us "Bought part of the outfit for %1; the rest was refused."
+     Comment "Toast: the outfit sale stopped part way (a gate refused one piece). %1 price paid."
+    }
+    CustomStringTableItem "{1525CDCF4C868B0B}" {
+     Id "LF-Mannequin_BuyOutfit"
+     Target_en_us "Buy whole outfit: %1"
+     Comment "Mannequin action: buy every worn piece. %1 total price."
+    }
+    CustomStringTableItem "{749A44898F468261}" {
+     Id "LF-Mannequin_BuyPiece"
+     Target_en_us "Buy %1: %2"
+     Comment "Mannequin action: buy one worn piece. %1 item name, %2 price."
+    }
+    CustomStringTableItem "{097B35901C0BFF32}" {
+     Id "LF-Mannequin_NoCash"
+     Target_en_us "Not enough cash"
+     Comment "Mannequin action greyed: the player carries less cash than the price."
+    }
+    CustomStringTableItem "{F224EE96F400AC18}" {
+     Id "LF-Mannequin_OutfitSoldOut"
+     Target_en_us "A piece is sold out"
+     Comment "Mannequin outfit action greyed: one worn piece is sold out."
+    }
+    CustomStringTableItem "{CFF4E53D12DE196D}" {
+     Id "LF-Mannequin_SoldOut"
+     Target_en_us "Sold out"
+     Comment "Mannequin action greyed: the store has none of this piece left."
+    }
+    CustomStringTableItem "{95C19D11A4510149}" {
+     Id "LF-Mannequin_Title"
+     Target_en_us "Mannequin"
+     Comment "Toast title for a purchase off a dressed mannequin."
+    }
     CustomStringTableItem "{D920AB80A60A3625}" {
      Id "LF-MapKnown_ArrivalMarked"
      Target_en_us "The clerk pencils %1 places on the square onto your map."

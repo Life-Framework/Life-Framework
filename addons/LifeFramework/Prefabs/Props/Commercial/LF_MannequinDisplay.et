@@ -1,0 +1,89 @@
+GenericEntity : "{DAEBE5DD34859027}Prefabs/Props/Commercial/LF_Mannequin.et" {
+ ID "882A473927519FA3"
+ components {
+  LF_ShopComponent "{B9707321705D85F1}" {
+   m_sShopName "#LF-Mannequin_Title"
+  }
+  LF_MannequinOutfitComponent "{DF845760343DB74B}" {
+  }
+  ActionsManagerComponent "{77AB624E333E6BC8}" {
+   ActionContexts {
+    UserActionContext "{999C6BCA70DFD7FD}" {
+     ContextName "default"
+     Position PointInfo "{C18C389596739769}" {
+      Offset 0 1.2 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_MannequinBuyAction "{7FDAC93EB30ADA13}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{18CD37D6ED76797C}" {
+      Name "#LF-Mannequin_Title"
+     }
+     m_iSlot 0
+    }
+    LF_MannequinBuyAction "{038BA1985C684731}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{3B22C6FD6EA62473}" {
+      Name "#LF-Mannequin_Title"
+     }
+     m_iSlot 1
+    }
+    LF_MannequinBuyAction "{7427008605481479}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{D8A4A6BA49F71BF3}" {
+      Name "#LF-Mannequin_Title"
+     }
+     m_iSlot 2
+    }
+    LF_MannequinBuyAction "{B7620B45AE434E7D}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{386653A2C0B0F655}" {
+      Name "#LF-Mannequin_Title"
+     }
+     m_iSlot 3
+    }
+    LF_MannequinBuyAction "{1191EE0B11F99AD1}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A68EF894DA801FD9}" {
+      Name "#LF-Mannequin_Title"
+     }
+     m_iSlot 4
+    }
+    LF_MannequinBuyAction "{D5C5EE3C0E426212}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{4246236E49DC14F7}" {
+      Name "#LF-Mannequin_Title"
+     }
+     m_iSlot 5
+    }
+    LF_MannequinBuyAction "{226BDEC12A6A0EA4}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{240970BB8DD59EC4}" {
+      Name "#LF-Mannequin_Title"
+     }
+     m_iSlot -1
+    }
+   }
+  }
+  RplComponent "{C7D57E356F8B980C}" {
+   Enabled 1
+  }
+ }
+}

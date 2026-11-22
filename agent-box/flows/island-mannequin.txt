@@ -1,0 +1,39 @@
+# Island mannequin (2026-11-22): a fresh player clears the rules quiz and form R-89, walks to the
+# Saint-Philippe clothing store and scrolls the action list on a dressed mannequin: one "Buy <piece>: $<price>"
+# line per worn piece and "Buy whole outfit: $<sum>". Then buys the flat cap (F) and reads the state.
+# Session: node agent-box/session.mjs up --profile full --mission island
+#          node agent-box/harness.mjs --client 1 flow island-mannequin
+ui
+click QuizOption1Button
+wait 500
+click QuizOption0Button
+wait 500
+click QuizOption2Button
+wait 500
+click QuizOption1Button
+wait 500
+click QuizOption0Button
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+stand Fit_saint_philippe_clothing_lf_mannequin_denim
+wait 2000
+look
+shot ui mannequin_denim_list
+press WheelDown
+wait 600
+press WheelDown
+wait 600
+shot ui mannequin_denim_scrolled
+stand Fit_saint_philippe_clothing_lf_mannequin_suit
+wait 2000
+look
+shot ui mannequin_suit_list
+state
