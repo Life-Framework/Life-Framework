@@ -39,6 +39,51 @@ StringTable {
      Target_en_us "Father Étienne Morel"
      Comment "Anniversary memorial (#3806): the priest's name over his line at the memorial."
     }
+    CustomStringTableItem "{7173CDE7A6CBFCA6}" {
+     Id "LF-BusStop_Everon_CarLot"
+     Target_en_us "Car lot"
+     Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{D9A5A31C9F96F57D}" {
+     Id "LF-BusStop_Everon_Clinic"
+     Target_en_us "Clinic"
+     Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{69DE048A8BC3C392}" {
+     Id "LF-BusStop_Everon_Dock"
+     Target_en_us "Harbour"
+     Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{00E9AB36C23DF5F5}" {
+     Id "LF-BusStop_Everon_Farm"
+     Target_en_us "Wheat farm"
+     Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{BBDC74AA61C95C5B}" {
+     Id "LF-BusStop_Everon_Fuel"
+     Target_en_us "Fuel station"
+     Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{52D391877BFBF0FC}" {
+     Id "LF-BusStop_Everon_Police"
+     Target_en_us "Police station"
+     Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{312B86AB31F32448}" {
+     Id "LF-BusStop_Everon_ShopStreet"
+     Target_en_us "Shop street"
+     Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{EE465457EB29CEC3}" {
+     Id "LF-BusStop_Everon_Square"
+     Target_en_us "Town hall square"
+     Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
+    CustomStringTableItem "{F69203F63F4EE1BE}" {
+     Id "LF-BusStop_Everon_Woodlot"
+     Target_en_us "Timber yard"
+     Comment "Bus timetable: the name of a Saint-Philippe stop."
+    }
     CustomStringTableItem "{BE2579D48B439241}" {
      Id "LF-BuyerSale_Closed"
      Target_en_us "The man is not buying here, not tonight."
