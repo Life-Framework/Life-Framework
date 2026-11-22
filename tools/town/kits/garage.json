@@ -48,7 +48,7 @@
       "role": "counter",
       "verb": "on floor",
       "offset": [
-        -1.5,
+        -3,
         0.157,
         0.8
       ],
@@ -63,7 +63,7 @@
       "role": "till",
       "verb": "on shop-counter",
       "offset": [
-        -1.5,
+        -3,
         1.196,
         0.6
       ],
@@ -96,7 +96,7 @@
       "role": "npc",
       "verb": "on floor",
       "offset": [
-        -1.5,
+        -3,
         0.157,
         -0.6
       ],
@@ -128,7 +128,7 @@
       "role": "dressing",
       "verb": "against wall",
       "offset": [
-        -1.75,
+        -4,
         2.2,
         -3
       ],
