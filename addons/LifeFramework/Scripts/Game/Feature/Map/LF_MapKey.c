@@ -7,11 +7,11 @@ class LF_MapKeyLine
 {
 	//! The player's fold choice for the column, kept in their profile like the help card's.
 	static const string PREF_PATH = "$profile:LifeFramework/map-key.txt";
-	static const float COLUMN_WIDTH = 210;	// lf-fixed: a badge and a type name at the readable size
-	static const float ROW_HEIGHT = 23;	// lf-fixed: compact rows that still read at 1080p
-	static const float FONT_SIZE = 17;	// lf-fixed: 13 was too small to read at 1080p (lead, 2026-11-22)
+	static const float COLUMN_WIDTH = 250;	// lf-fixed: a badge and a type name at the larger size
+	static const float ROW_HEIGHT = 28;	// lf-fixed: rows that read at 1080p without squinting
+	static const float FONT_SIZE = 20;	// lf-fixed: 17 still read small in the first-2-hours review (2026-11-22)
 	//! A column holds this many lines; more flow into a second column to its left.
-	static const int MAX_PER_COLUMN = 34;	// lf-fixed: from under the tab to above the scale bar at 1080 reference
+	static const int MAX_PER_COLUMN = 28;	// lf-fixed: from under the tab and the money block to above the scale bar at 1080 reference
 
 	bool m_bHeader;
 	string m_sCategory;
@@ -52,6 +52,39 @@ class LF_MapKeyLine
 		line.m_iSwatch = color;
 		line.m_bThinSwatch = thin;
 		return line;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Drops the type rows of every group not in `open`, in place: a collapsed group is its header alone. Sign
+	//! lines stay. \return how many lines are left.
+	static int Collapse(notnull array<ref LF_MapKeyLine> lines, notnull array<string> open)
+	{
+		for (int i = lines.Count() - 1; i >= 0; i--)
+		{
+			LF_MapKeyLine line = lines[i];
+			if (line.m_bHeader || !line.m_sNote.IsEmpty())
+				continue;
+
+			if (open.Find(line.m_sCategory) < 0)
+				lines.RemoveOrdered(i);
+		}
+
+		return lines.Count();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Opens the group `category` when it is shut, shuts it when open. \return true when it is open now.
+	static bool ToggleOpen(notnull array<string> open, string category)
+	{
+		int at = open.Find(category);
+		if (at >= 0)
+		{
+			open.Remove(at);
+			return false;
+		}
+
+		open.Insert(category);
+		return true;
 	}
 
 	//------------------------------------------------------------------------------------------------
