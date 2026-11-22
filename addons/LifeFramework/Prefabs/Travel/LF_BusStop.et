@@ -1,0 +1,29 @@
+GenericEntity : "{7FCD4E7C25D886A8}Prefabs/Structures/Signs/Traffic/SignBusStop_01.et" {
+ ID "6B5F216B0DF0913E"
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+  }
+  ActionsManagerComponent "{609F49B67AA34844}" {
+   ActionContexts {
+    UserActionContext "{0B5C4681E7CCDE86}" {
+     ContextName "LF_BusStop"
+     Position PointInfo "{A30F7A5586ED2395}" {
+      Offset 0 1.3 0
+     }
+     Radius 1.5
+    }
+   }
+   additionalActions {
+    LF_BusStopAction "{42ECB68055680677}" {
+     ParentContextList {
+      "LF_BusStop"
+     }
+     UIInfo UIInfo "{9A92F546324C9223}" {
+      Name "#LF-BusStop_Action"
+      Description "#LF-BusStop_Title"
+     }
+    }
+   }
+  }
+ }
+}

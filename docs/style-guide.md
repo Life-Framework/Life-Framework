@@ -65,7 +65,7 @@ sheet of paper or a terminal that belongs to the object the player walked up to.
 
 - **Build it from UI kit parts.** `LF_UIScreen.Open(parts)` with `LF_UIPart` rows: `TITLE`,
   `HEADING`, `LINE`, `RICH`, `FIELD`, `ROW`, `STATUS`, `QUANTITY`, `KEYS`, `LIST`, `RULE`, `IMAGE`, `PORTRAIT`,
-  `BUTTON`, `CLOSE`. `tools\cli feature new <Area> <Name> --kind ui` writes one. No new `.layout`
+  `BAR` (a progress bar, `SetBar`), `BUTTON`, `CLOSE`. `tools\cli feature new <Area> <Name> --kind ui` writes one. No new `.layout`
   for a screen; `validate-ui-kit` fails it.
 - **The theme is `LF_UITheme` and nothing else.** Its values live in `Configs/UI/LF_UITheme.conf` (#966), so a pack restyles every sheet by patching a theme id (`docs/architecture/ui-theme.md`); the numbers below are the 1989 flagship's. Warm paper (238, 230, 212), carbon ink
   (28, 26, 22), brass rule (122, 102, 64), blued-steel rim (62, 64, 58), a darker strip for rows

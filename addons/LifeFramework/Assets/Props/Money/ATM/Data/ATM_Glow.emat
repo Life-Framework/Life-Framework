@@ -1,0 +1,8 @@
+MatPBRBasic {
+ BCRMap "{7F11132709EFD2A6}Assets/Props/Money/ATM/Data/ATM_Glow_BCR.edds"
+ NMOMap "{58B0C1054767E113}Assets/Props/Money/ATM/Data/ATM_Glow_NMO.edds"
+ Emissive 1 1 1 1
+ EmissiveLV 1
+ EmissiveAbsoluteLV 0
+ EmissiveMap "{898E881FC7EBDC95}Assets/Props/Money/ATM/Data/ATM_Glow_EM.edds"
+}

@@ -1,4 +1,4 @@
-// red-proof: 2026-11-17, cli test --no-build --red LF_Test_MapWaypoint: RED-OK (RedProof() skips the first click, the board draw and the move, so the click, board-draw and move checks fail). Green without it.
+// red-proof: 2026-11-22 RED-OK (wording checks added), 2026-11-17, cli test --no-build --red LF_Test_MapWaypoint: RED-OK (RedProof() skips the first click, the board draw and the move, so the click, board-draw and move checks fail). Green without it.
 
 //------------------------------------------------------------------------------------------------
 //! map/waypoint (#2235, epic #2223): a map click marks `LF_Waypoint` with id `map`, a board waypoint
@@ -24,8 +24,34 @@ class LF_Test_MapWaypoint : LF_Test
 		RunBoard(ctx);
 		RunMove(ctx);
 		RunMark(ctx);
+		RunWording(ctx);
 
 		LF_Waypoint.ResetStatics();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tag and the strip never write "Waypoint" twice: an unnamed waypoint reads "Waypoint: 95 m" (strip
+	//! detail "95 m"), a named one "Cafe, 95 m".
+	protected void RunWording(LF_TestContext ctx)
+	{
+		string tag;
+		string detail;
+		string namedTag;
+		string namedDetail;
+		if (!RedProof())
+		{
+			tag = LF_MapWaypoint.Tag("Waypoint", "Waypoint", "95 m");
+			detail = LF_MapWaypoint.Detail("Waypoint", "Waypoint", "95 m");
+			namedTag = LF_MapWaypoint.Tag("Cafe", "Waypoint", "95 m");
+			namedDetail = LF_MapWaypoint.Detail("Cafe", "Waypoint", "95 m");
+		}
+
+		ctx.EqualStr("Waypoint: 95 m", tag, "an unnamed waypoint's tag is the word once, then the distance");
+		ctx.EqualStr("95 m", detail, "an unnamed waypoint's strip detail is the distance alone");
+		ctx.EqualStr("Cafe, 95 m", namedTag, "a named waypoint's tag is the place and the distance");
+		ctx.EqualStr("Cafe, 95 m", namedDetail, "a named waypoint's strip detail is the place and the distance");
+		ctx.EqualStr("Waypoint", LF_MapWaypoint.Tag("Waypoint", "Waypoint", ""), "no distance (no body): the bare word");
+		ctx.EqualStr("Cafe", LF_MapWaypoint.Detail("Cafe", "Waypoint", ""), "no distance: just the place");
 	}
 
 	//------------------------------------------------------------------------------------------------

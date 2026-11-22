@@ -53,6 +53,13 @@
   `LF_PlaceComponent` of kind `ATM`, id `atm` by default. A place id is unique, so a second machine
   overrides `m_sId` in its layer entry (the grid cell `slice-3352` does). Test `money/atm-prefab`; the old
   inline `ATM.layer` entity in DebugWorld stays as it is.
+- ✅ (2026-11-22) **The ATM is a free-standing 1989 cash kiosk**: `ATMWall.xob` (same GUID, so every placed `LF_ATM.et`
+  changed with it) is now a 1.9 m kiosk that stands against a wall on a black plinth, after the maintainer's reference picture: a
+  grey-beige brushed-steel body, a lit header sign (BANQUE REGIONALE, DISTRIBUTEUR DE BILLETS 24H; an emissive `ATM_Glow` material,
+  the kit's new `emissive` map support), a camera, a recessed dark fascia with green trim, a green CRT menu in francs between four side
+  keys each side, a sloped shelf with raised keypad keys and a card reader, receipt and cash slots and a branch sticker. No place name
+  is on it (core asset). The use point is on the keypad (`-0.134 1.13 0.17`, radius 1.5). The bank-wall and fuel-kiosk machines
+  moved along their walls (`sideways` in the `atms` mapping) so the deeper kiosk clears the bank's planter and the kiosk door.
 - ✅ (2026-11-19, #3355) **Three ATMs stand in Saint-Philippe**: the `atms` outposts slot (`town drops saint-philippe atms`,
   layer `Place_saint-philippe_atms.layer`) puts an `LF_ATM.et` on the outer wall of the bank's street front (b79, under the
   bank's ATM sign), the fuel station kiosk (b97) and the harbour offices on the dock road (dock b08). Each overrides

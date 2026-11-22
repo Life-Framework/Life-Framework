@@ -3,7 +3,7 @@
 //   node agent-box/session.mjs up --mission island --profile full
 //   node agent-box/session.mjs map-rework-shots [--out <dir>]
 //   node agent-box/session.mjs down
-// Writes town.png (zoom 4.3), square.png (zoom 6), hover.png (a place's card pinned), legend.png (the Legend
+// Writes town.png (zoom 4.3), wide.png (zoom 3), square.png (zoom 6), hover.png (a place's card pinned), legend.png (the Legend
 // panel), waypoint_map.png (the ring, its tag and the hint strip) and waypoint_hud.png (the map closed: the
 // HUD marker and distance), default tmp/map-rework-shots. Fails (exit 1) when the map never opens or a
 // picture is missing.
@@ -71,6 +71,8 @@ async function run(args) {
 
   pan(TOWN, 4.3);
   if (!shoot("town")) return fail("capture town");
+  pan(TOWN, 3);
+  if (!shoot("wide")) return fail("capture wide");
   pan(SQUARE, 6);
   if (!shoot("square")) return fail("capture square");
   on({ verb: "map", words: ["hover", String(SQUARE.x), String(SQUARE.z)] });

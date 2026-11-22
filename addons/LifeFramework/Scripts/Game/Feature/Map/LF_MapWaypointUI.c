@@ -101,6 +101,45 @@ class LF_MapWaypoint
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when the waypoint carries no name of its own: its name is the generic "Waypoint".
+	static bool IsUnnamed(string name, string genericName)
+	{
+		return name.IsEmpty() || name == genericName;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! What the strip says after "Waypoint: ": the distance alone for an unnamed waypoint ("95 m"), the place
+	//! and the distance for a named one ("Cafe, 95 m"), so the word Waypoint is never written twice.
+	static string Detail(string name, string genericName, string distance)
+	{
+		if (IsUnnamed(name, genericName))
+		{
+			if (distance.IsEmpty())
+				return genericName;
+
+			return distance;
+		}
+
+		if (distance.IsEmpty())
+			return name;
+
+		return name + ", " + distance;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The tag beside the ring: "Waypoint: 95 m" for an unnamed waypoint, "Cafe, 95 m" for a named one.
+	static string Tag(string name, string genericName, string distance)
+	{
+		if (!IsUnnamed(name, genericName))
+			return Detail(name, genericName, distance);
+
+		if (distance.IsEmpty())
+			return genericName;
+
+		return genericName + ": " + distance;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The hint strip's first line, for the device in use.
 	static string HintKey(bool pad)
 	{
@@ -327,15 +366,13 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 		}
 
 		string name = LF_Terms.Expand(WidgetManager.Translate(LF_Waypoint.GetLabel()));
+		string genericName = WidgetManager.Translate(LF_MapWaypoint.LABEL);
 		if (m_wTag)
 		{
 			m_wTag.SetVisible(m_bDrawn);
 			if (m_bDrawn)
 			{
-				string tag = name;
-				if (!distance.IsEmpty())
-					tag = name + ", " + distance;
-
+				string tag = LF_MapWaypoint.Tag(name, genericName, distance);
 				m_wTag.SetText(tag);
 				FrameSlot.SetSize(m_wTag, LF_MapDeclutter.LabelWidth(tag), LF_MapDeclutter.LABEL_HEIGHT);
 			}
@@ -345,7 +382,7 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 			m_wHintTitle.SetText(WidgetManager.Translate(LF_MapWaypoint.HintKey(pad)));
 
 		if (m_wHintNote)
-			m_wHintNote.SetText(WidgetManager.Translate(LF_MapWaypoint.StatusKey(m_bDrawn, pad), name, distance));
+			m_wHintNote.SetText(WidgetManager.Translate(LF_MapWaypoint.StatusKey(m_bDrawn, pad), LF_MapWaypoint.Detail(name, genericName, distance)));
 	}
 
 	//------------------------------------------------------------------------------------------------

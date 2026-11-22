@@ -12,11 +12,11 @@
 class LF_MapDeclutter
 {
 	//! A place icon at the solo zoom, and how much it grows per zoom level closer in, up to ICON_MAX.
-	static const float ICON_MIN = 28;	// lf-fixed: reference units; the glyph reads at 720p (22 was 15 px there)
-	static const float ICON_STEP = 3;	// lf-fixed: map readability, not a server tunable
-	static const float ICON_MAX = 36;	// lf-fixed: the badge stays a pictogram at the closest zoom, not a button
+	static const float ICON_MIN = 39;	// lf-fixed: reference units; badges read at town zoom on a grey map (28 was small and dark, 2026-11-22)
+	static const float ICON_STEP = 4;	// lf-fixed: map readability, not a server tunable
+	static const float ICON_MAX = 50;	// lf-fixed: the badge stays a pictogram at the closest zoom, not a button
 	//! A cluster stamp (several places counted as one) at the far zooms.
-	static const float STAMP_SIZE = 32;	// lf-fixed
+	static const float STAMP_SIZE = 44;	// lf-fixed
 	//! Two icons are one mark when their boxes overlap by this share of their size on both axes.
 	static const float MERGE_SHARE = 0.85;	// lf-fixed: a sliver of overlap still reads as two icons
 	//! The waypoint tag's type (LF_MapWaypointUI): LF_MapPoiLabel.layout's font size, and the estimated mean
