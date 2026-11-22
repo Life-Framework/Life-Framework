@@ -150,9 +150,9 @@
   layer. Proof: `houses/building-lock-private`.
 - 🟡 Saint-Philippe lock layer (#3204): `node tools/town/locks.mjs saint-philippe` writes
   `LF_Everon1989/.../MainWorld_Layers/Locks_saint-philippe.layer` from `purpose.json` (never hand-edited): one marker per
-  enterable building no fitted slot carries, at the footprint centre, with a pack sign key (`LF-Everon-Lock_*`: Propriété
-  privée for homes of residents, barns, lock-ups and outbuildings; Réservé au personnel; À vendre bientôt for the homes
-  for sale; Ouverture prochaine for planned shops; Zone militaire; École : vacances d'été; À louer bientôt; Fermé).
+  enterable building no fitted slot carries, at the footprint centre, with a pack sign key (`LF-Everon-Lock_*`, US English since 2026-11-22: Private
+  property for homes of residents, barns, lock-ups and outbuildings; Staff only; For sale soon for the homes
+  for sale; Opening soon for planned shops; Military zone; School: closed for summer; For rent soon; Closed).
   Left out: fitted or in-flight rows, the churches and chapels (D1), `sp:b49` (org registry) and side buildings of a
   fitted business. `tools\cli town doors saint-philippe --planned` shows the carriers; a shop or home card that fits
   its building needs no edit here (the open marker wins). Selftest: `node tools/town/locks.selftest.mjs`.

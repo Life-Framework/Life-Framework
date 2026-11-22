@@ -1,0 +1,108 @@
+FrameWidgetClass "{8F5975DD4CCCA84C}" {
+ Name "ATMScreenRoot"
+ Slot FrameWidgetSlot "{7C09E775F3E2A87E}" {
+  Anchor 0 0 1 1
+ }
+ {
+  FrameWidgetClass "{5A2598C2202F3C6B}" {
+   Name "Panel"
+   Slot FrameWidgetSlot "{612A2C3ED79A950B}" {
+    Anchor 0 0 0 0
+    PositionX 0
+    OffsetLeft 0
+    PositionY 0
+    OffsetTop 0
+    SizeX 120
+    OffsetRight -120
+    SizeY 90
+    OffsetBottom -90
+   }
+   {
+    ImageWidgetClass "{5E3ECF775A7A2FDA}" {
+     Name "Back"
+     Slot FrameWidgetSlot "{59D36397C852FD75}" {
+      Anchor 0 0 1 1
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.01 0.03 0.015 0.96
+    }
+    TextWidgetClass "{5390830B587CB270}" {
+     Name "Balance"
+     Slot FrameWidgetSlot "{D5E01B4C74C4F73B}" {
+      Anchor 0.06 0.1 0.96 0.38
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.42 1 0.5 1
+     Text ""
+     "Font Size" 14
+     "Min Font Size" 6
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{59893BC795BE7F5A}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{E6A8B111C91F053F}" {
+     Name "Cash"
+     Slot FrameWidgetSlot "{03C5EA94DD023073}" {
+      Anchor 0.06 0.38 0.96 0.66
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.42 1 0.5 1
+     Text ""
+     "Font Size" 14
+     "Min Font Size" 6
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{AC9092D5098E8F49}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{B268BCE6F3ED1236}" {
+     Name "Status"
+     Slot FrameWidgetSlot "{B6B45E7C38D7B4A6}" {
+      Anchor 0.06 0.68 0.96 0.92
+      PositionX 0
+      OffsetLeft 0
+      PositionY 0
+      OffsetTop 0
+      SizeX 0
+      OffsetRight 0
+      SizeY 0
+      OffsetBottom 0
+     }
+     Color 0.42 1 0.5 1
+     Text ""
+     "Font Size" 11
+     "Min Font Size" 6
+     "Horizontal Alignment" Left
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{C8DA443024D59AF3}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+   }
+  }
+ }
+}

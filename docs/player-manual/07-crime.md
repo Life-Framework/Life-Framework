@@ -125,7 +125,7 @@ Two **contested sites** (a hideout on the hilltop mast and the farm compound) ar
 | 4 | Cash van stop 1 | The cash van parks here for 5 minutes at a time. |
 | 5 | Cash van stop 2 | Next stop on the van's schedule. |
 | 6 | Cash van stop 3 | Next stop on the van's schedule. |
-| 7 | Filling station (till) | Hold up the attendant for 150. |
+| 7 | Gas station (till) | Hold up the attendant for 150. |
 | 8 | Supermarket (till) | Till robbery, 120 to 180. |
 | 9 | Buyer spot (harbour) | Where a buyer takes goods that cannot be sold in a shop. |
 | 10 | Buyer spot (east) | Same, east side. |

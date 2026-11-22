@@ -1,6 +1,6 @@
 {
   "slug": "atm-wall",
-  "about": "The 1989 cash machine (distributeur automatique de billets) for LF_ATM.et: a free-standing kiosk about 1.9 m tall that stands against a wall on a black plinth. A beige brushed-steel body, a lit header box with a cream sign panel (BANQUE REGIONALE, DISTRIBUTEUR DE BILLETS 24H), a small security camera, a recessed dark fascia with green trim, a green-on-black CRT menu in francs between four side keys each side, a sloped steel shelf with a raised metal keypad (green, yellow and red function keys) and a card reader, a receipt slot, a wide cash slot and a small branch sticker. Built by build.py in headless Blender from simple geometry and procedural textures: no base-game mesh reads as a cash machine (the vanilla Safe_01 it replaced did not) and the CC0 libraries have only a cash register; Meshy is reserved for fish and masks. Core asset: its faces carry period French wording with no place name (map independence, AGENTS.md rule 9), no real bank and no brand. Form after the maintainer's reference picture, 2026-11-22.",
+  "about": "The 1989 cash machine for LF_ATM.et: a free-standing kiosk about 1.9 m tall that stands against a wall on a black plinth. A beige brushed-steel body, a lit header box with a cream sign panel (REGIONAL BANK, 24 HOUR TELLER), a small security camera, a recessed dark fascia with green trim, a green-on-black CRT menu in dollars between four side keys each side, a sloped steel shelf with a raised metal keypad (green, yellow and red function keys) and a card reader (INSERT CARD), a receipt slot (RECEIPT), a wide cash slot (CASH), an envelope deposit drawer under it (DEPOSIT) and a small branch sticker. Built by build.py in headless Blender from simple geometry and procedural textures: no base-game mesh reads as a cash machine (the vanilla Safe_01 it replaced did not) and the CC0 libraries have only a cash register; Meshy is reserved for fish and masks. Core asset: every word on it is US English (the mod-wide rule, 2026-11-22), with no place name (map independence, AGENTS.md rule 9), no real bank and no brand. Form after the maintainer's reference picture, 2026-11-22.",
   "asset_dir": "Assets/Props/Money/ATM",
   "prefab_dir": "Prefabs/Props/Money",
   "script": "build.py",
@@ -61,6 +61,13 @@
       "row0": 560,
       "row1": 640,
       "depth": 0.025
+    },
+    "deposit": {
+      "col0": 260,
+      "col1": 480,
+      "row0": 770,
+      "row1": 850,
+      "depth": 0.02
     },
     "camera": {
       "x0": -0.16,
