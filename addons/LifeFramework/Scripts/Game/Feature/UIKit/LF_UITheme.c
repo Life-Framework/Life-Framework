@@ -97,8 +97,8 @@ class LF_UITheme
 
 		if (id == "price-list")
 		{
-			// The shop's typed price list: the paper sheet in a mono face.
-			record.m_Font = FONT_MONO;
+			// The shop's price list: the paper sheet in the kit's face (a mono face read as off-kit and
+			// spaced the apostrophe in "Miner's supply", first-2h review B5).
 			return record;
 		}
 

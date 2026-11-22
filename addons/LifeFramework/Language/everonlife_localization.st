@@ -12798,9 +12798,14 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
     }
+    CustomStringTableItem "{0A0EEB9828847F4A}" {
+     Id "LF-Process_RunningLeft"
+     Target_en_us "%1: %2 left"
+     Comment "Action row on a timed machine while it runs (first-2h review B10). %1 = the machine action (Smelt iron ore), %2 = time left as m:ss."
+    }
     CustomStringTableItem "{9D4E21B7C0A35F86}" {
      Id "LF-Process_Started"
-     Target_en_us "Running. The parts come out here in %1 seconds."
+     Target_en_us "Running. The parts come out here in %1 seconds; the time left shows on the machine, so get on with something else meanwhile."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
