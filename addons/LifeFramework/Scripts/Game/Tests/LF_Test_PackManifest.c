@@ -20,6 +20,17 @@ class LF_Test_PackManifest : LF_Test
 
 	override void Run(LF_TestContext ctx)
 	{
+		// The range a pack ships for this core, taken from LF_PackManifest.CORE_VERSION so a version bump
+		// does not stale this test: [major.minor.0, major.(minor+1).0). The real pack manifest against
+		// CORE_VERSION is the pack-manifest validation's job (a core test cannot read the pack's files).
+		int coreMajor;
+		int coreMinor;
+		int corePatch;
+		ctx.True(LF_PackManifest.ParseVersion(LF_PackManifest.CORE_VERSION, coreMajor, coreMinor, corePatch), "CORE_VERSION is x.y.z");
+		string rangeMin = coreMajor.ToString() + "." + coreMinor.ToString() + ".0";
+		string rangeBelow = coreMajor.ToString() + "." + (coreMinor + 1).ToString() + ".0";
+		string rangeInside = coreMajor.ToString() + "." + coreMinor.ToString() + ".5";
+
 		// The range: min inclusive, below exclusive, empty bounds open.
 		ctx.True(LF_PackManifest.InRange("0.1.0", "0.1.0", "0.2.0"), "the min is inclusive");
 		ctx.True(LF_PackManifest.InRange("0.1.9", "0.1.0", "0.2.0"), "a patch inside the range");
@@ -39,17 +50,17 @@ class LF_Test_PackManifest : LF_Test
 		source.SetHeader(header);
 		array<ResourceName> overlays = {};
 
-		source.SetManifest(Make("0.1.0", "0.2.0"), "0.1.5");
+		source.SetManifest(Make(rangeMin, rangeBelow), rangeInside);
 		source.GetOverlays("{000000000000000A}Configs/Core.conf", overlays);
 		ctx.Equal(1, overlays.Count(), "in range: the pack's overlay is handed out");
 
 		overlays.Clear();
-		LF_PackManifest tooNew = Make("0.1.0", "0.2.0");
-		source.SetManifest(tooNew, "0.2.0");
+		LF_PackManifest tooNew = Make(rangeMin, rangeBelow);
+		source.SetManifest(tooNew, rangeBelow);
 		source.GetOverlays("{000000000000000A}Configs/Core.conf", overlays);
 		ctx.Equal(0, overlays.Count(), "out of range: no overlay is handed out");
 		ctx.False(source.IsPackAccepted(header), "out of range: the pack is not accepted");
-		ctx.EqualStr("pack 'LF_Test_Pack' refused: it needs core >= 0.1.0, < 0.2.0, this core is 0.2.0; its config overlays are not loaded", tooNew.RefusalLine("0.2.0"), "the refusal line names the pack and both versions");
+		ctx.EqualStr("pack 'LF_Test_Pack' refused: it needs core >= " + rangeMin + ", < " + rangeBelow + ", this core is " + rangeBelow + "; its config overlays are not loaded", tooNew.RefusalLine(rangeBelow), "the refusal line names the pack and both versions");
 
 		// No manifest: nothing to check, the mission loads as before.
 		source.SetManifest(null);
@@ -57,6 +68,6 @@ class LF_Test_PackManifest : LF_Test
 		ctx.Equal(1, overlays.Count(), "no manifest: loads as before");
 
 		// The running core accepts the range a pack would ship today.
-		ctx.True(Make("0.1.0", "0.2.0").Supports(LF_PackManifest.CORE_VERSION), "the current core is in the skeleton's range");
+		ctx.True(Make(rangeMin, rangeBelow).Supports(LF_PackManifest.CORE_VERSION), "the current core is in the range a pack ships for it");
 	}
 }

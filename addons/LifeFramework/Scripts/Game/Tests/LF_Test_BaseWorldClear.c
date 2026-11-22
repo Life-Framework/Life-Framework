@@ -1,3 +1,5 @@
+// order-proof (2026-11-22): the building's furniture spawns as separate world entities, so deleting the shop left the hidden stepladder and coat rack
+// (not traceable) at <425,0.3,55>; `--only LF_Test_BaseWorldClear,LF_Test_DebugWorldCollision` failed debugworld/entity-collision on them. The test now deletes the furniture of both shops; green after.
 // red-proof: 2026-11-21 `--red LF_Test_BaseWorldClear` RED PROOF OK: with the hide skipped, "every listed prop in the store is hidden" failed.
 //! placement/base-world-clear (#3882): a stamp's clear list hides the doubled vanilla furniture of one clothing store
 //! (stepladder, coat rack) and nothing else: the building, its other furniture and a second copy of the building stay.
@@ -90,7 +92,50 @@ class LF_Test_BaseWorldClear : LF_Test
 		ctx.False(AllHidden(otherLadders), "another copy of the building keeps its stepladder");
 		ctx.Equal(0, LF_BaseWorldClear.HideInBuilding(shop, clear), "a second apply hides nothing more");
 
-		SCR_EntityHelper.DeleteEntityAndChildren(shop);
-		SCR_EntityHelper.DeleteEntityAndChildren(other);
+		DeleteWithFurniture(shop);
+		DeleteWithFurniture(other);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The building's furniture is not its child, so deleting the building leaves it standing (hidden props are not
+	//! traceable and fail debugworld/entity-collision, #2792). Deletes every loose entity inside its box, then the building.
+	protected static void DeleteWithFurniture(IEntity building)
+	{
+		if (!building)
+			return;
+
+		vector mins, maxs;
+		building.GetBounds(mins, maxs);
+		vector mat[4];
+		building.GetWorldTransform(mat);
+		LF_Test_BaseWorldClearSweep sweep = new LF_Test_BaseWorldClearSweep();
+		sweep.m_Building = building;
+		building.GetWorld().QueryEntitiesByOBB(mins, maxs, mat, sweep.Collect, null, EQueryEntitiesFlags.ALL);
+		foreach (IEntity e : sweep.m_aFound)
+		{
+			SCR_EntityHelper.DeleteEntityAndChildren(e);
+		}
+
+		SCR_EntityHelper.DeleteEntityAndChildren(building);
+	}
+}
+
+//! Collects the prefab-spawned, parentless entities inside a building's box (its loose furniture), never a character.
+class LF_Test_BaseWorldClearSweep : Managed
+{
+	IEntity m_Building;
+	ref array<IEntity> m_aFound = {};
+
+	//------------------------------------------------------------------------------------------------
+	bool Collect(IEntity entity)
+	{
+		if (entity == m_Building || entity.GetParent() || entity.Type().IsInherited(SCR_ChimeraCharacter))
+			return true;
+
+		if (LF_BaseWorldClear.PrefabOf(entity).IsEmpty())
+			return true;
+
+		m_aFound.Insert(entity);
+		return true;
 	}
 }
