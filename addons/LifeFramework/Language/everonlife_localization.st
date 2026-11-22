@@ -2117,12 +2117,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{366A7B92337FE227}" {
      Id "LF-Activity_Kilometres"
-     Target_en_us "%1 km away"
+     Target_en_us "%1 km"
      Comment "Next tab distance. %1 is kilometres with one decimal."
     }
     CustomStringTableItem "{3C9143AD27977EBB}" {
      Id "LF-Activity_Metres"
-     Target_en_us "%1 m away"
+     Target_en_us "%1 m"
      Comment "Next tab distance under a kilometre. %1 is metres."
     }
     CustomStringTableItem "{3471AB6ECF42E732}" {
@@ -2137,7 +2137,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{16B4C404FE5B8ED1}" {
      Id "LF-Activity_PayHour"
-     Target_en_us "about %1 an hour"
+     Target_en_us "%1/h"
      Comment "Next tab row status. %1 is money, e.g. $470."
     }
     CustomStringTableItem "{4835914B88D22934}" {
@@ -2152,7 +2152,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AF249A8804DAF7AF}" {
      Id "LF-Activity_RowStarted"
-     Target_en_us "%1 · started"
+     Target_en_us "%1 · on"
      Comment "Next tab row status of a running activity. %1 is pay and distance."
     }
     CustomStringTableItem "{5B14E9465D155E95}" {
