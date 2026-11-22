@@ -21,8 +21,8 @@
 //    `tools\cli grid place`. Branches that existed when the guard landed are listed in
 //    tools/validation/zone-guard-baseline.json and keep working; the list never grows.
 //    The branch is GITHUB_HEAD_REF in CI, else the checked-out branch; main and a detached HEAD
-//    outside CI are not checked. The change set is the diff against the merge base with the branch's
-//    base (the PR base in CI, the worktree's recorded base locally, else origin/main), untracked files included.
+//    outside CI are not checked. The change set is the diff against the merge base with origin/main,
+//    untracked files included.
 // red-proof: tools/validation/world-zones-selftest.mjs plants a slice that edits Street_Hospital.layer,
 // two claims on one cell, a grid prop outside its cell, a Grid_ layer in DebugWorld and a changed annex
 // entity in DebugWorld, and asserts each is reported.
@@ -224,18 +224,17 @@ function git(root, args) {
   return r.status === 0 ? r.stdout : null;
 }
 
-// The branch the change set is measured against: the PR's base in CI (GITHUB_BASE_REF), else the worktree's
-// recorded base (`wt new --base release-0.2.1`), else main. A release-branch PR that merged its base carries
-// the release's own town-layer edits, which are not on main; measured against origin/main they read as this
-// branch's edits and failed the guard (#4256, 2026-11-22).
-export function baseRefFor(env = {}, recorded = "") {
-  const base = env.GITHUB_BASE_REF || recorded || "main";
-  return `origin/${base}`;
+// The ref a branch is diffed against: the PR's own base in CI (a PR into release-0.2.1 must not count the
+// release branch's town-pass commits that main lacks as its own), else origin/main.
+export function baseRef(root) {
+  const base = process.env.GITHUB_BASE_REF;
+  if (!base || base === "main" || !/^[A-Za-z0-9._/-]+$/.test(base)) return "origin/main";
+  if (process.env.CI) git(root, ["fetch", "--quiet", "origin", `+refs/heads/${base}:refs/remotes/origin/${base}`]);
+  return git(root, ["rev-parse", "--verify", "--quiet", `origin/${base}`]) ? `origin/${base}` : "origin/main";
 }
 
-export function changedFiles(root, baseRef = "origin/main") {
-  let mb = git(root, ["merge-base", baseRef, "HEAD"]);
-  if (!mb && baseRef !== "origin/main") mb = git(root, ["merge-base", "origin/main", "HEAD"]);
+export function changedFiles(root) {
+  const mb = git(root, ["merge-base", baseRef(root), "HEAD"]);
   if (!mb) return null;
   const diff = git(root, ["diff", "--name-only", mb.trim()]);
   const un = git(root, ["ls-files", "--others", "--exclude-standard"]);
@@ -256,15 +255,9 @@ if (isMain) {
   const claims = checkClaims(root, { mainClaims: main.claims, prClaims: prs.claims });
   for (const w of claims.warnings) console.log(`validate-world-zones: warning: ${w}`);
   const baseline = existsSync(join(root, BASELINE)) ? JSON.parse(readFileSync(join(root, BASELINE), "utf8")).branches : [];
-  let recorded = "";
-  try {
-    recorded = (await import("../wt.mjs")).baseOfRoot(root);
-  } catch {
-    recorded = "";
-  }
-  const files = changedFiles(root, baseRefFor(process.env, recorded));
+  const files = changedFiles(root);
   const guard = files ? checkGuard({ branch, files, baseline }) : { skipped: "no merge base with origin/main", town: [], errors: [] };
-  const mb = files ? (git(root, ["merge-base", "origin/main", "HEAD"]) || "").trim() : "";
+  const mb = files ? (git(root, ["merge-base", baseRef(root), "HEAD"]) || "").trim() : "";
   const freeze = mb && branch !== "main" && branch !== "HEAD"
     ? checkFreeze({
         files,
