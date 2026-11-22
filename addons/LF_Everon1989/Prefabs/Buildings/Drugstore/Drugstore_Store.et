@@ -101,7 +101,7 @@ SCR_DestructibleBuildingEntity : "{9090774B54A3747C}Prefabs/Buildings/Drugstore/
    }
    coords 4.9 2.6 8.08
   }
-  GenericEntity : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+  GenericEntity : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
    ID "0E754B2C97DA8608"
    coords 1.57 0.199 -0.323
   }

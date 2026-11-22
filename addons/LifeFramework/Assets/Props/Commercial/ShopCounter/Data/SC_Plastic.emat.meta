@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{1AC9CE93C1D2CB83}Assets/Props/Commercial/ShopCounter/Data/SC_Plastic.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

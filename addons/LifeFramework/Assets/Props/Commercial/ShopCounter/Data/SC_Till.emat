@@ -1,0 +1,8 @@
+MatPBRBasic {
+ BCRMap "{A9EA901A42B1FDE9}Assets/Props/Commercial/ShopCounter/Data/SC_Till_BCR.edds"
+ NMOMap "{1129A39E31C77645}Assets/Props/Commercial/ShopCounter/Data/SC_Till_NMO.edds"
+ Emissive 1 1 1 1
+ EmissiveLV 0.6
+ EmissiveAbsoluteLV 0
+ EmissiveMap "{0BFEE1AA6BD77113}Assets/Props/Commercial/ShopCounter/Data/SC_Till_EM.edds"
+}

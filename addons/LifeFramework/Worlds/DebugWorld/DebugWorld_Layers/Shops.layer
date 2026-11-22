@@ -2,7 +2,7 @@ $grp GenericEntity {
  Shop_GeneralStore_Debug {
   components {
    MeshObject "{5A4B0B84C86E2841}" {
-    Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+    Object "{72258E19652CC943}Assets/Props/Commercial/ShopCounter/ShopCounterTill.xob"
    }
    RigidBody "{5A4B0B84C86E2842}" {
     Mass 10
