@@ -16,10 +16,14 @@
 // is rerun, bisected to the merge that introduced it, and that PR gets a comment, the staff a line and a fix card; only a
 // hard data-safety check (HARD_CHECKS) reverts. A red explained by an earlier guard revert still on main (the follow-up
 // of a reverted PR) is commented, never reverted. Never reverts a revert, never touches a merge from before it started, never pushes main. LF_MAIN_GUARD=0 stops it.
+// Newest first (2026-11-22): a red at an older head is first tried at the newest compiled-ok head (mg.newestFirst); a pass
+// there drops the bisect, and a revert is refused when a newer head already passes or the culprit is a large merge
+// (mg.isLargePr). The lease renewal is checked and logged; the heartbeat (beatAt/activityAt) lets the watchdog renew a
+// stale lease for a worker that still progresses (mg.watchDecision).
 // One worker per repo (hub lock); state in <hub>/main-guard.json; log tmp/logs/main-guard.log.
 
 import { spawn, spawnSync } from "node:child_process";
-import { appendFileSync, existsSync, mkdirSync, openSync, closeSync, readdirSync, readFileSync, renameSync, unlinkSync, writeFileSync } from "node:fs";
+import { appendFileSync, existsSync, mkdirSync, openSync, closeSync, readdirSync, readFileSync, renameSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as wt from "./wt.mjs";
@@ -169,16 +173,26 @@ function checkout(dir, sha) {
 // One cli command in the run worktree, at high pool priority (LF_PRIORITY: `build` takes no --priority flag and read it as an addon), logged to its own file; resolves { code, text, log }.
 // dropRdb: delete the run worktree's rdb first, so a recheck or a bisect probe never starts from the (possibly
 // corrupt) rdb the first run restored from the shared cache (#3586).
+// The step logs of the children running now: the worker's progress heartbeat is their newest write (activityNow).
+const activeLogs = new Set();
+function activityNow() {
+  let newest = 0;
+  for (const f of activeLogs) { try { newest = Math.max(newest, statSync(f).mtimeMs); } catch {} }
+  return new Date(newest || Date.now()).toISOString();
+}
+
 function runCli(root, dir, args, tag, extraEnv = {}, dropRdb = false) {
   if (dropRdb) rdbCache.dropAllRdbs(dir);
   const file = join(mainRoot(root), "tmp", "logs", `main-guard-${tag}-${Date.now()}.log`);
   mkdirSync(dirname(file), { recursive: true });
+  activeLogs.add(file);
   return new Promise((res) => {
     const fd = openSync(file, "a");
     const child = spawn(process.execPath, [join(dir, "tools", "cli.mjs"), ...args], { cwd: dir, env: { ...process.env, LF_PRIORITY: "high", LF_MAIN_GUARD_JOB: "1", ...extraEnv }, stdio: ["ignore", fd, fd], windowsHide: true });
     const timer = setTimeout(() => { try { child.kill(); } catch {} }, STEP_BUDGET_MS);
     const done = (code) => {
       clearTimeout(timer);
+      activeLogs.delete(file);
       try { closeSync(fd); } catch {}
       let text = "";
       try { text = readFileSync(file, "utf8"); } catch {}
@@ -219,8 +233,41 @@ function commentOnPr(root, dir, pr, body, tag) {
   if (r.status !== 0) log(root, `comment on #${pr} failed: ${String(r.stderr || "").trim().slice(0, 160)}`);
 }
 
-async function checkHead(root, dir, head) {
-  const state = readState(root);
+// The files one merge changed (the guard's first-parent view), for the large-PR rule (mg.isLargePr).
+function mergeFiles(dir, sha) {
+  const r = git(dir, ["diff", "--name-only", `${sha}^1`, sha]);
+  return r.status === 0 ? r.stdout.split(/\r?\n/).filter(Boolean) : [];
+}
+
+// Newest first (mg.newestFirst): the newest compiled-ok head that descends from `sha`, or null. A requested check of an
+// exact commit (pinned) is never moved to a newer head.
+const newerThanFn = (root, dir, pinned) => (sha) => {
+  if (pinned) return null;
+  const n = readState(root).lastCompiled;
+  if (!n || n === sha) return null;
+  return git(dir, ["merge-base", "--is-ancestor", sha, n]).status === 0 ? n : null;
+};
+
+// Run just the failing checks of `step` at one commit: { verdict: ok | red | env, failing, why, code, text, log }. "ok"
+// means none of the recorded failing tests fails there (another test failing is that head's own business).
+const probeFn = (root, dir, step) => async (sha, set) => {
+  checkout(dir, sha);
+  const x = await runCli(root, dir, step.recheck(set), `probe-${sha.slice(0, 8)}`, mg.RECHECK_ENV, true);
+  const failed = step.name === "suite" ? mg.failingTests(x.text, testSources(dir)) : [];
+  const v = mg.classifyStep(step.name, x.code, x.text, failed);
+  const base = { code: x.code, text: x.text, log: x.log };
+  let out;
+  if (v.verdict === "env" || v.verdict === "infra") out = { ...base, verdict: "env", why: v.why, failing: [] };
+  else if (x.code === 0) out = { ...base, verdict: "ok", failing: [] };
+  else if (step.name === "suite" && set.length) {
+    const hits = mg.setHits(set, failed);
+    out = hits.length ? { ...base, verdict: "red", failing: hits } : { ...base, verdict: "ok", failing: [] };
+  } else out = { ...base, verdict: "red", failing: failed };
+  log(root, `  probe ${sha.slice(0, 8)} ${step.name}: ${out.verdict}${out.verdict === "red" ? ` (${out.failing.slice(0, 3).join(", ") || step.name})` : out.verdict === "env" ? ` (${out.why})` : ""} (log ${x.log})`);
+  return out;
+};
+
+async function checkHead(root, dir, head, { pinned = false } = {}) {
   writeState(root, { lastRunAt: now(), running: { head, step: "checkout", at: now() } });
   checkout(dir, head);
   for (const step of mg.STEPS) {
@@ -239,94 +286,148 @@ async function checkHead(root, dir, head) {
       return;
     }
     const what = failing.length ? failing.slice(0, 3).join(", ") : step.name;
-    log(root, `${head.slice(0, 8)} ${step.name} RED (exit ${r.code}, ${what}); rechecking at the same head (log ${r.log})`);
-    const again = await runCli(root, dir, step.recheck(failing), `${head.slice(0, 8)}-recheck`, mg.RECHECK_ENV, true);
-    const v2 = mg.classifyStep(step.name, again.code, again.text, step.name === "suite" ? mg.failingTests(again.text, testSources(dir)) : []);
-    if (v2.verdict === "env" || v2.verdict === "infra") {
-      log(root, `${head.slice(0, 8)} ${step.name} recheck: ${v2.verdict.toUpperCase()} (${v2.why}), not the commit; no revert, retried on a later tick`);
-      writeState(root, { running: null, lastResult: { head, verdict: v2.verdict, step: step.name, what: v2.why, at: now() } });
+    log(root, `${head.slice(0, 8)} ${step.name} RED (exit ${r.code}, ${what})`);
+    // Newest first: a newer compiled-ok head runs the failing checks before this old head is rechecked or bisected.
+    const reproduced = new Set();
+    const nf = await mg.newestFirst({
+      head,
+      set: failing,
+      newerThan: newerThanFn(root, dir, pinned),
+      probe: probeFn(root, dir, step),
+      run: (cur, set, guard, probeOnce) => redAt(root, dir, step, cur, cur === head ? r : null, set, guard, probeOnce, { pinned, reproduced }),
+    });
+    if (nf.kind === "env") {
+      log(root, `${head.slice(0, 8)} ${step.name}: newer head ${nf.sha.slice(0, 8)} gave no verdict (${nf.why}); nothing judged, retried on a later tick`);
+      writeState(root, { running: null, lastResult: { head, verdict: "env", step: step.name, what: nf.why, at: now() } });
       return;
     }
-    const verdict = mg.judgeRecheck(true, again.code !== 0);
-    if (verdict === "flake") {
-      try { appendFileSync(flakeLog(root), `${now()} ${head.slice(0, 8)} ${step.name}: ${what} failed once, passed on recheck (${r.log})\n`); } catch {}
-      log(root, `${head.slice(0, 8)} ${step.name}: flake (${what}), no revert`);
-      continue;
-    }
-    // #2812: a pre-move e2e red is blamed on a PR only when the plain e2e fails too. A pass-2 check for data the ref
-    // build's pass 1 cannot write fails the pre-move run alone; that PR gets a fix card and a comment, no revert.
-    let needsSkip = false;
-    if (step.name === "pre-move e2e") {
-      log(root, `${head.slice(0, 8)} pre-move e2e reproduced; running the plain e2e to tell a pre-move-only failure from a real one`);
-      const plain = await runCli(root, dir, mg.PLAIN_E2E, `${head.slice(0, 8)}-plain-e2e`, mg.RECHECK_ENV, true);
-      const pv = mg.classifyStep("e2e", plain.code, plain.text);
-      if (pv.verdict === "env" || pv.verdict === "infra") {
-        log(root, `${head.slice(0, 8)} plain e2e: ${pv.verdict.toUpperCase()} (${pv.why}), not the commit; no revert, retried on a later tick`);
-        writeState(root, { running: null, lastResult: { head, verdict: pv.verdict, step: step.name, what: pv.why, at: now() } });
-        return;
-      }
-      needsSkip = mg.needsSkip(step.name, plain.code);
-      log(root, `${head.slice(0, 8)} plain e2e ${plain.code === 0 ? "passes: needs-skip, the pre-move failure is not a broken save" : "fails too: a real failure"} (log ${plain.log})`);
-    }
-    // Reproduced twice: find the merge that broke it.
-    const recheck = step.recheck(failing);
-    const list = mg.candidates(mergesSince(dir, state.lastGreen ?? state.startHead, head, state.startHead));
-    log(root, `${head.slice(0, 8)} ${step.name} reproduced (${what}); bisecting ${list.length} merge(s) since ${(state.lastGreen ?? state.startHead ?? "").slice(0, 8)}`);
-    writeState(root, { running: { head, step: `bisect ${step.name}`, at: now() } });
-    // The recorded red set (#2052): the failing tests and FAIL lines at this head. The suite bisect treats a commit as
-    // red only when it fails one of these tests; other steps (build, audit, e2e) have no test set and stay red/green.
-    const redLines = step.name === "suite" ? mg.failLines(r.text) : [];
-    if (step.name === "suite") log(root, `${head.slice(0, 8)} suite red set: ${failing.length ? failing.join(", ") : "(no test names parsed)"}${redLines.length ? ` | ${redLines.slice(0, 3).join(" | ")}` : ""}`);
-    let b;
-    if (step.name === "suite" && !failing.length) {
-      b = { culprit: null, stop: "no failing test name could be read from the suite output, so no merge can be matched to it" };
-    } else if (step.name === "suite") {
-      b = await mg.bisectBySet(list, failing, async (c) => {
-        checkout(dir, c.sha);
-        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`, mg.RECHECK_ENV, true);
-        const failed = mg.failingTests(x.text, testSources(dir));
-        const xv = mg.classifyStep(step.name, x.code, x.text, failed);
-        if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
-        const hit = mg.setHits(failing, failed);
-        log(root, `  bisect ${c.sha.slice(0, 8)} ${hit.length ? `red (${hit.slice(0, 3).join(", ")})` : x.code === 0 ? "green" : `green for the set (exit ${x.code}, other failures: ${failed.slice(0, 3).join(", ") || "none parsed"})`} (${c.subject.slice(0, 60)})`);
-        return failed;
-      }, { head });
-    } else {
-      b = await mg.bisect(list, async (c) => {
-        checkout(dir, c.sha);
-        const x = await runCli(root, dir, recheck, `bisect-${c.sha.slice(0, 8)}`, mg.RECHECK_ENV, true);
-        const xv = mg.classifyStep(step.name, x.code, x.text);
-        if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
-        log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
-        return x.code !== 0;
-      });
-    }
-    checkout(dir, head);
-    // Stale guard code judged this run (2026-11-18, #2884, #2899): no red mark, no revert; the restart rechecks the head.
-    const drift = codeDriftNow(dir);
-    if (drift.length) {
-      log(root, `${head.slice(0, 8)} ${step.name} red, not acted on: ${mg.staleRefusal(drift)}`);
-      writeState(root, { running: null });
+    if (nf.kind === "fixed") {
+      const by8 = nf.by.slice(0, 8);
+      log(root, `${head.slice(0, 8)} ${step.name} red (${what}) is fixed at the newer head ${by8}: no bisect, no revert; ${by8} gets its full check next`);
+      for (const sha of reproduced) mark(root, dir, sha, "red", { step: step.name, what, note: `fixed at ${by8}; not bisected` });
+      writeState(root, { running: null, lastRunAt: null, lastResult: { head, verdict: "superseded", step: step.name, what, by: nf.by, at: now() } });
       return;
     }
-    const earlier = b.culprit && !b.stop ? earlierRevertFor(dir, b.culprit, readState(root)) : null;
-    const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name, needsSkip }) ?? (earlier ? mg.earlierRefusal(mg.prOfMerge(b.culprit.subject), earlier) : null);
-    if (refusal) {
-      log(root, `${head.slice(0, 8)} ${step.name} red, no revert: ${refusal}`);
-      if (earlier && b.culprit) commentOnPr(root, dir, mg.prOfMerge(b.culprit.subject), `**Main guard:** ${what} fails on main after this PR merged, but ${mg.earlierRefusal(mg.prOfMerge(b.culprit.subject), earlier)}. Not reverted. Log on the guard machine: \`${r.log}\``, "explained");
-      if (mg.fixCardInstead(b.culprit, step.name, { needsSkip })) openFixCard(root, dir, b.culprit, step.name, what, r.log, { needsSkip });
-      mark(root, dir, head, "red", { step: step.name, what, note: b.stop ? refusal : "" });
-      writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), note: refusal, failing, failLines: redLines } });
-      return;
-    }
-    await revert(root, dir, b.culprit, what, r.log);
-    mark(root, dir, head, "red", { step: step.name, what });
-    writeState(root, { running: null, lastChecked: head, lastResult: { head, verdict: "red", step: step.name, what, at: now(), culprit: mg.prOfMerge(b.culprit.subject), failing, failLines: redLines } });
-    return;
+    if (nf.value === "done" || nf.head !== head) return;
+    // "flake": the same head passed on the rerun; go on with the next step.
   }
   mark(root, dir, head, "green");
   writeState(root, { running: null, lastChecked: head, lastGreen: head, lastResult: { head, verdict: "green", at: now() } });
   log(root, `${head.slice(0, 8)} green`);
+}
+
+// A red step at one head (cur), after newest-first found no newer head to try first: rerun it at the same head (a pass
+// is a flake), bisect the merges since the last green head, and revert or open a fix card. Returns "flake" or "done".
+// `r` is the first run at cur (a newer head's is the probe's); guard() throws Superseded when a still newer head appears.
+async function redAt(root, dir, step, cur, r, set, guard, probeOnce, { pinned, reproduced }) {
+  const state = readState(root);
+  const h8 = cur.slice(0, 8);
+  if (!r) r = await probeOnce(cur, set);
+  const failing = set;
+  const what = failing.length ? failing.slice(0, 3).join(", ") : step.name;
+  checkout(dir, cur);
+  writeState(root, { running: { head: cur, step: step.name, at: now() } });
+  log(root, `${h8} ${step.name} rechecking at the same head (${what}; log ${r.log})`);
+  const again = await runCli(root, dir, step.recheck(failing), `${h8}-recheck`, mg.RECHECK_ENV, true);
+  const v2 = mg.classifyStep(step.name, again.code, again.text, step.name === "suite" ? mg.failingTests(again.text, testSources(dir)) : []);
+  if (v2.verdict === "env" || v2.verdict === "infra") {
+    log(root, `${h8} ${step.name} recheck: ${v2.verdict.toUpperCase()} (${v2.why}), not the commit; no revert, retried on a later tick`);
+    writeState(root, { running: null, lastResult: { head: cur, verdict: v2.verdict, step: step.name, what: v2.why, at: now() } });
+    return "done";
+  }
+  const verdict = mg.judgeRecheck(true, again.code !== 0);
+  if (verdict === "flake") {
+    try { appendFileSync(flakeLog(root), `${now()} ${h8} ${step.name}: ${what} failed once, passed on recheck (${r.log})\n`); } catch {}
+    log(root, `${h8} ${step.name}: flake (${what}), no revert`);
+    return "flake";
+  }
+  reproduced.add(cur);
+  await guard(); // a newer head may have arrived during the recheck
+  // #2812: a pre-move e2e red is blamed on a PR only when the plain e2e fails too. A pass-2 check for data the ref
+  // build's pass 1 cannot write fails the pre-move run alone; that PR gets a fix card and a comment, no revert.
+  let needsSkip = false;
+  if (step.name === "pre-move e2e") {
+    log(root, `${h8} pre-move e2e reproduced; running the plain e2e to tell a pre-move-only failure from a real one`);
+    const plain = await runCli(root, dir, mg.PLAIN_E2E, `${h8}-plain-e2e`, mg.RECHECK_ENV, true);
+    const pv = mg.classifyStep("e2e", plain.code, plain.text);
+    if (pv.verdict === "env" || pv.verdict === "infra") {
+      log(root, `${h8} plain e2e: ${pv.verdict.toUpperCase()} (${pv.why}), not the commit; no revert, retried on a later tick`);
+      writeState(root, { running: null, lastResult: { head: cur, verdict: pv.verdict, step: step.name, what: pv.why, at: now() } });
+      return "done";
+    }
+    needsSkip = mg.needsSkip(step.name, plain.code);
+    log(root, `${h8} plain e2e ${plain.code === 0 ? "passes: needs-skip, the pre-move failure is not a broken save" : "fails too: a real failure"} (log ${plain.log})`);
+  }
+  // Reproduced twice: find the merge that broke it.
+  const rerun = step.recheck(failing);
+  const list = mg.candidates(mergesSince(dir, state.lastGreen ?? state.startHead, cur, state.startHead));
+  log(root, `${h8} ${step.name} reproduced (${what}); bisecting ${list.length} merge(s) since ${(state.lastGreen ?? state.startHead ?? "").slice(0, 8)}`);
+  writeState(root, { running: { head: cur, step: `bisect ${step.name}`, at: now() } });
+  // The recorded red set (#2052): the failing tests and FAIL lines at this head. The suite bisect treats a commit as
+  // red only when it fails one of these tests; other steps (build, audit, e2e) have no test set and stay red/green.
+  const redLines = step.name === "suite" ? mg.failLines(r.text) : [];
+  if (step.name === "suite") log(root, `${h8} suite red set: ${failing.length ? failing.join(", ") : "(no test names parsed)"}${redLines.length ? ` | ${redLines.slice(0, 3).join(" | ")}` : ""}`);
+  let b;
+  if (step.name === "suite" && !failing.length) {
+    b = { culprit: null, stop: "no failing test name could be read from the suite output, so no merge can be matched to it" };
+  } else if (step.name === "suite") {
+    b = await mg.bisectBySet(list, failing, async (c) => {
+      await guard();
+      checkout(dir, c.sha);
+      const x = await runCli(root, dir, rerun, `bisect-${c.sha.slice(0, 8)}`, mg.RECHECK_ENV, true);
+      const failed = mg.failingTests(x.text, testSources(dir));
+      const xv = mg.classifyStep(step.name, x.code, x.text, failed);
+      if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
+      const hit = mg.setHits(failing, failed);
+      log(root, `  bisect ${c.sha.slice(0, 8)} ${hit.length ? `red (${hit.slice(0, 3).join(", ")})` : x.code === 0 ? "green" : `green for the set (exit ${x.code}, other failures: ${failed.slice(0, 3).join(", ") || "none parsed"})`} (${c.subject.slice(0, 60)})`);
+      return failed;
+    }, { head: cur });
+  } else {
+    b = await mg.bisect(list, async (c) => {
+      await guard();
+      checkout(dir, c.sha);
+      const x = await runCli(root, dir, rerun, `bisect-${c.sha.slice(0, 8)}`, mg.RECHECK_ENV, true);
+      const xv = mg.classifyStep(step.name, x.code, x.text);
+      if (xv.verdict === "env" || xv.verdict === "infra") throw new Error(`bisect ${c.sha.slice(0, 8)}: ${xv.verdict} (${xv.why}), not the commit; nothing is reverted`);
+      log(root, `  bisect ${c.sha.slice(0, 8)} ${x.code === 0 ? "green" : "red"} (${c.subject.slice(0, 60)})`);
+      return x.code !== 0;
+    });
+  }
+  checkout(dir, cur);
+  // Stale guard code judged this run (2026-11-18, #2884, #2899): no red mark, no revert; the restart rechecks the head.
+  const drift = codeDriftNow(dir);
+  if (drift.length) {
+    log(root, `${h8} ${step.name} red, not acted on: ${mg.staleRefusal(drift)}`);
+    writeState(root, { running: null });
+    return "done";
+  }
+  // The size of the culprit (mg.isLargePr): a feature-sized merge gets a fix card, not a revert.
+  if (b.culprit && !b.stop) b.culprit.files = mg.countFiles(mergeFiles(dir, b.culprit.sha));
+  const earlier = b.culprit && !b.stop ? earlierRevertFor(dir, b.culprit, readState(root)) : null;
+  const refusal = b.stop ?? mg.revertRefusal(b.culprit, readState(root), { step: step.name, needsSkip }) ?? (earlier ? mg.earlierRefusal(mg.prOfMerge(b.culprit.subject), earlier) : null);
+  if (refusal) {
+    log(root, `${h8} ${step.name} red, no revert: ${refusal}`);
+    const pr = b.culprit ? mg.prOfMerge(b.culprit.subject) : null;
+    if (earlier && b.culprit) commentOnPr(root, dir, pr, `**Main guard:** ${what} fails on main after this PR merged, but ${mg.earlierRefusal(pr, earlier)}. Not reverted. Log on the guard machine: \`${r.log}\``, "explained");
+    else if (!b.stop && b.culprit && mg.isLargePr(b.culprit)) commentOnPr(root, dir, pr, `**Main guard:** ${what} fails on main after this PR merged, and the bisect points here. The PR changes ${b.culprit.files} files, so the guard opens a fix card instead of a revert (it reverts a merge this large only for a compile break). Fix forward on a branch. Log on the guard machine: \`${r.log}\``, "large");
+    if (mg.fixCardInstead(b.culprit, step.name, { needsSkip })) openFixCard(root, dir, b.culprit, step.name, what, r.log, { needsSkip });
+    mark(root, dir, cur, "red", { step: step.name, what, note: b.stop ? refusal : "" });
+    writeState(root, { running: null, lastChecked: cur, lastResult: { head: cur, verdict: "red", step: step.name, what, at: now(), note: refusal, failing, failLines: redLines } });
+    return "done";
+  }
+  // A newer head that already passes the failing checks means the fix is on main: no revert.
+  const fixedBy = await mg.newerFixes({ head: cur, set: failing, newerThan: newerThanFn(root, dir, pinned), probe: probeOnce });
+  if (fixedBy) {
+    const note = `a newer head ${fixedBy.slice(0, 8)} already passes the failing checks; culprit #${mg.prOfMerge(b.culprit.subject)} is not reverted`;
+    log(root, `${h8} ${step.name} red, no revert: ${note}`);
+    mark(root, dir, cur, "red", { step: step.name, what, note });
+    writeState(root, { running: null, lastRunAt: null, lastChecked: cur, lastResult: { head: cur, verdict: "red", step: step.name, what, at: now(), note, failing, failLines: redLines } });
+    return "done";
+  }
+  await revert(root, dir, b.culprit, what, r.log);
+  mark(root, dir, cur, "red", { step: step.name, what });
+  writeState(root, { running: null, lastChecked: cur, lastResult: { head: cur, verdict: "red", step: step.name, what, at: now(), culprit: mg.prOfMerge(b.culprit.subject), failing, failLines: redLines } });
+  return "done";
 }
 
 // Stage 0: validate --all on a new head (#2889), in the compile worktree, before the compile. It never marks the head red
@@ -589,22 +690,38 @@ export async function runWorker(root) {
   if (lease === undefined) log(root, "lease: gh could not read it; starting on the local lock only");
   else if (!ld.ok) { log(root, `lease refused: ${ld.why}; worker exits`); try { unlinkSync(lockPath(root)); } catch {} return 1; }
   log(root, `lease: ${lease === undefined ? "unreadable" : ld.why}`);
-  pin.writeLease(dir, "held", HOST, process.pid);
-  writeState(root, { running: null, pid: process.pid });
+  const first = pin.writeLeaseChecked(dir, "held", HOST, process.pid);
+  if (!first.ok) log(root, `lease write FAILED at start: ${first.why}`);
+  writeState(root, { running: null, pid: process.pid, beatAt: now(), activityAt: now(), leaseErr: first.ok ? null : first.why });
   // The lease is renewed on its own timer: the loop below awaits a compile for many minutes, and a lease renewed only
   // between ticks went 16 min stale under a live worker (#2754), which the watchdog and `lead` read as a dead guard.
   let leaseLost = null;
   let restart = false;
   let staleSaidAt = 0;
   writeState(root, { code: LOADED_CODE, codeFrom: dirname(dirname(SELF)) });
+  // A renewal that fails is logged, never swallowed (2026-11-22: GitHub refused every one from 2026-11-20 on, 422 "maximum
+  // number of statuses", and nothing said so). The watchdog renews a stale lease for a worker that still progresses.
+  let leaseFails = 0;
   const beat = setInterval(() => {
     try {
       const cur = pin.readLease(dir);
       if (cur && cur.state === "held" && !pin.sameLeaseHost(cur.host, HOST)) { leaseLost = cur.host; return; }
-      pin.writeLease(dir, "held", HOST, process.pid);
+      const w = pin.writeLeaseChecked(dir, "held", HOST, process.pid);
+      if (w.ok) {
+        if (leaseFails) log(root, `lease renewal ok again after ${leaseFails} failure(s) (${w.ctx})`);
+        leaseFails = 0;
+        if (readState(root).leaseErr) writeState(root, { leaseErr: null });
+      } else {
+        leaseFails++;
+        if (leaseFails === 1 || leaseFails % 6 === 0) log(root, `lease renewal FAILED (${leaseFails} in a row): ${w.why}; the watchdog renews it while this worker progresses`);
+        writeState(root, { leaseErr: w.why });
+      }
     } catch (e) { log(root, `lease renewal failed: ${e?.message ?? e}`); }
   }, 5 * 60 * 1000);
   beat.unref?.();
+  // The local heartbeat (mg.workerProgress): the event loop runs (beatAt) and the step it waits on writes (activityAt).
+  const pulse = setInterval(() => { try { writeState(root, { beatAt: now(), activityAt: activityNow() }); } catch {} }, 60 * 1000);
+  pulse.unref?.();
   for (;;) {
     if (leaseLost) { log(root, `lease taken by ${leaseLost}; worker exits`); break; }
     if (off()) { log(root, "LF_MAIN_GUARD=0: worker exits"); break; }
@@ -636,7 +753,7 @@ export async function runWorker(root) {
         log(root, `  compile ${req.slice(0, 8)}: ${v} (exit ${x.code}, ${x.log})`);
         if (v === "ok") {
           mark(root, cdir, req, "compiled-ok");
-          stage2 = checkHead(root, dir, req).catch((e) => { log(root, `stage 2 failed: ${e?.message ?? e}`); writeState(root, { running: null }); }).finally(() => { stage2 = null; });
+          stage2 = checkHead(root, dir, req, { pinned: true }).catch((e) => { log(root, `stage 2 failed: ${e?.message ?? e}`); writeState(root, { running: null }); }).finally(() => { stage2 = null; });
         } else if (v === "fail") mark(root, cdir, req, "red", { step: "compile" });
         else { log(root, `${req.slice(0, 8)}: no compile verdict; request kept`); writeState(root, { request: req }); }
       }
@@ -661,6 +778,7 @@ export async function runWorker(root) {
     await new Promise((r) => setTimeout(r, TICK_MS));
   }
   clearInterval(beat);
+  clearInterval(pulse);
   try { unlinkSync(lockPath(root)); } catch {}
   if (restart) {
     // The lease stays held (same host), so the new worker takes it over as ours with no gap another machine could use.
@@ -684,7 +802,8 @@ export async function watch(root, dryRun = false) {
   wt.git(mr, ["fetch", "origin", "--prune"]);
   const lease = pin.readLease(mr);
   const alive = workerAlive(root);
-  const d = mg.watchDecision({ off: off(), alive, lease, host: HOST, restarts: w.restarts ?? [] });
+  const st = readState(root);
+  const d = mg.watchDecision({ off: off(), alive, lease, host: HOST, restarts: w.restarts ?? [], local: { beatAt: st.beatAt, activityAt: st.activityAt } });
   console.log(`main-guard watch: ${d.action}: ${d.why}`);
   if (dryRun || d.action === "none") return 0;
   log(root, `watch: ${d.action}: ${d.why}`);
@@ -694,6 +813,12 @@ export async function watch(root, dryRun = false) {
     await staffLine(root, text);
   };
   if (d.action === "alert") { await say(`main guard watchdog: ${d.why}`); save(); return 1; }
+  if (d.action === "renew") {
+    const rw = pin.writeLeaseChecked(mr, "held", HOST, alive);
+    log(root, `watch: renew: ${rw.ok ? `lease renewed on ${rw.ctx} for pid ${alive}` : `FAILED: ${rw.why}`}`);
+    if (!rw.ok) { await say(`main guard watchdog: worker pid ${alive} is progressing but its lease cannot be written: ${rw.why}`); save(); return 1; }
+    return 0;
+  }
   w.restarts = [...(w.restarts ?? []), now()].slice(-10);
   save();
   const code = await main(["start"], { root });
@@ -770,7 +895,12 @@ export async function main(args, { root }) {
   }
   if (sub === "status" || !sub) {
     const alive = workerAlive(root);
-    if (alive) console.log(mg.statusLine(readState(root), { alive, off: off() }));
+    if (alive) {
+      console.log(mg.statusLine(readState(root), { alive, off: off() }));
+      const ws = readState(root);
+      const p = mg.workerProgress({ beatAt: ws.beatAt, activityAt: ws.activityAt });
+      console.log(`  worker: ${p.state} (${p.why})${ws.leaseErr ? `; its lease writes fail: ${ws.leaseErr}` : ""}`);
+    }
     // From GitHub, so every machine sees the same guard: who holds the lease, main's head, the newest checked commit.
     const mr = mainRoot(root);
     wt.git(mr, ["fetch", "origin", "--prune"]);

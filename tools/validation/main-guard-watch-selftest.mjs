@@ -5,6 +5,8 @@
 // red-proof 2026-11-17: before the watchdog rules existed this printed "FAIL cannot load"; with guardHealth's
 //   `now - at > downMs` flipped to `<` the run printed "FAIL a 40 min old lease is down" and "FAIL a fresh lease is live".
 
+// red-proof 2026-11-22 (progress, lease): with watchDecision's "renew" branch disabled this printed "FAIL a progressing worker with a
+//   65 h old lease: the watchdog renews it, no hung? alert".
 import { readFileSync } from "node:fs";
 import * as g from "../lib/main-guard.mjs";
 
@@ -51,6 +53,27 @@ const recent = [ago(50), ago(30), ago(10)];
 check(W({ alive: null, lease: held(40), restarts: recent }).action === "alert", "three restarts in an hour: alert, no fourth restart");
 check(W({ alive: null, lease: held(40), restarts: [ago(300), ago(200), ago(100), ago(90)] }).action === "restart", "old restarts do not count");
 
+// Progress (2026-11-22): a worker whose lease went stale under a live, working worker (GitHub refused every renewal,
+// "maximum number of statuses") is renewed by the watchdog; `hung?` fires only when the worker truly makes no progress.
+const okLocal = { beatAt: ago(1), activityAt: ago(3) };
+check(g.workerProgress(okLocal, T).state === "progressing", "a fresh heartbeat and fresh step output is progressing");
+check(g.workerProgress({ beatAt: ago(30), activityAt: ago(1) }, T).state === "hung", "no heartbeat for 30 min is hung");
+check(g.workerProgress({ beatAt: ago(1), activityAt: ago(130) }, T).state === "hung", "a step silent for 130 min is hung (its budget is 90)");
+check(g.workerProgress({ beatAt: ago(1), activityAt: ago(60) }, T).state === "progressing", "a step silent for 60 min is a long build, not hung");
+check(g.workerProgress({}, T).state === "unknown" && g.workerProgress(null, T).state === "unknown", "no heartbeat recorded (an old worker) is unknown");
+check(W({ alive: 9288, lease: held(3889), local: okLocal }).action === "renew", "a progressing worker with a 65 h old lease: the watchdog renews it, no hung? alert");
+check(W({ alive: 9288, lease: held(20), local: okLocal }).action === "renew", "a progressing worker with a 20 min old lease (3 missed renewals) is renewed too");
+check(W({ alive: 9288, lease: held(10), local: okLocal }).action === "none", "a lease 10 min old is within one late renewal: left alone");
+const hungW = W({ alive: 9288, lease: held(60), local: { beatAt: ago(40), activityAt: ago(40) } });
+check(hungW.action === "alert" && /no progress/.test(hungW.why) && /no heartbeat for 40 min/.test(hungW.why), `no heartbeat: alert names why, got ${JSON.stringify(hungW)}`);
+check(W({ alive: 9288, lease: held(60), local: null }).action === "alert" && /hung\?/.test(W({ alive: 9288, lease: held(60) }).why), "an old worker with no heartbeat keeps the old rule (alert past 45 min)");
+check(W({ alive: 9288, lease: held(3889, "OTHER-PC", 1), local: okLocal }).action === "none", "never renew another machine's lease");
+check(W({ alive: 9288, lease: { state: "released", host: "LAPTOP", at: ago(5) }, local: okLocal }).action === "none", "never renew a lease released on purpose");
+check(W({ alive: null, lease: held(3889), local: okLocal }).action === "restart", "a dead worker is still restarted whatever its old heartbeat says");
+check(g.guardAlert(held(3889), { now: T, alive: 9288, local: okLocal }) === null, "lead: a live, progressing worker with a stale lease is not a dead guard");
+check(g.guardAlert(held(3889), { now: T, alive: 9288, local: { beatAt: ago(40) } }) !== null, "lead: a live worker with no heartbeat and a 65 h lease is shouted about");
+check(g.guardAlert(held(3889), { now: T }) !== null, "lead: no live worker, a stale lease: down");
+
 // Wiring.
 const wtSrc = src("../wt.mjs");
 check(/guardWarn = guardAlert\(readLease\(root\)/.test(wtSrc) && /pinned, pinNote, guardWarn/.test(wtSrc), "wt new computes and returns guardWarn");
@@ -61,6 +84,10 @@ const mgSrc = src("../main-guard.mjs");
 check(/sub === "watch"/.test(mgSrc) && /mg\.watchDecision\(/.test(mgSrc), "main-guard watch runs watchDecision");
 check(/setInterval\(/.test(mgSrc) && /beat\.unref/.test(mgSrc), "the worker renews its lease on a timer, not only between ticks");
 check(/watch/.test(src("../commands/main-guard.mjs")), "the command help lists watch");
+check(/writeLeaseChecked\(dir, "held", HOST, process\.pid\)/.test(mgSrc) && /lease renewal FAILED/.test(mgSrc), "the worker's renewal checks the post and logs a failure (it was swallowed before)");
+check(/setInterval\(\(\) => \{ try \{ writeState\(root, \{ beatAt: now\(\), activityAt: activityNow\(\) \}\)/.test(mgSrc), "the worker writes its heartbeat every minute");
+check(/d\.action === "renew"/.test(mgSrc) && /local: \{ beatAt: st\.beatAt, activityAt: st\.activityAt \}/.test(mgSrc), "main-guard watch renews a progressing worker's lease");
+check(/pin\.leaseFromStatuses\(/.test(lead) && /local: \{ beatAt: ls\.beatAt/.test(lead), "lead reads every lease context and passes the worker's heartbeat");
 
 if (fails.length) { for (const f of fails) console.log(`FAIL  ${f}`); process.exit(1); }
 console.log("PASS  main-guard watchdog selftest");

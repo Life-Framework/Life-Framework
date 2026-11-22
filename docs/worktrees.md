@@ -241,6 +241,22 @@ toolscli main-guard start | stop | status | watch   # status is also a line in `
    gets a `mixed causes: ...` line, the head's `main-guard/suite` status says `red: suite failed; mixed causes ...`,
    and nothing is reverted. A suite red with no readable test name is not reverted either. Build, audit and e2e keep
    red/green. A compile break and a machine exit (logoff, budget kill) are handled as before.
+   **Newest first (2026-11-22).** When main went red on two suite checks the guard spent over an hour re-reproducing the red
+   and bisecting one old head after another while newer heads that already held the fix (#4135) waited. Stage 2 always
+   judges the newest compiled-ok head, so a red at an older head is first tried at the newer one
+   (`newestFirst` in `tools/lib/main-guard.mjs`): after the first red, before the recheck, between every bisect probe and
+   after the recheck, the guard looks for a newer compiled-ok head (`lastCompiled`, a descendant) and runs just the failing
+   tests there (`probe-<sha>` in `tmp/logs`). They pass: the old head is not rechecked, bisected or reverted
+   (`superseded` in `lastResult`, a `... is fixed at the newer head` log line; a head that already reproduced is marked red
+   with the note) and the newest head gets its own full check at once (`lastRunAt` cleared), green when it passes. They
+   still fail: the newest head becomes the one judged (its own failing set, recheck and bisect). A newer head with no
+   verdict (a held lock, no machine) judges nothing. Each head is probed once, at most 4 hops, and a requested check
+   (`main-guard check <sha>`) is pinned to its commit and never moved. Validate (stage 0) still bisects its own head.
+   **Revert caution.** Two more refusals before a revert PR (`revertRefusal`, `fixCardInstead`): a newer head that already
+   passes the failing tests means the fix is on main (`newerFixes`, the probe above), so no revert; and a merge that changes
+   more than `LARGE_PR_FILES` (20) files, append-only shared files not counted, is a feature PR and gets a fix card and a PR
+   comment, never a revert (2026-11-22: #4128 reverted a big feature PR for stale test expectations). The compile break
+   keeps its auto-revert, and so do the stage-0 data-safety checks (`HARD_CHECKS`). Proven by `main-guard-selftest.mjs`.
    **Stage 2b, the town tests (warn-only).** The 12 tests of `tools/test/town-tests.json` (the roadmap scenarios, the
    narrative loop, the sign coverage) are not in the suite: `test --tier all`, `ci`, `wt gate` and `wt ship` skip them.
    After the suite goes `green`, the guard runs them once as their own stage, `test --no-build --town` (one boot of the
@@ -253,14 +269,24 @@ toolscli main-guard start | stop | status | watch   # status is also a line in `
    `<hub>/main-guard-state.json` on the guard machine is only a cache, used when GitHub has no verdict or `gh` fails
    (`tools/lib/guard-pin.mjs`). `main-guard status` on any machine prints who runs the guard, main's head verdict
    and the newest checked commit, all from GitHub.
-   **One guard:** the worker holds a lease, the `main-guard/lease` status on the repository's root commit ("held
-   <host> <pid> <time>", renewed every 5 min, stale after 30). `start` and the worker refuse while another machine
+   **One guard:** the worker holds a lease, a `main-guard/lease/<yyyymmdd>` status on the repository's root commit ("held
+   <host> <pid> <time>", renewed every 5 min, stale after 30). The context carries the UTC day because GitHub keeps at most
+   1000 statuses per commit and context: the single `main-guard/lease` context filled on 2026-11-20, every renewal after it
+   failed with a 422 nobody logged, and the lease sat 65 h old under a live worker (the `hung?` alert every 5 min). A reader
+   takes the newest status of any context `main-guard/lease` or under it (`leaseFromStatuses`); a full context moves on
+   to `-2`; a renewal that fails is logged (`lease renewal FAILED`) and its reason is in `main-guard status`
+   and the state file (`leaseErr`). `start` and the worker refuse while another machine
    holds a fresh lease; `stop` releases it.
    **Watchdog (#2754).** The worker renews the lease on its own 5-min timer (not between ticks: a long compile
    once left it 16 min stale under a live worker). `toolscli main-guard watch [--dry-run]` is one watchdog tick: it
    reads the lease and this machine's worker pid and restarts a dead worker with `start` (rule `watchDecision` in
-   `tools/lib/main-guard.mjs`). It never touches a live worker (a live pid with a lease over 45 min old is only
-   reported as hung), never restarts a guard that was stopped on purpose (`stop` releases the lease) or one another
+   `tools/lib/main-guard.mjs`). It never kills a live worker. The worker writes a heartbeat to its state file every minute
+   (`beatAt`: its event loop runs; `activityAt`: the newest write of the step it waits on, else now). A live worker whose lease
+   is over 15 min old but that beats and whose step still writes (under 100 min silent; a step's budget is 90) is
+   **progressing**: the watchdog renews the lease for it (`watch: renew`, rule `renew` in `watchDecision`; `lead` shows no
+   alert). Only a worker with no heartbeat for 10 min, or a step silent for 100, is reported as hung, and the alert says
+   which (`workerProgress`). A worker from before the heartbeat keeps the old rule (a lease over 45 min old is reported
+   hung), never restarts a guard that was stopped on purpose (`stop` releases the lease) or one another
    machine runs fresh, and stops after 3 restarts in an hour (a crash loop alerts instead). Restarts and alerts go to
    `tmp/logs/main-guard.log` and the staff webhook, at most one alert per 30 min. The laptop runs it from the
    scheduled task `LF-MainGuardWatch` every 5 min (`C:\LF\health\CHANGES.md` has the wiring and undo). Down means

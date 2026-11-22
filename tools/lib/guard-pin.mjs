@@ -186,18 +186,53 @@ export function rootCommit(dir) {
   return String(r.stdout ?? "").split(/\r?\n/).filter(Boolean).pop() ?? null;
 }
 
+// GitHub keeps at most 1000 statuses per commit and context ("This SHA and context has reached the maximum number of
+// statuses", HTTP 422). The lease is one status per renewal (every 5 min) on one commit, so the single context
+// `main-guard/lease` filled up on 2026-11-20 and every renewal after it failed in silence: the lease sat 65 h old under a
+// live, working worker. A lease now goes to a context of the day (`main-guard/lease/20261122`: at most 288 renewals), and
+// a reader takes the newest status of any context that is `main-guard/lease` or under it.
+export const isLeaseCtx = (c) => c === LEASE_CTX || String(c ?? "").startsWith(`${LEASE_CTX}/`);
+export const leaseContextFor = (now = Date.now(), n = 1) => `${LEASE_CTX}/${new Date(now).toISOString().slice(0, 10).replace(/-/g, "")}${n > 1 ? `-${n}` : ""}`;
+
+// Pure: a commit's statuses (newest first, as the API lists them) -> the lease, null (none) .
+export function leaseFromStatuses(list) {
+  const mine = (list ?? []).filter((s) => isLeaseCtx(s?.context)).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
+  return parseLease(mine[0]) ?? null;
+}
+
 export function readLease(dir) {
   const root = rootCommit(dir);
   if (!root) return undefined;
   const list = ghStatuses(dir, root);
   if (list === undefined) return undefined;
-  const mine = list.filter((s) => s.context === LEASE_CTX).sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
-  return parseLease(mine[0]) ?? null;
+  return leaseFromStatuses(list);
+}
+
+// Post one lease status; returns the gh spawn result. `post` is injectable for the selftest.
+function postLease(dir, root, ctx, state, description) {
+  return spawnSync("gh", ["api", "-X", "POST", `repos/{owner}/{repo}/statuses/${root}`, "-f", `state=${state === "held" ? "pending" : "success"}`, "-f", `context=${ctx}`, "-f", `description=${description}`], { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 20000 });
+}
+
+// What a failed post says, one line (gh prints GitHub's message on stderr or in the JSON on stdout).
+export const postWhy = (r) => String(r?.stderr || r?.stdout || r?.error?.message || `exit ${r?.status ?? "?"}`).replace(/\s+/g, " ").trim().slice(0, 200);
+export const isStatusCap = (r) => /maximum number of statuses/i.test(String(r?.stderr ?? "") + String(r?.stdout ?? ""));
+
+// Write the lease and say whether it landed: { ok, ctx, why }. A context that is full moves to the next one of the day
+// (`-2`, `-3`); any other failure is returned, never swallowed (the caller logs it).
+export function writeLeaseChecked(dir, state, host, pid, { now = Date.now(), post = postLease, root = rootCommit(dir) } = {}) {
+  if (!root) return { ok: false, ctx: null, why: "no root commit" };
+  const description = state === "held" ? `held ${host} ${pid} ${new Date(now).toISOString()}` : `released ${host}`;
+  let last = null;
+  for (let n = 1; n <= 4; n++) {
+    const ctx = leaseContextFor(now, n);
+    last = post(dir, root, ctx, state, description);
+    if (last?.status === 0) return { ok: true, ctx, why: "" };
+    if (!isStatusCap(last)) break;
+  }
+  return { ok: false, ctx: null, why: postWhy(last) };
 }
 
 export function writeLease(dir, state, host, pid) {
-  const root = rootCommit(dir);
-  if (!root) return { status: 1, stderr: "no root commit" };
-  const description = state === "held" ? `held ${host} ${pid} ${new Date().toISOString()}` : `released ${host}`;
-  return spawnSync("gh", ["api", "-X", "POST", `repos/{owner}/{repo}/statuses/${root}`, "-f", `state=${state === "held" ? "pending" : "success"}`, "-f", `context=${LEASE_CTX}`, "-f", `description=${description}`], { cwd: dir, encoding: "utf8", windowsHide: true, timeout: 20000 });
+  const r = writeLeaseChecked(dir, state, host, pid);
+  return { status: r.ok ? 0 : 1, stderr: r.why, ...r };
 }

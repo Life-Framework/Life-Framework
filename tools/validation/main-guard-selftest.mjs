@@ -5,6 +5,9 @@
 //   with bisect's `hi = mid` swapped for `lo = mid` the run never finished (killed by `timeout 10`).
 // red-proof #2052: with setHits returning every failed test (red/green again) this printed "FAIL same set: blame m3, got
 //   m1111111" and "FAIL different set: no blame".
+// red-proof 2026-11-22 (newest first, revert caution): with newestFirst's `p.verdict === "ok"` return removed this printed "FAIL
+//   newer head passes: fixed, old head never judged"; with isLargePr's `>` flipped to `<` "FAIL a large merge is not reverted for a suite
+//   red"; with newerFixes returning null "FAIL newerFixes: a newer head that passes the set".
 import { readFileSync } from "node:fs";
 import * as g from "../lib/main-guard.mjs";
 import * as pin from "../lib/guard-pin.mjs";
@@ -51,8 +54,8 @@ check(g.judgeRecheck(false, false) === "green", "green is green");
 check(g.RECHECK_ENV.LF_RDB_CACHE === "0", "RECHECK_ENV must switch the shared rdb cache off");
 {
   const src = readFileSync(new URL("../main-guard.mjs", import.meta.url), "utf8");
-  const calls = src.split(/\r?\n/).filter((l) => /await runCli\(/.test(l) && /(recheck|bisect-)/.test(l));
-  check(calls.length === 3 && calls.every((l) => /mg\.RECHECK_ENV, true\)/.test(l)), `the recheck and both bisect probes must pass RECHECK_ENV and drop the rdb: ${calls.length} call(s)`);
+  const calls = src.split(/\r?\n/).filter((l) => /await runCli\(/.test(l) && /(recheck|bisect-|probe-)/.test(l));
+  check(calls.length === 4 && calls.every((l) => /mg\.RECHECK_ENV, true\)/.test(l)), `the recheck, the newest-head probe and both bisect probes must pass RECHECK_ENV and drop the rdb: ${calls.length} call(s)`);
 }
 
 // Environmental exits: a logoff/shutdown kill (0x40010004 = 1073807364), Ctrl+C, a budget kill: never a recheck or a revert.
@@ -159,6 +162,104 @@ check(/off/.test(g.statusLine({}, { alive: 1, off: true })), "status off");
   check(g.fixCardInstead(culprit, "pre-move e2e", { needsSkip: true }) !== null && g.fixCardInstead(culprit, "suite", { needsSkip: true }) === null, "needs-skip changes only the pre-move step");
   const w = readFileSync(new URL("../main-guard.mjs", import.meta.url), "utf8");
   check(w.includes("mg.PLAIN_E2E") && w.includes("{ step: step.name, needsSkip }"), "worker: runs the plain e2e after a reproduced pre-move red and passes needsSkip to the revert rule");
+}
+
+// Newest first (2026-11-22): main went red on two suite checks and the guard re-reproduced and bisected one old head after
+// another for over an hour while newer heads that already held the fix waited. A newer compiled-ok head runs the failing
+// checks first; when they pass the old head is neither rechecked, bisected nor reverted.
+{
+  const S = ["LF_Test_A", "LF_Test_B"];
+  const mkRun = (calls, value = "done") => async (cur, set, guard) => { calls.push({ cur, set }); return value; };
+  const newerOf = (map) => (sha) => map[sha] ?? null;
+  const probeOf = (table, seen = []) => async (sha, set) => { seen.push(sha); return table[sha] ?? { verdict: "ok", failing: [] }; };
+
+  // Nothing newer: the judgement runs at the red head, nothing is probed.
+  {
+    const calls = []; const seen = [];
+    const r = await g.newestFirst({ head: "h1", set: S, newerThan: newerOf({}), probe: probeOf({}, seen), run: mkRun(calls) });
+    check(r.kind === "done" && r.head === "h1" && calls.length === 1 && calls[0].cur === "h1" && seen.length === 0, `no newer head: judged at h1, got ${JSON.stringify(r)}`);
+  }
+  // A newer head passes the failing tests: fixed. No run at the old head (no recheck, no bisect, no revert).
+  {
+    const calls = []; const seen = [];
+    const r = await g.newestFirst({ head: "h1", set: S, newerThan: newerOf({ h1: "h5" }), probe: probeOf({ h5: { verdict: "ok", failing: [] } }, seen), run: mkRun(calls) });
+    check(r.kind === "fixed" && r.by === "h5" && r.from === "h1" && calls.length === 0 && seen.join() === "h5", `newer head passes: fixed, old head never judged, got ${JSON.stringify(r)} calls=${calls.length}`);
+  }
+  // The newer head still fails the set: it is the head to judge (recheck and bisect restart from it, with its own set).
+  {
+    const calls = [];
+    const r = await g.newestFirst({ head: "h1", set: S, newerThan: newerOf({ h1: "h5" }), probe: probeOf({ h5: { verdict: "red", failing: ["LF_Test_A"] } }), run: mkRun(calls, "flake") });
+    check(r.kind === "done" && r.head === "h5" && r.value === "flake" && calls.length === 1 && calls[0].cur === "h5" && calls[0].set.join() === "LF_Test_A", `newer head still red: judged at h5 with its set, got ${JSON.stringify(r)}`);
+  }
+  // Heads keep arriving: the newest one decides, each probed once.
+  {
+    const calls = []; const seen = [];
+    const r = await g.newestFirst({ head: "h1", set: S, newerThan: newerOf({ h1: "h3", h3: "h7" }), probe: probeOf({ h3: { verdict: "red", failing: S }, h7: { verdict: "ok", failing: [] } }, seen), run: mkRun(calls) });
+    check(r.kind === "fixed" && r.by === "h7" && r.from === "h3" && seen.join() === "h3,h7" && calls.length === 0, `h1 -> h3 red -> h7 green: fixed by h7, got ${JSON.stringify(r)}`);
+  }
+  // A newer head with no verdict (machine, lock): nothing is judged, nothing blamed.
+  {
+    const calls = [];
+    const r = await g.newestFirst({ head: "h1", set: S, newerThan: newerOf({ h1: "h5" }), probe: probeOf({ h5: { verdict: "env", failing: [], why: "no free Workbench slot" } }), run: mkRun(calls) });
+    check(r.kind === "env" && r.sha === "h5" && calls.length === 0, `newer head with no verdict: env, got ${JSON.stringify(r)}`);
+  }
+  // A newer head appears in the middle of the bisect: the bisect is abandoned and the newer head is tried first.
+  {
+    const calls = []; let arrived = false; const seen = [];
+    const run = async (cur, set, guard) => {
+      calls.push(cur);
+      if (cur === "h1") { arrived = true; await guard(); throw new Error("the guard must have thrown Superseded"); }
+      return "done";
+    };
+    const newerThan = (sha) => (sha === "h1" && arrived ? "h5" : null);
+    const r = await g.newestFirst({ head: "h1", set: S, newerThan, probe: probeOf({ h5: { verdict: "red", failing: S } }, seen), run });
+    check(r.kind === "done" && r.head === "h5" && calls.join() === "h1,h5" && seen.join() === "h5", `a head arriving mid-bisect restarts at the newest: ${JSON.stringify(r)} calls=${calls}`);
+    const calls2 = []; let arrived2 = false;
+    const r2 = await g.newestFirst({ head: "h1", set: S, newerThan: (sha) => (sha === "h1" && arrived2 ? "h5" : null), probe: probeOf({ h5: { verdict: "ok", failing: [] } }), run: async (cur, set, guard) => { calls2.push(cur); arrived2 = true; await guard(); return "done"; } });
+    check(r2.kind === "fixed" && r2.by === "h5" && calls2.join() === "h1", `mid-bisect arrival that passes: fixed, bisect dropped, got ${JSON.stringify(r2)}`);
+  }
+  // A head that never stops moving cannot starve the judgement: after MAX_HOPS the current head is judged.
+  {
+    let n = 0; const calls = [];
+    const r = await g.newestFirst({ head: "h0", set: S, newerThan: (sha) => `h${Number(sha.slice(1)) + 1}`, probe: async () => ({ verdict: "red", failing: S }), run: mkRun(calls) });
+    check(r.kind === "done" && calls.length === 1 && r.head === `h${g.MAX_HOPS + 1}`, `endless newer heads: judged after MAX_HOPS, got ${JSON.stringify(r)}`);
+  }
+  // Before a revert: a newer head that passes the set means the fix is on main.
+  {
+    const probe = (v) => async () => v;
+    check(await g.newerFixes({ head: "h1", set: S, newerThan: newerOf({ h1: "h5" }), probe: probe({ verdict: "ok", failing: [] }) }) === "h5", "newerFixes: a newer head that passes the set");
+    check(await g.newerFixes({ head: "h1", set: S, newerThan: newerOf({ h1: "h5" }), probe: probe({ verdict: "red", failing: S }) }) === null, "newerFixes: still red there, the revert stands");
+    check(await g.newerFixes({ head: "h1", set: S, newerThan: newerOf({ h1: "h5" }), probe: probe({ verdict: "env", failing: [] }) }) === null, "newerFixes: no verdict there, the revert is not blocked");
+    check(await g.newerFixes({ head: "h1", set: S, newerThan: newerOf({}), probe: probe({ verdict: "ok", failing: [] }) }) === null, "newerFixes: no newer head");
+  }
+}
+
+// Revert caution (2026-11-22: #4128 reverted a big feature PR whose break was stale test expectations): a merge that
+// changes more than LARGE_PR_FILES files gets a fix card, never a revert, unless the compile breaks (or a stage-0
+// data-safety check, which keeps its revert).
+{
+  const big = { sha: "b1111111", subject: "Merge pull request #4096 from Life-Framework/ws/everon-map", files: g.LARGE_PR_FILES + 1 };
+  const edge = { ...big, files: g.LARGE_PR_FILES };
+  const small = { ...big, files: 3 };
+  check(g.LARGE_PR_FILES === 20 && g.isLargePr(big) && !g.isLargePr(edge) && !g.isLargePr(small) && !g.isLargePr({ sha: "x" }), "isLargePr: over 20 files, an unknown count is not large");
+  check(/large merge \(21 files/.test(g.revertRefusal(big, {}, { step: "suite" }) ?? ""), `a large merge is not reverted for a suite red: ${g.revertRefusal(big, {}, { step: "suite" })}`);
+  check(g.revertRefusal(big, {}, { step: "pre-move e2e" }) !== null && g.revertRefusal(big, {}, { step: "build" }) !== null, "a large merge is not reverted for a build or e2e red either");
+  check(g.revertRefusal(edge, {}, { step: "suite" }) === null && g.revertRefusal(small, {}, { step: "suite" }) === null, "20 files and fewer revert as before");
+  check(g.revertRefusal(big, {}, { step: "compile" }) === null && g.fixCardInstead(big, "compile") === null, "a compile break still reverts a large merge");
+  check(g.revertRefusal(big, {}, { step: "validate" }) === null, "stage-0 data-safety reverts (step validate) keep their revert");
+  check(/large merge/.test(g.fixCard(big, "suite", "LF_Test_A", "log").body), "the fix card says why it was not reverted");
+  check(g.countFiles(["a.c", "docs/features/economy.md", "addons/x/Language/everonlife_localization.st", "tools/validation/record-shapes.json", "b.c"]) === 2, "countFiles leaves the append-only shared files out");
+}
+
+// Wiring (tools/main-guard.mjs).
+{
+  const w = readFileSync(new URL("../main-guard.mjs", import.meta.url), "utf8");
+  check(/mg\.newestFirst\(\{/.test(w) && w.indexOf("mg.newestFirst(") < w.indexOf("const again = await runCli(") , "worker: newest-first runs before the recheck at the old head");
+  check((w.match(/await guard\(\);/g) ?? []).length >= 3, "worker: the bisect probes and the recheck look for a newer head");
+  check(/mg\.newerFixes\(\{[^}]*probe: probeOnce/.test(w) && w.indexOf("mg.newerFixes(") < w.indexOf("await revert(root, dir, b.culprit"), "worker: a newer passing head is checked just before a revert");
+  check(w.includes("b.culprit.files = mg.countFiles(mergeFiles(dir, b.culprit.sha))") && w.indexOf("b.culprit.files =") < w.indexOf("mg.revertRefusal(b.culprit"), "worker: the culprit's size is known before the revert rule");
+  check(/pinned: true/.test(w) && /if \(pinned\) return null;/.test(w), "worker: a requested check of an exact commit is never moved to a newer head");
+  check(/verdict: "superseded"/.test(w) && /lastRunAt: null/.test(w), "worker: a superseded head records it and lets the newest head run at once");
 }
 
 if (fails.length) {

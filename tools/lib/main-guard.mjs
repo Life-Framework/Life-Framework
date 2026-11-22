@@ -223,6 +223,65 @@ export async function bisectBySet(list, set, probe, { head = null } = {}) {
   return r;
 }
 
+// ---- Newest first (2026-11-22). Main went red on two suite checks and the guard spent over an hour re-reproducing the red
+// and bisecting one old head after another while newer heads, which already held the fix, waited. Stage 2 always
+// judges the newest compiled-ok head, so a head that is no longer the newest is stale news: before the recheck, between
+// every bisect probe and before a revert, the guard looks for a newer compiled-ok head and runs the failing checks
+// there first. They pass: the red is fixed, the old head is not bisected or reverted, and the newest head gets its own
+// full check (green when it passes). They still fail: the newest head is the one to judge, and the recheck and the
+// bisect restart from it.
+export class Superseded extends Error {
+  constructor(sha) {
+    super(`superseded by ${String(sha).slice(0, 8)}`);
+    this.sha = sha;
+  }
+}
+export const MAX_HOPS = 4;
+
+// head: the red head; set: the failing tests recorded there ([] for build, audit, e2e).
+// newerThan(sha): the newest compiled-ok head that descends from sha, or null.
+// probe(sha, set) -> { verdict: "ok" | "red" | "env", failing: [...], why } runs just the failing checks at sha ("ok" =
+//   none of the set fails there, whatever else does).
+// run(cur, set, guard, seen): the judgement at one head (recheck, bisect, revert decision); `guard()` throws Superseded
+//   when a still newer head has appeared. Returns { kind: "done", head, set, value } | { kind: "fixed", by, from } |
+//   { kind: "env", sha, from, why }. `seen` caches probes (sha -> result), so a head is probed once.
+export async function newestFirst({ head, set = [], newerThan, probe, run, maxHops = MAX_HOPS }) {
+  const seen = new Map();
+  const probeOnce = async (sha, s) => {
+    if (!seen.has(sha)) seen.set(sha, await probe(sha, s));
+    return seen.get(sha);
+  };
+  let cur = head;
+  let curSet = set;
+  for (let hop = 0; hop <= maxHops; hop++) {
+    const n = await newerThan(cur);
+    if (n && n !== cur) {
+      const p = await probeOnce(n, curSet);
+      if (p.verdict === "env") return { kind: "env", sha: n, from: cur, why: p.why };
+      if (p.verdict === "ok") return { kind: "fixed", by: n, from: cur };
+      cur = n;
+      curSet = p.failing?.length ? p.failing : curSet;
+      continue;
+    }
+    const guard = hop === maxHops ? async () => {} : async () => { const m = await newerThan(cur); if (m && m !== cur) throw new Superseded(m); };
+    try {
+      return { kind: "done", head: cur, set: curSet, value: await run(cur, curSet, guard, probeOnce) };
+    } catch (e) {
+      if (!(e instanceof Superseded)) throw e;
+    }
+  }
+  return { kind: "done", head: cur, set: curSet, value: await run(cur, curSet, async () => {}, probeOnce) };
+}
+
+// Just before a revert: has a newer head already fixed it? -> the newest head whose probe passes the set, or null.
+// A head that still fails the set (the culprit is on it too) or has no verdict does not stop the revert.
+export async function newerFixes({ head, set = [], newerThan, probe }) {
+  const n = await newerThan(head);
+  if (!n || n === head) return null;
+  const p = await probe(n, set);
+  return p.verdict === "ok" ? n : null;
+}
+
 // May the guard revert this merge? Never a revert, never a merge from before the guard started, never one with
 // no PR number, never twice, never while the guard runs stale code (codeDrift).
 export function revertRefusal(c, state, { step, needsSkip: skip = false, codeDrift: drift = [], earlier = null } = {}) {
@@ -499,6 +558,12 @@ export function branchOfMerge(subject) {
 }
 export const MAINTAINER_BRANCH = /^(ws\/)?town-maintainer-[\w-]+$/;
 
+// A merge that changes more files than this is a feature PR, not a one-line break. The guard attaches the count to the
+// culprit (`c.files`, git diff --name-only <merge>^1 <merge>, append-only shared files left out: SHARED_FILE).
+export const LARGE_PR_FILES = 20;
+export const isLargePr = (c) => Number.isFinite(Number(c?.files)) && Number(c.files) > LARGE_PR_FILES;
+export const countFiles = (files) => (files ?? []).filter((f) => f && !SHARED_FILE.test(f)).length;
+
 // Never revert over town layout (#1872: town findings warn on every branch; a placement audit red is a fix card,
 // not a revert) and never auto-revert the maintainer's town edits for anything but a compile break.
 // Returns the reason when the guard must open a fix card instead, or null.
@@ -509,6 +574,9 @@ export function fixCardInstead(c, step, { needsSkip: skip = false } = {}) {
   if (step === "placement audit" || step === "grid placement audit") return "a placement audit finding is fixed forward, never reverted (town layout warns, #1872)";
   const br = c.branch || branchOfMerge(c.subject);
   if (MAINTAINER_BRANCH.test(br)) return `#${prOfMerge(c.subject)} is the maintainer's town edit (${br}); only a compile break reverts it`;
+  // A big merge is not reverted for a test or audit failure (2026-11-22: a feature PR was reverted for stale test
+  // expectations). The compile break and the stage-0 data-safety checks (step "validate", HARD_CHECKS) keep reverting.
+  if (step !== "validate" && isLargePr(c)) return `#${prOfMerge(c.subject)} is a large merge (${c.files} files, over ${LARGE_PR_FILES}): a feature-sized PR gets a fix card, never a revert, unless the compile breaks`;
   return null;
 }
 
@@ -539,6 +607,12 @@ export const REGEN_AFTER_REVERT = [
 // one, so "down" is three missed renewals (15 min), not the 30 min after which `start` may take the lease over.
 export const GUARD_DOWN_MS = 15 * 60 * 1000;
 export const GUARD_WEDGED_MS = 45 * 60 * 1000; // a live pid with a lease this old is hung, not slow
+// Local progress (2026-11-22): the lease alone cannot tell a hung worker from one whose lease writes fail (GitHub caps a
+// context at 1000 statuses per commit; the lease sat 65 h old under a live, working worker and `hung?` fired every 5 min).
+// The worker writes `beatAt` (its event loop runs) and `activityAt` (the newest write of the step it waits on, or now
+// when it only watches) to its state file every minute; the watchdog reads them.
+export const BEAT_STALE_MS = 10 * 60 * 1000; // no heartbeat for this long: the worker's event loop is stuck
+export const ACTIVITY_STALE_MS = 100 * 60 * 1000; // a running step silent this long (its budget is 90 min): no progress
 export const RESTART_CAP = 3; // restarts per RESTART_WINDOW_MS before the watchdog stops and only alerts
 export const RESTART_WINDOW_MS = 60 * 60 * 1000;
 
@@ -557,9 +631,11 @@ export function guardHealth(lease, { now = Date.now(), downMs = GUARD_DOWN_MS } 
 // The loud line for `lead` and `wt new`, null when the guard is fine or unknown. behind = commits between the pinned
 // compiled-ok head and origin/main (null when not known).
 // alive = this machine's worker pid: a live pid with a lease that is late but not hung is a busy guard, not a dead one.
-export function guardAlert(lease, { now = Date.now(), behind = null, downMs = GUARD_DOWN_MS, alive = null } = {}) {
+export function guardAlert(lease, { now = Date.now(), behind = null, downMs = GUARD_DOWN_MS, alive = null, local = null } = {}) {
   const h = guardHealth(lease, { now, downMs });
   if (alive && h.state === "down" && h.minutes * 60000 <= GUARD_WEDGED_MS) return null;
+  // A live, progressing worker with a stale lease is the watchdog's to renew (watchDecision "renew"), not a dead guard.
+  if (alive && h.state === "down" && workerProgress(local, now).state === "progressing") return null;
   const gap = behind === null || behind === undefined ? "" : `; you are ${behind} commit(s) behind main`;
   if (h.state === "down") return `main-guard down for ${h.minutes} min (last lease renewal on ${h.host}${gap}); \`tools\\cli main-guard start\`, or wait for the watchdog`;
   if (h.state === "stopped") return `main-guard stopped ${h.minutes} min ago${gap}; \`tools\\cli main-guard start\``;
@@ -567,13 +643,31 @@ export function guardAlert(lease, { now = Date.now(), behind = null, downMs = GU
   return null;
 }
 
+// Pure: is the live worker working? local = { beatAt, activityAt } from the worker's state file (ISO strings).
+// -> { state: "progressing" | "hung" | "unknown", why }. unknown: a worker from before the heartbeat existed.
+export function workerProgress(local, now = Date.now()) {
+  const beat = Date.parse(local?.beatAt ?? "");
+  if (!Number.isFinite(beat)) return { state: "unknown", why: "no heartbeat recorded (worker started before it existed)" };
+  const min = (t) => Math.max(0, Math.round((now - t) / 60000));
+  if (now - beat > BEAT_STALE_MS) return { state: "hung", why: `no heartbeat for ${min(beat)} min` };
+  const act = Date.parse(local?.activityAt ?? "");
+  if (Number.isFinite(act) && now - act > ACTIVITY_STALE_MS) return { state: "hung", why: `its running step wrote nothing for ${min(act)} min` };
+  return { state: "progressing", why: `heartbeat ${min(beat)} min ago${Number.isFinite(act) ? `, last step output ${min(act)} min ago` : ""}` };
+}
+
 // Pure: what one watchdog tick does. alive = pid of this machine's worker or null; restarts = ISO times of the
 // watchdog's recent restarts. -> { action: "none" | "restart" | "alert", why }.
-export function watchDecision({ off = false, alive = null, lease, host, now = Date.now(), restarts = [], downMs = GUARD_DOWN_MS, wedgedMs = GUARD_WEDGED_MS } = {}) {
+export function watchDecision({ off = false, alive = null, lease, host, now = Date.now(), restarts = [], downMs = GUARD_DOWN_MS, wedgedMs = GUARD_WEDGED_MS, local = null } = {}) {
   if (off) return { action: "none", why: "LF_MAIN_GUARD=0" };
   const h = guardHealth(lease, { now, downMs });
   if (alive) {
-    const stale = sameLeaseHost(lease?.host, host) && lease?.state === "held" && h.minutes * 60000 > wedgedMs;
+    const ours = sameLeaseHost(lease?.host, host) && lease?.state === "held";
+    const p = workerProgress(local, now);
+    // A working worker whose lease went stale (its own renewals failed): the watchdog renews it, so no other machine
+    // takes the guard over and `lead` does not shout. Only a worker that makes no progress is reported as hung.
+    if (ours && h.state === "down" && p.state === "progressing") return { action: "renew", why: `worker pid ${alive} is alive and progressing (${p.why}) but its lease is ${h.minutes} min old; renewing it` };
+    if (ours && h.state === "down" && p.state === "hung") return { action: "alert", why: `worker pid ${alive} is alive but makes no progress (${p.why}); lease ${h.minutes} min old (hung); not restarted` };
+    const stale = ours && h.minutes * 60000 > wedgedMs;
     return stale ? { action: "alert", why: `worker pid ${alive} is alive but its lease is ${h.minutes} min old (hung?); not restarted` } : { action: "none", why: `worker pid ${alive} alive` };
   }
   if (h.state === "live" && !sameLeaseHost(lease.host, host)) return { action: "none", why: `${lease.host} runs the guard` };
