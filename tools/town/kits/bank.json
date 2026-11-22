@@ -135,7 +135,7 @@
       "verb": "on floor",
       "offset": [
         3.785,
-        1.053,
+        1.097,
         -1.02
       ],
       "yaw": 0,
@@ -192,7 +192,8 @@
         }
       ],
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 0.044
     },
     {
       "id": "lf-locker-bank",

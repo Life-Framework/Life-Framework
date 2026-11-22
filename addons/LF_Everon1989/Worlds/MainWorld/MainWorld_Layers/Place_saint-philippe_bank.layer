@@ -41,7 +41,7 @@ GenericEntity Fit_saint_philippe_bank_lf_bank_vault : "{B17A72DCB10A840C}Prefabs
    m_sVaultId "bank_vault"
   }
  }
- coords 4364.919 13.053 10656.451
+ coords 4364.919 13.097 10656.451
  angleY 173
 }
 GenericEntity Fit_saint_philippe_bank_lf_money_bag : "{65DE48DCC1D4DD01}Prefabs/Items/Roleplay/LF_MoneyBag.et" {
@@ -51,7 +51,7 @@ GenericEntity Fit_saint_philippe_bank_lf_money_bag : "{65DE48DCC1D4DD01}Prefabs/
    m_sId "bank_vault"
   }
  }
- coords 4363.182 13.053 10658.988
+ coords 4363.182 13.097 10658.988
  angleY 173
 }
 GenericEntity Fit_saint_philippe_bank_lf_locker_bank : "{271A5DA917F4DF47}Prefabs/Props/Lockers/LF_LockerBank.et" {
