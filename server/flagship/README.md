@@ -18,6 +18,12 @@ The two files the Life Framework | Everon 1989 (Alpha) server runs on, kept in g
 
 `scenarioId` and `game.mods` equal `server/example/server.json`; change them there first.
 
+## Alpha pacing (alpha only, remove for a live server)
+
+| Key | Alpha | Shipped | Effect |
+|---|---|---|---|
+| `houses.salePercent` | 50 | 100 | homes and plots sell at half price: cottage $2000, cheapest plot $1400 |
+
 ## Host-only values (never in this folder)
 
 | Value | Where it lives instead |

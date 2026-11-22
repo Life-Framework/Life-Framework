@@ -42,5 +42,8 @@
       5,
       1
     ]
+  },
+  "houses": {
+    "salePercent": 50
   }
 }

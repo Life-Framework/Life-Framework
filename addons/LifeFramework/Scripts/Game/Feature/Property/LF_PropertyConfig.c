@@ -293,7 +293,7 @@ class LF_PropertyConfig
 		if (!house)
 			return 0;
 
-		return LF_Utils.MaxInt(0, house.m_iPrice);
+		return LF_HousesConfig.SalePrice(house.m_iPrice);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -370,7 +370,7 @@ class LF_PropertyConfig
 		if (!plot)
 			return 0;
 
-		return LF_Utils.MaxInt(0, plot.m_iPrice);
+		return LF_HousesConfig.SalePrice(plot.m_iPrice);
 	}
 
 	//------------------------------------------------------------------------------------------------
