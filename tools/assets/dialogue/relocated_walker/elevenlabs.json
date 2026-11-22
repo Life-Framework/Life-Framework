@@ -1,0 +1,63 @@
+{
+  "id": "relocated_walker",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "438bd686550067c2",
+      "date": "2026-11-22",
+      "voice_id": "V2aW90aP6L5wBvSqWbDm",
+      "voice_name": "Real Jeremy - Conversational",
+      "model": "eleven_multilingual_v2",
+      "text": "Sorry, we have only just come off the bus. Is this Saint-Philippe? They said someone would meet us.",
+      "chars": 99,
+      "chars_total": 40,
+      "request_id": "N6jPto53iME6YlcaoIot",
+      "seconds": 4.37,
+      "mouth": "1499745774889948422767345399953100000003854863277257897210000004846843889888499898431000"
+    },
+    "about_from": {
+      "hash": "0adcbbab316edbaa",
+      "date": "2026-11-22",
+      "voice_id": "V2aW90aP6L5wBvSqWbDm",
+      "voice_name": "Real Jeremy - Conversational",
+      "model": "eleven_multilingual_v2",
+      "text": "From near the Zone. They gave us one suitcase each and a paper with an address on it. That is all of it, here.",
+      "chars": 110,
+      "chars_total": 44,
+      "request_id": "K5qFoBcQMmS8AMXwQjiF",
+      "seconds": 5.74,
+      "mouth": "3299899996965799988631100001264694952797447424644462455625762655546653697465564210000000012898853599994531014652100"
+    },
+    "about_help": {
+      "hash": "d71c595a5f620eeb",
+      "date": "2026-11-22",
+      "voice_id": "V2aW90aP6L5wBvSqWbDm",
+      "voice_name": "Real Jeremy - Conversational",
+      "model": "eleven_multilingual_v2",
+      "text": "Just point us at the town hall, if you would. The clerk is meant to have our names and a key.",
+      "chars": 93,
+      "chars_total": 37,
+      "request_id": "QG3vnfMvFpdK75WJmBqt",
+      "seconds": 4.33,
+      "mouth": "472119985963955528774299721114214346774100000042149944625675453996986655672445215741000"
+    },
+    "bye": {
+      "hash": "62ff95b272eeea7f",
+      "date": "2026-11-22",
+      "voice_id": "V2aW90aP6L5wBvSqWbDm",
+      "voice_name": "Real Jeremy - Conversational",
+      "model": "eleven_multilingual_v2",
+      "text": "Thank you. Thank you, really.",
+      "chars": 29,
+      "chars_total": 12,
+      "request_id": "BLbt3YURLlw0CubiJEMa",
+      "seconds": 0.87,
+      "mouth": "762552993769952000"
+    }
+  },
+  "voice": {
+    "id": "V2aW90aP6L5wBvSqWbDm",
+    "name": "Real Jeremy - Conversational",
+    "source": "voice library"
+  }
+}

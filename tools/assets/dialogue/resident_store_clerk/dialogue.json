@@ -3,40 +3,123 @@
   "name": "ResidentStoreClerk",
   "addon": "LF_Everon1989",
   "speaker_key": "#LF-Resident_store_clerk_Name",
-  "text_only": true,
+  "voice": {
+    "id": "WUsdxD2jzqOBENDBdPBm",
+    "sex": "male",
+    "name": "Kevin Nitcheu",
+    "public_owner_id": "d62b054878cbe4c51cff316bf9bbe245cab3c9f135e6474368a9bed2b4d70306",
+    "why": "A brisk middle-aged French voice: Pierre Vasseur at the general store counter.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1.02
+    }
+  },
+  "budget_chars": 1300,
   "hear_range_m": 8,
   "start": "greet",
   "nodes": [
-    { "id": "greet_refuses", "line": "greet_refuses" },
-    { "id": "greet_wary", "line": "greet_wary", "options": [{ "text": "bye", "next": "bye" }] },
-    { "id": "greet_neutral", "line": "greet", "options_from": "greet" },
-    { "id": "greet_friendly", "line": "greet_friendly", "options_from": "greet" },
-    { "id": "greet_regular", "line": "greet_regular", "options_from": "greet" },
+    {
+      "id": "greet_refuses",
+      "line": "greet_refuses"
+    },
+    {
+      "id": "greet_wary",
+      "line": "greet_wary",
+      "options": [
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "greet_neutral",
+      "line": "greet",
+      "options_from": "greet"
+    },
+    {
+      "id": "greet_friendly",
+      "line": "greet_friendly",
+      "options_from": "greet"
+    },
+    {
+      "id": "greet_regular",
+      "line": "greet_regular",
+      "options_from": "greet"
+    },
     {
       "id": "greet",
       "line": "greet",
       "options": [
-        { "text": "work", "next": "work" },
-        { "text": "ferry", "next": "ferry" },
-        { "text": "town", "next": "town" },
-        { "text": "bye", "next": "bye" }
+        {
+          "text": "work",
+          "next": "work"
+        },
+        {
+          "text": "ferry",
+          "next": "ferry"
+        },
+        {
+          "text": "town",
+          "next": "town"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
       ]
     },
-    { "id": "work", "line": "about_work", "options_from": "greet" },
-    { "id": "ferry", "line": "about_ferry", "options_from": "greet" },
-    { "id": "town", "line": "about_town", "options_from": "greet" },
-    { "id": "bye", "line": "bye" }
+    {
+      "id": "work",
+      "line": "about_work",
+      "options_from": "greet"
+    },
+    {
+      "id": "ferry",
+      "line": "about_ferry",
+      "options_from": "greet"
+    },
+    {
+      "id": "town",
+      "line": "about_town",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
   ],
   "lines": {
-    "greet_refuses": { "text": "You are not welcome at my counter. Go on." },
-    "greet_wary": { "text": "I have my eye on you. Pay for what you take." },
-    "greet": { "text": "Pierre Vasseur, general store. If we do not have it, the ferry might bring it on Thursday." },
-    "greet_friendly": { "text": "Good to see you. The bread came in fresh this morning." },
-    "greet_regular": { "text": "My best customer! I put a tin of the good coffee aside for you." },
-    "about_work": { "text": "Tins, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass." },
-    "about_ferry": { "text": "Everything comes by the ferry. When the weather turns the shelves go bare, and everybody blames me." },
-    "about_town": { "text": "Quiet, mostly. Since the new families came there is more bread to bake and more faces to learn." },
-    "bye": { "text": "Mind how you go." }
+    "greet_refuses": {
+      "text": "You are not welcome at my counter. Go on."
+    },
+    "greet_wary": {
+      "text": "I have my eye on you. Pay for what you take."
+    },
+    "greet": {
+      "text": "Pierre Vasseur, general store. If we do not have it, the ferry might bring it on Thursday."
+    },
+    "greet_friendly": {
+      "text": "Good to see you. The bread came in fresh this morning."
+    },
+    "greet_regular": {
+      "text": "My best customer! I put a tin of the good coffee aside for you."
+    },
+    "about_work": {
+      "text": "Tins, rope, batteries, cigarettes. Half the island comes through my door before noon. Pay at the till and do not lean on the glass."
+    },
+    "about_ferry": {
+      "text": "Everything comes by the ferry. When the weather turns the shelves go bare, and everybody blames me."
+    },
+    "about_town": {
+      "text": "Quiet, mostly. Since the new families came there is more bread to bake and more faces to learn."
+    },
+    "bye": {
+      "text": "Mind how you go."
+    }
   },
   "replies": {
     "work": "What does the store sell?",

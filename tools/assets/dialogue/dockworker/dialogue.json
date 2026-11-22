@@ -3,7 +3,21 @@
   "name": "Dockworker",
   "addon": "LF_Everon1989",
   "speaker_key": "#LF-Dialogue_Dockworker_Name",
-  "text_only": true,
+  "voice": {
+    "id": "BOoKlbsve2J6x9UnqHOS",
+    "sex": "male",
+    "name": "Delgado Stephane",
+    "public_owner_id": "af484f19c3bc65655607a6a43b94fbd1c60053129730c016b598dde3dc1279ca",
+    "why": "A rough middle-aged French voice for a working docker: brusque, a little tired.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.45,
+      "similarity_boost": 0.75,
+      "style": 0.25,
+      "speed": 1
+    }
+  },
+  "budget_chars": 700,
   "hear_range_m": 6,
   "start": "greet",
   "nodes": [
@@ -11,20 +25,48 @@
       "id": "greet",
       "line": "greet",
       "options": [
-        { "text": "cargo", "next": "cargo" },
-        { "text": "work", "next": "work" },
-        { "text": "bye", "next": "bye" }
+        {
+          "text": "cargo",
+          "next": "cargo"
+        },
+        {
+          "text": "work",
+          "next": "work"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
       ]
     },
-    { "id": "cargo", "line": "about_cargo", "options_from": "greet" },
-    { "id": "work", "line": "about_work", "options_from": "greet" },
-    { "id": "bye", "line": "bye" }
+    {
+      "id": "cargo",
+      "line": "about_cargo",
+      "options_from": "greet"
+    },
+    {
+      "id": "work",
+      "line": "about_work",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
   ],
   "lines": {
-    "greet": { "text": "Mind your feet, the crane swings wide. You want something, or are you just watching us sweat?" },
-    "about_cargo": { "text": "Flour, diesel, machine parts. What is in the other crates is the harbour master's business, and he does not share." },
-    "about_work": { "text": "Ask the harbour master. He hires by the day when a boat comes in, and pays when the boat is empty." },
-    "bye": { "text": "Off you go, then." }
+    "greet": {
+      "text": "Mind your feet, the crane swings wide. You want something, or are you just watching us sweat?"
+    },
+    "about_cargo": {
+      "text": "Flour, diesel, machine parts. What is in the other crates is the harbour master's business, and he does not share."
+    },
+    "about_work": {
+      "text": "Ask the harbour master. He hires by the day when a boat comes in, and pays when the boat is empty."
+    },
+    "bye": {
+      "text": "Off you go, then."
+    }
   },
   "replies": {
     "cargo": "What came in on the boat?",

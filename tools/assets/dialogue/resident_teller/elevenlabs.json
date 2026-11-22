@@ -1,0 +1,128 @@
+{
+  "id": "resident_teller",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet_refuses": {
+      "hash": "0d2b955fd52fd102",
+      "date": "2026-11-22",
+      "voice_id": "eBAnahjDCcJXJUL16cEY",
+      "voice_name": "JP - Social media",
+      "model": "eleven_multilingual_v2",
+      "text": "I count other people's money all day. I will not waste my words on you.",
+      "chars": 71,
+      "chars_total": 28,
+      "request_id": "UEJ9pDaBecv0Lylyju01",
+      "seconds": 5.35,
+      "mouth": "797168998339998237257862666746774664422111111111111111111111111115888998798865998615786999445444442111111000"
+    },
+    "greet_wary": {
+      "hash": "5e1455e2e9d9a0b3",
+      "date": "2026-11-22",
+      "voice_id": "eBAnahjDCcJXJUL16cEY",
+      "voice_name": "JP - Social media",
+      "model": "eleven_multilingual_v2",
+      "text": "Mm. I remember you. Mind your manners and we will get along.",
+      "chars": 60,
+      "chars_total": 24,
+      "request_id": "hxjmhpsNbFgz6dyHxJkv",
+      "seconds": 4.04,
+      "mouth": "199987311111111111139999996656552111499968996655443111498697566536443441111111100"
+    },
+    "greet": {
+      "hash": "a49e28f964f9d969",
+      "date": "2026-11-22",
+      "voice_id": "eBAnahjDCcJXJUL16cEY",
+      "voice_name": "JP - Social media",
+      "model": "eleven_multilingual_v2",
+      "text": "Good day. I am off the counter just now, but I don't bite. Helene, from the bank.",
+      "chars": 81,
+      "chars_total": 32,
+      "request_id": "b2lUyGbq8kckWydoj8y0",
+      "seconds": 6.35,
+      "mouth": "1396796621111111111111118998785287598757884786476655211111132858858775766254111111111111112999997774111121165999959744211112100"
+    },
+    "greet_friendly": {
+      "hash": "6d95a0e2afa76b45",
+      "date": "2026-11-22",
+      "voice_id": "eBAnahjDCcJXJUL16cEY",
+      "voice_name": "JP - Social media",
+      "model": "eleven_multilingual_v2",
+      "text": "Ah, hello again. Your account is in better shape than most, you know.",
+      "chars": 69,
+      "chars_total": 28,
+      "request_id": "0CeNbHElJuWvztxVKDxL",
+      "seconds": 3.93,
+      "mouth": "9998611119899864444321011168978337654567654993656676114555655623443331111111100"
+    },
+    "greet_regular": {
+      "hash": "820984d20b4f534b",
+      "date": "2026-11-22",
+      "voice_id": "eBAnahjDCcJXJUL16cEY",
+      "voice_name": "JP - Social media",
+      "model": "eleven_multilingual_v2",
+      "text": "There you are! Sit down a minute. The bank can wait.",
+      "chars": 52,
+      "chars_total": 21,
+      "request_id": "n3YqWkH9uwjixMcAwQZ2",
+      "seconds": 2.43,
+      "mouth": "9999986799887676755565544344100014436522432331100"
+    },
+    "about_work": {
+      "hash": "baf2097b7eea96e7",
+      "date": "2026-11-22",
+      "voice_id": "eBAnahjDCcJXJUL16cEY",
+      "voice_name": "JP - Social media",
+      "model": "eleven_multilingual_v2",
+      "text": "I keep the counter at the First Bank of Everon. Deposits, withdrawals, and listening to the farmers argue about the price of feed.",
+      "chars": 130,
+      "chars_total": 52,
+      "request_id": "jDP4dWKm8Jope9hZp7FU",
+      "seconds": 8.58,
+      "mouth": "3999689636838876578854645875179744763115867466442111111111111131227199978477411111121111139941599999897632115888789357774357537877988379933766498546257998765336653111111100"
+    },
+    "about_advice": {
+      "hash": "c75bf3039f080969",
+      "date": "2026-11-22",
+      "voice_id": "eBAnahjDCcJXJUL16cEY",
+      "voice_name": "JP - Social media",
+      "model": "eleven_multilingual_v2",
+      "text": "Bank your pay the day you get it. What sits in your pocket can walk off. What sits with us stays yours.",
+      "chars": 103,
+      "chars_total": 41,
+      "request_id": "wT26L4GeE5HNopUSehs3",
+      "seconds": 6.67,
+      "mouth": "88648724977668658877875989972377499639666723562553111159879826663112221111111111111111599599995938959976752111166397654433222111111000"
+    },
+    "about_town": {
+      "hash": "2c0ba76948fc7f22",
+      "date": "2026-11-22",
+      "voice_id": "eBAnahjDCcJXJUL16cEY",
+      "voice_name": "JP - Social media",
+      "model": "eleven_multilingual_v2",
+      "text": "Saint-Philippe gossips faster than the telephone. If you want to know a thing, sit at the cafe and wait.",
+      "chars": 104,
+      "chars_total": 42,
+      "request_id": "wFJ89xVv2XqZfv8hHasH",
+      "seconds": 6.49,
+      "mouth": "7989987358798227977312354799896426733878746446654346543445412211111111279588788788888973886538997957756763577621111111199878635200"
+    },
+    "bye": {
+      "hash": "928a5430663f542f",
+      "date": "2026-11-22",
+      "voice_id": "eBAnahjDCcJXJUL16cEY",
+      "voice_name": "JP - Social media",
+      "model": "eleven_multilingual_v2",
+      "text": "Good day to you.",
+      "chars": 16,
+      "chars_total": 6,
+      "request_id": "5kliJrJqqOY8mUIcVpEP",
+      "seconds": 1.09,
+      "mouth": "1697998464555111111100"
+    }
+  },
+  "voice": {
+    "id": "eBAnahjDCcJXJUL16cEY",
+    "name": "JP - Social media",
+    "source": "voice library"
+  }
+}
