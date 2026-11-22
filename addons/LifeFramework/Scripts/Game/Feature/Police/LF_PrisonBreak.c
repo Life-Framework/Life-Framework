@@ -89,6 +89,14 @@ class LF_PrisonBreak
 		if (!LF_Jail.IsDoorTarget(targetId))
 			return;
 
+		// A two-layer jail (LF_JailBreak) frees the prisoners itself: no window on top of it.
+		if (LF_JailBreak.IsTwoLayer())
+		{
+			Starters().Remove(targetId);
+			StarterBodies().Remove(targetId);
+			return;
+		}
+
 		string starterUid;
 		Starters().Find(targetId, starterUid);
 		EntityID bodyId = EntityID.INVALID;

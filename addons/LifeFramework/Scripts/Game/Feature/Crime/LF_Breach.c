@@ -257,6 +257,22 @@ class LF_Breach
 			return false;
 		}
 
+		// A jail layer (LF_JailBreak): no breach from inside, the outer door first, the cooldown. Refused
+		// before the charge is taken, so a refused arm costs nothing.
+		string jailRefusal = LF_JailBreak.ArmRefusal(targetId, playerUid, System.GetUnixTime());
+		if (!jailRefusal.IsEmpty())
+		{
+			LF_Debug.Warn(LF_JailBreak.FEATURE, string.Format("arm on %1 refused for %2: %3", targetId, playerUid, jailRefusal));
+			IEntity refused = suspect;
+			if (!refused)
+				refused = chargeCarrier;
+
+			if (refused)
+				LF_Utils.NotifyEntity(refused, jailRefusal, "", 4.0);
+
+			return false;
+		}
+
 		if (!ChargePrefabLoads())
 			return false;
 
@@ -273,6 +289,10 @@ class LF_Breach
 		string offence = target.m_sOffence;
 		if (offence.IsEmpty())
 			offence = LF_WantedReports.OFFENCE_BREAK_IN;
+
+		offence = LF_JailBreak.OffenceFor(targetId, offence);
+		target.m_bLoud = LF_JailBreak.IsLoud(targetId, target.m_bLoud);
+		target.m_fFuseSeconds = LF_JailBreak.FuseFor(targetId, target.m_fFuseSeconds);
 
 		LF_CrimeCatalog.ApplyWanted(account, playerUid, offence);
 		LF_PlayerAccountManager accountManager = LF_PlayerAccountManager.GetInstance();
@@ -505,6 +525,7 @@ class LF_Breach
 		LF_Debug.Log("Breach", string.Format("lock opened: %1", target.m_sTargetId));
 		LeaveEvidence(target);
 		LF_PrisonBreak.OnOpened(target.m_sTargetId);
+		LF_JailBreak.OnOpened(target.m_sTargetId, target.m_sArmedBy, System.GetUnixTime());
 		if (Replication.IsServer())
 			LF_EventBus.Publish(LF_OnBreachOpened.Create(target.m_sTargetId, target.m_sArmedBy));
 	}

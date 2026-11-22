@@ -15,6 +15,7 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 | **Emote menu** | **F1** | |
 | **Give up** while downed (hold, after 30 seconds) | hold **X** | hold **Y** |
 | Mark a moment for a **clip** | **F8** | **right bumper + View** |
+| Open the **welcome guide** again | **F3** | **right bumper + Y** |
 
 ## Vehicles
 
@@ -31,6 +32,14 @@ You can change every one of them in **Settings, Controls, Life Framework**.
 | **Split** a stack | right mouse button | **Menu** |
 | **Quick split** | hold the right mouse button | hold **Menu** |
 | **Move a quantity** | hold **Left Alt** | hold **X** |
+
+## Talking to people
+
+| Action | Keyboard | Gamepad |
+|---|---|---|
+| Pick an answer | the number shown beside it (**1** to **4**) | left stick up or down, then **A** |
+| Say **goodbye** and end the talk | **0** (the last row is always "0. Goodbye"), or **Esc** | **B** |
+| Skip what they are saying | **Enter** | **A** |
 
 ## Keypads (ATM)
 

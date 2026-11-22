@@ -4,7 +4,7 @@
 
 * **Cash** is what you carry. Shops, the fuel pumps and homes take cash. Cash in your pocket is **lost if you die**
   (it stays on your body for someone to search).
-* **Bank** money is safe. Your balance starts at **$1,250**: enough for the cheapest car, the driving licence, a pickaxe, an axe and an entrenching tool, with a little over for fuel and food. Every car costs more than $500, so cars are paid **from the bank**; deposit first.
+* **Bank** money is safe. Your balance starts at **$2,000**: enough for the cheapest car, the driving licence, a pickaxe, an axe and an entrenching tool, plus three $150 respawn bills if you die, with a little over for fuel and food. Every car costs more than $500, so cars are paid **from the bank**; deposit first.
 * A small **benefit** of $50 is paid every 20 minutes while your money is almost gone, so nobody is ever stuck.
 * Job pay arrives as **cash**. Police and medic pay is handed out in cash when you clock out. Carry less, bank more.
 

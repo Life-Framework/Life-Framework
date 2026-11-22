@@ -1,0 +1,28 @@
+GenericEntity : "{641D6F151390FD47}Prefabs/Props/Furniture/PhoneTable_01_grey.et" {
+ ID "E3779BF6255FF3FB"
+ components {
+  ActionsManagerComponent "{A9CC02918B288980}" {
+   ActionContexts {
+    UserActionContext "{35AA1071407FF8CD}" {
+     ContextName "LF_JailBailPhone"
+     Position PointInfo "{5557418E745E5AB0}" {
+      Offset 0 0.08 0
+     }
+     Radius 1.2
+    }
+   }
+   additionalActions {
+    LF_JailBailAction "{E0A06F5B0D67B24E}" {
+     ParentContextList {
+      "LF_JailBailPhone"
+     }
+     UIInfo UIInfo "{CEE61F1562C9EEE6}" {
+      Name "#LF-JailBail_Action"
+      Description "#LF-JailBail_Desc"
+     }
+     "Sort Priority" 1
+    }
+   }
+  }
+ }
+}

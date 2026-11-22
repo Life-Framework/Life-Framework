@@ -4984,6 +4984,26 @@ StringTable {
      Target_en_us "Hugo Valmy"
      Comment "Townsfolk (The shipment, #3804): the go-between's name, the speaker line of his dialogue."
     }
+    CustomStringTableItem "{7D258D65CE0FBAB7}" {
+     Id "LF-WelcomeGuide_Body1a"
+     Target_en_us "You are new on Everon and carry no papers. Walk south from the hostel to the town hall on the square in Saint-Philippe: the registry clerk files your papers, hands you your ID card and gives you your first errands."
+     Comment "Everon pack override of the welcome guide page 1 paragraph: where the clerk is."
+    }
+    CustomStringTableItem "{90AC4E70357D8828}" {
+     Id "LF-WelcomeGuide_Body2a"
+     Target_en_us "You start with $1,000 in the bank. Cash in your pocket is lost when you die; money in the bank is not. Put cash in or take it out at an ATM (by the bank, on the east side, on the harbour) or at the bank teller."
+     Comment "Everon pack override of the welcome guide page 2 paragraph: the starting balance and the Saint-Philippe ATMs."
+    }
+    CustomStringTableItem "{D9FCAED1B0FE1333}" {
+     Id "LF-WelcomeGuide_Body2b"
+     Target_en_us "Starter jobs pay at once: a courier run from the post office pays $40 a parcel, a taxi fare about $100, a bin round $100. The notice board on the square lists every shop and service in Saint-Philippe, each with a waypoint button."
+     Comment "Everon pack override of the welcome guide page 2 paragraph: the starter jobs and the town board."
+    }
+    CustomStringTableItem "{F17D37DC02E7BD4B}" {
+     Id "LF-WelcomeGuide_Body4a"
+     Target_en_us "Police officers and medics are players. Anyone can sign on: press F at the duty desk in the police station on the main street, or in the clinic beside the taxi rank, and clock in. Pay is handed over in cash when you clock out."
+     Comment "Everon pack override of the welcome guide page 4 paragraph: where the duty desks are."
+    }
     CustomStringTableItem "{AEFD273B4E3FE2B7}" {
      Id "LF_Everon1989_AlphaNotice"
      Target_en_us "Alpha: progress can be wiped, with 24 hours' notice on Discord"

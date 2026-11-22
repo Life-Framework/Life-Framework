@@ -6,7 +6,15 @@
   framing for the whole talk (over the player's shoulder, the NPC from about the chest up: no zoom on a
   line, no cut); the line is a caption at the bottom with
   a recorded voice; replies are a numbered list (1 to 4, or up, down and confirm; Back leaves;
-  confirm skips a line). Movement, view and weapon controls are held and the HUD is hidden
+  confirm skips a line). The last row is always **"0. Goodbye"** (2026-11-22: the maintainer
+  asked for numbers on everything including the way out): key 0 leaves at any moment, up/down also walks onto it
+  and confirm picks it, Back (Escape, B) leaves too. The numbers, the digit-to-row map and the focus wrap are
+  `LF_DialogueKeys` (test `dialogue/numbers`); Goodbye is a client-only row (`LF_DialogueScene.Goodbye`, the
+  same `Close` as Back: controls, camera and HUD come back, the server frees the NPC). A node still holds at
+  most four replies, so the screen is never past five rows. Pad: left stick up/down and A, B leaves (the menu
+  actions; the d-pad is never bound). A node's own farewell reply (any reply with next `bye` and no action,
+  `LF_DialogueKeys.IsFarewell`, 104 of them) gets no row: "0. Goodbye" picks it, so the NPC still says its voiced goodbye and
+  no menu shows two (a node left with only that reply shows just Goodbye). A reply that goes to `bye` with an action stays a row. Open: the scene has no mouse cursor, so a click does not pick a row. Movement, view and weapon controls are held and the HUD is hidden
   for the length of it. Only the talker's client changes.
 - The server owns the conversation (`LF_Dialogue`): the client sends an NPC, then a reply
   index; the server checks reach (4 m), that it offered that reply, and its condition again, runs

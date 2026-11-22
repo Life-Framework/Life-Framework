@@ -4505,14 +4505,19 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "My hands, I cannot stop my hands. It is coming, it is almost open, please..."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
+    CustomStringTableItem "{D7641543B9FD8567}" {
+     Id "LF-Dialogue_Goodbye"
+     Target_en_us "Goodbye"
+     Comment "Conversation scene: the last numbered row, always 0, that ends the talk with any NPC."
+    }
     CustomStringTableItem "{857383630EAB1A5D}" {
      Id "LF-Dialogue_HintChoose"
-     Target_en_us "1 to 4, or Up, Down and Confirm: answer    Back: leave"
+     Target_en_us "Press the number, or Up, Down and Confirm: answer    0 or Back: goodbye"
      Comment "Conversation scene, small hint under the numbered replies."
     }
     CustomStringTableItem "{B3D8A9678B34F5A7}" {
      Id "LF-Dialogue_HintLine"
-     Target_en_us "Confirm: skip    Back: leave"
+     Target_en_us "Confirm: skip    0 or Back: goodbye"
      Comment "Conversation scene, small hint under the caption while the NPC speaks. Confirm and Back are the menu confirm and back keys."
     }
     CustomStringTableItem "{6456C75F481973C0}" {
@@ -7588,6 +7593,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Police scanner"
      Comment "Item name of the fence police scanner (#253)."
     }
+    CustomStringTableItem "{8E63383FBBBFBE83}" {
+     Id "LF-JailBail_Action"
+     Target_en_us "Pay bail"
+     Comment "Action on the jail bail phone."
+    }
+    CustomStringTableItem "{0D1924F8D487CAE9}" {
+     Id "LF-JailBail_Desc"
+     Target_en_us "Pay your bail from the bank and walk out"
+     Comment "Action description on the jail bail phone."
+    }
+    CustomStringTableItem "{5E7B829175406CAC}" {
+     Id "LF-JailBail_NoAccount"
+     Target_en_us "There is no bank account to pay bail from."
+     Comment "Toast: the prisoner has no bank account."
+    }
+    CustomStringTableItem "{83D41EBE07474BB4}" {
+     Id "LF-JailBail_NotServing"
+     Target_en_us "You are not serving a sentence."
+     Comment "Toast: someone not in custody used the bail phone."
+    }
+    CustomStringTableItem "{C9FBAB97BE1A14A2}" {
+     Id "LF-JailBail_Off"
+     Target_en_us "Bail is not offered here."
+     Comment "Toast and offer reason: the owner switched bail off."
+    }
+    CustomStringTableItem "{4C2DDD8EF971F0BA}" {
+     Id "LF-JailBail_Paid"
+     Target_en_us "Bail of %1 paid from your bank. You are free to go."
+     Comment "Toast: bail paid. %1 = the bail."
+    }
+    CustomStringTableItem "{65A1EF059B6C37A4}" {
+     Id "LF-JailBail_TooPoor"
+     Target_en_us "Bail is %1. Your bank cannot cover it."
+     Comment "Toast: the bank holds less than the bail. %1 = the bail."
+    }
+    CustomStringTableItem "{7DAABAD2EC8E0E3D}" {
+     Id "LF-JailBreak_Cooldown"
+     Target_en_us "The jail was broken open not long ago. Wait before you try again."
+     Comment "Toast: the jail doors are inside the cooldown after a break."
+    }
+    CustomStringTableItem "{0AE487F4A2029D85}" {
+     Id "LF-JailBreak_FromInside"
+     Target_en_us "You can't set a charge from inside the cell."
+     Comment "Toast: a serving prisoner tried to charge a jail door."
+    }
+    CustomStringTableItem "{A5E0EB1EBEB9C3DF}" {
+     Id "LF-JailBreak_OuterFirst"
+     Target_en_us "Blow the outer door first."
+     Comment "Toast and offer reason: the cell door waits until the jail's outer door is open."
+    }
     CustomStringTableItem "{B248F0FEF12E26A8}" {
      Id "LF-JailSlip_Blank"
      Target_en_us "A blank sentence slip."
@@ -9742,6 +9797,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Murder"
      Comment "Offence on a wanted poster: the suspect killed a person (M1-27)."
     }
+    CustomStringTableItem "{E95567BA027671E4}" {
+     Id "LF-Offence_PrisonBreach"
+     Target_en_us "Breaking prisoners out"
+     Comment "Offence: blew the jail cells open to free the prisoners (two-layer jailbreak)."
+    }
     CustomStringTableItem "{467D009B1D72E627}" {
      Id "LF-Offence_RestrictedItem"
      Target_en_us "Carrying restricted equipment"
@@ -11648,7 +11708,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8D29DF46F50BC183}" {
      Id "LF-Quest_ArrivalRegister_Desc"
-     Target_en_us "You are new in town and carry no papers. The registry clerk keeps the register: talk to them and they hand you your ID card."
+     Target_en_us "You are new in {town} and carry no papers. The registry clerk keeps the register: talk to them and they hand you your ID card."
      Comment "Arrival chain step 1: talk to the clerk, receive the ID card."
     }
     CustomStringTableItem "{002662BFCD8D20B3}" {
@@ -14747,6 +14807,141 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Weapon_Taser_Name"
      Target_en_us "Taser"
      Comment "Inventory name of the police stun pistol."
+    }
+    CustomStringTableItem "{092A6842A1A3E19E}" {
+     Id "LF-WelcomeGuide_Body1a"
+     Target_en_us "You are new in {town} and carry no papers. Your first stop is the registry clerk: he files your papers, hands you your ID card and gives you your first errands."
+     Comment "Welcome guide page 1, first paragraph: get the ID card at the clerk. Core text, no place names (the pack overrides it)."
+    }
+    CustomStringTableItem "{0C5F82D29C7B928C}" {
+     Id "LF-WelcomeGuide_Body1b"
+     Target_en_us "The quest panel says what to do next, and a waypoint with the distance shows the way to each errand. For your first minutes nobody can rob you."
+     Comment "Welcome guide page 1, second paragraph: the arrival quest marks and the grace period."
+    }
+    CustomStringTableItem "{74258C62AD985DC2}" {
+     Id "LF-WelcomeGuide_Body2a"
+     Target_en_us "Cash in your pocket is lost when you die; money in the bank is not. Put cash in or take it out at any ATM or at the bank teller."
+     Comment "Welcome guide page 2, first paragraph: cash and the bank."
+    }
+    CustomStringTableItem "{6C722FC34D331592}" {
+     Id "LF-WelcomeGuide_Body2b"
+     Target_en_us "Starter jobs pay at once. A courier run from the post office pays for every parcel you deliver, and the notice board lists every place in {town} that hires, each with a waypoint button."
+     Comment "Welcome guide page 2, second paragraph: starter jobs. Core text, no place names (the pack overrides it)."
+    }
+    CustomStringTableItem "{96A07E407C8D2B73}" {
+     Id "LF-WelcomeGuide_Body3a"
+     Target_en_us "Press M to open the map. If nothing opens, take the folded paper map out of your pack and hold it."
+     Comment "Welcome guide page 3, first paragraph: opening the map."
+    }
+    CustomStringTableItem "{B73B6D99D63DC09B}" {
+     Id "LF-WelcomeGuide_Body3b"
+     Target_en_us "Shift + Left click on the map (gamepad: hold Y, press A) sets your own waypoint; it stands in the world with the distance to it. There is one at a time. Backspace (gamepad: double-tap Y) clears it."
+     Comment "Welcome guide page 3, second paragraph: setting a waypoint on the map."
+    }
+    CustomStringTableItem "{F5C02DE4953A73B3}" {
+     Id "LF-WelcomeGuide_Body4a"
+     Target_en_us "{Police} officers and {medic:plural} are players. Anyone can sign on: press F at the duty desk in the {police} station or the clinic and clock in. Pay is handed over in cash when you clock out."
+     Comment "Welcome guide page 4, first paragraph: going on duty. Core text, no place names (the pack overrides it)."
+    }
+    CustomStringTableItem "{1C067E60B6FF0E64}" {
+     Id "LF-WelcomeGuide_Body4b"
+     Target_en_us "If you are shot you go down, not dead. A {medic} on duty can revive you; otherwise you wake in the hospital with a bill to pay at its till."
+     Comment "Welcome guide page 4, second paragraph: downed, revive, hospital bill."
+    }
+    CustomStringTableItem "{DE7156D698BB43DD}" {
+     Id "LF-WelcomeGuide_Body5a"
+     Target_en_us "The player manual explains jobs, homes, shops, the {police} and the {medic:plural} in full: life-framework.org/manual/. The server rules are in the Handbook in the pause menu (Escape)."
+     Comment "Welcome guide page 5, first paragraph: the manual link and the handbook."
+    }
+    CustomStringTableItem "{A2958ED54A2031BF}" {
+     Id "LF-WelcomeGuide_Body5b"
+     Target_en_us "Press F3 (gamepad: right bumper and Y) to open this guide again at any time. You can change the key in Settings, Controls."
+     Comment "Welcome guide page 5, second paragraph: the reopen key (LF_WelcomeGuide, chimeraInputCommon.conf)."
+    }
+    CustomStringTableItem "{B6132A753F1BF8B9}" {
+     Id "LF-WelcomeGuide_Close"
+     Target_en_us "Close"
+     Comment "Welcome guide: close button; the guide opens by itself again at the next join until Don't show again."
+    }
+    CustomStringTableItem "{AABF7919DBA9BDBB}" {
+     Id "LF-WelcomeGuide_Dismiss"
+     Target_en_us "Don't show again"
+     Comment "Welcome guide: button that stops the guide opening by itself at join; the key still opens it."
+    }
+    CustomStringTableItem "{31AE6F2A1A2047DC}" {
+     Id "LF-WelcomeGuide_Dismissed"
+     Target_en_us "The guide will not open by itself again. Press F3 to read it."
+     Comment "Toast after Don't show again."
+    }
+    CustomStringTableItem "{08C7D7374201626B}" {
+     Id "LF-WelcomeGuide_Head1"
+     Target_en_us "FIRST STEPS"
+     Comment "Welcome guide page 1 heading."
+    }
+    CustomStringTableItem "{67E6BE787D1A987F}" {
+     Id "LF-WelcomeGuide_Head2"
+     Target_en_us "MONEY"
+     Comment "Welcome guide page 2 heading."
+    }
+    CustomStringTableItem "{8CBEE5B95BE40EC0}" {
+     Id "LF-WelcomeGuide_Head3"
+     Target_en_us "THE MAP"
+     Comment "Welcome guide page 3 heading."
+    }
+    CustomStringTableItem "{17589246A8C8CBDB}" {
+     Id "LF-WelcomeGuide_Head4"
+     Target_en_us "ON DUTY"
+     Comment "Welcome guide page 4 heading."
+    }
+    CustomStringTableItem "{B533A055F306522E}" {
+     Id "LF-WelcomeGuide_Head5"
+     Target_en_us "MORE HELP"
+     Comment "Welcome guide page 5 heading."
+    }
+    CustomStringTableItem "{B591033A5B47E1C2}" {
+     Id "LF-WelcomeGuide_Key"
+     Target_en_us "Open the welcome guide"
+     Comment "Key binding name in Settings, Controls (LF_WelcomeGuide)."
+    }
+    CustomStringTableItem "{BE1FAB450ACD3FB1}" {
+     Id "LF-WelcomeGuide_Next"
+     Target_en_us "NEXT"
+     Comment "Welcome guide: button to the next page."
+    }
+    CustomStringTableItem "{D6F6871887DCCEC0}" {
+     Id "LF-WelcomeGuide_Page"
+     Target_en_us "Page %1 of %2"
+     Comment "Welcome guide: page counter under the title; %1 is this page, %2 the number of pages."
+    }
+    CustomStringTableItem "{5393776CBA6F0043}" {
+     Id "LF-WelcomeGuide_Prev"
+     Target_en_us "PREVIOUS"
+     Comment "Welcome guide: button to the page before."
+    }
+    CustomStringTableItem "{F15FD8A39C7470A1}" {
+     Id "LF-WelcomeGuide_Title"
+     Target_en_us "WELCOME"
+     Comment "Welcome guide (new players): printed title of the sheet and the title of its toasts."
+    }
+    CustomStringTableItem "{5729CB5D596F7564}" {
+     Id "LF-WelcomeGuide_Waypoint"
+     Target_en_us "Set waypoint to the clerk"
+     Comment "Welcome guide page 1 button: puts the current arrival errand (the clerk, for a new character) on the map and screen."
+    }
+    CustomStringTableItem "{B63C6D3F62307294}" {
+     Id "LF-WelcomeGuide_WaypointNoStep"
+     Target_en_us "Your arrival errands are done. Open the map (M) to set your own waypoint."
+     Comment "Toast after Set waypoint when the arrival chain is finished."
+    }
+    CustomStringTableItem "{554234D75E7B1A34}" {
+     Id "LF-WelcomeGuide_WaypointRefused"
+     Target_en_us "No waypoint now. Try again in a moment."
+     Comment "Toast after Set waypoint when the server could not set it (no body, rate limit)."
+    }
+    CustomStringTableItem "{773A3E90266AFD18}" {
+     Id "LF-WelcomeGuide_WaypointSet"
+     Target_en_us "Waypoint set: %1."
+     Comment "Toast after Set waypoint; %1 is the name of the errand's place (the clerk, for a new character)."
     }
     CustomStringTableItem "{C37C0A98B9E81B46}" {
      Id "LF-Witness_AlreadyGiven"
