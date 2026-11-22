@@ -13,11 +13,11 @@ LF_NpcBaseEntity Fit_saint_philippe_bakery_bakery_clerk : "{8CCD224BC53CABE7}Pre
  coords 4478.84 12.696 10747.346
  angleY -100
 }
-GenericEntity Fit_saint_philippe_bakery_bakery_counter_1 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Fit_saint_philippe_bakery_bakery_counter_1 : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4478.136 12.729 10745.698
  angleY -100
 }
-GenericEntity Fit_saint_philippe_bakery_bakery_counter_2 : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
+GenericEntity Fit_saint_philippe_bakery_bakery_counter_2 : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
  coords 4477.875 12.729 10747.175
  angleY -100
 }
