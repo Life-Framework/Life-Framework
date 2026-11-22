@@ -2259,6 +2259,21 @@ StringTable {
      Target_en_us "Worn hand tool"
      Comment "Item name: worn hand tool (scrapyard, #3823)."
     }
+    CustomStringTableItem "{F3657E616B45CD7B}" {
+     Id "LF-JobMap_PostLoad"
+     Target_en_us "Saint-Philippe post office"
+     Comment "Map mark and waypoint label: where the postal van run starts."
+    }
+    CustomStringTableItem "{2D805DAE8C95747C}" {
+     Id "LF-JobMap_PostReturn"
+     Target_en_us "Saint-Philippe post office"
+     Comment "Map mark and waypoint label: where the postal van run returns the van."
+    }
+    CustomStringTableItem "{700F14984EF9057D}" {
+     Id "LF-JobMap_PostUnload"
+     Target_en_us "Meaux post office"
+     Comment "Map mark and waypoint label: where the postal van run delivers (Meaux)."
+    }
     CustomStringTableItem "{E5D6ABA466DA481F}" {
      Id "LF-Launder_Closed"
      Target_en_us "Nobody is washing money tonight."
@@ -2834,6 +2849,11 @@ StringTable {
      Target_en_us "Application to the Everon {Police}"
      Comment "Police application form title."
     }
+    CustomStringTableItem "{980F2E9B2C46E028}" {
+     Id "LF-Postal_Loaded"
+     Target_en_us "Sack loaded (%1). When all are in, drive to the Meaux post office, marked on your map."
+     Comment "Toast after a sack is loaded: names the destination office (pack override of the core row)."
+    }
     CustomStringTableItem "{7955F10958310917}" {
      Id "LF-Process_SmeltIronOre"
      Target_en_us "Smelt iron ore (3 make a bar)"
@@ -3278,6 +3298,11 @@ StringTable {
      Id "LF-Reg_Title"
      Target_en_us "Civil Registry of Everon, Form R-89"
      Comment "Registration form title on first arrival. A 1989 paper form."
+    }
+    CustomStringTableItem "{7F4E17D32E3F866C}" {
+     Id "LF-Reg_Welcome"
+     Target_en_us "Welcome to Everon, 1989. Sign the register and start your new life on the island: find work, earn a living and keep to the rules you just read."
+     Comment "Registration form welcome line (pack override of the neutral core row)."
     }
     CustomStringTableItem "{1357AE90EB122FE9}" {
      Id "LF-Resident_cafe_owner_Name"
