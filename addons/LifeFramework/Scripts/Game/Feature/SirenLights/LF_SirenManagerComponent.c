@@ -436,8 +436,9 @@ class LF_SirenManagerComponent : ScriptComponent
 			if (m_SoundComp && !ownSiren && mode.GetName() != "default")
 			{
 				SetSignal("animSelector", 1);
-				m_SoundComp.SoundEventBone("SOUND_VEHICLE_HORN", "Scene_Root");
+				AudioHandle horn = m_SoundComp.SoundEventBone("SOUND_VEHICLE_HORN", "Scene_Root");
 				SetSignal("animSelector", 0);
+				LF_Debug.Info("Siren", string.Format("siren sound SOUND_VEHICLE_HORN %1 for %2", m_SoundComp.IsHandleValid(horn), mode.GetSirenActive()));
 			}
 		}
 
