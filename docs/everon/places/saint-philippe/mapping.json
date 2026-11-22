@@ -305,8 +305,8 @@
     },
     "atms": {
       "drops": [
-        { "place": "saint-philippe", "building": "b79" },
-        { "place": "saint-philippe", "building": "b97" },
+        { "place": "saint-philippe", "building": "b79", "sideways": -0.8 },
+        { "place": "saint-philippe", "building": "b97", "sideways": 0.8 },
         { "place": "saint-philippe-dock", "building": "b08", "lift": -0.27 }
       ],
       "why": [

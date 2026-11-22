@@ -100,12 +100,16 @@ def to_linear(c):
 TEX = {}  # material name -> {"base_png": path, "tile_m": metres per texture repeat}
 
 
-def save_material(name, base, rough, metal, normal, tile_m):
+def save_material(name, base, rough, metal, normal, tile_m, em=None):
+    # em: the emitted light colour per pixel (sRGB), written as <name>_EM.tif for the emat's EmissiveMap.
     h, w = base.shape[:2]
     bcr = np.dstack([to_linear(base[:, :, :3]), rough])
     nmo = np.dstack([normal[:, :, 0], 1.0 - normal[:, :, 1], metal, np.ones((h, w))])
     write_tiff(os.path.join(out, "tex", name + "_BCR.tif"), (np.clip(bcr, 0, 1) * 255 + 0.5).astype(np.uint8))
     write_tiff(os.path.join(out, "tex", name + "_NMO.tif"), (np.clip(nmo, 0, 1) * 255 + 0.5).astype(np.uint8))
+    if em is not None:
+        emr = np.dstack([to_linear(em), np.ones((h, w))])
+        write_tiff(os.path.join(out, "tex", name + "_EM.tif"), (np.clip(emr, 0, 1) * 255 + 0.5).astype(np.uint8))
     png = os.path.join(out, "tex", name + "_base.png")
     img = bpy.data.images.new(name + "_base", w, h)
     img.pixels.foreach_set(np.dstack([np.clip(base[:, :, :3], 0, 1), np.ones((h, w))])[::-1].astype(np.float32).ravel())
@@ -139,6 +143,8 @@ FONT = {
     "8": "01110 10001 10001 01110 10001 10001 01110", "9": "01110 10001 10001 01111 00001 00010 01100",
     "-": "00000 00000 00000 11111 00000 00000 00000", ".": "00000 00000 00000 00000 00000 01100 01100",
     "*": "00000 00100 10101 01110 10101 00100 00000", " ": "00000 00000 00000 00000 00000 00000 00000",
+    "/": "00001 00010 00010 00100 01000 01000 10000", "<": "00010 00100 01000 10000 01000 00100 00010",
+    ">": "01000 00100 00010 00001 00010 00100 01000",
 }
 GLYPH = {k: np.array([[int(c) for c in row] for row in v.split()], bool) for k, v in FONT.items()}
 
@@ -197,35 +203,40 @@ class Canvas:
 tpx = kit["texture_px"]["tile"]
 AW, AH = kit["texture_px"]["atlas"]
 
-# Region rectangles on the atlas, in pixels (x, y from the top left, w, h). One pixel is one millimetre.
-R_FASCIA = (0, 0, 620, 860)    # the whole beige front, y 0.80 to 1.66 m
-R_HEADER = (640, 0, 700, 170)  # the sign plate, 0.66 x 0.16 m used
-R_SCREEN = (640, 190, 260, 200)
-R_KEYPAD = (640, 410, 300, 140)
-R_CASH = (960, 190, 280, 140)
 
-PAINT = np.array([0.80, 0.74, 0.62])  # aged cream paint, sRGB
+PAINT = np.array([0.66, 0.64, 0.58])  # grey-beige brushed steel, sRGB
 STEEL = 0.56
 PLASTIC = np.array([0.075, 0.078, 0.08])
 
 # ---------------------------------------------------------------- tiling: beige paint
 base = np.ones((tpx, tpx, 3)) * PAINT
-base *= (1 + noise(tpx, tpx, 60) * 0.025 + noise(tpx, tpx, 4) * 0.012)[:, :, None]
+base *= (1 + noise(tpx, tpx, 60) * 0.025 + noise(tpx, tpx, 4) * 0.012 + noise(tpx, tpx, 0.6, 120) * 0.008)[:, :, None]
 scr = np.zeros((tpx, tpx))
-for _ in range(90):
+for _ in range(35):
     x, y = rng.uniform(0, tpx, 2)
     a = rng.uniform(0, math.pi)
     for t in range(int(rng.uniform(0.3, 1.0) * 40)):
         scr[int(y + math.sin(a) * t) % tpx, int(x + math.cos(a) * t) % tpx] = 1.0
 base = base * (1 - scr[:, :, None] * 0.25) + scr[:, :, None] * 0.04
-save_material("ATM_Paint", np.clip(base, 0, 1), np.full((tpx, tpx), 0.6) - scr * 0.15, np.zeros((tpx, tpx)) + scr * 0.3,
-              normal_from_height(noise(tpx, tpx, 3) * 0.2 - scr, 0.7), 1.0)
+# weathering: faint rain streaks (tall thin noise) and a few paint chips down to grey primer
+rain = np.clip(noise(tpx, tpx, 1.5, 70), 0, None)
+base *= (1 - rain * 0.02)[:, :, None]
+chip = (noise(tpx, tpx, 5) > 2.6).astype(float)
+chip = np.clip(blur(chip, 0.8) * 1.6, 0, 1)
+base = base * (1 - chip[:, :, None]) + chip[:, :, None] * np.array([0.42, 0.42, 0.40])
+save_material("ATM_Paint", np.clip(base, 0, 1), np.full((tpx, tpx), 0.45) - scr * 0.1 + rain * 0.04, np.full((tpx, tpx), 0.5) + scr * 0.3 + chip * 0.4,
+              normal_from_height(noise(tpx, tpx, 3) * 0.2 - scr - chip * 0.6, 0.7), 1.0)
 
 # ---------------------------------------------------------------- tiling: brushed steel (the base, the plate, the housing)
 streak = noise(tpx, tpx, 90, 0.8)
 base = np.ones((tpx, tpx, 3)) * STEEL
 base += (streak * 0.035 + noise(tpx, tpx, 150) * 0.025)[:, :, None]
-save_material("ATM_Steel", np.clip(base, 0, 1), np.clip(0.42 + streak * 0.05, 0, 1), np.full((tpx, tpx), 0.85),
+# street grime: the texture repeats every metre of height and the bottom rows are the first 10 cm,
+# so the plinth and the cabinet foot pick up road splash; blotchy dull patches everywhere else
+foot = np.clip((np.arange(tpx) - tpx * 0.88) / (tpx * 0.12), 0, 1)[:, None] * np.ones((1, tpx))
+dirt = np.clip(foot * (0.7 + noise(tpx, tpx, 8) * 0.3), 0, 1) + np.clip(noise(tpx, tpx, 40), 0, None) * 0.15
+base = base * (1 - dirt[:, :, None] * 0.35) + dirt[:, :, None] * np.array([0.10, 0.09, 0.07]) * 0.35
+save_material("ATM_Steel", np.clip(base, 0, 1), np.clip(0.42 + streak * 0.05 + dirt * 0.35, 0, 1), np.clip(0.85 - dirt * 0.5, 0, 1),
               normal_from_height(streak * 0.15, 0.7), 1.0)
 
 # ---------------------------------------------------------------- tiling: black plastic and rubber (bezels, slots, rims)
@@ -233,104 +244,182 @@ spx = 128
 save_material("ATM_Dark", np.clip(np.ones((spx, spx, 3)) * PLASTIC + noise(spx, spx, 3)[:, :, None] * 0.008, 0, 1),
               np.full((spx, spx), 0.7), np.zeros((spx, spx)), normal_from_height(noise(spx, spx, 2) * 0.2, 0.5), 0.5)
 
-# ---------------------------------------------------------------- the face atlas
-cv = Canvas(AW, AH, PAINT)
-cv.base *= (1 + noise(AH, AW, 60) * 0.025 + noise(AH, AW, 4) * 0.012)[:, :, None]
-cv.rough = 0.6 - 0.02 * noise(AH, AW, 5)
+# ---------------------------------------------------------------- the face atlas (1 px = 1 mm)
+# The kiosk's recessed fascia, the keypad shelf top, the card reader, the camera, the cash slot housing.
+BODY, PLI, OPEN, HD, SIGN, SC, SH = L["body"], L["plinth"], L["opening"], L["header"], L["sign"], L["screen"], L["shelf"]
+FW = int(round(OPEN["half_width"] * 2000))         # 500
+FH = int(round((OPEN["y1"] - OPEN["y0"]) * 1000))  # 1080
+SHELF_LEN = int(round(math.hypot(SH["front_z"] - SH["back_z"], SH["back_top"] - SH["front_top"]) * 1000))
+SHELF_W = int(round(SH["half_width"] * 2000))
+R_FASCIA = (0, 0, FW, FH)
+R_SHELF = (0, 1100, SHELF_W, SHELF_LEN)
+R_CARD = (0, 1260, 100, 54)
+R_CAM = (120, 1260, 60, 30)
+R_CASH = (0, 1330, 320, 80)
+R_GREEN = (200, 1260, 20, 20)
+GREEN = np.array([0.10, 0.36, 0.20])     # the painted trim green
+FASCIA_RGB = np.array([0.20, 0.19, 0.17])  # dark warm grey enamel inside the recess
+CREAM = np.array([0.86, 0.84, 0.76])
 
-# A: the fascia front (620 x 860 mm, top = y 1.66 m). Row = (1.66 - y) m * 1000, column = (x + 0.31) m * 1000.
+cv = Canvas(AW, AH, FASCIA_RGB)
+cv.rough[:] = 0.5
+
+# A: the fascia, rows down from the top of the opening (y1), columns from its left edge
 x0, y0, fw, fh = R_FASCIA
-# grime along the lower edge and the seam under the keypad
+cv.base[y0:y0 + fh, x0:x0 + fw] *= (1 + noise(fh, fw, 50) * 0.04 + noise(fh, fw, 3) * 0.015)[:, :, None]
+cv.rect(x0, y0, x0 + fw, y0 + 78, (0.13, 0.125, 0.115), rough=0.45)          # the top band
+cv.text("BANQUE", x0 + 24, y0 + 24, 4, (0.86, 0.84, 0.76))
+cv.text("REGIONALE", x0 + 168, y0 + 34, 2, GREEN * 1.6)
+cv.text("DAB", 0, y0 + 34, 2, (0.6, 0.6, 0.56), centre_in=(x0 + fw - 80, x0 + fw - 20))
+cv.rect(x0, y0 + 78, x0 + fw, y0 + 82, GREEN, height=0.5)
+# the screen bezel and the two steel rails beside it
+cv.rect(x0 + 108, y0 + 116, x0 + fw - 108, y0 + 344, (0.05, 0.05, 0.05), rough=0.6, height=1.5)
+for rx in (100, fw - 106):
+    cv.rect(x0 + rx, y0 + 112, x0 + rx + 6, y0 + 348, (0.62, 0.62, 0.62), rough=0.3, metal=0.9, height=2.0)
+# four side keys each side, level with the screen menu lines
+SIDE_ROWS = (155, 200, 245, 290)
+for sx in (62, fw - 62):
+    for r in SIDE_ROWS:
+        cv.rect(x0 + sx - 20, y0 + r - 13, x0 + sx + 20, y0 + r + 13, (0.30, 0.30, 0.31), rough=0.4, metal=0.6, height=2.5)
+        cv.rect(x0 + sx - 20, y0 + r - 13, x0 + sx + 20, y0 + r - 10, (0.55, 0.55, 0.56), height=2.5)
+# the receipt slot (right, under the shelf) and the cash slot label
+cv.text("RECU", 0, y0 + 458, 2, (0.62, 0.62, 0.58), centre_in=(x0 + 300, x0 + 420))
+cv.rect(x0 + 300, y0 + 478, x0 + 420, y0 + 500, (0.40, 0.40, 0.41), rough=0.35, metal=0.8, height=1.0)
+cv.rect(x0 + 308, y0 + 486, x0 + 412, y0 + 492, (0.01, 0.01, 0.01), rough=0.9, height=-2.0)
+cv.rect(x0 + 300, y0 + 500, x0 + 420, y0 + 503, GREEN)
+cv.text("BILLETS", x0 + 92, y0 + 535, 2, (0.62, 0.62, 0.58))
+# the branch sticker, lower left: small, slightly yellowed, a corner lifting
+st = (x0 + 30, y0 + 720, x0 + 200, y0 + 778)
+cv.rect(*st, (0.84, 0.82, 0.72), rough=0.7, height=0.3)
+cv.rect(st[0], st[1], st[0] + 4, st[3], GREEN)
+for i, line in enumerate(("BANQUE REGIONALE", "AGENCE 01", "ASSISTANCE 24H/24")):
+    cv.text(line, st[0] + 10, st[1] + 8 + i * 16, 1, (0.12, 0.12, 0.12))
+cv.base[st[3] - 10:st[3], st[2] - 12:st[2]] *= 0.8
+cv.text("OUVERT 24H/24 - 7 JOURS SUR 7", 0, y0 + 1030, 2, (0.42, 0.41, 0.38), centre_in=(x0, x0 + fw))
+# the green trim round the recess
+for a in ((0, 0, fw, 5), (0, fh - 5, fw, fh), (0, 0, 5, fh), (fw - 5, 0, fw, fh)):
+    cv.rect(x0 + a[0], y0 + a[1], x0 + a[2], y0 + a[3], GREEN, rough=0.45, height=1.0)
+# weathering: rain runs from the top band down, finger grime under the shelf and round the cash slot
 fas = cv.base[y0:y0 + fh, x0:x0 + fw]
-fas[-70:] *= np.linspace(1.0, 0.9, 70)[:, None, None]
-for yy in (170, 440):  # panel seams
-    cv.base[y0 + yy:y0 + yy + 2, x0:x0 + fw] *= 0.78
-    cv.height[y0 + yy:y0 + yy + 2, x0:x0 + fw] = -1.5
-# four corner screws
-for sx, sy in ((22, 22 + 170), (fw - 22, 22 + 170), (22, fh - 22), (fw - 22, fh - 22)):
-    cv.circle(x0 + sx, y0 + sy, 7, (0.46, 0.46, 0.45))
-    cv.base[y0 + sy - 1:y0 + sy + 1, x0 + sx - 5:x0 + sx + 5] = (0.18, 0.18, 0.18)
-    cv.height[y0 + sy - 7:y0 + sy + 7, x0 + sx - 7:x0 + sx + 7] += 0.8
-# side keys: four each side of the screen (the screen spans rows 190 to 390)
-for sx in (75, fw - 75):
-    for r in (215, 265, 315, 365):
-        cv.rect(x0 + sx - 32, y0 + r - 16, x0 + sx + 32, y0 + r + 16, (0.20, 0.205, 0.21), rough=0.5, metal=0.1, height=2.0)
-        cv.rect(x0 + sx - 32, y0 + r - 16, x0 + sx + 32, y0 + r - 13, (0.34, 0.34, 0.35), height=2.0)
-        cv.rect(x0 + sx - 9, y0 + r - 2, x0 + sx + 9, y0 + r + 2, (0.85, 0.85, 0.8))
-# the card slot (right of the keypad) and the ticket slot (left): rows 500 to 620
-for cx, label in ((fw - 75, "CARTE"), (75, "TICKET")):
-    cv.text(label, 0, y0 + 503, 2, (0.18, 0.18, 0.17), centre_in=(x0 + cx - 50, x0 + cx + 50))
-    cv.rect(x0 + cx - 50, y0 + 528, x0 + cx + 50, y0 + 592, (0.14, 0.14, 0.145), rough=0.45, metal=0.15, height=-1.0)
-    cv.rect(x0 + cx - 36, y0 + 556, x0 + cx + 36, y0 + 564, (0.01, 0.01, 0.01), rough=0.9, height=-3.0)
-    for k in range(5):  # a small arrow pointing at the slot
-        cv.rect(x0 + cx - 12 + k * 3, y0 + 538 + k * 2, x0 + cx + 12 - k * 3, y0 + 540 + k * 2, (0.8, 0.8, 0.75))
-# a plain blue badge strip above the cash housing ("RETRAIT") on the fascia strip under it
-cv.text("RETRAIT", 0, y0 + 815, 3, (0.18, 0.18, 0.17), centre_in=(x0, x0 + fw))
+yy, xx = np.mgrid[0:fh, 0:fw]
+streaks = np.zeros((fh, fw))
+for sx0 in rng.uniform(8, fw - 8, 18):
+    start = int(rng.choice([82, 348, 503, 0]))
+    length = rng.uniform(100, 380)
+    col = np.exp(-((xx - sx0) / rng.uniform(1.5, 4.5)) ** 2)
+    streaks = np.maximum(streaks, col * np.clip(1 - (yy - start) / length, 0, 1) * (yy >= start) * rng.uniform(0.4, 1))
+fas *= (1 - streaks * 0.22)[:, :, None]
+for gx, gy, rx_, ry_ in ((fw / 2, 600, 190, 45), (360, 490, 70, 25)):
+    g = np.clip(np.exp(-(((xx - gx) / rx_) ** 2 + ((yy - gy) / ry_) ** 2)) * (0.6 + 0.4 * noise(fh, fw, 6)), 0, 1)
+    fas[:] = fas * (1 - g[:, :, None] * 0.18)
+cv.rough[y0:y0 + fh, x0:x0 + fw] += streaks * 0.08
+edge = (np.minimum(np.minimum(xx, fw - 1 - xx), np.minimum(yy, fh - 1 - yy)) < 4) & (noise(fh, fw, 3) > 1.2)
+fas[edge] = (0.45, 0.45, 0.44)
 
-# B: the screen, 260 x 200: green phosphor text on black glass with scanlines and a vignette
-x0, y0, sw, sh = R_SCREEN
-scr_rgb = np.zeros((sh, sw, 3)) + np.array([0.012, 0.03, 0.016])
-glow = np.zeros((sh, sw))
-for s, y, sc in (("BONJOUR", 28, 4), ("INTRODUISEZ", 92, 3), ("VOTRE CARTE", 128, 3), ("S.V.P.", 164, 2)):
-    m = text_mask(s.replace("S.V.P.", "S.V.P"), sc)
-    th, tw = m.shape
-    xx = (sw - tw) // 2
-    glow[y:y + th, xx:xx + tw][m] = 1.0
-g1 = blur(glow, 1.0)
-g2 = blur(glow, 5.0)
-lum = np.clip(g1 * 1.15 + g2 * 1.4, 0, 1.2)
-scr_rgb += lum[:, :, None] * np.array([0.10, 0.92, 0.22])
-yy, xx = np.mgrid[0:sh, 0:sw]
-vig = 1 - 0.55 * (((xx - sw / 2) / (sw / 2)) ** 4 + ((yy - sh / 2) / (sh / 2)) ** 4)
-scan = 1 - 0.18 * ((yy % 3) == 0)
-scr_rgb *= (vig * scan)[:, :, None]
-cv.base[y0:y0 + sh, x0:x0 + sw] = np.clip(scr_rgb, 0, 1)
-cv.rough[y0:y0 + sh, x0:x0 + sw] = 0.22
-cv.height[y0:y0 + sh, x0:x0 + sw] = 0.0
-
-# C: the keypad deck, 300 x 140: dark plate, steel keys with black digits, three coloured function keys
-x0, y0, kw, kh = R_KEYPAD
-cv.rect(x0, y0, x0 + kw, y0 + kh, (0.09, 0.09, 0.095), rough=0.6, metal=0.0, height=0.0)
-digits = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], [".", "0", "*"]]
+# B: the shelf top: brushed steel; the keypad on the left (digits, then VALID, CORR, ANNUL), its plate dark
+x0, y0, kw, kh = R_SHELF
+streak2 = noise(kh, kw, 60, 0.8)
+cv.base[y0:y0 + kh, x0:x0 + kw] = (0.56 + streak2 * 0.03)[:, :, None]
+cv.rough[y0:y0 + kh, x0:x0 + kw] = 0.4
+cv.metal[y0:y0 + kh, x0:x0 + kw] = 0.85
+cv.rect(x0, y0 + kh - 4, x0 + kw, y0 + kh, GREEN)  # the front lip
+KEY_W, KEY_H, PITCH_X, PITCH_Y, KX0, KY0 = 28, 18, 32, 22, 24, 26
+cv.rect(x0 + 16, y0 + 18, x0 + KX0 + 4 * PITCH_X + 4, y0 + KY0 + 4 * PITCH_Y + 4, (0.08, 0.08, 0.085), rough=0.6, metal=0.0)
+digits = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["", "0", ""]]
+FUNC = ((0.18, 0.62, 0.26), (0.86, 0.72, 0.18), (0.74, 0.17, 0.15))
+KEYS = []
 for r in range(4):
-    for c in range(3):
-        kx, ky = x0 + 4 + c * 74, y0 + 4 + r * 33
-        cv.rect(kx, ky, kx + 62, ky + 27, (0.60, 0.60, 0.61), rough=0.38, metal=0.9, height=3.0)
-        cv.rect(kx, ky, kx + 62, ky + 3, (0.78, 0.78, 0.78), height=3.0)
-        cv.text(digits[r][c], 0, ky + 3, 3, (0.07, 0.07, 0.07), centre_in=(kx, kx + 62))
-for r, (label, rgb) in enumerate((("VALID", (0.18, 0.62, 0.26)), ("CORR", (0.86, 0.72, 0.18)), ("ANNUL", (0.74, 0.17, 0.15)))):
-    kx, ky = x0 + 4 + 3 * 74, y0 + 4 + r * 33
-    cv.rect(kx, ky, kx + 62, ky + 27, rgb, rough=0.5, metal=0.0, height=3.0)
-    cv.text(label, 0, ky + 6, 2, (0.06, 0.06, 0.06), centre_in=(kx, kx + 62))
+    for c in range(4):
+        kx, ky = KX0 + c * PITCH_X, KY0 + r * PITCH_Y
+        if c == 3:
+            if r == 3:
+                continue
+            cv.rect(x0 + kx, y0 + ky, x0 + kx + KEY_W, y0 + ky + KEY_H, FUNC[r], rough=0.5, metal=0.0)
+        else:
+            cv.rect(x0 + kx, y0 + ky, x0 + kx + KEY_W, y0 + ky + KEY_H, (0.62, 0.62, 0.63), rough=0.35, metal=0.9)
+            if digits[r][c]:
+                cv.text(digits[r][c], 0, y0 + ky + 2, 2, (0.07, 0.07, 0.07), centre_in=(x0 + kx, x0 + kx + KEY_W))
+            wy, wx = np.mgrid[0:KEY_H, 0:KEY_W]
+            w = np.exp(-(((wx - 14) / 10) ** 2 + ((wy - 9) / 6) ** 2)) * rng.uniform(0.4, 1.0)
+            cv.base[y0 + ky:y0 + ky + KEY_H, x0 + kx:x0 + kx + KEY_W] *= (1 - w * 0.12)[:, :, None]
+        KEYS.append((kx, ky))
+g = np.clip(noise(kh, kw, 12), 0, None) * 0.12
+cv.base[y0:y0 + kh, x0:x0 + kw] *= (1 - g)[:, :, None]
 
-# D: the bank sign plate, deep blue with a plain coin-and-columns emblem and BANQUE. No brand.
-x0, y0, hw_, hh = R_HEADER
-cv.rect(x0, y0, x0 + 660, y0 + 160, (0.07, 0.15, 0.33), rough=0.45, metal=0.05)
-cv.base[y0:y0 + 160, x0:x0 + 660] *= (1 + noise(160, 660, 30) * 0.02)[:, :, None]
-cv.rect(x0 + 8, y0 + 8, x0 + 652, y0 + 11, (0.9, 0.9, 0.85), height=1.0)
-cv.rect(x0 + 8, y0 + 149, x0 + 652, y0 + 152, (0.9, 0.9, 0.85), height=1.0)
-ecx, ecy = x0 + 90, y0 + 80
-cv.circle(ecx, ecy, 52, (0.93, 0.93, 0.88), ring=6)
-for k in (-24, 0, 24):  # three columns inside the coin
-    cv.rect(ecx + k - 6, ecy - 22, ecx + k + 6, ecy + 22, (0.93, 0.93, 0.88))
-cv.rect(ecx - 34, ecy - 30, ecx + 34, ecy - 22, (0.93, 0.93, 0.88))
-cv.rect(ecx - 34, ecy + 22, ecx + 34, ecy + 30, (0.93, 0.93, 0.88))
-cv.text("BANQUE", x0 + 175, y0 + 28, 8, (0.93, 0.93, 0.88), height=1.0)
-cv.text("DISTRIBUTEUR DE BILLETS", x0 + 175, y0 + 100, 3, (0.78, 0.82, 0.9), gap=1)
+# C: the card reader front: dark grey, a green-lipped slot, a small green arrow
+x0, y0, w_, h_ = R_CARD
+cv.rect(x0, y0, x0 + w_, y0 + h_, (0.16, 0.16, 0.165), rough=0.45, metal=0.3)
+cv.rect(x0 + 12, y0 + 22, x0 + w_ - 12, y0 + 30, (0.01, 0.01, 0.01), rough=0.9, height=-2.0)
+cv.rect(x0 + 12, y0 + 30, x0 + w_ - 12, y0 + 33, GREEN * 1.5)
+for k in range(5):
+    cv.rect(x0 + 40 + k * 2, y0 + 6 + k * 2, x0 + 60 - k * 2, y0 + 8 + k * 2, (0.3, 0.8, 0.4))
+cv.text("CARTE", 0, y0 + 40, 1, (0.7, 0.7, 0.7), centre_in=(x0, x0 + w_))
 
-# E: the cash housing front, 280 x 140: steel with a dark slot and BILLETS
-x0, y0, cw, ch = R_CASH
-streak2 = noise(ch, cw, 70, 0.8)
-cv.base[y0:y0 + ch, x0:x0 + cw] = (0.55 + streak2 * 0.03)[:, :, None]
-cv.rough[y0:y0 + ch, x0:x0 + cw] = 0.42
-cv.metal[y0:y0 + ch, x0:x0 + cw] = 0.85
-cv.text("BILLETS", 0, y0 + 14, 3, (0.07, 0.07, 0.07), centre_in=(x0, x0 + cw))
-cv.rect(x0 + 24, y0 + 56, x0 + cw - 24, y0 + 112, (0.30, 0.30, 0.31), rough=0.4, metal=0.8, height=0.5)
-cv.rect(x0 + 34, y0 + 66, x0 + cw - 34, y0 + 102, (0.008, 0.008, 0.008), rough=0.9, metal=0.0, height=-4.0)
+# D: the camera: a grey housing with a dark lens
+x0, y0, w_, h_ = R_CAM
+cv.rect(x0, y0, x0 + w_, y0 + h_, (0.42, 0.42, 0.42), rough=0.4, metal=0.6)
+cv.circle(x0 + 20, y0 + 15, 10, (0.02, 0.02, 0.025))
+cv.circle(x0 + 20, y0 + 15, 10, (0.25, 0.25, 0.27), ring=2)
+cv.circle(x0 + 47, y0 + 15, 3, (0.5, 0.1, 0.08))
+
+# E: the cash slot housing: steel, a wide dark slot, a green lip
+x0, y0, w_, h_ = R_CASH
+streak3 = noise(h_, w_, 70, 0.8)
+cv.base[y0:y0 + h_, x0:x0 + w_] = (0.52 + streak3 * 0.03)[:, :, None]
+cv.rough[y0:y0 + h_, x0:x0 + w_] = 0.4
+cv.metal[y0:y0 + h_, x0:x0 + w_] = 0.85
+cv.rect(x0 + 14, y0 + 22, x0 + w_ - 14, y0 + 52, (0.008, 0.008, 0.008), rough=0.9, metal=0.0, height=-4.0)
+cv.rect(x0 + 14, y0 + 52, x0 + w_ - 14, y0 + 56, GREEN)
+cv.rect(*np.add(R_GREEN, (0, 0, R_GREEN[0], R_GREEN[1])), GREEN, rough=0.45)
 
 atlas_n = normal_from_height(blur(cv.height, 0.7) + noise(AH, AW, 2) * 0.06, 1.2)
 save_material("ATM_Face", np.clip(cv.base, 0, 1), np.clip(cv.rough, 0, 1), np.clip(cv.metal, 0, 1), atlas_n, None)
 
+# ---------------------------------------------------------------- the glow atlas: the lit header sign and the CRT
+GW, GH = kit["texture_px"]["glow"]
+G_SIGN = (0, 0, 580, 200)
+G_SCREEN = (0, 220, 260, 200)
+gb = np.zeros((GH, GW, 3))
+em = np.zeros((GH, GW, 3))
+# the sign: a cream backlit panel, green lettering, a thin green rule; no brand, only the village bank
+sg = Canvas(580, 200, CREAM)
+sg.base *= (1 + noise(200, 580, 30) * 0.015)[:, :, None]
+sg.rect(10, 10, 570, 13, GREEN)
+sg.rect(10, 187, 570, 190, GREEN)
+sg.text("BANQUE", 0, 26, 9, GREEN, centre_in=(0, 580))
+sg.text("REGIONALE", 0, 100, 3, GREEN, centre_in=(0, 580))
+sg.rect(110, 132, 470, 134, GREEN * 0.8)
+sg.text("DISTRIBUTEUR DE BILLETS 24H", 0, 146, 2, (0.30, 0.30, 0.28), centre_in=(0, 580))
+gb[0:200, 0:580] = sg.base
+em[0:200, 0:580] = sg.base * 0.3
+# the screen: green phosphor on black, a menu that lines up with the side keys
+sw, sh = G_SCREEN[2], G_SCREEN[3]
+glow = np.zeros((sh, sw))
+
+
+def put(s, x, y, sc, right=False):
+    m = text_mask(s, sc)
+    th, tw = m.shape
+    x = sw - tw - x if right else x
+    glow[y:y + th, x:x + tw][m] = 1.0
+
+
+put("BANQUE REGIONALE", (sw - 16 * 6) // 2, 4, 1)
+for i, (l, r) in enumerate((("<RETRAIT", "100 F>"), ("<SOLDE", "200 F>"), ("<RELEVE", "500 F>"), ("<AUTRE", "1000 F>"))):
+    y = SIDE_ROWS[i] - 130 - 7  # fascia row of the key, less the screen's top row, less half a glyph
+    put(l, 6, y, 2)
+    put(r, 6, y, 2, right=True)
+put("CHOISISSEZ VOTRE OPERATION", (sw - 26 * 6) // 2, 186, 1)
+lum = np.clip(blur(glow, 0.8) * 1.15 + blur(glow, 4.0) * 1.3, 0, 1.2)
+scr_rgb = np.zeros((sh, sw, 3)) + np.array([0.012, 0.03, 0.016]) + lum[:, :, None] * np.array([0.10, 0.92, 0.22])
+yy, xx = np.mgrid[0:sh, 0:sw]
+scr_rgb *= ((1 - 0.5 * (((xx - sw / 2) / (sw / 2)) ** 4 + ((yy - sh / 2) / (sh / 2)) ** 4)) * (1 - 0.18 * ((yy % 3) == 0)))[:, :, None]
+gb[220:220 + sh, 0:sw] = np.clip(scr_rgb, 0, 1)
+em[220:220 + sh, 0:sw] = np.clip(scr_rgb, 0, 1) * 0.6
+g_rough = np.full((GH, GW), 0.25)
+g_rough[0:200, 0:580] = 0.4
+save_material("ATM_Glow", np.clip(gb, 0, 1), g_rough, np.zeros((GH, GW)),
+              normal_from_height(noise(GH, GW, 2) * 0.03, 0.5), None, em=np.clip(em, 0, 1))
 
 def blender_material(name):
     m = bpy.data.materials.get(name)
@@ -410,11 +499,30 @@ class Part:
                 mid = sum(pts, Vector()) / n
                 self.face(pts, mat, want=mid - centre)
 
-    def quad(self, mat, bl, br, tr, tl, normal, region):
-        # An atlas-mapped quad. Corners and normal in Enfusion axes; region (x, y, w, h) in atlas pixels.
+    def quad(self, mat, bl, br, tr, tl, normal, region, size=None):
+        # An atlas-mapped quad. Corners and normal in Enfusion axes; region (x, y, w, h) in atlas pixels
+        # of the face atlas, or of an atlas of `size` (w, h) such as the glow atlas.
         rx, ry, rw, rh = region
-        uvs = [(rx / AW, 1 - (ry + rh) / AH), ((rx + rw) / AW, 1 - (ry + rh) / AH), ((rx + rw) / AW, 1 - ry / AH), (rx / AW, 1 - ry / AH)]
+        aw, ah = size or (AW, AH)
+        uvs = [(rx / aw, 1 - (ry + rh) / ah), ((rx + rw) / aw, 1 - (ry + rh) / ah), ((rx + rw) / aw, 1 - ry / ah), (rx / aw, 1 - ry / ah)]
         self.face([B(*p) for p in (bl, br, tr, tl)], mat, want=B(*normal), uvs=uvs)
+
+    def slab(self, corners, normal, thick, top_mat, side_mat, region=None, size=None):
+        # A thin raised plate on a surface: corners (bl, br, tr, tl) on the surface in Enfusion axes,
+        # lifted `thick` metres along `normal`. The top is atlas-mapped from `region`, the sides tile.
+        nv = Vector(normal).normalized()
+        lo = [Vector(c) for c in corners]
+        hi = [c + nv * thick for c in lo]
+        if region:
+            self.quad(top_mat, *[tuple(c) for c in hi], tuple(nv), region, size)
+        else:
+            self.face([B(*c) for c in hi], top_mat, want=B(*nv))
+        centre = sum(lo + hi, Vector()) / 8
+        for i in range(4):
+            a, b = i, (i + 1) % 4
+            pts = [lo[a], lo[b], hi[b], hi[a]]
+            mid = sum(pts, Vector()) / 4
+            self.face([B(*c) for c in pts], side_mat, want=B(*(mid - centre)))
 
     def finish(self):
         # Box-projected UVs for every face that has none, then one mesh object.
@@ -475,58 +583,98 @@ def collider(model, i, lo, hi, cfg):
     return o
 
 
-# ================================================================ the machine, one function, three levels of detail
-P, PL, FA, CA, HD, SC = L["plate"], L["plinth"], L["fascia"], L["cabinet"], L["header"], L["screen"]
-DECK = [(-0.06, 1.02), (0.02, 1.02), (0.02, 1.05), (-0.06, 1.17)]   # (z, y): the keypad wedge, slope = edge 2
-HOOD = [(-0.06, 1.50), (0.03, 1.52), (0.03, 1.555), (-0.06, 1.555)]  # the small hood over the screen
-CASH = {"x": 0.14, "y0": 0.86, "y1": 1.00, "front": 0.0}
-FRONT_FASCIA_Z = FA["front_z"]
+# ================================================================ the kiosk, one function, three levels of detail
+# A free-standing cash machine against a wall: black plinth, beige brushed-steel body, a recessed fascia with
+# green trim, a sloped keypad shelf with a card reader, a cash slot housing, a lit header box with a camera under it.
+FZ = BODY["front_z"] - OPEN["recess"]  # the fascia plane inside the recess
+SH_PROFILE = [(SH["back_z"], SH["back_bottom"]), (SH["front_z"], SH["front_bottom"]), (SH["front_z"], SH["front_top"]),
+              (SH["back_z"], SH["back_top"])]  # (z, y): bottom, front lip, sloped top (edge 2), back against the fascia
+GS = (GW, GH)
+
+
+def fpx(col):  # fascia atlas column -> x
+    return -OPEN["half_width"] + col / 1000.0
+
+
+def fpy(row):  # fascia atlas row -> y
+    return OPEN["y1"] - row / 1000.0
 
 
 def make(level):
     p = Part("atm_L%d" % level)
-    body_back = BACK + P["depth"] if level == 0 else BACK  # the body stands on the mounting plate (dropped in the LODs)
-    if level == 0:
-        p.box((-P["half_width"], P["y0"], BACK), (P["half_width"], P["y1"], BACK + P["depth"]), "ATM_Steel")
-    # plinth and lower cabinet: brushed steel
-    p.box((-PL["half_width"], 0.0, body_back), (PL["half_width"], PL["height"], PL["front_z"]), "ATM_Steel", skip=("-y",))
-    p.box((-CA["half_width"], CA["y0"], body_back), (CA["half_width"], CA["y1"], CA["front_z"]), "ATM_Steel")
-    if level == 0:
-        for i in range(6):  # vent louvres on the cabinet front
-            y = 0.22 + i * 0.075
-            p.box((-0.22, y, CA["front_z"]), (0.22, y + 0.014, CA["front_z"] + 0.006), "ATM_Dark")
-    # fascia: painted steel, the front is the atlas
-    p.box((-FA["half_width"], FA["y0"], body_back), (FA["half_width"], FA["y1"], FA["front_z"]), "ATM_Paint", skip=("+z",))
-    p.quad("ATM_Face", (-FA["half_width"], FA["y0"], FRONT_FASCIA_Z), (FA["half_width"], FA["y0"], FRONT_FASCIA_Z),
-           (FA["half_width"], FA["y1"], FRONT_FASCIA_Z), (-FA["half_width"], FA["y1"], FRONT_FASCIA_Z), (0, 0, 1), R_FASCIA)
-    # the sign box on top: painted steel, the front is the sign plate
-    p.box((-HD["half_width"], HD["y0"], body_back), (HD["half_width"], HD["y1"], HD["front_z"]), "ATM_Paint", skip=("+z",))
-    hx = HD["half_width"]
-    sign_region = (R_HEADER[0], R_HEADER[1], 660, 160)
-    p.quad("ATM_Face", (-hx, HD["y0"], HD["front_z"]), (hx, HD["y0"], HD["front_z"]), (hx, HD["y1"], HD["front_z"]),
-           (-hx, HD["y1"], HD["front_z"]), (0, 0, 1), sign_region)
-    # the screen: a glass quad, recessed behind a dark bezel
-    sx = SC["half_width"]
-    sz = FRONT_FASCIA_Z + 0.004 if level == 0 else FRONT_FASCIA_Z + 0.005
-    p.quad("ATM_Face", (-sx, SC["y0"], sz), (sx, SC["y0"], sz), (sx, SC["y1"], sz), (-sx, SC["y1"], sz), (0, 0, 1),
-           (R_SCREEN[0], R_SCREEN[1], R_SCREEN[2], R_SCREEN[3]))
-    if level == 0:
-        bz0, bz1 = FRONT_FASCIA_Z, FRONT_FASCIA_Z + 0.025
-        for lo, hi in (((-0.16, SC["y1"], bz0), (0.16, 1.50, bz1)), ((-0.16, 1.24, bz0), (0.16, SC["y0"], bz1)),
-                       ((-0.16, SC["y0"], bz0), (-sx, SC["y1"], bz1)), ((sx, SC["y0"], bz0), (0.16, SC["y1"], bz1))):
-            p.box(lo, hi, "ATM_Dark")
-        p.prism(HOOD, -0.17, 0.17, "ATM_Steel", skip_edges=(3,))
-    # the keypad wedge and the cash housing
-    deck_x = 0.15
+    bw, ow = BODY["half_width"], OPEN["half_width"]
+    bf = BODY["front_z"]
+    # plinth, black
+    p.box((-PLI["half_width"], 0.0, BACK), (PLI["half_width"], PLI["height"], PLI["front_z"]), "ATM_Dark", skip=("-y",))
+    # the body: below, above and beside the opening it is full depth; the opening is recessed
     if level <= 1:
-        p.prism(DECK, -deck_x, deck_x, "ATM_Dark", skip_edges=(2, 3))
-        (z2, y2), (z3, y3) = DECK[2], DECK[3]
-        nz, ny = (y3 - y2), -(z3 - z2)  # the slope's outward normal, toward +z and up
-        p.quad("ATM_Face", (-deck_x, y2, z2), (deck_x, y2, z2), (deck_x, y3, z3), (-deck_x, y3, z3), (0, ny, nz), R_KEYPAD)
-        c = CASH
-        p.box((-c["x"], c["y0"], body_back), (c["x"], c["y1"], c["front"]), "ATM_Steel", skip=("+z",))
-        p.quad("ATM_Face", (-c["x"], c["y0"], c["front"]), (c["x"], c["y0"], c["front"]), (c["x"], c["y1"], c["front"]),
-               (-c["x"], c["y1"], c["front"]), (0, 0, 1), R_CASH)
+        p.box((-bw, PLI["height"], BACK), (bw, OPEN["y0"], bf), "ATM_Paint")
+        p.box((-bw, OPEN["y1"], BACK), (bw, HD["y0"], bf), "ATM_Paint")
+        for s in (-1, 1):
+            a, b = sorted((s * ow, s * bw))
+            p.box((a, OPEN["y0"], BACK), (b, OPEN["y1"], bf), "ATM_Paint", skip=("+y", "-y"))
+        # the recess walls, painted green
+        g = R_GREEN
+        p.quad("ATM_Face", (-ow, OPEN["y0"], FZ), (ow, OPEN["y0"], FZ), (ow, OPEN["y0"], bf), (-ow, OPEN["y0"], bf), (0, 1, 0), g)
+        p.quad("ATM_Face", (-ow, OPEN["y1"], bf), (ow, OPEN["y1"], bf), (ow, OPEN["y1"], FZ), (-ow, OPEN["y1"], FZ), (0, -1, 0), g)
+        p.quad("ATM_Face", (-ow, OPEN["y0"], bf), (-ow, OPEN["y0"], FZ), (-ow, OPEN["y1"], FZ), (-ow, OPEN["y1"], bf), (1, 0, 0), g)
+        p.quad("ATM_Face", (ow, OPEN["y0"], FZ), (ow, OPEN["y0"], bf), (ow, OPEN["y1"], bf), (ow, OPEN["y1"], FZ), (-1, 0, 0), g)
+        # the box behind the recess (closes the body between the side columns)
+        p.box((-ow, OPEN["y0"], BACK), (ow, OPEN["y1"], FZ), "ATM_Paint", skip=("+z", "+y", "-y", "+x", "-x"))
+        fz = FZ
+    else:
+        p.box((-bw, PLI["height"], BACK), (bw, HD["y0"], bf), "ATM_Paint", skip=("+z",))
+        p.quad("ATM_Paint", (-bw, PLI["height"], bf), (bw, PLI["height"], bf), (bw, HD["y0"], bf), (-bw, HD["y0"], bf), (0, 0, 1),
+               (0, 0, 1, 1), (1, 1))
+        fz = bf + 0.001
+    p.quad("ATM_Face", (-ow, OPEN["y0"], fz), (ow, OPEN["y0"], fz), (ow, OPEN["y1"], fz), (-ow, OPEN["y1"], fz), (0, 0, 1), R_FASCIA)
+    # the screen glass, just proud of its bezel
+    sx = SC["half_width"]
+    sz = fz + 0.003
+    p.quad("ATM_Glow", (-sx, SC["y0"], sz), (sx, SC["y0"], sz), (sx, SC["y1"], sz), (-sx, SC["y1"], sz), (0, 0, 1), G_SCREEN, GS)
+    # the header box and its lit sign panel
+    hw = HD["half_width"]
+    p.box((-hw, HD["y0"], BACK), (hw, HD["y1"], HD["front_z"]), "ATM_Paint", skip=("+z",) if level == 2 else ())
+    if level == 2:
+        p.quad("ATM_Paint", (-hw, HD["y0"], HD["front_z"]), (hw, HD["y0"], HD["front_z"]), (hw, HD["y1"], HD["front_z"]),
+               (-hw, HD["y1"], HD["front_z"]), (0, 0, 1), (0, 0, 1, 1), (1, 1))
+    gz = HD["front_z"] + 0.002
+    sgw = SIGN["half_width"]
+    p.quad("ATM_Glow", (-sgw, SIGN["y0"], gz), (sgw, SIGN["y0"], gz), (sgw, SIGN["y1"], gz), (-sgw, SIGN["y1"], gz), (0, 0, 1), G_SIGN, GS)
+    # the sloped shelf: steel, its top is the keypad atlas
+    shw = SH["half_width"]
+    p.prism(SH_PROFILE, -shw, shw, "ATM_Steel", skip_edges=(2, 3))
+    (z2, y2), (z3, y3) = SH_PROFILE[2], SH_PROFILE[3]
+    nz, ny = (y3 - y2), -(z3 - z2)
+    p.quad("ATM_Face", (-shw, y2, z2), (shw, y2, z2), (shw, y3, z3), (-shw, y3, z3), (0, ny, nz), R_SHELF)
+
+    def dk(px, py):  # a shelf atlas pixel -> a point on the sloped top (row 0 is the back edge)
+        t = py / R_SHELF[3]
+        return (-shw + px / 1000.0, y2 + (y3 - y2) * (1 - t), z2 + (z3 - z2) * (1 - t))
+
+    if level == 0:
+        for kx, ky in KEYS:  # raised keys, 5 mm, their tops the drawn keys
+            corners = [dk(kx, ky + KEY_H), dk(kx + KEY_W, ky + KEY_H), dk(kx + KEY_W, ky), dk(kx, ky)]
+            p.slab(corners, (0, ny, nz), 0.005, "ATM_Face", "ATM_Steel", region=(R_SHELF[0] + kx, R_SHELF[1] + ky, KEY_W, KEY_H))
+    if level <= 1:
+        # the card reader: a dark block on the right of the shelf, its front the reader face
+        cr = L["card_reader"]
+        p.box((cr["x0"], cr["y0"], cr["z0"]), (cr["x1"], cr["y1"], cr["z1"]), "ATM_Dark", skip=("+z",))
+        p.quad("ATM_Face", (cr["x0"], cr["y0"], cr["z1"]), (cr["x1"], cr["y0"], cr["z1"]), (cr["x1"], cr["y1"], cr["z1"]),
+               (cr["x0"], cr["y1"], cr["z1"]), (0, 0, 1), R_CARD)
+        # the cash slot housing, proud of the fascia
+        cs = L["cash"]
+        corners = [(fpx(cs["col0"]), fpy(cs["row1"]), FZ), (fpx(cs["col1"]), fpy(cs["row1"]), FZ),
+                   (fpx(cs["col1"]), fpy(cs["row0"]), FZ), (fpx(cs["col0"]), fpy(cs["row0"]), FZ)]
+        p.slab(corners, (0, 0, 1), cs["depth"], "ATM_Face", "ATM_Steel", region=R_CASH)
+    if level == 0:
+        # the security camera on the top rail, under the header
+        cm = L["camera"]
+        p.box((cm["x0"], cm["y0"], bf), (cm["x1"], cm["y1"], bf + cm["depth"]), "ATM_Steel", skip=("+z",))
+        p.quad("ATM_Face", (cm["x0"], cm["y0"], bf + cm["depth"]), (cm["x1"], cm["y0"], bf + cm["depth"]),
+               (cm["x1"], cm["y1"], bf + cm["depth"]), (cm["x0"], cm["y1"], bf + cm["depth"]), (0, 0, 1), R_CAM)
+        # a drip lip along the header's lower front edge
+        p.box((-hw, HD["y0"] - 0.008, HD["front_z"] - 0.03), (hw, HD["y0"], HD["front_z"]), "ATM_Steel")
     return p.finish()
 
 
@@ -536,8 +684,8 @@ for i, o in enumerate(lod_objs):
     o.name = "ATMWall_LOD%d" % i
     o.data.name = "ATMWall_LOD%d" % i
 cfg = kit["colliders"]["ATMWall"]
-body = (-PL["half_width"], 0.0, BACK), (PL["half_width"], HD["y1"], FRONT_FASCIA_Z)
-front = (-0.17, 0.86, FRONT_FASCIA_Z), (0.17, 1.56, 0.03)
+body = (-PLI["half_width"], 0.0, BACK), (PLI["half_width"], HD["y1"], BODY["front_z"])
+front = (-SH["half_width"], SH["front_bottom"], BODY["front_z"]), (SH["half_width"], L["card_reader"]["y1"], SH["front_z"])
 cols = [collider("ATMWall", 1, *body, cfg), collider("ATMWall", 2, *front, cfg)]
 
 export = list(lod_objs) + cols
@@ -604,7 +752,9 @@ shot(os.path.join(rv, "three_quarter.png"), (0, 0.95, -0.1), (0.7, 0.2, 1), 3.6,
 shot(os.path.join(rv, "three_quarter_left.png"), (0, 0.95, -0.1), (-0.7, 0.2, 1), 3.6, res=(1000, 1100))
 shot(os.path.join(rv, "side.png"), (0, 0.95, -0.15), (1, 0, 0), 6, ortho=2.0)
 shot(os.path.join(rv, "face_close.png"), (0, 1.3, 0), (0.1, 0.08, 1), 1.6, res=(1200, 1000))
-shot(os.path.join(rv, "head_close.png"), (0, 1.62, 0), (0.15, 0.1, 1), 1.4, res=(1200, 700))
+shot(os.path.join(rv, "head_close.png"), (0, 1.75, 0.1), (0.15, 0.1, 1), 1.4, res=(1200, 700))
+shot(os.path.join(rv, "keypad_close.png"), (0, 1.0, 0.1), (0.3, 0.7, 1), 1.0, res=(1200, 900))
+shot(os.path.join(rv, "street.png"), (0, 1.0, 0.1), (0.25, 0.12, 1), 3.2, res=(1000, 1100))
 for i in range(1, len(lod_objs)):
     for o in lod_objs:
         o.hide_render = o is not lod_objs[i]
