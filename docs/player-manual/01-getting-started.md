@@ -42,13 +42,13 @@ Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It
 |---|---|
 | Take the miner job | The desk by the mine on Coalman's Brow, south-west of the square |
 | Buy a pickaxe | The miners' supply till in the hardware store ($150); skipped if you carry one |
-| Take your car out | Your garage; any car will do. Skipped if a car is already out or you own none |
+| Take your car out | Your garage; any car will do (the buyer is down at the dock). Skipped if a car is already out or you own none |
 | Go to the mine | Back up to Coalman's Brow |
 | Mine 3 iron ore | Swing at the rust-veined rocks and pick up the pieces. Every piece levels **Mining**; level 2 opens the coal licence |
 | Smelt a bar | The mine furnace: 3 ore make a bar, about 4 minutes |
-| Sell your bars | The counter beside the furnace, $20 a bar |
+| Sell your bars | The iron counter in the dock wholesale warehouse, $20 a bar |
 
-The other starters are shorter: the parcel run (the post office, then one delivery), lumber (the lumberjack job, an
+The other starters are shorter: the postal van run (a driving licence, the post stand at the parcel kiosk, one run to Meaux and back), lumber (the lumberjack job, an
 axe, a felled tree), fishing (a rod, the nearest water, a fish), the apple harvest (the orchard, 5 apples, a bottle of
 juice), and police or medic duty (the duty desk, clock in).
 

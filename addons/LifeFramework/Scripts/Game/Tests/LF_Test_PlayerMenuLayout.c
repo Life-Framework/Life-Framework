@@ -46,7 +46,7 @@ class LF_Test_PlayerMenuLayout : LF_Test
 		ctx.Equal(1, LF_PlayerMenuSheet.DaysOnIsland(0, 120), "a new arrival is on day 1");
 		ctx.Equal(3, LF_PlayerMenuSheet.DaysOnIsland(5 * 3600, 120), "five hours on a two-hour day is day 3");
 		ctx.Equal(1, LF_PlayerMenuSheet.DaysOnIsland(5 * 3600, 0), "an unset day length counts real days");
-		ctx.False(LF_PlayerMenuNextTab.HasContent(data), "the next-steps tab stays hidden until its feature fills it");
+		ctx.True(LF_PlayerMenuNextTab.HasContent(data), "the What to do next tab shows: the activities feature fills it");
 
 		LF_NotificationHold.Hold(true);
 		ctx.True(LF_NotificationHold.IsHeld(), "an open file holds the notification toasts");

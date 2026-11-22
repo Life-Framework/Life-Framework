@@ -20,7 +20,8 @@ enum LF_EActivityCheck
 	VEHICLE,	//!< The player has an owned vehicle out; passed when they own none to take out
 	ARRIVE,		//!< The player stands within m_fArriveRadius of the step's target
 	DUTY,		//!< The player is on duty as m_sCheckParam (POLICE or MEDIC)
-	XP			//!< The player earned m_iCheckCount XP in the job m_sCheckParam since the step started
+	XP,			//!< The player earned m_iCheckCount XP in the job m_sCheckParam since the step started
+	LICENCE		//!< The player holds the licence m_sCheckParam (LF_ELicenseType name)
 }
 
 //------------------------------------------------------------------------------------------------
@@ -40,7 +41,7 @@ class LF_ActivityStep
 	[Attribute("0", UIWidgets.ComboBox, "How the step is known to be done", "", ParamEnumArray.FromEnum(LF_EActivityCheck))]
 	LF_EActivityCheck m_eCheck;
 
-	[Attribute("", UIWidgets.EditBox, "JOB and XP: the job id; ITEM: the prefab ({GUID}path); DUTY: POLICE or MEDIC")]
+	[Attribute("", UIWidgets.EditBox, "JOB and XP: the job id; ITEM: the prefab ({GUID}path); DUTY: POLICE or MEDIC; LICENCE: the licence (LF_ELicenseType name)")]
 	string m_sCheckParam;
 
 	[Attribute("1", UIWidgets.EditBox, "ITEM: how many to carry; XP: how much XP to earn")]
@@ -185,7 +186,7 @@ class LF_ActivityConfig
 			if (step.m_eCheck == LF_EActivityCheck.NONE && (!step.m_aObjectives || step.m_aObjectives.IsEmpty()))
 				return string.Format("activity %1 step %2 has no check and no objective", def.m_sId, step.m_sStepId);
 
-			bool needsParam = step.m_eCheck == LF_EActivityCheck.JOB || step.m_eCheck == LF_EActivityCheck.ITEM || step.m_eCheck == LF_EActivityCheck.DUTY || step.m_eCheck == LF_EActivityCheck.XP;
+			bool needsParam = step.m_eCheck == LF_EActivityCheck.JOB || step.m_eCheck == LF_EActivityCheck.ITEM || step.m_eCheck == LF_EActivityCheck.DUTY || step.m_eCheck == LF_EActivityCheck.XP || step.m_eCheck == LF_EActivityCheck.LICENCE;
 			if (needsParam && step.m_sCheckParam.IsEmpty())
 				return string.Format("activity %1 step %2 checks %3 of nothing", def.m_sId, step.m_sStepId, typename.EnumToString(LF_EActivityCheck, step.m_eCheck));
 

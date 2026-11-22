@@ -254,6 +254,11 @@ class LF_Test_NextActivities : LF_Test
 		c.m_mXp.Set("LUMBERJACK", 105);
 		ctx.True(LF_ActivityRules.CheckHolds(xp, c, -1, 100), "5 XP earned passes it");
 
+		LF_ActivityStep licence = Step("licence", LF_EActivityCheck.LICENCE, "DRIVING_LICENCE");
+		ctx.False(LF_ActivityRules.CheckHolds(licence, c, -1, 0), "no driving licence: the licence step waits");
+		c.m_aLicences.Insert("DRIVING_LICENCE");
+		ctx.True(LF_ActivityRules.CheckHolds(licence, c, -1, 0), "the licence held passes it");
+
 		// The list on the wire.
 		LF_ActivityData data = new LF_ActivityData();
 		LF_ActivityRow row = new LF_ActivityRow();

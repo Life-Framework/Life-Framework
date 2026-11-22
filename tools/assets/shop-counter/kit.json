@@ -1,6 +1,6 @@
 {
   "slug": "shop-counter",
-  "about": "The 1989 village shop counter that replaces the vanilla yellow market cart CounterShop_01 behind every till: a dark-stained oak carcass with varnished tongue-and-groove (lambris) panels on the customer front and sides, a black kick plinth, a brown laminate worktop with an aluminium edge, open shelves on the staff side with kraft paper bags and a wrapping-paper roll. ShopCounterTill adds an early-electronic cash register (cream plastic, sloped keyboard and cash drawer toward the clerk, a green figure display on a post toward the customer, a receipt roll) and a rubber change mat on the customer half. Built by build.py in headless Blender from boxes and procedural textures: no base-game mesh reads as a shop counter with a till, and Meshy is reserved for fish and masks. Core asset: no text, no brand, no place name.",
+  "about": "The 1989 village shop counter that replaced the vanilla yellow market cart CounterShop_01: a neutral oak carcass with three recessed veneer panels in a darker frame (stiles, rails and bevelled mouldings), a moulded top rail, a brushed steel kick plate, a beige speckled laminate top with a steel edge, open clerk shelves with kraft bags and a wrapping-paper roll. ShopCounterTill adds a 1980s electromechanical cash register (terraced round keys, colored department keys, a long TOTAL bar, a hand crank, a journal window with a slip, a CASH drawer with a brass lock, a pop-up AMOUNT tower readable from both sides), a service bell, a receipt spike with slips and a THANK YOU change mat. Built by build.py in headless Blender with kitlib and procedural textures; all printed text US English, no brand, no place name.",
   "asset_dir": "Assets/Props/Commercial/ShopCounter",
   "prefab_dir": "Prefabs/Props/Commercial",
   "script": "build.py",
@@ -11,15 +11,32 @@
     "front_z": 0.597,
     "top_y": 1.039,
     "top_thick": 0.035,
-    "till": {"x": 0.38, "z": -0.22}
+    "till": {
+      "x": 0.38,
+      "z": -0.22
+    }
   },
-  "texture_px": {"tile": 512, "till": [1024, 512]},
+  "texture_px": {
+    "tile": 512,
+    "till": [
+      1024,
+      512
+    ]
+  },
   "colliders": {
-    "ShopCounter": {"layerPreset": "PropFireView", "gamemat": "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"},
-    "ShopCounterTill": {"layerPreset": "PropFireView", "gamemat": "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"}
+    "ShopCounter": {
+      "layerPreset": "PropFireView",
+      "gamemat": "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"
+    },
+    "ShopCounterTill": {
+      "layerPreset": "PropFireView",
+      "gamemat": "{EA270CE454C419FD}Common/Materials/Game/wood.gamemat"
+    }
   },
   "emissive": {
     "about": "The till's figure display glows faintly green.",
-    "SC_Till": {"lv": 0.6}
+    "SC_Till": {
+      "lv": 0.6
+    }
   }
 }
