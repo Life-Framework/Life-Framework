@@ -1,4 +1,4 @@
-// red-proof: PENDING (game busy): batched with LF_Test_WelcomeGuide in one `--red` run.
+// red-proof: observed 2026-11-22 `tools/cli test --no-build --red LF_Test_WelcomeGuide,LF_Test_WelcomeGuideWorld,LF_Test_WelcomeGuidePersist`: RED PROOF OK (all 3 fail with the hook on); quests/welcome-guide-persist fails its read-back-after-load assertion. Green with `--only` (14 assertions).
 //! The welcome guide section: a pending guide is written in the "welcomeguide" save section and read
 //! back by character id, loading twice ends in the same state, and a save from before the section has
 //! none. Restart: the e2e character's pending guide survives `wt e2e`.

@@ -1,4 +1,4 @@
-// red-proof: PENDING (game busy): batched with LF_Test_WelcomeGuide in one `--red` run.
+// red-proof: observed 2026-11-22 `tools/cli test --no-build --red LF_Test_WelcomeGuide,LF_Test_WelcomeGuideWorld,LF_Test_WelcomeGuidePersist`: RED PROOF OK (all 3 fail with the hook on); quests/welcome-guide-world fails its first-spawn-with-no-controller assertion. Green with `--only` (68 assertions).
 //! Welcome guide in a world: the server's first-spawn hook marks the guide pending even when the player
 //! has no controller (the client asks again at join), and every page is built from kit parts in order:
 //! title, page line, heading, two paragraphs, then the buttons. Only the first page has "Set waypoint",

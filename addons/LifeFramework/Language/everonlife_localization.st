@@ -14405,7 +14405,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B73B6D99D63DC09B}" {
      Id "LF-WelcomeGuide_Body3b"
-     Target_en_us "Right-click on the map (gamepad: X) to set your own waypoint. It stands in the world with the distance to it. There is one waypoint at a time; a new one moves it."
+     Target_en_us "Shift + Left click on the map (gamepad: hold Y, press A) sets your own waypoint; it stands in the world with the distance to it. There is one at a time. Backspace (gamepad: double-tap Y) clears it."
      Comment "Welcome guide page 3, second paragraph: setting a waypoint on the map."
     }
     CustomStringTableItem "{F5C02DE4953A73B3}" {

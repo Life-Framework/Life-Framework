@@ -1,4 +1,4 @@
-// red-proof: PENDING (game busy): run `tools\cli test --no-build --red LF_Test_WelcomeGuide,LF_Test_WelcomeGuideWorld,LF_Test_WelcomeGuidePersist` and paste the RED-OK line here.
+// red-proof: observed 2026-11-22 `tools/cli test --no-build --red LF_Test_WelcomeGuide,LF_Test_WelcomeGuideWorld,LF_Test_WelcomeGuidePersist`: RED PROOF OK (all 3 fail with the hook on); quests/welcome-guide fails its first-spawn mark assertion. Green with `--only` (26 assertions).
 //! Welcome guide rules, no world: a new character's guide is pending once, a repeat mark is one mark,
 //! an empty id is refused, "Don't show again" clears it for good, export and apply round-trip the set and
 //! skip bad rows, the auto open waits for a standing body with nothing else on screen, and each
