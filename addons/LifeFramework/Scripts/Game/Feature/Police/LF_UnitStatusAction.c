@@ -8,7 +8,7 @@ class LF_UnitStatusAction : ScriptedUserAction
 	protected bool m_bBusy;
 
 	//! How far from the car the server accepts a radio press, in metres (inside the cab or at the door).
-	static const float REACH = 6.0;
+	static const float REACH = 6.0;	// lf-fixed: the car's own size (cab to driver door), not a balance knob
 
 	//------------------------------------------------------------------------------------------------
 	bool IsBusyRow()
