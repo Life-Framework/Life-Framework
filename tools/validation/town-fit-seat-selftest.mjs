@@ -21,6 +21,7 @@
 //   cutWalls returning []                                        -> FAIL clip: a counter half through a wall was not refused (and the shallow one stayed in it)
 //   the `standoff` term in the wall branch removed               -> FAIL standoff: a wall row with standoff 0.07 stands at z -3.745, not 0.07 m off the wall
 //   the `lift` line in seatRows removed                          -> FAIL lift: a floor row with lift -0.045 stands at y 0.200, not 0.155 (2026-11-19)
+//   the `keepY` guard in the floor branch removed                -> FAIL keepY: a floor row with keepY stands at y 0.200, not at its kit height 0.286 (#3888, 2026-11-22)
 //   (#3552, 2026-11-19, each broken once, FAIL seen, then restored)
 //   terrain branch using the centre height only                  -> FAIL terrain row: the row rests on the centre ground, so its high corner sinks into the slope
 //   the terrain branch removed (row left at the kit height)      -> FAIL terrain row: y ... is not the highest ground under its footprint
@@ -138,6 +139,25 @@ for (const [floorY, what] of [[0.5, "sank"], [0, "floated"]]) {
   const res = await seat.seatRows(rows, kitRows, HOST, { reader: reader({ "Fixture/Host.et": room(0.2) }) });
   check(near(local(rows[0].coords)[1], 0.2 - 0.045), `lift: a floor row with lift -0.045 stands at y ${local(rows[0].coords)[1].toFixed(3)}, not 0.155`);
   check(res.rows[0].notes.some((n) => /lifted/.test(n)), "lift: the seat report does not say the row was lifted");
+}
+
+// ---- a kit row's `keepY` leaves the offset y as the island height: a floor 8.6 cm over the model's top surface (jail laundry tub, #3888)
+{
+  const rows = [at("kept", -3, 0.086 + 0.2, 2), at("snapped", 3, 0.086 + 0.2, 2)];
+  const kitRows = [{ id: "kept", verb: "on floor", role: "interactable", prefab: STALL, keepY: true }, { id: "snapped", verb: "on floor", role: "interactable", prefab: STALL }];
+  const res = await seat.seatRows(rows, kitRows, HOST, { reader: reader({ "Fixture/Host.et": room(0.2) }) });
+  check(near(local(rows[0].coords)[1], 0.286), `keepY: a floor row with keepY stands at y ${local(rows[0].coords)[1].toFixed(3)}, not at its kit height 0.286`);
+  check(res.rows[0].notes.some((n) => /keepY/.test(n)), "keepY: the seat report does not say the row kept its height");
+  check(near(local(rows[1].coords)[1], 0.2), `keepY: a floor row without it was not snapped to the floor (y ${local(rows[1].coords)[1].toFixed(3)})`);
+}
+
+// ---- a wall row moved along its wall stays where the kit put it; only its depth is seated (jail kitchen sink, #3888)
+{
+  const rows = [at("home", 0, 1.5, -2.5, 0), at("sideways", 1.4, 1.5, -2.5, 0)];
+  const kitRows = rows.map((r) => ({ id: r.id, verb: "against wall", role: "alarm", on: "wall", prefab: STALL }));
+  await seat.seatRows(rows, kitRows, HOST, { reader: reader({ "Fixture/Host.et": room(0.2) }) });
+  check(near(local(rows[1].coords)[0], 1.4) && near(local(rows[0].coords)[0], 0), `wall sideways: the seat moved a row along the wall (x ${local(rows[1].coords)[0].toFixed(3)}, want 1.4)`);
+  check(near(local(rows[1].coords)[2], local(rows[0].coords)[2]), "wall sideways: a row moved along the wall was not seated on the same plane");
 }
 
 // ---- a kit row's `standoff` stands a wall row off the wall plane (a stepped facade under a long fascia, #3685)

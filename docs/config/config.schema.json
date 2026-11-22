@@ -1336,6 +1336,11 @@
           "description": "An on-duty officer who kills a suspect with wanted above 0 is not charged with murder",
           "default": true
         },
+        "alphaInstantApproval": {
+          "type": "boolean",
+          "description": "ALPHA ONLY: a police application filed at the station desk is approved at once, with no playtime gate, cooldown or trial, so testers can clock in without an administrator. Off on a live server",
+          "default": false
+        },
         "searchCooldownSeconds": {
           "type": "integer",
           "description": "Seconds before the same player or vehicle can be searched for chain goods again. A repeat inside it is not rolled again. 0 disables",

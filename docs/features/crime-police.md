@@ -446,6 +446,12 @@
   demotion takes off the officer every issued armory item the new rank's offer gate refuses and turns its serial in
   (`LF_PoliceRanks.StripKitAboveRank`, logged `kit above rank <r> taken from <uid>`, toast); an offline officer loses
   it at their next spawn. Plain kit lines with no serial (spike strip, roadblock kit) are not tracked and stay.
+- 🧪 **Alpha: the station desk approves on submit** (rc 0.2.0, LOGIC `police/alpha-instant-approval`). Owner key
+  `police.alphaInstantApproval` (off by default; on in `server/flagship/config.json` for the alpha only) makes
+  `LF_PoliceApplicationForm` take the playtest path (`LF_PoliceApplicationRules.ApprovesOnSubmit`): the application is filed
+  without the playtime gate or cooldown and `ApproveInstant` puts the account on the roster with no trial, so any player
+  can apply at the duty desk and clock in without an administrator. Log `approved on submit: police.alphaInstantApproval
+  is on (alpha only)`. Turn it off before the server opens to the public (`server/flagship/README.md` "Alpha pacing").
 - 🔨 **An expired trial ends the shift** (#2416, in-dev). `LF_PoliceTrialSweep` runs on the server every
   `trialSweepSeconds` (60): it expires trials (`ExpireTrials`), then clocks out each connected on-duty officer whose
   trial ended unpromoted and who may no longer clock in (`LF_PoliceApplications.TrialExpiredFor`, roster check), through
@@ -899,3 +905,4 @@
   back desk and the street bench, bin and flowerpots (their layer height was read as height above terrain, #3938) are gone. The front fascia
   row is left out: no seat on the villa's front wall cleared the shell audit (follow-up). The audit of the layer reports no floating,
   displaced, clipping, door-blocking or unreachable row. The kit's source layer is archived at `tools/town/kits/sources/police.layer`.
+- 🧪 (2026-11-22) **Island jail stations seated on the real floor and out of the door swing (#3888).** The laundry tub was 8.6 cm into the island floor and the kitchen sink 0.4 m into the cell door's swing. The kit row of the tub now carries `keepY` with its island height (`town fit` used to snap every floor row back to the model's top surface), and the sink moved 0.65 m along its wall (z) to stand clear; all three stations are still inside the cell's 2 m zone. Merged, in-dev.
