@@ -69,6 +69,9 @@ class LF_SignStyleDef : LF_ConfigRecord
 	[Attribute("120", UIWidgets.EditBox, "Largest row font, layout units")]
 	int m_iRowFontMax;
 
+	[Attribute("0", UIWidgets.EditBox, "Most rows the face prints (a timetable lists every stop). 0: LF_SignFacePlan.MAX_ROWS")]
+	int m_iMaxRows;
+
 	[Attribute(".", UIWidgets.EditBox, "Leader between a row's label and value ('' draws none)")]
 	string m_sLeader;
 }
@@ -257,6 +260,8 @@ class LF_SignStyleList : LF_ConfigList
 		if (container.IsVariableSetDirectly("m_iTitleFontMax") && container.Get("m_iTitleFontMax", style.m_iTitleFontMax))
 			changed++;
 		if (container.IsVariableSetDirectly("m_iRowFontMax") && container.Get("m_iRowFontMax", style.m_iRowFontMax))
+			changed++;
+		if (container.IsVariableSetDirectly("m_iMaxRows") && container.Get("m_iMaxRows", style.m_iMaxRows))
 			changed++;
 		if (container.IsVariableSetDirectly("m_sLeader") && container.Get("m_sLeader", style.m_sLeader))
 			changed++;
