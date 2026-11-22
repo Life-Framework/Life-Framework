@@ -57,7 +57,8 @@ for (const [route, html] of htmlByRoute) {
   for (const raw of refs) {
     const ref = raw.replace(/&amp;/g, "&");
     checked++;
-    if (ref.startsWith("mailto:")) continue;
+    // The player manual page embeds its pictures inline (docs/player-manual/build.mjs), so they carry no path to check.
+    if (ref.startsWith("mailto:") || ref.startsWith("data:")) continue;
     if (/^https?:\/\//.test(ref)) {
       const m = REPO_PREFIX.exec(ref);
       if (m) {
