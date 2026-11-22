@@ -4,7 +4,7 @@
 //! picks a character (or registers a new one while slots remain) before spawning, and can change
 //! character later at the town clerk (LF_CharacterSwitch). A pack overlay of this class (the mission
 //! header's m_aLF_ConfigOverlays) sets the fields it writes directly over the core file: the Everon
-//! pack allows 3. A missing or broken file logs once and falls back to 1.
+//! pack allows 3 and opens each new account with its own starting bank. A missing or broken file logs once and falls back to 1.
 [BaseContainerProps(configRoot: true)]
 class LF_CharacterConfig
 {
@@ -28,6 +28,10 @@ class LF_CharacterConfig
 
 	[Attribute("120", UIWidgets.Auto, "Seconds after a player hits or is hit by another player during which they cannot change character", params: "0 3600")]
 	int m_iSwitchCombatSeconds;
+
+	//! -1 keeps the game mode's own opening bank (LF_SpawnLogic.m_iStartingBank); 0 or more replaces it.
+	[Attribute("-1", UIWidgets.Auto, "Opening bank balance of a newly registered character. -1 keeps the game mode's value; a pack sets the figure its economy is built around", params: "-1 1000000")]
+	int m_iStartingBank;
 
 	protected static ref LF_CharacterConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -111,6 +115,12 @@ class LF_CharacterConfig
 			changed++;
 		}
 
+		if (root.IsVariableSetDirectly("m_iStartingBank") && root.Get("m_iStartingBank", value) && value >= -1)
+		{
+			m_iStartingBank = value;
+			changed++;
+		}
+
 		return changed;
 	}
 
@@ -165,6 +175,17 @@ class LF_CharacterConfig
 			return DEFAULT_MAX_AGE;
 
 		return config.m_iMaxAge;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The opening bank balance a pack sets, or `fallback` (the game mode's own value) when none does.
+	static int StartingBank(int fallback)
+	{
+		LF_CharacterConfig config = Get();
+		if (!config || config.m_iStartingBank < 0)
+			return fallback;
+
+		return config.m_iStartingBank;
 	}
 
 	//------------------------------------------------------------------------------------------------

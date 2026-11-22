@@ -6,7 +6,7 @@ A new character wakes on a bunk in the **hostel** (a town house just north of th
 [Saint-Philippe map](maps.md)). Step off the bed and go downstairs. The hostel and the square outside are **safe zones**:
 nobody can shoot you there.
 
-You start with **$1,000 in the bank** and very little cash, a work jacket, boots, and a **folded paper map** in your pack.
+You start with **$1,250 in the bank** and very little cash, a work jacket, boots, and a **folded paper map** in your pack.
 After you die or rejoin you do not wake in the hostel again; see [Money](02-money.md) and [Medic](08-medic.md).
 
 ## The arrival quest
