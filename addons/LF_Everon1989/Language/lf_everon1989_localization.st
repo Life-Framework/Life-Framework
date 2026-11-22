@@ -171,7 +171,7 @@ StringTable {
     }
     CustomStringTableItem "{A1503228206CA07A}" {
      Id "LF-Activity_Mining_Car_Note"
-     Target_en_us "Take a car out of your garage; any car will do, since the rocks, the furnace and the buyer all sit on the brow."
+     Target_en_us "Take a car out of your garage: the mine is up on the brow and the iron buyer is at the dock; any car will do."
      Comment "Mining step note, one sentence. Skipped when a car is already out or none is owned."
     }
     CustomStringTableItem "{842F70CE54DD26A6}" {
@@ -226,17 +226,17 @@ StringTable {
     }
     CustomStringTableItem "{59BB5E3FDEEBA658}" {
      Id "LF-Activity_Mining_Pitch"
-     Target_en_us "Swing a pickaxe on Coalman's Brow, smelt the ore and sell the bars at the furnace."
+     Target_en_us "Swing a pickaxe on Coalman's Brow, smelt the ore at the mine and sell the bars at the dock."
      Comment "Activity pitch, one line."
     }
     CustomStringTableItem "{2777AEB12A56E04F}" {
      Id "LF-Activity_Mining_Sell_Note"
-     Target_en_us "Sell the bars at the counter beside the furnace for $20 each."
+     Target_en_us "Drive the bars down to the iron counter in the dock wholesale warehouse; it pays $20 a bar."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{122ADCC1D2DD3D46}" {
      Id "LF-Activity_Mining_Sell_Title"
-     Target_en_us "Sell your bars"
+     Target_en_us "Sell your bars at the dock"
      Comment "Mining step title."
     }
     CustomStringTableItem "{43FB216022439923}" {
@@ -248,36 +248,6 @@ StringTable {
      Id "LF-Activity_Mining_Smelt_Title"
      Target_en_us "Smelt a bar"
      Comment "Mining step title."
-    }
-    CustomStringTableItem "{B40DAE6878EFB15A}" {
-     Id "LF-Activity_Parcel_Depot_Note"
-     Target_en_us "Walk to the parcel counter at the post office."
-     Comment "Parcel step note, one sentence."
-    }
-    CustomStringTableItem "{7FD2C7929791AAD0}" {
-     Id "LF-Activity_Parcel_Depot_Title"
-     Target_en_us "Go to the post office"
-     Comment "Parcel step title."
-    }
-    CustomStringTableItem "{9F67BE22C4D5858D}" {
-     Id "LF-Activity_Parcel_Name"
-     Target_en_us "Parcel run"
-     Comment "Activity name: the courier's parcel round."
-    }
-    CustomStringTableItem "{577CD395B8D0F3CD}" {
-     Id "LF-Activity_Parcel_Pitch"
-     Target_en_us "Pick up a parcel at the post office and drop it at the address on the label."
-     Comment "Activity pitch, one line."
-    }
-    CustomStringTableItem "{25C2D495AA6AF75C}" {
-     Id "LF-Activity_Parcel_Run_Note"
-     Target_en_us "Sign up as a courier, take a parcel and drop it at the house marked on your map."
-     Comment "Parcel step note, one sentence."
-    }
-    CustomStringTableItem "{03B1F72609E4002F}" {
-     Id "LF-Activity_Parcel_Run_Title"
-     Target_en_us "Deliver a parcel"
-     Comment "Parcel step title."
     }
     CustomStringTableItem "{35FC580FEECB6912}" {
      Id "LF-Activity_Police_Clockin_Note"
@@ -308,6 +278,46 @@ StringTable {
      Id "LF-Activity_Police_Pitch"
      Target_en_us "Clock in at the police station and patrol for a wage."
      Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{8AA24D7948EBB5BF}" {
+     Id "LF-Activity_Postal_Licence_Note"
+     Target_en_us "The van needs a driving licence: get one at the licence desk for $100."
+     Comment "Postal step note, one sentence. Skipped when held."
+    }
+    CustomStringTableItem "{DEC2262628F576DE}" {
+     Id "LF-Activity_Postal_Licence_Title"
+     Target_en_us "Get a driving licence"
+     Comment "Postal step title."
+    }
+    CustomStringTableItem "{1E5B2469908D677D}" {
+     Id "LF-Activity_Postal_Name"
+     Target_en_us "Postal van run"
+     Comment "Activity name: the postal van run (#4088)."
+    }
+    CustomStringTableItem "{E8719AC98DC5C7D4}" {
+     Id "LF-Activity_Postal_Pitch"
+     Target_en_us "Drive the post van from Saint-Philippe to Meaux and back with the mail sacks."
+     Comment "Activity pitch, one line."
+    }
+    CustomStringTableItem "{0E80D44F91010478}" {
+     Id "LF-Activity_Postal_Run_Note"
+     Target_en_us "Take the postal van run, load the sacks, drive to Meaux, unload, and hand the run in back here."
+     Comment "Postal step note, one sentence."
+    }
+    CustomStringTableItem "{BF34A22351ED41D7}" {
+     Id "LF-Activity_Postal_Run_Title"
+     Target_en_us "Do a postal run"
+     Comment "Postal step title."
+    }
+    CustomStringTableItem "{7A6B85F66F6B4C2C}" {
+     Id "LF-Activity_Postal_Stand_Note"
+     Target_en_us "Walk to the post-box stand on the side wall of the parcel kiosk."
+     Comment "Postal step note, one sentence."
+    }
+    CustomStringTableItem "{645193A536E66A9D}" {
+     Id "LF-Activity_Postal_Stand_Title"
+     Target_en_us "Go to the post stand"
+     Comment "Postal step title."
     }
     CustomStringTableItem "{D260354EBA36FC1E}" {
      Id "LF-Anniversary_Memorial_Title"
@@ -2456,7 +2466,7 @@ StringTable {
     }
     CustomStringTableItem "{4242821AC9CE0804}" {
      Id "LF-MapPoi_Mine"
-     Target_en_us "Iron mine"
+     Target_en_us "Mine"
      Comment "Map label of the iron mine on Coalman's Brow (the Workplace/mine slot row, Everon 1989 pack)."
     }
     CustomStringTableItem "{046B777F2F3B3DC1}" {

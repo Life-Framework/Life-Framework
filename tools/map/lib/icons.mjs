@@ -33,6 +33,8 @@ export const PACK_KINDS = [
   "Grocer", "Bakery", "Butcher", "Cafe", "Market", "News", "Clothing", "Hardware", "Guns", "Pharmacy", "Barber",
   "Furniture", "FarmSupply", "Wholesale", "Orchard", "Wheat", "Woodlot", "Mine", "Plant", "Smokehouse", "Board",
   "PlotForSale", "CarLot", "Range",
+  // Types that still shared a quad with another (map clean-up 2026-11-22), and the bus stop that had none.
+  "FarmYard", "SeedFeed", "FuelDepot", "Supermarket", "TimberMerchant", "LoggingYard", "BusStop", "PostOffice",
 ];
 
 // Tileable hatch textures (PolygonDrawCommand.m_pTexture): not imageset quads.

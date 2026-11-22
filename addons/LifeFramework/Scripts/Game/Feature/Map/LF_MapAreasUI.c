@@ -84,7 +84,9 @@ class LF_MapAreasDraw
 	static const float HEAVY_OFF = 8;	// lf-fixed: its gap
 	//! A dashed outline of an area this long on screen would need more dashes than this: it is drawn solid.
 	static const int MAX_DASHES = 400;	// lf-fixed: bounds the canvas commands of one huge area
-	static const float LABEL_SIZE = 18;	// lf-fixed: reference pixels, same as the body text
+	static const float LABEL_SIZE = 13;	// lf-fixed: reference pixels, a small edge note, not a headline
+	//! The gap between the outline and its label, reference pixels.
+	static const float LABEL_GAP = 3;	// lf-fixed
 	static const float LABEL_CHAR_WIDTH = 0.5;	// lf-fixed: average glyph width as a fraction of the size, to centre a label
 	//! Texture coordinates per reference pixel for the 64 px hatch tile: one tile every 32 px.
 	static const float HATCH_UV_SCALE = 0.03125;	// lf-fixed: the 64 px tile (period 8) shows a 4 px stripe period
@@ -376,7 +378,8 @@ class LF_MapAreasDraw
 
 		if (ppu >= LABEL_MIN_PPU && !labelText.IsEmpty())
 		{
-			// The middle of the outline's screen box: where the label is centred.
+			// Small type just under the outline, centred on it (above it when the bottom edge is off the
+			// canvas): a label over the middle sat on the badges inside the zone (map clean-up, 2026-11-22).
 			LF_MapAreaCmd label = new LF_MapAreaCmd();
 			label.m_eKind = LF_MapAreaCmdKind.LABEL;
 			label.m_sToken = look.m_sLineToken;
@@ -384,10 +387,13 @@ class LF_MapAreasDraw
 			label.m_sText = labelText;
 			label.m_fSize = LABEL_SIZE;
 			float cx = (minX + maxX) / 2;
-			float cy = (minY + maxY) / 2;
+			float top = maxY + LABEL_GAP;
+			if (top + LABEL_SIZE > viewH)
+				top = minY - LABEL_GAP - LABEL_SIZE;
+
 			label.m_aVertices.Insert(cx - labelText.Length() * LABEL_SIZE * LABEL_CHAR_WIDTH / 2);
-			label.m_aVertices.Insert(cy - LABEL_SIZE / 2);
-			if (cx >= 0 && cx <= viewW && cy >= 0 && cy <= viewH)
+			label.m_aVertices.Insert(top);
+			if (cx >= 0 && cx <= viewW && top >= 0 && top + LABEL_SIZE <= viewH)
 				into.Insert(label);
 		}
 
