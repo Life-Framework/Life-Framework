@@ -20,12 +20,12 @@
     "footprint": {
       "source": "rows",
       "min": [
-        -9,
+        -8,
         -8
       ],
       "max": [
-        8,
-        13
+        13,
+        9
       ]
     },
     "front": null,
@@ -41,11 +41,11 @@
       "verb": "against wall",
       "mount": "terrain",
       "offset": [
+        -8,
         0,
-        0,
-        -8
+        0
       ],
-      "yaw": 0,
+      "yaw": 90,
       "wall": "free",
       "floor": "f0"
     },
@@ -59,9 +59,9 @@
       "offset": [
         -6,
         0,
-        -6
+        6
       ],
-      "yaw": 90,
+      "yaw": 180,
       "wall": "free",
       "floor": "f0"
     },
@@ -73,11 +73,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        6,
+        -6,
         0,
         -6
       ],
-      "yaw": 90,
+      "yaw": 180,
       "wall": "free",
       "floor": "f0"
     },
@@ -91,9 +91,9 @@
       "offset": [
         -2.5,
         0,
-        -2.5
+        2.5
       ],
-      "yaw": 0,
+      "yaw": 90,
       "wall": "free",
       "floor": "f0"
     },
@@ -105,11 +105,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        2.6,
+        -2.8,
         0,
-        -2.8
+        -2.6
       ],
-      "yaw": 0,
+      "yaw": 90,
       "wall": "free",
       "floor": "f0"
     },
@@ -121,11 +121,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -1.6,
+        -4,
         0,
-        -4
+        1.6
       ],
-      "yaw": 0,
+      "yaw": 90,
       "wall": "free",
       "floor": "f0"
     },
@@ -137,11 +137,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -6.5,
+        1,
         0,
-        1
+        6.5
       ],
-      "yaw": 20,
+      "yaw": 110,
       "wall": "free",
       "floor": "f0"
     },
@@ -153,11 +153,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -3,
+        3.5,
         0,
-        3.5
+        3
       ],
-      "yaw": 140,
+      "yaw": -130,
       "wall": "free",
       "floor": "f0"
     },
@@ -169,11 +169,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        0.5,
+        1,
         0,
-        1
+        -0.5
       ],
-      "yaw": 75,
+      "yaw": 165,
       "wall": "free",
       "floor": "f0"
     },
@@ -185,11 +185,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        3.8,
+        4,
         0,
-        4
+        -3.8
       ],
-      "yaw": -110,
+      "yaw": -20,
       "wall": "free",
       "floor": "f0"
     },
@@ -201,11 +201,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        6.8,
+        1,
         0,
-        1
+        -6.8
       ],
-      "yaw": -50,
+      "yaw": 40,
       "wall": "free",
       "floor": "f0"
     },
@@ -217,11 +217,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -0.5,
+        6.5,
         0,
-        6.5
+        0.5
       ],
-      "yaw": -160,
+      "yaw": -70,
       "wall": "free",
       "floor": "f0"
     },
@@ -233,11 +233,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        6,
+        10,
         0,
-        10
+        -6
       ],
-      "yaw": 180,
+      "yaw": -90,
       "wall": "free",
       "floor": "f0"
     },
@@ -249,11 +249,11 @@
       "verb": "against wall",
       "mount": "terrain",
       "offset": [
-        8,
+        9,
         0,
-        9
+        -8
       ],
-      "yaw": -160,
+      "yaw": -70,
       "wall": "free",
       "floor": "f0"
     },
@@ -265,11 +265,11 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -6,
+        10,
         0,
-        10
+        6
       ],
-      "yaw": 180,
+      "yaw": -90,
       "config": [
         {
           "component": "LF_WorkplaceComponent",
@@ -291,11 +291,11 @@
       "verb": "against wall",
       "mount": "terrain",
       "offset": [
-        -9,
+        13,
         0,
-        13
+        9
       ],
-      "yaw": 180,
+      "yaw": -90,
       "config": [
         {
           "component": "LF_SignComponent",
@@ -319,11 +319,11 @@
       "verb": "against wall",
       "mount": "terrain",
       "offset": [
-        1.5,
+        12.5,
         0,
-        12.5
+        -1.5
       ],
-      "yaw": 180,
+      "yaw": -90,
       "wall": "free",
       "floor": "f0"
     },
@@ -335,13 +335,14 @@
       "verb": "on mine-buyer-counter",
       "mount": "terrain",
       "offset": [
-        1.5,
-        1.04,
-        12.5
+        12.5,
+        0,
+        -1.5
       ],
-      "yaw": 180,
+      "yaw": -90,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 1.04
     }
   ]
 }

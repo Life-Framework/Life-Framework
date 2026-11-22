@@ -241,7 +241,7 @@ the pump says "The tanks are dry. The depot truck is due."
 
 **Status:** ✅ live. One iron mine is open on **Coalman's Brow**, the hill just south of the village. Copper, coal and stone come later.
 
-* **Where:** the **iron mine** (sign *Coalman's Brow mine*, map label **Iron mine**) on the brow about 400 m south of the square, past the farms.
+* **Where:** the **iron mine** (sign *Coalman's Brow mine*, map label **Iron mine**) on the wooded north side of the brow, about 350 m south-west of the square past the farms; the track off the road to the west leads up to it.
   It has the **miner's desk**, six rust-veined **iron rocks**, a **furnace** and an **iron buyer**'s counter. The **pickaxe** is sold at the
   **miners' supply** till in the **hardware store** on the south-east road (and in the general store).
 * **How to start:** take the **miner job** at the desk by the mine. Then buy a **pickaxe** ($150) at the miners' supply till in the

@@ -1,4 +1,4 @@
-// red-proof: RedProof() asks the gate as a buyer outside the miner job, skips the rock and furnace spawns, the sign lookup and the POI row, and reads the buyer rows without the pack layer, so every check below fails.
+// red-proof: 2026-11-22 `tools\cli test --no-build --red LF_Test_EveronMiningLoop`: RED PROOF OK. RedProof() asks the gate as a buyer outside the miner job, skips the rock and furnace spawns, the sign lookup and the POI row, and reads the buyer rows without the pack layer, so every check below fails.
 //! everon/mining-loop: under the Everon 1989 header (the pack leg), the one mining loop a new player runs on the island
 //! (Coalman's Brow iron mine) holds end to end. A MINER at level 1 can buy the pickaxe at the miners' supply till (and a
 //! player outside the job is sent to the desk first); the iron rock prefab is an ore node on the `iron` row, which wants

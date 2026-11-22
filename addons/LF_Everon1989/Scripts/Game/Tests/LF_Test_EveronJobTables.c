@@ -1,4 +1,4 @@
-// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronJobTables`: RED PROOF OK (RedProof() reads no gates, looks for the pickaxe in the stock and for an outlet no pack names). Green with the overlays in the pack leg.
+// red-proof: 2026-11-18 `tools\cli test --no-build --red LF_Test_EveronJobTables`: RED PROOF OK (RedProof() reads no gates, looks for the pickaxe in the stock and for an outlet no pack names). Green with the overlays in the pack leg. 2026-11-22 (pickaxe from level 1): with m_iMinRank 2 back, `--only LF_Test_EveronJobTables` FAILED "a new miner (level 1) can buy the pickaxe"; with 1 it passes.
 //! everon/job-tables (#2710, slice of #1018): under the Everon 1989 header (the pack leg of `tools\cli test`),
 //! every pack job has a level table with one unlock per level (a track whose thresholds make levels 2..N, and
 //! exactly one licence gate on each of those levels), the hardware store stock has the shovel from a base-game
