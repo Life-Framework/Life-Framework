@@ -45,3 +45,10 @@ button: **Start** (available), **Guide me** (running: the waypoint goes back to 
 `activities/next-activities-world` (WORLD: a character runs a 3-step activity through the quest
 system), pack `everon/activities` (the Everon table loads, its prefabs and targets resolve). Harness:
 `playermenu open next`, `activities state|pick <n>|go`; proof `next-activities-proof`.
+
+## Adding an activity later (the postal run)
+
+A pack adds an activity with one overlay row (`m_sOp "add"`, a new `m_sId`), or replaces one (`m_sOp "patch"` on
+`parcel` with new steps, or `"remove"` then `"add"`). The postal truck job slots in that way when it ships: its row
+names its own place kind, pay, and steps (for example ARRIVE at its depot, then a `job.run_complete:<job>` SIGNAL
+objective). No core change is needed.
