@@ -42,6 +42,12 @@
   held offer; RplProps written on spawn, on change, and every 10 s); the
   server decides from the registry. Two-client proof:
   `node agent-box/session.mjs org [--shot]`.
+- ✅ (2026-11-23, GA-C5 #4214) Decline sits beside Join on the action list: slot `org_decline`
+  (`LF_OrgDeclineRole`, `Feature/Organizations/LF_OrgInviteActions.c`), shown exactly when
+  `org_invite` reads Join. `LF_OrgInvites.Decline` drops only the offer of the one faced (a
+  wrong inviter or a lapsed offer is refused and logged); both players get a toast and the
+  invitee's offer copy clears. All four entries (invite, join, decline, remove) are
+  `LF_PlayerRoleAction` rows in the character's vanilla action list. LOGIC `org/invite-actions`.
 - ✅ (2026-11-12, #750a) Ranks are a ladder with a rights bitmask
   (`LF_OrgRights`; bit = `LF_EOrganizationPermission`: withdraw, invite, kick,
   buy upgrade, manage ranks, use stash, and the reserved declare war, manage

@@ -1,19 +1,19 @@
 // Proves the mining chains of `tools\cli economy` (#3240, E1 of #3206): a fixture recipe and curve give an exact $/h
-// (trips an hour x product, less reagent and fuel), the duty band flags a chain whose ratio is outside 1.5 to 2.5 and
-// says which way, a premium purse is spent before the wholesale curve and refills (first hour full, steady hour the
+// (trips an hour x product, less reagent and fuel), the pay ladder (#4178) flags a chain paying under the lowest duty
+// shift, a premium purse is spent before the wholesale curve and refills (first hour full, steady hour the
 // refill), a lot-priced curve pays per lot (fractionally), a load over what the vehicle carries is a problem, the
 // chains read from planted configs, and the shipped report carries all five chains. It also proves the three mining
 // recipes in `validate-profit-loops`: a missing recipe fails, an all-shop-bought recipe and a shop-to-trader reagent loop
 // are found.
 // inputs: tools/lib/economy-mining.mjs, tools/lib/economy-mining-recipes.mjs, tools/lib/economy.mjs, tools/economy/mining-assumptions.json, tools/economy/profit-loops.mjs, tools/validation/economy-mining-selftest.mjs
 // red-proof: before tools/lib/economy-mining.mjs existed this selftest died on the missing import and exited 1; with the
-// reagent cost left out of computeMiningLoop the "net $400/h" check printed "FAIL net 500/h"; with DUTY_BAND.max raised to
-// 3.5 the "3.0x is too thin" check printed FAIL; restored, it prints "economy-mining-selftest: OK".
+// reagent cost left out of computeMiningLoop the "net $400/h" check printed "FAIL net 500/h"; with the band check (DUTY_BAND.max
+// raised to 3.5) the "3.0x is too thin" check printed FAIL; restored, it prints "economy-mining-selftest: OK".
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { MINING_RECIPES, findMiningRecipeLoops, sellPrices } from "../lib/economy-mining-recipes.mjs";
-import { bandSide, buildMining, computeMiningLoop, miningFlags, recipeOf, renderMining, sellCurve, simulateSales, tripCapacity } from "../lib/economy-mining.mjs";
+import { buildMining, computeMiningLoop, miningFlags, recipeOf, renderMining, sellCurve, simulateSales, tripCapacity } from "../lib/economy-mining.mjs";
 import { buildReport, renderReport } from "../lib/economy.mjs";
 import { DEFAULT_SOURCES, parseConf, loadShop } from "../economy/profit-loops.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -49,21 +49,19 @@ const chain = {
   reagents: [{ item: "acid", unitCost: 2 }], km: { mineToPlant: 1, plantToBuyer: 2, returnToMine: 1 }, overheadMinutes: 1, fuelPerHour: 0,
 };
 const recipe = { gatheredPerBatch: 2, outputPerBatch: 1, reagentPerBatch: { acid: 1 }, maxBatches: 5, processSeconds: 60 };
-const loop = computeMiningLoop({ chain, assumptions: a, recipe, curve: flat, premium: null, duty: { police: 900, medic: 792 } });
+const loop = computeMiningLoop({ chain, assumptions: a, recipe, curve: flat, premium: null, duty: { police: 350, medic: 480 } });
 expect(loop.tripMinutes === 12 && loop.tripsPerHour === 5, `a 12 minute trip, 5 trips an hour (got ${loop.tripMinutes}, ${loop.tripsPerHour})`);
 expect(loop.productPerTrip === 10 && loop.unitsPerHour === 50, `10 bars a trip, 50 an hour (got ${loop.productPerTrip}, ${loop.unitsPerHour})`);
 expect(loop.grossSteady === 500 && loop.costPerHour === 100, `gross 500, reagent 5 trips x 10 batches x 2 = 100 (got ${loop.grossSteady}, ${loop.costPerHour})`);
 expect(loop.steady === 400 && loop.first === 400, `net 400/h (got ${loop.steady}/${loop.first})`);
-expect(near(loop.ratios[0].ratio, 2.25) && !loop.flagged && bandSide(loop) === "in band", `900 / 400 is 2.25x and in band (got ${JSON.stringify(loop.ratios)})`);
-expect(near(loop.ratios[1].ratio, 1.98), `792 / 400 is 1.98x (got ${loop.ratios[1].ratio})`);
+expect(near(loop.ratios[0].ratio, 0.88) && !loop.flagged && loop.floor === 350, `$400 is above the $350 Cadet shift (got ${JSON.stringify(loop.ratios)})`);
+expect(near(loop.ratios[1].ratio, 1.2), `480 / 400 is 1.2x (got ${loop.ratios[1].ratio})`);
 const withFuel = computeMiningLoop({ chain: { ...chain, fuelPerHour: 40 }, assumptions: a, recipe, curve: flat, premium: null, duty: { police: 900 } });
 expect(withFuel.steady === 360, `fuel $40 an hour comes off the net (got ${withFuel.steady})`);
 const thin = computeMiningLoop({ chain, assumptions: a, recipe, curve: flat, premium: null, duty: { police: 1200 } });
-expect(thin.flagged && near(thin.ratios[0].ratio, 3) && bandSide(thin) === "too thin", `1200 / 400 is 3.0x, too thin (got ${thin.ratios[0].ratio} ${bandSide(thin)})`);
-const rich = computeMiningLoop({ chain, assumptions: a, recipe, curve: flat, premium: null, duty: { police: 500 } });
-expect(rich.flagged && near(rich.ratios[0].ratio, 1.25) && bandSide(rich) === "too rich", `500 / 400 is 1.25x, too rich (got ${bandSide(rich)})`);
-expect(!computeMiningLoop({ chain, assumptions: a, recipe, curve: flat, premium: null, duty: { police: 600 } }).flagged, "600 / 400 is 1.5x, in band");
-expect(miningFlags({ loops: [thin, loop, rich] }).length === 2 && miningFlags({ loops: [thin] })[0].kind === "mining-duty", "one mining-duty flag per out-of-band chain");
+expect(thin.flagged && near(thin.ratios[0].ratio, 3), `$400 under a $1200 shift is below the rung (got ${thin.ratios[0].ratio})`);
+expect(!computeMiningLoop({ chain, assumptions: a, recipe, curve: flat, premium: null, duty: { police: 400 } }).flagged, "$400 at a $400 shift is on the ladder");
+expect(miningFlags({ loops: [thin, loop] }).length === 1 && miningFlags({ loops: [thin] })[0].kind === "mining-duty" && /Cadet shift/.test(miningFlags({ loops: [thin] })[0].text), "one mining-duty flag per chain below the rung");
 const slow = computeMiningLoop({ chain: { ...chain, vehicle: "foot", km: { mineToPlant: 5, plantToBuyer: 5, returnToMine: 5 } }, assumptions: a, recipe, curve: flat, premium: null, duty: { police: 900 } });
 expect(slow.tripsPerHour < 1 && slow.steady > 0 && slow.steady < 100, `a long walk earns a fraction of a trip an hour, not zero (got ${slow.steady}, ${slow.tripsPerHour} trips)`);
 const premium = computeMiningLoop({ chain, assumptions: a, recipe, curve: flat, premium: { price: 20, cap: 20, refillPerHour: 10, lotSize: 1 }, duty: { police: 900 } });
@@ -85,22 +83,22 @@ const rec = recipeOf(parseConf(chainsConf), "smelter-fx", { reagents: [{ item: "
 expect(rec && rec.gatheredPerBatch === 2 && rec.reagentPerBatch.acid === 1 && rec.maxBatches === 5 && rec.processSeconds === 60 && rec.outputPerBatch === 1, `recipe read from the machine (got ${JSON.stringify(rec)})`);
 const assumptionsFile = join(dir, "mining.json");
 writeFileSync(assumptionsFile, JSON.stringify({ ...a, chains: [{ ...chain, recipe: "smelter-fx", reagents: [{ item: "acid", guidName: "Acid", unitCost: 2 }], buyer: null, wholesaleGood: "3333333333333333" }] }));
-const got = buildMining({ root: dir, addonsDir: join(dir, "addons"), packLayers: [], owner: null, duty: { police: 900, medic: 792 }, opts: { miningAssumptions: assumptionsFile } });
+const got = buildMining({ root: dir, addonsDir: join(dir, "addons"), packLayers: [], owner: null, duty: { police: 350, medic: 480 }, opts: { miningAssumptions: assumptionsFile } });
 expect(got.problems.length === 0 && got.loops.length === 1 && got.loops[0].steady === 400, `planted configs give the fixture's $400/h (problems: ${got.problems.join("; ")}, steady ${got.loops[0]?.steady})`);
-expect(renderMining(got).some((l) => /LOOP fixture: steady \$400\/h net, first hour \$400\/h; duty .* in band/.test(l)), "the loop line prints net steady, first hour and the band");
+expect(renderMining(got).some((l) => /LOOP fixture: steady \$400\/h net, first hour \$400\/h; duty .* on the ladder/.test(l)), "the loop line prints net steady, first hour and the rung");
 writeFileSync(assumptionsFile, JSON.stringify({ ...a, chains: [{ ...chain, recipe: "gone", reagents: [], buyer: null, wholesaleGood: "3333333333333333" }] }));
 const gone = buildMining({ root: dir, addonsDir: join(dir, "addons"), packLayers: [], owner: null, duty: { police: 900 }, opts: { miningAssumptions: assumptionsFile } });
 expect(gone.loops.length === 0 && /no machine 'gone'/.test(gone.problems.join()), "a recipe the config lacks prints a problem, not a crash");
 const none = buildMining({ root: join(dir, "nowhere"), addonsDir: join(dir, "nowhere", "addons"), packLayers: [], owner: null, duty: { police: 900 } });
 expect(none.loops.length === 0 && /mining loops skipped/.test(none.problems.join()), "no assumptions file prints a problem, not a crash");
 
-// 6. The shipped report: all five chains, flags exactly for the out-of-band ones, and every chain has a haul and a plant.
+// 6. The shipped report: all five chains, flags exactly for the ones below the rung, and every chain has a haul and a plant.
 const rep = buildReport(root, {});
 const ids = (rep.mining?.loops ?? []).map((l) => l.id);
 expect(!rep.error && ["iron-pickup", "copper-car", "stone-truck", "stone-foot", "coal-feeder"].every((i) => ids.includes(i)), `the real report has the five mining chains (got ${ids.join(", ")}; ${rep.mining?.problems?.join("; ")})`);
 expect((rep.mining?.problems ?? []).length === 0, `no mining problem in the real report (${rep.mining?.problems?.join("; ")})`);
 expect(renderReport(rep).some((l) => l.startsWith("mining loops")), "the report prints the mining section");
-expect(rep.flags.filter((f) => f.kind === "mining-duty").length === rep.mining.loops.filter((l) => l.flagged).length, "a mining-duty flag per out-of-band chain");
+expect(rep.flags.filter((f) => f.kind === "mining-duty").length === rep.mining.loops.filter((l) => l.flagged).length, "a mining-duty flag per chain below the rung");
 for (const l of rep.mining?.loops ?? []) expect(l.tripMinutes > 0 && l.driveMinutes > 0 && Number.isFinite(l.steady), `${l.id}: a real trip with a haul`);
 const truck = rep.mining?.loops.find((l) => l.id === "stone-truck");
 expect(truck && truck.batchesPerTrip === 15 && truck.productPerTrip === 30, `a truck trip of 60 limestone is 15 batches and 30 bags (got ${truck?.batchesPerTrip}, ${truck?.productPerTrip})`);
