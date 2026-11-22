@@ -33,7 +33,8 @@ enum LF_EBusStep
 	CANCEL_MOVED,
 	CANCEL_HURT,
 	CANCEL_STATE,
-	CANCEL_NO_ARRIVAL
+	CANCEL_NO_ARRIVAL,
+	CANCEL_ASKED
 }
 
 //------------------------------------------------------------------------------------------------
@@ -549,7 +550,33 @@ class LF_BusStop
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The string-table key of a refusal, for the sheet and the toast.
+	//! Server: the passenger takes back a waiting ticket (the "Cancel trip" action). The fare is refunded
+	//! like any other cancel. False, logged, when there is no waiting trip or the bus is already leaving.
+	static bool CancelAsked(int playerId, string key)
+	{
+		LF_BusTrip trip = TripOf(playerId, key);
+		if (!trip)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("bus cancel refused for %1: no waiting ticket", key));
+			return false;
+		}
+
+		if (trip.m_bDeparting)
+		{
+			LF_Debug.Warn(FEATURE, string.Format("bus cancel refused for %1: the bus is already leaving", trip.m_sKey));
+			return false;
+		}
+
+		s_mTrips.Remove(trip.m_iSlot);
+		Cancel(trip, Resolve(trip.m_BodyId), LF_EBusStep.CANCEL_ASKED);
+		if (s_mTrips.IsEmpty())
+			StopTicking();
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The string-table key of a refusal, for the action list and the toast.
 	static string RefusalKey(LF_EBusRefusal refusal)
 	{
 		switch (refusal)
@@ -581,6 +608,7 @@ class LF_BusStop
 			case LF_EBusStep.CANCEL_MOVED: return "#LF-BusStop_CancelMoved";
 			case LF_EBusStep.CANCEL_HURT: return "#LF-BusStop_CancelHurt";
 			case LF_EBusStep.CANCEL_NO_ARRIVAL: return "#LF-BusStop_CancelNoArrival";
+			case LF_EBusStep.CANCEL_ASKED: return "#LF-BusStop_CancelAsked";
 		}
 
 		return "#LF-BusStop_CancelState";
@@ -632,6 +660,7 @@ class LF_BusStop
 		}
 
 		LF_Debug.Info(FEATURE, string.Format("bus wait cancelled for %1 (%2 to %3): %4, refunded %5 of %6 to %7", trip.m_sKey, trip.m_sFrom, trip.m_sTo, typename.EnumToString(LF_EBusStep, step), refunded, trip.m_iFare, where));
+		LF_BusTravelClient.SendDone(trip.m_iPlayerId, false);
 		if (trip.m_iPlayerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(trip.m_iPlayerId, "#LF-BusStop_Title", CancelKey(step), 6.0, LF_ENotificationType.WARNING);
 	}
@@ -695,6 +724,7 @@ class LF_BusStop
 
 		s_mArrivedAt.Set(trip.m_sKey, LF_CharacterSwitch.Now());
 		LF_BusTravelClient.SendFade(trip.m_iPlayerId, false, config.m_fFadeSeconds);
+		LF_BusTravelClient.SendDone(trip.m_iPlayerId, true);
 		LF_Debug.Info(FEATURE, string.Format("bus arrived: %1 from %2 to %3 at %4 (fare %5)", trip.m_sKey, trip.m_sFrom, trip.m_sTo, spot, trip.m_iFare));
 		if (trip.m_iPlayerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(trip.m_iPlayerId, "#LF-BusStop_Title", "#LF-BusStop_Arrived", 5.0, LF_ENotificationType.INFO, LF_BusStopComponent.LabelOf(LF_Places.Find(PLACE_KIND, trip.m_sTo), trip.m_sTo));

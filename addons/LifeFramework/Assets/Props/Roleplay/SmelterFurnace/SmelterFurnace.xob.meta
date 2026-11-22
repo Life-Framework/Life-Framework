@@ -4,8 +4,20 @@ MetaFileClass {
   FBXResourceClass PC {
    MaterialAssigns {
     MaterialAssignClass "{3C2E1D1192EA0FB4}" {
-     SourceMaterial "SmelterFurnace"
-     AssignedMaterial "{4536B0ACC7D1CE34}Assets/Props/Roleplay/SmelterFurnace/Data/SmelterFurnace.emat"
+     SourceMaterial "SF_Brick"
+     AssignedMaterial "{CECAF4578A68F7DC}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Brick.emat"
+    }
+    MaterialAssignClass "{70C6BE62DE5E3F17}" {
+     SourceMaterial "SF_Iron"
+     AssignedMaterial "{1E2320A11E390DB7}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Iron.emat"
+    }
+    MaterialAssignClass "{B60D803F05A0F991}" {
+     SourceMaterial "SF_Door"
+     AssignedMaterial "{2C7C15E9DF99317C}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Door.emat"
+    }
+    MaterialAssignClass "{246BE2DAC8C9DD3D}" {
+     SourceMaterial "SF_Rust"
+     AssignedMaterial "{38C5C11F087023FE}Assets/Props/Roleplay/SmelterFurnace/Data/SF_Rust.emat"
     }
    }
    MeshParams {
@@ -13,10 +25,26 @@ MetaFileClass {
     }
    }
    GeometryParams {
-    GeometryParam UBX_SmelterFurnace {
-     LayerPreset "ItemFireView"
+    GeometryParam UBX_SmelterFurnace_01 {
+     LayerPreset "PropFireView"
      SurfaceProperties {
-      "{3B2D2687F56BB4EF}Common/Materials/Game/WeaponParts/weapon_metal.gamemat"
+      "{B393F062AAE9EB74}Common/Materials/Game/brick.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+    GeometryParam UBX_SmelterFurnace_02 {
+     LayerPreset "PropFireView"
+     SurfaceProperties {
+      "{B393F062AAE9EB74}Common/Materials/Game/brick.gamemat"
+     }
+     Mass 0
+     Margin 0
+    }
+    GeometryParam UBX_SmelterFurnace_03 {
+     LayerPreset "PropFireView"
+     SurfaceProperties {
+      "{B393F062AAE9EB74}Common/Materials/Game/brick.gamemat"
      }
      Mass 0
      Margin 0

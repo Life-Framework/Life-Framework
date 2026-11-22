@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{8246BFFC28CE0FD0}Assets/Props/Commercial/ShopCounter/Data/SC_Dark.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}
