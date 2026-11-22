@@ -85,7 +85,7 @@ GenericEntity Fit_saint_philippe_clothing_lf_mannequin_suit : "{88F59F323FF25661
  angleY 63
 }
 GenericEntity Fit_saint_philippe_clothing_lf_mannequin_backpack : "{F0BD498E7E7D7C6D}Prefabs/Props/Clothing/LF_Mannequin_Backpack.et" {
- coords 4443.36 11.499 10786.825
+ coords 4443.329 11.499 10786.887
  angleY -177
 }
 GenericEntity Fit_saint_philippe_clothing_clothing_stock : "{B7F7DA7E20CBDC08}Prefabs/Buildings/ClothingStore/ClothingStore_Stock.et" {
