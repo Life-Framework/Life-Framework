@@ -201,9 +201,9 @@ class LF_DialogueScene
 		SetText("Hint", "");
 		ShowRows();
 		Freeze(true);
+		LF_DialogueFacing.Begin(npc, LF_Utils.GetLocalCharacter());
 		if (!LF_DialogueCamera.Start(npc))
 			LF_Debug.Warn(LF_Dialogue.FEATURE, "the conversation runs without its camera");
-
 
 		LF_DialogueVoice.Attend(npc, true);
 		GetGame().GetCallqueue().CallLater(Tick, 0, true);
@@ -674,6 +674,7 @@ class LF_DialogueScene
 
 		Freeze(false);
 		LF_DialogueCamera.Stop();
+		LF_DialogueFacing.End();
 		string id = s_Config.m_sId;
 		ResetStatics();
 		LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("scene with '%1' closed: %2", id, reason));

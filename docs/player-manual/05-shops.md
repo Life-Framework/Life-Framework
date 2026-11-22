@@ -25,7 +25,7 @@ The numbers in the first column are the numbers on the [Saint-Philippe map](maps
 
 | Where | What |
 |---|---|
-| **Town hall** (registry clerk) | Driving licence **$100** |
+| **Town hall** (town clerk) | Driving licence **$100** |
 | **Gun store** | Firearm permit **$250** (instant in the alpha). Weapons need the permit |
 | **Car lot** | Seven cars, $560 to $6,400 at the alpha price. Paid from the bank. A driving licence is needed |
 | **Garage** | Car parts **$200**, repair kit **$80**. Buys scrap metal **$4**, copper wire **$12**, rubber scrap **$5** |

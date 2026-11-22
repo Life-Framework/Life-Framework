@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_DialogueFlow`: setting LF_DialogueCamera.FOV to 30 (the old face close-up) failed `dialogue/flow` with `- the one framing is a medium shot, not a face close-up`. Restored; green. Earlier: made LF_DialogueFlow.IsOffered return true; got `- a reply that was not offered cannot be picked`.
+// red-proof: 2026-11-22 (A8, A11): the camera asserts now read the side-on two-shot, FaceYaw, LF_DialogueFacing.Turns and LF_WaypointHud.HiddenFor; the run on the unchanged code did not compile (no such members), and green after the change (`--only LF_Test_DialogueFlow`). Earlier: Observed 2026-11-13 with `tools/cli test --no-build --only LF_Test_DialogueFlow`: setting LF_DialogueCamera.FOV to 30 (the old face close-up) failed `dialogue/flow` with `- the one framing is a medium shot, not a face close-up`. Restored; green. Earlier: made LF_DialogueFlow.IsOffered return true; got `- a reply that was not offered cannot be picked`.
 // LF_DialogueFlow.IsOffered return true; got `[LFTEST] FAIL dialogue/flow`,
 // `- a reply that was not offered cannot be picked`. Restored; green.
 //! The rules of an NPC conversation (Feature/Dialogue/LF_DialogueConfig.c, LF_DialogueFlow): a
@@ -129,25 +129,33 @@ class LF_Test_DialogueFlow : LF_Test
 		ctx.EqualFloat(6, LF_DialogueFlow.HoldSeconds(null, 100), 0.001, "a bare caption holds for reading time");
 		ctx.EqualFloat(LF_DialogueFlow.SILENT_SECONDS_MIN, LF_DialogueFlow.HoldSeconds(null, 3), 0.001, "a short bare caption still holds long enough to see");
 
-		// Camera: ONE framing for the whole talk, over the player's shoulder, the same at any distance
-		// of the two heads and whatever way the NPC faces. It looks at the NPC's head.
+		// Camera: ONE framing for the whole talk, a side-on two-shot: both faces in profile and in frame, from the
+		// player's right of the line between the heads, the same whatever way the NPC faces (A8).
 		vector npcHead = "10 1.7 10";
 		vector playerHead = "10 1.7 12";
 		vector position;
 		vector lookAt;
 		float fov;
 		LF_DialogueCamera.Frame(npcHead, playerHead, position, lookAt, fov);
-		ctx.True(vector.Distance(lookAt, npcHead) < 0.01, "the shot looks at the NPC's head");
+		vector middle = (npcHead + playerHead) * 0.5;
+		ctx.True(vector.Distance(lookAt, middle) < 0.01, "the shot looks at the middle between the two heads, so both faces are in frame");
 		ctx.EqualFloat(LF_DialogueCamera.FOV, fov, 0.001, "the shot uses the one field of view");
 		ctx.True(fov >= 38 && fov <= 50, "the one framing is a medium shot, not a face close-up (a close-up is about 30 degrees)");
-		ctx.True(vector.Distance(position, npcHead) > vector.Distance(playerHead, npcHead), "the shot stands behind the player, not in the NPC's face");
-		ctx.True(vector.Distance(position, npcHead) > 2, "the shot keeps the NPC at conversation distance, never a close-up of the face");
-		ctx.True(vector.Distance(position, playerHead) < 1.1, "the shot stays at the player's shoulder");
+		vector axis = playerHead - npcHead;
+		axis.Normalize();
+		vector fromMiddle = position - middle;
+		ctx.True(Math.AbsFloat(vector.Dot(fromMiddle, axis)) < 0.05, "the shot stands square to the line between the heads, so both faces are in profile");
+		ctx.True(vector.Distance(position, middle) >= LF_DialogueCamera.TWO_SHOT_MIN && vector.Distance(position, middle) <= LF_DialogueCamera.TWO_SHOT_MAX + 0.2, "the shot keeps conversation distance");
 		ctx.True(vector.Distance(position, playerHead) > LF_DialogueCamera.HEAD_KEEP_OUT, "the shot stands outside the player's head");
-		vector other = "10 1.7 11.5";
-		vector positionNear;
-		LF_DialogueCamera.Frame(npcHead, other, positionNear, lookAt, fov);
-		ctx.EqualFloat(vector.Distance(position, playerHead), vector.Distance(positionNear, other), 0.001, "the shot sits the same way against the player's head wherever the player stands");
+		ctx.EqualFloat(0, LF_DialogueCamera.FaceYaw("0 0 0", "0 0 5"), 0.01, "a body looking along +Z has yaw 0");
+		ctx.EqualFloat(90, LF_DialogueCamera.FaceYaw("0 0 0", "5 0 0"), 0.01, "a body turned to +X has yaw 90");
+		ctx.EqualFloat(180, Math.AbsFloat(LF_DialogueCamera.FaceYaw("0 0 0", "0 0 -5")), 0.01, "a body turned to -Z has yaw 180");
+		ctx.True(LF_DialogueFacing.Turns(true, false, false), "a still counter NPC turns to the player");
+		ctx.False(LF_DialogueFacing.Turns(true, true, false), "a stunned NPC keeps lying where it is");
+		ctx.False(LF_DialogueFacing.Turns(true, false, true), "a seated NPC keeps its seat");
+		ctx.False(LF_DialogueFacing.Turns(false, false, false), "a driven character is left alone");
+		ctx.True(LF_WaypointHud.HiddenFor(true, false) && LF_WaypointHud.HiddenFor(false, true), "the world waypoint is hidden while a conversation is up (A11)");
+		ctx.False(LF_WaypointHud.HiddenFor(false, false), "the world waypoint shows again when the talk is over");
 		vector positionRepeat;
 		LF_DialogueCamera.Frame(npcHead, playerHead, positionRepeat, lookAt, fov);
 		ctx.True(vector.Distance(position, positionRepeat) < 0.0001, "the framing depends on the two heads only, so the NPC's speaking cannot move it");
