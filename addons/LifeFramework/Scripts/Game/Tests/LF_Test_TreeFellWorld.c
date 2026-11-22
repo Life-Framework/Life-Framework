@@ -1,4 +1,4 @@
-// red-proof: 2026-11-19, `--only LF_Test_TreeFellWorld` before the change: LF_FellAction, LF_FelledTrees and LF_OnTreeFelled did not exist, so the test could not compile. `--red LF_Test_TreeFellWorld` skips the first fell, so the hidden, ledger, logs, XP and already-felled checks fail.
+// red-proof: 2026-11-19, `--only LF_Test_TreeFellWorld` before the change: LF_FellAction, LF_FelledTrees and LF_OnTreeFelled did not exist, so the test could not compile. `--red LF_Test_TreeFellWorld` skips the first fell, so the hidden, ledger, logs, XP and already-felled checks fail. 2026-11-22: the far-side log check fails on the old ring drop (half its logs lay on the feller side), passes with LF_TreeFall.
 //! lumber/tree-fell-world (#3260): a character with an axe fells a real vanilla tree. The tree is hidden
 //! and in the ledger, its logs lie on the ground along the line it fell, away from the feller, the LUMBERJACK XP rose, a second fell is
 //! refused ALREADY_FELLED, and a fell without the axe is refused NO_AXE with nothing changed.

@@ -105,10 +105,10 @@ class LF_TreeFallPlan
 			float along = LOG_START_M + logLenM / 2 + i * pitch;
 			float across = 0;
 			if (stagger)
-				across = ((i % 2) * 2 - 1) * LOG_SIDE_M;
+				across = ((i - (i / 2) * 2) * 2 - 1) * LOG_SIDE_M;
 
 			// A small turn per log so the row does not look stamped.
-			float yaw = yawDeg + ((i % 3) - 1) * 4;
+			float yaw = yawDeg + ((i - (i / 3) * 3) - 1) * 4;
 			spots.Insert(LF_TreeFallSpot.Make(foot + dir * along + side * across, yaw));
 		}
 

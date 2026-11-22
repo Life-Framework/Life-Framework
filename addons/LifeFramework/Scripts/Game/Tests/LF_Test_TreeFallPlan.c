@@ -1,4 +1,4 @@
-// red-proof: pending, the batched `--red LF_Test_TreeFallPlan,LF_Test_TreeFallLogs` run waits for a free game licence (tmp/handoff-tree-fall-logs.md).
+// red-proof: 2026-11-22, `--red LF_Test_TreeFallPlan,LF_Test_TreeFallLogs`: RED PROOF OK (all 2 listed test(s) fail with the hook on); the hook skips the log plan / the drop, so the yield-count, ground and sweep checks fail.
 //! lumber/tree-fall-plan: where a felled tree's pieces go. One log spot per log the yield gives, all on the
 //! far side from the feller along the fallen line, none overlapping; the fall angle rises to the landing
 //! and bounces once; the branch count is capped; the loose-log book forgets a taken or moved log, deletes

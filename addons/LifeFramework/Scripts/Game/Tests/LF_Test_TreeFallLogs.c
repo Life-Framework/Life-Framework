@@ -1,4 +1,4 @@
-// red-proof: pending, the batched `--red LF_Test_TreeFallPlan,LF_Test_TreeFallLogs` run waits for a free game licence (tmp/handoff-tree-fall-logs.md).
+// red-proof: 2026-11-22, `--red LF_Test_TreeFallPlan,LF_Test_TreeFallLogs`: RED PROOF OK (all 2 listed test(s) fail with the hook on); the hook skips the log plan / the drop, so the yield-count, ground and sweep checks fail.
 //! lumber/tree-fall-logs: the logs a fell drops are the real pickup items. DropLogs spawns one shoulder-carry
 //! log item per log along the fallen line, each resting on the ground; hardwood trees drop the hardwood
 //! log; the sweep keeps fresh logs, forgets one a player carried away (never deleting it) and deletes the

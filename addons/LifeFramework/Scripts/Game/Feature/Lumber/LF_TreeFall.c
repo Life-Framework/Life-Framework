@@ -152,6 +152,49 @@ class LF_TreeFall
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness: the nearest standing map tree within `radius` that passes every felling rule, the axe,
+	//! the reach and stamina aside (a tree in a garden by a house or on a verge does not count).
+	static IEntity NearestFellable(vector from, float radius)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		LF_TreeFellingConfig config = LF_TreeFellingConfig.Get();
+		if (!world || !config)
+			return null;
+
+		LF_FelledTreeQuery query = new LF_FelledTreeQuery();
+		world.QueryEntitiesBySphere(from, radius, query.Collect, null, EQueryEntitiesFlags.ALL);
+		IEntity best;
+		float bestGap = float.MAX;
+		foreach (IEntity entity : query.m_aEntities)
+		{
+			if (!Tree.Cast(entity) || LF_FelledTreesReplication.IsHidden(entity))
+				continue;
+
+			float gap = vector.Distance(entity.GetOrigin(), from);
+			if (gap >= bestGap)
+				continue;
+
+			LF_FellFacts facts = new LF_FellFacts();
+			facts.m_bHasAxe = true;
+			facts.m_sPrefab = LF_FellAction.PrefabOf(entity);
+			if (facts.m_sPrefab.IsEmpty())
+				continue;
+
+			vector at = entity.GetOrigin();
+			facts.m_bInSafeZone = LF_Zones.IsSafe(at);
+			facts.m_fRoadDistanceM = LF_FelledTrees.RoadDistance(at, config.m_fRoadClearM);
+			facts.m_fBuildingDistanceM = LF_FelledTrees.BuildingDistance(at);
+			if (LF_TreeFelling.Check(facts, config) != LF_FellRefusal.OK)
+				continue;
+
+			bestGap = gap;
+			best = entity;
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The tree's height from its world bounds.
 	static float HeightOf(notnull IEntity tree)
 	{
@@ -544,10 +587,11 @@ class LF_TreeFall
 		int spawned;
 		foreach (int i, LF_TreeFallSpot spot : spots)
 		{
-			Resource model = Resource.Load(meshes[i % meshes.Count()]);
+			ResourceName meshName = meshes[i - (i / meshes.Count()) * meshes.Count()];
+			Resource model = Resource.Load(meshName);
 			if (!model || !model.IsValid())
 			{
-				LF_Debug.Error(FEATURE, "tree fall: branch mesh does not load: " + meshes[i % meshes.Count()]);
+				LF_Debug.Error(FEATURE, "tree fall: branch mesh does not load: " + meshName);
 				continue;
 			}
 
@@ -663,8 +707,9 @@ modded class LF_GameModeRoleplay
 
 //------------------------------------------------------------------------------------------------
 //! Harness `treefall` (dev gate on the server): the motion proof of a fell.
-//!   treefall fell [radius]  the server fells the nearest standing map tree to the character through
+//!   treefall fell [radius|key]  the server fells the tree a key from `find` names (or the nearest one) through
 //!                           LF_FellAction.TryFell as if the axe were in hand; the reply names the key and refusal
+//!   treefall find [radius]  the nearest standing tree that passes every felling rule but the axe and reach: `key=<key> pos=<x> <y> <z>`
 //!   treefall state          this peer's falling copies and branch props: `anims=<n> debris=<n>`
 modded class LF_AgentHarnessVerbs
 {
@@ -680,17 +725,36 @@ modded class LF_AgentHarnessVerbs
 		}
 
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
-		if (cmd.Arg1 != "fell" || !character)
+		if (cmd.Arg1 == "find" && character)
 		{
-			LF_AgentHarness.Answer(cmd.Id, "error", "usage: treefall fell [radius] | state (fell needs a character)");
+			float findRadius = 80;
+			if (!cmd.Arg2.IsEmpty())
+				findRadius = cmd.Arg2.ToFloat();
+
+			IEntity fellable = LF_TreeFall.NearestFellable(character.GetOrigin(), findRadius);
+			if (!fellable)
+			{
+				LF_AgentHarness.Answer(cmd.Id, "error", string.Format("no fellable tree (rules passed, axe and reach aside) within %1 m", findRadius));
+				return true;
+			}
+
+			vector at = fellable.GetOrigin();
+			LF_AgentHarness.Answer(cmd.Id, "ok", string.Format("key=%1 pos=%2 %3 %4", LF_FellAction.KeyOfTree(fellable), at[0], at[1], at[2]));
 			return true;
 		}
 
-		float radius = 12;
-		if (!cmd.Arg2.IsEmpty())
-			radius = cmd.Arg2.ToFloat();
+		if (cmd.Arg1 != "fell" || !character)
+		{
+			LF_AgentHarness.Answer(cmd.Id, "error", "usage: treefall find [radius] | fell [radius|key] | state (find and fell need a character)");
+			return true;
+		}
 
-		character.LF_AskHarnessTreeFall(cmd.Id, radius);
+		// A key from `find` names one tree; a number is a radius for the nearest one.
+		string target = cmd.Arg2;
+		if (target.IsEmpty())
+			target = "12";
+
+		character.LF_AskHarnessTreeFall(cmd.Id, target);
 		return true;
 	}
 }
@@ -699,20 +763,20 @@ modded class LF_AgentHarnessVerbs
 modded class SCR_ChimeraCharacter
 {
 	//------------------------------------------------------------------------------------------------
-	void LF_AskHarnessTreeFall(int commandId, float radius)
+	void LF_AskHarnessTreeFall(int commandId, string target)
 	{
 		if (Replication.IsServer())
 		{
-			LF_HarnessTreeFallDo(commandId, radius);
+			LF_HarnessTreeFallDo(commandId, target);
 			return;
 		}
 
-		Rpc(RpcAsk_LF_HarnessTreeFall, commandId, radius);
+		Rpc(RpcAsk_LF_HarnessTreeFall, commandId, target);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_HarnessTreeFall(int commandId, float radius)
+	protected void RpcAsk_LF_HarnessTreeFall(int commandId, string target)
 	{
 		if (!LF_DevGate.CheckHarnessRequest(this, "treefall"))
 		{
@@ -720,17 +784,32 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		LF_HarnessTreeFallDo(commandId, radius);
+		LF_HarnessTreeFallDo(commandId, target);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	protected void LF_HarnessTreeFallDo(int commandId, float radius)
+	protected void LF_HarnessTreeFallDo(int commandId, string target)
 	{
-		int noPrefab;
-		IEntity tree = LF_FelledTreesReplication.NearestTree(GetOrigin(), radius, noPrefab);
+		IEntity tree;
+		if (target.Length() > 256)
+		{
+			LF_HarnessReply(commandId, "error", "treefall: target too long");
+			return;
+		}
+
+		if (target.Contains(":"))
+		{
+			tree = LF_FelledTreesReplication.FindTree(target);
+		}
+		else
+		{
+			int noPrefab;
+			tree = LF_FelledTreesReplication.NearestTree(GetOrigin(), target.ToFloat(), noPrefab);
+		}
+
 		if (!tree)
 		{
-			LF_HarnessReply(commandId, "error", string.Format("no standing map tree within %1 m", radius));
+			LF_HarnessReply(commandId, "error", "treefall: no standing map tree for " + target);
 			return;
 		}
 
