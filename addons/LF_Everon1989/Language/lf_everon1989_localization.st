@@ -1869,6 +1869,11 @@ StringTable {
      Target_en_us "Mine"
      Comment "Map POI kind name (#3241): a mine, where a miner digs ore or coal (LF_Places kind mine). The map adds the town."
     }
+    CustomStringTableItem "{4242821AC9CE0804}" {
+     Id "LF-MapPoi_Mine"
+     Target_en_us "Iron mine"
+     Comment "Map label of the iron mine on Coalman's Brow (the Workplace/mine slot row, Everon 1989 pack)."
+    }
     CustomStringTableItem "{046B777F2F3B3DC1}" {
      Id "LF-MapPoi_Newsagent"
      Target_en_us "Newsagent"
@@ -2113,6 +2118,11 @@ StringTable {
      Id "LF-PoliceApp_Title"
      Target_en_us "Application to the Everon {Police}"
      Comment "Police application form title."
+    }
+    CustomStringTableItem "{7955F10958310917}" {
+     Id "LF-Process_SmeltIronOre"
+     Target_en_us "Smelt iron ore (3 make a bar)"
+     Comment "Action on the Coalman's Brow mine furnace (LF_MineFurnace.et, machine furnace-iron-mine, Everon 1989 pack)."
     }
     CustomStringTableItem "{B4A2D6F89C3E5071}" {
      Id "LF-Quest_AnniversaryChairs_Desc"
@@ -2988,6 +2998,21 @@ StringTable {
      Id "LF-Sign_Butcher_What"
      Target_en_us "The village butcher: dried meat, tinned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
+    }
+    CustomStringTableItem "{1DF3BFB27FDA81CC}" {
+     Id "LF-Sign_CoalmansBrowMine_How"
+     Target_en_us "Take the miner job at the desk, buy a pickaxe at the miners' supply till in the hardware store, swing at the rust-veined rocks and pick up the ore. Three pieces make one bar at the furnace; sell the bars at the counter beside it."
+     Comment "Sign card for the Coalman's Brow mine plate, How section."
+    }
+    CustomStringTableItem "{B30D7B3198E25E1E}" {
+     Id "LF-Sign_CoalmansBrowMine_Title"
+     Target_en_us "Coalman's Brow mine"
+     Comment "Title of the pole plate at the iron mine on Coalman's Brow (Everon 1989 pack). Printed on the sign and shown in the prompt as Read: Coalman's Brow mine."
+    }
+    CustomStringTableItem "{938AC44BCAEB5DA8}" {
+     Id "LF-Sign_CoalmansBrowMine_What"
+     Target_en_us "Iron ore in the hillside, a furnace to smelt it, the miners' desk and a buyer for iron bars."
+     Comment "Sign card for the Coalman's Brow mine plate, What section."
     }
     CustomStringTableItem "{155AD337C15BEB65}" {
      Id "LF-Sign_ConvoyDrop_How"

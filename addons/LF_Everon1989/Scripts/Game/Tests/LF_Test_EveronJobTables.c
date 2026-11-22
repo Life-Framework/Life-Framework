@@ -2,7 +2,8 @@
 //! everon/job-tables (#2710, slice of #1018): under the Everon 1989 header (the pack leg of `tools\cli test`),
 //! every pack job has a level table with one unlock per level (a track whose thresholds make levels 2..N, and
 //! exactly one licence gate on each of those levels), the hardware store stock has the shovel from a base-game
-//! item, and the pickaxe is sold at the miners' supply outlet only to a MINER past the first level.
+//! item, and the pickaxe is sold at the miners' supply outlet to any MINER from the first level (a new miner has no
+//! other way to earn MINER XP: only pickaxe gathers pay it).
 //! Medic ranks wait on a pack overlay for `LF_MedicConfig` (the core has none yet), so they are not read here.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronJobTables : LF_Test
@@ -121,6 +122,6 @@ class LF_Test_EveronJobTables : LF_Test
 			return;
 
 		ctx.EqualStr("MINER", pickaxeOffer.m_sJob, "the pickaxe row is gated on the MINER job");
-		ctx.True(pickaxeOffer.m_iMinRank >= 2, "the pickaxe is sold only past the first miner level");
+		ctx.True(pickaxeOffer.m_iMinRank <= 1, "a new miner (level 1) can buy the pickaxe");
 	}
 }
