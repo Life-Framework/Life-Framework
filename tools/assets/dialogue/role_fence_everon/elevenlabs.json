@@ -1,0 +1,76 @@
+{
+  "id": "role_fence_everon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "de189f71a1b3b981",
+      "date": "2026-11-22",
+      "voice_id": "KZW681TTkoQ1dS9Hu5WY",
+      "voice_name": "Lucas - Deep, Raspy and Natural",
+      "model": "eleven_multilingual_v2",
+      "text": "You did not see me. Now, what are you after?",
+      "chars": 44,
+      "chars_total": 18,
+      "request_id": "uYozIkYzFh4F8NIHW76x",
+      "seconds": 2.03,
+      "mouth": "57489567555563431001379789997998621652000"
+    },
+    "what": {
+      "hash": "1b2229b3f3d13955",
+      "date": "2026-11-22",
+      "voice_id": "KZW681TTkoQ1dS9Hu5WY",
+      "voice_name": "Lucas - Deep, Raspy and Natural",
+      "model": "eleven_multilingual_v2",
+      "text": "I sell tools to people who do not ask what they are for. Locks are hard and the police are harder. Choose the right tool.",
+      "chars": 121,
+      "chars_total": 48,
+      "request_id": "5FPzdgKD6YmqdqcS4G8i",
+      "seconds": 5.9,
+      "mouth": "8966699248963836718944854987799824888538568874268741111138995698529997776935687587369845311111147974868731486421111100"
+    },
+    "where": {
+      "hash": "b518b822ba7ecc8d",
+      "date": "2026-11-22",
+      "voice_id": "KZW681TTkoQ1dS9Hu5WY",
+      "voice_name": "Lucas - Deep, Raspy and Natural",
+      "model": "eleven_multilingual_v2",
+      "text": "Ask nobody about me. Keep to the back streets.",
+      "chars": 46,
+      "chars_total": 18,
+      "request_id": "67a6GdilB8MLbdKfN5wZ",
+      "seconds": 2.65,
+      "mouth": "986546997498896897136765310262254643863424652431101000"
+    },
+    "rumour": {
+      "hash": "bb5c85ddcfa06184",
+      "date": "2026-11-22",
+      "voice_id": "KZW681TTkoQ1dS9Hu5WY",
+      "voice_name": "Lucas - Deep, Raspy and Natural",
+      "model": "eleven_multilingual_v2",
+      "text": "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the police.",
+      "chars": 92,
+      "chars_total": 37,
+      "request_id": "xRGm6iMFwA7etEj9IC42",
+      "seconds": 4.34,
+      "mouth": "579979998779968446999731667135872447667635854434331011997999633865456657586486873453100"
+    },
+    "bye": {
+      "hash": "be2fe40833b1ec69",
+      "date": "2026-11-22",
+      "voice_id": "KZW681TTkoQ1dS9Hu5WY",
+      "voice_name": "Lucas - Deep, Raspy and Natural",
+      "model": "eleven_multilingual_v2",
+      "text": "We never spoke.",
+      "chars": 15,
+      "chars_total": 6,
+      "request_id": "S8tB0FyngDe0NDnNYPp1",
+      "seconds": 1.07,
+      "mouth": "3697699868754498411000"
+    }
+  },
+  "voice": {
+    "id": "KZW681TTkoQ1dS9Hu5WY",
+    "name": "Lucas - Deep, Raspy and Natural",
+    "source": "voice library"
+  }
+}

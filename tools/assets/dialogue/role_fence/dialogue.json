@@ -1,0 +1,112 @@
+{
+  "id": "role_fence",
+  "name": "RoleFence",
+  "speaker_key": "#LF-NpcRole_fence_Name",
+  "text_only": true,
+  "hear_range_m": 12,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "what",
+          "next": "what"
+        },
+        {
+          "text": "where",
+          "next": "where"
+        },
+        {
+          "text": "rumour",
+          "next": "rumour"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "menu",
+      "options_from": "greet"
+    },
+    {
+      "id": "what",
+      "line": "what",
+      "options": [
+        {
+          "text": "browse",
+          "condition": "OpenShop",
+          "action": "OpenShop"
+        },
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "where",
+      "line": "where",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "rumour",
+      "line": "rumour",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "You did not see me. Now, what are you after?"
+    },
+    "what": {
+      "text": "I sell tools to people who do not ask what they are for. Locks are hard and the {police} are harder. Choose the right tool."
+    },
+    "where": {
+      "text": "Ask nobody about me. Keep to the back streets."
+    },
+    "rumour": {
+      "text": "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the {police}."
+    },
+    "bye": {
+      "text": "We never spoke."
+    }
+  },
+  "replies": {
+    "what": "What do you do here?",
+    "where": "Can you point me somewhere?",
+    "rumour": "Heard anything lately?",
+    "more": "One more thing.",
+    "bye": "Goodbye.",
+    "browse": "Show me what you've got."
+  }
+}

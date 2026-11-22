@@ -4,7 +4,7 @@
 // "complete" case asserts the same tree passes, so a check that always fails or never fails is caught.
 import { mkdirSync, writeFileSync, rmSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { ATLAS, FILES, catQuad, coreQuadNames, packQuadNames, layout, iconProblems, confRows } from "../map/lib/icons.mjs";
+import { ATLAS_SIZE, FILES, catQuad, coreQuadNames, packQuadNames, layout, iconProblems, confRows } from "../map/lib/icons.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
@@ -12,13 +12,13 @@ const check = (name, ok, detail = "") => {
   if (!ok) { failed++; console.log(`FAIL  ${name} ${detail}`); }
 };
 
-function imagesetText(guid, texPath, names, skip = []) {
-  const pos = layout(names);
+function imagesetText(guid, texPath, names, skip = [], size = ATLAS_SIZE.core) {
+  const pos = layout(names, size);
   const defs = names.filter((n) => !skip.includes(n)).map((n) => {
     const p = pos.get(n);
     return `  ImageSetDefClass ${n} {\n   Name "${n}"\n   Pos ${p.x} ${p.y}\n   Size ${p.w} ${p.h}\n   Flags 0\n  }\n`;
   }).join("");
-  return `ImageSetClass {\n RefSize ${ATLAS} ${ATLAS}\n Textures {\n  ImageSetTextureClass {\n   mpix 1\n   path "{${guid}}${texPath}"\n  }\n }\n Images {\n${defs} }\n}`;
+  return `ImageSetClass {\n RefSize ${size} ${size}\n Textures {\n  ImageSetTextureClass {\n   mpix 1\n   path "{${guid}}${texPath}"\n  }\n }\n Images {\n${defs} }\n}`;
 }
 
 function put(root, rel, text) {
@@ -33,7 +33,7 @@ function tree({ skipCore = [], skipPack = [] } = {}) {
   for (const side of ["core", "pack"]) {
     const f = FILES[side];
     const tex = f.atlas.slice(f.addon.length + 1);
-    put(root, f.imageset, imagesetText(guids[side], tex, side === "core" ? coreQuadNames() : packQuadNames(), side === "core" ? skipCore : skipPack));
+    put(root, f.imageset, imagesetText(guids[side], tex, side === "core" ? coreQuadNames() : packQuadNames(), side === "core" ? skipCore : skipPack, ATLAS_SIZE[side]));
     put(root, f.atlas, "edds");
     put(root, `${f.atlas}.meta`, `MetaFileClass {\n Name "{${guids[side]}}${tex}"\n}\n`);
     for (const h of f.hatch) { put(root, h, "edds"); put(root, `${h}.meta`, `MetaFileClass {\n Name "{CCCCCCCCCCCCCCC3}x"\n}\n`); }

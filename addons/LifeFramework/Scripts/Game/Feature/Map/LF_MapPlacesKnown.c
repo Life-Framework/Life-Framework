@@ -254,17 +254,17 @@ modded class LF_MapPlacesUI
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! A single heard-of place draws the faded pencil "?" instead of its kind's icon.
+	//! A heard-of place (alone or leading a crowded mark) draws the faded pencil "?" instead of its kind's icon.
 	//! (Through the layer's one candidate hook, so the icon is loaded once and the lookup is remembered, #2397.)
 	override protected void IconCandidates(notnull LF_MapClusterGroup group, notnull array<string> candidates)
 	{
-		if (!group.IsSingle() || group.m_eState != LF_EMapPoiState.FADED)
+		if (!group.HasLead() || group.m_eState != LF_EMapPoiState.FADED)
 		{
 			super.IconCandidates(group, candidates);
 			return;
 		}
 
-		LF_MapPoi poi = m_aPois[group.m_aMembers[0]];
+		LF_MapPoi poi = m_aPois[group.m_iLead];
 		LF_MapPlacesKnown.Candidates(group.m_eState, poi.m_sKind, poi.m_sIcon, poi.m_sCategory, candidates);
 	}
 }

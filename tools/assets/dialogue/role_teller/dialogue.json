@@ -1,0 +1,112 @@
+{
+  "id": "role_teller",
+  "name": "RoleTeller",
+  "speaker_key": "#LF-NpcRole_teller_Name",
+  "text_only": true,
+  "hear_range_m": 12,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "what",
+          "next": "what"
+        },
+        {
+          "text": "where",
+          "next": "where"
+        },
+        {
+          "text": "rumour",
+          "next": "rumour"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "menu",
+      "options_from": "greet"
+    },
+    {
+      "id": "what",
+      "line": "what",
+      "options": [
+        {
+          "text": "browse",
+          "condition": "OpenShop",
+          "action": "OpenShop"
+        },
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "where",
+      "line": "where",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "rumour",
+      "line": "rumour",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Good day. Welcome to the bank. How can I help?"
+    },
+    "what": {
+      "text": "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals."
+    },
+    "where": {
+      "text": "The post office is right beside us. The {town} board on the square lists the rest, and the {police} station is a short walk up the street."
+    },
+    "rumour": {
+      "text": "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business."
+    },
+    "bye": {
+      "text": "Good day. Mind your money."
+    }
+  },
+  "replies": {
+    "what": "What do you do here?",
+    "where": "Can you point me somewhere?",
+    "rumour": "Heard anything lately?",
+    "more": "One more thing.",
+    "bye": "Goodbye.",
+    "browse": "Show me what you've got."
+  }
+}

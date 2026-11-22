@@ -113,6 +113,10 @@ class LF_DialogueAudit
 
 		foreach (LF_RoleDef role : LF_Roles.All())
 		{
+			// A role that plays a registered dialogue is already in the index above.
+			if (!role.m_sDialogueId.IsEmpty())
+				continue;
+
 			LF_DialogueConfig roleConfig = LF_Roles.DialogueFor(role.m_sId);
 			if (roleConfig)
 				configs.Insert(roleConfig);

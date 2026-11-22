@@ -4,27 +4,27 @@
 //! species class and the chop time, and on completion asks `TryFell` on the server. TryFell is the one
 //! place that re-checks every LF_TreeFelling rule, so a forged perform cannot skip them. A fell
 //! hides the tree (visibility and collision off, never killed, so it can regrow), records its key in the
-//! LF_FelledTrees ledger, drops the logs beside the trunk, takes the stamina, pays the XP and publishes
+//! LF_FelledTrees ledger, draws the fall on every screen and drops the logs along the fallen line (LF_TreeFall), takes the stamina, pays the XP and publishes
 //! LF_OnTreeFelled and LF_OnGathered. A refusal toasts its Lumber string key and logs
 //! `[LFDebug:Lumber] fell refused: <reason>`.
 class LF_FellAction : ScriptedUserAction
 {
 	static const ResourceName AXE = "{9CAC68BA551417A4}Prefabs/Tools/Axe/Axe.et";
 	static const ResourceName LOG_PREFAB = "{32F5A906D8A573BC}Prefabs/Resources/WoodCutting/WoodLog_01_Small.et";
+	//! A hardwood tree drops the heavy log the sawmill's hardwood recipes take.
+	static const ResourceName HARDWOOD_LOG_PREFAB = "{FC7D57CC9C0798D7}Prefabs/Resources/WoodCutting/WoodLog_Hardwood.et";
 	//! The gather family a softwood fell pays through (LF_JobLevelSources pays gather_logging for it).
 	static const string FAMILY_LOGGING = "LOGGING";
 	//! Hardwood pays its own award (fell_hardwood) directly, so its event carries a family that pays nothing.
 	static const string FAMILY_HARDWOOD = "LOGGING_HARDWOOD";
 	static const string ACTION_FELL_HARDWOOD = "fell_hardwood";
-	//! Metres from the trunk the logs land, and the angle between two logs.
-	static const float LOG_RING_M = 1.2;
-	static const float LOG_STEP_DEG = 60;
-
 	//! The prompt helper that carries this action (client side, never replicated; LF_FellPrompt spawns it).
 	static const ResourceName HELPER = "{7A3C5E91D2B40F60}Prefabs/Lumber/LF_FellHelper.et";
 
 	//! The Duration the helper prefab declares, in seconds; the longest hardwood row (60 s).
 	static const float HELPER_DURATION_S = 60; // lf-fixed: mirrors the Duration in LF_FellHelper.et, not a tunable
+	//! Most ancestors read when a tree is not placed from a species prefab (a PrefabLibrary tree is one hop away).
+	static const int MAX_ANCESTRY = 12; // lf-fixed: a loop guard, not a tunable
 
 	protected IEntity m_Tree;
 
@@ -81,8 +81,8 @@ class LF_FellAction : ScriptedUserAction
 			return true;
 		}
 
-		LF_TreeYieldRow yield = LF_TreeFelling.YieldFor(PrefabOf(m_Tree), config);
-		LF_TreeKind kind = LF_TreeFelling.KindOf(PrefabOf(m_Tree), config);
+		LF_TreeYieldRow yield = LF_TreeFelling.YieldFor(TreePrefabOf(m_Tree), config);
+		LF_TreeKind kind = LF_TreeFelling.KindOf(TreePrefabOf(m_Tree), config);
 		string className = ClassName(kind.m_eClass);
 		string seconds = "";
 		if (yield)
@@ -117,7 +117,7 @@ class LF_FellAction : ScriptedUserAction
 		LF_TreeFellingConfig config = LF_TreeFellingConfig.Get();
 		if (m_Tree && config)
 		{
-			LF_TreeYieldRow yield = LF_TreeFelling.YieldFor(PrefabOf(m_Tree), config);
+			LF_TreeYieldRow yield = LF_TreeFelling.YieldFor(TreePrefabOf(m_Tree), config);
 			if (yield && yield.m_iChopSeconds > 0)
 				timeSlice = timeSlice * HELPER_DURATION_S / yield.m_iChopSeconds;
 		}
@@ -130,16 +130,17 @@ class LF_FellAction : ScriptedUserAction
 	//! caller's, read from the user's hands), then hides the tree, records the key, drops the logs,
 	//! takes the stamina, pays the XP and publishes the events.
 	//! \param axeInHands what HoldsAxe(user) said; a test passes it directly
-	//! \param[out] logs the log entities dropped, for the caller to track
+	//! \param[out] logs the log entities dropped, for the caller to track (empty while they wait for the landing)
+	//! \param dropDelayMs when the logs drop: -1 when the trunk lands (LF_TreeFallPlan.FALL_MS), 0 at once (a test)
 	//! \return OK on a fell, else the first refusal (logged, nothing changed)
-	static LF_FellRefusal TryFell(IEntity user, IEntity tree, bool axeInHands, out array<IEntity> logs)
+	static LF_FellRefusal TryFell(IEntity user, IEntity tree, bool axeInHands, out array<IEntity> logs, int dropDelayMs = -1)
 	{
 		logs = {};
 		if (!user || !tree)
 			return Refuse(LF_FellRefusal.NOT_A_TREE, "no user or no tree");
 
 		LF_TreeFellingConfig config = LF_TreeFellingConfig.Get();
-		ResourceName prefab = PrefabOf(tree);
+		ResourceName prefab = TreePrefabOf(tree);
 		string key = KeyOfTree(tree);
 		if (!Tree.Cast(tree) || prefab.IsEmpty())
 			return Refuse(LF_FellRefusal.NOT_A_TREE, "not a map tree");
@@ -154,18 +155,37 @@ class LF_FellAction : ScriptedUserAction
 		if (!LF_FelledTrees.Ledger().Fell(key, LF_FelledTrees.NowS(), config.RegrowSecondsOf(kind.m_eClass)))
 			return Refuse(LF_FellRefusal.ALREADY_FELLED, key);
 
+		// Read the tree before it is hidden: where it stands, how tall, and which way it falls (away from the player).
+		vector foot = tree.GetOrigin();
+		float height = LF_TreeFall.HeightOf(tree);
+		float yaw = LF_TreeFallPlan.FallYaw(user.GetOrigin(), foot);
+		LF_TreeFall.Broadcast(key, yaw);
 		LF_FelledTrees.Hide(tree, key);
 		LF_FelledTreesReplication.Publish(key);
 		LF_TreeRegrow.EnsureTicking();
-		DropLogs(tree, yield.m_iLogs, logs);
+		if (dropDelayMs < 0)
+			dropDelayMs = LF_TreeFallPlan.FALL_MS;
+
+		ResourceName logPrefab = LogPrefabOf(kind.m_eClass);
+		LF_TreeFall.ScheduleDrop(logPrefab, foot, yaw, height, yield.m_iLogs, dropDelayMs, logs);
 		SpendStamina(user, yield.m_iStaminaPct);
-		LF_Debug.Info(LF_FelledTrees.FEATURE, string.Format("felled %1 (%2 logs, %3)", key, logs.Count(), typename.EnumToString(LF_TreeWoodClass, kind.m_eClass)));
+		LF_Debug.Info(LF_FelledTrees.FEATURE, string.Format("felled %1 (%2 logs, %3)", key, yield.m_iLogs, typename.EnumToString(LF_TreeWoodClass, kind.m_eClass)));
 
 		string uid = LF_Utils.GetPlayerUID(user);
-		PayXp(uid, kind.m_eClass, yield, logs.Count());
-		LF_EventBus.Publish(LF_OnTreeFelled.Create(uid, key, kind.m_eClass, kind.m_iSize, logs.Count()));
-		LF_Utils.NotifyEntity(user, "#LF-Lumber_Felled", "", 4.0, logs.Count().ToString());
+		PayXp(uid, kind.m_eClass, yield, yield.m_iLogs, logPrefab);
+		LF_EventBus.Publish(LF_OnTreeFelled.Create(uid, key, kind.m_eClass, kind.m_iSize, yield.m_iLogs));
+		LF_Utils.NotifyEntity(user, "#LF-Lumber_Felled", "", 4.0, yield.m_iLogs.ToString());
 		return LF_FellRefusal.OK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The log item a tree of this wood drops: hardwood gives the heavy hardwood log, anything else the softwood log.
+	static ResourceName LogPrefabOf(LF_TreeWoodClass woodClass)
+	{
+		if (woodClass == LF_TreeWoodClass.HARDWOOD)
+			return HARDWOOD_LOG_PREFAB;
+
+		return LOG_PREFAB;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -195,28 +215,6 @@ class LF_FellAction : ScriptedUserAction
 			facts.m_fStamina = stamina.GetStamina();
 
 		return facts;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! One log per count on a ring round the trunk, each on the ground. Fills `logs` with what spawned.
-	protected static void DropLogs(IEntity tree, int count, out array<IEntity> logs)
-	{
-		BaseWorld world = GetGame().GetWorld();
-		vector foot = tree.GetOrigin();
-		for (int i = 0; i < count; i++)
-		{
-			float angle = i * LOG_STEP_DEG * Math.DEG2RAD;
-			vector at = foot + Vector(Math.Sin(angle) * LOG_RING_M, 0, Math.Cos(angle) * LOG_RING_M);
-			at[1] = world.GetSurfaceY(at[0], at[2]) + 0.15;
-			IEntity log = LF_Utils.SpawnEntityPrefab(LOG_PREFAB, at, Vector(angle * Math.RAD2DEG, 0, 0));
-			if (!log)
-			{
-				LF_Debug.Error(LF_FelledTrees.FEATURE, "log prefab did not spawn: " + LOG_PREFAB);
-				continue;
-			}
-
-			logs.Insert(log);
-		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -251,7 +249,7 @@ class LF_FellAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	//! Softwood pays gather_logging through LF_OnGathered (family LOGGING); hardwood pays fell_hardwood
 	//! directly and its event carries a family that pays nothing, so a fell never pays twice.
-	protected static void PayXp(string uid, LF_TreeWoodClass woodClass, LF_TreeYieldRow yield, int logs)
+	protected static void PayXp(string uid, LF_TreeWoodClass woodClass, LF_TreeYieldRow yield, int logs, ResourceName logPrefab)
 	{
 		string family = FAMILY_LOGGING;
 		if (woodClass == LF_TreeWoodClass.HARDWOOD)
@@ -264,7 +262,7 @@ class LF_FellAction : ScriptedUserAction
 			LF_JobLevels.Award(uid, action);
 		}
 
-		LF_EventBus.Publish(LF_OnGathered.Create(uid, "fell_tree", family, LOG_PREFAB, logs, 1.0));
+		LF_EventBus.Publish(LF_OnGathered.Create(uid, "fell_tree", family, logPrefab, logs, 1.0));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -275,6 +273,40 @@ class LF_FellAction : ScriptedUserAction
 			return ResourceName.Empty;
 
 		return data.GetPrefabName();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The prefab the felling rules read: the placed prefab, or for a tree placed from the editor's
+	//! PrefabLibrary the species prefab it inherits (LF_TreeFelling.RulesPrefabOf). The key and the
+	//! replicated ledger keep using PrefabOf, the placed prefab, so existing keys do not move.
+	static ResourceName TreePrefabOf(IEntity tree)
+	{
+		if (!tree)
+			return ResourceName.Empty;
+
+		EntityPrefabData data = tree.GetPrefabData();
+		if (!data)
+			return ResourceName.Empty;
+
+		ResourceName own = data.GetPrefabName();
+		if (LF_TreeFelling.IsSpeciesPath(own))
+			return own;
+
+		array<string> chain = {};
+		chain.Insert(own);
+		BaseContainer prefab = data.GetPrefab();
+		int depth = 0;
+		while (prefab && depth < MAX_ANCESTRY)
+		{
+			string name = prefab.GetResourceName();
+			if (!name.IsEmpty())
+				chain.Insert(name);
+
+			prefab = prefab.GetAncestor();
+			depth++;
+		}
+
+		return LF_TreeFelling.RulesPrefabOf(chain);
 	}
 
 	//------------------------------------------------------------------------------------------------

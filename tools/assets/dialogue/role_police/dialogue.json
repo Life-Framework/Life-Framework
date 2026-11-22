@@ -1,0 +1,112 @@
+{
+  "id": "role_police",
+  "name": "RolePolice",
+  "speaker_key": "#LF-NpcRole_police_Name",
+  "text_only": true,
+  "hear_range_m": 12,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "what",
+          "next": "what"
+        },
+        {
+          "text": "where",
+          "next": "where"
+        },
+        {
+          "text": "rumour",
+          "next": "rumour"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "menu",
+      "options_from": "greet"
+    },
+    {
+      "id": "what",
+      "line": "what",
+      "options": [
+        {
+          "text": "browse",
+          "condition": "OpenShop",
+          "action": "OpenShop"
+        },
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "where",
+      "line": "where",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "rumour",
+      "line": "rumour",
+      "options": [
+        {
+          "text": "more",
+          "next": "menu"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Officer on duty. Keep your hands where I can see them, and we will get along."
+    },
+    "what": {
+      "text": "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again."
+    },
+    "where": {
+      "text": "The station is the building behind me. The {town} board on the square lists everything else."
+    },
+    "rumour": {
+      "text": "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces."
+    },
+    "bye": {
+      "text": "Stay out of trouble."
+    }
+  },
+  "replies": {
+    "what": "What do you do here?",
+    "where": "Can you point me somewhere?",
+    "rumour": "Heard anything lately?",
+    "more": "One more thing.",
+    "bye": "Goodbye.",
+    "browse": "Show me what you've got."
+  }
+}

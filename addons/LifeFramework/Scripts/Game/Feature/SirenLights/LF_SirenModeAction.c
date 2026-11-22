@@ -10,7 +10,7 @@ class LF_SirenModeAction : ScriptedUserAction
 	[Attribute(uiwidget: UIWidgets.ComboBox, enums: LF_SirenMode.MODE_NAMES)]
 	protected string m_Mode;
 
-	[Attribute(uiwidget: UIWidgets.CheckBox, desc: "Only an on-duty member of the vehicle's service is offered this, and the server enforces it (the ambulance's medics, #923). The action hides while its mode is the one running, so a pair of them reads as one toggle. Leave off for the police knob.")]
+	[Attribute(uiwidget: UIWidgets.CheckBox, desc: "Toggle pair (the ambulance, #923): the action hides while its mode is the one running, so a pair of them reads as one toggle. Leave off for the police knob. Every siren row is server-checked for the vehicle's on-duty service either way.")]
 	protected bool m_bDutyOnly;
 
 	protected LF_SirenManagerComponent m_Manager;
@@ -31,6 +31,13 @@ class LF_SirenModeAction : ScriptedUserAction
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The siren mode this row selects.
+	string GetModeName()
+	{
+		return m_Mode;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	override void PerformAction(IEntity pOwnerEntity, IEntity pUserEntity)
 	{
 		if (LF_Systems.Refuses("SirenLights", "LF_SirenModeAction"))
@@ -39,15 +46,18 @@ class LF_SirenModeAction : ScriptedUserAction
 		if (!m_Manager)
 			return;
 
-		if (m_bDutyOnly)
-		{
-			// The server decides (duty rule and throttle) and the change replicates from there.
-			if (Replication.IsServer())
-				m_Manager.RequestModeStr(pUserEntity, m_Mode);
-			return;
-		}
+		// Every row, the police knob's too: the server decides (duty rule and throttle) and the
+		// replicated mode carries the change to every client, late joiners included. A local set on
+		// the server alone never reached a client (0.2.0: the menu showed, no siren played).
+		if (Replication.IsServer())
+			m_Manager.RequestModeStr(pUserEntity, m_Mode);
+	}
 
-		m_Manager.SetModeStr(m_Mode);
+	//------------------------------------------------------------------------------------------------
+	//! Not re-run on each client: the replicated mode (OnModeReplicated) is the one path there.
+	override bool CanBroadcastScript()
+	{
+		return false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -74,11 +84,12 @@ class LF_SirenModeAction : ScriptedUserAction
 		if (!LF_Systems.IsEnabled("SirenLights"))
 			return LF_ESirenActionView.HIDDEN;
 
-		if (!m_bDutyOnly)
-			return LF_SirenActionRules.View(SeatAllows(user), true, false);
-
 		if (!m_Manager)
 			return LF_ESirenActionView.HIDDEN;
+
+		// The knob's rows grey with the reason too: the server refuses an off-duty driver either way.
+		if (!m_bDutyOnly)
+			return LF_SirenActionRules.View(SeatAllows(user), m_Manager.MayOperate(user), false);
 
 		return LF_SirenActionRules.View(SeatAllows(user), m_Manager.MayOperate(user), m_Manager.IsModeName(m_Mode));
 	}

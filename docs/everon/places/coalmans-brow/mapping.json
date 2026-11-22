@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "template": "quarry",
+  "place": "coalmans-brow",
+  "status": "approved",
+  "note": "Hand-written for the first island mine (lead brief 2026-11-22: one mining loop near Saint-Philippe, playable by fresh characters). Coalman's Brow is the wooded hill about 390 m south of the Saint-Philippe square with a granite outcrop on its south-west side. No building stands there, so its one slot is a hostless plot (#3666): the kit anchors on the plot centre and every row rests on the probed ground. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": {
+      "at": "2026-11-22",
+      "tool": "tools\\cli scout",
+      "command": "tools\\cli scout 4337,10349 --radius 80",
+      "view": 60,
+      "gameBuild": "Arma Reforger build 26266485 (installed 2026-11-08)",
+      "world": "Worlds/CoreOnEveron/CoreOnEveron.ent"
+    },
+    "buildings": 0,
+    "freePlots": 8
+  },
+  "slots": {
+    "mine": {
+      "plot": "p2",
+      "hostless": true,
+      "why": [
+        "free plot p2 (30 x 46 m, ground 32.4 to 37.6 m) on the north flank of the brow, the side that faces the village: the nearest open ground to Saint-Philippe and 38 m from road r01, so a player walks or drives up from the farms",
+        "the ground falls to the north-east; the ground also falls about 2 m from west to east across the plot, so the shaft end is set into the west side; the desk, the sign and the iron buyer stand on the north-east side, toward the village"
+      ]
+    }
+  }
+}

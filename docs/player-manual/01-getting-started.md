@@ -6,8 +6,20 @@ A new character wakes on a bunk in the **hostel** (a town house just north of th
 [Saint-Philippe map](maps.md)). Step off the bed and go downstairs. The hostel and the square outside are **safe zones**:
 nobody can shoot you there.
 
-You start with **$1,250 in the bank** and very little cash, a work jacket, boots, and a **folded paper map** in your pack.
+You start with **$2,000 in the bank** and very little cash, a work jacket, boots, and a **folded paper map** in your pack.
 After you die or rejoin you do not wake in the hostel again; see [Money](02-money.md) and [Medic](08-medic.md).
+
+## The welcome guide
+
+A few seconds after you get out of bed a short **welcome guide** opens: five paper pages on what to do first, money,
+the map, police and medic duty, and where to read more. Turn the pages with **Next** and **Previous**.
+
+* **Set waypoint to the clerk** (page 1) puts a waypoint on the registry clerk, the first errand. If you are further
+  along, it points at your current errand instead.
+* **Close** puts it away; it opens again the next time you join.
+* **Don't show again** stops it opening by itself.
+* Press **F3** (gamepad: **right bumper + Y**) to open it again at any time. You can change the key in
+  **Settings, Controls, Life Framework**.
 
 ## The arrival quest
 
@@ -34,9 +46,14 @@ bought at the gun store counter, and in the alpha it is instant.
 ## The map and waypoints
 
 * **Open the map:** press **M**. If nothing opens, take the **folded paper map** out of your pack and hold it; every new character carries one.
-* **Every island place has a name and an icon** on it. Places you have not seen yet may show as "heard of" until you walk past.
-* **Set your own waypoint:** right-click on the map (gamepad: **X**). It appears in the world as a marker with the distance.
-  There is one waypoint at a time; a new click moves it.
+* **Every island place has its own icon**, a round badge coloured by kind (green shops, orange food, blue travel, brown work,
+  dark blue police, red health). Point at an icon to read its name; the **Legend** tab on the left lists every icon.
+  Icons that share one spot show the most important one and a count; click it to zoom in.
+  Places you have not seen yet may show as "heard of" until you walk past.
+* **Set your own waypoint:** **Shift + Left click** on the map (gamepad: hold **Y**, press **A**), or just click a place.
+  It shows on the map as a pencil circle with its name and distance, and in the world as a marker with the distance.
+  There is one waypoint at a time; a new click moves it. The same click on the waypoint, or **Backspace** (gamepad:
+  double-tap **Y**), clears it. The strip at the bottom of the map reminds you.
 * **The notice board** and the **Taxi** and **courier** jobs set waypoints for you.
 * **Scale:** Saint-Philippe is about 450 m across. The whole island is about 12 km. See the [maps](maps.md).
 

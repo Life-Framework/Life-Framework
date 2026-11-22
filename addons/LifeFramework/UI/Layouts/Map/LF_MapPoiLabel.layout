@@ -13,13 +13,13 @@ TextWidgetClass "{4D2B9E6A1C73F805}" {
  }
  Color 0.110 0.102 0.086 1
  Text ""
- "Font Size" 22
- "Min Font Size" 14
+ "Font Size" 17
+ "Min Font Size" 12
  "Horizontal Alignment" Left
  "Vertical Alignment" Center
  FontProperties FontProperties "{4D2B9E6A1C73F807}" {
   Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
-  ShadowSize 1
-  ShadowOffset 1 1
+  OutlineSize 2
+  OutlineColor 0.933 0.902 0.839 0.95
  }
 }
