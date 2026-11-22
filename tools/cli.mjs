@@ -662,8 +662,16 @@ const FULL_ONLY = new Set(["validate-scripts.ps1"]);
 
 // Checks that are healthy but slow when the PC is busy get a longer budget (seconds). world-sync-selftest runs
 // ~500 git processes; with ~20 agents validating at once it took 113-393 s green and then past 600 s on
-// 2026-11-18, which the main guard blamed on an unrelated merge (#3283).
-const SLOW_CHECK_S = new Map([["validate-scripts.ps1", 1200], ["world-sync-selftest.mjs", 1200], ["selftest-scratch-selftest.mjs", 1200]]);
+// 2026-11-18, which the main guard blamed on an unrelated merge (#3283). merge-drivers-selftest (hundreds of git
+// processes plus two real regen-localization runs) and promote-selftest hit the same wall on 2026-11-22: 603-605 s
+// red on four main heads with a green recheck each time, process spawns taking seconds on a loaded lf-testbox.
+const SLOW_CHECK_S = new Map([
+  ["validate-scripts.ps1", 1200],
+  ["world-sync-selftest.mjs", 1200],
+  ["selftest-scratch-selftest.mjs", 1200],
+  ["merge-drivers-selftest.mjs", 1200],
+  ["promote-selftest.mjs", 1200],
+]);
 
 // Checks are independent read-only scripts, so they run concurrently (most of
 // their time is PowerShell start-up), fewer at once when free RAM is short (tools/lib/validate-concurrency.mjs).
