@@ -50,7 +50,12 @@ modded class SCR_MapMarkerManagerComponent
 
 		super.InsertStaticMarker(marker, true, false);
 		if (LF_MapMarksClient.IsPersonal(marker))
+		{
 			LF_MapMarksClient.ScheduleUpload();
+			// A mark the player places also shows in the world as the HUD waypoint; a restore is not a placing.
+			if (!LF_MapMarksClient.IsRestoring())
+				LF_MapMarkWaypoint.OnMarkerPlaced(marker);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -59,7 +64,10 @@ modded class SCR_MapMarkerManagerComponent
 		bool personal = marker && marker.GetMarkerID() == -1 && LF_MapMarksClient.IsPersonal(marker);
 		super.RemoveStaticMarker(marker);
 		if (personal)
+		{
 			LF_MapMarksClient.ScheduleUpload();
+			LF_MapMarkWaypoint.OnMarkerRemoved(marker);
+		}
 	}
 }
 
