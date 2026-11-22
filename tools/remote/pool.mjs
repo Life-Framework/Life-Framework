@@ -924,14 +924,13 @@ ${pr.PS_PROC_ROWS}
   # pool-ram admit(): an ask is capped at what the box can ever free; a job whose own peak is over that runs
   # alone once no pool job runs there.
   $cap = [int]($os.TotalVisibleMemorySize / 1024) - $cfg.ram.floorMb
-  if ($cap -gt 0) {
-    if ($cfg.ram.reserveMb + $cfg.ram.floorMb -gt $cap) { if ($running -eq 0) { $need = 0 } else { $need = $cap } }
-    elseif ($need -gt $cap) { $need = $cap }
-  }
+  # The reported ask is capped; the refusal is not (a capped ask would let a job start under the floor).
+  $show = $need
+  if ($cap -gt 0 -and $need -gt $cap) { $show = $cap; if ($running -eq 0 -and [int]$cfg.ram.aheadMb -eq 0) { $need = 0 } }
   # Only a lane that is free (or stale) makes RAM the reason; all lanes taken is plain busy.
   $anyFree = $false
   foreach ($s in $slots) { $h = $null; try { $h = [IO.File]::ReadAllText((Join-Path $ld ($s.lock + '.lock'))) | ConvertFrom-Json } catch {}; if (-not $h -or -not (Test-Alive $h.pid)) { $anyFree = $true } }
-  if ($anyFree -and $free -lt $need) { Write-Host "lf-pool: ram $free $need $running"; exit 0 }
+  if ($anyFree -and $free -lt $need) { Write-Host "lf-pool: ram $free $show $running"; exit 0 }
   # Commit headroom (tools/lib/pool-commit.mjs): committed memory against the commit limit, with its own floor.
   if ($anyFree -and $cm) {
     $chead = [int](($os.FreeVirtualMemory) / 1024)

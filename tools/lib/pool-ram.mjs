@@ -220,11 +220,15 @@ export function admit({ freeMb, minFreeMb, reserveMb = 0, pendingMb = 0, growthM
   const gb = (x) => (x / 1024).toFixed(1);
   const committed = (Number(pendingMb) || 0) + (Number(growthMb) || 0);
   const capMb = Number.isFinite(totalMb) && totalMb - minFreeMb > 0 ? totalMb - minFreeMb : Infinity;
-  if (minFreeMb + reserveMb > capMb) {
-    if (idle) return { ok: true, needMb: capMb, neverFits: true, alone: true };
-    return { ok: false, needMb: capMb, neverFits: true, reason: `${gb(reserveMb)} GB peak for ${what} is more than this machine can ever free (${gb(totalMb)} GB RAM less the ${gb(minFreeMb)} GB floor); it runs alone once the machine is idle` };
+  // The ask shown and used for holding is capped; admission itself never is (a capped ask would let a job
+  // start under the floor).
+  const rawMb = minFreeMb + reserveMb + committed;
+  const needMb = Math.min(rawMb, capMb);
+  if (rawMb > capMb) {
+    if (idle) return { ok: true, needMb, neverFits: true, alone: true };
+    const own = minFreeMb + reserveMb > capMb ? `${gb(reserveMb)} GB peak for ${what}` : `${gb(reserveMb)} GB peak for ${what} plus ${gb(committed)} GB the running jobs still grow into`;
+    return { ok: false, needMb, neverFits: true, reason: `${own} is more than this machine can ever free (${gb(totalMb)} GB RAM less the ${gb(minFreeMb)} GB floor); it runs alone once no other lane job runs here` };
   }
-  const needMb = Math.min(minFreeMb + reserveMb + committed, capMb);
   if (!Number.isFinite(freeMb)) return { ok: true, needMb };
   if (freeMb < needMb) {
     const why = [`free RAM ${gb(freeMb)} GB`, `${gb(reserveMb)} GB peak for ${what}`];

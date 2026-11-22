@@ -59,6 +59,10 @@ check(alone.ok && alone.alone, "a neverFits job starts alone on an idle machine"
 const capped = pr.admit({ freeMb: 10 * GB, minFreeMb: 1500, reserveMb: 2300, growthMb: 60 * GB, totalMb: 47.2 * GB });
 check(!capped.ok && capped.needMb === 47.2 * GB - 1500, `the ask never exceeds the machine's RAM less the floor (${capped.needMb})`);
 
+// The cap shapes the ask, never admission: a 16 GB machine with 13 GB free, a 9 GB floor and 8 GB booting stays refused.
+const small = pr.admit({ freeMb: 13 * GB, minFreeMb: 9 * GB, reserveMb: 0, pendingMb: 8 * GB, totalMb: 16 * GB });
+check(!small.ok && small.needMb <= 7 * GB, `a capped ask does not admit a job under the floor (${JSON.stringify(small)})`);
+
 // --- (b) a waiting ticket holds its machine only when its ask fits the machine
 const T = Date.parse("2026-11-22T17:00:00Z");
 const m = { name: "lf-testbox", lanes: { test: 8, session: 4 } };
