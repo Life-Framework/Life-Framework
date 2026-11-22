@@ -40,6 +40,15 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
        }
        "Sort Priority" 1
       }
+      LF_WorkplaceJobAction "{AD16A0BEB5A0BD81}" {
+       ParentContextList {
+        "LF_DutyClock"
+       }
+       UIInfo UIInfo "{6F855AA8520F1B01}" {
+        Name "#LF-Job_DeskTakeName"
+       }
+       "Sort Priority" 2
+      }
      }
     }
    }
