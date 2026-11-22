@@ -63,7 +63,7 @@ class LF_ConfigStream
 	//! \param[in] catalogue The effective item catalogue and outlets (#988), or null to leave the section out.
 	//! \param[in] systems Whether to write every system's effective on or off (LF_Systems, #960).
 	//! \return The payload text.
-	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null, map<string, string> devCaptions = null, LF_ItemCatalogueConfig catalogue = null, bool systems = false, LF_TermBook terms = null)
+	static string BuildPayload(LF_ShopPricesConfig shops, bool ownerLayer, LF_VehiclePricesConfig vehicles = null, LF_PoliceConfig police = null, LF_OrgConfig organizations = null, map<string, string> devCaptions = null, LF_ItemCatalogueConfig catalogue = null, bool systems = false, LF_TermBook terms = null, LF_HousesConfig houses = null)
 	{
 		SCR_JsonSaveContext ctx = new SCR_JsonSaveContext(false);
 		ctx.WriteValue(KEY_FORMAT, FORMAT_VERSION);
@@ -117,6 +117,12 @@ class LF_ConfigStream
 			terms.WriteStream(ctx);
 			ctx.EndObject();
 		}
+		if (houses)
+		{
+			ctx.StartObject(LF_HousesConfig.SECTION);
+			houses.WriteStream(ctx);
+			ctx.EndObject();
+		}
 		return ctx.ExportToString();
 	}
 
@@ -148,7 +154,7 @@ class LF_ConfigStream
 		if (!catalogue)
 			LF_Debug.Warn(LF_ConfigService.FEATURE, "stream: no item catalogue on the server; clients keep their shipped outlet prices");
 
-		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles, police, organizations, LF_DialogueOverrides.GetCaptions(), catalogue, true, LF_Terms.Get());
+		string payload = BuildPayload(shops, LF_ConfigService.HasOwnerLayer(), vehicles, police, organizations, LF_DialogueOverrides.GetCaptions(), catalogue, true, LF_Terms.Get(), LF_HousesConfig.Get());
 		int hash = payload.Hash();
 		bool changed = !s_bPublished || hash != s_iPublishedHash;
 		s_sPublished = payload;

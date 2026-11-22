@@ -10,7 +10,7 @@ GenericEntity Fit_saint_philippe_districts_garage_Place {
  coords 4696.6 20.8 10755.1
 }
 GenericEntity Fit_saint_philippe_districts_garage_shop_counter : "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et" {
- coords 4697.477 20.757 10756.556
+ coords 4697.556 20.757 10758.054
  angleY 93
 }
 GenericEntity Fit_saint_philippe_districts_garage_shop_till : "{4E4E1620C6B02E1F}Prefabs/Props/Commercial/EL_FuelTill.et" {
@@ -43,11 +43,11 @@ GenericEntity Fit_saint_philippe_districts_garage_shop_till : "{4E4E1620C6B02E1F
    }
   }
  }
- coords 4697.278 21.796 10756.567
+ coords 4697.356 21.796 10758.064
  angleY -87
 }
 LF_NpcBaseEntity Fit_saint_philippe_districts_garage_mechanic : "{2C553E1AEE62231E}Prefabs/Characters/Npcs/Outfits/LF_Npc_Mechanic_1.et" {
- coords 4696.079 20.757 10756.629
+ coords 4696.158 20.757 10758.127
  angleY 93
 }
 GenericEntity Fit_saint_philippe_districts_garage_shelf_1 : "{B7669B7F8B7923F6}Prefabs/Props/Commercial/ShelfShop_01.et" {
@@ -55,7 +55,7 @@ GenericEntity Fit_saint_philippe_districts_garage_shelf_1 : "{B7669B7F8B7923F6}P
  angleY 93
 }
 GenericEntity Fit_saint_philippe_districts_garage_tool_rack_1 : "{20C6CD91EBCF3AD5}Prefabs/Structures/BuildingParts/Industrial/ToolRack_01.et" {
- coords 4693.466 22.8 10757.017
+ coords 4693.584 22.8 10759.264
  angleY 93
 }
 GenericEntity Fit_saint_philippe_districts_garage_lf_sign_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {

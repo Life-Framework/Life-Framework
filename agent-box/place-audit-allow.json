@@ -255,6 +255,12 @@
       "match": "^Car_Fit_saint_philippe_parked_cars_car_b12",
       "kind": "clips",
       "why": "The car parks under an apple tree (t_malus_domestica_2s) beside the b12 yard; the audit box is the whole tree with its crown. The slope here is steep and fenced: the island probe (town parked-cars --probe, 15 lines at 4 heights) refused all 13 other spots (net fence, 1.5 to 3 m of fall, a container, Eden walls), so the old spot stays (2026-11-22)."
+    },
+    {
+      "match": "^Fit_saint_philippe_bank_lf_bank_vault ",
+      "kind": "action-off-mesh",
+      "layer": "Place_saint-philippe_bank.layer",
+      "why": "LF_BankVault_RoomDoor is a mesh-less root: its one mesh is the VaultDoor child leaf (1.27 m right of the root, hinged in the vault-room doorway), which the audit does not read as a mesh. The action context (radius 1.5 m at the front's centre, 0.45 m out) overlaps the leaf; the same prefab opens in the grid bank proof (#2384)."
     }
   ]
 }
