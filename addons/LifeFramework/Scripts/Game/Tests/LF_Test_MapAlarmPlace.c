@@ -1,4 +1,4 @@
-// red-proof: pending
+// red-proof: 2026-11-22, cli test --no-build --red LF_Test_MapAlarmRing,LF_Test_MapAlarmPlace: RED-OK (RedProof() skips OnCall, so no place rings).
 //------------------------------------------------------------------------------------------------
 //! map/alarm-place: a police robbery call rings the nearest map place everyone may see, within the
 //! reach; a closer role-only place (the police armoury) is never put on the shared wire, and a robbery
