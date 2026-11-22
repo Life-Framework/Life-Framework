@@ -144,6 +144,32 @@
       "request_id": "WCEiFkc9hdlAFysLvUsn",
       "seconds": 3.7,
       "mouth": "58895699729969996149426889741000000123683243761110000037843167878625765200"
+    },
+    "rumour_reported": {
+      "hash": "7e9c092ceb065dc4",
+      "date": "2026-11-22",
+      "voice_id": "I1T6PEfqPxl45yKRN4aS",
+      "voice_name": "Marcel - Charming Native Accent",
+      "model": "eleven_multilingual_v2",
+      "text": "They say someone carried a crate off the quay straight to the gendarmes. The dockers have not touched a drink here all week. Whoever it was, keep your head down.",
+      "chars": 161,
+      "chars_total": 64,
+      "request_id": "1SIbLsFiqsqk59cYEsRf",
+      "seconds": 9.5,
+      "mouth": "4864499744777897616978748522599913742262226553422388830255365466667655322100000000026849828984595797207944247366884268895200599977850111000000000058998697872399996332000026326889943755453100"
+    },
+    "rumour_sold": {
+      "hash": "d11db5d64abe6182",
+      "date": "2026-11-22",
+      "voice_id": "I1T6PEfqPxl45yKRN4aS",
+      "voice_name": "Marcel - Charming Native Accent",
+      "model": "eleven_multilingual_v2",
+      "text": "They say a crate went missing off the quay and somebody in town is richer for it. Nobody asks who. The man at the corner table has stopped counting his change.",
+      "chars": 159,
+      "chars_total": 64,
+      "request_id": "yAO3xsqMAI1WXiFGE96n",
+      "seconds": 10.3,
+      "mouth": "49745389998234799923798317954357794226525887730000488446859846788239888776466862567327878840210000000059999589747887754313321039998510000000000037999988874484498883189949997885526922158774178874335777632100"
     }
   },
   "voice": {

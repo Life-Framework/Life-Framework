@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{0D3C4AF9980563B3}Sounds/Dialogue/resident_anselme/Dialogue_resident_anselme.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

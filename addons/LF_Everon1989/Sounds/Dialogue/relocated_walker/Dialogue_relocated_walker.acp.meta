@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{FC70E7D1C16784E0}Sounds/Dialogue/relocated_walker/Dialogue_relocated_walker.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

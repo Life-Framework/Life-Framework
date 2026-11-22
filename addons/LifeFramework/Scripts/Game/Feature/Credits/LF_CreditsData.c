@@ -88,15 +88,24 @@ class LF_CreditsData
 		rows.Insert("R|#LF-Credits_130|#LF-Credits_131");
 		rows.Insert("R|#LF-Credits_132|#LF-Credits_133");
 		rows.Insert("R|#LF-Credits_134|#LF-Credits_135");
-		rows.Insert("H|#LF-Credits_136|");
-		rows.Insert("R|#LF-Credits_137|#LF-Credits_138");
-		rows.Insert("R|#LF-Credits_139|#LF-Credits_140");
-		rows.Insert("H|#LF-Credits_141|");
+		rows.Insert("R|#LF-Credits_136|#LF-Credits_137");
+		rows.Insert("R|#LF-Credits_138|#LF-Credits_139");
+		rows.Insert("R|#LF-Credits_140|#LF-Credits_141");
 		rows.Insert("R|#LF-Credits_142|#LF-Credits_143");
 		rows.Insert("R|#LF-Credits_144|#LF-Credits_145");
-		rows.Insert("H|#LF-Credits_146|");
-		rows.Insert("R|#LF-Credits_147|");
-		rows.Insert("R|#LF-Credits_148|");
+		rows.Insert("R|#LF-Credits_146|#LF-Credits_147");
+		rows.Insert("R|#LF-Credits_148|#LF-Credits_149");
+		rows.Insert("R|#LF-Credits_150|#LF-Credits_151");
+		rows.Insert("R|#LF-Credits_152|#LF-Credits_153");
+		rows.Insert("H|#LF-Credits_154|");
+		rows.Insert("R|#LF-Credits_155|#LF-Credits_156");
+		rows.Insert("R|#LF-Credits_157|#LF-Credits_158");
+		rows.Insert("H|#LF-Credits_159|");
+		rows.Insert("R|#LF-Credits_160|#LF-Credits_161");
+		rows.Insert("R|#LF-Credits_162|#LF-Credits_163");
+		rows.Insert("H|#LF-Credits_164|");
+		rows.Insert("R|#LF-Credits_165|");
+		rows.Insert("R|#LF-Credits_166|");
 		return rows;
 	}
 }

@@ -69,7 +69,7 @@ class LF_Test_EveronMiningLoop : LF_Test
 		LF_Test_CatalogueBuyer stranger = new LF_Test_CatalogueBuyer();
 		ctx.Equal(LF_EOutletGate.NEEDS_JOB, LF_ItemCatalogue.Check(offer, stranger, missing), "a player outside the miner job is sent to the desk first");
 		if (item)
-			ctx.True(item.m_iPrice > 0 && item.m_iPrice <= 1000, string.Format("the pickaxe ($%1) fits a new player's $1,000 bank", item.m_iPrice));
+			ctx.True(item.m_iPrice > 0 && item.m_iPrice <= 1000, string.Format("the pickaxe ($%1) fits a new player's starting bank", item.m_iPrice));
 	}
 
 	//------------------------------------------------------------------------------------------------

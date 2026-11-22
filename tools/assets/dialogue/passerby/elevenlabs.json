@@ -1,0 +1,63 @@
+{
+  "id": "passerby",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "1b4cc0a4d7305ccb",
+      "date": "2026-11-22",
+      "voice_id": "ZYDBhr3ScOor68YC3XYn",
+      "voice_name": "Sylvain - International english",
+      "model": "eleven_multilingual_v2",
+      "text": "Evening. Lovely night for it, isn't it? Half the town is out on the square.",
+      "chars": 75,
+      "chars_total": 30,
+      "request_id": "mrAnZenQH3QfBNxVHkwk",
+      "seconds": 4.2,
+      "mouth": "7997997621111114896799888326976321176775421111266229526689967783555532288543111111000"
+    },
+    "about_what": {
+      "hash": "96e71e75c1d92cef",
+      "date": "2026-11-22",
+      "voice_id": "ZYDBhr3ScOor68YC3XYn",
+      "voice_name": "Sylvain - International english",
+      "model": "eleven_multilingual_v2",
+      "text": "Nothing much, and that is the point. A drink, the band if they turn up, somebody's uncle telling the same story about the war.",
+      "chars": 126,
+      "chars_total": 50,
+      "request_id": "dyUPSqKXmJBiZr3nPmUQ",
+      "seconds": 7.17,
+      "mouth": "798799997322221102668785152155321211000065499963210000000000164997886315843277666621122699698847763399622877756326654149999966752765999997421000"
+    },
+    "about_where": {
+      "hash": "fabe854d83ae96f1",
+      "date": "2026-11-22",
+      "voice_id": "ZYDBhr3ScOor68YC3XYn",
+      "voice_name": "Sylvain - International english",
+      "model": "eleven_multilingual_v2",
+      "text": "The cafe is on the square, the bank across from it. For anything official, the town hall clerk. For anything unofficial, nobody saw me say a word.",
+      "chars": 146,
+      "chars_total": 58,
+      "request_id": "cZ1qspq1TUWyfoaiWdh9",
+      "seconds": 7.48,
+      "mouth": "532899869998998552289999674277635126843256542110017898726751189867998636224665357512179962100588841677674138434764379858634256654425555487764211000000"
+    },
+    "bye": {
+      "hash": "38a9e88a1919743d",
+      "date": "2026-11-22",
+      "voice_id": "ZYDBhr3ScOor68YC3XYn",
+      "voice_name": "Sylvain - International english",
+      "model": "eleven_multilingual_v2",
+      "text": "Enjoy the evening.",
+      "chars": 18,
+      "chars_total": 7,
+      "request_id": "1UdbW1xGf74WINJ4ElDW",
+      "seconds": 1.13,
+      "mouth": "47769898899674453211100"
+    }
+  },
+  "voice": {
+    "id": "ZYDBhr3ScOor68YC3XYn",
+    "name": "Sylvain - International english",
+    "source": "voice library"
+  }
+}
