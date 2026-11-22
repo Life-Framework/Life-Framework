@@ -114,6 +114,12 @@
       "where": "texture text",
       "word": "DISTRIBUTEUR",
       "why": "ATM kiosk texture: another branch is re-authoring it in English (2026-11-22)"
+    },
+    {
+      "file": "addons/LF_Everon1989/Language/lf_everon1989_localization.st",
+      "where": "LF-Dialogue_ClerkEveron_Market",
+      "word": "centre",
+      "why": "voiced line: the recording says it; change tools/assets/dialogue/<npc>/dialogue.json and re-record (tools\\cli asset dialogue <npc> --force <line>)"
     }
   ]
 }

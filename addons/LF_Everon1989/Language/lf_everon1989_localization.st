@@ -2551,7 +2551,7 @@ StringTable {
     }
     CustomStringTableItem "{169160A3F43F94EA}" {
      Id "LF-Quest_EveronMarket_Desc"
-     Target_en_us "Drive back to the market in the town centre and sell your apple juice to the trader."
+     Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader."
      Comment "Everon arrival step 5 errand: sell the juice at the market."
     }
     CustomStringTableItem "{E821B19281DF6F39}" {
