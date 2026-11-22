@@ -15225,6 +15225,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "a trader"
      Comment "Holder label on a rented stall whose holder has no name (#2925)."
     }
+    CustomStringTableItem "{044EF7358D99C82D}" {
+     Id "LF-StashContainer_Closed"
+     Target_en_us "The container won't open"
+     Comment "Refusal on the short container: misconfigured or no player (#4195)."
+    }
+    CustomStringTableItem "{DC4609ADE4E93025}" {
+     Id "LF-StashContainer_Empty"
+     Target_en_us "Empty. Come back later"
+     Comment "Refusal on the short container: already taken, the refill timer is running (#4195)."
+    }
+    CustomStringTableItem "{DA310007BD3F516C}" {
+     Id "LF-StashContainer_NeedKey"
+     Target_en_us "Locked. You need the clerk's key"
+     Comment "Refusal on the short container: the player carries no key from the tally clerk (#4195)."
+    }
+    CustomStringTableItem "{BA110B9CEFF14792}" {
+     Id "LF-StashContainer_Open"
+     Target_en_us "Open the container"
+     Comment "Action: open the short container with the tally clerk's key and take the stock (#4195)."
+    }
     CustomStringTableItem "{C6CD1F2F0A61F3B5}" {
      Id "LF-Stolen_Already"
      Target_en_us "The {police} already have this one"
