@@ -2,7 +2,9 @@
 //! One premium buyer's appetite for one good (#3267, lumber design "Buyers"). The key is the buyer id
 //! (a free string the pack picks, for example a building id) plus the good's prefab. The buyer pays a
 //! fixed price up to its demand: a purse of `m_iCap` units that refills `m_iRefillPerHour` units each real
-//! hour. A row may also name a curve good (#2844): the unit price then falls inside the cap, by that
+//! hour. A row may instead set `m_iPeriodHours` (#4194): the purse then refills to the full cap at the start
+//! of each period (a week is 168), so "two cartons a week" is a cap of 2, which an hourly refill cannot say.
+//! A row may also name a curve good (#2844): the unit price then falls inside the cap, by that
 //! curve's drop percent and floor.
 [BaseContainerProps()]
 class LF_BuyerDemandRow : LF_ConfigRecord
@@ -19,6 +21,9 @@ class LF_BuyerDemandRow : LF_ConfigRecord
 	[Attribute("0", UIWidgets.Auto, "Units the purse refills each real hour; 0 never refills", params: "0 60000")]
 	int m_iRefillPerHour;
 
+	[Attribute("0", UIWidgets.Auto, "Period mode (#4194): hours between resets, for example 168 for a week. The purse refills to the full cap at the start of each period (UTC periods counted from the unix epoch). 0 uses the hourly refill. A row sets one of the two, never both", params: "0 8760")]
+	int m_iPeriodHours;
+
 	[Attribute("0", UIWidgets.Auto, "Whole cash one lot fetches from a full purse (one unit while the lot size is 1)", params: "0 10000000")]
 	int m_iPrice;
 
@@ -29,7 +34,7 @@ class LF_BuyerDemandRow : LF_ConfigRecord
 	ResourceName m_sCurveGood;
 
 	//------------------------------------------------------------------------------------------------
-	static LF_BuyerDemandRow Make(string buyer, ResourceName good, int cap, int refillPerHour, int price, ResourceName curveGood = "", int lotSize = 1)
+	static LF_BuyerDemandRow Make(string buyer, ResourceName good, int cap, int refillPerHour, int price, ResourceName curveGood = "", int lotSize = 1, int periodHours = 0)
 	{
 		LF_BuyerDemandRow row = new LF_BuyerDemandRow();
 		row.m_sBuyer = buyer;
@@ -39,7 +44,18 @@ class LF_BuyerDemandRow : LF_ConfigRecord
 		row.m_iPrice = price;
 		row.m_sCurveGood = curveGood;
 		row.m_iLotSize = lotSize;
+		row.m_iPeriodHours = periodHours;
 		return row;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! \return Seconds in one period of a period row (#4194), 0 for an hourly-refill row.
+	int PeriodSeconds()
+	{
+		if (m_iPeriodHours <= 0)
+			return 0;
+
+		return LF_Utils.MinInt(m_iPeriodHours, LF_BuyerDemand.MAX_PERIOD_HOURS) * LF_PriceCurve.SECONDS_PER_HOUR;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -58,7 +74,8 @@ class LF_BuyerDemandRow : LF_ConfigRecord
 
 	//------------------------------------------------------------------------------------------------
 	//! \return Empty when the row is usable, else why not: no buyer or good, a cap of 0 or past the
-	//! largest purse, a negative refill, or a price outside 0..MAX_CASH.
+	//! largest purse, a negative refill, a bad period or a period beside an hourly refill, or a price
+	//! outside 0..MAX_CASH.
 	string Problem()
 	{
 		if (m_sBuyer.IsEmpty())
@@ -73,6 +90,10 @@ class LF_BuyerDemandRow : LF_ConfigRecord
 			return string.Format("negative refill %1 per hour", m_iRefillPerHour);
 		if (m_iRefillPerHour > LF_BuyerDemand.MAX_CAP)
 			return string.Format("refill %1 per hour is above the largest purse %2", m_iRefillPerHour, LF_BuyerDemand.MAX_CAP);
+		if (m_iPeriodHours < 0 || m_iPeriodHours > LF_BuyerDemand.MAX_PERIOD_HOURS)
+			return string.Format("period %1 hours is outside 0 to %2", m_iPeriodHours, LF_BuyerDemand.MAX_PERIOD_HOURS);
+		if (m_iPeriodHours > 0 && m_iRefillPerHour > 0)
+			return string.Format("period %1 hours and refill %2 per hour are both set; a row uses one", m_iPeriodHours, m_iRefillPerHour);
 		if (m_iPrice < 0 || m_iPrice > LF_PriceCurve.MAX_CASH)
 			return string.Format("price %1 is outside 0 to %2", m_iPrice, LF_PriceCurve.MAX_CASH);
 		if (m_iLotSize < 0 || m_iLotSize > LF_BuyerDemand.MAX_CAP)
@@ -139,15 +160,27 @@ class LF_BuyerDemand
 	//! whole purse prices in one call and cap * 3600 stays inside an int.
 	static const int MAX_CAP = 60000;	// lf-fixed: equals LF_PriceCurve.MAX_BULK_UNITS
 
+	//! Longest period a row may use (a year of hours), so hours * 3600 stays inside an int.
+	static const int MAX_PERIOD_HOURS = 8760;	// lf-fixed: 365 days
+
 	//------------------------------------------------------------------------------------------------
 	//! Refills `purse` for the time since its stamp: refill units per hour, never past the cap. A gap long
 	//! enough to fill it is clamped (full, stamp to `now`); a full purse keeps no head start, so its stamp
 	//! follows `now`; a clock that moved back resets the stamp to `now`. The stamp moves by the time the
-	//! units gained cost, so a part-unit of progress is kept for the next call.
+	//! units gained cost, so a part-unit of progress is kept for the next call. A period row (#4194) instead
+	//! jumps to the full cap the first time `now` falls in a later period than the stamp and gains nothing
+	//! inside a period; the stamp is saved with the purse, so the reset also happens across a restart.
 	static void Refill(notnull LF_BuyerDemandRow row, notnull LF_BuyerPurse purse, int now)
 	{
 		int cap = row.m_iCap;
 		purse.m_iRemaining = LF_Utils.ClampInt(purse.m_iRemaining, 0, cap);
+		int periodSeconds = row.PeriodSeconds();
+		if (periodSeconds > 0)
+		{
+			RefillPeriod(purse, cap, periodSeconds, now);
+			return;
+		}
+
 		if (purse.m_iRemaining >= cap)
 		{
 			purse.m_iStamp = now;
@@ -190,6 +223,29 @@ class LF_BuyerDemand
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The period refill (#4194). Periods are `periodSeconds` long and counted from the unix epoch, so every
+	//! buyer resets together. A clock that moved back keeps the units and restarts the stamp, as the hourly
+	//! refill does.
+	protected static void RefillPeriod(notnull LF_BuyerPurse purse, int cap, int periodSeconds, int now)
+	{
+		if (now < purse.m_iStamp)
+		{
+			purse.m_iStamp = now;
+			return;
+		}
+
+		if (now / periodSeconds > purse.m_iStamp / periodSeconds)
+		{
+			purse.m_iRemaining = cap;
+			purse.m_iStamp = now;
+			return;
+		}
+
+		if (purse.m_iRemaining >= cap)
+			purse.m_iStamp = now;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return Seconds until the purse (after a refill to `now`) holds one lot (one unit while the lot size
 	//! is 1): 0 when it holds one now, -1 when it holds less and never refills.
 	static int SecondsToNextUnit(notnull LF_BuyerDemandRow row, notnull LF_BuyerPurse purse, int now)
@@ -198,6 +254,10 @@ class LF_BuyerDemand
 		int lot = row.Lot();
 		if (purse.m_iRemaining >= lot)
 			return 0;
+
+		int periodSeconds = row.PeriodSeconds();
+		if (periodSeconds > 0)
+			return periodSeconds - (now % periodSeconds);
 
 		int refill = LF_Utils.MinInt(row.m_iRefillPerHour, MAX_CAP);
 		if (refill <= 0)
