@@ -6,7 +6,9 @@
     "file": "tools/town/kits/sources/lumber-yard.layer",
     "origin": "0,0,0",
     "frame": "origin-entity",
-    "also": ["tools/town/nightlights.mjs"]
+    "also": [
+      "tools/town/nightlights.mjs"
+    ]
   },
   "scope": "room",
   "anchoring": {
@@ -82,45 +84,11 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -17,
+        -6,
         0,
-        -13
+        14
       ],
       "yaw": 90,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0",
-      "lift": 0.079
-    },
-    {
-      "id": "deck-2",
-      "name": "TimberYard_Deck_2",
-      "prefab": "{13FD3EC5D111AD6D}Prefabs/Props/Forest/WoodPile/WoodPile_01_A.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -17,
-        0,
-        -18
-      ],
-      "yaw": 90,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0",
-      "lift": 0.086
-    },
-    {
-      "id": "planks-1",
-      "name": "TimberYard_Planks_1",
-      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        14,
-        0,
-        -12.5
-      ],
-      "yaw": 0,
       "mount": "terrain",
       "wall": "free",
       "floor": "f0"
@@ -132,27 +100,11 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        17.5,
+        -13,
         0,
-        -12.5
+        15
       ],
       "yaw": 0,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "planks-3",
-      "name": "TimberYard_Planks_3",
-      "prefab": "{67B5336A6D63CCA4}Prefabs/Props/Construction/PlankPile/PlankPile_01_Medium.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        16,
-        0,
-        -16.5
-      ],
-      "yaw": 90,
       "mount": "terrain",
       "wall": "free",
       "floor": "f0"
@@ -164,9 +116,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -6,
+        -1.5,
         0,
-        -12.5
+        13.5
       ],
       "yaw": 0,
       "mount": "terrain",
@@ -180,14 +132,15 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        -2.5,
+        1.5,
         0,
-        -12.5
+        13.5
       ],
       "yaw": 0,
       "mount": "terrain",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.015
     },
     {
       "id": "pallet-2",
@@ -196,14 +149,15 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
+        3.5,
         0,
-        0,
-        -12.5
+        13.5
       ],
       "yaw": 0,
       "mount": "terrain",
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": -0.02
     },
     {
       "id": "truck",
@@ -212,154 +166,9 @@
       "role": "dressing",
       "verb": "on floor",
       "offset": [
-        5,
+        19,
         0,
-        -17
-      ],
-      "yaw": 0,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0",
-      "lift": -0.031
-    },
-    {
-      "id": "fence-w1",
-      "name": "TimberYard_Fence_W1",
-      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -21,
-        0,
-        -12
-      ],
-      "yaw": 90,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "fence-w2",
-      "name": "TimberYard_Fence_W2",
-      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -21,
-        0,
-        -16
-      ],
-      "yaw": 90,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "fence-w3",
-      "name": "TimberYard_Fence_W3",
-      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -21,
-        0,
-        -20
-      ],
-      "yaw": 90,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "fence-sw1",
-      "name": "TimberYard_Fence_Sw1",
-      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -19,
-        0,
-        -22.5
-      ],
-      "yaw": 0,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "fence-sw2",
-      "name": "TimberYard_Fence_Sw2",
-      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -15,
-        0,
-        -22.5
-      ],
-      "yaw": 0,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "fence-sw3",
-      "name": "TimberYard_Fence_Sw3",
-      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -11,
-        0,
-        -22.5
-      ],
-      "yaw": 0,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "fence-se1",
-      "name": "TimberYard_Fence_Se1",
-      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        9,
-        0,
-        -22.5
-      ],
-      "yaw": 0,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "fence-se2",
-      "name": "TimberYard_Fence_Se2",
-      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        13,
-        0,
-        -22.5
-      ],
-      "yaw": 0,
-      "mount": "terrain",
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "fence-se3",
-      "name": "TimberYard_Fence_Se3",
-      "prefab": "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        17,
-        0,
-        -22.5
+        17
       ],
       "yaw": 0,
       "mount": "terrain",
