@@ -239,7 +239,21 @@ class LF_MapPlaceCard
 		if (town.IsEmpty())
 			return label;
 
-		return label + ", " + town;
+		// The town is the nearest named place: a vanilla string key ("#AR-MapLocation_...") on the island.
+		return label + ", " + WidgetManager.Translate(town);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Makes an icon image fill its parent frame. The layout's slot alone left it at another size (an icon drew
+	//! as a wide ellipse, and at its 64 px image size before that), so the slot is set here.
+	static void FillParent(Widget image)
+	{
+		if (!image)
+			return;
+
+		FrameSlot.SetAnchorMin(image, 0, 0);
+		FrameSlot.SetAnchorMax(image, 1, 1);
+		FrameSlot.SetOffsets(image, 0, 0, 0, 0);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -481,6 +495,8 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 	protected static const string SELECT_ACTION = "MapSelect";	// vanilla: left click, gamepad A
 	protected static const float CULL_MARGIN = 40;	// lf-fixed: reference units off screen before an icon is hidden
 	protected static const float CARD_GAP = 16;	// lf-fixed: the card sits this far from its icon
+	protected static const float CARD_WIDTH = 260;	// lf-fixed: a place name, its town and one line of help
+	protected static const float CARD_HEIGHT = 58;	// lf-fixed: two lines
 	protected static const float FADED_ALPHA = 0.45;	// lf-fixed: heard of, not visited
 	//! A click on a crowded mark zooms in this many levels, up to MERGED_MAX_ZOOM; at that zoom a click sets
 	//! the waypoint on the mark's lead place instead.
@@ -545,9 +561,12 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		FrameSlot.SetAnchorMax(m_wLayer, 1, 1);
 		FrameSlot.SetOffsets(m_wLayer, 0, 0, 0, 0);
 
-		m_wCard = workspace.CreateWidgets(CARD_LAYOUT, m_wLayer);
+		// Under the map root like the legend slip and the hint strip: inside the code-made layer frame its paper
+		// drew smaller than its rim (the session pictures, 2026-11-22).
+		m_wCard = workspace.CreateWidgets(CARD_LAYOUT, m_RootWidget);
 		if (m_wCard)
 		{
+			FrameSlot.SetSize(m_wCard, CARD_WIDTH, CARD_HEIGHT);
 			m_wCard.SetFlags(WidgetFlags.IGNORE_CURSOR);
 			m_wCard.SetVisible(false);
 		}
@@ -622,6 +641,9 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		if (m_wLayer)
 			m_wLayer.RemoveFromHierarchy();
 
+		if (m_wCard)
+			m_wCard.RemoveFromHierarchy();
+
 		m_wLayer = null;
 		m_wCard = null;
 		m_aPois.Clear();
@@ -695,7 +717,9 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 			FrameSlot.SetAlignment(created, 0.5, 0.5);
 			m_aWidgets.Insert(created);
 			m_aShown.Insert(true);
-			m_aIcons.Insert(ImageWidget.Cast(created.FindAnyWidget("Icon")));
+			ImageWidget iconImage = ImageWidget.Cast(created.FindAnyWidget("Icon"));
+			LF_MapPlaceCard.FillParent(iconImage);
+			m_aIcons.Insert(iconImage);
 			m_aCounts.Insert(TextWidget.Cast(created.FindAnyWidget("Count")));
 			m_aStates.Insert(new LF_MapIconState());
 		}
@@ -809,8 +833,6 @@ class LF_MapPlacesUI : SCR_MapUIBaseComponent
 		if (state.SizeChanged(m_aSizes[i]))
 		{
 			FrameSlot.SetSize(m_aWidgets[i], m_aSizes[i], m_aSizes[i]);
-			if (m_aIcons[i])
-				m_aIcons[i].SetSize(m_aSizes[i], m_aSizes[i]);
 
 			state.m_fSize = m_aSizes[i];
 		}

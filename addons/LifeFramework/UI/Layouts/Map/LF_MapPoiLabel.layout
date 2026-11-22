@@ -15,7 +15,7 @@ TextWidgetClass "{4D2B9E6A1C73F805}" {
  Text ""
  "Font Size" 17
  "Min Font Size" 12
- "Horizontal Alignment" Center
+ "Horizontal Alignment" Left
  "Vertical Alignment" Center
  FontProperties FontProperties "{4D2B9E6A1C73F807}" {
   Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"

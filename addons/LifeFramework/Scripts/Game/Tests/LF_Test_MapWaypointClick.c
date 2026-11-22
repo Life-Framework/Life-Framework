@@ -1,4 +1,4 @@
-// red-proof: pending: tools\cli test --no-build --red LF_Test_MapDeclutter,LF_Test_MapWaypointClick (RedProof() skips the Shift-click set, the clear and the place click).
+// red-proof: 2026-11-22, cli test --no-build --red LF_Test_MapDeclutter,LF_Test_MapWaypointClick: RED PROOF OK (RedProof() skips the Shift-click set, the clear and the place click, so those checks fail). Green without it.
 
 //------------------------------------------------------------------------------------------------
 //! map/waypoint-click (0.2.0 playtest: "setting a waypoint is not intuitive"): Shift + left click (gamepad

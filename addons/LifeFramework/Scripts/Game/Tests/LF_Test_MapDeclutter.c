@@ -1,4 +1,4 @@
-// red-proof: pending: tools\cli test --no-build --red LF_Test_MapDeclutter,LF_Test_MapWaypointClick (RedProof() skips the merge, the hit test and the legend lines).
+// red-proof: 2026-11-22, cli test --no-build --red LF_Test_MapDeclutter,LF_Test_MapWaypointClick: RED PROOF OK (RedProof() skips the merge, the hit test and the legend lines, so those checks fail). Green without it.
 
 //------------------------------------------------------------------------------------------------
 //! map/declutter (0.2.0 playtest map rework): the paper-map rules for place icons. The icon size follows the
@@ -112,18 +112,21 @@ class LF_Test_MapDeclutter : LF_Test
 		pois.Insert(Poi("Payphone", "poi_Payphone", "civic", "Payphone", LF_EMapPoiState.FULL));
 		pois.Insert(Poi("StoreCounter", "poi_Grocer", "shop", "Supermarket", LF_EMapPoiState.FULL));
 		pois.Insert(Poi("Fence", "", "underworld", "Fence", LF_EMapPoiState.PENCIL));
+		pois.Insert(Poi("FuelTill", "poi_Fuel", "travel", "Filling station", LF_EMapPoiState.FULL));
+		pois.Insert(Poi("RoadFuel", "poi_Fuel", "travel", "Filling station", LF_EMapPoiState.FULL));
 		array<int> rows = {};
 		int count;
 		if (!RedProof())
 			count = LF_MapLegend.IconRows(pois, rows);
 
-		ctx.Equal(3, count, "one legend line per icon and type; the second payphone and the pencil mark add none");
-		if (rows.Count() < 3)
+		ctx.Equal(4, count, "one legend line per icon and type; the second payphone, the second filling station kind and the pencil mark add none");
+		if (rows.Count() < 4)
 			return;
 
 		ctx.Equal(1, rows[0], "civic comes before shop in the legend");
 		ctx.Equal(0, rows[1], "then the shops, first seen first");
 		ctx.Equal(3, rows[2], "a shop with its own icon has its own line");
+		ctx.Equal(5, rows[3], "two kinds with the same icon and name are one line");
 	}
 
 	//------------------------------------------------------------------------------------------------

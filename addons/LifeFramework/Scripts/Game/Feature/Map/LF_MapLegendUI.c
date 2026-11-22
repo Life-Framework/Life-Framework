@@ -112,7 +112,7 @@ class LF_MapLegend
 
 	//------------------------------------------------------------------------------------------------
 	//! The icon legend's lines: one POI per icon and type name the list holds (the many payphones are one
-	//! line), in the legend's category order, then first seen. A pencil mark (a place only suspected) has no
+	//! line, and so are two kinds that draw the same icon under the same name), in the legend's category order, then first seen. A pencil mark (a place only suspected) has no
 	//! line: its type is not known. \return how many lines.
 	static int IconRows(notnull array<ref LF_MapPoi> pois, notnull array<int> into)
 	{
@@ -124,7 +124,11 @@ class LF_MapLegend
 			if (poi.m_eState == LF_EMapPoiState.PENCIL)
 				continue;
 
-			string key = poi.m_sKind + "|" + poi.m_sIcon + "|" + poi.m_sCategory + "|" + TypeName(poi);
+			string icon = poi.m_sIcon;
+			if (icon.IsEmpty())
+				icon = "poi_" + poi.m_sKind;
+
+			string key = icon + "|" + poi.m_sCategory + "|" + TypeName(poi);
 			if (seen.Find(key) != -1)
 				continue;
 
@@ -414,10 +418,10 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 	protected static const float PANEL_LEFT = 120;	// lf-fixed: right of the tabs
 	protected static const float PANEL_PAD = 12;	// lf-fixed
 	protected static const float PANEL_HEAD = 34;	// lf-fixed: room for the title
-	protected static const float ROW_HEIGHT = 26;	// lf-fixed
-	protected static const float ROW_ICON = 22;	// lf-fixed: the solo-zoom icon size
+	protected static const float ROW_HEIGHT = 30;	// lf-fixed
+	protected static const float ROW_ICON = 26;	// lf-fixed: near the solo-zoom icon size
 	protected static const float COLUMN_WIDTH = 210;	// lf-fixed
-	protected static const int ROWS_PER_COLUMN = 18;	// lf-fixed: fits under the tool strip at 1080p reference height
+	protected static const int ROWS_PER_COLUMN = 16;	// lf-fixed: fits under the tool strip at 1080p reference height
 
 	protected Widget m_wTab;
 	protected Widget m_wIconTab;
@@ -559,7 +563,7 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 			LF_MapPlaceIcons.Candidates(poi.m_sKind, poi.m_sIcon, poi.m_sCategory, candidates);
 			if (image)
 			{
-				image.SetSize(ROW_ICON, ROW_ICON);
+				LF_MapPlaceCard.FillParent(image);
 				LF_MapPlaceIcons.Resolve(image, candidates);
 			}
 
@@ -574,9 +578,8 @@ class LF_MapLegendUI : SCR_MapUIBaseComponent
 
 		string text = LF_MapLegend.TypeName(poi);
 		name.SetText(text);
-		float width = Math.Min(LF_MapDeclutter.LabelWidth(text), COLUMN_WIDTH - ROW_ICON - 8);
 		FrameSlot.SetPos(name, x + ROW_ICON + 6, y);
-		FrameSlot.SetSize(name, width, ROW_ICON);
+		FrameSlot.SetSize(name, COLUMN_WIDTH - ROW_ICON - 8, ROW_ICON);
 	}
 
 	//------------------------------------------------------------------------------------------------

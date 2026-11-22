@@ -192,7 +192,7 @@ class LF_MapWaypointUI : SCR_MapUIBaseComponent
 	protected static const float TAG_WIDTH = 320;	// lf-fixed: room for a long place name and its distance
 	protected static const float HINT_WIDTH = 440;	// lf-fixed
 	protected static const float HINT_HEIGHT = 58;	// lf-fixed: two lines
-	protected static const float HINT_BOTTOM = 26;	// lf-fixed: above the vanilla scale bar's line
+	protected static const float HINT_BOTTOM = 100;	// lf-fixed: above the vanilla scale bar and the server's link line
 	protected static const int REFRESH_MS = 250;	// lf-fixed: the distance and the device's words follow at this pace
 
 	protected CanvasWidget m_wCanvas;
