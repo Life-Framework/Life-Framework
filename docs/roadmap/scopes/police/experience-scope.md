@@ -87,7 +87,7 @@ yard, and a phone call out. At hour 50 the law is a place on the map with its ow
 | Shared system | What this area uses or adds |
 |---|---|
 | **XP and skills** (#4140) | A `police` skill and a `medic` skill on the same curve as civilian jobs. XP comes from outcomes, never from time: a closed call, a booking, a recovered car, a recapture, a revive, a delivered patient. Perks are small and procedural (faster cuffing, longer radar range, a quicker booking, a longer track ping). Rank stays the whitelist ladder; the skill is separate and fills the "what next" card in F2 |
-| **Reputation / standing** ([reputation.md](../../architecture/reputation.md)) | Police standing is how the gendarmerie sees a civilian (R5: not for officers). Paying a fine on time and giving a witness statement raise it. Unpaid fines, resisting and escapes lower it. High standing makes the officer's charge sheet suggest "warning" for minor road charges. Low standing makes the officer's pager flag a known face |
+| **Reputation / standing** ([reputation.md](../../../architecture/reputation.md)) | Police standing is how the gendarmerie sees a civilian (R5: not for officers). Paying a fine on time and giving a witness statement raise it. Unpaid fines, resisting and escapes lower it. High standing makes the officer's charge sheet suggest "warning" for minor road charges. Low standing makes the officer's pager flag a known face |
 | **Wanted level** | Stays the warrant (1 to 5) that makes an arrest legal. The law book does not replace it: wanted says "may be arrested", the charge sheet says "for what, and for how much" |
 | **Legal system** | New. The law book (codes) and the charge sheet, below. It reads the crime catalog and the open crime reports, so the charges a suspect faces are pre-ticked from what dispatch already knows |
 | **Licences** | Driving, firearm, pilot (from the heli shop, wishlist 11) and truck licence (wishlist 11) can be seized from the sheet. They come back after a retake exam at the licence desk, with a fee. That fee is a sink |
@@ -103,7 +103,7 @@ yard, and a phone call out. At hour 50 the law is a place on the map with its ow
 ## 3. Places
 
 Island places come through the town pipeline (`town draft`, `town fit`, `audit placement`). Coordinates
-are from [everon-world.md](../../architecture/everon-world.md). Places marked "scout" need a survey
+are from [everon-world.md](../../../architecture/everon-world.md). Places marked "scout" need a survey
 pass first.
 
 | Place | Where | What it looks like, what's there |
