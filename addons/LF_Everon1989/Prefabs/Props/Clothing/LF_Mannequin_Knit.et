@@ -55,5 +55,13 @@ GenericEntity : "{451F65968BA97575}Prefabs/Props/Commercial/LF_MannequinDisplay.
     }
    }
   }
+  GenericEntity : "{8733B60DA6679BF0}Prefabs/Props/Commercial/LF_MannequinGarment.et" {
+   ID "B00753A1E2C4D602"
+   components {
+    MeshObject "{9F2610C81BC2FC77}" {
+     Object "{349EF65230313C3E}Assets/Characters/Footwear/CombatBoots_Soviet_01/CombatBoots_Soviet_01.xob"
+    }
+   }
+  }
  }
 }
