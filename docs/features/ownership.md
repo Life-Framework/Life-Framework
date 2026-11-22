@@ -74,6 +74,19 @@
   singleton, so a world loaded after another in one process no longer keeps the last world's
   organizations, members and funds (checked by `map/org-marks-character-id`).
 
+- 🧪 (2026-11-22, #4213, gangs C2) **Gang flag, stored and saved.** Each organization flies one of
+  20 preset flags, numbered 1 to 20 (`LF_OrgFlags`, `Feature/Organizations/LF_OrgFlag.c`); 0 is no
+  flag. `LF_OrgFlags.Set` (server, a registered organization, 1 to 20) picks it; `FlagOf` reads it.
+  A side table keyed by organization id, so the positional `orgs` record does not move. Saved in the
+  `orgflags` section (`LF_OrgFlagSavePayload`, one `LF_OrgFlagRow` per organization). After every
+  load each organization flies a flag: one with no row takes the first free flag (the lowest no
+  other registered organization holds), in organization id order, so a second load gives the same
+  flags. A save from before the section (`OnAbsent`) keeps the live flags (none on a boot) and gives
+  the rest the first free flag. With all 20 held, a new one shares flag 1 (warning). Nothing here
+  refuses two organizations the same flag: the choosing rule (decision N21, the flag wall) decides.
+  A row whose organization is not on the register is kept and counts for nothing. Nothing
+  replicates yet. PERSISTENCE `org/flag-save`; `wt e2e` carries the e2e organization's flag 13.
+
 ### Houses — `Feature/Houses/`
 - ✅ **Init runs** (2026-11-17 property review, WORLD `houses/identifier-init`): `LF_HouseManagerComponent`
   and an editor-bound `LF_KeyComponent` now set the INIT event mask, as `LF_LockComponent` and
