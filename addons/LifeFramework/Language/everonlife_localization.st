@@ -14210,6 +14210,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Taxi stand"
      Comment "Title printed on the taxi stand's pole plate (LF_TaxiStand prefab, sign id taxi_stand); the Read card shows it."
     }
+    CustomStringTableItem "{C893332322755556}" {
+     Id "LF-Sign_TaxiStand_What"
+     Target_en_us "The taxi stand: sign on for taxi work and pick up fares who need a ride."
+     Comment "Sign catalog 'what' text of the taxi stand's Read card (sign id taxi_stand)."
+    }
     CustomStringTableItem "{84F64B2018E1B414}" {
      Id "LF-Sign_What"
      Target_en_us "What it is"
