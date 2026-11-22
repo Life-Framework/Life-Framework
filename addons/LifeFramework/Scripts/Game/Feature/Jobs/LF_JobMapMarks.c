@@ -277,8 +277,9 @@ class LF_JobMapMarks
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: a delivery run's next stop. One stop per runner: a new stop replaces the last.
+	//! \param text Label of the mark and waypoint (a #key); empty: the generic delivery stop.
 	//! \return The share key, or "" when the stop gets no mark.
-	static string OnStop(string runnerUid, string stopId, vector position)
+	static string OnStop(string runnerUid, string stopId, vector position, string text = string.Empty)
 	{
 		if (runnerUid.IsEmpty() || stopId.IsEmpty())
 		{
@@ -293,8 +294,12 @@ class LF_JobMapMarks
 		}
 
 		OnStopDone(runnerUid);
+		string label = text;
+		if (label.IsEmpty())
+			label = TEXT_STOP;
+
 		string key = KEY_JOB + runnerUid + ":" + stopId;
-		if (!Give(key, string.Empty, runnerUid, WAYPOINT_STOP, TEXT_STOP, COLOUR_STOP, position, LF_CivilianJob.HasActiveRun(runnerUid)))
+		if (!Give(key, string.Empty, runnerUid, WAYPOINT_STOP, label, COLOUR_STOP, position, LF_CivilianJob.HasActiveRun(runnerUid)))
 			return "";
 
 		return key;
