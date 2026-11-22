@@ -107,17 +107,17 @@
       "mouth": "579933799986565457676577631110000000048543358744456433468867955641455215349994333332110110111010111699979659333543333321133100"
     },
     "greet_regular": {
-      "hash": "34d7ed3f833d32a0",
-      "date": "2026-11-18",
+      "hash": "79975292aea10752",
+      "date": "2026-11-22",
       "voice_id": "nTMUXLFSfbWmdKKy7nDC",
       "voice_name": "Alder - Warm, Raspy and Comforting",
       "model": "eleven_multilingual_v2",
-      "text": "My friend! The harbour is better for having you in it. What can an old fisherman do for you?",
-      "chars": 92,
-      "chars_total": 37,
-      "request_id": "NGunjsehGOjhgyWfSsxO",
-      "seconds": 6.85,
-      "mouth": "68996766999777562111010000002996799995599979914888664655679834656555544441152100000000011147416786867899856777997557663655577444344433200"
+      "text": "My friend! The harbor is better for having you in it. What can an old fisherman do for you?",
+      "chars": 91,
+      "chars_total": 73,
+      "request_id": "O2NK9eGSVW56W2l4cUjv",
+      "seconds": 6.94,
+      "mouth": "5686776999876482100000000000048669999758997951689675656558844556654565651751000000000000002672188888888997567699876656587556764555655553100"
     },
     "cove": {
       "hash": "1bd6f7b4d8848071",

@@ -181,7 +181,7 @@ StringTable {
     }
     CustomStringTableItem "{D147578847F58E39}" {
      Id "LF-Dialogue_CafeOwner_GreetRegular"
-     Target_en_us "There is my favourite customer! Sit, sit. Ask me anything."
+     Target_en_us "There is my favorite customer! Sit, sit. Ask me anything."
      Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
     }
     CustomStringTableItem "{8DFEB7702C93ABF5}" {
@@ -196,7 +196,7 @@ StringTable {
     }
     CustomStringTableItem "{CCB81BA7119C635E}" {
      Id "LF-Dialogue_CafeOwner_Move"
-     Target_en_us "When they brought us here, the town did not know what to say. So a neighbour brought bread, and nobody asked a single question. I still use the cups. Every day. Someone has to."
+     Target_en_us "When they brought us here, the town did not know what to say. So a neighbor brought bread, and nobody asked a single question. I still use the cups. Every day. Someone has to."
      Comment "Dialogue caption, spoken by the cafe_owner NPC (voiced; tools/assets/dialogue/cafe_owner). Changing it needs: tools\\cli asset dialogue cafe_owner"
     }
     CustomStringTableItem "{02DD35A9A42C5905}" {
@@ -306,7 +306,7 @@ StringTable {
     }
     CustomStringTableItem "{B3E611FAB38249E9}" {
      Id "LF-Dialogue_ClerkEveron_Market"
-     Target_en_us "Drive back to the market in the town centre and sell your apple juice to the trader."
+     Target_en_us "Drive back to the market in the town center and sell your apple juice to the trader."
      Comment "Pack patch of the clerk dialogue's line market (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{ACA40575917539FA}" {
@@ -371,7 +371,7 @@ StringTable {
     }
     CustomStringTableItem "{001D205C4B5E0B1A}" {
      Id "LF-Dialogue_ClerkEveron_WelcomeTown"
-     Target_en_us "The town expects honest work and quiet nights. Greet your neighbours, pay what you owe, and ask the police if you are ever lost."
+     Target_en_us "The town expects honest work and quiet nights. Greet your neighbors, pay what you owe, and ask the police if you are ever lost."
      Comment "Pack patch of the clerk dialogue's line welcome_town (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
     CustomStringTableItem "{B938C64F01A44D1B}" {
@@ -381,12 +381,12 @@ StringTable {
     }
     CustomStringTableItem "{7BDFAF37D3BDD834}" {
      Id "LF-Dialogue_Dockworker_AboutCargo"
-     Target_en_us "Flour, diesel, machine parts. What is in the other crates is the harbour master's business, and he does not share."
+     Target_en_us "Flour, diesel, machine parts. What is in the other crates is the harbor master's business, and he does not share."
      Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
     }
     CustomStringTableItem "{4682C7C311BB4E55}" {
      Id "LF-Dialogue_Dockworker_AboutWork"
-     Target_en_us "Ask the harbour master. He hires by the day when a boat comes in, and pays when the boat is empty."
+     Target_en_us "Ask the harbor master. He hires by the day when a boat comes in, and pays when the boat is empty."
      Comment "Dialogue caption, spoken by the dockworker NPC (text only; tools/assets/dialogue/dockworker). Changing it needs: tools\\cli asset dialogue dockworker"
     }
     CustomStringTableItem "{9522D9D58323D43B}" {
@@ -421,7 +421,7 @@ StringTable {
     }
     CustomStringTableItem "{4E29407E130F00C3}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
-     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Petrol at the pumps, maps and snacks in here. The square is just up the street."
+     Target_en_us "This is Everon, friend. One road around the coast, and this is the only fuel in town. Gas at the pumps, maps and snacks in here. The square is just up the street."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
     CustomStringTableItem "{632BADA7E940D7F6}" {
@@ -436,7 +436,7 @@ StringTable {
     }
     CustomStringTableItem "{BB548D11A912F53A}" {
      Id "LF-Dialogue_Gendarme_Greet"
-     Target_en_us "Gendarmerie. Stand back from the warehouse, please. This is a police matter."
+     Target_en_us "Police. Stand back from the warehouse, please. This is a police matter."
      Comment "Dialogue caption, spoken by the gendarme NPC (text only; tools/assets/dialogue/gendarme). Changing it needs: tools\\cli asset dialogue gendarme"
     }
     CustomStringTableItem "{1851DF85B4179C76}" {
@@ -501,7 +501,7 @@ StringTable {
     }
     CustomStringTableItem "{0C493581129EAF98}" {
      Id "LF-Dialogue_HarbourMaster_Greet"
-     Target_en_us "Harbour office. Mind the crane and mind the ropes. What can I do for you?"
+     Target_en_us "Harbor office. Mind the crane and mind the ropes. What can I do for you?"
      Comment "Harbour master caption (#2692): the greeting."
     }
     CustomStringTableItem "{793B568C770FF5C5}" {
@@ -586,7 +586,7 @@ StringTable {
     }
     CustomStringTableItem "{5844A7CD27076B26}" {
      Id "LF-Dialogue_NightShift_AboutZone"
-     Target_en_us "I worked near the Zone before they moved us. Twelve kilometres from the reactor. They told us three days. That was three years ago. I still keep my house key."
+     Target_en_us "I worked near the Zone before they moved us. Twelve kilometers from the reactor. They told us three days. That was three years ago. I still keep my house key."
      Comment "Dialogue caption, spoken by the night_shift NPC (voiced; tools/assets/dialogue/night_shift). Changing it needs: tools\\cli asset dialogue night_shift"
     }
     CustomStringTableItem "{6F1F8D8B72E42914}" {
@@ -681,7 +681,7 @@ StringTable {
     }
     CustomStringTableItem "{02D74A9E8D29DB53}" {
      Id "LF-Dialogue_OldMan_GreetRegular"
-     Target_en_us "My friend! The harbour is better for having you in it. What can an old fisherman do for you?"
+     Target_en_us "My friend! The harbor is better for having you in it. What can an old fisherman do for you?"
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
     CustomStringTableItem "{0DA987094106C72C}" {
@@ -906,7 +906,7 @@ StringTable {
     }
     CustomStringTableItem "{54FD7200DA7DFF55}" {
      Id "LF-Dialogue_ResidentMireille_AboutGossip"
-     Target_en_us "They say the harbour master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like."
+     Target_en_us "They say the harbor master counts his crates twice since the spring. And somebody has been buying a great deal of sugar. Make of it what you like."
      Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
     }
     CustomStringTableItem "{D804C106D3DFEC19}" {
@@ -916,7 +916,7 @@ StringTable {
     }
     CustomStringTableItem "{ECD55BE8D4B9C801}" {
      Id "LF-Dialogue_ResidentMireille_Greet"
-     Target_en_us "Bonjour. Marius. Forgive me, I only came out for a coffee and a little conversation."
+     Target_en_us "Good morning. Marius. Forgive me, I only came out for a coffee and a little conversation."
      Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
     }
     CustomStringTableItem "{D608E1EFD91B9415}" {
@@ -1266,7 +1266,7 @@ StringTable {
     }
     CustomStringTableItem "{3441F00000000001}" {
      Id "LF-Dialogue_Rumour_SayAsk"
-     Target_en_us "Any talk in the café lately?"
+     Target_en_us "Any talk in the cafe lately?"
      Comment "Reply: ask the café owner what the town is saying about the shipment (#3441)."
     }
     CustomStringTableItem "{3804F10000000008}" {
@@ -1301,7 +1301,7 @@ StringTable {
     }
     CustomStringTableItem "{3804F10000000005}" {
      Id "LF-Dialogue_ShipmentGoBetween_Sell"
-     Target_en_us "So you opened the red crate. If you still have what was in it, I know a buyer: cash on the spot, no questions. He keeps to the lanes and the quay after dark. The gendarmerie will only thank you."
+     Target_en_us "So you opened the red crate. If you still have what was in it, I know a buyer: cash on the spot, no questions. He keeps to the lanes and the quay after dark. The police will only thank you."
      Comment "Hugo Valmy introduces the sell ending of the shipment; he never names the buyer's spot, the buyer rotates (#3804)."
     }
     CustomStringTableItem "{3804F10000000006}" {
