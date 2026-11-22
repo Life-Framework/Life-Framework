@@ -249,6 +249,8 @@ class LF_SpawnPointAudit
 					text += "; ";
 
 				text += string.Format("%1 %2 at %3: %4", row.m_sKind, row.m_sName, row.m_vPoint, row.m_sVerdict);
+				if (!row.m_sBlocker.IsEmpty())
+					text += " (blocked by " + row.m_sBlocker + ")";
 			}
 		}
 
