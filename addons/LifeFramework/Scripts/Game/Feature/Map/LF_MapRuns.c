@@ -1,22 +1,50 @@
 //------------------------------------------------------------------------------------------------
-//! One stop of a job run: the world entity a player goes to (the pack names it; the core holds no names)
-//! and a short label for the hover card ("furnace").
+//! One stop of a job run: a place (LF_Places kind and id, as the map knows it) and a short label for the
+//! hover card ("furnace"). A kind whose places have runtime ids (the postal points) leaves the id empty:
+//! the stop is the place of that kind nearest the anchor place, or the first one the run has not used yet.
 [BaseContainerProps()]
 class LF_MapRunStop
 {
-	[Attribute("", UIWidgets.EditBox, "Name of the world entity at this stop (a desk, a till, a rock, a buyer)")]
-	string m_sEntity;
+	[Attribute("", UIWidgets.EditBox, "LF_Places kind of the stop, e.g. StoreCounter")]
+	string m_sKind;
+
+	[Attribute("", UIWidgets.EditBox, "Place id, e.g. saint-philippe.hardware. Empty: pick a place of the kind (see m_sNear)")]
+	string m_sId;
+
+	[Attribute("", UIWidgets.EditBox, "With no id: \"<kind>:<id>\" of a place; the stop is the place of its kind nearest it. Empty: the first place of the kind this run has not used")]
+	string m_sNear;
 
 	[Attribute("", UIWidgets.EditBox, "Localization key of the stop's short name, e.g. #LF-MapRunStop_Furnace")]
 	string m_sLabel;
 
 	//------------------------------------------------------------------------------------------------
-	static LF_MapRunStop Make(string entity, string label)
+	static LF_MapRunStop Make(string kind, string id, string label, string near = "")
 	{
 		LF_MapRunStop stop = new LF_MapRunStop();
-		stop.m_sEntity = entity;
+		stop.m_sKind = kind;
+		stop.m_sId = id;
+		stop.m_sNear = near;
 		stop.m_sLabel = label;
 		return stop;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! A place a stop can resolve to: what the map holds (its POIs, private ones included) and the public
+//! places of LF_Places. Pure data so the resolution runs in LOGIC tests.
+class LF_MapRunPlace
+{
+	string m_sKind;
+	string m_sId;
+	vector m_vPos;
+
+	static LF_MapRunPlace Make(string kind, string id, vector pos)
+	{
+		LF_MapRunPlace p = new LF_MapRunPlace();
+		p.m_sKind = kind;
+		p.m_sId = id;
+		p.m_vPos = pos;
+		return p;
 	}
 }
 
@@ -359,16 +387,18 @@ class LF_MapRunRules
 }
 
 //------------------------------------------------------------------------------------------------
-//! The run chains on this machine: every stop of every run resolved to a world position by its entity
-//! name (layer entities exist on every client). Read once per map open.
+//! The run chains on this machine: every stop of every run resolved to a place position. The places are
+//! what this player's map holds plus the public places of LF_Places, so a private place the player has
+//! not met never resolves (it is not on this client at all).
 class LF_MapRuns
 {
 	//------------------------------------------------------------------------------------------------
-	//! Resolves every stop of `config` into `into`, one point per stop. \return how many were found.
-	static int Resolve(notnull LF_MapRunConfig config, notnull array<ref LF_MapRunPoint> into)
+	//! Resolves every stop of `config` against `places` into `into`, one point per stop. Pure.
+	//! \return how many were found.
+	static int ResolveIn(notnull LF_MapRunConfig config, notnull array<ref LF_MapRunPlace> places, notnull array<ref LF_MapRunPoint> into)
 	{
 		into.Clear();
-		if (!config.m_aRuns || !GetGame() || !GetGame().GetWorld())
+		if (!config.m_aRuns)
 			return 0;
 
 		int found = 0;
@@ -377,19 +407,18 @@ class LF_MapRuns
 			if (!run || !run.m_aStops)
 				continue;
 
+			array<LF_MapRunPlace> used = {};
 			foreach (int s, LF_MapRunStop stop : run.m_aStops)
 			{
 				LF_MapRunPoint point = new LF_MapRunPoint();
 				point.m_iRun = r;
 				point.m_iStep = s;
-				IEntity entity;
-				if (stop && !stop.m_sEntity.IsEmpty())
-					entity = GetGame().GetWorld().FindEntityByName(stop.m_sEntity);
-
-				if (entity)
+				LF_MapRunPlace place = Pick(stop, places, used);
+				if (place)
 				{
-					point.m_vPos = entity.GetOrigin();
+					point.m_vPos = place.m_vPos;
 					point.m_bFound = true;
+					used.Insert(place);
 					found++;
 				}
 
@@ -399,6 +428,96 @@ class LF_MapRuns
 
 		return found;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The place a stop names, or null.
+	static LF_MapRunPlace Pick(LF_MapRunStop stop, notnull array<ref LF_MapRunPlace> places, notnull array<LF_MapRunPlace> used)
+	{
+		if (!stop || stop.m_sKind.IsEmpty())
+			return null;
+
+		if (!stop.m_sId.IsEmpty())
+			return Find(places, stop.m_sKind, stop.m_sId);
+
+		LF_MapRunPlace anchor;
+		int colon = stop.m_sNear.IndexOf(":");
+		if (colon > 0)
+			anchor = Find(places, stop.m_sNear.Substring(0, colon), stop.m_sNear.Substring(colon + 1, stop.m_sNear.Length() - colon - 1));
+
+		LF_MapRunPlace best;
+		float bestSq = float.MAX;
+		foreach (LF_MapRunPlace place : places)
+		{
+			if (place.m_sKind != stop.m_sKind || used.Find(place) != -1)
+				continue;
+
+			if (!anchor)
+				return place;
+
+			float d = vector.DistanceSqXZ(place.m_vPos, anchor.m_vPos);
+			if (d < bestSq)
+			{
+				bestSq = d;
+				best = place;
+			}
+		}
+
+		return best;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static LF_MapRunPlace Find(notnull array<ref LF_MapRunPlace> places, string kind, string id)
+	{
+		foreach (LF_MapRunPlace place : places)
+		{
+			if (place.m_sKind == kind && place.m_sId == id)
+				return place;
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the places a stop may resolve to, from the map's list and the public LF_Places of each
+	//! kind the runs name.
+	static void GatherPlaces(notnull LF_MapRunConfig config, notnull array<ref LF_MapPoi> pois, notnull array<ref LF_MapRunPlace> into)
+	{
+		into.Clear();
+		foreach (LF_MapPoi poi : pois)
+		{
+			into.Insert(LF_MapRunPlace.Make(poi.m_sKind, poi.m_sId, poi.m_vPos));
+		}
+
+		if (!config.m_aRuns)
+			return;
+
+		array<string> kinds = {};
+		foreach (LF_MapRun run : config.m_aRuns)
+		{
+			if (!run || !run.m_aStops)
+				continue;
+
+			foreach (LF_MapRunStop stop : run.m_aStops)
+			{
+				if (stop && !stop.m_sKind.IsEmpty() && kinds.Find(stop.m_sKind) == -1)
+					kinds.Insert(stop.m_sKind);
+			}
+		}
+
+		foreach (string kind : kinds)
+		{
+			array<string> ids = {};
+			array<IEntity> entities = {};
+			LF_Places.FindAllWithIds(kind, ids, entities);
+			foreach (int i, IEntity entity : entities)
+			{
+				if (!Find(into, kind, ids[i]))
+					into.Insert(LF_MapRunPlace.Make(kind, ids[i], entity.GetOrigin()));
+			}
+		}
+	}
+
+
 }
 
 //------------------------------------------------------------------------------------------------

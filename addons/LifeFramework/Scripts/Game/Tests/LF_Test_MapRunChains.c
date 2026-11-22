@@ -1,4 +1,4 @@
-// red-proof: 2026-11-22, cli test --no-build --red LF_Test_MapRunChains,LF_Test_EveronMapRuns: RED-OK (RedProof() skips MarkShown, so no stop shows and no badge matches a run). The shop-next-door case was red on the first matcher in the session (hardware badge matched the lumber run too) and green with NEAREST_SLACK.
+// red-proof: 2026-11-22, cli test --no-build --red (batched with the pack run-table test): RED-OK (RedProof() skips MarkShown, so no stop shows and no badge matches a run). The shop-next-door case was red on the first matcher in the session (hardware badge matched the lumber run too) and green with NEAREST_SLACK.
 //------------------------------------------------------------------------------------------------
 //! map/run-chains: a badge belongs to the run whose stop stands at it, at that step; a stop two runs share
 //! belongs to both; a stop no known place is near stays off the map (an undiscovered mine never leaks
@@ -68,6 +68,31 @@ class LF_Test_MapRunChains : LF_Test
 		ctx.EqualStr("3", stepText, "step 3");
 		ctx.EqualStr("5", countText, "of 5");
 		ctx.EqualStr("#LF-MapRun_CardLast", LF_MapRunRules.CardKey(4, 5, stepText, countText), "the last step says so");
+
+		// Resolution: a stop by kind and id, and two stops of a kind with runtime ids (the post stands): the
+		// first is the one nearest its anchor place, the second the one the run has not used yet.
+		LF_MapRunConfig config = new LF_MapRunConfig();
+		config.m_aRuns = {};
+		LF_MapRun postal = LF_MapRun.Make("postal");
+		postal.m_aStops.Insert(LF_MapRunStop.Make("StoreCounter", "town.hardware", "a"));
+		postal.m_aStops.Insert(LF_MapRunStop.Make("PostalPoint", "", "b", "ParcelDepot:town.parcel"));
+		postal.m_aStops.Insert(LF_MapRunStop.Make("PostalPoint", "", "c"));
+		postal.m_aStops.Insert(LF_MapRunStop.Make("Workplace", "unknown.mine", "d"));
+		config.m_aRuns.Insert(postal);
+		array<ref LF_MapRunPlace> places = {};
+		places.Insert(LF_MapRunPlace.Make("PostalPoint", "postal_9", "900 0 900"));
+		places.Insert(LF_MapRunPlace.Make("PostalPoint", "postal_4", "105 0 100"));
+		places.Insert(LF_MapRunPlace.Make("ParcelDepot", "town.parcel", "100 0 100"));
+		places.Insert(LF_MapRunPlace.Make("StoreCounter", "town.hardware", "50 0 50"));
+		array<ref LF_MapRunPoint> resolved = {};
+		ctx.Equal(3, LF_MapRuns.ResolveIn(config, places, resolved), "three of four stops are on this map (the unknown mine is not)");
+		if (resolved.Count() == 4)
+		{
+			ctx.EqualFloat(50, resolved[0].m_vPos[0], 0.01, "the hardware store by its id");
+			ctx.EqualFloat(105, resolved[1].m_vPos[0], 0.01, "the town post stand: the one by the parcel depot");
+			ctx.EqualFloat(900, resolved[2].m_vPos[0], 0.01, "the other town post stand: the one not used yet");
+			ctx.False(resolved[3].m_bFound, "a place this player does not hold never resolves");
+		}
 
 		array<float> dashes = {};
 		int n = LF_MapRunRules.Dashes(0, 0, 150, 0, dashes);

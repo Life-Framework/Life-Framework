@@ -29,10 +29,6 @@ modded class LF_MapPlacesUI
 		if (!runs || !workspace || !m_RootWidget)
 			return;
 
-		int found = LF_MapRuns.Resolve(runs, m_aLF_RunPoints);
-		if (found < m_aLF_RunPoints.Count())
-			LF_Debug.Warn(LF_MapRunConfig.FEATURE, string.Format("%1 of %2 run stop(s) have no entity in this world", m_aLF_RunPoints.Count() - found, m_aLF_RunPoints.Count()));
-
 		m_wLF_RunCanvas = CanvasWidget.Cast(workspace.CreateWidget(WidgetType.CanvasWidgetTypeID, WidgetFlags.VISIBLE | WidgetFlags.IGNORE_CURSOR | WidgetFlags.NOFOCUS, Color.FromInt(Color.WHITE), 0, m_RootWidget));
 		if (!m_wLF_RunCanvas)
 		{
@@ -117,11 +113,19 @@ modded class LF_MapPlacesUI
 	protected void LF_FindRuns(int group)
 	{
 		m_aLF_RunMatches.Clear();
-		if (group < 0 || group >= m_aGroups.Count() || m_aLF_RunPoints.IsEmpty())
+		if (group < 0 || group >= m_aGroups.Count())
 			return;
 
 		if (m_iLF_RunPoisSeen != m_aPois.Count())
 		{
+			LF_MapRunConfig runs = LF_MapRunConfig.Get();
+			if (!runs)
+				return;
+
+			array<ref LF_MapRunPlace> places = {};
+			LF_MapRuns.GatherPlaces(runs, m_aPois, places);
+			int found = LF_MapRuns.ResolveIn(runs, places, m_aLF_RunPoints);
+			LF_Debug.Info(LF_MapRunConfig.FEATURE, string.Format("%1 of %2 run stop(s) on this map", found, m_aLF_RunPoints.Count()));
 			array<vector> known = {};
 			foreach (LF_MapPoi poi : m_aPois)
 			{

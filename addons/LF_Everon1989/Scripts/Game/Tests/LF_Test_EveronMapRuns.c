@@ -39,7 +39,7 @@ class LF_Test_EveronMapRuns : LF_Test
 			ctx.False(run.m_sLabel.IsEmpty(), id + " has a name");
 			foreach (LF_MapRunStop stop : run.m_aStops)
 			{
-				ctx.False(stop.m_sEntity.IsEmpty() || stop.m_sLabel.IsEmpty(), id + ": every stop names an entity and a label");
+				ctx.False(stop.m_sKind.IsEmpty() || stop.m_sLabel.IsEmpty(), id + ": every stop names a place kind and a label");
 			}
 		}
 
