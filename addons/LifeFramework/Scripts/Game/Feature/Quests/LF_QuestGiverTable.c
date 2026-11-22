@@ -19,6 +19,11 @@ class LF_QuestGiverRow : LF_ConfigRecord
 	[Attribute("", UIWidgets.Object, "Quests the giver offers after its prefab's own")]
 	ref array<ref LF_QuestDefinition> m_aQuests;
 
+	//! A pack's own chain in place of the prefab's: these prefab quest ids are taken out of the giver,
+	//! so a row quest may give the id again with the pack's own steps (the Everon arrival chain).
+	[Attribute("", UIWidgets.Auto, "Prefab quest ids this row takes out of the giver; a row quest may then reuse the id")]
+	ref array<string> m_aDropQuestIds;
+
 	//------------------------------------------------------------------------------------------------
 	//! Test and fallback seam: a row built in script has no attributes to fill.
 	static LF_QuestGiverRow Make(string giverId)
@@ -26,6 +31,7 @@ class LF_QuestGiverRow : LF_ConfigRecord
 		LF_QuestGiverRow row = new LF_QuestGiverRow();
 		row.m_sGiverId = giverId;
 		row.m_aQuests = {};
+		row.m_aDropQuestIds = {};
 		return row;
 	}
 }
@@ -170,8 +176,17 @@ class LF_QuestGiverList : LF_ConfigList
 	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
 	{
 		LF_QuestGiverRow row = LF_QuestGiverRow.Cast(record);
+		int changed = 0;
+		if (container.IsVariableSetDirectly("m_aDropQuestIds"))
+		{
+			array<string> drops = {};
+			container.Get("m_aDropQuestIds", drops);
+			row.m_aDropQuestIds = drops;
+			changed = 1;
+		}
+
 		if (!container.IsVariableSetDirectly("m_aQuests"))
-			return 0;
+			return changed;
 
 		row.m_aQuests = new array<ref LF_QuestDefinition>();
 		BaseContainerList quests = container.GetObjectArray("m_aQuests");
@@ -242,7 +257,7 @@ class LF_QuestGiverTable
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The quests a giver offers: its prefab's own, then the table's row for its id. A table quest
+	//! The quests a giver offers: its prefab's own (less the row's m_aDropQuestIds), then the table's row for its id. A table quest
 	//! whose id the giver already offers is refused (logged once) and the earlier one wins. With no
 	//! row the prefab's own list is returned as it is.
 	static array<ref LF_QuestDefinition> QuestsFor(string giverId, array<ref LF_QuestDefinition> prefabQuests)
@@ -261,6 +276,10 @@ class LF_QuestGiverTable
 		{
 			foreach (LF_QuestDefinition own : prefabQuests)
 			{
+				// The row gives its own steps in place of these (a pack's chain over the prefab's).
+				if (own && row.m_aDropQuestIds && row.m_aDropQuestIds.Find(own.m_sQuestId) != -1)
+					continue;
+
 				merged.Insert(own);
 				if (own)
 					ids.Insert(own.m_sQuestId);

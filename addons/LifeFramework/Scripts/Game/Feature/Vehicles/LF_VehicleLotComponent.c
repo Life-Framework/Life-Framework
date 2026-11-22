@@ -243,6 +243,32 @@ class LF_VehicleLotComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The first lot in the world that offers this vehicle prefab (a starter car, LF_StarterVehicle).
+	//! \param[out] shopId That lot's shop id, empty when none offers it.
+	//! \return The offer, or null when no lot offers the prefab.
+	static LF_VehicleOffer FindOfferOnAnyLot(ResourceName prefab, out string shopId)
+	{
+		shopId = string.Empty;
+		if (!s_aLots || prefab.IsEmpty())
+			return null;
+
+		foreach (LF_VehicleLotComponent lot : s_aLots)
+		{
+			if (!lot)
+				continue;
+
+			LF_VehicleOffer offer = lot.GetOffer(prefab);
+			if (offer)
+			{
+				shopId = lot.m_sShopId;
+				return offer;
+			}
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! \return The offer for a vehicle prefab on this lot, or null.
 	LF_VehicleOffer GetOffer(ResourceName prefab)
 	{

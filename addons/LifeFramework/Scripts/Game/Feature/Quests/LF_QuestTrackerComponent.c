@@ -222,6 +222,10 @@ class LF_QuestTrackerComponent : ScriptComponent
 
 		RefreshFrameMask();
 
+		// A step that hands over a car puts it in the garage as it starts (once per character).
+		if (!def.m_sStartVehiclePrefab.IsEmpty())
+			LF_StarterVehicle.Grant(GetOwner(), OwnerUid(), def);
+
 		if (quiet)
 		{
 			LF_Debug.Log("Quests", string.Format("accepted quest=%1 (in conversation)", questId));
