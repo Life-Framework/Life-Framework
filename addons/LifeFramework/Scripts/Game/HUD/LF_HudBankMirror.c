@@ -81,6 +81,26 @@ class LF_HudBankMirror
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: every connected player again, on the account refresh timer (10 s), so a spawn write
+	//! that missed still lands. LF_SetHudBank bumps only a value that changed.
+	static void RefreshAll()
+	{
+		if (!Replication.IsServer() || !GetGame())
+			return;
+
+		PlayerManager players = GetGame().GetPlayerManager();
+		if (!players)
+			return;
+
+		array<int> ids = {};
+		players.GetPlayers(ids);
+		foreach (int playerId : ids)
+		{
+			PublishFor(playerId, players.GetPlayerControlledEntity(playerId));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_Subscriber = null;
@@ -104,9 +124,9 @@ class LF_HudBankMirror_StaticResetHook : LF_StaticResetHook
 //------------------------------------------------------------------------------------------------
 modded class SCR_ChimeraCharacter
 {
-	//! The owner's bank balance for the HUD; -1 until the server writes one.
+	//! The owner's bank balance for the HUD; LF_HudLogic.BANK_UNKNOWN until the server writes one.
 	[RplProp(condition: RplCondition.OwnerOnly)]
-	protected int m_iLF_HudBank = -1;
+	protected int m_iLF_HudBank = LF_HudLogic.BANK_UNKNOWN;
 
 	//------------------------------------------------------------------------------------------------
 	void LF_SetHudBank(int balance)
@@ -140,5 +160,12 @@ modded class LF_GameModeRoleplay
 	{
 		super.OnPlayerSpawned(playerId, controlledEntity);
 		LF_HudBankMirror.PublishFor(playerId, controlledEntity);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected override void LF_RefreshAccountReplication()
+	{
+		super.LF_RefreshAccountReplication();
+		LF_HudBankMirror.RefreshAll();
 	}
 }

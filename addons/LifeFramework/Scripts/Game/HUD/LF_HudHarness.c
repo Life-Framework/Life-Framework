@@ -1,5 +1,5 @@
 // LF_HudHarness.c: the `hud` harness verb, so a session can put the subtle HUD into the states its
-// pictures need: `hud <wanted> <hunger> <thirst> [bankDeposit]`. The server applies it behind the
+// pictures need: `hud <wanted> <hunger> <thirst> [bankDeposit] [hold|nohold]`; `-` (or nothing) leaves that value. The server applies it behind the
 // dev gate through the same mutators play uses (SetWantedLevel, SetSurvivalStats, Deposit), so the
 // HUD shows what replication really delivers.
 
@@ -11,6 +11,12 @@ modded class LF_AgentHarnessVerbs
 		if (cmd.Verb != "hud")
 			return super.Handle(cmd);
 
+		// "hold" (5th word) keeps the delta and the wanted caption up 20 s on this client, for shots.
+		if (cmd.Arg5 == "hold")
+			LF_HudLogic.SetHarnessHold(20);
+		else if (cmd.Arg5 == "nohold")
+			LF_HudLogic.SetHarnessHold(0);
+
 		SCR_ChimeraCharacter character = LF_Utils.GetLocalCharacter();
 		if (!character)
 		{
@@ -18,14 +24,27 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
-		character.LF_AskHarnessHud(cmd.Id, cmd.Arg1.ToInt(), cmd.Arg2.ToInt(), cmd.Arg3.ToInt(), cmd.Arg4.ToInt());
+		character.LF_AskHarnessHud(cmd.Id, ArgOrKeep(cmd.Arg1), ArgOrKeep(cmd.Arg2), ArgOrKeep(cmd.Arg3), ArgOrKeep(cmd.Arg4));
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! -1 (leave the value as it is) for an empty or "-" argument, so a short command never zeroes
+	//! the wanted level (which would also take the posters down).
+	protected static int ArgOrKeep(string arg)
+	{
+		if (arg.IsEmpty() || arg == "-")
+			return -1;
+
+		return arg.ToInt();
 	}
 }
 
 //------------------------------------------------------------------------------------------------
 modded class SCR_ChimeraCharacter
 {
+	static const string LF_HUD_HARNESS_REASON = "harness-hud";
+
 	//------------------------------------------------------------------------------------------------
 	void LF_AskHarnessHud(int commandId, int wanted, int hunger, int thirst, int bankDeposit)
 	{
@@ -64,23 +83,34 @@ modded class SCR_ChimeraCharacter
 		LF_PlayerAccount account;
 		if (accounts && !accountUid.IsEmpty())
 			account = accounts.GetAccount(accountUid);
-		if (account)
+		if (account && wanted >= 0)
 			account.SetWantedLevel(wanted);
 
 		LF_CharacterSurvivalComponent survival = LF_CharacterSurvivalComponent.Cast(FindComponent(LF_CharacterSurvivalComponent));
-		if (survival && survival.GetSurvivalStats())
+		if (survival && survival.GetSurvivalStats() && (hunger >= 0 || thirst >= 0))
 		{
 			LF_SurvivalStats stats = survival.GetSurvivalStats();
-			stats.SetHunger(hunger);
-			stats.SetThirst(thirst);
+			if (hunger >= 0)
+				stats.SetHunger(hunger);
+			if (thirst >= 0)
+				stats.SetThirst(thirst);
 			survival.SetSurvivalStats(stats);
 		}
 
 		if (bankDeposit > 0)
 		{
-			LF_BankAccount bank = LF_ATMManager.GetOrCreate(uid);
-			if (bank)
-				bank.Deposit(bankDeposit);
+			LF_BankAccount bank;
+			if (!uid.IsEmpty())
+				bank = LF_ATMManager.GetOrCreate(uid);
+			if (!bank)
+			{
+				LF_Debug.Warn(LF_HudLogic.FEATURE, "harness hud: no bank account for this body, deposit refused");
+				LF_HarnessReply(commandId, "error", "no_bank_account");
+				return;
+			}
+
+			// Its own ledger reason, so harness money never reads as a real deposit.
+			bank.Deposit(bankDeposit, LF_HUD_HARNESS_REASON);
 		}
 
 		LF_Debug.Info(LF_HudLogic.FEATURE, string.Format("harness hud: wanted %1 hunger %2 thirst %3 bank +%4 (account %5)", wanted, hunger, thirst, bankDeposit, account != null));

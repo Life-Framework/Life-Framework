@@ -22,8 +22,32 @@ class LF_HudLogic
 	static const float DELTA_SECONDS = 3.0;	// lf-float: UI seconds
 
 	static const int WANTED_PIPS = 5;
+	//! Extra seconds the delta and the wanted caption stay, set only by the `hud ... hold` harness
+	//! verb so a screenshot (several seconds to capture) catches them. 0 in play.
+	protected static float s_fHarnessHold;
+
+	//! The bank mirror before the server has written a balance.
+	static const int BANK_UNKNOWN = int.MIN;
 	//! Seconds the "Wanted" caption shows after the level rises.
 	static const float WANTED_CAPTION_SECONDS = 3.0;	// lf-float: UI seconds
+
+	//------------------------------------------------------------------------------------------------
+	static float DeltaSeconds()
+	{
+		return DELTA_SECONDS + s_fHarnessHold;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static float WantedCaptionSeconds()
+	{
+		return WANTED_CAPTION_SECONDS + s_fHarnessHold;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void SetHarnessHold(float seconds)
+	{
+		s_fHarnessHold = Math.Max(seconds, 0);
+	}
 
 	//------------------------------------------------------------------------------------------------
 	//! \return True when the needs line should be on screen.
@@ -67,11 +91,11 @@ class LF_HudLogic
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The bank amount, or empty while the balance is not known yet (the mirror sends -1 until the
-	//! server has written one).
+	//! The bank amount (a debt prints as -$150), or empty while the balance is not known yet: the
+	//! mirror holds BANK_UNKNOWN until the server writes one, a value no balance can take.
 	static string BankAmountText(int bank)
 	{
-		if (bank < 0)
+		if (bank == BANK_UNKNOWN)
 			return "";
 
 		return LF_MoneyFormat.FormatMoney(bank);
@@ -282,6 +306,7 @@ class LF_HudPrefs : Managed
 	static void ResetStatics()
 	{
 		s_Instance = null;
+		LF_HudLogic.SetHarnessHold(0);
 	}
 }
 

@@ -58,7 +58,8 @@ class LF_BetaHud : SCR_InfoDisplay
 	protected bool m_bHiddenByScreen;
 	protected string m_sPrefsLine;
 
-	protected int m_iBank = -2;
+	protected int m_iBank = LF_HudLogic.BANK_UNKNOWN;
+	protected bool m_bBankSeen;
 	protected float m_fMoneyIdle;
 	protected float m_fMoneyOpacity = -1;
 	protected bool m_bMoneyForced;
@@ -233,7 +234,8 @@ class LF_BetaHud : SCR_InfoDisplay
 		m_fPollAccumulator = POLL_SECONDS;
 		m_sPrefsLine = "";
 		m_bHiddenByScreen = false;
-		m_iBank = -2;
+		m_iBank = LF_HudLogic.BANK_UNKNOWN;
+		m_bBankSeen = false;
 		m_fMoneyIdle = 0;
 		m_fMoneyOpacity = -1;
 		m_fDeltaAge = -1;
@@ -311,7 +313,7 @@ class LF_BetaHud : SCR_InfoDisplay
 		if (m_fWantedCaptionAge >= 0)
 		{
 			m_fWantedCaptionAge += timeSlice;
-			if (m_fWantedCaptionAge >= LF_HudLogic.WANTED_CAPTION_SECONDS)
+			if (m_fWantedCaptionAge >= LF_HudLogic.WantedCaptionSeconds())
 			{
 				m_fWantedCaptionAge = -1;
 				if (m_wWantedCaption)
@@ -378,10 +380,11 @@ class LF_BetaHud : SCR_InfoDisplay
 	protected void PollBank()
 	{
 		int bank = m_Character.LF_GetHudBank();
-		if (bank == m_iBank || !m_wBank)
+		if ((m_bBankSeen && bank == m_iBank) || !m_wBank)
 			return;
 
-		bool first = m_iBank == -2;
+		bool first = !m_bBankSeen;
+		m_bBankSeen = true;
 		m_iBank = bank;
 		string amount = LF_HudLogic.BankAmountText(bank);
 		if (amount.IsEmpty())
@@ -520,7 +523,7 @@ class LF_BetaHud : SCR_InfoDisplay
 			return;
 		}
 
-		if (m_fDeltaAge >= LF_HudLogic.DELTA_SECONDS)
+		if (m_fDeltaAge >= LF_HudLogic.DeltaSeconds())
 		{
 			m_fDeltaAge = -1;
 			AlignableSlot.SetPadding(m_wCashDelta, 0, 0, DELTA_GAP_PIXELS, 0);

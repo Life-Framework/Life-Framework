@@ -31,7 +31,8 @@ class LF_Test_HudLogic : LF_Test
 		ctx.EqualStr("+" + LF_MoneyFormat.FormatMoney(100), LF_HudLogic.DeltaText(1140, 1240), "a gain reads +$100");
 		ctx.EqualStr(LF_MoneyFormat.FormatMoney(-18), LF_HudLogic.DeltaText(1240, 1222), "a spend reads -$18");
 		ctx.EqualStr("", LF_HudLogic.DeltaText(5, 5), "no change, no delta");
-		ctx.EqualStr("", LF_HudLogic.BankAmountText(-1), "unknown balance prints nothing");
+		ctx.EqualStr("", LF_HudLogic.BankAmountText(LF_HudLogic.BANK_UNKNOWN), "unknown balance prints nothing");
+		ctx.EqualStr(LF_MoneyFormat.FormatMoney(-150), LF_HudLogic.BankAmountText(-150), "a hospital debt prints as -$150, not blank");
 		ctx.EqualStr(LF_MoneyFormat.FormatMoney(18900), LF_HudLogic.BankAmountText(18900), "bank prints as money");
 
 		// Wanted.

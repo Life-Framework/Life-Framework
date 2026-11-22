@@ -63,7 +63,8 @@
   state, hunger and thirst from the survival RplProps, and the bank from `LF_HudBankMirror`: an owner-only RplProp on
   `SCR_ChimeraCharacter` the server writes on spawn and on every bank `LF_OnMoneyMoved` (display only, nothing trusts it).
 - Replicated values are polled every 0.25 s; widgets change only when a value or a target does. Hidden behind
-  full-screen menus and during dialogue (`LF_DialogueScene`, `LF_DialogueCamera`).
+  engine menus (pause, settings, dialogs) and during dialogue; a UI kit sheet is not an engine menu, so the HUD stays up beside one (`LF_DialogueScene`, `LF_DialogueCamera`).
+- Bank shows a debt as `-$150`; the mirror refreshes on the 10 s account refresh as well. Harness verb `hud <wanted> <hunger> <thirst> [bankDeposit] [hold]` (dev gate) sets up the states for pictures.
 - `/hud <brand|money|wanted|needs|all> <on|off>` toggles a part; kept per client in `$profile:LF_HudPrefs.txt`.
 - Test `hud/subtle-rules` (LOGIC): show and low thresholds, dimming, delta and bank text, pip clamp and rise, /hud
   parsing and the saved line.
