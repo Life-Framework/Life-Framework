@@ -1,7 +1,7 @@
 StringTable {
  ItemClassName "CustomStringTableItem"
  Items {
-    CustomStringTableItem "{1CB6BD5316FBA315}" {
+  CustomStringTableItem "{1CB6BD5316FBA315}" {
    Id "EL-ATM_Amount"
    Target_en_us "Amount:"
    Target_es_es "Cantidad:"
@@ -22,7 +22,7 @@ StringTable {
      Target_pt_br "Digite o valor"
      Comment "ATM deposit/withdraw amount field placeholder"
     }
-    CustomStringTableItem "{E687B439A5205BE9}" {
+  CustomStringTableItem "{E687B439A5205BE9}" {
    Id "EL-ATM_Balance"
    Target_en_us "Balance: $"
    Target_es_es "Saldo: $"
@@ -37,7 +37,7 @@ StringTable {
      Target_en_us "Close"
      Comment "Button that closes the ATM screen"
     }
-    CustomStringTableItem "{0379A5BDF0064A16}" {
+  CustomStringTableItem "{0379A5BDF0064A16}" {
    Id "EL-ATM_Deposit"
    Target_en_us "Deposit"
    Target_es_es "Depositar"
@@ -52,7 +52,7 @@ StringTable {
      Target_en_us "The teller refused the deposit: you do not carry that much cash"
      Comment "ATM deposit refused by the server"
     }
-    CustomStringTableItem "{E9F2EDAF4646211E}" {
+  CustomStringTableItem "{E9F2EDAF4646211E}" {
    Id "EL-ATM_InsufficientFunds"
    Target_en_us "Insufficient funds"
    Target_es_es "Fondos insuficientes"
@@ -67,7 +67,7 @@ StringTable {
      Target_en_us "Enter an amount greater than zero"
      Comment "ATM deposit/withdraw refused on the client because the typed amount is empty, zero or negative"
     }
-    CustomStringTableItem "{B3BF4076847C9C6E}" {
+  CustomStringTableItem "{B3BF4076847C9C6E}" {
    Id "EL-ATM_Title"
    Target_en_us "ATM"
    Target_es_es "Cajero Automático"
@@ -82,7 +82,7 @@ StringTable {
      Target_en_us "Stand at an ATM to do that"
      Comment "ATM deposit or withdraw refused because the player walked away from the ATM"
     }
-    CustomStringTableItem "{C726A3F43803900E}" {
+  CustomStringTableItem "{C726A3F43803900E}" {
    Id "EL-ATM_Withdraw"
    Target_en_us "Withdraw"
    Target_es_es "Retirar"
@@ -272,7 +272,7 @@ StringTable {
      Target_pt_br "Digite seu sobrenome..."
      Comment "Character creation last name field placeholder"
     }
-    CustomStringTableItem "{BB9797D7BF69E9F2}" {
+  CustomStringTableItem "{BB9797D7BF69E9F2}" {
    Id "EL-CharacterCreation_Age"
    Target_en_us "Age:"
    Target_es_es "Edad:"
@@ -282,7 +282,7 @@ StringTable {
    Target_pt_pt "Idade:"
    Target_pt_br "Idade:"
   }
-    CustomStringTableItem "{54AF4AE58A1DBCF7}" {
+CustomStringTableItem "{54AF4AE58A1DBCF7}" {
     Id "EL-CharacterCreation_Create"
     Target_en_us "Create Character"
     Target_es_es "Crear Personaje"
@@ -292,7 +292,7 @@ StringTable {
     Target_pt_pt "Criar personagem"
     Target_pt_br "Criar personagem"
    }
-    CustomStringTableItem "{52C0B4BC0FA1B26D}" {
+  CustomStringTableItem "{52C0B4BC0FA1B26D}" {
    Id "EL-CharacterCreation_FirstName"
    Target_en_us "First Name:"
    Target_es_es "Nombre:"
@@ -302,7 +302,7 @@ StringTable {
    Target_pt_pt "Nome próprio:"
    Target_pt_br "Primeiro nome:"
   }
-    CustomStringTableItem "{32AE1891B7DEDCF6}" {
+  CustomStringTableItem "{32AE1891B7DEDCF6}" {
    Id "EL-CharacterCreation_LastName"
    Target_en_us "Last Name:"
    Target_es_es "Apellido:"
@@ -312,7 +312,7 @@ StringTable {
    Target_pt_pt "Apelido:"
    Target_pt_br "Sobrenome:"
   }
-    CustomStringTableItem "{89423F406555DECA}" {
+  CustomStringTableItem "{89423F406555DECA}" {
    Id "EL-CharacterCreation_Title"
    Target_en_us "Create Your Character"
    Target_es_es "Crea tu Personaje"
@@ -322,7 +322,7 @@ StringTable {
    Target_pt_pt "Cria o teu personagem"
    Target_pt_br "Crie seu personagem"
   }
-    CustomStringTableItem "{528E67C0E6D6C58D}" {
+  CustomStringTableItem "{528E67C0E6D6C58D}" {
    Id "EL-Confiscate_DisplayName"
    Target_en_us "Confiscate Weapons"
    Target_es_es "Confiscar Armas"
@@ -367,7 +367,7 @@ StringTable {
      Target_en_us "Start convoy"
      Comment "Convoy start action name"
     }
-    CustomStringTableItem "{D5A0873EE40176C2}" {
+   CustomStringTableItem "{D5A0873EE40176C2}" {
     Id "EL-Death_Respawn"
     Target_en_us "Respawn"
     Target_de_de "Neu starten"
@@ -378,7 +378,7 @@ StringTable {
      Target_pt_br "Reaparecer"
      Comment "Death screen respawn button"
    }
-    CustomStringTableItem "{4CADF51C9441EA8A}" {
+   CustomStringTableItem "{4CADF51C9441EA8A}" {
     Id "EL-Death_Title"
     Target_en_us "You are dead"
     Target_de_de "Du bist gestorben"
@@ -389,7 +389,7 @@ StringTable {
     Target_pt_br "Você morreu"
     Comment "Death screen title"
    }
-    CustomStringTableItem "{6A52D1D87E9A31C4}" {
+   CustomStringTableItem "{6A52D1D87E9A31C4}" {
     Id "EL-DebugMenu_Close"
     Target_en_us "Close"
     Target_de_de "Schließen"
@@ -400,7 +400,7 @@ StringTable {
     Target_pt_br "Fechar"
     Comment "Debug menu close hint"
    }
-    CustomStringTableItem "{BBED3D35CECA0BEE}" {
+   CustomStringTableItem "{BBED3D35CECA0BEE}" {
     Id "EL-DebugMenu_FactionCivilian"
     Target_en_us "Civilian Faction"
     Target_de_de "Zivilisten-Fraktion"
@@ -411,7 +411,7 @@ StringTable {
     Target_pt_br "Facção civil"
     Comment "Debug menu: set civilian faction"
    }
-    CustomStringTableItem "{C72E71FF41583BB3}" {
+   CustomStringTableItem "{C72E71FF41583BB3}" {
     Id "EL-DebugMenu_FactionPolice"
     Target_en_us "Police Faction"
     Target_de_de "Polizei-Fraktion"
@@ -422,7 +422,7 @@ StringTable {
     Target_pt_br "Facção policial"
     Comment "Debug menu: set police faction"
    }
-    CustomStringTableItem "{B314C31C663DB665}" {
+   CustomStringTableItem "{B314C31C663DB665}" {
     Id "EL-DebugMenu_GiveCash"
     Target_en_us "Give Cash +1000"
     Target_de_de "Geld geben +1000"
@@ -433,7 +433,7 @@ StringTable {
     Target_pt_br "Dar dinheiro +1000"
     Comment "Debug menu: add cash button"
    }
-    CustomStringTableItem "{84BD5C1286CDFFBF}" {
+   CustomStringTableItem "{84BD5C1286CDFFBF}" {
     Id "EL-DebugMenu_GrantSp"
     Target_en_us "Grant SP +5"
     Target_de_de "SP geben +5"
@@ -444,7 +444,7 @@ StringTable {
     Target_pt_br "Dar SP +5"
     Comment "Debug menu: add skill points"
    }
-    CustomStringTableItem "{33D04535861495AB}" {
+   CustomStringTableItem "{33D04535861495AB}" {
     Id "EL-DebugMenu_GrantXp"
     Target_en_us "Grant XP +500"
     Target_de_de "XP geben +500"
@@ -455,7 +455,7 @@ StringTable {
     Target_pt_br "Dar XP +500"
     Comment "Debug menu: add experience"
    }
-    CustomStringTableItem "{5F3EB174B8DF0FBB}" {
+   CustomStringTableItem "{5F3EB174B8DF0FBB}" {
     Id "EL-DebugMenu_JobFarmer"
     Target_en_us "Job: Farmer"
     Target_de_de "Job: Bauer"
@@ -466,7 +466,7 @@ StringTable {
     Target_pt_br "Trabalho: agricultor"
     Comment "Debug menu: set farmer job"
    }
-    CustomStringTableItem "{5D41B256D421B6E8}" {
+   CustomStringTableItem "{5D41B256D421B6E8}" {
     Id "EL-DebugMenu_JobUnemployed"
     Target_en_us "Job: Unemployed"
     Target_de_de "Job: Arbeitslos"
@@ -477,7 +477,7 @@ StringTable {
     Target_pt_br "Trabalho: desempregado"
     Comment "Debug menu: set unemployed job"
    }
-    CustomStringTableItem "{63A127949F852CC4}" {
+   CustomStringTableItem "{63A127949F852CC4}" {
     Id "EL-DebugMenu_SurvivalEmpty"
     Target_en_us "Survival Empty"
     Target_de_de "Überleben leer"
@@ -488,7 +488,7 @@ StringTable {
     Target_pt_br "Sobrevivência vazia"
     Comment "Debug menu: zero hunger/thirst/health"
    }
-    CustomStringTableItem "{836DE3CEE3A9A308}" {
+   CustomStringTableItem "{836DE3CEE3A9A308}" {
     Id "EL-DebugMenu_SurvivalFull"
     Target_en_us "Survival Full"
     Target_de_de "Überleben voll"
@@ -499,7 +499,7 @@ StringTable {
     Target_pt_br "Sobrevivência cheia"
     Comment "Debug menu: max hunger/thirst/health"
    }
-    CustomStringTableItem "{58B6B04D77AF1CCC}" {
+   CustomStringTableItem "{58B6B04D77AF1CCC}" {
     Id "EL-DebugMenu_TakeCash"
     Target_en_us "Take Cash -1000"
     Target_de_de "Geld nehmen -1000"
@@ -521,7 +521,7 @@ StringTable {
     Target_pt_br "Menu de depuração"
     Comment "Debug menu title"
    }
-    CustomStringTableItem "{2DBD1E711A1FE9C9}" {
+   CustomStringTableItem "{2DBD1E711A1FE9C9}" {
     Id "EL-DebugMenu_Wanted0"
     Target_en_us "Wanted 0"
     Target_de_de "Gesucht 0"
@@ -532,7 +532,7 @@ StringTable {
     Target_pt_br "Procurado 0"
     Comment "Debug menu: clear wanted level"
    }
-    CustomStringTableItem "{EB6A833DCB4086E3}" {
+   CustomStringTableItem "{EB6A833DCB4086E3}" {
     Id "EL-DebugMenu_Wanted5"
     Target_en_us "Wanted 5"
     Target_de_de "Gesucht 5"
@@ -543,7 +543,7 @@ StringTable {
     Target_pt_br "Procurado 5"
     Comment "Debug menu: max wanted level"
    }
-    CustomStringTableItem "{B8AE8B1EC379425C}" {
+   CustomStringTableItem "{B8AE8B1EC379425C}" {
     Id "EL-DeleteAction_DisplayName"
     Target_en_us "Destroy"
     Target_de_de "Zerstören"
@@ -576,7 +576,7 @@ StringTable {
      Target_en_us "Only police can change duty"
      Comment "Duty toggle refused because the player is not in the police faction"
     }
-    CustomStringTableItem "{E9C8FC3D37EA4FF9}" {
+  CustomStringTableItem "{E9C8FC3D37EA4FF9}" {
    Id "EL-Duty_Status"
    Target_en_us "Duty Status"
    Target_es_es "Estado de Servicio"
@@ -586,7 +586,7 @@ StringTable {
    Target_pt_pt "Estado de Serviço"
    Target_pt_br "Estado de Serviço"
   }
-    CustomStringTableItem "{E707FDC68C849C38}" {
+  CustomStringTableItem "{E707FDC68C849C38}" {
    Id "EL-Duty_Status_Change"
    Target_en_us "You are now %1"
    Target_es_es "Ahora eres %1"
@@ -621,7 +621,7 @@ StringTable {
      Target_en_us "Take out of vehicle"
      Comment "Officer removes the prisoner from the vehicle. The sentence starts only at the cell."
     }
-    CustomStringTableItem "{A8730ED008B83986}" {
+   CustomStringTableItem "{A8730ED008B83986}" {
     Id "EL-Faction_Civilian"
     Target_en_us "Civilian"
     Target_es_es "Civil"
@@ -631,7 +631,7 @@ StringTable {
     Target_pt_pt "Civil"
     Target_pt_br "Civil"
    }
-    CustomStringTableItem "{8D4E3C7BBC67A1B5}" {
+   CustomStringTableItem "{8D4E3C7BBC67A1B5}" {
     Id "EL-Faction_Police"
     Target_en_us "Police"
     Target_es_es "Policía"
@@ -641,7 +641,7 @@ StringTable {
     Target_pt_pt "Polícia"
     Target_pt_br "Polícia"
    }
-    CustomStringTableItem "{71BBA650CD61B241}" {
+   CustomStringTableItem "{71BBA650CD61B241}" {
     Id "EL-Faction_Title"
     Target_en_us "Select Faction"
     Target_es_es "Seleccionar facción"
@@ -651,7 +651,7 @@ StringTable {
     Target_pt_pt "Selecionar facção"
     Target_pt_br "Selecionar facção"
    }
-    CustomStringTableItem "{3786BE1BEAA9D0BE}" {
+  CustomStringTableItem "{3786BE1BEAA9D0BE}" {
    Id "EL-Fine_Failed"
    Target_en_us "Player doesn't have enough money!"
    Target_es_es "El jugador no tiene suficiente dinero!"
@@ -677,7 +677,7 @@ StringTable {
      Target_en_us "A fine must be at least 1000 to lower the wanted level"
      Comment "Police fine refused because the amount is below one wanted level (1000 cash per level)"
     }
-    CustomStringTableItem "{5B715E486235B275}" {
+  CustomStringTableItem "{5B715E486235B275}" {
    Id "EL-Fined"
    Target_en_us "Fined"
    Target_es_es "Multado"
@@ -753,7 +753,7 @@ StringTable {
      Target_pt_br "A casa está trancada"
      Comment "Door action cannot-perform reason on a locked house"
     }
-    CustomStringTableItem "{04BE9409328F0209}" {
+  CustomStringTableItem "{04BE9409328F0209}" {
    Id "EL-ID_Information"
    Target_en_us "ID Information"
    Target_es_es "Información de ID"
@@ -763,7 +763,7 @@ StringTable {
    Target_pt_pt "Informação de ID"
    Target_pt_br "Informação de ID"
   }
-    CustomStringTableItem "{4CC21547F7D0E8C0}" {
+  CustomStringTableItem "{4CC21547F7D0E8C0}" {
    Id "EL-Inventory_Full"
    Target_en_us "Inventory full!"
    Target_es_es "Inventario lleno!"
@@ -795,7 +795,7 @@ StringTable {
      Target_pt_br "Chave de casa"
      Comment "House key item name"
     }
-    CustomStringTableItem "{AA76A797BE84093A}" {
+CustomStringTableItem "{AA76A797BE84093A}" {
     Id "EL-Item_Bought"
     Target_en_us "Bought %1 x%2!"
     Target_es_es "Compró %1 x%2!"
@@ -805,7 +805,7 @@ StringTable {
     Target_pt_pt "Comprou %1 x%2!"
     Target_pt_br "Comprou %1 x%2!"
    }
-    CustomStringTableItem "{281B36AB823C412B}" {
+   CustomStringTableItem "{281B36AB823C412B}" {
     Id "EL-Item_Pickaxe_Description"
     Target_en_us "Tool for mining ore"
     Target_de_de "Werkzeug zum Erzabbau"
@@ -819,7 +819,7 @@ StringTable {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-    CustomStringTableItem "{3A70AF4FE08F42F5}" {
+   CustomStringTableItem "{3A70AF4FE08F42F5}" {
     Id "EL-Item_Pickaxe_Name"
     Target_en_us "Pickaxe"
     Target_de_de "Spitzhacke"
@@ -833,7 +833,7 @@ StringTable {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-    CustomStringTableItem "{FDB3A4352A9457A4}" {
+  CustomStringTableItem "{FDB3A4352A9457A4}" {
    Id "EL-Item_Sold"
    Target_en_us "Sold item for {currency:sym}%1!"
    Target_es_es "Item vendido por {currency:sym}%1!"
@@ -888,7 +888,7 @@ StringTable {
      Target_en_us "Complete the run"
      Comment "Drop marker action that pays a delivery run"
     }
-    CustomStringTableItem "{C60F134F56CDE9BE}" {
+  CustomStringTableItem "{C60F134F56CDE9BE}" {
    Id "EL-Job_Earned"
    Target_en_us "Earned {currency:sym}%1 for work!"
    Target_es_es "Ganó {currency:sym}%1 por trabajo!"
@@ -943,7 +943,7 @@ StringTable {
      Target_en_us "Pick up parcel"
      Comment "Depot action that starts a parcel run"
     }
-    CustomStringTableItem "{8F253E3EE2D8A786}" {
+  CustomStringTableItem "{8F253E3EE2D8A786}" {
    Id "EL-Job_Reward"
    Target_en_us "Job Reward"
    Target_es_es "Recompensa de Trabajo"
@@ -973,7 +973,7 @@ StringTable {
      Target_en_us "Start fare"
      Comment "Taxi rank action that starts a marker fare"
     }
-    CustomStringTableItem "{5A60AE2B8D435CE9}" {
+  CustomStringTableItem "{5A60AE2B8D435CE9}" {
    Id "EL-Keybinds_Inventory_MoveQuantity"
    Target_en_us "Move stack"
    Target_de_de "Stapel verschieben"
@@ -986,7 +986,7 @@ StringTable {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{5A5EA70E9C33566A}" {
+  CustomStringTableItem "{5A5EA70E9C33566A}" {
    Id "EL-Keybinds_Inventory_PickUpQuantity"
    Target_en_us "Pick up stack"
    Target_de_de "Stapel aufsammeln"
@@ -999,7 +999,7 @@ StringTable {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{5A628A92C80C8905}" {
+  CustomStringTableItem "{5A628A92C80C8905}" {
    Id "EL-Keybinds_Inventory_QuickSplitQuantity"
    Target_en_us "Half stack"
    Target_de_de "Stapel halbieren"
@@ -1012,7 +1012,7 @@ StringTable {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{5A628A92CC3D121C}" {
+  CustomStringTableItem "{5A628A92CC3D121C}" {
    Id "EL-Keybinds_Inventory_SplitQuantity"
    Target_en_us "Split stack"
    Target_de_de "Stapel aufteilen"
@@ -1025,7 +1025,7 @@ StringTable {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{47776A7324DF510E}" {
+   CustomStringTableItem "{47776A7324DF510E}" {
     Id "EL-Keybinds_OpenDebugMenu"
     Target_en_us "Open debug menu"
     Target_de_de "Debug-Menü öffnen"
@@ -1036,14 +1036,14 @@ StringTable {
     Target_pt_br "Abrir menu de depuração"
     Comment "Keybind: open the debug menu"
    }
-    CustomStringTableItem "{5A5EA70D1ADCCA9E}" {
+  CustomStringTableItem "{5A5EA70D1ADCCA9E}" {
    Id "EL-Keybinds_Title"
    Target_en_us "Life Framework"
    Modified 1516153387
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{5AA164EA498BDCE0}" {
+  CustomStringTableItem "{5AA164EA498BDCE0}" {
    Id "EL-Not_Enough_Money"
    Target_en_us "Not enough money!"
    Target_es_es "Dinero insuficiente!"
@@ -1128,7 +1128,7 @@ StringTable {
      Target_en_us "Withdraw cash"
      Comment "Organization fund withdraw button"
     }
-    CustomStringTableItem "{8A914631969AA29B}" {
+  CustomStringTableItem "{8A914631969AA29B}" {
    Id "EL-Player_Arrested"
    Target_en_us "Player arrested!"
    Target_es_es "Jugador arrestado!"
@@ -1149,7 +1149,7 @@ StringTable {
      Target_pt_br "Alerta policial"
      Comment "Notification title for crime alerts to police"
     }
-    CustomStringTableItem "{D805FA4B449DCBDB}" {
+  CustomStringTableItem "{D805FA4B449DCBDB}" {
    Id "EL-Police_Action"
    Target_en_us "Weapons confiscated!"
    Target_es_es "Armas confiscadas!"
@@ -1169,7 +1169,7 @@ StringTable {
      Target_en_us "Crime Alert: Hospital till robbed"
      Comment "Police notification when the hospital till is robbed"
     }
-    CustomStringTableItem "{29AE645903F2735C}" {
+  CustomStringTableItem "{29AE645903F2735C}" {
    Id "EL-Police_Alert_Robbery"
    Target_en_us "Crime Alert: Robbery in progress!"
    Target_es_es "Alerta de Crimen: Robo en progreso!"
@@ -1179,7 +1179,7 @@ StringTable {
    Target_pt_pt "Alerta de Crime: Roubo em andamento!"
    Target_pt_br "Alerta de Crime: Roubo em andamento!"
   }
-    CustomStringTableItem "{94F7D789515A802D}" {
+  CustomStringTableItem "{94F7D789515A802D}" {
    Id "EL-Police_Alert_Vehicle"
    Target_en_us "Crime Alert: Vehicle theft!"
    Target_es_es "Alerta de Crimen: Robo de vehículo!"
@@ -1189,7 +1189,7 @@ StringTable {
    Target_pt_pt "Alerta de Crime: Roubo de veículo!"
    Target_pt_br "Alerta de Crime: Roubo de veículo!"
   }
-    CustomStringTableItem "{DA10C8D24DAFB028}" {
+  CustomStringTableItem "{DA10C8D24DAFB028}" {
    Id "EL-Police_Alert_Weapon"
    Target_en_us "Crime Alert: Weapon theft!"
    Target_es_es "Alerta de Crimen: Robo de arma!"
@@ -1355,7 +1355,7 @@ StringTable {
      Target_en_us "Not enough {police} on duty"
      Comment "Cash robbery refused because too few police are on duty"
     }
-    CustomStringTableItem "{0970D80CAA70B53F}" {
+  CustomStringTableItem "{0970D80CAA70B53F}" {
    Id "EL-Robbery_Failed"
    Target_en_us "Robbery Failed"
    Target_es_es "Robo Fallido"
@@ -1365,7 +1365,7 @@ StringTable {
    Target_pt_pt "Roubo Falhado"
    Target_pt_br "Roubo Falhado"
   }
-    CustomStringTableItem "{9B142C6279966BB8}" {
+  CustomStringTableItem "{9B142C6279966BB8}" {
    Id "EL-Robbery_Successful"
    Target_en_us "Robbery Successful"
    Target_es_es "Robo Exitoso"
@@ -1408,7 +1408,7 @@ StringTable {
      Target_pt_br "Esta loja não compra este item"
      Comment "Shop sell blocked: shop does not buy this item"
     }
-    CustomStringTableItem "{57624FF39CA0C9FB}" {
+   CustomStringTableItem "{57624FF39CA0C9FB}" {
     Id "EL-Shop_Buy"
     Target_en_us "Buy"
     Target_de_de "Kaufen"
@@ -1419,7 +1419,7 @@ StringTable {
     Target_pt_br "Comprar"
     Comment "Shop buy button"
    }
-    CustomStringTableItem "{B1312D9A925343A1}" {
+   CustomStringTableItem "{B1312D9A925343A1}" {
     Id "EL-Shop_Cash"
     Target_en_us "Cash"
     Target_de_de "Bargeld"
@@ -1430,7 +1430,7 @@ StringTable {
     Target_pt_br "Dinheiro"
     Comment "Shop menu cash label"
    }
-    CustomStringTableItem "{12501435C4030C81}" {
+   CustomStringTableItem "{12501435C4030C81}" {
     Id "EL-Shop_PurchaseFailed"
     Target_en_us "Purchase failed"
     Target_de_de "Kauf fehlgeschlagen"
@@ -1441,7 +1441,7 @@ StringTable {
     Target_pt_br "Compra falhou"
     Comment "Shop purchase failure notification title"
    }
-    CustomStringTableItem "{C5063E87653539D2}" {
+   CustomStringTableItem "{C5063E87653539D2}" {
     Id "EL-Shop_PurchaseSuccessful"
     Target_en_us "Purchase"
     Target_de_de "Kauf"
@@ -1452,7 +1452,7 @@ StringTable {
     Target_pt_br "Compra"
     Comment "Shop purchase notification title"
    }
-    CustomStringTableItem "{44869271883D0402}" {
+CustomStringTableItem "{44869271883D0402}" {
     Id "EL-Shop_Results"
     Target_en_us "Showing %1 of %2 items"
     Target_de_de "%1 von %2 Artikeln angezeigt"
@@ -1463,7 +1463,7 @@ StringTable {
     Target_pt_br "Mostrando %1 de %2 artigos"
     Comment "Shop result-count hint"
    }
-    CustomStringTableItem "{313F933C75272034}" {
+   CustomStringTableItem "{313F933C75272034}" {
     Id "EL-Shop_Search"
     Target_en_us "Search items"
     Target_de_de "Artikel suchen"
@@ -1474,7 +1474,7 @@ StringTable {
     Target_pt_br "Pesquisar artigos"
     Comment "Shop search box placeholder"
    }
-    CustomStringTableItem "{811696D359309A3D}" {
+   CustomStringTableItem "{811696D359309A3D}" {
     Id "EL-Shop_Sell"
     Target_en_us "Sell"
     Target_de_de "Verkaufen"
@@ -1485,7 +1485,7 @@ StringTable {
     Target_pt_br "Vender"
     Comment "Shop sell button"
    }
-    CustomStringTableItem "{1901F5D02C8E7AF1}" {
+   CustomStringTableItem "{1901F5D02C8E7AF1}" {
     Id "EL-Shop_SellFailed"
     Target_en_us "Nothing to sell"
     Target_de_de "Nichts zu verkaufen"
@@ -1496,7 +1496,7 @@ StringTable {
     Target_pt_br "Nada para vender"
     Comment "Shop sell failure notification body"
    }
-    CustomStringTableItem "{4517233F8276C3B2}" {
+  CustomStringTableItem "{4517233F8276C3B2}" {
     Id "EL-Shop_Title"
     Target_en_us "Shop"
     Target_de_de "Laden"
@@ -1507,7 +1507,7 @@ StringTable {
     Target_pt_br "Loja"
     Comment "Shop menu title"
    }
-    CustomStringTableItem "{4C73EC932CF638D8}" {
+  CustomStringTableItem "{4C73EC932CF638D8}" {
    Id "EL-ShowID_DisplayName"
    Target_en_us "Show ID"
    Target_es_es "Mostrar ID"
@@ -1517,7 +1517,7 @@ StringTable {
    Target_pt_pt "Mostrar ID"
    Target_pt_br "Mostrar ID"
   }
-    CustomStringTableItem "{41489243B750D903}" {
+   CustomStringTableItem "{41489243B750D903}" {
     Id "EL-SpawnLoc_Mine"
     Target_en_us "Mining Camp"
     Target_es_es "Campamento minero"
@@ -1527,7 +1527,7 @@ StringTable {
     Target_pt_pt "Campo mineiro"
     Target_pt_br "Acampamento de mineração"
    }
-    CustomStringTableItem "{41489243B750D905}" {
+   CustomStringTableItem "{41489243B750D905}" {
     Id "EL-SpawnLoc_Outpost"
     Target_en_us "East Outpost"
     Target_es_es "Puesto del este"
@@ -1537,7 +1537,7 @@ StringTable {
     Target_pt_pt "Posto avançado este"
     Target_pt_br "Posto avançado leste"
    }
-    CustomStringTableItem "{41489243B750D904}" {
+   CustomStringTableItem "{41489243B750D904}" {
     Id "EL-SpawnLoc_Station"
     Target_en_us "Police Station"
     Target_es_es "Comisaría"
@@ -1547,7 +1547,7 @@ StringTable {
     Target_pt_pt "Esquadra de polícia"
     Target_pt_br "Delegacia de polícia"
    }
-    CustomStringTableItem "{41489243B750D901}" {
+   CustomStringTableItem "{41489243B750D901}" {
     Id "EL-SpawnLoc_Title"
     Target_en_us "Select Spawn Location"
     Target_es_es "Seleccionar punto de aparición"
@@ -1557,7 +1557,7 @@ StringTable {
     Target_pt_pt "Selecionar ponto de aparição"
     Target_pt_br "Selecionar ponto de surgimento"
    }
-    CustomStringTableItem "{41489243B750D902}" {
+   CustomStringTableItem "{41489243B750D902}" {
     Id "EL-SpawnLoc_Town"
     Target_en_us "Town Square"
     Target_es_es "Plaza del pueblo"
@@ -1567,7 +1567,7 @@ StringTable {
     Target_pt_pt "Praça da vila"
     Target_pt_br "Praça da vila"
    }
-    CustomStringTableItem "{BA65E2A7D9A6EB16}" {
+  CustomStringTableItem "{BA65E2A7D9A6EB16}" {
    Id "EL-Spawn_Failed"
    Target_en_us "Failed to spawn vehicle!"
    Target_es_es "Fallo al spawnear vehículo!"
@@ -1577,7 +1577,7 @@ StringTable {
    Target_pt_pt "Falha ao spawnar veículo!"
    Target_pt_br "Falha ao spawnar veículo!"
   }
-    CustomStringTableItem "{5A7AC3DBDBC982B7}" {
+  CustomStringTableItem "{5A7AC3DBDBC982B7}" {
    Id "EL-SplitQuantityDialog_Input_Amount"
    Target_en_us "Amount"
    Target_de_de "Anzahl"
@@ -1590,7 +1590,7 @@ StringTable {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{5A7AC3DBD6ADFB48}" {
+  CustomStringTableItem "{5A7AC3DBD6ADFB48}" {
    Id "EL-SplitQuantityDialog_Input_Keep"
    Target_en_us "Keep"
    Target_de_de "Behalten"
@@ -1603,7 +1603,7 @@ StringTable {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{5A7AC3DBD51D98EF}" {
+  CustomStringTableItem "{5A7AC3DBD51D98EF}" {
    Id "EL-SplitQuantityDialog_Input_SplitOff"
    Target_en_us "Split off"
    Target_de_de "Abteilen"
@@ -1616,7 +1616,7 @@ StringTable {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{5A7AC3DBDC021AB3}" {
+  CustomStringTableItem "{5A7AC3DBDC021AB3}" {
    Id "EL-SplitQuantityDialog_Message"
    Target_en_us "Choose the stack size you want to split off"
    Target_de_de "Wähle die Größe des Stapels der abgespalten werden soll"
@@ -1629,7 +1629,7 @@ StringTable {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{5A7AC3DBA1DFD8FD}" {
+  CustomStringTableItem "{5A7AC3DBA1DFD8FD}" {
    Id "EL-SplitQuantityDialog_Name"
    Target_en_us "Split Stack"
    Target_de_de "Stapel aufteilen"
@@ -1642,7 +1642,7 @@ StringTable {
    Author "Arkensor"
    LastChanged "Arkensor"
   }
-    CustomStringTableItem "{51406463B7ACAB53}" {
+  CustomStringTableItem "{51406463B7ACAB53}" {
    Id "EL-Stole_Money"
    Target_en_us "Stole {currency:sym}%1!"
    Target_es_es "Robó {currency:sym}%1!"
@@ -1685,7 +1685,7 @@ StringTable {
      Target_pt_br "Sede:"
      Comment "Survival HUD thirst label"
     }
-    CustomStringTableItem "{589A396025738903}" {
+  CustomStringTableItem "{589A396025738903}" {
    Id "EL-Trade_Successful"
    Target_en_us "Trade Successful"
    Target_es_es "Intercambio Exitoso"
@@ -1695,7 +1695,7 @@ StringTable {
    Target_pt_pt "Troca Bem-Sucedida"
    Target_pt_br "Troca Bem-Sucedida"
   }
-    CustomStringTableItem "{497094A09ECC498E}" {
+   CustomStringTableItem "{497094A09ECC498E}" {
     Id "EL-VehicleLock_Action"
     Target_en_us "Lock/Unlock Vehicle"
     Target_de_de "Fahrzeug ver-/entriegeln"
@@ -1718,7 +1718,7 @@ StringTable {
      Target_en_us "Unlock vehicle"
      Comment "Action label when the vehicle is locked (#412)."
     }
-    CustomStringTableItem "{3183B68A7D10419E}" {
+   CustomStringTableItem "{3183B68A7D10419E}" {
     Id "EL-VehicleLock_MissingKey"
     Target_en_us "You need the key for this vehicle"
     Target_de_de "Sie benötigen den Schlüssel für dieses Fahrzeug"
@@ -1731,7 +1731,7 @@ StringTable {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-    CustomStringTableItem "{AEBA171181D64DD6}" {
+   CustomStringTableItem "{AEBA171181D64DD6}" {
     Id "EL-VehicleLock_Reason"
     Target_en_us "Vehicle is locked"
     Target_de_de "Fahrzeug ist abgeschlossen"
@@ -1744,7 +1744,7 @@ StringTable {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-    CustomStringTableItem "{863E7B439E7E4BDF}" {
+   CustomStringTableItem "{863E7B439E7E4BDF}" {
     Id "EL-VehicleLock_Title"
     Target_en_us "Vehicle Lock"
     Target_de_de "Fahrzeugschloss"
@@ -1757,7 +1757,7 @@ StringTable {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-    CustomStringTableItem "{AB000BA2CB254D71}" {
+   CustomStringTableItem "{AB000BA2CB254D71}" {
     Id "EL-VehicleLocked"
     Target_en_us "Your vehicle is now locked."
     Target_de_de "Ihr Fahrzeug ist jetzt abgeschlossen."
@@ -1770,7 +1770,7 @@ StringTable {
     Author "LifeFramework"
     LastChanged "LifeFramework"
    }
-    CustomStringTableItem "{A20CA0D7DF1C4CED}" {
+   CustomStringTableItem "{A20CA0D7DF1C4CED}" {
     Id "EL-VehicleUnlocked"
     Target_en_us "Your vehicle is now unlocked."
     Target_de_de "Ihr Fahrzeug ist jetzt aufgeschlossen."
@@ -1848,7 +1848,7 @@ StringTable {
      Target_en_us "Sputnik T601"
      Comment "Lot catalog row for the beige Sputnik T601 (vanilla T601, free in 1.9)"
     }
-    CustomStringTableItem "{769912DD3060E56A}" {
+  CustomStringTableItem "{769912DD3060E56A}" {
    Id "EL-Vehicle_Stolen"
    Target_en_us "Vehicle stolen!"
    Target_es_es "Vehículo robado!"
@@ -1873,7 +1873,7 @@ StringTable {
      Target_en_us "UAZ"
      Comment "Lot catalog row for the covered civilian UAZ"
     }
-    CustomStringTableItem "{D8E4F8A5027A13A8}" {
+  CustomStringTableItem "{D8E4F8A5027A13A8}" {
    Id "EL-Weapon_Stolen"
    Target_en_us "Weapon stolen!"
    Target_es_es "Arma robada!"
@@ -4787,7 +4787,7 @@ StringTable {
     }
     CustomStringTableItem "{D472603DD9705158}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
-     Target_en_us "This is the only fuel in town, friend. Petrol at the pumps, maps and snacks in here."
+     Target_en_us "This is the only fuel in town, friend. Gas at the pumps, maps and snacks in here."
      Comment "Dialogue caption, spoken by the fuel_clerk NPC (voiced; tools/assets/dialogue/fuel_clerk). Changing it needs: tools\\cli asset dialogue fuel_clerk"
     }
     CustomStringTableItem "{EB24FB16C4F34B2F}" {
@@ -12803,7 +12803,7 @@ StringTable {
      Target_en_us "This course is not open to your service."
      Comment "Qualifications: the character is of the wrong faction."
     }
-    CustomStringTableItem "{468EF5CBF215416A}" {
+   CustomStringTableItem "{468EF5CBF215416A}" {
     Id "LF-Quest_Accept"
     Target_en_us "Accept"
     Target_de_de "Annehmen"
@@ -12814,7 +12814,7 @@ StringTable {
     Target_pt_br "Aceitar"
     Comment "Quest accept button label"
    }
-    CustomStringTableItem "{C12D7EFE7EE35379}" {
+   CustomStringTableItem "{C12D7EFE7EE35379}" {
     Id "LF-Quest_Accepted"
     Target_en_us "Quest accepted"
     Target_de_de "Auftrag angenommen"
@@ -12825,7 +12825,7 @@ StringTable {
     Target_pt_br "Missão aceita"
     Comment "Quest accepted notification"
    }
-    CustomStringTableItem "{E2E355A0237019E3}" {
+   CustomStringTableItem "{E2E355A0237019E3}" {
     Id "LF-Quest_Action"
     Target_en_us "Talk to Quest Giver"
     Target_de_de "Mit Questgeber sprechen"
@@ -12911,7 +12911,7 @@ StringTable {
      Target_en_us "You are settled in. The town board on the square shows the rest: shops, the car lot, the police station, the organization office."
      Comment "The town clerk after the arrival chain, when there is nothing left to hand out."
     }
-    CustomStringTableItem "{DA61010D2314BF43}" {
+   CustomStringTableItem "{DA61010D2314BF43}" {
     Id "LF-Quest_Expired"
     Target_en_us "Quest expired"
     Target_de_de "Auftrag abgelaufen"
@@ -12943,7 +12943,7 @@ StringTable {
      Target_en_us "Test quest board"
      Comment "Quest menu title for the test quest giver in the test annex."
     }
-    CustomStringTableItem "{6BA7F1501B064DDB}" {
+   CustomStringTableItem "{6BA7F1501B064DDB}" {
     Id "LF-Quest_InProgress"
     Target_en_us "In progress"
     Target_de_de "In Arbeit"
@@ -12954,7 +12954,7 @@ StringTable {
     Target_pt_br "Em andamento"
     Comment "Active quest button placeholder"
    }
-    CustomStringTableItem "{2E57F8F9E638EE91}" {
+   CustomStringTableItem "{2E57F8F9E638EE91}" {
     Id "LF-Quest_IntroArea_Desc"
     Target_en_us "Visit the marked area near the start point."
     Target_de_de "Besuche das markierte Gebiet nahe dem Startpunkt."
@@ -12965,7 +12965,7 @@ StringTable {
     Target_pt_br "Visite a área marcada perto do ponto de partida."
     Comment "Area quest description"
    }
-    CustomStringTableItem "{C77DB039F02C2043}" {
+   CustomStringTableItem "{C77DB039F02C2043}" {
     Id "LF-Quest_IntroArea_Title"
     Target_en_us "Know the Area"
     Target_de_de "Die Gegend kennenlernen"
@@ -12976,7 +12976,7 @@ StringTable {
     Target_pt_br "Conheça a área"
     Comment "Area quest title"
    }
-    CustomStringTableItem "{EE99865B91651AE5}" {
+   CustomStringTableItem "{EE99865B91651AE5}" {
     Id "LF-Quest_IntroCollect_Desc"
     Target_en_us "Bring a water bottle to the quest giver."
     Target_de_de "Bring eine Wasserflasche zum Questgeber."
@@ -12987,7 +12987,7 @@ StringTable {
     Target_pt_br "Leve uma garrafa de água ao doador de missões."
     Comment "Collect quest description"
    }
-    CustomStringTableItem "{C9634CE0587CFA70}" {
+   CustomStringTableItem "{C9634CE0587CFA70}" {
     Id "LF-Quest_IntroCollect_Title"
     Target_en_us "Drinks on Me"
     Target_de_de "Getränke gefällig"
@@ -12998,7 +12998,7 @@ StringTable {
     Target_pt_br "Uma rodada de bebidas"
     Comment "Collect quest title"
    }
-    CustomStringTableItem "{A38C998BD1D37CDD}" {
+   CustomStringTableItem "{A38C998BD1D37CDD}" {
     Id "LF-Quest_IntroGather_Desc"
     Target_en_us "Gather 3 items in the world."
     Target_de_de "Sammle 3 Gegenstände in der Welt."
@@ -13009,7 +13009,7 @@ StringTable {
     Target_pt_br "Colete 3 itens no mundo."
     Comment "Gather quest description"
    }
-    CustomStringTableItem "{CEE0F1CF5CC3AD51}" {
+   CustomStringTableItem "{CEE0F1CF5CC3AD51}" {
     Id "LF-Quest_IntroGather_Title"
     Target_en_us "Gatherer's Start"
     Target_de_de "Sammler-Einstieg"
@@ -13020,7 +13020,7 @@ StringTable {
     Target_pt_br "Início do coletor"
     Comment "Gather quest title"
    }
-    CustomStringTableItem "{64A90BC62007EB6E}" {
+   CustomStringTableItem "{64A90BC62007EB6E}" {
     Id "LF-Quest_IntroKill_Desc"
     Target_en_us "Eliminate 2 enemy players."
     Target_de_de "Schalte 2 feindliche Spieler aus."
@@ -13031,7 +13031,7 @@ StringTable {
     Target_pt_br "Elimine 2 jogadores inimigos."
     Comment "Kill quest description"
    }
-    CustomStringTableItem "{ECACEA89B00C7695}" {
+   CustomStringTableItem "{ECACEA89B00C7695}" {
     Id "LF-Quest_IntroKill_Title"
     Target_en_us "Show of Force"
     Target_de_de "Zeichen der Stärke"
@@ -13042,7 +13042,7 @@ StringTable {
     Target_pt_br "Demonstração de força"
     Comment "Kill quest title"
    }
-    CustomStringTableItem "{D40D1DC625C5FAA9}" {
+   CustomStringTableItem "{D40D1DC625C5FAA9}" {
     Id "LF-Quest_IntroTalk_Desc"
     Target_en_us "Talk to the quest giver to learn how quests work."
     Target_de_de "Sprich mit dem Questgeber, um zu lernen, wie Aufträge funktionieren."
@@ -13053,7 +13053,7 @@ StringTable {
     Target_pt_br "Fale com o doador de missões para aprender como funcionam."
     Comment "Onboarding quest description"
    }
-    CustomStringTableItem "{8E5F1CF2509E3CC0}" {
+   CustomStringTableItem "{8E5F1CF2509E3CC0}" {
     Id "LF-Quest_IntroTalk_Title"
     Target_en_us "First Steps"
     Target_de_de "Erste Schritte"
@@ -13075,7 +13075,7 @@ StringTable {
      Target_pt_br "Entregue 2 garrafas de água em 2 minutos."
      Comment "Timed quest description"
     }
-    CustomStringTableItem "{C39AC0E1DD9064FD}" {
+   CustomStringTableItem "{C39AC0E1DD9064FD}" {
     Id "LF-Quest_IntroTimed_Title"
     Target_en_us "Quick Delivery"
     Target_de_de "Schnelle Lieferung"
@@ -13086,7 +13086,7 @@ StringTable {
     Target_pt_br "Entrega rápida"
     Comment "Timed quest title"
    }
-    CustomStringTableItem "{9A063765A5B8123E}" {
+   CustomStringTableItem "{9A063765A5B8123E}" {
     Id "LF-Quest_MissingItems"
     Target_en_us "You no longer hold the required items"
     Target_de_de "Du hast die benötigten Gegenstände nicht mehr"
@@ -13097,7 +13097,7 @@ StringTable {
     Target_pt_br "Você não tem mais os itens necessários"
     Comment "Turn-in refused after collect recount"
    }
-    CustomStringTableItem "{F6AB60C375531892}" {
+   CustomStringTableItem "{F6AB60C375531892}" {
     Id "LF-Quest_NotComplete"
     Target_en_us "Quest not complete yet"
     Target_de_de "Auftrag noch nicht abgeschlossen"
@@ -13113,7 +13113,7 @@ StringTable {
      Target_en_us "Nothing for the desk right now."
      Comment "The duty desk when there is nothing to hand in or report (#3768)."
     }
-    CustomStringTableItem "{C62FE3743E00B28C}" {
+   CustomStringTableItem "{C62FE3743E00B28C}" {
     Id "LF-Quest_Rejected"
     Target_en_us "Quest not available"
     Target_de_de "Auftrag nicht verfügbar"
@@ -13124,7 +13124,7 @@ StringTable {
     Target_pt_br "Missão não disponível"
     Comment "Quest accept rejected notification"
    }
-    CustomStringTableItem "{58FE2B1ECE005A69}" {
+   CustomStringTableItem "{58FE2B1ECE005A69}" {
     Id "LF-Quest_Status_Available"
     Target_en_us "Available"
     Target_de_de "Verfügbar"
@@ -13135,7 +13135,7 @@ StringTable {
     Target_pt_br "Disponível"
     Comment "Quest status: available"
    }
-    CustomStringTableItem "{C07FEC9957C93531}" {
+   CustomStringTableItem "{C07FEC9957C93531}" {
     Id "LF-Quest_Status_Complete"
     Target_en_us "Complete"
     Target_de_de "Abgeschlossen"
@@ -13146,7 +13146,7 @@ StringTable {
     Target_pt_br "Concluída"
     Comment "Quest status: complete, ready to turn in"
    }
-    CustomStringTableItem "{943A6AA99E7319EE}" {
+   CustomStringTableItem "{943A6AA99E7319EE}" {
     Id "LF-Quest_Status_Failed"
     Target_en_us "Failed"
     Target_de_de "Fehlgeschlagen"
@@ -13157,7 +13157,7 @@ StringTable {
     Target_pt_br "Falhada"
     Comment "Quest status: timed out"
    }
-    CustomStringTableItem "{CCB84CC4FAA1DA07}" {
+   CustomStringTableItem "{CCB84CC4FAA1DA07}" {
     Id "LF-Quest_Status_TurnedIn"
     Target_en_us "Turned in"
     Target_de_de "Abgegeben"
@@ -13168,7 +13168,7 @@ StringTable {
     Target_pt_br "Entregue"
     Comment "Quest status: reward claimed"
    }
-    CustomStringTableItem "{8433759EB8ED5E85}" {
+   CustomStringTableItem "{8433759EB8ED5E85}" {
     Id "LF-Quest_Title"
     Target_en_us "Quests"
     Target_de_de "Aufträge"
@@ -13179,7 +13179,7 @@ StringTable {
     Target_pt_br "Missões"
     Comment "Quest menu title"
    }
-    CustomStringTableItem "{4D6C52F92E7C8237}" {
+   CustomStringTableItem "{4D6C52F92E7C8237}" {
     Id "LF-Quest_TurnIn"
     Target_en_us "Turn In"
     Target_de_de "Abgeben"
@@ -13190,7 +13190,7 @@ StringTable {
     Target_pt_br "Entregar"
     Comment "Quest turn-in button label"
    }
-    CustomStringTableItem "{D70E71F61CD5B47F}" {
+   CustomStringTableItem "{D70E71F61CD5B47F}" {
     Id "LF-Quest_TurnedIn"
     Target_en_us "Quest completed - reward granted"
     Target_de_de "Auftrag abgeschlossen - Belohnung erhalten"
@@ -13821,27 +13821,27 @@ StringTable {
      Target_en_us "Too far away to revive them."
      Comment "Revive refusal: out of range."
     }
-    CustomStringTableItem "{BABA49E2440A6362}" {
+  CustomStringTableItem "{BABA49E2440A6362}" {
    Id "LF-Roadblock_Deploy"
    Target_en_us "Deploy roadblock"
    Comment "Action on the folded roadblock kit: lays the barrier and cones across the road in front of the officer (#1941)."
   }
-    CustomStringTableItem "{3655F9540576258C}" {
+  CustomStringTableItem "{3655F9540576258C}" {
    Id "LF-Roadblock_Description"
    Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty {police} only."
    Comment "Inventory description of the police roadblock kit."
   }
-    CustomStringTableItem "{986CA09EB5046245}" {
+  CustomStringTableItem "{986CA09EB5046245}" {
    Id "LF-Roadblock_Name"
    Target_en_us "Roadblock kit"
    Comment "Inventory name of the police roadblock kit (#1941)."
   }
-    CustomStringTableItem "{333125FDBDB896DE}" {
+  CustomStringTableItem "{333125FDBDB896DE}" {
    Id "LF-Roadblock_PickUp"
    Target_en_us "Pick up roadblock"
    Comment "Action on a piece of a deployed roadblock: folds the whole set back into the officer inventory."
   }
-    CustomStringTableItem "{440F14D84078D338}" {
+  CustomStringTableItem "{440F14D84078D338}" {
    Id "LF-Roadblock_PoliceOnly"
    Target_en_us "Only an on-duty officer can handle the roadblock kit."
    Comment "Toast and greyed-out reason when someone who is not on-duty police tries the roadblock kit."
@@ -14525,7 +14525,7 @@ StringTable {
      Target_en_us "Put it back"
      Comment "Button that closes the sign card. The player is done reading the notice."
     }
-    CustomStringTableItem "{FCEA5FDC41E5650D}" {
+  CustomStringTableItem "{FCEA5FDC41E5650D}" {
    Id "LF-Sign_Generic_Title"
    Target_en_us "Notice"
    Comment "Title of a sign card whose own text is not available (its pack is not loaded). Shown in the prompt as Read: Notice."

@@ -3,17 +3,17 @@
   "service": "ElevenLabs text-to-speech",
   "lines": {
     "greet": {
-      "hash": "a796cb511c97c57e",
+      "hash": "e7368f74f5986966",
       "date": "2026-11-22",
       "voice_id": "1YYTlNs7nGf3sEaTb78E",
       "voice_name": "Cedric - Calm",
       "model": "eleven_multilingual_v2",
-      "text": "Gendarmerie. Stand back from the warehouse, please. This is a police matter.",
-      "chars": 76,
-      "chars_total": 30,
-      "request_id": "bBdcTfBpnZOuhmgAOoMN",
-      "seconds": 8.3,
-      "mouth": "6689995999999644322200000000000000000159922999995399723377648657775454223433100000525533322220000000320033259977720025777673003565119475444566466544554153322110000000"
+      "text": "Police. Stand back from the warehouse, please. This is a police matter.",
+      "chars": 71,
+      "chars_total": 58,
+      "request_id": "mWYCQSIuvLPYHNmxDM8K",
+      "seconds": 7.67,
+      "mouth": "1699979864466641111111111110111273699977994339886756997555433444211111111152699743344311111110111124697888666211877766669998787511245667999965443211111000"
     },
     "about_what": {
       "hash": "7dc2864d80fba939",
