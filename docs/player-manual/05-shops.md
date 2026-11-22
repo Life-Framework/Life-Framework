@@ -12,12 +12,12 @@ The numbers in the first column are the numbers on the [Saint-Philippe map](maps
 | 22 | **Bakery** | Bread $4, Crackers $4, Chocolate bar $7, Baguette $3, Croissant $3 |
 | 23 | **Butcher** | Dried meat $14, Canned meat $8, Saucisson $12, Ham $24 |
 | 24 | **Cafe** | Water $3, Apple juice $6, Beer $9, Crackers $4, Apple $6, Dried meat $12 |
-| 25 | **Newsagent** | Tourist map $25, Water $3, Newspaper $1, Magazine $3, Postcard $1, Notebook $4, Pen $2 |
+|  | **Newsagent** | Tourist map $25, Water $3, Newspaper $1, Magazine $3, Postcard $1, Notebook $4, Pen $2 |
 | 26 | **Pharmacy** | Aspirin $10, Gauze $8, Surgical gauze $8, Tourniquet $25, Tourniquet (Soviet) $25 |
 | 28 | **Hardware store** | Shovel $45, Axe $120, Gravel bag $22, Cement bag $38, Brick $13, Plank $16, Door kit $250, Sandbag $20, Flashlight $40, Handset radio $250, Repair kit $90 |
 | 30 | **Seed and feed store** | Cabbage seeds $4, Bait tin $30, Fishing rod $60, Water $3 |
 | 32 | **Furniture store** | Chair $60, Table $120, Shelf $90, Lamp $35, Bed $150, Bed Double $260, Sofa $220, Armchair $140, Coffee Table $70, Rug $55, Tv $180, Radio $45, Plant $25, Mirror $40, Picture $20, Stove $200, Bookcase $110, Workbench $130, Wardrobe $180, Dresser $140, Cupboard $120, Chest $90, Crate $45, Fridge $260, Kitchen Unit $240, Stool $40 |
-| 12 | **Filling station** | Tourist map $25, Water $4, Soda $4, Chocolate bar $4, Crackers $5 |
+|  | **Filling station** | Tourist map $25, Water $4, Soda $4, Chocolate bar $4, Crackers $5 |
 | 13 | **Garage** | Car parts $200, Repair kit $80 |
 <!-- /shops -->
 

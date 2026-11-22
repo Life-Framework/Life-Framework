@@ -1,0 +1,28 @@
+{
+  "about": "Every piece of text this slug's build script paints onto its texture; checked by tools/validation/validate-us-english.mjs. Regenerate: node tools/validation/validate-us-english.mjs --update",
+  "scripts": {
+    "model.py": [
+      "paper-print",
+      "REPUBLIC OF EVERON",
+      "IDENTITY CARD",
+      "FORM R-89",
+      "SURNAME",
+      "GIVEN NAMES",
+      "AGE",
+      "DATE OF ISSUE",
+      "CARD NO.",
+      "EV 0 0 0 0 0 0",
+      "VALID WITH PHOTOGRAPH ONLY",
+      "EVERON",
+      "REGISTRY",
+      "REPUBLIC OF EVERON  -  CIVIL REGISTRY",
+      "This card is the property of the Republic of Everon.",
+      "If found, hand it to any police station or post office.",
+      "A replacement is issued by the registry clerk on payment of the fee.",
+      "HOLDER'S SIGNATURE",
+      "<<EV000000<<<<<<<<<<<<<<<<<<<<<<<<<<<",
+      "IdCardPhoto",
+      "LF_ASSET_MODEL ok"
+    ]
+  }
+}

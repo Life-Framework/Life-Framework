@@ -1,0 +1,27 @@
+{
+  "about": "Every piece of text this slug's build script paints onto its texture; checked by tools/validation/validate-us-english.mjs. Regenerate: node tools/validation/validate-us-english.mjs --update",
+  "scripts": {
+    "model.py": [
+      "paper-print",
+      "EVERON GENERAL STORES",
+      "MARKET SQUARE No. 4",
+      "PORT GORSE",
+      "REG 02         CLERK 07",
+      "DATE   --/--/1989   --:--",
+      "DESCRIPTION             SUM",
+      "ITEM %d",
+      "SUBTOTAL",
+      "TAX",
+      "TOTAL",
+      "CASH",
+      "CHANGE",
+      "THANK YOU",
+      "PLEASE KEEP THIS SLIP",
+      "NO REFUND WITHOUT RECEIPT",
+      "No 000000",
+      "PAID",
+      "ReceiptSheet",
+      "LF_ASSET_MODEL ok"
+    ]
+  }
+}

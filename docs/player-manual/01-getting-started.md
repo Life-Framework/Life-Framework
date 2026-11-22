@@ -88,22 +88,22 @@ Closer in, the centre of town:
 | 7 | ATM (east side) | Services | Cash machine near the filling station. |
 | 8 | ATM (harbour) | Services | Cash machine on the dock. |
 | 9 | Clinic (hospital) | Services | Medic duty desk, hospital till, where you wake after dying. |
-| 10 | Taxi rank | Services | Start a taxi run. |
+| 10 | Taxi stand | Services | Start a taxi run. |
 | 11 | Car lot | Services | Buy a car. Impound desk beside it. |
-| 12 | Filling station | Services | Pumps and the fuel kiosk. |
+| 12 | Gas station | Services | Pumps and the fuel kiosk. |
 | 13 | Garage | Services | Mechanic: car parts and repair kits. |
 | 14 | Church | Services | The village church. |
 | 15 | Organization office | Services | Register or join an organization. |
 | 16 | Shooting range | Services | Three target lanes. |
 | 17 | Market | Services | Market stall trader. |
-| 18 | Harbour Office | Services | The harbour master. |
+| 18 | Harbor Office | Services | The harbour master. |
 | 19 | Police station | Police and jail | Duty desk, armoury, wanted board, jail cell. |
 | 20 | Supermarket | Shops | Food and drink. |
 | 21 | General store | Shops | Tinned food, seeds, drinks, miner's till. |
 | 22 | Bakery | Shops | Bread, baguettes, croissants. |
 | 23 | Butcher | Shops | Ham, saucisson, canned and dried meat. |
 | 24 | Cafe | Shops | Drinks and snacks. Chess table next door. |
-| 25 | Newsagent | Shops | Tourist map, newspaper, postcards. |
+| 25 | Newsstand | Shops | Tourist map, newspaper, postcards. |
 | 26 | Pharmacy | Shops | Aspirin, gauze, tourniquets. |
 | 27 | Clothing store | Shops | Clothes, hats, jackets. |
 | 28 | Hardware store | Shops | Axe, shovel, planks, cement, radio, repair kit. |
@@ -116,7 +116,7 @@ Closer in, the centre of town:
 | 35 | Wheat field | Work sites | Harvest contracts and the weighbridge. |
 | 36 | Farm | Work sites | Vegetable plots, beehives, honey kitchen. |
 | 37 | Orchard | Work sites | Farmer job desk and apple trees. |
-| 38 | Timber yard (Scierie) | Work sites | Lumberjack job desk and sawmill. |
+| 38 | Timber yard | Work sites | Lumberjack job desk and sawmill. |
 | 39 | Smokehouse | Work sites | Smoke your fish. |
 | 40 | Wholesale warehouse | Work sites | Buys bulk goods at a falling price. |
 | 41 | Fishing spot (Spring Pond) | Work sites | Fish from the jetty. |

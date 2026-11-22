@@ -26,22 +26,22 @@ Closer in, the centre of town:
 | 7 | ATM (east side) | Services | Cash machine near the filling station. |
 | 8 | ATM (harbour) | Services | Cash machine on the dock. |
 | 9 | Clinic (hospital) | Services | Medic duty desk, hospital till, where you wake after dying. |
-| 10 | Taxi rank | Services | Start a taxi run. |
+| 10 | Taxi stand | Services | Start a taxi run. |
 | 11 | Car lot | Services | Buy a car. Impound desk beside it. |
-| 12 | Filling station | Services | Pumps and the fuel kiosk. |
+| 12 | Gas station | Services | Pumps and the fuel kiosk. |
 | 13 | Garage | Services | Mechanic: car parts and repair kits. |
 | 14 | Church | Services | The village church. |
 | 15 | Organization office | Services | Register or join an organization. |
 | 16 | Shooting range | Services | Three target lanes. |
 | 17 | Market | Services | Market stall trader. |
-| 18 | Harbour Office | Services | The harbour master. |
+| 18 | Harbor Office | Services | The harbour master. |
 | 19 | Police station | Police and jail | Duty desk, armoury, wanted board, jail cell. |
 | 20 | Supermarket | Shops | Food and drink. |
 | 21 | General store | Shops | Tinned food, seeds, drinks, miner's till. |
 | 22 | Bakery | Shops | Bread, baguettes, croissants. |
 | 23 | Butcher | Shops | Ham, saucisson, canned and dried meat. |
 | 24 | Cafe | Shops | Drinks and snacks. Chess table next door. |
-| 25 | Newsagent | Shops | Tourist map, newspaper, postcards. |
+| 25 | Newsstand | Shops | Tourist map, newspaper, postcards. |
 | 26 | Pharmacy | Shops | Aspirin, gauze, tourniquets. |
 | 27 | Clothing store | Shops | Clothes, hats, jackets. |
 | 28 | Hardware store | Shops | Axe, shovel, planks, cement, radio, repair kit. |
@@ -54,7 +54,7 @@ Closer in, the centre of town:
 | 35 | Wheat field | Work sites | Harvest contracts and the weighbridge. |
 | 36 | Farm | Work sites | Vegetable plots, beehives, honey kitchen. |
 | 37 | Orchard | Work sites | Farmer job desk and apple trees. |
-| 38 | Timber yard (Scierie) | Work sites | Lumberjack job desk and sawmill. |
+| 38 | Timber yard | Work sites | Lumberjack job desk and sawmill. |
 | 39 | Smokehouse | Work sites | Smoke your fish. |
 | 40 | Wholesale warehouse | Work sites | Buys bulk goods at a falling price. |
 | 41 | Fishing spot (Spring Pond) | Work sites | Fish from the jetty. |
@@ -75,12 +75,12 @@ Saint-Philippe is in the north. The other towns are scenery for now. Work sites 
 | 4 | Lamentin | 5.7 km | Western town. Scenery only. |
 | 5 | Morton | 6.7 km | Northern town. Scenery only. |
 | 6 | Saint Pierre | 10.5 km | Far north-east town. Scenery only. |
-| 7 | Sawmill (Scierie) | 5.6 km | The island sawmill: lumberjack desk, two saws, boards. |
+| 7 | Sawmill | 5.6 km | The island sawmill: lumberjack desk, two saws, boards. |
 | 8 | Fishing spot (Fisherman's Bay) | 0.4 km | Sheltered cove with a bench and lantern. Gaspard tells you about it. |
 | 9 | Fishing spot (Black Lake) | 9.2 km | A lake shore far to the north-east. |
-| 10 | Scrapyard (Casse) | 0.6 km | Scrap piles and the recycler bench. |
+| 10 | Scrapyard | 0.6 km | Scrap piles and the recycler bench. |
 | 11 | Fuel depot | 3.7 km | Collective-farm fuel depot. Closed to players for now. |
-| 12 | Ferme des Silos | 3.8 km | Roadside farm with a payphone. |
+| 12 | Silo Farm | 3.8 km | Roadside farm with a payphone. |
 | 13 | Fuel station (roadside) | 1.2 km | Roadside fuel stop with a payphone. |
 | 14 | Barn compound | 1.2 km | Chop yard and the moonshine still barn. |
 | 15 | Contested ground | 10.1 km | Hilltop mast: a hideout organizations fight over. |
@@ -150,7 +150,7 @@ The label on the map is the home's code and its alpha price in thousands. Prices
 | 4 | Cash van stop 1 | The cash van parks here for 5 minutes at a time. |
 | 5 | Cash van stop 2 | Next stop on the van's schedule. |
 | 6 | Cash van stop 3 | Next stop on the van's schedule. |
-| 7 | Filling station (till) | Hold up the attendant for 150. |
+| 7 | Gas station (till) | Hold up the attendant for 150. |
 | 8 | Supermarket (till) | Till robbery, 120 to 180. |
 | 9 | Buyer spot (harbour) | Where a buyer takes goods that cannot be sold in a shop. |
 | 10 | Buyer spot (east) | Same, east side. |
@@ -172,7 +172,7 @@ The label on the map is the home's code and its alpha price in thousands. Prices
 | 31 | Farm supply | The reaper and beehive kit. |
 | 35 | Wheat field | Harvest contracts and the weighbridge. |
 | 36 | Farm | Vegetable plots, beehives, honey kitchen. |
-| 38 | Timber yard (Scierie) | Lumberjack job desk and sawmill. |
+| 38 | Timber yard | Lumberjack job desk and sawmill. |
 | 68 | Wheat field (cutting area) | The ripe wheat you cut with the reaper. |
 | 69 | Weighbridge | Unload the reaper hopper here: Sell grain or Bag grain. |
 | 70 | Harvest contracts board | Post, take and return harvest contracts. |
@@ -183,7 +183,7 @@ The label on the map is the home's code and its alpha price in thousands. Prices
 
 | # | Place | What |
 |---|---|---|
-| 60 | Sawmill (Scierie) | Lumberjack desk and two saws inside the hall. |
+| 60 | Sawmill | Lumberjack desk and two saws inside the hall. |
 | 61 | Lumberjack desk | Sign on as a lumberjack. |
 <!-- /map -->
 ### Spring Pond
@@ -217,17 +217,17 @@ The label on the map is the home's code and its alpha price in thousands. Prices
 | # | Place | What |
 |---|---|---|
 | 8 | ATM (harbour) | Cash machine on the dock. |
-| 18 | Harbour Office | The harbour master. |
+| 18 | Harbor Office | The harbour master. |
 | 39 | Smokehouse | Smoke your fish. |
 | 40 | Wholesale warehouse | Buys bulk goods at a falling price. |
 <!-- /map -->
 ### Scrapyard
 <!-- map:inset:scrapyard -->
-![Scrapyard (Casse)](../../website/public/docs-images/player-manual/scrapyard.png)
+![Scrapyard](../../website/public/docs-images/player-manual/scrapyard.png)
 
 | # | Place | What |
 |---|---|---|
-| 60 | Scrapyard (Casse) | Search the scrap piles; the recycler bench is in the yard. |
+| 60 | Scrapyard | Search the scrap piles; the recycler bench is in the yard. |
 | 61 | Recycler bench | Break car parts and scrap into metal. |
 <!-- /map -->
 ### Barn compound
