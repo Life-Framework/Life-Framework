@@ -12,6 +12,7 @@ class LF_RegistrationForm
 	static const string PART_AGE = "RegAge";
 	static const string PART_ERROR = "RegError";
 	static const string PART_SIGN = "SignButton";
+	static const float REG_HEIGHT = 640;	// lf-fixed: resting card height; it grows to fit its lines
 
 	protected static ref LF_RegistrationForm s_Form;
 
@@ -24,11 +25,13 @@ class LF_RegistrationForm
 	{
 		ref array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "RegTitle", "#LF-Reg_Title"));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "RegWelcome", "#LF-Reg_Welcome"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "RegIntro", "#LF-Reg_Intro"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, PART_FIRST, "#LF-Reg_FirstName"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, PART_LAST, "#LF-Reg_LastName"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.FIELD, PART_AGE, "#LF-Reg_Age"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, PART_ERROR, refusal));
+		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "RegOutfit", "#LF-Reg_Outfit"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.BUTTON, PART_SIGN, "#LF-Reg_Sign"));
 		return parts;
 	}
@@ -46,7 +49,7 @@ class LF_RegistrationForm
 
 		LF_RegistrationForm form = new LF_RegistrationForm();
 		form.m_Controller = controller;
-		form.m_Screen = LF_UIScreen.Open(BuildParts(refusal));
+		form.m_Screen = LF_UIScreen.Open(BuildParts(refusal), LF_UISkin.Arrival(REG_HEIGHT));
 		if (!form.m_Screen)
 			return null;
 

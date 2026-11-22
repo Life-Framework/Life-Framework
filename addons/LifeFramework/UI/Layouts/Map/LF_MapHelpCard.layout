@@ -34,15 +34,15 @@ FrameWidgetClass "{71D90B3009031983}" {
    Name "Title"
    Slot FrameWidgetSlot "{AFE08E2FA2A0DBFA}" {
     Anchor 0 0 1 0
-    OffsetLeft 12
+    OffsetLeft 14
     OffsetTop 8
-    OffsetRight 12
-    OffsetBottom -28
+    OffsetRight 14
+    OffsetBottom -36
    }
    Color 0.110 0.102 0.086 1
    Text ""
-   "Font Size" 16
-   "Min Font Size" 11
+   "Font Size" 21
+   "Min Font Size" 14
    FontProperties FontProperties "{92FD95E1CDD4BBAA}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }
@@ -51,15 +51,15 @@ FrameWidgetClass "{71D90B3009031983}" {
    Name "Body"
    Slot FrameWidgetSlot "{57C1C346AFBBEBDA}" {
     Anchor 0 0 1 1
-    OffsetLeft 12
-    OffsetTop 32
-    OffsetRight 12
-    OffsetBottom 32
+    OffsetLeft 14
+    OffsetTop 42
+    OffsetRight 14
+    OffsetBottom 46
    }
    Color 0.18 0.14 0.07 1
    Text ""
-   "Font Size" 14
-   "Min Font Size" 10
+   "Font Size" 18
+   "Min Font Size" 12
    FontProperties FontProperties "{A9E9272AEC836162}" {
     Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
    }
@@ -68,15 +68,15 @@ FrameWidgetClass "{71D90B3009031983}" {
    Name "Status"
    Slot FrameWidgetSlot "{2F6B1D8E4C3A5907}" {
     Anchor 0 1 1 1
-    OffsetLeft 12
-    OffsetTop -28
-    OffsetRight 12
+    OffsetLeft 14
+    OffsetTop -38
+    OffsetRight 14
     OffsetBottom 8
    }
    Color 0.110 0.102 0.086 1
    Text ""
-   "Font Size" 14
-   "Min Font Size" 10
+   "Font Size" 19
+   "Min Font Size" 12
    FontProperties FontProperties "{5D0C7E2A9B4F1863}" {
     Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
    }

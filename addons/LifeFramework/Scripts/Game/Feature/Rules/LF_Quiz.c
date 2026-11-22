@@ -222,6 +222,27 @@ class LF_Quiz
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: whether one picked option is the right one, for the feedback page shown after each
+	//! question. It scores and counts nothing: the attempt is still the whole list through Submit.
+	//! \param note The rule behind the question (a #key or plain text), also for a right answer.
+	//! \return false for a wrong pick or for a question or option that does not exist.
+	static bool CheckOne(int index, int option, out string note)
+	{
+		note = string.Empty;
+		array<LF_QuizQuestion> questions = {};
+		LF_QuizBank.GetQuestions(questions);
+		if (index < 0 || index >= questions.Count() || option < 0 || option > 99)
+			return false;
+
+		LF_QuizQuestion question = questions[index];
+		note = question.m_sExplain;
+		if (note.IsEmpty())
+			note = question.m_sQuestion;
+
+		return option == question.m_iCorrect;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: scores one attempt, counts it, and remembers a pass. Every attempt is logged.
 	static LF_QuizResult Submit(string accountUid, notnull array<int> answers)
 	{
