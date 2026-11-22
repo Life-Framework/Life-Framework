@@ -8,6 +8,7 @@
 //     --world MainWorld: the island (the pack's MainWorld_Layers, where `town fit` writes Place_<place>_<slot>.layer), measured on MainWorld at the town bar;
 //     with --layer it audits only those layers, and an empty selection fails with the layer names instead of measuring something else.
 //     --baseline (with --world MainWorld): judge against tools/place/island-baseline.json, a new finding fails (#3888); --baseline-shrink drops fixed rows.
+//     --clutter (the playtest town only): also sweep the town circle for road clutter (LF_PlacementAudit.ClutterLines, the `road-clutter` rule): a prop standing on a road in the open, whoever owns it.
 //   audit selftest
 //
 // red-proof: 2026-11-19, with isTerrainRelative (now the frame from tools/lib/height-frame.mjs) returning false the selftest printed "FAILED a SCR_DestructibleEntity at layer y 19.1 is flagged relative-y"; restored, OK.
@@ -684,14 +685,14 @@ export function noOutputDiagnosis({ status, signal, error, text = "", outFile, r
 // `extra` input lines (the placement tool's probe rays). Returns the raw out.txt (null when the server
 // wrote none) and whether the test failed. The list goes in and the result comes out through this
 // checkout's test profile, on whichever machine the pool picked.
-export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log, local = false, preferLocal = false, grid = false, island = false, runtime = false } = {}) {
+export function measureTown(records, { outDir = join(ROOT, "tmp", "place-audit"), extra = [], log = console.log, local = false, preferLocal = false, grid = false, island = false, runtime = false, clutter = false } = {}) {
   mkdirSync(outDir, { recursive: true });
   const inFile = join(outDir, "in.txt");
   const outFile = join(PROFILE_DIR, "out.txt");
   rmSync(outFile, { force: true });
   const circle = island ? islandCircle(records) : grid ? GRID_CIRCLE : TOWN;
   // runtime: also sweep the circle for what spawners put out (LF_PlacementAudit.RuntimeLines, place-runtime.mjs).
-  writeFileSync(inFile, inputText(records, runtime ? [`runtime ${circle.x} ${circle.z} ${circle.r}`, ...(island ? placeClutterLines() : []), ...extra] : extra, circle));
+  writeFileSync(inFile, inputText(records, runtime ? [`runtime ${circle.x} ${circle.z} ${circle.r}`, ...(island ? placeClutterLines() : []), ...extra] : clutter ? [`clutter ${circle.x} ${circle.z} ${circle.r}`, ...extra] : extra, circle));
   writeFileSync(join(outDir, "records.json"), JSON.stringify(records));
   const r = spawnSync(process.execPath, [join(ROOT, "tools", "cli.mjs"), ...auditTestArgs({ local, grid, island, preferLocal })], { cwd: ROOT, encoding: "utf8", windowsHide: true, timeout: 600000, env: { ...process.env, LF_PLACE_AUDIT_IN: inFile } });
   const text = `${r.stdout ?? ""}${r.stderr ?? ""}`;
@@ -772,7 +773,7 @@ async function placement(argv) {
   } else {
     // The whole island (no --layer) also audits what spawners put out; a slot's own fit (--layer) judges only its rows unless --runtime.
     const runtime = island && (!layerNames || !!flags.runtime);
-    const run = measureTown(records, { outDir, grid, island, runtime });
+    const run = measureTown(records, { outDir, grid, island, runtime, clutter: !island && !grid && !!flags.clutter });
     if (run.outText == null) return 1;
     outText = run.outText;
     testFailed = run.failed;

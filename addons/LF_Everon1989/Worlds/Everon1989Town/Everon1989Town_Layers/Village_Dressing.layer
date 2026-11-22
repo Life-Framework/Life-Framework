@@ -429,19 +429,19 @@ $grp GenericEntity : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
   angles 0 10 0
  }
  Market_Box_1 {
-  coords 195.297 0 232.603
+  coords 196.597 0 229.702
   angles 0 8 0
  }
  Market_Box_3 {
-  coords 208.952 0 232.503
+  coords 207.197 0 229.702
   angles 0 90 0
  }
  Market_Box_4 {
-  coords 209.602 0 232.503
+  coords 207.997 0 229.702
   angles 0 90 0
  }
  Market_Box_2 {
-  coords 195.347 0 233.102
+  coords 197.397 0 229.702
   angles 0 -4 0
  }
  {
@@ -600,7 +600,7 @@ $grp GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.e
   coords 106.3 0 239.2
  }
  {
-  coords 119.7 0 260.8
+  coords 117.211 0 268.58
  }
  {
   coords 172.4 0 243.4
@@ -615,7 +615,7 @@ $grp GenericEntity : "{5E99DD1E8377D27F}Prefabs/Props/Garbage/Bins/TrashBin_02.e
   coords 297 0 256.7
  }
  Market_Bin {
-  coords 217.62 0 240.911
+  coords 219.611 0 240.38
   angles 0 -90 0
  }
 }
@@ -634,7 +634,7 @@ $grp Tree : "{63DC62906A5917F3}Prefabs/Vegetation/Tree/t_populus_nigra/t_populus
  }
 }
 GenericEntity Market_Sacks_1 : "{662766254306EE2D}PrefabLibrary/DefaultLibrary/Props/Agricultural/SackUniversal_01_Pile.et" {
- coords 196.306 0.03 241.893
+ coords 197.114 0.03 244.061
  angles 0 20 0
 }
 $grp GenericEntity : "{69D6D9BFDFEC3225}Prefabs/Props/Seats/LF_Seat_Chair_02_green.et" {
