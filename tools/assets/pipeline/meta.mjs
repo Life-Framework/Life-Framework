@@ -49,8 +49,10 @@ export function textureMeta(resPath, conf, guid) {
   return `MetaFileClass {\n Name "{${guid}}${resPath}"\n Configurations {\n${PLATFORMS.map(row).join("")}  TIFFResourceClass PS5 : PC {\n  }\n }\n}\n`;
 }
 
-export function ematText({ bcr, nmo }) {
-  return `MatPBRBasic {\n BCRMap "${bcr}"\n NMOMap "${nmo}"\n}\n`;
+// glow = { lv }: an emissive material lit by its _EM map (tex.em), like the siren LED emat.
+export function ematText({ bcr, nmo, em }, glow) {
+  const lit = glow && em ? ` Emissive 1 1 1 1\n EmissiveLV ${glow.lv ?? 2}\n EmissiveAbsoluteLV 0\n EmissiveMap "${em}"\n` : "";
+  return `MatPBRBasic {\n BCRMap "${bcr}"\n NMOMap "${nmo}"\n${lit}}\n`;
 }
 
 export function ematMeta(resPath, guid) {
