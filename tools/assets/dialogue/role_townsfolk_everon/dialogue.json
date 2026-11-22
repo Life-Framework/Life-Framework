@@ -1,0 +1,39 @@
+{
+  "id": "role_townsfolk_everon",
+  "name": "RoleTownsfolkEveron",
+  "patches": "role_townsfolk",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "rqBDkieYYBoHyv690zPl",
+    "sex": "male",
+    "name": "Eliot - Relaxed & Casual",
+    "public_owner_id": "ccdc1c09a97493d67d11bf8b57fd02ed8c145070938dd03414b98a37d659fceb",
+    "why": "A relaxed, casual French voice for the town civilians. The game has male bodies only; the voice is male.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1
+    }
+  },
+  "budget_chars": 700,
+  "lines": {
+    "greet": {
+      "text": "Hello. New in Saint-Philippe?"
+    },
+    "what": {
+      "text": "I live here. I get by, as everyone does. The work is simple and the people are decent."
+    },
+    "where": {
+      "text": "The town board on the square shows everything. The post office hires couriers, and the bank is beside it."
+    },
+    "rumour": {
+      "text": "People say the police are watching the main street. Burglars are about. Keep your doors locked."
+    },
+    "bye": {
+      "text": "Take care."
+    }
+  },
+  "replies": {}
+}

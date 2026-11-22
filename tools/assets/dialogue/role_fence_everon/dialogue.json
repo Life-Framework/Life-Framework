@@ -1,0 +1,39 @@
+{
+  "id": "role_fence_everon",
+  "name": "RoleFenceEveron",
+  "patches": "role_fence",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "KZW681TTkoQ1dS9Hu5WY",
+    "sex": "male",
+    "name": "Lucas - Deep, Raspy and Natural",
+    "public_owner_id": "d0e33a0b3fe25a1dd8e9a50a9086a3f8de89b59cdb5aae373bf59bed428f76b7",
+    "why": "A deep, raspy French voice for Vince at the fence yard: low and in no hurry. The game has male bodies only; the voice is male.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1
+    }
+  },
+  "budget_chars": 700,
+  "lines": {
+    "greet": {
+      "text": "You did not see me. Now, what are you after?"
+    },
+    "what": {
+      "text": "I sell tools to people who do not ask what they are for. Locks are hard and the police are harder. Choose the right tool."
+    },
+    "where": {
+      "text": "Ask nobody about me. Keep to the back streets."
+    },
+    "rumour": {
+      "text": "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the police."
+    },
+    "bye": {
+      "text": "We never spoke."
+    }
+  },
+  "replies": {}
+}

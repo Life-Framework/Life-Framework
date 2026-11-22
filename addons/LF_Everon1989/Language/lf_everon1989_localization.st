@@ -741,7 +741,7 @@ StringTable {
     }
     CustomStringTableItem "{CD365C03E5B40FA0}" {
      Id "LF-Dialogue_ResidentAnselme_AboutFamily"
-     Target_en_us "Mireille is my wife. She spends her mornings at the cafe and knows everything before the newspaper does."
+     Target_en_us "Marius is my brother. He spends his mornings at the cafe and knows everything before the newspaper does."
      Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
     }
     CustomStringTableItem "{04C501AFD83A49C8}" {
@@ -776,7 +776,7 @@ StringTable {
     }
     CustomStringTableItem "{F5F45D4080B74718}" {
      Id "LF-Dialogue_ResidentAnselme_GreetRegular"
-     Target_en_us "Ah, my friend! Mireille made too much soup again. Come by tonight."
+     Target_en_us "Ah, my friend! Marius made too much soup again. Come by tonight."
      Comment "Dialogue caption, spoken by the resident_anselme NPC (text only; tools/assets/dialogue/resident_anselme). Changing it needs: tools\\cli asset dialogue resident_anselme"
     }
     CustomStringTableItem "{9FADC716B9FC0BBA}" {
@@ -791,7 +791,7 @@ StringTable {
     }
     CustomStringTableItem "{9C7587601E0525A8}" {
      Id "LF-Dialogue_ResidentAnselme_SayFamily"
-     Target_en_us "Who is Mireille?"
+     Target_en_us "Who is Marius?"
      Comment "Dialogue reply the player can pick when talking to the resident_anselme NPC."
     }
     CustomStringTableItem "{56A57C39752E93D7}" {
@@ -811,7 +811,7 @@ StringTable {
     }
     CustomStringTableItem "{C9F228A9AA9EAB3C}" {
      Id "LF-Dialogue_ResidentMireille_AboutCafe"
-     Target_en_us "Odile runs the cafe. She keeps the best table for the mayor and pretends she does not."
+     Target_en_us "Odilon runs the cafe. He keeps the best table for the mayor and pretends he does not."
      Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
     }
     CustomStringTableItem "{54FD7200DA7DFF55}" {
@@ -826,7 +826,7 @@ StringTable {
     }
     CustomStringTableItem "{ECD55BE8D4B9C801}" {
      Id "LF-Dialogue_ResidentMireille_Greet"
-     Target_en_us "Bonjour. Mireille. Forgive me, I only came out for a coffee and a little conversation."
+     Target_en_us "Bonjour. Marius. Forgive me, I only came out for a coffee and a little conversation."
      Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
     }
     CustomStringTableItem "{D608E1EFD91B9415}" {
@@ -841,7 +841,7 @@ StringTable {
     }
     CustomStringTableItem "{1E1D746AB72C4E67}" {
      Id "LF-Dialogue_ResidentMireille_GreetRegular"
-     Target_en_us "There you are! I was just telling Odile about you."
+     Target_en_us "There you are! I was just telling Odilon about you."
      Comment "Dialogue caption, spoken by the resident_mireille NPC (text only; tools/assets/dialogue/resident_mireille). Changing it needs: tools\\cli asset dialogue resident_mireille"
     }
     CustomStringTableItem "{C7DD49231882FF53}" {
@@ -956,7 +956,7 @@ StringTable {
     }
     CustomStringTableItem "{574C7DDD6C967AF5}" {
      Id "LF-Dialogue_ResidentTeller_Greet"
-     Target_en_us "Good day. I am off the counter just now, but I don't bite. Helene, from the bank."
+     Target_en_us "Good day. I am off the counter just now, but I don't bite. Lucien, from the bank."
      Comment "Dialogue caption, spoken by the resident_teller NPC (text only; tools/assets/dialogue/resident_teller). Changing it needs: tools\\cli asset dialogue resident_teller"
     }
     CustomStringTableItem "{61EEE4365FEB146C}" {
@@ -998,6 +998,181 @@ StringTable {
      Id "LF-Dialogue_ResidentTeller_SayWork"
      Target_en_us "What do you do at the bank?"
      Comment "Dialogue reply the player can pick when talking to the resident_teller NPC."
+    }
+    CustomStringTableItem "{D29F985D42EAC058}" {
+     Id "LF-Dialogue_RoleFenceEveron_Bye"
+     Target_en_us "We never spoke."
+     Comment "Pack patch of the role_fence dialogue's line bye (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
+    CustomStringTableItem "{96BCAA1CD274CA52}" {
+     Id "LF-Dialogue_RoleFenceEveron_Greet"
+     Target_en_us "You did not see me. Now, what are you after?"
+     Comment "Pack patch of the role_fence dialogue's line greet (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
+    CustomStringTableItem "{BF2804A075D06D89}" {
+     Id "LF-Dialogue_RoleFenceEveron_Rumour"
+     Target_en_us "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the police."
+     Comment "Pack patch of the role_fence dialogue's line rumour (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
+    CustomStringTableItem "{4FDB1AC1ACEA8C7C}" {
+     Id "LF-Dialogue_RoleFenceEveron_What"
+     Target_en_us "I sell tools to people who do not ask what they are for. Locks are hard and the police are harder. Choose the right tool."
+     Comment "Pack patch of the role_fence dialogue's line what (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
+    CustomStringTableItem "{F780F1A89DA24D9E}" {
+     Id "LF-Dialogue_RoleFenceEveron_Where"
+     Target_en_us "Ask nobody about me. Keep to the back streets."
+     Comment "Pack patch of the role_fence dialogue's line where (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
+    CustomStringTableItem "{0988F7F8C0BF3C64}" {
+     Id "LF-Dialogue_RoleMechanicEveron_Bye"
+     Target_en_us "Drive safe."
+     Comment "Pack patch of the role_mechanic dialogue's line bye (voiced; tools/assets/dialogue/role_mechanic_everon). Changing it needs: tools\\cli asset dialogue role_mechanic_everon"
+    }
+    CustomStringTableItem "{2AFA2E399F21B7AD}" {
+     Id "LF-Dialogue_RoleMechanicEveron_Greet"
+     Target_en_us "Mind the oil. What is wrong with it?"
+     Comment "Pack patch of the role_mechanic dialogue's line greet (voiced; tools/assets/dialogue/role_mechanic_everon). Changing it needs: tools\\cli asset dialogue role_mechanic_everon"
+    }
+    CustomStringTableItem "{58698B79CA4AA7AE}" {
+     Id "LF-Dialogue_RoleMechanicEveron_Rumour"
+     Target_en_us "Somebody keeps asking me how to start a car without the key. I tell them to buy the key."
+     Comment "Pack patch of the role_mechanic dialogue's line rumour (voiced; tools/assets/dialogue/role_mechanic_everon). Changing it needs: tools\\cli asset dialogue role_mechanic_everon"
+    }
+    CustomStringTableItem "{1F9C08528FCD2960}" {
+     Id "LF-Dialogue_RoleMechanicEveron_What"
+     Target_en_us "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery."
+     Comment "Pack patch of the role_mechanic dialogue's line what (voiced; tools/assets/dialogue/role_mechanic_everon). Changing it needs: tools\\cli asset dialogue role_mechanic_everon"
+    }
+    CustomStringTableItem "{67D6EE4A23585976}" {
+     Id "LF-Dialogue_RoleMechanicEveron_Where"
+     Target_en_us "The car lot is on the east side, and the fuel station is down the road. Fill up before you go far."
+     Comment "Pack patch of the role_mechanic dialogue's line where (voiced; tools/assets/dialogue/role_mechanic_everon). Changing it needs: tools\\cli asset dialogue role_mechanic_everon"
+    }
+    CustomStringTableItem "{B97EE41392E9B150}" {
+     Id "LF-Dialogue_RoleMedicEveron_Bye"
+     Target_en_us "Look after yourself."
+     Comment "Pack patch of the role_medic dialogue's line bye (voiced; tools/assets/dialogue/role_medic_everon). Changing it needs: tools\\cli asset dialogue role_medic_everon"
+    }
+    CustomStringTableItem "{345068A447236EBF}" {
+     Id "LF-Dialogue_RoleMedicEveron_Greet"
+     Target_en_us "Come in. Are you hurt?"
+     Comment "Pack patch of the role_medic dialogue's line greet (voiced; tools/assets/dialogue/role_medic_everon). Changing it needs: tools\\cli asset dialogue role_medic_everon"
+    }
+    CustomStringTableItem "{00BB754B066A04A1}" {
+     Id "LF-Dialogue_RoleMedicEveron_Rumour"
+     Target_en_us "A lot of cuts from the sawmill this month. The men will not wear gloves."
+     Comment "Pack patch of the role_medic dialogue's line rumour (voiced; tools/assets/dialogue/role_medic_everon). Changing it needs: tools\\cli asset dialogue role_medic_everon"
+    }
+    CustomStringTableItem "{35F722E64421CE24}" {
+     Id "LF-Dialogue_RoleMedicEveron_What"
+     Target_en_us "I patch people up. A bandage stops bleeding. Anything worse, come to me before it gets worse."
+     Comment "Pack patch of the role_medic dialogue's line what (voiced; tools/assets/dialogue/role_medic_everon). Changing it needs: tools\\cli asset dialogue role_medic_everon"
+    }
+    CustomStringTableItem "{025CD7558F816299}" {
+     Id "LF-Dialogue_RoleMedicEveron_Where"
+     Target_en_us "If you need a bandage and I am not here, the general store keeps dressings by the counter."
+     Comment "Pack patch of the role_medic dialogue's line where (voiced; tools/assets/dialogue/role_medic_everon). Changing it needs: tools\\cli asset dialogue role_medic_everon"
+    }
+    CustomStringTableItem "{8F41F510FD79F3BE}" {
+     Id "LF-Dialogue_RolePoliceEveron_Bye"
+     Target_en_us "Stay out of trouble."
+     Comment "Pack patch of the role_police dialogue's line bye (voiced; tools/assets/dialogue/role_police_everon). Changing it needs: tools\\cli asset dialogue role_police_everon"
+    }
+    CustomStringTableItem "{9A27AA3E50F306D1}" {
+     Id "LF-Dialogue_RolePoliceEveron_Greet"
+     Target_en_us "Officer on duty. Keep your hands where I can see them, and we will get along."
+     Comment "Pack patch of the role_police dialogue's line greet (voiced; tools/assets/dialogue/role_police_everon). Changing it needs: tools\\cli asset dialogue role_police_everon"
+    }
+    CustomStringTableItem "{967DB6575C46452A}" {
+     Id "LF-Dialogue_RolePoliceEveron_Rumour"
+     Target_en_us "We have had burglaries along the main street. If you saw anything, tell us. People here remember faces."
+     Comment "Pack patch of the role_police dialogue's line rumour (voiced; tools/assets/dialogue/role_police_everon). Changing it needs: tools\\cli asset dialogue role_police_everon"
+    }
+    CustomStringTableItem "{9C6A57BC1C12EAD7}" {
+     Id "LF-Dialogue_RolePoliceEveron_What"
+     Target_en_us "I keep the peace and take the reports. Break into a shop or hurt someone and you will see me again."
+     Comment "Pack patch of the role_police dialogue's line what (voiced; tools/assets/dialogue/role_police_everon). Changing it needs: tools\\cli asset dialogue role_police_everon"
+    }
+    CustomStringTableItem "{4DA989F1CE07B4FF}" {
+     Id "LF-Dialogue_RolePoliceEveron_Where"
+     Target_en_us "The station is the building behind me. The town board on the square lists everything else."
+     Comment "Pack patch of the role_police dialogue's line where (voiced; tools/assets/dialogue/role_police_everon). Changing it needs: tools\\cli asset dialogue role_police_everon"
+    }
+    CustomStringTableItem "{51B71393FDAEED91}" {
+     Id "LF-Dialogue_RoleStoreClerkEveron_Bye"
+     Target_en_us "Take care out there."
+     Comment "Pack patch of the role_store_clerk dialogue's line bye (voiced; tools/assets/dialogue/role_store_clerk_everon). Changing it needs: tools\\cli asset dialogue role_store_clerk_everon"
+    }
+    CustomStringTableItem "{C98A7F721A106860}" {
+     Id "LF-Dialogue_RoleStoreClerkEveron_Greet"
+     Target_en_us "Morning. Looking for something in particular?"
+     Comment "Pack patch of the role_store_clerk dialogue's line greet (voiced; tools/assets/dialogue/role_store_clerk_everon). Changing it needs: tools\\cli asset dialogue role_store_clerk_everon"
+    }
+    CustomStringTableItem "{0215CA6A6B741C18}" {
+     Id "LF-Dialogue_RoleStoreClerkEveron_Rumour"
+     Target_en_us "Somebody has been asking whether I keep a safe under the counter. I do not, and I do not keep much cash either."
+     Comment "Pack patch of the role_store_clerk dialogue's line rumour (voiced; tools/assets/dialogue/role_store_clerk_everon). Changing it needs: tools\\cli asset dialogue role_store_clerk_everon"
+    }
+    CustomStringTableItem "{8F9FDD48805CB8BF}" {
+     Id "LF-Dialogue_RoleStoreClerkEveron_What"
+     Target_en_us "I run the till and keep the shelves full. Bread, water, apples, dressings. If we do not have it, nobody in Saint-Philippe does."
+     Comment "Pack patch of the role_store_clerk dialogue's line what (voiced; tools/assets/dialogue/role_store_clerk_everon). Changing it needs: tools\\cli asset dialogue role_store_clerk_everon"
+    }
+    CustomStringTableItem "{7312DDC94F510140}" {
+     Id "LF-Dialogue_RoleStoreClerkEveron_Where"
+     Target_en_us "The market square is south of the main street if you want fruit and vegetables. Cars are sold at the lot on the east side."
+     Comment "Pack patch of the role_store_clerk dialogue's line where (voiced; tools/assets/dialogue/role_store_clerk_everon). Changing it needs: tools\\cli asset dialogue role_store_clerk_everon"
+    }
+    CustomStringTableItem "{28ACD8C672C3DF1F}" {
+     Id "LF-Dialogue_RoleTellerEveron_Bye"
+     Target_en_us "Good day. Mind your money."
+     Comment "Pack patch of the role_teller dialogue's line bye (voiced; tools/assets/dialogue/role_teller_everon). Changing it needs: tools\\cli asset dialogue role_teller_everon"
+    }
+    CustomStringTableItem "{3D7A56C4F7C78DF9}" {
+     Id "LF-Dialogue_RoleTellerEveron_Greet"
+     Target_en_us "Good day. Welcome to the bank. How can I help?"
+     Comment "Pack patch of the role_teller dialogue's line greet (voiced; tools/assets/dialogue/role_teller_everon). Changing it needs: tools\\cli asset dialogue role_teller_everon"
+    }
+    CustomStringTableItem "{D9601826DEA9607D}" {
+     Id "LF-Dialogue_RoleTellerEveron_Rumour"
+     Target_en_us "A man with no work and a drill in his bag asked me about the vault. I told him the vault is none of my business."
+     Comment "Pack patch of the role_teller dialogue's line rumour (voiced; tools/assets/dialogue/role_teller_everon). Changing it needs: tools\\cli asset dialogue role_teller_everon"
+    }
+    CustomStringTableItem "{606DF12C454471D4}" {
+     Id "LF-Dialogue_RoleTellerEveron_What"
+     Target_en_us "I keep the counter and the accounts. Cash in your pocket is gone when you die. Money in the bank is not. The cash machine on the wall does deposits and withdrawals."
+     Comment "Pack patch of the role_teller dialogue's line what (voiced; tools/assets/dialogue/role_teller_everon). Changing it needs: tools\\cli asset dialogue role_teller_everon"
+    }
+    CustomStringTableItem "{757C62BFEECAE52F}" {
+     Id "LF-Dialogue_RoleTellerEveron_Where"
+     Target_en_us "The post office is right beside us. The town board on the square lists the rest, and the police station is a short walk up the street."
+     Comment "Pack patch of the role_teller dialogue's line where (voiced; tools/assets/dialogue/role_teller_everon). Changing it needs: tools\\cli asset dialogue role_teller_everon"
+    }
+    CustomStringTableItem "{66E02E6DC2FB7862}" {
+     Id "LF-Dialogue_RoleTownsfolkEveron_Bye"
+     Target_en_us "Take care."
+     Comment "Pack patch of the role_townsfolk dialogue's line bye (voiced; tools/assets/dialogue/role_townsfolk_everon). Changing it needs: tools\\cli asset dialogue role_townsfolk_everon"
+    }
+    CustomStringTableItem "{B7EDB54EB5DF8CE9}" {
+     Id "LF-Dialogue_RoleTownsfolkEveron_Greet"
+     Target_en_us "Hello. New in Saint-Philippe?"
+     Comment "Pack patch of the role_townsfolk dialogue's line greet (voiced; tools/assets/dialogue/role_townsfolk_everon). Changing it needs: tools\\cli asset dialogue role_townsfolk_everon"
+    }
+    CustomStringTableItem "{106848E394340C2B}" {
+     Id "LF-Dialogue_RoleTownsfolkEveron_Rumour"
+     Target_en_us "People say the police are watching the main street. Burglars are about. Keep your doors locked."
+     Comment "Pack patch of the role_townsfolk dialogue's line rumour (voiced; tools/assets/dialogue/role_townsfolk_everon). Changing it needs: tools\\cli asset dialogue role_townsfolk_everon"
+    }
+    CustomStringTableItem "{47312B84FDA54AF0}" {
+     Id "LF-Dialogue_RoleTownsfolkEveron_What"
+     Target_en_us "I live here. I get by, as everyone does. The work is simple and the people are decent."
+     Comment "Pack patch of the role_townsfolk dialogue's line what (voiced; tools/assets/dialogue/role_townsfolk_everon). Changing it needs: tools\\cli asset dialogue role_townsfolk_everon"
+    }
+    CustomStringTableItem "{57D2422ADB1BD399}" {
+     Id "LF-Dialogue_RoleTownsfolkEveron_Where"
+     Target_en_us "The town board on the square shows everything. The post office hires couriers, and the bank is beside it."
+     Comment "Pack patch of the role_townsfolk dialogue's line where (voiced; tools/assets/dialogue/role_townsfolk_everon). Changing it needs: tools\\cli asset dialogue role_townsfolk_everon"
     }
     CustomStringTableItem "{3441F00000000001}" {
      Id "LF-Dialogue_Rumour_SayAsk"
@@ -2526,7 +2701,7 @@ StringTable {
     }
     CustomStringTableItem "{68A4AB0318F5F0EE}" {
      Id "LF-Resident_neighbour_mireille_Name"
-     Target_en_us "Mireille Caron"
+     Target_en_us "Marius Caron"
      Comment "Saint-Philippe resident neighbour_mireille: display name (#2906)."
     }
     CustomStringTableItem "{42D3BDA28CC4BC6C}" {
@@ -2551,7 +2726,7 @@ StringTable {
     }
     CustomStringTableItem "{A5E43AF509340C8C}" {
      Id "LF-Resident_teller_Name"
-     Target_en_us "Helene Roux"
+     Target_en_us "Lucien Roux"
      Comment "Saint-Philippe resident teller: display name (#2906)."
     }
     CustomStringTableItem "{3441F00000000002}" {

@@ -100,6 +100,11 @@ export async function main() {
     s.lines.bye.text = "Good day to you.";
     const twice = dlg.upsertStrings(once, dlg.stringEntries(s), guid);
     ok(twice.includes('Target_en_us "Good day to you."') && !twice.includes('Target_en_us "Good day."') && twice.includes('Target_en_us "Sold."'), "strings: a reworded line updates its own row and no other");
+    // A sorted table ends with an item closed by "    }" (2026-11-22): the old "  }\n }\n}" anchor matched inside that
+    // brace and the new rows went in before it, leaving the last item unclosed.
+    const sorted = 'StringTableSource {\n Items {\n    CustomStringTableItem "{0000000000000001}" {\n     Id "LF-Z_Last"\n     Target_en_us "Last."\n    }\n }\n}\n';
+    const added = dlg.upsertStrings(sorted, entries.slice(0, 1), guid);
+    ok(added.includes('Target_en_us "Last."\n    }\n    CustomStringTableItem') && added.endsWith("    }\n }\n}\n"), "strings: rows go after a last item closed by four spaces, not inside its brace");
   }
 
   // ---- generated files: stable, and they name what the game reads -------------------------------

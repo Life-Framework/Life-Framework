@@ -5,8 +5,9 @@
 //   - a recorded line, made with the dialogue's voice from its current text, passes;
 //   - a text-only dialogue, a missing clip, a clip made with another voice and a stale clip each fail;
 //   - one voice speaking for two NPCs fails;
-//   - an NPC with a shop action and no conversation fails, passes while baselined, and a baseline entry that is
-//     voiced or gone fails (the list only shrinks).
+//   - an NPC with a shop action and no conversation fails;
+//   - a role NPC whose role plays a registered dialogue (roles.json `dialogue`) is judged by that dialogue and the
+//     pack's voiced patch of it: recorded passes, a missing recording fails; a role with no dialogue fails.
 //
 // red-proof: 2026-11-22, with the `p.voice_id !== voice.id` comparison in lineIssues() removed the "another voice" case printed FAIL.
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -53,7 +54,29 @@ function repo(npcs, extra = []) {
   return root;
 }
 
-const fails = (root, baseline = {}) => judge(scan(root), baseline);
+const fails = (root) => judge(scan(root));
+const roleComponent = (role) => `  LF_NpcRoleComponent "{4444444444444444}" {\n   m_sRole "${role}"\n  }\n`;
+
+// A role NPC (no dialogue component) whose role plays role_clerk: a core text-only spec plus a voiced pack patch.
+function roleRepo({ dialogue = "role_clerk", recorded = true } = {}) {
+  const root = repo([]);
+  const pack = join(root, "addons", "LF_Everon1989");
+  writeFileSync(join(pack, "Prefabs", "Npc_Clerk.et"), prefab("LF_NpcBaseEntity", roleComponent("clerk")));
+  mkdirSync(join(root, "tools", "assets", "outfits"), { recursive: true });
+  writeFileSync(join(root, "tools", "assets", "outfits", "roles.json"), JSON.stringify({ roles: [{ id: "clerk", ...(dialogue ? { dialogue } : {}) }] }));
+  const core = { id: "role_clerk", name: "RoleClerk", text_only: true, start: "greet", lines: { greet: { text: "Good day to you." } }, nodes: [{ id: "greet", line: "greet" }], replies: {} };
+  const patch = { id: "role_clerk_everon", name: "RoleClerkEveron", patches: "role_clerk", addon: "LF_Everon1989", voice: voice("CCC"), lines: { greet: { text: "Good day to you." } }, replies: {} };
+  for (const s of [core, patch]) {
+    mkdirSync(join(root, "tools", "assets", "dialogue", s.id), { recursive: true });
+    writeFileSync(join(root, "tools", "assets", "dialogue", s.id, "dialogue.json"), JSON.stringify(s));
+  }
+  if (recorded) {
+    writeFileSync(join(root, "tools", "assets", "dialogue", patch.id, "elevenlabs.json"), JSON.stringify({ lines: { greet: { hash: lineHash(patch.voice, "Good day to you."), voice_id: "CCC" } } }));
+    mkdirSync(join(pack, "Sounds", "Dialogue", patch.id), { recursive: true });
+    writeFileSync(join(pack, "Sounds", "Dialogue", patch.id, `${patch.id}_greet.wav`), "RIFF");
+  }
+  return root;
+}
 
 let f = fails(repo([{ id: "baker", voiceId: "AAA" }]));
 check(f.length === 0, "a recorded line in the dialogue's voice passes");
@@ -77,11 +100,14 @@ const silent = [["Fence.et", prefab("LF_NpcBaseEntity", action("LF_ShopAction"))
 f = fails(repo([{ id: "baker", voiceId: "AAA" }], silent));
 check(f.length === 1 && /silent:Fence/.test(f[0]) && /no conversation at all/.test(f[0]), "a shop NPC with nothing to say fails");
 
-f = fails(repo([{ id: "baker", voiceId: "AAA" }], silent), { "silent:Fence": "not yet" });
-check(f.length === 0, "a baselined gap passes");
+f = fails(roleRepo());
+check(f.length === 0, "a role NPC whose role dialogue the pack voices passes");
 
-f = fails(repo([{ id: "baker", voiceId: "AAA" }]), { "baker": "stale entry" });
-check(f.length === 1 && /baseline: baker is voiced or gone/.test(f[0]), "a baseline entry that is voiced fails (the list only shrinks)");
+f = fails(roleRepo({ recorded: false }));
+check(f.length === 1 && /role_clerk: line greet: no recording/.test(f[0]), "a role dialogue line with no recording fails");
+
+f = fails(roleRepo({ dialogue: "" }));
+check(f.length === 1 && /role:clerk: 5 line\(s\) with no voice clip/.test(f[0]), "a role with no registered dialogue (the built caption tree) fails");
 
 if (failed) {
   console.log(`dialogue-voices-selftest: ${failed} FAILED`);

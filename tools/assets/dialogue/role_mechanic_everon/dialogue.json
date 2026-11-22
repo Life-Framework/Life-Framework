@@ -1,0 +1,39 @@
+{
+  "id": "role_mechanic_everon",
+  "name": "RoleMechanicEveron",
+  "patches": "role_mechanic",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "1dtFMJq6XJK9hgZhZCQz",
+    "sex": "male",
+    "name": "Loic",
+    "public_owner_id": "3c8be7305dcc9ed394efaf913a81efe0467ebbfb92c19ebfe94661706726c90b",
+    "why": "A plain conversational middle-aged French voice for the garage and car lot mechanics. The game has male bodies only; the voice is male.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1
+    }
+  },
+  "budget_chars": 700,
+  "lines": {
+    "greet": {
+      "text": "Mind the oil. What is wrong with it?"
+    },
+    "what": {
+      "text": "I fix cars. A new battery, a repair kit, the right fuel, and it runs. Most breakdowns are a flat battery."
+    },
+    "where": {
+      "text": "The car lot is on the east side, and the fuel station is down the road. Fill up before you go far."
+    },
+    "rumour": {
+      "text": "Somebody keeps asking me how to start a car without the key. I tell them to buy the key."
+    },
+    "bye": {
+      "text": "Drive safe."
+    }
+  },
+  "replies": {}
+}
