@@ -363,12 +363,13 @@
       "mount": "terrain",
       "offset": [
         10,
-        1.039,
+        0,
         3.4
       ],
       "yaw": -90,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "lift": 1.039
     },
     {
       "id": "mine-sign",
