@@ -7,7 +7,7 @@
   "kit": "square-life",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_square-life.layer",
   "kinds": [],
-  "rows": 4,
+  "rows": 5,
   "destruction": {
     "mode": "needs-hook",
     "reason": "a vanilla building stands in the terrain and the slot has no place marker to carry LF_FittedBuildingComponent (D15)"

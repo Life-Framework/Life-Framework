@@ -34,3 +34,7 @@ GenericEntity Fit_saint_philippe_square_life_bed_village_night : "{A8568D2A6C46B
  coords 4451.999 12.719 10712
  angleY 172
 }
+GenericEntity Fit_saint_philippe_square_life_gossip_bench : "{9A0D37E96A665D27}Prefabs/Props/Residents/LF_GossipBench.et" {
+ coords 4446.002 12.513 10699.2
+ angleY -98
+}
