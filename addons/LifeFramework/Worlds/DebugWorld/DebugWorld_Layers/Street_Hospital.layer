@@ -137,20 +137,6 @@ GenericEntity Roadmap_Hospital_Duty_Desk : "{A0B78CD65C661B15}Prefabs/Medic/LF_M
  coords 259.4 0 256.4
  angles 0 180 0
 }
-$grp GenericEntity : "{AEF9A26C2F0334B3}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_base.et" {
- Hospital_BayCone_1 {
-  coords 262.2 0 247.6
- }
- Hospital_BayCone_2 {
-  coords 262.2 0 252.4
- }
- Hospital_BayCone_3 {
-  coords 270.2 0 247.6
- }
- Hospital_BayCone_4 {
-  coords 270.2 0 252.4
- }
-}
 $grp GenericEntity : "{B643FBB194A8C8D9}Prefabs/Medic/LF_HospitalBed.et" {
  Hospital_Bed_1 {
   coords 270.5 0.19 261.3

@@ -20,12 +20,14 @@ class LF_ActivityRow
 //! none of which holds either character; a row that would is cut out on the server (logged).
 class LF_ActivityData
 {
-	static const int VERSION = 1;
+	static const int VERSION = 2;
 	static const string ROW_SEP = ";";
 	static const string FIELD_SEP = "|";
 	static const int FIELDS = 9;
 
 	ref array<ref LF_ActivityRow> m_aRows = {};
+	//! The player has no papers yet: the tab sends them to the clerk instead of listing runs.
+	bool m_bNeedsPapers;
 
 	//------------------------------------------------------------------------------------------------
 	static bool Clean(string value)
@@ -36,7 +38,11 @@ class LF_ActivityData
 	//------------------------------------------------------------------------------------------------
 	string Encode()
 	{
-		string wire = VERSION.ToString();
+		string papers = "0";
+		if (m_bNeedsPapers)
+			papers = "1";
+
+		string wire = VERSION.ToString() + FIELD_SEP + papers;
 		foreach (LF_ActivityRow row : m_aRows)
 		{
 			if (!Clean(row.m_sId) || !Clean(row.m_sNameKey) || !Clean(row.m_sPitchKey) || !Clean(row.m_sStepTitleKey))
@@ -60,10 +66,16 @@ class LF_ActivityData
 	{
 		array<string> rows = {};
 		wire.Split(ROW_SEP, rows, false);
-		if (rows.IsEmpty() || rows[0].ToInt() != VERSION)
+		if (rows.IsEmpty())
+			return null;
+
+		array<string> head = {};
+		rows[0].Split(FIELD_SEP, head, false);
+		if (head.Count() != 2 || head[0].ToInt() != VERSION)
 			return null;
 
 		LF_ActivityData data = new LF_ActivityData();
+		data.m_bNeedsPapers = head[1] == "1";
 		for (int i = 1; i < rows.Count(); i++)
 		{
 			array<string> fields = {};
@@ -88,10 +100,34 @@ class LF_ActivityData
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The run in progress first, then what can start, then what is done; table order inside each
+	//! (review B1: the step the player is on was hidden below the fold).
+	static void SortRows(notnull array<ref LF_ActivityRow> rows)
+	{
+		array<ref LF_ActivityRow> sorted = {};
+		array<LF_EActivityState> order = {LF_EActivityState.ACTIVE, LF_EActivityState.AVAILABLE, LF_EActivityState.DONE, LF_EActivityState.LOCKED};
+		foreach (LF_EActivityState state : order)
+		{
+			foreach (LF_ActivityRow row : rows)
+			{
+				if (row.m_eState == state)
+					sorted.Insert(row);
+			}
+		}
+
+		rows.Clear();
+		foreach (LF_ActivityRow row : sorted)
+		{
+			rows.Insert(row);
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the rows one body may see, in table order, with its distances and states.
 	static LF_ActivityData Build(notnull array<ref LF_ActivityDef> all, notnull LF_ActivityFacts facts, vector from, bool hasPosition)
 	{
 		LF_ActivityData data = new LF_ActivityData();
+		data.m_bNeedsPapers = !facts.Registered();
 		array<LF_ActivityDef> listed = {};
 		LF_ActivityRules.Listed(all, facts, listed);
 		foreach (LF_ActivityDef def : listed)
@@ -127,6 +163,7 @@ class LF_ActivityData
 			data.m_aRows.Insert(row);
 		}
 
+		SortRows(data.m_aRows);
 		return data;
 	}
 }

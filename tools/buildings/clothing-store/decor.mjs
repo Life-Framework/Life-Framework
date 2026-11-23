@@ -58,9 +58,6 @@ const P = {
   sewing: "Prefabs/Props/Civilian/SewingMachine_01.et",
   box06: "Prefabs/Props/Crates/CardboardBox/CardboardBox_06.et",
   box03: "Prefabs/Props/Crates/CardboardBox/CardboardBox_03.et",
-  box01: "Prefabs/Props/Crates/CardboardBox/CardboardBox_01.et",
-  box05: "Prefabs/Props/Crates/CardboardBox/CardboardBox_05.et",
-  box07: "Prefabs/Props/Crates/CardboardBox/CardboardBox_07.et",
   bin: "Prefabs/Props/Garbage/Bins/BinInterior_01_green.et",
   pot: "Prefabs/Props/Decorations/Flowerpots/FlowerpotStreet_01/FlowerpotStreet_01_rect_long_begonia_red.et",
   crate: "Prefabs/Props/Crates/Crate_01_orange.et",
@@ -135,12 +132,10 @@ put(P.chandelier, 2.7, 3.99, 1.8, 0, 1, null, GLASS_ON);
 // ---- The window display (street side, z 6.4..7.15) ----
 put(P.carpet, 2.75, F, 6.8, 90);
 // a third mannequin in the middle, the denim one left and the raincoat one right come from the spec fixtures
-// riser at the left end: two crates, shoe boxes and a price card
+// riser at the left end: two crates and a price card. The cardboard shoe boxes that sat on top read as stock dumped in
+// the window, so they are gone (first-2h review C12); the shoe cabinet and the stock room keep the boxes.
 put(P.crate, 0.98, F, 6.95, 4);
 put(P.crate, 0.98, F + 0.223, 6.95, -6);
-put(P.box01, 0.88, F + 0.446, 6.93, 90, 0.5);
-put(P.box07, 1.08, F + 0.446, 6.96, 84, 0.5);
-put(P.box05, 0.88, F + 0.446 + 0.213, 6.93, 96, 0.5);
 put(P.noticeH1, 0.98, F + 0.12, 7.16, 0, 0.7);
 // riser at the right end: a crate with folded knitwear and a basket of caps; a hat stand beyond
 put(P.crate, 4.35, F, 6.35, -8);

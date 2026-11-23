@@ -27,6 +27,10 @@ class LF_TraderSale
 {
 	//! How far the seller may stand from the trader's storage for a client request.
 	protected static bool s_bFailRemoveForTest;
+	//! True while SellAll runs: the per-item toasts are held back for one summary toast.
+	protected static bool s_bQuiet;
+	//! Cash paid by the sales since SellAll started counting.
+	protected static int s_iBatchPaid;
 
 	static const float REACH = 5.0; // lf-fixed: an anti-forgery bound at the inventory vicinity range, same as the hideout stash reach
 
@@ -43,8 +47,9 @@ class LF_TraderSale
 	//! \param untrusted true for a client request: the item must be in the seller's inventory and
 	//! the seller within reach. false for server code and the listen host's own drag (the inventory
 	//! UI there already enforces both).
+	//! \param maxUnits sell at most this many units of the stack (a "Sell 1" row passes 1); 0 sells it all.
 	//! \return SOLD, or why the sale was refused; a refusal changes nothing.
-	static LF_ETraderSale Sell(IEntity seller, IEntity item, IEntity traderOwner, bool untrusted)
+	static LF_ETraderSale Sell(IEntity seller, IEntity item, IEntity traderOwner, bool untrusted, int maxUnits = 0)
 	{
 		if (!Replication.IsServer())
 		{
@@ -100,7 +105,10 @@ class LF_TraderSale
 		// output. Ported from rekterakathom/EveronLife (MIT), commit
 		// 482b74a5a7e39e999d129b0657253696b9b8be15. This trader pays cash rather
 		// than spawning a barter prefab; the count is the same rule.
-		int outputUnits = LF_ShopRules.StackTradeOutputCount(GetItemQuantity(item));
+		int stackUnits = LF_ShopRules.StackTradeOutputCount(GetItemQuantity(item));
+		int outputUnits = stackUnits;
+		if (maxUnits > 0)
+			outputUnits = LF_Utils.MinInt(stackUnits, maxUnits);
 
 		// Premium buyer (#3599): a trader that names a buyer id pays that buyer's row, up to its demand.
 		if (!trader.m_sBuyerId.IsEmpty())
@@ -108,7 +116,7 @@ class LF_TraderSale
 			LF_BuyerDemandRow demandRow = LF_BuyerDemandBook.FindRow(trader.m_sBuyerId, itemPrefab);
 			if (demandRow)
 			{
-				LF_ETraderSale toBuyer = SellToBuyer(seller, item, inventory, trader.m_sBuyerId, itemPrefab, outputUnits, untrusted);
+				LF_ETraderSale toBuyer = SellToBuyer(seller, item, inventory, trader.m_sBuyerId, itemPrefab, outputUnits, stackUnits, untrusted);
 				if (toBuyer == LF_ETraderSale.SOLD)
 					LF_OutpostStanding.OnSale(seller, traderOwner.GetOrigin());
 				return toBuyer;
@@ -158,7 +166,7 @@ class LF_TraderSale
 
 		bool removed = false;
 		if (!s_bFailRemoveForTest)
-			removed = TakeUnits(inventory, item, soldUnits, outputUnits);
+			removed = TakeUnits(inventory, item, soldUnits, stackUnits);
 
 		if (!removed)
 		{
@@ -172,8 +180,9 @@ class LF_TraderSale
 			LF_EventBus.Publish(LF_OnMarketPriceMoved.Create(itemPrefab, oldPrice, newPrice));
 
 		LF_Debug.Info("Trader", string.Format("sold %1 x%2 of %3 for %4 (untrusted=%5)", itemPrefab, soldUnits, outputUnits, totalValue, untrusted));
-		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, totalValue.ToString());
-		if (curved && newPrice != oldPrice)
+		s_iBatchPaid += totalValue;
+		Tell(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, totalValue.ToString());
+		if (curved && newPrice != oldPrice && !s_bQuiet)
 			LF_MarketSaleNotice.OnSale(seller, itemPrefab, oldPrice, newPrice);
 		LF_QuestArrivalSignals.ReportTraderSale(seller, itemPrefab);
 		LF_OutpostStanding.OnSale(seller, traderOwner.GetOrigin());
@@ -186,7 +195,7 @@ class LF_TraderSale
 	//! rest stays in the stack, and a buyer that has no demand left refuses with the full toast. Pay first,
 	//! then take the units; a failure puts the cash and the purse back.
 	//! \return SOLD (also for a part-stack sale), BUYER_FULL, or why the sale was refused.
-	protected static LF_ETraderSale SellToBuyer(IEntity seller, IEntity item, SCR_InventoryStorageManagerComponent inventory, string buyer, ResourceName itemPrefab, int outputUnits, bool untrusted)
+	protected static LF_ETraderSale SellToBuyer(IEntity seller, IEntity item, SCR_InventoryStorageManagerComponent inventory, string buyer, ResourceName itemPrefab, int outputUnits, int stackUnits, bool untrusted)
 	{
 		int nowUnix = System.GetUnixTime();
 		LF_BuyerPurse purseBefore = LF_BuyerDemandBook.Snapshot(buyer, itemPrefab);
@@ -227,7 +236,7 @@ class LF_TraderSale
 
 		bool removed = false;
 		if (!s_bFailRemoveForTest)
-			removed = TakeUnits(inventory, item, sale.m_iAccepted, outputUnits);
+			removed = TakeUnits(inventory, item, sale.m_iAccepted, stackUnits);
 
 		if (!removed)
 		{
@@ -237,7 +246,8 @@ class LF_TraderSale
 		}
 
 		LF_Debug.Info("Trader", string.Format("sold %1 x%2 of %3 to %4 for %5 (refused %6, untrusted=%7)", itemPrefab, sale.m_iAccepted, outputUnits, buyer, sale.m_iPayout, sale.m_iRefused, untrusted));
-		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, sale.m_iPayout.ToString());
+		s_iBatchPaid += sale.m_iPayout;
+		Tell(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, sale.m_iPayout.ToString());
 		LF_QuestArrivalSignals.ReportTraderSale(seller, itemPrefab);
 		// Only what the purse could not hold says "enough"; a part lot just stays with the seller.
 		if (sale.m_iRefused > sale.m_iUnderLot)
@@ -250,7 +260,7 @@ class LF_TraderSale
 	//! Toast to the seller: the stack is smaller than one lot of a good priced per lot (#3622).
 	protected static void NotifyBelowLot(IEntity seller, int lot)
 	{
-		LF_Utils.NotifyEntity(seller, "#LF-Market_BelowLot", "#LF-Trader_SaleRefused_Title", 3.0, lot.ToString());
+		Tell(seller, "#LF-Market_BelowLot", "#LF-Trader_SaleRefused_Title", 3.0, lot.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -276,12 +286,145 @@ class LF_TraderSale
 	{
 		if (secondsToNext < 0)
 		{
-			LF_Utils.NotifyEntity(seller, "#LF-Market_BuyerNever", "#LF-Market_BuyerFull_Title", 4.0);
+			Tell(seller, "#LF-Market_BuyerNever", "#LF-Market_BuyerFull_Title", 4.0);
 			return;
 		}
 
 		int minutes = LF_Utils.MaxInt((secondsToNext + 59) / 60, 1);
-		LF_Utils.NotifyEntity(seller, "#LF-Market_BuyerFull", "#LF-Market_BuyerFull_Title", 4.0, minutes.ToString());
+		Tell(seller, "#LF-Market_BuyerFull", "#LF-Market_BuyerFull_Title", 4.0, minutes.ToString());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A toast to the seller, unless SellAll is collecting the sales for one summary.
+	protected static void Tell(IEntity seller, string message, string title, float duration, string arg = "")
+	{
+		if (s_bQuiet)
+			return;
+
+		LF_Utils.NotifyEntity(seller, message, title, duration, arg);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: what the trader would pay for units of a prefab right now, booking nothing. The same
+	//! three prices Sell uses: a premium buyer's row, the market curve, else the trader's list value.
+	//! \return 0 when the trader does not buy it, or a part lot that would be refused.
+	static int QuoteUnits(LF_TraderManagerComponent trader, ResourceName prefab, int units, int nowUnix)
+	{
+		if (!trader || units <= 0)
+			return 0;
+
+		int unitValue = LF_TraderManagerComponent.GetUnitValue(trader.m_aTradableItems, prefab);
+		if (unitValue <= 0)
+			return 0;
+
+		if (!trader.m_sBuyerId.IsEmpty() && LF_BuyerDemandBook.FindRow(trader.m_sBuyerId, prefab))
+			return LF_BuyerDemandBook.QuoteAt(trader.m_sBuyerId, prefab, units, nowUnix);
+
+		if (LF_MarketBook.Curved(prefab))
+		{
+			int sellable = LF_MarketBook.SellableUnits(prefab, units);
+			if (sellable <= 0)
+				return 0;
+
+			return LF_MarketBook.QuoteAt(prefab, sellable, nowUnix);
+		}
+
+		return LF_ShopRules.StackTradeTotal(unitValue, units);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every item the seller carries, as a flat list (worn clothing and what sits inside it).
+	static array<IEntity> CarriedItems(IEntity seller)
+	{
+		array<IEntity> found = {};
+		InventoryStorageManagerComponent inventory = LF_InventoryUtils.GetResponsibleStorageManager(seller);
+		if (inventory)
+			inventory.GetItems(found);
+
+		// GetItems can list one entity twice (seen on the island: a juice stack counted double), which
+		// doubled the "Sell all" quote; each entity counts once.
+		array<IEntity> items = {};
+		foreach (IEntity item : found)
+		{
+			if (item && items.Find(item) < 0)
+				items.Insert(item);
+		}
+
+		return items;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the prices for the trader's sell rows (LF_TraderSellAction). One entry per good the seller
+	//! carries and the trader buys: the price of the one unit a "Sell 1" row takes, and of all of them.
+	//! \return false when the seller may not trade here (out of reach, down, not a trader).
+	static bool Quote(IEntity seller, IEntity traderOwner, notnull array<string> goods, notnull array<int> onePrices, notnull array<int> allPrices)
+	{
+		goods.Clear();
+		onePrices.Clear();
+		allPrices.Clear();
+		if (!seller || !traderOwner || !LF_Utils.IsAliveState(seller) || !InReach(seller.GetOrigin(), traderOwner.GetOrigin()))
+			return false;
+
+		LF_TraderManagerComponent trader = LF_Component<LF_TraderManagerComponent>.Find(traderOwner);
+		if (!trader)
+			return false;
+
+		array<ref LF_TraderSellGood> rows = LF_TraderSellRows.GroupEntities(trader.m_aTradableItems, CarriedItems(seller));
+		int nowUnix = System.GetUnixTime();
+		foreach (LF_TraderSellGood row : rows)
+		{
+			goods.Insert(row.m_sPrefab);
+			onePrices.Insert(QuoteUnits(trader, row.m_sPrefab, 1, nowUnix));
+			allPrices.Insert(QuoteUnits(trader, row.m_sPrefab, row.m_iUnits, nowUnix));
+		}
+
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: sells every item the seller carries that this trader buys, each through Sell (same checks,
+	//! same prices, same rollback), then one toast with the total instead of one per item.
+	//! \return The cash paid in all; 0 when nothing sold (the seller then gets the refusal toast).
+	static int SellAll(IEntity seller, IEntity traderOwner, bool untrusted)
+	{
+		if (!Replication.IsServer() || !seller || !traderOwner)
+			return 0;
+
+		LF_TraderManagerComponent trader = LF_Component<LF_TraderManagerComponent>.Find(traderOwner);
+		if (!trader)
+		{
+			Refuse(seller, LF_ETraderSale.NO_TRADER, "sell all: not a trader");
+			return 0;
+		}
+
+		array<IEntity> wanted = {};
+		foreach (IEntity item : CarriedItems(seller))
+		{
+			if (item && LF_TraderManagerComponent.GetUnitValue(trader.m_aTradableItems, LF_Utils.GetPrefabName(item)) > 0)
+				wanted.Insert(item);
+		}
+
+		s_bQuiet = true;
+		s_iBatchPaid = 0;
+		int sold = 0;
+		foreach (IEntity good : wanted)
+		{
+			if (Sell(seller, good, traderOwner, untrusted) == LF_ETraderSale.SOLD)
+				sold++;
+		}
+
+		s_bQuiet = false;
+		int paid = s_iBatchPaid;
+		s_iBatchPaid = 0;
+		if (sold == 0 || paid <= 0)
+		{
+			Refuse(seller, LF_ETraderSale.NOT_BOUGHT, string.Format("sell all: nothing sold (%1 offered)", wanted.Count()));
+			return 0;
+		}
+
+		LF_Debug.Info("Trader", string.Format("sell all: %1 of %2 items for %3", sold, wanted.Count(), paid));
+		LF_Utils.NotifyEntity(seller, "#EL-Item_Sold", "#EL-Trade_Successful", 3.0, paid.ToString());
+		return paid;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -296,7 +439,7 @@ class LF_TraderSale
 	{
 		LF_Debug.Warn("Trader", string.Format("sale refused (%1): %2", typename.EnumToString(LF_ETraderSale, why), detail));
 		if (seller)
-			LF_Utils.NotifyEntity(seller, "#LF-Trader_SaleRefused", "#LF-Trader_SaleRefused_Title", 3.0);
+			Tell(seller, "#LF-Trader_SaleRefused", "#LF-Trader_SaleRefused_Title", 3.0);
 		return why;
 	}
 
@@ -333,6 +476,7 @@ class LF_TraderSale_StaticResetHook : LF_StaticResetHook
 	override void Apply()
 	{
 		LF_TraderSale.FailRemoveForTest(false);
+		LF_TraderQuoteLive.ResetStatics();
 	}
 }
 
@@ -362,6 +506,100 @@ modded class SCR_PlayerController
 		}
 
 		Rpc(RpcAsk_LF_TraderSale, itemId, traderId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: asks the server for the prices of the trader's sell rows (LF_TraderQuoteLive keeps them).
+	void LF_RequestTraderQuote(IEntity traderOwner)
+	{
+		RplId traderId = LF_NetworkUtils.GetRplId(traderOwner);
+		if (!traderId.IsValid())
+		{
+			LF_Debug.Warn("Trader", "quote request dropped: the trader has no replication id");
+			return;
+		}
+
+		Rpc(RpcAsk_LF_TraderQuote, traderId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: a "Sell 1" row: one unit of the carried item (a stack shrinks by one).
+	void LF_RequestTraderSellOne(IEntity item, IEntity traderOwner)
+	{
+		RplId itemId = LF_NetworkUtils.GetRplId(item);
+		RplId traderId = LF_NetworkUtils.GetRplId(traderOwner);
+		if (!itemId.IsValid() || !traderId.IsValid())
+		{
+			LF_Debug.Warn("Trader", "sell-one request dropped: the item or the trader has no replication id");
+			return;
+		}
+
+		Rpc(RpcAsk_LF_TraderSellOne, itemId, traderId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one unit, priced and checked like any client sale.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_TraderSellOne(RplId itemId, RplId traderId)
+	{
+		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.PURCHASE, "trader sell one"))
+			return;
+
+		LF_TraderSale.Sell(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(itemId), LF_NetworkUtils.FindEntityByRplId(traderId), true, 1);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: the "Sell all" row. The server finds the goods itself; the request names only the trader.
+	void LF_RequestTraderSellAll(IEntity traderOwner)
+	{
+		RplId traderId = LF_NetworkUtils.GetRplId(traderOwner);
+		if (!traderId.IsValid())
+		{
+			LF_Debug.Warn("Trader", "sell-all request dropped: the trader has no replication id");
+			return;
+		}
+
+		Rpc(RpcAsk_LF_TraderSellAll, traderId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: answers a quote for this controller's own character only.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_TraderQuote(RplId traderId)
+	{
+		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.INVENTORY, "trader quote"))
+			return;
+
+		SendTraderQuote(traderId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: builds and sends the sell-row prices to this controller's owner.
+	protected void SendTraderQuote(RplId traderId)
+	{
+		array<string> goods = {};
+		array<int> onePrices = {};
+		array<int> allPrices = {};
+		LF_TraderSale.Quote(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(traderId), goods, onePrices, allPrices);
+		Rpc(RpcDo_LF_TraderQuote, traderId, goods, onePrices, allPrices);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
+	protected void RpcDo_LF_TraderQuote(RplId traderId, array<string> goods, array<int> onePrices, array<int> allPrices)
+	{
+		LF_TraderQuoteLive.OnReply(traderId, goods, onePrices, allPrices);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the "Sell all" row. The client asks for fresh prices once its inventory changes.
+	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
+	protected void RpcAsk_LF_TraderSellAll(RplId traderId)
+	{
+		if (!LF_RateLimit.Allow(GetPlayerId(), LF_ERequestKind.PURCHASE, "trader sell all"))
+			return;
+
+		LF_TraderSale.SellAll(GetControlledEntity(), LF_NetworkUtils.FindEntityByRplId(traderId), true);
 	}
 
 	//------------------------------------------------------------------------------------------------

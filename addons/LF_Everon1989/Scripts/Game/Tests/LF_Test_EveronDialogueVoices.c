@@ -102,7 +102,7 @@ class LF_Test_EveronDialogueVoices : LF_Test
 
 		// The roles the island's role NPCs carry (validate-dialogue-voices lists them: role_<id> rows).
 		LF_Roles.ResetStatics();
-		array<string> roles = { "fence", "mechanic", "medic", "police", "store_clerk", "teller", "townsfolk" };
+		array<string> roles = { "fence", "mechanic", "medic", "police", "store_clerk", "teller", "townsfolk", "trader" };
 		foreach (string roleId : roles)
 			CheckRole(ctx, roleId);
 

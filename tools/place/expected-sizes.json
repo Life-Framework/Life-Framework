@@ -250,8 +250,8 @@
    "id": "ore",
    "match": "(Copper|Iron|Gold)Ore",
    "min": 0.3,
-   "max": 1.6,
-   "why": "An ore outcrop chunk is 0.4-1.5 m"
+   "max": 2.4,
+   "why": "An ore outcrop chunk is 0.4-1.5 m; a mine sets its ore rocks up to 1.6x (2.3 m) so a new miner tells them from plain granite (first-2h review B8)"
   },
   {
    "id": "ingot",

@@ -272,8 +272,25 @@ function git(root, args) {
   return r.status === 0 ? r.stdout : null;
 }
 
+// The ref a branch is diffed against: the PR's own base in CI, its recorded base locally (a PR into release-0.2.1 must not count the
+// release branch's town-pass commits that main lacks as its own), else origin/main.
+// Locally the base is the branch's upstream, which `wt new --base <branch>` records (branch.<b>.merge);
+// a ws/ upstream (the branch's own push) or none means origin/main.
+export function baseRef(root) {
+  let base = process.env.GITHUB_BASE_REF;
+  if (!base) {
+    const branch = (git(root, ["rev-parse", "--abbrev-ref", "HEAD"]) || "").trim();
+    const merge = branch ? (git(root, ["config", "--get", `branch.${branch}.merge`]) || "").trim() : "";
+    base = merge.startsWith("refs/heads/") ? merge.slice("refs/heads/".length) : "";
+    if (base.startsWith("ws/")) base = "";
+  }
+  if (!base || base === "main" || !/^[A-Za-z0-9._/-]+$/.test(base)) return "origin/main";
+  if (process.env.CI) git(root, ["fetch", "--quiet", "origin", `+refs/heads/${base}:refs/remotes/origin/${base}`]);
+  return git(root, ["rev-parse", "--verify", "--quiet", `origin/${base}`]) ? `origin/${base}` : "origin/main";
+}
+
 export function changedFiles(root) {
-  const mb = git(root, ["merge-base", "origin/main", "HEAD"]);
+  const mb = git(root, ["merge-base", baseRef(root), "HEAD"]);
   if (!mb) return null;
   const diff = git(root, ["diff", "--name-only", mb.trim()]);
   const un = git(root, ["ls-files", "--others", "--exclude-standard"]);
@@ -296,7 +313,7 @@ if (isMain) {
   const baseline = existsSync(join(root, BASELINE)) ? JSON.parse(readFileSync(join(root, BASELINE), "utf8")).branches : [];
   const files = changedFiles(root);
   const guard = files ? checkGuard({ branch, files, baseline }) : { skipped: "no merge base with origin/main", town: [], errors: [] };
-  const mb = files ? (git(root, ["merge-base", "origin/main", "HEAD"]) || "").trim() : "";
+  const mb = files ? (git(root, ["merge-base", baseRef(root), "HEAD"]) || "").trim() : "";
   const freeze = mb && branch !== "main" && branch !== "HEAD"
     ? checkFreeze({
         files,

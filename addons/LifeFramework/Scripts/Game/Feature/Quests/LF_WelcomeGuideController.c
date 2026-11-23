@@ -64,7 +64,8 @@ modded class SCR_PlayerController
 	{
 		int playerId = GetPlayerId();
 		string characterId = LF_WelcomeGuide.CharacterIdOf(playerId);
-		if (!LF_WelcomeGuide.IsPending(characterId))
+		bool registered = LF_QuestManager.GetInstance() && LF_QuestManager.GetInstance().HasEarnedIdCard(LF_Utils.GetPlayerUID(playerId));
+		if (!LF_WelcomeGuide.ResolveAutoShow(characterId, registered))
 		{
 			LF_Debug.Info(LF_WelcomeGuide.FEATURE, "player " + playerId + " joined; the guide is not pending for " + characterId);
 			return;

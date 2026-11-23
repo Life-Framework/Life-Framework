@@ -41,27 +41,57 @@ GenericEntity Fit_coalmans_brow_mine_mine_lantern : "{53B76331BB3E6024}Prefabs/P
  angleY 90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_1 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 4328.2 35.142 10411.7
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 4327.6 35.136 10411.7
  angleY 110
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_2 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 4330.4 35.131 10412.6
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 4330.3 35.134 10412.6
  angleY -130
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_3 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 4332.6 35.02 10411.7
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 4333.3 34.988 10411.7
  angleY 165
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_4 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 4334.8 34.938 10412.6
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 4336 34.863 10412.6
  angleY -20
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_5 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 4337 34.731 10411.7
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 4338.7 34.561 10411.7
  angleY 40
 }
 GenericEntity Fit_coalmans_brow_mine_mine_ore_6 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
- coords 4339.2 34.516 10412.6
+ components {
+  LF_OreNodeComponent "{A8F5AC7296FF2BF9}" {
+   m_fBaseScale 1.6
+  }
+ }
+ coords 4341.4 34.163 10412.6
  angleY -70
 }
 GenericEntity Fit_coalmans_brow_mine_mine_furnace : "{CF27D083C01F1C36}Prefabs/Processor/LF_MineFurnace.et" {
@@ -80,6 +110,14 @@ GenericEntity Fit_coalmans_brow_mine_mine_desk : "{F2DA01057E99744B}Prefabs/Jobs
   }
  }
  coords 4340 34.313 10410
+ angleY -90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_supply_counter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
+ coords 4340 34.119 10407.4
+ angleY -90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_supply_till : "{E3FCCFB7C6EA8356}Prefabs/Props/Commercial/LF_MinersSupplyTill_Mine.et" {
+ coords 4340 35.158 10407.4
  angleY -90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
@@ -105,38 +143,38 @@ GenericEntity Fit_coalmans_brow_mine_mine_bus_stop : "{D3B1C7A4E2F05986}Prefabs/
  angleY -90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_rock_1 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
- coords 4327.8 0 10415.4
+ coords 4327.8 0 10416.9
  angleY 20
 }
 GenericEntity Fit_coalmans_brow_mine_mine_rock_2 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
- coords 4331.2 0 10415.8
+ coords 4331.2 0 10417.3
  angleY 150
 }
 GenericEntity Fit_coalmans_brow_mine_mine_rock_3 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
- coords 4334.4 0 10415.3
+ coords 4334.4 0 10416.8
  angleY 80
 }
 GenericEntity Fit_coalmans_brow_mine_mine_rock_4 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
- coords 4337.6 0 10415.7
+ coords 4337.6 0 10417.2
  angleY -160
 }
 GenericEntity Fit_coalmans_brow_mine_mine_rock_5 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
- coords 4340.6 0 10415.4
+ coords 4340.6 0 10416.9
  angleY -50
 }
 GenericEntity Fit_coalmans_brow_mine_mine_rock_6 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
- coords 4329.2 0 10418.2
+ coords 4329.2 0 10419.7
  angleY 40
 }
 GenericEntity Fit_coalmans_brow_mine_mine_rock_7 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
- coords 4332.9 0 10418.5
+ coords 4332.9 0 10420
  angleY -100
 }
 GenericEntity Fit_coalmans_brow_mine_mine_rock_8 : "{1F0AA3EA77753B5D}Prefabs/Rocks/Granite/Granite_Boulder_02.et" {
- coords 4336.4 0 10418.1
+ coords 4336.4 0 10419.6
  angleY 120
 }
 GenericEntity Fit_coalmans_brow_mine_mine_rock_9 : "{735E970ACBB1B473}Prefabs/Rocks/Granite/Granite_Boulder_01.et" {
- coords 4339.8 0 10418.4
+ coords 4339.8 0 10419.9
  angleY 10
 }

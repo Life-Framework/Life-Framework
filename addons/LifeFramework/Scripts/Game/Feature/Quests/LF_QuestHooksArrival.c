@@ -108,7 +108,11 @@ modded class LF_VehicleRetrieveAction
 
 		super.PerformAction(pOwnerEntity, pUserEntity);
 
-		if (!vehicleId.IsEmpty() && !LF_VehicleOwnership.IsStored(vehicleId) && LF_VehicleOwnership.GetVehicle(vehicleId))
-			LF_QuestArrivalSignals.Report(pUserEntity, LF_QuestArrivalSignals.GARAGE_RETRIEVED);
+		if (vehicleId.IsEmpty() || LF_VehicleOwnership.IsStored(vehicleId) || !LF_VehicleOwnership.GetVehicle(vehicleId))
+			return;
+
+		LF_QuestArrivalSignals.Report(pUserEntity, LF_QuestArrivalSignals.GARAGE_RETRIEVED);
+		// After the report: the car's mark replaces the next errand's for its 30 s, then the errand's comes back.
+		LF_VehicleHandover.Announce(pUserEntity, vehicleId);
 	}
 }

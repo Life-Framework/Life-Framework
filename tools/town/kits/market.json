@@ -10,7 +10,10 @@
     "also": [
       "addons/LF_Everon1989/Prefabs/Trader/LF_UniversalTrader_Everon1989.et",
       "addons/LifeFramework/Prefabs/Props/Stalls/LF_MarketStall.et",
-      "addons/LifeFramework/Prefabs/Props/Market/LF_PriceBoard.et"
+      "addons/LifeFramework/Prefabs/Props/Market/LF_PriceBoard.et",
+      "addons/LF_Everon1989/Worlds/Everon1989Town/Everon1989Town_Layers/Village_Dressing.layer",
+      "addons/LifeFramework/Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_1.et",
+      "addons/LF_Everon1989/Prefabs/Props/Market/LF_ProduceCrate_Apple.et"
     ]
   },
   "scope": "room",
@@ -25,17 +28,17 @@
     "footprint": {
       "source": "rows",
       "min": [
-        -15.6,
-        -3.2
+        -17.1,
+        -2.8
       ],
       "max": [
-        -14.2,
-        3.2
+        -13.5,
+        3.8
       ]
     },
     "front": null,
     "counters": [],
-    "adapt": "Street kit: the stall stands on the pavement along the street side of the building (b01 is the house the square's north side runs past, its street at building-local -x). The stall faces the street (yaw -90), the trader's prefab on its counter, the chalk price board 3 m along the pavement at the stall's end. Offsets are building-local, no world coordinates. Rows are rigid: shift, never stretch."
+    "adapt": "Street kit: the stall stands on the pavement along the street side of the building (b01 is the house the square's north side runs past, its street at building-local -x). The stall faces the street (yaw -90), the trader's prefab on its counter, the chalk price board 3 m along the pavement at the stall's end. Offsets are building-local, no world coordinates. Rows are rigid: shift, never stretch. Dressing (A20): the vendor stands behind the counter with a spare crate of cabbages at his side, a market umbrella shades the street end of the stall, crates of apples and plums sit on the counter ends, and the price board stands at the other end turned toward the customer."
   },
   "rows": [
     {
@@ -75,11 +78,88 @@
       "role": "board",
       "verb": "on floor",
       "offset": [
-        -14.9,
+        -15.4,
         0,
-        3
+        2.7
+      ],
+      "yaw": -120,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "market-awning",
+      "name": "Market_Awning",
+      "prefab": "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -15.9,
+        0,
+        -1.6
       ],
       "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "market-vendor",
+      "name": "Market_vendor",
+      "prefab": "{BA9D931A066C1997}Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_1.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        -13.85,
+        0,
+        -0.35
+      ],
+      "yaw": -90,
+      "class": "LF_NpcBaseEntity",
+      "wall": "free",
+      "floor": "f0",
+      "attach": "floor"
+    },
+    {
+      "id": "market-crate-apples",
+      "name": "Market_Crate_Apples",
+      "prefab": "{5D4B05BFB44A5F60}Prefabs/Props/Market/LF_ProduceCrate_Apple.et",
+      "role": "dressing",
+      "verb": "on market-stall",
+      "offset": [
+        -14.9,
+        0.946,
+        -0.85
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "market-crate-plums",
+      "name": "Market_Crate_Plums",
+      "prefab": "{6C8514716701DB45}Prefabs/Props/Market/LF_ProduceCrate_Plum.et",
+      "role": "dressing",
+      "verb": "on market-stall",
+      "offset": [
+        -14.9,
+        0.946,
+        0.85
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "market-crate-cabbages",
+      "name": "Market_Crate_Cabbages",
+      "prefab": "{37B197739B5B18A7}Prefabs/Props/Market/LF_ProduceCrate_Cabbage.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -13.95,
+        0,
+        1.15
+      ],
+      "yaw": -95,
       "wall": "free",
       "floor": "f0"
     }

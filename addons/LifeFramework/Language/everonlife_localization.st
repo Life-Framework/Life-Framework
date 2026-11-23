@@ -2212,8 +2212,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6E9D97E2C0EE30C6}" {
      Id "LF-Activity_Guide"
-     Target_en_us "Guide me"
-     Comment "Next tab button on a running activity: put the waypoint back on its current step."
+     Target_en_us "Resume"
+     Comment "Next tab button on a running activity: put the waypoint and the step note back on its current step."
     }
     CustomStringTableItem "{917EF52F3C24A83B}" {
      Id "LF-Activity_Guided"
@@ -2229,6 +2229,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Activity_Metres"
      Target_en_us "%1 m"
      Comment "Next tab distance under a kilometre. %1 is metres."
+    }
+    CustomStringTableItem "{2AAF598BE0DFACAE}" {
+     Id "LF-Activity_NeedPapers"
+     Target_en_us "First get your papers from the clerk: the waypoint shows the way. Work opens up after that."
+     Comment "Next tab line for a newcomer who has not been registered by the clerk yet: no run can start."
     }
     CustomStringTableItem "{3471AB6ECF42E732}" {
      Id "LF-Activity_None"
@@ -2250,6 +2255,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "pay varies"
      Comment "Next tab row status when the pay an hour is not known."
     }
+    CustomStringTableItem "{2A700326525E7C6D}" {
+     Id "LF-Activity_PickedPitch"
+     Target_en_us "%1: %2"
+     Comment "Next tab detail line: the picked run and its pitch. %1 = run name, %2 = pitch."
+    }
     CustomStringTableItem "{BC67C95738DDED4A}" {
      Id "LF-Activity_Refused"
      Target_en_us "That cannot start right now."
@@ -2257,7 +2267,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{AF249A8804DAF7AF}" {
      Id "LF-Activity_RowStarted"
-     Target_en_us "%1 · on"
+     Target_en_us "%1 · in progress"
      Comment "Next tab row status of a running activity. %1 is pay and distance."
     }
     CustomStringTableItem "{5B14E9465D155E95}" {
@@ -4047,52 +4057,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{0625D39270A113DC}" {
      Id "LF-Credits_160"
-     Target_en_us "Night-shift worker's spoken lines"
+     Target_en_us "The market trader's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6A3DD60E0145C890}" {
      Id "LF-Credits_161"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Nicolas Estrem - Mature\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09BDBEC3C3443456}" {
      Id "LF-Credits_162"
-     Target_en_us "Old man Gaspard Lenoir's six lines"
+     Target_en_us "Night-shift worker's spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0AB81D75DD0A7FCC}" {
      Id "LF-Credits_163"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C489B5F7558670CF}" {
      Id "LF-Credits_164"
-     Target_en_us "Go-between Hugo Valmy's five spoken lines"
+     Target_en_us "Old man Gaspard Lenoir's six lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2FA0C88C63E929C7}" {
      Id "LF-Credits_165"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D24D05840A3D9820}" {
      Id "LF-Credits_166"
-     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Go-between Hugo Valmy's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{473EC6052D855BB0}" {
      Id "LF-Credits_167"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4ED77DE7DEE2573C}" {
      Id "LF-Credits_168"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0774CCE82D802254}" {
      Id "LF-Credits_169"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD56C627EA2AD519}" {
@@ -4102,12 +4112,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6FDBFD431F29A691}" {
      Id "LF-Credits_170"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{24B6F60FC64E50FE}" {
      Id "LF-Credits_171"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B3125F791403A21}" {
@@ -4117,37 +4127,37 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6DEF465ED9803D1A}" {
      Id "LF-Credits_173"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{331934ECDCED4E47}" {
      Id "LF-Credits_174"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B9BF5DC2926087D1}" {
      Id "LF-Credits_175"
-     Target_en_us "Michael Hansen / Rhasspy"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CC2101DE9FC8F7B8}" {
      Id "LF-Credits_176"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C9C86A5A1ED40DCE}" {
      Id "LF-Credits_177"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
+     Target_en_us "Michael Hansen / Rhasspy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8A4563FF1C5E590F}" {
      Id "LF-Credits_178"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FC189AF5F7BE2CC}" {
      Id "LF-Credits_179"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3A24A564BBC40F8F}" {
@@ -4157,6 +4167,16 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDA999D625B19F3D}" {
      Id "LF-Credits_180"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A0A7AF015F2F74D4}" {
+     Id "LF-Credits_181"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{0D1A861CFC75EB60}" {
+     Id "LF-Credits_182"
      Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
@@ -5409,6 +5429,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Dialogue_RoleTownsfolk_Where"
      Target_en_us "The {town} board on the square shows everything. The post office hires couriers, and the bank is beside it."
      Comment "Dialogue caption, spoken by the role_townsfolk NPC (text only; tools/assets/dialogue/role_townsfolk). Changing it needs: tools\\cli asset dialogue role_townsfolk"
+    }
+    CustomStringTableItem "{0480851C614F500C}" {
+     Id "LF-Dialogue_RoleTrader_Bye"
+     Target_en_us "Come back when you have more."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
+    }
+    CustomStringTableItem "{044A09B67AE8403E}" {
+     Id "LF-Dialogue_RoleTrader_Greet"
+     Target_en_us "Fresh today. Have a look."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
+    }
+    CustomStringTableItem "{85382A3BA6F52559}" {
+     Id "LF-Dialogue_RoleTrader_Rumour"
+     Target_en_us "The price of apples went up this week. Somebody is hoarding them, I think."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
+    }
+    CustomStringTableItem "{B9F1EEBA03AEE5C2}" {
+     Id "LF-Dialogue_RoleTrader_SayBrowse"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{06AFB982644BACC5}" {
+     Id "LF-Dialogue_RoleTrader_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{CF810FCD0C599BCE}" {
+     Id "LF-Dialogue_RoleTrader_SayMore"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{35ECA074421F23AF}" {
+     Id "LF-Dialogue_RoleTrader_SayRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{348716388B238F15}" {
+     Id "LF-Dialogue_RoleTrader_SayWhat"
+     Target_en_us "What do you do here?"
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{161CFACD316FD080}" {
+     Id "LF-Dialogue_RoleTrader_SayWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{4FB85CE47EB1A778}" {
+     Id "LF-Dialogue_RoleTrader_What"
+     Target_en_us "I buy and sell at the stall. Bring me what you grow or make and I will give you a fair price."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
+    }
+    CustomStringTableItem "{A975EEDFA78026D4}" {
+     Id "LF-Dialogue_RoleTrader_Where"
+     Target_en_us "The farm is out past the greenhouse. For anything else, the {town} board on the square will tell you."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
     }
     CustomStringTableItem "{BC6FD589CFCCD2F2}" {
      Id "LF-Dialogue_Shopkeeper_Bye"
@@ -7173,6 +7248,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Food"
      Comment "HUD: label before the food number at the bottom of the screen."
     }
+    CustomStringTableItem "{6B84F81BC7DE9FB2}" {
+     Id "LF-Hud_Objective"
+     Target_en_us "Next: %1"
+     Comment "HUD objective line under the money: the step the waypoint follows. %1 = the step title."
+    }
     CustomStringTableItem "{3F5C4F04B95FDD98}" {
      Id "LF-Hud_WantedCaption"
      Target_en_us "Wanted"
@@ -8936,8 +9016,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{CA534EEB7372271B}" {
      Id "LF-LicenceDesk_NoCash"
-     Target_en_us "Refused: the fee is %1 in cash."
-     Comment "Licence desk refusal: not enough carried cash. %1 = the fee, formatted."
+     Target_en_us "Refused: the fee is %1, and your bank account and pockets hold less."
+     Comment "Licence desk refusal: the bank account plus carried cash is short of the fee. %1 = the fee, formatted."
     }
     CustomStringTableItem "{4CCA58108F1D9635}" {
      Id "LF-LicenceDesk_NotAllowed"
@@ -10266,6 +10346,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Menu_Close"
      Target_en_us "Close"
      Comment "Generic button that closes a menu"
+    }
+    CustomStringTableItem "{F0FD6E2EE0E11D73}" {
+     Id "LF-Mining_NotOre"
+     Target_en_us "That is plain rock. Ore rocks are streaked rust red: swing at those."
+     Comment "Toast (first-2h review B8): a pickaxe hit a plain rock, not an ore rock."
     }
     CustomStringTableItem "{93B24FC92EC107AF}" {
      Id "LF-Mission_PlaytestTown_Details"
@@ -12382,6 +12467,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Licenses and permits: none held"
      Comment "Personal file line when no licence is held."
     }
+    CustomStringTableItem "{CC5DA475963D07AD}" {
+     Id "LF-PlayerMenu_LicencesNoneShort"
+     Target_en_us "None"
+     Comment "Personal file licences row value when the character holds none."
+    }
     CustomStringTableItem "{48A10D9CC6860A9F}" {
      Id "LF-PlayerMenu_NoName"
      Target_en_us "Name not on file"
@@ -13088,9 +13178,14 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Missing the input materials"
      Comment "Processing refused: the player does not carry the input items"
     }
+    CustomStringTableItem "{0A0EEB9828847F4A}" {
+     Id "LF-Process_RunningLeft"
+     Target_en_us "%1: %2 left"
+     Comment "Action row on a timed machine while it runs (first-2h review B10). %1 = the machine action (Smelt iron ore), %2 = time left as m:ss."
+    }
     CustomStringTableItem "{9D4E21B7C0A35F86}" {
      Id "LF-Process_Started"
-     Target_en_us "Running. The parts come out here in %1 seconds."
+     Target_en_us "Running. The parts come out here in %1 seconds; the time left shows on the machine, so get on with something else meanwhile."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
     }
     CustomStringTableItem "{11D3E9515907FBC7}" {
@@ -16293,6 +16388,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1, right here"
      Comment "Where a town board card's place is when it stands beside the board. %1 place name."
     }
+    CustomStringTableItem "{527C8125A5DCF53B}" {
+     Id "LF-Trader_NotBuyingNow"
+     Target_en_us "Not buying a single one right now"
+     Comment "Why a Sell 1 row is greyed: the buyer is full, or sells only by the lot (Sell all still works)."
+    }
+    CustomStringTableItem "{308E50CB824EB64C}" {
+     Id "LF-Trader_NothingToSell"
+     Target_en_us "You carry nothing this buyer takes"
+     Comment "Why the sell-all row is greyed: no carried good is on this buyer's list."
+    }
     CustomStringTableItem "{3C7E19B2D54A806F}" {
      Id "LF-Trader_SaleRefused"
      Target_en_us "The trader won't take that."
@@ -16302,6 +16407,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Trader_SaleRefused_Title"
      Target_en_us "No sale"
      Comment "Title of the refused-sale toast."
+    }
+    CustomStringTableItem "{683D10EE9EDCCDF2}" {
+     Id "LF-Trader_SellAll"
+     Target_en_us "Sell all goods (%1): {currency:sym}%2"
+     Comment "Trader row that sells everything the buyer takes. %1 = units, %2 = the total price."
+    }
+    CustomStringTableItem "{73CDC5E30D79E666}" {
+     Id "LF-Trader_SellAllAsk"
+     Target_en_us "Sell all goods (%1)"
+     Comment "Sell-all row before the prices arrived. %1 = units."
+    }
+    CustomStringTableItem "{544BAF6FFDCEE018}" {
+     Id "LF-Trader_SellNothing"
+     Target_en_us "Sell goods"
+     Comment "Sell-all row when the player carries nothing this buyer takes (greyed)."
+    }
+    CustomStringTableItem "{114E334DB022DD7C}" {
+     Id "LF-Trader_SellOne"
+     Target_en_us "Sell 1 %1: {currency:sym}%2"
+     Comment "Trader sell row for one item. %1 = the good, %2 = the price the buyer pays now."
+    }
+    CustomStringTableItem "{C5D743750A8BBD92}" {
+     Id "LF-Trader_SellOneAsk"
+     Target_en_us "Sell 1 %1"
+     Comment "Trader sell row for one item before the price arrived. %1 = the good."
+    }
+    CustomStringTableItem "{0C4F96543148B6FF}" {
+     Id "LF-Trader_SellRowName"
+     Target_en_us "Sell"
+     Comment "Fallback name of a trader sell row; the row shows its own good and price."
     }
     CustomStringTableItem "{B976D15E0E9B0B4B}" {
      Id "LF-Training_Course_detective_course"
@@ -16527,6 +16662,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Vehicle_NeedsRallyDlc"
      Target_en_us "This tractor needs the Rally DLC."
      Comment "Vehicle purchase refused: the lot does not sell the Rally tractor to a player without the DLC (#3304)"
+    }
+    CustomStringTableItem "{A13F2CC58EFA7C05}" {
+     Id "LF-Vehicle_OutOnLot"
+     Target_en_us "Your car, plate %1, is out on the lot. Its hazard lights are blinking and a marker sits over it for 30 seconds."
+     Comment "Toast when the garage hands a car out. %1 = the plate."
+    }
+    CustomStringTableItem "{D453CA5B325AB1E5}" {
+     Id "LF-Vehicle_OutOnLotNoPlate"
+     Target_en_us "Your car is out on the lot. Its hazard lights are blinking and a marker sits over it for 30 seconds."
+     Comment "Toast when the garage hands out a car that has no plate."
+    }
+    CustomStringTableItem "{FB09B2B3594C991F}" {
+     Id "LF-Vehicle_OutOnLotTitle"
+     Target_en_us "Your car"
+     Comment "Toast title when the garage hands a car out to its owner."
+    }
+    CustomStringTableItem "{5527F4187C4874BD}" {
+     Id "LF-Vehicle_YourCarMark"
+     Target_en_us "Your car"
+     Comment "Waypoint label over the car the garage just handed out."
     }
     CustomStringTableItem "{5E0B7D31C9A24F86}" {
      Id "LF-Wanted_BuildHidden"

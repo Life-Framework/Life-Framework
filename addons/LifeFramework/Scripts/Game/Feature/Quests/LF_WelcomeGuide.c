@@ -88,6 +88,24 @@ class LF_WelcomeGuide
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server, at a join: whether the guide opens by itself for this character. A character who has
+	//! their papers (the clerk handed over the ID card) is past what page one tells a newcomer, so a
+	//! mark still pending from their first spawn is dropped instead (review B6: a rejoin reopened "you
+	//! carry no papers"). F3 still opens it.
+	static bool ResolveAutoShow(string characterId, bool registered)
+	{
+		if (!IsPending(characterId))
+			return false;
+
+		if (!registered)
+			return true;
+
+		LF_Debug.Info(FEATURE, "guide not reopened for " + characterId + ": the character has their papers");
+		Dismiss(characterId);
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: "Don't show again". \return True when a pending mark was removed.
 	static bool Dismiss(string characterId)
 	{

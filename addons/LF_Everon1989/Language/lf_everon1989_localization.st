@@ -216,7 +216,7 @@ StringTable {
     }
     CustomStringTableItem "{7AADE23D2DEEDDF3}" {
      Id "LF-Activity_Mining_Pickaxe_Note"
-     Target_en_us "Buy a pickaxe ($150) at the miners' supply till in the hardware store."
+     Target_en_us "Buy a pickaxe ($150) at the miner's supply counter beside the mine desk."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{11C01B3BCF77FA16}" {
@@ -1574,6 +1574,31 @@ StringTable {
      Target_en_us "The town board on the square shows everything. The post office hires couriers, and the bank is beside it."
      Comment "Pack patch of the role_townsfolk dialogue's line where (voiced; tools/assets/dialogue/role_townsfolk_everon). Changing it needs: tools\\cli asset dialogue role_townsfolk_everon"
     }
+    CustomStringTableItem "{8432BA1ABC5AC426}" {
+     Id "LF-Dialogue_RoleTraderEveron_Bye"
+     Target_en_us "Come back when you have more."
+     Comment "Pack patch of the role_trader dialogue's line bye (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
+    CustomStringTableItem "{43E8EB3C7D06C10F}" {
+     Id "LF-Dialogue_RoleTraderEveron_Greet"
+     Target_en_us "Fresh today. Have a look."
+     Comment "Pack patch of the role_trader dialogue's line greet (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
+    CustomStringTableItem "{8577C74CD73BC044}" {
+     Id "LF-Dialogue_RoleTraderEveron_Rumour"
+     Target_en_us "The price of apples went up this week. Somebody is hoarding them, I think."
+     Comment "Pack patch of the role_trader dialogue's line rumour (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
+    CustomStringTableItem "{3FE540CB43FD7BCB}" {
+     Id "LF-Dialogue_RoleTraderEveron_What"
+     Target_en_us "I buy at this stall. Bring me apple juice, fruit, cabbage or honey and I pay cash, the price on the board."
+     Comment "Pack patch of the role_trader dialogue's line what (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
+    CustomStringTableItem "{0393B47B3185EE62}" {
+     Id "LF-Dialogue_RoleTraderEveron_Where"
+     Target_en_us "The orchard is a short drive out of Saint-Philippe. Pick the apples, press them into juice. Juice pays best here."
+     Comment "Pack patch of the role_trader dialogue's line where (voiced; tools/assets/dialogue/role_trader_everon). Changing it needs: tools\\cli asset dialogue role_trader_everon"
+    }
     CustomStringTableItem "{3441F00000000001}" {
      Id "LF-Dialogue_Rumour_SayAsk"
      Target_en_us "Any talk in the cafe lately?"
@@ -1693,6 +1718,26 @@ StringTable {
      Id "LF-Everon-Lock_ToLetSoon"
      Target_en_us "For rent soon"
      Comment "Door prompt on a dock workshop kept for the fishing chapter (#3204)."
+    }
+    CustomStringTableItem "{2AEDD5A943FA58E7}" {
+     Id "LF-Everon_CanvasBackpackBlack_Description"
+     Target_en_us "A plain black canvas rucksack. Holds your first goods."
+     Comment "Description of the welcome-pack backpack."
+    }
+    CustomStringTableItem "{C4C007D76A4C3716}" {
+     Id "LF-Everon_CanvasBackpackBlack_Name"
+     Target_en_us "Canvas Backpack"
+     Comment "Display name of the black canvas backpack in the welcome pack (replaces the vanilla Russian name)."
+    }
+    CustomStringTableItem "{69054CE8BFE556AA}" {
+     Id "LF-Everon_CanvasBackpack_Description"
+     Target_en_us "A simple canvas rucksack with a drawstring top."
+     Comment "Description of the olive canvas backpack."
+    }
+    CustomStringTableItem "{F95638E60D3FE1B4}" {
+     Id "LF-Everon_CanvasBackpack_Name"
+     Target_en_us "Canvas Backpack"
+     Comment "Display name of the olive canvas backpack sold at the clothing store (replaces the vanilla Russian name)."
     }
     CustomStringTableItem "{10AEFC81EF1DE6FB}" {
      Id "LF-Everon_Tier_Police_0"
@@ -2666,7 +2711,7 @@ StringTable {
     }
     CustomStringTableItem "{57482B3DAC09588C}" {
      Id "LF-MapRunStop_Pickaxe"
-     Target_en_us "hardware store (pickaxe)"
+     Target_en_us "mine supply counter (pickaxe)"
      Comment "Job run stop."
     }
     CustomStringTableItem "{F880F64007B2CF6F}" {
@@ -3058,6 +3103,11 @@ StringTable {
      Id "LF-Quest_EveronMarket_TurnIn"
      Target_en_us "You are on your way. For steady pay, take a job: the town board lists who is hiring, and the clerk has more errands for you. Your errands and jobs are in your player menu."
      Comment "Everon arrival closing line, shown when the juice is sold (arrival_done turn-in)."
+    }
+    CustomStringTableItem "{F8112ED9A5186CE2}" {
+     Id "LF-Quest_EveronWelcomePack_Received"
+     Target_en_us "Welcome pack: your ID card, %1 in cash, bread, a sausage and a bottle of water. Your car waits in the garage at the car lot."
+     Comment "Everon arrival: toast after the clerk step listing what the welcome pack held. %1 = the cash, formatted."
     }
     CustomStringTableItem "{576D65C266994CCB}" {
      Id "LF-Quest_EveronWelcomePack_TurnIn"
@@ -3849,6 +3899,31 @@ StringTable {
      Target_en_us "The village butcher: dried meat, canned meat and cured cuts."
      Comment "What line of the butcher sign (#3228)."
     }
+    CustomStringTableItem "{7C4173595794A1E9}" {
+     Id "LF-Sign_ClothingStore_How"
+     Target_en_us "*Ask the clerk* at the counter, or look at a mannequin in the window and the shop floor"
+     Comment "Sign card for the clothing store, How section. Capitalized phrases are the exact action names the player sees."
+    }
+    CustomStringTableItem "{5615264136156D30}" {
+     Id "LF-Sign_ClothingStore_Needs"
+     Target_en_us "Money for the counter."
+     Comment "Sign card for the clothing store, You need section."
+    }
+    CustomStringTableItem "{93A6EC78CB83FB66}" {
+     Id "LF-Sign_ClothingStore_Next"
+     Target_en_us "Wear what you buy: open your inventory and pick the item."
+     Comment "Sign card for the clothing store, Next section."
+    }
+    CustomStringTableItem "{52F906C945FC7916}" {
+     Id "LF-Sign_ClothingStore_Title"
+     Target_en_us "Clothing"
+     Comment "Title of the fascia sign over the clothing store door on Saint-Philippe (Everon 1989 pack, first-2h review C17). Printed on the sign in capitals and shown in the prompt as Read: Clothing."
+    }
+    CustomStringTableItem "{CEB8C8C3972E0402}" {
+     Id "LF-Sign_ClothingStore_What"
+     Target_en_us "The village clothing store: jackets, trousers, caps and boots, and a backpack."
+     Comment "Sign card for the clothing store, What section."
+    }
     CustomStringTableItem "{54968BCB66E488A0}" {
      Id "LF-Sign_CoalmansBrowBuyer_Iron"
      Target_en_us "Iron bar"
@@ -3866,7 +3941,7 @@ StringTable {
     }
     CustomStringTableItem "{1DF3BFB27FDA81CC}" {
      Id "LF-Sign_CoalmansBrowMine_How"
-     Target_en_us "Take the miner job at the desk, buy a pickaxe at the miners' supply till in the hardware store, swing at the rust-veined rocks and pick up the ore. Three pieces make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
+     Target_en_us "Take the miner job at the desk, buy a pickaxe at the supply counter beside it, swing at the big rust-red rocks (not the grey granite) and pick up the ore. Three pieces make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Coalman's Brow mine plate, How section."
     }
     CustomStringTableItem "{B30D7B3198E25E1E}" {
@@ -5306,7 +5381,7 @@ StringTable {
     }
     CustomStringTableItem "{4DC16C48957F13C8}" {
      Id "LF-Sign_Traders_How"
-     Target_en_us "Sell Items at a stall, then move your goods into its storage. Each stall buys its own goods."
+     Target_en_us "Look at the stall and scroll: each good you carry has its own Sell row with today's price, or pick Sell all goods. Each stall buys its own goods."
      Comment "Sign card for the market stalls that buy produce, How section. Capitalized phrases are the exact action names the player sees."
     }
     CustomStringTableItem "{09F089CE1EB6773B}" {
@@ -5381,7 +5456,7 @@ StringTable {
     }
     CustomStringTableItem "{7C1E5A2D9B3F4A03}" {
      Id "LF-Sign_Wholesale_How"
-     Target_en_us "*Sell Items* at the counter: drop the goods into the crate and the clerk pays cash|Read the chalk board for today's prices"
+     Target_en_us "Look at the counter and scroll: *Sell 1* of a good or *Sell all goods*, priced on the row; the clerk pays cash|Read the chalk board for today's prices"
      Comment "Sign card for the wholesale warehouse, How section. Capitalized phrases are the action names the player sees."
     }
     CustomStringTableItem "{7C1E5A2D9B3F4A04}" {

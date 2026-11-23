@@ -2,7 +2,8 @@
 // Client-only, one at a time.
 //
 // Pick a line (Order), set the quantity on the slip (- / +, or MenuLeft/MenuRight along the
-// row), then Pay with carried cash or Sell that many back. The buy and sell go through the
+// row), then Pay with carried cash or Sell that many back (the Sell key is there only when the
+// counter pays for at least one of its lines, LF_ShopPriceList.BuysBack). The buy and sell go through the
 // existing LF_CharacterShopComponent RPCs; the reply (reason, money, carried cash) is printed on
 // the slip. Typing in "Look for" narrows the list. It closes on Leave, MenuBack, death, losing
 // the character, or walking CLOSE_DISTANCE from the counter.
@@ -45,6 +46,8 @@ class LF_ShopPriceList
 	//! The selected licence row's licence; empty when an item line (or nothing) is selected.
 	protected string m_sSelectedLicence;
 	protected bool m_bWaiting;
+	//! The till has a Sell key: some line of this counter has a sell price (a buy-only till shows Pay alone).
+	protected bool m_bSells;
 	protected string m_sKeySound;
 	protected string m_sTillSound;
 	protected string m_sRefuseSound;
@@ -177,8 +180,25 @@ class LF_ShopPriceList
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pure: whether a counter with these lines buys anything back, so its till needs a Sell key.
+	static bool BuysBack(array<ref LF_ShopCatalogItem> items)
+	{
+		if (!items)
+			return false;
+
+		foreach (LF_ShopCatalogItem item : items)
+		{
+			if (item && item.m_iSellPrice > 0)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected bool Build()
 	{
+		m_bSells = BuysBack(m_Shop.GetShopItems());
 		array<ref LF_UIPart> parts = {};
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.TITLE, "Title", WidgetManager.Translate(m_Shop.GetShopName())));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Cash", CashText(LF_MoneyUtils.GetCash(LF_Utils.GetLocalCharacter()))));
@@ -190,7 +210,10 @@ class LF_ShopPriceList
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Order", "#LF-Shop_SlipEmpty"));
 		parts.Insert(LF_ShopItemPreview.Part());
 		parts.Insert(LF_ATMTerminal.Keys("Quantity", LESS + "," + MORE, "#LF-Shop_Less,#LF-Shop_More"));
-		parts.Insert(LF_ATMTerminal.Keys("Till", PAY + "," + SELL, "#LF-Shop_Pay,#LF-Shop_SellBack"));
+		if (m_bSells)
+			parts.Insert(LF_ATMTerminal.Keys("Till", PAY + "," + SELL, "#LF-Shop_Pay,#LF-Shop_SellBack"));
+		else
+			parts.Insert(LF_ATMTerminal.Keys("Till", PAY, "#LF-Shop_Pay"));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Receipt", ""));
 		parts.Insert(LF_UIPart.Create(LF_EUIPartKind.CLOSE, "CloseButton", "#LF-Shop_Leave"));
 
@@ -401,7 +424,7 @@ class LF_ShopPriceList
 		{
 			m_Screen.SetLine("Order", WidgetManager.Translate("#LF-Shop_SlipLine", 1, m_sSelectedName));
 			m_Screen.SetButtonText(PAY, WidgetManager.Translate("#LF-Shop_PayTotal", LF_MoneyFormat.FormatMoney(m_iSelectedPrice)));
-			m_Screen.SetButtonText(SELL, "#LF-Shop_SellBack");
+			SetSellText("#LF-Shop_SellBack");
 			return;
 		}
 
@@ -417,13 +440,25 @@ class LF_ShopPriceList
 		{
 			int paid = LF_ShopRules.StackTradeTotal(m_iSelectedSell, m_iQuantity);
 			m_Screen.SetButtonText(PAY, "#LF-Shop_Pay");
-			m_Screen.SetButtonText(SELL, WidgetManager.Translate("#LF-Shop_SellTotal", LF_MoneyFormat.FormatMoney(paid)));
+			SetSellText(WidgetManager.Translate("#LF-Shop_SellTotal", LF_MoneyFormat.FormatMoney(paid)));
 			return;
 		}
 
 		int total = LF_ShopRules.StackTradeTotal(m_iSelectedPrice, m_iQuantity);
 		m_Screen.SetButtonText(PAY, WidgetManager.Translate("#LF-Shop_PayTotal", LF_MoneyFormat.FormatMoney(total)));
-		m_Screen.SetButtonText(SELL, "#LF-Shop_SellBack");
+		// A line the counter also buys back says what it pays ("Sell for $75"), not a bare "Sell these".
+		if (m_iSelectedSell > 0)
+			SetSellText(WidgetManager.Translate("#LF-Shop_SellTotal", LF_MoneyFormat.FormatMoney(LF_ShopRules.StackTradeTotal(m_iSelectedSell, m_iQuantity))));
+		else
+			SetSellText("#LF-Shop_SellBack");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Relabels the Sell key; a buy-only till has none.
+	protected void SetSellText(string text)
+	{
+		if (m_bSells)
+			m_Screen.SetButtonText(SELL, text);
 	}
 
 	//------------------------------------------------------------------------------------------------
