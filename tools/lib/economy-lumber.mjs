@@ -1,6 +1,6 @@
 // The lumber loops of `tools\cli economy` (#3270, LB12 of #3169): what a lumberjack earns an hour on the three
-// loops docs/roadmap/lumber.md "Money ladder" names, from the merged configs, and whether duty pay (police and
-// medic rank 0) still sits 1.5 to 2.5 times above it (the maintainer's pay band, 2026-11-18).
+// loops docs/roadmap/lumber.md "Money ladder" names, from the merged configs, and whether each loop pays at
+// least the lowest duty shift (police and medic rank 0, the Cadet's): the 0.3.0 pay ladder, 2026-11-22 (LADDER below).
 //
 // Read from config (core, then the pack overlays through tools/pack/layers.mjs): the tree yield rows
 // (Configs/Lumber/LF_TreeSpecies.conf), the sawmill outputs per log (Configs/Resources/ResourceChains.conf), the
@@ -19,8 +19,67 @@ import { join } from "node:path";
 import { parseConf, guidOf } from "../economy/profit-loops.mjs";
 import { SECTIONS, mergeList, sectionLayers } from "../pack/layers.mjs";
 
-/** The duty-to-civilian band (the maintainer's rule): duty pay is 1.5 to 2.5 times what a loop pays. */
-export const DUTY_BAND = { min: 1.5, max: 2.5 };
+/**
+ * The 0.3.0 pay ladder (the maintainer's rule, 2026-11-22; docs/roadmap/next-release-0.3.0.md "The economy table"):
+ * police duty is the lowest steady pay, medics sit on the mid-tier rung, civilian trades climb above duty with skill
+ * and vehicle tier. `entry` and `mid` are the civilian rungs in $ an hour. A police shift stays at or under the entry
+ * rung's top and, with its bonus cap, at or under `policeCeiling` (the plan's $520 mid-tier floor); a medic shift sits on the mid-tier rung and, with
+ * its bonus cap, at or under `medicCeiling`. A civilian loop pays at least the lowest duty shift (the Cadet's).
+ * `bonusCaps` are the per-rank outcome bonus caps per shift hour (the rows PO-D4 reads; no config holds them yet).
+ */
+export const LADDER = {
+  entry: { min: 400, max: 480 },
+  mid: { min: 480, max: 600 },
+  policeCeiling: 520,
+  medicCeiling: 600,
+  bonusCaps: {
+    police: { patrol: 100, senior: 100, senior_patrol: 100, sergeant: 95, lieutenant: 70 },
+    medic: { orderly: 40, emt: 50, paramedic: 50, doctor: 40 },
+  },
+};
+
+/** A civilian loop's steady $/h against the duty shifts: ratio per duty job, and flagged when it pays under the lowest. */
+export function rungCheck(perHour, duty) {
+  const ratios = Object.entries(duty).map(([job, pay]) => ({ job, pay, ratio: perHour > 0 ? Math.round((pay / perHour) * 100) / 100 : Infinity }));
+  const floor = ratios.length ? Math.min(...ratios.map((r) => r.pay)) : 0;
+  return { ratios, floor, flagged: !(perHour > 0) || perHour < floor };
+}
+
+/** What a civilian loop's rung check prints: "on the ladder" or "BELOW THE RUNG". */
+export function rungText(x) {
+  return x.flagged ? `BELOW THE RUNG (under the $${x.floor}/h Cadet shift)` : `on the ladder (at or above the $${x.floor}/h Cadet shift)`;
+}
+
+/**
+ * Every duty rank against its rung: duty is the report's { police: { ranks: [{ id, perHour }] }, medic: ... }.
+ * Returns { rows: [{ job, id, shift, cap, most, typical, problems }], flags } (one "duty-rung" flag per rank off it).
+ */
+export function dutyLadder(duty) {
+  const rows = [];
+  for (const job of ["police", "medic"]) {
+    for (const r of duty?.[job]?.ranks ?? []) {
+      const cap = LADDER.bonusCaps[job]?.[r.id] ?? 0;
+      const shift = r.perHour, most = shift + cap, problems = [];
+      if (job === "police") {
+        if (shift > LADDER.entry.max) problems.push(`$${shift}/h shift is above the entry rung ($${LADDER.entry.max})`);
+        if (most > LADDER.policeCeiling) problems.push(`$${most}/h with its bonus cap is over the $${LADDER.policeCeiling} mid-tier floor`);
+      } else {
+        if (shift < LADDER.mid.min || shift > LADDER.mid.max) problems.push(`$${shift}/h shift is off the mid-tier rung ($${LADDER.mid.min} to $${LADDER.mid.max})`);
+        if (most > LADDER.medicCeiling) problems.push(`$${most}/h with its bonus cap is over $${LADDER.medicCeiling}`);
+      }
+      rows.push({ job, id: r.id, shift, cap, most, typical: Math.round(shift + cap / 2), problems });
+    }
+  }
+  const flags = rows.filter((x) => x.problems.length).map((x) => ({ kind: "duty-rung", id: `duty:${x.job}:${x.id}`, text: `${x.job} ${x.id}: ${x.problems.join("; ")}` }));
+  return { rows, flags };
+}
+
+/** The lines `tools\cli economy` prints for the duty rungs. */
+export function renderDutyLadder(d) {
+  const L = [`duty rungs (police at or under the $${LADDER.entry.max} entry rung and $${LADDER.policeCeiling} with the bonus; medic on the $${LADDER.mid.min} to $${LADDER.mid.max} mid-tier rung and at most $${LADDER.medicCeiling} with the bonus; typical = half the bonus cap):`];
+  for (const x of d.rows) L.push(`  ${x.job.toUpperCase().padEnd(6)} ${x.id} $${x.shift}/h shift, bonus cap $${x.cap}, most $${x.most}/h, typical $${x.typical}/h${x.problems.length ? `  OFF THE RUNG: ${x.problems.join("; ")}` : ""}`);
+  return L;
+}
 
 /** Item prefab GUIDs (the key every market list uses). */
 export const GOODS = {
@@ -56,12 +115,6 @@ export const FALLBACK_CURVES = {
 };
 
 const num = (v, d = 0) => (typeof v === "number" ? v : d);
-
-/** Duty pay against a loop's steady $/h: ratio per duty job and whether any is outside the band. */
-export function bandCheck(perHour, duty) {
-  const ratios = Object.entries(duty).map(([job, pay]) => ({ job, pay, ratio: perHour > 0 ? Math.round((pay / perHour) * 100) / 100 : Infinity }));
-  return { ratios, flagged: ratios.some((r) => !(r.ratio >= DUTY_BAND.min && r.ratio <= DUTY_BAND.max)) };
-}
 
 /** What one hour of selling `units` earns at a wholesale curve now at `price`: { cash, price (after) }. Linear drop. */
 export function sellWholesale(curve, price, units) {
@@ -117,7 +170,7 @@ export function computeLoops(inp) {
       first += s.first; steady += s.steady;
       detail.push({ good: k, unitsPerHour: Math.round(units * 10) / 10, premiumSteady: Math.round(s.premiumSteady * 10) / 10, premiumFirst: Math.round(s.premiumFirst * 10) / 10 });
     }
-    loops.push({ id, label, logsPerHour: Math.round(logsPerHour * 10) / 10, first: Math.round(first), steady: Math.round(steady), detail, note, ...bandCheck(steady, inp.duty) });
+    loops.push({ id, label, logsPerHour: Math.round(logsPerHour * 10) / 10, first: Math.round(first), steady: Math.round(steady), detail, note, ...rungCheck(steady, inp.duty) });
   };
   const soft = inp.yields.softwood, hard = inp.yields.hardwood;
   const chopSoft = soft.chopSecondsPerLog, chopHard = hard.chopSecondsPerLog;
@@ -211,17 +264,17 @@ export function renderLumber(l) {
   L.push(`lumber loops (a size-${a.treeSize} tree; hand haul ${a.haulMetres} m at ${a.walkMps} m/s loaded, ${a.runMps} m/s back; steady = purse refill only, first = full purse, wholesale ${a.carryCurve ? "carries over between hours" : "back at base each hour"}):`);
   for (const x of l.loops) {
     const duty = x.ratios.map((r) => `${r.job} ${money(r.pay)} = ${r.ratio === Infinity ? "inf" : r.ratio.toFixed(1)}x`).join(", ");
-    L.push(`  LOOP ${x.label}: ~${x.logsPerHour} logs/h, steady ${money(x.steady)}/h, first hour ${money(x.first)}/h; duty ${duty} ${x.flagged ? "OUT OF BAND" : "in band"} (${DUTY_BAND.min} to ${DUTY_BAND.max})`);
+    L.push(`  LOOP ${x.label}: ~${x.logsPerHour} logs/h, steady ${money(x.steady)}/h, first hour ${money(x.first)}/h; duty ${duty} ${rungText(x)}`);
     L.push(`    sells ${x.detail.map((d) => `${d.unitsPerHour} ${d.good}/h (${d.premiumSteady} premium steady)`).join(", ")}${x.note ? `; ${x.note}` : ""}`);
   }
   L.push(`  sources: ${l.sources.join("; ")}`);
   return L;
 }
 
-/** FLAG rows for the loops outside the band, in the report's flag shape. */
+/** FLAG rows for the loops below the rung, in the report's flag shape. */
 export function lumberFlags(l) {
   return l.loops.filter((x) => x.flagged).map((x) => ({
     kind: "lumber-duty", id: `lumber:${x.id}`,
-    text: `lumber loop ${x.label} pays ${money(x.steady)}/h steady; duty pay is ${x.ratios.map((r) => `${r.ratio === Infinity ? "inf" : r.ratio.toFixed(1)}x (${r.job} ${money(r.pay)})`).join(" and ")}, outside ${DUTY_BAND.min} to ${DUTY_BAND.max}`,
+    text: `lumber loop ${x.label} pays ${money(x.steady)}/h steady; duty pay is ${x.ratios.map((r) => `${r.ratio === Infinity ? "inf" : r.ratio.toFixed(1)}x (${r.job} ${money(r.pay)})`).join(" and ")}, under the $${x.floor}/h Cadet shift`,
   }));
 }

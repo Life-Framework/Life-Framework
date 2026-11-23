@@ -1213,6 +1213,7 @@ class LF_OrganizationManager : Managed
 		GetInstance().m_mMembership.Remove(targetCharacterId);
 		LF_OrgMapMarks.RefreshCharacter(targetCharacterId);
 		LF_Debug.Log("Organizations", string.Format("kick org=%1 member=%2", orgId, targetCharacterId));
+		LF_EventBus.Publish(LF_OnOrganizationMemberLeft.Create(orgId, targetCharacterId, "kick"));
 		PublishIfEmptied(org, "kick");
 		return true;
 	}
@@ -1326,6 +1327,7 @@ class LF_OrganizationManager : Managed
 		GetInstance().m_mMembership.Remove(characterId);
 		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("leave org=%1 member=%2", org.GetId(), characterId));
+		LF_EventBus.Publish(LF_OnOrganizationMemberLeft.Create(org.GetId(), characterId, "leave"));
 		PublishIfEmptied(org, "leave");
 		return true;
 	}
@@ -1384,6 +1386,7 @@ class LF_OrganizationManager : Managed
 		GetInstance().m_mMembership.Remove(characterId);
 		LF_OrgMapMarks.RefreshCharacter(characterId);
 		LF_Debug.Log("Organizations", string.Format("direct leave org=%1 member=%2", org.GetId(), characterId));
+		LF_EventBus.Publish(LF_OnOrganizationMemberLeft.Create(org.GetId(), characterId, "leave"));
 		PublishIfEmptied(org, "leave");
 		return true;
 	}

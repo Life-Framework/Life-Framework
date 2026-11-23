@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{DF3DF77B46B7115F}Configs/Comms/LF_GangRadio.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,15 +1,15 @@
-// Proves the lumber loops of `tools\cli economy` (#3270, LB12): the duty band (a $300/h loop against duty $900 is 3.0x
-// and flagged, $450 is 2.0x and is not), the premium buyer's demand cap (first hour from the full purse, steady hour
+// Proves the lumber loops of `tools\cli economy` (#3270, LB12): the pay ladder (#4178: a $300/h loop under the $350
+// Cadet shift is flagged, $350 and $450 are not), the premium buyer's demand cap (first hour from the full purse, steady hour
 // from the refill only), the wholesale curve (linear drop, floor, carry-over), and the loops read from planted configs
 // (yield rows, sawmill outputs, a pack-less repo falling back to the design note's buyers and saying so).
 // inputs: tools/lib/economy-lumber.mjs, tools/lib/economy.mjs, tools/commands/economy.mjs, tools/validation/economy-lumber-selftest.mjs
 // red-proof: before tools/lib/economy-lumber.mjs existed this selftest died on the missing import and exited 1; with
-// DUTY_BAND.max raised to 3.5 the "$300 flagged" check printed "FAIL 300/h flagged"; with the demand cap ignored
+// the band check (DUTY_BAND.max raised to 3.5) the "$300 flagged" check printed "FAIL 300/h flagged"; with the demand cap ignored
 // (premium = units) the "cap limits premium" checks printed FAIL; restored, it prints "economy-lumber-selftest: OK".
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { DUTY_BAND, FALLBACK_BUYERS, FALLBACK_CURVES, LUMBER_ASSUMPTIONS, bandCheck, buildLumber, computeLoops, lumberFlags, renderLumber, sellWholesale, simulateProduct } from "../lib/economy-lumber.mjs";
+import { FALLBACK_BUYERS, FALLBACK_CURVES, LUMBER_ASSUMPTIONS, rungCheck, buildLumber, computeLoops, lumberFlags, renderLumber, sellWholesale, simulateProduct } from "../lib/economy-lumber.mjs";
 import { buildReport, renderReport } from "../lib/economy.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
@@ -19,15 +19,13 @@ const fails = [];
 const expect = (ok, msg) => { if (!ok) fails.push(`FAIL ${msg}`); };
 const near = (a, b, tol = 0.01) => Math.abs(a - b) <= tol;
 
-// 1. The band: 300/h with duty 900 is 3.0x and flagged; 450/h is 2.0x and is not.
-const low = bandCheck(300, { police: 900 });
-expect(low.flagged && near(low.ratios[0].ratio, 3), `300/h flagged at 3.0 (got ${JSON.stringify(low)})`);
-const mid = bandCheck(450, { police: 900 });
-expect(!mid.flagged && near(mid.ratios[0].ratio, 2), `450/h not flagged (got ${JSON.stringify(mid)})`);
-expect(bandCheck(450, { police: 900, medic: 1200 }).flagged, "one duty job out of band flags the loop (medic 2.67x)");
-expect(!bandCheck(600, { police: 900 }).flagged && bandCheck(700, { police: 900 }).flagged, "1.5x is in band, 1.29x is out");
-expect(bandCheck(0, { police: 900 }).flagged, "a loop paying nothing is flagged");
-expect(DUTY_BAND.min === 1.5 && DUTY_BAND.max === 2.5, "the band is 1.5 to 2.5");
+// 1. The ladder: a loop under the lowest duty shift (the Cadet's $350) is flagged; at or above it is not.
+const low = rungCheck(300, { police: 350, medic: 480 });
+expect(low.flagged && low.floor === 350 && near(low.ratios[0].ratio, 1.17), `300/h flagged under $350 (got ${JSON.stringify(low)})`);
+const mid = rungCheck(450, { police: 350, medic: 480 });
+expect(!mid.flagged, `450/h not flagged (got ${JSON.stringify(mid)})`);
+expect(!rungCheck(350, { police: 350 }).flagged && !rungCheck(1000, { police: 350 }).flagged, "the Cadet shift and a master loop are on the ladder");
+expect(rungCheck(0, { police: 350 }).flagged, "a loop paying nothing is flagged");
 
 // 2. The demand cap limits the premium units in the steady hour (and the first hour holds the full purse).
 const buyer = { price: 10, cap: 40, refillPerHour: 20 };
@@ -48,9 +46,9 @@ const fresh = simulateProduct(30, noPurse, curve, false);
 const carried = simulateProduct(30, noPurse, curve, true);
 expect(near(fresh.first, fresh.steady) && carried.steady < carried.first, "carry-over depresses the steady hour, a fresh curve does not");
 
-// 4. The loops from inputs: three loops, steady within the first hour, flagged by the band against duty.
+// 4. The loops from inputs: three loops, steady within the first hour, flagged under the lowest duty shift.
 const inp = {
-  assumptions: LUMBER_ASSUMPTIONS, duty: { police: 900, medic: 792 },
+  assumptions: LUMBER_ASSUMPTIONS, duty: { police: 350, medic: 480 },
   yields: { softwood: { chopSecondsPerLog: 12.5 }, hardwood: { chopSecondsPerLog: 22.5 } },
   outputs: { plank: 4, post: 2, firewood: 4, board: 2, hardFirewood: 5 }, buyers: FALLBACK_BUYERS, curves: FALLBACK_CURVES,
 };
@@ -60,10 +58,11 @@ for (const l of loops) expect(l.steady > 0 && l.steady <= l.first, `${l.id}: ste
 expect(near(loops[0].logsPerHour, 17.7, 0.3), `hand haul is about 18 logs an hour (got ${loops[0].logsPerHour})`);
 expect(loops[2].logsPerHour === 24, "the truck loop is 6 logs x 4 cycles = 24 logs an hour");
 expect(loops[0].detail[0].premiumSteady === 20 && loops[0].detail[0].premiumFirst === 40, "the plank purse caps premium at 20 steady, 40 first");
-const rich = computeLoops({ ...inp, duty: { police: 450, medic: 450 } });
-expect(rich.every((l) => l.flagged), "duty at $450 against loops paying about $350 to $450 is under 1.5x for the dearer loops");
-const flagged = lumberFlags({ loops: rich });
-expect(flagged.length === rich.length && flagged[0].kind === "lumber-duty", "one lumber-duty flag per out-of-band loop");
+expect(loops.every((l) => !l.flagged), `every fixture loop pays at least the $350 Cadet shift (got ${loops.map((l) => l.steady).join(", ")})`);
+const thin = computeLoops({ ...inp, duty: { police: 2000, medic: 2000 } });
+expect(thin.every((l) => l.flagged), "a $2000 duty shift puts every loop below the rung");
+const flagged = lumberFlags({ loops: thin });
+expect(flagged.length === thin.length && flagged[0].kind === "lumber-duty" && /Cadet shift/.test(flagged[0].text), "one lumber-duty flag per loop below the rung");
 
 // 5. Read from planted configs: yield rows and sawmill outputs come from files; buyers fall back and say so.
 const dir = scratchDir("lf-economy-lumber-");
@@ -72,20 +71,20 @@ const yieldRow = (n, cls, size, secs, logs) => `  LF_TreeYieldRow "{AA0000000000
 put("addons/LifeFramework/Configs/Lumber/LF_TreeSpecies.conf", `LF_TreeFellingConfig {\n m_aYields {\n${yieldRow(1, "SOFTWOOD", 2, 25, 2)}${yieldRow(2, "HARDWOOD", 2, 45, 2)} }\n}\n`);
 const machine = (id, input, outs) => ` LF_ResourceMachineDef "{B00000000000000${id}}" {\n  m_sMachineId "m${id}"\n  m_aInputs {\n   LF_ProcessingInput "{B10000000000000${id}}" {\n    m_InputPrefab "{${input}}Prefabs/Log.et"\n    m_iInputAmount 1\n   }\n  }\n  m_aOutputs {\n${outs.map(([g, n], i) => `   LF_ProcessingOutput "{B2000000000000${id}${i}}" {\n    m_OutputPrefab "{${g}}Prefabs/X.et"\n    m_iOutputAmount ${n}\n   }\n`).join("")}  }\n }\n`;
 put("addons/LifeFramework/Configs/Resources/ResourceChains.conf", `LF_ResourceChainConfig {\n m_aMachines {\n${machine(1, "32F5A906D8A573BC", [["45D1B36F99DD2FC3", 3]])}${machine(2, "32F5A906D8A573BC", [["7EB79C84E76D667D", 2]])}${machine(3, "32F5A906D8A573BC", [["F96D821A8E47FBBA", 4]])}${machine(4, "FC7D57CC9C0798D7", [["D2A8639FA0CA09EF", 2]])}${machine(5, "FC7D57CC9C0798D7", [["F96D821A8E47FBBA", 5]])} }\n}\n`);
-const got = buildLumber({ addonsDir: join(dir, "addons"), packLayers: [], owner: null, duty: { police: 900, medic: 792 } });
+const got = buildLumber({ addonsDir: join(dir, "addons"), packLayers: [], owner: null, duty: { police: 350, medic: 480 } });
 expect(got.problems.length === 0 && got.loops.length === 3, `planted configs give three loops (problems: ${got.problems.join("; ")})`);
 expect(got.loops[0]?.detail[0].unitsPerHour < 60, `the planted 3-plank sawmill sells fewer planks than the real 4 (got ${got.loops[0]?.detail[0].unitsPerHour})`);
 expect(got.sources.some((x) => /plank: premium assumed/.test(x)), "a missing buyerDemand row is reported as assumed");
 const lines = renderLumber(got);
-expect(lines.some((l) => /LOOP hand-haul softwood -> planks: .*steady \$\d+\/h, first hour \$\d+\/h; duty .*(in band|OUT OF BAND)/.test(l)), "a loop line prints steady, first hour and the band");
+expect(lines.some((l) => /LOOP hand-haul softwood -> planks: .*steady \$\d+\/h, first hour \$\d+\/h; duty .*(on the ladder|BELOW THE RUNG)/.test(l)), "a loop line prints steady, first hour and the rung");
 const none = buildLumber({ addonsDir: join(dir, "nowhere"), packLayers: [], owner: null, duty: { police: 900, medic: 792 } });
 expect(none.loops.length === 0 && /lumber loops skipped/.test(none.problems.join()), "no lumber config prints a problem, not a crash");
 
-// 6. The real repo: the whole report carries the lumber section and a flag exactly for each out-of-band loop.
+// 6. The real repo: the whole report carries the lumber section and a flag exactly for each loop below the rung.
 const rep = buildReport(root, {});
 expect(!rep.error && rep.lumber.loops.length === 3, `the real report has three lumber loops (${rep.error ?? ""})`);
 expect(renderReport(rep).some((l) => l.startsWith("lumber loops")), "the report prints the lumber section");
-expect(rep.flags.filter((f) => f.kind === "lumber-duty").length === rep.lumber.loops.filter((l) => l.flagged).length, "a lumber-duty flag per out-of-band loop");
+expect(rep.flags.filter((f) => f.kind === "lumber-duty").length === rep.lumber.loops.filter((l) => l.flagged).length, "a lumber-duty flag per loop below the rung");
 
 if (fails.length) {
   for (const f of fails) console.error(f);

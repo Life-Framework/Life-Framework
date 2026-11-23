@@ -37,7 +37,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
    }
   }
   LF_PlaceableComponent "{2A2BE9E51516AA08}" {
-   m_sPlacedPrefab "{1A01E5702E04422C}Prefabs/Props/Farming/LF_Beehive.et"
+   m_sPlacedPrefab "{D4E1B8A27C3F5096}Prefabs/Props/Farming/LF_Beehive.et"
    m_vFootprintMins -0.4 0 -0.4
    m_vFootprintMaxs 0.4 1.0 0.4
    m_fReach 1

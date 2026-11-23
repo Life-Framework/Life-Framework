@@ -1,7 +1,7 @@
 // The wheat loops of `tools\cli economy` (#3622, H10 of #3282): what a harvester earns an hour selling grain to the
 // granary (a wholesale curve) and what a harvester with a mill earns when the bakery also buys flour (a premium
-// row), from the merged configs, and whether duty pay (police and medic rank 0) still sits 1.5 to 2.5 times above
-// it (the maintainer's pay band, 2026-11-18).
+// row), from the merged configs, and whether each loop pays at least the lowest duty shift
+// (police and medic rank 0, the Cadet's): the 0.3.0 pay ladder, 2026-11-22 (LADDER in economy-lumber.mjs).
 //
 // A price here is per LOT (#3622): grain is counted in kg and priced per `lotSize` kg, so a granary lot of 200 kg at
 // $9 is $0.045 a kg and a bakery lot of 5 kg at $1 is $0.20 a kg. The curve falls per lot sold, not per kg.
@@ -13,7 +13,7 @@
 // (1,500 kg of grain an hour). A premium purse holds `cap` kg and refills `refillPerHour` kg an hour: the FIRST hour
 // sells from a full purse, the STEADY hour from the refill only. Flour the purse does not take is not milled.
 import { SECTIONS, mergeList, sectionLayers } from "../pack/layers.mjs";
-import { DUTY_BAND, bandCheck } from "./economy-lumber.mjs";
+import { rungCheck, rungText } from "./economy-lumber.mjs";
 
 export const GRAIN_GUID = "7B2E5A1C93D40F11";
 export const FLOUR_GUID = "7B2E5A1C93D40F12";
@@ -76,7 +76,7 @@ export function computeWheatLoops(inp) {
     const s = simulateWheat(kg, inp.curve, flour, a);
     loops.push({
       id, label, kgPerHour: kg, first: Math.round(s.first), steady: Math.round(s.steady),
-      flourKgSteady: Math.round(s.flourSteady), grainKgSteady: Math.round(s.grainSteady), note, ...bandCheck(s.steady, inp.duty),
+      flourKgSteady: Math.round(s.flourSteady), grainKgSteady: Math.round(s.grainSteady), note, ...rungCheck(s.steady, inp.duty),
     });
   };
   make("wheat-granary", "harvest -> granary (grain at wholesale)", null, `${a.fieldsPerHour} fields of ${a.fieldKg} kg an hour`);
@@ -125,17 +125,17 @@ export function renderWheat(w) {
   L.push(`wheat loops (a ${a.fieldKg} kg field cut ${a.fieldsPerHour} times an hour; steady = purse refill only, first = full purse, wholesale ${a.carryCurve ? "carries over between hours" : "back at base each hour"}):`);
   for (const x of w.loops) {
     const duty = x.ratios.map((r) => `${r.job} ${money(r.pay)} = ${r.ratio === Infinity ? "inf" : r.ratio.toFixed(1)}x`).join(", ");
-    L.push(`  LOOP ${x.label}: steady ${money(x.steady)}/h, first hour ${money(x.first)}/h; duty ${duty} ${x.flagged ? "OUT OF BAND" : "in band"} (${DUTY_BAND.min} to ${DUTY_BAND.max})`);
+    L.push(`  LOOP ${x.label}: steady ${money(x.steady)}/h, first hour ${money(x.first)}/h; duty ${duty} ${rungText(x)}`);
     L.push(`    sells ${x.grainKgSteady} kg grain and ${x.flourKgSteady} kg flour an hour (steady); ${x.note}`);
   }
   L.push(`  sources: ${w.sources.join("; ")}`);
   return L;
 }
 
-/** FLAG rows for the loops outside the band, in the report's flag shape. */
+/** FLAG rows for the loops below the rung, in the report's flag shape. */
 export function wheatFlags(w) {
   return w.loops.filter((x) => x.flagged).map((x) => ({
     kind: "wheat-duty", id: `wheat:${x.id}`,
-    text: `wheat loop ${x.label} pays ${money(x.steady)}/h steady; duty pay is ${x.ratios.map((r) => `${r.ratio === Infinity ? "inf" : r.ratio.toFixed(1)}x (${r.job} ${money(r.pay)})`).join(" and ")}, outside ${DUTY_BAND.min} to ${DUTY_BAND.max}`,
+    text: `wheat loop ${x.label} pays ${money(x.steady)}/h steady; duty pay is ${x.ratios.map((r) => `${r.ratio === Infinity ? "inf" : r.ratio.toFixed(1)}x (${r.job} ${money(r.pay)})`).join(" and ")}, under the $${x.floor}/h Cadet shift`,
   }));
 }
