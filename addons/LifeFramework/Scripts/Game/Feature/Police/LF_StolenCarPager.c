@@ -2,8 +2,8 @@
 //! Stolen-car pager lines (#4212). When an owner reports a car stolen (LF_StolenVehicles.Report
 //! publishes LF_OnVehicleReportedStolen), every on-duty officer's pager gets one line with the
 //! plate and the car, and the report stays on the hotlist (LF_StolenVehicles, the wanted board and
-//! the plate check) until an officer recovers the car. Recovery (LF_OnVehicleRecovered) takes the
-//! line off the pagers again.
+//! the plate check) until the car leaves the street: an officer's recovery (LF_OnVehicleRecovered) or a
+//! chop shop's payout (LF_OnVehicleChopped, #4355) closes the report and takes the line off the pagers.
 //!
 //! The pager entry is the board format "time|summary|0|place" (LF_Pager.Entry). The summary of a
 //! stolen-car line is "V;<plate>;<car name key>", so the pager card renders it as its own line and
@@ -118,6 +118,16 @@ class LF_StolenCarPager
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: a chop shop scrapped the car. The report closes (the chop shop already did; closing again is
+	//! a no-op) and the plate's line comes off each pager. The seam tests drive.
+	//! \return Lines removed.
+	static int OnChopped(notnull LF_OnVehicleChopped chopped, notnull array<LF_PagerComponent> pagers)
+	{
+		LF_StolenVehicles.Clear(chopped.m_sVehicleId, "chopped");
+		return Clear(chopped.m_sPlate, pagers);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the pagers carried by every on-duty officer right now.
 	static void OnDutyPagers(notnull array<LF_PagerComponent> outPagers)
 	{
@@ -130,7 +140,7 @@ class LF_StolenCarPager
 }
 
 //------------------------------------------------------------------------------------------------
-//! Bus subscriber: a report pages the on-duty officers, a recovery clears the line.
+//! Bus subscriber: a report pages the on-duty officers, a recovery or a chop clears the line.
 class LF_StolenCarPagerSubscriber : LF_EventSubscriber
 {
 	static ref LF_StolenCarPagerSubscriber s_Subscriber;
@@ -148,6 +158,13 @@ class LF_StolenCarPagerSubscriber : LF_EventSubscriber
 		if (recovered)
 		{
 			OnRecovered(recovered);
+			return true;
+		}
+
+		LF_OnVehicleChopped chopped = LF_OnVehicleChopped.Cast(busEvent);
+		if (chopped)
+		{
+			OnChopped(chopped);
 			return true;
 		}
 
@@ -186,6 +203,14 @@ class LF_StolenCarPagerSubscriber : LF_EventSubscriber
 	}
 
 	//------------------------------------------------------------------------------------------------
+	protected void OnChopped(notnull LF_OnVehicleChopped chopped)
+	{
+		array<LF_PagerComponent> pagers = {};
+		LF_StolenCarPager.OnDutyPagers(pagers);
+		LF_StolenCarPager.OnChopped(chopped, pagers);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static void Install()
 	{
 		if (!Replication.IsServer())
@@ -195,11 +220,13 @@ class LF_StolenCarPagerSubscriber : LF_EventSubscriber
 		{
 			LF_EventBus.Unsubscribe(LF_OnVehicleReportedStolen, s_Subscriber);
 			LF_EventBus.Unsubscribe(LF_OnVehicleRecovered, s_Subscriber);
+			LF_EventBus.Unsubscribe(LF_OnVehicleChopped, s_Subscriber);
 		}
 
 		s_Subscriber = new LF_StolenCarPagerSubscriber();
 		LF_EventBus.Subscribe(LF_OnVehicleReportedStolen, s_Subscriber);
 		LF_EventBus.Subscribe(LF_OnVehicleRecovered, s_Subscriber);
+		LF_EventBus.Subscribe(LF_OnVehicleChopped, s_Subscriber);
 	}
 
 	//------------------------------------------------------------------------------------------------
