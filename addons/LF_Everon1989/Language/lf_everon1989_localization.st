@@ -5069,6 +5069,31 @@ StringTable {
      Target_en_us "Odilon Marchand"
      Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
     }
+    CustomStringTableItem "{1304E767117CD1D9}" {
+     Id "LF-Resident_dock_chandler_Name"
+     Target_en_us "Joseph Vidal"
+     Comment "Saint-Philippe dock cast (ship chandler, #4466): display name."
+    }
+    CustomStringTableItem "{D64C66B47D9847D5}" {
+     Id "LF-Resident_dock_docker_1_Name"
+     Target_en_us "Lucien Brault"
+     Comment "Saint-Philippe dock cast (docker, #4466): display name."
+    }
+    CustomStringTableItem "{A46BD90F0A51F965}" {
+     Id "LF-Resident_dock_docker_2_Name"
+     Target_en_us "Theo Gagnon"
+     Comment "Saint-Philippe dock cast (docker, #4466): display name."
+    }
+    CustomStringTableItem "{2901BA1F5EE42D43}" {
+     Id "LF-Resident_dock_fishmonger_Name"
+     Target_en_us "Baptiste Pichon"
+     Comment "Saint-Philippe dock cast (fishmonger, #4466): display name."
+    }
+    CustomStringTableItem "{D04B44D06CAEB656}" {
+     Id "LF-Resident_dock_harbour_master_Name"
+     Target_en_us "Marcel Roux"
+     Comment "Saint-Philippe dock cast (harbour master, #4466): display name."
+    }
     CustomStringTableItem "{5C2B8E41A9D07F36}" {
      Id "LF-Resident_foreman_coalmans_brow_Name"
      Target_en_us "Bruno Faure"
