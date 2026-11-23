@@ -317,8 +317,9 @@ class LF_ServiceCalls
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: route a call and publish it. The caller shows NO_ANSWER_KEY when the result is not answered.
+	//! \param tip An automatic tip (LF_OnServiceCall.m_bTip): callerUid only noticed it and is not counted as a caller.
 	//! \return The route; null off the server.
-	static LF_ServiceRoute Place(string callerUid, string serviceKey, string place, string summary, vector position, array<ref LF_ServiceCandidate> players = null)
+	static LF_ServiceRoute Place(string callerUid, string serviceKey, string place, string summary, vector position, array<ref LF_ServiceCandidate> players = null, bool tip = false)
 	{
 		if (LF_Systems.Refuses("Comms", "service call"))
 			return null;
@@ -337,7 +338,9 @@ class LF_ServiceCalls
 		}
 
 		LF_Debug.Info(FEATURE, string.Format("%1 called %2 from '%3': %4 receiver(s) via %5", callerUid, serviceKey, place, route.m_aReceivers.Count(), route.m_sChannels));
-		LF_EventBus.Publish(LF_OnServiceCall.Create(callerUid, serviceKey, place, summary, route.m_sChannels, position, route.m_aReceivers));
+		LF_OnServiceCall call = LF_OnServiceCall.Create(callerUid, serviceKey, place, summary, route.m_sChannels, position, route.m_aReceivers);
+		call.m_bTip = tip;
+		LF_EventBus.Publish(call);
 		return route;
 	}
 

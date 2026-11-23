@@ -10,6 +10,11 @@
 // A body posed 18 m up lands in about 2 s; the last pose of a shot is
 // reapplied 0.7 s after the first.
 const int LF_HARNESS_POSE_SAFE_MS = 8000;
+// A stand across the island waits this long for the target to stream in to the client: about 11 s
+// on a lowspec client after a 2.7 km jump. Under the harness's 25 s stand timeout (STAND_TIMEOUT_MS in
+// agent-box/harness.mjs), so a miss comes back as target_not_streamed, not a timeout.
+const int LF_HARNESS_STREAM_TICK_MS = 100; // lf-fixed: harness poll step, not a game value
+const int LF_HARNESS_STREAM_WAIT_MS = 20000; // lf-fixed: under the harness 25 s stand timeout
 
 modded class SCR_ChimeraCharacter
 {
@@ -58,22 +63,52 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
-		Rpc(RpcDo_LF_HarnessStand, commandId, entityName, destination, LF_AgentHarness.LastStandYaw());
+		Rpc(RpcDo_LF_HarnessStand, commandId, entityName, destination, LF_AgentHarness.LastStandYaw(), LF_AgentHarness.LastStandTarget());
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_HarnessStand(int commandId, string entityName, vector destination, float yaw)
+	protected void RpcDo_LF_HarnessStand(int commandId, string entityName, vector destination, float yaw, RplId target)
 	{
 		LF_MoveHarnessBody(destination, yaw);
-		LF_AgentHarness.Reply(commandId, "ok", entityName);
+		LF_AwaitHarnessStandTarget(commandId, entityName, target, System.GetTickCount());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Owner: a stand far from where the body was lands before the server has streamed the target to
+	//! this client. A player walking up always sees the NPC; a teleported one does not for a second or
+	//! more, and a `use` in that gap finds no action here (#4611). Stand answers once the target exists
+	//! on this client, so the next command acts on what a player standing there would see.
+	protected void LF_AwaitHarnessStandTarget(int commandId, string entityName, RplId target, int sinceMs)
+	{
+		// Wall-clock: a loaded client runs the call queue late, so counting ticks overran the harness timeout.
+		int waitedMs = System.GetTickCount() - sinceMs;
+		if (!target.IsValid() || LF_NetworkUtils.FindEntityByRplId(target))
+		{
+			if (waitedMs > 0)
+				LF_Debug.Log("AgentHarness", string.Format("stand: %1 streamed in after %2 ms", entityName, waitedMs));
+
+			LF_AgentHarness.Reply(commandId, "ok", entityName);
+			return;
+		}
+
+		if (waitedMs >= LF_HARNESS_STREAM_WAIT_MS)
+		{
+			LF_Debug.Warn("AgentHarness", string.Format("stand: %1 did not stream in to this client within %2 ms", entityName, LF_HARNESS_STREAM_WAIT_MS));
+			LF_AgentHarness.Reply(commandId, "error", "target_not_streamed");
+			return;
+		}
+
+		GetGame().GetCallqueue().CallLater(LF_AwaitHarnessStandTarget, LF_HARNESS_STREAM_TICK_MS, false, commandId, entityName, target, sinceMs);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Stand at destination facing the entity (LF_AgentHarness.StandYaw), the way a player walks up
-	//! to a counter, so the interaction key aims at it.
+	//! to a counter, so the interaction key aims at it. A body still waking in its hospital bed stops
+	//! waking, or the step down beside the bed would carry it back there (#4611).
 	protected void LF_MoveHarnessBody(vector destination, float yaw)
 	{
+		LF_HospitalWake.End(this);
 		vector transform[4];
 		Math3D.AnglesToMatrix(Vector(yaw, 0, 0), transform);
 		transform[3] = destination;
@@ -442,6 +477,17 @@ modded class SCR_ChimeraCharacter
 				LF_HarnessReply(commandId, "ok", staffResult.Substring(3, staffResult.Length() - 3));
 			else
 				LF_HarnessReply(commandId, "error", staffResult.Substring(6, staffResult.Length() - 6));
+			return;
+		}
+
+		if (LF_ParkAtHarness.IsVerb(tool))
+		{
+			// A car set ahead of a placed entity, for a proof that cannot drive (#4425).
+			string parkResult = LF_ParkAtHarness.Run(this, tool);
+			if (parkResult.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", parkResult.Substring(3, parkResult.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", parkResult.Substring(6, parkResult.Length() - 6));
 			return;
 		}
 

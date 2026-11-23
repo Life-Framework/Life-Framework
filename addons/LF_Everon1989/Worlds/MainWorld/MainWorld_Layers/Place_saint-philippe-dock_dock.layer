@@ -1,0 +1,15 @@
+GenericEntity Fit_saint_philippe_dock_dock_Place {
+ components {
+  LF_PlaceComponent "{EA96FC541DA0E90F}" {
+   m_sKind "Dock"
+   m_sId "saint-philippe-dock.dock"
+  }
+  LF_FittedBuildingComponent "{A8800B298FA2319C}" {
+  }
+ }
+ coords 4429.18 1.7 11090.5
+}
+GenericEntity Fit_saint_philippe_dock_dock_crane_spot : "{897C2A6F02D75762}Prefabs/Props/LF_ExportCraneSpot.et" {
+ coords 4407.964 1.626 11111.945
+ angleY 81
+}

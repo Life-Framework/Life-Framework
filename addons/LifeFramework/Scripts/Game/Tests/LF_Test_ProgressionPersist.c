@@ -16,15 +16,16 @@ class LF_TestProgressionKit
 	static const string QUEST_ID = "intro_talk";
 
 	//------------------------------------------------------------------------------------------------
-	//! Courier at career level 2 through paid parcel runs.
+	//! Courier at the fuel delivery level through paid parcel runs.
 	static void SeedCourier(LF_TestContext ctx, string uid)
 	{
 		ctx.True(LF_CivilianJob.SignUp(uid, LF_EJobType.PARCEL), "the courier signs up for parcels");
 		ctx.True(LF_CivilianJob.StartRun(uid, LF_EJobType.PARCEL), "the courier starts a parcel run");
 		ctx.True(LF_CivilianJob.CompleteRun(uid) > 0, "the parcel run pays");
-		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.PARCEL, 2);
-		ctx.Equal(2, LF_CivilianJob.GetLevel(uid), "paid runs make the courier level 2");
-		ctx.True(LF_CivilianJob.CanSignUp(uid, LF_EJobType.FUEL_DELIVERY), "level 2 opens fuel delivery");
+		int fuelLevel = LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY);
+		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.PARCEL, fuelLevel);
+		ctx.Equal(fuelLevel, LF_CivilianJob.GetLevel(uid), "paid runs make the courier reach the fuel delivery level");
+		ctx.True(LF_CivilianJob.CanSignUp(uid, LF_EJobType.FUEL_DELIVERY), "the fuel delivery level opens fuel delivery");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -137,9 +138,9 @@ class LF_Test_ProgressionRoundtrip : LF_Test
 		ctx.Equal(LF_TestSaveVersion.CURRENT, version, "the save is written at the current version (progression is payload 7)");
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, loadContext, "progression");
 
-		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER), "courier level 2 after the load");
-		ctx.True(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "courier level 2 still opens fuel delivery");
-		ctx.Equal(LF_CivilianJob.PAY_PARCEL * LF_CivilianJob.RunsToReach(2), LF_CivilianJob.GetPaidTotal(COURIER), "the courier's paid total survives");
+		ctx.Equal(LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY), LF_CivilianJob.GetLevel(COURIER), "courier keeps the fuel delivery level after the load");
+		ctx.True(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "courier still opens fuel delivery after the load");
+		ctx.Equal(LF_CivilianJob.PAY_PARCEL * LF_CivilianJob.RunsToReach(LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY)), LF_CivilianJob.GetPaidTotal(COURIER), "the courier's paid total survives");
 		ctx.EqualStr(LF_UnemploymentBenefit.REFUSED_COOLDOWN, LF_UnemploymentBenefit.Refusal(COURIER, 0, false, LF_JobGuards.Now(), 100, 50, 3600), "the benefit cooldown survives");
 		if (officer)
 		{
@@ -184,7 +185,7 @@ class LF_Test_ProgressionRoundtrip : LF_Test
 		JsonLoadContext again = new JsonLoadContext(false);
 		again.LoadFromString(saved);
 		LF_PersistenceComponentSerializer.ReadPersistencePayload(persistence, again, "progression");
-		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER), "a second load keeps courier level 2");
+		ctx.Equal(LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY), LF_CivilianJob.GetLevel(COURIER), "a second load keeps the courier's fuel delivery level");
 		if (officer)
 			ctx.Equal(LF_PoliceRanks.SENIOR, officer.GetPoliceRank(), "a second load keeps the officer senior");
 

@@ -1,0 +1,63 @@
+{
+  "id": "outpost_quartermaster",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "d7a48c8e32899e05",
+      "date": "2026-11-23",
+      "voice_id": "pqHfZKP75CvOlQylNhV4",
+      "voice_name": "Bill - Wise, Mature, Balanced",
+      "model": "eleven_multilingual_v2",
+      "text": "Quartermaster. I keep the crate and I keep the count. Nothing leaves this camp without a price on it.",
+      "chars": 101,
+      "chars_total": 40,
+      "request_id": "MUDhQMopKICRGYLD8umc",
+      "seconds": 8.06,
+      "mouth": "989979988876645864320000000000000039954894194869764213100000000199887447941944997541420000000000000000099962987625897756548755339765531874986741397646586653221000"
+    },
+    "stock": {
+      "hash": "52f8d8208d1563f9",
+      "date": "2026-11-23",
+      "voice_id": "pqHfZKP75CvOlQylNhV4",
+      "voice_name": "Bill - Wise, Mature, Balanced",
+      "model": "eleven_multilingual_v2",
+      "text": "A radio, a pistol, a rifle. The crate shows what I will sell you today. The longer people have known you, the more of it I will show.",
+      "chars": 133,
+      "chars_total": 53,
+      "request_id": "jAYFftvXdvc7ez9epD9x",
+      "seconds": 11.48,
+      "mouth": "99999799897776100000000000951897645997620000000005995898855354100000000000000001949699853665988864444297578777555777766654877865432100000000000000004989998888328843988857888889999871000000000197899897625411000599754463567975432100"
+    },
+    "refuse": {
+      "hash": "7232c2086a7c4651",
+      "date": "2026-11-23",
+      "voice_id": "pqHfZKP75CvOlQylNhV4",
+      "voice_name": "Bill - Wise, Mature, Balanced",
+      "model": "eleven_multilingual_v2",
+      "text": "We don't deal with the law here. Take the badge off and come back.",
+      "chars": 66,
+      "chars_total": 26,
+      "request_id": "vKJ4UKaXugnOWWQWyYIq",
+      "seconds": 3.49,
+      "mouth": "9898827998674166666644555420000000299519688764576653256558775655320100"
+    },
+    "bye": {
+      "hash": "2ad8375ddac54e41",
+      "date": "2026-11-23",
+      "voice_id": "pqHfZKP75CvOlQylNhV4",
+      "voice_name": "Bill - Wise, Mature, Balanced",
+      "model": "eleven_multilingual_v2",
+      "text": "Keep your head down.",
+      "chars": 20,
+      "chars_total": 8,
+      "request_id": "rx4lSpcYcZOgObG6ioSX",
+      "seconds": 1.09,
+      "mouth": "3983996988658765432100"
+    }
+  },
+  "voice": {
+    "id": "pqHfZKP75CvOlQylNhV4",
+    "name": "Bill - Wise, Mature, Balanced",
+    "source": "premade"
+  }
+}

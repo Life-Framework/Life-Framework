@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{34ACF2F97F1257CA}Configs/NpcOutfits/LF_Outfit_DockFishmonger.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

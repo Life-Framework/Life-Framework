@@ -1,0 +1,17 @@
+Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ ID "1AC9F51930169160"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64D877CFC0DC5560}" {
+     SourceMaterial "S105Body_mat"
+     AssignedMaterial "{7DB7871FD01C8B0C}Assets/Vehicles/Wheeled/S105/Data/S105Body_mat_darkblue.emat"
+    }
+    MaterialAssignClass "{64D877CFC0DC55BA}" {
+     SourceMaterial "S105Body_mat_int_FC800CBC7671EDFD"
+     AssignedMaterial "{098C51D17EC93576}Assets/Vehicles/Wheeled/S105/Data/S105Body_mat_darkblue_int.emat"
+    }
+   }
+  }
+ }
+}

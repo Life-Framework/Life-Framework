@@ -32,6 +32,8 @@ class LF_PoliceCalls
 {
 	static const string FEATURE = "PoliceCalls";
 	static const string KIND_FINE = "FINE";
+	//! A call a player phoned in (a payphone or a radio set, #4606): no suspect; the caller is named on the call.
+	static const string KIND_PHONED = "PHONED";
 	//! Calls kept (open and closed). A full list drops its oldest closed call; with none, a new call is refused.
 	static const int MAX_CALLS = 64;	// lf-fixed: a list bound, not gameplay
 
@@ -169,10 +171,76 @@ class LF_PoliceCalls
 		if (open)
 			return open;
 
+		return Insert(kind, suspectUid, site, minRank, hasPosition, position);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: posts the call a player phoned in to the police (#4606: a payphone or a radio set), so an
+	//! officer can take it at the board and close it from the car radio. The call has no suspect; the
+	//! caller is named on it (LF_CallAbuse.SetCaller), so an unfounded close counts against them and the
+	//! call is posted low priority when they were charged for false reports today. One open phoned call
+	//! per caller: a second call while the first is open returns the open one. callerUid is the server's
+	//! own key for the player at the phone, never a value a client sent.
+	//! \param tip An automatic tip (LF_OnServiceCall.m_bTip, the chain smell lead): the call is takeable but
+	//! names no caller, so closing it unfounded charges nobody; the tip's source rate-limits itself.
+	//! \return The call, or null when the caller is empty or the list is full.
+	static LF_PoliceCall PostPhoned(string callerUid, string site, bool hasPosition, vector position, bool tip = false)
+	{
+		if (tip)
+		{
+			LF_PoliceCall lead = Insert(KIND_PHONED, string.Empty, site, LF_PoliceRanks.PATROL, hasPosition, position);
+			if (lead)
+				LF_Debug.Info(FEATURE, string.Format("call #%1 from a tip at '%2' is takeable at the board; no caller is named", lead.m_iId, site));
+
+			return lead;
+		}
+
+		if (callerUid.IsEmpty())
+		{
+			LF_Debug.Warn(FEATURE, "phoned call refused: no caller");
+			return null;
+		}
+
+		LF_PoliceCall open = FindOpenPhonedBy(callerUid);
+		if (open)
+		{
+			LF_Debug.Info(FEATURE, string.Format("phoned call by %1 not posted: call #%2 is still open", callerUid, open.m_iId));
+			return open;
+		}
+
+		LF_PoliceCall call = Insert(KIND_PHONED, string.Empty, site, LF_PoliceRanks.PATROL, hasPosition, position);
+		if (!call)
+			return null;
+
+		LF_CallAbuse.SetCaller(call, callerUid);
+		LF_Debug.Info(FEATURE, string.Format("call #%1 phoned in by %2 at '%3' is takeable at the board", call.m_iId, callerUid, site));
+		return call;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The open phoned call (taken or not) this player phoned in, or null.
+	static LF_PoliceCall FindOpenPhonedBy(string callerUid)
+	{
+		if (callerUid.IsEmpty())
+			return null;
+
+		array<ref LF_PoliceCall> calls = Calls();
+		for (int i = 0; i < calls.Count(); i++)
+		{
+			if (!calls[i].m_bClosed && calls[i].m_sKind == KIND_PHONED && calls[i].m_sCallerUid == callerUid)
+				return calls[i];
+		}
+
+		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static LF_PoliceCall Insert(string kind, string suspectUid, string site, int minRank, bool hasPosition, vector position)
+	{
 		array<ref LF_PoliceCall> calls = Calls();
 		if (calls.Count() >= MAX_CALLS && !DropOldestClosed())
 		{
-			LF_Debug.Warn(FEATURE, string.Format("call for %1 refused: %2 calls are open", suspectUid, MAX_CALLS));
+			LF_Debug.Warn(FEATURE, string.Format("%1 call refused: %2 calls are open", kind, MAX_CALLS));
 			return null;
 		}
 
@@ -220,9 +288,12 @@ class LF_PoliceCalls
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The open call (taken or not) for this suspect, or null.
+	//! The open call (taken or not) for this suspect, or null. A phoned call has no suspect, so an empty uid finds nothing.
 	static LF_PoliceCall FindOpenFor(string suspectUid)
 	{
+		if (suspectUid.IsEmpty())
+			return null;
+
 		array<ref LF_PoliceCall> calls = Calls();
 		for (int i = 0; i < calls.Count(); i++)
 		{

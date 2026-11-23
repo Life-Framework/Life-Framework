@@ -33,3 +33,4 @@ outpost's traders do not serve an on-duty officer. A player who wants the stock 
 ## Dependencies
 
 `Moderation` (`LF_Zones`), `Places` (`LF_Places`), `Police` (`LF_PoliceUtils.IsOnDutyCharacter`), `Trader`, `Shop`.
+- The outpost people's officer replies are gated by the `OutpostOfficer` dialogue condition (`LF_DialogueHook_OutpostOfficer`, on-duty officers only), and `LF_Outpost.NotifyRefusal(customer, traderPos)` plays the refusal clip from the voiced trader at that spot to the refused officer only (`LF_OutpostVoice`, #4640).

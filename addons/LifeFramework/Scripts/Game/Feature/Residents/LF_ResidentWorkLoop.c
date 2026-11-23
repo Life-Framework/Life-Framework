@@ -4,9 +4,11 @@
 // job's own vanilla clips in an anim set instance:
 //   hammer         LF_WorkHammer.asi: bent over, striking down with both hands (p_erc_supplies_demolitionUS_low_*)
 //   carry, sweep   no vanilla clip reads as carrying a load or a broom stroke (the rally emote's npc_cardboard_*
-//                  hold has a stale GUID in the game's own anim set and does not load), so the resident plays the
-//                  base game's plain idle loiter (ELoiteringType.LOITERING) instead of a hand signal. A job gets
-//                  its pose from an .asi on LF_WorkPick.ast and a PoseOf branch.
+//                  hold has a stale GUID in the game's own anim set and does not load), so they play our own clips
+//                  (Anims/LF/Work/LF_WorkCarry.asi and LF_WorkSweep.asi, built by toolscli work-anim, #4396),
+//                  looked up through LF_WorkAnimPlayer.JobPose. A job with no pose of its own plays the base game's
+//                  plain idle loiter (ELoiteringType.LOITERING). A job gets its pose from an .asi on LF_WorkPick.ast
+//                  and a PoseOf branch.
 // The base game replicates a loiter to every client (late joiners too, through the command handler's RplSave),
 // so nothing here is sent by hand. A 1 s
 // tick starts the pose again for a worker whose loiter ended by itself (a shove, a fall) and drops a dead or
@@ -83,6 +85,10 @@ class LF_ResidentWorkLoop
 		string name = Normalise(activity, known);
 		if (name == HAMMER)
 			return HAMMER_POSE;
+
+		// Carry and sweep play our own clips (#4396, Anims/LF/Work).
+		if (name == CARRY || name == SWEEP)
+			return LF_WorkAnimPlayer.JobPose(name);
 
 		return ResourceName.Empty;
 	}

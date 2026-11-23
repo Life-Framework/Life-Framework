@@ -259,8 +259,25 @@ class LF_WorkAnimPlayer
 	static const ResourceName DRILL_GRAPH = "{778C05FA492D603F}Anims/Workspaces/Work/LF_DrillPush.agr";
 	static const ResourceName DRILL_GRAPH_INSTANCE = "{8F503FB24B4F0D5D}Anims/Workspaces/Work/LF_DrillPush.asi";
 	static const string CONTROL_VARIABLE = "Gestures";
+	static const ResourceName CARRY_POSE = "{C890BDCEDBF3E5FD}Anims/LF/Work/LF_WorkCarry.asi";
+	static const ResourceName SWEEP_POSE = "{C257681AE3F241E1}Anims/LF/Work/LF_WorkSweep.asi";
 	//! How long a machine waits before it checks what it shows.
 	static const int CHECK_MS = 1500;
+
+	//------------------------------------------------------------------------------------------------
+	//! The resident jobs' own poses on this graph (#4396): anim set instances over our own clips
+	//! (Anims/LF/Work/, built by tools\cli work-anim from tools/assets/work-anim/clips). "" for a job with
+	//! no pose of its own, which the resident plays as the plain idle loiter.
+	static ResourceName JobPose(string job)
+	{
+		if (job == "carry")
+			return CARRY_POSE;
+
+		if (job == "sweep")
+			return SWEEP_POSE;
+
+		return ResourceName.Empty;
+	}
 
 	//------------------------------------------------------------------------------------------------
 	static ResourceName GraphOf(int kind)

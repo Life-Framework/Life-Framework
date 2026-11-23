@@ -1,0 +1,44 @@
+{
+  "id": "outpost_quartermaster",
+  "name": "OutpostQuartermaster",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Outpost_Quartermaster_Name",
+  "voice": {
+    "id": "pqHfZKP75CvOlQylNhV4",
+    "sex": "male",
+    "name": "Bill - Wise, Mature, Balanced",
+    "why": "The quartermaster has kept the camp's crate and count for years: older, measured, a man who has said no to better people than you. Bill is a crisp, mature American voice, nothing like the buyer's husky patter or the gate guard's young bark, and no other speaker uses this voice.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.55,
+      "similarity_boost": 0.75,
+      "style": 0.15,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 1000,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "stock", "next": "stock" },
+      { "text": "badge", "next": "refuse", "condition": "OutpostOfficer" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "stock", "line": "stock", "options": [
+      { "text": "badge", "next": "refuse", "condition": "OutpostOfficer" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "refuse", "line": "refuse" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Quartermaster. I keep the crate and I keep the count. Nothing leaves this camp without a price on it." },
+    "stock": { "text": "A radio, a pistol, a rifle. The crate shows what I will sell you today. The longer people have known you, the more of it I will show." },
+    "refuse": { "for_key": "#LF-Outpost_TraderRefusesOfficer", "text": "We don't deal with the law here. Take the badge off and come back." },
+    "bye": { "text": "Keep your head down." }
+  },
+  "replies": {
+    "stock": "What have you got?",
+    "badge": "I'm on duty. I'd like to buy.",
+    "bye": "Goodbye."
+  }
+}

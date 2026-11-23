@@ -1,8 +1,18 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "A745505870D6D9A9"
  components {
+  LF_DialogueComponent "{541B8AE04F336C6C}" {
+   m_sDialogueId "outpost_buyer"
+  }
   ActionsManagerComponent "{520EA1D2F659CE02}" {
    ActionContexts + {
+    UserActionContext "{E554D8108BCA5178}" {
+     ContextName "Talk"
+     Position PointInfo "{F06EA9188E337DDA}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
     UserActionContext "{2986235947D71AF7}" {
      ContextName "Trade"
      Position PointInfo "{CABAE5566D48B60D}" {
@@ -12,6 +22,14 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
     }
    }
    additionalActions + {
+    LF_DialogueTalkAction "{1136ACB9CC093150}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{A787FADDD4FE4710}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
     LF_OutpostBuyerSellAction "{2E2CB3E9516D344C}" {
      ParentContextList {
       "Trade"

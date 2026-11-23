@@ -1171,6 +1171,7 @@ class LF_AgentHarness
 	protected static int s_iCaptureId;
 	protected static vector s_vShotStand;
 	protected static float s_fStandYaw;
+	protected static RplId s_StandTarget = RplId.Invalid();
 	protected static IEntity s_StandSelf;
 	protected static vector s_vStandCentre;
 	protected static bool s_bStandBlocked;
@@ -1318,6 +1319,15 @@ class LF_AgentHarness
 		if (!System.GetCLIParam("lfSession", value))
 			return "";
 		return value;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! True on a client an agent drives (started with -lfSession by agent-box/session.mjs up). A real
+	//! player's client never carries it, so a feature can keep a first-join sheet off an agent's pictures
+	//! without changing what a player sees (the welcome guide's auto open, #4645).
+	static bool IsSessionClient()
+	{
+		return !OwnSession().IsEmpty();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -1805,8 +1815,17 @@ class LF_AgentHarness
 			s_fStandYaw = StandYaw(side);
 		}
 
+		s_StandTarget = LF_NetworkUtils.GetRplId(target);
 		LF_Debug.Log(FEATURE, string.Format("stand beside %1 at %2", entityName, destination));
 		return "";
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replication id of the entity the last ServerStand stood beside; invalid for a prop that is not
+	//! replicated (the client loads it with the world, so it is always there).
+	static RplId LastStandTarget()
+	{
+		return s_StandTarget;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -3459,6 +3478,16 @@ class LF_AgentHarness
 			// The reply stays the bare token (proofs compare it); the reason a player would read goes to the log.
 			LF_Debug.Info("AgentHarness", string.Format("use %1 on %2: cannot_perform reason=%3", className, target.GetName(), action.GetCannotPerformReason()));
 			UseReply(user, commandId, "error", "cannot_perform");
+			return;
+		}
+
+		// A local-effect action (Talk opens this player's scene) runs on the player's own machine. The
+		// client sends it here only when it did not find the action itself (the host not streamed in
+		// yet, #4611); performing it on a dedicated server fails with a misleading error, so name the miss.
+		if (action.HasLocalEffectOnlyScript() && user != LF_Utils.GetLocalCharacter())
+		{
+			LF_Debug.Warn(FEATURE, string.Format("use %1 on %2: a local-effect action the client did not find on its side; not performed on the server", className, target.GetName()));
+			UseReply(user, commandId, "error", "not_found_on_client");
 			return;
 		}
 
