@@ -83,7 +83,7 @@ bench, bus stop) near players.
 
 ## Resident work loop (#4230)
 
-- **Player sees:** a worker with a work activity (`carry`, `hammer`, `sweep`) moves through a short cycle of vanilla gestures and rests at their spot instead of standing still. A placed character does it with `LF_ResidentWorkLoopComponent`; the timetable word is not wired to `LF_ResidentActivity.Apply` yet.
+- **Player sees:** a worker with a work activity (`carry`, `hammer`, `sweep`) moves through a short cycle of vanilla gestures and rests at their spot instead of standing still. A placed character does it with `LF_ResidentWorkLoopComponent`; a timetable line that says `carry`, `hammer` or `sweep` reaches it through `LF_ResidentActivity.Apply` (#4366): a new line, a walk (`Release`) or the spawner despawning the resident calls `Stop`. A work line on a static NPC body warns once and stands.
 - **Owner and side:** server. `LF_ResidentWorkLoop` (`Begin`, `TickAt`, `Stop`); a 1 s `CallLater` sweep drives every worker from the clock (seconds since `Begin`). The gesture replicates through the character's own animation. Persisted: nothing.
 - **Rules:** a step is a vanilla `ECharacterGestures` (NONE is a rest) for whole seconds; the last step wraps to step 0. Not a work name: `LF_Debug.Warn`, no loop. A body with no character controller: warned, stands. Dead or deleted bodies leave the loop. Statics reset through `LF_ResidentWorkLoop_StaticResetHook`.
 - **Proof:** `residents/work-loop` (WORLD).

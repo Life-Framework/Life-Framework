@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{6D5C48EE7B91E16E}Assets/Props/Flags/Gang/Data/GangFlag_Lowtide.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

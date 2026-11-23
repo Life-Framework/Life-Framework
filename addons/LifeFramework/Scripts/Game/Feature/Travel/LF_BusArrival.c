@@ -53,6 +53,28 @@ class LF_BusArrival
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Pure: the yaw in degrees (0 looks along +Z) a passenger faces on arrival: the way the sign faces,
+	//! out to the open street (the stop stands with its back to a wall; re-review N6 had the passenger
+	//! set down staring at it).
+	static float FacingYaw(vector signForward)
+	{
+		signForward[1] = 0;
+		if (signForward.LengthSq() < 0.0001)
+			return 0;
+
+		return Math.Atan2(signForward[0], signForward[2]) * Math.RAD2DEG;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The yaw a passenger set down at this stop faces.
+	static float FacingAt(notnull IEntity stop)
+	{
+		vector mat[4];
+		stop.GetWorldTransform(mat);
+		return FacingYaw(mat[2]);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The wanted arrival spot of a stop entity: its component's spot, else 1.5 m behind the sign.
 	static vector WantedAt(notnull IEntity stop)
 	{

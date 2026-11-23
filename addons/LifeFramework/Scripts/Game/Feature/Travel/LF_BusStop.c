@@ -724,7 +724,12 @@ class LF_BusStop
 			return;
 		}
 
-		LF_Jail.MoveBody(body, spot);
+		IEntity stop = LF_Places.Find(PLACE_KIND, trip.m_sTo);
+		if (stop)
+			LF_Jail.MoveBodyFacing(body, spot, LF_BusArrival.FacingAt(stop));
+		else
+			LF_Jail.MoveBody(body, spot);
+
 		if (!s_mArrivedAt)
 			s_mArrivedAt = new map<string, float>();
 
