@@ -1,7 +1,7 @@
 // red-proof: 2026-11-23 `tools\cli test --no-build --red LF_Test_EveronRunPlateRow` RED-OK everon/run-plate-row (RedProof() skips the spawn of the S105, so the Cadet car carries no row and its assertion fails).
 //! "Run plate" (#4425) on the rank fleet in game: under the Everon 1989 header (the pack leg of `tools\cli test`) both
-//! police cars the pool hands out, the white S105 and the white UAZ469, carry an `LF_RunPlateAction` row. The S105's comes
-//! from `tools\cli livery build` (the row's `actions`), the UAZ469's from its core base prefab `LF_UAZ469_Police.et`.
+//! police cars the pool hands out, the white S105 and the white UAZ469, carry an `LF_RunPlateAction` row. Both come
+//! from their core base prefabs (`LF_S105_PoliceBase.et`, `LF_UAZ469_Police.et`), in the `default` context (#4606).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronRunPlateRow : LF_Test
 {

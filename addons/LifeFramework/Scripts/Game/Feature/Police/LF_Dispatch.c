@@ -154,7 +154,13 @@ class LF_Dispatch
 
 		LF_DispatchRecord record = Record(call.m_sSummary, call.m_sClothing, call.m_sVehicle, call.m_sPlace, officers);
 		record.m_sTime = ClockText();
-		record.m_bLowPriority = !s_bReportingCrime && LF_CallAbuse.IsMarked(call.m_sCallerUid);
+		record.m_bLowPriority = !s_bReportingCrime && !call.m_bTip && LF_CallAbuse.IsMarked(call.m_sCallerUid);
+		// A player phoned it in (#4606): it becomes a call an officer takes at the board and closes from the
+		// car radio. A crime report already posts its own call (LF_PoliceCalls.OnWantedChanged). The caller
+		// uid is the server's: LF_ServiceCalls.Place is only reached from server code keyed on the user entity.
+		if (!s_bReportingCrime)
+			LF_PoliceCalls.PostPhoned(call.m_sCallerUid, call.m_sPlace, call.m_vPosition != vector.Zero, call.m_vPosition, call.m_bTip);
+
 		if (officers > 0)
 			record.m_iRadioed = RadioOfficers(record);
 
