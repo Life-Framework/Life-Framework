@@ -1,3 +1,4 @@
+// red-proof: 2026-11-23 (#4531) the M923A1 name assertion failed on the pack patch without m_sNameKey (blank name seen in a session), passed with it; see the PR.
 // red-proof: RED-OK everon/truck-yard, observed 2026-11-23 with `tools\cli test --no-build --red LF_Test_EveronTruckYard` (the hook forgets every row's lot id and capacity class): `the truck yard lists exactly the two trucks`, `the truck yard sells the Ural` and `the truck yard sells the M923A1` fail (the yard is empty, so the run stops there). The car-lot and licence assertions run only past that point; they are not red-proofed separately (follow-up). Hook off: green (--only, pack leg).
 //! #4417 (0.3.0 W20), pack leg: under the Everon 1989 header the price rows put the trucks on the truck
 //! yard. The car lot's list holds no row of capacity class `truck`; the truck yard's list holds the Ural
@@ -67,6 +68,7 @@ class LF_Test_EveronTruckYard : LF_Test
 		ctx.Equal(12000, m923.PriceIn(config), "the M923A1 costs $12,000");
 		ctx.EqualStr(LF_VehicleLotComponent.CLASS_TRUCK, ural.CapacityClassIn(config), "the Ural is class truck");
 		ctx.EqualStr(LF_VehicleLotComponent.CLASS_TRUCK, m923.CapacityClassIn(config), "the M923A1 is class truck");
+		ctx.EqualStr("Cargo truck", WidgetManager.Translate(m923.GetNameKey()), "the M923A1 row has a name on the sheet (it showed blank, #4531)");
 
 		// No truck licence: refused in words, with the check fee.
 		LF_Progression.Forget(UID);

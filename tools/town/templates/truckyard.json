@@ -4,9 +4,9 @@
   "about": "A fenced works yard outside town where the trucks are sold: the sales hut with the truck lot, a row of display trucks, a spawn bay and signs. One slot, hosted by the yard's office building. Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names.",
   "slots": [
     {
-      "id": "truckyard", "required": true, "kit": "truckyard", "host": "building", "poi": "VehicleLot", "margin": 90,
+      "id": "truckyard", "required": true, "kit": "truckyard", "host": "building", "poi": "TruckLot", "margin": 90,
       "needs": { "interior": "optional", "minArea": 25, "prefer": "far", "types": ["farm", "farm-small", "garage", "shed", "industrial"] },
-      "places": ["VehicleLot"]
+      "places": ["TruckLot"]
     }
   ]
 }

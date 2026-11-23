@@ -3929,6 +3929,11 @@ StringTable {
      Target_en_us "Town hall"
      Comment "Map POI kind name (#2247): the town hall, where the clerk sits."
     }
+    CustomStringTableItem "{6BC39EAB78BC4239}" {
+     Id "LF-MapPoi_TruckLot"
+     Target_en_us "Truck Sales"
+     Comment "Map POI name (truck yard, #4531): the truck sales yard; its own badge, not the car lot."
+    }
     CustomStringTableItem "{F6A138480E019E89}" {
      Id "LF-MapPoi_WheatField"
      Target_en_us "Wheat field"
