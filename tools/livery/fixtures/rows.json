@@ -59,6 +59,47 @@
         "source": "Derived from Bohemia Interactive `S1203_body.emat`",
         "license": "Arma Public License, base-game asset",
         "purpose": "Fixture colour repaint"
+      },
+      "panels": {
+        "sign": "livery_fixture",
+        "paint": [
+          0.55,
+          0.03,
+          0.03
+        ],
+        "ink": [
+          0.97,
+          0.97,
+          0.95
+        ],
+        "rim": [
+          0.97,
+          0.97,
+          0.95
+        ],
+        "at": [
+          {
+            "name": "FixtureLetters_L",
+            "coords": [
+              -0.94,
+              1.15,
+              -1.2
+            ],
+            "yaw": -90,
+            "scale": 0.8,
+            "tilt": -10
+          },
+          {
+            "name": "FixtureLetters_R",
+            "coords": [
+              0.94,
+              1.15,
+              -1.2
+            ],
+            "yaw": 90,
+            "scale": 0.8
+          }
+        ]
       }
     }
   ],

@@ -1,5 +1,5 @@
 // tools/validation/livery-selftest.mjs
-// inputs: tools/livery/**, tools/commands/livery.mjs
+// inputs: tools/livery/**, tools/commands/livery.mjs, addons/LF_Everon1989/Prefabs/Vehicles/Liveries/**, addons/LF_Everon1989/Assets/Liveries/**, addons/LF_Everon1989/Configs/Signs/**
 //
 // Proves the `tools\cli livery build` generator (tools/livery/generate.mjs) offline: each fixture row in
 // tools/livery/fixtures/rows.json, built against the vanilla prefab texts in tools/livery/fixtures/vanilla/,
@@ -8,7 +8,9 @@
 // credit row in expected/<row id>/credit.md. A row without a credit fails, and so do mask lettering (it
 // scrambles across UV islands; words go on door plates), a plate text that is not capitals and a GUID shared
 // by two rows. Each front door carries one plate and the rear doors none. The real table
-// (tools/livery/table.mjs) must build against the same fixtures with unique GUIDs.
+// (tools/livery/table.mjs) must build against the same fixtures with unique GUIDs. Fixed-panel plates
+// (`panels`) are named children of the variant prefab, and every generated file in the pack must equal what
+// the build writes, so a hand edit the next build would drop fails here (#4559).
 // red-proof: before tools/livery/generate.mjs existed this printed
 // "FAIL cannot load tools/livery/generate.mjs: ERR_MODULE_NOT_FOUND" (2026-11-23).
 // red-proof: with the credit check in planLivery turned off this printed
@@ -17,6 +19,11 @@
 // "FAIL  table.mjs must export loadLiveries(dir) and generate.mjs loadVehicles(dir)" (2026-11-23).
 // red-proof: with the door plate child turned off this printed
 // "FAIL  addons/LF_Everon1989/Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_L01.et: 0 plates, want 1" (2026-11-23).
+//
+// red-proof: before panels took a tilt this printed
+// "FAIL  a panel tilted past 45 degrees: no error" and "panel FixtureLetters_L does not carry its tilt" (2026-11-23).
+// red-proof: with the rows' panels removed and the hand-added plates on disk this printed
+// "FAIL  addons/LF_Everon1989/Prefabs/Vehicles/Liveries/LF_S105_Police.et: hand edit the next livery build would drop" (2026-11-23).
 //
 // `node tools/validation/livery-selftest.mjs --update` rewrites expected/ from the generator (review the diff).
 
@@ -148,6 +155,46 @@ throws(() => gen.checkUnique([rows.good[0], { ...rows.good[0] }].map((r) => gen.
 try {
   gen.checkUnique(table.LIVERIES.map((r) => gen.planLivery(r, vanilla)));
 } catch (e) { fail(`table.mjs: ${e.message}`); }
+
+// Fixed-panel plates (#4559): children of the variant prefab, named, each naming the panels' sign.
+{
+  const plan = gen.planLivery(rows.good[1], vanilla);
+  const veh = plan.files.find((f) => f.role === "vehicle");
+  const names = rows.good[1].panels?.at.map((a) => a.name) || [];
+  if (names.length !== 2) fail("fixture row FixtureWhite has no two panels");
+  for (const n of names) if (!veh.text.includes(`GenericEntity ${n} {`)) fail(`${veh.rel}: no panel plate ${n}`);
+  const n = (veh.text.match(/m_sSignId "livery_fixture"/g) || []).length;
+  if (n !== names.length) fail(`${veh.rel}: ${n} panel plates name sign livery_fixture, want ${names.length}`);
+  const bad = (panels) => ({ ...rows.good[1], panels: { ...rows.good[1].panels, ...panels } });
+  throws(() => gen.planLivery(bad({ sign: undefined }), vanilla), /panels\.sign is required/, "panels with no sign and no door plate");
+  throws(() => gen.planLivery(bad({ at: [] }), vanilla), /at least one panel/, "panels with no positions");
+  throws(() => gen.planLivery(bad({ at: [{ name: "A", coords: [0, 1], yaw: 0, scale: 1 }] }), vanilla), /coords must be/, "a panel with two coords");
+  throws(() => gen.planLivery(bad({ at: [{ name: "A", coords: [0, 1, 2], yaw: 0, scale: 1 }, { name: "A", coords: [0, 1, 2], yaw: 0, scale: 1 }] }), vanilla), /unique entity name/, "two panels with one name");
+  // A panel's tilt leans the plate onto a side that slopes in at the top (the S105 rear quarter, -18).
+  if (!/GenericEntity FixtureLetters_L \{[\s\S]*?angles -10 -90 0\n/.test(veh.text)) fail(`${veh.rel}: panel FixtureLetters_L does not carry its tilt (want "angles -10 -90 0")`);
+  if (!/GenericEntity FixtureLetters_R \{[\s\S]*?angles 0 90 0\n/.test(veh.text)) fail(`${veh.rel}: panel FixtureLetters_R without tilt is not upright`);
+  throws(() => gen.planLivery(bad({ at: [{ name: "A", coords: [0, 1, 2], yaw: 0, scale: 1, tilt: 60 }] }), vanilla), /tilt must be/, "a panel tilted past 45 degrees");
+}
+
+// Every generated file in the pack is exactly what the build writes (#4559): a hand edit to a generated
+// prefab (a plate child added by hand, a moved coordinate) is dropped by the next `livery build`, so it
+// fails here; put it in the row (`panels`) instead. The UAZ469 door GUIDs come from the fixture vanilla
+// files, which match the game's.
+for (const r of table.LIVERIES) {
+  let plan;
+  try { plan = gen.planLivery(r, vanilla); } catch { continue; } // reported by the table check below
+  for (const f of plan.files) {
+    for (const [rel, text] of [[f.rel, f.text], [f.rel + ".meta", gen.metaText(f)]]) {
+      const abs = join(ROOT, rel);
+      if (!existsSync(abs)) continue; // not built yet: `livery list` shows it
+      const have = readFileSync(abs, "utf8").replace(/\r\n/g, "\n");
+      if (have === text) continue;
+      const a = have.split("\n"), b = text.split("\n");
+      const i = a.findIndex((l, k) => l !== b[k]);
+      fail(`${rel}: hand edit the next livery build would drop (line ${i + 1}: has "${a[i]}", build writes "${b[i]}"); move it into the row in tools/livery/rows/ and run tools\\cli livery build ${plan.id}`);
+    }
+  }
+}
 
 // The credit rows go under "## Liveries" in docs/credits.md, once.
 const cmd = await import(pathToFileURL(join(ROOT, "tools", "commands", "livery.mjs")).href);

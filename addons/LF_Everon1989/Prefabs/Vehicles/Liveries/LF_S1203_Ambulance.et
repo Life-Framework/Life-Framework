@@ -12,24 +12,24 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
  }
  {
   GenericEntity AmbulanceLetters_L {
-   ID "2BAAA3CFCC121B8B"
+   ID "0602EB80D95BD89D"
    components {
-    Hierarchy "{E5C72E402BFCA911}" {
+    Hierarchy "{36ABA2A9D7963BA1}" {
     }
-    MeshObject "{C846CFD029AC4170}" {
+    MeshObject "{6FB43DE89CBE0B6F}" {
      Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
      Materials {
-      MaterialAssignClass "{CEA986766CE9FDB4}" {
+      MaterialAssignClass "{586307892838F6C4}" {
        SourceMaterial "SignWall_01_90X45"
        AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
       }
-      MaterialAssignClass "{2D8C500F3BC8721D}" {
+      MaterialAssignClass "{52EEAAD0F22BBA26}" {
        SourceMaterial "SignWall_01_90X45_MLOD"
        AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
       }
      }
     }
-    LF_SignComponent "{26F596EF45B61DEC}" {
+    LF_SignComponent "{AE696F0F4411717F}" {
      m_sSignId "livery_ambulance"
      m_bFaceOnOwner 1
      m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
@@ -43,29 +43,29 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
      m_vTextColor 0.97 0.97 0.95
     }
    }
-   coords -0.94 1.15 -1.2
+   coords -0.95 0.96 -1.2
    angles 0 -90 0
-   scale 0.8
+   scale 0.7
   }
   GenericEntity AmbulanceLetters_R {
-   ID "3815A5A7006AB67F"
+   ID "E4DE4CFED9985BB6"
    components {
-    Hierarchy "{2B675BC8B6F35C7D}" {
+    Hierarchy "{480051FD90DBA975}" {
     }
-    MeshObject "{E4CE8E510DB1942E}" {
+    MeshObject "{45AD2C8D99472FD0}" {
      Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
      Materials {
-      MaterialAssignClass "{6A0909F0EBC4CDFA}" {
+      MaterialAssignClass "{7CABDB977D2F91F9}" {
        SourceMaterial "SignWall_01_90X45"
        AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
       }
-      MaterialAssignClass "{6294DBFB7DEC08D3}" {
+      MaterialAssignClass "{73EEE4F14C0FB6A5}" {
        SourceMaterial "SignWall_01_90X45_MLOD"
        AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
       }
      }
     }
-    LF_SignComponent "{A8C6E0AA3D98EB57}" {
+    LF_SignComponent "{1C896B1B1CA5D727}" {
      m_sSignId "livery_ambulance"
      m_bFaceOnOwner 1
      m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
@@ -79,9 +79,9 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
      m_vTextColor 0.97 0.97 0.95
     }
    }
-   coords 0.94 1.15 -1.2
+   coords 0.95 0.96 -1.2
    angles 0 90 0
-   scale 0.8
+   scale 0.7
   }
  }
 }

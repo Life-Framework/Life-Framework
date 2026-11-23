@@ -7,7 +7,7 @@
 //------------------------------------------------------------------------------------------------
 //! One rumor: the place it points at, the words, and when it may be told.
 [BaseContainerProps()]
-class LF_RumorDef
+class LF_RumorDef : LF_ConfigRecord
 {
 	[Attribute("", UIWidgets.EditBox, "Unique rumor id")]
 	string m_sId;
@@ -64,17 +64,23 @@ class LF_RumorState
 
 //------------------------------------------------------------------------------------------------
 //! Loaded from Configs/Residents/LF_Rumors.conf. The core ships no rows (rumors are about places,
-//! and places are a pack's); a pack adds its own.
+//! and places are a pack's); a pack adds its own as an overlay of this class listed in its mission
+//! header (`m_aLF_ConfigOverlays`, section `rumors`): rows by id through the override model (add,
+//! replace, patch, remove), plus the crime givers and voice conversations it lists, added to the core's.
 [BaseContainerProps(configRoot: true)]
 class LF_RumorsConfig
 {
 	static const ResourceName CONFIG_PATH = "{F03AAFDFA72ECA61}Configs/Residents/LF_Rumors.conf";
+	static const string OVERLAY_NAME = "rumors";
 
 	[Attribute("", UIWidgets.Object, "Givers that may tell a crime rumor (bar, informant)")]
 	ref array<string> m_aCrimeGivers;
 
 	[Attribute("", UIWidgets.Object, "The rumors")]
 	ref array<ref LF_RumorDef> m_aRumors;
+
+	[Attribute("", UIWidgets.Object, "Recorded conversations (dialogue .conf) whose lines the rows speak: a row's m_sLineKey is the text key of one of their lines")]
+	ref array<ResourceName> m_aVoices;
 
 	protected static ref LF_RumorsConfig s_Config;
 	protected static bool s_bLoadAttempted;
@@ -97,8 +103,70 @@ class LF_RumorsConfig
 		s_Config = LF_RumorsConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
 		if (!s_Config)
 			LF_Debug.Error("Residents", string.Format("rumor config has an unexpected root class: %1", CONFIG_PATH));
+		else
+			s_Config.ApplyLayers();
 
 		return s_Config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Layers the pack overlays of the core file, in load order, over this instance.
+	void ApplyLayers(ResourceName coreConf = CONFIG_PATH)
+	{
+		array<ref Resource> resources = {};
+		array<ResourceName> names = {};
+		LF_ConfigOverlay.LoadPackOverlays(coreConf, LF_RumorsConfig, OVERLAY_NAME, resources, names);
+		LF_ConfigClaims claims = new LF_ConfigClaims();
+		foreach (int i, Resource resource : resources)
+		{
+			int changed = ApplyContainer(resource.GetResource().ToBaseContainer(), names[i], claims);
+			LF_Debug.Info("Residents", string.Format("rumors: pack overlay %1 changed %2 entries", names[i], changed));
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Applies one pack `.conf` of this class: its rows by the override verbs (`m_sOp`), and the crime
+	//! givers and voice conversations it lists, added to this instance's (never removed).
+	//! \return Rows, crime givers and voices added or changed.
+	int ApplyContainer(notnull BaseContainer container, string source = "pack", LF_ConfigClaims claims = null)
+	{
+		if (!m_aRumors)
+			m_aRumors = new array<ref LF_RumorDef>();
+
+		int changed = LF_ConfigOverlay.ApplyContainerList(new LF_RumorList(this), container, "m_aRumors", source, claims);
+		if (!m_aCrimeGivers)
+			m_aCrimeGivers = {};
+
+		array<string> givers = {};
+		if (container.IsVariableSetDirectly("m_aCrimeGivers") && container.Get("m_aCrimeGivers", givers))
+		{
+			foreach (string giver : givers)
+			{
+				if (m_aCrimeGivers.Find(giver) == -1)
+				{
+					m_aCrimeGivers.Insert(giver);
+					changed++;
+				}
+			}
+		}
+
+		if (!m_aVoices)
+			m_aVoices = {};
+
+		array<ResourceName> voices = {};
+		if (container.IsVariableSetDirectly("m_aVoices") && container.Get("m_aVoices", voices))
+		{
+			foreach (ResourceName voice : voices)
+			{
+				if (m_aVoices.Find(voice) == -1)
+				{
+					m_aVoices.Insert(voice);
+					changed++;
+				}
+			}
+		}
+
+		return changed;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -114,6 +182,113 @@ class LF_RumorsConfig
 	{
 		s_Config = null;
 		s_bLoadAttempted = false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! The rumor rows as the override model sees them. The id is the row's `m_sId`.
+class LF_RumorList : LF_ConfigList
+{
+	protected LF_RumorsConfig m_Config;
+
+	void LF_RumorList(LF_RumorsConfig config)
+	{
+		m_Config = config;
+	}
+
+	override string GetName()
+	{
+		return "rumors.rumors";
+	}
+
+	override int Count()
+	{
+		return m_Config.m_aRumors.Count();
+	}
+
+	override LF_ConfigRecord Get(int index)
+	{
+		return m_Config.m_aRumors[index];
+	}
+
+	override string IdOf(notnull LF_ConfigRecord record)
+	{
+		return LF_RumorDef.Cast(record).m_sId;
+	}
+
+	override string IdOfContainer(notnull BaseContainer container)
+	{
+		string id;
+		container.Get("m_sId", id);
+		return id;
+	}
+
+	override string IdHint()
+	{
+		return "a rumor id";
+	}
+
+	override LF_ConfigRecord NewRecord(string id)
+	{
+		return LF_RumorDef.Make(id, string.Empty, string.Empty, false);
+	}
+
+	override void Set(int index, notnull LF_ConfigRecord record)
+	{
+		LF_RumorDef def = LF_RumorDef.Cast(record);
+		if (index < m_Config.m_aRumors.Count())
+			m_Config.m_aRumors.Set(index, def);
+		else
+			m_Config.m_aRumors.Insert(def);
+	}
+
+	override void RemoveAt(int index)
+	{
+		m_Config.m_aRumors.RemoveOrdered(index);
+	}
+
+	//! A patch changes only the fields the pack sets; a list it sets replaces the row's own.
+	override int PatchFromContainer(notnull LF_ConfigRecord record, notnull BaseContainer container)
+	{
+		LF_RumorDef def = LF_RumorDef.Cast(record);
+		int changed;
+		if (container.IsVariableSetDirectly("m_sPlaceId") && container.Get("m_sPlaceId", def.m_sPlaceId))
+			changed++;
+
+		if (container.IsVariableSetDirectly("m_sLineKey") && container.Get("m_sLineKey", def.m_sLineKey))
+			changed++;
+
+		if (container.IsVariableSetDirectly("m_bCrime") && container.Get("m_bCrime", def.m_bCrime))
+			changed++;
+
+		array<string> list = {};
+		if (container.IsVariableSetDirectly("m_aGivers") && container.Get("m_aGivers", list))
+		{
+			def.m_aGivers = list;
+			changed++;
+		}
+
+		array<string> conditions = {};
+		if (container.IsVariableSetDirectly("m_aConditions") && container.Get("m_aConditions", conditions))
+		{
+			def.m_aConditions = conditions;
+			changed++;
+		}
+
+		return changed;
+	}
+
+	//! A row with no place or no line cannot be told.
+	override string Incomplete(notnull LF_ConfigRecord record)
+	{
+		LF_RumorDef def = LF_RumorDef.Cast(record);
+		if (def.m_sPlaceId.IsEmpty())
+			return "a rumor needs a place id (m_sPlaceId)";
+
+		if (def.m_sLineKey.IsEmpty())
+			return "a rumor needs a line key (m_sLineKey)";
+
+		return string.Empty;
 	}
 }
 

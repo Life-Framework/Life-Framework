@@ -145,3 +145,38 @@ was. Full-profile client, grid cell:
 ![POLICE plate, left front door](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/4232/plate-left-close-after.png)
 
 ![police UAZ469, left side](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/4232/police-uaz-left-after.png)
+
+## Update 2026-11-23: plates on fixed panels (`panels`, #4559)
+
+A vehicle whose doors are animated parts of the body mesh (S105, S1203, UAZ452) has no door prefab to carry a
+plate. Its words go on fixed body panels through the row's `panels` field:
+
+```js
+panels: {
+  sign: "livery_ambulance",              // an existing sign row; omit it to reuse the row's door plate sign
+  paint: [r, g, b], ink: [r, g, b], rim: [r, g, b],
+  at: [{ name: "AmbulanceLetters_L", coords: [x, y, z], yaw: -90, scale: 0.7, tilt: 0 }, ...],  // tilt: optional, degrees
+}
+```
+
+Each `at` entry is a named `SignWall_01_90x45` child of the variant prefab, in the vehicle's frame, with GUIDs derived
+from the livery id and the panel name. `livery-selftest` rebuilds every table row and fails when a generated file in
+the pack differs from what the build writes, so a hand edit to a generated prefab (a plate added by hand, a moved
+coordinate) is caught before the next `livery build` drops it. Move the edit into the row and rebuild.
+
+Full-profile session check, 2026-11-23 (pack grid, scratch placements, side and rear-quarter views):
+
+- `LF_S105_Police`: at scale 0.7 and y 0.78 the plate hung over the rear wheel arch and stood off the curved quarter
+  panel. The panel above the arch is about 0.25 m tall, so the plate is scale 0.5 at y 0.82. A later session still
+  showed it standing proud: a trace of the body collider puts the paint 0.80 m out at the plate (the plate was at 0.90),
+  leaning in about 18 degrees at the top and tapering 2.5 cm toward the tail. Panels now take a `tilt` (degrees about
+  the plate's own horizontal axis; negative leans the top in). The S105 plate is x 0.83, tilt -18, yaw toed 1.5
+  degrees, and lies on the paint from the side and from the rear quarter. Four variants (tilt +/-20 and +/-14 to -18,
+  x 0.80 to 0.83, toe +/-3) were shot to pick it; +20 stood proud, x 0.80 at -20 sank the lettering.
+- `LF_UAZ452_Ambulance`: at x 0.93 both plates were buried in the body (the van side is about 0.97 m out), so neither
+  showed. Now x 0.98, y 1.12 (clear of the window line).
+- `LF_S1203_Ambulance`: at y 1.15 the upper third of each plate floated over the inset rear side window. Now scale 0.7
+  at y 0.96 and x 0.95, on the body panel below the window.
+- Left open: the vanilla `uaz452_body_VAI.emat` paints a Cyrillic "ВАИ" (mirrored on one side) along the UAZ452's
+  sides, and the plates do not cover it. Covering it needs a plate on the sliding door, which is part of the body
+  mesh, so the plate would not move with it; the clean fix is a body material without the VAI lettering.

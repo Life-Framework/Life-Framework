@@ -10,6 +10,8 @@
 //   base      the {GUID}path prefab the variant inherits (the service prefab, or a vanilla variant)
 //   colors    { 1: [r, g, b], 2: ..., 3: ..., 4: ... } paint layer colours, linear 0..1
 //   enabled   { 2: false } turns a vanilla paint layer off (the S1203 base mask speckles under layer 2)
+//   panels    { sign, paint, ink, rim, at: [{ name, coords, yaw, scale, tilt }] }: plates on fixed body panels, children of
+//             the variant prefab (S105, S1203, UAZ452: doors that are part of the body mesh), #4559
 //   plate     { text, paint, ink, rim }: a painted plate on each front door (UAZ469) reading text; words
 //             never go in the paint (mask lettering scrambles across UV islands)
 //   credit    { source, license, purpose }: required on every row; it becomes the docs/credits.md row

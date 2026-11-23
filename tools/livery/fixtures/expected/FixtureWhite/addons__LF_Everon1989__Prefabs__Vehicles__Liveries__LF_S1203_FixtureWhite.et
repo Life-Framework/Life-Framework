@@ -10,4 +10,78 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
    }
   }
  }
+ {
+  GenericEntity FixtureLetters_L {
+   ID "C086B508A2637AA8"
+   components {
+    Hierarchy "{4F7B8785B63CC85E}" {
+    }
+    MeshObject "{1E639D72CA4D325F}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{84B71576B8FC80E7}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{D69BEB54B976C9A7}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{9F86F5544F2E6B0F}" {
+     m_sSignId "livery_fixture"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.97 0.97 0.95
+     m_vPaintColor 0.55 0.03 0.03
+     m_vTextColor 0.97 0.97 0.95
+    }
+   }
+   coords -0.94 1.15 -1.2
+   angles -10 -90 0
+   scale 0.8
+  }
+  GenericEntity FixtureLetters_R {
+   ID "FB53A6DE092F0DE1"
+   components {
+    Hierarchy "{7414E7DEAC97FEB5}" {
+    }
+    MeshObject "{A18DD1C64B9543C1}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{5AB8DB4D3068631F}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{B383BD80ACBF80CC}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{A892D10D543412C0}" {
+     m_sSignId "livery_fixture"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.97 0.97 0.95
+     m_vPaintColor 0.55 0.03 0.03
+     m_vTextColor 0.97 0.97 0.95
+    }
+   }
+   coords 0.94 1.15 -1.2
+   angles 0 90 0
+   scale 0.8
+  }
+ }
 }
