@@ -1,0 +1,62 @@
+GenericEntity {
+ ID "A395D901125B279B"
+ components {
+  MeshObject "{B863CC9FDD274D71}" {
+   Object "{827CD0B3816D10CD}Assets/Props/Civilian/NoticeBoardCork_01/NoticeBoard_Motor_Pool.xob"
+  }
+  RigidBody "{BF40D28A4621AE9F}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  LF_MedicCarPoolComponent "{9E78B20106799A72}" {
+  }
+  ActionsManagerComponent "{7D5A413650F090E4}" {
+   ActionContexts {
+    UserActionContext "{6A592A9219C516BD}" {
+     ContextName "default"
+     Position PointInfo "{D00530E8827EC6B1}" {
+      Offset 0 0 0
+     }
+     Radius 1.6
+    }
+   }
+   additionalActions {
+    LF_MedicCarPoolDrawAction "{58178BDC3D3D4D32}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{42045F75D5467CAB}" {
+      Name "#LF-MedicFleet_Take"
+     }
+     "Sort Priority" 0
+     m_iSlot 0
+    }
+    LF_MedicCarPoolDrawAction "{34D42D4C9ADA39CF}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{390623BD73105417}" {
+      Name "#LF-MedicFleet_Take"
+     }
+     "Sort Priority" 1
+     m_iSlot 1
+    }
+    LF_MedicCarPoolDrawAction "{514332DE0DEFEA8C}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{334862B8E739B779}" {
+      Name "#LF-MedicFleet_Take"
+     }
+     "Sort Priority" 2
+     m_iSlot 2
+    }
+   }
+  }
+  RplComponent "{A0EFC70F3029E476}" {
+   Enabled 1
+  }
+ }
+ Flags 0x403 0
+}
