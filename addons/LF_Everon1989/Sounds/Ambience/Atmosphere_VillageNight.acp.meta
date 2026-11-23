@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{64FFA2B6121E2B26}Sounds/Ambience/Atmosphere_VillageNight.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
