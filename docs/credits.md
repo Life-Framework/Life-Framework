@@ -226,6 +226,7 @@ Repainted vehicle bodies and door plates written by `tools\cli livery build`.
 |---|---|---|---|
 | LF_UAZ469_Police | Derived from Bohemia Interactive `UAZ469_Body_CIV_BLUE.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Police repaint and door plates for the UAZ469 | `addons/LF_Everon1989/Assets/Liveries/UAZ469/` |
 | LF_S105_Police | Derived from Bohemia Interactive `S105Body_mat_beige.emat` (Arma Public License, base-game asset) | Police repaint for the S105 | `addons/LF_Everon1989/Assets/Liveries/S105/` |
+| LF_S1203_Police | Derived from Bohemia Interactive `S1203_body.emat` (Arma Public License, base-game asset) | Police repaint for the S1203 | `addons/LF_Everon1989/Assets/Liveries/S1203/` |
 
 ## Contraband labels
 

@@ -4497,26 +4497,31 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4BC652FE250FB8F9}" {
      Id "LF-Credits_194"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_S1203_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B19D39615671DC17}" {
      Id "LF-Credits_195"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "CONTRABAND LABELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{031A67A6561231CB}" {
      Id "LF-Credits_196"
-     Target_en_us "LF_VodkaBottle_BCR"
+     Target_en_us "LF_CigaretteCarton_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{41B72E8D01F8E68E}" {
      Id "LF-Credits_197"
-     Target_en_us "WORK-SITE SOUNDS"
+     Target_en_us "LF_VodkaBottle_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{899288C00EFEEAC6}" {
      Id "LF-Credits_198"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{AB6DB02C0E62EDEF}" {
+     Id "LF-Credits_199"
      Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
