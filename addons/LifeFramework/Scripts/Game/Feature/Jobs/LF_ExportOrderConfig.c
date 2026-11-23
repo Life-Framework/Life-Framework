@@ -34,7 +34,8 @@ class LF_ExportOrderConfig
 {
 	//! No core file: the overlays are matched by class, so there is no core path to name.
 	static const ResourceName CONFIG_PATH = "";
-	static const string SECTION = "exportOrders";
+	//! The name the overlay log lines carry. There is no owner config.json section: a server tunes orders through a pack overlay.
+	static const string LOG_LABEL = "exportOrders";
 
 	static const int DEFAULT_OPEN_SLOTS = 3;	// lf-fixed: fallback only, the card's rule
 	static const int DEFAULT_REFILL_MINUTES = 30;	// lf-fixed: fallback only, the card's rule
@@ -100,7 +101,7 @@ class LF_ExportOrderConfig
 		s_Config = CreateDefault();
 		array<ref Resource> resources = {};
 		array<ResourceName> names = {};
-		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_ExportOrderConfig, SECTION, resources, names);
+		LF_ConfigOverlay.LoadPackOverlays(CONFIG_PATH, LF_ExportOrderConfig, LOG_LABEL, resources, names);
 		foreach (int i, Resource resource : resources)
 		{
 			int changed = s_Config.ApplyContainer(resource.GetResource().ToBaseContainer());
