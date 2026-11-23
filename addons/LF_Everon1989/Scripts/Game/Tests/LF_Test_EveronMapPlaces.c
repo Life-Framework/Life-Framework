@@ -1,3 +1,4 @@
+// red-proof: 2026-11-23 (#4531), TruckLot lines added to the existing batch; the RedProof() hook already empties the table, so the new rows fail with it on (see the run in the PR).
 // red-proof: 2026-11-21, `tools\cli test --no-build --red LF_Test_EveronMapPlaces,LF_Test_PayphonePlace`: RED-OK everon/map-places (55 assertions fail with the hook on), RED-OK map/payphone-place (4); green without it.
 // red-proof: RedProof() reads the table without the island rows file, so the new place kinds have no row and the checks fail.
 //! everon/map-places (rc-map-places): under the Everon 1989 header (the pack leg), every important place of
@@ -74,6 +75,12 @@ class LF_Test_EveronMapPlaces : LF_Test
 		CheckKind(ctx, config, "PoliceStation", "");
 		CheckKind(ctx, config, "HospitalSite", "");
 		CheckKind(ctx, config, "HarbourMaster", "poi_Harbour");
+		// The truck yard has its own badge and reads Truck Sales, not the car lot (#4531).
+		CheckKind(ctx, config, "VehicleLot", "poi_CarLot");
+		CheckKind(ctx, config, "TruckLot", "poi_TruckLot");
+		LF_MapPoiKind truckLot = config.Find("TruckLot");
+		if (truckLot)
+			ctx.EqualStr("Truck Sales", WidgetManager.Translate(truckLot.m_sLabel), "the truck yard reads Truck Sales on the map");
 
 		// The map layer draws the pack's pictograms only when the pack names its imageset: without it every place
 		// fell back to a neutral category glyph (the clerk drew as a town-hall column icon).
