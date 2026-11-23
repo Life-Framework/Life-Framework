@@ -7273,6 +7273,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hotwire"
      Comment "Toast title for hotwiring (#412)."
     }
+    CustomStringTableItem "{747E2492D28BBC6E}" {
+     Id "LF-HoursPlate_Open"
+     Target_en_us "OPEN"
+     Comment "Hours plate row label on a shop door; the value is the keeper's hours written from the resident timetable."
+    }
     CustomStringTableItem "{7B1E4C90A2D35F68}" {
      Id "LF-HouseLock_Lock"
      Target_en_us "Lock house"
