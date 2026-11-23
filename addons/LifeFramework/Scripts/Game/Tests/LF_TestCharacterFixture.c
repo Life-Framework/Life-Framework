@@ -7,6 +7,11 @@ class LF_TestCharacterFixture
 {
 	static const ResourceName CHARACTER_PREFAB = "{9B5BB216CC7FF18E}Prefabs/Characters/Core/Character_Roleplay.et";
 	static const ResourceName JACKET_PREFAB = "{9F546CCA2582D16F}Prefabs/Characters/Uniforms/Jacket_M88.et";
+	//! A spot is taken when a character stands this close (a body is about 0.6 m wide).
+	static const float CROWD_M = 1.0;
+	static const float RING_NEAR_M = 1.25;
+	static const float RING_FAR_M = 2.5;
+	static const int RING_STEPS = 8;
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The character, or null after recording the FAIL reason on ctx.
@@ -31,10 +36,12 @@ class LF_TestCharacterFixture
 			return null;
 		}
 
-		vector position, yawPitchRoll;
-		spawnPoint.GetPositionAndRotation(position, yawPitchRoll);
-		Math3D.AnglesToMatrix(yawPitchRoll, params.Transform);
-		params.Transform[3] = position + "0 0.1 0";
+		// The point's own origin, not GetPositionAndRotation: the spawn point prefab sets m_fRandomSpawnRadius 2, so
+		// that call returns a different spot within 2 m on every call. Two fixture characters landed 1 to 4 m apart
+		// by chance, and a test that reached from one to the other flaked (lockers/lost-and-found, #4323).
+		vector position = spawnPoint.GetOrigin();
+		Math3D.AnglesToMatrix(spawnPoint.GetAngles(), params.Transform);
+		params.Transform[3] = FreeSpot(position) + "0 0.1 0";
 
 		IEntity character = GetGame().SpawnEntityPrefab(res, GetGame().GetWorld(), params);
 		if (!character)
@@ -67,7 +74,34 @@ class LF_TestCharacterFixture
 			return null;
 		}
 
+		LF_TestFixtureCrowd.Note(character);
 		return character;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Where a new character stands: the spawn point itself when no character is within CROWD_M of it,
+	//! else the first free spot on a ring around it, so a second body stands a known 1.25 m away and not on
+	//! top of the first (#4323). The first character stands exactly on the point.
+	static vector FreeSpot(vector spawnPoint)
+	{
+		LF_TestFixtureCrowd crowd = new LF_TestFixtureCrowd();
+		if (!crowd.Near(spawnPoint, CROWD_M))
+			return spawnPoint;
+
+		array<float> radii = {RING_NEAR_M, RING_FAR_M};
+		foreach (float radius : radii)
+		{
+			for (int step = 0; step < RING_STEPS; step++)
+			{
+				float angle = step * Math.PI2 / RING_STEPS;
+				vector spot = spawnPoint + Vector(Math.Cos(angle) * radius, 0, Math.Sin(angle) * radius);
+				if (!crowd.Near(spot, CROWD_M))
+					return spot;
+			}
+		}
+
+		LF_Debug.Warn("TestFixture", "no free spot around the spawn point; the engine will push the character: " + spawnPoint.ToString());
+		return spawnPoint;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -98,6 +132,65 @@ class LF_TestCharacterFixture
 				return true;
 		}
 
+		return false;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Whether a character stands near a spot (the fixture's crowd check). The sphere query does not
+//! list a body spawned earlier in the same frame, and a test run is one frame, so the fixture also
+//! remembers the characters it spawned.
+class LF_TestFixtureCrowd
+{
+	//! Characters the fixture spawned; filled on first use (no static initializer).
+	protected static ref array<EntityID> s_aSpawned;
+	//! The query matches bounding volumes, so it asks with a small sphere; the CROWD_M distance check is on the remembered bodies.
+	protected static const float QUERY_M = 0.3;
+	protected bool m_bFound;
+
+	//------------------------------------------------------------------------------------------------
+	static void Note(IEntity character)
+	{
+		if (!character)
+			return;
+
+		if (!s_aSpawned)
+			s_aSpawned = {};
+
+		s_aSpawned.Insert(character.GetID());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool Near(vector at, float radius)
+	{
+		m_bFound = false;
+		GetGame().GetWorld().QueryEntitiesBySphere(at, QUERY_M, Visit);
+		if (m_bFound || !s_aSpawned)
+			return m_bFound;
+
+		for (int i = s_aSpawned.Count() - 1; i >= 0; i--)
+		{
+			IEntity spawned = GetGame().GetWorld().FindEntityByID(s_aSpawned[i]);
+			if (!spawned)
+			{
+				s_aSpawned.Remove(i);
+				continue;
+			}
+
+			if (vector.Distance(spawned.GetOrigin(), at) < radius)
+				return true;
+		}
+
+		return false;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected bool Visit(IEntity entity)
+	{
+		if (!entity.Type().IsInherited(SCR_ChimeraCharacter))
+			return true;
+
+		m_bFound = true;
 		return false;
 	}
 }
