@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{7E21C5A93D40B8F6}Configs/Outposts/LF_OutpostStock_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
