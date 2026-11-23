@@ -418,6 +418,23 @@ WO-W1.6, WO-W2.7, WO-W4.9, WO-W6.5, WK-A1 place). Chapter 7's TP cards are town 
 | 6 | Sat 11-28 | **Release candidate** | Fix cards only | **X-6 end-of-week full run** 08:00 to 13:00 (all ten hours from checkpoint saves, two clients, a dedicated server, one restart in the middle). Cut `release-0.3.0` from the newest `green` main-guard head at 15:00. The lead may put the RC on the 0grind alpha (wipe allowed) for the **19:00 UK community session**, which is the real playtest of hours 0 to 4 | RC on the alpha |
 | 7 | Sun 11-29 | **Release** | Fixes from the session, built with `--base release-0.3.0`, then `wt sync-base main --source release-0.3.0` | The release checklist below. The maintainer publishes from `release-0.3.0` (or the lead, under its sign-off authority) | 0.3.0 public |
 
+**Days 3 and 4 as cut (2026-11-23).** Days 1 and 2 merged early, so the planner cut Days 3 and 4 the same day:
+73 new cards under the chapter epics (#4404 to #4480), plus eight filed follow-ups turned into cards (#4372, #4388,
+#4389, #4391, #4396, #4336, #4310, #4295). Where the cut differs from the lists above:
+- Split to fit 45 minutes: WK-W3 (card, sting), WK-W11 (effects, then the buyer price and the `economy` line),
+  WK-W24 (order book, board, dock placement), CR-A3 (one store per card), CR-B9 (container yard, bar survey, one
+  card per bar), GA-O11 (dress, then voices). Added: WK-W19_0 (survey the truck yard compound), CR-A6_1 (the bank
+  heist calls the big-job lock, which nothing called yet), WO-L2b (livery rows and vehicles one file each, so the
+  repaint cards run at once), WO-W5_2 (a Day 2 card that was never cut).
+- GA-C9 gets no card: the gang radio (#4221) already drops a leaver from the band. GA-C14 is the registrar voices
+  as in the scope table; flags on the contested-site poles are GA-C12.
+- PO-S1 is the ambulance in the medic fleet only: the medic bonuses merged with #4210. PO-R5 builds the signs
+  and the lay-by kit in a grid cell; the island road placement stays with PO-R10 (Day 5).
+- The F2 tabs run one after another: GA-C13 depends on WK-W6 (both edit `LF_PlayerMenuSheet.c`). CR-B6 depends on
+  WK-A1 (both append to `LF_BuyerDemand_Everon1989.conf`). Island cards carry the `town-draft` label; the square
+  pass (WO-W1_6) waits for the vanilla sign clear (#4391), and the S105 lettering and car-pool board (#4372) wait
+  for the police repaint (WO-L4).
+
 ### The critical paths
 
 Four chains each run five days. Their first cards start at 06:00 on Day 1 and go first in the queue

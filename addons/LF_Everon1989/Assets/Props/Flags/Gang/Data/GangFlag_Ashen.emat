@@ -1,4 +1,4 @@
-MatPBRBasic {
+MatPBRBasic : "{B7A02313829700F9}Assets/Props/Fabric/Flags/Data/Flag_1_2_Green.emat" {
  BCRMap "{2B30DF34FB4E6FEC}Assets/Props/Flags/Gang/Data/GangFlag_Ashen_BCR.edds"
  NMOMap "{425D3CB6B558046D}Assets/Props/Flags/Gang/Data/GangFlag_Ashen_NMO.edds"
 }

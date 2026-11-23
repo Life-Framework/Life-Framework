@@ -1,11 +1,11 @@
 GenericEntity : "{31CE12B3D1F6789E}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_base.et" {
- ID "60F45D2354B5F263"
+ ID "A5F27AF66148BCAE"
  {
   GenericEntity Cloth : "{AE09DA7896F9DB37}Prefabs/Props/Fabric/Flags/Flag_1_2.et" {
    ID "2367DC53371ECABD"
    coords 0 5.45 -0.1
    components {
-    MeshObject "{EEA0C332DD474390}" {
+    MeshObject "{52AE82368499B365}" {
      Materials {
       MaterialAssignClass "{E20FED9678EFB021}" {
        SourceMaterial "Flag_1_2"
