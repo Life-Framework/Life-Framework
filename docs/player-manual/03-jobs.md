@@ -50,6 +50,10 @@ Saint-Philippe holds most of them; the sawmill, the fishing coves, the lake and 
 (fuel delivery at work level 2, taxi at level 3) and licences (felling, sawing, tools). A refusal message says what is
 missing and where to get it.
 
+**First shift of the day.** The first 30 minutes you earn experience in a trade each day pay **double**. The clock starts
+at your first paid outcome, not when you clock in. After the 30 minutes the rest of that day pays the normal rate. Each
+trade has its own first shift, and a new day opens it again. A server restart opens it again too.
+
 **Night pay.** Parcel, fuel and taxi runs finished between **21:00 and 05:00 game time** pay **25 percent more**.
 A game day is 2 real hours and nights are short, so that is about 40 minutes in every 2 hours at the faster night speed.
 
