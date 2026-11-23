@@ -1,0 +1,19 @@
+GenericEntity : "{31CE12B3D1F6789E}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_base.et" {
+ ID "540EF9FEC98AA68B"
+ {
+  GenericEntity Cloth : "{AE09DA7896F9DB37}Prefabs/Props/Fabric/Flags/Flag_1_2.et" {
+   ID "AC171C1A4CB03423"
+   coords 0 5.45 -0.1
+   components {
+    MeshObject "{78AF1115CF117C92}" {
+     Materials {
+      MaterialAssignClass "{C6F5CA67CEEA33DA}" {
+       SourceMaterial "Flag_1_2"
+       AssignedMaterial "{FF7E64014EDA832C}Assets/Props/Flags/Gang/Data/GangFlag_Tidewater.emat"
+      }
+     }
+    }
+   }
+  }
+ }
+}

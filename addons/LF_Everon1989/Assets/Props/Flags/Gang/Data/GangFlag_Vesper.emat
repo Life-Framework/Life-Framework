@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{6B8C166CC6672DE8}Assets/Props/Flags/Gang/Data/GangFlag_Vesper_BCR.edds"
+ NMOMap "{F5132F88C3D3B3AB}Assets/Props/Flags/Gang/Data/GangFlag_Vesper_NMO.edds"
+}
