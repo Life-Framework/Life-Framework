@@ -2,7 +2,7 @@
 // red-proof: 2026-11-21 (#3884), before the fix `--only LF_Test_PlacementAudit` failed "a table pushed 0.3 m into a wall is flagged through-wall (flags=none, clip=none)" while the table's bounds were stale (flags had no through-wall), and with Flags lacking the ClipsWall line the run with clip=BrickWall_01_4m failed the same assertion; the missing row printed "0 missing=1 near=2" and passed.
 // red-proof: 2026-11-11, LF_PlacementAudit.Flags with the floating test at GAP + 5: `--only LF_Test_PlacementAudit` failed "a crate 1 m above the ground is flagged floating (flags=)" while the log measured gap=0.999. Restored, green.
 //! The placement audit (LF_PlacementAudit, `tools\cli audit placement`) on fixtures spawned on open
-//! ground east of the GridWorld annex fence (400, 100): a crate on the ground and one stacked on it are clean, a crate 1 m up is floating, a crate
+//! ground east of the GridWorld annex fence (440, 100): a crate on the ground and one stacked on it are clean, a crate 1 m up is floating, a crate
 //! at three times its size is scaled, a crate pushed half off a table overhangs without floating, a table pushed 0.3 m into a wall is
 //! through-wall, and a layer row 2 m from the only entity of its prefab is a `missing` row that carries the distance (#3884).
 [LF_TestInfo(LF_TestTier.WORLD)]
@@ -23,7 +23,7 @@ class LF_Test_PlacementAudit : LF_Test
 	override void Run(LF_TestContext ctx)
 	{
 		BaseWorld world = GetGame().GetWorld();
-		vector spot = Vector(400, world.GetSurfaceY(400, 100), 100);
+		vector spot = Vector(440, world.GetSurfaceY(440, 100), 100);
 		array<IEntity> spawned = {};
 
 		IEntity grounded = LF_Utils.SpawnEntityPrefab(CRATE, spot);

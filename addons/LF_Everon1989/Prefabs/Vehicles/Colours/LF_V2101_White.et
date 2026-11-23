@@ -1,0 +1,17 @@
+Vehicle : "{E1A2101BE1A00001}Prefabs/Vehicles/Wheeled/V2101/EL_V2101_beige.et" {
+ ID "A51ACF3F595183CB"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{6558DAD288F641A0}" {
+     SourceMaterial "V2101Body_mat1"
+     AssignedMaterial "{44304F34EC8A6147}Assets/Vehicles/Wheeled/V2101/Data/V2101Body_White.emat"
+    }
+    MaterialAssignClass "{6558DAD288F64186}" {
+     SourceMaterial "V2101Body_mat1_int_8707A2E383230350"
+     AssignedMaterial "{41C6EA0517F730F1}Assets/Vehicles/Wheeled/V2101/Data/V2101Body_White_int.emat"
+    }
+   }
+  }
+ }
+}

@@ -8,7 +8,7 @@ hours vary with how far you walk, drive and wait.
 |---|---|---|---|
 | [Parcel runs (courier)](#parcel-runs-courier) | ✅ yes | about **$400** (+25 percent at night) | nothing |
 | [Postal van run](#postal-van-run) | ✅ yes | about **$480** (+25 percent at night) | a driving licence |
-| [Taxi](#taxi) | ✅ yes | about **$600**, with a passenger | work level 3, a second player |
+| [Taxi](#taxi) | ✅ yes | about **$600**, with a passenger | work level 6, a second player |
 | [Harvest and farm](#harvest-and-farm) | ✅ wheat, garden, orchard | about **$420 to $480** for wheat | reaper and a tow vehicle |
 | [Lumber](#lumber) | ✅ yes | about **$400** | an axe |
 | [Fishing](#fishing) | ✅ yes, sold at the dock wholesale | about **$250 to $430** (the wholesale pays 65 percent of a fish counter's rate) | rod and bait |
@@ -47,7 +47,7 @@ Saint-Philippe holds most of them; the sawmill, the fishing coves, the lake and 
 <!-- /map -->
 
 **Levels.** Every paid run, felled tree, fish and revive earns job experience. Higher levels unlock the next job
-(fuel delivery at work level 2, taxi at level 3) and licences (felling, sawing, tools). A refusal message says what is
+(fuel delivery at work level 4, about 6 paid runs; taxi at level 6, about 15) and licences (felling, sawing, tools). A refusal message says what is
 missing and where to get it.
 
 **First shift of the day.** The first 30 minutes you earn experience in a trade each day pay **double**. The clock starts
@@ -97,13 +97,13 @@ The drops are on the east side (a house near the district road) and four along t
 
 ## Taxi
 
-**Status:** ✅ live. Needs **work level 3** (about 6 paid runs) and **another player in your car**.
+**Status:** ✅ live. Needs **work level 6** (about 15 paid runs) and **another player in your car**.
 
 * **Where:** the **taxi rank** at the clinic corner. A beige cab waits at the kerb. Sign up at the post office counter
   (**Take taxi work**), then press **F** at the rank for **Start fare**.
 * **What you do:** pick the passenger up, drive to the stop on your waypoint, and complete the run with the passenger still seated.
 * **Pay:** between **$90 and $150** a fare by distance; a 2 km trip pays about $100. About **$600 an hour** with a steady stream of fares.
-* **Needs:** work level 3 and a real passenger seated in the cab when you drop them off.
+* **Needs:** work level 6 and a real passenger seated in the cab when you drop them off.
 
 ## Getting around by bus
 

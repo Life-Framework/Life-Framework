@@ -9,8 +9,7 @@ import { arrive, clientBox, newestLog, parseState, sessionDir, sessionPaths } fr
 //   node agent-box/session.mjs down
 // On the island pass --board and --spot with the Fit_ names of the dock rows. One client:
 //   1. a level-1 hauler uses the board's real "Take the order" row and the server refuses it on level;
-//   2. `exportorder take` takes the smallest open order at the gate level (no DELIVERY level reaches the
-//      gate in a session yet);
+//   2. `levelupcard grant DELIVERY 5000` earns level 10 and the board's real row takes an order (#4596);
 //   3. `exportorder give short` puts count-1 of the goods in the pockets: "Hand in the export order" at the
 //      spot is refused and the wallet stays;
 //   4. `exportorder give rest` adds the last unit: the hand-in pays the order;
@@ -45,7 +44,7 @@ async function runExportCraneProof() {
     if (!ok) fails.push(name);
   };
   const cash = () => Number(parseState(on(1, { verb: "state" }, 10000).detail).cash || 0);
-  const shot = (name) => on(1, { verb: "capture", mode: "ui", name: `${prefix}_${name}` }, 25000);
+  const shot = (name) => { on(1, { verb: "guide", words: ["close"] }); return on(1, { verb: "capture", mode: "ui", name: `${prefix}_${name}` }, 25000); };
   const handIn = () => { on(1, { verb: "use", className: HAND_IN, entityName: spot }, 10000); wait(2500); };
 
   arrive(on, 1, wait);
@@ -54,24 +53,33 @@ async function runExportCraneProof() {
   on(1, { verb: "guide", words: ["close"] });
 
   // 1. The board's real take row, for a level-1 hauler.
+  // The first stand from the far spawn can land short while the island streams in: stand twice.
   on(1, { verb: "stand", entityName: board }, 10000);
-  wait(3000);
+  wait(8000);
+  on(1, { verb: "stand", entityName: board }, 10000);
+  wait(4000);
   shot("board");
   let mark = exportLines().length;
   // The take rows show once the face's rows reach the client (a board read round trip).
-  for (let i = 0; i < 6; i++) {
+  for (let i = 0; i < 12; i++) {
     if (on(1, { verb: "use", className: "LF_ExportBoardTakeAction", entityName: board }, 10000).status === "ok") break;
     wait(2000);
   }
   wait(2500);
   step("the board refuses a level-1 hauler", /take refused: \S+ is level \d+, orders need \d+/.test(newLines(mark)), newLines(mark).slice(0, 200));
 
-  // 2. Take at the gate level.
+  // 2. Earn DELIVERY level 10 (5000 XP on the 30-level table, #4596) and take the order with the board's real row.
+  on(1, { verb: "levelupcard", words: ["grant", "DELIVERY", "5000"] }, 10000);
+  wait(2500);
   mark = exportLines().length;
-  on(1, { verb: "exportorder", words: ["take"] }, 10000);
-  wait(1500);
-  const took = newLines(mark).match(/harness export take \d+ \((\d+) x ([^)]+)\) for \S+: '([^']*)'/);
-  step("the hauler holds an order", Boolean(took) && took[3] === "", took ? took[0] : "no take line");
+  let took = false;
+  for (let i = 0; i < 12 && !took; i++) {
+    on(1, { verb: "use", className: "LF_ExportBoardTakeAction", entityName: board }, 10000);
+    wait(2500);
+    took = /\S+ took order \d+/.test(newLines(mark));
+  }
+  shot("taken");
+  step("a level 10 hauler takes an order at the board", took, newLines(mark).slice(0, 200));
 
   // 3. Short by one: refused, nothing paid.
   const before = cash();

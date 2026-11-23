@@ -77,8 +77,8 @@ class LF_Test_JobRunRules : LF_Test
 	//------------------------------------------------------------------------------------------------
 	protected void RunTaxi(LF_TestContext ctx)
 	{
-		LF_TestJobRuns.ToLevel(ctx, UID, LF_EJobType.PARCEL, 3);
-		ctx.True(LF_CivilianJob.SignUp(UID, LF_EJobType.TAXI), "level 3 opens the taxi");
+		LF_TestJobRuns.ToLevel(ctx, UID, LF_EJobType.PARCEL, LF_CivilianJob.RequiredLevel(LF_EJobType.TAXI));
+		ctx.True(LF_CivilianJob.SignUp(UID, LF_EJobType.TAXI), "the taxi level opens the taxi");
 		ctx.True(LF_CivilianJob.StartRun(UID, LF_EJobType.TAXI), "a fare starts");
 		LF_CivilianJob.RecordRunStart(UID, Vector(0, 0, 0), 100);
 
