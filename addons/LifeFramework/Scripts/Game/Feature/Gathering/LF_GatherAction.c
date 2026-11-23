@@ -76,15 +76,17 @@ class LF_GatherAction : ScriptedUserAction
 		}
 
 		SCR_InventoryStorageManagerComponent inventoryManager = LF_Component<SCR_InventoryStorageManagerComponent>.Find(pUserEntity);
-		int added = LF_InventoryUtils.AddAmount(inventoryManager, m_GatherItemPrefab, m_GatherAmount);
+		// A trade perk can double the yield (#4408); the stock above is taken once either way.
+		string uid = LF_Utils.GetPlayerUID(pUserEntity);
+		string family = LF_GatherTools.JobFamily(m_Node);
+		string xpJob = FamilyJob(family);
+		int amount = LF_PerkEffects.RollYield(uid, xpJob, m_GatherAmount);
+		int added = LF_InventoryUtils.AddAmount(inventoryManager, m_GatherItemPrefab, amount);
 		if (added > 0)
 		{
 			inventoryManager.RpcAsk_PlaySound(LF_NetworkUtils.GetRplId(pUserEntity), "SOUND_PICK_UP");
 			LF_Debug.Log("Gathering", string.Format("gathered %1 x%2", m_GatherItemPrefab, added));
 			// The level source awards XP from this event; the toast reports what it actually paid.
-			string uid = LF_Utils.GetPlayerUID(pUserEntity);
-			string family = LF_GatherTools.JobFamily(m_Node);
-			string xpJob = FamilyJob(family);
 			int xpBefore = LF_JobLevels.XpOf(uid, xpJob);
 			LF_EventBus.Publish(LF_OnGathered.Create(uid, m_sNodeId, family, m_GatherItemPrefab, added, ToolSpeedFor(pUserEntity)));
 			int xpPaid = 0;
@@ -188,7 +190,7 @@ class LF_GatherAction : ScriptedUserAction
 			return false;
 		}
 
-		m_fToolSpeed = ToolSpeedFor(user);
+		m_fToolSpeed = ToolSpeedFor(user) * PerkSpeedFor(user);
 		return true;
  	}
 
@@ -210,6 +212,16 @@ class LF_GatherAction : ScriptedUserAction
 		if (speed <= 0)
 			return 1.0;
 		return speed;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Hold speed factor of the user's swift-hands perk for this node's trade (#4408): 1 with no perk.
+	//! The perk store lives on the server and the host, so a remote client's hold is not sped up
+	//! (replicating it to that client is a follow-up).
+	protected float PerkSpeedFor(IEntity user)
+	{
+		string trade = FamilyJob(LF_GatherTools.JobFamily(m_Node));
+		return LF_PerkEffects.SpeedFactor(LF_Utils.GetPlayerUID(user), trade);
 	}
 
 	//------------------------------------------------------------------------------------------------
