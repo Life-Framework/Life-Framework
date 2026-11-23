@@ -313,6 +313,12 @@
     {
       "match": "^Room_House_Village_E_1L03t .*market_stall",
       "why": "The room roll-up of the same stall-under-umbrella overlap on the b01 pavement (first-two-hours review A20)."
+    },
+    {
+      "match": "^Clothing_(Mannequin_Backpack|Counter)",
+      "kind": "action-crowds-till",
+      "layer": "Village_Clothing.layer",
+      "why": "The town clothing store's till action sits on the Village_ClothingStore building itself, so the rule reads the whole shop as one till box and every action prop inside it as 0 m from it. The counter's price list and the mannequin are 3 m and 4 m from the real till point (the clerk counter at the door end); the island splits the till into its own LF_ClothesTill prefab and has no such box."
     }
   ]
 }
