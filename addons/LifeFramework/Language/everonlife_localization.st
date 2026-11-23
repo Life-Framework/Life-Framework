@@ -4700,6 +4700,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Booking typewriter and ink pad stamp sounds"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+    CustomStringTableItem "{BE5E5996E3159D99}" {
+     Id "LF-Credits_206"
+     Target_en_us "The north outpost's spoken lines: quartermaster"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
     CustomStringTableItem "{09A1E735EF193A11}" {
      Id "LF-Credits_21"
      Target_en_us "Arma Reforger Tools and the Workbench IDE by Bohemia Interactive build and test the mod."
