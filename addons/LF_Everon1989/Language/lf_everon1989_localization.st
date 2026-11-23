@@ -206,12 +206,12 @@ StringTable {
     }
     CustomStringTableItem "{2FC28DBE70BC949C}" {
      Id "LF-Activity_Mining_Ore_Note"
-     Target_en_us "Swing at the rust-veined rocks and pick up 3 pieces of ore; every piece levels Mining, and level 2 opens the coal license."
+     Target_en_us "Swing at the rust-veined rocks and pick up 15 pieces of ore, one full furnace load; every piece levels Mining, and level 2 opens the coal license."
      Comment "Mining step note, one sentence, with the levelling hint."
     }
     CustomStringTableItem "{BBF0328175038D91}" {
      Id "LF-Activity_Mining_Ore_Title"
-     Target_en_us "Mine 3 iron ore"
+     Target_en_us "Mine 15 iron ore"
      Comment "Mining step title."
     }
     CustomStringTableItem "{7AADE23D2DEEDDF3}" {
@@ -231,7 +231,7 @@ StringTable {
     }
     CustomStringTableItem "{2777AEB12A56E04F}" {
      Id "LF-Activity_Mining_Sell_Note"
-     Target_en_us "Drive the bars down to the iron counter in the dock wholesale warehouse; it pays $20 a bar."
+     Target_en_us "Drive the bars down to the iron counter in the dock wholesale warehouse; it pays $20 a bar, and the mine adds $180 for your first run."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{122ADCC1D2DD3D46}" {
@@ -241,12 +241,12 @@ StringTable {
     }
     CustomStringTableItem "{43FB216022439923}" {
      Id "LF-Activity_Mining_Smelt_Note"
-     Target_en_us "Smelt the ore in the mine furnace: 3 ore make a bar, and a run takes about 4 minutes."
+     Target_en_us "Smelt the ore in the mine furnace: 3 ore make a bar, so your 15 make 5 bars in one 4-minute run."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{6F8D145FBA72E000}" {
      Id "LF-Activity_Mining_Smelt_Title"
-     Target_en_us "Smelt a bar"
+     Target_en_us "Smelt your bars"
      Comment "Mining step title."
     }
     CustomStringTableItem "{35FC580FEECB6912}" {
@@ -728,6 +728,346 @@ StringTable {
      Id "LF-Dialogue_Dockworker_SayWork"
      Target_en_us "Any work on the docks?"
      Comment "Dialogue reply the player can pick when talking to the dockworker NPC."
+    }
+    CustomStringTableItem "{7A79A57C7CDDE4FA}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Bye"
+     Target_en_us "Mind the roof."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{3A0E97FF4B89C2A7}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Greet"
+     Target_en_us "Bruno. I run the crew at Coalman's Brow. Swing a pick, keep your head down, and the mine will notice you."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{5B5767DDBD7822D1}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next02"
+     Target_en_us "Next up, level 2. Bruno hires you at Coalman's Brow. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{ECAED3F1E2EFB65D}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next03"
+     Target_en_us "Next up, level 3. Hard hat: fewer falls from the rock face. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{559537B1196BA0B6}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next04"
+     Target_en_us "Next up, level 4. The coal seam at East Rise. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{245379492B9DA31E}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next05"
+     Target_en_us "Next up, level 5. Iron rocks at the second shaft. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{A0A02721D8EA9C3B}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next06"
+     Target_en_us "Next up, level 6. Faster swing. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{E3081B2AD3609B7C}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next07"
+     Target_en_us "Next up, level 7. The power plant buys your coal. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{36B7C8B21E02C80A}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next08"
+     Target_en_us "Next up, level 8. Steel pickaxe at the hardware store. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{4AB97E76C0B755FE}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next09"
+     Target_en_us "Next up, level 9. Stone digging at the quarry. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{BB8CE3844369308F}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next10"
+     Target_en_us "Next up, level 10. The cement works buys sand and stone. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{4FD97BEFC7DCEB05}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next11"
+     Target_en_us "Next up, level 11. Ore cart: carry more per trip. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{2540B944E5907A0E}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next12"
+     Target_en_us "Next up, level 12. Chance of a double ore drop. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{0133EF7CFEA9F792}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next13"
+     Target_en_us "Next up, level 13. Lamp: work the deep face. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{28F3AD50655986A6}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next14"
+     Target_en_us "Next up, level 14. Better price at the wholesaler. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{731BB34EBF562BFD}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next15"
+     Target_en_us "Next up, level 15. Pick wear slows down. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{303D073C61E825D5}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next16"
+     Target_en_us "Next up, level 16. Morton quarry shifts. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{8DE28B4434F51931}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next17"
+     Target_en_us "Next up, level 17. Deep seam at East Rise. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{FA3D4C032257C336}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next18"
+     Target_en_us "Next up, level 18. Drill bits from the hardware store. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{F791FC745304D5C7}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next19"
+     Target_en_us "Next up, level 19. Larger double-drop chance. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{447286F5E41F4015}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next20"
+     Target_en_us "Next up, level 20. Blast fuses for the foreman's crew. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{92377D5BCA5CF790}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next21"
+     Target_en_us "Next up, level 21. Mine truck access. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{C51133283202A75A}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next22"
+     Target_en_us "Next up, level 22. The assay table at Ore Ridge. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{7E5BC3597728E4A6}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next23"
+     Target_en_us "Next up, level 23. Gold buyers pay more. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{CBB03F4E87351B21}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next24"
+     Target_en_us "Next up, level 24. Second double-drop chance. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{DDFBB27734A40C56}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next25"
+     Target_en_us "Next up, level 25. Gold flake in the Ore Ridge workings. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{C8E0F338F93835F2}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next26"
+     Target_en_us "Next up, level 26. Foreman's tool locker. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{E459846EE40716D2}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next27"
+     Target_en_us "Next up, level 27. Rich vein markers. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{7B556CB772C4B339}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next28"
+     Target_en_us "Next up, level 28. Crew bonus on a shared shift. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{9D1DA2B82FD95B2C}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next29"
+     Target_en_us "Next up, level 29. Mine foreman badge. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{2B0CA2CF90A9A646}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_Next30"
+     Target_en_us "Next up, level 30. Master Miner title and the foreman's clock. Keep swinging."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{3AED363808F7D5F7}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_NextTop"
+     Target_en_us "You have seen every door this mine has. The rest is just coal, friend."
+     Comment "Dialogue caption, spoken by the foreman_coalmans_brow NPC (voiced; tools/assets/dialogue/foreman_coalmans_brow). Changing it needs: tools\\cli asset dialogue foreman_coalmans_brow"
+    }
+    CustomStringTableItem "{324620A84DB17FA4}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the foreman_coalmans_brow NPC."
+    }
+    CustomStringTableItem "{A5A0F1207492DDC9}" {
+     Id "LF-Dialogue_ForemanCoalmansBrow_SayNext"
+     Target_en_us "What does my level open next?"
+     Comment "Dialogue reply the player can pick when talking to the foreman_coalmans_brow NPC."
+    }
+    CustomStringTableItem "{B5419F9ED0583E00}" {
+     Id "LF-Dialogue_ForemanSawmill_Bye"
+     Target_en_us "Watch your fingers."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{2869D9121B7B52C9}" {
+     Id "LF-Dialogue_ForemanSawmill_Greet"
+     Target_en_us "Lucien Maury. I keep the saws running at the Everon mill. Bring logs, and I will keep you busy."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{47A24BABE1E06E0D}" {
+     Id "LF-Dialogue_ForemanSawmill_Next02"
+     Target_en_us "Next up, level 2. Fell pine on the north ridge. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{34CB146E640C5FCF}" {
+     Id "LF-Dialogue_ForemanSawmill_Next03"
+     Target_en_us "Next up, level 3. Gloves: fewer splinters. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{E4FA30A0B89C7413}" {
+     Id "LF-Dialogue_ForemanSawmill_Next04"
+     Target_en_us "Next up, level 4. The timber counter buys logs. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{9682623ED7B7189E}" {
+     Id "LF-Dialogue_ForemanSawmill_Next05"
+     Target_en_us "Next up, level 5. Firewood for the bakery. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{121B48D6D9BB609A}" {
+     Id "LF-Dialogue_ForemanSawmill_Next06"
+     Target_en_us "Next up, level 6. Faster felling. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{3F088F3FFB131F1D}" {
+     Id "LF-Dialogue_ForemanSawmill_Next07"
+     Target_en_us "Next up, level 7. Log sawing at the sawmill. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{7E9254FED46EEC22}" {
+     Id "LF-Dialogue_ForemanSawmill_Next08"
+     Target_en_us "Next up, level 8. Chainsaw from the hardware store. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{9590C4035AF19549}" {
+     Id "LF-Dialogue_ForemanSawmill_Next09"
+     Target_en_us "Next up, level 9. Hornbeam Valley hardwood. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{C6C7AA1F9684FBF3}" {
+     Id "LF-Dialogue_ForemanSawmill_Next10"
+     Target_en_us "Next up, level 10. The smokehouse buys firewood. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{732271F406586803}" {
+     Id "LF-Dialogue_ForemanSawmill_Next11"
+     Target_en_us "Next up, level 11. Log trailer: carry more per run. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{BD1441AA5F66C979}" {
+     Id "LF-Dialogue_ForemanSawmill_Next12"
+     Target_en_us "Next up, level 12. Chance of a double log. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{C56A503A3646AC1E}" {
+     Id "LF-Dialogue_ForemanSawmill_Next13"
+     Target_en_us "Next up, level 13. Planks from the sawmill. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{ADE77E5362020F4D}" {
+     Id "LF-Dialogue_ForemanSawmill_Next14"
+     Target_en_us "Next up, level 14. Better price at the timber counter. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{7107DFBD1D4A00B4}" {
+     Id "LF-Dialogue_ForemanSawmill_Next15"
+     Target_en_us "Next up, level 15. Chain wear slows down. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{A9920E0046330F2F}" {
+     Id "LF-Dialogue_ForemanSawmill_Next16"
+     Target_en_us "Next up, level 16. Sawmill shifts. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{78D01C45135A27A5}" {
+     Id "LF-Dialogue_ForemanSawmill_Next17"
+     Target_en_us "Next up, level 17. Régina sawmill bulk buyer. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{39CCD00BD67B873B}" {
+     Id "LF-Dialogue_ForemanSawmill_Next18"
+     Target_en_us "Next up, level 18. Larger double-log chance. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{27A599EC4FEB7A4A}" {
+     Id "LF-Dialogue_ForemanSawmill_Next19"
+     Target_en_us "Next up, level 19. Timber haul orders. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{703D45E03B72A85F}" {
+     Id "LF-Dialogue_ForemanSawmill_Next20"
+     Target_en_us "Next up, level 20. Lumber truck loans. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{57574E80F1A57D21}" {
+     Id "LF-Dialogue_ForemanSawmill_Next21"
+     Target_en_us "Next up, level 21. Rare hardwood stands. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{13AB8142EDCECE0B}" {
+     Id "LF-Dialogue_ForemanSawmill_Next22"
+     Target_en_us "Next up, level 22. Faster sawing. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{29454A725C1E3DF9}" {
+     Id "LF-Dialogue_ForemanSawmill_Next23"
+     Target_en_us "Next up, level 23. Bulk planks to building work. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{27FF1058235A2AE7}" {
+     Id "LF-Dialogue_ForemanSawmill_Next24"
+     Target_en_us "Next up, level 24. Second double-log chance. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{4B20794DFB40C9C7}" {
+     Id "LF-Dialogue_ForemanSawmill_Next25"
+     Target_en_us "Next up, level 25. Logging crew bonus. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{7ECD8343FC359B67}" {
+     Id "LF-Dialogue_ForemanSawmill_Next26"
+     Target_en_us "Next up, level 26. Felling wedges: no pinched saw. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{036AB0CC427EE3D0}" {
+     Id "LF-Dialogue_ForemanSawmill_Next27"
+     Target_en_us "Next up, level 27. Sawmill foreman's tools. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{7CA1660B84393F36}" {
+     Id "LF-Dialogue_ForemanSawmill_Next28"
+     Target_en_us "Next up, level 28. Hardwood contracts. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{7E7390289E436633}" {
+     Id "LF-Dialogue_ForemanSawmill_Next29"
+     Target_en_us "Next up, level 29. Lumber foreman badge. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{D68F5B0FD2FDF29E}" {
+     Id "LF-Dialogue_ForemanSawmill_Next30"
+     Target_en_us "Next up, level 30. Master Lumberjack title and the mill's ledger. Keep the blade sharp."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{BBA13C5417634118}" {
+     Id "LF-Dialogue_ForemanSawmill_NextTop"
+     Target_en_us "I have nothing left to show you. You know every saw in this yard."
+     Comment "Dialogue caption, spoken by the foreman_sawmill NPC (voiced; tools/assets/dialogue/foreman_sawmill). Changing it needs: tools\\cli asset dialogue foreman_sawmill"
+    }
+    CustomStringTableItem "{7FF36E737326A625}" {
+     Id "LF-Dialogue_ForemanSawmill_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the foreman_sawmill NPC."
+    }
+    CustomStringTableItem "{22A4161051F769DD}" {
+     Id "LF-Dialogue_ForemanSawmill_SayNext"
+     Target_en_us "What does my level open next?"
+     Comment "Dialogue reply the player can pick when talking to the foreman_sawmill NPC."
     }
     CustomStringTableItem "{4E29407E130F00C3}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
@@ -1674,6 +2014,51 @@ StringTable {
      Target_en_us "Stop! You did not pay for that! Come back here!"
      Comment "Pack patch of the shopkeeper dialogue's line thief (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
     }
+    CustomStringTableItem "{5D5270FE6B9E5D3F}" {
+     Id "LF-Dialogue_TallyClerk_Bye"
+     Target_en_us "Mind the crane."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{E229C1F569881044}" {
+     Id "LF-Dialogue_TallyClerk_Greet"
+     Target_en_us "Marcel, tally clerk. I count what comes off the ships and I write down what the customs man wants written. Funny thing. Container nine is short this week."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{A211E5348B729FDB}" {
+     Id "LF-Dialogue_TallyClerk_Key"
+     Target_en_us "Here. Brass, on a red string. Container nine, back row, past the crane. Take what is in it, lock it up after. The books will say it never came."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{D47A10A396A7D15E}" {
+     Id "LF-Dialogue_TallyClerk_Later"
+     Target_en_us "Not while the customs man is here. Come back when your pockets are full and the yard is quiet."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{14E7D04534C559B3}" {
+     Id "LF-Dialogue_TallyClerk_Offer"
+     Target_en_us "Four hundred dollars, and it stays short on the books. You carry the key, you take what is in it, and in a while it fills up again. I never saw you."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{BFD54AC106AC9C6F}" {
+     Id "LF-Dialogue_TallyClerk_SayAsk"
+     Target_en_us "Container nine is short?"
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
+    CustomStringTableItem "{73462183206DA1C3}" {
+     Id "LF-Dialogue_TallyClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
+    CustomStringTableItem "{C2EEF8BC03101543}" {
+     Id "LF-Dialogue_TallyClerk_SayLater"
+     Target_en_us "I need to think about it."
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
+    CustomStringTableItem "{EE84E765295E0B07}" {
+     Id "LF-Dialogue_TallyClerk_SayPay"
+     Target_en_us "Here is the four hundred."
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
     CustomStringTableItem "{F2B1DF023C756490}" {
      Id "LF-Everon-Lock_Closed"
      Target_en_us "Closed"
@@ -1853,6 +2238,306 @@ StringTable {
      Id "LF-Everon_TradeTier_5"
      Target_en_us "Master"
      Comment "Trade tier word 5 of 5 (#4181), levels 28 to 30 of the 30-level trade tables. Shown instead of a level number."
+    }
+    CustomStringTableItem "{CA12AC1CA85BA543}" {
+     Id "LF-Foreman_LUMBERJACK_Next_02"
+     Target_en_us "Next up, level 2. Fell pine on the north ridge. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 2 opens."
+    }
+    CustomStringTableItem "{DAD225772002CB05}" {
+     Id "LF-Foreman_LUMBERJACK_Next_03"
+     Target_en_us "Next up, level 3. Gloves: fewer splinters. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 3 opens."
+    }
+    CustomStringTableItem "{5DACE2AA95A56CF5}" {
+     Id "LF-Foreman_LUMBERJACK_Next_04"
+     Target_en_us "Next up, level 4. The timber counter buys logs. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 4 opens."
+    }
+    CustomStringTableItem "{87A861271BF3FF96}" {
+     Id "LF-Foreman_LUMBERJACK_Next_05"
+     Target_en_us "Next up, level 5. Firewood for the bakery. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 5 opens."
+    }
+    CustomStringTableItem "{F6BDF301D8BED074}" {
+     Id "LF-Foreman_LUMBERJACK_Next_06"
+     Target_en_us "Next up, level 6. Faster felling. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 6 opens."
+    }
+    CustomStringTableItem "{57E8750D295AB856}" {
+     Id "LF-Foreman_LUMBERJACK_Next_07"
+     Target_en_us "Next up, level 7. Log sawing at the sawmill. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 7 opens."
+    }
+    CustomStringTableItem "{51A4E888B75F0C37}" {
+     Id "LF-Foreman_LUMBERJACK_Next_08"
+     Target_en_us "Next up, level 8. Chainsaw from the hardware store. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 8 opens."
+    }
+    CustomStringTableItem "{4A628399C243C153}" {
+     Id "LF-Foreman_LUMBERJACK_Next_09"
+     Target_en_us "Next up, level 9. Hornbeam Valley hardwood. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 9 opens."
+    }
+    CustomStringTableItem "{22CA39872DBDDE05}" {
+     Id "LF-Foreman_LUMBERJACK_Next_10"
+     Target_en_us "Next up, level 10. The smokehouse buys firewood. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 10 opens."
+    }
+    CustomStringTableItem "{45A3E47450A54058}" {
+     Id "LF-Foreman_LUMBERJACK_Next_11"
+     Target_en_us "Next up, level 11. Log trailer: carry more per run. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 11 opens."
+    }
+    CustomStringTableItem "{09AED91C1C2AA980}" {
+     Id "LF-Foreman_LUMBERJACK_Next_12"
+     Target_en_us "Next up, level 12. Chance of a double log. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 12 opens."
+    }
+    CustomStringTableItem "{91288A5209CE47F2}" {
+     Id "LF-Foreman_LUMBERJACK_Next_13"
+     Target_en_us "Next up, level 13. Planks from the sawmill. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 13 opens."
+    }
+    CustomStringTableItem "{13DB4203C20A3D83}" {
+     Id "LF-Foreman_LUMBERJACK_Next_14"
+     Target_en_us "Next up, level 14. Better price at the timber counter. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 14 opens."
+    }
+    CustomStringTableItem "{BFBA24E4EF002164}" {
+     Id "LF-Foreman_LUMBERJACK_Next_15"
+     Target_en_us "Next up, level 15. Chain wear slows down. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 15 opens."
+    }
+    CustomStringTableItem "{7FCF7D437CE5D9CD}" {
+     Id "LF-Foreman_LUMBERJACK_Next_16"
+     Target_en_us "Next up, level 16. Sawmill shifts. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 16 opens."
+    }
+    CustomStringTableItem "{DB95F74AA2F415F7}" {
+     Id "LF-Foreman_LUMBERJACK_Next_17"
+     Target_en_us "Next up, level 17. Régina sawmill bulk buyer. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 17 opens."
+    }
+    CustomStringTableItem "{AA39DCED4B8B025B}" {
+     Id "LF-Foreman_LUMBERJACK_Next_18"
+     Target_en_us "Next up, level 18. Larger double-log chance. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 18 opens."
+    }
+    CustomStringTableItem "{09C4DCF38FE18C88}" {
+     Id "LF-Foreman_LUMBERJACK_Next_19"
+     Target_en_us "Next up, level 19. Timber haul orders. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 19 opens."
+    }
+    CustomStringTableItem "{C4B8A6FC6F62A0BE}" {
+     Id "LF-Foreman_LUMBERJACK_Next_20"
+     Target_en_us "Next up, level 20. Lumber truck loans. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 20 opens."
+    }
+    CustomStringTableItem "{1C89D11FFA020A39}" {
+     Id "LF-Foreman_LUMBERJACK_Next_21"
+     Target_en_us "Next up, level 21. Rare hardwood stands. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 21 opens."
+    }
+    CustomStringTableItem "{5C00C24F4A9775D4}" {
+     Id "LF-Foreman_LUMBERJACK_Next_22"
+     Target_en_us "Next up, level 22. Faster sawing. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 22 opens."
+    }
+    CustomStringTableItem "{CAB0481BC7E58F8C}" {
+     Id "LF-Foreman_LUMBERJACK_Next_23"
+     Target_en_us "Next up, level 23. Bulk planks to building work. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 23 opens."
+    }
+    CustomStringTableItem "{C14C8D46383758DC}" {
+     Id "LF-Foreman_LUMBERJACK_Next_24"
+     Target_en_us "Next up, level 24. Second double-log chance. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 24 opens."
+    }
+    CustomStringTableItem "{4912CF8E7323D067}" {
+     Id "LF-Foreman_LUMBERJACK_Next_25"
+     Target_en_us "Next up, level 25. Logging crew bonus. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 25 opens."
+    }
+    CustomStringTableItem "{11B547457FED76A6}" {
+     Id "LF-Foreman_LUMBERJACK_Next_26"
+     Target_en_us "Next up, level 26. Felling wedges: no pinched saw. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 26 opens."
+    }
+    CustomStringTableItem "{2ECB68A2929A6226}" {
+     Id "LF-Foreman_LUMBERJACK_Next_27"
+     Target_en_us "Next up, level 27. Sawmill foreman's tools. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 27 opens."
+    }
+    CustomStringTableItem "{28FAF35028F3788B}" {
+     Id "LF-Foreman_LUMBERJACK_Next_28"
+     Target_en_us "Next up, level 28. Hardwood contracts. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 28 opens."
+    }
+    CustomStringTableItem "{3C5184EC31B873EF}" {
+     Id "LF-Foreman_LUMBERJACK_Next_29"
+     Target_en_us "Next up, level 29. Lumber foreman badge. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 29 opens."
+    }
+    CustomStringTableItem "{F4E69D0A04DF2B43}" {
+     Id "LF-Foreman_LUMBERJACK_Next_30"
+     Target_en_us "Next up, level 30. Master Lumberjack title and the mill's ledger. Keep the blade sharp."
+     Comment "Lumberjack foreman (#4237): announces what level 30 opens."
+    }
+    CustomStringTableItem "{6202FC58BA12DE95}" {
+     Id "LF-Foreman_LUMBERJACK_Next_Top"
+     Target_en_us "I have nothing left to show you. You know every saw in this yard."
+     Comment "Lumberjack foreman (#4237): what he says when the player has seen the last unlock row."
+    }
+    CustomStringTableItem "{3F8E19B7B933EEE5}" {
+     Id "LF-Foreman_MINER_Next_02"
+     Target_en_us "Next up, level 2. Bruno hires you at Coalman's Brow. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 2 opens."
+    }
+    CustomStringTableItem "{823C1AEB827EF62A}" {
+     Id "LF-Foreman_MINER_Next_03"
+     Target_en_us "Next up, level 3. Hard hat: fewer falls from the rock face. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 3 opens."
+    }
+    CustomStringTableItem "{06EB0137B57B1FE7}" {
+     Id "LF-Foreman_MINER_Next_04"
+     Target_en_us "Next up, level 4. The coal seam at East Rise. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 4 opens."
+    }
+    CustomStringTableItem "{CDDD73BF1D0AAAD1}" {
+     Id "LF-Foreman_MINER_Next_05"
+     Target_en_us "Next up, level 5. Iron rocks at the second shaft. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 5 opens."
+    }
+    CustomStringTableItem "{141F10FF0D0C636E}" {
+     Id "LF-Foreman_MINER_Next_06"
+     Target_en_us "Next up, level 6. Faster swing. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 6 opens."
+    }
+    CustomStringTableItem "{38E1A4120B775E8F}" {
+     Id "LF-Foreman_MINER_Next_07"
+     Target_en_us "Next up, level 7. The power plant buys your coal. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 7 opens."
+    }
+    CustomStringTableItem "{3C7C08C86CE8928C}" {
+     Id "LF-Foreman_MINER_Next_08"
+     Target_en_us "Next up, level 8. Steel pickaxe at the hardware store. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 8 opens."
+    }
+    CustomStringTableItem "{6AFAA73E9CAAF37D}" {
+     Id "LF-Foreman_MINER_Next_09"
+     Target_en_us "Next up, level 9. Stone digging at the quarry. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 9 opens."
+    }
+    CustomStringTableItem "{2AE795EC8C88BD4E}" {
+     Id "LF-Foreman_MINER_Next_10"
+     Target_en_us "Next up, level 10. The cement works buys sand and stone. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 10 opens."
+    }
+    CustomStringTableItem "{C6FEDB35372979F6}" {
+     Id "LF-Foreman_MINER_Next_11"
+     Target_en_us "Next up, level 11. Ore cart: carry more per trip. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 11 opens."
+    }
+    CustomStringTableItem "{A6C3F630D5B903B5}" {
+     Id "LF-Foreman_MINER_Next_12"
+     Target_en_us "Next up, level 12. Chance of a double ore drop. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 12 opens."
+    }
+    CustomStringTableItem "{AFAF9FC9EE57FCF8}" {
+     Id "LF-Foreman_MINER_Next_13"
+     Target_en_us "Next up, level 13. Lamp: work the deep face. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 13 opens."
+    }
+    CustomStringTableItem "{51FA0989011325F7}" {
+     Id "LF-Foreman_MINER_Next_14"
+     Target_en_us "Next up, level 14. Better price at the wholesaler. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 14 opens."
+    }
+    CustomStringTableItem "{DF4B0AA4CE0736FC}" {
+     Id "LF-Foreman_MINER_Next_15"
+     Target_en_us "Next up, level 15. Pick wear slows down. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 15 opens."
+    }
+    CustomStringTableItem "{81A92749BD3ED48B}" {
+     Id "LF-Foreman_MINER_Next_16"
+     Target_en_us "Next up, level 16. Morton quarry shifts. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 16 opens."
+    }
+    CustomStringTableItem "{D852F1E257C64C8C}" {
+     Id "LF-Foreman_MINER_Next_17"
+     Target_en_us "Next up, level 17. Deep seam at East Rise. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 17 opens."
+    }
+    CustomStringTableItem "{2955D840A75E2662}" {
+     Id "LF-Foreman_MINER_Next_18"
+     Target_en_us "Next up, level 18. Drill bits from the hardware store. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 18 opens."
+    }
+    CustomStringTableItem "{B43FB604A91D6413}" {
+     Id "LF-Foreman_MINER_Next_19"
+     Target_en_us "Next up, level 19. Larger double-drop chance. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 19 opens."
+    }
+    CustomStringTableItem "{60419DBBBF0E6896}" {
+     Id "LF-Foreman_MINER_Next_20"
+     Target_en_us "Next up, level 20. Blast fuses for the foreman's crew. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 20 opens."
+    }
+    CustomStringTableItem "{CDF21A1B7D1F9E9E}" {
+     Id "LF-Foreman_MINER_Next_21"
+     Target_en_us "Next up, level 21. Mine truck access. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 21 opens."
+    }
+    CustomStringTableItem "{B8A552223DC023AA}" {
+     Id "LF-Foreman_MINER_Next_22"
+     Target_en_us "Next up, level 22. The assay table at Ore Ridge. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 22 opens."
+    }
+    CustomStringTableItem "{21B38ABDE34E34C2}" {
+     Id "LF-Foreman_MINER_Next_23"
+     Target_en_us "Next up, level 23. Gold buyers pay more. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 23 opens."
+    }
+    CustomStringTableItem "{4C5898DA5F1D8B18}" {
+     Id "LF-Foreman_MINER_Next_24"
+     Target_en_us "Next up, level 24. Second double-drop chance. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 24 opens."
+    }
+    CustomStringTableItem "{DF7FFA8EC78104C3}" {
+     Id "LF-Foreman_MINER_Next_25"
+     Target_en_us "Next up, level 25. Gold flake in the Ore Ridge workings. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 25 opens."
+    }
+    CustomStringTableItem "{8C06746831F9C375}" {
+     Id "LF-Foreman_MINER_Next_26"
+     Target_en_us "Next up, level 26. Foreman's tool locker. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 26 opens."
+    }
+    CustomStringTableItem "{81E55C31C4E662B4}" {
+     Id "LF-Foreman_MINER_Next_27"
+     Target_en_us "Next up, level 27. Rich vein markers. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 27 opens."
+    }
+    CustomStringTableItem "{AF08B2A611B6E810}" {
+     Id "LF-Foreman_MINER_Next_28"
+     Target_en_us "Next up, level 28. Crew bonus on a shared shift. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 28 opens."
+    }
+    CustomStringTableItem "{A013C70341824E0E}" {
+     Id "LF-Foreman_MINER_Next_29"
+     Target_en_us "Next up, level 29. Mine foreman badge. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 29 opens."
+    }
+    CustomStringTableItem "{A2856058A8DDAD71}" {
+     Id "LF-Foreman_MINER_Next_30"
+     Target_en_us "Next up, level 30. Master Miner title and the foreman's clock. Keep swinging."
+     Comment "Miner foreman (#4237): announces what level 30 opens."
+    }
+    CustomStringTableItem "{56F6241EC9755E93}" {
+     Id "LF-Foreman_MINER_Next_Top"
+     Target_en_us "You have seen every door this mine has. The rest is just coal, friend."
+     Comment "Miner foreman (#4237): what he says when the player has seen the last unlock row."
     }
     CustomStringTableItem "{57D5CF2EF598E9B9}" {
      Id "LF-Garage_SlotsFull"
@@ -2089,6 +2774,16 @@ StringTable {
      Target_en_us "A wrapped bar of milk chocolate. A little sugar, a little cheer."
      Comment "Item description: chocolate bar."
     }
+    CustomStringTableItem "{00C0E4CD3F6AAF5F}" {
+     Id "LF-Item_CigaretteCarton"
+     Target_en_us "Carton of cigarettes"
+     Comment "Item name: a carton of cigarettes, a contraband good for the cigarette run (#4198)."
+    }
+    CustomStringTableItem "{8529809DBF35E46B}" {
+     Id "LF-Item_CigaretteCartonDesc"
+     Target_en_us "Ten packs, no tax stamp. A police stop search lists it as tobacco and an officer can seize it."
+     Comment "Item description: carton of cigarettes (#4198)."
+    }
     CustomStringTableItem "{D744A9EB6693B307}" {
      Id "LF-Item_CoffeeTin"
      Target_en_us "Instant coffee"
@@ -2098,6 +2793,16 @@ StringTable {
      Id "LF-Item_CoffeeTinDesc"
      Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
      Comment "Item description: instant coffee."
+    }
+    CustomStringTableItem "{E1BE7F6FF37D0EC9}" {
+     Id "LF-Item_ContainerNineKey_Desc"
+     Target_en_us "A brass key on a red string. It opens container nine at the container yard, back row, past the crane."
+     Comment "Item description of the container nine key (#4381)."
+    }
+    CustomStringTableItem "{2397B62607E1F53B}" {
+     Id "LF-Item_ContainerNineKey_Name"
+     Target_en_us "Container Nine Key"
+     Comment "Item name: the key Marcel the tally clerk sells for container nine at the container yard (#4381)."
     }
     CustomStringTableItem "{DD99AAF5FD3E4FC8}" {
      Id "LF-Item_CopperWireCoil_Description"
@@ -2318,6 +3023,16 @@ StringTable {
      Id "LF-Item_TouristMap_Name"
      Target_en_us "Tourist map of Everon"
      Comment "Tourist map (#2242): the item's name in the inventory."
+    }
+    CustomStringTableItem "{C10755A455463263}" {
+     Id "LF-Item_VodkaBottle"
+     Target_en_us "Bottle of vodka"
+     Comment "Item name: a bottle of vodka, a contraband good for the vodka run (#4198)."
+    }
+    CustomStringTableItem "{C88B737C670E0A5C}" {
+     Id "LF-Item_VodkaBottleDesc"
+     Target_en_us "A sealed bottle with no import stamp. A police stop search lists it as alcohol and an officer can seize it."
+     Comment "Item description: bottle of vodka (#4198)."
     }
     CustomStringTableItem "{66654F6ED99E5F5B}" {
      Id "LF-Item_WornHandTool_Description"
@@ -3428,6 +4143,21 @@ StringTable {
      Id "LF-Resident_cafe_owner_Name"
      Target_en_us "Odilon Marchand"
      Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
+    }
+    CustomStringTableItem "{2189482012477764}" {
+     Id "LF-Resident_gendarme_bank_beat_Name"
+     Target_en_us "Brigadier Lucien Carrel"
+     Comment "Saint-Philippe resident gendarme_bank_beat: display name (#4228)."
+    }
+    CustomStringTableItem "{0DADF7447AB9FD47}" {
+     Id "LF-Resident_gossip_colette_Name"
+     Target_en_us "Colette Brisset"
+     Comment "Saint-Philippe resident gossip_colette: display name (#4228)."
+    }
+    CustomStringTableItem "{03A0303E4DB2701C}" {
+     Id "LF-Resident_gossip_odile_Name"
+     Target_en_us "Odile Ferrand"
+     Comment "Saint-Philippe resident gossip_odile: display name (#4228)."
     }
     CustomStringTableItem "{C506DE77282216DB}" {
      Id "LF-Resident_neighbour_anselme_Name"
@@ -5854,6 +6584,11 @@ StringTable {
      Target_en_us "Couriers wanted"
      Comment "Town board card (work): card title; the prompt reads Read: <title>."
     }
+    CustomStringTableItem "{18C4BB2C33CD079A}" {
+     Id "LF-Townsfolk_Bruno_Name"
+     Target_en_us "Bruno Faure"
+     Comment "Mine foreman (#4237): the speaker line of his dialogue."
+    }
     CustomStringTableItem "{3E81A47C5D0B92F6}" {
      Id "LF-Townsfolk_CafeOwner_Name"
      Target_en_us "Odilon Marchand"
@@ -5894,10 +6629,20 @@ StringTable {
      Target_en_us "Retired fisherman"
      Comment "Townsfolk (The relocated, #1960): what Gaspard Lenoir does, the role line under the name."
     }
+    CustomStringTableItem "{36D9D5E6516866A7}" {
+     Id "LF-Townsfolk_SawmillForeman_Name"
+     Target_en_us "Lucien Maury"
+     Comment "Sawmill foreman (#4237): the speaker line of his dialogue."
+    }
     CustomStringTableItem "{3804F10000000002}" {
      Id "LF-Townsfolk_ShipmentGoBetween_Name"
      Target_en_us "Hugo Valmy"
      Comment "Townsfolk (The shipment, #3804): the go-between's name, the speaker line of his dialogue."
+    }
+    CustomStringTableItem "{4199A00000000001}" {
+     Id "LF-Townsfolk_TallyClerk_Name"
+     Target_en_us "Marcel Brun"
+     Comment "Townsfolk (crime B4, #4199): the tally clerk's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{28FAC180F47F7CA9}" {
      Id "LF-Unlock_Farmer_02"

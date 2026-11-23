@@ -1,0 +1,80 @@
+// Grid cell c16r0 for resident-work: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_resident_work_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 215 0 23
+}
+SCR_DestructibleEntity Grid_resident_work_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 220 0 23
+}
+SCR_DestructibleEntity Grid_resident_work_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 225 0 23
+ angleY 270
+}
+SCR_DestructibleEntity Grid_resident_work_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 225 0 28
+ angleY 270
+}
+SCR_DestructibleEntity Grid_resident_work_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 225 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_resident_work_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 220 0 33
+ angleY 180
+}
+SCR_DestructibleEntity Grid_resident_work_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 215 0 33
+ angleY 90
+}
+GenericEntity Grid_resident_work_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:resident-work"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 214.2 0.505 23.6
+ angleY -90
+}
+GenericEntity Grid_resident_work_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "resident-work"
+  }
+ }
+ coords 214.3 0 25.5
+ angleY 90
+}
+GenericEntity Grid_resident_work_R0 : "{776BF07068813A47}Prefabs/Placeables/Furniture/Furniture_Table_Placed.et" {
+ coords 222.501 0.001 27.998
+ angleY -90
+}
+SCR_ChimeraCharacter Grid_resident_work_Carrier : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ components {
+  LF_ResidentWorkLoopComponent "{4A91C2D7E03B58F1}" {
+   m_sActivity "carry"
+  }
+ }
+ coords 220 0 24.5
+ angleY 90
+}
+SCR_ChimeraCharacter Grid_resident_work_Hammerer : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ components {
+  LF_ResidentWorkLoopComponent "{4A91C2D7E03B58F2}" {
+   m_sActivity "hammer"
+  }
+ }
+ coords 221.2 0 28
+ angleY 90
+}
+SCR_ChimeraCharacter Grid_resident_work_Sweeper : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ components {
+  LF_ResidentWorkLoopComponent "{4A91C2D7E03B58F3}" {
+   m_sActivity "sweep"
+  }
+ }
+ coords 220 0 31.5
+ angleY 90
+}

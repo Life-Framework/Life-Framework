@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{1E802FDF0F994B28}Assets/Props/Flags/Gang/Data/GangFlag_Lowtide_BCR.edds"
+ NMOMap "{A2665CEAF3C47EDE}Assets/Props/Flags/Gang/Data/GangFlag_Lowtide_NMO.edds"
+}

@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{ABC98E5440A84229}Assets/Props/Flags/Gang/Data/GangFlag_Ironside_BCR.edds"
+ NMOMap "{5F29516C2392626C}Assets/Props/Flags/Gang/Data/GangFlag_Ironside_NMO.edds"
+}
