@@ -1,0 +1,26 @@
+GenericEntity : "{E1A5D4B878AA8980}Prefabs/Items/Equipment/Radios/Radio_R148.et" {
+ ID "508AB2013EEE1E00"
+ components {
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_GangRadio_Name"
+     Description "#LF-Item_GangRadio_Description"
+    }
+   }
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    LF_GangRadioTuneAction "{B35C220FAAF26B91}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{64AFB80D996386F1}" {
+      Name "#LF-GangRadio_Tune"
+      Description "#LF-Item_GangRadio_Name"
+     }
+    }
+   }
+  }
+ }
+}

@@ -6093,6 +6093,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Workbench"
      Comment "Inventory name of the carried workbench a player places in their own house."
     }
+    CustomStringTableItem "{D4DD0BA4533222B8}" {
+     Id "LF-GangRadio_NotMember"
+     Target_en_us "Gang members only"
+     Comment "Reason the gang radio cannot be tuned: the carrier is in no gang (#4221)."
+    }
+    CustomStringTableItem "{7C98C20B33E1A120}" {
+     Id "LF-GangRadio_Tune"
+     Target_en_us "Tune to gang channel"
+     Comment "Action on a carried gang radio: puts it on the gang band (#4221)."
+    }
     CustomStringTableItem "{3CEA2232FA244C93}" {
      Id "LF-Garage_Blue"
      Target_en_us "Blue"
@@ -7918,6 +7928,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Fishing rod"
      Comment "Item name: the fishing rod (#2928)."
     }
+    CustomStringTableItem "{4D123BBBA06D16BA}" {
+     Id "LF-Item_GangRadio_Description"
+     Target_en_us "A handheld set. Tune it to your gang channel and only your crew hears you."
+     Comment "Item description of the gang radio (#4221)."
+    }
+    CustomStringTableItem "{3337BFB02E6A4A9F}" {
+     Id "LF-Item_GangRadio_Name"
+     Target_en_us "Gang radio"
+     Comment "Item name: a handheld radio a gang tunes to its own hidden channel (#4221)."
+    }
     CustomStringTableItem "{E0C70F7F81117F7D}" {
      Id "LF-Item_Handcuffs_Description"
      Target_en_us "Steel chain handcuffs. Hold them and face a downed or held-up suspect to cuff them."
@@ -8032,6 +8052,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_Parcel_Desc"
      Target_en_us "A taped cardboard parcel for the drop-off address."
      Comment "Courier parcel item description"
+    }
+    CustomStringTableItem "{A342651F913CD658}" {
+     Id "LF-Item_RadarGun_Description"
+     Target_en_us "Hand-held speed radar. Aim at a car and use Measure speed. On-duty officers only."
+     Comment "Inventory description of the police radar gun."
+    }
+    CustomStringTableItem "{3A0DC1946B0A4795}" {
+     Id "LF-Item_RadarGun_Name"
+     Target_en_us "Radar gun"
+     Comment "Inventory name of the police radar gun."
     }
     CustomStringTableItem "{9195B0483F2D0148}" {
      Id "LF-Item_RepairKit_Description"
@@ -11452,6 +11482,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
     }
+    CustomStringTableItem "{6D41A0F3C8B2957E}" {
+     Id "LF-Outpost_TraderRefusesOfficer"
+     Target_en_us "We don't deal with the law here. Take the badge off and come back."
+     Comment "Toast to an on-duty officer: a trader inside a rebel outpost refuses to serve them (#4217)."
+    }
+    CustomStringTableItem "{A3F59E1B7C402D86}" {
+     Id "LF-Outpost_TraderRefusesOfficer_Title"
+     Target_en_us "Not serving you"
+     Comment "Title of the outpost trader's refusal toast to an on-duty officer (#4217)."
+    }
     CustomStringTableItem "{4EF600B18D7A2C1B}" {
      Id "LF-Pager_None"
      Target_en_us "No calls paged."
@@ -13675,6 +13715,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Race_Unavailable"
      Target_en_us "This race is not available."
      Comment "Toast: the sign's course is missing or broken (#1923)."
+    }
+    CustomStringTableItem "{48CF0958A82A784B}" {
+     Id "LF-Radar_Clear"
+     Target_en_us "Radar: %1 km/h (reading/limit). Within the limit."
+     Comment "Toast: radar reading at or under the limit. %1 = speed/limit."
+    }
+    CustomStringTableItem "{BE2708A0DE110C62}" {
+     Id "LF-Radar_Measure"
+     Target_en_us "Measure speed"
+     Comment "Action on the radar gun: read the speed of the car in the sights."
+    }
+    CustomStringTableItem "{348DA0DF7BECE3C8}" {
+     Id "LF-Radar_Minor"
+     Target_en_us "Radar: %1 km/h (reading/limit). Minor speeding."
+     Comment "Toast: radar reading 1 to 15 over. %1 = speed/limit."
+    }
+    CustomStringTableItem "{C74B168D6DFC30CF}" {
+     Id "LF-Radar_NoCar"
+     Target_en_us "Radar: no vehicle in your sights."
+     Comment "Toast: the radar gun was used with no car on the aim line."
+    }
+    CustomStringTableItem "{089DC48EF9D25C17}" {
+     Id "LF-Radar_Road"
+     Target_en_us "Radar: %1 km/h (reading/limit). Road speeding."
+     Comment "Toast: radar reading 16 to 30 over. %1 = speed/limit."
+    }
+    CustomStringTableItem "{6BB8EC9E16D2E478}" {
+     Id "LF-Radar_Serious"
+     Target_en_us "Radar: %1 km/h (reading/limit). Serious speeding."
+     Comment "Toast: radar reading over 30 over. %1 = speed/limit."
     }
     CustomStringTableItem "{C5ADAB68CA19613F}" {
      Id "LF-Range_Busy"
@@ -16217,6 +16287,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Unflip_TooFar"
      Target_en_us "Get closer to push it over."
      Comment "Unflip refusal toast (#3333): the player is out of reach."
+    }
+    CustomStringTableItem "{64FAA43ACB2D5BCD}" {
+     Id "LF-UnitStatus_ActionAvailable"
+     Target_en_us "Radio: available"
+     Comment "Police car action row: tell dispatch this unit is free for calls."
+    }
+    CustomStringTableItem "{8F7C7A324959094B}" {
+     Id "LF-UnitStatus_ActionBusy"
+     Target_en_us "Radio: busy"
+     Comment "Police car action row: tell dispatch this unit is tied up."
+    }
+    CustomStringTableItem "{6735AE870F08B8D7}" {
+     Id "LF-UnitStatus_Available"
+     Target_en_us "available"
+     Comment "Unit status word on the dispatch board."
+    }
+    CustomStringTableItem "{E4EDC2B539CB3C85}" {
+     Id "LF-UnitStatus_BoardHeading"
+     Target_en_us "UNITS ON THE RADIO"
+     Comment "Wanted board, police view: heading above the unit status rows."
+    }
+    CustomStringTableItem "{82942B511449462F}" {
+     Id "LF-UnitStatus_BoardLine"
+     Target_en_us "Unit %1: %2"
+     Comment "Dispatch board unit row. %1 = officer name, %2 = available or busy."
+    }
+    CustomStringTableItem "{A403887D50552271}" {
+     Id "LF-UnitStatus_Busy"
+     Target_en_us "busy"
+     Comment "Unit status word on the dispatch board."
+    }
+    CustomStringTableItem "{0877B5083A43C81C}" {
+     Id "LF-UnitStatus_NoName"
+     Target_en_us "unnamed officer"
+     Comment "Dispatch board unit row when the officer has no name."
+    }
+    CustomStringTableItem "{C5AB110336544DB4}" {
+     Id "LF-UnitStatus_SetAvailable"
+     Target_en_us "Dispatch has you as available."
+     Comment "Toast after the officer radios available."
+    }
+    CustomStringTableItem "{0A69E149174D2D14}" {
+     Id "LF-UnitStatus_SetBusy"
+     Target_en_us "Dispatch has you as busy."
+     Comment "Toast after the officer radios busy."
+    }
+    CustomStringTableItem "{296F37B4C207EAD9}" {
+     Id "LF-UnitStatus_Title"
+     Target_en_us "Radio"
+     Comment "Toast title for unit status radio messages."
     }
     CustomStringTableItem "{7B2D91E4A0C358F6}" {
      Id "LF-VehicleCompartment_Open"
