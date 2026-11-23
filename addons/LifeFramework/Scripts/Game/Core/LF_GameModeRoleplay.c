@@ -86,6 +86,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_JobLevelSync.EnsureSubscribed();
 		// Mining, logging and medic work earn MINER, LUMBERJACK and MEDIC XP (server only, #2707).
 		LF_JobLevelSources.EnsureSubscribed();
+		// Police XP from outcomes: a recovered stolen car (server only, #4424).
+		LF_PoliceSkill.EnsureSubscribed();
 		// Interaction menu role slots, on every machine (offer on the client, decide on the server).
 		LF_OrgInviteRole.Register();
 		LF_HoldUpRole.Register();

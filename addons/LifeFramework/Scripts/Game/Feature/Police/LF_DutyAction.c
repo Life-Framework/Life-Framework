@@ -45,7 +45,8 @@ class LF_DutyAction : ScriptedUserAction
 		if (reason.IsEmpty())
 			return true;
 
-		SetCannotPerformReason(reason);
+		// "#LF-Duty_NotOnRoster" names the {police}; the engine would show the braces as typed.
+		SetCannotPerformReason(LF_Terms.Shown(reason));
 		return false;
 	}
 

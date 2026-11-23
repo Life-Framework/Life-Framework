@@ -194,6 +194,7 @@ class LF_JailBooking
 		MarkFor(officerId, false);
 		// A booking at the desk earns the officer the $10 duty bonus, paid at clock-out (#4319).
 		LF_DutyBonus.AwardUid(officerUid, LF_DutyBonusKind.BOOKING);
+		LF_PoliceSkill.OnBooked(officerUid);
 		int seconds = Math.Round(LF_Jail.GetRemaining(suspectUid));
 		LF_Debug.Info(FEATURE, string.Format("booked %1 by %2 percent=%3 seconds=%4", suspectUid, officerUid, percent, seconds));
 		if (officerId > 0)

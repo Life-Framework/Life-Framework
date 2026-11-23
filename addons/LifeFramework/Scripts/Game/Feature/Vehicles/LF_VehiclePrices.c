@@ -51,6 +51,23 @@ class LF_VehiclePriceEntry : LF_ConfigRecord
 	[Attribute("-1", UIWidgets.Auto, "Garage fee override; -1 derives it", params: "-1 1000000")]
 	int m_iGarageOverride;
 
+	//! 0.3.0 W20 (#4417): a row with a lot id is sold only by the lot with that id; no lot id: every lot.
+	[Attribute("", UIWidgets.EditBox, "Lot id that sells this row (LF_VehicleLotComponent lot id). Empty: every lot")]
+	string m_sLotId;
+
+	[Attribute("", UIWidgets.EditBox, "Capacity class from LF_Capacity (car, pickup, van, truck). Empty: unclassed")]
+	string m_sCapacityClass;
+
+	[Attribute("", UIWidgets.EditBox, "Localization key of the catalogue row, for a lot that lists this row itself")]
+	string m_sNameKey;
+
+	//------------------------------------------------------------------------------------------------
+	//! True when the lot with this id sells the row. A row with no lot id is sold at every lot.
+	bool SoldAt(string lotId)
+	{
+		return m_sLotId.IsEmpty() || m_sLotId == lotId;
+	}
+
 	//------------------------------------------------------------------------------------------------
 	//! Test and setup seam: an entry built in script has no attributes to fill.
 	static LF_VehiclePriceEntry Make(ResourceName prefab, ResourceName spawnPrefab, int basePrice)
@@ -320,6 +337,12 @@ class LF_VehiclePricesConfig
 				ctx.WriteValue("chopOverride", entry.m_iChopOverride);
 				ctx.WriteValue("impoundOverride", entry.m_iImpoundOverride);
 				ctx.WriteValue("garageOverride", entry.m_iGarageOverride);
+				string lotId = entry.m_sLotId;
+				string capacityClass = entry.m_sCapacityClass;
+				string nameKey = entry.m_sNameKey;
+				ctx.WriteValue("lotId", lotId);
+				ctx.WriteValue("capacityClass", capacityClass);
+				ctx.WriteValue("nameKey", nameKey);
 				ctx.EndObject();
 				index++;
 			}
@@ -375,6 +398,15 @@ class LF_VehiclePricesConfig
 				reader.ReadInt("chopOverride", entry.m_iChopOverride, OVERRIDE_MIN, PRICE_MAX);
 				reader.ReadInt("impoundOverride", entry.m_iImpoundOverride, OVERRIDE_MIN, PRICE_MAX);
 				reader.ReadInt("garageOverride", entry.m_iGarageOverride, OVERRIDE_MIN, PRICE_MAX);
+				string lotId;
+				string capacityClass;
+				string nameKey;
+				reader.ReadString("lotId", lotId);
+				reader.ReadString("capacityClass", capacityClass);
+				reader.ReadString("nameKey", nameKey);
+				entry.m_sLotId = lotId;
+				entry.m_sCapacityClass = capacityClass;
+				entry.m_sNameKey = nameKey;
 				vehicles.Insert(entry);
 				reader.EndRecord();
 			}
@@ -529,6 +561,47 @@ class LF_VehiclePricesConfig
 		}
 
 		return null;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #4417: whether the lot with this id may offer the vehicle. A removed vehicle is never offered;
+	//! an unpriced one, or one whose row names no lot, is offered everywhere (saves and the playtest
+	//! town keep working); a row that names a lot is offered only there.
+	bool IsOfferedAt(ResourceName prefab, string lotId)
+	{
+		if (IsRemoved(prefab))
+			return false;
+
+		LF_VehiclePriceEntry entry = Find(prefab);
+		return !entry || entry.SoldAt(lotId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The capacity class a vehicle's row names ("truck"), or "" when unlisted or unclassed.
+	string CapacityClassOf(ResourceName prefab)
+	{
+		LF_VehiclePriceEntry entry = Find(prefab);
+		if (!entry)
+			return string.Empty;
+
+		return entry.m_sCapacityClass;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Test seam: forgets every row's lot id and capacity class until the next Reload() (the red proof).
+	void ClearLotRulesForTest()
+	{
+		if (!m_aVehicles)
+			return;
+
+		foreach (LF_VehiclePriceEntry entry : m_aVehicles)
+		{
+			if (!entry)
+				continue;
+
+			entry.m_sLotId = string.Empty;
+			entry.m_sCapacityClass = string.Empty;
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -699,13 +772,19 @@ class LF_VehiclePriceList : LF_ConfigList
 			changed++;
 		if (container.IsVariableSetDirectly("m_iGarageOverride") && container.Get("m_iGarageOverride", entry.m_iGarageOverride))
 			changed++;
+		if (container.IsVariableSetDirectly("m_sLotId") && container.Get("m_sLotId", entry.m_sLotId))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sCapacityClass") && container.Get("m_sCapacityClass", entry.m_sCapacityClass))
+			changed++;
+		if (container.IsVariableSetDirectly("m_sNameKey") && container.Get("m_sNameKey", entry.m_sNameKey))
+			changed++;
 		return changed;
 	}
 
 	override void PatchFromReader(notnull LF_ConfigRecord record, notnull LF_ConfigReader reader)
 	{
 		LF_VehiclePriceEntry entry = LF_VehiclePriceEntry.Cast(record);
-		array<string> recordKeys = {"op", "spawnPrefab", "basePrice", "buyOverride", "sellBackOverride", "chopOverride", "impoundOverride", "garageOverride"};
+		array<string> recordKeys = {"op", "spawnPrefab", "basePrice", "buyOverride", "sellBackOverride", "chopOverride", "impoundOverride", "garageOverride", "lotId", "capacityClass", "nameKey"};
 		reader.WarnUnknownKeys(recordKeys);
 		string spawn = entry.m_SpawnPrefab;
 		if (reader.ReadString("spawnPrefab", spawn))
@@ -716,6 +795,15 @@ class LF_VehiclePriceList : LF_ConfigList
 		reader.ReadInt("chopOverride", entry.m_iChopOverride, LF_VehiclePricesConfig.OVERRIDE_MIN, LF_VehiclePricesConfig.PRICE_MAX);
 		reader.ReadInt("impoundOverride", entry.m_iImpoundOverride, LF_VehiclePricesConfig.OVERRIDE_MIN, LF_VehiclePricesConfig.PRICE_MAX);
 		reader.ReadInt("garageOverride", entry.m_iGarageOverride, LF_VehiclePricesConfig.OVERRIDE_MIN, LF_VehiclePricesConfig.PRICE_MAX);
+		string lotId = entry.m_sLotId;
+		if (reader.ReadString("lotId", lotId))
+			entry.m_sLotId = lotId;
+		string capacityClass = entry.m_sCapacityClass;
+		if (reader.ReadString("capacityClass", capacityClass))
+			entry.m_sCapacityClass = capacityClass;
+		string nameKey = entry.m_sNameKey;
+		if (reader.ReadString("nameKey", nameKey))
+			entry.m_sNameKey = nameKey;
 	}
 
 	//! An unpriced vehicle would sell for nothing, and a vehicle with no prefab cannot be found.

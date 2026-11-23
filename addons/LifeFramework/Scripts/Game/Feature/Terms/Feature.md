@@ -36,6 +36,11 @@ is the same for script that builds text itself.
 Also on the path (#1136): `SetCannotPerformReason` (wrap the key: `LF_Terms.Text("#Key")`), the UI kit's titles, lines and
 buttons (`LF_Terms.Shown`: a bare key is translated and expanded, other text is expanded), and the script that
 builds a line itself (ticket sheet, ledger, wanted poster). All-capitals placeholders print in capitals (`{POLICE} TICKET`).
+The map's zone labels go through `LF_MapAreas.LabelOf` ("No {police}" on a lawless zone read with its braces on the 0.2.1
+map), the clock-in desk's refusal through `LF_Terms.Shown`, and the vanilla-hint fallback of `LF_Utils.NoteToast` too.
+`validate-term-sinks.mjs` fails a source line that gives a placeholder key to a raw sink (`WidgetManager.Translate`,
+`SetCannotPerformReason`, `SetText`, an action's `outName`) with no `LF_Terms` call, and a prefab `Name` or
+`Description` that names a placeholder key (the engine renders those itself, so their text is worded without the term).
 
 **Not on the path, and why.** The engine translates these itself from the key, so a placeholder would show raw:
 prefab `Name` and `Description` (item and prop names, the dispatch and phone actions), quest title, description

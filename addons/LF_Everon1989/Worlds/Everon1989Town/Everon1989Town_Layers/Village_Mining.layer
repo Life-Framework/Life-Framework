@@ -1,0 +1,56 @@
+SCR_DestructibleEntity Mine_Supply_Awning : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
+ coords 191.2 0 207.6
+}
+GenericEntity Mine_Furnace : "{CF27D083C01F1C36}Prefabs/Processor/LF_MineFurnace.et" {
+ coords 158 0.001 206
+ angleY 90
+}
+GenericEntity Mine_Iron_Counter : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+ coords 161.52 0.001 211.501
+ angleY -90
+}
+GenericEntity Mine_Supply_Counter : "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et" {
+ coords 191.2 0.001 206.9
+}
+GenericEntity Mine_Supply_Till : "{E3FCCFB7C6EA8356}Prefabs/Props/Commercial/LF_MinersSupplyTill_Mine.et" {
+ coords 191.2 1.04 206.9
+}
+GenericEntity Mine_Iron_Buyer : "{CDE1C29873CECBC0}Prefabs/Trader/LF_IronBuyer_Everon1989.et" {
+ coords 161.52 0.962 211.501
+ angleY -90
+}
+LF_NpcBaseEntity Mine_Iron_Clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+ coords 162.918 0 211.574
+ angleY -90
+}
+SCR_DestructibleEntity Mine_Iron_Board : "{7B452ADB636331A9}Prefabs/Props/Signs/LF_Sign_Pub.et" {
+ components {
+  LF_SignComponent "{DF6A14A1AD2B41F0}" {
+   m_sSignId "coalmans-brow-buyer"
+   m_sStyle ""
+   m_sSize ""
+   m_vFaceAngles 0 -15 0
+   m_fFaceScale 2.6
+  }
+ }
+ coords 160.196 0 213.835
+ angleY -90
+}
+GenericEntity Mine_Furnace_Place {
+ components {
+  LF_PlaceComponent "{07A04E0ACC18DF98}" {
+   m_sKind "Processor"
+   m_sId "coalmans-brow.mine"
+  }
+ }
+ coords 158 0 206
+}
+GenericEntity Mine_Buyer_Place {
+ components {
+  LF_PlaceComponent "{A6FE9940F124EDE2}" {
+   m_sKind "WholesaleCounter"
+   m_sId "saint-philippe-dock.wholesale"
+  }
+ }
+ coords 161.52 0 211.501
+}

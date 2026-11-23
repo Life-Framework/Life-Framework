@@ -170,7 +170,7 @@ class LF_RadarGunAction : ScriptedUserAction
 
 		TraceParam trace = new TraceParam();
 		trace.Start = from;
-		trace.End = from + dir * RANGE;
+		trace.End = from + dir * LF_PoliceSkill.RadarRange(LF_Utils.GetPlayerUid(officer), RANGE); // long-radar perk (#4424)
 		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
 		trace.Exclude = officer;
 		trace.LayerMask = EPhysicsLayerPresets.Projectile;
