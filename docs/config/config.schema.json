@@ -416,6 +416,117 @@
       "additionalProperties": false,
       "x-class": "LF_DisconnectConfig"
     },
+    "exportOrders": {
+      "type": "object",
+      "description": "Export order numbers.",
+      "properties": {
+        "openSlots": {
+          "type": "integer",
+          "description": "Export orders: how many orders are open server-wide at once",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 12
+        },
+        "refillMinutes": {
+          "type": "integer",
+          "description": "Export orders: game minutes between two openings while a slot is free",
+          "default": 30,
+          "minimum": 1,
+          "maximum": 1440
+        },
+        "minLevel": {
+          "type": "integer",
+          "description": "Export orders: the job level a hauler needs to take one",
+          "default": 10,
+          "minimum": 0,
+          "maximum": 100
+        },
+        "job": {
+          "type": "string",
+          "description": "Export orders: the job track whose level gates the board and earns the XP",
+          "default": "DELIVERY"
+        },
+        "premiumPct": {
+          "type": "integer",
+          "description": "Export orders: percent paid over wholesale",
+          "default": 15,
+          "minimum": 0,
+          "maximum": 200
+        },
+        "xp": {
+          "type": "integer",
+          "description": "Export orders: job XP for an order handed in",
+          "default": 120,
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "standingFaction": {
+          "type": "string",
+          "description": "Export orders: the standing faction a late order costs",
+          "default": "TOWN"
+        },
+        "lateStanding": {
+          "type": "integer",
+          "description": "Export orders: standing change for a taken order that misses its deadline (negative)",
+          "default": -10,
+          "minimum": -1000,
+          "maximum": 0
+        },
+        "templates": {
+          "type": "object",
+          "description": "",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "Export order: a stable id for this kind of order",
+                "default": ""
+              },
+              "goods": {
+                "type": "string",
+                "description": "Export order: the goods the crane takes",
+                "default": ""
+              },
+              "goodsName": {
+                "type": "string",
+                "description": "Export order: the goods' name on the board (a #key or plain US English text)",
+                "default": ""
+              },
+              "destination": {
+                "type": "string",
+                "description": "Export order: where the goods go, as the board names it (a #key or plain US English text)",
+                "default": ""
+              },
+              "count": {
+                "type": "integer",
+                "description": "Export order: how many units make the order",
+                "default": 20,
+                "minimum": 1,
+                "maximum": 1000
+              },
+              "wholesale": {
+                "type": "integer",
+                "description": "Export order: the wholesale price of one unit; the order pays the premium over it",
+                "default": 40,
+                "minimum": 1,
+                "maximum": 100000
+              },
+              "gameMinutes": {
+                "type": "integer",
+                "description": "Export order: game minutes from opening to the deadline",
+                "default": 180,
+                "minimum": 10,
+                "maximum": 2880
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_ExportOrderConfig"
+    },
     "grace": {
       "type": "object",
       "description": "The grace period setting (Configs/Moderation/LF_Grace.conf).",

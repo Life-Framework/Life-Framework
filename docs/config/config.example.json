@@ -51,6 +51,17 @@
     "jailClockOffline": false,
     "contactWindowSeconds": 120
   },
+  "exportOrders": {
+    "openSlots": 3,
+    "refillMinutes": 30,
+    "minLevel": 10,
+    "job": "DELIVERY",
+    "premiumPct": 15,
+    "xp": 120,
+    "standingFaction": "TOWN",
+    "lateStanding": -10,
+    "templates": {}
+  },
   "grace": {
     "minutes": 0
   },
