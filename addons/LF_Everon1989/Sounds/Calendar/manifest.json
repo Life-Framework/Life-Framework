@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "note": "The island calendar sounds of WO-W6.2 (#4477): church bell, Sunday peal, shift siren, ship horn. Vanilla first, then ElevenLabs sound effects (vanilla_checked says what vanilla offered).",
+  "addon": "LF_Everon1989",
+  "vanilla_checked": "2026-11-23: asset_search finds no vanilla sound project for a church bell, a factory siren or a ship horn that a carrier could play without its prop. The vanilla bell events live on the bell component of a church bell entity (the memorial rings those), and the vanilla siren prop binds its sound to the prop, so a carrier that must stay invisible plays generated samples.",
+  "sounds": [
+    {
+      "id": "bell_hour",
+      "slot": "atmo_calendar_bell_hour",
+      "project": "{59E20BD352E101B7}Sounds/Calendar/Calendar_BellHour.acp",
+      "sample": "{CF3BC57C8876FDF6}Sounds/Calendar/Samples/Calendar_BellHour_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP",
+      "source": "elevenlabs",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "A large old stone church bell struck three times slowly, deep bronze tone with a long ringing tail fading outdoors. No voices, no music, no birds.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project paid plan; commercial use allowed",
+      "inner_m": 15,
+      "outer_m": 120,
+      "volume_db": -3,
+      "seconds": 10
+    },
+    {
+      "id": "bell_service",
+      "slot": "atmo_calendar_bell_service",
+      "project": "{87649C882DF328FD}Sounds/Calendar/Calendar_BellService.acp",
+      "sample": "{B0BE16A04D0056F9}Sounds/Calendar/Samples/Calendar_BellService_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP",
+      "source": "elevenlabs",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "A village church bell peal calling people to Sunday service: a steady swinging rhythm of a heavy bronze bell, then a slow fade of the ringing tail outdoors. No voices, no music.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project paid plan; commercial use allowed",
+      "inner_m": 15,
+      "outer_m": 120,
+      "volume_db": -3,
+      "seconds": 15
+    },
+    {
+      "id": "siren_shift",
+      "slot": "atmo_calendar_siren_shift",
+      "project": "{A7AF38181B35EAEB}Sounds/Calendar/Calendar_SirenShift.acp",
+      "sample": "{9CAE3B51CE19B46F}Sounds/Calendar/Samples/Calendar_SirenShift_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP",
+      "source": "elevenlabs",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "An old factory shift siren, one slow rise and fall of a rotary air-raid style siren heard from far across a town, no voices, no music.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project paid plan; commercial use allowed",
+      "inner_m": 20,
+      "outer_m": 120,
+      "volume_db": -3,
+      "seconds": 8
+    },
+    {
+      "id": "horn_ship",
+      "slot": "atmo_calendar_horn_ship",
+      "project": "{3E2D165BC907546F}Sounds/Calendar/Calendar_HornShip.acp",
+      "sample": "{8E3403D1B5746EB3}Sounds/Calendar/Samples/Calendar_HornShip_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP",
+      "source": "elevenlabs",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "A large ship horn at a harbour dock sounding two deep long blasts with a short pause between, heard across the water. No voices, no music.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project paid plan; commercial use allowed",
+      "inner_m": 15,
+      "outer_m": 120,
+      "volume_db": -3,
+      "seconds": 6
+    }
+  ]
+}

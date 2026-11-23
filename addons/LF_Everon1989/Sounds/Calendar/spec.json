@@ -1,0 +1,120 @@
+{
+  "_note": "Spec and credit record of the island calendar sounds (WO-W6.2, #4477). Built by a scratch copy of tools/assets/site-ambience/build.mjs; the output is addons/LF_Everon1989/Sounds/Calendar/ with manifest.json.",
+  "addon": "LF_Everon1989",
+  "budget": {
+    "credits": 600
+  },
+  "vanilla_checked": "2026-11-23: asset_search finds no vanilla sound project for a church bell, a factory siren or a ship horn that a carrier could play without its prop. The vanilla bell events live on the bell component of a church bell entity (the memorial rings those), and the vanilla siren prop binds its sound to the prop, so a carrier that must stay invisible plays generated samples.",
+  "sounds": [
+    {
+      "id": "bell_hour",
+      "name": "BellHour",
+      "slot": "atmo_calendar_bell_hour",
+      "kind": "loop",
+      "loop": false,
+      "seconds": 10,
+      "rate": 48000,
+      "volume_db": -3,
+      "inner_m": 15,
+      "outer_m": 120,
+      "seam_ms": 150,
+      "takes": 1,
+      "prompt_influence": 0.6,
+      "prompt": "A large old stone church bell struck three times slowly, deep bronze tone with a long ringing tail fading outdoors. No voices, no music, no birds.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project paid plan; commercial use allowed"
+    },
+    {
+      "id": "bell_service",
+      "name": "BellService",
+      "slot": "atmo_calendar_bell_service",
+      "kind": "loop",
+      "loop": false,
+      "seconds": 15,
+      "rate": 48000,
+      "volume_db": -3,
+      "inner_m": 15,
+      "outer_m": 120,
+      "seam_ms": 150,
+      "takes": 1,
+      "prompt_influence": 0.6,
+      "prompt": "A village church bell peal calling people to Sunday service: a steady swinging rhythm of a heavy bronze bell, then a slow fade of the ringing tail outdoors. No voices, no music.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project paid plan; commercial use allowed"
+    },
+    {
+      "id": "siren_shift",
+      "name": "SirenShift",
+      "slot": "atmo_calendar_siren_shift",
+      "kind": "loop",
+      "loop": false,
+      "seconds": 8,
+      "rate": 48000,
+      "volume_db": -3,
+      "inner_m": 20,
+      "outer_m": 120,
+      "seam_ms": 150,
+      "takes": 1,
+      "prompt_influence": 0.6,
+      "prompt": "An old factory shift siren, one slow rise and fall of a rotary air-raid style siren heard from far across a town, no voices, no music.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project paid plan; commercial use allowed"
+    },
+    {
+      "id": "horn_ship",
+      "name": "HornShip",
+      "slot": "atmo_calendar_horn_ship",
+      "kind": "loop",
+      "loop": false,
+      "seconds": 6,
+      "rate": 48000,
+      "volume_db": -3,
+      "inner_m": 15,
+      "outer_m": 120,
+      "seam_ms": 150,
+      "takes": 1,
+      "prompt_influence": 0.6,
+      "prompt": "A large ship horn at a harbour dock sounding two deep long blasts with a short pause between, heard across the water. No voices, no music.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project paid plan; commercial use allowed"
+    }
+  ],
+  "generations": [
+    {
+      "id": "bell_hour",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "A large old stone church bell struck three times slowly, deep bronze tone with a long ringing tail fading outdoors. No voices, no music, no birds.",
+      "seconds": 10,
+      "bytes": 160957,
+      "credits": 100
+    },
+    {
+      "id": "bell_service",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "A village church bell peal calling people to Sunday service: a steady swinging rhythm of a heavy bronze bell, then a slow fade of the ringing tail outdoors. No voices, no music.",
+      "seconds": 15,
+      "bytes": 241205,
+      "credits": 150
+    },
+    {
+      "id": "siren_shift",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "An old factory shift siren, one slow rise and fall of a rotary air-raid style siren heard from far across a town, no voices, no music.",
+      "seconds": 8,
+      "bytes": 129192,
+      "credits": 80
+    },
+    {
+      "id": "horn_ship",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "A large ship horn at a harbour dock sounding two deep long blasts with a short pause between, heard across the water. No voices, no music.",
+      "seconds": 6,
+      "bytes": 97009,
+      "credits": 60
+    }
+  ]
+}

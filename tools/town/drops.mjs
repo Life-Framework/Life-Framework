@@ -50,6 +50,8 @@ export const DROP_KITS = {
   // A home's "For sale" sign (#3584, `town homes`): placed with the same entrance-wall seat as a drop.
   // A resident home's brass name plate (#3233, `town residenthomes`): the small vanilla wall plate, seated like a drop.
   "resident-plate": { prefab: "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et", source: "addons/LifeFramework/Prefabs/Props/Signs/LF_Sign_PlateSmall.et" },
+  // The police car pool board (#4352): a cork board on the station wall, its bay 6 m in front. No slot kit names it; the station card seats its one board with this entry.
+  "police-car-board": { prefab: "{AEFD4F9B8A69C66E}Prefabs/Props/Police/LF_PoliceCarPoolBoard.et", source: "addons/LifeFramework/Prefabs/Props/Police/LF_PoliceCarPoolBoard.et" },
   "house-sale": { prefab: "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et", source: "addons/LifeFramework/Prefabs/Props/Property/LF_HouseSaleSign.et" },
 };
 const OUTSIDE = 1.0; // the mailbox starts this far outside the footprint; the wall seat slides it the rest of the way
