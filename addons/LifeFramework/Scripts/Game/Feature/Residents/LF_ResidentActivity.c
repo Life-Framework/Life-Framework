@@ -5,6 +5,8 @@
 //           pose a player's Sit uses, so a late joiner sees it through the base game loiter replication).
 //   serve   the resident faces the anchor's facing and stands behind the counter.
 //   loiter  the LF_NpcLoiter stand set (lean or smoke), picked by the resident's id.
+//   carry, hammer, sweep   the resident plays that work's gesture cycle at the anchor (LF_ResidentWorkLoop,
+//           #4366); a new line, a walk or a despawn stops the loop.
 //   idle    (and empty) the resident faces the anchor's facing and stands.
 // An activity that is none of these falls back to idle with one LF_Debug.Warn per name. A sit with no
 // free seat near the anchor falls back to idle too, warned once per name. So does a sit or loiter for a
@@ -41,13 +43,16 @@ class LF_ResidentActivity
 		if (name == SIT || name == SERVE || name == LOITER)
 			return name;
 
+		if (LF_ResidentWorkLoop.IsWork(name))
+			return name;
+
 		known = false;
 		return IDLE;
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: puts the resident to their activity at `spot`. The body is first turned to the spot's
-	//! facing. \return The activity the resident ended up doing (sit, serve, loiter or idle).
+	//! facing. \return The activity the resident ended up doing (sit, serve, loiter, carry, hammer, sweep or idle).
 	static string Apply(IEntity entity, string activity, LF_ResidentSpot spot)
 	{
 		if (!entity || !Replication.IsServer())
@@ -57,6 +62,10 @@ class LF_ResidentActivity
 		string what = Normalise(activity, known);
 		if (!known)
 			WarnOnce(activity, string.Format("resident activity '%1' is unknown; the resident idles", activity));
+
+		// A new line ends the work the resident was doing (a no-op when they were not working).
+		if (!LF_ResidentWorkLoop.IsWork(what))
+			LF_ResidentWorkLoop.Stop(entity);
 
 		if (spot)
 			Face(entity, spot.m_vAngles);
@@ -91,6 +100,16 @@ class LF_ResidentActivity
 				return LOITER;
 
 			WarnOnce(LOITER, "resident could not start the loiter idle; the resident idles");
+			return IDLE;
+		}
+
+		if (LF_ResidentWorkLoop.IsWork(what))
+		{
+			// A static body has no character controller; Begin warns for it and the resident stands.
+			if (LF_ResidentWorkLoop.Begin(entity, what))
+				return what;
+
+			WarnOnce(what, string.Format("resident could not start the %1 work loop; the resident idles", what));
 			return IDLE;
 		}
 
@@ -132,6 +151,7 @@ class LF_ResidentActivity
 	//! tests call it).
 	static void Release(IEntity entity)
 	{
+		LF_ResidentWorkLoop.Stop(entity);
 		LF_NpcLoiter.Release(entity, "resident activity released");
 	}
 
