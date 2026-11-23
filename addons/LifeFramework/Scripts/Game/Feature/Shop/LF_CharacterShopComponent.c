@@ -189,7 +189,7 @@ class LF_CharacterShopComponent : ScriptComponent
 			// Outposts (#4217, #4224): the clerk does not serve an on-duty officer, and says so.
 			if (LF_Outpost.RefusesService(player, shop.GetOwner().GetOrigin()))
 			{
-				LF_Outpost.NotifyRefusal(player);
+				LF_Outpost.NotifyRefusal(player, shop.GetOwner().GetOrigin());
 				reason = LF_EShopRefusal.RESIDENT_REFUSES;
 			}
 			else if (buy)
