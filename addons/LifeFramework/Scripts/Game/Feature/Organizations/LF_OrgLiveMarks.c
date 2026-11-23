@@ -42,9 +42,9 @@ class LF_OrgLiveSent : Managed
 //! is dim. A member who goes offline, dies, has no body or leaves the organization loses their mark
 //! on the next pass. A mark is re-sent only when the member moved MOVE_M or more or changed state.
 //! Not the placed org marks of LF_OrgMapMarks (#2240): these are never saved.
-//! Key: `orglive:<orgId>:<characterId>`.
-//! Not yet: hiding the marks from a viewer who is in custody (N25) needs the share audience to know
-//! custody (LF_MapShareGameFacts), a follow-up card.
+//! A member who leaves or is kicked (LF_OnOrganizationMemberLeft) loses their mark at once, not on the
+//! next pass. A viewer in custody receives no live marks (LF_MapShares.Receives, #4364).
+//! The rules are LF_OrgLiveMarkRules. Key: `orglive:<orgId>:<characterId>`.
 class LF_OrgLiveMarks
 {
 	static const string FEATURE = "OrgLiveMarks";
@@ -53,12 +53,13 @@ class LF_OrgLiveMarks
 	static const int MOVE_M = 5; // lf-fixed: re-send floor, below the map's drawn size of a mark
 	static const int ICON = 1; // lf-fixed: placed-marker icon index (pencil_circle)
 	static const int COLOUR_LIVE = 5; // lf-fixed: placed-marker colour index (green)
-	static const int COLOUR_DOWN = 12; // lf-fixed: placed-marker colour index (the darkest; the list has no grey yet)
+	static const int COLOUR_DOWN = 13; // lf-fixed: placed-marker colour index (grey, LF_MapMarkerConfig.conf)
 
 	//! Live key to what was last sent under it.
 	protected static ref map<string, ref LF_OrgLiveSent> s_mSent;
 	protected static bool s_bRunning;
 	protected static int s_iPuts;
+	protected static ref LF_OrgLiveMarksLeftListener s_Left;
 
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
@@ -66,6 +67,10 @@ class LF_OrgLiveMarks
 		if (s_bRunning && GetGame())
 			GetGame().GetCallqueue().Remove(LF_OrgLiveMarks.Tick);
 
+		if (s_Left)
+			LF_EventBus.Unsubscribe(LF_OnOrganizationMemberLeft, s_Left);
+
+		s_Left = null;
 		s_mSent = null;
 		s_bRunning = false;
 		s_iPuts = 0;
@@ -78,6 +83,7 @@ class LF_OrgLiveMarks
 		if (!Replication.IsServer() || !GetGame())
 			return false;
 
+		Watch();
 		if (!s_bRunning)
 		{
 			GetGame().GetCallqueue().CallLater(LF_OrgLiveMarks.Tick, INTERVAL_MS, true);
@@ -86,6 +92,46 @@ class LF_OrgLiveMarks
 		}
 
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: listen for members leaving. Idempotent.
+	protected static void Watch()
+	{
+		if (s_Left)
+			return;
+
+		s_Left = new LF_OrgLiveMarksLeftListener();
+		LF_EventBus.Subscribe(LF_OnOrganizationMemberLeft, s_Left);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a member left orgId (left or kicked). Their live mark goes from every map now when
+	//! LF_OrgLiveMarkRules.DropKey says so (they are no longer in that organization).
+	//! \return true when a mark was taken off.
+	static bool OnMemberLeft(string orgId, string characterId)
+	{
+		if (!Replication.IsServer() || orgId.IsEmpty() || characterId.IsEmpty())
+			return false;
+
+		string key = KeyOf(orgId, characterId);
+		string orgNow;
+		LF_Organization org = LF_OrganizationManager.GetByCharacter(characterId);
+		if (org)
+			orgNow = org.GetId();
+
+		if (!LF_OrgLiveMarkRules.DropKey(key, orgNow))
+			return false;
+
+		bool had = s_mSent && s_mSent.Contains(key);
+		if (s_mSent)
+			s_mSent.Remove(key);
+
+		bool removed = LF_MapShares.Remove(key);
+		if (had || removed)
+			LF_Debug.Info(FEATURE, string.Format("live mark %1 removed: the member left", key));
+
+		return had || removed;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -135,7 +181,8 @@ class LF_OrgLiveMarks
 				continue;
 
 			vector at = body.GetOrigin();
-			bool down = LF_Downed.IsDowned(body) || LF_Jail.IsInCustody(LF_Utils.GetPlayerUID(playerId));
+			bool inCustody = LF_Jail.IsInCustody(LF_Utils.GetPlayerUID(playerId)) || LF_Restraint.IsRestrained(body);
+			bool down = LF_OrgLiveMarkRules.IsGrey(LF_Downed.IsDowned(body), inCustody);
 			string name = account.GetActiveCharacter().GetFullName();
 			outFixes.Insert(LF_OrgLiveFix.Make(characterId, Math.Round(at[0]), Math.Round(at[2]), down, name));
 		}
@@ -156,6 +203,7 @@ class LF_OrgLiveMarks
 		if (!s_mSent)
 			s_mSent = new map<string, ref LF_OrgLiveSent>();
 
+		Watch();
 		array<string> seen = {};
 		int put;
 		foreach (LF_OrgLiveFix fix : fixes)
@@ -174,9 +222,7 @@ class LF_OrgLiveMarks
 			if (last && last.m_bDown == fix.m_bDown && Math.AbsInt(last.m_iX - fix.m_iX) < MOVE_M && Math.AbsInt(last.m_iZ - fix.m_iZ) < MOVE_M)
 				continue;
 
-			int colour = COLOUR_LIVE;
-			if (fix.m_bDown)
-				colour = COLOUR_DOWN;
+			int colour = LF_OrgLiveMarkRules.ColourFor(fix.m_bDown, COLOUR_LIVE, COLOUR_DOWN);
 
 			string name = fix.m_sName.Trim();
 			while (name.StartsWith("#"))
@@ -239,6 +285,21 @@ class LF_OrgLiveMarks
 	static bool IsRunning()
 	{
 		return s_bRunning;
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! Bus subscriber: a member left or was kicked, so their live mark goes at once.
+class LF_OrgLiveMarksLeftListener : LF_EventSubscriber
+{
+	override bool Handle(notnull LF_Event busEvent)
+	{
+		LF_OnOrganizationMemberLeft left = LF_OnOrganizationMemberLeft.Cast(busEvent);
+		if (!left)
+			return false;
+
+		LF_OrgLiveMarks.OnMemberLeft(left.m_sOrgId, left.m_sCharacterId);
+		return true;
 	}
 }
 
