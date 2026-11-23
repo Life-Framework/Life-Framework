@@ -1,0 +1,192 @@
+{
+  "_note": "Spec and credit record of the Everon 1989 ambience beds (#4227, WO-W1.1): the harbour by day and night and the village at night. Same pipeline as ambience.json (tools/assets/pipeline/ambience.mjs); run with this file swapped in for ambience.json, then the output moved to Sounds/Ambience. Prompts never name an artist, a song or a label.",
+  "addon": "LF_Everon1989",
+  "budget": {
+    "credits": 3000
+  },
+  "sounds": [
+    {
+      "id": "harbor_day",
+      "name": "HarborDay",
+      "kind": "loop",
+      "seconds": 22,
+      "rate": 48000,
+      "volume_db": -11,
+      "inner_m": 8,
+      "outer_m": 48,
+      "seam_ms": 500,
+      "takes": 2,
+      "prompt_influence": 0.5,
+      "even": true,
+      "prompt": "Small fishing harbour on a calm morning: gulls crying now and then, water lapping gently against a stone quay, ropes and rigging creaking and clinking on moored boats, a distant boat engine puttering. No voices, no music, no traffic.",
+      "pick": 1,
+      "reason": "Take 1 shows distinct gull calls and a rope clink spread over the loop; take 2 is flatter with no clear gulls."
+    },
+    {
+      "id": "harbor_night",
+      "name": "HarborNight",
+      "kind": "loop",
+      "seconds": 22,
+      "rate": 48000,
+      "volume_db": -13,
+      "inner_m": 8,
+      "outer_m": 44,
+      "seam_ms": 500,
+      "takes": 2,
+      "prompt_influence": 0.5,
+      "even": true,
+      "prompt": "Quiet harbour at night: soft water lapping against stone and wooden pilings, a mooring rope creaking slowly, a faint hollow knock of a boat against the quay. No birds, no voices, no engines, no music.",
+      "pick": 1,
+      "reason": "Take 1 is water with a few soft knocks of a hull and no bird bands; take 2 has a long low swell mid-loop that would pulse when it repeats."
+    },
+    {
+      "id": "village_night",
+      "name": "VillageNight",
+      "kind": "loop",
+      "seconds": 22,
+      "rate": 48000,
+      "volume_db": -12,
+      "inner_m": 10,
+      "outer_m": 56,
+      "seam_ms": 500,
+      "takes": 2,
+      "prompt_influence": 0.5,
+      "even": true,
+      "prompt": "Village at night in summer: steady crickets, a faint breeze through leaves, a dog barking twice far away and then quiet again. No voices, no cars, no music.",
+      "pick": 1,
+      "reason": "Take 1 is a steady cricket band with no gaps; take 2 breaks into pulses."
+    }
+  ],
+  "generations": [
+    {
+      "id": "harbor_day",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Small fishing harbour on a calm morning: gulls crying now and then, water lapping gently against a stone quay, ropes and rigging creaking and clinking on moored boats, a distant boat engine puttering. No voices, no music, no traffic.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 21.49,
+        "peak_db": -3,
+        "rms_db": -22.5,
+        "wrap": 0.07
+      }
+    },
+    {
+      "id": "harbor_day",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Small fishing harbour on a calm morning: gulls crying now and then, water lapping gently against a stone quay, ropes and rigging creaking and clinking on moored boats, a distant boat engine puttering. No voices, no music, no traffic.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 21.5,
+        "peak_db": -3,
+        "rms_db": -28.2,
+        "wrap": 0.01
+      }
+    },
+    {
+      "id": "harbor_night",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Quiet harbour at night: soft water lapping against stone and wooden pilings, a mooring rope creaking slowly, a faint hollow knock of a boat against the quay. No birds, no voices, no engines, no music.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 20.76,
+        "peak_db": -3,
+        "rms_db": -30.2,
+        "wrap": 0.02
+      }
+    },
+    {
+      "id": "harbor_night",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Quiet harbour at night: soft water lapping against stone and wooden pilings, a mooring rope creaking slowly, a faint hollow knock of a boat against the quay. No birds, no voices, no engines, no music.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 21.13,
+        "peak_db": -3,
+        "rms_db": -30.3,
+        "wrap": 0.03
+      }
+    },
+    {
+      "id": "village_night",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Village at night in summer: steady crickets, a faint breeze through leaves, a dog barking twice far away and then quiet again. No voices, no cars, no music.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 21.46,
+        "peak_db": -3,
+        "rms_db": -20.7,
+        "wrap": 0.03
+      }
+    },
+    {
+      "id": "village_night",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Village at night in summer: steady crickets, a faint breeze through leaves, a dog barking twice far away and then quiet again. No voices, no cars, no music.",
+      "seconds": 22,
+      "bytes": 353218,
+      "credits": 220,
+      "processed": {
+        "seconds": 21.5,
+        "peak_db": -3,
+        "rms_db": -22.9,
+        "wrap": 0.13
+      }
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-11-23",
+      "generations": 6,
+      "plan": "starter",
+      "credits_before": 23279,
+      "credits_after": 24599,
+      "credits": 1320,
+      "by_rate": 1320
+    }
+  ],
+  "wired": {
+    "harbor_day": {
+      "project": "{BEC2E182919A51C0}Sounds/Ambience/Atmosphere_HarborDay.acp",
+      "sample": "{A30F92F12676DB02}Sounds/Ambience/Samples/Atmosphere_HarborDay_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "harbor_night": {
+      "project": "{DD80116099CC395A}Sounds/Ambience/Atmosphere_HarborNight.acp",
+      "sample": "{0AB05DCB58D7D661}Sounds/Ambience/Samples/Atmosphere_HarborNight_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "village_night": {
+      "project": "{64FFA2B6121E2B26}Sounds/Ambience/Atmosphere_VillageNight.acp",
+      "sample": "{0F28F427B07F0EFB}Sounds/Ambience/Samples/Atmosphere_VillageNight_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    }
+  }
+}
