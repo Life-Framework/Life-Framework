@@ -4,7 +4,9 @@
 // material, and the cargo bed is a separate part (VehParts/Ural4320_cargo.et) that keeps its own vanilla look.
 // The base is the forest variant because it already carries the mud and dirt layers a rebel truck wants; a row
 // overrides only the paint colours. The doors are animated parts of the body mesh, so there are no door parts
-// and no plate positions (a row with `plate` fails for this vehicle).
+// and no plate positions (a row with `plate` fails for this vehicle). A number on the cab doors and a camo net
+// over the bed ride on a hand-written pack prefab the row inherits instead (LF_Ural4320_RebelKit, #4544); a
+// later generator change can fold them back in.
 export default {
   baseEmat: "{3AFAAF8DCC91D45D}Assets/Vehicles/Wheeled/Ural4320/Data/Ural_4320_Body_CIV_Forest.emat",
   mesh: "51DAA09FEFBFC0E7",

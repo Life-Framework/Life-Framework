@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{B7DAF66838F6B0C4}Configs/NpcOutfits/LF_Outfit_ShopButcher.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

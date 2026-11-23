@@ -1,0 +1,76 @@
+{
+  "id": "desk_sergeant",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "ticket": {
+      "hash": "c3f94458ad52405b",
+      "date": "2026-11-23",
+      "voice_id": "pNInz6obpgDQGcFmaJgB",
+      "voice_name": "Adam - Dominant, Firm",
+      "model": "eleven_multilingual_v2",
+      "text": "Paying a ticket? Put it on the counter and I'll stamp it.",
+      "chars": 57,
+      "chars_total": 23,
+      "request_id": "Q0sjuHQbAj4LPhvjk2TV",
+      "seconds": 3.17,
+      "mouth": "7977786059726310000000000000498989978327988899788744186642320000"
+    },
+    "booking": {
+      "hash": "4fb1688af8515abe",
+      "date": "2026-11-23",
+      "voice_id": "pNInz6obpgDQGcFmaJgB",
+      "voice_name": "Adam - Dominant, Firm",
+      "model": "eleven_multilingual_v2",
+      "text": "Booking? Sign the sheet where it's marked. Name, charge, time. Then the stamp, and it's official.",
+      "chars": 97,
+      "chars_total": 39,
+      "request_id": "pt0mkGQXljaeK77KcZHr",
+      "seconds": 6.3,
+      "mouth": "5994398752000000369998778668862899973369985200200016898877665255998888533348775432320111139977654798761100007878246129644320000"
+    },
+    "pay_now": {
+      "hash": "c7310b1a145d8f09",
+      "date": "2026-11-23",
+      "voice_id": "pNInz6obpgDQGcFmaJgB",
+      "voice_name": "Adam - Dominant, Firm",
+      "model": "eleven_multilingual_v2",
+      "text": "You can pay the fine now and walk out, or serve the time. Cash only. No checks.",
+      "chars": 79,
+      "chars_total": 32,
+      "request_id": "SpUht99FsgNiQOxRyeBF",
+      "seconds": 5.86,
+      "mouth": "7667489859159887657877786679993398775100008835999636346753222211000000000279987459876443210000000006997245963002432000"
+    },
+    "cell": {
+      "hash": "b0c9273a0387fc41",
+      "date": "2026-11-23",
+      "voice_id": "pNInz6obpgDQGcFmaJgB",
+      "voice_name": "Adam - Dominant, Firm",
+      "model": "eleven_multilingual_v2",
+      "text": "The cell is down the hall, second door. Mind the step. Someone will let you out when your time is up.",
+      "chars": 101,
+      "chars_total": 40,
+      "request_id": "iedlU9r5bIK23hmHCgnX",
+      "seconds": 5.95,
+      "mouth": "755999998742987658439998765335961654698643210001112798877564549975000000024987987698896147898873676753476765553764200000"
+    },
+    "bye": {
+      "hash": "dee0c9dbb6762b31",
+      "date": "2026-11-23",
+      "voice_id": "pNInz6obpgDQGcFmaJgB",
+      "voice_name": "Adam - Dominant, Firm",
+      "model": "eleven_multilingual_v2",
+      "text": "Good day. Keep your paperwork.",
+      "chars": 30,
+      "chars_total": 12,
+      "request_id": "PlUnxOhuFNef8Q5DytMB",
+      "seconds": 2.13,
+      "mouth": "9949874311000000000002971881985485632002000"
+    }
+  },
+  "voice": {
+    "id": "pNInz6obpgDQGcFmaJgB",
+    "name": "Adam - Dominant, Firm",
+    "source": "premade"
+  }
+}

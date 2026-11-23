@@ -21,8 +21,8 @@ export default [
   {
     id: "Rebel",
     vehicle: "Ural4320",
-    base: "{2B402516452EC797}Prefabs/Vehicles/Wheeled/Ural4320/LF_Ural4320_transport_CIV.et",
+    base: "{2A84E52C3429DF4F}Prefabs/Vehicles/LF_Ural4320_RebelKit.et",
     colors: { 1: OLIVE, 2: MUD },
-    credit: { ...DERIVED("`Ural_4320_Body_CIV_Forest.emat`"), purpose: "Rebel mud-and-olive repaint for the Ural4320" },
+    credit: { ...DERIVED("`Ural_4320_Body_CIV_Forest.emat`, `SignWall_01_90x45`, `CamoNet_PalletMRE`, `CamoNet_PalletAmmo_Soviet` and the camo-net materials CS1"), purpose: "Rebel mud-and-olive repaint for the Ural4320, with a hand-painted door number and camo nets over the bed (LF_Ural4320_RebelKit)" },
   },
 ];

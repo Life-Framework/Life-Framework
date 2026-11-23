@@ -1,0 +1,61 @@
+// Grid cell c24r4 for booking: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_booking_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 311 0 71
+}
+SCR_DestructibleEntity Grid_booking_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 316 0 71
+}
+SCR_DestructibleEntity Grid_booking_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_booking_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 76
+ angleY 270
+}
+SCR_DestructibleEntity Grid_booking_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_booking_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 316 0 81
+ angleY 180
+}
+SCR_DestructibleEntity Grid_booking_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 311 0 81
+ angleY 90
+}
+GenericEntity Grid_booking_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:booking"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 310.2 0.505 71.6
+ angleY -90
+}
+GenericEntity Grid_booking_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "booking"
+  }
+ }
+ coords 310.3 0 73.5
+ angleY 90
+}
+GenericEntity Grid_booking_R0 : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ coords 318.874 0.001 76.851
+ angleY -90
+}
+GenericEntity Grid_booking_Typewriter : "{4DBA189750F6F017}Prefabs/Props/Civilian/Typewriter_01/Typewriter_01_grey.et" {
+ coords 318.675 0.906 75.365
+ angleY -90
+}
+GenericEntity Grid_booking_Inkwell : "{E73C26C2B63B5A06}Prefabs/Props/Civilian/InkwellDecorative_01/InkwellDecorative_01_base.et" {
+ coords 318.501 0.907 76.556
+ angleY -90
+}

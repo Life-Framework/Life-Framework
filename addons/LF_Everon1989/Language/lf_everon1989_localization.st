@@ -734,6 +734,56 @@ StringTable {
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
      Comment "Pack patch of the clerk dialogue's line work_errand (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{7D9807E24C9AA3E9}" {
+     Id "LF-Dialogue_DeskSergeant_Booking"
+     Target_en_us "Booking? Sign the sheet where it's marked. Name, charge, time. Then the stamp, and it's official."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
+    CustomStringTableItem "{E61C94CCD5ACEE28}" {
+     Id "LF-Dialogue_DeskSergeant_Bye"
+     Target_en_us "Good day. Keep your paperwork."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
+    CustomStringTableItem "{0C83B17417B6B367}" {
+     Id "LF-Dialogue_DeskSergeant_Cell"
+     Target_en_us "The cell is down the hall, second door. Mind the step. Someone will let you out when your time is up."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
+    CustomStringTableItem "{9B26E7091FEB3027}" {
+     Id "LF-Dialogue_DeskSergeant_Name"
+     Target_en_us "Desk Sergeant Marchand"
+     Comment "Speaker name shown over the desk sergeant dialogue."
+    }
+    CustomStringTableItem "{EA2DF3CEE06AD06C}" {
+     Id "LF-Dialogue_DeskSergeant_PayNow"
+     Target_en_us "You can pay the fine now and walk out, or serve the time. Cash only. No checks."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
+    CustomStringTableItem "{179FC496A7129A75}" {
+     Id "LF-Dialogue_DeskSergeant_SayBook"
+     Target_en_us "I'm here to be booked."
+     Comment "Dialogue reply the player can pick when talking to the desk_sergeant NPC."
+    }
+    CustomStringTableItem "{5C9933FC31FD5E36}" {
+     Id "LF-Dialogue_DeskSergeant_SayBye"
+     Target_en_us "That's all. Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the desk_sergeant NPC."
+    }
+    CustomStringTableItem "{38B15134A344AF69}" {
+     Id "LF-Dialogue_DeskSergeant_SayCell"
+     Target_en_us "Where do I serve it?"
+     Comment "Dialogue reply the player can pick when talking to the desk_sergeant NPC."
+    }
+    CustomStringTableItem "{DC7B651DA2397650}" {
+     Id "LF-Dialogue_DeskSergeant_SayPay"
+     Target_en_us "Can I pay it now?"
+     Comment "Dialogue reply the player can pick when talking to the desk_sergeant NPC."
+    }
+    CustomStringTableItem "{CC2A3F4E1B6480A4}" {
+     Id "LF-Dialogue_DeskSergeant_Ticket"
+     Target_en_us "Paying a ticket? Put it on the counter and I'll stamp it."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
     CustomStringTableItem "{7A3C5E19D2B84F60}" {
      Id "LF-Dialogue_Dispatcher_Name"
      Target_en_us "Dispatch"
@@ -3929,6 +3979,11 @@ StringTable {
      Target_en_us "Town hall"
      Comment "Map POI kind name (#2247): the town hall, where the clerk sits."
     }
+    CustomStringTableItem "{6BC39EAB78BC4239}" {
+     Id "LF-MapPoi_TruckLot"
+     Target_en_us "Truck Sales"
+     Comment "Map POI name (truck yard, #4531): the truck sales yard; its own badge, not the car lot."
+    }
     CustomStringTableItem "{F6A138480E019E89}" {
      Id "LF-MapPoi_WheatField"
      Target_en_us "Wheat field"
@@ -4853,6 +4908,36 @@ StringTable {
      Id "LF-Resident_shipment_go_between_Name"
      Target_en_us "Hugo Valmy"
      Comment "Saint-Philippe resident shipment_go_between: display name (#3804)."
+    }
+    CustomStringTableItem "{DC33F8BD1CB4065B}" {
+     Id "LF-Resident_shop_baker_Name"
+     Target_en_us "Remy Dufour"
+     Comment "Saint-Philippe baker (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{34C483FECB34BE5F}" {
+     Id "LF-Resident_shop_barber_Name"
+     Target_en_us "Fabrice Lenoir"
+     Comment "Saint-Philippe barber (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{A413A4B00A88A089}" {
+     Id "LF-Resident_shop_butcher_Name"
+     Target_en_us "Gilbert Roux"
+     Comment "Saint-Philippe butcher (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{21AB60B7900182C7}" {
+     Id "LF-Resident_shop_newsagent_Name"
+     Target_en_us "Armand Pons"
+     Comment "Saint-Philippe newsagent (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{04F1BCBDCDAEBF72}" {
+     Id "LF-Resident_shop_pharmacist_Name"
+     Target_en_us "Etienne Garnier"
+     Comment "Saint-Philippe pharmacist (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{A4D1F10E619D14CE}" {
+     Id "LF-Resident_shop_postmaster_Name"
+     Target_en_us "Noel Vasseur"
+     Comment "Saint-Philippe postmaster (shop cast, #4475): display name."
     }
     CustomStringTableItem "{9FE5B987FD8FD9D2}" {
      Id "LF-Resident_store_clerk_Name"
@@ -6244,6 +6329,11 @@ StringTable {
      Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
      Comment "Lawless area sign card, What section."
     }
+    CustomStringTableItem "{7100C834F7E9CEAF}" {
+     Id "LF-Sign_Livery_Ambulance_Title"
+     Target_en_us "AMBULANCE"
+     Comment "Livery plate on the side panels of the UAZ452 and S1203 ambulances (#4470)."
+    }
     CustomStringTableItem "{55502A149BCBFDCF}" {
      Id "LF-Sign_Livery_UAZ469_Police_Title"
      Target_en_us "POLICE"
@@ -6608,6 +6698,11 @@ StringTable {
      Id "LF-Sign_QuarryInfo_What"
      Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
      Comment "Quarry info board, What section."
+    }
+    CustomStringTableItem "{090D4A15534E09EE}" {
+     Id "LF-Sign_RebelKit_Ural_Title"
+     Target_en_us "27"
+     Comment "Hand-painted number on the doors of the rebel Ural4320 (LF_Ural4320_RebelKit)."
     }
     CustomStringTableItem "{6FE6312861E955B2}" {
      Id "LF-Sign_Registry_How"
