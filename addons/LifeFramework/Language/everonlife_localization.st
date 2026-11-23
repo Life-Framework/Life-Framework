@@ -6783,6 +6783,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Wait %1 seconds"
      Comment "Gather refused: the resource is restocking. %1 = seconds"
     }
+    CustomStringTableItem "{D83A61F4B05C92E7}" {
+     Id "LF-Gossip_Overheard"
+     Target_en_us "You overhear the gossips. A new place is marked on your map."
+     Comment "Toast: a rumor overheard on the gossip bench; its place is now heard of (#4462)."
+    }
+    CustomStringTableItem "{7C1E0B5A92D4F3A6}" {
+     Id "LF-Gossip_Title"
+     Target_en_us "Overheard"
+     Comment "Toast title when a player sitting on the gossip bench overhears a rumor (#4462)."
+    }
     CustomStringTableItem "{73D0C4773B5E967E}" {
      Id "LF-Grace_Refused"
      Target_en_us "A new arrival is under a short grace: no hold-up, robbery or arrest for now."

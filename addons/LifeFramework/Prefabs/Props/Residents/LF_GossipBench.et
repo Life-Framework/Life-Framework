@@ -1,0 +1,7 @@
+SCR_DestructibleEntity : "{CECA6D57E2CAB7A8}Prefabs/Props/Seats/LF_Seat_BenchStreet_02.et" {
+ ID "691F58932F2FA178"
+ components {
+  LF_GossipBenchComponent "{03EFF3B03188F8DF}" {
+  }
+ }
+}
