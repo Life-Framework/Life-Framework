@@ -15773,6 +15773,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
     }
+    CustomStringTableItem "{18DFC167284D07E8}" {
+     Id "LF-ToolBench_Done"
+     Target_en_us "Good as new. That came to %1 and one scrap metal."
+     Comment "Bench repair done (#4187). %1 = fee"
+    }
+    CustomStringTableItem "{3E45956C16155502}" {
+     Id "LF-ToolBench_Failed"
+     Target_en_us "The bench cannot do repairs right now."
+     Comment "Bench refusal on a broken setup (#4187)"
+    }
+    CustomStringTableItem "{8F6C7F1D0C427B09}" {
+     Id "LF-ToolBench_Full"
+     Target_en_us "That tool is already in top shape."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{25BBCAE014F0D78D}" {
+     Id "LF-ToolBench_NoMoney"
+     Target_en_us "You do not have enough cash for the repair."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{3088D8D49AFC71C9}" {
+     Id "LF-ToolBench_NoScrap"
+     Target_en_us "You need one piece of scrap metal for the repair."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{C6145C357DAD1FAB}" {
+     Id "LF-ToolBench_NoTool"
+     Target_en_us "You have no tool of that kind to work on."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{6F3046628BDFDFCF}" {
+     Id "LF-ToolBench_RepairPickaxe"
+     Target_en_us "Repair the pickaxe"
+     Comment "Hardware bench action (#4187)"
+    }
+    CustomStringTableItem "{C16B93140B289B82}" {
+     Id "LF-ToolBench_RestringRod"
+     Target_en_us "Re-string the rod"
+     Comment "Hardware bench action (#4187)"
+    }
+    CustomStringTableItem "{1188B7A6ADC3C8C7}" {
+     Id "LF-ToolBench_SharpenAxe"
+     Target_en_us "Sharpen the axe"
+     Comment "Hardware bench action (#4187)"
+    }
+    CustomStringTableItem "{62BCE351AF0CBFB2}" {
+     Id "LF-ToolBench_Title"
+     Target_en_us "Hardware bench"
+     Comment "Notification title (#4187)"
+    }
     CustomStringTableItem "{3723AB61E29CDCE1}" {
      Id "LF-ToolCondition_Good"
      Target_en_us "%1 is in good shape"
