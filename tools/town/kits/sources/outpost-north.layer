@@ -1,3 +1,4 @@
+// Source of the `outpost-north` kit (tools/town/kits/outpost-north.json): the grid layer it was authored in (bay c27r4), kept when its authoring bay was released. `town fit` reads the rows from here.
 // Grid cell c27r4 for outpost-north: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
 SCR_DestructibleEntity Grid_outpost_north_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
  coords 347 0 71
@@ -151,7 +152,7 @@ GenericEntity Outpost_Pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pal
  coords 359.008 0.004 91.488
 }
 GenericEntity Outpost_PalletBox_1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
- coords 361.599 0.022 91.504
+ coords 361.599 0.05 91.504
 }
 GenericEntity Outpost_Barrel_1 : "{4BE795374BE3D67E}Prefabs/Props/Industrial/BarrelFuel_01_closed.et" {
  coords 352.478 0.001 72.989
@@ -160,5 +161,43 @@ GenericEntity Outpost_CanvasCover_Crates : "{BFC48B664ED362EE}Prefabs/Structures
  coords 356 0 74.5
 }
 GenericEntity Outpost_CamoNet_Pallets : "{79AA43911CC6C3E8}Prefabs/Structures/Military/CamoNets/Soviet/CamoNet_Small_Soviet.et" {
- coords 360.2 0 91.6
+ coords 360.3 0 91.5
+ scale 0.4
+}
+GenericEntity Outpost_Stool_W : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 355.301 0 80.9
+}
+GenericEntity Outpost_Stool_N : "{D023942ECEA592ED}Prefabs/Props/Furniture/Stool_02.et" {
+ coords 357.194 0.002 82.49
+ angleY 30
+}
+GenericEntity Outpost_Stool_S : "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et" {
+ coords 356.601 0 79.2
+ angleY -20
+}
+GenericEntity Outpost_Bench_Box : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 358.7 0.022 80.404
+ angleY 15
+}
+GenericEntity Outpost_Workbench_1 : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ coords 362.602 0.001 77.329
+}
+GenericEntity Outpost_Workbench_2 : "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et" {
+ coords 365.601 0.001 77.38
+}
+GenericEntity Outpost_Canopy_Mechanic : "{C2789448B0BD05F8}Prefabs/Structures/Military/Camps/Canvas_Covers/CanvasCover_Medium_A_Base.et" {
+ coords 364 0 76.4
+}
+GenericEntity Outpost_FlagCloth : "{AE09DA7896F9DB37}Prefabs/Props/Fabric/Flags/Flag_1_2.et" {
+ components {
+  MeshObject "{52AE82368499B365}" {
+   Materials {
+    MaterialAssignClass "{599EE14E7161DB9A}" {
+     SourceMaterial "Flag_1_2"
+     AssignedMaterial "{B7A02313829700F9}Assets/Props/Fabric/Flags/Data/Flag_1_2_Green.emat"
+    }
+   }
+  }
+ }
+ coords 366.001 5.45 90.973
 }

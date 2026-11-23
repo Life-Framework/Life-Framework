@@ -15,6 +15,10 @@
 //      swings with the door. It is the SignWall_01_90x45 plate with LF_SignComponent (the postal van's
 //      method), its title a pack sign row and a pack string. No read action, so it adds nothing to the
 //      door's action list.
+//   5. Words on a vehicle whose doors are part of the body mesh (S105, S1203, UAZ452) are plates on fixed
+//      panels (`panels`): children of the variant prefab itself, each with its own position, yaw and scale.
+//      The build writes them, so a rebuild keeps them; livery-selftest fails when a generated file on disk
+//      differs from what the build writes (a hand edit the next build would drop).
 //
 // Every file lands in the pack (colours are what this server is). GUIDs are derived from the livery id and
 // the part name, so a rebuild writes the same GUIDs and two liveries never share one (checkUnique).
@@ -77,6 +81,24 @@ function checkRow(row) {
     if (!/^[A-Z0-9 .'-]{1,16}$/.test(p.text || "")) throw new Error(`${row.id}: plate.text must be 1-16 capitals (US English), got "${p.text}"`);
     for (const k of ["paint", "ink", "rim"]) color(p[k] || []);
   }
+  if (row.panels) checkPanels(row);
+}
+
+// panels { sign, paint, ink, rim, at: [{ name, coords: [x, y, z], yaw, scale }] }: plates on fixed body panels,
+// in the vehicle's frame. `sign` names an existing sign row; without it the row's door plate sign is used.
+function checkPanels(row) {
+  const p = row.panels;
+  if (!p.sign && !row.plate) throw new Error(`${row.id}: panels.sign is required when the row has no door plate`);
+  if (p.sign && !/^[a-z0-9_]+$/.test(p.sign)) throw new Error(`${row.id}: panels.sign must be a sign id (lower case, digits, _), got "${p.sign}"`);
+  for (const k of ["paint", "ink", "rim"]) color(p[k] || []);
+  if (!Array.isArray(p.at) || !p.at.length) throw new Error(`${row.id}: panels.at must list at least one panel`);
+  const names = new Set();
+  for (const a of p.at) {
+    if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(a.name || "") || names.has(a.name)) throw new Error(`${row.id}: each panel needs a unique entity name, got "${a.name}"`);
+    names.add(a.name);
+    if (!Array.isArray(a.coords) || a.coords.length !== 3 || a.coords.some((n) => typeof n !== "number")) throw new Error(`${row.id}: panel ${a.name} coords must be [x, y, z]`);
+    if (typeof a.yaw !== "number" || typeof a.scale !== "number" || a.scale <= 0) throw new Error(`${row.id}: panel ${a.name} needs a number yaw and a positive scale`);
+  }
 }
 
 function bodyEmat(row, v) {
@@ -103,9 +125,9 @@ function partMesh(text, source, what) {
   return [mesh[1], assign[1]];
 }
 
-// One plate child, in the door's frame. g(part) gives its stable GUIDs.
-function plateChild(p, at, scale, signId, g) {
-  return `  GenericEntity {
+// One plate child, in its parent's frame (a door, or the vehicle for a panel). g(part) gives its stable GUIDs.
+function plateChild(p, at, scale, signId, g, name = "") {
+  return `  GenericEntity ${name ? `${name} ` : ""}{
    ID "${g("id")}"
    components {
     Hierarchy "{${g("hier")}}" {
@@ -193,8 +215,13 @@ export function planLivery(row, vanilla) {
     vehSlots = `  SlotManagerComponent "{${slotMgr}}" {\n   Slots {\n${slots.join("")}   }\n  }\n`;
   }
   const cls = row.entity || "Vehicle";
+  let panels = "";
+  if (row.panels) {
+    const p = row.panels;
+    panels = ` {\n${p.at.map((a) => plateChild(p, a, a.scale, p.sign || signId, (k) => g(`panel-${a.name}-${k}`), a.name)).join("")} }\n`;
+  }
   add("vehicle", `${PREFABS}/LF_${id}.et`, g("vehicle"),
-    `${cls} : "${row.base}" {\n ID "${g("vehicle-id")}"\n components {\n${meshOverride(v.mesh, v.assign, v.source, ematRef)}${vehSlots} }\n}\n`);
+    `${cls} : "${row.base}" {\n ID "${g("vehicle-id")}"\n components {\n${meshOverride(v.mesh, v.assign, v.source, ematRef)}${vehSlots} }\n${panels}}\n`);
 
   const c = row.credit;
   const credit = `| LF_${id} | ${c.source} (${c.license}) | ${c.purpose} | \`${PACK}/${ASSETS}/${row.vehicle}/\` |`;

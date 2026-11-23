@@ -4,7 +4,8 @@
 //! offers and menus need. Nothing else of the account leaves the server.
 //!
 //! Layout: bit 0 has-account, bit 1 on-duty, bits 2-4 faction, bits 5-7 wanted, bits 8-15 rank,
-//! bit 16 on the police roster (whitelisted; the duty desk offers Clock in).
+//! bit 16 on the police roster (whitelisted; the duty desk offers Clock in), bits 17-24 the medic
+//! rank (the ladder index, so the medic car pool board shows only the ambulances the rank may draw).
 //! Values outside a field's range are clamped, never wrapped into a neighbour field.
 //------------------------------------------------------------------------------------------------
 class LF_AccountStateBits
@@ -18,10 +19,12 @@ class LF_AccountStateBits
 	static const int RANK_SHIFT = 8;
 	static const int RANK_MASK = 255;
 	static const int ON_ROSTER = 1 << 16;
+	static const int MEDIC_RANK_SHIFT = 17;
+	static const int MEDIC_RANK_MASK = 255;
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The packed state. No account is 0, which reads back as a civilian, off duty, not wanted.
-	static int Encode(bool hasAccount, int faction, bool onDuty, int wantedLevel, int policeRank, bool onRoster = false)
+	static int Encode(bool hasAccount, int faction, bool onDuty, int wantedLevel, int policeRank, bool onRoster = false, int medicRank = 0)
 	{
 		if (!hasAccount)
 			return 0;
@@ -36,6 +39,7 @@ class LF_AccountStateBits
 		if (onRoster)
 			state = state | ON_ROSTER;
 
+		state = state | (Math.ClampInt(medicRank, 0, MEDIC_RANK_MASK) << MEDIC_RANK_SHIFT);
 		return state;
 	}
 
@@ -46,7 +50,7 @@ class LF_AccountStateBits
 			return 0;
 
 		bool onRoster = LF_WhitelistManager.IsWhitelistedForFaction(account.GetPersistentId(), LF_EFactionType.POLICE);
-		return Encode(true, account.GetFaction(), account.IsOnDuty(), account.GetWantedLevel(), account.GetPoliceRank(), onRoster);
+		return Encode(true, account.GetFaction(), account.IsOnDuty(), account.GetWantedLevel(), account.GetPoliceRank(), onRoster, account.GetMedicRank());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -77,6 +81,13 @@ class LF_AccountStateBits
 	static int GetPoliceRank(int state)
 	{
 		return (state >> RANK_SHIFT) & RANK_MASK;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The medic ladder index, replicated beside the police rank (#4566).
+	static int GetMedicRank(int state)
+	{
+		return (state >> MEDIC_RANK_SHIFT) & MEDIC_RANK_MASK;
 	}
 
 	//------------------------------------------------------------------------------------------------

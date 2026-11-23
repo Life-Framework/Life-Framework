@@ -1,0 +1,69 @@
+GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ ID "4CD36CEAD0F8A3FA"
+ components {
+  LF_PlaceComponent "{B52C0E829AC28E9F}" {
+   m_sKind "LiveryBay"
+   m_sId "livery-bay"
+  }
+  LF_VehicleSpawnPointComponent "{46E8DD1835EFCC42}" {
+   m_sShopId "livery-bay"
+   m_vOffset 0 0 4
+   m_iSlots 1
+  }
+  ActionsManagerComponent "{D3C2BE978C294AE5}" {
+   ActionContexts {
+    UserActionContext "{15718B2234EF9472}" {
+     ContextName "LF_LiveryBay"
+     Position PointInfo "{095C3E35B93D3E9C}" {
+      Offset 0 1 0
+     }
+     Radius 3
+    }
+   }
+   additionalActions {
+    LF_LiveryShopAction "{E8359A3FC14BD74F}" {
+     ParentContextList {
+      "LF_LiveryBay"
+     }
+     m_iSlot 0
+    }
+    LF_LiveryShopAction "{69E64EAE7ECCCD88}" {
+     ParentContextList {
+      "LF_LiveryBay"
+     }
+     m_iSlot 1
+    }
+    LF_LiveryShopAction "{AC9E28E845996E25}" {
+     ParentContextList {
+      "LF_LiveryBay"
+     }
+     m_iSlot 2
+    }
+    LF_LiveryShopAction "{AC0D8A2B74704415}" {
+     ParentContextList {
+      "LF_LiveryBay"
+     }
+     m_iSlot 3
+    }
+    LF_LiveryShopAction "{07E78B0252F98198}" {
+     ParentContextList {
+      "LF_LiveryBay"
+     }
+     m_iSlot 4
+    }
+    LF_LiveryShopAction "{9C124B494052A855}" {
+     ParentContextList {
+      "LF_LiveryBay"
+     }
+     m_iSlot 5
+    }
+    LF_LiveryShopAction "{F15ABC53A77B6FE9}" {
+     ParentContextList {
+      "LF_LiveryBay"
+     }
+     m_iSlot -1
+    }
+   }
+  }
+ }
+}

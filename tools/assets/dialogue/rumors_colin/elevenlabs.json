@@ -1,0 +1,128 @@
+{
+  "id": "rumors_colin",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "colin_cove": {
+      "hash": "dd4299284619377c",
+      "date": "2026-11-23",
+      "voice_id": "mN8UWPJNnmcExNpfrkd2",
+      "voice_name": "Nicolas - French accent & cozy whisper",
+      "model": "eleven_multilingual_v2",
+      "text": "Somebody fishes the cove on the bay every dusk. A quiet type. He comes back with a full bucket and tells nobody where he goes.",
+      "chars": 126,
+      "chars_total": 50,
+      "request_id": "BQ62dWM6CMpANtWiIsMY",
+      "seconds": 8.57,
+      "mouth": "7996496657795998593751766647456316308453210864593195589717200000000000840989845029742094100000000038819758919816258877787448429437442085649934316319521877656326742499999200"
+    },
+    "colin_blacklake": {
+      "hash": "3aa474ffdebe4559",
+      "date": "2026-11-23",
+      "voice_id": "mN8UWPJNnmcExNpfrkd2",
+      "voice_name": "Nicolas - French accent & cozy whisper",
+      "model": "eleven_multilingual_v2",
+      "text": "The north shore of Black Lake has pike, big ones. Few people bother with it, which is why the pike are big.",
+      "chars": 107,
+      "chars_total": 43,
+      "request_id": "1zXS4m5T231cTgtL4qLz",
+      "seconds": 8.36,
+      "mouth": "942799759997966554457218861756630731268898197520631000000000000742679536741000000000000298417429431878765315673205984000000000068594892399842751987428319896307321062000"
+    },
+    "colin_wholesale": {
+      "hash": "1961b0a67f0fb2b3",
+      "date": "2026-11-23",
+      "voice_id": "mN8UWPJNnmcExNpfrkd2",
+      "voice_name": "Nicolas - French accent & cozy whisper",
+      "model": "eleven_multilingual_v2",
+      "text": "The wholesale counter at the dock buys in bulk. If you have crates to sell, do not take less than the market gives.",
+      "chars": 115,
+      "chars_total": 46,
+      "request_id": "7ArbPyRgJTxu8kFBN8bD",
+      "seconds": 7.21,
+      "mouth": "7787659956528863966529245384616019743773319742534000000000005797946976289941793889976320000000000074457600853364657410892652586227305643329674000"
+    },
+    "colin_woodlot": {
+      "hash": "885c7d8ed4b2fa15",
+      "date": "2026-11-23",
+      "voice_id": "mN8UWPJNnmcExNpfrkd2",
+      "voice_name": "Nicolas - French accent & cozy whisper",
+      "model": "eleven_multilingual_v2",
+      "text": "The woodlot behind the town has trees marked for cutting. A man with an axe can make an honest day of it.",
+      "chars": 105,
+      "chars_total": 42,
+      "request_id": "x992jtcmAJOk8Jf67Gex",
+      "seconds": 6.43,
+      "mouth": "952461748430995000029669984274095536769589934863876429743074193210000000000663899335676529839656322641532319944373075345653205100"
+    },
+    "colin_seedfeed": {
+      "hash": "6d25a16a1785ce11",
+      "date": "2026-11-23",
+      "voice_id": "mN8UWPJNnmcExNpfrkd2",
+      "voice_name": "Nicolas - French accent & cozy whisper",
+      "model": "eleven_multilingual_v2",
+      "text": "Seed and feed sells everything a farm needs. Ask the clerk what is moving this week. He tells you if you buy something.",
+      "chars": 119,
+      "chars_total": 48,
+      "request_id": "bkEKTbhmFIvZaRdGlGst",
+      "seconds": 7.06,
+      "mouth": "7984758367962499966487867955742558875323221376200000000019999269468763426678871347532376892531420000000000004718767988316666835964997368522000"
+    },
+    "colin_range": {
+      "hash": "3f42ba9d33576fe3",
+      "date": "2026-11-23",
+      "voice_id": "mN8UWPJNnmcExNpfrkd2",
+      "voice_name": "Nicolas - French accent & cozy whisper",
+      "model": "eleven_multilingual_v2",
+      "text": "There is a range at the edge of town where people practice. Mind the flags, and mind the neighbors.",
+      "chars": 99,
+      "chars_total": 40,
+      "request_id": "3EDpyVTvGiH65wz1YF94",
+      "seconds": 6.22,
+      "mouth": "48759856999952299719716425661795661875321468274219385944673763100000000003994356759969826786300000015623974337425432834585000"
+    },
+    "colin_clinic": {
+      "hash": "06f7314b3f74b013",
+      "date": "2026-11-23",
+      "voice_id": "mN8UWPJNnmcExNpfrkd2",
+      "voice_name": "Nicolas - French accent & cozy whisper",
+      "model": "eleven_multilingual_v2",
+      "text": "The clinic is short of hands, and always has been. If you can stay calm around blood, ask there.",
+      "chars": 96,
+      "chars_total": 38,
+      "request_id": "9gMBrwPVZgmPHievR2On",
+      "seconds": 6.83,
+      "mouth": "95297343179997759576896326761000000000001767999379687755281100000000000000007459516379185218996466456636195730740000000000008998189863100"
+    },
+    "colin_pub": {
+      "hash": "b8383d6c4e2ff4a8",
+      "date": "2026-11-23",
+      "voice_id": "mN8UWPJNnmcExNpfrkd2",
+      "voice_name": "Nicolas - French accent & cozy whisper",
+      "model": "eleven_multilingual_v2",
+      "text": "The Chotain pub has a back room. Cards on Friday nights, I am told, and the barkeeper keeps that door himself. I only repair watches.",
+      "chars": 133,
+      "chars_total": 53,
+      "request_id": "i9ILviYphAdRrrtAIyl1",
+      "seconds": 10.48,
+      "mouth": "456954284321751776978551894778433210000000000001999634992974999947742885208971000000000000776734754532710000000000027264189718563186640653967992064576532987654751000000000000894219653534963074565139919935656200"
+    },
+    "colin_chess": {
+      "hash": "f20d58c75e81a757",
+      "date": "2026-11-23",
+      "voice_id": "mN8UWPJNnmcExNpfrkd2",
+      "voice_name": "Nicolas - French accent & cozy whisper",
+      "model": "eleven_multilingual_v2",
+      "text": "Men play chess on the square for small stakes. Sit down, lose gracefully, and they will tell you everything.",
+      "chars": 108,
+      "chars_total": 43,
+      "request_id": "9xPjHBFvsjIGCAFEq9LD",
+      "seconds": 7.41,
+      "mouth": "67421486522996697452949946777656449946758957332654100000000002794119964232000000000163499499599544523100000000056419533542585323241366658733442111000"
+    }
+  },
+  "voice": {
+    "id": "mN8UWPJNnmcExNpfrkd2",
+    "name": "Nicolas - French accent & cozy whisper",
+    "source": "voice library"
+  }
+}

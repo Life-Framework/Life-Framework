@@ -1,0 +1,139 @@
+{
+  "id": "rumors_bar",
+  "name": "RumorsBar",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_Barkeeper_Name",
+  "voice": {
+    "id": "KvaCHcJoMXfOzwtsULOZ",
+    "sex": "male",
+    "name": "Hank Harvey - Gruff, Rugged and Wise",
+    "public_owner_id": "1a76b02cecffbd3f25a01b953eaecc6c05a281d4be25de83fa454db6a9c6eef6",
+    "why": "Josselin Vidal's own voice (Hank Harvey) for what the bar hears: shop and road tips, and the crime rumors only bar staff give to a regular they know.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.25,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 1300,
+  "hear_range_m": 8,
+  "start": "bar_carlot",
+  "nodes": [
+    {
+      "id": "bar_carlot",
+      "line": "bar_carlot",
+      "options": [
+        {
+          "text": "more",
+          "next": "bar_fuel"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bar_fuel",
+      "line": "bar_fuel",
+      "options": [
+        {
+          "text": "more",
+          "next": "bar_hardware"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bar_hardware",
+      "line": "bar_hardware",
+      "options": [
+        {
+          "text": "more",
+          "next": "bar_taxi"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bar_taxi",
+      "line": "bar_taxi",
+      "options": [
+        {
+          "text": "more",
+          "next": "bar_still"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bar_still",
+      "line": "bar_still",
+      "options": [
+        {
+          "text": "more",
+          "next": "bar_chop"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bar_chop",
+      "line": "bar_chop",
+      "options": [
+        {
+          "text": "more",
+          "next": "bar_fence"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bar_fence",
+      "line": "bar_fence",
+      "options": [
+        {
+          "text": "bye"
+        }
+      ]
+    }
+  ],
+  "lines": {
+    "bar_carlot": {
+      "text": "The car lot in town sells beaters cheap. Check the tires before you sign anything."
+    },
+    "bar_fuel": {
+      "text": "There is a fuel stop out on the road. If you run dry past the farms, that is your only hope."
+    },
+    "bar_hardware": {
+      "text": "The hardware store has tools. A man with a pick works faster than a man without one."
+    },
+    "bar_taxi": {
+      "text": "The taxi stand by the square. Drivers hear everything, but they only tell what pays."
+    },
+    "bar_still": {
+      "text": "The old barn off the road is not empty at night. Lights, a truck with no plates, a smell like sour mash. I pour what I pour and keep quiet."
+    },
+    "bar_chop": {
+      "text": "Cars go into the yard on the hill and parts come out. You can hear the saws from the road. That is all I know, and all I want to."
+    },
+    "bar_fence": {
+      "text": "A man buys odd goods behind a barn on the edge of town. Everybody sees who walks out there. Nobody says why."
+    }
+  },
+  "replies": {
+    "more": "Go on.",
+    "bye": "That is all I wanted."
+  }
+}

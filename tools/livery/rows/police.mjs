@@ -22,6 +22,15 @@ export default [
     vehicle: "S105",
     base: "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et",
     colors: { 1: WHITE },
+    // POLICE on the fixed rear quarter panels (#4372): the doors are part of the body mesh, so no door plate.
+    panels: {
+      sign: "livery_uaz469_police",
+      paint: [0.95, 0.95, 0.93], ink: [0.05, 0.1, 0.35], rim: [0.05, 0.1, 0.35],
+      at: [
+        { name: "PoliceLetters_L", coords: [-0.9, 0.84, -1.3], yaw: -90, scale: 0.5 },
+        { name: "PoliceLetters_R", coords: [0.9, 0.84, -1.3], yaw: 90, scale: 0.5 },
+      ],
+    },
     credit: { ...DERIVED("`S105Body_mat_beige.emat`"), purpose: "Police repaint for the S105" },
   },
   {
