@@ -3540,6 +3540,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
     }
+    CustomStringTableItem "{E35B0CC84DBE0C44}" {
+     Id "LF-Commendations_None"
+     Target_en_us "No commendations yet."
+     Comment "Plaque line when nobody has been commended (#4206)."
+    }
+    CustomStringTableItem "{D241025EB28BCFC9}" {
+     Id "LF-Commendations_Read"
+     Target_en_us "Read the commendations plaque"
+     Comment "Action on the commendations plaque in the station hall (#4206)."
+    }
+    CustomStringTableItem "{6BABF1BF0291EF96}" {
+     Id "LF-Commendations_Title"
+     Target_en_us "Commendations"
+     Comment "Title of the commendations plaque in the station hall (#4206)."
+    }
     CustomStringTableItem "{4E1D7A30B6C2F907}" {
      Id "LF-Consume_Keybind_Throw"
      Target_en_us "Throw the food or drink in your hands"
@@ -14015,6 +14030,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Range_Title"
      Target_en_us "Range"
      Comment "Title of the range toasts (Feature/Range)."
+    }
+    CustomStringTableItem "{D8D23856A51B44A4}" {
+     Id "LF-RankBoard_None"
+     Target_en_us "Nobody is on the roster yet."
+     Comment "Rank board line when no officer is on the police roster (#4206)."
+    }
+    CustomStringTableItem "{1789A3ABA9FAD36B}" {
+     Id "LF-RankBoard_Read"
+     Target_en_us "Read the rank board"
+     Comment "Action on the printed rank board by the duty desk (#4206)."
+    }
+    CustomStringTableItem "{45FB47B34F55289D}" {
+     Id "LF-RankBoard_Title"
+     Target_en_us "Rank board"
+     Comment "Title of the printed rank board at the police station (#4206)."
     }
     CustomStringTableItem "{8B1F4E70C2A9D356}" {
      Id "LF-RankFleet_NeedsRank"
