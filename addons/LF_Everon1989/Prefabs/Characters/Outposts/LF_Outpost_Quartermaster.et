@@ -1,0 +1,67 @@
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ ID "97CB14AF9EC964D7"
+ components {
+  LF_OutpostStockComponent "{24577A0E80D36771}" {
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{BC29A563414EDAB0}" {
+     ContextName "Crate"
+     Position PointInfo "{C4183B6DF31F92E9}" {
+      PivotID "Spine5"
+     }
+     Radius 1
+    }
+   }
+   additionalActions + {
+    LF_OutpostStockBuyAction "{C03A008B7EBB8252}" {
+     ParentContextList {
+      "Crate"
+     }
+     UIInfo UIInfo "{65BE63E85848E6FA}" {
+      Name "#LF-OutpostStock_Buy"
+     }
+    }
+    LF_OutpostStockBuyAction "{96A27E4E10311AA4}" {
+     ParentContextList {
+      "Crate"
+     }
+     UIInfo UIInfo "{02D6F1DBB05C9948}" {
+      Name "#LF-OutpostStock_Buy"
+     }
+     m_iIndex 1
+    }
+    LF_OutpostStockBuyAction "{CD9FA611AFCFB67A}" {
+     ParentContextList {
+      "Crate"
+     }
+     UIInfo UIInfo "{E9ACBD7A6FDC9576}" {
+      Name "#LF-OutpostStock_Buy"
+     }
+     m_iIndex 2
+    }
+   }
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{27162F1F6EE6581A}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_brownShirt.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{06BC3F18B47799AE}Prefabs/Characters/Uniforms/Pants_M70.et"
+    }
+    LoadoutSlotInfo Vest {
+     Enabled 1
+     Prefab "{9713FE6DDCC9510D}Prefabs/Characters/Vests/Vest_Lifchik/Vest_Lifchik.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{4C6029AB8BF5C044}Prefabs/Characters/Footwear/CombatBoots_Soviet_01_Dirty.et"
+    }
+   }
+  }
+ }
+}

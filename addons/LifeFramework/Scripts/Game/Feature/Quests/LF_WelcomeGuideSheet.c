@@ -175,6 +175,12 @@ class LF_WelcomeGuideSheet
 			return;
 		}
 
+		if (!LF_WelcomeGuide.CanOpenByKey(LF_DialogueScene.IsOpen()))
+		{
+			LF_Debug.Info(LF_WelcomeGuide.FEATURE, "guide key ignored: a conversation is up");
+			return;
+		}
+
 		Open(0);
 	}
 
@@ -324,7 +330,8 @@ class LF_WelcomeGuideSheet
 
 		bool menuOpen = GetGame().GetMenuManager() && GetGame().GetMenuManager().IsAnyMenuOpen();
 		bool sheetOpen = LF_UIScreen.IsActionPromptSuppressed();
-		if (LF_WelcomeGuide.CanAutoOpen(body != null, alive, loitering, menuOpen, sheetOpen))
+		bool dialogueOpen = LF_DialogueScene.IsOpen();
+		if (LF_WelcomeGuide.CanAutoOpen(body != null, alive, loitering, menuOpen, sheetOpen, dialogueOpen))
 		{
 			s_bAutoWaiting = false;
 			LF_Debug.Info(LF_WelcomeGuide.FEATURE, "guide opens by itself for a new character");
@@ -336,7 +343,7 @@ class LF_WelcomeGuideSheet
 		if (s_iAutoTries >= AUTO_MAX_TRIES)
 		{
 			s_bAutoWaiting = false;
-			LF_Debug.Warn(LF_WelcomeGuide.FEATURE, string.Format("guide did not open by itself (body=%1 alive=%2 loiter=%3 menu=%4 sheet=%5); it tries again at the next join", body != null, alive, loitering, menuOpen, sheetOpen));
+			LF_Debug.Warn(LF_WelcomeGuide.FEATURE, string.Format("guide did not open by itself (body=%1 alive=%2 loiter=%3 menu=%4 sheet=%5 dialogue=%6); it tries again at the next join", body != null, alive, loitering, menuOpen, sheetOpen, dialogueOpen));
 			return;
 		}
 

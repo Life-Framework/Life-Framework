@@ -459,6 +459,51 @@ StringTable {
      Target_en_us "Three years ago they walked out of the night with what they could carry. We remember each of them. Stand with us a moment."
      Comment "Dialogue caption, spoken by the anniversary_priest NPC (voiced; tools/assets/dialogue/anniversary_priest). Changing it needs: tools\\cli asset dialogue anniversary_priest"
     }
+    CustomStringTableItem "{650D1E6518498F3C}" {
+     Id "LF-Dialogue_Barkeeper_Buy"
+     Target_en_us "Cartons and vodka, yes. Use the counter, not your mouth. Two cartons a week, a few bottles. More than that and the owner notices."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{8B26882A22293458}" {
+     Id "LF-Dialogue_Barkeeper_Bye"
+     Target_en_us "Mind the step on your way out."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{98172406A7846646}" {
+     Id "LF-Dialogue_Barkeeper_Greet"
+     Target_en_us "Evening. Beer is on the board. If you carry cartons or bottles that never saw a tax stamp, you see me, not the bar. Keep your voice down."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{05465B04D4DCDCA0}" {
+     Id "LF-Dialogue_Barkeeper_Law"
+     Target_en_us "If you wear a badge, I sell beer. Nothing else, and I never saw you. Anyone else, the money is on the counter and nobody was here."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{555A4099D123C72B}" {
+     Id "LF-Dialogue_Barkeeper_Limit"
+     Target_en_us "A bar that sells ten cartons a week is a shop, and a shop gets a visit. When my shelf is full, it is full. Come back next week."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{89B8C4EE047CD189}" {
+     Id "LF-Dialogue_Barkeeper_SayAsk"
+     Target_en_us "Do you buy cartons and vodka?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
+    CustomStringTableItem "{8C06935E1F6474C1}" {
+     Id "LF-Dialogue_Barkeeper_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
+    CustomStringTableItem "{2B4B72011D81B0CE}" {
+     Id "LF-Dialogue_Barkeeper_SayLaw"
+     Target_en_us "What about the law?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
+    CustomStringTableItem "{AB03BC8431143041}" {
+     Id "LF-Dialogue_Barkeeper_SayWhy"
+     Target_en_us "Why only two cartons?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
     CustomStringTableItem "{3E9F5343A58B4851}" {
      Id "LF-Dialogue_CafeOwner_Bye"
      Target_en_us "Come back when you are hungry. Or lonely. It is the same to me."
@@ -3939,6 +3984,106 @@ StringTable {
      Target_en_us "VIN tampering"
      Comment "Offence in the Everon law book (#4208)."
     }
+    CustomStringTableItem "{BE1680F8AE6B1FAE}" {
+     Id "LF-OrgFlag_Name_01"
+     Target_en_us "Ember"
+     Comment "Name of preset gang flag 1 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{6817944A14126BD6}" {
+     Id "LF-OrgFlag_Name_02"
+     Target_en_us "Harbor"
+     Comment "Name of preset gang flag 2 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{C49BBCD6BBA48B24}" {
+     Id "LF-OrgFlag_Name_03"
+     Target_en_us "Marrow"
+     Comment "Name of preset gang flag 3 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{B4986C26E3591A2A}" {
+     Id "LF-OrgFlag_Name_04"
+     Target_en_us "Thornfield"
+     Comment "Name of preset gang flag 4 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{F896B5D313898C57}" {
+     Id "LF-OrgFlag_Name_05"
+     Target_en_us "Copperhead"
+     Comment "Name of preset gang flag 5 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{86EB6BD4930EC244}" {
+     Id "LF-OrgFlag_Name_06"
+     Target_en_us "Nightjar"
+     Comment "Name of preset gang flag 6 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{C8BEEB631DDC69EC}" {
+     Id "LF-OrgFlag_Name_07"
+     Target_en_us "Salt"
+     Comment "Name of preset gang flag 7 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{D1DAEDC39758D453}" {
+     Id "LF-OrgFlag_Name_08"
+     Target_en_us "Gallows"
+     Comment "Name of preset gang flag 8 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{95456EF16BD7654F}" {
+     Id "LF-OrgFlag_Name_09"
+     Target_en_us "Lantern"
+     Comment "Name of preset gang flag 9 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{C448DCCBF0454FBB}" {
+     Id "LF-OrgFlag_Name_10"
+     Target_en_us "Ironside"
+     Comment "Name of preset gang flag 10 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{640742821EAC85CC}" {
+     Id "LF-OrgFlag_Name_11"
+     Target_en_us "Cinder"
+     Comment "Name of preset gang flag 11 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{EC71EB3B529F79EF}" {
+     Id "LF-OrgFlag_Name_12"
+     Target_en_us "Vesper"
+     Comment "Name of preset gang flag 12 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{C7A1729027941361}" {
+     Id "LF-OrgFlag_Name_13"
+     Target_en_us "Quarry"
+     Comment "Name of preset gang flag 13 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{79499E7D95E9F211}" {
+     Id "LF-OrgFlag_Name_14"
+     Target_en_us "Rook"
+     Comment "Name of preset gang flag 14 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{23CC866AC4D8AC19}" {
+     Id "LF-OrgFlag_Name_15"
+     Target_en_us "Tidewater"
+     Comment "Name of preset gang flag 15 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{BD5F894A21CC5D50}" {
+     Id "LF-OrgFlag_Name_16"
+     Target_en_us "Brass"
+     Comment "Name of preset gang flag 16 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{D6E7902F6CD109FA}" {
+     Id "LF-OrgFlag_Name_17"
+     Target_en_us "Wolfsbane"
+     Comment "Name of preset gang flag 17 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{6524B266E8A41C71}" {
+     Id "LF-OrgFlag_Name_18"
+     Target_en_us "Ashen"
+     Comment "Name of preset gang flag 18 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{D7239B20E2D1CCB6}" {
+     Id "LF-OrgFlag_Name_19"
+     Target_en_us "Rustler"
+     Comment "Name of preset gang flag 19 in the 1989 Everon pack."
+    }
+    CustomStringTableItem "{E039C8EFD45BCF83}" {
+     Id "LF-OrgFlag_Name_20"
+     Target_en_us "Lowtide"
+     Comment "Name of preset gang flag 20 in the 1989 Everon pack."
+    }
     CustomStringTableItem "{894DEDBF2566803F}" {
      Id "LF-OrgWarAnnounce_Accepted"
      Target_en_us "NOTICE: the challenge is answered. War stands between %1."
@@ -5844,6 +5989,11 @@ StringTable {
      Target_en_us "The village hostel: a bed for anyone with nowhere to sleep."
      Comment "What line of the hostel sign."
     }
+    CustomStringTableItem "{BFF98FD4BBA45C34}" {
+     Id "LF-Sign_Housewares_Title"
+     Target_en_us "Housewares"
+     Comment "Title of the fascia sign over the household-wares shop door on Saint-Philippe (card #4391): replaces the vanilla Czech wall sign, which is hidden. Printed on the sign in capitals and shown in the prompt as Read: Housewares."
+    }
     CustomStringTableItem "{F209D5D9A5D3E58D}" {
      Id "LF-Sign_Impound_How"
      Target_en_us "Pay the fee and collect your vehicle at this desk. It waits in the yard, and you get a key."
@@ -6968,6 +7118,11 @@ StringTable {
      Id "LF-TownCard_Work_Title"
      Target_en_us "Couriers wanted"
      Comment "Town board card (work): card title; the prompt reads Read: <title>."
+    }
+    CustomStringTableItem "{4439B0A5C7000001}" {
+     Id "LF-Townsfolk_Barkeeper_Name"
+     Target_en_us "Josselin Vidal"
+     Comment "Townsfolk (crime B5, #4439): the barkeeper's name, the speaker line of his dialogue. The plan's Josette is a man because every character body is male (validate-voice-sex)."
     }
     CustomStringTableItem "{18C4BB2C33CD079A}" {
      Id "LF-Townsfolk_Bruno_Name"

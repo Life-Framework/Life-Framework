@@ -650,6 +650,39 @@
         "Workshop_02 (garage), 138 m2, 1 floor, 4 doors, the workshop yard on the south-east road beside the fence workshop b33; the building the hardware slot (#3217) already holds",
         "D10 pick (#3272), lumber epic #3169, card #3274: the hardware store's timber counter, a 'we buy timber' board and stacked timber on the b59 frontage; street furniture that shares the building with the hardware slot (the chess-on-the-pub pattern, #3078), so the hardware kit keeps the interior and the timber kit keeps the kerb"
       ]
+    },
+    "czech-signs": {
+      "drops": [
+        { "place": "saint-philippe-dock", "building": "b04" },
+        { "place": "saint-philippe-dock", "building": "b08" },
+        { "place": "saint-philippe-dock", "building": "b13" },
+        { "place": "saint-philippe-dock", "building": "b15" },
+        { "place": "saint-philippe-dock", "building": "b25" },
+        { "place": "saint-philippe", "building": "b01" },
+        { "place": "saint-philippe", "building": "b03" },
+        { "place": "saint-philippe", "building": "b06" },
+        { "place": "saint-philippe", "building": "b107" },
+        { "place": "saint-philippe", "building": "b109" },
+        { "place": "saint-philippe", "building": "b111" },
+        { "place": "saint-philippe", "building": "b114" },
+        { "place": "saint-philippe", "building": "b119" },
+        { "place": "saint-philippe", "building": "b12" },
+        { "place": "saint-philippe", "building": "b122" },
+        { "place": "saint-philippe", "building": "b123" },
+        { "place": "saint-philippe", "building": "b16" },
+        { "place": "saint-philippe", "building": "b23" },
+        { "place": "saint-philippe", "building": "b32" },
+        { "place": "saint-philippe", "building": "b38" },
+        { "place": "saint-philippe", "building": "b45" },
+        { "place": "saint-philippe", "building": "b48" },
+        { "place": "saint-philippe", "building": "b66" },
+        { "place": "saint-philippe", "building": "b68" },
+        { "place": "saint-philippe", "building": "b88" }
+      ],
+      "why": [
+        "Card #4391 (from the 0.2.1 market fixes, PR #4390): the vanilla base-map signs, murals and graffiti in Czech or Russian (DOMACI POTREBY, NEPTUN, Nedej se, Drogerie, Pohona, Sputnik and the like) break the US English rule. This slot owns the boxed hides (LF_BaseWorldClearComponent, one carrier per wall) that remove them and the US English fascia that replaces the household-wares shop sign",
+        "the drops are the buildings the props hang on or stand beside; the 80 m margin reaches the outskirts murals and graffiti"
+      ]
     }
   }
 }

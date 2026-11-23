@@ -1,0 +1,76 @@
+{
+  "id": "barkeeper",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "6995885a0545990d",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "Evening. Beer is on the board. If you carry cartons or bottles that never saw a tax stamp, you see me, not the bar. Keep your voice down.",
+      "chars": 137,
+      "chars_total": 55,
+      "request_id": "DWDOB3FRvVmOAk1bKck6",
+      "seconds": 9.55,
+      "mouth": "47956663220000000000699999658675699999953200000015368427997523997334347559787665325524645314655423754211145442820010002672358767644210000025996127496655432000000001195597399952177654332110000"
+    },
+    "buy": {
+      "hash": "8682ca6d00e16414",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "Cartons and vodka, yes. Use the counter, not your mouth. Two cartons a week, a few bottles. More than that and the owner notices.",
+      "chars": 129,
+      "chars_total": 52,
+      "request_id": "8ckoLMYBIVO9rRK9G1bD",
+      "seconds": 7.19,
+      "mouth": "199935465499993169866999722211135774252396532653466224547666411101571797342546530131265497755431110000000002599976557665644565544367552133211000"
+    },
+    "limit": {
+      "hash": "86e2ecde4973be96",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "A bar that sells ten cartons a week is a shop, and a shop gets a visit. When my shelf is full, it is full. Come back next week.",
+      "chars": 127,
+      "chars_total": 51,
+      "request_id": "NoCNcAsYm114flt5OiWP",
+      "seconds": 7.75,
+      "mouth": "43999792299932697533995452756641635522986731076353249722152154264232121000000003879973399922742358876533201758457798431000000000397998136411653111000000000"
+    },
+    "law": {
+      "hash": "99d00241210d0bae",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "If you wear a badge, I sell beer. Nothing else, and I never saw you. Anyone else, the money is on the counter and nobody was here.",
+      "chars": 130,
+      "chars_total": 52,
+      "request_id": "0NPGBZfeQSpjMuJQtY4c",
+      "seconds": 7.21,
+      "mouth": "5569999977997655224667425993998543232136943757765111556658483288533223210011100489999799873211087986676476453476542476555887766652375423200000000"
+    },
+    "bye": {
+      "hash": "b7119d179695382f",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "Mind the step on your way out.",
+      "chars": 30,
+      "chars_total": 12,
+      "request_id": "XlPIfQp5oJvzzHMA2ehn",
+      "seconds": 2.21,
+      "mouth": "399996474225992183212444664876634320111121000"
+    }
+  },
+  "voice": {
+    "id": "KvaCHcJoMXfOzwtsULOZ",
+    "name": "Hank Harvey - Gruff, Rugged and Wise",
+    "source": "voice library"
+  }
+}

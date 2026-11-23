@@ -252,10 +252,18 @@ class LF_WelcomeGuide
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: may the guide open by itself now? Not over another sheet or menu, not while the body
-	//! is still getting out of bed (the wake loiter), never on a dead or missing body.
-	static bool CanAutoOpen(bool hasBody, bool alive, bool loitering, bool menuOpen, bool sheetOpen)
+	//! is still getting out of bed (the wake loiter), never on a dead or missing body, never while a
+	//! conversation is up (the guide would take the confirm key from the clerk scene).
+	static bool CanAutoOpen(bool hasBody, bool alive, bool loitering, bool menuOpen, bool sheetOpen, bool dialogueOpen)
 	{
-		return hasBody && alive && !loitering && !menuOpen && !sheetOpen;
+		return hasBody && alive && !loitering && !menuOpen && !sheetOpen && !dialogueOpen;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: may the guide key open the sheet? Not while a conversation is up: the scene keeps focus.
+	static bool CanOpenByKey(bool dialogueOpen)
+	{
+		return !dialogueOpen;
 	}
 }
 

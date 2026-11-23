@@ -33,20 +33,6 @@ class LF_BookingOffer : Managed
 }
 
 //------------------------------------------------------------------------------------------------
-//! The pay-now seam (#4420). Police L6 fills it with `modded class LF_BookingPaySeam` (LF_ChargePayment).
-//! Until then paying logs and does nothing: the offer stays open and "take the time" still works.
-class LF_BookingPaySeam
-{
-	//------------------------------------------------------------------------------------------------
-	//! Server: take the offer's fine from the suspect. \return true when the money moved.
-	bool Pay(notnull LF_BookingOffer offer)
-	{
-		LF_Debug.Warn(LF_BookingDesk.FEATURE, string.Format("pay now: no LF_ChargePayment yet, %1 owes $%2, offer stays open", offer.m_sSuspectUid, offer.m_iFine));
-		return false;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
 //! The booking desk (#4420, police L5). An on-duty officer at the desk uses "Book suspect" on the
 //! cuffed suspect beside them. The server builds the charge sheet from the suspect's open crime
 //! reports with `LF_ChargeSheetRules`, using the officer's rank and duty from the server's own account
@@ -302,16 +288,21 @@ class LF_BookingDesk
 				wanted = suspectAccount.GetWantedLevel();
 		}
 
+		// A fine-only sheet has no time of its own: refusing the fine costs cell time by the fine (#4427).
+		int sheetSeconds = offer.m_iSheetSeconds;
+		if (sheetSeconds <= 0)
+			sheetSeconds = LF_ChargePayment.RefusedFineSeconds(offer.m_iFine);
+
 		// The same full length LF_Jail.Arrest serves: the wanted time or the longest reported code.
 		int full = LF_CrimeCatalog.SentenceFor(offer.m_sSuspectUid, LF_Jail.SentenceSeconds(wanted));
 		if (full <= 0)
 		{
 			offer.m_iPercent = LF_JailBooking.FULL_PERCENT;
-			offer.m_iServeSeconds = LF_Utils.MinInt(offer.m_iSheetSeconds, LF_ChargeSheetRules.MAX_SENTENCE_SECONDS);
+			offer.m_iServeSeconds = LF_Utils.MinInt(sheetSeconds, LF_ChargeSheetRules.MAX_SENTENCE_SECONDS);
 			return;
 		}
 
-		int percent = (offer.m_iSheetSeconds * LF_JailBooking.FULL_PERCENT + full - 1) / full;
+		int percent = (sheetSeconds * LF_JailBooking.FULL_PERCENT + full - 1) / full;
 		offer.m_iPercent = LF_Utils.ClampInt(percent, 1, LF_JailBooking.FULL_PERCENT);
 		offer.m_iServeSeconds = LF_JailBooking.Scaled(full, offer.m_iPercent);
 	}
@@ -384,11 +375,11 @@ class LF_BookingDesk
 			return "#LF-BookingDesk_NoOffer";
 		}
 
-		LF_BookingPaySeam seam = new LF_BookingPaySeam();
-		if (!seam.Pay(offer))
-			return "#LF-BookingDesk_PayClosed";
+		// Paid from cash then bank to the town, or short and to the cell (LF_ChargePayment, #4427).
+		string refusal = LF_ChargePayment.Settle(offer, suspect);
+		if (!refusal.IsEmpty())
+			return refusal;
 
-		LF_Debug.Info(FEATURE, string.Format("pay now: %1 paid $%2", suspectUid, offer.m_iFine));
 		Close(suspectUid, suspect);
 		return string.Empty;
 	}
