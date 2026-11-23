@@ -124,6 +124,7 @@ class LF_LevelUpCardView
 		vector mat[4];
 		character.GetWorldTransform(mat);
 		AudioSystem.PlayEvent(project, "SOUND_LEVEL_UP", mat);
+		LF_Debug.Info("Sound", string.Format("slot %1 played: %2", LF_LevelUpCard.SOUND_SLOT, project));
 	}
 }
 

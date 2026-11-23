@@ -22,10 +22,10 @@
   "nodes": [
     { "id": "greet", "line": "greet", "options": [
       { "text": "stock", "next": "stock" },
-      { "text": "badge", "next": "refuse" },
+      { "text": "badge", "next": "refuse", "condition": "OutpostOfficer" },
       { "text": "bye", "next": "bye" } ] },
     { "id": "stock", "line": "stock", "options": [
-      { "text": "badge", "next": "refuse" },
+      { "text": "badge", "next": "refuse", "condition": "OutpostOfficer" },
       { "text": "bye", "next": "bye" } ] },
     { "id": "refuse", "line": "refuse" },
     { "id": "bye", "line": "bye" }

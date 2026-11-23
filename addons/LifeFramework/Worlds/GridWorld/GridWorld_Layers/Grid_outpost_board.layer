@@ -1,0 +1,53 @@
+// Grid cell c29r3 for outpost-board: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_outpost_board_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 371 0 59
+}
+SCR_DestructibleEntity Grid_outpost_board_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 376 0 59
+}
+SCR_DestructibleEntity Grid_outpost_board_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 381 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_outpost_board_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 381 0 64
+ angleY 270
+}
+SCR_DestructibleEntity Grid_outpost_board_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 381 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_outpost_board_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 376 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_outpost_board_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 371 0 69
+ angleY 90
+}
+GenericEntity Grid_outpost_board_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:outpost-board"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 370.2 0.505 59.6
+ angleY -90
+}
+GenericEntity Grid_outpost_board_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "outpost-board"
+  }
+ }
+ coords 370.3 0 61.5
+ angleY 90
+}
+GenericEntity Grid_outpost_board_R0 : "{6C4AFD9C193BC4EC}Prefabs/Outposts/LF_OutpostBoard.et" {
+ coords 378.615 0.001 63.999
+ angleY -90
+}

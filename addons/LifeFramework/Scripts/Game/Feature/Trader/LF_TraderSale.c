@@ -72,7 +72,7 @@ class LF_TraderSale
 		// Outposts (#4217, #4224): the trader does not serve an on-duty officer, and says so.
 		if (LF_Outpost.RefusesService(seller, traderOwner.GetOrigin()))
 		{
-			LF_Outpost.NotifyRefusal(seller);
+			LF_Outpost.NotifyRefusal(seller, traderOwner.GetOrigin());
 			LF_Debug.Warn("Trader", "sale refused (OUTPOST_REFUSED): an outpost trader does not serve on-duty police");
 			return LF_ETraderSale.OUTPOST_REFUSED;
 		}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F3F90EA5A656F4D8}Sounds/Dialogue/dock_chandler/Dialogue_dock_chandler.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

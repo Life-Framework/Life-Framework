@@ -22,6 +22,7 @@
 // red-proof: with claimOfBase() and isIntegrationBranch() not applied in planFit()/worktreeTownClaims() the stacked -suffix and integration-worktree cases printed "FAIL a -suffix branch was refused its base draft's own slot" and "FAIL an integration worktree's claim copy blocked a fit" (2026-11-18, #3101).
 // red-proof: with the source-name preference removed from sourceComponent() the prefab-less taxi pad took the drop pad's guid and this printed "FAIL a prefab-less row took the wrong source entity" (2026-11-18, #2318).
 // red-proof: before the sameAsMain filter, `town fit saint-philippe supermarket --refit` printed "town-fit fail ... 16 problem(s)" (REFUSE ... already claimed on worktree ...), one per sibling worktree holding main's own claim file (2026-11-19, #3516, observed on the real repo).
+// red-proof: 2026-11-23 (#4444) with kitNameOf() returning the template slot's kit only this printed "FAIL kitNameOf ignored the mapping entry's kit", "FAIL a mapping entry's kit was not used" and "FAIL a mapping kit with no file was not refused by name".
 // red-proof: with the kit rows' yaw ignored (anchor yaw 0) this printed "FAIL shop row fit-display is not where kit apply puts it" (2026-11-16).
 // red-proof: 2026-11-19 (#3666) with the hostless branch of planFit()/planFitSeated() and the map check left out this printed 7 FAILs: "a hostless plot slot did not plan: mapping: slot shop: a plot needs a prefab to place on it", "the hostless claim is undefined", "a hostless plot on a lake was not refused", "a hostless terrain row did not take the probed height".
 
@@ -337,6 +338,21 @@ try {
   tk.rows[0].mount = "terrain";
   const seated = await fitMod.planFitSeated({ ...base, kits: { "fit-kit": tk }, mapping: hostless }, { ...ctx(), shell: { shell: async () => null }, terrain: { at: () => 77.5 } });
   check(seated.ok && seated.terrainPoints.length === 1 && seated.rows[0].coords[1] === 77.5, `a hostless terrain row did not take the probed height (${JSON.stringify(seated.rows?.[0]?.coords)})`);
+}
+
+// ---- a per-host kit: the mapping entry's `kit` replaces the template's (#4444, the Levie bar's house is not Chotain's)
+{
+  const mapMod = await import(pathToFileURL(join(ROOT, "tools", "town", "map.mjs")).href);
+  const variant = { ...kit, kit: "fit-kit-variant" };
+  const withKit = { ...mapping, slots: { ...mapping.slots, shop: { ...mapping.slots.shop, kit: "fit-kit-variant" } } };
+  check(fitMod.kitNameOf({ id: "shop", kit: "fit-kit" }, withKit.slots.shop) === "fit-kit-variant" && fitMod.kitNameOf({ id: "shop", kit: "fit-kit" }, mapping.slots.shop) === "fit-kit", "kitNameOf ignored the mapping entry's kit, or changed an entry with none");
+  const pv = fitMod.planFit({ ...base, mapping: withKit, kits: { "fit-kit": kit, "fit-kit-variant": variant } }, ctx());
+  check(pv.ok && pv.claim.kit === "fit-kit-variant", `a mapping entry's kit was not used (${(pv.errors || []).join("; ")} / claim kit ${pv.claim?.kit})`);
+  const miss = fitMod.planFit({ ...base, mapping: withKit, kits: { "fit-kit": kit } }, ctx());
+  check(!miss.ok && (miss.errors || []).some((e) => /kit 'fit-kit-variant'/.test(e)), "a mapping kit with no file was not refused by name");
+  check(!mapMod.checkMapping(withKit, dossier, template).some((p) => /"kit"/.test(p)), "a plain mapping kit name was refused");
+  const badKit = { ...mapping, slots: { ...mapping.slots, shop: { ...mapping.slots.shop, kit: "../x" } } };
+  check(mapMod.checkMapping(badKit, dossier, template).some((p) => /"kit" must be a plain kit name/.test(p)), "a kit name with a path was accepted");
 }
 
 console.log(failed ? `SUMMARY town-fit-selftest fail ${failed}` : "SUMMARY town-fit-selftest ok");

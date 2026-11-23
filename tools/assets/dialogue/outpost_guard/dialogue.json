@@ -23,7 +23,7 @@
     { "id": "greet", "line": "greet", "options": [
       { "text": "trade", "next": "trade" },
       { "text": "who", "next": "stranger" },
-      { "text": "badge", "next": "uniform" },
+      { "text": "badge", "next": "uniform", "condition": "OutpostOfficer" },
       { "text": "bye", "next": "bye" } ] },
     { "id": "trade", "line": "trade", "options": [
       { "text": "bye", "next": "bye" } ] },

@@ -18,6 +18,9 @@
 // (`index >= version - 1`) left pass 1 green and failed pass 2 with
 // `SUMMARY tier=persistence passed=10 failed=1 total=11`,
 // `- e2e courier is still level 2 after the save load (expected 2, got 1)`,
+// (#4607, pre-move: the main guard's `e2e --pre-move 502ebf39` failed pass 2 with `- e2e courier is still level 2
+// after the save load (expected 2, got 3)`: the ref seeds 500 XP, the 30-level curve reads it as level 3. The exact
+// level now needs COURIER_CURVE_FLAG; pre-move and plain e2e green on 2026-11-23.)
 // `- e2e senior officer stays senior after the save load (expected 1, got 0)`,
 // `- e2e turned-in quest stays done after the save load`. Restored; both passes green.
 
@@ -41,6 +44,10 @@
 [LF_TestInfo(LF_TestTier.PERSISTENCE)]
 class LF_Test_E2E_SaveStateWrite : LF_Test
 {
+	//! Set on the courier by this pass 1 (#4607): its XP was seeded on the 30-level DELIVERY curve. The pinned
+	//! --pre-move ref seeds the old curve's level 2 (500 XP), which this curve reads as a different level.
+	static const string COURIER_CURVE_FLAG = "e2e-delivery-curve-4596";
+
 	protected static const string ACCOUNT_UID = "e2e-uid";
 	protected static const string SLOTS_UID = "e2e-slots-uid";
 	protected static const string CARRIED_CHARACTER_ID = "e2e-carried-character";
@@ -223,6 +230,7 @@ class LF_Test_E2E_SaveStateWrite : LF_Test
 		LF_TestProgressionKit.SeedSeniorOfficer(ctx, OFFICER_UID);
 		LF_Progression.NoteTurnedIn(COURIER_UID, LF_TestProgressionKit.QUEST_ID);
 		LF_Progression.NoteFlag(COURIER_UID, LF_Quiz.PASS_FLAG);
+		LF_Progression.NoteFlag(COURIER_UID, COURIER_CURVE_FLAG);
 		// An introduction rides the "introductions" payload (save version 8): Bea still knows Ada.
 		LF_Introductions.Introduce(INTRO_KNOWER_UID, ACCOUNT_UID);
 		ctx.True(LF_Introductions.Knows(INTRO_KNOWER_UID, ACCOUNT_UID), "e2e introduction known before the save");
@@ -866,8 +874,16 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			}
 		}
 
-		ctx.Equal(LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY), LF_CivilianJob.GetLevel(COURIER_UID), "e2e courier keeps the fuel delivery level after the save load");
-		ctx.True(LF_CivilianJob.CanSignUp(COURIER_UID, LF_EJobType.FUEL_DELIVERY), "e2e courier still opens fuel delivery after the save load");
+		// The courier's XP survives any save; an older build's pass 1 seeds it too. The exact level is that XP read
+		// through this build's DELIVERY curve, so it is checked only on a courier this build seeded (#4607: the
+		// --pre-move ref seeds 500 XP for the old level 2, which the 30-level table reads as level 3).
+		ctx.True(LF_CivilianJob.GetExperience(COURIER_UID) > 0, "e2e courier's delivery XP survives the save load");
+		ctx.True(LF_CivilianJob.GetLevel(COURIER_UID) > 1, "e2e courier is above level 1 after the save load");
+		if (LF_E2E.RequiresSeed("courier seeded on the 30-level DELIVERY curve", LF_Progression.HasFlag(COURIER_UID, LF_Test_E2E_SaveStateWrite.COURIER_CURVE_FLAG)))
+		{
+			ctx.Equal(LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY), LF_CivilianJob.GetLevel(COURIER_UID), "e2e courier keeps the fuel delivery level after the save load");
+			ctx.True(LF_CivilianJob.CanSignUp(COURIER_UID, LF_EJobType.FUEL_DELIVERY), "e2e courier still opens fuel delivery after the save load");
+		}
 		ctx.Equal(LF_EJobType.PARCEL, LF_CivilianJob.GetSignedUpJob(COURIER_UID), "e2e courier is still signed up for parcels after the save load");
 		LF_PlayerAccount officer = LF_PlayerAccountManager.GetInstance().GetFromCache(OFFICER_UID);
 		ctx.NotNull(officer, "e2e officer account present after the save load");

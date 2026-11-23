@@ -1,0 +1,87 @@
+Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et" {
+ ID "EDED1BB5E7A29E30"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64DA70D3831058D9}" {
+     SourceMaterial "S1203_body"
+     AssignedMaterial "{8DE9D52CCB8D2CEE}Assets/Liveries/S1203/LF_S1203_CompanyBakery.emat"
+    }
+   }
+  }
+ }
+ {
+  GenericEntity CompanyLetters_L {
+   ID "62A41F7F9CCC65D7"
+   components {
+    Hierarchy "{D3C65CF0FF9972B9}" {
+    }
+    MeshObject "{E83FDBB275CA516D}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{B79DC8468AD5F710}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{3800E143F0AA24CD}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{DEB30433289C7FDA}" {
+     m_sSignId "livery_company_bakery"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.95 0.93 0.86
+     m_vPaintColor 0.42 0.18 0.08
+     m_vTextColor 0.95 0.93 0.86
+    }
+   }
+   coords -0.95 0.96 -1.2
+   angles 0 -90 0
+   scale 0.7
+  }
+  GenericEntity CompanyLetters_R {
+   ID "4E932D479EE2680C"
+   components {
+    Hierarchy "{E485EF467ACAC933}" {
+    }
+    MeshObject "{3975DFD227860234}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{9E0B7C0F72E320A2}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{56075FB7938D73BF}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{BD2A41984C6DBD37}" {
+     m_sSignId "livery_company_bakery"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.95 0.93 0.86
+     m_vPaintColor 0.42 0.18 0.08
+     m_vTextColor 0.95 0.93 0.86
+    }
+   }
+   coords 0.95 0.96 -1.2
+   angles 0 90 0
+   scale 0.7
+  }
+ }
+}

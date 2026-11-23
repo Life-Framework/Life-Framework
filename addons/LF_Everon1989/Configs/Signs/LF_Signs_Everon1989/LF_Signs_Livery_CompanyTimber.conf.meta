@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{F8541C013CA012BF}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Livery_CompanyTimber.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,18 @@
+GenericEntity : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ ID "4452B0A2D0C1E001"
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "outpost_stock"
+   m_sRowSource "outpoststock"
+  }
+  ActionsManagerComponent "{3C818B6A6011C9DE}" {
+   additionalActions + {
+    LF_OutpostBoardReadAction "{4452A1000000A001}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+    }
+   }
+  }
+ }
+}

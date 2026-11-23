@@ -1,10 +1,10 @@
-// red-proof: batched run `tools\cli test --no-build --red LF_Test_EveronResidentsDock`: RedProof() skips the overlay load, every outfit load and every spawn, so the five dock residents are not in the config and the clothes and dialogue checks fail.
+// red-proof: batched run `tools\cli test --no-build --red LF_Test_EveronResidentsDock`: RedProof() skips the overlay load, every outfit load and every spawn, so the five dock residents are not in the config and the clothes and dialogue checks fail (#4646: the fishmonger and chandler talk with their own dialogues).
 //! #4466 (W4.2 of the world chapter, #4170): under the Everon 1989 header (the pack leg of `tools\cli test`) the Saint-Philippe
 //! dock has its people at work by day: the harbour master at his cabin, two dockers on the work loop in hard hats (#4230), a
 //! fishmonger at the market's fish stall and a chandler at the dock's wholesale counter. Each of the five has an outfit preset of
 //! real 1989 working clothes the body wears, a prefab that loads and spawns as a dressed character, a name key, a timetable that
 //! parses and a home place of a kind (and, for each, the one named place) the island registers. The harbour master and the dockers
-//! talk with their voiced dialogues; the fishmonger and the chandler have no talk lines yet (voices are W4.7).
+//! talk with their voiced dialogues; the fishmonger (`dock_fishmonger`) and the chandler (`dock_chandler`) have their own (#4646).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronResidentsDock : LF_Test
 {
@@ -201,8 +201,8 @@ class LF_Test_EveronResidentsDock : LF_Test
 		};
 		array<string> kinds = { "HarbourMaster", "Warehouse", "Dock", "MarketTrader", "WholesaleCounter" };
 		array<string> places = { "saint-philippe.harbour", "saint-philippe-dock.warehouse", "saint-philippe-dock.dock", "saint-philippe.market", "saint-philippe-dock.wholesale" };
-		// The dialogue each body talks with; the fishmonger and the chandler have no lines yet (W4.7).
-		array<string> dialogues = { "harbour_master", "dockworker", "dockworker", "", "" };
+		// The dialogue each body talks with.
+		array<string> dialogues = { "harbour_master", "dockworker", "dockworker", "dock_fishmonger", "dock_chandler" };
 
 		set<string> distinctPrefabs = new set<string>();
 		for (int i = 0; i < ids.Count(); i++)

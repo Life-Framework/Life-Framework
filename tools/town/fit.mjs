@@ -43,6 +43,9 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 export const LAYER_DIR = "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers";
 export const CLAIMS_DIR = "tools/town/claims";
 const SLUG_RX = /^[a-z0-9][a-z0-9-]*$/;
+// The kit a slot takes: the template's, unless the mapping entry names another (`"kit": "village-bar-1i04"`): the same slot fitted into
+// a building the template's kit was not cut for (the Levie bar's house is not Chotain's, #4444).
+export const kitNameOf = (templateSlot, mappingEntry) => (typeof mappingEntry?.kit === "string" && mappingEntry.kit ? mappingEntry.kit : templateSlot?.kit);
 const REF_RE = /^\{([0-9A-Fa-f]{16})\}(.+)$/;
 const FLAGS = new Set(["dry", "check", "refit", "allow-clip", "no-fetch", "no-audit", "no-look", "terrain", "building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir", "help"]);
 const WITH_VALUE = new Set(["building-prefab", "destruction-guid", "dossier", "mapping", "template-file", "kits-dir", "out-dir"]);
@@ -425,8 +428,9 @@ export function planFit(opts, ctx = {}) {
   for (const p of checkMapping(mapping, opts.mappingDossier ?? dossier, template, entry.dossier ? { [entry.dossier]: dossier } : null)) if (!/^slot /.test(p) || p.startsWith(`slot ${slotId}:`)) errors.push(`mapping: ${p}`);
   if (errors.length) return fail();
 
-  const kit = opts.kits?.[slot.kit];
-  if (!kit) return (errors.push(`kit '${slot.kit}' (slot ${slotId}) was not found`), fail());
+  const kitName = kitNameOf(slot, entry);
+  const kit = opts.kits?.[kitName];
+  if (!kit) return (errors.push(`kit '${kitName}' (slot ${slotId}) was not found`), fail());
   const kitProblems = checkKit(kit, { root });
   if (kitProblems.length) return (errors.push(...kitProblems.map((p) => `kit: ${p}`)), fail());
 
@@ -550,7 +554,7 @@ export function planFit(opts, ctx = {}) {
     slot: slotId,
     ...(entry.building ? { building: buildingKey } : { plot: entry.plot, ...(entry.hostless ? { hostless: true } : {}) }),
     ...(entry.shared ? { shared: true } : {}),
-    kit: slot.kit,
+    kit: kitName,
     layer: `${LAYER_DIR}/${layerName}`,
     kinds,
     rows: rows.length,
@@ -616,7 +620,7 @@ export async function planFitSeated(opts, ctx = {}) {
   const reader = ctx.shell;
   if (!reader) return planFit(opts, ctx);
   const tmpl = opts.template?.slots?.find((s) => s.id === opts.slot);
-  const kit = tmpl ? opts.kits?.[tmpl.kit] : null;
+  const kit = tmpl ? opts.kits?.[kitNameOf(tmpl, opts.mapping?.slots?.[opts.slot])] : null;
   const ref = hostRefOf(opts);
   // opts.sameShell (`town stamp`: the kit was authored around this very prefab) is taken as given; `town fit` asks the models.
   const same = opts.sameShell != null ? Boolean(opts.sameShell) : kit && ref ? await sameShell(kit, ref, reader) : false;
@@ -809,8 +813,9 @@ export async function main(args, { root = ROOT, run, shell: ctxShell = null } = 
     const kits = {};
     if (entry) {
       const kitsDir = resolve(root, flags["kits-dir"] ?? "tools/town/kits");
-      const kf = join(kitsDir, `${entry.kit}.json`);
-      if (existsSync(kf)) kits[entry.kit] = readJson(kf, "kit");
+      const kitName = kitNameOf(entry, mapping.slots?.[slotId]);
+      const kf = join(kitsDir, `${kitName}.json`);
+      if (existsSync(kf)) kits[kitName] = readJson(kf, "kit");
     }
     const shell = ctxShell ?? shellReader(root);
     const fitOpts = { place, slot: slotId, dossier, mappingDossier, mapping, template, kits, buildingPrefab: flags["building-prefab"], destructionGuid: flags["destruction-guid"], branch, fetch: !flags["no-fetch"] && !flags.check, refit: Boolean(flags.refit), allowClip: Boolean(flags["allow-clip"]), skipClaims: Boolean(flags.check) };

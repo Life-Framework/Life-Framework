@@ -1,6 +1,30 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "5412D71C18483378"
  components {
+  LF_DialogueComponent "{00738FB2E29C9043}" {
+   m_sDialogueId "dock_chandler"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{68D781F33563D471}" {
+     ContextName "Talk"
+     Position PointInfo "{F7C60E323B97A37B}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{671F6DD462F65EE3}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{31D0194F0A1A0D09}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
   SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
     Name "Joseph"
