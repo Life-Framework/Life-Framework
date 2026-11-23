@@ -27,8 +27,8 @@ class LF_Test_NightLight : LF_Test
 		ctx.True(LF_NightLight.IsOn(20, 19, 23), "20:00 is inside 19 to 23");
 		ctx.False(LF_NightLight.IsOn(23.5, 19, 23), "23:30 is outside 19 to 23");
 
-		float groundY = GetGame().GetWorld().GetSurfaceY(410, 100);
-		CheckPrefab(ctx, GLOW, "window glow", Vector(410, groundY + 2, 100), 4);
+		float groundY = GetGame().GetWorld().GetSurfaceY(450, 100);
+		CheckPrefab(ctx, GLOW, "window glow", Vector(450, groundY + 2, 100), 4);
 		CheckPrefab(ctx, LAMP_HEAD, "lamp head", Vector(366, groundY + 5, 100), 16);
 	}
 
