@@ -4255,9 +4255,24 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "LF_S105_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+    CustomStringTableItem "{1FD2D69733781B26}" {
+     Id "LF-Credits_188"
+     Target_en_us "CONTRABAND LABELS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{413CD254F961C2CC}" {
+     Id "LF-Credits_189"
+     Target_en_us "LF_CigaretteCarton_BCR"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
     CustomStringTableItem "{9B225E9F684B34BE}" {
      Id "LF-Credits_19"
      Target_en_us "Third-party code keeps its own license and notice (THIRD_PARTY.md). Third-party assets are listed in assets-source/LICENSES.md: so far only the CC0 texture sets under \"Textures (CC0)\"."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{FB7F01DA30ED5462}" {
+     Id "LF-Credits_190"
+     Target_en_us "LF_VodkaBottle_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
