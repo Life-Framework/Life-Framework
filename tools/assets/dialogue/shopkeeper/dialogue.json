@@ -19,6 +19,11 @@
           "next": "stock"
         },
         {
+          "text": "heard",
+          "action": "HeardAnything",
+          "param": "shop"
+        },
+        {
           "text": "bye",
           "next": "bye"
         }
@@ -60,6 +65,7 @@
   "replies": {
     "pay": "How do I pay?",
     "stock": "What do you sell?",
+    "heard": "Heard anything?",
     "bye": "Goodbye."
   }
 }

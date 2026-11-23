@@ -1,6 +1,9 @@
 // Proves the world-edit check split (tools/lib/world-checks.mjs): a failing layout check is a warning that
 // reaches the PR body, a failing hard check still blocks, and every named check exists.
-// inputs: tools/lib/world-checks.mjs, tools/commands/world.mjs, tools/validation/world-checks-selftest.mjs
+// inputs: tools/lib/world-checks.mjs, tools/commands/world.mjs, tools/validation/validate-*.mjs, tools/validation/validate-*.ps1
+// (every validator is an input: a PR that adds a layer reader must re-run this selftest locally, #4603)
+// red-proof: with the validate-*.mjs glob removed from the inputs line, "a new validator file re-runs this selftest" printed
+//   FAIL and the run exited 1 (2026-11-23); restored, it passes.
 // red-proof: with LAYOUT_CHECKS made empty this printed "FAIL a failing layout check warns, it does not block" and
 //   exited 1 (2026-11-15); restored, it passes.
 // red-proof: with LAYER_READERS_KEPT_HARD empty this printed one "FAIL validate-sound-slots.mjs reads .layer files but is
@@ -11,6 +14,7 @@ import { fileURLToPath } from "node:url";
 import { HARD_CHECKS, LAYOUT_CHECKS, LAYER_READERS_KEPT_HARD, MAINTAINER_BRANCH, judgeChecks, layoutWarnings, worldScripts } from "../lib/world-checks.mjs";
 import { prBody } from "../commands/world.mjs";
 import { diffFiles } from "../lib/world-diff.mjs";
+import { fingerprint, parseInputs, touches } from "../lib/validate-incremental.mjs";
 
 const fails = [];
 const check = (ok, msg) => { if (!ok) fails.push(msg); };
@@ -28,6 +32,19 @@ const classified = new Set([...HARD_CHECKS, ...LAYOUT_CHECKS, ...Object.keys(LAY
 const readers = readdirSync(here).filter((f) => /^validate-.*\.(mjs|ps1)$/.test(f) && !f.includes("selftest") && /_Layers|worldLayerDirs|layerFile|townWorld|\.layer\b/.test(readFileSync(join(here, f), "utf8")));
 for (const f of readers) check(classified.has(f), `${f} reads .layer files but is neither in HARD_CHECKS, LAYOUT_CHECKS nor LAYER_READERS_KEPT_HARD (tools/lib/world-checks.mjs)`);
 for (const f of Object.keys(LAYER_READERS_KEPT_HARD)) check(existsSync(join(here, f)), `${f} is in LAYER_READERS_KEPT_HARD but is not in tools/validation`);
+
+// A new validator must re-run this selftest in the incremental validate (local run and base-clean skip), or an unlisted
+// layer reader passes its own PR and turns main red (#4333 -> #4360, #4581 -> #4602). The header is read as validate reads it.
+const selfRel = "tools/validation/world-checks-selftest.mjs";
+const globs = parseInputs(readFileSync(join(here, "world-checks-selftest.mjs"), "utf8")) ?? [];
+const filesBefore = [[selfRel, "a1"], ["tools/validation/validate-sound-slots.mjs", "b2"]];
+const filesAdded = [...filesBefore, ["tools/validation/validate-brand-new-layer-reader.mjs", "c3"]].sort((x, y) => (x[0] < y[0] ? -1 : 1));
+const filesEdited = [[selfRel, "a1"], ["tools/validation/validate-sound-slots.mjs", "b3"]];
+check(globs.length > 0, "world-checks-selftest declares no inputs header, so the incremental validate cannot tell when to re-run it");
+check(fingerprint(filesBefore, globs, selfRel) !== fingerprint(filesAdded, globs, selfRel), "a new validator file re-runs this selftest: adding validate-*.mjs must change its fingerprint");
+check(fingerprint(filesBefore, globs, selfRel) !== fingerprint(filesEdited, globs, selfRel), "editing a validator must change this selftest's fingerprint");
+check(touches(["tools/validation/validate-brand-new-layer-reader.mjs"], globs, selfRel), "a new .mjs validator counts for the base-clean skip, so the branch that adds one runs this selftest");
+check(touches(["tools/validation/validate-brand-new.ps1"], globs, selfRel), "a new .ps1 validator counts for the base-clean skip too");
 
 const results = [{ s: "validate-town-manifest.mjs", status: 1 }, { s: "validate-core-village-names.mjs", status: 1 }];
 check(judgeChecks(results, { demote: true }).failed.length === 0 && judgeChecks(results, { demote: true }).warned.length === 2, "a failing layout check warns, it does not block");

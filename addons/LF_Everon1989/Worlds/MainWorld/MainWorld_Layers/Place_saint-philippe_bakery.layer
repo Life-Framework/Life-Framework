@@ -9,7 +9,12 @@ GenericEntity Fit_saint_philippe_bakery_Place {
  }
  coords 4480.3 12.7 10750.7
 }
-LF_NpcBaseEntity Fit_saint_philippe_bakery_bakery_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+GenericEntity Fit_saint_philippe_bakery_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
  coords 4478.84 12.696 10747.346
  angleY -100
 }

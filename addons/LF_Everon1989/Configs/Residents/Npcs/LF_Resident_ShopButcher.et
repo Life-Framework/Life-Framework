@@ -1,6 +1,31 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "34D6C4D086B917E8"
  components {
+  LF_DialogueComponent "{09F4B1DD0D61F24C}" {
+   m_sDialogueId "shopkeeper"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{2EF6F95861E1BF0A}" {
+     ContextName "Talk"
+     Position PointInfo "{179DD30B31A0BC72}" {
+      PivotID "Spine5"
+     }
+     Radius 2.4
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{9D3DA86A635CF813}" {
+     m_bCustomerSideOnly 1
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{02D7FEA1613BF89C}" {
+      Name "#LF-Shopkeeper_Talk"
+     }
+    }
+   }
+  }
   SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
     Name "Gilbert"

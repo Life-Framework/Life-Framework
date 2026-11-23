@@ -28,6 +28,8 @@ class LF_Test_CallAbuse : LF_Test
 			return false;
 		}
 
+		LF_CallAbuse.SetCaller(call, caller);
+
 		ctx.True(LF_PoliceCalls.Take(call.m_iId, OFFICER, patrol), "the officer takes the call: " + label);
 		string key, arg;
 		bool closed = false;
@@ -65,6 +67,8 @@ class LF_Test_CallAbuse : LF_Test
 			return false;
 		}
 
+		LF_CallAbuse.SetCaller(call, caller);
+
 		bool low = call.m_bLowPriority;
 		LF_PoliceCalls.CloseFor(caller, "test");
 		return low;
@@ -101,7 +105,9 @@ class LF_Test_CallAbuse : LF_Test
 
 		// The caller's next call carries the low-priority flag; another caller's does not.
 		ctx.True(NextCallIsLow(ctx, CALLER, "after the charge"), "the caller's next call carries the low-priority flag");
-		ctx.EqualStr(LF_CallAbuse.LOW_PRIORITY_KEY, LF_CallAbuse.BoardTag(LF_PoliceCalls.Post(LF_PoliceCalls.KIND_FINE, CALLER, "Square", LF_PoliceRanks.PATROL)), "the board tag names the mark");
+		LF_PoliceCall tagged = LF_PoliceCalls.Post(LF_PoliceCalls.KIND_FINE, CALLER, "Square", LF_PoliceRanks.PATROL);
+		LF_CallAbuse.SetCaller(tagged, CALLER);
+		ctx.EqualStr(LF_CallAbuse.LOW_PRIORITY_KEY, LF_CallAbuse.BoardTag(tagged), "the board tag names the mark");
 		LF_PoliceCalls.CloseFor(CALLER, "test");
 		ctx.False(NextCallIsLow(ctx, BYSTANDER, "bystander"), "another caller's call stays normal");
 		ctx.Equal(0, ChargesFor(BYSTANDER), "another caller is not charged");
