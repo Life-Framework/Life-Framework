@@ -2965,6 +2965,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Connecting to the online service. Your registration form opens in a moment."
      Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
     }
+    CustomStringTableItem "{1865CC4D25E5D9B7}" {
+     Id "LF-CallAbuse_LowPriority"
+     Target_en_us "Low priority: caller charged for false reports"
+     Comment "Dispatch board tag on a call whose caller was charged for false reports today (#4421)."
+    }
     CustomStringTableItem "{AEB31D9E1738B09F}" {
      Id "LF-CallOutcome_NoCall"
      Target_en_us "That call is not open."
