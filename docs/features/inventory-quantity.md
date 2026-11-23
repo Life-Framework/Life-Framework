@@ -30,6 +30,12 @@
 - ✅ Quantity-aware `GetAmount`/`AddAmount`/`RemoveAmount` returning *actual*
   amounts; AddAmount fills stacks then spawns; RemoveAmount drains smallest
   stacks first (ascending sort).
+- ✅ `AddAmount(..., dropOverflow=true)` leaves what did not fit at the owner's feet, logs
+  `[LFDebug:Quantity] inventory refused ...` and tells a player "No room on you: X x1 is on the
+  ground at your feet." (`#LF-Inventory_DroppedAtFeet`). A pocketable item sets its own
+  `ItemPhysAttributes` (`SizeSetupStrategy Volume`); without them the engine sizes it from the mesh,
+  and a 26 cm bottle fits no backpack (Veshmeshok takes 20 cm), only the hands (0.2.1 N1, AppleJuice).
+  Test: `everon/outputs-fit-pack`.
 - ⚠️ `AddAmount` fills **largest** stacks first (descending) while Remove
   drains smallest — asymmetric by design, untested. Non-quantity
   `RemoveAmount` permanently deletes entities. `GetAmount` returns −1 on
