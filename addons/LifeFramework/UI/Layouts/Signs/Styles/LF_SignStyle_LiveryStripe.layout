@@ -1,0 +1,107 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{0E98980CD3FA8C10}" {
+  SizeX 1920
+  OffsetRight -1920
+  SizeY 960
+  OffsetBottom -960
+ }
+ {
+  RTTextureWidgetClass "{9E4E4CE679F65BC8}" {
+   Name "RTTexture0"
+   Slot FrameWidgetSlot "{3D5AFF4668B4895B}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 1920
+    OffsetRight -1920
+    SizeY 960
+    OffsetBottom -960
+   }
+   {
+    ImageWidgetClass "{5A2BB53BC5FFE6DF}" {
+     Name "Ground"
+     Slot FrameWidgetSlot "{4F90EB6476FDF69E}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.1 0.2 0.5 1
+    }
+    ImageWidgetClass "{298A7774C592E19B}" {
+     Name "StripeTop"
+     Slot FrameWidgetSlot "{ED0BB0B069D6D267}" {
+      Anchor 0 0.1 1 0.19
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 1 1 1 0.92
+    }
+    ImageWidgetClass "{0687D72DE7F8391E}" {
+     Name "StripeBottom"
+     Slot FrameWidgetSlot "{590E43BE7D392DEF}" {
+      Anchor 0 0.81 1 0.9
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 1 1 1 0.92
+    }
+    TextWidgetClass "{640FBAE31DF65CAC}" {
+     Name "Ghost"
+     Slot FrameWidgetSlot "{BFB41E4AC4482358}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 0 0 0 0.5
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{2F422A8A8D9E1F16}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{6F79480FF08033CB}" {
+     Name "Title"
+     Slot FrameWidgetSlot "{E011F8BE8DC96441}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 1 1 1 1
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{701F9924D5B24520}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    FrameWidgetClass "{E56747FE0C39C91B}" {
+     Name "Rows"
+     Slot FrameWidgetSlot "{05DAB06B29702FFB}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+    }
+   }
+  }
+ }
+}
