@@ -7625,7 +7625,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{C7E29B03FDF73DA5}" {
      Id "LF-HospitalPresence_TooFew"
-     Target_en_us "The cabinet stays shut unless a medic or two police officers are on duty."
+     Target_en_us "The cabinet stays shut unless a {medic} or two {police} are on duty."
      Comment "Pharmacy cabinet refusal (Feature/Crime/LF_HospitalPresence.c): the robbery needs one medic or two police on duty (pack config numbers)."
     }
     CustomStringTableItem "{DB6C9E5F09D39D13}" {
