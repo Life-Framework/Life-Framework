@@ -2009,6 +2009,131 @@ StringTable {
      Target_en_us "I lived near the zone. We were given one morning to pack. One suitcase each. I took my wife's coat and a jar of her cherry jam. The jam is gone. The coat I keep."
      Comment "Dialogue caption, spoken by the old_man NPC (voiced; tools/assets/dialogue/old_man). Changing it needs: tools\\cli asset dialogue old_man"
     }
+    CustomStringTableItem "{3D6910B9305DDD13}" {
+     Id "LF-Dialogue_OutpostBuyer_Bye"
+     Target_en_us "Pleasure. Mind where you drive."
+     Comment "Dialogue caption, spoken by the outpost_buyer NPC (voiced; tools/assets/dialogue/outpost_buyer). Changing it needs: tools\\cli asset dialogue outpost_buyer"
+    }
+    CustomStringTableItem "{184519C9CD72D2AC}" {
+     Id "LF-Dialogue_OutpostBuyer_Greet"
+     Target_en_us "Buyer. Crates, cartons, anything that fell off a truck. I pay cash and I don't ask which truck."
+     Comment "Dialogue caption, spoken by the outpost_buyer NPC (voiced; tools/assets/dialogue/outpost_buyer). Changing it needs: tools\\cli asset dialogue outpost_buyer"
+    }
+    CustomStringTableItem "{989B919E9533F03A}" {
+     Id "LF-Dialogue_OutpostBuyer_Haggle"
+     Target_en_us "More? Ha. The price is the price, friend. Bring me a crate I can sell and we will talk."
+     Comment "Dialogue caption, spoken by the outpost_buyer NPC (voiced; tools/assets/dialogue/outpost_buyer). Changing it needs: tools\\cli asset dialogue outpost_buyer"
+    }
+    CustomStringTableItem "{25CC1A77F564D183}" {
+     Id "LF-Dialogue_OutpostBuyer_Price"
+     Target_en_us "Two hundred thirty a crate, and not a cent over. Bring me more than I can shift in an hour and I will tell you to wait."
+     Comment "Dialogue caption, spoken by the outpost_buyer NPC (voiced; tools/assets/dialogue/outpost_buyer). Changing it needs: tools\\cli asset dialogue outpost_buyer"
+    }
+    CustomStringTableItem "{319F8ED85E7558CD}" {
+     Id "LF-Dialogue_OutpostBuyer_Refuse"
+     Target_en_us "We don't deal with the law here. Take the badge off and come back."
+     Comment "Dialogue caption, spoken by the outpost_buyer NPC (voiced; tools/assets/dialogue/outpost_buyer). Changing it needs: tools\\cli asset dialogue outpost_buyer"
+    }
+    CustomStringTableItem "{C6AF31B68124F0FE}" {
+     Id "LF-Dialogue_OutpostBuyer_SayBadge"
+     Target_en_us "I'm on duty. I have goods to sell."
+     Comment "Dialogue reply the player can pick when talking to the outpost_buyer NPC."
+    }
+    CustomStringTableItem "{E4F5482302919850}" {
+     Id "LF-Dialogue_OutpostBuyer_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the outpost_buyer NPC."
+    }
+    CustomStringTableItem "{3ABFF12BB7B49B95}" {
+     Id "LF-Dialogue_OutpostBuyer_SayMore"
+     Target_en_us "That's not much. Can you pay more?"
+     Comment "Dialogue reply the player can pick when talking to the outpost_buyer NPC."
+    }
+    CustomStringTableItem "{B7E90815BE8FEDFE}" {
+     Id "LF-Dialogue_OutpostBuyer_SayPrice"
+     Target_en_us "What do you pay?"
+     Comment "Dialogue reply the player can pick when talking to the outpost_buyer NPC."
+    }
+    CustomStringTableItem "{7D50F8E9C4C4F9BA}" {
+     Id "LF-Dialogue_OutpostGuard_Bye"
+     Target_en_us "Move along."
+     Comment "Dialogue caption, spoken by the outpost_guard NPC (voiced; tools/assets/dialogue/outpost_guard). Changing it needs: tools\\cli asset dialogue outpost_guard"
+    }
+    CustomStringTableItem "{EAD08CBCF6AC6591}" {
+     Id "LF-Dialogue_OutpostGuard_Greet"
+     Target_en_us "Hold it there. This is not a public road. State your business or turn around."
+     Comment "Dialogue caption, spoken by the outpost_guard NPC (voiced; tools/assets/dialogue/outpost_guard). Changing it needs: tools\\cli asset dialogue outpost_guard"
+    }
+    CustomStringTableItem "{652BA65855385FBE}" {
+     Id "LF-Dialogue_OutpostGuard_SayBadge"
+     Target_en_us "I'm with the police."
+     Comment "Dialogue reply the player can pick when talking to the outpost_guard NPC."
+    }
+    CustomStringTableItem "{556998B7F61AD32A}" {
+     Id "LF-Dialogue_OutpostGuard_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the outpost_guard NPC."
+    }
+    CustomStringTableItem "{A590AF8EE6286BD0}" {
+     Id "LF-Dialogue_OutpostGuard_SayTrade"
+     Target_en_us "I'm here to trade."
+     Comment "Dialogue reply the player can pick when talking to the outpost_guard NPC."
+    }
+    CustomStringTableItem "{47F11D99A4C5D79A}" {
+     Id "LF-Dialogue_OutpostGuard_SayWho"
+     Target_en_us "Who are you keeping out?"
+     Comment "Dialogue reply the player can pick when talking to the outpost_guard NPC."
+    }
+    CustomStringTableItem "{E7570B8CDD0B4828}" {
+     Id "LF-Dialogue_OutpostGuard_Stranger"
+     Target_en_us "Strangers. Uniforms. Anyone nobody here has vouched for. Right now that is you."
+     Comment "Dialogue caption, spoken by the outpost_guard NPC (voiced; tools/assets/dialogue/outpost_guard). Changing it needs: tools\\cli asset dialogue outpost_guard"
+    }
+    CustomStringTableItem "{76B0EEC83BE9ECEC}" {
+     Id "LF-Dialogue_OutpostGuard_Trade"
+     Target_en_us "Quartermaster is past the fire. Keep your hands where I can see them and touch nothing that is not yours."
+     Comment "Dialogue caption, spoken by the outpost_guard NPC (voiced; tools/assets/dialogue/outpost_guard). Changing it needs: tools\\cli asset dialogue outpost_guard"
+    }
+    CustomStringTableItem "{22E583180A80DEC9}" {
+     Id "LF-Dialogue_OutpostGuard_Uniform"
+     Target_en_us "Then you can turn around. Nobody here wants that badge in the camp. Go back the way you came."
+     Comment "Dialogue caption, spoken by the outpost_guard NPC (voiced; tools/assets/dialogue/outpost_guard). Changing it needs: tools\\cli asset dialogue outpost_guard"
+    }
+    CustomStringTableItem "{6A0CC77DF6F71C43}" {
+     Id "LF-Dialogue_OutpostQuartermaster_Bye"
+     Target_en_us "Keep your head down."
+     Comment "Dialogue caption, spoken by the outpost_quartermaster NPC (voiced; tools/assets/dialogue/outpost_quartermaster). Changing it needs: tools\\cli asset dialogue outpost_quartermaster"
+    }
+    CustomStringTableItem "{6AAE8B5CB615DB95}" {
+     Id "LF-Dialogue_OutpostQuartermaster_Greet"
+     Target_en_us "Quartermaster. I keep the crate and I keep the count. Nothing leaves this camp without a price on it."
+     Comment "Dialogue caption, spoken by the outpost_quartermaster NPC (voiced; tools/assets/dialogue/outpost_quartermaster). Changing it needs: tools\\cli asset dialogue outpost_quartermaster"
+    }
+    CustomStringTableItem "{AFDB379011F8C5A9}" {
+     Id "LF-Dialogue_OutpostQuartermaster_Refuse"
+     Target_en_us "We don't deal with the law here. Take the badge off and come back."
+     Comment "Dialogue caption, spoken by the outpost_quartermaster NPC (voiced; tools/assets/dialogue/outpost_quartermaster). Changing it needs: tools\\cli asset dialogue outpost_quartermaster"
+    }
+    CustomStringTableItem "{B75300F9C4ACA116}" {
+     Id "LF-Dialogue_OutpostQuartermaster_SayBadge"
+     Target_en_us "I'm on duty. I'd like to buy."
+     Comment "Dialogue reply the player can pick when talking to the outpost_quartermaster NPC."
+    }
+    CustomStringTableItem "{0756095F8AEA4EB6}" {
+     Id "LF-Dialogue_OutpostQuartermaster_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the outpost_quartermaster NPC."
+    }
+    CustomStringTableItem "{3D7ED77783D95B20}" {
+     Id "LF-Dialogue_OutpostQuartermaster_SayStock"
+     Target_en_us "What have you got?"
+     Comment "Dialogue reply the player can pick when talking to the outpost_quartermaster NPC."
+    }
+    CustomStringTableItem "{77E5135A92F7F56E}" {
+     Id "LF-Dialogue_OutpostQuartermaster_Stock"
+     Target_en_us "A radio, a pistol, a rifle. The crate shows what I will sell you today. The longer people have known you, the more of it I will show."
+     Comment "Dialogue caption, spoken by the outpost_quartermaster NPC (voiced; tools/assets/dialogue/outpost_quartermaster). Changing it needs: tools\\cli asset dialogue outpost_quartermaster"
+    }
     CustomStringTableItem "{BC1BAB3B06E2E1D5}" {
      Id "LF-Dialogue_Passerby_AboutWhat"
      Target_en_us "Nothing much, and that is the point. A drink, the band if they turn up, somebody's uncle telling the same story about the war."
@@ -4594,6 +4719,21 @@ StringTable {
      Target_en_us "{Org} Register - 1989 ledger"
      Comment "Registry ledger page title."
     }
+    CustomStringTableItem "{D1027E2373FE808E}" {
+     Id "LF-Outpost_Buyer_Name"
+     Target_en_us "Buyer"
+     Comment "Outpost people (gangs O11b, #4459): the speaker line of the buyer's dialogue."
+    }
+    CustomStringTableItem "{920E02C340FD402A}" {
+     Id "LF-Outpost_Guard_Name"
+     Target_en_us "Gate guard"
+     Comment "Outpost people (gangs O11b, #4459): the speaker line of the guard's dialogue."
+    }
+    CustomStringTableItem "{2AE67B6B5BC09A59}" {
+     Id "LF-Outpost_Quartermaster_Name"
+     Target_en_us "Quartermaster"
+     Comment "Outpost people (gangs O11b, #4459): the speaker line of the quartermaster's dialogue."
+    }
     CustomStringTableItem "{4B7A1E93C2D05F68}" {
      Id "LF-Place_SaintPhilippe"
      Target_en_us "Saint Philippe"
@@ -5068,6 +5208,31 @@ StringTable {
      Id "LF-Resident_cafe_owner_Name"
      Target_en_us "Odilon Marchand"
      Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
+    }
+    CustomStringTableItem "{1304E767117CD1D9}" {
+     Id "LF-Resident_dock_chandler_Name"
+     Target_en_us "Joseph Vidal"
+     Comment "Saint-Philippe dock cast (ship chandler, #4466): display name."
+    }
+    CustomStringTableItem "{D64C66B47D9847D5}" {
+     Id "LF-Resident_dock_docker_1_Name"
+     Target_en_us "Lucien Brault"
+     Comment "Saint-Philippe dock cast (docker, #4466): display name."
+    }
+    CustomStringTableItem "{A46BD90F0A51F965}" {
+     Id "LF-Resident_dock_docker_2_Name"
+     Target_en_us "Theo Gagnon"
+     Comment "Saint-Philippe dock cast (docker, #4466): display name."
+    }
+    CustomStringTableItem "{2901BA1F5EE42D43}" {
+     Id "LF-Resident_dock_fishmonger_Name"
+     Target_en_us "Baptiste Pichon"
+     Comment "Saint-Philippe dock cast (fishmonger, #4466): display name."
+    }
+    CustomStringTableItem "{D04B44D06CAEB656}" {
+     Id "LF-Resident_dock_harbour_master_Name"
+     Target_en_us "Marcel Roux"
+     Comment "Saint-Philippe dock cast (harbour master, #4466): display name."
     }
     CustomStringTableItem "{5C2B8E41A9D07F36}" {
      Id "LF-Resident_foreman_coalmans_brow_Name"
@@ -6544,6 +6709,31 @@ StringTable {
      Target_en_us "AMBULANCE"
      Comment "Livery plate on the side panels of the UAZ452 and S1203 ambulances (#4470)."
     }
+    CustomStringTableItem "{F01D4791B86B996D}" {
+     Id "LF-Sign_Livery_CompanyBakery_Title"
+     Target_en_us "EVERON BAKERY"
+     Comment "Company livery plate on the bakery van (S1203) (#4472)."
+    }
+    CustomStringTableItem "{11D6F8D6E4562BE4}" {
+     Id "LF-Sign_Livery_CompanyFactory_Title"
+     Target_en_us "EVERON WORKS"
+     Comment "Company livery plate on the factory van (S1203) (#4472)."
+    }
+    CustomStringTableItem "{9912765B14273B42}" {
+     Id "LF-Sign_Livery_CompanyHardware_Title"
+     Target_en_us "EVERON HARDWARE"
+     Comment "Company livery plate on the hardware van (UAZ452) (#4472)."
+    }
+    CustomStringTableItem "{321CB98EEF2D6361}" {
+     Id "LF-Sign_Livery_CompanyTimber_Title"
+     Target_en_us "EVERON TIMBER"
+     Comment "Company livery plate on the timber truck (Ural4320) (#4472)."
+    }
+    CustomStringTableItem "{0A03ACFB63202539}" {
+     Id "LF-Sign_Livery_Taxi_Title"
+     Target_en_us "TAXI"
+     Comment "Company livery plate on the taxi (S105) (#4472)."
+    }
     CustomStringTableItem "{55502A149BCBFDCF}" {
      Id "LF-Sign_Livery_UAZ469_Police_Title"
      Target_en_us "POLICE"
@@ -7996,12 +8186,12 @@ StringTable {
     }
     CustomStringTableItem "{26AB027C285BC0D5}" {
      Id "LF-Unlock_Hauling_05"
-     Target_en_us "Taxi fares"
+     Target_en_us "Faster loading"
      Comment "What Hauling level 5 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{66A808D00E3ACBA5}" {
      Id "LF-Unlock_Hauling_06"
-     Target_en_us "Faster loading"
+     Target_en_us "Taxi fares"
      Comment "What Hauling level 6 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{24D9B283B36BB21F}" {

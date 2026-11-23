@@ -348,3 +348,4 @@ set them. File and constant, then the value.
 
 Script holds no place names. Every user-facing string in `Feature/` is already a
 `#` key; the flavour sits in the string table.
+| `Dialogue/LF_Dialogue_OutpostQuartermaster.conf`, `LF_Dialogue_OutpostBuyer.conf`, `LF_Dialogue_OutpostGuard.conf`, `Sounds/Dialogue/outpost_*/` and the index fragment `Dialogue/LF_DialogueIndex_OldMan/LF_DialogueIndex_Outposts.conf` (in `LF_Everon1989`) | pack | The north outpost's three speakers (#4459, gangs O11b): quartermaster, contraband buyer and the two gate guards (one shared conversation), each with their own voice, 14 recordings in all. Pack content: people of this server; the core only plays them through `LF_DialogueComponent` |

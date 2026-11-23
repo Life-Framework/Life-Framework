@@ -1,0 +1,159 @@
+Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ ID "245DFBD57CAF3A20"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64D877CFC0DC5560}" {
+     SourceMaterial "S105Body_mat"
+     AssignedMaterial "{18C1C4322CDCACD4}Assets/Liveries/S105/LF_S105_Taxi.emat"
+    }
+   }
+  }
+ }
+ {
+  GenericEntity TaxiLetters_L {
+   ID "820FFFDC8FAF3C8E"
+   components {
+    Hierarchy "{83C3EF1934E8BD61}" {
+    }
+    MeshObject "{20D55F39C62A7159}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{D784955B1A82F653}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{E41653A90C988675}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{1E8FE51E17968345}" {
+     m_sSignId "livery_company_taxi"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.03 0.03 0.03
+     m_vPaintColor 0.97 0.78 0.1
+     m_vTextColor 0.03 0.03 0.03
+    }
+   }
+   coords -0.83 0.82 -1.3
+   angles -18 -88.5 0
+   scale 0.5
+  }
+  GenericEntity TaxiLetters_R {
+   ID "A2728A90D1332059"
+   components {
+    Hierarchy "{8DD361902A6AF5FB}" {
+    }
+    MeshObject "{18FD820F28FAA667}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{96D3A5502E9CC2EF}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{6662758FF97C3532}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{9CD92A3E160541FB}" {
+     m_sSignId "livery_company_taxi"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.03 0.03 0.03
+     m_vPaintColor 0.97 0.78 0.1
+     m_vTextColor 0.03 0.03 0.03
+    }
+   }
+   coords 0.83 0.82 -1.3
+   angles -18 88.5 0
+   scale 0.5
+  }
+  GenericEntity TaxiRoof_L {
+   ID "7C228391198D7F1F"
+   components {
+    Hierarchy "{07AF56D1DDC18D1B}" {
+    }
+    MeshObject "{672E0B5E9EA1FEFF}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{9B70D7A7C5684415}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{E24FF15FCD404484}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{9131A8F5457A36A1}" {
+     m_sSignId "livery_company_taxi"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.03 0.03 0.03
+     m_vPaintColor 0.97 0.78 0.1
+     m_vTextColor 0.03 0.03 0.03
+    }
+   }
+   coords -0.03 1.4 0.1
+   angles 0 -90 0
+   scale 0.4
+  }
+  GenericEntity TaxiRoof_R {
+   ID "1ED8B2FF80541B67"
+   components {
+    Hierarchy "{8C9719112D3822A0}" {
+    }
+    MeshObject "{274049CEDF7E7FDA}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{1DE210D379F19231}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{4EAACE06EDC26B50}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{B0CCDD236DE3794C}" {
+     m_sSignId "livery_company_taxi"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.03 0.03 0.03
+     m_vPaintColor 0.97 0.78 0.1
+     m_vTextColor 0.03 0.03 0.03
+    }
+   }
+   coords 0.03 1.4 0.1
+   angles 0 90 0
+   scale 0.4
+  }
+ }
+}

@@ -1,0 +1,38 @@
+{
+  "name": "sweep_loop",
+  "about": "Resident sweeps with a broom: both hands on the handle, the lower hand low and right, the upper hand at chest height, leaning forward; the broom head strokes from the right of the body to the left and back.",
+  "fps": 30,
+  "frames": 54,
+  "loop": true,
+  "bones": "body",
+  "keys": [
+    {
+      "frame": 0,
+      "hips": [0.0, -0.05, 0.03],
+      "turn": { "Spine1": [10, -10, 0], "Spine3": [8, -8, 0], "Neck1": [-8, 8, 0] },
+      "legs": {
+        "left": { "foot": [-0.13, 0.1, 0.2], "yaw": 8 },
+        "right": { "foot": [0.14, 0.1, -0.12], "yaw": 18 }
+      },
+      "arms": {
+        "right": { "hand": [0.3, 0.98, 0.4], "elbow": [0.5, 1.0, 0.0], "fingers": [-0.3, 0.1, 1], "palm": [-1, 0, 0] },
+        "left": { "hand": [0.1, 1.22, 0.3], "elbow": [-0.2, 1.05, 0.1], "fingers": [0.3, 0.1, 1], "palm": [0.5, 1, 0] }
+      },
+      "curl": { "right": 70, "left": 70 }
+    },
+    {
+      "frame": 27,
+      "hips": [-0.02, -0.06, 0.03],
+      "turn": { "Spine1": [10, 12, 0], "Spine3": [8, 8, 0], "Neck1": [-8, -8, 0] },
+      "legs": {
+        "left": { "foot": [-0.13, 0.1, 0.2], "yaw": 8 },
+        "right": { "foot": [0.14, 0.1, -0.12], "yaw": 18 }
+      },
+      "arms": {
+        "right": { "hand": [0.12, 0.98, 0.44], "elbow": [0.4, 1.0, 0.05], "fingers": [-0.3, 0.1, 1], "palm": [-1, 0, 0] },
+        "left": { "hand": [-0.1, 1.22, 0.32], "elbow": [-0.38, 1.05, 0.1], "fingers": [0.3, 0.1, 1], "palm": [0.5, 1, 0] }
+      },
+      "curl": { "right": 70, "left": 70 }
+    }
+  ]
+}

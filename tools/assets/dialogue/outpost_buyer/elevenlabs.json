@@ -1,0 +1,76 @@
+{
+  "id": "outpost_buyer",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "7560d7112d9d5103",
+      "date": "2026-11-23",
+      "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+      "voice_name": "Callum - Husky Trickster",
+      "model": "eleven_multilingual_v2",
+      "text": "Buyer. Crates, cartons, anything that fell off a truck. I pay cash and I don't ask which truck.",
+      "chars": 95,
+      "chars_total": 38,
+      "request_id": "FDGxQyOXEKmxAePI8CnF",
+      "seconds": 7.52,
+      "mouth": "9998555421000000000001299841133311499712477532240699942664662119979952413398311100000000000000364169513798785544246996299843598845311389145223994121000"
+    },
+    "price": {
+      "hash": "763e1ee4cab3317a",
+      "date": "2026-11-23",
+      "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+      "voice_name": "Callum - Husky Trickster",
+      "model": "eleven_multilingual_v2",
+      "text": "Two hundred thirty a crate, and not a cent over. Bring me more than I can shift in an hour and I will tell you to wait.",
+      "chars": 119,
+      "chars_total": 48,
+      "request_id": "medqXVGQtfQe3d0QR0Ym",
+      "seconds": 7.23,
+      "mouth": "3999786572159854556622339873441686789944744369742456532432100000000005999987778998762545651343347721274555898866665549985752379865644475875203100"
+    },
+    "haggle": {
+      "hash": "9c4f21f2778a8c0b",
+      "date": "2026-11-23",
+      "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+      "voice_name": "Callum - Husky Trickster",
+      "model": "eleven_multilingual_v2",
+      "text": "More? Ha. The price is the price, friend. Bring me a crate I can sell and we will talk.",
+      "chars": 87,
+      "chars_total": 35,
+      "request_id": "05vdPmjoOwU05Ov4PtOy",
+      "seconds": 6.34,
+      "mouth": "6999998520000000000179831000000053149997445652830299963333156532221000000398988872135974237831233434777767654653652228986101000"
+    },
+    "refuse": {
+      "hash": "a30ac71e17ef6a22",
+      "date": "2026-11-23",
+      "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+      "voice_name": "Callum - Husky Trickster",
+      "model": "eleven_multilingual_v2",
+      "text": "We don't deal with the law here. Take the badge off and come back.",
+      "chars": 66,
+      "chars_total": 26,
+      "request_id": "ZeenjCQT3JnYZd1AqVFg",
+      "seconds": 3.84,
+      "mouth": "89999636997573166579886224555431000001692194199985468773113332376539975302100"
+    },
+    "bye": {
+      "hash": "23155bd7e1521826",
+      "date": "2026-11-23",
+      "voice_id": "N2lVS1w4EtoT3dr4eOWO",
+      "voice_name": "Callum - Husky Trickster",
+      "model": "eleven_multilingual_v2",
+      "text": "Pleasure. Mind where you drive.",
+      "chars": 31,
+      "chars_total": 12,
+      "request_id": "cqf0ab4B8e3l1YhyJRwM",
+      "seconds": 2.38,
+      "mouth": "298544421100000000499754338764443359987532211000"
+    }
+  },
+  "voice": {
+    "id": "N2lVS1w4EtoT3dr4eOWO",
+    "name": "Callum - Husky Trickster",
+    "source": "premade"
+  }
+}

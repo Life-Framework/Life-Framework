@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{1E6C47B2A51E909B}Anims/LF/Work/Work_carry_out.anm"
+ Configurations {
+  TXAResourceClass PC {
+  }
+  TXAResourceClass XBOX_ONE : PC {
+  }
+  TXAResourceClass XBOX_SERIES : PC {
+  }
+  TXAResourceClass PS4 : PC {
+  }
+  TXAResourceClass HEADLESS : PC {
+  }
+  TXAResourceClass PS5 : PC {
+  }
+ }
+}

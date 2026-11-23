@@ -1,0 +1,181 @@
+{
+  "schema": 1,
+  "kit": "speed-trap",
+  "system": "speed-trap",
+  "source": {
+    "file": "addons/LF_Everon1989/Worlds/Everon1989Grid/Everon1989Grid_Layers/Grid_speedtrap.layer",
+    "group": "Grid_speedtrap_R0_*,Grid_speedtrap_PatrolCar,Grid_speedtrap_Barrier,Grid_speedtrap_Gravel_*",
+    "origin": "382,28,0",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -8.432,
+        -3
+      ],
+      "max": [
+        8.502,
+        3.28
+      ]
+    },
+    "front": "+x",
+    "counters": [],
+    "adapt": "Counter rows keep `wall`: put that wall of the kit against the building wall named by the dossier (counter wall = longest inner wall). `front` is the street side: turn the kit so it faces the entrance. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "speedtrap-r0-1",
+      "name": "Grid_speedtrap_R0_1",
+      "prefab": "{395925C97F4D53DE}Prefabs/Props/Signs/LF_SpeedLimit30.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        8.502,
+        0.506,
+        -3
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "speedtrap-r0-2",
+      "name": "Grid_speedtrap_R0_2",
+      "prefab": "{2311E06DD41A54BF}Prefabs/Props/Signs/LF_SpeedLimit50.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        8.502,
+        0.506,
+        0
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "speedtrap-r0-3",
+      "name": "Grid_speedtrap_R0_3",
+      "prefab": "{937A43570DF08420}Prefabs/Props/Signs/LF_SpeedLimit100.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        8.502,
+        0.506,
+        3
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "speedtrap-patrol-car",
+      "name": "Grid_speedtrap_PatrolCar",
+      "prefab": "{D1C459F87589D01D}Prefabs/Vehicles/Liveries/LF_S105_Police.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -0.488,
+        0,
+        -1.5
+      ],
+      "yaw": 90,
+      "class": "Vehicle",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "speedtrap-barrier",
+      "name": "Grid_speedtrap_Barrier",
+      "prefab": "{64C9C1D1C2C1B38D}Prefabs/Props/Infrastructure/Roadblocks/RoadBlock_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        6.502,
+        0.012,
+        -0.002
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "speedtrap-gravel-1",
+      "name": "Grid_speedtrap_Gravel_1",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -8.432,
+        0.046,
+        3.28
+      ],
+      "yaw": 0,
+      "scale": 0.5,
+      "class": "StaticModelEntity",
+      "wall": "-x",
+      "floor": "f0"
+    },
+    {
+      "id": "speedtrap-gravel-2",
+      "name": "Grid_speedtrap_Gravel_2",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.832,
+        0.046,
+        3.28
+      ],
+      "yaw": 0,
+      "scale": 0.5,
+      "class": "StaticModelEntity",
+      "wall": "+z",
+      "floor": "f0"
+    },
+    {
+      "id": "speedtrap-gravel-3",
+      "name": "Grid_speedtrap_Gravel_3",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.768,
+        0.046,
+        3.28
+      ],
+      "yaw": 0,
+      "scale": 0.5,
+      "class": "StaticModelEntity",
+      "wall": "+z",
+      "floor": "f0"
+    },
+    {
+      "id": "speedtrap-gravel-4",
+      "name": "Grid_speedtrap_Gravel_4",
+      "prefab": "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        5.368,
+        0.046,
+        3.28
+      ],
+      "yaw": 0,
+      "scale": 0.5,
+      "class": "StaticModelEntity",
+      "wall": "+z",
+      "floor": "f0"
+    }
+  ]
+}

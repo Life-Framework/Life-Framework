@@ -1,4 +1,5 @@
-// Harness verb `guide open [page]|close|state` (welcome guide, client side). `open` shows the guide on a
+// Harness verb `guide open [page]|close|state|autoopen on|off` (welcome guide, client side). A session client
+// (-lfSession) never gets the sheet by itself, so shots stay clean; `autoopen on` opts in for the guide proof. `open` shows the guide on a
 // page (1 to 5, default 1) the way the key does; `close` puts it away; `state` answers `open=<0|1>
 // page=<n> pages=<n>` so a proof can tell an auto-open happened. Buttons are pressed with `click`.
 
@@ -33,6 +34,14 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
+		if (cmd.Arg1 == "autoopen")
+		{
+			// A session client never gets the sheet by itself (#4645); the welcome-guide proof opts in.
+			LF_WelcomeGuideSheet.SetHarnessAutoOpen(cmd.Arg2 == "on");
+			LF_AgentHarness.Answer(cmd.Id, "ok", "autoopen=" + cmd.Arg2);
+			return true;
+		}
+
 		if (cmd.Arg1 == "state")
 		{
 			LF_UIScreen screen = LF_WelcomeGuideSheet.Current();
@@ -44,7 +53,7 @@ modded class LF_AgentHarnessVerbs
 			return true;
 		}
 
-		LF_AgentHarness.Answer(cmd.Id, "error", "usage: guide open [page]|close|state");
+		LF_AgentHarness.Answer(cmd.Id, "error", "usage: guide open [page]|close|state|autoopen on|off");
 		return true;
 	}
 }

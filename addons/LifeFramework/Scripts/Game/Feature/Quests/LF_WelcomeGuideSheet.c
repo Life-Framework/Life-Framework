@@ -38,6 +38,8 @@ class LF_WelcomeGuideSheet
 	protected static int s_iPage;
 	protected static bool s_bAutoWaiting;
 	protected static int s_iAutoTries;
+	//! A session client (agent) that asked for the auto open, for the welcome-guide proof only.
+	protected static bool s_bHarnessAutoOpen;
 
 	protected LF_UIScreen m_Subscribed;
 
@@ -293,6 +295,12 @@ class LF_WelcomeGuideSheet
 	//! new character on this connection) schedules again.
 	static void AutoOpen()
 	{
+		if (!LF_WelcomeGuide.AutoOpenWanted(LF_AgentHarness.IsSessionClient(), s_bHarnessAutoOpen))
+		{
+			LF_Debug.Info(LF_WelcomeGuide.FEATURE, "guide not opened by itself: this client is driven by an agent session (`guide autoopen on` opts in)");
+			return;
+		}
+
 		if (s_bAutoWaiting)
 			return;
 
@@ -351,6 +359,13 @@ class LF_WelcomeGuideSheet
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Harness: let the auto open run on this session client (`guide autoopen on`) or put it back off.
+	static void SetHarnessAutoOpen(bool on)
+	{
+		s_bHarnessAutoOpen = on;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	static LF_UIScreen Current()
 	{
 		return s_Screen;
@@ -383,6 +398,7 @@ class LF_WelcomeGuideSheet
 		s_iPage = 0;
 		s_bAutoWaiting = false;
 		s_iAutoTries = 0;
+		s_bHarnessAutoOpen = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
