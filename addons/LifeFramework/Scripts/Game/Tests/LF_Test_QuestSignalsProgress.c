@@ -1,4 +1,4 @@
-// red-proof: Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_QuestSignalsProgress`: `RED PROOF OK`; with each act skipped, `selling the fish moves its objective`, `which reaches level 2 (expected 2, got 1)` and `reaching level 2 moves the level 2 objective` fail. `--only` passes. Flake fix 2026-11-18: failed `--tier all` (and `--only LF_Test_FishSpeciesPrefabs,LF_Test_QuestSignalsProgress`) with `the seller lands a fish (expected 1, got 0)` on the unfixed test; the fish sale now runs on its own seller wearing a pack and both runs pass.
+// red-proof: Fix 2026-11-23: on main (the DELIVERY ladder went to 30 levels, #4596) the hard-coded 400 xp reached level 3, so `and is still level 1 (expected 1, got 3)` and `which reaches level 2 (expected 2, got 3)` failed; the thresholds now come from the job's ladder and the run passes. Observed 2026-11-18 with `tools\cli test --no-build --red LF_Test_QuestSignalsProgress`: `RED PROOF OK`; with each act skipped, `selling the fish moves its objective`, `which reaches level 2 (expected 2, got 1)` and `reaching level 2 moves the level 2 objective` fail. `--only` passes. Flake fix 2026-11-18: failed `--tier all` (and `--only LF_Test_FishSpeciesPrefabs,LF_Test_QuestSignalsProgress`) with `the seller lands a fish (expected 1, got 0)` on the unfixed test; the fish sale now runs on its own seller wearing a pack and both runs pass.
 //! quests/signals-progress (#3123): each hour-2 milestone reports its SIGNAL through the public server
 //! entry point of its own feature (plot buy, car lot buy, licence desk visit, fish counter sale, job XP
 //! award), moves only its own objective, and a refused purchase or sale moves nothing.
@@ -229,13 +229,27 @@ class LF_Test_QuestSignalsProgress : LF_Test
 		LF_QuestProgressSignals.SetBodyForTest(UID, player);
 		ctx.True(LF_JobLevelSync.EnsureSubscribed(), "the level sync is subscribed on the server");
 
+		// The thresholds come from the job's ladder, never typed here: a rebalanced curve (#4596) moved them.
+		LF_JobTrackDef track = LF_JobLevels.Track(JOB);
+		ctx.NotNull(track, "the job has a ladder");
+		if (!track)
+			return;
+
+		int level2 = track.XpForLevel(2);
+		int level3 = track.XpForLevel(3);
+		ctx.True(level2 > 1 && level3 > level2, "the ladder has a level 2 and a level 3 above it");
+		if (level2 <= 1 || level3 <= level2)
+			return;
+
+		int below = level2 - 1;
+		int rest = level2 - below;
 		ctx.Equal(0, LF_JobLevels.AddXp(UID, JOB, 0, "test"), "a zero award is refused");
-		ctx.Equal(400, LF_JobLevels.AddXp(UID, JOB, 400, "test"), "400 xp is granted");
+		ctx.Equal(below, LF_JobLevels.AddXp(UID, JOB, below, "test"), "xp one short of level 2 is granted");
 		ctx.Equal(1, LF_JobLevels.LevelOf(UID, JOB), "and is still level 1");
 		ctx.False(Done(tracker, LF_QuestProgressSignals.JobLevel(JOB, 2)), "a level not reached moves nothing");
 
 		if (!RedProof())
-			ctx.Equal(100, LF_JobLevels.AddXp(UID, JOB, 100, "test"), "100 more xp is granted");
+			ctx.Equal(rest, LF_JobLevels.AddXp(UID, JOB, rest, "test"), "the xp that reaches level 2 is granted");
 
 		ctx.Equal(2, LF_JobLevels.LevelOf(UID, JOB), "which reaches level 2");
 		ctx.True(Done(tracker, LF_QuestProgressSignals.JobLevel(JOB, 2)), "reaching level 2 moves the level 2 objective");

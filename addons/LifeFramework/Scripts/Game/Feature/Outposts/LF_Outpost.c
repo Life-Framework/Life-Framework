@@ -110,10 +110,12 @@ class LF_Outpost
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The refusal in words, to the officer.
-	static void NotifyRefusal(IEntity customer)
+	//! Server: the refusal to the officer, in words (the toast) and, when a voiced trader stands at
+	//! traderPos, in his voice (LF_OutpostVoice, to this player only).
+	static void NotifyRefusal(IEntity customer, vector traderPos)
 	{
 		LF_Utils.NotifyEntity(customer, REFUSE_KEY, REFUSE_TITLE_KEY, 4.0);
+		LF_OutpostVoice.OnRefusal(customer, traderPos);
 	}
 
 	//------------------------------------------------------------------------------------------------

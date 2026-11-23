@@ -13,6 +13,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { GIT_ATTEMPTS, expectedGitExits, spawnRetrying } from "../lib/git-retry.mjs";
+import { SOURCE as CREDITS_SOURCE, mergeCreditsMd } from "./credits-rows.mjs";
 import { mergeStringTables } from "./union-string-table.mjs";
 
 // The core's string table and each pack's (#325): the driver unions every one, then regenerates all confs.
@@ -194,7 +195,9 @@ function materializeStringTable(scratch, sides) {
     const ours = showPath(sides.ours, stPath) ?? "";
     const theirs = showPath(sides.theirs, stPath) ?? "";
     if (!base && !ours && !theirs) continue;
-    const merged = mergeStringTables(base, ours, theirs);
+    // The core table holds the generated credits rows; the merged docs/credits.md decides them (#4668).
+    const creditsMd = stPath === ST_PATHS[0] ? () => mergeCreditsMd(showPath(sides.base, CREDITS_SOURCE), showPath(sides.ours, CREDITS_SOURCE), showPath(sides.theirs, CREDITS_SOURCE)) : undefined;
+    const merged = mergeStringTables(base, ours, theirs, { creditsMd });
     if (!merged.ok) return merged;
     writeInto(scratch, stPath, merged.text);
   }

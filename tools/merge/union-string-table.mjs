@@ -6,6 +6,7 @@
 //   node tools/merge/union-string-table.mjs %O %A %B %P
 
 import { readFileSync, writeFileSync } from "node:fs";
+import { creditsRowsText, entries, mergedCreditsFromGit, patchSt, stripCreditsRows } from "./credits-rows.mjs";
 import { mergeLines } from "./merge-markdown.mjs";
 
 // An item ends at the first line that holds only `}`. Its text never decides
@@ -68,7 +69,31 @@ export function coverageError(parsed, label) {
   return null;
 }
 
-export function mergeStringTables(baseText, oursText, theirsText) {
+// Both sides changed the generated LF-Credits_* rows differently (#4668): the rows are numbered in docs/credits.md
+// order, so two branches that each add a credits entry write the same Id with different text. Returns the entries
+// of the merged docs/credits.md to regenerate them from, or null when there is nothing to regenerate or the
+// merged source is unknown (then the table merges as it always did). options.creditsMd() -> { ok, text } | null.
+function creditsRegen(baseText, oursText, theirsText, options) {
+  if (typeof options.creditsMd !== "function") return null;
+  const [base, ours, theirs] = [baseText, oursText, theirsText].map((text) => creditsRowsText(text ?? ""));
+  if (ours === theirs || ours === base || theirs === base) return null;
+  const merged = options.creditsMd();
+  if (!merged || !merged.ok) return null;
+  const list = entries(merged.text);
+  return list.length ? list : null;
+}
+
+export function mergeStringTables(baseText, oursText, theirsText, options = {}) {
+  const regen = creditsRegen(baseText, oursText, theirsText, options);
+  if (regen) {
+    const inner = mergeStringTables(stripCreditsRows(baseText ?? ""), stripCreditsRows(oursText ?? ""), stripCreditsRows(theirsText ?? ""));
+    if (!inner.ok) return inner;
+    try {
+      return { ok: true, text: patchSt(inner.text, regen) };
+    } catch (error) {
+      return { ok: false, error: `lf-string-table: cannot regenerate the credits rows: ${error.message}` };
+    }
+  }
   const base = parseStringTable(baseText ?? "");
   const ours = parseStringTable(oursText ?? "");
   const theirs = parseStringTable(theirsText ?? "");
@@ -133,10 +158,13 @@ function runDriver() {
     console.error("usage: union-string-table.mjs <base> <ours> <theirs> [path]");
     process.exit(2);
   }
+  // Only the core table holds the generated credits rows (%P is the path git is merging).
+  const isCore = /(^|[\\/])everonlife_localization\.st$/.test(process.argv[5] || "");
   const merged = mergeStringTables(
     readFileSync(basePath, "utf8"),
     readFileSync(oursPath, "utf8"),
     readFileSync(theirsPath, "utf8"),
+    { creditsMd: isCore ? mergedCreditsFromGit : undefined },
   );
   if (!merged.ok) {
     const ours = readFileSync(oursPath, "utf8");

@@ -929,6 +929,76 @@ StringTable {
      Target_en_us "Weapon theft reported."
      Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
     }
+    CustomStringTableItem "{866E763D856E9370}" {
+     Id "LF-Dialogue_DockChandler_AboutDock"
+     Target_en_us "The wholesale counter next door buys fish, timber and ore. The harbor master hands out day work at the cabin. I only sell the gear."
+     Comment "Dialogue caption, spoken by the dock_chandler NPC (voiced; tools/assets/dialogue/dock_chandler). Changing it needs: tools\\cli asset dialogue dock_chandler"
+    }
+    CustomStringTableItem "{39FAD0D1693E57FE}" {
+     Id "LF-Dialogue_DockChandler_AboutGear"
+     Target_en_us "Rope by the fathom, oil by the can, hooks and line for the fishermen. None of it is cheap, and none of it lets you down at sea."
+     Comment "Dialogue caption, spoken by the dock_chandler NPC (voiced; tools/assets/dialogue/dock_chandler). Changing it needs: tools\\cli asset dialogue dock_chandler"
+    }
+    CustomStringTableItem "{36AFF90D46867D30}" {
+     Id "LF-Dialogue_DockChandler_Bye"
+     Target_en_us "Fair winds."
+     Comment "Dialogue caption, spoken by the dock_chandler NPC (voiced; tools/assets/dialogue/dock_chandler). Changing it needs: tools\\cli asset dialogue dock_chandler"
+    }
+    CustomStringTableItem "{17B7C956989241C4}" {
+     Id "LF-Dialogue_DockChandler_Greet"
+     Target_en_us "Rope, lamp oil, tackle, paint. If a boat needs it, I have it, or I know who does."
+     Comment "Dialogue caption, spoken by the dock_chandler NPC (voiced; tools/assets/dialogue/dock_chandler). Changing it needs: tools\\cli asset dialogue dock_chandler"
+    }
+    CustomStringTableItem "{4CA7696A39470C4D}" {
+     Id "LF-Dialogue_DockChandler_SayBye"
+     Target_en_us "Thanks. Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the dock_chandler NPC."
+    }
+    CustomStringTableItem "{7BF82C1A81407939}" {
+     Id "LF-Dialogue_DockChandler_SayDock"
+     Target_en_us "Who buys what on the dock?"
+     Comment "Dialogue reply the player can pick when talking to the dock_chandler NPC."
+    }
+    CustomStringTableItem "{7B52C8F40EF77CA1}" {
+     Id "LF-Dialogue_DockChandler_SayGear"
+     Target_en_us "What do you sell?"
+     Comment "Dialogue reply the player can pick when talking to the dock_chandler NPC."
+    }
+    CustomStringTableItem "{916B3BF20D0A9326}" {
+     Id "LF-Dialogue_DockFishmonger_AboutCatch"
+     Target_en_us "The boats go out before light and are back by noon. Whatever they land, I put on the ice. If you catch your own, the wholesale counter at the dock buys it."
+     Comment "Dialogue caption, spoken by the dock_fishmonger NPC (voiced; tools/assets/dialogue/dock_fishmonger). Changing it needs: tools\\cli asset dialogue dock_fishmonger"
+    }
+    CustomStringTableItem "{89FF83AA780A1342}" {
+     Id "LF-Dialogue_DockFishmonger_AboutPrices"
+     Target_en_us "Mackerel is cheap. Bass costs more. Tuna only comes when the boats get lucky. The price is on the board, and I do not haggle."
+     Comment "Dialogue caption, spoken by the dock_fishmonger NPC (voiced; tools/assets/dialogue/dock_fishmonger). Changing it needs: tools\\cli asset dialogue dock_fishmonger"
+    }
+    CustomStringTableItem "{0201ACDB462E8834}" {
+     Id "LF-Dialogue_DockFishmonger_Bye"
+     Target_en_us "Mind the wet boards on your way out."
+     Comment "Dialogue caption, spoken by the dock_fishmonger NPC (voiced; tools/assets/dialogue/dock_fishmonger). Changing it needs: tools\\cli asset dialogue dock_fishmonger"
+    }
+    CustomStringTableItem "{B4EBCCB2CC0C954D}" {
+     Id "LF-Dialogue_DockFishmonger_Greet"
+     Target_en_us "Fresh off the boats this morning. Mackerel, bass, perch. Look all you like, but touch nothing you will not buy."
+     Comment "Dialogue caption, spoken by the dock_fishmonger NPC (voiced; tools/assets/dialogue/dock_fishmonger). Changing it needs: tools\\cli asset dialogue dock_fishmonger"
+    }
+    CustomStringTableItem "{FDC8C6D8B315B9A8}" {
+     Id "LF-Dialogue_DockFishmonger_SayBye"
+     Target_en_us "Thanks. Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the dock_fishmonger NPC."
+    }
+    CustomStringTableItem "{01DC93E68262AC80}" {
+     Id "LF-Dialogue_DockFishmonger_SayCatch"
+     Target_en_us "Where does your fish come from?"
+     Comment "Dialogue reply the player can pick when talking to the dock_fishmonger NPC."
+    }
+    CustomStringTableItem "{AD42EB48DB296DCF}" {
+     Id "LF-Dialogue_DockFishmonger_SayPrices"
+     Target_en_us "What is it going for?"
+     Comment "Dialogue reply the player can pick when talking to the dock_fishmonger NPC."
+    }
     CustomStringTableItem "{7BDFAF37D3BDD834}" {
      Id "LF-Dialogue_Dockworker_AboutCargo"
      Target_en_us "Flour, diesel, machine parts. What is in the other crates is the harbor master's business, and he does not share."
@@ -2173,6 +2243,51 @@ StringTable {
      Id "LF-Dialogue_Passerby_SayWhere"
      Target_en_us "Where can I find things around here?"
      Comment "Dialogue reply the player can pick when talking to the passerby NPC."
+    }
+    CustomStringTableItem "{B59194FE8B41BBA8}" {
+     Id "LF-Dialogue_Registrar_Bye"
+     Target_en_us "Next."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{FF32057309662992}" {
+     Id "LF-Dialogue_Registrar_Flags"
+     Target_en_us "A leader picks the flag at the wall. If another crew flies it and has someone around, it is taken."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{3A1C16EC3BF206D9}" {
+     Id "LF-Dialogue_Registrar_Found"
+     Target_en_us "Name, flag, and two hundred fifty dollars."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{858113BC1F8C3BD8}" {
+     Id "LF-Dialogue_Registrar_Greet"
+     Target_en_us "Registry. Crews and flags are my desk. What do you need?"
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{4629FAB20CF3A93A}" {
+     Id "LF-Dialogue_Registrar_Picked"
+     Target_en_us "That is your flag. It is on the books."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{3D0752F283E976CC}" {
+     Id "LF-Dialogue_Registrar_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the registrar NPC."
+    }
+    CustomStringTableItem "{52847E79E38D2C78}" {
+     Id "LF-Dialogue_Registrar_SayFlags"
+     Target_en_us "How do flags work?"
+     Comment "Dialogue reply the player can pick when talking to the registrar NPC."
+    }
+    CustomStringTableItem "{3E1D0B54142E9D86}" {
+     Id "LF-Dialogue_Registrar_SayFound"
+     Target_en_us "I want to start a crew."
+     Comment "Dialogue reply the player can pick when talking to the registrar NPC."
+    }
+    CustomStringTableItem "{A9B1BEEC3300C5C9}" {
+     Id "LF-Dialogue_Registrar_Taken"
+     Target_en_us "That one is taken. Another crew flies it. Pick a different one."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
     }
     CustomStringTableItem "{D706E5724264476D}" {
      Id "LF-Dialogue_RelocatedWalker_AboutFrom"
@@ -4283,6 +4398,11 @@ StringTable {
      Id "LF-MapPoi_SeedFeed"
      Target_en_us "Seed and feed store"
      Comment "Map POI name (#3515): the seed and feed store counter; a slot row of LF_MapPois_SaintPhilippe.conf gives each shop its own name instead of 'General store'."
+    }
+    CustomStringTableItem "{791F43A2A03F256C}" {
+     Id "LF-MapPoi_Settlement"
+     Target_en_us "Settlement"
+     Comment "Map POI name (#4655): the Town kind's name. The card adds the nearest named place, so it reads 'Settlement, Meaux'. The road map marks these once heard of."
     }
     CustomStringTableItem "{7A231C1ED753723E}" {
      Id "LF-MapPoi_Smokehouse"
@@ -6709,6 +6829,31 @@ StringTable {
      Target_en_us "AMBULANCE"
      Comment "Livery plate on the side panels of the UAZ452 and S1203 ambulances (#4470)."
     }
+    CustomStringTableItem "{F01D4791B86B996D}" {
+     Id "LF-Sign_Livery_CompanyBakery_Title"
+     Target_en_us "EVERON BAKERY"
+     Comment "Company livery plate on the bakery van (S1203) (#4472)."
+    }
+    CustomStringTableItem "{11D6F8D6E4562BE4}" {
+     Id "LF-Sign_Livery_CompanyFactory_Title"
+     Target_en_us "EVERON WORKS"
+     Comment "Company livery plate on the factory van (S1203) (#4472)."
+    }
+    CustomStringTableItem "{9912765B14273B42}" {
+     Id "LF-Sign_Livery_CompanyHardware_Title"
+     Target_en_us "EVERON HARDWARE"
+     Comment "Company livery plate on the hardware van (UAZ452) (#4472)."
+    }
+    CustomStringTableItem "{321CB98EEF2D6361}" {
+     Id "LF-Sign_Livery_CompanyTimber_Title"
+     Target_en_us "EVERON TIMBER"
+     Comment "Company livery plate on the timber truck (Ural4320) (#4472)."
+    }
+    CustomStringTableItem "{0A03ACFB63202539}" {
+     Id "LF-Sign_Livery_Taxi_Title"
+     Target_en_us "TAXI"
+     Comment "Company livery plate on the taxi (S105) (#4472)."
+    }
     CustomStringTableItem "{55502A149BCBFDCF}" {
      Id "LF-Sign_Livery_UAZ469_Police_Title"
      Target_en_us "POLICE"
@@ -7838,6 +7983,11 @@ StringTable {
      Id "LF-Townsfolk_OldMan_Role"
      Target_en_us "Retired fisherman"
      Comment "Townsfolk (The relocated, #1960): what Gaspard Lenoir does, the role line under the name."
+    }
+    CustomStringTableItem "{4457A00000000001}" {
+     Id "LF-Townsfolk_Registrar_Name"
+     Target_en_us "Gaspard Perrin"
+     Comment "Townsfolk (gangs C14, #4457): the registrar's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{36D9D5E6516866A7}" {
      Id "LF-Townsfolk_SawmillForeman_Name"

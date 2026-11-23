@@ -54,6 +54,10 @@ missing and where to get it.
 at your first paid outcome, not when you clock in. After the 30 minutes the rest of that day pays the normal rate. Each
 trade has its own first shift, and a new day opens it again. A server restart opens it again too.
 
+**Working beside a learner.** If you are level 10 or more in a trade and earn experience within 15 meters of someone under
+level 10 in the same trade, you both get a small bonus (a tenth of the award). It works the other way round too, when the
+learner earns. A pair can earn it once a minute, and your own other characters do not count.
+
 **Night pay.** Parcel, fuel and taxi runs finished between **21:00 and 05:00 game time** pay **25 percent more**.
 A game day is 2 real hours and nights are short, so that is about 40 minutes in every 2 hours at the faster night speed.
 
@@ -301,6 +305,7 @@ the pump says "The tanks are dry. The depot truck is due."
      it is full, the main wholesale counter buys more (from $20 a bar, falling as you sell).
 * **Pay:** about **$500 an hour**, with nothing to drive. Two players share the six rocks and the furnace comfortably.
 * **Wear:** every swing at a rock wears your pickaxe a little (an axe wears with each tree felled, a fishing rod with each fish landed). A notice tells you when the tool is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. The hardware bench repairs it for $12 and a scrap of metal once it is placed in town.
+* **Better tools:** the miners' supply till in the hardware store also sells the pickaxe, axe and fishing rod in three finishes: worn ($150), standard ($600) and fine ($1,800). A better finish wears slower. The standard pickaxe or axe needs trade level 3 and the fine one level 6; below that the till refuses in words.
 * **Needs:** the miner job and a pickaxe. Higher miner levels open the coal and copper rocks as those sites arrive. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the smelter wants Smelting level 8, the refinery level 15.
 
 

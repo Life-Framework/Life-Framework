@@ -1,0 +1,63 @@
+{
+  "id": "dock_chandler",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "d80730e496c20ce5",
+      "date": "2026-11-23",
+      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+      "voice_name": "George - Warm, Captivating Storyteller",
+      "model": "eleven_multilingual_v2",
+      "text": "Rope, lamp oil, tackle, paint. If a boat needs it, I have it, or I know who does.",
+      "chars": 81,
+      "chars_total": 32,
+      "request_id": "mTLdLIfwo8YapaRvLNur",
+      "seconds": 5.42,
+      "mouth": "8999411000699843676653136852565312597532100000000039796399514797547631048753674421100099987677644257653232000"
+    },
+    "about_gear": {
+      "hash": "9b0a8ad71a236887",
+      "date": "2026-11-23",
+      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+      "voice_name": "George - Warm, Captivating Storyteller",
+      "model": "eleven_multilingual_v2",
+      "text": "Rope by the fathom, oil by the can, hooks and line for the fishermen. None of it is cheap, and none of it lets you down at sea.",
+      "chars": 127,
+      "chars_total": 51,
+      "request_id": "j5hmI8obEXDPn3QXhbpw",
+      "seconds": 7.76,
+      "mouth": "499921146534378757442100005998775763423366664430000029924468579776754343434854874443100000000017999956334414587311000006999887741793346559776532439875431000"
+    },
+    "about_dock": {
+      "hash": "e68f0d87fe1d0525",
+      "date": "2026-11-23",
+      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+      "voice_name": "George - Warm, Captivating Storyteller",
+      "model": "eleven_multilingual_v2",
+      "text": "The wholesale counter next door buys fish, timber and ore. The harbor master hands out day work at the cabin. I only sell the gear.",
+      "chars": 131,
+      "chars_total": 52,
+      "request_id": "KgYrxXduqZQnaggN4WfX",
+      "seconds": 8.35,
+      "mouth": "11999995467652398746565234199875111099874328853320599956327418996432000000000000017679977767545264459885753239986654252143498574431000000000006799986447973433888633200"
+    },
+    "bye": {
+      "hash": "8931264c38214f61",
+      "date": "2026-11-23",
+      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+      "voice_name": "George - Warm, Captivating Storyteller",
+      "model": "eleven_multilingual_v2",
+      "text": "Fair winds.",
+      "chars": 11,
+      "chars_total": 4,
+      "request_id": "oETzkOpfmWObm1ryoU2T",
+      "seconds": 0.94,
+      "mouth": "3399765654223232100"
+    }
+  },
+  "voice": {
+    "id": "JBFqnCBsd6RMkjVDRZzb",
+    "name": "George - Warm, Captivating Storyteller",
+    "source": "premade"
+  }
+}

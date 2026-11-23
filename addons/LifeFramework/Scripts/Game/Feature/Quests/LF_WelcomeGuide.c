@@ -260,6 +260,16 @@ class LF_WelcomeGuide
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Client: does the guide open by itself on this client at all? A real player's client always
+	//! does. A client an agent drives (-lfSession) does not unless the agent asked for it (`guide
+	//! autoopen on`), because the sheet sits over the left of every world and UI picture (#4645).
+	//! The key and `guide open` work on every client.
+	static bool AutoOpenWanted(bool sessionClient, bool optedIn)
+	{
+		return !sessionClient || optedIn;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Client: may the guide key open the sheet? Not while a conversation is up: the scene keeps focus.
 	static bool CanOpenByKey(bool dialogueOpen)
 	{

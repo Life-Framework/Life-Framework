@@ -130,7 +130,7 @@ class LF_OutpostBuyer
 
 		if (LF_Outpost.RefusesService(seller, traderPos))
 		{
-			LF_Outpost.NotifyRefusal(seller);
+			LF_Outpost.NotifyRefusal(seller, traderPos);
 			return LF_EOutpostSell.REFUSED_OFFICER;
 		}
 

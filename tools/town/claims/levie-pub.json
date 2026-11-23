@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "levie",
+  "slot": "pub",
+  "building": "b03",
+  "kit": "village-bar-1i04",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_levie_pub.layer",
+  "kinds": [
+    "PubBar"
+  ],
+  "rows": 17,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_levie_pub_Place"
+  },
+  "date": "2026-11-23"
+}

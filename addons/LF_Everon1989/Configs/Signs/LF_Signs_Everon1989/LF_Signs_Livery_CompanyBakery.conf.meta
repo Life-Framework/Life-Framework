@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{25BB2E6C61AF57D8}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Livery_CompanyBakery.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,48 @@
+{
+  "id": "registrar",
+  "name": "Registrar",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_Registrar_Name",
+  "voice": {
+    "id": "TX3LPaxmHKxFdv7VOQHJ",
+    "sex": "male",
+    "name": "Liam - Energetic, Social Media Creator",
+    "why": "The registrar sits behind the registry desk and says the same three words to every crew: name, flag, money. Dry, quick, a man who has heard every gang name before and is not impressed. Liam is a clear, articulate American male voice with an even pace, nothing like the gruff barkeeper, the French-accented clerks or the harbour master's rasp. Not used by any other speaker.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 800,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "found", "next": "found" },
+      { "text": "flags", "next": "flags" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "found", "line": "found", "options": [
+      { "text": "flags", "next": "flags" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "flags", "line": "flags", "options": [
+      { "text": "found", "next": "found" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Registry. Crews and flags are my desk. What do you need?" },
+    "found": { "text": "Name, flag, and two hundred fifty dollars." },
+    "flags": { "text": "A leader picks the flag at the wall. If another crew flies it and has someone around, it is taken." },
+    "picked": { "for_key": "#LF-OrgFlagWall_Done", "text": "That is your flag. It is on the books." },
+    "taken": { "for_key": "#LF-OrgFlagWall_Held", "text": "That one is taken. Another crew flies it. Pick a different one." },
+    "bye": { "text": "Next." }
+  },
+  "replies": {
+    "found": "I want to start a crew.",
+    "flags": "How do flags work?",
+    "bye": "Goodbye."
+  }
+}

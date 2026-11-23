@@ -15,6 +15,9 @@ export const ATLAS = 512;
 export const ATLAS_SIZE = { core: 512, pack: 1024 };
 
 export const CATEGORIES = ["civic", "shop", "work", "law", "health", "travel", "story", "underworld"];
+// A category with no fallback glyph of its own: its rows must name their own pictogram (m_sIcon). `town` is the road map's
+// category (LF_RoadMapRules.TOWN_CATEGORY, #4474): a printed map marks the towns, and the key column has no group for it.
+export const ICON_ONLY_CATEGORIES = ["town"];
 
 // Quads both imagesets carry: personal pencil marks, shared pins, map stamps.
 export const PENCIL = ["pencil_cross", "pencil_circle", "pencil_arrow", "pencil_note", "pencil_question"];
@@ -155,7 +158,9 @@ export function iconProblems(root, confs = []) {
   for (const c of confs) {
     for (const r of confRows(c.text)) {
       const cat = r.category || cats.get(r.kind) || "";
-      if (cat && !CATEGORIES.includes(cat)) out.push(`${c.path}: kind ${r.kind} has category "${cat}"; the icon set has ${CATEGORIES.join(", ")}`);
+      if (cat && ICON_ONLY_CATEGORIES.includes(cat)) {
+        if (!r.icon) out.push(`${c.path}: kind ${r.kind} is in the ${cat} category, which has no fallback glyph; give it its own m_sIcon`);
+      } else if (cat && !CATEGORIES.includes(cat)) out.push(`${c.path}: kind ${r.kind} has category "${cat}"; the icon set has ${CATEGORIES.join(", ")}`);
       if (r.icon && !pack.has(r.icon) && !core.has(r.icon)) out.push(`${c.path}: kind ${r.kind} names icon "${r.icon}", which is in neither LF_MapIcons imageset`);
       if (!r.icon && !pack.has(poiQuad(r.kind)) && !(cat && pack.has(catQuad(cat)))) out.push(`${c.path}: kind ${r.kind} has no pictogram (${poiQuad(r.kind)}) and no category fallback in the pack imageset`);
     }

@@ -209,7 +209,50 @@ class LF_OrgFlagWall
 			type = LF_ENotificationType.WARNING;
 
 		LF_NotificationManagerComponent.NotifyPlayer(LF_PlayerInteraction.PlayerIdOf(user), "#LF-Org_Title", MessageKey(result), 5.0, type, holderName);
+		RegistrarSays(user, result);
 		return result;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The registrar's id in the dialogue index (the pack voices him, #4457).
+	static const string REGISTRAR_DIALOGUE = "registrar";
+	//! How far from the wall the registrar still hears a pick.
+	static const float REGISTRAR_REACH_M = 25.0;	// lf-fixed: the registry is one room; the wall and the desk stand within it
+
+	//------------------------------------------------------------------------------------------------
+	//! Whether the wall speaks for this result: a pick and a flag held by another crew (#4457). The
+	//! other results stay words on the toast.
+	static bool VoicesResult(LF_EOrgFlagWallResult result)
+	{
+		return result == LF_EOrgFlagWallResult.PICKED || result == LF_EOrgFlagWallResult.HELD;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the registrar near the picker says the voiced line for the result (its `for_key` is the
+	//! toast's message key). No registrar in earshot, or no voiced line, is logged by LF_Dialogue.Announce
+	//! or here and the toast is all the player gets.
+	protected static void RegistrarSays(IEntity user, LF_EOrgFlagWallResult result)
+	{
+		if (!VoicesResult(result))
+			return;
+
+		array<IEntity> near = {};
+		LF_DialogueAudit.NpcsNear(user.GetOrigin(), REGISTRAR_REACH_M, near);
+		foreach (IEntity npc : near)
+		{
+			LF_DialogueComponent component = LF_Component<LF_DialogueComponent>.Find(npc);
+			if (!component)
+				continue;
+
+			LF_DialogueConfig config = component.GetConfig();
+			if (!config || config.m_sId != REGISTRAR_DIALOGUE)
+				continue;
+
+			LF_Dialogue.Announce(npc, MessageKey(result));
+			return;
+		}
+
+		LF_Debug.Info(FEATURE, string.Format("no registrar within %1 m of the wall to voice the result", REGISTRAR_REACH_M));
 	}
 }
 

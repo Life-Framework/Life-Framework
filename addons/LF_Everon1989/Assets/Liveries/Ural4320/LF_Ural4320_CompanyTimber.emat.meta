@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{3F43E932308724F4}Assets/Liveries/Ural4320/LF_Ural4320_CompanyTimber.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}
