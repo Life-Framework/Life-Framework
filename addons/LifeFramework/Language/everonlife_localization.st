@@ -12983,6 +12983,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Still running. Wait for it to finish."
      Comment "Processing refused (#3229): a timed machine already has a run under way."
     }
+    CustomStringTableItem "{52D02C80CEB2B855}" {
+     Id "LF-Process_FeedFromTruck"
+     Target_en_us "Feed from the truck"
+     Comment "Action at a processing station (#4191): take the inputs from the van or truck backed up to it."
+    }
     CustomStringTableItem "{4140D26F74D7F5F3}" {
      Id "LF-Process_Needs"
      Target_en_us "Needs %1"
@@ -12997,6 +13002,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Process_Started"
      Target_en_us "Running. The parts come out here in %1 seconds."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
+    }
+    CustomStringTableItem "{11D3E9515907FBC7}" {
+     Id "LF-Process_TruckLocked"
+     Target_en_us "The truck is locked"
+     Comment "Feed from the truck refused (#4191): the vehicle backed up to the station is locked."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
      Id "LF-Property_Bought"
