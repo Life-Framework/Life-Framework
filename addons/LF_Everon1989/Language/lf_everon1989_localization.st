@@ -1674,6 +1674,51 @@ StringTable {
      Target_en_us "Stop! You did not pay for that! Come back here!"
      Comment "Pack patch of the shopkeeper dialogue's line thief (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
     }
+    CustomStringTableItem "{5D5270FE6B9E5D3F}" {
+     Id "LF-Dialogue_TallyClerk_Bye"
+     Target_en_us "Mind the crane."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{E229C1F569881044}" {
+     Id "LF-Dialogue_TallyClerk_Greet"
+     Target_en_us "Marcel, tally clerk. I count what comes off the ships and I write down what the customs man wants written. Funny thing. Container nine is short this week."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{A211E5348B729FDB}" {
+     Id "LF-Dialogue_TallyClerk_Key"
+     Target_en_us "Here. Brass, on a red string. Container nine, back row, past the crane. Take what is in it, lock it up after. The books will say it never came."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{D47A10A396A7D15E}" {
+     Id "LF-Dialogue_TallyClerk_Later"
+     Target_en_us "Not while the customs man is here. Come back when your pockets are full and the yard is quiet."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{14E7D04534C559B3}" {
+     Id "LF-Dialogue_TallyClerk_Offer"
+     Target_en_us "Four hundred dollars, and it stays short on the books. You carry the key, you take what is in it, and in a while it fills up again. I never saw you."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{BFD54AC106AC9C6F}" {
+     Id "LF-Dialogue_TallyClerk_SayAsk"
+     Target_en_us "Container nine is short?"
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
+    CustomStringTableItem "{73462183206DA1C3}" {
+     Id "LF-Dialogue_TallyClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
+    CustomStringTableItem "{C2EEF8BC03101543}" {
+     Id "LF-Dialogue_TallyClerk_SayLater"
+     Target_en_us "I need to think about it."
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
+    CustomStringTableItem "{EE84E765295E0B07}" {
+     Id "LF-Dialogue_TallyClerk_SayPay"
+     Target_en_us "Here is the four hundred."
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
     CustomStringTableItem "{F2B1DF023C756490}" {
      Id "LF-Everon-Lock_Closed"
      Target_en_us "Closed"
@@ -5893,6 +5938,11 @@ StringTable {
      Id "LF-Townsfolk_ShipmentGoBetween_Name"
      Target_en_us "Hugo Valmy"
      Comment "Townsfolk (The shipment, #3804): the go-between's name, the speaker line of his dialogue."
+    }
+    CustomStringTableItem "{4199A00000000001}" {
+     Id "LF-Townsfolk_TallyClerk_Name"
+     Target_en_us "Marcel Brun"
+     Comment "Townsfolk (crime B4, #4199): the tally clerk's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{28FAC180F47F7CA9}" {
      Id "LF-Unlock_Farmer_02"
