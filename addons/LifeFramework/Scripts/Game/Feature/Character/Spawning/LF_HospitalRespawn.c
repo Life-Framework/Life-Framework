@@ -362,6 +362,28 @@ class LF_HospitalWake
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Owner: the body was moved away from its bed mid-wake (the agent harness stand, #4611). The wake
+	//! stops where it is: the bed loiter ends and the step down beside the bed never runs, or it would
+	//! put the moved body back in the hospital seconds later. The bill card is not opened.
+	static void End(IEntity character)
+	{
+		ScriptCallQueue queue = GetGame().GetCallqueue();
+		queue.Remove(TryStart);
+		queue.Remove(WaitForStand);
+		bool waking = s_bHasBed;
+		s_bHasBed = false;
+		SCR_CharacterControllerComponent controller = FindController(character);
+		if (controller && controller.IsLoitering())
+		{
+			controller.StopLoitering(true);
+			waking = true;
+		}
+
+		if (waking)
+			LF_Debug.Info("Respawn", "the waking body was moved away from its bed; the wake ends there");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The owner reads the same shipped config as the server for how the body wakes.
 	protected static bool RootMotion()
 	{

@@ -1,0 +1,33 @@
+Vehicle : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
+ ID "58F082B43E42AFE8"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64F09BE9246E252A}" {
+     SourceMaterial "UAZ469_Body"
+     AssignedMaterial "{3CCC0219D5396239}Assets/Vehicles/Wheeled/UAZ469/Data/UAZ469_Body_CIV_BROWN.emat"
+    }
+    MaterialAssignClass "{64F09BE9246E2502}" {
+     SourceMaterial "UAZ469_Body_int_B4485C596220781A"
+     AssignedMaterial "{C1D6C1F72601E5EC}Assets/Vehicles/Wheeled/UAZ469/Data/UAZ469_Body_CIV_BROWN_int.emat"
+    }
+   }
+  }
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo Door_L01 {
+     Prefab "{87A13E9178436B84}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Brown/UAZ469_door_L01_brown.et"
+    }
+    RegisteringComponentSlotInfo Door_R01 {
+     Prefab "{4A15CB0E2398483F}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Brown/UAZ469_door_R01_brown.et"
+    }
+    RegisteringComponentSlotInfo Door_L02 {
+     Prefab "{C7511FB4CE5FE93D}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Brown/UAZ469_door_L02_brown.et"
+    }
+    RegisteringComponentSlotInfo Door_R02 {
+     Prefab "{0AE5EA2B9584CA82}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Brown/UAZ469_door_R02_brown.et"
+    }
+   }
+  }
+ }
+}

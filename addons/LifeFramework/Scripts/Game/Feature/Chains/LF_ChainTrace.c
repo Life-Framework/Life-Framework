@@ -295,7 +295,8 @@ class LF_ChainSmellLead : LF_EventSubscriber
 			return true;
 
 		string place = LF_WantedReports.DescribePlace(smell.m_vPosition);
-		LF_ServiceCalls.Place(smell.m_sListenerUid, "police", place, "#LF-Chain_SmellLead", smell.m_vPosition);
+		// A tip, not a 911 call: the listener only smelled it, so an unfounded close never counts against them (#4606).
+		LF_ServiceCalls.Place(smell.m_sListenerUid, "police", place, "#LF-Chain_SmellLead", smell.m_vPosition, null, true);
 		LF_Debug.Info(LF_ChainTrace.FEATURE, string.Format("smell lead for site %1 at '%2'", smell.m_sSiteId, place));
 		return true;
 	}

@@ -1,0 +1,21 @@
+Vehicle : "{E1A601BE1A000001}Prefabs/Vehicles/Wheeled/T601/EL_T601_beige.et" {
+ ID "10536A71BDDF57B5"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{6558C2D813EA6152}" {
+     SourceMaterial "T601_Body"
+     AssignedMaterial "{3025AB4C1242F8D3}Assets/Vehicles/Wheeled/T601/Data/T601_Body_Green.emat"
+    }
+    MaterialAssignClass "{6558C2D813EA6134}" {
+     SourceMaterial "T601_Interior"
+     AssignedMaterial "{765C5CA87DBDBD82}Assets/Vehicles/Wheeled/T601/Data/T601_Interior_Green.emat"
+    }
+    MaterialAssignClass "{6558C2D813EA6120}" {
+     SourceMaterial "T601_body_int_B24805B4B27EE0A5"
+     AssignedMaterial "{22A196C70FB7A7CD}Assets/Vehicles/Wheeled/T601/Data/T601_Body_Green_int.emat"
+    }
+   }
+  }
+ }
+}

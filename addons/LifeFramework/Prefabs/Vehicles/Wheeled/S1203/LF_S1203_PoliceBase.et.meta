@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{C1493A67B59073A1}Prefabs/Vehicles/Wheeled/S1203/LF_S1203_PoliceBase.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

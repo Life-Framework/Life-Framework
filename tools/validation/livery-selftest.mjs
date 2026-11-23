@@ -24,6 +24,8 @@
 // "FAIL  a panel tilted past 45 degrees: no error" and "panel FixtureLetters_L does not carry its tilt" (2026-11-23).
 // red-proof: with the rows' panels removed and the hand-added plates on disk this printed
 // "FAIL  addons/LF_Everon1989/Prefabs/Vehicles/Liveries/LF_S105_Police.et: hand edit the next livery build would drop" (2026-11-23).
+// red-proof: before the generator took `actions` this printed
+// "FAIL  the S105 police row does not add LF_RunPlateAction" and the fixture action row was not written (2026-11-23).
 //
 // `node tools/validation/livery-selftest.mjs --update` rewrites expected/ from the generator (review the diff).
 
@@ -174,6 +176,30 @@ try {
   if (!/GenericEntity FixtureLetters_L \{[\s\S]*?angles -10 -90 0\n/.test(veh.text)) fail(`${veh.rel}: panel FixtureLetters_L does not carry its tilt (want "angles -10 -90 0")`);
   if (!/GenericEntity FixtureLetters_R \{[\s\S]*?angles 0 90 0\n/.test(veh.text)) fail(`${veh.rel}: panel FixtureLetters_R without tilt is not upright`);
   throws(() => gen.planLivery(bad({ at: [{ name: "A", coords: [0, 1, 2], yaw: 0, scale: 1, tilt: 60 }] }), vanilla), /tilt must be/, "a panel tilted past 45 degrees");
+}
+
+// User actions on a variant (#4425): `actions` appends rows to the base's ActionsManagerComponent, in the build's output.
+{
+  const act = { manager: "C97BE5489221AE18", rows: [{ cls: "LF_FixtureAction", name: "#LF-Fixture_Action", contexts: ["door_l01", "door_l01_int"], priority: 11 }] };
+  const veh = gen.planLivery({ ...rows.good[1], actions: act }, vanilla).files.find((f) => f.role === "vehicle");
+  if (!/ActionsManagerComponent "\{C97BE5489221AE18\}" \{\n   additionalActions \+ \{\n    LF_FixtureAction "\{[0-9A-F]{16}\}" \{\n     ParentContextList \{\n      "door_l01"\n      "door_l01_int"\n     \}\n     UIInfo UIInfo "\{[0-9A-F]{16}\}" \{\n      Name "#LF-Fixture_Action"\n     \}\n     "Sort Priority" 11\n/.test(veh.text)) fail(`${veh.rel}: the action row is not written under the base's ActionsManagerComponent:\n${veh.text}`);
+  if (gen.planLivery(rows.good[1], vanilla).files.find((f) => f.role === "vehicle").text.includes("ActionsManagerComponent")) fail("a row without `actions` wrote an ActionsManagerComponent");
+  const bad = (a) => ({ ...rows.good[1], actions: { ...act, ...a } });
+  throws(() => gen.planLivery(bad({ manager: "nope" }), vanilla), /actions\.manager must be/, "actions with no manager GUID");
+  throws(() => gen.planLivery(bad({ rows: [] }), vanilla), /at least one action/, "actions with no rows");
+  throws(() => gen.planLivery(bad({ rows: [{ ...act.rows[0], name: "Run plate" }] }), vanilla), /#Key name/, "an action named in plain words");
+  // The real table: every police rank car offers Run plate exactly once, from its core base prefab (#4606), in the
+  // `default` context (the door contexts are not offered from the seat, #4425). A build-appended row would be a second.
+  for (const v of ["S105", "S1203"]) {
+    const row = table.LIVERIES.find((r) => r.vehicle === v && r.id === "Police");
+    if (row?.actions?.rows.some((r) => r.cls === "LF_RunPlateAction")) fail(`the ${v} police row appends LF_RunPlateAction; its base already carries it`);
+  }
+  for (const rel of ["UAZ469/LF_UAZ469_Police.et", "S105/LF_S105_PoliceBase.et", "S1203/LF_S1203_PoliceBase.et"]) {
+    const f = join(ROOT, "addons/LifeFramework/Prefabs/Vehicles/Wheeled", rel);
+    if (!existsSync(f)) continue;
+    const m = readFileSync(f, "utf8").match(/LF_RunPlateAction "\{[0-9A-F]{16}\}" \{\n\s*ParentContextList \{\n\s*"default"\n\s*\}/g) || [];
+    if (m.length !== 1) fail(`${rel}: expected one LF_RunPlateAction row in the default context, found ${m.length}`);
+  }
 }
 
 // Every generated file in the pack is exactly what the build writes (#4559): a hand edit to a generated

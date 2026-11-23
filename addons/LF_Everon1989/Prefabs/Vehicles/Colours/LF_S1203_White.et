@@ -1,0 +1,21 @@
+Vehicle : "{E1A1203BE1A00001}Prefabs/Vehicles/Wheeled/S1203/EL_S1203_transport_beige.et" {
+ ID "472AA3E5E407CB17"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64DA70D3831058D9}" {
+     SourceMaterial "S1203_body"
+     AssignedMaterial "{45598D558C15A300}Assets/Vehicles/Wheeled/S1203/Data/S1203_body_white.emat"
+    }
+    MaterialAssignClass "{64DA70D3831058B9}" {
+     SourceMaterial "S1203_body_int_E3C99AF8C813F493"
+     AssignedMaterial "{4727594BA2961BEB}Assets/Vehicles/Wheeled/S1203/Data/S1203_body_white_int.emat"
+    }
+    MaterialAssignClass "{64DA70D3831058A9}" {
+     SourceMaterial "S1203_interior"
+     AssignedMaterial "{E5877D698A07DC76}Assets/Vehicles/Wheeled/S1203/Data/S1203_interior_white.emat"
+    }
+   }
+  }
+ }
+}

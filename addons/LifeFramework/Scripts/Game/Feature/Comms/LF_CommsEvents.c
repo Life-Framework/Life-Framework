@@ -24,6 +24,9 @@ class LF_OnServiceCall : LF_Event
 	string m_sVehicle;
 	//! On-duty officers when the call was placed, when that differs from the receiver count; -1 means use the receivers.
 	int m_iOnDuty = -1;
+	//! An automatic tip, not a person on the phone (#4606: the chain smell lead): m_sCallerUid is whoever
+	//! noticed it, so nobody is counted as the caller for 911 abuse.
+	bool m_bTip;
 
 	static LF_OnServiceCall Create(string callerUid, string service, string place, string summary, string channels, vector position, array<int> receivers)
 	{

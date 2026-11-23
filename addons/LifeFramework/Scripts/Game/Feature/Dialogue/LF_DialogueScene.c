@@ -154,8 +154,14 @@ class LF_DialogueScene
 	static bool Begin(IEntity npc)
 	{
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (!controller)
+		{
+			LF_Debug.Error(LF_Dialogue.FEATURE, "conversation not opened: no local player (a talk runs on the player's own machine)");
+			return false;
+		}
+
 		LF_DialogueConfig config = LF_DialogueComponent.ConfigOf(npc);
-		if (!controller || !config)
+		if (!config)
 		{
 			LF_Debug.Error(LF_Dialogue.FEATURE, "conversation not opened: the NPC has no playable dialogue");
 			return false;
