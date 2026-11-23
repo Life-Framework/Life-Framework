@@ -77,3 +77,13 @@ GenericEntity Fit_saint_philippe_parcel_post_office_sign : "{884DF4029C8307DB}Pr
  coords 4426.778 12.9 10752.455
  angleY 100
 }
+GenericEntity Fit_saint_philippe_parcel_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{89FC49FE09ABB12B}" {
+   m_sAnchorId "counter"
+   m_sPlaceId "saint-philippe.parcel"
+  }
+ }
+ coords 4424.35 10.4 10754.2
+ angleY 280
+}
