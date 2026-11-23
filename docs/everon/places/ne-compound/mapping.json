@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "template": "truckyard",
+  "place": "ne-compound",
+  "status": "approved",
+  "note": "Hand-written for #4419 (WK-W19, plan decision N12): the north-east works compound, 0.6 km east of Saint-Philippe. The yard is the weighbridge office b09 with its apron; the survey is site.md. Approved with the card by the lead's standing rule (no maintainer approval since 2026-11-18).",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-23",
+    "buildings": 12,
+    "freePlots": 8
+  },
+  "slots": {
+    "truckyard": {
+      "building": "b09",
+      "why": [
+        "WeightStation_01 (the weighbridge office), 72.6 m2, two floors and two doors, at the east end of the fenced apron; the long metal sheds b03 and b05 line the south edge and the road r02 is 23 m west of the fence",
+        "the lot counter stands outside its front door, the display trucks run along the shed and the spawn bay sits on the apron lane to the west (docs/everon/places/ne-compound/site.md)"
+      ]
+    }
+  }
+}
