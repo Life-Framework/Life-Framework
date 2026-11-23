@@ -65,6 +65,44 @@ class LF_PagerComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Server: drop every stored message whose summary field ("time|summary|0|place") starts with
+	//! the prefix, with no beep (a stolen car was recovered, #4212).
+	//! \return Messages removed.
+	int RemoveBySummaryPrefix(string prefix)
+	{
+		if (!Replication.IsServer() || prefix.IsEmpty())
+			return 0;
+
+		array<string> messages = {};
+		GetMessages(messages);
+		int removed;
+		for (int i = messages.Count() - 1; i >= 0; i--)
+		{
+			array<string> fields = {};
+			messages[i].Split("|", fields, false);
+			if (fields.Count() >= 2 && fields[1].StartsWith(prefix))
+			{
+				messages.Remove(i);
+				removed++;
+			}
+		}
+
+		if (removed == 0)
+			return 0;
+
+		m_sMessages = string.Empty;
+		foreach (int index, string message : messages)
+		{
+			if (index > 0)
+				m_sMessages += MESSAGE_SEPARATOR;
+			m_sMessages += message;
+		}
+
+		Replication.BumpMe();
+		return removed;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Unreliable, RplRcver.Broadcast)]
 	protected void RpcDo_Beep()
 	{
@@ -150,10 +188,17 @@ class LF_Pager
 	//! Server: the pagers carried by the call's receivers.
 	static void ReceiverPagers(notnull LF_OnServiceCall call, notnull array<LF_PagerComponent> outPagers)
 	{
+		FindForPlayers(call.m_aReceiverIds, outPagers);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the pagers carried by these players.
+	static void FindForPlayers(notnull array<int> playerIds, notnull array<LF_PagerComponent> outPagers)
+	{
 		if (!GetGame() || !GetGame().GetPlayerManager())
 			return;
 
-		foreach (int playerId : call.m_aReceiverIds)
+		foreach (int playerId : playerIds)
 		{
 			FindCarried(GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId), outPagers);
 		}
@@ -173,7 +218,12 @@ class LF_Pager
 		{
 			foreach (int index, string message : messages)
 			{
-				string line = LF_ServiceBoard.EntryLine(message);
+				string line;
+				if (LF_StolenCarPager.IsEntry(message))
+					line = LF_StolenCarPager.EntryLine(message);
+				else
+					line = LF_ServiceBoard.EntryLine(message);
+
 				if (!line.IsEmpty())
 					parts.Insert(LF_UIPart.Create(LF_EUIPartKind.LINE, "Message" + index, line));
 			}
@@ -222,11 +272,15 @@ class LF_PagerSubscriber : LF_EventSubscriber
 
 		s_Subscriber = new LF_PagerSubscriber();
 		LF_EventBus.Subscribe(LF_OnServiceCall, s_Subscriber);
+
+		// A stolen-car report pages the on-duty officers too (#4212).
+		LF_StolenCarPagerSubscriber.Install();
 	}
 
 	static void ResetStatics()
 	{
 		s_Subscriber = null;
+		LF_StolenCarPagerSubscriber.ResetStatics();
 	}
 }
 

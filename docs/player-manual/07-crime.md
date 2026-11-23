@@ -1,7 +1,7 @@
 # 7. Crime
 
 Crime pays more than a day job and costs more when it goes wrong. Everything here raises your **wanted level** (1 to 5), which the police
-see on the **wanted board**. A wanted player can be **arrested**; the cell time is 60 seconds per level, 5 minutes at most.
+see on the **wanted board**. A wanted player can be **arrested**; the cell time is 60 seconds per level, 15 minutes at most.
 **New characters are refused for their first 5 minutes of play**, so you cannot rush in before you have found your feet.
 
 ## Wanted level
@@ -117,6 +117,8 @@ Two **contested sites** (a hideout on the hilltop mast and the farm compound) ar
 Recruit face to face. Look at a player with no organization and pick **Invite to <name>** from the action list. They look back at you and pick **Join <name>** or **Decline <name>**; an offer lapses after 2 minutes. A leader looking at a member picks **Remove from <name>**. Nobody can remove the founder.
 
 A **gang radio** keeps the crew on its own channel. Carry one and pick **Tune to gang channel** from its action list: your crew hears you and nobody else does, even on the same frequency. When someone leaves or is removed, the channel changes and the radios of members who are online follow it; if you were away, or after a server restart, pick **Tune to gang channel** again.
+
+Your map shows where every online member of your organization is, updated every few seconds, and nobody outside the crew sees these marks. A member who is downed, jailed or cuffed shows in grey. While you are jailed or cuffed yourself, the crew's marks disappear from your map and come back once you are free. A member who leaves or is removed drops off everyone's map at once.
 
 <!-- map:crime -->
 ![Crime and police in Saint-Philippe](../../website/public/docs-images/player-manual/crime-town.png)

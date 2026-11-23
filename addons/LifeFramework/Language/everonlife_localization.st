@@ -3575,6 +3575,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
     }
+    CustomStringTableItem "{E35B0CC84DBE0C44}" {
+     Id "LF-Commendations_None"
+     Target_en_us "No commendations yet."
+     Comment "Plaque line when nobody has been commended (#4206)."
+    }
+    CustomStringTableItem "{D241025EB28BCFC9}" {
+     Id "LF-Commendations_Read"
+     Target_en_us "Read the commendations plaque"
+     Comment "Action on the commendations plaque in the station hall (#4206)."
+    }
+    CustomStringTableItem "{6BABF1BF0291EF96}" {
+     Id "LF-Commendations_Title"
+     Target_en_us "Commendations"
+     Comment "Title of the commendations plaque in the station hall (#4206)."
+    }
     CustomStringTableItem "{4E1D7A30B6C2F907}" {
      Id "LF-Consume_Keybind_Throw"
      Target_en_us "Throw the food or drink in your hands"
@@ -11717,6 +11732,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not serving you"
      Comment "Title of the outpost trader's refusal toast to an on-duty officer (#4217)."
     }
+    CustomStringTableItem "{5A9C30E7D1B84F62}" {
+     Id "LF-Pager_NoPlate"
+     Target_en_us "no plate"
+     Comment "Pager stolen-car line when the car carries no plate (#4212)."
+    }
     CustomStringTableItem "{4EF600B18D7A2C1B}" {
      Id "LF-Pager_None"
      Target_en_us "No calls paged."
@@ -11726,6 +11746,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Pager_Read"
      Target_en_us "Read the pager"
      Comment "Action on a pager item (#249)."
+    }
+    CustomStringTableItem "{B7E1D4A92C06F385}" {
+     Id "LF-Pager_StolenLine"
+     Target_en_us "%1  Stolen car, plate %2: %3, reported at %4"
+     Comment "Pager card line: an owner reported a car stolen (#4212). %1 = clock time HH:MM, %2 = plate, %3 = car name, %4 = place."
     }
     CustomStringTableItem "{CA566A486AE9A98D}" {
      Id "LF-Pager_Title"
@@ -12637,6 +12662,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Patrols, stops, fines and arrests on duty with the {police}."
      Comment "Skill description, POLICE."
     }
+    CustomStringTableItem "{9D5AC9F2C514EA69}" {
+     Id "LF-PlayerMenu_SkillDesc_SALVAGE"
+     Target_en_us "Sorting scrap and salvage into metal worth selling."
+     Comment "Skill description, SALVAGE."
+    }
+    CustomStringTableItem "{1ED61C734E42F8A5}" {
+     Id "LF-PlayerMenu_SkillDesc_SMELTING"
+     Target_en_us "Furnaces, smelters, refineries and the cement works. Every finished batch earns experience here, never in Mining."
+     Comment "Skill description, SMELTING."
+    }
     CustomStringTableItem "{58F153B6D5B351ED}" {
      Id "LF-PlayerMenu_SkillHint"
      Target_en_us "Pick a skill to read its record."
@@ -12701,6 +12736,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-PlayerMenu_Skill_POLICE"
      Target_en_us "{Police}"
      Comment "Skill name of the POLICE job track."
+    }
+    CustomStringTableItem "{8D00FDBAFF6AEDED}" {
+     Id "LF-PlayerMenu_Skill_SALVAGE"
+     Target_en_us "Salvage"
+     Comment "Skill name of the SALVAGE job track."
+    }
+    CustomStringTableItem "{AD86C48B222D1B97}" {
+     Id "LF-PlayerMenu_Skill_SMELTING"
+     Target_en_us "Smelting"
+     Comment "Skill name of the SMELTING job track."
     }
     CustomStringTableItem "{D9EFF6F38B9466F2}" {
      Id "LF-PlayerMenu_StateCurrent"
@@ -14035,6 +14080,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Range_Title"
      Target_en_us "Range"
      Comment "Title of the range toasts (Feature/Range)."
+    }
+    CustomStringTableItem "{D8D23856A51B44A4}" {
+     Id "LF-RankBoard_None"
+     Target_en_us "Nobody is on the roster yet."
+     Comment "Rank board line when no officer is on the police roster (#4206)."
+    }
+    CustomStringTableItem "{1789A3ABA9FAD36B}" {
+     Id "LF-RankBoard_Read"
+     Target_en_us "Read the rank board"
+     Comment "Action on the printed rank board by the duty desk (#4206)."
+    }
+    CustomStringTableItem "{45FB47B34F55289D}" {
+     Id "LF-RankBoard_Title"
+     Target_en_us "Rank board"
+     Comment "Title of the printed rank board at the police station (#4206)."
     }
     CustomStringTableItem "{8B1F4E70C2A9D356}" {
      Id "LF-RankFleet_NeedsRank"
