@@ -1,6 +1,10 @@
 GenericEntity : "{5DDBFA4225659FFE}Prefabs/Trader/UniversalTrader.et" {
  ID "99BE565ABF6A2ACC"
  components {
+  LF_PlaceComponent "{8B2D4F6A1C3E5079}" {
+   m_sKind "WholesaleCounter"
+   m_sId "saint-philippe-dock.iron"
+  }
   MeshObject "{59670CE9C98E5BB0}" {
    Object "{CEC8A3DF893B9C96}Assets/Props/Crates/BoxWooden_01.xob"
   }

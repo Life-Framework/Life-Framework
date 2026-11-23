@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-22 `tools/cli test --no-build --red LF_Test_WelcomeGuide,LF_Test_WelcomeGuideWorld,LF_Test_WelcomeGuidePersist`: RED PROOF OK (all 3 fail with the hook on); quests/welcome-guide fails its first-spawn mark assertion. Green with `--only` (26 assertions).
+// red-proof: observed 2026-11-23: the new CanAutoOpen(..., dialogueOpen) and CanOpenByKey assertions do not compile on the unfixed code (red); `tools/cli test --no-build --only LF_Test_WelcomeGuide,LF_Test_FirstHoursGuide` green after the fix (passed=2).
 //! Welcome guide rules, no world: a new character's guide is pending once, a repeat mark is one mark,
 //! an empty id is refused, "Don't show again" clears it for good, export and apply round-trip the set and
 //! skip bad rows, the auto open waits for a standing body with nothing else on screen, and each
@@ -46,12 +46,15 @@ class LF_Test_WelcomeGuide : LF_Test
 		ctx.True(LF_WelcomeGuide.IsPending(OTHER), "dismissing one character leaves the other");
 		ctx.False(LF_WelcomeGuide.Dismiss(""), "an empty id dismisses nothing");
 
-		ctx.True(LF_WelcomeGuide.CanAutoOpen(true, true, false, false, false), "a standing body with a clear screen gets the guide");
-		ctx.False(LF_WelcomeGuide.CanAutoOpen(false, false, false, false, false), "no body, no guide");
-		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, false, false, false, false), "a dead body gets no guide");
-		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, true, false, false), "not while getting out of bed");
-		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, false, true, false), "not over another menu");
-		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, false, false, true), "not over another sheet");
+		ctx.True(LF_WelcomeGuide.CanAutoOpen(true, true, false, false, false, false), "a standing body with a clear screen gets the guide");
+		ctx.False(LF_WelcomeGuide.CanAutoOpen(false, false, false, false, false, false), "no body, no guide");
+		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, false, false, false, false, false), "a dead body gets no guide");
+		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, true, false, false, false), "not while getting out of bed");
+		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, false, true, false, false), "not over another menu");
+		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, false, false, true, false), "not over another sheet");
+		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, false, false, false, true), "not over a conversation: the clerk scene keeps the confirm key");
+		ctx.False(LF_WelcomeGuide.CanOpenByKey(true), "the guide key does nothing while a conversation is up");
+		ctx.True(LF_WelcomeGuide.CanOpenByKey(false), "the guide key opens the sheet with no conversation");
 
 		ctx.EqualStr("#LF-WelcomeGuide_WaypointSet", LF_WelcomeGuide.WaypointToastKey(LF_EWelcomeWaypoint.SET), "a set waypoint says where");
 		ctx.EqualStr("#LF-WelcomeGuide_WaypointNoStep", LF_WelcomeGuide.WaypointToastKey(LF_EWelcomeWaypoint.NO_STEP), "a finished chain says so");
