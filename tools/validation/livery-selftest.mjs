@@ -4,13 +4,17 @@
 // Proves the `tools\cli livery build` generator (tools/livery/generate.mjs) offline: each fixture row in
 // tools/livery/fixtures/rows.json, built against the vanilla prefab texts in tools/livery/fixtures/vanilla/,
 // writes exactly the files in tools/livery/fixtures/expected/<row id>/ (variant prefab, body material,
-// door parts, mask meta) and the credit row in expected/<row id>/credit.md. A row without a credit fails,
-// and so do a lettering row aimed at a panel with no measured rectangle and a GUID shared by two rows. The
-// real table (tools/livery/table.mjs) must build against the same fixtures with unique GUIDs.
+// door parts with their door plates, plate sign row), the pack strings in expected/<row id>/strings.st and the
+// credit row in expected/<row id>/credit.md. A row without a credit fails, and so do mask lettering (it
+// scrambles across UV islands; words go on door plates), a plate text that is not capitals and a GUID shared
+// by two rows. Each front door carries one plate and the rear doors none. The real table
+// (tools/livery/table.mjs) must build against the same fixtures with unique GUIDs.
 // red-proof: before tools/livery/generate.mjs existed this printed
 // "FAIL cannot load tools/livery/generate.mjs: ERR_MODULE_NOT_FOUND" (2026-11-23).
 // red-proof: with the credit check in planLivery turned off this printed
 // "FAIL  a row without a credit: wrong error \"Cannot read properties of undefined (reading 'source')\"" (2026-11-23).
+// red-proof: with the door plate child turned off this printed
+// "FAIL  addons/LF_Everon1989/Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_L01.et: 0 plates, want 1" (2026-11-23).
 //
 // `node tools/validation/livery-selftest.mjs --update` rewrites expected/ from the generator (review the diff).
 
@@ -84,7 +88,23 @@ for (const row of rows.good) {
 }
 
 throws(() => gen.planLivery(rows.noCredit, vanilla), /credit/i, "a row without a credit");
-throws(() => gen.planLivery(rows.unmeasuredPanel, vanilla), /panel .* has no UV-2 rectangle/i, "lettering on an unmeasured panel");
+throws(() => gen.planLivery(rows.maskLettering, vanilla), /mask lettering is gone/i, "a row with mask lettering");
+throws(() => gen.planLivery(rows.badPlateText, vanilla), /plate.text must be/i, "a plate text that is not capitals");
+
+// One plate per front door, none on the rear doors, and every plate names the row's sign id.
+{
+  const plan = gen.planLivery(rows.good[0], vanilla);
+  const signs = plan.files.find((f) => f.role === "signs");
+  const id = signs && /m_sId "([^"]+)"/.exec(signs.text)?.[1];
+  if (!id) fail("the plate row wrote no sign row");
+  for (const f of plan.files.filter((x) => x.role === "door")) {
+    const n = (f.text.match(/LF_SignComponent/g) || []).length;
+    const front = /_door_(L01|R01).et$/.test(f.rel);
+    if (n !== (front ? 1 : 0)) fail(`${f.rel}: ${n} plates, want ${front ? 1 : 0}`);
+    if (front && !f.text.includes(`m_sSignId "${id}"`)) fail(`${f.rel}: the plate does not name sign ${id}`);
+  }
+  if (!plan.strings.some((s) => signs?.text.includes(`"#${s.id}"`) && s.text === "POLICE")) fail("the sign row does not use the plate's string");
+}
 throws(() => gen.checkUnique([rows.good[0], { ...rows.good[0] }].map((r) => gen.planLivery(r, vanilla))), /GUID .* twice/i, "two rows with one id");
 
 // The real table builds against the fixture vanilla files and no GUID repeats.
@@ -102,6 +122,13 @@ if (twice.split("FixtureBlue").length !== 2 || !twice.includes("FixtureWhite")) 
 if (cmd.addCreditRows(twice, credits) !== twice) fail("addCreditRows changed a file that already has every row");
 const mid = cmd.addCreditRows(cmd.addCreditRows("# C\n\n## Liveries\n\n| x |\n\n## Music\n\n| m |\n", credits.slice(0, 1)), credits);
 if (!/## Liveries\n\n\| x \|\n.*FixtureBlue.*\n.*FixtureWhite.*\n\n## Music/.test(mid)) fail(`addCreditRows did not append inside a Liveries section that is not last:\n${mid}`);
+
+// The plate strings go into the pack table once, inside its item list.
+const items = gen.planLivery(rows.good[0], vanilla).strings;
+const st = "StringTableSource {\n Items {\n    CustomStringTableItem \"{0000000000000001}\" {\n     Id \"A\"\n    }\n }\n}\n";
+const st1 = cmd.addStrings(st, items, gen.stringItem);
+if (!/Id "A"\n    }\n    CustomStringTableItem "\{[0-9A-F]{16}\}" \{\n     Id "LF-Sign_Livery_UAZ469_FixtureBlue_Title"\n     Target_en_us "POLICE"[\s\S]*\n }\n}\n$/.test(st1)) fail(`addStrings did not add the plate string inside Items:\n${st1}`);
+if (cmd.addStrings(st1, items, gen.stringItem) !== st1) fail("addStrings added a string the table already has");
 
 if (failed) { console.log(`livery-selftest: ${failed} failure(s)`); process.exit(1); }
 console.log(`livery-selftest: OK (${rows.good.length} fixture rows, ${table.LIVERIES.length} table rows)`);

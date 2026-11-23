@@ -6,8 +6,8 @@
 //   base      the {GUID}path prefab the variant inherits (the service prefab, or a vanilla variant)
 //   colors    { 1: [r, g, b], 2: ..., 3: ..., 4: ... } paint layer colours, linear 0..1
 //   enabled   { 2: false } turns a vanilla paint layer off (the S1203 base mask speckles under layer 2)
-//   lettering { mode: "tiled", text, height } repeats text over the mask in colour 2, or
-//             { mode: "panels", items: [{ panel, text }] } puts it on measured panels (panels.mjs)
+//   plate     { text, paint, ink, rim }: a painted plate on each front door (UAZ469) reading text; words
+//             never go in the paint (mask lettering scrambles across UV islands)
 //   credit    { source, license, purpose }: required on every row; it becomes the docs/credits.md row
 //
 // The WO-L4..L6 cards add their rows here. Colours are what this server is, so the files go to the pack.
@@ -24,8 +24,8 @@ export const LIVERIES = [
     vehicle: "UAZ469",
     base: "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et",
     colors: { 1: WHITE, 2: NAVY },
-    lettering: { mode: "tiled", text: "POLICE", height: 14 },
-    credit: { ...DERIVED("`UAZ469_Body_CIV_BLUE.emat` and `UAZ469_Body_CIV_GLOBAL_MASK.edds`"), purpose: "Police repaint and lettering mask for the UAZ469" },
+    plate: { text: "POLICE", paint: [0.95, 0.95, 0.93], ink: [0.05, 0.1, 0.35], rim: [0.05, 0.1, 0.35] },
+    credit: { ...DERIVED("`UAZ469_Body_CIV_BLUE.emat` and `SignWall_01_90x45`"), purpose: "Police repaint and door plates for the UAZ469" },
   },
   {
     id: "Police",

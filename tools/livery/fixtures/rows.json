@@ -4,31 +4,140 @@
       "id": "FixtureBlue",
       "vehicle": "UAZ469",
       "base": "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et",
-      "colors": { "1": [0.62, 0.62, 0.6], "2": [0.012, 0.03, 0.09] },
-      "lettering": { "mode": "tiled", "text": "POLICE", "height": 14 },
-      "credit": { "source": "Derived from Bohemia Interactive `UAZ469_Body_CIV_GLOBAL_MASK.edds`", "license": "Arma Public License, base-game asset", "purpose": "Fixture lettering mask" }
+      "colors": {
+        "1": [
+          0.62,
+          0.62,
+          0.6
+        ],
+        "2": [
+          0.012,
+          0.03,
+          0.09
+        ]
+      },
+      "credit": {
+        "source": "Derived from Bohemia Interactive `UAZ469_Body_CIV_BLUE.emat`",
+        "license": "Arma Public License, base-game asset",
+        "purpose": "Fixture door plates"
+      },
+      "plate": {
+        "text": "POLICE",
+        "paint": [
+          0.95,
+          0.95,
+          0.93
+        ],
+        "ink": [
+          0.05,
+          0.1,
+          0.35
+        ],
+        "rim": [
+          0.05,
+          0.1,
+          0.35
+        ]
+      }
     },
     {
       "id": "FixtureWhite",
       "vehicle": "S1203",
       "base": "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et",
-      "colors": { "1": [0.62, 0.62, 0.6, 1] },
-      "enabled": { "2": false },
-      "credit": { "source": "Derived from Bohemia Interactive `S1203_body.emat`", "license": "Arma Public License, base-game asset", "purpose": "Fixture colour repaint" }
+      "colors": {
+        "1": [
+          0.62,
+          0.62,
+          0.6,
+          1
+        ]
+      },
+      "enabled": {
+        "2": false
+      },
+      "credit": {
+        "source": "Derived from Bohemia Interactive `S1203_body.emat`",
+        "license": "Arma Public License, base-game asset",
+        "purpose": "Fixture colour repaint"
+      }
     }
   ],
   "noCredit": {
     "id": "NoCredit",
     "vehicle": "S1203",
     "base": "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et",
-    "colors": { "1": [1, 0, 0] }
+    "colors": {
+      "1": [
+        1,
+        0,
+        0
+      ]
+    }
   },
-  "unmeasuredPanel": {
-    "id": "Unmeasured",
+  "maskLettering": {
+    "id": "MaskLetters",
     "vehicle": "UAZ469",
     "base": "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et",
-    "colors": { "1": [1, 1, 1], "2": [0, 0, 0] },
-    "lettering": { "mode": "panels", "items": [{ "panel": "door_L01", "text": "POLICE" }] },
-    "credit": { "source": "x", "license": "y", "purpose": "z" }
+    "colors": {
+      "1": [
+        0.62,
+        0.62,
+        0.6
+      ],
+      "2": [
+        0.012,
+        0.03,
+        0.09
+      ]
+    },
+    "credit": {
+      "source": "Derived from Bohemia Interactive `UAZ469_Body_CIV_BLUE.emat`",
+      "license": "Arma Public License, base-game asset",
+      "purpose": "Fixture door plates"
+    },
+    "lettering": {
+      "mode": "tiled",
+      "text": "POLICE"
+    }
+  },
+  "badPlateText": {
+    "id": "BadPlate",
+    "vehicle": "UAZ469",
+    "base": "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et",
+    "colors": {
+      "1": [
+        0.62,
+        0.62,
+        0.6
+      ],
+      "2": [
+        0.012,
+        0.03,
+        0.09
+      ]
+    },
+    "credit": {
+      "source": "Derived from Bohemia Interactive `UAZ469_Body_CIV_BLUE.emat`",
+      "license": "Arma Public License, base-game asset",
+      "purpose": "Fixture door plates"
+    },
+    "plate": {
+      "text": "Police",
+      "paint": [
+        0.95,
+        0.95,
+        0.93
+      ],
+      "ink": [
+        0.05,
+        0.1,
+        0.35
+      ],
+      "rim": [
+        0.05,
+        0.1,
+        0.35
+      ]
+    }
   }
 }

@@ -3,18 +3,19 @@
 //   livery list                          the rows, and whether each one's files are already written
 //   livery build [<Vehicle_Id>...]       write each row's body material, variant prefab, door parts (UAZ469)
 //          [--dry-run]                   print what would be written, write nothing
-//          [--mask]                      also build the lettering mask: unpack the vanilla mask (edds.mjs),
-//                                        stamp the spec in Blender (tools/livery/spike/mask.py), import it
-//                                        through Workbench (`tools\cli ui-image --batch`)
+//
+// Colours only go in the paint. Words are a painted plate on each front door (row `plate`): build writes
+// its pack sign row, adds its string to the pack table (addons/LF_Everon1989/Language/) and runs
+// `tools\cli regen-localization`.
 //
 // Every row carries a credit; build adds its row under "## Liveries" in docs/credits.md when it is missing.
 // The generator is tools/livery/generate.mjs (pure, proven by tools/validation/livery-selftest.mjs).
 // Method and limits: docs/architecture/livery-spike.md.
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import { dirname, join } from "node:path";
 
-export const help = "livery list | livery build [<Vehicle_Id>...] [--dry-run] [--mask]   repainted variant prefabs and credit rows from tools/livery/table.mjs";
+export const help = "livery list | livery build [<Vehicle_Id>...] [--dry-run]   repainted variant prefabs, door plates and credit rows from tools/livery/table.mjs";
 
 const CREDITS_HEAD = "## Liveries";
 const CREDITS_TABLE = "| Asset | Source and license | What it is for | Where |\n|---|---|---|---|";
@@ -23,7 +24,7 @@ export function addCreditRows(text, rows) {
   const missing = rows.filter((r) => !text.includes(r.split(" | ")[0] + " |"));
   if (!missing.length) return text;
   if (!text.includes(`\n${CREDITS_HEAD}\n`)) {
-    return `${text.replace(/\n*$/, "\n")}\n${CREDITS_HEAD}\n\nRepainted vehicle bodies and lettering masks written by \`tools\\cli livery build\`.\n\n${CREDITS_TABLE}\n${missing.join("\n")}\n`;
+    return `${text.replace(/\n*$/, "\n")}\n${CREDITS_HEAD}\n\nRepainted vehicle bodies and door plates written by \`tools\\cli livery build\`.\n\n${CREDITS_TABLE}\n${missing.join("\n")}\n`;
   }
   // Append after the last table row of the Liveries section.
   const start = text.indexOf(`\n${CREDITS_HEAD}\n`) + 1;
@@ -41,29 +42,13 @@ function pick(LIVERIES, names) {
   return rows;
 }
 
-async function buildMask(root, vfs, plan) {
-  const { eddsToDds } = await import("../livery/edds.mjs");
-  const { runHeadless } = await import("../lib/blender.mjs");
-  const script = join(root, "tools", "livery", "spike", "mask.py");
-  if (!existsSync(script)) throw new Error("tools/livery/spike/mask.py is missing (it lands with the spike follow-up, PR #4277)");
-  const work = join(root, "tmp", "livery");
-  mkdirSync(work, { recursive: true });
-  const dds = join(work, `${plan.id}_base.dds`);
-  writeFileSync(dds, eddsToDds(vfs.readFile(plan.mask.vanilla)).dds);
-  const spec = join(work, `${plan.id}_spec.json`);
-  writeFileSync(spec, JSON.stringify(plan.mask.spec));
-  const tif = join(root, plan.mask.tif);
-  mkdirSync(dirname(tif), { recursive: true });
-  const r = runHeadless(script, [dds, tif, spec], { timeoutMs: 180000 });
-  if (!/LF_MASK wrote/.test(r.stdout)) throw new Error(`mask.py wrote no mask: ${r.stdout.slice(-400)}`);
-  writeFileSync(join(root, plan.mask.edds + ".meta"), plan.mask.meta);
-  const edds = join(root, plan.mask.edds);
-  if (existsSync(edds) && statSync(edds).mtimeMs < statSync(tif).mtimeMs) rmSync(edds);
-  const list = join(work, `${plan.id}_batch.txt`);
-  writeFileSync(list, plan.mask.tif + "\n");
-  const imp = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "ui-image", "--batch", `tmp/livery/${plan.id}_batch.txt`], { cwd: root, encoding: "utf8", windowsHide: true, timeout: 600000 });
-  if (!existsSync(edds)) throw new Error(`the import built no ${plan.mask.edds}: ${(imp.stdout || "").trim().split("\n").slice(-3).join(" / ")}`);
-  console.log(`  mask {${plan.mask.guid}}${plan.mask.edds}`);
+// Append the plate strings the pack table lacks, before its closing braces; regen-localization sorts it.
+export function addStrings(st, items, stringItem) {
+  const missing = items.filter((s) => !st.includes(`Id "${s.id}"`));
+  if (!missing.length) return st;
+  const at = st.lastIndexOf("\n }\n}");
+  if (at < 0) throw new Error("the pack string table has no closing braces");
+  return st.slice(0, at + 1) + missing.map(stringItem).join("") + st.slice(at + 1);
 }
 
 export async function main(args, { root }) {
@@ -93,7 +78,7 @@ export async function main(args, { root }) {
   if (sub === "list") {
     for (const p of plans) {
       const have = p.files.filter((f) => existsSync(join(root, f.rel))).length;
-      console.log(`  ${p.id.padEnd(22)} ${String(p.files.length).padStart(2)} files, ${have} written${p.mask ? ", lettering mask" : ""}`);
+      console.log(`  ${p.id.padEnd(22)} ${String(p.files.length).padStart(2)} files, ${have} written${p.strings.length ? ", door plates" : ""}`);
     }
     return 0;
   }
@@ -108,8 +93,18 @@ export async function main(args, { root }) {
       writeFileSync(abs, f.text);
       writeFileSync(abs + ".meta", gen.metaText(f));
     }
-    if (p.mask && !dry && args.includes("--mask")) await buildMask(root, vfs, p);
-    else if (p.mask) console.log(`  (lettering mask ${p.mask.edds}: run with --mask to build it)`);
+  }
+  const stPath = join(root, gen.PACK, "Language", "lf_everon1989_localization.st");
+  const st = readFileSync(stPath, "utf8");
+  const st2 = addStrings(st, plans.flatMap((p) => p.strings), gen.stringItem);
+  if (st2 !== st) {
+    if (dry) console.log("strings: would add plate strings to the pack table");
+    else {
+      writeFileSync(stPath, st2);
+      const r = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "regen-localization"], { cwd: root, encoding: "utf8", windowsHide: true, timeout: 300000 });
+      console.log(`strings: plate strings added to the pack table; regen-localization exit ${r.status}`);
+      if (r.status !== 0) return 1;
+    }
   }
   const credits = join(root, "docs", "credits.md");
   const before = readFileSync(credits, "utf8");

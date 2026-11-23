@@ -17,4 +17,42 @@ GenericEntity : "{1FE6352A71D67F43}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Door
    }
   }
  }
+ {
+  GenericEntity {
+   ID "966799C84D35C35A"
+   components {
+    Hierarchy "{376D71E1185CE975}" {
+    }
+    MeshObject "{CDE2B6B947EC8D18}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{A3D87F213025551B}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{0269DBE09AD661F5}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{63227A977451938A}" {
+     m_sSignId "livery_uaz469_fixtureblue"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.05 0.1 0.35
+     m_vPaintColor 0.95 0.95 0.93
+     m_vTextColor 0.05 0.1 0.35
+    }
+   }
+   coords -0.94 0.78 0.42
+   angles 0 -90 0
+   scale 0.6
+  }
+ }
 }
