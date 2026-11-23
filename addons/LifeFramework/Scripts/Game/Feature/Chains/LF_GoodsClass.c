@@ -13,8 +13,8 @@ enum LF_EGoodsClass
 //! law book (Police) decides the charge. No statics, so there is nothing to reset.
 class LF_GoodsClass
 {
-	static const int MAX_A = 2;
-	static const int MAX_B = 10;
+	static const int MAX_A = 2; // lf-fixed: the class boundary is the charge-sheet definition in the 0.3.0 plan (A up to 2), not a server tunable
+	static const int MAX_B = 10; // lf-fixed: the class boundary is the charge-sheet definition in the 0.3.0 plan (B up to 10), not a server tunable
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The class of a load of this many units. NONE for zero or a negative count.
