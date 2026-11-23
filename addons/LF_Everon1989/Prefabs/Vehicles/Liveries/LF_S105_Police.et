@@ -9,6 +9,19 @@ Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
     }
    }
   }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_RunPlateAction "{DAD17B149B2BDFA0}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{21FA2BED848F7159}" {
+      Name "#LF-RunPlate_Action"
+     }
+     "Sort Priority" 11
+    }
+   }
+  }
  }
  {
   GenericEntity PoliceLetters_L {

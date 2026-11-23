@@ -662,7 +662,10 @@ class LF_ShopComponent : ScriptComponent
 			buyerUid = LF_Utils.GetPlayerUid(buyer);
 			LF_EShopRefusal trust = LF_FenceRules.Check(buyerUid, GetMinCrimes(prefab), prefab);
 			if (trust != LF_EShopRefusal.NONE)
+			{
+				LF_FenceVoice.OnBuy(GetOwner(), buyer, trust, prefab);
 				return trust;
+			}
 		}
 
 		int units = LF_ShopRules.StackTradeOutputCount(quantity);
@@ -717,7 +720,10 @@ class LF_ShopComponent : ScriptComponent
 			charged = totalPrice;
 			LF_Debug.Info("Shop", string.Format("bought item=%1 qty=%2 price=%3", prefab, units, totalPrice));
 			if (m_bFence)
+			{
 				LF_EventBus.Publish(LF_OnFenceSale.Create(buyerUid, prefab, units, totalPrice, m_sOutletId));
+				LF_FenceVoice.OnBuy(GetOwner(), buyer, LF_EShopRefusal.NONE, prefab);
+			}
 			else if (IsLicensedWeaponLine(prefab))
 				LF_FenceSerials.OnWeaponSale(buyer, LF_Utils.GetPlayerUid(buyer), prefab, units, m_sOutletId);
 			return LF_EShopRefusal.NONE;
