@@ -2530,6 +2530,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Stand at the bed to put a patient in it."
      Comment "Refusal: medic too far from the bed."
     }
+    CustomStringTableItem "{EE2695450DA92ACF}" {
+     Id "LF-BigJob_Busy"
+     Target_en_us "Another big job is already underway on the island. Wait until it is over."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): one pharmacy, bank or depot job runs on the server at a time."
+    }
+    CustomStringTableItem "{F9776BD9715991D9}" {
+     Id "LF-BigJob_Cooldown"
+     Target_en_us "This place was hit recently. Try again in %1 min."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): the job is cooling down. %1 is the minutes left."
+    }
+    CustomStringTableItem "{BE941138C8540332}" {
+     Id "LF-BigJob_Unavailable"
+     Target_en_us "This job cannot be started right now."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): a broken request (no job or player key)."
+    }
     CustomStringTableItem "{CEF674540C6B082E}" {
      Id "LF-Bill_NeedCash"
      Target_en_us "Carry %1 in cash to pay the bill"
@@ -3659,6 +3674,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Contract_Unknown"
      Target_en_us "That contract isn't on offer."
      Comment "Contract refusal (#2702): the contract id has no row or no delivery job."
+    }
+    CustomStringTableItem "{825B941D7F8A5C59}" {
+     Id "LF-CounterOutlet_Action"
+     Target_en_us "Sell under the counter"
+     Comment "Barkeeper action: sell the smuggled cartons and bottles the bar buys (#4200)."
+    }
+    CustomStringTableItem "{70843034317124F3}" {
+     Id "LF-CounterOutlet_Full"
+     Target_en_us "That's enough for this week. Come back later."
+     Comment "Toast: the bar's demand for the period is spent (#4200)."
+    }
+    CustomStringTableItem "{506F32AAE67FCF37}" {
+     Id "LF-CounterOutlet_Nothing"
+     Target_en_us "You have nothing the bar takes."
+     Comment "Toast and cannot-perform reason: no goods this bar buys (#4200)."
+    }
+    CustomStringTableItem "{F63D693CF85C59FE}" {
+     Id "LF-CounterOutlet_Police"
+     Target_en_us "Not with that badge on, officer."
+     Comment "Toast: the barkeeper refuses an on-duty police officer (#4200)."
+    }
+    CustomStringTableItem "{17E9077EC7547E6D}" {
+     Id "LF-CounterOutlet_Sold"
+     Target_en_us "Under the counter it goes. You get %1."
+     Comment "Toast: goods sold under the counter. %1 = the amount paid (#4200)."
+    }
+    CustomStringTableItem "{67B2BD45B6D5677C}" {
+     Id "LF-CounterOutlet_Title"
+     Target_en_us "The barkeeper"
+     Comment "Toast title at an under-the-counter outlet (#4200)."
     }
     CustomStringTableItem "{E83AB3CDE17F447B}" {
      Id "LF-Credits_1"
@@ -11482,6 +11527,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
     }
+    CustomStringTableItem "{D52F08A3E91B7C46}" {
+     Id "LF-OutpostStock_Bought"
+     Target_en_us "\"Take it. Don't tell anyone where you got it.\" You paid %1."
+     Comment "Toast after an outpost crate sale (#4223). %1 = the price paid."
+    }
+    CustomStringTableItem "{9B41E6D07C2A3F85}" {
+     Id "LF-OutpostStock_Buy"
+     Target_en_us "Buy %1 (%2)"
+     Comment "Action on the quartermaster's crate (#4223). %1 = the item name, %2 = the price."
+    }
+    CustomStringTableItem "{F09A6E3C2D5B4718}" {
+     Id "LF-OutpostStock_GangRadio"
+     Target_en_us "gang radio"
+     Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{E83B5D17A42C9F60}" {
+     Id "LF-OutpostStock_NoCash"
+     Target_en_us "\"Cash first. Come back when you have it.\""
+     Comment "Toast: the buyer carries less cash than the outpost crate's price (#4223)."
+    }
+    CustomStringTableItem "{61C9A4F2B07E3D58}" {
+     Id "LF-OutpostStock_NotKnown"
+     Target_en_us "\"I don't know you well enough for that one. Come back when people talk about you.\""
+     Comment "Toast: the buyer's underworld standing is below the item's (#4223). Never a number (decision N1)."
+    }
+    CustomStringTableItem "{B7D43E1A95C06F28}" {
+     Id "LF-OutpostStock_Pistol"
+     Target_en_us "pistol"
+     Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{4C1F8B29E6A37D05}" {
+     Id "LF-OutpostStock_Rifle"
+     Target_en_us "rifle"
+     Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{3F7A2C91B4E05D18}" {
+     Id "LF-OutpostStock_Title"
+     Target_en_us "Quartermaster"
+     Comment "Title of the outpost crate's toasts (#4223)."
+    }
+    CustomStringTableItem "{2A96F0C4D3B18E75}" {
+     Id "LF-OutpostStock_Unavailable"
+     Target_en_us "\"Not today.\""
+     Comment "Toast: the outpost crate sale failed for another reason (no room, no item) (#4223)."
+    }
     CustomStringTableItem "{6D41A0F3C8B2957E}" {
      Id "LF-Outpost_TraderRefusesOfficer"
      Target_en_us "We don't deal with the law here. Take the badge off and come back."
@@ -16003,6 +16093,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
     }
+    CustomStringTableItem "{18DFC167284D07E8}" {
+     Id "LF-ToolBench_Done"
+     Target_en_us "Good as new. That came to %1 and one scrap metal."
+     Comment "Bench repair done (#4187). %1 = fee"
+    }
+    CustomStringTableItem "{3E45956C16155502}" {
+     Id "LF-ToolBench_Failed"
+     Target_en_us "The bench cannot do repairs right now."
+     Comment "Bench refusal on a broken setup (#4187)"
+    }
+    CustomStringTableItem "{8F6C7F1D0C427B09}" {
+     Id "LF-ToolBench_Full"
+     Target_en_us "That tool is already in top shape."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{25BBCAE014F0D78D}" {
+     Id "LF-ToolBench_NoMoney"
+     Target_en_us "You do not have enough cash for the repair."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{3088D8D49AFC71C9}" {
+     Id "LF-ToolBench_NoScrap"
+     Target_en_us "You need one piece of scrap metal for the repair."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{C6145C357DAD1FAB}" {
+     Id "LF-ToolBench_NoTool"
+     Target_en_us "You have no tool of that kind to work on."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{6F3046628BDFDFCF}" {
+     Id "LF-ToolBench_RepairPickaxe"
+     Target_en_us "Repair the pickaxe"
+     Comment "Hardware bench action (#4187)"
+    }
+    CustomStringTableItem "{C16B93140B289B82}" {
+     Id "LF-ToolBench_RestringRod"
+     Target_en_us "Re-string the rod"
+     Comment "Hardware bench action (#4187)"
+    }
+    CustomStringTableItem "{1188B7A6ADC3C8C7}" {
+     Id "LF-ToolBench_SharpenAxe"
+     Target_en_us "Sharpen the axe"
+     Comment "Hardware bench action (#4187)"
+    }
+    CustomStringTableItem "{62BCE351AF0CBFB2}" {
+     Id "LF-ToolBench_Title"
+     Target_en_us "Hardware bench"
+     Comment "Notification title (#4187)"
+    }
     CustomStringTableItem "{3723AB61E29CDCE1}" {
      Id "LF-ToolCondition_Good"
      Target_en_us "%1 is in good shape"
@@ -16022,6 +16162,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ToolCondition_WornOut"
      Target_en_us "%1 is worn out but still works, slowly"
      Comment "Action text: tool at zero condition; it still works at half speed (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{0B593FFD66EB831C}" {
+     Id "LF-ToolKind_Axe"
+     Target_en_us "Your axe"
+     Comment "Tool kind name that fills %1 of the tool condition sentence (#4300)"
+    }
+    CustomStringTableItem "{DFCB9DADDFCEE73E}" {
+     Id "LF-ToolKind_Pickaxe"
+     Target_en_us "Your pickaxe"
+     Comment "Tool kind name that fills %1 of the tool condition sentence (#4300)"
+    }
+    CustomStringTableItem "{80FF3472F8A2800D}" {
+     Id "LF-ToolKind_Rod"
+     Target_en_us "Your fishing rod"
+     Comment "Tool kind name that fills %1 of the tool condition sentence (#4300)"
     }
     CustomStringTableItem "{75960D0103B97E17}" {
      Id "LF-ToolTier_Fine"

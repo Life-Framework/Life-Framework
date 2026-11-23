@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{AEF5A421ED5796D3}Prefabs/Tools/Tiers/LF_Tool_Pickaxe_Fine.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

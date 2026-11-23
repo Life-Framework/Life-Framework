@@ -86,6 +86,18 @@
 - Test `crime/safe-types` (LOGIC) and `everon/safe-types` (pack leg). Log `[LFDebug:SafeTypes]`.
 - **Store box in the pack** (#2331): `LF_Everon1989/Prefabs/Props/Safes/LF_StoreBox.et` inherits the core `LF_SafeBox.et` and names `store_box` itself, so a shop fit-out places the pack prefab and the pack's 120 cash takings apply. It swaps the mesh to the vanilla olive `CabinetMetal_01` steel cabinet with its own material, because the core `Safe_01` mesh renders plain white (#2728). The pack grid cell `store-box` (`Grid_store_box.layer`, cell c19r4) stands one till and one box beside it. Test `everon/store-box-safe` (pack leg, `LF_Test_EveronStoreBoxSafe`) asserts the box registers under its entity name with one bag, 120 a bag and a 10 s drill, and that a script-driven robbery with no tool and no police arms it and spills exactly that haul after the fuse. Putting a box in each shop is a later per-shop card.
 
+### `LF_BigJobLock` — `Feature/Crime/LF_BigJobLock.c` (#4193, plan 0.3.0 Crime A6, decision N17)
+- 🔧 One big job (robbery rungs 4 to 6: hospital pharmacy, bank vault, reserve depot; the prison break in 0.4)
+  runs on the server at a time. `TryBegin(jobKey, holderKey, cooldownSeconds, now)` takes the server-wide lock
+  or answers `BUSY` (another big job runs) or `COOLDOWN` (this job ended recently); `RefusalText` gives the
+  player the reason in words, with the minutes left. `Finish` releases the lock and starts that job's own
+  cooldown; another big job may start meanwhile. A lock never finished expires after 45 min into its cooldown.
+  Callers pass the cooldown from their pack config (`COOLDOWN_PHARMACY` 2 h, `COOLDOWN_BANK` 3 h and
+  `COOLDOWN_RESERVE` 6 h are the plan defaults). No job calls it yet: the pharmacy and bank cards wire it in.
+- 🔧 Save section `bigjob`: cooldowns as seconds left, so a restart never resets one; a job running at the
+  save comes back as that job in its full cooldown, with the lock free. Test `LF_Test_BigJobLock`; `wt e2e`
+  checks the cooldown across a real restart.
+
 ### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
 - ✅ The hospital till is not scripted here: the placed action is `LF_RobAction` on the
   till's single `ActionsManagerComponent` (civilian, cooldown and minimum-police gates, cash
@@ -464,6 +476,17 @@
   demotion takes off the officer every issued armory item the new rank's offer gate refuses and turns its serial in
   (`LF_PoliceRanks.StripKitAboveRank`, logged `kit above rank <r> taken from <uid>`, toast); an offline officer loses
   it at their next spawn. Plain kit lines with no serial (spike strip, roadblock kit) are not tracked and stay.
+- 🔨 **Outcome bonuses, capped per hour by rank, paid with the shift** (#4210, in-dev, LOGIC `jobs/duty-bonus-cap`).
+  `LF_DutyBonus.Award(account, kind)` adds a fixed amount to an on-duty account's pending bonus: a call resolved
+  $15, a booking $10, a stolen car $20 (police), a revive $10, a delivered patient $15 (medic). The hour window opens
+  at the first bonus; inside it the total stops at the rank's cap (police $100/$100/$100/$95/$70, medic
+  $40/$50/$50/$40; the plan's economy table), logged `bonus +$<n> (<kind>) ...` or `bonus capped for <id>`. Clock-out
+  (`LF_DutyPay.PayAtClockOut`) pays the pending bonus as cash beside the shift pay (ledger reason `duty-bonus`); a
+  bonus that does not fit is kept for the next clock-out, and clocking out does not reopen the hour's cap. Fines and
+  bail never reach this ledger. `LF_MedicDutyBonus.Install` awards revives and deliveries from the bus; a bed delivery's own revive is
+  refunded when its delivery follows, so the pair pays $15. Not yet
+  live in play: the game mode does not call `Install`, and the police outcomes have no caller yet (follow-up card).
+  The ledger is in memory: a restart mid-shift drops the unpaid bonus.
 - 🧪 **Alpha: the station desk approves on submit** (rc 0.2.0, LOGIC `police/alpha-instant-approval`). Owner key
   `police.alphaInstantApproval` (off by default; on in `server/flagship/config.json` for the alpha only) makes
   `LF_PoliceApplicationForm` take the playtest path (`LF_PoliceApplicationRules.ApprovesOnSubmit`): the application is filed

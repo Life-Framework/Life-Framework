@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9B1FE28C5B730314}Configs/Gathering/LF_ToolTiers.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

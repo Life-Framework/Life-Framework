@@ -1,0 +1,35 @@
+GenericEntity Postal_Depot_Place {
+ components {
+  LF_PlaceComponent "{5B2E94C7A1D03F68}" {
+   m_sKind "ParcelDepot"
+   m_sId "saint-philippe.parcel"
+  }
+ }
+ coords 160.005 0.2 260.646
+}
+GenericEntity Town_parcel_drop_h2 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 321.046 1.001 228.288
+ angleY 180
+}
+GenericEntity Town_parcel_drop_h5 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 352.29 1.001 231.24
+ angleY 180
+}
+GenericEntity Town_parcel_drop_h1 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 111.448 1.001 219.314
+ angleY 180
+}
+GenericEntity Town_parcel_drop_h3 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 347.113 1.001 277.321
+}
+GenericEntity Town_parcel_drop_h6 : "{CF8596F431D9EE52}Prefabs/Props/Roleplay/LF_ParcelDrop.et" {
+ coords 320.591 1.488 273.321
+}
+SCR_DestructibleEntity Town_postal_point_square : "{BEEEAB7F4544E89C}Prefabs/Props/Roleplay/LF_PostalPoint_Everon.et" {
+ coords 188 0.248 246.017
+ angleY 180
+}
+SCR_DestructibleEntity Town_postal_point_east : "{BEEEAB7F4544E89C}Prefabs/Props/Roleplay/LF_PostalPoint_Everon.et" {
+ coords 352 0.248 276.017
+ angleY 180
+}
