@@ -297,5 +297,5 @@ the pump says "The tanks are dry. The depot truck is due."
      it is full, the main wholesale counter buys more (from $20 a bar, falling as you sell).
 * **Pay:** about **$500 an hour**, with nothing to drive. Two players share the six rocks and the furnace comfortably.
 * **Wear:** every swing at a rock wears your pickaxe a little (an axe wears with each tree felled, a fishing rod with each fish landed). A notice tells you when the tool is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. The hardware bench repairs it for $12 and a scrap of metal once it is placed in town.
-* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal, copper and smelter work as those sites arrive.
+* **Needs:** the miner job and a pickaxe. Higher miner levels open the coal and copper rocks as those sites arrive. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the smelter wants Smelting level 8, the refinery level 15.
 

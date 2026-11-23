@@ -1,4 +1,4 @@
-// red-proof: 2026-11-23, `tools\cli test --no-build --red LF_Test_SmeltingXp`: RED PROOF OK (RedProof() clears the furnace row's m_sXpAction: a finished furnace batch raises SMELTING expected 14, got 0; the timed run pays 0 as well). Green with the rows via `--only`.
+// red-proof: #4341 2026-11-23, cement-works added to the plants that pay smelt_batch: `--only LF_Test_SmeltingXp` on the old conf FAILED (cement-works pays smelt_batch), green after. Earlier: 2026-11-23, `tools\cli test --no-build --red LF_Test_SmeltingXp`: RED PROOF OK (RedProof() clears the furnace row's m_sXpAction: a finished furnace batch raises SMELTING expected 14, got 0; the timed run pays 0 as well). Green with the rows via `--only`.
 
 //! jobs/smelting-xp (#4337, W2 of the 0.3.0 work scope, decision N3): a finished furnace batch raises SMELTING and
 //! never MINER. The jobs config ships the SMELTING and SALVAGE tracks (30 levels, the MINER table) and the
@@ -121,7 +121,7 @@ class LF_Test_SmeltingXp : LF_Test
 		if (salvage)
 			ctx.EqualStr("SALVAGE", salvage.m_sJob, "salvage_work feeds SALVAGE");
 
-		array<string> smelters = {"furnace-iron", "furnace-gold", "furnace-copper", "smelter-iron", "refinery-copper"};
+		array<string> smelters = {"furnace-iron", "furnace-gold", "furnace-copper", "smelter-iron", "refinery-copper", "cement-works"};
 		foreach (string id : smelters)
 		{
 			LF_ResourceMachineDef machine = LF_ResourceChainCatalog.FindMachine(id);

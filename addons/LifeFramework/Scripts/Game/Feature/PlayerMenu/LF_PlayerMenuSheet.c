@@ -1153,6 +1153,20 @@ class LF_PlayerMenuSheet
 			return true;
 		}
 
+		if (job == "SMELTING")
+		{
+			nameKey = "#LF-PlayerMenu_Skill_SMELTING";
+			descKey = "#LF-PlayerMenu_SkillDesc_SMELTING";
+			return true;
+		}
+
+		if (job == "SALVAGE")
+		{
+			nameKey = "#LF-PlayerMenu_Skill_SALVAGE";
+			descKey = "#LF-PlayerMenu_SkillDesc_SALVAGE";
+			return true;
+		}
+
 		nameKey = string.Empty;
 		descKey = "#LF-PlayerMenu_SkillDescOther";
 		return false;

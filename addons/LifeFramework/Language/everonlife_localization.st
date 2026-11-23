@@ -12597,6 +12597,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Patrols, stops, fines and arrests on duty with the {police}."
      Comment "Skill description, POLICE."
     }
+    CustomStringTableItem "{9D5AC9F2C514EA69}" {
+     Id "LF-PlayerMenu_SkillDesc_SALVAGE"
+     Target_en_us "Sorting scrap and salvage into metal worth selling."
+     Comment "Skill description, SALVAGE."
+    }
+    CustomStringTableItem "{1ED61C734E42F8A5}" {
+     Id "LF-PlayerMenu_SkillDesc_SMELTING"
+     Target_en_us "Furnaces, smelters, refineries and the cement works. Every finished batch earns experience here, never in Mining."
+     Comment "Skill description, SMELTING."
+    }
     CustomStringTableItem "{58F153B6D5B351ED}" {
      Id "LF-PlayerMenu_SkillHint"
      Target_en_us "Pick a skill to read its record."
@@ -12661,6 +12671,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-PlayerMenu_Skill_POLICE"
      Target_en_us "{Police}"
      Comment "Skill name of the POLICE job track."
+    }
+    CustomStringTableItem "{8D00FDBAFF6AEDED}" {
+     Id "LF-PlayerMenu_Skill_SALVAGE"
+     Target_en_us "Salvage"
+     Comment "Skill name of the SALVAGE job track."
+    }
+    CustomStringTableItem "{AD86C48B222D1B97}" {
+     Id "LF-PlayerMenu_Skill_SMELTING"
+     Target_en_us "Smelting"
+     Comment "Skill name of the SMELTING job track."
     }
     CustomStringTableItem "{D9EFF6F38B9466F2}" {
      Id "LF-PlayerMenu_StateCurrent"
