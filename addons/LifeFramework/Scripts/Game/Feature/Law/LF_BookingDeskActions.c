@@ -109,9 +109,9 @@ class LF_BookingDeskAnswerAction : ScriptedUserAction
 	override bool GetActionNameScript(out string outName)
 	{
 		if (m_bPay)
-			outName = WidgetManager.Translate("#LF-BookingDesk_Pay", LF_BookingDeskClient.Fine());
+			outName = LF_Terms.Text("#LF-BookingDesk_Pay", LF_BookingDeskClient.Fine().ToString());
 		else
-			outName = WidgetManager.Translate("#LF-BookingDesk_Time", LF_BookingDesk.Minutes(LF_BookingDeskClient.Seconds()));
+			outName = LF_Terms.Text("#LF-BookingDesk_Time", LF_BookingDesk.Minutes(LF_BookingDeskClient.Seconds()).ToString());
 
 		return true;
 	}

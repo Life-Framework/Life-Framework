@@ -2672,7 +2672,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{DFCCB05F185F73C7}" {
      Id "LF-BookingDesk_Pay"
-     Target_en_us "Pay $%1 now"
+     Target_en_us "Pay {currency:sym}%1 now"
      Comment "Suspect action on the booking desk. %1 = the fine in dollars."
     }
     CustomStringTableItem "{F1D9BD9D6D6D5724}" {
