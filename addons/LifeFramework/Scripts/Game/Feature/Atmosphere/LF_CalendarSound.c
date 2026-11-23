@@ -211,10 +211,14 @@ class LF_CalendarSound
 	//------------------------------------------------------------------------------------------------
 	protected static bool ListenerPosition(out vector position)
 	{
-		if (!GetGame() || !GetGame().GetCameraManager())
+		if (!GetGame())
 			return false;
 
-		CameraBase camera = GetGame().GetCameraManager().CurrentCamera();
+		CameraManager cameras = GetGame().GetCameraManager();
+		if (!cameras)
+			return false;
+
+		CameraBase camera = cameras.CurrentCamera();
 		if (!camera)
 			return false;
 
