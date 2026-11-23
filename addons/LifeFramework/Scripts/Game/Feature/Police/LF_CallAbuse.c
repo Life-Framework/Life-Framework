@@ -4,6 +4,9 @@
 modded class LF_PoliceCall
 {
 	bool m_bLowPriority;
+	//! The player who phoned the call in (#4585); empty for a call posted from a crime report, whose uid
+	//! (m_sSuspectUid) is the wanted suspect, not a caller. Only a caller is counted for 911 abuse.
+	string m_sCallerUid;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -12,8 +15,9 @@ modded class LF_PoliceCall
 //! one false-report charge against the caller (the law book's emergency line abuse code, #4348;
 //! it appears on the charge sheet, #4533) and marks the caller's next calls low priority until the
 //! day rolls. Server only. The count lives in memory for the session and is not saved: a restart
-//! starts the day clean. "The caller" of a police call is the uid the call carries
-//! (LF_PoliceCall.m_sSuspectUid, the LF_OnServiceCall caller).
+//! starts the day clean. "The caller" of a police call is LF_PoliceCall.m_sCallerUid, set through
+//! SetCaller by whatever posts a phoned-in call; a call posted from a crime report has no caller, so
+//! closing it unfounded charges nobody (#4585: the suspect is not the one who phoned).
 class LF_CallAbuse
 {
 	static const string FEATURE = "Police";
@@ -90,9 +94,12 @@ class LF_CallAbuse
 		if (!Replication.IsServer() || !call)
 			return false;
 
-		string callerUid = call.m_sSuspectUid;
+		string callerUid = call.m_sCallerUid;
 		if (callerUid.IsEmpty())
+		{
+			LF_Debug.Info(FEATURE, string.Format("unfounded call #%1 not counted: no player phoned it in", call.m_iId));
 			return false;
+		}
 
 		if (LF_DutyBonus.SameAccount(officerUid, callerUid))
 		{
@@ -127,14 +134,25 @@ class LF_CallAbuse
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: marks a freshly posted call low priority when its caller was charged today.
+	//! Server: names the player who phoned the call in, and marks it low priority when they were charged today.
+	static void SetCaller(LF_PoliceCall call, string callerUid)
+	{
+		if (!call)
+			return;
+
+		call.m_sCallerUid = callerUid;
+		MarkIfAbuser(call);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: marks a call low priority when its caller was charged today. A call with no caller is never marked.
 	static void MarkIfAbuser(LF_PoliceCall call)
 	{
-		if (!call || call.m_bLowPriority || !IsMarked(call.m_sSuspectUid))
+		if (!call || call.m_bLowPriority || !IsMarked(call.m_sCallerUid))
 			return;
 
 		call.m_bLowPriority = true;
-		LF_Debug.Info(FEATURE, string.Format("call #%1 of %2 posted low priority: charged for false reports today", call.m_iId, call.m_sSuspectUid));
+		LF_Debug.Info(FEATURE, string.Format("call #%1 phoned in by %2 posted low priority: charged for false reports today", call.m_iId, call.m_sCallerUid));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -145,18 +163,6 @@ class LF_CallAbuse
 			return LOW_PRIORITY_KEY;
 
 		return string.Empty;
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! A call posted for a charged caller carries the low-priority mark from the start.
-modded class LF_PoliceCalls
-{
-	override static LF_PoliceCall Post(string kind, string suspectUid, string site, int minRank, bool hasPosition = false, vector position = vector.Zero)
-	{
-		LF_PoliceCall call = super.Post(kind, suspectUid, site, minRank, hasPosition, position);
-		LF_CallAbuse.MarkIfAbuser(call);
-		return call;
 	}
 }
 

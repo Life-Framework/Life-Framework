@@ -1,0 +1,32 @@
+SCR_Bird Fit_saint_philippe_dock_harbor_life_gulls : "{EB419793F72FCE41}Prefabs/Animals/Birds/Larus_argentatus/BirdFlock_Seagull.et" {
+ coords 4403.995 1.594 11106.001
+ angleY 81
+}
+GenericEntity Fit_saint_philippe_dock_harbor_life_bed_harbor_day : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundProject "{BEC2E182919A51C0}Sounds/Ambience/Atmosphere_HarborDay.acp"
+   m_fRadius 46
+   m_fHourFrom 6
+   m_fHourTo 21
+   m_sGroup "harbor_bed"
+   m_iPriority 1
+  }
+ }
+ coords 4410.003 1.625 11103.996
+ angleY 81
+}
+GenericEntity Fit_saint_philippe_dock_harbor_life_bed_harbor_night : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundProject "{DD80116099CC395A}Sounds/Ambience/Atmosphere_HarborNight.acp"
+   m_fRadius 42
+   m_fHourFrom 21
+   m_fHourTo 6
+   m_sGroup "harbor_bed"
+   m_iPriority 1
+  }
+ }
+ coords 4410.003 1.625 11110
+ angleY 81
+}
