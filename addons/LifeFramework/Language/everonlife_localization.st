@@ -7588,6 +7588,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Too far away to hold them up."
      Comment "Toast when a hold-up is refused by range."
     }
+    CustomStringTableItem "{C7E29B03FDF73DA5}" {
+     Id "LF-HospitalPresence_TooFew"
+     Target_en_us "The cabinet stays shut unless a medic or two police officers are on duty."
+     Comment "Pharmacy cabinet refusal (Feature/Crime/LF_HospitalPresence.c): the robbery needs one medic or two police on duty (pack config numbers)."
+    }
     CustomStringTableItem "{DB6C9E5F09D39D13}" {
      Id "LF-Hospital_BillAmount"
      Target_en_us "Treatment: %1"

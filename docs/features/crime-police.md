@@ -125,6 +125,21 @@
   `198 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
   to the contraband scope.
 
+### `LF_HospitalPresence` — `Feature/Crime/LF_HospitalPresence.c` (#4446, plan 0.3.0 Crime D2, rung 4)
+- 🔧 (merged, in-dev) **The pharmacy cabinet needs one medic or two police on duty and a free big-job lock.**
+  The cabinet action (a modded `LF_HospitalCabinetAction`) asks `LF_HospitalPresence.RefusalKey` on the
+  server: too few on duty (`#LF-HospitalPresence_TooFew`), another big job running (`#LF-BigJob_Busy`) or
+  the pharmacy cooling down (`#LF-BigJob_Cooldown` with minutes). The key is the action's disabled reason;
+  the perform check says the same as a toast to a dedicated client, whose offer cannot count medics.
+  Medics are counted on the server over connected players (`LF_MedicDuty.IsOnDuty`), police through
+  `LF_AccountReplication.CountPoliceOnDuty`. A refusal is checked before the charge is taken.
+- A breach that arms the cabinet takes `LF_BigJobLock` as `pharmacy`; `EndJob` runs a hold after arming
+  (900 s, the fuse plus looting) and starts the 2 h cooldown. A restart in between saves the full cooldown.
+- Tuning: `LF_HospitalPresenceConfig` (core defaults; Everon overlay
+  `LF_Everon1989/Configs/Crime/LF_HospitalPresence_Everon1989.conf`): `m_iMinMedics 1`, `m_iMinPolice 2`,
+  `m_iCooldownSeconds 7200`, `m_iHoldSeconds 900`. `LF_Hospital.CanBreach`/`BreachCabinet` stay the raw
+  breach for scripted callers. Test: `LF_Test_HospitalPresence`.
+
 ### `LF_ClinicShortage` — `Feature/Crime/LF_ClinicShortage.c` (#4445, plan 0.3.0 Crime D1, decision N18)
 - 🔧 (merged, in-dev) **The clinic is short for an hour after its drug cabinet is robbed.** A
   `LF_OnBreachOpened` whose target is a hospital cabinet starts it; a breach of any other target starts
