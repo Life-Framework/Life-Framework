@@ -3415,6 +3415,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Every character slot on this account is taken."
      Comment "Character creation refused because the account already holds the configured maximum number of characters."
     }
+    CustomStringTableItem "{2DF6913A7B6E562C}" {
+     Id "LF-ChargePayment_Failed"
+     Target_en_us "The payment did not go through. Try again or take the time."
+     Comment "Toast to the suspect: the money could not be taken; nothing was charged."
+    }
+    CustomStringTableItem "{1B6EC4D1194BE38F}" {
+     Id "LF-ChargePayment_Paid"
+     Target_en_us "You paid your fine of {currency:sym}%1. You are free to go."
+     Comment "Toast to the suspect: the fine was paid at the booking desk. %1 = the fine in dollars."
+    }
+    CustomStringTableItem "{5142F0A862D4F263}" {
+     Id "LF-ChargePayment_Short"
+     Target_en_us "You can't cover {currency:sym}%1, so you take the time."
+     Comment "Toast to the suspect: cash and bank fall short of the fine; they go to the cell. %1 = the fine in dollars."
+    }
     CustomStringTableItem "{294B1C333502C014}" {
      Id "LF-Chess_BlackInCheck"
      Target_en_us "Black to move, in check"
