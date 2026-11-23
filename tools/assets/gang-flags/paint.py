@@ -76,11 +76,15 @@ LAYERS = {
     "Ember": ("crimson", [(tri((0, 0), (0, 1), (0.9, 0.5)), "black"), (tri((0, 0.18), (0, 0.82), (0.6, 0.5)), "orange")]),
     "Harbor": ("navy", [(box(0, 0.38, 2, 0.62), "white"), (box(0, 0.47, 2, 0.53), "red")]),
     "Marrow": ("cream", [(disc(1.0, 0.5, 0.36), "red"), (disc(1.0, 0.5, 0.24), "black")]),
-    "Thornfield": ("dkgreen", [(band(0, 0.07), "yellow"), (other_band(0, 0.07), "yellow")]),
+    # Three thorns pointing in from the fly edge (a green field with a gold saltire read as a national flag).
+    "Thornfield": ("dkgreen", [(tri((2, 0.08), (2, 0.30), (1.25, 0.19)), "yellow"), (tri((2, 0.39), (2, 0.61), (1.25, 0.50)), "yellow"),
+                               (tri((2, 0.70), (2, 0.92), (1.25, 0.81)), "yellow")]),
     "Copperhead": ("copper", [(box(0, 0, 0.45, 1), "brown"), (star(1.25, 0.5, 0.3), "brown")]),
     "Nightjar": ("black", [(diamond(1.0, 0.5, 0.62, 0.36), "grey"), (diamond(1.0, 0.5, 0.36, 0.2), "black")]),
-    "Salt": ("white", [(box(0, 0.12, 2, 0.28), "blue"), (box(0, 0.42, 2, 0.58), "blue"), (box(0, 0.72, 2, 0.88), "blue")]),
-    "Gallows": ("black", [(box(1.0, 0, 2, 1), "red")]),
+    # Three blue bars on the hoist half only (horizontal blue and white stripes read as a national flag).
+    "Salt": ("white", [(box(0.08, 0, 0.28, 1), "blue"), (box(0.40, 0, 0.60, 1), "blue"), (box(0.72, 0, 0.92, 1), "blue")]),
+    # A red wedge on black (a plain black and red split reads as a real group's flag).
+    "Gallows": ("black", [(tri((2, 0), (2, 1), (1.05, 0.5)), "red")]),
     "Lantern": ("yellow", [(disc(1.0, 0.5, 0.26), "red")]),
     "Ironside": ("grey", [(box(0.55, 0, 0.85, 1), "black"), (box(0, 0.35, 2, 0.65), "black")]),
     "Cinder": ("orange", [(tri((0, 1), (2, 1), (2, 0)), "black")]),
@@ -91,8 +95,10 @@ LAYERS = {
     "Brass": ("gold", [(box(0, 0.22, 2, 0.34), "black"), (box(0, 0.66, 2, 0.78), "black")]),
     "Wolfsbane": ("dkgreen", [(box(0.8, 0, 1.2, 1), "white")]),
     "Ashen": ("ash", [(((np.floor(x / 0.25) + np.floor(y / 0.25)) % 2) == 0, "black")]),
-    "Rustler": ("rust", [(band(0, 0.1), "cream"), (other_band(0, 0.1), "cream")]),
-    "Lowtide": ("blue", [(box(0, 0.5, 2, 1), "yellow"), (disc(1.0, 0.5, 0.2), "white")]),
+    # A cream diamond on rust (a saltire on a red field reads as a real battle flag).
+    "Rustler": ("rust", [(diamond(0.62, 0.5, 0.42, 0.34), "cream"), (diamond(0.62, 0.5, 0.2, 0.16), "rust")]),
+    # A white peak rising from the foot of a blue field (blue with a gold band and a white disc or star reads as a real flag).
+    "Lowtide": ("blue", [(tri((0.4, 1), (1.6, 1), (1.0, 0.35)), "white")]),
 }
 
 

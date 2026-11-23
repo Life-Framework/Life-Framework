@@ -2615,6 +2615,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Look in bin"
      Comment "Action on a bin: opens it as normal storage."
     }
+    CustomStringTableItem "{293BEFA5FB5FC2B2}" {
+     Id "LF-BookingDesk_Book"
+     Target_en_us "Book suspect"
+     Comment "Officer action on the booking desk: book the cuffed suspect beside them."
+    }
+    CustomStringTableItem "{8878A3308543871F}" {
+     Id "LF-BookingDesk_BookDesc"
+     Target_en_us "Charge the cuffed suspect beside you from their open crime reports."
+     Comment "Description of the booking desk action."
+    }
+    CustomStringTableItem "{E594E2FD93031AF6}" {
+     Id "LF-BookingDesk_NoCharges"
+     Target_en_us "This suspect has no open crime reports to charge."
+     Comment "Refusal toast: nothing to charge."
+    }
+    CustomStringTableItem "{AB63EECA4E69E45E}" {
+     Id "LF-BookingDesk_NoOffer"
+     Target_en_us "You have no open booking offer."
+     Comment "Refusal toast to a suspect at the desk."
+    }
+    CustomStringTableItem "{451E083737C61271}" {
+     Id "LF-BookingDesk_NoSuspect"
+     Target_en_us "Bring the cuffed suspect beside you to book them."
+     Comment "Refusal toast: no cuffed suspect next to the officer."
+    }
+    CustomStringTableItem "{CCE5E7A7F854490C}" {
+     Id "LF-BookingDesk_NotHere"
+     Target_en_us "Stand at the booking desk to book a suspect."
+     Comment "Refusal toast: the officer is too far from the desk."
+    }
+    CustomStringTableItem "{F52CFB9B10946A42}" {
+     Id "LF-BookingDesk_NotOnDuty"
+     Target_en_us "Only an on-duty officer can book a suspect."
+     Comment "Refusal toast at the booking desk."
+    }
+    CustomStringTableItem "{B4D1D0BA2B144D2B}" {
+     Id "LF-BookingDesk_OfferOpen"
+     Target_en_us "This suspect already has an open offer. Wait for their answer."
+     Comment "Refusal toast: a second booking while an offer is open."
+    }
+    CustomStringTableItem "{4F8886A116F29389}" {
+     Id "LF-BookingDesk_OfferSuspect"
+     Target_en_us "You are booked: %1. Use the booking desk to pay now or take the time."
+     Comment "Toast to the suspect. %1 = the terms, e.g. '$450 or 10 min'."
+    }
+    CustomStringTableItem "{C0EEBA23914CB0C0}" {
+     Id "LF-BookingDesk_Offered"
+     Target_en_us "Suspect booked: %1."
+     Comment "Toast to the officer. %1 = the terms, e.g. '$450 or 10 min'."
+    }
+    CustomStringTableItem "{B5946EAD645CA27D}" {
+     Id "LF-BookingDesk_OfficerGone"
+     Target_en_us "The booking officer has left. Ask an officer to book you again."
+     Comment "Toast: the officer who made the offer is gone."
+    }
+    CustomStringTableItem "{DFCCB05F185F73C7}" {
+     Id "LF-BookingDesk_Pay"
+     Target_en_us "Pay {currency:sym}%1 now"
+     Comment "Suspect action on the booking desk. %1 = the fine in dollars."
+    }
+    CustomStringTableItem "{F1D9BD9D6D6D5724}" {
+     Id "LF-BookingDesk_PayClosed"
+     Target_en_us "Paying at the desk is not open yet. Take the time instead."
+     Comment "Toast: the pay-now payment is not wired yet."
+    }
+    CustomStringTableItem "{8FEBD62161726822}" {
+     Id "LF-BookingDesk_PayName"
+     Target_en_us "Pay the fine now"
+     Comment "Fallback name of the pay-now desk action."
+    }
+    CustomStringTableItem "{F2D64E8553CB15FA}" {
+     Id "LF-BookingDesk_Time"
+     Target_en_us "Take the time (%1 min)"
+     Comment "Suspect action on the booking desk. %1 = minutes in the cell."
+    }
+    CustomStringTableItem "{CCB82C75C103A361}" {
+     Id "LF-BookingDesk_TimeName"
+     Target_en_us "Take the time"
+     Comment "Fallback name of the take-the-time desk action."
+    }
+    CustomStringTableItem "{79A50A782818ECCC}" {
+     Id "LF-BookingDesk_Title"
+     Target_en_us "Booking desk"
+     Comment "Toast title for the police booking desk."
+    }
     CustomStringTableItem "{312172B24DB5B820}" {
      Id "LF-BreakIn_Barely"
      Target_en_us "Barely started"
@@ -9079,6 +9164,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Mejora de categoría"
      Comment "Hint title when the character's overall standing rises (replaces an arcade LEVEL UP)"
     }
+    CustomStringTableItem "{9D8FF04C43EF328F}" {
+     Id "LF-Level_TradeTier_1"
+     Target_en_us "Apprentice"
+     Comment "Trade tier word for levels 1 to 5, shown beside the trade on the F2 skill card (#4414). The pack may override it."
+    }
+    CustomStringTableItem "{F4ECAB69CD47C063}" {
+     Id "LF-Level_TradeTier_2"
+     Target_en_us "Hand"
+     Comment "Trade tier word for levels 6 to 11 (#4414)."
+    }
+    CustomStringTableItem "{5F256D6141465559}" {
+     Id "LF-Level_TradeTier_3"
+     Target_en_us "Journeyman"
+     Comment "Trade tier word for levels 12 to 19 (#4414)."
+    }
+    CustomStringTableItem "{50ED2B8D81EFB19E}" {
+     Id "LF-Level_TradeTier_4"
+     Target_en_us "Foreman"
+     Comment "Trade tier word for levels 20 to 27 (#4414)."
+    }
+    CustomStringTableItem "{D9282509B6BB1C35}" {
+     Id "LF-Level_TradeTier_5"
+     Target_en_us "Master"
+     Comment "Trade tier word for levels 28 to 30 (#4414)."
+    }
     CustomStringTableItem "{7782A81CDE1A5199}" {
      Id "LF-LicenceCounter_Applied"
      Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this counter to collect it."
@@ -12802,10 +12912,35 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Next level opens: %1"
      Comment "Personal file skill record: what the next level of this job unlocks. %1 = names of the work it opens, comma separated."
     }
+    CustomStringTableItem "{6E14D128F51C49C6}" {
+     Id "LF-PlayerMenu_SkillOpens"
+     Target_en_us "Level %1 opens: %2"
+     Comment "F2 skill card (#4414). %1 = the next level, %2 = what it opens."
+    }
+    CustomStringTableItem "{92CE57A0169506BD}" {
+     Id "LF-PlayerMenu_SkillPerks"
+     Target_en_us "Perks: %1"
+     Comment "F2 skill card (#4414). %1 = the perks picked in this trade."
+    }
+    CustomStringTableItem "{710EB402141348F5}" {
+     Id "LF-PlayerMenu_SkillRank"
+     Target_en_us "Ranked %1 in %2 this week"
+     Comment "F2 skill card weekly rank slot (#4414). %1 = the rank as an ordinal, like 6th, %2 = the trade."
+    }
+    CustomStringTableItem "{B0E52A4594D5C18F}" {
+     Id "LF-PlayerMenu_SkillTitle"
+     Target_en_us "%1, %2"
+     Comment "F2 skill card title (#4414). %1 = the trade, %2 = its tier word."
+    }
     CustomStringTableItem "{F52EBB28BA797478}" {
      Id "LF-PlayerMenu_SkillTop"
      Target_en_us "Level %1 · %2 XP, the top of the ladder"
      Comment "Personal file skill numbers at the highest level. %1 = level, %2 = total XP."
+    }
+    CustomStringTableItem "{FC2FB5AAEA09C862}" {
+     Id "LF-PlayerMenu_SkillUnranked"
+     Target_en_us "Not ranked yet this week"
+     Comment "F2 skill card weekly rank slot (#4414) when the player is not on the shift board."
     }
     CustomStringTableItem "{48BCC2D5ADF101A4}" {
      Id "LF-PlayerMenu_SkillXp"

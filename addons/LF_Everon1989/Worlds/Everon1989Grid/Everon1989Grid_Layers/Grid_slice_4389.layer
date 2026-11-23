@@ -1,0 +1,185 @@
+// Grid cell c25r6 for slice-4389: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_slice_4389_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 327.6 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 332.2 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 336.8 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 341.4 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 346 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 350.6 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.2 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 359.8 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.4 0 95
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 95
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 100
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.4 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 359.8 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.2 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 350.6 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 346 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_19 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 341.4 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_20 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 336.8 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_21 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 332.2 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_22 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 327.6 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4389_Fence_23 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 323 0 105
+ angleY 90
+}
+GenericEntity Grid_slice_4389_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-4389"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 322.2 0.505 95.6
+ angleY -90
+}
+GenericEntity Grid_slice_4389_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "slice-4389"
+  }
+ }
+ coords 322.3 0 97.5
+ angleY 90
+}
+GenericEntity Grid_slice_4389_R0_1 : "{0DD361AB26A16F67}Assets/Props/Flags/Gang/LF_GangFlag_Ashen.et" {
+ coords 327.927 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R0_2 : "{B04AF3137DF84919}Assets/Props/Flags/Gang/LF_GangFlag_Brass.et" {
+ coords 332.038 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R0_3 : "{FB1A3084ACAC02D5}Assets/Props/Flags/Gang/LF_GangFlag_Cinder.et" {
+ coords 336.149 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R0_4 : "{203A78814845765C}Assets/Props/Flags/Gang/LF_GangFlag_Copperhead.et" {
+ coords 340.26 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R0_5 : "{AE9269025AD3ECE7}Assets/Props/Flags/Gang/LF_GangFlag_Ember.et" {
+ coords 344.371 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R0_6 : "{EDC02EE6F8265F6E}Assets/Props/Flags/Gang/LF_GangFlag_Gallows.et" {
+ coords 348.482 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R0_7 : "{DF206212C0316DE4}Assets/Props/Flags/Gang/LF_GangFlag_Harbor.et" {
+ coords 352.593 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R0_8 : "{1F7B3F1CCC70825C}Assets/Props/Flags/Gang/LF_GangFlag_Ironside.et" {
+ coords 356.704 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R0_9 : "{8DE1C6394696D70E}Assets/Props/Flags/Gang/LF_GangFlag_Lantern.et" {
+ coords 360.816 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R0_10 : "{46AA1EB0FDEF2125}Assets/Props/Flags/Gang/LF_GangFlag_Lowtide.et" {
+ coords 364.927 0.807 98.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_1 : "{2B95FDABD407DECE}Assets/Props/Flags/Gang/LF_GangFlag_Marrow.et" {
+ coords 327.927 0.807 102.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_2 : "{64AC2B3B963A00AB}Assets/Props/Flags/Gang/LF_GangFlag_Nightjar.et" {
+ coords 332.038 0.807 102.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_3 : "{F91E4022BC72ACBD}Assets/Props/Flags/Gang/LF_GangFlag_Quarry.et" {
+ coords 336.149 0.807 102.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_4 : "{4BA2CDC60A8EB61D}Assets/Props/Flags/Gang/LF_GangFlag_Rook.et" {
+ coords 340.26 0.807 102.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_5 : "{4CE2134E9C6F8F0E}Assets/Props/Flags/Gang/LF_GangFlag_Rustler.et" {
+ coords 344.371 0.807 102.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_6 : "{FFAE597869D9BAC2}Assets/Props/Flags/Gang/LF_GangFlag_Salt.et" {
+ coords 348.482 0.807 102.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_7 : "{293B6170784EAAC8}Assets/Props/Flags/Gang/LF_GangFlag_Thornfield.et" {
+ coords 352.593 0.807 102.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_8 : "{BE56FCD3637A2CAC}Assets/Props/Flags/Gang/LF_GangFlag_Tidewater.et" {
+ coords 356.704 0.807 102.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_9 : "{642100A3CB6538BE}Assets/Props/Flags/Gang/LF_GangFlag_Vesper.et" {
+ coords 360.816 0.807 102.001
+ angleY -90
+}
+GenericEntity Grid_slice_4389_R1_10 : "{4BAE6FD5D203F266}Assets/Props/Flags/Gang/LF_GangFlag_Wolfsbane.et" {
+ coords 364.927 0.807 102.001
+ angleY -90
+}
