@@ -1,0 +1,28 @@
+GenericEntity {
+ ID "8A3A39FC1B0CBB4D"
+ components {
+  MeshObject "{8429DB335DB3F162}" {
+   Object "{CEC8A3DF893B9C96}Assets/Props/Crates/BoxWooden_01.xob"
+  }
+  RigidBody "{D7A64EE7CFE5D625}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+ }
+ coords 0 0 0
+ {
+  GenericEntity : "{8DD52DEE63DCD07E}Prefabs/Props/Market/LF_ProduceFruit_Cabbage.et" {
+   ID "B0B3FCCE2C953728"
+   coords -0.119 0.142 -0.016
+   scale 0.85
+   angles 1.757 78.8 -3.078
+  }
+  GenericEntity : "{8DD52DEE63DCD07E}Prefabs/Props/Market/LF_ProduceFruit_Cabbage.et" {
+   ID "0431B5A622EC69D7"
+   coords 0.101 0.141 -0.015
+   scale 0.85
+   angles 18.117 215.641 1.644
+  }
+ }
+}

@@ -96,3 +96,15 @@ LF_NpcBaseEntity Fit_saint_philippe_clothing_village_clothing_store_clerk : "{50
  coords 4439.54 11.499 10789.367
  angleY 153
 }
+GenericEntity Fit_saint_philippe_clothing_clothing_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "clothing_store"
+   m_vRimColor 0.9 0.88 0.82
+   m_vPaintColor 0.1 0.2 0.42
+   m_vTextColor 0.96 0.94 0.88
+  }
+ }
+ coords 4442.313 14.33 10780.73
+ angleY 153
+}

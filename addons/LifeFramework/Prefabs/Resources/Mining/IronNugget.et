@@ -32,6 +32,8 @@ GenericEntity : "{B26D228CF60863F6}Prefabs/Items/Core/InteractableItem_Base.et" 
     m_Size SLOT_1x1
    }
   }
+  LF_LooseGlintComponent "{383043BE6DC8D9FF}" {
+  }
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{A1CA5A6BDE069736}Assets/Resources/Mining/Nugget/OreNugget.xob"
    Materials {

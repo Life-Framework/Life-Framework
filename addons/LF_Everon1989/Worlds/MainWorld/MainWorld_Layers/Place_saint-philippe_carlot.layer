@@ -148,6 +148,7 @@ GenericEntity Fit_saint_philippe_carlot_garage {
      UIInfo UIInfo "{A1C1080A00000006}" {
       Name "#EL-Vehicle_Store"
      }
+     "Sort Priority" 2
     }
     LF_VehicleRetrieveAction "{A1C1080A00000007}" {
      ParentContextList {
@@ -156,6 +157,7 @@ GenericEntity Fit_saint_philippe_carlot_garage {
      UIInfo UIInfo "{A1C1080A00000008}" {
       Name "#EL-Vehicle_Retrieve"
      }
+     "Sort Priority" 1
     }
     LF_GarageLedgerAction "{C9A69B1164585666}" {
      ParentContextList {
@@ -164,6 +166,7 @@ GenericEntity Fit_saint_philippe_carlot_garage {
      UIInfo UIInfo "{006BD8DCF53DEDC6}" {
       Name "#LF-Garage_ReadLedger"
      }
+     "Sort Priority" 3
     }
     LF_GarageBuySlotAction "{28F1261ED2051036}" {
      ParentContextList {
@@ -172,6 +175,7 @@ GenericEntity Fit_saint_philippe_carlot_garage {
      UIInfo UIInfo "{6EF55C133E0B55D2}" {
       Name "#LF-Garage_BuySlot"
      }
+     "Sort Priority" 4
     }
    }
   }
