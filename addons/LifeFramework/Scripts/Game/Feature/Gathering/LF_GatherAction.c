@@ -142,7 +142,7 @@ class LF_GatherAction : ScriptedUserAction
 			string format = m_sActionFormat;
 			if (format.IsEmpty())
 				format = "#LF-Gather_Action";
-			m_sDisplayName = WidgetManager.Translate(format, WidgetManager.Translate(itemName));
+			m_sDisplayName = WidgetManager.Translate(format, SentenceCaseItem(WidgetManager.Translate(itemName)));
 		}
 
 		outName = m_sDisplayName;
@@ -438,6 +438,16 @@ class LF_GatherAction : ScriptedUserAction
 			name = uiInfo.GetName();
 
 		return LF_Terms.Text(name);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An item's own name is Title Case ("Apple", "Iron Ore"); inside the action row it reads as part of
+	//! the sentence, so "Gather apple" matches the other rows (first-2-hours re-review A24).
+	static string SentenceCaseItem(string itemName)
+	{
+		string lower = itemName;
+		lower.ToLower();
+		return lower;
 	}
 
 	//------------------------------------------------------------------------------------------------
