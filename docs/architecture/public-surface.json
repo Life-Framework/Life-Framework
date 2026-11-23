@@ -5,6 +5,7 @@
     "LF_BuyerPrices",
     "LF_CharacterConfig",
     "LF_ChopShopConfig",
+    "LF_ClinicShortageConfig",
     "LF_CrimeCatalogConfig",
     "LF_CropCatalogue",
     "LF_DialogueConfig",
