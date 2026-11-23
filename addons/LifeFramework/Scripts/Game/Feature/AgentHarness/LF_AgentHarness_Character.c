@@ -71,7 +71,7 @@ modded class SCR_ChimeraCharacter
 	protected void RpcDo_LF_HarnessStand(int commandId, string entityName, vector destination, float yaw, RplId target)
 	{
 		LF_MoveHarnessBody(destination, yaw);
-		LF_AwaitHarnessStandTarget(commandId, entityName, target, 0);
+		LF_AwaitHarnessStandTarget(commandId, entityName, target, System.GetTickCount());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -79,25 +79,27 @@ modded class SCR_ChimeraCharacter
 	//! this client. A player walking up always sees the NPC; a teleported one does not for a second or
 	//! more, and a `use` in that gap finds no action here (#4611). Stand answers once the target exists
 	//! on this client, so the next command acts on what a player standing there would see.
-	protected void LF_AwaitHarnessStandTarget(int commandId, string entityName, RplId target, int tick)
+	protected void LF_AwaitHarnessStandTarget(int commandId, string entityName, RplId target, int sinceMs)
 	{
+		// Wall-clock: a loaded client runs the call queue late, so counting ticks overran the harness timeout.
+		int waitedMs = System.GetTickCount() - sinceMs;
 		if (!target.IsValid() || LF_NetworkUtils.FindEntityByRplId(target))
 		{
-			if (tick > 0)
-				LF_Debug.Log("AgentHarness", string.Format("stand: %1 streamed in after %2 ms", entityName, tick * LF_HARNESS_STREAM_TICK_MS));
+			if (waitedMs > 0)
+				LF_Debug.Log("AgentHarness", string.Format("stand: %1 streamed in after %2 ms", entityName, waitedMs));
 
 			LF_AgentHarness.Reply(commandId, "ok", entityName);
 			return;
 		}
 
-		if (tick * LF_HARNESS_STREAM_TICK_MS >= LF_HARNESS_STREAM_WAIT_MS)
+		if (waitedMs >= LF_HARNESS_STREAM_WAIT_MS)
 		{
 			LF_Debug.Warn("AgentHarness", string.Format("stand: %1 did not stream in to this client within %2 ms", entityName, LF_HARNESS_STREAM_WAIT_MS));
 			LF_AgentHarness.Reply(commandId, "error", "target_not_streamed");
 			return;
 		}
 
-		GetGame().GetCallqueue().CallLater(LF_AwaitHarnessStandTarget, LF_HARNESS_STREAM_TICK_MS, false, commandId, entityName, target, tick + 1);
+		GetGame().GetCallqueue().CallLater(LF_AwaitHarnessStandTarget, LF_HARNESS_STREAM_TICK_MS, false, commandId, entityName, target, sinceMs);
 	}
 
 	//------------------------------------------------------------------------------------------------
