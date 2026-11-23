@@ -111,6 +111,16 @@ LF_NpcBaseEntity Fit_saint_philippe_general_store_clerk : "{8CCD224BC53CABE7}Pre
  coords 4513.059 15.494 10747.015
  angleY 171
 }
+GenericEntity Fit_saint_philippe_general_store_general_store_box_safe : "{FDF16EF9B78A92F7}Prefabs/Props/Safes/LF_StoreBox.et" {
+ components {
+  LF_HeistVaultComponent "{6E1B3A7C95D2040B}" {
+   m_iStock 1
+   m_fRefillSeconds 2700
+  }
+ }
+ coords 4511.985 15.494 10746.891
+ angleY 171
+}
 GenericEntity Fit_saint_philippe_general_store_general_store_alarm_box : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
  components {
   LF_AlarmMountComponent "{6A1C3E57B0D24F81}" {
