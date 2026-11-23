@@ -356,6 +356,7 @@ export function checkMapping(mapping, dossierJson, template, others = null) {
       continue;
     }
     if (e.drops) out.push(`slot ${slot.id}: only an outposts slot lists drops`);
+    if (e.kit !== undefined && (typeof e.kit !== "string" || !SLUG_RX.test(e.kit))) out.push(`slot ${slot.id}: "kit" must be a plain kit name (a kit in tools/town/kits cut for this building)`);
     if (e.building && e.plot) out.push(`slot ${slot.id}: names both a building and a plot`);
     if (!e.building && !e.plot) {
       out.push(`slot ${slot.id}: names neither a building nor a plot`);
