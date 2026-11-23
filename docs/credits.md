@@ -223,3 +223,12 @@ Repainted vehicle bodies and door plates written by `tools\cli livery build`.
 |---|---|---|---|
 | LF_UAZ469_Police | Derived from Bohemia Interactive `UAZ469_Body_CIV_BLUE.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Police repaint and door plates for the UAZ469 | `addons/LF_Everon1989/Assets/Liveries/UAZ469/` |
 | LF_S105_Police | Derived from Bohemia Interactive `S105Body_mat_beige.emat` (Arma Public License, base-game asset) | Police repaint for the S105 | `addons/LF_Everon1989/Assets/Liveries/S105/` |
+
+## Contraband labels
+
+English print for the cigarette pack and the vodka bottle (#4383). The brands GANNET and CORVIN are invented. Both keep the vanilla mesh; each colour map is the vanilla map with the pack's or label's own patches repainted by `tools/assets/contraband-labels/build.mjs` (Blender, the two fonts Blender ships under open licenses).
+
+| Asset | Source and license | What it is for | Where |
+|---|---|---|---|
+| LF_CigaretteCarton_BCR | Derived from Bohemia Interactive `LitterInterior_01_V1_BCR.edds` (Arma Public License, base-game asset); the print is ours | English print on the cigarette pack (`LF_CigaretteCarton`) | `addons/LF_Everon1989/Assets/Items/Contraband/LF_CigaretteCarton/` |
+| LF_VodkaBottle_BCR | Derived from Bohemia Interactive `S2_Vodka_paper_BCR.edds` (Arma Public License, base-game asset); the print is ours | English label on the vodka bottle (`LF_VodkaBottle`) | `addons/LF_Everon1989/Assets/Items/Contraband/LF_VodkaBottle/` |
