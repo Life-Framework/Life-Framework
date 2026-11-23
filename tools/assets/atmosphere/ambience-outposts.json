@@ -1,0 +1,248 @@
+{
+  "_note": "Spec and credit record of the north outpost ambience beds (#4460, GA-O12): a generator hum, a crackling fire, a radio murmuring in a tent and wind through the nets. Same pipeline as ambience.json (tools/assets/pipeline/ambience.mjs); run with this file swapped in for ambience.json, then the output moved to Sounds/Ambience/Outposts. Prompts never name an artist, a song or a label.",
+  "addon": "LF_Everon1989",
+  "budget": {
+    "credits": 2500
+  },
+  "sounds": [
+    {
+      "id": "outpost_generator",
+      "name": "OutpostGenerator",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 48000,
+      "volume_db": -12,
+      "inner_m": 6,
+      "outer_m": 40,
+      "seam_ms": 500,
+      "takes": 2,
+      "prompt_influence": 0.6,
+      "even": true,
+      "prompt": "Small diesel generator running steadily outdoors at a camp: a low constant engine hum with a soft rattle of the casing, no revving, no speech, no music.",
+      "pick": 2,
+      "reason": "Take 2 has a loop step of 0.02x (take 1 0.28x would click at the seam) and the same hum level."
+    },
+    {
+      "id": "outpost_fire",
+      "name": "OutpostFire",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 48000,
+      "volume_db": -12,
+      "inner_m": 5,
+      "outer_m": 30,
+      "seam_ms": 500,
+      "takes": 2,
+      "prompt_influence": 0.6,
+      "even": true,
+      "prompt": "A campfire burning steadily at night: soft crackling and popping of dry wood, a gentle low flame rush, an occasional settling log. No voices, no music, no wind.",
+      "pick": 1,
+      "reason": "Take 1 runs the full 19.3 s of crackle (take 2 is cut to 16.5 s) with a seamless loop step of 0.00x."
+    },
+    {
+      "id": "outpost_radio",
+      "name": "OutpostRadio",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 24000,
+      "volume_db": -14,
+      "inner_m": 4,
+      "outer_m": 26,
+      "seam_ms": 500,
+      "takes": 2,
+      "prompt_influence": 0.5,
+      "even": true,
+      "prompt": "A small portable radio murmuring inside a canvas tent, heard from a few steps away: a muffled talking voice in a foreign language with no clear words, thin and tinny, with a faint static hiss under it. No music.",
+      "pick": 2,
+      "reason": "Take 2 has the lower loop step (0.10x against 0.14x) at the same band-limited level; both are an unintelligible murmur."
+    },
+    {
+      "id": "outpost_wind",
+      "name": "OutpostWind",
+      "kind": "loop",
+      "seconds": 20,
+      "rate": 48000,
+      "volume_db": -13,
+      "inner_m": 8,
+      "outer_m": 50,
+      "seam_ms": 500,
+      "takes": 2,
+      "prompt_influence": 0.5,
+      "even": true,
+      "prompt": "Night wind moving through camouflage nets stretched over a camp: a soft airy whistle and the slow flutter and rustle of loose netting and canvas, gusts rising and fading gently. No voices, no music, no engines.",
+      "pick": 1,
+      "reason": "Take 1 is louder and fuller (rms -19 dB against -21 dB) with the same 0.04x loop step, so the gusts carry at distance."
+    }
+  ],
+  "generations": [
+    {
+      "id": "outpost_generator",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Small diesel generator running steadily outdoors at a camp: a low constant engine hum with a soft rattle of the casing, no revving, no speech, no music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 19.5,
+        "peak_db": -3,
+        "rms_db": -15.5,
+        "wrap": 0.28
+      }
+    },
+    {
+      "id": "outpost_generator",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Small diesel generator running steadily outdoors at a camp: a low constant engine hum with a soft rattle of the casing, no revving, no speech, no music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 19.5,
+        "peak_db": -3,
+        "rms_db": -15,
+        "wrap": 0.02
+      }
+    },
+    {
+      "id": "outpost_fire",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A campfire burning steadily at night: soft crackling and popping of dry wood, a gentle low flame rush, an occasional settling log. No voices, no music, no wind.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 19.31,
+        "peak_db": -3,
+        "rms_db": -37.6,
+        "wrap": 0
+      }
+    },
+    {
+      "id": "outpost_fire",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A campfire burning steadily at night: soft crackling and popping of dry wood, a gentle low flame rush, an occasional settling log. No voices, no music, no wind.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 16.52,
+        "peak_db": -3,
+        "rms_db": -36.8,
+        "wrap": 0
+      }
+    },
+    {
+      "id": "outpost_radio",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small portable radio murmuring inside a canvas tent, heard from a few steps away: a muffled talking voice in a foreign language with no clear words, thin and tinny, with a faint static hiss under it. No music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 19.5,
+        "peak_db": -3,
+        "rms_db": -24.6,
+        "wrap": 0.14
+      }
+    },
+    {
+      "id": "outpost_radio",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A small portable radio murmuring inside a canvas tent, heard from a few steps away: a muffled talking voice in a foreign language with no clear words, thin and tinny, with a faint static hiss under it. No music.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 19.5,
+        "peak_db": -3,
+        "rms_db": -25,
+        "wrap": 0.1
+      }
+    },
+    {
+      "id": "outpost_wind",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Night wind moving through camouflage nets stretched over a camp: a soft airy whistle and the slow flutter and rustle of loose netting and canvas, gusts rising and fading gently. No voices, no music, no engines.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 18.92,
+        "peak_db": -3,
+        "rms_db": -19,
+        "wrap": 0.04
+      }
+    },
+    {
+      "id": "outpost_wind",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "Night wind moving through camouflage nets stretched over a camp: a soft airy whistle and the slow flutter and rustle of loose netting and canvas, gusts rising and fading gently. No voices, no music, no engines.",
+      "seconds": 20,
+      "bytes": 321035,
+      "credits": 200,
+      "processed": {
+        "seconds": 18.86,
+        "peak_db": -3,
+        "rms_db": -21,
+        "wrap": 0.04
+      }
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-11-23",
+      "generations": 8,
+      "plan": "starter",
+      "credits_before": 29396,
+      "credits_after": 30996,
+      "credits": 1600,
+      "by_rate": 1600
+    }
+  ],
+  "wired": {
+    "outpost_generator": {
+      "project": "{D4A74CE484CF999A}Sounds/Atmosphere/Atmosphere_OutpostGenerator.acp",
+      "sample": "{073022BD2C3D2945}Sounds/Atmosphere/Samples/Atmosphere_OutpostGenerator_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "outpost_fire": {
+      "project": "{8EBDC9701649F251}Sounds/Atmosphere/Atmosphere_OutpostFire.acp",
+      "sample": "{A4E2E5E4ED1A0024}Sounds/Atmosphere/Samples/Atmosphere_OutpostFire_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "outpost_radio": {
+      "project": "{A483FD5B3992DD8A}Sounds/Atmosphere/Atmosphere_OutpostRadio.acp",
+      "sample": "{0813E5D42B7F2CFF}Sounds/Atmosphere/Samples/Atmosphere_OutpostRadio_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    },
+    "outpost_wind": {
+      "project": "{93CF38268BAAEC25}Sounds/Atmosphere/Atmosphere_OutpostWind.acp",
+      "sample": "{9CB85C504B4687C4}Sounds/Atmosphere/Samples/Atmosphere_OutpostWind_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP"
+    }
+  }
+}
