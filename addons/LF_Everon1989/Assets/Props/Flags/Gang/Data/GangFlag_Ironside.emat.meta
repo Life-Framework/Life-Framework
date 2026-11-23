@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{5C0EF8A9D9925B44}Assets/Props/Flags/Gang/Data/GangFlag_Ironside.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}
