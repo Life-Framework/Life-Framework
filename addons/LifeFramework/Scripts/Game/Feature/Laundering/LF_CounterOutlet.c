@@ -30,6 +30,8 @@ class LF_CounterOutlet
 	static const string FEATURE = "Laundering";
 	static const string REASON_SALE = "counter-sale";
 	static const string REASON_REFUND = "counter-sale-refund";
+	//! The resident-memory reason a sale earns the barkeeper's regard (LF_ResidentMemory.conf).
+	static const string REASON_TRADED = "traded";
 
 	//! Server: world seconds of each seller's last attempt, for the rate limit.
 	protected static ref map<string, float> s_mLastSale = new map<string, float>();
@@ -206,6 +208,12 @@ class LF_CounterOutlet
 		// Cash is on the ledger already (AddCash); marked notes get their own trail line.
 		if (marked)
 			LF_EventBus.Publish(LF_OnMoneyMoved.CreateFull(key, LF_Ledger.ACCOUNT_MARKED, total, true, REASON_SALE, LF_MarkedCash.Count(user), ""));
+
+		// A regular is a seller the bar knows: each sale counts toward the barkeeper's standing (#4595);
+		// a counter with no standing id changes nothing, and the cooldown stops a burst of sales piling up.
+		string standing = LF_ResidentTalk.MemoryIdOf(counter);
+		if (!standing.IsEmpty())
+			LF_ResidentMemory.Apply(standing, key, REASON_TRADED, nowUnix);
 
 		paid = total;
 		LF_Debug.Info(FEATURE, string.Format("counter sale by %1 at '%2': %3 line(s) for %4 (%5)", key, buyer, soldGoods.Count(), total, LF_BuyerSale.Currency(marked)));
