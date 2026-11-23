@@ -33,6 +33,12 @@
     },
     "bye": {
       "text": "We never spoke."
+    },
+    "refuse_drill": {
+      "text": "Vince does not sell that to strangers. Make a name for yourself, then come back."
+    },
+    "sell_drill": {
+      "text": "You have earned it. Here is the drill. Be quiet with it, and it never came from me."
     }
   },
   "replies": {}

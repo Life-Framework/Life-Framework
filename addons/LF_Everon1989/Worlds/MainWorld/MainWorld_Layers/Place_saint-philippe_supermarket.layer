@@ -39,6 +39,16 @@ GenericEntity Fit_saint_philippe_supermarket_electricity_box_small_01 : "{CDE403
  coords 4380.769 15.3 10674.342
  angleY 82
 }
+GenericEntity Fit_saint_philippe_supermarket_supermarket_box_safe : "{FDF16EF9B78A92F7}Prefabs/Props/Safes/LF_StoreBox.et" {
+ components {
+  LF_HeistVaultComponent "{6E1B3A7C95D2040B}" {
+   m_iStock 1
+   m_fRefillSeconds 2700
+  }
+ }
+ coords 4378.423 12.7 10672.699
+ angleY 172
+}
 LF_NpcBaseEntity Fit_saint_philippe_supermarket_village_supermarket_shopkeeper : "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et" {
  coords 4377.284 12.695 10672.539
  angleY 172

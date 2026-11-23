@@ -138,8 +138,9 @@
   nothing; a job's `dailyXpCap` (FARMER 2000) drops the part over the cap per day of server
   time. Both clocks are session state. An unknown job or action earns nothing and logs
   `[LFDebug:JobLevels]`.
-- ✅ Gates read job levels: delivery sign-up (DELIVERY: fuel level 2, taxi level 3, the old
-  pacing), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
+- ✅ **DELIVERY has 30 levels** (#4596): its track uses the same XP curve as the other trades (100, 300, 600, 1000, 1500 ... 42000), so the export order gate at level 10 is 5000 XP, about 50 `delivery_run` runs (100 XP each; a postal run is 120) or a few hours of hauling. Test `jobs/delivery-level-ten` (the ladder, the runs to level 10, a level 9 hauler refused and a level 10 hauler taking an order). A pre-#749 career level never drops: the new table is easier.
+- ✅ Gates read job levels: delivery sign-up (DELIVERY: fuel level 2, taxi level 3; the
+  levels now come at 100 and 300 XP, see the 30-level table below), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
   or a `jobs.licenceGates` row), chain steps and quests (`m_sLevelJob` / `m_sJob`, CIVILIAN by
   default), lockpicking skill (CIVILIAN).
 - ✅ (2026-11-17, #2700) **A job-level gate refuses in words, never a number.**

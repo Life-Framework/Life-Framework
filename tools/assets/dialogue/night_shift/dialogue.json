@@ -30,12 +30,21 @@
       "line": "greet",
       "options": [
         { "text": "zone", "next": "zone" },
-        { "text": "move", "next": "move" },
+        { "text": "heard", "action": "HeardAnything", "param": "informant" },
         { "text": "work", "next": "work" },
         { "text": "bye", "next": "bye" }
       ]
     },
-    { "id": "zone", "line": "about_zone", "options_from": "greet" },
+    {
+      "id": "zone",
+      "line": "about_zone",
+      "options": [
+        { "text": "move", "next": "move" },
+        { "text": "heard", "action": "HeardAnything", "param": "informant" },
+        { "text": "work", "next": "work" },
+        { "text": "bye", "next": "bye" }
+      ]
+    },
     { "id": "move", "line": "about_move", "options_from": "greet" },
     {
       "id": "work",
@@ -66,6 +75,7 @@
     "move": "How was the move?",
     "work": "Is there work for me?",
     "tip": "Heard anyone's buying, quiet like?",
+    "heard": "Heard anything?",
     "bye": "Goodbye."
   }
 }
