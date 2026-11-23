@@ -8,8 +8,8 @@
 //
 // The options for a car are the lot colours of its model (LF_VehicleColoursConfig, at the
 // respray price) and the liveries a pack lists for the model (LF_LiveryShopConfig). A livery can
-// name a faction: a police or ambulance livery is only sold to that job. The client sends an
-// option index; the server rebuilds the list and checks ownership, the bay, the job and the cash.
+// name a faction: a police or ambulance livery is only sold to that job. The client sends the
+// paint (an option's spawn prefab); the server rebuilds the list and checks ownership, the bay, the job and the cash.
 
 //------------------------------------------------------------------------------------------------
 //! One livery a pack sells for one model.
@@ -209,12 +209,13 @@ class LF_LiveryShop
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: repaints the payer's car standing in the bay with option `index` of OptionsFor.
+	//! Server: repaints the payer's car standing in the bay in `chosenPaint`, the m_SpawnPrefab of one of
+	//! its OptionsFor.
 	//! Checks, in order: the car is the payer's, it stands in the bay, the option exists, the job
 	//! allows it, the payer carries the price in cash. The cash is taken once, then the car goes
 	//! through the garage and comes back on `padId` in the new paint; a failed respawn puts the old
 	//! paint back and refunds. reasonKey is the line the payer reads either way.
-	static bool Respray(IEntity payer, string payerUid, LF_Faction faction, string vehicleId, vector bayOrigin, string padId, int index, out int charged, out string reasonKey)
+	static bool Respray(IEntity payer, string payerUid, LF_Faction faction, string vehicleId, vector bayOrigin, string padId, ResourceName chosenPaint, out int charged, out string reasonKey)
 	{
 		charged = 0;
 		reasonKey = "#LF-Systems_Off";
@@ -243,16 +244,31 @@ class LF_LiveryShop
 			return false;
 		}
 
+		// The request names the paint, not a place in the list: the list leaves out the current paint,
+		// so an index sent twice (a double press, a stale row) landed on the next paint and charged
+		// again (#4473 review). The paint the car already wears is not on offer and is refused.
 		reasonKey = "#LF-LiveryShop_NoOption";
 		array<ref LF_LiveryOption> options = {};
 		OptionsFor(vehicleId, options);
-		if (index < 0 || index >= options.Count())
+		LF_LiveryOption option;
+		if (!chosenPaint.IsEmpty())
 		{
-			LF_Debug.Info("LiveryShop", string.Format("respray refused: %1 has no option %2 (of %3)", vehicleId, index, options.Count()));
+			foreach (LF_LiveryOption candidate : options)
+			{
+				if (LF_VehiclePriceModel.SameResource(candidate.m_SpawnPrefab, chosenPaint))
+				{
+					option = candidate;
+					break;
+				}
+			}
+		}
+
+		if (!option)
+		{
+			LF_Debug.Info("LiveryShop", string.Format("respray refused: %1 has no option %2 (of %3)", vehicleId, chosenPaint, options.Count()));
 			return false;
 		}
 
-		LF_LiveryOption option = options[index];
 		reasonKey = "#LF-LiveryShop_WrongJob";
 		if (option.m_eFaction != LF_Faction.CIVILIAN && option.m_eFaction != faction)
 		{
@@ -297,7 +313,7 @@ class LF_LiveryShop
 			// The old paint comes back on the pad, or the car waits in the garage; the money goes back.
 			Swap(vehicleId, payerUid, oldPaint, padId, payer);
 			if (option.m_iPrice > 0)
-				LF_MoneyUtils.AddCash(payer, option.m_iPrice, "respray-rollback");
+				LF_MoneyUtils.AddCash(payer, option.m_iPrice, "respray-rollback", "", true); // a key handed back may fill the pocket: the rest goes at their feet
 
 			LF_Debug.Warn("LiveryShop", string.Format("respray of %1 failed; refunded %2", vehicleId, option.m_iPrice));
 			return false;
