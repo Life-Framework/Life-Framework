@@ -6093,6 +6093,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Workbench"
      Comment "Inventory name of the carried workbench a player places in their own house."
     }
+    CustomStringTableItem "{D4DD0BA4533222B8}" {
+     Id "LF-GangRadio_NotMember"
+     Target_en_us "Gang members only"
+     Comment "Reason the gang radio cannot be tuned: the carrier is in no gang (#4221)."
+    }
+    CustomStringTableItem "{7C98C20B33E1A120}" {
+     Id "LF-GangRadio_Tune"
+     Target_en_us "Tune to gang channel"
+     Comment "Action on a carried gang radio: puts it on the gang band (#4221)."
+    }
     CustomStringTableItem "{3CEA2232FA244C93}" {
      Id "LF-Garage_Blue"
      Target_en_us "Blue"
@@ -7917,6 +7927,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_FishingRod_Name"
      Target_en_us "Fishing rod"
      Comment "Item name: the fishing rod (#2928)."
+    }
+    CustomStringTableItem "{4D123BBBA06D16BA}" {
+     Id "LF-Item_GangRadio_Description"
+     Target_en_us "A handheld set. Tune it to your gang channel and only your crew hears you."
+     Comment "Item description of the gang radio (#4221)."
+    }
+    CustomStringTableItem "{3337BFB02E6A4A9F}" {
+     Id "LF-Item_GangRadio_Name"
+     Target_en_us "Gang radio"
+     Comment "Item name: a handheld radio a gang tunes to its own hidden channel (#4221)."
     }
     CustomStringTableItem "{E0C70F7F81117F7D}" {
      Id "LF-Item_Handcuffs_Description"
