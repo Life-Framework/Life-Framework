@@ -22,18 +22,18 @@ class LF_Test_JobLevelGates : LF_Test
 		LF_JobLevels.Forget(COURIER);
 		LF_JobLevels.Forget(MINER);
 
-		// Delivery sign-up: fuel needs DELIVERY level 2 (100 xp), the taxi level 3 (300 xp; the 30-level table, #4596).
+		// Delivery sign-up: fuel needs DELIVERY level 4 (600 xp), the taxi level 6 (1500 xp; the 30-level table, #4596, keeps the early pacing).
 		ctx.False(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "a new courier may not take fuel delivery");
-		ctx.False(LF_CivilianJob.SignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "fuel sign-up is refused below DELIVERY level 2");
+		ctx.False(LF_CivilianJob.SignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "fuel sign-up is refused below DELIVERY level 4");
 		LF_JobLevels.AddXp(COURIER, LF_JobLevels.JOB_CIVILIAN, 5000, "test");
 		ctx.False(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "CIVILIAN xp does not open delivery work");
-		LF_JobLevels.AddXp(COURIER, LF_JobLevels.JOB_DELIVERY, 99, "test");
-		ctx.False(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "99 delivery xp is still level 1");
+		LF_JobLevels.AddXp(COURIER, LF_JobLevels.JOB_DELIVERY, 599, "test");
+		ctx.False(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "599 delivery xp is still level 3");
 		LF_JobLevels.AddXp(COURIER, LF_JobLevels.JOB_DELIVERY, 1, "test");
-		ctx.True(LF_CivilianJob.SignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "fuel sign-up is accepted at DELIVERY level 2");
-		ctx.False(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.TAXI), "the taxi still needs level 3");
-		LF_JobLevels.AddXp(COURIER, LF_JobLevels.JOB_DELIVERY, 200, "test");
-		ctx.True(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.TAXI), "the taxi opens at DELIVERY level 3");
+		ctx.True(LF_CivilianJob.SignUp(COURIER, LF_EJobType.FUEL_DELIVERY), "fuel sign-up is accepted at DELIVERY level 4");
+		ctx.False(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.TAXI), "the taxi still needs level 6");
+		LF_JobLevels.AddXp(COURIER, LF_JobLevels.JOB_DELIVERY, 900, "test");
+		ctx.True(LF_CivilianJob.CanSignUp(COURIER, LF_EJobType.TAXI), "the taxi opens at DELIVERY level 6");
 
 		// Licences: the family's job and the catalog level. MINER_GOLD ships at level 6 in MINER.
 		ctx.EqualStr("MINER", LF_LicenseGate.JobOf(LF_ELicenseType.MINER_GOLD), "a mining licence levels in MINER");

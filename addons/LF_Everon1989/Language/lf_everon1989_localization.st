@@ -7996,12 +7996,12 @@ StringTable {
     }
     CustomStringTableItem "{26AB027C285BC0D5}" {
      Id "LF-Unlock_Hauling_05"
-     Target_en_us "Taxi fares"
+     Target_en_us "Faster loading"
      Comment "What Hauling level 5 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{66A808D00E3ACBA5}" {
      Id "LF-Unlock_Hauling_06"
-     Target_en_us "Faster loading"
+     Target_en_us "Taxi fares"
      Comment "What Hauling level 6 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{24D9B283B36BB21F}" {
