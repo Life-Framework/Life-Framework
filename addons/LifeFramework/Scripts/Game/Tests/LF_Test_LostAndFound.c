@@ -1,4 +1,5 @@
 // red-proof: Observed 2026-11-19 with `tools\cli test --no-build --red LF_Test_LostAndFound`: `RED PROOF OK` with the lapse step skipped; it failed `the locker holds nothing after the lapse`, `the owner has things waiting` and `the owner's things are untouched by the stranger`.
+// red-proof (#4323): 2026-11-23 `test --only LF_Test_LostAndFound` on the unfixed test failed `a stranger reclaims nothing (expected 1, got 3)`: the stranger spawned at <73.90,0.11,108.18>, the box at <76.41,0.11,108.47>, 2.5 m apart, so the reclaim was OUT_OF_REACH. Green with the stranger standing at the owner's position.
 // tier: WORLD
 //! lockers/lost-and-found (#3457): a locker that lapsed with two items in it is freed and its contents wait in
 //! the site's lost-and-found. The owner, short of the fee, is refused and nothing moves; with the fee they take
@@ -101,9 +102,11 @@ class LF_Test_LostAndFound : LF_Test
 			ctx.Equal(1, waiting.CountPrefab(APPLE), "the apple waits in lost-and-found");
 		}
 
-		// A stranger sees nothing, is refused and keeps their cash.
+		// A stranger sees nothing, is refused and keeps their cash. They stand where the owner stands, in reach of the
+		// box: both fixture characters spawn on the gate and the engine shoves them apart by an arbitrary amount, so
+		// their own origin could land beyond the 2.5 m reach and the refusal would be OUT_OF_REACH (#4323).
 		ctx.False(LF_LostAndFound.HasThings(STRANGER_KEY, SITE), "a stranger has nothing waiting");
-		ctx.Equal(LF_ELostAndFoundResult.NOTHING_TO_RECLAIM, LF_LostAndFound.ReclaimAt(lapsedNow, stranger, STRANGER_KEY, SITE, stranger.GetOrigin(), box, reach, FEE, PERIOD_DAYS, GRACE_DAYS), "a stranger reclaims nothing");
+		ctx.Equal(LF_ELostAndFoundResult.NOTHING_TO_RECLAIM, LF_LostAndFound.ReclaimAt(lapsedNow, stranger, STRANGER_KEY, SITE, at, box, reach, FEE, PERIOD_DAYS, GRACE_DAYS), "a stranger reclaims nothing");
 		ctx.Equal(100, LF_MoneyUtils.GetCash(stranger), "the stranger keeps their cash");
 		ctx.True(LF_LostAndFound.HasThings(KEY, SITE), "the owner's things are untouched by the stranger");
 
