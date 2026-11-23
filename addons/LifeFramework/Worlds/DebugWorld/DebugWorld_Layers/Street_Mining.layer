@@ -1,0 +1,33 @@
+GenericEntity TownMine_Ore_1 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 166.097 0 208.982
+ angleY 110
+}
+GenericEntity TownMine_Ore_2 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 185.4 0 209.6
+ angleY -130
+}
+GenericEntity TownMine_Ore_3 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 172.441 0 208.91
+ angleY 165
+}
+GenericEntity TownMine_Ore_4 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 175.551 0 210.086
+ angleY -20
+}
+GenericEntity TownMine_Ore_5 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 178.85 0 209.085
+ angleY 40
+}
+GenericEntity TownMine_Ore_6 : "{2C571D6F7C05E095}Prefabs/Resources/Mining/IronOre.et" {
+ coords 181.903 0 210.018
+ angleY -70
+}
+GenericEntity TownMine_Desk : "{F2DA01057E99744B}Prefabs/Jobs/LF_Workplace.et" {
+ components {
+  LF_WorkplaceComponent "{BB227AA77D72A6F6}" {
+   m_sJob "MINER"
+   m_sPlaceId "coalmans_brow_mine"
+  }
+ }
+ coords 188.851 0.001 206.627
+}
