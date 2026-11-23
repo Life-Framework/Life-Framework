@@ -59,8 +59,7 @@ Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
     }
     LF_RunPlateAction "{DF94312BF25535DD}" {
      ParentContextList {
-      "door_l01"
-      "door_l01_int"
+      "default"
      }
      UIInfo UIInfo "{BB87D1BEB31245E1}" {
       Name "#LF-RunPlate_Action"

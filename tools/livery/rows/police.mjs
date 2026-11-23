@@ -34,12 +34,6 @@ export default [
         { name: "PoliceLetters_R", coords: [0.83, 0.82, -1.3], yaw: 88.5, scale: 0.5, tilt: -18 },
       ],
     },
-    // "Run plate" (#4425): the Cadet's car runs plates like the UAZ469 (whose base prefab carries the row itself). The base
-    // EL_S105_beige has no police rows, so the build appends it to the ActionsManagerComponent that base declares.
-    actions: {
-      manager: "C97BE5489221AE18",
-      rows: [{ cls: "LF_RunPlateAction", name: "#LF-RunPlate_Action", contexts: ["default"], priority: 11 }],
-    },
     credit: { ...DERIVED("`S105Body_mat_beige.emat`"), purpose: "Police repaint for the S105" },
   },
   {

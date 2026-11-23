@@ -59,8 +59,7 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
     }
     LF_RunPlateAction "{3FAD306A96A40AC5}" {
      ParentContextList {
-      "door_l01"
-      "door_l01_int"
+      "default"
      }
      UIInfo UIInfo "{41F82FC8DA6D1BF9}" {
       Name "#LF-RunPlate_Action"

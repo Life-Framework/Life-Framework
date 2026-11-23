@@ -188,11 +188,18 @@ try {
   throws(() => gen.planLivery(bad({ manager: "nope" }), vanilla), /actions\.manager must be/, "actions with no manager GUID");
   throws(() => gen.planLivery(bad({ rows: [] }), vanilla), /at least one action/, "actions with no rows");
   throws(() => gen.planLivery(bad({ rows: [{ ...act.rows[0], name: "Run plate" }] }), vanilla), /#Key name/, "an action named in plain words");
-  // The real table: both police rank cars offer Run plate (the UAZ469 from its core base prefab, the S105 from the build).
-  const s105 = table.LIVERIES.find((r) => r.vehicle === "S105" && r.id === "Police");
-  if (!s105?.actions?.rows.some((r) => r.cls === "LF_RunPlateAction")) fail("the S105 police row does not add LF_RunPlateAction");
-  const uaz = join(ROOT, "addons/LifeFramework/Prefabs/Vehicles/Wheeled/UAZ469/LF_UAZ469_Police.et");
-  if (existsSync(uaz) && !readFileSync(uaz, "utf8").includes("LF_RunPlateAction")) fail("LF_UAZ469_Police.et (the UAZ469 police livery's base) has no LF_RunPlateAction row");
+  // The real table: every police rank car offers Run plate exactly once, from its core base prefab (#4606), in the
+  // `default` context (the door contexts are not offered from the seat, #4425). A build-appended row would be a second.
+  for (const v of ["S105", "S1203"]) {
+    const row = table.LIVERIES.find((r) => r.vehicle === v && r.id === "Police");
+    if (row?.actions?.rows.some((r) => r.cls === "LF_RunPlateAction")) fail(`the ${v} police row appends LF_RunPlateAction; its base already carries it`);
+  }
+  for (const rel of ["UAZ469/LF_UAZ469_Police.et", "S105/LF_S105_PoliceBase.et", "S1203/LF_S1203_PoliceBase.et"]) {
+    const f = join(ROOT, "addons/LifeFramework/Prefabs/Vehicles/Wheeled", rel);
+    if (!existsSync(f)) continue;
+    const m = readFileSync(f, "utf8").match(/LF_RunPlateAction "\{[0-9A-F]{16}\}" \{\n\s*ParentContextList \{\n\s*"default"\n\s*\}/g) || [];
+    if (m.length !== 1) fail(`${rel}: expected one LF_RunPlateAction row in the default context, found ${m.length}`);
+  }
 }
 
 // Every generated file in the pack is exactly what the build writes (#4559): a hand edit to a generated
