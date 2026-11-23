@@ -44,7 +44,7 @@ Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beig
     }
    }
    coords -0.94 1.15 -1.2
-   angles 0 -90 0
+   angles -10 -90 0
    scale 0.8
   }
   GenericEntity FixtureLetters_R {

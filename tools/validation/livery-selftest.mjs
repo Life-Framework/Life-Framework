@@ -20,6 +20,11 @@
 // red-proof: with the door plate child turned off this printed
 // "FAIL  addons/LF_Everon1989/Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_L01.et: 0 plates, want 1" (2026-11-23).
 //
+// red-proof: before panels took a tilt this printed
+// "FAIL  a panel tilted past 45 degrees: no error" and "panel FixtureLetters_L does not carry its tilt" (2026-11-23).
+// red-proof: with the rows' panels removed and the hand-added plates on disk this printed
+// "FAIL  addons/LF_Everon1989/Prefabs/Vehicles/Liveries/LF_S105_Police.et: hand edit the next livery build would drop" (2026-11-23).
+//
 // `node tools/validation/livery-selftest.mjs --update` rewrites expected/ from the generator (review the diff).
 
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
@@ -165,6 +170,10 @@ try {
   throws(() => gen.planLivery(bad({ at: [] }), vanilla), /at least one panel/, "panels with no positions");
   throws(() => gen.planLivery(bad({ at: [{ name: "A", coords: [0, 1], yaw: 0, scale: 1 }] }), vanilla), /coords must be/, "a panel with two coords");
   throws(() => gen.planLivery(bad({ at: [{ name: "A", coords: [0, 1, 2], yaw: 0, scale: 1 }, { name: "A", coords: [0, 1, 2], yaw: 0, scale: 1 }] }), vanilla), /unique entity name/, "two panels with one name");
+  // A panel's tilt leans the plate onto a side that slopes in at the top (the S105 rear quarter, -18).
+  if (!/GenericEntity FixtureLetters_L \{[\s\S]*?angles -10 -90 0\n/.test(veh.text)) fail(`${veh.rel}: panel FixtureLetters_L does not carry its tilt (want "angles -10 -90 0")`);
+  if (!/GenericEntity FixtureLetters_R \{[\s\S]*?angles 0 90 0\n/.test(veh.text)) fail(`${veh.rel}: panel FixtureLetters_R without tilt is not upright`);
+  throws(() => gen.planLivery(bad({ at: [{ name: "A", coords: [0, 1, 2], yaw: 0, scale: 1, tilt: 60 }] }), vanilla), /tilt must be/, "a panel tilted past 45 degrees");
 }
 
 // Every generated file in the pack is exactly what the build writes (#4559): a hand edit to a generated
