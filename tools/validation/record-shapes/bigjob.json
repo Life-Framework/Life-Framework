@@ -1,0 +1,15 @@
+{
+  "section": "bigjob",
+  "class": "LF_BigJobLockSavePayload",
+  "version": 1,
+  "roots": "LF_BigJobCooldownRow",
+  "records": {
+    "LF_BigJobCooldownRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sJobKey",
+        "int m_iSecondsLeft"
+      ]
+    }
+  }
+}

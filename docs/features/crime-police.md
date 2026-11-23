@@ -85,6 +85,18 @@
 - Test `crime/safe-types` (LOGIC) and `everon/safe-types` (pack leg). Log `[LFDebug:SafeTypes]`.
 - **Store box in the pack** (#2331): `LF_Everon1989/Prefabs/Props/Safes/LF_StoreBox.et` inherits the core `LF_SafeBox.et` and names `store_box` itself, so a shop fit-out places the pack prefab and the pack's 120 cash takings apply. It swaps the mesh to the vanilla olive `CabinetMetal_01` steel cabinet with its own material, because the core `Safe_01` mesh renders plain white (#2728). The pack grid cell `store-box` (`Grid_store_box.layer`, cell c19r4) stands one till and one box beside it. Test `everon/store-box-safe` (pack leg, `LF_Test_EveronStoreBoxSafe`) asserts the box registers under its entity name with one bag, 120 a bag and a 10 s drill, and that a script-driven robbery with no tool and no police arms it and spills exactly that haul after the fuse. Putting a box in each shop is a later per-shop card.
 
+### `LF_BigJobLock` — `Feature/Crime/LF_BigJobLock.c` (#4193, plan 0.3.0 Crime A6, decision N17)
+- 🔧 One big job (robbery rungs 4 to 6: hospital pharmacy, bank vault, reserve depot; the prison break in 0.4)
+  runs on the server at a time. `TryBegin(jobKey, holderKey, cooldownSeconds, now)` takes the server-wide lock
+  or answers `BUSY` (another big job runs) or `COOLDOWN` (this job ended recently); `RefusalText` gives the
+  player the reason in words, with the minutes left. `Finish` releases the lock and starts that job's own
+  cooldown; another big job may start meanwhile. A lock never finished expires after 45 min into its cooldown.
+  Callers pass the cooldown from their pack config (`COOLDOWN_PHARMACY` 2 h, `COOLDOWN_BANK` 3 h and
+  `COOLDOWN_RESERVE` 6 h are the plan defaults). No job calls it yet: the pharmacy and bank cards wire it in.
+- 🔧 Save section `bigjob`: cooldowns as seconds left, so a restart never resets one; a job running at the
+  save comes back as that job in its full cooldown, with the lock free. Test `LF_Test_BigJobLock`; `wt e2e`
+  checks the cooldown across a real restart.
+
 ### `LF_Hospital` — `Feature/Crime/LF_Hospital.c`
 - ✅ The hospital till is not scripted here: the placed action is `LF_RobAction` on the
   till's single `ActionsManagerComponent` (civilian, cooldown and minimum-police gates, cash
@@ -632,6 +644,13 @@
   senior and every rung above draw the M16, the spike strip and the roadblock kit (`LF_Roadblocks.KIT`, added to the
   station catalog in `LF_PoliceRanks.Catalog`, since a kit line outside it is not issued). A civilian cannot draw.
   Test: `police/everon-kit`.
+- 🔨 **Radar gun with three speed classes** (#4211, PO-R4, merged, in-dev): `LF_RadarGun.et` (a vanilla binoculars
+  mesh until the Blender model lands) carries **Measure speed**, offered to on-duty officers. The server traces the
+  officer's aim up to 150 m for a vehicle, reads its velocity in whole km/h and classifies it against the road's limit
+  (`LF_RadarRules.Classify`): 1 to 15 over is **minor** (`road.speeding.minor`), 16 to 30 **road**
+  (`road.speeding`), over 30 **serious** (`road.speeding.serious`); at or under the limit is clear. A toast shows
+  speed/limit and the class. The limit is the 50 km/h default (`LF_RadarLimits`) until the speed signs (PO-R5) give
+  per-road limits. The gun is not yet issued in a kit. Test: `police/radar-classes`.
 - 🔨 **One issued kit per officer, two hours apart, saved** (#2416, in-dev; replaces the 2026-11-07 per-shift
   draw mark, which clocking out and in reset). `LF_ArmoryKits` books each kit's serialled lines (the M9, the M16)
   to the officer's account (all its characters share one book) with the issue time (`System.GetUnixTime`). While any serial is out, the armory action issues
