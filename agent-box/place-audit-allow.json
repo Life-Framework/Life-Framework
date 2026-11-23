@@ -324,6 +324,11 @@
       "kind": "action-crowds-till",
       "layer": "Village_Clothing.layer",
       "why": "The town clothing store's till action sits on the Village_ClothingStore building itself, so the rule reads the whole shop as one till box and every action prop inside it as 0 m from it. The counter's price list and the mannequin are 3 m and 4 m from the real till point (the clerk counter at the door end); the island splits the till into its own LF_ClothesTill prefab and has no such box."
+    },
+    {
+      "match": "^Fit_saint_philippe_square_life_pigeons_[ab] ",
+      "kind": "displaced",
+      "why": "A bird flock (SCR_Bird) is a flock the engine moves: it spawns at its row (y equals the terrain here, 0 m over the ground) and the probe finds the flock entity wherever it has wandered, so the audit's position match fails. Rows stand on the cobbles beside the chess table (#4479)."
     }
   ]
 }
