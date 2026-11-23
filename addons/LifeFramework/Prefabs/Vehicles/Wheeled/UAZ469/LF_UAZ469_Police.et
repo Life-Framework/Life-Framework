@@ -140,6 +140,15 @@ Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_
      "Sort Priority" 13
      m_eOutcome 3
     }
+    LF_RunPlateAction "{4204A1C000000005}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{4204A1C000000006}" {
+      Name "#LF-RunPlate_Action"
+     }
+     "Sort Priority" 14
+    }
    }
   }
  }

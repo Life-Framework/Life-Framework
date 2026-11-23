@@ -445,6 +445,17 @@ modded class SCR_ChimeraCharacter
 			return;
 		}
 
+		if (LF_ParkAtHarness.IsVerb(tool))
+		{
+			// A car set ahead of a placed entity, for a proof that cannot drive (#4425).
+			string parkResult = LF_ParkAtHarness.Run(this, tool);
+			if (parkResult.StartsWith("ok "))
+				LF_HarnessReply(commandId, "ok", parkResult.Substring(3, parkResult.Length() - 3));
+			else
+				LF_HarnessReply(commandId, "error", parkResult.Substring(6, parkResult.Length() - 6));
+			return;
+		}
+
 		if (LF_QuizHarness.IsVerb(tool))
 		{
 			// Forget this account's rules-quiz pass (#1567); the verb refuses outside a LF_HARNESS build.
