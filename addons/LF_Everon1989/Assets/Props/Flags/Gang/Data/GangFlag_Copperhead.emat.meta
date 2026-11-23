@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{1D9E4E1C33D20769}Assets/Props/Flags/Gang/Data/GangFlag_Copperhead.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

@@ -86,7 +86,8 @@ export function loadKinds(root) {
     for (const f of confFiles(root, d, "LF_MapPois")) {
       for (const b of findBlocks(parseConf(readFileSync(f, "utf8")), "LF_MapPoiKind")) {
         const kind = str(b.props.m_sKind);
-        if (!kind) continue;
+        // A removal row belongs to the town-only overlay (LF_MapPois_PlaytestTown.conf): the island map never loads it.
+        if (!kind || str(b.props.m_sOp) === "remove") continue;
         rows.set(kind, { kind, category: str(b.props.m_sCategory, "civic"), icon: str(b.props.m_sIcon), label: str(b.props.m_sLabel), minZoom: num(b.props.m_fMinZoom, 0), visibility: str(b.props.m_eVisibility, "PUBLIC").toUpperCase(), role: str(b.props.m_sRole) });
       }
     }

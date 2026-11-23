@@ -1,0 +1,19 @@
+GenericEntity : "{31CE12B3D1F6789E}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_base.et" {
+ ID "7922971236D2D0EC"
+ {
+  GenericEntity Cloth : "{AE09DA7896F9DB37}Prefabs/Props/Fabric/Flags/Flag_1_2.et" {
+   ID "DE4961F0FD802A89"
+   coords 0 5.45 -0.1
+   components {
+    MeshObject "{6414AB56DFBFE18B}" {
+     Materials {
+      MaterialAssignClass "{AE098B6BF61B9E8E}" {
+       SourceMaterial "Flag_1_2"
+       AssignedMaterial "{415092BEEAA5FEF3}Assets/Props/Flags/Gang/Data/GangFlag_Lantern.emat"
+      }
+     }
+    }
+   }
+  }
+ }
+}

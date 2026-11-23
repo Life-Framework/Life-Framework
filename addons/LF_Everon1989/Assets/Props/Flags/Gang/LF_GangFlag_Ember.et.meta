@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{AE9269025AD3ECE7}Assets/Props/Flags/Gang/LF_GangFlag_Ember.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
