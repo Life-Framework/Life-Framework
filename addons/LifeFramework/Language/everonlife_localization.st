@@ -10922,6 +10922,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "I'm paying full price for %1 again."
      Comment "Toast from the trader to the next seller once a good recovered a price band. %1 = good name (#2923)."
     }
+    CustomStringTableItem "{66656BD872EA3814}" {
+     Id "LF-MedicFleet_Take"
+     Target_en_us "Take the %1 ambulance"
+     Comment "Action on the medic car pool board (#4432). %1 = the title of the lowest medic rank that draws this ambulance (Orderly, Paramedic)."
+    }
+    CustomStringTableItem "{ADD3EECB7BFA4D40}" {
+     Id "LF-MedicFleet_Title"
+     Target_en_us "Ambulance pool"
+     Comment "Toast title (#4432): the medic car pool board."
+    }
     CustomStringTableItem "{DF4F6E621FD608FA}" {
      Id "LF-MedicRank_Doctor"
      Target_en_us "Doctor"
