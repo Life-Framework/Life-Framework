@@ -32,7 +32,8 @@ Delete them and run `tools\cli host config apply` to go back to the shipped pace
 | `houses.salePercent` | 50 | 100 | homes and plots sell at half price: cottage $2000, cheapest plot $1400; there is no house sell-back to flip |
 | `grace.minutes` | 5 | 30 (core default 0) | a new character can be held up, arrested or rob after 5 minutes of playtime, so two testers can try the cop flow early |
 
-Pay is untouched: police duty $900/h and medic $792/h stay 1.5 to 2.5x the civilian runs (`tools\cli economy`).
+Pay is untouched by the alpha switch: police duty pays $350 to $450 an hour and medic duty $480 to $560 by rank, the
+0.3.0 pay ladder where duty is the lowest steady pay and civilian trades climb above it (`tools\cli economy` prints each rung).
 `validate-flagship-job-gates` still refuses `jobs.testUnlockAll`; the alpha switch opens only the police application.
 
 Turning it off leaves what it already gave: officers approved under `police.alphaInstantApproval` have no trial and

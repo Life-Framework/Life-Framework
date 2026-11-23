@@ -1,0 +1,20 @@
+GenericEntity : "{5661E2D1BF64BB2C}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_R02_blue.et" {
+ ID "801A40D0CC176158"
+ components {
+  MeshObject "{4B42E716914465B9}" {
+   Materials {
+    MaterialAssignClass "{64F09BE817C4B4A7}" {
+     SourceMaterial "UAZ469_Body"
+     AssignedMaterial "{1636F1277D858AB3}Assets/Liveries/UAZ469/LF_UAZ469_FixtureBlue.emat"
+    }
+   }
+  }
+  SlotManagerComponent "{5AD4FD050A086870}" {
+   Slots {
+    RegisteringComponentSlotInfo DoorTop {
+     Prefab "{D1F4EFCEFDAF8BCC}Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_R02_top.et"
+    }
+   }
+  }
+ }
+}

@@ -37,6 +37,7 @@ An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the 
 * **Cuff:** hold the **handcuffs** in your left hand and pick **Cuff** (a 2 second hold) on a player who is **downed, stunned, held up, or has their hands up and no weapon**.
   A cuffed player can walk but cannot hold anything. **Uncuff** frees them; you get the cuffs back.
   Cuffing a **wanted** player puts a **"Jail booking" waypoint** on your screen: that is where you book them.
+* **Radar gun:** hold the radar gun, aim at a car (up to 150 m) and pick **Measure speed**. A toast shows the speed and the limit, and the class: **minor** (1 to 15 km/h over), **road** (16 to 30 over) or **serious** (over 30). Each class is a law-book charge. The gun is not issued in the kit yet.
 * **Escort:** pick **Escort** on a cuffed suspect to walk them along. An uncuffed suspect cannot be escorted.
 * **Put in vehicle:** at a police car pick **Put in vehicle** to seat your suspect, then drive to the station. At the station pick **Take out of vehicle**; they step out beside the car, still yours.
 * **Book into jail:** walk the cuffed suspect to the **cell door** (the waypoint). Their action list then shows **Book into jail: full sentence** and

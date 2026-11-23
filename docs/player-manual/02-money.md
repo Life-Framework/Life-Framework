@@ -63,5 +63,6 @@ reviving you costs $100. A car in the impound costs $200 to get out; a tow costs
 
 ## What you earn
 
-About **$400 an hour** from courier work, **$400 to $500** from harvest or lumber once you have the kit, **$792 to $1,224** an hour
-on medic duty and **$900 to $1,260** on police duty. The jobs are in [Jobs](03-jobs.md).
+About **$400 an hour** from courier work, **$400 to $500** from harvest or lumber once you have the kit, **$480 to $560** an hour
+on medic duty and **$350 to $450** on police duty. Duty is steady pay, not the best pay: a skilled trade with a van or
+a truck earns more than an officer. The jobs are in [Jobs](03-jobs.md).

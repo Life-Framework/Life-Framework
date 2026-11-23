@@ -97,3 +97,16 @@ Columns: asset, source and license, what it is for, where it lives.
 - An item-model tint for garments (`_item` material override).
 
 The fallback (vanilla colour variants plus light bars, repaints in 0.3.1) is not needed.
+
+## Update 2026-11-23: words go on door plates, not in the mask (#4232)
+
+Lettering stamped into the shared 512 px mask does not ship. The mask is tiled across the body's UV islands, so
+"POLICE" came out as scrambled, repeated fragments over the whole body (`docs-images/4226/session-full-profile-after.png`).
+`tools\cli livery build` therefore writes **colours only** into the paint. The words go on a painted plate on each front
+door: `SignWall_01_90x45` at scale 0.6 with `LF_SignComponent`, a child of the generated door prefab so it swings with
+the door. Its title is a pack sign row and a pack string. It has no read action, so the door's action list stays as it
+was. Full-profile client, grid cell:
+
+![POLICE plate, left front door](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/4232/plate-left-close-after.png)
+
+![police UAZ469, left side](https://raw.githubusercontent.com/Life-Framework/Life-Framework/main/website/public/docs-images/4232/police-uaz-left-after.png)
