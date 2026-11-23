@@ -9,6 +9,7 @@ Police are players. There is no roster to wait for in the alpha: anyone can sign
 3. Pick **Clock in**. Your civilian clothes and pack are **stored** and you swap into the **police kit**: cap, dark turtleneck, trousers, officer harness, boots,
    an M9 pistol with two magazines, the **station car key**, a pager, **handcuffs** and a radio. **Clock out** at the same desk to swap back.
 4. If you die on duty your shift ends; you keep the police gear and your civilian things come back when you respawn.
+5. **Your pager** beeps with each dispatch call. When a car owner reports their car stolen, it also shows a line with the **plate and the car**. The line stays on the pager until an officer recovers the car.
 
 **Pay** is handed over in **cash when you clock out**, by the second you were on duty.
 

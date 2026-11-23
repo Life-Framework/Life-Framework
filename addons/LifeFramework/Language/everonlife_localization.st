@@ -11667,6 +11667,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not serving you"
      Comment "Title of the outpost trader's refusal toast to an on-duty officer (#4217)."
     }
+    CustomStringTableItem "{5A9C30E7D1B84F62}" {
+     Id "LF-Pager_NoPlate"
+     Target_en_us "no plate"
+     Comment "Pager stolen-car line when the car carries no plate (#4212)."
+    }
     CustomStringTableItem "{4EF600B18D7A2C1B}" {
      Id "LF-Pager_None"
      Target_en_us "No calls paged."
@@ -11676,6 +11681,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Pager_Read"
      Target_en_us "Read the pager"
      Comment "Action on a pager item (#249)."
+    }
+    CustomStringTableItem "{B7E1D4A92C06F385}" {
+     Id "LF-Pager_StolenLine"
+     Target_en_us "%1  Stolen car, plate %2: %3, reported at %4"
+     Comment "Pager card line: an owner reported a car stolen (#4212). %1 = clock time HH:MM, %2 = plate, %3 = car name, %4 = place."
     }
     CustomStringTableItem "{CA566A486AE9A98D}" {
      Id "LF-Pager_Title"
