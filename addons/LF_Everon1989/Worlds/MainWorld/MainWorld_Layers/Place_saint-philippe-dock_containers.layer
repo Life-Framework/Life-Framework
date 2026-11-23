@@ -50,9 +50,9 @@ GenericEntity Fit_saint_philippe_dock_containers_tally_clerk : "{06C758FEC5FEF9F
  angleY 180
 }
 GenericEntity Fit_saint_philippe_dock_containers_yard_barrel : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
- coords 4436.2 2.398 11103.5
+ coords 4436.2 2.458 11103.5
 }
 GenericEntity Fit_saint_philippe_dock_containers_yard_pallet : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
- coords 4436 2.398 11106.5
+ coords 4436 2.498 11106.5
  angleY 12
 }
