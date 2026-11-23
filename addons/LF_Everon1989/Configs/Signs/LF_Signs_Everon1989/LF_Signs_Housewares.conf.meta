@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3177BD37DF96C409}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Housewares.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -16,6 +16,7 @@
   **Footer**: key-cap chips Esc Close, F3 Welcome guide, Settings. While open the HUD, the vanilla hint card
   and the notification toasts are put away (`LF_NotificationHold`) and come back on close.
   Focus starts on the open tab; MenuUp/Down walk tabs, skills or errands, and the footer.
+- 🧪 **Trade detail card (2026-11-23, #4414, WK-W6)**: opening a skill shows the trade and its tier word ("Mining, Journeyman": Apprentice 1-5, Hand 6-11, Journeyman 12-19, Foreman 20-27, Master 28-30; core rows `LF-Level_TradeTier_1` to `_5`), "Level N · X / Y XP", "Level N+1 opens: ..." from the unlock table (`LF_TradeUnlocks.NextKey`, #4185; the chain-gate line is the fallback when no row names one), "Perks: ..." for the perks picked at levels 10 and 20 (`LF_TradePerks.PerkAt`, #4186) and the weekly rank slot ("Ranked 6th in Mining this week", or "Not ranked yet this week"). The text lives in `LF_PlayerMenuTrade.c`; the skill row of the wire (`S|...`) gains four trailing fields (next unlock key, tier key, rank, perk ids) that an older wire may leave off. The rank slot is empty (`LF_PlayerMenuTrade.RankOf` returns 0) until the shift boards (W22) fill it. Levels show for legal trades only (decision N1). Test `LF_Test_PlayerMenuTrade`. Merged, in-dev.
 - ✅ Data comes from one owner RPC per open (`RpcAsk_LF_PlayerMenu`, no argument, throttled 5 s on the
   client and by `LF_RateLimit` on the server); the server reads only the asking player's own state.
 - ✅ New UI kit pieces: `COLUMNS` (side-by-side columns, `.Cards()` puts each on a plate; columns nest),

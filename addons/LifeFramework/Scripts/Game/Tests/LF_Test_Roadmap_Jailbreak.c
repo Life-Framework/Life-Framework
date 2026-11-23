@@ -5,6 +5,8 @@
 
 // red-proof: Jailbreak escape (#235), observed 2026-11-10: with `CheckEscape`/`NoteEscape` returning false the test failed `- walking out through the open door is an escape`. Restored; green.
 
+// red-proof: Two-layer rule (#4336), observed 2026-11-23 on `tools\cli test --town --no-build`: the old one-gate test failed `the jail door uses the shared breach` once the town cell named an outer gate; with the outer door charged first it passes. Both tests name their own logical outer door, so the town's placed cell never decides the layer.
+
 //! Needs DebugWorld's placed cell, hideout door or plaza zone; LOGIC runs on any map, #1047
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_Roadmap_Jailbreak : LF_Test
@@ -20,12 +22,22 @@ class LF_Test_Roadmap_Jailbreak : LF_Test
 		string prisonerUid = "roadmap-jailbreak-prisoner";
 		string breakerUid = "roadmap-jailbreak-breaker";
 		string doorId = "logic-jail-door";
+		string outerId = "logic-jail-outer";
 		vector placed = "48 0 64";
 		vector outside = "48 0 90";
+
+		// Two layers (#4336): the outer door first, then the cells. Config fuses are 0 so a charge blows at once.
+		LF_JailBreak.ResetForTest();
+		LF_JailBreakConfig config = LF_JailBreakConfig.CreateDefault();
+		config.m_fOuterFuseSeconds = 0;
+		config.m_fCellFuseSeconds = 0;
+		LF_JailBreakConfig.UseForTest(config);
 
 		LF_Jail.Configure(40, 200, 1, 4);
 		LF_Jail.SetCellOrigin(placed);
 		LF_Jail.SetDoorTarget(doorId);
+		LF_Jail.SetOuterDoorTarget(outerId);
+		LF_Breach.Configure(outerId, 0, "");
 		LF_Breach.Configure(doorId, 0, "");
 
 		LF_PlayerAccount officer = LF_PlayerAccountManager.GetOrCreate(officerUid);
@@ -43,8 +55,13 @@ class LF_Test_Roadmap_Jailbreak : LF_Test
 		ctx.True(SamePlace(LF_Jail.ResolvePosition(prisonerUid, outside), placed), "locked volume returns an escaped position to the cell");
 		ctx.EqualFloat(80, LF_Jail.GetRemaining(prisonerUid), 0.01, "a pull-back does not change the remaining sentence");
 
-		ctx.True(LF_Breach.Arm(doorId, breakerUid), "the jail door uses the shared breach");
-		ctx.Equal(1, breaker.GetWantedLevel(), "wanted on the breaker increases");
+		ctx.False(LF_Breach.Arm(doorId, breakerUid), "the cells cannot be charged while the outer door is shut");
+		ctx.Equal(0, breaker.GetWantedLevel(), "a refused charge adds no wanted");
+		ctx.True(LF_Jail.Confines(prisonerUid), "a shut outer door leaves the prisoner confined");
+		ctx.True(LF_Breach.Arm(outerId, breakerUid), "the outer door uses the shared breach");
+		ctx.True(LF_Jail.Confines(prisonerUid), "an open outer door alone does not free the cells");
+		ctx.True(LF_Breach.Arm(doorId, breakerUid), "the cell door uses the shared breach once the outer door is open");
+		ctx.True(breaker.GetWantedLevel() > 0, "wanted on the breaker increases");
 		ctx.Equal(2, prisoner.GetWantedLevel(), "a prisoner who walks out stays wanted");
 		ctx.False(LF_Jail.Confines(prisonerUid), "an open door does not confine");
 		ctx.True(SamePlace(LF_Jail.ResolvePosition(prisonerUid, outside), outside), "an open door does not pull the prisoner back");
@@ -63,6 +80,8 @@ class LF_Test_Roadmap_Jailbreak : LF_Test
 		ctx.True(SamePlace(LF_Jail.ResolvePosition(prisonerUid, outside), placed), "a repaired door returns the next escape to the cell");
 		ctx.EqualFloat(80, LF_Jail.GetRemaining(prisonerUid), 0.01, "repair does not zero the remaining sentence");
 
+		LF_JailBreak.ResetForTest();
+		LF_JailBreakConfig.Reload();
 		LF_Jail.SyncPlacedCell();
 	}
 
@@ -137,6 +156,16 @@ class LF_Test_Roadmap_JailbreakWorld : LF_Test
 		prisoner.SetWantedLevel(1);
 		LF_PlayerAccountManager.GetOrCreate(breakerUid);
 
+		// Two layers (#4336): an outer door of this test's own, so the town's placed gate does not decide the rule.
+		string outerId = "roadmap-jailbreak-e2e-outer";
+		LF_JailBreak.ResetForTest();
+		LF_JailBreakConfig config = LF_JailBreakConfig.CreateDefault();
+		config.m_fOuterFuseSeconds = 0;
+		config.m_fCellFuseSeconds = 0;
+		LF_JailBreakConfig.UseForTest(config);
+		LF_Jail.SetOuterDoorTarget(outerId);
+		LF_Breach.Configure(outerId, 0, "");
+
 		ctx.True(doorLock.IsLocked(), "the placed jail door starts locked (m_bDebugLocked)");
 
 		ctx.True(doorLock.IsLocked(), "jail door is locked before the zero-fuse arm");
@@ -145,6 +174,10 @@ class LF_Test_Roadmap_JailbreakWorld : LF_Test
 		float remaining = LF_Jail.GetRemaining(prisonerUid);
 		ctx.True(remaining > 0, "the prisoner still has time when the door opens");
 
+		ctx.False(LF_Breach.Arm(LF_TestAnnex.JAIL_DOOR, breakerUid), "the cell door is refused while the outer door is shut");
+		ctx.True(doorLock.IsLocked(), "a refused charge leaves the jail door locked");
+		ctx.True(LF_Breach.Arm(outerId, breakerUid), "zero-fuse arm opens the outer door first");
+		ctx.True(LF_Jail.Confines(prisonerUid), "an open outer door alone does not free the cell");
 		ctx.True(LF_Breach.Arm(LF_TestAnnex.JAIL_DOOR, breakerUid), "zero-fuse arm opens the jail door");
 		ctx.False(doorLock.IsLocked(), "jail door IsLocked() is false after the fuse");
 		ctx.False(LF_Jail.Confines(prisonerUid), "confinement predicate is false while the door is open");
@@ -153,5 +186,9 @@ class LF_Test_Roadmap_JailbreakWorld : LF_Test
 		ctx.True(LF_Breach.Repair(LF_TestAnnex.JAIL_DOOR, officerUid), "police repair runs");
 		ctx.True(doorLock.IsLocked(), "repair sets the lock");
 		ctx.True(LF_Jail.Confines(prisonerUid), "repair makes the confinement predicate true");
+
+		LF_JailBreak.ResetForTest();
+		LF_JailBreakConfig.Reload();
+		LF_Jail.SyncPlacedCell();
 	}
 }

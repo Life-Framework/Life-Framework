@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "place": "saint-philippe",
+  "slot": "czech-signs",
+  "drops": [
+    {
+      "place": "saint-philippe-dock",
+      "building": "b04"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b08"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b13"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b15"
+    },
+    {
+      "place": "saint-philippe-dock",
+      "building": "b25"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b01"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b03"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b06"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b107"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b109"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b111"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b114"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b119"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b12"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b122"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b123"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b16"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b23"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b32"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b38"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b45"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b48"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b66"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b68"
+    },
+    {
+      "place": "saint-philippe",
+      "building": "b88"
+    }
+  ],
+  "kit": "czech-signs",
+  "size": "small",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe_czech-signs.layer",
+  "kinds": [],
+  "rows": 39,
+  "date": "2026-11-23"
+}
