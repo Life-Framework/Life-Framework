@@ -2915,6 +2915,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Call closed: unfounded."
      Comment "Toast to the officer: the call closed as unfounded (#4203)."
     }
+    CustomStringTableItem "{CCA19DCF527EF2A2}" {
+     Id "LF-CarPool_BayBlocked"
+     Target_en_us "The bay is blocked. Move the car out of the bay first."
+     Comment "Toast (#4352): a vehicle stands in the car pool's bay."
+    }
+    CustomStringTableItem "{0A300420FA34288B}" {
+     Id "LF-CarPool_CarOut"
+     Target_en_us "Your last car is still out with people in it."
+     Comment "Toast (#4352): an officer's previous pool car is occupied, so it cannot go back for a new one."
+    }
+    CustomStringTableItem "{0A273A404E690928}" {
+     Id "LF-CarPool_Drawn"
+     Target_en_us "Your car is in the bay."
+     Comment "Toast (#4352): the car pool put the officer's car in the bay."
+    }
+    CustomStringTableItem "{793A240492C52CCA}" {
+     Id "LF-CarPool_OffDuty"
+     Target_en_us "Clock in before you take a car from the pool."
+     Comment "Toast (#4352): the car pool refused a player who is not police on duty."
+    }
+    CustomStringTableItem "{D099389B5BAEADCD}" {
+     Id "LF-CarPool_Take"
+     Target_en_us "Take the %1 car"
+     Comment "Action on the police car pool board (#4352). %1 = the title of the lowest rank that draws this car (Cadet, Patrol)."
+    }
+    CustomStringTableItem "{2552B4871B415278}" {
+     Id "LF-CarPool_TooFar"
+     Target_en_us "Stand at the car pool board to take a car."
+     Comment "Toast (#4352): the officer is too far from the pool board."
+    }
+    CustomStringTableItem "{8EC773517A0DB2DD}" {
+     Id "LF-CarPool_TooSoon"
+     Target_en_us "You just took a car. Wait a moment."
+     Comment "Toast (#4352): the officer drew a car seconds ago."
+    }
     CustomStringTableItem "{B27102B0C486F20E}" {
      Id "LF-Cargo_Empty"
      Target_en_us "The bed is empty."
@@ -4112,12 +4147,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4ED77DE7DEE2573C}" {
      Id "LF-Credits_168"
-     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Tally clerk Marcel Brun's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0774CCE82D802254}" {
      Id "LF-Credits_169"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Antonin - Warm, Unsettling, Elegant\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD56C627EA2AD519}" {
@@ -4127,22 +4162,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6FDBFD431F29A691}" {
      Id "LF-Credits_170"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{24B6F60FC64E50FE}" {
      Id "LF-Credits_171"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B3125F791403A21}" {
      Id "LF-Credits_172"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6DEF465ED9803D1A}" {
      Id "LF-Credits_173"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{331934ECDCED4E47}" {
@@ -4152,27 +4187,27 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B9BF5DC2926087D1}" {
      Id "LF-Credits_175"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CC2101DE9FC8F7B8}" {
      Id "LF-Credits_176"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C9C86A5A1ED40DCE}" {
      Id "LF-Credits_177"
-     Target_en_us "Michael Hansen / Rhasspy"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8A4563FF1C5E590F}" {
      Id "LF-Credits_178"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FC189AF5F7BE2CC}" {
      Id "LF-Credits_179"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
+     Target_en_us "Michael Hansen / Rhasspy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3A24A564BBC40F8F}" {
@@ -4182,17 +4217,42 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDA999D625B19F3D}" {
      Id "LF-Credits_180"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A0A7AF015F2F74D4}" {
      Id "LF-Credits_181"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0D1A861CFC75EB60}" {
      Id "LF-Credits_182"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{861D6EE9C532FE97}" {
+     Id "LF-Credits_183"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{FD0F462ADB68D02E}" {
+     Id "LF-Credits_184"
      Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{00BFA04619043DFC}" {
+     Id "LF-Credits_185"
+     Target_en_us "LIVERIES"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{90696CB2BFCA919F}" {
+     Id "LF-Credits_186"
+     Target_en_us "LF_UAZ469_Police"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{13C921E553E1333A}" {
+     Id "LF-Credits_187"
+     Target_en_us "LF_S105_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9B225E9F684B34BE}" {
@@ -11626,6 +11686,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_YourRank"
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
+    }
+    CustomStringTableItem "{520C10CDD07CEBC1}" {
+     Id "LF-OutpostBuyer_Full"
+     Target_en_us "\"I have enough for now. Come back in about %1 minutes.\""
+     Comment "Toast: the outpost buyer is at its demand cap (#4225). %1 = minutes until it takes another crate."
+    }
+    CustomStringTableItem "{52AFBF7DB477710B}" {
+     Id "LF-OutpostBuyer_FullNever"
+     Target_en_us "\"I have all the crates I need.\""
+     Comment "Toast: the outpost buyer is full and never refills (#4225)."
+    }
+    CustomStringTableItem "{BC8A7CE6BEE6A4A4}" {
+     Id "LF-OutpostBuyer_NoCrate"
+     Target_en_us "\"You have nothing I want.\""
+     Comment "Toast: the seller carries no contraband crate (#4225)."
+    }
+    CustomStringTableItem "{F87785E45E6D35AE}" {
+     Id "LF-OutpostBuyer_NoRun"
+     Target_en_us "\"Where did this come from? I only take crates that came up the road on a run.\""
+     Comment "Toast: the seller has no running, driven convoy run to close (#4225)."
+    }
+    CustomStringTableItem "{42236C5858B2F6DA}" {
+     Id "LF-OutpostBuyer_Sell"
+     Target_en_us "Sell contraband crate (%1)"
+     Comment "Action on the outpost buyer table (#4225). %1 = the price for the crate."
+    }
+    CustomStringTableItem "{FB3E7B610211031D}" {
+     Id "LF-OutpostBuyer_Sold"
+     Target_en_us "\"Good. Bring me more when you have it.\" You were paid %1."
+     Comment "Toast after the outpost buyer takes crates (#4225). %1 = the cash paid."
+    }
+    CustomStringTableItem "{C615BD9428C48A36}" {
+     Id "LF-OutpostBuyer_Title"
+     Target_en_us "Rebel Buyer"
+     Comment "Title of the outpost contraband buyer toasts (#4225)."
+    }
+    CustomStringTableItem "{87240FE872DFA583}" {
+     Id "LF-OutpostBuyer_Unavailable"
+     Target_en_us "\"Not now. Come back later.\""
+     Comment "Toast: the outpost buyer could not complete the sale (#4225)."
     }
     CustomStringTableItem "{D52F08A3E91B7C46}" {
      Id "LF-OutpostStock_Bought"

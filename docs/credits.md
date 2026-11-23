@@ -214,3 +214,12 @@ Captions and cards use the system sans-serif (Segoe UI on Windows). The logo is 
 | Anniversary mayor Bastien Girard's four lines (`LF_Everon1989/Sounds/Dialogue/anniversary_mayor/*.wav`) | ElevenLabs text-to-speech, voice "Henri - French-American Narrator" from the ElevenLabs voice library. Voice generated with ElevenLabs | https://elevenlabs.io | The maintainer's Starter plan (commercial use allowed). #3466 | `tools/assets/dialogue/anniversary_mayor/elevenlabs.json`, `tools/assets/dialogue/anniversary_mayor/dialogue.json` |
 | Anniversary priest Father Étienne Morel's memorial speech (`LF_Everon1989/Sounds/Dialogue/anniversary_priest/*.wav`) | ElevenLabs text-to-speech, voice "JC - Deep, Thoughful and Encouraging" from the ElevenLabs voice library. Voice generated with ElevenLabs | https://elevenlabs.io | The maintainer's Starter plan (commercial use allowed). #3466 | `tools/assets/dialogue/anniversary_priest/elevenlabs.json`, `tools/assets/dialogue/anniversary_priest/dialogue.json` |
 | Gaspard Lenoir's two anniversary letter lines (`LF_Everon1989/Sounds/Dialogue/old_man/old_man_anniversary_letter_*.wav`) | ElevenLabs text-to-speech, voice "Alder - Warm, Raspy and Comforting" (his existing voice). Voice generated with ElevenLabs | https://elevenlabs.io | The maintainer's Starter plan (commercial use allowed). #3466 | `tools/assets/dialogue/old_man/elevenlabs.json` |
+
+## Liveries
+
+Repainted vehicle bodies and door plates written by `tools\cli livery build`.
+
+| Asset | Source and license | What it is for | Where |
+|---|---|---|---|
+| LF_UAZ469_Police | Derived from Bohemia Interactive `UAZ469_Body_CIV_BLUE.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Police repaint and door plates for the UAZ469 | `addons/LF_Everon1989/Assets/Liveries/UAZ469/` |
+| LF_S105_Police | Derived from Bohemia Interactive `S105Body_mat_beige.emat` (Arma Public License, base-game asset) | Police repaint for the S105 | `addons/LF_Everon1989/Assets/Liveries/S105/` |
