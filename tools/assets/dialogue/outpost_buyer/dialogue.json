@@ -22,13 +22,13 @@
   "nodes": [
     { "id": "greet", "line": "greet", "options": [
       { "text": "price", "next": "price" },
-      { "text": "badge", "next": "refuse" },
+      { "text": "badge", "next": "refuse", "condition": "OutpostOfficer" },
       { "text": "bye", "next": "bye" } ] },
     { "id": "price", "line": "price", "options": [
       { "text": "more", "next": "haggle" },
       { "text": "bye", "next": "bye" } ] },
     { "id": "haggle", "line": "haggle", "options": [
-      { "text": "badge", "next": "refuse" },
+      { "text": "badge", "next": "refuse", "condition": "OutpostOfficer" },
       { "text": "bye", "next": "bye" } ] },
     { "id": "refuse", "line": "refuse" },
     { "id": "bye", "line": "bye" }
