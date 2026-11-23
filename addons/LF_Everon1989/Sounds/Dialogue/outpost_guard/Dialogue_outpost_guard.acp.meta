@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3BE64329E286C9A9}Sounds/Dialogue/outpost_guard/Dialogue_outpost_guard.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

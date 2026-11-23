@@ -3835,6 +3835,86 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1  /  %2  /  %3 UTC"
      Comment "The clip stamp text: server name, tail of the player id, real server date and time (UTC). Matches the incident log's clock (#1173)."
     }
+    CustomStringTableItem "{434952EDC3418374}" {
+     Id "LF-Colour_Beige"
+     Target_en_us "Beige"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{F0F8C8C4E7FCFFAC}" {
+     Id "LF-Colour_Blue"
+     Target_en_us "Blue"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{1A5FAC7D11F4EB3A}" {
+     Id "LF-Colour_Brown"
+     Target_en_us "Brown"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{5E66599DFE939C4E}" {
+     Id "LF-Colour_DarkBlue"
+     Target_en_us "Dark blue"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{B618DE1FC7637194}" {
+     Id "LF-Colour_DarkBrown"
+     Target_en_us "Dark brown"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{5CB9FF47A1C7F19B}" {
+     Id "LF-Colour_DarkRed"
+     Target_en_us "Dark red"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{4619BC52F54FEE2D}" {
+     Id "LF-Colour_Forest"
+     Target_en_us "Forest green"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{A0F1A3C81E2E29D2}" {
+     Id "LF-Colour_Green"
+     Target_en_us "Green"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{6527F4E5B67FD106}" {
+     Id "LF-Colour_Grey"
+     Target_en_us "Gray"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{D8C60705E728D184}" {
+     Id "LF-Colour_LightBlue"
+     Target_en_us "Light blue"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{DF8FB55E0BF47747}" {
+     Id "LF-Colour_LightGreen"
+     Target_en_us "Light green"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{FE5E0C97D593F0D9}" {
+     Id "LF-Colour_Orange"
+     Target_en_us "Orange"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{8A49425DF7088ABA}" {
+     Id "LF-Colour_Red"
+     Target_en_us "Red"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{7E4D3C8838195FA1}" {
+     Id "LF-Colour_Teal"
+     Target_en_us "Teal"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{068873DB84698E08}" {
+     Id "LF-Colour_White"
+     Target_en_us "White"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
+    CustomStringTableItem "{72198C3EB0E55A4C}" {
+     Id "LF-Colour_Yellow"
+     Target_en_us "Yellow"
+     Comment "Car paint colour name, shown on the lot sheet and the respray bay row."
+    }
     CustomStringTableItem "{E35B0CC84DBE0C44}" {
      Id "LF-Commendations_None"
      Target_en_us "No commendations yet."
@@ -4648,6 +4728,11 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{BCC6DE3AE86E2A44}" {
      Id "LF-Credits_210"
      Target_en_us "Booking typewriter and ink pad stamp sounds"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B77F496979C34298}" {
+     Id "LF-Credits_211"
+     Target_en_us "The north outpost's spoken lines: quartermaster"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B8555A0EF2D6690B}" {
@@ -7647,6 +7732,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-HoldUp_TooFar"
      Target_en_us "Too far away to hold them up."
      Comment "Toast when a hold-up is refused by range."
+    }
+    CustomStringTableItem "{C7E29B03FDF73DA5}" {
+     Id "LF-HospitalPresence_TooFew"
+     Target_en_us "The cabinet stays shut unless a {medic} or two {police} are on duty."
+     Comment "Pharmacy cabinet refusal (Feature/Crime/LF_HospitalPresence.c): the robbery needs one medic or two police on duty (pack config numbers)."
     }
     CustomStringTableItem "{DB6C9E5F09D39D13}" {
      Id "LF-Hospital_BillAmount"

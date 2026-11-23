@@ -1,0 +1,37 @@
+Vehicle : "{E1A469BE1A000001}Prefabs/Vehicles/Wheeled/UAZ469/EL_UAZ469_covered_CIV_blue.et" {
+ ID "B5AEBC23F56635DB"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64F09BE9246E252A}" {
+     SourceMaterial "UAZ469_Body"
+     AssignedMaterial "{DE753DBE3523E154}Assets/Vehicles/Wheeled/UAZ469/Data/UAZ469_Body_CIV_FOREST.emat"
+    }
+    MaterialAssignClass "{64F09BE9246E2502}" {
+     SourceMaterial "UAZ469_Body_int_B4485C596220781A"
+     AssignedMaterial "{8552603B902017A6}Assets/Vehicles/Wheeled/UAZ469/Data/UAZ469_Body_CIV_FOREST_int.emat"
+    }
+   }
+  }
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+   Slots {
+    RegisteringComponentSlotInfo Door_L01 {
+     Prefab "{87A13E9178436B80}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Forest/UAZ469_door_L01_FOREST.et"
+    }
+    RegisteringComponentSlotInfo Door_R01 {
+     Prefab "{4A15CB0E2398483B}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Forest/UAZ469_door_R01_FOREST.et"
+    }
+    RegisteringComponentSlotInfo Door_L02 {
+     Prefab "{C7511FB4CE5FE939}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Forest/UAZ469_door_L02_FOREST.et"
+    }
+    RegisteringComponentSlotInfo Door_R02 {
+     Prefab "{0AE5EA2B9584CA7E}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Forest/UAZ469_door_R02_FOREST.et"
+    }
+    RegisteringComponentSlotInfo Forest_Logo {
+     Prefab "{94854244CAD8CD1D}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Logos/UAZ469_logo_CIV_forest.et"
+     InheritParentSkeleton 1
+    }
+   }
+  }
+ }
+}

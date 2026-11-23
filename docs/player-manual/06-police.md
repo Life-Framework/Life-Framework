@@ -67,8 +67,9 @@ An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the 
 
 ## Calls, evidence and the armoury
 
-* Players call you from a **payphone**: *Report a crime*, *Report an emergency* or *Report someone suspicious*. An on-duty officer hears it on the radio and sees it on the board.
-* **Close a call from the car.** After you take a call at the dispatch board, drive to the scene and use the radio rows at the driver door of the Patrol UAZ: *Radio: call resolved*, *Radio: no one found* or *Radio: call unfounded*. You must be within 50 m of the scene. Only *resolved* earns the bonus. If you hold more than one call, the radio closes the one you are parked at.
+* Players call you from a **payphone**: *Report a crime*, *Report an emergency* or *Report someone suspicious*. An on-duty officer hears it on the radio and sees it on the board. The call also waits at the dispatch board: *Take a call* hands it to you with a waypoint to the phone it came from.
+* **Close a call from the car.** After you take a call at the dispatch board, drive to the scene and use the radio rows at the driver door of your police car (the Cadet S105, the Patrol UAZ or the S1203 van): *Radio: call resolved*, *Radio: no one found* or *Radio: call unfounded*. You must be within 50 m of the scene. Only *resolved* earns the bonus, and never for a call you phoned in yourself. If you hold more than one call, the radio closes the one you are parked at.
+* A player whose phoned-in calls are closed as *unfounded* three times in one day is charged with emergency line abuse, and their calls show as low priority on the board until the next day.
 * On the radio, a **dispatcher** reads each call to you after a short squelch: what happened, then the place ("Robbery in progress. At the general store."). The written line follows on screen.
   A caller can ring once a minute; with nobody on duty nothing connects.
 * The **armoury** hands out kit by rank. The **evidence locker** is in the station.

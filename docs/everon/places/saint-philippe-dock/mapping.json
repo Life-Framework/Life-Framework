@@ -127,6 +127,14 @@
         "free plot p5 (14 x 32 m, flat ground 1.4 to 2.2 m) 44 m from the dock scout centre, 13.7 m off the N-S road r17 and clear of the quay strip where the shipment route runs: room for a fenced yard of 9 x 27 m",
         "crime B9 (#4441): the container yard of 0.3.0, container nine (the short one, key from Marcel) and a second container in the back row, Marcel the tally clerk at his yellow hut inside the gate; the kit never turns and every row rests on the probed ground"
       ]
+    },
+    "harbor-life": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "#4586 (WO-W1.6, from #4479): the quay's life on the frontage of the light tower b01, sharing it with the dock, taxi and fishing slots: a seagull flock on the apron and the harbor day and night ambience emitters (the beds conf rows), all in the open air of the quay",
+        "the 60 m margin reaches the apron and the pier head from the tower; nothing the maintainer placed moves"
+      ]
     }
   }
 }

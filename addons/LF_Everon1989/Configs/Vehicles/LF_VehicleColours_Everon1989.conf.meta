@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{A6B7F29F051224B1}Configs/Vehicles/LF_VehicleColours_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

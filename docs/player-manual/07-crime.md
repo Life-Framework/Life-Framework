@@ -31,6 +31,8 @@ The level is capped at 5. An arrest sentence ends with one level **removed**.
   warns you if you leave its radius. If it pays you get **$150** in cash. A downed attendant ends the hold unpaid.
 * **Supermarket till.** Pays **$120 to $180**, same rules. Both tills have a **cooldown** after a robbery and refuse if you have no room to carry the cash.
 * **General store box safe.** A small olive steel safe stands behind the counter of the general store in Saint-Philippe. It needs **at least 1 police officer on duty**. It opens after a short fuse, sounds the store alarm and pays a little cash (**$120**). After a haul it stays shut for **45 minutes**; a second try in that time is refused.
+* **Supermarket box safe.** The Saint-Philippe supermarket has the same olive steel safe behind its till, with the same rules: **at least 1 police officer on duty**, a short fuse, the store alarm, *** **General store box safe.** A small olive steel safe stands behind the counter of the general store in Saint-Philippe. It needs **at least 1 police officer on duty**. It opens after a short fuse, sounds the store alarm and pays a little cash (**$120**). After a haul it stays shut for **45 minutes**; a second try in that time is refused.
+20**, and a **45 minute** wait after a haul.
 * **Weapons and cars.** Stealing a weapon adds +2; taking a car by force adds +3. Only civilians can do either; the police see it at once.
 * **Crew tills.** Where a till needs a crew, **Start the job** gathers every armed civilian within 15 m.
 * **Hospital till.** Robbing it adds +1 and rings the hospital alarm.
@@ -91,6 +93,10 @@ The barn also gives off **smoke and heat** that police can follow. Some chains n
 
 Crime cash on this server is **marked**. Wash it at the **laundry station** in the still barn: you keep **65 percent** (the washer takes a 35 percent cut),
 **up to $1,500 a batch**, a batch takes 90 seconds, and there is a daily cap of **$6,000**.
+
+## Pharmacy cabinet
+
+The drug cabinet in the clinic is a **big job**, like the bank. It opens only when **at least one medic or two police officers are on duty**, and only when no other big job is underway on the island. Otherwise the cabinet tells you why when you look at it. Once your charge is armed on the cabinet, the job holds the island's big-job slot for about 15 minutes; after that the pharmacy stays shut to robbers for **2 hours** (the cabinet says how many minutes are left). The clinic runs short of medicine for a while afterwards (see the medic chapter).
 
 ## Bank heist
 

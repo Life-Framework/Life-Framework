@@ -396,7 +396,11 @@ function warnLowspecCapture(dir) {
   console.error("WARN  this session is lowspec (640x360, lowest textures, no post-processing): a capture is not evidence. 'session down', then 'session up --profile full' for shots");
 }
 
+// A client answers `stand` once the target has streamed in (up to 20 s after a jump across the island, #4611).
+const STAND_TIMEOUT_MS = 25000;
+
 export function sendCommand(spec, timeoutMs = 8000) {
+  if (spec.verb === "stand") timeoutMs = Math.max(timeoutMs, STAND_TIMEOUT_MS);
   const id = nextId();
   const address = addressFor(boxOverride);
   // A command to a session client keeps the session's pool lease alive.

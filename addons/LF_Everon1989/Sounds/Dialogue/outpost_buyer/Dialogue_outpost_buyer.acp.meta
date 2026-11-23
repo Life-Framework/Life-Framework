@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D8F1EEC7D8A2B3EA}Sounds/Dialogue/outpost_buyer/Dialogue_outpost_buyer.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

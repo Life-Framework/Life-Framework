@@ -1,0 +1,49 @@
+{
+  "id": "outpost_buyer",
+  "name": "OutpostBuyer",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Outpost_Buyer_Name",
+  "voice": {
+    "id": "N2lVS1w4EtoT3dr4eOWO",
+    "sex": "male",
+    "name": "Callum - Husky Trickster",
+    "why": "The buyer takes whatever fell off a truck and never asks which truck: husky, quick, a little amused, always working the price. Callum is a middle-aged American trickster voice, nothing like the quartermaster's measured calm or the gate guard's young bark, and no other speaker uses this voice.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.45,
+      "similarity_boost": 0.75,
+      "style": 0.3,
+      "speed": 1.0
+    }
+  },
+  "budget_chars": 1000,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "price", "next": "price" },
+      { "text": "badge", "next": "refuse" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "price", "line": "price", "options": [
+      { "text": "more", "next": "haggle" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "haggle", "line": "haggle", "options": [
+      { "text": "badge", "next": "refuse" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "refuse", "line": "refuse" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Buyer. Crates, cartons, anything that fell off a truck. I pay cash and I don't ask which truck." },
+    "price": { "text": "Two hundred thirty a crate, and not a cent over. Bring me more than I can shift in an hour and I will tell you to wait." },
+    "haggle": { "text": "More? Ha. The price is the price, friend. Bring me a crate I can sell and we will talk." },
+    "refuse": { "for_key": "#LF-Outpost_TraderRefusesOfficer", "text": "We don't deal with the law here. Take the badge off and come back." },
+    "bye": { "text": "Pleasure. Mind where you drive." }
+  },
+  "replies": {
+    "price": "What do you pay?",
+    "more": "That's not much. Can you pay more?",
+    "badge": "I'm on duty. I have goods to sell.",
+    "bye": "Goodbye."
+  }
+}
