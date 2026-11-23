@@ -1,0 +1,12 @@
+# Charge sheet (#4426): the fixture paper with three open codes, all ticked; two share a stacking group so one greys.
+# Then a low rank cap, so a counted row greys by the cap. Run on a session (full profile for pictures).
+send chargesheet fixture
+wait 1200
+shot ui chargesheet_three_rows
+ui text
+send chargesheet close
+wait 300
+send chargesheet fixture-cap
+wait 1200
+shot ui chargesheet_capped
+send chargesheet close

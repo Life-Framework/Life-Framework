@@ -9,7 +9,7 @@
       "places": ["Hall", "Clerk"]
     },
     {
-      "id": "pub", "required": false, "kit": "pub", "host": "building", "poi": "none",
+      "id": "pub", "required": false, "kit": "village-bar", "host": "building", "poi": "none",
       "needs": { "interior": "required", "groundFloor": true, "minArea": 60, "prefer": "near", "maxDistance": 110, "types": ["pub", "shop", "house"] },
       "plot": { "minWidth": 14, "minDepth": 12, "prefabs": [{ "type": "pub", "stem": "PubVillage_E_2L01_V1" }] },
       "places": ["PubBar"]

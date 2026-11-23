@@ -26,8 +26,10 @@ class LF_TradePerkRow
 
 //------------------------------------------------------------------------------------------------
 //! The perk store (WK-W8, #4186): which perk each character picked in each trade at each pick level.
-//! Server state only; the pick itself (levels 10 and 20, the labour office counter, the $500 change)
-//! is WK-W8b and WK-W13, which call Pick. The store does not check the level: the caller gates.
+//! The server holds every character's picks; a client holds only its own character's, written by
+//! LF_PerkSync (#4525), so a remote client's hold bars and counter rows match the server. The pick
+//! itself (levels 10 and 20, the labour office counter, the $500 change) is LF_PerkPick, which calls
+//! Pick. The store does not check the level: the caller gates.
 class LF_TradePerks
 {
 	static const string FEATURE = "TradePerks";
@@ -78,6 +80,7 @@ class LF_TradePerks
 
 		Store().Set(Key(playerUid, trade, atLevel), perk);
 		LF_Debug.Info(FEATURE, string.Format("%1 picked %2 in %3 at level %4", playerUid, perk, trade, atLevel));
+		LF_PerkSync.Push(playerUid);
 		return true;
 	}
 
@@ -129,6 +132,55 @@ class LF_TradePerks
 		{
 			s_mPicks.Remove(key);
 		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every pick of one character as rows (the owner sync).
+	static array<ref LF_TradePerkRow> RowsOf(string playerUid)
+	{
+		array<ref LF_TradePerkRow> rows = new array<ref LF_TradePerkRow>();
+		if (!s_mPicks || playerUid.IsEmpty())
+			return rows;
+
+		string prefix = playerUid + "|";
+		foreach (string key, string perk : s_mPicks)
+		{
+			if (!key.StartsWith(prefix))
+				continue;
+
+			array<string> parts = {};
+			key.Split("|", parts, false);
+			if (parts.Count() == 3)
+				rows.Insert(LF_TradePerkRow.Create(parts[0], parts[1], parts[2].ToInt(), perk));
+		}
+
+		return rows;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Replaces one character's picks with the rows and leaves every other character's alone (a client
+	//! taking its owner sync). A row of another character or with a missing field is skipped.
+	//! \return How many rows were kept.
+	static int ReplaceFor(string playerUid, array<ref LF_TradePerkRow> rows)
+	{
+		if (playerUid.IsEmpty())
+			return 0;
+
+		Forget(playerUid);
+		if (!rows)
+			return 0;
+
+		int kept;
+		foreach (LF_TradePerkRow row : rows)
+		{
+			if (!row || row.m_sPlayerUid != playerUid || !Valid(row.m_sPlayerUid, row.m_sTrade, row.m_iAtLevel, row.m_sPerk))
+				continue;
+
+			Store().Set(Key(row.m_sPlayerUid, row.m_sTrade, row.m_iAtLevel), row.m_sPerk);
+			kept++;
+		}
+
+		return kept;
 	}
 
 	//------------------------------------------------------------------------------------------------
