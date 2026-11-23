@@ -6300,6 +6300,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Orders from the steamer and the freighters: bring the goods to the crane before the deadline."
      Comment "Sign catalog 'what' text of the export order board (the face prints the live orders)."
     }
+    CustomStringTableItem "{E4BA35B4EE3B794F}" {
+     Id "LF-ExportCrane_HandIn"
+     Target_en_us "Hand in the export order"
+     Comment "Action row at the dock crane spot: hand in the goods of the export order you took."
+    }
+    CustomStringTableItem "{CE33AF47A541C472}" {
+     Id "LF-ExportCrane_Paid"
+     Target_en_us "Order handed in. The shipper paid you {currency:sym}%1."
+     Comment "Toast after a full export order hand-in at the crane. %1 = the cash paid."
+    }
     CustomStringTableItem "{033372B427C8F462}" {
      Id "LF-ExportOrder_RefuseGone"
      Target_en_us "That order is no longer on the board."
