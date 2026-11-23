@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{18F6CD1DCF69D861}Prefabs/Tools/Tiers/LF_Tool_Rod_Standard.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}
