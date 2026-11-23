@@ -5397,6 +5397,23 @@ async function shipDirectCmd({ slug, flags, e, base, wtRoot, closes, customBody 
       shipMergeBase(wtRoot, base, healMergeSync, (l) => console.log(l));
     },
     regenSchema: () => {
+      // The credits rows derive from docs/credits.md like the schema derives from the config classes. Two branches that
+      // each add one entry write the same LF_CreditsData.c, which git resolves without a driver (#4668): re-derive it here.
+      try {
+        const cli = join(wtRoot, "tools", "cli.mjs");
+        const changedDocs = wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`, "--", "docs/credits.md"]).stdout.trim();
+        if (changedDocs && spawnSync(process.execPath, [cli, "credits"], { cwd: wtRoot, encoding: "utf8", windowsHide: true }).status === 0) {
+          const scope = ["addons/LifeFramework/Language", "addons/LifeFramework/Scripts/Game/Feature/Credits"];
+          if (wt.git(wtRoot, ["status", "--porcelain", "--", ...scope]).stdout.trim()) {
+            spawnSync(process.execPath, [cli, "regen-localization"], { cwd: wtRoot, encoding: "utf8", windowsHide: true });
+            wt.git(wtRoot, ["add", "--", ...scope]);
+            const c = wt.git(wtRoot, ["commit", "-q", "-m", "Regenerate the credits rows from docs/credits.md", "--", ...scope]);
+            console.log(c.status === 0 ? "ship: regenerated and committed the credits rows (docs/credits.md changed)" : "ship: credits rows regenerated but not committed; validate will report it");
+          }
+        }
+      } catch (err) {
+        console.log(`ship: credits regeneration threw (${err.message}); validate will report it`);
+      }
       return regenConfigSchema({
         log: (l) => console.log(l),
         changed: () => wt.git(wtRoot, ["diff", "--name-only", `origin/${base}...HEAD`]).stdout.split(/\r?\n/).filter(Boolean),

@@ -53,6 +53,10 @@ docs/decisions.md merge=lf-markdown
 # Per-area feature docs: sections features append (the ship queue never serializes on markdown).
 addons/*/Scripts/Game/Feature/*/Feature.md merge=lf-markdown
 
+# The credits source and what is generated from it: the string rows ride the string-table driver, the data file is regenerated (#4668).
+docs/credits.md merge=lf-markdown
+addons/LifeFramework/Scripts/Game/Feature/Credits/LF_CreditsData.c merge=lf-credits-data
+
 # Generated owner-config files: regenerated from the merged config classes (tools/merge/regen-config-schema.mjs).
 docs/config/config.schema.json merge=lf-regen-config-schema
 docs/config/config.example.json merge=lf-regen-config-schema
