@@ -1,0 +1,61 @@
+// Grid cell c24r6 for police-car-pool: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_police_car_pool_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 311 0 95
+}
+SCR_DestructibleEntity Grid_police_car_pool_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 316 0 95
+}
+SCR_DestructibleEntity Grid_police_car_pool_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 95
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_car_pool_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 100
+ angleY 270
+}
+SCR_DestructibleEntity Grid_police_car_pool_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 321 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_car_pool_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 316 0 105
+ angleY 180
+}
+SCR_DestructibleEntity Grid_police_car_pool_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 311 0 105
+ angleY 90
+}
+GenericEntity Grid_police_car_pool_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:police-car-pool"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 310.2 0.505 95.6
+ angleY -90
+}
+GenericEntity Grid_police_car_pool_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "police-car-pool"
+  }
+ }
+ coords 310.3 0 97.5
+ angleY 90
+}
+GenericEntity Grid_police_car_pool_R0_1 : "{AEFD4F9B8A69C66E}Prefabs/Props/Police/LF_PoliceCarPoolBoard.et" {
+ coords 318.49 -0.069 96.966
+ angleY -90
+}
+Vehicle Grid_police_car_pool_R0_2 : "{D1C459F87589D01D}Prefabs/Vehicles/Liveries/LF_S105_Police.et" {
+ coords 318.488 -0.131 100
+ angleY -90
+}
+Vehicle Grid_police_car_pool_R0_3 : "{C61DA18B80835A63}Prefabs/Vehicles/Liveries/LF_UAZ469_Police.et" {
+ coords 318.669 -0.211 103.024
+ angleY -90
+}

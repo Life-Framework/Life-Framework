@@ -2,7 +2,7 @@
 //
 // One row is one repainted variant:
 //   id        PascalCase name (Police, Ambulance, ...); the files are LF_<Vehicle>_<id>
-//   vehicle   a key of VEHICLES in generate.mjs (UAZ469, S1203)
+//   vehicle   a key of VEHICLES in generate.mjs (UAZ469, S105, S1203)
 //   base      the {GUID}path prefab the variant inherits (the service prefab, or a vanilla variant)
 //   colors    { 1: [r, g, b], 2: ..., 3: ..., 4: ... } paint layer colours, linear 0..1
 //   enabled   { 2: false } turns a vanilla paint layer off (the S1203 base mask speckles under layer 2)
@@ -26,6 +26,14 @@ export const LIVERIES = [
     colors: { 1: WHITE, 2: NAVY },
     plate: { text: "POLICE", paint: [0.95, 0.95, 0.93], ink: [0.05, 0.1, 0.35], rim: [0.05, 0.1, 0.35] },
     credit: { ...DERIVED("`UAZ469_Body_CIV_BLUE.emat` and `SignWall_01_90x45`"), purpose: "Police repaint and door plates for the UAZ469" },
+  },
+  {
+    // The Cadet's car in the rank fleet (#4352): the locked beige S105, repainted white.
+    id: "Police",
+    vehicle: "S105",
+    base: "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et",
+    colors: { 1: WHITE },
+    credit: { ...DERIVED("`S105Body_mat_beige.emat`"), purpose: "Police repaint for the S105" },
   },
   {
     id: "Police",
