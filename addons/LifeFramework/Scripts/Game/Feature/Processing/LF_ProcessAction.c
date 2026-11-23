@@ -177,6 +177,9 @@ class LF_ProcessAction : ScriptedUserAction
 			LF_Debug.Log("Processing", string.Format("processed %1 x%2 (%3 batch(es))", processingOutput.m_OutputPrefab, processingOutput.m_iOutputAmount, batches));
 		}
 
+		// The machine's trade pays its XP once for the whole run (a furnace pays SMELTING, #4337).
+		LF_ProcessXp.PayBatches(pUserEntity, m_sMachineId, batches);
+
 		LF_Utils.NotifyEntity(pUserEntity, ToastText(outputs), "", 4.0);
 
 		// The machine is heard running for a while (Feature/Atmosphere); no switch on the prefab, no sound.
