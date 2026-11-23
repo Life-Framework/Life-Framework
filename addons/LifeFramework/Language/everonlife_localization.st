@@ -8053,6 +8053,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A taped cardboard parcel for the drop-off address."
      Comment "Courier parcel item description"
     }
+    CustomStringTableItem "{A342651F913CD658}" {
+     Id "LF-Item_RadarGun_Description"
+     Target_en_us "Hand-held speed radar. Aim at a car and use Measure speed. On-duty officers only."
+     Comment "Inventory description of the police radar gun."
+    }
+    CustomStringTableItem "{3A0DC1946B0A4795}" {
+     Id "LF-Item_RadarGun_Name"
+     Target_en_us "Radar gun"
+     Comment "Inventory name of the police radar gun."
+    }
     CustomStringTableItem "{9195B0483F2D0148}" {
      Id "LF-Item_RepairKit_Description"
      Target_en_us "A toolbox of wrenches and patches. Holds one repair on a damaged vehicle."
@@ -13630,6 +13640,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Race_Unavailable"
      Target_en_us "This race is not available."
      Comment "Toast: the sign's course is missing or broken (#1923)."
+    }
+    CustomStringTableItem "{48CF0958A82A784B}" {
+     Id "LF-Radar_Clear"
+     Target_en_us "Radar: %1 km/h (reading/limit). Within the limit."
+     Comment "Toast: radar reading at or under the limit. %1 = speed/limit."
+    }
+    CustomStringTableItem "{BE2708A0DE110C62}" {
+     Id "LF-Radar_Measure"
+     Target_en_us "Measure speed"
+     Comment "Action on the radar gun: read the speed of the car in the sights."
+    }
+    CustomStringTableItem "{348DA0DF7BECE3C8}" {
+     Id "LF-Radar_Minor"
+     Target_en_us "Radar: %1 km/h (reading/limit). Minor speeding."
+     Comment "Toast: radar reading 1 to 15 over. %1 = speed/limit."
+    }
+    CustomStringTableItem "{C74B168D6DFC30CF}" {
+     Id "LF-Radar_NoCar"
+     Target_en_us "Radar: no vehicle in your sights."
+     Comment "Toast: the radar gun was used with no car on the aim line."
+    }
+    CustomStringTableItem "{089DC48EF9D25C17}" {
+     Id "LF-Radar_Road"
+     Target_en_us "Radar: %1 km/h (reading/limit). Road speeding."
+     Comment "Toast: radar reading 16 to 30 over. %1 = speed/limit."
+    }
+    CustomStringTableItem "{6BB8EC9E16D2E478}" {
+     Id "LF-Radar_Serious"
+     Target_en_us "Radar: %1 km/h (reading/limit). Serious speeding."
+     Comment "Toast: radar reading over 30 over. %1 = speed/limit."
     }
     CustomStringTableItem "{C5ADAB68CA19613F}" {
      Id "LF-Range_Busy"

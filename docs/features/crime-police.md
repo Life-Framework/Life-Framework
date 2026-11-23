@@ -632,6 +632,13 @@
   senior and every rung above draw the M16, the spike strip and the roadblock kit (`LF_Roadblocks.KIT`, added to the
   station catalog in `LF_PoliceRanks.Catalog`, since a kit line outside it is not issued). A civilian cannot draw.
   Test: `police/everon-kit`.
+- 🔨 **Radar gun with three speed classes** (#4211, PO-R4, merged, in-dev): `LF_RadarGun.et` (a vanilla binoculars
+  mesh until the Blender model lands) carries **Measure speed**, offered to on-duty officers. The server traces the
+  officer's aim up to 150 m for a vehicle, reads its velocity in whole km/h and classifies it against the road's limit
+  (`LF_RadarRules.Classify`): 1 to 15 over is **minor** (`road.speeding.minor`), 16 to 30 **road**
+  (`road.speeding`), over 30 **serious** (`road.speeding.serious`); at or under the limit is clear. A toast shows
+  speed/limit and the class. The limit is the 50 km/h default (`LF_RadarLimits`) until the speed signs (PO-R5) give
+  per-road limits. The gun is not yet issued in a kit. Test: `police/radar-classes`.
 - 🔨 **One issued kit per officer, two hours apart, saved** (#2416, in-dev; replaces the 2026-11-07 per-shift
   draw mark, which clocking out and in reset). `LF_ArmoryKits` books each kit's serialled lines (the M9, the M16)
   to the officer's account (all its characters share one book) with the issue time (`System.GetUnixTime`). While any serial is out, the armory action issues
