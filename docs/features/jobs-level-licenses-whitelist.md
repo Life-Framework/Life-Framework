@@ -26,12 +26,13 @@
 - ✅ **Civilian run XP** (verified 2026-10-11): `AddExperience` forwards to
   `LF_CivilianJob`. A completed courier, fuel, or taxi run adds
   `m_iJobXpPerRun` XP and `PullCareer` copies the level onto this component,
-  so `OnLevelUp` fires. Level 1 may take courier work, level 2 opens fuel
-  delivery, level 3 opens taxi. Under-level signup refuses and is logged.
+  so `OnLevelUp` fires. Level 1 may take courier work, level 4 opens fuel
+  delivery, level 6 opens taxi (the 30-level table, #4596). Under-level signup refuses and is logged.
 - ✅ **Job pacing is config and hidden** (2026-11-08, #156): `LF_Jobs.conf`
   sets `m_iJobXpPerRun` (100), `m_iJobXpFirstLevel` (500), and
-  `m_fJobXpLevelGrowth` (2): 5 runs open fuel delivery, 15 open the taxi
-  (`LF_CivilianJob.RunsToReach`). No level text reaches the player: the
+  `m_fJobXpLevelGrowth` (2): on the old table 5 runs opened fuel delivery and 15 the taxi; since #4596 the
+  gates sit at DELIVERY level 4 (600 XP, 6 runs) and level 6 (1500 XP, 15 runs), the same early pacing
+  (`LF_CivilianJob.RunsToReach`; test `jobs/pacing`). No level text reaches the player: the
   level-up hint ("grade N, +N%") and the grade in the hire hint are gone
   (`#LF-Job_HiredHidden`). When a run opens new work the drop-off shows
   `#LF-Job_NewWork` titled with the job name (`LF_CivilianJob.NewlyOpened`).
@@ -139,8 +140,8 @@
   time. Both clocks are session state. An unknown job or action earns nothing and logs
   `[LFDebug:JobLevels]`.
 - ✅ **DELIVERY has 30 levels** (#4596): its track uses the same XP curve as the other trades (100, 300, 600, 1000, 1500 ... 42000), so the export order gate at level 10 is 5000 XP, about 50 `delivery_run` runs (100 XP each; a postal run is 120) or a few hours of hauling. Test `jobs/delivery-level-ten` (the ladder, the runs to level 10, a level 9 hauler refused and a level 10 hauler taking an order). A pre-#749 career level never drops: the new table is easier.
-- ✅ Gates read job levels: delivery sign-up (DELIVERY: fuel level 2, taxi level 3; the
-  levels now come at 100 and 300 XP, see the 30-level table below), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
+- ✅ Gates read job levels: delivery sign-up (DELIVERY: fuel level 4, taxi level 6, `LF_CivilianJob.RequiredLevel`: 600 and 1500 XP on the
+  30-level table, so the early pacing of 6 and 15 runs survived #4596, which first left the gates on levels 2 and 3 at 100 and 300 XP), licence purchase (`LF_LicenseGate`: the licence family's job at the catalog level,
   or a `jobs.licenceGates` row), chain steps and quests (`m_sLevelJob` / `m_sJob`, CIVILIAN by
   default), lockpicking skill (CIVILIAN).
 - ✅ (2026-11-17, #2700) **A job-level gate refuses in words, never a number.**

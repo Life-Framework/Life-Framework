@@ -40,12 +40,12 @@ class LF_Test_Roadmap_Jobs : LF_Test
 		ctx.Equal(0, LF_CivilianJob.CompleteRun(uid), "the same run does not pay again");
 		ctx.Equal(LF_CivilianJob.PAY_PARCEL, LF_CivilianJob.GetPaidTotal(uid), "a second complete adds nothing");
 		ctx.False(LF_CivilianJob.SignUp(uid, LF_EJobType.FUEL_DELIVERY), "one run does not open fuel delivery");
-		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.PARCEL, 2);
-		ctx.Equal(2, LF_CivilianJob.GetLevel(uid), "enough parcel runs level the job");
+		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.PARCEL, LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY));
+		ctx.Equal(LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY), LF_CivilianJob.GetLevel(uid), "enough parcel runs level the job");
 		int parcelPay = LF_CivilianJob.GetPaidTotal(uid);
 
-		ctx.True(LF_CivilianJob.SignUp(uid, LF_EJobType.FUEL_DELIVERY), "level 2 opens fuel delivery");
-		ctx.False(LF_CivilianJob.SignUp(uid, LF_EJobType.TAXI), "level 2 taxi signup refuses");
+		ctx.True(LF_CivilianJob.SignUp(uid, LF_EJobType.FUEL_DELIVERY), "the fuel delivery level opens fuel delivery");
+		ctx.False(LF_CivilianJob.SignUp(uid, LF_EJobType.TAXI), "taxi signup refuses below its level");
 
 		ctx.True(LF_CivilianJob.StartRun(uid, LF_EJobType.FUEL_DELIVERY), "fuel run starts");
 		ctx.True(LF_CivilianJob.AbandonRun(uid), "an active run can be abandoned");
@@ -55,9 +55,9 @@ class LF_Test_Roadmap_Jobs : LF_Test
 		ctx.True(LF_CivilianJob.StartRun(uid, LF_EJobType.FUEL_DELIVERY), "a new fuel run starts after abandon");
 		ctx.Equal(LF_CivilianJob.PAY_FUEL, LF_CivilianJob.CompleteRun(uid), "the new run pays once");
 		ctx.Equal(parcelPay + LF_CivilianJob.PAY_FUEL, LF_CivilianJob.GetPaidTotal(uid), "each run pays once");
-		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.FUEL_DELIVERY, 3);
-		ctx.Equal(3, LF_CivilianJob.GetLevel(uid), "enough fuel runs level the job again");
-		ctx.True(LF_CivilianJob.SignUp(uid, LF_EJobType.TAXI), "level 3 opens taxi");
+		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.FUEL_DELIVERY, LF_CivilianJob.RequiredLevel(LF_EJobType.TAXI));
+		ctx.Equal(LF_CivilianJob.RequiredLevel(LF_EJobType.TAXI), LF_CivilianJob.GetLevel(uid), "enough fuel runs level the job again");
+		ctx.True(LF_CivilianJob.SignUp(uid, LF_EJobType.TAXI), "the taxi level opens taxi");
 		ctx.True(LF_CivilianJob.StartRun(uid, LF_EJobType.TAXI), "taxi fare starts without a second client");
 		ctx.Equal(LF_CivilianJob.PAY_TAXI, LF_CivilianJob.CompleteRun(uid), "taxi fare pays the fixed amount");
 
@@ -123,12 +123,12 @@ class LF_Test_Roadmap_JobsWorld : LF_Test
 		ctx.True(LF_CivilianJob.SignUp(uid, LF_EJobType.PARCEL), "e2e parcel signup");
 		ctx.True(LF_CivilianJob.StartRun(uid, LF_EJobType.PARCEL), "parcel leaves the depot");
 		ctx.Equal(LF_CivilianJob.PAY_PARCEL, LF_CivilianJob.CompleteRun(uid), "parcel drop pays");
-		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.PARCEL, 2);
+		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.PARCEL, LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY));
 
 		ctx.True(LF_CivilianJob.SignUp(uid, LF_EJobType.FUEL_DELIVERY), "e2e fuel signup after the parcel runs");
 		ctx.True(LF_CivilianJob.StartRun(uid, LF_EJobType.FUEL_DELIVERY), "fuel run starts from the can");
 		ctx.Equal(LF_CivilianJob.PAY_FUEL, LF_CivilianJob.CompleteRun(uid), "fuel delivery pays");
-		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.FUEL_DELIVERY, 3);
+		LF_TestJobRuns.ToLevel(ctx, uid, LF_EJobType.FUEL_DELIVERY, LF_CivilianJob.RequiredLevel(LF_EJobType.TAXI));
 
 		ctx.True(LF_CivilianJob.SignUp(uid, LF_EJobType.TAXI), "e2e taxi signup");
 		ctx.True(LF_CivilianJob.StartRun(uid, LF_EJobType.TAXI), "taxi fare starts");
