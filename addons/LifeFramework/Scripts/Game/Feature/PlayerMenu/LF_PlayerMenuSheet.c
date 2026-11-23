@@ -37,6 +37,8 @@ class LF_PlayerMenuSheet
 	//! Up to this many licences are named in the row's value.
 	static const int LICENCES_INLINE = 2;
 	static const string PART_UNLOCK = "PlayerMenuDetailUnlock";
+	static const string PART_PERKS = "PlayerMenuDetailPerks";
+	static const string PART_RANK = "PlayerMenuDetailRank";
 	//! Inner card columns, one per card.
 	static const string CARD_ID = "PlayerMenuCardId";
 	static const string CARD_MONEY = "PlayerMenuCardMoney";
@@ -570,6 +572,8 @@ class LF_PlayerMenuSheet
 		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.BAR, PART_DETAIL_BAR, string.Empty)));
 		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_DETAIL_NUMBERS, string.Empty)));
 		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_UNLOCK, string.Empty)));
+		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_PERKS, string.Empty)));
+		parts.Insert(Card(CARD_SKILLS, LF_UIPart.Create(LF_EUIPartKind.LINE, PART_RANK, string.Empty)));
 		Footer(parts);
 		return parts;
 	}
@@ -765,15 +769,22 @@ class LF_PlayerMenuSheet
 			return;
 
 		LF_PlayerMenuSkill skill = data.m_aSkills[index];
-		screen.SetLine(PART_DETAIL_NAME, SkillName(skill.m_sJob));
+		string tradeName = SkillName(skill.m_sJob);
+		screen.SetLine(PART_DETAIL_NAME, LF_PlayerMenuTrade.TitleLine(skill, tradeName));
 		screen.SetLine(PART_DETAIL_TEXT, SkillDescription(skill.m_sJob));
 		screen.SetBar(PART_DETAIL_BAR, LF_PlayerMenuXp.Fraction(skill.m_iXp, skill.m_iFloor, skill.m_iNext));
 		screen.SetLine(PART_DETAIL_NUMBERS, SkillNumbers(skill));
 		string unlock;
 		if (skill.m_iNext >= 0)
-			unlock = NextUnlock(skill.m_sJob, skill.m_iLevel + 1);
+		{
+			unlock = LF_PlayerMenuTrade.UnlockLine(skill);
+			if (unlock.IsEmpty())
+				unlock = NextUnlock(skill.m_sJob, skill.m_iLevel + 1);
+		}
 
 		screen.SetLine(PART_UNLOCK, unlock);
+		screen.SetLine(PART_PERKS, LF_PlayerMenuTrade.PerksLine(skill));
+		screen.SetLine(PART_RANK, LF_PlayerMenuTrade.RankLine(skill, tradeName));
 	}
 
 	//------------------------------------------------------------------------------------------------
