@@ -12,6 +12,7 @@ SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Charac
   }
   LF_DialogueComponent "{927B49167B7264EE}" {
    m_sDialogueId "barkeeper"
+   m_sStandingId "barkeeper"
   }
   LF_PlaceComponent "{9586E9865DD637CE}" {
    m_sKind "Townsfolk"

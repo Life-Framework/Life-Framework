@@ -126,6 +126,30 @@
       "floor": "f0"
     },
     {
+      "id": "supermarket-box-safe",
+      "name": "Shop_Supermarket_BoxSafe",
+      "prefab": "{FDF16EF9B78A92F7}Prefabs/Props/Safes/LF_StoreBox.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        9.4,
+        0.1,
+        3.65
+      ],
+      "yaw": 90,
+      "config": [
+        {
+          "component": "LF_HeistVaultComponent",
+          "set": {
+            "m_iStock": "1",
+            "m_fRefillSeconds": "2700"
+          },
+          "blocks": []
+        }
+      ],
+      "floor": "f0"
+    },
+    {
       "id": "village-supermarket-shopkeeper",
       "name": "Village_Supermarket_Shopkeeper",
       "prefab": "{AB73D0036F42E73E}Prefabs/Characters/Npcs/LF_Shopkeeper.et",

@@ -88,7 +88,7 @@ Vehicle : "{FE6068ACC2CADABB}Prefabs/Vehicles/Liveries/LF_S1203_Ambulance.et" {
  {
   GenericEntity : "{85AFAE9D62E38764}Prefabs/Vehicles/SirenLights/LightBarLED_Red.et" {
    ID "2F8A4C7D1E93B056"
-   coords 0 2.3 0.9
+   coords 0 1.85 0.9
   }
  }
 }

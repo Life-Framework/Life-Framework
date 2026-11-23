@@ -475,6 +475,14 @@
         "the pub b03 is the building the cafe, chess and board slots already share, so every row is a building-local offset and nothing the maintainer placed moves"
       ]
     },
+    "bank-beat": {
+      "building": "b79",
+      "shared": true,
+      "why": [
+        "#4586 (WO-W1.6, from #4479): the evening gendarme's bank beat needs `door` and `door2` resident anchors within 30 m of the Bank place; the bank b79 is the building the bank slot already fits, and its street entrance (the front door on the low-z face) is where he stands",
+        "two bare anchors on the pavement 3.5 m out from the facade; nothing the maintainer placed moves"
+      ]
+    },
     "anniversary": {
       "drops": [
         {

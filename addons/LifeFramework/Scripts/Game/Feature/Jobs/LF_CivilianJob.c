@@ -6,8 +6,8 @@
 //!
 //! Level 1 may take courier work. Level 2 opens fuel delivery. Level 3 opens
 //! taxi. XP per run is the jobs config's delivery_run award and the levels are the
-//! DELIVERY track's thresholds (shipped: 100 XP a run, 500 XP to level 2, 1500 to
-//! level 3: 5 runs to fuel delivery, 15 to the taxi). Progression is hidden: no level
+//! DELIVERY track's thresholds (shipped: 100 XP a run, 100 XP to level 2, 300 to
+//! level 3, 5000 to level 10: the 30-level table of #4596, the same curve as the other trades). Progression is hidden: no level
 //! text reaches the player.
 //------------------------------------------------------------------------------------------------
 class LF_JobWorker : Managed
