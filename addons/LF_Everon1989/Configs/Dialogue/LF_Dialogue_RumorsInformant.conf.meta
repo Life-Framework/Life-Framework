@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{25BDC240277AD840}Configs/Dialogue/LF_Dialogue_RumorsInformant.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

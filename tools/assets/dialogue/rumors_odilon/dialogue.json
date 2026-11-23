@@ -1,0 +1,171 @@
+{
+  "id": "rumors_odilon",
+  "name": "RumorsOdilon",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Resident_gossip_odile_Name",
+  "voice": {
+    "id": "W2BFXIBAz50X1hk8EohV",
+    "sex": "male",
+    "name": "Martin - Ultra High Quality",
+    "public_owner_id": "503b412cad8256acb9820883aedced2921545e247152757f7d8be7363c19999e",
+    "why": "Odilon Ferrand's own voice (Martin) for the rumors he passes on from the square's bench: the same calm man who talks to a player, so a rumor overheard on the bench sounds like him.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.25,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 1700,
+  "hear_range_m": 8,
+  "start": "odilon_mine",
+  "nodes": [
+    {
+      "id": "odilon_mine",
+      "line": "odilon_mine",
+      "options": [
+        {
+          "text": "more",
+          "next": "odilon_sawmill"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "odilon_sawmill",
+      "line": "odilon_sawmill",
+      "options": [
+        {
+          "text": "more",
+          "next": "odilon_orchard"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "odilon_orchard",
+      "line": "odilon_orchard",
+      "options": [
+        {
+          "text": "more",
+          "next": "odilon_smokehouse"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "odilon_smokehouse",
+      "line": "odilon_smokehouse",
+      "options": [
+        {
+          "text": "more",
+          "next": "odilon_market"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "odilon_market",
+      "line": "odilon_market",
+      "options": [
+        {
+          "text": "more",
+          "next": "odilon_harbor"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "odilon_harbor",
+      "line": "odilon_harbor",
+      "options": [
+        {
+          "text": "more",
+          "next": "odilon_parcel"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "odilon_parcel",
+      "line": "odilon_parcel",
+      "options": [
+        {
+          "text": "more",
+          "next": "odilon_pond"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "odilon_pond",
+      "line": "odilon_pond",
+      "options": [
+        {
+          "text": "more",
+          "next": "odilon_church"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "odilon_church",
+      "line": "odilon_church",
+      "options": [
+        {
+          "text": "bye"
+        }
+      ]
+    }
+  ],
+  "lines": {
+    "odilon_mine": {
+      "text": "The mine at Coalman's Brow takes anyone with a pick and a strong back. The coal goes down to the power plant on the edge of town."
+    },
+    "odilon_sawmill": {
+      "text": "The sawmill is always short a pair of hands. Logs come in from the woodlot, boards go out, and the foreman asks few questions."
+    },
+    "odilon_orchard": {
+      "text": "Pick apples at the orchard, press them for juice, and the market buys what you carry. I did it myself the summer my knees went."
+    },
+    "odilon_smokehouse": {
+      "text": "The smokehouse by the dock pays a fair price for fish. Bring it fresh and nobody will haggle."
+    },
+    "odilon_market": {
+      "text": "Set up at the market on a good morning and the whole town buys. Bread, honey, apples, whatever you carry."
+    },
+    "odilon_harbor": {
+      "text": "The harbor master keeps a tally of every crate that lands. Honest work, if you can count and stay awake."
+    },
+    "odilon_parcel": {
+      "text": "The post office wants couriers. Walk a parcel across town, earn a little, and learn every street on the way."
+    },
+    "odilon_pond": {
+      "text": "There is a pond past the houses where the carp sit lazy at noon. I fished it for years and never needed a boat."
+    },
+    "odilon_church": {
+      "text": "The church is open to anyone. The bell rings the hour, and the priest knows more about this town than the baker does."
+    }
+  },
+  "replies": {
+    "more": "Go on.",
+    "bye": "That is all I wanted."
+  }
+}
