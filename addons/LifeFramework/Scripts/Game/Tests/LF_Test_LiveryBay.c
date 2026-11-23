@@ -90,6 +90,9 @@ class LF_Test_LiveryBay : LF_Test
 			return;
 		}
 
+		// The car stands exactly on the bay's pad (the prefab's pad is 4 m from the bench): the car just
+		// stored must not block the pad it comes back to.
+		car.SetOrigin(bayAt + "0 0 4");
 		owner.SetOrigin(bayAt + "0 0 -1.5");
 		stranger.SetOrigin(bayAt + "1.5 0 0");
 		ctx.True(LF_LiveryBay.BayNear(owner) == bay, "the server finds the bay by the rows it carries");
@@ -126,6 +129,7 @@ class LF_Test_LiveryBay : LF_Test
 		ctx.True(painted && painted != car, "a new car stands in the new paint");
 		ctx.True(painted && LF_VehiclePriceModel.SameResource(painted.GetPrefabData().GetPrefabName(), LF_VehicleCatalog.S1203_LOCKED), "the live car is the chosen variant");
 		ctx.True(painted && vector.Distance(painted.GetOrigin(), bay.GetOrigin()) <= LF_LiveryShopConfig.Get().m_fBayRadius, "on the bay's pad");
+		ctx.True(painted && vector.Distance(painted.GetOrigin(), bayAt + "0 0 4") < 1.5, "the car parked on the pad came back to it, not blocked by itself");
 		LF_LiveryBay.VisibleOptions(CAR, LF_Faction.CIVILIAN, options);
 		ctx.Equal(0, options.Count(), "the car's own paint leaves the list");
 		ctx.False(LF_LiveryBay.ServerBuy(owner, LF_VehiclePriceModel.GuidOf(LF_VehicleCatalog.S1203_LOCKED)), "pressing the same row again is refused (the paint is already on the car)");

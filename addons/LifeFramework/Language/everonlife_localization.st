@@ -15691,6 +15691,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "No room for the cash. The till stays shut."
      Comment "Toast: the robber's inventory cannot take the till cash, so nothing is taken and nobody is alerted (crime review 2026-11-17)."
     }
+    CustomStringTableItem "{98F59847428914BF}" {
+     Id "LF-RunPlate_Action"
+     Target_en_us "Run plate"
+     Comment "Action row on a police car (#4425): read the plate of the car ahead."
+    }
+    CustomStringTableItem "{C945EFD33C6582C6}" {
+     Id "LF-RunPlate_Clear"
+     Target_en_us "CLEAR"
+     Comment "Pager word: registered, no report (#4425)."
+    }
+    CustomStringTableItem "{FF039827A68F2E8B}" {
+     Id "LF-RunPlate_Line"
+     Target_en_us "Plate %1: %2"
+     Comment "Pager line after Run plate (#4425). %1 = plate, %2 = STOLEN, CLEAR or UNKNOWN."
+    }
+    CustomStringTableItem "{2DDB8B7DB753748B}" {
+     Id "LF-RunPlate_NoCar"
+     Target_en_us "No car ahead within 30 meters."
+     Comment "Toast: run plate found no car in front (#4425)."
+    }
+    CustomStringTableItem "{07ED6567EF4AD283}" {
+     Id "LF-RunPlate_NotDriving"
+     Target_en_us "Run a plate from the driver seat of a patrol car."
+     Comment "Toast: run plate refused, the officer is not at the wheel (#4425)."
+    }
+    CustomStringTableItem "{AE1F8B3239967066}" {
+     Id "LF-RunPlate_OffDuty"
+     Target_en_us "Only an on-duty officer can run a plate."
+     Comment "Toast: run plate refused, the officer is not on duty (#4425)."
+    }
+    CustomStringTableItem "{2F32BB51C0269D79}" {
+     Id "LF-RunPlate_Stolen"
+     Target_en_us "STOLEN"
+     Comment "Pager word: the plate is on the stolen-car hotlist (#4425)."
+    }
+    CustomStringTableItem "{F27DCCD7B370563F}" {
+     Id "LF-RunPlate_Unknown"
+     Target_en_us "UNKNOWN"
+     Comment "Pager word: the plate is on no register (#4425)."
+    }
     CustomStringTableItem "{4AA0194A741E081B}" {
      Id "LF-SafeZone_ShotRefused"
      Target_en_us "The {town} square is a safe zone. Your shot hurt nobody."

@@ -157,6 +157,9 @@ class LF_LiveryOption : Managed
 //! The server half of the bay: the options and the paid respray.
 class LF_LiveryShop
 {
+	//! Where the stored car is moved until its deletion lands, clear of every pad.
+	static const vector PARK_OFFSET = "0 -2000 0";	// lf-fixed: below the world, not a tunable
+
 	//------------------------------------------------------------------------------------------------
 	//! The paint jobs for an owned car, in the order the bay lists them: the model's lot colours
 	//! (its current paint left out), then the liveries for the model. Empty for an unknown car.
@@ -334,8 +337,15 @@ class LF_LiveryShop
 		if (!record)
 			return false;
 
+		IEntity standing = LF_VehicleOwnership.GetVehicle(vehicleId);
 		if (!record.m_bStored && !LF_VehicleOwnership.Store(vehicleId, ownerUid))
 			return false;
+
+		// Store queues the car's deletion for the end of the frame, so the car just stored still stands on
+		// the pad when Retrieve looks for a free one and blocks it (a car parked on the bay's pad would make
+		// every respray fail and refund). Move it far away: a pad is taken by a car near its origin.
+		if (standing)
+			standing.SetOrigin(standing.GetOrigin() + PARK_OFFSET);
 
 		record = LF_VehicleOwnership.Export(vehicleId);
 		record.m_sSpawnPrefab = spawnPrefab;
