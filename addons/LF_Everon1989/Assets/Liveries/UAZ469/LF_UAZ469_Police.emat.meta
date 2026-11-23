@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{DBEBDD177E9D3A91}Assets/Liveries/UAZ469/LF_UAZ469_Police.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

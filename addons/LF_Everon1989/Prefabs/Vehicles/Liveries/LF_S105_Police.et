@@ -1,0 +1,13 @@
+Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
+ ID "0FE15C2A9B16A8C7"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64D877CFC0DC5560}" {
+     SourceMaterial "S105Body_mat"
+     AssignedMaterial "{56A87DCA636A1D96}Assets/Liveries/S105/LF_S105_Police.emat"
+    }
+   }
+  }
+ }
+}
