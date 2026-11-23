@@ -1,0 +1,13 @@
+Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et" {
+ ID "ED1A78BA92606812"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{64DA70D3831058D9}" {
+     SourceMaterial "S1203_body"
+     AssignedMaterial "{C032186FC52E039D}Assets/Liveries/S1203/LF_S1203_Police.emat"
+    }
+   }
+  }
+ }
+}
