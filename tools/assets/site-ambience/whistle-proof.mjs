@@ -1,12 +1,12 @@
-// Session proof for WK-W23 (#4183): the 06:00 shift whistle. One client stands at the whistle emitter in grid cell
-// slice-4183 (a Coalman's Brow stand-in), the clock is set before, inside and after the whistle window, and the
+// Session proof for WK-W23 (#4183): the 06:00 shift whistle. One client stands at the named whistle emitter, the clock is set before, inside and after the whistle window, and the
 // client's own [LFDebug:Atmosphere] lines must show the whistle start inside the window only, with the site name.
 //
-//   node tools/cli session up --mission grid ; node tools/assets/site-ambience/whistle-proof.mjs ; node tools/cli session down
+//   node tools/cli session up --sound ; node tools/assets/site-ambience/whistle-proof.mjs <emitter name> ; node tools/cli session down
 import { readFileSync } from "node:fs";
 import { arrive, clientBox, newestLog, sessionDir, sessionPaths } from "../../../agent-box/session.mjs";
 
-const EMITTER = "Grid_slice_4183_CoalmansBrow_Whistle";
+// The named emitter must carry slot atmo_shift_whistle and hours 6 to 6.02 (a site place card, or a scratch layer entry).
+const EMITTER = process.argv[2] || "CoalmansBrow_Whistle";
 const PROJECT = "Work_ShiftWhistle.acp";
 
 const h = await import("../../../agent-box/harness.mjs");
