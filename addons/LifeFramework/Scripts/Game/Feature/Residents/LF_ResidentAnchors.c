@@ -20,6 +20,10 @@ class LF_ResidentAnchors
 	//! An anchor not parented to its place belongs to the nearest place of the kind within this many metres.
 	static const float OWN_RADIUS = 30;	// lf-fixed: how close a loose anchor must sit to count as inside a place
 
+	protected static const int RANK_LOOSE = 0;
+	protected static const int RANK_BOUND = 1;
+	protected static const int RANK_NESTED = 2;
+
 	protected static ref array<EntityID> s_aAnchors;
 	protected static ref set<string> s_mWarned;
 	protected static int s_iWarnCount;
@@ -150,9 +154,10 @@ class LF_ResidentAnchors
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The anchor `anchorId` that belongs to place: nested under it, else loose within OWN_RADIUS and
-	//! closer to this place than to any other of the kind. A nested anchor beats a loose one, then the
-	//! nearest wins.
+	//! The anchor `anchorId` that belongs to place: nested under it, else bound to its id by the
+	//! anchor's m_sPlaceId (#4613), else loose within OWN_RADIUS and closer to this place than to any
+	//! other of the kind. An anchor bound to another place is never claimed. Nested beats bound beats
+	//! loose, then the nearest wins.
 	protected static IEntity FindAnchor(IEntity place, string kind, string anchorId)
 	{
 		if (!s_aAnchors || !GetGame() || !GetGame().GetWorld())
@@ -160,7 +165,7 @@ class LF_ResidentAnchors
 
 		IEntity best;
 		float bestDist = 0;
-		bool bestNested;
+		int bestRank;
 		array<EntityID> stale = {};
 		foreach (EntityID id : s_aAnchors)
 		{
@@ -175,9 +180,22 @@ class LF_ResidentAnchors
 			if (!comp || comp.GetAnchorId() != anchorId)
 				continue;
 
-			bool nested = IsUnder(anchor, place);
+			int rank = RANK_LOOSE;
 			float dist = vector.DistanceSq(anchor.GetOrigin(), place.GetOrigin());
-			if (!nested)
+			if (IsUnder(anchor, place))
+			{
+				rank = RANK_NESTED;
+			}
+			else if (!comp.GetPlaceId().IsEmpty())
+			{
+				// Bound to one place by id (#4613): that place's resident only, at any distance. A
+				// loose anchor beside another kind's place would be claimed by whoever stands nearest.
+				if (LF_Places.Find(kind, comp.GetPlaceId()) != place)
+					continue;
+
+				rank = RANK_BOUND;
+			}
+			else
 			{
 				if (dist > OWN_RADIUS * OWN_RADIUS)
 					continue;
@@ -187,11 +205,11 @@ class LF_ResidentAnchors
 					continue;
 			}
 
-			if (!best || (nested && !bestNested) || (nested == bestNested && dist < bestDist))
+			if (!best || rank > bestRank || (rank == bestRank && dist < bestDist))
 			{
 				best = anchor;
 				bestDist = dist;
-				bestNested = nested;
+				bestRank = rank;
 			}
 		}
 
