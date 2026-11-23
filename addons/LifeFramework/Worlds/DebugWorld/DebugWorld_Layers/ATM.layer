@@ -58,3 +58,30 @@ LF_NpcBaseEntity Bank_Teller : "{5B2A1E072C8DD6B7}Prefabs/Characters/Npcs/Outfit
  coords 175.4 0.2 264.4
  angleY 180
 }
+GenericEntity Town_ATM_Bank : "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et" {
+ components {
+  LF_PlaceComponent "{7070D89FFB6DC889}" {
+   m_sId "atm.saint-philippe.b79"
+  }
+ }
+ coords 190.5 0.001 259.167
+ angleY 180
+}
+GenericEntity Town_ATM_Fuel : "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et" {
+ components {
+  LF_PlaceComponent "{7070D89FFB6DC889}" {
+   m_sId "atm.saint-philippe.b97"
+  }
+ }
+ coords 280 0.001 236.199
+ angleY 180
+}
+GenericEntity Town_ATM_Square : "{7070D89FFB6DC880}Prefabs/Props/Money/LF_ATM.et" {
+ components {
+  LF_PlaceComponent "{7070D89FFB6DC889}" {
+   m_sId "atm.saint-philippe-dock.b08"
+  }
+ }
+ coords 133.14 0.001 256
+ angleY -90
+}

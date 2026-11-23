@@ -2,8 +2,15 @@
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildReport, renderReport } from "../lib/economy.mjs";
+import { dutyLadder, renderDutyLadder } from "../lib/economy-lumber.mjs";
 
-export const help = "economy [--mission LF_Everon1989] [--run-minutes parcel=6,fuel=8,taxi=10] [--taxi-metres 2000] [--wholesale-carry] [--hours 1,2,4,6] [--root <dir>] [--json]   what a newcomer earns and can buy by hour 1, 2, 4 and 6 (core + pack overlays + server/flagship/config.json): rank duty pay, taxi fares, contracts, licence fees, and flags for loops, empty fish and zero pay; the lumber loops (#3270) and the mining chains (#3240) with steady and first-hour $/h and a flag outside the 1.5 to 2.5 duty band (--wholesale-carry keeps the wholesale curve between hours)";
+export const help = "economy [--mission LF_Everon1989] [--run-minutes parcel=6,fuel=8,taxi=10] [--taxi-metres 2000] [--wholesale-carry] [--hours 1,2,4,6] [--root <dir>] [--json]   what a newcomer earns and can buy by hour 1, 2, 4 and 6 (core + pack overlays + server/flagship/config.json): rank duty pay with each rank's shift, bonus cap and rung (the 0.3.0 pay ladder, #4178), taxi fares, contracts, licence fees, and flags for loops, empty fish and zero pay; the lumber loops (#3270) and the mining chains (#3240) with steady and first-hour $/h and a flag for a loop under the Cadet shift (--wholesale-carry keeps the wholesale curve between hours)";
+
+/** The duty rungs of a built report (#4178): { duty: { rows, flags }, lines } for every police and medic rank. */
+export function ladderReport(report) {
+  const duty = dutyLadder(report.duty);
+  return { duty, lines: renderDutyLadder(duty) };
+}
 
 const REPO = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 
@@ -42,7 +49,16 @@ export async function main(args = []) {
     console.error(`economy: ${report.error}`);
     return 2;
   }
+  const ladder = ladderReport(report);
+  report.dutyLadder = ladder.duty.rows;
+  report.flags.push(...ladder.duty.flags);
   if (opt.json) console.log(JSON.stringify(report, null, 2));
-  else for (const line of renderReport(report)) console.log(line);
+  else {
+    // The duty rungs print right after the duty pay lines, before the purchases.
+    const lines = renderReport(report);
+    const at = lines.findIndex((l) => l.startsWith("cheapest purchase:"));
+    lines.splice(at < 0 ? lines.length : at, 0, ...ladder.lines);
+    for (const line of lines) console.log(line);
+  }
   return 0;
 }

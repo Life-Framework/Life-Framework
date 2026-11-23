@@ -1,0 +1,44 @@
+Tree Onboarding_Orchard_Apple_1 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 208 0 220
+ angleY 1
+}
+Tree Onboarding_Orchard_Apple_2 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 212 0 223
+ angleY 121
+}
+Tree Onboarding_Orchard_Apple_3 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 216 0 219
+ angleY -119
+}
+Tree Onboarding_Orchard_Apple_4 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
+ coords 210 0 215
+ angleY 61
+}
+Tree Onboarding_Orchard_Plum_1 : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ coords 218 0 213
+ angleY -179
+}
+Tree Onboarding_Orchard_Plum_2 : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ coords 214 0 210
+ angleY -59
+}
+Tree Onboarding_Orchard_Plum_3 : "{CEFEBF266E7040A9}Prefabs/Vegetation/Tree/t_prunus_domestica_2s.et" {
+ coords 207 0 211
+ angleY 21
+}
+GenericEntity Onboarding_Orchard_Crate_1 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 221.997 0.001 220.002
+ angleY 3
+}
+GenericEntity Onboarding_Orchard_Crate_2 : "{2B1D0128ED660BE9}Prefabs/Props/Crates/BoxWooden_01.et" {
+ coords 223.297 0.001 220.101
+ angleY -19
+}
+GenericEntity Onboarding_Orchard_HayBale : "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et" {
+ coords 221.997 0.04 216.499
+ angleY 71
+}
+GenericEntity Onboarding_Orchard_Cart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
+ coords 221.275 0.004 212.019
+ angleY 86
+}

@@ -1,6 +1,6 @@
 // The mining loops of `tools\cli economy` (#3240, E1 of #3206): what a miner earns an hour on each mining chain, net of
-// the reagent bought and the fuel burned, with the haul counted, and whether duty pay (police and medic rank 0) still
-// sits 1.5 to 2.5 times above it (the maintainer's pay band, 2026-11-18).
+// the reagent bought and the fuel burned, with the haul counted, and whether the chain pays at least the lowest duty
+// shift (police and medic rank 0, the Cadet's): the 0.3.0 pay ladder, 2026-11-22 (LADDER in economy-lumber.mjs).
 //
 // Read from config (core, then the pack overlays through tools/pack/layers.mjs): the plant recipes (inputs, outputs,
 // maxBatches, processSeconds in Configs/Resources/ResourceChains.conf), the wholesale curves (market.goods, price per
@@ -17,7 +17,7 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parseConf, guidOf } from "../economy/profit-loops.mjs";
 import { SECTIONS, mergeList, sectionLayers } from "../pack/layers.mjs";
-import { DUTY_BAND, bandCheck } from "./economy-lumber.mjs";
+import { rungCheck, rungText } from "./economy-lumber.mjs";
 
 export const MINING_ASSUMPTIONS_FILE = ["tools", "economy", "mining-assumptions.json"];
 const num = (v, d = 0) => (typeof v === "number" ? v : d);
@@ -105,7 +105,7 @@ export function computeMiningLoop(inp) {
     gatherMinutes: round1(gatherMinutes), driveMinutes: round1(driveMinutes), processMinutes: round1(processMinutes),
     unitsPerHour: round1(unitsPerHour), premiumSteady: round1(s.premiumSteady), premiumFirst: round1(s.premiumFirst),
     grossFirst: Math.round(s.first), grossSteady: Math.round(s.steady), costPerHour: Math.round(costPerHour),
-    first: Math.round(first), steady: Math.round(steady), ...bandCheck(steady, duty),
+    first: Math.round(first), steady: Math.round(steady), ...rungCheck(steady, duty),
   };
 }
 
@@ -201,13 +201,6 @@ export function buildMining({ root, addonsDir, packLayers, owner, duty, opts = {
 
 const money = (n) => `$${n}`;
 
-/** Which way a flagged chain is off: duty pay under the band means the chain pays too much, over it too little. */
-export function bandSide(x) {
-  if (!x.flagged) return "in band";
-  if (x.ratios.every((r) => r.ratio < DUTY_BAND.min)) return "too rich";
-  if (x.ratios.every((r) => r.ratio > DUTY_BAND.max)) return "too thin";
-  return "mixed";
-}
 const ratioText = (r) => (r === Infinity ? "inf" : `${r.toFixed(1)}x`);
 
 /** The lines `tools\cli economy` prints for the mining section. */
@@ -218,17 +211,17 @@ export function renderMining(m) {
   L.push(`mining loops (net of reagent and fuel, haul counted; steady = purse refill only, first = full purse, wholesale back at base each hour):`);
   for (const x of m.loops) {
     const duty = x.ratios.map((r) => `${r.job} ${money(r.pay)} = ${ratioText(r.ratio)}`).join(", ");
-    L.push(`  LOOP ${x.label}: steady ${money(x.steady)}/h net, first hour ${money(x.first)}/h; duty ${duty} ${x.flagged ? `OUT OF BAND, ${bandSide(x)}` : "in band"} (${DUTY_BAND.min} to ${DUTY_BAND.max})`);
+    L.push(`  LOOP ${x.label}: steady ${money(x.steady)}/h net, first hour ${money(x.first)}/h; duty ${duty} ${rungText(x)}`);
     L.push(`    trip ${x.tripMinutes} min (gather ${x.gatherMinutes}, plant ${x.processMinutes}, drive ${x.driveMinutes}), ${x.tripsPerHour} trips/h, ${x.unitsPerHour} units/h (${x.premiumSteady} premium steady); gross ${money(x.grossSteady)}/h less ${money(x.costPerHour)} reagent and fuel${x.note ? `; ${x.note}` : ""}`);
   }
   L.push(`  sources: ${m.sources.join("; ")}`);
   return L;
 }
 
-/** FLAG rows for the chains outside the band, in the report's flag shape. */
+/** FLAG rows for the chains below the rung, in the report's flag shape. */
 export function miningFlags(m) {
   return m.loops.filter((x) => x.flagged).map((x) => ({
     kind: "mining-duty", id: `mining:${x.id}`,
-    text: `mining chain ${x.label} pays ${money(x.steady)}/h net steady; duty pay is ${x.ratios.map((r) => `${ratioText(r.ratio)} (${r.job} ${money(r.pay)})`).join(" and ")}, outside ${DUTY_BAND.min} to ${DUTY_BAND.max} (${bandSide(x)})`,
+    text: `mining chain ${x.label} pays ${money(x.steady)}/h net steady; duty pay is ${x.ratios.map((r) => `${ratioText(r.ratio)} (${r.job} ${money(r.pay)})`).join(" and ")}, under the $${x.floor}/h Cadet shift`,
   }));
 }
