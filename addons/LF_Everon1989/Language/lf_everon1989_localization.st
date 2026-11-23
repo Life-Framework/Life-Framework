@@ -6779,6 +6779,31 @@ StringTable {
      Target_en_us "AMBULANCE"
      Comment "Livery plate on the side panels of the UAZ452 and S1203 ambulances (#4470)."
     }
+    CustomStringTableItem "{F01D4791B86B996D}" {
+     Id "LF-Sign_Livery_CompanyBakery_Title"
+     Target_en_us "EVERON BAKERY"
+     Comment "Company livery plate on the bakery van (S1203) (#4472)."
+    }
+    CustomStringTableItem "{11D6F8D6E4562BE4}" {
+     Id "LF-Sign_Livery_CompanyFactory_Title"
+     Target_en_us "EVERON WORKS"
+     Comment "Company livery plate on the factory van (S1203) (#4472)."
+    }
+    CustomStringTableItem "{9912765B14273B42}" {
+     Id "LF-Sign_Livery_CompanyHardware_Title"
+     Target_en_us "EVERON HARDWARE"
+     Comment "Company livery plate on the hardware van (UAZ452) (#4472)."
+    }
+    CustomStringTableItem "{321CB98EEF2D6361}" {
+     Id "LF-Sign_Livery_CompanyTimber_Title"
+     Target_en_us "EVERON TIMBER"
+     Comment "Company livery plate on the timber truck (Ural4320) (#4472)."
+    }
+    CustomStringTableItem "{0A03ACFB63202539}" {
+     Id "LF-Sign_Livery_Taxi_Title"
+     Target_en_us "TAXI"
+     Comment "Company livery plate on the taxi (S105) (#4472)."
+    }
     CustomStringTableItem "{55502A149BCBFDCF}" {
      Id "LF-Sign_Livery_UAZ469_Police_Title"
      Target_en_us "POLICE"

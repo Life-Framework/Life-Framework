@@ -129,14 +129,19 @@ class LF_CreditsData
 		rows.Insert("R|#LF-Credits_200|");
 		rows.Insert("R|#LF-Credits_201|");
 		rows.Insert("R|#LF-Credits_202|");
-		rows.Insert("H|#LF-Credits_203|");
+		rows.Insert("R|#LF-Credits_203|");
 		rows.Insert("R|#LF-Credits_204|");
 		rows.Insert("R|#LF-Credits_205|");
-		rows.Insert("H|#LF-Credits_206|");
+		rows.Insert("R|#LF-Credits_206|");
 		rows.Insert("R|#LF-Credits_207|");
-		rows.Insert("R|#LF-Credits_208|");
+		rows.Insert("H|#LF-Credits_208|");
 		rows.Insert("R|#LF-Credits_209|");
 		rows.Insert("R|#LF-Credits_210|");
+		rows.Insert("H|#LF-Credits_211|");
+		rows.Insert("R|#LF-Credits_212|");
+		rows.Insert("R|#LF-Credits_213|");
+		rows.Insert("R|#LF-Credits_214|");
+		rows.Insert("R|#LF-Credits_215|");
 		return rows;
 	}
 }

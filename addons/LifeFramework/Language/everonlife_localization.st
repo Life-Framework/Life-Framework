@@ -4687,37 +4687,37 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D12E84B0D1EB5D48}" {
      Id "LF-Credits_203"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_S105_Taxi"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E5F5B4D1BBEFC2E5}" {
      Id "LF-Credits_204"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "LF_S1203_CompanyBakery"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8DF88C3D0E2242BE}" {
      Id "LF-Credits_205"
-     Target_en_us "LF_VodkaBottle_BCR"
+     Target_en_us "LF_S1203_CompanyFactory"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{BE5E5996E3159D99}" {
      Id "LF-Credits_206"
-     Target_en_us "WORK-SITE SOUNDS"
+     Target_en_us "LF_UAZ452_CompanyHardware"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3357BDF3A3C49CCF}" {
      Id "LF-Credits_207"
-     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Target_en_us "LF_Ural4320_CompanyTimber"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C1690BAB498831CF}" {
      Id "LF-Credits_208"
-     Target_en_us "Desk sergeant's five lines"
+     Target_en_us "CONTRABAND LABELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{92B8B9DD3342AC1A}" {
      Id "LF-Credits_209"
-     Target_en_us "Booking typewriter and ink pad stamp sounds"
+     Target_en_us "LF_CigaretteCarton_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09A1E735EF193A11}" {
@@ -4727,6 +4727,31 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BCC6DE3AE86E2A44}" {
      Id "LF-Credits_210"
+     Target_en_us "LF_VodkaBottle_BCR"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B77F496979C34298}" {
+     Id "LF-Credits_211"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{7E19D38663FDACAA}" {
+     Id "LF-Credits_212"
+     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D8C2792E870AA9C3}" {
+     Id "LF-Credits_213"
+     Target_en_us "Desk sergeant's five lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{F36B1E4FCF515481}" {
+     Id "LF-Credits_214"
+     Target_en_us "Booking typewriter and ink pad stamp sounds"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{1A410F6815AF10B2}" {
+     Id "LF-Credits_215"
      Target_en_us "The north outpost's spoken lines: quartermaster"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
