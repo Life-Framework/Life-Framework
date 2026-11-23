@@ -29,6 +29,7 @@ import { fileURLToPath } from "node:url";
 import { isAuthoringClaim } from "../grid/lattice.mjs";
 import { layerOfSlug, readCells } from "../lib/world-zones.mjs";
 import { bayClearName, bayRowName, checkKit, entitiesOf, extractKit, KITS_DIR, parseBlocks } from "./kit.mjs";
+import { kitNameOf } from "./fit.mjs";
 import { kitPrefab } from "./stamp.mjs";
 
 export const help = "author <kit> [--from <place>/<slot>] [--margin m] | author --reopen <kit> | author extract <Grid layer> <group> --kit k   build a shop in an authoring bay (a 2x2 at the east end of the grid) around a copy of the island building, then lift it building-local for `town stamp` (extract frees the bay; --reopen rebuilds it from the kit)";
@@ -259,7 +260,8 @@ export function planAuthor(kitName, { from = null, placesDir, templatesDir, kits
     source = `${place}/${slot} (${b.id})`;
     const template = JSON.parse(readFileSync(join(templatesDir, `${mapping.template}.json`), "utf8"));
     const s = template.slots.find((x) => x.id === slot);
-    if (s && s.kit !== kitName) throw new Error(`--from ${from}: that slot takes kit ${s.kit}, not ${kitName}`);
+    const slotKit = kitNameOf(s, entry);
+    if (s && slotKit !== kitName) throw new Error(`--from ${from}: that slot takes kit ${slotKit}, not ${kitName}`);
   }
   if (!prefab) throw new Error(`kit ${kitName}: no building prefab known; pass --from <place>/<slot>`);
   return { kit, kitFile, prefab, source, slug: slug ?? `author-${kitName}`, seed: Boolean(kit) };

@@ -1,6 +1,30 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "A2F876BFBFA4515B"
  components {
+  LF_DialogueComponent "{0BEE3B2A75A486B1}" {
+   m_sDialogueId "dock_fishmonger"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{F2165C13D4B7D91F}" {
+     ContextName "Talk"
+     Position PointInfo "{04737D6B77B26089}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{9DC6AE3A8E56BD88}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{092B651752B69ACD}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
   SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
     Name "Baptiste"

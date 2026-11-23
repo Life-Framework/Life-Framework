@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-17 (#1963) with `tools\cli test --no-build --red LF_Test_EveronNightShift`: RedProof() skips the registry lookup, so the id names nothing; `- the night-shift worker's dialogue resolves by id`, RED PROOF OK. Green without the hook (pack leg, worlds=LF_Everon1989_Test).
+// red-proof: fix 2026-11-23: the run on main (b3ec5f59a, #4595, made a reply an action with no next node) failed `reply #LF-Dialogue_NightShift_SayHeard leads to a node`; the same run on the fixed test passes. Earlier: observed 2026-11-17 (#1963) with `tools\cli test --no-build --red LF_Test_EveronNightShift`: RedProof() skips the registry lookup, so the id names nothing; `- the night-shift worker's dialogue resolves by id`, RED PROOF OK. Green without the hook (pack leg, worlds=LF_Everon1989_Test).
 //! #1963 (The relocated, #1015): under the Everon 1989 header (the pack leg of `tools\cli test`) the
 //! night-shift worker's dialogue resolves by id through the pack's index overlay, is playable, and every
 //! line he says has a caption key that resolves, a sound event, a length and a mouth envelope. He remembers
@@ -57,7 +57,7 @@ class LF_Test_EveronNightShift : LF_Test
 			ctx.True(line.m_sMouth.Length() >= Math.Floor(line.m_fSeconds / LF_DialogueFlow.MOUTH_STEP) - 1, lineId + " has a mouth envelope as long as its recording");
 		}
 
-		// The talk: the greeting offers the Zone, the move, work and goodbye; each answer leads back to the same menu.
+		// The talk: the greeting offers the Zone, the move, work and goodbye; each answer leads back to the same menu, except "Heard anything?", which runs its hook and ends the talk.
 		LF_DialogueNode greet = LF_DialogueFlow.FindNode(config, config.m_sStart);
 		ctx.NotNull(greet, "the start node exists");
 		if (!greet || !greet.m_aOptions)
@@ -66,10 +66,18 @@ class LF_Test_EveronNightShift : LF_Test
 		ctx.Equal(4, greet.m_aOptions.Count(), "the greeting offers four replies");
 		foreach (LF_DialogueOption option : greet.m_aOptions)
 		{
-			LF_DialogueNode next = LF_DialogueFlow.FindNode(config, option.m_sNext);
-			ctx.NotNull(next, "reply " + option.m_sTextKey + " leads to a node");
 			string reply = WidgetManager.Translate(option.m_sTextKey);
 			ctx.True(reply != option.m_sTextKey && !reply.IsEmpty(), "reply " + option.m_sTextKey + " has its text in the string table");
+			if (!option.m_sAction.IsEmpty())
+			{
+				// "Heard anything?" (#4595) runs a hook and ends the talk with its answer: no next node on purpose.
+				ctx.True(LF_DialogueHook.Find(option.m_sAction) != null, "reply " + option.m_sTextKey + " runs the " + option.m_sAction + " hook, which has a class");
+				ctx.True(option.m_sNext.IsEmpty(), "reply " + option.m_sTextKey + " ends the talk with the hook's answer");
+				continue;
+			}
+
+			LF_DialogueNode next = LF_DialogueFlow.FindNode(config, option.m_sNext);
+			ctx.NotNull(next, "reply " + option.m_sTextKey + " leads to a node");
 			if (next && next.m_sId != "bye")
 				ctx.Equal(4, next.m_aOptions.Count(), "after " + next.m_sId + " the menu comes back");
 		}

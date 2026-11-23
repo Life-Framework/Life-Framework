@@ -11,6 +11,7 @@
 // tools/commands/grid.mjs, tools/validation/validate-world-zones.mjs, agent-box/place-audit.mjs,
 // tools/validation/validate-player-props.mjs and tools/visual/look.mjs.
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 import { existsSync, readFileSync, readdirSync, realpathSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
@@ -317,9 +318,32 @@ export function siblingWorktrees(root, { run } = {}) {
   return { trees: trees.filter((t) => !t.skip && !samePath(t.path, root)), note: "" };
 }
 
-export function worktreeClaims(root, { run } = {}) {
+// Every claim file blob origin/main has ever held under tools/grid/cells/ (one `git log --full-history -m --raw`: a plain log prunes the side branch that added a claim). A sibling's
+// copy of such a blob is the merged world, not a claim in flight: the branch inherited it, its PR merged it,
+// or main freed it afterwards (`Grid: free stale slice cells`). Only a blob main never had is a claim a
+// worktree made itself. Without the ref (no origin/main here) the set is empty and every file counts.
+export function mainClaimBlobs(root, { ref = "origin/main", run } = {}) {
+  const exec = run ?? ((cmd, args) => spawnSync(cmd, args, { cwd: root, encoding: "utf8", timeout: 30000, maxBuffer: 256 * 1024 * 1024 }));
+  const blobs = new Set();
+  const r = exec("git", ["log", ref, "--full-history", "-m", "--raw", "--no-abbrev", "--format=", "--", `${CELLS_DIR}/`]);
+  if (!r || r.status !== 0) return blobs;
+  for (const line of String(r.stdout).split(/\r?\n/)) {
+    const m = /^:\d+ \d+ [0-9a-f]+ ([0-9a-f]{40}) [AM]\t/.exec(line);
+    if (m) blobs.add(m[1]);
+  }
+  return blobs;
+}
+
+// git's blob id of a file's bytes, so a worktree copy is compared with main's history without a git call each
+const blobId = (buf) => createHash("sha1").update(`blob ${buf.length}\0`).update(buf).digest("hex");
+
+// The same claim seen in many worktrees (warm-pool and detached checkouts hold copies of one file) is one
+// claim: it counts once, under the first worktree that holds it.
+export function worktreeClaims(root, { run, ref = "origin/main", mainBlobs } = {}) {
   const { trees, note } = siblingWorktrees(root, { run });
+  const merged = mainBlobs ?? mainClaimBlobs(root, { ref });
   const claims = [];
+  const seen = new Set();
   for (const t of trees) {
     const dir = join(t.path, CELLS_DIR);
     let files;
@@ -330,8 +354,14 @@ export function worktreeClaims(root, { run } = {}) {
     }
     for (const f of files) {
       try {
-        const j = JSON.parse(readFileSync(join(dir, f), "utf8"));
-        if (j.slug && j.cell) claims.push({ file: `${CELLS_DIR}/${f}`, slug: j.slug, cell: j.cell, ...(j.span ? { span: j.span } : {}), worktree: basename(t.path), branch: t.branch });
+        const buf = readFileSync(join(dir, f));
+        if (merged.has(blobId(buf))) continue; // main held this exact claim: the merged (or freed) world
+        const j = JSON.parse(buf.toString("utf8"));
+        if (!j.slug || !j.cell) continue;
+        const key = `${j.slug}|${j.cell}|${JSON.stringify(j.span ?? null)}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        claims.push({ file: `${CELLS_DIR}/${f}`, slug: j.slug, cell: j.cell, ...(j.span ? { span: j.span } : {}), worktree: basename(t.path), branch: t.branch });
       } catch {
         // unreadable or half-written: validate-world-zones reports it in that worktree
       }

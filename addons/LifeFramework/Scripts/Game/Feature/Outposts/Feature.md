@@ -28,6 +28,7 @@ outpost's traders do not serve an on-duty officer. A player who wants the stock 
   `LF_OutpostStanding.OnSale` after the cash and the item have moved; a refused buy awards nothing.
 - The contraband buyer (`LF_OutpostBuyer.c`, #4225): crates at 10 to 20% above the fence, up to a buyer-demand purse per outpost; refuses on-duty officers, books standing on a sale.
 - The outpost people (#4454): the pack prefabs `Prefabs/Characters/Outposts/LF_Outpost_*` (quartermaster with the crate stock and Buy rows, contraband buyer with the Sell row, two rifle-carrying gate guards, a mechanic) with their outfit presets; a grid cell only.
+- Stock tables (`LF_OutpostStockTable.c`, #4453, O6): the pack lists one stock table per outpost id (`Configs/Outposts/LF_OutpostStock_Everon1989.conf`: north and south); a crate reads the table of the outpost whose zone holds it, then falls back to `DefaultStock`.
 - The stock board (#4452): a chalk board by the crate prints each stock row (name, price) on its face, plus one hint line for a reader below the crate's top tier; no tier or standing number (N1). Read-only; a Read row refreshes it.
 - Not yet: the placed outpost prefab, a buyer table and the north site (later cards).
 
