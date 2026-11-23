@@ -18,6 +18,9 @@
 // (`index >= version - 1`) left pass 1 green and failed pass 2 with
 // `SUMMARY tier=persistence passed=10 failed=1 total=11`,
 // `- e2e courier is still level 2 after the save load (expected 2, got 1)`,
+// (#4607, pre-move: the main guard's `e2e --pre-move 502ebf39` failed pass 2 with `- e2e courier is still level 2
+// after the save load (expected 2, got 3)`: the ref seeds 500 XP, the 30-level curve reads it as level 3. The exact
+// level now needs COURIER_CURVE_FLAG; pre-move and plain e2e green on 2026-11-23.)
 // `- e2e senior officer stays senior after the save load (expected 1, got 0)`,
 // `- e2e turned-in quest stays done after the save load`. Restored; both passes green.
 
