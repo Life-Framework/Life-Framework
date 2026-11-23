@@ -6093,6 +6093,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Workbench"
      Comment "Inventory name of the carried workbench a player places in their own house."
     }
+    CustomStringTableItem "{D4DD0BA4533222B8}" {
+     Id "LF-GangRadio_NotMember"
+     Target_en_us "Gang members only"
+     Comment "Reason the gang radio cannot be tuned: the carrier is in no gang (#4221)."
+    }
+    CustomStringTableItem "{7C98C20B33E1A120}" {
+     Id "LF-GangRadio_Tune"
+     Target_en_us "Tune to gang channel"
+     Comment "Action on a carried gang radio: puts it on the gang band (#4221)."
+    }
     CustomStringTableItem "{3CEA2232FA244C93}" {
      Id "LF-Garage_Blue"
      Target_en_us "Blue"
@@ -7917,6 +7927,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Item_FishingRod_Name"
      Target_en_us "Fishing rod"
      Comment "Item name: the fishing rod (#2928)."
+    }
+    CustomStringTableItem "{4D123BBBA06D16BA}" {
+     Id "LF-Item_GangRadio_Description"
+     Target_en_us "A handheld set. Tune it to your gang channel and only your crew hears you."
+     Comment "Item description of the gang radio (#4221)."
+    }
+    CustomStringTableItem "{3337BFB02E6A4A9F}" {
+     Id "LF-Item_GangRadio_Name"
+     Target_en_us "Gang radio"
+     Comment "Item name: a handheld radio a gang tunes to its own hidden channel (#4221)."
     }
     CustomStringTableItem "{E0C70F7F81117F7D}" {
      Id "LF-Item_Handcuffs_Description"
@@ -11037,6 +11057,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Close the ledger"
      Comment "Ledger close button."
     }
+    CustomStringTableItem "{D2628F8C9104150A}" {
+     Id "LF-Org_Decline"
+     Target_en_us "Decline %1"
+     Comment "Interaction entry: turn down the offer of the person faced. %1 is the organization."
+    }
+    CustomStringTableItem "{1686AD303E7B2F40}" {
+     Id "LF-Org_DeclineGeneric"
+     Target_en_us "Decline"
+     Comment "Fallback name of the decline entry; the handler names the organization."
+    }
+    CustomStringTableItem "{E7F11EA621C1BA74}" {
+     Id "LF-Org_Declined"
+     Target_en_us "You turned down %1."
+     Comment "Toast to the invitee after Decline. %1 is the organization."
+    }
     CustomStringTableItem "{BA50E8C027423E0C}" {
      Id "LF-Org_DemoteGeneric"
      Target_en_us "Demote"
@@ -11237,6 +11272,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not owned"
      Comment "Ledger row status: upgrade not owned."
     }
+    CustomStringTableItem "{6361E95B1AFC26BD}" {
+     Id "LF-Org_OfferDeclined"
+     Target_en_us "Your offer was turned down."
+     Comment "Toast to the inviter: the invitee chose Decline."
+    }
     CustomStringTableItem "{3E111C0C61E4B594}" {
      Id "LF-Org_OfferMade"
      Target_en_us "Offer made. They join by facing you and choosing Join."
@@ -11356,6 +11396,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_YourRank"
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
+    }
+    CustomStringTableItem "{6D41A0F3C8B2957E}" {
+     Id "LF-Outpost_TraderRefusesOfficer"
+     Target_en_us "We don't deal with the law here. Take the badge off and come back."
+     Comment "Toast to an on-duty officer: a trader inside a rebel outpost refuses to serve them (#4217)."
+    }
+    CustomStringTableItem "{A3F59E1B7C402D86}" {
+     Id "LF-Outpost_TraderRefusesOfficer_Title"
+     Target_en_us "Not serving you"
+     Comment "Title of the outpost trader's refusal toast to an on-duty officer (#4217)."
     }
     CustomStringTableItem "{4EF600B18D7A2C1B}" {
      Id "LF-Pager_None"
@@ -15225,6 +15275,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "a trader"
      Comment "Holder label on a rented stall whose holder has no name (#2925)."
     }
+    CustomStringTableItem "{044EF7358D99C82D}" {
+     Id "LF-StashContainer_Closed"
+     Target_en_us "The container won't open"
+     Comment "Refusal on the short container: misconfigured or no player (#4195)."
+    }
+    CustomStringTableItem "{DC4609ADE4E93025}" {
+     Id "LF-StashContainer_Empty"
+     Target_en_us "Empty. Come back later"
+     Comment "Refusal on the short container: already taken, the refill timer is running (#4195)."
+    }
+    CustomStringTableItem "{DA310007BD3F516C}" {
+     Id "LF-StashContainer_NeedKey"
+     Target_en_us "Locked. You need the clerk's key"
+     Comment "Refusal on the short container: the player carries no key from the tally clerk (#4195)."
+    }
+    CustomStringTableItem "{BA110B9CEFF14792}" {
+     Id "LF-StashContainer_Open"
+     Target_en_us "Open the container"
+     Comment "Action: open the short container with the tally clerk's key and take the stock (#4195)."
+    }
     CustomStringTableItem "{C6CD1F2F0A61F3B5}" {
      Id "LF-Stolen_Already"
      Target_en_us "The {police} already have this one"
@@ -16102,6 +16172,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Unflip_TooFar"
      Target_en_us "Get closer to push it over."
      Comment "Unflip refusal toast (#3333): the player is out of reach."
+    }
+    CustomStringTableItem "{64FAA43ACB2D5BCD}" {
+     Id "LF-UnitStatus_ActionAvailable"
+     Target_en_us "Radio: available"
+     Comment "Police car action row: tell dispatch this unit is free for calls."
+    }
+    CustomStringTableItem "{8F7C7A324959094B}" {
+     Id "LF-UnitStatus_ActionBusy"
+     Target_en_us "Radio: busy"
+     Comment "Police car action row: tell dispatch this unit is tied up."
+    }
+    CustomStringTableItem "{6735AE870F08B8D7}" {
+     Id "LF-UnitStatus_Available"
+     Target_en_us "available"
+     Comment "Unit status word on the dispatch board."
+    }
+    CustomStringTableItem "{E4EDC2B539CB3C85}" {
+     Id "LF-UnitStatus_BoardHeading"
+     Target_en_us "UNITS ON THE RADIO"
+     Comment "Wanted board, police view: heading above the unit status rows."
+    }
+    CustomStringTableItem "{82942B511449462F}" {
+     Id "LF-UnitStatus_BoardLine"
+     Target_en_us "Unit %1: %2"
+     Comment "Dispatch board unit row. %1 = officer name, %2 = available or busy."
+    }
+    CustomStringTableItem "{A403887D50552271}" {
+     Id "LF-UnitStatus_Busy"
+     Target_en_us "busy"
+     Comment "Unit status word on the dispatch board."
+    }
+    CustomStringTableItem "{0877B5083A43C81C}" {
+     Id "LF-UnitStatus_NoName"
+     Target_en_us "unnamed officer"
+     Comment "Dispatch board unit row when the officer has no name."
+    }
+    CustomStringTableItem "{C5AB110336544DB4}" {
+     Id "LF-UnitStatus_SetAvailable"
+     Target_en_us "Dispatch has you as available."
+     Comment "Toast after the officer radios available."
+    }
+    CustomStringTableItem "{0A69E149174D2D14}" {
+     Id "LF-UnitStatus_SetBusy"
+     Target_en_us "Dispatch has you as busy."
+     Comment "Toast after the officer radios busy."
+    }
+    CustomStringTableItem "{296F37B4C207EAD9}" {
+     Id "LF-UnitStatus_Title"
+     Target_en_us "Radio"
+     Comment "Toast title for unit status radio messages."
     }
     CustomStringTableItem "{7B2D91E4A0C358F6}" {
      Id "LF-VehicleCompartment_Open"

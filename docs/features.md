@@ -54,6 +54,7 @@
 - [Money & Economy](features/money-economy.md)
 - [Notifications](features/notifications.md)
 - [NPC dialogue scenes (spike, 2026-11-13)](features/npc-dialogue-scenes.md)
+- [Outposts](features/outposts.md)
 - [Ownership](features/ownership.md)
 - [Payphone (#247)](features/payphone.md)
 - [Player menu (personal file)](features/player-menu.md)

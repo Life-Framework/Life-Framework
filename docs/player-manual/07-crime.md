@@ -114,6 +114,10 @@ When the cells blow, **every prisoner in the cell is free**: their sentence ends
 
 Two **contested sites** (a hideout on the hilltop mast and the farm compound) are fought over by organizations. Organizations are run from the **organization office** in town; the **war board** there lists the fights.
 
+Recruit face to face. Look at a player with no organization and pick **Invite to <name>** from the action list. They look back at you and pick **Join <name>** or **Decline <name>**; an offer lapses after 2 minutes. A leader looking at a member picks **Remove from <name>**. Nobody can remove the founder.
+
+A **gang radio** keeps the crew on its own channel. Carry one and pick **Tune to gang channel** from its action list: your crew hears you and nobody else does, even on the same frequency. When someone leaves or is removed, the channel changes and the radios of members who are online follow it; if you were away, or after a server restart, pick **Tune to gang channel** again.
+
 <!-- map:crime -->
 ![Crime and police in Saint-Philippe](../../website/public/docs-images/player-manual/crime-town.png)
 

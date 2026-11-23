@@ -1,0 +1,68 @@
+GenericEntity Town_BusStop_Square : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b45"
+   m_sLabel "#LF-BusStop_Everon_Square"
+  }
+ }
+ coords 142 0.501 244.722
+}
+GenericEntity Town_BusStop_ShopStreet : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b12"
+   m_sLabel "#LF-BusStop_Everon_ShopStreet"
+  }
+ }
+ coords 172 0.501 255.222
+ angleY 180
+}
+GenericEntity Town_BusStop_CarLot : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b77"
+   m_sLabel "#LF-BusStop_Everon_CarLot"
+  }
+ }
+ coords 214 0.501 255.778
+ angleY 180
+}
+GenericEntity Town_BusStop_Clinic : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b39"
+   m_sLabel "#LF-BusStop_Everon_Clinic"
+  }
+ }
+ coords 257 0.501 255.778
+ angleY 180
+}
+GenericEntity Town_BusStop_Fuel : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b107"
+   m_sLabel "#LF-BusStop_Everon_Fuel"
+  }
+ }
+ coords 289 0.501 244.722
+}
+GenericEntity Town_BusStop_Farm : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.saint-philippe.b73"
+   m_sLabel "#LF-BusStop_Everon_Farm"
+  }
+ }
+ coords 134 0.501 297.722
+ angleY 180
+}
+GenericEntity Town_BusStop_Mine : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
+ components {
+  LF_BusStopComponent "{9900D66B63362F47}" {
+   m_sStopId "bus.coalmans-brow.mine"
+   m_sLabel "#LF-BusStop_Everon_Mine"
+  }
+ }
+ coords 176 0.501 170.278
+ angleY 180
+}
