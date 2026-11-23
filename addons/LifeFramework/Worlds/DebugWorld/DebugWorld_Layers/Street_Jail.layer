@@ -195,11 +195,11 @@ Vehicle Roadmap_Escort_Car : "{EFEB161F9BC2031D}Prefabs/Vehicles/Wheeled/UAZ469/
  coords 234.264 0.001 245.448
  angles 0 -43.063 0
 }
-GenericEntity Town_Jail_BailPhone : "{0BC3EE6F94D8C8A6}Prefabs/Police/LF_JailBailPhone.et" {
- coords 237.435 0.9 224.479
+GenericEntity Town_Jail_PhoneDesk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ coords 236.55 0.001 225.174
  angleY 180
 }
-GenericEntity Town_Jail_PhoneTable : "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et" {
- coords 237.402 0.001 224.501
+GenericEntity Town_Jail_BailPhone : "{0BC3EE6F94D8C8A6}Prefabs/Police/LF_JailBailPhone.et" {
+ coords 237.435 0.908 224.779
  angleY 180
 }
