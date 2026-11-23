@@ -50,9 +50,9 @@ An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the 
 
 ## Jail, fines and the wanted board
 
-* The **cell** is inside the station. A sentence is **60 seconds per wanted level**, at most **5 minutes**. When it ends the wanted level drops by one.
+* The **cell** is inside the station. A sentence is **60 seconds per wanted level**, at most **15 minutes**. When it ends the wanted level drops by one.
   Time **in jail counts online time**: it pauses when you log out and survives a restart. A prisoner sees **"Jail: m:ss left"** at the top of their screen, and the cell door opens when it reaches zero.
-* A prisoner can **work off time**: the **laundry tub**, the **kitchen sink** and the **yard broom** each take 8 to 10 seconds off after a short job, with a 30 second wait between repeats of the same chore.
+* A prisoner can **work off time**: the **laundry tub**, the **kitchen sink** and the **yard broom** each take 24 to 30 seconds off after a short job (scaled to the 15 minute cap), with a 30 second wait between repeats of the same chore.
 * **Bail:** a prisoner can use the **bail phone** in the cell to pay bail from their **bank** and walk out at once. Bail is **$150 per minute** left, at least **$500**. Not enough in the bank, no bail; cash does not count.
 * A **ticket** is paid at the **punch clock of the station duty desk**, in **cash**, oldest first. After **30 minutes** unpaid it doubles. After another 30 minutes the person gets **+1 wanted** and a poster on the wanted board.
 * The **wanted board** and the **case board** inside the station list who is wanted and why. The **dispatch board** shows reports from payphones.

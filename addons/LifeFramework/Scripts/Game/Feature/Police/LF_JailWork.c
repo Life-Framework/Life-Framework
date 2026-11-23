@@ -21,6 +21,31 @@ enum LF_EJailWorkCheck
 //! Pure rules, for LOGIC tests.
 class LF_JailWorkRules
 {
+	//! The cap the stations' seconds-off were authored against (the old 5 minute cell).
+	static const int REFERENCE_CAP = 300;
+
+	//! One chore never takes off more than this share of the sentence cap.
+	static const float CHORE_SHARE_MAX = 0.05;
+
+	//! A full shift (every station once) stays within this share of the cap.
+	static const float SHIFT_SHARE_MAX = 0.1;
+
+	//------------------------------------------------------------------------------------------------
+	//! Seconds a finished chore takes off: the station's number scaled to the cell's sentence cap
+	//! (3x at 15 minutes), held to CHORE_SHARE_MAX of the cap. No cap set (0) leaves it alone.
+	static float ScaledSecondsOff(float secondsOff, int cap)
+	{
+		if (cap <= 0)
+			return secondsOff;
+
+		float scaled = secondsOff * cap / REFERENCE_CAP;
+		float ceiling = cap * CHORE_SHARE_MAX;
+		if (scaled > ceiling)
+			return ceiling;
+
+		return scaled;
+	}
+
 	//! lastDoneAt below zero means this job was never finished.
 	static LF_EJailWorkCheck Check(bool serving, bool busy, float secondsOff, float lastDoneAt, float now, float cooldown)
 	{
@@ -94,11 +119,22 @@ class LF_JailWork
 	protected static ref map<string, float> s_mLastDone;
 	protected static ref array<string> s_aBusy;
 
+	//! The cell's sentence cap in seconds; 0 until a cell sets it (chores then credit as written).
+	protected static int s_iSentenceCap;
+
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
 		s_mLastDone = null;
 		s_aBusy = null;
+		s_iSentenceCap = 0;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the placed cell's sentence cap; chores credit in proportion to it (#4207).
+	static void SetSentenceCap(int cap)
+	{
+		s_iSentenceCap = cap;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -153,8 +189,9 @@ class LF_JailWork
 			return check;
 
 		LastDone().Set(Key(playerUid, jobId), now);
-		float left = LF_Jail.Credit(playerUid, secondsOff);
-		LF_Debug.Info(FEATURE, string.Format("jail work %1 done by %2: -%3 s, %4 s left", jobId, playerUid, secondsOff, left));
+		float credit = LF_JailWorkRules.ScaledSecondsOff(secondsOff, s_iSentenceCap);
+		float left = LF_Jail.Credit(playerUid, credit);
+		LF_Debug.Info(FEATURE, string.Format("jail work %1 done by %2: -%3 s, %4 s left", jobId, playerUid, credit, left));
 		return LF_EJailWorkCheck.OK;
 	}
 

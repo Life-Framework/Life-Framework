@@ -1,7 +1,7 @@
 # 7. Crime
 
 Crime pays more than a day job and costs more when it goes wrong. Everything here raises your **wanted level** (1 to 5), which the police
-see on the **wanted board**. A wanted player can be **arrested**; the cell time is 60 seconds per level, 5 minutes at most.
+see on the **wanted board**. A wanted player can be **arrested**; the cell time is 60 seconds per level, 15 minutes at most.
 **New characters are refused for their first 5 minutes of play**, so you cannot rush in before you have found your feet.
 
 ## Wanted level
