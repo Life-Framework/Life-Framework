@@ -39,6 +39,13 @@ class LF_PerkPrice
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True for a trade whose goods some trader buys, so good word can pay in it (the pick pool, #4573).
+	static bool PaysIn(string trade)
+	{
+		return trade == "MINER" || trade == "LUMBERJACK" || trade == "FISHER" || trade == "FARMER";
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The share of a good's price the character's perks add, in percent: 0 with no perk, a good that
 	//! belongs to no trade, or a perk held in another trade.
 	static int Percent(string playerUid, ResourceName prefab)

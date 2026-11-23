@@ -1,6 +1,31 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "6EF4EB81C4D5C7B1"
  components {
+  LF_DialogueComponent "{7CA0575A75717391}" {
+   m_sDialogueId "shopkeeper"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{8E00C3A009938D89}" {
+     ContextName "Talk"
+     Position PointInfo "{4C4C9CD911ADCD65}" {
+      PivotID "Spine5"
+     }
+     Radius 2.4
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{A32F76E40BE7370D}" {
+     m_bCustomerSideOnly 1
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{CEAC0C570CBB4EAD}" {
+      Name "#LF-Shopkeeper_Talk"
+     }
+    }
+   }
+  }
   SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
     Name "Etienne"

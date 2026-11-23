@@ -303,3 +303,11 @@ the pump says "The tanks are dry. The depot truck is due."
 * **Wear:** every swing at a rock wears your pickaxe a little (an axe wears with each tree felled, a fishing rod with each fish landed). A notice tells you when the tool is getting worn, when it is badly worn, and after every use once it is worn out. A worn-out tool still works. The hardware bench repairs it for $12 and a scrap of metal once it is placed in town.
 * **Needs:** the miner job and a pickaxe. Higher miner levels open the coal and copper rocks as those sites arrive. The smelter, the refinery and the cement works are Smelting work: batches there earn Smelting experience, and the smelter wants Smelting level 8, the refinery level 15.
 
+
+## Export orders
+
+**Status:** 🚧 coming. The board and the crane spot work, but they are not on the dock yet.
+
+* **Where:** the **EXPORT ORDERS** board on the warehouse wall by the quay, and the **crane spot** (a pallet box on the quay apron by the harbour crane).
+* **How it works:** the board lists up to three orders, such as *20 x iron bars to the steamer | $920 by 13:00*. Scroll to **Take the order** on a line to take it (haulers at Delivery level 10 or higher; one order at a time). Bring every unit to the crane spot, in your pockets or in a vehicle backed up to the pallet box, and choose **Hand in the export order**.
+* **Pay:** the order's price in cash (wholesale plus 15 percent) and Delivery experience. A short count takes nothing: bring the rest and hand in again. Miss the deadline and the order closes and your standing in town drops; it never costs money.

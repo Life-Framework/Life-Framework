@@ -1,0 +1,32 @@
+GenericEntity : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ ID "4CFDEB64279D83E4"
+ components {
+  SCR_DestructionMultiPhaseComponent "{5624A88D86EFE8BA}" {
+   Enabled 0
+  }
+  LF_ExportOrderCraneComponent "{719ADA90C85B9AEF}" {
+  }
+  ActionsManagerComponent "{87DF664B97C4598F}" {
+   ActionContexts {
+    UserActionContext "{EAEDEDF40014249A}" {
+     ContextName "LF_ExportCrane"
+     Position PointInfo "{187E5AA97E185397}" {
+      Offset 0 0.9 0
+     }
+     Radius 2
+    }
+   }
+   additionalActions {
+    LF_ExportCraneHandInAction "{9CF68F7A0DEB8590}" {
+     ParentContextList {
+      "LF_ExportCrane"
+     }
+     UIInfo UIInfo "{8C905C0AB60B9C8A}" {
+      Name "#LF-ExportCrane_HandIn"
+     }
+     Duration 1
+    }
+   }
+  }
+ }
+}
