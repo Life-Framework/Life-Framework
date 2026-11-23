@@ -2134,6 +2134,16 @@ StringTable {
      Target_en_us "A wrapped bar of milk chocolate. A little sugar, a little cheer."
      Comment "Item description: chocolate bar."
     }
+    CustomStringTableItem "{00C0E4CD3F6AAF5F}" {
+     Id "LF-Item_CigaretteCarton"
+     Target_en_us "Carton of cigarettes"
+     Comment "Item name: a carton of cigarettes, a contraband good for the cigarette run (#4198)."
+    }
+    CustomStringTableItem "{8529809DBF35E46B}" {
+     Id "LF-Item_CigaretteCartonDesc"
+     Target_en_us "Ten packs, no tax stamp. A police stop search lists it as tobacco and an officer can seize it."
+     Comment "Item description: carton of cigarettes (#4198)."
+    }
     CustomStringTableItem "{D744A9EB6693B307}" {
      Id "LF-Item_CoffeeTin"
      Target_en_us "Instant coffee"
@@ -2363,6 +2373,16 @@ StringTable {
      Id "LF-Item_TouristMap_Name"
      Target_en_us "Tourist map of Everon"
      Comment "Tourist map (#2242): the item's name in the inventory."
+    }
+    CustomStringTableItem "{C10755A455463263}" {
+     Id "LF-Item_VodkaBottle"
+     Target_en_us "Bottle of vodka"
+     Comment "Item name: a bottle of vodka, a contraband good for the vodka run (#4198)."
+    }
+    CustomStringTableItem "{C88B737C670E0A5C}" {
+     Id "LF-Item_VodkaBottleDesc"
+     Target_en_us "A sealed bottle with no import stamp. A police stop search lists it as alcohol and an officer can seize it."
+     Comment "Item description: bottle of vodka (#4198)."
     }
     CustomStringTableItem "{66654F6ED99E5F5B}" {
      Id "LF-Item_WornHandTool_Description"
