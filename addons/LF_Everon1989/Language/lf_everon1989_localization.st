@@ -206,12 +206,12 @@ StringTable {
     }
     CustomStringTableItem "{2FC28DBE70BC949C}" {
      Id "LF-Activity_Mining_Ore_Note"
-     Target_en_us "Swing at the rust-veined rocks and pick up 3 pieces of ore; every piece levels Mining, and level 2 opens the coal license."
+     Target_en_us "Swing at the rust-veined rocks and pick up 15 pieces of ore, one full furnace load; every piece levels Mining, and level 2 opens the coal license."
      Comment "Mining step note, one sentence, with the levelling hint."
     }
     CustomStringTableItem "{BBF0328175038D91}" {
      Id "LF-Activity_Mining_Ore_Title"
-     Target_en_us "Mine 3 iron ore"
+     Target_en_us "Mine 15 iron ore"
      Comment "Mining step title."
     }
     CustomStringTableItem "{7AADE23D2DEEDDF3}" {
@@ -231,7 +231,7 @@ StringTable {
     }
     CustomStringTableItem "{2777AEB12A56E04F}" {
      Id "LF-Activity_Mining_Sell_Note"
-     Target_en_us "Drive the bars down to the iron counter in the dock wholesale warehouse; it pays $20 a bar."
+     Target_en_us "Drive the bars down to the iron counter in the dock wholesale warehouse; it pays $20 a bar, and the mine adds $180 for your first run."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{122ADCC1D2DD3D46}" {
@@ -241,12 +241,12 @@ StringTable {
     }
     CustomStringTableItem "{43FB216022439923}" {
      Id "LF-Activity_Mining_Smelt_Note"
-     Target_en_us "Smelt the ore in the mine furnace: 3 ore make a bar, and a run takes about 4 minutes."
+     Target_en_us "Smelt the ore in the mine furnace: 3 ore make a bar, so your 15 make 5 bars in one 4-minute run."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{6F8D145FBA72E000}" {
      Id "LF-Activity_Mining_Smelt_Title"
-     Target_en_us "Smelt a bar"
+     Target_en_us "Smelt your bars"
      Comment "Mining step title."
     }
     CustomStringTableItem "{35FC580FEECB6912}" {
