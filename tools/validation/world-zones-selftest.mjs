@@ -26,7 +26,7 @@ import { dirname, join } from "node:path";
 import * as P from "../place/place.mjs";
 import { main as gridMain, yardLayer } from "../commands/grid.mjs";
 import { CELLS_DIR, DEBUG_LAYERS, GRID_LAYERS, allCells, allocate, blockers, cellBounds, claimCellIds as claimCellIdsOf, gapSide, inGrid, layerOfSlug, lookArea, mainClaims as mainClaimsOf, openPrClaims, rowLine, worktreeClaims, yardPlan, zoneOfLayer, zoneOfPath } from "../lib/world-zones.mjs";
-import { checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
+import { carriedFiles, checkClaims, checkFreeze, checkGuard, topLevelCoords } from "./validate-world-zones.mjs";
 import { scratchDir } from "../lib/scratch.mjs";
 
 let failed = 0;
@@ -422,6 +422,54 @@ ok(checkGuard({ branch: "ws/slice-1500", files: [`${DEBUG_LAYERS}/Grid_slice_150
 ok(checkGuard({ branch: "main", files: [hosp], baseline: [] }).skipped, "main is not checked");
 ok(checkGuard({ branch: "ws/town-m4-ch2", files: [hosp, `${GRID_LAYERS}/Grid_x.layer`], baseline: [] }).errors.length === 0, "a town change on a town- branch still passes beside a GridWorld edit");
 ok(checkGuard({ branch: "ws/slice-1500", files: [`${GRID_LAYERS}/Grid_slice_1500.layer`, `${GRID_LAYERS}/Annex.layer`], baseline: [] }).errors.length === 0, "GridWorld layers are free to edit");
+
+// ---- a wt sync-base branch carries town edits that already passed the guard on the other long-lived branch (2026-11-23)
+// red-proof: with SYNC_BRANCH made never to match (`/^never-match-/`) this printed 2 FAILs, "a sync branch that only carries release
+// town layers passes" and "a sync branch still fails for a town layer that is not carried", and exited 1 (2026-11-23); restored, it passes.
+ok(checkGuard({ branch: "ws/sync-main-202611222205", files: [hosp, packTown], baseline: [], carried: (fs) => new Set(fs) }).errors.length === 0, "a sync branch that only carries release town layers passes");
+ok(checkGuard({ branch: "ws/sync-main-202611222205", files: [hosp, packTown], baseline: [], carried: (fs) => new Set([hosp]) }).errors.length === 1, "a sync branch still fails for a town layer that is not carried");
+ok(checkGuard({ branch: "ws/slice-1500", files: [hosp], baseline: [], carried: (fs) => new Set(fs) }).errors.length === 1, "a normal slice gets no carried exemption");
+ok(checkGuard({ branch: "ws/syncing-1500", files: [hosp], baseline: [], carried: (fs) => new Set(fs) }).errors.length === 1, "only the sync- slug prefix counts");
+{
+  const dir = scratchDir("lf-zone-sync-");
+  const git = (...a) => gitSync(["-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...a], { cwd: dir, encoding: "utf8" });
+  const write = (rel, text) => {
+    mkdirSync(dirname(join(dir, rel)), { recursive: true });
+    writeFileSync(join(dir, rel), text);
+  };
+  const commit = (msg) => {
+    git("add", "-A");
+    git("commit", "-q", "-m", msg);
+  };
+  git("init", "-q", "-b", "main");
+  write(hosp, "v1\n");
+  write("tools/x.txt", "x\n");
+  commit("base");
+  git("update-ref", "refs/remotes/origin/main", "HEAD");
+  git("checkout", "-q", "-b", "release-0.2.1");
+  write(hosp, "v2\n");
+  commit("town- PR on the release branch");
+  git("update-ref", "refs/remotes/origin/release-0.2.1", "HEAD");
+  write(hosp, "v4\n"); // the release moves on after the sync was cut
+  commit("later town- PR on the release branch");
+  git("update-ref", "refs/remotes/origin/release-0.2.1", "HEAD");
+  git("update-ref", "refs/remotes/origin/ws/other", "HEAD"); // a ws/ branch is never a source
+  // the sync branch: cut from main, the release merged in at its first town edit
+  git("checkout", "-q", "-b", "ws/sync-main", "origin/main");
+  git("merge", "-q", "--no-edit", "release-0.2.1~1");
+  const carried = carriedFiles(dir, [hosp], "origin/main");
+  ok(carried.has(hosp), "carriedFiles finds a layer the release branch committed, even after it moved on");
+  // a slice's own edit hidden in a sync branch is not on any long-lived branch
+  write(hosp, "slice edit\n");
+  ok(!carriedFiles(dir, [hosp], "origin/main").has(hosp), "carriedFiles refuses a town layer nobody committed on a long-lived branch");
+  git("checkout", "-q", "--", hosp);
+  // a ws/ branch alone does not carry anything
+  git("checkout", "-q", "-b", "ws/slice-2", "origin/main");
+  write(hosp, "v9\n");
+  commit("slice edit");
+  git("update-ref", "refs/remotes/origin/ws/slice-2", "HEAD");
+  ok(!carriedFiles(dir, [hosp], "origin/main").has(hosp), "a ws/ branch is not a source of carried layers");
+}
 
 // ---- the freeze: no new or changed entity inside the annex rectangle in DebugWorld (until W6 deletes it)
 const ent = (name, x, z) => `GenericEntity ${name} : "{1111111111111111}Prefabs/Desk.et" {

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{0117CA8107D0F32C}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Livery_UAZ469_FixtureBlue.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
