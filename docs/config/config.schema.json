@@ -1858,10 +1858,8 @@
               },
               "level": {
                 "type": "integer",
-                "description": "The level that opens this",
-                "default": 2,
-                "minimum": 2,
-                "maximum": 30
+                "description": "The level that opens this, 2 to 30",
+                "default": 2
               },
               "textKey": {
                 "type": "string",

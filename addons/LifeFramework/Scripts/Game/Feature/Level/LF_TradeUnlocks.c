@@ -7,7 +7,7 @@ class LF_TradeUnlockRow
 	[Attribute("", UIWidgets.EditBox, "Trade track id, e.g. FARMER, MINER, SMELTING, DELIVERY")]
 	string m_sJob;
 
-	[Attribute("2", UIWidgets.Auto, "The level that opens this", params: "2 30")]
+	[Attribute("2", UIWidgets.Auto, "The level that opens this, 2 to 30")]
 	int m_iLevel;
 
 	[Attribute("", UIWidgets.EditBox, "Localization key naming what the level opens, the unlock text row")]
