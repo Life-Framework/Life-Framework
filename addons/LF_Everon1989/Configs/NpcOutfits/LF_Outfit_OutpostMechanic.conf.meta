@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{57A00B3A5D06DCC7}Configs/NpcOutfits/LF_Outfit_OutpostMechanic.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

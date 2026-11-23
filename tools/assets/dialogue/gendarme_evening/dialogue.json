@@ -1,0 +1,195 @@
+{
+  "id": "gendarme_evening",
+  "name": "GendarmeEvening",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Resident_gendarme_bank_beat_Name",
+  "voice": {
+    "id": "MKHH3pSZhHPPzypDhMoU",
+    "sex": "male",
+    "name": "Mathis - Deep, Smooth and Sophisticated",
+    "public_owner_id": "64cbc624eb5aab4e95a968e1f41d75402277cca6e549036ed17e56ea33bbbc9e",
+    "why": "A low, smooth baritone for Brigadier Lucien Carrel on the evening bank beat: a calm officer unwinding at the end of a shift, a different man and a different voice from the harbor inspector. Used by no other NPC.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.6,
+      "similarity_boost": 0.75,
+      "style": 0.1,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 1500,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "town",
+          "next": "town"
+        },
+        {
+          "text": "barn",
+          "next": "barn"
+        },
+        {
+          "text": "more",
+          "next": "more"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "town",
+      "line": "town",
+      "options_from": "greet"
+    },
+    {
+      "id": "barn",
+      "line": "barn",
+      "options_from": "greet"
+    },
+    {
+      "id": "more",
+      "line": "more",
+      "options": [
+        {
+          "text": "bell",
+          "next": "bell"
+        },
+        {
+          "text": "courier",
+          "next": "courier"
+        },
+        {
+          "text": "mine",
+          "next": "mine"
+        },
+        {
+          "text": "more2",
+          "next": "more2"
+        }
+      ]
+    },
+    {
+      "id": "bell",
+      "line": "bell",
+      "options_from": "more"
+    },
+    {
+      "id": "courier",
+      "line": "courier",
+      "options_from": "more"
+    },
+    {
+      "id": "mine",
+      "line": "mine",
+      "options_from": "more"
+    },
+    {
+      "id": "more2",
+      "line": "more2",
+      "options": [
+        {
+          "text": "market",
+          "next": "market"
+        },
+        {
+          "text": "hostel",
+          "next": "hostel"
+        },
+        {
+          "text": "who",
+          "next": "who"
+        },
+        {
+          "text": "back",
+          "next": "again"
+        }
+      ]
+    },
+    {
+      "id": "market",
+      "line": "market",
+      "options_from": "more2"
+    },
+    {
+      "id": "hostel",
+      "line": "hostel",
+      "options_from": "more2"
+    },
+    {
+      "id": "who",
+      "line": "who",
+      "options_from": "more2"
+    },
+    {
+      "id": "again",
+      "line": "again",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Good evening. I walk the bank and the square at this hour. All quiet so far."
+    },
+    "town": {
+      "text": "Saint-Philippe is calm after six. A few stray dogs, a few late customers at the cafe. I like it that way."
+    },
+    "barn": {
+      "text": "People talk about the old barn. I have driven by. A locked door is not a crime, and rumor is not evidence."
+    },
+    "more": {
+      "text": "Ask what you like. I will answer what I can."
+    },
+    "bell": {
+      "text": "The church bell marks my rounds. Six, nine, midnight. If you hear it, I am somewhere near the bank."
+    },
+    "courier": {
+      "text": "The Courier printed Tuesday's robbery. Most of it is right. Do not repeat the rest."
+    },
+    "mine": {
+      "text": "The coal workers head home dusty and tired. Quiet men. They give me no trouble."
+    },
+    "more2": {
+      "text": "A few things for visitors, then."
+    },
+    "market": {
+      "text": "Keep your cash in your pocket at the market. Pickpockets love a crowd and an open bag."
+    },
+    "hostel": {
+      "text": "A bed at the hostel costs little. A night on a bench costs more, if I find you there."
+    },
+    "who": {
+      "text": "Brigadier Carrel, evening patrol. If you need an officer by day, the station on the square keeps the desk."
+    },
+    "again": {
+      "text": "Anything else, friend? I have a few minutes before the next lap."
+    },
+    "bye": {
+      "text": "Good night. Stay out of trouble, and out of the bank after hours."
+    }
+  },
+  "replies": {
+    "town": "How is the town this evening?",
+    "barn": "What do you know about the old barn?",
+    "more": "Can I ask you something?",
+    "bye": "Good night.",
+    "bell": "What is the bell for?",
+    "courier": "What about the Courier story?",
+    "mine": "How are the coal workers?",
+    "more2": "Anything for visitors?",
+    "market": "Any advice about the market?",
+    "hostel": "What about the hostel?",
+    "who": "Who are you?",
+    "back": "One more question."
+  }
+}

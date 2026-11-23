@@ -1,0 +1,195 @@
+{
+  "id": "gossip_odile",
+  "name": "GossipOdile",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Resident_gossip_odile_Name",
+  "voice": {
+    "id": "W2BFXIBAz50X1hk8EohV",
+    "sex": "male",
+    "name": "Martin - Ultra High Quality",
+    "public_owner_id": "503b412cad8256acb9820883aedced2921545e247152757f7d8be7363c19999e",
+    "why": "A calm, easy French voice for Odilon Ferrand, the retired ferryman on the square's bench: unhurried, a man with all afternoon to talk. Used by no other NPC.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.25,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 1600,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "town",
+          "next": "town"
+        },
+        {
+          "text": "barn",
+          "next": "barn"
+        },
+        {
+          "text": "more",
+          "next": "more"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "town",
+      "line": "town",
+      "options_from": "greet"
+    },
+    {
+      "id": "barn",
+      "line": "barn",
+      "options_from": "greet"
+    },
+    {
+      "id": "more",
+      "line": "more",
+      "options": [
+        {
+          "text": "bell",
+          "next": "bell"
+        },
+        {
+          "text": "courier",
+          "next": "courier"
+        },
+        {
+          "text": "mine",
+          "next": "mine"
+        },
+        {
+          "text": "more2",
+          "next": "more2"
+        }
+      ]
+    },
+    {
+      "id": "bell",
+      "line": "bell",
+      "options_from": "more"
+    },
+    {
+      "id": "courier",
+      "line": "courier",
+      "options_from": "more"
+    },
+    {
+      "id": "mine",
+      "line": "mine",
+      "options_from": "more"
+    },
+    {
+      "id": "more2",
+      "line": "more2",
+      "options": [
+        {
+          "text": "market",
+          "next": "market"
+        },
+        {
+          "text": "hostel",
+          "next": "hostel"
+        },
+        {
+          "text": "who",
+          "next": "who"
+        },
+        {
+          "text": "back",
+          "next": "again"
+        }
+      ]
+    },
+    {
+      "id": "market",
+      "line": "market",
+      "options_from": "more2"
+    },
+    {
+      "id": "hostel",
+      "line": "hostel",
+      "options_from": "more2"
+    },
+    {
+      "id": "who",
+      "line": "who",
+      "options_from": "more2"
+    },
+    {
+      "id": "again",
+      "line": "again",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Well now, a new face on the square. Sit, sit. Colin and I see everything from this bench."
+    },
+    "town": {
+      "text": "Saint-Philippe is small. Everyone knows who paid the baker and who did not, and Colin knows twice as much."
+    },
+    "barn": {
+      "text": "They say the old still barn is not empty at night. Lights, and a truck with no plates. I say nothing."
+    },
+    "more": {
+      "text": "There is more, if you have the time. What would you like to hear?"
+    },
+    "bell": {
+      "text": "The church bell rings on the hour, and I set my watch by it. The priest oils the rope himself, you know."
+    },
+    "courier": {
+      "text": "The Courier is a dollar at the newsstand. Read it before you talk to anyone, and you will sound clever."
+    },
+    "mine": {
+      "text": "They are digging coal again at East Rise. Hard work, honest pay. My knees say no, thank you."
+    },
+    "more2": {
+      "text": "Still listening? Good. A man needs an audience."
+    },
+    "market": {
+      "text": "The market is where the apples go. Sell at the stalls, never to the first man who names a price."
+    },
+    "hostel": {
+      "text": "The hostel clerk is kind to strangers. A bed, a key, and a car if you ask nicely. Everyone starts there."
+    },
+    "who": {
+      "text": "Odilon Ferrand, retired from the ferry. Forty years of watching people come and go. Now I watch them stay."
+    },
+    "again": {
+      "text": "Anything else? My bench is free."
+    },
+    "bye": {
+      "text": "Come back when you have news. I will pay in coffee. Or in secrets."
+    }
+  },
+  "replies": {
+    "town": "What is the town like?",
+    "barn": "Heard anything about the old barn?",
+    "more": "What else do you know?",
+    "bye": "Goodbye.",
+    "bell": "Tell me about the church bell.",
+    "courier": "What is in the Courier?",
+    "mine": "What about the coal mine?",
+    "more2": "Go on, tell me more.",
+    "market": "And the market?",
+    "hostel": "Tell me about the hostel.",
+    "who": "Who are you?",
+    "back": "Something else."
+  }
+}
