@@ -19,9 +19,11 @@ outpost's traders do not serve an on-duty officer. A player who wants the stock 
 ## Current state
 
 - Rule, zone registration, config, refusal text: done (#4217).
-- Not yet wired: the trader sale and shop buy paths call `RefusesService` (a hook in
-  `Trader/LF_TraderSale.c` and the shop buy path, outside this card); the placed outpost prefab and the
-  north site come from later cards.
+- Trader sale and shop till call `RefusesService` (#4224).
+- Standing (#4224, N27): a completed trade inside an outpost books the `fence_sale` award on the one
+  underworld track and sets a per-outpost "known here" flag (`LF_OutpostStanding`, save section
+  `outpoststanding`). Nothing reads the flag yet.
+- Not yet: the placed outpost prefab and the north site (later cards).
 
 ## Dependencies
 
