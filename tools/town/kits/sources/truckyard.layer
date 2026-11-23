@@ -78,14 +78,6 @@ GenericEntity Truckyard_Display_covered_JZD : "{FB219B49A448A8EA}Prefabs/Vehicle
  coords -68.29 0 11.09
  angleY -85
 }
-GenericEntity Truckyard_Cone_1 : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
- coords -33.03 0 12.53
- angleY 5
-}
-GenericEntity Truckyard_Cone_2 : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
- coords -32.6 0 17.51
- angleY 5
-}
 GenericEntity Truckyard_Sign_Hut : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
  coords -5.51 0 11.62
  angleY -85
