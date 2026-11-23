@@ -644,6 +644,8 @@ modded class SCR_PlayerController
 			LF_Debug.Warn(LF_Dispatch.FEATURE, "radio chirp skipped: no body or no radio sound configured");
 		}
 
+		// The dispatcher reads the call type and place over the squelch (#4422).
+		LF_DispatchVoice.Speak(offence, place);
 		GetGame().GetCallqueue().CallLater(LF_ShowDispatchLine, 700, false, offence, clothing, vehicle, place);
 	}
 
