@@ -1,0 +1,52 @@
+{
+  "id": "barkeeper",
+  "name": "Barkeeper",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_Barkeeper_Name",
+  "voice": {
+    "id": "KvaCHcJoMXfOzwtsULOZ",
+    "sex": "male",
+    "name": "Hank Harvey - Gruff, Rugged and Wise",
+    "public_owner_id": "1a76b02cecffbd3f25a01b953eaecc6c05a281d4be25de83fa454db6a9c6eef6",
+    "why": "Josselin Vidal has kept the bar at the Chotain for twenty years: gruff, calm, dry, a man who counts bottles twice and says little. Hank Harvey is a calm, gruff, wise middle-aged voice. The game has male bodies only, so the barkeeper is a man (the plan's Josette became Josselin; validate-voice-sex refuses a woman's name or voice on a male body). The only American-sounding voice among the village speakers, and none of the French-accented ones (clerk, cafe owner, go-between, tally clerk, harbour master) is gruff. No other speaker uses this voice.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.25,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 1400,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "ask", "next": "buy" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "buy", "line": "buy", "options": [
+      { "text": "why", "next": "limit" },
+      { "text": "law", "next": "law" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "limit", "line": "limit", "options": [
+      { "text": "law", "next": "law" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "law", "line": "law", "options": [
+      { "text": "why", "next": "limit" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Evening. Beer is on the board. If you carry cartons or bottles that never saw a tax stamp, you see me, not the bar. Keep your voice down." },
+    "buy": { "text": "Cartons and vodka, yes. Use the counter, not your mouth. Two cartons a week, a few bottles. More than that and the owner notices." },
+    "limit": { "text": "A bar that sells ten cartons a week is a shop, and a shop gets a visit. When my shelf is full, it is full. Come back next week." },
+    "law": { "text": "If you wear a badge, I sell beer. Nothing else, and I never saw you. Anyone else, the money is on the counter and nobody was here." },
+    "bye": { "text": "Mind the step on your way out." }
+  },
+  "replies": {
+    "ask": "Do you buy cartons and vodka?",
+    "why": "Why only two cartons?",
+    "law": "What about the law?",
+    "bye": "Goodbye."
+  }
+}

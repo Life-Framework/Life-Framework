@@ -4172,32 +4172,32 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8B3125F791403A21}" {
      Id "LF-Credits_172"
-     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Barkeeper Josselin Vidal's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6DEF465ED9803D1A}" {
      Id "LF-Credits_173"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Hank Harvey - Gruff, Rugged and Wise\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{331934ECDCED4E47}" {
      Id "LF-Credits_174"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B9BF5DC2926087D1}" {
      Id "LF-Credits_175"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CC2101DE9FC8F7B8}" {
      Id "LF-Credits_176"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C9C86A5A1ED40DCE}" {
      Id "LF-Credits_177"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8A4563FF1C5E590F}" {
@@ -4207,7 +4207,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1FC189AF5F7BE2CC}" {
      Id "LF-Credits_179"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3A24A564BBC40F8F}" {
@@ -4217,52 +4217,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDA999D625B19F3D}" {
      Id "LF-Credits_180"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A0A7AF015F2F74D4}" {
      Id "LF-Credits_181"
-     Target_en_us "Michael Hansen / Rhasspy"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0D1A861CFC75EB60}" {
      Id "LF-Credits_182"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{861D6EE9C532FE97}" {
      Id "LF-Credits_183"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
+     Target_en_us "Michael Hansen / Rhasspy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FD0F462ADB68D02E}" {
      Id "LF-Credits_184"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{00BFA04619043DFC}" {
      Id "LF-Credits_185"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{90696CB2BFCA919F}" {
      Id "LF-Credits_186"
-     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Target_en_us "FONTS AND LOGO"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{13C921E553E1333A}" {
      Id "LF-Credits_187"
-     Target_en_us "LIVERIES"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FD2D69733781B26}" {
      Id "LF-Credits_188"
-     Target_en_us "LF_UAZ469_Police"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{413CD254F961C2CC}" {
      Id "LF-Credits_189"
-     Target_en_us "LF_S105_Police"
+     Target_en_us "LIVERIES"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9B225E9F684B34BE}" {
@@ -4272,16 +4272,26 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{FB7F01DA30ED5462}" {
      Id "LF-Credits_190"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_UAZ469_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{20D09EC5580FB73B}" {
      Id "LF-Credits_191"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "LF_S105_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{EB138655CB017E1B}" {
      Id "LF-Credits_192"
+     Target_en_us "CONTRABAND LABELS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{ADAAD0ACB3D62D04}" {
+     Id "LF-Credits_193"
+     Target_en_us "LF_CigaretteCarton_BCR"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4BC652FE250FB8F9}" {
+     Id "LF-Credits_194"
      Target_en_us "LF_VodkaBottle_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }

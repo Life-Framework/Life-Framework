@@ -459,6 +459,51 @@ StringTable {
      Target_en_us "Three years ago they walked out of the night with what they could carry. We remember each of them. Stand with us a moment."
      Comment "Dialogue caption, spoken by the anniversary_priest NPC (voiced; tools/assets/dialogue/anniversary_priest). Changing it needs: tools\\cli asset dialogue anniversary_priest"
     }
+    CustomStringTableItem "{650D1E6518498F3C}" {
+     Id "LF-Dialogue_Barkeeper_Buy"
+     Target_en_us "Cartons and vodka, yes. Use the counter, not your mouth. Two cartons a week, a few bottles. More than that and the owner notices."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{8B26882A22293458}" {
+     Id "LF-Dialogue_Barkeeper_Bye"
+     Target_en_us "Mind the step on your way out."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{98172406A7846646}" {
+     Id "LF-Dialogue_Barkeeper_Greet"
+     Target_en_us "Evening. Beer is on the board. If you carry cartons or bottles that never saw a tax stamp, you see me, not the bar. Keep your voice down."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{05465B04D4DCDCA0}" {
+     Id "LF-Dialogue_Barkeeper_Law"
+     Target_en_us "If you wear a badge, I sell beer. Nothing else, and I never saw you. Anyone else, the money is on the counter and nobody was here."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{555A4099D123C72B}" {
+     Id "LF-Dialogue_Barkeeper_Limit"
+     Target_en_us "A bar that sells ten cartons a week is a shop, and a shop gets a visit. When my shelf is full, it is full. Come back next week."
+     Comment "Dialogue caption, spoken by the barkeeper NPC (voiced; tools/assets/dialogue/barkeeper). Changing it needs: tools\\cli asset dialogue barkeeper"
+    }
+    CustomStringTableItem "{89B8C4EE047CD189}" {
+     Id "LF-Dialogue_Barkeeper_SayAsk"
+     Target_en_us "Do you buy cartons and vodka?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
+    CustomStringTableItem "{8C06935E1F6474C1}" {
+     Id "LF-Dialogue_Barkeeper_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
+    CustomStringTableItem "{2B4B72011D81B0CE}" {
+     Id "LF-Dialogue_Barkeeper_SayLaw"
+     Target_en_us "What about the law?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
+    CustomStringTableItem "{AB03BC8431143041}" {
+     Id "LF-Dialogue_Barkeeper_SayWhy"
+     Target_en_us "Why only two cartons?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
     CustomStringTableItem "{3E9F5343A58B4851}" {
      Id "LF-Dialogue_CafeOwner_Bye"
      Target_en_us "Come back when you are hungry. Or lonely. It is the same to me."
@@ -6583,6 +6628,11 @@ StringTable {
      Id "LF-TownCard_Work_Title"
      Target_en_us "Couriers wanted"
      Comment "Town board card (work): card title; the prompt reads Read: <title>."
+    }
+    CustomStringTableItem "{4439B0A5C7000001}" {
+     Id "LF-Townsfolk_Barkeeper_Name"
+     Target_en_us "Josselin Vidal"
+     Comment "Townsfolk (crime B5, #4439): the barkeeper's name, the speaker line of his dialogue. The plan's Josette is a man because every character body is male (validate-voice-sex)."
     }
     CustomStringTableItem "{18C4BB2C33CD079A}" {
      Id "LF-Townsfolk_Bruno_Name"
