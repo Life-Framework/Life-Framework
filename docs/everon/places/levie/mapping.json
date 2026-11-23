@@ -2,7 +2,7 @@
   "schema": 1,
   "template": "village",
   "place": "levie",
-  "status": "proposed",
+  "status": "approved",
   "note": "Card #4442 (CR-B9): the village template names its bar slot `pub`; the 0.3.0 barkeeper Josselin Vidal (#4516, buyer id `bar_levie`) stands in it. Only `pub` is needed in 0.3.0; the other slots are tool proposals and are not fitted yet. A proposal: approval is a reviewed PR holding only this file (label town-mapping). `toolscli town map levie --check --template village` passes.",
   "dossier": {
     "schema": 1,
