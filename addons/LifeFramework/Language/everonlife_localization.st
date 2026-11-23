@@ -12692,10 +12692,25 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "pistol"
      Comment "Item name on the outpost crate's Buy action (#4223)."
     }
+    CustomStringTableItem "{6ACB0A39142E7ED3}" {
+     Id "LF-OutpostStock_PistolM9"
+     Target_en_us "M9 pistol"
+     Comment "Item name on an outpost crate's Buy action: the pack's stock tables (#4453)."
+    }
     CustomStringTableItem "{4C1F8B29E6A37D05}" {
      Id "LF-OutpostStock_Rifle"
      Target_en_us "rifle"
      Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{9ACE1AA6CCD697C1}" {
+     Id "LF-OutpostStock_RifleAks74u"
+     Target_en_us "AKS-74U carbine"
+     Comment "Item name on an outpost crate's Buy action: the pack's stock tables (#4453)."
+    }
+    CustomStringTableItem "{6D844291A8E12BEB}" {
+     Id "LF-OutpostStock_RifleM16"
+     Target_en_us "M16A2 rifle"
+     Comment "Item name on an outpost crate's Buy action: the pack's stock tables (#4453)."
     }
     CustomStringTableItem "{3F7A2C91B4E05D18}" {
      Id "LF-OutpostStock_Title"
