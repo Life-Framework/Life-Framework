@@ -23,7 +23,7 @@ the F2 "What to do next" page, the map, police and medic duty, and where to read
 
 ## Your personal file
 
-Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It has three tabs:
+Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It has three tabs, and a fourth when you are in a gang:
 
 * **Person**: your name and role (civilian, police or medic, on or off duty), cash in hand and in the bank,
   houses owned, garage slots used, time on the island, whether you are wanted, the licences and permits you hold, and
@@ -36,6 +36,9 @@ Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It
   end and read **Done**. Pick one and press **Start**: a few short steps follow, each with a waypoint on your screen, a
   mark on your map and a one-line note. A step you have already done is skipped (you hold the job, you carry the tool).
   **Resume** on a started one puts the waypoint and the note back on its step.
+* **Gang** (only if you are in a gang): your crew at a glance, read only. The gang's name and flag, your rank, which
+  members are online, whether a radio you carry is on the gang channel, and the sites the gang holds. It shows only your
+  own gang. Nothing on it is a standing number; gang standing is never shown as a figure.
 
 ## Your current objective
 

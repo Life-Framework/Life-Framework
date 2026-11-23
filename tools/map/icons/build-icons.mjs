@@ -98,6 +98,7 @@ const SHAPES = {
   rocks: (k) => `<path d="M4 56L16 34L28 42L40 18L60 56Z" ${S(k)}/><path d="M16 34L22 56M40 18L36 56" ${S(k, 3)}/>`,
   board: (k) => `<rect x="6" y="8" width="52" height="36" rx="2" ${S(k)}/><path d="M16 44V60M48 44V60" ${S(k)}/><path d="M14 18H36M14 26H44M14 34H30" ${S(k, 3)}/>`,
   house: (k) => `<path d="M6 30L32 8L58 30" ${S(k)}/><path d="M14 25V56H50V25" ${S(k)}/><rect x="25" y="36" width="14" height="20" fill="${k}"/>`,
+  truck: (k) => `<rect x="4" y="14" width="34" height="28" rx="2" ${S(k, 3.4)}/><path d="M38 22H50L60 32V42H38Z" fill="${k}"/><circle cx="15" cy="47" r="6" fill="${k}"/><circle cx="30" cy="47" r="6" fill="${k}"/><circle cx="51" cy="47" r="6" fill="${k}"/>`,
   car: (k) => `<path d="M6 42V34L16 22H44L56 34H58V42Z" fill="${k}"/><circle cx="18" cy="46" r="7" fill="${k}"/><circle cx="46" cy="46" r="7" fill="${k}"/>`,
   crate: (k) => `<rect x="10" y="14" width="44" height="40" ${S(k)}/><path d="M10 14L54 54M54 14L10 54" ${S(k, 3)}/>`,
 };
@@ -121,7 +122,7 @@ const KIND_BADGE = {
   SeedFeed: ["sack", "shop"], TimberMerchant: ["planks", "shop"],
   Grocer: ["basket", "food"], Bakery: ["bread", "food"], Butcher: ["cleaver", "food"], Cafe: ["cup", "food"], Pub: ["mug", "food"], Market: ["stall", "food"],
   Supermarket: ["trolley", "food"],
-  Fuel: ["pump", "travel"], Garage: ["garage", "travel"], CarLot: ["car", "travel"], Taxi: ["taxi", "travel"], Harbour: ["anchor", "travel"], Bed: ["bed", "travel"],
+  Fuel: ["pump", "travel"], Garage: ["garage", "travel"], CarLot: ["car", "travel"], TruckLot: ["truck", "travel"], Taxi: ["taxi", "travel"], Harbour: ["anchor", "travel"], Bed: ["bed", "travel"],
   FuelDepot: ["drum", "travel"], BusStop: ["bus", "travel"],
   Workplace: ["hammerpick", "work"], Quarry: ["rocks", "work"], Mine: ["pickaxe", "work"], Plant: ["factory", "work"], Farm: ["barn", "work"],
   FarmYard: ["tractor", "work"], LoggingYard: ["axe", "work"],

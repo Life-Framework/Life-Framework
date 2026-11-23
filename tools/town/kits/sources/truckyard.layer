@@ -79,7 +79,7 @@ GenericEntity Truckyard_Display_covered_JZD : "{FB219B49A448A8EA}Prefabs/Vehicle
  angleY -85
 }
 GenericEntity Truckyard_Sign_Hut : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
- coords -5.51 0 11.62
+ coords -9.7 0 9.4
  angleY -85
  components {
   LF_SignComponent "{A7C4000000000041}" {

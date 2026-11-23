@@ -36,3 +36,5 @@ The **pharmacy** north of the clinic sells aspirin ($10), gauze ($8) and tourniq
 Reviving and delivering patients earns **medic job experience** and a **bonus**: **$10** a revive and **$15** a patient put in a hospital bed (the bed's own revive is included, so a bed delivery is $15, not $25). Reviving yourself earns nothing. The bonus stops at your rank's cap each hour and is paid with your shift when you clock out.
 
 The clinic, the taxi rank, the pharmacy and the notice board are on the [Saint-Philippe map](maps.md).
+
+**When the clinic is short.** Break into the clinic's drug cabinet and the pharmacy runs out of stock for a while. A paper notice appears beside the clinic's front door ("Pharmacy closed: Stock stolen. Medicine: Prices raised. Until: Further notice"), the counter charges more and a revive near the clinic takes longer. The notice comes down when the clinic is stocked again.
