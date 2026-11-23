@@ -494,6 +494,11 @@ StringTable {
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
     }
+    CustomStringTableItem "{9DC4EE9380274653}" {
+     Id "LF-Dialogue_Barkeeper_SayHeard"
+     Target_en_us "Heard anything?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
     CustomStringTableItem "{2B4B72011D81B0CE}" {
      Id "LF-Dialogue_Barkeeper_SayLaw"
      Target_en_us "What about the law?"
@@ -1884,6 +1889,11 @@ StringTable {
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
     }
+    CustomStringTableItem "{A5E941CBEC9A7E3D}" {
+     Id "LF-Dialogue_NightShift_SayHeard"
+     Target_en_us "Heard anything?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
     CustomStringTableItem "{88229E39461B49AD}" {
      Id "LF-Dialogue_NightShift_SayMove"
      Target_en_us "How was the move?"
@@ -2359,10 +2369,20 @@ StringTable {
      Target_en_us "You did not see me. Now, what are you after?"
      Comment "Pack patch of the role_fence dialogue's line greet (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
     }
+    CustomStringTableItem "{E71388111407C31A}" {
+     Id "LF-Dialogue_RoleFenceEveron_RefuseDrill"
+     Target_en_us "Vince does not sell that to strangers. Make a name for yourself, then come back."
+     Comment "Pack patch of the role_fence dialogue's line refuse_drill (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
     CustomStringTableItem "{BF2804A075D06D89}" {
      Id "LF-Dialogue_RoleFenceEveron_Rumour"
      Target_en_us "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the police."
      Comment "Pack patch of the role_fence dialogue's line rumour (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
+    CustomStringTableItem "{34C5E2FFD796D068}" {
+     Id "LF-Dialogue_RoleFenceEveron_SellDrill"
+     Target_en_us "You have earned it. Here is the drill. Be quiet with it, and it never came from me."
+     Comment "Pack patch of the role_fence dialogue's line sell_drill (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
     }
     CustomStringTableItem "{4FDB1AC1ACEA8C7C}" {
      Id "LF-Dialogue_RoleFenceEveron_What"

@@ -52,9 +52,11 @@ export const DROP_KITS = {
   "resident-plate": { prefab: "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et", source: "addons/LifeFramework/Prefabs/Props/Signs/LF_Sign_PlateSmall.et" },
   // The police car pool board (#4352): a cork board on the station wall, its bay 6 m in front. No slot kit names it; the station card seats its one board with this entry.
   "police-car-board": { prefab: "{AEFD4F9B8A69C66E}Prefabs/Props/Police/LF_PoliceCarPoolBoard.et", source: "addons/LifeFramework/Prefabs/Props/Police/LF_PoliceCarPoolBoard.et" },
-  // The respray bay's bench (#4589, WO-L9b): on the mechanic's garage wall, its pad 4 m out in front. The bay is one entity that
-  // overrides two ids (its place id and its pad id), which the seated line carries by hand, so no slot kit names it.
+  // The respray bay's bench (#4589, WO-L9b): on the mechanic's garage wall. Its pad offset is world-axis, so the placed bay overrides
+  // it, and its place id and pad id too; the seated line carries those by hand, so no slot kit names it.
   "livery-bay": { prefab: "{837750C2B0CBF9D9}Prefabs/Props/LF_LiveryBay.et", source: "addons/LifeFramework/Prefabs/Props/LF_LiveryBay.et" },
+  // The medic fleet board (#4432, #4566): a cork board on the clinic wall, its bay 6 m in front. No slot kit names it; the clinic board card seats its one board with this entry.
+  "medic-fleet-board": { prefab: "{7626F19FBE72C466}Prefabs/Props/Medic/LF_MedicCarPoolBoard.et", source: "addons/LifeFramework/Prefabs/Props/Medic/LF_MedicCarPoolBoard.et" },
   "house-sale": { prefab: "{2F815241C89039BC}Prefabs/Props/Property/LF_HouseSaleSign.et", source: "addons/LifeFramework/Prefabs/Props/Property/LF_HouseSaleSign.et" },
 };
 const OUTSIDE = 1.0; // the mailbox starts this far outside the footprint; the wall seat slides it the rest of the way

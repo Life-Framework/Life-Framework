@@ -49,7 +49,12 @@ GenericEntity Fit_saint_philippe_pharmacy_pharmacy_gauze : "{1564801BABC5C304}Pr
  coords 4432.186 10.28 10837.728
  angleY 76
 }
-LF_NpcBaseEntity Fit_saint_philippe_pharmacy_pharmacy_pharmacist : "{87E1270978227F3A}Prefabs/Characters/Npcs/LF_Npc_Pharmacist.et" {
+GenericEntity Fit_saint_philippe_pharmacy_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
  coords 4430.937 9.231 10838.19
  angleY 76
 }

@@ -87,8 +87,8 @@ class LF_Test_JobLevelsPersist : LF_Test
 			ctx.Equal(340, LF_JobLevels.XpOf(WORKER, LF_JobLevels.JOB_CIVILIAN), "the civilian xp is back" + tag);
 			ctx.Equal(3, LF_JobLevels.LevelOf(WORKER, LF_JobLevels.JOB_CIVILIAN), "the worker is civilian level 3" + tag);
 			ctx.Equal(1720, LF_JobLevels.XpOf(WORKER, LF_JobLevels.JOB_DELIVERY), "the delivery xp is back" + tag);
-			ctx.Equal(3, LF_CivilianJob.GetLevel(WORKER), "the worker is delivery level 3" + tag);
-			ctx.True(LF_CivilianJob.CanSignUp(WORKER, LF_EJobType.TAXI), "delivery level 3 still opens the taxi" + tag);
+			ctx.Equal(6, LF_CivilianJob.GetLevel(WORKER), "the worker is delivery level 6 (1720 xp on the 30-level table, #4596)" + tag);
+			ctx.True(LF_CivilianJob.CanSignUp(WORKER, LF_EJobType.TAXI), "the worker's delivery level still opens the taxi" + tag);
 			ctx.Equal(120, LF_JobLevels.XpOf(WORKER, LF_JobLevels.JOB_FARMER), "the farmer xp only joblevels holds is back" + tag);
 			ctx.Equal(2, LF_JobLevels.LevelOf(WORKER, LF_JobLevels.JOB_FARMER), "the worker is farmer level 2" + tag);
 			ctx.Equal(650, LF_JobLevels.XpOf(MINER, "MINER"), "the miner's xp is back" + tag);
@@ -119,7 +119,7 @@ class LF_Test_JobLevelsPersist : LF_Test
 			ctx.Equal(340, LF_JobLevels.XpOf(WORKER, LF_JobLevels.JOB_CIVILIAN), "the single level 3 + 40 xp migrates to 340 civilian xp" + tag);
 			ctx.Equal(3, LF_JobLevels.LevelOf(WORKER, LF_JobLevels.JOB_CIVILIAN), "the single level 3 stays civilian level 3" + tag);
 			ctx.Equal(1720, LF_JobLevels.XpOf(WORKER, LF_JobLevels.JOB_DELIVERY), "the career level 3 + 220 xp migrates to 1720 delivery xp" + tag);
-			ctx.Equal(3, LF_CivilianJob.GetLevel(WORKER), "the career level 3 stays delivery level 3" + tag);
+			ctx.True(LF_CivilianJob.GetLevel(WORKER) >= 3, "the career level 3 never drops below delivery level 3 (the 30-level table is easier, #4596)" + tag);
 			ctx.Equal(0, LF_JobLevels.XpOf(WORKER, LF_JobLevels.JOB_FARMER), "a job the old save never held starts at 0" + tag);
 			ctx.Equal(0, LF_JobLevels.XpOf(MINER, "MINER"), "the miner's xp had no pre-#749 field" + tag);
 		}
@@ -162,7 +162,7 @@ class LF_Test_JobLevelsPersist : LF_Test
 		ctx.Equal(1, LF_JobLevels.SeedFromLegacy(records), "the level 25 veteran is seeded");
 		ctx.Equal(30010, LF_JobLevels.XpOf(WORKER, LF_JobLevels.JOB_CIVILIAN), "a single level 25 with 10 xp migrates to 30010 civilian xp");
 		ctx.Equal(7530, LF_JobLevels.XpOf(WORKER, LF_JobLevels.JOB_DELIVERY), "a career level 5 with 30 xp migrates to 7530 delivery xp");
-		ctx.Equal(5, LF_CivilianJob.GetLevel(WORKER), "the career level 5 stays delivery level 5");
+		ctx.True(LF_CivilianJob.GetLevel(WORKER) >= 5, "the career level 5 never drops below delivery level 5 (the 30-level table is easier, #4596)");
 
 		// The mirror written back is the same level, so a version 27 build would read it unchanged.
 		int level;

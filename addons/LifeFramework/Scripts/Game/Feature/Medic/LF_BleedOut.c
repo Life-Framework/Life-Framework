@@ -157,7 +157,7 @@ class LF_BleedOut
 			if (LF_DownedPatient.IsPatient(character))
 				continue;
 
-			if (character.LF_BleedStep(dt))
+			if (character.LF_BleedStep(dt * LF_MedicSkill.BleedScaleFor(character))) // steady-carry perk (#4433)
 				expired.Insert(character);
 		}
 

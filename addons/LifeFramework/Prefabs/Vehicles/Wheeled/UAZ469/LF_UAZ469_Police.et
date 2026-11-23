@@ -107,6 +107,39 @@ Vehicle : "{C8B16ABCA57679A2}Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_
      "Sort Priority" 10
      m_bBusy 1
     }
+    LF_CallCloseAction "{4585C10000000001}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{4585C10000000002}" {
+      Name "#LF-CallOutcome_ActionResolved"
+     }
+     "Sort Priority" 11
+     m_eOutcome 1
+    }
+    LF_CallCloseAction "{4585C10000000003}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{4585C10000000004}" {
+      Name "#LF-CallOutcome_ActionNoOneFound"
+     }
+     "Sort Priority" 12
+     m_eOutcome 2
+    }
+    LF_CallCloseAction "{4585C10000000005}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{4585C10000000006}" {
+      Name "#LF-CallOutcome_ActionUnfounded"
+     }
+     "Sort Priority" 13
+     m_eOutcome 3
+    }
    }
   }
  }

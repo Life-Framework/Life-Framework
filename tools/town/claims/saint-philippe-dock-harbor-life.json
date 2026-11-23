@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "place": "saint-philippe-dock",
+  "slot": "harbor-life",
+  "building": "b01",
+  "shared": true,
+  "kit": "harbor-life",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe-dock_harbor-life.layer",
+  "kinds": [],
+  "rows": 3,
+  "destruction": {
+    "mode": "needs-hook",
+    "reason": "a vanilla building stands in the terrain and the slot has no place marker to carry LF_FittedBuildingComponent (D15)"
+  },
+  "date": "2026-11-23"
+}
