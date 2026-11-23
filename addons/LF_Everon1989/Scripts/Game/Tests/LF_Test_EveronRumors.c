@@ -1,16 +1,15 @@
-// red-proof: batched run `tools\cli test --no-build --red LF_Test_EveronRumors` (RED-OK line in the PR): RedProof() skips the load of the pack's rumor rows, so no row is found and every row, place, clip and crime check fails.
+// red-proof: batched run `tools\cli test --no-build --red LF_Test_EveronRumors` (RED-OK line in the PR): RedProof() skips the read of the rumor config through the mission header, so no row is found and every row, voice, clip and crime check fails.
 //! #4476 (W5.4 of the world chapter, #4170): under the Everon 1989 header (the pack leg of `tools\cli test`) the pack's
-//! rumor rows are real. About thirty rows of `Configs/Residents/LF_Rumors_Everon1989.conf`: each row has a unique id and
-//! points at a place id the island registers through `LF_Places` (the table below mirrors the `LF_PlaceComponent`
-//! kind and id of `Worlds/MainWorld/MainWorld_Layers/Place_*.layer`; the test world holds no island markers, so the
-//! ids are checked against that list), each line is spoken (its caption, sound event, length and clip on disk, through
-//! the speaker's own recorded conversation), and every caption is US English with no French word. A crime row (N32)
+//! rumor rows are real and the mission header loads them (#4569): `LF_RumorsConfig.Get()` returns about thirty rows of
+//! `Configs/Residents/LF_Rumors_Everon1989.conf` through the pack overlay. Each row has a unique id; its place id is
+//! checked against the island layers by `tools/validation/validate-rumor-places.mjs` (the test world holds no island
+//! markers). Each line is spoken (its caption, sound event, length and clip on disk, found through the config's own
+//! recorded conversations), and every caption is US English with no French word. A crime row (N32)
 //! carries the crime flag, is told only by bar staff or the informant, prints only what a passer-by could see (no
 //! open case, no record), and the pool offers it to a friendly player and never to a neutral one or a gossip.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronRumors : LF_Test
 {
-	static const ResourceName ROWS = "{4A002D70729E375D}Configs/Residents/LF_Rumors_Everon1989.conf";
 	static const int MIN_ROWS = 30;
 	static const string CHARACTER = "ev-rumor-char";
 
@@ -18,30 +17,6 @@ class LF_Test_EveronRumors : LF_Test
 	override string GetName()
 	{
 		return "everon/rumors";
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The island's places a rumor may name: kind and id, as the island layers register them.
-	protected static void Places(array<string> kinds, array<string> ids)
-	{
-		array<string> table = {
-			"Processor", "coalmans-brow.mine", "Workplace", "everon-sawmill.yard", "OrchardTrees", "saint-philippe.orchard",
-			"Smokehouse", "saint-philippe-dock.smokehouse", "MarketTrader", "saint-philippe.market", "HarbourMaster", "saint-philippe.harbour",
-			"ParcelDepot", "saint-philippe.parcel", "FishingSpot", "saint-philippe.pond", "Church", "saint-philippe.church",
-			"FishingSpot", "fishermansbay.cove", "FishingSpot", "blacklake.shore", "WholesaleCounter", "saint-philippe-dock.wholesale",
-			"Workplace", "saint-philippe.woodlot", "StoreCounter", "saint-philippe.seed-feed", "RangeLane", "saint-philippe.range",
-			"MedicDesk", "saint-philippe.clinic", "PubBar", "chotain.pub", "ChessTable", "saint-philippe.chess",
-			"VehicleLot", "saint-philippe.carlot", "RoadFuel", "roadfuel.fuel", "StoreCounter", "saint-philippe.hardware",
-			"TaxiRank", "saint-philippe.taxi", "StillBarn", "stillbarn.1", "ChopYard", "chopyard.yard",
-			"FenceYard", "saint-philippe.fence", "VehicleLot", "ne-compound.truckyard", "FarmCompound", "farmcompound.compound",
-			"HilltopMast", "hilltopmast.a", "ScrapRecycler", "scrapyard.recycler", "Warehouse", "saint-philippe-dock.warehouse"
-		};
-
-		for (int i = 0; i + 1 < table.Count(); i += 2)
-		{
-			kinds.Insert(table[i]);
-			ids.Insert(table[i + 1]);
-		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -111,17 +86,6 @@ class LF_Test_EveronRumors : LF_Test
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The pack's rumor rows, loaded the way LF_RumorsConfig loads the core file. Null when they do not resolve.
-	protected static LF_RumorsConfig LoadRows()
-	{
-		Resource container = BaseContainerTools.LoadContainer(ROWS);
-		if (!container || !container.GetResource())
-			return null;
-
-		return LF_RumorsConfig.Cast(BaseContainerTools.CreateInstanceFromContainer(container.GetResource().ToBaseContainer()));
-	}
-
-	//------------------------------------------------------------------------------------------------
 	protected static bool Offered(array<ref LF_RumorDef> offers, string id)
 	{
 		foreach (LF_RumorDef def : offers)
@@ -167,21 +131,21 @@ class LF_Test_EveronRumors : LF_Test
 		FrenchWords(french);
 		array<string> hidden = {};
 		HiddenFactWords(hidden);
-		array<string> placeKinds = {};
-		array<string> placeIds = {};
-		Places(placeKinds, placeIds);
 		array<string> crimePlaces = {};
 		CrimePlaces(crimePlaces);
 		array<string> convIds = {};
 		array<ResourceName> convPaths = {};
 		Conversations(convIds, convPaths);
 
-		// The act: load the rows the way the core does. Red proof: no load, so there are no rows.
+		// The act: read the rows the way the game does, through the mission header's overlay list.
+		// Red proof: no read, so there are no rows.
+		LF_RumorsConfig.ResetStatics();
+		LF_RumorVoice.ResetStatics();
 		LF_RumorsConfig config;
 		if (!RedProof())
-			config = LoadRows();
+			config = LF_RumorsConfig.Get();
 
-		ctx.NotNull(config, "the pack's rumor rows resolve");
+		ctx.NotNull(config, "the header loads the pack's rumor rows");
 		if (!config || !config.m_aRumors)
 		{
 			ctx.True(false, "the pack's rumor rows resolve");
@@ -190,6 +154,12 @@ class LF_Test_EveronRumors : LF_Test
 
 		ctx.True(config.m_aRumors.Count() >= MIN_ROWS, string.Format("the pack has at least %1 rumors (%2)", MIN_ROWS, config.m_aRumors.Count()));
 		ctx.True(config.m_aCrimeGivers && config.m_aCrimeGivers.Find("bar") != -1 && config.m_aCrimeGivers.Find("informant") != -1, "the crime givers are bar staff and the informant");
+		ctx.True(config.m_aVoices && config.m_aVoices.Count() == 4, "the config lists the four recorded conversations the rows speak");
+		if (config.m_aVoices)
+		{
+			foreach (ResourceName voice : convPaths)
+				ctx.True(config.m_aVoices.Find(voice) != -1, "the config lists the recorded conversation " + voice);
+		}
 
 		map<string, ref LF_DialogueLine> lineByKey = new map<string, ref LF_DialogueLine>();
 		map<string, string> ownerByKey = new map<string, string>();
@@ -208,9 +178,8 @@ class LF_Test_EveronRumors : LF_Test
 			ctx.True(!def.m_sId.IsEmpty() && !seenIds.Contains(def.m_sId), where + ": has a unique id");
 			seenIds.Insert(def.m_sId);
 
-			// Place: a real island place, found by id in the list the layers register.
-			int placeAt = placeIds.Find(def.m_sPlaceId);
-			ctx.True(placeAt != -1, where + ": its place " + def.m_sPlaceId + " is an island place");
+			// Place: the id is an island place (validate-rumor-places); the crime flag follows the hidden ones.
+			ctx.True(!def.m_sPlaceId.IsEmpty(), where + ": names a place");
 			bool crimePlace = crimePlaces.Find(def.m_sPlaceId) != -1;
 			ctx.True(def.m_bCrime == crimePlace, where + ": the crime flag matches its place");
 
@@ -242,6 +211,8 @@ class LF_Test_EveronRumors : LF_Test
 			if (!line)
 				continue;
 
+			LF_DialogueConfig voiceConfig;
+			ctx.True(LF_RumorVoice.FindLine(def, voiceConfig) != null, where + ": the game finds its recorded line through the config's voices");
 			string speaker = ownerByKey.Get(spoken);
 			ctx.True(!line.m_sEvent.IsEmpty(), where + ": has a sound event");
 			ctx.True(line.m_fSeconds > 0, where + ": has a length");

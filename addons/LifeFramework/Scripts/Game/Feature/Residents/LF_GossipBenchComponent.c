@@ -11,21 +11,44 @@ class LF_GossipBenchComponentClass : ScriptComponentClass
 }
 
 //------------------------------------------------------------------------------------------------
-//! Collects whether a gossip resident stands within range of a point.
+//! Collects the gossip residents that stand within range of a point.
 class LF_GossipQuery
 {
 	bool m_bFound;
+	ref array<IEntity> m_aGossips = {};
 
 	//------------------------------------------------------------------------------------------------
 	bool Collect(IEntity entity)
 	{
-		if (m_bFound || !entity)
-			return !m_bFound;
+		if (!entity)
+			return true;
 
 		if (LF_GossipBenchRules.IsGossipId(LF_ResidentSpawner.ResidentIdOf(entity)))
+		{
 			m_bFound = true;
+			m_aGossips.Insert(entity);
+		}
 
-		return !m_bFound;
+		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The gossip who tells `def`: the one its row names as a giver, else the first one found.
+	IEntity SpeakerFor(LF_RumorDef def)
+	{
+		if (def && def.m_aGivers)
+		{
+			foreach (IEntity gossip : m_aGossips)
+			{
+				if (gossip && def.m_aGivers.Find(LF_ResidentSpawner.ResidentIdOf(gossip)) != -1)
+					return gossip;
+			}
+		}
+
+		if (m_aGossips.IsEmpty())
+			return null;
+
+		return m_aGossips[0];
 	}
 }
 
@@ -75,9 +98,16 @@ class LF_GossipBenchComponent : ScriptComponent
 	//! True when a live gossip resident stands within earshot of the bench.
 	bool GossipNear()
 	{
+		return Gossips().m_bFound;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The gossip residents within earshot of the bench.
+	protected LF_GossipQuery Gossips()
+	{
 		LF_GossipQuery query = new LF_GossipQuery();
 		GetGame().GetWorld().QueryEntitiesBySphere(GetOwner().GetOrigin(), LF_GossipBenchRules.RANGE_M, query.Collect, null, EQueryEntitiesFlags.DYNAMIC | EQueryEntitiesFlags.WITH_OBJECT);
-		return query.m_bFound;
+		return query;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -100,7 +130,8 @@ class LF_GossipBenchComponent : ScriptComponent
 			return;
 
 		int stamp = Stamp();
-		bool gossipNear = GossipNear();
+		LF_GossipQuery gossips = Gossips();
+		bool gossipNear = gossips.m_bFound;
 		array<int> ids = {};
 		players.GetPlayers(ids);
 		array<string> seen = {};
@@ -115,7 +146,7 @@ class LF_GossipBenchComponent : ScriptComponent
 			float seconds = TICK_MS / 1000.0;
 			LF_RumorDef def = Step(characterId, IsSitting(body), gossipNear, seconds, stamp);
 			if (def)
-				SendToMap(playerId, def);
+				Tell(playerId, def, gossips.SpeakerFor(def));
 		}
 
 		m_State.KeepOnly(seen);
@@ -140,15 +171,12 @@ class LF_GossipBenchComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the player's map gets the heard-of place and a short note says so. The note is plain
-	//! text, not a spoken line: the gossips' own rumor lines and their voices are the rumor rows' (W5.4).
-	protected void SendToMap(int playerId, notnull LF_RumorDef def)
+	//! Server: the gossip speaks the rumor's recorded line to the player, its caption shows, and the
+	//! player's map gets the heard-of place (LF_RumorVoice.Deliver). A row with no recording still
+	//! shows "You overhear the gossips" and marks the place.
+	protected void Tell(int playerId, notnull LF_RumorDef def, IEntity speaker)
 	{
-		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerManager().GetPlayerController(playerId));
-		if (controller)
-			controller.LF_SendMapKnown(def.m_sPlaceId, LF_MapKnownRules.SavedState(LF_EMapPoiKnown.HEARD));
-
-		LF_NotificationManagerComponent.NotifyPlayer(playerId, "#LF-Gossip_Title", "#LF-Gossip_Overheard", 6.0, LF_ENotificationType.INFO);
+		LF_RumorVoice.Deliver(playerId, speaker, def, "#LF-Gossip_Title", "#LF-Gossip_Overheard");
 	}
 
 	//------------------------------------------------------------------------------------------------

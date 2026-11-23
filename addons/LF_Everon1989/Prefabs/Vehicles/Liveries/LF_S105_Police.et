@@ -43,8 +43,8 @@ Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
      m_vTextColor 0.05 0.1 0.35
     }
    }
-   coords -0.9 0.84 -1.3
-   angles 0 -90 0
+   coords -0.83 0.82 -1.3
+   angles -18 -88.5 0
    scale 0.5
   }
   GenericEntity PoliceLetters_R {
@@ -79,8 +79,8 @@ Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
      m_vTextColor 0.05 0.1 0.35
     }
    }
-   coords 0.9 0.84 -1.3
-   angles 0 90 0
+   coords 0.83 0.82 -1.3
+   angles -18 88.5 0
    scale 0.5
   }
  }

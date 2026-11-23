@@ -51,3 +51,6 @@ GenericEntity Grid_slice_4411_R0 : "{4411C0DE5A1F8036}Prefabs/Props/LF_ExportOrd
  coords 282.615 0.001 75.999
  angleY -90
 }
+GenericEntity Grid_slice_4411_CraneSpot : "{897C2A6F02D75762}Prefabs/Props/LF_ExportCraneSpot.et" {
+ coords 278.499 0.022 77.503
+}

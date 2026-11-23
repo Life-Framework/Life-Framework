@@ -13,7 +13,12 @@ GenericEntity Fit_saint_philippe_butcher_butcher_chiller_1 : "{613F68B39D0A4A64}
  coords 4477.5 12.046 10776.155
  angleY -10
 }
-LF_NpcBaseEntity Fit_saint_philippe_butcher_butcher_clerk : "{8CCD224BC53CABE7}Prefabs/Characters/Npcs/Outfits/LF_Npc_StoreClerk_1.et" {
+GenericEntity Fit_saint_philippe_butcher_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
  coords 4472.976 12.039 10776.474
  angleY -100
 }

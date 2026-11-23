@@ -23,6 +23,7 @@
   "nodes": [
     { "id": "greet", "line": "greet", "options": [
       { "text": "ask", "next": "buy" },
+      { "text": "heard", "action": "HeardAnything", "param": "bar" },
       { "text": "bye", "next": "bye" } ] },
     { "id": "buy", "line": "buy", "options": [
       { "text": "why", "next": "limit" },
@@ -45,6 +46,7 @@
   },
   "replies": {
     "ask": "Do you buy cartons and vodka?",
+    "heard": "Heard anything?",
     "why": "Why only two cartons?",
     "law": "What about the law?",
     "bye": "Goodbye."
