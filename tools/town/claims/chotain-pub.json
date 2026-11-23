@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "chotain",
+  "slot": "pub",
+  "building": "b01",
+  "kit": "village-bar",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_chotain_pub.layer",
+  "kinds": [
+    "PubBar"
+  ],
+  "rows": 18,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_chotain_pub_Place"
+  },
+  "date": "2026-11-23"
+}

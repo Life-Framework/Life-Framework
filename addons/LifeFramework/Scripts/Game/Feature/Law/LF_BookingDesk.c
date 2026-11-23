@@ -175,8 +175,10 @@ class LF_BookingDesk
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: build the charge sheet and open the offer. The officer's duty and rank come from the
-	//! server's account for `officerUid`. \return "" when the offer was made, else the refusal key.
-	static string Offer(string officerUid, vector officerOrigin, vector deskOrigin, string suspectUid, IEntity officer = null, IEntity suspect = null)
+	//! server's account for `officerUid`. A signed charge sheet (#4426) passes the codes the officer ticked:
+	//! only those of the suspect's open reports are charged, and every number is still the server's.
+	//! \return "" when the offer was made, else the refusal key.
+	static string Offer(string officerUid, vector officerOrigin, vector deskOrigin, string suspectUid, IEntity officer = null, IEntity suspect = null, array<string> tickedCodes = null)
 	{
 		if (!Replication.IsServer())
 			return "#LF-BookingDesk_NoSuspect";
@@ -235,6 +237,18 @@ class LF_BookingDesk
 				if (report && !report.m_sOffence.IsEmpty())
 					offences.Insert(report.m_sOffence);
 			}
+		}
+
+		if (tickedCodes)
+		{
+			array<string> kept = {};
+			foreach (string offence : offences)
+			{
+				if (tickedCodes.Contains(offence) && !kept.Contains(offence))
+					kept.Insert(offence);
+			}
+
+			offences = kept;
 		}
 
 		array<LF_CrimeEntry> codes = {};

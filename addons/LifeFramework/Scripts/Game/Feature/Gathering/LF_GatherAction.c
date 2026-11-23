@@ -216,8 +216,8 @@ class LF_GatherAction : ScriptedUserAction
 
 	//------------------------------------------------------------------------------------------------
 	//! Hold speed factor of the user's swift-hands perk for this node's trade (#4408): 1 with no perk.
-	//! The perk store lives on the server and the host, so a remote client's hold is not sped up
-	//! (replicating it to that client is a follow-up).
+	//! A remote client reads its own perks from the owner sync (LF_PerkSync, #4525), so its hold is
+	//! as short as the server's.
 	protected float PerkSpeedFor(IEntity user)
 	{
 		string trade = FamilyJob(LF_GatherTools.JobFamily(m_Node));

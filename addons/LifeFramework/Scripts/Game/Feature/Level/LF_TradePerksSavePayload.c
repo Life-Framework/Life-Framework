@@ -1,6 +1,7 @@
 //------------------------------------------------------------------------------------------------
 //! Save section "tradeperks" (WK-W8, #4186): one LF_TradePerkRow per perk a character picked in a
-//! trade, keyed by the character's record key. Sections apply after every legacy payload, so the
+//! trade, keyed by the character's record key, then (version 2, #4525) one LF_PerkChangeRow per paid
+//! change on the once-a-week clock. Sections apply after every legacy payload, so the
 //! "characters" payload has already set the final record keys.
 //------------------------------------------------------------------------------------------------
 class LF_TradePerksSavePayload : LF_SavePayload
@@ -14,9 +15,10 @@ class LF_TradePerksSavePayload : LF_SavePayload
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! 1: the picks. 2 (#4525): the once-a-week change clock (LF_PerkChangeRow) after them.
 	override int Version()
 	{
-		return 1;
+		return 2;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -24,7 +26,9 @@ class LF_TradePerksSavePayload : LF_SavePayload
 	{
 		array<ref LF_TradePerkRow> rows = LF_TradePerks.ExportAll();
 		context.WriteValue("rows", rows);
-		LF_Debug.Log("Persistence", string.Format("saved %1 trade perk row(s)", rows.Count()));
+		array<ref LF_PerkChangeRow> changes = LF_PerkPick.ExportChanges();
+		context.WriteValue("changes", changes);
+		LF_Debug.Log("Persistence", string.Format("saved %1 trade perk row(s), %2 change stamp(s)", rows.Count(), changes.Count()));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -46,6 +50,23 @@ class LF_TradePerksSavePayload : LF_SavePayload
 
 		int kept = LF_TradePerks.ApplyAll(rows);
 		LF_Debug.Info("Persistence", string.Format("applied %1 of %2 trade perk row(s)", kept, rows.Count()));
+
+		// Version 1 had no change clock: nobody is inside a week lock, as before the restart fix.
+		array<ref LF_PerkChangeRow> changes = new array<ref LF_PerkChangeRow>();
+		if (savedVersion >= 2 && !context.ReadValue("changes", changes))
+		{
+			LF_Debug.Warn(LF_TradePerks.FEATURE, "perk change stamps failed to read, no week lock is kept");
+			changes.Clear();
+		}
+
+		foreach (LF_PerkChangeRow change : changes)
+		{
+			if (change)
+				change.m_sTrade = LF_SaveIds.Resolve(LF_SaveIds.KIND_JOB, change.m_sTrade);
+		}
+
+		int stamps = LF_PerkPick.ApplyChanges(changes);
+		LF_Debug.Info("Persistence", string.Format("applied %1 of %2 perk change stamp(s)", stamps, changes.Count()));
 		return true;
 	}
 

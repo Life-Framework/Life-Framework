@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{2A3AEEABF6EC1239}Sounds/Dialogue/dispatcher/Dialogue_dispatcher.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

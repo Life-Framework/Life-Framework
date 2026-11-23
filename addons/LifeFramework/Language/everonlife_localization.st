@@ -3430,6 +3430,111 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You can't cover {currency:sym}%1, so you take the time."
      Comment "Toast to the suspect: cash and bank fall short of the fine; they go to the cell. %1 = the fine in dollars."
     }
+    CustomStringTableItem "{C7F8DEA56AF6FF3E}" {
+     Id "LF-ChargeSheet_Capped"
+     Target_en_us "Your rank limits this fine to {currency:sym}%1."
+     Comment "Note under the total when the rank cap cut the fine. %1 = the cap in dollars."
+    }
+    CustomStringTableItem "{B8446036CAFF4715}" {
+     Id "LF-ChargeSheet_Close"
+     Target_en_us "Close"
+     Comment "Button: put the charge sheet away unsigned."
+    }
+    CustomStringTableItem "{69E3DA5CDB56BD12}" {
+     Id "LF-ChargeSheet_Minutes"
+     Target_en_us "%1 min"
+     Comment "Time on the charge sheet. %1 = minutes."
+    }
+    CustomStringTableItem "{C508E98273CBBFC9}" {
+     Id "LF-ChargeSheet_Money"
+     Target_en_us "{currency:sym}%1"
+     Comment "Money amount on the charge sheet. %1 = dollars."
+    }
+    CustomStringTableItem "{66067AFF1E8DAEE8}" {
+     Id "LF-ChargeSheet_NoSheet"
+     Target_en_us "There is no open charge sheet. Book the suspect again."
+     Comment "Toast: the signature came with no open sheet."
+    }
+    CustomStringTableItem "{D845C156A3BF5987}" {
+     Id "LF-ChargeSheet_None"
+     Target_en_us "None"
+     Comment "Foot of the charge sheet: no fine or no time."
+    }
+    CustomStringTableItem "{C9A056B424C32FB9}" {
+     Id "LF-ChargeSheet_NoneTicked"
+     Target_en_us "Tick at least one charge before you sign."
+     Comment "Toast and note: nothing ticked on the sheet."
+    }
+    CustomStringTableItem "{835F52B991AB4548}" {
+     Id "LF-ChargeSheet_NothingYet"
+     Target_en_us "Nothing is charged until you sign."
+     Comment "Note under the total before anything is ticked."
+    }
+    CustomStringTableItem "{F15EDBFA8B381B38}" {
+     Id "LF-ChargeSheet_OverCap"
+     Target_en_us "Over cap"
+     Comment "Greyed row status: the rank fine cap is already reached. %1 = the cap in dollars."
+    }
+    CustomStringTableItem "{36EB17C89AD9A18C}" {
+     Id "LF-ChargeSheet_Pick"
+     Target_en_us "Tick the charges for this booking, then sign."
+     Comment "Line under the charge sheet heading."
+    }
+    CustomStringTableItem "{E82CC390D85B24C1}" {
+     Id "LF-ChargeSheet_ReadyNote"
+     Target_en_us "Sign to offer the suspect the fine or the time."
+     Comment "Note under the total once a charge is ticked."
+    }
+    CustomStringTableItem "{77A83752D2D25124}" {
+     Id "LF-ChargeSheet_RowBoth"
+     Target_en_us "{currency:sym}%1, %2 min"
+     Comment "Row status: the charge fine and time. %1 = dollars, %2 = minutes."
+    }
+    CustomStringTableItem "{1C7B8A037C80487D}" {
+     Id "LF-ChargeSheet_RowFine"
+     Target_en_us "{currency:sym}%1"
+     Comment "Row status: a fine-only charge. %1 = dollars."
+    }
+    CustomStringTableItem "{BE3A5D08F999C233}" {
+     Id "LF-ChargeSheet_RowJail"
+     Target_en_us "Jail, %1 min"
+     Comment "Row status: a jail-only charge. %1 = minutes."
+    }
+    CustomStringTableItem "{70A741E7B4D11E90}" {
+     Id "LF-ChargeSheet_Sign"
+     Target_en_us "Sign"
+     Comment "Button: sign the charge sheet and send the booking offer."
+    }
+    CustomStringTableItem "{C4B5F5A93D276780}" {
+     Id "LF-ChargeSheet_Stacked"
+     Target_en_us "Stacked"
+     Comment "Greyed row status: another ticked charge of the same group counts instead."
+    }
+    CustomStringTableItem "{0891C336368D2A53}" {
+     Id "LF-ChargeSheet_Tick"
+     Target_en_us "Tick"
+     Comment "Button on an open charge row: add it to the sheet."
+    }
+    CustomStringTableItem "{946CEC656180D415}" {
+     Id "LF-ChargeSheet_Title"
+     Target_en_us "Charge sheet"
+     Comment "Heading of the charge sheet paper the booking officer signs."
+    }
+    CustomStringTableItem "{6A50B06BBA8655E8}" {
+     Id "LF-ChargeSheet_TotalFine"
+     Target_en_us "Total fine"
+     Comment "Foot of the charge sheet: the fine the sheet asks for."
+    }
+    CustomStringTableItem "{E3534A731156B2B9}" {
+     Id "LF-ChargeSheet_TotalTime"
+     Target_en_us "Time in the cell"
+     Comment "Foot of the charge sheet: the time the sheet asks for."
+    }
+    CustomStringTableItem "{45572A2EE371E594}" {
+     Id "LF-ChargeSheet_Untick"
+     Target_en_us "Untick"
+     Comment "Button on a ticked charge row: take it off the sheet."
+    }
     CustomStringTableItem "{294B1C333502C014}" {
      Id "LF-Chess_BlackInCheck"
      Target_en_us "Black to move, in check"
@@ -4052,42 +4157,42 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A636049B1615FBC6}" {
      Id "LF-Credits_132"
-     Target_en_us "Dockworkers' four lines"
+     Target_en_us "Dispatcher's 27 radio lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{16186E0A5EB3A7AA}" {
      Id "LF-Credits_133"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Delgado Stephane\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Eric - Smooth, Trustworthy\" from the ElevenLabs premade voices. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FE189EB428AF142A}" {
      Id "LF-Credits_134"
-     Target_en_us "Passers-by's four lines"
+     Target_en_us "Dockworkers' four lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4D04FB45B8DBCE90}" {
      Id "LF-Credits_135"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Sylvain - International english\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Delgado Stephane\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{282E8AC7953417F3}" {
      Id "LF-Credits_136"
-     Target_en_us "Relocated walkers' four lines"
+     Target_en_us "Passers-by's four lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A096E2717EAFA002}" {
      Id "LF-Credits_137"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Real Jeremy - Conversational\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Sylvain - International english\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8B2E6676A5FC762}" {
      Id "LF-Credits_138"
-     Target_en_us "Anselme's nine lines"
+     Target_en_us "Relocated walkers' four lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4165A33B0CDDFEFA}" {
      Id "LF-Credits_139"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Bacbuc - Audiobooks\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Real Jeremy - Conversational\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CA6300164F63F92D}" {
@@ -4097,52 +4202,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{ADFB88278344FB5B}" {
      Id "LF-Credits_140"
-     Target_en_us "Marius Caron's nine lines"
+     Target_en_us "Anselme's nine lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{856667E0087DE2BB}" {
      Id "LF-Credits_141"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alex - Warm, Empathetic, Confident\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Bacbuc - Audiobooks\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A8A3DCF36786BA71}" {
      Id "LF-Credits_142"
-     Target_en_us "Pierre Vasseur's"
+     Target_en_us "Marius Caron's nine lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{740D77BACEA78D9C}" {
      Id "LF-Credits_143"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Kevin Nitcheu\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alex - Warm, Empathetic, Confident\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3CA96CAAEC9AB85D}" {
      Id "LF-Credits_144"
-     Target_en_us "Lucien Roux's"
+     Target_en_us "Pierre Vasseur's"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{66D2E150BBB2BBDF}" {
      Id "LF-Credits_145"
-     Target_en_us "ElevenLabs text-to-speech, voice \"JP - Social media\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Kevin Nitcheu\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{92C2B4F451409735}" {
      Id "LF-Credits_146"
-     Target_en_us "Shopkeepers' five lines"
+     Target_en_us "Lucien Roux's"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E884C0110C5B632F}" {
      Id "LF-Credits_147"
-     Target_en_us "ElevenLabs text-to-speech, voice \"James - French Podcast\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"JP - Social media\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{427FC7360D73D3A9}" {
      Id "LF-Credits_148"
-     Target_en_us "Store clerks' five role lines"
+     Target_en_us "Shopkeepers' five lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CBA36637CDF4AE7F}" {
      Id "LF-Credits_149"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Jamie - French Accent & Charismatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"James - French Podcast\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1E61840F28B6ADBC}" {
@@ -4152,52 +4257,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{D71B88C351B4EA69}" {
      Id "LF-Credits_150"
-     Target_en_us "Bank teller's five role lines"
+     Target_en_us "Store clerks' five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CDA2F516388DB3A1}" {
      Id "LF-Credits_151"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Nicolas - French English Male\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Jamie - French Accent & Charismatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A4F5C98AFC7B32E9}" {
      Id "LF-Credits_152"
-     Target_en_us "Desk officer's five role lines"
+     Target_en_us "Bank teller's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6D1FD16D6C772E09}" {
      Id "LF-Credits_153"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Benjamin - Deep and Calm\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Nicolas - French English Male\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1519D7ABE5844759}" {
      Id "LF-Credits_154"
-     Target_en_us "Clinic doctor's five role lines"
+     Target_en_us "Desk officer's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{312C6E9E98AFEA2C}" {
      Id "LF-Credits_155"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Antoine - Articulate, Calm and Bright\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Benjamin - Deep and Calm\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B4E1994EB6122A72}" {
      Id "LF-Credits_156"
-     Target_en_us "Mechanics' five role lines"
+     Target_en_us "Clinic doctor's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{E9299E95D9B8F174}" {
      Id "LF-Credits_157"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Loic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Antoine - Articulate, Calm and Bright\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4444E26E9DCF449C}" {
      Id "LF-Credits_158"
-     Target_en_us "The fence's five role lines"
+     Target_en_us "Mechanics' five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AC305FCEA4FFD18B}" {
      Id "LF-Credits_159"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Lucas - Deep, Raspy and Natural\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Loic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{59CAD5C15A66EDA7}" {
@@ -4207,52 +4312,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{0625D39270A113DC}" {
      Id "LF-Credits_160"
-     Target_en_us "Town civilians' five role lines"
+     Target_en_us "The fence's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6A3DD60E0145C890}" {
      Id "LF-Credits_161"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Eliot - Relaxed & Casual\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Lucas - Deep, Raspy and Natural\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09BDBEC3C3443456}" {
      Id "LF-Credits_162"
-     Target_en_us "The market trader's five role lines"
+     Target_en_us "Town civilians' five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0AB81D75DD0A7FCC}" {
      Id "LF-Credits_163"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Nicolas Estrem - Mature\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Eliot - Relaxed & Casual\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C489B5F7558670CF}" {
      Id "LF-Credits_164"
-     Target_en_us "Night-shift worker's spoken lines"
+     Target_en_us "The market trader's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2FA0C88C63E929C7}" {
      Id "LF-Credits_165"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Nicolas Estrem - Mature\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D24D05840A3D9820}" {
      Id "LF-Credits_166"
-     Target_en_us "Old man Gaspard Lenoir's six lines"
+     Target_en_us "Night-shift worker's spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{473EC6052D855BB0}" {
      Id "LF-Credits_167"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4ED77DE7DEE2573C}" {
      Id "LF-Credits_168"
-     Target_en_us "Go-between Hugo Valmy's five spoken lines"
+     Target_en_us "Old man Gaspard Lenoir's six lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0774CCE82D802254}" {
      Id "LF-Credits_169"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD56C627EA2AD519}" {
@@ -4262,52 +4367,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6FDBFD431F29A691}" {
      Id "LF-Credits_170"
-     Target_en_us "Tally clerk Marcel Brun's five spoken lines"
+     Target_en_us "Go-between Hugo Valmy's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{24B6F60FC64E50FE}" {
      Id "LF-Credits_171"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Antonin - Warm, Unsettling, Elegant\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B3125F791403A21}" {
      Id "LF-Credits_172"
-     Target_en_us "Barkeeper Josselin Vidal's five spoken lines"
+     Target_en_us "Tally clerk Marcel Brun's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6DEF465ED9803D1A}" {
      Id "LF-Credits_173"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Hank Harvey - Gruff, Rugged and Wise\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Antonin - Warm, Unsettling, Elegant\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{331934ECDCED4E47}" {
      Id "LF-Credits_174"
-     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Barkeeper Josselin Vidal's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B9BF5DC2926087D1}" {
      Id "LF-Credits_175"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Hank Harvey - Gruff, Rugged and Wise\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CC2101DE9FC8F7B8}" {
      Id "LF-Credits_176"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C9C86A5A1ED40DCE}" {
      Id "LF-Credits_177"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8A4563FF1C5E590F}" {
      Id "LF-Credits_178"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FC189AF5F7BE2CC}" {
      Id "LF-Credits_179"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3A24A564BBC40F8F}" {
@@ -4322,47 +4427,47 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{A0A7AF015F2F74D4}" {
      Id "LF-Credits_181"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0D1A861CFC75EB60}" {
      Id "LF-Credits_182"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{861D6EE9C532FE97}" {
      Id "LF-Credits_183"
-     Target_en_us "Michael Hansen / Rhasspy"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FD0F462ADB68D02E}" {
      Id "LF-Credits_184"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{00BFA04619043DFC}" {
      Id "LF-Credits_185"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
+     Target_en_us "Michael Hansen / Rhasspy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{90696CB2BFCA919F}" {
      Id "LF-Credits_186"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{13C921E553E1333A}" {
      Id "LF-Credits_187"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FD2D69733781B26}" {
      Id "LF-Credits_188"
-     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Target_en_us "FONTS AND LOGO"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{413CD254F961C2CC}" {
      Id "LF-Credits_189"
-     Target_en_us "LIVERIES"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9B225E9F684B34BE}" {
@@ -4372,36 +4477,46 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{FB7F01DA30ED5462}" {
      Id "LF-Credits_190"
-     Target_en_us "LF_UAZ469_Police"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{20D09EC5580FB73B}" {
      Id "LF-Credits_191"
-     Target_en_us "LF_S105_Police"
+     Target_en_us "LIVERIES"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{EB138655CB017E1B}" {
      Id "LF-Credits_192"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_UAZ469_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{ADAAD0ACB3D62D04}" {
      Id "LF-Credits_193"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "LF_S105_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4BC652FE250FB8F9}" {
      Id "LF-Credits_194"
-     Target_en_us "LF_VodkaBottle_BCR"
+     Target_en_us "CONTRABAND LABELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B19D39615671DC17}" {
      Id "LF-Credits_195"
-     Target_en_us "WORK-SITE SOUNDS"
+     Target_en_us "LF_CigaretteCarton_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{031A67A6561231CB}" {
      Id "LF-Credits_196"
+     Target_en_us "LF_VodkaBottle_BCR"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{41B72E8D01F8E68E}" {
+     Id "LF-Credits_197"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{899288C00EFEEAC6}" {
+     Id "LF-Credits_198"
      Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
@@ -12356,6 +12471,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Payphone_Title"
      Target_en_us "Payphone"
      Comment "Title of the payphone toast."
+    }
+    CustomStringTableItem "{7C9ACFE2F607ADE4}" {
+     Id "LF-PerkPick_Change"
+     Target_en_us "Change to %1 (%2), %3"
+     Comment "Counter row: paid perk change. %1 = perk, %2 = trade, %3 = fee (#4416)"
+    }
+    CustomStringTableItem "{CE43CE20BD57EFD8}" {
+     Id "LF-PerkPick_ChangeAny"
+     Target_en_us "Change to %1, %2"
+     Comment "Counter row before the client knows the trade: paid change. %1 = perk, %2 = fee (#4416)"
+    }
+    CustomStringTableItem "{9E6751E5C4E11EAB}" {
+     Id "LF-PerkPick_Changed"
+     Target_en_us "Perk changed. %1 paid at the counter."
+     Comment "Toast: paid perk change done. %1 = fee (#4416)"
+    }
+    CustomStringTableItem "{E84CEFF083318DA3}" {
+     Id "LF-PerkPick_Failed"
+     Target_en_us "The clerk could not record that. Try again."
+     Comment "Toast: pick failed (#4416)"
+    }
+    CustomStringTableItem "{1632EF2B9AA45FCB}" {
+     Id "LF-PerkPick_NoMoney"
+     Target_en_us "A perk change costs %1 in cash. You do not have enough."
+     Comment "Toast: refused change, short of cash. %1 = fee (#4416)"
+    }
+    CustomStringTableItem "{534418E6E7F31E1B}" {
+     Id "LF-PerkPick_NotOffered"
+     Target_en_us "That perk is not open to you yet. Picks open at trade levels 10 and 20."
+     Comment "Toast: refused pick (#4416)"
+    }
+    CustomStringTableItem "{604C99102F4E69D2}" {
+     Id "LF-PerkPick_Perk_DoubleYield"
+     Target_en_us "Double yield"
+     Comment "Perk name (#4416)"
+    }
+    CustomStringTableItem "{61E90E5710E9F92B}" {
+     Id "LF-PerkPick_Perk_LightTouch"
+     Target_en_us "Light touch"
+     Comment "Perk name (#4416)"
+    }
+    CustomStringTableItem "{3A444754F3E9577A}" {
+     Id "LF-PerkPick_Perk_SwiftHands"
+     Target_en_us "Swift hands"
+     Comment "Perk name (#4416)"
+    }
+    CustomStringTableItem "{EF810CC51A4FD0EC}" {
+     Id "LF-PerkPick_Take"
+     Target_en_us "Take %1 (%2)"
+     Comment "Counter row: free perk pick. %1 = perk, %2 = trade (#4416)"
+    }
+    CustomStringTableItem "{761DBAD47C3A4607}" {
+     Id "LF-PerkPick_TakeAny"
+     Target_en_us "Take %1"
+     Comment "Counter row before the client knows the trade. %1 = perk (#4416)"
+    }
+    CustomStringTableItem "{C44E243F17A27F8E}" {
+     Id "LF-PerkPick_Taken"
+     Target_en_us "Perk taken. It works from your next shift."
+     Comment "Toast: first perk pick done (#4416)"
+    }
+    CustomStringTableItem "{E670AFD3FEE77EB8}" {
+     Id "LF-PerkPick_Title"
+     Target_en_us "Labour office"
+     Comment "Toast title at the labour office counter (#4416)"
+    }
+    CustomStringTableItem "{3149C2DAEBE9569F}" {
+     Id "LF-PerkPick_WeekLock"
+     Target_en_us "You already changed this perk this week. Come back next week."
+     Comment "Toast: refused change inside the week (#4416)"
     }
     CustomStringTableItem "{3CD776C95F970C59}" {
      Id "LF-Phone_Connected"
