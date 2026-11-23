@@ -4909,6 +4909,36 @@ StringTable {
      Target_en_us "Hugo Valmy"
      Comment "Saint-Philippe resident shipment_go_between: display name (#3804)."
     }
+    CustomStringTableItem "{DC33F8BD1CB4065B}" {
+     Id "LF-Resident_shop_baker_Name"
+     Target_en_us "Remy Dufour"
+     Comment "Saint-Philippe baker (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{34C483FECB34BE5F}" {
+     Id "LF-Resident_shop_barber_Name"
+     Target_en_us "Fabrice Lenoir"
+     Comment "Saint-Philippe barber (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{A413A4B00A88A089}" {
+     Id "LF-Resident_shop_butcher_Name"
+     Target_en_us "Gilbert Roux"
+     Comment "Saint-Philippe butcher (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{21AB60B7900182C7}" {
+     Id "LF-Resident_shop_newsagent_Name"
+     Target_en_us "Armand Pons"
+     Comment "Saint-Philippe newsagent (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{04F1BCBDCDAEBF72}" {
+     Id "LF-Resident_shop_pharmacist_Name"
+     Target_en_us "Etienne Garnier"
+     Comment "Saint-Philippe pharmacist (shop cast, #4475): display name."
+    }
+    CustomStringTableItem "{A4D1F10E619D14CE}" {
+     Id "LF-Resident_shop_postmaster_Name"
+     Target_en_us "Noel Vasseur"
+     Comment "Saint-Philippe postmaster (shop cast, #4475): display name."
+    }
     CustomStringTableItem "{9FE5B987FD8FD9D2}" {
      Id "LF-Resident_store_clerk_Name"
      Target_en_us "Pierre Vasseur"

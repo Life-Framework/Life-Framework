@@ -1,0 +1,24 @@
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ ID "218B26FE5AF4892A"
+ components {
+  SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
+   Identity Identity "{5584CBC6363C648B}" {
+    Name "Fabrice"
+    Surname "Lenoir"
+   }
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{86E0117B630414B5}Prefabs/Characters/Uniforms/Shirt_CottonShirt_01/Shirt_CottonShirt_01_V2.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+ }
+}
