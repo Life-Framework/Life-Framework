@@ -13986,6 +13986,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Range"
      Comment "Title of the range toasts (Feature/Range)."
     }
+    CustomStringTableItem "{8B1F4E70C2A9D356}" {
+     Id "LF-RankFleet_NeedsRank"
+     Target_en_us "That car is for the rank of %1 and up."
+     Comment "Toast (PO-R1, #4205): the police car pool refused a car above the officer's rank. %1 = the title of the lowest rank that draws it."
+    }
+    CustomStringTableItem "{D3A6075E19F482CB}" {
+     Id "LF-RankFleet_NotIssued"
+     Target_en_us "The car pool has no car for you."
+     Comment "Toast (PO-R1, #4205): the police car pool has no car on its table for this rank, or the car is not one it issues."
+    }
     CustomStringTableItem "{5985DB962913E1DE}" {
      Id "LF-Rank_EscortDenied"
      Target_en_us "Your rank cannot escort"
