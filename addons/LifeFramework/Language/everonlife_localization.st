@@ -16503,6 +16503,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "No vehicle of yours in reach"
      Comment "Toast when U is pressed with no keyed vehicle near."
     }
+    CustomStringTableItem "{4466EFBBF7C1275F}" {
+     Id "LF-VehicleSearch_ClassAlcohol"
+     Target_en_us "alcohol"
+     Comment "Contraband class in a stop search (#4196): untaxed vodka and spirits."
+    }
+    CustomStringTableItem "{1C42F4FE39BCD2FB}" {
+     Id "LF-VehicleSearch_ClassLine"
+     Target_en_us "%1 %2"
+     Comment "One class in a stop-search find (#4196). %1 = units, %2 = the class name."
+    }
+    CustomStringTableItem "{360DF5FF0A09FDAB}" {
+     Id "LF-VehicleSearch_ClassNarcotics"
+     Target_en_us "narcotics"
+     Comment "Contraband class in a stop search (#4196): drugs."
+    }
+    CustomStringTableItem "{A7EBBB8DE2636103}" {
+     Id "LF-VehicleSearch_ClassTobacco"
+     Target_en_us "tobacco"
+     Comment "Contraband class in a stop search (#4196): cigarette cartons."
+    }
+    CustomStringTableItem "{9F64D10C6C809AF4}" {
+     Id "LF-VehicleSearch_ClassUntaxed"
+     Target_en_us "untaxed goods"
+     Comment "Contraband class in a stop search (#4196): other goods with no tax stamp."
+    }
+    CustomStringTableItem "{8000AB7071970A0B}" {
+     Id "LF-VehicleSearch_Found"
+     Target_en_us "Found in the trunk: %1. Search again to seize it."
+     Comment "Toast to the officer: a stop search found contraband (#4196). %1 = units by class, e.g. '2 tobacco, 1 alcohol'."
+    }
+    CustomStringTableItem "{1757B26C4D55D5D3}" {
+     Id "LF-VehicleSearch_Seized"
+     Target_en_us "Seized %1 contraband item(s) from the car"
+     Comment "Toast to the officer: the second search seized the goods it found (#4196). %1 = units seized."
+    }
     CustomStringTableItem "{2606D4AE3E7A4FE0}" {
      Id "LF-Vehicle_BankShort"
      Target_en_us "Cars are paid from your bank account, not from cash. Deposit cash at an ATM, then buy."
