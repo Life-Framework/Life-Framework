@@ -113,15 +113,21 @@
   writes (`LF_PrefabSlots_Everon1989.conf`); the core slot file lists none, so `LF_OrgFlagWall.SamplePrefab`
   reads the layered slot config itself, and the gang-pole card reuses it. Flag names are neutral core
   strings `LF-OrgFlag_Name_01..20` that the pack overrides with the real names. Placed in a grid cell
-  (`flag-wall`); the registry placement is a later card. WORLD `org/flag-wall-actions`, pack
+  (`flag-wall`); the Saint-Philippe registry placement is below (#4457 follow-up). WORLD `org/flag-wall-actions`, pack
   `everon/flag-wall-slots`.
 - 🧪 (2026-11-23, #4457, gangs C14) **Registrar voice.** The pack's registrar, Gaspard Perrin (`LF_Npc_Townsfolk_Registrar.et`,
   dialogue `registrar`, ElevenLabs, six lines), talks like any dialogue NPC: the founding line "Name, flag, and two hundred
   fifty dollars." and how flags work. After a pick at the flag wall `LF_OrgFlagWall.PickBy` finds the registrar within 25 m
   and `LF_Dialogue.Announce`s his `for_key` line for the toast key: `PICKED` says "That is your flag", `HELD` ("another crew
   flies it") says "That one is taken". Other results stay toast-only; no registrar near logs `[LFDebug:OrgFlagWall]` and the
-  toast stands alone. The voice manifest is `tools/assets/dialogue/registrar/elevenlabs.json`. Placing him at the registry
-  desk is a town pass, not done here. Pack `everon/registrar`.
+  toast stands alone. The voice manifest is `tools/assets/dialogue/registrar/elevenlabs.json`. Pack `everon/registrar`.
+- 🧪 (2026-11-24, #4457 follow-up) **Registry placement.** The org slot of Saint-Philippe (`tools/town/kits/org.json`, cabin b49)
+  now holds the registrar (`Fit_saint_philippe_org_registrar`, an `LF_NpcBaseEntity` standing behind the chair, facing the desk) and the
+  flag wall (`Fit_saint_philippe_org_flag_wall`, on the open ground against the cabin's south wall; its twenty samples fill
+  the grass in front of it). The wall board is about 2.5 m from the registrar and its farthest sample under 8 m, inside the 25 m a pick is voiced from. His Talk
+  context is 2.4 m (counter staff, `validate-action-reach`) so the prompt shows across the desk. Session proof
+  `agent-box/session.mjs registrar-proof` (talk line `[LFDebug:Dialogue] player 1 talks to 'registrar'`, then the pick logs
+  `'registrar' says 'picked'` and the client plays `registrar/picked`).
 
 ### Houses — `Feature/Houses/`
 - ✅ **Init runs** (2026-11-17 property review, WORLD `houses/identifier-init`): `LF_HouseManagerComponent`

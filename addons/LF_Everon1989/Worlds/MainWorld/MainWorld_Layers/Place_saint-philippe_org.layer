@@ -56,3 +56,11 @@ GenericEntity Fit_saint_philippe_org_registry_sign : "{884DF4029C8307DB}Prefabs/
  coords 4503.489 17.8 10621.953
  angleY 177
 }
+LF_NpcBaseEntity Fit_saint_philippe_org_registrar : "{A93B5D07E21C4F86}Configs/Npcs/LF_Npc_Townsfolk_Registrar.et" {
+ coords 4502.028 16.451 10623.077
+ angleY -3
+}
+GenericEntity Fit_saint_philippe_org_flag_wall : "{E0EE8DD048907D65}Prefabs/Organizations/LF_OrgFlagWall.et" {
+ coords 4500.427 16.185 10621.14
+ angleY -3
+}
