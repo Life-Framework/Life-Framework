@@ -365,6 +365,14 @@ from <ref>`). The string-table driver refuses a side it cannot parse whole
 and writes git's line merge with exit 1 instead. `merge-content-selftest`
 merges real branches and compares the result byte for byte (#1154, #1161).
 
+The credits rows are generated, numbered in `docs/credits.md` order, so two branches that each add an entry write the
+same `LF-Credits_<n>` Id with different text (#4668). The string-table driver (and the conf driver
+that unions the same table) drops those rows from all three sides, merges the rest, and regenerates the rows from the
+merged `docs/credits.md`, read at the base, ours and theirs commits because git merges it after the table
+(`tools/merge/credits-rows.mjs`). `LF_CreditsData.c` has its own driver (`lf-credits-data`) that does the same; when both
+branches write byte-identical copies git takes the file without a driver, so `wt ship` re-runs `tools\cli credits` after
+it merges main and commits any change. `credits-merge-selftest` merges and rebases two real branches.
+
 Tests carry `[LF_TestInfo]`; there is no registry and no `lf-regen-tests` driver (#2618). A child process costs about
 230 ms on a loaded laptop, so a driver never spawns one per file. `LF_MERGE_DRIVER_TRACE=<file>` appends `<ms> <command>`
 per child process, which is how to see where a slow merge goes; `merge-drivers-selftest` caps the git children at 12,
