@@ -1,0 +1,20 @@
+GenericEntity : "{5661E2D1BF64BB2C}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_R02_blue.et" {
+ ID "61404E039965A4EF"
+ components {
+  MeshObject "{4B42E716914465B9}" {
+   Materials {
+    MaterialAssignClass "{64F09BE817C4B4A7}" {
+     SourceMaterial "UAZ469_Body"
+     AssignedMaterial "{9E9B799E5FEB65D1}Assets/Liveries/UAZ469/LF_UAZ469_Rebel.emat"
+    }
+   }
+  }
+  SlotManagerComponent "{5AD4FD050A086870}" {
+   Slots {
+    RegisteringComponentSlotInfo DoorTop {
+     Prefab "{2FC52477BCAD1188}Prefabs/Vehicles/Liveries/UAZ469_Rebel_door_R02_top.et"
+    }
+   }
+  }
+ }
+}
