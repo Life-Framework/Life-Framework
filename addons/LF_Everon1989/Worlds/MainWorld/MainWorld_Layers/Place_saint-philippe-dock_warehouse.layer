@@ -94,20 +94,3 @@ GenericEntity Fit_saint_philippe_dock_warehouse_export_board : "{4411C0DE5A1F803
  coords 4459.017 2.153 11090.929
  angleY -60
 }
-GenericEntity Fit_saint_philippe_dock_warehouse_export_crane {
- components {
-  LF_ExportOrderCraneComponent "{4412C2A4E0B1D001}" {
-   m_sPlaceId "dock"
-  }
- }
- coords 4407.995 1.594 11111.957
- angleY -60
-}
-GenericEntity Fit_saint_philippe_dock_warehouse_export_pallet : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
- coords 4409.995 1.604 11115.421
- angleY -60
-}
-GenericEntity Fit_saint_philippe_dock_warehouse_export_pallet_crate : "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et" {
- coords 4409.995 1.744 11115.421
- angleY -60
-}
