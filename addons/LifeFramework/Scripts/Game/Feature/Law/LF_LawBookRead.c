@@ -84,9 +84,9 @@ class LF_LawBookRead
 			return WidgetManager.Translate("#LF-LawBook_LineJail", name, minutes.ToString());
 
 		if (minutes > 0)
-			return WidgetManager.Translate("#LF-LawBook_LineFineTime", name, fine.ToString(), minutes.ToString());
+			return LF_Terms.Text("#LF-LawBook_LineFineTime", name, fine.ToString(), minutes.ToString());
 
-		return WidgetManager.Translate("#LF-LawBook_LineFine", name, fine.ToString());
+		return LF_Terms.Text("#LF-LawBook_LineFine", name, fine.ToString());
 	}
 
 	//------------------------------------------------------------------------------------------------

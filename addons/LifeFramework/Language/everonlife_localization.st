@@ -9176,12 +9176,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9DDDB9A7239FF396}" {
      Id "LF-LawBook_LineFine"
-     Target_en_us "%1  $%2"
+     Target_en_us "%1  {currency:sym}%2"
      Comment "Law-book page line for a code with a fine and no time: %1 code name, %2 fine in dollars."
     }
     CustomStringTableItem "{81090FA397167E8F}" {
      Id "LF-LawBook_LineFineTime"
-     Target_en_us "%1  $%2, %3 min"
+     Target_en_us "%1  {currency:sym}%2, %3 min"
      Comment "Law-book page line: %1 code name, %2 fine in dollars, %3 time in minutes."
     }
     CustomStringTableItem "{F8582E4A8E0A84F1}" {
