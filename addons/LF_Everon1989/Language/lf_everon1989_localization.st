@@ -1889,6 +1889,11 @@ StringTable {
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
     }
+    CustomStringTableItem "{A5E941CBEC9A7E3D}" {
+     Id "LF-Dialogue_NightShift_SayHeard"
+     Target_en_us "Heard anything?"
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
     CustomStringTableItem "{88229E39461B49AD}" {
      Id "LF-Dialogue_NightShift_SayMove"
      Target_en_us "How was the move?"
