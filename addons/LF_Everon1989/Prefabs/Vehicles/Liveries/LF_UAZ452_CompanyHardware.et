@@ -1,0 +1,87 @@
+Vehicle : "{A003493D32140960}Prefabs/Vehicles/Wheeled/UAZ452/UAZ452_cargo_CIV_base.et" {
+ ID "20F47E1461656C38"
+ components {
+  MeshObject "{51DAA09FEFBFC0E7}" {
+   Materials {
+    MaterialAssignClass "{6502DC1DCDB16EF9}" {
+     SourceMaterial "uaz452_body"
+     AssignedMaterial "{C5F58428A41503EE}Assets/Liveries/UAZ452/LF_UAZ452_CompanyHardware.emat"
+    }
+   }
+  }
+ }
+ {
+  GenericEntity CompanyLetters_L {
+   ID "1110EB381D7CBF8A"
+   components {
+    Hierarchy "{AC7E405D24B0FF65}" {
+    }
+    MeshObject "{7AC0F3514FCD4D2D}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{FB922C8F9C19C185}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{88116C0D4650F853}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{32E137E7F9E3BDAC}" {
+     m_sSignId "livery_company_hardware"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.5 0.09 0.03
+     m_vPaintColor 0.95 0.93 0.86
+     m_vTextColor 0.5 0.09 0.03
+    }
+   }
+   coords -0.98 1.12 -0.9
+   angles 0 -90 0
+   scale 0.7
+  }
+  GenericEntity CompanyLetters_R {
+   ID "2B0D191272640F01"
+   components {
+    Hierarchy "{FFA8E65071BDE38D}" {
+    }
+    MeshObject "{ADDBBBBCB05CFA3A}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{BF32738D50A84F01}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{8DEE14B34285EA8B}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{A4F45D1632EE1FA5}" {
+     m_sSignId "livery_company_hardware"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.5 0.09 0.03
+     m_vPaintColor 0.95 0.93 0.86
+     m_vTextColor 0.5 0.09 0.03
+    }
+   }
+   coords 0.98 1.12 -0.9
+   angles 0 90 0
+   scale 0.7
+  }
+ }
+}
