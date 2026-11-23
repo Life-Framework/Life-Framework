@@ -1,0 +1,35 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "EC53BEAF704F0354"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    CustomAttributes {
+     PreviewRenderAttributes "{3D8C4E2B9A1F6071}" {
+      CameraPreset Front
+      CameraOrbitAngles -35 30 0
+      CameraDistanceToItem 0.55
+      FOV 10
+     }
+    }
+    ItemDisplayName UIInfo "{5222EB4D07D865FA}" {
+     Name "#LF-Item_ContainerNineKey_Name"
+     Description "#LF-Item_ContainerNineKey_Desc"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes "{3D8C4E2B9A1F6072}" {
+     Weight 0.05
+     SizeSetupStrategy Volume
+     ItemVolume 113
+     RestingUP Up
+     RestingAdditiveRotationLS 0 0 0
+     RestingAdditiveOffsetLS 0 0 -0.008
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{1A9AD5792903B6F0}Assets/Items/Keys/HouseKey.xob"
+  }
+ }
+}

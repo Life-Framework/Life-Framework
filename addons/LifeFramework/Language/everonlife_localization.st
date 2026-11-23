@@ -4975,6 +4975,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
      Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
     }
+    CustomStringTableItem "{3982603FE3CADC9F}" {
+     Id "LF-Dialogue_FeeFailed"
+     Target_en_us "Not now. Your pockets are full. Your money is still yours."
+     Comment "NPC caption: the item could not be handed over (no room); the fee was given back (#4381)."
+    }
+    CustomStringTableItem "{A6F453B61D373DD7}" {
+     Id "LF-Dialogue_FeeHeld"
+     Target_en_us "You already have one. Keep your money."
+     Comment "NPC caption: the player already carries the item a dialogue fee buys; nothing was taken (#4381)."
+    }
+    CustomStringTableItem "{6BEE27F424522CB8}" {
+     Id "LF-Dialogue_FeePaid"
+     Target_en_us "Paid. Here it is."
+     Comment "NPC caption after a dialogue fee is paid and the item handed over; a dialogue voices it with a line whose for_key is this key (#4381)."
+    }
+    CustomStringTableItem "{664E7189E2645BDB}" {
+     Id "LF-Dialogue_FeePaidToast"
+     Target_en_us "You paid %1 in cash."
+     Comment "Toast after paying an NPC's fee in a conversation. %1 is the fee, formatted as money (#4381)."
+    }
+    CustomStringTableItem "{A156B3598A7D9B80}" {
+     Id "LF-Dialogue_FeeShort"
+     Target_en_us "That is not enough. Come back with the full amount."
+     Comment "NPC caption: the player picked a paid reply but carries less cash than the fee; nothing was taken (#4381)."
+    }
+    CustomStringTableItem "{6D96E2F833B5BC10}" {
+     Id "LF-Dialogue_FeeTitle"
+     Target_en_us "Payment"
+     Comment "Toast title after paying an NPC's fee in a conversation (#4381)."
+    }
     CustomStringTableItem "{D472603DD9705158}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
      Target_en_us "This is the only fuel in town, friend. Gas at the pumps, maps and snacks in here."
