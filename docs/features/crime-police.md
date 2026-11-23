@@ -143,6 +143,7 @@
   `LF_ClinicShortage_Everon1989.conf` in its mission header overlays.
 - **Not persisted:** a server restart ends the shortage.
 - Test: `crime/clinic-shortage` (`LF_Test_ClinicShortage`).
+- 🔧 (merged, in-dev) **The notice on the clinic door (#4448, 0.3.0 Crime D8).** The only signal of the shortage: no toast. A paper notice on the clinic front wall (kit row `lf-clinic-shortage-notice`, prefab `LF_ClinicShortageNotice`, sign `clinic_shortage`) prints PHARMACY CLOSED with three rows, Why: Stock stolen, Medicine: Prices raised, Until: Further notice, from the replicated shortage flag (`LF_ClinicShortage.IsActive()`, local row source `clinic_shortage`, `Feature/Signs/LF_ShortageNotice.c`). When the shortage ends `LF_ShortageNoticeComponent` takes the paper off the door (clears the mesh flag, polling every 2 s on a client). The client holds only the flag, not the end time, so the paper says "until further notice". Test `signs/shortage-notice`; harness `clinicshort on|off|state` forces it for a session picture.
 
 ### `LF_Murder` / `LF_Zones` — `Feature/Crime/`, `Feature/Moderation/` (M1-27, #125; zones #242)
 - ✅ **Murder makes you wanted** (test `crime/murder`). Every character death

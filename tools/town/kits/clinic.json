@@ -255,6 +255,22 @@
       ]
     },
     {
+      "id": "lf-clinic-shortage-notice",
+      "name": "lf_clinic_shortage_notice",
+      "prefab": "{D747400072C9C9F6}Prefabs/Props/Signs/LF_ClinicShortageNotice.et",
+      "role": "sign",
+      "verb": "against wall",
+      "offset": [
+        -2.5,
+        1.75,
+        6.2
+      ],
+      "yaw": 0,
+      "wall": "+z",
+      "floor": "f0",
+      "attach": "wall"
+    },
+    {
       "id": "clinic-doctor",
       "name": "clinic_doctor",
       "prefab": "{C001B9088678C653}Prefabs/Characters/Npcs/Outfits/LF_Npc_Medic_1.et",
