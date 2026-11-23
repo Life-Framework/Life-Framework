@@ -542,7 +542,18 @@ class LF_RestrainAction : ScriptedUserAction
 	//! The hold began on the acting client: ask the server to open the cuffs.
 	override void OnActionStart(IEntity pUserEntity)
 	{
+		m_fLF_CuffSpeed = LF_PoliceSkill.CuffSpeed(LF_Utils.GetPlayerUID(pUserEntity));
 		LF_Cuffing.AskFromAction(pUserEntity, GetOwner(), LF_ECuffingKind.CUFF, LF_ECuffingPhase.START);
+	}
+
+	//! The fast-cuff perk's bar speed for the officer holding this action (the server asks the same
+	//! shorter hold, LF_Cuffing.Complete; a remote client reads its perk from LF_PerkSync).
+	protected float m_fLF_CuffSpeed = 1.0;
+
+	//------------------------------------------------------------------------------------------------
+	override float GetActionProgressScript(float fProgress, float timeSlice)
+	{
+		return super.GetActionProgressScript(fProgress, timeSlice * m_fLF_CuffSpeed);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -599,7 +610,18 @@ class LF_ReleaseRestraintAction : ScriptedUserAction
 	//------------------------------------------------------------------------------------------------
 	override void OnActionStart(IEntity pUserEntity)
 	{
+		m_fLF_CuffSpeed = LF_PoliceSkill.CuffSpeed(LF_Utils.GetPlayerUID(pUserEntity));
 		LF_Cuffing.AskFromAction(pUserEntity, GetOwner(), LF_ECuffingKind.RELEASE, LF_ECuffingPhase.START);
+	}
+
+	//! The fast-cuff perk's bar speed for the officer holding this action (the server asks the same
+	//! shorter hold, LF_Cuffing.Complete).
+	protected float m_fLF_CuffSpeed = 1.0;
+
+	//------------------------------------------------------------------------------------------------
+	override float GetActionProgressScript(float fProgress, float timeSlice)
+	{
+		return super.GetActionProgressScript(fProgress, timeSlice * m_fLF_CuffSpeed);
 	}
 
 	//------------------------------------------------------------------------------------------------
