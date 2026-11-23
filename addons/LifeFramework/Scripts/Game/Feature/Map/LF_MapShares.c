@@ -124,7 +124,23 @@ class LF_MapShareGameFacts : LF_MapShareFacts
 		if (org)
 			orgId = org.GetId();
 
-		return LF_MapShareMember.Make(playerId, uid, roles, orgId);
+		LF_MapShareMember member = LF_MapShareMember.Make(playerId, uid, roles, orgId);
+		member.m_bInCustody = InCustody(playerId, uid);
+		return member;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Jailed (a running sentence, not escaped) or cuffed.
+	static bool InCustody(int playerId, string uid)
+	{
+		if (!uid.IsEmpty() && LF_Jail.IsInCustody(uid))
+			return true;
+
+		if (!GetGame() || !GetGame().GetPlayerManager())
+			return false;
+
+		IEntity body = GetGame().GetPlayerManager().GetPlayerControlledEntity(playerId);
+		return body && LF_Restraint.IsRestrained(body);
 	}
 }
 
@@ -338,7 +354,7 @@ class LF_MapShares
 		{
 			array<string> delivered = DeliveredOf(playerId);
 			bool had = delivered.Find(row.m_sKey) != -1;
-			if (LF_MapShareRules.InAudience(row.m_eAudience, row.m_sAudienceId, facts.Of(playerId)))
+			if (Receives(row, facts.Of(playerId)))
 			{
 				if (!had && delivered.Count() >= SEND_CAP)
 				{
@@ -608,6 +624,20 @@ class LF_MapShares
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! Does this member receive this row? Its audience, and for a live member mark (orglive:) also
+	//! LF_OrgLiveMarkRules.ViewerSees: a viewer in custody gets none of their crew's positions.
+	static bool Receives(LF_MapShareRow row, LF_MapShareMember member)
+	{
+		if (!row || !LF_MapShareRules.InAudience(row.m_eAudience, row.m_sAudienceId, member))
+			return false;
+
+		if (!row.m_sKey.StartsWith(LF_OrgLiveMarkRules.KEY_PREFIX))
+			return true;
+
+		return LF_OrgLiveMarkRules.ViewerSees(row.m_sAudienceId, member.m_sOrgId, member.m_bInCustody);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The keys a player should hold now, in put order, at most SEND_CAP.
 	protected static void WantedFor(int playerId, notnull array<string> wanted)
 	{
@@ -623,7 +653,7 @@ class LF_MapShares
 		foreach (string key : s_aOrder)
 		{
 			LF_MapShareRow row = s_mRows.Get(key);
-			if (!row || !LF_MapShareRules.InAudience(row.m_eAudience, row.m_sAudienceId, member))
+			if (!row || !Receives(row, member))
 				continue;
 
 			if (wanted.Count() >= SEND_CAP)

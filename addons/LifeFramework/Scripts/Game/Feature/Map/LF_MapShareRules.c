@@ -25,6 +25,8 @@ class LF_MapShareMember : Managed
 	ref array<string> m_aRoles = {};
 	//! Organization id, "" when in none.
 	string m_sOrgId;
+	//! Jailed or cuffed: receives no live member marks (LF_OrgLiveMarkRules.ViewerSees, N25).
+	bool m_bInCustody;
 
 	//------------------------------------------------------------------------------------------------
 	static LF_MapShareMember Make(int playerId, string uid, array<string> roles, string orgId)

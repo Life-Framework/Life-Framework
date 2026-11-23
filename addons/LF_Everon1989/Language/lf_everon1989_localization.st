@@ -206,12 +206,12 @@ StringTable {
     }
     CustomStringTableItem "{2FC28DBE70BC949C}" {
      Id "LF-Activity_Mining_Ore_Note"
-     Target_en_us "Swing at the rust-veined rocks and pick up 3 pieces of ore; every piece levels Mining, and level 2 opens the coal license."
+     Target_en_us "Swing at the rust-veined rocks and pick up 15 pieces of ore, one full furnace load; every piece levels Mining, and level 2 opens the coal license."
      Comment "Mining step note, one sentence, with the levelling hint."
     }
     CustomStringTableItem "{BBF0328175038D91}" {
      Id "LF-Activity_Mining_Ore_Title"
-     Target_en_us "Mine 3 iron ore"
+     Target_en_us "Mine 15 iron ore"
      Comment "Mining step title."
     }
     CustomStringTableItem "{7AADE23D2DEEDDF3}" {
@@ -231,7 +231,7 @@ StringTable {
     }
     CustomStringTableItem "{2777AEB12A56E04F}" {
      Id "LF-Activity_Mining_Sell_Note"
-     Target_en_us "Drive the bars down to the iron counter in the dock wholesale warehouse; it pays $20 a bar."
+     Target_en_us "Drive the bars down to the iron counter in the dock wholesale warehouse; it pays $20 a bar, and the mine adds $180 for your first run."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{122ADCC1D2DD3D46}" {
@@ -241,12 +241,12 @@ StringTable {
     }
     CustomStringTableItem "{43FB216022439923}" {
      Id "LF-Activity_Mining_Smelt_Note"
-     Target_en_us "Smelt the ore in the mine furnace: 3 ore make a bar, and a run takes about 4 minutes."
+     Target_en_us "Smelt the ore in the mine furnace: 3 ore make a bar, so your 15 make 5 bars in one 4-minute run."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{6F8D145FBA72E000}" {
      Id "LF-Activity_Mining_Smelt_Title"
-     Target_en_us "Smelt a bar"
+     Target_en_us "Smelt your bars"
      Comment "Mining step title."
     }
     CustomStringTableItem "{35FC580FEECB6912}" {
@@ -2014,6 +2014,51 @@ StringTable {
      Target_en_us "Stop! You did not pay for that! Come back here!"
      Comment "Pack patch of the shopkeeper dialogue's line thief (voiced; tools/assets/dialogue/shopkeeper_everon). Changing it needs: tools\\cli asset dialogue shopkeeper_everon"
     }
+    CustomStringTableItem "{5D5270FE6B9E5D3F}" {
+     Id "LF-Dialogue_TallyClerk_Bye"
+     Target_en_us "Mind the crane."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{E229C1F569881044}" {
+     Id "LF-Dialogue_TallyClerk_Greet"
+     Target_en_us "Marcel, tally clerk. I count what comes off the ships and I write down what the customs man wants written. Funny thing. Container nine is short this week."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{A211E5348B729FDB}" {
+     Id "LF-Dialogue_TallyClerk_Key"
+     Target_en_us "Here. Brass, on a red string. Container nine, back row, past the crane. Take what is in it, lock it up after. The books will say it never came."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{D47A10A396A7D15E}" {
+     Id "LF-Dialogue_TallyClerk_Later"
+     Target_en_us "Not while the customs man is here. Come back when your pockets are full and the yard is quiet."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{14E7D04534C559B3}" {
+     Id "LF-Dialogue_TallyClerk_Offer"
+     Target_en_us "Four hundred dollars, and it stays short on the books. You carry the key, you take what is in it, and in a while it fills up again. I never saw you."
+     Comment "Dialogue caption, spoken by the tally_clerk NPC (voiced; tools/assets/dialogue/tally_clerk). Changing it needs: tools\\cli asset dialogue tally_clerk"
+    }
+    CustomStringTableItem "{BFD54AC106AC9C6F}" {
+     Id "LF-Dialogue_TallyClerk_SayAsk"
+     Target_en_us "Container nine is short?"
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
+    CustomStringTableItem "{73462183206DA1C3}" {
+     Id "LF-Dialogue_TallyClerk_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
+    CustomStringTableItem "{C2EEF8BC03101543}" {
+     Id "LF-Dialogue_TallyClerk_SayLater"
+     Target_en_us "I need to think about it."
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
+    CustomStringTableItem "{EE84E765295E0B07}" {
+     Id "LF-Dialogue_TallyClerk_SayPay"
+     Target_en_us "Here is the four hundred."
+     Comment "Dialogue reply the player can pick when talking to the tally_clerk NPC."
+    }
     CustomStringTableItem "{F2B1DF023C756490}" {
      Id "LF-Everon-Lock_Closed"
      Target_en_us "Closed"
@@ -2729,6 +2774,16 @@ StringTable {
      Target_en_us "A wrapped bar of milk chocolate. A little sugar, a little cheer."
      Comment "Item description: chocolate bar."
     }
+    CustomStringTableItem "{00C0E4CD3F6AAF5F}" {
+     Id "LF-Item_CigaretteCarton"
+     Target_en_us "Carton of cigarettes"
+     Comment "Item name: a carton of cigarettes, a contraband good for the cigarette run (#4198)."
+    }
+    CustomStringTableItem "{8529809DBF35E46B}" {
+     Id "LF-Item_CigaretteCartonDesc"
+     Target_en_us "Ten packs, no tax stamp. A police stop search lists it as tobacco and an officer can seize it."
+     Comment "Item description: carton of cigarettes (#4198)."
+    }
     CustomStringTableItem "{D744A9EB6693B307}" {
      Id "LF-Item_CoffeeTin"
      Target_en_us "Instant coffee"
@@ -2958,6 +3013,16 @@ StringTable {
      Id "LF-Item_TouristMap_Name"
      Target_en_us "Tourist map of Everon"
      Comment "Tourist map (#2242): the item's name in the inventory."
+    }
+    CustomStringTableItem "{C10755A455463263}" {
+     Id "LF-Item_VodkaBottle"
+     Target_en_us "Bottle of vodka"
+     Comment "Item name: a bottle of vodka, a contraband good for the vodka run (#4198)."
+    }
+    CustomStringTableItem "{C88B737C670E0A5C}" {
+     Id "LF-Item_VodkaBottleDesc"
+     Target_en_us "A sealed bottle with no import stamp. A police stop search lists it as alcohol and an officer can seize it."
+     Comment "Item description: bottle of vodka (#4198)."
     }
     CustomStringTableItem "{66654F6ED99E5F5B}" {
      Id "LF-Item_WornHandTool_Description"
@@ -4068,6 +4133,21 @@ StringTable {
      Id "LF-Resident_cafe_owner_Name"
      Target_en_us "Odilon Marchand"
      Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
+    }
+    CustomStringTableItem "{2189482012477764}" {
+     Id "LF-Resident_gendarme_bank_beat_Name"
+     Target_en_us "Brigadier Lucien Carrel"
+     Comment "Saint-Philippe resident gendarme_bank_beat: display name (#4228)."
+    }
+    CustomStringTableItem "{0DADF7447AB9FD47}" {
+     Id "LF-Resident_gossip_colette_Name"
+     Target_en_us "Colette Brisset"
+     Comment "Saint-Philippe resident gossip_colette: display name (#4228)."
+    }
+    CustomStringTableItem "{03A0303E4DB2701C}" {
+     Id "LF-Resident_gossip_odile_Name"
+     Target_en_us "Odile Ferrand"
+     Comment "Saint-Philippe resident gossip_odile: display name (#4228)."
     }
     CustomStringTableItem "{C506DE77282216DB}" {
      Id "LF-Resident_neighbour_anselme_Name"
@@ -5454,6 +5534,11 @@ StringTable {
      Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
      Comment "Lawless area sign card, What section."
     }
+    CustomStringTableItem "{55502A149BCBFDCF}" {
+     Id "LF-Sign_Livery_UAZ469_Police_Title"
+     Target_en_us "POLICE"
+     Comment "Livery plate on the front doors of the UAZ469 Police (written by tools\cli livery build)."
+    }
     CustomStringTableItem "{156BE656616C6972}" {
      Id "LF-Sign_LotPrice_Title"
      Target_en_us "%1 %2"
@@ -6543,6 +6628,11 @@ StringTable {
      Id "LF-Townsfolk_ShipmentGoBetween_Name"
      Target_en_us "Hugo Valmy"
      Comment "Townsfolk (The shipment, #3804): the go-between's name, the speaker line of his dialogue."
+    }
+    CustomStringTableItem "{4199A00000000001}" {
+     Id "LF-Townsfolk_TallyClerk_Name"
+     Target_en_us "Marcel Brun"
+     Comment "Townsfolk (crime B4, #4199): the tally clerk's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{28FAC180F47F7CA9}" {
      Id "LF-Unlock_Farmer_02"
