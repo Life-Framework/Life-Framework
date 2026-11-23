@@ -88,7 +88,7 @@ Vehicle : "{E04C8F3B6328475B}Prefabs/Vehicles/Liveries/LF_UAZ452_Ambulance.et" {
  {
   GenericEntity : "{85AFAE9D62E38764}Prefabs/Vehicles/SirenLights/LightBarLED_Red.et" {
    ID "81C5D2E9047A3B6F"
-   coords 0 1.95 0.9
+   coords 0 2.06 0.9
   }
  }
 }
