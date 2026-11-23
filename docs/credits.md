@@ -233,3 +233,9 @@ English print for the cigarette pack and the vodka bottle (#4383). The brands GA
 |---|---|---|---|
 | LF_CigaretteCarton_BCR | Derived from Bohemia Interactive `LitterInterior_01_V1_BCR.edds` (Arma Public License, base-game asset); the print is ours | English print on the cigarette pack (`LF_CigaretteCarton`) | `addons/LF_Everon1989/Assets/Items/Contraband/LF_CigaretteCarton/` |
 | LF_VodkaBottle_BCR | Derived from Bohemia Interactive `S2_Vodka_paper_BCR.edds` (Arma Public License, base-game asset); the print is ours | English label on the vodka bottle (`LF_VodkaBottle`) | `addons/LF_Everon1989/Assets/Items/Contraband/LF_VodkaBottle/` |
+
+## Work-site sounds
+
+| Asset | Source and license | What it is for | Where |
+|---|---|---|---|
+| Work-site sounds: shift whistle, mine tool bed, sawmill tool bed (`Sounds/Work/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-23 on the maintainer's Starter plan, same terms as the taser sounds above (vanilla had no shift whistle or matching loop) | `tools/assets/site-ambience/site-ambience.json` (every generation: prompt, parameters, date) and `addons/LF_Everon1989/Sounds/Work/manifest.json` |

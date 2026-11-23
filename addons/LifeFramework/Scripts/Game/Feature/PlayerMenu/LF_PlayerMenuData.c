@@ -7,7 +7,9 @@
 //   V|1
 //   P|name|faction|onDuty|cash|bank|houses|garageUsed|garageCap|playtimeSeconds|wanted
 //   L|licenceNameKey
-//   S|job|xp|level|floor|next          next = -1 at the top of the ladder
+//   S|job|xp|level|floor|next|nextUnlockKey|tierKey|rank|perk,perk
+//                                      next = -1 at the top of the ladder; the last four fields (#4414)
+//                                      are optional on read, rank 0 = not ranked this week
 //   Q|id|titleKey|descKey|group|state|progress|target
 
 //------------------------------------------------------------------------------------------------
@@ -37,6 +39,14 @@ class LF_PlayerMenuSkill
 	int m_iFloor;
 	//! Total XP of the next level; -1 when there is none.
 	int m_iNext;
+	//! The `#` key naming what the next level opens (LF_TradeUnlocks.NextKey), empty when no row names one.
+	string m_sNextUnlockKey;
+	//! The `#` key of the tier word for the level (LF_PlayerMenuTrade.TierKeyFor).
+	string m_sTierKey;
+	//! This week's rank in the trade, 1 and up; 0 until the shift boards (W22) rank the player.
+	int m_iRank;
+	//! The perk ids the player picked in this trade, in pick-level order.
+	ref array<string> m_aPerks = {};
 }
 
 //------------------------------------------------------------------------------------------------
@@ -128,6 +138,8 @@ class LF_PlayerMenuData
 		{
 			wire += RECORD + "S" + FIELD + Clean(skill.m_sJob) + FIELD + skill.m_iXp.ToString() + FIELD + skill.m_iLevel.ToString();
 			wire += FIELD + skill.m_iFloor.ToString() + FIELD + skill.m_iNext.ToString();
+			wire += FIELD + Clean(skill.m_sNextUnlockKey) + FIELD + Clean(skill.m_sTierKey) + FIELD + skill.m_iRank.ToString();
+			wire += FIELD + PerkList(skill.m_aPerks);
 		}
 
 		foreach (LF_PlayerMenuQuest quest : m_aQuests)
@@ -138,6 +150,24 @@ class LF_PlayerMenuData
 		}
 
 		return wire;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Perk ids joined with ',' (an id with a separator in it has it taken out).
+	protected static string PerkList(notnull array<string> perks)
+	{
+		string list = string.Empty;
+		foreach (string perk : perks)
+		{
+			string clean = Clean(perk);
+			clean.Replace(",", " ");
+			if (!list.IsEmpty())
+				list += ",";
+
+			list += clean;
+		}
+
+		return list;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -193,6 +223,17 @@ class LF_PlayerMenuData
 				skill.m_iLevel = f[3].ToInt();
 				skill.m_iFloor = f[4].ToInt();
 				skill.m_iNext = f[5].ToInt();
+				// The trade card fields trail the row; a row without them (an older wire) leaves them empty.
+				if (f.Count() >= 9)
+				{
+					skill.m_sNextUnlockKey = f[6];
+					skill.m_sTierKey = f[7];
+					skill.m_iRank = f[8].ToInt();
+				}
+
+				if (f.Count() >= 10 && !f[9].IsEmpty())
+					f[9].Split(",", skill.m_aPerks, true);
+
 				data.m_aSkills.Insert(skill);
 			}
 			else if (f[0] == "Q" && f.Count() >= 8)

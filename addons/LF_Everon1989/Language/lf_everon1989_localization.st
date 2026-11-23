@@ -4244,6 +4244,16 @@ StringTable {
      Target_en_us "Odilon Marchand"
      Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
     }
+    CustomStringTableItem "{5C2B8E41A9D07F36}" {
+     Id "LF-Resident_foreman_coalmans_brow_Name"
+     Target_en_us "Bruno Faure"
+     Comment "Coalman's Brow mine foreman, a site resident: display name (#4237)."
+    }
+    CustomStringTableItem "{B7140D9E36A52C83}" {
+     Id "LF-Resident_foreman_sawmill_Name"
+     Target_en_us "Lucien Maury"
+     Comment "Everon sawmill foreman, a site resident: display name (#4237)."
+    }
     CustomStringTableItem "{2189482012477764}" {
      Id "LF-Resident_gendarme_bank_beat_Name"
      Target_en_us "Brigadier Lucien Carrel"

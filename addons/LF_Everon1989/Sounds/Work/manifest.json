@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "note": "The work-site sounds of WK-W23 (#4183). Source order: vanilla first, then ElevenLabs sound effects (rec.vanilla_checked in tools/assets/site-ambience/site-ambience.json says what vanilla offered). Built by tools/assets/site-ambience/build.mjs.",
+  "addon": "LF_Everon1989",
+  "vanilla_checked": "2026-11-23: asset_search for 'whistle' finds no vanilla shift or steam whistle, and the vanilla prop loops (generator, tape recorder) play their own events, not SOUND_LF_AMBIENT_LP that LF_AmbientEmitterComponent starts. The pick/shovel/handsaw beds have no vanilla loop of their own either, so all three are generated.",
+  "whistle": {
+    "slot": "atmo_shift_whistle",
+    "hours": [
+      [
+        6,
+        6.04
+      ],
+      [
+        18,
+        18.04
+      ]
+    ],
+    "sites": [
+      "Coalman's Brow mine",
+      "Le Moule sawmill"
+    ],
+    "note": "An emitter with slot atmo_shift_whistle and hour window 6 to 6.02 (and a second at 18 to 18.02) sounds once per window; the sample is 5.5 s and at the 2 h day the window is 6 real seconds. The site's place card sets it on its own emitter."
+  },
+  "sounds": [
+    {
+      "id": "shift_whistle",
+      "slot": "atmo_shift_whistle",
+      "project": "{8B272C3A6A0053BF}Sounds/Work/Work_ShiftWhistle.acp",
+      "sample": "{A368226DC18E4D56}Sounds/Work/Samples/Work_ShiftWhistle_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP",
+      "source": "elevenlabs",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "Old steam works shift whistle blowing two long blasts with a short pause between them, heard outdoors across a work site. Brass and steam, no voices, no music, no machinery.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project's paid plan; commercial use allowed",
+      "inner_m": 6,
+      "outer_m": 110,
+      "volume_db": -4,
+      "seconds": 8
+    },
+    {
+      "id": "mine_bed",
+      "slot": "atmo_mine_bed",
+      "project": "{10122AD07F4FE502}Sounds/Work/Work_MineBed.acp",
+      "sample": "{E7EAD9BE590D0DED}Sounds/Work/Samples/Work_MineBed_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP",
+      "source": "elevenlabs",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "Quiet coal mine workings a little distant: picks chipping at a coal face at irregular intervals, a shovel scraping, a wooden cart rolling over planks, small lumps of coal falling, light wind. No voices, no engines, no music.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project's paid plan; commercial use allowed",
+      "inner_m": 5,
+      "outer_m": 40,
+      "volume_db": -11,
+      "seconds": 20
+    },
+    {
+      "id": "sawmill_bed",
+      "slot": "atmo_sawmill_bed",
+      "project": "{A21BF724F4B2550B}Sounds/Work/Work_SawmillBed.acp",
+      "sample": "{401066C20AE5E630}Sounds/Work/Samples/Work_SawmillBed_LP.wav",
+      "event": "SOUND_LF_AMBIENT_LP",
+      "source": "elevenlabs",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "prompt": "Quiet lumber yard hand tools: a handsaw rasping through a plank at irregular intervals, hammer taps, logs knocking together in a stack, a distant axe chop. Sparse, no motor, no voices, no music.",
+      "licence": "ElevenLabs text-to-sound-effects, generated on the project's paid plan; commercial use allowed",
+      "inner_m": 5,
+      "outer_m": 38,
+      "volume_db": -11,
+      "seconds": 20
+    }
+  ]
+}
