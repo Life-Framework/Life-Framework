@@ -273,6 +273,23 @@ class LF_Breach
 			return false;
 		}
 
+		// A heist job's door (#4492): the big-job lock is taken at arming, so a second crew is refused
+		// inside the first crew's fuse window. Asked before the charge is taken, so a refusal costs nothing.
+		string lockWhy;
+		string lockRefusal = LF_HeistRun.ArmLockRefusal(targetId, lockWhy);
+		if (!lockRefusal.IsEmpty())
+		{
+			LF_Debug.Info("Breach", string.Format("arm on %1 refused for %2: %3", targetId, playerUid, lockWhy));
+			IEntity lockTold = suspect;
+			if (!lockTold)
+				lockTold = chargeCarrier;
+
+			if (lockTold)
+				LF_Utils.NotifyEntity(lockTold, lockRefusal, "", 4.0);
+
+			return false;
+		}
+
 		if (!ChargePrefabLoads())
 			return false;
 
@@ -285,6 +302,9 @@ class LF_Breach
 
 		if (chargeCarrier && !TakeCharge(chargeCarrier, targetId))
 			return false;
+
+		// Same call as ArmLockState above, so nothing took the lock in between; the run adopts it.
+		LF_HeistRun.ClaimAtArm(targetId, playerUid);
 
 		string offence = target.m_sOffence;
 		if (offence.IsEmpty())
@@ -360,6 +380,7 @@ class LF_Breach
 		target.m_Footprint = null;
 		SyncTarget(target);
 		LF_Debug.Error("Breach", string.Format("charge cancelled on %1: %2", targetId, reason));
+		LF_HeistRun.ArmAbandoned(targetId, "charge cancelled");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -408,6 +429,7 @@ class LF_Breach
 			return false;
 		}
 
+		bool chargeDefused = target.m_bChargeArmed && !target.m_bOpen;
 		target.m_bOpen = false;
 		target.m_bChargeArmed = false;
 		target.m_fElapsed = 0;
@@ -415,6 +437,8 @@ class LF_Breach
 		WriteLock(targetId, true);
 		SyncTarget(target);
 		LF_Debug.Log("Breach", string.Format("repaired %1 by %2", targetId, playerUid));
+		if (chargeDefused)
+			LF_HeistRun.ArmAbandoned(targetId, "repaired before the fuse ran out");
 		return true;
 	}
 

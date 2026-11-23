@@ -30,25 +30,9 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The buried shaft end is the portal on the uphill side, two spoil heaps flank it, a cart, a pick pile and a lantern wait at its mouth; a granite rock face of nine boulders in two tiers closes the north side of the apron and the six iron ore rocks lie at its foot, 1.6 times the stone's size and streaked rust red so they stand apart from the grey granite, which stands 1.5 m further back (first-2h review B8), 2.7 m apart in a staggered row so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk, the miner's supply counter (the pickaxe, so a new miner buys it where they take the job, first-2h review B3) and the sign on the other, all on the side the track comes in from. The iron buyer is not here: bars are sold at the dock wholesale warehouse. Rows are rigid: shift, never stretch."
+    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). Two spoil heaps stand on the uphill side (the buried shaft end that was the portal left its coal chunks floating above the ground, 0.2.1 final check V4, so it is gone); a pick pile and a lantern wait beside them; a granite rock face of nine boulders in two tiers closes the north side of the apron and the six iron ore rocks lie at its foot, 1.6 times the stone's size and streaked rust red so they stand apart from the grey granite, which stands 1.5 m further back (first-2h review B8), 2.7 m apart in a staggered row so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk, the miner's supply counter (the pickaxe, so a new miner buys it where they take the job, first-2h review B3) and the sign on the other, all on the side the track comes in from. The iron buyer is not here: bars are sold at the dock wholesale warehouse. Rows are rigid: shift, never stretch."
   },
   "rows": [
-    {
-      "id": "mine-portal",
-      "name": "Mine_Portal",
-      "prefab": "{02128ED43CA97BCF}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_end_buried.et",
-      "role": "dressing",
-      "verb": "against wall",
-      "mount": "terrain",
-      "offset": [
-        -8,
-        0,
-        0
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0"
-    },
     {
       "id": "mine-heap-l",
       "name": "Mine_HeapL",
@@ -80,23 +64,6 @@
       "yaw": 180,
       "wall": "free",
       "floor": "f0"
-    },
-    {
-      "id": "mine-cart",
-      "name": "Mine_Cart",
-      "prefab": "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "mount": "terrain",
-      "offset": [
-        -2.5,
-        0,
-        2.5
-      ],
-      "yaw": 90,
-      "wall": "free",
-      "floor": "f0",
-      "lift": -0.299
     },
     {
       "id": "mine-picks",
@@ -395,6 +362,88 @@
             "m_vTextColor": "0.12 0.1 0.08"
           },
           "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-anchor-counter",
+      "name": "Mine_AnchorCounter",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        11.1,
+        0,
+        3.4
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"counter\""
+          },
+          "blocks": [],
+          "guid": "C21F185D2CE024A1"
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-anchor-door",
+      "name": "Mine_AnchorDoor",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        11.6,
+        0,
+        1.4
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "LF_ResidentAnchorComponent",
+          "set": {
+            "m_sAnchorId": "\"door\""
+          },
+          "blocks": [],
+          "guid": "C21F185D2CE024A1"
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "mine-ore-field",
+      "name": "Mine_OreField",
+      "prefab": null,
+      "free": true,
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        4.5,
+        0,
+        8.2
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_PlaceComponent",
+          "set": {
+            "m_sKind": "\"Workplace\"",
+            "m_sId": "\"coalmans-brow.mine-ore\""
+          },
+          "blocks": [],
+          "guid": "5E0B7A3D91C4F268"
         }
       ],
       "wall": "free",
