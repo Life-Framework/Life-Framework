@@ -76,6 +76,7 @@
     "LF_SpawnHubConfig",
     "LF_SurvivalConfig",
     "LF_RankFleetConfig",
+    "LF_LiveryShopConfig",
     "LF_TaxiFareConfig",
     "LF_ExportOrderConfig",
     "LF_TradeUnlocksConfig",

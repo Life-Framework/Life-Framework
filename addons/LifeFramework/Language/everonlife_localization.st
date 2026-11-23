@@ -10037,6 +10037,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Desempleado"
      Comment "Licence name: no employment"
     }
+    CustomStringTableItem "{3D9A51E07C2B4F62}" {
+     Id "LF-LiveryShop_Camo"
+     Target_en_us "Camouflage paint"
+     Comment "Bay paint job: a drab green camouflage repaint."
+    }
+    CustomStringTableItem "{B605EF2446246A47}" {
+     Id "LF-LiveryShop_Done"
+     Target_en_us "Fresh paint. Your car is waiting on the pad."
+     Comment "The respray or livery was paid for and the car came back in the new paint."
+    }
+    CustomStringTableItem "{4B4F10AFC83A6950}" {
+     Id "LF-LiveryShop_NoCash"
+     Target_en_us "You do not have enough cash on you for this paint job."
+     Comment "Respray refused: the owner carries less cash than the price."
+    }
+    CustomStringTableItem "{216DFEE917592D1F}" {
+     Id "LF-LiveryShop_NoOption"
+     Target_en_us "That paint job is not offered for this car."
+     Comment "Respray refused: the chosen paint or livery does not fit this model."
+    }
+    CustomStringTableItem "{99F69992AB7041A6}" {
+     Id "LF-LiveryShop_NotInBay"
+     Target_en_us "Drive the car into the paint bay first."
+     Comment "Respray refused: the owner's car is not standing in the mechanic's bay."
+    }
+    CustomStringTableItem "{3D9A51E07C2B4F61}" {
+     Id "LF-LiveryShop_Police"
+     Target_en_us "{police} livery"
+     Comment "Bay paint job: the department's white-and-navy repaint, sold to police only."
+    }
+    CustomStringTableItem "{C4C7B2C8203E90BD}" {
+     Id "LF-LiveryShop_WrongJob"
+     Target_en_us "That is a service livery. Only that department can order it."
+     Comment "Respray refused: a police or ambulance livery for someone without the job."
+    }
     CustomStringTableItem "{E767EB7F650628AD}" {
      Id "LF-LockerBank_AlreadyRented"
      Target_en_us "You already rent a locker here."
