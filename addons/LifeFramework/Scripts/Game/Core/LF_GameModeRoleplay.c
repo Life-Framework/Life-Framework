@@ -88,6 +88,8 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_JobLevelSources.EnsureSubscribed();
 		// Police XP from outcomes: a recovered stolen car (server only, #4424).
 		LF_PoliceSkill.EnsureSubscribed();
+		// Medic XP from first aid and the steady-carry bookkeeping (server only, #4433).
+		LF_MedicSkill.EnsureSubscribed();
 		// Interaction menu role slots, on every machine (offer on the client, decide on the server).
 		LF_OrgInviteRole.Register();
 		LF_HoldUpRole.Register();

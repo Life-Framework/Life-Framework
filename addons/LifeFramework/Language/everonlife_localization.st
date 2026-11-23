@@ -2965,6 +2965,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Connecting to the online service. Your registration form opens in a moment."
      Comment "Toast while the server waits for the joining player's platform identity before it opens their account (a listen host gets it seconds after the join)."
     }
+    CustomStringTableItem "{1865CC4D25E5D9B7}" {
+     Id "LF-CallAbuse_LowPriority"
+     Target_en_us "Low priority: caller charged for false reports"
+     Comment "Dispatch board tag on a call whose caller was charged for false reports today (#4421)."
+    }
     CustomStringTableItem "{AEB31D9E1738B09F}" {
      Id "LF-CallOutcome_NoCall"
      Target_en_us "That call is not open."
@@ -15670,6 +15675,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-RumorTalk_Told"
      Target_en_us "They told you about a place. It is on your map now."
      Comment "Toast body for a told rumor whose row has no caption of its own (#4461)."
+    }
+    CustomStringTableItem "{98F59847428914BF}" {
+     Id "LF-RunPlate_Action"
+     Target_en_us "Run plate"
+     Comment "Action row on a police car (#4425): read the plate of the car ahead."
+    }
+    CustomStringTableItem "{C945EFD33C6582C6}" {
+     Id "LF-RunPlate_Clear"
+     Target_en_us "CLEAR"
+     Comment "Pager word: registered, no report (#4425)."
+    }
+    CustomStringTableItem "{FF039827A68F2E8B}" {
+     Id "LF-RunPlate_Line"
+     Target_en_us "Plate %1: %2"
+     Comment "Pager line after Run plate (#4425). %1 = plate, %2 = STOLEN, CLEAR or UNKNOWN."
+    }
+    CustomStringTableItem "{2DDB8B7DB753748B}" {
+     Id "LF-RunPlate_NoCar"
+     Target_en_us "No car ahead within 30 meters."
+     Comment "Toast: run plate found no car in front (#4425)."
+    }
+    CustomStringTableItem "{07ED6567EF4AD283}" {
+     Id "LF-RunPlate_NotDriving"
+     Target_en_us "Run a plate from the driver seat of a patrol car."
+     Comment "Toast: run plate refused, the officer is not at the wheel (#4425)."
+    }
+    CustomStringTableItem "{AE1F8B3239967066}" {
+     Id "LF-RunPlate_OffDuty"
+     Target_en_us "Only an on-duty officer can run a plate."
+     Comment "Toast: run plate refused, the officer is not on duty (#4425)."
+    }
+    CustomStringTableItem "{2F32BB51C0269D79}" {
+     Id "LF-RunPlate_Stolen"
+     Target_en_us "STOLEN"
+     Comment "Pager word: the plate is on the stolen-car hotlist (#4425)."
+    }
+    CustomStringTableItem "{F27DCCD7B370563F}" {
+     Id "LF-RunPlate_Unknown"
+     Target_en_us "UNKNOWN"
+     Comment "Pager word: the plate is on no register (#4425)."
     }
     CustomStringTableItem "{4AA0194A741E081B}" {
      Id "LF-SafeZone_ShotRefused"
