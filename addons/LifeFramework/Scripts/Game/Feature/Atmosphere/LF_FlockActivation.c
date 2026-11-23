@@ -25,9 +25,8 @@ class LF_FlockActivation
 	static const int TICK_MS = 1000; // lf-fixed: how often the server looks for a player near a sleeping flock
 	static const float NO_PLAYER_M = 100000; // lf-fixed: "nobody in the world" distance
 
-	//! Placed flocks by entity name (a call-later and a static cannot carry an entity), whether each is armed, and
-	//! the world time (ms) it was last woken.
-	protected static ref array<string> s_aNames = {};
+	//! Placed flocks by entity id (never the entity), whether each is armed, and the world time (ms) it was last woken.
+	protected static ref array<EntityID> s_aIds = {};
 	protected static ref array<bool> s_aArmed = {};
 	protected static ref array<float> s_aWokeAt = {};
 	protected static bool s_bTicking;
@@ -56,12 +55,12 @@ class LF_FlockActivation
 
 	//------------------------------------------------------------------------------------------------
 	//! Server: a placed flock came up; it wakes whenever a player walks up to it.
-	static void Register(string entityName)
+	static void Register(IEntity flock)
 	{
-		if (!IsPlaced(entityName) || s_aNames.Contains(entityName))
+		if (!flock || !IsPlaced(flock.GetName()) || s_aIds.Find(flock.GetID()) != -1)
 			return;
 
-		s_aNames.Insert(entityName);
+		s_aIds.Insert(flock.GetID());
 		s_aArmed.Insert(true);
 		s_aWokeAt.Insert(-MIN_GAP_MS);
 		if (s_bTicking || !GetGame() || !GetGame().GetCallqueue())
@@ -90,12 +89,12 @@ class LF_FlockActivation
 		}
 
 		float now = world.GetWorldTime();
-		for (int i = s_aNames.Count() - 1; i >= 0; i--)
+		for (int i = s_aIds.Count() - 1; i >= 0; i--)
 		{
-			SCR_Bird flock = SCR_Bird.Cast(world.FindEntityByName(s_aNames[i]));
+			SCR_Bird flock = SCR_Bird.Cast(world.FindEntityByID(s_aIds[i]));
 			if (!flock)
 			{
-				s_aNames.Remove(i);
+				s_aIds.Remove(i);
 				s_aArmed.Remove(i);
 				s_aWokeAt.Remove(i);
 				continue;
@@ -141,7 +140,7 @@ class LF_FlockActivation
 		if (s_bTicking && GetGame() && GetGame().GetCallqueue())
 			GetGame().GetCallqueue().Remove(Tick);
 
-		s_aNames.Clear();
+		s_aIds.Clear();
 		s_aArmed.Clear();
 		s_aWokeAt.Clear();
 		s_bTicking = false;
@@ -173,6 +172,6 @@ modded class SCR_Bird
 		super.EOnInit(owner);
 
 		if (Replication.IsServer())
-			LF_FlockActivation.Register(GetName());
+			LF_FlockActivation.Register(this);
 	}
 }
