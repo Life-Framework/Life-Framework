@@ -124,6 +124,8 @@ class LF_CreditsData
 		rows.Insert("H|#LF-Credits_192|");
 		rows.Insert("R|#LF-Credits_193|");
 		rows.Insert("R|#LF-Credits_194|");
+		rows.Insert("H|#LF-Credits_195|");
+		rows.Insert("R|#LF-Credits_196|");
 		return rows;
 	}
 }

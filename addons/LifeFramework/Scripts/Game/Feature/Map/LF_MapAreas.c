@@ -148,6 +148,15 @@ class LF_MapAreas
 		return LookOf(area.m_eStyle).m_sLabelKey;
 	}
 
+	//------------------------------------------------------------------------------------------------
+	//! The words an area's label shows on the map: a string key is translated, then its `{term}`
+	//! placeholders are expanded ("No {police}" reads "No police"); plain text only has its placeholders
+	//! expanded. The map's draw path calls this, never WidgetManager.Translate alone.
+	static string LabelOf(notnull LF_MapArea area)
+	{
+		return LF_Terms.Shown(LabelKeyOf(area));
+	}
+
 	// Outlines (pure) -----------------------------------------------------------------------------
 
 	//------------------------------------------------------------------------------------------------

@@ -125,7 +125,7 @@ class LF_Utils : Managed
 			return;
 		}
 
-		SCR_HintManagerComponent.ShowCustomHint(message, title, duration);
+		SCR_HintManagerComponent.ShowCustomHint(LF_Terms.Shown(message), LF_Terms.Shown(title), duration);
 	}
 
 	//------------------------------------------------------------------------------------------------
