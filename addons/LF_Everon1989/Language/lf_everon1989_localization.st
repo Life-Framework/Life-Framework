@@ -6299,6 +6299,11 @@ StringTable {
      Target_en_us "You are entering the quarry, the one lawless area on Everon. The server rules about starting a fight do not apply here. Gangs and contraband work this ground."
      Comment "Lawless area sign card, What section."
     }
+    CustomStringTableItem "{7100C834F7E9CEAF}" {
+     Id "LF-Sign_Livery_Ambulance_Title"
+     Target_en_us "AMBULANCE"
+     Comment "Livery plate on the side panels of the UAZ452 and S1203 ambulances (#4470)."
+    }
     CustomStringTableItem "{55502A149BCBFDCF}" {
      Id "LF-Sign_Livery_UAZ469_Police_Title"
      Target_en_us "POLICE"
