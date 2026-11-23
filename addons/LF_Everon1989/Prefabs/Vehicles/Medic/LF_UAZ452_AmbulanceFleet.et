@@ -1,0 +1,94 @@
+Vehicle : "{E04C8F3B6328475B}Prefabs/Vehicles/Liveries/LF_UAZ452_Ambulance.et" {
+ ID "4B1E7A92C03D58F6"
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_sDebugIdentifier "MEDIC"
+   m_bMedicService 1
+  }
+  SCR_VehicleSoundComponent "{55C2E66AD4EF2CA6}" {
+   Filenames + {
+    "{4D8A2B25FC6C44FA}Sounds/Siren/Vehicles_Siren.acp"
+   }
+  }
+  LF_SirenManagerComponent "{4685286E8D464A64}" {
+   m_eService MEDIC
+   m_Modes LF_SirenModes "{B1F0340624EE4436}" : "{01051CFE4BC64945}Prefabs/Vehicles/SirenLights/LightBarLED.conf" {
+   }
+   m_sLoopProject "{504037CAE978B960}Sounds/Siren/Ambulance/Siren_Ambulance_Hilo.acp"
+   m_sLoopEvent "SOUND_LF_SIREN_AMBULANCE_LP"
+  }
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_VehicleUnflipAction "{3333A1C0E5D70010}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_RepairKitAction "{3332A1C0E5D70011}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_SirenModeAction "{A3D1C0DE00000923}" {
+     UIInfo UIInfo "{A3D1C0DE00000924}" {
+      Name "#LF-Siren_AmbulanceOn"
+     }
+     VisibilityRange 2.5
+     "Sort Priority" 7
+     m_bDutyOnly 1
+     m_Mode "Mode2"
+    }
+    LF_SirenModeAction "{A3D1C0DE00000925}" {
+     UIInfo UIInfo "{A3D1C0DE00000926}" {
+      Name "#LF-Siren_AmbulanceOff"
+     }
+     VisibilityRange 2.5
+     "Sort Priority" 7
+     m_bDutyOnly 1
+     m_Mode "default"
+    }
+    LF_VehicleLockAction "{E8BD9E1428464528}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{8DB9298A56C64720}" {
+      Name "#EL-VehicleLock_Action"
+     }
+     "Sort Priority" 5
+    }
+    LF_VehicleStoreHereAction "{E1A5707E00000102}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{E1A5707F00000102}" {
+      Name "#LF-Garage_StoreHere"
+     }
+     "Sort Priority" 6
+    }
+    LF_VehicleSearchAction "{5EA2C40400000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C40400000002}" {
+      Name "#LF-Search_Vehicle_Action"
+     }
+    }
+    LF_VehicleSearchFullAction "{5EA2C50400000001}" {
+     ParentContextList {
+      "door_l01"
+     }
+     UIInfo UIInfo "{5EA2C50400000002}" {
+      Name "#LF-Search_Full_Action"
+     }
+    }
+   }
+  }
+ }
+ {
+  GenericEntity : "{85AFAE9D62E38764}Prefabs/Vehicles/SirenLights/LightBarLED_Red.et" {
+   ID "81C5D2E9047A3B6F"
+   coords 0 1.95 0.9
+  }
+ }
+}

@@ -175,8 +175,28 @@ class LF_HoursPlate
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The resident whose work place of the keeper's kind stands nearest this sign, within SHOP_RADIUS_M, or
-	//! empty. Residents are tried by id so a tie is stable.
+	//! The LF_Places id of the one workplace the keeper works at (#4560), or empty when the keeper
+	//! works at any place of the kind.
+	static string WorkPlaceId(LF_ResidentTimetable day)
+	{
+		if (!day)
+			return string.Empty;
+
+		for (int minute = 0; minute < LF_ResidentTimetable.MINUTES_PER_DAY; minute++)
+		{
+			LF_ResidentSlot slot = day.At(minute);
+			if (slot.m_sRole == LF_ResidentTimetable.ROLE_WORK)
+				return slot.m_sPlaceId;
+		}
+
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The resident whose work place stands nearest this sign, within SHOP_RADIUS_M, or empty. A keeper
+	//! with a work place id (#4560) counts only that one place, so two shops of one kind side by side
+	//! each print their own keeper's hours; a keeper without one counts every place of the kind.
+	//! Residents are tried by id so a tie is stable.
 	static string KeeperNear(notnull IEntity sign)
 	{
 		array<string> ids = {};
@@ -192,7 +212,18 @@ class LF_HoursPlate
 				continue;
 
 			array<IEntity> places = {};
-			LF_Places.FindAll(kind, places);
+			string placeId = WorkPlaceId(LF_ResidentTimetable.Find(id));
+			if (placeId.IsEmpty())
+			{
+				LF_Places.FindAll(kind, places);
+			}
+			else
+			{
+				IEntity named = LF_Places.Find(kind, placeId);
+				if (named)
+					places.Insert(named);
+			}
+
 			foreach (IEntity place : places)
 			{
 				if (!place)

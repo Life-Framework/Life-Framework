@@ -5,9 +5,10 @@
 //! as a dressed character, and a name key. The one keeper whose work kind has a place of his own on the island (the barber's chair)
 //! has a resident row: its timetable parses, is at work only inside the hours the
 //! opening-hours plate (#4236) prints for it, and stands on a home and a work kind the island registers. The four
-//! StoreCounter keepers have no row yet: a work line has no place id, so they would all crowd the counter nearest a
-//! player and the plate could not tell the shops apart (the next card adds a work place id). The postmaster has none either: the parcel depot counter is already worked by neighbour_anselme, and two
-//! residents on one counter spot collide (validate-npc-spots). The bartender is the
+//! StoreCounter keepers and the postmaster have rows too (#4560): each names the one shop they work at
+//! (`m_sWorkPlaceId`), so four keepers of one kind stand at their own counters and each shop's plate prints its own
+//! keeper's hours. The postmaster and neighbour_anselme share the one depot counter by shift (validate-npc-spots).
+//! The bartender is the
 //! placed barkeeper of #4439, not a second resident: his prefab and outfit are checked here.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronResidentsShops : LF_Test
@@ -148,12 +149,13 @@ class LF_Test_EveronResidentsShops : LF_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! A keeper's row: kinds the island registers, a valid distinct day, and the shop's plate says what the timetable says.
-	protected void CheckRow(LF_TestContext ctx, LF_ResidentDef def, string plate)
+	protected void CheckRow(LF_TestContext ctx, LF_ResidentDef def, string plate, string shopId)
 	{
 		string id = def.m_sId;
 		ctx.True(IslandKind(def.m_sHomeKind), id + " home kind '" + def.m_sHomeKind + "' is a kind the island registers");
 		ctx.True(IslandKind(def.m_sWorkKind), id + " work kind '" + def.m_sWorkKind + "' is a kind the island registers");
 		ctx.False(def.m_sHomePlaceId.IsEmpty(), id + " lives in one named house");
+		ctx.EqualStr(shopId, def.m_sWorkPlaceId, id + " works at the one named shop");
 
 		set<int> starts = new set<int>();
 		foreach (LF_ResidentEntryDef line : def.m_aTimetable)
@@ -162,7 +164,7 @@ class LF_Test_EveronResidentsShops : LF_Test
 			ctx.True(start >= 0, string.Format("%1 line %2 is a 24 h HH:MM time", id, line.m_sTime));
 			ctx.False(starts.Contains(start), string.Format("%1 has one line starting at %2", id, line.m_sTime));
 			starts.Insert(start);
-			ctx.True(line.m_sAnchor == "counter" || line.m_sAnchor == "bench" || line.m_sAnchor.IndexOf("door") == 0, string.Format("%1 line %2 stands on a known anchor ('%3')", id, line.m_sTime, line.m_sAnchor));
+			ctx.True(line.m_sAnchor.IsEmpty() || line.m_sAnchor == "counter" || line.m_sAnchor == "bench" || line.m_sAnchor.IndexOf("door") == 0, string.Format("%1 line %2 stands on a known anchor ('%3')", id, line.m_sTime, line.m_sAnchor));
 			ctx.True(line.m_sActivity == "serve" || line.m_sActivity == "sit" || line.m_sActivity == "loiter" || line.m_sActivity == "idle", string.Format("%1 line %2 does a known activity ('%3')", id, line.m_sTime, line.m_sActivity));
 			if (line.m_sPlace == LF_ResidentTimetable.ROLE_WORK)
 				ctx.EqualStr("counter", line.m_sAnchor, id + " works at the counter");
@@ -178,6 +180,7 @@ class LF_Test_EveronResidentsShops : LF_Test
 		LF_HoursPlate.Spans(day, spans);
 		ctx.True(spans.Count() >= 2, id + " has opening hours");
 		ctx.EqualStr(plate, LF_HoursPlate.Text(day), id + " opening-hours plate text");
+		ctx.EqualStr(shopId, LF_HoursPlate.WorkPlaceId(day), id + " plate finds its own shop by the work place id");
 
 		int mismatches;
 		int openMinutes;
@@ -236,7 +239,9 @@ class LF_Test_EveronResidentsShops : LF_Test
 			"{C3E6B21FB417F1BF}Configs/Residents/Npcs/LF_Resident_ShopNewsagent.et",
 			"{8416E7C7F06BD33D}Configs/Residents/Npcs/LF_Resident_ShopPostmaster.et"
 		};
-		array<string> plates = { "", "", "", "OPEN 9 AM - 12:30 PM, 1:30 PM - 6 PM", "", "" };
+		array<string> plates = { "OPEN 6 AM - 2 PM", "OPEN 7:30 AM - 5 PM", "OPEN 9 AM - 6 PM", "OPEN 9 AM - 12:30 PM, 1:30 PM - 6 PM", "OPEN 7 AM - 7 PM", "OPEN 8 AM - 2 PM" };
+		// The LF_Places id of the one shop each keeper works at (the barber's chair has no id of its own).
+		array<string> shops = { "saint-philippe.bakery", "saint-philippe.butcher", "saint-philippe.pharmacy", "", "saint-philippe.newsagent", "saint-philippe.parcel" };
 
 		set<string> distinctPrefabs = new set<string>();
 		for (int i = 0; i < ids.Count(); i++)
@@ -259,7 +264,7 @@ class LF_Test_EveronResidentsShops : LF_Test
 				continue;
 
 			ctx.EqualStr(prefabs[i], def.m_sPrefab, id + " row names their own prefab");
-			CheckRow(ctx, def, plates[i]);
+			CheckRow(ctx, def, plates[i], shops[i]);
 		}
 
 		ctx.Equal(ids.Count(), distinctPrefabs.Count(), "six keepers are six bodies");

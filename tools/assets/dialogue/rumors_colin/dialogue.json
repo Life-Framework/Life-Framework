@@ -1,0 +1,171 @@
+{
+  "id": "rumors_colin",
+  "name": "RumorsColin",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Resident_gossip_colette_Name",
+  "voice": {
+    "id": "mN8UWPJNnmcExNpfrkd2",
+    "sex": "male",
+    "name": "Nicolas - French accent & cozy whisper",
+    "public_owner_id": "d8af1ba05554a805f077248f35e47098e9e6ec933845d7c2742b9d039f4da4ff",
+    "why": "Colin Brisset's own voice (Nicolas, a cozy whisper) for the rumors he passes on: the hush of a man who hears every secret.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.45,
+      "similarity_boost": 0.75,
+      "style": 0.35,
+      "speed": 1
+    }
+  },
+  "budget_chars": 1700,
+  "hear_range_m": 8,
+  "start": "colin_cove",
+  "nodes": [
+    {
+      "id": "colin_cove",
+      "line": "colin_cove",
+      "options": [
+        {
+          "text": "more",
+          "next": "colin_blacklake"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "colin_blacklake",
+      "line": "colin_blacklake",
+      "options": [
+        {
+          "text": "more",
+          "next": "colin_wholesale"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "colin_wholesale",
+      "line": "colin_wholesale",
+      "options": [
+        {
+          "text": "more",
+          "next": "colin_woodlot"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "colin_woodlot",
+      "line": "colin_woodlot",
+      "options": [
+        {
+          "text": "more",
+          "next": "colin_seedfeed"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "colin_seedfeed",
+      "line": "colin_seedfeed",
+      "options": [
+        {
+          "text": "more",
+          "next": "colin_range"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "colin_range",
+      "line": "colin_range",
+      "options": [
+        {
+          "text": "more",
+          "next": "colin_clinic"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "colin_clinic",
+      "line": "colin_clinic",
+      "options": [
+        {
+          "text": "more",
+          "next": "colin_pub"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "colin_pub",
+      "line": "colin_pub",
+      "options": [
+        {
+          "text": "more",
+          "next": "colin_chess"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "colin_chess",
+      "line": "colin_chess",
+      "options": [
+        {
+          "text": "bye"
+        }
+      ]
+    }
+  ],
+  "lines": {
+    "colin_cove": {
+      "text": "Somebody fishes the cove on the bay every dusk. A quiet type. He comes back with a full bucket and tells nobody where he goes."
+    },
+    "colin_blacklake": {
+      "text": "The north shore of Black Lake has pike, big ones. Few people bother with it, which is why the pike are big."
+    },
+    "colin_wholesale": {
+      "text": "The wholesale counter at the dock buys in bulk. If you have crates to sell, do not take less than the market gives."
+    },
+    "colin_woodlot": {
+      "text": "The woodlot behind the town has trees marked for cutting. A man with an axe can make an honest day of it."
+    },
+    "colin_seedfeed": {
+      "text": "Seed and feed sells everything a farm needs. Ask the clerk what is moving this week. He tells you if you buy something."
+    },
+    "colin_range": {
+      "text": "There is a range at the edge of town where people practice. Mind the flags, and mind the neighbors."
+    },
+    "colin_clinic": {
+      "text": "The clinic is short of hands, and always has been. If you can stay calm around blood, ask there."
+    },
+    "colin_pub": {
+      "text": "The Chotain pub has a back room. Cards on Friday nights, I am told, and the barkeeper keeps that door himself. I only repair watches."
+    },
+    "colin_chess": {
+      "text": "Men play chess on the square for small stakes. Sit down, lose gracefully, and they will tell you everything."
+    }
+  },
+  "replies": {
+    "more": "Go on.",
+    "bye": "That is all I wanted."
+  }
+}

@@ -1,0 +1,102 @@
+{
+  "id": "rumors_bar",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "bar_carlot": {
+      "hash": "deeb387411e4f613",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "The car lot in town sells beaters cheap. Check the tires before you sign anything.",
+      "chars": 82,
+      "chars_total": 33,
+      "request_id": "oRbkKmpnwUgdquJvv8h2",
+      "seconds": 4.63,
+      "mouth": "241899999996533996654228842186454222232119300000298116259988854362168554237655454331143222000"
+    },
+    "bar_fuel": {
+      "hash": "a273f6932383d1af",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "There is a fuel stop out on the road. If you run dry past the farms, that is your only hope.",
+      "chars": 92,
+      "chars_total": 37,
+      "request_id": "5DCVlKFMOSUe9Prg479i",
+      "seconds": 5.64,
+      "mouth": "04999696259997522286661977654354787654546441113526759954399766735994521154128554434311189966426888654455684206100"
+    },
+    "bar_hardware": {
+      "hash": "eb17890755a43b42",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "The hardware store has tools. A man with a pick works faster than a man without one.",
+      "chars": 84,
+      "chars_total": 34,
+      "request_id": "blyrlFPD5TewZFnPYPLb",
+      "seconds": 4.8,
+      "mouth": "156999598321787646521487532321100000000168999891839997112784122696632145556565545177622222231000"
+    },
+    "bar_taxi": {
+      "hash": "31dc39978e171e2e",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "The taxi stand by the square. Drivers hear everything, but they only tell what pays.",
+      "chars": 84,
+      "chars_total": 67,
+      "request_id": "jQgRGX9dZjRGaQvs3ST7",
+      "seconds": 5.64,
+      "mouth": "04449992224552246544675442216655443321122149983542266882552143331001110006929986772399976931999976444222111000000"
+    },
+    "bar_still": {
+      "hash": "49835495d840f047",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "The old barn off the road is not empty at night. Lights, a truck with no plates, a smell like sour mash. I pour what I pour and keep quiet.",
+      "chars": 139,
+      "chars_total": 56,
+      "request_id": "kptCjGkI70jm6iRbh1NL",
+      "seconds": 9.6,
+      "mouth": "269997499998678821766999856434675753125663244321012111237975311143126972012541356742956441112432247876775122275677454333312211000000000116839999967999948988777554321244411631128433311100000000"
+    },
+    "bar_chop": {
+      "hash": "6aa0b14538e93f1a",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "Cars go into the yard on the hill and parts come out. You can hear the saws from the road. That is all I know, and all I want to.",
+      "chars": 129,
+      "chars_total": 52,
+      "request_id": "8eDe6zstP67qoDgYZMo0",
+      "seconds": 7.68,
+      "mouth": "3999329987685789998766445587654443430998312165632211342254467636222999876631154654875443311000000039795999766567655331000000135999887566411224222210000000"
+    },
+    "bar_fence": {
+      "hash": "2c0ca79ece94ee88",
+      "date": "2026-11-23",
+      "voice_id": "KvaCHcJoMXfOzwtsULOZ",
+      "voice_name": "Hank Harvey - Gruff, Rugged and Wise",
+      "model": "eleven_multilingual_v2",
+      "text": "A man buys odd goods behind a barn on the edge of town. Everybody sees who walks out there. Nobody says why.",
+      "chars": 108,
+      "chars_total": 43,
+      "request_id": "Vem9CokYm7t7e5UNbGBv",
+      "seconds": 6.81,
+      "mouth": "37999997663999844999221796232753544738855544433345323104432211210000000496949966225555422657862116540365543221110013785743144233433222000"
+    }
+  },
+  "voice": {
+    "id": "KvaCHcJoMXfOzwtsULOZ",
+    "name": "Hank Harvey - Gruff, Rugged and Wise",
+    "source": "voice library"
+  }
+}

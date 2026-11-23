@@ -1,0 +1,128 @@
+{
+  "id": "rumors_odilon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "odilon_mine": {
+      "hash": "378542114c82686e",
+      "date": "2026-11-23",
+      "voice_id": "W2BFXIBAz50X1hk8EohV",
+      "voice_name": "Martin - Ultra High Quality",
+      "model": "eleven_multilingual_v2",
+      "text": "The mine at Coalman's Brow takes anyone with a pick and a strong back. The coal goes down to the power plant on the edge of town.",
+      "chars": 129,
+      "chars_total": 52,
+      "request_id": "lDbV0ZPWMc2LFMVyy0n8",
+      "seconds": 8.44,
+      "mouth": "9999998763452249997787411898875301762223787777666666403973020011010001896332987745421010100101110110100152899956999639876665422474521998841587752257651599636621166543200"
+    },
+    "odilon_sawmill": {
+      "hash": "7d9a55f92be07e71",
+      "date": "2026-11-23",
+      "voice_id": "W2BFXIBAz50X1hk8EohV",
+      "voice_name": "Martin - Ultra High Quality",
+      "model": "eleven_multilingual_v2",
+      "text": "The sawmill is always short a pair of hands. Logs come in from the woodlot, boards go out, and the foreman asks few questions.",
+      "chars": 126,
+      "chars_total": 50,
+      "request_id": "EwUgZSaP9gj0mEq18lFU",
+      "seconds": 8.07,
+      "mouth": "745998899725979987974359863224259877437544211000000000008999523316987887327767679579761021000039886433588766531100000000000598954999787635773232111993158732332000"
+    },
+    "odilon_orchard": {
+      "hash": "b9b866a84bdeb14d",
+      "date": "2026-11-23",
+      "voice_id": "W2BFXIBAz50X1hk8EohV",
+      "voice_name": "Martin - Ultra High Quality",
+      "model": "eleven_multilingual_v2",
+      "text": "Pick apples at the orchard, press them for juice, and the market buys what you carry. I did it myself the summer my knees went.",
+      "chars": 127,
+      "chars_total": 51,
+      "request_id": "QYJSi6U1WJif7u47uM4X",
+      "seconds": 7.5,
+      "mouth": "9849955995974976873469842210189844433200897764248743798622110000000688899937844999974177346486753320000077599872477843288773116437867766766775224432000"
+    },
+    "odilon_smokehouse": {
+      "hash": "d93d7f399a706df2",
+      "date": "2026-11-23",
+      "voice_id": "W2BFXIBAz50X1hk8EohV",
+      "voice_name": "Martin - Ultra High Quality",
+      "model": "eleven_multilingual_v2",
+      "text": "The smokehouse by the dock pays a fair price for fish. Bring it fresh and nobody will haggle.",
+      "chars": 93,
+      "chars_total": 37,
+      "request_id": "945Soeam0enoc582NRx2",
+      "seconds": 5.33,
+      "mouth": "84999329986249765379851019776411005622299612987732274217643332000010017999842228986332388875757666687532100"
+    },
+    "odilon_market": {
+      "hash": "0c7cb65854082473",
+      "date": "2026-11-23",
+      "voice_id": "W2BFXIBAz50X1hk8EohV",
+      "voice_name": "Martin - Ultra High Quality",
+      "model": "eleven_multilingual_v2",
+      "text": "Set up at the market on a good morning and the whole town buys. Bread, honey, apples, whatever you carry.",
+      "chars": 105,
+      "chars_total": 42,
+      "request_id": "styYD8D4MCzknp6NdxZk",
+      "seconds": 6.4,
+      "mouth": "299598364167788625984011356449757776654320000036699996299866542232775531100000110008999953110006666631574156633667667662265543000"
+    },
+    "odilon_harbor": {
+      "hash": "da06567597dc687c",
+      "date": "2026-11-23",
+      "voice_id": "W2BFXIBAz50X1hk8EohV",
+      "voice_name": "Martin - Ultra High Quality",
+      "model": "eleven_multilingual_v2",
+      "text": "The harbor master keeps a tally of every crate that lands. Honest work, if you can count and stay awake.",
+      "chars": 104,
+      "chars_total": 42,
+      "request_id": "x7rx7lhxhMWE3jbay3xh",
+      "seconds": 6.77,
+      "mouth": "9999889899832684399722732987886267643987952288764000552254444310000011101011005999641699972021000000493385687438776323753127766553200100"
+    },
+    "odilon_parcel": {
+      "hash": "88acf1063d99587c",
+      "date": "2026-11-23",
+      "voice_id": "W2BFXIBAz50X1hk8EohV",
+      "voice_name": "Martin - Ultra High Quality",
+      "model": "eleven_multilingual_v2",
+      "text": "The post office wants couriers. Walk a parcel across town, earn a little, and learn every street on the way.",
+      "chars": 108,
+      "chars_total": 43,
+      "request_id": "DdisBO5YHOUo4Wx7wuip",
+      "seconds": 6.87,
+      "mouth": "940998632861474311378753317987776542111000100269936369973377525852268765431000000998877752654100000000599999985288796323984215776666543000"
+    },
+    "odilon_pond": {
+      "hash": "63e3b13470e79fc3",
+      "date": "2026-11-23",
+      "voice_id": "W2BFXIBAz50X1hk8EohV",
+      "voice_name": "Martin - Ultra High Quality",
+      "model": "eleven_multilingual_v2",
+      "text": "There is a pond past the houses where the carp sit lazy at noon. I fished it for years and never needed a boat.",
+      "chars": 111,
+      "chars_total": 44,
+      "request_id": "Wojf9zB6Tl8yFaMDiNvQ",
+      "seconds": 7.3,
+      "mouth": "99958515988552079621899998766753210001001101069967425999233396248877736556226664320000010005983398415633677888764211000018999979889869641166552200"
+    },
+    "odilon_church": {
+      "hash": "8a56fc70dab690f6",
+      "date": "2026-11-23",
+      "voice_id": "W2BFXIBAz50X1hk8EohV",
+      "voice_name": "Martin - Ultra High Quality",
+      "model": "eleven_multilingual_v2",
+      "text": "The church is open to anyone. The bell rings the hour, and the priest knows more about this town than the baker does.",
+      "chars": 117,
+      "chars_total": 47,
+      "request_id": "p85vdY8OULKb9U0YtzSG",
+      "seconds": 7.74,
+      "mouth": "95369997113543210000100039715993798496799865442100010111005759999988884187789876653000000587722899821689987646878855853683139777654100003776554761453433100"
+    }
+  },
+  "voice": {
+    "id": "W2BFXIBAz50X1hk8EohV",
+    "name": "Martin - Ultra High Quality",
+    "source": "voice library"
+  }
+}
