@@ -3675,6 +3675,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "That contract isn't on offer."
      Comment "Contract refusal (#2702): the contract id has no row or no delivery job."
     }
+    CustomStringTableItem "{825B941D7F8A5C59}" {
+     Id "LF-CounterOutlet_Action"
+     Target_en_us "Sell under the counter"
+     Comment "Barkeeper action: sell the smuggled cartons and bottles the bar buys (#4200)."
+    }
+    CustomStringTableItem "{70843034317124F3}" {
+     Id "LF-CounterOutlet_Full"
+     Target_en_us "That's enough for this week. Come back later."
+     Comment "Toast: the bar's demand for the period is spent (#4200)."
+    }
+    CustomStringTableItem "{506F32AAE67FCF37}" {
+     Id "LF-CounterOutlet_Nothing"
+     Target_en_us "You have nothing the bar takes."
+     Comment "Toast and cannot-perform reason: no goods this bar buys (#4200)."
+    }
+    CustomStringTableItem "{F63D693CF85C59FE}" {
+     Id "LF-CounterOutlet_Police"
+     Target_en_us "Not with that badge on, officer."
+     Comment "Toast: the barkeeper refuses an on-duty police officer (#4200)."
+    }
+    CustomStringTableItem "{17E9077EC7547E6D}" {
+     Id "LF-CounterOutlet_Sold"
+     Target_en_us "Under the counter it goes. You get %1."
+     Comment "Toast: goods sold under the counter. %1 = the amount paid (#4200)."
+    }
+    CustomStringTableItem "{67B2BD45B6D5677C}" {
+     Id "LF-CounterOutlet_Title"
+     Target_en_us "The barkeeper"
+     Comment "Toast title at an under-the-counter outlet (#4200)."
+    }
     CustomStringTableItem "{E83AB3CDE17F447B}" {
      Id "LF-Credits_1"
      Target_en_us "PROJECTS WE BUILD ON AND BORROW FROM"
