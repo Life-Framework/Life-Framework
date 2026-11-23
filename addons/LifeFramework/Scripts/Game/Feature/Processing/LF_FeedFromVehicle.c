@@ -8,10 +8,10 @@ class LF_FeedFromVehicle
 	static const string FEATURE = "Processing";
 
 	//! Metres from the station to the nearest point of the vehicle's box: backed up, not parked nearby.
-	static const float REACH = 3.0;
+	static const float REACH = 3.0;	// lf-fixed: what backed up means, not a server tunable; the test places the truck against it
 
 	//! Sphere the vehicle's origin is looked for in; covers a truck's half length plus the reach.
-	protected static const float SEARCH_RADIUS = 12.0;
+	protected static const float SEARCH_RADIUS = 12.0;	// lf-fixed: query size derived from REACH plus a truck half length
 
 	//------------------------------------------------------------------------------------------------
 	//! \return The metres from \p point to the nearest point of \p vehicle's local bounding box; a large
