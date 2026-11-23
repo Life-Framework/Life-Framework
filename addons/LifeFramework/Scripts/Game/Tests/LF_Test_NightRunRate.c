@@ -1,4 +1,4 @@
-// red-proof: `toolscli test --no-build --red LF_Test_NightRunRate`: RedProof() leaves every run pay row at no night rate, so the 23:00 fuel run pays the base and the night assertions fail first (expected base plus the night extra).
+// red-proof: `toolscli test --no-build --red LF_Test_NightRunRate`: RedProof() leaves every run pay row at no night rate, so the 23:00 fuel run pays the base and the night assertions fail first (expected base plus the night extra). 2026-11-23: on main after #4637 (fuel at level 4) the five fixed parcel runs left fuel shut, "noon fuel: the job signs up" failed; the loop now runs until RequiredLevel.
 //! #3148: a delivery run finished between dusk and dawn on the world clock pays a night rate, and the
 //! pay toast names each part. The pure part: the window (21 to 5, wrapping midnight), the extra
 //! (round(base x (rate - 1))), and the toast key and argument built from the parts. The world part: with
@@ -107,10 +107,11 @@ class LF_Test_NightRunRate : LF_Test
 	//------------------------------------------------------------------------------------------------
 	protected void RunWorld(LF_TestContext ctx, LF_JobsConfig config, TimeAndWeatherManagerEntity clock)
 	{
-		// Five parcel runs by day open fuel delivery (level 2).
+		// Parcel runs by day until fuel delivery opens (its level comes from RequiredLevel: the DELIVERY curve moved, #4637).
 		clock.SetTimeOfTheDay(12, true);
 		LF_CivilianJob.SignUp(UID, LF_EJobType.PARCEL);
-		for (int i = 0; i < 5; i++)
+		int fuelLevel = LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY);
+		for (int i = 0; i < 20 && LF_CivilianJob.GetLevel(UID) < fuelLevel; i++)
 		{
 			LF_CivilianJob.StartRun(UID, LF_EJobType.PARCEL);
 			LF_CivilianJob.CompleteRun(UID);
