@@ -19,6 +19,13 @@
   layer name there); a host with another name answers `error wrong_target:<that name>` (#2935,
   `agent-harness/use-fallback-strict`). `carries <prefab text>` answers whether the character carries a
   matching item (`LF_HarnessCarries.c`).
+- 🧪 (2026-11-23, #4306) `quickslot <tool id> [press|ground|pickup]` (`LF_QuickSlotHarness.c`) reads, on the
+  client it lands on, where a hand tool is: carried, its 1-0 slot, its gadget mode, held. `press` presses
+  that slot through the vanilla quick bar (open, select, close, as a 1-0 key does), not `LF_HandTool.Equip`.
+  `ground` reads the nearest such tool lying within 6 m and what its vanilla pick-up says here (shown,
+  perform, the refusal, fits); `pickup` performs it. Proof `session.mjs drill-quickslot-proof [--island]`
+  (2026-11-23, a dedicated server with a remote client, the annex and the Saint-Philippe vault: the drill
+  takes slot 5, the press holds it, the vault drills 30 s, the drill left by the vault picks back up).
 - 🔵 Judged flows (#2935, `agent-box/flow-asserts.mjs`): `step <id> <title> [pending #N]` and
   `expect cash|bank|money +N|-N|=N|up|down|same`, `expect job <NAME>`, `expect duty police|medic|off`,
   `expect item <prefab text>`. The flow ends with a `step PASS|FAIL` table and exits 1 on any failed step;
