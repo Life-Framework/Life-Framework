@@ -231,6 +231,11 @@ Repainted vehicle bodies and door plates written by `tools\cli livery build`.
 | LF_S1203_Police | Derived from Bohemia Interactive `S1203_body.emat` (Arma Public License, base-game asset) | Police repaint for the S1203 | `addons/LF_Everon1989/Assets/Liveries/S1203/` |
 | LF_UAZ452_Ambulance | Derived from Bohemia Interactive `uaz452_body_VAI.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | White ambulance repaint and AMBULANCE side plates for the UAZ452 | `addons/LF_Everon1989/Assets/Liveries/UAZ452/` |
 | LF_S1203_Ambulance | Derived from Bohemia Interactive `S1203_body.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | White ambulance repaint with red stripe and AMBULANCE side plates for the S1203 | `addons/LF_Everon1989/Assets/Liveries/S1203/` |
+| LF_S105_Taxi | Derived from Bohemia Interactive `S105Body_mat_beige.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Yellow taxi repaint with TAXI quarter-panel and roof plates for the S105 | `addons/LF_Everon1989/Assets/Liveries/S105/` |
+| LF_S1203_CompanyBakery | Derived from Bohemia Interactive `S1203_body.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Cream bakery van repaint with the EVERON BAKERY side plates for the S1203 | `addons/LF_Everon1989/Assets/Liveries/S1203/` |
+| LF_S1203_CompanyFactory | Derived from Bohemia Interactive `S1203_body.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Factory-blue van repaint with the EVERON WORKS side plates for the S1203 | `addons/LF_Everon1989/Assets/Liveries/S1203/` |
+| LF_UAZ452_CompanyHardware | Derived from Bohemia Interactive `uaz452_body_VAI.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Red hardware van repaint with the EVERON HARDWARE side plates for the UAZ452 | `addons/LF_Everon1989/Assets/Liveries/UAZ452/` |
+| LF_Ural4320_CompanyTimber | Derived from Bohemia Interactive `Ural_4320_Body_CIV_Forest.emat` and `SignWall_01_90x45` (Arma Public License, base-game asset) | Forest-green timber truck repaint with the EVERON TIMBER cab-door plates for the Ural4320 | `addons/LF_Everon1989/Assets/Liveries/Ural4320/` |
 
 ## Contraband labels
 
