@@ -32,7 +32,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "The square's life, in the pub's frame (the chess table's ground, front null): two domestic pigeon flocks on the cobbles (vanilla SCR_Bird flocks that lift off when a player or vehicle comes within 50 m) and the square and village-night ambience beds as emitters with their hours (the beds conf rows). The gossip bench, the harbor beds, the dock gull flock and the bank-beat anchors stand at other places and are other cards. Rows are rigid: shift, never stretch."
+    "adapt": "The square's life, in the pub's frame (the chess table's ground, front null): two domestic pigeon flocks on the cobbles (vanilla SCR_Bird flocks that lift off when a player or vehicle comes within 50 m) and the square and village-night ambience beds as emitters with their hours (the beds conf rows). The gossip bench (`LF_GossipBench`, the two-seat bench the gossips' overhear check watches) stands 4 m from the cafe's street bench, on the pavement south of the pub door, clear of the door swing and the fence; the harbor beds, the dock gull flock and the bank-beat anchors stand at other places and are other cards. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -126,6 +126,21 @@
           "blocks": []
         }
       ]
+    },
+    {
+      "id": "gossip-bench",
+      "prefab": "{9A0D37E96A665D27}Prefabs/Props/Residents/LF_GossipBench.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        9.98,
+        0,
+        0.97
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
     }
   ]
 }

@@ -99,14 +99,10 @@ class LF_HospitalCabinetComponent : ScriptComponent
 		if (!cabinetLock.IsLocked())
 			cabinetLock.Lock();
 
+		// The cabinet's own list wins, then the pack conf (#4447), then the core default.
 		array<ResourceName> loot = {};
-		if (!m_aLootPrefabs || m_aLootPrefabs.Count() == 0)
-			LF_Hospital.FillDefaultLoot(loot);
-		else
-		{
-			foreach (ResourceName prefab : m_aLootPrefabs)
-				loot.Insert(prefab);
-		}
+		LF_HospitalLoot.Choose(m_aLootPrefabs, loot);
+		LF_HospitalLoot.RegisterGoods();
 
 		LF_Hospital.ConfigureCabinet(targetId, loot);
 	}

@@ -4,7 +4,7 @@
   "about": "Slots of a harbour place: a quay, the taxi stand, and the two quay services that wait for state 2b (docs/architecture/everon-world.md 3.2, docs/roadmap/m6-outline.md). Same shape as town.json, including `poi`. Tooling data: no coordinates and no place names. The dock and the taxi stand stand on the quay frontage (host street); the fish counter and the chandler are shop-sized and take a building or a plot. No LF_MapPois row exists for a harbour kind yet, so every slot says `poi: none`.",
   "slots": [
     {
-      "id": "dock", "required": true, "kit": "dock", "host": "street", "poi": "none",
+      "id": "dock", "required": true, "kit": "dock", "host": "street", "poi": "none", "margin": 60,
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 120 },
       "places": ["Dock"]
     },

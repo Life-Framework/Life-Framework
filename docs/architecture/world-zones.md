@@ -15,11 +15,11 @@ the guard is `tools/validation/validate-world-zones.mjs`.
 
 ## The grid
 
-The grid is a 29 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
-(south-west) to `c28r6` (north-east). It started 7 x 7 and grew east by four columns when the old square ran out of
+The grid is a 32 x 7 lattice of 12 m cells from x 22, z 22 (2 m inside the annex fence), ids `c0r0`
+(south-west) to `c31r6` (north-east). It started 7 x 7 and grew east by four columns when the old square ran out of
 free cells (2026-11-16): `c0r0` to `c6r6` keep their ids and coordinates, so every claim stands, and
 `GRID_CENTRE` stays at 66,66 so no old cell's gap flips. The east wall of `Annex.layer` moved from x 112 to
-x 160 and the north and south walls were extended. It grew east by four columns again (11 to 15, east wall x 208) when the first 24 m buildings (a town hall, a bank) found no free 2 x 2 or 3 x 2 block (2026-11-16); the new cells are `c11r0` to `c14r6`, and once more (15 to 25, east wall x 328, 2026-11-16) so that buildings of any size and the whole town pipeline find room for months: `c15r0` to `c24r6` are free, x 202..322, and the north gate and its track did not move. It grew east by four columns a last time (25 to 29, east wall x 376, 2026-11-21) for the authoring bays ("Authoring bays" below): `c25r0` to `c28r6`, x 322..370; `c0r0` to `c24r6` keep their ids and coordinates and every legacy cell is untouched. The margin is 2 m west and south of the lattice and 6 m east
+x 160 and the north and south walls were extended. It grew east by four columns again (11 to 15, east wall x 208) when the first 24 m buildings (a town hall, a bank) found no free 2 x 2 or 3 x 2 block (2026-11-16); the new cells are `c11r0` to `c14r6`, and once more (15 to 25, east wall x 328, 2026-11-16) so that buildings of any size and the whole town pipeline find room for months: `c15r0` to `c24r6` are free, x 202..322, and the north gate and its track did not move. It grew east by four columns a last time (25 to 29, east wall x 376, 2026-11-21) for the authoring bays ("Authoring bays" below): `c25r0` to `c28r6`, x 322..370; `c0r0` to `c24r6` keep their ids and coordinates and every legacy cell is untouched. It grew east by three more columns when `grid place` found no free cell (29 to 32, east wall x 412, 2026-11-23): `c29r0` to `c31r6` are 21 ordinary cells, x 370..406, on the same flat terrain (every GridTerrain height is 0); the tests that spawn on bare ground moved from x 400 and 410 to 440 and 450. The margin is 2 m west and south of the lattice and 6 m east
 and north (the gate and its track live in that margin). Terrain bounds: `GridTerrain` is 257 x 257 points at 2 m,
 512 m square, so the grid is far inside it; `world-zones-selftest` asserts the fence stays
 inside 0..512 (`TERRAIN_SIZE` in `tools/grid/lattice.mjs`). To grow again: raise `CELL.cols` or `CELL.rows`,
@@ -30,8 +30,8 @@ move the matching `Annex.layer` wall, run `node tools/grid/lattice.mjs write`. A
   (`docs/roadmap/m1-25-village.md` "Test annex");
 - the track in through the north gate, x 66..82, z 100..112.
 
-A test that spawns a prop on bare ground picks ground outside the grid, east of the annex fence (x above 376; the
-placement tests use 400 and 410, z 100), never a lattice cell: a cell claimed later puts a fence or a patch under
+A test that spawns a prop on bare ground picks ground outside the grid, east of the annex fence (x above 412; the
+placement tests use 440 and 450, z 100), never a lattice cell: a cell claimed later puts a fence or a patch under
 the fixture (the wheat cell `slice-3290` broke `agent-harness/placement-audit` and `placement-probe` at 300..310, 100,
 2026-11-19).
 

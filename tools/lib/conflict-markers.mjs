@@ -6,8 +6,12 @@
 //
 // Pure helpers; the validator owns the file walk.
 
-/** Line kinds git writes: ours, diff3 base, theirs (each followed by a space), and the separator (exactly 7 `=` alone). */
-const MARKER = /^(<<<<<<< |\|\|\|\|\|\|\| |>>>>>>> |=======\r?$)/;
+/**
+ * Line kinds git writes: ours and theirs (followed by a space), the diff3 base (any line that starts
+ * with 7 `|`: git writes a bare `|||||||` when the base has no label, #4622), and the separator
+ * (exactly 7 `=` alone).
+ */
+const MARKER = /^(<<<<<<< |\|{7}|>>>>>>> |=======\r?$)/;
 
 /** [{ line, text }] for each marker line (1-based). Accepts a string or Buffer (latin1). */
 export function conflictMarkerLines(data) {
