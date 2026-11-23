@@ -4,16 +4,17 @@
 //
 //   node tools/town/gen-produce-crates.mjs
 //
-// GUIDs of existing files are kept (read from their .meta and their ID lines); only a new file gets new ones.
+// A file keeps its resource GUID (read from its .meta); a new file gets a new one. Entity and component IDs are
+// a hash of the file and their place in it, so a re-run writes the same bytes. The work runs only when this file
+// is the command: CI imports every tools module, and an import that wrote the prefabs failed its clean-tree check.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { randomBytes } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const dir = "Prefabs/Props/Market";
 const abs = join(root, "addons/LF_Everon1989", dir);
-mkdirSync(abs, { recursive: true });
 
 const CRATE_XOB = "{CEC8A3DF893B9C96}Assets/Props/Crates/BoxWooden_01.xob";
 // BoxWooden_01: 0.505 x 0.28 x 0.368 m, pivot at the base centre (tools\cli place bounds).
@@ -45,14 +46,13 @@ const metaText = (guid, path) => `MetaFileClass {
 }
 `;
 
-// Keep a file's resource GUID and entity IDs across runs.
+// A file's resource GUID (kept from its .meta) and its stable entity and component IDs.
 function existing(file) {
   const meta = join(abs, file + ".meta");
-  const et = join(abs, file);
   const guid = existsSync(meta) ? /Name "\{([0-9A-F]{16})\}/.exec(readFileSync(meta, "utf8"))?.[1] : null;
-  const ids = existsSync(et) ? [...readFileSync(et, "utf8").matchAll(/ID "([0-9A-F]{16})"/g)].map((m) => m[1]) : [];
   let i = 0;
-  return { guid: guid ?? hex(), id: () => ids[i++] ?? hex() };
+  const id = () => createHash("sha1").update(`${dir}/${file}#${i++}`).digest("hex").slice(0, 16).toUpperCase();
+  return { guid: guid ?? hex(), id };
 }
 
 function write(file, body, guid) {
@@ -74,6 +74,8 @@ function rng(seed) {
 }
 const f3 = (n) => Number(n.toFixed(3));
 
+function main() {
+mkdirSync(abs, { recursive: true });
 let seed = 1989;
 for (const [name, fruit] of Object.entries(FRUIT)) {
   // The mesh-only fruit.
@@ -130,3 +132,6 @@ ${kids} }
 }
 `, ce.guid);
 }
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) main();

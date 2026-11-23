@@ -1,7 +1,7 @@
 GenericEntity {
- ID "CB4A0CF045B88C2F"
+ ID "3F605CDF1151E676"
  components {
-  MeshObject "{25C68D75F3307F88}" {
+  MeshObject "{6E7F58CFE9B2AD18}" {
    Object "{D0566D3CAE967F4D}Assets/Items/Food/Apple/Apple.xob"
   }
  }
