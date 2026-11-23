@@ -1,0 +1,63 @@
+{
+  "id": "dock_fishmonger",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "7218f1d6640db33b",
+      "date": "2026-11-23",
+      "voice_id": "iP95p4xoKVk53GoZ742B",
+      "voice_name": "Chris - Charming, Down-to-Earth",
+      "model": "eleven_multilingual_v2",
+      "text": "Fresh off the boats this morning. Mackerel, bass, perch. Look all you like, but touch nothing you will not buy.",
+      "chars": 111,
+      "chars_total": 44,
+      "request_id": "dBM6XtuOF01c4ikw3Vew",
+      "seconds": 6.27,
+      "mouth": "299669828639983323423322110000000000298833875117977533210025985143100000000002939987769741052228543689941555545466412764311000"
+    },
+    "about_catch": {
+      "hash": "94ee465c90292da2",
+      "date": "2026-11-23",
+      "voice_id": "iP95p4xoKVk53GoZ742B",
+      "voice_name": "Chris - Charming, Down-to-Earth",
+      "model": "eleven_multilingual_v2",
+      "text": "The boats go out before light and are back by noon. Whatever they land, I put on the ice. If you catch your own, the wholesale counter at the dock buys it.",
+      "chars": 155,
+      "chars_total": 62,
+      "request_id": "8g8cvIUPeexLXgUQ7TUK",
+      "seconds": 8.9,
+      "mouth": "95399944279982551498478761000014577427986248544321110000000000799785875777765210572239875444421122200000000003427533993448998765210000007832996338961339963583652999610774322101000"
+    },
+    "about_prices": {
+      "hash": "8f2cda8c837c688b",
+      "date": "2026-11-23",
+      "voice_id": "iP95p4xoKVk53GoZ742B",
+      "voice_name": "Chris - Charming, Down-to-Earth",
+      "model": "eleven_multilingual_v2",
+      "text": "Mackerel is cheap. Bass costs more. Tuna only comes when the boats get lucky. The price is on the board, and I do not haggle.",
+      "chars": 125,
+      "chars_total": 50,
+      "request_id": "D1ixNyU1PiiE10uo9Afc",
+      "seconds": 7.19,
+      "mouth": "897279843356941000000000079974239943244222200000000002599998863697476636982426413411110000000000000016159744599894498964210125763888743774322100"
+    },
+    "bye": {
+      "hash": "4b8f885da96cc0fb",
+      "date": "2026-11-23",
+      "voice_id": "iP95p4xoKVk53GoZ742B",
+      "voice_name": "Chris - Charming, Down-to-Earth",
+      "model": "eleven_multilingual_v2",
+      "text": "Mind the wet boards on your way out.",
+      "chars": 36,
+      "chars_total": 14,
+      "request_id": "WgoXrx3Jy6FNVs1zdAKS",
+      "seconds": 1.72,
+      "mouth": "69986654992025433234334477898531000"
+    }
+  },
+  "voice": {
+    "id": "iP95p4xoKVk53GoZ742B",
+    "name": "Chris - Charming, Down-to-Earth",
+    "source": "premade"
+  }
+}

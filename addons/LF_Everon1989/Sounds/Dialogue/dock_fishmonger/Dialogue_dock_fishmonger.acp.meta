@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{4803A254356AD13D}Sounds/Dialogue/dock_fishmonger/Dialogue_dock_fishmonger.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
