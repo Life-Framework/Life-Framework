@@ -12277,6 +12277,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Payphone"
      Comment "Title of the payphone toast."
     }
+    CustomStringTableItem "{7C9ACFE2F607ADE4}" {
+     Id "LF-PerkPick_Change"
+     Target_en_us "Change to %1 (%2), %3"
+     Comment "Counter row: paid perk change. %1 = perk, %2 = trade, %3 = fee (#4416)"
+    }
+    CustomStringTableItem "{CE43CE20BD57EFD8}" {
+     Id "LF-PerkPick_ChangeAny"
+     Target_en_us "Change to %1, %2"
+     Comment "Counter row before the client knows the trade: paid change. %1 = perk, %2 = fee (#4416)"
+    }
+    CustomStringTableItem "{9E6751E5C4E11EAB}" {
+     Id "LF-PerkPick_Changed"
+     Target_en_us "Perk changed. %1 paid at the counter."
+     Comment "Toast: paid perk change done. %1 = fee (#4416)"
+    }
+    CustomStringTableItem "{E84CEFF083318DA3}" {
+     Id "LF-PerkPick_Failed"
+     Target_en_us "The clerk could not record that. Try again."
+     Comment "Toast: pick failed (#4416)"
+    }
+    CustomStringTableItem "{1632EF2B9AA45FCB}" {
+     Id "LF-PerkPick_NoMoney"
+     Target_en_us "A perk change costs %1 in cash. You do not have enough."
+     Comment "Toast: refused change, short of cash. %1 = fee (#4416)"
+    }
+    CustomStringTableItem "{534418E6E7F31E1B}" {
+     Id "LF-PerkPick_NotOffered"
+     Target_en_us "That perk is not open to you yet. Picks open at trade levels 10 and 20."
+     Comment "Toast: refused pick (#4416)"
+    }
+    CustomStringTableItem "{604C99102F4E69D2}" {
+     Id "LF-PerkPick_Perk_DoubleYield"
+     Target_en_us "Double yield"
+     Comment "Perk name (#4416)"
+    }
+    CustomStringTableItem "{61E90E5710E9F92B}" {
+     Id "LF-PerkPick_Perk_LightTouch"
+     Target_en_us "Light touch"
+     Comment "Perk name (#4416)"
+    }
+    CustomStringTableItem "{3A444754F3E9577A}" {
+     Id "LF-PerkPick_Perk_SwiftHands"
+     Target_en_us "Swift hands"
+     Comment "Perk name (#4416)"
+    }
+    CustomStringTableItem "{EF810CC51A4FD0EC}" {
+     Id "LF-PerkPick_Take"
+     Target_en_us "Take %1 (%2)"
+     Comment "Counter row: free perk pick. %1 = perk, %2 = trade (#4416)"
+    }
+    CustomStringTableItem "{761DBAD47C3A4607}" {
+     Id "LF-PerkPick_TakeAny"
+     Target_en_us "Take %1"
+     Comment "Counter row before the client knows the trade. %1 = perk (#4416)"
+    }
+    CustomStringTableItem "{C44E243F17A27F8E}" {
+     Id "LF-PerkPick_Taken"
+     Target_en_us "Perk taken. It works from your next shift."
+     Comment "Toast: first perk pick done (#4416)"
+    }
+    CustomStringTableItem "{E670AFD3FEE77EB8}" {
+     Id "LF-PerkPick_Title"
+     Target_en_us "Labour office"
+     Comment "Toast title at the labour office counter (#4416)"
+    }
+    CustomStringTableItem "{3149C2DAEBE9569F}" {
+     Id "LF-PerkPick_WeekLock"
+     Target_en_us "You already changed this perk this week. Come back next week."
+     Comment "Toast: refused change inside the week (#4416)"
+    }
     CustomStringTableItem "{3CD776C95F970C59}" {
      Id "LF-Phone_Connected"
      Target_en_us "Someone picked up. The line is open."
