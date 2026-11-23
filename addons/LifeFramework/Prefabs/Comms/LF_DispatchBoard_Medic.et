@@ -19,6 +19,136 @@ GenericEntity : "{3F233EFE851CEBBE}Prefabs/Police/LF_WantedBoard.et" {
      }
      m_sService "medic"
     }
+    LF_PerkPickAction "{609ED32A084E0BDC}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{56B0C73A27DEABFF}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "quick_revive"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
+    LF_PerkPickAction "{A8CD85C396188D63}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{A7AD595E36449678}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "quick_aid"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
+    LF_PerkPickAction "{A444CC84EB268C53}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{AA4A93FB5BF4A913}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "steady_carry"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
+    LF_PerkPickAction "{2BA41DFFE3CFCFE6}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{3E3DECDB27D814E4}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "quick_revive"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
+    LF_PerkPickAction "{B1AFC18A42EEF642}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{D19DD0C1846290BE}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "quick_aid"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
+    LF_PerkPickAction "{B86A76EB74104639}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{34D90E686A4676DB}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "quick_revive"
+     m_bChange 1
+     m_sTrade "MEDIC"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
+    LF_PerkPickAction "{7C75D268C4B657F2}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{97DD253126B3F494}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "quick_aid"
+     m_bChange 1
+     m_sTrade "MEDIC"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
+    LF_PerkPickAction "{50F6AB94B3E0FB50}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{A41C75C0A8682983}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "steady_carry"
+     m_bChange 1
+     m_sTrade "MEDIC"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
+    LF_PerkPickAction "{12DB6271BB0AE28A}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{F1FF80A102F02D33}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "quick_revive"
+     m_bChange 1
+     m_sTrade "MEDIC"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
+    LF_PerkPickAction "{C8EE74E38282085B}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     UIInfo UIInfo "{08B11E1FD982A52A}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "quick_aid"
+     m_bChange 1
+     m_sTrade "MEDIC"
+     m_sTitle "#LF-PerkPick_TitleClinic"
+    }
    }
   }
  }

@@ -12674,7 +12674,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{9E6751E5C4E11EAB}" {
      Id "LF-PerkPick_Changed"
-     Target_en_us "Perk changed. %1 paid at the counter."
+     Target_en_us "Perk changed. %1 paid."
      Comment "Toast: paid perk change done. %1 = fee (#4416)"
     }
     CustomStringTableItem "{E84CEFF083318DA3}" {
@@ -12697,11 +12697,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Double yield"
      Comment "Perk name (#4416)"
     }
+  CustomStringTableItem "{F2E79F963D70D375}" {
+   Id "LF-PerkPick_Perk_FastCuff"
+   Target_en_us "Fast cuff"
+   Comment "Police perk name: shorter cuff hold (#4573)"
+  }
+  CustomStringTableItem "{9D7CBBFEEB7AA1C6}" {
+   Id "LF-PerkPick_Perk_GoodWord"
+   Target_en_us "Good word"
+   Comment "Perk name: traders pay 10% more for the trade's goods (#4573)"
+  }
     CustomStringTableItem "{61E90E5710E9F92B}" {
      Id "LF-PerkPick_Perk_LightTouch"
      Target_en_us "Light touch"
      Comment "Perk name (#4416)"
     }
+  CustomStringTableItem "{287C6C5C69D1FD5F}" {
+   Id "LF-PerkPick_Perk_LongRadar"
+   Target_en_us "Long radar"
+   Comment "Police perk name: longer radar gun range (#4573)"
+  }
+  CustomStringTableItem "{0B655457D863937F}" {
+   Id "LF-PerkPick_Perk_QuickAid"
+   Target_en_us "Quick aid"
+   Comment "Medic perk name: a dressing buys more time (#4573)"
+  }
+  CustomStringTableItem "{CC5C32C2C44180C2}" {
+   Id "LF-PerkPick_Perk_QuickRevive"
+   Target_en_us "Quick revive"
+   Comment "Medic perk name: shorter revive hold (#4573)"
+  }
+  CustomStringTableItem "{E6943718899C1488}" {
+   Id "LF-PerkPick_Perk_SteadyCarry"
+   Target_en_us "Steady carry"
+   Comment "Medic perk name: a carried patient bleeds slower (#4573)"
+  }
     CustomStringTableItem "{3A444754F3E9577A}" {
      Id "LF-PerkPick_Perk_SwiftHands"
      Target_en_us "Swift hands"
@@ -12724,9 +12754,19 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{E670AFD3FEE77EB8}" {
      Id "LF-PerkPick_Title"
-     Target_en_us "Labour office"
+     Target_en_us "Labor office"
      Comment "Toast title at the labour office counter (#4416)"
     }
+  CustomStringTableItem "{F15221208DB39DB9}" {
+   Id "LF-PerkPick_TitleClinic"
+   Target_en_us "Clinic"
+   Comment "Toast title at the clinic dispatch board perk rows (#4573)"
+  }
+  CustomStringTableItem "{67F56523A9EC5CDA}" {
+   Id "LF-PerkPick_TitlePolice"
+   Target_en_us "{Police} station"
+   Comment "Toast title at the police dispatch board perk rows (#4573)"
+  }
     CustomStringTableItem "{3149C2DAEBE9569F}" {
      Id "LF-PerkPick_WeekLock"
      Target_en_us "You already changed this perk this week. Come back next week."

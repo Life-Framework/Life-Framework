@@ -53,7 +53,7 @@ class LF_Test_PerkPick : LF_Test
 		LF_Utils.SetUidForTests(character, UID);
 		array<LF_PerkPickAction> rows = {};
 		Rows(counter, rows);
-		ctx.Equal(35, rows.Count(), "the counter has 35 perk rows (five take rows, five change rows per trade)");
+		ctx.Equal(40, rows.Count(), "the counter has 40 perk rows (six take rows, five change rows per trade, a good-word change row in four)");
 
 		// Level 9: no row.
 		SetLevel(levelsBefore, track, 9);
