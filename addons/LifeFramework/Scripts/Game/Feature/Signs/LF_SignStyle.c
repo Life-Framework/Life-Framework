@@ -2,8 +2,10 @@
 //
 // A style is how the lettering is made (layout and so font, ink, ground, ghost, tilt, leaders); a size is
 // the carrier mesh the face is drawn on and how many layout units it shows. Both are rows of
-// Configs/Signs/LF_SignStyles.conf; a pack overlay of LF_SignStyleConfig adds, replaces, patches or
-// removes a row by id (LF_ConfigOverlay, docs/config/override-model.md).
+// Configs/Signs/LF_SignStyles.conf and of every sibling family file Configs/Signs/LF_SignStyles_<Family>.conf
+// (the livery plates are LF_SignStyles_Livery.conf), so a card adds styles in its own file and edits no
+// shared list. A pack overlay of LF_SignStyleConfig adds, replaces, patches or removes a row by id
+// (LF_ConfigOverlay, docs/config/override-model.md).
 
 //------------------------------------------------------------------------------------------------
 [BaseContainerProps(), LF_SignStyleTitle()]
@@ -395,9 +397,69 @@ class LF_SignStyles
 			return;
 
 		s_bLoadAttempted = true;
-		s_Config = Load(CONFIG_PATH);
+		s_Config = LoadWithFamilies();
 		if (s_Config)
 			s_Config.ApplyPackOverlays();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The core config with every family file merged in (path order). Null when the core config does not load.
+	static LF_SignStyleConfig LoadWithFamilies()
+	{
+		LF_SignStyleConfig config = Load(CONFIG_PATH);
+		if (config)
+			ApplyFamilyFiles(config);
+
+		return config;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every family file: a `.conf` named `LF_SignStyles_<Family>.conf` in a `Configs/Signs` folder of a
+	//! loaded addon, in path order. The core `LF_SignStyles.conf` has no underscore after "Styles" and is not one.
+	static void FamilyFiles(notnull array<ResourceName> files)
+	{
+		LF_SignStyleFamilyCollector collector = new LF_SignStyleFamilyCollector();
+		SearchResourcesFilter filter = new SearchResourcesFilter();
+		filter.fileExtensions = { "conf" };
+		filter.recursive = true;
+		ResourceDatabase.SearchResources(filter, collector.OnFound);
+		collector.GetSorted(files);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Merges each family file's styles and sizes into the config by the override verbs (an empty op adds
+	//! a new id and patches a known one). A file that does not load or has another root class is logged and skipped.
+	//! \return Rows changed.
+	static int ApplyFamilyFiles(notnull LF_SignStyleConfig config)
+	{
+		array<ResourceName> files = {};
+		FamilyFiles(files);
+		int total;
+		foreach (ResourceName file : files)
+		{
+			Resource resource = BaseContainerTools.LoadContainer(file);
+			if (!resource || !resource.IsValid() || !resource.GetResource())
+			{
+				LF_Debug.Error("Signs", "sign style family file does not resolve, skipped: " + file);
+				continue;
+			}
+
+			BaseContainer container = resource.GetResource().ToBaseContainer();
+			typename rootType;
+			if (container)
+				rootType = container.GetClassName().ToType();
+			if (!rootType || !rootType.IsInherited(LF_SignStyleConfig))
+			{
+				LF_Debug.Error("Signs", "sign style family file is not an LF_SignStyleConfig, skipped: " + file);
+				continue;
+			}
+
+			int changed = config.ApplyContainer(container, file);
+			LF_Debug.Info("Signs", string.Format("sign style family file %1 changed %2 styles and sizes", file, changed));
+			total += changed;
+		}
+
+		return total;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -487,6 +549,35 @@ class LF_SignStyles
 		{
 			if (size)
 				ids.Insert(size.m_sId);
+		}
+	}
+}
+
+//------------------------------------------------------------------------------------------------
+//! SearchResources callback for LF_SignStyles.FamilyFiles: keeps the family files as "path|resourceName"
+//! rows so a sort orders them by path.
+class LF_SignStyleFamilyCollector
+{
+	protected ref array<string> m_aRows = {};
+
+	//------------------------------------------------------------------------------------------------
+	void OnFound(ResourceName resourceName, string exactPath = "")
+	{
+		string path = resourceName.GetPath();
+		if (path.IndexOf("Configs/Signs/LF_SignStyles_") < 0)
+			return;
+
+		m_aRows.Insert(path + "|" + resourceName);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	void GetSorted(notnull array<ResourceName> files)
+	{
+		m_aRows.Sort();
+		foreach (string row : m_aRows)
+		{
+			int cut = row.IndexOf("|");
+			files.Insert(row.Substring(cut + 1, row.Length() - cut - 1)); // lf-bounded: a resource path
 		}
 	}
 }
