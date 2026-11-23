@@ -134,6 +134,3 @@ GenericEntity Fit_ne_compound_truckyard_sign_gate : "{B7B489CA36A0E9F8}Prefabs/P
  coords 5024.116 28.072 10848.3
  angleY -90
 }
-GenericEntity Fit_ne_compound_truckyard_lamp : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
- coords 5084.117 30.845 10850.799
-}

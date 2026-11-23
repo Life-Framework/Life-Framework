@@ -110,7 +110,3 @@ GenericEntity Truckyard_Sign_Gate : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Si
   }
  }
 }
-GenericEntity Truckyard_Lamp : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
- coords -7.74 0 14.83
- angleY 5
-}

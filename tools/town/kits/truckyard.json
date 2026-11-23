@@ -30,7 +30,7 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "A fenced truck yard on open apron: the host is the weighbridge office (the sales hut). Everything stands on the ground (terrain rows, run town fit --terrain): the lot counter with id truck-yard in front of the hut, a row of four civilian Ural display trucks along the long shed, the spawn bay on the lane west of the counter (set in the lot spawn point, world axes), cones at its mouth, two Truck Sales signs and a floodlight. Rows are rigid: shift, never stretch."
+    "adapt": "A fenced truck yard on open apron: the host is the weighbridge office (the sales hut). Everything stands on the ground (terrain rows, run town fit --terrain): the lot counter with id truck-yard in front of the hut, a row of four civilian Ural display trucks along the long shed, the spawn bay on the lane west of the counter (set in the lot spawn point, world axes), cones at its mouth and two Truck Sales signs. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -306,23 +306,6 @@
       "wall": "free",
       "floor": "f0",
       "mount": "terrain"
-    },
-    {
-      "id": "lamp",
-      "name": "Truckyard_Lamp",
-      "prefab": "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et",
-      "role": "light",
-      "verb": "on floor",
-      "offset": [
-        -7.74,
-        0,
-        14.83
-      ],
-      "yaw": 5,
-      "wall": "free",
-      "floor": "f0",
-      "mount": "terrain",
-      "lift": 3.462
     }
   ]
 }
