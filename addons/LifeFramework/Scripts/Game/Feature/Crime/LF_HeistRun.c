@@ -5,6 +5,12 @@
 //! outside the site radius. The door opening starts the run and its clock (the breach arm rings
 //! the alarm, LF_Breach.Arm); a vault opened before the door does nothing. The clock running out or
 //! the crew gone fails it. Server only; it listens on the bus while Listen() is in force.
+//!
+//! A configured job (FromRow) is a big job (#4437, plan 0.3.0 Crime A6): its door opening takes
+//! the server-wide LF_BigJobLock under the row's id, the run ending (paid out or failed) or being
+//! stopped mid-run releases it and starts the job's cooldown, and ArmRefusal refuses arming its door
+//! while another big job runs or the job cools down. A lost run frees the lock after
+//! LF_BigJobLock.MAX_RUN_SECONDS. A run built from attributes (Create) takes no lock.
 class LF_HeistRun : LF_EventSubscriber
 {
 	static const string FEATURE = "Heist";
@@ -27,6 +33,16 @@ class LF_HeistRun : LF_EventSubscriber
 	protected bool m_bAlarm;
 	protected int m_iMinPolice;
 	protected bool m_bClerkHandsUp;
+	//! The big-job lock key (the heist row id); empty for a run that is not a configured job.
+	protected string m_sJobKey;
+	protected int m_iCooldownSeconds;
+	//! True while this run holds the big-job lock.
+	protected bool m_bHoldsLock;
+
+	//! Throttles the server's refusal log: ArmRefusal also runs for every action-menu frame on a host.
+	protected static string s_sLastRefusalLog;
+	protected static int s_iLastRefusalLogAt = -1;
+	protected static const int REFUSAL_LOG_EVERY_SECONDS = 10; // lf-fixed: log throttle, not tuning
 
 	//------------------------------------------------------------------------------------------------
 	//! \param clockMs the whole run's time limit from the door opening; 0 or less means none.
@@ -89,7 +105,18 @@ class LF_HeistRun : LF_EventSubscriber
 
 		run.m_iMinPolice = row.m_iMinPoliceOnDuty;
 		run.m_bClerkHandsUp = door.m_bClerkHandsUp;
+		run.m_sJobKey = row.m_sId;
+		run.m_iCooldownSeconds = CooldownSeconds(row);
 		return run;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The big-job cooldown a configured job starts when it ends. LF_HeistSiteRow has no cooldown
+	//! field yet, so every heist job takes the bank's plan default (3 h); the pharmacy takes the lock
+	//! in its own code with its own cooldown.
+	static int CooldownSeconds(LF_HeistSiteRow row)
+	{
+		return LF_BigJobLock.COOLDOWN_BANK;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -107,15 +134,66 @@ class LF_HeistRun : LF_EventSubscriber
 
 		foreach (LF_HeistSiteRow row : config.m_aSites)
 		{
-			if (!row)
-				continue;
-
-			LF_HeistStageRow door = row.FindStage(LF_HeistKinds.DOOR);
-			if (door && door.m_sTargetId == targetId && !LF_Bank.PoliceOnDutyAllows(policeOnDuty, row.m_iMinPoliceOnDuty))
-				return NEED_POLICE;
+			string refusal = RowArmRefusal(row, targetId, policeOnDuty, LF_BigJobLock.Now());
+			if (!refusal.IsEmpty())
+				return refusal;
 		}
 
 		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! ArmRefusal for one job row: NEED_POLICE under the police minimum; then the big-job refusal
+	//! (LF_BigJobLock.RefusalKey for another job running, the cooldown in words with its minutes) when
+	//! the lock would refuse this job. Empty when \p targetId is not the row's door or arming may go on.
+	//! Pure: it never takes the lock (the door opening does). The lock lives on the server, so the
+	//! client's offer passes and the server's perform decides.
+	static string RowArmRefusal(LF_HeistSiteRow row, string targetId, int policeOnDuty, int nowSeconds)
+	{
+		if (!row || targetId.IsEmpty())
+			return string.Empty;
+
+		LF_HeistStageRow door = row.FindStage(LF_HeistKinds.DOOR);
+		if (!door || door.m_sTargetId != targetId)
+			return string.Empty;
+
+		if (!LF_Bank.PoliceOnDutyAllows(policeOnDuty, row.m_iMinPoliceOnDuty))
+			return NEED_POLICE;
+
+		string running = LF_BigJobLock.RunningJob(nowSeconds);
+		if (!running.IsEmpty())
+		{
+			LogRefusal(row.m_sId, string.Format("arming %1 refused: big job %2 is running", row.m_sId, running), nowSeconds);
+			return LF_BigJobLock.RefusalKey(LF_EBigJobLock.BUSY);
+		}
+
+		int left = LF_BigJobLock.CooldownLeft(row.m_sId, nowSeconds);
+		if (left > 0)
+		{
+			LogRefusal(row.m_sId, string.Format("arming %1 refused: cooling down, %2 s left", row.m_sId, left), nowSeconds);
+			return LF_BigJobLock.RefusalText(LF_EBigJobLock.COOLDOWN, row.m_sId, nowSeconds);
+		}
+
+		return string.Empty;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void LogRefusal(string jobKey, string message, int nowSeconds)
+	{
+		if (jobKey == s_sLastRefusalLog && s_iLastRefusalLogAt >= 0 && nowSeconds - s_iLastRefusalLogAt < REFUSAL_LOG_EVERY_SECONDS)
+			return;
+
+		s_sLastRefusalLog = jobKey;
+		s_iLastRefusalLogAt = nowSeconds;
+		LF_Debug.Info(LF_BigJobLock.FEATURE, message);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	static void ResetStatics()
+	{
+		s_iNowOverride = -1;
+		s_sLastRefusalLog = string.Empty;
+		s_iLastRefusalLogAt = -1;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -144,6 +222,22 @@ class LF_HeistRun : LF_EventSubscriber
 	{
 		LF_EventBus.Unsubscribe(LF_OnBreachOpened, this);
 		LF_EventBus.Unsubscribe(LF_OnVaultBreach, this);
+		if (m_bHoldsLock)
+		{
+			LF_Debug.Info(FEATURE, string.Format("%1: run stopped mid-way; the big-job lock is released", m_sSiteId));
+			ReleaseLock();
+		}
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Ends this run's hold on the big-job lock and starts the job's cooldown.
+	protected void ReleaseLock()
+	{
+		if (!m_bHoldsLock)
+			return;
+
+		m_bHoldsLock = false;
+		LF_BigJobLock.Finish(m_sJobKey, LF_BigJobLock.Now());
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -177,8 +271,23 @@ class LF_HeistRun : LF_EventSubscriber
 	{
 		if (m_Stages.GetState() == LF_EHeistState.IDLE)
 		{
+			if (!m_sJobKey.IsEmpty())
+			{
+				LF_EBigJobLock lockResult = LF_BigJobLock.TryBegin(m_sJobKey, playerUid, m_iCooldownSeconds, LF_BigJobLock.Now());
+				if (lockResult != LF_EBigJobLock.OK)
+				{
+					LF_Debug.Info(LF_BigJobLock.FEATURE, string.Format("%1: run not started by %2: the big-job lock refused (%3)", m_sSiteId, playerUid, typename.EnumToString(LF_EBigJobLock, lockResult)));
+					return false;
+				}
+
+				m_bHoldsLock = true;
+			}
+
 			if (!m_Stages.Start(nowMs, m_iClockMs))
+			{
+				ReleaseLock();
 				return false;
+			}
 
 			m_bAlarm = true;
 			LF_Debug.Info(FEATURE, string.Format("%1: run started by %2 at the door %3; alarm raised; clerk may raise hands: %4", m_sSiteId, playerUid, m_sDoorId, m_bClerkHandsUp));
@@ -253,6 +362,7 @@ class LF_HeistRun : LF_EventSubscriber
 		else
 			LF_Debug.Info(FEATURE, string.Format("%1: run complete, crew of %2 got away", m_sSiteId, m_aCrew.Count()));
 
+		ReleaseLock();
 		return true;
 	}
 
@@ -338,6 +448,19 @@ class LF_HeistRun : LF_EventSubscriber
 	{
 		return m_sSiteId;
 	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The big-job lock key (the heist row id), empty for a run that takes no lock.
+	string GetJobKey()
+	{
+		return m_sJobKey;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	bool HoldsBigJobLock()
+	{
+		return m_bHoldsLock;
+	}
 }
 
 //------------------------------------------------------------------------------------------------
@@ -351,6 +474,6 @@ class LF_HeistRun_StaticResetHook : LF_StaticResetHook
 
 	override void Apply()
 	{
-		LF_HeistRun.s_iNowOverride = -1;
+		LF_HeistRun.ResetStatics();
 	}
 }
