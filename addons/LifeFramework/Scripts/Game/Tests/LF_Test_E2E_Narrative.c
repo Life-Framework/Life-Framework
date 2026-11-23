@@ -1,3 +1,5 @@
+// red-proof (#4401, leftover character): the town leg `tools\cli test --town --no-build --no-cache` without the
+// Run()/RunLoop() delete failed `suite/no-leftover-fixtures` (12 of 13 passed); with it 13 of 13 pass.
 // red-proof: break an expectation and run `tools\cli test --tier all`; the
 // loop goes red. Observed red: expected GetCash 201 after AddCash(200), then
 // reverted. Dropping the apple tradable value below 5 in AppleChain.layer sends
@@ -27,6 +29,16 @@ class LF_Test_E2E_Narrative : LF_Test
 	//------------------------------------------------------------------------------------------------
 	override void Run(LF_TestContext ctx)
 	{
+		// The character spawns at the gate and would pile up under later tests (#2792, #4401): the
+		// loop runs in RunLoop, which returns early on any failure, and this deletes what it left.
+		IEntity character;
+		RunLoop(ctx, character);
+		LF_TestCharacterFixture.Delete(character);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected void RunLoop(LF_TestContext ctx, out IEntity character)
+	{
 		Resource res = Resource.Load(CHARACTER_PREFAB);
 		ctx.True(res.IsValid(), "character prefab loads: " + CHARACTER_PREFAB);
 		if (ctx.FailureCount() > 0)
@@ -50,7 +62,7 @@ class LF_Test_E2E_Narrative : LF_Test
 		Math3D.AnglesToMatrix(yawPitchRoll, params.Transform);
 		params.Transform[3] = position + "0 0.1 0";
 
-		IEntity character = GetGame().SpawnEntityPrefab(res, GetGame().GetWorld(), params);
+		character = GetGame().SpawnEntityPrefab(res, GetGame().GetWorld(), params);
 		ctx.True(character != null, "character spawns an entity");
 		if (ctx.FailureCount() > 0)
 			return;

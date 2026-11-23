@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "kit": "birds",
+  "system": "atmosphere",
+  "source": {
+    "file": "addons/LifeFramework/Worlds/GridWorld/GridWorld_Layers/Grid_slice_4233.layer",
+    "group": "Kit_birds_*",
+    "origin": "Grid_slice_4233_Sign",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -3,
+        -2.5
+      ],
+      "max": [
+        3.5,
+        2.5
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "Vanilla bird flocks (SCR_Bird, no art, no sound of our own). Two domestic pigeon flocks go on open paving of the square, clear of the fountain basin and the cafe terrace; one seagull flock goes on the dock apron or a quay edge, not on a roof. A flock spawns where it stands and lifts off on its own when a player or a vehicle comes within DangerEventRange (50 m), then lands again after ReactionCooldown (35 s). Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "pigeons-a",
+      "name": "LF_BirdFlock_Pigeons_A",
+      "prefab": "{BF8A3171E5AF74E7}Prefabs/Animals/Birds/Columba_livia_domestica/BirdFlock_DomesticPigeon.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3,
+        0,
+        -2.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "pigeons-b",
+      "name": "LF_BirdFlock_Pigeons_B",
+      "prefab": "{BF8A3171E5AF74E7}Prefabs/Animals/Birds/Columba_livia_domestica/BirdFlock_DomesticPigeon.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.5,
+        0,
+        2.5
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "gulls",
+      "name": "LF_BirdFlock_Gulls",
+      "prefab": "{EB419793F72FCE41}Prefabs/Animals/Birds/Larus_argentatus/BirdFlock_Seagull.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.5,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

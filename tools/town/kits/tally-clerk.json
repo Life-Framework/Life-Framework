@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "kit": "tally-clerk",
+  "system": "crime",
+  "source": {
+    "file": "addons/LF_Everon1989/Configs/Npcs/LF_Npc_Townsfolk_TallyClerk.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0,
+        0
+      ],
+      "max": [
+        0,
+        0
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "One person, standing on the ground of the container yard on the dock, beside the tally hut door (crime B9 of 0.3.0 places it). The row sits at the footprint centre; `town fit --check` shows the seat corrections. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "tally-clerk",
+      "prefab": "{06C758FEC5FEF9F2}Configs/Npcs/LF_Npc_Townsfolk_TallyClerk.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        0,
+        0,
+        0
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{2D1FCA52E5A0CD4B}Configs/Dialogue/LF_Dialogue_ForemanCoalmansBrow.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
