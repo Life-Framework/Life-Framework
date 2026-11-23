@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-23: the new CanAutoOpen(..., dialogueOpen) and CanOpenByKey assertions do not compile on the unfixed code (red); `tools/cli test --no-build --only LF_Test_WelcomeGuide,LF_Test_FirstHoursGuide` green after the fix (passed=2).
+// red-proof: #4645 AutoOpenWanted: `--red` run, the agent-client assertion fails when the client looks like a player's (RED-OK line in the PR); earlier: observed 2026-11-23: the new CanAutoOpen(..., dialogueOpen) and CanOpenByKey assertions do not compile on the unfixed code (red); `tools/cli test --no-build --only LF_Test_WelcomeGuide,LF_Test_FirstHoursGuide` green after the fix (passed=2).
 //! Welcome guide rules, no world: a new character's guide is pending once, a repeat mark is one mark,
 //! an empty id is refused, "Don't show again" clears it for good, export and apply round-trip the set and
 //! skip bad rows, the auto open waits for a standing body with nothing else on screen, and each
@@ -53,6 +53,14 @@ class LF_Test_WelcomeGuide : LF_Test
 		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, false, true, false, false), "not over another menu");
 		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, false, false, true, false), "not over another sheet");
 		ctx.False(LF_WelcomeGuide.CanAutoOpen(true, true, false, false, false, true), "not over a conversation: the clerk scene keeps the confirm key");
+		// A client an agent drives gets no auto open (#4645); RedProof(): the client looks like a real player's, so it would open.
+		bool agentClient = true;
+		if (RedProof())
+			agentClient = false;
+
+		ctx.False(LF_WelcomeGuide.AutoOpenWanted(agentClient, false), "an agent session client never gets the guide by itself: it covers every picture");
+		ctx.True(LF_WelcomeGuide.AutoOpenWanted(agentClient, true), "an agent session client that opted in (the guide proof) gets it");
+		ctx.True(LF_WelcomeGuide.AutoOpenWanted(false, false), "a real player's client always gets the guide on a first join");
 		ctx.False(LF_WelcomeGuide.CanOpenByKey(true), "the guide key does nothing while a conversation is up");
 		ctx.True(LF_WelcomeGuide.CanOpenByKey(false), "the guide key opens the sheet with no conversation");
 
