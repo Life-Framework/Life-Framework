@@ -114,6 +114,25 @@
   `198 0 120`. Items stay ordinary; confiscation of a contraband flag belongs
   to the contraband scope.
 
+### `LF_ClinicShortage` — `Feature/Crime/LF_ClinicShortage.c` (#4445, plan 0.3.0 Crime D1, decision N18)
+- 🔧 (merged, in-dev) **The clinic is short for an hour after its drug cabinet is robbed.** A
+  `LF_OnBreachOpened` whose target is a hospital cabinet starts it; a breach of any other target starts
+  nothing. While short, the counters named in the config (`pharmacy_counter` by default) charge 150% of
+  the buy price, and a revive held within 40 m of a hospital place (till or cabinet) takes 1.5 times as
+  long. Then it ends on its own. Never a block on revives.
+- Fair to medics: an on-duty medic restocking at the counter pays the normal price (the counter sells
+  only to `MEDIC_ACCESS` holders, so the raise would otherwise fall on them); the sell price is unchanged,
+  so buying dear and selling back is never a profit; duty pay, revive bills and bonuses do not change.
+  A second robbery while short restarts the clock at the full duration and never stacks a second hour.
+- `LF_ClinicShortage.IsActive()` and `SecondsLeft()` are the server accessors the door notice (CR-D8)
+  reads. One bool replicates on the game mode (`RplProp`, bumped only on change) so a client's revive
+  hold and price list match the server.
+- Tuning: `LF_ClinicShortageConfig` (duration, price percent capped at 300, revive percent capped at 200,
+  clinic radius, outlet ids). The core field defaults are the shipped values; the pack lists
+  `LF_ClinicShortage_Everon1989.conf` in its mission header overlays.
+- **Not persisted:** a server restart ends the shortage.
+- Test: `crime/clinic-shortage` (`LF_Test_ClinicShortage`).
+
 ### `LF_Murder` / `LF_Zones` — `Feature/Crime/`, `Feature/Moderation/` (M1-27, #125; zones #242)
 - ✅ **Murder makes you wanted** (test `crime/murder`). Every character death
   reaches `LF_GameModeRoleplay.OnControllableDestroyedEx` on the server. A
