@@ -48,6 +48,6 @@ GenericEntity Grid_slice_4187_Spawn {
  angleY 90
 }
 GenericEntity Grid_slice_4187_R0 : "{B6CCB3CFBFD054C7}Prefabs/Props/LF_ToolBench.et" {
- coords 210.525 0.1 100.001
+ coords 210.525 0.001 100.001
  angleY -90
 }
