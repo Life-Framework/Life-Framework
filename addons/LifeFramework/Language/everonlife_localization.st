@@ -12592,6 +12592,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
     }
+    CustomStringTableItem "{56655C954626CD1D}" {
+     Id "LF-OutpostBoard_Hint"
+     Target_en_us "Better pieces for friends of the camp"
+     Comment "Last chalk line of the outpost board for a reader below the crate top tier. Never a tier or a number (N1)."
+    }
+    CustomStringTableItem "{5BD9E4FA0AF8FA6C}" {
+     Id "LF-OutpostBoard_Next"
+     Target_en_us "Ask at the crate beside the board."
+     Comment "Sign catalog next text of the outpost stock board."
+    }
+    CustomStringTableItem "{7905DE54080B09B0}" {
+     Id "LF-OutpostBoard_None"
+     Target_en_us "Nothing on the shelf today"
+     Comment "Chalk line of the outpost board when the crate has no stock rows."
+    }
+    CustomStringTableItem "{E4EC46DA39DBA91A}" {
+     Id "LF-OutpostBoard_Read"
+     Target_en_us "Read the board"
+     Comment "Read row on the outpost chalk board: refreshes the lines painted on its face. No window opens."
+    }
+    CustomStringTableItem "{A7D148B678DA6EA2}" {
+     Id "LF-OutpostBoard_Title"
+     Target_en_us "Today's stock"
+     Comment "Sign title of the chalk board beside the outpost crate (#4452)."
+    }
+    CustomStringTableItem "{ACDAC44B906974C2}" {
+     Id "LF-OutpostBoard_What"
+     Target_en_us "What the quartermaster has on hand today, with the price of each."
+     Comment "Sign catalog what text of the outpost stock board (the face prints the live rows)."
+    }
     CustomStringTableItem "{520C10CDD07CEBC1}" {
      Id "LF-OutpostBuyer_Full"
      Target_en_us "\"I have enough for now. Come back in about %1 minutes.\""
