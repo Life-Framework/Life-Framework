@@ -118,7 +118,7 @@ GenericEntity Fit_saint_philippe_general_store_general_store_box_safe : "{FDF16E
    m_fRefillSeconds 2700
   }
  }
- coords 4512.134 15.494 10746.915
+ coords 4511.985 15.494 10746.891
  angleY 171
 }
 GenericEntity Fit_saint_philippe_general_store_general_store_alarm_box : "{CDE4035B661F9555}Prefabs/Structures/BuildingParts/Eletrical/ElectricityBoxes/ElectricityBox_small_01.et" {
