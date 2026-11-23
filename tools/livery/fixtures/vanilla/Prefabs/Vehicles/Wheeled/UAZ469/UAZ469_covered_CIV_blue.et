@@ -1,0 +1,6 @@
+// trimmed: only the door slot lines the livery generator reads
+  SlotManagerComponent "{55BCE45E438E4CFF}" {
+     Prefab "{1FE6352A71D67F43}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_L01_blue.et"
+     Prefab "{587FA6998293B4F6}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_R01_blue.et"
+     Prefab "{11F871624C217099}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_L02_blue.et"
+     Prefab "{5661E2D1BF64BB2C}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_R02_blue.et"

@@ -1,0 +1,48 @@
+GenericEntity : "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et" {
+ ID "258982F5B51BC244"
+ components {
+  ActionsManagerComponent "{F34EC4F01E991FBF}" {
+   ActionContexts {
+    UserActionContext "{0D62E53C35662BE0}" {
+     ContextName "LF_ToolBench"
+     Position PointInfo "{D4BAD71594516062}" {
+      Offset 0 1 0
+     }
+     Radius 2.5
+    }
+   }
+   additionalActions {
+    LF_ToolBenchAction "{EBF9AE6DFF59D5D8}" {
+     ParentContextList {
+      "LF_ToolBench"
+     }
+     UIInfo UIInfo "{E0F6BA80FE0E6365}" {
+      Name "#LF-ToolBench_RepairPickaxe"
+     }
+     Duration 2
+     m_eKind PICKAXE
+    }
+    LF_ToolBenchAction "{4F542031F735EA70}" {
+     ParentContextList {
+      "LF_ToolBench"
+     }
+     UIInfo UIInfo "{3E0C462E496D10BC}" {
+      Name "#LF-ToolBench_SharpenAxe"
+     }
+     Duration 2
+     m_eKind AXE
+    }
+    LF_ToolBenchAction "{11AEE4069B622642}" {
+     ParentContextList {
+      "LF_ToolBench"
+     }
+     UIInfo UIInfo "{7CD1167EE5D63D86}" {
+      Name "#LF-ToolBench_RestringRod"
+     }
+     Duration 2
+     m_eKind ROD
+    }
+   }
+  }
+ }
+}

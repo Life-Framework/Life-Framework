@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{BE71B7E0BFC87203}Prefabs/Tools/Tiers/LF_Tool_Axe_Standard.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

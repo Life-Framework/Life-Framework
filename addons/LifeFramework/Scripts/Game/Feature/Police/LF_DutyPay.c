@@ -137,7 +137,18 @@ class LF_DutyPay
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: hands the officer the shift's duty pay as cash, with the pick-up sound first and
+	//! Takes the account's pending outcome bonus (LF_DutyBonus, #4210) for the clock-out. A civilian is owed
+	//! none. Only shift pay and capped bonuses reach the officer: fines and bail go to the town treasury.
+	static int TakeBonus(LF_PlayerAccount account)
+	{
+		if (!account || account.GetFaction() == LF_Faction.CIVILIAN)
+			return 0;
+
+		return LF_DutyBonus.TakePending(account);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: hands the officer the shift's duty pay and outcome bonus as cash, with the pick-up sound first and
 	//! a toast second. Call after the duty clock settled the clock-out.
 	//! \return Cash placed on the officer.
 	static int PayAtClockOut(LF_PlayerAccount account, IEntity officer)
@@ -146,20 +157,39 @@ class LF_DutyPay
 			return 0;
 
 		int owed = TakeShiftPay(account, RateForAccount(account));
-		if (owed <= 0)
+		int bonus = TakeBonus(account);
+		if (owed <= 0 && bonus <= 0)
 			return 0;
 
 		if (!officer)
 		{
 			LF_Debug.Error("DutyPay", string.Format("shift pay of %1 lost: no officer entity for %2", owed, account.GetPersistentId()));
+			LF_DutyBonus.Restore(account, bonus);
 			return 0;
 		}
 
-		int given = LF_MoneyUtils.GiveCash(officer, owed, "duty-pay");
-		if (given != owed)
-			LF_Debug.Warn("DutyPay", string.Format("shift pay short: paid %1 of %2 (player %3)", given, owed, officer));
-		else
-			LF_Debug.Info("DutyPay", string.Format("shift pay +%1 cash to %2", given, account.GetPersistentId()));
+		int given = 0;
+		if (owed > 0)
+		{
+			given = LF_MoneyUtils.GiveCash(officer, owed, "duty-pay");
+			if (given != owed)
+				LF_Debug.Warn("DutyPay", string.Format("shift pay short: paid %1 of %2 (player %3)", given, owed, officer));
+			else
+				LF_Debug.Info("DutyPay", string.Format("shift pay +%1 cash to %2", given, account.GetPersistentId()));
+		}
+
+		if (bonus > 0)
+		{
+			int bonusGiven = LF_MoneyUtils.GiveCash(officer, bonus, LF_DutyBonus.REASON);
+			if (bonusGiven < bonus)
+				LF_DutyBonus.Restore(account, bonus - LF_Utils.MaxInt(bonusGiven, 0));
+
+			if (bonusGiven > 0)
+			{
+				given += bonusGiven;
+				LF_Debug.Info("DutyPay", string.Format("duty bonus +%1 cash to %2", bonusGiven, account.GetPersistentId()));
+			}
+		}
 
 		if (given <= 0)
 			return 0;

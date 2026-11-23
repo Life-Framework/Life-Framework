@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{BAC46536675E629B}Prefabs/Tools/Tiers/LF_Tool_Axe_Worn.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}
