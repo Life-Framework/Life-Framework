@@ -1,0 +1,4 @@
+MatPBRBasic : "{B7A02313829700F9}Assets/Props/Fabric/Flags/Data/Flag_1_2_Green.emat" {
+ BCRMap "{D898F299364C2D61}Assets/Props/Flags/Gang/Data/GangFlag_Rustler_BCR.edds"
+ NMOMap "{C77766C240854017}Assets/Props/Flags/Gang/Data/GangFlag_Rustler_NMO.edds"
+}

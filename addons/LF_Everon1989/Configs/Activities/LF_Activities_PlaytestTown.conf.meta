@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{890841F939AB5F0D}Configs/Activities/LF_Activities_PlaytestTown.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

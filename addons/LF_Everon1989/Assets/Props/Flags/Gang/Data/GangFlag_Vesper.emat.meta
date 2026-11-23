@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{F0D91AF05256BDD4}Assets/Props/Flags/Gang/Data/GangFlag_Vesper.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

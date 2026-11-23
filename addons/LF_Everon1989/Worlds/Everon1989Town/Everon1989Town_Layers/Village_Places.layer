@@ -1,0 +1,72 @@
+GenericEntity Places_PoliceDesk {
+ components {
+  LF_PlaceComponent "{2BC62668A6FAF83E}" {
+   m_sKind "PoliceDesk"
+   m_sId "saint-philippe.police"
+  }
+ }
+ coords 232.9 0 239.6
+}
+GenericEntity Places_MedicDesk {
+ components {
+  LF_PlaceComponent "{7FF8C19A2811284D}" {
+   m_sKind "MedicDesk"
+   m_sId "saint-philippe.clinic"
+  }
+ }
+ coords 259.4 0 256.4
+}
+GenericEntity Places_TownBoard {
+ components {
+  LF_PlaceComponent "{5A4EE393006266F0}" {
+   m_sKind "TownBoard"
+   m_sId "saint-philippe.board"
+  }
+ }
+ coords 128.039 0 249.884
+}
+GenericEntity Places_Bank {
+ components {
+  LF_PlaceComponent "{9B14CFD60902FACE}" {
+   m_sKind "Bank"
+   m_sId "saint-philippe.bank"
+  }
+ }
+ coords 175.4 0.2 264.4
+}
+GenericEntity Places_PoliceStation {
+ components {
+  LF_PlaceComponent "{3949F2D5A19E2C0C}" {
+   m_sKind "PoliceStation"
+   m_sId "saint-philippe.police"
+  }
+ }
+ coords 232.9 0 239.6
+}
+GenericEntity Places_ClothingCounter {
+ components {
+  LF_PlaceComponent "{C0151B3BAB58076A}" {
+   m_sKind "ClothingCounter"
+   m_sId "saint-philippe.clothing"
+  }
+ }
+ coords 356.8 0.201 266.336
+}
+GenericEntity Places_FuelTill {
+ components {
+  LF_PlaceComponent "{F6E1D54CC0C59603}" {
+   m_sKind "FuelTill"
+   m_sId "saint-philippe.fuel"
+  }
+ }
+ coords 283.656 0 237.43
+}
+GenericEntity Places_GunCounter {
+ components {
+  LF_PlaceComponent "{7F81199E929B70A0}" {
+   m_sKind "GunCounter"
+   m_sId "saint-philippe.gun-counter"
+  }
+ }
+ coords 375 0.199 267.6
+}
