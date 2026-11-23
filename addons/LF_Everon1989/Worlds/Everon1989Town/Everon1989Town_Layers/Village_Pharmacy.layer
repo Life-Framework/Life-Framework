@@ -1,0 +1,12 @@
+GenericEntity Pharmacy_Display_Aspirin : "{A83CE7CE9B0483D0}Prefabs/Props/Commercial/LF_PharmDisplay_Aspirin.et" {
+ coords 136.95 1.239 266.1
+ angleY 180
+}
+GenericEntity Pharmacy_Display_Gauze : "{1564801BABC5C304}Prefabs/Props/Commercial/LF_PharmDisplay_Gauze.et" {
+ coords 136.6 1.243 266.101
+ angleY 180
+}
+GenericEntity Pharmacy_Display_Tourniquet : "{DDF32314117FBA79}Prefabs/Props/Commercial/LF_PharmDisplay_Tourniquet.et" {
+ coords 136.247 1.239 266.109
+ angleY 180
+}
