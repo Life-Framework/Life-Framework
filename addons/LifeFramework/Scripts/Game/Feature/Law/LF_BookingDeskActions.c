@@ -72,7 +72,8 @@ class LF_BookingDeskBookAction : ScriptedUserAction
 		if (suspect)
 			suspectId = Replication.FindId(suspect);
 
-		string refusal = LF_BookingDesk.RequestBook(pUserEntity, pOwnerEntity.GetOrigin(), suspectId);
+		// The officer reads and signs the charge sheet (#4426); the offer is made when it comes back signed.
+		string refusal = LF_ChargeSheetDesk.Open(pUserEntity, pOwnerEntity.GetOrigin(), suspectId);
 		int officerId = LF_PlayerInteraction.PlayerIdOf(pUserEntity);
 		if (!refusal.IsEmpty() && officerId > 0)
 			LF_NotificationManagerComponent.NotifyPlayer(officerId, "#LF-BookingDesk_Title", refusal, 5.0, LF_ENotificationType.WARNING);

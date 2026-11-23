@@ -34,3 +34,11 @@ and logged (`[LFDebug:Law]`); the shipped value stays.
   Core rows ship with the defaults until then.
 - The charge sheet total, rank cap, repeat doubling and the Sergeant override are
   `Law/LF_ChargeSheetRules.c` (L3, #4209); the booking desk that uses them is L5.
+
+## Charge sheet paper (L4, #4426)
+
+Booking opens a paper, not an offer. The officer ticks each open report, sees the stacked and
+over-cap rows greyed and the total at the foot, and signs. Client: `LF_ChargeSheetScreen.c`
+(model, screen, harness fixture). Server: `LF_ChargeSheetScreenDesk.c` (open, sign, the two RPCs).
+The paper only previews: the server recomputes from the ticked ids with its own account's rank and
+duty in `LF_BookingDesk.Offer`; a total or rank the client claims is never read.
