@@ -235,7 +235,12 @@
   stays. `Export` / `Apply` put the remaining seconds back, and `ExportAll` /
   `ApplyAll` carry every serving sentence through the save. DebugWorld places
   `Roadmap_Jail_Door`, `Roadmap_Jail_Cell`, and `Roadmap_Police_Desk` on
-  `Street_Jail.layer` (the desk on `Street_Police.layer`). The placed door is
+  `Street_Jail.layer` (the desk on `Street_Police.layer`). The playtest town jail is
+  two-layer like the island's (#4336): `Roadmap_Jail_Door` (the yard gate) is the cell
+  door, and a short net-fenced pen outside it ends in `Roadmap_Jail_OuterGate` (same
+  `EL_JailDoor` prefab, `LF_BreachTargetComponent` target, named by the cell's
+  `m_sOuterDoorTargetId`) between two lock-only wing doors. The cells refuse a charge
+  until the outer gate is blown, and a released prisoner appears beside the pen. The placed door is
   `{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et`, which
   inherits
   `{B597177F09247CE9}Prefabs/Structures/BuildingParts/Doors/Door_PrisonCell_E_A_Left_INT_ST_B.et`
