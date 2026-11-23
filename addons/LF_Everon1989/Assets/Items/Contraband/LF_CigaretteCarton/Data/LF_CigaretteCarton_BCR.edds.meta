@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{1107746950C8D253}.edds"
+ Name "{1107746950C8D253}Assets/Items/Contraband/LF_CigaretteCarton/Data/LF_CigaretteCarton_BCR.edds"
  Configurations {
   TIFFResourceClass PC : "{EAB5DE3219F9CBA8}Configs/System/ResourceTypes/PC/TextureColorMap.conf" {
   }

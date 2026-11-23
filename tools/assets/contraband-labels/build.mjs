@@ -71,4 +71,15 @@ if (process.argv.includes("--no-import")) process.exit(0);
 const list = join(root, "tmp", "contraband-labels-batch.txt");
 writeFileSync(list, tifs.map((t) => t.slice(root.length + 1).replace(/\\/g, "/")).join("\n") + "\n");
 const imp = spawnSync(process.execPath, [join(root, "tools", "cli.mjs"), "ui-image", "--batch", "tmp/contraband-labels-batch.txt"], { cwd: root, encoding: "utf8", stdio: "inherit" });
+// The Workbench import rewrites a texture meta's Name as "{GUID}.edds" (no path, which validate-meta-name-path
+// rejects and no "{GUID}path" reference can name). Put the path back, keeping the GUID it chose, and point the
+// material at that GUID.
+for (const it of ITEMS) {
+  const dataDir = join(pack, DIR, it.name, "Data");
+  const meta = join(dataDir, `${it.name}_BCR.edds.meta`);
+  const res = `${DIR}/${it.name}/Data/${it.name}_BCR.edds`;
+  writeFileSync(meta, readFileSync(meta, "utf8").replace(/(Name "\{[0-9A-F]{16}\})\.edds"/, `$1${res}"`));
+  const guid = readGuid(meta);
+  writeFileSync(join(dataDir, `${it.name}.emat`), `${it.kind} : "${it.baseEmat}" {\n BCRMap "{${guid}}${res}"\n}\n`);
+}
 process.exit(imp.status ?? 1);

@@ -1,5 +1,5 @@
 MetaFileClass {
- Name "{EFD1D71165AF7339}.edds"
+ Name "{EFD1D71165AF7339}Assets/Items/Contraband/LF_VodkaBottle/Data/LF_VodkaBottle_BCR.edds"
  Configurations {
   TIFFResourceClass PC : "{EAB5DE3219F9CBA8}Configs/System/ResourceTypes/PC/TextureColorMap.conf" {
   }
