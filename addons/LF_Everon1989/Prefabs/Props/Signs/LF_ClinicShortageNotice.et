@@ -1,0 +1,11 @@
+GenericEntity : "{70924D289627911B}Prefabs/Props/Signs/LF_Sign_Notice.et" {
+ ID "65C31FE13AC5DB18"
+ components {
+  LF_SignComponent "{18C0F82DD8448393}" {
+   m_sSignId "clinic_shortage"
+   m_sRowSource "clinic_shortage"
+  }
+  LF_ShortageNoticeComponent "{9D1C1A4093E8CAC9}" {
+  }
+ }
+}

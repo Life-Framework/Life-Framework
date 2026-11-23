@@ -3765,6 +3765,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cleanup is not available."
      Comment "Greyed-out reason and toast when cleanup is refused (#690)."
     }
+    CustomStringTableItem "{343B6E24B7A77DB7}" {
+     Id "LF-ClinicShortage_Prices"
+     Target_en_us "Medicine"
+     Comment "Clinic shortage notice row label: what changed."
+    }
+    CustomStringTableItem "{89FB7CD603CEB2B2}" {
+     Id "LF-ClinicShortage_PricesValue"
+     Target_en_us "Prices raised"
+     Comment "Clinic shortage notice: medicine prices are higher."
+    }
+    CustomStringTableItem "{9E13187BE04DD170}" {
+     Id "LF-ClinicShortage_Until"
+     Target_en_us "Until"
+     Comment "Clinic shortage notice row label: how long."
+    }
+    CustomStringTableItem "{F8B0EA0FB0209C5E}" {
+     Id "LF-ClinicShortage_UntilValue"
+     Target_en_us "Further notice"
+     Comment "Clinic shortage notice: no date is promised."
+    }
+    CustomStringTableItem "{F3DA3091EFA304D0}" {
+     Id "LF-ClinicShortage_Why"
+     Target_en_us "Why"
+     Comment "Clinic shortage notice row label (#4448)."
+    }
+    CustomStringTableItem "{7376B8A6E82EC0D4}" {
+     Id "LF-ClinicShortage_WhyValue"
+     Target_en_us "Stock stolen"
+     Comment "Clinic shortage notice: why the pharmacy is closed."
+    }
     CustomStringTableItem "{B56342EA30F0AFB8}" {
      Id "LF-ClipStamp_Action"
      Target_en_us "Show clip stamp"
@@ -16079,6 +16109,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_ChalkSample_What"
      Target_en_us "A chalk board with a title and a short price list."
      Comment "Read card of the sample chalk board."
+    }
+    CustomStringTableItem "{9E48B81765BAFEC3}" {
+     Id "LF-Sign_ClinicShortage_Title"
+     Target_en_us "Pharmacy closed"
+     Comment "Sign title: the paper notice on the clinic door while the clinic is short (#4448)."
     }
     CustomStringTableItem "{62312EEA2BF57769}" {
      Id "LF-Sign_Close"

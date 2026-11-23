@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{D1D3BA9D5198E65F}Configs/Signs/LF_Signs_Everon1989/LF_Signs_ClinicShortage.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
