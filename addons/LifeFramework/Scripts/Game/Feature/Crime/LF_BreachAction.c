@@ -77,10 +77,12 @@ class LF_BreachArmAction : ScriptedUserAction
 		}
 
 		// A heist job's door waits for its police minimum (#3748); the server counts live.
-		string heistRefusal = LF_HeistRun.ArmRefusal(target.GetTargetId(), LF_AccountReplication.CountPoliceOnDuty());
+		// Then the big-job lock (#4437): another big job running, or this one cooling down; the log names which (#4492).
+		string heistWhy;
+		string heistRefusal = LF_HeistRun.ArmRefusalWhy(target.GetTargetId(), LF_AccountReplication.CountPoliceOnDuty(), heistWhy);
 		if (!heistRefusal.IsEmpty())
 		{
-			LF_Debug.Info(LF_HeistRun.FEATURE, string.Format("arm on %1 refused for %2: too few police on duty", target.GetTargetId(), playerUid));
+			LF_Debug.Info(LF_HeistRun.FEATURE, string.Format("arm on %1 refused for %2: %3", target.GetTargetId(), playerUid, heistWhy));
 			LF_Utils.NotifyEntity(pUserEntity, LF_Terms.Text(heistRefusal), "", 4.0);
 			return;
 		}

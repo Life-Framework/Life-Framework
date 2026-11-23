@@ -96,12 +96,16 @@
   Callers pass the cooldown from their pack config (`COOLDOWN_PHARMACY` 2 h, `COOLDOWN_BANK` 3 h and
   `COOLDOWN_RESERVE` 6 h are the plan defaults).
 - 🔧 **The bank heist takes it** (#4437): a configured heist job (`LF_HeistRun.FromRow`) is a big job keyed by its
-  row id. Its door opening (`DoorOpened`) calls `TryBegin`; a refused run stays idle. The run ending (getaway or
-  failure) or `Stop` mid-run calls `Finish`, so the bank cools down 3 h (`LF_HeistRun.CooldownSeconds`; the row
-  has no cooldown field yet, so every heist job takes `COOLDOWN_BANK`). `ArmRefusal` (offer and server perform)
+  row id. Arming its door takes the lock (#4492): `LF_Breach.Arm` asks `LF_HeistRun.ArmLockRefusal` before the
+  charge is taken (a refusal costs nothing and names the reason in `[LFDebug:Breach]`) and calls `ClaimAtArm`
+  right after, so a second crew is refused inside the first crew's fuse window. The door opening (`DoorOpened`)
+  adopts that lock, or calls `TryBegin` for a door opened with no arm; a refused run stays idle. A charge cancelled
+  or repaired before its fuse runs out ends the job (`ArmAbandoned`: `Finish`, so the cooldown starts). The run
+  ending (getaway or failure) or `Stop` mid-run calls `Finish`. The cooldown is the row's `m_iCooldownSeconds`
+  (`LF_HeistRun.CooldownSeconds`; 0 keeps `COOLDOWN_BANK`, 3 h; the Everon bank row sets 10800). `ArmRefusal` (offer and server perform)
   refuses arming the door after the police minimum with `#LF-BigJob_Busy` or the cooldown in minutes, logged
   `[LFDebug:BigJob]` at most every 10 s. The lock lives on the server, so the client offer passes and the server
-  perform sends the toast. Runs built from attributes take no lock. Test `LF_Test_HeistBigJobLock`.
+  perform sends the toast; its log line says the real reason (police, a big job running, or the cooldown; `ArmRefusalWhy`). Runs built from attributes take no lock. Tests `LF_Test_HeistBigJobLock`, `LF_Test_HeistArmLock`.
 - 🔧 Save section `bigjob`: cooldowns as seconds left, so a restart never resets one; a job running at the
   save comes back as that job in its full cooldown, with the lock free. Test `LF_Test_BigJobLock`; `wt e2e`
   checks the cooldown across a real restart.
