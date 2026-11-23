@@ -1,0 +1,39 @@
+{
+  "id": "role_trader_everon",
+  "name": "RoleTraderEveron",
+  "patches": "role_trader",
+  "addon": "LF_Everon1989",
+  "voice": {
+    "id": "ukUwdbHMYybjBQCOxbZ6",
+    "sex": "male",
+    "name": "Nicolas Estrem - Mature",
+    "public_owner_id": "5b4378537287ca61fa4cb50e86a36b8353bbcb624bdfd5b5a033bbf4661d634f",
+    "why": "A warm Southern French voice for the market trader on the Saint-Philippe square, the last stop of the first hour (apples, juice, sell). Not used by any other NPC. The game has male bodies only; the voice is male.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1
+    }
+  },
+  "budget_chars": 900,
+  "lines": {
+    "greet": {
+      "text": "Fresh today. Have a look."
+    },
+    "what": {
+      "text": "I buy at this stall. Bring me apple juice, fruit, cabbage or honey and I pay cash, the price on the board."
+    },
+    "where": {
+      "text": "The orchard is a short drive out of Saint-Philippe. Pick the apples, press them into juice. Juice pays best here."
+    },
+    "rumour": {
+      "text": "The price of apples went up this week. Somebody is hoarding them, I think."
+    },
+    "bye": {
+      "text": "Come back when you have more."
+    }
+  },
+  "replies": {}
+}

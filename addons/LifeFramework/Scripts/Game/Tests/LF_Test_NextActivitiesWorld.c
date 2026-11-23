@@ -94,6 +94,13 @@ class LF_Test_NextActivitiesWorld : LF_Test
 		{
 			LF_Utils.SetUidForTests(body, UID);
 			tracker.SetUidForTests(UID);
+			// The clerk's papers first (review B13): with the pack loaded, a run waits for the ID card quest.
+			foreach (string questId, LF_QuestDefinition quest : LF_QuestManager.GetInstance().GetDefinitions())
+			{
+				if (quest && quest.m_bRewardIdCard)
+					LF_Progression.NoteTurnedIn(UID, questId);
+			}
+
 			LF_MapShares.ResetStatics();
 			LF_ActivityGuide.ResetStatics();
 			LF_ActivityTestWaypoints waypoints = new LF_ActivityTestWaypoints();
@@ -108,6 +115,7 @@ class LF_Test_NextActivitiesWorld : LF_Test
 		LF_MapShares.ResetStatics();
 		LF_MapShares.EnsureStarted();
 		LF_Utils.SetUidForTests(null, string.Empty);
+		LF_Progression.Forget(UID);
 		LF_TestCharacterFixture.Delete(body);
 	}
 

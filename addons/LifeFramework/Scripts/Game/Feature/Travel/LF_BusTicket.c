@@ -288,12 +288,12 @@ class LF_BusTicket
 			s_iFare = fare;
 			s_fDepartAt = Now() + waitSeconds;
 			LF_Debug.Info(LF_BusStop.FEATURE, string.Format("bus ticket bought: fare %1, wait %2 s", fare, waitSeconds));
-			SCR_HintManagerComponent.ShowCustomHint(LF_Terms.Text("#LF-BusStop_Boarded", fare.ToString(), waitSeconds.ToString()), WidgetManager.Translate("#LF-BusStop_Title"), waitSeconds, false, EFieldManualEntryId.NONE, true);
+			LF_Utils.NoteToast(LF_Terms.Text("#LF-BusStop_Boarded", fare.ToString(), waitSeconds.ToString()), WidgetManager.Translate("#LF-BusStop_Title"), waitSeconds);
 			return;
 		}
 
 		LF_Debug.Info(LF_BusStop.FEATURE, string.Format("bus ticket refused here: %1", typename.EnumToString(LF_EBusRefusal, refusal)));
-		SCR_HintManagerComponent.ShowCustomHint(LF_Terms.Text(LF_BusStop.RefusalKey(refusal)), WidgetManager.Translate("#LF-BusStop_Title"), 5);
+		LF_Utils.NoteToast(LF_Terms.Text(LF_BusStop.RefusalKey(refusal)), WidgetManager.Translate("#LF-BusStop_Title"), 5);
 	}
 
 	//------------------------------------------------------------------------------------------------

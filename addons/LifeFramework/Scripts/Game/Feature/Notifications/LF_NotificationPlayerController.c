@@ -17,20 +17,21 @@ modded class SCR_PlayerController
 	//------------------------------------------------------------------------------------------------
 	//! Server: show a toast to this controller's player. The listen host's own controller is
 	//! local, so it calls the handler directly (an RPC is never executed on the sender).
-	void LF_DeliverNotification(string title, string message, float duration, LF_ENotificationType type, string messageArg)
+	//! \param slot A toast with a slot replaces the one still showing in that slot; empty stacks.
+	void LF_DeliverNotification(string title, string message, float duration, LF_ENotificationType type, string messageArg, string slot = "")
 	{
 		if (GetGame().GetPlayerController() == this)
 		{
-			RpcDo_LF_ShowNotification(title, message, duration, type, messageArg);
+			RpcDo_LF_ShowNotification(title, message, duration, type, messageArg, slot);
 			return;
 		}
 
-		Rpc(RpcDo_LF_ShowNotification, title, message, duration, type, messageArg);
+		Rpc(RpcDo_LF_ShowNotification, title, message, duration, type, messageArg, slot);
 	}
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Owner)]
-	protected void RpcDo_LF_ShowNotification(string title, string message, float duration, LF_ENotificationType type, string messageArg)
+	protected void RpcDo_LF_ShowNotification(string title, string message, float duration, LF_ENotificationType type, string messageArg, string slot)
 	{
 		LF_NotificationManagerComponent manager = LF_NotificationManagerComponent.GetInstance();
 		if (!manager)
@@ -41,6 +42,6 @@ modded class SCR_PlayerController
 
 		s_sLF_LastToast = message;
 		LF_Debug.Log("Notify", string.Format("toast received: %1", message));
-		manager.ShowNotificationToast(title, message, duration, type, messageArg);
+		manager.ShowNotificationToast(title, message, duration, type, messageArg, slot);
 	}
 }

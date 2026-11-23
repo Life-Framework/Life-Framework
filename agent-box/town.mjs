@@ -43,7 +43,7 @@ export const TOWN = {
     { id: "clerk", entity: "Quest_Clerk", actions: ["LF_QuestAction"], sign: "registry", step: 5 },
     { id: "post_office", entity: "Roadmap_Job_Depot", actions: ["LF_JobSignUpAction", "LF_JobStartRunAction"], sign: "post_office", step: 6 },
     { id: "job_drop", entity: "Roadmap_Job_Drop", actions: ["LF_JobDropoffAction"], sign: null, step: 7 },
-    { id: "traders", entity: "TraderChainCounter", actions: ["LF_OpenTraderAction"], sign: "traders", step: 7 },
+    { id: "traders", entity: "TraderChainCounter", actions: ["LF_TraderSellAction"], sign: "traders", step: 7 },
     { id: "atm", entity: "ATM_Debug", actions: ["LF_ATMAction"], sign: "atm", step: 8 },
     { id: "general_store", entity: "Shop_GeneralStore_Debug", actions: ["LF_ShopAction"], sign: "general_store", step: 9 },
     { id: "black_market", entity: "Shop_BlackMarket_Debug", actions: ["LF_ShopAction"], sign: "black_market", step: 9 },

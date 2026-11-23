@@ -132,7 +132,8 @@ put(P.chandelier, 2.7, 3.99, 1.8, 0, 1, null, GLASS_ON);
 // ---- The window display (street side, z 6.4..7.15) ----
 put(P.carpet, 2.75, F, 6.8, 90);
 // a third mannequin in the middle, the denim one left and the raincoat one right come from the spec fixtures
-// riser at the left end: two crates and a price card; the shoe boxes that sat on top are gone (first-2h review C12)
+// riser at the left end: two crates and a price card. The cardboard shoe boxes that sat on top read as stock dumped in
+// the window, so they are gone (first-2h review C12); the shoe cabinet and the stock room keep the boxes.
 put(P.crate, 0.98, F, 6.95, 4);
 put(P.crate, 0.98, F + 0.223, 6.95, -6);
 put(P.noticeH1, 0.98, F + 0.12, 7.16, 0, 0.7);

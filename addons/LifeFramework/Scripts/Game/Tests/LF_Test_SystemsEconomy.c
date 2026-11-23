@@ -214,9 +214,9 @@ class LF_Test_SystemsEconomy : LF_Test
 	{
 		Owner(string.Empty);
 		IEntity trader = LF_Utils.SpawnEntityPrefab(TRADER, user.GetOrigin());
-		ctx.True(ShownActions(trader, user, LF_OpenTraderAction) > 0, "with Trader on the stall offers its storage");
+		ctx.True(ShownActions(trader, user, LF_TraderSellAction) > 0, "with Trader on the stall offers its sell rows");
 		Owner("{\"Trader\":{\"enabled\":false}}");
-		ctx.Equal(0, ShownActions(trader, user, LF_OpenTraderAction), "with Trader off it offers nothing");
+		ctx.Equal(0, ShownActions(trader, user, LF_TraderSellAction), "with Trader off it offers nothing");
 		SCR_EntityHelper.DeleteEntityAndChildren(trader);
 		Owner(string.Empty);
 	}

@@ -31,7 +31,7 @@ FrameWidgetClass "{8F5975DD4CCCA84C}" {
       SizeY 0
       OffsetBottom 0
      }
-     Color 0.01 0.03 0.015 0.96
+     Color 0.01 0.03 0.015 1
     }
     TextWidgetClass "{5390830B587CB270}" {
      Name "Balance"

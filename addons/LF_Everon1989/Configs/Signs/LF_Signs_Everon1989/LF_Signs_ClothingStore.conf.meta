@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{80E536D15B9FBB22}Configs/Signs/LF_Signs_Everon1989/LF_Signs_ClothingStore.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -18,6 +18,26 @@ GenericEntity Fit_saint_philippe_market_market_trader : "{3A9F6E21C47D8B71}Prefa
  angleY -8
 }
 GenericEntity Fit_saint_philippe_market_market_price_board : "{B47D2C9E5A1F8036}Prefabs/Props/Market/LF_PriceBoard.et" {
- coords 4489.197 13.9 10717.473
+ coords 4488.83 13.9 10717.926
+ angleY -38
+}
+GenericEntity Fit_saint_philippe_market_market_awning : "{2DAC8D663D5F3E2E}Prefabs/Props/Commercial/MarketStand_01_Umbrella.et" {
+ coords 4484.503 13.9 10717.823
  angleY -8
+}
+LF_NpcBaseEntity Fit_saint_philippe_market_market_vendor : "{BA9D931A066C1997}Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_1.et" {
+ coords 4486.026 13.9 10715.967
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_market_crate_apples : "{5D4B05BFB44A5F60}Prefabs/Props/Market/LF_ProduceCrate_Apple.et" {
+ coords 4485.385 14.846 10716.937
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_market_crate_plums : "{6C8514716701DB45}Prefabs/Props/Market/LF_ProduceCrate_Plum.et" {
+ coords 4487.068 14.846 10717.173
+ angleY -8
+}
+GenericEntity Fit_saint_philippe_market_market_crate_cabbages : "{37B197739B5B18A7}Prefabs/Props/Market/LF_ProduceCrate_Cabbage.et" {
+ coords 4487.497 13.9 10716.274
+ angleY -13
 }

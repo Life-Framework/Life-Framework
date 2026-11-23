@@ -17,20 +17,20 @@ modded class LF_QuestTrackerComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The arrival guide first; a running activity step then takes the one waypoint (the player chose it
-	//! last). Returns the quest id guided to.
+	//! A running activity step holds the one waypoint (the player chose it last); the arrival guide
+	//! marks only when no activity runs, so its mark never flashes up between two activity steps
+	//! (review B12). Returns the quest id guided to.
 	override string RefreshGuide()
 	{
-		string guided = super.RefreshGuide();
 		if (!Replication.IsServer() || !GetOwner())
-			return guided;
+			return super.RefreshGuide();
 
 		LF_ActivityTable.EnsureRegistered();
 		string activity = LF_ActivityGuide.Refresh(GetOwner());
 		if (!activity.IsEmpty())
 			return activity;
 
-		return guided;
+		return super.RefreshGuide();
 	}
 }
 

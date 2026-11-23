@@ -9,6 +9,9 @@ class LF_TraderItem
 
 	[Attribute(defvalue: "false", uiwidget: UIWidgets.CheckBox, desc: "Is this item illegal?")]
 	bool m_bIllegal;
+
+	[Attribute(defvalue: "false", uiwidget: UIWidgets.CheckBox, desc: "Posted on the chalk price board beside this trader. When any row of a trader is posted, the board lists those rows at this trader's own prices; with none posted it shows the market's goods")]
+	bool m_bPosted;
 }
 
 class LF_TraderManagerComponentClass: GameComponentClass

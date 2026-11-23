@@ -44,7 +44,7 @@ class LF_RolesTable
 		role.AddOutfit("{7F564C3F96D34A04}Prefabs/Characters/Npcs/Outfits/LF_Npc_Logger_1.et", true);
 		role.AddOutfit("{31E740A9BE82E617}Prefabs/Characters/Npcs/Outfits/LF_Npc_Logger_2.et", true);
 		roles.Insert(role);
-		role = new LF_RoleDef("trader", false, "");
+		role = new LF_RoleDef("trader", false, "role_trader");
 		role.AddOutfit("{BA9D931A066C1997}Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_1.et", true);
 		role.AddOutfit("{C3B3B18CB7B18293}Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_2.et", true);
 		role.AddOutfit("{979138C2A03EF6CB}Prefabs/Characters/Npcs/Outfits/LF_Npc_Trader_3.et", true);

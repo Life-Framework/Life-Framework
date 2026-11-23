@@ -109,6 +109,22 @@ class LF_Utils : Managed
 	//------------------------------------------------------------------------------------------------
 	static void Notify(string message, string title = "", float duration = 3.0)
 	{
+		NoteToast(message, title, duration);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A note on this machine in the cream note style (first-2-hours review C11: the vanilla hint was a dark
+	//! panel with an orange heading beside the cream quest notes). Falls back to the vanilla hint when the
+	//! game mode has no notification manager (a world without it).
+	static void NoteToast(string message, string title = "", float duration = 3.0, LF_ENotificationType type = LF_ENotificationType.INFO)
+	{
+		LF_NotificationManagerComponent manager = LF_NotificationManagerComponent.GetInstance();
+		if (manager)
+		{
+			manager.ShowNotificationToast(title, message, duration, type);
+			return;
+		}
+
 		SCR_HintManagerComponent.ShowCustomHint(message, title, duration);
 	}
 
@@ -118,7 +134,8 @@ class LF_Utils : Managed
 	//! hint on the machine that calls it, which on a dedicated server is nobody.
 	//! A client call is a no-op: the server copy of the same action sends the toast.
 	//! \param messageArg Fills %1 in a #key message on the receiving client.
-	static void NotifyEntity(IEntity player, string message, string title = "", float duration = 3.0, string messageArg = "")
+	//! \param slot A toast with a slot replaces the one still showing in that slot (LF_NotificationManagerComponent.SLOT_STEP).
+	static void NotifyEntity(IEntity player, string message, string title = "", float duration = 3.0, string messageArg = "", string slot = "")
 	{
 		if (!Replication.IsServer() || !player)
 			return;
@@ -134,7 +151,7 @@ class LF_Utils : Managed
 			return;
 		}
 
-		LF_NotificationManagerComponent.NotifyPlayer(playerId, title, message, duration, LF_ENotificationType.INFO, messageArg);
+		LF_NotificationManagerComponent.NotifyPlayer(playerId, title, message, duration, LF_ENotificationType.INFO, messageArg, slot);
 	}
 
 	//------------------------------------------------------------------------------------------------

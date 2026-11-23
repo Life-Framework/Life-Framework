@@ -31,6 +31,10 @@ class LF_HarnessPickup
 	protected static IEntity s_pBest;
 	protected static float s_fBest;
 	protected static vector s_vFrom;
+	//! Carried count of the picked prefab before the pickup. A stackable item (LF_QuantityComponent) merges
+	//! into the stack it joins and is deleted, so a rise in this count also proves the pickup (first-2h B9:
+	//! every nugget after the first read as not_inserted alive=0 while it sat in the stack).
+	protected static int s_iCarriedBefore;
 
 	//------------------------------------------------------------------------------------------------
 	static void Start(int commandId, string filter)
@@ -108,6 +112,7 @@ class LF_HarnessPickup
 		}
 
 		s_ItemId = item.GetID();
+		s_iCarriedBefore = LF_HarnessCarries.CountCarried(character, FilePath.StripPath(s_sPrefab));
 		action.PerformAction(item, character);
 		LF_Debug.Info(FEATURE, string.Format("pickup performed %1 on %2", ACTION, s_sPrefab));
 		s_iWaited = 0;
@@ -129,10 +134,17 @@ class LF_HarnessPickup
 			return;
 		}
 
+		int carried = LF_HarnessCarries.CountCarried(LF_Utils.GetLocalCharacter(), FilePath.StripPath(s_sPrefab));
+		if (carried > s_iCarriedBefore)
+		{
+			Finish("ok", string.Format("pickup took item=%1 dist=%2 via=%3 carried=%4 (merged into a stack)", s_sPrefab, s_fDistance, ACTION, carried));
+			return;
+		}
+
 		s_iWaited += STEP_MS;
 		if (s_iWaited >= INSERT_WAIT_MS)
 		{
-			Finish("error", string.Format("pickup not_inserted item=%1 alive=%2 waited_ms=%3", s_sPrefab, item != null, s_iWaited));
+			Finish("error", string.Format("pickup not_inserted item=%1 alive=%2 waited_ms=%3 carried=%4", s_sPrefab, item != null, s_iWaited, carried));
 			return;
 		}
 
