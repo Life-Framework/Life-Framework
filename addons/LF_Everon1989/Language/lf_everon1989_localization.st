@@ -929,6 +929,76 @@ StringTable {
      Target_en_us "Weapon theft reported."
      Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
     }
+    CustomStringTableItem "{866E763D856E9370}" {
+     Id "LF-Dialogue_DockChandler_AboutDock"
+     Target_en_us "The wholesale counter next door buys fish, timber and ore. The harbor master hands out day work at the cabin. I only sell the gear."
+     Comment "Dialogue caption, spoken by the dock_chandler NPC (voiced; tools/assets/dialogue/dock_chandler). Changing it needs: tools\\cli asset dialogue dock_chandler"
+    }
+    CustomStringTableItem "{39FAD0D1693E57FE}" {
+     Id "LF-Dialogue_DockChandler_AboutGear"
+     Target_en_us "Rope by the fathom, oil by the can, hooks and line for the fishermen. None of it is cheap, and none of it lets you down at sea."
+     Comment "Dialogue caption, spoken by the dock_chandler NPC (voiced; tools/assets/dialogue/dock_chandler). Changing it needs: tools\\cli asset dialogue dock_chandler"
+    }
+    CustomStringTableItem "{36AFF90D46867D30}" {
+     Id "LF-Dialogue_DockChandler_Bye"
+     Target_en_us "Fair winds."
+     Comment "Dialogue caption, spoken by the dock_chandler NPC (voiced; tools/assets/dialogue/dock_chandler). Changing it needs: tools\\cli asset dialogue dock_chandler"
+    }
+    CustomStringTableItem "{17B7C956989241C4}" {
+     Id "LF-Dialogue_DockChandler_Greet"
+     Target_en_us "Rope, lamp oil, tackle, paint. If a boat needs it, I have it, or I know who does."
+     Comment "Dialogue caption, spoken by the dock_chandler NPC (voiced; tools/assets/dialogue/dock_chandler). Changing it needs: tools\\cli asset dialogue dock_chandler"
+    }
+    CustomStringTableItem "{4CA7696A39470C4D}" {
+     Id "LF-Dialogue_DockChandler_SayBye"
+     Target_en_us "Thanks. Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the dock_chandler NPC."
+    }
+    CustomStringTableItem "{7BF82C1A81407939}" {
+     Id "LF-Dialogue_DockChandler_SayDock"
+     Target_en_us "Who buys what on the dock?"
+     Comment "Dialogue reply the player can pick when talking to the dock_chandler NPC."
+    }
+    CustomStringTableItem "{7B52C8F40EF77CA1}" {
+     Id "LF-Dialogue_DockChandler_SayGear"
+     Target_en_us "What do you sell?"
+     Comment "Dialogue reply the player can pick when talking to the dock_chandler NPC."
+    }
+    CustomStringTableItem "{916B3BF20D0A9326}" {
+     Id "LF-Dialogue_DockFishmonger_AboutCatch"
+     Target_en_us "The boats go out before light and are back by noon. Whatever they land, I put on the ice. If you catch your own, the wholesale counter at the dock buys it."
+     Comment "Dialogue caption, spoken by the dock_fishmonger NPC (voiced; tools/assets/dialogue/dock_fishmonger). Changing it needs: tools\\cli asset dialogue dock_fishmonger"
+    }
+    CustomStringTableItem "{89FF83AA780A1342}" {
+     Id "LF-Dialogue_DockFishmonger_AboutPrices"
+     Target_en_us "Mackerel is cheap. Bass costs more. Tuna only comes when the boats get lucky. The price is on the board, and I do not haggle."
+     Comment "Dialogue caption, spoken by the dock_fishmonger NPC (voiced; tools/assets/dialogue/dock_fishmonger). Changing it needs: tools\\cli asset dialogue dock_fishmonger"
+    }
+    CustomStringTableItem "{0201ACDB462E8834}" {
+     Id "LF-Dialogue_DockFishmonger_Bye"
+     Target_en_us "Mind the wet boards on your way out."
+     Comment "Dialogue caption, spoken by the dock_fishmonger NPC (voiced; tools/assets/dialogue/dock_fishmonger). Changing it needs: tools\\cli asset dialogue dock_fishmonger"
+    }
+    CustomStringTableItem "{B4EBCCB2CC0C954D}" {
+     Id "LF-Dialogue_DockFishmonger_Greet"
+     Target_en_us "Fresh off the boats this morning. Mackerel, bass, perch. Look all you like, but touch nothing you will not buy."
+     Comment "Dialogue caption, spoken by the dock_fishmonger NPC (voiced; tools/assets/dialogue/dock_fishmonger). Changing it needs: tools\\cli asset dialogue dock_fishmonger"
+    }
+    CustomStringTableItem "{FDC8C6D8B315B9A8}" {
+     Id "LF-Dialogue_DockFishmonger_SayBye"
+     Target_en_us "Thanks. Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the dock_fishmonger NPC."
+    }
+    CustomStringTableItem "{01DC93E68262AC80}" {
+     Id "LF-Dialogue_DockFishmonger_SayCatch"
+     Target_en_us "Where does your fish come from?"
+     Comment "Dialogue reply the player can pick when talking to the dock_fishmonger NPC."
+    }
+    CustomStringTableItem "{AD42EB48DB296DCF}" {
+     Id "LF-Dialogue_DockFishmonger_SayPrices"
+     Target_en_us "What is it going for?"
+     Comment "Dialogue reply the player can pick when talking to the dock_fishmonger NPC."
+    }
     CustomStringTableItem "{7BDFAF37D3BDD834}" {
      Id "LF-Dialogue_Dockworker_AboutCargo"
      Target_en_us "Flour, diesel, machine parts. What is in the other crates is the harbor master's business, and he does not share."
