@@ -1,0 +1,37 @@
+GenericEntity : "{1B79BB823DC46F9D}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_20ft_green.et" {
+ ID "252C2531222DCF02"
+ components {
+  ActionsManagerComponent "{FAD4D66A36FC57A3}" {
+   ActionContexts {
+    UserActionContext "{2B508429A5DB1051}" {
+     ContextName "LF_ContainerNine"
+     Position PointInfo "{296B6A8619DF8F79}" {
+      Offset 0 1.2 0
+     }
+     Radius 3.3
+    }
+   }
+   additionalActions {
+    LF_StashContainerAction "{B9A6B37D872EED89}" {
+     ParentContextList {
+      "LF_ContainerNine"
+     }
+    }
+   }
+  }
+  LF_StashContainerComponent "{80CF4B9E5E6C821D}" {
+   m_sKeyPrefab "{6E6C667869AC0F87}Prefabs/Items/Story/LF_ContainerNineKey.et"
+   m_aStock {
+    LF_StashContainerEntry "{00767466A93592B8}" {
+     m_sPrefab "{37C18698D9B51EAE}Prefabs/Items/Contraband/LF_CigaretteCarton.et"
+     m_iCount 4
+    }
+    LF_StashContainerEntry "{A4D8B2FD03C417FB}" {
+     m_sPrefab "{23AE52677634DDD2}Prefabs/Items/Contraband/LF_VodkaBottle.et"
+     m_iCount 4
+    }
+   }
+   m_fRefillSeconds 2700
+  }
+ }
+}

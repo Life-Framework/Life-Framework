@@ -10,4 +10,78 @@ Vehicle : "{E1A105BE1A000001}Prefabs/Vehicles/Wheeled/S105/EL_S105_beige.et" {
    }
   }
  }
+ {
+  GenericEntity PoliceLetters_L {
+   ID "5105A0B1C0DE0001"
+   components {
+    Hierarchy "{5105A0B1C0DE1001}" {
+    }
+    MeshObject "{5105A0B1C0DE2001}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{5105A0B1C0DE3001}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{5105A0B1C0DE3002}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{5105A0B1C0DE4001}" {
+     m_sSignId "livery_uaz469_police"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.05 0.1 0.35
+     m_vPaintColor 0.95 0.95 0.93
+     m_vTextColor 0.05 0.1 0.35
+    }
+   }
+   coords -0.9 0.78 -1.3
+   angles 0 -90 0
+   scale 0.7
+  }
+  GenericEntity PoliceLetters_R {
+   ID "5105A0B1C0DE0002"
+   components {
+    Hierarchy "{5105A0B1C0DE1002}" {
+    }
+    MeshObject "{5105A0B1C0DE2002}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{5105A0B1C0DE3003}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{5105A0B1C0DE3004}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{5105A0B1C0DE4002}" {
+     m_sSignId "livery_uaz469_police"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.05 0.1 0.35
+     m_vPaintColor 0.95 0.95 0.93
+     m_vTextColor 0.05 0.1 0.35
+    }
+   }
+   coords 0.9 0.78 -1.3
+   angles 0 90 0
+   scale 0.7
+  }
+ }
 }

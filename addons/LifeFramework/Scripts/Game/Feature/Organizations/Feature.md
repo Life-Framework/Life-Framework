@@ -27,6 +27,8 @@ processing upgrade are kept at the desk.
 - `LF_OrganizationManager` / `LF_Organization` — the persisted register (save
   payload unchanged by M1-17). Names checked by `LF_OrgRules.RefuseName` and
   `IsNameTaken`.
+- `LF_OrgProspect` (#4455): an invited member is a prospect for 48 h with no fund or stash right; a
+  leader's promote ends it early; join times are save section `org_prospects`.
 - `LF_OrganizationPlayer` — cash boundary: `Found` (fee from carried MoneyStack),
   deposit, withdraw, buy; `MemberLines` for the ledger.
 - `LF_OrganizationCharacter.c` — ledger RPCs; every register change is refused

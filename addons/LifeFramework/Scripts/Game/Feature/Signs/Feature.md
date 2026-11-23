@@ -188,3 +188,7 @@ A row source may work its rows out on the reader's machine: `LF_SignRowSource.Is
 ## Livery styles and family files (#4468, 2026-11-23)
 
 Styles load from `Configs/Signs/LF_SignStyles.conf` plus every `Configs/Signs/LF_SignStyles_<Family>.conf` (`LF_SignStyles.FamilyFiles`, path order, an empty op adds a new id and patches a known one), then the pack overlays. `LF_SignStyles_Livery.conf` holds `block`, `stripe`, `stencil` and `mud` for vehicle door plates (layouts `LF_SignStyle_Livery*.layout`, built for the `quad2x1` and `quad4x1` sizes). A card that needs a style adds its own family file. Test LOGIC `signs/styles-livery`.
+
+## Clinic shortage notice (#4448, 2026-11-23)
+
+A door paper that exists only while a system says so: local row source `clinic_shortage` (`LF_ShortageNotice.c`) prints three rows while `LF_ClinicShortage.IsActive()`, none otherwise, and `LF_ShortageNoticeComponent` on the prefab (`LF_Everon1989/Prefabs/Props/Signs/LF_ClinicShortageNotice.et`, a `LF_Sign_Notice` child) hides the mesh when the clinic is stocked. Workbench `look` runs play mode, so it shows the stocked state (no paper); the face is a session picture. Test LOGIC `signs/shortage-notice`.
