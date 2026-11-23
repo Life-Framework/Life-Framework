@@ -2530,6 +2530,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Stand at the bed to put a patient in it."
      Comment "Refusal: medic too far from the bed."
     }
+    CustomStringTableItem "{EE2695450DA92ACF}" {
+     Id "LF-BigJob_Busy"
+     Target_en_us "Another big job is already underway on the island. Wait until it is over."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): one pharmacy, bank or depot job runs on the server at a time."
+    }
+    CustomStringTableItem "{F9776BD9715991D9}" {
+     Id "LF-BigJob_Cooldown"
+     Target_en_us "This place was hit recently. Try again in %1 min."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): the job is cooling down. %1 is the minutes left."
+    }
+    CustomStringTableItem "{BE941138C8540332}" {
+     Id "LF-BigJob_Unavailable"
+     Target_en_us "This job cannot be started right now."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): a broken request (no job or player key)."
+    }
     CustomStringTableItem "{CEF674540C6B082E}" {
      Id "LF-Bill_NeedCash"
      Target_en_us "Carry %1 in cash to pay the bill"
