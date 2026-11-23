@@ -24,6 +24,12 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   }
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{89CA97FF0F8F3D18}Assets/Props/Garbage/Generic/LitterInterior_01/LitterInterior_01_Cigarettes_02.xob"
+   Materials {
+    MaterialAssignClass "{BCF9761980650305}" {
+     SourceMaterial "LitterInterior_01_V1"
+     AssignedMaterial "{6CF6A0656698A694}Assets/Items/Contraband/LF_CigaretteCarton/Data/LF_CigaretteCarton.emat"
+    }
+   }
   }
   LF_VehicleSearchGoodsComponent "{5A7C0E91D2B43F68}" {
    m_eGoodsClass 1
