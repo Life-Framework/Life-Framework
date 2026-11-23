@@ -311,3 +311,5 @@ the pump says "The tanks are dry. The depot truck is due."
 * **Where:** the **EXPORT ORDERS** board on the warehouse wall by the quay, and the **crane spot** (a pallet box on the quay apron by the harbour crane).
 * **How it works:** the board lists up to three orders, such as *20 x iron bars to the steamer | $920 by 13:00*. Scroll to **Take the order** on a line to take it (haulers at Delivery level 10 or higher; one order at a time). Bring every unit to the crane spot, in your pockets or in a vehicle backed up to the pallet box, and choose **Hand in the export order**.
 * **Pay:** the order's price in cash (wholesale plus 15 percent) and Delivery experience. A short count takes nothing: bring the rest and hand in again. Miss the deadline and the order closes and your standing in town drops; it never costs money.
+
+* **Paper:** a paid shift hands you a payslip, a parcel run a delivery note, and a sale at the granary or a buyer a weigh slip. Each shows what was sold or paid and the date; choose **Read receipt** on it to read it.
