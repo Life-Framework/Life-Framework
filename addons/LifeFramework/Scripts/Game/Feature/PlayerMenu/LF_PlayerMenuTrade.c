@@ -157,7 +157,13 @@ class LF_PlayerMenuTrade
 			if (!list.IsEmpty())
 				list += ", ";
 
-			list += LF_PlayerMenuSheet.PlainCase(perk);
+			// The perk's own name (the counter and board rows use the same words); an id with no name
+			// row reads in plain case.
+			string nameKey = LF_PerkPick.PerkNameKey(perk);
+			if (nameKey.StartsWith("#"))
+				list += LF_Terms.Text(nameKey);
+			else
+				list += LF_PlayerMenuSheet.PlainCase(perk);
 		}
 
 		return LF_Terms.Text("#LF-PlayerMenu_SkillPerks", list);
