@@ -1,0 +1,8 @@
+GenericEntity Clothing_Mannequin_Backpack : "{F0BD498E7E7D7C6D}Prefabs/Props/Clothing/LF_Mannequin_Backpack.et" {
+ coords 359.811 0.195 262.029
+ angleY -160
+}
+GenericEntity Clothing_Counter : "{37C56F70D97B0214}Prefabs/Props/Commercial/LF_ClothesShopCounter.et" {
+ coords 356.8 0.201 266.336
+ angleY 180
+}

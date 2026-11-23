@@ -285,6 +285,12 @@
       "kind": "blocks-door",
       "layer": "Place_saint-philippe_jail.layer",
       "why": "The two wing leaves of the jail gate are fixed and locked (LF_LockComponent, no breach target, no open action), overlapping by 0.5 m on purpose so the 2.7 m corridor mouth has no gap; neither swings, so each reads the other as a door in its swing (gate close-up in the PR)."
+    },
+    {
+      "match": "^Clothing_(Mannequin_Backpack|Counter)",
+      "kind": "action-crowds-till",
+      "layer": "Village_Clothing.layer",
+      "why": "The town clothing store's till action sits on the Village_ClothingStore building itself, so the rule reads the whole shop as one till box and every action prop inside it as 0 m from it. The counter's price list and the mannequin are 3 m and 4 m from the real till point (the clerk counter at the door end); the island splits the till into its own LF_ClothesTill prefab and has no such box."
     }
   ]
 }
