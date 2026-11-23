@@ -28,7 +28,7 @@
       ],
       "max": [
         8,
-        3
+        66
       ]
     },
     "front": "+z",
@@ -322,6 +322,79 @@
       "wall": "free",
       "floor": "f0",
       "free": true
+    },
+    {
+      "id": "export-board",
+      "name": "Warehouse_export_board",
+      "prefab": "{4411C0DE5A1F8036}Prefabs/Props/LF_ExportOrderBoard.et",
+      "role": "board",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        6.5,
+        0,
+        10.2
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "export-crane",
+      "name": "Warehouse_export_crane",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -0.8,
+        0,
+        64.9
+      ],
+      "yaw": 0,
+      "config": [
+        {
+          "component": "LF_ExportOrderCraneComponent",
+          "guid": "4412C2A4E0B1D001",
+          "set": {
+            "m_sPlaceId": "\"dock\""
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "export-pallet",
+      "name": "Warehouse_export_pallet",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        3.2,
+        0,
+        64.9
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "export-pallet-crate",
+      "name": "Warehouse_export_pallet_crate",
+      "prefab": "{ABA40158860E5B6B}Prefabs/Props/Crates/Crate_01_brown.et",
+      "role": "dressing",
+      "verb": "on export-pallet",
+      "offset": [
+        3.2,
+        0.14,
+        64.9
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
     }
   ]
 }
