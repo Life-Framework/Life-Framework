@@ -9,8 +9,8 @@
     "defaultSellPrice": 25
   },
   "jobs": {
-    "policeDutyPayPerSecond": 0.25,
-    "medicDutyPayPerSecond": 0.22,
+    "policeDutyPayPerSecond": 0.0972,
+    "medicDutyPayPerSecond": 0.1333,
     "benefitAmount": 50,
     "benefitBalanceThreshold": 250,
     "benefitCooldownSeconds": 1200,

@@ -1784,6 +1784,31 @@ StringTable {
      Target_en_us "Not trusted"
      Comment "Standing tier word (#2709): underworld tier -2. docs/architecture/reputation.md section 1. Never shown to players (the underworld faction is hidden); the words exist for the pack's dialogue."
     }
+    CustomStringTableItem "{CD7EA3E1CAC215E6}" {
+     Id "LF-Everon_TradeTier_1"
+     Target_en_us "Apprentice"
+     Comment "Trade tier word 1 of 5 (#4181), levels 1 to 5 of the 30-level trade tables. Shown instead of a level number."
+    }
+    CustomStringTableItem "{6F4E6ECEA5881149}" {
+     Id "LF-Everon_TradeTier_2"
+     Target_en_us "Hand"
+     Comment "Trade tier word 2 of 5 (#4181), levels 6 to 11 of the 30-level trade tables. Shown instead of a level number."
+    }
+    CustomStringTableItem "{DB7115047C05002A}" {
+     Id "LF-Everon_TradeTier_3"
+     Target_en_us "Journeyman"
+     Comment "Trade tier word 3 of 5 (#4181), levels 12 to 19 of the 30-level trade tables. Shown instead of a level number."
+    }
+    CustomStringTableItem "{45A9F6204F94B6F4}" {
+     Id "LF-Everon_TradeTier_4"
+     Target_en_us "Foreman"
+     Comment "Trade tier word 4 of 5 (#4181), levels 20 to 27 of the 30-level trade tables. Shown instead of a level number."
+    }
+    CustomStringTableItem "{39A008FB3F52C66C}" {
+     Id "LF-Everon_TradeTier_5"
+     Target_en_us "Master"
+     Comment "Trade tier word 5 of 5 (#4181), levels 28 to 30 of the 30-level trade tables. Shown instead of a level number."
+    }
     CustomStringTableItem "{57D5CF2EF598E9B9}" {
      Id "LF-Garage_SlotsFull"
      Target_en_us "No room left in your garage: %1 cars and that is the lot. Take one out before you put another in."
