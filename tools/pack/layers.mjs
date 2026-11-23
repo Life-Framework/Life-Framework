@@ -65,6 +65,7 @@ Object.assign(SECTIONS, {
   "questGivers.givers": row("questGivers", "givers", "LF_QuestGiverConfig", "Configs/Quests/LF_QuestGiverTable.conf", "m_aGivers", "m_sGiverId", byField("m_sGiverId")),
   // The core ships no course (LF_RaceCourseBook starts empty), so the core layer is empty: a pack adds.
   "racing.courses": row("racing", "courses", "LF_RaceCoursesConfig", null, "m_aCourses", "m_sId", byField("m_sId"), same),
+  "rumors.rumors": row("rumors", "rumors", "LF_RumorsConfig", "Configs/Residents/LF_Rumors.conf", "m_aRumors", "m_sId", byField("m_sId")),
   "residents.residents": row("residents", "residents", "LF_ResidentsConfig", "Configs/Residents/LF_Residents.conf", "m_aResidents", "m_sId", byField("m_sId")),
   "handbook.pages": row("handbook", "pages", "LF_HandbookConfig", "Configs/Rules/LF_Handbook.conf", "m_aPages", "m_sId", byField("m_sId")),
   "signs.signs": row("signs", "signs", "LF_SignConfig", "Configs/Signs/LF_Signs.conf", "m_aSigns", "m_sId", byField("m_sId")),

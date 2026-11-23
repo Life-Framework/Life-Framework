@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{DE3B18E71B4D2CE4}Configs/Tests/LF_Test_RumorOverlayEdit.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
