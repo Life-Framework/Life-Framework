@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{7E15CE83F6B89D9C}Assets/Liveries/UAZ452/LF_UAZ452_Ambulance.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,10 @@
+GenericEntity {
+ ID "DF287132EE3AD326"
+ components {
+  LF_CalendarCarrierComponent "{E59EB4CB2704DE87}" {
+   m_sOperationId "calendar_horn"
+   m_sSoundProject "{3E2D165BC907546F}Sounds/Calendar/Calendar_HornShip.acp"
+   m_fSeconds 6
+  }
+ }
+}

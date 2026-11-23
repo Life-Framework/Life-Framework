@@ -201,7 +201,7 @@ modded class SCR_ChimeraCharacter
 		if (!LF_OrgLedgerGate.AdmitCharacter(this, "withdraw"))
 			return;
 
-		string notice = "#LF-Org_CashRefused";
+		string notice = LF_OrganizationPlayer.WithdrawRefusalKey(LF_OrganizationPlayer.CharacterId(this));
 		if (!LF_RefuseAwayFromOrganizationDesk("withdraw", amount) && LF_OrganizationPlayer.WithdrawCash(this, amount))
 			notice = "#LF-Org_Withdrawn";
 

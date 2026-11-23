@@ -22,7 +22,7 @@ class LF_Test_EveronResidents : LF_Test
 		array<string> kinds = {
 			"Spawn", "Clerk", "LicenceDesk", "Bank", "BankVault", "BankCounter", "TownBoard", "MapBoard",
 			"ClothingCounter", "GunCounter", "StoreCounter", "CafeTable", "HostelBed", "House", "FuelTill",
-			"ParcelDepot", "PubBar", "Hall", "Dock", "FishCounter", "Garage", SITE_KIND
+			"ParcelDepot", "PubBar", "Hall", "Dock", "FishCounter", "Garage", "BarberChair", SITE_KIND
 		};
 		return kinds.Find(kind) != -1;
 	}

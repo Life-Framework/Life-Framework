@@ -1,0 +1,10 @@
+GenericEntity {
+ ID "C65BD67AEE265D1D"
+ components {
+  LF_CalendarCarrierComponent "{1E67E77CC4D01761}" {
+   m_sOperationId "calendar_siren"
+   m_sSoundProject "{A7AF38181B35EAEB}Sounds/Calendar/Calendar_SirenShift.acp"
+   m_fSeconds 8
+  }
+ }
+}

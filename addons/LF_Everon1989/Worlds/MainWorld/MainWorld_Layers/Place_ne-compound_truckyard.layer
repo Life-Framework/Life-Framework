@@ -1,7 +1,7 @@
 GenericEntity Fit_ne_compound_truckyard_Place {
  components {
-  LF_PlaceComponent "{931ADD19005523BE}" {
-   m_sKind "VehicleLot"
+  LF_PlaceComponent "{756A41E447CDF239}" {
+   m_sKind "TruckLot"
    m_sId "ne-compound.truckyard"
   }
   LF_FittedBuildingComponent "{8F510D876BD2E8A0}" {
@@ -113,7 +113,7 @@ GenericEntity Fit_ne_compound_truckyard_sign_hut : "{B7B489CA36A0E9F8}Prefabs/Pr
    m_vTextColor 1 1 1
   }
  }
- coords 5086.618 27.053 10847.796
+ coords 5082.638 27.312 10845.219
  angleY -90
 }
 GenericEntity Fit_ne_compound_truckyard_sign_gate : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {

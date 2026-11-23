@@ -1,0 +1,512 @@
+{
+  "schema": 1,
+  "kit": "outpost-north",
+  "system": "outpost",
+  "source": {
+    "file": "tools/town/kits/sources/outpost-north.layer",
+    "group": "*",
+    "origin": "Grid_outpost_north_Spawn",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -16.104,
+        0
+      ],
+      "max": [
+        3.495,
+        19.701
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "A hostless open-ground camp on the north outpost site: no building, so the kit never turns past the dossier yaw. Every row rests on the probed ground (`--terrain`). The six `outpost-spot-*` rows have no prefab: they are the named spots for the crate (#4223), chalk board (GA-O3), buyer, quartermaster and the two gate guards (#4519); a consumer reads their offset and yaw. The gate is a 4 m opening in the sandbag line facing the kit's -x side. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "outpost-spot-crate",
+      "name": "Outpost_Spot_Crate",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.9,
+        0,
+        9.7
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-spot-chalk-board",
+      "name": "Outpost_Spot_ChalkBoard",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11.4,
+        0,
+        5.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-spot-buyer",
+      "name": "Outpost_Spot_Buyer",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.6,
+        0,
+        12.7
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-spot-quartermaster",
+      "name": "Outpost_Spot_Quartermaster",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -9.1,
+        0,
+        14.2
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-spot-guard-s",
+      "name": "Outpost_Spot_GuardS",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2,
+        0,
+        5.7
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-spot-guard-n",
+      "name": "Outpost_Spot_GuardN",
+      "prefab": null,
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -12.2,
+        0,
+        5.7
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-gate-sandbag-s1",
+      "name": "Outpost_Gate_SandbagS1",
+      "prefab": "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -2.823,
+        0,
+        3.691
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-gate-sandbag-s2",
+      "name": "Outpost_Gate_SandbagS2",
+      "prefab": "{B547CF929FCC6BB7}Prefabs/Props/Military/Sandbags/Sandbag_01_end_high_burlap.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.197,
+        0,
+        3.702
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-gate-sandbag-n1",
+      "name": "Outpost_Gate_SandbagN1",
+      "prefab": "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -10.423,
+        0,
+        3.691
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-gate-sandbag-n2",
+      "name": "Outpost_Gate_SandbagN2",
+      "prefab": "{B547CF929FCC6BB7}Prefabs/Props/Military/Sandbags/Sandbag_01_end_high_burlap.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -13.403,
+        0,
+        3.702
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-fire",
+      "name": "Outpost_Fire",
+      "prefab": "{0FB935C50541B694}Prefabs/Crafting/Fireplace.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.52,
+        0.187,
+        10.645
+      ],
+      "yaw": -90,
+      "class": "GameEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-generator",
+      "name": "Outpost_Generator",
+      "prefab": "{FCBEDECB2A39B6BC}Prefabs/Props/Military/Generators/GeneratorPortable_USSR_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -15.563,
+        0,
+        8.705
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-mast",
+      "name": "Outpost_Mast",
+      "prefab": "{5B8922E61D8DF345}Prefabs/Props/Military/Antennas/Antenna_R161_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        3.495,
+        0.32,
+        19.7
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-flag-pole",
+      "name": "Outpost_FlagPole",
+      "prefab": "{1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -15.673,
+        0,
+        19.701
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-tent-quartermaster",
+      "name": "Outpost_Tent_Quartermaster",
+      "prefab": "{4A1E3B17DB672E35}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -8.611,
+        0,
+        16.309
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleBuildingEntity",
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-table",
+      "name": "Outpost_Table",
+      "prefab": "{1A1020205E2B1710}Prefabs/Props/Military/Furniture/TableMilitary_USSR_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -11.1,
+        0.001,
+        12.2
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-pallet-1",
+      "name": "Outpost_Pallet_1",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -16.088,
+        0.004,
+        12.708
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-pallet-box-1",
+      "name": "Outpost_PalletBox_1",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -16.104,
+        0.05,
+        15.299
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-barrel-1",
+      "name": "Outpost_Barrel_1",
+      "prefab": "{4BE795374BE3D67E}Prefabs/Props/Industrial/BarrelFuel_01_closed.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.411,
+        0.001,
+        6.178
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-canvas-cover-crates",
+      "name": "Outpost_CanvasCover_Crates",
+      "prefab": "{BFC48B664ED362EE}Prefabs/Structures/Military/Camps/Canvas_Covers/CanvasCover_Medium_Base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        0.9,
+        0,
+        9.7
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-camo-net-pallets",
+      "name": "Outpost_CamoNet_Pallets",
+      "prefab": "{79AA43911CC6C3E8}Prefabs/Structures/Military/CamoNets/Soviet/CamoNet_Small_Soviet.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -16.1,
+        0,
+        14
+      ],
+      "yaw": -90,
+      "scale": 0.4,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-stool-w",
+      "name": "Outpost_Stool_W",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.5,
+        0,
+        9.001
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-stool-n",
+      "name": "Outpost_Stool_N",
+      "prefab": "{D023942ECEA592ED}Prefabs/Props/Furniture/Stool_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -7.09,
+        0.002,
+        10.894
+      ],
+      "yaw": -60,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-stool-s",
+      "name": "Outpost_Stool_S",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -3.8,
+        0,
+        10.301
+      ],
+      "yaw": -110,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-bench-box",
+      "name": "Outpost_Bench_Box",
+      "prefab": "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -5.004,
+        0.022,
+        12.4
+      ],
+      "yaw": -75,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-workbench-1",
+      "name": "Outpost_Workbench_1",
+      "prefab": "{95D947E744336F78}Prefabs/Props/Industrial/Workbench_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.929,
+        0.001,
+        16.302
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-workbench-2",
+      "name": "Outpost_Workbench_2",
+      "prefab": "{64A37FE9287F1A77}Prefabs/Props/Industrial/Workbench_02.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1.98,
+        0.001,
+        19.301
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-canopy-mechanic",
+      "name": "Outpost_Canopy_Mechanic",
+      "prefab": "{C2789448B0BD05F8}Prefabs/Structures/Military/Camps/Canvas_Covers/CanvasCover_Medium_A_Base.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -1,
+        0,
+        17.7
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "outpost-flag-cloth",
+      "name": "Outpost_FlagCloth",
+      "prefab": "{AE09DA7896F9DB37}Prefabs/Props/Fabric/Flags/Flag_1_2.et",
+      "role": "dressing",
+      "verb": "on outpost-flag-pole",
+      "offset": [
+        -15.573,
+        5.45,
+        19.701
+      ],
+      "yaw": -90,
+      "config": [
+        {
+          "component": "MeshObject",
+          "guid": "52AE82368499B365",
+          "set": {},
+          "blocks": [
+            "Materials"
+          ]
+        }
+      ],
+      "floor": "f0"
+    }
+  ]
+}
