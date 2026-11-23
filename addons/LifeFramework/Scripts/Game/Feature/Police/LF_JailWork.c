@@ -22,13 +22,13 @@ enum LF_EJailWorkCheck
 class LF_JailWorkRules
 {
 	//! The cap the stations' seconds-off were authored against (the old 5 minute cell).
-	static const int REFERENCE_CAP = 300;
+	static const int REFERENCE_CAP = 300; // lf-fixed: the cap the station prefab numbers were authored against
 
 	//! One chore never takes off more than this share of the sentence cap.
-	static const float CHORE_SHARE_MAX = 0.05;
+	static const float CHORE_SHARE_MAX = 0.05; // lf-fixed: design rule, one chore stays a small slice of the sentence
 
 	//! A full shift (every station once) stays within this share of the cap.
-	static const float SHIFT_SHARE_MAX = 0.1;
+	static const float SHIFT_SHARE_MAX = 0.1; // lf-fixed: design rule, a full round of the stations stays a minority of the sentence
 
 	//------------------------------------------------------------------------------------------------
 	//! Seconds a finished chore takes off: the station's number scaled to the cell's sentence cap

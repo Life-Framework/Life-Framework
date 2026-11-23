@@ -66,7 +66,7 @@ class LF_JailCellComponent : ScriptComponent
 	protected static LF_JailCellComponent s_Placed;
 
 	//! No sentence runs past 15 online minutes in the holding cell (#4207).
-	static const int MAX_SENTENCE_SECONDS = 900;
+	static const int MAX_SENTENCE_SECONDS = 900; // lf-fixed: design rule N5, no sentence runs past 15 online minutes
 
 	//------------------------------------------------------------------------------------------------
 	//! A cell's configured cap, held at MAX_SENTENCE_SECONDS. A higher value logs and clamps.
