@@ -1,0 +1,76 @@
+{
+  "id": "outpost_guard",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "ec17964d72a2e77b",
+      "date": "2026-11-23",
+      "voice_id": "SOYHLrjzK2X1ezoPC6cr",
+      "voice_name": "Harry - Fierce Warrior",
+      "model": "eleven_multilingual_v2",
+      "text": "Hold it there. This is not a public road. State your business or turn around.",
+      "chars": 77,
+      "chars_total": 31,
+      "request_id": "lYM1AD8GUD1Wgt38R5nZ",
+      "seconds": 4.49,
+      "mouth": "299968724854430000001244536999751483741297532100002339635953984266531001752599887976532100"
+    },
+    "trade": {
+      "hash": "3775591d05db0f66",
+      "date": "2026-11-23",
+      "voice_id": "SOYHLrjzK2X1ezoPC6cr",
+      "voice_name": "Harry - Fierce Warrior",
+      "model": "eleven_multilingual_v2",
+      "text": "Quartermaster is past the fire. Keep your hands where I can see them and touch nothing that is not yours.",
+      "chars": 105,
+      "chars_total": 42,
+      "request_id": "ecSxJETjcED3f7jr0tca",
+      "seconds": 6.16,
+      "mouth": "2999967753379731587431732998543200000000000000001497179667765539887325643576774310000462597243986166769873488623799643432000"
+    },
+    "stranger": {
+      "hash": "a758f3debfafa818",
+      "date": "2026-11-23",
+      "voice_id": "SOYHLrjzK2X1ezoPC6cr",
+      "voice_name": "Harry - Fierce Warrior",
+      "model": "eleven_multilingual_v2",
+      "text": "Strangers. Uniforms. Anyone nobody here has vouched for. Right now that is you.",
+      "chars": 79,
+      "chars_total": 32,
+      "request_id": "xbR0PcmzvFkhFNLsTl0C",
+      "seconds": 5.62,
+      "mouth": "23499886754542000049998339863541000069898987889555542379674289724332885420000000000000000499448998496755469632000"
+    },
+    "uniform": {
+      "hash": "b20915fdc6e82d10",
+      "date": "2026-11-23",
+      "voice_id": "SOYHLrjzK2X1ezoPC6cr",
+      "voice_name": "Harry - Fierce Warrior",
+      "model": "eleven_multilingual_v2",
+      "text": "Then you can turn around. Nobody here wants that badge in the camp. Go back the way you came.",
+      "chars": 93,
+      "chars_total": 37,
+      "request_id": "tpYvFj2BYLX6GtK5CfOt",
+      "seconds": 5.75,
+      "mouth": "89999369669989798886320000000000000049849685499977764358510888645768137865111000000000000896797119989756337865332000"
+    },
+    "bye": {
+      "hash": "1e6f6a5f6e5ff596",
+      "date": "2026-11-23",
+      "voice_id": "SOYHLrjzK2X1ezoPC6cr",
+      "voice_name": "Harry - Fierce Warrior",
+      "model": "eleven_multilingual_v2",
+      "text": "Move along.",
+      "chars": 11,
+      "chars_total": 4,
+      "request_id": "KxQuQzbdUNwxltRh0Xx0",
+      "seconds": 0.73,
+      "mouth": "598697987532100"
+    }
+  },
+  "voice": {
+    "id": "SOYHLrjzK2X1ezoPC6cr",
+    "name": "Harry - Fierce Warrior",
+    "source": "premade"
+  }
+}

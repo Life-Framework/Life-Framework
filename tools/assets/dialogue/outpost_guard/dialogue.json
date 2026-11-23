@@ -1,0 +1,48 @@
+{
+  "id": "outpost_guard",
+  "name": "OutpostGuard",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Outpost_Guard_Name",
+  "voice": {
+    "id": "SOYHLrjzK2X1ezoPC6cr",
+    "sex": "male",
+    "name": "Harry - Fierce Warrior",
+    "why": "The gate guard is young, tense and holds a rifle he has never had to fire: short sentences, no patience for strangers. Harry is a young, rough American voice, nothing like the quartermaster's measured calm or the buyer's husky patter, and no other speaker uses this voice. Both gate guards play this one dialogue.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.2,
+      "speed": 1.0
+    }
+  },
+  "budget_chars": 1000,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "trade", "next": "trade" },
+      { "text": "who", "next": "stranger" },
+      { "text": "badge", "next": "uniform" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "trade", "line": "trade", "options": [
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "stranger", "line": "stranger", "options": [
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "uniform", "line": "uniform" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Hold it there. This is not a public road. State your business or turn around." },
+    "trade": { "text": "Quartermaster is past the fire. Keep your hands where I can see them and touch nothing that is not yours." },
+    "stranger": { "text": "Strangers. Uniforms. Anyone nobody here has vouched for. Right now that is you." },
+    "uniform": { "text": "Then you can turn around. Nobody here wants that badge in the camp. Go back the way you came." },
+    "bye": { "text": "Move along." }
+  },
+  "replies": {
+    "trade": "I'm here to trade.",
+    "who": "Who are you keeping out?",
+    "badge": "I'm with the police.",
+    "bye": "Goodbye."
+  }
+}

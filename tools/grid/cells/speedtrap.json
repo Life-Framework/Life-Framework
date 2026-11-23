@@ -1,0 +1,12 @@
+{
+  "slug": "speedtrap",
+  "cell": "c29r0",
+  "span": [
+    2,
+    1
+  ],
+  "layer": "Grid_speedtrap.layer",
+  "rows": 1,
+  "created": "2026-11-23",
+  "pack": true
+}

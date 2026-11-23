@@ -4,7 +4,7 @@
 //! DELIVERY job of LF_JobLevels (#749); LF_PlayerJobComponent.PullCareer copies its
 //! level onto the player for the client-side offer.
 //!
-//! Level 1 may take courier work. Level 2 opens fuel delivery. Level 3 opens
+//! Level 1 may take courier work. Level 4 opens fuel delivery. Level 6 opens
 //! taxi. XP per run is the jobs config's delivery_run award and the levels are the
 //! DELIVERY track's thresholds (shipped: 100 XP a run, 100 XP to level 2, 300 to
 //! level 3, 5000 to level 10: the 30-level table of #4596, the same curve as the other trades). Progression is hidden: no level
@@ -389,10 +389,12 @@ class LF_CivilianJob
 	//------------------------------------------------------------------------------------------------
 	static int RequiredLevel(LF_EJobType job)
 	{
+		// DELIVERY runs on the 30-level table (#4596): level 4 is 600 XP (six runs) and level 6 is 1500 XP
+		// (fifteen runs), the early pacing the gates had on the old table (fuel at 500 XP, taxi at 1500).
 		if (job == LF_EJobType.FUEL_DELIVERY)
-			return 2;
+			return 4;
 		if (job == LF_EJobType.TAXI)
-			return 3;
+			return 6;
 
 		return 1;
 	}
