@@ -6,9 +6,10 @@
   "kit": "garage",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe-districts_garage.layer",
   "kinds": [
-    "Garage"
+    "Garage",
+    "LiveryBay"
   ],
-  "rows": 6,
+  "rows": 7,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",
