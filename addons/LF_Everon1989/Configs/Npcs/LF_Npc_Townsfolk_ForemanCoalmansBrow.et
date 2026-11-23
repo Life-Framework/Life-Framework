@@ -1,0 +1,59 @@
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ ID "907383490A1B1564"
+ components {
+  SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
+   Identity Identity "{5584CBC6363C648B}" {
+    Name "Bruno"
+    Surname "Faure"
+   }
+  }
+  LF_NpcRoleComponent "{7A31C05E94D2B861}" {
+   m_sRole "townsfolk"
+  }
+  LF_DialogueComponent "{8C7FCFE7707268A6}" {
+   m_sDialogueId "foreman_coalmans_brow"
+  }
+  LF_PlaceComponent "{A8A9F30737EFA04D}" {
+   m_sKind "Townsfolk"
+   m_sId "foreman_coalmans_brow"
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{43D84EA05C66258C}Prefabs/Characters/Uniforms/Jacket_Denim_01/Jacket_Denim_01_base.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{6925E6C63EBCF623}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkBrown.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{8F5261C6B57B95C8}Prefabs/Characters/HeadGear/Hat_Hard_01/Hat_Hard_01_yellow.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{A09C0DAD28A29F1B}" {
+     ContextName "Talk"
+     Position PointInfo "{CA3BE0B335443579}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{D24566E0FC22C6C7}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{93EDAD4F928D77FF}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}

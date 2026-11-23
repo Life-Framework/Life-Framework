@@ -1,0 +1,19 @@
+GenericEntity : "{31CE12B3D1F6789E}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_base.et" {
+ ID "9F5B1EDA66E62675"
+ {
+  GenericEntity Cloth : "{AE09DA7896F9DB37}Prefabs/Props/Fabric/Flags/Flag_1_2.et" {
+   ID "F93D8C3AE5E558F4"
+   coords 0 5.45 -0.1
+   components {
+    MeshObject "{52AE82368499B365}" {
+     Materials {
+      MaterialAssignClass "{A60A67703AF445B6}" {
+       SourceMaterial "Flag_1_2"
+       AssignedMaterial "{6F1E2335E08DBFF7}Assets/Props/Flags/Gang/Data/GangFlag_Thornfield.emat"
+      }
+     }
+    }
+   }
+  }
+ }
+}

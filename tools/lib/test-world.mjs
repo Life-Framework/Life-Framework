@@ -192,11 +192,29 @@ export function withoutTown(registry, { town, names }) {
   return out.size ? registry.filter((t) => !out.has(t.cls)) : registry;
 }
 
-// The one boot of `test --town`: every town test, on the playtest world. null when the list is empty.
+// The boot of `test --town` for the tests that need nothing but the town: every town test with no
+// `world` of its own, on the playtest world. null when there is none.
 export function townLeg({ names, town, world }) {
-  const classes = [...new Set((town ?? []).map((p) => (names ?? {})[p.name] ?? p.name))];
+  const classes = [...new Set((town ?? []).filter((p) => !p.world).map((p) => (names ?? {})[p.name] ?? p.name))];
   if (!classes.length) return null;
   return { world: world ?? PLAYTEST_WORLD, classes, reason: `the town tests (${TOWN_FILE})` };
+}
+
+// All boots of `test --town`: the playtest-world leg (townLeg), then one leg per mission header a town
+// test names in its `world` (the parity test reads the pack tables the town header loads, which a bare
+// DebugWorld boot does not, so there it would pass with nothing to check).
+export function townLegs({ names, town }) {
+  const legs = [];
+  const plain = townLeg({ names, town });
+  if (plain) legs.push(plain);
+  const byWorld = new Map();
+  for (const p of town ?? []) {
+    if (!p.world) continue;
+    if (!byWorld.has(p.world)) byWorld.set(p.world, []);
+    byWorld.get(p.world).push((names ?? {})[p.name] ?? p.name);
+  }
+  for (const [w, classes] of byWorld) legs.push({ world: w, classes: [...new Set(classes)], reason: `town tests that need the header ${w} (${TOWN_FILE})` });
+  return legs;
 }
 
 // { world, reason }: world is undefined for DebugWorld (the harness default), so a run that is not
@@ -260,8 +278,11 @@ export function splitSelection({ only = [], names, tiers, registry = [], pack = 
 
 function planCoreLegs({ tier, only = [], world, env = process.env, tiers, names, registry, pins, town, townRun = false }) {
   if (townRun) {
-    const leg = townLeg({ names, town, world });
-    return leg ? [leg] : [];
+    if (world) {
+      const leg = townLeg({ names, town, world });
+      return leg ? [leg] : [];
+    }
+    return townLegs({ names, town });
   }
   const picked = pickWorld({ tier, only, world, env, tiers });
   const one = [{ world: picked.world, classes: null, reason: picked.reason }];
@@ -278,14 +299,18 @@ function planCoreLegs({ tier, only = [], world, env = process.env, tiers, names,
   // test (classes null), the town ones included.
   const left = selection.length - suite.length;
   const tierRun = !only.length && townSet.size > 0;
-  const toPlaytest = suite.filter((c) => pinned.has(c) || townSet.has(c));
-  if (!toPlaytest.length && !left && !tierRun) return one;
+  // A town test with a `world` of its own (a mission header) is never a plain playtest-world test.
+  const ownWorld = new Map((town ?? []).filter((p) => p.world).map((p) => [clsOf(p.name), p.world]));
+  const toPlaytest = suite.filter((c) => (pinned.has(c) || townSet.has(c)) && !ownWorld.has(c));
+  const toHeader = suite.filter((c) => ownWorld.has(c));
+  if (!toPlaytest.length && !toHeader.length && !left && !tierRun) return one;
   const toGrid = suite.filter((c) => !pinned.has(c) && !townSet.has(c));
   const legs = [];
   const apart = toPlaytest.length ? `; ${toPlaytest.length} pinned or town test(s) run apart` : "";
   const dropped = left || tierRun ? `; ${townSet.size} town test(s) run only under --town` : "";
   if (toGrid.length) legs.push({ world: GRID_WORLD, classes: toGrid, reason: `${picked.reason}${apart}${dropped}` });
   if (toPlaytest.length) legs.push({ world: PLAYTEST_WORLD, classes: toPlaytest, reason: `pinned to the playtest world (${PINS_FILE}, ${TOWN_FILE})` });
+  for (const w of new Set(toHeader.map((c) => ownWorld.get(c)))) legs.push({ world: w, classes: toHeader.filter((c) => ownWorld.get(c) === w), reason: `town test that needs the header ${w} (${TOWN_FILE})` });
   return legs;
 }
 

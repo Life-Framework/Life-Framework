@@ -1,0 +1,59 @@
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ ID "294EC0984912C96C"
+ components {
+  SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
+   Identity Identity "{5584CBC6363C648B}" {
+    Name "Marcel"
+    Surname "Brun"
+   }
+  }
+  LF_NpcRoleComponent "{9ABBD2B3BE61A74C}" {
+   m_sRole "townsfolk"
+  }
+  LF_DialogueComponent "{927B49167B7264EE}" {
+   m_sDialogueId "tally_clerk"
+  }
+  LF_PlaceComponent "{9586E9865DD637CE}" {
+   m_sKind "Townsfolk"
+   m_sId "tally_clerk"
+  }
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Jacket {
+     Prefab "{7F1451790F3D75BD}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_green.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{1A65EADE4B08583E}Prefabs/Characters/Uniforms/Pants_Suit_01/Pants_Suit_01_black_V1.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{67662815EFF734DD}Prefabs/Characters/HeadGear/Hat_FlatCap_01/Hat_FlatCap_01_darkgrey.et"
+    }
+   }
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{1333DC1FF383AD8C}" {
+     ContextName "Talk"
+     Position PointInfo "{0D303A9503A833D7}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{363CD2FE3A8DB458}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{16BA0D05313770DA}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
+ }
+}
