@@ -7,7 +7,7 @@
 //! resident's prefab loads, every home and work kind is a kind this pack's places register or its place
 //! templates name, every timetable parses and covers the whole 24 h, and the names are pack `#` keys.
 //! A site resident (a work-site foreman, #4237: home kind `Workplace`, a place id, no anchor) stands at the
-//! site's place origin, so it needs no anchor and does not count toward the Saint-Philippe cast of six to twelve.
+//! site's place origin, so it needs no anchor and does not count toward the Saint-Philippe cast of six to twenty (the shop cast of #4475 grew it).
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronResidents : LF_Test
 {
@@ -22,7 +22,7 @@ class LF_Test_EveronResidents : LF_Test
 		array<string> kinds = {
 			"Spawn", "Clerk", "LicenceDesk", "Bank", "BankVault", "BankCounter", "TownBoard", "MapBoard",
 			"ClothingCounter", "GunCounter", "StoreCounter", "CafeTable", "HostelBed", "House", "FuelTill",
-			"ParcelDepot", "PubBar", "Hall", "Dock", "FishCounter", "Garage", SITE_KIND
+			"ParcelDepot", "PubBar", "Hall", "Dock", "FishCounter", "Garage", "BarberChair", SITE_KIND
 		};
 		return kinds.Find(kind) != -1;
 	}
@@ -77,7 +77,7 @@ class LF_Test_EveronResidents : LF_Test
 				townCast++;
 		}
 
-		ctx.True(townCast >= 6 && townCast <= 12, string.Format("Saint-Philippe has six to twelve town residents, site foremen apart (has %1)", townCast));
+		ctx.True(townCast >= 6 && townCast <= 20, string.Format("Saint-Philippe has six to twenty town residents, site foremen apart (has %1)", townCast));
 
 		// The named cast the card asks for.
 		array<string> cast = { "cafe_owner", "old_man", "night_shift", "teller", "store_clerk", "neighbour_anselme", "neighbour_mireille" };
