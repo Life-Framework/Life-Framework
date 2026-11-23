@@ -9,6 +9,8 @@
 //   - a `-text` asset, a NUL-bearing file and an ALLOW fixture path are not flagged.
 //
 // red-proof: 2026-11-18 with conflictMarkerLines returning [], "a full block fails" printed FAIL.
+// 2026-11-23 (#4622) with the old pattern (7 pipes plus a space only): "a bare or unlabeled diff3 base
+// marker" and "a bare diff3 base marker (no label) fails" printed FAIL, exit 1; the fix passes both.
 import { spawnSync } from "node:child_process";
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { scratchDir } from "../lib/scratch.mjs";
@@ -38,7 +40,8 @@ const run = () => spawnSync(process.execPath, [validator], { env: { ...process.e
 
 try {
   check(conflictMarkerLines(block).map((h) => h.line).join() === "2,4,6,8", "conflictMarkerLines reports the 1-based lines");
-  check(conflictMarkerLines(`${L}\n${E}=\n ${E}\n${B}x\n=== a ===\n`).length === 0, "a marker needs its trailing space (or exactly 7 =) at column 0");
+  check(conflictMarkerLines(`${L}\n${E}=\n ${E}\n ${B}\n=== a ===\n`).length === 0, "an ours marker needs its trailing space, a separator exactly 7 =, a base marker column 0");
+  check(conflictMarkerLines(`a\n${B}\nb\n${B}x\n${B}|\n`).map((h) => h.line).join() === "2,4,5", "a bare or unlabeled diff3 base marker (7 pipes) fails (#4622)");
   check(conflictMarkerLines(`a\r\n${E}\r\nb\r\n`).length === 1, "a CRLF separator counts");
   const allow = allowMatcher(["tools/merge/fixtures/**", "docs/*.md"]);
   check(allow("tools/merge/fixtures/a/b.txt") && allow("docs/x.md") && !allow("docs/a/x.md") && !allow("tools/merge/x.txt"), "allowMatcher: ** crosses folders, * does not");
@@ -55,6 +58,10 @@ try {
   writeFileSync(join(docs, "planted.md"), `a\n${B} base\nb\n`);
   r = run();
   check(r.status === 1 && r.stdout.includes("planted.md:2 "), "a lone base marker fails");
+
+  writeFileSync(join(docs, "planted.md"), `a\n${B}\nb\n`);
+  r = run();
+  check(r.status === 1 && r.stdout.includes("planted.md:2 "), "a bare diff3 base marker (no label) fails");
 
   writeFileSync(join(docs, "planted.md"), `a\r\n${E}\r\nb\r\n`);
   r = run();

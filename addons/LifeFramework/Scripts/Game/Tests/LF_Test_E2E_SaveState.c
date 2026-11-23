@@ -866,8 +866,8 @@ class LF_Test_E2E_SaveStateVerify : LF_Test
 			}
 		}
 
-		ctx.Equal(2, LF_CivilianJob.GetLevel(COURIER_UID), "e2e courier is still level 2 after the save load");
-		ctx.True(LF_CivilianJob.CanSignUp(COURIER_UID, LF_EJobType.FUEL_DELIVERY), "e2e courier level 2 still opens fuel delivery");
+		ctx.Equal(LF_CivilianJob.RequiredLevel(LF_EJobType.FUEL_DELIVERY), LF_CivilianJob.GetLevel(COURIER_UID), "e2e courier keeps the fuel delivery level after the save load");
+		ctx.True(LF_CivilianJob.CanSignUp(COURIER_UID, LF_EJobType.FUEL_DELIVERY), "e2e courier still opens fuel delivery after the save load");
 		ctx.Equal(LF_EJobType.PARCEL, LF_CivilianJob.GetSignedUpJob(COURIER_UID), "e2e courier is still signed up for parcels after the save load");
 		LF_PlayerAccount officer = LF_PlayerAccountManager.GetInstance().GetFromCache(OFFICER_UID);
 		ctx.NotNull(officer, "e2e officer account present after the save load");

@@ -23,24 +23,20 @@ async function run() {
   const fails = [];
 
   arrive((n, spec, t) => on(spec, t), 1, wait);
-  wait(6000);
-  // The first talk after the session starts can miss (the dialogue index loads on first use), so try a few times.
-  let replies = "";
-  for (let tries = 0; tries < 4 && !/phase=choosing/.test(replies); tries++) {
-    replies = "";
-    const stood = on({ verb: "stand", entityName: BARKEEPER, side: "w" }, 20000);
-    if (stood.status !== "ok") {
-      console.log(`FAIL  stand at the barkeeper: ${stood.status} ${stood.detail}`);
-      return 1;
-    }
+  // Stand ends the hospital wake-up and answers once the barkeeper has streamed in (#4611), so one talk is enough.
+  const stood = on({ verb: "stand", entityName: BARKEEPER, side: "w" }, 20000);
+  if (stood.status !== "ok") {
+    console.log(`FAIL  stand at the barkeeper: ${stood.status} ${stood.detail}`);
+    return 1;
+  }
 
-    wait(2500);
-    on({ verb: "use", className: "LF_DialogueTalkAction", entityName: BARKEEPER }, 10000);
-    // Wait out the greeting (it is spoken before the replies show); a closed scene means the talk missed.
-    for (let waited = 0; waited < 30000 && !/phase=choosing|^closed/.test(replies); waited += 2000) {
-      wait(2000);
-      replies = String(scene());
-    }
+  const use = on({ verb: "use", className: "LF_DialogueTalkAction", entityName: BARKEEPER }, 10000);
+  if (use.status !== "ok") fails.push(`the talk returned ${use.status} ${use.detail}`);
+  // Wait out the greeting (it is spoken before the replies show); a closed scene means the talk missed.
+  let replies = "";
+  for (let waited = 0; waited < 30000 && !/phase=choosing|^closed/.test(replies); waited += 2000) {
+    wait(2000);
+    replies = String(scene());
   }
 
   if (!/phase=choosing replies=2/.test(replies)) fails.push(`the barkeeper offers two replies and Goodbye (got: ${replies})`);

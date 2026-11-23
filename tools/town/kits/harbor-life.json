@@ -1,0 +1,115 @@
+{
+  "schema": 1,
+  "kit": "harbor-life",
+  "system": "atmosphere",
+  "source": {
+    "file": "tools/town/kits/harbor-life.json",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside"
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -22.26,
+        -22.45
+      ],
+      "max": [
+        -16.33,
+        -15.89
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "The quay's life, in the frame of the light tower b01 at the quay road junction (front null): a vanilla seagull flock (SCR_Bird) on the dock apron and the harbor day and night ambience beds as emitters with their hours (the beds conf rows). The flock lifts off by itself when a player or vehicle comes within 50 m and lands again after 35 s. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "gulls",
+      "prefab": "{EB419793F72FCE41}Prefabs/Animals/Birds/Larus_argentatus/BirdFlock_Seagull.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -19.25,
+        0,
+        -22.45
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "class": "SCR_Bird"
+    },
+    {
+      "id": "bed-harbor-day",
+      "prefab": "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -16.33,
+        0,
+        -16.83
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_AmbientEmitterComponent",
+          "guid": "54EF977E52CFEF83",
+          "set": {
+            "m_sSoundProject": "\"{BEC2E182919A51C0}Sounds/Ambience/Atmosphere_HarborDay.acp\"",
+            "m_fRadius": "46",
+            "m_fHourFrom": "6",
+            "m_fHourTo": "21",
+            "m_sGroup": "\"harbor_bed\"",
+            "m_iPriority": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "bed-harbor-night",
+      "prefab": "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -22.26,
+        0,
+        -15.89
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_AmbientEmitterComponent",
+          "guid": "54EF977E52CFEF83",
+          "set": {
+            "m_sSoundProject": "\"{DD80116099CC395A}Sounds/Ambience/Atmosphere_HarborNight.acp\"",
+            "m_fRadius": "42",
+            "m_fHourFrom": "21",
+            "m_fHourTo": "6",
+            "m_sGroup": "\"harbor_bed\"",
+            "m_iPriority": "1"
+          },
+          "blocks": []
+        }
+      ]
+    }
+  ]
+}

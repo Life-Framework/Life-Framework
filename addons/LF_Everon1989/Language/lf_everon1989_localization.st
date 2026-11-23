@@ -2369,10 +2369,20 @@ StringTable {
      Target_en_us "You did not see me. Now, what are you after?"
      Comment "Pack patch of the role_fence dialogue's line greet (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
     }
+    CustomStringTableItem "{E71388111407C31A}" {
+     Id "LF-Dialogue_RoleFenceEveron_RefuseDrill"
+     Target_en_us "Vince does not sell that to strangers. Make a name for yourself, then come back."
+     Comment "Pack patch of the role_fence dialogue's line refuse_drill (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
     CustomStringTableItem "{BF2804A075D06D89}" {
      Id "LF-Dialogue_RoleFenceEveron_Rumour"
      Target_en_us "Somebody sold a drill and a charge to the wrong customer. The wrong customer was the police."
      Comment "Pack patch of the role_fence dialogue's line rumour (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
+    }
+    CustomStringTableItem "{34C5E2FFD796D068}" {
+     Id "LF-Dialogue_RoleFenceEveron_SellDrill"
+     Target_en_us "You have earned it. Here is the drill. Be quiet with it, and it never came from me."
+     Comment "Pack patch of the role_fence dialogue's line sell_drill (voiced; tools/assets/dialogue/role_fence_everon). Changing it needs: tools\\cli asset dialogue role_fence_everon"
     }
     CustomStringTableItem "{4FDB1AC1ACEA8C7C}" {
      Id "LF-Dialogue_RoleFenceEveron_What"
@@ -7029,6 +7039,36 @@ StringTable {
      Target_en_us "The dock smokehouse on the east apron. One fresh fish and one bundle of firewood come out as smoked fish, which sells for half as much again and can be eaten."
      Comment "Sign card for the dock smokehouse plate, What section."
     }
+    CustomStringTableItem "{2AAEB76EAA14E856}" {
+     Id "LF-Sign_SpeedLimit100_Title"
+     Target_en_us "SPEED LIMIT 100 KM/H"
+     Comment "Speed limit sign face, 100 km/h, and the Read title (card #4434). Kilometers per hour because the radar gun measures km/h; US English wording."
+    }
+    CustomStringTableItem "{F71E160D65C5338C}" {
+     Id "LF-Sign_SpeedLimit100_What"
+     Target_en_us "The posted limit is 100 km/h on the open road. Officers with a radar gun check it from the lay-by."
+     Comment "Read card of the 100 km/h speed limit sign (card #4434)."
+    }
+    CustomStringTableItem "{CEE67BB33C9C4B39}" {
+     Id "LF-Sign_SpeedLimit30_Title"
+     Target_en_us "SPEED LIMIT 30 KM/H"
+     Comment "Speed limit sign face, 30 km/h, and the Read title (card #4434). Kilometers per hour because the radar gun measures km/h; US English wording."
+    }
+    CustomStringTableItem "{230591BF3C6CC1C6}" {
+     Id "LF-Sign_SpeedLimit30_What"
+     Target_en_us "The posted limit is 30 km/h near the markets and the village squares. Officers with a radar gun check it from the lay-by."
+     Comment "Read card of the 30 km/h speed limit sign (card #4434)."
+    }
+    CustomStringTableItem "{B0D6C23589C23F33}" {
+     Id "LF-Sign_SpeedLimit50_Title"
+     Target_en_us "SPEED LIMIT 50 KM/H"
+     Comment "Speed limit sign face, 50 km/h, and the Read title (card #4434). Kilometers per hour because the radar gun measures km/h; US English wording."
+    }
+    CustomStringTableItem "{9E57A1DB482CCDAF}" {
+     Id "LF-Sign_SpeedLimit50_What"
+     Target_en_us "The posted limit is 50 km/h through the town streets. Officers with a radar gun check it from the lay-by."
+     Comment "Read card of the 50 km/h speed limit sign (card #4434)."
+    }
     CustomStringTableItem "{5F88AA844B7BCA38}" {
      Id "LF-Sign_SpringPond_How"
      Target_en_us "Bring a rod and a bait tin, cast onto the water from the jetty or the bank, and strike when the float dips"
@@ -7956,12 +7996,12 @@ StringTable {
     }
     CustomStringTableItem "{26AB027C285BC0D5}" {
      Id "LF-Unlock_Hauling_05"
-     Target_en_us "Taxi fares"
+     Target_en_us "Faster loading"
      Comment "What Hauling level 5 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{66A808D00E3ACBA5}" {
      Id "LF-Unlock_Hauling_06"
-     Target_en_us "Faster loading"
+     Target_en_us "Taxi fares"
      Comment "What Hauling level 6 opens; the level-up card prefixes Opens:."
     }
     CustomStringTableItem "{24D9B283B36BB21F}" {

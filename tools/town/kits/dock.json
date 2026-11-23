@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "kit": "dock",
+  "system": "jobs",
+  "source": {
+    "file": "addons/LifeFramework/Prefabs/Props/LF_ExportCraneSpot.et",
+    "group": "*",
+    "origin": "prefab",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0,
+        0
+      ],
+      "max": [
+        0,
+        0
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "One export crane hand-in spot (#4580) on the open quay apron south of the harbour crane, on the ground clear of the quay edge, so a van can back up within 3 m. The spot sits at the kit origin, shifted onto the quay by its offset; rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "crane-spot",
+      "name": "Dock_CraneSpot",
+      "prefab": "{897C2A6F02D75762}Prefabs/Props/LF_ExportCraneSpot.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -24.5,
+        0,
+        -17.6
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}

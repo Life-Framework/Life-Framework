@@ -27,7 +27,7 @@ const ok = (cond, what) => {
 
 // ---- the lattice: six bays, inside c25..c28 rows r0..r5, none on a legacy cell
 const bays = authoringBays();
-ok(CELL.cols === 29 && bays.length === 6, `the lattice has 29 columns and six authoring bays (got ${CELL.cols}, ${bays.length})`);
+ok(CELL.cols === 32 && bays.length === 6, `the lattice has 32 columns and six authoring bays (got ${CELL.cols}, ${bays.length})`);
 ok(bays.every((b) => b.span.join("x") === "2x2" && b.cells.length === 4 && b.cells.every((id) => claimCellIds({ cell: id }).length === 1)), "every bay is a 2x2 of lattice cells");
 ok(bays.map((b) => b.id).join() === "c25r0,c27r0,c25r2,c27r2,c25r4,c27r4", `the bays are c25r0, c27r0, c25r2, c27r2, c25r4, c27r4 (got ${bays.map((b) => b.id)})`);
 const used = bays.flatMap((b) => b.cells);
