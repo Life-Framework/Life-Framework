@@ -1,0 +1,159 @@
+{
+  "schema": 1,
+  "template": "village",
+  "place": "chotain",
+  "status": "proposed",
+  "note": "Card #4442 (CR-B9): the village template names its bar slot `pub`; the 0.3.0 barkeeper Josselin Vidal (#4516, buyer id `bar_chotain`) stands in it. Only `pub` is needed in 0.3.0; the other slots are tool proposals and are not fitted yet. A proposal: approval is a reviewed PR holding only this file (label town-mapping). `toolscli town map chotain --check --template village` passes.",
+  "dossier": {
+    "schema": 1,
+    "generated": "2026-11-23",
+    "buildings": 37,
+    "freePlots": 8
+  },
+  "slots": {
+    "hall": {
+      "building": "b12",
+      "score": 0.825,
+      "why": [
+        "type house",
+        "large: 663 m2, 56.4 m out",
+        "interior yes"
+      ],
+      "alternatives": [
+        {
+          "building": "b02",
+          "score": 0.792
+        },
+        {
+          "building": "b01",
+          "score": 0.754
+        },
+        {
+          "building": "b19",
+          "score": 0.696
+        }
+      ]
+    },
+    "pub": {
+      "building": "b01",
+      "score": 0.704,
+      "why": [
+        "type house, 527 m2 with 12 doors and a known front entrance: the largest, most central building with a walkable ground floor",
+        "interior yes (2 floors)",
+        "24.2 m from the centre"
+      ],
+      "alternatives": [
+        {
+          "building": "b18",
+          "score": 0.698
+        },
+        {
+          "building": "b05",
+          "score": 0.676
+        },
+        {
+          "building": "b09",
+          "score": 0.654
+        }
+      ]
+    },
+    "shop": {
+      "building": "b18",
+      "score": 0.788,
+      "why": [
+        "type shop (first choice)",
+        "near: 483.1 m2, 71.5 m out",
+        "interior yes"
+      ],
+      "alternatives": [
+        {
+          "building": "b01",
+          "score": 0.749
+        },
+        {
+          "building": "b05",
+          "score": 0.721
+        },
+        {
+          "building": "b09",
+          "score": 0.699
+        }
+      ]
+    },
+    "fuel": {
+      "none": true,
+      "reason": "no building fits (17 x type shed is not one of fuel, 9 x type house is not one of fuel) and the slot has no plot fallback"
+    },
+    "garage": {
+      "building": "b29",
+      "score": 0.877,
+      "why": [
+        "type garage (first choice)",
+        "far: 48.5 m2, 91.9 m out"
+      ],
+      "alternatives": [
+        {
+          "building": "b23",
+          "score": 0.861
+        },
+        {
+          "building": "b22",
+          "score": 0.859
+        },
+        {
+          "building": "b34",
+          "score": 0.855
+        }
+      ]
+    },
+    "house": {
+      "building": "b05",
+      "score": 0.856,
+      "why": [
+        "type house (first choice)",
+        "near: 192.8 m2, 37.9 m out",
+        "interior yes"
+      ],
+      "alternatives": [
+        {
+          "building": "b01",
+          "score": 0.884
+        },
+        {
+          "building": "b09",
+          "score": 0.834
+        },
+        {
+          "building": "b12",
+          "score": 0.828
+        }
+      ]
+    },
+    "depot": {
+      "none": true,
+      "reason": "no building fits (17 x footprint N mN is under N, 9 x type house is not one of industrial, industrial-tank, farm, shed) and the slot has no plot fallback"
+    },
+    "factory": {
+      "none": true,
+      "reason": "no building fits (17 x type shed is not one of industrial, 9 x type house is not one of industrial) and the slot has no plot fallback"
+    },
+    "farm-plot": {
+      "none": true,
+      "reason": "plot p8 (24 x 22 m) is the free plot that fits, but the village template lists no farm-plot prefab, so there is nothing to place on it; not needed in 0.3.0"
+    },
+    "board": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (house), 24.2 m from the centre; the kit sets it against the kerb"
+      ]
+    },
+    "taxi": {
+      "building": "b01",
+      "shared": true,
+      "why": [
+        "street furniture on the frontage of b01 (house), 24.2 m from the centre; the kit sets it against the kerb"
+      ]
+    }
+  }
+}
