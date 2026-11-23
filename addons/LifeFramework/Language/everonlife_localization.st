@@ -4520,6 +4520,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+    CustomStringTableItem "{AB6DB02C0E62EDEF}" {
+     Id "LF-Credits_199"
+     Target_en_us "Desk sergeant's five lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
      Id "LF-Credits_2"
      Target_en_us "Everon Life RPG Framework"
@@ -4528,6 +4533,11 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{07EEDCD277D92D50}" {
      Id "LF-Credits_20"
      Target_en_us "TOOLS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{98645FC8B2D9330E}" {
+     Id "LF-Credits_200"
+     Target_en_us "Booking typewriter and ink pad stamp sounds"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09A1E735EF193A11}" {

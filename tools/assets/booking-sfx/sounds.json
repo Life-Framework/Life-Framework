@@ -1,0 +1,207 @@
+{
+  "slug": "booking-sfx",
+  "name": "BookingSfx",
+  "kind": "gadget",
+  "project_dir": "Sounds/Police",
+  "project_prefix": "Booking",
+  "output_format": "pcm_48000",
+  "budget": {
+    "generations": 12
+  },
+  "sounds": [
+    {
+      "id": "typewriter",
+      "event": "SOUND_LF_BOOKING_TYPEWRITER",
+      "project": "Typewriter",
+      "bus": "sfx",
+      "range": "near22",
+      "volume_db": -8,
+      "pitch_variance": 0.05,
+      "prompt": "A police clerk typing a booking form on a manual mechanical typewriter: a quick burst of about a dozen key clacks, then the bell and the carriage return slide. 1980s office, dry, close, no room reverb, no music, no voice.",
+      "duration_seconds": 3,
+      "prompt_influence": 0.75,
+      "variations": 4,
+      "trim_db": -40,
+      "pick": [
+        1,
+        2
+      ],
+      "reason": "Take 1 is fourteen even key clacks with the carriage slide at the end of the burst; take 2 is three short bursts ending in the bell. Two takes for variety between bookings. Takes 3 and 4 were not played."
+    },
+    {
+      "id": "stamp",
+      "event": "SOUND_LF_BOOKING_STAMP",
+      "project": "Stamp",
+      "bus": "sfx",
+      "range": "near22",
+      "volume_db": -6,
+      "pitch_variance": 0.05,
+      "prompt": "A rubber stamp pressed hard on an ink pad then thumped onto a paper form on a wooden desk: a soft pad press, then one firm dull thump. Close, dry, no reverb, no music, no voice.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "variations": 4,
+      "trim_db": -40,
+      "pick": [
+        3,
+        4
+      ],
+      "reason": "Take 3 is one dry firm thump with a short paper decay and take 4 a soft pad press into the thump, the stamp landing on the sheet. Takes 1 and 2 are two separate hits 0.7 s apart that read as two actions, and take 2 rings."
+    }
+  ],
+  "generations": [
+    {
+      "id": "typewriter",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A police clerk typing a booking form on a manual mechanical typewriter: a quick burst of about a dozen key clacks, then the bell and the carriage return slide. 1980s office, dry, close, no room reverb, no music, no voice.",
+      "duration_seconds": 3,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 576000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "typewriter",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A police clerk typing a booking form on a manual mechanical typewriter: a quick burst of about a dozen key clacks, then the bell and the carriage return slide. 1980s office, dry, close, no room reverb, no music, no voice.",
+      "duration_seconds": 3,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 576000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "typewriter",
+      "take": 3,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A police clerk typing a booking form on a manual mechanical typewriter: a quick burst of about a dozen key clacks, then the bell and the carriage return slide. 1980s office, dry, close, no room reverb, no music, no voice.",
+      "duration_seconds": 3,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 576000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "typewriter",
+      "take": 4,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A police clerk typing a booking form on a manual mechanical typewriter: a quick burst of about a dozen key clacks, then the bell and the carriage return slide. 1980s office, dry, close, no room reverb, no music, no voice.",
+      "duration_seconds": 3,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 576000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "stamp",
+      "take": 1,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A rubber stamp pressed hard on an ink pad then thumped onto a paper form on a wooden desk: a soft pad press, then one firm dull thump. Close, dry, no reverb, no music, no voice.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 192000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "stamp",
+      "take": 2,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A rubber stamp pressed hard on an ink pad then thumped onto a paper form on a wooden desk: a soft pad press, then one firm dull thump. Close, dry, no reverb, no music, no voice.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 192000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "stamp",
+      "take": 3,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A rubber stamp pressed hard on an ink pad then thumped onto a paper form on a wooden desk: a soft pad press, then one firm dull thump. Close, dry, no reverb, no music, no voice.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 192000,
+      "credits_estimate": 200
+    },
+    {
+      "id": "stamp",
+      "take": 4,
+      "date": "2026-11-23",
+      "tool": "ElevenLabs text-to-sound-effects",
+      "model": "default",
+      "prompt": "A rubber stamp pressed hard on an ink pad then thumped onto a paper form on a wooden desk: a soft pad press, then one firm dull thump. Close, dry, no reverb, no music, no voice.",
+      "duration_seconds": 1,
+      "prompt_influence": 0.75,
+      "loop": false,
+      "output_format": "pcm_48000",
+      "channels": 2,
+      "bytes": 192000,
+      "credits_estimate": 200
+    }
+  ],
+  "runs": [
+    {
+      "date": "2026-11-23",
+      "generations": 8,
+      "seconds": 16,
+      "plan": "starter",
+      "credits_before": 26348,
+      "credits_after": 26494,
+      "credits": 146
+    }
+  ],
+  "wired": {
+    "Typewriter": {
+      "project": "{E531FF5152552DAB}Sounds/Police/Booking_Typewriter.acp",
+      "events": [
+        "SOUND_LF_BOOKING_TYPEWRITER"
+      ],
+      "samples": [
+        "{D1191B80495A40C2}Sounds/Police/Samples/Booking_LF_BOOKING_TYPEWRITER_01.wav",
+        "{3EF13A9FE764B4B4}Sounds/Police/Samples/Booking_LF_BOOKING_TYPEWRITER_02.wav"
+      ]
+    },
+    "Stamp": {
+      "project": "{4D80FB79AF0B7ED8}Sounds/Police/Booking_Stamp.acp",
+      "events": [
+        "SOUND_LF_BOOKING_STAMP"
+      ],
+      "samples": [
+        "{1666FBF115795201}Sounds/Police/Samples/Booking_LF_BOOKING_STAMP_01.wav",
+        "{FF9FA7CAB6EF252D}Sounds/Police/Samples/Booking_LF_BOOKING_STAMP_02.wav"
+      ]
+    }
+  },
+  "addon": "LF_Everon1989"
+}

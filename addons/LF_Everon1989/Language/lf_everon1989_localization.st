@@ -734,6 +734,56 @@ StringTable {
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
      Comment "Pack patch of the clerk dialogue's line work_errand (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{7D9807E24C9AA3E9}" {
+     Id "LF-Dialogue_DeskSergeant_Booking"
+     Target_en_us "Booking? Sign the sheet where it's marked. Name, charge, time. Then the stamp, and it's official."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
+    CustomStringTableItem "{E61C94CCD5ACEE28}" {
+     Id "LF-Dialogue_DeskSergeant_Bye"
+     Target_en_us "Good day. Keep your paperwork."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
+    CustomStringTableItem "{0C83B17417B6B367}" {
+     Id "LF-Dialogue_DeskSergeant_Cell"
+     Target_en_us "The cell is down the hall, second door. Mind the step. Someone will let you out when your time is up."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
+    CustomStringTableItem "{9B26E7091FEB3027}" {
+     Id "LF-Dialogue_DeskSergeant_Name"
+     Target_en_us "Desk Sergeant Marchand"
+     Comment "Speaker name shown over the desk sergeant dialogue."
+    }
+    CustomStringTableItem "{EA2DF3CEE06AD06C}" {
+     Id "LF-Dialogue_DeskSergeant_PayNow"
+     Target_en_us "You can pay the fine now and walk out, or serve the time. Cash only. No checks."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
+    CustomStringTableItem "{179FC496A7129A75}" {
+     Id "LF-Dialogue_DeskSergeant_SayBook"
+     Target_en_us "I'm here to be booked."
+     Comment "Dialogue reply the player can pick when talking to the desk_sergeant NPC."
+    }
+    CustomStringTableItem "{5C9933FC31FD5E36}" {
+     Id "LF-Dialogue_DeskSergeant_SayBye"
+     Target_en_us "That's all. Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the desk_sergeant NPC."
+    }
+    CustomStringTableItem "{38B15134A344AF69}" {
+     Id "LF-Dialogue_DeskSergeant_SayCell"
+     Target_en_us "Where do I serve it?"
+     Comment "Dialogue reply the player can pick when talking to the desk_sergeant NPC."
+    }
+    CustomStringTableItem "{DC7B651DA2397650}" {
+     Id "LF-Dialogue_DeskSergeant_SayPay"
+     Target_en_us "Can I pay it now?"
+     Comment "Dialogue reply the player can pick when talking to the desk_sergeant NPC."
+    }
+    CustomStringTableItem "{CC2A3F4E1B6480A4}" {
+     Id "LF-Dialogue_DeskSergeant_Ticket"
+     Target_en_us "Paying a ticket? Put it on the counter and I'll stamp it."
+     Comment "Dialogue caption, spoken by the desk_sergeant NPC (voiced; tools/assets/dialogue/desk_sergeant). Changing it needs: tools\\cli asset dialogue desk_sergeant"
+    }
     CustomStringTableItem "{7A3C5E19D2B84F60}" {
      Id "LF-Dialogue_Dispatcher_Name"
      Target_en_us "Dispatch"
