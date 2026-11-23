@@ -75,6 +75,9 @@ class LF_HeistSiteRow : LF_ConfigRecord
 	[Attribute("0", UIWidgets.Auto, "Minimum police on duty before the job can start. Same gate as LF_RobAction", params: "0 20")]
 	int m_iMinPoliceOnDuty;
 
+	[Attribute("10800", UIWidgets.Auto, "Big-job cooldown in seconds after the job ends (LF_BigJobLock). Zero: the bank's plan default, 3 h", params: "0 86400")]
+	int m_iCooldownSeconds;
+
 	[Attribute("", UIWidgets.Object, "The stages in order")]
 	ref array<ref LF_HeistStageRow> m_aStages;
 

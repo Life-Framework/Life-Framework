@@ -575,9 +575,7 @@ class LF_MapAreasUI : SCR_MapUIBaseComponent
 				screen.Insert(Vector(sx, sy, 0));
 			}
 
-			string label = LF_MapAreas.LabelKeyOf(area);
-			if (label.StartsWith("#"))
-				label = WidgetManager.Translate(label);
+			string label = LF_MapAreas.LabelOf(area);
 
 			array<ref LF_MapAreaCmd> records = {};
 			if (LF_MapAreasDraw.Build(area, screen, ppu, viewW, viewH, tokens, label, records, palette) == 0)

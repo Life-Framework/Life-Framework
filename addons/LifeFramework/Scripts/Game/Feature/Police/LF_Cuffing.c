@@ -365,6 +365,7 @@ class LF_Cuffing
 		}
 
 		float elapsed = Now() - session.m_fStartedAt;
+		durationSeconds = LF_PoliceSkill.CuffSeconds(LF_Utils.GetPlayerUid(officer), durationSeconds); // fast-cuff perk (#4424)
 		if (!force && !HoldLongEnough(elapsed, durationSeconds))
 		{
 			LF_Debug.Warn(FEATURE, string.Format("cuffing completion refused: the hold ran %1 s of %2 s", elapsed, durationSeconds));

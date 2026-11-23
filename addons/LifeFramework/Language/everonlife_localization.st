@@ -3415,6 +3415,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Every character slot on this account is taken."
      Comment "Character creation refused because the account already holds the configured maximum number of characters."
     }
+    CustomStringTableItem "{2DF6913A7B6E562C}" {
+     Id "LF-ChargePayment_Failed"
+     Target_en_us "The payment did not go through. Try again or take the time."
+     Comment "Toast to the suspect: the money could not be taken; nothing was charged."
+    }
+    CustomStringTableItem "{1B6EC4D1194BE38F}" {
+     Id "LF-ChargePayment_Paid"
+     Target_en_us "You paid your fine of {currency:sym}%1. You are free to go."
+     Comment "Toast to the suspect: the fine was paid at the booking desk. %1 = the fine in dollars."
+    }
+    CustomStringTableItem "{5142F0A862D4F263}" {
+     Id "LF-ChargePayment_Short"
+     Target_en_us "You can't cover {currency:sym}%1, so you take the time."
+     Comment "Toast to the suspect: cash and bank fall short of the fine; they go to the cell. %1 = the fine in dollars."
+    }
     CustomStringTableItem "{294B1C333502C014}" {
      Id "LF-Chess_BlackInCheck"
      Target_en_us "Black to move, in check"
@@ -4257,32 +4272,32 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{8B3125F791403A21}" {
      Id "LF-Credits_172"
-     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Barkeeper Josselin Vidal's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6DEF465ED9803D1A}" {
      Id "LF-Credits_173"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Hank Harvey - Gruff, Rugged and Wise\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{331934ECDCED4E47}" {
      Id "LF-Credits_174"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B9BF5DC2926087D1}" {
      Id "LF-Credits_175"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CC2101DE9FC8F7B8}" {
      Id "LF-Credits_176"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C9C86A5A1ED40DCE}" {
      Id "LF-Credits_177"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8A4563FF1C5E590F}" {
@@ -4292,7 +4307,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1FC189AF5F7BE2CC}" {
      Id "LF-Credits_179"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3A24A564BBC40F8F}" {
@@ -4302,52 +4317,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDA999D625B19F3D}" {
      Id "LF-Credits_180"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A0A7AF015F2F74D4}" {
      Id "LF-Credits_181"
-     Target_en_us "Michael Hansen / Rhasspy"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0D1A861CFC75EB60}" {
      Id "LF-Credits_182"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{861D6EE9C532FE97}" {
      Id "LF-Credits_183"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
+     Target_en_us "Michael Hansen / Rhasspy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FD0F462ADB68D02E}" {
      Id "LF-Credits_184"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{00BFA04619043DFC}" {
      Id "LF-Credits_185"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{90696CB2BFCA919F}" {
      Id "LF-Credits_186"
-     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Target_en_us "FONTS AND LOGO"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{13C921E553E1333A}" {
      Id "LF-Credits_187"
-     Target_en_us "LIVERIES"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FD2D69733781B26}" {
      Id "LF-Credits_188"
-     Target_en_us "LF_UAZ469_Police"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{413CD254F961C2CC}" {
      Id "LF-Credits_189"
-     Target_en_us "LF_S105_Police"
+     Target_en_us "LIVERIES"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9B225E9F684B34BE}" {
@@ -4357,26 +4372,36 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{FB7F01DA30ED5462}" {
      Id "LF-Credits_190"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_UAZ469_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{20D09EC5580FB73B}" {
      Id "LF-Credits_191"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "LF_S105_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{EB138655CB017E1B}" {
      Id "LF-Credits_192"
-     Target_en_us "LF_VodkaBottle_BCR"
+     Target_en_us "CONTRABAND LABELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{ADAAD0ACB3D62D04}" {
      Id "LF-Credits_193"
-     Target_en_us "WORK-SITE SOUNDS"
+     Target_en_us "LF_CigaretteCarton_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4BC652FE250FB8F9}" {
      Id "LF-Credits_194"
+     Target_en_us "LF_VodkaBottle_BCR"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{B19D39615671DC17}" {
+     Id "LF-Credits_195"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{031A67A6561231CB}" {
+     Id "LF-Credits_196"
      Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
@@ -6040,6 +6065,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Evidence"
      Comment "Toast title for scene evidence."
     }
+    CustomStringTableItem "{033372B427C8F462}" {
+     Id "LF-ExportOrder_RefuseGone"
+     Target_en_us "That order is no longer on the board."
+     Comment "Export order board: the order closed or was never open."
+    }
+    CustomStringTableItem "{8651760D8ABA0ABB}" {
+     Id "LF-ExportOrder_RefuseHoldsOne"
+     Target_en_us "You already have an export order. Hand it in first."
+     Comment "Export order board: one order per hauler."
+    }
+    CustomStringTableItem "{75449B377FCD4EF0}" {
+     Id "LF-ExportOrder_RefuseLevel"
+     Target_en_us "Export orders are for haulers at level 10 or higher. Keep hauling."
+     Comment "Export order board: a hauler under the level gate tries to take an order."
+    }
+    CustomStringTableItem "{827665D19E29D2A6}" {
+     Id "LF-ExportOrder_RefuseNoneHeld"
+     Target_en_us "You have no export order to hand in."
+     Comment "Export order crane: the player holds no order."
+    }
+    CustomStringTableItem "{333B1F31AD7A4561}" {
+     Id "LF-ExportOrder_RefuseShort"
+     Target_en_us "That is not the full order. Bring every unit, then hand it in."
+     Comment "Export order crane: fewer goods than the order asks for; nothing is taken."
+    }
+    CustomStringTableItem "{1BA87EB81FC07ECF}" {
+     Id "LF-ExportOrder_RefuseTaken"
+     Target_en_us "Another hauler already took that order."
+     Comment "Export order board: someone else holds the order."
+    }
     CustomStringTableItem "{E6E02AC329CA9010}" {
      Id "LF-Farm_CabbageSeeds"
      Target_en_us "Cabbage seeds"
@@ -6880,8 +6935,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{544D193A3E8A461A}" {
      Id "LF-Handset_CallPolice"
-     Target_en_us "Radio the {police}"
-     Comment "Radio set action: call the police."
+     Target_en_us "Radio for an officer"
+     Comment "Radio set action: call the police. The engine renders a prefab action name itself, so the text holds no term placeholder (validate-term-sinks)."
     }
     CustomStringTableItem "{0350E5CBCEDFF757}" {
      Id "LF-Handset_CallTaxi"
@@ -8310,8 +8365,8 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B343B39B5EC2F09D}" {
      Id "LF-Item_HandsetRadio_Description"
-     Target_en_us "A handheld set. Calls a cab, a doctor or the {police} from wherever you stand, for a small fee."
-     Comment "Item description of the radio set."
+     Target_en_us "A handheld set. Calls a cab, a doctor or an officer from wherever you stand, for a small fee."
+     Comment "Item description of the radio set. The engine renders a prefab description itself, so the text holds no term placeholder (validate-term-sinks)."
     }
     CustomStringTableItem "{3A87AA0CD67A55F9}" {
      Id "LF-Item_HandsetRadio_Name"
@@ -10012,6 +10067,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not without a driving license. The license desk issues it for %1."
      Comment "Car lot refusal when the server asks for a driving licence (#3151). %1 is the fee. Neutral core text; a pack row with the same Id names the place."
     }
+    CustomStringTableItem "{B7C2E4F1A93D5680}" {
+     Id "LF-Lot_NeedsTruckLicence"
+     Target_en_us "Trucks need the truck license first. The license desk runs the truck check for %1."
+     Comment "Vehicle lot refusal for a truck without the truck license (#4417). %1 is the truck check fee. Neutral core text."
+    }
     CustomStringTableItem "{B58D71B1650E8EBB}" {
      Id "LF-Lot_Rule"
      Target_en_us "Cars up to %1 are paid in cash. Dearer cars are paid from your bank: deposit cash at the ATM first."
@@ -11161,6 +11221,141 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Ops_RestartToast"
      Target_en_us "The server restarts in %1 minute(s)."
      Comment "Toast to every player at each restart warning step (Ops O6, #1265). %1 = minutes left."
+    }
+    CustomStringTableItem "{7D34417334CA2E12}" {
+     Id "LF-OrgFlagWall_Done"
+     Target_en_us "Your gang now flies the new flag."
+     Comment "Toast to the gang leader after picking a flag at the wall."
+    }
+    CustomStringTableItem "{0DD2469217004277}" {
+     Id "LF-OrgFlagWall_Fly"
+     Target_en_us "Fly the %1 flag"
+     Comment "Action on a sample flag at the registry flag wall. %1 is the flag name."
+    }
+    CustomStringTableItem "{5835D1DD383908D7}" {
+     Id "LF-OrgFlagWall_Held"
+     Target_en_us "That flag belongs to %1, and they are around. Pick another."
+     Comment "Toast when a flag is held by a gang with a member online. %1 is the holding gang."
+    }
+    CustomStringTableItem "{B717A91F51503F78}" {
+     Id "LF-OrgFlagWall_NoGang"
+     Target_en_us "You need a gang to fly a flag."
+     Comment "Toast to a player with no organization."
+    }
+    CustomStringTableItem "{5592F38460C60DB0}" {
+     Id "LF-OrgFlagWall_NotLeader"
+     Target_en_us "Only a gang leader can pick the gang flag."
+     Comment "Toast to a gang member who is not a leader."
+    }
+    CustomStringTableItem "{BDE4CC259DADC42D}" {
+     Id "LF-OrgFlagWall_Refused"
+     Target_en_us "That flag cannot be picked."
+     Comment "Toast when the pick is not one of the preset flags."
+    }
+    CustomStringTableItem "{2317577E1FF2C9F2}" {
+     Id "LF-OrgFlagWall_Same"
+     Target_en_us "Your gang already flies that flag."
+     Comment "Toast when the leader picks the flag the gang already has."
+    }
+    CustomStringTableItem "{6DD4905328743C3C}" {
+     Id "LF-OrgFlag_Name_01"
+     Target_en_us "Flag 1"
+     Comment "Neutral name of preset gang flag 1; a pack gives the real name."
+    }
+    CustomStringTableItem "{C7E4384645F27400}" {
+     Id "LF-OrgFlag_Name_02"
+     Target_en_us "Flag 2"
+     Comment "Neutral name of preset gang flag 2; a pack gives the real name."
+    }
+    CustomStringTableItem "{06CB274D16F5D514}" {
+     Id "LF-OrgFlag_Name_03"
+     Target_en_us "Flag 3"
+     Comment "Neutral name of preset gang flag 3; a pack gives the real name."
+    }
+    CustomStringTableItem "{4BBB49F3186E9C91}" {
+     Id "LF-OrgFlag_Name_04"
+     Target_en_us "Flag 4"
+     Comment "Neutral name of preset gang flag 4; a pack gives the real name."
+    }
+    CustomStringTableItem "{80848B99F9327F1F}" {
+     Id "LF-OrgFlag_Name_05"
+     Target_en_us "Flag 5"
+     Comment "Neutral name of preset gang flag 5; a pack gives the real name."
+    }
+    CustomStringTableItem "{41BB2518650EC259}" {
+     Id "LF-OrgFlag_Name_06"
+     Target_en_us "Flag 6"
+     Comment "Neutral name of preset gang flag 6; a pack gives the real name."
+    }
+    CustomStringTableItem "{3BFCE726AB706918}" {
+     Id "LF-OrgFlag_Name_07"
+     Target_en_us "Flag 7"
+     Comment "Neutral name of preset gang flag 7; a pack gives the real name."
+    }
+    CustomStringTableItem "{D549594C3E7CA88D}" {
+     Id "LF-OrgFlag_Name_08"
+     Target_en_us "Flag 8"
+     Comment "Neutral name of preset gang flag 8; a pack gives the real name."
+    }
+    CustomStringTableItem "{CD1F50FA7D06680B}" {
+     Id "LF-OrgFlag_Name_09"
+     Target_en_us "Flag 9"
+     Comment "Neutral name of preset gang flag 9; a pack gives the real name."
+    }
+    CustomStringTableItem "{F2D8608EB4BADFA2}" {
+     Id "LF-OrgFlag_Name_10"
+     Target_en_us "Flag 10"
+     Comment "Neutral name of preset gang flag 10; a pack gives the real name."
+    }
+    CustomStringTableItem "{1F4EC0E2CC8A7E46}" {
+     Id "LF-OrgFlag_Name_11"
+     Target_en_us "Flag 11"
+     Comment "Neutral name of preset gang flag 11; a pack gives the real name."
+    }
+    CustomStringTableItem "{9896D7B92896EC0A}" {
+     Id "LF-OrgFlag_Name_12"
+     Target_en_us "Flag 12"
+     Comment "Neutral name of preset gang flag 12; a pack gives the real name."
+    }
+    CustomStringTableItem "{82527DEB453A9885}" {
+     Id "LF-OrgFlag_Name_13"
+     Target_en_us "Flag 13"
+     Comment "Neutral name of preset gang flag 13; a pack gives the real name."
+    }
+    CustomStringTableItem "{914669FAB5989DD9}" {
+     Id "LF-OrgFlag_Name_14"
+     Target_en_us "Flag 14"
+     Comment "Neutral name of preset gang flag 14; a pack gives the real name."
+    }
+    CustomStringTableItem "{71BE884AF0AC76CD}" {
+     Id "LF-OrgFlag_Name_15"
+     Target_en_us "Flag 15"
+     Comment "Neutral name of preset gang flag 15; a pack gives the real name."
+    }
+    CustomStringTableItem "{1625AAF66BB314BA}" {
+     Id "LF-OrgFlag_Name_16"
+     Target_en_us "Flag 16"
+     Comment "Neutral name of preset gang flag 16; a pack gives the real name."
+    }
+    CustomStringTableItem "{1CB2F49578C1F055}" {
+     Id "LF-OrgFlag_Name_17"
+     Target_en_us "Flag 17"
+     Comment "Neutral name of preset gang flag 17; a pack gives the real name."
+    }
+    CustomStringTableItem "{57C899AC492EF9AC}" {
+     Id "LF-OrgFlag_Name_18"
+     Target_en_us "Flag 18"
+     Comment "Neutral name of preset gang flag 18; a pack gives the real name."
+    }
+    CustomStringTableItem "{0A2B3522F3279827}" {
+     Id "LF-OrgFlag_Name_19"
+     Target_en_us "Flag 19"
+     Comment "Neutral name of preset gang flag 19; a pack gives the real name."
+    }
+    CustomStringTableItem "{2323BD897B6C077E}" {
+     Id "LF-OrgFlag_Name_20"
+     Target_en_us "Flag 20"
+     Comment "Neutral name of preset gang flag 20; a pack gives the real name."
     }
     CustomStringTableItem "{5AB8DC50BD7DC910}" {
      Id "LF-OrgRight_BUY_UPGRADE"
@@ -14783,8 +14978,8 @@ CustomStringTableItem "{44869271883D0402}" {
   }
   CustomStringTableItem "{3655F9540576258C}" {
    Id "LF-Roadblock_Description"
-   Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty {police} only."
-   Comment "Inventory description of the police roadblock kit."
+   Target_en_us "Folding roadblock kit: a barrier and four cones. Drop it at the roadside and deploy it across the road; pick any piece up to fold the set away. On-duty officers only."
+   Comment "Inventory description of the police roadblock kit. The engine renders a prefab description itself, so the text holds no term placeholder (validate-term-sinks)."
   }
   CustomStringTableItem "{986CA09EB5046245}" {
    Id "LF-Roadblock_Name"
@@ -17097,6 +17292,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Vehicle_OutOnLotTitle"
      Target_en_us "Your car"
      Comment "Toast title when the garage hands a car out to its owner."
+    }
+    CustomStringTableItem "{6D1F8A3E2C94B057}" {
+     Id "LF-Vehicle_Ural"
+     Target_en_us "Ural 4320 cargo truck"
+     Comment "Lot catalog row for the Ural cargo truck (#4417)."
     }
     CustomStringTableItem "{5527F4187C4874BD}" {
      Id "LF-Vehicle_YourCarMark"
