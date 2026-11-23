@@ -2530,6 +2530,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Stand at the bed to put a patient in it."
      Comment "Refusal: medic too far from the bed."
     }
+    CustomStringTableItem "{EE2695450DA92ACF}" {
+     Id "LF-BigJob_Busy"
+     Target_en_us "Another big job is already underway on the island. Wait until it is over."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): one pharmacy, bank or depot job runs on the server at a time."
+    }
+    CustomStringTableItem "{F9776BD9715991D9}" {
+     Id "LF-BigJob_Cooldown"
+     Target_en_us "This place was hit recently. Try again in %1 min."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): the job is cooling down. %1 is the minutes left."
+    }
+    CustomStringTableItem "{BE941138C8540332}" {
+     Id "LF-BigJob_Unavailable"
+     Target_en_us "This job cannot be started right now."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): a broken request (no job or player key)."
+    }
     CustomStringTableItem "{CEF674540C6B082E}" {
      Id "LF-Bill_NeedCash"
      Target_en_us "Carry %1 in cash to pay the bill"
@@ -8083,6 +8098,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "A taped cardboard parcel for the drop-off address."
      Comment "Courier parcel item description"
     }
+    CustomStringTableItem "{A342651F913CD658}" {
+     Id "LF-Item_RadarGun_Description"
+     Target_en_us "Hand-held speed radar. Aim at a car and use Measure speed. On-duty officers only."
+     Comment "Inventory description of the police radar gun."
+    }
+    CustomStringTableItem "{3A0DC1946B0A4795}" {
+     Id "LF-Item_RadarGun_Name"
+     Target_en_us "Radar gun"
+     Comment "Inventory name of the police radar gun."
+    }
     CustomStringTableItem "{9195B0483F2D0148}" {
      Id "LF-Item_RepairKit_Description"
      Target_en_us "A toolbox of wrenches and patches. Holds one repair on a damaged vehicle."
@@ -10267,6 +10292,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You wear a New Life wristband. Stay away from where you died for %1 minutes."
      Comment "Toast on waking in hospital after a real death. %1 is the minutes."
     }
+    CustomStringTableItem "{3D9D0114019FA819}" {
+     Id "LF-NewspaperEdition_ArrestLine"
+     Target_en_us "%1 was jailed for %3 minutes."
+     Comment "Courier arrest line. %1 name, %3 minutes."
+    }
+    CustomStringTableItem "{A94FDE8D9CF2A01F}" {
+     Id "LF-NewspaperEdition_ArrestLineNoName"
+     Target_en_us "A resident was jailed for %3 minutes."
+     Comment "Courier arrest line with no name. %3 minutes."
+    }
+    CustomStringTableItem "{894E6ED818297742}" {
+     Id "LF-NewspaperEdition_ArrestsHeadline"
+     Target_en_us "Arrests this week"
+     Comment "Courier section headline."
+    }
+    CustomStringTableItem "{22BD063C26FD5B70}" {
+     Id "LF-NewspaperEdition_CrimeHeadline"
+     Target_en_us "Crimes reported"
+     Comment "Courier section headline for crimes reported, never with names."
+    }
+    CustomStringTableItem "{016F88C3A5AC3DB0}" {
+     Id "LF-NewspaperEdition_CrimeLine"
+     Target_en_us "%2: %3 reported this week."
+     Comment "Courier crime line. %2 offence, %3 count. No names."
+    }
+    CustomStringTableItem "{806AAD6D47CB71A9}" {
+     Id "LF-NewspaperEdition_Dateline"
+     Target_en_us "Week %1 edition"
+     Comment "Courier dateline: the week of the year."
+    }
+    CustomStringTableItem "{6A025FF8D8D24473}" {
+     Id "LF-NewspaperEdition_MarketHeadline"
+     Target_en_us "Market prices"
+     Comment "Courier section headline."
+    }
+    CustomStringTableItem "{3CDD917F8D234034}" {
+     Id "LF-NewspaperEdition_MarketLine"
+     Target_en_us "%2: was %3, now %4."
+     Comment "Courier market line. %2 good, %3 old price, %4 new price."
+    }
+    CustomStringTableItem "{1B319DCEBD1A3319}" {
+     Id "LF-NewspaperEdition_OpeningLine"
+     Target_en_us "%1 bought a building plot for %3."
+     Comment "Courier plot sale line with a name; the core section prints no names (a plot is a home). %1 name, %3 price."
+    }
+    CustomStringTableItem "{1C6E4500C2E5F6C7}" {
+     Id "LF-NewspaperEdition_OpeningLineNoName"
+     Target_en_us "A building plot sold for %3."
+     Comment "Courier plot sale line, no name. %3 price."
+    }
+    CustomStringTableItem "{91D7413A2A1494B4}" {
+     Id "LF-NewspaperEdition_OpeningsHeadline"
+     Target_en_us "Land sales"
+     Comment "Courier section headline: building plots sold this week."
+    }
+    CustomStringTableItem "{FA7303F7E07F54FE}" {
+     Id "LF-NewspaperEdition_RewardLine"
+     Target_en_us "%1 collected %3 in call rewards."
+     Comment "Courier reward line. %1 name, %3 money."
+    }
+    CustomStringTableItem "{B70BC567343C4313}" {
+     Id "LF-NewspaperEdition_RewardLineNoName"
+     Target_en_us "An officer collected %3 in call rewards."
+     Comment "Courier reward line with no name. %3 money."
+    }
+    CustomStringTableItem "{874A06AA2DC6D702}" {
+     Id "LF-NewspaperEdition_RewardsHeadline"
+     Target_en_us "Rewards paid"
+     Comment "Courier section headline."
+    }
+    CustomStringTableItem "{4DD4F07F0C812A8E}" {
+     Id "LF-NewspaperEdition_Someone"
+     Target_en_us "A resident"
+     Comment "Courier: stands in for a name that is not known."
+    }
     CustomStringTableItem "{60ED2D502AEE4A5F}" {
      Id "LF-Newspaper_BoardsBody"
      Target_en_us "The notice boards carry the latest notices, job offers and prices. Read them before you head out."
@@ -11426,6 +11526,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Org_YourRank"
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
+    }
+    CustomStringTableItem "{D52F08A3E91B7C46}" {
+     Id "LF-OutpostStock_Bought"
+     Target_en_us "\"Take it. Don't tell anyone where you got it.\" You paid %1."
+     Comment "Toast after an outpost crate sale (#4223). %1 = the price paid."
+    }
+    CustomStringTableItem "{9B41E6D07C2A3F85}" {
+     Id "LF-OutpostStock_Buy"
+     Target_en_us "Buy %1 (%2)"
+     Comment "Action on the quartermaster's crate (#4223). %1 = the item name, %2 = the price."
+    }
+    CustomStringTableItem "{F09A6E3C2D5B4718}" {
+     Id "LF-OutpostStock_GangRadio"
+     Target_en_us "gang radio"
+     Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{E83B5D17A42C9F60}" {
+     Id "LF-OutpostStock_NoCash"
+     Target_en_us "\"Cash first. Come back when you have it.\""
+     Comment "Toast: the buyer carries less cash than the outpost crate's price (#4223)."
+    }
+    CustomStringTableItem "{61C9A4F2B07E3D58}" {
+     Id "LF-OutpostStock_NotKnown"
+     Target_en_us "\"I don't know you well enough for that one. Come back when people talk about you.\""
+     Comment "Toast: the buyer's underworld standing is below the item's (#4223). Never a number (decision N1)."
+    }
+    CustomStringTableItem "{B7D43E1A95C06F28}" {
+     Id "LF-OutpostStock_Pistol"
+     Target_en_us "pistol"
+     Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{4C1F8B29E6A37D05}" {
+     Id "LF-OutpostStock_Rifle"
+     Target_en_us "rifle"
+     Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{3F7A2C91B4E05D18}" {
+     Id "LF-OutpostStock_Title"
+     Target_en_us "Quartermaster"
+     Comment "Title of the outpost crate's toasts (#4223)."
+    }
+    CustomStringTableItem "{2A96F0C4D3B18E75}" {
+     Id "LF-OutpostStock_Unavailable"
+     Target_en_us "\"Not today.\""
+     Comment "Toast: the outpost crate sale failed for another reason (no room, no item) (#4223)."
     }
     CustomStringTableItem "{6D41A0F3C8B2957E}" {
      Id "LF-Outpost_TraderRefusesOfficer"
@@ -12928,6 +13073,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Still running. Wait for it to finish."
      Comment "Processing refused (#3229): a timed machine already has a run under way."
     }
+    CustomStringTableItem "{52D02C80CEB2B855}" {
+     Id "LF-Process_FeedFromTruck"
+     Target_en_us "Feed from the truck"
+     Comment "Action at a processing station (#4191): take the inputs from the van or truck backed up to it."
+    }
     CustomStringTableItem "{4140D26F74D7F5F3}" {
      Id "LF-Process_Needs"
      Target_en_us "Needs %1"
@@ -12942,6 +13092,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Process_Started"
      Target_en_us "Running. The parts come out here in %1 seconds."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
+    }
+    CustomStringTableItem "{11D3E9515907FBC7}" {
+     Id "LF-Process_TruckLocked"
+     Target_en_us "The truck is locked"
+     Comment "Feed from the truck refused (#4191): the vehicle backed up to the station is locked."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
      Id "LF-Property_Bought"
@@ -13660,6 +13815,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Race_Unavailable"
      Target_en_us "This race is not available."
      Comment "Toast: the sign's course is missing or broken (#1923)."
+    }
+    CustomStringTableItem "{48CF0958A82A784B}" {
+     Id "LF-Radar_Clear"
+     Target_en_us "Radar: %1 km/h (reading/limit). Within the limit."
+     Comment "Toast: radar reading at or under the limit. %1 = speed/limit."
+    }
+    CustomStringTableItem "{BE2708A0DE110C62}" {
+     Id "LF-Radar_Measure"
+     Target_en_us "Measure speed"
+     Comment "Action on the radar gun: read the speed of the car in the sights."
+    }
+    CustomStringTableItem "{348DA0DF7BECE3C8}" {
+     Id "LF-Radar_Minor"
+     Target_en_us "Radar: %1 km/h (reading/limit). Minor speeding."
+     Comment "Toast: radar reading 1 to 15 over. %1 = speed/limit."
+    }
+    CustomStringTableItem "{C74B168D6DFC30CF}" {
+     Id "LF-Radar_NoCar"
+     Target_en_us "Radar: no vehicle in your sights."
+     Comment "Toast: the radar gun was used with no car on the aim line."
+    }
+    CustomStringTableItem "{089DC48EF9D25C17}" {
+     Id "LF-Radar_Road"
+     Target_en_us "Radar: %1 km/h (reading/limit). Road speeding."
+     Comment "Toast: radar reading 16 to 30 over. %1 = speed/limit."
+    }
+    CustomStringTableItem "{6BB8EC9E16D2E478}" {
+     Id "LF-Radar_Serious"
+     Target_en_us "Radar: %1 km/h (reading/limit). Serious speeding."
+     Comment "Toast: radar reading over 30 over. %1 = speed/limit."
     }
     CustomStringTableItem "{C5ADAB68CA19613F}" {
      Id "LF-Range_Busy"

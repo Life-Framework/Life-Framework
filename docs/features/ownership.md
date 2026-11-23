@@ -92,6 +92,17 @@
   refuses two organizations the same flag: the choosing rule (decision N21, the flag wall) decides.
   A row whose organization is not on the register is kept and counts for nothing. Nothing
   replicates yet. PERSISTENCE `org/flag-save`; `wt e2e` carries the e2e organization's flag 13.
+- 🧪 (2026-11-23, #4220, gangs C3, decision N21) **Flag lock.** `LF_OrgFlagRules`
+  (`Feature/Organizations/LF_OrgFlagRules.c`): the first gang keeps its flag. `Pick` (server) refuses a
+  flag another organization holds while one of that holder's members is online; the holder offline,
+  the pick goes through and both fly the flag. `CanPick` is the same check without the write, for the
+  flag wall's "Taken by X (online)" line. When two organizations fly one flag and both have a member
+  online, `FliesPlainCloth` is true for the later one: its poles fly a plain cloth in the flag's
+  colour (the pole reads it; nothing renders yet). "Online" is a list of character ids (`PickLive` and
+  `FliesPlainClothLive` read the live players). "Later" is the claim order of `Pick` in this session;
+  an organization with no claim yet counts as earlier, and a tie ranks by organization id, so after a
+  restart a pair sharing a flag ranks by id until someone picks again (the order is not saved).
+  Re-picking its own flag changes nothing. LOGIC `org/flag-lock`.
 
 ### Houses — `Feature/Houses/`
 - ✅ **Init runs** (2026-11-17 property review, WORLD `houses/identifier-init`): `LF_HouseManagerComponent`
