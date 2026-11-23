@@ -1,0 +1,13 @@
+GenericEntity : "{23341E2840F5ACB4}Prefabs/Tools/Pickaxe.et" {
+ ID "67822853D125045C"
+ components {
+  MeshObject "{59908096775F151D}" {
+   Materials {
+    MaterialAssignClass "{94D059E80F03E779}" {
+     SourceMaterial "Pickaxe"
+     AssignedMaterial "{AEF5A421ED5796D3}Prefabs/Tools/Tiers/LF_Tool_Pickaxe_Fine.emat"
+    }
+   }
+  }
+ }
+}
