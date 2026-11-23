@@ -9892,6 +9892,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Not without a driving license. The license desk issues it for %1."
      Comment "Car lot refusal when the server asks for a driving licence (#3151). %1 is the fee. Neutral core text; a pack row with the same Id names the place."
     }
+    CustomStringTableItem "{B7C2E4F1A93D5680}" {
+     Id "LF-Lot_NeedsTruckLicence"
+     Target_en_us "Trucks need the truck license first. The license desk runs the truck check for %1."
+     Comment "Vehicle lot refusal for a truck without the truck license (#4417). %1 is the truck check fee. Neutral core text."
+    }
     CustomStringTableItem "{B58D71B1650E8EBB}" {
      Id "LF-Lot_Rule"
      Target_en_us "Cars up to %1 are paid in cash. Dearer cars are paid from your bank: deposit cash at the ATM first."
@@ -16952,6 +16957,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Vehicle_OutOnLotTitle"
      Target_en_us "Your car"
      Comment "Toast title when the garage hands a car out to its owner."
+    }
+    CustomStringTableItem "{6D1F8A3E2C94B057}" {
+     Id "LF-Vehicle_Ural"
+     Target_en_us "Ural 4320 cargo truck"
+     Comment "Lot catalog row for the Ural cargo truck (#4417)."
     }
     CustomStringTableItem "{5527F4187C4874BD}" {
      Id "LF-Vehicle_YourCarMark"
