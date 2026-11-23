@@ -1,0 +1,129 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{1E7F3684D69ABB5E}" {
+  SizeX 1920
+  OffsetRight -1920
+  SizeY 960
+  OffsetBottom -960
+ }
+ {
+  RTTextureWidgetClass "{C777B02F75BD736F}" {
+   Name "RTTexture0"
+   Slot FrameWidgetSlot "{B26AA52253144F04}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 1920
+    OffsetRight -1920
+    SizeY 960
+    OffsetBottom -960
+   }
+   {
+    ImageWidgetClass "{4D676906439DB1F4}" {
+     Name "Ground"
+     Slot FrameWidgetSlot "{59E0B98EA9BBFB46}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.1 0.2 0.5 1
+    }
+    TextWidgetClass "{5AE5DE728402D254}" {
+     Name "Ghost"
+     Slot FrameWidgetSlot "{006287413EF01F92}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 0.25 0.17 0.09 0.4
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{DE599755ED1EFC1B}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{AC2FC5D421A2CEC9}" {
+     Name "Title"
+     Slot FrameWidgetSlot "{1CF31467368DE9FA}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 1 1 1 0.8
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{7D1AB80F738C9B77}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    ImageWidgetClass "{38524A322F925F57}" {
+     Name "DirtLow"
+     Slot FrameWidgetSlot "{314355E43489F3AC}" {
+      Anchor 0 0.45 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.27 0.19 0.1 0.5
+    }
+    ImageWidgetClass "{9B9EC7F21CB5B9BA}" {
+     Name "DirtMid"
+     Slot FrameWidgetSlot "{DE90B37B5EE46144}" {
+      Anchor 0 0.72 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.24 0.17 0.09 0.45
+    }
+    ImageWidgetClass "{6C049AE707766D71}" {
+     Name "DirtEdge"
+     Slot FrameWidgetSlot "{94860B1038161187}" {
+      Anchor 0 0.9 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.2 0.14 0.07 0.55
+    }
+    ImageWidgetClass "{A7589B2533E9B3B9}" {
+     Name "Splash"
+     Slot FrameWidgetSlot "{47938FE20F1E8F36}" {
+      Anchor 0.08 0.1 0.34 0.3
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.3 0.21 0.11 0.35
+    }
+    FrameWidgetClass "{169AB1F1342F3844}" {
+     Name "Rows"
+     Slot FrameWidgetSlot "{B388FF3AC8820E6F}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+    }
+   }
+  }
+ }
+}

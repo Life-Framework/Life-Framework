@@ -184,3 +184,7 @@ Every painted sign prefab (`LF_Sign_Plate`, `_PlateSmall`, `_Fascia`, `_Posts`, 
 ## Local row sources and long lists (2026-11-22)
 
 A row source may work its rows out on the reader's machine: `LF_SignRowSource.IsLocal()` true and `LocalRows(sign, rows)` filled from what the client already holds. Such a sign never asks the server; `LF_SignComponent.PollLocalRows` (every 2 s, only within `LOCAL_ROWS_RANGE` 60 m) repaints when `LF_SignRowSource.Signature` of the rows changed. First local source: `bus_timetable` (`Feature/Travel/LF_BusTimetable.c`). A style may print more than `LF_SignFacePlan.MAX_ROWS` rows: `LF_SignStyleDef.m_iMaxRows` (the `timetable` style holds 12; `LF_SignFacePlan.MaxRowsOf`).
+
+## Livery styles and family files (#4468, 2026-11-23)
+
+Styles load from `Configs/Signs/LF_SignStyles.conf` plus every `Configs/Signs/LF_SignStyles_<Family>.conf` (`LF_SignStyles.FamilyFiles`, path order, an empty op adds a new id and patches a known one), then the pack overlays. `LF_SignStyles_Livery.conf` holds `block`, `stripe`, `stencil` and `mud` for vehicle door plates (layouts `LF_SignStyle_Livery*.layout`, built for the `quad2x1` and `quad4x1` sizes). A card that needs a style adds its own family file. Test LOGIC `signs/styles-livery`.
