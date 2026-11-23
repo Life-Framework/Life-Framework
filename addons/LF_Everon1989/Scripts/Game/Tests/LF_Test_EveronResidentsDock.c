@@ -32,7 +32,7 @@ class LF_Test_EveronResidentsDock : LF_Test
 	//! The place kinds the island registers for the dock cast (its place layers).
 	protected static bool IslandKind(string kind)
 	{
-		array<string> kinds = { "HarbourMaster", "Warehouse", "MarketTrader", "WholesaleCounter" };
+		array<string> kinds = { "HarbourMaster", "Warehouse", "Dock", "MarketTrader", "WholesaleCounter" };
 		return kinds.Find(kind) != -1;
 	}
 
@@ -199,8 +199,8 @@ class LF_Test_EveronResidentsDock : LF_Test
 			"{D57E9062A0FC2341}Configs/Residents/Npcs/LF_Resident_DockFishmonger.et",
 			"{73110EC1F87E9441}Configs/Residents/Npcs/LF_Resident_DockChandler.et"
 		};
-		array<string> kinds = { "HarbourMaster", "Warehouse", "Warehouse", "MarketTrader", "WholesaleCounter" };
-		array<string> places = { "saint-philippe.harbour", "saint-philippe-dock.warehouse", "saint-philippe-dock.warehouse", "saint-philippe.market", "saint-philippe-dock.wholesale" };
+		array<string> kinds = { "HarbourMaster", "Warehouse", "Dock", "MarketTrader", "WholesaleCounter" };
+		array<string> places = { "saint-philippe.harbour", "saint-philippe-dock.warehouse", "saint-philippe-dock.dock", "saint-philippe.market", "saint-philippe-dock.wholesale" };
 		// The dialogue each body talks with; the fishmonger and the chandler have no lines yet (W4.7).
 		array<string> dialogues = { "harbour_master", "dockworker", "dockworker", "", "" };
 
