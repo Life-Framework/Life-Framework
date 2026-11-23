@@ -1,6 +1,30 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "9C472BC9D7A8FD80"
  components {
+  LF_DialogueComponent "{108292407A25AF23}" {
+   m_sDialogueId "outpost_guard"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{F938C81FECA23C62}" {
+     ContextName "Talk"
+     Position PointInfo "{0B1A2B0E30D5AD57}" {
+      PivotID "Spine5"
+     }
+     Radius 0.6
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{64CBDD2DCF56B7B0}" {
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{9C3C2E4AC8D45E3C}" {
+      Name "#LF-NpcTalk_Action"
+     }
+    }
+   }
+  }
   CharacterWeaponSlotComponent "{520EA1D2F659CFAB}" {
    WeaponTemplate "{9C948630078D154D}Prefabs/Weapons/Rifles/VZ58/Rifle_VZ58P.et"
   }

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{BAAD7F328B30DFE3}Configs/Dialogue/LF_Dialogue_OutpostBuyer.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

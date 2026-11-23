@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{AAF79E9B1CE0564D}Configs/Signs/LF_Signs_Everon1989/LF_Signs_Livery_CompanyHardware.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

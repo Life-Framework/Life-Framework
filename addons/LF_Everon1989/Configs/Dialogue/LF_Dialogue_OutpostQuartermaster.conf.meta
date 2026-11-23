@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{22A4BA20F49A52D2}Configs/Dialogue/LF_Dialogue_OutpostQuartermaster.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -44,6 +44,8 @@ class LF_Test_WorkAnim : LF_Test
 		ctx.False(LF_WorkAnim.IsDone(true, 5, 6), "self-ending work runs until then");
 		ctx.False(LF_WorkAnim.IsDone(false, 60, 6), "work its owner ends is never ended by the clock alone");
 
+		RunJobPoses(ctx);
+
 		LF_WorkAnim.ResetStatics();
 		LF_WorkAnim.SetSilent(true);
 		IEntity worker = LF_TestCharacterFixture.Spawn(ctx);
@@ -52,6 +54,32 @@ class LF_Test_WorkAnim : LF_Test
 
 		LF_TestCharacterFixture.Delete(worker);
 		LF_WorkAnim.ResetStatics();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #4396: carry and sweep play our own clips (a real pose instance, not the idle fallback), and every clip
+	//! of the two poses loads.
+	protected void RunJobPoses(LF_TestContext ctx)
+	{
+		ResourceName carry = LF_WorkAnimPlayer.JobPose("carry");
+		ResourceName sweep = LF_WorkAnimPlayer.JobPose("sweep");
+		ctx.True(carry != ResourceName.Empty, "carry resolves a pose, not the idle fallback");
+		ctx.True(sweep != ResourceName.Empty, "sweep resolves a pose, not the idle fallback");
+		ctx.True(carry != sweep, "carry and sweep are different poses");
+		ctx.True(LF_WorkAnimPlayer.JobPose("moonwalk") == ResourceName.Empty, "an unknown job has no pose");
+		if (carry != ResourceName.Empty)
+			ctx.True(Resource.Load(carry).IsValid(), "the carry pose instance loads");
+
+		if (sweep != ResourceName.Empty)
+			ctx.True(Resource.Load(sweep).IsValid(), "the sweep pose instance loads");
+
+		array<string> clips = {
+			"{B75E8B08C9504119}Anims/LF/Work/Work_carry_in.anm", "{8125B953B7DDD23F}Anims/LF/Work/Work_carry_loop.anm", "{1E6C47B2A51E909B}Anims/LF/Work/Work_carry_out.anm",
+			"{528B69ACE5484121}Anims/LF/Work/Work_sweep_in.anm", "{FFFFDCE5F327A302}Anims/LF/Work/Work_sweep_loop.anm", "{97103739FF3673DA}Anims/LF/Work/Work_sweep_out.anm"};
+		foreach (string clip : clips)
+		{
+			ctx.True(Resource.Load(clip).IsValid(), "our own clip loads: " + clip);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
