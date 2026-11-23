@@ -35,7 +35,7 @@ The **pharmacy** north of the clinic sells aspirin ($10), gauze ($8) and tourniq
 
 Reviving and delivering patients earns **medic job experience** and a **bonus**: **$10** a revive and **$15** a patient put in a hospital bed (the bed's own revive is included, so a bed delivery is $15, not $25). Reviving yourself earns nothing. The bonus stops at your rank's cap each hour and is paid with your shift when you clock out.
 
-**Ambulance pool board.** On duty, press **F** at the ambulance pool board and pick your rank's ambulance ("Take the Orderly ambulance": the white UAZ452 with AMBULANCE on the sides, Orderly and EMT; "Take the Paramedic ambulance": the white S1203, Paramedic and Doctor). It stands in the bay in front of the board, unlocked for medics on duty only. Taking another one sends your last back, unless someone is sitting in it. A rank too low for the one you pick is told which rank it needs. The board is not at the clinic yet.
+**Ambulance pool board.** On duty, press **F** at the ambulance pool board and pick your rank's ambulance ("Take the Orderly ambulance": the white UAZ452 with AMBULANCE on the sides, Orderly and EMT; "Take the Paramedic ambulance": the white S1203, Paramedic and Doctor). It stands in the bay in front of the board, unlocked for medics on duty only. Taking another one sends your last back, unless someone is sitting in it. The board lists only the ambulances your rank may take. The board is not at the clinic yet.
 
 The clinic, the taxi rank, the pharmacy and the notice board are on the [Saint-Philippe map](maps.md).
 

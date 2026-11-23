@@ -73,8 +73,28 @@ class LF_BedDelivery
 		if (!data)
 			return false;
 
+		return IsStretcherContainer(data.GetPrefab());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A prefab resource, or one it inherits, is in the config's stretcher list (#4566: what the pack's
+	//! fleet ambulances must satisfy without spawning one).
+	static bool IsStretcherPrefab(ResourceName prefabName)
+	{
+		if (prefabName.IsEmpty())
+			return false;
+
+		Resource resource = Resource.Load(prefabName);
+		if (!resource || !resource.IsValid())
+			return false;
+
+		return IsStretcherContainer(resource.GetResource().ToBaseContainer());
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static bool IsStretcherContainer(BaseContainer prefab)
+	{
 		array<ResourceName> stretchers = LF_MedicConfig.Get().m_aStretcherVehicles;
-		BaseContainer prefab = data.GetPrefab();
 		while (prefab)
 		{
 			string name = prefab.GetResourceName();
