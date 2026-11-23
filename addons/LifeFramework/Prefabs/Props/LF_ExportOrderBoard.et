@@ -1,0 +1,49 @@
+GenericEntity : "{F82F6440A45EE705}Prefabs/Props/Signs/LF_Sign_Chalkboard.et" {
+ ID "4411B0A2D0C1E001"
+ components {
+  LF_SignComponent "{82B1E805004F28DE}" {
+   m_sSignId "export_orders"
+   m_sRowSource "exportorders"
+  }
+  ActionsManagerComponent "{3C818B6A6011C9DE}" {
+   additionalActions + {
+    LF_ExportBoardTakeAction "{4411A1000000A001}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     m_iSlot 0
+    }
+    LF_ExportBoardTakeAction "{4411A1000000A002}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     m_iSlot 1
+    }
+    LF_ExportBoardTakeAction "{4411A1000000A003}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     m_iSlot 2
+    }
+    LF_ExportBoardTakeAction "{4411A1000000A004}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     m_iSlot 3
+    }
+    LF_ExportBoardTakeAction "{4411A1000000A005}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     m_iSlot 4
+    }
+    LF_ExportBoardTakeAction "{4411A1000000A006}" {
+     ParentContextList {
+      "LF_Sign"
+     }
+     m_iSlot 5
+    }
+   }
+  }
+ }
+}

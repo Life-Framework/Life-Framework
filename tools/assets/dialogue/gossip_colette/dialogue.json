@@ -1,0 +1,195 @@
+{
+  "id": "gossip_colette",
+  "name": "GossipColette",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Resident_gossip_colette_Name",
+  "voice": {
+    "id": "mN8UWPJNnmcExNpfrkd2",
+    "sex": "male",
+    "name": "Nicolas - French accent & cozy whisper",
+    "public_owner_id": "d8af1ba05554a805f077248f35e47098e9e6ec933845d7c2742b9d039f4da4ff",
+    "why": "A gentle, near-whispering French voice for Colin Brisset, the watch mender who hears every secret: the hush of a man passing on a rumor. Used by no other NPC.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.45,
+      "similarity_boost": 0.75,
+      "style": 0.35,
+      "speed": 1
+    }
+  },
+  "budget_chars": 1600,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "town",
+          "next": "town"
+        },
+        {
+          "text": "barn",
+          "next": "barn"
+        },
+        {
+          "text": "more",
+          "next": "more"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "town",
+      "line": "town",
+      "options_from": "greet"
+    },
+    {
+      "id": "barn",
+      "line": "barn",
+      "options_from": "greet"
+    },
+    {
+      "id": "more",
+      "line": "more",
+      "options": [
+        {
+          "text": "bell",
+          "next": "bell"
+        },
+        {
+          "text": "courier",
+          "next": "courier"
+        },
+        {
+          "text": "mine",
+          "next": "mine"
+        },
+        {
+          "text": "more2",
+          "next": "more2"
+        }
+      ]
+    },
+    {
+      "id": "bell",
+      "line": "bell",
+      "options_from": "more"
+    },
+    {
+      "id": "courier",
+      "line": "courier",
+      "options_from": "more"
+    },
+    {
+      "id": "mine",
+      "line": "mine",
+      "options_from": "more"
+    },
+    {
+      "id": "more2",
+      "line": "more2",
+      "options": [
+        {
+          "text": "market",
+          "next": "market"
+        },
+        {
+          "text": "hostel",
+          "next": "hostel"
+        },
+        {
+          "text": "who",
+          "next": "who"
+        },
+        {
+          "text": "back",
+          "next": "again"
+        }
+      ]
+    },
+    {
+      "id": "market",
+      "line": "market",
+      "options_from": "more2"
+    },
+    {
+      "id": "hostel",
+      "line": "hostel",
+      "options_from": "more2"
+    },
+    {
+      "id": "who",
+      "line": "who",
+      "options_from": "more2"
+    },
+    {
+      "id": "again",
+      "line": "again",
+      "options_from": "greet"
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Psst. Come closer. Odilon talks too loud, and the walls on this square have ears."
+    },
+    "town": {
+      "text": "Everybody on the square owes somebody. The trick is knowing who, and never saying it before noon."
+    },
+    "barn": {
+      "text": "The old still barn. Odilon says it is empty at night. It is not. Ask at the cafe, and watch who goes quiet."
+    },
+    "more": {
+      "text": "Oh, I have plenty. Choose one, and I will whisper it."
+    },
+    "bell": {
+      "text": "The bell is two minutes slow, and has been since spring. I would fix it, but then what would I complain about?"
+    },
+    "courier": {
+      "text": "Buy the Courier and read the robbery story twice. Tuesday night, and not one word about the open window."
+    },
+    "mine": {
+      "text": "The coal men come into town black to the elbows and spend every dollar by Friday. Lovely tippers."
+    },
+    "more2": {
+      "text": "More? Greedy. I like that."
+    },
+    "market": {
+      "text": "At the market, the woman with the plums waters down her cider. Buy the apples. Trust the apples."
+    },
+    "hostel": {
+      "text": "The hostel clerk keeps your key warm and your business to himself. A rare thing in this town."
+    },
+    "who": {
+      "text": "Colin Brisset. I mend watches, and every secret in Saint-Philippe is wound a little too tight for my liking."
+    },
+    "again": {
+      "text": "Was there something else? I am all ears, and not much else."
+    },
+    "bye": {
+      "text": "Go on, then. And if anyone asks, you heard none of this from me."
+    }
+  },
+  "replies": {
+    "town": "What do people say about the town?",
+    "barn": "What about the old barn?",
+    "more": "Tell me something else.",
+    "bye": "I will keep quiet.",
+    "bell": "Is the church bell right?",
+    "courier": "What is in the Courier?",
+    "mine": "Any news about the mine?",
+    "more2": "And what else?",
+    "market": "Anything about the market?",
+    "hostel": "What about the hostel?",
+    "who": "Who are you?",
+    "back": "One more thing."
+  }
+}

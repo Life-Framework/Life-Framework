@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{E9EA468641951546}Sounds/Dialogue/barkeeper/Dialogue_barkeeper.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

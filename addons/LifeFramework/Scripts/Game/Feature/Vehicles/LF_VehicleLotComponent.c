@@ -82,6 +82,34 @@ class LF_VehicleOffer
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! #4417: false when an override removed this vehicle, or its price row names another lot.
+	bool IsOfferedAt(LF_VehiclePricesConfig config, string lotId)
+	{
+		if (!config)
+			return true;
+
+		return config.IsOfferedAt(m_sPrefab, lotId);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The capacity class the price row names ("truck"), or "" when the row names none.
+	string CapacityClassIn(LF_VehiclePricesConfig config)
+	{
+		if (!config)
+			return string.Empty;
+
+		return config.CapacityClassOf(m_sPrefab);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! An offer a lot lists straight from its price row (a lot with no placed offers of its own).
+	static LF_VehicleOffer FromRow(notnull LF_VehiclePriceEntry entry)
+	{
+		LF_VehicleOffer offer = MakeWithSpawn(entry.m_Prefab, entry.m_SpawnPrefab, entry.m_iBasePrice, entry.m_sNameKey);
+		return offer;
+	}
+
+	//------------------------------------------------------------------------------------------------
 	string GetNameKey()
 	{
 		return m_sNameKey;
@@ -182,6 +210,9 @@ class LF_VehicleLotComponent : ScriptComponent
 
 	[Attribute("", UIWidgets.Object, desc: "Vehicles for sale")]
 	protected ref array<ref LF_VehicleOffer> m_aOffers;
+
+	[Attribute("", UIWidgets.EditBox, desc: "Lot id (#4417). The lot sells the price rows that name it, and every row that names none. Empty: only the rows that name no lot (the car lot).")]
+	protected string m_sLotId;
 
 	[Attribute("0", UIWidgets.CheckBox, desc: "Playtest: this lot's first two offers are the test cars a new character is granted (LF_SpawnLogic.m_bGrantTestCars). One lot per world.")]
 	protected bool m_bTestCarLot;
@@ -298,10 +329,67 @@ class LF_VehicleLotComponent : ScriptComponent
 		if (m_sShopId.IsEmpty())
 			LF_Debug.Error("Vehicle", "lot has no shop id");
 
-		if (!m_aOffers || m_aOffers.Count() == 0)
+		// A lot with an id may list only its price rows (the truck yard); a lot with neither has nothing to sell.
+		if ((!m_aOffers || m_aOffers.Count() == 0) && m_sLotId.IsEmpty())
 			LF_Debug.Error("Vehicle", "lot catalog is empty");
 		else
-			LF_Debug.Log("Vehicle", string.Format("lot catalog %1 offers shop=%2", m_aOffers.Count(), m_sShopId));
+			LF_Debug.Log("Vehicle", string.Format("lot catalog %1 offers shop=%2 lot=%3", GetOfferCount(), m_sShopId, m_sLotId));
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetLotId()
+	{
+		return m_sLotId;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! #4417: the offers a lot with this id sells: its placed offers whose price row is not another
+	//! lot's, then the price rows that name the lot and are not placed yet. Pure; tests drive it.
+	//! \param[in] lotId The lot's id; empty for the car lot, which sells only rows that name no lot.
+	//! \param[in] placed The offers set on the lot entity, or null.
+	//! \param[in] config The vehicle prices, or null (then every placed offer is sold).
+	//! \param[out] result The offers on sale, in list order.
+	static void CollectOffers(string lotId, array<ref LF_VehicleOffer> placed, LF_VehiclePricesConfig config, notnull array<ref LF_VehicleOffer> result)
+	{
+		if (placed)
+		{
+			foreach (LF_VehicleOffer offer : placed)
+			{
+				if (offer && offer.IsOfferedAt(config, lotId))
+					result.Insert(offer);
+			}
+		}
+
+		if (lotId.IsEmpty() || !config || !config.m_aVehicles)
+			return;
+
+		foreach (LF_VehiclePriceEntry entry : config.m_aVehicles)
+		{
+			if (!entry || entry.m_sLotId != lotId || entry.m_Prefab.IsEmpty())
+				continue;
+
+			if (config.IsRemoved(entry.m_Prefab) || OfferIn(result, entry.m_Prefab))
+				continue;
+
+			result.Insert(LF_VehicleOffer.FromRow(entry));
+		}
+	}
+
+	//! #4417: the truck yard's refusal when the buyer has no truck licence. Its %1 is the check fee.
+	static const string KEY_NEEDS_TRUCK = "#LF-Lot_NeedsTruckLicence";
+	static const string CLASS_TRUCK = "truck";
+
+	//------------------------------------------------------------------------------------------------
+	//! The refusal key when this offer is a truck and the buyer has not passed the truck check, else "".
+	static string TruckRefusal(LF_VehicleOffer offer, string buyerUid, LF_VehiclePricesConfig config)
+	{
+		if (!offer || offer.CapacityClassIn(config) != CLASS_TRUCK)
+			return string.Empty;
+
+		if (LF_DrivingCheck.HoldsTruckLicence(buyerUid))
+			return string.Empty;
+
+		return KEY_NEEDS_TRUCK;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -325,18 +413,9 @@ class LF_VehicleLotComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	int GetOfferCount()
 	{
-		if (!m_aOffers)
-			return 0;
-
-		LF_VehiclePricesConfig config = LF_VehiclePricesConfig.Get();
-		int count;
-		foreach (LF_VehicleOffer offer : m_aOffers)
-		{
-			if (offer && offer.IsOfferedIn(config))
-				count++;
-		}
-
-		return count;
+		array<ref LF_VehicleOffer> offers = {};
+		CollectOffers(m_sLotId, m_aOffers, LF_VehiclePricesConfig.Get(), offers);
+		return offers.Count();
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -344,23 +423,15 @@ class LF_VehicleLotComponent : ScriptComponent
 	//! and the Buy index agree (#1741).
 	LF_VehicleOffer GetOfferAt(int index)
 	{
-		if (!m_aOffers || index < 0)
+		if (index < 0)
 			return null;
 
-		LF_VehiclePricesConfig config = LF_VehiclePricesConfig.Get();
-		int seen;
-		foreach (LF_VehicleOffer offer : m_aOffers)
-		{
-			if (!offer || !offer.IsOfferedIn(config))
-				continue;
+		array<ref LF_VehicleOffer> offers = {};
+		CollectOffers(m_sLotId, m_aOffers, LF_VehiclePricesConfig.Get(), offers);
+		if (index >= offers.Count())
+			return null;
 
-			if (seen == index)
-				return offer;
-
-			seen++;
-		}
-
-		return null;
+		return offers[index];
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -398,6 +469,9 @@ class LF_VehicleLotComponent : ScriptComponent
 		if (reasonKey == KEY_NEEDS_DRIVING)
 			return LF_MoneyFormat.FormatMoney(LF_LicencesConfig.DriverLicenceFee());
 
+		if (reasonKey == KEY_NEEDS_TRUCK)
+			return LF_MoneyFormat.FormatMoney(LF_DrivingCheck.FEE);
+
 		return string.Empty;
 	}
 
@@ -434,6 +508,15 @@ class LF_VehicleLotComponent : ScriptComponent
 		{
 			reasonKey = KEY_NEEDS_DRIVING;
 			LF_Debug.Info("Vehicle", string.Format("purchase refused for %1: no driving licence", buyerUid));
+			return false;
+		}
+
+		// #4417: a truck needs the truck licence, before any cash moves.
+		string truckReason = TruckRefusal(offer, buyerUid, LF_VehiclePricesConfig.Get());
+		if (!truckReason.IsEmpty())
+		{
+			reasonKey = truckReason;
+			LF_Debug.Info("Vehicle", string.Format("purchase refused for %1: no truck licence", buyerUid));
 			return false;
 		}
 
@@ -505,10 +588,8 @@ class LF_VehicleLotComponent : ScriptComponent
 	//------------------------------------------------------------------------------------------------
 	protected LF_VehicleOffer FindOffer(ResourceName prefab)
 	{
-		LF_VehicleOffer offer = OfferIn(m_aOffers, prefab);
-		if (offer && !offer.IsOfferedIn(LF_VehiclePricesConfig.Get()))
-			return null;
-
-		return offer;
+		array<ref LF_VehicleOffer> offers = {};
+		CollectOffers(m_sLotId, m_aOffers, LF_VehiclePricesConfig.Get(), offers);
+		return OfferIn(offers, prefab);
 	}
 }
