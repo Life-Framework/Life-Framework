@@ -5139,6 +5139,31 @@ StringTable {
      Target_en_us "The island scrapyard: wrecks to pick over, a recycler bench and a dealer in the cabin."
      Comment "Sign card for the scrapyard, What section."
     }
+    CustomStringTableItem "{548E74052ADE4A34}" {
+     Id "LF-Sign_EveronTruckYard_How"
+     Target_en_us "Walk up to the counter at the sales hut and browse the trucks. The bought truck waits in the bay on the lane."
+     Comment "Sign card for the truck yard, How section."
+    }
+    CustomStringTableItem "{9C2C73D2CEBEF284}" {
+     Id "LF-Sign_EveronTruckYard_Needs"
+     Target_en_us "A truck license from the license desk. Cash or a bank balance for the price."
+     Comment "Sign card for the truck yard, Needs section."
+    }
+    CustomStringTableItem "{8BD934745E372133}" {
+     Id "LF-Sign_EveronTruckYard_Next"
+     Target_en_us "Haul lumber, ore or feed with your new truck."
+     Comment "Sign card for the truck yard, Next section."
+    }
+    CustomStringTableItem "{75F97FD94AB4DB55}" {
+     Id "LF-Sign_EveronTruckYard_Title"
+     Target_en_us "Truck Sales"
+     Comment "Title of the sign at the truck yard (Everon 1989 pack, #4419). Printed on the sign."
+    }
+    CustomStringTableItem "{6957F6C32DF7E9FF}" {
+     Id "LF-Sign_EveronTruckYard_What"
+     Target_en_us "The north-east truck yard: civilian Ural trucks for sale at the hut counter."
+     Comment "Sign card for the truck yard, What section."
+    }
     CustomStringTableItem "{4E7B1C9A2D8F5036}" {
      Id "LF-Sign_FarmCompound_What"
      Target_en_us "Abandoned farm. Whoever holds the yard longest holds the barn."

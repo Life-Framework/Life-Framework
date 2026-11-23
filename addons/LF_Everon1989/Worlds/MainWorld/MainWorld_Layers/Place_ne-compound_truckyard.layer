@@ -1,0 +1,139 @@
+GenericEntity Fit_ne_compound_truckyard_Place {
+ components {
+  LF_PlaceComponent "{931ADD19005523BE}" {
+   m_sKind "VehicleLot"
+   m_sId "ne-compound.truckyard"
+  }
+  LF_FittedBuildingComponent "{8F510D876BD2E8A0}" {
+  }
+ }
+ coords 5093.12 26.7 10836.7
+}
+GenericEntity Fit_ne_compound_truckyard_lot {
+ components {
+  LF_VehicleLotComponent "{A7C4000000000003}" {
+   m_sShopId "truck-yard"
+   m_iCashCeiling 500
+   m_iExtraKeyPrice 25
+   m_sLotId "truck-yard"
+  }
+  LF_VehicleSpawnPointComponent "{A7C4000000000005}" {
+   m_sShopId "truck-yard"
+   m_vOffset -22.5 0 4.5
+   m_iSlots 2
+   m_vSlotStep 10 0 0
+   m_vAngles 270 0 0
+  }
+  MeshObject "{A7C4000000000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{A7C4000000000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{A7C4000000000006}" {
+   ActionContexts {
+    UserActionContext "{A7C4000000000007}" {
+     ContextName "default"
+     Radius 3
+     Position PointInfo "{A7C4000000000008}" {
+      Offset 0 0.8 0
+     }
+    }
+   }
+   additionalActions {
+    LF_VehicleBuyAction "{A7C4000000000021}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A7C4000000000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+    }
+    LF_VehicleExtraKeyAction "{A7C4000000000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A7C4000000000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+   }
+  }
+  RplComponent "{A7C4000000000009}" {
+   Enabled 1
+  }
+ }
+ coords 5086.623 26.984 10844.303
+ angleY -90
+}
+Vehicle Fit_ne_compound_truckyard_display_covered_blue : "{F66EAD0D2016B6BA}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_covered_CIV_blue.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 5054.117 27.321 10841.8
+ angleY -90
+}
+Vehicle Fit_ne_compound_truckyard_display_civ_forest : "{1449105FD658EDFB}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_forest.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 5044.119 27.352 10841.799
+ angleY -90
+}
+Vehicle Fit_ne_compound_truckyard_display_covered_orange : "{66241E0CEDFCEDFF}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_covered_CIV_orange.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 5034.121 27.464 10841.797
+ angleY -90
+}
+Vehicle Fit_ne_compound_truckyard_display_covered_jzd : "{FB219B49A448A8EA}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_covered_CIV_JZD.et" {
+ components {
+  LF_VehicleLockComponent "{54D6FBC0EA806FE5}" {
+   m_bDebugLocked 1
+  }
+ }
+ coords 5024.123 27.545 10841.796
+ angleY -90
+}
+GenericEntity Fit_ne_compound_truckyard_cone_1 : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+ coords 5059.124 27.707 10846.304
+}
+GenericEntity Fit_ne_compound_truckyard_cone_2 : "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et" {
+ coords 5059.118 27.738 10851.302
+}
+GenericEntity Fit_ne_compound_truckyard_sign_hut : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "everon_truckyard"
+   m_vRimColor 0.9 0.9 0.9
+   m_vPaintColor 0.12 0.3 0.55
+   m_vTextColor 1 1 1
+  }
+ }
+ coords 5086.618 27.053 10847.796
+ angleY -90
+}
+GenericEntity Fit_ne_compound_truckyard_sign_gate : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "everon_truckyard"
+   m_vRimColor 0.9 0.9 0.9
+   m_vPaintColor 0.12 0.3 0.55
+   m_vTextColor 1 1 1
+  }
+ }
+ coords 5024.116 28.072 10848.3
+ angleY -90
+}
+GenericEntity Fit_ne_compound_truckyard_lamp : "{90738F3F8BF3BA7B}Prefabs/Props/Lights/LF_LampIndustrial_NoShadow.et" {
+ coords 5084.117 30.845 10850.799
+}

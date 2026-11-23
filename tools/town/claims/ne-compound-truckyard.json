@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "place": "ne-compound",
+  "slot": "truckyard",
+  "building": "b09",
+  "kit": "truckyard",
+  "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_ne-compound_truckyard.layer",
+  "kinds": [
+    "VehicleLot"
+  ],
+  "rows": 10,
+  "destruction": {
+    "mode": "hooked",
+    "component": "LF_FittedBuildingComponent",
+    "marker": "Fit_ne_compound_truckyard_Place"
+  },
+  "date": "2026-11-23"
+}
