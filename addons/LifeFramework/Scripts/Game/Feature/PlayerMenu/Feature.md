@@ -26,6 +26,9 @@ role badge, "Day N on the island · playtime") sits over the tab keys:
   errand** (`LF_AskWelcomeGuideWaypoint`).
 - **WHAT TO DO NEXT**: a slot, `LF_PlayerMenuNextTab`. Its key shows only when `HasContent` says so; the
   next-steps feature fills that one file.
+- **GANG**: only for a player in a gang (`LF_PlayerMenuGangTab`, read only): the gang's name and flag, your rank, who is
+  online, whether your radio is on the gang channel and the sites held. Its facts come in their own answer
+  (`RpcAsk_LF_PlayerMenuGang`), built for the asker's own gang only. No standing is printed.
 
 Footer: key-cap chips **Esc Close**, **F3 Welcome guide** (`LF_WelcomeGuideSheet.Open`), **Settings**.
 While the file is open the HUD, the vanilla hint card and the notification toasts (`LF_NotificationHold`)
