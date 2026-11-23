@@ -86,7 +86,8 @@
               -1.2
             ],
             "yaw": -90,
-            "scale": 0.8
+            "scale": 0.8,
+            "tilt": -10
           },
           {
             "name": "FixtureLetters_R",

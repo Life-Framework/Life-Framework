@@ -1,6 +1,31 @@
 SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
  ID "32260106F187257C"
  components {
+  LF_DialogueComponent "{250EBFBF9BC8FA16}" {
+   m_sDialogueId "shopkeeper"
+  }
+  ActionsManagerComponent "{520EA1D2F659CE02}" {
+   ActionContexts + {
+    UserActionContext "{239CD91FE1AD56C3}" {
+     ContextName "Talk"
+     Position PointInfo "{5A74A47E5483109F}" {
+      PivotID "Spine5"
+     }
+     Radius 2.4
+    }
+   }
+   additionalActions + {
+    LF_DialogueTalkAction "{76956A1333257C7C}" {
+     m_bCustomerSideOnly 1
+     ParentContextList {
+      "Talk"
+     }
+     UIInfo UIInfo "{785EB3EB93BC92C9}" {
+      Name "#LF-Shopkeeper_Talk"
+     }
+    }
+   }
+  }
   SCR_CharacterIdentityComponent "{5584CBC63E092DBC}" {
    Identity Identity "{5584CBC6363C648B}" {
     Name "Remy"

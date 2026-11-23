@@ -133,7 +133,7 @@ class LF_Test_JobLevelsConfig : LF_Test
 			{
 				for (int careerLevel = 1; careerLevel <= 7; careerLevel++)
 				{
-					ctx.Equal(careerLevel, delivery.LevelFor(LF_JobLevels.LegacyCareerToXp(careerLevel, 0)), string.Format("a pre-#749 career level %1 is DELIVERY level %1", careerLevel));
+					ctx.True(delivery.LevelFor(LF_JobLevels.LegacyCareerToXp(careerLevel, 0)) >= careerLevel, string.Format("a pre-#749 career level %1 never drops below DELIVERY level %1 (#4596 made the table easier)", careerLevel));
 				}
 			}
 		}

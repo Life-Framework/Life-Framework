@@ -494,6 +494,11 @@ StringTable {
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
     }
+    CustomStringTableItem "{9DC4EE9380274653}" {
+     Id "LF-Dialogue_Barkeeper_SayHeard"
+     Target_en_us "Heard anything?"
+     Comment "Dialogue reply the player can pick when talking to the barkeeper NPC."
+    }
     CustomStringTableItem "{2B4B72011D81B0CE}" {
      Id "LF-Dialogue_Barkeeper_SayLaw"
      Target_en_us "What about the law?"
@@ -1882,6 +1887,11 @@ StringTable {
     CustomStringTableItem "{D435BA49E015D84F}" {
      Id "LF-Dialogue_NightShift_SayBye"
      Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
+    }
+    CustomStringTableItem "{A5E941CBEC9A7E3D}" {
+     Id "LF-Dialogue_NightShift_SayHeard"
+     Target_en_us "Heard anything?"
      Comment "Dialogue reply the player can pick when talking to the night_shift NPC."
     }
     CustomStringTableItem "{88229E39461B49AD}" {

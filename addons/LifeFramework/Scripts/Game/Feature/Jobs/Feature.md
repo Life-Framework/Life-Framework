@@ -75,3 +75,7 @@ which opens the police roster, the job whitelist and the licence whitelist in on
 ## Export order board (#4411)
 
 `LF_ExportBoard.c`: the board kind `exportboard` and the sign row source `exportorders` over `LF_ExportOrderBook`. `LF_ExportBoardActions.c`: `LF_ExportBoardTakeAction` (one per printed line, slot 0 up) and the take RPC `RpcAsk_LF_ExportTake(orderId)`. Prefab `Prefabs/Props/LF_ExportOrderBoard.et`. The take names the order by id, never the slot. A modded class cannot call a method another folder's modded `SCR_PlayerController` adds, so the post-take refresh is a static on a plain class. Test `jobs/export-board`.
+
+## Export crane hand-in (#4580)
+
+`LF_ExportCraneHandInAction.c`: the "Hand in the export order" row on the crane spot and `LF_ExportCraneHandIn.Serve`, the server side (a 6 m reach check, then `LF_ExportOrderCraneComponent.HandIn`, then the pay or refusal toast). Prefab `Prefabs/Props/LF_ExportCraneSpot.et`: a vanilla wooden pallet box (destruction off) carrying the crane component (place id `dock`) and the row. `LF_ExportOrderHarness.c`: the dev-gated harness verb `exportorder take|give short|rest` behind `agent-box/proofs/export-crane-proof.mjs`. Test `jobs/export-crane-hand-in` (WORLD).
