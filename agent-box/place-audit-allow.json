@@ -287,6 +287,34 @@
       "why": "The two wing leaves of the jail gate are fixed and locked (LF_LockComponent, no breach target, no open action), overlapping by 0.5 m on purpose so the 2.7 m corridor mouth has no gap; neither swings, so each reads the other as a door in its swing (gate close-up in the PR)."
     },
     {
+      "match": "^Fit_saint_philippe_market_market_[a-z0-9_]+ .*market_awning|^Fit_saint_philippe_market_market_awning ",
+      "kind": "overlaps",
+      "layer": "Place_saint-philippe_market.layer",
+      "why": "A market umbrella over the street end of the stall: its bounds are the 2.4 m canopy, so the stall under it overlaps that box and the canopy reaches past the kerb. Only the pole stands on the pavement, clear of the stall (look place:saint-philippe/market, first-two-hours review A20)."
+    },
+    {
+      "match": "^Fit_saint_philippe_market_market_[a-z0-9_]+ .*market_awning|^Fit_saint_philippe_market_market_awning ",
+      "kind": "clips",
+      "layer": "Place_saint-philippe_market.layer",
+      "why": "A market umbrella over the street end of the stall: its bounds are the 2.4 m canopy, so the stall under it overlaps that box and the canopy reaches past the kerb. Only the pole stands on the pavement, clear of the stall (look place:saint-philippe/market, first-two-hours review A20)."
+    },
+    {
+      "match": "^Fit_saint_philippe_market_market_[a-z0-9_]+ .*market_awning|^Fit_saint_philippe_market_market_awning ",
+      "kind": "overhang",
+      "layer": "Place_saint-philippe_market.layer",
+      "why": "A market umbrella over the street end of the stall: its bounds are the 2.4 m canopy, so the stall under it overlaps that box and the canopy reaches past the kerb. Only the pole stands on the pavement, clear of the stall (look place:saint-philippe/market, first-two-hours review A20)."
+    },
+    {
+      "match": "^Fit_saint_philippe_market_market_stall ",
+      "kind": "overlaps",
+      "layer": "Place_saint-philippe_market.layer",
+      "why": "The stall stands under the market umbrella (Fit_saint_philippe_market_market_awning): the overlap is the canopy box over the stall end, not a solid touch (first-two-hours review A20)."
+    },
+    {
+      "match": "^Room_House_Village_E_1L03t .*market_stall",
+      "why": "The room roll-up of the same stall-under-umbrella overlap on the b01 pavement (first-two-hours review A20)."
+    },
+    {
       "match": "^Clothing_(Mannequin_Backpack|Counter)",
       "kind": "action-crowds-till",
       "layer": "Village_Clothing.layer",

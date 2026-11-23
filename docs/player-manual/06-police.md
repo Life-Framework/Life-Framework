@@ -34,6 +34,7 @@ An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the 
 
 * **Search:** face a player within 2 m, press **F** to open the player menu and pick **Search**. Every item they carry is checked. Anything illegal for them is **seized and filed as an offence**.
   A pistol with a firearm permit is left alone. You see "Seized from <name>: ..." when something is taken.
+* **Search a car:** stand by a stopped car and pick **Search vehicle**. Cartons, bottles and other contraband in the trunk show up by class: "Found in the trunk: 2 tobacco, 1 alcohol". **Search again** within 5 minutes to **seize** them; the people in the car are charged. Legal goods stay in the car.
 * **Cuff:** hold the **handcuffs** in your left hand and pick **Cuff** (a 2 second hold) on a player who is **downed, stunned, held up, or has their hands up and no weapon**.
   A cuffed player can walk but cannot hold anything. **Uncuff** frees them; you get the cuffs back.
   Cuffing a **wanted** player puts a **"Jail booking" waypoint** on your screen: that is where you book them.

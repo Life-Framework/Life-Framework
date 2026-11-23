@@ -97,7 +97,7 @@
   "rows": [
     {
       "id": "sign-commercial-01-clothes-store",
-      "prefab": "{134DBD739E0790EC}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_ClothesStore.et",
+      "prefab": "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et",
       "role": "sign",
       "verb": "against wall",
       "offset": [
@@ -109,11 +109,14 @@
       "from": "ShopHouse_E_2I01t_clothesstore_lf.et",
       "config": [
         {
-          "component": "MeshObject",
-          "set": {},
-          "blocks": [
-            "Materials"
-          ]
+          "component": "LF_SignComponent",
+          "set": {
+            "m_sSignId": "\"clothing_store\"",
+            "m_vRimColor": "0.9 0.88 0.82",
+            "m_vPaintColor": "0.1 0.2 0.42",
+            "m_vTextColor": "0.96 0.94 0.88"
+          },
+          "blocks": []
         },
         {
           "component": "Hierarchy",

@@ -400,14 +400,23 @@ export function placeOver(perf) {
 
 // Pure: only a `ws/town-draft-<place>-<slot>` branch may change a Place_<place>_<slot>.layer, and only its own. `files` are repo paths
 // changed on the branch. main, a detached HEAD and a missing branch are not checked.
-export function guardIslandLayers({ branch, files }) {
+// `carried(files)` -> Set of layers a `wt sync-base` branch (ws/sync-*) carries unchanged from another long-lived origin branch
+// (validate-world-zones carriedFiles: the blob exists on that branch's own history, where its town-draft PR passed this guard).
+// Only such a sync branch is exempt, and only for those layers; without `carried` nothing is exempt.
+export function guardIslandLayers({ branch, files, carried = null }) {
   const errors = [];
-  const touched = (files ?? []).map((f) => String(f).replace(/\\/g, "/")).filter((f) => f.startsWith(`${LAYER_DIR}/`) && /\/Place_[^/]+\.layer$/.test(f));
+  let touched = (files ?? []).map((f) => String(f).replace(/\\/g, "/")).filter((f) => f.startsWith(`${LAYER_DIR}/`) && /\/Place_[^/]+\.layer$/.test(f));
   if (!touched.length) return { errors, touched };
   const name = String(branch ?? "");
   if (!name || name === "main" || name === "HEAD") return { errors, touched, skipped: `branch '${name || "unknown"}' is not checked` };
   const slug = name.replace(/^ws\//, "");
   const draft = /^town-draft-([a-z0-9-]+)$/.exec(slug);
+  const sync = /^sync-/.test(slug);
+  if (sync && carried) {
+    const own = carried(touched);
+    touched = touched.filter((f) => !own.has(f));
+    if (!touched.length) return { errors, touched, skipped: `sync-base branch (${slug}): every island layer is carried from another long-lived branch` };
+  }
   for (const f of touched) {
     const base = f.slice(f.lastIndexOf("/") + 1, -".layer".length); // Place_<place>_<slot>
     if (!draft) {

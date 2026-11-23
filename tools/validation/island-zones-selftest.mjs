@@ -144,6 +144,15 @@ for (const name of names) {
   check(g("ws/town-draft-saint-philippe-cafe-shop", [`${LAYER_DIR}/Place_saint-philippe_cafe-shop.layer`]).errors.length === 0, "a branch's exact place-slot layer is still its own");
   check(g("ws/fix-bug", ["docs/features/world.md", `${LAYER_DIR}/Gamemode.layer`]).errors.length === 0, "the guard touches only Place_*.layer files");
   check(g("main", [shop]).errors.length === 0 && g("HEAD", [shop]).errors.length === 0, "main and a detached HEAD are not checked");
+  // A wt sync-base branch carries island layers that passed the guard in their own town-draft PR on the other long-lived branch.
+  // red-proof: with the sync branch handling left out of guardIslandLayers() this printed 2 FAILs ("a sync branch that only carries
+  // island layers passes", "a sync branch that carries one layer and edits another fails") (2026-11-23).
+  const gc = (branch, files, carried) => guardIslandLayers({ branch, files, carried });
+  check(gc("ws/sync-main-202611222205", [shop, arrival], (fs) => new Set(fs)).errors.length === 0, "a sync branch that only carries island layers passes");
+  check(gc("ws/sync-main-202611222205", [shop, arrival], () => new Set([shop])).errors.length === 1, "a sync branch that carries one layer and edits another fails");
+  check(gc("ws/sync-main-202611222205", [shop], null).errors.length === 1, "a sync branch with no carried check is not exempt");
+  check(gc("ws/syncing-1500", [shop], (fs) => new Set(fs)).errors.length === 1, "only the sync- slug prefix counts");
+  check(gc("ws/fix-bug", [shop], (fs) => new Set(fs)).errors.length === 1, "a normal branch is never exempt, even with a carried check");
 }
 
 // ------------------------------------------------------------------ small pieces

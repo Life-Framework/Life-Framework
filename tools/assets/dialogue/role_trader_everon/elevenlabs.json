@@ -1,0 +1,76 @@
+{
+  "id": "role_trader_everon",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "990f776c6742c2c6",
+      "date": "2026-11-22",
+      "voice_id": "ukUwdbHMYybjBQCOxbZ6",
+      "voice_name": "Nicolas Estrem - Mature",
+      "model": "eleven_multilingual_v2",
+      "text": "Fresh today. Have a look.",
+      "chars": 25,
+      "chars_total": 10,
+      "request_id": "rGJu8nY1P8nKMlvg4CXk",
+      "seconds": 1.39,
+      "mouth": "1269774483998424859984021000"
+    },
+    "what": {
+      "hash": "6b857abdeb951464",
+      "date": "2026-11-22",
+      "voice_id": "ukUwdbHMYybjBQCOxbZ6",
+      "voice_name": "Nicolas Estrem - Mature",
+      "model": "eleven_multilingual_v2",
+      "text": "I buy at this stall. Bring me apple juice, fruit, cabbage or honey and I pay cash, the price on the board.",
+      "chars": 106,
+      "chars_total": 42,
+      "request_id": "Tk1SzV7kRIBOxAG577lL",
+      "seconds": 7.26,
+      "mouth": "19942999942433148973110000000002339965789156255653454233871032033996898354735955432101111100134597993058833389835664100520349972333552687775231000"
+    },
+    "where": {
+      "hash": "e35e3dca2de52f67",
+      "date": "2026-11-22",
+      "voice_id": "ukUwdbHMYybjBQCOxbZ6",
+      "voice_name": "Nicolas Estrem - Mature",
+      "model": "eleven_multilingual_v2",
+      "text": "The orchard is a short drive out of Saint-Philippe. Pick the apples, press them into juice. Juice pays best here.",
+      "chars": 113,
+      "chars_total": 45,
+      "request_id": "IkqTdzbvFnQFTvAtQdmw",
+      "seconds": 7.98,
+      "mouth": "2899998243865763434438832269883454413335422557513874100000000000015932289885249999763332100012795319677624533599953321000000002234999543102588831069643225542100"
+    },
+    "rumour": {
+      "hash": "2c8b04cf49f6cca8",
+      "date": "2026-11-22",
+      "voice_id": "ukUwdbHMYybjBQCOxbZ6",
+      "voice_name": "Nicolas Estrem - Mature",
+      "model": "eleven_multilingual_v2",
+      "text": "The price of apples went up this week. Somebody is hoarding them, I think.",
+      "chars": 74,
+      "chars_total": 30,
+      "request_id": "Zg0IxJgfYGy2Wc5H7eku",
+      "seconds": 4.19,
+      "mouth": "831399545336797269522595289215432153111000000000122389979965421898655353342114221100"
+    },
+    "bye": {
+      "hash": "5ef3b3f9c4b29aec",
+      "date": "2026-11-22",
+      "voice_id": "ukUwdbHMYybjBQCOxbZ6",
+      "voice_name": "Nicolas Estrem - Mature",
+      "model": "eleven_multilingual_v2",
+      "text": "Come back when you have more.",
+      "chars": 29,
+      "chars_total": 12,
+      "request_id": "vzle5JNEfP86R617z0Bx",
+      "seconds": 1.18,
+      "mouth": "498797316899663255443100"
+    }
+  },
+  "voice": {
+    "id": "ukUwdbHMYybjBQCOxbZ6",
+    "name": "Nicolas Estrem - Mature",
+    "source": "voice library"
+  }
+}

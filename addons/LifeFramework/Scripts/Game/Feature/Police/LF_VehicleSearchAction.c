@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------------------------
 //! An on-duty officer searches a vehicle's storage for chain goods (#419). Offer checks read the
 //! replicated duty bit; the search runs on the server, which re-checks the officer against the
-//! real account and the reach and rolls the find itself (LF_ChainSearch).
+//! real account and the reach and rolls the find itself (LF_ChainSearch). Classed contraband (cartons,
+//! bottles) is listed on a find and seized by the next search of the same car (LF_VehicleSearchGoods, #4196).
 class LF_VehicleSearchAction : ScriptedUserAction
 {
 	//------------------------------------------------------------------------------------------------
@@ -70,11 +71,33 @@ class LF_VehicleSearchAction : ScriptedUserAction
 		if (!LF_QualificationGate.AllowsUser(pUserEntity, GateAction()))
 			return;
 
+		int nowMs = GetGame().GetWorld().GetWorldTime();
+
+		// A car with a find from the last search: this search seizes those goods (#4196).
+		if (LF_VehicleSearchGoods.HasPending(pOwnerEntity, nowMs))
+		{
+			int taken = LF_VehicleSearchGoods.Seize(pOwnerEntity, nowMs);
+			if (taken > 0)
+				LF_Utils.NotifyEntity(pUserEntity, "#LF-VehicleSearch_Seized", "#EL-Police_Title", 4.0, taken.ToString());
+			else
+				LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Clean", "#EL-Police_Title", 3.0);
+			return;
+		}
+
 		// A repeat inside the cooldown rolls nothing and reads clean (#472).
 		int seized = 0;
-		if (LF_ChainSearch.TryBeginSearch(CooldownKey(pOwnerEntity), GetGame().GetWorld().GetWorldTime()))
-			seized = Search(pOwnerEntity, Math.RandomFloat01());
-		if (seized > 0)
+		int found = 0;
+		string listing;
+		if (LF_ChainSearch.TryBeginSearch(CooldownKey(pOwnerEntity), nowMs))
+		{
+			float roll = Math.RandomFloat01();
+			seized = Search(pOwnerEntity, roll);
+			found = LF_VehicleSearchGoods.Search(pOwnerEntity, roll, nowMs, listing);
+		}
+
+		if (found > 0)
+			LF_Utils.NotifyEntity(pUserEntity, "#LF-VehicleSearch_Found", "#EL-Police_Title", 6.0, listing);
+		else if (seized > 0)
 			LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Found", "#EL-Police_Title", 3.0);
 		else
 			LF_Utils.NotifyEntity(pUserEntity, "#LF-Search_Clean", "#EL-Police_Title", 3.0);

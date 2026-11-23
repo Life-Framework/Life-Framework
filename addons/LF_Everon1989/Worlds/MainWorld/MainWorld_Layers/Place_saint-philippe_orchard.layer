@@ -9,6 +9,15 @@ GenericEntity Fit_saint_philippe_orchard_Place {
  }
  coords 4607.7 18.9 10779.5
 }
+GenericEntity Fit_saint_philippe_orchard_Place_OrchardTrees {
+ components {
+  LF_PlaceComponent "{10C22D0A710B25D4}" {
+   m_sKind "OrchardTrees"
+   m_sId "saint-philippe.orchard"
+  }
+ }
+ coords 4615.861 18.9 10782.311
+}
 Tree Fit_saint_philippe_orchard_orchard_apple_1 : "{1C6F9AD2669C17F9}Prefabs/Vegetation/Tree/t_malus_domestica_2s.et" {
  coords 4615.861 0 10782.311
  angleY 1
@@ -75,11 +84,15 @@ GenericEntity Fit_saint_philippe_orchard_orchard_crate_2 : "{2B1D0128ED660BE9}Pr
  coords 4608.994 18.809 10768.77
  angleY -19
 }
-GenericEntity Fit_saint_philippe_orchard_orchard_hay_bale : "{6A8D0F8B78685E0A}Prefabs/Props/Agriculture/Farm/HayBale_01.et" {
- coords 4606.742 18.64 10770.844
- angleY 71
+GenericEntity Fit_saint_philippe_orchard_orchard_hay_bale : "{24DE47095BD6BE7B}Prefabs/Props/Agriculture/Farm/HayBale_01_square_big.et" {
+ coords 4606.446 18.622 10770.797
+ angleY 91
 }
 GenericEntity Fit_saint_philippe_orchard_orchard_cart : "{A208248B503EF831}Prefabs/Props/Civilian/Cart_01.et" {
  coords 4614.741 19.076 10775.958
  angleY 86
+}
+GenericEntity Fit_saint_philippe_orchard_orchard_bucket : "{BCE07A58672955B9}Prefabs/Props/Civilian/Bucket_01.et" {
+ coords 4611.919 18.966 10772.676
+ angleY 21
 }
