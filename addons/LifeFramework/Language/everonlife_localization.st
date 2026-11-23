@@ -2915,6 +2915,41 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Call closed: unfounded."
      Comment "Toast to the officer: the call closed as unfounded (#4203)."
     }
+    CustomStringTableItem "{CCA19DCF527EF2A2}" {
+     Id "LF-CarPool_BayBlocked"
+     Target_en_us "The bay is blocked. Move the car out of the bay first."
+     Comment "Toast (#4352): a vehicle stands in the car pool's bay."
+    }
+    CustomStringTableItem "{0A300420FA34288B}" {
+     Id "LF-CarPool_CarOut"
+     Target_en_us "Your last car is still out with people in it."
+     Comment "Toast (#4352): an officer's previous pool car is occupied, so it cannot go back for a new one."
+    }
+    CustomStringTableItem "{0A273A404E690928}" {
+     Id "LF-CarPool_Drawn"
+     Target_en_us "Your car is in the bay."
+     Comment "Toast (#4352): the car pool put the officer's car in the bay."
+    }
+    CustomStringTableItem "{793A240492C52CCA}" {
+     Id "LF-CarPool_OffDuty"
+     Target_en_us "Clock in before you take a car from the pool."
+     Comment "Toast (#4352): the car pool refused a player who is not police on duty."
+    }
+    CustomStringTableItem "{D099389B5BAEADCD}" {
+     Id "LF-CarPool_Take"
+     Target_en_us "Take the %1 car"
+     Comment "Action on the police car pool board (#4352). %1 = the title of the lowest rank that draws this car (Cadet, Patrol)."
+    }
+    CustomStringTableItem "{2552B4871B415278}" {
+     Id "LF-CarPool_TooFar"
+     Target_en_us "Stand at the car pool board to take a car."
+     Comment "Toast (#4352): the officer is too far from the pool board."
+    }
+    CustomStringTableItem "{8EC773517A0DB2DD}" {
+     Id "LF-CarPool_TooSoon"
+     Target_en_us "You just took a car. Wait a moment."
+     Comment "Toast (#4352): the officer drew a car seconds ago."
+    }
     CustomStringTableItem "{B27102B0C486F20E}" {
      Id "LF-Cargo_Empty"
      Target_en_us "The bed is empty."
@@ -4193,6 +4228,21 @@ CustomStringTableItem "{44869271883D0402}" {
     CustomStringTableItem "{0D1A861CFC75EB60}" {
      Id "LF-Credits_182"
      Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{861D6EE9C532FE97}" {
+     Id "LF-Credits_183"
+     Target_en_us "LIVERIES"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{FD0F462ADB68D02E}" {
+     Id "LF-Credits_184"
+     Target_en_us "LF_UAZ469_Police"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{00BFA04619043DFC}" {
+     Id "LF-Credits_185"
+     Target_en_us "LF_S105_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9B225E9F684B34BE}" {

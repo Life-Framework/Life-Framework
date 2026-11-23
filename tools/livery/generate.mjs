@@ -54,6 +54,14 @@ export const VEHICLES = {
       plateScale: 0.6,
     },
   },
+  // The S105's doors are animated parts of the body mesh (AnimDoorIndex), so one body material repaints them.
+  S105: {
+    baseEmat: "{6A5E5A0B4C4B52A1}Assets/Vehicles/Wheeled/S105/Data/S105Body_mat_beige.emat",
+    mesh: "51DAA09FEFBFC0E7",
+    assign: "64D877CFC0DC5560",
+    source: "S105Body_mat",
+    doors: null,
+  },
   S1203: {
     baseEmat: "{0078643DF969CA01}Assets/Vehicles/Wheeled/S1203/Data/S1203_body.emat",
     mesh: "51DAA09FEFBFC0E7",
