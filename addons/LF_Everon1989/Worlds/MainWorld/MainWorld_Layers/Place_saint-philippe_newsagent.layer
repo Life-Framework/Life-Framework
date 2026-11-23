@@ -66,3 +66,12 @@ GenericEntity Fit_saint_philippe_newsagent_newsagent_till : "{4E4E1620C6B02E1F}P
  coords 4436.682 13.191 10689.866
  angleY -5
 }
+GenericEntity Fit_saint_philippe_newsagent_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
+ coords 4436.86 11.95 10690.71
+ angleY -168
+}

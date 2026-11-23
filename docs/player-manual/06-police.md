@@ -21,7 +21,7 @@ Police are players. There is no roster to wait for in the alpha: anyone can sign
 | Sergeant | $425 | $95 | $4,000 | 8 hours |
 | Lieutenant | $450 | $70 | $5,000 | top |
 
-**Bonus:** a call closed as resolved (fine the suspect at the scene) earns **$15**, a suspect booked at the desk **$10**, and a stolen car recovered to its owner **$20** (not your own car). The bonus stops at your rank's cap each hour and is paid with your shift when you clock out. It survives a server restart. Fines go to the town, never to you.
+**Bonus:** a call closed as resolved (fine the suspect at the scene, or radio it from the car) earns **$15**, a suspect booked at the desk **$10**, and a stolen car recovered to its owner **$20** (not your own car). The bonus stops at your rank's cap each hour and is paid with your shift when you clock out. It survives a server restart. Fines go to the town, never to you.
 
 A higher rank also promotes: at the **armoury**, an officer above the new rank can promote you. Higher ranks draw bigger weapons (the M16A2, then the AKS-74U).
 
@@ -68,6 +68,7 @@ An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the 
 ## Calls, evidence and the armoury
 
 * Players call you from a **payphone**: *Report a crime*, *Report an emergency* or *Report someone suspicious*. An on-duty officer hears it on the radio and sees it on the board.
+* **Close a call from the car.** After you take a call at the dispatch board, drive to the scene and use the radio rows at the driver door of the Patrol UAZ: *Radio: call resolved*, *Radio: no one found* or *Radio: call unfounded*. You must be within 50 m of the scene. Only *resolved* earns the bonus. If you hold more than one call, the radio closes the one you are parked at.
 * On the radio, a **dispatcher** reads each call to you after a short squelch: what happened, then the place ("Robbery in progress. At the general store."). The written line follows on screen.
   A caller can ring once a minute; with nobody on duty nothing connects.
 * The **armoury** hands out kit by rank. The **evidence locker** is in the station.
