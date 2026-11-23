@@ -11162,6 +11162,141 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The server restarts in %1 minute(s)."
      Comment "Toast to every player at each restart warning step (Ops O6, #1265). %1 = minutes left."
     }
+    CustomStringTableItem "{7D34417334CA2E12}" {
+     Id "LF-OrgFlagWall_Done"
+     Target_en_us "Your gang now flies the new flag."
+     Comment "Toast to the gang leader after picking a flag at the wall."
+    }
+    CustomStringTableItem "{0DD2469217004277}" {
+     Id "LF-OrgFlagWall_Fly"
+     Target_en_us "Fly the %1 flag"
+     Comment "Action on a sample flag at the registry flag wall. %1 is the flag name."
+    }
+    CustomStringTableItem "{5835D1DD383908D7}" {
+     Id "LF-OrgFlagWall_Held"
+     Target_en_us "That flag belongs to %1, and they are around. Pick another."
+     Comment "Toast when a flag is held by a gang with a member online. %1 is the holding gang."
+    }
+    CustomStringTableItem "{B717A91F51503F78}" {
+     Id "LF-OrgFlagWall_NoGang"
+     Target_en_us "You need a gang to fly a flag."
+     Comment "Toast to a player with no organization."
+    }
+    CustomStringTableItem "{5592F38460C60DB0}" {
+     Id "LF-OrgFlagWall_NotLeader"
+     Target_en_us "Only a gang leader can pick the gang flag."
+     Comment "Toast to a gang member who is not a leader."
+    }
+    CustomStringTableItem "{BDE4CC259DADC42D}" {
+     Id "LF-OrgFlagWall_Refused"
+     Target_en_us "That flag cannot be picked."
+     Comment "Toast when the pick is not one of the preset flags."
+    }
+    CustomStringTableItem "{2317577E1FF2C9F2}" {
+     Id "LF-OrgFlagWall_Same"
+     Target_en_us "Your gang already flies that flag."
+     Comment "Toast when the leader picks the flag the gang already has."
+    }
+    CustomStringTableItem "{6DD4905328743C3C}" {
+     Id "LF-OrgFlag_Name_01"
+     Target_en_us "Flag 1"
+     Comment "Neutral name of preset gang flag 1; a pack gives the real name."
+    }
+    CustomStringTableItem "{C7E4384645F27400}" {
+     Id "LF-OrgFlag_Name_02"
+     Target_en_us "Flag 2"
+     Comment "Neutral name of preset gang flag 2; a pack gives the real name."
+    }
+    CustomStringTableItem "{06CB274D16F5D514}" {
+     Id "LF-OrgFlag_Name_03"
+     Target_en_us "Flag 3"
+     Comment "Neutral name of preset gang flag 3; a pack gives the real name."
+    }
+    CustomStringTableItem "{4BBB49F3186E9C91}" {
+     Id "LF-OrgFlag_Name_04"
+     Target_en_us "Flag 4"
+     Comment "Neutral name of preset gang flag 4; a pack gives the real name."
+    }
+    CustomStringTableItem "{80848B99F9327F1F}" {
+     Id "LF-OrgFlag_Name_05"
+     Target_en_us "Flag 5"
+     Comment "Neutral name of preset gang flag 5; a pack gives the real name."
+    }
+    CustomStringTableItem "{41BB2518650EC259}" {
+     Id "LF-OrgFlag_Name_06"
+     Target_en_us "Flag 6"
+     Comment "Neutral name of preset gang flag 6; a pack gives the real name."
+    }
+    CustomStringTableItem "{3BFCE726AB706918}" {
+     Id "LF-OrgFlag_Name_07"
+     Target_en_us "Flag 7"
+     Comment "Neutral name of preset gang flag 7; a pack gives the real name."
+    }
+    CustomStringTableItem "{D549594C3E7CA88D}" {
+     Id "LF-OrgFlag_Name_08"
+     Target_en_us "Flag 8"
+     Comment "Neutral name of preset gang flag 8; a pack gives the real name."
+    }
+    CustomStringTableItem "{CD1F50FA7D06680B}" {
+     Id "LF-OrgFlag_Name_09"
+     Target_en_us "Flag 9"
+     Comment "Neutral name of preset gang flag 9; a pack gives the real name."
+    }
+    CustomStringTableItem "{F2D8608EB4BADFA2}" {
+     Id "LF-OrgFlag_Name_10"
+     Target_en_us "Flag 10"
+     Comment "Neutral name of preset gang flag 10; a pack gives the real name."
+    }
+    CustomStringTableItem "{1F4EC0E2CC8A7E46}" {
+     Id "LF-OrgFlag_Name_11"
+     Target_en_us "Flag 11"
+     Comment "Neutral name of preset gang flag 11; a pack gives the real name."
+    }
+    CustomStringTableItem "{9896D7B92896EC0A}" {
+     Id "LF-OrgFlag_Name_12"
+     Target_en_us "Flag 12"
+     Comment "Neutral name of preset gang flag 12; a pack gives the real name."
+    }
+    CustomStringTableItem "{82527DEB453A9885}" {
+     Id "LF-OrgFlag_Name_13"
+     Target_en_us "Flag 13"
+     Comment "Neutral name of preset gang flag 13; a pack gives the real name."
+    }
+    CustomStringTableItem "{914669FAB5989DD9}" {
+     Id "LF-OrgFlag_Name_14"
+     Target_en_us "Flag 14"
+     Comment "Neutral name of preset gang flag 14; a pack gives the real name."
+    }
+    CustomStringTableItem "{71BE884AF0AC76CD}" {
+     Id "LF-OrgFlag_Name_15"
+     Target_en_us "Flag 15"
+     Comment "Neutral name of preset gang flag 15; a pack gives the real name."
+    }
+    CustomStringTableItem "{1625AAF66BB314BA}" {
+     Id "LF-OrgFlag_Name_16"
+     Target_en_us "Flag 16"
+     Comment "Neutral name of preset gang flag 16; a pack gives the real name."
+    }
+    CustomStringTableItem "{1CB2F49578C1F055}" {
+     Id "LF-OrgFlag_Name_17"
+     Target_en_us "Flag 17"
+     Comment "Neutral name of preset gang flag 17; a pack gives the real name."
+    }
+    CustomStringTableItem "{57C899AC492EF9AC}" {
+     Id "LF-OrgFlag_Name_18"
+     Target_en_us "Flag 18"
+     Comment "Neutral name of preset gang flag 18; a pack gives the real name."
+    }
+    CustomStringTableItem "{0A2B3522F3279827}" {
+     Id "LF-OrgFlag_Name_19"
+     Target_en_us "Flag 19"
+     Comment "Neutral name of preset gang flag 19; a pack gives the real name."
+    }
+    CustomStringTableItem "{2323BD897B6C077E}" {
+     Id "LF-OrgFlag_Name_20"
+     Target_en_us "Flag 20"
+     Comment "Neutral name of preset gang flag 20; a pack gives the real name."
+    }
     CustomStringTableItem "{5AB8DC50BD7DC910}" {
      Id "LF-OrgRight_BUY_UPGRADE"
      Target_en_us "Buy upgrades"
