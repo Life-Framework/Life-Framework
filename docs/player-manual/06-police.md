@@ -31,6 +31,8 @@ Three **police cars** (covered UAZ469 with a blue light bar) stand beside the st
 **F6** to lock or unlock a car (gamepad: press the right stick). Cycle the siren modes with the **right mouse button** (gamepad: click the left stick).
 Station cars are not owned: they are back at the station after a restart.
 
+**Car pool board.** On duty, press **F** at the car pool board and pick your rank's car ("Take the Cadet car": a white S105; "Take the Patrol car": the white UAZ469 with POLICE on the doors, Patrol and up). It stands in the bay in front of the board, unlocked for officers on duty. Taking another car sends your last one back, unless someone is sitting in it. A car above your rank is greyed out with the rank it needs. The board is not at the Saint-Philippe station yet.
+
 ## Stop, cuff, search, arrest
 
 An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the station, **book into jail** at the cell.
