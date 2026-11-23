@@ -5674,6 +5674,1311 @@ StringTable {
      Target_en_us "Hugo Valmy"
      Comment "Townsfolk (The shipment, #3804): the go-between's name, the speaker line of his dialogue."
     }
+    CustomStringTableItem "{28FAC180F47F7CA9}" {
+     Id "LF-Unlock_Farmer_02"
+     Target_en_us "Hand basket: carry more fruit"
+     Comment "What Farmer level 2 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F325D28E816EBED5}" {
+     Id "LF-Unlock_Farmer_03"
+     Target_en_us "The market stall buys your fruit"
+     Comment "What Farmer level 3 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{2D3634B908407F87}" {
+     Id "LF-Unlock_Farmer_04"
+     Target_en_us "The juicer at the square"
+     Comment "What Farmer level 4 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{28C410C1791F40EB}" {
+     Id "LF-Unlock_Farmer_05"
+     Target_en_us "North-east farm work"
+     Comment "What Farmer level 5 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{D150DC4DEAA1465B}" {
+     Id "LF-Unlock_Farmer_06"
+     Target_en_us "Faster picking"
+     Comment "What Farmer level 6 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B15B128A92A3D1D7}" {
+     Id "LF-Unlock_Farmer_07"
+     Target_en_us "Honey from the apiary"
+     Comment "What Farmer level 7 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E3C4CE5D8C70A97D}" {
+     Id "LF-Unlock_Farmer_08"
+     Target_en_us "Grain lots at the mill"
+     Comment "What Farmer level 8 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{288E3AF3B282481C}" {
+     Id "LF-Unlock_Farmer_09"
+     Target_en_us "The Étoupe orchard"
+     Comment "What Farmer level 9 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1F311C663AFE5115}" {
+     Id "LF-Unlock_Farmer_10"
+     Target_en_us "The bakery buys flour"
+     Comment "What Farmer level 10 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E50F9BA114480075}" {
+     Id "LF-Unlock_Farmer_11"
+     Target_en_us "Fruit crate: carry a full crate"
+     Comment "What Farmer level 11 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E55BE7C38B3BE1F6}" {
+     Id "LF-Unlock_Farmer_12"
+     Target_en_us "Chance of a double harvest"
+     Comment "What Farmer level 12 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{82AAA1AA94D73E72}" {
+     Id "LF-Unlock_Farmer_13"
+     Target_en_us "Better price at the market stall"
+     Comment "What Farmer level 13 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{148A01DF874F4B9F}" {
+     Id "LF-Unlock_Farmer_14"
+     Target_en_us "Pruning shears: faster fruit"
+     Comment "What Farmer level 14 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{24095BCA0A7DE192}" {
+     Id "LF-Unlock_Farmer_15"
+     Target_en_us "Bulk crop orders from the wholesaler"
+     Comment "What Farmer level 15 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{FDE551D7FEAFD031}" {
+     Id "LF-Unlock_Farmer_16"
+     Target_en_us "Orchard keys: the cold store"
+     Comment "What Farmer level 16 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{2EEC2BE0DB080FC3}" {
+     Id "LF-Unlock_Farmer_17"
+     Target_en_us "Seed supplier discount"
+     Comment "What Farmer level 17 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1426AFF283D7D8C7}" {
+     Id "LF-Unlock_Farmer_18"
+     Target_en_us "Faster threshing at the mill"
+     Comment "What Farmer level 18 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{551C4F83E36717F2}" {
+     Id "LF-Unlock_Farmer_19"
+     Target_en_us "Honey buyers in the harbor town"
+     Comment "What Farmer level 19 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E901195C9BD0D20F}" {
+     Id "LF-Unlock_Farmer_20"
+     Target_en_us "Larger double-harvest chance"
+     Comment "What Farmer level 20 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1AC308FDCEFAD526}" {
+     Id "LF-Unlock_Farmer_21"
+     Target_en_us "Farm truck loans from the co-op"
+     Comment "What Farmer level 21 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{6D8A718028472D42}" {
+     Id "LF-Unlock_Farmer_22"
+     Target_en_us "Preserves: jam from your fruit"
+     Comment "What Farmer level 22 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{D433F82E4822BC1E}" {
+     Id "LF-Unlock_Farmer_23"
+     Target_en_us "Cider press access"
+     Comment "What Farmer level 23 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B4757AE31C0087AF}" {
+     Id "LF-Unlock_Farmer_24"
+     Target_en_us "Co-op price board"
+     Comment "What Farmer level 24 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B93961CD8F477389}" {
+     Id "LF-Unlock_Farmer_25"
+     Target_en_us "Second double-harvest chance"
+     Comment "What Farmer level 25 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B41ADC93CABF7EED}" {
+     Id "LF-Unlock_Farmer_26"
+     Target_en_us "Seed stock for rare crops"
+     Comment "What Farmer level 26 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A173E55A34CF5532}" {
+     Id "LF-Unlock_Farmer_27"
+     Target_en_us "Wholesale fruit contracts"
+     Comment "What Farmer level 27 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1321B7CFED8C7624}" {
+     Id "LF-Unlock_Farmer_28"
+     Target_en_us "Harvest festival stall"
+     Comment "What Farmer level 28 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{988A7C6C4A393D19}" {
+     Id "LF-Unlock_Farmer_29"
+     Target_en_us "Farm foreman badge"
+     Comment "What Farmer level 29 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{65C5B96FD6FC58A2}" {
+     Id "LF-Unlock_Farmer_30"
+     Target_en_us "Master Farmer title and the co-op seat"
+     Comment "What Farmer level 30 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E84812AE4708E87B}" {
+     Id "LF-Unlock_Fishing_02"
+     Target_en_us "The cove on the west coast"
+     Comment "What Fishing level 2 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{CB494B2C7D6AE355}" {
+     Id "LF-Unlock_Fishing_03"
+     Target_en_us "Bait box: better bites"
+     Comment "What Fishing level 3 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{68671949DBE10BAE}" {
+     Id "LF-Unlock_Fishing_04"
+     Target_en_us "The fish counter buys your catch"
+     Comment "What Fishing level 4 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{AAAC72848EC6CAC4}" {
+     Id "LF-Unlock_Fishing_05"
+     Target_en_us "The fish cannery"
+     Comment "What Fishing level 5 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{45861703EE91D553}" {
+     Id "LF-Unlock_Fishing_06"
+     Target_en_us "Faster reeling"
+     Comment "What Fishing level 6 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A9F5F597EB748605}" {
+     Id "LF-Unlock_Fishing_07"
+     Target_en_us "Smokehouse: smoke your fish"
+     Comment "What Fishing level 7 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{2F48A72308342335}" {
+     Id "LF-Unlock_Fishing_08"
+     Target_en_us "Chance of a double catch"
+     Comment "What Fishing level 8 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A998AD4065A1AD7B}" {
+     Id "LF-Unlock_Fishing_09"
+     Target_en_us "Fiberglass rod"
+     Comment "What Fishing level 9 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{FE2E04CF37F41491}" {
+     Id "LF-Unlock_Fishing_10"
+     Target_en_us "Black Lake spot"
+     Comment "What Fishing level 10 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{8B73217DE47AB115}" {
+     Id "LF-Unlock_Fishing_11"
+     Target_en_us "Smoked fish buyers"
+     Comment "What Fishing level 11 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{9A20C078DA239CB6}" {
+     Id "LF-Unlock_Fishing_12"
+     Target_en_us "Better price at the fish counter"
+     Comment "What Fishing level 12 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B78222D4A9A6BED8}" {
+     Id "LF-Unlock_Fishing_13"
+     Target_en_us "Tackle bag: carry more fish"
+     Comment "What Fishing level 13 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C1553B46521EEFE4}" {
+     Id "LF-Unlock_Fishing_14"
+     Target_en_us "Line wear slows down"
+     Comment "What Fishing level 14 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B7D4EB2E7AA9D005}" {
+     Id "LF-Unlock_Fishing_15"
+     Target_en_us "Pinewood Lake"
+     Comment "What Fishing level 15 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{CD38831BED35FFB8}" {
+     Id "LF-Unlock_Fishing_16"
+     Target_en_us "Pike and eel"
+     Comment "What Fishing level 16 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E0ACA45425223DF2}" {
+     Id "LF-Unlock_Fishing_17"
+     Target_en_us "Fish scale at the counter"
+     Comment "What Fishing level 17 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B8E74F51781E02FD}" {
+     Id "LF-Unlock_Fishing_18"
+     Target_en_us "Larger double-catch chance"
+     Comment "What Fishing level 18 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{481CDD7E39A3E2CC}" {
+     Id "LF-Unlock_Fishing_19"
+     Target_en_us "Cannery bulk orders"
+     Comment "What Fishing level 19 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C84F8560FF310886}" {
+     Id "LF-Unlock_Fishing_20"
+     Target_en_us "Boat hire at the harbor"
+     Comment "What Fishing level 20 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{19F649C87CF0B6C4}" {
+     Id "LF-Unlock_Fishing_21"
+     Target_en_us "Deep-water spots"
+     Comment "What Fishing level 21 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B58073271E7B546C}" {
+     Id "LF-Unlock_Fishing_22"
+     Target_en_us "Faster smoking"
+     Comment "What Fishing level 22 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1D8AB4E30758F3EF}" {
+     Id "LF-Unlock_Fishing_23"
+     Target_en_us "Harbor master's crates"
+     Comment "What Fishing level 23 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{591AB4F4DE85BA06}" {
+     Id "LF-Unlock_Fishing_24"
+     Target_en_us "Second double-catch chance"
+     Comment "What Fishing level 24 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{25E49A3C5A92D2B2}" {
+     Id "LF-Unlock_Fishing_25"
+     Target_en_us "Competition rod"
+     Comment "What Fishing level 25 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F540F16A95803556}" {
+     Id "LF-Unlock_Fishing_26"
+     Target_en_us "Fishing derby entry"
+     Comment "What Fishing level 26 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{0177DA903D4EF4D6}" {
+     Id "LF-Unlock_Fishing_27"
+     Target_en_us "Rare catches"
+     Comment "What Fishing level 27 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{AA73763FB1D6BC84}" {
+     Id "LF-Unlock_Fishing_28"
+     Target_en_us "Cannery foreman's contract"
+     Comment "What Fishing level 28 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{6B0DB425554968F0}" {
+     Id "LF-Unlock_Fishing_29"
+     Target_en_us "Harbor fisher badge"
+     Comment "What Fishing level 29 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{FB6977F549ACC665}" {
+     Id "LF-Unlock_Fishing_30"
+     Target_en_us "Master Fisher title and the derby cup"
+     Comment "What Fishing level 30 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{3D50423DF77AB6D8}" {
+     Id "LF-Unlock_Hauling_02"
+     Target_en_us "Parcel runs around town"
+     Comment "What Hauling level 2 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{768F6624884FC9CC}" {
+     Id "LF-Unlock_Hauling_03"
+     Target_en_us "Map pins for every drop"
+     Comment "What Hauling level 3 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B9BCB1B47BCC9036}" {
+     Id "LF-Unlock_Hauling_04"
+     Target_en_us "Fuel runs for the garage"
+     Comment "What Hauling level 4 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{26AB027C285BC0D5}" {
+     Id "LF-Unlock_Hauling_05"
+     Target_en_us "Taxi fares"
+     Comment "What Hauling level 5 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{66A808D00E3ACBA5}" {
+     Id "LF-Unlock_Hauling_06"
+     Target_en_us "Faster loading"
+     Comment "What Hauling level 6 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{24D9B283B36BB21F}" {
+     Id "LF-Unlock_Hauling_07"
+     Target_en_us "The parcel depot"
+     Comment "What Hauling level 7 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C1704326D408DE34}" {
+     Id "LF-Unlock_Hauling_08"
+     Target_en_us "Light truck loans"
+     Comment "What Hauling level 8 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{5072C6D93924B62D}" {
+     Id "LF-Unlock_Hauling_09"
+     Target_en_us "Postal rounds on the coast road"
+     Comment "What Hauling level 9 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{ABB5F3D9E64D099D}" {
+     Id "LF-Unlock_Hauling_10"
+     Target_en_us "Timber haul orders"
+     Comment "What Hauling level 10 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{53202796FAB02F8E}" {
+     Id "LF-Unlock_Hauling_11"
+     Target_en_us "Better fares on long taxi runs"
+     Comment "What Hauling level 11 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F7F40755F9E51DC1}" {
+     Id "LF-Unlock_Hauling_12"
+     Target_en_us "Export orders at the harbor"
+     Comment "What Hauling level 12 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{8D086AADB73C4A1F}" {
+     Id "LF-Unlock_Hauling_13"
+     Target_en_us "Pallet loader: carry more per run"
+     Comment "What Hauling level 13 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{7B710DE2D69022CB}" {
+     Id "LF-Unlock_Hauling_14"
+     Target_en_us "Fuel tanker work"
+     Comment "What Hauling level 14 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{7C6FC2E037654F6B}" {
+     Id "LF-Unlock_Hauling_15"
+     Target_en_us "Delivery bonus on time"
+     Comment "What Hauling level 15 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{508DC686115E1C5E}" {
+     Id "LF-Unlock_Hauling_16"
+     Target_en_us "Wholesale freight"
+     Comment "What Hauling level 16 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{39635DAE2901F5E4}" {
+     Id "LF-Unlock_Hauling_17"
+     Target_en_us "Heavier truck loans"
+     Comment "What Hauling level 17 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B783B81FBD458A82}" {
+     Id "LF-Unlock_Hauling_18"
+     Target_en_us "Cold-chain loads"
+     Comment "What Hauling level 18 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1C4478B9490B8FF3}" {
+     Id "LF-Unlock_Hauling_19"
+     Target_en_us "Larger bonus on a tight run"
+     Comment "What Hauling level 19 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F6EDE127DB5D86C7}" {
+     Id "LF-Unlock_Hauling_20"
+     Target_en_us "Harbor freight contracts"
+     Comment "What Hauling level 20 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A4599B46BC220CE7}" {
+     Id "LF-Unlock_Hauling_21"
+     Target_en_us "Fleet discount at the garage"
+     Comment "What Hauling level 21 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4E2E57F5DE731EA9}" {
+     Id "LF-Unlock_Hauling_22"
+     Target_en_us "Cargo straps: fewer lost crates"
+     Comment "What Hauling level 22 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B607E68DD3BFFABD}" {
+     Id "LF-Unlock_Hauling_23"
+     Target_en_us "Night-run rates"
+     Comment "What Hauling level 23 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4B1C7174CBA32660}" {
+     Id "LF-Unlock_Hauling_24"
+     Target_en_us "Long-haul orders"
+     Comment "What Hauling level 24 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C0C6D23D1C5A1B47}" {
+     Id "LF-Unlock_Hauling_25"
+     Target_en_us "Rich-cargo contracts"
+     Comment "What Hauling level 25 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{6100681865D00E9A}" {
+     Id "LF-Unlock_Hauling_26"
+     Target_en_us "Dispatcher's call list"
+     Comment "What Hauling level 26 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{81CB1CF424950818}" {
+     Id "LF-Unlock_Hauling_27"
+     Target_en_us "Convoy bonus with a partner"
+     Comment "What Hauling level 27 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{0A9BDF5AB3984A65}" {
+     Id "LF-Unlock_Hauling_28"
+     Target_en_us "Express orders"
+     Comment "What Hauling level 28 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{91D492BEF9258899}" {
+     Id "LF-Unlock_Hauling_29"
+     Target_en_us "Dispatch foreman badge"
+     Comment "What Hauling level 29 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C95AA723F0BD1F7E}" {
+     Id "LF-Unlock_Hauling_30"
+     Target_en_us "Master Hauler title and the depot keys"
+     Comment "What Hauling level 30 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4C96D01C7880E83B}" {
+     Id "LF-Unlock_Lumberjack_02"
+     Target_en_us "Fell pine on the north ridge"
+     Comment "What Lumberjack level 2 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{80FAA917AAF3A815}" {
+     Id "LF-Unlock_Lumberjack_03"
+     Target_en_us "Gloves: fewer splinters"
+     Comment "What Lumberjack level 3 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C2A4F8B72C44E859}" {
+     Id "LF-Unlock_Lumberjack_04"
+     Target_en_us "The timber counter buys logs"
+     Comment "What Lumberjack level 4 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F7D54413FB009761}" {
+     Id "LF-Unlock_Lumberjack_05"
+     Target_en_us "Firewood for the bakery"
+     Comment "What Lumberjack level 5 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F61EFEABF7DCB084}" {
+     Id "LF-Unlock_Lumberjack_06"
+     Target_en_us "Faster felling"
+     Comment "What Lumberjack level 6 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{377443AE5B9E3D2B}" {
+     Id "LF-Unlock_Lumberjack_07"
+     Target_en_us "Log sawing at the sawmill"
+     Comment "What Lumberjack level 7 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{D3598359C06BF6C7}" {
+     Id "LF-Unlock_Lumberjack_08"
+     Target_en_us "Chainsaw from the hardware store"
+     Comment "What Lumberjack level 8 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{EE6EA8774C82CD19}" {
+     Id "LF-Unlock_Lumberjack_09"
+     Target_en_us "Hornbeam Valley hardwood"
+     Comment "What Lumberjack level 9 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{35778227836B66E4}" {
+     Id "LF-Unlock_Lumberjack_10"
+     Target_en_us "The smokehouse buys firewood"
+     Comment "What Lumberjack level 10 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{CF3D99102198FCDE}" {
+     Id "LF-Unlock_Lumberjack_11"
+     Target_en_us "Log trailer: carry more per run"
+     Comment "What Lumberjack level 11 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A3A1BD667F5C339C}" {
+     Id "LF-Unlock_Lumberjack_12"
+     Target_en_us "Chance of a double log"
+     Comment "What Lumberjack level 12 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{157BF943BCC5474C}" {
+     Id "LF-Unlock_Lumberjack_13"
+     Target_en_us "Planks from the sawmill"
+     Comment "What Lumberjack level 13 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1B6C2739066EA6A9}" {
+     Id "LF-Unlock_Lumberjack_14"
+     Target_en_us "Better price at the timber counter"
+     Comment "What Lumberjack level 14 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{CB850E04B7D9D473}" {
+     Id "LF-Unlock_Lumberjack_15"
+     Target_en_us "Chain wear slows down"
+     Comment "What Lumberjack level 15 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{7AD3FBC72D5FBA2F}" {
+     Id "LF-Unlock_Lumberjack_16"
+     Target_en_us "Sawmill shifts"
+     Comment "What Lumberjack level 16 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1E2DCF73EEE38990}" {
+     Id "LF-Unlock_Lumberjack_17"
+     Target_en_us "Régina sawmill bulk buyer"
+     Comment "What Lumberjack level 17 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E3696E87C07BEF62}" {
+     Id "LF-Unlock_Lumberjack_18"
+     Target_en_us "Larger double-log chance"
+     Comment "What Lumberjack level 18 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{CA26F4641BE87278}" {
+     Id "LF-Unlock_Lumberjack_19"
+     Target_en_us "Timber haul orders"
+     Comment "What Lumberjack level 19 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{2BA16B25FD3C3F39}" {
+     Id "LF-Unlock_Lumberjack_20"
+     Target_en_us "Lumber truck loans"
+     Comment "What Lumberjack level 20 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{AEA0E60FB514EE25}" {
+     Id "LF-Unlock_Lumberjack_21"
+     Target_en_us "Rare hardwood stands"
+     Comment "What Lumberjack level 21 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4ECDC5B5C156343F}" {
+     Id "LF-Unlock_Lumberjack_22"
+     Target_en_us "Faster sawing"
+     Comment "What Lumberjack level 22 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{37BA2C38E2F15CF7}" {
+     Id "LF-Unlock_Lumberjack_23"
+     Target_en_us "Bulk planks to building work"
+     Comment "What Lumberjack level 23 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C15755DCA8C6F7AD}" {
+     Id "LF-Unlock_Lumberjack_24"
+     Target_en_us "Second double-log chance"
+     Comment "What Lumberjack level 24 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1135D0410091B687}" {
+     Id "LF-Unlock_Lumberjack_25"
+     Target_en_us "Logging crew bonus"
+     Comment "What Lumberjack level 25 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{351C84F8159F6BE7}" {
+     Id "LF-Unlock_Lumberjack_26"
+     Target_en_us "Felling wedges: no pinched saw"
+     Comment "What Lumberjack level 26 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{EF00CE14ABA489C3}" {
+     Id "LF-Unlock_Lumberjack_27"
+     Target_en_us "Sawmill foreman's tools"
+     Comment "What Lumberjack level 27 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{0E4D9EF417DA923C}" {
+     Id "LF-Unlock_Lumberjack_28"
+     Target_en_us "Hardwood contracts"
+     Comment "What Lumberjack level 28 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{5777B1497CE91B33}" {
+     Id "LF-Unlock_Lumberjack_29"
+     Target_en_us "Lumber foreman badge"
+     Comment "What Lumberjack level 29 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F536EC6E5DAC4A88}" {
+     Id "LF-Unlock_Lumberjack_30"
+     Target_en_us "Master Lumberjack title and the mill's ledger"
+     Comment "What Lumberjack level 30 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4B4913445F8307E9}" {
+     Id "LF-Unlock_Medic_02"
+     Target_en_us "First-aid kit"
+     Comment "What Medic level 2 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{7A8D3B70D0272882}" {
+     Id "LF-Unlock_Medic_03"
+     Target_en_us "The ambulance van"
+     Comment "What Medic level 3 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F92081DFE0A5F1EF}" {
+     Id "LF-Unlock_Medic_04"
+     Target_en_us "Bandages and splints"
+     Comment "What Medic level 4 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{19911B098072FD76}" {
+     Id "LF-Unlock_Medic_05"
+     Target_en_us "Revive a downed player"
+     Comment "What Medic level 5 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{58808F87D57915BC}" {
+     Id "LF-Unlock_Medic_06"
+     Target_en_us "Faster bandaging"
+     Comment "What Medic level 6 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B42F08393A9B5132}" {
+     Id "LF-Unlock_Medic_07"
+     Target_en_us "Morphine for pain"
+     Comment "What Medic level 7 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{8EAE37F686B951B9}" {
+     Id "LF-Unlock_Medic_08"
+     Target_en_us "Saline bags"
+     Comment "What Medic level 8 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{0B7DB38479987754}" {
+     Id "LF-Unlock_Medic_09"
+     Target_en_us "Stretcher: move the wounded"
+     Comment "What Medic level 9 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{BB9E8598BF9078C8}" {
+     Id "LF-Unlock_Medic_10"
+     Target_en_us "Clinic shifts"
+     Comment "What Medic level 10 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{444ED4C8A0AC9271}" {
+     Id "LF-Unlock_Medic_11"
+     Target_en_us "Defibrillator"
+     Comment "What Medic level 11 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{32FA6CAE60020A0E}" {
+     Id "LF-Unlock_Medic_12"
+     Target_en_us "Larger medical bag"
+     Comment "What Medic level 12 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{CC9985AA2F028553}" {
+     Id "LF-Unlock_Medic_13"
+     Target_en_us "Faster reviving"
+     Comment "What Medic level 13 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1AAEFD785E11FC70}" {
+     Id "LF-Unlock_Medic_14"
+     Target_en_us "Surgical kit"
+     Comment "What Medic level 14 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{DCE76AAF8C2094E5}" {
+     Id "LF-Unlock_Medic_15"
+     Target_en_us "Paramedic jacket"
+     Comment "What Medic level 15 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{93C37721AC5A01CA}" {
+     Id "LF-Unlock_Medic_16"
+     Target_en_us "Blood bags"
+     Comment "What Medic level 16 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1B407AE66B698EA5}" {
+     Id "LF-Unlock_Medic_17"
+     Target_en_us "Triage tags"
+     Comment "What Medic level 17 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{5392F932D9F963AA}" {
+     Id "LF-Unlock_Medic_18"
+     Target_en_us "Rescue helicopter seat"
+     Comment "What Medic level 18 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C187935C278F99F8}" {
+     Id "LF-Unlock_Medic_19"
+     Target_en_us "Faster surgery"
+     Comment "What Medic level 19 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4A6839322F45A0E0}" {
+     Id "LF-Unlock_Medic_20"
+     Target_en_us "Medicine cabinet at the clinic"
+     Comment "What Medic level 20 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{7A7224A989F3E0B2}" {
+     Id "LF-Unlock_Medic_21"
+     Target_en_us "Field hospital tent"
+     Comment "What Medic level 21 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{0360EC4D8C626B25}" {
+     Id "LF-Unlock_Medic_22"
+     Target_en_us "Ambulance siren and lights"
+     Comment "What Medic level 22 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{087560FDF12F8C85}" {
+     Id "LF-Unlock_Medic_23"
+     Target_en_us "Chief paramedic's keys"
+     Comment "What Medic level 23 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{99D718EC53F9E460}" {
+     Id "LF-Unlock_Medic_24"
+     Target_en_us "Disaster response drills"
+     Comment "What Medic level 24 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{3C8C5F4D791882AF}" {
+     Id "LF-Unlock_Medic_25"
+     Target_en_us "Hospital ward access"
+     Comment "What Medic level 25 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{FE7C38235F3D911F}" {
+     Id "LF-Unlock_Medic_26"
+     Target_en_us "Medical director's briefings"
+     Comment "What Medic level 26 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4A1C19F57D0EF267}" {
+     Id "LF-Unlock_Medic_27"
+     Target_en_us "Air ambulance pilot's signoff"
+     Comment "What Medic level 27 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{CACC90718D1FBE63}" {
+     Id "LF-Unlock_Medic_28"
+     Target_en_us "Clinic keys"
+     Comment "What Medic level 28 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4B73E986F37E57C3}" {
+     Id "LF-Unlock_Medic_29"
+     Target_en_us "Head paramedic badge"
+     Comment "What Medic level 29 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{5F56CD9A23759091}" {
+     Id "LF-Unlock_Medic_30"
+     Target_en_us "Chief Medic title and the clinic keys"
+     Comment "What Medic level 30 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{2D369C29900B50C8}" {
+     Id "LF-Unlock_Miner_02"
+     Target_en_us "Bruno hires you at Coalman's Brow"
+     Comment "What Miner level 2 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1A00A6261B157402}" {
+     Id "LF-Unlock_Miner_03"
+     Target_en_us "Hard hat: fewer falls from the rock face"
+     Comment "What Miner level 3 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{BC5517754137773A}" {
+     Id "LF-Unlock_Miner_04"
+     Target_en_us "The coal seam at East Rise"
+     Comment "What Miner level 4 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{ABACE182A736098E}" {
+     Id "LF-Unlock_Miner_05"
+     Target_en_us "Iron rocks at the second shaft"
+     Comment "What Miner level 5 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1C250B11512B3D55}" {
+     Id "LF-Unlock_Miner_06"
+     Target_en_us "Faster swing"
+     Comment "What Miner level 6 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C11E3BA396E420F8}" {
+     Id "LF-Unlock_Miner_07"
+     Target_en_us "The power plant buys your coal"
+     Comment "What Miner level 7 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{3FA2EE6ACD57F9E0}" {
+     Id "LF-Unlock_Miner_08"
+     Target_en_us "Steel pickaxe at the hardware store"
+     Comment "What Miner level 8 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{80F8E85FA758D663}" {
+     Id "LF-Unlock_Miner_09"
+     Target_en_us "Stone digging at the quarry"
+     Comment "What Miner level 9 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{2A3A134B0A83CFB3}" {
+     Id "LF-Unlock_Miner_10"
+     Target_en_us "The cement works buys sand and stone"
+     Comment "What Miner level 10 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4FC8A845D2894A6F}" {
+     Id "LF-Unlock_Miner_11"
+     Target_en_us "Ore cart: carry more per trip"
+     Comment "What Miner level 11 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{BC0D4E521B21FB75}" {
+     Id "LF-Unlock_Miner_12"
+     Target_en_us "Chance of a double ore drop"
+     Comment "What Miner level 12 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{65E99DF100D9CFCD}" {
+     Id "LF-Unlock_Miner_13"
+     Target_en_us "Lamp: work the deep face"
+     Comment "What Miner level 13 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{0BF4DF53B4AC1483}" {
+     Id "LF-Unlock_Miner_14"
+     Target_en_us "Better price at the wholesaler"
+     Comment "What Miner level 14 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F02E22AEE27FE41D}" {
+     Id "LF-Unlock_Miner_15"
+     Target_en_us "Pick wear slows down"
+     Comment "What Miner level 15 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E8C06EA3268A6CFA}" {
+     Id "LF-Unlock_Miner_16"
+     Target_en_us "Morton quarry shifts"
+     Comment "What Miner level 16 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{72C5C1D235D9F471}" {
+     Id "LF-Unlock_Miner_17"
+     Target_en_us "Deep seam at East Rise"
+     Comment "What Miner level 17 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{0C825CBA5C57B9DE}" {
+     Id "LF-Unlock_Miner_18"
+     Target_en_us "Drill bits from the hardware store"
+     Comment "What Miner level 18 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E11FAD0C1CC5CA90}" {
+     Id "LF-Unlock_Miner_19"
+     Target_en_us "Larger double-drop chance"
+     Comment "What Miner level 19 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{D8E6151EA79244C2}" {
+     Id "LF-Unlock_Miner_20"
+     Target_en_us "Blast fuses for the foreman's crew"
+     Comment "What Miner level 20 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{45155ACB037DB9BE}" {
+     Id "LF-Unlock_Miner_21"
+     Target_en_us "Mine truck access"
+     Comment "What Miner level 21 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{3B5C04F0136793EE}" {
+     Id "LF-Unlock_Miner_22"
+     Target_en_us "The assay table at Ore Ridge"
+     Comment "What Miner level 22 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B57D3B08F302C90E}" {
+     Id "LF-Unlock_Miner_23"
+     Target_en_us "Gold buyers pay more"
+     Comment "What Miner level 23 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F888555DB30B74C0}" {
+     Id "LF-Unlock_Miner_24"
+     Target_en_us "Second double-drop chance"
+     Comment "What Miner level 24 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{D21746F7ACD21B00}" {
+     Id "LF-Unlock_Miner_25"
+     Target_en_us "Gold flake in the Ore Ridge workings"
+     Comment "What Miner level 25 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C032840E4D84B30F}" {
+     Id "LF-Unlock_Miner_26"
+     Target_en_us "Foreman's tool locker"
+     Comment "What Miner level 26 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C787BDC610093ED8}" {
+     Id "LF-Unlock_Miner_27"
+     Target_en_us "Rich vein markers"
+     Comment "What Miner level 27 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{88E7FCA78BEDBACE}" {
+     Id "LF-Unlock_Miner_28"
+     Target_en_us "Crew bonus on a shared shift"
+     Comment "What Miner level 28 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{06AA3262A1A23F96}" {
+     Id "LF-Unlock_Miner_29"
+     Target_en_us "Mine foreman badge"
+     Comment "What Miner level 29 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A3C04F150761632E}" {
+     Id "LF-Unlock_Miner_30"
+     Target_en_us "Master Miner title and the foreman's clock"
+     Comment "What Miner level 30 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{403C16363A4492A2}" {
+     Id "LF-Unlock_Police_02"
+     Target_en_us "The beige S105 patrol car"
+     Comment "What Police level 2 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1A04681DCC96BAD3}" {
+     Id "LF-Unlock_Police_03"
+     Target_en_us "Radio and notebook"
+     Comment "What Police level 3 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{66409928DEEA036B}" {
+     Id "LF-Unlock_Police_04"
+     Target_en_us "Payphone calls to answer"
+     Comment "What Police level 4 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{6D999F69B9C183E0}" {
+     Id "LF-Unlock_Police_05"
+     Target_en_us "Handcuffs"
+     Comment "What Police level 5 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1A931F35CDC59EF8}" {
+     Id "LF-Unlock_Police_06"
+     Target_en_us "Speed gun"
+     Comment "What Police level 6 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{5C23E4AB52CDFBEE}" {
+     Id "LF-Unlock_Police_07"
+     Target_en_us "Patrol officer kit"
+     Comment "What Police level 7 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{17C859D43C769FF9}" {
+     Id "LF-Unlock_Police_08"
+     Target_en_us "Report forms at the desk"
+     Comment "What Police level 8 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{CC2A7A9061446BC2}" {
+     Id "LF-Unlock_Police_09"
+     Target_en_us "Breathalyzer"
+     Comment "What Police level 9 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{AEE620A6534E6666}" {
+     Id "LF-Unlock_Police_10"
+     Target_en_us "Traffic stops"
+     Comment "What Police level 10 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E29383BBA79297D3}" {
+     Id "LF-Unlock_Police_11"
+     Target_en_us "Arrest warrants"
+     Comment "What Police level 11 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{8FB11D2FB800C139}" {
+     Id "LF-Unlock_Police_12"
+     Target_en_us "Evidence bags"
+     Comment "What Police level 12 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{535727803660FF6C}" {
+     Id "LF-Unlock_Police_13"
+     Target_en_us "Detective desk"
+     Comment "What Police level 13 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{095A7BE57C03510C}" {
+     Id "LF-Unlock_Police_14"
+     Target_en_us "Baton and pepper spray"
+     Comment "What Police level 14 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{73E2A6682A22C0DF}" {
+     Id "LF-Unlock_Police_15"
+     Target_en_us "The unmarked sedan"
+     Comment "What Police level 15 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C0B1BC92B1702151}" {
+     Id "LF-Unlock_Police_16"
+     Target_en_us "Roadblock cones"
+     Comment "What Police level 16 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B6CBA45455D4D54A}" {
+     Id "LF-Unlock_Police_17"
+     Target_en_us "Case files"
+     Comment "What Police level 17 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{577C3DACAFEF187D}" {
+     Id "LF-Unlock_Police_18"
+     Target_en_us "Helicopter ride-along"
+     Comment "What Police level 18 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{60B037A76B37D23A}" {
+     Id "LF-Unlock_Police_19"
+     Target_en_us "Interview room"
+     Comment "What Police level 19 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{D5C1333CE597651E}" {
+     Id "LF-Unlock_Police_20"
+     Target_en_us "Sergeant's stripes"
+     Comment "What Police level 20 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{70EF4F2236C4B0EB}" {
+     Id "LF-Unlock_Police_21"
+     Target_en_us "Armory access"
+     Comment "What Police level 21 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{6E1E4689FE7CF680}" {
+     Id "LF-Unlock_Police_22"
+     Target_en_us "Marksman range card"
+     Comment "What Police level 22 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{671A16F647B8986B}" {
+     Id "LF-Unlock_Police_23"
+     Target_en_us "Raid approvals"
+     Comment "What Police level 23 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4989F18A6B4FE97C}" {
+     Id "LF-Unlock_Police_24"
+     Target_en_us "Lieutenant's desk"
+     Comment "What Police level 24 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A75FD151E1DA240F}" {
+     Id "LF-Unlock_Police_25"
+     Target_en_us "Witness protection files"
+     Comment "What Police level 25 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{FE101DB1E982E0A5}" {
+     Id "LF-Unlock_Police_26"
+     Target_en_us "Chief's briefings"
+     Comment "What Police level 26 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{00FDB547254EECD2}" {
+     Id "LF-Unlock_Police_27"
+     Target_en_us "Task force badge"
+     Comment "What Police level 27 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A7571B63F2E3B06E}" {
+     Id "LF-Unlock_Police_28"
+     Target_en_us "Precinct keys"
+     Comment "What Police level 28 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{5ADDABDBBACBEE5B}" {
+     Id "LF-Unlock_Police_29"
+     Target_en_us "Captain's badge"
+     Comment "What Police level 29 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{DE5C0CB25B70E7BA}" {
+     Id "LF-Unlock_Police_30"
+     Target_en_us "Chief of Police title and the station keys"
+     Comment "What Police level 30 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{9F9C098C2DB1BE6F}" {
+     Id "LF-Unlock_Salvage_02"
+     Target_en_us "Gloves: fewer cuts"
+     Comment "What Salvage level 2 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{53CE9439C52415BA}" {
+     Id "LF-Unlock_Salvage_03"
+     Target_en_us "The recycler buys scrap"
+     Comment "What Salvage level 3 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{FF001C69F34B3C95}" {
+     Id "LF-Unlock_Salvage_04"
+     Target_en_us "Bench loads at the garage"
+     Comment "What Salvage level 4 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{530894E5F466DF16}" {
+     Id "LF-Unlock_Salvage_05"
+     Target_en_us "Bin rounds in town"
+     Comment "What Salvage level 5 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{9F6181FC68774CD2}" {
+     Id "LF-Unlock_Salvage_06"
+     Target_en_us "Faster searching"
+     Comment "What Salvage level 6 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{05FBA887A93E1B25}" {
+     Id "LF-Unlock_Salvage_07"
+     Target_en_us "Scrap iron for the smelter"
+     Comment "What Salvage level 7 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F1C0852BEE5AF137}" {
+     Id "LF-Unlock_Salvage_08"
+     Target_en_us "Wreck stripping with a toolkit"
+     Comment "What Salvage level 8 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{734526E9D5687487}" {
+     Id "LF-Unlock_Salvage_09"
+     Target_en_us "The garage buys parts"
+     Comment "What Salvage level 9 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{01369A675460562F}" {
+     Id "LF-Unlock_Salvage_10"
+     Target_en_us "Chance of a bonus find"
+     Comment "What Salvage level 10 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{248E540623E2A9B0}" {
+     Id "LF-Unlock_Salvage_11"
+     Target_en_us "Salvage cart: carry more"
+     Comment "What Salvage level 11 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{48BBF7C40276FE7B}" {
+     Id "LF-Unlock_Salvage_12"
+     Target_en_us "Better price at the recycler"
+     Comment "What Salvage level 12 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F8CC8D87D421B158}" {
+     Id "LF-Unlock_Salvage_13"
+     Target_en_us "Crowbar: open sealed crates"
+     Comment "What Salvage level 13 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{09358B635C7D8FD7}" {
+     Id "LF-Unlock_Salvage_14"
+     Target_en_us "Wreck yard access"
+     Comment "What Salvage level 14 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{614439A5A31262F8}" {
+     Id "LF-Unlock_Salvage_15"
+     Target_en_us "Tool wear slows down"
+     Comment "What Salvage level 15 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{378B63AE79F7BF34}" {
+     Id "LF-Unlock_Salvage_16"
+     Target_en_us "Larger bonus-find chance"
+     Comment "What Salvage level 16 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{D59A396B6AF9953E}" {
+     Id "LF-Unlock_Salvage_17"
+     Target_en_us "Copper from old wiring"
+     Comment "What Salvage level 17 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{B99EC0DA331C0C9E}" {
+     Id "LF-Unlock_Salvage_18"
+     Target_en_us "Battery recycling"
+     Comment "What Salvage level 18 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{567C32E2BF9E31B6}" {
+     Id "LF-Unlock_Salvage_19"
+     Target_en_us "Faster stripping"
+     Comment "What Salvage level 19 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A229391332085FFE}" {
+     Id "LF-Unlock_Salvage_20"
+     Target_en_us "Bulk scrap to the smelter"
+     Comment "What Salvage level 20 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{0A1E8C487EC29563}" {
+     Id "LF-Unlock_Salvage_21"
+     Target_en_us "Engine parts for the garage"
+     Comment "What Salvage level 21 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{CD9FF5355F9BA8E7}" {
+     Id "LF-Unlock_Salvage_22"
+     Target_en_us "Second bonus-find chance"
+     Comment "What Salvage level 22 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{0EE450A3D9ACA9FF}" {
+     Id "LF-Unlock_Salvage_23"
+     Target_en_us "Salvage truck loans"
+     Comment "What Salvage level 23 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{98D036E969EF7CFB}" {
+     Id "LF-Unlock_Salvage_24"
+     Target_en_us "Rare parts in wrecks"
+     Comment "What Salvage level 24 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1E2F099FDD0E6330}" {
+     Id "LF-Unlock_Salvage_25"
+     Target_en_us "Recycler contracts"
+     Comment "What Salvage level 25 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{9F1505E49FA891AD}" {
+     Id "LF-Unlock_Salvage_26"
+     Target_en_us "Yard foreman's keys"
+     Comment "What Salvage level 26 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C5061F1A8DC331CA}" {
+     Id "LF-Unlock_Salvage_27"
+     Target_en_us "Scrap dealer's call list"
+     Comment "What Salvage level 27 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{2E6B43660132C1BF}" {
+     Id "LF-Unlock_Salvage_28"
+     Target_en_us "Crew bonus on a shared yard"
+     Comment "What Salvage level 28 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{39E513966031ECF6}" {
+     Id "LF-Unlock_Salvage_29"
+     Target_en_us "Yard foreman badge"
+     Comment "What Salvage level 29 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{D7CA9767F7F95E33}" {
+     Id "LF-Unlock_Salvage_30"
+     Target_en_us "Master Salvager title and the yard keys"
+     Comment "What Salvage level 30 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{5C28C1EA8C7DD082}" {
+     Id "LF-Unlock_Smelting_02"
+     Target_en_us "Iron bars from iron ore"
+     Comment "What Smelting level 2 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{A2CD7E9EC5EAAB06}" {
+     Id "LF-Unlock_Smelting_03"
+     Target_en_us "Tongs: fewer burns"
+     Comment "What Smelting level 3 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1C6E1DE56D2908CF}" {
+     Id "LF-Unlock_Smelting_04"
+     Target_en_us "Coal feeds the fire"
+     Comment "What Smelting level 4 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{94282D37869E26CB}" {
+     Id "LF-Unlock_Smelting_05"
+     Target_en_us "Bar molds: bigger batches"
+     Comment "What Smelting level 5 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{5ADBBA78337241F0}" {
+     Id "LF-Unlock_Smelting_06"
+     Target_en_us "The Morton cement works"
+     Comment "What Smelting level 6 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4A5D95FC44DA822A}" {
+     Id "LF-Unlock_Smelting_07"
+     Target_en_us "Faster smelting"
+     Comment "What Smelting level 7 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{71CEF0C3AA3BE4C8}" {
+     Id "LF-Unlock_Smelting_08"
+     Target_en_us "The smelter at the east-central works"
+     Comment "What Smelting level 8 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1B5A72594151EE44}" {
+     Id "LF-Unlock_Smelting_09"
+     Target_en_us "Steel bars at the smelter"
+     Comment "What Smelting level 9 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C17C8C6540A10D8A}" {
+     Id "LF-Unlock_Smelting_10"
+     Target_en_us "Hardware store buys your bars"
+     Comment "What Smelting level 10 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{6F6EC05ED2C6F1EE}" {
+     Id "LF-Unlock_Smelting_11"
+     Target_en_us "Chance of an extra bar"
+     Comment "What Smelting level 11 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{5CD08C6022835B66}" {
+     Id "LF-Unlock_Smelting_12"
+     Target_en_us "Furnace gloves"
+     Comment "What Smelting level 12 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4B85517677E6BFB5}" {
+     Id "LF-Unlock_Smelting_13"
+     Target_en_us "Wholesale buys your bars"
+     Comment "What Smelting level 13 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{C2134BCA14BAFC50}" {
+     Id "LF-Unlock_Smelting_14"
+     Target_en_us "Cement bags from the works"
+     Comment "What Smelting level 14 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{120AD22946FB994D}" {
+     Id "LF-Unlock_Smelting_15"
+     Target_en_us "The Levie refinery"
+     Comment "What Smelting level 15 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{03AB2A26283A3864}" {
+     Id "LF-Unlock_Smelting_16"
+     Target_en_us "Bigger batches at the smelter"
+     Comment "What Smelting level 16 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{77666FBC2DB85F86}" {
+     Id "LF-Unlock_Smelting_17"
+     Target_en_us "Building work buys your steel"
+     Comment "What Smelting level 17 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{920C3DC07B95963D}" {
+     Id "LF-Unlock_Smelting_18"
+     Target_en_us "Larger extra-bar chance"
+     Comment "What Smelting level 18 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E0111E6FD5258CA4}" {
+     Id "LF-Unlock_Smelting_19"
+     Target_en_us "Lower coal use per batch"
+     Comment "What Smelting level 19 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E98F79F94F671669}" {
+     Id "LF-Unlock_Smelting_20"
+     Target_en_us "Refinery batch: more per run"
+     Comment "What Smelting level 20 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{1EB89300A0E54C13}" {
+     Id "LF-Unlock_Smelting_21"
+     Target_en_us "Acid handling at the refinery"
+     Comment "What Smelting level 21 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{8D7EBBA21AF61A19}" {
+     Id "LF-Unlock_Smelting_22"
+     Target_en_us "Better price for steel"
+     Comment "What Smelting level 22 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{3779EB30CB09677F}" {
+     Id "LF-Unlock_Smelting_23"
+     Target_en_us "Scrap iron from the salvage yard"
+     Comment "What Smelting level 23 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F1171D5A766874DA}" {
+     Id "LF-Unlock_Smelting_24"
+     Target_en_us "Second extra-bar chance"
+     Comment "What Smelting level 24 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{437C7D1BB6BC0871}" {
+     Id "LF-Unlock_Smelting_25"
+     Target_en_us "Gold smelting at the assay table"
+     Comment "What Smelting level 25 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{E6A5352C30C58665}" {
+     Id "LF-Unlock_Smelting_26"
+     Target_en_us "Refined gold bars"
+     Comment "What Smelting level 26 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{F34CDC3D9D50CB4A}" {
+     Id "LF-Unlock_Smelting_27"
+     Target_en_us "Furnace foreman's keys"
+     Comment "What Smelting level 27 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{852CD225187B7CD9}" {
+     Id "LF-Unlock_Smelting_28"
+     Target_en_us "Bulk steel contracts"
+     Comment "What Smelting level 28 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{4D4737C1F9D15794}" {
+     Id "LF-Unlock_Smelting_29"
+     Target_en_us "Smelter foreman badge"
+     Comment "What Smelting level 29 opens; the level-up card prefixes Opens:."
+    }
+    CustomStringTableItem "{40F34760F3748529}" {
+     Id "LF-Unlock_Smelting_30"
+     Target_en_us "Master Smelter title and the smelter's keys"
+     Comment "What Smelting level 30 opens; the level-up card prefixes Opens:."
+    }
     CustomStringTableItem "{7D258D65CE0FBAB7}" {
      Id "LF-WelcomeGuide_Body1a"
      Target_en_us "You are new on Everon and carry no papers. Walk south from the hostel to the town hall on the square in Saint-Philippe and talk to the town clerk: he files your papers, hands you your ID card and a welcome pack, and tells you where your starter car waits."
