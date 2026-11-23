@@ -67,7 +67,7 @@ class LF_Test_LiveryShop : LF_Test
 		// Too little money: the owner carries less than the price.
 		LF_MoneyUtils.RemoveCash(owner, LF_MoneyUtils.GetCash(owner));
 		LF_MoneyUtils.AddCash(owner, CIVIL_PRICE - 1);
-		ctx.False(LF_LiveryShop.Respray(owner, OWNER, LF_Faction.CIVILIAN, CAR, bay, LF_TestAnnex.GARAGE_PAD_ID, 0, charged, reasonKey), "too little cash is refused");
+		ctx.False(LF_LiveryShop.Respray(owner, OWNER, LF_Faction.CIVILIAN, CAR, bay, LF_TestAnnex.GARAGE_PAD_ID, LF_VehicleCatalog.S1203_LOCKED, charged, reasonKey), "too little cash is refused");
 		ctx.EqualStr("#LF-LiveryShop_NoCash", reasonKey, "and told so");
 		ctx.Equal(CIVIL_PRICE - 1, LF_MoneyUtils.GetCash(owner), "and charged nothing");
 
@@ -77,16 +77,16 @@ class LF_Test_LiveryShop : LF_Test
 		// A stranger cannot repaint the owner's car.
 		LF_MoneyUtils.AddCash(stranger, 1000);
 		int strangerCash = LF_MoneyUtils.GetCash(stranger);
-		ctx.False(LF_LiveryShop.Respray(stranger, STRANGER, LF_Faction.CIVILIAN, CAR, bay, LF_TestAnnex.GARAGE_PAD_ID, 0, charged, reasonKey), "a stranger is refused");
+		ctx.False(LF_LiveryShop.Respray(stranger, STRANGER, LF_Faction.CIVILIAN, CAR, bay, LF_TestAnnex.GARAGE_PAD_ID, LF_VehicleCatalog.S1203_LOCKED, charged, reasonKey), "a stranger is refused");
 		ctx.EqualStr("#EL-Vehicle_NotOwner", reasonKey, "the stranger is told it is not theirs");
 		ctx.Equal(strangerCash, LF_MoneyUtils.GetCash(stranger), "the stranger is charged nothing");
 
 		// The car is not in the bay.
-		ctx.False(LF_LiveryShop.Respray(owner, OWNER, LF_Faction.CIVILIAN, CAR, bay + "60 0 0", LF_TestAnnex.GARAGE_PAD_ID, 0, charged, reasonKey), "a car outside the bay is refused");
+		ctx.False(LF_LiveryShop.Respray(owner, OWNER, LF_Faction.CIVILIAN, CAR, bay + "60 0 0", LF_TestAnnex.GARAGE_PAD_ID, LF_VehicleCatalog.S1203_LOCKED, charged, reasonKey), "a car outside the bay is refused");
 		ctx.EqualStr("#LF-LiveryShop_NotInBay", reasonKey, "the owner is told to bring it into the bay");
 
 		// A police livery for a civilian.
-		ctx.False(LF_LiveryShop.Respray(owner, OWNER, LF_Faction.CIVILIAN, CAR, bay, LF_TestAnnex.GARAGE_PAD_ID, 1, charged, reasonKey), "a police livery is refused to a civilian");
+		ctx.False(LF_LiveryShop.Respray(owner, OWNER, LF_Faction.CIVILIAN, CAR, bay, LF_TestAnnex.GARAGE_PAD_ID, LF_VehicleCatalog.UAZ469_LOCKED, charged, reasonKey), "a police livery is refused to a civilian");
 		ctx.EqualStr("#LF-LiveryShop_WrongJob", reasonKey, "the civilian is told it is a service livery");
 		ctx.Equal(cash, LF_MoneyUtils.GetCash(owner), "the refusals charged the owner nothing");
 		ctx.True(car == LF_VehicleOwnership.GetVehicle(CAR), "the refusals left the car alone");
@@ -99,7 +99,7 @@ class LF_Test_LiveryShop : LF_Test
 
 		bool done;
 		if (!RedProof())
-			done = LF_LiveryShop.Respray(owner, OWNER, LF_Faction.CIVILIAN, CAR, bay, LF_TestAnnex.GARAGE_PAD_ID, 0, charged, reasonKey);
+			done = LF_LiveryShop.Respray(owner, OWNER, LF_Faction.CIVILIAN, CAR, bay, LF_TestAnnex.GARAGE_PAD_ID, LF_VehicleCatalog.S1203_LOCKED, charged, reasonKey);
 
 		ctx.True(done, "the owner with the cash gets the respray");
 		ctx.EqualStr("#LF-LiveryShop_Done", reasonKey, "and is told it is done");
