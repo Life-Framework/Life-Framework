@@ -94,6 +94,10 @@ The barn also gives off **smoke and heat** that police can follow. Some chains n
 Crime cash on this server is **marked**. Wash it at the **laundry station** in the still barn: you keep **65 percent** (the washer takes a 35 percent cut),
 **up to $1,500 a batch**, a batch takes 90 seconds, and there is a daily cap of **$6,000**.
 
+## Pharmacy cabinet
+
+The drug cabinet in the clinic is a **big job**, like the bank. It opens only when **at least one medic or two police officers are on duty**, and only when no other big job is underway on the island. Otherwise the cabinet tells you why when you look at it. Once your charge is armed on the cabinet, the job holds the island's big-job slot for about 15 minutes; after that the pharmacy stays shut to robbers for **2 hours** (the cabinet says how many minutes are left). The clinic runs short of medicine for a while afterwards (see the medic chapter).
+
 ## Bank heist
 
 Needs **at least 2 police on duty**. You have **12 minutes**.

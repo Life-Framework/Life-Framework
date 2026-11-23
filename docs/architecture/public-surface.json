@@ -22,6 +22,7 @@
     "LF_HandbookConfig",
     "LF_HeistConfig",
     "LF_HospitalLootConfig",
+    "LF_HospitalPresenceConfig",
     "LF_FuelConfig",
     "LF_RecycleConfig",
     "LF_IncidentConfig",
