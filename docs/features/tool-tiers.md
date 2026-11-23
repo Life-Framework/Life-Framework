@@ -1,4 +1,4 @@
-﻿# Tool tiers
+# Tool tiers
 
 Design context: `docs/roadmap/next-release-0.3.0.md` (work W10, the three finishes).
 
