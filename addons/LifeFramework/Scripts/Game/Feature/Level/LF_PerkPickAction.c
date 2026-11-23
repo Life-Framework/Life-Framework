@@ -1,7 +1,8 @@
 //------------------------------------------------------------------------------------------------
 //! One row on the labour office counter (WK-W8b, #4416): "Take Double yield (Miner)" or "Change to
-//! Swift hands (Miner), $500". Each row is one perk at one pick level; it shows only when that perk
-//! is on offer to the player in some trade (the first trade in counter order). A row is a free take or a
+//! Swift hands (Miner), $500". Each row is one perk at one pick level; a take row shows when that perk
+//! is on offer in some trade (the first in counter order), a change row names its own trade
+//! (`m_sTrade`, #4525), so two trades that both hold a pick each get a change row. A row is a free take or a
 //! paid change (`m_bChange`), never both, so a stale label cannot turn a take into a charge. The client sends no
 //! trade or price: the server reads the level and perk stores, takes the fee and says how it went.
 class LF_PerkPickAction : ScriptedUserAction
@@ -18,13 +19,16 @@ class LF_PerkPickAction : ScriptedUserAction
 	[Attribute("500", UIWidgets.EditBox, "Cash a change costs; a first pick is free", "0 100000 1")]
 	protected int m_iFee;
 
+	[Attribute("", UIWidgets.EditBox, "Trade (job id) a change row serves; empty serves the first trade that offers the perk")]
+	protected string m_sTrade;
+
 	//! The offer this row showed last, for the name.
 	protected ref LF_PerkPickOffer m_Shown;
 
 	//------------------------------------------------------------------------------------------------
 	//! The offer this row stands for, for a user; null hides the row. The server (and a listen host)
-	//! reads the stores; a client reads its last F2 sheet, and with no sheet shows the row and lets the
-	//! server answer.
+	//! reads the stores; a client reads its owner sync (LF_PerkSync, sent at spawn). Before the sync
+	//! arrives a take row shows in general words and the server answers; a trade's change row hides.
 	LF_PerkPickOffer OfferFor(IEntity user)
 	{
 		if (!user)
@@ -35,12 +39,15 @@ class LF_PerkPickAction : ScriptedUserAction
 		{
 			LF_PerkPick.Offers(LF_Utils.GetPlayerUID(user), offers);
 		}
-		else if (!LF_PerkPick.OffersFromSheet(LF_PlayerMenuSheet.Data(), offers))
+		else if (!LF_PerkPick.OffersSynced(LF_Utils.GetPlayerUID(user), offers))
 		{
+			if (!m_sTrade.IsEmpty())
+				return null;
+
 			return LF_PerkPickOffer.Make(string.Empty, m_iAtLevel, m_sPerk, m_bChange);
 		}
 
-		return LF_PerkPick.Find(offers, m_iAtLevel, m_sPerk, m_bChange);
+		return LF_PerkPick.Find(offers, m_iAtLevel, m_sPerk, m_bChange, m_sTrade);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -88,7 +95,7 @@ class LF_PerkPickAction : ScriptedUserAction
 			return;
 		}
 
-		LF_EPerkPickResult result = LF_PerkPick.Take(pUserEntity, m_iAtLevel, m_sPerk, m_iFee, m_bChange);
+		LF_EPerkPickResult result = LF_PerkPick.Take(pUserEntity, m_iAtLevel, m_sPerk, m_iFee, m_bChange, m_sTrade);
 
 		int playerId = 0;
 		if (GetGame().GetPlayerManager())
@@ -118,5 +125,11 @@ class LF_PerkPickAction : ScriptedUserAction
 	bool IsChange()
 	{
 		return m_bChange;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	string GetTrade()
+	{
+		return m_sTrade;
 	}
 }
