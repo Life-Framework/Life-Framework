@@ -10259,18 +10259,18 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{1B319DCEBD1A3319}" {
      Id "LF-NewspaperEdition_OpeningLine"
-     Target_en_us "%1 bought a business plot for %3."
-     Comment "Courier opening line. %1 name, %3 price."
+     Target_en_us "%1 bought a building plot for %3."
+     Comment "Courier plot sale line with a name; the core section prints no names (a plot is a home). %1 name, %3 price."
     }
     CustomStringTableItem "{1C6E4500C2E5F6C7}" {
      Id "LF-NewspaperEdition_OpeningLineNoName"
-     Target_en_us "A business plot sold for %3."
-     Comment "Courier opening line with no name. %3 price."
+     Target_en_us "A building plot sold for %3."
+     Comment "Courier plot sale line, no name. %3 price."
     }
     CustomStringTableItem "{91D7413A2A1494B4}" {
      Id "LF-NewspaperEdition_OpeningsHeadline"
-     Target_en_us "New businesses"
-     Comment "Courier section headline: new businesses."
+     Target_en_us "Land sales"
+     Comment "Courier section headline: building plots sold this week."
     }
     CustomStringTableItem "{FA7303F7E07F54FE}" {
      Id "LF-NewspaperEdition_RewardLine"
@@ -13163,7 +13163,7 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{002662BFCD8D20B3}" {
      Id "LF-Quest_ArrivalRegister_Title"
-     Target_en_us "New businesses"
+     Target_en_us "New in town"
      Comment "Arrival chain step 1 title."
     }
     CustomStringTableItem "{419B451194328DF6}" {

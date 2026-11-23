@@ -116,7 +116,8 @@ class LF_Test_NewspaperEdition : LF_Test
 		ctx.True(page.Contains("Ada Arrested"), "the page names the arrested character");
 		ctx.True(page.Contains("12 minutes"), "the page prints the sentence");
 		ctx.True(page.Contains("Bea Officer") && page.Contains("$250"), "the page names the rewarded officer with the week's total");
-		ctx.True(page.Contains("Cal Baker") && page.Contains("$4,000"), "the page names the new business owner");
+		ctx.True(page.Contains("$4,000"), "the page prints the plot sale");
+		ctx.False(page.Contains("Cal Baker"), "a plot buyer (a home owner) is never named");
 		ctx.True(page.Contains("Apples") && page.Contains("$12") && page.Contains("$9"), "the page prints the week's price move, first to last");
 		ctx.True(page.Contains(LF_Terms.Text(LF_WantedReports.OFFENCE_ROBBERY)), "the page prints the robbery");
 		ctx.False(page.Contains(CROOK_NAME), "the robbery is printed with no name");

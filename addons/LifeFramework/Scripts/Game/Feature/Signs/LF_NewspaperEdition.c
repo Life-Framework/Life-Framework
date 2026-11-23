@@ -454,7 +454,10 @@ class LF_NewspaperEdition
 			if (count >= LF_Newspaper.MAX_STORIES)
 				break;
 
-			wire += "\n" + Clean(story.m_sHeadline) + "\n" + story.m_sBody;
+			// A newline in a translated line would shift every field after it on the client.
+			string body = story.m_sBody;
+			body.Replace("\n", " ");
+			wire += "\n" + Clean(story.m_sHeadline) + "\n" + body;
 			count++;
 		}
 
