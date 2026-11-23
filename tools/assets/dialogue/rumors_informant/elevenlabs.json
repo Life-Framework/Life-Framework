@@ -1,0 +1,76 @@
+{
+  "id": "rumors_informant",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "inf_trucks": {
+      "hash": "ff6eb26bb4622108",
+      "date": "2026-11-23",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Trucks roll into the north east yard at two in the morning with the lights off. Same trucks, never in daylight.",
+      "chars": 111,
+      "chars_total": 44,
+      "request_id": "6SLV33kpVWaPcTacVdmW",
+      "seconds": 7.44,
+      "mouth": "44996766667897548646777667885104774511576775466100442577789765556779878965025555787135355443110466599994535752023320059999739977899756566555443003100"
+    },
+    "inf_compound": {
+      "hash": "706dab4372c67ca4",
+      "date": "2026-11-23",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "The farm compound keeps its gate shut and its dogs loose. A lot of traffic for a farm that grows nothing.",
+      "chars": 105,
+      "chars_total": 42,
+      "request_id": "wtjzaPUEuuZranenztKL",
+      "seconds": 7.4,
+      "mouth": "8992118999431488771577662229624863546642025658852022588743502799987656668765322221397789969302569813522147652112898747863024899765666861156554443100"
+    },
+    "inf_mast": {
+      "hash": "f74e53cd0757f7f2",
+      "date": "2026-11-23",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Up by the hilltop mast somebody left a camp. Fresh boot prints, a cold fire. You can see the whole valley from there.",
+      "chars": 117,
+      "chars_total": 47,
+      "request_id": "0hWXkRsaXAPFP5mCAYgO",
+      "seconds": 8.7,
+      "mouth": "593100998798339981336821388766863411134585358876126601459875411110122397568622199710039866434168203349996311288766654310099996468555599588228999764777766531277765666655432100"
+    },
+    "inf_scrap": {
+      "hash": "f9f576d1a5be798d",
+      "date": "2026-11-23",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "Cars go into the scrapyard and the plates do not come out. Ask yourself why a scrapyard keeps a night man.",
+      "chars": 106,
+      "chars_total": 42,
+      "request_id": "Kq51oy45utUnlCxLPdw4",
+      "seconds": 7.26,
+      "mouth": "57999897898853597676118772066555468994123579543029999861123666556643213899770298657821478866766711177540056777620259345487677788113787665555542000"
+    },
+    "inf_dock": {
+      "hash": "e1dbdd1852911362",
+      "date": "2026-11-23",
+      "voice_id": "HL6h30e2Rd3SQjMZu1Wz",
+      "voice_name": "Raspy - Convincing and Weary Narrator",
+      "model": "eleven_multilingual_v2",
+      "text": "The dock warehouse has its lights on after the last boat. Crates go in light and come out heavy. I just walk past.",
+      "chars": 114,
+      "chars_total": 46,
+      "request_id": "pfGn8OiaOf1bPbF2PyAN",
+      "seconds": 7.4,
+      "mouth": "28961799913988885588544687673535886255886784147776665551116787631221243899174579999977666875257824459654132886754212999398556798121548864333212111000"
+    }
+  },
+  "voice": {
+    "id": "HL6h30e2Rd3SQjMZu1Wz",
+    "name": "Raspy - Convincing and Weary Narrator",
+    "source": "voice library"
+  }
+}

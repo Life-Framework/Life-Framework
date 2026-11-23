@@ -63,6 +63,7 @@
     "LF_ReputationContractsConfig",
     "LF_ResourceChainConfig",
     "LF_ResidentsConfig",
+    "LF_RumorsConfig",
     "LF_RespawnConfig",
     "LF_SafeTypeConfig",
     "LF_ServiceCallsConfig",

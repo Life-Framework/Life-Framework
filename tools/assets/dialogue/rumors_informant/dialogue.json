@@ -1,0 +1,107 @@
+{
+  "id": "rumors_informant",
+  "name": "RumorsInformant",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_NightShift_Name",
+  "voice": {
+    "id": "HL6h30e2Rd3SQjMZu1Wz",
+    "sex": "male",
+    "name": "Raspy - Convincing and Weary Narrator",
+    "public_owner_id": "8aba776a20ef1207599626c70ba4393e6aa675a1d44749709ccec0685962cd54",
+    "why": "Remi Duval's own voice (Raspy) for the tips he sells as the town's informant: low, weary, a man who walks past things and remembers.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.4,
+      "similarity_boost": 0.75,
+      "style": 0.1,
+      "speed": 0.9
+    }
+  },
+  "budget_chars": 1000,
+  "hear_range_m": 8,
+  "start": "inf_trucks",
+  "nodes": [
+    {
+      "id": "inf_trucks",
+      "line": "inf_trucks",
+      "options": [
+        {
+          "text": "more",
+          "next": "inf_compound"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "inf_compound",
+      "line": "inf_compound",
+      "options": [
+        {
+          "text": "more",
+          "next": "inf_mast"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "inf_mast",
+      "line": "inf_mast",
+      "options": [
+        {
+          "text": "more",
+          "next": "inf_scrap"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "inf_scrap",
+      "line": "inf_scrap",
+      "options": [
+        {
+          "text": "more",
+          "next": "inf_dock"
+        },
+        {
+          "text": "bye"
+        }
+      ]
+    },
+    {
+      "id": "inf_dock",
+      "line": "inf_dock",
+      "options": [
+        {
+          "text": "bye"
+        }
+      ]
+    }
+  ],
+  "lines": {
+    "inf_trucks": {
+      "text": "Trucks roll into the north east yard at two in the morning with the lights off. Same trucks, never in daylight."
+    },
+    "inf_compound": {
+      "text": "The farm compound keeps its gate shut and its dogs loose. A lot of traffic for a farm that grows nothing."
+    },
+    "inf_mast": {
+      "text": "Up by the hilltop mast somebody left a camp. Fresh boot prints, a cold fire. You can see the whole valley from there."
+    },
+    "inf_scrap": {
+      "text": "Cars go into the scrapyard and the plates do not come out. Ask yourself why a scrapyard keeps a night man."
+    },
+    "inf_dock": {
+      "text": "The dock warehouse has its lights on after the last boat. Crates go in light and come out heavy. I just walk past."
+    }
+  },
+  "replies": {
+    "more": "Go on.",
+    "bye": "That is all I wanted."
+  }
+}
