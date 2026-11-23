@@ -2,11 +2,12 @@
 //! #4475 (W4.5 of the world chapter, #4170): under the Everon 1989 header (the pack leg of `tools\cli test`) the shop
 //! cast resolves. Six keepers (a baker, a butcher, a pharmacist, a barber, a newsagent and a postmaster; every body is
 //! male) each have an outfit preset of real 1989 working clothes the body actually wears, a prefab that loads and spawns
-//! as a dressed character, and a name key. The keepers whose work kind has one place on the island (the barber's chair,
-//! the postmaster's parcel depot) have a resident row: its timetable parses, is at work only inside the hours the
+//! as a dressed character, and a name key. The one keeper whose work kind has a place of his own on the island (the barber's chair)
+//! has a resident row: its timetable parses, is at work only inside the hours the
 //! opening-hours plate (#4236) prints for it, and stands on a home and a work kind the island registers. The four
 //! StoreCounter keepers have no row yet: a work line has no place id, so they would all crowd the counter nearest a
-//! player and the plate could not tell the shops apart (the next card adds a work place id). The bartender is the
+//! player and the plate could not tell the shops apart (the next card adds a work place id). The postmaster has none either: the parcel depot counter is already worked by neighbour_anselme, and two
+//! residents on one counter spot collide (validate-npc-spots). The bartender is the
 //! placed barkeeper of #4439, not a second resident: his prefab and outfit are checked here.
 [LF_TestInfo(LF_TestTier.WORLD, pack: true)]
 class LF_Test_EveronResidentsShops : LF_Test
@@ -168,7 +169,7 @@ class LF_Test_EveronResidentsShops : LF_Test
 		}
 
 		// Every shop keeper serves a few hours of the day, at home to sleep at night.
-		LF_ResidentTimetable day = LF_ResidentTimetable.Build(def, new LF_Test_ShopKindCheck());
+		LF_ResidentTimetable day = LF_ResidentTimetable.Build(def, new LF_Test_AnyKinds());
 		ctx.NotNull(day, id + " timetable builds");
 		if (!day)
 			return;
@@ -235,7 +236,7 @@ class LF_Test_EveronResidentsShops : LF_Test
 			"{C3E6B21FB417F1BF}Configs/Residents/Npcs/LF_Resident_ShopNewsagent.et",
 			"{8416E7C7F06BD33D}Configs/Residents/Npcs/LF_Resident_ShopPostmaster.et"
 		};
-		array<string> plates = { "", "", "", "OPEN 9 AM - 12:30 PM, 1:30 PM - 6 PM", "", "OPEN 8:30 AM - 12 PM, 1 PM - 5 PM" };
+		array<string> plates = { "", "", "", "OPEN 9 AM - 12:30 PM, 1:30 PM - 6 PM", "", "" };
 
 		set<string> distinctPrefabs = new set<string>();
 		for (int i = 0; i < ids.Count(); i++)
@@ -272,15 +273,5 @@ class LF_Test_EveronResidentsShops : LF_Test
 
 		CheckOutfit(ctx, BARKEEPER_OUTFIT, "barkeeper");
 		CheckBody(ctx, BARKEEPER_PREFAB, "barkeeper");
-	}
-}
-
-//------------------------------------------------------------------------------------------------
-//! The island's place kinds are not loaded in the test world: every named kind counts as known.
-class LF_Test_ShopKindCheck : LF_ResidentKindCheck
-{
-	override bool Knows(string kind)
-	{
-		return !kind.IsEmpty();
 	}
 }
