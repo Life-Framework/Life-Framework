@@ -270,6 +270,9 @@
     "cap": 300,
     "shortHopMetres": 100
   },
+  "tradeUnlocks": {
+    "rows": {}
+  },
   "vehicles": {
     "buyPercent": 100,
     "sellBackPercent": 50,
