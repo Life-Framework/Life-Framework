@@ -7768,6 +7768,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Step closer to them."
      Comment "Player interaction refused: the other person is out of reach."
     }
+    CustomStringTableItem "{218E14C1F987A256}" {
+     Id "LF-Inventory_DroppedAtFeet"
+     Target_en_us "No room on you: %1 x%2 is on the ground at your feet."
+     Comment "Toast when a given item (a press output, a catch, a harvest) did not fit the inventory and was dropped beside the player. %1 = item name, %2 = amount"
+    }
     CustomStringTableItem "{7C1E4A92B05D3F18}" {
      Id "LF-ItemName_HouseKeyOf"
      Target_en_us "House Key [%1]"
