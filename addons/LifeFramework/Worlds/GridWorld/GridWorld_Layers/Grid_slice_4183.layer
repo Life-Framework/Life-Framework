@@ -1,0 +1,71 @@
+// Grid cell c20r3 for slice-4183: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_slice_4183_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 263 0 59
+}
+SCR_DestructibleEntity Grid_slice_4183_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 268 0 59
+}
+SCR_DestructibleEntity Grid_slice_4183_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 273 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_4183_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 273 0 64
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_4183_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 273 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4183_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 268 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4183_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 263 0 69
+ angleY 90
+}
+GenericEntity Grid_slice_4183_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-4183"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 262.2 0.505 59.6
+ angleY -90
+}
+GenericEntity Grid_slice_4183_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "slice-4183"
+  }
+ }
+ coords 262.3 0 61.5
+ angleY 90
+}
+GenericEntity Grid_slice_4183_CoalmansBrow_Whistle : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundSlot "atmo_shift_whistle"
+   m_fRadius 105
+   m_fHourFrom 6
+   m_fHourTo 6.02
+  }
+ }
+ coords 268 0 64
+}
+GenericEntity Grid_slice_4183_CoalmansBrow_MineBed : "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et" {
+ components {
+  LF_AmbientEmitterComponent "{54EF977E52CFEF83}" {
+   m_sSoundSlot "atmo_mine_bed"
+   m_fRadius 36
+   m_fHourFrom 6
+   m_fHourTo 18
+  }
+ }
+ coords 270 0 64
+}
