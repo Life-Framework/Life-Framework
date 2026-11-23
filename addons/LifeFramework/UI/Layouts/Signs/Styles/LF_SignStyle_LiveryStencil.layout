@@ -1,0 +1,107 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{EBE60F31DFA1D7CE}" {
+  SizeX 1920
+  OffsetRight -1920
+  SizeY 960
+  OffsetBottom -960
+ }
+ {
+  RTTextureWidgetClass "{0EC9FD5B60FBC9EE}" {
+   Name "RTTexture0"
+   Slot FrameWidgetSlot "{4FDAF37EC4D101AD}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 1920
+    OffsetRight -1920
+    SizeY 960
+    OffsetBottom -960
+   }
+   {
+    ImageWidgetClass "{0CC3ED87C84DE194}" {
+     Name "Ground"
+     Slot FrameWidgetSlot "{0A74C9A822556F06}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.24 0.27 0.18 1
+    }
+    TextWidgetClass "{038559158990A67D}" {
+     Name "Ghost"
+     Slot FrameWidgetSlot "{3EB33E8BA19EDE86}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 0 0 0 0.5
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{F5060299ABC96C5E}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{8B04E074E9FF05D4}" {
+     Name "Title"
+     Slot FrameWidgetSlot "{EA8EB68D95E132DF}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 0.88 0.86 0.78 1
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{8A21E25E712346DB}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    ImageWidgetClass "{570E236CD52BD62A}" {
+     Name "BridgeTop"
+     Slot FrameWidgetSlot "{DED15EAECF405B25}" {
+      Anchor 0 0.395 1 0.425
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.24 0.27 0.18 1
+    }
+    ImageWidgetClass "{FCC29406EA696CC1}" {
+     Name "BridgeBottom"
+     Slot FrameWidgetSlot "{41DDDC9F6333817D}" {
+      Anchor 0 0.575 1 0.605
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 0.24 0.27 0.18 1
+    }
+    FrameWidgetClass "{5CE3D2320F030B93}" {
+     Name "Rows"
+     Slot FrameWidgetSlot "{2959518E83BF48BF}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+    }
+   }
+  }
+ }
+}

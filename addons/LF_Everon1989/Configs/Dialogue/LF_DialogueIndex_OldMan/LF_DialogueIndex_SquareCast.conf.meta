@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{85EA6C21DCC08A2F}Configs/Dialogue/LF_DialogueIndex_OldMan/LF_DialogueIndex_SquareCast.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{5049A288A865D850}Sounds/Dialogue/gossip_colette/Dialogue_gossip_colette.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}
