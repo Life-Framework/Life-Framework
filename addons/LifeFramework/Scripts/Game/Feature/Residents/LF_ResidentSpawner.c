@@ -241,7 +241,10 @@ class LF_ResidentSpawner
 			return;
 
 		foreach (string id, LF_ResidentLive live : s_mLive)
+		{
+			LF_ResidentWorkLoop.Stop(Entity(live));
 			SCR_EntityHelper.DeleteEntityAndChildren(Entity(live));
+		}
 
 		s_mLive.Clear();
 	}
@@ -286,6 +289,7 @@ class LF_ResidentSpawner
 			if (!slot || moved)
 			{
 				LF_Debug.Info(FEATURE, string.Format("resident '%1' despawned: the timetable moved them on", id));
+				LF_ResidentWorkLoop.Stop(entity);
 				SCR_EntityHelper.DeleteEntityAndChildren(entity);
 				drop.Insert(id);
 				removed++;
@@ -297,6 +301,7 @@ class LF_ResidentSpawner
 			if (!AnyWithin(where, entity.GetOrigin(), despawnSq))
 			{
 				LF_Debug.Info(FEATURE, string.Format("resident '%1' despawned: no player within the despawn radius", id));
+				LF_ResidentWorkLoop.Stop(entity);
 				SCR_EntityHelper.DeleteEntityAndChildren(entity);
 				drop.Insert(id);
 				removed++;

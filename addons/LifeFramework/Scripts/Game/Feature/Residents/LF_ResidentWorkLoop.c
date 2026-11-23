@@ -7,8 +7,8 @@
 //   sweep   move, rest, follow, rest  (a stroke each way)
 // The loop is driven by the clock (seconds since Begin), never by frames: TickAt(entity, seconds) is the one
 // path the 1 s sweep and the tests both take. Server only; nothing persists (the resident is re-spawned from the
-// timetable and the loop starts again). Entries hold EntityID. The timetable word is not wired to this yet
-// (LF_ResidentActivity.Apply treats it as unknown); a placed character gets it from LF_ResidentWorkLoopComponent.
+// timetable and the loop starts again). Entries hold EntityID. A timetable line reaches it through
+// LF_ResidentActivity.Apply (#4366); a placed character gets it from LF_ResidentWorkLoopComponent.
 
 //------------------------------------------------------------------------------------------------
 //! One step of a work cycle: a vanilla gesture (ECharacterGestures, NONE for a rest) and how long it lasts.
