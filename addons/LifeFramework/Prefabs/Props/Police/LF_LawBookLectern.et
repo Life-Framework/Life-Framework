@@ -1,0 +1,72 @@
+GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ ID "CE692A505B519A91"
+ components {
+  RplComponent "{42EF3AA6273C1ED9}" {
+   Enabled 1
+  }
+  ActionsManagerComponent "{BB5A53FCEE7B7C5A}" {
+   ActionContexts {
+    UserActionContext "{AB7ED6C311B6FA3D}" {
+     ContextName "LF_LawBookLectern"
+     Position PointInfo "{5DDCBCD065B2D408}" {
+      Offset -0.6 0.9 0.35
+     }
+     Radius 1.8
+    }
+   }
+   additionalActions {
+    LF_LawBookReadAction "{8238C5D8875C6F2C}" {
+     ParentContextList {
+      "LF_LawBookLectern"
+     }
+     UIInfo UIInfo "{56FCFB93CAC448B6}" {
+      Name "#LF-LawBook_Read"
+     }
+     "Sort Priority" 1
+     m_sSection "criminal"
+    }
+    LF_LawBookReadAction "{77431B0AE0A88306}" {
+     ParentContextList {
+      "LF_LawBookLectern"
+     }
+     UIInfo UIInfo "{8A723089C84FA242}" {
+      Name "#LF-LawBook_Read"
+     }
+     "Sort Priority" 2
+     m_sSection "road"
+    }
+    LF_LawBookReadAction "{235784B02107951F}" {
+     ParentContextList {
+      "LF_LawBookLectern"
+     }
+     UIInfo UIInfo "{2CAE3890FA1D7030}" {
+      Name "#LF-LawBook_Read"
+     }
+     "Sort Priority" 3
+     m_sSection "narcotics"
+    }
+    LF_LawBookReadAction "{0C45CA82589A6663}" {
+     ParentContextList {
+      "LF_LawBookLectern"
+     }
+     UIInfo UIInfo "{C489D0BE0BF1B76F}" {
+      Name "#LF-LawBook_Read"
+     }
+     "Sort Priority" 4
+     m_sSection "weapons"
+    }
+   }
+  }
+ }
+ {
+  GenericEntity Book {
+   ID "E69F23CBA56EFAB5"
+   components {
+    MeshObject "{1875F16400474A0D}" {
+     Object "{4D9DE6B5DC6FF8BA}Assets/Props/Civilian/Notebook_01/Notebook_01_Double.xob"
+    }
+   }
+   coords -0.6 0.914 0.35
+  }
+ }
+}

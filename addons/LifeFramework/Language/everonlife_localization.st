@@ -4497,32 +4497,32 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4BC652FE250FB8F9}" {
      Id "LF-Credits_194"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_UAZ469_Rebel"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B19D39615671DC17}" {
      Id "LF-Credits_195"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "LF_Ural4320_Rebel"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{031A67A6561231CB}" {
      Id "LF-Credits_196"
-     Target_en_us "LF_VodkaBottle_BCR"
+     Target_en_us "LF_S1203_Police"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{41B72E8D01F8E68E}" {
      Id "LF-Credits_197"
-     Target_en_us "WORK-SITE SOUNDS"
+     Target_en_us "CONTRABAND LABELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{899288C00EFEEAC6}" {
      Id "LF-Credits_198"
-     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Target_en_us "LF_CigaretteCarton_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AB6DB02C0E62EDEF}" {
      Id "LF-Credits_199"
-     Target_en_us "Desk sergeant's five lines"
+     Target_en_us "LF_VodkaBottle_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
@@ -4537,6 +4537,21 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{98645FC8B2D9330E}" {
      Id "LF-Credits_200"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{31D05720B5CD5B48}" {
+     Id "LF-Credits_201"
+     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4D22C5E97B2689AA}" {
+     Id "LF-Credits_202"
+     Target_en_us "Desk sergeant's five lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D12E84B0D1EB5D48}" {
+     Id "LF-Credits_203"
      Target_en_us "Booking typewriter and ink pad stamp sounds"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
@@ -9293,6 +9308,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Launder_Washing"
      Target_en_us "Check the wash"
      Comment "Laundering station action while the batch is still washing (#2853)."
+    }
+    CustomStringTableItem "{27381134AAEF8E1F}" {
+     Id "LF-LawBook_Empty"
+     Target_en_us "No codes in this section."
+     Comment "Law-book page line when a section lists no codes."
+    }
+    CustomStringTableItem "{9DDDB9A7239FF396}" {
+     Id "LF-LawBook_LineFine"
+     Target_en_us "%1  {currency:sym}%2"
+     Comment "Law-book page line for a code with a fine and no time: %1 code name, %2 fine in dollars."
+    }
+    CustomStringTableItem "{81090FA397167E8F}" {
+     Id "LF-LawBook_LineFineTime"
+     Target_en_us "%1  {currency:sym}%2, %3 min"
+     Comment "Law-book page line: %1 code name, %2 fine in dollars, %3 time in minutes."
+    }
+    CustomStringTableItem "{F8582E4A8E0A84F1}" {
+     Id "LF-LawBook_LineJail"
+     Target_en_us "%1  jail only, %2 min"
+     Comment "Law-book page line for a jail-only code (no fine): %1 code name, %2 time in minutes."
+    }
+    CustomStringTableItem "{19E1E2EEA95E7990}" {
+     Id "LF-LawBook_Read"
+     Target_en_us "Read: %1"
+     Comment "Action on the law-book lectern, one per section. %1 = the section name."
+    }
+    CustomStringTableItem "{C9966D6AE8C46169}" {
+     Id "LF-LawBook_Section_criminal"
+     Target_en_us "Criminal"
+     Comment "Law-book section name: criminal codes."
+    }
+    CustomStringTableItem "{79D1B91FDF7A5E37}" {
+     Id "LF-LawBook_Section_narcotics"
+     Target_en_us "Narcotics"
+     Comment "Law-book section name: narcotics codes."
+    }
+    CustomStringTableItem "{A0D0B472BFD72AF7}" {
+     Id "LF-LawBook_Section_road"
+     Target_en_us "Traffic"
+     Comment "Law-book section name: road and traffic codes."
+    }
+    CustomStringTableItem "{36C97D557BFD5D82}" {
+     Id "LF-LawBook_Section_weapons"
+     Target_en_us "Weapons"
+     Comment "Law-book section name: weapons codes."
+    }
+    CustomStringTableItem "{519671401E89B54B}" {
+     Id "LF-LawBook_Title"
+     Target_en_us "Law book: %1"
+     Comment "Title of a law-book page. %1 = the section name."
     }
     CustomStringTableItem "{59EE09E1B7435797}" {
      Id "LF-LawlessHud_Enter"
