@@ -20,7 +20,10 @@ class LF_DestructibleResourceHitZone : SCR_HitZone
 		if (ore)
 		{
 			float dealt = ComputeEffectiveDamage(damageContext, false);
-			ore.OnToolHit(dealt, damageContext.hitPosition, damageContext.hitDirection, damageContext.damageSource);
+			IEntity miner;
+			if (damageContext.instigator)
+				miner = damageContext.instigator.GetInstigatorEntity();
+			ore.OnToolHit(dealt, damageContext.hitPosition, damageContext.hitDirection, damageContext.damageSource, miner);
 			SetHealthScaled(1);
 			return;
 		}

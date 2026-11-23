@@ -15948,6 +15948,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 is worn out but still works, slowly"
      Comment "Action text: tool at zero condition; it still works at half speed (#4182). %1 = tool name"
     }
+    CustomStringTableItem "{0B593FFD66EB831C}" {
+     Id "LF-ToolKind_Axe"
+     Target_en_us "Your axe"
+     Comment "Tool kind name that fills %1 of the tool condition sentence (#4300)"
+    }
+    CustomStringTableItem "{DFCB9DADDFCEE73E}" {
+     Id "LF-ToolKind_Pickaxe"
+     Target_en_us "Your pickaxe"
+     Comment "Tool kind name that fills %1 of the tool condition sentence (#4300)"
+    }
+    CustomStringTableItem "{80FF3472F8A2800D}" {
+     Id "LF-ToolKind_Rod"
+     Target_en_us "Your fishing rod"
+     Comment "Tool kind name that fills %1 of the tool condition sentence (#4300)"
+    }
     CustomStringTableItem "{75960D0103B97E17}" {
      Id "LF-ToolTier_Fine"
      Target_en_us "Fine"
