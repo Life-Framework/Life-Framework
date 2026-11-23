@@ -45,8 +45,9 @@ An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the 
 * **Put in vehicle:** at a police car pick **Put in vehicle** to seat your suspect, then drive to the station. At the station pick **Take out of vehicle**; they step out beside the car, still yours.
 * **Book into jail:** walk the cuffed suspect to the **cell door** (the waypoint). Their action list then shows **Book into jail: full sentence** and
   **Book into jail: reduced (cooperated)** (half, at least 30 seconds). Pick one: they go into the cell, the cuffs come back to you. Booking is only offered at the jail.
-* **Tickets:** pick **Write ticket** to hand a paper fine. The pad lists the offences your rank may fine: speeding $200, disturbance $150, reckless driving $500, brandishing a weapon $800,
-  causing a crash $1,500. Up to three unpaid tickets per person.
+* **Tickets:** pick **Write ticket** to hand a paper fine. The pad lists the offences your rank may fine, priced in minutes of a civilian's work: minor road $50 to $75 (speeding up to 15 over, parking, inspection),
+  road $150 to $250 (speeding 16 to 30 over, reckless driving, an overloaded vehicle), serious road $300 to $400 (speeding more than 30 over, a crash, driving without a license),
+  weapons $250 to $800. Robbery, murder and the other violent charges are jail only, 10 to 15 minutes. Up to three unpaid tickets per person.
 * **Spike strips and roadblocks** are in the kit.
 * **Hands up:** a suspect presses **F7** (gamepad: right bumper + X). That counts as complying, so you can search and cuff them.
 
