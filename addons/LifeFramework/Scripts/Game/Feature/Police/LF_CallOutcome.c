@@ -119,13 +119,14 @@ class LF_CallOutcome
 		call.m_iOutcome = outcome;
 		// Only a resolved call earns the $15 duty bonus (#4319); Complete closed the call once, so the bonus is
 		// awarded once. No one found and unfounded earn nothing.
-		// An officer closing the call on their own crime earns nothing.
-		if (outcome == LF_CallOutcomeKind.RESOLVED && !LF_DutyBonus.SameAccount(officerUid, call.m_sSuspectUid))
+		// An officer closing the call on their own crime, or a call they phoned in themselves (#4606), earns nothing.
+		bool ownCall = LF_DutyBonus.SameAccount(officerUid, call.m_sSuspectUid) || LF_DutyBonus.SameAccount(officerUid, call.m_sCallerUid);
+		if (outcome == LF_CallOutcomeKind.RESOLVED && !ownCall)
 			LF_DutyBonus.AwardUid(officerUid, LF_DutyBonusKind.CALL_RESOLVED);
 		else if (outcome == LF_CallOutcomeKind.RESOLVED)
-			LF_Debug.Info(FEATURE, string.Format("no duty bonus for %1: call #%2 is their own crime", officerUid, callId));
+			LF_Debug.Info(FEATURE, string.Format("no duty bonus for %1: call #%2 is their own crime or their own call", officerUid, callId));
 
-		if (!LF_DutyBonus.SameAccount(officerUid, call.m_sSuspectUid))
+		if (!ownCall)
 			LF_PoliceSkill.OnCallClosed(officerUid, outcome);
 
 		messageKey = ClosedKey(outcome);
