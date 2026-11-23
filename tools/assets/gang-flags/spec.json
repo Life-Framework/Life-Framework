@@ -1,0 +1,454 @@
+{
+  "slug": "gang-flags",
+  "name": "GangFlag",
+  "kind": "material",
+  "addon": "LF_Everon1989",
+  "roadmap": "4219",
+  "concept": "Twenty cloth designs a street gang could fly in 1989: plain dyed fields, bands, a cross, a chevron, a disc, a star. No national or real-world group symbols. Each is a flag material for the vanilla flag cloth (Flag_1_2.xob).",
+  "prompt": "Painted in Blender by paint.py: 20 flat flag designs, one variant per flag. no text, no logos.",
+  "texture_prompt": "",
+  "source": {
+    "blender": "paint.py",
+    "textures": []
+  },
+  "size_m": {
+    "length": 1,
+    "height": 1,
+    "width": 1
+  },
+  "budget": {
+    "lod0_tris": 100,
+    "lod_ratios": [],
+    "texture_px": 1024,
+    "credits": 0
+  },
+  "fit": {
+    "offset": [
+      0,
+      0,
+      0
+    ]
+  },
+  "parts": [],
+  "asset_dir": "Assets/Props/Flags/Gang",
+  "prefab_dir": "Prefabs/Props/Flags/Gang",
+  "materials": {
+    "default": "cloth",
+    "regions": [],
+    "classes": {
+      "cloth": {
+        "rough": [
+          0.8,
+          0.92
+        ],
+        "metal": [
+          0,
+          0
+        ],
+        "base_scale": 1
+      }
+    }
+  },
+  "variants": [
+    {
+      "name": "Ember",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Harbor",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Marrow",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Thornfield",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Copperhead",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Nightjar",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Salt",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Gallows",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Lantern",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Ironside",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Cinder",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Vesper",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Quarry",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Rook",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Tidewater",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Brass",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Wolfsbane",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Ashen",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Rustler",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    },
+    {
+      "name": "Lowtide",
+      "materials": {
+        "default": "cloth",
+        "regions": [],
+        "classes": {
+          "cloth": {
+            "rough": [
+              0.8,
+              0.92
+            ],
+            "metal": [
+              0,
+              0
+            ],
+            "base_scale": 1
+          }
+        }
+      }
+    }
+  ]
+}

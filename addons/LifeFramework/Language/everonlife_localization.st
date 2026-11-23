@@ -1972,12 +1972,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4A64CBDDC70A3B14}" {
      Id "LF-ATM_Deposited"
-     Target_en_us "DEPOSITED %1. THANK YOU."
+     Target_en_us "DEPOSITED: %1"
      Comment "ATM terminal status line after a deposit. %1 is the amount."
     }
     CustomStringTableItem "{CAF4A9272F7A5651}" {
      Id "LF-ATM_Dispensed"
-     Target_en_us "PLEASE TAKE YOUR CASH: %1"
+     Target_en_us "TAKE YOUR CASH: %1"
      Comment "ATM terminal status line after a withdrawal. %1 is the amount paid out."
     }
     CustomStringTableItem "{2028FAF6D9D3BF5C}" {
@@ -7282,6 +7282,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Hotwire_Title"
      Target_en_us "Hotwire"
      Comment "Toast title for hotwiring (#412)."
+    }
+    CustomStringTableItem "{747E2492D28BBC6E}" {
+     Id "LF-HoursPlate_Open"
+     Target_en_us "OPEN"
+     Comment "Hours plate row label on a shop door; the value is the keeper's hours written from the resident timetable."
     }
     CustomStringTableItem "{7B1E4C90A2D35F68}" {
      Id "LF-HouseLock_Lock"

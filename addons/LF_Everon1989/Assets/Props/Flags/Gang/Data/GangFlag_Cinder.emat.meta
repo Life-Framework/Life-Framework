@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{4CE08517FB4A0B8F}Assets/Props/Flags/Gang/Data/GangFlag_Cinder.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

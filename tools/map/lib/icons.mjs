@@ -105,6 +105,11 @@ export function confRows(text) {
     }
     const body = text.slice(re.lastIndex, i - 1);
     const get = (k) => (new RegExp(`${k}\\s+"([^"]*)"`).exec(body) ?? [])[1] ?? "";
+    // A removal row (a town-only overlay dropping a kind) draws nothing, so it needs no pictogram.
+    if (get("m_sOp") === "remove") {
+      re.lastIndex = i;
+      continue;
+    }
     rows.push({ kind: get("m_sKind"), category: get("m_sCategory"), icon: get("m_sIcon") });
     re.lastIndex = i;
   }
