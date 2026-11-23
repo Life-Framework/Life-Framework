@@ -30,6 +30,7 @@ The level is capped at 5. An arrest sentence ends with one level **removed**.
 * **Fuel station till.** Draw a weapon and talk to the attendant; a robbery reply appears only while a weapon is out. A hold timer with a bar starts and
   warns you if you leave its radius. If it pays you get **$150** in cash. A downed attendant ends the hold unpaid.
 * **Supermarket till.** Pays **$120 to $180**, same rules. Both tills have a **cooldown** after a robbery and refuse if you have no room to carry the cash.
+* **General store box safe.** A small olive steel safe stands behind the counter of the general store in Saint-Philippe. It needs **at least 1 police officer on duty**. It opens after a short fuse, sounds the store alarm and pays a little cash (**$120**). After a haul it stays shut for **45 minutes**; a second try in that time is refused.
 * **Weapons and cars.** Stealing a weapon adds +2; taking a car by force adds +3. Only civilians can do either; the police see it at once.
 * **Crew tills.** Where a till needs a crew, **Start the job** gathers every armed civilian within 15 m.
 * **Hospital till.** Robbing it adds +1 and rings the hospital alarm.
