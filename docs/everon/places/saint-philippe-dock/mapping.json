@@ -3,7 +3,7 @@
   "template": "harbour",
   "place": "saint-philippe-dock",
   "status": "approved",
-  "note": "Approved by the lead on merge of #3315 (D10): the tool proposal, hand-edited. The dock and the taxi stand share b01, the light tower on the quay road at the junction 40 m inland of the pier head (the dossier lists the concrete pier pieces as props, not buildings, so the kit sets the dock against the quay edge near b01 and the taxi against the kerb). fish-counter and chandler (state 2b, docs/roadmap/m6-outline.md) are mapped for the held fish card #3179; lockers, smokehouse, warehouse and quay-fishing (#3315) and wholesale (#3272) are optional slots no card has fitted yet. `toolscli town map saint-philippe-dock --check` passes.",
+  "note": "Approved by the lead on merge of #3315 (D10): the tool proposal, hand-edited. The dock and the taxi stand share b01, the light tower on the quay road at the junction 40 m inland of the pier head (the dossier lists the concrete pier pieces as props, not buildings, so the kit sets the dock against the quay edge near b01 and the taxi against the kerb). fish-counter and chandler (state 2b, docs/roadmap/m6-outline.md) are mapped for the held fish card #3179; lockers, smokehouse, warehouse and quay-fishing (#3315) and wholesale (#3272) are optional slots no card has fitted yet. `toolscli town map saint-philippe-dock --check` passes. containers (#4441, crime B9): the container yard on the free plot p5, hostless, with container nine and Marcel the tally clerk.",
   "dossier": {
     "schema": 1,
     "generated": "2026-11-17",
@@ -118,6 +118,14 @@
       "why": [
         "street furniture on the frontage of b01 (industrial-tower) at the quay road junction, sharing it with the dock, taxi and quay-fishing slots",
         "D10 pick (#3346), card X17 #3383: two `LF_FishingSpot` entities (table harbour, radius about 20 m), one at the quay end and one along the quay wall, with the spot cones hidden below the quay edge; the 60 m margin reaches the quay end. It names the slot the quay-fishing card's worktree uses; #3315's `quay-fishing` maps the same quay and the lead can retire one of the two"
+      ]
+    },
+    "containers": {
+      "plot": "p5",
+      "hostless": true,
+      "why": [
+        "free plot p5 (14 x 32 m, flat ground 1.4 to 2.2 m) 44 m from the dock scout centre, 13.7 m off the N-S road r17 and clear of the quay strip where the shipment route runs: room for a fenced yard of 9 x 27 m",
+        "crime B9 (#4441): the container yard of 0.3.0, container nine (the short one, key from Marcel) and a second container in the back row, Marcel the tally clerk at his yellow hut inside the gate; the kit never turns and every row rests on the probed ground"
       ]
     }
   }

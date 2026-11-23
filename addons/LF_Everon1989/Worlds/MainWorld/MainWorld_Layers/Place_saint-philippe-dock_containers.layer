@@ -1,0 +1,58 @@
+GenericEntity Fit_saint_philippe_dock_containers_container_nine : "{5D1E7B42A9C60F38}Prefabs/Props/Crime/LF_ContainerNine_Everon1989.et" {
+ coords 4430.8 1.594 11118
+}
+GenericEntity Fit_saint_philippe_dock_containers_container_eight : "{1B79BB823DC46F9D}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_20ft_green.et" {
+ coords 4435.2 1.613 11118
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_w_1 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4428.5 0 11101
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_w_2 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4428.5 0 11109
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_w_3 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4428.5 0 11117
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_w_4 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4428.5 0 11122
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_e_1 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4437.5 0 11101
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_e_2 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4437.5 0 11109
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_e_3 : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4437.5 0 11117
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_e_4 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4437.5 0 11122
+ angleY 90
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_n : "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et" {
+ coords 4433 0 11124
+}
+SCR_DestructibleEntity Fit_saint_philippe_dock_containers_fence_s_1 : "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et" {
+ coords 4430.5 0 11096.5
+}
+GenericEntity Fit_saint_philippe_dock_containers_tally_hut : "{B9F18808252E22C3}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_yellow.et" {
+ coords 4431 0 11100.5
+}
+GenericEntity Fit_saint_philippe_dock_containers_tally_clerk : "{06C758FEC5FEF9F2}Configs/Npcs/LF_Npc_Townsfolk_TallyClerk.et" {
+ coords 4434.6 2.328 11101
+ angleY 180
+}
+GenericEntity Fit_saint_philippe_dock_containers_yard_barrel : "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et" {
+ coords 4436.2 2.398 11103.5
+}
+GenericEntity Fit_saint_philippe_dock_containers_yard_pallet : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 4436 2.398 11106.5
+ angleY 12
+}

@@ -1,0 +1,301 @@
+{
+  "schema": 1,
+  "kit": "container-yard",
+  "system": "crime",
+  "source": {
+    "file": "tools/town/kits/container-yard.json",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -5,
+        -14
+      ],
+      "max": [
+        5,
+        14
+      ]
+    },
+    "front": "-z",
+    "counters": [],
+    "adapt": "A hostless plot on the Saint-Philippe dock (p5, 14 x 32 m, flat ground beside the N-S road r17): a small fenced yard, 9 m wide and 27 m deep, gate gap on the south side. Container nine (the short one, `LF_ContainerNine_Everon1989.et`: key, stock and refill timer set on its prefab, crime B3 #4195) stands in the back row beside a second plain container, both lying north to south with an aisle between them. Marcel the tally clerk (the same row as `tally-clerk.json`, #4199) stands by the yellow tally hut just inside the gate, facing the gate, so the player meets him first. The kit never turns. Every row rests on the probed ground (`--terrain`). Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "container-nine",
+      "name": "ContainerYard_Nine",
+      "prefab": "{5D1E7B42A9C60F38}Prefabs/Props/Crime/LF_ContainerNine_Everon1989.et",
+      "role": "interactable",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -2.2,
+        0,
+        8
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "container-eight",
+      "name": "ContainerYard_Eight",
+      "prefab": "{1B79BB823DC46F9D}Prefabs/Props/Industrial/CargoContainers/CargoContainer_01/CargoContainer_01_20ft_green.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        2.2,
+        0,
+        8
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-w-1",
+      "name": "ContainerYard_FenceW_1",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -4.5,
+        0,
+        -9
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-w-2",
+      "name": "ContainerYard_FenceW_2",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -4.5,
+        0,
+        -1
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-w-3",
+      "name": "ContainerYard_FenceW_3",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -4.5,
+        0,
+        7
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-w-4",
+      "name": "ContainerYard_FenceW_4",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -4.5,
+        0,
+        12
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-e-1",
+      "name": "ContainerYard_FenceE_1",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        4.5,
+        0,
+        -9
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-e-2",
+      "name": "ContainerYard_FenceE_2",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        4.5,
+        0,
+        -1
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-e-3",
+      "name": "ContainerYard_FenceE_3",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        4.5,
+        0,
+        7
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-e-4",
+      "name": "ContainerYard_FenceE_4",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        4.5,
+        0,
+        12
+      ],
+      "yaw": 90,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-n",
+      "name": "ContainerYard_FenceN",
+      "prefab": "{AB044B4917B05086}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_8m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        0,
+        0,
+        14
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "fence-s-1",
+      "name": "ContainerYard_FenceS_1",
+      "prefab": "{4A9F6EFA33F8FBE0}Prefabs/Structures/Walls/Wooden/WoodenFence_01/WoodenFence_01_4m.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -2.5,
+        0,
+        -13.5
+      ],
+      "yaw": 0,
+      "class": "SCR_DestructibleEntity",
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "tally-hut",
+      "name": "ContainerYard_TallyHut",
+      "prefab": "{B9F18808252E22C3}Prefabs/Structures/Industrial/Houses/PortableCabin_E_01/PortableCabin_E_01_yellow.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        -2,
+        0,
+        -9.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "tally-clerk",
+      "prefab": "{06C758FEC5FEF9F2}Configs/Npcs/LF_Npc_Townsfolk_TallyClerk.et",
+      "role": "npc",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        1.6,
+        0,
+        -9
+      ],
+      "yaw": 180,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "yard-barrel",
+      "name": "ContainerYard_Barrel",
+      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        3.2,
+        0,
+        -6.5
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0"
+    },
+    {
+      "id": "yard-pallet",
+      "name": "ContainerYard_Pallet",
+      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        3,
+        0,
+        -3.5
+      ],
+      "yaw": 12,
+      "wall": "free",
+      "floor": "f0"
+    }
+  ]
+}
