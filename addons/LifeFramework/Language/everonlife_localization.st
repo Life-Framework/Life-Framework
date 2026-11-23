@@ -5940,6 +5940,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Goodbye."
      Comment "Dialogue reply the player can pick when talking to the shopkeeper NPC."
     }
+    CustomStringTableItem "{C3B22B8F511083DF}" {
+     Id "LF-Dialogue_Shopkeeper_SayHeard"
+     Target_en_us "Heard anything?"
+     Comment "Dialogue reply the player can pick when talking to the shopkeeper NPC."
+    }
     CustomStringTableItem "{16D8E0E89EE9DE1A}" {
      Id "LF-Dialogue_Shopkeeper_SayPay"
      Target_en_us "How do I pay?"
@@ -15650,6 +15655,26 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Robbery_NoRoom"
      Target_en_us "No room for the cash. The till stays shut."
      Comment "Toast: the robber's inventory cannot take the till cash, so nothing is taken and nobody is alerted (crime review 2026-11-17)."
+    }
+    CustomStringTableItem "{4461B0C3D5E70005}" {
+     Id "LF-RumorTalk_AskedToday"
+     Target_en_us "I have told you what I know today. Ask again tomorrow."
+     Comment "Spoken caption when you ask the same giver twice in one game day (#4461)."
+    }
+    CustomStringTableItem "{4461B0C3D5E70004}" {
+     Id "LF-RumorTalk_NothingNew"
+     Target_en_us "Nothing new. Ask me tomorrow."
+     Comment "Spoken caption when the giver has no rumor you do not already know (#4461)."
+    }
+    CustomStringTableItem "{4461B0C3D5E70002}" {
+     Id "LF-RumorTalk_Title"
+     Target_en_us "Word on the street"
+     Comment "Toast title when a resident tells a rumor (#4461)."
+    }
+    CustomStringTableItem "{4461B0C3D5E70003}" {
+     Id "LF-RumorTalk_Told"
+     Target_en_us "They told you about a place. It is on your map now."
+     Comment "Toast body for a told rumor whose row has no caption of its own (#4461)."
     }
     CustomStringTableItem "{98F59847428914BF}" {
      Id "LF-RunPlate_Action"
