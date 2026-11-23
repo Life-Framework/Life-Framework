@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{8DE1C6394696D70E}Assets/Props/Flags/Gang/LF_GangFlag_Lantern.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

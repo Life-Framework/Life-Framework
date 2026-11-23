@@ -25,16 +25,15 @@
       { "text": "ask", "next": "offer" },
       { "text": "bye", "next": "bye" } ] },
     { "id": "offer", "line": "offer", "options": [
-      { "text": "pay", "next": "key" },
+      { "text": "pay", "action": "FeeForItem", "param": "400|{6E6C667869AC0F87}Prefabs/Items/Story/LF_ContainerNineKey.et" },
       { "text": "later", "next": "later" } ] },
-    { "id": "key", "line": "key" },
     { "id": "later", "line": "later" },
     { "id": "bye", "line": "bye" }
   ],
   "lines": {
     "greet": { "text": "Marcel, tally clerk. I count what comes off the ships and I write down what the customs man wants written. Funny thing. Container nine is short this week." },
     "offer": { "text": "Four hundred dollars, and it stays short on the books. You carry the key, you take what is in it, and in a while it fills up again. I never saw you." },
-    "key": { "text": "Here. Brass, on a red string. Container nine, back row, past the crane. Take what is in it, lock it up after. The books will say it never came." },
+    "key": { "for_key": "#LF-Dialogue_FeePaid", "text": "Here. Brass, on a red string. Container nine, back row, past the crane. Take what is in it, lock it up after. The books will say it never came." },
     "later": { "text": "Not while the customs man is here. Come back when your pockets are full and the yard is quiet." },
     "bye": { "text": "Mind the crane." }
   },

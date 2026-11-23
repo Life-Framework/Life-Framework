@@ -54,7 +54,7 @@ class LF_Test_ResidentWorkApply : LF_Test
 
 		ctx.EqualStr("hammer", did, "the activity says hammer");
 		ctx.True(LF_ResidentWorkLoop.IsRunning(worker), "a hammer line starts the work loop");
-		ctx.Equal(0, LF_ResidentWorkLoop.StepOf(worker), "the hammer loop starts on step 0");
+		ctx.EqualStr(LF_ResidentWorkLoop.HAMMER_POSE, LF_ResidentWorkLoop.PlayedPose(worker), "the hammer line plays the hammer pose");
 
 		// The same line again keeps one loop; a different work word swaps it.
 		LF_ResidentActivity.Apply(worker, "hammer", spot);

@@ -1,0 +1,14 @@
+AnimSetInstanceSource {
+ Template "{9A43A8BDDF59B93C}Anims/Workspaces/Work/LF_WorkPick.ast"
+ Lines {
+  AnimSetInstanceSource_Line "Work.Pick.In" {
+   Resource "{961352FBBDBB1AD7}anims/anm/player/actions/supplies/build/p_erc_supplies_demolitionUS_low_in.anm"
+  }
+  AnimSetInstanceSource_Line "Work.Pick.Loop" {
+   Resource "{4B74C849B2079E41}anims/anm/player/actions/supplies/build/p_erc_supplies_demolitionUS_low_loop.anm"
+  }
+  AnimSetInstanceSource_Line "Work.Pick.Out" {
+   Resource "{CB17AB4A75069805}anims/anm/player/actions/supplies/build/p_erc_supplies_demolitionUS_low_out.anm"
+  }
+ }
+}

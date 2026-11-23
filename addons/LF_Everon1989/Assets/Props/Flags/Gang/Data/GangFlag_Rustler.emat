@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{D898F299364C2D61}Assets/Props/Flags/Gang/Data/GangFlag_Rustler_BCR.edds"
+ NMOMap "{C77766C240854017}Assets/Props/Flags/Gang/Data/GangFlag_Rustler_NMO.edds"
+}

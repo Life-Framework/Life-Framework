@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{091E42014F704E86}Assets/Props/Flags/Gang/Data/GangFlag_Thornfield_BCR.edds"
+ NMOMap "{C51F93DD8AFD554C}Assets/Props/Flags/Gang/Data/GangFlag_Thornfield_NMO.edds"
+}

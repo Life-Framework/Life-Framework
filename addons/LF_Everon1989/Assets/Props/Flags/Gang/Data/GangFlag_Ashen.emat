@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{2B30DF34FB4E6FEC}Assets/Props/Flags/Gang/Data/GangFlag_Ashen_BCR.edds"
+ NMOMap "{425D3CB6B558046D}Assets/Props/Flags/Gang/Data/GangFlag_Ashen_NMO.edds"
+}
