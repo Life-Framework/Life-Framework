@@ -65,8 +65,12 @@ export function placesOf(entities) {
 export function anchorsOf(entities) {
   const out = [];
   for (const e of entities) {
-    const id = /LF_ResidentAnchorComponent[\s\S]*?m_sAnchorId "([^"]*)"/.exec(e.body)?.[1];
-    if (id) out.push({ id, x: e.x, y: e.y, z: e.z, name: e.name });
+    const at = e.body.indexOf("LF_ResidentAnchorComponent");
+    if (at < 0) continue;
+    const comp = block(e.body, at);
+    const id = /m_sAnchorId "([^"]*)"/.exec(comp)?.[1];
+    // An anchor bound to one place by id (LF_ResidentAnchorComponent.m_sPlaceId, #4613).
+    if (id) out.push({ id, placeId: /m_sPlaceId "([^"]*)"/.exec(comp)?.[1] || "", x: e.x, y: e.y, z: e.z, name: e.name });
   }
   return out;
 }
@@ -90,13 +94,16 @@ export function candidatePlaces(places, kind, placeId) {
   return ofKind;
 }
 
-// LF_ResidentAnchors.FindAnchor: a loose anchor within OWN_RADIUS_M of the place whose nearest place of the kind is
-// this one; the nearest wins. No anchor id, or none found: the place's own origin.
+// LF_ResidentAnchors.FindAnchor: an anchor bound to this place's id (m_sPlaceId, at any distance; one bound to another
+// place is never claimed), else a loose anchor within OWN_RADIUS_M of the place whose nearest place of the kind is this
+// one. A bound anchor beats a loose one, then the nearest wins. (The layer parser sees top-level entities only, so no
+// anchor is nested under its place here.) No anchor id, or none found: the place's own origin.
 export function spotOf(place, anchorId, anchors, places) {
   if (anchorId) {
     const ofKind = places.filter((p) => p.kind === place.kind);
-    const mine = anchors.filter((a) => a.id === anchorId && distXZ(a, place) <= OWN_RADIUS_M && nearest(ofKind, a) === place);
-    const found = nearest(mine, place);
+    const bound = anchors.filter((a) => a.id === anchorId && a.placeId && a.placeId === place.id);
+    const loose = anchors.filter((a) => a.id === anchorId && !a.placeId && distXZ(a, place) <= OWN_RADIUS_M && nearest(ofKind, a) === place);
+    const found = nearest(bound, place) || nearest(loose, place);
     if (found) return { x: found.x, y: found.y, z: found.z, via: found.name };
   }
   return { x: place.x, y: place.y, z: place.z, via: place.name + " (place origin)" };
