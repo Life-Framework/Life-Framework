@@ -9,10 +9,6 @@ GenericEntity Fit_saint_philippe_harbour_Place {
  }
  coords 4471.1 1.4 11143.9
 }
-GenericEntity Fit_saint_philippe_harbour_harbour_master : "{B45B7C6C168822D4}Configs/Npcs/LF_Npc_Townsfolk_HarbourMaster.et" {
- coords 4471.577 1.846 11144.663
- angleY 122
-}
 GenericEntity Fit_saint_philippe_harbour_harbour_office_sign : "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et" {
  components {
   LF_SignComponent "{A19037297E81C6EC}" {

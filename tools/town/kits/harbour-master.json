@@ -30,23 +30,9 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "One person, standing on the ground floor of a small office (a site cabin or shed with a door). The row sits at the footprint centre; `town fit --check` shows the seat corrections. Rows are rigid: shift, never stretch."
+    "adapt": "The harbour master's office: a small site cabin or shed with a door. The master is a resident (Marcel Roux, dock_harbour_master, #4466) who spawns from the HarbourMaster place on his timetable, so the kit places no body, only the office sign (#4646). Rows are rigid: shift, never stretch."
   },
   "rows": [
-    {
-      "id": "harbour-master",
-      "prefab": "{B45B7C6C168822D4}Configs/Npcs/LF_Npc_Townsfolk_HarbourMaster.et",
-      "role": "npc",
-      "verb": "on floor",
-      "offset": [
-        -0.9,
-        0,
-        0
-      ],
-      "yaw": 0,
-      "wall": "free",
-      "floor": "f0"
-    },
     {
       "id": "harbour-office-sign",
       "prefab": "{9182BD264965878C}Prefabs/Props/Signs/LF_Sign_PlateSmall.et",
