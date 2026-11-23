@@ -126,6 +126,7 @@ class LF_PlayerAccount : Managed
 	void SetMedicRank(int rank)
 	{
 		GetStanding().m_iMedicRank = LF_Utils.MaxInt(0, rank);
+		LF_AccountReplication.Publish(this);
 	}
 
 	//------------------------------------------------------------------------------------------------

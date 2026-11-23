@@ -298,12 +298,15 @@ class LF_MedicCarPoolDrawAction : ScriptedUserAction
 		if (!LF_MedicDuty.IsOnDutyState(LF_AccountReplication.GetState(user)))
 			return false;
 
-		return !LF_MedicCarPool.SlotCar(m_iSlot).IsEmpty();
+		// The medic rank rides in the replicated account state (#4566): a slot above the rank is not offered.
+		// The server's draw checks the real account again and refuses in words.
+		int rank = LF_AccountStateBits.GetMedicRank(LF_AccountReplication.GetState(user));
+		string refusalKey;
+		string neededTitleKey;
+		return LF_MedicFleet.MayDraw(rank, LF_MedicCarPool.SlotCar(m_iSlot), refusalKey, neededTitleKey);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The medic rank is not in the replicated account state (only the police rank is), so the client offers
-	//! every slot to a medic on duty and the server's draw refuses a rank that is too low, in words.
 	override bool CanBePerformedScript(IEntity user)
 	{
 		return true;
