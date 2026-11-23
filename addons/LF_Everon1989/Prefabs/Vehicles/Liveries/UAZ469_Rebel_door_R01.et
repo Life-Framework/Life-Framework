@@ -1,0 +1,58 @@
+GenericEntity : "{587FA6998293B4F6}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_R01_blue.et" {
+ ID "F99DAA86BC893208"
+ components {
+  MeshObject "{4B42E716914465B9}" {
+   Materials {
+    MaterialAssignClass "{64F09BE80DFE0921}" {
+     SourceMaterial "UAZ469_Body"
+     AssignedMaterial "{9E9B799E5FEB65D1}Assets/Liveries/UAZ469/LF_UAZ469_Rebel.emat"
+    }
+   }
+  }
+  SlotManagerComponent "{5AD4FD050A086870}" {
+   Slots {
+    RegisteringComponentSlotInfo DoorTop {
+     Prefab "{65396DEE14F22F66}Prefabs/Vehicles/Liveries/UAZ469_Rebel_door_R01_top.et"
+    }
+   }
+  }
+ }
+ {
+  GenericEntity {
+   ID "B0606714BEA4DD07"
+   components {
+    Hierarchy "{159CA2CD4661DE23}" {
+    }
+    MeshObject "{1B30A021AAB36C9B}" {
+     Object "{8825082D2DEB3C8C}Assets/Structures/BuildingsParts/Signs/SignWall_01/SignWall_01_90x45.xob"
+     Materials {
+      MaterialAssignClass "{2DC94915DD6F3BCC}" {
+       SourceMaterial "SignWall_01_90X45"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+      MaterialAssignClass "{BF72730D93857A78}" {
+       SourceMaterial "SignWall_01_90X45_MLOD"
+       AssignedMaterial "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat"
+      }
+     }
+    }
+    LF_SignComponent "{358A12243558E6FD}" {
+     m_sSignId "livery_uaz469_rebel"
+     m_bFaceOnOwner 1
+     m_sFaceLayout "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout"
+     m_vTitlePos 60 56 0
+     m_vTitleSize 904 400 0
+     m_iTitleFontMax 220
+     m_vFaceArea 1024 512 0
+     m_fRimWidth 26
+     m_vRimColor 0.42 0.4 0.3
+     m_vPaintColor 0.42 0.4 0.3
+     m_vTextColor 0.04 0.035 0.025
+    }
+   }
+   coords 0.938 0.78 0.42
+   angles 0 90 0
+   scale 0.6
+  }
+ }
+}

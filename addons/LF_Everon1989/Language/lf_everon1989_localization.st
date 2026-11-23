@@ -6084,6 +6084,11 @@ StringTable {
      Target_en_us "POLICE"
      Comment "Livery plate on the front doors of the UAZ469 Police (written by tools\cli livery build)."
     }
+    CustomStringTableItem "{C83D865A3A23DA67}" {
+     Id "LF-Sign_Livery_UAZ469_Rebel_Title"
+     Target_en_us "14"
+     Comment "Livery plate on the front doors of the UAZ469 Rebel (written by tools\cli livery build)."
+    }
     CustomStringTableItem "{156BE656616C6972}" {
      Id "LF-Sign_LotPrice_Title"
      Target_en_us "%1 %2"
