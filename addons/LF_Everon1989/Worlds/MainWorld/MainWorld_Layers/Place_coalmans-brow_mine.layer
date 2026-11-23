@@ -16,10 +16,6 @@ GenericEntity Fit_coalmans_brow_mine_Place_Processor {
  }
  coords 4330 35 10404
 }
-GenericEntity Fit_coalmans_brow_mine_mine_portal : "{02128ED43CA97BCF}Prefabs/Structures/Industrial/CoalMineShaft_01/CoalMineShaft_USSR_01_end_buried.et" {
- coords 4322 35.531 10404
- angleY 90
-}
 GenericEntity Fit_coalmans_brow_mine_mine_heap_l : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 4324 35.094 10410
  angleY 180
@@ -27,10 +23,6 @@ GenericEntity Fit_coalmans_brow_mine_mine_heap_l : "{D93A7286584E122C}Prefabs/Pr
 GenericEntity Fit_coalmans_brow_mine_mine_heap_r : "{D93A7286584E122C}Prefabs/Props/Construction/GravelPile_01/GravelPile_01_base.et" {
  coords 4324 35.594 10398
  angleY 180
-}
-GenericEntity Fit_coalmans_brow_mine_mine_cart : "{5F178E159D8DA763}Prefabs/Props/Industrial/Mine/Mine_01_cart/Mine_01_cart_cargo.et" {
- coords 4327.5 34.662 10406.5
- angleY 90
 }
 GenericEntity Fit_coalmans_brow_mine_mine_picks : "{C1686BEC82BCE823}Prefabs/Props/Industrial/Mine/MiningPick_01/MiningPick_01_Pile.et" {
  coords 4327.2 35.006 10401.4
@@ -131,6 +123,33 @@ GenericEntity Fit_coalmans_brow_mine_mine_sign : "{B7B489CA36A0E9F8}Prefabs/Prop
  }
  coords 4343 33.797 10413
  angleY -90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_anchor_counter {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "counter"
+  }
+ }
+ coords 4341.1 33.794 10407.4
+ angleY -90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_anchor_door {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4341.6 33.403 10405.4
+ angleY -90
+}
+GenericEntity Fit_coalmans_brow_mine_mine_ore_field {
+ components {
+  LF_PlaceComponent "{5E0B7A3D91C4F268}" {
+   m_sKind "Workplace"
+   m_sId "coalmans-brow.mine-ore"
+  }
+ }
+ coords 4334.5 34.944 10412.2
 }
 GenericEntity Fit_coalmans_brow_mine_mine_bus_stop : "{D3B1C7A4E2F05986}Prefabs/Travel/LF_BusStop.et" {
  components {
