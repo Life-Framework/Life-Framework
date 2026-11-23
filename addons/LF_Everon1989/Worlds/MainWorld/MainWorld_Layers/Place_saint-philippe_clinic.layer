@@ -125,3 +125,12 @@ LF_NpcBaseEntity Fit_saint_philippe_clinic_clinic_doctor : "{C001B9088678C653}Pr
  coords 4424.183 10.941 10777.952
  angleY 152
 }
+GenericEntity Fit_saint_philippe_clinic_medic_fleet_board : "{7626F19FBE72C466}Prefabs/Props/Medic/LF_MedicCarPoolBoard.et" {
+ components {
+  LF_MedicCarPoolComponent "{9E78B20106799A72}" {
+   m_vBayOffset 9 -1 5
+  }
+ }
+ coords 4428.226 11.73 10775.087
+ angleY 152
+}

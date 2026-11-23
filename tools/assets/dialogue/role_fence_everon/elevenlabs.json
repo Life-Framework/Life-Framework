@@ -66,6 +66,32 @@
       "request_id": "S8tB0FyngDe0NDnNYPp1",
       "seconds": 1.07,
       "mouth": "3697699868754498411000"
+    },
+    "refuse_drill": {
+      "hash": "0cd02d8d389cc75c",
+      "date": "2026-11-23",
+      "voice_id": "KZW681TTkoQ1dS9Hu5WY",
+      "voice_name": "Lucas - Deep, Raspy and Natural",
+      "model": "eleven_multilingual_v2",
+      "text": "Vince does not sell that to strangers. Make a name for yourself, then come back.",
+      "chars": 80,
+      "chars_total": 32,
+      "request_id": "wFB1Osjj9jtdXfhS2Ifg",
+      "seconds": 4.2,
+      "mouth": "669967579958884559998997167534898655333114883675788526564566631111176558964797313100"
+    },
+    "sell_drill": {
+      "hash": "87796239c8fc3667",
+      "date": "2026-11-23",
+      "voice_id": "KZW681TTkoQ1dS9Hu5WY",
+      "voice_name": "Lucas - Deep, Raspy and Natural",
+      "model": "eleven_multilingual_v2",
+      "text": "You have earned it. Here is the drill. Be quiet with it, and it never came from me.",
+      "chars": 83,
+      "chars_total": 33,
+      "request_id": "mFyrqGCkTqdHxyluDtux",
+      "seconds": 4.49,
+      "mouth": "269999521499846522101399995397459963310017623489884465674200465612448845522665324434543000"
     }
   },
   "voice": {
