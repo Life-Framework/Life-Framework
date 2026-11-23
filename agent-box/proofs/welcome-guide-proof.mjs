@@ -28,6 +28,8 @@ async function runWelcomeGuideProof() {
   };
   const state = () => on(1, { verb: "guide", words: ["state"] });
 
+  // A session client gets no auto open (#4645: it covered every picture); this proof is the one that wants it.
+  must(on(1, { verb: "guide", words: ["autoopen", "on"] }), "guide autoopen on");
   arrive(on, 1, wait);
 
   // The guide opens by itself after the bed wake: bounded wait, one state read every 2 s.

@@ -1,0 +1,96 @@
+FrameWidgetClass {
+ Name "rootFrame"
+ Slot FrameWidgetSlot "{10C6B7F3EE4E9AF8}" {
+  SizeX 1920
+  OffsetRight -1920
+  SizeY 1080
+  OffsetBottom -1080
+ }
+ {
+  RTTextureWidgetClass "{DABE455EB27E2A18}" {
+   Name "RTTexture0"
+   Slot FrameWidgetSlot "{46286AA7BC0F9D85}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 1920
+    OffsetRight -1920
+    SizeY 1080
+    OffsetBottom -1080
+   }
+   {
+    ImageWidgetClass "{68123BEC5554D4FD}" {
+     Name "Border"
+     Slot FrameWidgetSlot "{00CF238FCB728108}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+     Color 1 1 1 1
+    }
+    ImageWidgetClass "{2306527CAC75B60B}" {
+     Name "Ground"
+     Slot FrameWidgetSlot "{BE81D8CFEE4CD083}" {
+      Anchor 0 0 1 1
+      OffsetLeft 44
+      OffsetTop 44
+      OffsetRight 44
+      OffsetBottom 44
+     }
+     Color 0 0.3 0.18 1
+    }
+    TextWidgetClass "{979B0C17D1A33A40}" {
+     Name "Ghost"
+     Slot FrameWidgetSlot "{987870713C4BDF69}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 1 1 1 0
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{ED00AA6A58AA8681}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    TextWidgetClass "{96A33909EB6CFB82}" {
+     Name "Title"
+     Slot FrameWidgetSlot "{5B8937242288C68A}" {
+      OffsetLeft 0
+      OffsetTop 0
+      SizeX 100
+      OffsetRight -100
+      SizeY 100
+      OffsetBottom -100
+     }
+     Color 1 1 1 1
+     Text ""
+     "Font Size" 120
+     "Min Font Size" 24
+     "Horizontal Alignment" Center
+     "Vertical Alignment" Center
+     FontProperties FontProperties "{2E6357BE90663A42}" {
+      Font "{EABA4FE9D014CCEF}UI/Fonts/RobotoCondensed/RobotoCondensed_Bold.fnt"
+     }
+    }
+    FrameWidgetClass "{A1A2E4BEA4C3ABB6}" {
+     Name "Rows"
+     Slot FrameWidgetSlot "{41B86ACE9B6C3121}" {
+      Anchor 0 0 1 1
+      OffsetLeft 0
+      OffsetTop 0
+      OffsetRight 0
+      OffsetBottom 0
+     }
+    }
+   }
+  }
+ }
+}

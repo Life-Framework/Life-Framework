@@ -43,7 +43,8 @@ class LF_Test_EveronVillageStock : LF_Test
 	protected static const ResourceName BAIT = "{53E0B27FA119A866}Prefabs/Items/Fishing/LF_BaitTin.et";
 	protected static const ResourceName ROD = "{0327968D17D249FD}Prefabs/Items/Fishing/LF_FishingRod.et";
 	protected static const ResourceName MAP = "{A5EDB92E7A42913E}Prefabs/Items/LF_TouristMap.et";
-	protected static const ResourceName NEWSPAPER = "{87592893752A28D6}Prefabs/Items/Newsagent/LF_Newspaper.et";
+	protected static const ResourceName NEWSPAPER = "{4D7E2B91A6C35F08}Prefabs/Items/Paper/LF_Newspaper.et";
+	protected static const ResourceName ROAD_MAP = "{7C3E5A92D41F6B08}Prefabs/Items/Paper/LF_RoadMap.et";
 	protected static const ResourceName MAGAZINE = "{9D70A14BB2B80C60}Prefabs/Items/Newsagent/LF_Magazine.et";
 	protected static const ResourceName POSTCARD = "{F4935CB74CA81B10}Prefabs/Items/Newsagent/LF_Postcard.et";
 	protected static const ResourceName NOTEBOOK = "{858F926E8089F6A1}Prefabs/Items/Newsagent/LF_Notebook.et";
@@ -74,7 +75,7 @@ class LF_Test_EveronVillageStock : LF_Test
 		CheckStock(ctx, manager, "hardware", {ETOOL, AXE, GRAVEL, CEMENT, BRICK, PLANK, DOOR_KIT, SANDBAG, FLASHLIGHT, RADIO, REPAIR_KIT});
 		CheckStock(ctx, manager, "seed_feed", {SEEDS, BAIT, ROD, WATER});
 		//! #3893: the newsagent sells what its racks show: papers, magazines, postcards, the island map, stationery.
-		CheckStock(ctx, manager, "newsagent", {MAP, WATER, NEWSPAPER, MAGAZINE, POSTCARD, NOTEBOOK, PEN});
+		CheckStock(ctx, manager, "newsagent", {MAP, WATER, NEWSPAPER, ROAD_MAP, MAGAZINE, POSTCARD, NOTEBOOK, PEN});
 		//! #3893: the pharmacy till sells the medicine its counter shows (buy-back capped by the drugstore price rules).
 		CheckStock(ctx, manager, "pharmacy", {ASPIRIN, GAUZE_1, GAUZE_2, TOURNIQUET_US, TOURNIQUET_USSR});
 		CheckStock(ctx, manager, "mechanic", {PARTS, REPAIR_KIT});
