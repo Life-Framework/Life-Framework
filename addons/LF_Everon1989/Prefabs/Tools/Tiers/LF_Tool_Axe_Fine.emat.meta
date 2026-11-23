@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{59D597BCCD981C55}Prefabs/Tools/Tiers/LF_Tool_Axe_Fine.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

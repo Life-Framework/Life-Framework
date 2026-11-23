@@ -15,7 +15,8 @@ enum LF_ETraderSale
 	NOT_REMOVED,
 	SELLER_DOWN,	//!< A dead or downed seller (a forged request from a body)
 	BUYER_FULL,		//!< A premium buyer with no demand left (#3599); the seller keeps the item
-	BELOW_LOT		//!< The stack is smaller than one lot of a good priced per lot (#3622); the seller keeps the item
+	BELOW_LOT,		//!< The stack is smaller than one lot of a good priced per lot (#3622); the seller keeps the item
+	OUTPOST_REFUSED	//!< An outpost trader does not serve an on-duty officer (#4217); said in words, the seller keeps the item
 }
 
 //------------------------------------------------------------------------------------------------
@@ -68,6 +69,14 @@ class LF_TraderSale
 		if (!trader)
 			return Refuse(seller, LF_ETraderSale.NO_TRADER, "not a trader");
 
+		// Outposts (#4217, #4224): the trader does not serve an on-duty officer, and says so.
+		if (LF_Outpost.RefusesService(seller, traderOwner.GetOrigin()))
+		{
+			LF_Outpost.NotifyRefusal(seller);
+			LF_Debug.Warn("Trader", "sale refused (OUTPOST_REFUSED): an outpost trader does not serve on-duty police");
+			return LF_ETraderSale.OUTPOST_REFUSED;
+		}
+
 		SCR_InventoryStorageManagerComponent inventory = LF_Component<SCR_InventoryStorageManagerComponent>.Find(seller);
 		if (!inventory)
 			return Refuse(seller, LF_ETraderSale.NO_SELLER, "seller has no inventory");
@@ -106,7 +115,12 @@ class LF_TraderSale
 		{
 			LF_BuyerDemandRow demandRow = LF_BuyerDemandBook.FindRow(trader.m_sBuyerId, itemPrefab);
 			if (demandRow)
-				return SellToBuyer(seller, item, inventory, trader.m_sBuyerId, itemPrefab, outputUnits, stackUnits, untrusted);
+			{
+				LF_ETraderSale toBuyer = SellToBuyer(seller, item, inventory, trader.m_sBuyerId, itemPrefab, outputUnits, stackUnits, untrusted);
+				if (toBuyer == LF_ETraderSale.SOLD)
+					LF_OutpostStanding.OnSale(seller, traderOwner.GetOrigin());
+				return toBuyer;
+			}
 		}
 
 		int totalValue = LF_ShopRules.StackTradeTotal(unitValue, outputUnits);
@@ -171,6 +185,7 @@ class LF_TraderSale
 		if (curved && newPrice != oldPrice && !s_bQuiet)
 			LF_MarketSaleNotice.OnSale(seller, itemPrefab, oldPrice, newPrice);
 		LF_QuestArrivalSignals.ReportTraderSale(seller, itemPrefab);
+		LF_OutpostStanding.OnSale(seller, traderOwner.GetOrigin());
 		return LF_ETraderSale.SOLD;
 	}
 

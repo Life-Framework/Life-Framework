@@ -1,0 +1,6 @@
+MatPBRBasic {
+ Color 0.5 0.34 0.24 1
+ BCRMap "{A31BDC2E23C8BA4A}Assets/Items/Fishing/FishingRod/Data/FishingRod_BCR.edds"
+ NMOMap "{B1B2F7B02D5EDA26}Assets/Items/Fishing/FishingRod/Data/FishingRod_NMO.edds"
+ MetalnessScale 0.1
+}

@@ -1,0 +1,6 @@
+MatPBRBasic {
+ Color 0.5 0.34 0.24 1
+ BCRMap "{81838C52E7772E41}Assets/Tools/Pickaxe/Data/T_Pickaxe_BCR.edds"
+ NMOMap "{B95B37C03E007CDF}Assets/Tools/Pickaxe/Data/T_Pickaxe_NMO.edds"
+ MetalnessScale 0.1
+}
