@@ -10247,6 +10247,81 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "You wear a New Life wristband. Stay away from where you died for %1 minutes."
      Comment "Toast on waking in hospital after a real death. %1 is the minutes."
     }
+    CustomStringTableItem "{3D9D0114019FA819}" {
+     Id "LF-NewspaperEdition_ArrestLine"
+     Target_en_us "%1 was jailed for %3 minutes."
+     Comment "Courier arrest line. %1 name, %3 minutes."
+    }
+    CustomStringTableItem "{A94FDE8D9CF2A01F}" {
+     Id "LF-NewspaperEdition_ArrestLineNoName"
+     Target_en_us "A resident was jailed for %3 minutes."
+     Comment "Courier arrest line with no name. %3 minutes."
+    }
+    CustomStringTableItem "{894E6ED818297742}" {
+     Id "LF-NewspaperEdition_ArrestsHeadline"
+     Target_en_us "Arrests this week"
+     Comment "Courier section headline."
+    }
+    CustomStringTableItem "{22BD063C26FD5B70}" {
+     Id "LF-NewspaperEdition_CrimeHeadline"
+     Target_en_us "Crimes reported"
+     Comment "Courier section headline for crimes reported, never with names."
+    }
+    CustomStringTableItem "{016F88C3A5AC3DB0}" {
+     Id "LF-NewspaperEdition_CrimeLine"
+     Target_en_us "%2: %3 reported this week."
+     Comment "Courier crime line. %2 offence, %3 count. No names."
+    }
+    CustomStringTableItem "{806AAD6D47CB71A9}" {
+     Id "LF-NewspaperEdition_Dateline"
+     Target_en_us "Week %1 edition"
+     Comment "Courier dateline: the week of the year."
+    }
+    CustomStringTableItem "{6A025FF8D8D24473}" {
+     Id "LF-NewspaperEdition_MarketHeadline"
+     Target_en_us "Market prices"
+     Comment "Courier section headline."
+    }
+    CustomStringTableItem "{3CDD917F8D234034}" {
+     Id "LF-NewspaperEdition_MarketLine"
+     Target_en_us "%2: was %3, now %4."
+     Comment "Courier market line. %2 good, %3 old price, %4 new price."
+    }
+    CustomStringTableItem "{1B319DCEBD1A3319}" {
+     Id "LF-NewspaperEdition_OpeningLine"
+     Target_en_us "%1 bought a building plot for %3."
+     Comment "Courier plot sale line with a name; the core section prints no names (a plot is a home). %1 name, %3 price."
+    }
+    CustomStringTableItem "{1C6E4500C2E5F6C7}" {
+     Id "LF-NewspaperEdition_OpeningLineNoName"
+     Target_en_us "A building plot sold for %3."
+     Comment "Courier plot sale line, no name. %3 price."
+    }
+    CustomStringTableItem "{91D7413A2A1494B4}" {
+     Id "LF-NewspaperEdition_OpeningsHeadline"
+     Target_en_us "Land sales"
+     Comment "Courier section headline: building plots sold this week."
+    }
+    CustomStringTableItem "{FA7303F7E07F54FE}" {
+     Id "LF-NewspaperEdition_RewardLine"
+     Target_en_us "%1 collected %3 in call rewards."
+     Comment "Courier reward line. %1 name, %3 money."
+    }
+    CustomStringTableItem "{B70BC567343C4313}" {
+     Id "LF-NewspaperEdition_RewardLineNoName"
+     Target_en_us "An officer collected %3 in call rewards."
+     Comment "Courier reward line with no name. %3 money."
+    }
+    CustomStringTableItem "{874A06AA2DC6D702}" {
+     Id "LF-NewspaperEdition_RewardsHeadline"
+     Target_en_us "Rewards paid"
+     Comment "Courier section headline."
+    }
+    CustomStringTableItem "{4DD4F07F0C812A8E}" {
+     Id "LF-NewspaperEdition_Someone"
+     Target_en_us "A resident"
+     Comment "Courier: stands in for a name that is not known."
+    }
     CustomStringTableItem "{60ED2D502AEE4A5F}" {
      Id "LF-Newspaper_BoardsBody"
      Target_en_us "The notice boards carry the latest notices, job offers and prices. Read them before you head out."
