@@ -1,4 +1,4 @@
-Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et" {
+Vehicle : "{C1493A67B59073A1}Prefabs/Vehicles/Wheeled/S1203/LF_S1203_PoliceBase.et" {
  ID "ED1A78BA92606812"
  components {
   MeshObject "{51DAA09FEFBFC0E7}" {

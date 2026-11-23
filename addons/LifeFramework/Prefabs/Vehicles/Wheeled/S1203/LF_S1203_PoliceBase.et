@@ -1,0 +1,73 @@
+Vehicle : "{543799AC5C52989C}Prefabs/Vehicles/Wheeled/S1203/S1203_transport_beige.et" {
+ ID "239D5D794B80F204"
+ components {
+  ActionsManagerComponent "{C97BE5489221AE18}" {
+   additionalActions + {
+    LF_UnitStatusAction "{BB7F585ED2372C5A}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{9899BB253E05ED6E}" {
+      Name "#LF-UnitStatus_ActionAvailable"
+     }
+     "Sort Priority" 9
+    }
+    LF_UnitStatusAction "{B5E0D90238D1BFCC}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{88AEED1149E67332}" {
+      Name "#LF-UnitStatus_ActionBusy"
+     }
+     "Sort Priority" 10
+     m_bBusy 1
+    }
+    LF_CallCloseAction "{6C3A1DAAD150FA5C}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{F990D2EA20F46070}" {
+      Name "#LF-CallOutcome_ActionResolved"
+     }
+     "Sort Priority" 11
+     m_eOutcome 1
+    }
+    LF_CallCloseAction "{3CC68F167E5ED75B}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{3C73AC263EC59ECF}" {
+      Name "#LF-CallOutcome_ActionNoOneFound"
+     }
+     "Sort Priority" 12
+     m_eOutcome 2
+    }
+    LF_CallCloseAction "{A72224D73DB8ABB8}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{06EEF53990796F4D}" {
+      Name "#LF-CallOutcome_ActionUnfounded"
+     }
+     "Sort Priority" 13
+     m_eOutcome 3
+    }
+    LF_RunPlateAction "{3FAD306A96A40AC5}" {
+     ParentContextList {
+      "door_l01"
+      "door_l01_int"
+     }
+     UIInfo UIInfo "{41F82FC8DA6D1BF9}" {
+      Name "#LF-RunPlate_Action"
+     }
+     "Sort Priority" 14
+    }
+   }
+  }
+ }
+}
