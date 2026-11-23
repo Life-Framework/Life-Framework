@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1DD15AB2CC99721A}Configs/Dialogue/LF_Dialogue_RumorsBar.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
