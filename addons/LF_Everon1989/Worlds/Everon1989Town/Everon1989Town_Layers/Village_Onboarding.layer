@@ -25,3 +25,12 @@ GenericEntity Onboarding_Market_Place {
 GenericEntity Onboarding_Market_Trader : "{3A9F6E21C47D8B71}Prefabs/Trader/LF_UniversalTrader_Everon1989.et" {
  coords 199.859 1.027 225.067
 }
+GenericEntity Onboarding_OrchardTrees_Place {
+ components {
+  LF_PlaceComponent "{0ECCE8EFC89E9F15}" {
+   m_sKind "OrchardTrees"
+   m_sId "saint-philippe.orchard"
+  }
+ }
+ coords 212 0 217
+}
