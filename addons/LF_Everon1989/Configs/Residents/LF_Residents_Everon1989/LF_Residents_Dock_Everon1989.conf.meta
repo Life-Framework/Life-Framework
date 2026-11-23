@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{36D706AEDAB483EC}Configs/Residents/LF_Residents_Everon1989/LF_Residents_Dock_Everon1989.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}
