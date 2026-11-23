@@ -54,6 +54,10 @@ missing and where to get it.
 at your first paid outcome, not when you clock in. After the 30 minutes the rest of that day pays the normal rate. Each
 trade has its own first shift, and a new day opens it again. A server restart opens it again too.
 
+**Working beside a learner.** If you are level 10 or more in a trade and earn experience within 15 meters of someone under
+level 10 in the same trade, you both get a small bonus (a tenth of the award). It works the other way round too, when the
+learner earns. A pair can earn it once a minute, and your own other characters do not count.
+
 **Night pay.** Parcel, fuel and taxi runs finished between **21:00 and 05:00 game time** pay **25 percent more**.
 A game day is 2 real hours and nights are short, so that is about 40 minutes in every 2 hours at the faster night speed.
 

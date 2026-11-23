@@ -1,0 +1,300 @@
+{
+  "schema": 1,
+  "kit": "village-bar-1i04",
+  "system": "",
+  "source": {
+    "file": "tools/town/kits/sources/bakery.layer",
+    "also": [
+      "docs/everon/catalog-props.json"
+    ],
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside",
+    "vanilla": "{9EC1D8CA0391BF16}Prefabs/Structures/Houses/Village/House_Village_E_1I04/House_Village_E_1I04sf_green.et"
+  },
+  "anchoring": {
+    "floorY": 0.194,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0.194
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        0.7,
+        0.4
+      ],
+      "max": [
+        3.8,
+        4
+      ]
+    },
+    "front": "+z",
+    "counters": [
+      {
+        "id": "bar-counter-1",
+        "wall": "free",
+        "edgeGap": 0
+      }
+    ],
+    "adapt": "A village bar in the living room of a House_Village_E_1I04sf house (the room east of the hall: x -2.45 to 3.75, z -0.4 to 4.43 in the house frame, floor y 0.194). The counter runs along z at x 1.95 and its finished front faces the customers on its -x side; the barkeeper stands behind it facing -x with the bottle shelves on the east wall (x 3.75). Stools stand on the customer side. The living-room furniture on the clear list is hidden (the kitchen, hall, bedroom and bathroom keep theirs). Rows are rigid: shift, never stretch."
+  },
+  "clear": [
+    "{0DC4F830876C6671}Prefabs/Props/Furniture/Chair_02/Chair_02_green.et",
+    "{108B2B2A04700231}Prefabs/Props/Furniture/ClockFloor_01.et",
+    "{208028C4307E3772}Prefabs/Props/Furniture/ShelfDecorative_01_barewood.et",
+    "{313CC1F195E06A6E}Prefabs/Props/Furniture/TVSet_01.et",
+    "{451120716704276F}Prefabs/Props/Decorations/Paintings/PaintingSmall_01_V2.et",
+    "{4549BE7A1D414EDA}Prefabs/Props/Furniture/PlantRoom_01.et",
+    "{4BE33BD4C315C615}Prefabs/Props/Civilian/Ashtray_01_Full_base.et",
+    "{53506DCB398C7EBE}Prefabs/Props/Furniture/Table_01.et",
+    "{67C2A2742A183D89}Prefabs/Props/Furniture/PhoneTable_01_red.et",
+    "{728DD36004461456}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_B.et",
+    "{76E3962626F4B633}Prefabs/Props/Furniture/CoatRack_02.et",
+    "{814ADF7834151561}Prefabs/Props/Furniture/BenchKitchen_01/BenchKitchen_01_Green.et",
+    "{AA25BAA17DCF0A0A}Prefabs/Props/Furniture/Cupboard_01/Cupboard_01_D.et",
+    "{CFF3A41D0D674C93}Prefabs/Props/Civilian/VacuumCleaner_01/VacuumCleaner_01_blue.et",
+    "{D8B02CE6A9F8E165}Prefabs/Props/Civilian/AlarmClock_01/AlarmClock_01_base.et",
+    "{F6CF869062E6EDB0}Prefabs/Props/Furniture/Rack_01_Long.et"
+  ],
+  "rows": [
+    {
+      "id": "bar-counter-1",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        1.95,
+        0.194,
+        1.5
+      ],
+      "yaw": -90,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-counter-2",
+      "prefab": "{E214337C6E1931C5}Prefabs/Props/Commercial/CounterShop_01.et",
+      "role": "counter",
+      "verb": "on floor",
+      "offset": [
+        1.95,
+        0.194,
+        3
+      ],
+      "yaw": -90,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-barkeeper",
+      "prefab": "{4439B0A5C0000003}Configs/Npcs/LF_Npc_Townsfolk_Barkeeper.et",
+      "role": "npc",
+      "verb": "on floor",
+      "offset": [
+        2.85,
+        0.194,
+        2.2
+      ],
+      "yaw": -90,
+      "class": "LF_NpcBaseEntity",
+      "config": [
+        {
+          "component": "LF_CounterOutletComponent",
+          "set": {
+            "m_sBuyerId": "\"bar_levie\""
+          },
+          "blocks": []
+        }
+      ],
+      "floor": "f0"
+    },
+    {
+      "id": "bar-shelf-1",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        3.75,
+        0.194,
+        1.945
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "bar-shelf-2",
+      "prefab": "{D6E93EF9D3232D16}Prefabs/Props/Commercial/ShelfUniversal_01_wide.et",
+      "role": "dressing",
+      "verb": "against wall",
+      "offset": [
+        3.75,
+        0.194,
+        3.9
+      ],
+      "yaw": -90,
+      "wall": "+x",
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-1",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        3.54,
+        1.275,
+        0.995
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-2",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        3.54,
+        1.275,
+        1.25
+      ],
+      "yaw": 20,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-3",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-1",
+      "offset": [
+        3.54,
+        1.275,
+        1.65
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-4",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        3.54,
+        1.275,
+        2.95
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-5",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        3.54,
+        1.275,
+        3.2
+      ],
+      "yaw": 35,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-bottle-6",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-shelf-2",
+      "offset": [
+        3.54,
+        1.275,
+        3.6
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-counter-bottle-1",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-counter-1",
+      "offset": [
+        1.95,
+        1.234,
+        1.2
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-counter-bottle-2",
+      "prefab": "{88FAE04EF7115814}Prefabs/Props/Civilian/BeerBottle_01_green.et",
+      "role": "dressing",
+      "verb": "on bar-counter-2",
+      "offset": [
+        1.95,
+        1.234,
+        3.3
+      ],
+      "yaw": 60,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-stool-1",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0.95,
+        0.183,
+        1
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-stool-2",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0.95,
+        0.183,
+        1.9
+      ],
+      "yaw": 40,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-stool-3",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0.95,
+        0.183,
+        2.8
+      ],
+      "yaw": 0,
+      "floor": "f0"
+    },
+    {
+      "id": "bar-stool-4",
+      "prefab": "{BC77A0CE72611DC3}Prefabs/Props/Furniture/Stool_01.et",
+      "role": "furniture",
+      "verb": "on floor",
+      "offset": [
+        0.95,
+        0.183,
+        3.7
+      ],
+      "yaw": 70,
+      "floor": "f0"
+    }
+  ]
+}

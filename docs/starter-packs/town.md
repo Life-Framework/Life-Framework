@@ -39,6 +39,7 @@ tools\cli look place:<place>/<slot> --interior auto   # its ground floor from in
 - Ship it like any card: `tools\cli wt ship <slug> --refs <N> --body-file tmp\pr-body-<slug>.md --commit "<subject>"`
   opens the PR and turns on auto-merge. No maintainer approval is needed (since 2026-11-18). One island slot per card.
   The PR body embeds the before and after `look place:` pictures and a contact sheet (docs/visual-testing.md).
+- **A kit is cut for one building prefab.** Where the template's kit was cut for another house (Levie's bar is in `House_Village_E_1I04sf_green`, the `village-bar` kit in `House_Village_E_1L02`), cut a variant (`tools/town/kits/village-bar-1i04.json`: that house's floor, offsets and a `clear` list of its own furniture) and name it on the mapping entry, `"kit": "village-bar-1i04"`; `town fit`, `town stamp` and `town author --from` read it in place of the template's.
 - Claims live in `tools/town/claims/<place>-<slot>.json`; a claim `origin/main` or an open PR holds is refused.
   `--refit` ignores this slot's own claim on `origin/main` (re-fitting a slot already merged) and still refuses an open PR, a sibling worktree or another slot holding it.
 
