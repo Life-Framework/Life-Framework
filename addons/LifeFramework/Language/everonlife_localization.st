@@ -9164,6 +9164,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Mejora de categoría"
      Comment "Hint title when the character's overall standing rises (replaces an arcade LEVEL UP)"
     }
+    CustomStringTableItem "{9D8FF04C43EF328F}" {
+     Id "LF-Level_TradeTier_1"
+     Target_en_us "Apprentice"
+     Comment "Trade tier word for levels 1 to 5, shown beside the trade on the F2 skill card (#4414). The pack may override it."
+    }
+    CustomStringTableItem "{F4ECAB69CD47C063}" {
+     Id "LF-Level_TradeTier_2"
+     Target_en_us "Hand"
+     Comment "Trade tier word for levels 6 to 11 (#4414)."
+    }
+    CustomStringTableItem "{5F256D6141465559}" {
+     Id "LF-Level_TradeTier_3"
+     Target_en_us "Journeyman"
+     Comment "Trade tier word for levels 12 to 19 (#4414)."
+    }
+    CustomStringTableItem "{50ED2B8D81EFB19E}" {
+     Id "LF-Level_TradeTier_4"
+     Target_en_us "Foreman"
+     Comment "Trade tier word for levels 20 to 27 (#4414)."
+    }
+    CustomStringTableItem "{D9282509B6BB1C35}" {
+     Id "LF-Level_TradeTier_5"
+     Target_en_us "Master"
+     Comment "Trade tier word for levels 28 to 30 (#4414)."
+    }
     CustomStringTableItem "{7782A81CDE1A5199}" {
      Id "LF-LicenceCounter_Applied"
      Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this counter to collect it."
@@ -12887,10 +12912,35 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Next level opens: %1"
      Comment "Personal file skill record: what the next level of this job unlocks. %1 = names of the work it opens, comma separated."
     }
+    CustomStringTableItem "{6E14D128F51C49C6}" {
+     Id "LF-PlayerMenu_SkillOpens"
+     Target_en_us "Level %1 opens: %2"
+     Comment "F2 skill card (#4414). %1 = the next level, %2 = what it opens."
+    }
+    CustomStringTableItem "{92CE57A0169506BD}" {
+     Id "LF-PlayerMenu_SkillPerks"
+     Target_en_us "Perks: %1"
+     Comment "F2 skill card (#4414). %1 = the perks picked in this trade."
+    }
+    CustomStringTableItem "{710EB402141348F5}" {
+     Id "LF-PlayerMenu_SkillRank"
+     Target_en_us "Ranked %1 in %2 this week"
+     Comment "F2 skill card weekly rank slot (#4414). %1 = the rank as an ordinal, like 6th, %2 = the trade."
+    }
+    CustomStringTableItem "{B0E52A4594D5C18F}" {
+     Id "LF-PlayerMenu_SkillTitle"
+     Target_en_us "%1, %2"
+     Comment "F2 skill card title (#4414). %1 = the trade, %2 = its tier word."
+    }
     CustomStringTableItem "{F52EBB28BA797478}" {
      Id "LF-PlayerMenu_SkillTop"
      Target_en_us "Level %1 · %2 XP, the top of the ladder"
      Comment "Personal file skill numbers at the highest level. %1 = level, %2 = total XP."
+    }
+    CustomStringTableItem "{FC2FB5AAEA09C862}" {
+     Id "LF-PlayerMenu_SkillUnranked"
+     Target_en_us "Not ranked yet this week"
+     Comment "F2 skill card weekly rank slot (#4414) when the player is not on the shift board."
     }
     CustomStringTableItem "{48BCC2D5ADF101A4}" {
      Id "LF-PlayerMenu_SkillXp"
