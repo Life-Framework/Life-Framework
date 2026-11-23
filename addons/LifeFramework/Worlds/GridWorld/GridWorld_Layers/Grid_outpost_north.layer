@@ -1,0 +1,164 @@
+// Grid cell c27r4 for outpost-north: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_outpost_north_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 71
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 71
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 71
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 71
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 71
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 71
+ angleY 270
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 75.4
+ angleY 270
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_8 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 79.8
+ angleY 270
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_9 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 84.2
+ angleY 270
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_10 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 88.6
+ angleY 270
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_11 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 369 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_12 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 364.6 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_13 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 360.2 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_14 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 355.8 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_15 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 351.4 0 93
+ angleY 180
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_16 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 93
+ angleY 90
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_17 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 88.6
+ angleY 90
+}
+SCR_DestructibleEntity Grid_outpost_north_Fence_18 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 347 0 84.2
+ angleY 90
+}
+GenericEntity Grid_outpost_north_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:outpost-north"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 346.2 0.505 71.6
+ angleY -90
+}
+GenericEntity Grid_outpost_north_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "outpost-north"
+  }
+ }
+ coords 346.3 0 75.4
+ angleY 90
+}
+GenericEntity Outpost_Spot_Crate {
+ coords 356 0 74.5
+}
+GenericEntity Outpost_Spot_ChalkBoard {
+ coords 351.8 0 86.8
+ angleY 90
+}
+GenericEntity Outpost_Spot_Buyer {
+ coords 359 0 77
+ angleY 270
+}
+GenericEntity Outpost_Spot_Quartermaster {
+ coords 360.5 0 84.5
+ angleY 270
+}
+GenericEntity Outpost_Spot_GuardS {
+ coords 352 0 77.4
+ angleY 90
+}
+GenericEntity Outpost_Spot_GuardN {
+ coords 352 0 87.6
+ angleY 90
+}
+GenericEntity Outpost_Gate_SandbagS1 : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
+ coords 349.991 0 78.223
+ angleY 90
+}
+GenericEntity Outpost_Gate_SandbagS2 : "{B547CF929FCC6BB7}Prefabs/Props/Military/Sandbags/Sandbag_01_end_high_burlap.et" {
+ coords 350.002 0 75.203
+ angleY 90
+}
+GenericEntity Outpost_Gate_SandbagN1 : "{BE16EE8FAA315FE2}Prefabs/Props/Military/Sandbags/Sandbag_01_long_high_burlap.et" {
+ coords 349.991 0 85.823
+ angleY 90
+}
+GenericEntity Outpost_Gate_SandbagN2 : "{B547CF929FCC6BB7}Prefabs/Props/Military/Sandbags/Sandbag_01_end_high_burlap.et" {
+ coords 350.002 0 88.803
+ angleY 90
+}
+GameEntity Outpost_Fire : "{0FB935C50541B694}Prefabs/Crafting/Fireplace.et" {
+ coords 356.945 0.187 80.92
+}
+GenericEntity Outpost_Generator : "{FCBEDECB2A39B6BC}Prefabs/Props/Military/Generators/GeneratorPortable_USSR_01.et" {
+ coords 355.005 0 90.963
+ angleY 180
+}
+GenericEntity Outpost_Mast : "{5B8922E61D8DF345}Prefabs/Props/Military/Antennas/Antenna_R161_01.et" {
+ coords 366 0.32 71.905
+}
+GenericEntity Outpost_FlagPole : "{1A8791C2BC2B8B75}Prefabs/Structures/Military/Flags/FlagPole_01/FlagPole_01_empty.et" {
+ coords 366.001 0 91.073
+}
+SCR_DestructibleBuildingEntity Outpost_Tent_Quartermaster : "{4A1E3B17DB672E35}Prefabs/Structures/Military/Camps/TentFIA_01/TentFIA_01.et" {
+ coords 362.609 0 84.011
+ angleY 90
+}
+GenericEntity Outpost_Table : "{1A1020205E2B1710}Prefabs/Props/Military/Furniture/TableMilitary_USSR_01.et" {
+ coords 358.5 0.001 86.5
+}
+GenericEntity Outpost_Pallet_1 : "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et" {
+ coords 359.008 0.004 91.488
+}
+GenericEntity Outpost_PalletBox_1 : "{51B08BDA20AF8FF7}Prefabs/Props/Industrial/Pallets/WoodenPalletBox_01.et" {
+ coords 361.599 0.022 91.504
+}
+GenericEntity Outpost_Barrel_1 : "{4BE795374BE3D67E}Prefabs/Props/Industrial/BarrelFuel_01_closed.et" {
+ coords 352.478 0.001 72.989
+}
+GenericEntity Outpost_CanvasCover_Crates : "{BFC48B664ED362EE}Prefabs/Structures/Military/Camps/Canvas_Covers/CanvasCover_Medium_Base.et" {
+ coords 356 0 74.5
+}
+GenericEntity Outpost_CamoNet_Pallets : "{79AA43911CC6C3E8}Prefabs/Structures/Military/CamoNets/Soviet/CamoNet_Small_Soviet.et" {
+ coords 360.2 0 91.6
+}
