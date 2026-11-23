@@ -3765,6 +3765,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Cleanup is not available."
      Comment "Greyed-out reason and toast when cleanup is refused (#690)."
     }
+    CustomStringTableItem "{343B6E24B7A77DB7}" {
+     Id "LF-ClinicShortage_Prices"
+     Target_en_us "Medicine"
+     Comment "Clinic shortage notice row label: what changed."
+    }
+    CustomStringTableItem "{89FB7CD603CEB2B2}" {
+     Id "LF-ClinicShortage_PricesValue"
+     Target_en_us "Prices raised"
+     Comment "Clinic shortage notice: medicine prices are higher."
+    }
+    CustomStringTableItem "{9E13187BE04DD170}" {
+     Id "LF-ClinicShortage_Until"
+     Target_en_us "Until"
+     Comment "Clinic shortage notice row label: how long."
+    }
+    CustomStringTableItem "{F8B0EA0FB0209C5E}" {
+     Id "LF-ClinicShortage_UntilValue"
+     Target_en_us "Further notice"
+     Comment "Clinic shortage notice: no date is promised."
+    }
+    CustomStringTableItem "{F3DA3091EFA304D0}" {
+     Id "LF-ClinicShortage_Why"
+     Target_en_us "Why"
+     Comment "Clinic shortage notice row label (#4448)."
+    }
+    CustomStringTableItem "{7376B8A6E82EC0D4}" {
+     Id "LF-ClinicShortage_WhyValue"
+     Target_en_us "Stock stolen"
+     Comment "Clinic shortage notice: why the pharmacy is closed."
+    }
     CustomStringTableItem "{B56342EA30F0AFB8}" {
      Id "LF-ClipStamp_Action"
      Target_en_us "Show clip stamp"
@@ -4512,17 +4542,17 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{41B72E8D01F8E68E}" {
      Id "LF-Credits_197"
-     Target_en_us "CONTRABAND LABELS"
+     Target_en_us "LF_UAZ452_Ambulance"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{899288C00EFEEAC6}" {
      Id "LF-Credits_198"
-     Target_en_us "LF_CigaretteCarton_BCR"
+     Target_en_us "LF_S1203_Ambulance"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AB6DB02C0E62EDEF}" {
      Id "LF-Credits_199"
-     Target_en_us "LF_VodkaBottle_BCR"
+     Target_en_us "CONTRABAND LABELS"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
@@ -4537,12 +4567,32 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{98645FC8B2D9330E}" {
      Id "LF-Credits_200"
-     Target_en_us "WORK-SITE SOUNDS"
+     Target_en_us "LF_CigaretteCarton_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{31D05720B5CD5B48}" {
      Id "LF-Credits_201"
+     Target_en_us "LF_VodkaBottle_BCR"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4D22C5E97B2689AA}" {
+     Id "LF-Credits_202"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D12E84B0D1EB5D48}" {
+     Id "LF-Credits_203"
      Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{E5F5B4D1BBEFC2E5}" {
+     Id "LF-Credits_204"
+     Target_en_us "Desk sergeant's five lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{8DF88C3D0E2242BE}" {
+     Id "LF-Credits_205"
+     Target_en_us "Booking typewriter and ink pad stamp sounds"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09A1E735EF193A11}" {
@@ -11602,6 +11652,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Flag 20"
      Comment "Neutral name of preset gang flag 20; a pack gives the real name."
     }
+    CustomStringTableItem "{D1325EB69512F8BF}" {
+     Id "LF-OrgProspect_Rank"
+     Target_en_us "Prospect"
+     Comment "Rank shown for a gang member who joined by invite less than 48 hours ago (#4455). No countdown."
+    }
+    CustomStringTableItem "{A033D8712C95A9F9}" {
+     Id "LF-OrgProspect_Refused"
+     Target_en_us "Prospects can't touch the gang fund or the stash yet."
+     Comment "Refusal for a gang prospect at the fund or the stash (#4455)."
+    }
     CustomStringTableItem "{5AB8DC50BD7DC910}" {
      Id "LF-OrgRight_BUY_UPGRADE"
      Target_en_us "Buy upgrades"
@@ -13137,6 +13197,76 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The soil is dry. It needs water."
      Comment "Inspect toast: the plant can be watered now (#2664)."
     }
+    CustomStringTableItem "{913159AB574CA2A1}" {
+     Id "LF-PlayerMenuGang_Flag"
+     Target_en_us "Flag"
+     Comment "Personal file Gang tab: label of the gang's flag; the value is the flag's name."
+    }
+    CustomStringTableItem "{234FCA6DAAD47422}" {
+     Id "LF-PlayerMenuGang_HeadCrew"
+     Target_en_us "YOUR CREW"
+     Comment "Personal file Gang tab: card heading, the gang's name, flag, your rank and radio."
+    }
+    CustomStringTableItem "{EB3CACE7C34B7736}" {
+     Id "LF-PlayerMenuGang_HeadOnline"
+     Target_en_us "ONLINE NOW"
+     Comment "Personal file Gang tab: card heading, the gang's members online."
+    }
+    CustomStringTableItem "{0345AA03F2A3446B}" {
+     Id "LF-PlayerMenuGang_HeadSites"
+     Target_en_us "SITES HELD"
+     Comment "Personal file Gang tab: card heading, the sites the gang holds."
+    }
+    CustomStringTableItem "{7B5972DECE2933EB}" {
+     Id "LF-PlayerMenuGang_Name"
+     Target_en_us "Gang"
+     Comment "Personal file Gang tab: label of the gang's name."
+    }
+    CustomStringTableItem "{A5BAEB0ED177CCF0}" {
+     Id "LF-PlayerMenuGang_NoFlag"
+     Target_en_us "No flag"
+     Comment "Personal file Gang tab: the gang flies no flag."
+    }
+    CustomStringTableItem "{103BF10661BA7414}" {
+     Id "LF-PlayerMenuGang_OnlineNone"
+     Target_en_us "Nobody is online."
+     Comment "Personal file Gang tab: no member of the gang is online."
+    }
+    CustomStringTableItem "{B1BF19836FF7ED42}" {
+     Id "LF-PlayerMenuGang_Radio"
+     Target_en_us "Radio"
+     Comment "Personal file Gang tab: label of the radio line."
+    }
+    CustomStringTableItem "{079B74DA2C54DDA2}" {
+     Id "LF-PlayerMenuGang_RadioNone"
+     Target_en_us "No radio carried"
+     Comment "Personal file Gang tab: the member carries no radio."
+    }
+    CustomStringTableItem "{24B4149B9DCB481E}" {
+     Id "LF-PlayerMenuGang_RadioOff"
+     Target_en_us "Not on the gang channel"
+     Comment "Personal file Gang tab: the member carries a radio that is not on the gang channel."
+    }
+    CustomStringTableItem "{677C3AE5B1C69820}" {
+     Id "LF-PlayerMenuGang_RadioOn"
+     Target_en_us "On the gang channel"
+     Comment "Personal file Gang tab: a radio the member carries is tuned to the gang channel."
+    }
+    CustomStringTableItem "{38497A994749DBCA}" {
+     Id "LF-PlayerMenuGang_Rank"
+     Target_en_us "Your rank"
+     Comment "Personal file Gang tab: label of the member's own rank."
+    }
+    CustomStringTableItem "{03473A66F3C4EECF}" {
+     Id "LF-PlayerMenuGang_SitesNone"
+     Target_en_us "No sites held yet."
+     Comment "Personal file Gang tab: the gang holds no site."
+    }
+    CustomStringTableItem "{D7E1304018F6F1B9}" {
+     Id "LF-PlayerMenuGang_Waiting"
+     Target_en_us "Asking your crew..."
+     Comment "Personal file Gang tab: shown until the server's answer arrives."
+    }
     CustomStringTableItem "{A839CFC87CD97E94}" {
      Id "LF-PlayerMenu_Bank"
      Target_en_us "Bank account"
@@ -13541,6 +13671,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-PlayerMenu_Summary"
      Target_en_us "Errands on file: %1 of %2 done"
      Comment "Personal file Progress tab summary. %1 = done, %2 = listed."
+    }
+    CustomStringTableItem "{E6EFC108394AC7CF}" {
+     Id "LF-PlayerMenu_TabGang"
+     Target_en_us "Gang"
+     Comment "Personal file tab button: your gang at a glance. Shown only to a gang member."
     }
     CustomStringTableItem "{564984191E6AC0B6}" {
      Id "LF-PlayerMenu_TabNext"
@@ -15984,6 +16119,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Sign_ChalkSample_What"
      Target_en_us "A chalk board with a title and a short price list."
      Comment "Read card of the sample chalk board."
+    }
+    CustomStringTableItem "{9E48B81765BAFEC3}" {
+     Id "LF-Sign_ClinicShortage_Title"
+     Target_en_us "Pharmacy closed"
+     Comment "Sign title: the paper notice on the clinic door while the clinic is short (#4448)."
     }
     CustomStringTableItem "{62312EEA2BF57769}" {
      Id "LF-Sign_Close"

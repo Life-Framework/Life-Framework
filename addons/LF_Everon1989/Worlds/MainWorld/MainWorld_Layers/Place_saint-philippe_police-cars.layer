@@ -10,3 +10,7 @@ GenericEntity Fit_saint_philippe_police_cars_car_b32_3 : "{5D2B8E41A7C3906F}Pref
  coords 4562.992 17.697 10753.685
  angleY -11
 }
+GenericEntity Fit_saint_philippe_police_cars_board : "{AEFD4F9B8A69C66E}Prefabs/Props/Police/LF_PoliceCarPoolBoard.et" {
+ coords 4559.835 18.7 10749.326
+ angleY 81
+}
