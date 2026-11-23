@@ -4729,6 +4729,11 @@ StringTable {
      Target_en_us "The village hostel: a bed for anyone with nowhere to sleep."
      Comment "What line of the hostel sign."
     }
+    CustomStringTableItem "{BFF98FD4BBA45C34}" {
+     Id "LF-Sign_Housewares_Title"
+     Target_en_us "Housewares"
+     Comment "Title of the fascia sign over the household-wares shop door on Saint-Philippe (card #4391): replaces the vanilla Czech wall sign, which is hidden. Printed on the sign in capitals and shown in the prompt as Read: Housewares."
+    }
     CustomStringTableItem "{F209D5D9A5D3E58D}" {
      Id "LF-Sign_Impound_How"
      Target_en_us "Pay the fee and collect your vehicle at this desk. It waits in the yard, and you get a key."

@@ -1,0 +1,473 @@
+GenericEntity Fit_saint_philippe_czech_signs_dock_b04_1 {
+ components {
+  LF_BaseWorldClearComponent "{D984439AF8FF30CC}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Mural/Murals_5x1_TSNC_V1.et"
+   }
+  }
+ }
+ coords 4389.31 3.68093 11049.8
+}
+GenericEntity Fit_saint_philippe_czech_signs_dock_b08_1 {
+ components {
+  LF_BaseWorldClearComponent "{BCB2C49E50D5AC55}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Signs/SignWall/SignWall_01_65x45_ShippingCompany.et"
+   }
+  }
+ }
+ coords 4421.89 3.82775 11022.9
+}
+GenericEntity Fit_saint_philippe_czech_signs_dock_b13_1 {
+ components {
+  LF_BaseWorldClearComponent "{61602EF02677773A}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Pamatujeme_V1.et"
+   }
+  }
+ }
+ coords 4402.17 2.86789 11021.5
+}
+GenericEntity Fit_saint_philippe_czech_signs_dock_b15_1 {
+ components {
+  LF_BaseWorldClearComponent "{E578551027F749E0}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Azbuka_V1.et"
+   }
+  }
+ }
+ coords 4440.08 6.90877 11158.9
+}
+GenericEntity Fit_saint_philippe_czech_signs_dock_b25_1 {
+ components {
+  LF_BaseWorldClearComponent "{223F820AB4A8774C}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_CarService.et"
+   }
+  }
+ }
+ coords 4403.44 8.0205 10968.4
+}
+GenericEntity Fit_saint_philippe_czech_signs_b01_1 {
+ components {
+  LF_BaseWorldClearComponent "{49D859F3EB8027C9}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Mural/Murals_8x5_NEPTUN_V1.et"
+   }
+  }
+ }
+ coords 4487.01 17.6791 10714.2
+}
+GenericEntity Fit_saint_philippe_czech_signs_b01_2 {
+ components {
+  LF_BaseWorldClearComponent "{AAD9DAFC9BC41CB8}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Nedej_V1.et"
+   }
+  }
+ }
+ coords 4491.32 14.9281 10714.8
+}
+GenericEntity Fit_saint_philippe_czech_signs_b03_1 {
+ components {
+  LF_BaseWorldClearComponent "{13F7C1C3037386A9}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{EF9AC1132797202D}Prefabs/Structures/BuildingParts/Signs/SignWall3D_01/SignWall3D_Pub_01.et"
+   }
+  }
+ }
+ coords 4447.25 16.2973 10700.7
+}
+GenericEntity Fit_saint_philippe_czech_signs_b03_2 {
+ components {
+  LF_BaseWorldClearComponent "{708260335E78881D}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{EF9AC1132797202D}Prefabs/Structures/BuildingParts/Signs/SignWall3D_01/SignWall3D_Pub_01.et"
+   }
+  }
+ }
+ coords 4453.09 16.9873 10709.2
+}
+GenericEntity Fit_saint_philippe_czech_signs_b06_1 {
+ components {
+  LF_BaseWorldClearComponent "{C9C7618EA3CF3648}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Svoboda_V1.et"
+   }
+  }
+ }
+ coords 4482.52 14.69 10745
+}
+GenericEntity Fit_saint_philippe_czech_signs_b107_1 {
+ components {
+  LF_BaseWorldClearComponent "{83836C32DAEF36F9}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/Commercial/FuelStations/FuelStation_E_01/HouseAddons/FuelStation_E_01_fuelsign.et"
+   }
+  }
+ }
+ coords 4614.55 21.862 10652.7
+}
+GenericEntity Fit_saint_philippe_czech_signs_b107_2 {
+ components {
+  LF_BaseWorldClearComponent "{592F50DD5B0CA56C}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{D7EEBCFB81A67398}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GasStation.et"
+   }
+  }
+ }
+ coords 4615.45 21.462 10661.7
+}
+GenericEntity Fit_saint_philippe_czech_signs_b109_1 {
+ components {
+  LF_BaseWorldClearComponent "{42BE371E486B5A89}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Signs/SignWall/SignWall_01_115x67_ElementarySchool.et"
+   }
+  }
+ }
+ coords 4583.94 19.5178 10815.6
+}
+GenericEntity Fit_saint_philippe_czech_signs_b111_1 {
+ components {
+  LF_BaseWorldClearComponent "{B3072D62B5639160}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Do_toho_V1.et"
+   }
+  }
+ }
+ coords 4259.59 2.93875 10690.5
+}
+GenericEntity Fit_saint_philippe_czech_signs_b114_1 {
+ components {
+  LF_BaseWorldClearComponent "{17D4662B375BA0D5}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_02_Pub_V1.et"
+   }
+  }
+ }
+ coords 4459.76 12.8175 10899.4
+}
+GenericEntity Fit_saint_philippe_czech_signs_b119_1 {
+ components {
+  LF_BaseWorldClearComponent "{34D391E621475A54}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Do_toho_V1.et"
+   }
+  }
+ }
+ coords 4668.49 22.2748 10752.7
+}
+GenericEntity Fit_saint_philippe_czech_signs_b119_2 {
+ components {
+  LF_BaseWorldClearComponent "{65950C7146588B75}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_CarService.et"
+   }
+  }
+ }
+ coords 4690.85 23.7255 10755.9
+}
+GenericEntity Fit_saint_philippe_czech_signs_b12_1 {
+ components {
+  LF_BaseWorldClearComponent "{EB1834453417548A}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{912A784B79C35318}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_HouseholdWares.et"
+   }
+  }
+ }
+ coords 4514.4 18.4942 10738.3
+}
+GenericEntity Fit_saint_philippe_czech_signs_b122_1 {
+ components {
+  LF_BaseWorldClearComponent "{801407D3CED91309}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Mural/Murals_5x1_TSNC_V2.et"
+   }
+  }
+ }
+ coords 4238.85 3.13975 10694.9
+}
+GenericEntity Fit_saint_philippe_czech_signs_b122_2 {
+ components {
+  LF_BaseWorldClearComponent "{873DE02E487DC55C}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Mural/Murals_5x1_TSNC_V1.et"
+   }
+  }
+ }
+ coords 4262.76 4.53775 10696.1
+}
+GenericEntity Fit_saint_philippe_czech_signs_b123_1 {
+ components {
+  LF_BaseWorldClearComponent "{4E99379F6FD6B983}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_02_Pub_V1.et"
+   }
+  }
+ }
+ coords 4468.83 12.7405 10894.2
+}
+GenericEntity Fit_saint_philippe_czech_signs_b123_2 {
+ components {
+  LF_BaseWorldClearComponent "{082A8A6E9984073C}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{234CF9A4AE06D5ED}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_02_Pub_V1.et"
+   }
+  }
+ }
+ coords 4476.03 15.1495 10899.9
+}
+GenericEntity Fit_saint_philippe_czech_signs_b16_1 {
+ components {
+  LF_BaseWorldClearComponent "{C74E3271EE50CB21}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Mural/Murals_5x1_Sputnik_V1.et"
+    "Prefabs/Structures/BuildingParts/Mural/Murals_5x5_round_Sputnik_V1.et"
+   }
+  }
+ }
+ coords 4542.8 21.3759 10720.9
+}
+GenericEntity Fit_saint_philippe_czech_signs_b23_1 {
+ components {
+  LF_BaseWorldClearComponent "{0F34608DC0ACE85F}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Pamatujeme_V1.et"
+   }
+  }
+ }
+ coords 4494.46 17.8583 10644.4
+}
+GenericEntity Fit_saint_philippe_czech_signs_b32_1 {
+ components {
+  LF_BaseWorldClearComponent "{B66B4553CAE3DDBA}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Props/Military/Posters/PosterSingle_USSR_A1_calendar.et"
+    "Prefabs/Props/Military/Posters/PosterSingle_USSR_A1_sleep.et"
+    "Prefabs/Props/Military/Posters/Poster_USSR_cutouts_V5.et"
+    "Prefabs/Props/Military/Posters/Poster_USSR_cutouts_star.et"
+   }
+  }
+ }
+ coords 4546.84 23.699 10747.3
+}
+GenericEntity Fit_saint_philippe_czech_signs_b38_1 {
+ components {
+  LF_BaseWorldClearComponent "{2BD40AB1C2DBDB1B}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{134DBD739E0790EC}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_ClothesStore.et"
+   }
+  }
+ }
+ coords 4442.98 14.5762 10781.1
+}
+GenericEntity Fit_saint_philippe_czech_signs_b45_1 {
+ components {
+  LF_BaseWorldClearComponent "{8B7BFFF540AF55B3}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{EE10F4DC37099ADA}Prefabs/Structures/BuildingParts/Signs/SignWall/SignWall_01_115x67_MunicipalOffice.et"
+   }
+  }
+ }
+ coords 4416.48 14.605 10656
+}
+GenericEntity Fit_saint_philippe_czech_signs_b45_2 {
+ components {
+  LF_BaseWorldClearComponent "{5B251F1A331EAD48}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Azbuka_V1.et"
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Vole_V1.et"
+   }
+  }
+ }
+ coords 4421.97 13.8765 10640.1
+}
+GenericEntity Fit_saint_philippe_czech_signs_b45_3 {
+ components {
+  LF_BaseWorldClearComponent "{509B4B5ACDFD9F58}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Starka_V1.et"
+   }
+  }
+ }
+ coords 4424.81 14.2373 10641.6
+}
+GenericEntity Fit_saint_philippe_czech_signs_b45_4 {
+ components {
+  LF_BaseWorldClearComponent "{9215217EF58F8C5D}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{D46F2E632A683DBA}Prefabs/Structures/BuildingParts/Signs/SignWall/SignWall_01_90x45_PostOffice.et"
+   }
+  }
+ }
+ coords 4428.85 15.0422 10655.4
+}
+GenericEntity Fit_saint_philippe_czech_signs_b48_1 {
+ components {
+  LF_BaseWorldClearComponent "{FEC1205F0FFE80B3}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Mural/Murals_5x5_round_Malina_V1.et"
+   }
+  }
+ }
+ coords 4554.11 24.766 10768.2
+}
+GenericEntity Fit_saint_philippe_czech_signs_b48_2 {
+ components {
+  LF_BaseWorldClearComponent "{12D06A81D3752CFA}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{44A1CCEB43D989CA}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_Drugstore.et"
+   }
+  }
+ }
+ coords 4560.68 20.9462 10773.4
+}
+GenericEntity Fit_saint_philippe_czech_signs_b66_1 {
+ components {
+  LF_BaseWorldClearComponent "{5B26A10BFED3117F}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{1A299FE9842C8DB3}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GroceryStore.et"
+   }
+  }
+ }
+ coords 4362.92 15.952 10691.5
+}
+GenericEntity Fit_saint_philippe_czech_signs_b66_2 {
+ components {
+  LF_BaseWorldClearComponent "{21B4FD43DB349E3D}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{1A299FE9842C8DB3}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_GroceryStore.et"
+   }
+  }
+ }
+ coords 4379.28 16.007 10684.7
+}
+GenericEntity Fit_saint_philippe_czech_signs_b66_3 {
+ components {
+  LF_BaseWorldClearComponent "{0F10FACCC701EBD0}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Signs/SignWall3D_01/SignWall3D_GroceryStore_01.et"
+   }
+  }
+ }
+ coords 4379.96 15.417 10669.6
+}
+GenericEntity Fit_saint_philippe_czech_signs_b68_1 {
+ components {
+  LF_BaseWorldClearComponent "{40D38D6E4CBCE64B}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Mural/Murals_4x4_round_Rybana_V1.et"
+   }
+  }
+ }
+ coords 4588.75 22.756 10747.3
+}
+GenericEntity Fit_saint_philippe_czech_signs_b88_1 {
+ components {
+  LF_BaseWorldClearComponent "{86F011B49BF0EDED}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "Prefabs/Structures/BuildingParts/Graffiti/Graffiti_Azbuka_V1.et"
+   }
+  }
+ }
+ coords 4439.1 10.5155 10837.1
+}
+GenericEntity Fit_saint_philippe_czech_signs_b88_2 {
+ components {
+  LF_BaseWorldClearComponent "{19E835AF327FB8D6}" {
+   m_vBoxHalfM 3 0 3
+   m_fBoxHeightM 16
+   m_aPrefabs {
+    "{44A1CCEB43D989CA}Prefabs/Structures/BuildingParts/Signs/Commercial/SignCommercial_01_Drugstore.et"
+   }
+  }
+ }
+ coords 4439.24 12.2787 10841.2
+}
+GenericEntity Fit_saint_philippe_czech_signs_housewares_fascia : "{4697D9464B596C24}Prefabs/Props/Signs/LF_Sign_Fascia.et" {
+ components {
+  LF_SignComponent "{6E3FF3980D87CACE}" {
+   m_sSignId "housewares"
+   m_vRimColor 0.9 0.88 0.82
+   m_vPaintColor 0.12 0.3 0.2
+   m_vTextColor 0.96 0.94 0.88
+  }
+ }
+ coords 4514.4 18.49 10738.3
+ angleY 171
+}
