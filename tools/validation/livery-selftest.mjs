@@ -13,6 +13,8 @@
 // "FAIL cannot load tools/livery/generate.mjs: ERR_MODULE_NOT_FOUND" (2026-11-23).
 // red-proof: with the credit check in planLivery turned off this printed
 // "FAIL  a row without a credit: wrong error \"Cannot read properties of undefined (reading 'source')\"" (2026-11-23).
+// red-proof: before rows/ and vehicles/ existed this printed
+// "FAIL  table.mjs must export loadLiveries(dir) and generate.mjs loadVehicles(dir)" (2026-11-23).
 // red-proof: with the door plate child turned off this printed
 // "FAIL  addons/LF_Everon1989/Prefabs/Vehicles/Liveries/UAZ469_FixtureBlue_door_L01.et: 0 plates, want 1" (2026-11-23).
 //
@@ -21,6 +23,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
+import { scratchDir } from "../lib/scratch.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const FIX = join(ROOT, "tools", "livery", "fixtures");
@@ -106,6 +109,36 @@ throws(() => gen.planLivery(rows.badPlateText, vanilla), /plate.text must be/i, 
   if (!plan.strings.some((s) => signs?.text.includes(`"#${s.id}"`) && s.text === "POLICE")) fail("the sign row does not use the plate's string");
 }
 throws(() => gen.checkUnique([rows.good[0], { ...rows.good[0] }].map((r) => gen.planLivery(r, vanilla))), /GUID .* twice/i, "two rows with one id");
+
+// Rows and vehicles are one file each (#4467): every tools/livery/rows/*.mjs and vehicles/*.mjs is read, with
+// no central list. A scratch folder holds a rows file and a vehicle file nothing else names.
+{
+  const dir = scratchDir("lf-livery-");
+  const rowsDir = join(dir, "rows"), vehDir = join(dir, "vehicles");
+  mkdirSync(rowsDir); mkdirSync(vehDir);
+  writeFileSync(join(rowsDir, "extra.mjs"), `export default [{ id: "Extra", vehicle: "Truck", base: "{0123456789ABCDEF}Prefabs/x.et", colors: { 1: [1, 1, 1] } }];\n`);
+  writeFileSync(join(rowsDir, "notes.txt"), "not a rows file\n");
+  writeFileSync(join(vehDir, "Truck.mjs"), `export default { baseEmat: "e", mesh: "A", assign: "B", source: "S", doors: null };\n`);
+  if (typeof table.loadLiveries !== "function" || typeof gen.loadVehicles !== "function") {
+    fail("table.mjs must export loadLiveries(dir) and generate.mjs loadVehicles(dir)");
+  } else {
+    const got = await table.loadLiveries(rowsDir);
+    if (got.length !== 1 || got[0].id !== "Extra") fail(`a rows file outside table.mjs was not read: ${JSON.stringify(got)}`);
+    const veh = await gen.loadVehicles(vehDir);
+    if (Object.keys(veh).join() !== "Truck") fail(`a vehicle file outside generate.mjs was not read: ${Object.keys(veh).join()}`);
+    writeFileSync(join(rowsDir, "bad.mjs"), "export const nope = 1;\n");
+    let bad = false;
+    try { await table.loadLiveries(rowsDir); } catch (e) { bad = /bad\.mjs/.test(e.message); }
+    if (!bad) fail("a rows file with no default array did not name itself in the error");
+  }
+  const ls = (d) => (existsSync(join(ROOT, "tools", "livery", d)) ? readdirSync(join(ROOT, "tools", "livery", d)) : []);
+  const shipped = ls("rows").filter((n) => n.endsWith(".mjs"));
+  if (!shipped.includes("police.mjs")) fail("tools/livery/rows/police.mjs is missing");
+  const vShipped = ls("vehicles").filter((n) => n.endsWith(".mjs")).sort().join();
+  if (vShipped !== "S105.mjs,S1203.mjs,UAZ469.mjs") fail(`tools/livery/vehicles holds ${vShipped}, want S105.mjs,S1203.mjs,UAZ469.mjs`);
+  if (Object.keys(gen.VEHICLES).sort().join() !== "S105,S1203,UAZ469") fail(`VEHICLES keys ${Object.keys(gen.VEHICLES).join()}`);
+  if (table.LIVERIES.map((r) => `${r.vehicle}_${r.id}`).join() !== "UAZ469_Police,S105_Police,S1203_Police") fail("the three police rows are not in table.LIVERIES in order");
+}
 
 // The real table builds against the fixture vanilla files and no GUID repeats.
 try {

@@ -142,6 +142,7 @@ Music and ambience generated with ElevenLabs.
 | Radio track "Orchestral morning", a light orchestral morning piece (`Sounds/Atmosphere/Samples/Atmosphere_RadioOrchestralMorning_LP.wav`) | Music generated with ElevenLabs (ElevenLabs Music, `music_v1`, instrumental) | https://elevenlabs.io | The maintainer's Starter plan, which allows commercial use: use inside the mod. **Not under this repository's MIT license**: the track may not be taken out of the mod and reused or offered as a music library | `tools/assets/atmosphere/ambience.json` (prompt, model, date, pick) |
 | Radio track "Orchestral serenade", a Mediterranean serenade (`Sounds/Atmosphere/Samples/Atmosphere_RadioOrchestralSerenade_LP.wav`) | Music generated with ElevenLabs (ElevenLabs Music, `music_v1`, instrumental) | https://elevenlabs.io | The maintainer's Starter plan, which allows commercial use: use inside the mod. **Not under this repository's MIT license**: the track may not be taken out of the mod and reused or offered as a music library | `tools/assets/atmosphere/ambience.json` (prompt, model, date, pick) |
 | Background loops: furnace, sawmill, quarry, farm, still, police desk, chop shop, square, bank murmur, bank till and clock, hospital equipment, hospital ward, payphone line, fuel pump, cash van idle (`Sounds/Atmosphere/Samples/`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | The maintainer's Starter plan (commercial use allowed) | `tools/assets/atmosphere/ambience.json` |
+| Ambience beds: harbor by day (gulls, water, rigging), harbor by night (water only) and village night (crickets, a far dog) (`Sounds/Ambience/Samples/Atmosphere_HarborDay_LP.wav`, `Atmosphere_HarborNight_LP.wav`, `Atmosphere_VillageNight_LP.wav`) | ElevenLabs text-to-sound-effects, loop on, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-23 on the maintainer's Starter plan, same terms as the taser sounds above. Vanilla has no prop-level sound for these: its harbor and night ambience is the global soundscape (`Sounds/Environment/Ambients2D`). #4227 | `tools/assets/atmosphere/ambience-beds.json` (every generation: prompt, parameters, date, credits; the picks and why) |
 
 ## Generated voices
 
@@ -232,3 +233,9 @@ English print for the cigarette pack and the vodka bottle (#4383). The brands GA
 |---|---|---|---|
 | LF_CigaretteCarton_BCR | Derived from Bohemia Interactive `LitterInterior_01_V1_BCR.edds` (Arma Public License, base-game asset); the print is ours | English print on the cigarette pack (`LF_CigaretteCarton`) | `addons/LF_Everon1989/Assets/Items/Contraband/LF_CigaretteCarton/` |
 | LF_VodkaBottle_BCR | Derived from Bohemia Interactive `S2_Vodka_paper_BCR.edds` (Arma Public License, base-game asset); the print is ours | English label on the vodka bottle (`LF_VodkaBottle`) | `addons/LF_Everon1989/Assets/Items/Contraband/LF_VodkaBottle/` |
+
+## Work-site sounds
+
+| Asset | Source and license | What it is for | Where |
+|---|---|---|---|
+| Work-site sounds: shift whistle, mine tool bed, sawmill tool bed (`Sounds/Work/Samples/*.wav`) | ElevenLabs text-to-sound-effects, generated with ElevenLabs | https://elevenlabs.io | Generated 2026-11-23 on the maintainer's Starter plan, same terms as the taser sounds above (vanilla had no shift whistle or matching loop) | `tools/assets/site-ambience/site-ambience.json` (every generation: prompt, parameters, date) and `addons/LF_Everon1989/Sounds/Work/manifest.json` |
