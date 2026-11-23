@@ -4545,6 +4545,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+    CustomStringTableItem "{4D22C5E97B2689AA}" {
+     Id "LF-Credits_202"
+     Target_en_us "Desk sergeant's five lines"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{D12E84B0D1EB5D48}" {
+     Id "LF-Credits_203"
+     Target_en_us "Booking typewriter and ink pad stamp sounds"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
     CustomStringTableItem "{09A1E735EF193A11}" {
      Id "LF-Credits_21"
      Target_en_us "Arma Reforger Tools and the Workbench IDE by Bohemia Interactive build and test the mod."

@@ -234,7 +234,7 @@ export async function main() {
       for (const s of r.sounds.filter((x) => x.pick)) for (const n of s.pick) ok((r.generations || []).some((g) => g.id === s.id && g.take === n) || (s.compose && s.compose.as_take === n) || (s.derive && s.derive.as_take === n), `${slug}: pick ${s.id} ${n} is a recorded generation or a composed take`);
       for (const [project, w] of Object.entries(r.wired || {})) {
         const rel = w.project.slice(18);
-        const file = join(ADDON, rel);
+        const file = join(ROOT, "addons", r.addon || "LifeFramework", rel); // a pack-wired sound (#4431)
         ok(existsSync(file) && existsSync(file + ".meta"), `${slug}: ${rel} and its .meta are in the addon`);
         if (!existsSync(file)) continue;
         ok(readFileSync(file + ".meta", "utf8").includes(`Name "${w.project}"`), `${slug}: ${rel}.meta carries the recorded GUID`);
@@ -243,7 +243,7 @@ export async function main() {
         const evs = r.sounds.filter((s) => s.project === project && !s.layer_only).map((s) => ({ ...s, samples: w.samples.slice(at, (at += s.pick.length)) }));
         ok(readFileSync(file, "utf8") === sound.acpText(evs), `${slug}: ${rel} is what the generator writes from sounds.json (rerun --only wire)`);
         for (const ref of w.samples) {
-          const wav = join(ADDON, ref.slice(18));
+          const wav = join(ROOT, "addons", r.addon || "LifeFramework", ref.slice(18)); // a pack-wired sound (#4431)
           ok(existsSync(wav) && existsSync(wav + ".meta"), `${slug}: sample ${ref.slice(18)} and its .meta are in the addon`);
           if (!existsSync(wav)) continue;
           const s = evs.find((e) => e.samples.includes(ref));
