@@ -157,7 +157,8 @@ class LF_JobLevels
 			return 0;
 		}
 
-		int granted = CapToday(playerUid, track, amount);
+		// First shift of the day (N11) doubles before the cap, so the daily cap holds on the doubled amount.
+		int granted = CapToday(playerUid, track, LF_FirstShift.Apply(playerUid, job, amount, LF_JobGuards.Now()));
 		if (granted <= 0)
 		{
 			LF_Debug.Info(FEATURE, string.Format("xp capped: %1 reached the daily %2 cap of %3 (%4)", playerUid, job, track.m_iDailyXpCap, reason));
@@ -170,6 +171,8 @@ class LF_JobLevels
 		int levelAfter = track.LevelFor(before + granted);
 
 		LF_Debug.Info(FEATURE, string.Format("+%1 %2 xp for %3 from %4 (total %5, level %6)", granted, job, playerUid, reason, before + granted, levelAfter));
+		// After the change, before the level event: a subscriber (WK-A10, the apprentice bonus) sees the final amount.
+		LF_EventBus.Publish(LF_OnJobXpAwarded.Create(playerUid, job, granted, reason));
 		if (levelAfter > levelBefore)
 		{
 			LF_Debug.Info(FEATURE, string.Format("%1 %2 level %3 -> %4", playerUid, job, levelBefore, levelAfter));
@@ -305,6 +308,7 @@ class LF_JobLevels
 		ForgetTimes(s_mLastAward, playerUid);
 		ForgetCounts(s_mEarnedToday, playerUid);
 		ForgetCounts(s_mCapDay, playerUid);
+		LF_FirstShift.Forget(playerUid);
 	}
 
 	//------------------------------------------------------------------------------------------------
