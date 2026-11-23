@@ -10097,6 +10097,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Fresh paint. Your car is waiting on the pad."
      Comment "The respray or livery was paid for and the car came back in the new paint."
     }
+    CustomStringTableItem "{9EA5DE59135EED28}" {
+     Id "LF-LiveryShop_Hint"
+     Target_en_us "Paint bay: park your own car on the pad"
+     Comment "Action row beside the paint bay pad while the reader has no car of theirs on it."
+    }
     CustomStringTableItem "{4B4F10AFC83A6950}" {
      Id "LF-LiveryShop_NoCash"
      Target_en_us "You do not have enough cash on you for this paint job."
@@ -10116,6 +10121,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-LiveryShop_Police"
      Target_en_us "{police} livery"
      Comment "Bay paint job: the department's white-and-navy repaint, sold to police only."
+    }
+    CustomStringTableItem "{669C1BF76FE6381B}" {
+     Id "LF-LiveryShop_Row"
+     Target_en_us "Paint: %1 ({currency:sym}%2)"
+     Comment "Action row on the paint bay: %1 is the paint or livery name, %2 the price."
+    }
+    CustomStringTableItem "{B1DCC57A7522779C}" {
+     Id "LF-LiveryShop_Title"
+     Target_en_us "Paint bay"
+     Comment "Toast title for the respray bay."
     }
     CustomStringTableItem "{C4C7B2C8203E90BD}" {
      Id "LF-LiveryShop_WrongJob"
