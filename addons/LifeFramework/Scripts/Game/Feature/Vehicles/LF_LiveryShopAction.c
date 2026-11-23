@@ -7,11 +7,11 @@
 // server only, #3366), so it asks the server for it while it stands at the bay, keeps the answer a few
 // seconds, and the row reads the answer.
 //
-// The press names the paint (its option index and its spawn prefab's GUID), never a price or a prefab.
+// The press names the paint by its spawn prefab's GUID, never a price, a place in the list or a prefab path.
 // The server finds the bay by the action it carries, resolves the payer's faction from the account, the
-// uid from the player, the car from the owner's cars near the bay, rebuilds the list, and refuses a stale
-// press (the GUID no longer matches that index). LF_LiveryShop.Respray then does the rest and its reason
-// key comes back as a toast.
+// uid from the player, the car from the owner's cars near the bay, rebuilds the list, and refuses a paint
+// that is not on it now (a stale row, a double press: the car's own paint leaves the list).
+// LF_LiveryShop.Respray then does the rest and its reason key comes back as a toast.
 
 //------------------------------------------------------------------------------------------------
 class LF_LiveryBay
@@ -31,10 +31,9 @@ class LF_LiveryBay
 	//! An answer older than this no longer shows rows (the reader walked away or the ask was lost).
 	static const int ANSWER_FRESH_MS = 6000;	// lf-fixed: three asks, so one lost reply does not flicker
 	static const int TEXTS_PER_ROW = 2;	// lf-fixed: wire stride, not a tunable
-	static const int NUMBERS_PER_ROW = 2;	// lf-fixed: wire stride, not a tunable
+	static const int NUMBERS_PER_ROW = 1;	// lf-fixed: wire stride, not a tunable
 
 	// Client: what the last reply said, per row.
-	protected static ref array<int> s_aClientIndexes;
 	protected static ref array<string> s_aClientGuids;
 	protected static ref array<string> s_aClientLabels;
 	protected static int s_iAnswerTick;
@@ -43,7 +42,6 @@ class LF_LiveryBay
 	//------------------------------------------------------------------------------------------------
 	static void ResetStatics()
 	{
-		s_aClientIndexes = null;
 		s_aClientGuids = null;
 		s_aClientLabels = null;
 		s_iAnswerTick = 0;
@@ -51,15 +49,14 @@ class LF_LiveryBay
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pure: the options this faction may buy, in OptionsFor order, with each one's index in the full
-	//! list. A service livery is hidden from another job; the cap is the rows the prefab carries.
-	static void VisibleOptions(string vehicleId, LF_Faction faction, notnull array<ref LF_LiveryOption> options, notnull array<int> indexes)
+	//! Pure: the options this faction may buy, in OptionsFor order. A service livery is hidden from
+	//! another job; the cap is the rows the prefab carries.
+	static void VisibleOptions(string vehicleId, LF_Faction faction, notnull array<ref LF_LiveryOption> options)
 	{
 		options.Clear();
-		indexes.Clear();
 		array<ref LF_LiveryOption> all = {};
 		LF_LiveryShop.OptionsFor(vehicleId, all);
-		foreach (int i, LF_LiveryOption option : all)
+		foreach (LF_LiveryOption option : all)
 		{
 			if (options.Count() >= MAX_ROWS)
 				break;
@@ -68,22 +65,19 @@ class LF_LiveryBay
 				continue;
 
 			options.Insert(option);
-			indexes.Insert(i);
 		}
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Pure: the wire form of a visible list: per row the name key and the spawn prefab's GUID, and
-	//! the option index and the price.
-	static void Pack(notnull array<ref LF_LiveryOption> options, notnull array<int> indexes, notnull array<string> texts, notnull array<int> numbers)
+	//! Pure: the wire form of a visible list: per row the name key and the spawn prefab's GUID, and the price.
+	static void Pack(notnull array<ref LF_LiveryOption> options, notnull array<string> texts, notnull array<int> numbers)
 	{
 		texts.Clear();
 		numbers.Clear();
-		foreach (int i, LF_LiveryOption option : options)
+		foreach (LF_LiveryOption option : options)
 		{
 			texts.Insert(option.m_sNameKey);
 			texts.Insert(LF_VehiclePriceModel.GuidOf(option.m_SpawnPrefab));
-			numbers.Insert(indexes[i]);
 			numbers.Insert(option.m_iPrice);
 		}
 	}
@@ -169,17 +163,16 @@ class LF_LiveryBay
 			return;
 
 		array<ref LF_LiveryOption> options = {};
-		array<int> indexes = {};
-		VisibleOptions(vehicleId, faction, options, indexes);
-		Pack(options, indexes, texts, numbers);
+		VisibleOptions(vehicleId, faction, options);
+		Pack(options, texts, numbers);
 		LF_Debug.Log(FEATURE, string.Format("bay offer for %1: %2 paint jobs for %3", uid, options.Count(), vehicleId));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the reader presses a row. `index` and `guid` name the paint as the client's list showed
-	//! it; the server's own list must agree, or the press is stale and charges nothing.
+	//! Server: the reader presses a row. `guid` names the paint as the client's list showed it; it must
+	//! be on the server's own list for the car now, or the press is stale and charges nothing.
 	//! \return True when the car was repainted.
-	static bool ServerBuy(IEntity user, int index, string guid)
+	static bool ServerBuy(IEntity user, string guid)
 	{
 		if (!Replication.IsServer() || !user)
 			return false;
@@ -198,16 +191,26 @@ class LF_LiveryBay
 
 		array<ref LF_LiveryOption> all = {};
 		LF_LiveryShop.OptionsFor(vehicleId, all);
-		if (index < 0 || index >= all.Count() || LF_VehiclePriceModel.GuidOf(all[index].m_SpawnPrefab) != guid)
+		ResourceName paint;
+		foreach (LF_LiveryOption option : all)
 		{
-			LF_Debug.Info(FEATURE, string.Format("respray press refused: option %1 (%2) is not what the bay lists for %3 now", index, guid, vehicleId));
+			if (LF_VehiclePriceModel.GuidOf(option.m_SpawnPrefab) == guid)
+			{
+				paint = option.m_SpawnPrefab;
+				break;
+			}
+		}
+
+		if (paint.IsEmpty())
+		{
+			LF_Debug.Info(FEATURE, string.Format("respray press refused: paint %1 is not what the bay lists for %2 now", guid, vehicleId));
 			LF_Utils.NotifyEntity(user, "#LF-LiveryShop_NoOption", TITLE);
 			return false;
 		}
 
 		int charged;
 		string reasonKey;
-		bool done = LF_LiveryShop.Respray(user, uid, faction, vehicleId, bay.GetOrigin(), padId, index, charged, reasonKey);
+		bool done = LF_LiveryShop.Respray(user, uid, faction, vehicleId, bay.GetOrigin(), padId, paint, charged, reasonKey);
 		LF_Utils.NotifyEntity(user, reasonKey, TITLE, 4.0);
 		return done;
 	}
@@ -232,22 +235,20 @@ class LF_LiveryBay
 		}
 
 		array<ref LF_LiveryOption> options = {};
-		array<int> indexes = {};
-		VisibleOptions(vehicleId, faction, options, indexes);
+		VisibleOptions(vehicleId, faction, options);
 		if (slot < 0 || slot >= options.Count())
 		{
 			LF_Utils.NotifyEntity(user, "#LF-LiveryShop_NoOption", TITLE);
 			return false;
 		}
 
-		return ServerBuy(user, indexes[slot], LF_VehiclePriceModel.GuidOf(options[slot].m_SpawnPrefab));
+		return ServerBuy(user, LF_VehiclePriceModel.GuidOf(options[slot].m_SpawnPrefab));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: remember a reply. `nowMs` is the tick it arrived on.
 	static void RememberAnswer(notnull array<string> texts, notnull array<int> numbers, int nowMs)
 	{
-		s_aClientIndexes = {};
 		s_aClientGuids = {};
 		s_aClientLabels = {};
 		s_iAnswerTick = nowMs;
@@ -257,9 +258,8 @@ class LF_LiveryBay
 
 		for (int i = 0; i < rows && i < MAX_ROWS; i++)
 		{
-			s_aClientIndexes.Insert(numbers[i * NUMBERS_PER_ROW]);
 			s_aClientGuids.Insert(texts[i * TEXTS_PER_ROW + 1]);
-			s_aClientLabels.Insert(RowLabel(texts[i * TEXTS_PER_ROW], numbers[i * NUMBERS_PER_ROW + 1]));
+			s_aClientLabels.Insert(RowLabel(texts[i * TEXTS_PER_ROW], numbers[i * NUMBERS_PER_ROW]));
 		}
 	}
 
@@ -271,16 +271,14 @@ class LF_LiveryBay
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Client: the row `slot` shows (its option index, spawn GUID and label), false when it is empty.
-	static bool RowAt(int slot, int nowMs, out int index, out string guid, out string label)
+	//! Client: the row `slot` shows (its paint's GUID and label), false when it is empty.
+	static bool RowAt(int slot, int nowMs, out string guid, out string label)
 	{
-		index = -1;
 		guid = string.Empty;
 		label = string.Empty;
-		if (!AnswerFresh(nowMs) || !s_aClientIndexes || slot < 0 || slot >= s_aClientIndexes.Count())
+		if (!AnswerFresh(nowMs) || !s_aClientGuids || slot < 0 || slot >= s_aClientGuids.Count())
 			return false;
 
-		index = s_aClientIndexes[slot];
 		guid = s_aClientGuids[slot];
 		label = s_aClientLabels[slot];
 		return true;
@@ -290,7 +288,7 @@ class LF_LiveryBay
 	//! Client: true while a fresh reply holds no rows (the hint row shows).
 	static bool AnswerEmpty(int nowMs)
 	{
-		return AnswerFresh(nowMs) && s_aClientIndexes && s_aClientIndexes.Count() == 0;
+		return AnswerFresh(nowMs) && s_aClientGuids && s_aClientGuids.Count() == 0;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -321,7 +319,6 @@ class LF_LiveryBay
 	//! until the next ask (within ASK_GAP_MS) brings the new list.
 	static void NotePress()
 	{
-		s_aClientIndexes = null;
 		s_aClientGuids = null;
 		s_aClientLabels = null;
 		s_iAnswerTick = 0;
@@ -364,10 +361,9 @@ class LF_LiveryShopAction : ScriptedUserAction
 		if (m_iSlot < 0)
 			return LF_LiveryBay.AnswerEmpty(now);
 
-		int index;
 		string guid;
 		string label;
-		return LF_LiveryBay.RowAt(m_iSlot, now, index, guid, label);
+		return LF_LiveryBay.RowAt(m_iSlot, now, guid, label);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -397,10 +393,9 @@ class LF_LiveryShopAction : ScriptedUserAction
 			return true;
 		}
 
-		int index;
 		string guid;
 		string label;
-		if (!LF_LiveryBay.RowAt(m_iSlot, System.GetTickCount(), index, guid, label))
+		if (!LF_LiveryBay.RowAt(m_iSlot, System.GetTickCount(), guid, label))
 			return false;
 
 		outName = label;
@@ -426,10 +421,9 @@ class LF_LiveryShopAction : ScriptedUserAction
 			return;
 		}
 
-		int index;
 		string guid;
 		string label;
-		if (!LF_LiveryBay.RowAt(m_iSlot, System.GetTickCount(), index, guid, label))
+		if (!LF_LiveryBay.RowAt(m_iSlot, System.GetTickCount(), guid, label))
 			return;
 
 		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
@@ -440,7 +434,7 @@ class LF_LiveryShopAction : ScriptedUserAction
 		}
 
 		LF_LiveryBay.NotePress();
-		controller.LF_BuyLivery(index, guid);
+		controller.LF_BuyLivery(guid);
 	}
 }
 
@@ -459,12 +453,12 @@ modded class SCR_PlayerController
 
 	//------------------------------------------------------------------------------------------------
 	//! Client: press a row; the server checks the whole purchase again.
-	void LF_BuyLivery(int index, string guid)
+	void LF_BuyLivery(string guid)
 	{
 		if (Replication.IsServer())
-			RpcAsk_LF_LiveryBuy(index, guid);
+			RpcAsk_LF_LiveryBuy(guid);
 		else
-			Rpc(RpcAsk_LF_LiveryBuy, index, guid);
+			Rpc(RpcAsk_LF_LiveryBuy, guid);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -486,7 +480,7 @@ modded class SCR_PlayerController
 
 	//------------------------------------------------------------------------------------------------
 	[RplRpc(RplChannel.Reliable, RplRcver.Server)]
-	protected void RpcAsk_LF_LiveryBuy(int index, string guid)
+	protected void RpcAsk_LF_LiveryBuy(string guid)
 	{
 		if (!LF_BoardProviders.AllowReadAt(GetPlayerId(), System.GetTickCount()))
 			return;
@@ -495,7 +489,7 @@ modded class SCR_PlayerController
 		if (guid.Length() > 40)
 			return;
 
-		LF_LiveryBay.ServerBuy(GetControlledEntity(), index, guid);
+		LF_LiveryBay.ServerBuy(GetControlledEntity(), guid);
 	}
 
 	//------------------------------------------------------------------------------------------------

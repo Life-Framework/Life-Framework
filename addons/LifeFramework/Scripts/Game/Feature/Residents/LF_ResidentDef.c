@@ -47,6 +47,9 @@ class LF_ResidentDef : LF_ConfigRecord
 	[Attribute("", UIWidgets.EditBox, "LF_Places kind of this resident's workplace. Empty for a resident who never works")]
 	string m_sWorkKind;
 
+	[Attribute("", UIWidgets.EditBox, "LF_Places id of the one workplace of the work kind this resident works at (#4560), so four StoreCounter keepers each stand at their own shop. Empty: the nearest place of the kind. An id no place holds warns and falls back to the nearest")]
+	string m_sWorkPlaceId;
+
 	[Attribute("", UIWidgets.ResourcePickerThumbnail, "Character prefab this resident spawns as (#2858). Empty: the neutral civilian", "et")]
 	ResourceName m_sPrefab;
 

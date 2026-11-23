@@ -57,30 +57,25 @@ class LF_Test_LiveryBay : LF_Test
 
 		// The list a reader sees: the job filters it, the index stays the full list's.
 		array<ref LF_LiveryOption> options = {};
-		array<int> indexes = {};
-		LF_LiveryBay.VisibleOptions(CAR, LF_Faction.CIVILIAN, options, indexes);
+		LF_LiveryBay.VisibleOptions(CAR, LF_Faction.CIVILIAN, options);
 		ctx.Equal(1, options.Count(), "a civilian is offered the one civilian paint");
-		ctx.True(indexes.Count() == 1 && indexes[0] == 0, "which is the full list's option 0");
-		LF_LiveryBay.VisibleOptions(CAR, LF_Faction.POLICE, options, indexes);
+		LF_LiveryBay.VisibleOptions(CAR, LF_Faction.POLICE, options);
 		ctx.Equal(2, options.Count(), "an officer is offered both");
-		ctx.True(indexes.Count() == 2 && indexes[1] == 1, "the livery keeps its full-list index");
 
 		// The wire form and the client's rows.
 		array<string> texts = {};
 		array<int> numbers = {};
-		LF_LiveryBay.Pack(options, indexes, texts, numbers);
+		LF_LiveryBay.Pack(options, texts, numbers);
 		ctx.Equal(4, texts.Count(), "two texts per paint job");
-		ctx.Equal(4, numbers.Count(), "two numbers per paint job");
+		ctx.Equal(2, numbers.Count(), "one number per paint job");
 		LF_LiveryBay.RememberAnswer(texts, numbers, 1000);
-		int index;
 		string guid;
 		string label;
-		ctx.True(LF_LiveryBay.RowAt(1, 1500, index, guid, label), "the client's second row exists");
-		ctx.Equal(1, index, "and names option 1");
+		ctx.True(LF_LiveryBay.RowAt(1, 1500, guid, label), "the client's second row exists");
 		ctx.EqualStr(LF_VehiclePriceModel.GuidOf(LF_VehicleCatalog.UAZ469_LOCKED), guid, "and the paint's GUID");
 		ctx.True(label.Contains(POLICE_PRICE.ToString()), "and its label carries the price");
-		ctx.False(LF_LiveryBay.RowAt(2, 1500, index, guid, label), "a third row is empty");
-		ctx.False(LF_LiveryBay.RowAt(0, 1000 + LF_LiveryBay.ANSWER_FRESH_MS + 1, index, guid, label), "a stale answer draws no rows");
+		ctx.False(LF_LiveryBay.RowAt(2, 1500, guid, label), "a third row is empty");
+		ctx.False(LF_LiveryBay.RowAt(0, 1000 + LF_LiveryBay.ANSWER_FRESH_MS + 1, guid, label), "a stale answer draws no rows");
 		LF_LiveryBay.RememberAnswer({}, {}, 2000);
 		ctx.True(LF_LiveryBay.AnswerEmpty(2500), "an empty fresh answer shows the hint row");
 		LF_LiveryBay.ResetStatics();
@@ -107,7 +102,7 @@ class LF_Test_LiveryBay : LF_Test
 		ctx.Equal(2, texts.Count(), "the owner's offer at the bay is one row (a civilian)");
 
 		// A stale press and an empty slot charge nothing.
-		ctx.False(LF_LiveryBay.ServerBuy(owner, 0, "DEADBEEFDEADBEEF"), "a press whose GUID is not the listed paint is refused");
+		ctx.False(LF_LiveryBay.ServerBuy(owner, "DEADBEEFDEADBEEF"), "a press whose GUID is not the listed paint is refused");
 		ctx.False(LF_LiveryBay.ServerBuySlot(owner, 5), "a slot past the list is refused");
 		ctx.Equal(cash, LF_MoneyUtils.GetCash(owner), "refusals charge nothing");
 		ctx.True(car == LF_VehicleOwnership.GetVehicle(CAR), "and leave the car alone");
@@ -131,8 +126,10 @@ class LF_Test_LiveryBay : LF_Test
 		ctx.True(painted && painted != car, "a new car stands in the new paint");
 		ctx.True(painted && LF_VehiclePriceModel.SameResource(painted.GetPrefabData().GetPrefabName(), LF_VehicleCatalog.S1203_LOCKED), "the live car is the chosen variant");
 		ctx.True(painted && vector.Distance(painted.GetOrigin(), bay.GetOrigin()) <= LF_LiveryShopConfig.Get().m_fBayRadius, "on the bay's pad");
-		LF_LiveryBay.VisibleOptions(CAR, LF_Faction.CIVILIAN, options, indexes);
+		LF_LiveryBay.VisibleOptions(CAR, LF_Faction.CIVILIAN, options);
 		ctx.Equal(0, options.Count(), "the car's own paint leaves the list");
+		ctx.False(LF_LiveryBay.ServerBuy(owner, LF_VehiclePriceModel.GuidOf(LF_VehicleCatalog.S1203_LOCKED)), "pressing the same row again is refused (the paint is already on the car)");
+		ctx.Equal(cash - CIVIL_PRICE, LF_MoneyUtils.GetCash(owner), "and charges nothing more");
 
 		Cleanup(owner, stranger, bay, before);
 	}

@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------------
-//! The police skill (PO-R8, #4424, 0.3.0 plan section 2): POLICE XP from outcomes, three small perks.
+//! The police skill (PO-R8, #4424, 0.3.0 plan section 2): POLICE XP from outcomes, two small perks.
 //! XP comes only from what an officer finishes, never from time on duty (shift pay already pays for
 //! time): a call closed as resolved (`police_call_resolved`), a booking at the desk (`police_booking`)
 //! and a recovered stolen car (`police_recovery`). An unfounded close, no one found and clocking in
@@ -7,7 +7,7 @@
 //! its curve are the same as every trade (`LF_JobLevels`). Server only.
 //!
 //! The perks are read through `LF_TradePerks.Has(uid, "POLICE", perk)`: a faster cuff (the hold the
-//! server asks for), a longer radar range and a quicker booking. They change a feel, never pay:
+//! server asks for) and a longer radar range. They change a feel, never pay:
 //! police stay the lowest paid trade and no row here touches money.
 //------------------------------------------------------------------------------------------------
 class LF_PoliceSkill : LF_EventSubscriber
@@ -21,11 +21,9 @@ class LF_PoliceSkill : LF_EventSubscriber
 
 	static const string PERK_FAST_CUFF = "fast_cuff";
 	static const string PERK_LONG_RADAR = "long_radar";
-	static const string PERK_QUICK_BOOKING = "quick_booking";
 
 	static const int CUFF_PERCENT = 70;	// lf-fixed: a perked cuff hold asks for 70% of the base time
 	static const int RADAR_PERCENT = 150;	// lf-fixed: a perked radar gun reaches 150% of the base range
-	static const int BOOKING_PERCENT = 60;	// lf-fixed: a perked booking takes 60% of the base time
 
 	protected static ref LF_PoliceSkill s_Subscriber;
 
@@ -120,16 +118,6 @@ class LF_PoliceSkill : LF_EventSubscriber
 			return baseMeters * RADAR_PERCENT / 100;
 
 		return baseMeters;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! A booking's time: the base time, shorter with the quick-booking perk.
-	static float BookingSeconds(string officerUid, float baseSeconds)
-	{
-		if (Has(officerUid, PERK_QUICK_BOOKING))
-			return baseSeconds * BOOKING_PERCENT / 100;
-
-		return baseSeconds;
 	}
 
 	//------------------------------------------------------------------------------------------------
