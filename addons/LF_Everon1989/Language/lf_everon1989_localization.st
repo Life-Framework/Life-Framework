@@ -689,6 +689,146 @@ StringTable {
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
      Comment "Pack patch of the clerk dialogue's line work_errand (voiced; tools/assets/dialogue/clerk_everon). Changing it needs: tools\\cli asset dialogue clerk_everon"
     }
+    CustomStringTableItem "{7A3C5E19D2B84F60}" {
+     Id "LF-Dialogue_Dispatcher_Name"
+     Target_en_us "Dispatch"
+     Comment "Speaker name of the station dispatcher heard on the officers radio (tools/assets/dialogue/dispatcher)."
+    }
+    CustomStringTableItem "{47E0CFCEA05B6E67}" {
+     Id "LF-Dialogue_Dispatcher_PlaceBank"
+     Target_en_us "At the bank."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{D0A84FB72E495DAC}" {
+     Id "LF-Dialogue_Dispatcher_PlaceClothingStore"
+     Target_en_us "At the clothing store."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{8C8FBF3DC014073C}" {
+     Id "LF-Dialogue_Dispatcher_PlaceFuelStation"
+     Target_en_us "At the fuel station."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{5D926CA5C81CB79D}" {
+     Id "LF-Dialogue_Dispatcher_PlaceFurnitureStore"
+     Target_en_us "At the furniture store."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{8E08EC281E221BC8}" {
+     Id "LF-Dialogue_Dispatcher_PlaceGarage"
+     Target_en_us "At the garage."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{50560F35367168B6}" {
+     Id "LF-Dialogue_Dispatcher_PlaceGeneralStore"
+     Target_en_us "At the general store."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{B202ECAFEACC67F8}" {
+     Id "LF-Dialogue_Dispatcher_PlaceGunStore"
+     Target_en_us "At the gunsmith."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{1B5303BD5C5FD66E}" {
+     Id "LF-Dialogue_Dispatcher_PlaceHospital"
+     Target_en_us "At the hospital."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{6116C3121AC2F695}" {
+     Id "LF-Dialogue_Dispatcher_PlaceHostel"
+     Target_en_us "At the hostel."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{EF6C4A3E2B15CA42}" {
+     Id "LF-Dialogue_Dispatcher_PlacePharmacy"
+     Target_en_us "At the pharmacy."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{3AFCA8CAFE81E4CD}" {
+     Id "LF-Dialogue_Dispatcher_PlacePostOffice"
+     Target_en_us "At the post office."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{55BD0514F9CEFD06}" {
+     Id "LF-Dialogue_Dispatcher_PlaceSaintPhilippe"
+     Target_en_us "In Saint-Philippe."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{A49FEF245841A009}" {
+     Id "LF-Dialogue_Dispatcher_PlaceSupermarket"
+     Target_en_us "At the supermarket."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{5FD802E459680D1E}" {
+     Id "LF-Dialogue_Dispatcher_Standby"
+     Target_en_us "Dispatch, standing by."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{35649FFA631F4DF3}" {
+     Id "LF-Dialogue_Dispatcher_TypeArmory"
+     Target_en_us "Armory break-in. All units respond."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{39959F8C43D0ABD7}" {
+     Id "LF-Dialogue_Dispatcher_TypeBreakIn"
+     Target_en_us "Break-in in progress."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{4C49FBA278A7D6F0}" {
+     Id "LF-Dialogue_Dispatcher_TypeCarjacking"
+     Target_en_us "Carjacking in progress."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{0586629E8209A683}" {
+     Id "LF-Dialogue_Dispatcher_TypeCashVan"
+     Target_en_us "Cash van attacked."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{12D3E7DD336CDAB9}" {
+     Id "LF-Dialogue_Dispatcher_TypeChopShop"
+     Target_en_us "Chop shop activity reported."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{1E07B6635CD686E8}" {
+     Id "LF-Dialogue_Dispatcher_TypeEscaped"
+     Target_en_us "Prisoner escaped custody."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{13B62A9661EA3D47}" {
+     Id "LF-Dialogue_Dispatcher_TypeHospital"
+     Target_en_us "Hospital robbery in progress."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{11F953346ED9FDFF}" {
+     Id "LF-Dialogue_Dispatcher_TypeJailbreak"
+     Target_en_us "Jailbreak in progress. All units respond."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{B9A0D2401614653B}" {
+     Id "LF-Dialogue_Dispatcher_TypeMurder"
+     Target_en_us "Homicide reported. Man down."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{16A96A0228A2E5F1}" {
+     Id "LF-Dialogue_Dispatcher_TypeRobbery"
+     Target_en_us "Robbery in progress."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{63D9F4E75FA4A803}" {
+     Id "LF-Dialogue_Dispatcher_TypeShoplifting"
+     Target_en_us "Shoplifting reported."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{082424050AB77E84}" {
+     Id "LF-Dialogue_Dispatcher_TypeVehicleTheft"
+     Target_en_us "Vehicle theft reported."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
+    CustomStringTableItem "{B7118FF54EADB1E4}" {
+     Id "LF-Dialogue_Dispatcher_TypeWeaponTheft"
+     Target_en_us "Weapon theft reported."
+     Comment "Dialogue caption, spoken by the dispatcher NPC (voiced; tools/assets/dialogue/dispatcher). Changing it needs: tools\\cli asset dialogue dispatcher"
+    }
     CustomStringTableItem "{7BDFAF37D3BDD834}" {
      Id "LF-Dialogue_Dockworker_AboutCargo"
      Target_en_us "Flour, diesel, machine parts. What is in the other crates is the harbor master's business, and he does not share."

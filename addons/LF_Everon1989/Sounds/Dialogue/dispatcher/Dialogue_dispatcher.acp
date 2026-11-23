@@ -1,0 +1,2908 @@
+AudioClass {
+ signals {
+  SignalClass {
+   id 65549
+   name "WPN Handling Spatiality"
+   tl 432 -1248
+   res "{1387EB9E4DBEB1F2}Sounds/_SharedData/Signals/Weapons/Spatiality/Weapons_Handling_Spatiality.sig"
+   inputsport {
+    1 3
+   }
+   outputsport {
+    9
+   }
+   inputvalues {
+    0 1
+   }
+   inputvaluesmin {
+    0 0
+   }
+   inputvaluesmax {
+    1 1
+   }
+   path "{1387EB9E4DBEB1F2}Sounds/_SharedData/Signals/Weapons/Spatiality/Weapons_Handling_Spatiality.sig"
+  }
+  SignalClass {
+   id 70669
+   name "Reverb Base"
+   tl 1088 -224
+   res "{76CBB40EF7F227B6}Sounds/_SharedData/Signals/Reverb/Reverb_Base.sig"
+   inputsport {
+    1 35 40 112 139
+   }
+   outputsport {
+    34 39 105 107 106 110
+   }
+   inputvalues {
+    100 0.5 0.5 16000 16000
+   }
+   inputvaluesmin {
+    0 0 0 0 0
+   }
+   inputvaluesmax {
+    100 1 1 16000 16000
+   }
+   path "{76CBB40EF7F227B6}Sounds/_SharedData/Signals/Reverb/Reverb_Base.sig"
+  }
+  SignalClass {
+   id 72717
+   name "Occlusion Props"
+   tl 256 -1040
+   res "{A45B14CDEA2D5DCD}Sounds/_SharedData/Signals/Props/Props_Occlusion.sig"
+   inputsport {
+    1 6 7 23 52 56
+   }
+   outputsport {
+    5 37
+   }
+   inputvalues {
+    0 0 0 0 1000 400
+   }
+   inputvaluesmin {
+    0 0 0 0 0 0
+   }
+   inputvaluesmax {
+    1 1 1 1 10000 10000
+   }
+   path "{A45B14CDEA2D5DCD}Sounds/_SharedData/Signals/Props/Props_Occlusion.sig"
+  }
+ }
+ sounds {
+  SoundClass {
+   id 102409
+   name "SOUND_DLG_DISPATCHER_STANDBY"
+   version 5
+   tl 680 0
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 204818
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 103433
+   name "SOUND_DLG_DISPATCHER_TYPE_ROBBERY"
+   version 5
+   tl 680 280
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 205842
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 104457
+   name "SOUND_DLG_DISPATCHER_TYPE_VEHICLE_THEFT"
+   version 5
+   tl 680 560
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 206866
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 105481
+   name "SOUND_DLG_DISPATCHER_TYPE_CARJACKING"
+   version 5
+   tl 680 840
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 207890
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 106505
+   name "SOUND_DLG_DISPATCHER_TYPE_WEAPON_THEFT"
+   version 5
+   tl 680 1120
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 208914
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 107529
+   name "SOUND_DLG_DISPATCHER_TYPE_BREAK_IN"
+   version 5
+   tl 680 1400
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 209938
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 108553
+   name "SOUND_DLG_DISPATCHER_TYPE_HOSPITAL"
+   version 5
+   tl 680 1680
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 210962
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 109577
+   name "SOUND_DLG_DISPATCHER_TYPE_MURDER"
+   version 5
+   tl 680 1960
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 211986
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 110601
+   name "SOUND_DLG_DISPATCHER_TYPE_CASH_VAN"
+   version 5
+   tl 680 2240
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 213010
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 111625
+   name "SOUND_DLG_DISPATCHER_TYPE_ARMORY"
+   version 5
+   tl 680 2520
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 214034
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 112649
+   name "SOUND_DLG_DISPATCHER_TYPE_JAILBREAK"
+   version 5
+   tl 680 2800
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 215058
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 113673
+   name "SOUND_DLG_DISPATCHER_TYPE_ESCAPED"
+   version 5
+   tl 680 3080
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 216082
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 114697
+   name "SOUND_DLG_DISPATCHER_TYPE_SHOPLIFTING"
+   version 5
+   tl 680 3360
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 217106
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 115721
+   name "SOUND_DLG_DISPATCHER_TYPE_CHOP_SHOP"
+   version 5
+   tl 680 3640
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 218130
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 116745
+   name "SOUND_DLG_DISPATCHER_PLACE_BANK"
+   version 5
+   tl 680 3920
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 219154
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 117769
+   name "SOUND_DLG_DISPATCHER_PLACE_FUEL_STATION"
+   version 5
+   tl 680 4200
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 220178
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 118793
+   name "SOUND_DLG_DISPATCHER_PLACE_GENERAL_STORE"
+   version 5
+   tl 680 4480
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 221202
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 119817
+   name "SOUND_DLG_DISPATCHER_PLACE_GUN_STORE"
+   version 5
+   tl 680 4760
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 222226
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 120841
+   name "SOUND_DLG_DISPATCHER_PLACE_HOSPITAL"
+   version 5
+   tl 680 5040
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 223250
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 121865
+   name "SOUND_DLG_DISPATCHER_PLACE_PHARMACY"
+   version 5
+   tl 680 5320
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 224274
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 122889
+   name "SOUND_DLG_DISPATCHER_PLACE_POST_OFFICE"
+   version 5
+   tl 680 5600
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 225298
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 123913
+   name "SOUND_DLG_DISPATCHER_PLACE_SUPERMARKET"
+   version 5
+   tl 680 5880
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 226322
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 124937
+   name "SOUND_DLG_DISPATCHER_PLACE_CLOTHING_STORE"
+   version 5
+   tl 680 6160
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 227346
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 125961
+   name "SOUND_DLG_DISPATCHER_PLACE_FURNITURE_STORE"
+   version 5
+   tl 680 6440
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 228370
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 126985
+   name "SOUND_DLG_DISPATCHER_PLACE_GARAGE"
+   version 5
+   tl 680 6720
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 229394
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 128009
+   name "SOUND_DLG_DISPATCHER_PLACE_HOSTEL"
+   version 5
+   tl 680 7000
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 230418
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+  SoundClass {
+   id 129033
+   name "SOUND_DLG_DISPATCHER_PLACE_SAINT_PHILIPPE"
+   version 5
+   tl 680 7280
+   ins {
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 231442
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    127 0
+   }
+   outState 35851
+   outStatePort 79879
+  }
+ }
+ mixers {
+  MixerClass {
+   id 35851
+   name "OutputState"
+   version 4
+   tl 1488 -288
+   res "{B764D803219C775E}Sounds/FinalMix.afm"
+   ins {
+    ConnectionsClass connections {
+     id 79879
+     links {
+      ConnectionClass connection {
+       id 102409
+       port 65
+      }
+      ConnectionClass connection {
+       id 103433
+       port 65
+      }
+      ConnectionClass connection {
+       id 104457
+       port 65
+      }
+      ConnectionClass connection {
+       id 105481
+       port 65
+      }
+      ConnectionClass connection {
+       id 106505
+       port 65
+      }
+      ConnectionClass connection {
+       id 107529
+       port 65
+      }
+      ConnectionClass connection {
+       id 108553
+       port 65
+      }
+      ConnectionClass connection {
+       id 109577
+       port 65
+      }
+      ConnectionClass connection {
+       id 110601
+       port 65
+      }
+      ConnectionClass connection {
+       id 111625
+       port 65
+      }
+      ConnectionClass connection {
+       id 112649
+       port 65
+      }
+      ConnectionClass connection {
+       id 113673
+       port 65
+      }
+      ConnectionClass connection {
+       id 114697
+       port 65
+      }
+      ConnectionClass connection {
+       id 115721
+       port 65
+      }
+      ConnectionClass connection {
+       id 116745
+       port 65
+      }
+      ConnectionClass connection {
+       id 117769
+       port 65
+      }
+      ConnectionClass connection {
+       id 118793
+       port 65
+      }
+      ConnectionClass connection {
+       id 119817
+       port 65
+      }
+      ConnectionClass connection {
+       id 120841
+       port 65
+      }
+      ConnectionClass connection {
+       id 121865
+       port 65
+      }
+      ConnectionClass connection {
+       id 122889
+       port 65
+      }
+      ConnectionClass connection {
+       id 123913
+       port 65
+      }
+      ConnectionClass connection {
+       id 124937
+       port 65
+      }
+      ConnectionClass connection {
+       id 125961
+       port 65
+      }
+      ConnectionClass connection {
+       id 126985
+       port 65
+      }
+      ConnectionClass connection {
+       id 128009
+       port 65
+      }
+      ConnectionClass connection {
+       id 129033
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 300039
+     links {
+      ConnectionClass connection {
+       id 68637
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 301063
+     links {
+      ConnectionClass connection {
+       id 69661
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 302087
+     links {
+      ConnectionClass connection {
+       id 70685
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    947945475 0
+   }
+   path "{B764D803219C775E}Sounds/FinalMix.afm"
+   inputs {
+    "WPN_Handling" "WPN_Shots" "WPN_Explosions" "WNP_BulletHits" "CHAR" "ENV_AMB_2D" "VEH_Animations" "Impacts" "Dialog" "Music" "ENV_Doors" "VEH_Engine" "VEH_Tires" "VON" "SFX" "SFX_Reverb" "VON_Reverb" "Dialog_Reverb" "Impacts_EXT" "ENV_AMB_3D" "WPN_SonicCracks" "CHAR_Gear" "PA" "SFX_Reverb_Exterior" "UI" "ENV_AMB_3D_Reverb_Exterior" "SFX_Direct" "SFX_Reverb_Small" "SFX_Reverb_Medium" "SFX_Reverb_Large" "WPN_Shots_Player" "Dialog_Reverb_Small" "Dialog_Reverb_Medium" "Dialog_Reverb_Large" "WPN_TravelingProjectile" "Dialog_Delay_Exterior"
+   }
+  }
+ }
+ shaders {
+  ShaderClass {
+   id 204818
+   name "SOUND_DLG_DISPATCHER_STANDBY"
+   version 5
+   tl 432 0
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 307204
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 205842
+   name "SOUND_DLG_DISPATCHER_TYPE_ROBBERY"
+   version 5
+   tl 432 280
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 308228
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 206866
+   name "SOUND_DLG_DISPATCHER_TYPE_VEHICLE_THEFT"
+   version 5
+   tl 432 560
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 309252
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 207890
+   name "SOUND_DLG_DISPATCHER_TYPE_CARJACKING"
+   version 5
+   tl 432 840
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 310276
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 208914
+   name "SOUND_DLG_DISPATCHER_TYPE_WEAPON_THEFT"
+   version 5
+   tl 432 1120
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 311300
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 209938
+   name "SOUND_DLG_DISPATCHER_TYPE_BREAK_IN"
+   version 5
+   tl 432 1400
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 312324
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 210962
+   name "SOUND_DLG_DISPATCHER_TYPE_HOSPITAL"
+   version 5
+   tl 432 1680
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 313348
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 211986
+   name "SOUND_DLG_DISPATCHER_TYPE_MURDER"
+   version 5
+   tl 432 1960
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 314372
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 213010
+   name "SOUND_DLG_DISPATCHER_TYPE_CASH_VAN"
+   version 5
+   tl 432 2240
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 315396
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 214034
+   name "SOUND_DLG_DISPATCHER_TYPE_ARMORY"
+   version 5
+   tl 432 2520
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 316420
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 215058
+   name "SOUND_DLG_DISPATCHER_TYPE_JAILBREAK"
+   version 5
+   tl 432 2800
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 317444
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 216082
+   name "SOUND_DLG_DISPATCHER_TYPE_ESCAPED"
+   version 5
+   tl 432 3080
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 318468
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 217106
+   name "SOUND_DLG_DISPATCHER_TYPE_SHOPLIFTING"
+   version 5
+   tl 432 3360
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 319492
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 218130
+   name "SOUND_DLG_DISPATCHER_TYPE_CHOP_SHOP"
+   version 5
+   tl 432 3640
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 320516
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 219154
+   name "SOUND_DLG_DISPATCHER_PLACE_BANK"
+   version 5
+   tl 432 3920
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 321540
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 220178
+   name "SOUND_DLG_DISPATCHER_PLACE_FUEL_STATION"
+   version 5
+   tl 432 4200
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 322564
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 221202
+   name "SOUND_DLG_DISPATCHER_PLACE_GENERAL_STORE"
+   version 5
+   tl 432 4480
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 323588
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 222226
+   name "SOUND_DLG_DISPATCHER_PLACE_GUN_STORE"
+   version 5
+   tl 432 4760
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 324612
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 223250
+   name "SOUND_DLG_DISPATCHER_PLACE_HOSPITAL"
+   version 5
+   tl 432 5040
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 325636
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 224274
+   name "SOUND_DLG_DISPATCHER_PLACE_PHARMACY"
+   version 5
+   tl 432 5320
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 326660
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 225298
+   name "SOUND_DLG_DISPATCHER_PLACE_POST_OFFICE"
+   version 5
+   tl 432 5600
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 327684
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 226322
+   name "SOUND_DLG_DISPATCHER_PLACE_SUPERMARKET"
+   version 5
+   tl 432 5880
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 328708
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 227346
+   name "SOUND_DLG_DISPATCHER_PLACE_CLOTHING_STORE"
+   version 5
+   tl 432 6160
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 329732
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 228370
+   name "SOUND_DLG_DISPATCHER_PLACE_FURNITURE_STORE"
+   version 5
+   tl 432 6440
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 330756
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 229394
+   name "SOUND_DLG_DISPATCHER_PLACE_GARAGE"
+   version 5
+   tl 432 6720
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 331780
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 230418
+   name "SOUND_DLG_DISPATCHER_PLACE_HOSTEL"
+   version 5
+   tl 432 7000
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 332804
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+  ShaderClass {
+   id 231442
+   name "SOUND_DLG_DISPATCHER_PLACE_SAINT_PHILIPPE"
+   version 5
+   tl 432 7280
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 66588
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 51219
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 4117
+       port 65
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 64
+     links {
+      ConnectionClass connection {
+       id 333828
+       port 65
+      }
+     }
+    }
+   }
+   pi {
+    23 0
+   }
+  }
+ }
+ amplitudes {
+  AmplitudeClass : "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf" {
+   id 51219
+   version 5
+   tl 432 -400
+   parent "{011A82046959B996}Sounds/_SharedData/Configs/Amplitude/_SharedData/Amplitude_-45LUFS_to_-30LUFS_Weapons_Reload.conf"
+  }
+ }
+ frequency {
+  FrequencyClass : "{65257CB7AD05C1FD}Sounds/_SharedData/Configs/Frequency/Weapons/Frequency_Weapons_Handling_Rifle.conf" {
+   id 4117
+   version 5
+   tl 432 -1008
+   parent "{65257CB7AD05C1FD}Sounds/_SharedData/Configs/Frequency/Weapons/Frequency_Weapons_Handling_Rifle.conf"
+   ins {
+    ConnectionsClass connections {
+     id 4
+     links {
+      ConnectionClass connection {
+       id 72717
+       port 37
+      }
+     }
+    }
+   }
+   pi {
+    16 0
+   }
+  }
+ }
+ banks_local {
+  BankLocalClass {
+   id 307204
+   name "DLG_DISPATCHER_STANDBY"
+   version 7
+   tl 150 0
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{B38A331697B4FA81}Sounds/Dialogue/dispatcher/dispatcher_standby.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 308228
+   name "DLG_DISPATCHER_TYPE_ROBBERY"
+   version 7
+   tl 150 280
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{C03AEE958B865568}Sounds/Dialogue/dispatcher/dispatcher_type_robbery.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 309252
+   name "DLG_DISPATCHER_TYPE_VEHICLE_THEFT"
+   version 7
+   tl 150 560
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{51635B2DF7C810AA}Sounds/Dialogue/dispatcher/dispatcher_type_vehicle_theft.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 310276
+   name "DLG_DISPATCHER_TYPE_CARJACKING"
+   version 7
+   tl 150 840
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{709D80E324294B8B}Sounds/Dialogue/dispatcher/dispatcher_type_carjacking.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 311300
+   name "DLG_DISPATCHER_TYPE_WEAPON_THEFT"
+   version 7
+   tl 150 1120
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{BAA11FF1D0666FF3}Sounds/Dialogue/dispatcher/dispatcher_type_weapon_theft.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 312324
+   name "DLG_DISPATCHER_TYPE_BREAK_IN"
+   version 7
+   tl 150 1400
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{58727C0B21B998A0}Sounds/Dialogue/dispatcher/dispatcher_type_break_in.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 313348
+   name "DLG_DISPATCHER_TYPE_HOSPITAL"
+   version 7
+   tl 150 1680
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{09A28693A1FF8D66}Sounds/Dialogue/dispatcher/dispatcher_type_hospital.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 314372
+   name "DLG_DISPATCHER_TYPE_MURDER"
+   version 7
+   tl 150 1960
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{5568C2D58DDCAAA2}Sounds/Dialogue/dispatcher/dispatcher_type_murder.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 315396
+   name "DLG_DISPATCHER_TYPE_CASH_VAN"
+   version 7
+   tl 150 2240
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{9B4A276C97EA68EC}Sounds/Dialogue/dispatcher/dispatcher_type_cash_van.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 316420
+   name "DLG_DISPATCHER_TYPE_ARMORY"
+   version 7
+   tl 150 2520
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{576CD919E8B930F4}Sounds/Dialogue/dispatcher/dispatcher_type_armory.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 317444
+   name "DLG_DISPATCHER_TYPE_JAILBREAK"
+   version 7
+   tl 150 2800
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{069B4E677D40AE15}Sounds/Dialogue/dispatcher/dispatcher_type_jailbreak.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 318468
+   name "DLG_DISPATCHER_TYPE_ESCAPED"
+   version 7
+   tl 150 3080
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{4B78167DADCB29CF}Sounds/Dialogue/dispatcher/dispatcher_type_escaped.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 319492
+   name "DLG_DISPATCHER_TYPE_SHOPLIFTING"
+   version 7
+   tl 150 3360
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{B9E79167FA976AF0}Sounds/Dialogue/dispatcher/dispatcher_type_shoplifting.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 320516
+   name "DLG_DISPATCHER_TYPE_CHOP_SHOP"
+   version 7
+   tl 150 3640
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{03F8BCDE0A995BFE}Sounds/Dialogue/dispatcher/dispatcher_type_chop_shop.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 321540
+   name "DLG_DISPATCHER_PLACE_BANK"
+   version 7
+   tl 150 3920
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{F2DF06F2E934B120}Sounds/Dialogue/dispatcher/dispatcher_place_bank.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 322564
+   name "DLG_DISPATCHER_PLACE_FUEL_STATION"
+   version 7
+   tl 150 4200
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{B9801BAC82C0743A}Sounds/Dialogue/dispatcher/dispatcher_place_fuel_station.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 323588
+   name "DLG_DISPATCHER_PLACE_GENERAL_STORE"
+   version 7
+   tl 150 4480
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{A24D1D55922592A2}Sounds/Dialogue/dispatcher/dispatcher_place_general_store.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 324612
+   name "DLG_DISPATCHER_PLACE_GUN_STORE"
+   version 7
+   tl 150 4760
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{733FA608CC7F4A6C}Sounds/Dialogue/dispatcher/dispatcher_place_gun_store.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 325636
+   name "DLG_DISPATCHER_PLACE_HOSPITAL"
+   version 7
+   tl 150 5040
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{0F5DC40B73BEFF58}Sounds/Dialogue/dispatcher/dispatcher_place_hospital.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 326660
+   name "DLG_DISPATCHER_PLACE_PHARMACY"
+   version 7
+   tl 150 5320
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{A419C86423086510}Sounds/Dialogue/dispatcher/dispatcher_place_pharmacy.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 327684
+   name "DLG_DISPATCHER_PLACE_POST_OFFICE"
+   version 7
+   tl 150 5600
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{3DD1828D3F2E725F}Sounds/Dialogue/dispatcher/dispatcher_place_post_office.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 328708
+   name "DLG_DISPATCHER_PLACE_SUPERMARKET"
+   version 7
+   tl 150 5880
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{491ED36549B8765E}Sounds/Dialogue/dispatcher/dispatcher_place_supermarket.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 329732
+   name "DLG_DISPATCHER_PLACE_CLOTHING_STORE"
+   version 7
+   tl 150 6160
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{79F4EF4C75950F67}Sounds/Dialogue/dispatcher/dispatcher_place_clothing_store.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 330756
+   name "DLG_DISPATCHER_PLACE_FURNITURE_STORE"
+   version 7
+   tl 150 6440
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{925E9B0109D86435}Sounds/Dialogue/dispatcher/dispatcher_place_furniture_store.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 331780
+   name "DLG_DISPATCHER_PLACE_GARAGE"
+   version 7
+   tl 150 6720
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{0DCE23B6BC8A600F}Sounds/Dialogue/dispatcher/dispatcher_place_garage.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 332804
+   name "DLG_DISPATCHER_PLACE_HOSTEL"
+   version 7
+   tl 150 7000
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{CFAAD73E316F0E2B}Sounds/Dialogue/dispatcher/dispatcher_place_hostel.wav"
+    }
+   }
+  }
+  BankLocalClass {
+   id 333828
+   name "DLG_DISPATCHER_PLACE_SAINT_PHILIPPE"
+   version 7
+   tl 150 7280
+   Volume 0
+   Samples {
+    AudioBankSampleClass Sample {
+     Filename "{756E34AF290770F4}Sounds/Dialogue/dispatcher/dispatcher_place_saint_philippe.wav"
+    }
+   }
+  }
+ }
+ spatialities {
+  SpatialityClass : "{68C6E66C2A370788}Sounds/_SharedData/Configs/Spatiality/Spatiality_Signal_Update.conf" {
+   id 66588
+   version 5
+   tl 432 -1152
+   parent "{68C6E66C2A370788}Sounds/_SharedData/Configs/Spatiality/Spatiality_Signal_Update.conf"
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 65549
+       port 9
+      }
+     }
+    }
+   }
+   pi + {
+    0
+   }
+   pu {
+    1 0
+   }
+  }
+ }
+ auxOuts {
+  AuxOutClass {
+   id 68637
+   name "AuxOut Rev Small"
+   version 5
+   tl 1088 -32
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 102409
+       port 5
+      }
+      ConnectionClass connection {
+       id 103433
+       port 5
+      }
+      ConnectionClass connection {
+       id 104457
+       port 5
+      }
+      ConnectionClass connection {
+       id 105481
+       port 5
+      }
+      ConnectionClass connection {
+       id 106505
+       port 5
+      }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
+      ConnectionClass connection {
+       id 108553
+       port 5
+      }
+      ConnectionClass connection {
+       id 109577
+       port 5
+      }
+      ConnectionClass connection {
+       id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
+       port 5
+      }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
+      ConnectionClass connection {
+       id 116745
+       port 5
+      }
+      ConnectionClass connection {
+       id 117769
+       port 5
+      }
+      ConnectionClass connection {
+       id 118793
+       port 5
+      }
+      ConnectionClass connection {
+       id 119817
+       port 5
+      }
+      ConnectionClass connection {
+       id 120841
+       port 5
+      }
+      ConnectionClass connection {
+       id 121865
+       port 5
+      }
+      ConnectionClass connection {
+       id 122889
+       port 5
+      }
+      ConnectionClass connection {
+       id 123913
+       port 5
+      }
+      ConnectionClass connection {
+       id 124937
+       port 5
+      }
+      ConnectionClass connection {
+       id 125961
+       port 5
+      }
+      ConnectionClass connection {
+       id 126985
+       port 5
+      }
+      ConnectionClass connection {
+       id 128009
+       port 5
+      }
+      ConnectionClass connection {
+       id 129033
+       port 5
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 107
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 39
+      }
+     }
+    }
+   }
+   pi {
+    7 0
+   }
+   OSPort 300039
+  }
+  AuxOutClass {
+   id 69661
+   name "AuxOut Rev Medium"
+   version 5
+   tl 1088 80
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 102409
+       port 5
+      }
+      ConnectionClass connection {
+       id 103433
+       port 5
+      }
+      ConnectionClass connection {
+       id 104457
+       port 5
+      }
+      ConnectionClass connection {
+       id 105481
+       port 5
+      }
+      ConnectionClass connection {
+       id 106505
+       port 5
+      }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
+      ConnectionClass connection {
+       id 108553
+       port 5
+      }
+      ConnectionClass connection {
+       id 109577
+       port 5
+      }
+      ConnectionClass connection {
+       id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
+       port 5
+      }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
+      ConnectionClass connection {
+       id 116745
+       port 5
+      }
+      ConnectionClass connection {
+       id 117769
+       port 5
+      }
+      ConnectionClass connection {
+       id 118793
+       port 5
+      }
+      ConnectionClass connection {
+       id 119817
+       port 5
+      }
+      ConnectionClass connection {
+       id 120841
+       port 5
+      }
+      ConnectionClass connection {
+       id 121865
+       port 5
+      }
+      ConnectionClass connection {
+       id 122889
+       port 5
+      }
+      ConnectionClass connection {
+       id 123913
+       port 5
+      }
+      ConnectionClass connection {
+       id 124937
+       port 5
+      }
+      ConnectionClass connection {
+       id 125961
+       port 5
+      }
+      ConnectionClass connection {
+       id 126985
+       port 5
+      }
+      ConnectionClass connection {
+       id 128009
+       port 5
+      }
+      ConnectionClass connection {
+       id 129033
+       port 5
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 106
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 39
+      }
+     }
+    }
+   }
+   pi {
+    7 0
+   }
+   OSPort 301063
+  }
+  AuxOutClass {
+   id 70685
+   name "AuxOut Rev Large"
+   version 5
+   tl 1088 192
+   ins {
+    ConnectionsClass connections {
+     id 0
+     links {
+      ConnectionClass connection {
+       id 102409
+       port 5
+      }
+      ConnectionClass connection {
+       id 103433
+       port 5
+      }
+      ConnectionClass connection {
+       id 104457
+       port 5
+      }
+      ConnectionClass connection {
+       id 105481
+       port 5
+      }
+      ConnectionClass connection {
+       id 106505
+       port 5
+      }
+      ConnectionClass connection {
+       id 107529
+       port 5
+      }
+      ConnectionClass connection {
+       id 108553
+       port 5
+      }
+      ConnectionClass connection {
+       id 109577
+       port 5
+      }
+      ConnectionClass connection {
+       id 110601
+       port 5
+      }
+      ConnectionClass connection {
+       id 111625
+       port 5
+      }
+      ConnectionClass connection {
+       id 112649
+       port 5
+      }
+      ConnectionClass connection {
+       id 113673
+       port 5
+      }
+      ConnectionClass connection {
+       id 114697
+       port 5
+      }
+      ConnectionClass connection {
+       id 115721
+       port 5
+      }
+      ConnectionClass connection {
+       id 116745
+       port 5
+      }
+      ConnectionClass connection {
+       id 117769
+       port 5
+      }
+      ConnectionClass connection {
+       id 118793
+       port 5
+      }
+      ConnectionClass connection {
+       id 119817
+       port 5
+      }
+      ConnectionClass connection {
+       id 120841
+       port 5
+      }
+      ConnectionClass connection {
+       id 121865
+       port 5
+      }
+      ConnectionClass connection {
+       id 122889
+       port 5
+      }
+      ConnectionClass connection {
+       id 123913
+       port 5
+      }
+      ConnectionClass connection {
+       id 124937
+       port 5
+      }
+      ConnectionClass connection {
+       id 125961
+       port 5
+      }
+      ConnectionClass connection {
+       id 126985
+       port 5
+      }
+      ConnectionClass connection {
+       id 128009
+       port 5
+      }
+      ConnectionClass connection {
+       id 129033
+       port 5
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 1
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 110
+      }
+     }
+    }
+    ConnectionsClass connections {
+     id 2
+     links {
+      ConnectionClass connection {
+       id 70669
+       port 39
+      }
+     }
+    }
+   }
+   pi {
+    7 0
+   }
+   OSPort 302087
+  }
+ }
+ version 1
+}

@@ -67,6 +67,7 @@ An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the 
 ## Calls, evidence and the armoury
 
 * Players call you from a **payphone**: *Report a crime*, *Report an emergency* or *Report someone suspicious*. An on-duty officer hears it on the radio and sees it on the board.
+* On the radio, a **dispatcher** reads each call to you after a short squelch: what happened, then the place ("Robbery in progress. At the general store."). The written line follows on screen.
   A caller can ring once a minute; with nobody on duty nothing connects.
 * The **armoury** hands out kit by rank. The **evidence locker** is in the station.
 * A fired **alarm** at the bank, a shop till or the cash van also goes to dispatch.
