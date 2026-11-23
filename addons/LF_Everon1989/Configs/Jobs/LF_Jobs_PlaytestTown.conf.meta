@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{ECED7FAD5F5C8B24}Configs/Jobs/LF_Jobs_PlaytestTown.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

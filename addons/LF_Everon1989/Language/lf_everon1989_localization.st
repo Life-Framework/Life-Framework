@@ -2814,6 +2814,41 @@ StringTable {
      Target_en_us "I teach people to survive outside town. Water, food, a fire, a shelter. The weather turns fast on Everon."
      Comment "NPC role talk (ranger), from tools/assets/outfits/roles.json."
     }
+    CustomStringTableItem "{9D6F6C22C92E7C4E}" {
+     Id "LF-Offence_DeprivationOfLiberty"
+     Target_en_us "Deprivation of liberty"
+     Comment "Offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{5D2D2570C0806891}" {
+     Id "LF-Offence_HostageTaking"
+     Target_en_us "Hostage taking"
+     Comment "Offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{A4DD5A2C46C1497B}" {
+     Id "LF-Offence_IllegalConversion"
+     Target_en_us "Illegal weapon conversion"
+     Comment "Offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{48BEC134D705A8BC}" {
+     Id "LF-Offence_MassiveMayhem"
+     Target_en_us "Massive mayhem"
+     Comment "Offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{20DC5CC7BEA34AB7}" {
+     Id "LF-Offence_Mayhem"
+     Target_en_us "Mayhem"
+     Comment "Offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{124EFF5F0E57AC0E}" {
+     Id "LF-Offence_NarcoticsC"
+     Target_en_us "Narcotics, class C (trafficking)"
+     Comment "Offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{39FB2FBC93F227A1}" {
+     Id "LF-Offence_VinTampering"
+     Target_en_us "VIN tampering"
+     Comment "Offence in the Everon law book (#4208)."
+    }
     CustomStringTableItem "{894DEDBF2566803F}" {
      Id "LF-OrgWarAnnounce_Accepted"
      Target_en_us "NOTICE: the challenge is answered. War stands between %1."
@@ -5498,6 +5533,116 @@ StringTable {
      Id "LF-SiteName_quarry_hideout"
      Target_en_us "Quarry Hideout"
      Comment "Contested site name on the capture bar and the organisation's held-site list (#3406); the hideout id is quarry_hideout."
+    }
+    CustomStringTableItem "{DD3C27E4F75371A0}" {
+     Id "LF-Ticket_OffenceDangerousIntervention"
+     Target_en_us "Dangerous intervention in traffic"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{2E3B9CB801BDCB42}" {
+     Id "LF-Ticket_OffenceDisobeyPolice"
+     Target_en_us "Disobeying police"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{7C9CEECF4A073E14}" {
+     Id "LF-Ticket_OffenceEmergencyLineAbuse"
+     Target_en_us "Abuse of the emergency line"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{9B32A0049DB8EA89}" {
+     Id "LF-Ticket_OffenceHitAndRun"
+     Target_en_us "Hit and run"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{3F3B8ED36B5F4F0E}" {
+     Id "LF-Ticket_OffenceIllegalWeapon"
+     Target_en_us "Illegal weapon possession"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{974CF027F1BED0AA}" {
+     Id "LF-Ticket_OffenceInspection"
+     Target_en_us "Failed vehicle inspection"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{BE3E10554E4292A0}" {
+     Id "LF-Ticket_OffenceInsult"
+     Target_en_us "Insult"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{584CB47D297BFDDF}" {
+     Id "LF-Ticket_OffenceNarcoticsA"
+     Target_en_us "Narcotics, class A (personal)"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{B2372988FCC50B37}" {
+     Id "LF-Ticket_OffenceNarcoticsB"
+     Target_en_us "Narcotics, class B (dealing)"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{50597BB8EA8CF161}" {
+     Id "LF-Ticket_OffenceNoCarryZone"
+     Target_en_us "Carrying a weapon in a no-carry zone"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{502E58E334A5E428}" {
+     Id "LF-Ticket_OffenceNoDrivingLicence"
+     Target_en_us "Driving without a license"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{F34C2B53C0AB50D9}" {
+     Id "LF-Ticket_OffenceNoFlyingLicence"
+     Target_en_us "Flying without a license"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{5FF33C4F848D76C9}" {
+     Id "LF-Ticket_OffenceOverloading"
+     Target_en_us "Overloaded vehicle"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{264B325B0DE51011}" {
+     Id "LF-Ticket_OffenceParking"
+     Target_en_us "Illegal parking"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{80A6CCEEF453DC3C}" {
+     Id "LF-Ticket_OffenceResistingArrest"
+     Target_en_us "Resisting arrest"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{2AAFE67809CF0D4D}" {
+     Id "LF-Ticket_OffenceSpeeding"
+     Target_en_us "Speeding, 16 to 30 over"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{FFE4481244FCEB39}" {
+     Id "LF-Ticket_OffenceSpeedingMajor"
+     Target_en_us "Speeding, more than 30 over"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{DFF4C99628023DE0}" {
+     Id "LF-Ticket_OffenceSpeedingMinor"
+     Target_en_us "Speeding, up to 15 over"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{182F3F14926F3525}" {
+     Id "LF-Ticket_OffenceThreat"
+     Target_en_us "Threat"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{C704400490843861}" {
+     Id "LF-Ticket_OffenceTrespassing"
+     Target_en_us "Trespassing"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{BC0B38E5991B04F9}" {
+     Id "LF-Ticket_OffenceUnlawfulDischarge"
+     Target_en_us "Unlawful discharge of a weapon"
+     Comment "Ticket offence in the Everon law book (#4208)."
+    }
+    CustomStringTableItem "{2800EB80A1C79C8D}" {
+     Id "LF-Ticket_OffenceWeaponNoLicence"
+     Target_en_us "Carrying a weapon without a license"
+     Comment "Ticket offence in the Everon law book (#4208)."
     }
     CustomStringTableItem "{A014D70CFB1F92A3}" {
      Id "LF-Tow_Towed"

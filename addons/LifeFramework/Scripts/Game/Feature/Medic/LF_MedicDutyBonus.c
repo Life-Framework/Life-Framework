@@ -43,6 +43,13 @@ class LF_MedicDutyBonus
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True while the subscriber listens for revives (the game mode installs it, #4319).
+	static bool IsInstalled()
+	{
+		return s_Subscriber && LF_EventBus.IsSubscribed(LF_OnPlayerRevived, s_Subscriber);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: listens for revives and delivered patients. Safe to call twice.
 	static bool Install()
 	{
@@ -55,6 +62,7 @@ class LF_MedicDutyBonus
 		s_Subscriber = new LF_MedicDutyBonusSubscriber();
 		bool revives = LF_EventBus.Subscribe(LF_OnPlayerRevived, s_Subscriber);
 		bool deliveries = LF_EventBus.Subscribe(LF_OnPatientDelivered, s_Subscriber);
+		LF_Debug.Info(FEATURE, string.Format("medic duty bonus listening for revives (%1) and deliveries (%2)", revives, deliveries));
 		return revives && deliveries;
 	}
 

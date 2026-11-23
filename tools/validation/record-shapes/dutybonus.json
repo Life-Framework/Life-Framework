@@ -1,0 +1,17 @@
+{
+  "section": "dutybonus",
+  "class": "LF_DutyBonusSavePayload",
+  "version": 1,
+  "roots": "LF_DutyBonusRow",
+  "records": {
+    "LF_DutyBonusRow": {
+      "fields": [
+        "int m_iVersion",
+        "string m_sAccountId",
+        "int m_iPending",
+        "int m_iWindowStart",
+        "int m_iWindowEarned"
+      ]
+    }
+  }
+}

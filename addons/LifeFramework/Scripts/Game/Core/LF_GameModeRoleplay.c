@@ -117,8 +117,10 @@ class LF_GameModeRoleplay: SCR_BaseGameMode
 		LF_PoliceCalls.Install();
 		// Playtime per account and job, credited to online players (server only, #692).
 		LF_Playtime.Start();
-		// A fine at the site completes the officer's police call and pays it (server only, #2478).
+		// A fine at the site completes the officer's police call and earns its duty bonus (server only, #2478, #4319).
 		LF_PoliceCallPay.Install();
+		// A revive or a delivered patient earns the medic's duty bonus, paid at clock-out (server only, #4319).
+		LF_MedicDutyBonus.Install();
 		// A playtest mission remembers where its vehicles stand, for the world reset (server only).
 		LF_WorldReset.Start();
 		// Organization wars lapse and end on time, an emptied org forfeits, the island is told (server only, #2669).
