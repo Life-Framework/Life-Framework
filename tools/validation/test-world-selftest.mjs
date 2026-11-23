@@ -19,6 +19,10 @@
 // red-proof (town legs, fix-town-legs), 2026-11-16: on main (planLegs without `town` at the cli.mjs call, and
 // no explicit class list when the suite registry already lacks the town tests) 2g and the two "registry without the
 // town tests" checks FAIL; green once the call passes town: readTown(root) and planLegs names the classes.
+// red-proof (town header leg, TP-6b follow-up #4388), 2026-11-23: 2h and the list-of-13 checks against the module before
+// townLegs and the per-entry `world` (townLeg took every entry, planCoreLegs had no header leg): "--town plans the
+// playtest-world leg, then one leg on the header", "a town test with a world is not in the playtest-world leg" and
+// "--only <header test> is one leg on its header" FAIL; green once townLegs and ownWorld exist.
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
@@ -170,13 +174,32 @@ check(l?.length === 1 && l[0].world === tw.LOGIC_WORLD && l[0].classes === null,
 const tl = fn("townLeg")({ names: namesT, town });
 check(tl?.world === worlds.PLAYTEST_WORLD && eq(tl.classes, ["LF_Test_T", "LF_Test_U"]), `townLeg is the PLAYTEST_WORLD leg of the list (got ${JSON.stringify(tl)})`);
 
+// 2h. A town test that names a mission header in `world` (the parity test reads the tables the town header
+// loads; a bare DebugWorld boot has none) runs in its own leg on that header, never in the playtest-world leg.
+const HEADER = "{1054CC8646357708}Missions/LF_PlaytestTown.conf";
+const regH = [...regT, { cls: "LF_Test_H", tier: "WORLD" }];
+const namesH = { ...namesT, "unit/h": "LF_Test_H" };
+const tiersH = { ...tiersT, LF_Test_H: "WORLD", "unit/h": "WORLD" };
+const townH = [...town, { name: "unit/h", world: HEADER, reason: "reads the header's tables" }];
+const hlegs = (o) => fn("planLegs")({ tiers: tiersH, names: namesH, registry: regH, pins, town: townH, env, ...o });
+l = hlegs({ tier: "all", townRun: true });
+check(l?.length === 2 && l[0].world === worlds.PLAYTEST_WORLD && eq(l[0].classes, ["LF_Test_T", "LF_Test_U"]) && l[1].world === HEADER && eq(l[1].classes, ["LF_Test_H"]), `--town plans the playtest-world leg, then one leg on the header (got ${show(l)})`);
+l = hlegs({ tier: "all", only: ["unit/t", "unit/h"] });
+check(l?.length === 2 && l[0].world === worlds.PLAYTEST_WORLD && eq(l[0].classes, ["LF_Test_T"]) && l[1].world === HEADER && eq(l[1].classes, ["LF_Test_H"]), `a town test with a world is not in the playtest-world leg (got ${show(l)})`);
+l = hlegs({ tier: "all", only: ["unit/h"] });
+check(l?.length === 1 && l[0].world === HEADER && eq(l[0].classes, ["LF_Test_H"]), `--only <header test> is one leg on its header (got ${show(l)})`);
+const th = fn("townLegs")({ names: namesH, town: townH });
+check(th?.length === 2 && th[1].world === HEADER, `townLegs lists the header leg last (got ${show(th)})`);
+const onlyH = fn("townLegs")({ names: namesH, town: [{ name: "unit/h", world: HEADER, reason: "x" }] });
+check(onlyH?.length === 1 && onlyH[0].world === HEADER, `a list of header tests alone has no playtest-world leg (got ${show(onlyH)})`);
+
 // 2f. The real list: each town test is registered, WORLD or PERSISTENCE, not also pinned, and the
 // shard registry (what ci, wt gate and a sharded --tier all run) leaves it out.
 const realTown = fn("readTown")(root);
 const realPinClasses = new Set((realPins ?? []).map((p) => realNames[p.name] ?? p.name));
-const wantTown = ["signs/coverage", "e2e/narrative-loop", "e2e/pass1-write-save", "e2e/roadmap-contraband", "e2e/roadmap-jailbreak", "e2e/roadmap-jailing", "roadmap/contraband", "roadmap/escort", "roadmap/hideout", "roadmap/jailbreak", "roadmap/jailing", "roadmap/jailing-save"];
-check(Array.isArray(realTown) && realTown.length === 12, `tools/test/town-tests.json reads as a list of 12 (got ${realTown?.length})`);
-check(eq((realTown ?? []).map((p) => p.name).sort(), [...wantTown].sort()), "the town list names the 12 tests of slice #1895");
+const wantTown = ["playtest-town/parity-data", "signs/coverage", "e2e/narrative-loop", "e2e/pass1-write-save", "e2e/roadmap-contraband", "e2e/roadmap-jailbreak", "e2e/roadmap-jailing", "roadmap/contraband", "roadmap/escort", "roadmap/hideout", "roadmap/jailbreak", "roadmap/jailing", "roadmap/jailing-save"];
+check(Array.isArray(realTown) && realTown.length === 13, `tools/test/town-tests.json reads as a list of 13 (got ${realTown?.length})`);
+check(eq((realTown ?? []).map((p) => p.name).sort(), [...wantTown].sort()), "the town list names the 12 tests of slice #1895 and the parity test (#4388)");
 const shardsMod = await import(pathToFileURL(join(here, "..", "lib", "test-shards.mjs")).href);
 const suiteRegistry = shardsMod.readRegistry(root);
 const suiteClasses = new Set(suiteRegistry.map((x) => x.cls));

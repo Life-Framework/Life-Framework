@@ -1,0 +1,185 @@
+{
+  "id": "foreman_coalmans_brow",
+  "name": "ForemanCoalmansBrow",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_Bruno_Name",
+  "voice": {
+    "id": "nPczCjzI2devNBz1zQrb",
+    "sex": "male",
+    "name": "Brian - Deep, Resonant and Comforting",
+    "why": "Bruno runs the crew at Coalman's Brow: big, slow and sure of himself. Brian is a deep, resonant American baritone, a long way from the mill foreman's lighter laid-back drawl and from every islander voice already cast.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.55,
+      "similarity_boost": 0.75,
+      "style": 0.15,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 4200,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    {
+      "id": "greet",
+      "line": "greet",
+      "options": [
+        {
+          "text": "next",
+          "next": "next",
+          "action": "ForemanNext",
+          "param": "MINER"
+        },
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "next",
+      "options": [
+        {
+          "text": "bye",
+          "next": "bye"
+        }
+      ]
+    },
+    {
+      "id": "bye",
+      "line": "bye"
+    }
+  ],
+  "lines": {
+    "greet": {
+      "text": "Bruno. I run the crew at Coalman's Brow. Swing a pick, keep your head down, and the mine will notice you."
+    },
+    "bye": {
+      "text": "Mind the roof."
+    },
+    "next_top": {
+      "text": "You have seen every door this mine has. The rest is just coal, friend.",
+      "for_key": "#LF-Foreman_MINER_Next_Top"
+    },
+    "next_02": {
+      "text": "Next up, level 2. Bruno hires you at Coalman's Brow. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_02"
+    },
+    "next_03": {
+      "text": "Next up, level 3. Hard hat: fewer falls from the rock face. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_03"
+    },
+    "next_04": {
+      "text": "Next up, level 4. The coal seam at East Rise. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_04"
+    },
+    "next_05": {
+      "text": "Next up, level 5. Iron rocks at the second shaft. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_05"
+    },
+    "next_06": {
+      "text": "Next up, level 6. Faster swing. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_06"
+    },
+    "next_07": {
+      "text": "Next up, level 7. The power plant buys your coal. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_07"
+    },
+    "next_08": {
+      "text": "Next up, level 8. Steel pickaxe at the hardware store. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_08"
+    },
+    "next_09": {
+      "text": "Next up, level 9. Stone digging at the quarry. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_09"
+    },
+    "next_10": {
+      "text": "Next up, level 10. The cement works buys sand and stone. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_10"
+    },
+    "next_11": {
+      "text": "Next up, level 11. Ore cart: carry more per trip. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_11"
+    },
+    "next_12": {
+      "text": "Next up, level 12. Chance of a double ore drop. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_12"
+    },
+    "next_13": {
+      "text": "Next up, level 13. Lamp: work the deep face. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_13"
+    },
+    "next_14": {
+      "text": "Next up, level 14. Better price at the wholesaler. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_14"
+    },
+    "next_15": {
+      "text": "Next up, level 15. Pick wear slows down. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_15"
+    },
+    "next_16": {
+      "text": "Next up, level 16. Morton quarry shifts. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_16"
+    },
+    "next_17": {
+      "text": "Next up, level 17. Deep seam at East Rise. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_17"
+    },
+    "next_18": {
+      "text": "Next up, level 18. Drill bits from the hardware store. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_18"
+    },
+    "next_19": {
+      "text": "Next up, level 19. Larger double-drop chance. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_19"
+    },
+    "next_20": {
+      "text": "Next up, level 20. Blast fuses for the foreman's crew. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_20"
+    },
+    "next_21": {
+      "text": "Next up, level 21. Mine truck access. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_21"
+    },
+    "next_22": {
+      "text": "Next up, level 22. The assay table at Ore Ridge. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_22"
+    },
+    "next_23": {
+      "text": "Next up, level 23. Gold buyers pay more. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_23"
+    },
+    "next_24": {
+      "text": "Next up, level 24. Second double-drop chance. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_24"
+    },
+    "next_25": {
+      "text": "Next up, level 25. Gold flake in the Ore Ridge workings. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_25"
+    },
+    "next_26": {
+      "text": "Next up, level 26. Foreman's tool locker. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_26"
+    },
+    "next_27": {
+      "text": "Next up, level 27. Rich vein markers. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_27"
+    },
+    "next_28": {
+      "text": "Next up, level 28. Crew bonus on a shared shift. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_28"
+    },
+    "next_29": {
+      "text": "Next up, level 29. Mine foreman badge. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_29"
+    },
+    "next_30": {
+      "text": "Next up, level 30. Master Miner title and the foreman's clock. Keep swinging.",
+      "for_key": "#LF-Foreman_MINER_Next_30"
+    }
+  },
+  "replies": {
+    "next": "What does my level open next?",
+    "bye": "Goodbye."
+  }
+}

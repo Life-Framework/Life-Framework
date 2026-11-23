@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{D4E50FDDCFD6A6C9}Assets/Props/Flags/Gang/Data/GangFlag_Harbor_BCR.edds"
+ NMOMap "{11BE1DA560A433A7}Assets/Props/Flags/Gang/Data/GangFlag_Harbor_NMO.edds"
+}

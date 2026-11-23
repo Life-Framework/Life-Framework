@@ -6,7 +6,7 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
     CustomAttributes {
      PreviewRenderAttributes "{7BDC48FD4E998DE1}" {
       CameraPreset Front
-      CameraOrbitAngles -35 30 0
+      CameraOrbitAngles -35 270 0
       CameraDistanceToItem 1.4
       FOV 10
      }
@@ -24,6 +24,12 @@ GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
   }
   MeshObject "{5A4ACD10B8DA304F}" {
    Object "{AFDDAEDF81F02E79}Assets/Props/S2/S2_Vodka/S2_Vodka.xob"
+   Materials {
+    MaterialAssignClass "{6639A857822D6C4C}" {
+     SourceMaterial "Vodka_paper"
+     AssignedMaterial "{48D227F6BD2CCD17}Assets/Items/Contraband/LF_VodkaBottle/Data/LF_VodkaBottle.emat"
+    }
+   }
   }
   LF_VehicleSearchGoodsComponent "{5A7C0E91D2B43F69}" {
    m_eGoodsClass 2
