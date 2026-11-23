@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{9B3E51D7A20C6F84}Configs/Signs/LF_NewspaperSections.conf"
+ Configurations {
+  CONFResourceClass PC {
+  }
+  CONFResourceClass XBOX_ONE : PC {
+  }
+  CONFResourceClass XBOX_SERIES : PC {
+  }
+  CONFResourceClass PS4 : PC {
+  }
+  CONFResourceClass HEADLESS : PC {
+  }
+ }
+}

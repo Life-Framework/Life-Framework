@@ -1,0 +1,13 @@
+GenericEntity : "{E254F69A9AA09DE2}Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_L02_top_blue.et" {
+ ID "E1717ECBDA4DAC8D"
+ components {
+  MeshObject "{4B42E716914465B9}" {
+   Materials {
+    MaterialAssignClass "{64F09BE80115AC51}" {
+     SourceMaterial "UAZ469_Body"
+     AssignedMaterial "{1636F1277D858AB3}Assets/Liveries/UAZ469/LF_UAZ469_FixtureBlue.emat"
+    }
+   }
+  }
+ }
+}

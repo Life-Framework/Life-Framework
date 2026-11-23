@@ -1,0 +1,56 @@
+GenericEntity : "{8B993DEBBF41116C}Prefabs/Items/Core/RoleplayItem_Base.et" {
+ ID "ADB76D97064B6483"
+ components {
+  LF_QuantityComponent "{5AD2B81F97B9381B}" {
+   m_iMaxQuantity 1
+  }
+  InventoryItemComponent "{5222EB4D0C73006B}" {
+   Attributes SCR_ItemAttributeCollection "{5222EB4D0A2B466B}" {
+    ItemDisplayName UIInfo "{CCFBF42D290D9D0D}" {
+     Name "#LF-Item_RadarGun_Name"
+     Description "#LF-Item_RadarGun_Description"
+    }
+    ItemPhysAttributes ItemPhysicalAttributes PhysicalAttributes {
+     Weight 0.6
+     SizeSetupStrategy Volume
+     ItemVolume 500
+     RestingUP Up
+    }
+    ItemAnimationAttributes ItemAnimationAttributes "{6BD27321C1406B52}" {
+     AnimationAttachments {
+      AnimationAttachmentInfo "{9BC36903877C246B}" {
+       AnimGraph "{82906ACD75DF8523}Assets/Items/Equipment/workspaces/Flashlight_MX991.agr"
+       AnimInstance "{903E4A0B96B34B8F}Assets/Items/Equipment/workspaces/MX991_player.asi"
+       BindingName "Gadget"
+      }
+     }
+    }
+    CustomAttributes {
+     PreviewRenderAttributes "{51B4D3B0C1A27E32}" {
+      CameraOrbitAngles -15 155 0
+      CameraDistanceToItem 0.5
+      FOV 20
+     }
+    }
+   }
+  }
+  MeshObject "{5A4ACD10B8DA304F}" {
+   Object "{8838D0FE9D8142AE}Assets/Items/Equipment/Binoculars/Binoculars_B8/Binoculars_B8.xob"
+  }
+  ActionsManagerComponent "{508AB5952B584B2E}" {
+   additionalActions {
+    LF_RadarGunAction "{BB7F0D33379C90AC}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{D42FC9B43E640B9A}" {
+      Name "#LF-Radar_Measure"
+     }
+    }
+   }
+  }
+  SCR_GadgetComponent "{9A7553FE5FE4D3D0}" {
+   m_eAnimVariable MX991
+  }
+ }
+}
