@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{9CA06743AC9F9C29}Assets/Props/Flags/Gang/Data/GangFlag_Salt.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}
