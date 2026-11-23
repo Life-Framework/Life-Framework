@@ -1,4 +1,4 @@
-// red-proof: observed 2026-11-23 `tools/cli test --no-build --red LF_Test_PoliceSkillXp`: RED PROOF OK; with the subscriber off and no perk picks it fails the recovery XP, quick-booking, fast-cuff and long-radar checks. Green with `--only`.
+// red-proof: observed 2026-11-23 `tools/cli test --no-build --red LF_Test_PoliceSkillXp`: RED PROOF OK; with the subscriber off and no perk picks it fails the recovery XP, fast-cuff and long-radar checks (quick booking was retired 2026-11-23, #4409: the desk booking is instant, so no hold could use it). Green with `--only`.
 //! police/skill-xp (#4424, PO-R8): a resolved call, a booking and a recovered stolen car each award the
 //! configured POLICE XP; an unfounded close, no one found and an hour on duty award none; with each perk
 //! picked, the cuff time, radar range and booking time read the perk value, and without it the base.
@@ -91,19 +91,15 @@ class LF_Test_PoliceSkillXp : LF_Test
 		// Perks: the base without a pick, the perk value with it.
 		ctx.EqualFloat(1.8, LF_PoliceSkill.CuffSeconds(OFFICER, 1.8), 0.001, "no perk: the cuff hold is the base");
 		ctx.EqualFloat(150, LF_PoliceSkill.RadarRange(OFFICER, 150), 0.001, "no perk: the radar range is the base");
-		ctx.EqualFloat(10, LF_PoliceSkill.BookingSeconds(OFFICER, 10), 0.001, "no perk: the booking takes the base");
 
 		if (!RedProof())
 		{
 			LF_TradePerks.Pick(OFFICER, LF_PoliceSkill.JOB, 10, LF_PoliceSkill.PERK_FAST_CUFF);
 			LF_TradePerks.Pick(OFFICER, LF_PoliceSkill.JOB, 20, LF_PoliceSkill.PERK_LONG_RADAR);
-			LF_TradePerks.Pick(OTHER, LF_PoliceSkill.JOB, 10, LF_PoliceSkill.PERK_QUICK_BOOKING);
 		}
 
 		ctx.EqualFloat(1.8 * LF_PoliceSkill.CUFF_PERCENT / 100, LF_PoliceSkill.CuffSeconds(OFFICER, 1.8), 0.001, "fast-cuff perk: the cuff hold reads the perk value");
 		ctx.EqualFloat(150 * LF_PoliceSkill.RADAR_PERCENT / 100, LF_PoliceSkill.RadarRange(OFFICER, 150), 0.001, "long-radar perk: the radar range reads the perk value");
-		ctx.EqualFloat(10, LF_PoliceSkill.BookingSeconds(OFFICER, 10), 0.001, "an officer without the booking perk books at the base time");
-		ctx.EqualFloat(10 * LF_PoliceSkill.BOOKING_PERCENT / 100, LF_PoliceSkill.BookingSeconds(OTHER, 10), 0.001, "quick-booking perk: the booking reads the perk value");
 		ctx.EqualFloat(1.8, LF_PoliceSkill.CuffSeconds(OTHER, 1.8), 0.001, "a perk is the officer's own: another officer cuffs at the base");
 		ctx.True(LF_PoliceSkill.CuffSeconds(OFFICER, 1.8) < 1.8, "the fast-cuff perk is faster");
 		ctx.True(LF_PoliceSkill.RadarRange(OFFICER, 150) > 150, "the long-radar perk reaches farther");

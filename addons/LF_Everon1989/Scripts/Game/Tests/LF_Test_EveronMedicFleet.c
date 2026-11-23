@@ -1,4 +1,4 @@
-// red-proof: RedProof() drops the pack table, so no rank draws an ambulance and every assertion below fails (`tools\cli test --no-build --red LF_Test_EveronMedicFleet`).
+// red-proof: RedProof() drops the pack table, so no rank draws an ambulance and the table assertions fail, and it puts the core M997 stretcher list back so the fleet ambulances stop being stretcher vehicles (`tools\cli test --no-build --red LF_Test_EveronMedicFleet`).
 //! #4432 in game: under the Everon 1989 header (the pack leg of `tools\cli test`), the medic car pool hands the
 //! Orderly and EMT the UAZ452 ambulance and the Paramedic and Doctor the S1203 ambulance, refuses the Orderly the S1203
 //! in words, and hands nobody the old M997. The cars carry the lock, store-here and siren a service ambulance needs.
@@ -61,6 +61,20 @@ class LF_Test_EveronMedicFleet : LF_Test
 			ctx.False(LF_Utils.SamePrefab(car, M997), "the board does not offer the M997");
 		}
 
+		// #4566: the fleet ambulances are the stretcher vehicles, the old M997 is not (the pack overlay replaces the list).
+		LF_MedicConfig.Reload();
+		// RedProof(): the core list stands (the M997 only), as if the pack overlay did not set the stretcher vehicles.
+		if (RedProof())
+		{
+			array<ResourceName> coreList = new array<ResourceName>();
+			coreList.Insert(M997);
+			LF_MedicConfig.Get().m_aStretcherVehicles = coreList;
+		}
+
+		ctx.True(LF_BedDelivery.IsStretcherPrefab(UAZ_CAR), "the UAZ452 fleet ambulance is a stretcher vehicle");
+		ctx.True(LF_BedDelivery.IsStretcherPrefab(S1203_CAR), "the S1203 fleet ambulance is a stretcher vehicle");
+		ctx.False(LF_BedDelivery.IsStretcherPrefab(M997), "the M997 is not a stretcher vehicle under the pack");
+		LF_MedicConfig.Reload();
 		LF_MedicFleet.Reload();
 	}
 }

@@ -215,7 +215,25 @@ class LF_MedicConfig
 	//! \param[in] source The overlay file, for log lines.
 	int ApplyPackContainer(notnull BaseContainer root, string source, LF_ConfigClaims claims = null)
 	{
+		ApplyStretcherVehicles(root, source);
 		return LF_ConfigOverlay.ApplyContainerList(new LF_MedicRankList(this), root, "m_aRanks", source, claims);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! A pack that sets `m_aStretcherVehicles` replaces the shipped list whole (#4566): the Everon pack names
+	//! its two fleet ambulances and drops the M997 the core `.conf` keeps for the debug world.
+	protected void ApplyStretcherVehicles(notnull BaseContainer root, string source)
+	{
+		if (!root.IsVariableSetDirectly("m_aStretcherVehicles"))
+			return;
+
+		array<ResourceName> stretchers = {};
+		if (!root.Get("m_aStretcherVehicles", stretchers))
+			return;
+
+		m_aStretcherVehicles = new array<ResourceName>();
+		m_aStretcherVehicles.Copy(stretchers);
+		LF_Debug.Info(LF_MedicRanks.FEATURE, string.Format("medic: pack overlay %1 set %2 stretcher vehicles", source, stretchers.Count()));
 	}
 
 	//------------------------------------------------------------------------------------------------
