@@ -1,0 +1,71 @@
+FrameWidgetClass {
+ Name "Row"
+ Slot FrameWidgetSlot "{03FDBCC4913D390C}" {
+  SizeX 100
+  OffsetRight -100
+  SizeY 100
+  OffsetBottom -100
+ }
+ {
+  TextWidgetClass "{DB884B5D21D09822}" {
+   Name "Label"
+   Slot FrameWidgetSlot "{70B7BA1B557755DA}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 100
+    OffsetBottom -100
+   }
+   Color 1 1 1 1
+   Text ""
+   "Font Size" 64
+   "Min Font Size" 16
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{E967C1AB015D5B87}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{5C895ECFF1B622A9}" {
+   Name "Leader"
+   Slot FrameWidgetSlot "{B1302DF87490C647}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 100
+    OffsetBottom -100
+   }
+   Color 1 1 1 1
+   Text ""
+   "Font Size" 64
+   "Min Font Size" 16
+   "Horizontal Alignment" Left
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{886CD43395D901EC}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+  TextWidgetClass "{1FD6EF7BE9E35FFD}" {
+   Name "Value"
+   Slot FrameWidgetSlot "{883DA9A28B083EC1}" {
+    OffsetLeft 0
+    OffsetTop 0
+    SizeX 100
+    OffsetRight -100
+    SizeY 100
+    OffsetBottom -100
+   }
+   Color 1 1 1 1
+   Text ""
+   "Font Size" 64
+   "Min Font Size" 16
+   "Horizontal Alignment" Right
+   "Vertical Alignment" Center
+   FontProperties FontProperties "{B6243C61EC5D2D37}" {
+    Font "{3E7733BAC8C831F6}UI/Fonts/RobotoCondensed/RobotoCondensed_Regular.fnt"
+   }
+  }
+ }
+}
