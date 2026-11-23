@@ -1,4 +1,4 @@
-// red-proof: batched run `tools\cli test --no-build --red LF_Test_EveronResidentsShops`: RedProof() skips the overlay load, every outfit load and every spawn, so the keepers are not in the config, the plate text is empty and the clothes checks fail.
+// red-proof: batched run `tools\cli test --no-build --red LF_Test_EveronResidentsShops`: RedProof() skips the overlay load, every outfit load and every spawn, so the keepers are not in the config, the plate text is empty and the clothes checks fail. Talk wiring (#4578): on the prefabs before this card the run failed exactly the six `shop_baker|shop_butcher|shop_pharmacist has a playable dialogue / a talk action` lines.
 //! #4475 (W4.5 of the world chapter, #4170): under the Everon 1989 header (the pack leg of `tools\cli test`) the shop
 //! cast resolves. Six keepers (a baker, a butcher, a pharmacist, a barber, a newsagent and a postmaster; every body is
 //! male) each have an outfit preset of real 1989 working clothes the body actually wears, a prefab that loads and spawns
@@ -96,7 +96,7 @@ class LF_Test_EveronResidentsShops : LF_Test
 
 	//------------------------------------------------------------------------------------------------
 	//! A keeper's body: the prefab loads, spawns as a real character and wears at least a jacket, trousers and boots.
-	protected void CheckBody(LF_TestContext ctx, ResourceName prefab, string who)
+	protected void CheckBody(LF_TestContext ctx, ResourceName prefab, string who, bool talks = false)
 	{
 		ctx.False(prefab.IsEmpty(), who + " has a prefab of their own");
 		if (prefab.IsEmpty())
@@ -114,7 +114,35 @@ class LF_Test_EveronResidentsShops : LF_Test
 			return;
 
 		ctx.True(WornCount(body) >= 3, who + " wears a jacket, trousers and boots");
+		if (talks)
+			CheckTalk(ctx, body, who);
+
 		SCR_EntityHelper.DeleteEntityAndChildren(body);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The placed clerk the keeper replaced (#4578) carried a talk action: the keeper keeps it, with the shopkeeper dialogue.
+	protected void CheckTalk(LF_TestContext ctx, IEntity body, string who)
+	{
+		LF_DialogueConfig dialogue = LF_DialogueComponent.ConfigOf(body);
+		ctx.NotNull(dialogue, who + " has a playable dialogue");
+		if (dialogue)
+			ctx.EqualStr("shopkeeper", dialogue.m_sId, who + " talks with the shopkeeper dialogue");
+
+		bool talk;
+		BaseActionsManagerComponent manager = BaseActionsManagerComponent.Cast(body.FindComponent(BaseActionsManagerComponent));
+		if (manager)
+		{
+			array<BaseUserAction> actions = {};
+			manager.GetActionsList(actions);
+			foreach (BaseUserAction action : actions)
+			{
+				if (LF_DialogueTalkAction.Cast(action))
+					talk = true;
+			}
+		}
+
+		ctx.True(talk, who + " has a talk action");
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -248,7 +276,8 @@ class LF_Test_EveronResidentsShops : LF_Test
 		{
 			string id = ids[i];
 			CheckOutfit(ctx, outfits[i], id);
-			CheckBody(ctx, prefabs[i], id);
+			// The baker, butcher and pharmacist replaced a placed clerk that could be talked to (#4578).
+			CheckBody(ctx, prefabs[i], id, id == "shop_baker" || id == "shop_butcher" || id == "shop_pharmacist");
 			distinctPrefabs.Insert(prefabs[i]);
 
 			string key = "#" + "LF-Resident_" + id + "_Name";

@@ -86,7 +86,7 @@ class LF_JobLevelSources : LF_EventSubscriber
 	//! \return XP actually added.
 	static int AwardMedic(string medicUid, string patientUid, string action)
 	{
-		if (medicUid.IsEmpty() || medicUid == patientUid)
+		if (!LF_MedicSkill.MayAward(medicUid, patientUid))
 			return 0;
 
 		return LF_JobLevels.Award(medicUid, action);

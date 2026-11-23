@@ -571,6 +571,8 @@ export function analyse(records, outText, { allow = [], areas = [], roads = [], 
       if (!m.at && m.near !== null && m.near < 0 && isFlattenedGroup(e.prefab)) { groups++; continue; }
       // A row seated terrain-relative on purpose (layer y 0 to 2, the entity at terrain + y: an orchard tree, `town fit`'s y about 0) stands where it was meant to.
       if (m.at && m.surfy !== null && Math.abs(e.y) <= TERRAIN_FRAME_MAX_Y && Math.abs(m.at[1] - (m.surfy + e.y)) < 0.5) { seated++; continue; }
+      // A row the allowlist names for this kind (a bird flock the engine moves, #4479) is not a finding.
+      if (allowed(allow, e, { kind: m.at ? "displaced" : "missing" })) { seated++; continue; }
       if (m.at) displaced++;
       missing.push({ ...e, near: m.near, nearName: m.nearName, at: m.at });
       missingRows.push(missingRow(e, m));

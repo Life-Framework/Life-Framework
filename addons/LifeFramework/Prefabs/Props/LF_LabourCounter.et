@@ -460,6 +460,69 @@ GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
      m_bChange 1
      m_sTrade "SALVAGE"
     }
+    LF_PerkPickAction "{63105AC1A831456C}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{7E9FED036D4A0216}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "good_word"
+    }
+    LF_PerkPickAction "{DB3075DCA5AFE52D}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{D4F3CA3EFF8EF2CD}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "good_word"
+     m_bChange 1
+     m_sTrade "MINER"
+    }
+    LF_PerkPickAction "{F4019B81AD785773}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{C6DCCA8CB096050D}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "good_word"
+     m_bChange 1
+     m_sTrade "LUMBERJACK"
+    }
+    LF_PerkPickAction "{D84173CDA7BB0432}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{250835397079D14A}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "good_word"
+     m_bChange 1
+     m_sTrade "FARMER"
+    }
+    LF_PerkPickAction "{D258C321B69B775D}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{0CB09AC7BA736BCF}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "good_word"
+     m_bChange 1
+     m_sTrade "FISHER"
+    }
    }
   }
  }

@@ -73,7 +73,7 @@ class LF_FirstAid
 		if (!character.LF_ClaimAidItem(itemId))
 			return 0;
 
-		float granted = Grant(character.LF_GetBleedLeft(), SecondsFor(kind), LF_MedicConfig.Get().m_fFirstAidCapSeconds);
+		float granted = Grant(character.LF_GetBleedLeft(), LF_MedicSkill.AidSeconds(helperUid, SecondsFor(kind)), LF_MedicConfig.Get().m_fFirstAidCapSeconds); // quick-aid perk (#4433)
 		if (granted <= 0)
 		{
 			LF_Debug.Info(FEATURE, string.Format("first aid (%1) on %2 adds no time", kind, patientUid));

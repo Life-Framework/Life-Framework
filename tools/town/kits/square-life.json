@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "kit": "square-life",
+  "system": "atmosphere",
+  "source": {
+    "file": "tools/town/kits/square-life.json",
+    "origin": "building",
+    "frame": "building-local"
+  },
+  "scope": "room",
+  "building": {
+    "mode": "inside"
+  },
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        2.26,
+        -19.32
+      ],
+      "max": [
+        19.25,
+        -10.56
+      ]
+    },
+    "front": null,
+    "counters": [],
+    "adapt": "The square's life, in the pub's frame (the chess table's ground, front null): two domestic pigeon flocks on the cobbles (vanilla SCR_Bird flocks that lift off when a player or vehicle comes within 50 m) and the square and village-night ambience beds as emitters with their hours (the beds conf rows). The gossip bench, the harbor beds, the dock gull flock and the bank-beat anchors stand at other places and are other cards. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "pigeons-a",
+      "prefab": "{BF8A3171E5AF74E7}Prefabs/Animals/Birds/Columba_livia_domestica/BirdFlock_DomesticPigeon.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        19.25,
+        0,
+        -19.32
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "class": "SCR_Bird"
+    },
+    {
+      "id": "pigeons-b",
+      "prefab": "{BF8A3171E5AF74E7}Prefabs/Animals/Birds/Columba_livia_domestica/BirdFlock_DomesticPigeon.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        7.23,
+        0,
+        -18.64
+      ],
+      "yaw": 90,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "class": "SCR_Bird"
+    },
+    {
+      "id": "bed-square",
+      "prefab": "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        14.42,
+        0,
+        -10.56
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_AmbientEmitterComponent",
+          "guid": "54EF977E52CFEF83",
+          "set": {
+            "m_sSoundProject": "\"{B80322D3F895D4CB}Sounds/Atmosphere/Atmosphere_Square.acp\"",
+            "m_fRadius": "34",
+            "m_fHourFrom": "6",
+            "m_fHourTo": "22",
+            "m_sGroup": "\"square_bed\"",
+            "m_iPriority": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "bed-village-night",
+      "prefab": "{A8568D2A6C46B864}Prefabs/Atmosphere/LF_AmbientEmitter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        2.26,
+        0,
+        -10.87
+      ],
+      "yaw": 0,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "config": [
+        {
+          "component": "LF_AmbientEmitterComponent",
+          "guid": "54EF977E52CFEF83",
+          "set": {
+            "m_sSoundProject": "\"{64FFA2B6121E2B26}Sounds/Ambience/Atmosphere_VillageNight.acp\"",
+            "m_fRadius": "54",
+            "m_fHourFrom": "21",
+            "m_fHourTo": "5",
+            "m_sGroup": "\"square_bed\"",
+            "m_iPriority": "1"
+          },
+          "blocks": []
+        }
+      ]
+    }
+  ]
+}

@@ -467,6 +467,14 @@
         "the 25 m margin lets a marker stand at the end of a lane; the fit card reads the roads of the dossier to pick which lane ends"
       ]
     },
+    "square-life": {
+      "building": "b03",
+      "shared": true,
+      "why": [
+        "#4479 (WO-W1.6): the square's life on the pub's frontage, the ground of the chess and cafe slots: two pigeon flocks on the cobbles, the gossip bench beside the cafe's street bench, the square and village-night ambience emitters",
+        "the pub b03 is the building the cafe, chess and board slots already share, so every row is a building-local offset and nothing the maintainer placed moves"
+      ]
+    },
     "anniversary": {
       "drops": [
         {
