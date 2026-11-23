@@ -11602,6 +11602,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Flag 20"
      Comment "Neutral name of preset gang flag 20; a pack gives the real name."
     }
+    CustomStringTableItem "{D1325EB69512F8BF}" {
+     Id "LF-OrgProspect_Rank"
+     Target_en_us "Prospect"
+     Comment "Rank shown for a gang member who joined by invite less than 48 hours ago (#4455). No countdown."
+    }
+    CustomStringTableItem "{A033D8712C95A9F9}" {
+     Id "LF-OrgProspect_Refused"
+     Target_en_us "Prospects can't touch the gang fund or the stash yet."
+     Comment "Refusal for a gang prospect at the fund or the stash (#4455)."
+    }
     CustomStringTableItem "{5AB8DC50BD7DC910}" {
      Id "LF-OrgRight_BUY_UPGRADE"
      Target_en_us "Buy upgrades"
