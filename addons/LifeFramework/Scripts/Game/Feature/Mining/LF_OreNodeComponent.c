@@ -70,6 +70,12 @@ class LF_OreNodeComponent : ScriptComponent
 	[Attribute("0.45", UIWidgets.Slider, "Scale of the rock after its next-to-last piece breaks; it shrinks in equal steps from 1 (whole) to this", "0.1 1 0.05", category: "Ore")]
 	protected float m_fMinScale;
 
+	//! The whole rock's size: a place sets it to make its ore rocks stand out (first-2h review B8: the island's
+	//! ore rocks were knee-high stones in the grass beside big plain boulders). The mined shrink multiplies it,
+	//! so a big rock shrinks from its own size and never snaps back to the mesh size on the first break.
+	[Attribute("1", UIWidgets.Slider, "Size of the whole rock (1 is the mesh size); the mined shrink scales from this", "0.5 4 0.05", category: "Ore")]
+	protected float m_fBaseScale;
+
 	[RplProp(onRplName: "OnDepletedChanged")]
 	protected bool m_bDepleted;
 
@@ -131,7 +137,8 @@ class LF_OreNodeComponent : ScriptComponent
 	//! \param damage Effective damage the hit zone computed for the tool.
 	//! \param hitPos World hit point. \param hitDir Swing direction (toward the rock).
 	//! \param tool The swung tool, checked against the node row's tool when it names one.
-	int OnToolHit(float damage, vector hitPos, vector hitDir, IEntity tool)
+	//! \param miner Whoever swung it: an accepted hit wears their pickaxe (LF_ToolWear). Null wears nothing.
+	int OnToolHit(float damage, vector hitPos, vector hitDir, IEntity tool, IEntity miner = null)
 	{
 		IEntity owner = GetOwner();
 		if (!IsAuthority())
@@ -159,6 +166,8 @@ class LF_OreNodeComponent : ScriptComponent
 			LF_Debug.Info(FEATURE, string.Format("hit on %1 rock refused: %2 is not %3", m_sNodeId, LF_Utils.GetPrefabName(tool), row.m_ToolPrefab));
 			return 0;
 		}
+
+		LF_ToolWear.OnUse(miner, LF_ToolBench.KIND_PICKAXE);
 
 		if (hitDir.LengthSq() < 0.0001)
 			hitDir = owner.GetOrigin() - hitPos;
@@ -394,10 +403,41 @@ class LF_OreNodeComponent : ScriptComponent
 		if (!owner)
 			return;
 
-		owner.SetScale(m_fRockScale);
+		owner.SetScale(ScaleOf(m_fBaseScale, m_fRockScale));
 		Physics physics = owner.GetPhysics();
 		if (physics)
 			physics.UpdateGeometries();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: the entity scale for a rock of \p baseScale at mined step \p rockScale (a base under 0.1 reads as 1).
+	static float ScaleOf(float baseScale, float rockScale)
+	{
+		if (baseScale < 0.1)
+			baseScale = 1;
+
+		return baseScale * rockScale;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	float GetBaseScale()
+	{
+		return m_fBaseScale;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	override void OnPostInit(IEntity owner)
+	{
+		super.OnPostInit(owner);
+		SetEventMask(owner, EntityEvent.INIT);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Every peer: a rock with its own size shows it from the start (the mined steps keep it through ApplyScale).
+	override void EOnInit(IEntity owner)
+	{
+		if (m_fBaseScale != 1 || m_fRockScale != 1)
+			ApplyScale();
 	}
 
 	//------------------------------------------------------------------------------------------------

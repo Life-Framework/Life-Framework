@@ -21,9 +21,12 @@ outpost's traders do not serve an on-duty officer. A player who wants the stock 
 - Rule, zone registration, config, refusal text: done (#4217).
 - The quartermaster crate (`LF_OutpostStock.c`, #4223): stock rows, one Buy action per row index, the tier gate in words, the officer refusal on every Buy, cash then item with a refund. Default north stock: gang radio $60, pistol $500 (tier 1), rifle $2,000 (tier 2).
 - Outpost guns carry no outlet serial: the vanilla PM and AK-74 have no `LF_SerialComponent`, so a seized outpost gun does not trace back to a counter (N29: the rebels sell what the legal trail does not). The pack stock tables (O6) may pick serial-stamped prefabs and call `LF_FenceSerials.OnWeaponSale` then.
-- Not yet wired: the trader sale and shop buy paths (the outpost crate does) call `RefusesService` (a hook in
-  `Trader/LF_TraderSale.c` and the shop buy path, outside this card); the placed outpost prefab and the
-  north site come from later cards.
+- Trader sale and shop till call `RefusesService` (#4224).
+- Standing (#4224, #4322, N27): a completed trade at a trader or till, or a paid crate Buy, inside an outpost books the `fence_sale`
+  award on the one underworld track and sets a per-outpost "known here" flag (`LF_OutpostStanding`, save
+  section `outpoststanding`). Nothing reads the flag yet. A crate Buy (`LF_OutpostStock.Buy`) calls
+  `LF_OutpostStanding.OnSale` after the cash and the item have moved; a refused buy awards nothing.
+- Not yet: the placed outpost prefab and the north site (later cards).
 
 ## Dependencies
 

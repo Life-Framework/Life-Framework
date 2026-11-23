@@ -11,6 +11,7 @@ from real bounds and probe rays and runs this audit on what it wrote.
 tools\cli audit placement                       ranked list, top 40; full report in tmp/place-audit/report.txt
 tools\cli audit placement --area hospital       one area of agent-box/areas.json
 tools\cli audit placement --layer Street_Hospital.layer,Signs.layer
+tools\cli audit placement --clutter             also sweep the town circle for road clutter (`road-clutter`: a prop on a road in the open, whoever owns it; 574 props swept, 0 left on 2026-11-22)
 tools\cli audit placement --annex               also the debug annex (the old test stations south-west of town)
 tools\cli audit placement --from tmp/place-audit/out.txt   re-rank the last measurements (records.json beside it), no server
 tools\cli audit placement --strict              exit 1 when anything in the town is flagged (a pre-filming gate); the debug grid never fails it (docs/architecture/world-zones.md)

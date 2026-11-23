@@ -1,0 +1,14 @@
+{
+  "section": "outpoststanding",
+  "class": "LF_OutpostStandingSavePayload",
+  "version": 1,
+  "roots": "LF_OutpostKnownRow",
+  "records": {
+    "LF_OutpostKnownRow": {
+      "fields": [
+        "string m_sCharacterKey",
+        "string m_sOutpostId"
+      ]
+    }
+  }
+}

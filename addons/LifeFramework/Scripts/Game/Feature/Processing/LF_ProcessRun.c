@@ -5,6 +5,7 @@ class LF_ProcessRunJob
 {
 	string m_sKey;
 	string m_sMachineId;
+	EntityID m_Machine;
 	EntityID m_User;
 	vector m_vDrop;
 	vector m_vRotation;
@@ -89,6 +90,7 @@ class LF_ProcessRun
 		LF_ProcessRunJob job = new LF_ProcessRunJob();
 		job.m_sKey = KeyOf(machine);
 		job.m_sMachineId = machineId;
+		job.m_Machine = machine.GetID();
 		if (user)
 			job.m_User = user.GetID();
 		job.m_vDrop = machine.GetOrigin() + offset;
@@ -111,6 +113,8 @@ class LF_ProcessRun
 		GetGame().GetCallqueue().CallLater(OnTimer, seconds * 1000, false, job.m_sKey);
 		// Heard running for the whole run (Feature/Atmosphere); a machine without the switch stays quiet.
 		LF_AmbientSwitchComponent.PulseOn(machine, seconds);
+		// Seen running too: fire glow, smoke and the time left on its row (LF_ProcessRunFxComponent).
+		LF_ProcessRunFxComponent.RunStarted(machine, seconds);
 		LF_Debug.Info(FEATURE, string.Format("run started at %1 (%2): %3 batch(es), outputs in %4 s", machineId, job.m_sKey, batches, seconds));
 		return true;
 	}
@@ -173,6 +177,7 @@ class LF_ProcessRun
 			return;
 
 		s_mJobs.Remove(key);
+		LF_ProcessRunFxComponent.RunEnded(GetGame().GetWorld().FindEntityByID(job.m_Machine));
 
 		int dropped;
 		foreach (LF_ProcessingOutput output : job.m_aOutputs)

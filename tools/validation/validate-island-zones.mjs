@@ -6,6 +6,8 @@
 // 1. Branch guard. Only a `ws/town-draft-<place>-<slot>` branch may change an island layer, and only its own
 //    `Place_<place>_<slot>.layer`. The branch is GITHUB_HEAD_REF in CI, else the checked-out branch; main and a detached HEAD
 //    outside CI are not checked. The change set is the diff against the merge base with origin/main, untracked files included.
+//    A `wt sync-base` branch (ws/sync-*) is exempt only for island layers it carries unchanged from another long-lived origin branch
+//    (validate-world-zones carriedFiles: the blob exists on that branch's own history, where its town-draft PR passed this guard).
 // 2. Claims, per slot. Every island layer has its claim `tools/town/claims/<place>-<slot>.json` and every claim its layer; the claim
 //    agrees with the place's approved mapping; no two claims name one building (or plot), except a street slot marked `shared`.
 //    A mapped slot with neither layer nor claim is not fitted yet and passes: drafts fit one slot at a time (#2347).
@@ -24,7 +26,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { CLAIMS_DIR, LAYER_DIR, checkClaimsAndFootprints, guardIslandLayers, loadPlace } from "../town/check.mjs";
-import { changedFiles } from "./validate-world-zones.mjs";
+import { carriedFiles, changedFiles } from "./validate-world-zones.mjs";
 
 const git = (root, args) => {
   const r = spawnSync("git", args, { cwd: root, encoding: "utf8", windowsHide: true });
@@ -77,7 +79,7 @@ if (isMain) {
   const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
   const branch = process.env.GITHUB_HEAD_REF || (git(root, ["rev-parse", "--abbrev-ref", "HEAD"]) || "").trim();
   const files = changedFiles(root);
-  const guard = files ? guardIslandLayers({ branch, files }) : { errors: [], touched: [], skipped: "no merge base with origin/main" };
+  const guard = files ? guardIslandLayers({ branch, files, carried: (fs) => carriedFiles(root, fs) }) : { errors: [], touched: [], skipped: "no merge base with origin/main" };
   const claims = checkIslandClaims(root);
   for (const w of claims.warnings) console.log(`validate-island-zones: warning: ${w}`);
   const errors = [...guard.errors, ...claims.errors];

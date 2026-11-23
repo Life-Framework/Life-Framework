@@ -10,6 +10,7 @@ class LF_HudLogic
 	//! Hunger and thirst run 0 (empty) to 100 (full). The needs line shows below SHOW_BELOW,
 	//! reads red below LOW_BELOW and stays hidden while both are comfortably high.
 	static const int NEED_SHOW_BELOW = 50;	// lf-fixed: half full is when a player starts to care
+	static const float NEED_QUIET_OPACITY = 0.4;	// lf-float: UI opacity of a need still above NEED_SHOW_BELOW
 	static const int NEED_LOW_BELOW = 25;	// lf-fixed: the same quarter the survival penalty bites at
 	//! Seconds the needs line stays up after eating or drinking raised a value.
 	static const float NEED_RISE_SECONDS = 4.0;	// lf-float: UI seconds
@@ -64,6 +65,24 @@ class LF_HudLogic
 	static bool NeedLow(int value)
 	{
 		return value < NEED_LOW_BELOW;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How strongly one need's icon and figure draw: full once it is under half, faded while it is still comfortable
+	//! (the row shows because the other need dropped), so the icon that matters is the one the eye finds.
+	static float NeedOpacity(int points)
+	{
+		if (points < NEED_SHOW_BELOW)
+			return 1;
+
+		return NEED_QUIET_OPACITY;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The brand mark shows when the player keeps it on, and never over the open map (it sat on the grid numbers).
+	static bool BrandVisible(bool pref, bool mapOpen)
+	{
+		return pref && !mapOpen;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -127,11 +146,13 @@ class LF_HudPrefs : Managed
 	static const string PART_MONEY = "money";
 	static const string PART_WANTED = "wanted";
 	static const string PART_NEEDS = "needs";
+	static const string PART_OBJECTIVE = "objective";
 
 	protected bool m_bBrand = true;
 	protected bool m_bMoney = true;
 	protected bool m_bWanted = true;
 	protected bool m_bNeeds = true;
+	protected bool m_bObjective = true;
 
 	protected static ref LF_HudPrefs s_Instance;
 
@@ -177,7 +198,7 @@ class LF_HudPrefs : Managed
 	//------------------------------------------------------------------------------------------------
 	static array<string> Parts()
 	{
-		return {PART_BRAND, PART_MONEY, PART_WANTED, PART_NEEDS};
+		return {PART_BRAND, PART_MONEY, PART_WANTED, PART_NEEDS, PART_OBJECTIVE};
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -189,6 +210,7 @@ class LF_HudPrefs : Managed
 			case PART_MONEY: return m_bMoney;
 			case PART_WANTED: return m_bWanted;
 			case PART_NEEDS: return m_bNeeds;
+			case PART_OBJECTIVE: return m_bObjective;
 		}
 
 		return false;
@@ -204,6 +226,7 @@ class LF_HudPrefs : Managed
 			case PART_MONEY: m_bMoney = on; return true;
 			case PART_WANTED: m_bWanted = on; return true;
 			case PART_NEEDS: m_bNeeds = on; return true;
+			case PART_OBJECTIVE: m_bObjective = on; return true;
 		}
 
 		return false;

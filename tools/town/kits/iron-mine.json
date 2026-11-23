@@ -30,7 +30,7 @@
     },
     "front": null,
     "counters": [],
-    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The buried shaft end is the portal on the uphill side, two spoil heaps flank it, a cart, a pick pile and a lantern wait at its mouth; a granite rock face of nine boulders in two tiers closes the north side of the apron and the six iron ore rocks lie at its foot, 2.6 m apart in a staggered row so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk and the sign on the other, all on the side the track comes in from. The iron buyer is not here: bars are sold at the dock wholesale warehouse. Rows are rigid: shift, never stretch."
+    "adapt": "A hostless plot on the hillside of Coalman's Brow: no building, so the kit never turns. Every row rests on the probed ground (`--terrain`). The buried shaft end is the portal on the uphill side, two spoil heaps flank it, a cart, a pick pile and a lantern wait at its mouth; a granite rock face of nine boulders in two tiers closes the north side of the apron and the six iron ore rocks lie at its foot, 1.6 times the stone's size and streaked rust red so they stand apart from the grey granite, which stands 1.5 m further back (first-2h review B8), 2.7 m apart in a staggered row so two miners swing side by side; the furnace and its lamp stand on one side of the apron, the MINER job desk, the miner's supply counter (the pickaxe, so a new miner buys it where they take the job, first-2h review B3) and the sign on the other, all on the side the track comes in from. The iron buyer is not here: bars are sold at the dock wholesale warehouse. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -138,13 +138,22 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        -1.8,
+        -2.4,
         0,
         7.7
       ],
       "yaw": 110,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "mine-ore-2",
@@ -154,13 +163,22 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        0.4,
+        0.3,
         0,
         8.6
       ],
       "yaw": -130,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "mine-ore-3",
@@ -170,13 +188,22 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        2.6,
+        3.3,
         0,
         7.7
       ],
       "yaw": 165,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "mine-ore-4",
@@ -186,13 +213,22 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        4.8,
+        6,
         0,
         8.6
       ],
       "yaw": -20,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "mine-ore-5",
@@ -202,13 +238,22 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        7,
+        8.7,
         0,
         7.7
       ],
       "yaw": 40,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "mine-ore-6",
@@ -218,13 +263,22 @@
       "verb": "on floor",
       "mount": "terrain",
       "offset": [
-        9.2,
+        11.4,
         0,
         8.6
       ],
       "yaw": -70,
       "wall": "free",
-      "floor": "f0"
+      "floor": "f0",
+      "config": [
+        {
+          "component": "LF_OreNodeComponent",
+          "set": {
+            "m_fBaseScale": "1.6"
+          },
+          "blocks": []
+        }
+      ]
     },
     {
       "id": "mine-furnace",
@@ -283,6 +337,40 @@
       ],
       "wall": "free",
       "floor": "f0"
+    },
+    {
+      "id": "mine-supply-counter",
+      "name": "Mine_SupplyCounter",
+      "prefab": "{70C282F48D580FB8}Prefabs/Props/Commercial/LF_ShopCounter.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10,
+        0,
+        3.4
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "lift": 0.11
+    },
+    {
+      "id": "mine-supply-till",
+      "name": "Mine_SupplyTill",
+      "prefab": "{E3FCCFB7C6EA8356}Prefabs/Props/Commercial/LF_MinersSupplyTill_Mine.et",
+      "role": "till",
+      "verb": "on floor",
+      "mount": "terrain",
+      "offset": [
+        10,
+        0,
+        3.4
+      ],
+      "yaw": -90,
+      "wall": "free",
+      "floor": "f0",
+      "lift": 1.149
     },
     {
       "id": "mine-sign",
@@ -348,7 +436,7 @@
       "offset": [
         -2.2,
         0.6,
-        11.4
+        12.9
       ],
       "yaw": 20,
       "wall": "free",
@@ -364,7 +452,7 @@
       "offset": [
         1.2,
         1.5,
-        11.8
+        13.3
       ],
       "yaw": 150,
       "wall": "free",
@@ -380,7 +468,7 @@
       "offset": [
         4.4,
         0.6,
-        11.3
+        12.8
       ],
       "yaw": 80,
       "wall": "free",
@@ -396,7 +484,7 @@
       "offset": [
         7.6,
         1.5,
-        11.7
+        13.2
       ],
       "yaw": 200,
       "wall": "free",
@@ -412,7 +500,7 @@
       "offset": [
         10.6,
         0.6,
-        11.4
+        12.9
       ],
       "yaw": 310,
       "wall": "free",
@@ -428,7 +516,7 @@
       "offset": [
         -0.8,
         1.3,
-        14.2
+        15.7
       ],
       "yaw": 40,
       "wall": "free",
@@ -444,7 +532,7 @@
       "offset": [
         2.9,
         0.4,
-        14.5
+        16
       ],
       "yaw": 260,
       "wall": "free",
@@ -460,7 +548,7 @@
       "offset": [
         6.4,
         1.3,
-        14.1
+        15.6
       ],
       "yaw": 120,
       "wall": "free",
@@ -476,7 +564,7 @@
       "offset": [
         9.8,
         0.4,
-        14.4
+        15.9
       ],
       "yaw": 10,
       "wall": "free",

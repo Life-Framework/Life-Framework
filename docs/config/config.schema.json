@@ -1834,6 +1834,39 @@
       "additionalProperties": false,
       "x-class": "LF_TaxiFareConfig"
     },
+    "tradeUnlocks": {
+      "type": "object",
+      "description": "The unlock table: one row per trade per level 2 to 30.",
+      "properties": {
+        "rows": {
+          "type": "object",
+          "description": "Unlock rows: trade, level, text key. ",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "job": {
+                "type": "string",
+                "description": "Trade track id, e.g. FARMER, MINER, SMELTING, DELIVERY",
+                "default": ""
+              },
+              "level": {
+                "type": "integer",
+                "description": "The level that opens this, 2 to 30",
+                "default": 2
+              },
+              "textKey": {
+                "type": "string",
+                "description": "Localization key naming what the level opens, the unlock text row",
+                "default": ""
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false,
+      "x-class": "LF_TradeUnlocksConfig"
+    },
     "vehicles": {
       "type": "object",
       "description": "Vehicle prices.",

@@ -170,6 +170,7 @@ class LF_ArrivalGuide
 			LF_Debug.Warn(FEATURE, string.Format("the map share for %1 was refused; the waypoint still goes", uid));
 
 		Sink().Mark(uid, WAYPOINT_ID, label, x, z);
+		Sink().Objective(uid, WAYPOINT_ID, step.m_sTitleKey);
 		LF_Debug.Info(FEATURE, string.Format("%1 is guided to step %2: map mark %3 and waypoint %4 at %5 %6", uid, step.m_sQuestId, row.m_sKey, WAYPOINT_ID, x, z));
 		return step.m_sQuestId;
 	}
@@ -183,6 +184,7 @@ class LF_ArrivalGuide
 
 		bool removed = LF_MapShares.Remove(KeyOf(uid));
 		Sink().Clear(uid, WAYPOINT_ID);
+		Sink().Objective(uid, WAYPOINT_ID, string.Empty);
 		if (removed)
 			LF_Debug.Info(FEATURE, string.Format("%1 has no guided step left: the map mark and waypoint are cleared", uid));
 	}

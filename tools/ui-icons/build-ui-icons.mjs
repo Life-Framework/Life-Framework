@@ -42,6 +42,8 @@ export const ICONS = {
   errand: `<path d="M16 6V60" ${S()}/><path d="M18 8H52L44 20L52 32H18Z" fill="${W}"/>`,
   police: `<path d="M32 6L54 14V32C54 46 44 54 32 59C20 54 10 46 10 32V14Z" ${S()}/><path d="M32 20L35 29H44L37 34L40 43L32 38L24 43L27 34L20 29H29Z" fill="${W}"/>`,
   medic: `<rect x="8" y="8" width="48" height="48" rx="4" ${S()}/><path d="M32 18V46M18 32H46" stroke="${W}" stroke-width="9" fill="none"/>`,
+  food: `<path d="M12 6V22Q12 31 20 31Q28 31 28 22V6M20 6V31M20 31V58" ${S(4)}/><path d="M44 58V6Q56 12 56 30Q56 36 50 36H44" ${S(4)}/>`,
+  drink: `<path d="M14 8H50L45 56H19Z" ${S(4)}/><path d="M17 24H47" ${S(4)}/>`,
 };
 
 function layout(names) {

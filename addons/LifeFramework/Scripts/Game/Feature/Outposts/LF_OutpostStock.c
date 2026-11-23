@@ -111,7 +111,8 @@ class LF_OutpostStock
 	//------------------------------------------------------------------------------------------------
 	//! Server: sells `item` to `buyer` at the crate at `traderPos`. Order: the outpost's officer refusal
 	//! (told by LF_Outpost.NotifyRefusal), the tier gate, the cash, the item; a failed hand-over
-	//! refunds the cash. The caller tells the buyer every other result (RefusalKey).
+	//! refunds the cash. A completed buy inside an outpost books the fence_sale award and the known-here
+	//! flag (LF_OutpostStanding.OnSale). The caller tells the buyer every other result (RefusalKey).
 	//! \param[in] tier The buyer's underworld tier (TierOf in play).
 	//! \param[out] paid Dollars taken; 0 unless OK.
 	static LF_EOutpostBuy Buy(IEntity buyer, LF_OutpostStockItem item, vector traderPos, int tier, out int paid)
@@ -172,6 +173,9 @@ class LF_OutpostStock
 
 		paid = taken;
 		LF_Debug.Info(FEATURE, string.Format("%1 bought %2 at the outpost for %3", uid, item.m_sId, paid));
+		// Standing (#4322, N27): a completed buy counts like a trader sale. The gate above already read the
+		// tier, so the award never lets this same buy past its own tier row.
+		LF_OutpostStanding.OnSale(buyer, traderPos);
 		return LF_EOutpostBuy.OK;
 	}
 

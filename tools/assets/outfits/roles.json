@@ -118,11 +118,7 @@
     {
       "id": "trader", "name": "Market trader", "base": "default",
       "outfits": [["shirt_v5", "trousers_brown", "boots_us", "cap_flat_light"], ["shirt_v6", "trousers_grey", "boots_us"], ["denim_brown", "trousers_grey", "boots_us", "knit_black"]],
-      "greet": "Fresh today. Have a look.",
-      "what": "I buy and sell at the stall. Bring me what you grow or make and I will give you a fair price.",
-      "where": "The farm is out past the greenhouse. For anything else, the {town} board on the square will tell you.",
-      "rumour": "The price of apples went up this week. Somebody is hoarding them, I think.",
-      "bye": "Come back when you have more."
+      "dialogue": "role_trader"
     },
     {
       "id": "mechanic", "name": "Mechanic", "base": "default",
