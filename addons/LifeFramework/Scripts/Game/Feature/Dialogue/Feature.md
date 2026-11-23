@@ -12,6 +12,7 @@ Adding an NPC: `docs/asset-pipeline/dialogue.md`.
 | `LF_DialogueComponent.c` | both | On the NPC prefab; names its dialogue by id (`m_sDialogueId`, or a path in `m_sDialogue`), loads and checks the config once |
 | `LF_DialogueRegistry.c` | both | Dialogue by id (#957): the core index `Configs/Dialogue/LF_DialogueIndex.conf` plus pack overlays (add, replace, remove an id). `LF_DialogueRegistry.Resolve(id)` |
 | `LF_DialogueHook.c` | server | Base of a reply's condition or action; `Find("Name")` resolves class `LF_DialogueHook_Name` |
+| `LF_DialogueFeeTrade.c` | server | The action `FeeForItem` (param `<fee>` bar `<prefab>`, e.g. `400` then the key's `{GUID}path`): takes the fee in carried cash, hands the item over, gives the fee back if it cannot; refuses in words when the player is short or already holds one (#4381). A dialogue voices the paid answer with a line whose `for_key` is `#LF-Dialogue_FeePaid` |
 | `LF_Dialogue.c` | server | Sessions: start, choose, end; tells bystanders what to hear |
 | `LF_DialoguePlayerController.c` | both | The RPCs, on the player's controller |
 | `LF_DialogueScene.c` | client | Captions, replies, input, freezing the character, the harness hook |
