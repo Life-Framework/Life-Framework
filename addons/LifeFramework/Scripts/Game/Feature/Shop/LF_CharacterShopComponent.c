@@ -182,17 +182,27 @@ class LF_CharacterShopComponent : ScriptComponent
 
 		string missing;
 		LF_EShopRefusal reason = CheckRequest(player, shopId, prefabName, quantity);
+		LF_ShopComponent shop;
 		if (reason == LF_EShopRefusal.NONE)
 		{
-			LF_ShopComponent shop = ResolveShop(shopId);
-			if (buy)
+			shop = ResolveShop(shopId);
+			// Outposts (#4217, #4224): the clerk does not serve an on-duty officer, and says so.
+			if (LF_Outpost.RefusesService(player, shop.GetOwner().GetOrigin()))
+			{
+				LF_Outpost.NotifyRefusal(player);
+				reason = LF_EShopRefusal.RESIDENT_REFUSES;
+			}
+			else if (buy)
 				reason = shop.Buy(prefabName, quantity, player, money, missing);
 			else
 				reason = shop.Sell(prefabName, quantity, player, money, missing);
 		}
 
 		if (reason == LF_EShopRefusal.NONE)
+		{
 			PlayTillSound(player);
+			LF_OutpostStanding.OnSale(player, shop.GetOwner().GetOrigin());
+		}
 
 		RespondResult(buy, reason, prefabName, quantity, money, LF_MoneyUtils.GetCash(player), missing);
 	}

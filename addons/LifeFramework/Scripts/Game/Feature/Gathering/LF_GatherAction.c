@@ -91,6 +91,8 @@ class LF_GatherAction : ScriptedUserAction
 			if (!xpJob.IsEmpty())
 				xpPaid = LF_JobLevels.XpOf(uid, xpJob) - xpBefore;
 			NotifyGathered(pUserEntity, m_GatherItemPrefab, added, xpPaid);
+			if (LF_GatherTools.NeedsTool(m_Node))
+				LF_ToolWear.OnGather(pUserEntity, family);
 
 			// Notify job manager for reward
 			LF_JobManager jobManager = LF_JobManager.GetInstance();

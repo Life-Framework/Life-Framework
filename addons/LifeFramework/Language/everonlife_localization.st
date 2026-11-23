@@ -3675,6 +3675,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "That contract isn't on offer."
      Comment "Contract refusal (#2702): the contract id has no row or no delivery job."
     }
+    CustomStringTableItem "{825B941D7F8A5C59}" {
+     Id "LF-CounterOutlet_Action"
+     Target_en_us "Sell under the counter"
+     Comment "Barkeeper action: sell the smuggled cartons and bottles the bar buys (#4200)."
+    }
+    CustomStringTableItem "{70843034317124F3}" {
+     Id "LF-CounterOutlet_Full"
+     Target_en_us "That's enough for this week. Come back later."
+     Comment "Toast: the bar's demand for the period is spent (#4200)."
+    }
+    CustomStringTableItem "{506F32AAE67FCF37}" {
+     Id "LF-CounterOutlet_Nothing"
+     Target_en_us "You have nothing the bar takes."
+     Comment "Toast and cannot-perform reason: no goods this bar buys (#4200)."
+    }
+    CustomStringTableItem "{F63D693CF85C59FE}" {
+     Id "LF-CounterOutlet_Police"
+     Target_en_us "Not with that badge on, officer."
+     Comment "Toast: the barkeeper refuses an on-duty police officer (#4200)."
+    }
+    CustomStringTableItem "{17E9077EC7547E6D}" {
+     Id "LF-CounterOutlet_Sold"
+     Target_en_us "Under the counter it goes. You get %1."
+     Comment "Toast: goods sold under the counter. %1 = the amount paid (#4200)."
+    }
+    CustomStringTableItem "{67B2BD45B6D5677C}" {
+     Id "LF-CounterOutlet_Title"
+     Target_en_us "The barkeeper"
+     Comment "Toast title at an under-the-counter outlet (#4200)."
+    }
     CustomStringTableItem "{E83AB3CDE17F447B}" {
      Id "LF-Credits_1"
      Target_en_us "PROJECTS WE BUILD ON AND BORROW FROM"
@@ -16063,6 +16093,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Ticket handed over: %1"
      Comment "Toast to the officer. %1 is the amount."
     }
+    CustomStringTableItem "{18DFC167284D07E8}" {
+     Id "LF-ToolBench_Done"
+     Target_en_us "Good as new. That came to %1 and one scrap metal."
+     Comment "Bench repair done (#4187). %1 = fee"
+    }
+    CustomStringTableItem "{3E45956C16155502}" {
+     Id "LF-ToolBench_Failed"
+     Target_en_us "The bench cannot do repairs right now."
+     Comment "Bench refusal on a broken setup (#4187)"
+    }
+    CustomStringTableItem "{8F6C7F1D0C427B09}" {
+     Id "LF-ToolBench_Full"
+     Target_en_us "That tool is already in top shape."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{25BBCAE014F0D78D}" {
+     Id "LF-ToolBench_NoMoney"
+     Target_en_us "You do not have enough cash for the repair."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{3088D8D49AFC71C9}" {
+     Id "LF-ToolBench_NoScrap"
+     Target_en_us "You need one piece of scrap metal for the repair."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{C6145C357DAD1FAB}" {
+     Id "LF-ToolBench_NoTool"
+     Target_en_us "You have no tool of that kind to work on."
+     Comment "Bench refusal (#4187)"
+    }
+    CustomStringTableItem "{6F3046628BDFDFCF}" {
+     Id "LF-ToolBench_RepairPickaxe"
+     Target_en_us "Repair the pickaxe"
+     Comment "Hardware bench action (#4187)"
+    }
+    CustomStringTableItem "{C16B93140B289B82}" {
+     Id "LF-ToolBench_RestringRod"
+     Target_en_us "Re-string the rod"
+     Comment "Hardware bench action (#4187)"
+    }
+    CustomStringTableItem "{1188B7A6ADC3C8C7}" {
+     Id "LF-ToolBench_SharpenAxe"
+     Target_en_us "Sharpen the axe"
+     Comment "Hardware bench action (#4187)"
+    }
+    CustomStringTableItem "{62BCE351AF0CBFB2}" {
+     Id "LF-ToolBench_Title"
+     Target_en_us "Hardware bench"
+     Comment "Notification title (#4187)"
+    }
     CustomStringTableItem "{3723AB61E29CDCE1}" {
      Id "LF-ToolCondition_Good"
      Target_en_us "%1 is in good shape"
@@ -16082,6 +16162,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ToolCondition_WornOut"
      Target_en_us "%1 is worn out but still works, slowly"
      Comment "Action text: tool at zero condition; it still works at half speed (#4182). %1 = tool name"
+    }
+    CustomStringTableItem "{0B593FFD66EB831C}" {
+     Id "LF-ToolKind_Axe"
+     Target_en_us "Your axe"
+     Comment "Tool kind name that fills %1 of the tool condition sentence (#4300)"
+    }
+    CustomStringTableItem "{DFCB9DADDFCEE73E}" {
+     Id "LF-ToolKind_Pickaxe"
+     Target_en_us "Your pickaxe"
+     Comment "Tool kind name that fills %1 of the tool condition sentence (#4300)"
+    }
+    CustomStringTableItem "{80FF3472F8A2800D}" {
+     Id "LF-ToolKind_Rod"
+     Target_en_us "Your fishing rod"
+     Comment "Tool kind name that fills %1 of the tool condition sentence (#4300)"
     }
     CustomStringTableItem "{75960D0103B97E17}" {
      Id "LF-ToolTier_Fine"

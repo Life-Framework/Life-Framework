@@ -43,15 +43,11 @@ class LF_ToolCondition
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Condition lost per use at a tier: a worn tool wears fastest, a fine one slowest.
+	//! Condition lost per use at a tier: a worn tool wears fastest, a fine one slowest. The amounts
+	//! come from the tool tier config (Configs/Gathering/LF_ToolTiers.conf, #4300).
 	static float WearPerUse(int tier)
 	{
-		int clamped = ClampTier(tier);
-		if (clamped == TIER_WORN)
-			return 2.0; // lf-fixed: wear table, tuned in the W36 economy pass
-		if (clamped == TIER_FINE)
-			return 0.5; // lf-fixed: wear table
-		return 1.0; // lf-fixed: wear table
+		return LF_ToolTierConfig.WearPerUse(ClampTier(tier));
 	}
 
 	//------------------------------------------------------------------------------------------------
