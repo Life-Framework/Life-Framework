@@ -140,7 +140,9 @@ class LF_PlayerMenuServer
 			if (!track || track.m_sJob.IsEmpty())
 				continue;
 
-			data.m_aSkills.Insert(SkillOf(track, LF_JobLevels.XpOf(uid, track.m_sJob)));
+			LF_PlayerMenuSkill skill = SkillOf(track, LF_JobLevels.XpOf(uid, track.m_sJob));
+			LF_PlayerMenuTrade.Fill(skill, uid);
+			data.m_aSkills.Insert(skill);
 		}
 	}
 

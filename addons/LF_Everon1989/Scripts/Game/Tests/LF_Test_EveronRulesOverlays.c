@@ -63,7 +63,8 @@ class LF_Test_EveronRulesOverlays : LF_Test
 		{
 			LF_PrefabSlotsConfig layered = LF_PrefabSlotsConfig.LoadCore();
 			layered.ApplyLayers();
-			ctx.Equal(core.m_aSlots.Count(), layered.m_aSlots.Count(), "the pack overlay adds and removes no slot");
+			// The pack adds the 20 gang flag slots (#4449): the core file lists none, LF_OrgFlagWall reads them layered.
+			ctx.Equal(core.m_aSlots.Count() + LF_OrgFlags.COUNT, layered.m_aSlots.Count(), "the pack overlay removes no slot and adds only the 20 gang flag slots");
 			foreach (LF_PrefabSlot slot : core.m_aSlots)
 			{
 				LF_PrefabSlot got = layered.Find(slot.m_sSlot);

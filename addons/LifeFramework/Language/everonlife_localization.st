@@ -4385,6 +4385,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "LF_VodkaBottle_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
+    CustomStringTableItem "{ADAAD0ACB3D62D04}" {
+     Id "LF-Credits_193"
+     Target_en_us "WORK-SITE SOUNDS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{4BC652FE250FB8F9}" {
+     Id "LF-Credits_194"
+     Target_en_us "Work-site sounds: shift whistle, mine tool bed, sawmill tool bed"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
      Id "LF-Credits_2"
      Target_en_us "Everon Life RPG Framework"
@@ -6044,6 +6054,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Evidence_Title"
      Target_en_us "Evidence"
      Comment "Toast title for scene evidence."
+    }
+    CustomStringTableItem "{033372B427C8F462}" {
+     Id "LF-ExportOrder_RefuseGone"
+     Target_en_us "That order is no longer on the board."
+     Comment "Export order board: the order closed or was never open."
+    }
+    CustomStringTableItem "{8651760D8ABA0ABB}" {
+     Id "LF-ExportOrder_RefuseHoldsOne"
+     Target_en_us "You already have an export order. Hand it in first."
+     Comment "Export order board: one order per hauler."
+    }
+    CustomStringTableItem "{75449B377FCD4EF0}" {
+     Id "LF-ExportOrder_RefuseLevel"
+     Target_en_us "Export orders are for haulers at level 10 or higher. Keep hauling."
+     Comment "Export order board: a hauler under the level gate tries to take an order."
+    }
+    CustomStringTableItem "{827665D19E29D2A6}" {
+     Id "LF-ExportOrder_RefuseNoneHeld"
+     Target_en_us "You have no export order to hand in."
+     Comment "Export order crane: the player holds no order."
+    }
+    CustomStringTableItem "{333B1F31AD7A4561}" {
+     Id "LF-ExportOrder_RefuseShort"
+     Target_en_us "That is not the full order. Bring every unit, then hand it in."
+     Comment "Export order crane: fewer goods than the order asks for; nothing is taken."
+    }
+    CustomStringTableItem "{1BA87EB81FC07ECF}" {
+     Id "LF-ExportOrder_RefuseTaken"
+     Target_en_us "Another hauler already took that order."
+     Comment "Export order board: someone else holds the order."
     }
     CustomStringTableItem "{E6E02AC329CA9010}" {
      Id "LF-Farm_CabbageSeeds"
@@ -9179,6 +9219,31 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_es_es "Mejora de categoría"
      Comment "Hint title when the character's overall standing rises (replaces an arcade LEVEL UP)"
     }
+    CustomStringTableItem "{9D8FF04C43EF328F}" {
+     Id "LF-Level_TradeTier_1"
+     Target_en_us "Apprentice"
+     Comment "Trade tier word for levels 1 to 5, shown beside the trade on the F2 skill card (#4414). The pack may override it."
+    }
+    CustomStringTableItem "{F4ECAB69CD47C063}" {
+     Id "LF-Level_TradeTier_2"
+     Target_en_us "Hand"
+     Comment "Trade tier word for levels 6 to 11 (#4414)."
+    }
+    CustomStringTableItem "{5F256D6141465559}" {
+     Id "LF-Level_TradeTier_3"
+     Target_en_us "Journeyman"
+     Comment "Trade tier word for levels 12 to 19 (#4414)."
+    }
+    CustomStringTableItem "{50ED2B8D81EFB19E}" {
+     Id "LF-Level_TradeTier_4"
+     Target_en_us "Foreman"
+     Comment "Trade tier word for levels 20 to 27 (#4414)."
+    }
+    CustomStringTableItem "{D9282509B6BB1C35}" {
+     Id "LF-Level_TradeTier_5"
+     Target_en_us "Master"
+     Comment "Trade tier word for levels 28 to 30 (#4414)."
+    }
     CustomStringTableItem "{7782A81CDE1A5199}" {
      Id "LF-LicenceCounter_Applied"
      Target_en_us "Application taken. Your permit will be ready in about %1 hours. Come back to this counter to collect it."
@@ -11142,6 +11207,141 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "The server restarts in %1 minute(s)."
      Comment "Toast to every player at each restart warning step (Ops O6, #1265). %1 = minutes left."
     }
+    CustomStringTableItem "{7D34417334CA2E12}" {
+     Id "LF-OrgFlagWall_Done"
+     Target_en_us "Your gang now flies the new flag."
+     Comment "Toast to the gang leader after picking a flag at the wall."
+    }
+    CustomStringTableItem "{0DD2469217004277}" {
+     Id "LF-OrgFlagWall_Fly"
+     Target_en_us "Fly the %1 flag"
+     Comment "Action on a sample flag at the registry flag wall. %1 is the flag name."
+    }
+    CustomStringTableItem "{5835D1DD383908D7}" {
+     Id "LF-OrgFlagWall_Held"
+     Target_en_us "That flag belongs to %1, and they are around. Pick another."
+     Comment "Toast when a flag is held by a gang with a member online. %1 is the holding gang."
+    }
+    CustomStringTableItem "{B717A91F51503F78}" {
+     Id "LF-OrgFlagWall_NoGang"
+     Target_en_us "You need a gang to fly a flag."
+     Comment "Toast to a player with no organization."
+    }
+    CustomStringTableItem "{5592F38460C60DB0}" {
+     Id "LF-OrgFlagWall_NotLeader"
+     Target_en_us "Only a gang leader can pick the gang flag."
+     Comment "Toast to a gang member who is not a leader."
+    }
+    CustomStringTableItem "{BDE4CC259DADC42D}" {
+     Id "LF-OrgFlagWall_Refused"
+     Target_en_us "That flag cannot be picked."
+     Comment "Toast when the pick is not one of the preset flags."
+    }
+    CustomStringTableItem "{2317577E1FF2C9F2}" {
+     Id "LF-OrgFlagWall_Same"
+     Target_en_us "Your gang already flies that flag."
+     Comment "Toast when the leader picks the flag the gang already has."
+    }
+    CustomStringTableItem "{6DD4905328743C3C}" {
+     Id "LF-OrgFlag_Name_01"
+     Target_en_us "Flag 1"
+     Comment "Neutral name of preset gang flag 1; a pack gives the real name."
+    }
+    CustomStringTableItem "{C7E4384645F27400}" {
+     Id "LF-OrgFlag_Name_02"
+     Target_en_us "Flag 2"
+     Comment "Neutral name of preset gang flag 2; a pack gives the real name."
+    }
+    CustomStringTableItem "{06CB274D16F5D514}" {
+     Id "LF-OrgFlag_Name_03"
+     Target_en_us "Flag 3"
+     Comment "Neutral name of preset gang flag 3; a pack gives the real name."
+    }
+    CustomStringTableItem "{4BBB49F3186E9C91}" {
+     Id "LF-OrgFlag_Name_04"
+     Target_en_us "Flag 4"
+     Comment "Neutral name of preset gang flag 4; a pack gives the real name."
+    }
+    CustomStringTableItem "{80848B99F9327F1F}" {
+     Id "LF-OrgFlag_Name_05"
+     Target_en_us "Flag 5"
+     Comment "Neutral name of preset gang flag 5; a pack gives the real name."
+    }
+    CustomStringTableItem "{41BB2518650EC259}" {
+     Id "LF-OrgFlag_Name_06"
+     Target_en_us "Flag 6"
+     Comment "Neutral name of preset gang flag 6; a pack gives the real name."
+    }
+    CustomStringTableItem "{3BFCE726AB706918}" {
+     Id "LF-OrgFlag_Name_07"
+     Target_en_us "Flag 7"
+     Comment "Neutral name of preset gang flag 7; a pack gives the real name."
+    }
+    CustomStringTableItem "{D549594C3E7CA88D}" {
+     Id "LF-OrgFlag_Name_08"
+     Target_en_us "Flag 8"
+     Comment "Neutral name of preset gang flag 8; a pack gives the real name."
+    }
+    CustomStringTableItem "{CD1F50FA7D06680B}" {
+     Id "LF-OrgFlag_Name_09"
+     Target_en_us "Flag 9"
+     Comment "Neutral name of preset gang flag 9; a pack gives the real name."
+    }
+    CustomStringTableItem "{F2D8608EB4BADFA2}" {
+     Id "LF-OrgFlag_Name_10"
+     Target_en_us "Flag 10"
+     Comment "Neutral name of preset gang flag 10; a pack gives the real name."
+    }
+    CustomStringTableItem "{1F4EC0E2CC8A7E46}" {
+     Id "LF-OrgFlag_Name_11"
+     Target_en_us "Flag 11"
+     Comment "Neutral name of preset gang flag 11; a pack gives the real name."
+    }
+    CustomStringTableItem "{9896D7B92896EC0A}" {
+     Id "LF-OrgFlag_Name_12"
+     Target_en_us "Flag 12"
+     Comment "Neutral name of preset gang flag 12; a pack gives the real name."
+    }
+    CustomStringTableItem "{82527DEB453A9885}" {
+     Id "LF-OrgFlag_Name_13"
+     Target_en_us "Flag 13"
+     Comment "Neutral name of preset gang flag 13; a pack gives the real name."
+    }
+    CustomStringTableItem "{914669FAB5989DD9}" {
+     Id "LF-OrgFlag_Name_14"
+     Target_en_us "Flag 14"
+     Comment "Neutral name of preset gang flag 14; a pack gives the real name."
+    }
+    CustomStringTableItem "{71BE884AF0AC76CD}" {
+     Id "LF-OrgFlag_Name_15"
+     Target_en_us "Flag 15"
+     Comment "Neutral name of preset gang flag 15; a pack gives the real name."
+    }
+    CustomStringTableItem "{1625AAF66BB314BA}" {
+     Id "LF-OrgFlag_Name_16"
+     Target_en_us "Flag 16"
+     Comment "Neutral name of preset gang flag 16; a pack gives the real name."
+    }
+    CustomStringTableItem "{1CB2F49578C1F055}" {
+     Id "LF-OrgFlag_Name_17"
+     Target_en_us "Flag 17"
+     Comment "Neutral name of preset gang flag 17; a pack gives the real name."
+    }
+    CustomStringTableItem "{57C899AC492EF9AC}" {
+     Id "LF-OrgFlag_Name_18"
+     Target_en_us "Flag 18"
+     Comment "Neutral name of preset gang flag 18; a pack gives the real name."
+    }
+    CustomStringTableItem "{0A2B3522F3279827}" {
+     Id "LF-OrgFlag_Name_19"
+     Target_en_us "Flag 19"
+     Comment "Neutral name of preset gang flag 19; a pack gives the real name."
+    }
+    CustomStringTableItem "{2323BD897B6C077E}" {
+     Id "LF-OrgFlag_Name_20"
+     Target_en_us "Flag 20"
+     Comment "Neutral name of preset gang flag 20; a pack gives the real name."
+    }
     CustomStringTableItem "{5AB8DC50BD7DC910}" {
      Id "LF-OrgRight_BUY_UPGRADE"
      Target_en_us "Buy upgrades"
@@ -12902,10 +13102,35 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Next level opens: %1"
      Comment "Personal file skill record: what the next level of this job unlocks. %1 = names of the work it opens, comma separated."
     }
+    CustomStringTableItem "{6E14D128F51C49C6}" {
+     Id "LF-PlayerMenu_SkillOpens"
+     Target_en_us "Level %1 opens: %2"
+     Comment "F2 skill card (#4414). %1 = the next level, %2 = what it opens."
+    }
+    CustomStringTableItem "{92CE57A0169506BD}" {
+     Id "LF-PlayerMenu_SkillPerks"
+     Target_en_us "Perks: %1"
+     Comment "F2 skill card (#4414). %1 = the perks picked in this trade."
+    }
+    CustomStringTableItem "{710EB402141348F5}" {
+     Id "LF-PlayerMenu_SkillRank"
+     Target_en_us "Ranked %1 in %2 this week"
+     Comment "F2 skill card weekly rank slot (#4414). %1 = the rank as an ordinal, like 6th, %2 = the trade."
+    }
+    CustomStringTableItem "{B0E52A4594D5C18F}" {
+     Id "LF-PlayerMenu_SkillTitle"
+     Target_en_us "%1, %2"
+     Comment "F2 skill card title (#4414). %1 = the trade, %2 = its tier word."
+    }
     CustomStringTableItem "{F52EBB28BA797478}" {
      Id "LF-PlayerMenu_SkillTop"
      Target_en_us "Level %1 · %2 XP, the top of the ladder"
      Comment "Personal file skill numbers at the highest level. %1 = level, %2 = total XP."
+    }
+    CustomStringTableItem "{FC2FB5AAEA09C862}" {
+     Id "LF-PlayerMenu_SkillUnranked"
+     Target_en_us "Not ranked yet this week"
+     Comment "F2 skill card weekly rank slot (#4414) when the player is not on the shift board."
     }
     CustomStringTableItem "{48BCC2D5ADF101A4}" {
      Id "LF-PlayerMenu_SkillXp"
