@@ -53,83 +53,83 @@ SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFenc
  coords 107 0 112
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 112
+ coords 412 0 112
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 107
+ coords 412 0 107
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 102
+ coords 412 0 102
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 97
+ coords 412 0 97
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 92
+ coords 412 0 92
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 87
+ coords 412 0 87
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 82
+ coords 412 0 82
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 77
+ coords 412 0 77
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 72
+ coords 412 0 72
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 67
+ coords 412 0 67
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 62
+ coords 412 0 62
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 57
+ coords 412 0 57
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 52
+ coords 412 0 52
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 47
+ coords 412 0 47
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 42
+ coords 412 0 42
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 37
+ coords 412 0 37
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 32
+ coords 412 0 32
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 27
+ coords 412 0 27
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 25
+ coords 412 0 25
  angleY 90
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
- coords 376 0 20
+ coords 412 0 20
  angleY -180
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
@@ -597,4 +597,52 @@ SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFenc
 }
 SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
  coords 370 0 20
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 375 0 112
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 380 0 112
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 385 0 112
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 390 0 112
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 395 0 112
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 400 0 112
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 405 0 112
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 408 0 112
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 375 0 20
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 380 0 20
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 385 0 20
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 390 0 20
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 395 0 20
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 400 0 20
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 405 0 20
+}
+SCR_DestructibleEntity : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 408 0 20
 }
