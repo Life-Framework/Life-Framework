@@ -76,6 +76,7 @@
     "LF_SurvivalConfig",
     "LF_RankFleetConfig",
     "LF_TaxiFareConfig",
+    "LF_ExportOrderConfig",
     "LF_TradeUnlocksConfig",
     "LF_TermsConfig",
     "LF_TownBoardConfig",

@@ -1,0 +1,25 @@
+{
+  "section": "newspaper",
+  "class": "LF_NewspaperSavePayload",
+  "version": 1,
+  "roots": "LF_NewspaperFactRow,LF_NewspaperIssueRow",
+  "records": {
+    "LF_NewspaperFactRow": {
+      "fields": [
+        "int m_iKind",
+        "string m_sName",
+        "string m_sDetail",
+        "string m_sKey",
+        "int m_iAmount",
+        "int m_iAmount2",
+        "int m_iUnixTime"
+      ]
+    },
+    "LF_NewspaperIssueRow": {
+      "fields": [
+        "int m_iWeek",
+        "string m_sWire"
+      ]
+    }
+  }
+}
