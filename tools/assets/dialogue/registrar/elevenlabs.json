@@ -1,0 +1,89 @@
+{
+  "id": "registrar",
+  "service": "ElevenLabs text-to-speech",
+  "lines": {
+    "greet": {
+      "hash": "7610cf32878331a5",
+      "date": "2026-11-23",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "Registry. Crews and flags are my desk. What do you need?",
+      "chars": 56,
+      "chars_total": 22,
+      "request_id": "fXMyx8l6TQaYXFWTSi7U",
+      "seconds": 2.88,
+      "mouth": "9958653453200000013998788449985577884564442139887887642100"
+    },
+    "found": {
+      "hash": "09038934211ad3ef",
+      "date": "2026-11-23",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "Name, flag, and two hundred fifty dollars.",
+      "chars": 42,
+      "chars_total": 17,
+      "request_id": "oIOi8Pvcw5QaH5G2UZlv",
+      "seconds": 2.48,
+      "mouth": "89998652025899886200008836888968539828697532344100"
+    },
+    "flags": {
+      "hash": "cc77e7e695d8b7a7",
+      "date": "2026-11-23",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "A leader picks the flag at the wall. If another crew flies it and has someone around, it is taken.",
+      "chars": 98,
+      "chars_total": 39,
+      "request_id": "Llj9xsWnMCZEtPCmb7wp",
+      "seconds": 5.55,
+      "mouth": "998979439667763699684797799754100000000000000009799997835399733789886861488578765687766688543311297764785461200"
+    },
+    "picked": {
+      "hash": "d21fccf2b14ddc23",
+      "date": "2026-11-23",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "That is your flag. It is on the books.",
+      "chars": 38,
+      "chars_total": 15,
+      "request_id": "XhXMisd5nSiLE969OqTT",
+      "seconds": 2.43,
+      "mouth": "5999569758954478655331000008999889788588414553000"
+    },
+    "taken": {
+      "hash": "7a94354b9ce14f25",
+      "date": "2026-11-23",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "That one is taken. Another crew flies it. Pick a different one.",
+      "chars": 63,
+      "chars_total": 25,
+      "request_id": "5rQdA6wsQpqr7Gc0iVRW",
+      "seconds": 3.42,
+      "mouth": "498378766349724321000000069988624985347755541000000193969527413421000"
+    },
+    "bye": {
+      "hash": "ce5a0f5b5ee9b916",
+      "date": "2026-11-23",
+      "voice_id": "TX3LPaxmHKxFdv7VOQHJ",
+      "voice_name": "Liam - Energetic, Social Media Creator",
+      "model": "eleven_multilingual_v2",
+      "text": "Next.",
+      "chars": 5,
+      "chars_total": 2,
+      "request_id": "yw4kk8xFiwFliOZADwxI",
+      "seconds": 0.64,
+      "mouth": "9995236644100"
+    }
+  },
+  "voice": {
+    "id": "TX3LPaxmHKxFdv7VOQHJ",
+    "name": "Liam - Energetic, Social Media Creator",
+    "source": "premade"
+  }
+}

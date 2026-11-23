@@ -115,6 +115,13 @@
   strings `LF-OrgFlag_Name_01..20` that the pack overrides with the real names. Placed in a grid cell
   (`flag-wall`); the registry placement is a later card. WORLD `org/flag-wall-actions`, pack
   `everon/flag-wall-slots`.
+- 🧪 (2026-11-23, #4457, gangs C14) **Registrar voice.** The pack's registrar, Gaspard Perrin (`LF_Npc_Townsfolk_Registrar.et`,
+  dialogue `registrar`, ElevenLabs, six lines), talks like any dialogue NPC: the founding line "Name, flag, and two hundred
+  fifty dollars." and how flags work. After a pick at the flag wall `LF_OrgFlagWall.PickBy` finds the registrar within 25 m
+  and `LF_Dialogue.Announce`s his `for_key` line for the toast key: `PICKED` says "That is your flag", `HELD` ("another crew
+  flies it") says "That one is taken". Other results stay toast-only; no registrar near logs `[LFDebug:OrgFlagWall]` and the
+  toast stands alone. The voice manifest is `tools/assets/dialogue/registrar/elevenlabs.json`. Placing him at the registry
+  desk is a town pass, not done here. Pack `everon/registrar`.
 
 ### Houses — `Feature/Houses/`
 - ✅ **Init runs** (2026-11-17 property review, WORLD `houses/identifier-init`): `LF_HouseManagerComponent`

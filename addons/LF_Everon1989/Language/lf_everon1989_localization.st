@@ -2174,6 +2174,51 @@ StringTable {
      Target_en_us "Where can I find things around here?"
      Comment "Dialogue reply the player can pick when talking to the passerby NPC."
     }
+    CustomStringTableItem "{B59194FE8B41BBA8}" {
+     Id "LF-Dialogue_Registrar_Bye"
+     Target_en_us "Next."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{FF32057309662992}" {
+     Id "LF-Dialogue_Registrar_Flags"
+     Target_en_us "A leader picks the flag at the wall. If another crew flies it and has someone around, it is taken."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{3A1C16EC3BF206D9}" {
+     Id "LF-Dialogue_Registrar_Found"
+     Target_en_us "Name, flag, and two hundred fifty dollars."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{858113BC1F8C3BD8}" {
+     Id "LF-Dialogue_Registrar_Greet"
+     Target_en_us "Registry. Crews and flags are my desk. What do you need?"
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{4629FAB20CF3A93A}" {
+     Id "LF-Dialogue_Registrar_Picked"
+     Target_en_us "That is your flag. It is on the books."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
+    CustomStringTableItem "{3D0752F283E976CC}" {
+     Id "LF-Dialogue_Registrar_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the registrar NPC."
+    }
+    CustomStringTableItem "{52847E79E38D2C78}" {
+     Id "LF-Dialogue_Registrar_SayFlags"
+     Target_en_us "How do flags work?"
+     Comment "Dialogue reply the player can pick when talking to the registrar NPC."
+    }
+    CustomStringTableItem "{3E1D0B54142E9D86}" {
+     Id "LF-Dialogue_Registrar_SayFound"
+     Target_en_us "I want to start a crew."
+     Comment "Dialogue reply the player can pick when talking to the registrar NPC."
+    }
+    CustomStringTableItem "{A9B1BEEC3300C5C9}" {
+     Id "LF-Dialogue_Registrar_Taken"
+     Target_en_us "That one is taken. Another crew flies it. Pick a different one."
+     Comment "Dialogue caption, spoken by the registrar NPC (voiced; tools/assets/dialogue/registrar). Changing it needs: tools\\cli asset dialogue registrar"
+    }
     CustomStringTableItem "{D706E5724264476D}" {
      Id "LF-Dialogue_RelocatedWalker_AboutFrom"
      Target_en_us "From near the Zone. They gave us one suitcase each and a paper with an address on it. That is all of it, here."
@@ -7863,6 +7908,11 @@ StringTable {
      Id "LF-Townsfolk_OldMan_Role"
      Target_en_us "Retired fisherman"
      Comment "Townsfolk (The relocated, #1960): what Gaspard Lenoir does, the role line under the name."
+    }
+    CustomStringTableItem "{4457A00000000001}" {
+     Id "LF-Townsfolk_Registrar_Name"
+     Target_en_us "Gaspard Perrin"
+     Comment "Townsfolk (gangs C14, #4457): the registrar's name, the speaker line of his dialogue."
     }
     CustomStringTableItem "{36D9D5E6516866A7}" {
      Id "LF-Townsfolk_SawmillForeman_Name"
