@@ -6040,6 +6040,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Evidence"
      Comment "Toast title for scene evidence."
     }
+    CustomStringTableItem "{033372B427C8F462}" {
+     Id "LF-ExportOrder_RefuseGone"
+     Target_en_us "That order is no longer on the board."
+     Comment "Export order board: the order closed or was never open."
+    }
+    CustomStringTableItem "{8651760D8ABA0ABB}" {
+     Id "LF-ExportOrder_RefuseHoldsOne"
+     Target_en_us "You already have an export order. Hand it in first."
+     Comment "Export order board: one order per hauler."
+    }
+    CustomStringTableItem "{75449B377FCD4EF0}" {
+     Id "LF-ExportOrder_RefuseLevel"
+     Target_en_us "Export orders are for haulers at level 10 or higher. Keep hauling."
+     Comment "Export order board: a hauler under the level gate tries to take an order."
+    }
+    CustomStringTableItem "{827665D19E29D2A6}" {
+     Id "LF-ExportOrder_RefuseNoneHeld"
+     Target_en_us "You have no export order to hand in."
+     Comment "Export order crane: the player holds no order."
+    }
+    CustomStringTableItem "{333B1F31AD7A4561}" {
+     Id "LF-ExportOrder_RefuseShort"
+     Target_en_us "That is not the full order. Bring every unit, then hand it in."
+     Comment "Export order crane: fewer goods than the order asks for; nothing is taken."
+    }
+    CustomStringTableItem "{1BA87EB81FC07ECF}" {
+     Id "LF-ExportOrder_RefuseTaken"
+     Target_en_us "Another hauler already took that order."
+     Comment "Export order board: someone else holds the order."
+    }
     CustomStringTableItem "{E6E02AC329CA9010}" {
      Id "LF-Farm_CabbageSeeds"
      Target_en_us "Cabbage seeds"
