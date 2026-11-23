@@ -103,6 +103,18 @@
   an organization with no claim yet counts as earlier, and a tie ranks by organization id, so after a
   restart a pair sharing a flag ranks by id until someone picks again (the order is not saved).
   Re-picking its own flag changes nothing. LOGIC `org/flag-lock`.
+- 🧪 (2026-11-23, #4449, gangs C4) **Flag wall.** `LF_OrgFlagWall` (`Feature/Organizations/LF_OrgFlagWall.c`,
+  `LF_OrgFlagWallAction.c`, prefab `Prefabs/Organizations/LF_OrgFlagWall.et`): the wall is the menu, no
+  window. It stands the 20 sample flags (each screen, never a dedicated server) and carries 20 actions,
+  one per flag, "Fly the <name> flag". The action shows to a leader (the right to manage ranks, so the
+  founder) and the server checks again: `Pick` returns `PICKED`, `KEPT` (own flag), `NO_ORG`,
+  `NOT_LEADER`, `BAD_FLAG` or `HELD` (the holder named in the toast), reusing `LF_OrgFlagRules`
+  and `LF_OrgFlags`. Samples come from prefab slots `gang_flag_01` to `gang_flag_20`, whose rows the pack
+  writes (`LF_PrefabSlots_Everon1989.conf`); the core slot file lists none, so `LF_OrgFlagWall.SamplePrefab`
+  reads the layered slot config itself, and the gang-pole card reuses it. Flag names are neutral core
+  strings `LF-OrgFlag_Name_01..20` that the pack overrides with the real names. Placed in a grid cell
+  (`flag-wall`); the registry placement is a later card. WORLD `org/flag-wall-actions`, pack
+  `everon/flag-wall-slots`.
 
 ### Houses — `Feature/Houses/`
 - ✅ **Init runs** (2026-11-17 property review, WORLD `houses/identifier-init`): `LF_HouseManagerComponent`

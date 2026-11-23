@@ -19,6 +19,11 @@
 // Every file lands in the pack (colours are what this server is). GUIDs are derived from the livery id and
 // the part name, so a rebuild writes the same GUIDs and two liveries never share one (checkUnique).
 import { createHash } from "node:crypto";
+import { existsSync, readdirSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath, pathToFileURL } from "node:url";
+
+const HERE = dirname(fileURLToPath(import.meta.url));
 
 export const PACK = "addons/LF_Everon1989";
 const ASSETS = "Assets/Liveries";
@@ -31,45 +36,22 @@ const PLATE_SOURCE = "SignWall_01_90X45";
 const SIGN_FACE = "{355E4F25429C2EF1}Assets/Signs/Data/LF_SignFace.emat";
 const SIGN_LAYOUT = "{5783648244305C88}UI/Layouts/Signs/LF_SignPaintFace.layout";
 
-// What the generator needs to know about each vanilla vehicle. Mesh and assign GUIDs are the vanilla
-// body MeshObject's (the spike read them from the vanilla prefabs; they are the same on every variant).
-// `plate` is where a front-door plate sits in the door's own frame (the door .xob's bounds: the outer skin
-// is at x -0.937 / +0.935 and the flat lower panel spans y 0.5..1.0, z 0..0.84), and its yaw so the face
-// points out of the door.
-export const VEHICLES = {
-  UAZ469: {
-    baseEmat: "{D1F1DD9AE3DC919D}Assets/Vehicles/Wheeled/UAZ469/Data/UAZ469_Body_CIV_BLUE.emat",
-    mesh: "51DAA09FEFBFC0E7",
-    assign: "64F09BE9246E252A",
-    source: "UAZ469_Body",
-    doors: {
-      vehicle: "Prefabs/Vehicles/Wheeled/UAZ469/UAZ469_covered_CIV_blue.et",
-      names: ["L01", "R01", "L02", "R02"],
-      door: (d) => `Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_${d}_blue.et`,
-      top: (d) => `Prefabs/Vehicles/Wheeled/UAZ469/VehParts/Doors/Blue/UAZ469_door_${d}_top_blue.et`,
-      plate: {
-        L01: { coords: [-0.94, 0.78, 0.42], yaw: -90 },
-        R01: { coords: [0.938, 0.78, 0.42], yaw: 90 },
-      },
-      plateScale: 0.6,
-    },
-  },
-  // The S105's doors are animated parts of the body mesh (AnimDoorIndex), so one body material repaints them.
-  S105: {
-    baseEmat: "{6A5E5A0B4C4B52A1}Assets/Vehicles/Wheeled/S105/Data/S105Body_mat_beige.emat",
-    mesh: "51DAA09FEFBFC0E7",
-    assign: "64D877CFC0DC5560",
-    source: "S105Body_mat",
-    doors: null,
-  },
-  S1203: {
-    baseEmat: "{0078643DF969CA01}Assets/Vehicles/Wheeled/S1203/Data/S1203_body.emat",
-    mesh: "51DAA09FEFBFC0E7",
-    assign: "64DA70D3831058D9",
-    source: "S1203_body",
-    doors: null,
-  },
-};
+// What the generator needs to know about each vanilla vehicle: one file per vehicle in tools/livery/vehicles/
+// (the file name is the key a row names in `vehicle`; `export default { baseEmat, mesh, assign, source, doors }`).
+// See vehicles/UAZ469.mjs for the fields. A new vehicle is a new file, no list here changes.
+export async function loadVehicles(dir = join(HERE, "vehicles")) {
+  if (!existsSync(dir)) throw new Error(`livery vehicles folder ${dir} is missing`);
+  const out = {};
+  for (const name of readdirSync(dir).filter((n) => n.endsWith(".mjs") && !n.startsWith("_")).sort()) {
+    const mod = await import(pathToFileURL(join(dir, name)).href);
+    const v = mod.default;
+    if (!v || typeof v !== "object" || !v.baseEmat || !v.mesh || !v.assign || !v.source || !("doors" in v)) throw new Error(`${name}: a vehicle file must export default { baseEmat, mesh, assign, source, doors }`);
+    out[name.slice(0, -".mjs".length)] = v;
+  }
+  return out;
+}
+
+export const VEHICLES = await loadVehicles();
 
 export function guidFor(id, part) {
   return createHash("sha1").update(`lf-livery:${id}:${part}`).digest("hex").slice(0, 16).toUpperCase();

@@ -48,12 +48,37 @@ class LF_ToolWear
 	//! One use of `tool`: it loses the tier's amount. Returns the warning key, or "".
 	static string Wear(LF_ToolCondition tool)
 	{
+		return WearScaled(tool, 1.0);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! One use of `tool` that costs `scale` times the tier's amount (a trade perk, #4408: 1 is the full
+	//! rate). The condition never goes below 0. Returns the warning key, or "".
+	static string WearScaled(LF_ToolCondition tool, float scale)
+	{
 		if (!tool)
 			return "";
 
 		float before = tool.m_fCondition;
-		tool.Use();
-		return WarnKey(before, tool.m_fCondition);
+		float left = before - LF_ToolCondition.WearPerUse(tool.m_iTier) * scale;
+		if (left < 0)
+			left = 0;
+
+		tool.m_fCondition = left;
+		return WarnKey(before, left);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The trade a tool kind works for, the key of its perks: pickaxe mining, axe logging, rod fishing.
+	static string TradeOfKind(string kind)
+	{
+		if (kind == LF_ToolBench.KIND_PICKAXE)
+			return "MINER";
+		if (kind == LF_ToolBench.KIND_AXE)
+			return "LUMBERJACK";
+		if (kind == LF_ToolBench.KIND_ROD)
+			return "FISHER";
+		return "";
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -71,7 +96,8 @@ class LF_ToolWear
 			return;
 		}
 
-		string warn = Wear(tool);
+		string uid = LF_Utils.GetPlayerUID(user);
+		string warn = WearScaled(tool, LF_PerkEffects.WearScale(uid, TradeOfKind(kind)));
 		LF_Debug.Info(FEATURE, string.Format("%1 used, condition now %2", kind, tool.m_fCondition));
 		if (warn.IsEmpty())
 			return;

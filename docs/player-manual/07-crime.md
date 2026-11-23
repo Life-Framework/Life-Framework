@@ -95,6 +95,8 @@ Crime cash on this server is **marked**. Wash it at the **laundry station** in t
 
 Needs **at least 2 police on duty**. You have **12 minutes**.
 
+The bank is a **big job**: only one big job (the bank or the hospital pharmacy) runs on the island at a time. The job starts the moment your charge is armed on the staff door, so a second crew cannot arm another big job while your fuse burns. While another one is underway, the staff door tells you so and cannot be armed. If the police defuse your charge before it goes off, the job still counts. After a bank job ends, paid out or not, the bank stays shut to robbers for **3 hours** (the door says how many minutes are left).
+
 1. **Staff door.** Breach the bank's staff door (lockpick or charge). The alarm rings, dispatch hears, and the clerk may put their hands up.
 2. **Vault.** Open the vault with a **drill** or a **breaching charge**. Money bags spill on the floor. **Carry** them: dropping a bag leaves the cash in the world.
 3. **Getaway.** Every crew member must get **more than 120 m** from the bank before the clock runs out.

@@ -56,7 +56,9 @@ for (const item of newItems) {
       // Case is copy, not a migration: {medic} -> {Medic} only capitalises the same term (the medic
       // skill name, 2026-11-22), so placeholders compare without case.
       const marks = (t) => ((t || "").match(new RegExp(PLACEHOLDER.source, "g")) || []).map((m) => m.toLowerCase());
-      const migrated = marks(text).join("|") !== marks(before.texts[lang]).join("|");
+      // A string reworded to drop its placeholder (prefab text the engine renders itself, validate-term-sinks)
+      // is a copy edit as well: nothing migrated to a term.
+      const migrated = marks(text).length > 0 && marks(text).join("|") !== marks(before.texts[lang]).join("|");
       if (migrated) differing++;
       else edits++;
       console.log(`${migrated ? "DIFF" : "EDIT"} ${item.id} (${lang})\n  was: ${was}\n  now: ${rendered}`);

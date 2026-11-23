@@ -106,3 +106,6 @@
 - A foreman stands at his site all day (`m_sHomeKind` Workplace, `m_sHomePlaceId` the site's place id: a work kind alone would pick the nearest of every Workplace). They are placed with no town edit; the stand-in spot is the place origin until the town pass (W4.9) puts an anchor on the site board.
 - **Not wired yet:** the "heard of" map mark the plan lists for the unlock's place needs a place id per unlock row; that is a data card on the unlock table.
 - **Proof:** `residents/foreman` (LOGIC).
+
+### Site foremen in the `everon/residents` test (guard fix, 2026-11-23)
+- 🧪 The pack test `everon/residents` treats a site resident (home kind `Workplace`, a place id, no anchor: the two foremen of #4237) as its own group: the Saint-Philippe cast of six to twelve counts town residents only, `Workplace` is an allowed home kind, and an empty anchor is allowed only for a site resident (it stands at the site's place origin). The foremen got `LF-Resident_foreman_*_Name` rows in the pack table. `playtest-town/parity-data` now passes with one assertion under a header with no config overlays, as its comment already promised; on the town header it checks as before.

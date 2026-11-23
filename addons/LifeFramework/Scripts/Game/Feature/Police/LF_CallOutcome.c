@@ -125,6 +125,9 @@ class LF_CallOutcome
 		else if (outcome == LF_CallOutcomeKind.RESOLVED)
 			LF_Debug.Info(FEATURE, string.Format("no duty bonus for %1: call #%2 is their own crime", officerUid, callId));
 
+		if (!LF_DutyBonus.SameAccount(officerUid, call.m_sSuspectUid))
+			LF_PoliceSkill.OnCallClosed(officerUid, outcome);
+
 		messageKey = ClosedKey(outcome);
 		LF_Debug.Info(FEATURE, string.Format("call #%1 closed %2 by %3", callId, Name(outcome), officerUid));
 		return true;
