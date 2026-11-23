@@ -2530,6 +2530,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Stand at the bed to put a patient in it."
      Comment "Refusal: medic too far from the bed."
     }
+    CustomStringTableItem "{EE2695450DA92ACF}" {
+     Id "LF-BigJob_Busy"
+     Target_en_us "Another big job is already underway on the island. Wait until it is over."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): one pharmacy, bank or depot job runs on the server at a time."
+    }
+    CustomStringTableItem "{F9776BD9715991D9}" {
+     Id "LF-BigJob_Cooldown"
+     Target_en_us "This place was hit recently. Try again in %1 min."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): the job is cooling down. %1 is the minutes left."
+    }
+    CustomStringTableItem "{BE941138C8540332}" {
+     Id "LF-BigJob_Unavailable"
+     Target_en_us "This job cannot be started right now."
+     Comment "Big-job lock refusal (Feature/Crime/LF_BigJobLock.c): a broken request (no job or player key)."
+    }
     CustomStringTableItem "{CEF674540C6B082E}" {
      Id "LF-Bill_NeedCash"
      Target_en_us "Carry %1 in cash to pay the bill"
@@ -11482,6 +11497,51 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
     }
+    CustomStringTableItem "{D52F08A3E91B7C46}" {
+     Id "LF-OutpostStock_Bought"
+     Target_en_us "\"Take it. Don't tell anyone where you got it.\" You paid %1."
+     Comment "Toast after an outpost crate sale (#4223). %1 = the price paid."
+    }
+    CustomStringTableItem "{9B41E6D07C2A3F85}" {
+     Id "LF-OutpostStock_Buy"
+     Target_en_us "Buy %1 (%2)"
+     Comment "Action on the quartermaster's crate (#4223). %1 = the item name, %2 = the price."
+    }
+    CustomStringTableItem "{F09A6E3C2D5B4718}" {
+     Id "LF-OutpostStock_GangRadio"
+     Target_en_us "gang radio"
+     Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{E83B5D17A42C9F60}" {
+     Id "LF-OutpostStock_NoCash"
+     Target_en_us "\"Cash first. Come back when you have it.\""
+     Comment "Toast: the buyer carries less cash than the outpost crate's price (#4223)."
+    }
+    CustomStringTableItem "{61C9A4F2B07E3D58}" {
+     Id "LF-OutpostStock_NotKnown"
+     Target_en_us "\"I don't know you well enough for that one. Come back when people talk about you.\""
+     Comment "Toast: the buyer's underworld standing is below the item's (#4223). Never a number (decision N1)."
+    }
+    CustomStringTableItem "{B7D43E1A95C06F28}" {
+     Id "LF-OutpostStock_Pistol"
+     Target_en_us "pistol"
+     Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{4C1F8B29E6A37D05}" {
+     Id "LF-OutpostStock_Rifle"
+     Target_en_us "rifle"
+     Comment "Item name on the outpost crate's Buy action (#4223)."
+    }
+    CustomStringTableItem "{3F7A2C91B4E05D18}" {
+     Id "LF-OutpostStock_Title"
+     Target_en_us "Quartermaster"
+     Comment "Title of the outpost crate's toasts (#4223)."
+    }
+    CustomStringTableItem "{2A96F0C4D3B18E75}" {
+     Id "LF-OutpostStock_Unavailable"
+     Target_en_us "\"Not today.\""
+     Comment "Toast: the outpost crate sale failed for another reason (no room, no item) (#4223)."
+    }
     CustomStringTableItem "{6D41A0F3C8B2957E}" {
      Id "LF-Outpost_TraderRefusesOfficer"
      Target_en_us "We don't deal with the law here. Take the badge off and come back."
@@ -12983,6 +13043,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Still running. Wait for it to finish."
      Comment "Processing refused (#3229): a timed machine already has a run under way."
     }
+    CustomStringTableItem "{52D02C80CEB2B855}" {
+     Id "LF-Process_FeedFromTruck"
+     Target_en_us "Feed from the truck"
+     Comment "Action at a processing station (#4191): take the inputs from the van or truck backed up to it."
+    }
     CustomStringTableItem "{4140D26F74D7F5F3}" {
      Id "LF-Process_Needs"
      Target_en_us "Needs %1"
@@ -12997,6 +13062,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Process_Started"
      Target_en_us "Running. The parts come out here in %1 seconds."
      Comment "Toast (#3229): a timed machine took the inputs. %1 = seconds the run takes."
+    }
+    CustomStringTableItem "{11D3E9515907FBC7}" {
+     Id "LF-Process_TruckLocked"
+     Target_en_us "The truck is locked"
+     Comment "Feed from the truck refused (#4191): the vehicle backed up to the station is locked."
     }
     CustomStringTableItem "{C1E9F68FC02150FF}" {
      Id "LF-Property_Bought"
