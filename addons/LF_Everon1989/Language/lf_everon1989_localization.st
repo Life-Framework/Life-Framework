@@ -2794,6 +2794,16 @@ StringTable {
      Target_en_us "A tin of instant coffee. Stir a spoonful into hot water."
      Comment "Item description: instant coffee."
     }
+    CustomStringTableItem "{E1BE7F6FF37D0EC9}" {
+     Id "LF-Item_ContainerNineKey_Desc"
+     Target_en_us "A brass key on a red string. It opens container nine at the container yard, back row, past the crane."
+     Comment "Item description of the container nine key (#4381)."
+    }
+    CustomStringTableItem "{2397B62607E1F53B}" {
+     Id "LF-Item_ContainerNineKey_Name"
+     Target_en_us "Container Nine Key"
+     Comment "Item name: the key Marcel the tally clerk sells for container nine at the container yard (#4381)."
+    }
     CustomStringTableItem "{DD99AAF5FD3E4FC8}" {
      Id "LF-Item_CopperWireCoil_Description"
      Target_en_us "A coil of stripped copper wire. Scrapyards pay more for copper than for iron."
