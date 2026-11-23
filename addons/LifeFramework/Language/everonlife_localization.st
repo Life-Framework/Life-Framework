@@ -12937,6 +12937,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Why you want to serve"
      Comment "Police application blank: reason."
     }
+    CustomStringTableItem "{F5DFC610C9A4C8D8}" {
+     Id "LF-PoliceCall_Bonus"
+     Target_en_us "Call closed: resolved. +{currency:sym}%1 bonus, paid when you clock out."
+     Comment "Toast to the officer when fining the call's suspect at the site completes their police call; %1 is the duty bonus added (#4319)"
+    }
     CustomStringTableItem "{95E584A32913873F}" {
      Id "LF-PoliceCall_Paid"
      Target_en_us "Call closed: {currency:sym}%1 cash"
@@ -13990,6 +13995,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Range_Title"
      Target_en_us "Range"
      Comment "Title of the range toasts (Feature/Range)."
+    }
+    CustomStringTableItem "{8B1F4E70C2A9D356}" {
+     Id "LF-RankFleet_NeedsRank"
+     Target_en_us "That car is for the rank of %1 and up."
+     Comment "Toast (PO-R1, #4205): the police car pool refused a car above the officer's rank. %1 = the title of the lowest rank that draws it."
+    }
+    CustomStringTableItem "{D3A6075E19F482CB}" {
+     Id "LF-RankFleet_NotIssued"
+     Target_en_us "The car pool has no car for you."
+     Comment "Toast (PO-R1, #4205): the police car pool has no car on its table for this rank, or the car is not one it issues."
     }
     CustomStringTableItem "{5985DB962913E1DE}" {
      Id "LF-Rank_EscortDenied"

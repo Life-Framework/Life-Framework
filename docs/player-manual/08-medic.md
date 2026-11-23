@@ -26,13 +26,13 @@ The **pharmacy** north of the clinic sells aspirin ($10), gauze ($8) and tourniq
 2. Wait at the clinic or patrol. The **medic dispatch board** lists calls. Revive downed players and bring patients in.
 3. **Clock out** at the same desk. You are **paid in cash** for the time you were on duty.
 
-| Rank | Pay per hour | Adds to your kit | On duty to rise |
-|---|---|---|---|
-| Orderly | $792 | Dressing, tourniquet | 1 hour |
-| EMT | $936 | Saline bag | 2 hours |
-| Paramedic | $1,080 | Morphine | 4 hours |
-| Doctor | $1,224 | Surgical gauze | top |
+| Rank | Pay per hour | Bonus cap per hour | Adds to your kit | On duty to rise |
+|---|---|---|---|---|
+| Orderly | $480 | $40 | Dressing, tourniquet | 1 hour |
+| EMT | $500 | $50 | Saline bag | 2 hours |
+| Paramedic | $530 | $50 | Morphine | 4 hours |
+| Doctor | $560 | $40 | Surgical gauze | top |
 
-Reviving and delivering patients earns **medic job experience**.
+Reviving and delivering patients earns **medic job experience** and a **bonus**: **$10** a revive and **$15** a patient put in a hospital bed (the bed's own revive is included, so a bed delivery is $15, not $25). Reviving yourself earns nothing. The bonus stops at your rank's cap each hour and is paid with your shift when you clock out.
 
 The clinic, the taxi rank, the pharmacy and the notice board are on the [Saint-Philippe map](maps.md).

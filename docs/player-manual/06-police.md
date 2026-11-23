@@ -11,15 +11,17 @@ Police are players. There is no roster to wait for in the alpha: anyone can sign
 4. If you die on duty your shift ends; you keep the police gear and your civilian things come back when you respawn.
 5. **Your pager** beeps with each dispatch call. When a car owner reports their car stolen, it also shows a line with the **plate and the car**. The line stays on the pager until an officer recovers the car.
 
-**Pay** is handed over in **cash when you clock out**, by the second you were on duty.
+**Pay** is handed over in **cash when you clock out**, by the second you were on duty, plus your **bonus**.
 
-| Rank | Pay per hour | Fine limit | On duty to rise |
-|---|---|---|---|
-| Cadet | $900 | $500 | 1 hour |
-| Patrol | $1,008 | $1,000 | 2 hours |
-| Senior Patrol | $1,080 | $2,500 | 4 hours |
-| Sergeant | $1,188 | $4,000 | 8 hours |
-| Lieutenant | $1,260 | $5,000 | top |
+| Rank | Pay per hour | Bonus cap per hour | Fine limit | On duty to rise |
+|---|---|---|---|---|
+| Cadet | $350 | $100 | $500 | 1 hour |
+| Patrol | $375 | $100 | $1,000 | 2 hours |
+| Senior Patrol | $400 | $100 | $2,500 | 4 hours |
+| Sergeant | $425 | $95 | $4,000 | 8 hours |
+| Lieutenant | $450 | $70 | $5,000 | top |
+
+**Bonus:** a call closed as resolved (fine the suspect at the scene) earns **$15**, a suspect booked at the desk **$10**, and a stolen car recovered to its owner **$20** (not your own car). The bonus stops at your rank's cap each hour and is paid with your shift when you clock out. It survives a server restart. Fines go to the town, never to you.
 
 A higher rank also promotes: at the **armoury**, an officer above the new rank can promote you. Higher ranks draw bigger weapons (the M16A2, then the AKS-74U).
 
@@ -44,8 +46,9 @@ An arrest is five steps: **cuff**, **escort**, **put in vehicle**, drive to the 
 * **Put in vehicle:** at a police car pick **Put in vehicle** to seat your suspect, then drive to the station. At the station pick **Take out of vehicle**; they step out beside the car, still yours.
 * **Book into jail:** walk the cuffed suspect to the **cell door** (the waypoint). Their action list then shows **Book into jail: full sentence** and
   **Book into jail: reduced (cooperated)** (half, at least 30 seconds). Pick one: they go into the cell, the cuffs come back to you. Booking is only offered at the jail.
-* **Tickets:** pick **Write ticket** to hand a paper fine. The pad lists the offences your rank may fine: speeding $200, disturbance $150, reckless driving $500, brandishing a weapon $800,
-  causing a crash $1,500. Up to three unpaid tickets per person.
+* **Tickets:** pick **Write ticket** to hand a paper fine. The pad lists the offences your rank may fine, priced in minutes of a civilian's work: minor road $50 to $75 (speeding up to 15 over, parking, inspection),
+  road $150 to $250 (speeding 16 to 30 over, reckless driving, an overloaded vehicle), serious road $300 to $400 (speeding more than 30 over, a crash, driving without a license),
+  weapons $250 to $800. Robbery, murder and the other violent charges are jail only, 10 to 15 minutes. Up to three unpaid tickets per person.
 * **Spike strips and roadblocks** are in the kit.
 * **Hands up:** a suspect presses **F7** (gamepad: right bumper + X). That counts as complying, so you can search and cuff them.
 

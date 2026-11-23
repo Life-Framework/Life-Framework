@@ -72,6 +72,9 @@ class LF_ResourceMachineDef
 
 	[Attribute("0", UIWidgets.Auto, "Seconds a run takes: the inputs go in, the outputs drop at the machine after the delay, one run at a time per machine. 0: instant (#3229)")]
 	int m_iProcessSeconds;
+
+	[Attribute("", UIWidgets.EditBox, "jobs.xpAwards action a finished batch pays the worker (smelt_batch for a furnace, #4337). Empty: no XP")]
+	string m_sXpAction;
 }
 
 //------------------------------------------------------------------------------------------------
