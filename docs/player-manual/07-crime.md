@@ -118,6 +118,8 @@ Recruit face to face. Look at a player with no organization and pick **Invite to
 
 A **gang radio** keeps the crew on its own channel. Carry one and pick **Tune to gang channel** from its action list: your crew hears you and nobody else does, even on the same frequency. When someone leaves or is removed, the channel changes and the radios of members who are online follow it; if you were away, or after a server restart, pick **Tune to gang channel** again.
 
+Your map shows where every online member of your organization is, updated every few seconds, and nobody outside the crew sees these marks. A member who is downed, jailed or cuffed shows in grey. While you are jailed or cuffed yourself, the crew's marks disappear from your map and come back once you are free. A member who leaves or is removed drops off everyone's map at once.
+
 <!-- map:crime -->
 ![Crime and police in Saint-Philippe](../../website/public/docs-images/player-manual/crime-town.png)
 
