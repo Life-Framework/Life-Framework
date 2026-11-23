@@ -2615,6 +2615,91 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Look in bin"
      Comment "Action on a bin: opens it as normal storage."
     }
+    CustomStringTableItem "{293BEFA5FB5FC2B2}" {
+     Id "LF-BookingDesk_Book"
+     Target_en_us "Book suspect"
+     Comment "Officer action on the booking desk: book the cuffed suspect beside them."
+    }
+    CustomStringTableItem "{8878A3308543871F}" {
+     Id "LF-BookingDesk_BookDesc"
+     Target_en_us "Charge the cuffed suspect beside you from their open crime reports."
+     Comment "Description of the booking desk action."
+    }
+    CustomStringTableItem "{E594E2FD93031AF6}" {
+     Id "LF-BookingDesk_NoCharges"
+     Target_en_us "This suspect has no open crime reports to charge."
+     Comment "Refusal toast: nothing to charge."
+    }
+    CustomStringTableItem "{AB63EECA4E69E45E}" {
+     Id "LF-BookingDesk_NoOffer"
+     Target_en_us "You have no open booking offer."
+     Comment "Refusal toast to a suspect at the desk."
+    }
+    CustomStringTableItem "{451E083737C61271}" {
+     Id "LF-BookingDesk_NoSuspect"
+     Target_en_us "Bring the cuffed suspect beside you to book them."
+     Comment "Refusal toast: no cuffed suspect next to the officer."
+    }
+    CustomStringTableItem "{CCE5E7A7F854490C}" {
+     Id "LF-BookingDesk_NotHere"
+     Target_en_us "Stand at the booking desk to book a suspect."
+     Comment "Refusal toast: the officer is too far from the desk."
+    }
+    CustomStringTableItem "{F52CFB9B10946A42}" {
+     Id "LF-BookingDesk_NotOnDuty"
+     Target_en_us "Only an on-duty officer can book a suspect."
+     Comment "Refusal toast at the booking desk."
+    }
+    CustomStringTableItem "{B4D1D0BA2B144D2B}" {
+     Id "LF-BookingDesk_OfferOpen"
+     Target_en_us "This suspect already has an open offer. Wait for their answer."
+     Comment "Refusal toast: a second booking while an offer is open."
+    }
+    CustomStringTableItem "{4F8886A116F29389}" {
+     Id "LF-BookingDesk_OfferSuspect"
+     Target_en_us "You are booked: %1. Use the booking desk to pay now or take the time."
+     Comment "Toast to the suspect. %1 = the terms, e.g. '$450 or 10 min'."
+    }
+    CustomStringTableItem "{C0EEBA23914CB0C0}" {
+     Id "LF-BookingDesk_Offered"
+     Target_en_us "Suspect booked: %1."
+     Comment "Toast to the officer. %1 = the terms, e.g. '$450 or 10 min'."
+    }
+    CustomStringTableItem "{B5946EAD645CA27D}" {
+     Id "LF-BookingDesk_OfficerGone"
+     Target_en_us "The booking officer has left. Ask an officer to book you again."
+     Comment "Toast: the officer who made the offer is gone."
+    }
+    CustomStringTableItem "{DFCCB05F185F73C7}" {
+     Id "LF-BookingDesk_Pay"
+     Target_en_us "Pay $%1 now"
+     Comment "Suspect action on the booking desk. %1 = the fine in dollars."
+    }
+    CustomStringTableItem "{F1D9BD9D6D6D5724}" {
+     Id "LF-BookingDesk_PayClosed"
+     Target_en_us "Paying at the desk is not open yet. Take the time instead."
+     Comment "Toast: the pay-now payment is not wired yet."
+    }
+    CustomStringTableItem "{8FEBD62161726822}" {
+     Id "LF-BookingDesk_PayName"
+     Target_en_us "Pay the fine now"
+     Comment "Fallback name of the pay-now desk action."
+    }
+    CustomStringTableItem "{F2D64E8553CB15FA}" {
+     Id "LF-BookingDesk_Time"
+     Target_en_us "Take the time (%1 min)"
+     Comment "Suspect action on the booking desk. %1 = minutes in the cell."
+    }
+    CustomStringTableItem "{CCB82C75C103A361}" {
+     Id "LF-BookingDesk_TimeName"
+     Target_en_us "Take the time"
+     Comment "Fallback name of the take-the-time desk action."
+    }
+    CustomStringTableItem "{79A50A782818ECCC}" {
+     Id "LF-BookingDesk_Title"
+     Target_en_us "Booking desk"
+     Comment "Toast title for the police booking desk."
+    }
     CustomStringTableItem "{312172B24DB5B820}" {
      Id "LF-BreakIn_Barely"
      Target_en_us "Barely started"
