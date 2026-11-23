@@ -188,6 +188,19 @@ export function loadPackOverlays(addonsDir, pack, meta) {
   out.header = rel(dir, header.f);
   out.manifestRef = header.root.props.m_LF_PackManifest ?? null;
   const listed = new Set();
+  // An overlay only another header of this pack lists (the playtest town's own numbers) is loaded by that mission,
+  // so it is not "unlisted"; it is not merged into this header's view.
+  const elsewhere = new Set();
+  for (const other of headers) {
+    if (other === header.f) continue;
+    const root = parseConf(readFileSync(other, "utf8"));
+    if (root?.cls !== "LF_MissionHeader") continue;
+    for (const ref of root.props.m_aLF_ConfigOverlays?.list ?? []) {
+      const g = guidOf(ref);
+      const hit = g ? meta.get(g) : null;
+      if (hit && hit.addon === pack) elsewhere.add(hit.file);
+    }
+  }
   for (const ref of header.root.props.m_aLF_ConfigOverlays?.list ?? []) {
     const g = guidOf(ref);
     const hit = g ? meta.get(g) : null;
@@ -218,7 +231,7 @@ export function loadPackOverlays(addonsDir, pack, meta) {
     const r = rel(dir, f);
     const root = parseConf(readFileSync(f, "utf8"));
     // Configs/Tests/ holds fixtures a test loads itself (like the core's), never a header overlay.
-    if (root && classes().has(root.cls) && !listed.has(r) && !r.startsWith("Configs/Tests/")) out.unlisted.push(r);
+    if (root && classes().has(root.cls) && !listed.has(r) && !elsewhere.has(r) && !r.startsWith("Configs/Tests/")) out.unlisted.push(r);
   }
   return out;
 }
