@@ -28,6 +28,7 @@ class LF_PlayerMenuSheet
 	static const string PART_GARAGE = "PlayerMenuGarage";
 	static const string PART_WANTED = "PlayerMenuWanted";
 	static const string PART_TAB_NEXT = "PlayerMenuNextButton";
+	static const string PART_TAB_GANG = "PlayerMenuGangButton";
 	static const string PART_PORTRAIT = "PlayerMenuPortrait";
 	static const string PART_JOB = "PlayerMenuJob";
 	static const string PART_STANDING = "PlayerMenuStanding_";
@@ -77,6 +78,8 @@ class LF_PlayerMenuSheet
 	static const int TAB_PROGRESS = 1;
 	//! "What to do next": shown only when LF_PlayerMenuNextTab has something to say.
 	static const int TAB_NEXT = 2;
+	//! "Gang": shown only to a player in a gang (LF_PlayerMenuGangTab.HasTabLocal).
+	static const int TAB_GANG = 3;
 
 	protected static ref LF_UIScreen s_Screen;
 	//! The character drawn in the preview (a dummy in the preview world), cleared when the file closes.
@@ -175,7 +178,7 @@ class LF_PlayerMenuSheet
 	{
 		Hide();
 		s_iTab = TAB_PERSON;
-		if (tab == TAB_PROGRESS || tab == TAB_NEXT)
+		if (tab == TAB_PROGRESS || tab == TAB_NEXT || tab == TAB_GANG)
 			s_iTab = tab;
 
 		s_Sheet = new LF_PlayerMenuSheet();
@@ -188,6 +191,8 @@ class LF_PlayerMenuSheet
 
 		if (s_iTab == TAB_NEXT)
 			LF_ActivityPage.Ask();
+		else if (s_iTab == TAB_GANG)
+			AskGang();
 
 		return screen;
 	}
@@ -335,12 +340,18 @@ class LF_PlayerMenuSheet
 		if (s_iTab == TAB_NEXT && !LF_PlayerMenuNextTab.HasContent(s_Data))
 			s_iTab = TAB_PERSON;
 
+		// The Gang tab shows only for a player in a gang; one who left it while the file was open falls back too.
+		if (s_iTab == TAB_GANG && !LF_PlayerMenuGangTab.HasTabLocal())
+			s_iTab = TAB_PERSON;
+
 		LF_UISkin skin = LF_UISkin.Dashboard(SHEET_SHARE, SHEET_MIN_WIDTH);
 		array<ref LF_UIPart> parts;
 		if (s_iTab == TAB_PROGRESS)
 			parts = BuildProgress(s_Data);
 		else if (s_iTab == TAB_NEXT)
 			parts = BuildNext(s_Data);
+		else if (s_iTab == TAB_GANG)
+			parts = BuildGang(s_Data);
 		else
 			parts = BuildPerson(s_Data);
 
@@ -364,7 +375,7 @@ class LF_PlayerMenuSheet
 		screen.CloseOnDeath();
 		screen.CloseWhenUncontrolled();
 		HoldHint();
-		if (s_Data && s_iTab != TAB_NEXT)
+		if (s_Data && s_iTab != TAB_NEXT && s_iTab != TAB_GANG)
 			screen.SetListHeight(PART_LIST, ListHeight(s_Data, s_iTab));
 
 		if (s_Data && s_iTab == TAB_PERSON)
@@ -372,7 +383,7 @@ class LF_PlayerMenuSheet
 
 		if (s_iTab == TAB_NEXT)
 			LF_ActivityPage.Fill(screen);
-		else
+		else if (s_iTab != TAB_GANG)
 			FillList(screen, s_Data);
 
 		// Focus starts on the open tab's key, so a pad user sees where they are.
@@ -381,6 +392,8 @@ class LF_PlayerMenuSheet
 			openTab = PART_TAB_PROGRESS;
 		else if (s_iTab == TAB_NEXT)
 			openTab = PART_TAB_NEXT;
+		else if (s_iTab == TAB_GANG)
+			openTab = PART_TAB_GANG;
 
 		screen.FocusPart(openTab);
 		LF_Debug.Info(LF_PlayerMenuServer.FEATURE, "file open on tab " + s_iTab.ToString());
@@ -413,17 +426,27 @@ class LF_PlayerMenuSheet
 		// The open tab is printed between dots. The next-steps tab shows only when it has something to say.
 		array<string> names = {PART_TAB_PERSON, PART_TAB_PROGRESS};
 		array<string> keys = {"#LF-PlayerMenu_TabPerson", "#LF-PlayerMenu_TabProgress"};
+		array<int> tabs = {TAB_PERSON, TAB_PROGRESS};
 		if (LF_PlayerMenuNextTab.HasContent(data))
 		{
 			names.Insert(PART_TAB_NEXT);
 			keys.Insert("#LF-PlayerMenu_TabNext");
+			tabs.Insert(TAB_NEXT);
+		}
+
+		// The Gang key shows only for a player in a gang, read from their own body so it is right before any answer.
+		if (LF_PlayerMenuGangTab.HasTabLocal())
+		{
+			names.Insert(PART_TAB_GANG);
+			keys.Insert("#LF-PlayerMenu_TabGang");
+			tabs.Insert(TAB_GANG);
 		}
 
 		array<string> texts = {};
 		foreach (int i, string key : keys)
 		{
 			string text = LF_Terms.Text(key);
-			if (i == tab)
+			if (tabs[i] == tab)
 				text = LF_Terms.Text("#LF-PlayerMenu_TabOpen", text);
 
 			texts.Insert(text);
@@ -440,6 +463,36 @@ class LF_PlayerMenuSheet
 	{
 		if (changed && IsOpen() && s_Sheet && s_iTab == TAB_NEXT)
 			GetGame().GetCallqueue().CallLater(s_Sheet.ShowLater, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Client: asks the server for the crew facts (the Gang tab opened; the last answer prints meanwhile).
+	protected static void AskGang()
+	{
+		SCR_PlayerController controller = SCR_PlayerController.Cast(GetGame().GetPlayerController());
+		if (controller)
+			controller.LF_AskPlayerMenuGang();
+		else
+			LF_Debug.Warn(LF_PlayerMenuServer.FEATURE, "gang tab not asked: no player controller");
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The server's crew answer (LF_PlayerMenuGangTabWire). A changed answer prints the Gang tab again when it is open.
+	static void OnGangData(string wire)
+	{
+		bool changed = LF_PlayerMenuGangView.Apply(wire);
+		if (changed && IsOpen() && s_Sheet && s_iTab == TAB_GANG)
+			GetGame().GetCallqueue().CallLater(s_Sheet.ShowLater, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! The Gang page: LF_PlayerMenuGangTab fills it between the header and the footer.
+	static array<ref LF_UIPart> BuildGang(LF_PlayerMenuData data)
+	{
+		array<ref LF_UIPart> parts = Header(TAB_GANG, data);
+		LF_PlayerMenuGangTab.Build(parts, LF_PlayerMenuGangView.Data());
+		Footer(parts);
+		return parts;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -670,13 +723,15 @@ class LF_PlayerMenuSheet
 			return;
 		}
 
-		if (name == PART_TAB_PERSON || name == PART_TAB_PROGRESS || name == PART_TAB_NEXT)
+		if (name == PART_TAB_PERSON || name == PART_TAB_PROGRESS || name == PART_TAB_NEXT || name == PART_TAB_GANG)
 		{
 			int tab = TAB_PERSON;
 			if (name == PART_TAB_PROGRESS)
 				tab = TAB_PROGRESS;
 			else if (name == PART_TAB_NEXT)
 				tab = TAB_NEXT;
+			else if (name == PART_TAB_GANG)
+				tab = TAB_GANG;
 
 			if (tab == s_iTab)
 				return;
@@ -684,6 +739,8 @@ class LF_PlayerMenuSheet
 			s_iTab = tab;
 			if (tab == TAB_NEXT)
 				LF_ActivityPage.Ask();
+			else if (tab == TAB_GANG)
+				AskGang();
 
 			// The press runs inside the old sheet; build the next one after it has finished.
 			GetGame().GetCallqueue().CallLater(ShowLater, 0, false);
