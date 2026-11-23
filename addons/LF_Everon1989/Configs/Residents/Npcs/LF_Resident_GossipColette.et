@@ -1,0 +1,22 @@
+SCR_ChimeraCharacter : "{9B443DD4C1F6DCAD}Prefabs/Characters/Factions/CIV/Character_CIV_baseLoadout.et" {
+ ID "8F18D800770CFF65"
+ components {
+  BaseLoadoutManagerComponent "{520EA1D2DB11821E}" {
+   Slots {
+    LoadoutSlotInfo Hat {
+     Enabled 1
+     Prefab "{6B2256EBB8E267DD}Prefabs/Characters/HeadGear/Hat_Knitted_01/Hat_Knitted_01_blue.et"
+    }
+    LoadoutSlotInfo Jacket {
+     Prefab "{FD39B0B833BB927E}Prefabs/Characters/Uniforms/Jacket_Raincoat_01/Jacket_Raincoat_01_yellow.et"
+    }
+    LoadoutSlotInfo Pants {
+     Prefab "{5A8C9A020BD7ABA6}Prefabs/Characters/Uniforms/Pants_Trousers_01/Pants_Trousers_01_DarkGrey.et"
+    }
+    SCR_FeetLoadoutSlotInfo Boots {
+     Prefab "{DAAFD15478BDE1C3}Prefabs/Characters/Footwear/CombatBoots_US_01.et"
+    }
+   }
+  }
+ }
+}

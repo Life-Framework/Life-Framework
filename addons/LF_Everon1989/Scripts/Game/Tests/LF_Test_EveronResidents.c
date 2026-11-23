@@ -66,7 +66,7 @@ class LF_Test_EveronResidents : LF_Test
 
 		ctx.True(Find(config, "example_shopkeeper") == null, "the core example shopkeeper is removed");
 		ctx.True(Find(config, "example_neighbour") == null, "the core example neighbour is removed");
-		ctx.True(config.Count() >= 6 && config.Count() <= 8, string.Format("Saint-Philippe has six to eight residents (has %1)", config.Count()));
+		ctx.True(config.Count() >= 6 && config.Count() <= 12, string.Format("Saint-Philippe has six to twelve residents (has %1)", config.Count()));
 
 		// The named cast the card asks for.
 		array<string> cast = { "cafe_owner", "old_man", "night_shift", "teller", "store_clerk", "neighbour_anselme", "neighbour_mireille" };

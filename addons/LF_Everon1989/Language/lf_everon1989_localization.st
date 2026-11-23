@@ -3474,6 +3474,21 @@ StringTable {
      Target_en_us "Odilon Marchand"
      Comment "Saint-Philippe resident cafe_owner: display name (#2906)."
     }
+    CustomStringTableItem "{2189482012477764}" {
+     Id "LF-Resident_gendarme_bank_beat_Name"
+     Target_en_us "Brigadier Lucien Carrel"
+     Comment "Saint-Philippe resident gendarme_bank_beat: display name (#4228)."
+    }
+    CustomStringTableItem "{0DADF7447AB9FD47}" {
+     Id "LF-Resident_gossip_colette_Name"
+     Target_en_us "Colette Brisset"
+     Comment "Saint-Philippe resident gossip_colette: display name (#4228)."
+    }
+    CustomStringTableItem "{03A0303E4DB2701C}" {
+     Id "LF-Resident_gossip_odile_Name"
+     Target_en_us "Odile Ferrand"
+     Comment "Saint-Philippe resident gossip_odile: display name (#4228)."
+    }
     CustomStringTableItem "{C506DE77282216DB}" {
      Id "LF-Resident_neighbour_anselme_Name"
      Target_en_us "Anselme Caron"
