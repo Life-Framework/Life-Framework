@@ -21,6 +21,7 @@
     "LF_GarageConfig",
     "LF_HandbookConfig",
     "LF_HeistConfig",
+    "LF_HospitalLootConfig",
     "LF_FuelConfig",
     "LF_RecycleConfig",
     "LF_IncidentConfig",
