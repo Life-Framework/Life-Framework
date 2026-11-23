@@ -4,8 +4,10 @@
 //!
 //! The server owns the name. It sets it from `LF_OnSiteCaptured` (for the site's hideout id) and,
 //! every RECONCILE_MS, from the hideout's lessee, so a release, a lapse or a give-up reaches the
-//! board too. The name is one short `RplProp` string, `Replication.BumpMe()` only when it changes,
-//! so a late joiner reads the current holder from the entity's initial state. Each rendering
+//! board too. The name is one short `RplProp` string and the holder's flag (`LF_OrgFlags`, NONE when
+//! nobody holds it) a second `RplProp` int (#4451), `Replication.BumpMe()` only when either changes,
+//! so a late joiner reads the current holder and flag from the entity's initial state. The pole's
+//! cloth (LF_SiteFlagCloth) flies that flag, or a plain cloth for NONE. Each rendering
 //! machine paints it on the plate child; a listen host paints it itself because a
 //! `RplProp` callback never runs on the server (docs/architecture/rpc-routing.md rule 3).
 [ComponentEditorProps(category: "LifeFramework/Feature/Sites", description: "Flag pole of a contested site: the painted board names the holder.")]
@@ -38,6 +40,12 @@ class LF_SiteFlagComponent : ScriptComponent
 	//! The holder's organisation name, "" while nobody holds the site. The only replicated state.
 	[RplProp(onRplName: "OnHolderReplicated")]
 	protected string m_sHolderName;
+
+	//! The holder's flag, 1 to LF_OrgFlags.COUNT, NONE while nobody holds the site (#4451).
+	[RplProp(onRplName: "OnFlagReplicated")]
+	protected int m_iFlag;
+
+	protected ref LF_SiteFlagCloth m_Cloth = new LF_SiteFlagCloth();
 
 	protected int m_iBumps;
 	protected IEntity m_FaceTarget;
@@ -107,30 +115,47 @@ class LF_SiteFlagComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How many times the server bumped the name (tests read it).
+	//! The flag number this machine's copy holds (the replicated value), NONE when unheld.
+	int GetFlag()
+	{
+		return m_iFlag;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! How many times the server bumped the name or flag (tests read it).
 	int GetBumpCount()
 	{
 		return m_iBumps;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: set the name; bumps replication only when it changed.
-	//! \return True when the name changed.
-	bool SetHolderName(string name)
+	//! Server: set the name and flag; bumps replication once, only when either changed.
+	//! \return True when the name or flag changed.
+	bool SetHolder(string name, int flag)
 	{
 		if (!Replication.IsServer())
 			return false;
 
-		if (m_sHolderName == name)
+		if (m_sHolderName == name && m_iFlag == flag)
 			return false;
 
 		m_sHolderName = name;
+		m_iFlag = flag;
 		m_iBumps++;
 		Replication.BumpMe();
-		LF_Debug.Info(FEATURE, string.Format("flag %1 holder='%2'", m_sHideoutId, name));
+		LF_Debug.Info(FEATURE, string.Format("flag %1 holder='%2' flag=%3", m_sHideoutId, name, flag));
 		// A RplProp callback never runs on the server: a listen host's own player paints it here.
 		ShowName();
+		ShowCloth();
 		return true;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: the holder by organization id ("" for nobody): its name and its flag.
+	//! \return True when the name or flag changed.
+	bool SetHolderOrg(string orgId)
+	{
+		return SetHolder(HolderNameOf(orgId), LF_OrgFlags.FlagOf(orgId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -141,18 +166,19 @@ class LF_SiteFlagComponent : ScriptComponent
 		if (captured.m_sHideoutId != m_sHideoutId)
 			return false;
 
-		return SetHolderName(HolderNameOf(captured.m_sToOrgId));
+		return SetHolderOrg(captured.m_sToOrgId);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: take the name from the hideout's lessee (a release, a lapse, a give-up, a rename).
-	//! \return True when this flag's name changed.
+	//! Server: take the name and flag from the hideout's lessee (a release, a lapse, a give-up, a
+	//! rename, a new flag picked at the wall).
+	//! \return True when this pole's name or flag changed.
 	bool Reconcile()
 	{
 		if (!Replication.IsServer() || m_sHideoutId.IsEmpty())
 			return false;
 
-		return SetHolderName(HolderNameOf(LF_Hideout.GetOwner(m_sHideoutId)));
+		return SetHolderOrg(LF_Hideout.GetOwner(m_sHideoutId));
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -207,7 +233,10 @@ class LF_SiteFlagComponent : ScriptComponent
 
 		// After the world finishes loading, so the plate child is placed.
 		if (GetGame().GetCallqueue())
+		{
 			GetGame().GetCallqueue().CallLater(BuildFace, 0, false);
+			GetGame().GetCallqueue().CallLater(ShowCloth, 0, false);
+		}
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -218,8 +247,10 @@ class LF_SiteFlagComponent : ScriptComponent
 		{
 			GetGame().GetCallqueue().Remove(ReconcileTick);
 			GetGame().GetCallqueue().Remove(BuildFace);
+			GetGame().GetCallqueue().Remove(ShowCloth);
 		}
 
+		m_Cloth.Clear();
 		ClearFace();
 		super.OnDelete(owner);
 	}
@@ -238,13 +269,30 @@ class LF_SiteFlagComponent : ScriptComponent
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! A client: the replicated flag arrived or changed.
+	protected void OnFlagReplicated()
+	{
+		ShowCloth();
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Fly the current flag on this machine's pole; a dedicated server has no cloth to show.
+	protected void ShowCloth()
+	{
+		if (RplSession.Mode() == RplMode.Dedicated || !GetGame() || !GetGame().GetWorkspace())
+			return;
+
+		m_Cloth.Show(GetOwner(), m_iFlag);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	protected void BuildFace()
 	{
 		IEntity owner = GetOwner();
 		if (!owner || owner.IsDeleted() || m_wFaceRoot)
 			return;
 
-		IEntity plate = owner.GetChildren();
+		IEntity plate = LF_SiteFlagCloth.Plate(owner);
 		if (!plate)
 		{
 			LF_Debug.Error(FEATURE, "site flag " + m_sHideoutId + " has no plate child to paint");

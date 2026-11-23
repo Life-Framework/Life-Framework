@@ -30,7 +30,7 @@
     },
     "front": "+z",
     "counters": [],
-    "adapt": "A fenced truck yard on open apron: the host is the weighbridge office (the sales hut). Everything stands on the ground (terrain rows, run town fit --terrain): the lot counter with id truck-yard in front of the hut, a row of four civilian Ural display trucks along the long shed, the spawn bay on the lane west of the counter (set in the lot spawn point, world axes), cones at its mouth and two Truck Sales signs. Rows are rigid: shift, never stretch."
+    "adapt": "A fenced truck yard on open apron: the host is the weighbridge office (the sales hut). Everything stands on the ground (terrain rows, run town fit --terrain): the lot counter with id truck-yard in front of the hut, a row of four civilian Ural display trucks along the long shed, the spawn bay on the lane west of the counter (set in the lot spawn point, world axes; no cones, the maintainer wants none in town) and two Truck Sales signs. Rows are rigid: shift, never stretch."
   },
   "rows": [
     {
@@ -216,38 +216,6 @@
           "blocks": []
         }
       ]
-    },
-    {
-      "id": "cone-1",
-      "name": "Truckyard_Cone_1",
-      "prefab": "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -33.03,
-        0,
-        12.53
-      ],
-      "yaw": 5,
-      "wall": "free",
-      "floor": "f0",
-      "mount": "terrain"
-    },
-    {
-      "id": "cone-2",
-      "name": "Truckyard_Cone_2",
-      "prefab": "{25C8B889A777399D}Prefabs/Props/Infrastructure/ConeTraffic/ConeTraffic_01_red.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "offset": [
-        -32.6,
-        0,
-        17.51
-      ],
-      "yaw": 5,
-      "wall": "free",
-      "floor": "f0",
-      "mount": "terrain"
     },
     {
       "id": "sign-hut",

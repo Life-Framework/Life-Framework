@@ -35,6 +35,14 @@ and logged (`[LFDebug:Law]`); the shipped value stays.
 - The charge sheet total, rank cap, repeat doubling and the Sergeant override are
   `Law/LF_ChargeSheetRules.c` (L3, #4209); the booking desk that uses them is L5.
 
+## The lectern (L8, #4429)
+
+`Prefabs/Props/Police/LF_LawBookLectern.et` is the book the officers (and anyone) read: a vanilla short desk with a
+vanilla open notebook on it and four **Read: <Section>** rows. `Law/LF_LawBookRead.c` registers one board kind per
+section (`law_<key>`), answers it from `LF_LawCode.CollectSection`, and paints one line per code with its fine and
+time (jail-only codes show no fine). The page is a board card like the price board, not a menu; the amounts are
+whatever the catalog holds, so the pack's law book is what a player reads.
+
 ## Charge sheet paper (L4, #4426)
 
 Booking opens a paper, not an offer. The officer ticks each open report, sees the stacked and

@@ -8,7 +8,7 @@
   "kinds": [
     "VehicleLot"
   ],
-  "rows": 9,
+  "rows": 7,
   "destruction": {
     "mode": "hooked",
     "component": "LF_FittedBuildingComponent",

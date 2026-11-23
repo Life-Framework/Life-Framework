@@ -134,10 +134,14 @@ throws(() => gen.checkUnique([rows.good[0], { ...rows.good[0] }].map((r) => gen.
   const ls = (d) => (existsSync(join(ROOT, "tools", "livery", d)) ? readdirSync(join(ROOT, "tools", "livery", d)) : []);
   const shipped = ls("rows").filter((n) => n.endsWith(".mjs"));
   if (!shipped.includes("police.mjs")) fail("tools/livery/rows/police.mjs is missing");
-  const vShipped = ls("vehicles").filter((n) => n.endsWith(".mjs")).sort().join();
-  if (vShipped !== "S105.mjs,S1203.mjs,UAZ469.mjs") fail(`tools/livery/vehicles holds ${vShipped}, want S105.mjs,S1203.mjs,UAZ469.mjs`);
-  if (Object.keys(gen.VEHICLES).sort().join() !== "S105,S1203,UAZ469") fail(`VEHICLES keys ${Object.keys(gen.VEHICLES).join()}`);
-  if (table.LIVERIES.map((r) => `${r.vehicle}_${r.id}`).join() !== "UAZ469_Police,S105_Police,S1203_Police") fail("the three police rows are not in table.LIVERIES in order");
+  // Each card adds its own vehicle and rows file (#4467), so these are lower bounds, not an exact list.
+  const vShipped = ls("vehicles").filter((n) => n.endsWith(".mjs"));
+  for (const want of ["S105.mjs", "S1203.mjs", "UAZ469.mjs", "Ural4320.mjs"]) if (!vShipped.includes(want)) fail(`tools/livery/vehicles lacks ${want}`);
+  for (const want of ["S105", "S1203", "UAZ469", "Ural4320"]) if (!(want in gen.VEHICLES)) fail(`VEHICLES lacks ${want}`);
+  const ids = table.LIVERIES.map((r) => `${r.vehicle}_${r.id}`);
+  const police = ids.filter((i) => i.endsWith("_Police")).join();
+  if (police !== "UAZ469_Police,S105_Police,S1203_Police") fail(`the three police rows are not in table.LIVERIES in order (${police})`);
+  for (const want of ["UAZ469_Rebel", "Ural4320_Rebel"]) if (!ids.includes(want)) fail(`table.LIVERIES lacks ${want}`);
 }
 
 // The real table builds against the fixture vanilla files and no GUID repeats.

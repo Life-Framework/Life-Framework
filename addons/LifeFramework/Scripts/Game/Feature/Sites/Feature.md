@@ -47,7 +47,7 @@ None yet: no player-facing object in this slice. `LF_SiteHold.Step` is a pure fu
 
 ## Site flag board (#2685)
 
-- **Player sees:** a flag pole at the site with a small painted board that reads the holding organisation's name, or "Unclaimed". The back of the board is plain.
-- **Owner and side:** `LF_SiteFlagComponent` on `Prefabs/Sites/LF_SiteFlag.et`. The server sets the name (`LF_OnSiteCaptured` for its hideout id, and a 5 s reconcile with `LF_Hideout.GetOwner`); one `RplProp` string replicates it; clients (and a listen host, locally) paint it on the plate child.
+- **Player sees:** a flag pole at the site flying the holding gang's flag (#4451), or a plain white cloth while nobody holds it, with a small painted board that reads the holder's name, or "Unclaimed". The back of the board is plain.
+- **Owner and side:** `LF_SiteFlagComponent` on `Prefabs/Sites/LF_SiteFlag.et`. The server sets the name (`LF_OnSiteCaptured` for its hideout id, and a 5 s reconcile with `LF_Hideout.GetOwner`); one `RplProp` string replicates it; clients (and a listen host, locally) paint it on the plate child. The holder's flag number (`LF_OrgFlags`, NONE when unheld) is a second `RplProp` int, bumped in the same `BumpMe` as the name; each rendering machine (a listen host directly) hides the prefab's plain cloth and spawns the slot `gang_flag_NN` sample (`LF_OrgFlagWall.SamplePrefab`) locally on the pole, its own pole hidden (`LF_SiteFlagCloth`). A flag picked at the wall reaches the pole on the next 5 s reconcile.
 - **Data:** none persisted; the board rebuilds from the lessee after a restart.
-- **Proof:** `sites/site-flag` (WORLD). A client's board is looked at in a session (`docs/features/sites.md`).
+- **Proof:** `sites/site-flag` (WORLD). A client's board is looked at in a session (`docs/features/sites.md`). `sites/site-flag-cloth` (WORLD, #4451): capture, hand-over, wall pick and release set the flag number.

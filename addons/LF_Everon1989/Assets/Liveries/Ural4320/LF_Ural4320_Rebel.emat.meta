@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{7F754325BA2A633E}Assets/Liveries/Ural4320/LF_Ural4320_Rebel.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+ }
+}
