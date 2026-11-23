@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{3D9C3A59FE5B5604}Sounds/Dialogue/foreman_coalmans_brow/Dialogue_foreman_coalmans_brow.acp"
+ Configurations {
+  AudioProjectResourceClass PC {
+  }
+  AudioProjectResourceClass XBOX_ONE : PC {
+  }
+  AudioProjectResourceClass XBOX_SERIES : PC {
+  }
+  AudioProjectResourceClass PS4 : PC {
+  }
+  AudioProjectResourceClass HEADLESS : PC {
+  }
+ }
+}

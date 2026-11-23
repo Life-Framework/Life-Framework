@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{48D227F6BD2CCD17}Assets/Items/Contraband/LF_VodkaBottle/Data/LF_VodkaBottle.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

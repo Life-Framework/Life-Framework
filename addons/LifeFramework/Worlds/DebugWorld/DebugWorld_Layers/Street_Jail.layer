@@ -153,7 +153,8 @@ GenericEntity Roadmap_Jail_Cell : "{AA32D528D592E54C}Prefabs/Police/EL_JailCell.
    m_iMaxSeconds 300
    m_iWantedReduction 1
    m_sDoorTargetId "Roadmap_Jail_Door"
-   m_vReleaseOffset 0.15 0 10
+   m_vReleaseOffset 5 0 10
+   m_sOuterDoorTargetId "Roadmap_Jail_OuterGate"
   }
  }
  coords 232.2 0 219
@@ -202,4 +203,65 @@ GenericEntity Town_Jail_PhoneDesk : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/D
 GenericEntity Town_Jail_BailPhone : "{0BC3EE6F94D8C8A6}Prefabs/Police/LF_JailBailPhone.et" {
  coords 237.435 0.908 224.779
  angleY 180
+}
+GenericEntity Roadmap_Jail_OuterGate : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_BreachTargetComponent "{D2FC9663261624B6}" {
+   m_sTargetId "Roadmap_Jail_OuterGate"
+  }
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+  ActionsManagerComponent "{F32B667C3C823800}" {
+   ActionContexts {
+    UserActionContext "{50888D37F529F720}" {
+     Position PointInfo "{50888D37F0EB77E0}" {
+      Offset 1.1594 1.205 0.0196
+     }
+     Radius 0.653
+     Height 2.41
+    }
+   }
+   additionalActions {
+    LF_BreachArmAction "{30DA080036F318AA}" {
+     ParentContextList {
+      "default"
+     }
+    }
+    LF_BreachRepairAction "{C82C7E9C610EFB5D}" {
+     ParentContextList {
+      "default"
+     }
+    }
+   }
+  }
+ }
+ Flags 0x403 0
+ coords 231.75 0 229.2
+}
+GenericEntity Roadmap_Jail_OuterWingW : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+ }
+ Flags 0x403 0
+ coords 230.45 0 229.2
+}
+GenericEntity Roadmap_Jail_OuterWingE : "{787617D5B683FE41}Prefabs/Structures/BuildingParts/Doors/EL_JailDoor.et" {
+ components {
+  LF_LockComponent "{5AC29970429B33BB}" {
+   m_bDebugLocked 1
+  }
+ }
+ Flags 0x403 0
+ coords 233.05 0 229.2
+}
+SCR_DestructibleEntity Roadmap_Jail_PenFenceW : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 230.45 0 227.6
+ angleY 90
+}
+SCR_DestructibleEntity Roadmap_Jail_PenFenceE : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 234.35 0 227.6
+ angleY 90
 }

@@ -1,0 +1,59 @@
+// Grid cell c19r3 for slice-4233: written by tools\cli grid place (docs/architecture/world-zones.md). Debug zone: low look bar.
+SCR_DestructibleEntity Grid_slice_4233_Fence_1 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 251 0 59
+}
+SCR_DestructibleEntity Grid_slice_4233_Fence_2 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 256 0 59
+}
+SCR_DestructibleEntity Grid_slice_4233_Fence_3 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 261 0 59
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_4233_Fence_4 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 261 0 64
+ angleY 270
+}
+SCR_DestructibleEntity Grid_slice_4233_Fence_5 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 261 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4233_Fence_6 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 256 0 69
+ angleY 180
+}
+SCR_DestructibleEntity Grid_slice_4233_Fence_7 : "{57873EAF69D5450E}Prefabs/Structures/Walls/Net/NetFence_01/NetFence_01_4m.et" {
+ coords 251 0 69
+ angleY 90
+}
+GenericEntity Grid_slice_4233_Sign : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ components {
+  LF_SignComponent "{026619B31213409D}" {
+   m_sSignId "grid:slice-4233"
+   m_vRimColor 0.1 0.1 0.1
+   m_vPaintColor 0.95 0.78 0.1
+   m_vTextColor 0.1 0.1 0.1
+  }
+ }
+ coords 250.2 0.505 59.6
+ angleY -90
+}
+GenericEntity Grid_slice_4233_Spawn {
+ components {
+  LF_PlaceComponent "{3C7B2E9A41D58F06}" {
+   m_sKind "GridCell"
+   m_sId "slice-4233"
+  }
+ }
+ coords 250.3 0 61.5
+ angleY 90
+}
+SCR_Bird Kit_birds_pigeons_a : "{BF8A3171E5AF74E7}Prefabs/Animals/Birds/Columba_livia_domestica/BirdFlock_DomesticPigeon.et" {
+ coords 253 0 61.5
+}
+SCR_Bird Kit_birds_pigeons_b : "{BF8A3171E5AF74E7}Prefabs/Animals/Birds/Columba_livia_domestica/BirdFlock_DomesticPigeon.et" {
+ coords 254.5 0 66.5
+ angleY 90
+}
+SCR_Bird Kit_birds_gulls : "{EB419793F72FCE41}Prefabs/Animals/Birds/Larus_argentatus/BirdFlock_Seagull.et" {
+ coords 259.5 0 64
+}
