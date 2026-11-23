@@ -21,8 +21,8 @@ class LF_DispatchVoice
 	static const string FEATURE = "Police";
 	static const string DIALOGUE_ID = "dispatcher";
 	//! The squelch is short; the voice starts after it, then the place follows the type.
-	static const int SQUELCH_LEAD_MS = 600;
-	static const int GAP_MS = 250;
+	static const int SQUELCH_LEAD_MS = 600; // lf-fixed: audio pacing after the radio squelch
+	static const int GAP_MS = 250; // lf-fixed: pause between the type and place lines
 
 	//------------------------------------------------------------------------------------------------
 	//! The lines for one call. Never null; a missing line leaves its field null and warns.

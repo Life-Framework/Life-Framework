@@ -1,4 +1,4 @@
-// red-proof: 2026-11-23: `toolsi test --no-build --red LF_Test_DispatchVoice` -> RED PROOF OK (the RedProof() hook skips the pick; every pick assertion fails); green with `--only`.
+// red-proof: 2026-11-23: the batched `--red LF_Test_DispatchVoice` run printed RED PROOF OK (the RedProof() hook skips the pick, so every pick assertion fails); green with `--only`.
 //! The dispatcher's voice on a radio call (Feature/Police/LF_DispatchVoice.c, #4422): a call of each
 //! type picks its type line and its place line and logs `dispatch voice <type> <place>`; a missing line
 //! warns and the call still lands with the lines it has. Uses a neutral fixture, not the pack's recordings.
