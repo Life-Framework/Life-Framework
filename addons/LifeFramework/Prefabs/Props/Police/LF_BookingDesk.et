@@ -1,0 +1,47 @@
+GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ ID "455FAE7CA39522A5"
+ components {
+  RplComponent "{80E756125CCE3F4E}" {
+   Enabled 1
+  }
+  ActionsManagerComponent "{809919DD29FAB60F}" {
+   ActionContexts {
+    UserActionContext "{C5D84A388E018A21}" {
+     ContextName "LF_BookingDesk"
+     Position PointInfo "{74573C75AEC63F85}" {
+      Offset 0 0.9 0
+     }
+     Radius 1.8
+    }
+   }
+   additionalActions {
+    LF_BookingDeskBookAction "{53F4F8EC00688C5B}" {
+     ParentContextList {
+      "LF_BookingDesk"
+     }
+     UIInfo UIInfo "{43813412F8F2FE3C}" {
+      Name "#LF-BookingDesk_Book"
+      Description "#LF-BookingDesk_BookDesc"
+     }
+    }
+    LF_BookingDeskAnswerAction "{9C657DB3C4E28E1B}" {
+     ParentContextList {
+      "LF_BookingDesk"
+     }
+     UIInfo UIInfo "{B2E1C4D7A9F03E61}" {
+      Name "#LF-BookingDesk_PayName"
+     }
+     m_bPay 1
+    }
+    LF_BookingDeskAnswerAction "{D4A8F2C61E7B3095}" {
+     ParentContextList {
+      "LF_BookingDesk"
+     }
+     UIInfo UIInfo "{6F3B9E0A2C5D8147}" {
+      Name "#LF-BookingDesk_TimeName"
+     }
+    }
+   }
+  }
+ }
+}
