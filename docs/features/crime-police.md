@@ -463,6 +463,17 @@
   demotion takes off the officer every issued armory item the new rank's offer gate refuses and turns its serial in
   (`LF_PoliceRanks.StripKitAboveRank`, logged `kit above rank <r> taken from <uid>`, toast); an offline officer loses
   it at their next spawn. Plain kit lines with no serial (spike strip, roadblock kit) are not tracked and stay.
+- 🔨 **Outcome bonuses, capped per hour by rank, paid with the shift** (#4210, in-dev, LOGIC `jobs/duty-bonus-cap`).
+  `LF_DutyBonus.Award(account, kind)` adds a fixed amount to an on-duty account's pending bonus: a call resolved
+  $15, a booking $10, a stolen car $20 (police), a revive $10, a delivered patient $15 (medic). The hour window opens
+  at the first bonus; inside it the total stops at the rank's cap (police $100/$100/$100/$95/$70, medic
+  $40/$50/$50/$40; the plan's economy table), logged `bonus +$<n> (<kind>) ...` or `bonus capped for <id>`. Clock-out
+  (`LF_DutyPay.PayAtClockOut`) pays the pending bonus as cash beside the shift pay (ledger reason `duty-bonus`); a
+  bonus that does not fit is kept for the next clock-out, and clocking out does not reopen the hour's cap. Fines and
+  bail never reach this ledger. `LF_MedicDutyBonus.Install` awards revives and deliveries from the bus; a bed delivery's own revive is
+  refunded when its delivery follows, so the pair pays $15. Not yet
+  live in play: the game mode does not call `Install`, and the police outcomes have no caller yet (follow-up card).
+  The ledger is in memory: a restart mid-shift drops the unpaid bonus.
 - 🧪 **Alpha: the station desk approves on submit** (rc 0.2.0, LOGIC `police/alpha-instant-approval`). Owner key
   `police.alphaInstantApproval` (off by default; on in `server/flagship/config.json` for the alpha only) makes
   `LF_PoliceApplicationForm` take the playtest path (`LF_PoliceApplicationRules.ApprovesOnSubmit`): the application is filed
