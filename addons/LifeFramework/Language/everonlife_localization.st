@@ -3977,52 +3977,52 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{0625D39270A113DC}" {
      Id "LF-Credits_160"
-     Target_en_us "Night-shift worker's spoken lines"
+     Target_en_us "The market trader's five role lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6A3DD60E0145C890}" {
      Id "LF-Credits_161"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Nicolas Estrem - Mature\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{09BDBEC3C3443456}" {
      Id "LF-Credits_162"
-     Target_en_us "Old man Gaspard Lenoir's six lines"
+     Target_en_us "Night-shift worker's spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0AB81D75DD0A7FCC}" {
      Id "LF-Credits_163"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Raspy - Convincing and Weary Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C489B5F7558670CF}" {
      Id "LF-Credits_164"
-     Target_en_us "Go-between Hugo Valmy's five spoken lines"
+     Target_en_us "Old man Gaspard Lenoir's six lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{2FA0C88C63E929C7}" {
      Id "LF-Credits_165"
-     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Alder - Warm, Raspy and Comforting\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{D24D05840A3D9820}" {
      Id "LF-Credits_166"
-     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Go-between Hugo Valmy's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{473EC6052D855BB0}" {
      Id "LF-Credits_167"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Cyril - French-Accented Narrator\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{4ED77DE7DEE2573C}" {
      Id "LF-Credits_168"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0774CCE82D802254}" {
      Id "LF-Credits_169"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD56C627EA2AD519}" {
@@ -4032,12 +4032,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6FDBFD431F29A691}" {
      Id "LF-Credits_170"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{24B6F60FC64E50FE}" {
      Id "LF-Credits_171"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B3125F791403A21}" {
@@ -4047,37 +4047,37 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6DEF465ED9803D1A}" {
      Id "LF-Credits_173"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{331934ECDCED4E47}" {
      Id "LF-Credits_174"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{B9BF5DC2926087D1}" {
      Id "LF-Credits_175"
-     Target_en_us "Michael Hansen / Rhasspy"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CC2101DE9FC8F7B8}" {
      Id "LF-Credits_176"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C9C86A5A1ED40DCE}" {
      Id "LF-Credits_177"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
+     Target_en_us "Michael Hansen / Rhasspy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8A4563FF1C5E590F}" {
      Id "LF-Credits_178"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FC189AF5F7BE2CC}" {
      Id "LF-Credits_179"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3A24A564BBC40F8F}" {
@@ -4087,6 +4087,16 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDA999D625B19F3D}" {
      Id "LF-Credits_180"
+     Target_en_us "FONTS AND LOGO"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{A0A7AF015F2F74D4}" {
+     Id "LF-Credits_181"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{0D1A861CFC75EB60}" {
+     Id "LF-Credits_182"
      Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
@@ -5339,6 +5349,61 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Dialogue_RoleTownsfolk_Where"
      Target_en_us "The {town} board on the square shows everything. The post office hires couriers, and the bank is beside it."
      Comment "Dialogue caption, spoken by the role_townsfolk NPC (text only; tools/assets/dialogue/role_townsfolk). Changing it needs: tools\\cli asset dialogue role_townsfolk"
+    }
+    CustomStringTableItem "{0480851C614F500C}" {
+     Id "LF-Dialogue_RoleTrader_Bye"
+     Target_en_us "Come back when you have more."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
+    }
+    CustomStringTableItem "{044A09B67AE8403E}" {
+     Id "LF-Dialogue_RoleTrader_Greet"
+     Target_en_us "Fresh today. Have a look."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
+    }
+    CustomStringTableItem "{85382A3BA6F52559}" {
+     Id "LF-Dialogue_RoleTrader_Rumour"
+     Target_en_us "The price of apples went up this week. Somebody is hoarding them, I think."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
+    }
+    CustomStringTableItem "{B9F1EEBA03AEE5C2}" {
+     Id "LF-Dialogue_RoleTrader_SayBrowse"
+     Target_en_us "Show me what you've got."
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{06AFB982644BACC5}" {
+     Id "LF-Dialogue_RoleTrader_SayBye"
+     Target_en_us "Goodbye."
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{CF810FCD0C599BCE}" {
+     Id "LF-Dialogue_RoleTrader_SayMore"
+     Target_en_us "One more thing."
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{35ECA074421F23AF}" {
+     Id "LF-Dialogue_RoleTrader_SayRumour"
+     Target_en_us "Heard anything lately?"
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{348716388B238F15}" {
+     Id "LF-Dialogue_RoleTrader_SayWhat"
+     Target_en_us "What do you do here?"
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{161CFACD316FD080}" {
+     Id "LF-Dialogue_RoleTrader_SayWhere"
+     Target_en_us "Can you point me somewhere?"
+     Comment "Dialogue reply the player can pick when talking to the role_trader NPC."
+    }
+    CustomStringTableItem "{4FB85CE47EB1A778}" {
+     Id "LF-Dialogue_RoleTrader_What"
+     Target_en_us "I buy and sell at the stall. Bring me what you grow or make and I will give you a fair price."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
+    }
+    CustomStringTableItem "{A975EEDFA78026D4}" {
+     Id "LF-Dialogue_RoleTrader_Where"
+     Target_en_us "The farm is out past the greenhouse. For anything else, the {town} board on the square will tell you."
+     Comment "Dialogue caption, spoken by the role_trader NPC (text only; tools/assets/dialogue/role_trader). Changing it needs: tools\\cli asset dialogue role_trader"
     }
     CustomStringTableItem "{BC6FD589CFCCD2F2}" {
      Id "LF-Dialogue_Shopkeeper_Bye"

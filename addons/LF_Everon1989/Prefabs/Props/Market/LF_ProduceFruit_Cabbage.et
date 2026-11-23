@@ -1,0 +1,9 @@
+GenericEntity {
+ ID "61A042CE800F4D14"
+ components {
+  MeshObject "{B6B0910169A90335}" {
+   Object "{446E8F1AEE3A1EEF}Assets/Items/Food/Cabbage/Cabbage.xob"
+  }
+ }
+ coords 0 0 0
+}
