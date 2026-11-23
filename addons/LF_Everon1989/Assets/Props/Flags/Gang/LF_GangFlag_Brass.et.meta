@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{B04AF3137DF84919}Assets/Props/Flags/Gang/LF_GangFlag_Brass.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

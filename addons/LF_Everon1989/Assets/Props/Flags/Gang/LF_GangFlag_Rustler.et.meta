@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{4CE2134E9C6F8F0E}Assets/Props/Flags/Gang/LF_GangFlag_Rustler.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

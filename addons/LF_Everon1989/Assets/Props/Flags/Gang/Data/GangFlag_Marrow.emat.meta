@@ -1,0 +1,17 @@
+MetaFileClass {
+ Name "{FAA6BCB6FAFD874B}Assets/Props/Flags/Gang/Data/GangFlag_Marrow.emat"
+ Configurations {
+  EMATResourceClass PC {
+  }
+  EMATResourceClass XBOX_ONE : PC {
+  }
+  EMATResourceClass XBOX_SERIES : PC {
+  }
+  EMATResourceClass PS4 : PC {
+  }
+  EMATResourceClass HEADLESS : PC {
+  }
+  EMATResourceClass PS5 : PC {
+  }
+ }
+}

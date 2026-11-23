@@ -1,0 +1,46 @@
+{
+  "id": "tally_clerk",
+  "name": "TallyClerk",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Townsfolk_TallyClerk_Name",
+  "voice": {
+    "id": "bObiIpcSB2feMOHORpee",
+    "sex": "male",
+    "name": "Antonin - Warm, Unsettling, Elegant",
+    "public_owner_id": "7f1fdf37b4355b50d3580c190eff8960d5296dad4fb77306156bfa7d1c6f4960",
+    "why": "Marcel Brun counts the containers at the yard and cooks the books for a cut: soft, smiling, middle-aged and a little too friendly. Antonin is a warm, confident French voice with something unsettling under it, nothing like the café owner's charm, the harbour master's rasp or the go-between's level calm. No other speaker uses this voice.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.5,
+      "similarity_boost": 0.75,
+      "style": 0.25,
+      "speed": 0.95
+    }
+  },
+  "budget_chars": 1200,
+  "hear_range_m": 8,
+  "start": "greet",
+  "nodes": [
+    { "id": "greet", "line": "greet", "options": [
+      { "text": "ask", "next": "offer" },
+      { "text": "bye", "next": "bye" } ] },
+    { "id": "offer", "line": "offer", "options": [
+      { "text": "pay", "action": "FeeForItem", "param": "400|{6E6C667869AC0F87}Prefabs/Items/Story/LF_ContainerNineKey.et" },
+      { "text": "later", "next": "later" } ] },
+    { "id": "later", "line": "later" },
+    { "id": "bye", "line": "bye" }
+  ],
+  "lines": {
+    "greet": { "text": "Marcel, tally clerk. I count what comes off the ships and I write down what the customs man wants written. Funny thing. Container nine is short this week." },
+    "offer": { "text": "Four hundred dollars, and it stays short on the books. You carry the key, you take what is in it, and in a while it fills up again. I never saw you." },
+    "key": { "for_key": "#LF-Dialogue_FeePaid", "text": "Here. Brass, on a red string. Container nine, back row, past the crane. Take what is in it, lock it up after. The books will say it never came." },
+    "later": { "text": "Not while the customs man is here. Come back when your pockets are full and the yard is quiet." },
+    "bye": { "text": "Mind the crane." }
+  },
+  "replies": {
+    "ask": "Container nine is short?",
+    "pay": "Here is the four hundred.",
+    "later": "I need to think about it.",
+    "bye": "Goodbye."
+  }
+}

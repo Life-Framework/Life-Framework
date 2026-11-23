@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{E01ECF6E967576D5}Assets/Props/Flags/Gang/Data/GangFlag_Nightjar_BCR.edds"
+ NMOMap "{5F2A6FE4328E1A82}Assets/Props/Flags/Gang/Data/GangFlag_Nightjar_NMO.edds"
+}

@@ -1,40 +1,27 @@
 // LF_ResidentWorkLoop.c - a generic worker carries, hammers or sweeps at their spot instead of standing still
-// (#4230, epic #4170). Vanilla has no hammer or broom animation, so each work activity is a short cycle of
-// vanilla character gestures with rests between them; a step runs for its seconds, then the next one starts,
-// and the last step hands back to step 0:
-//   carry   move, follow, rest        (haul one load across, set it down)
-//   hammer  stop, rest, stop, rest    (two strikes, a pause)
-//   sweep   move, rest, follow, rest  (a stroke each way)
-// The loop is driven by the clock (seconds since Begin), never by frames: TickAt(entity, seconds) is the one
-// path the 1 s sweep and the tests both take. Server only; nothing persists (the resident is re-spawned from the
-// timetable and the loop starts again). Entries hold EntityID. The timetable word is not wired to this yet
-// (LF_ResidentActivity.Apply treats it as unknown); a placed character gets it from LF_ResidentWorkLoopComponent.
-
-//------------------------------------------------------------------------------------------------
-//! One step of a work cycle: a vanilla gesture (ECharacterGestures, NONE for a rest) and how long it lasts.
-class LF_ResidentWorkStep
-{
-	int m_iGesture;
-	int m_iSeconds;
-
-	//------------------------------------------------------------------------------------------------
-	static LF_ResidentWorkStep Make(int gesture, int seconds)
-	{
-		LF_ResidentWorkStep step = new LF_ResidentWorkStep();
-		step.m_iGesture = gesture;
-		step.m_iSeconds = seconds;
-		return step;
-	}
-}
+// (#4230, #4382, epic #4170). Each work activity is a body pose that loops while the resident works: a custom
+// loiter on the work graph (Anims/Workspaces/Work/LF_WorkPick.agr, the lockpick's graph, LF_WorkAnim) with that
+// job's own vanilla clips in an anim set instance:
+//   hammer         LF_WorkHammer.asi: bent over, striking down with both hands (p_erc_supplies_demolitionUS_low_*)
+//   carry, sweep   no vanilla clip reads as carrying a load or a broom stroke (the rally emote's npc_cardboard_*
+//                  hold has a stale GUID in the game's own anim set and does not load), so the resident plays the
+//                  base game's plain idle loiter (ELoiteringType.LOITERING) instead of a hand signal. A job gets
+//                  its pose from an .asi on LF_WorkPick.ast and a PoseOf branch.
+// The base game replicates a loiter to every client (late joiners too, through the command handler's RplSave),
+// so nothing here is sent by hand. A 1 s
+// tick starts the pose again for a worker whose loiter ended by itself (a shove, a fall) and drops a dead or
+// deleted body. Server only; nothing persists (the resident is re-spawned from the timetable and the pose starts
+// again). Entries hold EntityID. A timetable line reaches it through LF_ResidentActivity.Apply (#4366); a placed
+// character gets it from LF_ResidentWorkLoopComponent.
 
 //------------------------------------------------------------------------------------------------
 //! What one worker is doing now.
 class LF_ResidentWorkState
 {
 	string m_sActivity;
-	int m_iStartMs;
-	int m_iStep = -1;
-	int m_iGesture;
+	ResourceName m_sPose;
+	int m_iStartedMs;
+	int m_iStarts;
 }
 
 //------------------------------------------------------------------------------------------------
@@ -44,15 +31,17 @@ class LF_ResidentWorkLoop
 	static const string CARRY = "carry";
 	static const string HAMMER = "hammer";
 	static const string SWEEP = "sweep";
-	//! The loop re-reads the clock this often; steps are whole seconds. Housekeeping, not tuning.
+	static const ResourceName HAMMER_POSE = "{B8807790A1C2C068}Anims/Workspaces/Work/LF_WorkHammer.asi";
+	//! The loop looks at every worker this often. Housekeeping, not tuning.
 	static const int TICK_MS = 1000; // lf-fixed: a housekeeping tick, not tuning
+	//! A pose that is not showing this long after its start is started again.
+	static const int RESTART_MS = 4000; // lf-fixed: the loiter's blend-in time with slack, not tuning
 
 	protected static ref map<EntityID, ref LF_ResidentWorkState> s_mState;
-	protected static ref map<string, ref array<ref LF_ResidentWorkStep>> s_mCycles;
 	protected static bool s_bTicking;
 
 	//------------------------------------------------------------------------------------------------
-	//! World end (and tests): stops the sweep and forgets every worker.
+	//! World end (and tests): stops the tick and forgets every worker.
 	static void ResetStatics()
 	{
 		if (s_bTicking && GetGame() && GetGame().GetCallqueue())
@@ -60,38 +49,6 @@ class LF_ResidentWorkLoop
 
 		s_bTicking = false;
 		s_mState = null;
-		s_mCycles = null;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static map<string, ref array<ref LF_ResidentWorkStep>> Cycles()
-	{
-		if (s_mCycles)
-			return s_mCycles;
-
-		s_mCycles = new map<string, ref array<ref LF_ResidentWorkStep>>();
-
-		array<ref LF_ResidentWorkStep> carry = {};
-		carry.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.COMMAND_MOVE, 5));
-		carry.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.COMMAND_FOLLOW, 5));
-		carry.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.NONE, 4));
-		s_mCycles.Insert(CARRY, carry);
-
-		array<ref LF_ResidentWorkStep> hammer = {};
-		hammer.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.COMMAND_STOP, 2));
-		hammer.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.NONE, 1));
-		hammer.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.COMMAND_STOP, 2));
-		hammer.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.NONE, 3));
-		s_mCycles.Insert(HAMMER, hammer);
-
-		array<ref LF_ResidentWorkStep> sweep = {};
-		sweep.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.COMMAND_MOVE, 3));
-		sweep.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.NONE, 2));
-		sweep.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.COMMAND_FOLLOW, 3));
-		sweep.Insert(LF_ResidentWorkStep.Make(ECharacterGestures.NONE, 2));
-		s_mCycles.Insert(SWEEP, sweep);
-
-		return s_mCycles;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -102,7 +59,7 @@ class LF_ResidentWorkLoop
 		string name = activity;
 		name.TrimInPlace();
 		name.ToLower();
-		known = Cycles().Contains(name);
+		known = name == CARRY || name == HAMMER || name == SWEEP;
 		if (!known)
 			return "";
 
@@ -118,88 +75,23 @@ class LF_ResidentWorkLoop
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How many steps the activity's cycle has (0 for a name that is not work).
-	static int StepCount(string activity)
+	//! The rule, with no world: the anim set instance of the job's pose on the work graph, or "" when the job
+	//! has no pose of its own yet (or is not work) and the resident plays the plain idle loiter.
+	static ResourceName PoseOf(string activity)
 	{
 		bool known;
 		string name = Normalise(activity, known);
-		if (!known)
-			return 0;
+		if (name == HAMMER)
+			return HAMMER_POSE;
 
-		return Cycles().Get(name).Count();
+		return ResourceName.Empty;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How long step `step` lasts, in seconds (0 out of range).
-	static int StepSeconds(string activity, int step)
+	//! The loiter data for a job pose: the work graph with the job's clips, entered through its Gestures value.
+	static SCR_LoiterCustomAnimData PoseData(ResourceName pose)
 	{
-		LF_ResidentWorkStep one = StepOfCycle(activity, step);
-		if (!one)
-			return 0;
-
-		return one.m_iSeconds;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The vanilla gesture (ECharacterGestures) step `step` plays; NONE for a rest or an unknown step.
-	static int GestureOf(string activity, int step)
-	{
-		LF_ResidentWorkStep one = StepOfCycle(activity, step);
-		if (!one)
-			return ECharacterGestures.NONE;
-
-		return one.m_iGesture;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! Seconds one whole cycle takes (0 for a name that is not work).
-	static int CycleSeconds(string activity)
-	{
-		int total = 0;
-		for (int i = 0; i < StepCount(activity); i++)
-		{
-			total += StepSeconds(activity, i);
-		}
-
-		return total;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	//! The rule, with no world: the step the loop is on `seconds` after it began, wrapping around the cycle.
-	//! -1 for a name that is not work.
-	static int StepAt(string activity, int seconds)
-	{
-		int cycle = CycleSeconds(activity);
-		if (cycle <= 0)
-			return -1;
-
-		int at = seconds % cycle;
-		if (at < 0)
-			at += cycle;
-
-		for (int i = 0; i < StepCount(activity); i++)
-		{
-			at -= StepSeconds(activity, i);
-			if (at < 0)
-				return i;
-		}
-
-		return 0;
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static LF_ResidentWorkStep StepOfCycle(string activity, int step)
-	{
-		bool known;
-		string name = Normalise(activity, known);
-		if (!known)
-			return null;
-
-		array<ref LF_ResidentWorkStep> cycle = Cycles().Get(name);
-		if (step < 0 || step >= cycle.Count())
-			return null;
-
-		return cycle.Get(step);
+		return SCR_LoiterCustomAnimData.CreateInstance(-1, -1, string.Empty, SCR_CustomAnimData_Properties.BINDING_NAME_NPC, LF_WorkAnimPlayer.PICK_GRAPH, pose, -1, LF_EWorkAnimKind.PICK, LF_WorkAnimPlayer.CONTROL_VARIABLE);
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -212,9 +104,9 @@ class LF_ResidentWorkLoop
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the worker starts their activity on step 0 and the clock keeps the cycle going. Beginning
-	//! again with the same activity keeps the running loop. \return false for a name that is not work, a
-	//! body with no character controller, or a client.
+	//! Server: the worker takes their job's pose and holds it until Stop. Beginning again with the same
+	//! activity keeps the running pose; a different one swaps it. \return false for a name that is not work,
+	//! a body with no character controller, or a client.
 	static bool Begin(IEntity entity, string activity)
 	{
 		if (!entity || !Replication.IsServer())
@@ -240,10 +132,14 @@ class LF_ResidentWorkLoop
 
 		LF_ResidentWorkState state = new LF_ResidentWorkState();
 		state.m_sActivity = name;
-		state.m_iStartMs = System.GetTickCount();
+		state.m_sPose = PoseOf(name);
 		State().Set(entity.GetID(), state);
-		LF_Debug.Info(FEATURE, string.Format("work loop: %1 starts %2", entity.GetID(), name));
-		Apply(entity, state, 0);
+		string pose = "the idle loiter (no job pose yet)";
+		if (!state.m_sPose.IsEmpty())
+			pose = state.m_sPose;
+
+		LF_Debug.Info(FEATURE, string.Format("work loop: %1 starts %2 with %3", entity.GetID(), name, pose));
+		StartPose(entity, state);
 
 		if (!s_bTicking)
 		{
@@ -255,68 +151,73 @@ class LF_ResidentWorkLoop
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Server: the worker's clock reads `seconds` since Begin; moves to the step that belongs there and plays
-	//! its gesture when the step changed. The 1 s sweep and the tests both come through here.
-	static void TickAt(IEntity entity, int seconds)
+	protected static void StartPose(notnull IEntity entity, notnull LF_ResidentWorkState state)
 	{
-		if (!entity)
-			return;
-
-		LF_ResidentWorkState state = State().Get(entity.GetID());
-		if (!state)
-			return;
-
-		Apply(entity, state, StepAt(state.m_sActivity, seconds));
-	}
-
-	//------------------------------------------------------------------------------------------------
-	protected static void Apply(notnull IEntity entity, notnull LF_ResidentWorkState state, int step)
-	{
-		if (step < 0 || step == state.m_iStep)
-			return;
-
-		state.m_iStep = step;
-		state.m_iGesture = GestureOf(state.m_sActivity, step);
-
 		SCR_CharacterControllerComponent controller = Controller(entity);
 		if (!controller)
 			return;
 
+		// A hand signal or an earlier pose gives way to the work.
 		controller.StopCharacterGesture();
-		if (state.m_iGesture == ECharacterGestures.NONE)
+		if (controller.IsLoitering())
+			controller.StopLoitering(true);
+
+		vector none[4];
+		if (state.m_sPose.IsEmpty())
+			controller.StartLoitering(null, ELoiteringType.LOITERING, true, true, false, none);
+		else
+			controller.StartLoitering(null, ELoiteringType.CUSTOM, true, true, false, none, true, PoseData(state.m_sPose));
+
+		state.m_iStartedMs = System.GetTickCount();
+		state.m_iStarts++;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one look at the worker `elapsedMs` after their pose last started; a pose that is not showing
+	//! after RESTART_MS starts again. The 1 s tick and the tests both come through here.
+	static void Check(IEntity entity, int elapsedMs)
+	{
+		if (!entity || !s_mState)
 			return;
 
-		// The gesture is held for the step's length; a refused start (the body is busy) logs and waits for the next step.
-		if (!controller.TryStartCharacterGesture(state.m_iGesture, StepSeconds(state.m_sActivity, step) * 1000))
-			LF_Debug.Info(FEATURE, string.Format("work loop: %1 could not start gesture %2 on step %3", entity.GetID(), state.m_iGesture, step));
+		LF_ResidentWorkState state = s_mState.Get(entity.GetID());
+		if (!state || elapsedMs < RESTART_MS)
+			return;
+
+		SCR_CharacterControllerComponent controller = Controller(entity);
+		if (!controller || controller.IsLoitering())
+			return;
+
+		LF_Debug.Info(FEATURE, string.Format("work loop: %1 stopped posing; %2 starts again", entity.GetID(), state.m_sActivity));
+		StartPose(entity, state);
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The step the worker is on now (-1 when they are not working).
-	static int StepOf(IEntity entity)
+	//! The job pose the loop gave the worker ("" for the idle loiter or when they are not working).
+	static ResourceName PlayedPose(IEntity entity)
 	{
 		if (!entity || !s_mState)
-			return -1;
+			return ResourceName.Empty;
 
 		LF_ResidentWorkState state = s_mState.Get(entity.GetID());
 		if (!state)
-			return -1;
+			return ResourceName.Empty;
 
-		return state.m_iStep;
+		return state.m_sPose;
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The gesture the loop last asked the worker to play (NONE for a rest or when they are not working).
-	static int PlayedGesture(IEntity entity)
+	//! How often the loop started the worker's pose (0 when they are not working).
+	static int StartsOf(IEntity entity)
 	{
 		if (!entity || !s_mState)
-			return ECharacterGestures.NONE;
+			return 0;
 
 		LF_ResidentWorkState state = s_mState.Get(entity.GetID());
 		if (!state)
-			return ECharacterGestures.NONE;
+			return 0;
 
-		return state.m_iGesture;
+		return state.m_iStarts;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -326,7 +227,7 @@ class LF_ResidentWorkLoop
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! How many workers have a loop now (tests read it).
+	//! How many workers are working now (tests read it).
 	static int Count()
 	{
 		if (!s_mState)
@@ -336,7 +237,7 @@ class LF_ResidentWorkLoop
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! Ends the worker's loop and stops the gesture (a despawn, a new timetable line).
+	//! Ends the worker's pose (a despawn, a new timetable line).
 	static void Stop(IEntity entity)
 	{
 		if (!entity || !s_mState)
@@ -347,14 +248,14 @@ class LF_ResidentWorkLoop
 
 		s_mState.Remove(entity.GetID());
 		SCR_CharacterControllerComponent controller = Controller(entity);
-		if (controller)
-			controller.StopCharacterGesture();
+		if (controller && controller.IsLoitering())
+			controller.StopLoitering(true);
 
 		LF_Debug.Info(FEATURE, string.Format("work loop: %1 stops", entity.GetID()));
 	}
 
 	//------------------------------------------------------------------------------------------------
-	//! The 1 s tick: every worker moves to the step their clock says; a body that is gone leaves the loop.
+	//! The 1 s tick: every worker keeps posing; a body that is gone or down leaves the loop.
 	protected static void Sweep()
 	{
 		if (!s_mState || s_mState.IsEmpty())
@@ -390,7 +291,7 @@ class LF_ResidentWorkLoop
 				continue;
 			}
 
-			TickAt(entity, (now - state.m_iStartMs) / 1000);
+			Check(entity, now - state.m_iStartedMs);
 		}
 	}
 

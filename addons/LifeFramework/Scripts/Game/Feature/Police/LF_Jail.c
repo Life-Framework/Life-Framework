@@ -972,6 +972,20 @@ class LF_Jail
 	//! in one ("When in a vehicle, teleport the vehicle instead", Scripts/Game/Global/Functions.c).
 	static void MoveBody(IEntity body, vector position)
 	{
+		Move(body, position, 0, false);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! MoveBody, and the body ends up looking along yaw (degrees, 0 looks along +Z). A body in a vehicle
+	//! is only dismounted: its heading is left alone.
+	static void MoveBodyFacing(IEntity body, vector position, float yaw)
+	{
+		Move(body, position, yaw, true);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	protected static void Move(IEntity body, vector position, float yaw, bool facing)
+	{
 		if (!body)
 			return;
 
@@ -989,11 +1003,14 @@ class LF_Jail
 		if (how == LF_EJailMove.TELEPORT_PLAYER)
 		{
 			bool teleported = SCR_Global.TeleportPlayer(playerId, position);
+			if (facing && teleported)
+				body.SetYawPitchRoll(Vector(yaw, 0, 0));
+
 			// On a dedicated server TeleportPlayer alone moved the body on the server only: the
 			// owning client's next movement update put the prisoner back where they were arrested
 			// (M1 RC QA: "moved ... to the cell" logged, the client never left the garage). The
 			// owner has to make the move itself.
-			if (AskOwnerToMove(body, position))
+			if (AskOwnerToMove(body, position, yaw, facing))
 				return;
 
 			if (teleported)
@@ -1003,13 +1020,15 @@ class LF_Jail
 		}
 
 		body.SetOrigin(position);
+		if (facing)
+			body.SetYawPitchRoll(Vector(yaw, 0, 0));
 	}
 
 	//------------------------------------------------------------------------------------------------
 	//! A body a remote client owns is moved by that client, through the vanilla Game Master path
 	//! (SCR_EditableCharacterComponent.SetTransform asks the owner). False for a body this machine
 	//! owns (a listen host, a test stand-in): the caller's server move is enough there.
-	protected static bool AskOwnerToMove(IEntity body, vector position)
+	protected static bool AskOwnerToMove(IEntity body, vector position, float yaw = 0, bool facing = false)
 	{
 		RplComponent rpl = RplComponent.Cast(body.FindComponent(RplComponent));
 		if (!rpl || rpl.IsOwner())
@@ -1024,6 +1043,9 @@ class LF_Jail
 
 		vector transform[4];
 		body.GetWorldTransform(transform);
+		if (facing)
+			Math3D.AnglesToMatrix(Vector(yaw, 0, 0), transform);
+
 		transform[3] = position;
 		editable.SetTransform(transform);
 		LF_Debug.Info("Jail", string.Format("asked the owning client to move the prisoner to %1", position));
