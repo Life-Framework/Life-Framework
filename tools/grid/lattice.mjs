@@ -28,7 +28,8 @@ import { frameSpawnLines } from "./cell-spawn.mjs";
 // at 2 m = 512 m) is far larger than the grid; keep GRID inside 0..512 (tools/validation/grid-world-selftest.mjs).
 // GRID_CENTRE stays where it was so no old cell's gap flips to another side.
 // It grew east from 25 to 29 columns for the authoring bays (2026-11-21, see AUTHORING below): c0r0 to c24r6 keep their ids and coordinates.
-export const CELL = { size: 12, origin: 22, cols: 29, rows: 7, inset: 1, fence: 5 };
+// It grew east from 29 to 32 columns when the free cells ran out again (2026-11-23, #4541): c29r0 to c31r6 are ordinary cells, x 370..406; east wall x 412.
+export const CELL = { size: 12, origin: 22, cols: 32, rows: 7, inset: 1, fence: 5 };
 export const GRID_CENTRE = [66, 66];
 // The outer fence (Annex.layer): 2 m outside the lattice on the west and south, 6 m on the east and north
 // (the north gate and the track in through it live in that margin). x 20..160, z 20..112.
