@@ -6699,6 +6699,11 @@ StringTable {
      Target_en_us "Everything the town builds from comes out of this one site: ore and stone in the pit, cement at the plant, gravel and sand at the stands, and timber at the sawmill."
      Comment "Quarry info board, What section."
     }
+    CustomStringTableItem "{090D4A15534E09EE}" {
+     Id "LF-Sign_RebelKit_Ural_Title"
+     Target_en_us "27"
+     Comment "Hand-painted number on the doors of the rebel Ural4320 (LF_Ural4320_RebelKit)."
+    }
     CustomStringTableItem "{6FE6312861E955B2}" {
      Id "LF-Sign_Registry_How"
      Target_en_us "Talk to the clerk at the counter. New in town: say so, and you are handed your card. A lost card is replaced for a fee."
