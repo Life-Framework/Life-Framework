@@ -961,6 +961,7 @@
   row is left out: no seat on the villa's front wall cleared the shell audit (follow-up). The audit of the layer reports no floating,
   displaced, clipping, door-blocking or unreachable row. The kit's source layer is archived at `tools/town/kits/sources/police.layer`.
 - 🧪 (2026-11-22) **Island jail stations seated on the real floor and out of the door swing (#3888).** The laundry tub was 8.6 cm into the island floor and the kitchen sink 0.4 m into the cell door's swing. The kit row of the tub now carries `keepY` with its island height (`town fit` used to snap every floor row back to the model's top surface), and the sink moved 0.65 m along its wall (z) to stand clear; all three stations are still inside the cell's 2 m zone. Merged, in-dev.
+- 🧪 (2026-11-23) **Sentences up to 15 online minutes, work stations scaled (#4207).** The cell's cap is 900 s (`EL_JailCell.et`, `LF_JailCellComponent.MAX_SENTENCE_SECONDS`); a configured cap above that clamps to 900 with a `[LFDebug:Jail]` warning. The cell tells `LF_JailWork` its cap (`SetSentenceCap`) and each finished chore credits its station number scaled to it: 3x at 15 minutes (the 8, 10 and 8 s stations take 24, 30 and 24 s off), never more than 5% of the cap for one chore, and a full shift of all stations stays within 10% (`LF_JailWorkRules.ScaledSecondsOff`). No cap set leaves a chore as written. No persistence change. Test `jail/cap-15`. Merged, in-dev.
 
 ### `LF_StashContainer` — `Feature/Crime/LF_StashContainer*.c` (#4195, crime B3)
 

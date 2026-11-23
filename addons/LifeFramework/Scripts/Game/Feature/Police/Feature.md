@@ -104,7 +104,7 @@ weapons from the nearest wanted player within 5 m.
 
 ## Jail work (#127)
 
-`LF_JailWork.c`: job spots in the cell (`LF_JailWorkAction`) take seconds off a serving prisoner's sentence through `LF_Jail.Credit`; the server owns the rules (serving, not busy, per-job cooldown). Pure rules in `LF_JailWorkRules`; test `jail/work`. No persistence change.
+`LF_JailWork.c`: job spots in the cell (`LF_JailWorkAction`) take seconds off a serving prisoner's sentence through `LF_Jail.Credit`; the server owns the rules (serving, not busy, per-job cooldown). Pure rules in `LF_JailWorkRules`; test `jail/work`. No persistence change. The cell sets the sentence cap (900 s, 15 online minutes; a higher value clamps with a log line) and `LF_JailWorkRules.ScaledSecondsOff` scales each chore to it (3x at 15 minutes, at most 5% of the cap per chore); test `jail/cap-15` (#4207).
 
 ## Npc stun (#922)
 
