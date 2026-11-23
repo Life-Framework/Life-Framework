@@ -1,10 +1,10 @@
 GenericEntity {
  ID "DB41B3043BA34D2A"
  components {
-  MeshObject "{0CBBD1845E01BA04}" {
+  MeshObject "{FE95D4A975477FEE}" {
    Object "{CEC8A3DF893B9C96}Assets/Props/Crates/BoxWooden_01.xob"
   }
-  RigidBody "{87D264BBC316B0AA}" {
+  RigidBody "{3479D105F6B7347F}" {
    Mass 10
    ModelGeometry 1
    Static 1

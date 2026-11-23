@@ -1,7 +1,7 @@
 GenericEntity {
  ID "61A042CE800F4D14"
  components {
-  MeshObject "{C02907AA0217B732}" {
+  MeshObject "{B6B0910169A90335}" {
    Object "{446E8F1AEE3A1EEF}Assets/Items/Food/Cabbage/Cabbage.xob"
   }
  }
