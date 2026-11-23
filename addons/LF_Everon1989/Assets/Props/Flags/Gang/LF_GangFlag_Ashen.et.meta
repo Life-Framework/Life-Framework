@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{0DD361AB26A16F67}Assets/Props/Flags/Gang/LF_GangFlag_Ashen.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

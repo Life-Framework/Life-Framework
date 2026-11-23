@@ -1,0 +1,4 @@
+MatPBRBasic {
+ BCRMap "{ABB01B251CC102B9}Assets/Props/Flags/Gang/Data/GangFlag_Quarry_BCR.edds"
+ NMOMap "{B6B49940116AEFC8}Assets/Props/Flags/Gang/Data/GangFlag_Quarry_NMO.edds"
+}

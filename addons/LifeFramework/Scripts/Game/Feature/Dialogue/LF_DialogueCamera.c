@@ -26,7 +26,15 @@ class LF_DialogueCamera
 	//! covers the head, hair and the neck, so no mesh is cut by the near plane.
 	static const float HEAD_KEEP_OUT = 0.85;
 
+	//! The side spots tried, best first: how far along the line from the NPC to the player the camera stands
+	//! (0.5 is the middle) and which side of the line. The middle is the shot; a spot nearer the NPC is for a
+	//! counter with a glass partition at the middle, where the middle spot sits inside the glass and sees a door
+	//! frame instead of the clerk (re-review A8).
+	static const int SPOT_COUNT = 6;
+
 	protected static bool s_bProofCloseUp;
+	protected static int s_iSpot = -1;
+	protected static bool s_bSpotClear;
 	protected static float s_fKeepFrom;
 	protected static EntityID s_CameraId = EntityID.INVALID;
 	protected static EntityID s_PreviousId = EntityID.INVALID;
@@ -49,6 +57,8 @@ class LF_DialogueCamera
 		s_NpcId = EntityID.INVALID;
 		s_bClosing = false;
 		s_bProofCloseUp = false;
+		s_iSpot = -1;
+		s_bSpotClear = false;
 	}
 
 	//------------------------------------------------------------------------------------------------
@@ -71,6 +81,37 @@ class LF_DialogueCamera
 	//! player's shoulder showed the back of the player's cap). The only shot of the conversation.
 	static void Frame(vector npcHead, vector playerHead, out vector position, out vector lookAt, out float fov)
 	{
+		FrameAt(npcHead, playerHead, 0.5, 1, position, lookAt, fov);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: how far along the line from the NPC (0) to the player (1) side spot `index` stands.
+	static float SpotAlong(int index)
+	{
+		if (index >= 4)
+			return 0.15;
+
+		if (index >= 2)
+			return 0.3;
+
+		return 0.5;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: which side of the line (1 the player's right, -1 the left) side spot `index` stands.
+	static float SpotSide(int index)
+	{
+		if (index % 2 == 1)
+			return -1;
+
+		return 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Pure: Frame for a spot: `along` the line from the NPC to the player, `side` 1 or -1. The camera
+	//! always looks at the middle between the two heads.
+	static void FrameAt(vector npcHead, vector playerHead, float along, float side, out vector position, out vector lookAt, out float fov)
+	{
 		vector toPlayer = playerHead - npcHead;
 		float separation = toPlayer.Length();
 		toPlayer[1] = 0;
@@ -81,7 +122,8 @@ class LF_DialogueCamera
 		vector right = Vector(toPlayer[2], 0, -toPlayer[0]);
 		vector middle = (npcHead + playerHead) * 0.5;
 		float distance = Math.Clamp((separation + TWO_SHOT_MARGIN) / TWO_SHOT_SPAN, TWO_SHOT_MIN, TWO_SHOT_MAX);
-		position = middle + right * distance + Vector(0, SHOT_UP, 0);
+		vector spot = npcHead + (playerHead - npcHead) * along;
+		position = spot + right * (distance * side) + Vector(0, SHOT_UP, 0);
 		lookAt = middle;
 		fov = FOV;
 	}
@@ -154,6 +196,64 @@ class LF_DialogueCamera
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! True when nothing but `exclude` stands between the two points.
+	protected static bool SightClear(vector from, vector to, IEntity exclude)
+	{
+		BaseWorld world = GetGame().GetWorld();
+		if (!world)
+			return true;
+
+		TraceParam trace = new TraceParam();
+		trace.Start = from;
+		trace.End = to;
+		trace.Flags = TraceFlags.WORLD | TraceFlags.ENTS;
+		trace.Exclude = exclude;
+		trace.LayerMask = EPhysicsLayerPresets.Projectile;
+		return world.TraceMove(trace, null) >= 1;
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Picks the side spot once per conversation: the first with a clear line to the NPC's head and to the
+	//! player's, else the first with a clear line to the NPC's head (the player is then seen through glass),
+	//! else none (the old shot, pulled in by collision).
+	protected static void ChooseSpot(IEntity npc, IEntity player, vector npcHead, vector playerHead)
+	{
+		s_iSpot = 0;
+		s_bSpotClear = false;
+		int npcOnly = -1;
+		for (int i = 0; i < SPOT_COUNT; i++)
+		{
+			vector position;
+			vector lookAt;
+			float fov;
+			FrameAt(npcHead, playerHead, SpotAlong(i), SpotSide(i), position, lookAt, fov);
+			if (!SightClear(npcHead, position, npc))
+				continue;
+
+			if (npcOnly < 0)
+				npcOnly = i;
+
+			if (SightClear(playerHead, position, player))
+			{
+				s_iSpot = i;
+				s_bSpotClear = true;
+				LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("camera spot %1: both heads in clear sight", i));
+				return;
+			}
+		}
+
+		if (npcOnly >= 0)
+		{
+			s_iSpot = npcOnly;
+			s_bSpotClear = true;
+			LF_Debug.Info(LF_Dialogue.FEATURE, string.Format("camera spot %1: the NPC in clear sight, the player behind glass or a wall", npcOnly));
+			return;
+		}
+
+		LF_Debug.Warn(LF_Dialogue.FEATURE, "camera spot: no side spot sees the NPC, using the middle shot pulled in by collision");
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! The shot, with collision.
 	protected static bool Target(out vector position, out vector lookAt, out float fov)
 	{
@@ -168,7 +268,10 @@ class LF_DialogueCamera
 
 		vector npcHead = LF_DialogueVoice.HeadOf(npc);
 		vector playerHead = LF_DialogueVoice.HeadOf(player);
-		Frame(npcHead, playerHead, position, lookAt, fov);
+		if (s_iSpot < 0)
+			ChooseSpot(npc, player, npcHead, playerHead);
+
+		FrameAt(npcHead, playerHead, SpotAlong(s_iSpot), SpotSide(s_iSpot), position, lookAt, fov);
 		if (s_bProofCloseUp)
 		{
 			// Harness only (`dialogue closeup 1`): a face close-up so a proof can film the mouth. The
@@ -185,7 +288,9 @@ class LF_DialogueCamera
 			return true;
 		}
 
-		position = Unblocked(lookAt, position, player);
+		if (!s_bSpotClear)
+			position = Unblocked(lookAt, position, player);
+
 		return true;
 	}
 
@@ -227,6 +332,8 @@ class LF_DialogueCamera
 			manual.SetInputEnabled(false);
 
 		s_NpcId = npc.GetID();
+		s_iSpot = -1;
+		s_bSpotClear = false;
 		s_PreviousId = previous.GetID();
 		s_CameraId = camera.GetID();
 		s_bClosing = false;

@@ -86,3 +86,5 @@
 
 
 - **Moonshine barn in the hills (#3402).** Place `stillbarn` (a lone vanilla barn about 1 km from Saint-Philippe, no sign, no POI) holds three mash barrels, a still and a packing barrel on one site id (`stillbarn_site`, shared heat), plus a laundering bench with its own site id, with hay, crates and two lamps. Kit `stillbarn`, layer `Place_stillbarn_1.layer`. Manual: run one batch mash to a packed crate, see the PR.
+
+- **Amount class on goods (#4201, CR-F1).** `LF_GoodsClass.FromUnits(units)` maps a load to `LF_EGoodsClass`: A is 1 to 2 units, B is 3 to 10, C is 11 and up, NONE for zero or less; `Letter` gives "A", "B" or "C" for a charge sheet line. Pure rules and no player-visible change yet: the law book (Police, PO-L) reads the class and decides the charge, and a later card tags the pharmacy stock. Test: `chains/goods-class` (LOGIC).

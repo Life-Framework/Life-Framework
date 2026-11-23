@@ -12,6 +12,7 @@
     { "name": "roadmap/jailbreak", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
     { "name": "roadmap/jailing", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
     { "name": "roadmap/jailing-save", "reason": "a roadmap scenario run on the town's places (jail, hideout, police, contraband)" },
+    { "name": "playtest-town/parity-data", "world": "{1054CC8646357708}Missions/LF_PlaytestTown.conf", "reason": "reads the pack's map, run and guide tables the town header loads: every row must point at a place the town has (TP-6b, #4246); a bare DebugWorld boot has no overlays and passes with nothing to check, so it boots the header" },
     { "name": "signs/coverage", "reason": "reads the town signs, which are not in GridWorld" }
   ]
 }

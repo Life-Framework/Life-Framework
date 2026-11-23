@@ -1972,12 +1972,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4A64CBDDC70A3B14}" {
      Id "LF-ATM_Deposited"
-     Target_en_us "DEPOSITED %1. THANK YOU."
+     Target_en_us "DEPOSITED: %1"
      Comment "ATM terminal status line after a deposit. %1 is the amount."
     }
     CustomStringTableItem "{CAF4A9272F7A5651}" {
      Id "LF-ATM_Dispensed"
-     Target_en_us "PLEASE TAKE YOUR CASH: %1"
+     Target_en_us "TAKE YOUR CASH: %1"
      Comment "ATM terminal status line after a withdrawal. %1 is the amount paid out."
     }
     CustomStringTableItem "{2028FAF6D9D3BF5C}" {
@@ -4147,12 +4147,12 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{4ED77DE7DEE2573C}" {
      Id "LF-Credits_168"
-     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
+     Target_en_us "Tally clerk Marcel Brun's five spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0774CCE82D802254}" {
      Id "LF-Credits_169"
-     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
+     Target_en_us "ElevenLabs text-to-speech, voice \"Antonin - Warm, Unsettling, Elegant\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{AD56C627EA2AD519}" {
@@ -4162,22 +4162,22 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{6FDBFD431F29A691}" {
      Id "LF-Credits_170"
-     Target_en_us "MUSIC"
+     Target_en_us "Harbor master Marcel Roux's fourteen spoken lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{24B6F60FC64E50FE}" {
      Id "LF-Credits_171"
-     Target_en_us "\"Carefree\""
+     Target_en_us "ElevenLabs text-to-speech, voice \"LaRauque - Hoarse, Deep, and Dramatic\" from the ElevenLabs voice library. Voice generated with ElevenLabs"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8B3125F791403A21}" {
      Id "LF-Credits_172"
-     Target_en_us "Kevin MacLeod (incompetech.com)"
+     Target_en_us "MUSIC"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{6DEF465ED9803D1A}" {
      Id "LF-Credits_173"
-     Target_en_us "\"Hitman\""
+     Target_en_us "\"Carefree\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{331934ECDCED4E47}" {
@@ -4187,27 +4187,27 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{B9BF5DC2926087D1}" {
      Id "LF-Credits_175"
-     Target_en_us "VOICE-OVER"
+     Target_en_us "\"Hitman\""
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CC2101DE9FC8F7B8}" {
      Id "LF-Credits_176"
-     Target_en_us "Piper"
+     Target_en_us "Kevin MacLeod (incompetech.com)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{C9C86A5A1ED40DCE}" {
      Id "LF-Credits_177"
-     Target_en_us "Michael Hansen / Rhasspy"
+     Target_en_us "VOICE-OVER"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{8A4563FF1C5E590F}" {
      Id "LF-Credits_178"
-     Target_en_us "Voice en_US-ljspeech-high"
+     Target_en_us "Piper"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{1FC189AF5F7BE2CC}" {
      Id "LF-Credits_179"
-     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
+     Target_en_us "Michael Hansen / Rhasspy"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{3A24A564BBC40F8F}" {
@@ -4217,37 +4217,62 @@ CustomStringTableItem "{44869271883D0402}" {
     }
     CustomStringTableItem "{BDA999D625B19F3D}" {
      Id "LF-Credits_180"
-     Target_en_us "FONTS AND LOGO"
+     Target_en_us "Voice en_US-ljspeech-high"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{A0A7AF015F2F74D4}" {
      Id "LF-Credits_181"
-     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
+     Target_en_us "Trained from scratch on LJ Speech (Keith Ito)"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{0D1A861CFC75EB60}" {
      Id "LF-Credits_182"
-     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
+     Target_en_us "FONTS AND LOGO"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{861D6EE9C532FE97}" {
      Id "LF-Credits_183"
-     Target_en_us "LIVERIES"
+     Target_en_us "Anniversary priest Father Étienne Morel's memorial speech"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{FD0F462ADB68D02E}" {
      Id "LF-Credits_184"
-     Target_en_us "LF_UAZ469_Police"
+     Target_en_us "Gaspard Lenoir's two anniversary letter lines"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{00BFA04619043DFC}" {
      Id "LF-Credits_185"
+     Target_en_us "LIVERIES"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{90696CB2BFCA919F}" {
+     Id "LF-Credits_186"
+     Target_en_us "LF_UAZ469_Police"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{13C921E553E1333A}" {
+     Id "LF-Credits_187"
      Target_en_us "LF_S105_Police"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{1FD2D69733781B26}" {
+     Id "LF-Credits_188"
+     Target_en_us "CONTRABAND LABELS"
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{413CD254F961C2CC}" {
+     Id "LF-Credits_189"
+     Target_en_us "LF_CigaretteCarton_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{9B225E9F684B34BE}" {
      Id "LF-Credits_19"
      Target_en_us "Third-party code keeps its own license and notice (THIRD_PARTY.md). Third-party assets are listed in assets-source/LICENSES.md: so far only the CC0 texture sets under \"Textures (CC0)\"."
+     Comment "Generated from docs/credits.md by tools\cli credits (#481)"
+    }
+    CustomStringTableItem "{FB7F01DA30ED5462}" {
+     Id "LF-Credits_190"
+     Target_en_us "LF_VodkaBottle_BCR"
      Comment "Generated from docs/credits.md by tools\cli credits (#481)"
     }
     CustomStringTableItem "{CFC4ECAEFB5E7DFF}" {
@@ -4949,6 +4974,36 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Dialogue_Clerk_WorkErrand"
      Target_en_us "Time to earn your first wages. The post office is down the street. Take courier work at the counter, pick up a parcel, carry it to the drop at the east end of the street, and complete the run."
      Comment "Dialogue caption, spoken by the clerk NPC (voiced; tools/assets/dialogue/clerk). Changing it needs: tools\\cli asset dialogue clerk"
+    }
+    CustomStringTableItem "{3982603FE3CADC9F}" {
+     Id "LF-Dialogue_FeeFailed"
+     Target_en_us "Not now. Your pockets are full. Your money is still yours."
+     Comment "NPC caption: the item could not be handed over (no room); the fee was given back (#4381)."
+    }
+    CustomStringTableItem "{A6F453B61D373DD7}" {
+     Id "LF-Dialogue_FeeHeld"
+     Target_en_us "You already have one. Keep your money."
+     Comment "NPC caption: the player already carries the item a dialogue fee buys; nothing was taken (#4381)."
+    }
+    CustomStringTableItem "{6BEE27F424522CB8}" {
+     Id "LF-Dialogue_FeePaid"
+     Target_en_us "Paid. Here it is."
+     Comment "NPC caption after a dialogue fee is paid and the item handed over; a dialogue voices it with a line whose for_key is this key (#4381)."
+    }
+    CustomStringTableItem "{664E7189E2645BDB}" {
+     Id "LF-Dialogue_FeePaidToast"
+     Target_en_us "You paid %1 in cash."
+     Comment "Toast after paying an NPC's fee in a conversation. %1 is the fee, formatted as money (#4381)."
+    }
+    CustomStringTableItem "{A156B3598A7D9B80}" {
+     Id "LF-Dialogue_FeeShort"
+     Target_en_us "That is not enough. Come back with the full amount."
+     Comment "NPC caption: the player picked a paid reply but carries less cash than the fee; nothing was taken (#4381)."
+    }
+    CustomStringTableItem "{6D96E2F833B5BC10}" {
+     Id "LF-Dialogue_FeeTitle"
+     Target_en_us "Payment"
+     Comment "Toast title after paying an NPC's fee in a conversation (#4381)."
     }
     CustomStringTableItem "{D472603DD9705158}" {
      Id "LF-Dialogue_FuelClerk_AboutWhere"
@@ -7273,6 +7328,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Hotwire"
      Comment "Toast title for hotwiring (#412)."
     }
+    CustomStringTableItem "{747E2492D28BBC6E}" {
+     Id "LF-HoursPlate_Open"
+     Target_en_us "OPEN"
+     Comment "Hours plate row label on a shop door; the value is the keeper's hours written from the resident timetable."
+    }
     CustomStringTableItem "{7B1E4C90A2D35F68}" {
      Id "LF-HouseLock_Lock"
      Target_en_us "Lock house"
@@ -7817,6 +7877,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-Interact_TooFar"
      Target_en_us "Step closer to them."
      Comment "Player interaction refused: the other person is out of reach."
+    }
+    CustomStringTableItem "{218E14C1F987A256}" {
+     Id "LF-Inventory_DroppedAtFeet"
+     Target_en_us "No room on you: %1 x%2 is on the ground at your feet."
+     Comment "Toast when a given item (a press output, a catch, a harvest) did not fit the inventory and was dropped beside the player. %1 = item name, %2 = amount"
     }
     CustomStringTableItem "{7C1E4A92B05D3F18}" {
      Id "LF-ItemName_HouseKeyOf"
