@@ -216,7 +216,7 @@ StringTable {
     }
     CustomStringTableItem "{7AADE23D2DEEDDF3}" {
      Id "LF-Activity_Mining_Pickaxe_Note"
-     Target_en_us "Buy a pickaxe ($150) at the miners' supply till in the hardware store."
+     Target_en_us "Buy a pickaxe ($150) at the miner's supply counter beside the mine desk."
      Comment "Mining step note, one sentence."
     }
     CustomStringTableItem "{11C01B3BCF77FA16}" {
@@ -2686,7 +2686,7 @@ StringTable {
     }
     CustomStringTableItem "{57482B3DAC09588C}" {
      Id "LF-MapRunStop_Pickaxe"
-     Target_en_us "hardware store (pickaxe)"
+     Target_en_us "mine supply counter (pickaxe)"
      Comment "Job run stop."
     }
     CustomStringTableItem "{F880F64007B2CF6F}" {
@@ -3906,7 +3906,7 @@ StringTable {
     }
     CustomStringTableItem "{1DF3BFB27FDA81CC}" {
      Id "LF-Sign_CoalmansBrowMine_How"
-     Target_en_us "Take the miner job at the desk, buy a pickaxe at the miners' supply till in the hardware store, swing at the rust-veined rocks and pick up the ore. Three pieces make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
+     Target_en_us "Take the miner job at the desk, buy a pickaxe at the supply counter beside it, swing at the big rust-red rocks (not the grey granite) and pick up the ore. Three pieces make one bar at the furnace; sell the bars at the iron counter in the dock wholesale warehouse."
      Comment "Sign card for the Coalman's Brow mine plate, How section."
     }
     CustomStringTableItem "{B30D7B3198E25E1E}" {
