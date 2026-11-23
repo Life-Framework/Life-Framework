@@ -2970,6 +2970,21 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Low priority: caller charged for false reports"
      Comment "Dispatch board tag on a call whose caller was charged for false reports today (#4421)."
     }
+    CustomStringTableItem "{4FCE393F14E712BB}" {
+     Id "LF-CallOutcome_ActionNoOneFound"
+     Target_en_us "Radio: no one found"
+     Comment "Police car radio row (#4585): close the call the officer holds; the suspect was gone."
+    }
+    CustomStringTableItem "{BCB191D62965EE1B}" {
+     Id "LF-CallOutcome_ActionResolved"
+     Target_en_us "Radio: call resolved"
+     Comment "Police car radio row (#4585): close the call the officer holds as resolved (a fine, an arrest or a revive settled it)."
+    }
+    CustomStringTableItem "{4F3D79F1FCC93949}" {
+     Id "LF-CallOutcome_ActionUnfounded"
+     Target_en_us "Radio: call unfounded"
+     Comment "Police car radio row (#4585): close the call the officer holds as unfounded (nothing happened; counts against the caller)."
+    }
     CustomStringTableItem "{AEB31D9E1738B09F}" {
      Id "LF-CallOutcome_NoCall"
      Target_en_us "That call is not open."
@@ -2984,6 +2999,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-CallOutcome_NoScene"
      Target_en_us "Dispatch cannot place this call on the map. Close it with a fine at the scene."
      Comment "Toast to the officer: the call has no position to check presence against (#4203)."
+    }
+    CustomStringTableItem "{02A2956C3E052118}" {
+     Id "LF-CallOutcome_NoneHeld"
+     Target_en_us "You hold no call. Take one at the dispatch board."
+     Comment "Toast when an officer radios a call closed without holding one (#4585)."
     }
     CustomStringTableItem "{E371BE1A6F20F92F}" {
      Id "LF-CallOutcome_NotHeld"
@@ -6065,6 +6085,11 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "%1 on duty, radioed"
      Comment "Dispatch outcome: %1 = number of officers on duty who got the radio call."
     }
+    CustomStringTableItem "{80FDC5082308648B}" {
+     Id "LF-Dispatch_BoardTagged"
+     Target_en_us "%1 (%2)"
+     Comment "Dispatch board line with a tag after it (#4585). %1 = the dispatch line, %2 = the tag, e.g. low priority."
+    }
     CustomStringTableItem "{F03D5F8438D95A26}" {
      Id "LF-Dispatch_Radio"
      Target_en_us "All units: %1 at %2. Suspect: %3."
@@ -6379,6 +6404,16 @@ CustomStringTableItem "{44869271883D0402}" {
      Id "LF-ExportBoard_What"
      Target_en_us "Orders from the steamer and the freighters: bring the goods to the crane before the deadline."
      Comment "Sign catalog 'what' text of the export order board (the face prints the live orders)."
+    }
+    CustomStringTableItem "{E4BA35B4EE3B794F}" {
+     Id "LF-ExportCrane_HandIn"
+     Target_en_us "Hand in the export order"
+     Comment "Action row at the dock crane spot: hand in the goods of the export order you took."
+    }
+    CustomStringTableItem "{CE33AF47A541C472}" {
+     Id "LF-ExportCrane_Paid"
+     Target_en_us "Order handed in. The shipper paid you {currency:sym}%1."
+     Comment "Toast after a full export order hand-in at the crane. %1 = the cash paid."
     }
     CustomStringTableItem "{033372B427C8F462}" {
      Id "LF-ExportOrder_RefuseGone"

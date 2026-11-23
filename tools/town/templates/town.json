@@ -159,6 +159,11 @@
       "places": []
     },
     {
+      "id": "bank-beat", "required": false, "kit": "bank-beat", "host": "street", "poi": "none", "margin": 20,
+      "needs": { "interior": "optional", "prefer": "near", "maxDistance": 70 },
+      "places": []
+    },
+    {
       "id": "board", "required": true, "kit": "board", "host": "street", "poi": "none",
       "needs": { "interior": "optional", "prefer": "near", "maxDistance": 60 },
       "places": ["TownBoard", "MapBoard"]

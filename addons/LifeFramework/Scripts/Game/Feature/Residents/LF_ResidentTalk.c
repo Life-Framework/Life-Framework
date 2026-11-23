@@ -53,6 +53,18 @@ class LF_ResidentTalk
 	}
 
 	//------------------------------------------------------------------------------------------------
+	//! The id `npc` is remembered under: its resident id when it is a live resident, else the standing id
+	//! its dialogue component names (a placed NPC such as the barkeeper, #4595), else empty (neutral).
+	static string MemoryIdOf(IEntity npc)
+	{
+		string residentId = LF_ResidentSpawner.ResidentIdOf(npc);
+		if (!residentId.IsEmpty())
+			return residentId;
+
+		return LF_DialogueComponent.StandingIdOf(npc);
+	}
+
+	//------------------------------------------------------------------------------------------------
 	//! Server: the node a player's talk with `npc` opens on. A character that is not a live resident
 	//! gets the dialogue's own start.
 	static string StartNode(IEntity player, IEntity npc, LF_DialogueConfig config)
@@ -60,7 +72,7 @@ class LF_ResidentTalk
 		if (!config)
 			return string.Empty;
 
-		string residentId = LF_ResidentSpawner.ResidentIdOf(npc);
+		string residentId = MemoryIdOf(npc);
 		if (residentId.IsEmpty())
 			return config.m_sStart;
 

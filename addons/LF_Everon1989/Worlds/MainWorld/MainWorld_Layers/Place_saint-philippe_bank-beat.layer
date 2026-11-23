@@ -1,0 +1,18 @@
+GenericEntity Fit_saint_philippe_bank_beat_anchor_door {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door"
+  }
+ }
+ coords 4373.202 12 10646.598
+ angleY 173
+}
+GenericEntity Fit_saint_philippe_bank_beat_anchor_door2 {
+ components {
+  LF_ResidentAnchorComponent "{C21F185D2CE024A1}" {
+   m_sAnchorId "door2"
+  }
+ }
+ coords 4369.004 12 10646.002
+ angleY 173
+}

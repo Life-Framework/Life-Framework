@@ -1,0 +1,92 @@
+# Respray bay on Everon (#4589): a newcomer's starter car goes onto the bay by the mechanic's garage, the paint
+# rows show, one press repaints it and takes the money once, and a second press on the same row is refused.
+# Needs a fresh client profile (rules quiz, form R-89), $100 cash and $2000 bank. The only civilian paint on Everon is the
+# UAZ camo ($400) and the lot's UAZ costs $2,500, so for the check cut its `m_iBasePrice` in LF_VehiclePrices.conf to 500 in
+# the worktree before `session up` (test-only, never committed).
+#   node agent-box/session.mjs up --mission island --profile full --wait
+#   node agent-box/harness.mjs --client 1 flow island-livery-bay
+#   node agent-box/session.mjs down
+# Read the server console for [LFDebug:LiveryShop] after the run.
+
+ui
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption2Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption1Button
+wait 1500
+click QuizNextButton
+wait 800
+click QuizOption0Button
+wait 1500
+click QuizNextButton
+wait 800
+wait 2500
+click QuizContinueButton
+wait 2500
+type RegFirstName Ada
+type RegLastName Lovelace
+type RegAge 36
+click SignButton
+wait 12000
+send guide close
+wait 1000
+
+step 1 Buy the UAZ at the lot (driving licence by the dev gate; the car is paid from the bank)
+licence DRIVING_LICENCE
+wait 1500
+stand Fit_saint_philippe_carlot_vehicle_lot
+wait 1500
+use LF_VehicleBuyAction Fit_saint_philippe_carlot_vehicle_lot
+wait 1500
+click Car3_Action
+wait 2500
+click LotClose
+wait 500
+state
+
+step 2 Withdraw $300 at the bank: the camo respray is paid in cash ($400) and a newcomer carries $100
+stand Fit_saint_philippe_bank_bank_teller
+wait 1500
+use LF_ATMAction Fit_saint_philippe_bank_bank_teller
+wait 1200
+click Key3Button
+click Key0Button
+click Key0Button
+click WithdrawButton
+wait 1500
+click CloseButton
+wait 500
+state
+
+step 3 Stand at the bay and set the car on its pad (the dev park stands in for driving it)
+stand Fit_saint_philippe_districts_garage_livery_bay
+wait 1500
+send baypark
+wait 3000
+look
+wait 2500
+look
+wait 1500
+shot ui livery_bay_rows
+
+step 4 Press the first paint row once: the car comes back on the pad in the new paint, the cash drops once
+state
+use LF_LiveryShopAction Fit_saint_philippe_districts_garage_livery_bay
+wait 4000
+state
+shot ui livery_bay_painted
+
+step 5 Press the same row again at once (a stale press): refused, nothing more is charged
+wait 100
+use LF_LiveryShopAction Fit_saint_philippe_districts_garage_livery_bay
+wait 3000
+state
