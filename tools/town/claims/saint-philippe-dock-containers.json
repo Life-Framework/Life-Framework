@@ -7,7 +7,7 @@
   "kit": "container-yard",
   "layer": "addons/LF_Everon1989/Worlds/MainWorld/MainWorld_Layers/Place_saint-philippe-dock_containers.layer",
   "kinds": [],
-  "rows": 16,
+  "rows": 14,
   "destruction": {
     "mode": "none",
     "reason": "hostless plot: no building stands in the slot"

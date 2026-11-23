@@ -264,40 +264,6 @@
       "yaw": 180,
       "wall": "free",
       "floor": "f0"
-    },
-    {
-      "id": "yard-barrel",
-      "name": "ContainerYard_Barrel",
-      "prefab": "{7D52C517720EF2F5}Prefabs/Props/Industrial/BarrelMetal_01_blue.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "mount": "terrain",
-      "offset": [
-        3.2,
-        0,
-        -6.5
-      ],
-      "yaw": 0,
-      "lift": 0.06,
-      "wall": "free",
-      "floor": "f0"
-    },
-    {
-      "id": "yard-pallet",
-      "name": "ContainerYard_Pallet",
-      "prefab": "{D7F69BF7D2DCA0A8}Prefabs/Props/Industrial/Pallets/Pallet_01.et",
-      "role": "dressing",
-      "verb": "on floor",
-      "mount": "terrain",
-      "offset": [
-        3,
-        0,
-        -3.5
-      ],
-      "yaw": 12,
-      "lift": 0.1,
-      "wall": "free",
-      "floor": "f0"
     }
   ]
 }
