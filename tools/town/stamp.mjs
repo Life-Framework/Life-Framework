@@ -25,7 +25,7 @@ import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkKit } from "./kit.mjs";
-import { CLAIMS_DIR, LAYER_DIR, planFitSeated } from "./fit.mjs";
+import { CLAIMS_DIR, kitNameOf, LAYER_DIR, planFitSeated } from "./fit.mjs";
 import { mountOf, shellReader } from "./seat.mjs";
 import { probeTerrain, readPins, terrainFromPins, writePins } from "./terrain.mjs";
 
@@ -66,8 +66,8 @@ export function stampTargets(kitName, { placesDir, templatesDir, place = null })
     const template = readJson(tf);
     const dossier = readJson(df);
     for (const slot of template.slots ?? []) {
-      if (slot.kit !== kitName) continue;
       const entry = mapping.slots?.[slot.id];
+      if (kitNameOf(slot, entry) !== kitName) continue;
       if (!entry || entry.none || !entry.building || entry.dossier) continue;
       const building = (dossier.buildings ?? []).find((b) => b.id === entry.building) ?? null;
       out.push({ place: p, slot: slot.id, building, dossier, mapping, template });
@@ -100,7 +100,7 @@ export async function planStamp(kit, targets, { root = ROOT, layerDir = LAYER_DI
     // flatWalls), which is flat under the plate or slid along to a run that is. With no readable host model they stay as authored.
     const terrain = terrainOf ? terrainOf(t.place, t.slot) : terrainFromPins(readPins(root, t.place, t.slot));
     const plan = await planFitSeated(
-      { place: t.place, slot: t.slot, dossier: t.dossier, mapping: t.mapping, template: t.template, kits: { [t.template.slots.find((s) => s.id === t.slot).kit]: sk }, sameShell: true, refit: true, skipClaims, branch, fetch: false, seatOnly: STAMP_SEAT, flatWalls: true },
+      { place: t.place, slot: t.slot, dossier: t.dossier, mapping: t.mapping, template: t.template, kits: { [kitNameOf(t.template.slots.find((s) => s.id === t.slot), t.mapping.slots[t.slot])]: sk }, sameShell: true, refit: true, skipClaims, branch, fetch: false, seatOnly: STAMP_SEAT, flatWalls: true },
       { root, now, readGame, shell, terrain, frameOf },
     );
     if (!plan.ok) {
