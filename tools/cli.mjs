@@ -5710,7 +5710,7 @@ const cmds = {
     const list = flags ?? [];
     return cmdDev(argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), wait: list.includes("--wait"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },
-  test: (flags) => {
+  test: async (flags) => {
     const list = flags ?? [];
     const noBuild = list.includes("--no-build");
     const only = list.includes("--only") ? (argValue(list, "--only") ?? "") : undefined;
@@ -5723,13 +5723,19 @@ const cmds = {
         console.log("test: --town runs the whole town list on the playtest world; it takes no --only, --red, --only-classes or --world");
         return 2;
       }
-      const leg = testWorld.townLeg({ names: testWorld.testNames(ROOT), town: testWorld.readTown(ROOT) });
-      if (!leg) {
+      const legs = testWorld.townLegs({ names: testWorld.testNames(ROOT), town: testWorld.readTown(ROOT) });
+      if (!legs.length) {
         console.log(`test: --town: ${testWorld.TOWN_FILE} lists no tests`);
         return 2;
       }
-      console.log(`test: --town ${leg.classes.length} test(s) on ${leg.world}`);
-      return cmdTest(noBuild, "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), onlyClasses: leg.classes.join(","), world: leg.world, coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
+      // One boot per leg: the playtest world, then each mission header a town test names (the parity test).
+      let code = 0;
+      for (const leg of legs) {
+        console.log(`test: --town ${leg.classes.length} test(s) on ${leg.world}`);
+        const r = await cmdTest(noBuild, "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), onlyClasses: leg.classes.join(","), world: leg.world, coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
+        if (r !== 0 && code === 0) code = r;
+      }
+      return code;
     }
     return cmdTest(noBuild, argValue(list, "--tier") ?? "all", ROOT, { force: list.includes("--force"), noCache: list.includes("--no-cache"), wait: list.includes("--wait"), only, onlyClasses, shards: shardsFlag, both: list.includes("--both"), red, world: argValue(list, "--world"), coreOnly: list.includes("--core-only"), ...remoteFlags(list) });
   },

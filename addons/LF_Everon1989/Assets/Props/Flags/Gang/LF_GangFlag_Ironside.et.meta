@@ -1,0 +1,15 @@
+MetaFileClass {
+ Name "{1F7B3F1CCC70825C}Assets/Props/Flags/Gang/LF_GangFlag_Ironside.et"
+ Configurations {
+  EntityTemplateResourceClass PC {
+  }
+  EntityTemplateResourceClass XBOX_ONE : PC {
+  }
+  EntityTemplateResourceClass XBOX_SERIES : PC {
+  }
+  EntityTemplateResourceClass PS4 : PC {
+  }
+  EntityTemplateResourceClass HEADLESS : PC {
+  }
+ }
+}

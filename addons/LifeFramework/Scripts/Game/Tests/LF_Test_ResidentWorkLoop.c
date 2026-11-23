@@ -1,12 +1,11 @@
-// red-proof: 2026-11-23, before LF_ResidentWorkLoop existed the test did not compile; with the act skipped (RedProof()
-//   on, `cli test --no-build --red LF_Test_ResidentWorkLoop`) no step is ever applied, so `a carry worker starts on
-//   step 0`, `the loop moves on to the next step` and `the worker plays the step's gesture` fail. The run that went
-//   red and then green is in the PR.
-//! residents/work-loop (#4230): a resident with a work activity (carry, hammer, sweep) cycles through its steps on
-//! the clock. The rule with no world: a name is trimmed and lower-cased, an unknown one is not work, every
-//! activity has several steps, the step at a second wraps around the cycle and every step gesture is a vanilla
-//! one. With a character: Begin starts step 0, a later second moves to the next step and plays its gesture, a
-//! whole cycle later it is back on step 0, and Stop ends the loop.
+// red-proof: 2026-11-23 (#4382), with the act skipped (RedProof() on, `cli test --no-build --red LF_Test_ResidentWorkLoop`)
+//   no pose is started, so `a hammer worker plays the hammer pose`, `the pose was started once` and `a sweep worker
+//   falls back to the idle loiter` fail. The RED-OK line is in the PR.
+//! residents/work-loop (#4230, #4382): a resident with a work activity (carry, hammer, sweep) holds that job's body
+//! pose. The rule with no world: a name is trimmed and lower-cased, an unknown one is not work, hammer has its own
+//! anim set instance on the work graph and it loads, carry and sweep (no vanilla clip reads as either) have none
+//! and play the plain idle loiter. With a character: Begin starts the hammer pose once, beginning again keeps it, a
+//! sweep line swaps to the idle loiter, a check before the restart time leaves the pose alone, Stop ends it.
 [LF_TestInfo(LF_TestTier.WORLD)]
 class LF_Test_ResidentWorkLoop : LF_Test
 {
@@ -44,57 +43,48 @@ class LF_Test_ResidentWorkLoop : LF_Test
 		foreach (string name : names)
 		{
 			ctx.True(LF_ResidentWorkLoop.IsWork(name), name + " is a work activity");
-			ctx.True(LF_ResidentWorkLoop.StepCount(name) >= 3, name + " has several steps");
-			int total = 0;
-			for (int i = 0; i <LF_ResidentWorkLoop.StepCount(name); i++)
-			{
-				ctx.True(LF_ResidentWorkLoop.StepSeconds(name, i) > 0, name + " step " + i + " lasts a while");
-				total += LF_ResidentWorkLoop.StepSeconds(name, i);
-			}
-
-			ctx.Equal(total, LF_ResidentWorkLoop.CycleSeconds(name), name + " cycle is the sum of its steps");
-			ctx.Equal(0, LF_ResidentWorkLoop.StepAt(name, 0), name + " starts on step 0");
-			ctx.Equal(0, LF_ResidentWorkLoop.StepAt(name, total), name + " wraps to step 0 after one cycle");
-			ctx.Equal(LF_ResidentWorkLoop.StepCount(name) - 1, LF_ResidentWorkLoop.StepAt(name, total - 1), name + " ends on its last step");
-			ctx.Equal(1, LF_ResidentWorkLoop.StepAt(name, LF_ResidentWorkLoop.StepSeconds(name, 0)), name + " moves to step 1 when step 0 is over");
 		}
 
-		ctx.Equal(-1, LF_ResidentWorkLoop.StepAt("moonwalk", 5), "an unknown name has no step");
+		ctx.EqualStr(LF_ResidentWorkLoop.HAMMER_POSE, LF_ResidentWorkLoop.PoseOf("hammer"), "hammer has its own pose");
+		ctx.EqualStr("", LF_ResidentWorkLoop.PoseOf("Carry"), "carry has no pose of its own and idles");
+		ctx.EqualStr("", LF_ResidentWorkLoop.PoseOf("sweep"), "sweep has no pose of its own and idles");
+		ctx.EqualStr("", LF_ResidentWorkLoop.PoseOf("moonwalk"), "an unknown name has no pose");
+
+		ctx.True(Resource.Load(LF_ResidentWorkLoop.HAMMER_POSE).IsValid(), "the hammer pose instance loads");
+		ctx.True(Resource.Load(LF_WorkAnimPlayer.PICK_GRAPH).IsValid(), "the work graph the poses run on loads");
+		ctx.NotNull(LF_ResidentWorkLoop.PoseData(LF_ResidentWorkLoop.HAMMER_POSE), "a pose builds its loiter data");
 	}
 
 	//------------------------------------------------------------------------------------------------
 	protected void RunWorker(LF_TestContext ctx, IEntity worker)
 	{
-		string name = LF_ResidentWorkLoop.CARRY;
 		ctx.False(LF_ResidentWorkLoop.IsRunning(worker), "nobody works before Begin");
 
 		bool began;
 		if (!RedProof())
-			began = LF_ResidentWorkLoop.Begin(worker, name);
+			began = LF_ResidentWorkLoop.Begin(worker, "hammer");
 
-		ctx.True(began, "a carry worker begins");
+		ctx.True(began, "a hammer worker begins");
 		ctx.True(LF_ResidentWorkLoop.IsRunning(worker), "a worker that began is running");
-		ctx.Equal(0, LF_ResidentWorkLoop.StepOf(worker), "a carry worker starts on step 0");
+		ctx.EqualStr(LF_ResidentWorkLoop.HAMMER_POSE, LF_ResidentWorkLoop.PlayedPose(worker), "a hammer worker plays the hammer pose");
+		ctx.Equal(1, LF_ResidentWorkLoop.StartsOf(worker), "the pose was started once");
 
-		int first = LF_ResidentWorkLoop.StepSeconds(name, 0);
-		if (!RedProof())
-			LF_ResidentWorkLoop.TickAt(worker, first);
-
-		ctx.Equal(1, LF_ResidentWorkLoop.StepOf(worker), "the loop moves on to the next step");
-		ctx.Equal(LF_ResidentWorkLoop.GestureOf(name, 1), LF_ResidentWorkLoop.PlayedGesture(worker), "the worker plays the step's gesture");
-
-		if (!RedProof())
-			LF_ResidentWorkLoop.TickAt(worker, LF_ResidentWorkLoop.CycleSeconds(name) + 1);
-
-		ctx.Equal(0, LF_ResidentWorkLoop.StepOf(worker), "a whole cycle later the worker is back on step 0");
-
-		// Beginning twice keeps one loop.
-		ctx.True(LF_ResidentWorkLoop.Begin(worker, name), "beginning again keeps the loop");
+		// Beginning twice keeps one pose; a check before the restart time leaves it alone.
+		ctx.True(LF_ResidentWorkLoop.Begin(worker, "hammer"), "beginning again keeps the loop");
+		LF_ResidentWorkLoop.Check(worker, LF_ResidentWorkLoop.RESTART_MS - 1);
+		ctx.Equal(1, LF_ResidentWorkLoop.StartsOf(worker), "the same work starts its pose once");
 		ctx.Equal(1, LF_ResidentWorkLoop.Count(), "one worker is one loop");
+
+		// A job with no pose of its own plays the idle loiter, not a hand signal.
+		if (!RedProof())
+			LF_ResidentWorkLoop.Begin(worker, "sweep");
+
+		ctx.True(LF_ResidentWorkLoop.IsRunning(worker) && LF_ResidentWorkLoop.PlayedPose(worker).IsEmpty(), "a sweep worker falls back to the idle loiter");
+		ctx.Equal(1, LF_ResidentWorkLoop.Count(), "a new job replaces the old one");
 
 		LF_ResidentWorkLoop.Stop(worker);
 		ctx.False(LF_ResidentWorkLoop.IsRunning(worker), "Stop ends the loop");
-		ctx.Equal(-1, LF_ResidentWorkLoop.StepOf(worker), "a stopped worker has no step");
+		ctx.Equal(0, LF_ResidentWorkLoop.StartsOf(worker), "a stopped worker has no pose");
 
 		// A word that is not work never starts a loop.
 		ctx.False(LF_ResidentWorkLoop.Begin(worker, "moonwalk"), "an unknown name does not begin");

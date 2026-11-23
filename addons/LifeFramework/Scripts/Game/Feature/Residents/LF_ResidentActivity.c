@@ -5,7 +5,7 @@
 //           pose a player's Sit uses, so a late joiner sees it through the base game loiter replication).
 //   serve   the resident faces the anchor's facing and stands behind the counter.
 //   loiter  the LF_NpcLoiter stand set (lean or smoke), picked by the resident's id.
-//   carry, hammer, sweep   the resident plays that work's gesture cycle at the anchor (LF_ResidentWorkLoop,
+//   carry, hammer, sweep   the resident holds that job's work pose at the anchor (LF_ResidentWorkLoop,
 //           #4366); a new line, a walk or a despawn stops the loop.
 //   idle    (and empty) the resident faces the anchor's facing and stands.
 // An activity that is none of these falls back to idle with one LF_Debug.Warn per name. A sit with no
