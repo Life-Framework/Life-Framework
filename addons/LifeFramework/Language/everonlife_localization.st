@@ -9284,6 +9284,56 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Check the wash"
      Comment "Laundering station action while the batch is still washing (#2853)."
     }
+    CustomStringTableItem "{27381134AAEF8E1F}" {
+     Id "LF-LawBook_Empty"
+     Target_en_us "No codes in this section."
+     Comment "Law-book page line when a section lists no codes."
+    }
+    CustomStringTableItem "{9DDDB9A7239FF396}" {
+     Id "LF-LawBook_LineFine"
+     Target_en_us "%1  {currency:sym}%2"
+     Comment "Law-book page line for a code with a fine and no time: %1 code name, %2 fine in dollars."
+    }
+    CustomStringTableItem "{81090FA397167E8F}" {
+     Id "LF-LawBook_LineFineTime"
+     Target_en_us "%1  {currency:sym}%2, %3 min"
+     Comment "Law-book page line: %1 code name, %2 fine in dollars, %3 time in minutes."
+    }
+    CustomStringTableItem "{F8582E4A8E0A84F1}" {
+     Id "LF-LawBook_LineJail"
+     Target_en_us "%1  jail only, %2 min"
+     Comment "Law-book page line for a jail-only code (no fine): %1 code name, %2 time in minutes."
+    }
+    CustomStringTableItem "{19E1E2EEA95E7990}" {
+     Id "LF-LawBook_Read"
+     Target_en_us "Read: %1"
+     Comment "Action on the law-book lectern, one per section. %1 = the section name."
+    }
+    CustomStringTableItem "{C9966D6AE8C46169}" {
+     Id "LF-LawBook_Section_criminal"
+     Target_en_us "Criminal"
+     Comment "Law-book section name: criminal codes."
+    }
+    CustomStringTableItem "{79D1B91FDF7A5E37}" {
+     Id "LF-LawBook_Section_narcotics"
+     Target_en_us "Narcotics"
+     Comment "Law-book section name: narcotics codes."
+    }
+    CustomStringTableItem "{A0D0B472BFD72AF7}" {
+     Id "LF-LawBook_Section_road"
+     Target_en_us "Traffic"
+     Comment "Law-book section name: road and traffic codes."
+    }
+    CustomStringTableItem "{36C97D557BFD5D82}" {
+     Id "LF-LawBook_Section_weapons"
+     Target_en_us "Weapons"
+     Comment "Law-book section name: weapons codes."
+    }
+    CustomStringTableItem "{519671401E89B54B}" {
+     Id "LF-LawBook_Title"
+     Target_en_us "Law book: %1"
+     Comment "Title of a law-book page. %1 = the section name."
+    }
     CustomStringTableItem "{59EE09E1B7435797}" {
      Id "LF-LawlessHud_Enter"
      Target_en_us "You entered a lawless area. Server rules are relaxed here. Watch your back."
