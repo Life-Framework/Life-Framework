@@ -11612,6 +11612,46 @@ CustomStringTableItem "{44869271883D0402}" {
      Target_en_us "Your rank is now %1."
      Comment "Toast to the promoted or demoted member. %1 is the new rank."
     }
+    CustomStringTableItem "{520C10CDD07CEBC1}" {
+     Id "LF-OutpostBuyer_Full"
+     Target_en_us "\"I have enough for now. Come back in about %1 minutes.\""
+     Comment "Toast: the outpost buyer is at its demand cap (#4225). %1 = minutes until it takes another crate."
+    }
+    CustomStringTableItem "{52AFBF7DB477710B}" {
+     Id "LF-OutpostBuyer_FullNever"
+     Target_en_us "\"I have all the crates I need.\""
+     Comment "Toast: the outpost buyer is full and never refills (#4225)."
+    }
+    CustomStringTableItem "{BC8A7CE6BEE6A4A4}" {
+     Id "LF-OutpostBuyer_NoCrate"
+     Target_en_us "\"You have nothing I want.\""
+     Comment "Toast: the seller carries no contraband crate (#4225)."
+    }
+    CustomStringTableItem "{F87785E45E6D35AE}" {
+     Id "LF-OutpostBuyer_NoRun"
+     Target_en_us "\"Where did this come from? I only take crates that came up the road on a run.\""
+     Comment "Toast: the seller has no running, driven convoy run to close (#4225)."
+    }
+    CustomStringTableItem "{42236C5858B2F6DA}" {
+     Id "LF-OutpostBuyer_Sell"
+     Target_en_us "Sell contraband crate (%1)"
+     Comment "Action on the outpost buyer table (#4225). %1 = the price for the crate."
+    }
+    CustomStringTableItem "{FB3E7B610211031D}" {
+     Id "LF-OutpostBuyer_Sold"
+     Target_en_us "\"Good. Bring me more when you have it.\" You were paid %1."
+     Comment "Toast after the outpost buyer takes crates (#4225). %1 = the cash paid."
+    }
+    CustomStringTableItem "{C615BD9428C48A36}" {
+     Id "LF-OutpostBuyer_Title"
+     Target_en_us "Rebel Buyer"
+     Comment "Title of the outpost contraband buyer toasts (#4225)."
+    }
+    CustomStringTableItem "{87240FE872DFA583}" {
+     Id "LF-OutpostBuyer_Unavailable"
+     Target_en_us "\"Not now. Come back later.\""
+     Comment "Toast: the outpost buyer could not complete the sale (#4225)."
+    }
     CustomStringTableItem "{D52F08A3E91B7C46}" {
      Id "LF-OutpostStock_Bought"
      Target_en_us "\"Take it. Don't tell anyone where you got it.\" You paid %1."
