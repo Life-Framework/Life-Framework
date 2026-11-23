@@ -27,7 +27,7 @@ Press **F2** (gamepad: hold **right bumper + Y**) to open your personal file. It
 
 * **Person**: your name and role (civilian, police or medic, on or off duty), cash in hand and in the bank,
   houses owned, garage slots used, time on the island, whether you are wanted, the licences and permits you hold, and
-  your level in each job. **Read** on a job shows its title with your tier word (Apprentice, Hand, Journeyman, Foreman or Master), how far you are to the next level, what that level opens, the perks you picked and, once the shift boards are up, your rank in that trade this week.
+  your level in each job. **Read** on a job shows its title with your tier word (Apprentice, Hand, Journeyman, Foreman or Master), how far you are to the next level, what that level opens, the perks you picked and, once the shift boards are up, your rank in that trade this week. At level 10 and again at level 20 of a work trade, walk up to the labour office counter and take one of two perks for that trade. The first pick is free; changing it later costs $500 at the same counter, once a week per trade and level, and each trade has its own change row.
 * **Progress**: your first errands in order, each marked **DONE**, **CURRENT** or **LATER**, then any other errand you
   took. **Read** shows the errand and its progress; **Set waypoint to the current errand** puts it on your map.
 * **Next**: what you could do now to earn a living, with a line on each, roughly what it pays an hour and how far away

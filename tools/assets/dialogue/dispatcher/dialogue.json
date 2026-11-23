@@ -1,0 +1,138 @@
+{
+  "id": "dispatcher",
+  "name": "Dispatcher",
+  "addon": "LF_Everon1989",
+  "speaker_key": "#LF-Dialogue_Dispatcher_Name",
+  "voice": {
+    "id": "cjVigY5qzO86Huf0OWal",
+    "sex": "male",
+    "name": "Eric - Smooth, Trustworthy",
+    "why": "The station dispatcher on the radio: a calm, level American male voice, clipped and unhurried, the one every officer hears when a call comes in. No other NPC uses this voice.",
+    "model": "eleven_multilingual_v2",
+    "settings": {
+      "stability": 0.65,
+      "similarity_boost": 0.75,
+      "style": 0.05,
+      "speed": 1.05
+    }
+  },
+  "budget_chars": 900,
+  "hear_range_m": 0,
+  "start": "standby",
+  "nodes": [
+    {
+      "id": "standby",
+      "line": "standby"
+    }
+  ],
+  "lines": {
+    "standby": {
+      "text": "Dispatch, standing by."
+    },
+    "type_robbery": {
+      "text": "Robbery in progress.",
+      "for_key": "#LF-Offence_Robbery"
+    },
+    "type_vehicle_theft": {
+      "text": "Vehicle theft reported.",
+      "for_key": "#LF-Offence_VehicleTheft"
+    },
+    "type_carjacking": {
+      "text": "Carjacking in progress.",
+      "for_key": "#LF-Offence_Carjacking"
+    },
+    "type_weapon_theft": {
+      "text": "Weapon theft reported.",
+      "for_key": "#LF-Offence_WeaponTheft"
+    },
+    "type_break_in": {
+      "text": "Break-in in progress.",
+      "for_key": "#LF-Offence_BreakIn"
+    },
+    "type_hospital": {
+      "text": "Hospital robbery in progress.",
+      "for_key": "#LF-Offence_HospitalRobbery"
+    },
+    "type_murder": {
+      "text": "Homicide reported. Man down.",
+      "for_key": "#LF-Offence_Murder"
+    },
+    "type_cash_van": {
+      "text": "Cash van attacked.",
+      "for_key": "#LF-Offence_CashVan"
+    },
+    "type_armory": {
+      "text": "Armory break-in. All units respond.",
+      "for_key": "#LF-Offence_ArmoryHeist"
+    },
+    "type_jailbreak": {
+      "text": "Jailbreak in progress. All units respond.",
+      "for_key": "#LF-Offence_JailBreak"
+    },
+    "type_escaped": {
+      "text": "Prisoner escaped custody.",
+      "for_key": "#LF-Offence_EscapedCustody"
+    },
+    "type_shoplifting": {
+      "text": "Shoplifting reported.",
+      "for_key": "#LF-Offence_Shoplifting"
+    },
+    "type_chop_shop": {
+      "text": "Chop shop activity reported.",
+      "for_key": "#LF-Offence_ChopShop"
+    },
+    "place_bank": {
+      "text": "At the bank.",
+      "for_key": "#LF-Sign_Bank_Title"
+    },
+    "place_fuel_station": {
+      "text": "At the fuel station.",
+      "for_key": "#LF-Sign_FuelStation_Title"
+    },
+    "place_general_store": {
+      "text": "At the general store.",
+      "for_key": "#LF-Sign_GeneralStore_Title"
+    },
+    "place_gun_store": {
+      "text": "At the gunsmith.",
+      "for_key": "#LF-Sign_GunStore_Title"
+    },
+    "place_hospital": {
+      "text": "At the hospital.",
+      "for_key": "#LF-Sign_Hospital_Title"
+    },
+    "place_pharmacy": {
+      "text": "At the pharmacy.",
+      "for_key": "#LF-Sign_Pharmacy_Title"
+    },
+    "place_post_office": {
+      "text": "At the post office.",
+      "for_key": "#LF-Sign_PostOffice_Title"
+    },
+    "place_supermarket": {
+      "text": "At the supermarket.",
+      "for_key": "#LF-Sign_Supermarket_Title"
+    },
+    "place_clothing_store": {
+      "text": "At the clothing store.",
+      "for_key": "#LF-Sign_ClothingStore_Title"
+    },
+    "place_furniture_store": {
+      "text": "At the furniture store.",
+      "for_key": "#LF-Sign_FurnitureStore_Title"
+    },
+    "place_garage": {
+      "text": "At the garage.",
+      "for_key": "#LF-Sign_Garage_Title"
+    },
+    "place_hostel": {
+      "text": "At the hostel.",
+      "for_key": "#LF-Sign_Hostel_Title"
+    },
+    "place_saint_philippe": {
+      "text": "In Saint-Philippe.",
+      "for_key": "#LF-Place_SaintPhilippe"
+    }
+  },
+  "replies": {}
+}

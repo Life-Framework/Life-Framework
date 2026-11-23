@@ -1,8 +1,8 @@
 {
   "section": "tradeperks",
   "class": "LF_TradePerksSavePayload",
-  "version": 1,
-  "roots": "LF_TradePerkRow",
+  "version": 2,
+  "roots": "LF_TradePerkRow,LF_PerkChangeRow",
   "records": {
     "LF_TradePerkRow": {
       "fields": [
@@ -10,6 +10,14 @@
         "string m_sTrade",
         "int m_iAtLevel",
         "string m_sPerk"
+      ]
+    },
+    "LF_PerkChangeRow": {
+      "fields": [
+        "string m_sPlayerUid",
+        "string m_sTrade",
+        "int m_iAtLevel",
+        "int m_iDay"
       ]
     }
   }

@@ -1,0 +1,279 @@
+{
+  "schema": 1,
+  "kit": "truckyard",
+  "system": "vehicles",
+  "source": {
+    "file": "tools/town/kits/sources/truckyard.layer",
+    "group": "*",
+    "origin": "Source_Truckyard_Origin",
+    "frame": "origin-entity"
+  },
+  "scope": "room",
+  "anchoring": {
+    "floorY": 0,
+    "floors": [
+      {
+        "id": "f0",
+        "y": 0
+      }
+    ],
+    "footprint": {
+      "source": "rows",
+      "min": [
+        -69,
+        -2
+      ],
+      "max": [
+        2,
+        18
+      ]
+    },
+    "front": "+z",
+    "counters": [],
+    "adapt": "A fenced truck yard on open apron: the host is the weighbridge office (the sales hut). Everything stands on the ground (terrain rows, run town fit --terrain): the lot counter with id truck-yard in front of the hut, a row of four civilian Ural display trucks along the long shed, the spawn bay on the lane west of the counter (set in the lot spawn point, world axes; no cones, the maintainer wants none in town) and two Truck Sales signs. Rows are rigid: shift, never stretch."
+  },
+  "rows": [
+    {
+      "id": "lot",
+      "name": "Truckyard_Lot",
+      "prefab": null,
+      "role": "interactable",
+      "verb": "on floor",
+      "offset": [
+        -5.81,
+        0,
+        8.14
+      ],
+      "yaw": -85,
+      "config": [
+        {
+          "component": "LF_VehicleLotComponent",
+          "guid": "A7C4000000000003",
+          "set": {
+            "m_sShopId": "\"truck-yard\"",
+            "m_iCashCeiling": "500",
+            "m_iExtraKeyPrice": "25",
+            "m_sLotId": "\"truck-yard\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "LF_VehicleSpawnPointComponent",
+          "guid": "A7C4000000000005",
+          "set": {
+            "m_sShopId": "\"truck-yard\"",
+            "m_vOffset": "-22.5 0 4.5",
+            "m_iSlots": "2",
+            "m_vSlotStep": "10 0 0",
+            "m_vAngles": "270 0 0"
+          },
+          "blocks": []
+        },
+        {
+          "component": "MeshObject",
+          "guid": "A7C4000000000001",
+          "set": {
+            "Object": "\"{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob\""
+          },
+          "blocks": []
+        },
+        {
+          "component": "RigidBody",
+          "guid": "A7C4000000000002",
+          "set": {
+            "Mass": "10",
+            "ModelGeometry": "1",
+            "Static": "1"
+          },
+          "blocks": []
+        },
+        {
+          "component": "ActionsManagerComponent",
+          "guid": "A7C4000000000006",
+          "set": {},
+          "blocks": [
+            "ActionContexts",
+            "additionalActions"
+          ]
+        },
+        {
+          "component": "RplComponent",
+          "guid": "A7C4000000000009",
+          "set": {
+            "Enabled": "1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "display-covered-blue",
+      "name": "Truckyard_Display_covered_blue",
+      "prefab": "{F66EAD0D2016B6BA}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_covered_CIV_blue.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -38.41,
+        0,
+        8.48
+      ],
+      "yaw": -85,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "class": "Vehicle",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "display-civ-forest",
+      "name": "Truckyard_Display_CIV_forest",
+      "prefab": "{1449105FD658EDFB}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_forest.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -48.37,
+        0,
+        9.35
+      ],
+      "yaw": -85,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "class": "Vehicle",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "display-covered-orange",
+      "name": "Truckyard_Display_covered_orange",
+      "prefab": "{66241E0CEDFCEDFF}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_covered_CIV_orange.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -58.33,
+        0,
+        10.22
+      ],
+      "yaw": -85,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "class": "Vehicle",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "display-covered-jzd",
+      "name": "Truckyard_Display_covered_JZD",
+      "prefab": "{FB219B49A448A8EA}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_covered_CIV_JZD.et",
+      "role": "dressing",
+      "verb": "on floor",
+      "offset": [
+        -68.29,
+        0,
+        11.09
+      ],
+      "yaw": -85,
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain",
+      "class": "Vehicle",
+      "config": [
+        {
+          "component": "LF_VehicleLockComponent",
+          "guid": "54D6FBC0EA806FE5",
+          "set": {
+            "m_bDebugLocked": "1"
+          },
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "id": "sign-hut",
+      "name": "Truckyard_Sign_Hut",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        -5.51,
+        0,
+        11.62
+      ],
+      "yaw": -85,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "guid": "A7C4000000000041",
+          "set": {
+            "m_sSignId": "\"everon_truckyard\"",
+            "m_vRimColor": "0.9 0.9 0.9",
+            "m_vPaintColor": "0.12 0.3 0.55",
+            "m_vTextColor": "1 1 1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    },
+    {
+      "id": "sign-gate",
+      "name": "Truckyard_Sign_Gate",
+      "prefab": "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et",
+      "role": "sign",
+      "verb": "on floor",
+      "offset": [
+        -67.73,
+        0,
+        17.57
+      ],
+      "yaw": -85,
+      "config": [
+        {
+          "component": "LF_SignComponent",
+          "guid": "A7C4000000000041",
+          "set": {
+            "m_sSignId": "\"everon_truckyard\"",
+            "m_vRimColor": "0.9 0.9 0.9",
+            "m_vPaintColor": "0.12 0.3 0.55",
+            "m_vTextColor": "1 1 1"
+          },
+          "blocks": []
+        }
+      ],
+      "wall": "free",
+      "floor": "f0",
+      "mount": "terrain"
+    }
+  ]
+}

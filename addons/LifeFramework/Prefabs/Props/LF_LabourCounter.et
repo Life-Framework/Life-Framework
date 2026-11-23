@@ -1,0 +1,466 @@
+GenericEntity : "{6B7B7CCC74AACA67}Prefabs/Props/Furniture/Desk_01_short.et" {
+ ID "93BC83E1CDDE0CD4"
+ components {
+  RplComponent "{840ECA10BB0DF003}" {
+   Enabled 1
+  }
+  ActionsManagerComponent "{8256A01237420806}" {
+   ActionContexts {
+    UserActionContext "{4B1915C241C0727C}" {
+     ContextName "LF_LabourCounter"
+     Position PointInfo "{2D191AB0D4574B2F}" {
+      Offset 0 0.9 0
+     }
+     Radius 2
+    }
+   }
+   additionalActions {
+    LF_PerkPickAction "{CB38797056C5D2FA}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{01627CFD130BD22C}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "double_yield"
+    }
+    LF_PerkPickAction "{711ABF51CE221510}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{9A3B1D35FD84261D}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "swift_hands"
+    }
+    LF_PerkPickAction "{5F90C405F319B1F8}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{5021CD2BA21E9AE1}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "light_touch"
+    }
+    LF_PerkPickAction "{EBCDD8DCCA7611B0}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{A85BBCF73AC497A9}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "double_yield"
+    }
+    LF_PerkPickAction "{131FAA52ADF3F67C}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{5E58F2B9C00CA81B}" {
+      Name "#LF-PerkPick_TakeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "swift_hands"
+    }
+    LF_PerkPickAction "{4B3575EB57EE5ECA}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{415D841AD5408B69}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "MINER"
+    }
+    LF_PerkPickAction "{BFF7D5C8BC0C35EA}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{2E738A1BC0FE467E}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "MINER"
+    }
+    LF_PerkPickAction "{031ECE998D11ED74}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{D3FDBB237CFD6880}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "light_touch"
+     m_bChange 1
+     m_sTrade "MINER"
+    }
+    LF_PerkPickAction "{A8495558F2E84552}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{6121C47A7516EC4B}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "MINER"
+    }
+    LF_PerkPickAction "{50E7B6295F832352}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{A5C04096EB968E30}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "MINER"
+    }
+    LF_PerkPickAction "{352E94DB080E88B1}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{DE5E93DD3BC88EA4}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "LUMBERJACK"
+    }
+    LF_PerkPickAction "{0F464B06FCC31E23}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{962F842FB560DFC6}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "LUMBERJACK"
+    }
+    LF_PerkPickAction "{4A8D479B856CA695}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{EA73A2F35C0F2452}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "light_touch"
+     m_bChange 1
+     m_sTrade "LUMBERJACK"
+    }
+    LF_PerkPickAction "{83DBD0FAE6FD2F36}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{AF0DC3E2E006965B}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "LUMBERJACK"
+    }
+    LF_PerkPickAction "{4EFAE44B1CD6D6EC}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{19A5381EB926D65A}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "LUMBERJACK"
+    }
+    LF_PerkPickAction "{F09E217FD5122AAC}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{71B60CF640766C31}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "FARMER"
+    }
+    LF_PerkPickAction "{5EFA4EE2865049AA}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{ADA0CBFF87AF9A01}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "FARMER"
+    }
+    LF_PerkPickAction "{F63F7BA6A19BD9A3}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{E5D7745B2D528E2B}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "light_touch"
+     m_bChange 1
+     m_sTrade "FARMER"
+    }
+    LF_PerkPickAction "{7FC67F8B44189A28}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{7772AE21EDB5D36B}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "FARMER"
+    }
+    LF_PerkPickAction "{DCFCD28383002AE2}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{D6C341361CBDC929}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "FARMER"
+    }
+    LF_PerkPickAction "{92667EDE3C3FE3AA}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{DB97B57F94F5987C}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "FISHER"
+    }
+    LF_PerkPickAction "{6EB1DB20540EAE24}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{C64ACD908DF476CB}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "FISHER"
+    }
+    LF_PerkPickAction "{C30D8C4A16D2FF74}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{6449124522E1DB6E}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "light_touch"
+     m_bChange 1
+     m_sTrade "FISHER"
+    }
+    LF_PerkPickAction "{31F1269A956CAFC0}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{9E5B7CFBEC4A4C90}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "FISHER"
+    }
+    LF_PerkPickAction "{7E06E0F47E202E09}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{F972E953FF38050F}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "FISHER"
+    }
+    LF_PerkPickAction "{BEB4B1D663811334}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{8306FAA5789002D3}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "SMELTING"
+    }
+    LF_PerkPickAction "{B9B5AFC2C2A1E538}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{9F3FC857C5A72FF1}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "SMELTING"
+    }
+    LF_PerkPickAction "{158115F95A6E8EC2}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{F20FB5AA0EABB976}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "light_touch"
+     m_bChange 1
+     m_sTrade "SMELTING"
+    }
+    LF_PerkPickAction "{DC7AEBD73ED90CDA}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{04BBCDEF00FF58FD}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "SMELTING"
+    }
+    LF_PerkPickAction "{2D40F3B07BB66914}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{F545EBAA8AEC0E5E}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "SMELTING"
+    }
+    LF_PerkPickAction "{69F0EC04CA5B99E5}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{54C88736300BADC7}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "SALVAGE"
+    }
+    LF_PerkPickAction "{0E6162DB6BBD4CEB}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{F600C345BDB7B442}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 10
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "SALVAGE"
+    }
+    LF_PerkPickAction "{550BE9F0B6FF5A6A}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{8959ACC37D08BA20}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "light_touch"
+     m_bChange 1
+     m_sTrade "SALVAGE"
+    }
+    LF_PerkPickAction "{2AB06B68DF0ECE47}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{B842B5072227B4A9}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "double_yield"
+     m_bChange 1
+     m_sTrade "SALVAGE"
+    }
+    LF_PerkPickAction "{6B56FAAFC04EFEA5}" {
+     ParentContextList {
+      "LF_LabourCounter"
+     }
+     UIInfo UIInfo "{C4283C2626A46754}" {
+      Name "#LF-PerkPick_ChangeAny"
+     }
+     Duration 1
+     m_iAtLevel 20
+     m_sPerk "swift_hands"
+     m_bChange 1
+     m_sTrade "SALVAGE"
+    }
+   }
+  }
+ }
+}

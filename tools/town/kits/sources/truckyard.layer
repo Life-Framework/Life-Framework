@@ -1,0 +1,104 @@
+// Source of the `truckyard` kit (tools/town/kits/truckyard.json, #4419): the truck yard of the north-east compound.
+// Coordinates are in the host's frame (origin = the weighbridge office b09, yaw -5). Truck row, lot counter, signs and lamp.
+GenericEntity Source_Truckyard_Origin {
+ coords 0 0 0
+}
+GenericEntity Truckyard_Lot {
+ components {
+  LF_VehicleLotComponent "{A7C4000000000003}" {
+   m_sShopId "truck-yard"
+   m_iCashCeiling 500
+   m_iExtraKeyPrice 25
+   m_sLotId "truck-yard"
+  }
+  LF_VehicleSpawnPointComponent "{A7C4000000000005}" {
+   m_sShopId "truck-yard"
+   m_vOffset -22.5 0 4.5
+   m_iSlots 2
+   m_vSlotStep 10 0 0
+   m_vAngles 270 0 0
+  }
+  MeshObject "{A7C4000000000001}" {
+   Object "{3200A3508CA2E09B}Assets/Props/Commercial/CounterShop_01/CounterShop_01.xob"
+  }
+  RigidBody "{A7C4000000000002}" {
+   Mass 10
+   ModelGeometry 1
+   Static 1
+  }
+  ActionsManagerComponent "{A7C4000000000006}" {
+   ActionContexts {
+    UserActionContext "{A7C4000000000007}" {
+     ContextName "default"
+     Radius 3
+     Position PointInfo "{A7C4000000000008}" {
+      Offset 0 0.8 0
+     }
+    }
+   }
+   additionalActions {
+    LF_VehicleBuyAction "{A7C4000000000021}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A7C4000000000022}" {
+      Name "#EL-Vehicle_Buy"
+     }
+    }
+    LF_VehicleExtraKeyAction "{A7C4000000000023}" {
+     ParentContextList {
+      "default"
+     }
+     UIInfo UIInfo "{A7C4000000000024}" {
+      Name "#EL-Vehicle_ExtraKey"
+     }
+    }
+   }
+  }
+  RplComponent "{A7C4000000000009}" {
+   Enabled 1
+  }
+ }
+ coords -5.81 0 8.14
+ angleY -85
+}
+GenericEntity Truckyard_Display_covered_blue : "{F66EAD0D2016B6BA}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_covered_CIV_blue.et" {
+ coords -38.41 0 8.48
+ angleY -85
+}
+GenericEntity Truckyard_Display_CIV_forest : "{1449105FD658EDFB}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_CIV_forest.et" {
+ coords -48.37 0 9.35
+ angleY -85
+}
+GenericEntity Truckyard_Display_covered_orange : "{66241E0CEDFCEDFF}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_covered_CIV_orange.et" {
+ coords -58.33 0 10.22
+ angleY -85
+}
+GenericEntity Truckyard_Display_covered_JZD : "{FB219B49A448A8EA}Prefabs/Vehicles/Wheeled/Ural4320/Ural4320_transport_covered_CIV_JZD.et" {
+ coords -68.29 0 11.09
+ angleY -85
+}
+GenericEntity Truckyard_Sign_Hut : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ coords -5.51 0 11.62
+ angleY -85
+ components {
+  LF_SignComponent "{A7C4000000000041}" {
+   m_sSignId "everon_truckyard"
+   m_vRimColor 0.9 0.9 0.9
+   m_vPaintColor 0.12 0.3 0.55
+   m_vTextColor 1 1 1
+  }
+ }
+}
+GenericEntity Truckyard_Sign_Gate : "{B7B489CA36A0E9F8}Prefabs/Props/Signs/LF_Sign_PolePlate.et" {
+ coords -67.73 0 17.57
+ angleY -85
+ components {
+  LF_SignComponent "{A7C4000000000041}" {
+   m_sSignId "everon_truckyard"
+   m_vRimColor 0.9 0.9 0.9
+   m_vPaintColor 0.12 0.3 0.55
+   m_vTextColor 1 1 1
+  }
+ }
+}
