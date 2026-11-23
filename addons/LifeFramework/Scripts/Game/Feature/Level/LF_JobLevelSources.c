@@ -20,6 +20,12 @@ class LF_JobLevelSources : LF_EventSubscriber
 	static const string ACTION_MEDIC_REVIVE = "medic_revive";
 	static const string ACTION_MEDIC_DELIVERY = "medic_delivery";
 
+	//! SMELTING and SALVAGE are trades of their own (#4184, decision N3): a furnace batch never feeds MINER.
+	static const string JOB_SMELTING = "SMELTING";
+	static const string JOB_SALVAGE = "SALVAGE";
+	static const string ACTION_SMELT_BATCH = "smelt_batch";
+	static const string ACTION_SALVAGE_WORK = "salvage_work";
+
 	protected static ref LF_JobLevelSources s_Subscriber;
 
 	//------------------------------------------------------------------------------------------------
@@ -84,6 +90,43 @@ class LF_JobLevelSources : LF_EventSubscriber
 			return 0;
 
 		return LF_JobLevels.Award(medicUid, action);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: pays one trade action, but only when its `jobs.xpAwards` row feeds that trade. A row that
+	//! points at another track (a batch that pays MINER) pays nothing and logs an error.
+	//! \return XP actually added.
+	protected static int AwardTrade(string playerUid, string action, string trade, int units)
+	{
+		LF_JobsConfig config = LF_JobsConfig.Get();
+		LF_JobXpAwardDef row;
+		if (config)
+			row = config.FindAward(action);
+
+		if (row && row.m_sJob != trade)
+		{
+			LF_Debug.Error(FEATURE, string.Format("xp refused: action '%1' feeds '%2' in the jobs config, it must feed %3", action, row.m_sJob, trade));
+			return 0;
+		}
+
+		return LF_JobLevels.Award(playerUid, action, units);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: a finished smelter batch pays SMELTING xp, never MINER xp.
+	//! \param[in] batches Batches finished; the row's xp is per batch.
+	//! \return XP actually added.
+	static int AwardSmelting(string playerUid, int batches = 1)
+	{
+		return AwardTrade(playerUid, ACTION_SMELT_BATCH, JOB_SMELTING, batches);
+	}
+
+	//------------------------------------------------------------------------------------------------
+	//! Server: one unit of salvage work pays SALVAGE xp.
+	//! \return XP actually added.
+	static int AwardSalvage(string playerUid, int units = 1)
+	{
+		return AwardTrade(playerUid, ACTION_SALVAGE_WORK, JOB_SALVAGE, units);
 	}
 
 	//------------------------------------------------------------------------------------------------

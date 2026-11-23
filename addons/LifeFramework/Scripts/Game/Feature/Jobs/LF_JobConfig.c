@@ -10,6 +10,8 @@ enum LF_EJobType
 	PARCEL = 5,      // Courier - parcel run
 	FUEL_DELIVERY = 6, // Fuel delivery - jerrycan run
 	TAXI = 7,        // Taxi driver - marker fare
+	SMELTING = 8,    // Smelter - furnace batches; its own XP track (#4184, decision N3)
+	SALVAGE = 9,     // Salvage - landfill work; its own XP track (#4184)
 	// Whitelist-only jobs
 	POLICE = 100     // Policía - Requiere whitelist
 }
